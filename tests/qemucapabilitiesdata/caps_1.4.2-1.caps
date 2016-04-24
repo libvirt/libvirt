@@ -130,4 +130,5 @@
     <flag name='qxl.vram64_size_mb'/>
     <flag name='qxl-vga.vram64_size_mb'/>
     <flag name='device-tray-moved-event'/>
+    <flag name='nec-usb-xhci-ports'/>
   </qemuCaps>

@@ -357,6 +357,7 @@ typedef enum {
     /* 220 */
     QEMU_CAPS_DEVICE_PXB_PCIE, /* -device pxb-pcie */
     QEMU_CAPS_DEVICE_TRAY_MOVED, /* DEVICE_TRAY_MOVED event */
+    QEMU_CAPS_NEC_USB_XHCI_PORTS, /* -device nec-usb-xhci.p3 ports setting */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

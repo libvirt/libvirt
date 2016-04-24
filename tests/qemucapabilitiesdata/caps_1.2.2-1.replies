@@ -1668,6 +1668,17 @@
     }
 }
 
+
+{
+    "return": [
+        {
+            "name": "msi",
+            "type": "uint32"
+        }
+    ]
+}
+
+
 {
     "return": [
         {

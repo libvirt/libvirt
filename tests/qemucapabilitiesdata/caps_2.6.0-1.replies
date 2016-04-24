@@ -2995,6 +2995,47 @@
 }
 
 {
+    "return": [
+        {
+            "name": "msi",
+            "type": "on/off"
+        },
+        {
+            "name": "msix",
+            "type": "on/off"
+        },
+        {
+            "name": "superspeed-ports-first",
+            "type": "on/off"
+        },
+        {
+            "name": "force-pcie-endcap",
+            "type": "on/off"
+        },
+        {
+            "name": "streams",
+            "type": "on/off"
+        },
+        {
+            "name": "intrs",
+            "type": "uint32"
+        },
+        {
+            "name": "slots",
+            "type": "uint32"
+        },
+        {
+            "name": "2",
+            "type": "uint32"
+        },
+        {
+            "name": "p3",
+            "type": "uint32"
+        }
+    ]
+}
+
+{
   "return": [
     {
       "name": "pc-i440fx-2.4",

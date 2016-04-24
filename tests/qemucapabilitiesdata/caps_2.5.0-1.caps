@@ -176,4 +176,5 @@
     <flag name='debug-threads'/>
     <flag name='pxb'/>
     <flag name='device-tray-moved-event'/>
+    <flag name='nec-usb-xhci-ports'/>
   </qemuCaps>

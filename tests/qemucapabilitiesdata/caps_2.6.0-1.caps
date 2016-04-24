@@ -181,4 +181,5 @@
     <flag name='pxb'/>
     <flag name='pxb-pcie'/>
     <flag name='device-tray-moved-event'/>
+    <flag name='nec-usb-xhci-ports'/>
   </qemuCaps>

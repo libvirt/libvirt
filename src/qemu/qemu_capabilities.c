@@ -326,6 +326,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "pxb-pcie", /* 220 */
               "device-tray-moved-event",
+              "nec-usb-xhci-ports",
     );
 
 
@@ -1685,6 +1686,10 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsICH9[] = {
     { "disable_s4", QEMU_CAPS_ICH9_DISABLE_S4 },
 };
 
+static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUSBNECXHCI[] = {
+    { "p3", QEMU_CAPS_NEC_USB_XHCI_PORTS },
+};
+
 struct virQEMUCapsObjectTypeProps {
     const char *type;
     struct virQEMUCapsStringFlags *props;
@@ -1748,6 +1753,8 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBalloon) },
     { "virtio-balloon-device", virQEMUCapsObjectPropsVirtioBalloon,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioBalloon) },
+    { "nec-usb-xhci", virQEMUCapsObjectPropsUSBNECXHCI,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBNECXHCI) },
 };
 
 
