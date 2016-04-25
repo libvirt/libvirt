@@ -2592,7 +2592,7 @@ class app:
 
     def rebuild(self, name):
         if name not in ["libvirt", "libvirt-qemu", "libvirt-lxc", "libvirt-admin"]:
-            self.warning("rebuild() failed, unknown module %s") % name
+            self.warning("rebuild() failed, unknown module %s" % name)
             return None
         builder = None
         srcdir = os.path.abspath((os.environ["srcdir"]))
