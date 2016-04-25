@@ -77,9 +77,16 @@ mymain(void)
 
     DO_TEST_DIFFERENT("disk-virtio");
 
+    DO_TEST_DIFFERENT("graphics-vnc-minimal");
+    DO_TEST_DIFFERENT("graphics-vnc-manual-port");
+    DO_TEST_DIFFERENT("graphics-vnc-socket");
+    DO_TEST_DIFFERENT("graphics-vnc-socket-listen");
     DO_TEST_DIFFERENT("graphics-listen-back-compat");
     DO_TEST_FULL("graphics-listen-back-compat-mismatch", 0, false,
         TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
+    DO_TEST_DIFFERENT("graphics-vnc-listen-attr-only");
+    DO_TEST_DIFFERENT("graphics-vnc-listen-element-minimal");
+    DO_TEST_DIFFERENT("graphics-vnc-listen-element-with-address");
 
     DO_TEST_FULL("name-slash-parse", 0, false,
         TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
