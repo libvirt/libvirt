@@ -242,7 +242,7 @@ virFDStreamAddCallback(virStreamPtr st,
 }
 
 static int
-virFDStreamCloseCommand(struct virFDStreamData *fdst)
+virFDStreamCloseCommand(struct virFDStreamData *fdst, bool streamAbort)
 {
     char buf[1024];
     ssize_t len;
@@ -265,6 +265,12 @@ virFDStreamCloseCommand(struct virFDStreamData *fdst)
         if (buf[0] != '\0') {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", buf);
         } else if (WIFSIGNALED(status) && WTERMSIG(status) == SIGPIPE) {
+            if (streamAbort) {
+                /* Explicit abort request means the caller doesn't care
+                   if there's data left over, so skip the error */
+                goto out;
+            }
+
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("I/O helper exited "
                              "before all data was processed"));
@@ -278,6 +284,7 @@ virFDStreamCloseCommand(struct virFDStreamData *fdst)
         goto cleanup;
     }
 
+ out:
     ret = 0;
  cleanup:
     virCommandFree(fdst->cmd);
@@ -329,7 +336,7 @@ virFDStreamCloseInt(virStreamPtr st, bool streamAbort)
 
     /* mutex locked */
     ret = VIR_CLOSE(fdst->fd);
-    if (virFDStreamCloseCommand(fdst) < 0)
+    if (virFDStreamCloseCommand(fdst, streamAbort) < 0)
         ret = -1;
 
     if (VIR_CLOSE(fdst->errfd) < 0)
