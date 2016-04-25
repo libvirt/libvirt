@@ -2607,9 +2607,10 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
                          virDomainGraphicsDefPtr dev)
 {
     virDomainGraphicsDefPtr olddev = qemuDomainFindGraphics(vm, dev);
-    int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    const char *type = virDomainGraphicsTypeToString(dev->type);
     size_t i;
+    int ret = -1;
 
     if (!olddev) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2618,8 +2619,9 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
     }
 
     if (dev->nListens != olddev->nListens) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cannot change the number of listen addresses"));
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("cannot change the number of listen addresses "
+                         "on '%s' graphics"), type);
         goto cleanup;
     }
 
@@ -2628,30 +2630,31 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
         virDomainGraphicsListenDefPtr oldlisten = &olddev->listens[i];
 
         if (newlisten->type != oldlisten->type) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("cannot change the type of listen address"));
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("cannot change the type of listen address "
+                             "on '%s' graphics"), type);
             goto cleanup;
         }
 
         switch (newlisten->type) {
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
             if (STRNEQ_NULLABLE(newlisten->address, oldlisten->address)) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               dev->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
-                               _("cannot change listen address setting on vnc graphics") :
-                               _("cannot change listen address setting on spice graphics"));
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                               _("cannot change listen address setting "
+                                 "on '%s' graphics"), type);
                 goto cleanup;
             }
+
             break;
 
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
             if (STRNEQ_NULLABLE(newlisten->network, oldlisten->network)) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               dev->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
-                           _("cannot change listen network setting on vnc graphics") :
-                           _("cannot change listen network setting on spice graphics"));
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                               _("cannot change listen address setting "
+                                 "on '%s' graphics"), type);
                 goto cleanup;
             }
+
             break;
 
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
@@ -2761,8 +2764,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to change config on '%s' graphics type"),
-                       virDomainGraphicsTypeToString(dev->type));
+                       _("unable to change config on '%s' graphics type"), type);
         break;
     }
 
