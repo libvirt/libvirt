@@ -463,6 +463,7 @@ daemonRemoveClientStream(virNetServerClientPtr client,
     }
 
     if (!stream->closed) {
+        stream->closed = true;
         virStreamEventRemoveCallback(stream->st);
         virStreamAbort(stream->st);
     }
@@ -493,6 +494,7 @@ daemonRemoveAllClientStreams(daemonClientStream *stream)
         tmp = stream->next;
 
         if (!stream->closed) {
+            stream->closed = true;
             virStreamEventRemoveCallback(stream->st);
             virStreamAbort(stream->st);
         }
