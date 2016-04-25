@@ -539,6 +539,9 @@ daemonStreamHandleWriteData(virNetServerClientPtr client,
 
         VIR_INFO("Stream send failed");
         stream->closed = true;
+        virStreamEventRemoveCallback(stream->st);
+        virStreamAbort(stream->st);
+
         return virNetServerProgramSendReplyError(stream->prog,
                                                  client,
                                                  msg,
