@@ -718,6 +718,7 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
     int ret = -1;
     char *drivestr = NULL;
     char *devstr = NULL;
+    bool driveAdded = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *src = virDomainDiskGetSource(disk);
     bool releaseaddr = false;
@@ -749,27 +750,21 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
         goto error;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorAddDrive(priv->mon, drivestr);
-    if (ret == 0) {
-        ret = qemuMonitorAddDevice(priv->mon, devstr);
-        if (ret < 0) {
-            VIR_WARN("qemuMonitorAddDevice failed on %s (%s)",
-                     drivestr, devstr);
-            /* XXX should call 'drive_del' on error but this does not
-               exist yet */
-        }
-    }
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        ret = -1;
-        goto error;
-    }
 
-    virDomainAuditDisk(vm, NULL, disk->src, "attach", ret >= 0);
+    if (qemuMonitorAddDrive(priv->mon, drivestr) < 0)
+        goto exit_monitor;
+    driveAdded = true;
 
-    if (ret < 0)
+    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+        goto exit_monitor;
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto error;
+
+    virDomainAuditDisk(vm, NULL, disk->src, "attach", true);
 
     virDomainDiskInsertPreAlloced(vm->def, disk);
+    ret = 0;
 
  cleanup:
     if (ret < 0 && releaseaddr)
@@ -778,6 +773,17 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
     VIR_FREE(drivestr);
     virObjectUnref(cfg);
     return ret;
+
+ exit_monitor:
+    if (driveAdded) {
+        VIR_WARN("qemuMonitorAddDevice failed on %s (%s)",
+                 drivestr, devstr);
+        /* XXX should call 'drive_del' on error but this does not
+           exist yet */
+    }
+
+    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
 
  error:
     ignore_value(qemuDomainPrepareDisk(driver, vm, disk, NULL, true));
