@@ -699,7 +699,7 @@ cmdNodeCpuMap(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     vshPrint(ctl, "%-15s ", _("CPU map:"));
     if (pretty) {
-        char *str = virBitmapDataToString(cpumap, cpunum);
+        char *str = virBitmapDataToString(cpumap, VIR_CPU_MAPLEN(cpunum));
 
         if (!str)
             goto cleanup;
