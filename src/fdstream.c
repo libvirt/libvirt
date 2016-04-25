@@ -43,6 +43,7 @@
 #include "configmake.h"
 #include "virstring.h"
 #include "virtime.h"
+#include "virprocess.h"
 
 #define VIR_FROM_THIS VIR_FROM_STREAMS
 
@@ -263,13 +264,12 @@ virFDStreamCloseCommand(struct virFDStreamData *fdst)
     if (status != 0) {
         if (buf[0] != '\0') {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", buf);
-        } else if (WIFEXITED(status)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("I/O helper exited with status %d"),
-                           WEXITSTATUS(status));
         } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("I/O helper exited abnormally"));
+            char *str = virProcessTranslateStatus(status);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("I/O helper exited with %s"),
+                           NULLSTR(str));
+            VIR_FREE(str);
         }
         goto cleanup;
     }
