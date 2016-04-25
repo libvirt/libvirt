@@ -76,6 +76,8 @@ static void
 daemonStreamUpdateEvents(daemonClientStream *stream)
 {
     int newEvents = 0;
+    if (stream->closed)
+        return;
     if (stream->rx)
         newEvents |= VIR_STREAM_EVENT_WRITABLE;
     if (stream->tx && !stream->recvEOF)
