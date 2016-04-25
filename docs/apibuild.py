@@ -2584,57 +2584,65 @@ class docBuilder:
         output.close()
 
 
-def rebuild(name):
-    if name not in ["libvirt", "libvirt-qemu", "libvirt-lxc", "libvirt-admin"]:
-        self.warning("rebuild() failed, unknown module %s") % name
-        return None
-    builder = None
-    srcdir = os.path.abspath((os.environ["srcdir"]))
-    builddir = os.path.abspath((os.environ["builddir"]))
-    if srcdir == builddir:
-        builddir = None
-    if glob.glob(srcdir + "/../src/libvirt.c") != [] :
-        if not quiet:
-            print "Rebuilding API description for %s" % name
-        dirs = [srcdir + "/../src",
-                srcdir + "/../src/util",
-                srcdir + "/../include/libvirt"]
-        if builddir:
-            dirs.append(builddir + "/../include/libvirt")
-        if glob.glob(srcdir + "/../include/libvirt/libvirt.h") == [] :
-            dirs.append("../include/libvirt")
-        builder = docBuilder(name, srcdir, dirs, [])
-    elif glob.glob("src/libvirt.c") != [] :
-        if not quiet:
-            print "Rebuilding API description for %s" % name
-        builder = docBuilder(name, srcdir,
-                             ["src", "src/util", "include/libvirt"],
-                             [])
-    else:
-        self.warning("rebuild() failed, unable to guess the module")
-        return None
-    builder.scan()
-    builder.analyze()
-    builder.serialize()
-    return builder
+class app:
+    def warning(self, msg):
+        global warnings
+        warnings = warnings + 1
+        print msg
 
-#
-# for debugging the parser
-#
-def parse(filename):
-    parser = CParser(filename)
-    idx = parser.parse()
-    return idx
+    def rebuild(self, name):
+        if name not in ["libvirt", "libvirt-qemu", "libvirt-lxc", "libvirt-admin"]:
+            self.warning("rebuild() failed, unknown module %s") % name
+            return None
+        builder = None
+        srcdir = os.path.abspath((os.environ["srcdir"]))
+        builddir = os.path.abspath((os.environ["builddir"]))
+        if srcdir == builddir:
+            builddir = None
+        if glob.glob(srcdir + "/../src/libvirt.c") != [] :
+            if not quiet:
+                print "Rebuilding API description for %s" % name
+            dirs = [srcdir + "/../src",
+                    srcdir + "/../src/util",
+                    srcdir + "/../include/libvirt"]
+            if builddir:
+                dirs.append(builddir + "/../include/libvirt")
+            if glob.glob(srcdir + "/../include/libvirt/libvirt.h") == [] :
+                dirs.append("../include/libvirt")
+            builder = docBuilder(name, srcdir, dirs, [])
+        elif glob.glob("src/libvirt.c") != [] :
+            if not quiet:
+                print "Rebuilding API description for %s" % name
+            builder = docBuilder(name, srcdir,
+                                 ["src", "src/util", "include/libvirt"],
+                                 [])
+        else:
+            self.warning("rebuild() failed, unable to guess the module")
+            return None
+        builder.scan()
+        builder.analyze()
+        builder.serialize()
+        return builder
+
+    #
+    # for debugging the parser
+    #
+    def parse(self, filename):
+        parser = CParser(filename)
+        idx = parser.parse()
+        return idx
+
 
 if __name__ == "__main__":
+    app = app()
     if len(sys.argv) > 1:
         debug = 1
-        parse(sys.argv[1])
+        app.parse(sys.argv[1])
     else:
-        rebuild("libvirt")
-        rebuild("libvirt-qemu")
-        rebuild("libvirt-lxc")
-        rebuild("libvirt-admin")
+        app.rebuild("libvirt")
+        app.rebuild("libvirt-qemu")
+        app.rebuild("libvirt-lxc")
+        app.rebuild("libvirt-admin")
     if warnings > 0:
         sys.exit(2)
     else:
