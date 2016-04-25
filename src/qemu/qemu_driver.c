@@ -7060,7 +7060,8 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         }
     }
 
-    if (!(cmd = qemuProcessCreatePretendCmd(conn, driver, vm, NULL, false, true,
+    if (!(cmd = qemuProcessCreatePretendCmd(conn, driver, vm, NULL,
+                                            qemuCheckFips(), true,
                                             VIR_QEMU_PROCESS_START_COLD)))
         goto cleanup;
 

@@ -85,7 +85,7 @@ virCommandPtr qemuProcessCreatePretendCmd(virConnectPtr conn,
                                           virQEMUDriverPtr driver,
                                           virDomainObjPtr vm,
                                           const char *migrateURI,
-                                          bool forceFips,
+                                          bool enableFips,
                                           bool standalone,
                                           unsigned int flags);
 
