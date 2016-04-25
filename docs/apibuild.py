@@ -240,6 +240,11 @@ class index:
         self.references = {}
         self.info = {}
 
+    def warning(self, msg):
+        global warnings
+        warnings = warnings + 1
+        print msg
+
     def add_ref(self, name, header, module, static, type, lineno, info=None, extra=None, conditionals = None):
         if name[0:2] == '__':
             return None
