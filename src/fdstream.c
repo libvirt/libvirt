@@ -264,6 +264,10 @@ virFDStreamCloseCommand(struct virFDStreamData *fdst)
     if (status != 0) {
         if (buf[0] != '\0') {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", buf);
+        } else if (WIFSIGNALED(status) && WTERMSIG(status) == SIGPIPE) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("I/O helper exited "
+                             "before all data was processed"));
         } else {
             char *str = virProcessTranslateStatus(status);
             virReportError(VIR_ERR_INTERNAL_ERROR,
