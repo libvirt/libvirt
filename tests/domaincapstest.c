@@ -95,6 +95,7 @@ fillAllCaps(virDomainCapsPtr domCaps)
 static int
 fillQemuCaps(virDomainCapsPtr domCaps,
              const char *name,
+             virArch arch,
              virQEMUDriverConfigPtr cfg)
 {
     int ret = -1;
@@ -102,8 +103,8 @@ fillQemuCaps(virDomainCapsPtr domCaps,
     virQEMUCapsPtr qemuCaps = NULL;
     virDomainCapsLoaderPtr loader = &domCaps->os.loader;
 
-    if (virAsprintf(&path, "%s/qemucapabilitiesdata/%s.caps",
-                    abs_srcdir, name) < 0 ||
+    if (virAsprintf(&path, "%s/qemucapabilitiesdata/%s.%s.caps",
+                    abs_srcdir, name, virArchToString(arch)) < 0 ||
         !(qemuCaps = qemuTestParseCapabilities(path)))
         goto cleanup;
 
@@ -186,7 +187,8 @@ test_virDomainCapsFormat(const void *opaque)
 
     case CAPS_QEMU:
 #if WITH_QEMU
-        if (fillQemuCaps(domCaps, data->capsName, data->capsOpaque) < 0)
+        if (fillQemuCaps(domCaps, data->capsName, data->arch,
+                         data->capsOpaque) < 0)
             goto cleanup;
 #endif
         break;

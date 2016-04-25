@@ -30,6 +30,7 @@ typedef struct _testQemuData testQemuData;
 typedef testQemuData *testQemuDataPtr;
 struct _testQemuData {
     virDomainXMLOptionPtr xmlopt;
+    const char *archName;
     const char *base;
 };
 
@@ -120,10 +121,10 @@ testQemuCaps(const void *opaque)
     qemuMonitorTestPtr mon = NULL;
     virQEMUCapsPtr capsProvided = NULL, capsComputed = NULL;
 
-    if (virAsprintf(&repliesFile, "%s/qemucapabilitiesdata/%s.replies",
-                    abs_srcdir, data->base) < 0 ||
-        virAsprintf(&capsFile, "%s/qemucapabilitiesdata/%s.caps",
-                    abs_srcdir, data->base) < 0)
+    if (virAsprintf(&repliesFile, "%s/qemucapabilitiesdata/%s.%s.replies",
+                    abs_srcdir, data->base, data->archName) < 0 ||
+        virAsprintf(&capsFile, "%s/qemucapabilitiesdata/%s.%s.caps",
+                    abs_srcdir, data->base, data->archName) < 0)
         goto cleanup;
 
     if (virtTestLoadFile(repliesFile, &replies) < 0)
@@ -176,23 +177,24 @@ mymain(void)
 
     data.xmlopt = driver.xmlopt;
 
-#define DO_TEST(name)                                   \
-    do {                                                \
-        data.base = name;                               \
-        if (virtTestRun(name, testQemuCaps, &data) < 0) \
-            ret = -1;                                   \
+#define DO_TEST(arch, name)                                             \
+    do {                                                                \
+        data.archName = arch;                                           \
+        data.base = name;                                               \
+        if (virtTestRun(name "(" arch ")", testQemuCaps, &data) < 0)    \
+            ret = -1;                                                   \
     } while (0)
 
-    DO_TEST("caps_1.2.2-1");
-    DO_TEST("caps_1.3.1-1");
-    DO_TEST("caps_1.4.2-1");
-    DO_TEST("caps_1.5.3-1");
-    DO_TEST("caps_1.6.0-1");
-    DO_TEST("caps_1.6.50-1");
-    DO_TEST("caps_2.1.1-1");
-    DO_TEST("caps_2.4.0-1");
-    DO_TEST("caps_2.5.0-1");
-    DO_TEST("caps_2.6.0-1");
+    DO_TEST("x86_64", "caps_1.2.2-1");
+    DO_TEST("x86_64", "caps_1.3.1-1");
+    DO_TEST("x86_64", "caps_1.4.2-1");
+    DO_TEST("x86_64", "caps_1.5.3-1");
+    DO_TEST("x86_64", "caps_1.6.0-1");
+    DO_TEST("x86_64", "caps_1.6.50-1");
+    DO_TEST("x86_64", "caps_2.1.1-1");
+    DO_TEST("x86_64", "caps_2.4.0-1");
+    DO_TEST("x86_64", "caps_2.5.0-1");
+    DO_TEST("x86_64", "caps_2.6.0-1");
 
     /*
      * Run "tests/qemucapsprobe /path/to/qemu/binary >foo.replies"
