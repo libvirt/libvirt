@@ -1409,7 +1409,7 @@ qemuBuildDriveStr(virConnectPtr conn,
         disk->blkdeviotune.size_iops_sec > QEMU_BLOCK_IOTUNE_MAX) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                       _("block I/O throttle limit must "
-                        "be less than %llu using QEMU"), QEMU_BLOCK_IOTUNE_MAX);
+                        "be no more than %llu using QEMU"), QEMU_BLOCK_IOTUNE_MAX);
         goto error;
     }
 
