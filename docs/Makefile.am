@@ -325,7 +325,7 @@ $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 		$(top_srcdir)/src/util/virerror.c \
 		$(top_srcdir)/src/util/virevent.c \
 		$(top_srcdir)/src/util/virtypedparam.c
-	$(AM_V_GEN)srcdir=$(srcdir) builddir=$(abs_builddir) $(PYTHON) $(APIBUILD)
+	$(AM_V_GEN)srcdir=$(srcdir) builddir=$(builddir) $(PYTHON) $(APIBUILD)
 	touch $@
 
 
