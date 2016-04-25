@@ -240,6 +240,46 @@ virFDStreamAddCallback(virStreamPtr st,
     return ret;
 }
 
+static int
+virFDStreamCloseCommand(struct virFDStreamData *fdst)
+{
+    char buf[1024];
+    ssize_t len;
+    int status;
+    int ret = -1;
+
+    if (!fdst->cmd)
+        return 0;
+
+    if ((len = saferead(fdst->errfd, buf, sizeof(buf)-1)) < 0)
+        buf[0] = '\0';
+    else
+        buf[len] = '\0';
+
+    virCommandRawStatus(fdst->cmd);
+    if (virCommandWait(fdst->cmd, &status) < 0)
+        goto cleanup;
+
+    if (status != 0) {
+        if (buf[0] != '\0') {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s", buf);
+        } else if (WIFEXITED(status)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("I/O helper exited with status %d"),
+                           WEXITSTATUS(status));
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("I/O helper exited abnormally"));
+        }
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virCommandFree(fdst->cmd);
+    fdst->cmd = NULL;
+    return ret;
+}
 
 static int
 virFDStreamCloseInt(virStreamPtr st, bool streamAbort)
@@ -285,37 +325,8 @@ virFDStreamCloseInt(virStreamPtr st, bool streamAbort)
 
     /* mutex locked */
     ret = VIR_CLOSE(fdst->fd);
-    if (fdst->cmd) {
-        char buf[1024];
-        ssize_t len;
-        int status;
-        if ((len = saferead(fdst->errfd, buf, sizeof(buf)-1)) < 0)
-            buf[0] = '\0';
-        else
-            buf[len] = '\0';
-
-        virCommandRawStatus(fdst->cmd);
-        if (virCommandWait(fdst->cmd, &status) < 0) {
-            ret = -1;
-        } else if (status != 0) {
-            if (buf[0] == '\0') {
-                if (WIFEXITED(status)) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("I/O helper exited with status %d"),
-                                   WEXITSTATUS(status));
-                } else {
-                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                                   _("I/O helper exited abnormally"));
-                }
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               buf);
-            }
-            ret = -1;
-        }
-        virCommandFree(fdst->cmd);
-        fdst->cmd = NULL;
-    }
+    if (virFDStreamCloseCommand(fdst) < 0)
+        ret = -1;
 
     if (VIR_CLOSE(fdst->errfd) < 0)
         VIR_DEBUG("ignoring failed close on fd %d", fdst->errfd);
