@@ -3856,14 +3856,22 @@ qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver)
     virDomainObjListForEach(driver->domains, qemuProcessReconnectHelper, &data);
 }
 
-static int
+int
 qemuProcessVNCAllocatePorts(virQEMUDriverPtr driver,
-                            virDomainGraphicsDefPtr graphics)
+                            virDomainGraphicsDefPtr graphics,
+                            bool allocate)
 {
     unsigned short port;
 
     if (graphics->data.vnc.socket)
         return 0;
+
+    if (!allocate) {
+        if (graphics->data.vnc.autoport)
+            graphics->data.vnc.port = 5900;
+
+        return 0;
+    }
 
     if (graphics->data.vnc.autoport) {
         if (virPortAllocatorAcquire(driver->remotePorts, &port) < 0)
@@ -4379,12 +4387,23 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-            if (qemuProcessVNCAllocatePorts(driver, graphics) < 0)
+
+        switch (graphics->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+            if (qemuProcessVNCAllocatePorts(driver, graphics, true) < 0)
                 goto cleanup;
-        } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
             if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics, true) < 0)
                 goto cleanup;
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+            break;
         }
     }
 
