@@ -853,6 +853,12 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
         goto error;
     }
 
+    if (strchr(ret->name, '/')) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("name %s cannot contain '/'"), ret->name);
+        goto error;
+    }
+
     uuid = virXPathString("string(./uuid)", ctxt);
     if (uuid == NULL) {
         if (virUUIDGenerate(ret->uuid) < 0) {
