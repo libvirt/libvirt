@@ -1851,11 +1851,11 @@ if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ;
     ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 
     # Make sure libvirt picks up the new network defininiton
-      %if %{with_systemd}
+        %if %{with_systemd}
     /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 ||:
-      %else
+        %else
     /sbin/service libvirtd condrestart > /dev/null 2>&1 || :
-      %endif
+        %endif
 
 fi
     %endif
