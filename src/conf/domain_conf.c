@@ -6130,15 +6130,9 @@ virDomainNetIPParseXML(xmlNodePtr node)
     int family = AF_UNSPEC;
     char *address = NULL;
 
-    if (!(prefixStr = virXMLPropString(node, "prefix")) ||
-        (virStrToLong_ui(prefixStr, NULL, 10, &prefixValue) < 0)) {
-        // Don't shout, as some old config may not have a prefix
-        VIR_DEBUG("Missing or invalid network prefix");
-    }
-
     if (!(address = virXMLPropString(node, "address"))) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("Missing network address"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing required address in <ip>"));
         goto cleanup;
     }
 
@@ -6154,9 +6148,20 @@ virDomainNetIPParseXML(xmlNodePtr node)
         goto cleanup;
 
     if (virSocketAddrParse(&ip->address, address, family) < 0) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("Failed to parse IP address: '%s'"),
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid address '%s' in <ip>"),
                        address);
+        goto cleanup;
+    }
+
+    prefixStr = virXMLPropString(node, "prefix");
+    if (prefixStr &&
+        ((virStrToLong_ui(prefixStr, NULL, 10, &prefixValue) < 0) ||
+         (family == AF_INET6 && prefixValue > 128) ||
+         (family == AF_INET && prefixValue > 32))) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid prefix value '%s' in <ip>"),
+                       prefixStr);
         goto cleanup;
     }
     ip->prefix = prefixValue;
