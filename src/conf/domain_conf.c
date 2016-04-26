@@ -4300,6 +4300,14 @@ virDomainDefPostParseCheckFeatures(virDomainDefPtr def,
     if (UNSUPPORTED(VIR_DOMAIN_DEF_FEATURE_OFFLINE_VCPUPIN))
         virDomainDefRemoveOfflineVcpuPin(def);
 
+    if (UNSUPPORTED(VIR_DOMAIN_DEF_FEATURE_NAME_SLASH)) {
+        if (def->name && strchr(def->name, '/')) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("name %s cannot contain '/'"), def->name);
+            return -1;
+        }
+    }
+
     return 0;
 }
 

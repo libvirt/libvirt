@@ -128,8 +128,9 @@ openvzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
 
 virDomainDefParserConfig openvzDomainDefParserConfig = {
-        .domainPostParseCallback = openvzDomainDefPostParse,
-        .devicesPostParseCallback = openvzDomainDeviceDefPostParse,
+    .domainPostParseCallback = openvzDomainDefPostParse,
+    .devicesPostParseCallback = openvzDomainDeviceDefPostParse,
+    .features = VIR_DOMAIN_DEF_FEATURE_NAME_SLASH,
 };
 
 

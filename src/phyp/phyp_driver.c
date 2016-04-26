@@ -1117,6 +1117,7 @@ phypDomainDeviceDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
 virDomainDefParserConfig virPhypDriverDomainDefParserConfig = {
     .devicesPostParseCallback = phypDomainDeviceDefPostParse,
     .domainPostParseCallback = phypDomainDefPostParse,
+    .features = VIR_DOMAIN_DEF_FEATURE_NAME_SLASH,
 };
 
 

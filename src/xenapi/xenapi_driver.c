@@ -88,6 +88,7 @@ xenapiDomainDefPostParse(virDomainDefPtr def,
 virDomainDefParserConfig xenapiDomainDefParserConfig = {
     .devicesPostParseCallback = xenapiDomainDeviceDefPostParse,
     .domainPostParseCallback = xenapiDomainDefPostParse,
+    .features = VIR_DOMAIN_DEF_FEATURE_NAME_SLASH,
 };
 
 

@@ -547,7 +547,8 @@ static virDomainDefParserConfig virVMXDomainDefParserConfig = {
     .macPrefix = {0x00, 0x0c, 0x29},
     .devicesPostParseCallback = virVMXDomainDevicesDefPostParse,
     .domainPostParseCallback = virVMXDomainDefPostParse,
-    .features = VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI,
+    .features = (VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI |
+                 VIR_DOMAIN_DEF_FEATURE_NAME_SLASH),
 };
 
 static void

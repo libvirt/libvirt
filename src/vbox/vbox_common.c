@@ -273,6 +273,7 @@ static virDomainDefParserConfig vboxDomainDefParserConfig = {
     .macPrefix = { 0x08, 0x00, 0x27 },
     .devicesPostParseCallback = vboxDomainDeviceDefPostParse,
     .domainPostParseCallback = vboxDomainDefPostParse,
+    .features = VIR_DOMAIN_DEF_FEATURE_NAME_SLASH,
 };
 
 static virDomainXMLOptionPtr
