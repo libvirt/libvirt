@@ -3616,8 +3616,7 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        !detach->info.alias) {
+    if (!detach->info.alias) {
         if (qemuAssignDeviceControllerAlias(vm->def, priv->qemuCaps, detach) < 0)
             goto cleanup;
     }
@@ -3625,17 +3624,9 @@ int qemuDomainDetachControllerDevice(virQEMUDriverPtr driver,
     qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuMonitorDelDevice(priv->mon, detach->info.alias)) {
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
-            goto cleanup;
-        }
-    } else {
-        if (qemuMonitorRemovePCIDevice(priv->mon,
-                                       &detach->info.addr.pci) < 0) {
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
-            goto cleanup;
-        }
+    if (qemuMonitorDelDevice(priv->mon, detach->info.alias)) {
+        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        goto cleanup;
     }
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
