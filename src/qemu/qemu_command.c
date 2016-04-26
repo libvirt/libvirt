@@ -4281,7 +4281,9 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
         virBufferAddLit(&buf, "vfio-pci");
         break;
 
-    default:
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN:
+    case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid PCI passthrough type '%s'"),
                        virDomainHostdevSubsysPCIBackendTypeToString(backend));
