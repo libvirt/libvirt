@@ -400,6 +400,7 @@ virDomainObjGetDefs;
 virDomainObjGetMetadata;
 virDomainObjGetOneDef;
 virDomainObjGetPersistentDef;
+virDomainObjGetShortName;
 virDomainObjGetState;
 virDomainObjNew;
 virDomainObjParseNode;

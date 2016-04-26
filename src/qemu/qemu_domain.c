@@ -787,39 +787,31 @@ qemuDomainSetPrivatePathsOld(virQEMUDriverPtr driver,
 }
 
 
-/*
- * The newer version uses a magic number for one reason.  The thing is
- * that we need a bit shorter name in order to be able to connect to
- * it using UNIX sockets which have path length limitation.  Since the
- * length is not guaranteed to be constant and similarly the lib
- * directory is configurable and so on, we need to rather choose an
- * arbitrary maximum length of the domain name that will be used.
- * Thanks to the fact that we are now saving it in the status XML, we
- * can change it later on whenever we feel like so.
- */
 int
 qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
                           virDomainObjPtr vm)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    const int dommaxlen = 20;
+    char *domname = virDomainObjGetShortName(vm);
     int ret = -1;
 
+    if (!domname)
+        goto cleanup;
+
     if (!priv->libDir &&
-        virAsprintf(&priv->libDir, "%s/domain-%d-%.*s",
-                    cfg->libDir, vm->def->id, dommaxlen, vm->def->name) < 0)
+        virAsprintf(&priv->libDir, "%s/domain-%s", cfg->libDir, domname) < 0)
         goto cleanup;
 
     if (!priv->channelTargetDir &&
-        virAsprintf(&priv->channelTargetDir, "%s/domain-%d-%.*s",
-                    cfg->channelTargetDir, vm->def->id,
-                    dommaxlen, vm->def->name) < 0)
+        virAsprintf(&priv->channelTargetDir, "%s/domain-%s",
+                    cfg->channelTargetDir, domname) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
     virObjectUnref(cfg);
+    VIR_FREE(domname);
     return ret;
 }
 

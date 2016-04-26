@@ -24307,3 +24307,23 @@ virDomainDefHasMemballoon(const virDomainDef *def)
     return def->memballoon &&
            def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
 }
+
+
+/**
+ * virDomainObjGetShortName:
+ * @vm: Machine for which to get a name
+ * @unique: Make sure the name is unique (use id as well)
+ *
+ * Shorten domain name to avoid possible path length limitations.
+ */
+char *
+virDomainObjGetShortName(virDomainObjPtr vm)
+{
+    const int dommaxlen = 20;
+    char *ret = NULL;
+
+    ignore_value(virAsprintf(&ret, "%d-%.*s",
+                             vm->def->id, dommaxlen, vm->def->name));
+
+    return ret;
+}
