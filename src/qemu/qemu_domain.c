@@ -1464,6 +1464,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     ret = 0;
  cleanup:
     virObjectUnref(qemuCaps);
+    virObjectUnref(cfg);
     return ret;
 }
 
