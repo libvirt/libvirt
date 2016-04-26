@@ -3397,8 +3397,7 @@ qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
         }
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        !detach->info.alias) {
+    if (!detach->info.alias) {
         if (qemuAssignDeviceDiskAlias(vm->def, detach, priv->qemuCaps) < 0)
             goto cleanup;
     }
@@ -3406,21 +3405,11 @@ qemuDomainDetachVirtioDiskDevice(virQEMUDriverPtr driver,
     qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
-            if (qemuDomainObjExitMonitor(driver, vm) < 0)
-                goto cleanup;
-            virDomainAuditDisk(vm, detach->src, NULL, "detach", false);
+    if (qemuMonitorDelDevice(priv->mon, detach->info.alias) < 0) {
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;
-        }
-    } else {
-        if (qemuMonitorRemovePCIDevice(priv->mon,
-                                       &detach->info.addr.pci) < 0) {
-            if (qemuDomainObjExitMonitor(driver, vm) < 0)
-                goto cleanup;
-            virDomainAuditDisk(vm, detach->src, NULL, "detach", false);
-            goto cleanup;
-        }
+        virDomainAuditDisk(vm, detach->src, NULL, "detach", false);
+        goto cleanup;
     }
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
