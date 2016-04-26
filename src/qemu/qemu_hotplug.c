@@ -3666,11 +3666,7 @@ qemuDomainDetachHostPCIDevice(virQEMUDriverPtr driver,
     qemuDomainMarkDeviceForRemoval(vm, detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        ret = qemuMonitorDelDevice(priv->mon, detach->info->alias);
-    } else {
-        ret = qemuMonitorRemovePCIDevice(priv->mon, &detach->info->addr.pci);
-    }
+    ret = qemuMonitorDelDevice(priv->mon, detach->info->alias);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
 
