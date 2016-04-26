@@ -3965,13 +3965,17 @@ doCoreDumpToAutoDumpPath(virQEMUDriverPtr driver,
     char timestr[100];
     struct tm time_info;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    char *domname = virDomainObjGetShortName(vm);
+
+    if (!domname)
+        goto cleanup;
 
     localtime_r(&curtime, &time_info);
     strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
 
     if (virAsprintf(&dumpfile, "%s/%s-%s",
                     cfg->autoDumpPath,
-                    vm->def->name,
+                    domname,
                     timestr) < 0)
         goto cleanup;
 
@@ -3984,6 +3988,7 @@ doCoreDumpToAutoDumpPath(virQEMUDriverPtr driver,
                        "%s", _("Dump failed"));
  cleanup:
     VIR_FREE(dumpfile);
+    VIR_FREE(domname);
     virObjectUnref(cfg);
     return ret;
 }
