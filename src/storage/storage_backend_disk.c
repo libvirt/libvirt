@@ -799,6 +799,31 @@ virStorageBackendDiskPartBoundaries(virStoragePoolObjPtr pool,
 }
 
 
+/* virStorageBackendDiskDeleteVol
+ * @conn: Pointer to a libvirt connection
+ * @pool: Pointer to the storage pool
+ * @vol: Pointer to the volume definition
+ * @flags: flags (unused for now)
+ *
+ * This API will remove the disk volume partition either from direct
+ * API call or as an error path during creation when the partition
+ * name provided during create doesn't match the name read from
+ * virStorageBackendDiskReadPartitions.
+ *
+ * For a device mapper device, device respresentation is dependant upon
+ * device mapper configuration, but the general rule of thumb is that at
+ * creation if a device name ends with a number, then a partition separator
+ * "p" is added to the created name; otherwise, if the device name doesn't
+ * end with a number, then there is no partition separator. This name is
+ * what ends up in the vol->target.path. This ends up being a link to a
+ * /dev/mapper/dm-# device which cannot be used in the algorithm to determine
+ * which partition to remove, but a properly handled target.path can be.
+ *
+ * For non device mapper devices, just need to resolve the link of the
+ * vol->target.path in order to get the path.
+ *
+ * Returns 0 on success, -1 on failure with error message set.
+ */
 static int
 virStorageBackendDiskDeleteVol(virConnectPtr conn,
                                virStoragePoolObjPtr pool,
@@ -807,7 +832,9 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn,
 {
     char *part_num = NULL;
     char *devpath = NULL;
-    char *dev_name, *srcname;
+    char *dev_name;
+    char *src_path = pool->def->source.devices[0].path;
+    char *srcname = last_component(src_path);
     virCommandPtr cmd = NULL;
     bool isDevMapperDevice;
     int rc = -1;
@@ -817,55 +844,59 @@ virStorageBackendDiskDeleteVol(virConnectPtr conn,
     if (!vol->target.path) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("volume target path empty for source path '%s'"),
-                      pool->def->source.devices[0].path);
+                      src_path);
         return -1;
     }
 
-    if (virFileResolveLink(vol->target.path, &devpath) < 0) {
-        virReportSystemError(errno,
-                             _("Couldn't read volume target path '%s'"),
-                             vol->target.path);
-        goto cleanup;
+    /* NB: This is the corollary to the algorithm in libvirt_parthelper
+     *     (parthelper.c) that is used to generate the target.path name
+     *     for use by libvirt. Changes to either, need to be reflected
+     *     in both places */
+    isDevMapperDevice = virIsDevMapperDevice(vol->target.path);
+    if (isDevMapperDevice) {
+        dev_name = last_component(vol->target.path);
+    } else {
+        if (virFileResolveLink(vol->target.path, &devpath) < 0) {
+            virReportSystemError(errno,
+                                 _("Couldn't read volume target path '%s'"),
+                                 vol->target.path);
+            goto cleanup;
+        }
+        dev_name = last_component(devpath);
     }
 
-    dev_name = last_component(devpath);
-    srcname = last_component(pool->def->source.devices[0].path);
     VIR_DEBUG("dev_name=%s, srcname=%s", dev_name, srcname);
 
-    isDevMapperDevice = virIsDevMapperDevice(devpath);
-
-    if (!isDevMapperDevice && !STRPREFIX(dev_name, srcname)) {
+    if (!STRPREFIX(dev_name, srcname)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Volume path '%s' did not start with parent "
                          "pool source device name."), dev_name);
         goto cleanup;
     }
 
-    if (!isDevMapperDevice) {
-        part_num = dev_name + strlen(srcname);
+    part_num = dev_name + strlen(srcname);
 
-        if (*part_num == 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("cannot parse partition number from target "
-                             "'%s'"), dev_name);
-            goto cleanup;
-        }
+    /* For device mapper and we have a partition character 'p' as the
+     * current character, let's move beyond that before checking part_num */
+    if (isDevMapperDevice && *part_num == 'p')
+        part_num++;
 
-        /* eg parted /dev/sda rm 2 */
-        cmd = virCommandNewArgList(PARTED,
-                                   pool->def->source.devices[0].path,
-                                   "rm",
-                                   "--script",
-                                   part_num,
-                                   NULL);
-        if (virCommandRun(cmd, NULL) < 0)
-            goto cleanup;
-    } else {
-        cmd = virCommandNewArgList(DMSETUP, "remove", "--force", devpath, NULL);
-
-        if (virCommandRun(cmd, NULL) < 0)
-            goto cleanup;
+    if (*part_num == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot parse partition number from target "
+                         "'%s'"), dev_name);
+        goto cleanup;
     }
+
+    /* eg parted /dev/sda rm 2 or /dev/mapper/mpathc rm 2 */
+    cmd = virCommandNewArgList(PARTED,
+                               src_path,
+                               "rm",
+                               "--script",
+                               part_num,
+                               NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
 
     /* Refreshing the pool is the easiest option as LOGICAL and EXTENDED
      * partition allocation/capacity management is handled within

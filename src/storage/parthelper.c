@@ -83,6 +83,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    /* NB: Changes to the following algorithm will need corresponding
+     * changes to virStorageBackendDiskDeleteVol */
     path = argv[1];
     if (virIsDevMapperDevice(path)) {
         /* If the path ends with a number or we explicitly request it for

@@ -1958,17 +1958,10 @@ LIBPARTED_LIBS=
 if test "$with_storage_disk" = "yes" ||
    test "$with_storage_disk" = "check"; then
   AC_PATH_PROG([PARTED], [parted], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([DMSETUP], [dmsetup], [], [$PATH:/sbin:/usr/sbin])
   if test -z "$PARTED" ; then
     PARTED_FOUND=no
   else
     PARTED_FOUND=yes
-  fi
-
-  if test -z "$DMSETUP" ; then
-    DMSETUP_FOUND=no
-  else
-    DMSETUP_FOUND=yes
   fi
 
   if test "$PARTED_FOUND" = "yes" && test "x$PKG_CONFIG" != "x" ; then
@@ -1989,12 +1982,12 @@ if test "$with_storage_disk" = "yes" ||
   fi
 
   if test "$with_storage_disk" = "yes" &&
-     test "$PARTED_FOUND:$DMSETUP_FOUND" != "yes:yes"; then
-    AC_MSG_ERROR([Need both parted and dmsetup for disk storage driver])
+     test "$PARTED_FOUND" != "yes"; then
+    AC_MSG_ERROR([Need parted for disk storage driver])
   fi
 
   if test "$with_storage_disk" = "check"; then
-    if test "$PARTED_FOUND:$DMSETUP_FOUND" != "yes:yes"; then
+    if test "$PARTED_FOUND" != "yes"; then
       with_storage_disk=no
     else
       with_storage_disk=yes
@@ -2006,8 +1999,6 @@ if test "$with_storage_disk" = "yes" ||
       [whether Disk backend for storage driver is enabled])
     AC_DEFINE_UNQUOTED([PARTED],["$PARTED"],
       [Location or name of the parted program])
-    AC_DEFINE_UNQUOTED([DMSETUP],["$DMSETUP"],
-      [Location or name of the dmsetup program])
   fi
 fi
 AM_CONDITIONAL([WITH_STORAGE_DISK], [test "$with_storage_disk" = "yes"])
