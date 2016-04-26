@@ -51,6 +51,11 @@ MOCKLIBS_LDFLAGS = -module -avoid-version \
 	-rpath /evil/libtool/hack/to/force/shared/lib/creation \
 	$(MINGW_EXTRA_LDFLAGS)
 
+QEMULIB_LDFLAGS = \
+	-avoid-version \
+	-rpath /evil/libtool/hack/to/force/shared/lib/creation \
+	$(MINGW_EXTRA_LDFLAGS)
+
 if WITH_DRIVER_MODULES
 INCLUDES += \
 	-DTEST_DRIVER_DIR=\"$(top_builddir)/src/.libs\"
@@ -418,6 +423,7 @@ test_libraries = libshunload.la \
 		$(NULL)
 if WITH_QEMU
 test_libraries += libqemumonitortestutils.la \
+		libqemutestdriver.la \
 		qemuxml2argvmock.la \
 		qemucaps2xmlmock.la \
 		$(NULL)
@@ -545,6 +551,10 @@ endif WITH_STORAGE
 if WITH_DTRACE_PROBES
 qemu_LDADDS += ../src/libvirt_qemu_probes.lo
 endif WITH_DTRACE_PROBES
+
+libqemutestdriver_la_SOURCES =
+libqemutestdriver_la_LDFLAGS = $(QEMULIB_LDFLAGS)
+libqemutestdriver_la_LIBADD = $(qemu_LDADDS)
 
 qemuxml2argvtest_SOURCES = \
 	qemuxml2argvtest.c testutilsqemu.c testutilsqemu.h \
