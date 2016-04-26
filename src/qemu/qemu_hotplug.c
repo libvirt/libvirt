@@ -1884,23 +1884,16 @@ qemuDomainAttachHostUSBDevice(virQEMUDriverPtr driver,
         goto cleanup;
     teardownlabel = true;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
-            goto cleanup;
-        if (!(devstr = qemuBuildUSBHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))
-            goto cleanup;
-    }
+    if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
+        goto cleanup;
+    if (!(devstr = qemuBuildUSBHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))
+        goto cleanup;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1) < 0)
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE))
-        ret = qemuMonitorAddDevice(priv->mon, devstr);
-    else
-        ret = qemuMonitorAddUSBDeviceExact(priv->mon,
-                                           hostdev->source.subsys.u.usb.bus,
-                                           hostdev->source.subsys.u.usb.device);
+    ret = qemuMonitorAddDevice(priv->mon, devstr);
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         ret = -1;
         goto cleanup;
