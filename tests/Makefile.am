@@ -261,6 +261,7 @@ test_programs += qemuxml2argvtest qemuxml2xmltest \
 	qemumonitortest qemumonitorjsontest qemuhotplugtest \
 	qemuagenttest qemucapabilitiestest qemucaps2xmltest \
 	qemucommandutiltest
+test_helpers += qemucapsprobe
 endif WITH_QEMU
 
 if WITH_LXC
@@ -426,6 +427,7 @@ test_libraries += libqemumonitortestutils.la \
 		libqemutestdriver.la \
 		qemuxml2argvmock.la \
 		qemucaps2xmlmock.la \
+		qemucapsprobemock.la \
 		$(NULL)
 endif WITH_QEMU
 
@@ -602,6 +604,17 @@ qemucapabilitiestest_SOURCES = \
 	$(NULL)
 qemucapabilitiestest_LDADD = libqemumonitortestutils.la \
 	$(qemu_LDADDS) $(LDADDS)
+
+qemucapsprobe_SOURCES = \
+	qemucapsprobe.c
+qemucapsprobe_LDADD = \
+	libqemutestdriver.la $(LDADDS)
+
+qemucapsprobemock_la_SOURCES = \
+	qemucapsprobemock.c
+qemucapsprobemock_la_CFLAGS = $(AM_CFLAGS)
+qemucapsprobemock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+qemucapsprobemock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 qemucommandutiltest_SOURCES = \
 	qemucommandutiltest.c \
