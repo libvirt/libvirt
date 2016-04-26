@@ -3713,11 +3713,13 @@ virQEMUCapsLogProbeFailure(const char *binary)
 }
 
 
-virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
-                                       const char *libDir,
-                                       const char *cacheDir,
-                                       uid_t runUid,
-                                       gid_t runGid)
+virQEMUCapsPtr
+virQEMUCapsNewForBinaryInternal(const char *binary,
+                                const char *libDir,
+                                const char *cacheDir,
+                                uid_t runUid,
+                                gid_t runGid,
+                                bool qmpOnly)
 {
     virQEMUCapsPtr qemuCaps;
     struct stat sb;
@@ -3749,11 +3751,21 @@ virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
         goto error;
     }
 
-    if ((rv = virQEMUCapsInitCached(qemuCaps, cacheDir)) < 0)
+    if (!cacheDir)
+        rv = 0;
+    else if ((rv = virQEMUCapsInitCached(qemuCaps, cacheDir)) < 0)
         goto error;
 
     if (rv == 0) {
         if (virQEMUCapsInitQMP(qemuCaps, libDir, runUid, runGid, &qmperr) < 0) {
+            virQEMUCapsLogProbeFailure(binary);
+            goto error;
+        }
+
+        if (qmpOnly && !qemuCaps->usedQMP) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to probe QEMU binary with QMP: %s"),
+                           qmperr ? qmperr : _("unknown error"));
             virQEMUCapsLogProbeFailure(binary);
             goto error;
         }
@@ -3764,7 +3776,8 @@ virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
             goto error;
         }
 
-        if (virQEMUCapsRememberCached(qemuCaps, cacheDir) < 0)
+        if (cacheDir &&
+            virQEMUCapsRememberCached(qemuCaps, cacheDir) < 0)
             goto error;
     }
 
@@ -3776,6 +3789,17 @@ virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
     virObjectUnref(qemuCaps);
     qemuCaps = NULL;
     return NULL;
+}
+
+virQEMUCapsPtr
+virQEMUCapsNewForBinary(const char *binary,
+                        const char *libDir,
+                        const char *cacheDir,
+                        uid_t runUid,
+                        gid_t runGid)
+{
+    return virQEMUCapsNewForBinaryInternal(binary, libDir, cacheDir,
+                                           runUid, runGid, false);
 }
 
 
