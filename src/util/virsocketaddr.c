@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2015 Red Hat, Inc.
+ * Copyright (C) 2009-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -1026,9 +1026,9 @@ virSocketAddrGetIPPrefix(const virSocketAddr *address,
 {
     if (prefix > 0) {
         return prefix;
-    } else if (VIR_SOCKET_ADDR_VALID(netmask)) {
+    } else if (netmask && VIR_SOCKET_ADDR_VALID(netmask)) {
         return virSocketAddrGetNumNetmaskBits(netmask);
-    } else if (VIR_SOCKET_ADDR_IS_FAMILY(address, AF_INET)) {
+    } else if (address && VIR_SOCKET_ADDR_IS_FAMILY(address, AF_INET)) {
         /* Return the natural prefix for the network's ip address.
          * On Linux we could use the IN_CLASSx() macros, but those
          * aren't guaranteed on all platforms, so we just deal with
@@ -1053,7 +1053,7 @@ virSocketAddrGetIPPrefix(const virSocketAddr *address,
             return 24;
         }
         return -1;
-    } else if (VIR_SOCKET_ADDR_IS_FAMILY(address, AF_INET6)) {
+    } else if (address && VIR_SOCKET_ADDR_IS_FAMILY(address, AF_INET6)) {
         if (virSocketAddrIsWildcard(address))
             return 0;
         return 64;
