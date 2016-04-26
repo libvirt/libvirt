@@ -628,29 +628,6 @@ int qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
                                 int tlsPort,
                                 const char *tlsSubject);
 
-int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
-                                virDevicePCIAddress *hostAddr,
-                                virDevicePCIAddress *guestAddr);
-
-/* XXX disk driver type eg,  qcow/etc.
- * XXX cache mode
- */
-int qemuMonitorAddPCIDisk(qemuMonitorPtr mon,
-                          const char *path,
-                          const char *bus,
-                          virDevicePCIAddress *guestAddr);
-
-/* XXX do we really want to hardcode 'nicstr' as the
- * sendable item here
- */
-int qemuMonitorAddPCINetwork(qemuMonitorPtr mon,
-                             const char *nicstr,
-                             virDevicePCIAddress *guestAddr);
-
-int qemuMonitorRemovePCIDevice(qemuMonitorPtr mon,
-                               virDevicePCIAddress *guestAddr);
-
-
 int qemuMonitorSendFileHandle(qemuMonitorPtr mon,
                               const char *fdname,
                               int fd);

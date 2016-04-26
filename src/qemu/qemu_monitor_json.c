@@ -3032,46 +3032,6 @@ int qemuMonitorJSONGraphicsRelocate(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                    virDevicePCIAddress *hostAddr ATTRIBUTE_UNUSED,
-                                    virDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("pci_add not supported in JSON mode"));
-    return -1;
-}
-
-
-int qemuMonitorJSONAddPCIDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                              const char *path ATTRIBUTE_UNUSED,
-                              const char *bus ATTRIBUTE_UNUSED,
-                              virDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("pci_add not supported in JSON mode"));
-    return -1;
-}
-
-
-int qemuMonitorJSONAddPCINetwork(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                 const char *nicstr ATTRIBUTE_UNUSED,
-                                 virDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("pci_add not supported in JSON mode"));
-    return -1;
-}
-
-
-int qemuMonitorJSONRemovePCIDevice(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                   virDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("pci_del not supported in JSON mode"));
-    return -1;
-}
-
-
 int qemuMonitorJSONSendFileHandle(qemuMonitorPtr mon,
                                   const char *fdname,
                                   int fd)
@@ -3567,16 +3527,6 @@ qemuMonitorJSONGetChardevInfo(qemuMonitorPtr mon,
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
-}
-
-
-int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                           const char *bus ATTRIBUTE_UNUSED,
-                                           virDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("pci_add not supported in JSON mode"));
-    return -1;
 }
 
 

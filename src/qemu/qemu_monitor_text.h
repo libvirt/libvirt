@@ -119,22 +119,6 @@ int qemuMonitorTextGraphicsRelocate(qemuMonitorPtr mon,
                                     int tlsPort,
                                     const char *tlsSubject);
 
-int qemuMonitorTextAddPCIHostDevice(qemuMonitorPtr mon,
-                                    virDevicePCIAddress *hostAddr,
-                                    virDevicePCIAddress *guestAddr);
-
-int qemuMonitorTextAddPCIDisk(qemuMonitorPtr mon,
-                              const char *path,
-                              const char *bus,
-                              virDevicePCIAddress *guestAddr);
-
-int qemuMonitorTextAddPCINetwork(qemuMonitorPtr mon,
-                                 const char *nicstr,
-                                 virDevicePCIAddress *guestAddr);
-
-int qemuMonitorTextRemovePCIDevice(qemuMonitorPtr mon,
-                                   virDevicePCIAddress *guestAddr);
-
 int qemuMonitorTextSendFileHandle(qemuMonitorPtr mon,
                                   const char *fdname,
                                   int fd);
@@ -157,10 +141,6 @@ int qemuMonitorTextRemoveNetdev(qemuMonitorPtr mon,
 
 int qemuMonitorTextGetChardevInfo(qemuMonitorPtr mon,
                                   virHashTablePtr info);
-
-int qemuMonitorTextAttachPCIDiskController(qemuMonitorPtr mon,
-                                           const char *bus,
-                                           virDevicePCIAddress *guestAddr);
 
 int qemuMonitorTextGetAllPCIAddresses(qemuMonitorPtr mon,
                                       qemuMonitorPCIAddress **addrs);
