@@ -339,9 +339,11 @@ virSocketAddrFormat(const virSocketAddr *addr)
  * @withService: if true, then service info is appended
  * @separator: separator between hostname & service.
  *
- * Returns a string representation of the given address
- * Returns NULL on any error
- * Caller must free the returned string
+ * Returns a string representation of the given address. If a format conforming
+ * to URI specification is required, NULL should be passed to separator.
+ * Set @separator only if non-URI format is required, e.g. passing ';' for
+ * @separator if the address should be used with SASL.
+ * Caller must free the returned string.
  */
 char *
 virSocketAddrFormatFull(const virSocketAddr *addr,
@@ -383,8 +385,22 @@ virSocketAddrFormatFull(const virSocketAddr *addr,
     }
 
     if (withService) {
-        if (virAsprintf(&addrstr, "%s%s%s", host, separator, port) == -1)
+        char *ipv6_host = NULL;
+        /* sasl_new_client demands the socket address to be in an odd format:
+         * a.b.c.d;port or e:f:g:h:i:j:k:l;port, so use square brackets for
+         * IPv6 only if no separator is passed to the function
+         */
+        if (!separator && VIR_SOCKET_ADDR_FAMILY(addr) == AF_INET6) {
+            if (virAsprintf(&ipv6_host, "[%s]", host) < 0)
+                goto error;
+        }
+
+        if (virAsprintf(&addrstr, "%s%s%s",
+                        ipv6_host ? ipv6_host : host,
+                        separator ? separator : ":", port) == -1)
             goto error;
+
+        VIR_FREE(ipv6_host);
     } else {
         if (VIR_STRDUP(addrstr, host) < 0)
             goto error;

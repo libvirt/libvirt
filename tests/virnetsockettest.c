@@ -249,7 +249,7 @@ static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
     if (virNetSocketNewListenUNIX(path, 0700, -1, getegid(), &lsock) < 0)
         goto cleanup;
 
-    if (STRNEQ(virNetSocketLocalAddrString(lsock), "127.0.0.1;0")) {
+    if (STRNEQ(virNetSocketLocalAddrString(lsock), "127.0.0.1:0")) {
         VIR_DEBUG("Unexpected local address");
         goto cleanup;
     }
@@ -265,12 +265,12 @@ static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
     if (virNetSocketNewConnectUNIX(path, false, NULL, &csock) < 0)
         goto cleanup;
 
-    if (STRNEQ(virNetSocketLocalAddrString(csock), "127.0.0.1;0")) {
+    if (STRNEQ(virNetSocketLocalAddrString(csock), "127.0.0.1:0")) {
         VIR_DEBUG("Unexpected local address");
         goto cleanup;
     }
 
-    if (STRNEQ(virNetSocketRemoteAddrString(csock), "127.0.0.1;0")) {
+    if (STRNEQ(virNetSocketRemoteAddrString(csock), "127.0.0.1:0")) {
         VIR_DEBUG("Unexpected local address");
         goto cleanup;
     }
@@ -282,12 +282,12 @@ static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
     }
 
 
-    if (STRNEQ(virNetSocketLocalAddrString(ssock), "127.0.0.1;0")) {
+    if (STRNEQ(virNetSocketLocalAddrString(ssock), "127.0.0.1:0")) {
         VIR_DEBUG("Unexpected local address");
         goto cleanup;
     }
 
-    if (STRNEQ(virNetSocketRemoteAddrString(ssock), "127.0.0.1;0")) {
+    if (STRNEQ(virNetSocketRemoteAddrString(ssock), "127.0.0.1:0")) {
         VIR_DEBUG("Unexpected local address");
         goto cleanup;
     }

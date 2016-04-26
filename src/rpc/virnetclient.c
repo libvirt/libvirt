@@ -954,6 +954,16 @@ const char *virNetClientRemoteAddrString(virNetClientPtr client)
     return virNetSocketRemoteAddrString(client->sock);
 }
 
+char *virNetClientLocalAddrFormatSASL(virNetClientPtr client)
+{
+    return virNetSocketLocalAddrFormatSASL(client->sock);
+}
+
+char *virNetClientRemoteAddrFormatSASL(virNetClientPtr client)
+{
+    return virNetSocketRemoteAddrFormatSASL(client->sock);
+}
+
 #if WITH_GNUTLS
 int virNetClientGetTLSKeySize(virNetClientPtr client)
 {

@@ -2937,6 +2937,8 @@ remoteDispatchAuthSaslInit(virNetServerPtr server ATTRIBUTE_UNUSED,
     virNetSASLSessionPtr sasl = NULL;
     struct daemonClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
+    char *localAddr = NULL;
+    char *remoteAddr = NULL;
 
     virMutexLock(&priv->lock);
 
@@ -2947,10 +2949,17 @@ remoteDispatchAuthSaslInit(virNetServerPtr server ATTRIBUTE_UNUSED,
         goto authfail;
     }
 
+    localAddr = virNetServerClientLocalAddrFormatSASL(client);
+    remoteAddr = virNetServerClientRemoteAddrFormatSASL(client);
+
     sasl = virNetSASLSessionNewServer(saslCtxt,
                                       "libvirt",
-                                      virNetServerClientLocalAddrString(client),
-                                      virNetServerClientRemoteAddrString(client));
+                                      localAddr,
+                                      remoteAddr);
+
+    VIR_FREE(localAddr);
+    VIR_FREE(remoteAddr);
+
     if (!sasl)
         goto authfail;
 

@@ -262,11 +262,11 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
 
 
     if (localAddr &&
-        !(sock->localAddrStr = virSocketAddrFormatFull(localAddr, true, ";")))
+        !(sock->localAddrStr = virSocketAddrFormatFull(localAddr, true, NULL)))
         goto error;
 
     if (remoteAddr &&
-        !(sock->remoteAddrStr = virSocketAddrFormatFull(remoteAddr, true, ";")))
+        !(sock->remoteAddrStr = virSocketAddrFormatFull(remoteAddr, true, NULL)))
         goto error;
 
     sock->client = isClient;
@@ -1463,6 +1463,19 @@ const char *virNetSocketLocalAddrString(virNetSocketPtr sock)
 const char *virNetSocketRemoteAddrString(virNetSocketPtr sock)
 {
     return sock->remoteAddrStr;
+}
+
+/* These helper functions return a SASL-formatted socket addr string,
+ * caller is responsible for freeing the string.
+ */
+char *virNetSocketLocalAddrFormatSASL(virNetSocketPtr sock)
+{
+    return virSocketAddrFormatFull(&sock->localAddr, true, ";");
+}
+
+char *virNetSocketRemoteAddrFormatSASL(virNetSocketPtr sock)
+{
+    return virSocketAddrFormatFull(&sock->remoteAddr, true, ";");
 }
 
 

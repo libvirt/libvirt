@@ -911,6 +911,19 @@ const char *virNetServerClientRemoteAddrString(virNetServerClientPtr client)
     return virNetSocketRemoteAddrString(client->sock);
 }
 
+char *virNetServerClientLocalAddrFormatSASL(virNetServerClientPtr client)
+{
+    if (!client->sock)
+        return NULL;
+    return virNetSocketLocalAddrFormatSASL(client->sock);
+}
+
+char *virNetServerClientRemoteAddrFormatSASL(virNetServerClientPtr client)
+{
+    if (!client->sock)
+        return NULL;
+    return virNetSocketRemoteAddrFormatSASL(client->sock);
+}
 
 void virNetServerClientDispose(void *obj)
 {

@@ -123,6 +123,8 @@ bool virNetClientIsOpen(virNetClientPtr client);
 
 const char *virNetClientLocalAddrString(virNetClientPtr client);
 const char *virNetClientRemoteAddrString(virNetClientPtr client);
+char *virNetClientLocalAddrFormatSASL(virNetClientPtr client);
+char *virNetClientRemoteAddrFormatSASL(virNetClientPtr client);
 
 # ifdef WITH_GNUTLS
 int virNetClientGetTLSKeySize(virNetClientPtr client);
