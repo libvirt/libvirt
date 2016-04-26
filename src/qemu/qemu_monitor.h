@@ -628,20 +628,6 @@ int qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
                                 int tlsPort,
                                 const char *tlsSubject);
 
-/* XXX disk driver type eg,  qcow/etc.
- * XXX cache mode
- */
-int qemuMonitorAddUSBDisk(qemuMonitorPtr mon,
-                          const char *path);
-
-int qemuMonitorAddUSBDeviceExact(qemuMonitorPtr mon,
-                                 int bus,
-                                 int dev);
-int qemuMonitorAddUSBDeviceMatch(qemuMonitorPtr mon,
-                                 int vendor,
-                                 int product);
-
-
 int qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
                                 virDevicePCIAddress *hostAddr,
                                 virDevicePCIAddress *guestAddr);

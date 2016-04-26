@@ -2405,53 +2405,6 @@ qemuMonitorGraphicsRelocate(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorAddUSBDisk(qemuMonitorPtr mon,
-                      const char *path)
-{
-    VIR_DEBUG("path=%s", path);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    if (mon->json)
-        return qemuMonitorJSONAddUSBDisk(mon, path);
-    else
-        return qemuMonitorTextAddUSBDisk(mon, path);
-}
-
-
-int
-qemuMonitorAddUSBDeviceExact(qemuMonitorPtr mon,
-                             int bus,
-                             int dev)
-{
-    VIR_DEBUG("bus=%d dev=%d", bus, dev);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    if (mon->json)
-        return qemuMonitorJSONAddUSBDeviceExact(mon, bus, dev);
-    else
-        return qemuMonitorTextAddUSBDeviceExact(mon, bus, dev);
-}
-
-
-int
-qemuMonitorAddUSBDeviceMatch(qemuMonitorPtr mon,
-                             int vendor,
-                             int product)
-{
-    VIR_DEBUG("vendor=%d product=%d", vendor, product);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    if (mon->json)
-        return qemuMonitorJSONAddUSBDeviceMatch(mon, vendor, product);
-    else
-        return qemuMonitorTextAddUSBDeviceMatch(mon, vendor, product);
-}
-
-
-int
 qemuMonitorAddPCIHostDevice(qemuMonitorPtr mon,
                             virDevicePCIAddress *hostAddr,
                             virDevicePCIAddress *guestAddr)

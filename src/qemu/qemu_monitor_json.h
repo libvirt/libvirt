@@ -169,17 +169,6 @@ int qemuMonitorJSONGraphicsRelocate(qemuMonitorPtr mon,
                                     int tlsPort,
                                     const char *tlsSubject);
 
-int qemuMonitorJSONAddUSBDisk(qemuMonitorPtr mon,
-                              const char *path);
-
-int qemuMonitorJSONAddUSBDeviceExact(qemuMonitorPtr mon,
-                                     int bus,
-                                     int dev);
-int qemuMonitorJSONAddUSBDeviceMatch(qemuMonitorPtr mon,
-                                     int vendor,
-                                     int product);
-
-
 int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon,
                                     virDevicePCIAddress *hostAddr,
                                     virDevicePCIAddress *guestAddr);

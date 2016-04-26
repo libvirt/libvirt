@@ -119,17 +119,6 @@ int qemuMonitorTextGraphicsRelocate(qemuMonitorPtr mon,
                                     int tlsPort,
                                     const char *tlsSubject);
 
-int qemuMonitorTextAddUSBDisk(qemuMonitorPtr mon,
-                              const char *path);
-
-int qemuMonitorTextAddUSBDeviceExact(qemuMonitorPtr mon,
-                                     int bus,
-                                     int dev);
-int qemuMonitorTextAddUSBDeviceMatch(qemuMonitorPtr mon,
-                                     int vendor,
-                                     int product);
-
-
 int qemuMonitorTextAddPCIHostDevice(qemuMonitorPtr mon,
                                     virDevicePCIAddress *hostAddr,
                                     virDevicePCIAddress *guestAddr);

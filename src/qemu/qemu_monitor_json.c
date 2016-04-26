@@ -3032,35 +3032,6 @@ int qemuMonitorJSONGraphicsRelocate(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorJSONAddUSBDisk(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                              const char *path ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("usb_add not supported in JSON mode"));
-    return -1;
-}
-
-
-int qemuMonitorJSONAddUSBDeviceExact(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                     int bus ATTRIBUTE_UNUSED,
-                                     int dev ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("usb_add not supported in JSON mode"));
-    return -1;
-}
-
-
-int qemuMonitorJSONAddUSBDeviceMatch(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                     int vendor ATTRIBUTE_UNUSED,
-                                     int product ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("usb_add not supported in JSON mode"));
-    return -1;
-}
-
-
 int qemuMonitorJSONAddPCIHostDevice(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                     virDevicePCIAddress *hostAddr ATTRIBUTE_UNUSED,
                                     virDevicePCIAddress *guestAddr ATTRIBUTE_UNUSED)
