@@ -263,6 +263,7 @@ mymain(void)
 {
     int ret = 0;
     struct testInfo info;
+    virQEMUDriverConfigPtr cfg = NULL;
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
@@ -774,6 +775,12 @@ mymain(void)
     DO_TEST("virtio-input");
     DO_TEST("virtio-input-passthrough");
 
+    cfg = virQEMUDriverGetConfig(&driver);
+    cfg->vncAutoUnixSocket = true;
+    DO_TEST_FULL("graphics-vnc-autosocket", WHEN_INACTIVE, NONE);
+    cfg->vncAutoUnixSocket = false;
+
+    virObjectUnref(cfg);
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
