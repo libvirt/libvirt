@@ -450,47 +450,39 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-            if (qemuDomainMachineIsS390CCW(vm->def) &&
-                virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW))
-                controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
-            else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
-                controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
-        } else {
-            if (!qemuCheckCCWS390AddressSupport(vm->def, controller->info,
-                                                priv->qemuCaps, "controller"))
-                goto cleanup;
-        }
-
-        if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
-            controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-            if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, &controller->info) < 0)
-                goto cleanup;
-        } else if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-            if (virDomainCCWAddressAssign(&controller->info, priv->ccwaddrs,
-                                          !controller->info.addr.ccw.assigned) < 0)
-                goto cleanup;
-        }
-        releaseaddr = true;
-        if (qemuAssignDeviceControllerAlias(vm->def, priv->qemuCaps, controller) < 0)
-            goto cleanup;
-
-        if (!(devstr = qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, NULL)))
+    if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        if (qemuDomainMachineIsS390CCW(vm->def) &&
+            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW))
+            controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
+        else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_S390))
+            controller->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390;
+    } else {
+        if (!qemuCheckCCWS390AddressSupport(vm->def, controller->info,
+                                            priv->qemuCaps, "controller"))
             goto cleanup;
     }
+
+    if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
+        controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, &controller->info) < 0)
+            goto cleanup;
+    } else if (controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+        if (virDomainCCWAddressAssign(&controller->info, priv->ccwaddrs,
+                                      !controller->info.addr.ccw.assigned) < 0)
+            goto cleanup;
+    }
+    releaseaddr = true;
+    if (qemuAssignDeviceControllerAlias(vm->def, priv->qemuCaps, controller) < 0)
+        goto cleanup;
+
+    if (!(devstr = qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, NULL)))
+        goto cleanup;
 
     if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers+1) < 0)
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        ret = qemuMonitorAddDevice(priv->mon, devstr);
-    } else {
-        ret = qemuMonitorAttachPCIDiskController(priv->mon,
-                                                 type,
-                                                 &controller->info.addr.pci);
-    }
+    ret = qemuMonitorAddDevice(priv->mon, devstr);
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         releaseaddr = false;
         ret = -1;
