@@ -1238,57 +1238,37 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
         teardownlabel = true;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
-            goto error;
-        if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, hostdev->info) < 0)
-            goto error;
-        releaseaddr = true;
-        if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO &&
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
-            configfd = qemuOpenPCIConfig(hostdev);
-            if (configfd >= 0) {
-                if (virAsprintf(&configfd_name, "fd-%s",
-                                hostdev->info->alias) < 0)
-                    goto error;
-            }
+    if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
+        goto error;
+    if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, hostdev->info) < 0)
+        goto error;
+    releaseaddr = true;
+    if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PCI_CONFIGFD)) {
+        configfd = qemuOpenPCIConfig(hostdev);
+        if (configfd >= 0) {
+            if (virAsprintf(&configfd_name, "fd-%s",
+                            hostdev->info->alias) < 0)
+                goto error;
         }
-
-        if (!virDomainObjIsActive(vm)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("guest unexpectedly quit during hotplug"));
-            goto error;
-        }
-
-        if (!(devstr = qemuBuildPCIHostdevDevStr(vm->def, hostdev, 0,
-                                                 configfd_name, priv->qemuCaps)))
-            goto error;
-
-        qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorAddDeviceWithFd(priv->mon, devstr,
-                                         configfd, configfd_name);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            goto error;
-    } else {
-        virDevicePCIAddressPtr guestAddr = &hostdev->info->addr.pci;
-        virDevicePCIAddressPtr hostAddr = &hostdev->source.subsys.u.pci.addr;
-
-        if (hostAddr->domain &&
-            !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_HOST_PCI_MULTIDOMAIN)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("non-zero domain='%.4x' in host device "
-                             "PCI address not supported in this QEMU binary"),
-                           hostAddr->domain);
-            goto error;
-        }
-
-        qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorAddPCIHostDevice(priv->mon, hostAddr, guestAddr);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            goto error;
-
-        hostdev->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     }
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("guest unexpectedly quit during hotplug"));
+        goto error;
+    }
+
+    if (!(devstr = qemuBuildPCIHostdevDevStr(vm->def, hostdev, 0,
+                                             configfd_name, priv->qemuCaps)))
+        goto error;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorAddDeviceWithFd(priv->mon, devstr,
+                                     configfd, configfd_name);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto error;
+
     virDomainAuditHostdev(vm, hostdev, "attach", ret == 0);
     if (ret < 0)
         goto error;
