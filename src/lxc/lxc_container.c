@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Red Hat, Inc.
+ * Copyright (C) 2008-2016 Red Hat, Inc.
  * Copyright (C) 2008 IBM Corp.
  * Copyright (c) 2015 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -514,12 +514,20 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
 
         for (j = 0; j < netDef->nips; j++) {
             virDomainNetIPDefPtr ip = netDef->ips[j];
-            unsigned int prefix = (ip->prefix > 0) ? ip->prefix :
-                                  VIR_SOCKET_ADDR_DEFAULT_PREFIX;
+            int prefix;
             char *ipStr = virSocketAddrFormat(&ip->address);
 
-            VIR_DEBUG("Adding IP address '%s/%u' to '%s'",
-                      ipStr, ip->prefix, newname);
+            if ((prefix = virSocketAddrGetIPPrefix(&ip->address,
+                                                   NULL, ip->prefix)) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to determine prefix for IP address '%s'"),
+                               ipStr);
+                VIR_FREE(ipStr);
+                goto error_out;
+            }
+
+            VIR_DEBUG("Adding IP address '%s/%d' to '%s'",
+                      ipStr, prefix, newname);
             if (virNetDevSetIPAddress(newname, &ip->address, NULL, prefix) < 0) {
                 virReportError(VIR_ERR_SYSTEM_ERROR,
                                _("Failed to set IP address '%s' on %s"),
