@@ -110,8 +110,8 @@ int virtTestMain(int argc,
         return virtTestMain(argc, argv, func);  \
     }
 
-# define VIRT_TEST_MAIN_PRELOAD(func, lib)                              \
-    int main(int argc, char **argv) {                                   \
+# define VIRT_TEST_PRELOAD(lib)                                         \
+    do {                                                                \
         const char *preload = getenv("LD_PRELOAD");                     \
         if (preload == NULL || strstr(preload, lib) == NULL) {          \
             char *newenv;                                               \
@@ -128,6 +128,11 @@ int virtTestMain(int argc,
             setenv("LD_PRELOAD", newenv, 1);                            \
             execv(argv[0], argv);                                       \
         }                                                               \
+    } while (0)
+
+# define VIRT_TEST_MAIN_PRELOAD(func, lib)                              \
+    int main(int argc, char **argv) {                                   \
+        VIRT_TEST_PRELOAD(lib);                                         \
         return virtTestMain(argc, argv, func);                          \
     }
 
