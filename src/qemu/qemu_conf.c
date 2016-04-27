@@ -324,6 +324,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     cfg->seccompSandbox = -1;
 
     cfg->logTimestamp = true;
+    cfg->stdioLogD = true;
 
 #ifdef DEFAULT_LOADER_NVRAM
     if (virQEMUDriverConfigLoaderNVRAMParse(cfg, DEFAULT_LOADER_NVRAM) < 0)
@@ -812,8 +813,6 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
             goto cleanup;
         }
         VIR_FREE(stdioHandler);
-    } else {
-        cfg->stdioLogD = true;
     }
 
     GET_VALUE_ULONG("max_queued", cfg->maxQueuedJobs);
