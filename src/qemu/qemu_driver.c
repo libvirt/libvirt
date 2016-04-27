@@ -10086,9 +10086,9 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
             enabled = params->value.b;
             type = virPerfEventTypeFromString(param->field);
 
-            if (!enabled && virPerfEventDisable(priv->perf, type))
+            if (!enabled && virPerfEventDisable(priv->perf, type) < 0)
                 goto endjob;
-            if (enabled && virPerfEventEnable(priv->perf, type, vm->pid))
+            if (enabled && virPerfEventEnable(priv->perf, type, vm->pid) < 0)
                 goto endjob;
 
             def->perf->events[type] = enabled ?
