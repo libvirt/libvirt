@@ -54,6 +54,8 @@ struct _virNetMessage {
 
 virNetMessagePtr virNetMessageNew(bool tracked);
 
+void virNetMessageClearPayload(virNetMessagePtr msg);
+
 void virNetMessageClear(virNetMessagePtr);
 
 void virNetMessageFree(virNetMessagePtr msg);

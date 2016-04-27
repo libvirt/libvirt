@@ -49,7 +49,7 @@ virNetMessagePtr virNetMessageNew(bool tracked)
 }
 
 
-static void
+void
 virNetMessageClearPayload(virNetMessagePtr msg)
 {
     size_t i;

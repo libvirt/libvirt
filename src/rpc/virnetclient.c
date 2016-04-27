@@ -1194,12 +1194,8 @@ virNetClientIOWriteMessage(virNetClientPtr client,
             if (rv == 0) /* Blocking */
                 return 0;
             thecall->msg->donefds++;
-            VIR_FORCE_CLOSE(thecall->msg->fds[i]);
         }
-        thecall->msg->donefds = 0;
-        thecall->msg->bufferOffset = thecall->msg->bufferLength = 0;
-        VIR_FREE(thecall->msg->fds);
-        VIR_FREE(thecall->msg->buffer);
+        virNetMessageClearPayload(thecall->msg);
         if (thecall->expectReply)
             thecall->mode = VIR_NET_CLIENT_MODE_WAIT_RX;
         else

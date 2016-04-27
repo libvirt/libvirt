@@ -79,6 +79,7 @@ virNetDaemonUpdateServices;
 
 # rpc/virnetmessage.h
 virNetMessageClear;
+virNetMessageClearPayload;
 virNetMessageDecodeHeader;
 virNetMessageDecodeLength;
 virNetMessageDecodeNumFDs;
