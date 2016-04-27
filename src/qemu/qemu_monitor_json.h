@@ -32,6 +32,10 @@
 # include "cpu/cpu.h"
 # include "util/virgic.h"
 
+int qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
+                                 const char *line,
+                                 qemuMonitorMessagePtr msg);
+
 int qemuMonitorJSONIOProcess(qemuMonitorPtr mon,
                              const char *data,
                              size_t len,

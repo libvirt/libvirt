@@ -180,7 +180,7 @@ qemuMonitorJSONIOProcessEvent(qemuMonitorPtr mon,
     return 0;
 }
 
-static int
+int
 qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
                              const char *line,
                              qemuMonitorMessagePtr msg)
