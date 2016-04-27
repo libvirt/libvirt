@@ -1892,33 +1892,6 @@ nodeGetMemoryFake(unsigned long long *mem,
 {
     int ret = -1;
 
-#if defined(__FreeBSD__)
-    unsigned long pagesize = getpagesize();
-    u_int value;
-    size_t value_size = sizeof(value);
-
-    if (mem) {
-        if (sysctlbyname("vm.stats.vm.v_page_count", &value,
-                         &value_size, NULL, 0) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("sysctl failed for vm.stats.vm.v_page_count"));
-            goto cleanup;
-        }
-        *mem = value * (unsigned long long)pagesize;
-    }
-
-    if (freeMem) {
-        if (sysctlbyname("vm.stats.vm.v_free_count", &value,
-                         &value_size, NULL, 0) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("sysctl failed for vm.stats.vm.v_free_count"));
-            goto cleanup;
-        }
-
-        *freeMem = value * (unsigned long long)pagesize;
-    }
-
-#else
     if (mem) {
         double total = physmem_total();
         if (!total) {
@@ -1941,7 +1914,6 @@ nodeGetMemoryFake(unsigned long long *mem,
 
         *freeMem = (unsigned long long) avail;
     }
-#endif
 
     ret = 0;
  cleanup:
