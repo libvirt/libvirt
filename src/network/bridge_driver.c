@@ -3126,6 +3126,20 @@ networkValidate(virNetworkDriverStatePtr driver,
                        def->name);
         return -1;
     }
+
+    if (def->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
+        for (i = 0; i < def->nPortGroups; i++) {
+            if (def->portGroups[i].bandwidth) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported <bandwidth> element "
+                                 "in <portgroup name='%s'> of "
+                                 "network '%s' with forward mode='%s'"),
+                               def->portGroups[i].name, def->name,
+                               virNetworkForwardTypeToString(def->forward.type));
+                return -1;
+            }
+        }
+    }
     return 0;
 }
 
@@ -4302,6 +4316,17 @@ networkAllocateActualDevice(virDomainDefPtr dom,
                                  "supported for this type of connection"),
                                virDomainNetTypeToString(iface->type));
             }
+            goto error;
+        }
+    }
+    if (virDomainNetGetActualBandwidth(iface)) {
+        /* bandwidth configuration via libvirt is not supported for
+         * hostdev network devices
+         */
+        if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("bandwidth settings are not supported "
+                             "for hostdev interfaces"));
             goto error;
         }
     }
