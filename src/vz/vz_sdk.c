@@ -3810,7 +3810,7 @@ prlsdkDetachDomainHardDisks(PRL_HANDLE sdkdom)
     prlsdkCheckRetGoto(pret, cleanup);
 
     for (i = 0; i < hddCount; ++i) {
-        pret = PrlVmCfg_GetHardDisk(sdkdom, i, &sdkdisk);
+        pret = PrlVmCfg_GetHardDisk(sdkdom, 0, &sdkdisk);
         prlsdkCheckRetGoto(pret, cleanup);
 
         pret = PrlVmDev_Remove(sdkdisk);
