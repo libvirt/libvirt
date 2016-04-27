@@ -3501,17 +3501,14 @@ qemuDomainPerfRestart(virDomainObjPtr vm)
     for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
         if (def->perf->events[i] &&
             def->perf->events[i] == VIR_TRISTATE_BOOL_YES) {
-            if (virPerfEventEnable(priv->perf, i, vm->pid))
-                goto cleanup;
+
+            /* Failure to re-enable the perf event should not be fatal */
+            if (virPerfEventEnable(priv->perf, i, vm->pid) < 0)
+                def->perf->events[i] = VIR_TRISTATE_BOOL_NO;
         }
     }
 
     return 0;
-
- cleanup:
-    virPerfFree(priv->perf);
-    priv->perf = NULL;
-    return -1;
 }
 
 struct qemuProcessReconnectData {
@@ -5414,8 +5411,9 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
-        if (vm->def->perf->events[i] == VIR_TRISTATE_BOOL_YES)
-            virPerfEventEnable(priv->perf, i, vm->pid);
+        if (vm->def->perf->events[i] == VIR_TRISTATE_BOOL_YES &&
+            virPerfEventEnable(priv->perf, i, vm->pid) < 0)
+            goto cleanup;
     }
 
     /* This must be done after cgroup placement to avoid resetting CPU
