@@ -1756,7 +1756,7 @@ virJSONValueToString(virJSONValuePtr object,
     char *ret = NULL;
     yajl_size_t len;
 # ifndef WITH_YAJL2
-    yajl_gen_config conf = { pretty ? 1 : 0, pretty ? "    " : " "};
+    yajl_gen_config conf = { pretty ? 1 : 0, pretty ? "  " : " "};
 # endif
 
     VIR_DEBUG("object=%p", object);
@@ -1765,7 +1765,7 @@ virJSONValueToString(virJSONValuePtr object,
     g = yajl_gen_alloc(NULL);
     if (g) {
         yajl_gen_config(g, yajl_gen_beautify, pretty ? 1 : 0);
-        yajl_gen_config(g, yajl_gen_indent_string, pretty ? "    " : " ");
+        yajl_gen_config(g, yajl_gen_indent_string, pretty ? "  " : " ");
         yajl_gen_config(g, yajl_gen_validate_utf8, 1);
     }
 # else
