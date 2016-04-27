@@ -3492,10 +3492,7 @@ qemuDomainPerfRestart(virDomainObjPtr vm)
     virDomainDefPtr def = vm->def;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    virPerfFree(priv->perf);
-
-    priv->perf = virPerfNew();
-    if (!priv->perf)
+    if (!(priv->perf = virPerfNew()))
         return -1;
 
     for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
