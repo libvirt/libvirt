@@ -1432,6 +1432,109 @@ virDomainUSBAddressSetAddController(virDomainUSBAddressSetPtr addrs,
 }
 
 
+static ssize_t
+virDomainUSBAddressGetLastIdx(virDomainDeviceInfoPtr info)
+{
+    ssize_t i;
+    for (i = VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH - 1; i > 0; i--) {
+        if (info->addr.usb.port[i] != 0)
+            break;
+    }
+    return i;
+}
+
+
+/* Find the USBAddressHub structure representing the hub/controller
+ * that corresponds to the bus/port path specified by info.
+ * Returns the index of the requested port in targetIdx.
+ */
+static virDomainUSBAddressHubPtr
+virDomainUSBAddressFindPort(virDomainUSBAddressSetPtr addrs,
+                            virDomainDeviceInfoPtr info,
+                            int *targetIdx,
+                            const char *portStr)
+{
+    virDomainUSBAddressHubPtr hub = NULL;
+    ssize_t i, lastIdx;
+
+    if (info->addr.usb.bus >= addrs->nbuses ||
+        !addrs->buses[info->addr.usb.bus]) {
+        virReportError(VIR_ERR_XML_ERROR, _("Missing USB bus %u"),
+                       info->addr.usb.bus);
+        return NULL;
+    }
+    hub = addrs->buses[info->addr.usb.bus];
+
+    lastIdx = virDomainUSBAddressGetLastIdx(info);
+
+    for (i = 0; i < lastIdx; i++) {
+        /* ports are numbered from 1 */
+        int portIdx = info->addr.usb.port[i] - 1;
+
+        if (hub->nports <= portIdx) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("port %u out of range in USB address bus: %u port: %s"),
+                           info->addr.usb.port[i],
+                           info->addr.usb.bus,
+                           portStr);
+            return NULL;
+        }
+        hub = hub->ports[portIdx];
+    }
+
+    *targetIdx = info->addr.usb.port[lastIdx] - 1;
+    return hub;
+}
+
+
+#define VIR_DOMAIN_USB_HUB_PORTS 8
+
+static int
+virDomainUSBAddressSetAddHub(virDomainUSBAddressSetPtr addrs,
+                             virDomainHubDefPtr hub)
+{
+    virDomainUSBAddressHubPtr targetHub = NULL, newHub = NULL;
+    int ret = -1;
+    int targetPort;
+    char *portStr = NULL;
+
+    if (hub->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Wrong address type for USB hub"));
+        goto cleanup;
+    }
+
+    if (!(portStr = virDomainUSBAddressPortFormat(hub->info.addr.usb.port)))
+        goto cleanup;
+
+    VIR_DEBUG("Adding a USB hub with 8 ports on bus=%u port=%s",
+              hub->info.addr.usb.bus, portStr);
+
+    if (!(newHub = virDomainUSBAddressHubNew(VIR_DOMAIN_USB_HUB_PORTS)))
+        goto cleanup;
+
+    if (!(targetHub = virDomainUSBAddressFindPort(addrs, &(hub->info), &targetPort,
+                                                  portStr)))
+        goto cleanup;
+
+    if (targetHub->ports[targetPort]) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Duplicate USB hub on bus %u port %s"),
+                       hub->info.addr.usb.bus, portStr);
+        goto cleanup;
+    }
+    ignore_value(virBitmapSetBit(targetHub->portmap, targetPort));
+    targetHub->ports[targetPort] = newHub;
+    newHub = NULL;
+
+    ret = 0;
+ cleanup:
+    virDomainUSBAddressHubFree(newHub);
+    VIR_FREE(portStr);
+    return ret;
+}
+
+
 int
 virDomainUSBAddressSetAddControllers(virDomainUSBAddressSetPtr addrs,
                                      virDomainDefPtr def)
@@ -1442,6 +1545,18 @@ virDomainUSBAddressSetAddControllers(virDomainUSBAddressSetPtr addrs,
         virDomainControllerDefPtr cont = def->controllers[i];
         if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
             if (virDomainUSBAddressSetAddController(addrs, cont) < 0)
+                return -1;
+        }
+    }
+
+    for (i = 0; i < def->nhubs; i++) {
+        virDomainHubDefPtr hub = def->hubs[i];
+        if (hub->type == VIR_DOMAIN_HUB_TYPE_USB &&
+            hub->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB &&
+            virDomainUSBAddressPortIsValid(hub->info.addr.usb.port)) {
+            /* USB hubs that do not yet have an USB address have to be
+             * dealt with later */
+            if (virDomainUSBAddressSetAddHub(addrs, hub) < 0)
                 return -1;
         }
     }
