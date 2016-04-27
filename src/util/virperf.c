@@ -186,7 +186,7 @@ virPerfEventEnable(virPerfPtr perf,
 
     switch (type) {
     case VIR_PERF_EVENT_CMT:
-        if (virPerfCmtEnable(event, pid))
+        if (virPerfCmtEnable(event, pid) < 0)
             return -1;
         break;
     case VIR_PERF_EVENT_LAST:
