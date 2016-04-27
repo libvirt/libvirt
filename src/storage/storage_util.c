@@ -2427,7 +2427,7 @@ virStorageBackendVolUploadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     /* Not using O_CREAT because the file is required to already exist at
      * this point */
     ret = virFDStreamOpenBlockDevice(stream, target_path,
-                                     offset, len, O_WRONLY);
+                                     offset, len, false, O_WRONLY);
 
  cleanup:
     VIR_FREE(path);
@@ -2465,7 +2465,7 @@ virStorageBackendVolDownloadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     ret = virFDStreamOpenBlockDevice(stream, target_path,
-                                     offset, len, O_RDONLY);
+                                     offset, len, false, O_RDONLY);
 
  cleanup:
     VIR_FREE(path);
