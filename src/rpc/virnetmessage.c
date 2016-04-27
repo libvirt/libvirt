@@ -56,7 +56,13 @@ virNetMessageClearPayload(virNetMessagePtr msg)
 
     for (i = 0; i < msg->nfds; i++)
         VIR_FORCE_CLOSE(msg->fds[i]);
+
+    msg->donefds = 0;
+    msg->nfds = 0;
     VIR_FREE(msg->fds);
+
+    msg->bufferOffset = 0;
+    msg->bufferLength = 0;
     VIR_FREE(msg->buffer);
 }
 
