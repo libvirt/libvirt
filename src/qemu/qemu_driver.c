@@ -4903,6 +4903,13 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     if (persistentDef) {
         if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
+            if (virDomainNumaGetCPUCountTotal(persistentDef->numa) > nvcpus) {
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                               _("Number of CPUs in <numa> exceeds the desired "
+                                 "maximum vcpu count"));
+                goto endjob;
+            }
+
             if (virDomainDefSetVcpusMax(persistentDef, nvcpus) < 0)
                 goto endjob;
         } else {
