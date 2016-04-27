@@ -5410,12 +5410,12 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuSetupCgroup(driver, vm, nnicindexes, nicindexes) < 0)
         goto cleanup;
 
-    priv->perf = virPerfNew();
-    if (priv->perf) {
-        for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
-            if (vm->def->perf->events[i] == VIR_TRISTATE_BOOL_YES)
-                virPerfEventEnable(priv->perf, i, vm->pid);
-        }
+    if (!(priv->perf = virPerfNew()))
+        goto cleanup;
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+        if (vm->def->perf->events[i] == VIR_TRISTATE_BOOL_YES)
+            virPerfEventEnable(priv->perf, i, vm->pid);
     }
 
     /* This must be done after cgroup placement to avoid resetting CPU
