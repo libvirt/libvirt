@@ -660,17 +660,12 @@ static const vshCmdOptDef opts_vol_upload[] = {
      .type = VSH_OT_INT,
      .help = N_("amount of data to upload")
     },
+    {.name = "sparse",
+     .type = VSH_OT_BOOL,
+     .help = N_("preserve sparseness of volume")
+    },
     {.name = NULL}
 };
-
-static int
-cmdVolUploadSource(virStreamPtr st ATTRIBUTE_UNUSED,
-                   char *bytes, size_t nbytes, void *opaque)
-{
-    int *fd = opaque;
-
-    return saferead(*fd, bytes, nbytes);
-}
 
 static bool
 cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
@@ -683,6 +678,8 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     unsigned long long offset = 0, length = 0;
     virshControlPtr priv = ctl->privData;
+    unsigned int flags = 0;
+    virshStreamCallbackData cbData;
 
     if (vshCommandOptULongLong(ctl, cmd, "offset", &offset) < 0)
         return false;
@@ -701,19 +698,34 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
+    cbData.ctl = ctl;
+    cbData.fd = fd;
+
+    if (vshCommandOptBool(cmd, "sparse"))
+        flags |= VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM;
+
     if (!(st = virStreamNew(priv->conn, 0))) {
         vshError(ctl, _("cannot create a new stream"));
         goto cleanup;
     }
 
-    if (virStorageVolUpload(vol, st, offset, length, 0) < 0) {
+    if (virStorageVolUpload(vol, st, offset, length, flags) < 0) {
         vshError(ctl, _("cannot upload to volume %s"), name);
         goto cleanup;
     }
 
-    if (virStreamSendAll(st, cmdVolUploadSource, &fd) < 0) {
-        vshError(ctl, _("cannot send data to volume %s"), name);
-        goto cleanup;
+    if (flags & VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM) {
+        if (virStreamSparseSendAll(st, virshStreamSource,
+                                   virshStreamInData,
+                                   virshStreamSourceSkip, &cbData) < 0) {
+            vshError(ctl, _("cannot send data to volume %s"), name);
+            goto cleanup;
+        }
+    } else {
+        if (virStreamSendAll(st, virshStreamSource, &cbData) < 0) {
+            vshError(ctl, _("cannot send data to volume %s"), name);
+            goto cleanup;
+        }
     }
 
     if (VIR_CLOSE(fd) < 0) {

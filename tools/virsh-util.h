@@ -57,10 +57,34 @@ virshStreamSink(virStreamPtr st,
                 size_t nbytes,
                 void *opaque);
 
+typedef struct _virshStreamCallbackData virshStreamCallbackData;
+typedef virshStreamCallbackData *virshStreamCallbackDataPtr;
+struct _virshStreamCallbackData {
+    vshControl *ctl;
+    int fd;
+};
+
+int
+virshStreamSource(virStreamPtr st,
+                  char *bytes,
+                  size_t nbytes,
+                  void *opaque);
+
+int
+virshStreamSourceSkip(virStreamPtr st,
+                      long long offset,
+                      void *opaque);
+
 int
 virshStreamSkip(virStreamPtr st,
                 long long offset,
                 void *opaque);
+
+int
+virshStreamInData(virStreamPtr st,
+                  int *inData,
+                  long long *offset,
+                  void *opaque);
 
 int
 virshDomainGetXMLFromDom(vshControl *ctl,

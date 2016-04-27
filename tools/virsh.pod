@@ -3925,13 +3925,14 @@ the storage volume should be deleted as well. Not all storage drivers
 support this option, presently only rbd.
 
 =item B<vol-upload> [I<--pool> I<pool-or-uuid>] [I<--offset> I<bytes>]
-[I<--length> I<bytes>] I<vol-name-or-key-or-path> I<local-file>
+[I<--length> I<bytes>] [I<--sparse>] I<vol-name-or-key-or-path> I<local-file>
 
 Upload the contents of I<local-file> to a storage volume.
 I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
 is in.
 I<vol-name-or-key-or-path> is the name or key or path of the volume where the
 file will be uploaded.
+If I<--sparse> is specified, this command will preserve volume sparseness.
 I<--offset> is the position in the storage volume at which to start writing
 the data. The value must be 0 or larger. I<--length> is an upper bound
 of the amount of data to be uploaded. A negative value is interpreted
