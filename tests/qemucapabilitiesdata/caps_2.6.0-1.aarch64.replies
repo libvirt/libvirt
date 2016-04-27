@@ -1,0 +1,4940 @@
+{
+  "QMP": {
+    "version": {
+      "qemu": {
+        "micro": 94,
+        "minor": 5,
+        "major": 2
+      },
+      "package": ""
+    },
+    "capabilities": [
+    ]
+  }
+}
+
+{
+  "return": {
+  },
+  "id": "libvirt-1"
+}
+
+{
+  "return": {
+    "qemu": {
+      "micro": 94,
+      "minor": 5,
+      "major": 2
+    },
+    "package": ""
+  },
+  "id": "libvirt-2"
+}
+
+{
+  "return": {
+    "arch": "aarch64"
+  },
+  "id": "libvirt-3"
+}
+
+{
+  "return": [
+    {
+      "name": "query-gic-capabilities"
+    },
+    {
+      "name": "query-rocker-of-dpa-groups"
+    },
+    {
+      "name": "query-rocker-of-dpa-flows"
+    },
+    {
+      "name": "query-rocker-ports"
+    },
+    {
+      "name": "query-rocker"
+    },
+    {
+      "name": "block-set-write-threshold"
+    },
+    {
+      "name": "input-send-event"
+    },
+    {
+      "name": "trace-event-set-state"
+    },
+    {
+      "name": "trace-event-get-state"
+    },
+    {
+      "name": "query-acpi-ospm-status"
+    },
+    {
+      "name": "query-memory-devices"
+    },
+    {
+      "name": "query-memdev"
+    },
+    {
+      "name": "blockdev-change-medium"
+    },
+    {
+      "name": "query-named-block-nodes"
+    },
+    {
+      "name": "x-blockdev-insert-medium"
+    },
+    {
+      "name": "x-blockdev-remove-medium"
+    },
+    {
+      "name": "blockdev-close-tray"
+    },
+    {
+      "name": "blockdev-open-tray"
+    },
+    {
+      "name": "x-blockdev-del"
+    },
+    {
+      "name": "blockdev-add"
+    },
+    {
+      "name": "query-rx-filter"
+    },
+    {
+      "name": "chardev-remove"
+    },
+    {
+      "name": "chardev-add"
+    },
+    {
+      "name": "query-tpm-types"
+    },
+    {
+      "name": "query-tpm-models"
+    },
+    {
+      "name": "query-tpm"
+    },
+    {
+      "name": "query-target"
+    },
+    {
+      "name": "query-cpu-definitions"
+    },
+    {
+      "name": "query-machines"
+    },
+    {
+      "name": "device-list-properties"
+    },
+    {
+      "name": "qom-list-types"
+    },
+    {
+      "name": "change-vnc-password"
+    },
+    {
+      "name": "nbd-server-stop"
+    },
+    {
+      "name": "nbd-server-add"
+    },
+    {
+      "name": "nbd-server-start"
+    },
+    {
+      "name": "qom-get"
+    },
+    {
+      "name": "qom-set"
+    },
+    {
+      "name": "qom-list"
+    },
+    {
+      "name": "query-block-jobs"
+    },
+    {
+      "name": "query-balloon"
+    },
+    {
+      "name": "query-migrate-parameters"
+    },
+    {
+      "name": "migrate-set-parameters"
+    },
+    {
+      "name": "query-migrate-capabilities"
+    },
+    {
+      "name": "migrate-set-capabilities"
+    },
+    {
+      "name": "query-migrate"
+    },
+    {
+      "name": "query-command-line-options"
+    },
+    {
+      "name": "query-uuid"
+    },
+    {
+      "name": "query-name"
+    },
+    {
+      "name": "query-vnc-servers"
+    },
+    {
+      "name": "query-vnc"
+    },
+    {
+      "name": "query-mice"
+    },
+    {
+      "name": "query-status"
+    },
+    {
+      "name": "query-kvm"
+    },
+    {
+      "name": "query-pci"
+    },
+    {
+      "name": "query-iothreads"
+    },
+    {
+      "name": "query-cpus"
+    },
+    {
+      "name": "query-blockstats"
+    },
+    {
+      "name": "query-block"
+    },
+    {
+      "name": "query-chardev-backends"
+    },
+    {
+      "name": "query-chardev"
+    },
+    {
+      "name": "query-qmp-schema"
+    },
+    {
+      "name": "query-events"
+    },
+    {
+      "name": "query-commands"
+    },
+    {
+      "name": "query-version"
+    },
+    {
+      "name": "human-monitor-command"
+    },
+    {
+      "name": "qmp_capabilities"
+    },
+    {
+      "name": "add_client"
+    },
+    {
+      "name": "expire_password"
+    },
+    {
+      "name": "set_password"
+    },
+    {
+      "name": "block_set_io_throttle"
+    },
+    {
+      "name": "block_passwd"
+    },
+    {
+      "name": "query-fdsets"
+    },
+    {
+      "name": "remove-fd"
+    },
+    {
+      "name": "add-fd"
+    },
+    {
+      "name": "closefd"
+    },
+    {
+      "name": "getfd"
+    },
+    {
+      "name": "set_link"
+    },
+    {
+      "name": "balloon"
+    },
+    {
+      "name": "change-backing-file"
+    },
+    {
+      "name": "blockdev-mirror"
+    },
+    {
+      "name": "drive-mirror"
+    },
+    {
+      "name": "blockdev-snapshot-delete-internal-sync"
+    },
+    {
+      "name": "blockdev-snapshot-internal-sync"
+    },
+    {
+      "name": "blockdev-snapshot"
+    },
+    {
+      "name": "blockdev-snapshot-sync"
+    },
+    {
+      "name": "block-dirty-bitmap-clear"
+    },
+    {
+      "name": "block-dirty-bitmap-remove"
+    },
+    {
+      "name": "block-dirty-bitmap-add"
+    },
+    {
+      "name": "transaction"
+    },
+    {
+      "name": "block-job-complete"
+    },
+    {
+      "name": "block-job-resume"
+    },
+    {
+      "name": "block-job-pause"
+    },
+    {
+      "name": "block-job-cancel"
+    },
+    {
+      "name": "block-job-set-speed"
+    },
+    {
+      "name": "blockdev-backup"
+    },
+    {
+      "name": "drive-backup"
+    },
+    {
+      "name": "block-commit"
+    },
+    {
+      "name": "block-stream"
+    },
+    {
+      "name": "block_resize"
+    },
+    {
+      "name": "object-del"
+    },
+    {
+      "name": "object-add"
+    },
+    {
+      "name": "netdev_del"
+    },
+    {
+      "name": "netdev_add"
+    },
+    {
+      "name": "query-dump"
+    },
+    {
+      "name": "query-dump-guest-memory-capability"
+    },
+    {
+      "name": "dump-guest-memory"
+    },
+    {
+      "name": "client_migrate_info"
+    },
+    {
+      "name": "migrate_set_downtime"
+    },
+    {
+      "name": "migrate_set_speed"
+    },
+    {
+      "name": "query-migrate-cache-size"
+    },
+    {
+      "name": "migrate-start-postcopy"
+    },
+    {
+      "name": "migrate-set-cache-size"
+    },
+    {
+      "name": "migrate-incoming"
+    },
+    {
+      "name": "migrate_cancel"
+    },
+    {
+      "name": "migrate"
+    },
+    {
+      "name": "xen-set-global-dirty-log"
+    },
+    {
+      "name": "xen-save-devices-state"
+    },
+    {
+      "name": "ringbuf-read"
+    },
+    {
+      "name": "ringbuf-write"
+    },
+    {
+      "name": "inject-nmi"
+    },
+    {
+      "name": "pmemsave"
+    },
+    {
+      "name": "memsave"
+    },
+    {
+      "name": "cpu-add"
+    },
+    {
+      "name": "cpu"
+    },
+    {
+      "name": "send-key"
+    },
+    {
+      "name": "device_del"
+    },
+    {
+      "name": "device_add"
+    },
+    {
+      "name": "system_powerdown"
+    },
+    {
+      "name": "system_reset"
+    },
+    {
+      "name": "system_wakeup"
+    },
+    {
+      "name": "cont"
+    },
+    {
+      "name": "stop"
+    },
+    {
+      "name": "screendump"
+    },
+    {
+      "name": "change"
+    },
+    {
+      "name": "eject"
+    },
+    {
+      "name": "quit"
+    }
+  ],
+  "id": "libvirt-4"
+}
+
+{
+  "return": {
+    "fd": 15,
+    "fdset-id": 0
+  },
+  "id": "libvirt-5"
+}
+
+{
+  "id": "libvirt-6",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'bogus' not found"
+  }
+}
+
+{
+  "return": [
+    {
+      "name": "WATCHDOG"
+    },
+    {
+      "name": "WAKEUP"
+    },
+    {
+      "name": "VSERPORT_CHANGE"
+    },
+    {
+      "name": "VNC_INITIALIZED"
+    },
+    {
+      "name": "VNC_DISCONNECTED"
+    },
+    {
+      "name": "VNC_CONNECTED"
+    },
+    {
+      "name": "SUSPEND_DISK"
+    },
+    {
+      "name": "SUSPEND"
+    },
+    {
+      "name": "STOP"
+    },
+    {
+      "name": "SPICE_MIGRATE_COMPLETED"
+    },
+    {
+      "name": "SPICE_INITIALIZED"
+    },
+    {
+      "name": "SPICE_DISCONNECTED"
+    },
+    {
+      "name": "SPICE_CONNECTED"
+    },
+    {
+      "name": "SHUTDOWN"
+    },
+    {
+      "name": "RTC_CHANGE"
+    },
+    {
+      "name": "RESUME"
+    },
+    {
+      "name": "RESET"
+    },
+    {
+      "name": "QUORUM_REPORT_BAD"
+    },
+    {
+      "name": "QUORUM_FAILURE"
+    },
+    {
+      "name": "POWERDOWN"
+    },
+    {
+      "name": "NIC_RX_FILTER_CHANGED"
+    },
+    {
+      "name": "MIGRATION_PASS"
+    },
+    {
+      "name": "MIGRATION"
+    },
+    {
+      "name": "MEM_UNPLUG_ERROR"
+    },
+    {
+      "name": "GUEST_PANICKED"
+    },
+    {
+      "name": "DUMP_COMPLETED"
+    },
+    {
+      "name": "DEVICE_TRAY_MOVED"
+    },
+    {
+      "name": "DEVICE_DELETED"
+    },
+    {
+      "name": "BLOCK_WRITE_THRESHOLD"
+    },
+    {
+      "name": "BLOCK_JOB_READY"
+    },
+    {
+      "name": "BLOCK_JOB_ERROR"
+    },
+    {
+      "name": "BLOCK_JOB_COMPLETED"
+    },
+    {
+      "name": "BLOCK_JOB_CANCELLED"
+    },
+    {
+      "name": "BLOCK_IO_ERROR"
+    },
+    {
+      "name": "BLOCK_IMAGE_CORRUPTED"
+    },
+    {
+      "name": "BALLOON_CHANGE"
+    },
+    {
+      "name": "ACPI_DEVICE_OST"
+    }
+  ],
+  "id": "libvirt-7"
+}
+
+{
+  "return": [
+    {
+      "name": "virtio-mmio"
+    },
+    {
+      "name": "scsi-generic"
+    },
+    {
+      "name": "qio-channel-tls"
+    },
+    {
+      "name": "scsi-hd"
+    },
+    {
+      "name": "pxa270-arm-cpu"
+    },
+    {
+      "name": "pxa270-a1-arm-cpu"
+    },
+    {
+      "name": "digic"
+    },
+    {
+      "name": "mv88w8618_flashcfg"
+    },
+    {
+      "name": "at25df641"
+    },
+    {
+      "name": "usb-bot"
+    },
+    {
+      "name": "lm3s811evb-machine"
+    },
+    {
+      "name": "mx25l3205d"
+    },
+    {
+      "name": "bcm2835-property"
+    },
+    {
+      "name": "pxa2xx-pcmcia"
+    },
+    {
+      "name": "canon-a1100-machine"
+    },
+    {
+      "name": "n25q512a"
+    },
+    {
+      "name": "lsi53c895a"
+    },
+    {
+      "name": "virtio-keyboard-pci"
+    },
+    {
+      "name": "mx25l6405d"
+    },
+    {
+      "name": "w25q256"
+    },
+    {
+      "name": "s25fl064k"
+    },
+    {
+      "name": "musicpal_gpio"
+    },
+    {
+      "name": "ide-hd"
+    },
+    {
+      "name": "virtio-net-device"
+    },
+    {
+      "name": "virtio-serial-pci"
+    },
+    {
+      "name": "cortex-r5-arm-cpu"
+    },
+    {
+      "name": "vexpress-a15-machine"
+    },
+    {
+      "name": "at45db081d"
+    },
+    {
+      "name": "en25p32"
+    },
+    {
+      "name": "pxa2xx-i2c-slave"
+    },
+    {
+      "name": "arm946-arm-cpu"
+    },
+    {
+      "name": "gpex-pcihost"
+    },
+    {
+      "name": "m25pe80"
+    },
+    {
+      "name": "pxa270-b0-arm-cpu"
+    },
+    {
+      "name": "s25fl256s1"
+    },
+    {
+      "name": "s25fl256s0"
+    },
+    {
+      "name": "platform-bus-device"
+    },
+    {
+      "name": "usb-host"
+    },
+    {
+      "name": "ich9-usb-uhci2"
+    },
+    {
+      "name": "usb-bt-dongle"
+    },
+    {
+      "name": "s25fl129p1"
+    },
+    {
+      "name": "s25fl129p0"
+    },
+    {
+      "name": "ccid-card-emulated"
+    },
+    {
+      "name": "virtio-input-host-pci"
+    },
+    {
+      "name": "kvm-arm-gicv3"
+    },
+    {
+      "name": "usb-mtp"
+    },
+    {
+      "name": "ich9-usb-uhci6"
+    },
+    {
+      "name": "SSI"
+    },
+    {
+      "name": "ich9-usb-uhci4"
+    },
+    {
+      "name": "e1000"
+    },
+    {
+      "name": "xlnx,ps7-usb"
+    },
+    {
+      "name": "s25sl12801"
+    },
+    {
+      "name": "s25sl12800"
+    },
+    {
+      "name": "ich9-usb-uhci5"
+    },
+    {
+      "name": "pxa2xx_rtc"
+    },
+    {
+      "name": "xlnx,zynq-xadc"
+    },
+    {
+      "name": "cortex-m4-arm-cpu"
+    },
+    {
+      "name": "sysbus-ahci"
+    },
+    {
+      "name": "ich9-usb-uhci3"
+    },
+    {
+      "name": "kvm-arm-gic"
+    },
+    {
+      "name": "imx.fec"
+    },
+    {
+      "name": "ich9-usb-uhci1"
+    },
+    {
+      "name": "tpci200"
+    },
+    {
+      "name": "spitz-lcdtg"
+    },
+    {
+      "name": "memory-backend-file"
+    },
+    {
+      "name": "stm32f2xx-usart"
+    },
+    {
+      "name": "cortex-m3-arm-cpu"
+    },
+    {
+      "name": "s25sl064p"
+    },
+    {
+      "name": "stm32f2xx-syscfg"
+    },
+    {
+      "name": "rtl8139"
+    },
+    {
+      "name": "exynos4210.i2c"
+    },
+    {
+      "name": "lan9118"
+    },
+    {
+      "name": "vexpress-a9-machine"
+    },
+    {
+      "name": "corgi-ssp"
+    },
+    {
+      "name": "megasas"
+    },
+    {
+      "name": "pxa2xx-fir"
+    },
+    {
+      "name": "s25sl064a"
+    },
+    {
+      "name": "container"
+    },
+    {
+      "name": "scsi-block"
+    },
+    {
+      "name": "omap-intc"
+    },
+    {
+      "name": "strongarm_pic"
+    },
+    {
+      "name": "sst25wf512"
+    },
+    {
+      "name": "max7310"
+    },
+    {
+      "name": "scsi-cd"
+    },
+    {
+      "name": "pxb-bus"
+    },
+    {
+      "name": "usb-audio"
+    },
+    {
+      "name": "accel"
+    },
+    {
+      "name": "pxa270-b1-arm-cpu"
+    },
+    {
+      "name": "m45pe80"
+    },
+    {
+      "name": "pxa2xx-dma"
+    },
+    {
+      "name": "filter-redirector"
+    },
+    {
+      "name": "imx.gpio"
+    },
+    {
+      "name": "arm-linux-boot-if"
+    },
+    {
+      "name": "isa-serial"
+    },
+    {
+      "name": "virtio-serial-device"
+    },
+    {
+      "name": "tegra2-ehci-usb"
+    },
+    {
+      "name": "vhost-scsi-pci"
+    },
+    {
+      "name": "integrator_debug"
+    },
+    {
+      "name": "imx25.ccm"
+    },
+    {
+      "name": "a15mpcore_priv"
+    },
+    {
+      "name": "tls-creds-anon"
+    },
+    {
+      "name": "fw_cfg_mem"
+    },
+    {
+      "name": "digic-timer"
+    },
+    {
+      "name": "usb-uas"
+    },
+    {
+      "name": "ide-cd"
+    },
+    {
+      "name": "usb-ccid"
+    },
+    {
+      "name": "cadence_uart"
+    },
+    {
+      "name": "virtio-balloon-pci"
+    },
+    {
+      "name": "gpio_i2c"
+    },
+    {
+      "name": "iothread"
+    },
+    {
+      "name": "spitz-keyboard"
+    },
+    {
+      "name": "xlnx-ep108-machine"
+    },
+    {
+      "name": "n25q256a"
+    },
+    {
+      "name": "lm8323"
+    },
+    {
+      "name": "bcm2835-ic"
+    },
+    {
+      "name": "xilinx-zynq-a9-machine"
+    },
+    {
+      "name": "arm1026-arm-cpu"
+    },
+    {
+      "name": "twl92230"
+    },
+    {
+      "name": "sdhci-pci"
+    },
+    {
+      "name": "virtio-input-host-device"
+    },
+    {
+      "name": "i82559er"
+    },
+    {
+      "name": "pci-bridge"
+    },
+    {
+      "name": "ivshmem-doorbell"
+    },
+    {
+      "name": "versatile_pci_host"
+    },
+    {
+      "name": "w25x80"
+    },
+    {
+      "name": "mv88w8618_wlan"
+    },
+    {
+      "name": "virtio-rng-device"
+    },
+    {
+      "name": "en25q32b"
+    },
+    {
+      "name": "pxa270-c0-arm-cpu"
+    },
+    {
+      "name": "mx25l1606e"
+    },
+    {
+      "name": "nand"
+    },
+    {
+      "name": "arm-gicv2m"
+    },
+    {
+      "name": "pxa27x-timer"
+    },
+    {
+      "name": "hda-micro"
+    },
+    {
+      "name": "pci-bridge-seat"
+    },
+    {
+      "name": "dc390"
+    },
+    {
+      "name": "stm32f2xx-timer"
+    },
+    {
+      "name": "pl190"
+    },
+    {
+      "name": "IDE"
+    },
+    {
+      "name": "at25256a-nonjedec"
+    },
+    {
+      "name": "fw_cfg_io"
+    },
+    {
+      "name": "integrator_core"
+    },
+    {
+      "name": "m25pe20"
+    },
+    {
+      "name": "ads7846"
+    },
+    {
+      "name": "sst25wf080"
+    },
+    {
+      "name": "memory-backend-ram"
+    },
+    {
+      "name": "am53c974"
+    },
+    {
+      "name": "connex-machine"
+    },
+    {
+      "name": "stellaris-adc"
+    },
+    {
+      "name": "exynos4210.mct"
+    },
+    {
+      "name": "virtio-blk-device"
+    },
+    {
+      "name": "at25128a-nonjedec"
+    },
+    {
+      "name": "cortex-a8-arm-cpu"
+    },
+    {
+      "name": "imx6.ccm"
+    },
+    {
+      "name": "qio-channel-file"
+    },
+    {
+      "name": "qio-channel-websock"
+    },
+    {
+      "name": "icp-ctrl-regs"
+    },
+    {
+      "name": "stellaris-gptm"
+    },
+    {
+      "name": "arm_gic"
+    },
+    {
+      "name": "pl181"
+    },
+    {
+      "name": "sl-nand"
+    },
+    {
+      "name": "m25pe16"
+    },
+    {
+      "name": "gpio-key"
+    },
+    {
+      "name": "hda-output"
+    },
+    {
+      "name": "w25x64"
+    },
+    {
+      "name": "VGA"
+    },
+    {
+      "name": "s25fl016k"
+    },
+    {
+      "name": "n800-machine"
+    },
+    {
+      "name": "m25p80"
+    },
+    {
+      "name": "at25df321a"
+    },
+    {
+      "name": "pxa2xx-mmci-bus"
+    },
+    {
+      "name": "lm3s6965evb-machine"
+    },
+    {
+      "name": "mptsas1068"
+    },
+    {
+      "name": "bcm2835-fb"
+    },
+    {
+      "name": "edu"
+    },
+    {
+      "name": "versatileab-machine"
+    },
+    {
+      "name": "virtio-mouse-pci"
+    },
+    {
+      "name": "strongarm-uart"
+    },
+    {
+      "name": "pl330"
+    },
+    {
+      "name": "ast2400"
+    },
+    {
+      "name": "mv88w8618_pit"
+    },
+    {
+      "name": "HDA"
+    },
+    {
+      "name": "qemu:memory-region"
+    },
+    {
+      "name": "mv88w8618_pic"
+    },
+    {
+      "name": "ssd0323"
+    },
+    {
+      "name": "omap2-intc"
+    },
+    {
+      "name": "sysbus-ohci"
+    },
+    {
+      "name": "borzoi-machine"
+    },
+    {
+      "name": "stellaris-i2c"
+    },
+    {
+      "name": "pl081"
+    },
+    {
+      "name": "pl080"
+    },
+    {
+      "name": "qtest-accel"
+    },
+    {
+      "name": "qio-channel-command"
+    },
+    {
+      "name": "m25p64"
+    },
+    {
+      "name": "w25x40"
+    },
+    {
+      "name": "tosa-machine"
+    },
+    {
+      "name": "pxb-host"
+    },
+    {
+      "name": "xio3130-downstream"
+    },
+    {
+      "name": "n25q128a13"
+    },
+    {
+      "name": "virtio-blk-pci"
+    },
+    {
+      "name": "cortex-a9-arm-cpu"
+    },
+    {
+      "name": "virtio-gpu-device"
+    },
+    {
+      "name": "QJSON"
+    },
+    {
+      "name": "n25q128a11"
+    },
+    {
+      "name": "lsi53c810"
+    },
+    {
+      "name": "strongarm-gpio"
+    },
+    {
+      "name": "cheetah-machine"
+    },
+    {
+      "name": "m45pe16"
+    },
+    {
+      "name": "pxa270-c5-arm-cpu"
+    },
+    {
+      "name": "System"
+    },
+    {
+      "name": "usb-serial"
+    },
+    {
+      "name": "m45pe10"
+    },
+    {
+      "name": "vt82c686b-usb-uhci"
+    },
+    {
+      "name": "sst25wf040"
+    },
+    {
+      "name": "w25x32"
+    },
+    {
+      "name": "s25sl032p"
+    },
+    {
+      "name": "ccid-card-passthru"
+    },
+    {
+      "name": "ccid-bus"
+    },
+    {
+      "name": "PCIE"
+    },
+    {
+      "name": "exynos4210.rtc"
+    },
+    {
+      "name": "sa1100-arm-cpu"
+    },
+    {
+      "name": "ssd0303"
+    },
+    {
+      "name": "s25sl032a"
+    },
+    {
+      "name": "gpex-root"
+    },
+    {
+      "name": "s25sl016a"
+    },
+    {
+      "name": "mv88w8618_audio"
+    },
+    {
+      "name": "s25sl008a"
+    },
+    {
+      "name": "virtio-serial-bus"
+    },
+    {
+      "name": "ssi-sd"
+    },
+    {
+      "name": "secondary-vga"
+    },
+    {
+      "name": "vhost-scsi"
+    },
+    {
+      "name": "pl061"
+    },
+    {
+      "name": "exynos4210-ehci-usb"
+    },
+    {
+      "name": "pci-ohci"
+    },
+    {
+      "name": "cfi.pflash02"
+    },
+    {
+      "name": "s25fl512s"
+    },
+    {
+      "name": "s70fl01gs"
+    },
+    {
+      "name": "cfi.pflash01"
+    },
+    {
+      "name": "w25x20"
+    },
+    {
+      "name": "usb-hub"
+    },
+    {
+      "name": "m25p40"
+    },
+    {
+      "name": "mx25l12855e"
+    },
+    {
+      "name": "exynos4210.pwm"
+    },
+    {
+      "name": "nmi"
+    },
+    {
+      "name": "midway-machine"
+    },
+    {
+      "name": "bcm2835-aux"
+    },
+    {
+      "name": "input-linux"
+    },
+    {
+      "name": "musicpal-misc"
+    },
+    {
+      "name": "w25x16"
+    },
+    {
+      "name": "SCSI"
+    },
+    {
+      "name": "w25x10"
+    },
+    {
+      "name": "sst25wf020"
+    },
+    {
+      "name": "vfio-amd-xgbe"
+    },
+    {
+      "name": "m25p32"
+    },
+    {
+      "name": "pxa2xx-gpio"
+    },
+    {
+      "name": "palmetto-bmc-machine"
+    },
+    {
+      "name": "mainstone-machine"
+    },
+    {
+      "name": "n810-machine"
+    },
+    {
+      "name": "pci-serial"
+    },
+    {
+      "name": "at26df161a"
+    },
+    {
+      "name": "terrier-machine"
+    },
+    {
+      "name": "max1111"
+    },
+    {
+      "name": "netduino2-machine"
+    },
+    {
+      "name": "max1110"
+    },
+    {
+      "name": "i82559c"
+    },
+    {
+      "name": "i82559b"
+    },
+    {
+      "name": "i82559a"
+    },
+    {
+      "name": "xlnx,zynqmp"
+    },
+    {
+      "name": "realview_pci"
+    },
+    {
+      "name": "pl041"
+    },
+    {
+      "name": "rocker"
+    },
+    {
+      "name": "pcnet"
+    },
+    {
+      "name": "n25q032a13"
+    },
+    {
+      "name": "n25q032a11"
+    },
+    {
+      "name": "filter-dump"
+    },
+    {
+      "name": "sst25wf010"
+    },
+    {
+      "name": "rng-egd"
+    },
+    {
+      "name": "gd25q64"
+    },
+    {
+      "name": "exynos4210.gic"
+    },
+    {
+      "name": "m25p20"
+    },
+    {
+      "name": "l2x0"
+    },
+    {
+      "name": "n25q064"
+    },
+    {
+      "name": "pl031"
+    },
+    {
+      "name": "arm_mptimer"
+    },
+    {
+      "name": "n25q064a13"
+    },
+    {
+      "name": "n25q064a11"
+    },
+    {
+      "name": "raspi2-machine"
+    },
+    {
+      "name": "scoop"
+    },
+    {
+      "name": "strongarm-ssp"
+    },
+    {
+      "name": "i82558b"
+    },
+    {
+      "name": "i82558a"
+    },
+    {
+      "name": "exynos4210.fimd"
+    },
+    {
+      "name": "pl111"
+    },
+    {
+      "name": "smbus-eeprom"
+    },
+    {
+      "name": "pl110"
+    },
+    {
+      "name": "tosa_dac"
+    },
+    {
+      "name": "onenand"
+    },
+    {
+      "name": "m25p16"
+    },
+    {
+      "name": "bcm2835-dma"
+    },
+    {
+      "name": "allwinner-A10-timer"
+    },
+    {
+      "name": "m25p10"
+    },
+    {
+      "name": "i82801"
+    },
+    {
+      "name": "tls-creds-x509"
+    },
+    {
+      "name": "virtio-net-pci"
+    },
+    {
+      "name": "virtio-keyboard-device"
+    },
+    {
+      "name": "i82562"
+    },
+    {
+      "name": "usb-net"
+    },
+    {
+      "name": "highbank-machine"
+    },
+    {
+      "name": "at26df081a"
+    },
+    {
+      "name": "digic-uart"
+    },
+    {
+      "name": "i82557c"
+    },
+    {
+      "name": "cortex-a53-arm-cpu"
+    },
+    {
+      "name": "s25sl004a"
+    },
+    {
+      "name": "arm1176-arm-cpu"
+    },
+    {
+      "name": "i82557b"
+    },
+    {
+      "name": "i82557a"
+    },
+    {
+      "name": "pl022"
+    },
+    {
+      "name": "virtio-gpu-pci"
+    },
+    {
+      "name": "sdhci-bus"
+    },
+    {
+      "name": "pl061_luminary"
+    },
+    {
+      "name": "usb-mouse"
+    },
+    {
+      "name": "m25p05"
+    },
+    {
+      "name": "strongarm-rtc"
+    },
+    {
+      "name": "n25q128"
+    },
+    {
+      "name": "imx.epit"
+    },
+    {
+      "name": "i82551"
+    },
+    {
+      "name": "i82550"
+    },
+    {
+      "name": "armv7m_nvic"
+    },
+    {
+      "name": "cubieboard-machine"
+    },
+    {
+      "name": "fsl,imx31"
+    },
+    {
+      "name": "imx.i2c"
+    },
+    {
+      "name": "highbank-regs"
+    },
+    {
+      "name": "virt-2.6-machine"
+    },
+    {
+      "name": "sa1110-arm-cpu"
+    },
+    {
+      "name": "ich9-usb-ehci2"
+    },
+    {
+      "name": "user-creatable"
+    },
+    {
+      "name": "pl011"
+    },
+    {
+      "name": "ich9-usb-ehci1"
+    },
+    {
+      "name": "vfio-pci"
+    },
+    {
+      "name": "filter-mirror"
+    },
+    {
+      "name": "tusb6010"
+    },
+    {
+      "name": "realview_mpcore"
+    },
+    {
+      "name": "w25q32dw"
+    },
+    {
+      "name": "sx1-v1-machine"
+    },
+    {
+      "name": "fsl,imx25"
+    },
+    {
+      "name": "gd25q32"
+    },
+    {
+      "name": "cortex-a57-arm-cpu"
+    },
+    {
+      "name": "irq"
+    },
+    {
+      "name": "n25q032"
+    },
+    {
+      "name": "cadence_ttc"
+    },
+    {
+      "name": "pxa2xx_pic"
+    },
+    {
+      "name": "arm.cortex-a9-global-timer"
+    },
+    {
+      "name": "nec-usb-xhci"
+    },
+    {
+      "name": "qio-channel-socket"
+    },
+    {
+      "name": "ti925t-arm-cpu"
+    },
+    {
+      "name": "piix3-usb-uhci"
+    },
+    {
+      "name": "virtserialport"
+    },
+    {
+      "name": "pvscsi"
+    },
+    {
+      "name": "sd-bus"
+    },
+    {
+      "name": "sx1-machine"
+    },
+    {
+      "name": "320s33b"
+    },
+    {
+      "name": "dscm1xxxx"
+    },
+    {
+      "name": "ich9-ahci"
+    },
+    {
+      "name": "isa-dma"
+    },
+    {
+      "name": "realview-eb-mpcore-machine"
+    },
+    {
+      "name": "IndustryPack"
+    },
+    {
+      "name": "mx25l8005"
+    },
+    {
+      "name": "pl050_keyboard"
+    },
+    {
+      "name": "kzm-machine"
+    },
+    {
+      "name": "pxa250-arm-cpu"
+    },
+    {
+      "name": "virtio-rng-pci"
+    },
+    {
+      "name": "usb-ehci"
+    },
+    {
+      "name": "realview_sysctl"
+    },
+    {
+      "name": "smc91c111"
+    },
+    {
+      "name": "arm11mpcore-arm-cpu"
+    },
+    {
+      "name": "versatile_pci"
+    },
+    {
+      "name": "pxa2xx-mmci"
+    },
+    {
+      "name": "xgmac"
+    },
+    {
+      "name": "sst25vf080b"
+    },
+    {
+      "name": "akita-machine"
+    },
+    {
+      "name": "imx.gpt"
+    },
+    {
+      "name": "allwinner-a10"
+    },
+    {
+      "name": "e1000-82545em"
+    },
+    {
+      "name": "sp804"
+    },
+    {
+      "name": "tmp105"
+    },
+    {
+      "name": "w25q80"
+    },
+    {
+      "name": "integrator_pit"
+    },
+    {
+      "name": "e1000-82544gc"
+    },
+    {
+      "name": "pci-serial-4x"
+    },
+    {
+      "name": "mv88w8618_eth"
+    },
+    {
+      "name": "versatilepb_sic"
+    },
+    {
+      "name": "ioh3420"
+    },
+    {
+      "name": "virtio-9p-pci"
+    },
+    {
+      "name": "integrator_pic"
+    },
+    {
+      "name": "virtio-9p-device"
+    },
+    {
+      "name": "m25p128"
+    },
+    {
+      "name": "en25f32"
+    },
+    {
+      "name": "filter-buffer"
+    },
+    {
+      "name": "versatile_i2c"
+    },
+    {
+      "name": "acpi-device-interface"
+    },
+    {
+      "name": "z2-machine"
+    },
+    {
+      "name": "xilinx,zynq_slcr"
+    },
+    {
+      "name": "ich9-intel-hda"
+    },
+    {
+      "name": "at26f004"
+    },
+    {
+      "name": "ivshmem"
+    },
+    {
+      "name": "n25q256a13"
+    },
+    {
+      "name": "160s33b"
+    },
+    {
+      "name": "n25q256a11"
+    },
+    {
+      "name": "exynos4210.irq_gate"
+    },
+    {
+      "name": "musicpal-machine"
+    },
+    {
+      "name": "exynos4210.combiner"
+    },
+    {
+      "name": "arm926-arm-cpu"
+    },
+    {
+      "name": "virtio-tablet-pci"
+    },
+    {
+      "name": "exynos4210.pmu"
+    },
+    {
+      "name": "secret"
+    },
+    {
+      "name": "ipoctal232"
+    },
+    {
+      "name": "omap_i2c"
+    },
+    {
+      "name": "omap-gpio"
+    },
+    {
+      "name": "virtio-tablet-device"
+    },
+    {
+      "name": "w25q64"
+    },
+    {
+      "name": "virtio-pci-bus"
+    },
+    {
+      "name": "virtio-scsi-pci"
+    },
+    {
+      "name": "at25df041a"
+    },
+    {
+      "name": "mx25l12805d"
+    },
+    {
+      "name": "x3130-upstream"
+    },
+    {
+      "name": "ES1370"
+    },
+    {
+      "name": "pci-testdev"
+    },
+    {
+      "name": "at25fs040"
+    },
+    {
+      "name": "qemu-console"
+    },
+    {
+      "name": "xlnx.ps7-spi"
+    },
+    {
+      "name": "ISA"
+    },
+    {
+      "name": "piix4-usb-uhci"
+    },
+    {
+      "name": "ARM,bitband-memory"
+    },
+    {
+      "name": "tcg-accel"
+    },
+    {
+      "name": "virtconsole"
+    },
+    {
+      "name": "mx25l25655e"
+    },
+    {
+      "name": "aspeed.timer"
+    },
+    {
+      "name": "pci-serial-2x"
+    },
+    {
+      "name": "bcm2836-control"
+    },
+    {
+      "name": "bcm2835-peripherals"
+    },
+    {
+      "name": "musicpal_key"
+    },
+    {
+      "name": "realview-pb-a8-machine"
+    },
+    {
+      "name": "virtio-mmio-bus"
+    },
+    {
+      "name": "pxa25x-timer"
+    },
+    {
+      "name": "usb-bus"
+    },
+    {
+      "name": "versatilepb-machine"
+    },
+    {
+      "name": "w25q80bl"
+    },
+    {
+      "name": "pxa255-arm-cpu"
+    },
+    {
+      "name": "allwinner-emac"
+    },
+    {
+      "name": "at26df321"
+    },
+    {
+      "name": "pxa261-arm-cpu"
+    },
+    {
+      "name": "strongarm-ppc"
+    },
+    {
+      "name": "hotplug-handler"
+    },
+    {
+      "name": "tosa-ssp"
+    },
+    {
+      "name": "pl050_mouse"
+    },
+    {
+      "name": "i82801b11-bridge"
+    },
+    {
+      "name": "PCI"
+    },
+    {
+      "name": "usb-storage"
+    },
+    {
+      "name": "fusbh200-ehci-usb"
+    },
+    {
+      "name": "arm1136-r2-arm-cpu"
+    },
+    {
+      "name": "pxa260-arm-cpu"
+    },
+    {
+      "name": "esp"
+    },
+    {
+      "name": "realview-eb-machine"
+    },
+    {
+      "name": "musicpal_lcd"
+    },
+    {
+      "name": "isabus-bridge"
+    },
+    {
+      "name": "ne2k_pci"
+    },
+    {
+      "name": "realview-pbx-a9-machine"
+    },
+    {
+      "name": "ivshmem-plain"
+    },
+    {
+      "name": "usb-kbd"
+    },
+    {
+      "name": "pxa2xx_i2c"
+    },
+    {
+      "name": "stellaris_enet"
+    },
+    {
+      "name": "imx31.ccm"
+    },
+    {
+      "name": "cortex-a15-arm-cpu"
+    },
+    {
+      "name": "spitz-machine"
+    },
+    {
+      "name": "hda-duplex"
+    },
+    {
+      "name": "a9-scu"
+    },
+    {
+      "name": "stm32f205-soc"
+    },
+    {
+      "name": "w25q32"
+    },
+    {
+      "name": "wm8750"
+    },
+    {
+      "name": "virtio-balloon-device"
+    },
+    {
+      "name": "none-machine"
+    },
+    {
+      "name": "megasas-gen2"
+    },
+    {
+      "name": "allwinner-ahci"
+    },
+    {
+      "name": "m25px64"
+    },
+    {
+      "name": "pl011_luminary"
+    },
+    {
+      "name": "at25fs010"
+    },
+    {
+      "name": "allwinner-a10-pic"
+    },
+    {
+      "name": "imx25-pdk-machine"
+    },
+    {
+      "name": "nvme"
+    },
+    {
+      "name": "arm1136-arm-cpu"
+    },
+    {
+      "name": "mx25l4005a"
+    },
+    {
+      "name": "usb-tablet"
+    },
+    {
+      "name": "usb-braille"
+    },
+    {
+      "name": "qio-channel-buffer"
+    },
+    {
+      "name": "en25q64"
+    },
+    {
+      "name": "scsi-disk"
+    },
+    {
+      "name": "fw_cfg"
+    },
+    {
+      "name": "intel-hda"
+    },
+    {
+      "name": "collie-machine"
+    },
+    {
+      "name": "arm11mpcore_priv"
+    },
+    {
+      "name": "kvm-accel"
+    },
+    {
+      "name": "pxb-pcie-bus"
+    },
+    {
+      "name": "virtio-scsi-device"
+    },
+    {
+      "name": "realview_gic"
+    },
+    {
+      "name": "smdkc210-machine"
+    },
+    {
+      "name": "bcm2835-mbox"
+    },
+    {
+      "name": "AC97"
+    },
+    {
+      "name": "usb-wacom-tablet"
+    },
+    {
+      "name": "pxa270-a0-arm-cpu"
+    },
+    {
+      "name": "ds1338"
+    },
+    {
+      "name": "pxa262-arm-cpu"
+    },
+    {
+      "name": "i2c-bus"
+    },
+    {
+      "name": "exynos4210.uart"
+    },
+    {
+      "name": "virtio-mouse-device"
+    },
+    {
+      "name": "mx25l25635e"
+    },
+    {
+      "name": "pxb-pcie"
+    },
+    {
+      "name": "640s33b"
+    },
+    {
+      "name": "pl110_versatile"
+    },
+    {
+      "name": "mx25l2005a"
+    },
+    {
+      "name": "a9mpcore_priv"
+    },
+    {
+      "name": "generic-sdhci"
+    },
+    {
+      "name": "aspeed.vic"
+    },
+    {
+      "name": "mainstone-fpga"
+    },
+    {
+      "name": "cadence_gem"
+    },
+    {
+      "name": "sst25vf040b"
+    },
+    {
+      "name": "ide-drive"
+    },
+    {
+      "name": "sst25vf032b"
+    },
+    {
+      "name": "bcm2836"
+    },
+    {
+      "name": "sst25vf016b"
+    },
+    {
+      "name": "pxb"
+    },
+    {
+      "name": "omap2-gpio"
+    },
+    {
+      "name": "imx.serial"
+    },
+    {
+      "name": "xlnx.ps7-qspi"
+    },
+    {
+      "name": "en25p64"
+    },
+    {
+      "name": "pxa2xx-ssp"
+    },
+    {
+      "name": "arm11-scu"
+    },
+    {
+      "name": "i6300esb"
+    },
+    {
+      "name": "sd-card"
+    },
+    {
+      "name": "verdex-machine"
+    },
+    {
+      "name": "m25px32"
+    },
+    {
+      "name": "m25px32-s1"
+    },
+    {
+      "name": "m25px32-s0"
+    },
+    {
+      "name": "vmxnet3"
+    },
+    {
+      "name": "vfio-calxeda-xgmac"
+    },
+    {
+      "name": "imx.avic"
+    },
+    {
+      "name": "nuri-machine"
+    },
+    {
+      "name": "integratorcp-machine"
+    },
+    {
+      "name": "rng-random"
+    },
+    {
+      "name": "fw-path-provider"
+    }
+  ],
+  "id": "libvirt-8"
+}
+
+{
+  "return": [
+    {
+      "name": "request-merging",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "min_io_size",
+      "type": "uint16"
+    },
+    {
+      "name": "secs",
+      "type": "uint32"
+    },
+    {
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "heads",
+      "type": "uint32"
+    },
+    {
+      "name": "serial",
+      "type": "str"
+    },
+    {
+      "name": "ioeventfd",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "scsi",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "cyls",
+      "type": "uint32"
+    },
+    {
+      "name": "logical_block_size",
+      "description": "A power of two between 512 and 32768",
+      "type": "uint16"
+    },
+    {
+      "name": "x-disable-pcie",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "disable-modern",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "drive",
+      "description": "ID of a drive to use as a backend",
+      "type": "str"
+    },
+    {
+      "name": "disable-legacy",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "discard_granularity",
+      "type": "uint32"
+    },
+    {
+      "name": "iothread",
+      "type": "link<iothread>"
+    },
+    {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "class",
+      "type": "uint32"
+    },
+    {
+      "name": "migrate-extra",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "modern-pio-notify",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "vectors",
+      "type": "uint32"
+    },
+    {
+      "name": "physical_block_size",
+      "description": "A power of two between 512 and 32768",
+      "type": "uint16"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "virtio-backend",
+      "type": "child<virtio-blk-device>"
+    },
+    {
+      "name": "config-wce",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "virtio-pci-bus-master-bug-migration",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "opt_io_size",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    }
+  ],
+  "id": "libvirt-9"
+}
+
+{
+  "return": [
+    {
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "x-txtimer",
+      "type": "uint32"
+    },
+    {
+      "name": "guest_ufo",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "mq",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "status",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "host_ecn",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "ioeventfd",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "tx",
+      "type": "str"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "ctrl_rx_extra",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "ctrl_vq",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "mac",
+      "description": "Ethernet 6-byte MAC Address, example: 52:54:00:12:34:56",
+      "type": "str"
+    },
+    {
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "x-disable-pcie",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "guest_tso6",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "gso",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "guest_ecn",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "ctrl_rx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "guest_tso4",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "disable-modern",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "guest_csum",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "guest_announce",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "disable-legacy",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "x-txburst",
+      "type": "int32"
+    },
+    {
+      "name": "ctrl_vlan",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "csum",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "mrg_rxbuf",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "ctrl_guest_offloads",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "host_tso6",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "ctrl_mac_addr",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "migrate-extra",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "modern-pio-notify",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "vectors",
+      "type": "uint32"
+    },
+    {
+      "name": "vlan",
+      "description": "Integer VLAN id to connect to",
+      "type": "int32"
+    },
+    {
+      "name": "host_tso4",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "host_ufo",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "virtio-backend",
+      "type": "child<virtio-net-device>"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "netdev",
+      "description": "ID of a netdev to use as a backend",
+      "type": "str"
+    },
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "virtio-pci-bus-master-bug-migration",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    }
+  ],
+  "id": "libvirt-10"
+}
+
+{
+  "return": [
+    {
+      "name": "disable-modern",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "ioeventfd",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "virtio-pci-bus-master-bug-migration",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "cmd_per_lun",
+      "type": "uint32"
+    },
+    {
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "param_change",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "iothread",
+      "type": "link<iothread>"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "migrate-extra",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "hotplug",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "modern-pio-notify",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "num_queues",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "virtio-backend",
+      "type": "child<virtio-scsi-device>"
+    },
+    {
+      "name": "disable-legacy",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "vectors",
+      "type": "uint32"
+    },
+    {
+      "name": "x-disable-pcie",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "max_sectors",
+      "type": "uint32"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-11"
+}
+
+{
+  "id": "libvirt-12",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-blk-ccw' not found"
+  }
+}
+
+{
+  "id": "libvirt-13",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-net-ccw' not found"
+  }
+}
+
+{
+  "id": "libvirt-14",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-scsi-ccw' not found"
+  }
+}
+
+{
+  "id": "libvirt-15",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-blk-s390' not found"
+  }
+}
+
+{
+  "id": "libvirt-16",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-net-s390' not found"
+  }
+}
+
+{
+  "id": "libvirt-17",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'pci-assign' not found"
+  }
+}
+
+{
+  "id": "libvirt-18",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'kvm-pci-assign' not found"
+  }
+}
+
+{
+  "return": [
+    {
+      "name": "x-pci-sub-device-id",
+      "type": "uint32"
+    },
+    {
+      "name": "x-no-kvm-msi",
+      "type": "bool"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "x-vga",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "x-pci-vendor-id",
+      "type": "uint32"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "x-req",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "x-no-kvm-intx",
+      "type": "bool"
+    },
+    {
+      "name": "x-pci-device-id",
+      "type": "uint32"
+    },
+    {
+      "name": "host",
+      "description": "Address (bus/device/function) of the host device, example: 04:10.0",
+      "type": "str"
+    },
+    {
+      "name": "x-no-kvm-msix",
+      "type": "bool"
+    },
+    {
+      "name": "x-intx-mmap-timeout-ms",
+      "type": "uint32"
+    },
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "x-pci-sub-vendor-id",
+      "type": "uint32"
+    },
+    {
+      "name": "sysfsdev",
+      "type": "str"
+    },
+    {
+      "name": "x-no-mmap",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-19"
+}
+
+{
+  "return": [
+    {
+      "name": "serial",
+      "type": "str"
+    },
+    {
+      "name": "port_index",
+      "type": "uint16"
+    },
+    {
+      "name": "dpofua",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "logical_block_size",
+      "description": "A power of two between 512 and 32768",
+      "type": "uint16"
+    },
+    {
+      "name": "discard_granularity",
+      "type": "uint32"
+    },
+    {
+      "name": "lun",
+      "type": "uint32"
+    },
+    {
+      "name": "drive",
+      "description": "ID of a drive to use as a backend",
+      "type": "str"
+    },
+    {
+      "name": "port_wwn",
+      "type": "uint64"
+    },
+    {
+      "name": "max_unmap_size",
+      "type": "uint64"
+    },
+    {
+      "name": "opt_io_size",
+      "type": "uint32"
+    },
+    {
+      "name": "min_io_size",
+      "type": "uint16"
+    },
+    {
+      "name": "product",
+      "type": "str"
+    },
+    {
+      "name": "vendor",
+      "type": "str"
+    },
+    {
+      "name": "channel",
+      "type": "uint32"
+    },
+    {
+      "name": "wwn",
+      "type": "uint64"
+    },
+    {
+      "name": "removable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "scsi-id",
+      "type": "uint32"
+    },
+    {
+      "name": "ver",
+      "type": "str"
+    },
+    {
+      "name": "physical_block_size",
+      "description": "A power of two between 512 and 32768",
+      "type": "uint16"
+    },
+    {
+      "name": "max_io_size",
+      "type": "uint64"
+    }
+  ],
+  "id": "libvirt-20"
+}
+
+{
+  "return": [
+    {
+      "name": "serial",
+      "type": "str"
+    },
+    {
+      "name": "logical_block_size",
+      "description": "A power of two between 512 and 32768",
+      "type": "uint16"
+    },
+    {
+      "name": "discard_granularity",
+      "type": "uint32"
+    },
+    {
+      "name": "drive",
+      "description": "ID of a drive to use as a backend",
+      "type": "str"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "opt_io_size",
+      "type": "uint32"
+    },
+    {
+      "name": "min_io_size",
+      "type": "uint16"
+    },
+    {
+      "name": "unit",
+      "type": "uint32"
+    },
+    {
+      "name": "wwn",
+      "type": "uint64"
+    },
+    {
+      "name": "model",
+      "type": "str"
+    },
+    {
+      "name": "ver",
+      "type": "str"
+    },
+    {
+      "name": "physical_block_size",
+      "description": "A power of two between 512 and 32768",
+      "type": "uint16"
+    }
+  ],
+  "id": "libvirt-21"
+}
+
+{
+  "id": "libvirt-22",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'PIIX4_PM' not found"
+  }
+}
+
+{
+  "id": "libvirt-23",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'usb-redir' not found"
+  }
+}
+
+{
+  "return": [
+    {
+      "name": "isobufs",
+      "type": "uint32"
+    },
+    {
+      "name": "hostaddr",
+      "type": "uint32"
+    },
+    {
+      "name": "msos-desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "productid",
+      "type": "uint32"
+    },
+    {
+      "name": "serial",
+      "type": "str"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "isobsize",
+      "type": "uint32"
+    },
+    {
+      "name": "port",
+      "type": "str"
+    },
+    {
+      "name": "vendorid",
+      "type": "uint32"
+    },
+    {
+      "name": "pipeline",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "hostport",
+      "type": "str"
+    },
+    {
+      "name": "full-path",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "loglevel",
+      "type": "uint32"
+    },
+    {
+      "name": "hostbus",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-24"
+}
+
+{
+  "return": [
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "drive",
+      "description": "ID of a drive to use as a backend",
+      "type": "str"
+    },
+    {
+      "name": "lun",
+      "type": "uint32"
+    },
+    {
+      "name": "channel",
+      "type": "uint32"
+    },
+    {
+      "name": "scsi-id",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-25"
+}
+
+{
+  "id": "libvirt-26",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'i440FX-pcihost' not found"
+  }
+}
+
+{
+  "id": "libvirt-27",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'q35-pcihost' not found"
+  }
+}
+
+{
+  "return": [
+    {
+      "name": "serial",
+      "type": "str"
+    },
+    {
+      "name": "msos-desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "logical_block_size",
+      "description": "A power of two between 512 and 32768",
+      "type": "uint16"
+    },
+    {
+      "name": "discard_granularity",
+      "type": "uint32"
+    },
+    {
+      "name": "drive",
+      "description": "ID of a drive to use as a backend",
+      "type": "str"
+    },
+    {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
+      "name": "opt_io_size",
+      "type": "uint32"
+    },
+    {
+      "name": "min_io_size",
+      "type": "uint16"
+    },
+    {
+      "name": "port",
+      "type": "str"
+    },
+    {
+      "name": "full-path",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "removable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "physical_block_size",
+      "description": "A power of two between 512 and 32768",
+      "type": "uint16"
+    }
+  ],
+  "id": "libvirt-28"
+}
+
+{
+  "id": "libvirt-29",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'kvm-pit' not found"
+  }
+}
+
+{
+  "return": [
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "mmio",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "qemu-extended-regs",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "big-endian-framebuffer",
+      "type": "bool"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "vgamem_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    }
+  ],
+  "id": "libvirt-30"
+}
+
+{
+  "id": "libvirt-31",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'vmware-svga' not found"
+  }
+}
+
+{
+  "id": "libvirt-32",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'qxl' not found"
+  }
+}
+
+{
+  "id": "libvirt-33",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'qxl-vga' not found"
+  }
+}
+
+{
+  "return": [
+    {
+      "name": "disable-modern",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "ioeventfd",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "virtio-pci-bus-master-bug-migration",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "migrate-extra",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "modern-pio-notify",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "virtio-backend",
+      "type": "child<virtio-gpu-device>"
+    },
+    {
+      "name": "disable-legacy",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "vectors",
+      "type": "uint32"
+    },
+    {
+      "name": "x-disable-pcie",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "max_outputs",
+      "type": "uint32"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-34"
+}
+
+{
+  "id": "libvirt-35",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'ICH9-LPC' not found"
+  }
+}
+
+{
+  "return": [
+    {
+      "name": "disable-modern",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "virtio-pci-bus-master-bug-migration",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "class",
+      "type": "uint32"
+    },
+    {
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "guest-stats-polling-interval",
+      "type": "int"
+    },
+    {
+      "name": "guest-stats",
+      "type": "guest statistics"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "migrate-extra",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "modern-pio-notify",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "virtio-backend",
+      "type": "child<virtio-balloon-device>"
+    },
+    {
+      "name": "disable-legacy",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "x-disable-pcie",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "deflate-on-oom",
+      "description": "on/off",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-36"
+}
+
+{
+  "id": "libvirt-37",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-balloon-ccw' not found"
+  }
+}
+
+{
+  "return": [
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "guest-stats",
+      "type": "guest statistics"
+    },
+    {
+      "name": "guest-stats-polling-interval",
+      "type": "int"
+    },
+    {
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "deflate-on-oom",
+      "description": "on/off",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-38"
+}
+
+{
+  "return": [
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "intrs",
+      "type": "uint32"
+    },
+    {
+      "name": "msix",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "msi",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "superspeed-ports-first",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "streams",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "force-pcie-endcap",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "p3",
+      "type": "uint32"
+    },
+    {
+      "name": "p2",
+      "type": "uint32"
+    },
+    {
+      "name": "slots",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-39"
+}
+
+{
+  "return": [
+    {
+      "name": "integratorcp",
+      "cpu-max": 1
+    },
+    {
+      "name": "nuri",
+      "cpu-max": 2
+    },
+    {
+      "name": "verdex",
+      "cpu-max": 1
+    },
+    {
+      "name": "smdkc210",
+      "cpu-max": 2
+    },
+    {
+      "name": "collie",
+      "cpu-max": 1
+    },
+    {
+      "name": "imx25-pdk",
+      "cpu-max": 1
+    },
+    {
+      "name": "none",
+      "cpu-max": 1
+    },
+    {
+      "name": "spitz",
+      "cpu-max": 1
+    },
+    {
+      "name": "realview-pbx-a9",
+      "cpu-max": 4
+    },
+    {
+      "name": "realview-eb",
+      "cpu-max": 1
+    },
+    {
+      "name": "versatilepb",
+      "cpu-max": 1
+    },
+    {
+      "name": "realview-pb-a8",
+      "cpu-max": 1
+    },
+    {
+      "name": "musicpal",
+      "cpu-max": 1
+    },
+    {
+      "name": "z2",
+      "cpu-max": 1
+    },
+    {
+      "name": "akita",
+      "cpu-max": 1
+    },
+    {
+      "name": "kzm",
+      "cpu-max": 1
+    },
+    {
+      "name": "realview-eb-mpcore",
+      "cpu-max": 4
+    },
+    {
+      "name": "sx1",
+      "cpu-max": 1
+    },
+    {
+      "name": "sx1-v1",
+      "cpu-max": 1
+    },
+    {
+      "name": "virt-2.6",
+      "cpu-max": 255,
+      "alias": "virt"
+    },
+    {
+      "name": "cubieboard",
+      "cpu-max": 1
+    },
+    {
+      "name": "highbank",
+      "cpu-max": 4
+    },
+    {
+      "name": "raspi2",
+      "cpu-max": 4
+    },
+    {
+      "name": "netduino2",
+      "cpu-max": 1
+    },
+    {
+      "name": "terrier",
+      "cpu-max": 1
+    },
+    {
+      "name": "n810",
+      "cpu-max": 1
+    },
+    {
+      "name": "mainstone",
+      "cpu-max": 1
+    },
+    {
+      "name": "palmetto-bmc",
+      "cpu-max": 1
+    },
+    {
+      "name": "midway",
+      "cpu-max": 4
+    },
+    {
+      "name": "cheetah",
+      "cpu-max": 1
+    },
+    {
+      "name": "tosa",
+      "cpu-max": 1
+    },
+    {
+      "name": "borzoi",
+      "cpu-max": 1
+    },
+    {
+      "name": "versatileab",
+      "cpu-max": 1
+    },
+    {
+      "name": "lm3s6965evb",
+      "cpu-max": 1
+    },
+    {
+      "name": "n800",
+      "cpu-max": 1
+    },
+    {
+      "name": "connex",
+      "cpu-max": 1
+    },
+    {
+      "name": "xilinx-zynq-a9",
+      "cpu-max": 1
+    },
+    {
+      "name": "xlnx-ep108",
+      "cpu-max": 1
+    },
+    {
+      "name": "vexpress-a9",
+      "cpu-max": 4
+    },
+    {
+      "name": "vexpress-a15",
+      "cpu-max": 4
+    },
+    {
+      "name": "canon-a1100",
+      "cpu-max": 1
+    },
+    {
+      "name": "lm3s811evb",
+      "cpu-max": 1
+    }
+  ],
+  "id": "libvirt-40"
+}
+
+{
+  "return": [
+    {
+      "name": "pxa262"
+    },
+    {
+      "name": "pxa270-a0"
+    },
+    {
+      "name": "arm1136"
+    },
+    {
+      "name": "cortex-a15"
+    },
+    {
+      "name": "pxa260"
+    },
+    {
+      "name": "arm1136-r2"
+    },
+    {
+      "name": "pxa261"
+    },
+    {
+      "name": "pxa255"
+    },
+    {
+      "name": "arm926"
+    },
+    {
+      "name": "arm11mpcore"
+    },
+    {
+      "name": "pxa250"
+    },
+    {
+      "name": "ti925t"
+    },
+    {
+      "name": "cortex-a57"
+    },
+    {
+      "name": "sa1110"
+    },
+    {
+      "name": "arm1176"
+    },
+    {
+      "name": "cortex-a53"
+    },
+    {
+      "name": "sa1100"
+    },
+    {
+      "name": "pxa270-c5"
+    },
+    {
+      "name": "cortex-a9"
+    },
+    {
+      "name": "cortex-a8"
+    },
+    {
+      "name": "pxa270-c0"
+    },
+    {
+      "name": "arm1026"
+    },
+    {
+      "name": "pxa270-b1"
+    },
+    {
+      "name": "cortex-m3"
+    },
+    {
+      "name": "cortex-m4"
+    },
+    {
+      "name": "pxa270-b0"
+    },
+    {
+      "name": "arm946"
+    },
+    {
+      "name": "cortex-r5"
+    },
+    {
+      "name": "pxa270-a1"
+    },
+    {
+      "name": "pxa270"
+    }
+  ],
+  "id": "libvirt-41"
+}
+
+{
+  "return": {
+    "enabled": false,
+    "present": true
+  },
+  "id": "libvirt-42"
+}
+
+{
+  "return": [
+  ],
+  "id": "libvirt-43"
+}
+
+{
+  "return": [
+  ],
+  "id": "libvirt-44"
+}
+
+{
+  "return": [
+    {
+      "parameters": [
+        {
+          "name": "timeout",
+          "help": "Request timeout in seconds (default 0 = no timeout)",
+          "type": "number"
+        },
+        {
+          "name": "initiator-name",
+          "help": "Initiator iqn name to use when connecting",
+          "type": "string"
+        },
+        {
+          "name": "header-digest",
+          "help": "HeaderDigest setting. {CRC32C|CRC32C-NONE|NONE-CRC32C|NONE}",
+          "type": "string"
+        },
+        {
+          "name": "password-secret",
+          "help": "ID of the secret providing password for CHAP authentication to target",
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "help": "password for CHAP authentication to target",
+          "type": "string"
+        },
+        {
+          "name": "user",
+          "help": "username for CHAP authentication to target",
+          "type": "string"
+        }
+      ],
+      "option": "iscsi"
+    },
+    {
+      "parameters": [
+        {
+          "name": "non-adaptive",
+          "type": "boolean"
+        },
+        {
+          "name": "lossy",
+          "type": "boolean"
+        },
+        {
+          "name": "acl",
+          "type": "boolean"
+        },
+        {
+          "name": "x509verify",
+          "type": "string"
+        },
+        {
+          "name": "tls",
+          "type": "boolean"
+        },
+        {
+          "name": "sasl",
+          "type": "boolean"
+        },
+        {
+          "name": "lock-key-sync",
+          "type": "boolean"
+        },
+        {
+          "name": "reverse",
+          "type": "boolean"
+        },
+        {
+          "name": "password",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv6",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv4",
+          "type": "boolean"
+        },
+        {
+          "name": "to",
+          "type": "number"
+        },
+        {
+          "name": "connections",
+          "type": "number"
+        },
+        {
+          "name": "head",
+          "type": "number"
+        },
+        {
+          "name": "display",
+          "type": "string"
+        },
+        {
+          "name": "share",
+          "type": "string"
+        },
+        {
+          "name": "x509",
+          "type": "string"
+        },
+        {
+          "name": "tls-creds",
+          "type": "string"
+        },
+        {
+          "name": "websocket",
+          "type": "string"
+        },
+        {
+          "name": "vnc",
+          "type": "string"
+        }
+      ],
+      "option": "vnc"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "smbios"
+    },
+    {
+      "parameters": [
+        {
+          "name": "sock_fd",
+          "type": "number"
+        },
+        {
+          "name": "socket",
+          "type": "string"
+        },
+        {
+          "name": "readonly",
+          "type": "boolean"
+        },
+        {
+          "name": "writeout",
+          "type": "string"
+        },
+        {
+          "name": "security_model",
+          "type": "string"
+        },
+        {
+          "name": "mount_tag",
+          "type": "string"
+        },
+        {
+          "name": "path",
+          "type": "string"
+        },
+        {
+          "name": "fsdriver",
+          "type": "string"
+        }
+      ],
+      "option": "virtfs"
+    },
+    {
+      "parameters": [
+        {
+          "name": "sock_fd",
+          "type": "number"
+        },
+        {
+          "name": "socket",
+          "type": "string"
+        },
+        {
+          "name": "readonly",
+          "type": "boolean"
+        },
+        {
+          "name": "writeout",
+          "type": "string"
+        },
+        {
+          "name": "security_model",
+          "type": "string"
+        },
+        {
+          "name": "path",
+          "type": "string"
+        },
+        {
+          "name": "fsdriver",
+          "type": "string"
+        }
+      ],
+      "option": "fsdev"
+    },
+    {
+      "parameters": [
+        {
+          "name": "string",
+          "help": "Sets content of the blob to be inserted from a string",
+          "type": "string"
+        },
+        {
+          "name": "file",
+          "help": "Sets the name of the file from which\nthe fw_cfg blob will be loaded",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "help": "Sets the fw_cfg name of the blob to be inserted",
+          "type": "string"
+        }
+      ],
+      "option": "fw_cfg"
+    },
+    {
+      "parameters": [
+        {
+          "name": "arg",
+          "type": "string"
+        },
+        {
+          "name": "target",
+          "type": "string"
+        },
+        {
+          "name": "enable",
+          "type": "boolean"
+        }
+      ],
+      "option": "semihosting-config"
+    },
+    {
+      "parameters": [
+        {
+          "name": "rrfile",
+          "type": "string"
+        },
+        {
+          "name": "rr",
+          "type": "string"
+        },
+        {
+          "name": "sleep",
+          "type": "boolean"
+        },
+        {
+          "name": "align",
+          "type": "boolean"
+        },
+        {
+          "name": "shift",
+          "type": "string"
+        }
+      ],
+      "option": "icount"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "numa"
+    },
+    {
+      "parameters": [
+        {
+          "name": "debug-threads",
+          "help": "When enabled, name the individual threads; defaults off.\nNOTE: The thread names are for debugging and not a\nstable API.",
+          "type": "boolean"
+        },
+        {
+          "name": "process",
+          "help": "Sets the name of the QEMU process, as shown in top etc",
+          "type": "string"
+        },
+        {
+          "name": "guest",
+          "help": "Sets the name of the guest.\nThis name will be displayed in the SDL window caption.\nThe name will also be used for the VNC server",
+          "type": "string"
+        }
+      ],
+      "option": "name"
+    },
+    {
+      "parameters": [
+        {
+          "name": "timestamp",
+          "type": "boolean"
+        }
+      ],
+      "option": "msg"
+    },
+    {
+      "parameters": [
+        {
+          "name": "mlock",
+          "type": "boolean"
+        }
+      ],
+      "option": "realtime"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "tpmdev"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "object"
+    },
+    {
+      "parameters": [
+        {
+          "name": "opaque",
+          "help": "free-form string used to describe fd",
+          "type": "string"
+        },
+        {
+          "name": "set",
+          "help": "ID of the fd set to add fd to",
+          "type": "number"
+        },
+        {
+          "name": "fd",
+          "help": "file descriptor of which a duplicate is added to fd set",
+          "type": "number"
+        }
+      ],
+      "option": "add-fd"
+    },
+    {
+      "parameters": [
+        {
+          "name": "enable",
+          "type": "boolean"
+        }
+      ],
+      "option": "sandbox"
+    },
+    {
+      "parameters": [
+        {
+          "name": "strict",
+          "type": "boolean"
+        },
+        {
+          "name": "reboot-timeout",
+          "type": "string"
+        },
+        {
+          "name": "splash-time",
+          "type": "string"
+        },
+        {
+          "name": "splash",
+          "type": "string"
+        },
+        {
+          "name": "menu",
+          "type": "boolean"
+        },
+        {
+          "name": "once",
+          "type": "string"
+        },
+        {
+          "name": "order",
+          "type": "string"
+        }
+      ],
+      "option": "boot-opts"
+    },
+    {
+      "parameters": [
+        {
+          "name": "maxcpus",
+          "type": "number"
+        },
+        {
+          "name": "threads",
+          "type": "number"
+        },
+        {
+          "name": "cores",
+          "type": "number"
+        },
+        {
+          "name": "sockets",
+          "type": "number"
+        },
+        {
+          "name": "cpus",
+          "type": "number"
+        }
+      ],
+      "option": "smp-opts"
+    },
+    {
+      "parameters": [
+        {
+          "name": "maxmem",
+          "type": "size"
+        },
+        {
+          "name": "slots",
+          "type": "number"
+        },
+        {
+          "name": "size",
+          "type": "size"
+        }
+      ],
+      "option": "memory"
+    },
+    {
+      "parameters": [
+        {
+          "name": "dea-key-wrap",
+          "help": "enable/disable DEA key wrapping using the CPACF wrapping key",
+          "type": "boolean"
+        },
+        {
+          "name": "aes-key-wrap",
+          "help": "enable/disable AES key wrapping using the CPACF wrapping key",
+          "type": "boolean"
+        },
+        {
+          "name": "suppress-vmdesc",
+          "help": "Set on to disable self-describing migration",
+          "type": "boolean"
+        },
+        {
+          "name": "iommu",
+          "help": "Set on/off to enable/disable Intel IOMMU (VT-d)",
+          "type": "boolean"
+        },
+        {
+          "name": "firmware",
+          "help": "firmware image",
+          "type": "string"
+        },
+        {
+          "name": "usb",
+          "help": "Set on/off to enable/disable usb",
+          "type": "boolean"
+        },
+        {
+          "name": "mem-merge",
+          "help": "enable/disable memory merge support",
+          "type": "boolean"
+        },
+        {
+          "name": "dump-guest-core",
+          "help": "Include guest memory in  a core dump",
+          "type": "boolean"
+        },
+        {
+          "name": "dt_compatible",
+          "help": "Overrides the \"compatible\" property of the dt root node",
+          "type": "string"
+        },
+        {
+          "name": "phandle_start",
+          "help": "The first phandle ID we may generate dynamically",
+          "type": "number"
+        },
+        {
+          "name": "dumpdtb",
+          "help": "Dump current dtb to a file and quit",
+          "type": "string"
+        },
+        {
+          "name": "dtb",
+          "help": "Linux kernel device tree file",
+          "type": "string"
+        },
+        {
+          "name": "append",
+          "help": "Linux kernel command line",
+          "type": "string"
+        },
+        {
+          "name": "initrd",
+          "help": "Linux initial ramdisk file",
+          "type": "string"
+        },
+        {
+          "name": "kernel",
+          "help": "Linux kernel image file",
+          "type": "string"
+        },
+        {
+          "name": "kvm_shadow_mem",
+          "help": "KVM shadow MMU size",
+          "type": "size"
+        },
+        {
+          "name": "kernel_irqchip",
+          "help": "use KVM in-kernel irqchip",
+          "type": "boolean"
+        },
+        {
+          "name": "accel",
+          "help": "accelerator list",
+          "type": "string"
+        },
+        {
+          "name": "type",
+          "help": "emulated machine",
+          "type": "string"
+        }
+      ],
+      "option": "machine"
+    },
+    {
+      "parameters": [
+        {
+          "name": "romfile",
+          "type": "string"
+        },
+        {
+          "name": "bootindex",
+          "type": "number"
+        }
+      ],
+      "option": "option-rom"
+    },
+    {
+      "parameters": [
+        {
+          "name": "file",
+          "type": "string"
+        },
+        {
+          "name": "events",
+          "type": "string"
+        },
+        {
+          "name": "enable",
+          "type": "string"
+        }
+      ],
+      "option": "trace"
+    },
+    {
+      "parameters": [
+        {
+          "name": "pretty",
+          "type": "boolean"
+        },
+        {
+          "name": "default",
+          "type": "boolean"
+        },
+        {
+          "name": "chardev",
+          "type": "string"
+        },
+        {
+          "name": "mode",
+          "type": "string"
+        }
+      ],
+      "option": "mon"
+    },
+    {
+      "parameters": [
+        {
+          "name": "value",
+          "type": "string"
+        },
+        {
+          "name": "property",
+          "type": "string"
+        },
+        {
+          "name": "driver",
+          "type": "string"
+        }
+      ],
+      "option": "global"
+    },
+    {
+      "parameters": [
+        {
+          "name": "driftfix",
+          "type": "string"
+        },
+        {
+          "name": "clock",
+          "type": "string"
+        },
+        {
+          "name": "base",
+          "type": "string"
+        }
+      ],
+      "option": "rtc"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "net"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "netdev"
+    },
+    {
+      "parameters": [
+      ],
+      "option": "device"
+    },
+    {
+      "parameters": [
+        {
+          "name": "logappend",
+          "type": "boolean"
+        },
+        {
+          "name": "logfile",
+          "type": "string"
+        },
+        {
+          "name": "append",
+          "type": "boolean"
+        },
+        {
+          "name": "chardev",
+          "type": "string"
+        },
+        {
+          "name": "size",
+          "type": "size"
+        },
+        {
+          "name": "debug",
+          "type": "number"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "signal",
+          "type": "boolean"
+        },
+        {
+          "name": "mux",
+          "type": "boolean"
+        },
+        {
+          "name": "rows",
+          "type": "number"
+        },
+        {
+          "name": "cols",
+          "type": "number"
+        },
+        {
+          "name": "height",
+          "type": "number"
+        },
+        {
+          "name": "width",
+          "type": "number"
+        },
+        {
+          "name": "tls-creds",
+          "type": "string"
+        },
+        {
+          "name": "telnet",
+          "type": "boolean"
+        },
+        {
+          "name": "reconnect",
+          "type": "number"
+        },
+        {
+          "name": "delay",
+          "type": "boolean"
+        },
+        {
+          "name": "server",
+          "type": "boolean"
+        },
+        {
+          "name": "wait",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv6",
+          "type": "boolean"
+        },
+        {
+          "name": "ipv4",
+          "type": "boolean"
+        },
+        {
+          "name": "to",
+          "type": "number"
+        },
+        {
+          "name": "localport",
+          "type": "string"
+        },
+        {
+          "name": "localaddr",
+          "type": "string"
+        },
+        {
+          "name": "port",
+          "type": "string"
+        },
+        {
+          "name": "host",
+          "type": "string"
+        },
+        {
+          "name": "path",
+          "type": "string"
+        },
+        {
+          "name": "backend",
+          "type": "string"
+        }
+      ],
+      "option": "chardev"
+    },
+    {
+      "parameters": [
+        {
+          "name": "copy-on-read",
+          "help": "copy read data from backing file into image file",
+          "type": "boolean"
+        },
+        {
+          "name": "werror",
+          "help": "write error action",
+          "type": "string"
+        },
+        {
+          "name": "rerror",
+          "help": "read error action",
+          "type": "string"
+        },
+        {
+          "name": "read-only",
+          "help": "open drive file as read-only",
+          "type": "boolean"
+        },
+        {
+          "name": "file",
+          "help": "file name",
+          "type": "string"
+        },
+        {
+          "name": "serial",
+          "help": "disk serial number",
+          "type": "string"
+        },
+        {
+          "name": "addr",
+          "help": "pci address (virtio only)",
+          "type": "string"
+        },
+        {
+          "name": "boot",
+          "help": "(deprecated, ignored)",
+          "type": "boolean"
+        },
+        {
+          "name": "trans",
+          "help": "chs translation (auto, lba, none)",
+          "type": "string"
+        },
+        {
+          "name": "secs",
+          "help": "number of sectors (ide disk geometry)",
+          "type": "number"
+        },
+        {
+          "name": "heads",
+          "help": "number of heads (ide disk geometry)",
+          "type": "number"
+        },
+        {
+          "name": "cyls",
+          "help": "number of cylinders (ide disk geometry)",
+          "type": "number"
+        },
+        {
+          "name": "if",
+          "help": "interface (ide, scsi, sd, mtd, floppy, pflash, virtio)",
+          "type": "string"
+        },
+        {
+          "name": "media",
+          "help": "media type (disk, cdrom)",
+          "type": "string"
+        },
+        {
+          "name": "index",
+          "help": "index number",
+          "type": "number"
+        },
+        {
+          "name": "unit",
+          "help": "unit number (i.e. lun for scsi)",
+          "type": "number"
+        },
+        {
+          "name": "bus",
+          "help": "bus number",
+          "type": "number"
+        },
+        {
+          "name": "stats-account-failed",
+          "help": "whether to account for failed I/O operations in the statistics",
+          "type": "boolean"
+        },
+        {
+          "name": "stats-account-invalid",
+          "help": "whether to account for invalid I/O operations in the statistics",
+          "type": "boolean"
+        },
+        {
+          "name": "detect-zeroes",
+          "help": "try to optimize zero writes (off, on, unmap)",
+          "type": "string"
+        },
+        {
+          "name": "throttling.group",
+          "help": "name of the block throttling group",
+          "type": "string"
+        },
+        {
+          "name": "throttling.iops-size",
+          "help": "when limiting by iops max size of an I/O in bytes",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-write-max-length",
+          "help": "length of the bps-write-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-read-max-length",
+          "help": "length of the bps-read-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-total-max-length",
+          "help": "length of the bps-total-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-write-max-length",
+          "help": "length of the iops-write-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-read-max-length",
+          "help": "length of the iops-read-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-total-max-length",
+          "help": "length of the iops-total-max burst period, in seconds",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-write-max",
+          "help": "total bytes write burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-read-max",
+          "help": "total bytes read burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-total-max",
+          "help": "total bytes burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-write-max",
+          "help": "I/O operations write burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-read-max",
+          "help": "I/O operations read burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-total-max",
+          "help": "I/O operations burst",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-write",
+          "help": "limit write bytes per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-read",
+          "help": "limit read bytes per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.bps-total",
+          "help": "limit total bytes per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-write",
+          "help": "limit write operations per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-read",
+          "help": "limit read operations per second",
+          "type": "number"
+        },
+        {
+          "name": "throttling.iops-total",
+          "help": "limit total I/O operations per second",
+          "type": "number"
+        },
+        {
+          "name": "werror",
+          "help": "write error action",
+          "type": "string"
+        },
+        {
+          "name": "format",
+          "help": "disk format (raw, qcow2, ...)",
+          "type": "string"
+        },
+        {
+          "name": "cache.writeback",
+          "help": "Enable writeback mode",
+          "type": "boolean"
+        },
+        {
+          "name": "aio",
+          "help": "host AIO implementation (threads, native)",
+          "type": "string"
+        },
+        {
+          "name": "discard",
+          "help": "discard operation (ignore/off, unmap/on)",
+          "type": "string"
+        },
+        {
+          "name": "snapshot",
+          "help": "enable/disable snapshot mode",
+          "type": "boolean"
+        }
+      ],
+      "option": "drive"
+    }
+  ],
+  "id": "libvirt-45"
+}
+
+{
+  "return": [
+    {
+      "state": false,
+      "capability": "xbzrle"
+    },
+    {
+      "state": false,
+      "capability": "rdma-pin-all"
+    },
+    {
+      "state": false,
+      "capability": "auto-converge"
+    },
+    {
+      "state": false,
+      "capability": "zero-blocks"
+    },
+    {
+      "state": false,
+      "capability": "compress"
+    },
+    {
+      "state": false,
+      "capability": "events"
+    },
+    {
+      "state": false,
+      "capability": "postcopy-ram"
+    }
+  ],
+  "id": "libvirt-46"
+}
+
+{
+  "return": [
+    {
+      "emulated": false,
+      "version": 3,
+      "kernel": false
+    },
+    {
+      "emulated": true,
+      "version": 2,
+      "kernel": true
+    }
+  ],
+  "id": "libvirt-47"
+}

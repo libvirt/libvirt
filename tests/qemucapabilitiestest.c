@@ -170,6 +170,9 @@ mymain(void)
     DO_TEST("x86_64", "caps_2.4.0-1");
     DO_TEST("x86_64", "caps_2.5.0-1");
     DO_TEST("x86_64", "caps_2.6.0-1");
+    DO_TEST("aarch64", "caps_2.6.0-1");
+    DO_TEST("aarch64", "caps_2.6.0-2");
+    DO_TEST("ppc64le", "caps_2.6.0-1");
 
     /*
      * Run "tests/qemucapsprobe /path/to/qemu/binary >foo.replies"
