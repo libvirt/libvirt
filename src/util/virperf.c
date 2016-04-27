@@ -120,7 +120,7 @@ virPerfCmtEnable(virPerfEventPtr event,
 
     if (virFileReadAll("/sys/devices/intel_cqm/type",
                        10, &buf) < 0)
-        goto cleanup;
+        goto error;
 
     if ((tmp = strchr(buf, '\n')))
         *tmp = '\0';
@@ -128,18 +128,18 @@ virPerfCmtEnable(virPerfEventPtr event,
     if (virStrToLong_ui(buf, NULL, 10, &event_type) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to get cmt event type"));
-        goto cleanup;
+        goto error;
     }
     VIR_FREE(buf);
 
     if (virFileReadAll("/sys/devices/intel_cqm/events/llc_occupancy.scale",
                        10, &buf) < 0)
-        goto cleanup;
+        goto error;
 
     if (virStrToLong_ui(buf, NULL, 10, &scale) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to get cmt scaling factor"));
-        goto cleanup;
+        goto error;
     }
 
     event->efields.cmt.scale = scale;
@@ -157,19 +157,19 @@ virPerfCmtEnable(virPerfEventPtr event,
         virReportSystemError(errno,
                              _("Unable to open perf type=%d for pid=%d"),
                              event_type, pid);
-        goto cleanup;
+        goto error;
     }
 
     if (ioctl(event->fd, PERF_EVENT_IOC_ENABLE) < 0) {
         virReportSystemError(errno, "%s",
                              _("Unable to enable perf event for CMT"));
-        goto cleanup;
+        goto error;
     }
 
     event->enabled = true;
     return 0;
 
- cleanup:
+ error:
     VIR_FORCE_CLOSE(event->fd);
     VIR_FREE(buf);
     return -1;
