@@ -742,6 +742,73 @@ cmdClientInfo(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(timestr);
     return ret;
 }
+
+/* -------------------------
+ * Command client-disconnect
+ * -------------------------
+ */
+
+static const vshCmdInfo info_client_disconnect[] = {
+    {.name = "help",
+     .data = N_("force disconnect a client from the given server")
+    },
+    {.name = "desc",
+     .data = N_("Force close a specific client's connection to the given "
+                "server.")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_client_disconnect[] = {
+    {.name = "server",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("server which the client is currently connected to"),
+    },
+    {.name = "client",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("client which to disconnect, specified by ID"),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdClientDisconnect(vshControl *ctl, const vshCmd *cmd)
+{
+    bool ret = false;
+    const char *srvname = NULL;
+    unsigned long long id = 0;
+    virAdmServerPtr srv = NULL;
+    virAdmClientPtr client = NULL;
+    vshAdmControlPtr priv = ctl->privData;
+
+    if (vshCommandOptStringReq(ctl, cmd, "server", &srvname) < 0)
+        return false;
+
+    if (vshCommandOptULongLongWrap(ctl, cmd, "client", &id) < 0)
+        return false;
+
+    if (!(srv = virAdmConnectLookupServer(priv->conn, srvname, 0)))
+        goto cleanup;
+
+    if (!(client = virAdmServerLookupClient(srv, id, 0)))
+        goto cleanup;
+
+    if (virAdmClientClose(client, 0) < 0) {
+        vshError(ctl, _("Failed to disconnect client '%llu' from server %s"),
+                 id, virAdmServerGetName(srv));
+        goto cleanup;
+    }
+
+    vshPrint(ctl, _("Client '%llu' disconnected"), id);
+    ret = true;
+ cleanup:
+    virAdmClientFree(client);
+    virAdmServerFree(srv);
+    return ret;
+}
+
 static void *
 vshAdmConnectionHandler(vshControl *ctl)
 {
@@ -1067,6 +1134,12 @@ static const vshCmdDef managementCmds[] = {
      .handler = cmdSrvThreadpoolSet,
      .opts = opts_srv_threadpool_set,
      .info = info_srv_threadpool_set,
+     .flags = 0
+    },
+    {.name = "client-disconnect",
+     .handler = cmdClientDisconnect,
+     .opts = opts_client_disconnect,
+     .info = info_client_disconnect,
      .flags = 0
     },
     {.name = NULL}

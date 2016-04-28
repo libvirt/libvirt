@@ -270,6 +270,11 @@ B<Examples>
  readonly       : no
  sock_addr      : 127.0.0.1:57060
 
+=item B<client-disconnect> I<server> I<client>
+
+Close a connection originating from I<client>. The I<server> argument
+specifies the name of the server I<client> is currently connected to.
+
 =back
 
 =head1 ENVIRONMENT
