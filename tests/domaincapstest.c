@@ -103,7 +103,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
     virQEMUCapsPtr qemuCaps = NULL;
     virDomainCapsLoaderPtr loader = &domCaps->os.loader;
 
-    if (virAsprintf(&path, "%s/qemucapabilitiesdata/%s.%s.caps",
+    if (virAsprintf(&path, "%s/qemucapabilitiesdata/%s.%s.xml",
                     abs_srcdir, name, virArchToString(arch)) < 0 ||
         !(qemuCaps = qemuTestParseCapabilities(path)))
         goto cleanup;

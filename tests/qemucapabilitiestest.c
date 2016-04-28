@@ -100,7 +100,7 @@ testQemuCaps(const void *opaque)
 
     if (virAsprintf(&repliesFile, "%s/qemucapabilitiesdata/%s.%s.replies",
                     abs_srcdir, data->base, data->archName) < 0 ||
-        virAsprintf(&capsFile, "%s/qemucapabilitiesdata/%s.%s.caps",
+        virAsprintf(&capsFile, "%s/qemucapabilitiesdata/%s.%s.xml",
                     abs_srcdir, data->base, data->archName) < 0)
         goto cleanup;
 
