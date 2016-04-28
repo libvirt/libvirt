@@ -4386,26 +4386,6 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
             if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics, true) < 0)
                 goto cleanup;
         }
-
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
-            graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-            if (graphics->nListens == 0) {
-                const char *listenAddr
-                    = graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ?
-                    cfg->vncListen : cfg->spiceListen;
-
-                if (virDomainGraphicsListenAppendAddress(graphics,
-                                                         listenAddr) < 0)
-                    goto cleanup;
-
-                graphics->listens[0].fromConfig = true;
-            } else if (graphics->nListens > 1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("QEMU does not support multiple listen "
-                                 "addresses for one graphics device."));
-                goto cleanup;
-            }
-        }
     }
 
     ret = 0;
@@ -4630,6 +4610,8 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
                          bool snapshot,
                          unsigned int flags)
 {
+    size_t i;
+
     if (!(flags & VIR_QEMU_PROCESS_START_PRETEND)) {
         if (vm->def->virtType == VIR_DOMAIN_VIRT_KVM) {
             VIR_DEBUG("Checking for KVM availability");
@@ -4659,6 +4641,28 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
     VIR_DEBUG("Checking for any possible (non-fatal) issues");
 
     qemuProcessStartWarnShmem(vm);
+
+    for (i = 0; i < vm->def->ngraphics; i++) {
+        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
+
+        switch (graphics->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+            if (graphics->nListens > 1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("QEMU does not support multiple listens for "
+                                 "one graphics device."));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+            break;
+        }
+    }
 
     return 0;
 }
@@ -5086,6 +5090,7 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     size_t i;
     char *nodeset = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virCapsPtr caps;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
@@ -5138,6 +5143,36 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
         goto cleanup;
 
+    /* Fill in run-time values for graphics devices. */
+    for (i = 0; i < vm->def->ngraphics; i++) {
+        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
+        char *listenAddr = NULL;
+
+        switch (graphics->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+            listenAddr = cfg->vncListen;
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+            listenAddr = cfg->spiceListen;
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+            break;
+        }
+
+        if (graphics->nListens == 0 && listenAddr) {
+            if (virDomainGraphicsListenAppendAddress(graphics,
+                                                     listenAddr) < 0)
+                goto cleanup;
+
+            graphics->listens[0].fromConfig = true;
+        }
+    }
+
     /* "volume" type disk's source must be translated before
      * cgroup and security setting.
      */
@@ -5170,6 +5205,7 @@ qemuProcessPrepareDomain(virConnectPtr conn,
  cleanup:
     VIR_FREE(nodeset);
     virObjectUnref(caps);
+    virObjectUnref(cfg);
     return ret;
 }
 
