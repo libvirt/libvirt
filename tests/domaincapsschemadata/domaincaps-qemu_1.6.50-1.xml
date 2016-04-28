@@ -3,6 +3,7 @@
   <domain>kvm</domain>
   <machine>pc-1.2</machine>
   <arch>x86_64</arch>
+  <vcpu max='255'/>
   <os supported='yes'>
     <loader supported='yes'>
       <value>/usr/share/AAVMF/AAVMF_CODE.fd</value>
