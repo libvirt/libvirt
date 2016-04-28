@@ -634,7 +634,15 @@ if test "$with_init_script" = check; then
     if test "$cross_compiling" = yes; then
         with_init_script=none
     fi
+    if type systemctl >/dev/null 2>&1; then
+        if test "$with_init_script" = check; then
+            with_init_script=systemd
+        fi
+    fi
     if test -f /etc/redhat-release; then
+        if test "$with_init_script" = systemd; then
+            with_init_script=systemd+redhat
+        fi
         if test "$with_init_script" = check; then
             with_init_script=redhat
         fi
