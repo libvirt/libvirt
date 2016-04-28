@@ -3940,6 +3940,12 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
         return false;
     }
 
+    /* checks for fields stored in disk->src */
+    /* unfortunately 'readonly' and 'shared' can't be converted to tristate
+     * values thus we need to ignore the check if the new value is 'false' */
+    CHECK_EQ(src->readonly, "readonly", true);
+    CHECK_EQ(src->shared, "shared", true);
+
 #undef CHECK_EQ
 
     return true;
