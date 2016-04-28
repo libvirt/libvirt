@@ -86,23 +86,23 @@ testQemuFeedMonitor(char *replies,
 }
 
 static int
-testQemuCapsCompare(virQEMUCapsPtr capsProvided,
-                    virQEMUCapsPtr capsComputed)
+testQemuCapsCompare(virQEMUCapsPtr capsExpected,
+                    virQEMUCapsPtr capsActual)
 {
     int ret = 0;
     size_t i;
 
     for (i = 0; i < QEMU_CAPS_LAST; i++) {
-        if (virQEMUCapsGet(capsProvided, i) &&
-            !virQEMUCapsGet(capsComputed, i)) {
-            fprintf(stderr, "Caps mismatch: capsComputed is missing %s\n",
+        if (virQEMUCapsGet(capsExpected, i) &&
+            !virQEMUCapsGet(capsActual, i)) {
+            fprintf(stderr, "Expected caps flag not set: %s\n",
                     virQEMUCapsTypeToString(i));
             ret = -1;
         }
 
-        if (virQEMUCapsGet(capsComputed, i) &&
-            !virQEMUCapsGet(capsProvided, i)) {
-            fprintf(stderr, "Caps mismatch: capsProvided is missing %s\n",
+        if (!virQEMUCapsGet(capsExpected, i) &&
+            virQEMUCapsGet(capsActual, i)) {
+            fprintf(stderr, "Unexpected caps flag set: %s\n",
                     virQEMUCapsTypeToString(i));
             ret = -1;
         }
@@ -119,7 +119,8 @@ testQemuCaps(const void *opaque)
     char *repliesFile = NULL, *capsFile = NULL;
     char *replies = NULL;
     qemuMonitorTestPtr mon = NULL;
-    virQEMUCapsPtr capsProvided = NULL, capsComputed = NULL;
+    virQEMUCapsPtr capsExpected = NULL;
+    virQEMUCapsPtr capsActual = NULL;
 
     if (virAsprintf(&repliesFile, "%s/qemucapabilitiesdata/%s.%s.replies",
                     abs_srcdir, data->base, data->archName) < 0 ||
@@ -133,17 +134,17 @@ testQemuCaps(const void *opaque)
     if (!(mon = testQemuFeedMonitor(replies, data->xmlopt)))
         goto cleanup;
 
-    if (!(capsProvided = qemuTestParseCapabilities(capsFile)))
+    if (!(capsExpected = qemuTestParseCapabilities(capsFile)))
         goto cleanup;
 
-    if (!(capsComputed = virQEMUCapsNew()))
+    if (!(capsActual = virQEMUCapsNew()))
         goto cleanup;
 
-    if (virQEMUCapsInitQMPMonitor(capsComputed,
+    if (virQEMUCapsInitQMPMonitor(capsActual,
                                   qemuMonitorTestGetMonitor(mon)) < 0)
         goto cleanup;
 
-    if (testQemuCapsCompare(capsProvided, capsComputed) < 0)
+    if (testQemuCapsCompare(capsExpected, capsActual) < 0)
         goto cleanup;
 
     ret = 0;
@@ -152,8 +153,8 @@ testQemuCaps(const void *opaque)
     VIR_FREE(capsFile);
     VIR_FREE(replies);
     qemuMonitorTestFree(mon);
-    virObjectUnref(capsProvided);
-    virObjectUnref(capsComputed);
+    virObjectUnref(capsExpected);
+    virObjectUnref(capsActual);
     return ret;
 }
 
