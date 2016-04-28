@@ -272,6 +272,26 @@ mymain(void)
                  "/usr/bin/qemu-system-x86_64", NULL,
                  VIR_ARCH_X86_64, VIR_DOMAIN_VIRT_KVM);
 
+    DO_TEST_QEMU("qemu_2.6.0-1", "caps_2.6.0-1",
+                 "/usr/bin/qemu-system-x86_64", NULL,
+                 VIR_ARCH_X86_64, VIR_DOMAIN_VIRT_KVM);
+
+    DO_TEST_QEMU("qemu_2.6.0-2", "caps_2.6.0-1",
+                 "/usr/bin/qemu-system-aarch64", NULL,
+                 VIR_ARCH_AARCH64, VIR_DOMAIN_VIRT_KVM);
+
+    DO_TEST_QEMU("qemu_2.6.0-3", "caps_2.6.0-1",
+                 "/usr/bin/qemu-system-aarch64", "virt",
+                 VIR_ARCH_AARCH64, VIR_DOMAIN_VIRT_KVM);
+
+    DO_TEST_QEMU("qemu_2.6.0-4", "caps_2.6.0-2",
+                 "/usr/bin/qemu-system-aarch64", "virt",
+                 VIR_ARCH_AARCH64, VIR_DOMAIN_VIRT_KVM);
+
+    DO_TEST_QEMU("qemu_2.6.0-5", "caps_2.6.0-1",
+                 "/usr/bin/qemu-system-ppc64", NULL,
+                 VIR_ARCH_PPC64LE, VIR_DOMAIN_VIRT_KVM);
+
 #endif /* WITH_QEMU */
 
     return ret;
