@@ -96,6 +96,7 @@ static int
 fillQemuCaps(virDomainCapsPtr domCaps,
              const char *name,
              virArch arch,
+             const char *machine,
              virQEMUDriverConfigPtr cfg)
 {
     int ret = -1;
@@ -106,6 +107,16 @@ fillQemuCaps(virDomainCapsPtr domCaps,
     if (virAsprintf(&path, "%s/qemucapabilitiesdata/%s.%s.xml",
                     abs_srcdir, name, virArchToString(arch)) < 0 ||
         !(qemuCaps = qemuTestParseCapabilities(path)))
+        goto cleanup;
+
+    if (machine &&
+        VIR_STRDUP(domCaps->machine,
+                   virQEMUCapsGetCanonicalMachine(qemuCaps, machine)) < 0)
+        goto cleanup;
+
+    if (!domCaps->machine &&
+        VIR_STRDUP(domCaps->machine,
+                   virQEMUCapsGetDefaultMachine(qemuCaps)) < 0)
         goto cleanup;
 
     if (virQEMUCapsFillDomainCaps(domCaps, qemuCaps,
@@ -187,7 +198,7 @@ test_virDomainCapsFormat(const void *opaque)
 
     case CAPS_QEMU:
 #if WITH_QEMU
-        if (fillQemuCaps(domCaps, data->capsName, data->arch,
+        if (fillQemuCaps(domCaps, data->capsName, data->arch, data->machine,
                          data->capsOpaque) < 0)
             goto cleanup;
 #endif
@@ -258,8 +269,8 @@ mymain(void)
 #if WITH_QEMU
 
     DO_TEST_QEMU("qemu_1.6.50-1", "caps_1.6.50-1",
-                 "/usr/bin/qemu-system-x86_64", "pc-1.2", VIR_ARCH_X86_64,
-                 VIR_DOMAIN_VIRT_KVM);
+                 "/usr/bin/qemu-system-x86_64", NULL,
+                 VIR_ARCH_X86_64, VIR_DOMAIN_VIRT_KVM);
 
 #endif /* WITH_QEMU */
 
