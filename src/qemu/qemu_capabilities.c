@@ -2781,7 +2781,7 @@ int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
  *   ...
  * </qemuCaps>
  */
-static int
+int
 virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
                      time_t *qemuctime, time_t *selfctime,
                      unsigned long *selfvers)
@@ -3019,7 +3019,7 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
 }
 
 
-static char *
+char *
 virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
                        time_t selfCTime,
                        unsigned long selfVersion)
