@@ -1644,23 +1644,21 @@ qemuDomainAssignAddresses(virDomainDefPtr def,
                           virQEMUCapsPtr qemuCaps,
                           virDomainObjPtr obj)
 {
-    int rc;
+    if (qemuDomainAssignVirtioSerialAddresses(def, obj) < 0)
+        return -1;
 
-    rc = qemuDomainAssignVirtioSerialAddresses(def, obj);
-    if (rc)
-        return rc;
+    if (qemuDomainAssignSpaprVIOAddresses(def, qemuCaps) < 0)
+        return -1;
 
-    rc = qemuDomainAssignSpaprVIOAddresses(def, qemuCaps);
-    if (rc)
-        return rc;
-
-    rc = qemuDomainAssignS390Addresses(def, qemuCaps, obj);
-    if (rc)
-        return rc;
+    if (qemuDomainAssignS390Addresses(def, qemuCaps, obj) < 0)
+        return -1;
 
     qemuDomainAssignARMVirtioMMIOAddresses(def, qemuCaps);
 
-    return qemuDomainAssignPCIAddresses(def, qemuCaps, obj);
+    if (qemuDomainAssignPCIAddresses(def, qemuCaps, obj) < 0)
+        return -1;
+
+    return 0;
 }
 
 
