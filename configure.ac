@@ -630,6 +630,19 @@ AC_ARG_WITH([init-script],
 init_redhat=no
 init_systemd=no
 init_upstart=no
+if test "$with_init_script" = check; then
+    if test "$cross_compiling" = yes; then
+        with_init_script=none
+    fi
+    if test -f /etc/redhat-release; then
+        if test "$with_init_script" = check; then
+            with_init_script=redhat
+        fi
+    fi
+    if test "$with_init_script" = check; then
+        with_init_script=none
+    fi
+fi
 case "$with_init_script" in
     systemd+redhat)
        init_redhat=yes
@@ -645,12 +658,6 @@ case "$with_init_script" in
        init_redhat=yes
        ;;
     none)
-       ;;
-    check)
-       if test "$cross_compiling" != yes && test -f /etc/redhat-release; then
-          init_redhat=yes
-          with_init_script=redhat
-       fi
        ;;
     *)
        AC_MSG_ERROR([Unknown initscript flavour $with_init_script])
