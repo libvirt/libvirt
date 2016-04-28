@@ -398,7 +398,7 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
 }
 
 
-static int
+static void
 qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
                                        virQEMUCapsPtr qemuCaps)
 {
@@ -411,7 +411,6 @@ qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
         qemuDomainPrimeVirtioDeviceAddresses(
             def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO);
     }
-    return 0;
 }
 
 
@@ -1659,9 +1658,7 @@ qemuDomainAssignAddresses(virDomainDefPtr def,
     if (rc)
         return rc;
 
-    rc = qemuDomainAssignARMVirtioMMIOAddresses(def, qemuCaps);
-    if (rc)
-        return rc;
+    qemuDomainAssignARMVirtioMMIOAddresses(def, qemuCaps);
 
     return qemuDomainAssignPCIAddresses(def, qemuCaps, obj);
 }
