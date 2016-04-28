@@ -77,6 +77,7 @@
   <flag name='ide-drive.wwn'/>
   <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
+  <flag name='reboot-timeout'/>
   <flag name='dump-guest-core'/>
   <flag name='seamless-migration'/>
   <flag name='block-commit'/>
@@ -118,7 +119,6 @@
   <flag name='kvm-pit-lost-tick-policy'/>
   <flag name='boot-strict'/>
   <flag name='pvpanic'/>
-  <flag name='reboot-timeout'/>
   <flag name='spiceport'/>
   <flag name='usb-kbd'/>
   <flag name='host-pci-multidomain'/>

@@ -79,6 +79,7 @@
   <flag name='ide-drive.wwn'/>
   <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
+  <flag name='reboot-timeout'/>
   <flag name='dump-guest-core'/>
   <flag name='seamless-migration'/>
   <flag name='block-commit'/>
@@ -127,7 +128,6 @@
   <flag name='kvm-pit-lost-tick-policy'/>
   <flag name='boot-strict'/>
   <flag name='pvpanic'/>
-  <flag name='reboot-timeout'/>
   <flag name='spice-file-xfer-disable'/>
   <flag name='spiceport'/>
   <flag name='usb-kbd'/>
@@ -136,8 +136,8 @@
   <flag name='active-commit'/>
   <flag name='change-backing-file'/>
   <flag name='memory-backend-ram'/>
-  <flag name='memory-backend-file'/>
   <flag name='numa'/>
+  <flag name='memory-backend-file'/>
   <flag name='usb-audio'/>
   <flag name='rtc-reset-reinjection'/>
   <flag name='splash-timeout'/>
@@ -152,9 +152,9 @@
   <flag name='pc-dimm'/>
   <flag name='machine-vmport-opt'/>
   <flag name='pci-serial'/>
-  <flag name='ioh3420'/>
   <flag name='vhost-user-multiqueue'/>
   <flag name='migration-event'/>
+  <flag name='ioh3420'/>
   <flag name='x3130-upstream'/>
   <flag name='xio3130-downstream'/>
   <flag name='rtl8139'/>
