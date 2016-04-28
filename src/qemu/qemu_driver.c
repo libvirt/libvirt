@@ -7682,6 +7682,7 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
     virDomainDiskDefPtr disk = dev->data.disk;
     virDomainDiskDefPtr orig_disk = NULL;
     int startupPolicy;
+    int snapshot;
     int ret = -1;
 
     if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
@@ -7700,6 +7701,7 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
     }
 
     startupPolicy = orig_disk->startupPolicy;
+    snapshot = orig_disk->snapshot;
 
     switch ((virDomainDiskDevice) disk->device) {
     case VIR_DOMAIN_DISK_DEVICE_CDROM:
@@ -7708,6 +7710,7 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
             goto cleanup;
 
         orig_disk->startupPolicy = dev->data.disk->startupPolicy;
+        orig_disk->snapshot = dev->data.disk->snapshot;
 
         if (qemuDomainDiskSourceDiffers(conn, disk, orig_disk)) {
             /* Add the new disk src into shared disk hash table */
@@ -7742,6 +7745,7 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
     return ret;
 
  rollback:
+    orig_disk->snapshot = snapshot;
     orig_disk->startupPolicy = startupPolicy;
     goto cleanup;
 }
