@@ -3828,7 +3828,7 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
     if (STRNEQ(disk->dst, orig_disk->dst)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("cannot modify field '%s' of the disk"),
-                       "bus");
+                       "target");
         return false;
     }
     CHECK_EQ(tray_status, "tray", true);
