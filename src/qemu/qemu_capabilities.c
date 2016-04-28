@@ -3019,23 +3019,24 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
 }
 
 
-static int
-virQEMUCapsSaveCache(virQEMUCapsPtr qemuCaps, const char *filename)
+static char *
+virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
+                       time_t selfCTime,
+                       unsigned long selfVersion)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *xml = NULL;
-    int ret = -1;
+    char *ret = NULL;
     size_t i;
 
     virBufferAddLit(&buf, "<qemuCaps>\n");
     virBufferAdjustIndent(&buf, 2);
 
     virBufferAsprintf(&buf, "<qemuctime>%llu</qemuctime>\n",
-                      (long long)qemuCaps->ctime);
+                      (long long) qemuCaps->ctime);
     virBufferAsprintf(&buf, "<selfctime>%llu</selfctime>\n",
-                      (long long)virGetSelfLastChanged());
+                      (long long) selfCTime);
     virBufferAsprintf(&buf, "<selfvers>%lu</selfvers>\n",
-                      (unsigned long)LIBVIR_VERSION_NUMBER);
+                      (unsigned long) selfVersion);
 
     if (qemuCaps->usedQMP)
         virBufferAddLit(&buf, "<usedQMP/>\n");
@@ -3094,10 +3095,22 @@ virQEMUCapsSaveCache(virQEMUCapsPtr qemuCaps, const char *filename)
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</qemuCaps>\n");
 
-    if (virBufferCheckError(&buf) < 0)
-        goto cleanup;
+    if (virBufferCheckError(&buf) == 0)
+        ret = virBufferContentAndReset(&buf);
 
-    xml = virBufferContentAndReset(&buf);
+    return ret;
+}
+
+
+static int
+virQEMUCapsSaveCache(virQEMUCapsPtr qemuCaps, const char *filename)
+{
+    char *xml = NULL;
+    int ret = -1;
+
+    xml = virQEMUCapsFormatCache(qemuCaps,
+                                 virGetSelfLastChanged(),
+                                 LIBVIR_VERSION_NUMBER);
 
     if (virFileWriteStr(filename, xml, 0600) < 0) {
         virReportSystemError(errno,
