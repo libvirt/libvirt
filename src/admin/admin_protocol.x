@@ -160,6 +160,11 @@ struct admin_client_get_info_ret { /* insert@1 */
     admin_typed_param params<ADMIN_CLIENT_INFO_PARAMETERS_MAX>;
 };
 
+struct admin_client_close_args {
+    admin_nonnull_client clnt;
+    unsigned int flags;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -230,5 +235,10 @@ enum admin_procedure {
     /**
      * @generate: none
      */
-    ADMIN_PROC_CLIENT_GET_INFO = 10
+    ADMIN_PROC_CLIENT_GET_INFO = 10,
+
+    /**
+     * @generate: both
+     */
+    ADMIN_PROC_CLIENT_CLOSE = 11
 };

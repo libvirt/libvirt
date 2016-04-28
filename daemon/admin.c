@@ -94,6 +94,12 @@ make_nonnull_server(admin_nonnull_server *srv_dst,
     ignore_value(VIR_STRDUP_QUIET(srv_dst->name, virNetServerGetName(srv_src)));
 }
 
+static virNetServerClientPtr
+get_nonnull_client(virNetServerPtr srv, admin_nonnull_client clnt)
+{
+    return virNetServerGetClient(srv, clnt.id);
+}
+
 static void
 make_nonnull_client(admin_nonnull_client *clt_dst,
                     virNetServerClientPtr clt_src)

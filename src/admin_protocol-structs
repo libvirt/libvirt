@@ -105,6 +105,10 @@ struct admin_client_get_info_ret {
                 admin_typed_param * params_val;
         } params;
 };
+struct admin_client_close_args {
+        admin_nonnull_client       clnt;
+        u_int                      flags;
+};
 enum admin_procedure {
         ADMIN_PROC_CONNECT_OPEN = 1,
         ADMIN_PROC_CONNECT_CLOSE = 2,
@@ -116,4 +120,5 @@ enum admin_procedure {
         ADMIN_PROC_SERVER_LIST_CLIENTS = 8,
         ADMIN_PROC_SERVER_LOOKUP_CLIENT = 9,
         ADMIN_PROC_CLIENT_GET_INFO = 10,
+        ADMIN_PROC_CLIENT_CLOSE = 11,
 };

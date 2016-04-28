@@ -349,6 +349,8 @@ int virAdmClientGetInfo(virAdmClientPtr client,
                         int *nparams,
                         unsigned int flags);
 
+int virAdmClientClose(virAdmClientPtr client, unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif

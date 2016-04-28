@@ -59,4 +59,7 @@ int adminClientGetInfo(virNetServerClientPtr client,
                        int *nparams,
                        unsigned int flags);
 
+int adminClientClose(virNetServerClientPtr client,
+                     unsigned int flags);
+
 #endif /* __LIBVIRTD_ADMIN_SERVER_H__ */

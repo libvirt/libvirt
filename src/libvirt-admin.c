@@ -971,3 +971,32 @@ virAdmClientGetInfo(virAdmClientPtr client,
     virDispatchError(NULL);
     return -1;
 }
+
+/**
+ * virAdmClientClose:
+ * @client: a valid client object reference
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Close @client's connection to daemon forcefully.
+ *
+ * Returns 0 if the daemon's connection with @client was closed successfully
+ * or -1 in case of an error.
+ */
+int virAdmClientClose(virAdmClientPtr client,
+                      unsigned int flags)
+{
+    int ret = -1;
+
+    VIR_DEBUG("client=%p, flags=%x", client, flags);
+    virResetLastError();
+
+    virCheckAdmClientGoto(client, error);
+
+    if ((ret = remoteAdminClientClose(client, flags)) < 0)
+        goto error;
+
+    return ret;
+ error:
+    virDispatchError(NULL);
+    return -1;
+}

@@ -302,3 +302,12 @@ adminClientGetInfo(virNetServerClientPtr client,
     virObjectUnref(identity);
     return ret;
 }
+
+int adminClientClose(virNetServerClientPtr client,
+                     unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    virNetServerClientClose(client);
+    return 0;
+}
