@@ -48,6 +48,18 @@
 
 VIR_LOG_INIT("libxl.libxl_migration");
 
+typedef struct _libxlMigrationCookie libxlMigrationCookie;
+typedef libxlMigrationCookie *libxlMigrationCookiePtr;
+struct _libxlMigrationCookie {
+    /* Host properties */
+    char *srcHostname;
+    uint32_t xenMigStreamVer;
+
+    /* Guest properties */
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    char *name;
+};
+
 typedef struct _libxlMigrationDstArgs {
     virObject parent;
 
@@ -55,6 +67,7 @@ typedef struct _libxlMigrationDstArgs {
     virConnectPtr conn;
     virDomainObjPtr vm;
     unsigned int flags;
+    libxlMigrationCookiePtr migcookie;
 
     /* for freeing listen sockets */
     virNetSocketPtr *socks;
@@ -63,11 +76,166 @@ typedef struct _libxlMigrationDstArgs {
 
 static virClassPtr libxlMigrationDstArgsClass;
 
+
+static void
+libxlMigrationCookieFree(libxlMigrationCookiePtr mig)
+{
+    if (!mig)
+        return;
+
+    VIR_FREE(mig->srcHostname);
+    VIR_FREE(mig->name);
+    VIR_FREE(mig);
+}
+
+static libxlMigrationCookiePtr
+libxlMigrationCookieNew(virDomainObjPtr dom)
+{
+    libxlMigrationCookiePtr mig = NULL;
+
+    if (VIR_ALLOC(mig) < 0)
+        goto error;
+
+    if (VIR_STRDUP(mig->name, dom->def->name) < 0)
+        goto error;
+
+    memcpy(mig->uuid, dom->def->uuid, VIR_UUID_BUFLEN);
+
+    if (!(mig->srcHostname = virGetHostname()))
+        goto error;
+
+    mig->xenMigStreamVer = LIBXL_SAVE_VERSION;
+
+    return mig;
+
+ error:
+    libxlMigrationCookieFree(mig);
+    return NULL;
+}
+
+
+static int
+libxlMigrationBakeCookie(libxlMigrationCookiePtr mig,
+                         char **cookieout,
+                         int *cookieoutlen)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (!cookieout || !cookieoutlen)
+        return 0;
+
+    *cookieoutlen = 0;
+    virUUIDFormat(mig->uuid, uuidstr);
+
+    virBufferAddLit(&buf, "<libxl-migration>\n");
+    virBufferAdjustIndent(&buf, 2);
+    virBufferEscapeString(&buf, "<name>%s</name>\n", mig->name);
+    virBufferAsprintf(&buf, "<uuid>%s</uuid>\n", uuidstr);
+    virBufferEscapeString(&buf, "<hostname>%s</hostname>\n", mig->srcHostname);
+    virBufferAsprintf(&buf, "<migration-stream-version>%u</migration-stream-version>\n", mig->xenMigStreamVer);
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAddLit(&buf, "</libxl-migration>\n");
+
+    if (virBufferCheckError(&buf) < 0)
+        return -1;
+
+    *cookieout = virBufferContentAndReset(&buf);
+    *cookieoutlen = strlen(*cookieout) + 1;
+
+    VIR_DEBUG("cookielen=%d cookie=%s", *cookieoutlen, *cookieout);
+
+    return 0;
+}
+
+static int
+libxlMigrationEatCookie(const char *cookiein,
+                        int cookieinlen,
+                        libxlMigrationCookiePtr *migout)
+{
+    libxlMigrationCookiePtr mig = NULL;
+    xmlDocPtr doc = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    char *uuidstr = NULL;
+    int ret = -1;
+
+    /*
+     * Assume a legacy (V1) migration stream if request came from a
+     * source host without cookie support, and hence no way to
+     * specify a stream version.
+     */
+    if (!cookiein || !cookieinlen) {
+        if (VIR_ALLOC(mig) < 0)
+            return -1;
+
+        mig->xenMigStreamVer = 1;
+        *migout = mig;
+        return 0;
+    }
+
+    if (cookiein[cookieinlen-1] != '\0') {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Migration cookie was not NULL terminated"));
+        return -1;
+    }
+
+    VIR_DEBUG("cookielen=%d cookie='%s'", cookieinlen, NULLSTR(cookiein));
+
+    if (VIR_ALLOC(mig) < 0)
+        return -1;
+
+    if (!(doc = virXMLParseStringCtxt(cookiein,
+                                      _("(libxl_migration_cookie)"),
+                                      &ctxt)))
+        goto error;
+
+    /* Extract domain name */
+    if (!(mig->name = virXPathString("string(./name[1])", ctxt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("missing name element in migration data"));
+        goto error;
+    }
+
+    /* Extract domain uuid */
+    uuidstr = virXPathString("string(./uuid[1])", ctxt);
+    if (!uuidstr) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("missing uuid element in migration data"));
+        goto error;
+    }
+    if (virUUIDParse(uuidstr, mig->uuid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("malformed uuid element"));
+        goto error;
+    }
+
+    if (virXPathUInt("string(./migration-stream-version[1])",
+                     ctxt, &mig->xenMigStreamVer) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing Xen migration stream version"));
+        goto error;
+    }
+
+    *migout = mig;
+    ret = 0;
+    goto cleanup;
+
+ error:
+    libxlMigrationCookieFree(mig);
+
+ cleanup:
+    VIR_FREE(uuidstr);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(doc);
+    return ret;
+}
+
 static void
 libxlMigrationDstArgsDispose(void *obj)
 {
     libxlMigrationDstArgs *args = obj;
 
+    libxlMigrationCookieFree(args->migcookie);
     VIR_FREE(args->socks);
 }
 
@@ -106,7 +274,8 @@ libxlDoMigrateReceive(void *opaque)
      * Always start the domain paused.  If needed, unpause in the
      * finish phase, after transfer of the domain is complete.
      */
-    ret = libxlDomainStartRestore(driver, vm, true, recvfd, LIBXL_SAVE_VERSION);
+    ret = libxlDomainStartRestore(driver, vm, true, recvfd,
+                                  args->migcookie->xenMigStreamVer);
 
     if (ret < 0 && !vm->persistent)
         remove_dom = true;
@@ -227,16 +396,25 @@ libxlDomainMigrationIsAllowed(virDomainDefPtr def)
 char *
 libxlDomainMigrationBegin(virConnectPtr conn,
                           virDomainObjPtr vm,
-                          const char *xmlin)
+                          const char *xmlin,
+                          char **cookieout,
+                          int *cookieoutlen)
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    libxlMigrationCookiePtr mig;
     virDomainDefPtr tmpdef = NULL;
     virDomainDefPtr def;
     char *xml = NULL;
 
     if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
         goto cleanup;
+
+    if (!(mig = libxlMigrationCookieNew(vm)))
+        goto endjob;
+
+    if (libxlMigrationBakeCookie(mig, cookieout, cookieoutlen) < 0)
+        goto endjob;
 
     if (xmlin) {
         if (!(tmpdef = virDomainDefParseString(xmlin, cfg->caps,
@@ -308,9 +486,12 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
                             virDomainDefPtr *def,
                             const char *uri_in,
                             char **uri_out,
+                            const char *cookiein,
+                            int cookieinlen,
                             unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dconn->privateData;
+    libxlMigrationCookiePtr mig = NULL;
     virDomainObjPtr vm = NULL;
     char *hostname = NULL;
     unsigned short port;
@@ -322,6 +503,16 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     libxlMigrationDstArgs *args = NULL;
     size_t i;
     int ret = -1;
+
+    if (libxlMigrationEatCookie(cookiein, cookieinlen, &mig) < 0)
+        goto error;
+
+    if (mig->xenMigStreamVer > LIBXL_SAVE_VERSION) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("Xen migration stream version '%d' is not supported on this host"),
+                       mig->xenMigStreamVer);
+        goto error;
+    }
 
     if (!(vm = virDomainObjListAdd(driver->domains, *def,
                                    driver->xmlopt,
@@ -409,6 +600,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     args->flags = flags;
     args->socks = socks;
     args->nsocks = nsocks;
+    args->migcookie = mig;
 
     for (i = 0; i < nsocks; i++) {
         if (virNetSocketSetBlocking(socks[i], true) < 0)
@@ -479,11 +671,14 @@ libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
     char *uri_out = NULL;
     char *dom_xml = NULL;
     unsigned long destflags;
+    char *cookieout = NULL;
+    int cookieoutlen;
     bool cancelled = true;
     virErrorPtr orig_err = NULL;
     int ret = -1;
 
-    dom_xml = libxlDomainMigrationBegin(sconn, vm, xmlin);
+    dom_xml = libxlDomainMigrationBegin(sconn, vm, xmlin,
+                                        &cookieout, &cookieoutlen);
     if (!dom_xml)
         goto cleanup;
 
@@ -509,7 +704,7 @@ libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
     VIR_DEBUG("Prepare3");
     virObjectUnlock(vm);
     ret = dconn->driver->domainMigratePrepare3Params
-        (dconn, params, nparams, NULL, 0, NULL, NULL, &uri_out, destflags);
+        (dconn, params, nparams, cookieout, cookieoutlen, NULL, NULL, &uri_out, destflags);
     virObjectLock(vm);
 
     if (ret == -1)
@@ -580,6 +775,7 @@ libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
         virFreeError(orig_err);
     }
 
+    VIR_FREE(cookieout);
     VIR_FREE(dom_xml);
     VIR_FREE(uri_out);
     virTypedParamsFree(params, nparams);

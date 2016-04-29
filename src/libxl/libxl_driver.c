@@ -5151,8 +5151,8 @@ static char *
 libxlDomainMigrateBegin3Params(virDomainPtr domain,
                                virTypedParameterPtr params,
                                int nparams,
-                               char **cookieout ATTRIBUTE_UNUSED,
-                               int *cookieoutlen ATTRIBUTE_UNUSED,
+                               char **cookieout,
+                               int *cookieoutlen,
                                unsigned int flags)
 {
     const char *xmlin = NULL;
@@ -5193,15 +5193,16 @@ libxlDomainMigrateBegin3Params(virDomainPtr domain,
         return NULL;
     }
 
-    return libxlDomainMigrationBegin(domain->conn, vm, xmlin);
+    return libxlDomainMigrationBegin(domain->conn, vm, xmlin,
+                                     cookieout, cookieoutlen);
 }
 
 static int
 libxlDomainMigratePrepare3Params(virConnectPtr dconn,
                                  virTypedParameterPtr params,
                                  int nparams,
-                                 const char *cookiein ATTRIBUTE_UNUSED,
-                                 int cookieinlen ATTRIBUTE_UNUSED,
+                                 const char *cookiein,
+                                 int cookieinlen,
                                  char **cookieout ATTRIBUTE_UNUSED,
                                  int *cookieoutlen ATTRIBUTE_UNUSED,
                                  char **uri_out,
@@ -5240,7 +5241,8 @@ libxlDomainMigratePrepare3Params(virConnectPtr dconn,
     if (virDomainMigratePrepare3ParamsEnsureACL(dconn, def) < 0)
         goto error;
 
-    if (libxlDomainMigrationPrepare(dconn, &def, uri_in, uri_out, flags) < 0)
+    if (libxlDomainMigrationPrepare(dconn, &def, uri_in, uri_out,
+                                    cookiein, cookieinlen, flags) < 0)
         goto error;
 
     return 0;

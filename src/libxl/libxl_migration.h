@@ -42,7 +42,9 @@
 char *
 libxlDomainMigrationBegin(virConnectPtr conn,
                           virDomainObjPtr vm,
-                          const char *xmlin);
+                          const char *xmlin,
+                          char **cookieout,
+                          int *cookieoutlen);
 
 virDomainDefPtr
 libxlDomainMigrationPrepareDef(libxlDriverPrivatePtr driver,
@@ -54,6 +56,8 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
                             virDomainDefPtr *def,
                             const char *uri_in,
                             char **uri_out,
+                            const char *cookiein,
+                            int cookieinlen,
                             unsigned int flags);
 
 int
