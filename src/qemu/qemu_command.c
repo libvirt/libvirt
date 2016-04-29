@@ -9001,6 +9001,25 @@ qemuBuildPanicCommandLine(virCommandPtr cmd,
 
     for (i = 0; i < def->npanics; i++) {
         switch ((virDomainPanicModel) def->panics[i]->model) {
+        case VIR_DOMAIN_PANIC_MODEL_S390:
+            /* For s390 guests, the hardware provides the same
+             * functionality as the pvpanic device. The address
+             * cannot be configured by the user */
+            if (!ARCH_IS_S390(def->os.arch)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("only S390 guests support "
+                                 "panic device of model 's390'"));
+                return -1;
+            }
+            if (def->panics[i]->info.type !=
+                VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("setting the panic device address is not "
+                                 "supported for model 's390'"));
+                return -1;
+            }
+            break;
+
         case VIR_DOMAIN_PANIC_MODEL_HYPERV:
             /* Panic with model 'hyperv' is not a device, it should
              * be configured in cpu commandline. The address

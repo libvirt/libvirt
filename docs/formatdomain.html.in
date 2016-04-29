@@ -6355,9 +6355,15 @@ qemu-kvm -net nic,model=? /dev/null
       <span class="since">Since 1.2.1, QEMU and KVM only</span>
     </p>
     <p>
-      For pSeries guests, this feature is always enabled since it's
-      implemented by the guest firmware, thus libvirt automatically
-      adds the <code>panic</code> element to the domain XML.
+      This feature is always enabled for:
+    </p>
+    <ul>
+      <li>pSeries guests, since it's implemented by the guest firmware</li>
+      <li>S390 guests, since it's an integral part of the S390 architecture</li>
+    </ul>
+    <p>
+      For the guest types listed above, libvirt automatically adds a
+      <code>panic</code> element to the domain XML.
     </p>
     <p>
       Example: usage of panic configuration
@@ -6385,6 +6391,8 @@ qemu-kvm -net nic,model=? /dev/null
           <li>'pseries' &mdash; default and valid only for pSeries guests.</li>
           <li>'hyperv' &mdash; for Hyper-V crash CPU feature.
             <span class="since">Since 1.3.0, QEMU and KVM only</span></li>
+          <li>'s390' &mdash; default for S390 guests.
+            <span class="since">Since 1.3.5</span></li>
         </ul>
       </dd>
     <dt><code>address</code></dt>
@@ -6392,7 +6400,7 @@ qemu-kvm -net nic,model=? /dev/null
       <p>
         address of panic. The default ioport is 0x505. Most users
         don't need to specify an address, and doing so is forbidden
-        altogether for pseries and hyperv models.
+        altogether for s390, pseries and hyperv models.
       </p>
     </dd>
   </dl>

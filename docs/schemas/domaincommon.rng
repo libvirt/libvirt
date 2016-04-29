@@ -5518,6 +5518,7 @@
             <value>isa</value>
             <value>pseries</value>
             <value>hyperv</value>
+            <value>s390</value>
           </choice>
         </attribute>
       </optional>
