@@ -156,6 +156,7 @@ virDomainAuditVcpu;
 virDomainCapsCPUModelsAdd;
 virDomainCapsCPUModelsAddSteal;
 virDomainCapsCPUModelsCopy;
+virDomainCapsCPUModelsFilter;
 virDomainCapsCPUModelsNew;
 virDomainCapsEnumClear;
 virDomainCapsEnumSet;

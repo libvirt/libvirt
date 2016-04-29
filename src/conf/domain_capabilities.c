@@ -169,6 +169,33 @@ virDomainCapsCPUModelsCopy(virDomainCapsCPUModelsPtr old)
 }
 
 
+virDomainCapsCPUModelsPtr
+virDomainCapsCPUModelsFilter(virDomainCapsCPUModelsPtr old,
+                             const char **models)
+{
+    virDomainCapsCPUModelsPtr cpuModels;
+    size_t i;
+
+    if (!(cpuModels = virDomainCapsCPUModelsNew(0)))
+        return NULL;
+
+    for (i = 0; i < old->nmodels; i++) {
+        if (models && !virStringArrayHasString(models, old->models[i].name))
+            continue;
+
+        if (virDomainCapsCPUModelsAdd(cpuModels,
+                                      old->models[i].name, -1) < 0)
+            goto error;
+    }
+
+    return cpuModels;
+
+ error:
+    virObjectUnref(cpuModels);
+    return NULL;
+}
+
+
 int
 virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
                                char **name)

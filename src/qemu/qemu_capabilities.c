@@ -4288,6 +4288,8 @@ virQEMUCapsFillDomainCPUCaps(virCapsPtr caps,
                              virQEMUCapsPtr qemuCaps,
                              virDomainCapsPtr domCaps)
 {
+    virDomainCapsCPUModelsPtr filtered = NULL;
+    char **models = NULL;
 
     if (domCaps->virttype == VIR_DOMAIN_VIRT_KVM &&
         virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch))
@@ -4297,7 +4299,13 @@ virQEMUCapsFillDomainCPUCaps(virCapsPtr caps,
         domCaps->cpu.hostModel = virQEMUCapsGuestIsNative(caps->host.arch,
                                                           qemuCaps->arch);
 
-    domCaps->cpu.custom = virObjectRef(qemuCaps->cpuDefinitions);
+    if (qemuCaps->cpuDefinitions &&
+        cpuGetModels(domCaps->arch, &models) >= 0) {
+        filtered = virDomainCapsCPUModelsFilter(qemuCaps->cpuDefinitions,
+                                                (const char **) models);
+        virStringFreeList(models);
+    }
+    domCaps->cpu.custom = filtered;
 
     return 0;
 }

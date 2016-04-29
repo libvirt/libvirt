@@ -156,6 +156,8 @@ virDomainCapsPtr virDomainCapsNew(const char *path,
 
 virDomainCapsCPUModelsPtr virDomainCapsCPUModelsNew(size_t nmodels);
 virDomainCapsCPUModelsPtr virDomainCapsCPUModelsCopy(virDomainCapsCPUModelsPtr old);
+virDomainCapsCPUModelsPtr virDomainCapsCPUModelsFilter(virDomainCapsCPUModelsPtr old,
+                                                       const char **models);
 int virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
                                    char **name);
 int virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
