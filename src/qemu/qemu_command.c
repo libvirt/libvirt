@@ -9044,7 +9044,7 @@ qemuBuildPanicCommandLine(virCommandPtr cmd,
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PANIC)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("the QEMU binary does not support the "
-                                 "panic device"));
+                                 "ISA panic device"));
                 return -1;
             }
 
