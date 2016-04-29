@@ -871,10 +871,11 @@ if test "$with_libxl" != "no" ; then
     fi
 fi
 
-# Until there is a need to use enhancements of libxl APIs such as
-# libxl_domain_create_restore and libxl_set_vcpuaffinity, stick with
-# the APIs as defined in libxl API version 4.2.0.
-LIBXL_CFLAGS="$LIBXL_CFLAGS -DLIBXL_API_VERSION=0x040200"
+# LIBXL_API_VERSION 4.4.0 introduced a new parameter to
+# libxl_domain_create_restore for specifying restore parameters.
+# The libxl driver will make use of this new parameter for specifying
+# the Xen migration stream version.
+LIBXL_CFLAGS="$LIBXL_CFLAGS -DLIBXL_API_VERSION=0x040400"
 LIBS="$old_LIBS"
 CFLAGS="$old_CFLAGS"
 

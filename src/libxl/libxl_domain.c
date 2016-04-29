@@ -1028,6 +1028,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     libxlDriverConfigPtr cfg;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     libxl_asyncprogress_how aop_console_how;
+    libxl_domain_restore_params params;
 
     libxl_domain_config_init(&d_config);
 
@@ -1115,8 +1116,11 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
         ret = libxl_domain_create_new(cfg->ctx, &d_config,
                                       &domid, NULL, &aop_console_how);
     } else {
+        libxl_domain_restore_params_init(&params);
         ret = libxl_domain_create_restore(cfg->ctx, &d_config, &domid,
-                                          restore_fd, NULL, &aop_console_how);
+                                          restore_fd, &params, NULL,
+                                          &aop_console_how);
+        libxl_domain_restore_params_dispose(&params);
     }
     virObjectLock(vm);
 
