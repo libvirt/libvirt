@@ -514,7 +514,6 @@ typedef struct _virDomainNetIpDef virDomainNetIpDef;
 typedef virDomainNetIpDef *virDomainNetIpDefPtr;
 struct _virDomainNetIpDef {
     virSocketAddr address;       /* ipv4 or ipv6 address */
-    virSocketAddr peer;    /* ipv4 or ipv6 address of peer */
     unsigned int prefix; /* number of 1 bits in the net mask */
 };
 

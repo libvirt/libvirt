@@ -2410,11 +2410,6 @@
               <ref name="ipPrefix"/>
             </attribute>
           </optional>
-          <optional>
-            <attribute name="peer">
-              <ref name="ipAddr"/>
-            </attribute>
-          </optional>
           <empty/>
         </element>
       </zeroOrMore>
