@@ -2039,6 +2039,13 @@ storageVolCreateXMLFrom(virStoragePoolPtr obj,
     if (newvol->target.capacity < origvol->target.capacity)
         newvol->target.capacity = origvol->target.capacity;
 
+    /* If the allocation was not provided in the XML, then use capacity
+     * as it's specifically documented "If omitted when creating a volume,
+     * the  volume will be fully allocated at time of creation.". This
+     * is especially important for logical volume creation. */
+    if (!newvol->target.has_allocation)
+        newvol->target.allocation = newvol->target.capacity;
+
     if (!backend->buildVolFrom) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        "%s", _("storage pool does not support"

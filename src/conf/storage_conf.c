@@ -1370,6 +1370,7 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         unit = virXPathString("string(./allocation/@unit)", ctxt);
         if (virStorageSize(unit, allocation, &ret->target.allocation) < 0)
             goto error;
+        ret->target.has_allocation = true;
     } else {
         ret->target.allocation = ret->target.capacity;
     }
