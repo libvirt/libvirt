@@ -2966,7 +2966,7 @@
         0.9.9.</span>
       </dd>
       <dt><code>ccw</code></dt>
-      <dd>s390 guests with a <code>machine</code> value of
+      <dd>S390 guests with a <code>machine</code> value of
         s390-ccw-virtio use the native CCW bus for I/O devices.
         CCW bus addresses have the following additional attributes:
         <code>cssid</code> (a hex value between 0 and 0xfe, inclusive),
@@ -3028,7 +3028,7 @@
       <span class="since">since 0.10.0</span>, if the USB bus needs to be
       explicitly disabled for the guest, <code>model='none'</code> may be
       used.  <span class="since">Since 1.0.5</span>, no default USB controller
-      will be built on s390.  The PowerPC64 "spapr-vio" addresses do not have an
+      will be built on S390.  The PowerPC64 "spapr-vio" addresses do not have an
       associated controller.
     </p>
 
@@ -5539,9 +5539,9 @@ qemu-kvm -net nic,model=? /dev/null
       <li>Only the first <code>console</code> element may use a <code>targetType</code>
         of <code>serial</code>. Secondary consoles must all be paravirtualized.
       </li>
-      <li>On s390, the <code>console</code> element may use a
+      <li>On S390, the <code>console</code> element may use a
         <code>targetType</code> of <code>sclp</code> or <code>sclplm</code>
-        (line mode). SCLP is the native console type for s390. There's no
+        (line mode). SCLP is the native console type for S390. There's no
         controller associated to SCLP consoles.
         <span class="since">Since 1.0.2</span>
       </li>
@@ -5573,7 +5573,7 @@ qemu-kvm -net nic,model=? /dev/null
 <pre>
   ...
   &lt;devices&gt;
-    &lt;!-- KVM s390 sclp console --&gt;
+    &lt;!-- KVM S390 sclp console --&gt;
     &lt;console type='pty'&gt;
       &lt;source path='/dev/pts/1'/&gt;
       &lt;target type='sclp' port='0'/&gt;
