@@ -699,6 +699,12 @@ mymain(void)
 
     DO_TEST_FULL("s390-defaultconsole", WHEN_ACTIVE,
                  QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST_FULL("s390-panic", WHEN_BOTH,
+                 QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST_FULL("s390-panic-missing", WHEN_BOTH,
+                 QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST_FULL("s390-panic-no-address", WHEN_BOTH,
+                 QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
 
     DO_TEST("pcihole64");
     DO_TEST("pcihole64-gib");
