@@ -2158,9 +2158,9 @@
 
               Using a LUN from an iSCSI source pool provides the same
               features as a <code>disk</code> configured using
-              <code>type</code> 'block' or 'network and <code>device</code>
+              <code>type</code> 'block' or 'network' and <code>device</code>
               of 'lun' with respect to how the LUN is presented to and
-              may used by the guest.
+              may be used by the guest.
 
               <span class="since">Since 1.0.5</span>
               </p>
