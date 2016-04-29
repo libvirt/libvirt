@@ -2887,7 +2887,11 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
                 usb = def->controllers[i];
             }
         }
-        if (usb && usb->idx == 0 && usb->model == -1) {
+        /*  The original purpose of the check was the migration compatibility
+         *  with libvirt <= 0.9.4. Limitation doesn't apply to other archs
+         *  and can cause problems on PPC64.
+         */
+        if (ARCH_IS_X86(def->os.arch) && usb && usb->idx == 0 && usb->model == -1) {
             VIR_DEBUG("Removing default USB controller from domain '%s'"
                       " for migration compatibility", def->name);
             toremove++;
