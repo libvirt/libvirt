@@ -18369,13 +18369,22 @@ qemuNodeSuspendForDuration(virConnectPtr conn,
 
 static int
 qemuConnectGetCPUModelNames(virConnectPtr conn,
-                            const char *arch,
+                            const char *archName,
                             char ***models,
                             unsigned int flags)
 {
+    virArch arch;
+
     virCheckFlags(0, -1);
     if (virConnectGetCPUModelNamesEnsureACL(conn) < 0)
         return -1;
+
+    if (!(arch = virArchFromString(archName))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("cannot find architecture %s"),
+                       archName);
+        return -1;
+    }
 
     return cpuGetModels(arch, models);
 }

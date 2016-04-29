@@ -747,7 +747,7 @@ cpuModelIsAllowed(const char *model,
 /**
  * cpuGetModels:
  *
- * @archName: CPU architecture string
+ * @arch: CPU architecture
  * @models: where to store the NULL-terminated list of supported models
  *
  * Fetches all CPU models supported by libvirt on @archName.
@@ -755,26 +755,17 @@ cpuModelIsAllowed(const char *model,
  * Returns number of supported CPU models or -1 on error.
  */
 int
-cpuGetModels(const char *archName, char ***models)
+cpuGetModels(virArch arch, char ***models)
 {
     struct cpuArchDriver *driver;
-    virArch arch;
 
-    VIR_DEBUG("arch=%s", archName);
-
-    arch = virArchFromString(archName);
-    if (arch == VIR_ARCH_NONE) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("cannot find architecture %s"),
-                       archName);
-        return -1;
-    }
+    VIR_DEBUG("arch=%s", virArchToString(arch));
 
     driver = cpuGetSubDriver(arch);
     if (driver == NULL) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("cannot find a driver for the architecture %s"),
-                       archName);
+                       virArchToString(arch));
         return -1;
     }
 

@@ -678,7 +678,7 @@ typedef char *
 
 typedef int
 (*virDrvConnectGetCPUModelNames)(virConnectPtr conn,
-                                 const char *args,
+                                 const char *archName,
                                  char ***models,
                                  unsigned int flags);
 

@@ -199,8 +199,7 @@ cpuModelIsAllowed(const char *model,
     ATTRIBUTE_NONNULL(1);
 
 int
-cpuGetModels(const char *arch, char ***models)
-    ATTRIBUTE_NONNULL(1);
+cpuGetModels(virArch arch, char ***models);
 
 /* cpuDataFormat and cpuDataParse are implemented for unit tests only and
  * have no real-life usage
