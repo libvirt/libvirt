@@ -10729,10 +10729,17 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
     xmlNodePtr save = ctxt->node;
     virDomainGraphicsListenDefPtr address = NULL;
     char *listenAddr = NULL;
+    char *socketPath = NULL;
     int nListens;
     int ret = -1;
 
     ctxt->node = node;
+
+    if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+        (socketPath = virXMLPropString(node, "socket"))) {
+        ret = 0;
+        goto error;
+    }
 
     /* parse the <listen> subelements for graphics types that support it */
     nListens = virXPathNodeSet("./listen", ctxt, &listenNodes);
@@ -10786,6 +10793,7 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
  error:
     VIR_FREE(listenNodes);
     VIR_FREE(listenAddr);
+    VIR_FREE(socketPath);
     ctxt->node = save;
     return ret;
 }

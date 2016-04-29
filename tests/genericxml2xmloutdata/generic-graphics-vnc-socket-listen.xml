@@ -19,9 +19,7 @@
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <graphics type='vnc' socket='/tmp/QEMUGuest1-vnc.sock'>
-      <listen type='address' address='127.0.0.1'/>
-    </graphics>
+    <graphics type='vnc' socket='/tmp/QEMUGuest1-vnc.sock'/>
     <video>
       <model type='cirrus' vram='16384' heads='1' primary='yes'/>
     </video>
