@@ -202,6 +202,15 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;
 
+        /* skip all retrying if qemu doesn't notify us on tray change */
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_TRAY_MOVED)) {
+            if (rc == 0)
+                break;
+
+            if (rc < 0)
+                goto error;
+        }
+
         if (rc < 0) {
             /* we've already tried, error out */
             if (ejectRetry)

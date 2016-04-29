@@ -174,4 +174,5 @@
     <flag name='qxl.vram64_size_mb'/>
     <flag name='qxl-vga.vram64_size_mb'/>
     <flag name='debug-threads'/>
+    <flag name='device-tray-moved-event'/>
   </qemuCaps>

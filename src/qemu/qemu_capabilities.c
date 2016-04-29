@@ -321,6 +321,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "qxl-vga.vram64_size_mb", /* 215 */
               "chardev-logfile",
               "debug-threads",
+              "device-tray-moved-event",
     );
 
 
@@ -1493,6 +1494,7 @@ struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
     { "DEVICE_DELETED", QEMU_CAPS_DEVICE_DEL_EVENT },
     { "MIGRATION", QEMU_CAPS_MIGRATION_EVENT },
     { "VSERPORT_CHANGE", QEMU_CAPS_VSERPORT_CHANGE },
+    { "DEVICE_TRAY_MOVED", QEMU_CAPS_DEVICE_TRAY_MOVED },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {

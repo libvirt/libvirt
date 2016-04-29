@@ -351,6 +351,7 @@ typedef enum {
     QEMU_CAPS_QXL_VGA_VRAM64, /* -device qxl-vga.vram64_size_mb */
     QEMU_CAPS_CHARDEV_LOGFILE, /* -chardev logfile=xxxx */
     QEMU_CAPS_NAME_DEBUG_THREADS, /* Is -name debug-threads= available */
+    QEMU_CAPS_DEVICE_TRAY_MOVED, /* DEVICE_TRAY_MOVED event */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
