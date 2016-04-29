@@ -411,7 +411,6 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
     bool template_ifname = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *tunpath = "/dev/net/tun";
-    size_t i;
 
     if (net->backend.tap) {
         tunpath = net->backend.tap;
@@ -448,45 +447,6 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
     if (virNetDevSetMAC(net->ifname, &tapmac) < 0)
         goto cleanup;
 
-    for (i = 0; i < net->nips; i++) {
-        virDomainNetIpDefPtr ip = net->ips[i];
-        unsigned int prefix = (ip->prefix > 0) ? ip->prefix :
-            VIR_SOCKET_ADDR_DEFAULT_PREFIX;
-        char *ipStr = virSocketAddrFormat(&ip->address);
-
-        VIR_DEBUG("Adding IP address '%s/%u' to '%s'",
-                  ipStr, ip->prefix, net->ifname);
-
-        if (virNetDevSetIPAddress(net->ifname, &ip->address, &ip->peer, prefix) < 0) {
-            virReportError(VIR_ERR_SYSTEM_ERROR,
-                           _("Failed to set IP address '%s' on %s"),
-                           ipStr, net->ifname);
-            VIR_FREE(ipStr);
-            goto cleanup;
-        }
-        VIR_FREE(ipStr);
-    }
-
-    if (net->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP ||
-        net->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT) {
-        if (virNetDevSetOnline(net->ifname, true) < 0)
-            goto cleanup;
-
-        /* Set the routes */
-        for (i = 0; i < net->nroutes; i++) {
-            virNetworkRouteDefPtr route = net->routes[i];
-
-            if (virNetDevAddRoute(net->ifname,
-                                  virNetworkRouteDefGetAddress(route),
-                                  virNetworkRouteDefGetPrefix(route),
-                                  virNetworkRouteDefGetGateway(route),
-                                  virNetworkRouteDefGetMetric(route)) < 0) {
-                goto cleanup;
-            }
-        }
-    }
-
-
     if (net->script &&
         virNetDevRunEthernetScript(net->ifname, net->script) < 0)
         goto cleanup;
@@ -506,6 +466,7 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
 
  cleanup:
     if (ret < 0) {
+        size_t i;
         for (i = 0; i < tapfdSize && tapfd[i] >= 0; i++)
             VIR_FORCE_CLOSE(tapfd[i]);
         if (template_ifname)
