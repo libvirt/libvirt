@@ -1792,9 +1792,8 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
     case VIR_ARCH_SH4EB:
         addPCIRoot = true;
         break;
+
     case VIR_ARCH_S390:
-        addDefaultUSB = false;
-        break;
     case VIR_ARCH_S390X:
         addDefaultUSB = false;
         break;
