@@ -3726,3 +3726,14 @@ qemuMonitorMigrateStartPostCopy(qemuMonitorPtr mon)
 
     return qemuMonitorJSONMigrateStartPostCopy(mon);
 }
+
+int
+qemuMonitorGetRTCTime(qemuMonitorPtr mon,
+                      struct tm *tm)
+{
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_CHECK_MONITOR_JSON(mon);
+
+    return qemuMonitorJSONGetRTCTime(mon, tm);
+}

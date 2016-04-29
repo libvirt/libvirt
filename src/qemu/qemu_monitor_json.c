@@ -6905,3 +6905,44 @@ qemuMonitorJSONMigrateStartPostCopy(qemuMonitorPtr mon)
     virJSONValueFree(reply);
     return ret;
 }
+
+int
+qemuMonitorJSONGetRTCTime(qemuMonitorPtr mon,
+                          struct tm *tm)
+{
+    int ret = -1;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-get",
+                                           "s:path", "/machine",
+                                           "s:property", "rtc-time",
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    data = virJSONValueObjectGet(reply, "return");
+
+    if (virJSONValueObjectGetNumberInt(data, "tm_year", &tm->tm_year) < 0 ||
+        virJSONValueObjectGetNumberInt(data, "tm_mon", &tm->tm_mon) < 0 ||
+        virJSONValueObjectGetNumberInt(data, "tm_mday", &tm->tm_mday) < 0 ||
+        virJSONValueObjectGetNumberInt(data, "tm_hour", &tm->tm_hour) < 0 ||
+        virJSONValueObjectGetNumberInt(data, "tm_min", &tm->tm_min) < 0 ||
+        virJSONValueObjectGetNumberInt(data, "tm_sec", &tm->tm_sec) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qemu returned malformed time"));
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

@@ -933,4 +933,7 @@ int qemuMonitorMigrateIncoming(qemuMonitorPtr mon,
 
 int qemuMonitorMigrateStartPostCopy(qemuMonitorPtr mon);
 
+int qemuMonitorGetRTCTime(qemuMonitorPtr mon,
+                          struct tm *tm);
+
 #endif /* QEMU_MONITOR_H */
