@@ -2219,7 +2219,7 @@ virStorageBackendPloopRestoreDesc(char *path)
     if (virFileRemove(desc, 0, 0) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("refresh ploop failed:"
-                         " unuble to delete DiskDescriptor.xml"));
+                         " unable to delete DiskDescriptor.xml"));
         goto cleanup;
     }
 

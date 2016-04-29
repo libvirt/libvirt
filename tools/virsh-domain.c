@@ -9798,11 +9798,11 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "comp-mt-threads",
      .type = VSH_OT_INT,
-     .help = N_("number of compession threads for multithread compression")
+     .help = N_("number of compression threads for multithread compression")
     },
     {.name = "comp-mt-dthreads",
      .type = VSH_OT_INT,
-     .help = N_("number of decompession threads for multithread compression")
+     .help = N_("number of decompression threads for multithread compression")
     },
     {.name = "comp-xbzrle-cache",
      .type = VSH_OT_INT,

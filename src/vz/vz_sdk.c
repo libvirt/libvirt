@@ -1342,7 +1342,7 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
 
         if (!(disk = virFindDiskBootIndex(def, device, bootIndex))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Can find boot device of type: %s, index: %d"),
+                           _("Can't find boot device of type: %s, index: %d"),
                            virDomainDiskDeviceTypeToString(device), bootIndex);
             goto cleanup;
         }
@@ -1361,7 +1361,7 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
 
         if (bootIndex >= def->nnets) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Can find network boot device for index: %d"),
+                           _("Can't find network boot device for index: %d"),
                            bootIndex);
             goto cleanup;
         }
