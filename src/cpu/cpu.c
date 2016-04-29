@@ -716,7 +716,7 @@ cpuModelIsAllowed(const char *model,
  * cpuGetModels:
  *
  * @archName: CPU architecture string
- * @models: where to store the list of supported models
+ * @models: where to store the NULL-terminated list of supported models
  *
  * Fetches all CPU models supported by libvirt on @archName.
  *
