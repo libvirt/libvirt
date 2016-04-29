@@ -5555,6 +5555,10 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessUpdateVideoRamSize(driver, vm, asyncJob) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Updating ejectable media status");
+    if (qemuDomainCheckEjectableMedia(driver, vm, asyncJob) < 0)
+        goto cleanup;
+
     if (flags & VIR_QEMU_PROCESS_START_AUTODESTROY &&
         qemuProcessAutoDestroyAdd(driver, vm, conn) < 0)
         goto cleanup;

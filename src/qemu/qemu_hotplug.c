@@ -300,8 +300,14 @@ qemuDomainCheckEjectableMedia(virQEMUDriverPtr driver,
         if (!info)
             goto cleanup;
 
-        if (info->tray_open && virDomainDiskGetSource(disk))
-            ignore_value(virDomainDiskSetSource(disk, NULL));
+        if (info->tray_open) {
+            if (virDomainDiskGetSource(disk))
+                ignore_value(virDomainDiskSetSource(disk, NULL));
+
+            disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
+        } else {
+            disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
+        }
     }
 
     ret = 0;
