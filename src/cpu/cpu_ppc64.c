@@ -886,8 +886,10 @@ ppc64DriverGetModels(char ***models)
             if (VIR_STRDUP(name, model->name) < 0)
                 goto error;
 
-            if (VIR_APPEND_ELEMENT(*models, nmodels, name) < 0)
+            if (VIR_APPEND_ELEMENT(*models, nmodels, name) < 0) {
+                VIR_FREE(name);
                 goto error;
+            }
         } else {
             nmodels++;
         }
