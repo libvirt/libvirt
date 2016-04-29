@@ -180,4 +180,5 @@
     <flag name='secret'/>
     <flag name='pxb'/>
     <flag name='pxb-pcie'/>
+    <flag name='device-tray-moved-event'/>
   </qemuCaps>

@@ -325,6 +325,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "pxb",
 
               "pxb-pcie", /* 220 */
+              "device-tray-moved-event",
     );
 
 
@@ -1498,6 +1499,7 @@ struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
     { "DEVICE_DELETED", QEMU_CAPS_DEVICE_DEL_EVENT },
     { "MIGRATION", QEMU_CAPS_MIGRATION_EVENT },
     { "VSERPORT_CHANGE", QEMU_CAPS_VSERPORT_CHANGE },
+    { "DEVICE_TRAY_MOVED", QEMU_CAPS_DEVICE_TRAY_MOVED },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
