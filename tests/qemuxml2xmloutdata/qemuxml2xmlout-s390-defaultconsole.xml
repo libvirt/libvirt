@@ -20,5 +20,6 @@
       <target type='virtio' port='0'/>
     </console>
     <memballoon model='none'/>
+    <panic model='s390'/>
   </devices>
 </domain>

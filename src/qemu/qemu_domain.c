@@ -1796,6 +1796,7 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
     case VIR_ARCH_S390:
     case VIR_ARCH_S390X:
         addDefaultUSB = false;
+        addPanicDevice = true;
         break;
 
     case VIR_ARCH_SPARC:
@@ -1874,7 +1875,10 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
         size_t j;
         for (j = 0; j < def->npanics; j++) {
             if (def->panics[j]->model == VIR_DOMAIN_PANIC_MODEL_DEFAULT ||
-                def->panics[j]->model == VIR_DOMAIN_PANIC_MODEL_PSERIES)
+                (ARCH_IS_PPC64(def->os.arch) &&
+                     def->panics[j]->model == VIR_DOMAIN_PANIC_MODEL_PSERIES) ||
+                (ARCH_IS_S390(def->os.arch) &&
+                     def->panics[j]->model == VIR_DOMAIN_PANIC_MODEL_S390))
                 break;
         }
 

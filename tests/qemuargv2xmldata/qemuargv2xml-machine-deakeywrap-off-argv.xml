@@ -20,6 +20,7 @@
       <target dev='vda' bus='virtio'/>
     </disk>
     <memballoon model='none'/>
+    <panic model='s390'/>
   </devices>
   <keywrap>
     <cipher name='dea' state='off'/>

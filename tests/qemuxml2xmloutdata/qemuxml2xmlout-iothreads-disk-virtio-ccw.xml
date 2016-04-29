@@ -31,5 +31,6 @@
     <memballoon model='virtio'>
       <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x000a'/>
     </memballoon>
+    <panic model='s390'/>
   </devices>
 </domain>
