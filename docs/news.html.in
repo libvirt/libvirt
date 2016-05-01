@@ -16,6 +16,391 @@
     to gauge progress.
     </p>
 
+   <h3>v1.3.4: May 01 2016</h3>
+    <ul>
+      <li>Features:<br/>
+      Lot of work on documentation (Andrea Bolognani, Cole Robinson),<br/>
+      Add support for migration data compression (ShaoHe Feng, Nikolay Shirokovskiy, Eli Qiao)<br/>
+      </li>
+
+      <li>Documentation:<br/>
+      Fix minor typos in messages (Yuri Chornoivan),<br/>
+      docs: Pass relative paths to apibuild.py (Andrea Bolognani),<br/>
+      man: Fix links (Andrea Bolognani),<br/>
+      man: Fix SYNOPSIS section (Andrea Bolognani),<br/>
+      man: Fix NAME section (Andrea Bolognani),<br/>
+      build: Standardize on .pod -&gt; .x.in -&gt; .x (Andrea Bolognani),<br/>
+      build: Perform post-processing on all man pages (Andrea Bolognani),<br/>
+      build: Build man pages in $(builddir) (Andrea Bolognani),<br/>
+      build: Extract pod from source files (Andrea Bolognani),<br/>
+      build: Ship virt-admin.pod (Andrea Bolognani),<br/>
+      docs: Fix some formatting oddities (Andrea Bolognani),<br/>
+      syntax-check: Enforce &lt;code&gt; inside &lt;dt&gt; elements (Andrea Bolognani),<br/>
+      docs: remove *other* reference to igmp for IPv6 (Laine Stump),<br/>
+      docs: Add bold style for &lt;dt&gt;&lt;code&gt; elements (John Ferlan),<br/>
+      docs: Use &lt;code&gt; inside &lt;dt&gt; for symbols (Andrea Bolognani),<br/>
+      docs: apibuild: Fix for python 2.6 (Peter Krempa),<br/>
+      docs: remove reference to non-existent "igmp-ipv6" protocol (Laine Stump),<br/>
+      docs: domain: Document network &lt;filterref&gt; (Cole Robinson),<br/>
+      docs: Don't leave any documentation behind (Michal Privoznik),<br/>
+      docs: Uninstall libvirt logo too (Michal Privoznik),<br/>
+      man: Clarify virsh vol-clone works within a single pool (Cole Robinson),<br/>
+      docs: Document the new XML elements (Andrea Bolognani),<br/>
+      virDomain{Get,Set}PerfEvents: Tweak documentation (Michal Privoznik),<br/>
+      spec: Only pull in API docs with -devel package (Cole Robinson),<br/>
+      man: virsh: Document lxc-enter-namespace --noseclabel (Cole Robinson),<br/>
+      docs: formatdomain: document versions for video acceleration (Cole Robinson),<br/>
+      docs: domain: document blkiotune {read, write}_{bytes, iops}_sec (Cole Robinson),<br/>
+      docs: rewrite graphics XML documentation (Pavel Hrdina),<br/>
+      docs: Remove unused div.body CSS rule (Andrea Bolognani)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      wireshark: Fix distcheck (Michal Privoznik),<br/>
+      tools: Introduce install-nss targets (Michal Privoznik),<br/>
+      docs: apibuild: Fix VPATH build (Peter Krempa),<br/>
+      build: Fix default network generation on FreeBSD (Andrea Bolognani),<br/>
+      dist: ln(1) is not guaranteed to have a '-f' option (Andrea Bolognani),<br/>
+      build: Use $(LN_S) safely (Andrea Bolognani),<br/>
+      Include sysmacros.h where needed (Martin Kletzander),<br/>
+      ploop: Fix build with gluster (Jiri Denemark),<br/>
+      Fix various shadowed declarations (Martin Kletzander),<br/>
+      build: fix build on RHEL-6 (Pavel Hrdina),<br/>
+      build: add GCC 6.0 -Wlogical-op workaround (Pavel Hrdina),<br/>
+      build: cleanup GCC &lt; 4.6 -Wlogical-op workaround (Pavel Hrdina),<br/>
+      configure: Fix check for --with-login-shell on Windows (Andrea Bolognani),<br/>
+      qemu: fix build without gnutls installed (Roman Bogorodskiy),<br/>
+      nss: properly include syms files to dist (Roman Bogorodskiy),<br/>
+      netdev: Use the correct pointer type for virSocketAddrFormat() (Andrea Bolognani),<br/>
+      configure: Move check for &lt;gnutls/crypto.h&gt; (Andrea Bolognani),<br/>
+      util: move ENODATA redefine to internal.h (Roman Bogorodskiy),<br/>
+      qemu: Explicitly check for gnutls_rnd() (Andrea Bolognani)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      rpc: Don't leak fd via CreateXMLWithFiles (Ben Gray),<br/>
+      vz: fix disk enumeration (Mikhail Feoktistov),<br/>
+      virsh: Fix support for 64 migration options (Nikolay Shirokovskiy),<br/>
+      qemu: Regenerate VNC socket paths (Martin Kletzander),<br/>
+      qemu: Error out if setting vcpu count would lead to invalid config (Peter Krempa),<br/>
+      qemu: conf: Set default logging approach in virQEMUDriverConfigNew (Peter Krempa),<br/>
+      Shorten domain name for automatic coredump (Martin Kletzander),<br/>
+      qemu: Unref cfg in qemuDomainDefPostParse (Martin Kletzander),<br/>
+      conf: Drop restrictions on rng backend path (Cole Robinson),<br/>
+      remote: Don't reject remote polkit if client lacks support (Cole Robinson),<br/>
+      spec: If installing default network, restart libvirtd (Cole Robinson),<br/>
+      schema: Allow space character in disk vendor/product (Cole Robinson),<br/>
+      qemu: fix error log in qemuAssignPCIAddresses() (Laine Stump),<br/>
+      virsh: host: Use bitmap size in bytes rather than bit count (Peter Krempa),<br/>
+      qemu: Fix off-by-one error in block I/O throttle messages (Martin Kletzander),<br/>
+      qemu: Limit maximum block device I/O tune values (Martin Kletzander),<br/>
+      virconf: Handle conf file without ending newline (Cole Robinson),<br/>
+      network: fix DHCPv6 on networks with prefix != 64 (Laine Stump),<br/>
+      virsh: Don't clear old connection if 'connect $uri' fails (Cole Robinson),<br/>
+      libvirt: Fix crash on URI without scheme (Cole Robinson),<br/>
+      virsh: perf: Don't leak domain (Peter Krempa),<br/>
+      virsh: don't override connection URI from argv (Roman Bogorodskiy),<br/>
+      vz: fix config input device check (Nikolay Shirokovskiy),<br/>
+      virt-aa-helper: disallow VNC socket read permissions (Simon Arlott),<br/>
+      Revert "daemon: use socket activation with systemd" (Cole Robinson),<br/>
+      tests: Fix enumeration value (Andrea Bolognani),<br/>
+      vz: fix boot check to use new disk id (Nikolay Shirokovskiy),<br/>
+      vz: fix detach disk to use new disk id (Nikolay Shirokovskiy),<br/>
+      network: prevent duplicate entries in network device pools (Laine Stump),<br/>
+      lxc: explicitly error on interface type=ethernet (Cole Robinson),<br/>
+      tests: Fix syntax in iSCSI auth/secret tests (John Ferlan),<br/>
+      Libvirt: virTypedParamsValidate: Fix detection of multiple parameters (Jason J. Herne),<br/>
+      Resolve a couple of memory leaks (John Ferlan),<br/>
+      tools: Fix memory leak (John Ferlan),<br/>
+      qemu: Fix qemuBuildCommandLine prototype (John Ferlan),<br/>
+      qemu: hotplug: Properly recalculate/reload balloon size after hot(un)plug (Peter Krempa),<br/>
+      storage: mpath: Don't error on target_type=NULL (Cole Robinson),<br/>
+      qemu: command: don't overwrite watchdog dump action (Cole Robinson),<br/>
+      fix build by correcting functions order and src/Makefile.am (Maxim Nestratov),<br/>
+      rpc: daemon: Fix virtlog/virtlock daemon reload (Cole Robinson),<br/>
+      qemuxml2argvtest: do not mock virCommand (Ján Tomko),<br/>
+      vz: fix memory leak (Nikolay Shirokovskiy),<br/>
+      conf: also mark the implicit video as primary (Ján Tomko),<br/>
+      virtlogd: Fix a couple minor memory leaks (Cole Robinson),<br/>
+      qemu: Free priv-&gt;machineName (Martin Kletzander),<br/>
+      qemu: agent: Fix incorrect and weird debug/warning log entries (Peter Krempa),<br/>
+      util: netdev: Don't crash in virNetDevSetIPAddress if @peer is NULL (Peter Krempa),<br/>
+      libxl: libxl_domain_create_restore has an extra argument (Wei Liu),<br/>
+      qemu: perf: Fix crash/memory corruption on failed VM start (Peter Krempa),<br/>
+      qemu: alias: Fix calculation of memory device aliases (Peter Krempa),<br/>
+      qemu: alias: Fix calculation of RNG device aliases (Peter Krempa),<br/>
+      Link libvirt_xenconfig instead of libvirt against libxl (Guido Günther),<br/>
+      libvirt-admin: do not crash on URI without a scheme (Ján Tomko)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      Unify domain name shortening (Martin Kletzander),<br/>
+      spec: Use proper indentation (Andrea Bolognani),<br/>
+      maint: Ignore all intermediate and generated man pages (Andrea Bolognani),<br/>
+      apibuild: Fix method call (Andrea Bolognani),<br/>
+      apibuild: Introduce app class (Andrea Bolognani),<br/>
+      apibuild: Add index.warning() method (Andrea Bolognani),<br/>
+      secret: Change virSecretDef variable names (John Ferlan),<br/>
+      secret: Introduce virSecretObjGetValue and virSecretObjGetValueSize (John Ferlan),<br/>
+      secret: Introduce virSecretObj{Get|Set}Def (John Ferlan),<br/>
+      secret: Introduce virSecretObjSave{Config|Data} (John Ferlan),<br/>
+      secret: Introduce virSecretObjDelete{Config|Data} (John Ferlan),<br/>
+      secret: Move and rename secretLoadAllConfigs (John Ferlan),<br/>
+      secret: Use the hashed virSecretObjList (John Ferlan),<br/>
+      secret: Introduce virSecretObjListGetUUIDs (John Ferlan),<br/>
+      secret: Introduce virSecretObjListExport (John Ferlan),<br/>
+      secret: Introduce virSecretObjListNumOfSecrets (John Ferlan),<br/>
+      secret: Introduce virSecretObjListAdd* and virSecretObjListRemove (John Ferlan),<br/>
+      secret: Introduce virSecretUsageIDForDef (John Ferlan),<br/>
+      secret: Introduce virSecretObjListFindBy{UUID|Usage} support (John Ferlan),<br/>
+      secret: Create virsecretobj.c and virsecretconf.h (John Ferlan),<br/>
+      Makefile: Enable distuninstallcheck again (Michal Privoznik),<br/>
+      qemuProcessCreatePretendCmd: Rework FIPS handling (Michal Privoznik),<br/>
+      build: Always ship virt-login-shell.conf (Andrea Bolognani),<br/>
+      build: Replace variables in man pages (Andrea Bolognani),<br/>
+      build: Ensure intermediate files are cleaned up properly (Andrea Bolognani),<br/>
+      build: Group files (Andrea Bolognani),<br/>
+      build: Never ship man pages (Andrea Bolognani),<br/>
+      tests: consistently source test-lib.sh in scripts (Cole Robinson),<br/>
+      vbox: VIR_WARN if we don't support the API version (Cole Robinson),<br/>
+      tests: remove 'reconnect' and 'statstest' (Cole Robinson),<br/>
+      tests: rename test_conf -&gt; virconftest (Cole Robinson),<br/>
+      tests: consistently name virsh tests with 'virsh-' prefix (Cole Robinson),<br/>
+      tests: build: Remove duplicate libvirtd test list (Cole Robinson),<br/>
+      conf: disk: extract validation of startup policy (Peter Krempa),<br/>
+      conf: disk: Extract checking of removable status (Peter Krempa),<br/>
+      conf: disk: Move validation of disk bus vs disk type (Peter Krempa),<br/>
+      conf: disk: extract sgio/rawio validation (Peter Krempa),<br/>
+      conf: disk: Don't bother setting removable state to 0 by default (Peter Krempa),<br/>
+      conf: disk: Initialize closed device tray state to 0 (Peter Krempa),<br/>
+      conf: disk: Extract disk type and device right away (Peter Krempa),<br/>
+      conf: disk: Remove custom single-use temporary variables (Peter Krempa),<br/>
+      conf: disk: Mark VIR_DOMAIN_DISK_IO_DEFAULT as 0 and simplify parsing (Peter Krempa),<br/>
+      conf: disk: Sanitize parsing of disk format (Peter Krempa),<br/>
+      conf: disk: Avoid temporary variable when parsing driver name (Peter Krempa),<br/>
+      conf: disk: Split out parsing of disk &lt;driver&gt; element (Peter Krempa),<br/>
+      conf: disk: Extract verification of disk config (Peter Krempa),<br/>
+      daemonStreamHandleRead: Rework to follow our coding pattern (Michal Privoznik),<br/>
+      virNet{Client,Server}*Stream: Update comment (Michal Privoznik),<br/>
+      daemon stream: Remove useless empty lines from header file (Michal Privoznik),<br/>
+      daemon stream: Convert @tx in daemonClientStream to bool (Michal Privoznik),<br/>
+      daemon stream: Prefer bool over unsigned int var:1 (Michal Privoznik),<br/>
+      daemonClientStream: Use unsigned int to store stream @serial (Michal Privoznik),<br/>
+      include: common: Fix function formatting (Peter Krempa),<br/>
+      api: Generate docs for libvirt-common.h (Peter Krempa),<br/>
+      apibuild: Allow completely skipping certain macros (Peter Krempa),<br/>
+      include: common: Fix file header for apibuild.py (Peter Krempa),<br/>
+      qemu: process: split out startup XML validation (Cole Robinson),<br/>
+      qemu: process: split out shmem startup warning (Cole Robinson),<br/>
+      tests: virnetdaemontest: Enable testing for no-keepalive-required (Erik Skultety),<br/>
+      tests: virnetdaemon: Replace tabs with spaces (Erik Skultety),<br/>
+      tests: remove virnetservertest data leftovers (Erik Skultety),<br/>
+      virsh: re-fix help printing without connection (Roman Bogorodskiy),<br/>
+      build: Overwrite existing symbolic links (Andrea Bolognani),<br/>
+      build: Add AC_PROG_LN_S to configure (Andrea Bolognani),<br/>
+      build: Always use $(LN_S) and $(MKDIR_P) (Andrea Bolognani),<br/>
+      virsh: perf: Remove unnecessary 'error' label (Peter Krempa),<br/>
+      examples: Try harder to uninstall nwfilter (Michal Privoznik),<br/>
+      nss: Try harder to uninstall (Michal Privoznik),<br/>
+      vz: add default input devices on post parse (Nikolay Shirokovskiy),<br/>
+      storage: drop the plumbing needed for kvm-img/qcow-create (Cole Robinson),<br/>
+      storage: remove support for /usr/bin/kvm-img (Cole Robinson),<br/>
+      storage: remove support for /usr/bin/qcow-create (Cole Robinson),<br/>
+      network: Don't use ERR_NO_SUPPORT for invalid net-update requests (Cole Robinson),<br/>
+      libvirt: Use conventional function names (Cole Robinson),<br/>
+      qemu: Cache GIC capabilities (Andrea Bolognani),<br/>
+      qemu: Fill in GIC capabilities (Andrea Bolognani),<br/>
+      conf: Expose GIC capabilities (Andrea Bolognani),<br/>
+      schema: Validate GIC capabilities (Andrea Bolognani),<br/>
+      qemu: Probe GIC capabilities (Andrea Bolognani),<br/>
+      conf: Get rid of virDomainCapsDevice (Andrea Bolognani),<br/>
+      Explicitly error on uri=qemu://system (Cole Robinson),<br/>
+      vz: handle sourceless cdroms (Mikhail Feoktistov),<br/>
+      vz: cleanup: remove trivial function (Nikolay Shirokovskiy),<br/>
+      vz: introduce vzsdk disk id function (Nikolay Shirokovskiy),<br/>
+      test: enable testing for expected parse errors in network XML (Laine Stump),<br/>
+      qemu: command: drop redundant min_guarantee check (Cole Robinson),<br/>
+      qemu: Remove redundant DomainObjIsActive calls (Cole Robinson),<br/>
+      security: Rename DomainSetDirLabel to DomainSetPathLabel (Martin Kletzander),<br/>
+      virt-admin: Introduce srv-threadpool-info and srv-threadpool-set commands (Erik Skultety),<br/>
+      admin: Introduce virAdmServerSetThreadPoolParameters (Erik Skultety),<br/>
+      admin: Introduce virAdmServerGethreadPoolParameters (Erik Skultety),<br/>
+      admin: Prepare admin protocol for future worker related procedures (Erik Skultety),<br/>
+      util: Add more getters to threadpool parameters (Erik Skultety),<br/>
+      util: Use a mutex when retrieving threadpool data (Erik Skultety),<br/>
+      util: Report system error when virThreadCreateFull fails (Erik Skultety),<br/>
+      util: Refactor thread creation by introducing virThreadPoolExpand (Erik Skultety),<br/>
+      admin: Enable usage of typed parameters (Erik Skultety),<br/>
+      libvirt-host: Move virTypedParam* to libvirt-common (Erik Skultety),<br/>
+      event-test: Enforce domain event sync (Peter Krempa),<br/>
+      event-test: Add VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON (Peter Krempa),<br/>
+      event-test: Add VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED (Peter Krempa),<br/>
+      event-test: Add VIR_DOMAIN_EVENT_ID_JOB_COMPLETED (Peter Krempa),<br/>
+      event-test: Add VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION callback (Peter Krempa),<br/>
+      event-test: Add VIR_DOMAIN_EVENT_ID_BLOCK_JOB and VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2 (Peter Krempa),<br/>
+      event-test: make domain event registration declarative (Peter Krempa),<br/>
+      event-test: warn on unhandled enum values (Peter Krempa),<br/>
+      event-test: make few switch statements future proof (Peter Krempa),<br/>
+      event-test: Use switch instead of if/else if chains for lifecycle event translation (Peter Krempa),<br/>
+      event-test: Use typecasted enum to convert graphics event phase (Peter Krempa),<br/>
+      event-test: Force compiler check in switch for connectClose callback (Peter Krempa),<br/>
+      lib: document fields virConnectDomainEventDiskChangeReason (Peter Krempa),<br/>
+      event-test: Use functions with typecasted switch to convert enums (Peter Krempa),<br/>
+      event-test: touch up coding style (Peter Krempa),<br/>
+      event-test: Remove unnecessary 'usage' function (Peter Krempa),<br/>
+      event-test: Get rid of useless and ambiguous VIR_DEBUG macro (Peter Krempa),<br/>
+      event-test: Remove forward declarations (Peter Krempa),<br/>
+      qemu: migration: new migration param for persistent destination XML (Dmitry Andreev),<br/>
+      qemuMigrationCookieAddPersistent: move it out and change argument type (Dmitry Andreev),<br/>
+      ZFS: Support sparse volumes (Richard Laager),<br/>
+      libxl: use LIBXL_API_VERSION 0x040200 (Jim Fehlig),<br/>
+      qemu: Label master key file (Martin Kletzander),<br/>
+      Add functions for handling exponential backoff loops. (Richard W.M. Jones),<br/>
+      storage: dir: adapt .uploadVol .dowloadVol for ploop volume (Olga Krishtal),<br/>
+      storage: dir: adapt .refreshVol and .refreshPool for ploop volumes (Olga Krishtal),<br/>
+      storage: dir: .wipeVol is left unsupported for ploop volume (Olga Krishtal),<br/>
+      storage: dir: .resizeVol callback for ploop volume (Olga Krishtal),<br/>
+      storage: dir: .deleteVol callback for ploop volume (Olga Krishtal),<br/>
+      storage: dir: .buildVol and .buildVolFrom callbacks for ploop (Olga Krishtal),<br/>
+      storage: add ploop volume type (Olga Krishtal),<br/>
+      cfg.mk: Get rid of quotation tricks (Andrea Bolognani),<br/>
+      Return error when --start &lt;number&gt; in cpu-stats is invalid. (Nitesh Konkar),<br/>
+      qemu: process: Simplify condition in qemuProcessRefreshBalloonState (Peter Krempa),<br/>
+      qemu: driver: Reuse qemuDomainGetMonitor in qemuDomainMemoryStats (Peter Krempa),<br/>
+      domain: Add helper to determine presence of memory baloon (Peter Krempa),<br/>
+      qemu: command: Refactor memballoon command line formatting (Peter Krempa),<br/>
+      qemu: command: Drop obsolete comment (Peter Krempa),<br/>
+      qemu: caps: Deprecate QEMU_CAPS_BALLOON (Peter Krempa),<br/>
+      qemu: command: Assume QEMU_CAPS_DEVICE when building memballoon args (Peter Krempa),<br/>
+      qemu: migration: Drop dead VNC cookie handling (Cole Robinson),<br/>
+      makefile: Move include/Makefile.am to include/libvirt/Makefile.am (Erik Skultety),<br/>
+      vz: make it possible to use shared drivers API with vz driver connection (Maxim Nestratov),<br/>
+      qemu: support new pci controller model "pcie-expander-bus" (Laine Stump),<br/>
+      conf: new pci controller model pcie-expander-bus (Laine Stump),<br/>
+      qemu: add capabilities bit for device "pxb-pcie" (Laine Stump),<br/>
+      qemu: support new pci controller model "pci-expander-bus" (Laine Stump),<br/>
+      conf: new pci controller model pci-expander-bus (Laine Stump),<br/>
+      qemu: add capabilities bit for device "pxb" (Laine Stump),<br/>
+      qemu: set PCI controller default modelName in a separate function (Laine Stump),<br/>
+      conf: utility function to convert PCI controller model into connect type (Laine Stump),<br/>
+      conf/qemu: change the way VIR_PCI_CONNECT_TYPE_* flags work (Laine Stump),<br/>
+      conf: allow use of slot 0 in a dmi-to-pci-bridge (Laine Stump),<br/>
+      conf: use #define instead of literal for highest slot in upstream port (Laine Stump),<br/>
+      schema: allow pci address attributes to be in decimal (Laine Stump),<br/>
+      schema: new basic type - uint16 (Laine Stump),<br/>
+      schema: rename uint8range/uint24range to uint8/uint24 (Laine Stump),<br/>
+      schema: make pci slot and function optional (Laine Stump),<br/>
+      util: Add virGettextInitialize, convert the code (Cole Robinson),<br/>
+      test: genericxml2xml: test graphics listen= compat (Cole Robinson),<br/>
+      tests: Enable failure testing with CompareDomXML2XML (Cole Robinson),<br/>
+      tests: do not overwrite return value when filling qemuCapsCache (Ján Tomko),<br/>
+      virsh: add compression options for migration (ShaoHe Feng),<br/>
+      qemu: migration: support setting compession parameters (Nikolay Shirokovskiy),<br/>
+      qemumonitorjsontest: add test for getting multithread compress params (Eli Qiao),<br/>
+      qemu: monitor: add migration parameters accessors (ShaoHe Feng),<br/>
+      migration: qemu: add option to select compression methods (Nikolay Shirokovskiy),<br/>
+      virsh: support up to 64 migration options for command (Nikolay Shirokovskiy),<br/>
+      libxl: support creating domain with VF assignment from a pool (Chunyan Liu),<br/>
+      vz: simplify getting strings from vzsdk (Nikolay Shirokovskiy),<br/>
+      vz: minor cleanup (Maxim Nestratov),<br/>
+      vz: remove vzDriverLock/Unlock function (Maxim Nestratov),<br/>
+      vz: implement connectGetSysinfo hypervisor callback (Maxim Nestratov),<br/>
+      vz: fix possible vzDomainDefineXMLFlags and prlsdkNewDomainByHandle race (Maxim Nestratov),<br/>
+      vz: introduce new vzDriver lockable structure and use it (Maxim Nestratov),<br/>
+      vz: build driver as module and don't register it on client's side (Maxim Nestratov),<br/>
+      vz: correct iomode check (Mikhail Feoktistov),<br/>
+      qemuExecuteEthernetScript: move to util (Ján Tomko),<br/>
+      qemu: process: Wire up ACPI OST events to notify users of failed memory unplug (Peter Krempa),<br/>
+      qemu: monitor: Add support for ACPI_DEVICE_OST event handling (Peter Krempa),<br/>
+      Add VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED event (Peter Krempa),<br/>
+      qemu: hotplug: Add support for signalling device unplug failure (Peter Krempa),<br/>
+      qemu: Use domain condition for device removal signaling (Peter Krempa),<br/>
+      qemu: hotplug: Refactor semantics of qemuDomainWaitForDeviceRemoval (Peter Krempa),<br/>
+      qemu: hotplug: Properly handle errors in qemuDomainWaitForDeviceRemoval (Peter Krempa),<br/>
+      qemu: assign addresses before aliases (Ján Tomko),<br/>
+      qemuxml2argvtest: drop FLAG_EXPECT_ERROR (Ján Tomko),<br/>
+      tests: clean up includes (Ján Tomko),<br/>
+      drop qemuBuildCommandLineCallbacks (Ján Tomko),<br/>
+      domain_conf: call ...ListensParseXML only for appropriate graphics (Pavel Hrdina),<br/>
+      domain_conf: remove unused virDomainGraphicsListenGet* (Pavel Hrdina),<br/>
+      use virDomainGraphicsGetListen instead of the other getters (Pavel Hrdina),<br/>
+      domain_conf: cleanup virDomainGraphicsGetListen (Pavel Hrdina),<br/>
+      domain_conf: remove unused virDomainGraphicsListenSetType (Pavel Hrdina),<br/>
+      domain_conf: remove virDomainGraphicsListenSetNetwork (Pavel Hrdina),<br/>
+      domain_conf: introduce virDomainGraphicsListenAppendAddress (Pavel Hrdina),<br/>
+      configure: Make virt-host-validate optional (Andrea Bolognani),<br/>
+      tools: Reorganize conditional bits (Andrea Bolognani),<br/>
+      conf: extract disk geometry parsing code (Peter Krempa),<br/>
+      conf: Refactor virDomainDiskDefMirrorParse (Peter Krempa),<br/>
+      conf: disk: Split out parsing of disk mirror data (Peter Krempa),<br/>
+      conf: virDomainDiskDefIotuneParse: Report malformed number errors (Peter Krempa),<br/>
+      conf: virDomainDiskDefIotuneParse: simplify parsing (Peter Krempa),<br/>
+      conf: disk: Remove error label from virDomainDiskDefIotuneParse (Peter Krempa),<br/>
+      conf: disk: Extract iotune parsing into a separate func (Peter Krempa),<br/>
+      conf: disk: Remove one unnecessary level of indentation (Peter Krempa),<br/>
+      conf: disk: Don't initialize fields allocated by calloc (Peter Krempa),<br/>
+      util: Rename and move virStrIsPrint to virStringIsPrintable (Peter Krempa),<br/>
+      vz: add Hypervisor prefix to vz and parallels Driver structures (Maxim Nestratov),<br/>
+      vz: remove drivername field from vzConn structure (Maxim Nestratov),<br/>
+      vz: change the order of capabilities reported (Maxim Nestratov),<br/>
+      virsh: report when vz driver is compiled (Maxim Nestratov),<br/>
+      tests: fix xen-related tests (Ján Tomko),<br/>
+      conf: use VIR_APPEND_ELEMENT in virDomainDefAddImplicitVideo (Ján Tomko),<br/>
+      conf: reduce indentation in virDomainDefAddImplicitVideo (Ján Tomko),<br/>
+      conf: delete useless primaryVideo variable (Ján Tomko),<br/>
+      conf: use insertAt instead of j (Ján Tomko),<br/>
+      conf: use the iterator directly when parsing video devices (Ján Tomko),<br/>
+      conf: move default video addition after XML parsing (Ján Tomko),<br/>
+      cfg.mk: Use single quotes wherever possible (Andrea Bolognani),<br/>
+      cfg.mk: Remove spurious whitespace (Andrea Bolognani),<br/>
+      util: Fix 'exempt from syntax-check' comment (Andrea Bolognani),<br/>
+      vz: implement memory setting functions (Nikolay Shirokovskiy),<br/>
+      vz: factor out config update flags checks (Nikolay Shirokovskiy),<br/>
+      domain_conf: fix graphics parsing (Pavel Hrdina),<br/>
+      host-validate: Be more careful when checking for cgroup support (Andrea Bolognani),<br/>
+      po: Really fix po/POTFILES.in ordering (Erik Skultety),<br/>
+      po: fix POTFILES.in file ordering (Erik Skultety),<br/>
+      nss: fix typo in configure help string (Roman Bogorodskiy),<br/>
+      domain_conf: cleanup error paths for graphics parser (Pavel Hrdina),<br/>
+      domain_conf: split graphics xml parser into multiple functions (Pavel Hrdina),<br/>
+      domain_conf: cleanup virDomainGraphicsListensParseXML (Pavel Hrdina),<br/>
+      domain_conf: introduce virDomainGraphicsListensParseXML (Pavel Hrdina),<br/>
+      tests: remove unwanted VIR_FREE of spice and vnc default listen (Pavel Hrdina),<br/>
+      qemu: support virt-2.6 machine type on arm (Ján Tomko),<br/>
+      host-validate: Be more careful when checking for cgroup mounts (Andrea Bolognani),<br/>
+      qemu domain allow to set ip address, peer address and route (Vasiliy Tolstov),<br/>
+      lxc domain allow to set peer address (Vasiliy Tolstov),<br/>
+      libvirt domain xml allow to set peer address (Vasiliy Tolstov),<br/>
+      virnetdev allow to set peer address (Vasiliy Tolstov),<br/>
+      configure: Always use old_CFLAGS and old_LIBS (Andrea Bolognani),<br/>
+      configure: Restore CFLAGS properly after GnuTLS checks (Andrea Bolognani),<br/>
+      host-validate: Improve CPU flags processing (Andrea Bolognani),<br/>
+      vz: support boot order in domain xml dump (Nikolay Shirokovskiy),<br/>
+      vz: fix disk order on load domain (Nikolay Shirokovskiy),<br/>
+      vz: support boot order specification on define domain (Nikolay Shirokovskiy),<br/>
+      secret: Introduce virSecretGetSecretString (John Ferlan),<br/>
+      qemu: Introduce qemuBuildMasterKeyCommandLine (John Ferlan),<br/>
+      qemu: Create domain master key (John Ferlan),<br/>
+      util: Introduce virRandomBytes (John Ferlan),<br/>
+      qemu: Add capability bit for qemu secret object (John Ferlan),<br/>
+      qemu: Tear down the cgroup before reattach device to host (John Ferlan),<br/>
+      qemu: Restore label before reattach device to host (John Ferlan),<br/>
+      virt-admin: get rid of LIBVIRT_DEFAULT_ADMIN_URI env var (Ján Tomko),<br/>
+      tools: remove unnecessary defaultConn variable (Ján Tomko),<br/>
+      virsh: read default connection uri from env later (Ján Tomko),<br/>
+      spec: Include KVM support on RHEL 7 ppc64 and newer (Andrea Bolognani),<br/>
+      conf: store bootindex as unsigned int (Peter Krempa),<br/>
+      conf: Pass the whole device info struct to virDomainDeviceBootParseXML (Peter Krempa),<br/>
+      Post-release version bump to 1.3.4 (Peter Krempa)<br/>
+      </li>
+
+      <li>Cleanups:<br/>
+      Revert "qemu domain allow to set ip address, peer address and route" (Laine Stump),<br/>
+      Revert "lxc domain allow to set peer address" (Laine Stump),<br/>
+      Revert "libvirt domain xml allow to set peer address" (Laine Stump)<br/>
+      </li>
+    </ul>
+
    <h3>v1.3.3: Apr 06 2016</h3>
     <ul>
       <li>Features:<br/>
