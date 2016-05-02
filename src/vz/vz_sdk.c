@@ -4274,3 +4274,219 @@ int prlsdkSetMemsize(virDomainObjPtr dom, unsigned int memsize)
  error:
     return -1;
 }
+
+static long long
+prlsdkParseDateTime(const char *str)
+{
+    struct tm tm;
+    const char *tmp;
+
+    tmp = strptime(str, "%Y-%m-%d %H:%M:%S", &tm);
+    if (!tmp || *tmp != '\0') {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected DateTime format: '%s'"), str);
+        return -1;
+    }
+
+    return mktime(&tm);
+}
+
+static virDomainSnapshotObjListPtr
+prlsdkParseSnapshotTree(const char *treexml)
+{
+    virDomainSnapshotObjListPtr ret = NULL;
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr root;
+    xmlNodePtr *nodes = NULL;
+    virDomainSnapshotDefPtr def = NULL;
+    virDomainSnapshotObjPtr snapshot;
+    virDomainSnapshotObjPtr current = NULL;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+    char *xmlstr = NULL;
+    int n;
+    size_t i;
+
+    if (!(snapshots = virDomainSnapshotObjListNew()))
+        return NULL;
+
+    if (*treexml == '\0')
+        return snapshots;
+
+    if (!(xml = virXMLParse(NULL, treexml, _("(snapshot_tree)"))))
+        goto cleanup;
+
+    root = xmlDocGetRootElement(xml);
+    if (!xmlStrEqual(root->name, BAD_CAST "ParallelsSavedStates")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unexpected root element: '%s'"), root->name);
+        goto cleanup;
+    }
+
+    ctxt = xmlXPathNewContext(xml);
+    if (ctxt == NULL) {
+        virReportOOMError();
+        goto cleanup;
+    }
+    ctxt->node = root;
+
+    if ((n = virXPathNodeSet("//SavedStateItem", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("cannot extract snapshot nodes"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < n; i++) {
+        if (nodes[i]->parent == root)
+            continue;
+
+        if (VIR_ALLOC(def) < 0)
+            goto cleanup;
+
+        ctxt->node = nodes[i];
+
+        def->name = virXPathString("string(./@guid)", ctxt);
+        if (!def->name) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing 'guid' attribute"));
+            goto cleanup;
+        }
+
+        def->parent = virXPathString("string(../@guid)", ctxt);
+
+        xmlstr = virXPathString("string(./DateTime)", ctxt);
+        if (!xmlstr) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing 'DateTime' element"));
+            goto cleanup;
+        }
+        if ((def->creationTime = prlsdkParseDateTime(xmlstr)) < 0)
+            goto cleanup;
+        VIR_FREE(xmlstr);
+
+        def->description = virXPathString("string(./Description)", ctxt);
+
+        def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
+        xmlstr = virXPathString("string(./@state)", ctxt);
+        if (!xmlstr) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing 'state' attribute"));
+            goto cleanup;
+        } else if (STREQ(xmlstr, "poweron")) {
+            def->state = VIR_DOMAIN_RUNNING;
+            def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
+        } else if (STREQ(xmlstr, "pause")) {
+            def->state = VIR_DOMAIN_PAUSED;
+            def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
+        } else if (STREQ(xmlstr, "suspend")) {
+            def->state = VIR_DOMAIN_SHUTOFF;
+        } else if (STREQ(xmlstr, "poweroff")) {
+            def->state = VIR_DOMAIN_SHUTOFF;
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unexpected snapshot state: %s"), xmlstr);
+        }
+        VIR_FREE(xmlstr);
+
+        xmlstr = virXPathString("string(./@current)", ctxt);
+        def->current = xmlstr && STREQ("yes", xmlstr);
+        VIR_FREE(xmlstr);
+
+        if (!(snapshot = virDomainSnapshotAssignDef(snapshots, def)))
+            goto cleanup;
+        def = NULL;
+
+        if (snapshot->def->current) {
+            if (current) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("too many current snapshots"));
+                goto cleanup;
+            }
+            current = snapshot;
+        }
+    }
+
+    if (virDomainSnapshotUpdateRelations(snapshots) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("snapshots have inconsistent relations"));
+        goto cleanup;
+    }
+
+    ret = snapshots;
+    snapshots = NULL;
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    VIR_FREE(nodes);
+    VIR_FREE(xmlstr);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
+    VIR_FREE(def);
+
+    return ret;
+}
+
+virDomainSnapshotObjListPtr
+prlsdkLoadSnapshots(virDomainObjPtr dom)
+{
+    virDomainSnapshotObjListPtr ret = NULL;
+    PRL_HANDLE job;
+    PRL_HANDLE result = PRL_INVALID_HANDLE;
+    vzDomObjPtr privdom = dom->privateData;
+    char *treexml = NULL;
+
+    job = PrlVm_GetSnapshotsTreeEx(privdom->sdkdom, PGST_WITHOUT_SCREENSHOTS);
+    if (PRL_FAILED(getJobResult(job, &result)))
+        goto cleanup;
+
+    if (!(treexml = prlsdkGetStringParamVar(PrlResult_GetParamAsString, result)))
+        goto cleanup;
+
+    ret = prlsdkParseSnapshotTree(treexml);
+ cleanup:
+
+    PrlHandle_Free(result);
+    VIR_FREE(treexml);
+    return ret;
+}
+
+int prlsdkCreateSnapshot(virDomainObjPtr dom, const char *description)
+{
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job;
+
+    job = PrlVm_CreateSnapshot(privdom->sdkdom, "",
+                               description ? : "");
+    if (PRL_FAILED(waitJob(job)))
+        return -1;
+
+    return 0;
+}
+
+int prlsdkDeleteSnapshot(virDomainObjPtr dom, const char *uuid, bool children)
+{
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job;
+
+    job = PrlVm_DeleteSnapshot(privdom->sdkdom, uuid, children);
+    if (PRL_FAILED(waitJob(job)))
+        return -1;
+
+    return 0;
+}
+
+int prlsdkSwitchToSnapshot(virDomainObjPtr dom, const char *uuid, bool paused)
+{
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job;
+    PRL_UINT32 flags = 0;
+
+    if (paused)
+        flags |= PSSF_SKIP_RESUME;
+
+    job = PrlVm_SwitchToSnapshotEx(privdom->sdkdom, uuid, flags);
+    if (PRL_FAILED(waitJob(job)))
+        return -1;
+
+    return 0;
+}

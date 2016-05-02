@@ -1581,6 +1581,525 @@ static int vzDomainSetMemory(virDomainPtr domain, unsigned long memory)
     return vzDomainSetMemoryFlagsImpl(domain, memory, 0, false);
 }
 
+static virDomainSnapshotObjPtr
+vzSnapObjFromName(virDomainSnapshotObjListPtr snapshots, const char *name)
+{
+    virDomainSnapshotObjPtr snap = NULL;
+    snap = virDomainSnapshotFindByName(snapshots, name);
+    if (!snap)
+        virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                       _("no domain snapshot with matching name '%s'"), name);
+
+    return snap;
+}
+
+static virDomainSnapshotObjPtr
+vzSnapObjFromSnapshot(virDomainSnapshotObjListPtr snapshots,
+                      virDomainSnapshotPtr snapshot)
+{
+    return vzSnapObjFromName(snapshots, snapshot->name);
+}
+
+static int
+vzCurrentSnapshotIterator(void *payload,
+                              const void *name ATTRIBUTE_UNUSED,
+                              void *data)
+{
+    virDomainSnapshotObjPtr snapshot = payload;
+    virDomainSnapshotObjPtr *current = data;
+
+    if (snapshot->def->current)
+        *current = snapshot;
+
+    return 0;
+}
+
+static virDomainSnapshotObjPtr
+vzFindCurrentSnapshot(virDomainSnapshotObjListPtr snapshots)
+{
+    virDomainSnapshotObjPtr current = NULL;
+
+    virDomainSnapshotForEach(snapshots, vzCurrentSnapshotIterator, &current);
+    return current;
+}
+
+static int
+vzDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
+{
+    virDomainObjPtr dom;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+    int n = -1;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
+
+    if (!(dom = vzDomObjFromDomain(domain)))
+        return -1;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    n = virDomainSnapshotObjListNum(snapshots, NULL, flags);
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+
+    return n;
+}
+
+static int
+vzDomainSnapshotListNames(virDomainPtr domain,
+                          char **names,
+                          int nameslen,
+                          unsigned int flags)
+{
+    virDomainObjPtr dom;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+    int n = -1;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
+
+    if (!(dom = vzDomObjFromDomain(domain)))
+        return -1;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    n = virDomainSnapshotObjListGetNames(snapshots, NULL, names, nameslen, flags);
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+
+    return n;
+}
+
+static int
+vzDomainListAllSnapshots(virDomainPtr domain,
+                         virDomainSnapshotPtr **snaps,
+                         unsigned int flags)
+{
+    virDomainObjPtr dom;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+    int n = -1;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
+                  VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
+
+    if (!(dom = vzDomObjFromDomain(domain)))
+        return -1;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    n = virDomainListSnapshots(snapshots, NULL, domain, snaps, flags);
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+
+    return n;
+}
+
+static char *
+vzDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot, unsigned int flags)
+{
+    virDomainObjPtr dom;
+    char *xml = NULL;
+    virDomainSnapshotObjPtr snap;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virDomainSnapshotObjListPtr snapshots = NULL;
+    vzConnPtr privconn = snapshot->domain->conn->privateData;
+
+    virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
+
+    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+        return NULL;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    if (!(snap = vzSnapObjFromSnapshot(snapshots, snapshot)))
+        goto cleanup;
+
+    virUUIDFormat(snapshot->domain->uuid, uuidstr);
+
+    xml = virDomainSnapshotDefFormat(uuidstr, snap->def, privconn->driver->caps,
+                                     virDomainDefFormatConvertXMLFlags(flags),
+                                     0);
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+
+    return xml;
+}
+
+static int
+vzDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
+{
+    virDomainObjPtr dom;
+    virDomainSnapshotObjPtr snap;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+    int n = -1;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
+                  VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
+
+    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+        return -1;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    if (!(snap = vzSnapObjFromSnapshot(snapshots, snapshot)))
+        goto cleanup;
+
+    n = virDomainSnapshotObjListNum(snapshots, snap, flags);
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+
+    return n;
+}
+
+static int
+vzDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
+                                  char **names,
+                                  int nameslen,
+                                  unsigned int flags)
+{
+    virDomainObjPtr dom;
+    virDomainSnapshotObjPtr snap;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+    int n = -1;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
+                  VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
+
+    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+        return -1;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    if (!(snap = vzSnapObjFromSnapshot(snapshots, snapshot)))
+        goto cleanup;
+
+    n = virDomainSnapshotObjListGetNames(snapshots, snap, names, nameslen, flags);
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+
+    return n;
+}
+
+static int
+vzDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
+                                virDomainSnapshotPtr **snaps,
+                                unsigned int flags)
+{
+    virDomainObjPtr dom;
+    virDomainSnapshotObjPtr snap;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+    int n = -1;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
+                  VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
+
+    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+        return -1;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    if (!(snap = vzSnapObjFromSnapshot(snapshots, snapshot)))
+        goto cleanup;
+
+    n = virDomainListSnapshots(snapshots, snap, snapshot->domain, snaps, flags);
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+
+    return n;
+}
+
+static virDomainSnapshotPtr
+vzDomainSnapshotLookupByName(virDomainPtr domain,
+                             const char *name,
+                             unsigned int flags)
+{
+    virDomainObjPtr dom;
+    virDomainSnapshotObjPtr snap;
+    virDomainSnapshotPtr snapshot = NULL;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!(dom = vzDomObjFromDomain(domain)))
+        return NULL;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    if (!(snap = vzSnapObjFromName(snapshots, name)))
+        goto cleanup;
+
+    snapshot = virGetDomainSnapshot(domain, snap->def->name);
+
+ cleanup:
+    virObjectUnlock(dom);
+    virDomainSnapshotObjListFree(snapshots);
+
+    return snapshot;
+}
+
+static int
+vzDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
+{
+    virDomainObjPtr dom;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(dom = vzDomObjFromDomain(domain)))
+        return -1;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    ret = vzFindCurrentSnapshot(snapshots) != NULL;
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+
+    return ret;
+}
+
+static virDomainSnapshotPtr
+vzDomainSnapshotGetParent(virDomainSnapshotPtr snapshot, unsigned int flags)
+{
+    virDomainObjPtr dom;
+    virDomainSnapshotObjPtr snap;
+    virDomainSnapshotPtr parent = NULL;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+
+    virCheckFlags(0, NULL);
+
+    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+        return NULL;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    if (!(snap = vzSnapObjFromSnapshot(snapshots, snapshot)))
+        goto cleanup;
+
+    if (!snap->def->parent) {
+        virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT,
+                       _("snapshot '%s' does not have a parent"),
+                       snap->def->name);
+        goto cleanup;
+    }
+
+    parent = virGetDomainSnapshot(snapshot->domain, snap->def->parent);
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+
+    return parent;
+}
+
+static virDomainSnapshotPtr
+vzDomainSnapshotCurrent(virDomainPtr domain, unsigned int flags)
+{
+    virDomainObjPtr dom;
+    virDomainSnapshotPtr snapshot = NULL;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+    virDomainSnapshotObjPtr current;
+
+    virCheckFlags(0, NULL);
+
+    if (!(dom = vzDomObjFromDomain(domain)))
+        return NULL;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    if (!(current = vzFindCurrentSnapshot(snapshots))) {
+        virReportError(VIR_ERR_NO_DOMAIN_SNAPSHOT, "%s",
+                       _("the domain does not have a current snapshot"));
+        goto cleanup;
+    }
+
+    snapshot = virGetDomainSnapshot(domain, current->def->name);
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+
+    return snapshot;
+}
+
+static int
+vzDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot, unsigned int flags)
+{
+    virDomainObjPtr dom;
+    int ret = -1;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+    virDomainSnapshotObjPtr current;
+
+    virCheckFlags(0, -1);
+
+    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+        return -1;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    current = vzFindCurrentSnapshot(snapshots);
+    ret = current && STREQ(snapshot->name, current->def->name);
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+
+    return ret;
+}
+
+static int
+vzDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
+                              unsigned int flags)
+{
+    virDomainObjPtr dom;
+    int ret = -1;
+    virDomainSnapshotObjPtr snap;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+
+    virCheckFlags(0, -1);
+
+    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+        return -1;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    if (!(snap = vzSnapObjFromSnapshot(snapshots, snapshot)))
+        goto cleanup;
+
+    ret = 1;
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+    return ret;
+}
+
+static virDomainSnapshotPtr
+vzDomainSnapshotCreateXML(virDomainPtr domain,
+                          const char *xmlDesc,
+                          unsigned int flags)
+{
+    virDomainSnapshotDefPtr def = NULL;
+    virDomainSnapshotPtr snapshot = NULL;
+    virDomainObjPtr dom;
+    vzConnPtr privconn = domain->conn->privateData;
+    vzDriverPtr driver = privconn->driver;
+    unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
+    virDomainSnapshotObjListPtr snapshots = NULL;
+    virDomainSnapshotObjPtr current;
+
+    virCheckFlags(0, NULL);
+
+    if (!(dom = vzDomObjFromDomain(domain)))
+        return NULL;
+
+    if (!(def = virDomainSnapshotDefParseString(xmlDesc, driver->caps,
+                                                driver->xmlopt, parse_flags)))
+        goto cleanup;
+
+    if (def->ndisks > 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("configuring disks is not supported for vz snapshots"));
+        goto cleanup;
+    }
+
+    if (def->memory) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("configuring memory location is not supported"));
+        goto cleanup;
+    }
+
+    /* snaphot name is ignored, it will be set to auto generated by sdk uuid */
+    if (prlsdkCreateSnapshot(dom, def->description) < 0)
+        goto cleanup;
+
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
+        goto cleanup;
+
+    if (!(current = vzFindCurrentSnapshot(snapshots))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("can't find created snapshot"));
+        goto cleanup;
+    }
+
+    /* hopefully new current snapshot is newly created one */
+    snapshot = virGetDomainSnapshot(domain, current->def->name);
+
+ cleanup:
+    virDomainSnapshotObjListFree(snapshots);
+    virObjectUnlock(dom);
+    virDomainSnapshotDefFree(def);
+
+    return snapshot;
+}
+
+static int
+vzDomainSnapshotDelete(virDomainSnapshotPtr snapshot, unsigned int flags)
+{
+    virDomainObjPtr dom;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, -1);
+
+    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+        return -1;
+
+    ret = prlsdkDeleteSnapshot(dom, snapshot->name,
+                               flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN);
+
+    virObjectUnlock(dom);
+
+    return ret;
+}
+
+static int
+vzDomainRevertToSnapshot(virDomainSnapshotPtr snapshot, unsigned int flags)
+{
+    virDomainObjPtr dom;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED, -1);
+
+    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+        return -1;
+
+    ret = prlsdkSwitchToSnapshot(dom, snapshot->name,
+                                 flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED);
+
+    virObjectUnlock(dom);
+
+    return ret;
+}
+
 static virHypervisorDriver vzHypervisorDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
@@ -1648,6 +2167,22 @@ static virHypervisorDriver vzHypervisorDriver = {
     .connectUnregisterCloseCallback = vzConnectUnregisterCloseCallback, /* 1.3.2 */
     .domainSetMemoryFlags = vzDomainSetMemoryFlags, /* 1.3.4 */
     .domainSetMemory = vzDomainSetMemory, /* 1.3.4 */
+    .domainSnapshotNum = vzDomainSnapshotNum, /* 1.3.5 */
+    .domainSnapshotListNames = vzDomainSnapshotListNames, /* 1.3.5 */
+    .domainListAllSnapshots = vzDomainListAllSnapshots, /* 1.3.5 */
+    .domainSnapshotGetXMLDesc = vzDomainSnapshotGetXMLDesc, /* 1.3.5 */
+    .domainSnapshotNumChildren = vzDomainSnapshotNumChildren, /* 1.3.5 */
+    .domainSnapshotListChildrenNames = vzDomainSnapshotListChildrenNames, /* 1.3.5 */
+    .domainSnapshotListAllChildren = vzDomainSnapshotListAllChildren, /* 1.3.5 */
+    .domainSnapshotLookupByName = vzDomainSnapshotLookupByName, /* 1.3.5 */
+    .domainHasCurrentSnapshot = vzDomainHasCurrentSnapshot, /* 1.3.5 */
+    .domainSnapshotGetParent = vzDomainSnapshotGetParent, /* 1.3.5 */
+    .domainSnapshotCurrent = vzDomainSnapshotCurrent, /* 1.3.5 */
+    .domainSnapshotIsCurrent = vzDomainSnapshotIsCurrent, /* 1.3.5 */
+    .domainSnapshotHasMetadata = vzDomainSnapshotHasMetadata, /* 1.3.5 */
+    .domainSnapshotCreateXML = vzDomainSnapshotCreateXML, /* 1.3.5 */
+    .domainSnapshotDelete = vzDomainSnapshotDelete, /* 1.3.5 */
+    .domainRevertToSnapshot = vzDomainRevertToSnapshot, /* 1.3.5 */
 };
 
 static virConnectDriver vzConnectDriver = {

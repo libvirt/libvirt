@@ -82,3 +82,8 @@ void
 prlsdkDomObjFreePrivate(void *p);
 /* memsize is in MiB */
 int prlsdkSetMemsize(virDomainObjPtr dom, unsigned int memsize);
+
+virDomainSnapshotObjListPtr prlsdkLoadSnapshots(virDomainObjPtr dom);
+int prlsdkCreateSnapshot(virDomainObjPtr dom, const char *description);
+int prlsdkDeleteSnapshot(virDomainObjPtr dom, const char *uuid, bool children);
+int prlsdkSwitchToSnapshot(virDomainObjPtr dom, const char *uuid, bool paused);
