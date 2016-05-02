@@ -357,9 +357,10 @@ int virStorageSourceInitChainElement(virStorageSourcePtr newelem,
                                      bool force);
 void virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def);
 void virStorageSourceClear(virStorageSourcePtr def);
-int virStorageSourceGetActualType(virStorageSourcePtr def);
+int virStorageSourceGetActualType(const virStorageSource *def);
 bool virStorageSourceIsLocalStorage(virStorageSourcePtr src);
 bool virStorageSourceIsEmpty(virStorageSourcePtr src);
+bool virStorageSourceIsBlockLocal(const virStorageSource *src);
 void virStorageSourceFree(virStorageSourcePtr def);
 void virStorageSourceBackingStoreClear(virStorageSourcePtr def);
 int virStorageSourceUpdateBlockPhysicalSize(virStorageSourcePtr src,

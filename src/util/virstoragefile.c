@@ -1955,7 +1955,7 @@ virStorageSourcePoolDefFree(virStorageSourcePoolDefPtr def)
 
 
 int
-virStorageSourceGetActualType(virStorageSourcePtr def)
+virStorageSourceGetActualType(const virStorageSource *def)
 {
     if (def->type == VIR_STORAGE_TYPE_VOLUME && def->srcpool)
         return def->srcpool->actualtype;
@@ -2008,6 +2008,20 @@ virStorageSourceIsEmpty(virStorageSourcePtr src)
         return true;
 
     return false;
+}
+
+
+/**
+ * virStorageSourceIsBlockLocal:
+ * @src: disk source definition
+ *
+ * Returns true if @src describes a locally accessible block storage source.
+ * This includes block devices and host-mapped iSCSI volumes.
+ */
+bool
+virStorageSourceIsBlockLocal(const virStorageSource *src)
+{
+    return virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_BLOCK;
 }
 
 

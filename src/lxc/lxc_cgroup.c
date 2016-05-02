@@ -393,7 +393,8 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
 
     VIR_DEBUG("Allowing any disk block devs");
     for (i = 0; i < def->ndisks; i++) {
-        if (!virDomainDiskSourceIsBlockType(def->disks[i]->src, false))
+        if (virStorageSourceIsEmpty(def->disks[i]->src) ||
+            !virStorageSourceIsBlockLocal(def->disks[i]->src))
             continue;
 
         if (virCgroupAllowDevicePath(cgroup,
