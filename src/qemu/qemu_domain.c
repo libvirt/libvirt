@@ -737,12 +737,34 @@ qemuDomainSecretPlainFree(qemuDomainSecretPlain secret)
 
 
 static void
+qemuDomainSecretIVFree(qemuDomainSecretIV secret)
+{
+    VIR_FREE(secret.username);
+    VIR_FREE(secret.alias);
+    VIR_FREE(secret.iv);
+    VIR_FREE(secret.ciphertext);
+}
+
+
+static void
 qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr *secinfo)
 {
     if (!*secinfo)
         return;
 
-    qemuDomainSecretPlainFree((*secinfo)->s.plain);
+    switch ((qemuDomainSecretInfoType) (*secinfo)->type) {
+    case VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN:
+        qemuDomainSecretPlainFree((*secinfo)->s.plain);
+        break;
+
+    case VIR_DOMAIN_SECRET_INFO_TYPE_IV:
+        qemuDomainSecretIVFree((*secinfo)->s.iv);
+        break;
+
+    case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
+        break;
+    }
+
     VIR_FREE(*secinfo);
 }
 
@@ -890,6 +912,7 @@ qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
 
 /* qemuDomainSecretDiskPrepare:
  * @conn: Pointer to connection
+ * @priv: pointer to domain private object
  * @disk: Pointer to a disk definition
  *
  * For the right disk, generate the qemuDomainSecretInfo structure.
@@ -898,6 +921,7 @@ qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
  */
 int
 qemuDomainSecretDiskPrepare(virConnectPtr conn,
+                            qemuDomainObjPrivatePtr priv ATTRIBUTE_UNUSED,
                             virDomainDiskDefPtr disk)
 {
     virStorageSourcePtr src = disk->src;
@@ -949,6 +973,7 @@ qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr hostdev)
 
 /* qemuDomainSecretHostdevPrepare:
  * @conn: Pointer to connection
+ * @priv: pointer to domain private object
  * @hostdev: Pointer to a hostdev definition
  *
  * For the right host device, generate the qemuDomainSecretInfo structure.
@@ -957,6 +982,7 @@ qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr hostdev)
  */
 int
 qemuDomainSecretHostdevPrepare(virConnectPtr conn,
+                               qemuDomainObjPrivatePtr priv ATTRIBUTE_UNUSED,
                                virDomainHostdevDefPtr hostdev)
 {
     virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
@@ -1029,15 +1055,17 @@ int
 qemuDomainSecretPrepare(virConnectPtr conn,
                         virDomainObjPtr vm)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     size_t i;
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        if (qemuDomainSecretDiskPrepare(conn, vm->def->disks[i]) < 0)
+        if (qemuDomainSecretDiskPrepare(conn, priv, vm->def->disks[i]) < 0)
             return -1;
     }
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
-        if (qemuDomainSecretHostdevPrepare(conn, vm->def->hostdevs[i]) < 0)
+        if (qemuDomainSecretHostdevPrepare(conn, priv,
+                                           vm->def->hostdevs[i]) < 0)
             return -1;
     }
 

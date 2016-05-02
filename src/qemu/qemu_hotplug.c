@@ -370,7 +370,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
         goto error;
 
-    if (qemuDomainSecretDiskPrepare(conn, disk) < 0)
+    if (qemuDomainSecretDiskPrepare(conn, priv, disk) < 0)
         goto error;
 
     if (!(drivestr = qemuBuildDriveStr(disk, false, priv->qemuCaps)))
@@ -587,7 +587,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
         goto error;
 
-    if (qemuDomainSecretDiskPrepare(conn, disk) < 0)
+    if (qemuDomainSecretDiskPrepare(conn, priv, disk) < 0)
         goto error;
 
     if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
@@ -1933,7 +1933,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
         goto cleanup;
 
-    if (qemuDomainSecretHostdevPrepare(conn, hostdev) < 0)
+    if (qemuDomainSecretHostdevPrepare(conn, priv, hostdev) < 0)
         goto cleanup;
 
     if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, priv->qemuCaps)))

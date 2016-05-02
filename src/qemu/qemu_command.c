@@ -625,14 +625,22 @@ qemuBuildGeneralSecinfoURI(virURIPtr uri,
     if (!secinfo)
         return 0;
 
-    if (secinfo->s.plain.secret) {
-        if (virAsprintf(&uri->user, "%s:%s",
-                        secinfo->s.plain.username,
-                        secinfo->s.plain.secret) < 0)
-            return -1;
-    } else {
-        if (VIR_STRDUP(uri->user, secinfo->s.plain.username) < 0)
-            return -1;
+    switch ((qemuDomainSecretInfoType) secinfo->type) {
+    case VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN:
+        if (secinfo->s.plain.secret) {
+            if (virAsprintf(&uri->user, "%s:%s",
+                            secinfo->s.plain.username,
+                            secinfo->s.plain.secret) < 0)
+                return -1;
+        } else {
+            if (VIR_STRDUP(uri->user, secinfo->s.plain.username) < 0)
+                return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_SECRET_INFO_TYPE_IV:
+    case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
+        return -1;
     }
 
     return 0;
@@ -659,11 +667,19 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
         return 0;
     }
 
-    virBufferEscape(buf, '\\', ":", ":id=%s",
-                    secinfo->s.plain.username);
-    virBufferEscape(buf, '\\', ":",
-                    ":key=%s:auth_supported=cephx\\;none",
-                    secinfo->s.plain.secret);
+    switch ((qemuDomainSecretInfoType) secinfo->type) {
+    case VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN:
+        virBufferEscape(buf, '\\', ":", ":id=%s",
+                        secinfo->s.plain.username);
+        virBufferEscape(buf, '\\', ":",
+                        ":key=%s:auth_supported=cephx\\;none",
+                        secinfo->s.plain.secret);
+        break;
+
+    case VIR_DOMAIN_SECRET_INFO_TYPE_IV:
+    case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
+        return -1;
+    }
 
     return 0;
 }

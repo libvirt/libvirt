@@ -242,6 +242,7 @@ struct _qemuDomainObjPrivate {
 /* Type of domain secret */
 typedef enum {
     VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN = 0,
+    VIR_DOMAIN_SECRET_INFO_TYPE_IV,
 
     VIR_DOMAIN_SECRET_INFO_TYPE_LAST
 } qemuDomainSecretInfoType;
@@ -253,12 +254,24 @@ struct _qemuDomainSecretPlain {
     char *secret;
 };
 
+# define QEMU_DOMAIN_IV_KEY_LEN 16      /* 16 bytes for 128 bit random */
+                                        /*    initialization vector key */
+typedef struct _qemuDomainSecretIV qemuDomainSecretIV;
+typedef struct _qemuDomainSecretIV *qemuDomainSecretIVPtr;
+struct _qemuDomainSecretIV {
+    char *username;
+    char *alias;      /* generated alias for secret */
+    char *iv;         /* base64 encoded initialization vector */
+    char *ciphertext; /* encoded/encrypted secret */
+};
+
 typedef struct _qemuDomainSecretInfo qemuDomainSecretInfo;
 typedef qemuDomainSecretInfo *qemuDomainSecretInfoPtr;
 struct _qemuDomainSecretInfo {
     qemuDomainSecretInfoType type;
     union {
         qemuDomainSecretPlain plain;
+        qemuDomainSecretIV iv;
     } s;
 };
 
@@ -634,15 +647,18 @@ void qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv);
 void qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
     ATTRIBUTE_NONNULL(1);
 
-int qemuDomainSecretDiskPrepare(virConnectPtr conn, virDomainDiskDefPtr disk)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int qemuDomainSecretDiskPrepare(virConnectPtr conn,
+                                qemuDomainObjPrivatePtr priv,
+                                virDomainDiskDefPtr disk)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 void qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr disk)
     ATTRIBUTE_NONNULL(1);
 
 int qemuDomainSecretHostdevPrepare(virConnectPtr conn,
+                                   qemuDomainObjPrivatePtr priv,
                                    virDomainHostdevDefPtr hostdev)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 void qemuDomainSecretDestroy(virDomainObjPtr vm)
     ATTRIBUTE_NONNULL(1);
