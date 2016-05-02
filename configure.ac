@@ -616,66 +616,7 @@ if test x"$enable_debug" = x"yes"; then
    AC_DEFINE([ENABLE_DEBUG], [], [whether debugging is enabled])
 fi
 
-
-
-dnl
-dnl init script flavor
-dnl
-AC_MSG_CHECKING([for init script flavor])
-AC_ARG_WITH([init-script],
-  [AS_HELP_STRING([--with-init-script@<:@=STYLE@:>@],
-    [Style of init script to install: redhat, systemd, systemd+redhat,
-     upstart, check, none @<:@default=check@:>@])],
-  [],[with_init_script=check])
-init_redhat=no
-init_systemd=no
-init_upstart=no
-if test "$with_init_script" = check; then
-    if test "$cross_compiling" = yes; then
-        with_init_script=none
-    fi
-    if type systemctl >/dev/null 2>&1; then
-        if test "$with_init_script" = check; then
-            with_init_script=systemd
-        fi
-    fi
-    if test -f /etc/redhat-release; then
-        if test "$with_init_script" = systemd; then
-            with_init_script=systemd+redhat
-        fi
-        if test "$with_init_script" = check; then
-            with_init_script=redhat
-        fi
-    fi
-    if test "$with_init_script" = check; then
-        with_init_script=none
-    fi
-fi
-case "$with_init_script" in
-    systemd+redhat)
-       init_redhat=yes
-       init_systemd=yes
-       ;;
-    systemd)
-       init_systemd=yes
-       ;;
-    upstart)
-       init_upstart=yes
-       ;;
-    redhat)
-       init_redhat=yes
-       ;;
-    none)
-       ;;
-    *)
-       AC_MSG_ERROR([Unknown initscript flavour $with_init_script])
-    ;;
-esac
-AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_RED_HAT], test "$init_redhat" = "yes")
-AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_UPSTART], test "$init_upstart" = "yes")
-AM_CONDITIONAL([LIBVIRT_INIT_SCRIPT_SYSTEMD], test "$init_systemd" = "yes")
-AC_MSG_RESULT($with_init_script)
-
+LIBVIRT_CHECK_INIT_SCRIPT
 
 AC_MSG_CHECKING([for whether to install sysctl config])
 AC_ARG_WITH([sysctl],
@@ -2959,7 +2900,7 @@ AC_MSG_NOTICE([     Warning Flags: $WARN_CFLAGS])
 AC_MSG_NOTICE([            DTrace: $with_dtrace])
 AC_MSG_NOTICE([             numad: $with_numad])
 AC_MSG_NOTICE([       XML Catalog: $XML_CATALOG_FILE])
-AC_MSG_NOTICE([       Init script: $with_init_script])
+LIBVIRT_RESULT_INIT_SCRIPT
 AC_MSG_NOTICE([ Char device locks: $with_chrdev_lock_files])
 AC_MSG_NOTICE([    Default Editor: $DEFAULT_EDITOR])
 AC_MSG_NOTICE([      Loader/NVRAM: $with_loader_nvram])
