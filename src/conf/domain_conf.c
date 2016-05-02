@@ -24076,58 +24076,6 @@ virDomainDefFindDevice(virDomainDefPtr def,
     return 0;
 }
 
-/**
- * virDomainDiskSourceIsBlockType:
- *
- * Check if the disk *source* is of block type. This just tries
- * to check from the type of disk def, not to probe the underlying
- * storage.
- *
- * Return true if its source is block type, or false otherwise.
- */
-bool
-virDomainDiskSourceIsBlockType(virStorageSourcePtr src,
-                               bool report)
-{
-    if (!src->path) {
-        if (report)
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("source path not found for device='lun' "
-                             "using type='%d'"), src->type);
-        return false;
-    }
-
-    if (src->type == VIR_STORAGE_TYPE_BLOCK)
-        return true;
-
-    /* For volume types, check the srcpool.
-     * If it's a block type source pool, then it's possible
-     */
-    if (src->type == VIR_STORAGE_TYPE_VOLUME &&
-        src->srcpool &&
-        src->srcpool->voltype == VIR_STORAGE_VOL_BLOCK) {
-        /* We don't think the volume accessed by remote URI is
-         * block type source, since we can't/shouldn't manage it
-         * (e.g. set sgio=filtered|unfiltered for it) in libvirt.
-         */
-         if (src->srcpool->pooltype == VIR_STORAGE_POOL_ISCSI &&
-             src->srcpool->mode == VIR_STORAGE_SOURCE_POOL_MODE_DIRECT) {
-             if (report)
-                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                _("disk device='lun' for iSCSI is not "
-                                  "supported with mode='direct'."));
-             return false;
-         }
-
-        return true;
-    }
-    if (report)
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("disk device='lun' is only valid for block "
-                         "type disk source"));
-    return false;
-}
-
 
 char *
 virDomainObjGetMetadata(virDomainObjPtr vm,

@@ -3127,9 +3127,6 @@ int virDomainDefFindDevice(virDomainDefPtr def,
                            virDomainDeviceDefPtr dev,
                            bool reportError);
 
-bool virDomainDiskSourceIsBlockType(virStorageSourcePtr src, bool report)
-    ATTRIBUTE_NONNULL(1);
-
 void virDomainChrSourceDefClear(virDomainChrSourceDefPtr def);
 
 char *virDomainObjGetMetadata(virDomainObjPtr vm,

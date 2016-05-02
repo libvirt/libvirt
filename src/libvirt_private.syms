@@ -290,7 +290,6 @@ virDomainDiskSetDriver;
 virDomainDiskSetFormat;
 virDomainDiskSetSource;
 virDomainDiskSetType;
-virDomainDiskSourceIsBlockType;
 virDomainFSDefFree;
 virDomainFSIndexByName;
 virDomainFSInsert;
