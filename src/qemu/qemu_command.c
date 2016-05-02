@@ -606,6 +606,69 @@ qemuNetworkDriveGetPort(int protocol,
     return -1;
 }
 
+
+/* qemuBuildGeneralSecinfoURI:
+ * @uri: Pointer to the URI structure to add to
+ * @secinfo: Pointer to the secret info data (if present)
+ *
+ * If we have a secinfo, then build the command line options for
+ * the secret info for the "general" case (somewhat a misnomer since
+ * an iscsi disk is the only one with a secinfo).
+ *
+ * Returns 0 on success or if no secinfo,
+ * -1 and error message if fail to add secret information
+ */
+static int
+qemuBuildGeneralSecinfoURI(virURIPtr uri,
+                           qemuDomainSecretInfoPtr secinfo)
+{
+    if (!secinfo)
+        return 0;
+
+    if (secinfo->s.plain.secret) {
+        if (virAsprintf(&uri->user, "%s:%s",
+                        secinfo->s.plain.username,
+                        secinfo->s.plain.secret) < 0)
+            return -1;
+    } else {
+        if (VIR_STRDUP(uri->user, secinfo->s.plain.username) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+/* qemuBuildRBDSecinfoURI:
+ * @uri: Pointer to the URI structure to add to
+ * @secinfo: Pointer to the secret info data (if present)
+ *
+ * If we have a secinfo, then build the command line options for
+ * the secret info for the RBD network storage. Assumption for this
+ * is both username and secret exist for plaintext
+ *
+ * Returns 0 on success or if no secinfo,
+ * -1 and error message if fail to add secret information
+ */
+static int
+qemuBuildRBDSecinfoURI(virBufferPtr buf,
+                       qemuDomainSecretInfoPtr secinfo)
+{
+    if (!secinfo) {
+        virBufferAddLit(buf, ":auth_supported=none");
+        return 0;
+    }
+
+    virBufferEscape(buf, '\\', ":", ":id=%s",
+                    secinfo->s.plain.username);
+    virBufferEscape(buf, '\\', ":",
+                    ":key=%s:auth_supported=cephx\\;none",
+                    secinfo->s.plain.secret);
+
+    return 0;
+}
+
+
 #define QEMU_DEFAULT_NBD_PORT "10809"
 
 static char *
@@ -701,7 +764,8 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
                     goto cleanup;
             }
 
-            if ((uri->port = qemuNetworkDriveGetPort(src->protocol, src->hosts->port)) < 0)
+            if ((uri->port = qemuNetworkDriveGetPort(src->protocol,
+                                                     src->hosts->port)) < 0)
                 goto cleanup;
 
             if (src->path) {
@@ -721,17 +785,8 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
                 virAsprintf(&uri->query, "socket=%s", src->hosts->socket) < 0)
                 goto cleanup;
 
-            if (secinfo) {
-                if (secinfo->s.plain.secret) {
-                    if (virAsprintf(&uri->user, "%s:%s",
-                                    secinfo->s.plain.username,
-                                    secinfo->s.plain.secret) < 0)
-                        goto cleanup;
-                } else {
-                    if (VIR_STRDUP(uri->user, secinfo->s.plain.username) < 0)
-                        goto cleanup;
-                }
-            }
+            if (qemuBuildGeneralSecinfoURI(uri, secinfo) < 0)
+                goto cleanup;
 
             if (VIR_STRDUP(uri->server, src->hosts->name) < 0)
                 goto cleanup;
@@ -777,15 +832,8 @@ qemuBuildNetworkDriveURI(virStorageSourcePtr src,
             if (src->snapshot)
                 virBufferEscape(&buf, '\\', ":", "@%s", src->snapshot);
 
-            if (secinfo) {
-                virBufferEscape(&buf, '\\', ":", ":id=%s",
-                                secinfo->s.plain.username);
-                virBufferEscape(&buf, '\\', ":",
-                                ":key=%s:auth_supported=cephx\\;none",
-                                secinfo->s.plain.secret);
-            } else {
-                virBufferAddLit(&buf, ":auth_supported=none");
-            }
+            if (qemuBuildRBDSecinfoURI(&buf, secinfo) < 0)
+                goto cleanup;
 
             if (src->nhosts > 0) {
                 virBufferAddLit(&buf, ":mon_host=");
