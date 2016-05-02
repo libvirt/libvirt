@@ -980,9 +980,13 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
                                virStorageNetProtocolTypeToString(disk->src->protocol));
                 goto error;
             }
-        } else if (!virDomainDiskSourceIsBlockType(disk->src, true)) {
+        } else if (!virStorageSourceIsBlockLocal(disk->src)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk device='lun' is only valid for block "
+                             "type disk source"));
             goto error;
         }
+
         if (disk->wwn) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Setting wwn is not supported for lun device"));
