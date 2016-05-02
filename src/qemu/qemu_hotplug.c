@@ -225,7 +225,13 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
             goto error;
 
         while (disk->tray_status != VIR_DOMAIN_DISK_TRAY_OPEN) {
-            if (virDomainObjWaitUntil(vm, now + CHANGE_MEDIA_TIMEOUT) != 0)
+            int wait_rc = virDomainObjWaitUntil(vm, now + CHANGE_MEDIA_TIMEOUT);
+            if (wait_rc > 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("timed out waiting for "
+                                 "disk tray status update"));
+            }
+            if (wait_rc != 0)
                 goto error;
         }
     } while (rc < 0);
