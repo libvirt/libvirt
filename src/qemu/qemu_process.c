@@ -5150,6 +5150,10 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     if (qemuDomainMasterKeyCreate(vm) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Add secrets to disks and hostdevs");
+    if (qemuDomainSecretPrepare(conn, vm) < 0)
+        goto cleanup;
+
     if (VIR_ALLOC(priv->monConfig) < 0)
         goto cleanup;
 
@@ -5708,9 +5712,6 @@ qemuProcessStart(virConnectPtr conn,
     if (qemuProcessPrepareHost(driver, vm, !!incoming) < 0)
         goto stop;
 
-    if (qemuDomainSecretPrepare(conn, vm) < 0)
-        goto cleanup;
-
     if ((rv = qemuProcessLaunch(conn, driver, vm, asyncJob, incoming,
                                 snapshot, vmop, flags)) < 0) {
         if (rv == -2)
@@ -5780,9 +5781,6 @@ qemuProcessCreatePretendCmd(virConnectPtr conn,
         goto cleanup;
 
     if (qemuProcessPrepareDomain(conn, driver, vm, flags) < 0)
-        goto cleanup;
-
-    if (qemuDomainSecretPrepare(conn, vm) < 0)
         goto cleanup;
 
     VIR_DEBUG("Building emulator command line");
