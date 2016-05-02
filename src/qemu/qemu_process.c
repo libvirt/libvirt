@@ -5608,6 +5608,7 @@ qemuProcessLaunch(virConnectPtr conn,
     ret = 0;
 
  cleanup:
+    qemuDomainSecretDestroy(vm);
     virCommandFree(cmd);
     qemuDomainLogContextFree(logCtxt);
     virObjectUnref(cfg);
@@ -5719,8 +5720,6 @@ qemuProcessStart(virConnectPtr conn,
         goto stop;
     }
     relabel = true;
-
-    qemuDomainSecretDestroy(vm);
 
     if (incoming &&
         incoming->deferredURI &&
