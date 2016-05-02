@@ -855,7 +855,7 @@ qemuDomainSecretPlainSetup(virConnectPtr conn,
     int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
     const char *protocolstr = virStorageNetProtocolTypeToString(protocol);
 
-    secinfo->type = VIR_DOMAIN_SECRET_INFO_PLAIN;
+    secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN;
     if (VIR_STRDUP(secinfo->s.plain.username, authdef->username) < 0)
         return -1;
 

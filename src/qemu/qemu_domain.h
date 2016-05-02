@@ -241,9 +241,9 @@ struct _qemuDomainObjPrivate {
 
 /* Type of domain secret */
 typedef enum {
-    VIR_DOMAIN_SECRET_INFO_PLAIN = 0,
+    VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN = 0,
 
-    VIR_DOMAIN_SECRET_INFO_LAST
+    VIR_DOMAIN_SECRET_INFO_TYPE_LAST
 } qemuDomainSecretInfoType;
 
 typedef struct _qemuDomainSecretPlain qemuDomainSecretPlain;
@@ -256,7 +256,7 @@ struct _qemuDomainSecretPlain {
 typedef struct _qemuDomainSecretInfo qemuDomainSecretInfo;
 typedef qemuDomainSecretInfo *qemuDomainSecretInfoPtr;
 struct _qemuDomainSecretInfo {
-    int type;  /* qemuDomainSecretInfoType */
+    qemuDomainSecretInfoType type;
     union {
         qemuDomainSecretPlain plain;
     } s;
