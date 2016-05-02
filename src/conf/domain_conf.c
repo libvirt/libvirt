@@ -1240,7 +1240,7 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
     if (!def)
         return;
 
-    switch ((virDomainGraphicsType)def->type) {
+    switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         VIR_FREE(def->data.vnc.socket);
         VIR_FREE(def->data.vnc.keymap);
@@ -10650,7 +10650,7 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     char *address  = virXMLPropString(node, "address");
     char *network  = virXMLPropString(node, "network");
     char *fromConfig = virXMLPropString(node, "fromConfig");
-    int tmp;
+    int tmp, typeVal;
 
     if (!type) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -10658,11 +10658,12 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
         goto error;
     }
 
-    if ((def->type = virDomainGraphicsListenTypeFromString(type)) < 0) {
+    if ((typeVal = virDomainGraphicsListenTypeFromString(type)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown graphics listen type '%s'"), type);
         goto error;
     }
+    def->type = typeVal;
 
     /* address is recognized if either type='address', or if
      * type='network' and we're looking at live XML (i.e. *not*
@@ -11288,6 +11289,7 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
 {
     virDomainGraphicsDefPtr def;
     char *type = NULL;
+    int typeVal;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -11299,13 +11301,14 @@ virDomainGraphicsDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-    if ((def->type = virDomainGraphicsTypeFromString(type)) < 0) {
+    if ((typeVal = virDomainGraphicsTypeFromString(type)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown graphics device type '%s'"), type);
         goto error;
     }
+    def->type = typeVal;
 
-    switch ((virDomainGraphicsType)def->type) {
+    switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
         if (virDomainGraphicsDefParseXMLVNC(def, node, ctxt, flags) < 0)
             goto error;
@@ -21519,6 +21522,8 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         virDomainGraphicsAuthDefFormatAttr(buf, &def->data.spice.auth, flags);
         break;
 
+    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+        break;
     }
 
     for (i = 0; i < def->nListens; i++) {

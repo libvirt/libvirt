@@ -2633,7 +2633,7 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        switch ((virDomainGraphicsListenType) newlisten->type) {
+        switch (newlisten->type) {
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
             if (STRNEQ_NULLABLE(newlisten->address, oldlisten->address)) {
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",

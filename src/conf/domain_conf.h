@@ -1552,7 +1552,7 @@ typedef enum {
 typedef struct _virDomainGraphicsListenDef virDomainGraphicsListenDef;
 typedef virDomainGraphicsListenDef *virDomainGraphicsListenDefPtr;
 struct _virDomainGraphicsListenDef {
-    int type;   /* enum virDomainGraphicsListenType */
+    virDomainGraphicsListenType type;
     char *address;
     char *network;
     bool fromConfig;    /* true if the @address is config file originated */
@@ -1564,7 +1564,7 @@ struct _virDomainGraphicsDef {
      * Value 0 means port wasn't specified in XML at all.
      * Positive value is actual port number given in XML.
      */
-    int type;
+    virDomainGraphicsType type;
     union {
         struct {
             int port;
@@ -1597,20 +1597,20 @@ struct _virDomainGraphicsDef {
             int tlsPort;
             bool portReserved;
             bool tlsPortReserved;
-            int mousemode;
+            virDomainGraphicsSpiceMouseMode mousemode;
             char *keymap;
             virDomainGraphicsAuthDef auth;
             bool autoport;
             int channels[VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST];
-            int defaultMode; /* enum virDomainGraphicsSpiceChannelMode */
+            virDomainGraphicsSpiceChannelMode defaultMode;
             int image;
             int jpeg;
             int zlib;
             int playback;
             int streaming;
-            int copypaste; /* enum virTristateBool */
-            int filetransfer; /* enum virTristateBool */
-            int gl; /* enum virTristateBool */
+            virTristateBool copypaste;
+            virTristateBool filetransfer;
+            virTristateBool gl;
         } spice;
     } data;
     /* nListens, listens, and *port are only useful if type is vnc,

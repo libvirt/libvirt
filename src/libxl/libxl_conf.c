@@ -1463,6 +1463,12 @@ libxlMakeVfb(virPortAllocatorPtr graphicsports,
             if (VIR_STRDUP(x_vfb->keymap, l_vfb->data.vnc.keymap) < 0)
                 return -1;
             break;
+
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+            break;
     }
 
     return 0;
@@ -1578,6 +1584,8 @@ libxlMakeBuildInfoVfb(virPortAllocatorPtr graphicsports,
             break;
         case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER:
             libxl_defbool_set(&b_info->u.hvm.spice.agent_mouse, false);
+            break;
+        case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_LAST:
             break;
         }
 

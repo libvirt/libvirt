@@ -7445,6 +7445,10 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
                 if (VIR_STRDUP(gListen->address, netAddr) < 0)
                     goto error;
                 break;
+
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+                break;
             }
         }
 
@@ -7602,6 +7606,10 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                 if (VIR_STRDUP(gListen->address, listenAddr) < 0)
                     goto error;
                 break;
+
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+                break;
             }
         }
 
@@ -7727,7 +7735,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         }
     }
 
-    if (graphics->data.spice.gl == VIR_TRISTATE_SWITCH_ON) {
+    if (graphics->data.spice.gl == VIR_TRISTATE_BOOL_YES) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_GL)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("This QEMU doesn't support spice OpenGL"));
@@ -7782,7 +7790,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
                              virDomainGraphicsDefPtr graphics,
                              const char *domainLibDir)
 {
-    switch ((virDomainGraphicsType) graphics->type) {
+    switch (graphics->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -9319,6 +9327,10 @@ qemuBuildCommandLineValidate(virQEMUDriverPtr driver,
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
             ++spice;
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
             break;
         }
     }

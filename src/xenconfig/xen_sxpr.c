@@ -929,6 +929,7 @@ xenParseSxprGraphicsNew(virDomainDefPtr def,
     virDomainGraphicsDefPtr graphics = NULL;
     const struct sexpr *cur, *node;
     const char *tmp;
+    int typeVal;
 
     /* append network devices and framebuffer */
     for (cur = root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
@@ -949,11 +950,12 @@ xenParseSxprGraphicsNew(virDomainDefPtr def,
             if (VIR_ALLOC(graphics) < 0)
                 goto error;
 
-            if ((graphics->type = virDomainGraphicsTypeFromString(tmp)) < 0) {
+            if ((typeVal = virDomainGraphicsTypeFromString(tmp)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unknown graphics type '%s'"), tmp);
                 goto error;
             }
+            graphics->type = typeVal;
 
             if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SDL) {
                 const char *display = sexpr_node(node, "device/vfb/display");
