@@ -10716,10 +10716,9 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
 
     if (network && network[0]) {
         if (def->type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK) {
-            /* network='xxx' never makes sense with anything except
-             * type='network' */
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("network attribute not allowed when listen type is not network"));
+                           _("'network' attribute is valid only for listen "
+                             "type 'network'"));
             goto error;
         }
         def->network = network;
