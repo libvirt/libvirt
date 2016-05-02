@@ -5146,6 +5146,10 @@ qemuProcessPrepareDomain(virConnectPtr conn,
             goto cleanup;
     }
 
+    VIR_DEBUG("Create domain masterKey");
+    if (qemuDomainMasterKeyCreate(vm) < 0)
+        goto cleanup;
+
     if (VIR_ALLOC(priv->monConfig) < 0)
         goto cleanup;
 
@@ -5271,8 +5275,8 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
         qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Create domain masterKey");
-    if (qemuDomainMasterKeyCreate(driver, vm) < 0)
+    VIR_DEBUG("Write domain masterKey");
+    if (qemuDomainWriteMasterKeyFile(driver, vm) < 0)
         goto cleanup;
 
     ret = 0;

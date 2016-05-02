@@ -498,13 +498,14 @@ qemuDomainGetMasterKeyFilePath(const char *libDir)
 
 
 /* qemuDomainWriteMasterKeyFile:
- * @priv: pointer to domain private object
+ * @driver: qemu driver data
+ * @vm: Pointer to the vm object
  *
  * Get the desired path to the masterKey file and store it in the path.
  *
  * Returns 0 on success, -1 on failure with error message indicating failure
  */
-static int
+int
 qemuDomainWriteMasterKeyFile(virQEMUDriverPtr driver,
                              virDomainObjPtr vm)
 {
@@ -512,6 +513,10 @@ qemuDomainWriteMasterKeyFile(virQEMUDriverPtr driver,
     int fd = -1;
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    /* Only gets filled in if we have the capability */
+    if (!priv->masterKey)
+        return 0;
 
     if (!(path = qemuDomainGetMasterKeyFilePath(priv->libDir)))
         return -1;
@@ -695,7 +700,7 @@ qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv)
 
 
 /* qemuDomainMasterKeyCreate:
- * @priv: Pointer to the domain private object
+ * @vm: Pointer to the domain object
  *
  * As long as the underlying qemu has the secret capability,
  * generate and store 'raw' in a file a random 32-byte key to
@@ -704,8 +709,7 @@ qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv)
  * Returns: 0 on success, -1 w/ error message on failure
  */
 int
-qemuDomainMasterKeyCreate(virQEMUDriverPtr driver,
-                          virDomainObjPtr vm)
+qemuDomainMasterKeyCreate(virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -715,18 +719,11 @@ qemuDomainMasterKeyCreate(virQEMUDriverPtr driver,
 
     if (!(priv->masterKey =
           qemuDomainGenerateRandomKey(QEMU_DOMAIN_MASTER_KEY_LEN)))
-        goto error;
+        return -1;
 
     priv->masterKeyLen = QEMU_DOMAIN_MASTER_KEY_LEN;
 
-    if (qemuDomainWriteMasterKeyFile(driver, vm) < 0)
-        goto error;
-
     return 0;
-
- error:
-    qemuDomainMasterKeyRemove(priv);
-    return -1;
 }
 
 
