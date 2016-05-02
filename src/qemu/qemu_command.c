@@ -943,7 +943,7 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
     if (virDiskNameToIndex(disk->dst) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unsupported disk type '%s'"), disk->dst);
-        goto error;
+        return -1;
     }
 
     if (disk->wwn) {
@@ -951,7 +951,7 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
             (disk->bus != VIR_DOMAIN_DISK_BUS_SCSI)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Only ide and scsi disk support wwn"));
-            goto error;
+            return -1;
         }
     }
 
@@ -959,7 +959,7 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
         disk->bus != VIR_DOMAIN_DISK_BUS_SCSI) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Only scsi disk supports vendor and product"));
-            goto error;
+            return -1;
     }
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
@@ -969,7 +969,7 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk device='lun' is not supported for bus='%s'"),
                            virDomainDiskQEMUBusTypeToString(disk->bus));
-            goto error;
+            return -1;
         }
 
         if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_NETWORK) {
@@ -978,30 +978,28 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
                                _("disk device='lun' is not supported "
                                  "for protocol='%s'"),
                                virStorageNetProtocolTypeToString(disk->src->protocol));
-                goto error;
+                return -1;
             }
         } else if (!virStorageSourceIsBlockLocal(disk->src)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("disk device='lun' is only valid for block "
                              "type disk source"));
-            goto error;
+            return -1;
         }
 
         if (disk->wwn) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Setting wwn is not supported for lun device"));
-            goto error;
+            return -1;
         }
         if (disk->vendor || disk->product) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Setting vendor or product is not supported "
                              "for lun device"));
-            goto error;
+            return -1;
         }
     }
     return 0;
- error:
-    return -1;
 }
 
 
