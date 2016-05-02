@@ -971,7 +971,8 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
                            virDomainDiskQEMUBusTypeToString(disk->bus));
             goto error;
         }
-        if (disk->src->type == VIR_STORAGE_TYPE_NETWORK) {
+
+        if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_NETWORK) {
             if (disk->src->protocol != VIR_STORAGE_NET_PROTOCOL_ISCSI) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("disk device='lun' is not supported "
