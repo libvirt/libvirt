@@ -3838,75 +3838,16 @@ prlsdkDetachDomainHardDisks(PRL_HANDLE sdkdom)
     return ret;
 }
 
-/**
- * prlsdkDomainHasSnapshots:
- *
- * This function detects where a domain specified by @sdkdom
- * has snapshots. It doesn't count them correctly.
- *
- * @sdkdom: domain handle
- * @found: a value more than zero if snapshots present
- *
- * Returns 0 if function succeeds, -1 otherwise.
- */
-static int
-prlsdkDomainHasSnapshots(PRL_HANDLE sdkdom, int* found)
-{
-    int ret = -1;
-    PRL_RESULT pret;
-    PRL_HANDLE job;
-    PRL_HANDLE result;
-    char *snapshotxml = NULL;
-    unsigned int paramsCount;
-    xmlDocPtr xml = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-
-    if (!found)
-        goto cleanup;
-
-    job = PrlVm_GetSnapshotsTreeEx(sdkdom, PGST_WITHOUT_SCREENSHOTS);
-    if (PRL_FAILED(getJobResult(job, &result)))
-        goto cleanup;
-
-    pret = PrlResult_GetParamsCount(result, &paramsCount);
-    prlsdkCheckRetGoto(pret, cleanup);
-
-    if (!paramsCount)
-        goto cleanup;
-
-    if (!(snapshotxml = prlsdkGetStringParamVar(PrlResult_GetParamAsString,
-                                                result)))
-        goto cleanup;
-
-    if (*snapshotxml == '\0') {
-        /* The document is empty that means no snapshots */
-        *found = 0;
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (!(xml = virXMLParseStringCtxt(snapshotxml, "SavedStateItem", &ctxt)))
-        goto cleanup;
-
-    *found = virXMLChildElementCount(ctxt->node);
-    ret = 0;
-
- cleanup:
-
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
-    VIR_FREE(snapshotxml);
-    return ret;
-}
-
 int
 prlsdkUnregisterDomain(vzDriverPtr driver, virDomainObjPtr dom, unsigned int flags)
 {
     vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job;
     size_t i;
-    int snapshotfound = 0;
+    virDomainSnapshotObjListPtr snapshots = NULL;
     VIRTUAL_MACHINE_STATE domainState;
+    int ret = -1;
+    int num;
 
     if (prlsdkGetDomainState(privdom->sdkdom, &domainState) < 0)
         return -1;
@@ -3920,31 +3861,39 @@ prlsdkUnregisterDomain(vzDriverPtr driver, virDomainObjPtr dom, unsigned int fla
         return -1;
     }
 
-    if (prlsdkDomainHasSnapshots(privdom->sdkdom, &snapshotfound) < 0)
+    if (!(snapshots = prlsdkLoadSnapshots(dom)))
         return -1;
 
-    if (snapshotfound && !(flags & VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA)) {
+    if ((num = virDomainSnapshotObjListNum(snapshots, NULL, 0)) < 0)
+        goto cleanup;
+
+    if (num > 0 && !(flags & VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Refusing to undefine while snapshots exist"));
-        return -1;
+        goto cleanup;
     }
 
     if (prlsdkDetachDomainHardDisks(privdom->sdkdom))
-        return -1;
+        goto cleanup;
 
     job = PrlVm_Delete(privdom->sdkdom, PRL_INVALID_HANDLE);
     if (PRL_FAILED(waitJob(job)))
-        return -1;
+        goto cleanup;
 
     for (i = 0; i < dom->def->nnets; i++)
         prlsdkCleanupBridgedNet(driver, dom->def->nets[i]);
 
     if (prlsdkSendEvent(driver, dom, VIR_DOMAIN_EVENT_UNDEFINED,
                         VIR_DOMAIN_EVENT_UNDEFINED_REMOVED) < 0)
-        return -1;
+        goto cleanup;
 
     virDomainObjListRemove(driver->domains, dom);
-    return 0;
+
+    ret = 0;
+ cleanup:
+
+    virDomainSnapshotObjListFree(snapshots);
+    return ret;
 }
 
 int
