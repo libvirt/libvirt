@@ -16759,6 +16759,10 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     if (qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
 
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN &&
+        qemuDomainDefValidateDiskLunSource(mirror) < 0)
+        goto endjob;
+
     if (!(virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_MIRROR) &&
           virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKJOB_ASYNC))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

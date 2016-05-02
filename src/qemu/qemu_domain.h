@@ -666,4 +666,7 @@ void qemuDomainSecretDestroy(virDomainObjPtr vm)
 int qemuDomainSecretPrepare(virConnectPtr conn, virDomainObjPtr vm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int qemuDomainDefValidateDiskLunSource(const virStorageSource *src)
+    ATTRIBUTE_NONNULL(1);
+
 #endif /* __QEMU_DOMAIN_H__ */

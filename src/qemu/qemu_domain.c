@@ -5297,3 +5297,34 @@ qemuDomainDiskByName(virDomainDefPtr def,
 
     return ret;
 }
+
+
+/**
+ * qemuDomainDefValidateDiskLunSource:
+ * @src: disk source struct
+ *
+ * Validate whether the disk source is valid for disk device='lun'.
+ *
+ * Returns 0 if the configuration is valid -1 and a libvirt error if the soure
+ * is invalid.
+ */
+int
+qemuDomainDefValidateDiskLunSource(const virStorageSource *src)
+{
+    if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_NETWORK) {
+        if (src->protocol != VIR_STORAGE_NET_PROTOCOL_ISCSI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("disk device='lun' is not supported "
+                             "for protocol='%s'"),
+                           virStorageNetProtocolTypeToString(src->protocol));
+            return -1;
+        }
+    } else if (!virStorageSourceIsBlockLocal(src)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("disk device='lun' is only valid for block "
+                         "type disk source"));
+        return -1;
+    }
+
+    return 0;
+}

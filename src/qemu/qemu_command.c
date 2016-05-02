@@ -972,20 +972,8 @@ qemuCheckDiskConfig(virDomainDiskDefPtr disk)
             return -1;
         }
 
-        if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_NETWORK) {
-            if (disk->src->protocol != VIR_STORAGE_NET_PROTOCOL_ISCSI) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("disk device='lun' is not supported "
-                                 "for protocol='%s'"),
-                               virStorageNetProtocolTypeToString(disk->src->protocol));
-                return -1;
-            }
-        } else if (!virStorageSourceIsBlockLocal(disk->src)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk device='lun' is only valid for block "
-                             "type disk source"));
+        if (qemuDomainDefValidateDiskLunSource(disk->src) < 0)
             return -1;
-        }
 
         if (disk->wwn) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
