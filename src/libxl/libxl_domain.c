@@ -514,7 +514,7 @@ libxlDomainShutdownThread(void *opaque)
     }
     libxlDomainDestroyInternal(driver, vm);
     libxlDomainCleanup(driver, vm);
-    if (libxlDomainStart(driver, vm, false, -1) < 0) {
+    if (libxlDomainStartNew(driver, vm, false) < 0) {
         virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to restart VM '%s': %s"),
                   vm->def->name, err ? err->message : _("unknown error"));
@@ -1006,14 +1006,23 @@ libxlDomainCreateIfaceNames(virDomainDefPtr def, libxl_domain_config *d_config)
 }
 
 
+#ifdef LIBXL_HAVE_SRM_V2
+# define LIBXL_DOMSTART_RESTORE_VER_ATTR /* empty */
+#else
+# define LIBXL_DOMSTART_RESTORE_VER_ATTR ATTRIBUTE_UNUSED
+#endif
+
 /*
  * Start a domain through libxenlight.
  *
  * virDomainObjPtr must be locked and a job acquired on invocation
  */
-int
-libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
-                 bool start_paused, int restore_fd)
+static int
+libxlDomainStart(libxlDriverPrivatePtr driver,
+                 virDomainObjPtr vm,
+                 bool start_paused,
+                 int restore_fd,
+                 uint32_t restore_ver LIBXL_DOMSTART_RESTORE_VER_ATTR)
 {
     libxl_domain_config d_config;
     virDomainDefPtr def = NULL;
@@ -1049,6 +1058,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                 goto cleanup;
 
             restore_fd = managed_save_fd;
+            restore_ver = hdr.version;
 
             if (STRNEQ(vm->def->name, def->name) ||
                 memcmp(vm->def->uuid, def->uuid, VIR_UUID_BUFLEN)) {
@@ -1117,6 +1127,9 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
                                       &domid, NULL, &aop_console_how);
     } else {
         libxl_domain_restore_params_init(&params);
+#ifdef LIBXL_HAVE_SRM_V2
+        params.stream_version = restore_ver;
+#endif
         ret = libxl_domain_create_restore(cfg->ctx, &d_config, &domid,
                                           restore_fd, &params, NULL,
                                           &aop_console_how);
@@ -1201,6 +1214,25 @@ libxlDomainStart(libxlDriverPrivatePtr driver, virDomainObjPtr vm,
     VIR_FORCE_CLOSE(managed_save_fd);
     virObjectUnref(cfg);
     return ret;
+}
+
+int
+libxlDomainStartNew(libxlDriverPrivatePtr driver,
+            virDomainObjPtr vm,
+            bool start_paused)
+{
+    return libxlDomainStart(driver, vm, start_paused, -1, LIBXL_SAVE_VERSION);
+}
+
+int
+libxlDomainStartRestore(libxlDriverPrivatePtr driver,
+                        virDomainObjPtr vm,
+                        bool start_paused,
+                        int restore_fd,
+                        uint32_t restore_ver)
+{
+    return libxlDomainStart(driver, vm, start_paused,
+                            restore_fd, restore_ver);
 }
 
 bool

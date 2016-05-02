@@ -323,7 +323,7 @@ libxlAutostartDomain(virDomainObjPtr vm,
     }
 
     if (vm->autostart && !virDomainObjIsActive(vm) &&
-        libxlDomainStart(driver, vm, false, -1) < 0) {
+        libxlDomainStartNew(driver, vm, false) < 0) {
         err = virGetLastError();
         VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                   vm->def->name,
@@ -998,8 +998,8 @@ libxlDomainCreateXML(virConnectPtr conn, const char *xml,
         goto cleanup;
     }
 
-    if (libxlDomainStart(driver, vm, (flags & VIR_DOMAIN_START_PAUSED) != 0,
-                     -1) < 0) {
+    if (libxlDomainStartNew(driver, vm,
+                         (flags & VIR_DOMAIN_START_PAUSED) != 0) < 0) {
         if (!vm->persistent) {
             virDomainObjListRemove(driver->domains, vm);
             vm = NULL;
@@ -1818,7 +1818,9 @@ libxlDomainRestoreFlags(virConnectPtr conn, const char *from,
         goto cleanup;
     }
 
-    ret = libxlDomainStart(driver, vm, (flags & VIR_DOMAIN_SAVE_PAUSED) != 0, fd);
+    ret = libxlDomainStartRestore(driver, vm,
+                                  (flags & VIR_DOMAIN_SAVE_PAUSED) != 0,
+                                  fd, hdr.version);
     if (ret < 0 && !vm->persistent)
         virDomainObjListRemove(driver->domains, vm);
 
@@ -2681,7 +2683,8 @@ libxlDomainCreateWithFlags(virDomainPtr dom,
         goto endjob;
     }
 
-    ret = libxlDomainStart(driver, vm, (flags & VIR_DOMAIN_START_PAUSED) != 0, -1);
+    ret = libxlDomainStartNew(driver, vm,
+                              (flags & VIR_DOMAIN_START_PAUSED) != 0);
     if (ret < 0)
         goto endjob;
     dom->id = vm->def->id;

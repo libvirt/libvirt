@@ -142,10 +142,16 @@ libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver,
                              virDomainObjPtr vm);
 
 int
-libxlDomainStart(libxlDriverPrivatePtr driver,
-                 virDomainObjPtr vm,
-                 bool start_paused,
-                 int restore_fd);
+libxlDomainStartNew(libxlDriverPrivatePtr driver,
+                    virDomainObjPtr vm,
+                    bool start_paused);
+
+int
+libxlDomainStartRestore(libxlDriverPrivatePtr driver,
+                        virDomainObjPtr vm,
+                        bool start_paused,
+                        int restore_fd,
+                        uint32_t restore_ver);
 
 bool
 libxlDomainDefCheckABIStability(libxlDriverPrivatePtr driver,

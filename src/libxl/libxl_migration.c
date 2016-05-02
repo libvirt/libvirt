@@ -106,7 +106,7 @@ libxlDoMigrateReceive(void *opaque)
      * Always start the domain paused.  If needed, unpause in the
      * finish phase, after transfer of the domain is complete.
      */
-    ret = libxlDomainStart(driver, vm, true, recvfd);
+    ret = libxlDomainStartRestore(driver, vm, true, recvfd, LIBXL_SAVE_VERSION);
 
     if (ret < 0 && !vm->persistent)
         remove_dom = true;
