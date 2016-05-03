@@ -1475,9 +1475,9 @@ rm -rf .git
 %define with_packager_version --with-packager-version="%{release}"
 
 %if %{with_systemd}
-    %define init_scripts --with-init_script=systemd
+    %define init_scripts --with-init-script=systemd
 %else
-    %define init_scripts --with-init_script=redhat
+    %define init_scripts --with-init-script=redhat
 %endif
 
 %if %{with_selinux}
