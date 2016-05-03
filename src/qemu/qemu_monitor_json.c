@@ -1093,11 +1093,7 @@ qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,
     if (qemuMonitorJSONCheckError(cmd, reply))
         goto cleanup;
 
-    if (!(obj = virJSONValueObjectGet(reply, "return"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("human monitor command was missing return data"));
-        goto cleanup;
-    }
+    obj = virJSONValueObjectGet(reply, "return");
 
     if (reply_str) {
         const char *data;
@@ -2539,12 +2535,7 @@ qemuMonitorJSONGetMigrationCompression(qemuMonitorPtr mon,
     if ((ret = qemuMonitorJSONCheckError(cmd, reply)) < 0)
         goto cleanup;
 
-    if (!(result = virJSONValueObjectGet(reply, "return"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-migrate-parameters reply was missing "
-                         "'return' data"));
-        goto cleanup;
-    }
+    result = virJSONValueObjectGet(reply, "return");
 
     if (virJSONValueObjectGetNumberInt(result, "compress-level",
                                        &compress->level) < 0) {
@@ -5395,11 +5386,7 @@ int qemuMonitorJSONGetObjectProperty(qemuMonitorPtr mon,
 
     ret = -1;
 
-    if (!(data = virJSONValueObjectGet(reply, "return"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("qom-get reply was missing return data"));
-        goto cleanup;
-    }
+    data = virJSONValueObjectGet(reply, "return");
 
     switch ((qemuMonitorJSONObjectPropertyType) prop->type) {
     /* Simple cases of boolean, int, long, uint, ulong, double, and string
