@@ -31,7 +31,7 @@ int virHostValidateQEMU(void)
     virBitmapPtr flags;
     int ret = 0;
 
-    virHostMsgCheck("QEMU", "%s", ("for hardware virtualization"));
+    virHostMsgCheck("QEMU", "%s", _("for hardware virtualization"));
 
     flags = virHostValidateGetCPUFlags();
 
