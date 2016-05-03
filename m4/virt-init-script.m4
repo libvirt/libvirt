@@ -30,20 +30,14 @@ AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
     init_systemd=no
     init_upstart=no
 
-    if test "$with_init_script" = check; then
-        if test "$cross_compiling" = yes; then
-            with_init_script=none
-        fi
+    if test "$with_init_script" = check && test "$cross_compiling" = yes; then
+        with_init_script=none
     fi
-    if type systemctl >/dev/null 2>&1; then
-        if test "$with_init_script" = check; then
-            with_init_script=systemd
-        fi
+    if test "$with_init_script" = check && type systemctl >/dev/null 2>&1; then
+        with_init_script=systemd
     fi
-    if test -f /etc/redhat-release; then
-        if test "$with_init_script" = check; then
-            with_init_script=redhat
-        fi
+    if test "$with_init_script" = check && test -f /etc/redhat-release; then
+        with_init_script=redhat
     fi
     if test "$with_init_script" = check; then
         with_init_script=none
