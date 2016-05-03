@@ -1734,8 +1734,6 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
     switch (def->os.arch) {
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
-        if (!def->os.machine)
-            break;
         if (STREQ(def->os.machine, "isapc")) {
             addDefaultUSB = false;
             break;
