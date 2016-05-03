@@ -1740,8 +1740,7 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
             addDefaultUSB = false;
             break;
         }
-        if (STRPREFIX(def->os.machine, "pc-q35") ||
-            STREQ(def->os.machine, "q35")) {
+        if (qemuDomainMachineIsQ35(def)) {
             addPCIeRoot = true;
             addImplicitSATA = true;
 
@@ -1754,11 +1753,7 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
                 addDefaultUSB = false;
             break;
         }
-        if (!STRPREFIX(def->os.machine, "pc-0.") &&
-            !STRPREFIX(def->os.machine, "pc-1.") &&
-            !STRPREFIX(def->os.machine, "pc-i440") &&
-            STRNEQ(def->os.machine, "pc") &&
-            !STRPREFIX(def->os.machine, "rhel"))
+        if (!qemuDomainMachineIsI440FX(def))
             break;
         addPCIRoot = true;
         break;
