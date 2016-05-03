@@ -3401,14 +3401,14 @@ qemuMonitorJSONQueryRxFilter(qemuMonitorPtr mon, const char *alias,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
     if (qemuMonitorJSONQueryRxFilterParse(reply, filter) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
     if (ret < 0) {
         virNetDevRxFilterFree(*filter);
         *filter = NULL;
