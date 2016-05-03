@@ -60,7 +60,6 @@
 /daemon/libvirtd
 /daemon/libvirtd*.logrotate
 /daemon/libvirtd.init
-/daemon/libvirtd.pod
 /daemon/libvirtd.policy
 /daemon/libvirtd.service
 /daemon/test_libvirtd.aug
