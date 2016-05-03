@@ -33,10 +33,10 @@ int virHostValidateQEMU(void)
 
     virHostMsgCheck("QEMU", "%s", _("for hardware virtualization"));
 
-    flags = virHostValidateGetCPUFlags();
+    if (!(flags = virHostValidateGetCPUFlags()))
+        return -1;
 
-    if (flags &&
-        (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SVM) ||
+    if ((virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SVM) ||
          virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_VMX))) {
         virHostMsgPass();
         if (virHostValidateDeviceExists("QEMU", "/dev/kvm",
