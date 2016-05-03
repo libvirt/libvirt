@@ -1753,9 +1753,8 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
                 addDefaultUSB = false;
             break;
         }
-        if (!qemuDomainMachineIsI440FX(def))
-            break;
-        addPCIRoot = true;
+        if (qemuDomainMachineIsI440FX(def))
+            addPCIRoot = true;
         break;
 
     case VIR_ARCH_ARMV7L:
