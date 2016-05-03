@@ -156,8 +156,12 @@
 /src/virt-aa-helper
 /src/virtlockd
 /src/virtlockd.init
+/src/virtlockd.service
+/src/virtlockd.socket
 /src/virtlogd
 /src/virtlogd.init
+/src/virtlogd.service
+/src/virtlogd.socket
 /tests/*.log
 /tests/*.pid
 /tests/*.trs
