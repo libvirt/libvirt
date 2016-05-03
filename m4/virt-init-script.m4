@@ -41,9 +41,6 @@ AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
         fi
     fi
     if test -f /etc/redhat-release; then
-        if test "$with_init_script" = systemd; then
-            with_init_script=systemd+redhat
-        fi
         if test "$with_init_script" = check; then
             with_init_script=redhat
         fi
