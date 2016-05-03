@@ -11,6 +11,7 @@
 *.gcov
 *.html
 *.i
+*.init
 *.la
 *.lo
 *.loT
@@ -20,6 +21,8 @@
 *.pyc
 *.rej
 *.s
+*.service
+*.socket
 *.swp
 *~
 .#*
@@ -59,9 +62,7 @@
 /daemon/libvirt_qemud
 /daemon/libvirtd
 /daemon/libvirtd*.logrotate
-/daemon/libvirtd.init
 /daemon/libvirtd.policy
-/daemon/libvirtd.service
 /daemon/test_libvirtd.aug
 /docs/aclperms.htmlinc
 /docs/apibuild.py.stamp
@@ -154,13 +155,7 @@
 /src/util/virkeymaps.h
 /src/virt-aa-helper
 /src/virtlockd
-/src/virtlockd.init
-/src/virtlockd.service
-/src/virtlockd.socket
 /src/virtlogd
-/src/virtlogd.init
-/src/virtlogd.service
-/src/virtlogd.socket
 /tests/*.log
 /tests/*.pid
 /tests/*.trs
@@ -174,8 +169,6 @@
 /tests/reconnect
 /tests/ssh
 /tests/test_conf
-/tools/libvirt-guests.init
-/tools/libvirt-guests.service
 /tools/libvirt-guests.sh
 /tools/virt-login-shell
 /tools/virsh
