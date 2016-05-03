@@ -992,6 +992,10 @@ static const vshCmdInfo info_vol_info[] = {
 static const vshCmdOptDef opts_vol_info[] = {
     VIRSH_COMMON_OPT_VOLUME_VOL,
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
+    {.name = "bytes",
+     .type = VSH_OT_BOOL,
+     .help = N_("sizes are represented in bytes rather than pretty units")
+    },
     {.name = NULL}
 };
 
@@ -1000,6 +1004,7 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
 {
     virStorageVolInfo info;
     virStorageVolPtr vol;
+    bool bytes = vshCommandOptBool(cmd, "bytes");
     bool ret = true;
 
     if (!(vol = virshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
@@ -1014,11 +1019,21 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%-15s %s\n", _("Type:"),
                  virshVolumeTypeToString(info.type));
 
-        val = vshPrettyCapacity(info.capacity, &unit);
-        vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
+        if (bytes) {
+            vshPrint(ctl, "%-15s %llu %s\n", _("Capacity:"),
+                     info.capacity, _("bytes"));
+        } else {
+            val = vshPrettyCapacity(info.capacity, &unit);
+            vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
+        }
 
-        val = vshPrettyCapacity(info.allocation, &unit);
-        vshPrint(ctl, "%-15s %2.2lf %s\n", _("Allocation:"), val, unit);
+        if (bytes) {
+            vshPrint(ctl, "%-15s %llu %s\n", _("Allocation:"),
+                     info.allocation, _("bytes"));
+         } else {
+            val = vshPrettyCapacity(info.allocation, &unit);
+            vshPrint(ctl, "%-15s %2.2lf %s\n", _("Allocation:"), val, unit);
+         }
     } else {
         ret = false;
     }
