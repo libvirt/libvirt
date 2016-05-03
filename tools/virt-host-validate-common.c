@@ -40,7 +40,8 @@
 
 VIR_ENUM_IMPL(virHostValidateCPUFlag, VIR_HOST_VALIDATE_CPU_FLAG_LAST,
               "vmx",
-              "svm");
+              "svm",
+              "sie");
 
 static bool quiet;
 

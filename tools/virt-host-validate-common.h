@@ -37,6 +37,7 @@ typedef enum {
 typedef enum {
     VIR_HOST_VALIDATE_CPU_FLAG_VMX = 0,
     VIR_HOST_VALIDATE_CPU_FLAG_SVM,
+    VIR_HOST_VALIDATE_CPU_FLAG_SIE,
 
     VIR_HOST_VALIDATE_CPU_FLAG_LAST,
 } virHostValidateCPUFlag;

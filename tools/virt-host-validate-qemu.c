@@ -24,20 +24,37 @@
 
 #include "virt-host-validate-qemu.h"
 #include "virt-host-validate-common.h"
+#include "virarch.h"
 #include "virbitmap.h"
 
 int virHostValidateQEMU(void)
 {
     virBitmapPtr flags;
     int ret = 0;
+    bool hasHwVirt = false;
 
     virHostMsgCheck("QEMU", "%s", _("for hardware virtualization"));
 
     if (!(flags = virHostValidateGetCPUFlags()))
         return -1;
 
-    if ((virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SVM) ||
-         virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_VMX))) {
+    switch (virArchFromHost()) {
+    case VIR_ARCH_I686:
+    case VIR_ARCH_X86_64:
+        if (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SVM) ||
+            virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_VMX))
+            hasHwVirt = true;
+        break;
+    case VIR_ARCH_S390:
+    case VIR_ARCH_S390X:
+        if (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SIE))
+            hasHwVirt = true;
+        break;
+    default:
+        hasHwVirt = false;
+    }
+
+    if (hasHwVirt) {
         virHostMsgPass();
         if (virHostValidateDeviceExists("QEMU", "/dev/kvm",
                                         VIR_HOST_VALIDATE_FAIL,
