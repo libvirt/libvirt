@@ -55,6 +55,7 @@ module Test_libvirtd =
         { "audit_level" = "2" }
         { "audit_logging" = "1" }
         { "host_uuid" = "00000000-0000-0000-0000-000000000000" }
+        { "host_uuid_source" = "smbios" }
         { "keepalive_interval" = "5" }
         { "keepalive_count" = "5" }
         { "keepalive_required" = "1" }

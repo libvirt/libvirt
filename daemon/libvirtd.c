@@ -1076,6 +1076,39 @@ static int migrateProfile(void)
     return ret;
 }
 
+static int
+daemonSetupHostUUID(const struct daemonConfig *config)
+{
+    static const char *machine_id = "/etc/machine-id";
+    char buf[VIR_UUID_STRING_BUFLEN];
+    const char *uuid;
+
+    if (config->host_uuid) {
+        uuid = config->host_uuid;
+    } else if (!config->host_uuid_source ||
+               STREQ(config->host_uuid_source, "smbios")) {
+        /* smbios UUID is fetched on demand in virGetHostUUID */
+        return 0;
+    } else if (STREQ(config->host_uuid_source, "machine-id")) {
+        if (virFileReadBufQuiet(machine_id, buf, sizeof(buf)) < 0) {
+            VIR_ERROR(_("Can't read %s"), machine_id);
+            return -1;
+        }
+
+        uuid = buf;
+    } else {
+        VIR_ERROR(_("invalid UUID source: %s"), config->host_uuid_source);
+        return -1;
+    }
+
+    if (virSetHostUUIDStr(uuid)) {
+        VIR_ERROR(_("invalid host UUID: %s"), uuid);
+        return -1;
+    }
+
+    return 0;
+}
+
 /* Print command-line usage. */
 static void
 daemonUsage(const char *argv0, bool privileged)
@@ -1295,9 +1328,8 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    if (config->host_uuid &&
-        virSetHostUUIDStr(config->host_uuid) < 0) {
-        VIR_ERROR(_("invalid host UUID: %s"), config->host_uuid);
+    if (daemonSetupHostUUID(config) < 0) {
+        VIR_ERROR(_("Can't setup host uuid"));
         exit(EXIT_FAILURE);
     }
 

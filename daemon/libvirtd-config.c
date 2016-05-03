@@ -374,6 +374,7 @@ daemonConfigFree(struct daemonConfig *data)
     VIR_FREE(data->crl_file);
 
     VIR_FREE(data->host_uuid);
+    VIR_FREE(data->host_uuid_source);
     VIR_FREE(data->log_filters);
     VIR_FREE(data->log_outputs);
 
@@ -463,6 +464,7 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     GET_CONF_UINT(conf, filename, audit_logging);
 
     GET_CONF_STR(conf, filename, host_uuid);
+    GET_CONF_STR(conf, filename, host_uuid_source);
 
     GET_CONF_UINT(conf, filename, log_level);
     GET_CONF_STR(conf, filename, log_filters);

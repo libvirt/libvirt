@@ -28,6 +28,7 @@
 
 struct daemonConfig {
     char *host_uuid;
+    char *host_uuid_source;
 
     int listen_tls;
     int listen_tcp;

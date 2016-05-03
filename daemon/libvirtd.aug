@@ -86,6 +86,7 @@ module Libvirtd =
                              | bool_entry "admin_keepalive_required"
 
    let misc_entry = str_entry "host_uuid"
+                  | str_entry "host_uuid_source"
 
    (* Each enty in the config is one of the following three ... *)
    let entry = network_entry
