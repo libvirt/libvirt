@@ -1475,9 +1475,9 @@ rm -rf .git
 %define with_packager_version --with-packager-version="%{release}"
 
 %if %{with_systemd}
-    %define init_scripts --with-init-script=systemd
+    %define with_init_script --with-init-script=systemd
 %else
-    %define init_scripts --with-init-script=redhat
+    %define with_init_script --with-init-script=redhat
 %endif
 
 %if %{with_selinux}
@@ -1553,7 +1553,7 @@ rm -f po/stamp-po
            %{?with_loader_nvram} \
            %{?enable_werror} \
            --enable-expensive-tests \
-           %{init_scripts}
+           %{with_init_script}
 make %{?_smp_mflags}
 gzip -9 ChangeLog
 
