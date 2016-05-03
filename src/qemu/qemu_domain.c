@@ -1761,10 +1761,8 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
     case VIR_ARCH_AARCH64:
         addDefaultUSB = false;
         addDefaultMemballoon = false;
-        if (STREQ(def->os.machine, "virt") ||
-            STRPREFIX(def->os.machine, "virt-")) {
+        if (qemuDomainMachineIsVirt(def))
             addPCIeRoot = virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_GPEX);
-        }
         break;
 
     case VIR_ARCH_PPC64:
@@ -1906,8 +1904,7 @@ qemuDomainDefEnableDefaultFeatures(virDomainDefPtr def)
     switch (def->os.arch) {
     case VIR_ARCH_ARMV7L:
     case VIR_ARCH_AARCH64:
-        if (STREQ(def->os.machine, "virt") ||
-            STRPREFIX(def->os.machine, "virt-")) {
+        if (qemuDomainMachineIsVirt(def)) {
             /* GIC is always available to ARM virt machines */
             def->features[VIR_DOMAIN_FEATURE_GIC] = VIR_TRISTATE_SWITCH_ON;
         }
@@ -2039,8 +2036,7 @@ qemuDomainDefaultNetModel(const virDomainDef *def,
         if (STREQ(def->os.machine, "versatilepb"))
             return "smc91c111";
 
-        if (STREQ(def->os.machine, "virt") ||
-            STRPREFIX(def->os.machine, "virt-"))
+        if (qemuDomainMachineIsVirt(def))
             return "virtio";
 
         /* Incomplete. vexpress (and a few others) use this, but not all
@@ -4650,6 +4646,14 @@ bool
 qemuDomainMachineIsS390CCW(const virDomainDef *def)
 {
     return STRPREFIX(def->os.machine, "s390-ccw");
+}
+
+
+bool
+qemuDomainMachineIsVirt(const virDomainDef *def)
+{
+    return STREQ(def->os.machine, "virt") ||
+           STRPREFIX(def->os.machine, "virt-");
 }
 
 

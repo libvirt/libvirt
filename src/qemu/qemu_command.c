@@ -6807,8 +6807,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
             if (def->gic_version != VIR_GIC_VERSION_NONE) {
                 if ((def->os.arch != VIR_ARCH_ARMV7L &&
                      def->os.arch != VIR_ARCH_AARCH64) ||
-                    (STRNEQ(def->os.machine, "virt") &&
-                     !STRPREFIX(def->os.machine, "virt-"))) {
+                    !qemuDomainMachineIsVirt(def)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("gic-version option is available "
                                      "only for ARM virt machine"));
