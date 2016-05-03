@@ -1115,17 +1115,20 @@ qemuMonitorJSONHumanCommandWithFd(qemuMonitorPtr mon,
 int
 qemuMonitorJSONSetCapabilities(qemuMonitorPtr mon)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("qmp_capabilities", NULL);
     virJSONValuePtr reply = NULL;
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
 
+    ret = 0;
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -1173,17 +1176,20 @@ qemuMonitorJSONStartCPUs(qemuMonitorPtr mon,
 int
 qemuMonitorJSONStopCPUs(qemuMonitorPtr mon)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("stop", NULL);
     virJSONValuePtr reply = NULL;
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
 
+    ret = 0;
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -1195,7 +1201,7 @@ qemuMonitorJSONGetStatus(qemuMonitorPtr mon,
                          bool *running,
                          virDomainPausedReason *reason)
 {
-    int ret;
+    int ret = -1;
     const char *status;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
@@ -1207,15 +1213,11 @@ qemuMonitorJSONGetStatus(qemuMonitorPtr mon,
     if (!(cmd = qemuMonitorJSONMakeCommand("query-status", NULL)))
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
-
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-    if (ret < 0)
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    ret = -1;
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
 
     if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1247,17 +1249,20 @@ qemuMonitorJSONGetStatus(qemuMonitorPtr mon,
 
 int qemuMonitorJSONSystemPowerdown(qemuMonitorPtr mon)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("system_powerdown", NULL);
     virJSONValuePtr reply = NULL;
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
 
+    ret = 0;
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -1268,7 +1273,7 @@ int qemuMonitorJSONSetLink(qemuMonitorPtr mon,
                            virDomainNetInterfaceLinkState state)
 {
 
-    int ret;
+    int ret = -1;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("set_link",
                                                      "s:name", name,
@@ -1278,28 +1283,35 @@ int qemuMonitorJSONSetLink(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
-
     return ret;
 }
 
 int qemuMonitorJSONSystemReset(qemuMonitorPtr mon)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("system_reset", NULL);
     virJSONValuePtr reply = NULL;
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
 
+    ret = 0;
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -1367,7 +1379,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
 int qemuMonitorJSONGetCPUInfo(qemuMonitorPtr mon,
                               int **pids)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-cpus",
                                                      NULL);
     virJSONValuePtr reply = NULL;
@@ -1377,14 +1389,14 @@ int qemuMonitorJSONGetCPUInfo(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONExtractCPUInfo(reply, pids);
-
+    ret = qemuMonitorJSONExtractCPUInfo(reply, pids);
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -1394,42 +1406,41 @@ int qemuMonitorJSONGetCPUInfo(qemuMonitorPtr mon,
 int qemuMonitorJSONGetVirtType(qemuMonitorPtr mon,
                                virDomainVirtType *virtType)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-kvm",
                                                      NULL);
     virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    bool val = false;
 
     *virtType = VIR_DOMAIN_VIRT_QEMU;
 
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
 
-    if (ret == 0) {
-        virJSONValuePtr data;
-        bool val = false;
 
-        if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("info kvm reply was missing return data"));
-            ret = -1;
-            goto cleanup;
-        }
-
-        if (virJSONValueObjectGetBoolean(data, "enabled", &val) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("info kvm reply missing 'enabled' field"));
-            ret = -1;
-            goto cleanup;
-        }
-        if (val)
-            *virtType = VIR_DOMAIN_VIRT_KVM;
+    if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("info kvm reply was missing return data"));
+        goto cleanup;
     }
 
+    if (virJSONValueObjectGetBoolean(data, "enabled", &val) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("info kvm reply missing 'enabled' field"));
+        goto cleanup;
+    }
+
+    if (val)
+        *virtType = VIR_DOMAIN_VIRT_KVM;
+
+    ret = 0;
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
@@ -1564,7 +1575,9 @@ int
 qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
                               unsigned long long *currmem)
 {
-    int ret;
+    int ret = -1;
+    virJSONValuePtr data;
+    unsigned long long mem;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-balloon",
                                                      NULL);
     virJSONValuePtr reply = NULL;
@@ -1574,41 +1587,35 @@ qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0) {
-        /* See if balloon soft-failed */
-        if (qemuMonitorJSONHasError(reply, "DeviceNotActive") ||
-            qemuMonitorJSONHasError(reply, "KVMMissingCap"))
-            goto cleanup;
-
-        /* See if any other fatal error occurred */
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-        /* Success */
-        if (ret == 0) {
-            virJSONValuePtr data;
-            unsigned long long mem;
-
-            if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("info balloon reply was missing return data"));
-                ret = -1;
-                goto cleanup;
-            }
-
-            if (virJSONValueObjectGetNumberUlong(data, "actual", &mem) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("info balloon reply was missing balloon data"));
-                ret = -1;
-                goto cleanup;
-            }
-
-            *currmem = (mem/1024);
-            ret = 1;
-        }
+    /* See if balloon soft-failed */
+    if (qemuMonitorJSONHasError(reply, "DeviceNotActive") ||
+        qemuMonitorJSONHasError(reply, "KVMMissingCap")) {
+        ret = 0;
+        goto cleanup;
     }
 
+    /* See if any other fatal error occurred */
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    /* Success */
+    if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("info balloon reply was missing return data"));
+        goto cleanup;
+    }
+
+    if (virJSONValueObjectGetNumberUlong(data, "actual", &mem) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("info balloon reply was missing balloon data"));
+        goto cleanup;
+    }
+
+    *currmem = (mem/1024);
+    ret = 1;
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
@@ -1658,7 +1665,7 @@ int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
                                   virDomainMemoryStatPtr stats,
                                   unsigned int nr_stats)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
@@ -1682,7 +1689,7 @@ int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
                                            NULL)))
         goto cleanup;
 
-    if ((ret = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
     if ((data = virJSONValueObjectGetObject(reply, "error"))) {
@@ -1697,7 +1704,7 @@ int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
         }
     }
 
-    if ((ret = qemuMonitorJSONCheckError(cmd, reply)) < 0)
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
         goto cleanup;
 
     if (!(data = virJSONValueObjectGetObject(reply, "return"))) {
@@ -1723,15 +1730,10 @@ int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
                       VIR_DOMAIN_MEMORY_STAT_UNUSED, 1024);
     GET_BALLOON_STATS("stat-total-memory",
                       VIR_DOMAIN_MEMORY_STAT_AVAILABLE, 1024);
-
-
+    ret = got;
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
-
-    if (got > 0)
-        ret = got;
-
     return ret;
 }
 #undef GET_BALLOON_STATS
@@ -1764,7 +1766,7 @@ qemuMonitorJSONSetMemoryStatsPeriod(qemuMonitorPtr mon,
 int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
                                 virHashTablePtr table)
 {
-    int ret;
+    int ret = -1;
     size_t i;
 
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-block",
@@ -1775,13 +1777,11 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-    if (ret < 0)
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    ret = -1;
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
 
     if (!(devices = virJSONValueObjectGetArray(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -1847,7 +1847,6 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
     }
 
     ret = 0;
-
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
@@ -2114,7 +2113,7 @@ int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
                                const char *device,
                                unsigned long long size)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd;
     virJSONValuePtr reply = NULL;
 
@@ -2125,17 +2124,18 @@ int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0) {
-        if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-            ret = -2;
-            goto cleanup;
-        }
-
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+        ret = -2;
+        goto cleanup;
     }
 
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
@@ -2145,7 +2145,7 @@ int qemuMonitorJSONBlockResize(qemuMonitorPtr mon,
 int qemuMonitorJSONSetVNCPassword(qemuMonitorPtr mon,
                                   const char *password)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("change",
                                                      "s:device", "vnc",
                                                      "s:target", "password",
@@ -2155,11 +2155,14 @@ int qemuMonitorJSONSetVNCPassword(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0)
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
 
+    ret = 0;
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -2171,7 +2174,7 @@ int qemuMonitorJSONSetPassword(qemuMonitorPtr mon,
                                const char *password,
                                const char *action_if_connected)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("set_password",
                                                      "s:protocol", protocol,
                                                      "s:password", password,
@@ -2181,17 +2184,18 @@ int qemuMonitorJSONSetPassword(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0) {
-        if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-            ret = -2;
-            goto cleanup;
-        }
-
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+        ret = -2;
+        goto cleanup;
     }
 
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
@@ -2203,7 +2207,7 @@ int qemuMonitorJSONExpirePassword(qemuMonitorPtr mon,
                                   const char *protocol,
                                   const char *expire_time)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("expire_password",
                                                      "s:protocol", protocol,
                                                      "s:time", expire_time,
@@ -2212,17 +2216,18 @@ int qemuMonitorJSONExpirePassword(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0) {
-        if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-            ret = -2;
-            goto cleanup;
-        }
-
-        ret = qemuMonitorJSONCheckError(cmd, reply);
+    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
+        ret = -2;
+        goto cleanup;
     }
 
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    ret = 0;
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
@@ -2234,7 +2239,7 @@ int
 qemuMonitorJSONSetBalloon(qemuMonitorPtr mon,
                           unsigned long long newmem)
 {
-    int ret;
+    int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("balloon",
                                                      "U:value", newmem * 1024,
                                                      NULL);
@@ -2242,22 +2247,22 @@ qemuMonitorJSONSetBalloon(qemuMonitorPtr mon,
     if (!cmd)
         return -1;
 
-    ret = qemuMonitorJSONCommand(mon, cmd, &reply);
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
 
-    if (ret == 0) {
-        /* See if balloon soft-failed */
-        if (qemuMonitorJSONHasError(reply, "DeviceNotActive") ||
-            qemuMonitorJSONHasError(reply, "KVMMissingCap"))
-            goto cleanup;
-
-        /* See if any other fatal error occurred */
-        ret = qemuMonitorJSONCheckError(cmd, reply);
-
-        /* Real success */
-        if (ret == 0)
-            ret = 1;
+    /* See if balloon soft-failed */
+    if (qemuMonitorJSONHasError(reply, "DeviceNotActive") ||
+        qemuMonitorJSONHasError(reply, "KVMMissingCap")) {
+        ret = 0;
+        goto cleanup;
     }
 
+    /* See if any other fatal error occurred */
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    /* Real success */
+    ret = 1;
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
