@@ -231,15 +231,8 @@ getDMISystemUUID(char *uuid, int len)
     };
 
     while (paths[i]) {
-        int fd = open(paths[i], O_RDONLY);
-        if (fd >= 0) {
-            if (saferead(fd, uuid, len - 1) == len - 1) {
-                uuid[len - 1] = '\0';
-                VIR_FORCE_CLOSE(fd);
-                return 0;
-            }
-            VIR_FORCE_CLOSE(fd);
-        }
+        if (virFileReadBufQuiet(paths[i], uuid, len) == len - 1)
+            return 0;
         i++;
     }
 

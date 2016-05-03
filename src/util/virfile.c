@@ -1401,6 +1401,30 @@ virFileReadAllQuiet(const char *path, int maxlen, char **buf)
     return len;
 }
 
+/* Read @file into preallocated buffer @buf of size @len.
+ * Return value is -errno in case of errors and size
+ * of data read (no trailing zero) in case of success.
+ * If there is more data then @len - 1 then data will be
+ * truncated. */
+int
+virFileReadBufQuiet(const char *file, char *buf, int len)
+{
+    int fd;
+    ssize_t sz;
+
+    fd = open(file, O_RDONLY);
+    if (fd < 0)
+        return -errno;
+
+    sz = saferead(fd, buf, len - 1);
+    VIR_FORCE_CLOSE(fd);
+    if (sz < 0)
+        return -errno;
+
+    buf[sz] = '\0';
+    return sz;
+}
+
 /* Truncate @path and write @str to it.  If @mode is 0, ensure that
    @path exists; otherwise, use @mode if @path must be created.
    Return 0 for success, nonzero for failure.
