@@ -838,6 +838,7 @@ virAdmServerSetThreadPoolParameters(virAdmServerPtr srv,
 
     virCheckAdmServerReturn(srv, -1);
     virCheckNonNullArgGoto(params, error);
+    virCheckNonNegativeArgGoto(nparams, error);
 
     if (remoteAdminServerSetThreadPoolParameters(srv, params,
                                                  nparams, flags) < 0)
