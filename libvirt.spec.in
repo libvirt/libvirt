@@ -72,7 +72,6 @@
 
 # A few optional bits off by default, we enable later
 %define with_fuse          0%{!?_without_fuse:0}
-%define with_nwfilter      0%{!?_without_nwfilter:0}
 %define with_libpcap       0%{!?_without_libpcap:0}
 %define with_macvtap       0%{!?_without_macvtap:0}
 %define with_libnl         0%{!?_without_libnl:0}
@@ -183,7 +182,6 @@
 
 
 %if %{with_qemu} || %{with_lxc} || %{with_uml}
-    %define with_nwfilter 0%{!?_without_nwfilter:1}
 # Enable libpcap library
     %define with_libpcap  0%{!?_without_libpcap:1}
     %define with_macvtap  0%{!?_without_macvtap:1}
@@ -248,9 +246,7 @@ Source: http://libvirt.org/sources/%{?mainturl}libvirt-%{version}.tar.gz
 
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-config-network = %{version}-%{release}
-%if %{with_nwfilter}
 Requires: libvirt-daemon-config-nwfilter = %{version}-%{release}
-%endif
 %if %{with_libxl}
 Requires: libvirt-daemon-driver-libxl = %{version}-%{release}
 %endif
@@ -269,9 +265,7 @@ Requires: libvirt-daemon-driver-xen = %{version}-%{release}
 %if %{with_vbox}
 Requires: libvirt-daemon-driver-vbox = %{version}-%{release}
 %endif
-%if %{with_nwfilter}
 Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
-%endif
 
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-secret = %{version}-%{release}
@@ -341,9 +335,7 @@ BuildRequires: iptables
 BuildRequires: iptables-ipv6
 %endif
 BuildRequires: radvd
-%if %{with_nwfilter}
 BuildRequires: ebtables
-%endif
 BuildRequires: module-init-tools
 BuildRequires: cyrus-sasl-devel
 %if 0%{?fedora} || 0%{?rhel} >= 7
@@ -505,7 +497,6 @@ Requires: libvirt-daemon-driver-network = %{version}-%{release}
 %description daemon-config-network
 Default configuration files for setting up NAT based networking
 
-%if %{with_nwfilter}
 %package daemon-config-nwfilter
 Summary: Network filter configuration files for the libvirtd daemon
 Group: Development/Libraries
@@ -515,7 +506,6 @@ Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 
 %description daemon-config-nwfilter
 Network filter configuration files for cleaning guest traffic
-%endif
 
 %package daemon-driver-network
 Summary: Network driver plugin for the libvirtd daemon
@@ -534,22 +524,20 @@ an implementation of the virtual network APIs using the Linux
 bridge capabilities.
 
 
-%if %{with_nwfilter}
 %package daemon-driver-nwfilter
 Summary: Nwfilter driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: iptables
-    %if 0%{?rhel} && 0%{?rhel} < 7
+%if 0%{?rhel} && 0%{?rhel} < 7
 Requires: iptables-ipv6
-    %endif
+%endif
 Requires: ebtables
 
 %description daemon-driver-nwfilter
 The nwfilter driver plugin for the libvirtd daemon, providing
 an implementation of the firewall APIs using the ebtables,
 iptables and ip6tables capabilities
-%endif
 
 
 %package daemon-driver-nodedev
@@ -1609,11 +1597,9 @@ exit 0
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml
 
-%if %{with_nwfilter}
 %files daemon-config-nwfilter
 %defattr(-, root, root)
 %{_sysconfdir}/libvirt/nwfilter/*.xml
-%endif
 
 %files daemon-driver-interface
 %defattr(-, root, root)
@@ -1634,13 +1620,11 @@ exit 0
 %defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so
 
-%if %{with_nwfilter}
 %files daemon-driver-nwfilter
 %defattr(-, root, root)
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
 %ghost %dir %{_localstatedir}/run/libvirt/network/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nwfilter.so
-%endif
 
 %files daemon-driver-secret
 %defattr(-, root, root)
