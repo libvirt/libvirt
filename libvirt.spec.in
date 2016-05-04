@@ -99,7 +99,6 @@
 
 # Non-server/HV driver defaults which are always enabled
 %define with_sasl          0%{!?_without_sasl:1}
-%define with_audit         0%{!?_without_audit:1}
 %define with_nss_plugin    0%{!?_without_nss_plugin:1}
 
 
@@ -457,9 +456,7 @@ BuildRequires: libcurl-devel
 %if %{with_hyperv}
 BuildRequires: libwsman-devel >= 2.2.3
 %endif
-%if %{with_audit}
 BuildRequires: audit-libs-devel
-%endif
 %if %{with_dtrace}
 # we need /usr/sbin/dtrace
 BuildRequires: systemtap-sdt-devel
@@ -1184,10 +1181,6 @@ rm -rf .git
     %define _without_macvtap --without-macvtap
 %endif
 
-%if ! %{with_audit}
-    %define _without_audit --without-audit
-%endif
-
 %if ! %{with_dtrace}
     %define _without_dtrace --without-dtrace
 %endif
@@ -1281,7 +1274,7 @@ rm -f po/stamp-po
            %{?_without_sanlock} \
            %{?_without_libpcap} \
            %{?_without_macvtap} \
-           %{?_without_audit} \
+           --with-audit \
            %{?_without_dtrace} \
            --with-driver-modules \
            %{?_with_firewalld} \
