@@ -72,7 +72,6 @@
 
 # A few optional bits off by default, we enable later
 %define with_fuse          0%{!?_without_fuse:0}
-%define with_libpcap       0%{!?_without_libpcap:0}
 %define with_macvtap       0%{!?_without_macvtap:0}
 %define with_libnl         0%{!?_without_libnl:0}
 %define with_cgconfig      0%{!?_without_cgconfig:0}
@@ -182,8 +181,6 @@
 
 
 %if %{with_qemu} || %{with_lxc} || %{with_uml}
-# Enable libpcap library
-    %define with_libpcap  0%{!?_without_libpcap:1}
     %define with_macvtap  0%{!?_without_macvtap:1}
 
 # numad is used to manage the CPU and memory placement dynamically,
@@ -321,9 +318,7 @@ BuildRequires: yajl-devel
 %if %{with_sanlock}
 BuildRequires: sanlock-devel >= 2.4
 %endif
-%if %{with_libpcap}
 BuildRequires: libpcap-devel
-%endif
 %if %{with_libnl}
 BuildRequires: libnl3-devel
 %endif
@@ -1037,10 +1032,6 @@ rm -rf .git
     %define _without_sanlock --without-sanlock
 %endif
 
-%if ! %{with_libpcap}
-    %define _without_libpcap --without-libpcap
-%endif
-
 %if ! %{with_macvtap}
     %define _without_macvtap --without-macvtap
 %endif
@@ -1130,7 +1121,7 @@ rm -f po/stamp-po
            --with-udev \
            --with-yajl \
            %{?_without_sanlock} \
-           %{?_without_libpcap} \
+           --with-libpcap \
            %{?_without_macvtap} \
            --with-audit \
            --with-dtrace \
