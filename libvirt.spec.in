@@ -87,7 +87,6 @@
 %define with_fuse          0%{!?_without_fuse:0}
 %define with_netcf         0%{!?_without_netcf:0}
 %define with_udev          0%{!?_without_udev:0}
-%define with_hal           0%{!?_without_hal:0}
 %define with_yajl          0%{!?_without_yajl:0}
 %define with_nwfilter      0%{!?_without_nwfilter:0}
 %define with_libpcap       0%{!?_without_libpcap:0}
@@ -236,7 +235,7 @@
     %define with_cgconfig 0%{!?_without_cgconfig:1}
 %endif
 
-%if %{with_udev} || %{with_hal}
+%if %{with_udev}
     %define with_nodedev 1
 %else
     %define with_nodedev 0
@@ -366,9 +365,6 @@ BuildRequires: libattr-devel
 BuildRequires: libblkid-devel >= 2.17
 # for augparse, optionally used in testing
 BuildRequires: augeas
-%if %{with_hal}
-BuildRequires: hal-devel
-%endif
 %if %{with_udev}
     %if 0%{?fedora} || 0%{?rhel} >= 7
 BuildRequires: systemd-devel >= 185
@@ -653,9 +649,6 @@ Summary: Nodedev driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 # needed for device enumeration
-    %if %{with_hal}
-Requires: hal
-    %endif
     %if %{with_udev}
         %if 0%{?fedora} || 0%{?rhel} >= 7
 Requires: systemd >= 185
@@ -1215,10 +1208,6 @@ rm -rf .git
     %define _without_apparmor --without-apparmor
 %endif
 
-%if ! %{with_hal}
-    %define _without_hal --without-hal
-%endif
-
 %if ! %{with_udev}
     %define _without_udev --without-udev
 %endif
@@ -1330,7 +1319,7 @@ rm -f po/stamp-po
            %{?_without_selinux} \
            %{?_with_selinux_mount} \
            %{?_without_apparmor} \
-           %{?_without_hal} \
+           --without-hal \
            %{?_without_udev} \
            %{?_without_yajl} \
            %{?_without_sanlock} \
