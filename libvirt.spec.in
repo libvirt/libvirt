@@ -57,7 +57,6 @@
 %define with_hyperv        0%{!?_without_hyperv:1}
 
 # Then the secondary host drivers, which run inside libvirtd
-%define with_network          0%{!?_without_network:1}
 %define with_storage_fs       0%{!?_without_storage_fs:1}
 %define with_storage_lvm      0%{!?_without_storage_lvm:1}
 %define with_storage_iscsi    0%{!?_without_storage_iscsi:1}
@@ -262,9 +261,7 @@ URL: http://libvirt.org/
 Source: http://libvirt.org/sources/%{?mainturl}libvirt-%{version}.tar.gz
 
 Requires: libvirt-daemon = %{version}-%{release}
-%if %{with_network}
 Requires: libvirt-daemon-config-network = %{version}-%{release}
-%endif
 %if %{with_nwfilter}
 Requires: libvirt-daemon-config-nwfilter = %{version}-%{release}
 %endif
@@ -352,14 +349,12 @@ BuildRequires: libnl3-devel
 %endif
 BuildRequires: avahi-devel
 BuildRequires: libselinux-devel
-%if %{with_network}
 BuildRequires: dnsmasq >= 2.41
 BuildRequires: iptables
-    %if 0%{?rhel} && 0%{?rhel} < 7
+%if 0%{?rhel} && 0%{?rhel} < 7
 BuildRequires: iptables-ipv6
-    %endif
-BuildRequires: radvd
 %endif
+BuildRequires: radvd
 %if %{with_nwfilter}
 BuildRequires: ebtables
 %endif
@@ -526,7 +521,6 @@ Server side daemon required to manage the virtualization capabilities
 of recent versions of Linux. Requires a hypervisor specific sub-RPM
 for specific drivers.
 
-%if %{with_network}
 %package daemon-config-network
 Summary: Default configuration files for the libvirtd daemon
 Group: Development/Libraries
@@ -536,7 +530,6 @@ Requires: libvirt-daemon-driver-network = %{version}-%{release}
 
 %description daemon-config-network
 Default configuration files for setting up NAT based networking
-%endif
 
 %if %{with_nwfilter}
 %package daemon-config-nwfilter
@@ -550,7 +543,6 @@ Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 Network filter configuration files for cleaning guest traffic
 %endif
 
-%if %{with_network}
 %package daemon-driver-network
 Summary: Network driver plugin for the libvirtd daemon
 Group: Development/Libraries
@@ -558,15 +550,14 @@ Requires: libvirt-daemon = %{version}-%{release}
 Requires: dnsmasq >= 2.41
 Requires: radvd
 Requires: iptables
-    %if 0%{?rhel} && 0%{?rhel} < 7
+%if 0%{?rhel} && 0%{?rhel} < 7
 Requires: iptables-ipv6
-    %endif
+%endif
 
 %description daemon-driver-network
 The network driver plugin for the libvirtd daemon, providing
 an implementation of the virtual network APIs using the Linux
 bridge capabilities.
-%endif
 
 
 %if %{with_nwfilter}
@@ -1071,10 +1062,6 @@ rm -rf .git
     %define _without_uml --without-uml
 %endif
 
-%if ! %{with_network}
-    %define _without_network --without-network
-%endif
-
 %if ! %{with_storage_fs}
     %define _without_storage_fs --without-storage-fs
 %endif
@@ -1195,7 +1182,7 @@ rm -f po/stamp-po
            --without-vz \
            --without-bhyve \
            --with-interface \
-           %{?_without_network} \
+           --with-network \
            %{?_without_storage_fs} \
            %{?_without_storage_lvm} \
            %{?_without_storage_iscsi} \
@@ -1265,7 +1252,6 @@ rm -f $RPM_BUILD_ROOT%{_bindir}/virt-admin
 rm -f $RPM_BUILD_ROOT%{_mandir}/man1/virt-admin.1*
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/libvirt-admin.conf
 
-%if %{with_network}
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
 # We don't want to install /etc/libvirt/qemu/networks in the main %files list
 # because if the admin wants to delete the default network completely, we don't
@@ -1277,10 +1263,6 @@ rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml
 rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 # Strip auto-generated UUID - we need it generated per-install
 sed -i -e "/<uuid>/d" $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/default.xml
-%else
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
-%endif
 %if ! %{with_qemu}
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_qemu.aug
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
@@ -1460,7 +1442,6 @@ if [ $1 -ge 1 ] ; then
 %endif
 fi
 
-%if %{with_network}
 %post daemon-config-network
 if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ; then
     # see if the network used by default network creates a conflict,
@@ -1499,14 +1480,13 @@ if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ;
     ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 
     # Make sure libvirt picks up the new network defininiton
-    %if %{with_systemd}
+%if %{with_systemd}
     /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 ||:
-    %else
+%else
     /sbin/service libvirtd condrestart > /dev/null 2>&1 || :
-    %endif
+%endif
 
 fi
-%endif
 
 %if %{with_systemd}
 %triggerun -- libvirt < 0.9.4
@@ -1685,12 +1665,10 @@ exit 0
 
 %doc examples/polkit/*.rules
 
-%if %{with_network}
 %files daemon-config-network
 %defattr(-, root, root)
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml
-%endif
 
 %if %{with_nwfilter}
 %files daemon-config-nwfilter
@@ -1702,7 +1680,6 @@ exit 0
 %defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_interface.so
 
-%if %{with_network}
 %files daemon-driver-network
 %defattr(-, root, root)
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
