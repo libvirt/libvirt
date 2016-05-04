@@ -194,7 +194,7 @@
 
 # Advertise OVMF and AAVMF from nightly firmware repo
 %if 0%{?fedora}
-    %define with_loader_nvram --with-loader-nvram="/usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd:/usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd:/usr/share/edk2.git/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2.git/aarch64/vars-template-pflash.raw"
+    %define arg_loader_nvram --with-loader-nvram="/usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd:/usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd:/usr/share/edk2.git/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2.git/aarch64/vars-template-pflash.raw"
 %endif
 
 
@@ -944,110 +944,154 @@ rm -f $PATCHLIST
 rm -rf .git
 
 %build
-%if ! %{with_xen}
-    %define _without_xen --without-xen
+%if %{with_xen}
+    %define arg_xen --with-xen
+%else
+    %define arg_xen --without-xen
 %endif
 
-%if ! %{with_qemu}
-    %define _without_qemu --without-qemu
+%if %{with_qemu}
+    %define arg_qemu --with-qemu
+%else
+    %define arg_qemu --without-qemu
 %endif
 
-%if ! %{with_openvz}
-    %define _without_openvz --without-openvz
+%if %{with_openvz}
+    %define arg_openvz --with-openvz
+%else
+    %define arg_openvz --without-openvz
 %endif
 
-%if ! %{with_lxc}
-    %define _without_lxc --without-lxc
+%if %{with_lxc}
+    %define arg_lxc --with-lxc
+%else
+    %define arg_lxc --without-lxc
 %endif
 
-%if ! %{with_vbox}
-    %define _without_vbox --without-vbox
+%if %{with_vbox}
+    %define arg_vbox --with-vbox
+%else
+    %define arg_vbox --without-vbox
 %endif
 
-%if ! %{with_libxl}
-    %define _without_libxl --without-libxl
+%if %{with_libxl}
+    %define arg_libxl --with-libxl
+%else
+    %define arg_libxl --without-libxl
 %endif
 
-%if ! %{with_phyp}
-    %define _without_phyp --without-phyp
+%if %{with_phyp}
+    %define arg_phyp --with-phyp
+%else
+    %define arg_phyp --without-phyp
 %endif
 
-%if ! %{with_esx}
-    %define _without_esx --without-esx
+%if %{with_esx}
+    %define arg_esx --with-esx
+%else
+    %define arg_esx --without-esx
 %endif
 
-%if ! %{with_hyperv}
-    %define _without_hyperv --without-hyperv
+%if %{with_hyperv}
+    %define arg_hyperv --with-hyperv
+%else
+    %define arg_hyperv --without-hyperv
 %endif
 
-%if ! %{with_vmware}
-    %define _without_vmware --without-vmware
+%if %{with_vmware}
+    %define arg_vmware --with-vmware
+%else
+    %define arg_vmware --without-vmware
 %endif
 
-%if ! %{with_uml}
-    %define _without_uml --without-uml
+%if %{with_uml}
+    %define arg_uml --with-uml
+%else
+    %define arg_uml --without-uml
 %endif
 
-%if ! %{with_storage_rbd}
-    %define _without_storage_rbd --without-storage-rbd
+%if %{with_storage_rbd}
+    %define arg_storage_rbd --with-storage-rbd
+%else
+    %define arg_storage_rbd --without-storage-rbd
 %endif
 
-%if ! %{with_storage_sheepdog}
-    %define _without_storage_sheepdog --without-storage-sheepdog
+%if %{with_storage_sheepdog}
+    %define arg_storage_sheepdog --with-storage-sheepdog
+%else
+    %define arg_storage_sheepdog --without-storage-sheepdog
 %endif
 
-%if ! %{with_storage_gluster}
-    %define _without_storage_gluster --without-storage-gluster
+%if %{with_storage_gluster}
+    %define arg_storage_gluster --with-storage-gluster
+%else
+    %define arg_storage_gluster --without-storage-gluster
 %endif
 
-%if ! %{with_numactl}
-    %define _without_numactl --without-numactl
+%if %{with_numactl}
+    %define arg_numactl --with-numactl
+%else
+    %define arg_numactl --without-numactl
 %endif
 
-%if ! %{with_numad}
-    %define _without_numad --without-numad
+%if %{with_numad}
+    %define arg_numad --with-numad
+%else
+    %define arg_numad --without-numad
 %endif
 
-%if ! %{with_fuse}
-    %define _without_fuse --without-fuse
+%if %{with_fuse}
+    %define arg_fuse --with-fuse
+%else
+    %define arg_fuse --without-fuse
 %endif
 
-%if ! %{with_sanlock}
-    %define _without_sanlock --without-sanlock
+%if %{with_sanlock}
+    %define arg_sanlock --with-sanlock
+%else
+    %define arg_sanlock --without-sanlock
 %endif
 
 %if %{with_firewalld}
-    %define _with_firewalld --with-firewalld
+    %define arg_firewalld --with-firewalld
+%else
+    %define arg_firewalld --without-firewalld
 %endif
 
-%if ! %{with_wireshark}
-    %define _without_wireshark --without-wireshark-dissector
+%if %{with_wireshark}
+    %define arg_wireshark --with-wireshark-dissector
+%else
+    %define arg_wireshark --without-wireshark-dissector
 %endif
 
-%if ! %{with_systemd_daemon}
-    %define _without_systemd_daemon --without-systemd-daemon
+%if %{with_systemd_daemon}
+    %define arg_systemd_daemon --with-systemd-daemon
+%else
+    %define arg_systemd_daemon --without-systemd-daemon
 %endif
 
-%if ! %{with_pm_utils}
-    %define _without_pm_utils --without-pm-utils
+%if %{with_pm_utils}
+    %define arg_pm_utils --with-pm-utils
+%else
+    %define arg_pm_utils --without-pm-utils
 %endif
 
 %define when  %(date +"%%F-%%T")
 %define where %(hostname)
 %define who   %{?packager}%{!?packager:Unknown}
-%define with_packager --with-packager="%{who}, %{when}, %{where}"
-%define with_packager_version --with-packager-version="%{release}"
+%define arg_packager --with-packager="%{who}, %{when}, %{where}"
+%define arg_packager_version --with-packager-version="%{release}"
 
 %if %{with_systemd}
-    %define with_init_script --with-init-script=systemd
+    %define arg_init_script --with-init-script=systemd
 %else
-    %define with_init_script --with-init-script=redhat
+    %define arg_init_script --with-init-script=redhat
 %endif
 
 %if 0%{?fedora} || 0%{?rhel} >= 7
-    %define with_selinux_mount --with-selinux-mount="/sys/fs/selinux"
+    %define arg_selinux_mount --with-selinux-mount="/sys/fs/selinux"
 %else
-    %define with_selinux_mount --with-selinux-mount="/selinux"
+    %define arg_selinux_mount --with-selinux-mount="/selinux"
 %endif
 
 # place macros above and build commands below this comment
@@ -1057,21 +1101,21 @@ rm -rf .git
 %endif
 
 rm -f po/stamp-po
-%configure %{?_without_xen} \
-           %{?_without_qemu} \
-           %{?_without_openvz} \
-           %{?_without_lxc} \
-           %{?_without_vbox} \
-           %{?_without_libxl} \
+%configure %{?arg_xen} \
+           %{?arg_qemu} \
+           %{?arg_openvz} \
+           %{?arg_lxc} \
+           %{?arg_vbox} \
+           %{?arg_libxl} \
            --with-sasl \
            --with-avahi \
            --with-polkit \
            --with-libvirtd \
-           %{?_without_uml} \
-           %{?_without_phyp} \
-           %{?_without_esx} \
-           %{?_without_hyperv} \
-           %{?_without_vmware} \
+           %{?arg_uml} \
+           %{?arg_phyp} \
+           %{?arg_esx} \
+           %{?arg_hyperv} \
+           %{?arg_vmware} \
            --without-xenapi \
            --without-vz \
            --without-bhyve \
@@ -1082,39 +1126,39 @@ rm -f po/stamp-po
            --with-storage-iscsi \
            --with-storage-disk \
            --with-storage-mpath \
-           %{?_without_storage_rbd} \
-           %{?_without_storage_sheepdog} \
-           %{?_without_storage_gluster} \
-           %{?_without_numactl} \
-           %{?_without_numad} \
+           %{?arg_storage_rbd} \
+           %{?arg_storage_sheepdog} \
+           %{?arg_storage_gluster} \
+           %{?arg_numactl} \
+           %{?arg_numad} \
            --with-capng \
-           %{?_without_fuse} \
+           %{?arg_fuse} \
            --with-netcf \
            --with-selinux \
-           %{?_with_selinux_mount} \
+           %{?arg_selinux_mount} \
            --without-apparmor \
            --without-hal \
            --with-udev \
            --with-yajl \
-           %{?_without_sanlock} \
+           %{?arg_sanlock} \
            --with-libpcap \
            --with-macvtap \
            --with-audit \
            --with-dtrace \
            --with-driver-modules \
-           %{?_with_firewalld} \
-           %{?_without_wireshark} \
-           %{?_without_systemd_daemon} \
-           %{?_without_pm_utils} \
+           %{?arg_firewalld} \
+           %{?arg_wireshark} \
+           %{?arg_systemd_daemon} \
+           %{?arg_pm_utils} \
            --with-nss-plugin \
-           %{with_packager} \
-           %{with_packager_version} \
+           %{arg_packager} \
+           %{arg_packager_version} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
-           %{?with_loader_nvram} \
+           %{?arg_loader_nvram} \
            %{?enable_werror} \
            --enable-expensive-tests \
-           %{with_init_script}
+           %{arg_init_script}
 make %{?_smp_mflags}
 gzip -9 ChangeLog
 
