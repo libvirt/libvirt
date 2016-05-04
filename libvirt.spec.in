@@ -82,7 +82,6 @@
 %define with_polkit        0%{!?_without_polkit:0}
 %define with_fuse          0%{!?_without_fuse:0}
 %define with_netcf         0%{!?_without_netcf:0}
-%define with_udev          0%{!?_without_udev:0}
 %define with_yajl          0%{!?_without_yajl:0}
 %define with_nwfilter      0%{!?_without_nwfilter:0}
 %define with_libpcap       0%{!?_without_libpcap:0}
@@ -177,7 +176,6 @@
 
 %define with_polkit    0%{!?_without_polkit:1}
 %define with_netcf     0%{!?_without_netcf:1}
-%define with_udev      0%{!?_without_udev:1}
 %define with_yajl      0%{!?_without_yajl:1}
 %define with_dtrace 1
 
@@ -230,11 +228,7 @@
     %define with_cgconfig 0%{!?_without_cgconfig:1}
 %endif
 
-%if %{with_udev}
-    %define with_nodedev 1
-%else
-    %define with_nodedev 0
-%endif
+%define with_nodedev 1
 
 %if %{with_storage_fs} || %{with_storage_mpath} || %{with_storage_iscsi} || %{with_storage_lvm} || %{with_storage_disk}
     %define with_storage 1
@@ -360,14 +354,12 @@ BuildRequires: libattr-devel
 BuildRequires: libblkid-devel >= 2.17
 # for augparse, optionally used in testing
 BuildRequires: augeas
-%if %{with_udev}
-    %if 0%{?fedora} || 0%{?rhel} >= 7
+%if 0%{?fedora} || 0%{?rhel} >= 7
 BuildRequires: systemd-devel >= 185
-    %else
+%else
 BuildRequires: libudev-devel >= 145
-    %endif
-BuildRequires: libpciaccess-devel >= 0.10.9
 %endif
+BuildRequires: libpciaccess-devel >= 0.10.9
 %if %{with_yajl}
 BuildRequires: yajl-devel
 %endif
@@ -639,13 +631,12 @@ Summary: Nodedev driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 # needed for device enumeration
-    %if %{with_udev}
-        %if 0%{?fedora} || 0%{?rhel} >= 7
+    %if 0%{?fedora} || 0%{?rhel} >= 7
 Requires: systemd >= 185
-        %else
+    %else
 Requires: udev >= 145
-        %endif
     %endif
+%endif
 
 %description daemon-driver-nodedev
 The nodedev driver plugin for the libvirtd daemon, providing
@@ -1190,10 +1181,6 @@ rm -rf .git
     %define _without_selinux --without-selinux
 %endif
 
-%if ! %{with_udev}
-    %define _without_udev --without-udev
-%endif
-
 %if ! %{with_yajl}
     %define _without_yajl --without-yajl
 %endif
@@ -1302,7 +1289,7 @@ rm -f po/stamp-po
            %{?_with_selinux_mount} \
            --without-apparmor \
            --without-hal \
-           %{?_without_udev} \
+           --with-udev \
            %{?_without_yajl} \
            %{?_without_sanlock} \
            %{?_without_libpcap} \
