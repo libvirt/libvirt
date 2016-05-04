@@ -1018,6 +1018,32 @@ bhyveDomainDestroy(virDomainPtr dom)
 }
 
 static int
+bhyveDomainShutdown(virDomainPtr dom)
+{
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    if (!(vm = bhyveDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainShutdownEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("Domain is not running"));
+        goto cleanup;
+    }
+
+    ret = virBhyveProcessShutdown(vm);
+
+ cleanup:
+    if (vm)
+        virObjectUnlock(vm);
+    return ret;
+}
+
+static int
 bhyveDomainOpenConsole(virDomainPtr dom,
                        const char *dev_name ATTRIBUTE_UNUSED,
                        virStreamPtr st,
@@ -1502,6 +1528,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainCreateWithFlags = bhyveDomainCreateWithFlags, /* 1.2.3 */
     .domainCreateXML = bhyveDomainCreateXML, /* 1.2.4 */
     .domainDestroy = bhyveDomainDestroy, /* 1.2.2 */
+    .domainShutdown = bhyveDomainShutdown, /* 1.3.3 */
     .domainLookupByUUID = bhyveDomainLookupByUUID, /* 1.2.2 */
     .domainLookupByName = bhyveDomainLookupByName, /* 1.2.2 */
     .domainLookupByID = bhyveDomainLookupByID, /* 1.2.3 */

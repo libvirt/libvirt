@@ -309,6 +309,29 @@ virBhyveProcessStop(bhyveConnPtr driver,
 }
 
 int
+virBhyveProcessShutdown(virDomainObjPtr vm)
+{
+    if (vm->pid <= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid PID %d for VM"),
+                       (int)vm->pid);
+        return -1;
+    }
+
+    /* Bhyve tries to perform ACPI shutdown when it receives
+     * SIGTERM signal. So we just issue SIGTERM here and rely
+     * on the bhyve monitor to clean things up if process disappears.
+     */
+    if (virProcessKill(vm->pid, SIGTERM) != 0) {
+        VIR_WARN("Failed to terminate bhyve process for VM '%s': %s",
+                 vm->def->name, virGetLastErrorMessage());
+        return -1;
+    }
+
+    return 0;
+}
+
+int
 virBhyveGetDomainTotalCpuStats(virDomainObjPtr vm,
                                unsigned long long *cpustats)
 {
