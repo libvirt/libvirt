@@ -57,11 +57,6 @@
 %define with_hyperv        0%{!?_without_hyperv:1}
 
 # Then the secondary host drivers, which run inside libvirtd
-%define with_storage_fs       0%{!?_without_storage_fs:1}
-%define with_storage_lvm      0%{!?_without_storage_lvm:1}
-%define with_storage_iscsi    0%{!?_without_storage_iscsi:1}
-%define with_storage_disk     0%{!?_without_storage_disk:1}
-%define with_storage_mpath    0%{!?_without_storage_mpath:1}
 %if 0%{?fedora} || 0%{?rhel} >= 7
     %define with_storage_rbd      0%{!?_without_storage_rbd:1}
 %else
@@ -210,13 +205,6 @@
 %endif
 
 %define with_nodedev 1
-
-%if %{with_storage_fs} || %{with_storage_mpath} || %{with_storage_iscsi} || %{with_storage_lvm} || %{with_storage_disk}
-    %define with_storage 1
-%else
-    %define with_storage 0
-%endif
-
 
 # Force QEMU to run as non-root
 %define qemu_user  qemu
@@ -367,10 +355,8 @@ BuildRequires: polkit-devel >= 0.112
 %else
 BuildRequires: polkit-devel >= 0.93
 %endif
-%if %{with_storage_fs}
 # For mount/umount in FS driver
 BuildRequires: util-linux
-%endif
 %if %{with_qemu}
 # From QEMU RPMs
 BuildRequires: /usr/bin/qemu-img
@@ -380,22 +366,14 @@ BuildRequires: /usr/bin/qemu-img
 BuildRequires: /usr/sbin/qcow-create
     %endif
 %endif
-%if %{with_storage_lvm}
 # For LVM drivers
 BuildRequires: lvm2
-%endif
-%if %{with_storage_iscsi}
 # For ISCSI driver
 BuildRequires: iscsi-initiator-utils
-%endif
-%if %{with_storage_disk}
 # For disk driver
 BuildRequires: parted-devel
-%endif
-%if %{with_storage_mpath} || %{with_storage_disk}
 # For Multipath support
 BuildRequires: device-mapper-devel
-%endif
 %if %{with_storage_rbd}
     %if 0%{?rhel} >= 7
 BuildRequires: librados2-devel
@@ -435,12 +413,10 @@ BuildRequires: audit-libs-devel
 # we need /usr/sbin/dtrace
 BuildRequires: systemtap-sdt-devel
 
-%if %{with_storage_fs}
 # For mount/umount in FS driver
 BuildRequires: util-linux
 # For showmount in FS driver (netfs discovery)
 BuildRequires: nfs-utils
-%endif
 
 # Communication with the firewall and polkit daemons use DBus
 BuildRequires: dbus-devel
@@ -622,56 +598,44 @@ The secret driver plugin for the libvirtd daemon, providing
 an implementation of the secret key APIs.
 
 
-%if %{with_storage}
 %package daemon-driver-storage
 Summary: Storage driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
-    %if %{with_storage_fs}
 Requires: nfs-utils
 # For mkfs
 Requires: util-linux
 # For glusterfs
-        %if 0%{?fedora}
+%if 0%{?fedora}
 Requires: glusterfs-client >= 2.0.1
-        %endif
-    %endif
-    %if %{with_storage_lvm}
+%endif
 # For LVM drivers
 Requires: lvm2
-    %endif
-    %if %{with_storage_iscsi}
 # For ISCSI driver
 Requires: iscsi-initiator-utils
-    %endif
-    %if %{with_storage_disk}
 # For disk driver
 Requires: parted
 Requires: device-mapper
-    %endif
-    %if %{with_storage_mpath}
 # For multipath support
 Requires: device-mapper
-    %endif
-    %if %{with_storage_sheepdog}
+%if %{with_storage_sheepdog}
 # For Sheepdog support
 Requires: sheepdog
-    %endif
-    %if %{with_qemu}
+%endif
+%if %{with_qemu}
 # From QEMU RPMs
 Requires: /usr/bin/qemu-img
-    %else
-        %if %{with_xen}
+%else
+    %if %{with_xen}
 # From Xen RPMs
 Requires: /usr/sbin/qcow-create
-        %endif
     %endif
+%endif
 
 %description daemon-driver-storage
 The storage driver plugin for the libvirtd daemon, providing
 an implementation of the storage APIs using LVM, iSCSI,
 parted and more.
-%endif
 
 
 %if %{with_qemu}
@@ -1062,26 +1026,6 @@ rm -rf .git
     %define _without_uml --without-uml
 %endif
 
-%if ! %{with_storage_fs}
-    %define _without_storage_fs --without-storage-fs
-%endif
-
-%if ! %{with_storage_lvm}
-    %define _without_storage_lvm --without-storage-lvm
-%endif
-
-%if ! %{with_storage_iscsi}
-    %define _without_storage_iscsi --without-storage-iscsi
-%endif
-
-%if ! %{with_storage_disk}
-    %define _without_storage_disk --without-storage-disk
-%endif
-
-%if ! %{with_storage_mpath}
-    %define _without_storage_mpath --without-storage-mpath
-%endif
-
 %if ! %{with_storage_rbd}
     %define _without_storage_rbd --without-storage-rbd
 %endif
@@ -1183,11 +1127,11 @@ rm -f po/stamp-po
            --without-bhyve \
            --with-interface \
            --with-network \
-           %{?_without_storage_fs} \
-           %{?_without_storage_lvm} \
-           %{?_without_storage_iscsi} \
-           %{?_without_storage_disk} \
-           %{?_without_storage_mpath} \
+           --with-storage-fs \
+           --with-storage-lvm \
+           --with-storage-iscsi \
+           --with-storage-disk \
+           --with-storage-mpath \
            %{?_without_storage_rbd} \
            %{?_without_storage_sheepdog} \
            %{?_without_storage_gluster} \
@@ -1709,14 +1653,10 @@ exit 0
 %defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_secret.so
 
-%if %{with_storage}
 %files daemon-driver-storage
 %defattr(-, root, root)
-    %if %{with_storage_disk}
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
-    %endif
 %{_libdir}/%{name}/connection-driver/libvirt_driver_storage.so
-%endif
 
 %if %{with_qemu}
 %files daemon-driver-qemu
