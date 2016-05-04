@@ -72,7 +72,6 @@
 
 # A few optional bits off by default, we enable later
 %define with_fuse          0%{!?_without_fuse:0}
-%define with_macvtap       0%{!?_without_macvtap:0}
 %define with_libnl         0%{!?_without_libnl:0}
 %define with_cgconfig      0%{!?_without_cgconfig:0}
 %define with_sanlock       0%{!?_without_sanlock:0}
@@ -181,8 +180,6 @@
 
 
 %if %{with_qemu} || %{with_lxc} || %{with_uml}
-    %define with_macvtap  0%{!?_without_macvtap:1}
-
 # numad is used to manage the CPU and memory placement dynamically,
 # it's not available on s390[x] and ARM.
     %ifnarch s390 s390x %{arm}
@@ -190,9 +187,7 @@
     %endif
 %endif
 
-%if %{with_macvtap}
-    %define with_libnl 1
-%endif
+%define with_libnl 1
 
 # Pull in cgroups config system
 %if %{with_qemu} || %{with_lxc}
@@ -1032,10 +1027,6 @@ rm -rf .git
     %define _without_sanlock --without-sanlock
 %endif
 
-%if ! %{with_macvtap}
-    %define _without_macvtap --without-macvtap
-%endif
-
 %if %{with_firewalld}
     %define _with_firewalld --with-firewalld
 %endif
@@ -1122,7 +1113,7 @@ rm -f po/stamp-po
            --with-yajl \
            %{?_without_sanlock} \
            --with-libpcap \
-           %{?_without_macvtap} \
+           --with-macvtap \
            --with-audit \
            --with-dtrace \
            --with-driver-modules \
