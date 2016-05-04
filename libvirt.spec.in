@@ -204,8 +204,6 @@
     %define with_cgconfig 0%{!?_without_cgconfig:1}
 %endif
 
-%define with_nodedev 1
-
 # Force QEMU to run as non-root
 %define qemu_user  qemu
 %define qemu_group  qemu
@@ -554,24 +552,21 @@ iptables and ip6tables capabilities
 %endif
 
 
-%if %{with_nodedev}
 %package daemon-driver-nodedev
 Summary: Nodedev driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 # needed for device enumeration
-    %if 0%{?fedora} || 0%{?rhel} >= 7
+%if 0%{?fedora} || 0%{?rhel} >= 7
 Requires: systemd >= 185
-    %else
+%else
 Requires: udev >= 145
-    %endif
 %endif
 
 %description daemon-driver-nodedev
 The nodedev driver plugin for the libvirtd daemon, providing
 an implementation of the node device APIs using the udev
 capabilities.
-%endif
 
 
 %package daemon-driver-interface
@@ -1635,11 +1630,9 @@ exit 0
 %attr(0755, root, root) %{_libexecdir}/libvirt_leaseshelper
 %{_libdir}/%{name}/connection-driver/libvirt_driver_network.so
 
-%if %{with_nodedev}
 %files daemon-driver-nodedev
 %defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so
-%endif
 
 %if %{with_nwfilter}
 %files daemon-driver-nwfilter
