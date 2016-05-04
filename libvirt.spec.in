@@ -80,7 +80,6 @@
 
 # A few optional bits off by default, we enable later
 %define with_fuse          0%{!?_without_fuse:0}
-%define with_yajl          0%{!?_without_yajl:0}
 %define with_nwfilter      0%{!?_without_nwfilter:0}
 %define with_libpcap       0%{!?_without_libpcap:0}
 %define with_macvtap       0%{!?_without_macvtap:0}
@@ -168,8 +167,6 @@
 %if 0%{?fedora} || 0%{?rhel} >= 7
     %define with_fuse      0%{!?_without_fuse:1}
 %endif
-
-%define with_yajl      0%{!?_without_yajl:1}
 
 # Enable sanlock library for lock management with QEMU
 # Sanlock is available only on arches where kvm is available for RHEL
@@ -347,9 +344,7 @@ BuildRequires: systemd-devel >= 185
 BuildRequires: libudev-devel >= 145
 %endif
 BuildRequires: libpciaccess-devel >= 0.10.9
-%if %{with_yajl}
 BuildRequires: yajl-devel
-%endif
 %if %{with_sanlock}
 BuildRequires: sanlock-devel >= 2.4
 %endif
@@ -1140,10 +1135,6 @@ rm -rf .git
     %define _without_selinux --without-selinux
 %endif
 
-%if ! %{with_yajl}
-    %define _without_yajl --without-yajl
-%endif
-
 %if ! %{with_sanlock}
     %define _without_sanlock --without-sanlock
 %endif
@@ -1241,7 +1232,7 @@ rm -f po/stamp-po
            --without-apparmor \
            --without-hal \
            --with-udev \
-           %{?_without_yajl} \
+           --with-yajl \
            %{?_without_sanlock} \
            %{?_without_libpcap} \
            %{?_without_macvtap} \
