@@ -86,7 +86,6 @@
 %define with_libpcap       0%{!?_without_libpcap:0}
 %define with_macvtap       0%{!?_without_macvtap:0}
 %define with_libnl         0%{!?_without_libnl:0}
-%define with_dtrace        0%{!?_without_dtrace:0}
 %define with_cgconfig      0%{!?_without_cgconfig:0}
 %define with_sanlock       0%{!?_without_sanlock:0}
 %define with_systemd       0%{!?_without_systemd:0}
@@ -174,7 +173,6 @@
 
 %define with_polkit    0%{!?_without_polkit:1}
 %define with_yajl      0%{!?_without_yajl:1}
-%define with_dtrace 1
 
 # Enable sanlock library for lock management with QEMU
 # Sanlock is available only on arches where kvm is available for RHEL
@@ -457,10 +455,8 @@ BuildRequires: libcurl-devel
 BuildRequires: libwsman-devel >= 2.2.3
 %endif
 BuildRequires: audit-libs-devel
-%if %{with_dtrace}
 # we need /usr/sbin/dtrace
 BuildRequires: systemtap-sdt-devel
-%endif
 
 %if %{with_storage_fs}
 # For mount/umount in FS driver
@@ -1181,10 +1177,6 @@ rm -rf .git
     %define _without_macvtap --without-macvtap
 %endif
 
-%if ! %{with_dtrace}
-    %define _without_dtrace --without-dtrace
-%endif
-
 %if %{with_firewalld}
     %define _with_firewalld --with-firewalld
 %endif
@@ -1275,7 +1267,7 @@ rm -f po/stamp-po
            %{?_without_libpcap} \
            %{?_without_macvtap} \
            --with-audit \
-           %{?_without_dtrace} \
+           --with-dtrace \
            --with-driver-modules \
            %{?_with_firewalld} \
            %{?_without_wireshark} \
@@ -1374,13 +1366,11 @@ rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.uml
 # Copied into libvirt-docs subpackage eventually
 mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt-%{version} libvirt-docs
 
-%if %{with_dtrace}
-    %ifarch %{power64} s390x x86_64 ia64 alpha sparc64
+%ifarch %{power64} s390x x86_64 ia64 alpha sparc64
 mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes.stp \
    $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes-64.stp
 mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp \
    $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes-64.stp
-    %endif
 %endif
 
 %clean
@@ -1939,11 +1929,9 @@ exit 0
 %{_libdir}/libvirt-lxc.so.*
 %{_libdir}/libvirt-admin.so.*
 
-%if %{with_dtrace}
 %{_datadir}/systemtap/tapset/libvirt_probes*.stp
 %{_datadir}/systemtap/tapset/libvirt_qemu_probes*.stp
 %{_datadir}/systemtap/tapset/libvirt_functions.stp
-%endif
 
 %dir %{_datadir}/libvirt/
 %dir %{_datadir}/libvirt/schemas/
