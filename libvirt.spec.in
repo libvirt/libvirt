@@ -14,19 +14,6 @@
 # touch configure.ac or Makefile.am.
 %{!?enable_autotools:%global enable_autotools 0}
 
-# A client only build will create a libvirt.so only containing
-# the generic RPC driver, and test driver and no libvirtd
-# Default to a full server + client build, but with the possibility
-# of a command-line or ~/.rpmmacros override for client-only.
-%{!?client_only:%global client_only 0}
-
-# Disable all server side drivers if client only build requested
-%if %{client_only}
-    %define server_drivers     0
-%else
-    %define server_drivers     1
-%endif
-
 # Always build with dlopen'd modules
 %define with_driver_modules 1
 
@@ -34,16 +21,16 @@
 # of any particular OS
 
 # First the daemon itself
-%define with_libvirtd      0%{!?_without_libvirtd:%{server_drivers}}
-%define with_avahi         0%{!?_without_avahi:%{server_drivers}}
+%define with_libvirtd      0%{!?_without_libvirtd:1}
+%define with_avahi         0%{!?_without_avahi:1}
 
 # Then the hypervisor drivers that run in libvirtd
-%define with_xen           0%{!?_without_xen:%{server_drivers}}
-%define with_qemu          0%{!?_without_qemu:%{server_drivers}}
-%define with_lxc           0%{!?_without_lxc:%{server_drivers}}
-%define with_uml           0%{!?_without_uml:%{server_drivers}}
-%define with_libxl         0%{!?_without_libxl:%{server_drivers}}
-%define with_vbox          0%{!?_without_vbox:%{server_drivers}}
+%define with_xen           0%{!?_without_xen:1}
+%define with_qemu          0%{!?_without_qemu:1}
+%define with_lxc           0%{!?_without_lxc:1}
+%define with_uml           0%{!?_without_uml:1}
+%define with_libxl         0%{!?_without_libxl:1}
+%define with_vbox          0%{!?_without_vbox:1}
 
 %define with_qemu_tcg      %{with_qemu}
 
@@ -79,26 +66,26 @@
 %define with_hyperv        0%{!?_without_hyperv:1}
 
 # Then the secondary host drivers, which run inside libvirtd
-%define with_interface        0%{!?_without_interface:%{server_drivers}}
-%define with_network          0%{!?_without_network:%{server_drivers}}
-%define with_storage_fs       0%{!?_without_storage_fs:%{server_drivers}}
-%define with_storage_lvm      0%{!?_without_storage_lvm:%{server_drivers}}
-%define with_storage_iscsi    0%{!?_without_storage_iscsi:%{server_drivers}}
-%define with_storage_disk     0%{!?_without_storage_disk:%{server_drivers}}
-%define with_storage_mpath    0%{!?_without_storage_mpath:%{server_drivers}}
+%define with_interface        0%{!?_without_interface:1}
+%define with_network          0%{!?_without_network:1}
+%define with_storage_fs       0%{!?_without_storage_fs:1}
+%define with_storage_lvm      0%{!?_without_storage_lvm:1}
+%define with_storage_iscsi    0%{!?_without_storage_iscsi:1}
+%define with_storage_disk     0%{!?_without_storage_disk:1}
+%define with_storage_mpath    0%{!?_without_storage_mpath:1}
 %if 0%{?fedora} || 0%{?rhel} >= 7
-    %define with_storage_rbd      0%{!?_without_storage_rbd:%{server_drivers}}
+    %define with_storage_rbd      0%{!?_without_storage_rbd:1}
 %else
     %define with_storage_rbd      0
 %endif
 %if 0%{?fedora}
-    %define with_storage_sheepdog 0%{!?_without_storage_sheepdog:%{server_drivers}}
+    %define with_storage_sheepdog 0%{!?_without_storage_sheepdog:1}
 %else
     %define with_storage_sheepdog 0
 %endif
-%define with_storage_gluster 0%{!?_without_storage_gluster:%{server_drivers}}
-%define with_numactl          0%{!?_without_numactl:%{server_drivers}}
-%define with_selinux          0%{!?_without_selinux:%{server_drivers}}
+%define with_storage_gluster 0%{!?_without_storage_gluster:1}
+%define with_numactl          0%{!?_without_numactl:1}
+%define with_selinux          0%{!?_without_selinux:1}
 
 # Just hardcode to off, since few people ever have apparmor RPMs installed
 %define with_apparmor         0%{!?_without_apparmor:0}
@@ -204,9 +191,9 @@
 
 %define with_polkit    0%{!?_without_polkit:1}
 %define with_capng     0%{!?_without_capng:1}
-%define with_netcf     0%{!?_without_netcf:%{server_drivers}}
-%define with_udev      0%{!?_without_udev:%{server_drivers}}
-%define with_yajl      0%{!?_without_yajl:%{server_drivers}}
+%define with_netcf     0%{!?_without_netcf:1}
+%define with_udev      0%{!?_without_udev:1}
+%define with_yajl      0%{!?_without_yajl:1}
 %define with_dtrace 1
 
 # interface requires netcf
@@ -217,11 +204,11 @@
 # Enable sanlock library for lock management with QEMU
 # Sanlock is available only on arches where kvm is available for RHEL
 %if 0%{?fedora}
-    %define with_sanlock 0%{!?_without_sanlock:%{server_drivers}}
+    %define with_sanlock 0%{!?_without_sanlock:1}
 %endif
 %if 0%{?rhel}
     %ifarch %{qemu_kvm_arches}
-        %define with_sanlock 0%{!?_without_sanlock:%{server_drivers}}
+        %define with_sanlock 0%{!?_without_sanlock:1}
     %endif
 %endif
 
@@ -256,15 +243,15 @@
 %endif
 
 %if %{with_qemu} || %{with_lxc} || %{with_uml}
-    %define with_nwfilter 0%{!?_without_nwfilter:%{server_drivers}}
+    %define with_nwfilter 0%{!?_without_nwfilter:1}
 # Enable libpcap library
-    %define with_libpcap  0%{!?_without_libpcap:%{server_drivers}}
-    %define with_macvtap  0%{!?_without_macvtap:%{server_drivers}}
+    %define with_libpcap  0%{!?_without_libpcap:1}
+    %define with_macvtap  0%{!?_without_macvtap:1}
 
 # numad is used to manage the CPU and memory placement dynamically,
 # it's not available on s390[x] and ARM.
     %ifnarch s390 s390x %{arm}
-        %define with_numad    0%{!?_without_numad:%{server_drivers}}
+        %define with_numad    0%{!?_without_numad:1}
     %endif
 %endif
 
