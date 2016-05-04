@@ -333,6 +333,8 @@ static int daemonErrorLogFilter(virErrorPtr err, int priority)
     case VIR_ERR_NO_DOMAIN_SNAPSHOT:
     case VIR_ERR_OPERATION_INVALID:
     case VIR_ERR_NO_DOMAIN_METADATA:
+    case VIR_ERR_NO_SERVER:
+    case VIR_ERR_NO_CLIENT:
         return VIR_LOG_DEBUG;
     }
 
