@@ -99,9 +99,6 @@
 %define with_phyp          0%{!?_without_phyp:1}
 %define with_esx           0%{!?_without_esx:1}
 %define with_hyperv        0%{!?_without_hyperv:1}
-%define with_xenapi        0%{!?_without_xenapi:1}
-%define with_vz            0%{!?_without_vz:1}
-# No test for bhyve, because it does not build on Linux
 
 # Then the secondary host drivers, which run inside libvirtd
 %define with_interface        0%{!?_without_interface:%{server_drivers}}
@@ -1292,10 +1289,6 @@ rm -rf .git
     %define _without_vbox --without-vbox
 %endif
 
-%if ! %{with_xenapi}
-    %define _without_xenapi --without-xenapi
-%endif
-
 %if ! %{with_libxl}
     %define _without_libxl --without-libxl
 %endif
@@ -1322,10 +1315,6 @@ rm -rf .git
 
 %if ! %{with_vmware}
     %define _without_vmware --without-vmware
-%endif
-
-%if ! %{with_vz}
-    %define _without_vz --without-vz
 %endif
 
 %if ! %{with_polkit}
@@ -1501,7 +1490,6 @@ rm -f po/stamp-po
            %{?_without_lxc} \
            %{?_without_vbox} \
            %{?_without_libxl} \
-           %{?_without_xenapi} \
            %{?_without_sasl} \
            %{?_without_avahi} \
            %{?_without_polkit} \
@@ -1511,7 +1499,8 @@ rm -f po/stamp-po
            %{?_without_esx} \
            %{?_without_hyperv} \
            %{?_without_vmware} \
-           %{?_without_vz} \
+           --without-xenapi \
+           --without-vz \
            --without-bhyve \
            %{?_without_interface} \
            %{?_without_network} \
