@@ -81,7 +81,6 @@
 # A few optional bits off by default, we enable later
 %define with_polkit        0%{!?_without_polkit:0}
 %define with_fuse          0%{!?_without_fuse:0}
-%define with_netcf         0%{!?_without_netcf:0}
 %define with_yajl          0%{!?_without_yajl:0}
 %define with_nwfilter      0%{!?_without_nwfilter:0}
 %define with_libpcap       0%{!?_without_libpcap:0}
@@ -175,14 +174,8 @@
 %endif
 
 %define with_polkit    0%{!?_without_polkit:1}
-%define with_netcf     0%{!?_without_netcf:1}
 %define with_yajl      0%{!?_without_yajl:1}
 %define with_dtrace 1
-
-# interface requires netcf
-%if ! 0%{?with_netcf}
-    %define with_interface     0
-%endif
 
 # Enable sanlock library for lock management with QEMU
 # Sanlock is available only on arches where kvm is available for RHEL
@@ -453,12 +446,10 @@ BuildRequires: fuse-devel >= 2.8.6
 BuildRequires: libssh2-devel >= 1.3.0
 %endif
 
-%if %{with_netcf}
-    %if 0%{?fedora} || 0%{?rhel} >= 7
+%if 0%{?fedora} || 0%{?rhel} >= 7
 BuildRequires: netcf-devel >= 0.2.2
-    %else
+%else
 BuildRequires: netcf-devel >= 0.1.8
-    %endif
 %endif
 %if %{with_esx}
 BuildRequires: libcurl-devel
@@ -650,7 +641,7 @@ capabilities.
 Summary: Interface driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
-    %if %{with_netcf} && (0%{?fedora} || 0%{?rhel} >= 7)
+    %if (0%{?fedora} || 0%{?rhel} >= 7)
 Requires: netcf-libs >= 0.2.2
     %endif
 
@@ -1173,10 +1164,6 @@ rm -rf .git
     %define _without_fuse --without-fuse
 %endif
 
-%if ! %{with_netcf}
-    %define _without_netcf --without-netcf
-%endif
-
 %if ! %{with_selinux}
     %define _without_selinux --without-selinux
 %endif
@@ -1284,7 +1271,7 @@ rm -f po/stamp-po
            %{?_without_numad} \
            --with-capng \
            %{?_without_fuse} \
-           %{?_without_netcf} \
+           --with-netcf \
            %{?_without_selinux} \
            %{?_with_selinux_mount} \
            --without-apparmor \
