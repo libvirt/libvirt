@@ -15,12 +15,7 @@
 %{!?enable_autotools:%global enable_autotools 0}
 
 
-# Now set the defaults for all the important features, independent
-# of any particular OS
-
-%define with_avahi         0%{!?_without_avahi:1}
-
-# Then the hypervisor drivers that run in libvirtd
+# The hypervisor drivers that run in libvirtd
 %define with_xen           0%{!?_without_xen:1}
 %define with_qemu          0%{!?_without_qemu:1}
 %define with_lxc           0%{!?_without_lxc:1}
@@ -394,9 +389,7 @@ BuildRequires: libpcap-devel
 %if %{with_libnl}
 BuildRequires: libnl3-devel
 %endif
-%if %{with_avahi}
 BuildRequires: avahi-devel
-%endif
 %if %{with_selinux}
 BuildRequires: libselinux-devel
 %endif
@@ -558,9 +551,7 @@ Requires: %{name}-client = %{version}-%{release}
 Requires: module-init-tools
 # for /sbin/ip & /sbin/tc
 Requires: iproute
-%if %{with_avahi}
 Requires: avahi-libs
-%endif
 %if %{with_polkit}
     %if 0%{?fedora} || 0%{?rhel} >= 7
 Requires: polkit >= 0.112
@@ -1132,10 +1123,6 @@ rm -rf .git
     %define _without_sasl --without-sasl
 %endif
 
-%if ! %{with_avahi}
-    %define _without_avahi --without-avahi
-%endif
-
 %if ! %{with_phyp}
     %define _without_phyp --without-phyp
 %endif
@@ -1314,7 +1301,7 @@ rm -f po/stamp-po
            %{?_without_vbox} \
            %{?_without_libxl} \
            %{?_without_sasl} \
-           %{?_without_avahi} \
+           --with-avahi \
            %{?_without_polkit} \
            --with-libvirtd \
            %{?_without_uml} \
