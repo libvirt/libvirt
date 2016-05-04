@@ -97,7 +97,6 @@
 %define with_pm_utils      1
 
 # Non-server/HV driver defaults which are always enabled
-%define with_sasl          0%{!?_without_sasl:1}
 %define with_nss_plugin    0%{!?_without_nss_plugin:1}
 
 
@@ -378,9 +377,7 @@ BuildRequires: radvd
 BuildRequires: ebtables
 %endif
 BuildRequires: module-init-tools
-%if %{with_sasl}
 BuildRequires: cyrus-sasl-devel
-%endif
 %if %{with_polkit}
     %if 0%{?fedora} || 0%{?rhel} >= 7
 # F22 polkit-devel doesn't pull in polkit anymore, which we need for pkcheck
@@ -939,12 +936,10 @@ Requires: gnutls-utils
 # Needed for probing the power management features of the host.
 Requires: pm-utils
 %endif
-%if %{with_sasl}
 Requires: cyrus-sasl
 # Not technically required, but makes 'out-of-box' config
 # work correctly & doesn't have onerous dependencies
 Requires: cyrus-sasl-md5
-%endif
 
 %description client
 Shared libraries and client binaries needed to access to the
@@ -1075,10 +1070,6 @@ rm -rf .git
 
 %if ! %{with_libxl}
     %define _without_libxl --without-libxl
-%endif
-
-%if ! %{with_sasl}
-    %define _without_sasl --without-sasl
 %endif
 
 %if ! %{with_phyp}
@@ -1230,7 +1221,7 @@ rm -f po/stamp-po
            %{?_without_lxc} \
            %{?_without_vbox} \
            %{?_without_libxl} \
-           %{?_without_sasl} \
+           --with-sasl \
            --with-avahi \
            %{?_without_polkit} \
            --with-libvirtd \
@@ -1964,9 +1955,7 @@ exit 0
 %attr(0755, root, root) %{_libexecdir}/libvirt-guests.sh
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/
 
-%if %{with_sasl}
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
-%endif
 
 %if %{with_wireshark}
 %files wireshark
