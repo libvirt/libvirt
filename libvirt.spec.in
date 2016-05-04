@@ -18,8 +18,6 @@
 # Now set the defaults for all the important features, independent
 # of any particular OS
 
-# First the daemon itself
-%define with_libvirtd      0%{!?_without_libvirtd:1}
 %define with_avahi         0%{!?_without_avahi:1}
 
 # Then the hypervisor drivers that run in libvirtd
@@ -220,25 +218,6 @@
     %define with_wireshark 0%{!?_without_wireshark:1}
 %endif
 
-# Disable some drivers when building without libvirt daemon.
-# The logic is the same as in configure.ac
-%if ! %{with_libvirtd}
-    %define with_interface 0
-    %define with_network 0
-    %define with_qemu 0
-    %define with_lxc 0
-    %define with_uml 0
-    %define with_hal 0
-    %define with_udev 0
-    %define with_storage_fs 0
-    %define with_storage_lvm 0
-    %define with_storage_iscsi 0
-    %define with_storage_mpath 0
-    %define with_storage_rbd 0
-    %define with_storage_sheepdog 0
-    %define with_storage_gluster 0
-    %define with_storage_disk 0
-%endif
 
 %if %{with_qemu} || %{with_lxc} || %{with_uml}
     %define with_nwfilter 0%{!?_without_nwfilter:1}
@@ -317,44 +296,42 @@ URL: http://libvirt.org/
 %endif
 Source: http://libvirt.org/sources/%{?mainturl}libvirt-%{version}.tar.gz
 
-%if %{with_libvirtd}
 Requires: libvirt-daemon = %{version}-%{release}
-    %if %{with_network}
+%if %{with_network}
 Requires: libvirt-daemon-config-network = %{version}-%{release}
-    %endif
-    %if %{with_nwfilter}
+%endif
+%if %{with_nwfilter}
 Requires: libvirt-daemon-config-nwfilter = %{version}-%{release}
-    %endif
-    %if %{with_libxl}
+%endif
+%if %{with_libxl}
 Requires: libvirt-daemon-driver-libxl = %{version}-%{release}
-    %endif
-    %if %{with_lxc}
+%endif
+%if %{with_lxc}
 Requires: libvirt-daemon-driver-lxc = %{version}-%{release}
-    %endif
-    %if %{with_qemu}
+%endif
+%if %{with_qemu}
 Requires: libvirt-daemon-driver-qemu = %{version}-%{release}
-    %endif
-    %if %{with_uml}
+%endif
+%if %{with_uml}
 Requires: libvirt-daemon-driver-uml = %{version}-%{release}
-    %endif
-    %if %{with_xen}
+%endif
+%if %{with_xen}
 Requires: libvirt-daemon-driver-xen = %{version}-%{release}
-    %endif
-    %if %{with_vbox}
+%endif
+%if %{with_vbox}
 Requires: libvirt-daemon-driver-vbox = %{version}-%{release}
-    %endif
-    %if %{with_nwfilter}
+%endif
+%if %{with_nwfilter}
 Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
-    %endif
+%endif
 
-    %if %{with_interface}
+%if %{with_interface}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
-    %endif
+%endif
 Requires: libvirt-daemon-driver-secret = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
 Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
-%endif
 Requires: libvirt-client = %{version}-%{release}
 
 # All build-time requirements. Run-time requirements are
@@ -390,10 +367,8 @@ BuildRequires: libgcrypt-devel
 %endif
 BuildRequires: gnutls-devel
 BuildRequires: libattr-devel
-%if %{with_libvirtd}
 # For pool-build probing for existing pools
 BuildRequires: libblkid-devel >= 2.17
-%endif
 # for augparse, optionally used in testing
 BuildRequires: augeas
 %if %{with_hal}
@@ -569,7 +544,6 @@ Group: Development/Libraries
 Includes the API reference for the libvirt C library, and a complete
 copy of the libvirt.org website documentation.
 
-%if %{with_libvirtd}
 %package daemon
 Summary: Server side daemon and supporting files for libvirt library
 Group: Development/Libraries
@@ -584,33 +558,33 @@ Requires: %{name}-client = %{version}-%{release}
 Requires: module-init-tools
 # for /sbin/ip & /sbin/tc
 Requires: iproute
-    %if %{with_avahi}
+%if %{with_avahi}
 Requires: avahi-libs
-    %endif
-    %if %{with_polkit}
-        %if 0%{?fedora} || 0%{?rhel} >= 7
+%endif
+%if %{with_polkit}
+    %if 0%{?fedora} || 0%{?rhel} >= 7
 Requires: polkit >= 0.112
-        %else
+    %else
 Requires: polkit >= 0.93
-        %endif
     %endif
-    %if %{with_cgconfig}
+%endif
+%if %{with_cgconfig}
 Requires: libcgroup
-    %endif
-    %ifarch %{ix86} x86_64 ia64
+%endif
+%ifarch %{ix86} x86_64 ia64
 # For virConnectGetSysinfo
 Requires: dmidecode
-    %endif
+%endif
 # For service management
-    %if %{with_systemd}
+%if %{with_systemd}
 Requires(post): systemd-units
 Requires(post): systemd-sysv
 Requires(preun): systemd-units
 Requires(postun): systemd-units
-    %endif
-    %if %{with_numad}
+%endif
+%if %{with_numad}
 Requires: numad
-    %endif
+%endif
 # libvirtd depends on 'messagebus' service
 Requires: dbus
 # For uid creation during pre
@@ -621,7 +595,7 @@ Server side daemon required to manage the virtualization capabilities
 of recent versions of Linux. Requires a hypervisor specific sub-RPM
 for specific drivers.
 
-    %if %{with_network}
+%if %{with_network}
 %package daemon-config-network
 Summary: Default configuration files for the libvirtd daemon
 Group: Development/Libraries
@@ -631,9 +605,9 @@ Requires: libvirt-daemon-driver-network = %{version}-%{release}
 
 %description daemon-config-network
 Default configuration files for setting up NAT based networking
-    %endif
+%endif
 
-    %if %{with_nwfilter}
+%if %{with_nwfilter}
 %package daemon-config-nwfilter
 Summary: Network filter configuration files for the libvirtd daemon
 Group: Development/Libraries
@@ -643,9 +617,9 @@ Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 
 %description daemon-config-nwfilter
 Network filter configuration files for cleaning guest traffic
-    %endif
+%endif
 
-    %if %{with_network}
+%if %{with_network}
 %package daemon-driver-network
 Summary: Network driver plugin for the libvirtd daemon
 Group: Development/Libraries
@@ -653,73 +627,73 @@ Requires: libvirt-daemon = %{version}-%{release}
 Requires: dnsmasq >= 2.41
 Requires: radvd
 Requires: iptables
-        %if 0%{?rhel} && 0%{?rhel} < 7
+    %if 0%{?rhel} && 0%{?rhel} < 7
 Requires: iptables-ipv6
-        %endif
+    %endif
 
 %description daemon-driver-network
 The network driver plugin for the libvirtd daemon, providing
 an implementation of the virtual network APIs using the Linux
 bridge capabilities.
-    %endif
+%endif
 
 
-    %if %{with_nwfilter}
+%if %{with_nwfilter}
 %package daemon-driver-nwfilter
 Summary: Nwfilter driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: iptables
-        %if 0%{?rhel} && 0%{?rhel} < 7
+    %if 0%{?rhel} && 0%{?rhel} < 7
 Requires: iptables-ipv6
-        %endif
+    %endif
 Requires: ebtables
 
 %description daemon-driver-nwfilter
 The nwfilter driver plugin for the libvirtd daemon, providing
 an implementation of the firewall APIs using the ebtables,
 iptables and ip6tables capabilities
-    %endif
+%endif
 
 
-    %if %{with_nodedev}
+%if %{with_nodedev}
 %package daemon-driver-nodedev
 Summary: Nodedev driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 # needed for device enumeration
-        %if %{with_hal}
+    %if %{with_hal}
 Requires: hal
-        %endif
-        %if %{with_udev}
-            %if 0%{?fedora} || 0%{?rhel} >= 7
+    %endif
+    %if %{with_udev}
+        %if 0%{?fedora} || 0%{?rhel} >= 7
 Requires: systemd >= 185
-            %else
+        %else
 Requires: udev >= 145
-            %endif
         %endif
+    %endif
 
 %description daemon-driver-nodedev
 The nodedev driver plugin for the libvirtd daemon, providing
 an implementation of the node device APIs using the udev
 capabilities.
-    %endif
+%endif
 
 
-    %if %{with_interface}
+%if %{with_interface}
 %package daemon-driver-interface
 Summary: Interface driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
-        %if %{with_netcf} && (0%{?fedora} || 0%{?rhel} >= 7)
+    %if %{with_netcf} && (0%{?fedora} || 0%{?rhel} >= 7)
 Requires: netcf-libs >= 0.2.2
-        %endif
+    %endif
 
 %description daemon-driver-interface
 The interface driver plugin for the libvirtd daemon, providing
 an implementation of the network interface APIs using the
 netcf library
-    %endif
+%endif
 
 
 %package daemon-driver-secret
@@ -732,59 +706,59 @@ The secret driver plugin for the libvirtd daemon, providing
 an implementation of the secret key APIs.
 
 
-    %if %{with_storage}
+%if %{with_storage}
 %package daemon-driver-storage
 Summary: Storage driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
-        %if %{with_storage_fs}
+    %if %{with_storage_fs}
 Requires: nfs-utils
 # For mkfs
 Requires: util-linux
 # For glusterfs
-            %if 0%{?fedora}
+        %if 0%{?fedora}
 Requires: glusterfs-client >= 2.0.1
-            %endif
         %endif
-        %if %{with_storage_lvm}
+    %endif
+    %if %{with_storage_lvm}
 # For LVM drivers
 Requires: lvm2
-        %endif
-        %if %{with_storage_iscsi}
+    %endif
+    %if %{with_storage_iscsi}
 # For ISCSI driver
 Requires: iscsi-initiator-utils
-        %endif
-        %if %{with_storage_disk}
+    %endif
+    %if %{with_storage_disk}
 # For disk driver
 Requires: parted
 Requires: device-mapper
-        %endif
-        %if %{with_storage_mpath}
+    %endif
+    %if %{with_storage_mpath}
 # For multipath support
 Requires: device-mapper
-        %endif
-        %if %{with_storage_sheepdog}
+    %endif
+    %if %{with_storage_sheepdog}
 # For Sheepdog support
 Requires: sheepdog
-        %endif
-        %if %{with_qemu}
+    %endif
+    %if %{with_qemu}
 # From QEMU RPMs
 Requires: /usr/bin/qemu-img
-        %else
-            %if %{with_xen}
+    %else
+        %if %{with_xen}
 # From Xen RPMs
 Requires: /usr/sbin/qcow-create
-            %endif
         %endif
+    %endif
 
 %description daemon-driver-storage
 The storage driver plugin for the libvirtd daemon, providing
 an implementation of the storage APIs using LVM, iSCSI,
 parted and more.
-    %endif
+%endif
 
 
-    %if %{with_qemu}
+%if %{with_qemu}
 %package daemon-driver-qemu
 Summary: Qemu driver plugin for the libvirtd daemon
 Group: Development/Libraries
@@ -802,10 +776,10 @@ Requires: xz
 The qemu driver plugin for the libvirtd daemon, providing
 an implementation of the hypervisor driver APIs using
 QEMU
-    %endif
+%endif
 
 
-    %if %{with_lxc}
+%if %{with_lxc}
 %package daemon-driver-lxc
 Summary: LXC driver plugin for the libvirtd daemon
 Group: Development/Libraries
@@ -817,10 +791,10 @@ Requires: libvirt-daemon-driver-network = %{version}-%{release}
 The LXC driver plugin for the libvirtd daemon, providing
 an implementation of the hypervisor driver APIs using
 the Linux kernel
-    %endif
+%endif
 
 
-    %if %{with_uml}
+%if %{with_uml}
 %package daemon-driver-uml
 Summary: Uml driver plugin for the libvirtd daemon
 Group: Development/Libraries
@@ -830,10 +804,10 @@ Requires: libvirt-daemon = %{version}-%{release}
 The UML driver plugin for the libvirtd daemon, providing
 an implementation of the hypervisor driver APIs using
 User Mode Linux
-    %endif
+%endif
 
 
-    %if %{with_xen}
+%if %{with_xen}
 %package daemon-driver-xen
 Summary: Xen driver plugin for the libvirtd daemon
 Group: Development/Libraries
@@ -843,10 +817,10 @@ Requires: libvirt-daemon = %{version}-%{release}
 The Xen driver plugin for the libvirtd daemon, providing
 an implementation of the hypervisor driver APIs using
 Xen
-    %endif
+%endif
 
 
-    %if %{with_vbox}
+%if %{with_vbox}
 %package daemon-driver-vbox
 Summary: VirtualBox driver plugin for the libvirtd daemon
 Group: Development/Libraries
@@ -856,10 +830,10 @@ Requires: libvirt-daemon = %{version}-%{release}
 The vbox driver plugin for the libvirtd daemon, providing
 an implementation of the hypervisor driver APIs using
 VirtualBox
-    %endif
+%endif
 
 
-    %if %{with_libxl}
+%if %{with_libxl}
 %package daemon-driver-libxl
 Summary: Libxl driver plugin for the libvirtd daemon
 Group: Development/Libraries
@@ -869,11 +843,11 @@ Requires: libvirt-daemon = %{version}-%{release}
 The Libxl driver plugin for the libvirtd daemon, providing
 an implementation of the hypervisor driver APIs using
 Libxl
-    %endif
+%endif
 
 
 
-    %if %{with_qemu_tcg}
+%if %{with_qemu_tcg}
 %package daemon-qemu
 Summary: Server side daemon & driver required to run QEMU guests
 Group: Development/Libraries
@@ -891,10 +865,10 @@ Requires: qemu
 %description daemon-qemu
 Server side daemon and driver required to manage the virtualization
 capabilities of the QEMU TCG emulators
-    %endif
+%endif
 
 
-    %if %{with_qemu_kvm}
+%if %{with_qemu_kvm}
 %package daemon-kvm
 Summary: Server side daemon & driver required to run KVM guests
 Group: Development/Libraries
@@ -912,10 +886,10 @@ Requires: qemu-kvm
 %description daemon-kvm
 Server side daemon and driver required to manage the virtualization
 capabilities of the KVM hypervisor
-    %endif
+%endif
 
 
-    %if %{with_lxc}
+%if %{with_lxc}
 %package daemon-lxc
 Summary: Server side daemon & driver required to run LXC guests
 Group: Development/Libraries
@@ -932,10 +906,10 @@ Requires: libvirt-daemon-driver-storage = %{version}-%{release}
 %description daemon-lxc
 Server side daemon and driver required to manage the virtualization
 capabilities of LXC
-    %endif
+%endif
 
 
-    %if %{with_uml}
+%if %{with_uml}
 %package daemon-uml
 Summary: Server side daemon & driver required to run UML guests
 Group: Development/Libraries
@@ -953,21 +927,21 @@ Requires: libvirt-daemon-driver-storage = %{version}-%{release}
 %description daemon-uml
 Server side daemon and driver required to manage the virtualization
 capabilities of UML
-    %endif
+%endif
 
 
-    %if %{with_xen} || %{with_libxl}
+%if %{with_xen} || %{with_libxl}
 %package daemon-xen
 Summary: Server side daemon & driver required to run XEN guests
 Group: Development/Libraries
 
 Requires: libvirt-daemon = %{version}-%{release}
-        %if %{with_xen}
+    %if %{with_xen}
 Requires: libvirt-daemon-driver-xen = %{version}-%{release}
-        %endif
-        %if %{with_libxl}
+    %endif
+    %if %{with_libxl}
 Requires: libvirt-daemon-driver-libxl = %{version}-%{release}
-        %endif
+    %endif
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
 Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
@@ -979,9 +953,9 @@ Requires: xen
 %description daemon-xen
 Server side daemon and driver required to manage the virtualization
 capabilities of XEN
-    %endif
+%endif
 
-    %if %{with_vbox}
+%if %{with_vbox}
 %package daemon-vbox
 Summary: Server side daemon & driver required to run VirtualBox guests
 Group: Development/Libraries
@@ -998,8 +972,7 @@ Requires: libvirt-daemon-driver-storage = %{version}-%{release}
 %description daemon-vbox
 Server side daemon and driver required to manage the virtualization
 capabilities of VirtualBox
-    %endif
-%endif # %{with_libvirtd}
+%endif
 
 %package client
 Summary: Client side library and utilities of the libvirt library
@@ -1183,10 +1156,6 @@ rm -rf .git
     %define _without_polkit --without-polkit
 %endif
 
-%if ! %{with_libvirtd}
-    %define _without_libvirtd --without-libvirtd
-%endif
-
 %if ! %{with_uml}
     %define _without_uml --without-uml
 %endif
@@ -1347,7 +1316,7 @@ rm -f po/stamp-po
            %{?_without_sasl} \
            %{?_without_avahi} \
            %{?_without_polkit} \
-           %{?_without_libvirtd} \
+           --with-libvirtd \
            %{?_without_uml} \
            %{?_without_phyp} \
            %{?_without_esx} \
@@ -1509,23 +1478,22 @@ then
   exit 1
 fi
 
-%if %{with_libvirtd}
 %pre daemon
-    %if %{with_polkit}
+%if %{with_polkit}
 # 'libvirt' group is just to allow password-less polkit access to
 # libvirtd. The uid number is irrelevant, so we use dynamic allocation
 # described at the above link.
 getent group libvirt >/dev/null || groupadd -r libvirt
-    %endif
+%endif
 
 exit 0
 
 %post daemon
 
-    %if %{with_systemd}
-        %if %{with_systemd_macros}
-            %systemd_post virtlockd.socket virtlogd.socket libvirtd.service
-        %else
+%if %{with_systemd}
+    %if %{with_systemd_macros}
+        %systemd_post virtlockd.socket virtlogd.socket libvirtd.service
+    %else
 if [ $1 -eq 1 ] ; then
     # Initial installation
     /bin/systemctl enable \
@@ -1533,28 +1501,28 @@ if [ $1 -eq 1 ] ; then
         virtlogd.socket \
         libvirtd.service >/dev/null 2>&1 || :
 fi
-        %endif
-    %else
-        %if %{with_cgconfig}
+    %endif
+%else
+    %if %{with_cgconfig}
 # Starting with Fedora 16/RHEL-7, systemd automounts all cgroups,
 # and cgconfig is no longer a necessary service.
-            %if 0%{?rhel} && 0%{?rhel} < 7
+        %if 0%{?rhel} && 0%{?rhel} < 7
 if [ "$1" -eq "1" ]; then
 /sbin/chkconfig cgconfig on
 fi
-            %endif
         %endif
+    %endif
 
 /sbin/chkconfig --add libvirtd
 /sbin/chkconfig --add virtlogd
 /sbin/chkconfig --add virtlockd
-    %endif
+%endif
 
 %preun daemon
-    %if %{with_systemd}
-        %if %{with_systemd_macros}
-            %systemd_preun libvirtd.service virtlogd.socket virtlogd.service virtlockd.socket virtlockd.service
-        %else
+%if %{with_systemd}
+    %if %{with_systemd_macros}
+        %systemd_preun libvirtd.service virtlogd.socket virtlogd.service virtlockd.socket virtlockd.service
+    %else
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
     /bin/systemctl --no-reload disable \
@@ -1570,8 +1538,8 @@ if [ $1 -eq 0 ] ; then
         virtlockd.socket \
         virtlockd.service > /dev/null 2>&1 || :
 fi
-        %endif
-    %else
+    %endif
+%else
 if [ $1 = 0 ]; then
     /sbin/service libvirtd stop 1>/dev/null 2>&1
     /sbin/chkconfig --del libvirtd
@@ -1580,33 +1548,33 @@ if [ $1 = 0 ]; then
     /sbin/service virtlockd stop 1>/dev/null 2>&1
     /sbin/chkconfig --del virtlockd
 fi
-    %endif
+%endif
 
 %postun daemon
-    %if %{with_systemd}
+%if %{with_systemd}
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 if [ $1 -ge 1 ] ; then
     /bin/systemctl reload-or-try-restart virtlockd.service >/dev/null 2>&1 || :
     /bin/systemctl reload-or-try-restart virtlogd.service >/dev/null 2>&1 || :
     /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
 fi
-    %else
+%else
 if [ $1 -ge 1 ]; then
     /sbin/service virtlockd reload > /dev/null 2>&1 || :
     /sbin/service virtlogd reload > /dev/null 2>&1 || :
     /sbin/service libvirtd condrestart > /dev/null 2>&1
 fi
-    %endif
+%endif
 
-    %if %{with_systemd}
-    %else
+%if %{with_systemd}
+%else
 %triggerpostun daemon -- libvirt-daemon < 1.2.1
 if [ "$1" -ge "1" ]; then
     /sbin/service virtlockd reload > /dev/null 2>&1 || :
     /sbin/service virtlogd reload > /dev/null 2>&1 || :
     /sbin/service libvirtd condrestart > /dev/null 2>&1
 fi
-    %endif
+%endif
 
 # In upgrade scenario we must explicitly enable virtlockd/virtlogd
 # sockets, if libvirtd is already enabled and start them if
@@ -1614,20 +1582,20 @@ fi
 # guests
 %triggerpostun daemon -- libvirt-daemon < 1.3.0
 if [ $1 -ge 1 ] ; then
-    %if %{with_systemd}
+%if %{with_systemd}
         /bin/systemctl is-enabled libvirtd.service 1>/dev/null 2>&1 &&
             /bin/systemctl enable virtlogd.socket || :
         /bin/systemctl is-active libvirtd.service 1>/dev/null 2>&1 &&
             /bin/systemctl start virtlogd.socket || :
-    %else
+%else
         /sbin/chkconfig libvirtd 1>/dev/null 2>&1 &&
             /sbin/chkconfig virtlogd on || :
         /sbin/service libvirtd status 1>/dev/null 2>&1 &&
             /sbin/service virtlogd start || :
-    %endif
+%endif
 fi
 
-    %if %{with_network}
+%if %{with_network}
 %post daemon-config-network
 if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ; then
     # see if the network used by default network creates a conflict,
@@ -1666,16 +1634,16 @@ if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ;
     ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 
     # Make sure libvirt picks up the new network defininiton
-        %if %{with_systemd}
+    %if %{with_systemd}
     /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 ||:
-        %else
+    %else
     /sbin/service libvirtd condrestart > /dev/null 2>&1 || :
-        %endif
-
-fi
     %endif
 
-    %if %{with_systemd}
+fi
+%endif
+
+%if %{with_systemd}
 %triggerun -- libvirt < 0.9.4
 %{_bindir}/systemd-sysv-convert --save libvirtd >/dev/null 2>&1 ||:
 
@@ -1685,9 +1653,9 @@ fi
 # Run these because the SysV package being removed won't do them
 /sbin/chkconfig --del libvirtd >/dev/null 2>&1 || :
 /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
-    %endif
+%endif
 
-    %if %{with_qemu}
+%if %{with_qemu}
 %pre daemon-driver-qemu
 # We want soft static allocation of well-known ids, as disk images
 # are commonly shared across NFS mounts by id rather than name; see
@@ -1702,8 +1670,7 @@ if ! getent passwd qemu >/dev/null; then
   fi
 fi
 exit 0
-    %endif
-%endif # %{with_libvirtd}
+%endif
 
 %preun client
 
@@ -1785,23 +1752,22 @@ exit 0
 %doc examples/systemtap
 
 
-%if %{with_libvirtd}
 %files daemon
 %defattr(-, root, root)
 
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 
-    %if %{with_systemd}
+%if %{with_systemd}
 %{_unitdir}/libvirtd.service
 %{_unitdir}/virtlogd.service
 %{_unitdir}/virtlogd.socket
 %{_unitdir}/virtlockd.service
 %{_unitdir}/virtlockd.socket
-    %else
+%else
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %{_sysconfdir}/rc.d/init.d/virtlogd
 %{_sysconfdir}/rc.d/init.d/virtlockd
-    %endif
+%endif
 %doc daemon/libvirtd.upstart
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
 %config(noreplace) %{_sysconfdir}/sysconfig/virtlogd
@@ -1832,23 +1798,23 @@ exit 0
 %{_datadir}/augeas/lenses/virtlockd.aug
 %{_datadir}/augeas/lenses/tests/test_virtlockd.aug
 %{_datadir}/augeas/lenses/libvirt_lockd.aug
-    %if %{with_qemu}
+%if %{with_qemu}
 %{_datadir}/augeas/lenses/tests/test_libvirt_lockd.aug
-    %endif
+%endif
 
-    %if %{with_polkit}
+%if %{with_polkit}
 %{_datadir}/polkit-1/actions/org.libvirt.unix.policy
 %{_datadir}/polkit-1/actions/org.libvirt.api.policy
 %{_datadir}/polkit-1/rules.d/50-libvirt.rules
-    %endif
+%endif
 
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/
 
 %attr(0755, root, root) %{_libexecdir}/libvirt_iohelper
 
-    %if %{with_apparmor}
+%if %{with_apparmor}
 %attr(0755, root, root) %{_libexecdir}/virt-aa-helper
-    %endif
+%endif
 
 %attr(0755, root, root) %{_sbindir}/libvirtd
 %attr(0755, root, root) %{_sbindir}/virtlogd
@@ -1860,26 +1826,26 @@ exit 0
 
 %doc examples/polkit/*.rules
 
-    %if %{with_network}
+%if %{with_network}
 %files daemon-config-network
 %defattr(-, root, root)
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml
-    %endif
+%endif
 
-    %if %{with_nwfilter}
+%if %{with_nwfilter}
 %files daemon-config-nwfilter
 %defattr(-, root, root)
 %{_sysconfdir}/libvirt/nwfilter/*.xml
-    %endif
+%endif
 
-    %if %{with_interface}
+%if %{with_interface}
 %files daemon-driver-interface
 %defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_interface.so
-    %endif
+%endif
 
-    %if %{with_network}
+%if %{with_network}
 %files daemon-driver-network
 %defattr(-, root, root)
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
@@ -1890,36 +1856,36 @@ exit 0
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
 %attr(0755, root, root) %{_libexecdir}/libvirt_leaseshelper
 %{_libdir}/%{name}/connection-driver/libvirt_driver_network.so
-    %endif
+%endif
 
-    %if %{with_nodedev}
+%if %{with_nodedev}
 %files daemon-driver-nodedev
 %defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so
-    %endif
+%endif
 
-    %if %{with_nwfilter}
+%if %{with_nwfilter}
 %files daemon-driver-nwfilter
 %defattr(-, root, root)
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
 %ghost %dir %{_localstatedir}/run/libvirt/network/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nwfilter.so
-    %endif
+%endif
 
 %files daemon-driver-secret
 %defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_secret.so
 
-    %if %{with_storage}
+%if %{with_storage}
 %files daemon-driver-storage
 %defattr(-, root, root)
-        %if %{with_storage_disk}
+    %if %{with_storage_disk}
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
-        %endif
-%{_libdir}/%{name}/connection-driver/libvirt_driver_storage.so
     %endif
+%{_libdir}/%{name}/connection-driver/libvirt_driver_storage.so
+%endif
 
-    %if %{with_qemu}
+%if %{with_qemu}
 %files daemon-driver-qemu
 %defattr(-, root, root)
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
@@ -1933,9 +1899,9 @@ exit 0
 %{_datadir}/augeas/lenses/libvirtd_qemu.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
 %{_libdir}/%{name}/connection-driver/libvirt_driver_qemu.so
-    %endif
+%endif
 
-    %if %{with_lxc}
+%if %{with_lxc}
 %files daemon-driver-lxc
 %defattr(-, root, root)
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
@@ -1947,9 +1913,9 @@ exit 0
 %{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
 %attr(0755, root, root) %{_libexecdir}/libvirt_lxc
 %{_libdir}/%{name}/connection-driver/libvirt_driver_lxc.so
-    %endif
+%endif
 
-    %if %{with_uml}
+%if %{with_uml}
 %files daemon-driver-uml
 %defattr(-, root, root)
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/uml/
@@ -1957,16 +1923,16 @@ exit 0
 %ghost %dir %{_localstatedir}/run/libvirt/uml/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/uml/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_uml.so
-    %endif
+%endif
 
-    %if %{with_xen}
+%if %{with_xen}
 %files daemon-driver-xen
 %defattr(-, root, root)
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/xen/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_xen.so
-    %endif
+%endif
 
-    %if %{with_libxl}
+%if %{with_libxl}
 %files daemon-driver-libxl
 %defattr(-, root, root)
 %config(noreplace) %{_sysconfdir}/libvirt/libxl.conf
@@ -1978,44 +1944,43 @@ exit 0
 %ghost %dir %{_localstatedir}/run/libvirt/libxl/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_libxl.so
-    %endif
+%endif
 
-    %if %{with_vbox}
+%if %{with_vbox}
 %files daemon-driver-vbox
 %defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_vbox.so
-    %endif
+%endif
 
-    %if %{with_qemu_tcg}
+%if %{with_qemu_tcg}
 %files daemon-qemu
 %defattr(-, root, root)
-    %endif
+%endif
 
-    %if %{with_qemu_kvm}
+%if %{with_qemu_kvm}
 %files daemon-kvm
 %defattr(-, root, root)
-    %endif
+%endif
 
-    %if %{with_lxc}
+%if %{with_lxc}
 %files daemon-lxc
 %defattr(-, root, root)
-    %endif
+%endif
 
-    %if %{with_uml}
+%if %{with_uml}
 %files daemon-uml
 %defattr(-, root, root)
-    %endif
+%endif
 
-    %if %{with_xen} || %{with_libxl}
+%if %{with_xen} || %{with_libxl}
 %files daemon-xen
 %defattr(-, root, root)
-    %endif
+%endif
 
-    %if %{with_vbox}
+%if %{with_vbox}
 %files daemon-vbox
 %defattr(-, root, root)
-    %endif
-%endif # %{with_libvirtd}
+%endif
 
 %if %{with_sanlock}
 %files lock-sanlock
