@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 1.2.13\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2015-12-23 18:57-0500\n"
+"POT-Creation-Date: 2016-05-04 19:50-0400\n"
 "PO-Revision-Date: 2014-12-10 01:40-0500\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/projects/p/libvirt/"
@@ -9593,7 +9593,7 @@ msgid "%s is missing 'type' property"
 msgstr "У %s не вказано властивості «type»"
 
 #: src/fdstream.c:88 src/fdstream.c:125 src/fdstream.c:206 src/fdstream.c:369
-#: src/fdstream.c:421
+#: src/fdstream.c:423
 msgid "stream is not open"
 msgstr "потік даних не відкрито"
 
@@ -9623,72 +9623,72 @@ msgstr "Допоміжна програма вводу-виводу заверш
 msgid "Too many bytes to write to stream"
 msgstr "Забагато байтів для запису до потоку даних"
 
-#: src/fdstream.c:378 src/fdstream.c:397
+#: src/fdstream.c:378 src/fdstream.c:399
 msgid "cannot write to stream"
 msgstr "не вдалося виконати запис до потоку"
 
-#: src/fdstream.c:415
+#: src/fdstream.c:417
 msgid "Too many bytes to read from stream"
 msgstr "Забагато байтів для читання з потоку даних"
 
-#: src/fdstream.c:447
+#: src/fdstream.c:451
 msgid "cannot read from stream"
 msgstr "не вдалося виконати читання даних з потоку"
 
-#: src/fdstream.c:481
+#: src/fdstream.c:485
 msgid "Unable to set non-blocking mode"
 msgstr "Не вдалося встановити режим без блокування"
 
-#: src/fdstream.c:495 src/locking/lock_daemon.c:147
+#: src/fdstream.c:499 src/locking/lock_daemon.c:147
 #: src/locking/lock_daemon.c:194 src/qemu/qemu_capabilities.c:3675
 #: src/util/vireventpoll.c:692 src/util/virobject.c:224
 msgid "Unable to initialize mutex"
 msgstr "Не вдалося ініціалізувати семафор"
 
-#: src/fdstream.c:525
+#: src/fdstream.c:529
 msgid "Unable to open UNIX socket"
 msgstr "Не вдалося відкрити сокет UNIX"
 
-#: src/fdstream.c:568
+#: src/fdstream.c:572
 msgid "UNIX domain sockets are not supported on this platform"
 msgstr "На цій платформі сокети доменів UNIX не підтримуються"
 
-#: src/fdstream.c:600
+#: src/fdstream.c:604
 #, c-format
 msgid "Unable to open stream for '%s'"
 msgstr "Не вдалося відкрити потік даних для «%s»"
 
-#: src/fdstream.c:607
+#: src/fdstream.c:611
 #, c-format
 msgid "Unable to access stream for '%s'"
 msgstr "Не вдалося отримати доступ до потоку даних для «%s»"
 
-#: src/fdstream.c:615 src/util/iohelper.c:65
+#: src/fdstream.c:619 src/util/iohelper.c:65
 #, c-format
 msgid "Unable to seek %s to %llu"
 msgstr "Не вдалося встановити на %s позицію %llu"
 
-#: src/fdstream.c:632
+#: src/fdstream.c:636
 #, c-format
 msgid "%s: Cannot request read and write flags together"
 msgstr ""
 "%s: не можна використовувати одразу прапорці читання (read) і запису (write)"
 
-#: src/fdstream.c:639 src/lxc/lxc_process.c:1218
+#: src/fdstream.c:643 src/lxc/lxc_process.c:1218
 msgid "Unable to create pipe"
 msgstr "Не вдалося створити канал"
 
-#: src/fdstream.c:700
+#: src/fdstream.c:704
 #, c-format
 msgid "Attempt to create %s without specifying mode"
 msgstr "Спроба створення %s без визначення режиму"
 
-#: src/fdstream.c:742
+#: src/fdstream.c:746
 #, c-format
 msgid "unable to get tty attributes: %s"
 msgstr "не вдалося отримати атрибути tty: %s"
 
-#: src/fdstream.c:751 tools/virsh.c:2570
+#: src/fdstream.c:755 tools/virsh.c:2570
 #, c-format
 msgid "unable to set tty attributes: %s"
 msgstr "не вдалося встановити атрибути tty: %s"
@@ -10217,22 +10217,22 @@ msgstr "не вдалося створити контекст udev"
 msgid "failed to register udev interface driver"
 msgstr "не вдалося зареєструвати драйвер інтерфейсу udev"
 
-#: src/internal.h:303 src/internal.h:325
+#: src/internal.h:325 src/internal.h:347
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "непідтримувані прапорці (0x%lx) у функції %s"
 
-#: src/internal.h:350 src/internal.h:374
+#: src/internal.h:372 src/internal.h:396
 #, fuzzy, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "Параметри --%s і --%s не можна використовувати одночасно"
 
-#: src/internal.h:400 src/internal.h:422
+#: src/internal.h:422 src/internal.h:444
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
-#: src/internal.h:491
+#: src/internal.h:513
 #, c-format
 msgid "read only access prevents %s"
 msgstr "через наявність доступу лише до читання неможливе виконання %s"
@@ -10966,8 +10966,8 @@ msgstr "Не вдалося створити простір блокувань %
 
 #: src/locking/lock_driver_sanlock.c:262 src/locking/lock_driver_sanlock.c:317
 #: src/locking/lock_driver_sanlock.c:674 src/storage/storage_backend.c:366
-#: src/util/vircgroup.c:3868 src/util/vircgroup.c:3880 src/util/virfile.c:2035
-#: src/util/virfile.c:2442
+#: src/util/vircgroup.c:3867 src/util/vircgroup.c:3879 src/util/virfile.c:2035
+#: src/util/virfile.c:2472
 #, c-format
 msgid "cannot chown '%s' to (%u, %u)"
 msgstr "не вдалося змінити власника «%s» на (%u, %u)"
@@ -11216,20 +11216,20 @@ msgstr "не вдалося отримати шлях до контролера 
 msgid "Resource partition '%s' must start with '/'"
 msgstr "Назва розділу ресурсів «%s» має починатися з «/»"
 
-#: src/lxc/lxc_fuse.c:150 src/util/vircgroup.c:3524
+#: src/lxc/lxc_fuse.c:149 src/util/vircgroup.c:3524
 #, c-format
 msgid "Cannot open %s"
 msgstr "Не вдалося відкрити %s"
 
-#: src/lxc/lxc_fuse.c:156
+#: src/lxc/lxc_fuse.c:155
 msgid "fseek failed"
 msgstr "помилка fseek"
 
-#: src/lxc/lxc_fuse.c:285
+#: src/lxc/lxc_fuse.c:296
 msgid "fuse_loop failed"
 msgstr "помилка fuse_loop"
 
-#: src/lxc/lxc_fuse.c:309
+#: src/lxc/lxc_fuse.c:320
 #, c-format
 msgid "Cannot create %s"
 msgstr "Не вдалося створити %s"
@@ -18581,7 +18581,7 @@ msgstr "неочікувана адреса QEMU «%s», спробуйте ад
 
 #: src/qemu/qemu_driver.c:1267 src/util/iohelper.c:59 src/util/vircgroup.c:349
 #: src/util/virfile.c:597 src/util/virfile.c:638 src/util/virfile.c:713
-#: src/util/virfile.c:3246 src/util/virnetdevtap.c:438
+#: src/util/virfile.c:3276 src/util/virnetdevtap.c:438
 #, c-format
 msgid "Unable to open %s"
 msgstr "Не вдалося відкрити %s"
@@ -22580,7 +22580,7 @@ msgid "Unable to enable keepalives without async IO support"
 msgstr ""
 "Не вдалося увімкнути keepalive без підтримки асинхронного введення-виведення"
 
-#: src/rpc/virnetclient.c:718 src/rpc/virnetclient.c:1725
+#: src/rpc/virnetclient.c:718 src/rpc/virnetclient.c:1726
 msgid "failed to wake up polling thread"
 msgstr "не вдалося пробудити потік опитування"
 
@@ -22606,37 +22606,37 @@ msgid "got unexpected RPC call prog %d vers %d proc %d type %d"
 msgstr ""
 "отримано неочікуваний виклик RPC програми %d, версія %d, процедура %d, тип %d"
 
-#: src/rpc/virnetclient.c:1529
+#: src/rpc/virnetclient.c:1530
 msgid "poll on socket failed"
 msgstr "помилка опитування сокета"
 
-#: src/rpc/virnetclient.c:1555
+#: src/rpc/virnetclient.c:1556
 msgid "read on wakeup fd failed"
 msgstr "спроба читання дескриптора пробудження зазнала невдачі"
 
-#: src/rpc/virnetclient.c:1599
+#: src/rpc/virnetclient.c:1600
 msgid "received hangup / error event on socket"
 msgstr "отримано повідомлення про подію розриву зв’язку або помилки сокета"
 
-#: src/rpc/virnetclient.c:1743
+#: src/rpc/virnetclient.c:1744
 msgid "failed to wait on condition"
 msgstr "не вдалося дочекатися виконання умови"
 
-#: src/rpc/virnetclient.c:1872
+#: src/rpc/virnetclient.c:1873
 msgid "Attempt to send an asynchronous message with a synchronous reply"
 msgstr "Спроба надсилання асинхронного повідомлення з синхронною відповіддю"
 
-#: src/rpc/virnetclient.c:1879
+#: src/rpc/virnetclient.c:1880
 msgid "Attempt to send a non-blocking message with a synchronous reply"
 msgstr ""
 "Спроба надсилання повідомлення, що не блокує обробку, за допомогою "
 "синхронної відповіді"
 
-#: src/rpc/virnetclient.c:1889
+#: src/rpc/virnetclient.c:1890
 msgid "cannot initialize condition variable"
 msgstr "не вдається ініціалізувати змінну умови"
 
-#: src/rpc/virnetclient.c:1954
+#: src/rpc/virnetclient.c:1955
 msgid "client socket is closed"
 msgstr "сокет клієнта закрито"
 
@@ -22969,17 +22969,17 @@ msgid "Unable to bind to port"
 msgstr "Не вдалося прив’язатися до порту"
 
 #: src/rpc/virnetsocket.c:384 src/rpc/virnetsocket.c:514
-#: src/rpc/virnetsocket.c:584 src/rpc/virnetsocket.c:701
-#: src/rpc/virnetsocket.c:1031 src/rpc/virnetsocket.c:1083
-#: src/rpc/virnetsocket.c:1878
+#: src/rpc/virnetsocket.c:584 src/rpc/virnetsocket.c:715
+#: src/rpc/virnetsocket.c:1045 src/rpc/virnetsocket.c:1097
+#: src/rpc/virnetsocket.c:1892
 msgid "Unable to get local socket name"
 msgstr "Не вдалося отримати назву локального сокета"
 
-#: src/rpc/virnetsocket.c:444 src/rpc/virnetsocket.c:671
+#: src/rpc/virnetsocket.c:444 src/rpc/virnetsocket.c:675
 msgid "Failed to create socket"
 msgstr "Не вдалося створити сокет"
 
-#: src/rpc/virnetsocket.c:451 src/rpc/virnetsocket.c:677
+#: src/rpc/virnetsocket.c:451 src/rpc/virnetsocket.c:681
 #, c-format
 msgid "Path %s too long for unix socket"
 msgstr "Адреса %s є занадто довгою для сокета unix"
@@ -22994,7 +22994,7 @@ msgstr "Не вдається прив'язати сокет до «%s»"
 msgid "Failed to change ownership of '%s' to %d:%d"
 msgstr "Не вдалося змінити права власності щодо «%s» на %d:%d"
 
-#: src/rpc/virnetsocket.c:499 src/rpc/virnetsocket.c:730
+#: src/rpc/virnetsocket.c:499 src/rpc/virnetsocket.c:744
 msgid "UNIX sockets are not supported on this platform"
 msgstr "Підтримки сокетів UNIX на цій платформі не передбачено"
 
@@ -23007,177 +23007,177 @@ msgstr "не вдалося встановити з’єднання з серв
 msgid "Unable to get remote socket name"
 msgstr "Не вдалося отримати назву віддаленого сокета"
 
-#: src/rpc/virnetsocket.c:633
+#: src/rpc/virnetsocket.c:637
 msgid "Auto-spawn of daemon requested, but no binary specified"
 msgstr ""
 "Надіслано запит на автоматичне відновлення роботи фонової служби, але не "
 "вказано виконуваного файла служби"
 
-#: src/rpc/virnetsocket.c:640
+#: src/rpc/virnetsocket.c:644
 #, c-format
 msgid "Cannot determine basename for binary '%s'"
 msgstr "Не вдалося визначити базову назву для виконуваного файла «%s»"
 
-#: src/rpc/virnetsocket.c:650 src/util/virpidfile.c:561
+#: src/rpc/virnetsocket.c:654 src/util/virpidfile.c:561
 #, c-format
 msgid "Cannot create user runtime directory '%s'"
 msgstr "Не вдалося створити тимчасовий каталог користувача «%s»"
 
-#: src/rpc/virnetsocket.c:660
+#: src/rpc/virnetsocket.c:664
 #, fuzzy, c-format
 msgid "Unable to create lock '%s'"
 msgstr "Не вдалося створити простір блокувань %s"
 
-#: src/rpc/virnetsocket.c:665
+#: src/rpc/virnetsocket.c:669
 #, fuzzy, c-format
 msgid "Unable to lock '%s'"
 msgstr "Не вдалося відкрити «%s»"
 
-#: src/rpc/virnetsocket.c:687
+#: src/rpc/virnetsocket.c:698
 #, c-format
 msgid "Failed to connect socket to '%s'"
 msgstr "Не вдалося з’єднати сокет з «%s»"
 
-#: src/rpc/virnetsocket.c:752 src/rpc/virnetsocket.c:758
+#: src/rpc/virnetsocket.c:766 src/rpc/virnetsocket.c:772
 msgid "unable to create socket pair"
 msgstr "не вдалося створити пару сокетів"
 
-#: src/rpc/virnetsocket.c:796
+#: src/rpc/virnetsocket.c:810
 msgid "Tunnelling sockets not supported on this platform"
 msgstr "Підтримки тунелювання сокетів на цій платформі не передбачено"
 
-#: src/rpc/virnetsocket.c:901
+#: src/rpc/virnetsocket.c:915
 msgid "Failed to parse port number"
 msgstr "Не вдалося обробити номер порту"
 
-#: src/rpc/virnetsocket.c:921
+#: src/rpc/virnetsocket.c:935
 #, c-format
 msgid "Invalid host key verification method: '%s'"
 msgstr "Некоректний метод перевірки ключів основної системи: «%s»"
 
-#: src/rpc/virnetsocket.c:958
+#: src/rpc/virnetsocket.c:972
 #, c-format
 msgid "Invalid authentication method: '%s'"
 msgstr "Некоректний спосіб розпізнавання: «%s»"
 
-#: src/rpc/virnetsocket.c:1004
+#: src/rpc/virnetsocket.c:1018
 msgid "libssh2 transport support was not enabled"
 msgstr "Підтримку передавання даних за допомогою libssh2 не було увімкнено"
 
-#: src/rpc/virnetsocket.c:1051
+#: src/rpc/virnetsocket.c:1065
 msgid "Missing fd data in JSON document"
 msgstr "У документі JSON не вистачає даних fd"
 
-#: src/rpc/virnetsocket.c:1057
+#: src/rpc/virnetsocket.c:1071
 msgid "Missing pid data in JSON document"
 msgstr "У документі JSON не вистачає даних pid"
 
-#: src/rpc/virnetsocket.c:1063
+#: src/rpc/virnetsocket.c:1077
 msgid "Missing errfd data in JSON document"
 msgstr "У документі JSON не вистачає даних errfd"
 
-#: src/rpc/virnetsocket.c:1068
+#: src/rpc/virnetsocket.c:1082
 msgid "Missing isClient data in JSON document"
 msgstr "У документі JSON не вистачає даних isClient"
 
-#: src/rpc/virnetsocket.c:1077
+#: src/rpc/virnetsocket.c:1091
 msgid "Unable to get peer socket name"
 msgstr "Не вдалося отримати назву сокета вузла"
 
-#: src/rpc/virnetsocket.c:1101
+#: src/rpc/virnetsocket.c:1115
 msgid "Unable to save socket state when SASL session is active"
 msgstr "Не можна зберігати стан сокета, якщо активним є сеанс SASL"
 
-#: src/rpc/virnetsocket.c:1108
+#: src/rpc/virnetsocket.c:1122
 msgid "Unable to save socket state when TLS session is active"
 msgstr "Не можна зберігати стан сокета, якщо активним є сеанс TLS"
 
-#: src/rpc/virnetsocket.c:1130
+#: src/rpc/virnetsocket.c:1144
 #, c-format
 msgid "Cannot disable close-on-exec flag on socket %d"
 msgstr "Не вдалося вимкнути прапорець close-on-exec для сокета %d"
 
-#: src/rpc/virnetsocket.c:1137
+#: src/rpc/virnetsocket.c:1151
 #, c-format
 msgid "Cannot disable close-on-exec flag on pipe %d"
 msgstr "Не вдалося вимкнути прапорець close-on-exec для каналу %d"
 
-#: src/rpc/virnetsocket.c:1216
+#: src/rpc/virnetsocket.c:1230
 msgid "Unable to copy socket file handle"
 msgstr "Не вдалося скопіювати дескриптор файла сокета"
 
-#: src/rpc/virnetsocket.c:1270 src/rpc/virnetsocket.c:1324
+#: src/rpc/virnetsocket.c:1284 src/rpc/virnetsocket.c:1338
 msgid "Failed to get client socket identity"
 msgstr "Не вдалося отримати профіль сокета клієнтської частини"
 
-#: src/rpc/virnetsocket.c:1330
+#: src/rpc/virnetsocket.c:1344
 msgid "Failed to get valid client socket identity"
 msgstr "Не вдалося отримати коректний профіль сокета клієнтської частини"
 
-#: src/rpc/virnetsocket.c:1336
+#: src/rpc/virnetsocket.c:1350
 msgid "Failed to get valid client socket identity groups"
 msgstr "Не вдалося отримати коректні групи профілів сокета клієнтської частини"
 
-#: src/rpc/virnetsocket.c:1364
+#: src/rpc/virnetsocket.c:1378
 msgid "Failed to get client socket PID"
 msgstr "Не вдалося отримати PID сокета клієнта"
 
-#: src/rpc/virnetsocket.c:1385
+#: src/rpc/virnetsocket.c:1399
 msgid "Client socket identity not available"
 msgstr "Профіль сокета клієнтської частини недоступний"
 
-#: src/rpc/virnetsocket.c:1406
+#: src/rpc/virnetsocket.c:1420
 msgid "Unable to query peer security context"
 msgstr "Не вдалося надіслати запит щодо явного контексту захисту"
 
-#: src/rpc/virnetsocket.c:1584
+#: src/rpc/virnetsocket.c:1598
 #, c-format
 msgid "Cannot recv data: %s"
 msgstr "Не вдалося отримати дані: %s"
 
-#: src/rpc/virnetsocket.c:1587
+#: src/rpc/virnetsocket.c:1601
 msgid "Cannot recv data"
 msgstr "Не вдалося отримати дані"
 
-#: src/rpc/virnetsocket.c:1592
+#: src/rpc/virnetsocket.c:1606
 #, c-format
 msgid "End of file while reading data: %s"
 msgstr "Кінець файла під час читання даних: %s"
 
-#: src/rpc/virnetsocket.c:1595
+#: src/rpc/virnetsocket.c:1609
 msgid "End of file while reading data"
 msgstr "Кінець файла під час читання даних"
 
-#: src/rpc/virnetsocket.c:1632
+#: src/rpc/virnetsocket.c:1646
 msgid "Cannot write data"
 msgstr "Не вдалося записати дані"
 
-#: src/rpc/virnetsocket.c:1637
+#: src/rpc/virnetsocket.c:1651
 msgid "End of file while writing data"
 msgstr "Кінець файла під час запису даних"
 
-#: src/rpc/virnetsocket.c:1780
+#: src/rpc/virnetsocket.c:1794
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "Надсилання дескрипторів файлів не підтримується цим сокетом"
 
-#: src/rpc/virnetsocket.c:1791
+#: src/rpc/virnetsocket.c:1805
 #, c-format
 msgid "Failed to send file descriptor %d"
 msgstr "Не вдалося надіслати дескриптор файла %d"
 
-#: src/rpc/virnetsocket.c:1814
+#: src/rpc/virnetsocket.c:1828
 msgid "Receiving file descriptors is not supported on this socket"
 msgstr "Отримання дескрипторів файлів не підтримується цим сокетом"
 
-#: src/rpc/virnetsocket.c:1824
+#: src/rpc/virnetsocket.c:1838
 msgid "Failed to recv file descriptor"
 msgstr "Не вдалося виконати дію recv для файлового дескриптора"
 
-#: src/rpc/virnetsocket.c:1841
+#: src/rpc/virnetsocket.c:1855
 msgid "Unable to listen on socket"
 msgstr "Не вдалося встановити очікування на дані з сокета"
 
-#: src/rpc/virnetsocket.c:1872
+#: src/rpc/virnetsocket.c:1886
 msgid "Unable to accept client"
 msgstr "Не вдалося прийняти клієнтську частину"
 
@@ -23448,62 +23448,62 @@ msgstr "Не вдалося встановити зв’язок з агенто
 msgid "Failed to list ssh agent identities"
 msgstr "Не вдалося побудувати список профілів агента SSH"
 
-#: src/rpc/virnetsshsession.c:553 src/rpc/virnetsshsession.c:577
+#: src/rpc/virnetsshsession.c:555 src/rpc/virnetsshsession.c:579
 #, c-format
 msgid "failed to authenticate using SSH agent: %s"
 msgstr "не вдалося пройти розпізнавання за допомогою агента SSH: %s"
 
-#: src/rpc/virnetsshsession.c:565
+#: src/rpc/virnetsshsession.c:567
 msgid "SSH Agent did not provide any authentication identity"
 msgstr "Агентом SSH не надано жодного профілю розпізнавання"
 
-#: src/rpc/virnetsshsession.c:569
+#: src/rpc/virnetsshsession.c:571
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "Всім профілям, наданим агентом SSH, було відмовлено"
 
-#: src/rpc/virnetsshsession.c:613 src/rpc/virnetsshsession.c:672
+#: src/rpc/virnetsshsession.c:617 src/rpc/virnetsshsession.c:676
 #, c-format
 msgid "authentication with private key '%s' has failed: %s"
 msgstr "спроба розпізнавання за закритим ключем «%s» зазнала невдачі: %s"
 
-#: src/rpc/virnetsshsession.c:622
+#: src/rpc/virnetsshsession.c:626
 msgid ""
 "No user interaction callback provided: Can't retrieve private key passphrase"
 msgstr ""
 "Не надано функції зворотного виклику для взаємодії з користувачем: не "
 "вдалося отримати пароль до закритого ключа"
 
-#: src/rpc/virnetsshsession.c:640
+#: src/rpc/virnetsshsession.c:644
 msgid "no suitable method to retrieve key passphrase"
 msgstr "не виявлено відповідного методу для отримання пароля ключа"
 
-#: src/rpc/virnetsshsession.c:645
+#: src/rpc/virnetsshsession.c:649
 #, c-format
 msgid "Passphrase for key '%s'"
 msgstr "Пароль до ключа «%s»"
 
-#: src/rpc/virnetsshsession.c:651
+#: src/rpc/virnetsshsession.c:655
 msgid "failed to retrieve private key passphrase: callback has failed"
 msgstr ""
 "Не вдалося отримати пароль до закритого ключа: помилка функції зворотного "
 "виклику"
 
-#: src/rpc/virnetsshsession.c:716
+#: src/rpc/virnetsshsession.c:722
 msgid "Can't perform authentication: Authentication callback not provided"
 msgstr ""
 "Не вдалося виконати розпізнавання: не надано функції розпізнавання за "
 "допомогою зворотного виклику"
 
-#: src/rpc/virnetsshsession.c:728
+#: src/rpc/virnetsshsession.c:734
 msgid "failed to retrieve password"
 msgstr "не вдалося отримати пароль"
 
-#: src/rpc/virnetsshsession.c:750 src/util/virerror.c:1088
+#: src/rpc/virnetsshsession.c:756 src/util/virerror.c:1088
 #, c-format
 msgid "authentication failed: %s"
 msgstr "помилка розпізнавання: %s"
 
-#: src/rpc/virnetsshsession.c:781
+#: src/rpc/virnetsshsession.c:787
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
 "not provided "
@@ -23511,40 +23511,40 @@ msgstr ""
 "Не вдалося виконати інтерактивне розпізнавання за допомогою клавіатури: не "
 "надано функції розпізнавання за допомогою зворотного виклику "
 
-#: src/rpc/virnetsshsession.c:797
+#: src/rpc/virnetsshsession.c:803
 msgid "no suitable method to retrieve authentication credentials"
 msgstr ""
 "не виявлено відповідного методу для отримання реєстраційних даних для "
 "розпізнавання"
 
-#: src/rpc/virnetsshsession.c:805
+#: src/rpc/virnetsshsession.c:811
 msgid "failed to retrieve credentials"
 msgstr "не вдалося отримати реєстраційні дані"
 
-#: src/rpc/virnetsshsession.c:822 src/rpc/virnetsshsession.c:829
+#: src/rpc/virnetsshsession.c:828 src/rpc/virnetsshsession.c:835
 #, c-format
 msgid "keyboard interactive authentication failed: %s"
 msgstr "помилка інтерактивного розпізнавання за допомогою клавіатури: %s"
 
-#: src/rpc/virnetsshsession.c:850 src/rpc/virnetsshsession.c:964
+#: src/rpc/virnetsshsession.c:856 src/rpc/virnetsshsession.c:970
 msgid "No authentication methods and credentials provided"
 msgstr "Не надано методів розпізнавання та реєстраційних даних"
 
-#: src/rpc/virnetsshsession.c:866
+#: src/rpc/virnetsshsession.c:872
 #, c-format
 msgid "couldn't retrieve authentication methods list: %s"
 msgstr "не вдалося отримати список методів розпізнавання: %s"
 
-#: src/rpc/virnetsshsession.c:911
+#: src/rpc/virnetsshsession.c:917
 msgid "No authentication methods supplied"
 msgstr "Не забезпечено методів розпізнавання"
 
-#: src/rpc/virnetsshsession.c:916
+#: src/rpc/virnetsshsession.c:922
 msgid ""
 "None of the requested authentication methods are supported by the server"
 msgstr "Жоден з бажаних методів розпізнавання не підтримується сервером"
 
-#: src/rpc/virnetsshsession.c:920
+#: src/rpc/virnetsshsession.c:926
 msgid ""
 "All provided authentication methods with credentials were rejected by the "
 "server"
@@ -23552,83 +23552,83 @@ msgstr ""
 "Сервером відмовлено у розпізнаванні за всіма методами розпізнавання і за "
 "всіма реєстраційними даними"
 
-#: src/rpc/virnetsshsession.c:937
+#: src/rpc/virnetsshsession.c:943
 #, c-format
 msgid "failed to open ssh channel: %s"
 msgstr "не вдалося відкрити канал SSH: %s"
 
-#: src/rpc/virnetsshsession.c:945
+#: src/rpc/virnetsshsession.c:951
 #, c-format
 msgid "failed to execute command '%s': %s"
 msgstr "не вдалося виконати команду «%s»: %s"
 
-#: src/rpc/virnetsshsession.c:971
+#: src/rpc/virnetsshsession.c:977
 msgid "No channel command provided"
 msgstr "Не вказано команди каналу"
 
-#: src/rpc/virnetsshsession.c:978
+#: src/rpc/virnetsshsession.c:984
 msgid "Hostname is needed for host key verification"
 msgstr "Для виконання перевірки ключа вузла слід вказати назву вузла"
 
-#: src/rpc/virnetsshsession.c:1056 src/rpc/virnetsshsession.c:1136
+#: src/rpc/virnetsshsession.c:1062 src/rpc/virnetsshsession.c:1142
 msgid "Username must be provided for ssh agent authentication"
 msgstr ""
 "Для розпізнавання за допомогою агента SSH слід вказати ім’я користувача"
 
-#: src/rpc/virnetsshsession.c:1095
+#: src/rpc/virnetsshsession.c:1101
 msgid ""
 "Username and key file path must be provided for private key authentication"
 msgstr ""
 "Для розпізнавання за допомогою закритого ключа слід вказати ім’я користувача "
 "і шлях до файла ключа"
 
-#: src/rpc/virnetsshsession.c:1207
+#: src/rpc/virnetsshsession.c:1213
 #, c-format
 msgid "unable to load knownhosts file '%s': %s"
 msgstr "не вдалося завантажити файл відомих вузлів «%s»: %s"
 
-#: src/rpc/virnetsshsession.c:1213
+#: src/rpc/virnetsshsession.c:1219
 #, c-format
 msgid "known hosts file '%s' does not exist"
 msgstr "файла відомих вузлів, «%s», не існує"
 
-#: src/rpc/virnetsshsession.c:1252
+#: src/rpc/virnetsshsession.c:1258
 msgid "Failed to initialize libssh2 session"
 msgstr "не вдалося ініціалізувати сеанс libssh2"
 
-#: src/rpc/virnetsshsession.c:1258
+#: src/rpc/virnetsshsession.c:1264
 msgid "Failed to initialize libssh2 known hosts table"
 msgstr "Не вдалося ініціалізувати таблицю відомих вузлів libssh2"
 
-#: src/rpc/virnetsshsession.c:1264
+#: src/rpc/virnetsshsession.c:1270
 msgid "Failed to initialize libssh2 agent handle"
 msgstr "Не вдалося ініціалізувати обробник агентів libssh2"
 
-#: src/rpc/virnetsshsession.c:1296
+#: src/rpc/virnetsshsession.c:1302
 msgid "Invalid virNetSSHSessionPtr"
 msgstr "Некоректне значення virNetSSHSessionPtr"
 
-#: src/rpc/virnetsshsession.c:1312
+#: src/rpc/virnetsshsession.c:1318
 #, c-format
 msgid "SSH session handshake failed: %s"
 msgstr "Помилка під час спроби започаткування сеансу SSH: %s"
 
-#: src/rpc/virnetsshsession.c:1357 src/rpc/virnetsshsession.c:1468
-#: src/rpc/virnetsshsession.c:1480
+#: src/rpc/virnetsshsession.c:1363 src/rpc/virnetsshsession.c:1474
+#: src/rpc/virnetsshsession.c:1486
 #, c-format
 msgid "Remote program terminated with non-zero code: %d"
 msgstr "Виконання віддаленої програми перервано з ненульовим кодом виходу: %d"
 
-#: src/rpc/virnetsshsession.c:1362 src/rpc/virnetsshsession.c:1472
+#: src/rpc/virnetsshsession.c:1368 src/rpc/virnetsshsession.c:1478
 msgid "Tried to write socket in error state"
 msgstr "Спроба запису до сокета у стані помилки"
 
-#: src/rpc/virnetsshsession.c:1433
+#: src/rpc/virnetsshsession.c:1439
 #, c-format
 msgid "Remote command terminated with non-zero code: %d"
 msgstr "Виконання віддаленої команди перервано з ненульовим кодом виходу: %d"
 
-#: src/rpc/virnetsshsession.c:1505
+#: src/rpc/virnetsshsession.c:1511
 #, c-format
 msgid "write failed: %s"
 msgstr "помилка запису: %s"
@@ -24061,9 +24061,9 @@ msgid "could not remove profile for '%s'"
 msgstr "не вдалося вилучити профіль для «%s»"
 
 #: src/security/security_apparmor.c:622 src/security/security_apparmor.c:668
-#: src/security/security_selinux.c:2066 src/security/security_selinux.c:2097
-#: src/security/security_selinux.c:2131 src/security/security_selinux.c:2160
-#: src/security/security_selinux.c:2207 src/security/security_selinux.c:2245
+#: src/security/security_selinux.c:2060 src/security/security_selinux.c:2091
+#: src/security/security_selinux.c:2125 src/security/security_selinux.c:2154
+#: src/security/security_selinux.c:2201 src/security/security_selinux.c:2239
 #, c-format
 msgid ""
 "security label driver mismatch: '%s' model configured for domain, but "
@@ -24099,42 +24099,42 @@ msgstr "Не вдалося визначити мітку образу (imagelab
 msgid "unable to set user and group to '%ld:%ld' on '%s'"
 msgstr "не вдалося встановити значення користувача і групи у «%ld:%ld» на «%s»"
 
-#: src/security/security_dac.c:1174 src/security/security_selinux.c:603
+#: src/security/security_dac.c:1166 src/security/security_selinux.c:603
 msgid "security image label already defined for VM"
 msgstr "захист міткою образу для віртуальної машини вже визначено"
 
-#: src/security/security_dac.c:1182 src/security/security_selinux.c:610
+#: src/security/security_dac.c:1174 src/security/security_selinux.c:610
 #, c-format
 msgid "security label model %s is not supported with selinux"
 msgstr "модель захисту міткою %s не підтримується у системах з selinux"
 
-#: src/security/security_dac.c:1192
+#: src/security/security_dac.c:1184
 #, c-format
 msgid "missing label for static security driver in domain %s"
 msgstr "не вистачає мітки для статичного драйвера захисту у домені %s"
 
-#: src/security/security_dac.c:1204
+#: src/security/security_dac.c:1196
 #, c-format
 msgid "cannot generate dac user and group id for domain %s"
 msgstr ""
 "не вдалося створити ідентифікатори користувача і групи DAC для домену %s"
 
-#: src/security/security_dac.c:1215 src/security/security_selinux.c:688
+#: src/security/security_dac.c:1207 src/security/security_selinux.c:688
 #, c-format
 msgid "unexpected security label type '%s'"
 msgstr "неочікуваний тип мітки безпеки, «%s»"
 
-#: src/security/security_dac.c:1260
+#: src/security/security_dac.c:1252
 #, c-format
 msgid "unable to get uid and gid for PID %d via procfs"
 msgstr "Не вдалося обробити uid і gid для PID %d за допомогою procfs"
 
-#: src/security/security_dac.c:1289
+#: src/security/security_dac.c:1281
 #, c-format
 msgid "unable to get PID %d uid and gid via sysctl"
 msgstr "не вдалося отримати uid та gid для PID %d за допомогою sysctl"
 
-#: src/security/security_dac.c:1305
+#: src/security/security_dac.c:1297
 msgid "Cannot get process uid and gid on this platform"
 msgstr "На цій платформі неможливо отримати uid та gid процесу"
 
@@ -24263,12 +24263,12 @@ msgstr "не вдалося отримати діапазон контексті
 msgid "MCS level for existing domain label %s already reserved"
 msgstr "Рівень MCS для вже створеної мітки домену %s зарезервовано"
 
-#: src/security/security_selinux.c:917
+#: src/security/security_selinux.c:919
 #, c-format
 msgid "unable to set security context '%s' on '%s'"
 msgstr "не вдалося встановити контекст безпеки «%s» у значення «%s»"
 
-#: src/security/security_selinux.c:928
+#: src/security/security_selinux.c:930
 #, c-format
 msgid ""
 "Setting security context '%s' on '%s' not supported. Consider setting "
@@ -24277,62 +24277,62 @@ msgstr ""
 "Підтримки встановлення контексту захисту «%s» у «%s» не передбачено. "
 "Спробуйте встановити virt_use_nfs"
 
-#: src/security/security_selinux.c:988
+#: src/security/security_selinux.c:990
 #, c-format
 msgid "unable to set security context '%s' on fd %d"
 msgstr "не вдалося встановити контекст безпеки «%s» на дескрипторі файла %d"
 
-#: src/security/security_selinux.c:1907 src/security/security_selinux.c:2305
+#: src/security/security_selinux.c:1909 src/security/security_selinux.c:2299
 #, c-format
 msgid "unknown smartcard type %d"
 msgstr "невідомий тип смарт-картки %d"
 
-#: src/security/security_selinux.c:2076
+#: src/security/security_selinux.c:2070
 #, c-format
 msgid "Invalid security label %s"
 msgstr "Некоректна мітка безпеки %s"
 
-#: src/security/security_selinux.c:2107
+#: src/security/security_selinux.c:2101
 #, c-format
 msgid "unable to set security context '%s'"
 msgstr "не вдалося встановити контекст безпеки «%s»"
 
-#: src/security/security_selinux.c:2169
+#: src/security/security_selinux.c:2163
 #, c-format
 msgid "unable to get current process context '%s'"
 msgstr "не вдалося отримати контекст поточного процесу «%s»"
 
-#: src/security/security_selinux.c:2180 src/security/security_selinux.c:2218
+#: src/security/security_selinux.c:2174 src/security/security_selinux.c:2212
 #, c-format
 msgid "unable to set socket security context '%s'"
 msgstr "не вдалося встановити контекст безпеки сокета «%s»"
 
-#: src/security/security_selinux.c:2255
+#: src/security/security_selinux.c:2249
 #, c-format
 msgid "unable to clear socket security context '%s'"
 msgstr "не вдалося зняти контекст безпеки сокета «%s»"
 
-#: src/security/security_selinux.c:2428
+#: src/security/security_selinux.c:2422
 #, c-format
 msgid "cannot stat tap fd %d"
 msgstr "не вдалося отримати статистичні дані щодо файлового дескриптора tap %d"
 
-#: src/security/security_selinux.c:2434
+#: src/security/security_selinux.c:2428
 #, c-format
 msgid "tap fd %d is not character device"
 msgstr "дескриптор файла tap %d не є символьним пристроєм"
 
-#: src/security/security_selinux.c:2444
+#: src/security/security_selinux.c:2438
 #, c-format
 msgid "Unable to resolve link: %s"
 msgstr "Не вдалося обробити посилання: %s"
 
-#: src/security/security_selinux.c:2457
+#: src/security/security_selinux.c:2451
 #, c-format
 msgid "cannot lookup default selinux label for tap fd %d"
 msgstr "не вдалося знайти типової мітки selinux для дескриптора файла tap %d"
 
-#: src/security/security_selinux.c:2493
+#: src/security/security_selinux.c:2487
 #, c-format
 msgid "unable to create selinux context for: %s"
 msgstr "не вдалося створити контекст selinux для %s"
@@ -24692,13 +24692,13 @@ msgid "cannot create path '%s'"
 msgstr "не вдалося створити каталог «%s»"
 
 #: src/storage/storage_backend.c:355 src/util/virfile.c:2024
-#: src/util/virfile.c:2435 src/util/virfile.c:2568
+#: src/util/virfile.c:2465 src/util/virfile.c:2598
 #, c-format
 msgid "stat of '%s' failed"
 msgstr "помилка stat для «%s»"
 
 #: src/storage/storage_backend.c:376 src/storage/storage_backend.c:733
-#: src/util/virfile.c:2046 src/util/virfile.c:2449 src/util/virfile.c:2582
+#: src/util/virfile.c:2046 src/util/virfile.c:2479 src/util/virfile.c:2612
 #, c-format
 msgid "cannot set mode of '%s' to %04o"
 msgstr "не вдалося встановити режим «%s» у значення %04o"
@@ -26709,7 +26709,7 @@ msgstr "Не вдалося обробити статистичні дані щ�
 msgid "Cannot determine system clock HZ"
 msgstr "Не вдалося визначити частоту системного годинника"
 
-#: src/util/vircgroup.c:3755 src/util/vircgroup.c:3787
+#: src/util/vircgroup.c:3755 src/util/vircgroup.c:3786
 #, c-format
 msgid "Unable to create directory %s"
 msgstr "Не вдалося створити каталог %s"
@@ -26719,55 +26719,55 @@ msgstr "Не вдалося створити каталог %s"
 msgid "Failed to mount %s on %s type %s"
 msgstr "Не вдалося змонтувати %s на %s, тип %s"
 
-#: src/util/vircgroup.c:3796
+#: src/util/vircgroup.c:3795
 #, c-format
 msgid "Failed to bind cgroup '%s' on '%s'"
 msgstr "Не вдалося прив’язати cgroup «%s» на «%s»"
 
-#: src/util/vircgroup.c:3812
+#: src/util/vircgroup.c:3811
 #, c-format
 msgid "Unable to symlink directory %s to %s"
 msgstr "Не вдалося створити символічне посилання %s на каталог %s"
 
-#: src/util/vircgroup.c:3854
+#: src/util/vircgroup.c:3853
 #, c-format
 msgid "Unable to open dir '%s'"
 msgstr "Не вдалося відкрити каталог «%s»"
 
-#: src/util/vircgroup.c:3977 src/util/vircgroup.c:3989
-#: src/util/vircgroup.c:3998 src/util/vircgroup.c:4011
-#: src/util/vircgroup.c:4024 src/util/vircgroup.c:4035
-#: src/util/vircgroup.c:4048 src/util/vircgroup.c:4058
-#: src/util/vircgroup.c:4078 src/util/vircgroup.c:4095
-#: src/util/vircgroup.c:4114 src/util/vircgroup.c:4124
-#: src/util/vircgroup.c:4135 src/util/vircgroup.c:4145
-#: src/util/vircgroup.c:4158 src/util/vircgroup.c:4172
-#: src/util/vircgroup.c:4182 src/util/vircgroup.c:4192
-#: src/util/vircgroup.c:4203 src/util/vircgroup.c:4213
-#: src/util/vircgroup.c:4223 src/util/vircgroup.c:4233
-#: src/util/vircgroup.c:4243 src/util/vircgroup.c:4253
-#: src/util/vircgroup.c:4263 src/util/vircgroup.c:4273
-#: src/util/vircgroup.c:4283 src/util/vircgroup.c:4293
-#: src/util/vircgroup.c:4303 src/util/vircgroup.c:4313
-#: src/util/vircgroup.c:4323 src/util/vircgroup.c:4333
-#: src/util/vircgroup.c:4343 src/util/vircgroup.c:4353
-#: src/util/vircgroup.c:4363 src/util/vircgroup.c:4373
-#: src/util/vircgroup.c:4383 src/util/vircgroup.c:4393
-#: src/util/vircgroup.c:4402 src/util/vircgroup.c:4410
-#: src/util/vircgroup.c:4423 src/util/vircgroup.c:4435
-#: src/util/vircgroup.c:4446 src/util/vircgroup.c:4459
-#: src/util/vircgroup.c:4471 src/util/vircgroup.c:4482
-#: src/util/vircgroup.c:4492 src/util/vircgroup.c:4502
-#: src/util/vircgroup.c:4512 src/util/vircgroup.c:4522
-#: src/util/vircgroup.c:4532 src/util/vircgroup.c:4541
-#: src/util/vircgroup.c:4550 src/util/vircgroup.c:4560
-#: src/util/vircgroup.c:4570 src/util/vircgroup.c:4579
-#: src/util/vircgroup.c:4589 src/util/vircgroup.c:4599
-#: src/util/vircgroup.c:4609 src/util/vircgroup.c:4620
-#: src/util/vircgroup.c:4631 src/util/vircgroup.c:4641
-#: src/util/vircgroup.c:4651 src/util/vircgroup.c:4662
-#: src/util/vircgroup.c:4684 src/util/vircgroup.c:4696
-#: src/util/vircgroup.c:4705
+#: src/util/vircgroup.c:3976 src/util/vircgroup.c:3988
+#: src/util/vircgroup.c:3997 src/util/vircgroup.c:4010
+#: src/util/vircgroup.c:4023 src/util/vircgroup.c:4034
+#: src/util/vircgroup.c:4047 src/util/vircgroup.c:4057
+#: src/util/vircgroup.c:4077 src/util/vircgroup.c:4094
+#: src/util/vircgroup.c:4113 src/util/vircgroup.c:4123
+#: src/util/vircgroup.c:4134 src/util/vircgroup.c:4144
+#: src/util/vircgroup.c:4157 src/util/vircgroup.c:4171
+#: src/util/vircgroup.c:4181 src/util/vircgroup.c:4191
+#: src/util/vircgroup.c:4202 src/util/vircgroup.c:4212
+#: src/util/vircgroup.c:4222 src/util/vircgroup.c:4232
+#: src/util/vircgroup.c:4242 src/util/vircgroup.c:4252
+#: src/util/vircgroup.c:4262 src/util/vircgroup.c:4272
+#: src/util/vircgroup.c:4282 src/util/vircgroup.c:4292
+#: src/util/vircgroup.c:4302 src/util/vircgroup.c:4312
+#: src/util/vircgroup.c:4322 src/util/vircgroup.c:4332
+#: src/util/vircgroup.c:4342 src/util/vircgroup.c:4352
+#: src/util/vircgroup.c:4362 src/util/vircgroup.c:4372
+#: src/util/vircgroup.c:4382 src/util/vircgroup.c:4392
+#: src/util/vircgroup.c:4401 src/util/vircgroup.c:4409
+#: src/util/vircgroup.c:4422 src/util/vircgroup.c:4434
+#: src/util/vircgroup.c:4445 src/util/vircgroup.c:4458
+#: src/util/vircgroup.c:4470 src/util/vircgroup.c:4481
+#: src/util/vircgroup.c:4491 src/util/vircgroup.c:4501
+#: src/util/vircgroup.c:4511 src/util/vircgroup.c:4521
+#: src/util/vircgroup.c:4531 src/util/vircgroup.c:4540
+#: src/util/vircgroup.c:4549 src/util/vircgroup.c:4559
+#: src/util/vircgroup.c:4569 src/util/vircgroup.c:4578
+#: src/util/vircgroup.c:4588 src/util/vircgroup.c:4598
+#: src/util/vircgroup.c:4608 src/util/vircgroup.c:4619
+#: src/util/vircgroup.c:4630 src/util/vircgroup.c:4640
+#: src/util/vircgroup.c:4650 src/util/vircgroup.c:4661
+#: src/util/vircgroup.c:4683 src/util/vircgroup.c:4695
+#: src/util/vircgroup.c:4704
 msgid "Control groups not supported on this platform"
 msgstr "На цій платформі не передбачено підтримки груп керування (cgroup)"
 
@@ -28265,12 +28265,12 @@ msgstr ""
 "дочірньому процесу не вдалося надіслати файловий дескриптор до основного "
 "процесу"
 
-#: src/util/virfile.c:2165 src/util/virfile.c:2516
+#: src/util/virfile.c:2165 src/util/virfile.c:2546
 #, c-format
 msgid "failed to wait for child creating '%s'"
 msgstr "не вдалося дочекатися створення дочірнього процесу «%s»"
 
-#: src/util/virfile.c:2178 src/util/virfile.c:2532
+#: src/util/virfile.c:2178 src/util/virfile.c:2562
 #, c-format
 msgid "child failed to create '%s': %s"
 msgstr ""
@@ -28280,69 +28280,69 @@ msgstr ""
 msgid "failed recvfd for child creating '%s'"
 msgstr ""
 
-#: src/util/virfile.c:2368
+#: src/util/virfile.c:2397
 #, fuzzy, c-format
 msgid "failed to wait for child unlinking '%s'"
 msgstr "не вдалося дочекатися створення дочірнього процесу «%s»"
 
-#: src/util/virfile.c:2380
+#: src/util/virfile.c:2409
 #, fuzzy, c-format
 msgid "child failed to unlink '%s': %s"
 msgstr "не вдалося виконати команду «%s --help»: %s"
 
-#: src/util/virfile.c:2427
+#: src/util/virfile.c:2457
 #, c-format
 msgid "failed to create directory '%s'"
 msgstr "Не вдалося створити каталог «%s»"
 
-#: src/util/virfile.c:2557
+#: src/util/virfile.c:2587
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "дочірньому процесу не вдалося створити каталог «%s»"
 
-#: src/util/virfile.c:2575
+#: src/util/virfile.c:2605
 #, c-format
 msgid "cannot chown '%s' to group %u"
 msgstr "не вдалося змінити власника «%s» на групу %u"
 
-#: src/util/virfile.c:2619
+#: src/util/virfile.c:2649
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs не реалізовано для WIN32"
 
-#: src/util/virfile.c:2632
+#: src/util/virfile.c:2662
 msgid "virDirCreate is not implemented for WIN32"
 msgstr "virDirCreate не реалізовано для WIN32"
 
-#: src/util/virfile.c:2664
+#: src/util/virfile.c:2694
 #, c-format
 msgid "Unable to read directory '%s'"
 msgstr "Не вдалося прочитати каталог «%s»"
 
-#: src/util/virfile.c:3055
+#: src/util/virfile.c:3085
 msgid "Could not write to stream"
 msgstr "Не вдалося виконати запис до потоку даних"
 
-#: src/util/virfile.c:3115
+#: src/util/virfile.c:3145
 #, c-format
 msgid "Invalid relative path '%s'"
 msgstr "Некоректний відносний шлях «%s»"
 
-#: src/util/virfile.c:3133 src/util/virfile.c:3173
+#: src/util/virfile.c:3163 src/util/virfile.c:3203
 #, c-format
 msgid "cannot determine filesystem for '%s'"
 msgstr "не вдалося визначити файлову систему для «%s»"
 
-#: src/util/virfile.c:3180
+#: src/util/virfile.c:3210
 #, c-format
 msgid "not a hugetlbfs mount: '%s'"
 msgstr "не є змонтованою системою hugetlbfs: «%s»"
 
-#: src/util/virfile.c:3205
+#: src/util/virfile.c:3235
 #, c-format
 msgid "%s not found in %s"
 msgstr "%s не знайдено у %s"
 
-#: src/util/virfile.c:3219
+#: src/util/virfile.c:3249
 #, c-format
 msgid "Unable to parse %s %s"
 msgstr "Не вдалося обробити %s %s"
@@ -30145,8 +30145,8 @@ msgid "Cannot parse adapter '%s'"
 msgstr "Не вдалося обробити запис адаптера «%s»"
 
 #: src/util/virscsi.c:132 src/util/virscsi.c:179 src/util/virsysinfo.c:278
-#: src/util/virsysinfo.c:410 src/util/virsysinfo.c:560
-#: src/util/virsysinfo.c:575
+#: src/util/virsysinfo.c:410 src/util/virsysinfo.c:551
+#: src/util/virsysinfo.c:566
 #, c-format
 msgid "Failed to open %s"
 msgstr "Не вдалося відкрити %s"
@@ -30493,43 +30493,43 @@ msgid "Regular expression '%s' must have exactly 1 match group, not %zu"
 msgstr ""
 "Формальний вираз «%s» повинен мати лише одну групу відповідності, а не %zu"
 
-#: src/util/virsysinfo.c:605
+#: src/util/virsysinfo.c:596
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr ""
 "Видобування даних системної інформації щодо основної системи не "
 "підтримується на цій платформі"
 
-#: src/util/virsysinfo.c:1030
+#: src/util/virsysinfo.c:1021
 #, c-format
 msgid "Failed to find path for %s binary"
 msgstr "Не вдалося визначити шлях для виконуваного файла %s"
 
-#: src/util/virsysinfo.c:1277
+#: src/util/virsysinfo.c:1268
 #, c-format
 msgid "unexpected sysinfo type model %d"
 msgstr "неочікувана модель типу системної інформації %d"
 
-#: src/util/virsysinfo.c:1313
+#: src/util/virsysinfo.c:1304
 #, c-format
 msgid "Target sysinfo %s %s does not match source %s"
 msgstr "Системна інформація призначення %s %s не відповідає даним джерела %s"
 
-#: src/util/virsysinfo.c:1330 src/util/virsysinfo.c:1355
-#: src/util/virsysinfo.c:1412
+#: src/util/virsysinfo.c:1321 src/util/virsysinfo.c:1346
+#: src/util/virsysinfo.c:1403
 msgid "Target sysinfo does not match source"
 msgstr "Системна інформація призначення не відповідає даним джерела"
 
-#: src/util/virsysinfo.c:1383
+#: src/util/virsysinfo.c:1374
 #, fuzzy
 msgid "Target base board does not match source"
 msgstr "Код класу USB призначення не збігається з кодом джерела"
 
-#: src/util/virsysinfo.c:1418
+#: src/util/virsysinfo.c:1409
 #, c-format
 msgid "Target sysinfo %s does not match source %s"
 msgstr "Системна інформація призначення %s не відповідає даним джерела %s"
 
-#: src/util/virsysinfo.c:1432
+#: src/util/virsysinfo.c:1423
 #, fuzzy, c-format
 msgid "Target sysinfo base board count '%zu' does not match source '%zu'"
 msgstr ""
