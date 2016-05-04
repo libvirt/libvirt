@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2015 Red Hat, Inc.
+ * Copyright (C) 2007-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,6 +30,7 @@
 # include "virnetlink.h"
 # include "virmacaddr.h"
 # include "virpci.h"
+# include "virnetdevvlan.h"
 # include "device_conf.h"
 
 # ifdef HAVE_STRUCT_IFREQ
@@ -175,7 +176,8 @@ int virNetDevLinkDump(const char *ifname, int ifindex,
     ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevReplaceNetConfig(const char *linkdev, int vf,
-                              const virMacAddr *macaddress, int vlanid,
+                              const virMacAddr *macaddress,
+                              virNetDevVlanPtr vlan,
                               const char *stateDir)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(5);
 

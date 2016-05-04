@@ -3057,11 +3057,12 @@ networkValidate(virNetworkDriverStatePtr driver,
      * a pool, and those using an Open vSwitch bridge.
      */
 
-    vlanAllowed = ((def->forward.type == VIR_NETWORK_FORWARD_BRIDGE &&
+    vlanAllowed = (def->forward.type == VIR_NETWORK_FORWARD_HOSTDEV ||
+                   def->forward.type == VIR_NETWORK_FORWARD_PASSTHROUGH ||
+                   (def->forward.type == VIR_NETWORK_FORWARD_BRIDGE &&
                     def->virtPortProfile &&
                     def->virtPortProfile->virtPortType
-                    == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) ||
-                   def->forward.type == VIR_NETWORK_FORWARD_HOSTDEV);
+                    == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH));
 
     vlanUsed = def->vlan.nTags > 0;
     for (i = 0; i < def->nPortGroups; i++) {
@@ -4276,11 +4277,15 @@ networkAllocateActualDevice(virDomainDefPtr dom,
      */
 
     if (virDomainNetGetActualVlan(iface)) {
-        /* vlan configuration via libvirt is only supported for
-         * PCI Passthrough SR-IOV devices and openvswitch bridges.
-         * otherwise log an error and fail
+        /* vlan configuration via libvirt is only supported for PCI
+         * Passthrough SR-IOV devices (hostdev or macvtap passthru
+         * mode) and openvswitch bridges. Otherwise log an error and
+         * fail
          */
         if (!(actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV ||
+              (actualType == VIR_DOMAIN_NET_TYPE_DIRECT &&
+               virDomainNetGetActualDirectMode(iface)
+               == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) ||
               (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE &&
                virtport && virtport->virtPortType
                == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH))) {

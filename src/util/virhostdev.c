@@ -1,6 +1,6 @@
 /* virhostdev.c: hostdev management
  *
- * Copyright (C) 2006-2007, 2009-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  * Copyright (C) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -387,7 +387,6 @@ virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
     virNetDevVPortProfilePtr virtPort;
     int ret = -1;
     int vf = -1;
-    int vlanid = -1;
     bool port_profile_associate = true;
 
     if (virHostdevIsVirtualFunction(hostdev) != 1) {
@@ -416,27 +415,9 @@ virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
                             port_profile_associate);
     } else {
         /* Set only mac and vlan */
-        if (vlan) {
-            if (vlan->nTags != 1 || vlan->trunk) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("vlan trunking is not supported "
-                                 "by SR-IOV network devices"));
-                goto cleanup;
-            }
-            if (vf == -1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("vlan can only be set for SR-IOV VFs, but "
-                                 "%s is not a VF"), linkdev);
-                goto cleanup;
-            }
-            vlanid = vlan->tag[0];
-        } else  if (vf >= 0) {
-            vlanid = 0; /* assure any current vlan tag is reset */
-        }
-
         ret = virNetDevReplaceNetConfig(linkdev, vf,
                                         &hostdev->parent.data.net->mac,
-                                        vlanid, stateDir);
+                                        vlan, stateDir);
     }
  cleanup:
     VIR_FREE(linkdev);

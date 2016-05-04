@@ -975,6 +975,7 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
                                        const virMacAddr *macaddress,
                                        const char *linkdev,
                                        virNetDevMacVLanMode mode,
+                                       virNetDevVlanPtr vlan,
                                        const unsigned char *vmuuid,
                                        virNetDevVPortProfilePtr virtPortProfile,
                                        char **ifnameResult,
@@ -1021,7 +1022,7 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
             if (virNetDevReplaceMacAddress(linkdev, macaddress, stateDir) < 0)
                 return -1;
         } else {
-            if (virNetDevReplaceNetConfig(linkdev, -1, macaddress, -1, stateDir) < 0)
+            if (virNetDevReplaceNetConfig(linkdev, -1, macaddress, vlan, stateDir) < 0)
                 return -1;
         }
     }
@@ -1281,6 +1282,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
                                            const virMacAddr *macaddress ATTRIBUTE_UNUSED,
                                            const char *linkdev ATTRIBUTE_UNUSED,
                                            virNetDevMacVLanMode mode ATTRIBUTE_UNUSED,
+                                           virNetDevVlanPtr vlan ATTRIBUTE_UNUSED,
                                            const unsigned char *vmuuid ATTRIBUTE_UNUSED,
                                            virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
                                            char **res_ifname ATTRIBUTE_UNUSED,

@@ -4032,7 +4032,7 @@
     <p>
       On Linux systems, the bridge device is normally a standard Linux
       host bridge. On hosts that support Open vSwitch, it is also
-      possible to connect to an open vSwitch bridge device by adding
+      possible to connect to an Open vSwitch bridge device by adding
       a <code>&lt;virtualport type='openvswitch'/&gt;</code> to the
       interface definition.  (<span class="since">Since
       0.9.11</span>). The Open vSwitch type virtualport accepts two
@@ -4816,34 +4816,46 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
       If (and only if) the network connection used by the guest
-      supports vlan tagging transparent to the guest, an
+      supports VLAN tagging transparent to the guest, an
       optional <code>&lt;vlan&gt;</code> element can specify one or
-      more vlan tags to apply to the guest's network
-      traffic <span class="since">Since 0.10.0</span>. (openvswitch
-      and type='hostdev' SR-IOV interfaces do support transparent vlan
-      tagging of guest traffic; everything else, including standard
+      more VLAN tags to apply to the guest's network
+      traffic <span class="since">Since 0.10.0</span>. Network
+      connections that support guest-transparent VLAN tagging include
+      1) type='bridge' interfaces connected to an Open vSwitch bridge
+      <span class="since">Since 0.10.0</span>, 2) SRIOV Virtual
+      Functions (VF) used via type='hostdev' (direct device
+      assignment) <span class="since">Since 0.10.0</span>, and 3)
+      SRIOV VFs used via type='direct' with mode='passthrough'
+      (macvtap "passthru" mode) <span class="since">Since
+      1.3.4</span>. All other connection types, including standard
       linux bridges and libvirt's own virtual networks, <b>do not</b>
       support it. 802.1Qbh (vn-link) and 802.1Qbg (VEPA) switches
       provide their own way (outside of libvirt) to tag guest traffic
-      onto specific vlans.) To allow for specification of multiple
-      tags (in the case of vlan trunking), a
-      subelement, <code>&lt;tag&gt;</code>, specifies which vlan tag
-      to use (for example: <code>&lt;tag id='42'/&gt;</code>. If an
-      interface has more than one <code>&lt;vlan&gt;</code> element
-      defined, it is assumed that the user wants to do VLAN trunking
-      using all the specified tags. In the case that vlan trunking
-      with a single tag is desired, the optional
+      onto a specific VLAN. Each tag is given in a
+      separate <code>&lt;tag&gt;</code> subelement
+      of <code>&lt;vlan&gt;</code> (for example: <code>&lt;tag
+      id='42'/&gt;</code>). For VLAN trunking of multiple tags (which
+      is supported only on Open vSwitch connections),
+      multiple <code>&lt;tag&gt;</code> subelements can be specified,
+      which implies that the user wants to do VLAN trunking on the
+      interface for all the specified tags. In the case that VLAN
+      trunking of a single tag is desired, the optional
       attribute <code>trunk='yes'</code> can be added to the toplevel
-      vlan element.
+      <code>&lt;vlan&gt;</code> element to differentiate trunking of a
+      single tag from normal tagging.
     </p>
-
     <p>
-      For network connections using openvswitch it is possible to
-      configure the 'native-tagged' and 'native-untagged' vlan modes
-      <span class="since">Since 1.1.0.</span> This uses the optional
-      <code>nativeMode</code> attribute on the <code>&lt;tag&gt;</code>
-      element: <code>nativeMode</code> may be set to 'tagged' or
-      'untagged'. The id attribute of the element sets the native vlan.
+      For network connections using Open vSwitch it is also possible
+      to configure 'native-tagged' and 'native-untagged' VLAN modes
+      <span class="since">Since 1.1.0.</span> This is done with the
+      optional <code>nativeMode</code> attribute on
+      the <code>&lt;tag&gt;</code> subelement: <code>nativeMode</code>
+      may be set to 'tagged' or 'untagged'. The <code>id</code>
+      attribute of the <code>&lt;tag&gt;</code> subelement
+      containing <code>nativeMode</code> sets which VLAN is considered
+      to be the "native" VLAN for this interface, and
+      the <code>nativeMode</code> attribute determines whether or not
+      traffic for that VLAN will be tagged.
     </p>
 
     <h5><a name="elementLink">Modifying virtual link state</a></h5>

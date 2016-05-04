@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2015 Red Hat, Inc.
+ * Copyright (C) 2010-2016 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_process.c: LXC process lifecycle management
@@ -343,6 +343,7 @@ char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
             net->ifname, &net->mac,
             linkdev,
             virDomainNetGetActualDirectMode(net),
+            virDomainNetGetActualVlan(net),
             def->uuid,
             prof,
             &res_ifname,

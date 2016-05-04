@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2015 Red Hat, Inc.
+ * Copyright (C) 2007-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2547,7 +2547,8 @@ virNetDevRestoreVfConfig(const char *pflinkdev,
  */
 int
 virNetDevReplaceNetConfig(const char *linkdev, int vf,
-                          const virMacAddr *macaddress, int vlanid,
+                          const virMacAddr *macaddress,
+                          virNetDevVlanPtr vlan,
                           const char *stateDir)
 {
     int ret = -1;
@@ -2566,11 +2567,29 @@ virNetDevReplaceNetConfig(const char *linkdev, int vf,
         linkdev = pfdevname;
     }
 
-    if (vf == -1)
+    if (vf == -1) {
+        if (vlan) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("vlan can only be set for SR-IOV VFs, but "
+                             "%s is not a VF"), linkdev);
+            goto cleanup;
+        }
         ret = virNetDevReplaceMacAddress(linkdev, macaddress, stateDir);
-    else
+    } else {
+        int vlanid = 0; /* assure any current vlan tag is reset */
+
+        if (vlan) {
+            if (vlan->nTags != 1 || vlan->trunk) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("vlan trunking is not supported "
+                                 "by SR-IOV network devices"));
+                goto cleanup;
+            }
+            vlanid = vlan->tag[0];
+        }
         ret = virNetDevReplaceVfConfig(linkdev, vf, macaddress, vlanid,
                                        stateDir);
+    }
 
  cleanup:
     VIR_FREE(pfdevname);
@@ -2636,7 +2655,7 @@ int
 virNetDevReplaceNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
                           int vf ATTRIBUTE_UNUSED,
                           const virMacAddr *macaddress ATTRIBUTE_UNUSED,
-                          int vlanid ATTRIBUTE_UNUSED,
+                          virNetDevVlanPtr vlan ATTRIBUTE_UNUSED,
                           const char *stateDir ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",

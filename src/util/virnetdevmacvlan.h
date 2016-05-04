@@ -28,6 +28,7 @@
 # include "virsocketaddr.h"
 # include "virnetdevbandwidth.h"
 # include "virnetdevvportprofile.h"
+# include "virnetdevvlan.h"
 
 /* the mode type for macvtap devices */
 typedef enum {
@@ -69,6 +70,7 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname,
                                            const virMacAddr *macaddress,
                                            const char *linkdev,
                                            virNetDevMacVLanMode mode,
+                                           virNetDevVlanPtr vlan,
                                            const unsigned char *vmuuid,
                                            virNetDevVPortProfilePtr virtPortProfile,
                                            char **res_ifname,
@@ -77,8 +79,8 @@ int virNetDevMacVLanCreateWithVPortProfile(const char *ifname,
                                            int *tapfd,
                                            size_t tapfdSize,
                                            unsigned int flags)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(5)
-    ATTRIBUTE_NONNULL(7) ATTRIBUTE_NONNULL(9) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(6)
+    ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(10) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
                                            const virMacAddr *macaddress,
