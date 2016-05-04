@@ -1164,7 +1164,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-bytes-sec",
      .type = VSH_OT_INT,
-     .help = N_("total throughput limit in bytes per second")
+     .help = N_("total throughput limit, as scaled integer (default bytes)")
     },
     {.name = "read_bytes_sec",
      .type = VSH_OT_ALIAS,
@@ -1172,7 +1172,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-bytes-sec",
      .type = VSH_OT_INT,
-     .help = N_("read throughput limit in bytes per second")
+     .help = N_("read throughput limit, as scaled integer (default bytes)")
     },
     {.name = "write_bytes_sec",
      .type = VSH_OT_ALIAS,
@@ -1180,7 +1180,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-bytes-sec",
      .type = VSH_OT_INT,
-     .help =  N_("write throughput limit in bytes per second")
+     .help =  N_("write throughput limit, as scaled integer (default bytes)")
     },
     {.name = "total_iops_sec",
      .type = VSH_OT_ALIAS,
@@ -1212,7 +1212,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "total-bytes-sec-max",
      .type = VSH_OT_INT,
-     .help = N_("total max in bytes")
+     .help = N_("total max, as scaled integer (default bytes)")
     },
     {.name = "read_bytes_sec_max",
      .type = VSH_OT_ALIAS,
@@ -1220,7 +1220,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "read-bytes-sec-max",
      .type = VSH_OT_INT,
-     .help = N_("read max in bytes")
+     .help = N_("read max, as scaled integer (default bytes)")
     },
     {.name = "write_bytes_sec_max",
      .type = VSH_OT_ALIAS,
@@ -1228,7 +1228,7 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
     },
     {.name = "write-bytes-sec-max",
      .type = VSH_OT_INT,
-     .help = N_("write max in bytes")
+     .help = N_("write max, as scaled integer (default bytes)")
     },
     {.name = "total_iops_sec_max",
      .type = VSH_OT_ALIAS,
@@ -1299,7 +1299,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "device", &disk) < 0)
         goto cleanup;
 
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "total-bytes-sec", &value)) < 0) {
+    if ((rv = vshCommandOptScaledInt(ctl, cmd, "total-bytes-sec", &value, 1, ULLONG_MAX)) < 0) {
         goto interror;
     } else if (rv > 0) {
         if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
@@ -1308,7 +1308,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             goto save_error;
     }
 
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "read-bytes-sec", &value)) < 0) {
+    if ((rv = vshCommandOptScaledInt(ctl, cmd, "read-bytes-sec", &value, 1, ULLONG_MAX)) < 0) {
         goto interror;
     } else if (rv > 0) {
         if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
@@ -1317,7 +1317,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             goto save_error;
     }
 
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "write-bytes-sec", &value)) < 0) {
+    if ((rv = vshCommandOptScaledInt(ctl, cmd, "write-bytes-sec", &value, 1, ULLONG_MAX)) < 0) {
         goto interror;
     } else if (rv > 0) {
         if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
@@ -1326,7 +1326,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             goto save_error;
     }
 
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "total-bytes-sec-max", &value)) < 0) {
+    if ((rv = vshCommandOptScaledInt(ctl, cmd, "total-bytes-sec-max", &value, 1, ULLONG_MAX)) < 0) {
         goto interror;
     } else if (rv > 0) {
         if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
@@ -1335,7 +1335,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             goto save_error;
     }
 
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "read-bytes-sec-max", &value)) < 0) {
+    if ((rv = vshCommandOptScaledInt(ctl, cmd, "read-bytes-sec-max", &value, 1, ULLONG_MAX)) < 0) {
         goto interror;
     } else if (rv > 0) {
         if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
@@ -1344,7 +1344,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
             goto save_error;
     }
 
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "write-bytes-sec-max", &value)) < 0) {
+    if ((rv = vshCommandOptScaledInt(ctl, cmd, "write-bytes-sec-max", &value, 1, ULLONG_MAX)) < 0) {
         goto interror;
     } else if (rv > 0) {
         if (virTypedParamsAddULLong(&params, &nparams, &maxparams,

@@ -1097,15 +1097,21 @@ I<domain> (see also B<domblklist> for listing these names).
 
 If no limit is specified, it will query current I/O limits setting.
 Otherwise, alter the limits with these flags:
-I<--total-bytes-sec> specifies total throughput limit in bytes per second.
-I<--read-bytes-sec> specifies read throughput limit in bytes per second.
-I<--write-bytes-sec> specifies write throughput limit in bytes per second.
+I<--total-bytes-sec> specifies total throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+I<--read-bytes-sec> specifies read throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
+I<--write-bytes-sec> specifies write throughput limit as a scaled integer, the
+default being bytes per second if no suffix is specified.
 I<--total-iops-sec> specifies total I/O operations limit per second.
 I<--read-iops-sec> specifies read I/O operations limit per second.
 I<--write-iops-sec> specifies write I/O operations limit per second.
-I<--total-bytes-sec-max> specifies maximum total throughput limit in bytes per second.
-I<--read-bytes-sec-max> specifies maximum read throughput limit in bytes per second.
-I<--write-bytes-sec-max> specifies maximum write throughput limit in bytes per second.
+I<--total-bytes-sec-max> specifies maximum total throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified
+I<--read-bytes-sec-max> specifies maximum read throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified.
+I<--write-bytes-sec-max> specifies maximum write throughput limit as a scaled
+integer, the default being bytes per second if no suffix is specified.
 I<--total-iops-sec-max> specifies maximum total I/O operations limit per second.
 I<--read-iops-sec-max> specifies maximum read I/O operations limit per second.
 I<--write-iops-sec-max> specifies maximum write I/O operations limit per second.
