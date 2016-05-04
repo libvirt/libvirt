@@ -76,7 +76,6 @@
 %endif
 %define with_storage_gluster 0%{!?_without_storage_gluster:1}
 %define with_numactl          0%{!?_without_numactl:1}
-%define with_selinux          0%{!?_without_selinux:1}
 
 # A few optional bits off by default, we enable later
 %define with_fuse          0%{!?_without_fuse:0}
@@ -355,9 +354,7 @@ BuildRequires: libpcap-devel
 BuildRequires: libnl3-devel
 %endif
 BuildRequires: avahi-devel
-%if %{with_selinux}
 BuildRequires: libselinux-devel
-%endif
 %if %{with_network}
 BuildRequires: dnsmasq >= 2.41
 BuildRequires: iptables
@@ -1131,10 +1128,6 @@ rm -rf .git
     %define _without_fuse --without-fuse
 %endif
 
-%if ! %{with_selinux}
-    %define _without_selinux --without-selinux
-%endif
-
 %if ! %{with_sanlock}
     %define _without_sanlock --without-sanlock
 %endif
@@ -1179,12 +1172,10 @@ rm -rf .git
     %define with_init_script --with-init-script=redhat
 %endif
 
-%if %{with_selinux}
-    %if 0%{?fedora} || 0%{?rhel} >= 7
-        %define with_selinux_mount --with-selinux-mount="/sys/fs/selinux"
-    %else
-        %define with_selinux_mount --with-selinux-mount="/selinux"
-    %endif
+%if 0%{?fedora} || 0%{?rhel} >= 7
+    %define with_selinux_mount --with-selinux-mount="/sys/fs/selinux"
+%else
+    %define with_selinux_mount --with-selinux-mount="/selinux"
 %endif
 
 # place macros above and build commands below this comment
@@ -1227,7 +1218,7 @@ rm -f po/stamp-po
            --with-capng \
            %{?_without_fuse} \
            --with-netcf \
-           %{?_without_selinux} \
+           --with-selinux \
            %{?_with_selinux_mount} \
            --without-apparmor \
            --without-hal \
