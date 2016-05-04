@@ -11199,57 +11199,21 @@ static const vshCmdOptDef opts_detach_interface[] = {
 };
 
 static bool
-cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
+virshDomainDetachInterface(char *doc,
+                           unsigned int flags,
+                           virDomainPtr dom,
+                           vshControl *ctl,
+                           bool current,
+                           const char *type,
+                           const char *mac)
 {
-    virDomainPtr dom = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathObjectPtr obj = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr cur = NULL, matchNode = NULL;
-    char *detach_xml = NULL;
-    const char *mac = NULL, *type = NULL;
-    char *doc = NULL;
-    char buf[64];
-    int diff_mac;
+    char *detach_xml = NULL, buf[64];
+    int diff_mac, ret = -1;
     size_t i;
-    int ret;
-    bool functionReturn = false;
-    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
-    bool current = vshCommandOptBool(cmd, "current");
-    bool config = vshCommandOptBool(cmd, "config");
-    bool live = vshCommandOptBool(cmd, "live");
-    bool persistent = vshCommandOptBool(cmd, "persistent");
-
-    VSH_EXCLUSIVE_OPTIONS_VAR(persistent, current);
-
-    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
-    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
-
-    if (config || persistent)
-        flags |= VIR_DOMAIN_AFFECT_CONFIG;
-    if (live)
-        flags |= VIR_DOMAIN_AFFECT_LIVE;
-
-    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
-        return false;
-
-    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
-        goto cleanup;
-
-    if (vshCommandOptStringReq(ctl, cmd, "mac", &mac) < 0)
-        goto cleanup;
-
-    if (persistent &&
-        virDomainIsActive(dom) == 1)
-        flags |= VIR_DOMAIN_AFFECT_LIVE;
-
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-        doc = virDomainGetXMLDesc(dom, VIR_DOMAIN_XML_INACTIVE);
-    else
-        doc = virDomainGetXMLDesc(dom, 0);
-
-    if (!doc)
-        goto cleanup;
 
     if (!(xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt))) {
         vshError(ctl, "%s", _("Failed to get interface information"));
@@ -11315,21 +11279,72 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     else
         ret = virDomainDetachDevice(dom, detach_xml);
 
-    if (ret != 0) {
+ cleanup:
+    VIR_FREE(detach_xml);
+    xmlFreeDoc(xml);
+    xmlXPathFreeObject(obj);
+    xmlXPathFreeContext(ctxt);
+    return ret == 0;
+}
+
+
+static bool
+cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    char *doc = NULL;
+    const char *mac = NULL, *type = NULL;
+    bool ret = false;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    bool persistent = vshCommandOptBool(cmd, "persistent");
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(persistent, current);
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
+    if (config || persistent)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
+        goto cleanup;
+
+    if (vshCommandOptStringReq(ctl, cmd, "mac", &mac) < 0)
+        goto cleanup;
+
+    if (persistent &&
+        virDomainIsActive(dom) == 1)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+        doc = virDomainGetXMLDesc(dom, VIR_DOMAIN_XML_INACTIVE);
+    else
+        doc = virDomainGetXMLDesc(dom, 0);
+
+    if (!doc)
+        goto cleanup;
+    else
+        ret = virshDomainDetachInterface(doc, flags, dom, ctl,
+                                         current, type, mac);
+
+ cleanup:
+    if (!ret) {
         vshError(ctl, "%s", _("Failed to detach interface"));
     } else {
         vshPrint(ctl, "%s", _("Interface detached successfully\n"));
-        functionReturn = true;
     }
 
- cleanup:
     VIR_FREE(doc);
-    VIR_FREE(detach_xml);
     virDomainFree(dom);
-    xmlXPathFreeObject(obj);
-    xmlXPathFreeContext(ctxt);
-    xmlFreeDoc(xml);
-    return functionReturn;
+    return ret;
 }
 
 typedef enum {
