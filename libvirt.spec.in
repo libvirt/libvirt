@@ -1956,7 +1956,6 @@ exit 0
 %defattr(-, root, root)
 %doc AUTHORS ChangeLog.gz NEWS README TODO
 %doc libvirt-docs/*
-%doc docs/*.html docs/html docs/*.gif
 
 # API docs
 %dir %{_datadir}/gtk-doc/html/libvirt/
