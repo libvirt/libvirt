@@ -11292,10 +11292,10 @@ static bool
 cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
-    char *doc = NULL;
+    char *doc_live = NULL, *doc_config = NULL;
     const char *mac = NULL, *type = NULL;
-    bool ret = false;
-    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    int flags = 0;
+    bool ret = false, affect_config, affect_live;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
@@ -11306,11 +11306,6 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
 
-    if (config || persistent)
-        flags |= VIR_DOMAIN_AFFECT_CONFIG;
-    if (live)
-        flags |= VIR_DOMAIN_AFFECT_LIVE;
-
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
@@ -11320,20 +11315,31 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "mac", &mac) < 0)
         goto cleanup;
 
-    if (persistent &&
-        virDomainIsActive(dom) == 1)
-        flags |= VIR_DOMAIN_AFFECT_LIVE;
+    affect_config = (config || persistent);
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-        doc = virDomainGetXMLDesc(dom, VIR_DOMAIN_XML_INACTIVE);
-    else
-        doc = virDomainGetXMLDesc(dom, 0);
+    if (affect_config) {
+        if (!(doc_config = virDomainGetXMLDesc(dom, VIR_DOMAIN_XML_INACTIVE)))
+            goto cleanup;
+        if (!(ret = virshDomainDetachInterface(doc_config,
+                                               flags | VIR_DOMAIN_AFFECT_CONFIG,
+                                               dom, ctl, current, type, mac)))
+            goto cleanup;
+    }
 
-    if (!doc)
-        goto cleanup;
-    else
-        ret = virshDomainDetachInterface(doc, flags, dom, ctl,
-                                         current, type, mac);
+    affect_live = (live || (persistent && virDomainIsActive(dom) == 1));
+
+    if (affect_live || !affect_config) {
+        flags = 0;
+
+        if (affect_live)
+            flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+        if (!(doc_live = virDomainGetXMLDesc(dom, 0)))
+            goto cleanup;
+
+        ret = virshDomainDetachInterface(doc_live, flags,
+                                         dom, ctl, current, type, mac);
+    }
 
  cleanup:
     if (!ret) {
@@ -11341,8 +11347,8 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     } else {
         vshPrint(ctl, "%s", _("Interface detached successfully\n"));
     }
-
-    VIR_FREE(doc);
+    VIR_FREE(doc_live);
+    VIR_FREE(doc_config);
     virDomainFree(dom);
     return ret;
 }
