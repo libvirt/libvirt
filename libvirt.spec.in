@@ -57,7 +57,6 @@
 %define with_hyperv        0%{!?_without_hyperv:1}
 
 # Then the secondary host drivers, which run inside libvirtd
-%define with_interface        0%{!?_without_interface:1}
 %define with_network          0%{!?_without_network:1}
 %define with_storage_fs       0%{!?_without_storage_fs:1}
 %define with_storage_lvm      0%{!?_without_storage_lvm:1}
@@ -291,9 +290,7 @@ Requires: libvirt-daemon-driver-vbox = %{version}-%{release}
 Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 %endif
 
-%if %{with_interface}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
-%endif
 Requires: libvirt-daemon-driver-secret = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -610,20 +607,18 @@ capabilities.
 %endif
 
 
-%if %{with_interface}
 %package daemon-driver-interface
 Summary: Interface driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
-    %if (0%{?fedora} || 0%{?rhel} >= 7)
+%if (0%{?fedora} || 0%{?rhel} >= 7)
 Requires: netcf-libs >= 0.2.2
-    %endif
+%endif
 
 %description daemon-driver-interface
 The interface driver plugin for the libvirtd daemon, providing
 an implementation of the network interface APIs using the
 netcf library
-%endif
 
 
 %package daemon-driver-secret
@@ -1076,10 +1071,6 @@ rm -rf .git
     %define _without_uml --without-uml
 %endif
 
-%if ! %{with_interface}
-    %define _without_interface --without-interface
-%endif
-
 %if ! %{with_network}
     %define _without_network --without-network
 %endif
@@ -1203,7 +1194,7 @@ rm -f po/stamp-po
            --without-xenapi \
            --without-vz \
            --without-bhyve \
-           %{?_without_interface} \
+           --with-interface \
            %{?_without_network} \
            %{?_without_storage_fs} \
            %{?_without_storage_lvm} \
@@ -1707,11 +1698,9 @@ exit 0
 %{_sysconfdir}/libvirt/nwfilter/*.xml
 %endif
 
-%if %{with_interface}
 %files daemon-driver-interface
 %defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_interface.so
-%endif
 
 %if %{with_network}
 %files daemon-driver-network
@@ -1724,7 +1713,6 @@ exit 0
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/dnsmasq/
 %attr(0755, root, root) %{_libexecdir}/libvirt_leaseshelper
 %{_libdir}/%{name}/connection-driver/libvirt_driver_network.so
-%endif
 
 %if %{with_nodedev}
 %files daemon-driver-nodedev
