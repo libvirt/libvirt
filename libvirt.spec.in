@@ -79,7 +79,6 @@
 %define with_selinux          0%{!?_without_selinux:1}
 
 # A few optional bits off by default, we enable later
-%define with_polkit        0%{!?_without_polkit:0}
 %define with_fuse          0%{!?_without_fuse:0}
 %define with_yajl          0%{!?_without_yajl:0}
 %define with_nwfilter      0%{!?_without_nwfilter:0}
@@ -170,7 +169,6 @@
     %define with_fuse      0%{!?_without_fuse:1}
 %endif
 
-%define with_polkit    0%{!?_without_polkit:1}
 %define with_yajl      0%{!?_without_yajl:1}
 
 # Enable sanlock library for lock management with QEMU
@@ -378,14 +376,12 @@ BuildRequires: ebtables
 %endif
 BuildRequires: module-init-tools
 BuildRequires: cyrus-sasl-devel
-%if %{with_polkit}
-    %if 0%{?fedora} || 0%{?rhel} >= 7
+%if 0%{?fedora} || 0%{?rhel} >= 7
 # F22 polkit-devel doesn't pull in polkit anymore, which we need for pkcheck
 BuildRequires: polkit >= 0.112
 BuildRequires: polkit-devel >= 0.112
-    %else
+%else
 BuildRequires: polkit-devel >= 0.93
-    %endif
 %endif
 %if %{with_storage_fs}
 # For mount/umount in FS driver
@@ -462,10 +458,8 @@ BuildRequires: util-linux
 BuildRequires: nfs-utils
 %endif
 
-%if %{with_firewalld} || %{with_polkit}
 # Communication with the firewall and polkit daemons use DBus
 BuildRequires: dbus-devel
-%endif
 
 # Fedora build root suckage
 BuildRequires: gawk
@@ -511,12 +505,10 @@ Requires: module-init-tools
 # for /sbin/ip & /sbin/tc
 Requires: iproute
 Requires: avahi-libs
-%if %{with_polkit}
-    %if 0%{?fedora} || 0%{?rhel} >= 7
+%if 0%{?fedora} || 0%{?rhel} >= 7
 Requires: polkit >= 0.112
-    %else
+%else
 Requires: polkit >= 0.93
-    %endif
 %endif
 %if %{with_cgconfig}
 Requires: libcgroup
@@ -1088,10 +1080,6 @@ rm -rf .git
     %define _without_vmware --without-vmware
 %endif
 
-%if ! %{with_polkit}
-    %define _without_polkit --without-polkit
-%endif
-
 %if ! %{with_uml}
     %define _without_uml --without-uml
 %endif
@@ -1223,7 +1211,7 @@ rm -f po/stamp-po
            %{?_without_libxl} \
            --with-sasl \
            --with-avahi \
-           %{?_without_polkit} \
+           --with-polkit \
            --with-libvirtd \
            %{?_without_uml} \
            %{?_without_phyp} \
@@ -1385,12 +1373,10 @@ then
 fi
 
 %pre daemon
-%if %{with_polkit}
 # 'libvirt' group is just to allow password-less polkit access to
 # libvirtd. The uid number is irrelevant, so we use dynamic allocation
 # described at the above link.
 getent group libvirt >/dev/null || groupadd -r libvirt
-%endif
 
 exit 0
 
@@ -1708,11 +1694,9 @@ exit 0
 %{_datadir}/augeas/lenses/tests/test_libvirt_lockd.aug
 %endif
 
-%if %{with_polkit}
 %{_datadir}/polkit-1/actions/org.libvirt.unix.policy
 %{_datadir}/polkit-1/actions/org.libvirt.api.policy
 %{_datadir}/polkit-1/rules.d/50-libvirt.rules
-%endif
 
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/
 
