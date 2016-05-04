@@ -262,8 +262,8 @@ adminDispatchClientGetInfo(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     if (!(clnt = virNetServerGetClient(srv, args->clnt.id))) {
         virReportError(VIR_ERR_NO_CLIENT,
-                      _("no client with matching id '%lu' found"),
-                      args->clnt.id);
+                       _("no client with matching id '%llu' found"),
+                       (unsigned long long) args->clnt.id);
         goto cleanup;
     }
 
