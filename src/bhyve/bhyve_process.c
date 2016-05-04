@@ -278,25 +278,17 @@ virBhyveProcessStop(bhyveConnPtr driver,
         return -1;
     }
 
-    if ((priv != NULL) && (priv->mon != NULL))
-         bhyveMonitorClose(priv->mon);
-
-    /* First, try to kill 'bhyve' process */
-    if (virProcessKillPainfully(vm->pid, true) != 0)
-        VIR_WARN("Failed to gracefully stop bhyve VM '%s' (pid: %d)",
-                 vm->def->name,
-                 (int)vm->pid);
-
-    /* Cleanup network interfaces */
-    bhyveNetCleanup(vm);
-
-    /* No matter if shutdown was successful or not, we
-     * need to unload the VM */
     if (!(cmd = virBhyveProcessBuildDestroyCmd(driver, vm->def)))
-        goto cleanup;
+        return -1;
 
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
+
+    if ((priv != NULL) && (priv->mon != NULL))
+         bhyveMonitorClose(priv->mon);
+
+    /* Cleanup network interfaces */
+    bhyveNetCleanup(vm);
 
     ret = 0;
 
