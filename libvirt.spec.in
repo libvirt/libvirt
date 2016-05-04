@@ -80,7 +80,6 @@
 
 # A few optional bits off by default, we enable later
 %define with_polkit        0%{!?_without_polkit:0}
-%define with_capng         0%{!?_without_capng:0}
 %define with_fuse          0%{!?_without_fuse:0}
 %define with_netcf         0%{!?_without_netcf:0}
 %define with_udev          0%{!?_without_udev:0}
@@ -177,7 +176,6 @@
 %endif
 
 %define with_polkit    0%{!?_without_polkit:1}
-%define with_capng     0%{!?_without_capng:1}
 %define with_netcf     0%{!?_without_netcf:1}
 %define with_udev      0%{!?_without_udev:1}
 %define with_yajl      0%{!?_without_yajl:1}
@@ -455,9 +453,7 @@ BuildRequires: glusterfs-devel >= 3.4.1
 # For QEMU/LXC numa info
 BuildRequires: numactl-devel
 %endif
-%if %{with_capng}
 BuildRequires: libcap-ng-devel >= 0.5.0
-%endif
 %if %{with_fuse}
 BuildRequires: fuse-devel >= 2.8.6
 %endif
@@ -1182,10 +1178,6 @@ rm -rf .git
     %define _without_numad --without-numad
 %endif
 
-%if ! %{with_capng}
-    %define _without_capng --without-capng
-%endif
-
 %if ! %{with_fuse}
     %define _without_fuse --without-fuse
 %endif
@@ -1303,7 +1295,7 @@ rm -f po/stamp-po
            %{?_without_storage_gluster} \
            %{?_without_numactl} \
            %{?_without_numad} \
-           %{?_without_capng} \
+           --with-capng \
            %{?_without_fuse} \
            %{?_without_netcf} \
            %{?_without_selinux} \
