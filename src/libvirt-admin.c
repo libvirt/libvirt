@@ -715,7 +715,6 @@ virAdmConnectListServers(virAdmConnectPtr conn,
     VIR_DEBUG("conn=%p, servers=%p, flags=%x", conn, servers, flags);
 
     virResetLastError();
-    virCheckFlagsGoto(0, error);
 
     if (servers)
         *servers = NULL;
@@ -756,7 +755,6 @@ virAdmConnectLookupServer(virAdmConnectPtr conn,
 
     virCheckAdmConnectGoto(conn, cleanup);
     virCheckNonNullArgGoto(name, cleanup);
-    virCheckFlagsGoto(0, cleanup);
 
     ret = remoteAdminConnectLookupServer(conn, name, flags);
  cleanup:
@@ -876,7 +874,6 @@ virAdmServerListClients(virAdmServerPtr srv,
     VIR_DEBUG("srv=%p, clients=%p, flags=%x", srv, clients, flags);
 
     virResetLastError();
-    virCheckFlagsGoto(0, error);
 
     if (clients)
         *clients = NULL;
@@ -916,7 +913,6 @@ virAdmServerLookupClient(virAdmServerPtr srv,
     virResetLastError();
 
     virCheckAdmServerGoto(srv, error);
-    virCheckFlagsGoto(0, error);
 
     if (!(ret = remoteAdminServerLookupClient(srv, id, flags)))
         goto error;
@@ -966,7 +962,6 @@ virAdmClientGetInfo(virAdmClientPtr client,
     virResetLastError();
     virCheckAdmClientReturn(client, -1);
     virCheckNonNullArgGoto(params, error);
-    virCheckFlagsGoto(0, error);
 
     if ((ret = remoteAdminClientGetInfo(client, params, nparams, flags)) < 0)
         goto error;
