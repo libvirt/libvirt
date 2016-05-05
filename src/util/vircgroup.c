@@ -261,12 +261,19 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
     char *scopename_new = NULL;
     char *machinename = virSystemdMakeMachineName(drivername, id,
                                                   name, privileged);
+    char *partmachinename = NULL;
 
     if (virAsprintf(&partname, "%s.libvirt-%s",
                     name, drivername) < 0)
         goto cleanup;
 
     if (virCgroupPartitionEscape(&partname) < 0)
+        goto cleanup;
+
+    if (machinename &&
+        (virAsprintf(&partmachinename, "%s.libvirt-%s",
+                     machinename, drivername) < 0 ||
+         virCgroupPartitionEscape(&partmachinename) < 0))
         goto cleanup;
 
     if (!(scopename_old = virSystemdMakeScopeName(name, drivername, true)))
@@ -315,6 +322,7 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
         if (STRNEQ(tmp, name) &&
             STRNEQ_NULLABLE(tmp, machinename) &&
             STRNEQ(tmp, partname) &&
+            STRNEQ_NULLABLE(tmp, partmachinename) &&
             STRNEQ(tmp, scopename_old) &&
             STRNEQ_NULLABLE(tmp, scopename_new)) {
             VIR_DEBUG("Name '%s' for controller '%s' does not match "
@@ -329,6 +337,7 @@ virCgroupValidateMachineGroup(virCgroupPtr group,
     valid = true;
 
  cleanup:
+    VIR_FREE(partmachinename);
     VIR_FREE(partname);
     VIR_FREE(scopename_old);
     VIR_FREE(scopename_new);
