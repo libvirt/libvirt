@@ -90,7 +90,7 @@ struct _virNetServerClient
      * attribute, value of 0 (epoch time) is used to indicate we have no
      * information about their connection time.
      */
-    time_t conn_time;
+    long long conn_time;
 
     /* Count of messages in the 'tx' queue,
      * and the server worker pool queue
@@ -363,7 +363,7 @@ virNetServerClientNewInternal(unsigned long long id,
 #endif
                               bool readonly,
                               size_t nrequests_max,
-                              time_t timestamp)
+                              long long timestamp)
 {
     virNetServerClientPtr client;
 
@@ -472,7 +472,7 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
     bool readonly;
     unsigned int nrequests_max;
     unsigned long long id;
-    time_t timestamp;
+    long long timestamp;
 
     if (virJSONValueObjectGetNumberInt(object, "auth", &auth) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -511,8 +511,7 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
     if (!virJSONValueObjectHasKey(object, "conn_time")) {
         timestamp = 0;
     } else {
-        if (virJSONValueObjectGetNumberLong(object, "conn_time",
-                                            (long long *) &timestamp) < 0) {
+        if (virJSONValueObjectGetNumberLong(object, "conn_time", &timestamp) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Malformed conn_time field in JSON "
                              "state document"));
