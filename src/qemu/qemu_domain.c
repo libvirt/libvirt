@@ -3817,7 +3817,7 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
          * without backing support, the fact that the file exists is
          * more than enough */
         if (virStorageSourceIsLocalStorage(disk->src) &&
-            format >= VIR_STORAGE_FILE_NONE &&
+            format > VIR_STORAGE_FILE_NONE &&
             format < VIR_STORAGE_FILE_BACKING &&
             virFileExists(virDomainDiskGetSource(disk)))
             continue;
