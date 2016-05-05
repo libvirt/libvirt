@@ -191,14 +191,13 @@ adminServerListClients(virNetServerPtr srv,
     virCheckFlags(0, -1);
 
     if ((ret = virNetServerGetClients(srv, &clts)) < 0)
-        goto cleanup;
+        return -1;
 
     if (clients) {
         *clients = clts;
         clts = NULL;
     }
 
- cleanup:
     virObjectListFreeCount(clts, ret);
     return ret;
 }
