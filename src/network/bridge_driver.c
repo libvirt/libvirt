@@ -695,9 +695,8 @@ networkStateInitialize(bool privileged,
 
 #ifdef HAVE_FIREWALLD
     if (!(sysbus = virDBusGetSystemBus())) {
-        virErrorPtr err = virGetLastError();
         VIR_WARN("DBus not available, disabling firewalld support "
-                 "in bridge_network_driver: %s", err->message);
+                 "in bridge_network_driver: %s", virGetLastErrorMessage());
     } else {
         /* add matches for
          * NameOwnerChanged on org.freedesktop.DBus for firewalld start/stop

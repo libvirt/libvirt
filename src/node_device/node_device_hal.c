@@ -641,9 +641,8 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
 
     dbus_error_init(&err);
     if (!(sysbus = virDBusGetSystemBus())) {
-        virErrorPtr verr = virGetLastError();
         VIR_ERROR(_("DBus not available, disabling HAL driver: %s"),
-                    verr->message);
+                    virGetLastErrorMessage());
         ret = 0;
         goto failure;
     }
