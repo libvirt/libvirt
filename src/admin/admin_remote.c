@@ -162,7 +162,7 @@ remoteAdminConnectOpen(virAdmConnectPtr conn, unsigned int flags)
 
     virObjectLock(priv);
 
-    args.flags = flags;
+    args.flags = flags & ~VIR_CONNECT_NO_ALIASES;
 
     if (virNetClientRegisterAsyncIO(priv->client) < 0) {
         VIR_DEBUG("Failed to add event watch, disabling events and support for"

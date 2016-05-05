@@ -185,7 +185,8 @@ virAdmGetDefaultURI(virConfPtr conf)
 /**
  * virAdmConnectOpen:
  * @name: uri of the daemon to connect to, NULL for default
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virConnectFlags; so far the only supported flag is
+ *         VIR_CONNECT_NO_ALIASES
  *
  * Opens connection to admin interface of the daemon.
  *
@@ -204,7 +205,6 @@ virAdmConnectOpen(const char *name, unsigned int flags)
 
     VIR_DEBUG("flags=%x", flags);
     virResetLastError();
-    virCheckFlagsGoto(VIR_CONNECT_NO_ALIASES, error);
 
     if (!(conn = virAdmConnectNew()))
         goto error;
