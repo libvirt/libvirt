@@ -159,8 +159,9 @@
 /tests/*.log
 /tests/*.pid
 /tests/*.trs
-/tests/commandhelper
 /tests/*test
+/tests/commandhelper
+/tests/qemucapsprobe
 !/tests/*schematest
 !/tests/virt-aa-helper-test
 /tests/objectlocking
