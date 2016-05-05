@@ -485,7 +485,7 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
         return NULL;
     }
     if (virJSONValueObjectGetNumberUint(object, "nrequests_max",
-                                        (unsigned int *)&nrequests_max) < 0) {
+                                        &nrequests_max) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing nrequests_client_max field in JSON state document"));
         return NULL;
@@ -501,8 +501,7 @@ virNetServerClientPtr virNetServerClientNewPostExecRestart(virJSONValuePtr objec
         /* no ID found in, a new one must be generated */
         id = virNetServerNextClientID((virNetServerPtr) opaque);
     } else {
-        if (virJSONValueObjectGetNumberUlong(object, "id",
-                                        (unsigned long long *) &id) < 0) {
+        if (virJSONValueObjectGetNumberUlong(object, "id", &id) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Malformed id field in JSON state document"));
         return NULL;
