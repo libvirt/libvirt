@@ -1305,7 +1305,10 @@ virNodeDevPCICapabilityParseXML(xmlXPathContextPtr ctxt,
                                         data->pci_dev.physical_function) < 0)
             goto out;
     } else if (STREQ(type, "virt_functions")) {
-        int naddresses = virXPathNodeSet("./address", ctxt, &addresses);
+        int naddresses;
+
+        if ((naddresses = virXPathNodeSet("./address", ctxt, &addresses)) < 0)
+            goto out;
 
         if (maxFuncsStr &&
             virStrToLong_uip(maxFuncsStr, NULL, 10,
