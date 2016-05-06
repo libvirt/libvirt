@@ -10648,17 +10648,35 @@ virDomainGraphicsAuthDefParseXML(xmlNodePtr node,
     return 0;
 }
 
+
+/**
+ * virDomainGraphicsListenDefParseXML:
+ * @def: listen def pointer to be filled
+ * @node: xml node of <listen/> element
+ * @parent: xml node of <graphics/> element
+ * @flags: bit-wise or of VIR_DOMAIN_DEF_PARSE_*
+ *
+ * Parses current <listen/> element from @node to @def.  For backward
+ * compatibility the @parent element should contain node of <graphics/> element
+ * for the first <listen/> element in order to validate attributes from both
+ * elements.
+ */
 static int
 virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
                                    xmlNodePtr node,
+                                   xmlNodePtr parent,
                                    unsigned int flags)
 {
     int ret = -1;
-    char *type     = virXMLPropString(node, "type");
-    char *address  = virXMLPropString(node, "address");
-    char *network  = virXMLPropString(node, "network");
+    char *type = virXMLPropString(node, "type");
+    char *address = virXMLPropString(node, "address");
+    char *network = virXMLPropString(node, "network");
     char *fromConfig = virXMLPropString(node, "fromConfig");
+    char *addressCompat = NULL;
     int tmp, typeVal;
+
+    if (parent)
+        addressCompat = virXMLPropString(parent, "listen");
 
     if (!type) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -10673,9 +10691,21 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     }
     def->type = typeVal;
 
-    /* address is recognized if either type='address', or if
-     * type='network' and we're looking at live XML (i.e. *not*
-     * inactive). It is otherwise ignored. */
+    if (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS) {
+        if (address && addressCompat && STRNEQ(address, addressCompat)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("graphics 'listen' attribute '%s' must match "
+                             "'address' attribute of first listen element "
+                             "(found '%s')"), addressCompat, address);
+            goto error;
+        }
+
+        if (!address) {
+            address = addressCompat;
+            addressCompat = NULL;
+        }
+    }
+
     if (address && address[0] &&
         (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS ||
          (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK &&
@@ -10715,6 +10745,7 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     VIR_FREE(address);
     VIR_FREE(network);
     VIR_FREE(fromConfig);
+    VIR_FREE(addressCompat);
     return ret;
 }
 
@@ -10727,8 +10758,7 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
 {
     xmlNodePtr *listenNodes = NULL;
     xmlNodePtr save = ctxt->node;
-    virDomainGraphicsListenDefPtr address = NULL;
-    char *listenAddr = NULL;
+    virDomainGraphicsListenDef newListen = {0};
     char *socketPath = NULL;
     int nListens;
     int ret = -1;
@@ -10755,44 +10785,31 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
         for (i = 0; i < nListens; i++) {
             if (virDomainGraphicsListenDefParseXML(&def->listens[i],
                                                    listenNodes[i],
+                                                   i == 0 ? node : NULL,
                                                    flags) < 0)
                 goto error;
-
-            if (!address &&
-                def->listens[i].type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS)
-                address = &def->listens[i];
 
             def->nListens++;
         }
         VIR_FREE(listenNodes);
+    } else {
+        /* If no <listen/> element was found in XML for backward compatibility
+         * we should try to parse 'listen' attribute from <graphics/> element. */
+        newListen.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
+        newListen.address = virXMLPropString(node, "listen");
+        if (STREQ_NULLABLE(newListen.address, ""))
+            VIR_FREE(newListen.address);
+
+        if (newListen.address &&
+            VIR_APPEND_ELEMENT(def->listens, def->nListens, newListen) < 0)
+            goto error;
     }
-
-    /* listen attribute of <graphics> is also supported by these,
-     * but must match the 'address' attribute of the first listen
-     * that is type='address' (if present) */
-    listenAddr = virXMLPropString(node, "listen");
-    if (STREQ_NULLABLE(listenAddr, ""))
-        VIR_FREE(listenAddr);
-
-    if (address && listenAddr &&
-        STRNEQ_NULLABLE(address->address, listenAddr)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("graphics listen attribute %s must match address "
-                         "attribute of first listen element (found %s)"),
-                       listenAddr, address->address);
-        goto error;
-    }
-
-    /* There were no <listen> elements, so we can just
-     * directly set listenAddr as listens[0]->address */
-    if (listenAddr && def->nListens == 0 &&
-        virDomainGraphicsListenAppendAddress(def, listenAddr) < 0)
-        goto error;
 
     ret = 0;
  error:
+    if (ret < 0)
+        virDomainGraphicsListenDefClear(&newListen);
     VIR_FREE(listenNodes);
-    VIR_FREE(listenAddr);
     VIR_FREE(socketPath);
     ctxt->node = save;
     return ret;
