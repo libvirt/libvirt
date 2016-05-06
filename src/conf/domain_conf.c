@@ -21077,8 +21077,10 @@ virDomainInputDefFormat(virBufferPtr buf,
     const char *bus = virDomainInputBusTypeToString(def->bus);
 
     /* don't format keyboard into migratable XML for backward compatibility */
-    if (def->type == VIR_DOMAIN_INPUT_TYPE_KBD &&
-        flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE)
+    if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
+        def->type == VIR_DOMAIN_INPUT_TYPE_KBD &&
+        (def->bus == VIR_DOMAIN_INPUT_BUS_PS2 ||
+         def->bus == VIR_DOMAIN_INPUT_BUS_XEN))
         return 0;
 
     if (!type) {
