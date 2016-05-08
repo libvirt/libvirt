@@ -23,8 +23,12 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_UML],[
         [add UML support @<:@default=check@:>@])])
     m4_divert_text([DEFAULTS], [with_uml=check])
 
-    if test "$with_libvirtd" = "no" ; then
-        with_uml=no
+    if test "$with_libvirtd" = "no" || test "$with_linux" = "no"; then
+        if test "$with_uml" = "yes"; then
+            AC_MSG_ERROR([The UML driver cannot be enabled])
+        elif test "$with_uml" = "check"; then
+            with_uml="no"
+        fi
     fi
 
     if test "$with_uml" = "yes" || test "$with_uml" = "check"; then
