@@ -1903,7 +1903,7 @@ mymain(void)
                               NONE);
 
     DO_TEST("name-escape", QEMU_CAPS_NAME_DEBUG_THREADS,
-            QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_CHARDEV);
+            QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_CHARDEV, QEMU_CAPS_VNC);
     DO_TEST("debug-threads", QEMU_CAPS_NAME_DEBUG_THREADS);
 
     DO_TEST("master-key", QEMU_CAPS_OBJECT_SECRET);

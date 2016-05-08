@@ -14,5 +14,6 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu</emulator>
+    <graphics type='vnc' socket='/tmp/bar,foo.sock'/>
   </devices>
 </domain>
