@@ -189,6 +189,7 @@ virDomainControllerDefFree;
 virDomainControllerDefNew;
 virDomainControllerFind;
 virDomainControllerFindByType;
+virDomainControllerFindUnusedIndex;
 virDomainControllerInsert;
 virDomainControllerInsertPreAlloced;
 virDomainControllerModelPCITypeToString;

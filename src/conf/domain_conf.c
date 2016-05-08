@@ -13717,8 +13717,8 @@ virDomainControllerFind(const virDomainDef *def,
 }
 
 
-static int
-virDomainControllerFindUnusedIndex(virDomainDefPtr def, int type)
+int
+virDomainControllerFindUnusedIndex(virDomainDef const *def, int type)
 {
     int idx = 0;
 
