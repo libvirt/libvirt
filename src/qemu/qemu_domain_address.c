@@ -969,13 +969,6 @@ qemuDomainPCIBusFullyReserved(virDomainPCIAddressBusPtr bus)
 }
 
 
-#define IS_USB2_CONTROLLER(ctrl) \
-    (((ctrl)->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) && \
-     ((ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_EHCI1 || \
-      (ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI1 || \
-      (ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI2 || \
-      (ctrl)->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_ICH9_UHCI3))
-
 /*
  * This assigns static PCI slots to all configured devices.
  * The ordering here is chosen to match the ordering used
