@@ -4171,6 +4171,23 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
 
 
 static int
+virQEMUCapsFillDomainDeviceGraphicsCaps(virQEMUCapsPtr qemuCaps,
+                                        virDomainCapsDeviceGraphicsPtr dev)
+{
+    dev->supported = true;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SDL))
+        VIR_DOMAIN_CAPS_ENUM_SET(dev->type, VIR_DOMAIN_GRAPHICS_TYPE_SDL);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC))
+        VIR_DOMAIN_CAPS_ENUM_SET(dev->type, VIR_DOMAIN_GRAPHICS_TYPE_VNC);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE))
+        VIR_DOMAIN_CAPS_ENUM_SET(dev->type, VIR_DOMAIN_GRAPHICS_TYPE_SPICE);
+
+    return 0;
+}
+
+
+static int
 virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
                                        virDomainCapsDeviceHostdevPtr hostdev)
 {
@@ -4281,13 +4298,16 @@ virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
     virDomainCapsOSPtr os = &domCaps->os;
     virDomainCapsDeviceDiskPtr disk = &domCaps->disk;
     virDomainCapsDeviceHostdevPtr hostdev = &domCaps->hostdev;
+    virDomainCapsDeviceGraphicsPtr graphics = &domCaps->graphics;
     int maxvcpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, domCaps->machine);
 
     domCaps->maxvcpus = maxvcpus;
 
     if (virQEMUCapsFillDomainOSCaps(qemuCaps, os,
                                     loader, nloader) < 0 ||
-        virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps, domCaps->machine, disk) < 0 ||
+        virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps,
+                                            domCaps->machine, disk) < 0 ||
+        virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, graphics) < 0 ||
         virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev) < 0 ||
         virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps) < 0)
         return -1;

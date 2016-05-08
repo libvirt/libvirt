@@ -61,6 +61,7 @@ fillAllCaps(virDomainCapsPtr domCaps)
     virDomainCapsOSPtr os = &domCaps->os;
     virDomainCapsLoaderPtr loader = &os->loader;
     virDomainCapsDeviceDiskPtr disk = &domCaps->disk;
+    virDomainCapsDeviceGraphicsPtr graphics = &domCaps->graphics;
     virDomainCapsDeviceHostdevPtr hostdev = &domCaps->hostdev;
     domCaps->maxvcpus = 255;
 
@@ -78,6 +79,9 @@ fillAllCaps(virDomainCapsPtr domCaps)
     disk->supported = true;
     SET_ALL_BITS(disk->diskDevice);
     SET_ALL_BITS(disk->bus);
+
+    graphics->supported = true;
+    SET_ALL_BITS(graphics->type);
 
     hostdev->supported = true;
     SET_ALL_BITS(hostdev->mode);

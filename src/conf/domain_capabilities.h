@@ -69,6 +69,13 @@ struct _virDomainCapsDeviceDisk {
     /* add new fields here */
 };
 
+typedef struct _virDomainCapsDeviceGraphics virDomainCapsDeviceGraphics;
+typedef virDomainCapsDeviceGraphics *virDomainCapsDeviceGraphicsPtr;
+struct _virDomainCapsDeviceGraphics {
+    bool supported;
+    virDomainCapsEnum type;   /* virDomainGraphicsType */
+};
+
 typedef struct _virDomainCapsDeviceHostdev virDomainCapsDeviceHostdev;
 typedef virDomainCapsDeviceHostdev *virDomainCapsDeviceHostdevPtr;
 struct _virDomainCapsDeviceHostdev {
@@ -101,6 +108,7 @@ struct _virDomainCaps {
 
     virDomainCapsOS os;
     virDomainCapsDeviceDisk disk;
+    virDomainCapsDeviceGraphics graphics;
     virDomainCapsDeviceHostdev hostdev;
     /* add new domain devices here */
 

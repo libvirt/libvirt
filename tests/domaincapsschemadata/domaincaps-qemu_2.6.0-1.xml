@@ -34,6 +34,13 @@
         <value>usb</value>
       </enum>
     </disk>
+    <graphics supported='yes'>
+      <enum name='type'>
+        <value>sdl</value>
+        <value>vnc</value>
+        <value>spice</value>
+      </enum>
+    </graphics>
     <hostdev supported='yes'>
       <enum name='mode'>
         <value>subsystem</value>

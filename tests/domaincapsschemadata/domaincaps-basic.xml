@@ -6,6 +6,7 @@
   <os supported='no'/>
   <devices>
     <disk supported='no'/>
+    <graphics supported='no'/>
     <hostdev supported='no'/>
   </devices>
   <features>

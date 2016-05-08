@@ -72,6 +72,7 @@
     <element name='devices'>
       <interleave>
         <ref name='disk'/>
+        <ref name='graphics'/>
         <ref name='hostdev'/>
       </interleave>
     </element>
@@ -79,6 +80,13 @@
 
   <define name='disk'>
     <element name='disk'>
+      <ref name='supported'/>
+      <ref name='enum'/>
+    </element>
+  </define>
+
+  <define name='graphics'>
+    <element name='graphics'>
       <ref name='supported'/>
       <ref name='enum'/>
     </element>

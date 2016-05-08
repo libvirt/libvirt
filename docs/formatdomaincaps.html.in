@@ -175,7 +175,7 @@
     <code>floppy</code>, or <code>lun</code>.</p>
 
     <h4><a name="elementsDisks">Hard drives, floppy disks, CDROMs</a></h4>
-    <p>Disk capabilities are exposed under <code>disk</code> element. For
+    <p>Disk capabilities are exposed under the <code>disk</code> element. For
     instance:</p>
 
 <pre>
@@ -215,6 +215,34 @@
       <dd>Options for the <code>bus</code> attribute of the &lt;target/&gt;
       element for a &lt;disk/&gt;.</dd>
     </dl>
+
+
+    <h4><a name="elementsGraphics">Graphical framebuffers</a></h4>
+    <p>Graphics device capabilities are exposed under the
+    <code>graphics</code> element. For instance:</p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;devices&gt;
+    &lt;graphics supported='yes'&gt;
+      &lt;enum name='type'&gt;
+        &lt;value&gt;sdl&lt;/value&gt;
+        &lt;value&gt;vnc&lt;/value&gt;
+        &lt;value&gt;spice&lt;/value&gt;
+      &lt;/enum&gt;
+    &lt;/graphics&gt;
+    ...
+  &lt;/devices&gt;
+&lt;/domainCapabilities&gt;
+</pre>
+
+    <dl>
+      <dt><code>type</code></dt>
+      <dd>Options for the <code>type</code> attribute of the &lt;graphics/&gt;
+      element.</dd>
+    </dl>
+
 
     <h4><a name="elementsHostDev">Host device assignment</a></h4>
     <p>Some host devices can be passed through to a guest (e.g. USB, PCI and
