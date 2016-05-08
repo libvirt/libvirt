@@ -149,6 +149,22 @@ VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
               "preferred",
               "interleave");
 
+
+/**
+ * qemuBufferEscapeComma:
+ * @buf: buffer to append the escaped string
+ * @str: the string to escape
+ *
+ * qemu requires that any values passed on the command line which contain
+ * a ',' must escape it using an extra ',' as the escape character
+ */
+static void
+qemuBufferEscapeComma(virBufferPtr buf, const char *str)
+{
+    virBufferEscape(buf, ',', ",", "%s", str);
+}
+
+
 /**
  * qemuBuildHasMasterKey:
  * @qemuCaps: QEMU binary capabilities
@@ -1211,7 +1227,8 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
             break;
         }
 
-        virBufferEscape(&opt, ',', ",", "%s,", source);
+        qemuBufferEscapeComma(&opt, source);
+        virBufferAddLit(&opt, ",");
 
         if (disk->src->format > 0 &&
             disk->src->type != VIR_STORAGE_TYPE_DIR)
@@ -3783,7 +3800,7 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
             goto error;
         }
         virBufferAsprintf(&buf, "virtio-input-host%s,id=%s,evdev=", suffix, dev->info.alias);
-        virBufferEscape(&buf, ',', ",", "%s", dev->source.evdev);
+        qemuBufferEscapeComma(&buf, dev->source.evdev);
         break;
     case VIR_DOMAIN_INPUT_TYPE_LAST:
         break;
@@ -9084,10 +9101,10 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
                 goto error;
         }
         virBufferAddLit(&buf, ",path=");
-        virBufferEscape(&buf, ',', ",", "%s", devset ? devset : tpmdev);
+        qemuBufferEscapeComma(&buf, devset ? devset : tpmdev);
 
         virBufferAddLit(&buf, ",cancel-path=");
-        virBufferEscape(&buf, ',', ",", "%s", cancel_path);
+        qemuBufferEscapeComma(&buf, cancel_path);
 
         VIR_FREE(devset);
         VIR_FREE(cancel_path);
