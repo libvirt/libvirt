@@ -48,6 +48,18 @@
         <value>spice</value>
       </enum>
     </graphics>
+    <video supported='yes'>
+      <enum name='modelType'>
+        <value>vga</value>
+        <value>cirrus</value>
+        <value>vmvga</value>
+        <value>xen</value>
+        <value>vbox</value>
+        <value>qxl</value>
+        <value>parallels</value>
+        <value>virtio</value>
+      </enum>
+    </video>
     <hostdev supported='yes'>
       <enum name='mode'>
         <value>subsystem</value>

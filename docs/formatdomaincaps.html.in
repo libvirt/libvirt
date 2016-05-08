@@ -244,6 +244,35 @@
     </dl>
 
 
+    <h4><a name="elementsVideo">Video device</a></h4>
+    <p>Video device capabilities are exposed under the
+    <code>video</code> element. For instance:</p>
+
+<pre>
+&lt;domainCapabilities&gt;
+  ...
+  &lt;devices&gt;
+    &lt;video supported='yes'&gt;
+      &lt;enum name='modelType'&gt;
+        &lt;value&gt;vga&lt;/value&gt;
+        &lt;value&gt;cirrus&lt;/value&gt;
+        &lt;value&gt;vmvga&lt;/value&gt;
+        &lt;value&gt;qxl&lt;/value&gt;
+        &lt;value&gt;virtio&lt;/value&gt;
+      &lt;/enum&gt;
+    &lt;/video&gt;
+    ...
+  &lt;/devices&gt;
+&lt;/domainCapabilities&gt;
+</pre>
+
+    <dl>
+      <dt><code>modelType</code></dt>
+      <dd>Options for the <code>type</code> attribute of the
+      &lt;video&gt;&lt;model&gt; element.</dd>
+    </dl>
+
+
     <h4><a name="elementsHostDev">Host device assignment</a></h4>
     <p>Some host devices can be passed through to a guest (e.g. USB, PCI and
     SCSI). Well, only if the following is enabled:</p>

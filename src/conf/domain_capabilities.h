@@ -76,6 +76,15 @@ struct _virDomainCapsDeviceGraphics {
     virDomainCapsEnum type;   /* virDomainGraphicsType */
 };
 
+typedef struct _virDomainCapsDeviceVideo virDomainCapsDeviceVideo;
+typedef virDomainCapsDeviceVideo *virDomainCapsDeviceVideoPtr;
+struct _virDomainCapsDeviceVideo {
+    bool supported;
+    virDomainCapsEnum modelType;   /* virDomainVideoType */
+};
+
+typedef struct _virDomainCapsDeviceHostdev virDomainCapsDeviceHostdev;
+
 typedef struct _virDomainCapsDeviceHostdev virDomainCapsDeviceHostdev;
 typedef virDomainCapsDeviceHostdev *virDomainCapsDeviceHostdevPtr;
 struct _virDomainCapsDeviceHostdev {
@@ -109,6 +118,7 @@ struct _virDomainCaps {
     virDomainCapsOS os;
     virDomainCapsDeviceDisk disk;
     virDomainCapsDeviceGraphics graphics;
+    virDomainCapsDeviceVideo video;
     virDomainCapsDeviceHostdev hostdev;
     /* add new domain devices here */
 

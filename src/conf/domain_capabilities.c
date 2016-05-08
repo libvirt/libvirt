@@ -259,6 +259,18 @@ virDomainCapsDeviceGraphicsFormat(virBufferPtr buf,
 
 
 static void
+virDomainCapsDeviceVideoFormat(virBufferPtr buf,
+                               virDomainCapsDeviceVideoPtr const video)
+{
+    FORMAT_PROLOGUE(video);
+
+    ENUM_PROCESS(video, modelType, virDomainVideoTypeToString);
+
+    FORMAT_EPILOGUE(video);
+}
+
+
+static void
 virDomainCapsDeviceHostdevFormat(virBufferPtr buf,
                                  virDomainCapsDeviceHostdevPtr const hostdev)
 {
@@ -327,6 +339,7 @@ virDomainCapsFormatInternal(virBufferPtr buf,
 
     virDomainCapsDeviceDiskFormat(buf, &caps->disk);
     virDomainCapsDeviceGraphicsFormat(buf, &caps->graphics);
+    virDomainCapsDeviceVideoFormat(buf, &caps->video);
     virDomainCapsDeviceHostdevFormat(buf, &caps->hostdev);
 
     virBufferAdjustIndent(buf, -2);
