@@ -4116,7 +4116,7 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
     virBufferAsprintf(&buf, "%s,id=%s", model, video->info.alias);
 
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
-        if (video->accel && video->accel->accel3d) {
+        if (video->accel && video->accel->accel3d == VIR_TRISTATE_SWITCH_ON) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU_VIRGL)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                "%s", _("virtio-gpu 3d acceleration is not supported"));
