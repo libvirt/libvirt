@@ -537,10 +537,6 @@ AC_ARG_WITH([qemu],
   [AS_HELP_STRING([--with-qemu],
     [add QEMU/KVM support @<:@default=yes@:>@])])
 m4_divert_text([DEFAULTS], [with_qemu=yes])
-AC_ARG_WITH([uml],
-  [AS_HELP_STRING([--with-uml],
-    [add UML support @<:@default=check@:>@])])
-m4_divert_text([DEFAULTS], [with_uml=check])
 AC_ARG_WITH([openvz],
   [AS_HELP_STRING([--with-openvz],
     [add OpenVZ support @<:@default=check@:>@])])
@@ -1561,27 +1557,7 @@ dnl
 dnl Checks for the UML driver
 dnl
 
-if test "$with_libvirtd" = "no" ; then
-  with_uml=no
-fi
-if test "$with_uml" = "yes" || test "$with_uml" = "check"; then
-    AC_CHECK_HEADER([sys/inotify.h], [
-        with_uml=yes
-    ], [
-        if test "$with_uml" = "check"; then
-            with_uml=no
-            AC_MSG_NOTICE([<sys/inotify.h> is required for the UML driver, disabling it])
-        else
-            AC_MSG_ERROR([The <sys/inotify.h> is required for the UML driver. Upgrade your libc6.])
-        fi
-    ])
-fi
-if test "$with_uml" = "yes" ; then
-    AC_DEFINE_UNQUOTED([WITH_UML], 1, [whether UML driver is enabled])
-fi
-AM_CONDITIONAL([WITH_UML], [test "$with_uml" = "yes"])
-
-
+LIBVIRT_DRIVER_CHECK_UML
 
 dnl
 dnl check for PHYP
@@ -2747,7 +2723,7 @@ AC_MSG_NOTICE([Drivers])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([      Xen: $with_xen])
 AC_MSG_NOTICE([     QEMU: $with_qemu])
-AC_MSG_NOTICE([      UML: $with_uml])
+LIBVIRT_DRIVER_RESULT_UML
 AC_MSG_NOTICE([   OpenVZ: $with_openvz])
 AC_MSG_NOTICE([   VMware: $with_vmware])
 AC_MSG_NOTICE([     VBox: $with_vbox])
