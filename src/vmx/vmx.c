@@ -1875,11 +1875,9 @@ virVMXParseVNC(virConfPtr conf, virDomainGraphicsDefPtr *def)
         goto failure;
     }
 
-    if (listenAddr) {
-        if (virDomainGraphicsListenAppendAddress(*def, listenAddr) < 0)
-            goto failure;
-        VIR_FREE(listenAddr);
-    }
+    if (virDomainGraphicsListenAppendAddress(*def, listenAddr) < 0)
+        goto failure;
+    VIR_FREE(listenAddr);
 
     if (port < 0) {
         VIR_WARN("VNC is enabled but VMX entry 'RemoteDisplay.vnc.port' "

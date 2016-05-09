@@ -11,7 +11,9 @@
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <graphics type='vnc' port='5903' autoport='no' keymap='de' passwd='password'/>
+    <graphics type='vnc' port='5903' autoport='no' keymap='de' passwd='password'>
+      <listen type='address'/>
+    </graphics>
     <video>
       <model type='vmvga' vram='4096' primary='yes'/>
     </video>

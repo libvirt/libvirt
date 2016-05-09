@@ -10800,8 +10800,7 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
         if (STREQ_NULLABLE(newListen.address, ""))
             VIR_FREE(newListen.address);
 
-        if (newListen.address &&
-            VIR_APPEND_ELEMENT(def->listens, def->nListens, newListen) < 0)
+        if (VIR_APPEND_ELEMENT(def->listens, def->nListens, newListen) < 0)
             goto error;
     }
 

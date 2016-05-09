@@ -4394,7 +4394,7 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     bool allocate = !(flags & VIR_QEMU_PROCESS_START_PRETEND);
-    size_t i;
+    size_t i, j;
     int ret = -1;
 
     if (allocate && qemuProcessGraphicsReservePorts(driver, vm) < 0)
@@ -4426,12 +4426,16 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
             break;
         }
 
-        if (graphics->nListens == 0 && listenAddr) {
-            if (virDomainGraphicsListenAppendAddress(graphics,
-                                                     listenAddr) < 0)
-                goto cleanup;
+        for (j = 0; j < graphics->nListens; j++) {
+            virDomainGraphicsListenDefPtr glisten = &graphics->listens[j];
 
-            graphics->listens[0].fromConfig = true;
+            if (glisten->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS &&
+                !glisten->address && listenAddr) {
+                if (VIR_STRDUP(glisten->address, listenAddr) < 0)
+                    goto cleanup;
+
+                glisten->fromConfig = true;
+            }
         }
     }
 

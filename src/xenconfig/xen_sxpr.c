@@ -867,8 +867,7 @@ xenParseSxprGraphicsOld(virDomainDefPtr def,
             graphics->data.vnc.autoport = true;
         graphics->data.vnc.port = port;
 
-        if (listenAddr &&
-            virDomainGraphicsListenAppendAddress(graphics, listenAddr) < 0)
+        if (virDomainGraphicsListenAppendAddress(graphics, listenAddr) < 0)
             goto error;
 
         if (VIR_STRDUP(graphics->data.vnc.auth.passwd, vncPasswd) < 0)
@@ -988,8 +987,7 @@ xenParseSxprGraphicsNew(virDomainDefPtr def,
                     port += 5900;
                 graphics->data.vnc.port = port;
 
-                if (listenAddr &&
-                    virDomainGraphicsListenAppendAddress(graphics, listenAddr) < 0)
+                if (virDomainGraphicsListenAppendAddress(graphics, listenAddr) < 0)
                     goto error;
 
                 if (VIR_STRDUP(graphics->data.vnc.auth.passwd, vncPasswd) < 0)

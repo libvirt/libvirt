@@ -2952,9 +2952,11 @@
             <attribute name="type">
               <value>address</value>
             </attribute>
-            <attribute name="address">
-              <ref name="addrIPorName"/>
-            </attribute>
+            <optional>
+              <attribute name="address">
+                <ref name="addrIPorName"/>
+              </attribute>
+            </optional>
           </group>
           <group>
             <attribute name="type">

@@ -5126,11 +5126,10 @@ qemu-kvm -net nic,model=? /dev/null
               the TCP port number (with -1 as legacy syntax indicating that it
               should be auto-allocated). The <code>autoport</code> attribute is
               the new preferred syntax for indicating auto-allocation of the TCP
-              port to use. The <code>listen</code> attribute is an IP address
-              for the server to listen on. The <code>passwd</code> attribute
-              provides a VNC password in clear text. The <code>keymap</code>
-              attribute specifies the keymap to use. It is possible to set
-              a limit on the validity of the password by giving an timestamp
+              port to use. The <code>passwd</code> attribute provides a VNC
+              password in clear text. The <code>keymap</code> attribute specifies
+              the keymap to use. It is possible to set a limit on the validity of
+              the password by giving an timestamp
               <code>passwdValidTo='2010-04-09T15:51:00'</code> assumed to be
               in UTC. The <code>connected</code> attribute allows control of
               connected client during password changes. VNC accepts
@@ -5168,14 +5167,12 @@ qemu-kvm -net nic,model=? /dev/null
               should be auto-allocated), while <code>tlsPort</code> gives
               an alternative secure port number. The <code>autoport</code>
               attribute is the new preferred syntax for indicating
-              auto-allocation of needed port numbers. The <code>listen</code>
-              attribute is an IP address for the server to listen on.
-              The <code>passwd</code> attribute provides a SPICE password in
-              clear text. The <code>keymap</code> attribute specifies the keymap
-              to use. It is possible to set a limit on the validity of
-              the password by giving an timestamp
-              <code>passwdValidTo='2010-04-09T15:51:00'</code> assumed to be in
-              UTC.
+              auto-allocation of needed port numbers. The <code>passwd</code>
+              attribute provides a SPICE password in clear text. The
+              <code>keymap</code> attribute specifies the keymap to use. It is
+              possible to set a limit on the validity of the password by giving
+              an timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
+              assumed to be in UTC.
             </p>
             <p>
               The <code>connected</code> attribute allows control of connected
@@ -5311,6 +5308,15 @@ qemu-kvm -net nic,model=? /dev/null
           <code>address</code> attribute, which will contain either an IP address
           or hostname (which will be resolved to an IP address via a DNS query)
           to listen on.
+        </p>
+        <p>
+          It is possible to omit the <code>address</code> attribute in order to
+          use an address from config files <span class="since">Since 1.3.5</span>.
+        </p>
+        <p>
+          The <code>address</code> attribute is duplicated as <code>listen</code>
+          attribute in <code>graphics</code> element for backward compatibility.
+          If both are provided they must be equal.
         </p>
       </dd>
       <dt><code>network</code></dt>

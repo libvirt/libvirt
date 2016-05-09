@@ -594,8 +594,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
 
             if (xenConfigCopyStringOpt(conf, "vnclisten", &listenAddr) < 0)
                 goto cleanup;
-            if (listenAddr &&
-                virDomainGraphicsListenAppendAddress(graphics, listenAddr) < 0)
+            if (virDomainGraphicsListenAppendAddress(graphics, listenAddr) < 0)
                 goto cleanup;
             VIR_FREE(listenAddr);
 
@@ -664,8 +663,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
                         if (STREQ(key + 10, "1"))
                             graphics->data.vnc.autoport = true;
                     } else if (STRPREFIX(key, "vnclisten=")) {
-                        if (virDomainGraphicsListenAppendAddress(graphics,
-                                                                 key+10) < 0)
+                        if (VIR_STRDUP(listenAddr, key+10) < 0)
                             goto cleanup;
                     } else if (STRPREFIX(key, "vncpasswd=")) {
                         if (VIR_STRDUP(graphics->data.vnc.auth.passwd, key + 10) < 0)
@@ -698,6 +696,12 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
                                    nextkey[0] == '\t'))
                     nextkey++;
                 key = nextkey;
+            }
+            if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+                if (virDomainGraphicsListenAppendAddress(graphics,
+                                                         listenAddr) < 0)
+                    goto cleanup;
+                VIR_FREE(listenAddr);
             }
             if (VIR_ALLOC_N(def->graphics, 1) < 0)
                 goto cleanup;

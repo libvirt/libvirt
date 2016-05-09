@@ -42,7 +42,9 @@
     </interface>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <graphics type='vnc' port='-1' autoport='yes' keymap='ja'/>
+    <graphics type='vnc' port='-1' autoport='yes' keymap='ja'>
+      <listen type='address'/>
+    </graphics>
     <sound model='sb16'/>
     <sound model='es1370'/>
     <video>

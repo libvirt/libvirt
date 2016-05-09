@@ -30,6 +30,7 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <graphics type='spice' autoport='no'>
+      <listen type='address'/>
       <gl enable='yes'/>
     </graphics>
     <video>

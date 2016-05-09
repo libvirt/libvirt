@@ -186,8 +186,7 @@ xenParseXLSpice(virConfPtr conf, virDomainDefPtr def)
             graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_SPICE;
             if (xenConfigCopyStringOpt(conf, "spicehost", &listenAddr) < 0)
                 goto cleanup;
-            if (listenAddr &&
-                virDomainGraphicsListenAppendAddress(graphics, listenAddr) < 0)
+            if (virDomainGraphicsListenAppendAddress(graphics, listenAddr) < 0)
                 goto cleanup;
             VIR_FREE(listenAddr);
 
