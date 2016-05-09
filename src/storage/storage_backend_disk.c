@@ -325,13 +325,14 @@ virStorageBackendDiskReadPartitions(virStoragePoolObjPtr pool,
                                pool->def->source.devices[0].path,
                                NULL);
 
-    /* Check for the presence of the part_separator='no'. Pass this
+    /* Check for the presence of the part_separator='yes'. Pass this
      * along to the libvirt_parthelper as option '-p'. This will cause
-     * libvirt_parthelper to not append the "p" partition separator to
-     * the generated device name, unless the name ends with a number.
+     * libvirt_parthelper to append the "p" partition separator to
+     * the generated device name for a source device which ends with
+     * a non-numeric value (e.g. mpatha would generate mpathap#).
      */
     if (pool->def->source.devices[0].part_separator ==
-        VIR_TRISTATE_BOOL_NO)
+        VIR_TRISTATE_BOOL_YES)
         virCommandAddArg(cmd, "-p");
 
     /* If a volume is passed, virStorageBackendDiskMakeVol only updates the

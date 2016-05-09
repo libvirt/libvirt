@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     const char *path;
     char *canonical_path;
     const char *partsep;
-    bool devmap_nopartsep = false;
+    bool devmap_partsep = false;
 
     if (virGettextInitialize() < 0)
         exit(EXIT_FAILURE);
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
     if (argc == 3 && STREQ(argv[2], "-g")) {
         cmd = DISK_GEOMETRY;
     } else if (argc == 3 && STREQ(argv[2], "-p")) {
-        devmap_nopartsep = true;
+        devmap_partsep = true;
     } else if (argc != 2) {
         fprintf(stderr, _("syntax: %s DEVICE [-g]|[-p]\n"), argv[0]);
         return 1;
@@ -85,10 +85,11 @@ int main(int argc, char **argv)
 
     path = argv[1];
     if (virIsDevMapperDevice(path)) {
-        /* The 'devmap_nopartsep' option will not append the partsep of "p"
-         * onto the name unless the 'path' ends in a number
+        /* If the path ends with a number or we explicitly request it for
+         * path, then append the "p" partition separator. Otherwise, if
+         * the path ends with a letter already, then no need for a separator.
          */
-        if (c_isdigit(path[strlen(path)-1]) || !devmap_nopartsep)
+        if (c_isdigit(path[strlen(path)-1]) || devmap_partsep)
             partsep = "p";
         else
             partsep = "";

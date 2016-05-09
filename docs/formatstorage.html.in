@@ -134,19 +134,11 @@
         <code>path</code> may be supplied. Valid values for the attribute
         may be either "yes" or "no". This attribute is to be used for a
         <code>disk</code> pool type using a <code>path</code> to a
-        device mapper multipath device configured to utilize either
-        'user_friendly_names' or a custom 'alias' name in the
-        /etc/multipath.conf. The attribute directs libvirt to not
-        generate device volume names with the partition character "p".
-        By default, when libvirt generates the partition names for
-        device mapper multipath devices it will add a "p" path separator
-        to the device name before adding the partition number. For example,
-        a <code>device path</code> of '/dev/mapper/mpatha' libvirt would
-        generate partition names of '/dev/mapper/mpathap1',
-        '/dev/mapper/mpathap2', etc. for each partition found. With
-        this attribute set to "no", libvirt will not append the "p" to
-        the name unless it ends with a number thus generating names
-        of '/dev/mapper/mpatha1', '/dev/mapper/mpatha2', etc.
+        device mapper multipath device. Setting the attribute to "yes"
+        causes libvirt to attempt to generate and find target volume path's
+        using a "p" separator. The default algorithm used by device mapper
+        is to add the "p" separator only when the source device path ends
+        with a number.
         <span class="since">Since 1.3.1</span></p></dd>
       <dt><code>dir</code></dt>
       <dd>Provides the source for pools backed by directories (pool
