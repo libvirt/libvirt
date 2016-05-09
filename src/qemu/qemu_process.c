@@ -4402,16 +4402,21 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
+        char *listenAddr = NULL;
 
         switch (graphics->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
             if (qemuProcessVNCAllocatePorts(driver, graphics, allocate) < 0)
                 goto cleanup;
+
+            listenAddr = cfg->vncListen;
             break;
 
         case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
             if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics, allocate) < 0)
                 goto cleanup;
+
+            listenAddr = cfg->spiceListen;
             break;
 
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
@@ -4419,6 +4424,14 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
         case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
             break;
+        }
+
+        if (graphics->nListens == 0 && listenAddr) {
+            if (virDomainGraphicsListenAppendAddress(graphics,
+                                                     listenAddr) < 0)
+                goto cleanup;
+
+            graphics->listens[0].fromConfig = true;
         }
     }
 
@@ -5177,39 +5190,9 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Setting up ports for graphics");
+    VIR_DEBUG("Setting graphics devices");
     if (qemuProcessSetupGraphics(driver, vm, flags) < 0)
         goto cleanup;
-
-    /* Fill in run-time values for graphics devices. */
-    for (i = 0; i < vm->def->ngraphics; i++) {
-        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
-        char *listenAddr = NULL;
-
-        switch (graphics->type) {
-        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-            listenAddr = cfg->vncListen;
-            break;
-
-        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-            listenAddr = cfg->spiceListen;
-            break;
-
-        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
-        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
-            break;
-        }
-
-        if (graphics->nListens == 0 && listenAddr) {
-            if (virDomainGraphicsListenAppendAddress(graphics,
-                                                     listenAddr) < 0)
-                goto cleanup;
-
-            graphics->listens[0].fromConfig = true;
-        }
-    }
 
     /* "volume" type disk's source must be translated before
      * cgroup and security setting.
