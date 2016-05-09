@@ -1931,24 +1931,41 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
 /**
  * qemuDomainDefEnableDefaultFeatures:
  * @def: domain definition
+ * @qemuCaps: QEMU capabilities
  *
  * Make sure that features that should be enabled by default are actually
  * enabled and configure default values related to those features.
  */
 static void
-qemuDomainDefEnableDefaultFeatures(virDomainDefPtr def)
+qemuDomainDefEnableDefaultFeatures(virDomainDefPtr def,
+                                   virQEMUCapsPtr qemuCaps)
 {
-    switch (def->os.arch) {
-    case VIR_ARCH_ARMV7L:
-    case VIR_ARCH_AARCH64:
-        if (qemuDomainMachineIsVirt(def)) {
-            /* GIC is always available to ARM virt machines */
-            def->features[VIR_DOMAIN_FEATURE_GIC] = VIR_TRISTATE_SWITCH_ON;
-        }
-        break;
+    virGICVersion version;
 
-    default:
-        break;
+    /* The virt machine type always uses GIC: if the relevant element
+     * was not included in the domain XML, we need to choose a suitable
+     * GIC version ourselves */
+    if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ABSENT &&
+        (def->os.arch == VIR_ARCH_ARMV7L || def->os.arch == VIR_ARCH_AARCH64) &&
+        qemuDomainMachineIsVirt(def)) {
+
+        VIR_DEBUG("Looking for usable GIC version in domain capabilities");
+        for (version = VIR_GIC_VERSION_LAST - 1;
+             version > VIR_GIC_VERSION_NONE;
+             version--) {
+            if (virQEMUCapsSupportsGICVersion(qemuCaps,
+                                              def->virtType,
+                                              version)) {
+                VIR_DEBUG("Using GIC version %s",
+                          virGICVersionTypeToString(version));
+                def->gic_version = version;
+                break;
+            }
+        }
+
+        /* Even if we haven't found a usable GIC version in the domain
+         * capabilities, we still want to enable this */
+        def->features[VIR_DOMAIN_FEATURE_GIC] = VIR_TRISTATE_SWITCH_ON;
     }
 
     /* Use the default GIC version if no version was specified */
@@ -2047,7 +2064,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     if (qemuCanonicalizeMachine(def, qemuCaps) < 0)
         goto cleanup;
 
-    qemuDomainDefEnableDefaultFeatures(def);
+    qemuDomainDefEnableDefaultFeatures(def, qemuCaps);
 
     qemuDomainRecheckInternalPaths(def, cfg, parseFlags);
 
