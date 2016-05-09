@@ -7060,18 +7060,6 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         net->mac = mac;
     }
 
-    /* do fake auto-alloc of graphics ports, if such config is used */
-    for (i = 0; i < vm->def->ngraphics; ++i) {
-        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-            if (qemuProcessVNCAllocatePorts(driver, graphics, false) < 0)
-                goto cleanup;
-        } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-            if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics, false) < 0)
-                goto cleanup;
-        }
-    }
-
     if (!(cmd = qemuProcessCreatePretendCmd(conn, driver, vm, NULL,
                                             qemuCheckFips(), true,
                                             VIR_QEMU_PROCESS_START_COLD)))

@@ -3856,7 +3856,7 @@ qemuProcessReconnectAll(virConnectPtr conn, virQEMUDriverPtr driver)
     virDomainObjListForEach(driver->domains, qemuProcessReconnectHelper, &data);
 }
 
-int
+static int
 qemuProcessVNCAllocatePorts(virQEMUDriverPtr driver,
                             virDomainGraphicsDefPtr graphics,
                             bool allocate)
@@ -3888,7 +3888,7 @@ qemuProcessVNCAllocatePorts(virQEMUDriverPtr driver,
     return 0;
 }
 
-int
+static int
 qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
                               virQEMUDriverConfigPtr cfg,
                               virDomainGraphicsDefPtr graphics,
@@ -4389,13 +4389,15 @@ qemuProcessGraphicsReservePorts(virQEMUDriverPtr driver,
 
 static int
 qemuProcessSetupGraphics(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm)
+                         virDomainObjPtr vm,
+                         unsigned int flags)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    bool allocate = !(flags & VIR_QEMU_PROCESS_START_PRETEND);
     size_t i;
     int ret = -1;
 
-    if (qemuProcessGraphicsReservePorts(driver, vm) < 0)
+    if (allocate && qemuProcessGraphicsReservePorts(driver, vm) < 0)
         goto cleanup;
 
     for (i = 0; i < vm->def->ngraphics; ++i) {
@@ -4403,12 +4405,12 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
 
         switch (graphics->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-            if (qemuProcessVNCAllocatePorts(driver, graphics, true) < 0)
+            if (qemuProcessVNCAllocatePorts(driver, graphics, allocate) < 0)
                 goto cleanup;
             break;
 
         case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-            if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics, true) < 0)
+            if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics, allocate) < 0)
                 goto cleanup;
             break;
 
@@ -5175,6 +5177,10 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
         goto cleanup;
 
+    VIR_DEBUG("Setting up ports for graphics");
+    if (qemuProcessSetupGraphics(driver, vm, flags) < 0)
+        goto cleanup;
+
     /* Fill in run-time values for graphics devices. */
     for (i = 0; i < vm->def->ngraphics; i++) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
@@ -5312,10 +5318,6 @@ qemuProcessPrepareHost(virQEMUDriverPtr driver,
      * settings */
     VIR_DEBUG("Ensuring no historical cgroup is lying around");
     qemuRemoveCgroup(vm);
-
-    VIR_DEBUG("Setting up ports for graphics");
-    if (qemuProcessSetupGraphics(driver, vm) < 0)
-        goto cleanup;
 
     if (virFileMakePath(cfg->logDir) < 0) {
         virReportSystemError(errno,

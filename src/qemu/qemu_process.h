@@ -175,14 +175,6 @@ bool qemuProcessAutoDestroyActive(virQEMUDriverPtr driver,
 int qemuProcessSetSchedParams(int id, pid_t pid, size_t nsp,
                               virDomainThreadSchedParamPtr sp);
 
-int qemuProcessVNCAllocatePorts(virQEMUDriverPtr driver,
-                                virDomainGraphicsDefPtr graphics,
-                                bool allocate);
-int qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
-                                  virQEMUDriverConfigPtr cfg,
-                                  virDomainGraphicsDefPtr graphics,
-                                  bool allocate);
-
 virDomainDiskDefPtr qemuProcessFindDomainDiskByAlias(virDomainObjPtr vm,
                                                      const char *alias);
 
