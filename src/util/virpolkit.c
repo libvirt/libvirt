@@ -167,7 +167,6 @@ virPolkitAgentPtr
 virPolkitAgentCreate(void)
 {
     virPolkitAgentPtr agent = NULL;
-    virCommandPtr cmd = virCommandNewArgList(PKTTYAGENT, "--process", NULL);
     int pipe_fd[2] = {-1, -1};
     struct pollfd pollfd;
     int outfd = STDOUT_FILENO;
@@ -181,18 +180,18 @@ virPolkitAgentCreate(void)
 
     if (VIR_ALLOC(agent) < 0)
         goto error;
-    agent->cmd = cmd;
-    cmd = NULL;
 
-    virCommandAddArgFormat(cmd, "%lld", (long long int) getpid());
-    virCommandAddArg(cmd, "--notify-fd");
-    virCommandAddArgFormat(cmd, "%d", pipe_fd[1]);
-    virCommandAddArg(cmd, "--fallback");
-    virCommandSetInputFD(cmd, STDIN_FILENO);
-    virCommandSetOutputFD(cmd, &outfd);
-    virCommandSetErrorFD(cmd, &errfd);
-    virCommandPassFD(cmd, pipe_fd[1], VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-    if (virCommandRunAsync(cmd, NULL) < 0)
+    agent->cmd = virCommandNewArgList(PKTTYAGENT, "--process", NULL);
+
+    virCommandAddArgFormat(agent->cmd, "%lld", (long long int) getpid());
+    virCommandAddArg(agent->cmd, "--notify-fd");
+    virCommandAddArgFormat(agent->cmd, "%d", pipe_fd[1]);
+    virCommandAddArg(agent->cmd, "--fallback");
+    virCommandSetInputFD(agent->cmd, STDIN_FILENO);
+    virCommandSetOutputFD(agent->cmd, &outfd);
+    virCommandSetErrorFD(agent->cmd, &errfd);
+    virCommandPassFD(agent->cmd, pipe_fd[1], VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+    if (virCommandRunAsync(agent->cmd, NULL) < 0)
         goto error;
 
     pollfd.fd = pipe_fd[0];
@@ -207,7 +206,6 @@ virPolkitAgentCreate(void)
     VIR_FORCE_CLOSE(pipe_fd[0]);
     VIR_FORCE_CLOSE(pipe_fd[1]);
     virPolkitAgentDestroy(agent);
-    virCommandFree(cmd);
     return NULL;
 }
 
