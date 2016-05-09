@@ -4348,12 +4348,10 @@ qemuProcessStartHook(virQEMUDriverPtr driver,
 
 
 static int
-qemuProcessSetupGraphics(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm)
+qemuProcessGraphicsReservePorts(virQEMUDriverPtr driver,
+                                virDomainObjPtr vm)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     size_t i;
-    int ret = -1;
 
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
@@ -4362,7 +4360,7 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
             if (virPortAllocatorSetUsed(driver->remotePorts,
                                         graphics->data.vnc.port,
                                         true) < 0)
-                goto cleanup;
+                return -1;
             graphics->data.vnc.portReserved = true;
 
         } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
@@ -4371,7 +4369,7 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
                 if (virPortAllocatorSetUsed(driver->remotePorts,
                                             graphics->data.spice.port,
                                             true) < 0)
-                    goto cleanup;
+                    return -1;
                 graphics->data.spice.portReserved = true;
             }
 
@@ -4379,11 +4377,26 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
                 if (virPortAllocatorSetUsed(driver->remotePorts,
                                             graphics->data.spice.tlsPort,
                                             true) < 0)
-                    goto cleanup;
+                    return -1;
                 graphics->data.spice.tlsPortReserved = true;
             }
         }
     }
+
+    return 0;
+}
+
+
+static int
+qemuProcessSetupGraphics(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    size_t i;
+    int ret = -1;
+
+    if (qemuProcessGraphicsReservePorts(driver, vm) < 0)
+        goto cleanup;
 
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
