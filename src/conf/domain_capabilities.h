@@ -84,8 +84,6 @@ struct _virDomainCapsDeviceVideo {
 };
 
 typedef struct _virDomainCapsDeviceHostdev virDomainCapsDeviceHostdev;
-
-typedef struct _virDomainCapsDeviceHostdev virDomainCapsDeviceHostdev;
 typedef virDomainCapsDeviceHostdev *virDomainCapsDeviceHostdevPtr;
 struct _virDomainCapsDeviceHostdev {
     bool supported;
