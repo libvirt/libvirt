@@ -187,7 +187,7 @@ test_virDomainCapsFormat(const void *opaque)
     char *domCapsXML = NULL;
     int ret = -1;
 
-    if (virAsprintf(&path, "%s/domaincapsschemadata/domaincaps-%s.xml",
+    if (virAsprintf(&path, "%s/domaincapsschemadata/%s.xml",
                     abs_srcdir, data->name) < 0)
         goto cleanup;
 
@@ -256,8 +256,16 @@ mymain(void)
 
 #define DO_TEST_QEMU(Name, CapsName, Emulator, Machine, Arch, Type)     \
     do {                                                                \
+        char *name = NULL;                                              \
+        if (virAsprintf(&name, "qemu_%s%s%s.%s",                        \
+                        Name,                                           \
+                        Machine ? "-" : "", Machine ? Machine : "",     \
+                        Arch) < 0) {                                    \
+            ret = -1;                                                   \
+            break;                                                      \
+        }                                                               \
         struct testData data = {                                        \
-            .name = Name,                                               \
+            .name = name,                                               \
             .emulator = Emulator,                                       \
             .machine = Machine,                                         \
             .arch = Arch,                                               \
@@ -266,8 +274,9 @@ mymain(void)
             .capsName = CapsName,                                       \
             .capsOpaque = cfg,                                          \
         };                                                              \
-        if (virtTestRun(Name, test_virDomainCapsFormat, &data) < 0)     \
+        if (virtTestRun(name, test_virDomainCapsFormat, &data) < 0)     \
             ret = -1;                                                   \
+        VIR_FREE(name);                                                 \
     } while (0)
 
     DO_TEST("basic", "/bin/emulatorbin", "my-machine-type",
@@ -277,27 +286,27 @@ mymain(void)
 
 #if WITH_QEMU
 
-    DO_TEST_QEMU("qemu_1.6.50-1", "caps_1.6.50-1",
+    DO_TEST_QEMU("1.6.50", "caps_1.6.50-1",
                  "/usr/bin/qemu-system-x86_64", NULL,
                  "x86_64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("qemu_2.6.0-1", "caps_2.6.0-1",
+    DO_TEST_QEMU("2.6.0", "caps_2.6.0-1",
                  "/usr/bin/qemu-system-x86_64", NULL,
                  "x86_64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("qemu_2.6.0-2", "caps_2.6.0-1",
+    DO_TEST_QEMU("2.6.0", "caps_2.6.0-1",
                  "/usr/bin/qemu-system-aarch64", NULL,
                  "aarch64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("qemu_2.6.0-3", "caps_2.6.0-1",
+    DO_TEST_QEMU("2.6.0-gicv2", "caps_2.6.0-1",
                  "/usr/bin/qemu-system-aarch64", "virt",
                  "aarch64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("qemu_2.6.0-4", "caps_2.6.0-2",
+    DO_TEST_QEMU("2.6.0-gicv3", "caps_2.6.0-2",
                  "/usr/bin/qemu-system-aarch64", "virt",
                  "aarch64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("qemu_2.6.0-5", "caps_2.6.0-1",
+    DO_TEST_QEMU("2.6.0", "caps_2.6.0-1",
                  "/usr/bin/qemu-system-ppc64", NULL,
                  "ppc64le", VIR_DOMAIN_VIRT_KVM);
 
