@@ -2367,6 +2367,30 @@ int virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
 }
 
 
+/**
+ * virQEMUCapsSetGICCapabilities:
+ * @qemuCaps: QEMU capabilities
+ * @capabilities: GIC capabilities
+ * @ncapabilities: number of GIC capabilities
+ *
+ * Set the GIC capabilities for @qemuCaps.
+ *
+ * The ownership of @capabilities is taken away from the caller, ie. this
+ * function will not make a copy of @capabilities, so releasing that memory
+ * after it's been called is a bug.
+ */
+void
+virQEMUCapsSetGICCapabilities(virQEMUCapsPtr qemuCaps,
+                              virGICCapability *capabilities,
+                              size_t ncapabilities)
+{
+    VIR_FREE(qemuCaps->gicCapabilities);
+
+    qemuCaps->gicCapabilities = capabilities;
+    qemuCaps->ngicCapabilities = ncapabilities;
+}
+
+
 static int
 virQEMUCapsProbeQMPCommands(virQEMUCapsPtr qemuCaps,
                             qemuMonitorPtr mon)
@@ -2719,10 +2743,7 @@ virQEMUCapsProbeQMPGICCapabilities(virQEMUCapsPtr qemuCaps,
     if ((ncaps = qemuMonitorGetGICCapabilities(mon, &caps)) < 0)
         return -1;
 
-    VIR_FREE(qemuCaps->gicCapabilities);
-
-    qemuCaps->gicCapabilities = caps;
-    qemuCaps->ngicCapabilities = ncaps;
+    virQEMUCapsSetGICCapabilities(qemuCaps, caps, ncaps);
 
     return 0;
 }

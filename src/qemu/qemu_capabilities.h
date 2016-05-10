@@ -427,6 +427,11 @@ bool virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps);
 void virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
                                     const char *machineType);
 
+/* Only for use by test suite */
+void virQEMUCapsSetGICCapabilities(virQEMUCapsPtr qemuCaps,
+                                   virGICCapability *capabilities,
+                                   size_t ncapabilities);
+
 virQEMUCapsCachePtr virQEMUCapsCacheNew(const char *libDir,
                                         const char *cacheDir,
                                         uid_t uid, gid_t gid);
