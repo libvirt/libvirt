@@ -4827,7 +4827,7 @@ qemu-kvm -net nic,model=? /dev/null
       assignment) <span class="since">Since 0.10.0</span>, and 3)
       SRIOV VFs used via type='direct' with mode='passthrough'
       (macvtap "passthru" mode) <span class="since">Since
-      1.3.4</span>. All other connection types, including standard
+      1.3.5</span>. All other connection types, including standard
       linux bridges and libvirt's own virtual networks, <b>do not</b>
       support it. 802.1Qbh (vn-link) and 802.1Qbg (VEPA) switches
       provide their own way (outside of libvirt) to tag guest traffic
