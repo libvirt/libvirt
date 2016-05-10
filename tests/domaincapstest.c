@@ -286,27 +286,27 @@ mymain(void)
 
 #if WITH_QEMU
 
-    DO_TEST_QEMU("1.6.50", "caps_1.6.50-1",
+    DO_TEST_QEMU("1.6.50", "caps_1.6.50",
                  "/usr/bin/qemu-system-x86_64", NULL,
                  "x86_64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.6.0", "caps_2.6.0-1",
+    DO_TEST_QEMU("2.6.0", "caps_2.6.0",
                  "/usr/bin/qemu-system-x86_64", NULL,
                  "x86_64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.6.0", "caps_2.6.0-1",
+    DO_TEST_QEMU("2.6.0", "caps_2.6.0-gicv2",
                  "/usr/bin/qemu-system-aarch64", NULL,
                  "aarch64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.6.0-gicv2", "caps_2.6.0-1",
+    DO_TEST_QEMU("2.6.0-gicv2", "caps_2.6.0-gicv2",
                  "/usr/bin/qemu-system-aarch64", "virt",
                  "aarch64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.6.0-gicv3", "caps_2.6.0-2",
+    DO_TEST_QEMU("2.6.0-gicv3", "caps_2.6.0-gicv3",
                  "/usr/bin/qemu-system-aarch64", "virt",
                  "aarch64", VIR_DOMAIN_VIRT_KVM);
 
-    DO_TEST_QEMU("2.6.0", "caps_2.6.0-1",
+    DO_TEST_QEMU("2.6.0", "caps_2.6.0",
                  "/usr/bin/qemu-system-ppc64", NULL,
                  "ppc64le", VIR_DOMAIN_VIRT_KVM);
 

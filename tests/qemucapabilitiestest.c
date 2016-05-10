@@ -160,19 +160,19 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
-    DO_TEST("x86_64", "caps_1.2.2-1");
-    DO_TEST("x86_64", "caps_1.3.1-1");
-    DO_TEST("x86_64", "caps_1.4.2-1");
-    DO_TEST("x86_64", "caps_1.5.3-1");
-    DO_TEST("x86_64", "caps_1.6.0-1");
-    DO_TEST("x86_64", "caps_1.6.50-1");
-    DO_TEST("x86_64", "caps_2.1.1-1");
-    DO_TEST("x86_64", "caps_2.4.0-1");
-    DO_TEST("x86_64", "caps_2.5.0-1");
-    DO_TEST("x86_64", "caps_2.6.0-1");
-    DO_TEST("aarch64", "caps_2.6.0-1");
-    DO_TEST("aarch64", "caps_2.6.0-2");
-    DO_TEST("ppc64le", "caps_2.6.0-1");
+    DO_TEST("x86_64", "caps_1.2.2");
+    DO_TEST("x86_64", "caps_1.3.1");
+    DO_TEST("x86_64", "caps_1.4.2");
+    DO_TEST("x86_64", "caps_1.5.3");
+    DO_TEST("x86_64", "caps_1.6.0");
+    DO_TEST("x86_64", "caps_1.6.50");
+    DO_TEST("x86_64", "caps_2.1.1");
+    DO_TEST("x86_64", "caps_2.4.0");
+    DO_TEST("x86_64", "caps_2.5.0");
+    DO_TEST("x86_64", "caps_2.6.0");
+    DO_TEST("aarch64", "caps_2.6.0-gicv2");
+    DO_TEST("aarch64", "caps_2.6.0-gicv3");
+    DO_TEST("ppc64le", "caps_2.6.0");
 
     /*
      * Run "tests/qemucapsprobe /path/to/qemu/binary >foo.replies"
