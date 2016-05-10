@@ -903,7 +903,7 @@ qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
-    if (!diskPriv->secinfo)
+    if (!diskPriv || !diskPriv->secinfo)
         return;
 
     qemuDomainSecretInfoFree(&diskPriv->secinfo);
@@ -964,7 +964,7 @@ qemuDomainSecretHostdevDestroy(virDomainHostdevDefPtr hostdev)
     qemuDomainHostdevPrivatePtr hostdevPriv =
         QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev);
 
-    if (!hostdevPriv->secinfo)
+    if (!hostdevPriv || !hostdevPriv->secinfo)
         return;
 
     qemuDomainSecretInfoFree(&hostdevPriv->secinfo);
