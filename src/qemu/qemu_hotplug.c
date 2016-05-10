@@ -425,6 +425,14 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
+    /* default idx would normally be set by virDomainDefPostParse(),
+     * which isn't called in the case of live attach of a single
+     * device.
+     */
+    if (controller->idx == -1)
+       controller->idx = virDomainControllerFindUnusedIndex(vm->def,
+                                                            controller->type);
+
     if (virDomainControllerFind(vm->def, controller->type, controller->idx) >= 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("target %s:%d already exists"),

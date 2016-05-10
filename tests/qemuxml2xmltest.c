@@ -664,7 +664,15 @@ mymain(void)
                  QEMU_CAPS_DEVICE_X3130_UPSTREAM,
                  QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM,
                  QEMU_CAPS_DEVICE_PXB_PCIE);
-
+    DO_TEST_FULL("autoindex", WHEN_ACTIVE, GIC_NONE,
+                 QEMU_CAPS_DEVICE_PCI_BRIDGE,
+                 QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+                 QEMU_CAPS_DEVICE_IOH3420,
+                 QEMU_CAPS_DEVICE_X3130_UPSTREAM,
+                 QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM,
+                 QEMU_CAPS_ICH9_AHCI,
+                 QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_ICH9_USB_EHCI1,
+                 QEMU_CAPS_NEC_USB_XHCI);
 
     DO_TEST_FULL("hostdev-scsi-lsi", WHEN_ACTIVE, GIC_NONE,
                  QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_LSI,

@@ -3041,8 +3041,11 @@
       attribute <code>index</code> which is the decimal integer
       describing in which order the bus controller is encountered (for
       use in <code>controller</code> attributes of
-      <code>&lt;address&gt;</code> elements). Some controller types
-      have additional attributes that control specific features, such as:
+      <code>&lt;address&gt;</code> elements).
+      <span class="since">Since 1.3.5</span> the index is optional; if
+      not specified, it will be auto-assigned to be the lowest unused
+      index for the given controller type. Some controller types have
+      additional attributes that control specific features, such as:
     </p>
 
       <dl>

@@ -1,7 +1,7 @@
 /*
  * qemu_driver.c: core driver methods for managing qemu guests
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -7827,7 +7827,8 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
 
     case VIR_DOMAIN_DEVICE_CONTROLLER:
         controller = dev->data.controller;
-        if (virDomainControllerFind(vmdef, controller->type,
+        if (controller->idx != -1 &&
+            virDomainControllerFind(vmdef, controller->type,
                                     controller->idx) >= 0) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Target already exists"));

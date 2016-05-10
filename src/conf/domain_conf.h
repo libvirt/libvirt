@@ -733,7 +733,7 @@ struct _virDomainUSBControllerOpts {
 /* Stores the virtual disk controller configuration */
 struct _virDomainControllerDef {
     int type;
-    unsigned int idx;
+    int idx;
     int model; /* -1 == undef */
     unsigned int queues;
     unsigned int cmd_per_lun;

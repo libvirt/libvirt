@@ -1647,9 +1647,11 @@ virDomainControllerDefNew(virDomainControllerType type)
         return NULL;
 
     def->type = type;
-    def->model = -1;
 
     /* initialize anything that has a non-0 default */
+    def->model = -1;
+    def->idx = -1;
+
     switch ((virDomainControllerType) def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
         def->opts.vioserial.ports = -1;
@@ -3585,7 +3587,7 @@ virDomainDefRejectDuplicateControllers(virDomainDefPtr def)
 
     for (i = 0; i < def->ncontrollers; i++) {
         cont = def->controllers[i];
-        if ((int) cont->idx > max_idx[cont->type])
+        if (cont->idx > max_idx[cont->type])
             max_idx[cont->type] = cont->idx;
     }
 
@@ -4254,6 +4256,84 @@ virDomainDefRemoveOfflineVcpuPin(virDomainDefPtr def)
 }
 
 
+static void
+virDomainAssignControllerIndexes(virDomainDefPtr def)
+{
+    /* the index attribute of a controller is optional in the XML, but
+     * is required to be valid at any time after parse. When no index
+     * is provided for a controller, assign one automatically by
+     * looking at what indexes are already used for that controller
+     * type in the domain - the unindexed controller gets the lowest
+     * unused index.
+     */
+    size_t outer;
+
+    for (outer = 0; outer < def->ncontrollers; outer++) {
+        virDomainControllerDefPtr cont = def->controllers[outer];
+        virDomainControllerDefPtr prev = NULL;
+        size_t inner;
+
+        if (cont->idx != -1)
+            continue;
+
+        if (outer > 0 && IS_USB2_CONTROLLER(cont)) {
+            /* USB2 controllers are the only exception to the simple
+             * "assign the lowest unused index". A group of USB2
+             * "companions" should all be at the same index as other
+             * USB2 controllers in the group, but only do this
+             * automatically if it appears to be the intent. To prove
+             * intent: the USB controller on the list just prior to
+             * this one must also be a USB2 controller, and there must
+             * not yet be a controller with the exact same model of
+             * this one and the same index as the previously added
+             * controller (e.g., if this controller is a UHCI1, then
+             * the previous controller must be an EHCI1 or a UHCI[23],
+             * and there must not already be a UHCI1 controller with
+             * the same index as the previous controller). If all of
+             * these are satisfied, set this controller to the same
+             * index as the previous controller.
+             */
+            int prevIdx;
+
+            prevIdx = outer - 1;
+            while (prevIdx >= 0 &&
+                   def->controllers[prevIdx]->type != VIR_DOMAIN_CONTROLLER_TYPE_USB)
+                prevIdx--;
+            if (prevIdx >= 0)
+                prev = def->controllers[prevIdx];
+            /* if the last USB controller isn't USB2, that breaks
+             * the chain, so we need a new index for this new
+             * controller
+             */
+            if (prev && !IS_USB2_CONTROLLER(prev))
+                prev = NULL;
+
+            /* if prev != NULL, we've found a potential index to
+             * use. Make sure this index isn't already used by an
+             * existing USB2 controller of the same model as the new
+             * one.
+             */
+            for (inner = 0; prev && inner < def->ncontrollers; inner++) {
+                if (def->controllers[inner]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+                    def->controllers[inner]->idx == prev->idx &&
+                    def->controllers[inner]->model == cont->model) {
+                    /* we already have a controller of this model with
+                     * the proposed index, so we need to move to a new
+                     * index for this controller
+                     */
+                    prev = NULL;
+                }
+            }
+            if (prev)
+                cont->idx = prev->idx;
+        }
+        /* if none of the above applied, prev will be NULL */
+        if (!prev)
+            cont->idx = virDomainControllerFindUnusedIndex(def, cont->type);
+    }
+}
+
+
 #define UNSUPPORTED(FEATURE) (!((FEATURE) & xmlopt->config.features))
 /**
  * virDomainDefPostParseCheckFeatures:
@@ -4421,6 +4501,11 @@ virDomainDefPostParse(virDomainDefPtr def,
         .xmlopt = xmlopt,
         .parseFlags = parseFlags,
     };
+
+    /* this must be done before the hypervisor-specific callback,
+     * in case presence of a controller at a specific index is checked
+     */
+    virDomainAssignControllerIndexes(def);
 
     /* call the domain config callback */
     if (xmlopt->config.domainPostParseCallback) {
@@ -7908,16 +7993,6 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     if (!(def = virDomainControllerDefNew(type)))
         goto error;
 
-    idx = virXMLPropString(node, "index");
-    if (idx) {
-        if (virStrToLong_ui(idx, NULL, 10, &def->idx) < 0 ||
-            def->idx > INT_MAX) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot parse controller index %s"), idx);
-            goto error;
-        }
-    }
-
     model = virXMLPropString(node, "model");
     if (model) {
         if ((def->model = virDomainControllerModelTypeFromString(def, model)) < 0) {
@@ -7925,6 +8000,18 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                            _("Unknown model type '%s'"), model);
             goto error;
         }
+    }
+
+    idx = virXMLPropString(node, "index");
+    if (idx) {
+        unsigned int idxVal;
+        if (virStrToLong_ui(idx, NULL, 10, &idxVal) < 0 ||
+            idxVal > INT_MAX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot parse controller index %s"), idx);
+            goto error;
+        }
+        def->idx = idxVal;
     }
 
     cur = node->children;
@@ -8075,7 +8162,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                                  "have an address"));
                 goto error;
             }
-            if (def->idx != 0) {
+            if (def->idx > 0) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                                _("pci-root and pcie-root controllers "
                                  "should have index 0"));
@@ -13672,6 +13759,14 @@ void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
     for (idx = (def->ncontrollers - 1); idx >= 0; idx--) {
         current = def->controllers[idx];
         if (current->type == controller->type) {
+            if (controller->idx == -1) {
+                /* If the new controller doesn't have an index set
+                 * yet, put it just past this controller, which until
+                 * now was the last controller of this type.
+                 */
+                insertAt = idx + 1;
+                break;
+            }
             if (current->idx > controller->idx) {
                 /* If bus matches and current controller is after
                  * new controller, then new controller should go here
@@ -16238,6 +16333,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         virDomainControllerDefPtr controller = virDomainControllerDefParseXML(nodes[i],
                                                                               ctxt,
                                                                               flags);
+
         if (!controller)
             goto error;
 
@@ -19552,7 +19648,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
     }
 
     virBufferAsprintf(buf,
-                      "<controller type='%s' index='%u'",
+                      "<controller type='%s' index='%d'",
                       type, def->idx);
 
     if (model)
