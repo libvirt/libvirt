@@ -452,6 +452,28 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
 
 
 static int
+testPrepareExtraFlags(struct testInfo *info,
+                      bool skipLegacyCPUs,
+                      int gic)
+{
+    int ret = -1;
+
+    if (!(info->extraFlags = virQEMUCapsNew()))
+        goto out;
+
+    if (testAddCPUModels(info->extraFlags, skipLegacyCPUs) < 0)
+        goto out;
+
+    if (testQemuCapsSetGIC(info->extraFlags, gic) < 0)
+        goto out;
+
+    ret = 0;
+
+ out:
+    return ret;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -501,14 +523,12 @@ mymain(void)
         return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, migrateFrom, migrateFd, flags,              \
-                      parseFlags, ...)                                  \
+                      parseFlags, gic, ...)                             \
     do {                                                                \
         static struct testInfo info = {                                 \
             name, NULL, migrateFrom, migrateFd, (flags), parseFlags     \
         };                                                              \
-        if (!(info.extraFlags = virQEMUCapsNew()))                      \
-            return EXIT_FAILURE;                                        \
-        if (testAddCPUModels(info.extraFlags, skipLegacyCPUs) < 0)      \
+        if (testPrepareExtraFlags(&info, skipLegacyCPUs, gic) < 0)      \
             return EXIT_FAILURE;                                        \
         virQEMUCapsSetList(info.extraFlags, __VA_ARGS__, QEMU_CAPS_LAST);\
         if (virtTestRun("QEMU XML-2-ARGV " name,                        \
@@ -518,23 +538,24 @@ mymain(void)
     } while (0)
 
 # define DO_TEST(name, ...)                                             \
-    DO_TEST_FULL(name, NULL, -1, 0, 0, __VA_ARGS__)
+    DO_TEST_FULL(name, NULL, -1, 0, 0, GIC_NONE, __VA_ARGS__)
 
 # define DO_TEST_FAILURE(name, ...)                                     \
-    DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_FAILURE, 0, __VA_ARGS__)
+    DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_FAILURE,                   \
+                 0, GIC_NONE, __VA_ARGS__)
 
 # define DO_TEST_PARSE_ERROR(name, ...)                                 \
     DO_TEST_FULL(name, NULL, -1,                                        \
                  FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE,         \
-                 0, __VA_ARGS__)
+                 0, GIC_NONE, __VA_ARGS__)
 
 # define DO_TEST_PARSE_FLAGS_ERROR(name, parseFlags, ...)               \
     DO_TEST_FULL(name, NULL, -1,                                        \
                  FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE,         \
-                 parseFlags, __VA_ARGS__)
+                 parseFlags, GIC_NONE, __VA_ARGS__)
 
 # define DO_TEST_LINUX(name, ...)                                       \
-    DO_TEST_LINUX_FULL(name, NULL, -1, 0, 0, __VA_ARGS__)
+    DO_TEST_LINUX_FULL(name, NULL, -1, 0, 0, GIC_NONE, __VA_ARGS__)
 
 # ifdef __linux__
     /* This is a macro that invokes test only on Linux. It's
@@ -1234,12 +1255,12 @@ mymain(void)
     DO_TEST("pci-rom",
             QEMU_CAPS_PCIDEVICE, QEMU_CAPS_NODEFCONFIG);
 
-    DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, 0, NONE);
-    DO_TEST_FULL("restore-v2-fd", "stdio", 7, 0, 0, NONE);
-    DO_TEST_FULL("restore-v2-fd", "fd:7", 7, 0, 0, NONE);
-    DO_TEST_FULL("migrate", "tcp:10.0.0.1:5000", -1, 0, 0, NONE);
+    DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, 0, GIC_NONE, NONE);
+    DO_TEST_FULL("restore-v2-fd", "stdio", 7, 0, 0, GIC_NONE, NONE);
+    DO_TEST_FULL("restore-v2-fd", "fd:7", 7, 0, 0, GIC_NONE, NONE);
+    DO_TEST_FULL("migrate", "tcp:10.0.0.1:5000", -1, 0, 0, GIC_NONE, NONE);
 
-    DO_TEST_LINUX_FULL("migrate-numa-unaligned", "stdio", 7, 0, 0,
+    DO_TEST_LINUX_FULL("migrate-numa-unaligned", "stdio", 7, 0, 0, GIC_NONE,
                        QEMU_CAPS_NUMA,
                        QEMU_CAPS_OBJECT_MEMORY_RAM);
 

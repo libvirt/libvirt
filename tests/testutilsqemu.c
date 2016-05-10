@@ -556,4 +556,40 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     return -1;
 }
 
+int
+testQemuCapsSetGIC(virQEMUCapsPtr qemuCaps,
+                   int gic)
+{
+    virGICCapability *gicCapabilities = NULL;
+    size_t ngicCapabilities = 0;
+    int ret = -1;
+
+    if (VIR_ALLOC_N(gicCapabilities, 2) < 0)
+        goto out;
+
+# define IMPL_BOTH \
+         VIR_GIC_IMPLEMENTATION_KERNEL|VIR_GIC_IMPLEMENTATION_EMULATED
+
+    if (gic & GIC_V2) {
+        gicCapabilities[ngicCapabilities].version = VIR_GIC_VERSION_2;
+        gicCapabilities[ngicCapabilities].implementation = IMPL_BOTH;
+        ngicCapabilities++;
+    }
+    if (gic & GIC_V3) {
+        gicCapabilities[ngicCapabilities].version = VIR_GIC_VERSION_3;
+        gicCapabilities[ngicCapabilities].implementation = IMPL_BOTH;
+        ngicCapabilities++;
+    }
+
+# undef IMPL_BOTH
+
+    virQEMUCapsSetGICCapabilities(qemuCaps,
+                                  gicCapabilities, ngicCapabilities);
+
+    ret = 0;
+
+ out:
+    return ret;
+}
+
 #endif
