@@ -103,7 +103,7 @@ fillAllCaps(virDomainCapsPtr domCaps)
 static int
 fillQemuCaps(virDomainCapsPtr domCaps,
              const char *name,
-             virArch arch,
+             const char *arch,
              const char *machine,
              virQEMUDriverConfigPtr cfg)
 {
@@ -113,7 +113,7 @@ fillQemuCaps(virDomainCapsPtr domCaps,
     virDomainCapsLoaderPtr loader = &domCaps->os.loader;
 
     if (virAsprintf(&path, "%s/qemucapabilitiesdata/%s.%s.xml",
-                    abs_srcdir, name, virArchToString(arch)) < 0 ||
+                    abs_srcdir, name, arch) < 0 ||
         !(qemuCaps = qemuTestParseCapabilities(path)))
         goto cleanup;
 
@@ -171,7 +171,7 @@ struct testData {
     const char *name;
     const char *emulator;
     const char *machine;
-    virArch arch;
+    const char *arch;
     virDomainVirtType type;
     enum testCapsType capsType;
     const char *capsName;
@@ -191,7 +191,8 @@ test_virDomainCapsFormat(const void *opaque)
                     abs_srcdir, data->name) < 0)
         goto cleanup;
 
-    if (!(domCaps = virDomainCapsNew(data->emulator, data->machine, data->arch,
+    if (!(domCaps = virDomainCapsNew(data->emulator, data->machine,
+                                     virArchFromString(data->arch),
                                      data->type)))
         goto cleanup;
 
@@ -270,35 +271,35 @@ mymain(void)
     } while (0)
 
     DO_TEST("basic", "/bin/emulatorbin", "my-machine-type",
-            VIR_ARCH_X86_64, VIR_DOMAIN_VIRT_UML, CAPS_NONE);
+            "x86_64", VIR_DOMAIN_VIRT_UML, CAPS_NONE);
     DO_TEST("full", "/bin/emulatorbin", "my-machine-type",
-            VIR_ARCH_X86_64, VIR_DOMAIN_VIRT_KVM, CAPS_ALL);
+            "x86_64", VIR_DOMAIN_VIRT_KVM, CAPS_ALL);
 
 #if WITH_QEMU
 
     DO_TEST_QEMU("qemu_1.6.50-1", "caps_1.6.50-1",
                  "/usr/bin/qemu-system-x86_64", NULL,
-                 VIR_ARCH_X86_64, VIR_DOMAIN_VIRT_KVM);
+                 "x86_64", VIR_DOMAIN_VIRT_KVM);
 
     DO_TEST_QEMU("qemu_2.6.0-1", "caps_2.6.0-1",
                  "/usr/bin/qemu-system-x86_64", NULL,
-                 VIR_ARCH_X86_64, VIR_DOMAIN_VIRT_KVM);
+                 "x86_64", VIR_DOMAIN_VIRT_KVM);
 
     DO_TEST_QEMU("qemu_2.6.0-2", "caps_2.6.0-1",
                  "/usr/bin/qemu-system-aarch64", NULL,
-                 VIR_ARCH_AARCH64, VIR_DOMAIN_VIRT_KVM);
+                 "aarch64", VIR_DOMAIN_VIRT_KVM);
 
     DO_TEST_QEMU("qemu_2.6.0-3", "caps_2.6.0-1",
                  "/usr/bin/qemu-system-aarch64", "virt",
-                 VIR_ARCH_AARCH64, VIR_DOMAIN_VIRT_KVM);
+                 "aarch64", VIR_DOMAIN_VIRT_KVM);
 
     DO_TEST_QEMU("qemu_2.6.0-4", "caps_2.6.0-2",
                  "/usr/bin/qemu-system-aarch64", "virt",
-                 VIR_ARCH_AARCH64, VIR_DOMAIN_VIRT_KVM);
+                 "aarch64", VIR_DOMAIN_VIRT_KVM);
 
     DO_TEST_QEMU("qemu_2.6.0-5", "caps_2.6.0-1",
                  "/usr/bin/qemu-system-ppc64", NULL,
-                 VIR_ARCH_PPC64LE, VIR_DOMAIN_VIRT_KVM);
+                 "ppc64le", VIR_DOMAIN_VIRT_KVM);
 
 #endif /* WITH_QEMU */
 
