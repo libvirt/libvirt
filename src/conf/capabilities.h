@@ -204,27 +204,27 @@ struct _virCapsDomainData {
 };
 
 
-extern virCapsPtr
+virCapsPtr
 virCapabilitiesNew(virArch hostarch,
                    bool offlineMigrate,
                    bool liveMigrate);
 
-extern void
+void
 virCapabilitiesFreeNUMAInfo(virCapsPtr caps);
 
-extern int
+int
 virCapabilitiesAddHostFeature(virCapsPtr caps,
                               const char *name);
 
-extern int
+int
 virCapabilitiesAddHostMigrateTransport(virCapsPtr caps,
                                        const char *name);
 
-extern int
+int
 virCapabilitiesSetNetPrefix(virCapsPtr caps,
                             const char *prefix);
 
-extern int
+int
 virCapabilitiesAddHostNUMACell(virCapsPtr caps,
                                int num,
                                unsigned long long mem,
@@ -236,19 +236,19 @@ virCapabilitiesAddHostNUMACell(virCapsPtr caps,
                                virCapsHostNUMACellPageInfoPtr pageinfo);
 
 
-extern int
+int
 virCapabilitiesSetHostCPU(virCapsPtr caps,
                           virCPUDefPtr cpu);
 
 
-extern virCapsGuestMachinePtr *
+virCapsGuestMachinePtr *
 virCapabilitiesAllocMachines(const char *const *names,
                              int nnames);
-extern void
+void
 virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
                             int nmachines);
 
-extern virCapsGuestPtr
+virCapsGuestPtr
 virCapabilitiesAddGuest(virCapsPtr caps,
                         int ostype,
                         virArch arch,
@@ -257,7 +257,7 @@ virCapabilitiesAddGuest(virCapsPtr caps,
                         int nmachines,
                         virCapsGuestMachinePtr *machines);
 
-extern virCapsGuestDomainPtr
+virCapsGuestDomainPtr
 virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
                               int hvtype,
                               const char *emulator,
@@ -265,13 +265,13 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
                               int nmachines,
                               virCapsGuestMachinePtr *machines);
 
-extern virCapsGuestFeaturePtr
+virCapsGuestFeaturePtr
 virCapabilitiesAddGuestFeature(virCapsGuestPtr guest,
                                const char *name,
                                bool defaultOn,
                                bool toggle);
 
-extern int
+int
 virCapabilitiesHostSecModelAddBaseLabel(virCapsHostSecModelPtr secmodel,
                                         const char *type,
                                         const char *label);
@@ -288,7 +288,7 @@ void
 virCapabilitiesClearHostNUMACellCPUTopology(virCapsHostNUMACellCPUPtr cpu,
                                             size_t ncpus);
 
-extern char *
+char *
 virCapabilitiesFormatXML(virCapsPtr caps);
 
 virBitmapPtr virCapabilitiesGetCpusForNodemask(virCapsPtr caps,

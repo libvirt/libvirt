@@ -44,45 +44,45 @@ typedef enum {
 
 VIR_ENUM_DECL(virHostValidateCPUFlag);
 
-extern void virHostMsgSetQuiet(bool quietFlag);
+void virHostMsgSetQuiet(bool quietFlag);
 
-extern void virHostMsgCheck(const char *prefix,
-                            const char *format,
-                            ...) ATTRIBUTE_FMT_PRINTF(2, 3);
+void virHostMsgCheck(const char *prefix,
+                     const char *format,
+                     ...) ATTRIBUTE_FMT_PRINTF(2, 3);
 
-extern void virHostMsgPass(void);
-extern void virHostMsgFail(virHostValidateLevel level,
-                           const char *format,
-                           ...) ATTRIBUTE_FMT_PRINTF(2, 3);
+void virHostMsgPass(void);
+void virHostMsgFail(virHostValidateLevel level,
+                    const char *format,
+                    ...) ATTRIBUTE_FMT_PRINTF(2, 3);
 
-extern int virHostValidateDeviceExists(const char *hvname,
-                                       const char *dev_name,
-                                       virHostValidateLevel level,
-                                       const char *hint);
+int virHostValidateDeviceExists(const char *hvname,
+                                const char *dev_name,
+                                virHostValidateLevel level,
+                                const char *hint);
 
-extern int virHostValidateDeviceAccessible(const char *hvname,
-                                           const char *dev_name,
-                                           virHostValidateLevel level,
-                                           const char *hint);
-
-extern virBitmapPtr virHostValidateGetCPUFlags(void);
-
-extern int virHostValidateLinuxKernel(const char *hvname,
-                                      int version,
-                                      virHostValidateLevel level,
-                                      const char *hint);
-
-extern int virHostValidateNamespace(const char *hvname,
-                                    const char *ns_name,
+int virHostValidateDeviceAccessible(const char *hvname,
+                                    const char *dev_name,
                                     virHostValidateLevel level,
                                     const char *hint);
 
-extern int virHostValidateCGroupController(const char *hvname,
-                                           const char *cg_name,
-                                           virHostValidateLevel level,
-                                           const char *config_name);
+virBitmapPtr virHostValidateGetCPUFlags(void);
 
-extern int virHostValidateIOMMU(const char *hvname,
-                                virHostValidateLevel level);
+int virHostValidateLinuxKernel(const char *hvname,
+                               int version,
+                               virHostValidateLevel level,
+                               const char *hint);
+
+int virHostValidateNamespace(const char *hvname,
+                             const char *ns_name,
+                             virHostValidateLevel level,
+                             const char *hint);
+
+int virHostValidateCGroupController(const char *hvname,
+                                    const char *cg_name,
+                                    virHostValidateLevel level,
+                                    const char *config_name);
+
+int virHostValidateIOMMU(const char *hvname,
+                         virHostValidateLevel level);
 
 #endif /* __VIRT_HOST_VALIDATE_COMMON_H__ */

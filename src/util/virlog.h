@@ -170,50 +170,50 @@ typedef enum {
     VIR_LOG_STACK_TRACE = (1 << 0),
 } virLogFlags;
 
-extern int virLogGetNbFilters(void);
-extern int virLogGetNbOutputs(void);
-extern char *virLogGetFilters(void);
-extern char *virLogGetOutputs(void);
-extern virLogPriority virLogGetDefaultPriority(void);
-extern int virLogSetDefaultPriority(virLogPriority priority);
-extern void virLogSetFromEnv(void);
-extern int virLogDefineFilter(const char *match,
-                              virLogPriority priority,
-                              unsigned int flags);
-extern int virLogDefineOutput(virLogOutputFunc f,
-                              virLogCloseFunc c,
-                              void *data,
-                              virLogPriority priority,
-                              virLogDestination dest,
-                              const char *name,
-                              unsigned int flags);
+int virLogGetNbFilters(void);
+int virLogGetNbOutputs(void);
+char *virLogGetFilters(void);
+char *virLogGetOutputs(void);
+virLogPriority virLogGetDefaultPriority(void);
+int virLogSetDefaultPriority(virLogPriority priority);
+void virLogSetFromEnv(void);
+int virLogDefineFilter(const char *match,
+                       virLogPriority priority,
+                       unsigned int flags);
+int virLogDefineOutput(virLogOutputFunc f,
+                       virLogCloseFunc c,
+                       void *data,
+                       virLogPriority priority,
+                       virLogDestination dest,
+                       const char *name,
+                       unsigned int flags);
 
 /*
  * Internal logging API
  */
 
-extern void virLogLock(void);
-extern void virLogUnlock(void);
-extern int virLogReset(void);
-extern int virLogParseDefaultPriority(const char *priority);
-extern int virLogParseFilters(const char *filters);
-extern int virLogParseOutputs(const char *output);
-extern int virLogPriorityFromSyslog(int priority);
-extern void virLogMessage(virLogSourcePtr source,
-                          virLogPriority priority,
-                          const char *filename,
-                          int linenr,
-                          const char *funcname,
-                          virLogMetadataPtr metadata,
-                          const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(7, 8);
-extern void virLogVMessage(virLogSourcePtr source,
-                           virLogPriority priority,
-                           const char *filename,
-                           int linenr,
-                           const char *funcname,
-                           virLogMetadataPtr metadata,
-                           const char *fmt,
-                           va_list vargs) ATTRIBUTE_FMT_PRINTF(7, 0);
+void virLogLock(void);
+void virLogUnlock(void);
+int virLogReset(void);
+int virLogParseDefaultPriority(const char *priority);
+int virLogParseFilters(const char *filters);
+int virLogParseOutputs(const char *output);
+int virLogPriorityFromSyslog(int priority);
+void virLogMessage(virLogSourcePtr source,
+                   virLogPriority priority,
+                   const char *filename,
+                   int linenr,
+                   const char *funcname,
+                   virLogMetadataPtr metadata,
+                   const char *fmt, ...) ATTRIBUTE_FMT_PRINTF(7, 8);
+void virLogVMessage(virLogSourcePtr source,
+                    virLogPriority priority,
+                    const char *filename,
+                    int linenr,
+                    const char *funcname,
+                    virLogMetadataPtr metadata,
+                    const char *fmt,
+                    va_list vargs) ATTRIBUTE_FMT_PRINTF(7, 0);
 
 bool virLogProbablyLogMessage(const char *str);
 

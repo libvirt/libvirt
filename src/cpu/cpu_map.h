@@ -43,7 +43,7 @@ typedef int
                         xmlXPathContextPtr ctxt,
                         void *data);
 
-extern int
+int
 cpuMapLoad(const char *arch,
            cpuMapLoadCallback cb,
            void *data);

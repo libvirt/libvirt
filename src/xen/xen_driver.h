@@ -51,7 +51,7 @@
 #  define MAX_VIRT_CPUS XEN_LEGACY_MAX_VCPUS
 # endif
 
-extern int xenRegister (void);
+int xenRegister (void);
 
 # define XEN_UNIFIED_HYPERVISOR_OFFSET 0
 # define XEN_UNIFIED_XEND_OFFSET 1

@@ -23,6 +23,6 @@
 #ifndef __VIR_XENAPI_PRIV_H__
 # define __VIR_XENAPI_PRIV_H__
 
-extern int xenapiRegister(void);
+int xenapiRegister(void);
 
 #endif /* __VIR_XENAPI_PRIV_H__ */

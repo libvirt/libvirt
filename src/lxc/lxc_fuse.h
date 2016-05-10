@@ -57,8 +57,8 @@ struct virLXCFuse {
 };
 typedef struct virLXCFuse *virLXCFusePtr;
 
-extern int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def);
-extern int lxcStartFuse(virLXCFusePtr f);
-extern void lxcFreeFuse(virLXCFusePtr *f);
+int lxcSetupFuse(virLXCFusePtr *f, virDomainDefPtr def);
+int lxcStartFuse(virLXCFusePtr f);
+void lxcFreeFuse(virLXCFusePtr *f);
 
 #endif /* LXC_FUSE_H */
