@@ -357,6 +357,9 @@ BuildRequires: ceph-devel
 BuildRequires: glusterfs-api-devel >= 3.4.1
 BuildRequires: glusterfs-devel >= 3.4.1
 %endif
+%if %{with_storage_sheepdog}
+BuildRequires: sheepdog
+%endif
 %if %{with_numactl}
 # For QEMU/LXC numa info
 BuildRequires: numactl-devel
