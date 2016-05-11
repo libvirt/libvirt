@@ -2584,9 +2584,7 @@ qemuParseCommandLine(virCapsPtr caps,
             vid->type = VIR_DOMAIN_VIDEO_TYPE_XEN;
         else
             vid->type = video;
-        vid->vram = virDomainVideoDefaultRAM(def, vid->type);
         if (vid->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
-            vid->ram = virDomainVideoDefaultRAM(def, vid->type);
             vid->vgamem = QEMU_QXL_VGAMEM_DEFAULT;
         } else {
             vid->ram = 0;
