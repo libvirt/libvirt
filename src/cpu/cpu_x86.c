@@ -91,18 +91,20 @@ static const virCPUx86KVMFeature x86_kvm_features[] =
     {VIR_CPU_x86_KVM_HV_RESET,     { .function = 0x40000003, .eax = 0x00000080 }},
 };
 
-struct x86_model {
+typedef struct _virCPUx86Model virCPUx86Model;
+typedef virCPUx86Model *virCPUx86ModelPtr;
+struct _virCPUx86Model {
     char *name;
     virCPUx86VendorPtr vendor;
     virCPUx86Data *data;
 
-    struct x86_model *next;
+    virCPUx86ModelPtr next;
 };
 
 struct x86_map {
     virCPUx86VendorPtr vendors;
     virCPUx86FeaturePtr features;
-    struct x86_model *models;
+    virCPUx86ModelPtr models;
     virCPUx86FeaturePtr migrate_blockers;
 };
 
@@ -446,7 +448,7 @@ x86DataToVendor(virCPUx86Data *data,
 
 static virCPUDefPtr
 x86DataToCPU(const virCPUx86Data *data,
-             const struct x86_model *model,
+             virCPUx86ModelPtr model,
              const struct x86_map *map)
 {
     virCPUDefPtr cpu;
@@ -816,10 +818,10 @@ x86DataFromCPUFeatures(virCPUDefPtr cpu,
 }
 
 
-static struct x86_model *
+static virCPUx86ModelPtr
 x86ModelNew(void)
 {
-    struct x86_model *model;
+    virCPUx86ModelPtr model;
 
     if (VIR_ALLOC(model) < 0)
         return NULL;
@@ -834,7 +836,7 @@ x86ModelNew(void)
 
 
 static void
-x86ModelFree(struct x86_model *model)
+x86ModelFree(virCPUx86ModelPtr model)
 {
     if (model == NULL)
         return;
@@ -845,10 +847,10 @@ x86ModelFree(struct x86_model *model)
 }
 
 
-static struct x86_model *
-x86ModelCopy(const struct x86_model *model)
+static virCPUx86ModelPtr
+x86ModelCopy(virCPUx86ModelPtr model)
 {
-    struct x86_model *copy;
+    virCPUx86ModelPtr copy;
 
     if (VIR_ALLOC(copy) < 0 ||
         VIR_STRDUP(copy->name, model->name) < 0 ||
@@ -863,11 +865,11 @@ x86ModelCopy(const struct x86_model *model)
 }
 
 
-static struct x86_model *
+static virCPUx86ModelPtr
 x86ModelFind(const struct x86_map *map,
              const char *name)
 {
-    struct x86_model *model;
+    virCPUx86ModelPtr model;
 
     model = map->models;
     while (model != NULL) {
@@ -881,12 +883,12 @@ x86ModelFind(const struct x86_map *map,
 }
 
 
-static struct x86_model *
+static virCPUx86ModelPtr
 x86ModelFromCPU(const virCPUDef *cpu,
                 const struct x86_map *map,
                 int policy)
 {
-    struct x86_model *model = NULL;
+    virCPUx86ModelPtr model = NULL;
     size_t i;
 
     if (policy == VIR_CPU_FEATURE_REQUIRE) {
@@ -930,11 +932,11 @@ x86ModelFromCPU(const virCPUDef *cpu,
 
 
 static int
-x86ModelSubtractCPU(struct x86_model *model,
+x86ModelSubtractCPU(virCPUx86ModelPtr model,
                     const virCPUDef *cpu,
                     const struct x86_map *map)
 {
-    const struct x86_model *cpu_model;
+    virCPUx86ModelPtr cpu_model;
     size_t i;
 
     if (!(cpu_model = x86ModelFind(map, cpu->model))) {
@@ -964,8 +966,8 @@ x86ModelSubtractCPU(struct x86_model *model,
 
 
 static enum compare_result
-x86ModelCompare(const struct x86_model *model1,
-                const struct x86_model *model2)
+x86ModelCompare(virCPUx86ModelPtr model1,
+                virCPUx86ModelPtr model2)
 {
     enum compare_result result = EQUAL;
     struct virCPUx86DataIterator iter1 = virCPUx86DataIteratorInit(model1->data);
@@ -1014,7 +1016,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
              struct x86_map *map)
 {
     xmlNodePtr *nodes = NULL;
-    struct x86_model *model;
+    virCPUx86ModelPtr model;
     char *vendor = NULL;
     int ret = 0;
     size_t i;
@@ -1031,7 +1033,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
     }
 
     if (virXPathNode("./model", ctxt) != NULL) {
-        const struct x86_model *ancestor;
+        virCPUx86ModelPtr ancestor;
         char *name;
 
         name = virXPathString("string(./model/@name)", ctxt);
@@ -1136,7 +1138,7 @@ x86MapFree(struct x86_map *map)
     }
 
     while (map->models != NULL) {
-        struct x86_model *model = map->models;
+        virCPUx86ModelPtr model = map->models;
         map->models = model->next;
         x86ModelFree(model);
     }
@@ -1372,14 +1374,14 @@ x86Compute(virCPUDefPtr host,
            char **message)
 {
     const struct x86_map *map = NULL;
-    struct x86_model *host_model = NULL;
-    struct x86_model *cpu_force = NULL;
-    struct x86_model *cpu_require = NULL;
-    struct x86_model *cpu_optional = NULL;
-    struct x86_model *cpu_disable = NULL;
-    struct x86_model *cpu_forbid = NULL;
-    struct x86_model *diff = NULL;
-    struct x86_model *guest_model = NULL;
+    virCPUx86ModelPtr host_model = NULL;
+    virCPUx86ModelPtr cpu_force = NULL;
+    virCPUx86ModelPtr cpu_require = NULL;
+    virCPUx86ModelPtr cpu_optional = NULL;
+    virCPUx86ModelPtr cpu_disable = NULL;
+    virCPUx86ModelPtr cpu_forbid = NULL;
+    virCPUx86ModelPtr diff = NULL;
+    virCPUx86ModelPtr guest_model = NULL;
     virCPUCompareResult ret;
     enum compare_result result;
     virArch arch;
@@ -1568,7 +1570,7 @@ x86Decode(virCPUDefPtr cpu,
 {
     int ret = -1;
     const struct x86_map *map;
-    const struct x86_model *candidate;
+    virCPUx86ModelPtr candidate;
     virCPUDefPtr cpuCandidate;
     virCPUDefPtr cpuModel = NULL;
     virCPUx86Data *copy = NULL;
@@ -1712,7 +1714,7 @@ x86EncodePolicy(const virCPUDef *cpu,
                 const struct x86_map *map,
                 virCPUFeaturePolicy policy)
 {
-    struct x86_model *model;
+    virCPUx86ModelPtr model;
     virCPUx86Data *data = NULL;
 
     if (!(model = x86ModelFromCPU(cpu, map, policy)))
@@ -1942,11 +1944,11 @@ x86Baseline(virCPUDefPtr *cpus,
             unsigned int flags)
 {
     const struct x86_map *map = NULL;
-    struct x86_model *base_model = NULL;
+    virCPUx86ModelPtr base_model = NULL;
     virCPUDefPtr cpu = NULL;
     size_t i;
     virCPUx86VendorPtr vendor = NULL;
-    struct x86_model *model = NULL;
+    virCPUx86ModelPtr model = NULL;
     bool outputVendor = true;
     const char *modelName;
     bool matchingNames = true;
@@ -2066,7 +2068,7 @@ x86UpdateCustom(virCPUDefPtr guest,
     int ret = -1;
     size_t i;
     const struct x86_map *map;
-    struct x86_model *host_model = NULL;
+    virCPUx86ModelPtr host_model = NULL;
 
     if (!(map = virCPUx86GetMap()) ||
         !(host_model = x86ModelFromCPU(host, map, VIR_CPU_FEATURE_REQUIRE)))
@@ -2209,7 +2211,7 @@ static int
 x86GetModels(char ***models)
 {
     const struct x86_map *map;
-    struct x86_model *model;
+    virCPUx86ModelPtr model;
     char *name;
     size_t nmodels = 0;
 
