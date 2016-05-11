@@ -351,6 +351,48 @@ int virAdmClientGetInfo(virAdmClientPtr client,
 
 int virAdmClientClose(virAdmClientPtr client, unsigned int flags);
 
+/* Manage per-server client limits */
+
+/**
+ * VIR_SERVER_CLIENTS_MAX:
+ * Macro for per-server nclients_max limit: represents the upper limit to
+ * number of clients connected to the server, as uint.
+ */
+
+# define VIR_SERVER_CLIENTS_MAX "nclients_max"
+
+/**
+ * VIR_SERVER_CLIENTS_CURRENT:
+ * Macro for per-server nclients attribute: represents the current number of
+ * clients connected to the server, as VIR_TYPED_PARAM_UINT.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_SERVER_CLIENTS_CURRENT "nclients"
+
+/**
+ * VIR_SERVER_CLIENTS_UNAUTH_MAX:
+ * Macro for per-server nclients_unauth_max limit: represents the upper limit
+ * to number of clients connected to the server, but not authenticated yet,
+ * as VIR_TYPED_PARAM_UINT.
+ */
+
+# define VIR_SERVER_CLIENTS_UNAUTH_MAX "nclients_unauth_max"
+
+/**
+ * VIR_SERVER_CLIENTS_UNAUTH_CURRENT:
+ * Macro for per-server nclients_unauth attribute: represents the current
+ * number of clients connected to the server, but not authenticated yet,
+ * as VIR_TYPED_PARAM_UINT.
+ *
+ * NOTE: This attribute is read-only and any attempt to set it will be denied
+ * by daemon
+ */
+
+# define VIR_SERVER_CLIENTS_UNAUTH_CURRENT "nclients_unauth"
+
 # ifdef __cplusplus
 }
 # endif
