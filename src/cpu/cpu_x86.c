@@ -62,12 +62,14 @@ struct _virCPUx86Feature {
     virCPUx86FeaturePtr next;
 };
 
-struct x86_kvm_feature {
+typedef struct _virCPUx86KVMFeature virCPUx86KVMFeature;
+typedef virCPUx86KVMFeature *virCPUx86KVMFeaturePtr;
+struct _virCPUx86KVMFeature {
     const char *name;
     const virCPUx86CPUID cpuid;
 };
 
-static const struct x86_kvm_feature x86_kvm_features[] =
+static const virCPUx86KVMFeature x86_kvm_features[] =
 {
     {VIR_CPU_x86_KVM_CLOCKSOURCE,  { .function = 0x40000001, .eax = 0x00000001 }},
     {VIR_CPU_x86_KVM_NOP_IO_DELAY, { .function = 0x40000001, .eax = 0x00000002 }},
