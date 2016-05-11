@@ -4174,6 +4174,12 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
 
     if (dev->type == VIR_DOMAIN_DEVICE_VIDEO) {
         virDomainVideoDefPtr video = dev->data.video;
+        /* Fill out (V)RAM if the driver-specific callback did not do so */
+        if (video->ram == 0 && video->type == VIR_DOMAIN_VIDEO_TYPE_QXL)
+            video->ram = virDomainVideoDefaultRAM(def, video->type);
+        if (video->vram == 0)
+            video->vram = virDomainVideoDefaultRAM(def, video->type);
+
         video->ram = VIR_ROUND_UP_POWER_OF_TWO(video->ram);
         video->vram = VIR_ROUND_UP_POWER_OF_TWO(video->vram);
     }
@@ -12045,10 +12051,6 @@ unsigned int
 virDomainVideoDefaultRAM(const virDomainDef *def,
                          const virDomainVideoType type)
 {
-    /* Defer setting default vram to the Xen drivers */
-    if (def->virtType == VIR_DOMAIN_VIRT_XEN)
-        return 0;
-
     switch (type) {
     case VIR_DOMAIN_VIDEO_TYPE_VGA:
     case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
@@ -12227,8 +12229,6 @@ virDomainVideoDefParseXML(xmlNodePtr node,
                            _("cannot parse video ram '%s'"), ram);
             goto error;
         }
-    } else if (def->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
-        def->ram = virDomainVideoDefaultRAM(dom, def->type);
     }
 
     if (vram) {
@@ -12237,8 +12237,6 @@ virDomainVideoDefParseXML(xmlNodePtr node,
                            _("cannot parse video vram '%s'"), vram);
             goto error;
         }
-    } else {
-        def->vram = virDomainVideoDefaultRAM(dom, def->type);
     }
 
     if (vram64) {
@@ -18697,7 +18695,6 @@ virDomainDefAddImplicitVideo(virDomainDefPtr def)
                        _("cannot determine default video type"));
         goto cleanup;
     }
-    video->vram = virDomainVideoDefaultRAM(def, video->type);
     video->heads = 1;
     if (VIR_APPEND_ELEMENT(def->videos, def->nvideos, video) < 0)
         goto cleanup;
