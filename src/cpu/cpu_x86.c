@@ -53,11 +53,13 @@ struct _virCPUx86Vendor {
     virCPUx86VendorPtr next;
 };
 
-struct x86_feature {
+typedef struct _virCPUx86Feature virCPUx86Feature;
+typedef virCPUx86Feature *virCPUx86FeaturePtr;
+struct _virCPUx86Feature {
     char *name;
     virCPUx86Data *data;
 
-    struct x86_feature *next;
+    virCPUx86FeaturePtr next;
 };
 
 struct x86_kvm_feature {
@@ -97,9 +99,9 @@ struct x86_model {
 
 struct x86_map {
     virCPUx86VendorPtr vendors;
-    struct x86_feature *features;
+    virCPUx86FeaturePtr features;
     struct x86_model *models;
-    struct x86_feature *migrate_blockers;
+    virCPUx86FeaturePtr migrate_blockers;
 };
 
 static struct x86_map* virCPUx86Map;
@@ -404,7 +406,7 @@ x86DataToCPUFeatures(virCPUDefPtr cpu,
                      virCPUx86Data *data,
                      const struct x86_map *map)
 {
-    const struct x86_feature *feature = map->features;
+    virCPUx86FeaturePtr feature = map->features;
 
     while (feature != NULL) {
         if (x86DataIsSubset(data, feature->data)) {
@@ -573,10 +575,10 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
 }
 
 
-static struct x86_feature *
+static virCPUx86FeaturePtr
 x86FeatureNew(void)
 {
-    struct x86_feature *feature;
+    virCPUx86FeaturePtr feature;
 
     if (VIR_ALLOC(feature) < 0)
         return NULL;
@@ -591,7 +593,7 @@ x86FeatureNew(void)
 
 
 static void
-x86FeatureFree(struct x86_feature *feature)
+x86FeatureFree(virCPUx86FeaturePtr feature)
 {
     if (feature == NULL)
         return;
@@ -602,10 +604,10 @@ x86FeatureFree(struct x86_feature *feature)
 }
 
 
-static struct x86_feature *
-x86FeatureCopy(const struct x86_feature *src)
+static virCPUx86FeaturePtr
+x86FeatureCopy(virCPUx86FeaturePtr src)
 {
-    struct x86_feature *feature;
+    virCPUx86FeaturePtr feature;
 
     if (VIR_ALLOC(feature) < 0)
         return NULL;
@@ -624,11 +626,11 @@ x86FeatureCopy(const struct x86_feature *src)
 }
 
 
-static struct x86_feature *
+static virCPUx86FeaturePtr
 x86FeatureFind(const struct x86_map *map,
                const char *name)
 {
-    struct x86_feature *feature;
+    virCPUx86FeaturePtr feature;
 
     feature = map->features;
     while (feature != NULL) {
@@ -650,7 +652,7 @@ x86FeatureNames(const struct x86_map *map,
     virBuffer ret = VIR_BUFFER_INITIALIZER;
     bool first = true;
 
-    struct x86_feature *next_feature = map->features;
+    virCPUx86FeaturePtr next_feature = map->features;
 
     virBufferAdd(&ret, "", 0);
 
@@ -705,14 +707,14 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
 {
     xmlNodePtr *nodes = NULL;
     xmlNodePtr ctxt_node = ctxt->node;
-    struct x86_feature *feature;
+    virCPUx86FeaturePtr feature;
     virCPUx86CPUID cpuid;
     int ret = 0;
     size_t i;
     int n;
     char *str = NULL;
     bool migratable = true;
-    struct x86_feature *migrate_blocker = NULL;
+    virCPUx86FeaturePtr migrate_blocker = NULL;
 
     if (!(feature = x86FeatureNew()))
         goto error;
@@ -793,7 +795,7 @@ x86DataFromCPUFeatures(virCPUDefPtr cpu,
         return NULL;
 
     for (i = 0; i < cpu->nfeatures; i++) {
-        const struct x86_feature *feature;
+        virCPUx86FeaturePtr feature;
         if (!(feature = x86FeatureFind(map, cpu->features[i].name))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown CPU feature %s"), cpu->features[i].name);
@@ -901,7 +903,7 @@ x86ModelFromCPU(const virCPUDef *cpu,
     }
 
     for (i = 0; i < cpu->nfeatures; i++) {
-        const struct x86_feature *feature;
+        virCPUx86FeaturePtr feature;
 
         if (cpu->type == VIR_CPU_TYPE_GUEST
             && cpu->features[i].policy != policy)
@@ -943,7 +945,7 @@ x86ModelSubtractCPU(struct x86_model *model,
     x86DataSubtract(model->data, cpu_model->data);
 
     for (i = 0; i < cpu->nfeatures; i++) {
-        const struct x86_feature *feature;
+        virCPUx86FeaturePtr feature;
 
         if (!(feature = x86FeatureFind(map, cpu->features[i].name))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1076,7 +1078,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
         goto ignore;
 
     for (i = 0; i < n; i++) {
-        const struct x86_feature *feature;
+        virCPUx86FeaturePtr feature;
         char *name;
 
         if ((name = virXMLPropString(nodes[i], "name")) == NULL) {
@@ -1126,7 +1128,7 @@ x86MapFree(struct x86_map *map)
         return;
 
     while (map->features != NULL) {
-        struct x86_feature *feature = map->features;
+        virCPUx86FeaturePtr feature = map->features;
         map->features = feature->next;
         x86FeatureFree(feature);
     }
@@ -1144,7 +1146,7 @@ x86MapFree(struct x86_map *map)
     }
 
     while (map->migrate_blockers != NULL) {
-        struct x86_feature *migrate_blocker = map->migrate_blockers;
+        virCPUx86FeaturePtr migrate_blocker = map->migrate_blockers;
         map->migrate_blockers = migrate_blocker->next;
         x86FeatureFree(migrate_blocker);
     }
@@ -1179,7 +1181,7 @@ static int
 x86MapLoadInternalFeatures(struct x86_map *map)
 {
     size_t i;
-    struct x86_feature *feature = NULL;
+    virCPUx86FeaturePtr feature = NULL;
 
     for (i = 0; i < ARRAY_CARDINALITY(x86_kvm_features); i++) {
         const char *name = x86_kvm_features[i].name;
@@ -1655,7 +1657,7 @@ x86Decode(virCPUDefPtr cpu,
      * features directly */
     if (flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE) {
         for (i = 0; i < cpuModel->nfeatures; i++) {
-            const struct x86_feature *feat;
+            virCPUx86FeaturePtr feat;
             for (feat = map->migrate_blockers; feat; feat = feat->next) {
                 if (STREQ(feat->name, cpuModel->features[i].name)) {
                     VIR_FREE(cpuModel->features[i].name);
@@ -2070,7 +2072,7 @@ x86UpdateCustom(virCPUDefPtr guest,
 
     for (i = 0; i < guest->nfeatures; i++) {
         if (guest->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
-            const struct x86_feature *feature;
+            virCPUx86FeaturePtr feature;
             if (!(feature = x86FeatureFind(map, guest->features[i].name))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unknown CPU feature %s"),
@@ -2108,7 +2110,7 @@ x86UpdateHostModel(virCPUDefPtr guest,
 {
     virCPUDefPtr oldguest = NULL;
     const struct x86_map *map;
-    const struct x86_feature *feat;
+    virCPUx86FeaturePtr feat;
     size_t i;
     int ret = -1;
 
@@ -2186,7 +2188,7 @@ x86HasFeature(const virCPUData *data,
               const char *name)
 {
     const struct x86_map *map;
-    struct x86_feature *feature;
+    virCPUx86FeaturePtr feature;
     int ret = -1;
 
     if (!(map = virCPUx86GetMap()))
