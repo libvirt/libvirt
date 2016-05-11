@@ -242,7 +242,7 @@ struct _qemuDomainObjPrivate {
 /* Type of domain secret */
 typedef enum {
     VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN = 0,
-    VIR_DOMAIN_SECRET_INFO_TYPE_IV,
+    VIR_DOMAIN_SECRET_INFO_TYPE_AES,  /* utilize GNUTLS_CIPHER_AES_256_CBC */
 
     VIR_DOMAIN_SECRET_INFO_TYPE_LAST
 } qemuDomainSecretInfoType;
@@ -254,11 +254,11 @@ struct _qemuDomainSecretPlain {
     char *secret;
 };
 
-# define QEMU_DOMAIN_IV_KEY_LEN 16      /* 16 bytes for 128 bit random */
-                                        /*    initialization vector key */
-typedef struct _qemuDomainSecretIV qemuDomainSecretIV;
-typedef struct _qemuDomainSecretIV *qemuDomainSecretIVPtr;
-struct _qemuDomainSecretIV {
+# define QEMU_DOMAIN_AES_IV_KEY_LEN 16   /* 16 bytes for 128 bit random */
+                                         /*    initialization vector */
+typedef struct _qemuDomainSecretAES qemuDomainSecretAES;
+typedef struct _qemuDomainSecretAES *qemuDomainSecretAESPtr;
+struct _qemuDomainSecretAES {
     char *username;
     char *alias;      /* generated alias for secret */
     char *iv;         /* base64 encoded initialization vector */
@@ -271,7 +271,7 @@ struct _qemuDomainSecretInfo {
     qemuDomainSecretInfoType type;
     union {
         qemuDomainSecretPlain plain;
-        qemuDomainSecretIV iv;
+        qemuDomainSecretAES aes;
     } s;
 };
 

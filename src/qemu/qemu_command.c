@@ -638,7 +638,7 @@ qemuBuildGeneralSecinfoURI(virURIPtr uri,
         }
         break;
 
-    case VIR_DOMAIN_SECRET_INFO_TYPE_IV:
+    case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
     case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
         return -1;
     }
@@ -676,7 +676,7 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
                         secinfo->s.plain.secret);
         break;
 
-    case VIR_DOMAIN_SECRET_INFO_TYPE_IV:
+    case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
     case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
         return -1;
     }

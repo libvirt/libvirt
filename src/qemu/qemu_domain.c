@@ -737,7 +737,7 @@ qemuDomainSecretPlainFree(qemuDomainSecretPlain secret)
 
 
 static void
-qemuDomainSecretIVFree(qemuDomainSecretIV secret)
+qemuDomainSecretAESFree(qemuDomainSecretAES secret)
 {
     VIR_FREE(secret.username);
     VIR_FREE(secret.alias);
@@ -757,8 +757,8 @@ qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr *secinfo)
         qemuDomainSecretPlainFree((*secinfo)->s.plain);
         break;
 
-    case VIR_DOMAIN_SECRET_INFO_TYPE_IV:
-        qemuDomainSecretIVFree((*secinfo)->s.iv);
+    case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
+        qemuDomainSecretAESFree((*secinfo)->s.aes);
         break;
 
     case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
