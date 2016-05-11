@@ -115,12 +115,12 @@ int virCPUx86MapOnceInit(void);
 VIR_ONCE_GLOBAL_INIT(virCPUx86Map);
 
 
-enum compare_result {
+typedef enum {
     SUBSET,
     EQUAL,
     SUPERSET,
     UNRELATED
-};
+} virCPUx86CompareResult;
 
 
 struct virCPUx86DataIterator {
@@ -967,18 +967,18 @@ x86ModelSubtractCPU(virCPUx86ModelPtr model,
 }
 
 
-static enum compare_result
+static virCPUx86CompareResult
 x86ModelCompare(virCPUx86ModelPtr model1,
                 virCPUx86ModelPtr model2)
 {
-    enum compare_result result = EQUAL;
+    virCPUx86CompareResult result = EQUAL;
     struct virCPUx86DataIterator iter1 = virCPUx86DataIteratorInit(model1->data);
     struct virCPUx86DataIterator iter2 = virCPUx86DataIteratorInit(model2->data);
     virCPUx86CPUID *cpuid1;
     virCPUx86CPUID *cpuid2;
 
     while ((cpuid1 = x86DataCpuidNext(&iter1))) {
-        enum compare_result match = SUPERSET;
+        virCPUx86CompareResult match = SUPERSET;
 
         if ((cpuid2 = x86DataCpuid(model2->data, cpuid1->function))) {
             if (x86cpuidMatch(cpuid1, cpuid2))
@@ -994,7 +994,7 @@ x86ModelCompare(virCPUx86ModelPtr model1,
     }
 
     while ((cpuid2 = x86DataCpuidNext(&iter2))) {
-        enum compare_result match = SUBSET;
+        virCPUx86CompareResult match = SUBSET;
 
         if ((cpuid1 = x86DataCpuid(model1->data, cpuid2->function))) {
             if (x86cpuidMatch(cpuid2, cpuid1))
@@ -1385,7 +1385,7 @@ x86Compute(virCPUDefPtr host,
     virCPUx86ModelPtr diff = NULL;
     virCPUx86ModelPtr guest_model = NULL;
     virCPUCompareResult ret;
-    enum compare_result result;
+    virCPUx86CompareResult result;
     virArch arch;
     size_t i;
 
