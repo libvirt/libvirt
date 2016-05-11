@@ -15105,6 +15105,87 @@ virDomainVcpuParse(virDomainDefPtr def,
     return ret;
 }
 
+
+static int
+virDomainDefParseBootOptions(virDomainDefPtr def,
+                             xmlXPathContextPtr ctxt,
+                             virHashTablePtr *bootHash)
+{
+    xmlNodePtr *nodes = NULL;
+    int ret = -1;
+    size_t i;
+    int n;
+
+    /*
+     * Booting options for different OS types....
+     *
+     *   - A bootloader (and optional kernel+initrd)  (xen)
+     *   - A kernel + initrd                          (xen)
+     *   - A boot device (and optional kernel+initrd) (hvm)
+     *   - An init script                             (exe)
+     */
+
+    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE) {
+        def->os.init = virXPathString("string(./os/init[1])", ctxt);
+        def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
+
+        if ((n = virXPathNodeSet("./os/initarg", ctxt, &nodes)) < 0)
+            goto error;
+
+        if (VIR_ALLOC_N(def->os.initargv, n+1) < 0)
+            goto error;
+        for (i = 0; i < n; i++) {
+            if (!nodes[i]->children ||
+                !nodes[i]->children->content) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("No data supplied for <initarg> element"));
+                goto error;
+            }
+            if (VIR_STRDUP(def->os.initargv[i],
+                           (const char*) nodes[i]->children->content) < 0)
+                goto error;
+        }
+        def->os.initargv[n] = NULL;
+        VIR_FREE(nodes);
+    }
+
+    if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
+        def->os.type == VIR_DOMAIN_OSTYPE_HVM ||
+        def->os.type == VIR_DOMAIN_OSTYPE_UML) {
+        xmlNodePtr loader_node;
+
+        def->os.kernel = virXPathString("string(./os/kernel[1])", ctxt);
+        def->os.initrd = virXPathString("string(./os/initrd[1])", ctxt);
+        def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
+        def->os.dtb = virXPathString("string(./os/dtb[1])", ctxt);
+        def->os.root = virXPathString("string(./os/root[1])", ctxt);
+        if ((loader_node = virXPathNode("./os/loader[1]", ctxt))) {
+            if (VIR_ALLOC(def->os.loader) < 0)
+                goto error;
+
+            if (virDomainLoaderDefParseXML(loader_node, def->os.loader) < 0)
+                goto error;
+
+            def->os.loader->nvram = virXPathString("string(./os/nvram[1])", ctxt);
+            def->os.loader->templt = virXPathString("string(./os/nvram[1]/@template)", ctxt);
+        }
+    }
+
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
+        if (virDomainDefParseBootXML(ctxt, def) < 0)
+            goto error;
+        if (!(*bootHash = virHashCreate(5, NULL)))
+            goto error;
+    }
+
+    ret = 0;
+
+ error:
+    VIR_FREE(nodes);
+    return ret;
+}
+
+
 static virDomainDefPtr
 virDomainDefParseXML(xmlDocPtr xml,
                      xmlNodePtr root,
@@ -16080,69 +16161,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
-
-    /*
-     * Booting options for different OS types....
-     *
-     *   - A bootloader (and optional kernel+initrd)  (xen)
-     *   - A kernel + initrd                          (xen)
-     *   - A boot device (and optional kernel+initrd) (hvm)
-     *   - An init script                             (exe)
-     */
-
-    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE) {
-        def->os.init = virXPathString("string(./os/init[1])", ctxt);
-        def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
-
-        if ((n = virXPathNodeSet("./os/initarg", ctxt, &nodes)) < 0)
-            goto error;
-
-        if (VIR_ALLOC_N(def->os.initargv, n+1) < 0)
-            goto error;
-        for (i = 0; i < n; i++) {
-            if (!nodes[i]->children ||
-                !nodes[i]->children->content) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("No data supplied for <initarg> element"));
-                goto error;
-            }
-            if (VIR_STRDUP(def->os.initargv[i],
-                           (const char*) nodes[i]->children->content) < 0)
-                goto error;
-        }
-        def->os.initargv[n] = NULL;
-        VIR_FREE(nodes);
-    }
-
-    if (def->os.type == VIR_DOMAIN_OSTYPE_XEN ||
-        def->os.type == VIR_DOMAIN_OSTYPE_HVM ||
-        def->os.type == VIR_DOMAIN_OSTYPE_UML) {
-        xmlNodePtr loader_node;
-
-        def->os.kernel = virXPathString("string(./os/kernel[1])", ctxt);
-        def->os.initrd = virXPathString("string(./os/initrd[1])", ctxt);
-        def->os.cmdline = virXPathString("string(./os/cmdline[1])", ctxt);
-        def->os.dtb = virXPathString("string(./os/dtb[1])", ctxt);
-        def->os.root = virXPathString("string(./os/root[1])", ctxt);
-        if ((loader_node = virXPathNode("./os/loader[1]", ctxt))) {
-            if (VIR_ALLOC(def->os.loader) < 0)
-                goto error;
-
-            if (virDomainLoaderDefParseXML(loader_node, def->os.loader) < 0)
-                goto error;
-
-            def->os.loader->nvram = virXPathString("string(./os/nvram[1])", ctxt);
-            def->os.loader->templt = virXPathString("string(./os/nvram[1]/@template)", ctxt);
-        }
-    }
-
-    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
-        if (virDomainDefParseBootXML(ctxt, def) < 0)
-            goto error;
-        if (!(bootHash = virHashCreate(5, NULL)))
-            goto error;
-    }
-
+    if (virDomainDefParseBootOptions(def, ctxt, &bootHash) < 0)
+        goto error;
 
     /* analysis of the disk devices */
     if ((n = virXPathNodeSet("./devices/disk", ctxt, &nodes)) < 0)
