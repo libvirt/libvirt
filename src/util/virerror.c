@@ -281,9 +281,9 @@ const char *
 virGetLastErrorMessage(void)
 {
     virErrorPtr err = virLastErrorObject();
-    if (!err || err->code == VIR_ERR_OK)
+    if (err && err->code == VIR_ERR_OK)
         return _("no error");
-    if (err->message == NULL)
+    if (!err || !err->message)
         return _("unknown error");
     return err->message;
 }
