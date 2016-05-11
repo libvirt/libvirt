@@ -3924,45 +3924,6 @@ virDomainDefPostParseTimer(virDomainDefPtr def)
 }
 
 
-static int
-virDomainDefPostParseInternal(virDomainDefPtr def,
-                              virCapsPtr caps ATTRIBUTE_UNUSED,
-                              unsigned int parseFlags)
-{
-    /* verify init path for container based domains */
-    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("init binary must be specified"));
-        return -1;
-    }
-
-    if (virDomainDefPostParseMemory(def, parseFlags) < 0)
-        return -1;
-
-    if (virDomainDefRejectDuplicateControllers(def) < 0)
-        return -1;
-
-    if (virDomainDefRejectDuplicatePanics(def) < 0)
-        return -1;
-
-    if (virDomainDefPostParseTimer(def) < 0)
-        return -1;
-
-    if (virDomainDefAddImplicitDevices(def) < 0)
-        return -1;
-
-    /* Mark the first video as primary. If the user specified primary="yes",
-     * the parser already inserted the device at def->videos[0] */
-    if (def->nvideos != 0)
-        def->videos[0]->primary = true;
-
-    /* clean up possibly duplicated metadata entries */
-    virDomainDefMetadataSanitize(def);
-
-    return 0;
-}
-
-
 /* Check if a drive type address $controller:$bus:$target:$unit is already
  * taken by a disk or not.
  */
@@ -4396,6 +4357,45 @@ virDomainDefPostParseDeviceIterator(virDomainDefPtr def ATTRIBUTE_UNUSED,
     struct virDomainDefPostParseDeviceIteratorData *data = opaque;
     return virDomainDeviceDefPostParse(dev, data->def, data->caps,
                                        data->parseFlags, data->xmlopt);
+}
+
+
+static int
+virDomainDefPostParseInternal(virDomainDefPtr def,
+                              virCapsPtr caps ATTRIBUTE_UNUSED,
+                              unsigned int parseFlags)
+{
+    /* verify init path for container based domains */
+    if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("init binary must be specified"));
+        return -1;
+    }
+
+    if (virDomainDefPostParseMemory(def, parseFlags) < 0)
+        return -1;
+
+    if (virDomainDefRejectDuplicateControllers(def) < 0)
+        return -1;
+
+    if (virDomainDefRejectDuplicatePanics(def) < 0)
+        return -1;
+
+    if (virDomainDefPostParseTimer(def) < 0)
+        return -1;
+
+    if (virDomainDefAddImplicitDevices(def) < 0)
+        return -1;
+
+    /* Mark the first video as primary. If the user specified primary="yes",
+     * the parser already inserted the device at def->videos[0] */
+    if (def->nvideos != 0)
+        def->videos[0]->primary = true;
+
+    /* clean up possibly duplicated metadata entries */
+    virDomainDefMetadataSanitize(def);
+
+    return 0;
 }
 
 
