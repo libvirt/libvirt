@@ -44,11 +44,13 @@ static const virCPUx86CPUID cpuidNull = { 0, 0, 0, 0, 0 };
 
 static const virArch archs[] = { VIR_ARCH_I686, VIR_ARCH_X86_64 };
 
-struct x86_vendor {
+typedef struct _virCPUx86Vendor virCPUx86Vendor;
+typedef virCPUx86Vendor *virCPUx86VendorPtr;
+struct _virCPUx86Vendor {
     char *name;
     virCPUx86CPUID cpuid;
 
-    struct x86_vendor *next;
+    virCPUx86VendorPtr next;
 };
 
 struct x86_feature {
@@ -87,14 +89,14 @@ static const struct x86_kvm_feature x86_kvm_features[] =
 
 struct x86_model {
     char *name;
-    const struct x86_vendor *vendor;
+    virCPUx86VendorPtr vendor;
     virCPUx86Data *data;
 
     struct x86_model *next;
 };
 
 struct x86_map {
-    struct x86_vendor *vendors;
+    virCPUx86VendorPtr vendors;
     struct x86_feature *features;
     struct x86_model *models;
     struct x86_feature *migrate_blockers;
@@ -418,11 +420,11 @@ x86DataToCPUFeatures(virCPUDefPtr cpu,
 
 
 /* also removes bits corresponding to vendor string from data */
-static const struct x86_vendor *
+static virCPUx86VendorPtr
 x86DataToVendor(virCPUx86Data *data,
                 const struct x86_map *map)
 {
-    const struct x86_vendor *vendor = map->vendors;
+    virCPUx86VendorPtr vendor = map->vendors;
     virCPUx86CPUID *cpuid;
 
     while (vendor) {
@@ -446,7 +448,7 @@ x86DataToCPU(const virCPUx86Data *data,
     virCPUDefPtr cpu;
     virCPUx86Data *copy = NULL;
     virCPUx86Data *modelData = NULL;
-    const struct x86_vendor *vendor;
+    virCPUx86VendorPtr vendor;
 
     if (VIR_ALLOC(cpu) < 0 ||
         VIR_STRDUP(cpu->model, model->name) < 0 ||
@@ -481,7 +483,7 @@ x86DataToCPU(const virCPUx86Data *data,
 
 
 static void
-x86VendorFree(struct x86_vendor *vendor)
+x86VendorFree(virCPUx86VendorPtr vendor)
 {
     if (!vendor)
         return;
@@ -491,11 +493,11 @@ x86VendorFree(struct x86_vendor *vendor)
 }
 
 
-static struct x86_vendor *
+static virCPUx86VendorPtr
 x86VendorFind(const struct x86_map *map,
               const char *name)
 {
-    struct x86_vendor *vendor;
+    virCPUx86VendorPtr vendor;
 
     vendor = map->vendors;
     while (vendor) {
@@ -513,7 +515,7 @@ static int
 x86VendorLoad(xmlXPathContextPtr ctxt,
               struct x86_map *map)
 {
-    struct x86_vendor *vendor = NULL;
+    virCPUx86VendorPtr vendor = NULL;
     char *string = NULL;
     int ret = 0;
 
@@ -1136,7 +1138,7 @@ x86MapFree(struct x86_map *map)
     }
 
     while (map->vendors != NULL) {
-        struct x86_vendor *vendor = map->vendors;
+        virCPUx86VendorPtr vendor = map->vendors;
         map->vendors = vendor->next;
         x86VendorFree(vendor);
     }
@@ -1785,7 +1787,7 @@ x86Encode(virArch arch,
     }
 
     if (vendor) {
-        const struct x86_vendor *v = NULL;
+        virCPUx86VendorPtr v = NULL;
 
         if (cpu->vendor && !(v = x86VendorFind(map, cpu->vendor))) {
             virReportError(VIR_ERR_OPERATION_FAILED,
@@ -1939,7 +1941,7 @@ x86Baseline(virCPUDefPtr *cpus,
     struct x86_model *base_model = NULL;
     virCPUDefPtr cpu = NULL;
     size_t i;
-    const struct x86_vendor *vendor = NULL;
+    virCPUx86VendorPtr vendor = NULL;
     struct x86_model *model = NULL;
     bool outputVendor = true;
     const char *modelName;
