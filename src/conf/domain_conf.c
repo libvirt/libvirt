@@ -4315,8 +4315,7 @@ virDomainDefPostParseDeviceIterator(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 static int
 virDomainDefPostParseInternal(virDomainDefPtr def,
-                              virCapsPtr caps ATTRIBUTE_UNUSED,
-                              unsigned int parseFlags)
+                              struct virDomainDefPostParseDeviceIteratorData *data)
 {
     /* verify init path for container based domains */
     if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {
@@ -4325,7 +4324,7 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
         return -1;
     }
 
-    if (virDomainDefPostParseMemory(def, parseFlags) < 0)
+    if (virDomainDefPostParseMemory(def, data->parseFlags) < 0)
         return -1;
 
     if (virDomainDefRejectDuplicateControllers(def) < 0)
@@ -4340,10 +4339,21 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
     if (virDomainDefAddImplicitDevices(def) < 0)
         return -1;
 
-    /* Mark the first video as primary. If the user specified primary="yes",
-     * the parser already inserted the device at def->videos[0] */
-    if (def->nvideos != 0)
+    if (def->nvideos != 0) {
+        virDomainDeviceDef device = {
+            .type = VIR_DOMAIN_DEVICE_VIDEO,
+            .data.video = def->videos[0],
+        };
+
+        /* Mark the first video as primary. If the user specified primary="yes",
+         * the parser already inserted the device at def->videos[0] */
         def->videos[0]->primary = true;
+
+        /* videos[0] might have been added in AddImplicitDevices, after we've
+         * done the per-device post-parse */
+        if (virDomainDefPostParseDeviceIterator(NULL, &device, NULL, data) < 0)
+            return -1;
+    }
 
     /* clean up possibly duplicated metadata entries */
     virDomainDefMetadataSanitize(def);
@@ -4382,7 +4392,7 @@ virDomainDefPostParse(virDomainDefPtr def,
         return ret;
 
 
-    if ((ret = virDomainDefPostParseInternal(def, caps, parseFlags)) < 0)
+    if ((ret = virDomainDefPostParseInternal(def, &data)) < 0)
         return ret;
 
     if (virDomainDefPostParseCheckFeatures(def, xmlopt) < 0)
