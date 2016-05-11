@@ -4,9 +4,9 @@
 # or for RHEL 6 or newer. It may need some tweaks for other distros.
 # If neither fedora nor rhel was defined, try to guess them from dist
 %if (0%{?fedora} && 0%{?fedora} >= 20) || (0%{?rhel} && 0%{?rhel} >= 6)
-%define supported_platform 1
+    %define supported_platform 1
 %else
-%define supported_platform 0
+    %define supported_platform 0
 %endif
 
 # Default to skipping autoreconf.  Distros can change just this one line
