@@ -1626,8 +1626,7 @@ x86Decode(virCPUDefPtr cpu,
     if (!data || !(map = virCPUx86GetMap()))
         return -1;
 
-    candidate = map->models;
-    while (candidate != NULL) {
+    for (candidate = map->models; candidate; candidate = candidate->next) {
         if (!cpuModelIsAllowed(candidate->name, models, nmodels)) {
             if (preferred && STREQ(candidate->name, preferred)) {
                 if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
@@ -1644,7 +1643,7 @@ x86Decode(virCPUDefPtr cpu,
                 VIR_DEBUG("CPU model %s not allowed by hypervisor; ignoring",
                           candidate->name);
             }
-            goto next;
+            continue;
         }
 
         if (!(cpuCandidate = x86DataToCPU(data, candidate, map)))
@@ -1657,7 +1656,7 @@ x86Decode(virCPUDefPtr cpu,
                       candidate->vendor->name, candidate->name,
                       cpuCandidate->vendor);
             virCPUDefFree(cpuCandidate);
-            goto next;
+            continue;
         }
 
         if ((rc = x86DecodeUseCandidate(cpuModel, cpuCandidate, preferred,
@@ -1670,9 +1669,6 @@ x86Decode(virCPUDefPtr cpu,
         } else {
             virCPUDefFree(cpuCandidate);
         }
-
-    next:
-        candidate = candidate->next;
     }
 
     if (cpuModel == NULL) {
