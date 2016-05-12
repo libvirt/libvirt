@@ -248,7 +248,7 @@ x86DataCpuid(const virCPUx86Data *data,
 void
 virCPUx86DataFree(virCPUx86Data *data)
 {
-    if (data == NULL)
+    if (!data)
         return;
 
     VIR_FREE(data->data);
@@ -384,7 +384,7 @@ x86DataIsEmpty(virCPUx86Data *data)
 {
     virCPUx86DataIterator iter = virCPUx86DataIteratorInit(data);
 
-    return x86DataCpuidNext(&iter) == NULL;
+    return !x86DataCpuidNext(&iter);
 }
 
 
@@ -416,7 +416,7 @@ x86DataToCPUFeatures(virCPUDefPtr cpu,
 {
     virCPUx86FeaturePtr feature = map->features;
 
-    while (feature != NULL) {
+    while (feature) {
         if (x86DataIsSubset(data, feature->data)) {
             x86DataSubtract(data, feature->data);
             if (virCPUDefAddFeature(cpu, feature->name, policy) < 0)
@@ -603,7 +603,7 @@ x86FeatureNew(void)
 static void
 x86FeatureFree(virCPUx86FeaturePtr feature)
 {
-    if (feature == NULL)
+    if (!feature)
         return;
 
     VIR_FREE(feature->name);
@@ -623,7 +623,7 @@ x86FeatureCopy(virCPUx86FeaturePtr src)
     if (VIR_STRDUP(feature->name, src->name) < 0)
         goto error;
 
-    if ((feature->data = x86DataCopy(src->data)) == NULL)
+    if (!(feature->data = x86DataCopy(src->data)))
         goto error;
 
     return feature;
@@ -641,7 +641,7 @@ x86FeatureFind(virCPUx86MapPtr map,
     virCPUx86FeaturePtr feature;
 
     feature = map->features;
-    while (feature != NULL) {
+    while (feature) {
         if (STREQ(feature->name, name))
             return feature;
 
@@ -728,7 +728,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
         goto error;
 
     feature->name = virXPathString("string(@name)", ctxt);
-    if (feature->name == NULL) {
+    if (!feature->name) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Missing CPU feature name"));
         goto ignore;
@@ -761,14 +761,14 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
     }
 
     if (!migratable) {
-        if ((migrate_blocker = x86FeatureCopy(feature)) == NULL)
+        if (!(migrate_blocker = x86FeatureCopy(feature)))
             goto error;
 
         migrate_blocker->next = map->migrate_blockers;
         map->migrate_blockers = migrate_blocker;
     }
 
-    if (map->features == NULL) {
+    if (!map->features) {
         map->features = feature;
     } else {
         feature->next = map->features;
@@ -842,7 +842,7 @@ x86ModelNew(void)
 static void
 x86ModelFree(virCPUx86ModelPtr model)
 {
-    if (model == NULL)
+    if (!model)
         return;
 
     VIR_FREE(model->name);
@@ -876,7 +876,7 @@ x86ModelFind(virCPUx86MapPtr map,
     virCPUx86ModelPtr model;
 
     model = map->models;
-    while (model != NULL) {
+    while (model) {
         if (STREQ(model->name, name))
             return model;
 
@@ -896,13 +896,13 @@ x86ModelFromCPU(const virCPUDef *cpu,
     size_t i;
 
     if (policy == VIR_CPU_FEATURE_REQUIRE) {
-        if ((model = x86ModelFind(map, cpu->model)) == NULL) {
+        if (!(model = x86ModelFind(map, cpu->model))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown CPU model %s"), cpu->model);
             goto error;
         }
 
-        if ((model = x86ModelCopy(model)) == NULL)
+        if (!(model = x86ModelCopy(model)))
             goto error;
     } else if (!(model = x86ModelNew())) {
         goto error;
@@ -917,7 +917,7 @@ x86ModelFromCPU(const virCPUDef *cpu,
             && cpu->features[i].policy != policy)
             continue;
 
-        if ((feature = x86FeatureFind(map, cpu->features[i].name)) == NULL) {
+        if (!(feature = x86FeatureFind(map, cpu->features[i].name))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown CPU feature %s"), cpu->features[i].name);
             goto error;
@@ -1030,25 +1030,25 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
         goto error;
 
     model->name = virXPathString("string(@name)", ctxt);
-    if (model->name == NULL) {
+    if (!model->name) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Missing CPU model name"));
         goto ignore;
     }
 
-    if (virXPathNode("./model", ctxt) != NULL) {
+    if (virXPathNode("./model", ctxt)) {
         virCPUx86ModelPtr ancestor;
         char *name;
 
         name = virXPathString("string(./model/@name)", ctxt);
-        if (name == NULL) {
+        if (!name) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Missing ancestor's name in CPU model %s"),
                            model->name);
             goto ignore;
         }
 
-        if ((ancestor = x86ModelFind(map, name)) == NULL) {
+        if (!(ancestor = x86ModelFind(map, name))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Ancestor model %s not found for CPU model %s"),
                            name, model->name);
@@ -1089,13 +1089,13 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
         virCPUx86FeaturePtr feature;
         char *name;
 
-        if ((name = virXMLPropString(nodes[i], "name")) == NULL) {
+        if (!(name = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Missing feature name for CPU model %s"), model->name);
             goto ignore;
         }
 
-        if ((feature = x86FeatureFind(map, name)) == NULL) {
+        if (!(feature = x86FeatureFind(map, name))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Feature %s required by CPU model %s not found"),
                            name, model->name);
@@ -1108,7 +1108,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
             goto error;
     }
 
-    if (map->models == NULL) {
+    if (!map->models) {
         map->models = model;
     } else {
         model->next = map->models;
@@ -1132,28 +1132,28 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
 static void
 x86MapFree(virCPUx86MapPtr map)
 {
-    if (map == NULL)
+    if (!map)
         return;
 
-    while (map->features != NULL) {
+    while (map->features) {
         virCPUx86FeaturePtr feature = map->features;
         map->features = feature->next;
         x86FeatureFree(feature);
     }
 
-    while (map->models != NULL) {
+    while (map->models) {
         virCPUx86ModelPtr model = map->models;
         map->models = model->next;
         x86ModelFree(model);
     }
 
-    while (map->vendors != NULL) {
+    while (map->vendors) {
         virCPUx86VendorPtr vendor = map->vendors;
         map->vendors = vendor->next;
         x86VendorFree(vendor);
     }
 
-    while (map->migrate_blockers != NULL) {
+    while (map->migrate_blockers) {
         virCPUx86FeaturePtr migrate_blocker = map->migrate_blockers;
         map->migrate_blockers = migrate_blocker->next;
         x86FeatureFree(migrate_blocker);
@@ -1209,7 +1209,7 @@ x86MapLoadInternalFeatures(virCPUx86MapPtr map)
         if (virCPUx86DataAddCPUID(feature->data, &x86_kvm_features[i].cpuid))
             goto error;
 
-        if (map->features == NULL) {
+        if (!map->features) {
             map->features = feature;
         } else {
             feature->next = map->features;
@@ -1469,7 +1469,7 @@ x86Compute(virCPUDefPtr host,
 
     ret = VIR_CPU_COMPARE_IDENTICAL;
 
-    if ((diff = x86ModelCopy(host_model)) == NULL)
+    if (!(diff = x86ModelCopy(host_model)))
         goto error;
 
     x86DataSubtract(diff->data, cpu_optional->data);
@@ -1489,10 +1489,10 @@ x86Compute(virCPUDefPtr host,
         goto cleanup;
     }
 
-    if (guest != NULL) {
+    if (guest) {
         virCPUx86Data *guestData;
 
-        if ((guest_model = x86ModelCopy(host_model)) == NULL)
+        if (!(guest_model = x86ModelCopy(host_model)))
             goto error;
 
         if (cpu->type == VIR_CPU_TYPE_GUEST
@@ -1671,7 +1671,7 @@ x86Decode(virCPUDefPtr cpu,
         }
     }
 
-    if (cpuModel == NULL) {
+    if (!cpuModel) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Cannot find suitable CPU model for given data"));
         goto cleanup;
@@ -1780,7 +1780,7 @@ x86Encode(virArch arch,
     if (vendor)
         *vendor = NULL;
 
-    if ((map = virCPUx86GetMap()) == NULL)
+    if (!(map = virCPUx86GetMap()))
         goto error;
 
     if (forced) {
@@ -2243,7 +2243,7 @@ x86GetModels(char ***models)
         goto error;
 
     model = map->models;
-    while (model != NULL) {
+    while (model) {
         if (models) {
             if (VIR_STRDUP(name, model->name) < 0)
                 goto error;
