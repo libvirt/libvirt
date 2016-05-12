@@ -710,27 +710,26 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
     xmlNodePtr ctxt_node = ctxt->node;
     virCPUx86FeaturePtr feature;
     virCPUx86CPUID cpuid;
-    int ret = 0;
+    int ret = -1;
     size_t i;
     int n;
     char *str = NULL;
     bool migratable = true;
-    virCPUx86FeaturePtr migrate_blocker = NULL;
 
     if (!(feature = x86FeatureNew()))
-        goto error;
+        goto cleanup;
 
     feature->name = virXPathString("string(@name)", ctxt);
     if (!feature->name) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Missing CPU feature name"));
-        goto ignore;
+        goto cleanup;
     }
 
     if (x86FeatureFind(map, feature->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU feature %s already defined"), feature->name);
-        goto ignore;
+        goto cleanup;
     }
 
     str = virXPathString("string(@migratable)", ctxt);
@@ -739,7 +738,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
 
     n = virXPathNodeSet("./cpuid", ctxt, &nodes);
     if (n < 0)
-        goto ignore;
+        goto cleanup;
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
@@ -747,37 +746,35 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid cpuid[%zu] in %s feature"),
                            i, feature->name);
-            goto ignore;
+            goto cleanup;
         }
         if (virCPUx86DataAddCPUID(feature->data, &cpuid))
-            goto error;
+            goto cleanup;
     }
 
     if (!migratable) {
-        if (!(migrate_blocker = x86FeatureCopy(feature)))
-            goto error;
+        virCPUx86FeaturePtr blocker;
 
-        migrate_blocker->next = map->migrate_blockers;
-        map->migrate_blockers = migrate_blocker;
+        if (!(blocker = x86FeatureCopy(feature)))
+            goto cleanup;
+
+        blocker->next = map->migrate_blockers;
+        map->migrate_blockers = blocker;
     }
 
     feature->next = map->features;
     map->features = feature;
+    feature = NULL;
+
+    ret = 0;
 
  cleanup:
+    x86FeatureFree(feature);
     ctxt->node = ctxt_node;
     VIR_FREE(nodes);
     VIR_FREE(str);
 
     return ret;
-
- error:
-    ret = -1;
-
- ignore:
-    x86FeatureFree(feature);
-    x86FeatureFree(migrate_blocker);
-    goto cleanup;
 }
 
 
