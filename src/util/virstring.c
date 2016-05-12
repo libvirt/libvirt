@@ -1070,6 +1070,25 @@ virStringIsPrintable(const char *str)
 
 
 /**
+ * virBufferIsPrintable:
+ *
+ * Returns true if @buf of @buflen contains only printable characters
+ */
+bool
+virStringBufferIsPrintable(const uint8_t *buf,
+                           size_t buflen)
+{
+    size_t i;
+
+    for (i = 0; i < buflen; i++)
+        if (!c_isprint(buf[i]))
+            return false;
+
+    return true;
+}
+
+
+/**
  * virStringEncodeBase64:
  * @buf: buffer of bytes to encode
  * @buflen: number of bytes to encode

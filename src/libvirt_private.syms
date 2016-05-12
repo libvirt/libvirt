@@ -2303,6 +2303,7 @@ virSkipSpacesBackwards;
 virStrcpy;
 virStrdup;
 virStringArrayHasString;
+virStringBufferIsPrintable;
 virStringEncodeBase64;
 virStringFreeList;
 virStringFreeListCount;
