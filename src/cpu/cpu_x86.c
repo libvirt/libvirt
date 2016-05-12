@@ -1564,6 +1564,43 @@ x86GuestData(virCPUDefPtr host,
 }
 
 
+/*
+ * Checks whether cpuCandidate is a better fit for the CPU data than the
+ * currently selected one from cpuCurrent.
+ *
+ * Returns 0 if cpuCurrent is better,
+ *         1 if cpuCandidate is better,
+ *         2 if cpuCandidate is the best one (search should stop now).
+ */
+static int
+x86DecodeUseCandidate(virCPUDefPtr cpuCurrent,
+                      virCPUDefPtr cpuCandidate,
+                      const char *preferred,
+                      bool checkPolicy)
+{
+    if (checkPolicy) {
+        size_t i;
+        for (i = 0; i < cpuCandidate->nfeatures; i++) {
+            if (cpuCandidate->features[i].policy == VIR_CPU_FEATURE_DISABLE)
+                return 0;
+            cpuCandidate->features[i].policy = -1;
+        }
+    }
+
+    if (preferred &&
+        STREQ(cpuCandidate->model, preferred))
+        return 2;
+
+    if (!cpuCurrent)
+        return 1;
+
+    if (cpuCurrent->nfeatures > cpuCandidate->nfeatures)
+        return 1;
+
+    return 0;
+}
+
+
 static int
 x86Decode(virCPUDefPtr cpu,
           const virCPUx86Data *data,
@@ -1581,6 +1618,7 @@ x86Decode(virCPUDefPtr cpu,
     virCPUx86Data *features = NULL;
     const virCPUx86Data *cpuData = NULL;
     size_t i;
+    int rc;
 
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
                   VIR_CONNECT_BASELINE_CPU_MIGRATABLE, -1);
@@ -1611,6 +1649,7 @@ x86Decode(virCPUDefPtr cpu,
 
         if (!(cpuCandidate = x86DataToCPU(data, candidate, map)))
             goto out;
+        cpuCandidate->type = cpu->type;
 
         if (candidate->vendor && cpuCandidate->vendor &&
             STRNEQ(candidate->vendor->name, cpuCandidate->vendor)) {
@@ -1621,31 +1660,13 @@ x86Decode(virCPUDefPtr cpu,
             goto next;
         }
 
-        if (cpu->type == VIR_CPU_TYPE_HOST) {
-            cpuCandidate->type = VIR_CPU_TYPE_HOST;
-            for (i = 0; i < cpuCandidate->nfeatures; i++) {
-                switch (cpuCandidate->features[i].policy) {
-                case VIR_CPU_FEATURE_DISABLE:
-                    virCPUDefFree(cpuCandidate);
-                    goto next;
-                default:
-                    cpuCandidate->features[i].policy = -1;
-                }
-            }
-        }
-
-        if (preferred && STREQ(cpuCandidate->model, preferred)) {
+        if ((rc = x86DecodeUseCandidate(cpuModel, cpuCandidate, preferred,
+                                        cpu->type == VIR_CPU_TYPE_HOST))) {
             virCPUDefFree(cpuModel);
             cpuModel = cpuCandidate;
             cpuData = candidate->data;
-            break;
-        }
-
-        if (cpuModel == NULL
-            || cpuModel->nfeatures > cpuCandidate->nfeatures) {
-            virCPUDefFree(cpuModel);
-            cpuModel = cpuCandidate;
-            cpuData = candidate->data;
+            if (rc == 2)
+                break;
         } else {
             virCPUDefFree(cpuCandidate);
         }
