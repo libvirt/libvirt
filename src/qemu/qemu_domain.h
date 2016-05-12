@@ -254,8 +254,8 @@ struct _qemuDomainSecretPlain {
     char *secret;
 };
 
-# define QEMU_DOMAIN_AES_IV_KEY_LEN 16   /* 16 bytes for 128 bit random */
-                                         /*    initialization vector */
+# define QEMU_DOMAIN_AES_IV_LEN 16   /* 16 bytes for 128 bit random */
+                                     /*    initialization vector */
 typedef struct _qemuDomainSecretAES qemuDomainSecretAES;
 typedef struct _qemuDomainSecretAES *qemuDomainSecretAESPtr;
 struct _qemuDomainSecretAES {
