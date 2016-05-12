@@ -570,7 +570,7 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
         map->vendors = vendor;
     }
 
- out:
+ cleanup:
     VIR_FREE(string);
 
     return ret;
@@ -579,7 +579,7 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
     ret = -1;
  ignore:
     x86VendorFree(vendor);
-    goto out;
+    goto cleanup;
 }
 
 
@@ -775,7 +775,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
         map->features = feature;
     }
 
- out:
+ cleanup:
     ctxt->node = ctxt_node;
     VIR_FREE(nodes);
     VIR_FREE(str);
@@ -788,7 +788,7 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
  ignore:
     x86FeatureFree(feature);
     x86FeatureFree(migrate_blocker);
-    goto out;
+    goto cleanup;
 }
 
 
@@ -1115,7 +1115,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
         map->models = model;
     }
 
- out:
+ cleanup:
     VIR_FREE(vendor);
     VIR_FREE(nodes);
     return ret;
@@ -1125,7 +1125,7 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
 
  ignore:
     x86ModelFree(model);
-    goto out;
+    goto cleanup;
 }
 
 
@@ -1634,7 +1634,7 @@ x86Decode(virCPUDefPtr cpu,
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("CPU model %s is not supported by hypervisor"),
                                    preferred);
-                    goto out;
+                    goto cleanup;
                 } else {
                     VIR_WARN("Preferred CPU model %s not allowed by"
                              " hypervisor; closest supported model will be"
@@ -1648,7 +1648,7 @@ x86Decode(virCPUDefPtr cpu,
         }
 
         if (!(cpuCandidate = x86DataToCPU(data, candidate, map)))
-            goto out;
+            goto cleanup;
         cpuCandidate->type = cpu->type;
 
         if (candidate->vendor && cpuCandidate->vendor &&
@@ -1678,7 +1678,7 @@ x86Decode(virCPUDefPtr cpu,
     if (cpuModel == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Cannot find suitable CPU model for given data"));
-        goto out;
+        goto cleanup;
     }
 
     /* Remove non-migratable features if requested
@@ -1699,12 +1699,12 @@ x86Decode(virCPUDefPtr cpu,
     if (flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) {
         if (!(copy = x86DataCopy(cpuData)) ||
             !(features = x86DataFromCPUFeatures(cpuModel, map)))
-            goto out;
+            goto cleanup;
 
         x86DataSubtract(copy, features);
         if (x86DataToCPUFeatures(cpuModel, VIR_CPU_FEATURE_REQUIRE,
                                  copy, map) < 0)
-            goto out;
+            goto cleanup;
     }
 
     cpu->model = cpuModel->model;
@@ -1715,7 +1715,7 @@ x86Decode(virCPUDefPtr cpu,
 
     ret = 0;
 
- out:
+ cleanup:
     virCPUDefFree(cpuModel);
     virCPUx86DataFree(copy);
     virCPUx86DataFree(features);
