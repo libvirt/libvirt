@@ -916,6 +916,9 @@ libxlDomainGetEmulatorType(const virDomainDef *def)
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (def->emulator) {
+            if (!virFileExists(def->emulator))
+                goto cleanup;
+
             cmd = virCommandNew(def->emulator);
 
             virCommandAddArgList(cmd, "-help", NULL);
