@@ -180,6 +180,7 @@ test_programs = virshtest sockettest \
 	virbitmaptest \
 	vircgrouptest \
 	vircryptotest \
+	virrandomtest \
 	virpcitest \
 	virendiantest \
 	virfiletest \
@@ -423,6 +424,7 @@ test_libraries = libshunload.la \
 		vircgroupmock.la \
 		virpcimock.la \
 		virnetdevmock.la \
+		virrandommock.la \
 		nodeinfomock.la \
 		nssmock.la \
 		$(NULL)
@@ -1080,6 +1082,10 @@ vircryptotest_SOURCES = \
 	vircryptotest.c testutils.h testutils.c
 vircryptotest_LDADD = $(LDADDS)
 
+virrandomtest_SOURCES = \
+	virrandomtest.c testutils.h testutils.c
+virrandomtest_LDADD = $(LDADDS)
+
 virhostdevtest_SOURCES = \
 	virhostdevtest.c testutils.h testutils.c
 virhostdevtest_LDADD = $(LDADDS)
@@ -1093,6 +1099,12 @@ virpcimock_la_SOURCES = \
 virpcimock_la_CFLAGS = $(AM_CFLAGS)
 virpcimock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virpcimock_la_LIBADD = $(MOCKLIBS_LIBS)
+
+virrandommock_la_SOURCES = \
+	virrandommock.c
+virrandommock_la_CFLAGS = $(AM_CFLAGS)
+virrandommock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+virrandommock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 nodeinfomock_la_SOURCES = \
 	nodeinfomock.c
