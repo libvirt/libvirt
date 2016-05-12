@@ -268,6 +268,7 @@ bool virFileIsAbsPath(const char *path);
 int virFileAbsPath(const char *path,
                    char **abspath) ATTRIBUTE_RETURN_CHECK;
 const char *virFileSkipRoot(const char *path);
+void virFileRemoveLastComponent(char *path);
 
 int virFileOpenTty(int *ttymaster,
                    char **ttyName,

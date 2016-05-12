@@ -3132,6 +3132,23 @@ virFileSanitizePath(const char *path)
     return cleanpath;
 }
 
+/**
+ * virFileRemoveLastComponent:
+ *
+ * For given path cut off the last component. If there's no dir
+ * separator (whole path is one file name), @path is turned into
+ * an empty string.
+ */
+void
+virFileRemoveLastComponent(char *path)
+{
+    char *tmp;
+
+    if ((tmp = strrchr(path, VIR_FILE_DIR_SEPARATOR)))
+        tmp[1] = '\0';
+    else
+        path[0] = '\0';
+}
 
 /**
  * virFilePrintf:

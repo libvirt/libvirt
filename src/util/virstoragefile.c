@@ -2868,16 +2868,12 @@ virStorageFileCanonicalizePath(const char *path,
 static char *
 virStorageFileRemoveLastPathComponent(const char *path)
 {
-    char *tmp;
     char *ret;
 
     if (VIR_STRDUP(ret, path ? path : "") < 0)
         return NULL;
 
-    if ((tmp = strrchr(ret, '/')))
-        tmp[1] = '\0';
-    else
-        ret[0] = '\0';
+    virFileRemoveLastComponent(ret);
 
     return ret;
 }
