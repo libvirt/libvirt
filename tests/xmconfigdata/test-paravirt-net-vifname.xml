@@ -34,7 +34,7 @@
       <listen type='address' address='127.0.0.1'/>
     </graphics>
     <video>
-      <model type='xen' heads='1' primary='yes'/>
+      <model type='xen' vram='4096' heads='1' primary='yes'/>
     </video>
     <memballoon model='xen'/>
   </devices>
