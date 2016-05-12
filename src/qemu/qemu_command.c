@@ -6222,6 +6222,13 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
             goto error;
         }
     }
+    if (def->os.slic_table) {
+        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        virCommandAddArg(cmd, "-acpitable");
+        virBufferAddLit(&buf, "sig=SLIC,file=");
+        qemuBufferEscapeComma(&buf, def->os.slic_table);
+        virCommandAddArgBuffer(cmd, &buf);
+    }
 
     return 0;
 

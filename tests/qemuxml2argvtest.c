@@ -1974,6 +1974,8 @@ mymain(void)
 
     DO_TEST("master-key", QEMU_CAPS_OBJECT_SECRET);
 
+    DO_TEST("acpi-table", NONE);
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
