@@ -563,12 +563,8 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
     vendor->cpuid.edx = virReadBufInt32LE(string + 4);
     vendor->cpuid.ecx = virReadBufInt32LE(string + 8);
 
-    if (!map->vendors) {
-        map->vendors = vendor;
-    } else {
-        vendor->next = map->vendors;
-        map->vendors = vendor;
-    }
+    vendor->next = map->vendors;
+    map->vendors = vendor;
 
  cleanup:
     VIR_FREE(string);
@@ -768,12 +764,8 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
         map->migrate_blockers = migrate_blocker;
     }
 
-    if (!map->features) {
-        map->features = feature;
-    } else {
-        feature->next = map->features;
-        map->features = feature;
-    }
+    feature->next = map->features;
+    map->features = feature;
 
  cleanup:
     ctxt->node = ctxt_node;
@@ -1108,12 +1100,8 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
             goto error;
     }
 
-    if (!map->models) {
-        map->models = model;
-    } else {
-        model->next = map->models;
-        map->models = model;
-    }
+    model->next = map->models;
+    map->models = model;
 
  cleanup:
     VIR_FREE(vendor);
@@ -1209,13 +1197,8 @@ x86MapLoadInternalFeatures(virCPUx86MapPtr map)
         if (virCPUx86DataAddCPUID(feature->data, &x86_kvm_features[i].cpuid))
             goto error;
 
-        if (!map->features) {
-            map->features = feature;
-        } else {
-            feature->next = map->features;
-            map->features = feature;
-        }
-
+        feature->next = map->features;
+        map->features = feature;
         feature = NULL;
     }
 
