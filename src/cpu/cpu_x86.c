@@ -431,7 +431,7 @@ x86DataToCPUFeatures(virCPUDefPtr cpu,
 
 /* also removes bits corresponding to vendor string from data */
 static virCPUx86VendorPtr
-x86DataToVendor(virCPUx86Data *data,
+x86DataToVendor(const virCPUx86Data *data,
                 virCPUx86MapPtr map)
 {
     virCPUx86VendorPtr vendor = map->vendors;
@@ -1591,6 +1591,7 @@ x86Decode(virCPUDefPtr cpu,
     virCPUx86Data *copy = NULL;
     virCPUx86Data *features = NULL;
     const virCPUx86Data *cpuData = NULL;
+    virCPUx86VendorPtr vendor;
     size_t i;
     int rc;
 
@@ -1599,6 +1600,8 @@ x86Decode(virCPUDefPtr cpu,
 
     if (!data || !(map = virCPUx86GetMap()))
         return -1;
+
+    vendor = x86DataToVendor(data, map);
 
     for (candidate = map->models; candidate; candidate = candidate->next) {
         if (!cpuModelIsAllowed(candidate->name, models, nmodels)) {
@@ -1620,18 +1623,18 @@ x86Decode(virCPUDefPtr cpu,
             continue;
         }
 
+        /* Both vendor and candidate->vendor are pointers to a single list of
+         * known vendors stored in the map.
+         */
+        if (vendor && candidate->vendor && vendor != candidate->vendor) {
+            VIR_DEBUG("CPU vendor %s of model %s differs from %s; ignoring",
+                      candidate->vendor->name, candidate->name, vendor->name);
+            continue;
+        }
+
         if (!(cpuCandidate = x86DataToCPU(data, candidate, map)))
             goto cleanup;
         cpuCandidate->type = cpu->type;
-
-        if (candidate->vendor && cpuCandidate->vendor &&
-            STRNEQ(candidate->vendor->name, cpuCandidate->vendor)) {
-            VIR_DEBUG("CPU vendor %s of model %s differs from %s; ignoring",
-                      candidate->vendor->name, candidate->name,
-                      cpuCandidate->vendor);
-            virCPUDefFree(cpuCandidate);
-            continue;
-        }
 
         if ((rc = x86DecodeUseCandidate(cpuModel, cpuCandidate, preferred,
                                         cpu->type == VIR_CPU_TYPE_HOST))) {
@@ -1677,8 +1680,10 @@ x86Decode(virCPUDefPtr cpu,
             goto cleanup;
     }
 
+    if (vendor && VIR_STRDUP(cpu->vendor, vendor->name) < 0)
+        goto cleanup;
+
     cpu->model = cpuModel->model;
-    cpu->vendor = cpuModel->vendor;
     cpu->nfeatures = cpuModel->nfeatures;
     cpu->features = cpuModel->features;
     VIR_FREE(cpuModel);
