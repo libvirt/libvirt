@@ -527,22 +527,22 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
 {
     virCPUx86VendorPtr vendor = NULL;
     char *string = NULL;
-    int ret = 0;
+    int ret = -1;
 
     if (VIR_ALLOC(vendor) < 0)
-        goto error;
+        goto cleanup;
 
     vendor->name = virXPathString("string(@name)", ctxt);
     if (!vendor->name) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing CPU vendor name"));
-        goto ignore;
+        goto cleanup;
     }
 
     if (x86VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU vendor %s already defined"), vendor->name);
-        goto ignore;
+        goto cleanup;
     }
 
     string = virXPathString("string(@string)", ctxt);
@@ -550,12 +550,12 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing vendor string for CPU vendor %s"),
                        vendor->name);
-        goto ignore;
+        goto cleanup;
     }
     if (strlen(string) != VENDOR_STRING_LENGTH) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid CPU vendor string '%s'"), string);
-        goto ignore;
+        goto cleanup;
     }
 
     vendor->cpuid.function = 0;
@@ -565,17 +565,14 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
 
     vendor->next = map->vendors;
     map->vendors = vendor;
+    vendor = NULL;
+
+    ret = 0;
 
  cleanup:
     VIR_FREE(string);
-
-    return ret;
-
- error:
-    ret = -1;
- ignore:
     x86VendorFree(vendor);
-    goto cleanup;
+    return ret;
 }
 
 
