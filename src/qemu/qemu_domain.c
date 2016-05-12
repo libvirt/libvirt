@@ -731,8 +731,7 @@ static void
 qemuDomainSecretPlainClear(qemuDomainSecretPlain secret)
 {
     VIR_FREE(secret.username);
-    memset(secret.secret, 0, strlen(secret.secret));
-    VIR_FREE(secret.secret);
+    VIR_DISPOSE_N(secret.secret, secret.secretlen);
 }
 
 
@@ -870,24 +869,18 @@ qemuDomainSecretPlainSetup(virConnectPtr conn,
                            virStorageNetProtocol protocol,
                            virStorageAuthDefPtr authdef)
 {
-    bool encode = false;
     int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
 
     secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN;
     if (VIR_STRDUP(secinfo->s.plain.username, authdef->username) < 0)
         return -1;
 
-    if (protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
-        /* qemu requires the secret to be encoded for RBD */
-        encode = true;
+    if (protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
         secretType = VIR_SECRET_USAGE_TYPE_CEPH;
-    }
 
-    if (!(secinfo->s.plain.secret =
-          virSecretGetSecretString(conn, encode, authdef, secretType)))
-        return -1;
-
-    return 0;
+    return virSecretGetSecretString(conn, authdef, secretType,
+                                    &secinfo->s.plain.secret,
+                                    &secinfo->s.plain.secretlen);
 }
 
 

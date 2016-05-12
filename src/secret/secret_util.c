@@ -27,7 +27,6 @@
 #include "virlog.h"
 #include "virobject.h"
 #include "viruuid.h"
-#include "base64.h"
 #include "datatypes.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
@@ -37,25 +36,26 @@ VIR_LOG_INIT("secret.secret_util");
 
 /* virSecretGetSecretString:
  * @conn: Pointer to the connection driver to make secret driver call
- * @encoded: Whether the returned secret needs to be base64 encoded
  * @authdef: Pointer to the disk storage authentication
  * @secretUsageType: Type of secret usage for authdef lookup
+ * @secret: returned secret as a sized stream of unsigned chars
+ * @secret_size: Return size of the secret - either raw text or base64
  *
- * Lookup the secret for the authdef usage type and return it either as
- * raw text or encoded based on the caller's need.
+ * Lookup the secret for the authdef usage type and return it as raw text.
+ * It is up to the caller to encode the secret further.
  *
- * Returns a pointer to memory that needs to be cleared and free'd after
- * usage or NULL on error.
+ * Returns 0 on success, -1 on failure.  On success the memory in secret
+ * needs to be cleared and free'd after usage.
  */
-char *
+int
 virSecretGetSecretString(virConnectPtr conn,
-                         bool encoded,
                          virStorageAuthDefPtr authdef,
-                         virSecretUsageType secretUsageType)
+                         virSecretUsageType secretUsageType,
+                         uint8_t **secret,
+                         size_t *secret_size)
 {
-    size_t secret_size;
     virSecretPtr sec = NULL;
-    char *secret = NULL;
+    int ret = -1;
 
     switch (authdef->secretType) {
     case VIR_STORAGE_SECRET_TYPE_UUID:
@@ -71,25 +71,15 @@ virSecretGetSecretString(virConnectPtr conn,
     if (!sec)
         goto cleanup;
 
-    secret = (char *)conn->secretDriver->secretGetValue(sec, &secret_size, 0,
-                                                        VIR_SECRET_GET_VALUE_INTERNAL_CALL);
+    *secret = conn->secretDriver->secretGetValue(sec, secret_size, 0,
+                                                 VIR_SECRET_GET_VALUE_INTERNAL_CALL);
 
-    if (!secret)
+    if (!*secret)
         goto cleanup;
 
-    if (encoded) {
-        char *base64 = NULL;
-
-        base64_encode_alloc(secret, secret_size, &base64);
-        VIR_FREE(secret);
-        if (!base64) {
-            virReportOOMError();
-            goto cleanup;
-        }
-        secret = base64;
-    }
+    ret = 0;
 
  cleanup:
     virObjectUnref(sec);
-    return secret;
+    return ret;
 }

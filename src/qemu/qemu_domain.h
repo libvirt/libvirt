@@ -251,7 +251,8 @@ typedef struct _qemuDomainSecretPlain qemuDomainSecretPlain;
 typedef struct _qemuDomainSecretPlain *qemuDomainSecretPlainPtr;
 struct _qemuDomainSecretPlain {
     char *username;
-    char *secret;
+    uint8_t *secret;
+    size_t secretlen;
 };
 
 # define QEMU_DOMAIN_AES_IV_LEN 16   /* 16 bytes for 128 bit random */

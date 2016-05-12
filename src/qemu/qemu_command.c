@@ -628,6 +628,12 @@ qemuBuildGeneralSecinfoURI(virURIPtr uri,
     switch ((qemuDomainSecretInfoType) secinfo->type) {
     case VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN:
         if (secinfo->s.plain.secret) {
+            if (!virStringBufferIsPrintable(secinfo->s.plain.secret,
+                                            secinfo->s.plain.secretlen)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("found non printable characters in secret"));
+                return -1;
+            }
             if (virAsprintf(&uri->user, "%s:%s",
                             secinfo->s.plain.username,
                             secinfo->s.plain.secret) < 0)
@@ -662,6 +668,8 @@ static int
 qemuBuildRBDSecinfoURI(virBufferPtr buf,
                        qemuDomainSecretInfoPtr secinfo)
 {
+    char *base64secret = NULL;
+
     if (!secinfo) {
         virBufferAddLit(buf, ":auth_supported=none");
         return 0;
@@ -669,11 +677,14 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
 
     switch ((qemuDomainSecretInfoType) secinfo->type) {
     case VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN:
-        virBufferEscape(buf, '\\', ":", ":id=%s",
-                        secinfo->s.plain.username);
+        if (!(base64secret = virStringEncodeBase64(secinfo->s.plain.secret,
+                                                   secinfo->s.plain.secretlen)))
+            return -1;
+        virBufferEscape(buf, '\\', ":", ":id=%s", secinfo->s.plain.username);
         virBufferEscape(buf, '\\', ":",
                         ":key=%s:auth_supported=cephx\\;none",
-                        secinfo->s.plain.secret);
+                        base64secret);
+        VIR_DISPOSE_STRING(base64secret);
         break;
 
     case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
