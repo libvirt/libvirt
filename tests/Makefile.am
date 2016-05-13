@@ -443,6 +443,7 @@ endif WITH_DBUS
 if WITH_LINUX
 test_libraries += virusbmock.la \
 		virnetdevbandwidthmock.la \
+		virtestmock.la
 		$(NULL)
 endif WITH_LINUX
 
@@ -1142,9 +1143,15 @@ virnetdevbandwidthmock_la_CFLAGS = $(AM_CFLAGS)
 virnetdevbandwidthmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virnetdevbandwidthmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
+virtestmock_la_SOURCES = \
+	virtestmock.c
+virtestmock_la_CFLAGS = $(AM_CFLAGS)
+virtestmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+virtestmock_la_LIBADD = $(MOCKLIBS_LIBS)
 else ! WITH_LINUX
 	EXTRA_DIST += virusbtest.c virusbmock.c \
-		virnetdevbandwidthtest.c virnetdevbandwidthmock.c
+		virnetdevbandwidthtest.c virnetdevbandwidthmock.c \
+		virtestmock.c
 endif ! WITH_LINUX
 
 if WITH_DBUS
