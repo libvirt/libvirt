@@ -583,3 +583,39 @@ void virFree(void *ptrptr)
     *(void**)ptrptr = NULL;
     errno = save_errno;
 }
+
+
+/**
+ * virDispose:
+ * @ptrptr: pointer to pointer for address of memory to be sanitized and freed
+ * @count: count of elements in the array to dispose
+ * @elemet_size: size of one element
+ * @countptr: pointer to the count variable to clear (may be NULL)
+ *
+ * Clear and release the chunk of memory in the pointer pointed to by 'prtptr'.
+ *
+ * If @countptr is provided, it's value is used instead of @count and it's set
+ * to 0 after clearing and freeing the memory.
+ *
+ * After release, 'ptrptr' will be updated to point to NULL.
+ */
+void virDispose(void *ptrptr,
+                size_t count,
+                size_t element_size,
+                size_t *countptr)
+{
+    int save_errno = errno;
+
+    if (countptr)
+        count = *countptr;
+
+    if (*(void**)ptrptr && count > 0)
+        memset(*(void **)ptrptr, 0, count * element_size);
+
+    free(*(void**)ptrptr);
+    *(void**)ptrptr = NULL;
+
+    if (countptr)
+        *countptr = 0;
+    errno = save_errno;
+}

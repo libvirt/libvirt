@@ -78,6 +78,9 @@ int virAllocVar(void *ptrptr, size_t struct_size, size_t element_size, size_t co
     ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NONNULL(1);
 void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
 
+void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countptr)
+    ATTRIBUTE_NONNULL(1);
+
 /**
  * VIR_ALLOC:
  * @ptr: pointer to hold address of allocated memory
@@ -560,6 +563,59 @@ void virFree(void *ptrptr) ATTRIBUTE_NONNULL(1);
  */
 #  define VIR_FREE(ptr) virFree(&(ptr))
 # endif
+
+
+/**
+ * VIR_DISPOSE_N:
+ * @ptr: pointer holding address to be cleared and freed
+ * @count: count of elements in @ptr
+ *
+ * Clear the memory of the array of elemets pointed to by 'ptr' of 'count'
+ * elements and free it. Update the pointer/count to NULL/0.
+ *
+ * This macro is safe to use on arguments with side effects.
+ */
+# if !STATIC_ANALYSIS
+/* See explanation in VIR_FREE */
+#  define VIR_DISPOSE_N(ptr, count) virDispose(1 ? (void *) &(ptr) : (ptr), 0, \
+                                             sizeof(*(ptr)), &(count))
+# else
+#  define VIR_DISPOSE_N(ptr, count) virDispose(&(ptr), 0, sizeof(*(ptr)), &(count))
+# endif
+
+
+/**
+ * VIR_DISPOSE_STRING:
+ * @ptr: pointer to a string to be cleared and freed
+ *
+ * Clears the string and frees the corresponding memory.
+ *
+ * This macro is not safe to be used on arguments with side effects.
+ */
+# if !STATIC_ANALYSIS
+/* See explanation in VIR_FREE */
+#  define VIR_DISPOSE_STRING(ptr) virDispose(1 ? (void *) &(ptr) : (ptr),      \
+                                             (ptr) ? strlen((ptr)) : 0, 1, NULL)
+# else
+#  define VIR_DISPOSE_STRING(ptr) virDispose(&(ptr), (ptr) ? strlen((ptr)) : 1, NULL)
+# endif
+
+
+/**
+ * VIR_DISPOSE:
+ * @ptr: pointer to memory to be cleared and freed
+ *
+ * Clears and frees the corresponding memory.
+ *
+ * This macro is safe to be used on arguments with side effects.
+ */
+# if !STATIC_ANALYSIS
+/* See explanation in VIR_FREE */
+#  define VIR_DISPOSE(ptr) virDispose(1 ? (void *) &(ptr) : (ptr), 1, sizeof(*(ptr)), NULL)
+# else
+#  define VIR_DISPOSE(ptr) virDispose(&(ptr), 1, sizeof(*(ptr)), NULL)
+# endif
+
 
 void virAllocTestInit(void);
 int virAllocTestCount(void);

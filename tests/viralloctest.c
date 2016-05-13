@@ -384,6 +384,41 @@ testInsertArray(const void *opaque ATTRIBUTE_UNUSED)
 
 
 static int
+testDispose(const void *opaque ATTRIBUTE_UNUSED)
+{
+    int *num = NULL;
+    int *nums = NULL;
+    size_t nnums = 0;
+    char *str = NULL;
+
+    VIR_DISPOSE(num);
+    VIR_DISPOSE_N(nums, nnums);
+    VIR_DISPOSE_STRING(str);
+
+    nnums = 10;
+    VIR_DISPOSE_N(nums, nnums);
+
+    if (VIR_ALLOC(num) < 0)
+        return -1;
+
+    VIR_DISPOSE(num);
+
+    nnums = 10;
+    if (VIR_ALLOC_N(nums, nnums) < 0)
+        return -1;
+
+    VIR_DISPOSE_N(nums, nnums);
+
+    if (VIR_STRDUP(str, "test") < 0)
+        return -1;
+
+    VIR_DISPOSE_STRING(str);
+
+    return 0;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -399,6 +434,8 @@ mymain(void)
     if (virtTestRun("resize array", testResizeArray, NULL) < 0)
         ret = -1;
     if (virtTestRun("insert array", testInsertArray, NULL) < 0)
+        ret = -1;
+    if (virtTestRun("dispose tests", testDispose, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
