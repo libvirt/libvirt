@@ -21,37 +21,20 @@
 #include <config.h>
 
 #ifdef NSS
-# include <stdio.h>
-# include <stdlib.h>
-# include <dlfcn.h>
+# include "virmock.h"
 # include <sys/types.h>
 # include <dirent.h>
 # include <sys/stat.h>
 # include <fcntl.h>
 
 # include "configmake.h"
-# include "internal.h"
 # include "virstring.h"
 # include "viralloc.h"
 
-static int (*realopen)(const char *path, int flags, ...);
-static DIR * (*realopendir)(const char *name);
+static int (*real_open)(const char *path, int flags, ...);
+static DIR * (*real_opendir)(const char *name);
 
 # define LEASEDIR LOCALSTATEDIR "/lib/libvirt/dnsmasq/"
-
-# define STDERR(...)                                                    \
-    fprintf(stderr, "%s %zu: ", __FUNCTION__, (size_t) __LINE__);       \
-    fprintf(stderr, __VA_ARGS__);                                       \
-    fprintf(stderr, "\n");                                              \
-
-# define ABORT(...)                                                     \
-    do {                                                                \
-        STDERR(__VA_ARGS__);                                            \
-        abort();                                                        \
-    } while (0)
-
-# define ABORT_OOM()                                                    \
-    ABORT("Out of memory")
 
 /*
  * Functions to load the symbols and init the environment
@@ -59,17 +42,11 @@ static DIR * (*realopendir)(const char *name);
 static void
 init_syms(void)
 {
-    if (realopen)
+    if (real_open)
         return;
 
-# define LOAD_SYM(name)                                                 \
-    do {                                                                \
-        if (!(real ## name = dlsym(RTLD_NEXT, #name)))                  \
-            ABORT("Cannot find real '%s' symbol\n", #name);             \
-    } while (0)
-
-    LOAD_SYM(open);
-    LOAD_SYM(opendir);
+    VIR_MOCK_REAL_INIT(open);
+    VIR_MOCK_REAL_INIT(opendir);
 }
 
 static int
@@ -109,9 +86,9 @@ open(const char *path, int flags, ...)
         va_start(ap, flags);
         mode = va_arg(ap, int);
         va_end(ap);
-        ret = realopen(newpath ? newpath : path, flags, mode);
+        ret = real_open(newpath ? newpath : path, flags, mode);
     } else {
-        ret = realopen(newpath ? newpath : path, flags);
+        ret = real_open(newpath ? newpath : path, flags);
     }
 
     VIR_FREE(newpath);
@@ -130,7 +107,7 @@ opendir(const char *path)
         getrealpath(&newpath, path) < 0)
         return NULL;
 
-    ret = realopendir(newpath ? newpath : path);
+    ret = real_opendir(newpath ? newpath : path);
 
     VIR_FREE(newpath);
     return ret;
