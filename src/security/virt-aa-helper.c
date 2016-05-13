@@ -148,62 +148,6 @@ vah_info(const char *str)
 }
 
 /*
- * Replace @oldstr in @orig with @repstr
- * @len is number of bytes allocated for @orig. Assumes @orig, @oldstr and
- * @repstr are null terminated
- */
-static int
-replace_string(char *orig, const size_t len, const char *oldstr,
-               const char *repstr)
-{
-    int idx;
-    char *pos = NULL;
-    char *tmp = NULL;
-
-    if ((pos = strstr(orig, oldstr)) == NULL) {
-        vah_error(NULL, 0, _("could not find replacement string"));
-        return -1;
-    }
-
-    if (VIR_ALLOC_N_QUIET(tmp, len) < 0) {
-        vah_error(NULL, 0, _("could not allocate memory for string"));
-        return -1;
-    }
-    tmp[0] = '\0';
-
-    idx = abs(pos - orig);
-
-    /* copy everything up to oldstr */
-    strncat(tmp, orig, idx);
-
-    /* add the replacement string */
-    if (strlen(tmp) + strlen(repstr) > len - 1) {
-        vah_error(NULL, 0, _("not enough space in target buffer"));
-        VIR_FREE(tmp);
-        return -1;
-    }
-    strcat(tmp, repstr);
-
-    /* add everything after oldstr */
-    if (strlen(tmp) + strlen(orig) - (idx + strlen(oldstr)) > len - 1) {
-        vah_error(NULL, 0, _("not enough space in target buffer"));
-        VIR_FREE(tmp);
-        return -1;
-    }
-    strncat(tmp, orig + idx + strlen(oldstr),
-            strlen(orig) - (idx + strlen(oldstr)));
-
-    if (virStrcpy(orig, tmp, len) == NULL) {
-        vah_error(NULL, 0, _("error replacing string"));
-        VIR_FREE(tmp);
-        return -1;
-    }
-    VIR_FREE(tmp);
-
-    return 0;
-}
-
-/*
  * run an apparmor_parser command
  */
 static int
@@ -340,6 +284,7 @@ create_profile(const char *profile, const char *profile_name,
     char *pcontent = NULL;
     char *replace_name = NULL;
     char *replace_files = NULL;
+    char *tmp = NULL;
     const char *template_name = "\nprofile LIBVIRT_TEMPLATE";
     const char *template_end = "\n}";
     int tlen, plen;
@@ -412,19 +357,16 @@ create_profile(const char *profile, const char *profile_name,
         goto clean_replace;
     }
 
-    if (VIR_ALLOC_N_QUIET(pcontent, plen) < 0) {
-        vah_error(NULL, 0, _("could not allocate memory for profile"));
-        goto clean_replace;
+    if (!(pcontent = virStringReplace(tcontent, template_name, replace_name)))
+        goto clean_all;
+
+    if (virtType != VIR_DOMAIN_VIRT_LXC) {
+        if (!(tmp = virStringReplace(pcontent, template_end, replace_files)))
+            goto clean_all;
+        VIR_FREE(pcontent);
+        pcontent = tmp;
+        tmp = NULL;
     }
-    pcontent[0] = '\0';
-    strcpy(pcontent, tcontent);
-
-    if (replace_string(pcontent, plen, template_name, replace_name) < 0)
-        goto clean_all;
-
-    if ((virtType != VIR_DOMAIN_VIRT_LXC) &&
-            replace_string(pcontent, plen, template_end, replace_files) < 0)
-        goto clean_all;
 
     /* write the file */
     if ((fd = open(profile, O_CREAT | O_EXCL | O_WRONLY, 0644)) == -1) {
