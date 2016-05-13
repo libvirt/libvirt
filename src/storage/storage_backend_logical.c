@@ -398,7 +398,8 @@ virStorageBackendLogicalFindLVs(virStoragePoolObjPtr pool,
                            vars,
                            virStorageBackendLogicalMakeVol,
                            &cbdata,
-                           "lvs") < 0)
+                           "lvs",
+                           NULL) < 0)
         goto cleanup;
 
     ret = 0;
@@ -511,10 +512,10 @@ virStorageBackendLogicalGetPoolSources(virStoragePoolSourceListPtr sourceList)
     cmd = virCommandNewArgList(PVS,
                                "--noheadings",
                                "-o", "pv_name,vg_name",
-                               NULL);
+                               NULL, NULL);
     if (virCommandRunRegex(cmd, 1, regexes, vars,
                            virStorageBackendLogicalFindPoolSourcesFunc,
-                           sourceList, "pvs") < 0)
+                           sourceList, "pvs", NULL) < 0)
         goto cleanup;
     ret = 0;
 
@@ -799,7 +800,8 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                            vars,
                            virStorageBackendLogicalRefreshPoolFunc,
                            pool,
-                           "vgs") < 0)
+                           "vgs",
+                           NULL) < 0)
         goto cleanup;
 
     ret = 0;

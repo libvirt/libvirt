@@ -87,7 +87,7 @@ virISCSIGetSession(const char *devpath,
                            regexes,
                            vars,
                            virISCSIExtractSession,
-                           &cbdata, NULL) < 0)
+                           &cbdata, NULL, NULL) < 0)
         goto cleanup;
 
     if (cbdata.session == NULL && !probe) {
@@ -437,7 +437,7 @@ virISCSIScanTargets(const char *portal,
                            regexes,
                            vars,
                            virISCSIGetTargets,
-                           &list, NULL) < 0)
+                           &list, NULL, NULL) < 0)
         goto cleanup;
 
     for (i = 0; i < list.ntargets; i++) {

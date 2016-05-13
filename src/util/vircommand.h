@@ -205,7 +205,8 @@ int virCommandRunRegex(virCommandPtr cmd,
                        int *nvars,
                        virCommandRunRegexFunc func,
                        void *data,
-                       const char *cmd_to_ignore);
+                       const char *cmd_to_ignore,
+                       int *exitstatus);
 
 int virCommandRunNul(virCommandPtr cmd,
                      size_t n_columns,
