@@ -1517,6 +1517,11 @@ bhyveConnectGetType(virConnectPtr conn)
     return "BHYVE";
 }
 
+static int bhyveConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return 1;
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectOpen = bhyveConnectOpen, /* 1.2.2 */
@@ -1567,6 +1572,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .connectDomainEventDeregisterAny = bhyveConnectDomainEventDeregisterAny, /* 1.2.5 */
     .domainHasManagedSaveImage = bhyveDomainHasManagedSaveImage, /* 1.2.13 */
     .connectGetType = bhyveConnectGetType, /* 1.3.5 */
+    .connectIsAlive = bhyveConnectIsAlive, /* 1.3.5 */
 };
 
 
