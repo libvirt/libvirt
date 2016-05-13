@@ -21,10 +21,8 @@
 #include <config.h>
 
 #ifdef __linux__
-# include "internal.h"
-
+# include "virmock.h"
 # include <stdio.h>
-# include <dlfcn.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
@@ -41,14 +39,14 @@
 # include "virstring.h"
 # include "virfile.h"
 
-static int (*realopen)(const char *path, int flags, ...);
-static FILE *(*realfopen)(const char *path, const char *mode);
-static int (*realaccess)(const char *path, int mode);
-static int (*realstat)(const char *path, struct stat *sb);
-static int (*real__xstat)(int ver, const char *path, struct stat *sb);
-static int (*reallstat)(const char *path, struct stat *sb);
-static int (*real__lxstat)(int ver, const char *path, struct stat *sb);
-static int (*realmkdir)(const char *path, mode_t mode);
+static int (*real_open)(const char *path, int flags, ...);
+static FILE *(*real_fopen)(const char *path, const char *mode);
+static int (*real_access)(const char *path, int mode);
+static int (*real_stat)(const char *path, struct stat *sb);
+static int (*real___xstat)(int ver, const char *path, struct stat *sb);
+static int (*real_lstat)(const char *path, struct stat *sb);
+static int (*real___lxstat)(int ver, const char *path, struct stat *sb);
+static int (*real_mkdir)(const char *path, mode_t mode);
 
 /* Don't make static, since it causes problems with clang
  * when passed as an arg to asprintf()
@@ -173,7 +171,7 @@ static int make_file(const char *path,
     if (asprintf(&filepath, "%s/%s", path, name) < 0)
         return -1;
 
-    if ((fd = realopen(filepath, O_CREAT|O_WRONLY, 0600)) < 0)
+    if ((fd = real_open(filepath, O_CREAT|O_WRONLY, 0600)) < 0)
         goto cleanup;
 
     if (write(fd, value, strlen(value)) != strlen(value))
@@ -204,7 +202,7 @@ static int make_controller(const char *path, mode_t mode)
     if (STREQ(controller, "cpuacct"))
         return symlink("cpu,cpuacct", path);
 
-    if (realmkdir(path, mode) < 0)
+    if (real_mkdir(path, mode) < 0)
         goto cleanup;
 
 # define MAKE_FILE(name, value)                 \
@@ -394,32 +392,15 @@ static int make_controller(const char *path, mode_t mode)
 
 static void init_syms(void)
 {
-    if (realfopen)
+    if (real_fopen)
         return;
 
-# define LOAD_SYM(name)                                                 \
-    do {                                                                \
-        if (!(real ## name = dlsym(RTLD_NEXT, #name))) {                \
-            fprintf(stderr, "Cannot find real '%s' symbol\n", #name);   \
-            abort();                                                    \
-        }                                                               \
-    } while (0)
-
-# define LOAD_SYM_ALT(name1, name2)                                     \
-    do {                                                                \
-        if (!(real ## name1 = dlsym(RTLD_NEXT, #name1)) &&              \
-            !(real ## name2 = dlsym(RTLD_NEXT, #name2))) {              \
-            fprintf(stderr, "Cannot find real '%s' or '%s' symbol\n", #name1, #name2); \
-            abort();                                                    \
-        }                                                               \
-    } while (0)
-
-    LOAD_SYM(fopen);
-    LOAD_SYM(access);
-    LOAD_SYM_ALT(lstat, __lxstat);
-    LOAD_SYM_ALT(stat, __xstat);
-    LOAD_SYM(mkdir);
-    LOAD_SYM(open);
+    VIR_MOCK_REAL_INIT(fopen);
+    VIR_MOCK_REAL_INIT(access);
+    VIR_MOCK_REAL_INIT_ALT(lstat, __lxstat);
+    VIR_MOCK_REAL_INIT_ALT(stat, __xstat);
+    VIR_MOCK_REAL_INIT(mkdir);
+    VIR_MOCK_REAL_INIT(open);
 }
 
 static void init_sysfs(void)
@@ -527,7 +508,7 @@ FILE *fopen(const char *path, const char *mode)
         }
     }
 
-    return realfopen(path, mode);
+    return real_fopen(path, mode);
 }
 
 int access(const char *path, int mode)
@@ -545,7 +526,7 @@ int access(const char *path, int mode)
             errno = ENOMEM;
             return -1;
         }
-        ret = realaccess(newpath, mode);
+        ret = real_access(newpath, mode);
         free(newpath);
     } else if (STREQ(path, "/proc/cgroups") ||
                STREQ(path, "/proc/self/cgroup") ||
@@ -557,7 +538,7 @@ int access(const char *path, int mode)
          * a symlink to /proc/self/mounts. */
         ret = 0;
     } else {
-        ret = realaccess(path, mode);
+        ret = real_access(path, mode);
     }
     return ret;
 }
@@ -577,7 +558,7 @@ int __lxstat(int ver, const char *path, struct stat *sb)
             errno = ENOMEM;
             return -1;
         }
-        ret = real__lxstat(ver, newpath, sb);
+        ret = real___lxstat(ver, newpath, sb);
         free(newpath);
     } else if (STRPREFIX(path, fakedevicedir0)) {
         sb->st_mode = S_IFBLK;
@@ -588,7 +569,7 @@ int __lxstat(int ver, const char *path, struct stat *sb)
         sb->st_rdev = makedev(9, 0);
         return 0;
     } else {
-        ret = real__lxstat(ver, path, sb);
+        ret = real___lxstat(ver, path, sb);
     }
     return ret;
 }
@@ -608,7 +589,7 @@ int lstat(const char *path, struct stat *sb)
             errno = ENOMEM;
             return -1;
         }
-        ret = reallstat(newpath, sb);
+        ret = real_lstat(newpath, sb);
         free(newpath);
     } else if (STRPREFIX(path, fakedevicedir0)) {
         sb->st_mode = S_IFBLK;
@@ -619,7 +600,7 @@ int lstat(const char *path, struct stat *sb)
         sb->st_rdev = makedev(9, 0);
         return 0;
     } else {
-        ret = reallstat(path, sb);
+        ret = real_lstat(path, sb);
     }
     return ret;
 }
@@ -639,7 +620,7 @@ int __xstat(int ver, const char *path, struct stat *sb)
             errno = ENOMEM;
             return -1;
         }
-        ret = real__xstat(ver, newpath, sb);
+        ret = real___xstat(ver, newpath, sb);
         free(newpath);
     } else if (STRPREFIX(path, fakedevicedir0)) {
         sb->st_mode = S_IFBLK;
@@ -650,7 +631,7 @@ int __xstat(int ver, const char *path, struct stat *sb)
         sb->st_rdev = makedev(9, 0);
         return 0;
     } else {
-        ret = real__xstat(ver, path, sb);
+        ret = real___xstat(ver, path, sb);
     }
     return ret;
 }
@@ -690,7 +671,7 @@ int stat(const char *path, struct stat *sb)
         if (!(newpath = strdup(path)))
             return -1;
     }
-    ret = realstat(newpath, sb);
+    ret = real_stat(newpath, sb);
     free(newpath);
     return ret;
 }
@@ -713,7 +694,7 @@ int mkdir(const char *path, mode_t mode)
         ret = make_controller(newpath, mode);
         free(newpath);
     } else {
-        ret = realmkdir(path, mode);
+        ret = real_mkdir(path, mode);
     }
     return ret;
 }
@@ -750,9 +731,9 @@ int open(const char *path, int flags, ...)
         va_start(ap, flags);
         mode = va_arg(ap, mode_t);
         va_end(ap);
-        ret = realopen(newpath ? newpath : path, flags, mode);
+        ret = real_open(newpath ? newpath : path, flags, mode);
     } else {
-        ret = realopen(newpath ? newpath : path, flags);
+        ret = real_open(newpath ? newpath : path, flags);
     }
     free(newpath);
     return ret;
