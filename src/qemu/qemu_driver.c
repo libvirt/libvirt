@@ -10038,6 +10038,8 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
 
     if (virTypedParamsValidate(params, nparams,
                                VIR_PERF_PARAM_CMT, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_MBMT, VIR_TYPED_PARAM_BOOLEAN,
+                               VIR_PERF_PARAM_MBML, VIR_TYPED_PARAM_BOOLEAN,
                                NULL) < 0)
         return -1;
 
@@ -19479,20 +19481,25 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 #undef QEMU_ADD_COUNT_PARAM
 
 static int
-qemuDomainGetStatsPerfCmt(virPerfPtr perf,
+qemuDomainGetStatsPerfRdt(virPerfPtr perf,
+                          virPerfEventType type,
                           virDomainStatsRecordPtr record,
                           int *maxparams)
 {
-    uint64_t cache = 0;
+    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
+    uint64_t value = 0;
 
-    if (virPerfReadEvent(perf, VIR_PERF_EVENT_CMT, &cache) < 0)
+    if (virPerfReadEvent(perf, type, &value) < 0)
         return -1;
+
+    snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "perf.%s",
+             virPerfEventTypeToString(type));
 
     if (virTypedParamsAddULLong(&record->params,
                                 &record->nparams,
                                 maxparams,
-                                "perf.cache",
-                                cache) < 0)
+                                param_name,
+                                value) < 0)
         return -1;
 
     return 0;
@@ -19515,7 +19522,9 @@ qemuDomainGetStatsPerf(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
         switch (i) {
         case VIR_PERF_EVENT_CMT:
-            if (qemuDomainGetStatsPerfCmt(priv->perf, record, maxparams) < 0)
+        case VIR_PERF_EVENT_MBMT:
+        case VIR_PERF_EVENT_MBML:
+            if (qemuDomainGetStatsPerfRdt(priv->perf, i, record, maxparams) < 0)
                 goto cleanup;
             break;
         }

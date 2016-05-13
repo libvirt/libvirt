@@ -1900,9 +1900,33 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
 /**
  * VIR_PERF_PARAM_CMT:
  *
- * Macro for typed parameter name that represents CMT perf event.
+ * Macro for typed parameter name that represents CMT perf event
+ * which can be used to measure the usage of cache (bytes) by
+ * applications running on the platform. It corresponds to the
+ * "perf.cmt" field in the *Stats APIs.
  */
 # define VIR_PERF_PARAM_CMT "cmt"
+
+/**
+ * VIR_PERF_PARAM_MBMT:
+ *
+ * Macro for typed parameter name that represents MBMT perf event
+ * which can be used to monitor total system bandwidth (bytes/s)
+ * from one level of cache to another. It corresponds to the
+ * "perf.mbmt" field in the *Stats APIs.
+
+ */
+# define VIR_PERF_PARAM_MBMT "mbmt"
+
+/**
+ * VIR_PERF_PARAM_MBML:
+ *
+ * Macro for typed parameter name that represents MBML perf event
+ * which can be used to monitor the amount of data (bytes/s) sent
+ * through the memory controller on the socket. It corresponds to
+ * the "perf.mbml" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_MBML "mbml"
 
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,

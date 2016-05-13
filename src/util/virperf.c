@@ -38,7 +38,7 @@ VIR_LOG_INIT("util.perf");
 #define VIR_FROM_THIS VIR_FROM_PERF
 
 VIR_ENUM_IMPL(virPerfEvent, VIR_PERF_EVENT_LAST,
-              "cmt");
+              "cmt", "mbmt", "mbml");
 
 struct virPerfEvent {
     int type;
@@ -110,10 +110,10 @@ virPerfGetEvent(virPerfPtr perf,
 }
 
 static int
-virPerfCmtEnable(virPerfEventPtr event,
+virPerfRdtEnable(virPerfEventPtr event,
                  pid_t pid)
 {
-    struct perf_event_attr cmt_attr;
+    struct perf_event_attr rdt_attr;
     char *buf = NULL;
     char *tmp = NULL;
     unsigned int event_type, scale;
@@ -127,32 +127,42 @@ virPerfCmtEnable(virPerfEventPtr event,
 
     if (virStrToLong_ui(buf, NULL, 10, &event_type) < 0) {
         virReportSystemError(errno, "%s",
-                             _("failed to get cmt event type"));
+                             _("failed to get rdt event type"));
         goto error;
     }
     VIR_FREE(buf);
 
-    if (virFileReadAll("/sys/devices/intel_cqm/events/llc_occupancy.scale",
-                       10, &buf) < 0)
-        goto error;
+    memset(&rdt_attr, 0, sizeof(rdt_attr));
+    rdt_attr.size = sizeof(rdt_attr);
+    rdt_attr.type = event_type;
+    rdt_attr.inherit = 1;
+    rdt_attr.disabled = 1;
+    rdt_attr.enable_on_exec = 0;
 
-    if (virStrToLong_ui(buf, NULL, 10, &scale) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("failed to get cmt scaling factor"));
-        goto error;
+    switch (event->type) {
+    case VIR_PERF_EVENT_CMT:
+        if (virFileReadAll("/sys/devices/intel_cqm/events/llc_occupancy.scale",
+                           10, &buf) < 0)
+            goto error;
+
+        if (virStrToLong_ui(buf, NULL, 10, &scale) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("failed to get cmt scaling factor"));
+            goto error;
+        }
+        event->efields.cmt.scale = scale;
+
+        rdt_attr.config = 1;
+        break;
+    case VIR_PERF_EVENT_MBMT:
+        rdt_attr.config = 2;
+        break;
+    case VIR_PERF_EVENT_MBML:
+        rdt_attr.config = 3;
+        break;
     }
 
-    event->efields.cmt.scale = scale;
-
-    memset(&cmt_attr, 0, sizeof(cmt_attr));
-    cmt_attr.size = sizeof(cmt_attr);
-    cmt_attr.type = event_type;
-    cmt_attr.config = 1;
-    cmt_attr.inherit = 1;
-    cmt_attr.disabled = 1;
-    cmt_attr.enable_on_exec = 0;
-
-    event->fd = syscall(__NR_perf_event_open, &cmt_attr, pid, -1, -1, 0);
+    event->fd = syscall(__NR_perf_event_open, &rdt_attr, pid, -1, -1, 0);
     if (event->fd < 0) {
         virReportSystemError(errno,
                              _("Unable to open perf type=%d for pid=%d"),
@@ -161,8 +171,9 @@ virPerfCmtEnable(virPerfEventPtr event,
     }
 
     if (ioctl(event->fd, PERF_EVENT_IOC_ENABLE) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to enable perf event for CMT"));
+        virReportSystemError(errno,
+                             _("Unable to enable perf event for %s"),
+                             virPerfEventTypeToString(event->type));
         goto error;
     }
 
@@ -186,7 +197,9 @@ virPerfEventEnable(virPerfPtr perf,
 
     switch (type) {
     case VIR_PERF_EVENT_CMT:
-        if (virPerfCmtEnable(event, pid) < 0)
+    case VIR_PERF_EVENT_MBMT:
+    case VIR_PERF_EVENT_MBML:
+        if (virPerfRdtEnable(event, pid) < 0)
             return -1;
         break;
     case VIR_PERF_EVENT_LAST:

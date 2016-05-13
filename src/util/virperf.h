@@ -26,6 +26,8 @@
 
 typedef enum {
     VIR_PERF_EVENT_CMT,
+    VIR_PERF_EVENT_MBMT,
+    VIR_PERF_EVENT_MBML,
 
     VIR_PERF_EVENT_LAST
 } virPerfEventType;

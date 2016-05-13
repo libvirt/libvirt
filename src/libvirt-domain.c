@@ -11441,6 +11441,18 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * "block.<num>.physical" - physical size in bytes of the container of the
  *                          backing image as unsigned long long.
  *
+ * VIR_DOMAIN_STATS_PERF: Return perf event statistics.
+ * The typed parameter keys are in this format:
+ * "perf.cmt" - the usage of l3 cache (bytes) by applications running on the
+ *              platform as unsigned long long. It is produced by cmt perf
+ *              event.
+ * "perf.mbmt" - the total system bandwidth (bytes/s) from one level of cache
+ *               to another as unsigned long long. It is produced by mbmt perf
+ *               event.
+ * "perf.mbml" - the amount of data (bytes/s) sent through the memory controller
+ *               on the socket as unsigned long long. It is produced by mbml
+ *               perf event.
+ *
  * Note that entire stats groups or individual stat fields may be missing from
  * the output in case they are not supported by the given hypervisor, are not
  * applicable for the current state of the guest domain, or their retrieval
