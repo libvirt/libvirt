@@ -2900,6 +2900,7 @@ virCommandSetDryRun(virBufferPtr buf,
  * needs to return 0 on success
  * @data: additional data that will be passed to the callback function
  * @prefix: prefix that will be skipped at the beginning of each line
+ * @exitstatus: allows the caller to handle command run exit failures
  *
  * Run an external program.
  *
@@ -2917,7 +2918,8 @@ virCommandRunRegex(virCommandPtr cmd,
                    int *nvars,
                    virCommandRunRegexFunc func,
                    void *data,
-                   const char *prefix)
+                   const char *prefix,
+                   int *exitstatus)
 {
     int err;
     regex_t *reg;
@@ -2959,7 +2961,7 @@ virCommandRunRegex(virCommandPtr cmd,
         goto cleanup;
 
     virCommandSetOutputBuffer(cmd, &outbuf);
-    if (virCommandRun(cmd, NULL) < 0)
+    if (virCommandRun(cmd, exitstatus) < 0)
         goto cleanup;
 
     if (!outbuf) {
@@ -3114,7 +3116,8 @@ virCommandRunRegex(virCommandPtr cmd ATTRIBUTE_UNUSED,
                    int *nvars ATTRIBUTE_UNUSED,
                    virCommandRunRegexFunc func ATTRIBUTE_UNUSED,
                    void *data ATTRIBUTE_UNUSED,
-                   const char *prefix ATTRIBUTE_UNUSED)
+                   const char *prefix ATTRIBUTE_UNUSED,
+                   int *exitstatus ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("%s not implemented on Win32"), __FUNCTION__);

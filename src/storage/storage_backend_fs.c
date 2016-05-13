@@ -267,7 +267,7 @@ virStorageBackendFileSystemNetFindNFSPoolSources(virNetfsDiscoverState *state)
 
     if (virCommandRunRegex(cmd, 1, regexes, vars,
                            virStorageBackendFileSystemNetFindPoolSourcesFunc,
-                           state, NULL) < 0)
+                           state, NULL, NULL) < 0)
         goto cleanup;
 
     ret = 0;
