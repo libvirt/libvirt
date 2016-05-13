@@ -105,17 +105,8 @@ int cpuMapLoad(const char *arch,
         goto cleanup;
     }
 
-    if ((xml = xmlParseFile(mapfile)) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse CPU map file: %s"),
-                       mapfile);
+    if (!(xml = virXMLParseFileCtxt(mapfile, &ctxt)))
         goto cleanup;
-    }
-
-    if ((ctxt = xmlXPathNewContext(xml)) == NULL) {
-        virReportOOMError();
-        goto cleanup;
-    }
 
     virBufferAsprintf(&buf, "./arch[@name='%s']", arch);
     if (virBufferCheckError(&buf) < 0)
