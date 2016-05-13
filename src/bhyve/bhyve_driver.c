@@ -1508,6 +1508,15 @@ bhyveDomainHasManagedSaveImage(virDomainPtr domain, unsigned int flags)
     return ret;
 }
 
+static const char *
+bhyveConnectGetType(virConnectPtr conn)
+{
+    if (virConnectGetTypeEnsureACL(conn) < 0)
+        return NULL;
+
+    return "BHYVE";
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectOpen = bhyveConnectOpen, /* 1.2.2 */
@@ -1557,6 +1566,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .connectDomainEventRegisterAny = bhyveConnectDomainEventRegisterAny, /* 1.2.5 */
     .connectDomainEventDeregisterAny = bhyveConnectDomainEventDeregisterAny, /* 1.2.5 */
     .domainHasManagedSaveImage = bhyveDomainHasManagedSaveImage, /* 1.2.13 */
+    .connectGetType = bhyveConnectGetType, /* 1.3.5 */
 };
 
 
