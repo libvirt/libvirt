@@ -119,6 +119,7 @@ mymain(void)
     DO_TEST("cputune", false);
     DO_TEST("cpusettune", false);
     DO_TEST("blkiotune", false);
+    DO_TEST("ethernet", false);
 
     virObjectUnref(xmlopt);
     virObjectUnref(caps);

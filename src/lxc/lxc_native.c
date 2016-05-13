@@ -360,14 +360,13 @@ lxcCreateNetDef(const char *type,
         net->mac = macAddr;
 
     if (STREQ(type, "veth")) {
-        if (!linkdev)
-            goto error;
-
-        net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
-
-        if (VIR_STRDUP(net->data.bridge.brname, linkdev) < 0)
-            goto error;
-
+        if (linkdev) {
+            net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+            if (VIR_STRDUP(net->data.bridge.brname, linkdev) < 0)
+                goto error;
+        } else {
+            net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+        }
     } else if (STREQ(type, "macvlan")) {
         net->type = VIR_DOMAIN_NET_TYPE_DIRECT;
 

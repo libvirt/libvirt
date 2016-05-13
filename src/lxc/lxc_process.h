@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2012 Red Hat, Inc.
+ * Copyright (C) 2010-2012, 2016 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_process.h: LXC process lifecycle management
@@ -47,9 +47,10 @@ void virLXCProcessAutostartAll(virLXCDriverPtr driver);
 int virLXCProcessReconnectAll(virLXCDriverPtr driver,
                               virDomainObjListPtr doms);
 
-char *virLXCProcessSetupInterfaceBridged(virDomainDefPtr vm,
-                                         virDomainNetDefPtr net,
-                                         const char *brname);
+int virLXCProcessValidateInterface(virDomainNetDefPtr net);
+char *virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
+                                     virDomainNetDefPtr net,
+                                     const char *brname);
 char *virLXCProcessSetupInterfaceDirect(virConnectPtr conn,
                                         virDomainDefPtr def,
                                         virDomainNetDefPtr net);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2015 Red Hat, Inc.
+ * Copyright (C) 2010-2016 Red Hat, Inc.
  * Copyright IBM Corp. 2008
  *
  * lxc_driver.c: linux container driver functions
@@ -4278,6 +4278,9 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
         goto cleanup;
     }
 
+    if (virLXCProcessValidateInterface(net) < 0)
+       return -1;
+
     /* preallocate new slot for device */
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets+1) < 0)
         return -1;
@@ -4300,15 +4303,15 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
                            _("No bridge name specified"));
             goto cleanup;
         }
-        if (!(veth = virLXCProcessSetupInterfaceBridged(vm->def,
-                                                        net,
-                                                        brname)))
+        if (!(veth = virLXCProcessSetupInterfaceTap(vm->def, net, brname)))
             goto cleanup;
     }   break;
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        if (!(veth = virLXCProcessSetupInterfaceTap(vm->def, net, NULL)))
+            goto cleanup;
+        break;
     case VIR_DOMAIN_NET_TYPE_DIRECT: {
-        if (!(veth = virLXCProcessSetupInterfaceDirect(conn,
-                                                       vm->def,
-                                                       net)))
+        if (!(veth = virLXCProcessSetupInterfaceDirect(conn, vm->def, net)))
             goto cleanup;
     }   break;
     default:
@@ -4345,6 +4348,7 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
         switch (actualType) {
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
         case VIR_DOMAIN_NET_TYPE_NETWORK:
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
             ignore_value(virNetDevVethDelete(veth));
             break;
 
@@ -4770,6 +4774,7 @@ lxcDomainDetachDeviceNetLive(virDomainObjPtr vm,
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
         if (virNetDevVethDelete(detach->ifname) < 0) {
             virDomainAuditNet(vm, detach, NULL, "detach", false);
             goto cleanup;

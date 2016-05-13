@@ -256,9 +256,22 @@ static void virLXCProcessCleanup(virLXCDriverPtr driver,
 }
 
 
-char *virLXCProcessSetupInterfaceBridged(virDomainDefPtr vm,
-                                         virDomainNetDefPtr net,
-                                         const char *brname)
+int
+virLXCProcessValidateInterface(virDomainNetDefPtr net)
+{
+    if (net->script) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("scripts are not supported on LXC network interfaces"));
+        return -1;
+    }
+    return 0;
+}
+
+
+char *
+virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
+                               virDomainNetDefPtr net,
+                               const char *brname)
 {
     char *ret = NULL;
     char *parentVeth;
@@ -277,13 +290,15 @@ char *virLXCProcessSetupInterfaceBridged(virDomainDefPtr vm,
     if (virNetDevSetMAC(containerVeth, &net->mac) < 0)
         goto cleanup;
 
-    if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
-        if (virNetDevOpenvswitchAddPort(brname, parentVeth, &net->mac,
-                                        vm->uuid, vport, virDomainNetGetActualVlan(net)) < 0)
-            goto cleanup;
-    } else {
-        if (virNetDevBridgeAddPort(brname, parentVeth) < 0)
-            goto cleanup;
+    if (brname) {
+        if (vport && vport->virtPortType == VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH) {
+            if (virNetDevOpenvswitchAddPort(brname, parentVeth, &net->mac, vm->uuid,
+                                            vport, virDomainNetGetActualVlan(net)) < 0)
+                goto cleanup;
+        } else {
+            if (virNetDevBridgeAddPort(brname, parentVeth) < 0)
+                goto cleanup;
+        }
     }
 
     if (virNetDevSetOnline(parentVeth, true) < 0)
@@ -530,6 +545,10 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
          * to the one defined in the network definition.
          */
         net = def->nets[i];
+
+        if (virLXCProcessValidateInterface(net) < 0)
+            return -1;
+
         if (networkAllocateActualDevice(def, net) < 0)
             goto cleanup;
 
@@ -546,20 +565,18 @@ static int virLXCProcessSetupInterfaces(virConnectPtr conn,
                                _("No bridge name specified"));
                 goto cleanup;
             }
-            if (!(veth = virLXCProcessSetupInterfaceBridged(def,
-                                                            net,
-                                                            brname)))
+            if (!(veth = virLXCProcessSetupInterfaceTap(def, net, brname)))
                 goto cleanup;
         }   break;
-
+        case VIR_DOMAIN_NET_TYPE_ETHERNET:
+            if (!(veth = virLXCProcessSetupInterfaceTap(def, net, NULL)))
+                goto cleanup;
+            break;
         case VIR_DOMAIN_NET_TYPE_DIRECT:
-            if (!(veth = virLXCProcessSetupInterfaceDirect(conn,
-                                                           def,
-                                                           net)))
+            if (!(veth = virLXCProcessSetupInterfaceDirect(conn, def, net)))
                 goto cleanup;
             break;
 
-        case VIR_DOMAIN_NET_TYPE_ETHERNET:
         case VIR_DOMAIN_NET_TYPE_USER:
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         case VIR_DOMAIN_NET_TYPE_SERVER:
