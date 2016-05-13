@@ -197,9 +197,7 @@ virStorageBackendISCSIFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!(portal = virStorageBackendISCSIPortal(source)))
         goto cleanup;
 
-    if (virISCSIScanTargets(portal,
-                            source->initiator.iqn,
-                            &ntargets, &targets) < 0)
+    if (virISCSIScanTargets(portal, &ntargets, &targets) < 0)
         goto cleanup;
 
     if (VIR_ALLOC_N(list.sources, ntargets) < 0)
@@ -399,9 +397,7 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
          * iscsiadm doesn't let you login to a target, unless you've
          * first issued a 'sendtargets' command to the portal :-(
          */
-        if (virISCSIScanTargets(portal,
-                                pool->def->source.initiator.iqn,
-                                NULL, NULL) < 0)
+        if (virISCSIScanTargets(portal, NULL, NULL) < 0)
             goto cleanup;
 
         if (virStorageBackendISCSISetAuth(portal, conn, &pool->def->source) < 0)

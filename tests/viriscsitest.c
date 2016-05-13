@@ -145,8 +145,7 @@ testISCSIScanTargets(const void *data)
 
     virCommandSetDryRun(NULL, testIscsiadmCb, NULL);
 
-    if (virISCSIScanTargets(info->portal, NULL,
-                            &ntargets, &targets) < 0)
+    if (virISCSIScanTargets(info->portal, &ntargets, &targets) < 0)
         goto cleanup;
 
     if (info->nexpected != ntargets) {
