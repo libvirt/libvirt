@@ -1228,7 +1228,7 @@ qemuConnectSupportsFeature(virConnectPtr conn, int feature)
     }
 }
 
-static const char *qemuConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
+static const char *qemuConnectGetType(virConnectPtr conn) {
     if (virConnectGetTypeEnsureACL(conn) < 0)
         return NULL;
 
