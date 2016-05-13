@@ -2444,6 +2444,11 @@ virSecuritySELinuxSetAllLabel(virSecurityManagerPtr mgr,
                                      data->content_context) < 0)
         return -1;
 
+    if (def->os.slic_table &&
+        virSecuritySELinuxSetFilecon(mgr, def->os.slic_table,
+                                     data->content_context) < 0)
+        return -1;
+
     if (stdin_path &&
         virSecuritySELinuxSetFilecon(mgr, stdin_path,
                                      data->content_context) < 0)

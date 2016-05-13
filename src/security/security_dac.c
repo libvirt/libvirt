@@ -1218,6 +1218,11 @@ virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
                                    def->os.dtb, user, group) < 0)
         return -1;
 
+    if (def->os.slic_table &&
+        virSecurityDACSetOwnership(priv, NULL,
+                                   def->os.slic_table, user, group) < 0)
+        return -1;
+
     return 0;
 }
 
