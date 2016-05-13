@@ -728,7 +728,7 @@ qemuDomainMasterKeyCreate(virDomainObjPtr vm)
 
 
 static void
-qemuDomainSecretPlainFree(qemuDomainSecretPlain secret)
+qemuDomainSecretPlainClear(qemuDomainSecretPlain secret)
 {
     VIR_FREE(secret.username);
     memset(secret.secret, 0, strlen(secret.secret));
@@ -737,7 +737,7 @@ qemuDomainSecretPlainFree(qemuDomainSecretPlain secret)
 
 
 static void
-qemuDomainSecretAESFree(qemuDomainSecretAES secret)
+qemuDomainSecretAESClear(qemuDomainSecretAES secret)
 {
     VIR_FREE(secret.username);
     VIR_FREE(secret.alias);
@@ -754,11 +754,11 @@ qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr *secinfo)
 
     switch ((qemuDomainSecretInfoType) (*secinfo)->type) {
     case VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN:
-        qemuDomainSecretPlainFree((*secinfo)->s.plain);
+        qemuDomainSecretPlainClear((*secinfo)->s.plain);
         break;
 
     case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
-        qemuDomainSecretAESFree((*secinfo)->s.aes);
+        qemuDomainSecretAESClear((*secinfo)->s.aes);
         break;
 
     case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
