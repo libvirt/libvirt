@@ -307,7 +307,7 @@ virISCSIConnection(const char *portal,
              * portal. Without the sendtargets all that is received is a
              * "iscsiadm: No records found"
              */
-            if (virISCSIScanTargets(portal, initiatoriqn, NULL, NULL) < 0)
+            if (virISCSIScanTargets(portal, NULL, NULL) < 0)
                 goto cleanup;
 
             break;
@@ -392,7 +392,6 @@ virISCSIGetTargets(char **const groups,
 
 int
 virISCSIScanTargets(const char *portal,
-                    const char *initiatoriqn ATTRIBUTE_UNUSED,
                     size_t *ntargetsret,
                     char ***targetsret)
 {

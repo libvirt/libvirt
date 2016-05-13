@@ -49,7 +49,6 @@ virISCSIRescanLUNs(const char *session)
 
 int
 virISCSIScanTargets(const char *portal,
-                    const char *initiatoriqn,
                     size_t *ntargetsret,
                     char ***targetsret)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
