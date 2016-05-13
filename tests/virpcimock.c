@@ -21,9 +21,8 @@
 #include <config.h>
 
 #ifdef __linux__
-# include "internal.h"
+# include "virmock.h"
 # include <stdio.h>
-# include <dlfcn.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
@@ -35,15 +34,15 @@
 # include "virfile.h"
 # include "dirname.h"
 
-static int (*realaccess)(const char *path, int mode);
-static int (*reallstat)(const char *path, struct stat *sb);
-static int (*real__lxstat)(int ver, const char *path, struct stat *sb);
-static int (*realstat)(const char *path, struct stat *sb);
-static int (*real__xstat)(int ver, const char *path, struct stat *sb);
-static char *(*realcanonicalize_file_name)(const char *path);
-static int (*realopen)(const char *path, int flags, ...);
-static int (*realclose)(int fd);
-static DIR * (*realopendir)(const char *name);
+static int (*real_access)(const char *path, int mode);
+static int (*real_lstat)(const char *path, struct stat *sb);
+static int (*real___lxstat)(int ver, const char *path, struct stat *sb);
+static int (*real_stat)(const char *path, struct stat *sb);
+static int (*real___xstat)(int ver, const char *path, struct stat *sb);
+static char *(*real_canonicalize_file_name)(const char *path);
+static int (*real_open)(const char *path, int flags, ...);
+static int (*real_close)(int fd);
+static DIR * (*real_opendir)(const char *name);
 
 /* Don't make static, since it causes problems with clang
  * when passed as an arg to virAsprintf()
@@ -181,7 +180,7 @@ make_file(const char *path,
     if (virAsprintfQuiet(&filepath, "%s/%s", path, name) < 0)
         ABORT_OOM();
 
-    if ((fd = realopen(filepath, O_CREAT|O_WRONLY, 0666)) < 0)
+    if ((fd = real_open(filepath, O_CREAT|O_WRONLY, 0666)) < 0)
         ABORT("Unable to open: %s", filepath);
 
     if (value && safewrite(fd, value, len) != len)
@@ -207,7 +206,7 @@ pci_read_file(const char *path,
         goto cleanup;
     }
 
-    if ((fd = realopen(newpath, O_RDWR)) < 0)
+    if ((fd = real_open(newpath, O_RDWR)) < 0)
         goto cleanup;
 
     bzero(buf, buf_size);
@@ -222,7 +221,7 @@ pci_read_file(const char *path,
     ret = 0;
  cleanup:
     VIR_FREE(newpath);
-    realclose(fd);
+    real_close(fd);
     return ret;
 }
 
@@ -354,8 +353,8 @@ pci_device_new_from_stub(const struct pciDevice *data)
 
     /* If there is a config file for the device within virpcitestdata dir,
      * symlink it. Otherwise create a dummy config file. */
-    if ((realstat && realstat(configSrc, &sb) == 0) ||
-        (real__xstat && real__xstat(_STAT_VER, configSrc, &sb) == 0)) {
+    if ((real_stat && real_stat(configSrc, &sb) == 0) ||
+        (real___xstat && real___xstat(_STAT_VER, configSrc, &sb) == 0)) {
         /* On success, copy @configSrc into the destination (a copy,
          * rather than a symlink, is required since we write into the
          * file, and parallel VPATH builds must not stomp on the
@@ -772,30 +771,16 @@ pci_driver_handle_remove_id(const char *path)
 static void
 init_syms(void)
 {
-    if (realaccess)
+    if (real_access)
         return;
 
-# define LOAD_SYM(name)                                                 \
-    do {                                                                \
-        if (!(real ## name = dlsym(RTLD_NEXT, #name)))                  \
-            ABORT("Cannot find real '%s' symbol\n", #name);             \
-    } while (0)
-
-# define LOAD_SYM_ALT(name1, name2)                                     \
-    do {                                                                \
-        if (!(real ## name1 = dlsym(RTLD_NEXT, #name1)) &&              \
-            !(real ## name2 = dlsym(RTLD_NEXT, #name2)))                \
-            ABORT("Cannot find real '%s' or '%s' symbol\n",             \
-                  #name1, #name2);                                      \
-    } while (0)
-
-    LOAD_SYM(access);
-    LOAD_SYM_ALT(lstat, __lxstat);
-    LOAD_SYM_ALT(stat, __xstat);
-    LOAD_SYM(canonicalize_file_name);
-    LOAD_SYM(open);
-    LOAD_SYM(close);
-    LOAD_SYM(opendir);
+    VIR_MOCK_REAL_INIT(access);
+    VIR_MOCK_REAL_INIT_ALT(lstat, __lxstat);
+    VIR_MOCK_REAL_INIT_ALT(stat, __xstat);
+    VIR_MOCK_REAL_INIT(canonicalize_file_name);
+    VIR_MOCK_REAL_INIT(open);
+    VIR_MOCK_REAL_INIT(close);
+    VIR_MOCK_REAL_INIT(opendir);
 }
 
 static void
@@ -865,10 +850,10 @@ access(const char *path, int mode)
         char *newpath;
         if (getrealpath(&newpath, path) < 0)
             return -1;
-        ret = realaccess(newpath, mode);
+        ret = real_access(newpath, mode);
         VIR_FREE(newpath);
     } else {
-        ret = realaccess(path, mode);
+        ret = real_access(path, mode);
     }
     return ret;
 }
@@ -884,10 +869,10 @@ __lxstat(int ver, const char *path, struct stat *sb)
         char *newpath;
         if (getrealpath(&newpath, path) < 0)
             return -1;
-        ret = real__lxstat(ver, newpath, sb);
+        ret = real___lxstat(ver, newpath, sb);
         VIR_FREE(newpath);
     } else {
-        ret = real__lxstat(ver, path, sb);
+        ret = real___lxstat(ver, path, sb);
     }
     return ret;
 }
@@ -903,10 +888,10 @@ lstat(const char *path, struct stat *sb)
         char *newpath;
         if (getrealpath(&newpath, path) < 0)
             return -1;
-        ret = reallstat(newpath, sb);
+        ret = real_lstat(newpath, sb);
         VIR_FREE(newpath);
     } else {
-        ret = reallstat(path, sb);
+        ret = real_lstat(path, sb);
     }
     return ret;
 }
@@ -922,10 +907,10 @@ __xstat(int ver, const char *path, struct stat *sb)
         char *newpath;
         if (getrealpath(&newpath, path) < 0)
             return -1;
-        ret = real__xstat(ver, newpath, sb);
+        ret = real___xstat(ver, newpath, sb);
         VIR_FREE(newpath);
     } else {
-        ret = real__xstat(ver, path, sb);
+        ret = real___xstat(ver, path, sb);
     }
     return ret;
 }
@@ -941,10 +926,10 @@ stat(const char *path, struct stat *sb)
         char *newpath;
         if (getrealpath(&newpath, path) < 0)
             return -1;
-        ret = realstat(newpath, sb);
+        ret = real_stat(newpath, sb);
         VIR_FREE(newpath);
     } else {
-        ret = realstat(path, sb);
+        ret = real_stat(path, sb);
     }
     return ret;
 }
@@ -960,10 +945,10 @@ canonicalize_file_name(const char *path)
         char *newpath;
         if (getrealpath(&newpath, path) < 0)
             return NULL;
-        ret = realcanonicalize_file_name(newpath);
+        ret = real_canonicalize_file_name(newpath);
         VIR_FREE(newpath);
     } else {
-        ret = realcanonicalize_file_name(path);
+        ret = real_canonicalize_file_name(path);
     }
     return ret;
 }
@@ -986,16 +971,16 @@ open(const char *path, int flags, ...)
         va_start(ap, flags);
         mode = va_arg(ap, mode_t);
         va_end(ap);
-        ret = realopen(newpath ? newpath : path, flags, mode);
+        ret = real_open(newpath ? newpath : path, flags, mode);
     } else {
-        ret = realopen(newpath ? newpath : path, flags);
+        ret = real_open(newpath ? newpath : path, flags);
     }
 
     /* Catch both: /sys/bus/pci/drivers/... and
      * /sys/bus/pci/device/.../driver/... */
     if (ret >= 0 && STRPREFIX(path, SYSFS_PCI_PREFIX) &&
         strstr(path, "driver") && add_fd(ret, path) < 0) {
-        realclose(ret);
+        real_close(ret);
         ret = -1;
     }
 
@@ -1015,7 +1000,7 @@ opendir(const char *path)
         getrealpath(&newpath, path) < 0)
         return NULL;
 
-    ret = realopendir(newpath ? newpath : path);
+    ret = real_opendir(newpath ? newpath : path);
 
     VIR_FREE(newpath);
     return ret;
@@ -1026,7 +1011,7 @@ close(int fd)
 {
     if (remove_fd(fd) < 0)
         return -1;
-    return realclose(fd);
+    return real_close(fd);
 }
 #else
 /* Nothing to override on non-__linux__ platforms */
