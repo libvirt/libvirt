@@ -277,4 +277,6 @@ void virStringStripControlChars(char *str);
 
 bool virStringIsPrintable(const char *str);
 
+char *virStringEncodeBase64(const uint8_t *buf, size_t buflen);
+
 #endif /* __VIR_STRING_H__ */

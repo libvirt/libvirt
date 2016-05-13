@@ -2303,6 +2303,7 @@ virSkipSpacesBackwards;
 virStrcpy;
 virStrdup;
 virStringArrayHasString;
+virStringEncodeBase64;
 virStringFreeList;
 virStringFreeListCount;
 virStringGetFirstWithPrefix;

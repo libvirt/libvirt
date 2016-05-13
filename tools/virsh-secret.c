@@ -32,6 +32,7 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virutil.h"
+#include "virstring.h"
 #include "conf/secret_conf.h"
 
 static virSecretPtr
@@ -265,20 +266,15 @@ cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
     if (value == NULL)
         goto cleanup;
 
-    base64_encode_alloc((char *)value, value_size, &base64);
-    memset(value, 0, value_size);
-    VIR_FREE(value);
-
-    if (base64 == NULL) {
-        vshError(ctl, "%s", _("Failed to allocate memory"));
+    if (!(base64 = virStringEncodeBase64(value, value_size)))
         goto cleanup;
-    }
+
     vshPrint(ctl, "%s", base64);
-    memset(base64, 0, strlen(base64));
-    VIR_FREE(base64);
     ret = true;
 
  cleanup:
+    VIR_DISPOSE_N(value, value_size);
+    VIR_DISPOSE_STRING(base64);
     virSecretFree(secret);
     return ret;
 }

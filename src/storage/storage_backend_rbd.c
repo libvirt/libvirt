@@ -59,7 +59,7 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     int r = 0;
     virStorageAuthDefPtr authdef = source->auth;
     unsigned char *secret_value = NULL;
-    size_t secret_value_size;
+    size_t secret_value_size = 0;
     char *rados_key = NULL;
     virBuffer mon_host = VIR_BUFFER_INITIALIZER;
     virSecretPtr secret = NULL;
@@ -129,15 +129,8 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
             goto cleanup;
         }
 
-        base64_encode_alloc((char *)secret_value,
-                            secret_value_size, &rados_key);
-        memset(secret_value, 0, secret_value_size);
-
-        if (rados_key == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("failed to decode the RADOS key"));
+        if (!(rados_key = virStringEncodeBase64(secret_value, secret_value_size)))
             goto cleanup;
-        }
 
         VIR_DEBUG("Found cephx key: %s", rados_key);
         if (rados_conf_set(ptr->cluster, "key", rados_key) < 0) {
@@ -146,8 +139,6 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
                            "rados_key");
             goto cleanup;
         }
-
-        memset(rados_key, 0, strlen(rados_key));
 
         if (rados_conf_set(ptr->cluster, "auth_supported", "cephx") < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -233,8 +224,8 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     ret = 0;
 
  cleanup:
-    VIR_FREE(secret_value);
-    VIR_FREE(rados_key);
+    VIR_DISPOSE_N(secret_value, secret_value_size);
+    VIR_DISPOSE_STRING(rados_key);
 
     virObjectUnref(secret);
 

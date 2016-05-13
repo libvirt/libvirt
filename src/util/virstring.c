@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <regex.h>
 
+#include "base64.h"
 #include "c-ctype.h"
 #include "virstring.h"
 #include "viralloc.h"
@@ -1065,4 +1066,27 @@ virStringIsPrintable(const char *str)
             return false;
 
     return true;
+}
+
+
+/**
+ * virStringEncodeBase64:
+ * @buf: buffer of bytes to encode
+ * @buflen: number of bytes to encode
+ *
+ * Encodes @buf to base 64 and returns the resulting string. The caller is
+ * responsible for freeing the result.
+ */
+char *
+virStringEncodeBase64(const uint8_t *buf, size_t buflen)
+{
+    char *ret;
+
+    base64_encode_alloc((const char *) buf, buflen, &ret);
+    if (!ret) {
+        virReportOOMError();
+        return NULL;
+    }
+
+    return ret;
 }
