@@ -37,7 +37,6 @@ VIR_LOG_INIT("secret.secret_util");
 
 /* virSecretGetSecretString:
  * @conn: Pointer to the connection driver to make secret driver call
- * @scheme: Unique enough string for error message to help determine cause
  * @encoded: Whether the returned secret needs to be base64 encoded
  * @authdef: Pointer to the disk storage authentication
  * @secretUsageType: Type of secret usage for authdef lookup
@@ -50,7 +49,6 @@ VIR_LOG_INIT("secret.secret_util");
  */
 char *
 virSecretGetSecretString(virConnectPtr conn,
-                         const char *scheme,
                          bool encoded,
                          virStorageAuthDefPtr authdef,
                          virSecretUsageType secretUsageType)
@@ -58,49 +56,26 @@ virSecretGetSecretString(virConnectPtr conn,
     size_t secret_size;
     virSecretPtr sec = NULL;
     char *secret = NULL;
-    char uuidStr[VIR_UUID_STRING_BUFLEN];
 
-    /* look up secret */
     switch (authdef->secretType) {
     case VIR_STORAGE_SECRET_TYPE_UUID:
-        sec = virSecretLookupByUUID(conn, authdef->secret.uuid);
-        virUUIDFormat(authdef->secret.uuid, uuidStr);
+        sec = conn->secretDriver->secretLookupByUUID(conn, authdef->secret.uuid);
         break;
+
     case VIR_STORAGE_SECRET_TYPE_USAGE:
-        sec = virSecretLookupByUsage(conn, secretUsageType,
-                                     authdef->secret.usage);
+        sec = conn->secretDriver->secretLookupByUsage(conn, secretUsageType,
+                                                      authdef->secret.usage);
         break;
     }
 
-    if (!sec) {
-        if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
-            virReportError(VIR_ERR_NO_SECRET,
-                           _("%s no secret matches uuid '%s'"),
-                           scheme, uuidStr);
-        } else {
-            virReportError(VIR_ERR_NO_SECRET,
-                           _("%s no secret matches usage value '%s'"),
-                           scheme, authdef->secret.usage);
-        }
+    if (!sec)
         goto cleanup;
-    }
 
     secret = (char *)conn->secretDriver->secretGetValue(sec, &secret_size, 0,
                                                         VIR_SECRET_GET_VALUE_INTERNAL_CALL);
-    if (!secret) {
-        if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("could not get value of the secret for "
-                             "username '%s' using uuid '%s'"),
-                           authdef->username, uuidStr);
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("could not get value of the secret for "
-                             "username '%s' using usage value '%s'"),
-                           authdef->username, authdef->secret.usage);
-        }
+
+    if (!secret)
         goto cleanup;
-    }
 
     if (encoded) {
         char *base64 = NULL;

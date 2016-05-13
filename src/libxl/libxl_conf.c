@@ -1027,14 +1027,11 @@ libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
 
     *srcstr = NULL;
     if (src->auth && src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
-        const char *protocol = virStorageNetProtocolTypeToString(src->protocol);
-
         username = src->auth->username;
         if (!(conn = virConnectOpen("xen:///system")))
             goto cleanup;
 
         if (!(secret = virSecretGetSecretString(conn,
-                                                protocol,
                                                 true,
                                                 src->auth,
                                                 VIR_SECRET_USAGE_TYPE_CEPH)))
