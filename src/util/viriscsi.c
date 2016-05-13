@@ -79,24 +79,28 @@ virISCSIGetSession(const char *devpath,
         .session = NULL,
         .devpath = devpath,
     };
+    char *error = NULL;
+    int exitstatus = 0;
 
-    virCommandPtr cmd = virCommandNewArgList(ISCSIADM, "--mode", "session", NULL);
+    virCommandPtr cmd = virCommandNewArgList(ISCSIADM, "--mode",
+                                             "session", NULL);
+    virCommandSetErrorBuffer(cmd, &error);
 
     if (virCommandRunRegex(cmd,
                            1,
                            regexes,
                            vars,
                            virISCSIExtractSession,
-                           &cbdata, NULL, NULL) < 0)
+                           &cbdata, NULL, &exitstatus) < 0)
         goto cleanup;
 
-    if (cbdata.session == NULL && !probe) {
+    if (cbdata.session == NULL && !probe)
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot find session"));
-        goto cleanup;
-    }
+                       _("cannot find iscsiadm session: %s"),
+                       NULLSTR(error));
 
  cleanup:
+    VIR_FREE(error);
     virCommandFree(cmd);
     return cbdata.session;
 }
