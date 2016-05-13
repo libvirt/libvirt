@@ -90,7 +90,9 @@ static void testIscsiadmCb(const char *const*args,
                args[4] && STREQ(args[4], "sendtargets") &&
                args[5] && STREQ(args[5], "--portal") &&
                args[6] && STREQ(args[6], "10.20.30.40:3260,1") &&
-               args[7] == NULL) {
+               args[7] && STREQ(args[7], "--op") &&
+               args[8] && STREQ(args[8], "nonpersistent") &&
+               args[9] == NULL) {
         ignore_value(VIR_STRDUP(*output, iscsiadmSendtargetsOutput));
     } else {
         *status = -1;

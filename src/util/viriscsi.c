@@ -390,24 +390,9 @@ virISCSIGetTargets(char **const groups,
 }
 
 
-static int
-virISCSITargetAutologin(const char *portal,
-                        const char *initiatoriqn,
-                        const char *target,
-                        bool enable)
-{
-    const char *extraargv[] = { "--op", "update",
-                                "--name", "node.startup",
-                                "--value", enable ? "automatic" : "manual",
-                                NULL };
-
-    return virISCSIConnection(portal, initiatoriqn, target, extraargv);
-}
-
-
 int
 virISCSIScanTargets(const char *portal,
-                    const char *initiatoriqn,
+                    const char *initiatoriqn ATTRIBUTE_UNUSED,
                     size_t *ntargetsret,
                     char ***targetsret)
 {
@@ -432,6 +417,7 @@ virISCSIScanTargets(const char *portal,
                                              "--mode", "discovery",
                                              "--type", "sendtargets",
                                              "--portal", portal,
+                                             "--op", "nonpersistent",
                                              NULL);
 
     memset(&list, 0, sizeof(list));
@@ -443,18 +429,6 @@ virISCSIScanTargets(const char *portal,
                            virISCSIGetTargets,
                            &list, NULL, NULL) < 0)
         goto cleanup;
-
-    for (i = 0; i < list.ntargets; i++) {
-        /* We have to ignore failure, because we can't undo
-         * the results of 'sendtargets', unless we go scrubbing
-         * around in the dirt in /var/lib/iscsi.
-         */
-        if (virISCSITargetAutologin(portal,
-                                    initiatoriqn,
-                                    list.targets[i], false) < 0)
-            VIR_WARN("Unable to disable auto-login on iSCSI target %s: %s",
-                     portal, list.targets[i]);
-    }
 
     if (ntargetsret && targetsret) {
         *ntargetsret = list.ntargets;
