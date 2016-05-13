@@ -22,7 +22,7 @@
 /* This file is only compiled on Linux, and only if xattr support was
  * detected. */
 
-#include <dlfcn.h>
+#include "virmock.h"
 #include <errno.h>
 #if HAVE_LINUX_MAGIC_H
 # include <linux/magic.h>
@@ -31,8 +31,6 @@
 #if HAVE_SELINUX_LABEL_H
 # include <selinux/label.h>
 #endif
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/vfs.h>
 #include <unistd.h>
@@ -47,24 +45,24 @@
 #include "viralloc.h"
 #include "virstring.h"
 
-static int (*realstatfs)(const char *path, struct statfs *buf);
-static int (*realsecurity_get_boolean_active)(const char *name);
-static int (*realis_selinux_enabled)(void);
+static int (*real_statfs)(const char *path, struct statfs *buf);
+static int (*real_security_get_boolean_active)(const char *name);
+static int (*real_is_selinux_enabled)(void);
 
-static const char *(*realselinux_virtual_domain_context_path)(void);
-static const char *(*realselinux_virtual_image_context_path)(void);
+static const char *(*real_selinux_virtual_domain_context_path)(void);
+static const char *(*real_selinux_virtual_image_context_path)(void);
 
 #ifdef HAVE_SELINUX_LXC_CONTEXTS_PATH
-static const char *(*realselinux_lxc_contexts_path)(void);
+static const char *(*real_selinux_lxc_contexts_path)(void);
 #endif
 
 #if HAVE_SELINUX_LABEL_H
-static struct selabel_handle *(*realselabel_open)(unsigned int backend,
+static struct selabel_handle *(*real_selabel_open)(unsigned int backend,
                                                   VIR_SELINUX_OPEN_CONST
                                                   struct selinux_opt *opts,
                                                   unsigned nopts);
-static void (*realselabel_close)(struct selabel_handle *handle);
-static int (*realselabel_lookup_raw)(struct selabel_handle *handle,
+static void (*real_selabel_close)(struct selabel_handle *handle);
+static int (*real_selabel_lookup_raw)(struct selabel_handle *handle,
                                      security_context_t *con,
                                      const char *key,
                                      int type);
@@ -72,35 +70,25 @@ static int (*realselabel_lookup_raw)(struct selabel_handle *handle,
 
 static void init_syms(void)
 {
-    if (realstatfs)
+    if (real_statfs)
         return;
 
-#define LOAD_SYM(name)                                                  \
-    do {                                                                \
-        if (!(real ## name = dlsym(RTLD_NEXT, #name))) {                \
-            fprintf(stderr, "Cannot find real '%s' symbol\n", #name);   \
-            abort();                                                    \
-        }                                                               \
-    } while (0)
+    VIR_MOCK_REAL_INIT(statfs);
+    VIR_MOCK_REAL_INIT(security_get_boolean_active);
+    VIR_MOCK_REAL_INIT(is_selinux_enabled);
 
-    LOAD_SYM(statfs);
-    LOAD_SYM(security_get_boolean_active);
-    LOAD_SYM(is_selinux_enabled);
-
-    LOAD_SYM(selinux_virtual_domain_context_path);
-    LOAD_SYM(selinux_virtual_image_context_path);
+    VIR_MOCK_REAL_INIT(selinux_virtual_domain_context_path);
+    VIR_MOCK_REAL_INIT(selinux_virtual_image_context_path);
 
 #ifdef HAVE_SELINUX_LXC_CONTEXTS_PATH
-    LOAD_SYM(selinux_lxc_contexts_path);
+    VIR_MOCK_REAL_INIT(selinux_lxc_contexts_path);
 #endif
 
 #if HAVE_SELINUX_LABEL_H
-    LOAD_SYM(selabel_open);
-    LOAD_SYM(selabel_close);
-    LOAD_SYM(selabel_lookup_raw);
+    VIR_MOCK_REAL_INIT(selabel_open);
+    VIR_MOCK_REAL_INIT(selabel_close);
+    VIR_MOCK_REAL_INIT(selabel_lookup_raw);
 #endif
-
-#undef LOAD_SYM
 }
 
 
@@ -224,7 +212,7 @@ int statfs(const char *path, struct statfs *buf)
 
     init_syms();
 
-    ret = realstatfs(path, buf);
+    ret = real_statfs(path, buf);
     if (!ret && STREQ(path, abs_builddir "/securityselinuxlabeldata/nfs"))
         buf->f_type = NFS_SUPER_MAGIC;
     return ret;
@@ -269,15 +257,15 @@ int security_get_boolean_active(const char *name)
         return 0;
 
     init_syms();
-    return realsecurity_get_boolean_active(name);
+    return real_security_get_boolean_active(name);
 }
 
 const char *selinux_virtual_domain_context_path(void)
 {
     init_syms();
 
-    if (realis_selinux_enabled())
-        return realselinux_virtual_domain_context_path();
+    if (real_is_selinux_enabled())
+        return real_selinux_virtual_domain_context_path();
 
     return abs_srcdir "/securityselinuxhelperdata/virtual_domain_context";
 }
@@ -286,8 +274,8 @@ const char *selinux_virtual_image_context_path(void)
 {
     init_syms();
 
-    if (realis_selinux_enabled())
-        return realselinux_virtual_image_context_path();
+    if (real_is_selinux_enabled())
+        return real_selinux_virtual_image_context_path();
 
     return abs_srcdir "/securityselinuxhelperdata/virtual_image_context";
 }
@@ -297,8 +285,8 @@ const char *selinux_lxc_contexts_path(void)
 {
     init_syms();
 
-    if (realis_selinux_enabled())
-        return realselinux_lxc_contexts_path();
+    if (real_is_selinux_enabled())
+        return real_selinux_lxc_contexts_path();
 
     return abs_srcdir "/securityselinuxhelperdata/lxc_contexts";
 }
@@ -314,8 +302,8 @@ selabel_open(unsigned int backend,
 
     init_syms();
 
-    if (realis_selinux_enabled())
-        return realselabel_open(backend, opts, nopts);
+    if (real_is_selinux_enabled())
+        return real_selabel_open(backend, opts, nopts);
 
     /* struct selabel_handle is opaque; fake it */
     if (VIR_ALLOC(fake_handle) < 0)
@@ -327,8 +315,8 @@ void selabel_close(struct selabel_handle *handle)
 {
     init_syms();
 
-    if (realis_selinux_enabled())
-        return realselabel_close(handle);
+    if (real_is_selinux_enabled())
+        return real_selabel_close(handle);
 
     VIR_FREE(handle);
 }
@@ -340,8 +328,8 @@ int selabel_lookup_raw(struct selabel_handle *handle,
 {
     init_syms();
 
-    if (realis_selinux_enabled())
-        return realselabel_lookup_raw(handle, con, key, type);
+    if (real_is_selinux_enabled())
+        return real_selabel_lookup_raw(handle, con, key, type);
 
     /* Unimplemented */
     errno = ENOENT;
