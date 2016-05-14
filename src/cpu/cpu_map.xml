@@ -293,6 +293,9 @@
     <feature name='fsgsbase'>
       <cpuid function='0x00000007' ebx='0x00000001'/>
     </feature>
+    <feature name='tsc_adjust'>
+      <cpuid function='0x00000007' ebx='0x00000002'/>
+    </feature>
     <feature name='bmi1'>
       <cpuid function='0x00000007' ebx='0x00000008'/>
     </feature>
@@ -331,6 +334,9 @@
     </feature>
     <feature name='smap'>
       <cpuid function='0x00000007' ebx='0x00100000'/>
+    </feature>
+    <feature name='clflushopt'>
+      <cpuid function='0x00000007' ebx='0x00800000'/>
     </feature>
     <feature name='avx512pf'> <!-- AVX-512 Prefetch -->
       <cpuid function='0x00000007' ebx='0x04000000'/>
