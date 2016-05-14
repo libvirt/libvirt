@@ -1771,7 +1771,6 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     virObjectEventPtr event = NULL;
     virObjectEventPtr event2 = NULL;
     unsigned int start_flags = VIR_QEMU_PROCESS_START_COLD;
-    virQEMUCapsPtr qemuCaps = NULL;
     virCapsPtr caps = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
@@ -1797,12 +1796,6 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
         goto cleanup;
 
     if (virDomainCreateXMLEnsureACL(conn, def) < 0)
-        goto cleanup;
-
-    if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator)))
-        goto cleanup;
-
-    if (qemuDomainAssignAddresses(def, qemuCaps, NULL) < 0)
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,
@@ -1858,7 +1851,6 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
         qemuDomainEventQueue(driver, event2);
     }
     virObjectUnref(caps);
-    virObjectUnref(qemuCaps);
     virNWFilterUnlockFilterUpdates();
     return dom;
 }
@@ -7249,7 +7241,6 @@ static virDomainPtr qemuDomainDefineXMLFlags(virConnectPtr conn, const char *xml
     virDomainObjPtr vm = NULL;
     virDomainPtr dom = NULL;
     virObjectEventPtr event = NULL;
-    virQEMUCapsPtr qemuCaps = NULL;
     virQEMUDriverConfigPtr cfg;
     virCapsPtr caps = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
@@ -7270,12 +7261,6 @@ static virDomainPtr qemuDomainDefineXMLFlags(virConnectPtr conn, const char *xml
         goto cleanup;
 
     if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
-        goto cleanup;
-
-    if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator)))
-        goto cleanup;
-
-    if (qemuDomainAssignAddresses(def, qemuCaps, NULL) < 0)
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,
@@ -7328,7 +7313,6 @@ static virDomainPtr qemuDomainDefineXMLFlags(virConnectPtr conn, const char *xml
     virDomainDefFree(def);
     virDomainObjEndAPI(&vm);
     qemuDomainEventQueue(driver, event);
-    virObjectUnref(qemuCaps);
     virObjectUnref(caps);
     virObjectUnref(cfg);
     return dom;
@@ -15973,9 +15957,6 @@ static virDomainPtr qemuDomainQemuAttach(virConnectPtr conn,
         goto cleanup;
 
     if (qemuAssignDeviceAliases(def, qemuCaps) < 0)
-        goto cleanup;
-
-    if (qemuDomainAssignAddresses(def, qemuCaps, NULL) < 0)
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,

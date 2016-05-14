@@ -37,13 +37,9 @@ struct testInfo {
 };
 
 static int
-qemuXML2XMLPreFormatCallback(virDomainDefPtr def, const void *opaque)
+qemuXML2XMLPreFormatCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                             const void *opaque ATTRIBUTE_UNUSED)
 {
-    const struct testInfo *info = opaque;
-
-    if (qemuDomainAssignAddresses(def, info->qemuCaps, NULL))
-        return -1;
-
     return 0;
 }
 
@@ -152,9 +148,6 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
         VIR_TEST_DEBUG("Failed to parse domain status XML:\n%s", source);
         goto cleanup;
     }
-
-    if (qemuDomainAssignAddresses(obj->def, data->qemuCaps, NULL))
-        goto cleanup;
 
     /* format it back */
     if (!(actual = virDomainObjFormat(driver.xmlopt, obj, NULL,

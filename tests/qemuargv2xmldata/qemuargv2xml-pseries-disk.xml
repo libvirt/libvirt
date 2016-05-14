@@ -29,7 +29,9 @@
     </disk>
     <controller type='usb' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
-    <controller type='scsi' index='0'/>
+    <controller type='scsi' index='0'>
+      <address type='spapr-vio' reg='0x2000'/>
+    </controller>
     <input type='keyboard' bus='usb'/>
     <input type='mouse' bus='usb'/>
     <graphics type='sdl'/>
