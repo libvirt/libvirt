@@ -1463,158 +1463,155 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
     int ret = -1;
     virDomainPCIAddressSetPtr addrs = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
+    int max_idx = -1;
+    int nbuses = 0;
+    size_t i;
+    int rv;
+    bool buses_reserved = true;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        int max_idx = -1;
-        int nbuses = 0;
-        size_t i;
-        int rv;
-        bool buses_reserved = true;
+    virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
 
-        virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
+            if ((int) def->controllers[i]->idx > max_idx)
+                max_idx = def->controllers[i]->idx;
+        }
+    }
 
-        for (i = 0; i < def->ncontrollers; i++) {
-            if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-                if ((int) def->controllers[i]->idx > max_idx)
-                    max_idx = def->controllers[i]->idx;
-            }
+    nbuses = max_idx + 1;
+
+    if (nbuses > 0 &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCI_BRIDGE)) {
+        virDomainDeviceInfo info;
+
+        /* 1st pass to figure out how many PCI bridges we need */
+        if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, true)))
+            goto cleanup;
+
+        if (qemuDomainValidateDevicePCISlotsChipsets(def, qemuCaps,
+                                                     addrs) < 0)
+            goto cleanup;
+
+        for (i = 0; i < addrs->nbuses; i++) {
+            if (!qemuDomainPCIBusFullyReserved(&addrs->buses[i]))
+                buses_reserved = false;
         }
 
-        nbuses = max_idx + 1;
+        /* Reserve 1 extra slot for a (potential) bridge only if buses
+         * are not fully reserved yet
+         */
+        if (!buses_reserved &&
+            virDomainPCIAddressReserveNextSlot(addrs, &info, flags) < 0)
+            goto cleanup;
 
-        if (nbuses > 0 &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCI_BRIDGE)) {
-            virDomainDeviceInfo info;
+        if (qemuDomainAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
+            goto cleanup;
 
-            /* 1st pass to figure out how many PCI bridges we need */
-            if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, true)))
+        for (i = 1; i < addrs->nbuses; i++) {
+            virDomainPCIAddressBusPtr bus = &addrs->buses[i];
+
+            if ((rv = virDomainDefMaybeAddController(
+                     def, VIR_DOMAIN_CONTROLLER_TYPE_PCI,
+                     i, bus->model)) < 0)
                 goto cleanup;
-
-            if (qemuDomainValidateDevicePCISlotsChipsets(def, qemuCaps,
-                                                         addrs) < 0)
-                goto cleanup;
-
-            for (i = 0; i < addrs->nbuses; i++) {
-                if (!qemuDomainPCIBusFullyReserved(&addrs->buses[i]))
-                    buses_reserved = false;
-            }
-
-            /* Reserve 1 extra slot for a (potential) bridge only if buses
-             * are not fully reserved yet
-             */
-            if (!buses_reserved &&
+            /* If we added a new bridge, we will need one more address */
+            if (rv > 0 &&
                 virDomainPCIAddressReserveNextSlot(addrs, &info, flags) < 0)
                 goto cleanup;
-
-            if (qemuDomainAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
-                goto cleanup;
-
-            for (i = 1; i < addrs->nbuses; i++) {
-                virDomainPCIAddressBusPtr bus = &addrs->buses[i];
-
-                if ((rv = virDomainDefMaybeAddController(
-                         def, VIR_DOMAIN_CONTROLLER_TYPE_PCI,
-                         i, bus->model)) < 0)
-                    goto cleanup;
-                /* If we added a new bridge, we will need one more address */
-                if (rv > 0 &&
-                    virDomainPCIAddressReserveNextSlot(addrs, &info, flags) < 0)
-                    goto cleanup;
-            }
-            nbuses = addrs->nbuses;
-            virDomainPCIAddressSetFree(addrs);
-            addrs = NULL;
-
-        } else if (max_idx > 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("PCI bridges are not supported "
-                             "by this QEMU binary"));
-            goto cleanup;
         }
+        nbuses = addrs->nbuses;
+        virDomainPCIAddressSetFree(addrs);
+        addrs = NULL;
 
-        if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, false)))
+    } else if (max_idx > 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("PCI bridges are not supported "
+                         "by this QEMU binary"));
+        goto cleanup;
+    }
+
+    if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, false)))
+        goto cleanup;
+
+    if (qemuDomainSupportsPCI(def, qemuCaps)) {
+        if (qemuDomainValidateDevicePCISlotsChipsets(def, qemuCaps,
+                                                     addrs) < 0)
             goto cleanup;
 
-        if (qemuDomainSupportsPCI(def, qemuCaps)) {
-            if (qemuDomainValidateDevicePCISlotsChipsets(def, qemuCaps,
-                                                         addrs) < 0)
-                goto cleanup;
+        if (qemuDomainAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
+            goto cleanup;
 
-            if (qemuDomainAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
-                goto cleanup;
+        for (i = 0; i < def->ncontrollers; i++) {
+            virDomainControllerDefPtr cont = def->controllers[i];
+            int idx = cont->idx;
+            virPCIDeviceAddressPtr addr;
+            virDomainPCIControllerOptsPtr options;
 
-            for (i = 0; i < def->ncontrollers; i++) {
-                virDomainControllerDefPtr cont = def->controllers[i];
-                int idx = cont->idx;
-                virPCIDeviceAddressPtr addr;
-                virDomainPCIControllerOptsPtr options;
+            if (cont->type != VIR_DOMAIN_CONTROLLER_TYPE_PCI)
+                continue;
 
-                if (cont->type != VIR_DOMAIN_CONTROLLER_TYPE_PCI)
-                    continue;
+            addr = &cont->info.addr.pci;
+            options = &cont->opts.pciopts;
 
-                addr = &cont->info.addr.pci;
-                options = &cont->opts.pciopts;
+            /* set default model name (the actual name of the
+             * device in qemu) for any controller that doesn't yet
+             * have it set.
+             */
+            qemuDomainPCIControllerSetDefaultModelName(cont);
 
-                /* set default model name (the actual name of the
-                 * device in qemu) for any controller that doesn't yet
-                 * have it set.
-                 */
-                qemuDomainPCIControllerSetDefaultModelName(cont);
-
-                /* set defaults for any other auto-generated config
-                 * options for this controller that haven't been
-                 * specified in config.
-                 */
-                switch ((virDomainControllerModelPCI)cont->model) {
-                case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-                    if (options->chassisNr == -1)
-                        options->chassisNr = cont->idx;
-                    break;
-                case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
-                    if (options->chassis == -1)
-                       options->chassis = cont->idx;
-                    if (options->port == -1)
-                       options->port = (addr->slot << 3) + addr->function;
-                    break;
-                case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
-                    if (options->chassis == -1)
-                       options->chassis = cont->idx;
-                    if (options->port == -1)
-                       options->port = addr->slot;
-                    break;
-                case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
-                case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
-                    if (options->busNr == -1)
-                        options->busNr = qemuDomainAddressFindNewBusNr(def);
-                    if (options->busNr == -1) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("No free busNr lower than current "
-                                         "lowest busNr is available to "
-                                         "auto-assign to bus %d. Must be "
-                                         "manually assigned"),
-                                       addr->bus);
-                        goto cleanup;
-                    }
-                    break;
-                case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
-                case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
-                case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
-                case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
-                case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
-                    break;
-                }
-
-                /* check if every PCI bridge controller's ID is greater than
-                 * the bus it is placed onto
-                 */
-                if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE &&
-                    idx <= addr->bus) {
+            /* set defaults for any other auto-generated config
+             * options for this controller that haven't been
+             * specified in config.
+             */
+            switch ((virDomainControllerModelPCI)cont->model) {
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+                if (options->chassisNr == -1)
+                    options->chassisNr = cont->idx;
+                break;
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+                if (options->chassis == -1)
+                   options->chassis = cont->idx;
+                if (options->port == -1)
+                   options->port = (addr->slot << 3) + addr->function;
+                break;
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
+                if (options->chassis == -1)
+                   options->chassis = cont->idx;
+                if (options->port == -1)
+                   options->port = addr->slot;
+                break;
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+                if (options->busNr == -1)
+                    options->busNr = qemuDomainAddressFindNewBusNr(def);
+                if (options->busNr == -1) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("PCI controller at index %d (0x%02x) has "
-                                     "bus='0x%02x', but bus must be <= index"),
-                                   idx, idx, addr->bus);
+                                   _("No free busNr lower than current "
+                                     "lowest busNr is available to "
+                                     "auto-assign to bus %d. Must be "
+                                     "manually assigned"),
+                                   addr->bus);
                     goto cleanup;
                 }
+                break;
+            case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+            case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+                break;
+            }
+
+            /* check if every PCI bridge controller's ID is greater than
+             * the bus it is placed onto
+             */
+            if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE &&
+                idx <= addr->bus) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("PCI controller at index %d (0x%02x) has "
+                                 "bus='0x%02x', but bus must be <= index"),
+                               idx, idx, addr->bus);
+                goto cleanup;
             }
         }
     }
@@ -1681,7 +1678,6 @@ qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
         VIR_WARN("Unable to release CCW address on %s",
                  NULLSTR(devstr));
     else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
              virDomainPCIAddressReleaseSlot(priv->pciaddrs,
                                             &info->addr.pci) < 0)
         VIR_WARN("Unable to release PCI address on %s",

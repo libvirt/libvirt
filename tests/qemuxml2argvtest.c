@@ -1584,7 +1584,7 @@ mymain(void)
             QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
     DO_TEST_PARSE_ERROR("440fx-wrong-root", NONE);
 
-    DO_TEST_FAILURE("pcie-root-port-too-many",
+    DO_TEST_PARSE_ERROR("pcie-root-port-too-many",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_IOH3420,
