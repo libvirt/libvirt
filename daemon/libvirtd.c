@@ -543,7 +543,7 @@ daemonSetupNetworking(virNetServerPtr srv,
 #if WITH_GNUTLS
                                                   NULL,
 #endif
-                                                  true,
+                                                  false,
                                                   config->admin_max_queued_clients,
                                                   config->admin_max_client_requests)))
             goto cleanup;
