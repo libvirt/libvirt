@@ -4440,6 +4440,13 @@ virDomainDefPostParse(virDomainDefPtr def,
     if ((ret = virDomainDefPostParseInternal(def, &data)) < 0)
         return ret;
 
+    if (xmlopt->config.assignAddressesCallback) {
+        ret = xmlopt->config.assignAddressesCallback(def, caps, parseFlags,
+                                                     xmlopt->config.priv);
+        if (ret < 0)
+            return ret;
+    }
+
     if (virDomainDefPostParseCheckFeatures(def, xmlopt) < 0)
         return -1;
 

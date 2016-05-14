@@ -2475,6 +2475,13 @@ typedef int (*virDomainDeviceDefPostParseCallback)(virDomainDeviceDefPtr dev,
                                                    virCapsPtr caps,
                                                    unsigned int parseFlags,
                                                    void *opaque);
+/* Drive callback for assigning device addresses, called at the end
+ * of parsing, after all defaults and implicit devices have been added.  */
+typedef int (*virDomainDefAssignAddressesCallback)(virDomainDef *def,
+                                                   virCapsPtr caps,
+                                                   unsigned int parseFlags,
+                                                   void *opaque);
+
 
 typedef struct _virDomainDefParserConfig virDomainDefParserConfig;
 typedef virDomainDefParserConfig *virDomainDefParserConfigPtr;
@@ -2482,6 +2489,7 @@ struct _virDomainDefParserConfig {
     /* driver domain definition callbacks */
     virDomainDefPostParseCallback domainPostParseCallback;
     virDomainDeviceDefPostParseCallback devicesPostParseCallback;
+    virDomainDefAssignAddressesCallback assignAddressesCallback;
 
     /* private data for the callbacks */
     void *priv;
