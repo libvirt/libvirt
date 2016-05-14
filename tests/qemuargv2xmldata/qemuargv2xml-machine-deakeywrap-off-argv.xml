@@ -14,11 +14,6 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-s390x</emulator>
-    <disk type='block' device='disk'>
-      <driver name='qemu' type='raw'/>
-      <source dev='/dev/HostVG/QEMUGuest1'/>
-      <target dev='vda' bus='virtio'/>
-    </disk>
     <memballoon model='none'/>
     <panic model='s390'/>
   </devices>

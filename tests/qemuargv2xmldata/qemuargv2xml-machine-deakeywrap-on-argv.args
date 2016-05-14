@@ -15,6 +15,4 @@ QEMU_AUDIO_DRV=none \
 -nodefaults \
 -monitor unix:/tmp/test-monitor,server,nowait \
 -no-acpi \
--boot c \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=virtio,index=0,\
-id=drive-virtio-disk0
+-boot c
