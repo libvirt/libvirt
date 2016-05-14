@@ -7775,10 +7775,12 @@ qemuDomainUpdateDeviceLive(virConnectPtr conn,
 }
 
 static int
-qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
-                             virDomainDefPtr vmdef,
+qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
                              virDomainDeviceDefPtr dev,
-                             virConnectPtr conn)
+                             virConnectPtr conn,
+                             virCapsPtr caps,
+                             unsigned int parse_flags,
+                             virDomainXMLOptionPtr xmlopt)
 {
     virDomainDiskDefPtr disk;
     virDomainNetDefPtr net;
@@ -7803,11 +7805,6 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
             return -1;
         /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
         dev->data.disk = NULL;
-        if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
-            if (virDomainDefAddImplicitDevices(vmdef) < 0)
-                return -1;
-        if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
-            return -1;
         break;
 
     case VIR_DOMAIN_DEVICE_NET:
@@ -7815,8 +7812,6 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         if (virDomainNetInsert(vmdef, net))
             return -1;
         dev->data.net = NULL;
-        if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
-            return -1;
         break;
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
@@ -7829,10 +7824,6 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
         if (virDomainHostdevInsert(vmdef, hostdev))
             return -1;
         dev->data.hostdev = NULL;
-        if (virDomainDefAddImplicitDevices(vmdef) < 0)
-            return -1;
-        if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
-            return -1;
         break;
 
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -7863,18 +7854,12 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
             return -1;
         dev->data.controller = NULL;
 
-        if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
-            return -1;
         break;
 
     case VIR_DOMAIN_DEVICE_CHR:
         if (qemuDomainChrInsert(vmdef, dev->data.chr) < 0)
             return -1;
         dev->data.chr = NULL;
-        if (virDomainDefAddImplicitDevices(vmdef) < 0)
-            return -1;
-        if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
-            return -1;
         break;
 
     case VIR_DOMAIN_DEVICE_FS:
@@ -7902,8 +7887,6 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
             return -1;
         dev->data.rng = NULL;
 
-        if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
-            return -1;
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
@@ -7941,13 +7924,20 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
                         virDomainDeviceTypeToString(dev->type));
          return -1;
     }
+
+    if (virDomainDefPostParse(vmdef, caps, parse_flags, xmlopt) < 0)
+        return -1;
+
     return 0;
 }
 
 
 static int
 qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
-                             virDomainDeviceDefPtr dev)
+                             virDomainDeviceDefPtr dev,
+                             virCapsPtr caps,
+                             unsigned int parse_flags,
+                             virDomainXMLOptionPtr xmlopt)
 {
     virDomainDiskDefPtr disk, det_disk;
     virDomainNetDefPtr net;
@@ -8077,13 +8067,19 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
                        virDomainDeviceTypeToString(dev->type));
         return -1;
     }
+
+    if (virDomainDefPostParse(vmdef, caps, parse_flags, xmlopt) < 0)
+        return -1;
+
     return 0;
 }
 
 static int
-qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
-                             virDomainDefPtr vmdef,
-                             virDomainDeviceDefPtr dev)
+qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
+                             virDomainDeviceDefPtr dev,
+                             virCapsPtr caps,
+                             unsigned int parse_flags,
+                             virDomainXMLOptionPtr xmlopt)
 {
     virDomainDiskDefPtr orig, disk;
     virDomainGraphicsDefPtr newGraphics;
@@ -8141,9 +8137,6 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
 
         vmdef->nets[pos] = net;
         dev->data.net = NULL;
-
-        if (qemuDomainAssignAddresses(vmdef, qemuCaps, NULL) < 0)
-            return -1;
         break;
 
     case VIR_DOMAIN_DEVICE_FS:
@@ -8172,6 +8165,10 @@ qemuDomainUpdateDeviceConfig(virQEMUCapsPtr qemuCaps,
                        virDomainDeviceTypeToString(dev->type));
         return -1;
     }
+
+    if (virDomainDefPostParse(vmdef, caps, parse_flags, xmlopt) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -8247,8 +8244,9 @@ static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
                                          VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
             goto endjob;
 
-        if ((ret = qemuDomainAttachDeviceConfig(qemuCaps, vmdef, dev,
-                                                dom->conn)) < 0)
+        if ((ret = qemuDomainAttachDeviceConfig(vmdef, dev, dom->conn, caps,
+                                                parse_flags,
+                                                driver->xmlopt)) < 0)
             goto endjob;
     }
 
@@ -8316,6 +8314,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     qemuDomainObjPrivatePtr priv;
     virQEMUDriverConfigPtr cfg = NULL;
     virCapsPtr caps = NULL;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -8341,7 +8340,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
 
     dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              caps, driver->xmlopt,
-                                             VIR_DOMAIN_DEF_PARSE_INACTIVE);
+                                             parse_flags);
     if (dev == NULL)
         goto endjob;
 
@@ -8374,7 +8373,9 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
                                          VIR_DOMAIN_DEVICE_ACTION_UPDATE) < 0)
             goto endjob;
 
-        if ((ret = qemuDomainUpdateDeviceConfig(qemuCaps, vmdef, dev)) < 0)
+        if ((ret = qemuDomainUpdateDeviceConfig(vmdef, dev, caps,
+                                                parse_flags,
+                                                driver->xmlopt)) < 0)
             goto endjob;
     }
 
@@ -8494,7 +8495,9 @@ static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
                                          VIR_DOMAIN_DEVICE_ACTION_DETACH) < 0)
             goto endjob;
 
-        if ((ret = qemuDomainDetachDeviceConfig(vmdef, dev)) < 0)
+        if ((ret = qemuDomainDetachDeviceConfig(vmdef, dev, caps,
+                                                parse_flags,
+                                                driver->xmlopt)) < 0)
             goto endjob;
     }
 
