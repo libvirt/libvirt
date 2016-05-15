@@ -2980,6 +2980,13 @@
         set to 0xfe.
         <span class="since">Since 1.0.4</span>
       </dd>
+      <dt><code>virtio-mmio</code></dt>
+      <dd>This places the device on the virtio-mmio transport, which is
+        currently only available for some <code>armv7l</code> and
+        <code>aarch64</code> virtual machines. virtio-mmio addresses
+        do not have any additional attributes.
+        <span class="since">Since 1.1.3</span>
+      </dd>
       <dt><code>isa</code></dt>
       <dd>ISA addresses have the following additional
         attributes: <code>iobase</code> and <code>irq</code>.
