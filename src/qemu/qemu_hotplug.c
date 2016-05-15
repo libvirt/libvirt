@@ -192,7 +192,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (qemuDomainPrepareDisk(driver, vm, disk, newsrc, false) < 0)
         goto cleanup;
 
-    if (!(driveAlias = qemuDeviceDriveHostAlias(disk, priv->qemuCaps)))
+    if (!(driveAlias = qemuDeviceDriveHostAlias(disk)))
         goto error;
 
     do {
@@ -376,7 +376,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     if (!(drivestr = qemuBuildDriveStr(disk, false, priv->qemuCaps)))
         goto error;
 
-    if (!(drivealias = qemuDeviceDriveHostAlias(disk, priv->qemuCaps)))
+    if (!(drivealias = qemuDeviceDriveHostAlias(disk)))
         goto error;
 
     if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))

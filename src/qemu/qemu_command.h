@@ -96,8 +96,7 @@ char *qemuBuildNicDevStr(virDomainDefPtr def,
                          size_t vhostfdSize,
                          virQEMUCapsPtr qemuCaps);
 
-char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
-                               virQEMUCapsPtr qemuCaps);
+char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk);
 
 /* Both legacy & current support */
 char *qemuBuildDriveStr(virDomainDiskDefPtr disk,

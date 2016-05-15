@@ -377,17 +377,13 @@ qemuBuildObjectCommandlineFromJSON(const char *type,
 }
 
 
-char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk,
-                               virQEMUCapsPtr qemuCaps)
+char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk)
 {
     char *ret;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        ignore_value(virAsprintf(&ret, "%s%s", QEMU_DRIVE_HOST_PREFIX,
-                                 disk->info.alias));
-    } else {
-        ignore_value(VIR_STRDUP(ret, disk->info.alias));
-    }
+    if (virAsprintf(&ret, "%s%s",
+                    QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0)
+        return NULL;
     return ret;
 }
 
