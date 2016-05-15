@@ -1514,10 +1514,8 @@ exit 0
 %endif
 
 %files
-%defattr(-, root, root)
 
 %files docs
-%defattr(-, root, root)
 %doc AUTHORS ChangeLog.gz NEWS README TODO
 %doc libvirt-docs/*
 
@@ -1539,7 +1537,6 @@ exit 0
 
 
 %files daemon
-%defattr(-, root, root)
 
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 
@@ -1607,20 +1604,16 @@ exit 0
 %doc examples/polkit/*.rules
 
 %files daemon-config-network
-%defattr(-, root, root)
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml
 
 %files daemon-config-nwfilter
-%defattr(-, root, root)
 %{_sysconfdir}/libvirt/nwfilter/*.xml
 
 %files daemon-driver-interface
-%defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_interface.so
 
 %files daemon-driver-network
-%defattr(-, root, root)
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart
@@ -1631,27 +1624,22 @@ exit 0
 %{_libdir}/%{name}/connection-driver/libvirt_driver_network.so
 
 %files daemon-driver-nodedev
-%defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so
 
 %files daemon-driver-nwfilter
-%defattr(-, root, root)
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
 %ghost %dir %{_localstatedir}/run/libvirt/network/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nwfilter.so
 
 %files daemon-driver-secret
-%defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_secret.so
 
 %files daemon-driver-storage
-%defattr(-, root, root)
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
 %{_libdir}/%{name}/connection-driver/libvirt_driver_storage.so
 
 %if %{with_qemu}
 %files daemon-driver-qemu
-%defattr(-, root, root)
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
@@ -1667,7 +1655,6 @@ exit 0
 
 %if %{with_lxc}
 %files daemon-driver-lxc
-%defattr(-, root, root)
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
 %config(noreplace) %{_sysconfdir}/libvirt/lxc.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.lxc
@@ -1681,7 +1668,6 @@ exit 0
 
 %if %{with_uml}
 %files daemon-driver-uml
-%defattr(-, root, root)
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/uml/
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.uml
 %ghost %dir %{_localstatedir}/run/libvirt/uml/
@@ -1691,14 +1677,12 @@ exit 0
 
 %if %{with_xen}
 %files daemon-driver-xen
-%defattr(-, root, root)
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/xen/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_xen.so
 %endif
 
 %if %{with_libxl}
 %files daemon-driver-libxl
-%defattr(-, root, root)
 %config(noreplace) %{_sysconfdir}/libvirt/libxl.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.libxl
 %config(noreplace) %{_sysconfdir}/libvirt/libxl-lockd.conf
@@ -1712,43 +1696,35 @@ exit 0
 
 %if %{with_vbox}
 %files daemon-driver-vbox
-%defattr(-, root, root)
 %{_libdir}/%{name}/connection-driver/libvirt_driver_vbox.so
 %endif
 
 %if %{with_qemu_tcg}
 %files daemon-qemu
-%defattr(-, root, root)
 %endif
 
 %if %{with_qemu_kvm}
 %files daemon-kvm
-%defattr(-, root, root)
 %endif
 
 %if %{with_lxc}
 %files daemon-lxc
-%defattr(-, root, root)
 %endif
 
 %if %{with_uml}
 %files daemon-uml
-%defattr(-, root, root)
 %endif
 
 %if %{with_xen} || %{with_libxl}
 %files daemon-xen
-%defattr(-, root, root)
 %endif
 
 %if %{with_vbox}
 %files daemon-vbox
-%defattr(-, root, root)
 %endif
 
 %if %{with_sanlock}
 %files lock-sanlock
-%defattr(-, root, root)
     %if %{with_qemu}
 %config(noreplace) %{_sysconfdir}/libvirt/qemu-sanlock.conf
     %endif
@@ -1765,7 +1741,6 @@ exit 0
 %endif
 
 %files client -f %{name}.lang
-%defattr(-, root, root)
 %doc COPYING COPYING.LESSER
 
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt.conf
@@ -1835,8 +1810,6 @@ exit 0
 %endif
 
 %files devel
-%defattr(-, root, root)
-
 %{_libdir}/libvirt.so
 %{_libdir}/libvirt-qemu.so
 %{_libdir}/libvirt-lxc.so
