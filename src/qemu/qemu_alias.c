@@ -171,70 +171,11 @@ qemuAssignDeviceControllerAlias(virDomainDefPtr domainDef,
 }
 
 
-/* Names used before -drive supported the id= option */
-static int
-qemuAssignDeviceDiskAliasFixed(virDomainDiskDefPtr disk)
-{
-    int busid, devid;
-    int ret;
-    char *dev_name;
-
-    if (virDiskNameToBusDeviceIndex(disk, &busid, &devid) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot convert disk '%s' to bus/device index"),
-                       disk->dst);
-        return -1;
-    }
-
-    switch (disk->bus) {
-    case VIR_DOMAIN_DISK_BUS_IDE:
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
-            ret = virAsprintf(&dev_name, "ide%d-hd%d", busid, devid);
-        else
-            ret = virAsprintf(&dev_name, "ide%d-cd%d", busid, devid);
-        break;
-    case VIR_DOMAIN_DISK_BUS_SCSI:
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK)
-            ret = virAsprintf(&dev_name, "scsi%d-hd%d", busid, devid);
-        else
-            ret = virAsprintf(&dev_name, "scsi%d-cd%d", busid, devid);
-        break;
-    case VIR_DOMAIN_DISK_BUS_FDC:
-        ret = virAsprintf(&dev_name, "floppy%d", devid);
-        break;
-    case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        ret = virAsprintf(&dev_name, "virtio%d", devid);
-        break;
-    case VIR_DOMAIN_DISK_BUS_XEN:
-        ret = virAsprintf(&dev_name, "xenblk%d", devid);
-        break;
-    case VIR_DOMAIN_DISK_BUS_SD:
-        ret = virAsprintf(&dev_name, "sd%d", devid);
-        break;
-    case VIR_DOMAIN_DISK_BUS_USB:
-        ret = virAsprintf(&dev_name, "usb%d", devid);
-        break;
-    default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported disk name mapping for bus '%s'"),
-                       virDomainDiskBusTypeToString(disk->bus));
-        return -1;
-    }
-
-    if (ret == -1)
-        return -1;
-
-    disk->info.alias = dev_name;
-
-    return 0;
-}
-
-
 /* Our custom -drive naming scheme used with id= */
-static int
-qemuAssignDeviceDiskAliasCustom(virDomainDefPtr def,
-                                virDomainDiskDefPtr disk,
-                                virQEMUCapsPtr qemuCaps)
+int
+qemuAssignDeviceDiskAlias(virDomainDefPtr def,
+                          virDomainDiskDefPtr disk,
+                          virQEMUCapsPtr qemuCaps)
 {
     const char *prefix = virDomainDiskBusTypeToString(disk->bus);
     int controllerModel = -1;
@@ -272,18 +213,6 @@ qemuAssignDeviceDiskAliasCustom(virDomainDefPtr def,
     }
 
     return 0;
-}
-
-
-int
-qemuAssignDeviceDiskAlias(virDomainDefPtr vmdef,
-                          virDomainDiskDefPtr def,
-                          virQEMUCapsPtr qemuCaps)
-{
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-        return qemuAssignDeviceDiskAliasCustom(vmdef, def, qemuCaps);
-    else
-        return qemuAssignDeviceDiskAliasFixed(def);
 }
 
 
@@ -434,9 +363,6 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
         if (qemuAssignDeviceNetAlias(def, def->nets[i], -1) < 0)
             return -1;
     }
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-        return 0;
 
     for (i = 0; i < def->nfss; i++) {
         if (virAsprintf(&def->fss[i]->info.alias, "fs%zu", i) < 0)
