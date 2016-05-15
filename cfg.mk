@@ -1147,7 +1147,7 @@ exclude_file_name_regexp--sc_prohibit_access_xok = \
 	^(cfg\.mk|src/util/virutil\.c)$$
 
 exclude_file_name_regexp--sc_prohibit_asprintf = \
-  ^(cfg\.mk|bootstrap.conf$$|src/util/virstring\.[ch]$$|tests/vircgroupmock\.c$$)
+  ^(cfg\.mk|bootstrap.conf$$|examples/|src/util/virstring\.[ch]$$|tests/vircgroupmock\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_strdup = \
   ^(docs/|examples/|src/util/virstring\.c|tests/vir(netserverclient|cgroup)mock.c$$)
@@ -1189,7 +1189,7 @@ exclude_file_name_regexp--sc_prohibit_sprintf = \
 
 exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/virstring\.c$$
 
-exclude_file_name_regexp--sc_prohibit_strtol = ^examples/dom.*/.*\.c$$
+exclude_file_name_regexp--sc_prohibit_strtol = ^examples/.*$$
 
 exclude_file_name_regexp--sc_prohibit_gethostby = ^docs/nss.html.in$$
 

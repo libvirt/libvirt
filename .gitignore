@@ -74,6 +74,12 @@
 /docs/libvirt-refs.xml
 /docs/search.php
 /docs/todo.html.in
+/examples/admin/client_close
+/examples/admin/client_info
+/examples/admin/client_limits
+/examples/admin/list_clients
+/examples/admin/list_servers
+/examples/admin/threadpool_params
 /examples/object-events/event-test
 /examples/dominfo/info1
 /examples/domsuspend/suspend
