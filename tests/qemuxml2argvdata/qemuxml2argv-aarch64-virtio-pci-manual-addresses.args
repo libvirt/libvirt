@@ -29,4 +29,6 @@ QEMU_AUDIO_DRV=none \
 -device scsi-disk,bus=scsi0.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi0-0-0-0,\
 id=scsi0-0-0-0 \
 -device virtio-net-pci,vlan=0,id=net0,mac=52:54:00:09:a4:37,bus=pcie.0,addr=0x2 \
--net user,vlan=0,name=hostnet0
+-net user,vlan=0,name=hostnet0 \
+-device virtio-net-pci,vlan=1,id=net1,mac=52:54:00:09:a4:38,bus=pci.2,addr=0x1 \
+-net user,vlan=1,name=hostnet1
