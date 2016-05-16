@@ -725,19 +725,22 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     if (virDomainSetMemoryFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
+    if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0)
         goto cleanup;
+
+    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
+        goto endjob;
 
     if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
                                         &persistentDef) < 0)
-        goto cleanup;
+        goto endjob;
 
     if (flags & VIR_DOMAIN_MEM_MAXIMUM) {
         if (flags & VIR_DOMAIN_AFFECT_LIVE) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Cannot resize the max memory "
                              "on an active domain"));
-            goto cleanup;
+            goto endjob;
         }
 
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
@@ -746,7 +749,7 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
                 persistentDef->mem.cur_balloon = newmem;
             if (virDomainSaveConfig(cfg->configDir, driver->caps,
                                     persistentDef) < 0)
-                goto cleanup;
+                goto endjob;
         }
     } else {
         unsigned long oldmax = 0;
@@ -761,30 +764,34 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         if (newmem > oldmax) {
             virReportError(VIR_ERR_INVALID_ARG,
                            "%s", _("Cannot set memory higher than max memory"));
-            goto cleanup;
+            goto endjob;
         }
 
         if (flags & VIR_DOMAIN_AFFECT_LIVE) {
             if (virCgroupSetMemory(priv->cgroup, newmem) < 0) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
                                "%s", _("Failed to set memory for domain"));
-                goto cleanup;
+                goto endjob;
             }
 
             vm->def->mem.cur_balloon = newmem;
             if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-                goto cleanup;
+                goto endjob;
         }
 
         if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
             persistentDef->mem.cur_balloon = newmem;
             if (virDomainSaveConfig(cfg->configDir, driver->caps,
                                     persistentDef) < 0)
-                goto cleanup;
+                goto endjob;
         }
     }
 
     ret = 0;
+
+ endjob:
+    if (!virLXCDomainObjEndJob(driver, vm))
+        vm = NULL;
 
  cleanup:
     if (vm)
