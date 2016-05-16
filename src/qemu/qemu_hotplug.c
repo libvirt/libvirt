@@ -2671,8 +2671,9 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
 
     switch (dev->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        if (olddev->data.vnc.autoport != dev->data.vnc.autoport ||
-            olddev->data.vnc.port != dev->data.vnc.port) {
+        if ((olddev->data.vnc.autoport != dev->data.vnc.autoport) ||
+            (!dev->data.vnc.autoport &&
+             (olddev->data.vnc.port != dev->data.vnc.port))) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot change port settings on vnc graphics"));
             goto cleanup;
@@ -2714,9 +2715,11 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-        if (olddev->data.spice.autoport != dev->data.spice.autoport ||
-            olddev->data.spice.port != dev->data.spice.port ||
-            olddev->data.spice.tlsPort != dev->data.spice.tlsPort) {
+        if ((olddev->data.spice.autoport != dev->data.spice.autoport) ||
+            (!dev->data.spice.autoport &&
+             (olddev->data.spice.port != dev->data.spice.port)) ||
+            (!dev->data.spice.autoport &&
+             (olddev->data.spice.tlsPort != dev->data.spice.tlsPort))) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("cannot change port settings on spice graphics"));
             goto cleanup;
