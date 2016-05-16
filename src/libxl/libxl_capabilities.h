@@ -27,6 +27,8 @@
 
 # include "virobject.h"
 # include "capabilities.h"
+# include "domain_capabilities.h"
+# include "virfirmware.h"
 
 
 # ifndef LIBXL_FIRMWARE_DIR
@@ -43,6 +45,11 @@
 
 virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx);
+
+int
+libxlMakeDomainCapabilities(virDomainCapsPtr domCaps,
+                            virFirmwarePtr *firmwares,
+                            size_t nfirmwares);
 
 int
 libxlDomainGetEmulatorType(const virDomainDef *def);

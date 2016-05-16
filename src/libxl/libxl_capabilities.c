@@ -30,8 +30,10 @@
 #include "virerror.h"
 #include "virfile.h"
 #include "viralloc.h"
+#include "virstring.h"
 #include "domain_conf.h"
 #include "capabilities.h"
+#include "domain_capabilities.h"
 #include "vircommand.h"
 #include "libxl_capabilities.h"
 
@@ -396,6 +398,109 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCapsPtr caps)
     return 0;
 }
 
+static int
+libxlMakeDomainOSCaps(const char *machine,
+                      virDomainCapsOSPtr os,
+                      virFirmwarePtr *firmwares,
+                      size_t nfirmwares)
+{
+    virDomainCapsLoaderPtr capsLoader = &os->loader;
+    size_t i;
+
+    os->supported = true;
+
+    if (STREQ(machine, "xenpv"))
+        return 0;
+
+    capsLoader->supported = true;
+    if (VIR_ALLOC_N(capsLoader->values.values, nfirmwares) < 0)
+        return -1;
+
+    for (i = 0; i < nfirmwares; i++) {
+        if (VIR_STRDUP(capsLoader->values.values[capsLoader->values.nvalues],
+                       firmwares[i]->name) < 0)
+            return -1;
+        capsLoader->values.nvalues++;
+    }
+
+    VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->type,
+                             VIR_DOMAIN_LOADER_TYPE_ROM,
+                             VIR_DOMAIN_LOADER_TYPE_PFLASH);
+    VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->readonly,
+                             VIR_TRISTATE_BOOL_YES);
+
+    return 0;
+}
+
+static int
+libxlMakeDomainDeviceDiskCaps(virDomainCapsDeviceDiskPtr dev)
+{
+    dev->supported = true;
+
+    VIR_DOMAIN_CAPS_ENUM_SET(dev->diskDevice,
+                             VIR_DOMAIN_DISK_DEVICE_DISK,
+                             VIR_DOMAIN_DISK_DEVICE_CDROM);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(dev->bus,
+                             VIR_DOMAIN_DISK_BUS_IDE,
+                             VIR_DOMAIN_DISK_BUS_SCSI,
+                             VIR_DOMAIN_DISK_BUS_XEN);
+
+    return 0;
+}
+
+static int
+libxlMakeDomainDeviceGraphicsCaps(virDomainCapsDeviceGraphicsPtr dev)
+{
+    dev->supported = true;
+
+    VIR_DOMAIN_CAPS_ENUM_SET(dev->type,
+                             VIR_DOMAIN_GRAPHICS_TYPE_SDL,
+                             VIR_DOMAIN_GRAPHICS_TYPE_VNC,
+                             VIR_DOMAIN_GRAPHICS_TYPE_SPICE);
+
+    return 0;
+}
+
+static int
+libxlMakeDomainDeviceVideoCaps(virDomainCapsDeviceVideoPtr dev)
+{
+    dev->supported = true;
+
+    VIR_DOMAIN_CAPS_ENUM_SET(dev->modelType,
+                             VIR_DOMAIN_VIDEO_TYPE_VGA,
+                             VIR_DOMAIN_VIDEO_TYPE_CIRRUS,
+                             VIR_DOMAIN_VIDEO_TYPE_XEN);
+
+    return 0;
+}
+
+static int
+libxlMakeDomainDeviceHostdevCaps(virDomainCapsDeviceHostdevPtr dev)
+{
+    dev->supported = true;
+    /* VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES is for containers only */
+    VIR_DOMAIN_CAPS_ENUM_SET(dev->mode,
+                             VIR_DOMAIN_HOSTDEV_MODE_SUBSYS);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(dev->startupPolicy,
+                             VIR_DOMAIN_STARTUP_POLICY_DEFAULT,
+                             VIR_DOMAIN_STARTUP_POLICY_MANDATORY,
+                             VIR_DOMAIN_STARTUP_POLICY_REQUISITE,
+                             VIR_DOMAIN_STARTUP_POLICY_OPTIONAL);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(dev->subsysType,
+                             VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI);
+
+    /* No virDomainHostdevCapsType for libxl */
+    virDomainCapsEnumClear(&dev->capsType);
+
+    virDomainCapsEnumClear(&dev->pciBackend);
+    VIR_DOMAIN_CAPS_ENUM_SET(dev->pciBackend,
+                             VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN);
+    return 0;
+}
+
 virCapsPtr
 libxlMakeCapabilities(libxl_ctx *ctx)
 {
@@ -422,6 +527,41 @@ libxlMakeCapabilities(libxl_ctx *ctx)
  error:
     virObjectUnref(caps);
     return NULL;
+}
+
+/*
+ * Currently Xen has no interface to report maxvcpus supported
+ * for the various domain types (PV, HVM, PVH). HVM_MAX_VCPUS
+ * is defined in $xensrc/xen/include/public/hvm/hvm_info_table.h
+ * PV has no equivalent and is relunctantly set here until Xen
+ * can report such capabilities.
+ */
+#define HVM_MAX_VCPUS 128
+#define PV_MAX_VCPUS  512
+
+int
+libxlMakeDomainCapabilities(virDomainCapsPtr domCaps,
+                            virFirmwarePtr *firmwares,
+                            size_t nfirmwares)
+{
+    virDomainCapsOSPtr os = &domCaps->os;
+    virDomainCapsDeviceDiskPtr disk = &domCaps->disk;
+    virDomainCapsDeviceGraphicsPtr graphics = &domCaps->graphics;
+    virDomainCapsDeviceVideoPtr video = &domCaps->video;
+    virDomainCapsDeviceHostdevPtr hostdev = &domCaps->hostdev;
+
+    if (STREQ(domCaps->machine, "xenfv"))
+        domCaps->maxvcpus = HVM_MAX_VCPUS;
+    else
+        domCaps->maxvcpus = PV_MAX_VCPUS;
+
+    if (libxlMakeDomainOSCaps(domCaps->machine, os, firmwares, nfirmwares) < 0 ||
+        libxlMakeDomainDeviceDiskCaps(disk) < 0 ||
+        libxlMakeDomainDeviceGraphicsCaps(graphics) < 0 ||
+        libxlMakeDomainDeviceVideoCaps(video) < 0 ||
+        libxlMakeDomainDeviceHostdevCaps(hostdev) < 0)
+        return -1;
+    return 0;
 }
 
 #define LIBXL_QEMU_DM_STR  "Options specific to the Xen version:"

@@ -930,6 +930,11 @@ domaincapstest_SOURCES += testutilsqemu.c testutilsqemu.h
 domaincapstest_LDADD += $(qemu_LDADDS) $(GNULIB_LIBS)
 endif WITH_QEMU
 
+if WITH_LIBXL
+domaincapstest_SOURCES += testutilsxen.c testutilsxen.h
+domaincapstest_LDADD += ../src/libvirt_driver_libxl_impl.la
+endif WITH_LIBXL
+
 if WITH_LIBVIRTD
 libvirtdconftest_SOURCES = \
 	libvirtdconftest.c testutils.h testutils.c \

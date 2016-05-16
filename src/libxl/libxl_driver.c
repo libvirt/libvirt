@@ -5526,6 +5526,79 @@ libxlDomainInterfaceAddresses(virDomainPtr dom,
 }
 
 
+static char *
+libxlConnectGetDomainCapabilities(virConnectPtr conn,
+                                  const char *emulatorbin,
+                                  const char *arch_str,
+                                  const char *machine,
+                                  const char *virttype_str,
+                                  unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = conn->privateData;
+    libxlDriverConfigPtr cfg;
+    char *ret = NULL;
+    int virttype = VIR_DOMAIN_VIRT_XEN;
+    virDomainCapsPtr domCaps = NULL;
+    int arch = virArchFromHost(); /* virArch */
+
+    virCheckFlags(0, ret);
+
+    if (virConnectGetDomainCapabilitiesEnsureACL(conn) < 0)
+        return ret;
+
+    cfg = libxlDriverConfigGet(driver);
+
+    if (virttype_str &&
+        (virttype = virDomainVirtTypeFromString(virttype_str)) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown virttype: %s"),
+                       virttype_str);
+        goto cleanup;
+    }
+
+    if (virttype != VIR_DOMAIN_VIRT_XEN) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown virttype: %s"),
+                       virttype_str);
+        goto cleanup;
+    }
+
+    if (arch_str && (arch = virArchFromString(arch_str)) == VIR_ARCH_NONE) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unknown architecture: %s"),
+                       arch_str);
+        goto cleanup;
+    }
+
+    if (emulatorbin == NULL)
+        emulatorbin = "/usr/bin/qemu-system-x86_64";
+
+    if (machine) {
+        if (STRNEQ(machine, "xenpv") && STRNEQ(machine, "xenfv")) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("Xen only supports 'xenpv' and 'xenfv' machines"));
+            goto cleanup;
+        }
+    } else {
+        machine = "xenpv";
+    }
+
+    if (!(domCaps = virDomainCapsNew(emulatorbin, machine, arch, virttype)))
+        goto cleanup;
+
+    if (libxlMakeDomainCapabilities(domCaps, cfg->firmwares,
+                                    cfg->nfirmwares) < 0)
+        goto cleanup;
+
+    ret = virDomainCapsFormat(domCaps);
+
+ cleanup:
+    virObjectUnref(domCaps);
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
 static virHypervisorDriver libxlHypervisorDriver = {
     .name = LIBXL_DRIVER_NAME,
     .connectOpen = libxlConnectOpen, /* 0.9.0 */
@@ -5627,6 +5700,7 @@ static virHypervisorDriver libxlHypervisorDriver = {
     .domainMigrateConfirm3Params = libxlDomainMigrateConfirm3Params, /* 1.2.6 */
     .nodeGetSecurityModel = libxlNodeGetSecurityModel, /* 1.2.16 */
     .domainInterfaceAddresses = libxlDomainInterfaceAddresses, /* 1.3.5 */
+    .connectGetDomainCapabilities = libxlConnectGetDomainCapabilities, /* 1.3.6 */
 };
 
 static virConnectDriver libxlConnectDriver = {

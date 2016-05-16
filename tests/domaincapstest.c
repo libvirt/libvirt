@@ -162,10 +162,41 @@ fillQemuCaps(virDomainCapsPtr domCaps,
 #endif /* WITH_QEMU */
 
 
+#ifdef WITH_LIBXL
+# include "testutilsxen.h"
+
+static int
+fillXenCaps(virDomainCapsPtr domCaps)
+{
+    virFirmwarePtr *firmwares;
+    int ret = -1;
+
+    if (VIR_ALLOC_N(firmwares, 2) < 0)
+        return ret;
+
+    if (VIR_ALLOC(firmwares[0]) < 0 || VIR_ALLOC(firmwares[1]) < 0)
+        goto cleanup;
+    if (VIR_STRDUP(firmwares[0]->name, "/usr/lib/xen/boot/hvmloader") < 0 ||
+        VIR_STRDUP(firmwares[1]->name, "/usr/lib/xen/boot/ovmf.bin") < 0)
+        goto cleanup;
+
+    if (libxlMakeDomainCapabilities(domCaps, firmwares, 2) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virFirmwareFreeList(firmwares, 2);
+    return ret;
+}
+#endif /* WITH_LIBXL */
+
+
 enum testCapsType {
     CAPS_NONE,
     CAPS_ALL,
     CAPS_QEMU,
+    CAPS_LIBXL,
 };
 
 struct testData {
@@ -210,6 +241,13 @@ test_virDomainCapsFormat(const void *opaque)
 #if WITH_QEMU
         if (fillQemuCaps(domCaps, data->capsName, data->arch, data->machine,
                          data->capsOpaque) < 0)
+            goto cleanup;
+#endif
+        break;
+
+    case CAPS_LIBXL:
+#if WITH_LIBXL
+        if (fillXenCaps(domCaps) < 0)
             goto cleanup;
 #endif
         break;
@@ -280,6 +318,20 @@ mymain(void)
         VIR_FREE(name);                                                 \
     } while (0)
 
+#define DO_TEST_LIBXL(Name, Emulator, Machine, Arch, Type)              \
+    do {                                                                \
+        struct testData data = {                                        \
+            .name = Name,                                               \
+            .emulator = Emulator,                                       \
+            .machine = Machine,                                         \
+            .arch = Arch,                                               \
+            .type = Type,                                               \
+            .capsType = CAPS_LIBXL,                                     \
+        };                                                              \
+        if (virTestRun(Name, test_virDomainCapsFormat, &data) < 0)     \
+            ret = -1;                                                   \
+    } while (0)
+
     DO_TEST("basic", "/bin/emulatorbin", "my-machine-type",
             "x86_64", VIR_DOMAIN_VIRT_UML, CAPS_NONE);
     DO_TEST("full", "/bin/emulatorbin", "my-machine-type",
@@ -312,6 +364,15 @@ mymain(void)
                  "ppc64le", VIR_DOMAIN_VIRT_KVM);
 
 #endif /* WITH_QEMU */
+
+#if WITH_LIBXL
+
+    DO_TEST_LIBXL("libxl-xenpv", "/usr/bin/qemu-system-x86_64",
+                  "xenpv", "x86_64", VIR_DOMAIN_VIRT_XEN);
+    DO_TEST_LIBXL("libxl-xenfv", "/usr/bin/qemu-system-x86_64",
+                  "xenfv", "x86_64", VIR_DOMAIN_VIRT_XEN);
+
+#endif /* WITH_LIBXL */
 
     return ret;
 }
