@@ -353,7 +353,8 @@ pci_device_new_from_stub(const struct pciDevice *data)
 
     /* If there is a config file for the device within virpcitestdata dir,
      * symlink it. Otherwise create a dummy config file. */
-    if (VIR_MOCK_CALL_STAT(_STAT_VER, configSrc, &sb) == 0) {
+    if ((real_stat && real_stat(configSrc, &sb) == 0) ||
+        (real___xstat && real___xstat(_STAT_VER, configSrc, &sb) == 0)) {
         /* On success, copy @configSrc into the destination (a copy,
          * rather than a symlink, is required since we write into the
          * file, and parallel VPATH builds must not stomp on the
@@ -868,10 +869,10 @@ __lxstat(int ver, const char *path, struct stat *sb)
         char *newpath;
         if (getrealpath(&newpath, path) < 0)
             return -1;
-        ret = VIR_MOCK_CALL_LSTAT(ver, newpath, sb);
+        ret = real___lxstat(ver, newpath, sb);
         VIR_FREE(newpath);
     } else {
-        ret = VIR_MOCK_CALL_LSTAT(ver, path, sb);
+        ret = real___lxstat(ver, path, sb);
     }
     return ret;
 }
@@ -887,10 +888,10 @@ lstat(const char *path, struct stat *sb)
         char *newpath;
         if (getrealpath(&newpath, path) < 0)
             return -1;
-        ret = VIR_MOCK_CALL_LSTAT(_STAT_VER, newpath, sb);
+        ret = real_lstat(newpath, sb);
         VIR_FREE(newpath);
     } else {
-        ret = VIR_MOCK_CALL_LSTAT(_STAT_VER, path, sb);
+        ret = real_lstat(path, sb);
     }
     return ret;
 }
@@ -906,10 +907,10 @@ __xstat(int ver, const char *path, struct stat *sb)
         char *newpath;
         if (getrealpath(&newpath, path) < 0)
             return -1;
-        ret = VIR_MOCK_CALL_STAT(ver, newpath, sb);
+        ret = real___xstat(ver, newpath, sb);
         VIR_FREE(newpath);
     } else {
-        ret = VIR_MOCK_CALL_STAT(ver, path, sb);
+        ret = real___xstat(ver, path, sb);
     }
     return ret;
 }
@@ -925,10 +926,10 @@ stat(const char *path, struct stat *sb)
         char *newpath;
         if (getrealpath(&newpath, path) < 0)
             return -1;
-        ret = VIR_MOCK_CALL_STAT(_STAT_VER, newpath, sb);
+        ret = real_stat(newpath, sb);
         VIR_FREE(newpath);
     } else {
-        ret = VIR_MOCK_CALL_STAT(_STAT_VER, path, sb);
+        ret = real_stat(path, sb);
     }
     return ret;
 }

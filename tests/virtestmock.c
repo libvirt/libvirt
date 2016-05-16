@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <execinfo.h>
 #include <sys/file.h>
+#include <sys/stat.h>
 
 #include "internal.h"
 #include "configmake.h"
@@ -192,7 +193,7 @@ int stat(const char *path, struct stat *sb)
 
     checkPath(path);
 
-    return VIR_MOCK_CALL_STAT(_STAT_VER, path, sb);
+    return real_stat(path, sb);
 }
 
 int
@@ -202,7 +203,7 @@ __xstat(int ver, const char *path, struct stat *sb)
 
     checkPath(path);
 
-    return VIR_MOCK_CALL_STAT(ver, path, sb);
+    return real___xstat(ver, path, sb);
 }
 
 int
@@ -212,7 +213,7 @@ lstat(const char *path, struct stat *sb)
 
     checkPath(path);
 
-    return VIR_MOCK_CALL_LSTAT(_STAT_VER, path, sb);
+    return real_lstat(path, sb);
 }
 
 int
@@ -222,5 +223,5 @@ __lxstat(int ver, const char *path, struct stat *sb)
 
     checkPath(path);
 
-    return VIR_MOCK_CALL_LSTAT(ver, path, sb);
+    return real___lxstat(ver, path, sb);
 }

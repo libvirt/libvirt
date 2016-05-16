@@ -558,7 +558,7 @@ int __lxstat(int ver, const char *path, struct stat *sb)
             errno = ENOMEM;
             return -1;
         }
-        ret = VIR_MOCK_CALL_LSTAT(ver, newpath, sb);
+        ret = real___lxstat(ver, newpath, sb);
         free(newpath);
     } else if (STRPREFIX(path, fakedevicedir0)) {
         sb->st_mode = S_IFBLK;
@@ -569,7 +569,7 @@ int __lxstat(int ver, const char *path, struct stat *sb)
         sb->st_rdev = makedev(9, 0);
         return 0;
     } else {
-        ret = VIR_MOCK_CALL_LSTAT(ver, path, sb);
+        ret = real___lxstat(ver, path, sb);
     }
     return ret;
 }
@@ -589,7 +589,7 @@ int lstat(const char *path, struct stat *sb)
             errno = ENOMEM;
             return -1;
         }
-        ret = VIR_MOCK_CALL_LSTAT(_STAT_VER, newpath, sb);
+        ret = real_lstat(newpath, sb);
         free(newpath);
     } else if (STRPREFIX(path, fakedevicedir0)) {
         sb->st_mode = S_IFBLK;
@@ -600,7 +600,7 @@ int lstat(const char *path, struct stat *sb)
         sb->st_rdev = makedev(9, 0);
         return 0;
     } else {
-        ret = VIR_MOCK_CALL_LSTAT(_STAT_VER, path, sb);
+        ret = real_lstat(path, sb);
     }
     return ret;
 }
@@ -620,7 +620,7 @@ int __xstat(int ver, const char *path, struct stat *sb)
             errno = ENOMEM;
             return -1;
         }
-        ret = VIR_MOCK_CALL_STAT(ver, newpath, sb);
+        ret = real___xstat(ver, newpath, sb);
         free(newpath);
     } else if (STRPREFIX(path, fakedevicedir0)) {
         sb->st_mode = S_IFBLK;
@@ -631,7 +631,7 @@ int __xstat(int ver, const char *path, struct stat *sb)
         sb->st_rdev = makedev(9, 0);
         return 0;
     } else {
-        ret = VIR_MOCK_CALL_STAT(ver, path, sb);
+        ret = real___xstat(ver, path, sb);
     }
     return ret;
 }
@@ -671,7 +671,7 @@ int stat(const char *path, struct stat *sb)
         if (!(newpath = strdup(path)))
             return -1;
     }
-    ret = VIR_MOCK_CALL_STAT(_STAT_VER, newpath, sb);
+    ret = real_stat(newpath, sb);
     free(newpath);
     return ret;
 }

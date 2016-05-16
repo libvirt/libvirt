@@ -27,7 +27,6 @@
 # endif
 # include <stdlib.h>
 # include <stdio.h>
-# include <sys/stat.h>
 
 # include "internal.h"
 
@@ -254,28 +253,6 @@
     void name(void);                                                    \
     static void (*real_##name)(void);                                   \
     void name(void)
-
-static inline int
-callStat(int (*realStat)(const char *, struct stat *),
-         int (*realXstat)(int, const char *, struct stat *),
-         int __ver, const char *__filename, struct stat *__stat_buf)
-{
-    if (!realXstat) {
-        if (__ver == _STAT_VER) {
-            return realStat(__filename, __stat_buf);
-        } else {
-            fprintf(stderr, "Not handled __xstat(ver=%d)", __ver);
-            abort();
-        }
-    }
-
-    return realXstat(__ver, __filename, __stat_buf);
-}
-
-# define VIR_MOCK_CALL_STAT(__ver, __filename, __stat_buf)              \
-    callStat(real_stat, real___xstat, __ver, __filename, __stat_buf)
-# define VIR_MOCK_CALL_LSTAT(__ver, __filename, __stat_buf)             \
-    callStat(real_lstat, real___lxstat, __ver, __filename, __stat_buf)
 
 /*
  * The VIR_MOCK_WRAP_NNN_MMM() macros are intended for use in the
