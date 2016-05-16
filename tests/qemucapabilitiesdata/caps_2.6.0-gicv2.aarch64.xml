@@ -46,7 +46,6 @@
   <flag name='ich9-ahci'/>
   <flag name='fsdev-readonly'/>
   <flag name='virtio-blk-pci.scsi'/>
-  <flag name='blk-sg-io'/>
   <flag name='drive-copy-on-read'/>
   <flag name='fsdev-writeout'/>
   <flag name='drive-iotune'/>

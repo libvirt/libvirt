@@ -615,21 +615,21 @@ mymain(void)
             QEMU_CAPS_BOOTINDEX);
     DO_TEST_PARSE_ERROR("boot-dev+order",
             QEMU_CAPS_BOOTINDEX,
-            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+            QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("boot-order",
             QEMU_CAPS_BOOTINDEX,
-            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+            QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("boot-complex",
             QEMU_CAPS_DRIVE_BOOT,
-            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+            QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("boot-complex-bootindex",
             QEMU_CAPS_DRIVE_BOOT,
             QEMU_CAPS_BOOTINDEX,
-            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+            QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("boot-strict",
             QEMU_CAPS_DRIVE_BOOT,
             QEMU_CAPS_BOOTINDEX, QEMU_CAPS_BOOT_STRICT,
-            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+            QEMU_CAPS_VIRTIO_BLK_SCSI);
 
     DO_TEST("reboot-timeout-disabled", QEMU_CAPS_REBOOT_TIMEOUT);
     DO_TEST("reboot-timeout-enabled", QEMU_CAPS_REBOOT_TIMEOUT);
@@ -727,8 +727,7 @@ mymain(void)
     DO_TEST("disk-virtio-scsi-ccw", QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("disk-order",
-            QEMU_CAPS_DRIVE_BOOT,
-            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+            QEMU_CAPS_DRIVE_BOOT, QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("disk-xenvbd", QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-drive-boot-disk",
             QEMU_CAPS_DRIVE_BOOT);
@@ -771,7 +770,7 @@ mymain(void)
     DO_TEST("disk-drive-network-iscsi-auth", NONE);
     DO_TEST("disk-drive-network-iscsi-lun",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_VIRTIO_BLK_SG_IO, QEMU_CAPS_SCSI_BLOCK);
+            QEMU_CAPS_SCSI_BLOCK);
     DO_TEST("disk-drive-network-gluster", NONE);
     DO_TEST("disk-drive-network-rbd", NONE);
     DO_TEST("disk-drive-network-sheepdog", NONE);
@@ -847,11 +846,11 @@ mymain(void)
     DO_TEST("disk-ioeventfd",
             QEMU_CAPS_VIRTIO_IOEVENTFD,
             QEMU_CAPS_VIRTIO_TX_ALG,
-            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+            QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("disk-copy_on_read",
             QEMU_CAPS_DRIVE_COPY_ON_READ,
             QEMU_CAPS_VIRTIO_TX_ALG,
-            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+            QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("disk-drive-discard",
             QEMU_CAPS_DRIVE_DISCARD);
     DO_TEST("disk-snapshot", NONE);
@@ -861,11 +860,11 @@ mymain(void)
     DO_TEST("event_idx",
             QEMU_CAPS_VIRTIO_BLK_EVENT_IDX,
             QEMU_CAPS_VIRTIO_NET_EVENT_IDX,
-            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+            QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("virtio-lun",
-            QEMU_CAPS_VIRTIO_BLK_SCSI, QEMU_CAPS_VIRTIO_BLK_SG_IO);
+            QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("disk-scsi-lun-passthrough",
-            QEMU_CAPS_SCSI_BLOCK, QEMU_CAPS_VIRTIO_BLK_SG_IO,
+            QEMU_CAPS_SCSI_BLOCK,
             QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-serial",
             QEMU_CAPS_KVM,

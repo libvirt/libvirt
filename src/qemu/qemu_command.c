@@ -1596,17 +1596,6 @@ qemuBuildDriveDevStr(const virDomainDef *def,
     if (qemuCheckDiskConfig(disk) < 0)
         goto error;
 
-    /* Live only checks */
-    if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-        /* make sure that the qemu binary supports type='lun' (SG_IO). */
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SG_IO)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("disk device='lun' is not supported by "
-                             "this QEMU"));
-            goto error;
-        }
-    }
-
     if (!qemuCheckCCWS390AddressSupport(def, disk->info, qemuCaps, disk->dst))
         goto error;
 
