@@ -4234,6 +4234,44 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
 
 
 /**
+ * virQEMUCapsSupportsGICVersion:
+ * @qemuCaps: QEMU capabilities
+ * @virtType: domain type
+ * @version: GIC version
+ *
+ * Checks the QEMU binary with capabilities @qemuCaps supports a specific
+ * GIC version for a domain of type @virtType.
+ *
+ * Returns: true if the binary supports the requested GIC version, false
+ *          otherwise
+ */
+bool
+virQEMUCapsSupportsGICVersion(virQEMUCapsPtr qemuCaps,
+                              virDomainVirtType virtType,
+                              virGICVersion version)
+{
+    size_t i;
+
+    for (i = 0; i < qemuCaps->ngicCapabilities; i++) {
+        virGICCapabilityPtr cap = &(qemuCaps->gicCapabilities[i]);
+
+        if (cap->version != version)
+            continue;
+
+        if (virtType == VIR_DOMAIN_VIRT_KVM &&
+            cap->implementation & VIR_GIC_IMPLEMENTATION_KERNEL)
+            return true;
+
+        if (virtType == VIR_DOMAIN_VIRT_QEMU &&
+            cap->implementation & VIR_GIC_IMPLEMENTATION_EMULATED)
+            return true;
+    }
+
+    return false;
+}
+
+
+/**
  * virQEMUCapsFillDomainFeatureGICCaps:
  * @qemuCaps: QEMU capabilities
  * @domCaps: domain capabilities
@@ -4257,7 +4295,7 @@ virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
                                     virDomainCapsPtr domCaps)
 {
     virDomainCapsFeatureGICPtr gic = &domCaps->gic;
-    size_t i;
+    virGICVersion version;
 
     if (domCaps->arch != VIR_ARCH_ARMV7L &&
         domCaps->arch != VIR_ARCH_AARCH64)
@@ -4267,20 +4305,17 @@ virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
         !STRPREFIX(domCaps->machine, "virt-"))
         return 0;
 
-    for (i = 0; i < qemuCaps->ngicCapabilities; i++) {
-        virGICCapabilityPtr cap = &qemuCaps->gicCapabilities[i];
-
-        if (domCaps->virttype == VIR_DOMAIN_VIRT_KVM &&
-            !(cap->implementation & VIR_GIC_IMPLEMENTATION_KERNEL))
-            continue;
-
-        if (domCaps->virttype == VIR_DOMAIN_VIRT_QEMU &&
-            !(cap->implementation & VIR_GIC_IMPLEMENTATION_EMULATED))
+    for (version = VIR_GIC_VERSION_LAST - 1;
+         version > VIR_GIC_VERSION_NONE;
+         version--) {
+        if (!virQEMUCapsSupportsGICVersion(qemuCaps,
+                                           domCaps->virttype,
+                                           version))
             continue;
 
         gic->supported = true;
         VIR_DOMAIN_CAPS_ENUM_SET(gic->version,
-                                 cap->version);
+                                 version);
     }
 
     return 0;

@@ -463,6 +463,10 @@ bool virQEMUCapsSupportsChardev(const virDomainDef *def,
                                 virQEMUCapsPtr qemuCaps,
                                 virDomainChrDefPtr chr);
 
+bool virQEMUCapsSupportsGICVersion(virQEMUCapsPtr qemuCaps,
+                                   virDomainVirtType virtType,
+                                   virGICVersion version);
+
 bool virQEMUCapsIsMachineSupported(virQEMUCapsPtr qemuCaps,
                                    const char *canonical_machine);
 
