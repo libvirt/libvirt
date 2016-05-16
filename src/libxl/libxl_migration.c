@@ -402,7 +402,7 @@ libxlDomainMigrationBegin(virConnectPtr conn,
 {
     libxlDriverPrivatePtr driver = conn->privateData;
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
-    libxlMigrationCookiePtr mig;
+    libxlMigrationCookiePtr mig = NULL;
     virDomainDefPtr tmpdef = NULL;
     virDomainDefPtr def;
     char *xml = NULL;
@@ -440,6 +440,7 @@ libxlDomainMigrationBegin(virConnectPtr conn,
         vm = NULL;
 
  cleanup:
+    libxlMigrationCookieFree(mig);
     if (vm)
         virObjectUnlock(vm);
 
@@ -601,6 +602,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     args->socks = socks;
     args->nsocks = nsocks;
     args->migcookie = mig;
+    mig = NULL;
 
     for (i = 0; i < nsocks; i++) {
         if (virNetSocketSetBlocking(socks[i], true) < 0)
@@ -640,6 +642,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     }
 
  done:
+    libxlMigrationCookieFree(mig);
     if (!uri_in)
         VIR_FREE(hostname);
     else
