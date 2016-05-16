@@ -4863,9 +4863,10 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
 
     ret = n;
     *machines = infolist;
+    infolist = NULL;
 
  cleanup:
-    if (ret < 0 && infolist) {
+    if (infolist) {
         for (i = 0; i < n; i++)
             qemuMonitorMachineInfoFree(infolist[i]);
         VIR_FREE(infolist);
@@ -4939,10 +4940,10 @@ int qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
 
     ret = n;
     *cpus = cpulist;
+    cpulist = NULL;
 
  cleanup:
-    if (ret < 0)
-        virStringFreeList(cpulist);
+    virStringFreeList(cpulist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5003,10 +5004,11 @@ int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
 
     ret = n;
     *commands = commandlist;
+    commandlist = NULL;
+
 
  cleanup:
-    if (ret < 0)
-        virStringFreeList(commandlist);
+    virStringFreeList(commandlist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5072,10 +5074,10 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
 
     ret = n;
     *events = eventlist;
+    eventlist = NULL;
 
  cleanup:
-    if (ret < 0)
-        virStringFreeList(eventlist);
+    virStringFreeList(eventlist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5189,6 +5191,7 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
 
     ret = n;
     *params = paramlist;
+    paramlist = NULL;
 
  cleanup:
     /* If we failed before getting the JSON array of options, we (try)
@@ -5196,8 +5199,7 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
     if (!qemuMonitorGetOptions(mon))
         qemuMonitorSetOptions(mon, virJSONValueNewArray());
 
-    if (ret < 0)
-        virStringFreeList(paramlist);
+    virStringFreeList(paramlist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5306,10 +5308,10 @@ int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
 
     ret = n;
     *types = typelist;
+    typelist = NULL;
 
  cleanup:
-    if (ret < 0)
-        virStringFreeList(typelist);
+    virStringFreeList(typelist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5389,9 +5391,10 @@ int qemuMonitorJSONGetObjectListPaths(qemuMonitorPtr mon,
 
     ret = n;
     *paths = pathlist;
+    pathlist = NULL;
 
  cleanup:
-    if (ret < 0 && pathlist) {
+    if (pathlist) {
         for (i = 0; i < n; i++)
             qemuMonitorJSONListPathFree(pathlist[i]);
         VIR_FREE(pathlist);
@@ -5616,10 +5619,10 @@ int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
 
     ret = n;
     *props = proplist;
+    proplist = NULL;
 
  cleanup:
-    if (ret < 0)
-        virStringFreeList(proplist);
+    virStringFreeList(proplist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5726,10 +5729,10 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
 
     ret = n;
     *capabilities = list;
+    list = NULL;
 
  cleanup:
-    if (ret < 0)
-        virStringFreeList(list);
+    virStringFreeList(list);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5911,10 +5914,10 @@ qemuMonitorJSONGetGICCapabilities(qemuMonitorPtr mon,
 
     ret = n;
     *capabilities = list;
+    list = NULL;
 
  cleanup:
-    if (ret < 0)
-        VIR_FREE(list);
+    VIR_FREE(list);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
 
@@ -6125,10 +6128,10 @@ qemuMonitorJSONGetStringArray(qemuMonitorPtr mon, const char *qmpCmd,
 
     ret = n;
     *array = list;
+    list = NULL;
 
  cleanup:
-    if (ret < 0)
-        virStringFreeList(list);
+    virStringFreeList(list);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -6668,9 +6671,10 @@ qemuMonitorJSONGetIOThreads(qemuMonitorPtr mon,
 
     ret = n;
     *iothreads = infolist;
+    infolist = NULL;
 
  cleanup:
-    if (ret < 0 && infolist) {
+    if (infolist) {
         for (i = 0; i < n; i++)
             VIR_FREE(infolist[i]);
         VIR_FREE(infolist);
