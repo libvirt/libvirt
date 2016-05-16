@@ -1127,10 +1127,13 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
         goto cleanup;
     }
 
+    if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Domain is already running"));
-        goto cleanup;
+        goto endjob;
     }
 
     ret = virLXCProcessStart(dom->conn, driver, vm,
@@ -1146,6 +1149,10 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
     } else {
         virDomainAuditStart(vm, "booted", false);
     }
+
+ endjob:
+    if (!virLXCDomainObjEndJob(driver, vm))
+        vm = NULL;
 
  cleanup:
     if (vm)
@@ -1249,6 +1256,14 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
         goto cleanup;
     def = NULL;
 
+    if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0) {
+        if (!vm->persistent) {
+            virDomainObjListRemove(driver->domains, vm);
+            vm = NULL;
+        }
+        goto cleanup;
+    }
+
     if (virLXCProcessStart(conn, driver, vm,
                            nfiles, files,
                            (flags & VIR_DOMAIN_START_AUTODESTROY),
@@ -1258,7 +1273,7 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
             virDomainObjListRemove(driver->domains, vm);
             vm = NULL;
         }
-        goto cleanup;
+        goto endjob;
     }
 
     event = virDomainEventLifecycleNewFromObj(vm,
@@ -1269,6 +1284,10 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (dom)
         dom->id = vm->def->id;
+
+ endjob:
+    if (!virLXCDomainObjEndJob(driver, vm))
+        vm = NULL;
 
  cleanup:
     virDomainDefFree(def);
