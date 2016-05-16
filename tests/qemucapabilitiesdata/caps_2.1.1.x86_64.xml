@@ -52,7 +52,6 @@
   <flag name='usb-hub'/>
   <flag name='no-shutdown'/>
   <flag name='cache-unsafe'/>
-  <flag name='rombar'/>
   <flag name='ich9-ahci'/>
   <flag name='no-acpi'/>
   <flag name='fsdev-readonly'/>

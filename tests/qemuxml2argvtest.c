@@ -1233,8 +1233,7 @@ mymain(void)
                     QEMU_CAPS_PCIDEVICE,
                     QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pci-rom",
-            QEMU_CAPS_PCIDEVICE, QEMU_CAPS_NODEFCONFIG,
-            QEMU_CAPS_PCI_ROMBAR);
+            QEMU_CAPS_PCIDEVICE, QEMU_CAPS_NODEFCONFIG);
 
     DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, 0, NONE);
     DO_TEST_FULL("restore-v2-fd", "stdio", 7, 0, 0, NONE);

@@ -508,18 +508,12 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
 
 static int
 qemuBuildRomStr(virBufferPtr buf,
-                virDomainDeviceInfoPtr info,
-                virQEMUCapsPtr qemuCaps)
+                virDomainDeviceInfoPtr info)
 {
     if (info->rombar || info->romfile) {
         if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("rombar and romfile are supported only for PCI devices"));
-            return -1;
-        }
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_ROMBAR)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("rombar and romfile not supported in this QEMU binary"));
             return -1;
         }
 
@@ -3400,7 +3394,7 @@ qemuBuildNicDevStr(virDomainDefPtr def,
                       virMacAddrFormat(&net->mac, macaddr));
     if (qemuBuildDeviceAddressStr(&buf, def, &net->info, qemuCaps) < 0)
         goto error;
-    if (qemuBuildRomStr(&buf, &net->info, qemuCaps) < 0)
+    if (qemuBuildRomStr(&buf, &net->info) < 0)
         goto error;
     if (bootindex && virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
         virBufferAsprintf(&buf, ",bootindex=%u", bootindex);
@@ -4469,7 +4463,7 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
         virBufferAsprintf(&buf, ",bootindex=%u", bootIndex);
     if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
         goto error;
-    if (qemuBuildRomStr(&buf, dev->info, qemuCaps) < 0)
+    if (qemuBuildRomStr(&buf, dev->info) < 0)
         goto error;
 
     if (virBufferCheckError(&buf) < 0)

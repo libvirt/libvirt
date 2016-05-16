@@ -152,7 +152,7 @@ typedef enum {
 
     /* 75 */
     QEMU_CAPS_DRIVE_CACHE_UNSAFE, /* Is cache=unsafe supported? */
-    QEMU_CAPS_PCI_ROMBAR, /* -device rombar=0|1 */
+    X_QEMU_CAPS_PCI_ROMBAR, /* -device rombar=0|1 */
     QEMU_CAPS_ICH9_AHCI, /* -device ich9-ahci */
     QEMU_CAPS_NO_ACPI, /* -no-acpi */
     QEMU_CAPS_FSDEV_READONLY, /* -fsdev readonly supported */
