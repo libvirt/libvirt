@@ -2380,6 +2380,7 @@ lxcDomainBlockStats(virDomainPtr dom,
                     const char *path,
                     virDomainBlockStatsPtr stats)
 {
+    virLXCDriverPtr driver = dom->conn->privateData;
     int ret = -1;
     virDomainObjPtr vm;
     virDomainDiskDefPtr disk = NULL;
@@ -2393,16 +2394,19 @@ lxcDomainBlockStats(virDomainPtr dom,
     if (virDomainBlockStatsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+   if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_QUERY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_BLKIO)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("blkio cgroup isn't mounted"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (!*path) {
@@ -2412,19 +2416,19 @@ lxcDomainBlockStats(virDomainPtr dom,
                                           &stats->wr_bytes,
                                           &stats->rd_req,
                                           &stats->wr_req);
-        goto cleanup;
+        goto endjob;
     }
 
     if (!(disk = virDomainDiskByName(vm->def, path, false))) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid path: %s"), path);
-        goto cleanup;
+        goto endjob;
     }
 
     if (!disk->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("missing disk device alias name for %s"), disk->dst);
-        goto cleanup;
+        goto endjob;
     }
 
     ret = virCgroupGetBlkioIoDeviceServiced(priv->cgroup,
@@ -2433,6 +2437,11 @@ lxcDomainBlockStats(virDomainPtr dom,
                                             &stats->wr_bytes,
                                             &stats->rd_req,
                                             &stats->wr_req);
+
+ endjob:
+    if (!virLXCDomainObjEndJob(driver, vm))
+        vm = NULL;
+
  cleanup:
     if (vm)
         virObjectUnlock(vm);
@@ -2447,6 +2456,7 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
                          int * nparams,
                          unsigned int flags)
 {
+    virLXCDriverPtr driver = dom->conn->privateData;
     int tmp, ret = -1;
     virDomainObjPtr vm;
     virDomainDiskDefPtr disk = NULL;
@@ -2472,16 +2482,19 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
     if (virDomainBlockStatsFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_QUERY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_BLKIO)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("blkio cgroup isn't mounted"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (!*path) {
@@ -2493,19 +2506,19 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
                                         &wr_req) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("domain stats query failed"));
-            goto cleanup;
+            goto endjob;
         }
     } else {
         if (!(disk = virDomainDiskByName(vm->def, path, false))) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("invalid path: %s"), path);
-            goto cleanup;
+            goto endjob;
         }
 
         if (!disk->info.alias) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("missing disk device alias name for %s"), disk->dst);
-            goto cleanup;
+            goto endjob;
         }
 
         if (virCgroupGetBlkioIoDeviceServiced(priv->cgroup,
@@ -2516,7 +2529,7 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
                                               &wr_req) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("domain stats query failed"));
-            goto cleanup;
+            goto endjob;
         }
     }
 
@@ -2527,7 +2540,7 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
         param = &params[tmp];
         if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES,
                                     VIR_TYPED_PARAM_LLONG, wr_bytes) < 0)
-            goto cleanup;
+            goto endjob;
         tmp++;
     }
 
@@ -2535,7 +2548,7 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
         param = &params[tmp];
         if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ,
                                     VIR_TYPED_PARAM_LLONG, wr_req) < 0)
-            goto cleanup;
+            goto endjob;
         tmp++;
     }
 
@@ -2543,7 +2556,7 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
         param = &params[tmp];
         if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_READ_BYTES,
                                     VIR_TYPED_PARAM_LLONG, rd_bytes) < 0)
-            goto cleanup;
+            goto endjob;
         tmp++;
     }
 
@@ -2551,12 +2564,16 @@ lxcDomainBlockStatsFlags(virDomainPtr dom,
         param = &params[tmp];
         if (virTypedParameterAssign(param, VIR_DOMAIN_BLOCK_STATS_READ_REQ,
                                     VIR_TYPED_PARAM_LLONG, rd_req) < 0)
-            goto cleanup;
+            goto endjob;
         tmp++;
     }
 
     ret = 0;
     *nparams = tmp;
+
+ endjob:
+    if (!virLXCDomainObjEndJob(driver, vm))
+        vm = NULL;
 
  cleanup:
     if (vm)
@@ -3179,6 +3196,7 @@ lxcDomainInterfaceStats(virDomainPtr dom,
     virDomainObjPtr vm;
     size_t i;
     int ret = -1;
+    virLXCDriverPtr driver = dom->conn->privateData;
 
     if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
@@ -3186,10 +3204,13 @@ lxcDomainInterfaceStats(virDomainPtr dom,
     if (virDomainInterfaceStatsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_QUERY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     /* Check the path is one of the domain's network interfaces. */
@@ -3206,6 +3227,10 @@ lxcDomainInterfaceStats(virDomainPtr dom,
     else
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Invalid path, '%s' is not a known interface"), path);
+
+ endjob:
+    if (!virLXCDomainObjEndJob(driver, vm))
+        vm = NULL;
 
  cleanup:
     if (vm)
@@ -5454,6 +5479,7 @@ lxcDomainMemoryStats(virDomainPtr dom,
     virLXCDomainObjPrivatePtr priv;
     unsigned long long swap_usage;
     unsigned long mem_usage;
+    virLXCDriverPtr driver = dom->conn->privateData;
 
     virCheckFlags(0, -1);
 
@@ -5465,17 +5491,20 @@ lxcDomainMemoryStats(virDomainPtr dom,
     if (virDomainMemoryStatsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_QUERY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain is not active"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (virCgroupGetMemSwapUsage(priv->cgroup, &swap_usage) < 0)
-        goto cleanup;
+        goto endjob;
 
     if (virCgroupGetMemoryUsage(priv->cgroup, &mem_usage) < 0)
-        goto cleanup;
+        goto endjob;
 
     ret = 0;
     if (ret < nr_stats) {
@@ -5494,6 +5523,9 @@ lxcDomainMemoryStats(virDomainPtr dom,
         ret++;
     }
 
+ endjob:
+    if (!virLXCDomainObjEndJob(driver, vm))
+        vm = NULL;
  cleanup:
     if (vm)
         virObjectUnlock(vm);
