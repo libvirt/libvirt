@@ -3416,17 +3416,20 @@ static int lxcDomainSuspend(virDomainPtr dom)
     if (virDomainSuspendEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (virDomainObjGetState(vm, NULL) != VIR_DOMAIN_PAUSED) {
         if (lxcFreezeContainer(vm) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            "%s", _("Suspend operation failed"));
-            goto cleanup;
+            goto endjob;
         }
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
 
@@ -3436,9 +3439,12 @@ static int lxcDomainSuspend(virDomainPtr dom)
     }
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-        goto cleanup;
+        goto endjob;
     ret = 0;
 
+ endjob:
+    if (!virLXCDomainObjEndJob(driver, vm))
+        vm = NULL;
  cleanup:
     if (event)
         virObjectEventStateQueue(driver->domainEventState, event);
@@ -3465,17 +3471,20 @@ static int lxcDomainResume(virDomainPtr dom)
     if (virDomainResumeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
         if (virCgroupSetFreezerState(priv->cgroup, "THAWED") < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            "%s", _("Resume operation failed"));
-            goto cleanup;
+            goto endjob;
         }
         virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                              VIR_DOMAIN_RUNNING_UNPAUSED);
@@ -3486,9 +3495,12 @@ static int lxcDomainResume(virDomainPtr dom)
     }
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-        goto cleanup;
+        goto endjob;
     ret = 0;
 
+ endjob:
+    if (!virLXCDomainObjEndJob(driver, vm))
+        vm = NULL;
  cleanup:
     if (event)
         virObjectEventStateQueue(driver->domainEventState, event);
