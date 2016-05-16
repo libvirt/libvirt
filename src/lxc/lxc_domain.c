@@ -30,21 +30,163 @@
 #include "virstring.h"
 #include "virutil.h"
 #include "virfile.h"
+#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 #define LXC_NAMESPACE_HREF "http://libvirt.org/schemas/domain/lxc/1.0"
 
+VIR_ENUM_IMPL(virLXCDomainJob, LXC_JOB_LAST,
+              "none",
+              "query",
+              "destroy",
+              "modify",
+);
+
 VIR_LOG_INIT("lxc.lxc_domain");
 
-static void *virLXCDomainObjPrivateAlloc(void)
+static int
+virLXCDomainObjInitJob(virLXCDomainObjPrivatePtr priv)
+{
+    memset(&priv->job, 0, sizeof(priv->job));
+
+    if (virCondInit(&priv->job.cond) < 0)
+        return -1;
+
+    return 0;
+}
+
+static void
+virLXCDomainObjResetJob(virLXCDomainObjPrivatePtr priv)
+{
+    struct virLXCDomainJobObj *job = &priv->job;
+
+    job->active = LXC_JOB_NONE;
+    job->owner = 0;
+}
+
+static void
+virLXCDomainObjFreeJob(virLXCDomainObjPrivatePtr priv)
+{
+    ignore_value(virCondDestroy(&priv->job.cond));
+}
+
+/* Give up waiting for mutex after 30 seconds */
+#define LXC_JOB_WAIT_TIME (1000ull * 30)
+
+/*
+ * obj must be locked before calling, virLXCDriverPtr must NOT be locked
+ *
+ * This must be called by anything that will change the VM state
+ * in any way
+ *
+ * Upon successful return, the object will have its ref count increased,
+ * successful calls must be followed by EndJob eventually
+ */
+int
+virLXCDomainObjBeginJob(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
+                       virDomainObjPtr obj,
+                       enum virLXCDomainJob job)
+{
+    virLXCDomainObjPrivatePtr priv = obj->privateData;
+    unsigned long long now;
+    unsigned long long then;
+
+    if (virTimeMillisNow(&now) < 0)
+        return -1;
+    then = now + LXC_JOB_WAIT_TIME;
+
+    virObjectRef(obj);
+
+    while (priv->job.active) {
+        VIR_DEBUG("Wait normal job condition for starting job: %s",
+                  virLXCDomainJobTypeToString(job));
+        if (virCondWaitUntil(&priv->job.cond, &obj->parent.lock, then) < 0)
+            goto error;
+    }
+
+    virLXCDomainObjResetJob(priv);
+
+    VIR_DEBUG("Starting job: %s", virLXCDomainJobTypeToString(job));
+    priv->job.active = job;
+    priv->job.owner = virThreadSelfID();
+
+    return 0;
+
+ error:
+    VIR_WARN("Cannot start job (%s) for domain %s;"
+             " current job is (%s) owned by (%d)",
+             virLXCDomainJobTypeToString(job),
+             obj->def->name,
+             virLXCDomainJobTypeToString(priv->job.active),
+             priv->job.owner);
+
+    if (errno == ETIMEDOUT)
+        virReportError(VIR_ERR_OPERATION_TIMEOUT,
+                       "%s", _("cannot acquire state change lock"));
+    else
+        virReportSystemError(errno,
+                             "%s", _("cannot acquire job mutex"));
+
+    virObjectUnref(obj);
+    return -1;
+}
+
+
+/*
+ * obj must be locked before calling
+ *
+ * To be called after completing the work associated with the
+ * earlier virLXCDomainBeginJob() call
+ *
+ * Returns true if the remaining reference count on obj is
+ * non-zero, false if the reference count has dropped to zero
+ * and obj is disposed.
+ */
+bool
+virLXCDomainObjEndJob(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
+                     virDomainObjPtr obj)
+{
+    virLXCDomainObjPrivatePtr priv = obj->privateData;
+    enum virLXCDomainJob job = priv->job.active;
+
+    VIR_DEBUG("Stopping job: %s",
+              virLXCDomainJobTypeToString(job));
+
+    virLXCDomainObjResetJob(priv);
+    virCondSignal(&priv->job.cond);
+
+    return virObjectUnref(obj);
+}
+
+
+static void *
+virLXCDomainObjPrivateAlloc(void)
 {
     virLXCDomainObjPrivatePtr priv;
 
     if (VIR_ALLOC(priv) < 0)
         return NULL;
 
+    if (virLXCDomainObjInitJob(priv) < 0) {
+        VIR_FREE(priv);
+        return NULL;
+    }
+
     return priv;
 }
+
+
+static void
+virLXCDomainObjPrivateFree(void *data)
+{
+    virLXCDomainObjPrivatePtr priv = data;
+
+    virCgroupFree(&priv->cgroup);
+    virLXCDomainObjFreeJob(priv);
+    VIR_FREE(priv);
+}
+
+
 
 VIR_ENUM_IMPL(virLXCDomainNamespace,
               VIR_LXC_DOMAIN_NAMESPACE_LAST,
@@ -188,16 +330,6 @@ virDomainXMLNamespace virLXCDriverDomainXMLNamespace = {
     .format = lxcDomainDefNamespaceFormatXML,
     .href = lxcDomainDefNamespaceHref,
 };
-
-
-static void virLXCDomainObjPrivateFree(void *data)
-{
-    virLXCDomainObjPrivatePtr priv = data;
-
-    virCgroupFree(&priv->cgroup);
-
-    VIR_FREE(priv);
-}
 
 
 static int

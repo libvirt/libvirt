@@ -27,6 +27,7 @@
 # include "lxc_conf.h"
 # include "lxc_monitor.h"
 
+
 typedef enum {
     VIR_LXC_DOMAIN_NAMESPACE_SHARENET = 0,
     VIR_LXC_DOMAIN_NAMESPACE_SHAREIPC,
@@ -53,6 +54,28 @@ struct _lxcDomainDef {
     char *ns_val[VIR_LXC_DOMAIN_NAMESPACE_LAST];
 };
 
+
+/* Only 1 job is allowed at any time
+ * A job includes *all* lxc.so api, even those just querying
+ * information, not merely actions */
+
+enum virLXCDomainJob {
+    LXC_JOB_NONE = 0,      /* Always set to 0 for easy if (jobActive) conditions */
+    LXC_JOB_QUERY,         /* Doesn't change any state */
+    LXC_JOB_DESTROY,       /* Destroys the domain (cannot be masked out) */
+    LXC_JOB_MODIFY,        /* May change state */
+    LXC_JOB_LAST
+};
+VIR_ENUM_DECL(virLXCDomainJob)
+
+
+struct virLXCDomainJobObj {
+    virCond cond;                       /* Use to coordinate jobs */
+    enum virLXCDomainJob active;        /* Currently running job */
+    int owner;                          /* Thread which set current job */
+};
+
+
 typedef struct _virLXCDomainObjPrivate virLXCDomainObjPrivate;
 typedef virLXCDomainObjPrivate *virLXCDomainObjPrivatePtr;
 struct _virLXCDomainObjPrivate {
@@ -65,10 +88,24 @@ struct _virLXCDomainObjPrivate {
 
     virCgroupPtr cgroup;
     char *machineName;
+
+    struct virLXCDomainJobObj job;
 };
 
 extern virDomainXMLNamespace virLXCDriverDomainXMLNamespace;
 extern virDomainXMLPrivateDataCallbacks virLXCDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virLXCDriverDomainDefParserConfig;
+
+int
+virLXCDomainObjBeginJob(virLXCDriverPtr driver,
+                       virDomainObjPtr obj,
+                       enum virLXCDomainJob job)
+    ATTRIBUTE_RETURN_CHECK;
+
+bool
+virLXCDomainObjEndJob(virLXCDriverPtr driver,
+                     virDomainObjPtr obj)
+    ATTRIBUTE_RETURN_CHECK;
+
 
 #endif /* __LXC_DOMAIN_H__ */
