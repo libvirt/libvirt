@@ -3259,54 +3259,60 @@ static int lxcDomainSetAutostart(virDomainPtr dom,
     if (virDomainSetAutostartEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!vm->persistent) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Cannot set autostart for transient domain"));
-        goto cleanup;
+        goto endjob;
     }
 
     autostart = (autostart != 0);
 
     if (vm->autostart == autostart) {
         ret = 0;
-        goto cleanup;
+        goto endjob;
     }
 
     configFile = virDomainConfigFile(cfg->configDir,
                                      vm->def->name);
     if (configFile == NULL)
-        goto cleanup;
+        goto endjob;
     autostartLink = virDomainConfigFile(cfg->autostartDir,
                                         vm->def->name);
     if (autostartLink == NULL)
-        goto cleanup;
+        goto endjob;
 
     if (autostart) {
         if (virFileMakePath(cfg->autostartDir) < 0) {
             virReportSystemError(errno,
                                  _("Cannot create autostart directory %s"),
                                  cfg->autostartDir);
-            goto cleanup;
+            goto endjob;
         }
 
         if (symlink(configFile, autostartLink) < 0) {
             virReportSystemError(errno,
                                  _("Failed to create symlink '%s to '%s'"),
                                  autostartLink, configFile);
-            goto cleanup;
+            goto endjob;
         }
     } else {
         if (unlink(autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
             virReportSystemError(errno,
                                  _("Failed to delete symlink '%s'"),
                                  autostartLink);
-            goto cleanup;
+            goto endjob;
         }
     }
 
     vm->autostart = autostart;
     ret = 0;
 
+ endjob:
+    if (!virLXCDomainObjEndJob(driver, vm))
+        vm = NULL;
  cleanup:
     VIR_FREE(configFile);
     VIR_FREE(autostartLink);
