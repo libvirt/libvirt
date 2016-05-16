@@ -929,11 +929,9 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
     machines = NULL;
     nmachines = 0;
 
-    if ((virQEMUCapsGet(qemubinCaps, QEMU_CAPS_CPU_HOST) ||
-         (caps->host.cpu &&
-          caps->host.cpu->model &&
-          virQEMUCapsGetCPUDefinitions(qemubinCaps, NULL) > 0)) &&
-        !virCapabilitiesAddGuestFeature(guest, "cpuselection", true, false))
+    /* CPU selection is always available, because all QEMU versions
+     * we support can use at least '-cpu host' */
+    if (!virCapabilitiesAddGuestFeature(guest, "cpuselection", true, false))
         goto cleanup;
 
     if (virQEMUCapsGet(qemubinCaps, QEMU_CAPS_BOOTINDEX) &&
@@ -1302,9 +1300,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
 
     if (version >= 13000)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_PCI_MULTIFUNCTION);
-
-    if (version >= 11000)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_HOST);
 
     if (version >= 1001000) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_IPV6_MIGRATION);
@@ -3391,7 +3386,6 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_FSDEV_READONLY);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SG_IO);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_COPY_ON_READ);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_HOST);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_FSDEV_WRITEOUT);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_WAKEUP);

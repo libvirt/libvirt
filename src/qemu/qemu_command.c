@@ -6487,17 +6487,10 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
     if ((cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) ||
         ((cpu->mode == VIR_CPU_MODE_HOST_MODEL) &&
           ARCH_IS_PPC64(def->os.arch))) {
-        const char *mode = virCPUModeTypeToString(cpu->mode);
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_HOST)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("CPU mode '%s' is not supported by QEMU"
-                             " binary"), mode);
-            goto cleanup;
-        }
         if (def->virtType != VIR_DOMAIN_VIRT_KVM) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("CPU mode '%s' is only supported with kvm"),
-                           mode);
+                           virCPUModeTypeToString(cpu->mode));
             goto cleanup;
         }
         virBufferAddLit(buf, "host");

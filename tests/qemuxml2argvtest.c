@@ -647,7 +647,7 @@ mymain(void)
             QEMU_CAPS_NO_KVM_PIT);
     DO_TEST("clock-catchup", QEMU_CAPS_RTC, QEMU_CAPS_NO_KVM_PIT);
     DO_TEST("cpu-kvmclock", QEMU_CAPS_ENABLE_KVM);
-    DO_TEST("cpu-host-kvmclock", QEMU_CAPS_ENABLE_KVM, QEMU_CAPS_CPU_HOST);
+    DO_TEST("cpu-host-kvmclock", QEMU_CAPS_ENABLE_KVM);
     DO_TEST("kvmclock", QEMU_CAPS_KVM);
     DO_TEST("clock-timer-hyperv-rtc", QEMU_CAPS_KVM);
 
@@ -1289,10 +1289,9 @@ mymain(void)
     DO_TEST("cpu-host-model-fallback", NONE);
     DO_TEST_FAILURE("cpu-host-model-nofallback", NONE);
     skipLegacyCPUs = false;
-    DO_TEST("cpu-host-passthrough", QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST);
+    DO_TEST("cpu-host-passthrough", QEMU_CAPS_KVM);
     DO_TEST_FAILURE("cpu-host-passthrough", NONE);
-    DO_TEST_FAILURE("cpu-qemu-host-passthrough",
-                    QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST);
+    DO_TEST_FAILURE("cpu-qemu-host-passthrough", QEMU_CAPS_KVM);
 
     driver.caps->host.cpu = cpuHaswell;
     DO_TEST("cpu-Haswell", QEMU_CAPS_KVM);
@@ -1389,9 +1388,9 @@ mymain(void)
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-cpu-exact", QEMU_CAPS_CHARDEV,
             QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("pseries-cpu-compat", QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST,
+    DO_TEST("pseries-cpu-compat", QEMU_CAPS_KVM,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
-    DO_TEST("pseries-cpu-le",  QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST,
+    DO_TEST("pseries-cpu-le", QEMU_CAPS_KVM,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-panic-missing",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
@@ -1717,49 +1716,49 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_MMIO);
     DO_TEST("aarch64-cpu-passthrough",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-            QEMU_CAPS_CPU_HOST, QEMU_CAPS_KVM);
+            QEMU_CAPS_KVM);
     DO_TEST("aarch64-gic-none",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST,
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST("aarch64-gic-none",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST);
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT);
     DO_TEST("aarch64-gic-default",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST,
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST("aarch64-gic-default",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST);
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT);
     DO_TEST("aarch64-gic-v2",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST,
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST("aarch64-gic-v2",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST);
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT);
     DO_TEST("aarch64-gic-v3",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST,
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_FAILURE("aarch64-gic-v3",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST);
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT);
     DO_TEST("aarch64-gic-host",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST,
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_FAILURE("aarch64-gic-host",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST);
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT);
     DO_TEST_PARSE_ERROR("aarch64-gic-invalid",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST,
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_FAILURE("aarch64-gic-not-virt",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST,
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
     DO_TEST_FAILURE("aarch64-gic-not-arm",
-            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_CPU_HOST,
+            QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
 
     driver.caps->host.cpu->arch = VIR_ARCH_AARCH64;
     DO_TEST("aarch64-kvm-32-on-64",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-            QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST, QEMU_CAPS_CPU_AARCH64_OFF);
+            QEMU_CAPS_KVM, QEMU_CAPS_CPU_AARCH64_OFF);
     DO_TEST_FAILURE("aarch64-kvm-32-on-64",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
-            QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST);
+            QEMU_CAPS_KVM);
     driver.caps->host.cpu->arch = cpuDefault->arch;
 
     DO_TEST("kvm-pit-device", QEMU_CAPS_KVM_PIT_TICK_POLICY);
@@ -1787,7 +1786,7 @@ mymain(void)
     DO_TEST_FAILURE("shmem-small-size", QEMU_CAPS_PCIDEVICE,
                     QEMU_CAPS_DEVICE_IVSHMEM);
     DO_TEST_PARSE_ERROR("shmem-msi-only", NONE);
-    DO_TEST("cpu-host-passthrough-features", QEMU_CAPS_KVM, QEMU_CAPS_CPU_HOST);
+    DO_TEST("cpu-host-passthrough-features", QEMU_CAPS_KVM);
 
     DO_TEST_FAILURE("memory-align-fail", NONE);
     DO_TEST_FAILURE("memory-hotplug-nonuma", QEMU_CAPS_DEVICE_PC_DIMM);

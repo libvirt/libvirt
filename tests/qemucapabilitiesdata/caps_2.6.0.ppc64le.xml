@@ -46,7 +46,6 @@
   <flag name='virtio-blk-pci.scsi'/>
   <flag name='blk-sg-io'/>
   <flag name='drive-copy-on-read'/>
-  <flag name='cpu-host'/>
   <flag name='fsdev-writeout'/>
   <flag name='drive-iotune'/>
   <flag name='system_wakeup'/>

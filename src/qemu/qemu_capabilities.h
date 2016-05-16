@@ -161,7 +161,7 @@ typedef enum {
     QEMU_CAPS_VIRTIO_BLK_SCSI, /* virtio-blk-pci.scsi */
     QEMU_CAPS_VIRTIO_BLK_SG_IO, /* SG_IO commands, since 0.11 */
     QEMU_CAPS_DRIVE_COPY_ON_READ, /* -drive copy-on-read */
-    QEMU_CAPS_CPU_HOST, /* support for -cpu host */
+    X_QEMU_CAPS_CPU_HOST, /* support for -cpu host */
     QEMU_CAPS_FSDEV_WRITEOUT, /* -fsdev writeout supported */
 
     /* 85 */
