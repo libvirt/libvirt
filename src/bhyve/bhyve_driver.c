@@ -1523,6 +1523,13 @@ static int bhyveConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 }
 
 static int
+bhyveConnectIsSecure(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Trivially secure, since always inside the daemon */
+    return 1;
+}
+
+static int
 bhyveConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
 {
     /* Not encrypted, but remote driver takes care of that */
@@ -1580,6 +1587,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainHasManagedSaveImage = bhyveDomainHasManagedSaveImage, /* 1.2.13 */
     .connectGetType = bhyveConnectGetType, /* 1.3.5 */
     .connectIsAlive = bhyveConnectIsAlive, /* 1.3.5 */
+    .connectIsSecure = bhyveConnectIsSecure, /* 1.3.5 */
     .connectIsEncrypted = bhyveConnectIsEncrypted, /* 1.3.5 */
 };
 
