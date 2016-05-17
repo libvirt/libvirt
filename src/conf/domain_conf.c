@@ -14012,7 +14012,7 @@ virDomainChrInsertPreAlloced(virDomainDefPtr vmdef,
 
     virDomainChrGetDomainPtrsInternal(vmdef, chr->deviceType, &arrPtr, &cntPtr);
 
-    ignore_value(VIR_APPEND_ELEMENT_INPLACE(*arrPtr, *cntPtr, chr));
+    VIR_APPEND_ELEMENT_INPLACE(*arrPtr, *cntPtr, chr);
 }
 
 virDomainChrDefPtr

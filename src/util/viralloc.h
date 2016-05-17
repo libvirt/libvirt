@@ -436,13 +436,17 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, false, \
                        true, VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
 # define VIR_APPEND_ELEMENT_INPLACE(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
-                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, true, \
-                       true, VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
+    ignore_value(virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),   \
+                                    VIR_TYPEMATCH(ptr, &(newelem)),         \
+                                    &(newelem), true, true, false,          \
+                                    VIR_FROM_THIS, __FILE__,                \
+                                    __FUNCTION__, __LINE__))
 # define VIR_APPEND_ELEMENT_COPY_INPLACE(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
-                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, true, \
-                       true, VIR_FROM_THIS, __FILE__, __FUNCTION__, __LINE__)
+    ignore_value(virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),   \
+                                    VIR_TYPEMATCH(ptr, &(newelem)),         \
+                                    &(newelem), false, true, false,         \
+                                    VIR_FROM_THIS, __FILE__,                \
+                                    __FUNCTION__, __LINE__))
 
 /* Quiet version of macros above */
 # define VIR_APPEND_ELEMENT_QUIET(ptr, count, newelem) \
@@ -453,14 +457,7 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
     virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
                        VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, false, \
                        false, 0, NULL, NULL, 0)
-# define VIR_APPEND_ELEMENT_INPLACE_QUIET(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
-                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), true, true, \
-                       false. 0, NULL, NULL, 0)
-# define VIR_APPEND_ELEMENT_COPY_INPLACE_QUIET(ptr, count, newelem) \
-    virInsertElementsN(&(ptr), sizeof(*(ptr)), -1, &(count),  \
-                       VIR_TYPEMATCH(ptr, &(newelem)), &(newelem), false, true, \
-                       false, 0, NULL, NULL, 0)
+
 /**
  * VIR_DELETE_ELEMENT:
  * @ptr:   pointer to array of objects (*not* ptr to ptr)

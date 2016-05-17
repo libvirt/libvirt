@@ -1666,7 +1666,7 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    ignore_value(VIR_APPEND_ELEMENT_INPLACE(vm->def->rngs, vm->def->nrngs, rng));
+    VIR_APPEND_ELEMENT_INPLACE(vm->def->rngs, vm->def->nrngs, rng);
 
     ret = 0;
 
