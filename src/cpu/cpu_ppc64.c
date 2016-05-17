@@ -42,7 +42,6 @@ static const virArch archs[] = { VIR_ARCH_PPC64, VIR_ARCH_PPC64LE };
 
 struct ppc64_vendor {
     char *name;
-    struct ppc64_vendor *next;
 };
 
 struct ppc64_model {
@@ -53,7 +52,8 @@ struct ppc64_model {
 };
 
 struct ppc64_map {
-    struct ppc64_vendor *vendors;
+    size_t nvendors;
+    struct ppc64_vendor **vendors;
     struct ppc64_model *models;
 };
 
@@ -182,14 +182,11 @@ static struct ppc64_vendor *
 ppc64VendorFind(const struct ppc64_map *map,
                 const char *name)
 {
-    struct ppc64_vendor *vendor;
+    size_t i;
 
-    vendor = map->vendors;
-    while (vendor) {
-        if (STREQ(vendor->name, name))
-            return vendor;
-
-        vendor = vendor->next;
+    for (i = 0; i < map->nvendors; i++) {
+        if (STREQ(map->vendors[i]->name, name))
+            return map->vendors[i];
     }
 
     return NULL;
@@ -283,6 +280,8 @@ ppc64ModelFromCPU(const virCPUDef *cpu,
 static void
 ppc64MapFree(struct ppc64_map *map)
 {
+    size_t i;
+
     if (!map)
         return;
 
@@ -292,11 +291,9 @@ ppc64MapFree(struct ppc64_map *map)
         ppc64ModelFree(model);
     }
 
-    while (map->vendors) {
-        struct ppc64_vendor *vendor = map->vendors;
-        map->vendors = vendor->next;
-        ppc64VendorFree(vendor);
-    }
+    for (i = 0; i < map->nvendors; i++)
+        ppc64VendorFree(map->vendors[i]);
+    VIR_FREE(map->vendors);
 
     VIR_FREE(map);
 }
@@ -323,12 +320,8 @@ ppc64VendorLoad(xmlXPathContextPtr ctxt,
         goto ignore;
     }
 
-    if (!map->vendors) {
-        map->vendors = vendor;
-    } else {
-        vendor->next = map->vendors;
-        map->vendors = vendor;
-    }
+    if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
+        goto ignore;
 
  cleanup:
     return 0;
