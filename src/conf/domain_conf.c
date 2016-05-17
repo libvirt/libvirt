@@ -6939,7 +6939,7 @@ virDomainDiskDefGeometryParse(virDomainDiskDefPtr def,
 
 
 static int
-virDomainDiskDefValidate(const virDomainDiskDef *def)
+virDomainDiskDefParseValidate(const virDomainDiskDef *def)
 {
     if (def->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
         if (def->event_idx != VIR_TRISTATE_SWITCH_ABSENT) {
@@ -7544,7 +7544,7 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             goto error;
     }
 
-    if (virDomainDiskDefValidate(def) < 0)
+    if (virDomainDiskDefParseValidate(def) < 0)
         goto error;
 
  cleanup:
