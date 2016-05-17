@@ -18534,7 +18534,7 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
         goto cleanup;
 
     if (virQEMUCapsFillDomainCaps(domCaps, qemuCaps,
-                                  cfg->loader, cfg->nloader) < 0)
+                                  cfg->firmwares, cfg->nfirmwares) < 0)
         goto cleanup;
 
     ret = virDomainCapsFormat(domCaps);

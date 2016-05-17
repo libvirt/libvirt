@@ -48,6 +48,7 @@
 # include "virclosecallbacks.h"
 # include "virhostdev.h"
 # include "virfile.h"
+# include "virfirmware.h"
 
 # ifdef CPU_SETSIZE /* Linux */
 #  define QEMUD_CPUMASK_LEN CPU_SETSIZE
@@ -178,10 +179,8 @@ struct _virQEMUDriverConfig {
     bool logTimestamp;
     bool stdioLogD;
 
-    /* Pairs of loader:nvram paths. The list is @nloader items long */
-    char **loader;
-    char **nvram;
-    size_t nloader;
+    virFirmwarePtr *firmwares;
+    size_t nfirmwares;
 };
 
 /* Main driver state */

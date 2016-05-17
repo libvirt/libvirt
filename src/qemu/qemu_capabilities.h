@@ -29,6 +29,7 @@
 # include "vircommand.h"
 # include "qemu_monitor.h"
 # include "domain_capabilities.h"
+# include "virfirmware.h"
 
 /*
  * Internal flags to keep track of qemu command line capabilities
@@ -491,7 +492,7 @@ int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 
 int virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
                               virQEMUCapsPtr qemuCaps,
-                              char **loader,
-                              size_t nloader);
+                              virFirmwarePtr *firmwares,
+                              size_t nfirmwares);
 
 #endif /* __QEMU_CAPABILITIES_H__*/

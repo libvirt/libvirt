@@ -114,6 +114,7 @@ UTIL_SOURCES =							\
 		util/virfile.c util/virfile.h			\
 		util/virfirewall.c util/virfirewall.h		\
 		util/virfirewallpriv.h				\
+		util/virfirmware.c util/virfirmware.h		\
 		util/virgettext.c util/virgettext.h		\
 		util/virgic.c util/virgic.h			\
 		util/virhash.c util/virhash.h			\

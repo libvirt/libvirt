@@ -4071,18 +4071,18 @@ virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps)
 
 static int
 virQEMUCapsFillDomainLoaderCaps(virDomainCapsLoaderPtr capsLoader,
-                                char **loader,
-                                size_t nloader)
+                                virFirmwarePtr *firmwares,
+                                size_t nfirmwares)
 {
     size_t i;
 
     capsLoader->supported = true;
 
-    if (VIR_ALLOC_N(capsLoader->values.values, nloader) < 0)
+    if (VIR_ALLOC_N(capsLoader->values.values, nfirmwares) < 0)
         return -1;
 
-    for (i = 0; i < nloader; i++) {
-        const char *filename = loader[i];
+    for (i = 0; i < nfirmwares; i++) {
+        const char *filename = firmwares[i]->name;
 
         if (!virFileExists(filename)) {
             VIR_DEBUG("loader filename=%s does not exist", filename);
@@ -4111,13 +4111,13 @@ virQEMUCapsFillDomainLoaderCaps(virDomainCapsLoaderPtr capsLoader,
 
 static int
 virQEMUCapsFillDomainOSCaps(virDomainCapsOSPtr os,
-                            char **loader,
-                            size_t nloader)
+                            virFirmwarePtr *firmwares,
+                            size_t nfirmwares)
 {
     virDomainCapsLoaderPtr capsLoader = &os->loader;
 
     os->supported = true;
-    if (virQEMUCapsFillDomainLoaderCaps(capsLoader, loader, nloader) < 0)
+    if (virQEMUCapsFillDomainLoaderCaps(capsLoader, firmwares, nfirmwares) < 0)
         return -1;
     return 0;
 }
@@ -4330,8 +4330,8 @@ virQEMUCapsFillDomainFeatureGICCaps(virQEMUCapsPtr qemuCaps,
 int
 virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
                           virQEMUCapsPtr qemuCaps,
-                          char **loader,
-                          size_t nloader)
+                          virFirmwarePtr *firmwares,
+                          size_t nfirmwares)
 {
     virDomainCapsOSPtr os = &domCaps->os;
     virDomainCapsDeviceDiskPtr disk = &domCaps->disk;
@@ -4342,7 +4342,7 @@ virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
 
     domCaps->maxvcpus = maxvcpus;
 
-    if (virQEMUCapsFillDomainOSCaps(os, loader, nloader) < 0 ||
+    if (virQEMUCapsFillDomainOSCaps(os, firmwares, nfirmwares) < 0 ||
         virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps,
                                             domCaps->machine, disk) < 0 ||
         virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, graphics) < 0 ||

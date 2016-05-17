@@ -128,7 +128,8 @@ fillQemuCaps(virDomainCapsPtr domCaps,
         goto cleanup;
 
     if (virQEMUCapsFillDomainCaps(domCaps, qemuCaps,
-                                  cfg->loader, cfg->nloader) < 0)
+                                  cfg->firmwares,
+                                  cfg->nfirmwares) < 0)
         goto cleanup;
 
     /* The function above tries to query host's KVM & VFIO capabilities by

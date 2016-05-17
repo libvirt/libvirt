@@ -124,47 +124,6 @@ void qemuDomainCmdlineDefFree(qemuDomainCmdlineDefPtr def)
 }
 
 
-static int ATTRIBUTE_UNUSED
-virQEMUDriverConfigLoaderNVRAMParse(virQEMUDriverConfigPtr cfg,
-                                    const char *list)
-{
-    int ret = -1;
-    char **token;
-    size_t i, j;
-
-    if (!(token = virStringSplit(list, ":", 0)))
-        goto cleanup;
-
-    for (i = 0; token[i]; i += 2) {
-        if (!token[i] || !token[i + 1] ||
-            STREQ(token[i], "") || STREQ(token[i + 1], "")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Invalid --with-loader-nvram list: %s"),
-                           list);
-            goto cleanup;
-        }
-    }
-
-    if (i) {
-        if (VIR_ALLOC_N(cfg->loader, i / 2) < 0 ||
-            VIR_ALLOC_N(cfg->nvram, i / 2) < 0)
-            goto cleanup;
-        cfg->nloader = i / 2;
-
-        for (j = 0; j < i / 2; j++) {
-            if (VIR_STRDUP(cfg->loader[j], token[2 * j]) < 0 ||
-                VIR_STRDUP(cfg->nvram[j], token[2 * j + 1]) < 0)
-                goto cleanup;
-        }
-    }
-
-    ret = 0;
- cleanup:
-    virStringFreeList(token);
-    return ret;
-}
-
-
 #define VIR_QEMU_OVMF_LOADER_PATH "/usr/share/OVMF/OVMF_CODE.fd"
 #define VIR_QEMU_OVMF_NVRAM_PATH "/usr/share/OVMF/OVMF_VARS.fd"
 #define VIR_QEMU_AAVMF_LOADER_PATH "/usr/share/AAVMF/AAVMF_CODE.fd"
@@ -327,20 +286,22 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     cfg->stdioLogD = true;
 
 #ifdef DEFAULT_LOADER_NVRAM
-    if (virQEMUDriverConfigLoaderNVRAMParse(cfg, DEFAULT_LOADER_NVRAM) < 0)
+    if (virFirmwareParseList(DEFAULT_LOADER_NVRAM,
+                             &cfg->firmwares,
+                             &cfg->nfirmwares) < 0)
         goto error;
 
 #else
-
-    if (VIR_ALLOC_N(cfg->loader, 2) < 0 ||
-        VIR_ALLOC_N(cfg->nvram, 2) < 0)
+    if (VIR_ALLOC_N(cfg->firmwares, 2) < 0)
         goto error;
-    cfg->nloader = 2;
+    cfg->nfirmwares = 2;
+    if (VIR_ALLOC(cfg->firmwares[0]) < 0 || VIR_ALLOC(cfg->firmwares[1]) < 0)
+        goto error;
 
-    if (VIR_STRDUP(cfg->loader[0], VIR_QEMU_AAVMF_LOADER_PATH) < 0 ||
-        VIR_STRDUP(cfg->nvram[0], VIR_QEMU_AAVMF_NVRAM_PATH) < 0  ||
-        VIR_STRDUP(cfg->loader[1], VIR_QEMU_OVMF_LOADER_PATH) < 0 ||
-        VIR_STRDUP(cfg->nvram[1], VIR_QEMU_OVMF_NVRAM_PATH) < 0)
+    if (VIR_STRDUP(cfg->firmwares[0]->name, VIR_QEMU_AAVMF_LOADER_PATH) < 0 ||
+        VIR_STRDUP(cfg->firmwares[0]->nvram, VIR_QEMU_AAVMF_NVRAM_PATH) < 0  ||
+        VIR_STRDUP(cfg->firmwares[1]->name, VIR_QEMU_OVMF_LOADER_PATH) < 0 ||
+        VIR_STRDUP(cfg->firmwares[1]->nvram, VIR_QEMU_OVMF_NVRAM_PATH) < 0)
         goto error;
 #endif
 
@@ -397,13 +358,7 @@ static void virQEMUDriverConfigDispose(void *obj)
 
     VIR_FREE(cfg->lockManagerName);
 
-    while (cfg->nloader) {
-        VIR_FREE(cfg->loader[cfg->nloader - 1]);
-        VIR_FREE(cfg->nvram[cfg->nloader - 1]);
-        cfg->nloader--;
-    }
-    VIR_FREE(cfg->loader);
-    VIR_FREE(cfg->nvram);
+    virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
 }
 
 
@@ -423,43 +378,6 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
     hugetlbfs->deflt = deflt;
     ret = 0;
  cleanup:
-    return ret;
-}
-
-
-static int
-virQEMUDriverConfigNVRAMParse(const char *str,
-                              char **loader,
-                              char **nvram)
-{
-    int ret = -1;
-    char **token;
-
-    if (!(token = virStringSplit(str, ":", 0)))
-        goto cleanup;
-
-    if (token[0]) {
-        virSkipSpaces((const char **) &token[0]);
-        if (token[1])
-            virSkipSpaces((const char **) &token[1]);
-    }
-
-    /* Exactly two tokens are expected */
-    if (!token[0] || !token[1] || token[2] ||
-        STREQ(token[0], "") || STREQ(token[1], "")) {
-        virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("Invalid nvram format: '%s'"),
-                       str);
-        goto cleanup;
-    }
-
-    if (VIR_STRDUP(*loader, token[0]) < 0 ||
-        VIR_STRDUP(*nvram, token[1]) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virStringFreeList(token);
     return ret;
 }
 
@@ -855,14 +773,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 
         CHECK_TYPE("nvram", VIR_CONF_LIST);
 
-        while (cfg->nloader) {
-            VIR_FREE(cfg->loader[cfg->nloader - 1]);
-            VIR_FREE(cfg->nvram[cfg->nloader - 1]);
-            cfg->nloader--;
-        }
-        VIR_FREE(cfg->loader);
-        VIR_FREE(cfg->nvram);
-
+        virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
         /* Calc length and check items */
         for (len = 0, pp = p->list; pp; len++, pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
@@ -872,16 +783,14 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
             }
         }
 
-        if (len &&
-            (VIR_ALLOC_N(cfg->loader, len) < 0 ||
-             VIR_ALLOC_N(cfg->nvram, len) < 0))
+        if (len && VIR_ALLOC_N(cfg->firmwares, len) < 0)
             goto cleanup;
-        cfg->nloader = len;
+        cfg->nfirmwares = len;
 
         for (i = 0, pp = p->list; pp; i++, pp = pp->next) {
-            if (virQEMUDriverConfigNVRAMParse(pp->str,
-                                              &cfg->loader[i],
-                                              &cfg->nvram[i]) < 0)
+            if (VIR_ALLOC(cfg->firmwares[i]) < 0)
+                goto cleanup;
+            if (virFirmwareParse(pp->str, cfg->firmwares[i]) < 0)
                 goto cleanup;
         }
     }

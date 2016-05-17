@@ -1564,6 +1564,12 @@ virFirewallStartRollback;
 virFirewallStartTransaction;
 
 
+# util/virfirmware.h
+virFirmwareFreeList;
+virFirmwareParse;
+virFirmwareParseList;
+
+
 # util/virgettext.h
 virGettextInitialize;
 

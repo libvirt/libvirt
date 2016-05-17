@@ -3724,9 +3724,9 @@ qemuPrepareNVRAM(virQEMUDriverConfigPtr cfg,
     master_nvram_path = loader->templt;
     if (!loader->templt) {
         size_t i;
-        for (i = 0; i < cfg->nloader; i++) {
-            if (STREQ(cfg->loader[i], loader->path)) {
-                master_nvram_path = cfg->nvram[i];
+        for (i = 0; i < cfg->nfirmwares; i++) {
+            if (STREQ(cfg->firmwares[i]->name, loader->path)) {
+                master_nvram_path = cfg->firmwares[i]->nvram;
                 break;
             }
         }
