@@ -2573,6 +2573,7 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
     for (i = 0; i < *num_virtual_functions; i++)
         VIR_FREE((*virtual_functions)[i]);
     VIR_FREE(*virtual_functions);
+    *num_virtual_functions = 0;
     goto cleanup;
 }
 
