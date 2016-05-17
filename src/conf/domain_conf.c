@@ -14039,18 +14039,6 @@ virDomainChrRemove(virDomainDefPtr vmdef,
 }
 
 
-int
-virDomainRNGInsert(virDomainDefPtr def,
-                   virDomainRNGDefPtr rng,
-                   bool inplace)
-{
-    if (inplace)
-        return VIR_APPEND_ELEMENT_INPLACE(def->rngs, def->nrngs, rng);
-    else
-        return VIR_APPEND_ELEMENT(def->rngs, def->nrngs, rng);
-}
-
-
 ssize_t
 virDomainRNGFind(virDomainDefPtr def,
                  virDomainRNGDefPtr rng)

@@ -7914,7 +7914,7 @@ qemuDomainAttachDeviceConfig(virQEMUCapsPtr qemuCaps,
             return -1;
         }
 
-        if (virDomainRNGInsert(vmdef, dev->data.rng, false) < 0)
+        if (VIR_APPEND_ELEMENT(vmdef->rngs, vmdef->nrngs, dev->data.rng) < 0)
             return -1;
         dev->data.rng = NULL;
 

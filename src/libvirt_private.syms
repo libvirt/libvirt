@@ -424,7 +424,6 @@ virDomainRedirdevBusTypeToString;
 virDomainRNGBackendTypeToString;
 virDomainRNGDefFree;
 virDomainRNGFind;
-virDomainRNGInsert;
 virDomainRNGModelTypeToString;
 virDomainRNGRemove;
 virDomainRunningReasonTypeFromString;
