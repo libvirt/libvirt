@@ -49,8 +49,6 @@ typedef virCPUx86Vendor *virCPUx86VendorPtr;
 struct _virCPUx86Vendor {
     char *name;
     virCPUx86CPUID cpuid;
-
-    virCPUx86VendorPtr next;
 };
 
 typedef struct _virCPUx86Feature virCPUx86Feature;
@@ -102,7 +100,8 @@ struct _virCPUx86Model {
 typedef struct _virCPUx86Map virCPUx86Map;
 typedef virCPUx86Map *virCPUx86MapPtr;
 struct _virCPUx86Map {
-    virCPUx86VendorPtr vendors;
+    size_t nvendors;
+    virCPUx86VendorPtr *vendors;
     virCPUx86FeaturePtr features;
     size_t nmodels;
     virCPUx86ModelPtr *models;
@@ -433,16 +432,16 @@ static virCPUx86VendorPtr
 x86DataToVendor(const virCPUx86Data *data,
                 virCPUx86MapPtr map)
 {
-    virCPUx86VendorPtr vendor = map->vendors;
     virCPUx86CPUID *cpuid;
+    size_t i;
 
-    while (vendor) {
+    for (i = 0; i < map->nvendors; i++) {
+        virCPUx86VendorPtr vendor = map->vendors[i];
         if ((cpuid = x86DataCpuid(data, vendor->cpuid.function)) &&
             x86cpuidMatchMasked(cpuid, &vendor->cpuid)) {
             x86cpuidClearBits(cpuid, &vendor->cpuid);
             return vendor;
         }
-        vendor = vendor->next;
     }
 
     return NULL;
@@ -506,14 +505,11 @@ static virCPUx86VendorPtr
 x86VendorFind(virCPUx86MapPtr map,
               const char *name)
 {
-    virCPUx86VendorPtr vendor;
+    size_t i;
 
-    vendor = map->vendors;
-    while (vendor) {
-        if (STREQ(vendor->name, name))
-            return vendor;
-
-        vendor = vendor->next;
+    for (i = 0; i < map->nvendors; i++) {
+        if (STREQ(map->vendors[i]->name, name))
+            return map->vendors[i];
     }
 
     return NULL;
@@ -562,9 +558,8 @@ x86VendorLoad(xmlXPathContextPtr ctxt,
     vendor->cpuid.edx = virReadBufInt32LE(string + 4);
     vendor->cpuid.ecx = virReadBufInt32LE(string + 8);
 
-    vendor->next = map->vendors;
-    map->vendors = vendor;
-    vendor = NULL;
+    if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
+        goto cleanup;
 
     ret = 0;
 
@@ -1121,11 +1116,9 @@ x86MapFree(virCPUx86MapPtr map)
         x86ModelFree(map->models[i]);
     VIR_FREE(map->models);
 
-    while (map->vendors) {
-        virCPUx86VendorPtr vendor = map->vendors;
-        map->vendors = vendor->next;
-        x86VendorFree(vendor);
-    }
+    for (i = 0; i < map->nvendors; i++)
+        x86VendorFree(map->vendors[i]);
+    VIR_FREE(map->vendors);
 
     while (map->migrate_blockers) {
         virCPUx86FeaturePtr migrate_blocker = map->migrate_blockers;
