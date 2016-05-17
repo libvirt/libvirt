@@ -1296,3 +1296,6 @@ exclude_file_name_regexp--sc_prohibit_not_strneq = \
 
 exclude_file_name_regexp--sc_prohibit_dt_without_code = \
   ^docs/(newapi\.xsl|(apps|contact)\.html\.in)$$
+
+exclude_file_name_regexp--sc_prohibit_always-defined_macros = \
+  ^tests/virtestmock.c$$

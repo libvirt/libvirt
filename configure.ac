@@ -332,6 +332,7 @@ AC_CHECK_HEADERS([pwd.h regex.h sys/un.h \
   libtasn1.h sys/ucred.h sys/mount.h])
 dnl Check whether endian provides handy macros.
 AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
+AC_CHECK_FUNCS([stat stat64 __xstat __xstat64 lstat lstat64 __lxstat __lxstat64])
 
 dnl We need to decide at configure time if libvirt will use real atomic
 dnl operations ("lock free") or emulated ones with a mutex.
