@@ -2168,6 +2168,22 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     return ret;
 }
 
+
+static int
+qemuDomainDefValidate(const virDomainDef *def,
+                      virCapsPtr caps ATTRIBUTE_UNUSED,
+                      void *opaque ATTRIBUTE_UNUSED)
+{
+    if (def->mem.min_guarantee) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Parameter 'min_guarantee' not supported by QEMU."));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static const char *
 qemuDomainDefaultNetModel(const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
@@ -2419,6 +2435,7 @@ virDomainDefParserConfig virQEMUDriverDomainDefParserConfig = {
     .devicesPostParseCallback = qemuDomainDeviceDefPostParse,
     .domainPostParseCallback = qemuDomainDefPostParse,
     .assignAddressesCallback = qemuDomainDefAssignAddresses,
+    .domainValidateCallback = qemuDomainDefValidate,
     .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG |
                 VIR_DOMAIN_DEF_FEATURE_OFFLINE_VCPUPIN
 };

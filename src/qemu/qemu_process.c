@@ -4307,13 +4307,6 @@ qemuProcessStartValidateXML(virQEMUDriverPtr driver,
         virDomainDefValidate(vm->def, caps, 0, driver->xmlopt) < 0)
         return -1;
 
-    if (vm->def->mem.min_guarantee) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Parameter 'min_guarantee' "
-                         "not supported by QEMU."));
-        return -1;
-    }
-
     return 0;
 }
 
