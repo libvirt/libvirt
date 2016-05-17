@@ -2438,18 +2438,17 @@ virPCIDeviceAddressIsEqual(virPCIDeviceAddressPtr bdf1,
             (bdf1->function == bdf2->function));
 }
 
-static int
-virPCIGetDeviceAddressFromSysfsLink(const char *device_link,
-                                    virPCIDeviceAddressPtr *bdf)
+static virPCIDeviceAddressPtr
+virPCIGetDeviceAddressFromSysfsLink(const char *device_link)
 {
+    virPCIDeviceAddressPtr bdf = NULL;
     char *config_address = NULL;
     char *device_path = NULL;
     char errbuf[64];
-    int ret = -1;
 
     if (!virFileExists(device_link)) {
         VIR_DEBUG("'%s' does not exist", device_link);
-        return ret;
+        return NULL;
     }
 
     device_path = canonicalize_file_name(device_link);
@@ -2458,26 +2457,25 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link,
         virReportSystemError(errno,
                              _("Failed to resolve device link '%s'"),
                              device_link);
-        return ret;
+        return NULL;
     }
 
     config_address = last_component(device_path);
-    if (VIR_ALLOC(*bdf) != 0)
+    if (VIR_ALLOC(bdf) < 0)
         goto out;
 
-    if (virPCIDeviceAddressParse(config_address, *bdf) != 0) {
+    if (virPCIDeviceAddressParse(config_address, bdf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to parse PCI config address '%s'"),
                        config_address);
-        VIR_FREE(*bdf);
+        VIR_FREE(bdf);
         goto out;
     }
 
-    ret = 0;
  out:
     VIR_FREE(device_path);
 
-    return ret;
+    return bdf;
 }
 
 /*
@@ -2494,7 +2492,7 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path,
         return -1;
     }
 
-    if (virPCIGetDeviceAddressFromSysfsLink(device_link, pf) >= 0) {
+    if ((*pf = virPCIGetDeviceAddressFromSysfsLink(device_link))) {
         VIR_DEBUG("PF for VF device '%s': %.4x:%.2x:%.2x.%.1x", vf_sysfs_path,
                   (*pf)->domain, (*pf)->bus, (*pf)->slot, (*pf)->function);
     }
@@ -2546,20 +2544,22 @@ virPCIGetVirtualFunctions(const char *sysfs_path,
         if (!virFileExists(device_link))
             break;
 
-        if (virPCIGetDeviceAddressFromSysfsLink(device_link, &config_addr) < 0) {
+        if (!(config_addr = virPCIGetDeviceAddressFromSysfsLink(device_link))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to get SRIOV function from device link '%s'"),
                            device_link);
             goto error;
         }
 
-        if (VIR_APPEND_ELEMENT(*virtual_functions, *num_virtual_functions, config_addr) < 0)
+        if (VIR_APPEND_ELEMENT(*virtual_functions, *num_virtual_functions,
+                               config_addr) < 0)
             goto error;
         VIR_FREE(device_link);
 
     } while (1);
 
-    VIR_DEBUG("Found %zu virtual functions for %s", *num_virtual_functions, sysfs_path);
+    VIR_DEBUG("Found %zu virtual functions for %s",
+              *num_virtual_functions, sysfs_path);
     ret = 0;
  cleanup:
     VIR_FREE(device_link);
@@ -2612,8 +2612,7 @@ virPCIGetVirtualFunctionIndex(const char *pf_sysfs_device_link,
     virPCIDeviceAddressPtr vf_bdf = NULL;
     virPCIDeviceAddressPtr *virt_fns = NULL;
 
-    if (virPCIGetDeviceAddressFromSysfsLink(vf_sysfs_device_link,
-                                            &vf_bdf) < 0)
+    if (!(vf_bdf = virPCIGetDeviceAddressFromSysfsLink(vf_sysfs_device_link)))
         return ret;
 
     if (virPCIGetVirtualFunctions(pf_sysfs_device_link, &virt_fns,
