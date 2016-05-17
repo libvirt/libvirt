@@ -228,6 +228,7 @@ mymain(void)
     DO_TEST_FORMAT("fullvirt-direct-kernel-boot-extra");
     DO_TEST_FORMAT("fullvirt-direct-kernel-boot-bogus-extra");
 #endif
+    DO_TEST("vif-typename");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
