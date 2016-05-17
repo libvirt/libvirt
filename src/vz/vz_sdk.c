@@ -3216,13 +3216,11 @@ static int prlsdkAddDisk(vzDriverPtr driver,
     pret = PrlVmDev_SetEmulatedType(sdkdisk, emutype);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    if (disk->src->path) {
-        pret = PrlVmDev_SetSysName(sdkdisk, path);
-        prlsdkCheckRetGoto(pret, cleanup);
+    pret = PrlVmDev_SetSysName(sdkdisk, path);
+    prlsdkCheckRetGoto(pret, cleanup);
 
-        pret = PrlVmDev_SetFriendlyName(sdkdisk, path);
-        prlsdkCheckRetGoto(pret, cleanup);
-    }
+    pret = PrlVmDev_SetFriendlyName(sdkdisk, path);
+    prlsdkCheckRetGoto(pret, cleanup);
 
     drive = &disk->info.addr.drive;
     if (drive->controller > 0) {
