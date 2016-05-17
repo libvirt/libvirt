@@ -70,10 +70,6 @@ VIR_LOG_INIT("libxl.libxl_driver");
 #define LIBXL_DOM_REQ_CRASH    3
 #define LIBXL_DOM_REQ_HALT     4
 
-#define LIBXL_CONFIG_FORMAT_XL "xen-xl"
-#define LIBXL_CONFIG_FORMAT_XM "xen-xm"
-#define LIBXL_CONFIG_FORMAT_SEXPR "xen-sxpr"
-
 #define LIBXL_NB_TOTAL_CPU_STAT_PARAM 1
 
 #define HYPERVISOR_CAPABILITIES "/proc/xen/capabilities"
@@ -2534,14 +2530,14 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
     if (virConnectDomainXMLFromNativeEnsureACL(conn) < 0)
         goto cleanup;
 
-    if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XL)) {
+    if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XL)) {
         if (!(conf = virConfReadMem(nativeConfig, strlen(nativeConfig), 0)))
             goto cleanup;
         if (!(def = xenParseXL(conf,
                                cfg->caps,
                                driver->xmlopt)))
             goto cleanup;
-    } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
+    } else if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XM)) {
         if (!(conf = virConfReadMem(nativeConfig, strlen(nativeConfig), 0)))
             goto cleanup;
 
@@ -2549,7 +2545,7 @@ libxlConnectDomainXMLFromNative(virConnectPtr conn,
                                cfg->caps,
                                driver->xmlopt)))
             goto cleanup;
-    } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_SEXPR)) {
+    } else if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_SEXPR)) {
         /* only support latest xend config format */
         if (!(def = xenParseSxprString(nativeConfig,
                                        NULL,
@@ -2599,10 +2595,10 @@ libxlConnectDomainXMLToNative(virConnectPtr conn, const char * nativeFormat,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
-    if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XL)) {
+    if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XL)) {
         if (!(conf = xenFormatXL(def, conn)))
             goto cleanup;
-    } else if (STREQ(nativeFormat, LIBXL_CONFIG_FORMAT_XM)) {
+    } else if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XM)) {
         if (!(conf = xenFormatXM(conn, def)))
             goto cleanup;
     } else {

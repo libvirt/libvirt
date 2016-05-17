@@ -27,6 +27,10 @@
 # include "virconf.h"
 # include "domain_conf.h"
 
+# define XEN_CONFIG_FORMAT_XL    "xen-xl"
+# define XEN_CONFIG_FORMAT_XM    "xen-xm"
+# define XEN_CONFIG_FORMAT_SEXPR "xen-sxpr"
+
 int xenConfigGetString(virConfPtr conf,
                        const char *name,
                        const char **value,

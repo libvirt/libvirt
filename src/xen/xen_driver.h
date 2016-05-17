@@ -67,9 +67,6 @@ int xenRegister (void);
 
 # define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */
 
-# define XEN_CONFIG_FORMAT_XM    "xen-xm"
-# define XEN_CONFIG_FORMAT_SEXPR "xen-sxpr"
-
 # define XEND_DOMAINS_DIR "/var/lib/xend/domains"
 
 # define XEN_SCHED_SEDF_NPARAM   6
