@@ -91,7 +91,7 @@ int virAdmConnectRef(virAdmConnectPtr conn);
 int virAdmConnectIsAlive(virAdmConnectPtr conn);
 int virAdmServerFree(virAdmServerPtr srv);
 
-int virAdmConnectListServers(virAdmConnectPtr dmn,
+int virAdmConnectListServers(virAdmConnectPtr conn,
                              virAdmServerPtr **servers,
                              unsigned int flags);
 
