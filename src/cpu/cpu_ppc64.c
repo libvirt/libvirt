@@ -292,74 +292,87 @@ ppc64MapFree(struct ppc64_map *map)
     VIR_FREE(map);
 }
 
-static int
-ppc64VendorLoad(xmlXPathContextPtr ctxt,
-                struct ppc64_map *map)
+static struct ppc64_vendor *
+ppc64VendorParse(xmlXPathContextPtr ctxt,
+                 struct ppc64_map *map)
 {
     struct ppc64_vendor *vendor;
 
     if (VIR_ALLOC(vendor) < 0)
-        return -1;
+        return NULL;
 
     vendor->name = virXPathString("string(@name)", ctxt);
     if (!vendor->name) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Missing CPU vendor name"));
-        goto ignore;
+        goto error;
     }
 
     if (ppc64VendorFind(map, vendor->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU vendor %s already defined"), vendor->name);
-        goto ignore;
+        goto error;
     }
 
-    if (VIR_APPEND_ELEMENT(map->vendors, map->nvendors, vendor) < 0)
-        goto ignore;
+    return vendor;
 
- cleanup:
-    return 0;
-
- ignore:
+ error:
     ppc64VendorFree(vendor);
-    goto cleanup;
+    return NULL;
 }
 
+
 static int
-ppc64ModelLoad(xmlXPathContextPtr ctxt,
-               struct ppc64_map *map)
+ppc64VendorsLoad(struct ppc64_map *map,
+                 xmlXPathContextPtr ctxt,
+                 xmlNodePtr *nodes,
+                 int n)
+{
+    struct ppc64_vendor *vendor;
+    size_t i;
+
+    if (VIR_ALLOC_N(map->vendors, n) < 0)
+        return -1;
+
+    for (i = 0; i < n; i++) {
+        ctxt->node = nodes[i];
+        if (!(vendor = ppc64VendorParse(ctxt, map)))
+            return -1;
+        map->vendors[map->nvendors++] = vendor;
+    }
+
+    return 0;
+}
+
+
+static struct ppc64_model *
+ppc64ModelParse(xmlXPathContextPtr ctxt,
+                struct ppc64_map *map)
 {
     struct ppc64_model *model;
     xmlNodePtr *nodes = NULL;
-    xmlNodePtr bookmark;
     char *vendor = NULL;
     unsigned long pvr;
     size_t i;
     int n;
 
-    /* Save the node the context was pointing to, as we're going
-     * to change it later. It's going to be restored on exit */
-    bookmark = ctxt->node;
-
     if (VIR_ALLOC(model) < 0)
-        return -1;
+        goto error;
 
-    if (VIR_ALLOC(model->data) < 0) {
-        ppc64ModelFree(model);
-        return -1;
-    }
+    if (VIR_ALLOC(model->data) < 0)
+        goto error;
 
     model->name = virXPathString("string(@name)", ctxt);
     if (!model->name) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("Missing CPU model name"));
-        goto ignore;
+        goto error;
     }
 
     if (ppc64ModelFind(map, model->name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("CPU model %s already defined"), model->name);
-        goto ignore;
+        goto error;
     }
 
     if (virXPathBoolean("boolean(./vendor)", ctxt)) {
@@ -368,14 +381,14 @@ ppc64ModelLoad(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid vendor element in CPU model %s"),
                            model->name);
-            goto ignore;
+            goto error;
         }
 
         if (!(model->vendor = ppc64VendorFind(map, vendor))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown vendor %s referenced by CPU model %s"),
                            vendor, model->name);
-            goto ignore;
+            goto error;
         }
     }
 
@@ -383,11 +396,11 @@ ppc64ModelLoad(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing PVR information for CPU model %s"),
                        model->name);
-        goto ignore;
+        goto error;
     }
 
     if (VIR_ALLOC_N(model->data->pvr, n) < 0)
-        goto ignore;
+        goto error;
 
     model->data->len = n;
 
@@ -398,7 +411,7 @@ ppc64ModelLoad(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Missing or invalid PVR value in CPU model %s"),
                            model->name);
-            goto ignore;
+            goto error;
         }
         model->data->pvr[i].value = pvr;
 
@@ -406,37 +419,60 @@ ppc64ModelLoad(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Missing or invalid PVR mask in CPU model %s"),
                            model->name);
-            goto ignore;
+            goto error;
         }
         model->data->pvr[i].mask = pvr;
     }
 
-    if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
-        goto ignore;
-
  cleanup:
-    ctxt->node = bookmark;
     VIR_FREE(vendor);
     VIR_FREE(nodes);
-    return 0;
+    return model;
 
- ignore:
+ error:
     ppc64ModelFree(model);
+    model = NULL;
     goto cleanup;
 }
+
+
+static int
+ppc64ModelsLoad(struct ppc64_map *map,
+                xmlXPathContextPtr ctxt,
+                xmlNodePtr *nodes,
+                int n)
+{
+    struct ppc64_model *model;
+    size_t i;
+
+    if (VIR_ALLOC_N(map->models, n) < 0)
+        return -1;
+
+    for (i = 0; i < n; i++) {
+        ctxt->node = nodes[i];
+        if (!(model = ppc64ModelParse(ctxt, map)))
+            return -1;
+        map->models[map->nmodels++] = model;
+    }
+
+    return 0;
+}
+
 
 static int
 ppc64MapLoadCallback(cpuMapElement element,
                      xmlXPathContextPtr ctxt,
+                     xmlNodePtr *nodes,
+                     int n,
                      void *data)
 {
     struct ppc64_map *map = data;
 
     switch (element) {
     case CPU_MAP_ELEMENT_VENDOR:
-        return ppc64VendorLoad(ctxt, map);
+        return ppc64VendorsLoad(map, ctxt, nodes, n);
     case CPU_MAP_ELEMENT_MODEL:
-        return ppc64ModelLoad(ctxt, map);
+        return ppc64ModelsLoad(map, ctxt, nodes, n);
     case CPU_MAP_ELEMENT_FEATURE:
     case CPU_MAP_ELEMENT_LAST:
         break;

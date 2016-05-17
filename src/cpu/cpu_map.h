@@ -41,6 +41,8 @@ VIR_ENUM_DECL(cpuMapElement)
 typedef int
 (*cpuMapLoadCallback)  (cpuMapElement element,
                         xmlXPathContextPtr ctxt,
+                        xmlNodePtr *nodes,
+                        int n,
                         void *data);
 
 int
