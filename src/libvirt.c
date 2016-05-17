@@ -799,12 +799,12 @@ virStateInitialize(bool privileged,
 int
 virStateCleanup(void)
 {
-    size_t i;
+    int r;
     int ret = 0;
 
-    for (i = 0; i < virStateDriverTabCount; i++) {
-        if (virStateDriverTab[i]->stateCleanup &&
-            virStateDriverTab[i]->stateCleanup() < 0)
+    for (r = virStateDriverTabCount - 1; r >= 0; r--) {
+        if (virStateDriverTab[r]->stateCleanup &&
+            virStateDriverTab[r]->stateCleanup() < 0)
             ret = -1;
     }
     return ret;
