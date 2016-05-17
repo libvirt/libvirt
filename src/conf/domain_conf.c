@@ -21417,13 +21417,43 @@ virDomainGraphicsListenDefFormat(virBufferPtr buf,
 }
 
 
+/**
+ * virDomainGraphicsListenDefFormatAddr:
+ * @buf: buffer where the output XML is written
+ * @glisten: first listen element
+ * @flags: bit-wise or of VIR_DOMAIN_DEF_FORMAT_*
+ *
+ * This is used to add a legacy 'listen' attribute into <graphics> element to
+ * improve backward compatibility.
+ */
+static void
+virDomainGraphicsListenDefFormatAddr(virBufferPtr buf,
+                                     virDomainGraphicsListenDefPtr glisten,
+                                     unsigned int flags)
+{
+    if (!glisten)
+        return;
+
+    if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE && glisten->fromConfig)
+        return;
+
+    if (glisten->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK &&
+        flags & (VIR_DOMAIN_DEF_FORMAT_INACTIVE |
+                 VIR_DOMAIN_DEF_FORMAT_MIGRATABLE))
+        return;
+
+    if (glisten->address)
+        virBufferAsprintf(buf, " listen='%s'", glisten->address);
+}
+
+
 static int
 virDomainGraphicsDefFormat(virBufferPtr buf,
                            virDomainGraphicsDefPtr def,
                            unsigned int flags)
 {
+    virDomainGraphicsListenDefPtr glisten = virDomainGraphicsGetListen(def, 0);
     const char *type = virDomainGraphicsTypeToString(def->type);
-    const char *listenAddr = NULL;
     bool children = false;
     size_t i;
 
@@ -21431,24 +21461,6 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected net type %d"), def->type);
         return -1;
-    }
-
-    /* find the first listen subelement with a valid address and
-    * duplicate its address attribute as the listen attribute of
-    * <graphics>. This is done to improve backward compatibility.
-    */
-    for (i = 0; i < def->nListens; i++) {
-        if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
-            def->listens[i].fromConfig)
-            continue;
-
-        if (def->listens[i].type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK &&
-            flags & (VIR_DOMAIN_DEF_FORMAT_INACTIVE |
-                     VIR_DOMAIN_DEF_FORMAT_MIGRATABLE))
-            continue;
-
-        if ((listenAddr = def->listens[i].address))
-            break;
     }
 
     virBufferAsprintf(buf, "<graphics type='%s'", type);
@@ -21475,8 +21487,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
             if (def->data.vnc.websocket)
                 virBufferAsprintf(buf, " websocket='%d'", def->data.vnc.websocket);
 
-            if (listenAddr)
-                virBufferAsprintf(buf, " listen='%s'", listenAddr);
+            virDomainGraphicsListenDefFormatAddr(buf, glisten, flags);
         }
 
         if (def->data.vnc.keymap)
@@ -21520,8 +21531,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         if (def->data.rdp.multiUser)
             virBufferAddLit(buf, " multiUser='yes'");
 
-        if (listenAddr)
-            virBufferAsprintf(buf, " listen='%s'", listenAddr);
+        virDomainGraphicsListenDefFormatAddr(buf, glisten, flags);
 
         break;
 
@@ -21547,8 +21557,7 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " autoport='%s'",
                           def->data.spice.autoport ? "yes" : "no");
 
-        if (listenAddr)
-            virBufferAsprintf(buf, " listen='%s'", listenAddr);
+        virDomainGraphicsListenDefFormatAddr(buf, glisten, flags);
 
         if (def->data.spice.keymap)
             virBufferEscapeString(buf, " keymap='%s'",
