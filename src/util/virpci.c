@@ -2487,21 +2487,20 @@ int
 virPCIGetPhysicalFunction(const char *vf_sysfs_path,
                           virPCIDeviceAddressPtr *pf)
 {
-    int ret = -1;
     char *device_link = NULL;
 
     if (virBuildPath(&device_link, vf_sysfs_path, "physfn") == -1) {
         virReportOOMError();
-        return ret;
+        return -1;
     }
 
-    if ((ret = virPCIGetDeviceAddressFromSysfsLink(device_link, pf)) >= 0) {
+    if (virPCIGetDeviceAddressFromSysfsLink(device_link, pf) >= 0) {
         VIR_DEBUG("PF for VF device '%s': %.4x:%.2x:%.2x.%.1x", vf_sysfs_path,
                   (*pf)->domain, (*pf)->bus, (*pf)->slot, (*pf)->function);
     }
     VIR_FREE(device_link);
 
-    return ret;
+    return 0;
 }
 
 
