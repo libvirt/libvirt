@@ -1522,6 +1522,13 @@ static int bhyveConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 1;
 }
 
+static int
+bhyveConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    /* Not encrypted, but remote driver takes care of that */
+    return 0;
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectOpen = bhyveConnectOpen, /* 1.2.2 */
@@ -1573,6 +1580,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .domainHasManagedSaveImage = bhyveDomainHasManagedSaveImage, /* 1.2.13 */
     .connectGetType = bhyveConnectGetType, /* 1.3.5 */
     .connectIsAlive = bhyveConnectIsAlive, /* 1.3.5 */
+    .connectIsEncrypted = bhyveConnectIsEncrypted, /* 1.3.5 */
 };
 
 
