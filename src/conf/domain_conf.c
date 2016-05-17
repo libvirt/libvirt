@@ -4522,11 +4522,14 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
 
     switch ((virDomainDeviceAddressType) info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
-        virBufferAsprintf(buf, " domain='0x%.4x' bus='0x%.2x' slot='0x%.2x' function='0x%.1x'",
-                          info->addr.pci.domain,
-                          info->addr.pci.bus,
-                          info->addr.pci.slot,
-                          info->addr.pci.function);
+        if (!virPCIDeviceAddressIsEmpty(&info->addr.pci)) {
+            virBufferAsprintf(buf, " domain='0x%.4x' bus='0x%.2x' "
+                              "slot='0x%.2x' function='0x%.1x'",
+                              info->addr.pci.domain,
+                              info->addr.pci.bus,
+                              info->addr.pci.slot,
+                              info->addr.pci.function);
+        }
         if (info->addr.pci.multi) {
            virBufferAsprintf(buf, " multifunction='%s'",
                              virTristateSwitchTypeToString(info->addr.pci.multi));

@@ -1,7 +1,7 @@
 /*
  * device_conf.c: device XML handling
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -90,7 +90,7 @@ int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                            addr->function);
         return 0;
     }
-    if (!(addr->domain || addr->bus || addr->slot)) {
+    if (virPCIDeviceAddressIsEmpty(addr)) {
         if (report)
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Invalid PCI address 0000:00:00, at least "
@@ -152,7 +152,7 @@ virPCIDeviceAddressParseXML(xmlNodePtr node,
         goto cleanup;
 
     }
-    if (!virPCIDeviceAddressIsValid(addr, true))
+    if (!virPCIDeviceAddressIsEmpty(addr) && !virPCIDeviceAddressIsValid(addr, true))
         goto cleanup;
 
     ret = 0;

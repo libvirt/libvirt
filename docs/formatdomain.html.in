@@ -2930,7 +2930,13 @@
         (<span class="since">since 0.9.7, requires QEMU
         0.13</span>). <code>multifunction</code> defaults to 'off',
         but should be set to 'on' for function 0 of a slot that will
-        have multiple functions used.
+        have multiple functions used.<br/>
+        <span class="since">Since 1.3.5</span>, some hypervisor
+        drivers may accept an <code>&lt;address type='pci'/&gt;</code>
+        element with no other attributes as an explicit request to
+        assign a PCI address for the device rather than some other
+        type of address that may also be appropriate for that same
+        device (e.g. virtio-mmio).
       </dd>
       <dt><code>drive</code></dt>
       <dd>Drive addresses have the following additional
