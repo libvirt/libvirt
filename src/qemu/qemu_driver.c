@@ -7233,7 +7233,10 @@ qemuDomainCreate(virDomainPtr dom)
     return qemuDomainCreateWithFlags(dom, 0);
 }
 
-static virDomainPtr qemuDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
+static virDomainPtr
+qemuDomainDefineXMLFlags(virConnectPtr conn,
+                         const char *xml,
+                         unsigned int flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
     virDomainDefPtr def = NULL;
@@ -8173,8 +8176,10 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
 }
 
 
-static int qemuDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
-                                       unsigned int flags)
+static int
+qemuDomainAttachDeviceFlags(virDomainPtr dom,
+                            const char *xml,
+                            unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
@@ -8423,8 +8428,10 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
 }
 
 
-static int qemuDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
-                                       unsigned int flags)
+static int
+qemuDomainDetachDeviceFlags(virDomainPtr dom,
+                            const char *xml,
+                            unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
