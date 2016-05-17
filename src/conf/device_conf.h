@@ -1,7 +1,7 @@
 /*
  * device_conf.h: device XML handling entry points
  *
- * Copyright (C) 2006-2012, 2014-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2012, 2014-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -71,6 +71,115 @@ typedef enum {
 } virNetDevFeature;
 
 VIR_ENUM_DECL(virNetDevFeature)
+
+typedef enum {
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA,
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM,
+
+    VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
+} virDomainDeviceAddressType;
+
+typedef struct _virDomainDeviceDriveAddress {
+    unsigned int controller;
+    unsigned int bus;
+    unsigned int target;
+    unsigned int unit;
+} virDomainDeviceDriveAddress, *virDomainDeviceDriveAddressPtr;
+
+typedef struct _virDomainDeviceVirtioSerialAddress {
+    unsigned int controller;
+    unsigned int bus;
+    unsigned int port;
+} virDomainDeviceVirtioSerialAddress, *virDomainDeviceVirtioSerialAddressPtr;
+
+# define VIR_DOMAIN_DEVICE_CCW_MAX_CSSID    254
+# define VIR_DOMAIN_DEVICE_CCW_MAX_SSID       3
+# define VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO  65535
+
+typedef struct _virDomainDeviceCCWAddress {
+    unsigned int cssid;
+    unsigned int ssid;
+    unsigned int devno;
+    bool         assigned;
+} virDomainDeviceCCWAddress, *virDomainDeviceCCWAddressPtr;
+
+typedef struct _virDomainDeviceCcidAddress {
+    unsigned int controller;
+    unsigned int slot;
+} virDomainDeviceCcidAddress, *virDomainDeviceCcidAddressPtr;
+
+typedef struct _virDomainDeviceUSBAddress {
+    unsigned int bus;
+    char *port;
+} virDomainDeviceUSBAddress, *virDomainDeviceUSBAddressPtr;
+
+typedef struct _virDomainDeviceSpaprVioAddress {
+    unsigned long long reg;
+    bool has_reg;
+} virDomainDeviceSpaprVioAddress, *virDomainDeviceSpaprVioAddressPtr;
+
+typedef enum {
+    VIR_DOMAIN_CONTROLLER_MASTER_NONE,
+    VIR_DOMAIN_CONTROLLER_MASTER_USB,
+
+    VIR_DOMAIN_CONTROLLER_MASTER_LAST
+} virDomainControllerMaster;
+
+typedef struct _virDomainDeviceUSBMaster {
+    unsigned int startport;
+} virDomainDeviceUSBMaster, *virDomainDeviceUSBMasterPtr;
+
+typedef struct _virDomainDeviceISAAddress {
+    unsigned int iobase;
+    unsigned int irq;
+} virDomainDeviceISAAddress, *virDomainDeviceISAAddressPtr;
+
+typedef struct _virDomainDeviceDimmAddress {
+    unsigned int slot;
+    unsigned long long base;
+} virDomainDeviceDimmAddress, *virDomainDeviceDimmAddressPtr;
+
+typedef struct _virDomainDeviceInfo {
+    /* If adding to this struct, ensure that
+     * virDomainDeviceInfoIsSet() is updated
+     * to consider the new fields
+     */
+    char *alias;
+    int type; /* virDomainDeviceAddressType */
+    union {
+        virPCIDeviceAddress pci;
+        virDomainDeviceDriveAddress drive;
+        virDomainDeviceVirtioSerialAddress vioserial;
+        virDomainDeviceCcidAddress ccid;
+        virDomainDeviceUSBAddress usb;
+        virDomainDeviceSpaprVioAddress spaprvio;
+        virDomainDeviceCCWAddress ccw;
+        virDomainDeviceISAAddress isa;
+        virDomainDeviceDimmAddress dimm;
+    } addr;
+    int mastertype;
+    union {
+        virDomainDeviceUSBMaster usb;
+    } master;
+    /* rombar and romfile are only used for pci hostdev and network
+     * devices. */
+    int rombar;         /* enum virTristateSwitch */
+    char *romfile;
+    /* bootIndex is only used for disk, network interface, hostdev
+     * and redirdev devices */
+    unsigned int bootIndex;
+} virDomainDeviceInfo, *virDomainDeviceInfoPtr;
+
 
 int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                                bool report);
