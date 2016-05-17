@@ -56,8 +56,6 @@ typedef virCPUx86Feature *virCPUx86FeaturePtr;
 struct _virCPUx86Feature {
     char *name;
     virCPUx86Data *data;
-
-    virCPUx86FeaturePtr next;
 };
 
 typedef struct _virCPUx86KVMFeature virCPUx86KVMFeature;
@@ -102,10 +100,12 @@ typedef virCPUx86Map *virCPUx86MapPtr;
 struct _virCPUx86Map {
     size_t nvendors;
     virCPUx86VendorPtr *vendors;
-    virCPUx86FeaturePtr features;
+    size_t nfeatures;
+    virCPUx86FeaturePtr *features;
     size_t nmodels;
     virCPUx86ModelPtr *models;
-    virCPUx86FeaturePtr migrate_blockers;
+    size_t nblockers;
+    virCPUx86FeaturePtr *migrate_blockers;
 };
 
 static virCPUx86MapPtr cpuMap;
@@ -412,15 +412,15 @@ x86DataToCPUFeatures(virCPUDefPtr cpu,
                      virCPUx86Data *data,
                      virCPUx86MapPtr map)
 {
-    virCPUx86FeaturePtr feature = map->features;
+    size_t i;
 
-    while (feature) {
+    for (i = 0; i < map->nfeatures; i++) {
+        virCPUx86FeaturePtr feature = map->features[i];
         if (x86DataIsSubset(data, feature->data)) {
             x86DataSubtract(data, feature->data);
             if (virCPUDefAddFeature(cpu, feature->name, policy) < 0)
                 return -1;
         }
-        feature = feature->next;
     }
 
     return 0;
@@ -600,39 +600,14 @@ x86FeatureFree(virCPUx86FeaturePtr feature)
 
 
 static virCPUx86FeaturePtr
-x86FeatureCopy(virCPUx86FeaturePtr src)
-{
-    virCPUx86FeaturePtr feature;
-
-    if (VIR_ALLOC(feature) < 0)
-        return NULL;
-
-    if (VIR_STRDUP(feature->name, src->name) < 0)
-        goto error;
-
-    if (!(feature->data = x86DataCopy(src->data)))
-        goto error;
-
-    return feature;
-
- error:
-    x86FeatureFree(feature);
-    return NULL;
-}
-
-
-static virCPUx86FeaturePtr
 x86FeatureFind(virCPUx86MapPtr map,
                const char *name)
 {
-    virCPUx86FeaturePtr feature;
+    size_t i;
 
-    feature = map->features;
-    while (feature) {
-        if (STREQ(feature->name, name))
-            return feature;
-
-        feature = feature->next;
+    for (i = 0; i < map->nfeatures; i++) {
+        if (STREQ(map->features[i]->name, name))
+            return map->features[i];
     }
 
     return NULL;
@@ -646,21 +621,20 @@ x86FeatureNames(virCPUx86MapPtr map,
 {
     virBuffer ret = VIR_BUFFER_INITIALIZER;
     bool first = true;
-
-    virCPUx86FeaturePtr next_feature = map->features;
+    size_t i;
 
     virBufferAdd(&ret, "", 0);
 
-    while (next_feature) {
-        if (x86DataIsSubset(data, next_feature->data)) {
+    for (i = 0; i < map->nfeatures; i++) {
+        virCPUx86FeaturePtr feature = map->features[i];
+        if (x86DataIsSubset(data, feature->data)) {
             if (!first)
                 virBufferAdd(&ret, separator, -1);
             else
                 first = false;
 
-            virBufferAdd(&ret, next_feature->name, -1);
+            virBufferAdd(&ret, feature->name, -1);
         }
-        next_feature = next_feature->next;
     }
 
     return virBufferContentAndReset(&ret);
@@ -746,19 +720,13 @@ x86FeatureLoad(xmlXPathContextPtr ctxt,
             goto cleanup;
     }
 
-    if (!migratable) {
-        virCPUx86FeaturePtr blocker;
+    if (!migratable &&
+        VIR_APPEND_ELEMENT_COPY(map->migrate_blockers,
+                                map->nblockers, feature) < 0)
+        goto cleanup;
 
-        if (!(blocker = x86FeatureCopy(feature)))
-            goto cleanup;
-
-        blocker->next = map->migrate_blockers;
-        map->migrate_blockers = blocker;
-    }
-
-    feature->next = map->features;
-    map->features = feature;
-    feature = NULL;
+    if (VIR_APPEND_ELEMENT(map->features, map->nfeatures, feature) < 0)
+        goto cleanup;
 
     ret = 0;
 
@@ -1106,11 +1074,9 @@ x86MapFree(virCPUx86MapPtr map)
     if (!map)
         return;
 
-    while (map->features) {
-        virCPUx86FeaturePtr feature = map->features;
-        map->features = feature->next;
-        x86FeatureFree(feature);
-    }
+    for (i = 0; i < map->nfeatures; i++)
+        x86FeatureFree(map->features[i]);
+    VIR_FREE(map->features);
 
     for (i = 0; i < map->nmodels; i++)
         x86ModelFree(map->models[i]);
@@ -1120,11 +1086,10 @@ x86MapFree(virCPUx86MapPtr map)
         x86VendorFree(map->vendors[i]);
     VIR_FREE(map->vendors);
 
-    while (map->migrate_blockers) {
-        virCPUx86FeaturePtr migrate_blocker = map->migrate_blockers;
-        map->migrate_blockers = migrate_blocker->next;
-        x86FeatureFree(migrate_blocker);
-    }
+    /* migrate_blockers only points to the features from map->features list,
+     * which were already freed above
+     */
+    VIR_FREE(map->migrate_blockers);
 
     VIR_FREE(map);
 }
@@ -1157,14 +1122,19 @@ x86MapLoadInternalFeatures(virCPUx86MapPtr map)
 {
     size_t i;
     virCPUx86FeaturePtr feature = NULL;
+    size_t nfeatures = map->nfeatures;
+    size_t count = ARRAY_CARDINALITY(x86_kvm_features);
 
-    for (i = 0; i < ARRAY_CARDINALITY(x86_kvm_features); i++) {
+    if (VIR_EXPAND_N(map->features, nfeatures, count) < 0)
+        goto error;
+
+    for (i = 0; i < count; i++) {
         const char *name = x86_kvm_features[i].name;
 
         if (x86FeatureFind(map, name)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("CPU feature %s already defined"), name);
-            return -1;
+            goto error;
         }
 
         if (!(feature = x86FeatureNew()))
@@ -1176,8 +1146,7 @@ x86MapLoadInternalFeatures(virCPUx86MapPtr map)
         if (virCPUx86DataAddCPUID(feature->data, &x86_kvm_features[i].cpuid))
             goto error;
 
-        feature->next = map->features;
-        map->features = feature;
+        map->features[map->nfeatures++] = feature;
         feature = NULL;
     }
 
@@ -1651,11 +1620,13 @@ x86Decode(virCPUDefPtr cpu,
      * features directly */
     if (flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE) {
         for (i = 0; i < cpuModel->nfeatures; i++) {
-            virCPUx86FeaturePtr feat;
-            for (feat = map->migrate_blockers; feat; feat = feat->next) {
-                if (STREQ(feat->name, cpuModel->features[i].name)) {
+            size_t j;
+            for (j = 0; j < map->nblockers; j++) {
+                if (STREQ(map->migrate_blockers[j]->name,
+                          cpuModel->features[i].name)) {
                     VIR_FREE(cpuModel->features[i].name);
-                    VIR_DELETE_ELEMENT_INPLACE(cpuModel->features, i, cpuModel->nfeatures);
+                    VIR_DELETE_ELEMENT_INPLACE(cpuModel->features, i,
+                                               cpuModel->nfeatures);
                 }
             }
         }
@@ -2106,7 +2077,6 @@ x86UpdateHostModel(virCPUDefPtr guest,
 {
     virCPUDefPtr oldguest = NULL;
     virCPUx86MapPtr map;
-    virCPUx86FeaturePtr feat;
     size_t i;
     int ret = -1;
 
@@ -2131,8 +2101,9 @@ x86UpdateHostModel(virCPUDefPtr guest,
      * Note: this only works as long as no CPU model contains non-migratable
      * features directly */
     for (i = 0; i < guest->nfeatures; i++) {
-        for (feat = map->migrate_blockers; feat; feat = feat->next) {
-            if (STREQ(feat->name, guest->features[i].name)) {
+        size_t j;
+        for (j = 0; j < map->nblockers; j++) {
+            if (STREQ(map->migrate_blockers[j]->name, guest->features[i].name)) {
                 VIR_FREE(guest->features[i].name);
                 VIR_DELETE_ELEMENT_INPLACE(guest->features, i, guest->nfeatures);
             }
