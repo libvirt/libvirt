@@ -547,19 +547,11 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  *
  * This macro is safe to use on arguments with side effects.
  */
-# if !STATIC_ANALYSIS
 /* The ternary ensures that ptr is a non-const pointer and not an
  * integer type, all while evaluating ptr only once.  This gives us
  * extra compiler safety when compiling under gcc.
  */
-#  define VIR_FREE(ptr) virFree(1 ? (void *) &(ptr) : (ptr))
-# else
-/* The Coverity static analyzer considers the else path of the "?:" and
- * flags the VIR_FREE() of the address of the address of memory as a
- * RESOURCE_LEAK resulting in numerous false positives (eg, VIR_FREE(&ptr))
- */
-#  define VIR_FREE(ptr) virFree(&(ptr))
-# endif
+# define VIR_FREE(ptr) virFree(1 ? (void *) &(ptr) : (ptr))
 
 
 /**
@@ -572,13 +564,8 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  *
  * This macro is safe to use on arguments with side effects.
  */
-# if !STATIC_ANALYSIS
-/* See explanation in VIR_FREE */
-#  define VIR_DISPOSE_N(ptr, count) virDispose(1 ? (void *) &(ptr) : (ptr), 0, \
+# define VIR_DISPOSE_N(ptr, count) virDispose(1 ? (void *) &(ptr) : (ptr), 0, \
                                              sizeof(*(ptr)), &(count))
-# else
-#  define VIR_DISPOSE_N(ptr, count) virDispose(&(ptr), 0, sizeof(*(ptr)), &(count))
-# endif
 
 
 /**
@@ -589,13 +576,8 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  *
  * This macro is not safe to be used on arguments with side effects.
  */
-# if !STATIC_ANALYSIS
-/* See explanation in VIR_FREE */
-#  define VIR_DISPOSE_STRING(ptr) virDispose(1 ? (void *) &(ptr) : (ptr),      \
-                                             (ptr) ? strlen((ptr)) : 0, 1, NULL)
-# else
-#  define VIR_DISPOSE_STRING(ptr) virDispose(&(ptr), (ptr) ? strlen((ptr)) : 1, NULL)
-# endif
+# define VIR_DISPOSE_STRING(ptr) virDispose(1 ? (void *) &(ptr) : (ptr),      \
+                                            (ptr) ? strlen((ptr)) : 0, 1, NULL)
 
 
 /**
@@ -606,12 +588,8 @@ void virDispose(void *ptrptr, size_t count, size_t element_size, size_t *countpt
  *
  * This macro is safe to be used on arguments with side effects.
  */
-# if !STATIC_ANALYSIS
-/* See explanation in VIR_FREE */
-#  define VIR_DISPOSE(ptr) virDispose(1 ? (void *) &(ptr) : (ptr), 1, sizeof(*(ptr)), NULL)
-# else
-#  define VIR_DISPOSE(ptr) virDispose(&(ptr), 1, sizeof(*(ptr)), NULL)
-# endif
+# define VIR_DISPOSE(ptr) virDispose(1 ? (void *) &(ptr) : (ptr), 1,          \
+                                     sizeof(*(ptr)), NULL)
 
 
 void virAllocTestInit(void);
