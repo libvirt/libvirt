@@ -7357,7 +7357,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
                                 const char *domainLibDir)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
-    virDomainGraphicsListenDefPtr gListen = NULL;
+    virDomainGraphicsListenDefPtr glisten = NULL;
     const char *listenAddr = NULL;
     char *netAddr = NULL;
     bool escapeAddr;
@@ -7390,18 +7390,18 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
             goto error;
         }
 
-        if ((gListen = virDomainGraphicsGetListen(graphics, 0))) {
+        if ((glisten = virDomainGraphicsGetListen(graphics, 0))) {
 
-            switch (gListen->type) {
+            switch (glisten->type) {
             case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-                listenAddr = gListen->address;
+                listenAddr = glisten->address;
                 break;
 
             case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-                if (!gListen->network)
+                if (!glisten->network)
                     break;
 
-                ret = networkGetNetworkAddress(gListen->network, &netAddr);
+                ret = networkGetNetworkAddress(glisten->network, &netAddr);
                 if (ret <= -2) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    "%s", _("network-based listen not possible, "
@@ -7414,7 +7414,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
                 listenAddr = netAddr;
                 /* store the address we found in the <graphics> element so it
                  * will show up in status. */
-                if (VIR_STRDUP(gListen->address, netAddr) < 0)
+                if (VIR_STRDUP(glisten->address, netAddr) < 0)
                     goto error;
                 break;
 
@@ -7512,7 +7512,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                                   virDomainGraphicsDefPtr graphics)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
-    virDomainGraphicsListenDefPtr gListen = NULL;
+    virDomainGraphicsListenDefPtr glisten = NULL;
     const char *listenAddr = NULL;
     char *netAddr = NULL;
     int ret;
@@ -7551,18 +7551,18 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     }
 
     if (port > 0 || tlsPort > 0) {
-        if ((gListen = virDomainGraphicsGetListen(graphics, 0))) {
+        if ((glisten = virDomainGraphicsGetListen(graphics, 0))) {
 
-            switch (gListen->type) {
+            switch (glisten->type) {
             case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-                listenAddr = gListen->address;
+                listenAddr = glisten->address;
                 break;
 
             case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-                if (!gListen->network)
+                if (!glisten->network)
                     break;
 
-                ret = networkGetNetworkAddress(gListen->network, &netAddr);
+                ret = networkGetNetworkAddress(glisten->network, &netAddr);
                 if (ret <= -2) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    "%s", _("network-based listen not possible, "
@@ -7575,7 +7575,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                 listenAddr = netAddr;
                 /* store the address we found in the <graphics> element so it will
                  * show up in status. */
-                if (VIR_STRDUP(gListen->address, listenAddr) < 0)
+                if (VIR_STRDUP(glisten->address, listenAddr) < 0)
                     goto error;
                 break;
 

@@ -319,7 +319,7 @@ qemuMigrationCookieGraphicsSpiceAlloc(virQEMUDriverPtr driver,
 {
     qemuMigrationCookieGraphicsPtr mig = NULL;
     const char *listenAddr;
-    virDomainGraphicsListenDefPtr gListen = virDomainGraphicsGetListen(def, 0);
+    virDomainGraphicsListenDefPtr glisten = virDomainGraphicsGetListen(def, 0);
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (VIR_ALLOC(mig) < 0)
@@ -332,7 +332,7 @@ qemuMigrationCookieGraphicsSpiceAlloc(virQEMUDriverPtr driver,
     else
         mig->tlsPort = -1;
 
-    if (!gListen || !(listenAddr = gListen->address))
+    if (!glisten || !(listenAddr = glisten->address))
         listenAddr = cfg->spiceListen;
 
 #ifdef WITH_GNUTLS

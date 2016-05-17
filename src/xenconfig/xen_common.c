@@ -1643,7 +1643,7 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                                        def->graphics[0]->data.sdl.xauth) < 0)
                     return -1;
             } else {
-                virDomainGraphicsListenDefPtr gListen;
+                virDomainGraphicsListenDefPtr glisten;
 
                 if (xenConfigSetInt(conf, "sdl", 0) < 0)
                     return -1;
@@ -1660,9 +1660,9 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                                     def->graphics[0]->data.vnc.port - 5900) < 0)
                     return -1;
 
-                if ((gListen = virDomainGraphicsGetListen(def->graphics[0], 0)) &&
-                    gListen->address &&
-                    xenConfigSetString(conf, "vnclisten", gListen->address) < 0)
+                if ((glisten = virDomainGraphicsGetListen(def->graphics[0], 0)) &&
+                    glisten->address &&
+                    xenConfigSetString(conf, "vnclisten", glisten->address) < 0)
                     return -1;
 
                 if (def->graphics[0]->data.vnc.auth.passwd &&
@@ -1689,7 +1689,7 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                     virBufferAsprintf(&buf, ",xauthority=%s",
                                       def->graphics[0]->data.sdl.xauth);
             } else {
-                virDomainGraphicsListenDefPtr gListen
+                virDomainGraphicsListenDefPtr glisten
                     = virDomainGraphicsGetListen(def->graphics[0], 0);
 
                 virBufferAddLit(&buf, "type=vnc");
@@ -1698,8 +1698,8 @@ xenFormatVfb(virConfPtr conf, virDomainDefPtr def)
                 if (!def->graphics[0]->data.vnc.autoport)
                     virBufferAsprintf(&buf, ",vncdisplay=%d",
                                       def->graphics[0]->data.vnc.port - 5900);
-                if (gListen && gListen->address)
-                    virBufferAsprintf(&buf, ",vnclisten=%s", gListen->address);
+                if (glisten && glisten->address)
+                    virBufferAsprintf(&buf, ",vnclisten=%s", glisten->address);
                 if (def->graphics[0]->data.vnc.auth.passwd)
                     virBufferAsprintf(&buf, ",vncpasswd=%s",
                                       def->graphics[0]->data.vnc.auth.passwd);

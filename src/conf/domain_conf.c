@@ -23865,21 +23865,21 @@ int
 virDomainGraphicsListenAppendAddress(virDomainGraphicsDefPtr def,
                                      const char *address)
 {
-    virDomainGraphicsListenDef gListen;
+    virDomainGraphicsListenDef glisten;
 
-    memset(&gListen, 0, sizeof(gListen));
+    memset(&glisten, 0, sizeof(glisten));
 
-    gListen.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
+    glisten.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
 
-    if (VIR_STRDUP(gListen.address, address) < 0)
+    if (VIR_STRDUP(glisten.address, address) < 0)
         goto error;
 
-    if (VIR_APPEND_ELEMENT_COPY(def->listens, def->nListens, gListen) < 0)
+    if (VIR_APPEND_ELEMENT_COPY(def->listens, def->nListens, glisten) < 0)
         goto error;
 
     return 0;
  error:
-    VIR_FREE(gListen.address);
+    VIR_FREE(glisten.address);
     return -1;
 }
 
