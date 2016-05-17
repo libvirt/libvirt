@@ -58,11 +58,13 @@ int xenConfigCopyStringOpt(virConfPtr conf,
 
 int xenParseConfigCommon(virConfPtr conf,
                          virDomainDefPtr def,
-                         virCapsPtr caps);
+                         virCapsPtr caps,
+                         const char *nativeFormat);
 
 int xenFormatConfigCommon(virConfPtr conf,
                           virDomainDefPtr def,
-                          virConnectPtr conn);
+                          virConnectPtr conn,
+                          const char *nativeFormat);
 
 
 int xenDomainDefAddImplicitInputDevice(virDomainDefPtr def);

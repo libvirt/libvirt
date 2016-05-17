@@ -443,7 +443,7 @@ xenParseXM(virConfPtr conf,
     def->virtType = VIR_DOMAIN_VIRT_XEN;
     def->id = -1;
 
-    if (xenParseConfigCommon(conf, def, caps) < 0)
+    if (xenParseConfigCommon(conf, def, caps, XEN_CONFIG_FORMAT_XM) < 0)
         goto cleanup;
 
     if (xenParseXMOS(conf, def) < 0)
@@ -586,7 +586,7 @@ xenFormatXM(virConnectPtr conn,
     if (!(conf = virConfNew()))
         goto cleanup;
 
-    if (xenFormatConfigCommon(conf, def, conn) < 0)
+    if (xenFormatConfigCommon(conf, def, conn, XEN_CONFIG_FORMAT_XM) < 0)
         goto cleanup;
 
     if (xenFormatXMOS(conf, def) < 0)

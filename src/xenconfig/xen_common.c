@@ -807,7 +807,7 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenParseVif(virConfPtr conf, virDomainDefPtr def)
+xenParseVif(virConfPtr conf, virDomainDefPtr def, const char *vif_typename)
 {
     char *script = NULL;
     virDomainNetDefPtr net = NULL;
@@ -946,7 +946,7 @@ xenParseVif(virConfPtr conf, virDomainDefPtr def)
                 VIR_STRDUP(net->model, model) < 0)
                 goto cleanup;
 
-            if (!model[0] && type[0] && STREQ(type, "netfront") &&
+            if (!model[0] && type[0] && STREQ(type, vif_typename) &&
                 VIR_STRDUP(net->model, "netfront") < 0)
                 goto cleanup;
 
@@ -1050,7 +1050,8 @@ xenParseGeneralMeta(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
 int
 xenParseConfigCommon(virConfPtr conf,
                      virDomainDefPtr def,
-                     virCapsPtr caps)
+                     virCapsPtr caps,
+                     const char *nativeFormat)
 {
     if (xenParseGeneralMeta(conf, def, caps) < 0)
         return -1;
@@ -1070,8 +1071,17 @@ xenParseConfigCommon(virConfPtr conf,
     if (xenConfigCopyStringOpt(conf, "device_model", &def->emulator) < 0)
         return -1;
 
-    if (xenParseVif(conf, def) < 0)
+    if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XL)) {
+        if (xenParseVif(conf, def, "vif") < 0)
+            return -1;
+    } else if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XM)) {
+        if (xenParseVif(conf, def, "netfront") < 0)
+            return -1;
+    } else {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unsupported config type %s"), nativeFormat);
         return -1;
+    }
 
     if (xenParsePCI(conf, def) < 0)
         return -1;
@@ -1131,7 +1141,8 @@ static int
 xenFormatNet(virConnectPtr conn,
              virConfValuePtr list,
              virDomainNetDefPtr net,
-             int hvm)
+             int hvm,
+             const char *vif_typename)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virConfValuePtr val, tmp;
@@ -1203,7 +1214,7 @@ xenFormatNet(virConnectPtr conn,
             virBufferAsprintf(&buf, ",model=%s", net->model);
     } else {
         if (net->model != NULL && STREQ(net->model, "netfront")) {
-            virBufferAddLit(&buf, ",type=netfront");
+            virBufferAsprintf(&buf, ",type=%s", vif_typename);
         } else {
             if (net->model != NULL)
                 virBufferAsprintf(&buf, ",model=%s", net->model);
@@ -1753,7 +1764,8 @@ xenFormatSound(virConfPtr conf, virDomainDefPtr def)
 static int
 xenFormatVif(virConfPtr conf,
              virConnectPtr conn,
-             virDomainDefPtr def)
+             virDomainDefPtr def,
+             const char *vif_typename)
 {
    virConfValuePtr netVal = NULL;
    size_t i;
@@ -1766,7 +1778,7 @@ xenFormatVif(virConfPtr conf,
 
     for (i = 0; i < def->nnets; i++) {
         if (xenFormatNet(conn, netVal, def->nets[i],
-                         hvm) < 0)
+                         hvm, vif_typename) < 0)
            goto cleanup;
     }
 
@@ -1792,7 +1804,8 @@ xenFormatVif(virConfPtr conf,
 int
 xenFormatConfigCommon(virConfPtr conf,
                       virDomainDefPtr def,
-                      virConnectPtr conn)
+                      virConnectPtr conn,
+                      const char *nativeFormat)
 {
     if (xenFormatGeneralMeta(conf, def) < 0)
         return -1;
@@ -1818,8 +1831,17 @@ xenFormatConfigCommon(virConfPtr conf,
     if (xenFormatVfb(conf, def) < 0)
         return -1;
 
-    if (xenFormatVif(conf, conn, def) < 0)
+    if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XL)) {
+        if (xenFormatVif(conf, conn, def, "vif") < 0)
+            return -1;
+    } else if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XM)) {
+        if (xenFormatVif(conf, conn, def, "netfront") < 0)
+            return -1;
+    } else {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unsupported config type %s"), nativeFormat);
         return -1;
+    }
 
     if (xenFormatPCI(conf, def) < 0)
         return -1;

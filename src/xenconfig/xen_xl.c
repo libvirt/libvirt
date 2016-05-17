@@ -498,7 +498,7 @@ xenParseXL(virConfPtr conf,
     def->virtType = VIR_DOMAIN_VIRT_XEN;
     def->id = -1;
 
-    if (xenParseConfigCommon(conf, def, caps) < 0)
+    if (xenParseConfigCommon(conf, def, caps, XEN_CONFIG_FORMAT_XL) < 0)
         goto cleanup;
 
     if (xenParseXLOS(conf, def, caps) < 0)
@@ -993,7 +993,7 @@ xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
     if (!(conf = virConfNew()))
         goto cleanup;
 
-    if (xenFormatConfigCommon(conf, def, conn) < 0)
+    if (xenFormatConfigCommon(conf, def, conn, XEN_CONFIG_FORMAT_XL) < 0)
         goto cleanup;
 
     if (xenFormatXLOS(conf, def) < 0)
