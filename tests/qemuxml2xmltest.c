@@ -597,6 +597,7 @@ mymain(void)
                  QEMU_CAPS_DEVICE_PCI_BRIDGE);
     DO_TEST_FULL("pci-autoadd-idx", WHEN_ACTIVE, GIC_NONE,
                  QEMU_CAPS_DEVICE_PCI_BRIDGE);
+    DO_TEST("pci-autofill-addr");
 
     DO_TEST_FULL("q35", WHEN_ACTIVE, GIC_NONE,
                  QEMU_CAPS_DEVICE_PCI_BRIDGE,

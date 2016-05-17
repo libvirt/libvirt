@@ -1,0 +1,25 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/libexec/qemu-kvm \
+-name fdr-br \
+-S \
+-M pc-1.2 \
+-m 2048 \
+-smp 2 \
+-uuid 3ec6cbe1-b5a2-4515-b800-31a61855df41 \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/lib/domain--1-fdr-br/monitor.sock,server,nowait \
+-no-acpi \
+-boot c \
+-usb \
+-drive file=/var/iso/f18kde.iso,format=raw,if=none,media=cdrom,\
+id=drive-virtio-disk0 \
+-device virtio-blk-pci,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,\
+id=virtio-disk0 \
+-vga cirrus \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4

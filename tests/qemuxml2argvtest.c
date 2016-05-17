@@ -1527,6 +1527,7 @@ mymain(void)
 
     DO_TEST("pci-autoadd-addr", QEMU_CAPS_DEVICE_PCI_BRIDGE);
     DO_TEST("pci-autoadd-idx", QEMU_CAPS_DEVICE_PCI_BRIDGE);
+    DO_TEST("pci-autofill-addr", NONE);
     DO_TEST("pci-many",
             QEMU_CAPS_DEVICE_PCI_BRIDGE);
     DO_TEST("pci-bridge-many-disks",
