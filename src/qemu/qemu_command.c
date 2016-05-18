@@ -7540,16 +7540,6 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         virBufferAsprintf(&opt, "tls-port=%u,", tlsPort);
     }
 
-    if (cfg->spiceSASL) {
-        virBufferAddLit(&opt, "sasl,");
-
-        if (cfg->spiceSASLdir)
-            virCommandAddEnvPair(cmd, "SASL_CONF_PATH",
-                                 cfg->spiceSASLdir);
-
-        /* TODO: Support ACLs later */
-    }
-
     if (port > 0 || tlsPort > 0) {
         if ((glisten = virDomainGraphicsGetListen(graphics, 0))) {
 
@@ -7591,6 +7581,16 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
             virBufferAsprintf(&opt, "addr=%s,", listenAddr);
 
         VIR_FREE(netAddr);
+    }
+
+    if (cfg->spiceSASL) {
+        virBufferAddLit(&opt, "sasl,");
+
+        if (cfg->spiceSASLdir)
+            virCommandAddEnvPair(cmd, "SASL_CONF_PATH",
+                                 cfg->spiceSASLdir);
+
+        /* TODO: Support ACLs later */
     }
 
     if (graphics->data.spice.mousemode) {
