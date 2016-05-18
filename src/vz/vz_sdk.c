@@ -4461,3 +4461,45 @@ int prlsdkSwitchToSnapshot(virDomainObjPtr dom, const char *uuid, bool paused)
 
     return 0;
 }
+
+/* high security is default choice for 2 reasons:
+ * 1. as this is the highest set security we can't get
+ * reject from server with high security settings
+ * 2. this is on par with security level of driver
+ * connection to dispatcher
+ */
+
+#define PRLSDK_MIGRATION_FLAGS (PSL_HIGH_SECURITY)
+
+int prlsdkMigrate(virDomainObjPtr dom, virURIPtr uri,
+                  const unsigned char *session_uuid,
+                  const char *dname,
+                  unsigned int flags)
+{
+    int ret = -1;
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+    char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
+    PRL_UINT32 vzflags = PRLSDK_MIGRATION_FLAGS;
+
+    if (flags & VIR_MIGRATE_PAUSED)
+        vzflags |= PVMT_DONT_RESUME_VM;
+
+    prlsdkUUIDFormat(session_uuid, uuidstr);
+    job = PrlVm_MigrateWithRenameEx(privdom->sdkdom, uri->server,
+                                    uri->port, uuidstr,
+                                    dname == NULL ? "" : dname,
+                                    "",
+                                    vzflags,
+                                    0,
+                                    PRL_TRUE
+                                    );
+
+    if (PRL_FAILED(waitJob(job)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}

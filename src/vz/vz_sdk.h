@@ -87,3 +87,9 @@ virDomainSnapshotObjListPtr prlsdkLoadSnapshots(virDomainObjPtr dom);
 int prlsdkCreateSnapshot(virDomainObjPtr dom, const char *description);
 int prlsdkDeleteSnapshot(virDomainObjPtr dom, const char *uuid, bool children);
 int prlsdkSwitchToSnapshot(virDomainObjPtr dom, const char *uuid, bool paused);
+int
+prlsdkMigrate(virDomainObjPtr dom,
+              virURIPtr uri,
+              const char unsigned *session_uuid,
+              const char *dname,
+              unsigned int flags);

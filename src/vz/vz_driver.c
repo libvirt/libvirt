@@ -139,6 +139,9 @@ vzBuildCapabilities(void)
 
     caps->host.cpu = cpu;
 
+    if (virCapabilitiesAddHostMigrateTransport(caps, "vzmigr") < 0)
+        goto error;
+
     if (!(data = cpuNodeData(cpu->arch))
         || cpuDecode(cpu, data, NULL, 0, NULL) < 0) {
         goto cleanup;
@@ -2100,6 +2103,454 @@ vzDomainRevertToSnapshot(virDomainSnapshotPtr snapshot, unsigned int flags)
     return ret;
 }
 
+typedef struct _vzMigrationCookie vzMigrationCookie;
+typedef vzMigrationCookie *vzMigrationCookiePtr;
+struct _vzMigrationCookie {
+    unsigned char session_uuid[VIR_UUID_BUFLEN];
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    char *name;
+};
+
+static void
+vzMigrationCookieFree(vzMigrationCookiePtr mig)
+{
+    if (!mig)
+        return;
+    VIR_FREE(mig->name);
+    VIR_FREE(mig);
+}
+
+static int
+vzBakeCookie(vzMigrationCookiePtr mig, char **cookieout, int *cookieoutlen)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    if (!cookieout || !cookieoutlen) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Migration cookie parameters are not provided."));
+        return -1;
+    }
+
+    *cookieout = NULL;
+    *cookieoutlen = 0;
+
+    virBufferAddLit(&buf, "<vz-migration>\n");
+    virBufferAdjustIndent(&buf, 2);
+    virUUIDFormat(mig->session_uuid, uuidstr);
+    virBufferAsprintf(&buf, "<session-uuid>%s</session-uuid>\n", uuidstr);
+    virUUIDFormat(mig->uuid, uuidstr);
+    virBufferAsprintf(&buf, "<uuid>%s</uuid>\n", uuidstr);
+    virBufferAsprintf(&buf, "<name>%s</name>\n", mig->name);
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAddLit(&buf, "</vz-migration>\n");
+
+    if (virBufferCheckError(&buf) < 0)
+        return -1;
+
+    *cookieout = virBufferContentAndReset(&buf);
+    *cookieoutlen = strlen(*cookieout) + 1;
+
+    return 0;
+}
+
+static vzMigrationCookiePtr
+vzEatCookie(const char *cookiein, int cookieinlen)
+{
+    xmlDocPtr doc = NULL;
+    xmlXPathContextPtr ctx = NULL;
+    char *tmp;
+    vzMigrationCookiePtr mig = NULL;
+
+    if (VIR_ALLOC(mig) < 0)
+        return NULL;
+
+    if (!cookiein || cookieinlen <= 0 || cookiein[cookieinlen - 1] != '\0') {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Invalid migration cookie"));
+        goto error;
+    }
+
+    if (!(doc = virXMLParseStringCtxt(cookiein,
+                                      _("(_migration_cookie)"), &ctx)))
+        goto error;
+
+    if (!(tmp = virXPathString("string(./session-uuid[1])", ctx))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing session-uuid element in migration data"));
+        goto error;
+    }
+    if (virUUIDParse(tmp, mig->session_uuid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed session-uuid element in migration data"));
+        VIR_FREE(tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    if (!(tmp = virXPathString("string(./uuid[1])", ctx))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing uuid element in migration data"));
+        goto error;
+    }
+    if (virUUIDParse(tmp, mig->uuid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed uuid element in migration data"));
+        VIR_FREE(tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    if (!(mig->name = virXPathString("string(./name[1])", ctx))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing name element in migration data"));
+        goto error;
+    }
+
+ cleanup:
+    xmlXPathFreeContext(ctx);
+    xmlFreeDoc(doc);
+    return mig;
+
+ error:
+    vzMigrationCookieFree(mig);
+    mig = NULL;
+    goto cleanup;
+}
+
+#define VZ_MIGRATION_FLAGS      VIR_MIGRATE_PAUSED
+
+#define VZ_MIGRATION_PARAMETERS                                 \
+    VIR_MIGRATE_PARAM_DEST_XML,         VIR_TYPED_PARAM_STRING, \
+    VIR_MIGRATE_PARAM_URI,              VIR_TYPED_PARAM_STRING, \
+    VIR_MIGRATE_PARAM_DEST_NAME,        VIR_TYPED_PARAM_STRING, \
+    NULL
+
+static char *
+vzDomainMigrateBegin3Params(virDomainPtr domain,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            char **cookieout,
+                            int *cookieoutlen,
+                            unsigned int flags)
+{
+    char *xml = NULL;
+    virDomainObjPtr dom = NULL;
+    vzConnPtr privconn = domain->conn->privateData;
+    vzMigrationCookiePtr mig = NULL;
+
+    virCheckFlags(VZ_MIGRATION_FLAGS, NULL);
+
+    if (virTypedParamsValidate(params, nparams, VZ_MIGRATION_PARAMETERS) < 0)
+        goto cleanup;
+
+    /* we can't do this check via VZ_MIGRATION_PARAMETERS as on preparation
+     * step domain xml will be passed via this parameter and it is a common
+     * style to use single allowed parameter list definition in all steps */
+    if (virTypedParamsGet(params, nparams, VIR_MIGRATE_PARAM_DEST_XML)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("Changing destination XML is not supported"));
+        goto cleanup;
+    }
+
+    if (!(dom = vzDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (VIR_ALLOC(mig) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(mig->name, dom->def->name) < 0)
+        goto cleanup;
+
+    memcpy(mig->uuid, dom->def->uuid, VIR_UUID_BUFLEN);
+
+    if (vzBakeCookie(mig, cookieout, cookieoutlen) < 0)
+        goto cleanup;
+
+    xml = virDomainDefFormat(dom->def, privconn->driver->caps,
+                             VIR_DOMAIN_XML_MIGRATABLE);
+
+ cleanup:
+
+    vzMigrationCookieFree(mig);
+    if (dom)
+        virObjectUnlock(dom);
+    return xml;
+}
+
+static char*
+vzMigrationCreateURI(void)
+{
+    char *hostname = NULL;
+    char *uri = NULL;
+
+    if (!(hostname = virGetHostname()))
+        goto cleanup;
+
+    if (STRPREFIX(hostname, "localhost")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("hostname on destination resolved to localhost,"
+                         " but migration requires an FQDN"));
+        goto cleanup;
+    }
+
+    if (virAsprintf(&uri, "vzmigr://%s", hostname) < 0)
+        goto cleanup;
+
+ cleanup:
+    VIR_FREE(hostname);
+    return uri;
+}
+
+static int
+vzDomainMigratePrepare3Params(virConnectPtr conn,
+                              virTypedParameterPtr params,
+                              int nparams,
+                              const char *cookiein,
+                              int cookieinlen,
+                              char **cookieout,
+                              int *cookieoutlen,
+                              char **uri_out,
+                              unsigned int flags)
+{
+    vzConnPtr privconn = conn->privateData;
+    const char *miguri = NULL;
+    const char *dname = NULL;
+    virDomainObjPtr dom = NULL;
+    vzMigrationCookiePtr mig = NULL;
+    int ret = -1;
+
+    virCheckFlags(VZ_MIGRATION_FLAGS, -1);
+
+    if (virTypedParamsValidate(params, nparams, VZ_MIGRATION_PARAMETERS) < 0)
+        goto cleanup;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_URI, &miguri) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0)
+        goto cleanup;
+
+    /* We must set uri_out if miguri is not set. This is direct
+     * managed migration requirement */
+    if (!miguri && !(*uri_out = vzMigrationCreateURI()))
+        goto cleanup;
+
+    if (!(mig = vzEatCookie(cookiein, cookieinlen)))
+        goto cleanup;
+
+    memcpy(mig->session_uuid, privconn->driver->session_uuid, VIR_UUID_BUFLEN);
+
+    if (vzBakeCookie(mig, cookieout, cookieoutlen) < 0)
+        goto cleanup;
+
+    virObjectLock(privconn->driver);
+    dom = virDomainObjListFindByUUID(privconn->driver->domains, mig->uuid);
+    if (dom) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(mig->uuid, uuidstr);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("A domain with uuid '%s' already exists"),
+                       uuidstr);
+        goto unlock;
+    }
+
+    if (!(dom = vzNewDomain(privconn->driver,
+                            dname ? dname : mig->name, mig->uuid)))
+        goto unlock;
+
+    ret = 0;
+
+ unlock:
+    virObjectUnlock(privconn->driver);
+
+ cleanup:
+    vzMigrationCookieFree(mig);
+    if (dom)
+        virObjectUnlock(dom);
+    return ret;
+}
+
+static int
+vzConnectSupportsFeature(virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
+{
+    switch (feature) {
+    case VIR_DRV_FEATURE_MIGRATION_PARAMS:
+        return 1;
+    default:
+        return 0;
+    }
+}
+
+static virURIPtr
+vzParseVzURI(const char *uri_str)
+{
+    virURIPtr uri = NULL;
+
+    if (!(uri = virURIParse(uri_str)))
+        goto error;
+
+    if (!uri->scheme || !uri->server) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("scheme and host are mandatory vz migration URI: %s"),
+                       uri_str);
+        goto error;
+    }
+
+    if (uri->user || uri->path || uri->query || uri->fragment) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("only scheme, host and port are supported in "
+                         "vz migration URI: %s"), uri_str);
+        goto error;
+    }
+
+    if (STRNEQ(uri->scheme, "vzmigr")) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("unsupported scheme %s in migration URI %s"),
+                       uri->scheme, uri_str);
+        goto error;
+    }
+
+    return uri;
+
+ error:
+    virURIFree(uri);
+    return NULL;
+}
+
+static int
+vzDomainMigratePerform3Params(virDomainPtr domain,
+                              const char *dconnuri ATTRIBUTE_UNUSED,
+                              virTypedParameterPtr params,
+                              int nparams,
+                              const char *cookiein,
+                              int cookieinlen,
+                              char **cookieout ATTRIBUTE_UNUSED,
+                              int *cookieoutlen ATTRIBUTE_UNUSED,
+                              unsigned int flags)
+{
+    int ret = -1;
+    virDomainObjPtr dom = NULL;
+    virURIPtr vzuri = NULL;
+    vzConnPtr privconn = domain->conn->privateData;
+    const char *miguri = NULL;
+    const char *dname = NULL;
+    vzMigrationCookiePtr mig = NULL;
+
+    virCheckFlags(VZ_MIGRATION_FLAGS, -1);
+
+    if (virTypedParamsValidate(params, nparams, VZ_MIGRATION_PARAMETERS) < 0)
+        goto cleanup;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_URI, &miguri) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0)
+        goto cleanup;
+
+    if (!miguri) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("migrate uri is not set"));
+        goto cleanup;
+    }
+
+    if (!(mig = vzEatCookie(cookiein, cookieinlen)))
+        goto cleanup;
+
+    if (!(dom = vzDomObjFromDomain(domain)))
+        goto cleanup;
+
+    if (!(vzuri = vzParseVzURI(miguri)))
+        goto cleanup;
+
+    if (prlsdkMigrate(dom, vzuri, mig->session_uuid, dname, flags) < 0)
+        goto cleanup;
+
+    virDomainObjListRemove(privconn->driver->domains, dom);
+    dom = NULL;
+
+    ret = 0;
+
+ cleanup:
+    if (dom)
+        virObjectUnlock(dom);
+    virURIFree(vzuri);
+    vzMigrationCookieFree(mig);
+
+    return ret;
+}
+
+static virDomainPtr
+vzDomainMigrateFinish3Params(virConnectPtr dconn,
+                             virTypedParameterPtr params,
+                             int nparams,
+                             const char *cookiein ATTRIBUTE_UNUSED,
+                             int cookieinlen ATTRIBUTE_UNUSED,
+                             char **cookieout ATTRIBUTE_UNUSED,
+                             int *cookieoutlen ATTRIBUTE_UNUSED,
+                             unsigned int flags,
+                             int cancelled)
+{
+    virDomainObjPtr dom = NULL;
+    virDomainPtr domain = NULL;
+    vzConnPtr privconn = dconn->privateData;
+    vzDriverPtr driver = privconn->driver;
+    const char *name = NULL;
+
+    virCheckFlags(VZ_MIGRATION_FLAGS, NULL);
+
+    if (virTypedParamsValidate(params, nparams, VZ_MIGRATION_PARAMETERS) < 0)
+        goto cleanup;
+
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, &name) < 0)
+        goto cleanup;
+
+    if (!(dom = virDomainObjListFindByName(driver->domains, name))) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching name '%s'"), name);
+        goto cleanup;
+    }
+
+    if (cancelled) {
+        virDomainObjListRemove(driver->domains, dom);
+        dom = NULL;
+        goto cleanup;
+    }
+
+    if (prlsdkLoadDomain(driver, dom))
+        goto cleanup;
+
+    domain = virGetDomain(dconn, dom->def->name, dom->def->uuid);
+    if (domain)
+        domain->id = dom->def->id;
+
+ cleanup:
+    /* In this situation we have to restore domain on source. But the migration
+     * is already finished. */
+    if (!cancelled && !domain)
+        VIR_WARN("Can't provide domain '%s' after successfull migration.", name);
+    virDomainObjEndAPI(&dom);
+    return domain;
+}
+
+static int
+vzDomainMigrateConfirm3Params(virDomainPtr domain ATTRIBUTE_UNUSED,
+                              virTypedParameterPtr params,
+                              int nparams,
+                              const char *cookiein ATTRIBUTE_UNUSED,
+                              int cookieinlen ATTRIBUTE_UNUSED,
+                              unsigned int flags,
+                              int cancelled ATTRIBUTE_UNUSED)
+{
+    virCheckFlags(VZ_MIGRATION_FLAGS, -1);
+
+    if (virTypedParamsValidate(params, nparams, VZ_MIGRATION_PARAMETERS) < 0)
+        return -1;
+
+    return 0;
+}
+
 static virHypervisorDriver vzHypervisorDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
@@ -2183,6 +2634,12 @@ static virHypervisorDriver vzHypervisorDriver = {
     .domainSnapshotCreateXML = vzDomainSnapshotCreateXML, /* 1.3.5 */
     .domainSnapshotDelete = vzDomainSnapshotDelete, /* 1.3.5 */
     .domainRevertToSnapshot = vzDomainRevertToSnapshot, /* 1.3.5 */
+    .connectSupportsFeature = vzConnectSupportsFeature, /* 1.3.5 */
+    .domainMigrateBegin3Params = vzDomainMigrateBegin3Params, /* 1.3.5 */
+    .domainMigratePrepare3Params = vzDomainMigratePrepare3Params, /* 1.3.5 */
+    .domainMigratePerform3Params = vzDomainMigratePerform3Params, /* 1.3.5 */
+    .domainMigrateFinish3Params = vzDomainMigrateFinish3Params, /* 1.3.5 */
+    .domainMigrateConfirm3Params = vzDomainMigrateConfirm3Params, /* 1.3.5 */
 };
 
 static virConnectDriver vzConnectDriver = {
