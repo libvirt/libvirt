@@ -48,13 +48,13 @@ struct ppc64_model {
     char *name;
     const struct ppc64_vendor *vendor;
     virCPUppc64Data *data;
-    struct ppc64_model *next;
 };
 
 struct ppc64_map {
     size_t nvendors;
     struct ppc64_vendor **vendors;
-    struct ppc64_model *models;
+    size_t nmodels;
+    struct ppc64_model **models;
 };
 
 /* Convert a legacy CPU definition by transforming
@@ -230,14 +230,11 @@ static struct ppc64_model *
 ppc64ModelFind(const struct ppc64_map *map,
                const char *name)
 {
-    struct ppc64_model *model;
+    size_t i;
 
-    model = map->models;
-    while (model) {
-        if (STREQ(model->name, name))
-            return model;
-
-        model = model->next;
+    for (i = 0; i < map->nmodels; i++) {
+        if (STREQ(map->models[i]->name, name))
+            return map->models[i];
     }
 
     return NULL;
@@ -247,16 +244,15 @@ static struct ppc64_model *
 ppc64ModelFindPVR(const struct ppc64_map *map,
                   uint32_t pvr)
 {
-    struct ppc64_model *model;
     size_t i;
+    size_t j;
 
-    model = map->models;
-    while (model) {
-        for (i = 0; i < model->data->len; i++) {
-            if ((pvr & model->data->pvr[i].mask) == model->data->pvr[i].value)
+    for (i = 0; i < map->nmodels; i++) {
+        struct ppc64_model *model = map->models[i];
+        for (j = 0; j < model->data->len; j++) {
+            if ((pvr & model->data->pvr[j].mask) == model->data->pvr[j].value)
                 return model;
         }
-        model = model->next;
     }
 
     return NULL;
@@ -285,11 +281,9 @@ ppc64MapFree(struct ppc64_map *map)
     if (!map)
         return;
 
-    while (map->models) {
-        struct ppc64_model *model = map->models;
-        map->models = model->next;
-        ppc64ModelFree(model);
-    }
+    for (i = 0; i < map->nmodels; i++)
+        ppc64ModelFree(map->models[i]);
+    VIR_FREE(map->models);
 
     for (i = 0; i < map->nvendors; i++)
         ppc64VendorFree(map->vendors[i]);
@@ -417,12 +411,8 @@ ppc64ModelLoad(xmlXPathContextPtr ctxt,
         model->data->pvr[i].mask = pvr;
     }
 
-    if (!map->models) {
-        map->models = model;
-    } else {
-        model->next = map->models;
-        map->models = model;
-    }
+    if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
+        goto ignore;
 
  cleanup:
     ctxt->node = bookmark;
@@ -863,44 +853,33 @@ static int
 ppc64DriverGetModels(char ***models)
 {
     struct ppc64_map *map;
-    struct ppc64_model *model;
-    char *name;
-    size_t nmodels = 0;
+    size_t i;
+    int ret = -1;
 
     if (!(map = ppc64LoadMap()))
         goto error;
 
-    if (models && VIR_ALLOC_N(*models, 0) < 0)
-        goto error;
+    if (models) {
+        if (VIR_ALLOC_N(*models, map->nmodels + 1) < 0)
+            goto error;
 
-    model = map->models;
-    while (model) {
-        if (models) {
-            if (VIR_STRDUP(name, model->name) < 0)
+        for (i = 0; i < map->nmodels; i++) {
+            if (VIR_STRDUP((*models)[i], map->models[i]->name) < 0)
                 goto error;
-
-            if (VIR_APPEND_ELEMENT(*models, nmodels, name) < 0) {
-                VIR_FREE(name);
-                goto error;
-            }
-        } else {
-            nmodels++;
         }
-
-        model = model->next;
     }
+
+    ret = map->nmodels;
 
  cleanup:
     ppc64MapFree(map);
-
-    return nmodels;
+    return ret;
 
  error:
     if (models) {
         virStringFreeList(*models);
         *models = NULL;
     }
-    nmodels = -1;
     goto cleanup;
 }
 
