@@ -19373,10 +19373,19 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
         QEMU_ADD_BLOCK_PARAM_UI(record, maxparams, block_idx, "backingIndex",
                                 backing_idx);
 
-    /* use fallback path if data is not available */
-    if (!stats || !alias || !(entry = virHashLookup(stats, alias))) {
+    /* the VM is offline so we have to go and load the stast from the disk by
+     * ourselves */
+    if (!virDomainObjIsActive(dom)) {
         ret = qemuDomainGetStatsOneBlockFallback(driver, cfg, dom, record,
                                                  maxparams, src, block_idx);
+        goto cleanup;
+    }
+
+    /* In case where qemu didn't provide the stats we stop here rather than
+     * trying to refresh the stats from the disk. Inability to provide stats is
+     * usually caused by blocked storage so this would make libvirtd hang */
+    if (!stats || !alias || !(entry = virHashLookup(stats, alias))) {
+        ret = 0;
         goto cleanup;
     }
 
