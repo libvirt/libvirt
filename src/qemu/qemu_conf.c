@@ -588,6 +588,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     GET_VALUE_STR("spice_sasl_dir", cfg->spiceSASLdir);
     GET_VALUE_STR("spice_listen", cfg->spiceListen);
     GET_VALUE_STR("spice_password", cfg->spicePassword);
+    GET_VALUE_BOOL("spice_auto_unix_socket", cfg->spiceAutoUnixSocket);
 
 
     GET_VALUE_ULONG("remote_websocket_port_min", cfg->webSocketPortMin);

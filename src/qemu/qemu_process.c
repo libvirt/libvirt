@@ -4035,6 +4035,7 @@ qemuProcessGraphicsSetupListen(virQEMUDriverConfigPtr cfg,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        useSocket = cfg->spiceAutoUnixSocket;
         listenAddr = cfg->spiceListen;
         break;
 

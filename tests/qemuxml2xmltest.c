@@ -444,6 +444,10 @@ mymain(void)
     DO_TEST("graphics-spice-qxl-vga");
     DO_TEST("graphics-spice-socket");
     DO_TEST("graphics-spice-auto-socket");
+    cfg->spiceAutoUnixSocket = true;
+    DO_TEST("graphics-spice-auto-socket-cfg");
+    cfg->spiceAutoUnixSocket = false;
+
     DO_TEST("nographics-vga");
     DO_TEST("input-usbmouse");
     DO_TEST("input-usbtablet");

@@ -123,6 +123,7 @@ struct _virQEMUDriverConfig {
     char *spiceSASLdir;
     char *spiceListen;
     char *spicePassword;
+    bool spiceAutoUnixSocket;
 
     int remotePortMin;
     int remotePortMax;

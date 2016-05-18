@@ -14,6 +14,7 @@ module Test_libvirtd_qemu =
 { "spice_listen" = "0.0.0.0" }
 { "spice_tls" = "1" }
 { "spice_tls_x509_cert_dir" = "/etc/pki/libvirt-spice" }
+{ "spice_auto_unix_socket" = "1" }
 { "spice_password" = "XYZ12345" }
 { "spice_sasl" = "1" }
 { "spice_sasl_dir" = "/some/directory/sasl2" }

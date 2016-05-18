@@ -972,6 +972,11 @@ mymain(void)
     DO_TEST("graphics-spice-auto-socket",
             QEMU_CAPS_SPICE,
             QEMU_CAPS_SPICE_UNIX);
+    driver.config->spiceAutoUnixSocket = true;
+    DO_TEST("graphics-spice-auto-socket-cfg",
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_SPICE_UNIX);
+    driver.config->spiceAutoUnixSocket = false;
 
     DO_TEST("input-usbmouse", NONE);
     DO_TEST("input-usbtablet", NONE);
