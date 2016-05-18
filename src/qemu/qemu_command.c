@@ -7392,6 +7392,11 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         break;
 
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+        /* QEMU requires either port or tls-port to be specified if there is no
+         * other argument. Use a dummy port=0. */
+        virBufferAddLit(&opt, "port=0,");
+        hasInsecure = true;
+        break;
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
         break;
     }
@@ -7539,13 +7544,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     virBufferTrim(&opt, ",", -1);
 
     virCommandAddArg(cmd, "-spice");
-    /* If we did not add any SPICE arguments, add a dummy 'port=0' one
-     * as -spice alone is not allowed on QEMU command line
-     */
-    if (virBufferUse(&opt) == 0)
-        virCommandAddArg(cmd, "port=0");
-    else
-        virCommandAddArgBuffer(cmd, &opt);
+    virCommandAddArgBuffer(cmd, &opt);
     if (graphics->data.spice.keymap)
         virCommandAddArgList(cmd, "-k",
                              graphics->data.spice.keymap, NULL);

@@ -5376,6 +5376,17 @@ qemu-kvm -net nic,model=? /dev/null
           attribute all <code>listen</code> elements are ignored.
         </p>
       </dd>
+      <dt><code>none</code> <span class="since">since 1.3.6 (QEMU only)</span></dt>
+      <dd>
+        <p>
+          This listen type doesn't have any other attribute. Libvirt supports
+          passing a file descriptor through our APIs virDomainOpenGraphics() and
+          virDomainOpenGraphicsFD(). No other listen types are allowed if this
+          one is used and the graphics device doesn't listen anywhere. You need
+          to use one of the two APIs to pass a FD to QEMU in order to connect to
+          this graphics device. Supported by graphics type <code>spice</code>.
+        </p>
+      </dd>
     </dl>
 
     <h4><a name="elementsVideo">Video devices</a></h4>

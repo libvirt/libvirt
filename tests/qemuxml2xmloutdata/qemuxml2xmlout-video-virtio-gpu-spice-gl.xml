@@ -29,8 +29,8 @@
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <graphics type='spice' autoport='no'>
-      <listen type='address'/>
+    <graphics type='spice'>
+      <listen type='none'/>
       <gl enable='yes'/>
     </graphics>
     <video>

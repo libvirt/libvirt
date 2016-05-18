@@ -2986,6 +2986,11 @@
               </attribute>
             </optional>
           </group>
+          <group>
+            <attribute name="type">
+              <value>none</value>
+            </attribute>
+          </group>
         </choice>
       </element>
     </zeroOrMore>
