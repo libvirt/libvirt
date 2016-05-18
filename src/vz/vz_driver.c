@@ -2218,7 +2218,8 @@ vzEatCookie(const char *cookiein, int cookieinlen)
     goto cleanup;
 }
 
-#define VZ_MIGRATION_FLAGS      VIR_MIGRATE_PAUSED
+#define VZ_MIGRATION_FLAGS         (VIR_MIGRATE_PAUSED |        \
+                                    VIR_MIGRATE_PEER2PEER)
 
 #define VZ_MIGRATION_PARAMETERS                                 \
     VIR_MIGRATE_PARAM_DEST_XML,         VIR_TYPED_PARAM_STRING, \
@@ -2376,6 +2377,7 @@ vzConnectSupportsFeature(virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
 {
     switch (feature) {
     case VIR_DRV_FEATURE_MIGRATION_PARAMS:
+    case VIR_DRV_FEATURE_MIGRATION_P2P:
         return 1;
     default:
         return 0;
@@ -2419,15 +2421,12 @@ vzParseVzURI(const char *uri_str)
 }
 
 static int
-vzDomainMigratePerform3Params(virDomainPtr domain,
-                              const char *dconnuri ATTRIBUTE_UNUSED,
-                              virTypedParameterPtr params,
-                              int nparams,
-                              const char *cookiein,
-                              int cookieinlen,
-                              char **cookieout ATTRIBUTE_UNUSED,
-                              int *cookieoutlen ATTRIBUTE_UNUSED,
-                              unsigned int flags)
+vzDomainMigratePerformStep(virDomainPtr domain,
+                           virTypedParameterPtr params,
+                           int nparams,
+                           const char *cookiein,
+                           int cookieinlen,
+                           unsigned int flags)
 {
     int ret = -1;
     virDomainObjPtr dom = NULL;
@@ -2478,6 +2477,123 @@ vzDomainMigratePerform3Params(virDomainPtr domain,
     vzMigrationCookieFree(mig);
 
     return ret;
+}
+
+static int
+vzDomainMigratePerformP2P(virDomainPtr domain,
+                          const char *dconnuri,
+                          virTypedParameterPtr orig_params,
+                          int nparams,
+                          unsigned int flags)
+{
+    virDomainPtr ddomain = NULL;
+    char *uri = NULL;
+    char *cookiein = NULL;
+    char *cookieout = NULL;
+    char *dom_xml = NULL;
+    int cookieinlen = 0;
+    int cookieoutlen = 0;
+    virErrorPtr orig_err = NULL;
+    int cancelled = 1;
+    virConnectPtr dconn = NULL;
+    virTypedParameterPtr params = NULL;
+    int ret = -1;
+
+    if (virTypedParamsCopy(&params, orig_params, nparams) < 0)
+        return -1;
+
+    if (!(dconn = virConnectOpen(dconnuri)))
+        goto done;
+
+    if (!(dom_xml = vzDomainMigrateBegin3Params(domain, params, nparams,
+                                                &cookieout, &cookieoutlen,
+                                                flags)))
+        goto done;
+
+    cookiein = cookieout;
+    cookieinlen = cookieoutlen;
+    cookieout = NULL;
+    cookieoutlen = 0;
+    if (dconn->driver->domainMigratePrepare3Params
+            (dconn, params, nparams, cookiein, cookieinlen,
+             &cookieout, &cookieoutlen, &uri, flags) < 0)
+        goto done;
+
+    /* preparation step was successful, thus on any error we must perform
+     * finish step to finalize migration on target
+     */
+    if (uri && virTypedParamsReplaceString(&params, &nparams,
+                                           VIR_MIGRATE_PARAM_URI, uri) < 0) {
+        orig_err = virSaveLastError();
+        goto finish;
+    }
+
+    VIR_FREE(cookiein);
+    cookiein = cookieout;
+    cookieinlen = cookieoutlen;
+    cookieout = NULL;
+    cookieoutlen = 0;
+    if (vzDomainMigratePerformStep(domain, params, nparams, cookiein,
+                                   cookieinlen, flags) < 0) {
+        orig_err = virSaveLastError();
+        goto finish;
+    }
+
+    cancelled = 0;
+
+ finish:
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_MIGRATE_PARAM_DEST_NAME, NULL) <= 0 &&
+        virTypedParamsReplaceString(&params, &nparams,
+                                    VIR_MIGRATE_PARAM_DEST_NAME,
+                                    domain->name) < 0)
+        goto done;
+
+    ddomain = dconn->driver->domainMigrateFinish3Params(dconn, params, nparams,
+                                                        NULL, 0, NULL, NULL,
+                                                        flags, cancelled);
+    if (ddomain)
+        ret = 0;
+    virObjectUnref(ddomain);
+
+    /* confirm step is NOOP thus no need to call it */
+
+ done:
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
+    VIR_FREE(dom_xml);
+    VIR_FREE(uri);
+    VIR_FREE(cookiein);
+    VIR_FREE(cookieout);
+    virTypedParamsFree(params, nparams);
+    virObjectUnref(dconn);
+    return ret;
+}
+
+static int
+vzDomainMigratePerform3Params(virDomainPtr domain,
+                              const char *dconnuri,
+                              virTypedParameterPtr params,
+                              int nparams,
+                              const char *cookiein,
+                              int cookieinlen,
+                              char **cookieout ATTRIBUTE_UNUSED,
+                              int *cookieoutlen ATTRIBUTE_UNUSED,
+                              unsigned int flags)
+{
+    virCheckFlags(VZ_MIGRATION_FLAGS, -1);
+
+    if (virTypedParamsValidate(params, nparams, VZ_MIGRATION_PARAMETERS) < 0)
+        return -1;
+
+    if (flags & VIR_MIGRATE_PEER2PEER)
+        return vzDomainMigratePerformP2P(domain, dconnuri, params, nparams, flags);
+    else
+        return vzDomainMigratePerformStep(domain, params, nparams,
+                                          cookiein, cookieinlen, flags);
+
 }
 
 static virDomainPtr
