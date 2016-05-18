@@ -97,8 +97,6 @@ struct _virCPUx86Model {
     char *name;
     virCPUx86VendorPtr vendor;
     virCPUx86Data *data;
-
-    virCPUx86ModelPtr next;
 };
 
 typedef struct _virCPUx86Map virCPUx86Map;
@@ -106,7 +104,8 @@ typedef virCPUx86Map *virCPUx86MapPtr;
 struct _virCPUx86Map {
     virCPUx86VendorPtr vendors;
     virCPUx86FeaturePtr features;
-    virCPUx86ModelPtr models;
+    size_t nmodels;
+    virCPUx86ModelPtr *models;
     virCPUx86FeaturePtr migrate_blockers;
 };
 
@@ -859,14 +858,11 @@ static virCPUx86ModelPtr
 x86ModelFind(virCPUx86MapPtr map,
              const char *name)
 {
-    virCPUx86ModelPtr model;
+    size_t i;
 
-    model = map->models;
-    while (model) {
-        if (STREQ(model->name, name))
-            return model;
-
-        model = model->next;
+    for (i = 0; i < map->nmodels; i++) {
+        if (STREQ(map->models[i]->name, name))
+            return map->models[i];
     }
 
     return NULL;
@@ -1094,9 +1090,8 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
             goto cleanup;
     }
 
-    model->next = map->models;
-    map->models = model;
-    model = NULL;
+    if (VIR_APPEND_ELEMENT(map->models, map->nmodels, model) < 0)
+        goto cleanup;
 
     ret = 0;
 
@@ -1111,6 +1106,8 @@ x86ModelLoad(xmlXPathContextPtr ctxt,
 static void
 x86MapFree(virCPUx86MapPtr map)
 {
+    size_t i;
+
     if (!map)
         return;
 
@@ -1120,11 +1117,9 @@ x86MapFree(virCPUx86MapPtr map)
         x86FeatureFree(feature);
     }
 
-    while (map->models) {
-        virCPUx86ModelPtr model = map->models;
-        map->models = model->next;
-        x86ModelFree(model);
-    }
+    for (i = 0; i < map->nmodels; i++)
+        x86ModelFree(map->models[i]);
+    VIR_FREE(map->models);
 
     while (map->vendors) {
         virCPUx86VendorPtr vendor = map->vendors;
@@ -1592,7 +1587,7 @@ x86Decode(virCPUDefPtr cpu,
     virCPUx86Data *features = NULL;
     const virCPUx86Data *cpuData = NULL;
     virCPUx86VendorPtr vendor;
-    size_t i;
+    ssize_t i;
     int rc;
 
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
@@ -1603,7 +1598,11 @@ x86Decode(virCPUDefPtr cpu,
 
     vendor = x86DataToVendor(data, map);
 
-    for (candidate = map->models; candidate; candidate = candidate->next) {
+    /* Walk through the CPU models in reverse order to check newest
+     * models first.
+     */
+    for (i = map->nmodels - 1; i >= 0; i--) {
+        candidate = map->models[i];
         if (!cpuModelIsAllowed(candidate->name, models, nmodels)) {
             if (preferred && STREQ(candidate->name, preferred)) {
                 if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
@@ -2211,34 +2210,22 @@ static int
 x86GetModels(char ***models)
 {
     virCPUx86MapPtr map;
-    virCPUx86ModelPtr model;
-    char *name;
-    size_t nmodels = 0;
+    size_t i;
 
     if (!(map = virCPUx86GetMap()))
         return -1;
 
-    if (models && VIR_ALLOC_N(*models, 0) < 0)
-        goto error;
+    if (models) {
+        if (VIR_ALLOC_N(*models, map->nmodels + 1) < 0)
+            goto error;
 
-    model = map->models;
-    while (model) {
-        if (models) {
-            if (VIR_STRDUP(name, model->name) < 0)
+        for (i = 0; i < map->nmodels; i++) {
+            if (VIR_STRDUP((*models)[i], map->models[i]->name) < 0)
                 goto error;
-
-            if (VIR_APPEND_ELEMENT(*models, nmodels, name) < 0) {
-                VIR_FREE(name);
-                goto error;
-            }
-        } else {
-            nmodels++;
         }
-
-        model = model->next;
     }
 
-    return nmodels;
+    return map->nmodels;
 
  error:
     if (models) {
