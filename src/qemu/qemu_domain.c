@@ -835,6 +835,26 @@ qemuDomainSecretPlainSetup(virConnectPtr conn,
 }
 
 
+/* qemuDomainSecretSetup:
+ * @conn: Pointer to connection
+ * @secinfo: Pointer to secret info
+ * @protocol: Protocol for secret
+ * @authdef: Pointer to auth data
+ *
+ * A shim to call plain setup.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+static int
+qemuDomainSecretSetup(virConnectPtr conn,
+                      qemuDomainSecretInfoPtr secinfo,
+                      virStorageNetProtocol protocol,
+                      virStorageAuthDefPtr authdef)
+{
+    return qemuDomainSecretPlainSetup(conn, secinfo, protocol, authdef);
+}
+
+
 /* qemuDomainSecretDiskDestroy:
  * @disk: Pointer to a disk definition
  *
@@ -880,8 +900,8 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
         if (VIR_ALLOC(secinfo) < 0)
             return -1;
 
-        if (qemuDomainSecretPlainSetup(conn, secinfo, src->protocol,
-                                       src->auth) < 0)
+        if (qemuDomainSecretSetup(conn, secinfo, src->protocol,
+                                  src->auth) < 0)
             goto error;
 
         diskPriv->secinfo = secinfo;
@@ -945,9 +965,9 @@ qemuDomainSecretHostdevPrepare(virConnectPtr conn,
             if (VIR_ALLOC(secinfo) < 0)
                 return -1;
 
-            if (qemuDomainSecretPlainSetup(conn, secinfo,
-                                           VIR_STORAGE_NET_PROTOCOL_ISCSI,
-                                           iscsisrc->auth) < 0)
+            if (qemuDomainSecretSetup(conn, secinfo,
+                                      VIR_STORAGE_NET_PROTOCOL_ISCSI,
+                                      iscsisrc->auth) < 0)
                 goto error;
 
             hostdevPriv->secinfo = secinfo;
