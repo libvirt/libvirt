@@ -37,6 +37,9 @@
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 #define JOB_INFINIT_WAIT_TIMEOUT UINT_MAX
 
+static int
+prlsdkUUIDParse(const char *uuidstr, unsigned char *uuid);
+
 VIR_LOG_INIT("parallels.sdk");
 
 /*
@@ -268,24 +271,43 @@ prlsdkDeinit(void)
 int
 prlsdkConnect(vzDriverPtr driver)
 {
-    PRL_RESULT ret;
+    int ret = -1;
+    PRL_RESULT pret;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
+    PRL_HANDLE result = PRL_INVALID_HANDLE;
+    PRL_HANDLE response = PRL_INVALID_HANDLE;
+    char session_uuid[VIR_UUID_STRING_BUFLEN + 2];
 
-    ret = PrlSrv_Create(&driver->server);
-    if (PRL_FAILED(ret)) {
-        logPrlError(ret);
-        return -1;
-    }
+    pret = PrlSrv_Create(&driver->server);
+    prlsdkCheckRetExit(pret, -1);
 
     job = PrlSrv_LoginLocalEx(driver->server, NULL, 0,
                               PSL_HIGH_SECURITY, PACF_NON_INTERACTIVE_MODE);
+    if (PRL_FAILED(getJobResult(job, &result)))
+        goto cleanup;
 
-    if (waitJob(job)) {
+    pret = PrlResult_GetParam(result, &response);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = prlsdkGetStringParamBuf(PrlLoginResponse_GetSessionUuid,
+                                   response, session_uuid, sizeof(session_uuid));
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    if (prlsdkUUIDParse(session_uuid, driver->session_uuid) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (ret < 0) {
         PrlHandle_Free(driver->server);
-        return -1;
+        driver->server = PRL_INVALID_HANDLE;
     }
 
-    return 0;
+    PrlHandle_Free(result);
+    PrlHandle_Free(response);
+
+    return ret;
 }
 
 void

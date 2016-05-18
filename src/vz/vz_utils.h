@@ -66,7 +66,7 @@ struct _vzDriver {
 
     /* Immutable pointer, self-locking APIs */
     virDomainObjListPtr domains;
-
+    unsigned char session_uuid[VIR_UUID_BUFLEN];
     PRL_HANDLE server;
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
