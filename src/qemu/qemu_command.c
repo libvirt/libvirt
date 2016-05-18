@@ -7358,16 +7358,15 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     virDomainGraphicsListenDefPtr glisten = NULL;
-    const char *listenAddr = NULL;
-    char *netAddr = NULL;
     bool escapeAddr;
-    int ret;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("vnc graphics are not supported with this QEMU"));
         goto error;
     }
+
+    glisten = virDomainGraphicsGetListen(graphics, 0);
 
     if (graphics->data.vnc.socket || cfg->vncAutoUnixSocket) {
         if (!graphics->data.vnc.socket) {
@@ -7390,52 +7389,15 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
             goto error;
         }
 
-        if ((glisten = virDomainGraphicsGetListen(graphics, 0))) {
-
-            switch (glisten->type) {
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-                listenAddr = glisten->address;
-                break;
-
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-                if (!glisten->network)
-                    break;
-
-                ret = networkGetNetworkAddress(glisten->network, &netAddr);
-                if (ret <= -2) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   "%s", _("network-based listen not possible, "
-                                           "network driver not present"));
-                    goto error;
-                }
-                if (ret < 0)
-                    goto error;
-
-                listenAddr = netAddr;
-                /* store the address we found in the <graphics> element so it
-                 * will show up in status. */
-                if (VIR_STRDUP(glisten->address, netAddr) < 0)
-                    goto error;
-                break;
-
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
-                break;
-            }
+        if (glisten && glisten->address) {
+            escapeAddr = strchr(glisten->address, ':') != NULL;
+            if (escapeAddr)
+                virBufferAsprintf(&opt, "[%s]", glisten->address);
+            else
+                virBufferAdd(&opt, glisten->address, -1);
         }
-
-        if (!listenAddr)
-            listenAddr = cfg->vncListen;
-
-        escapeAddr = strchr(listenAddr, ':') != NULL;
-        if (escapeAddr)
-            virBufferAsprintf(&opt, "[%s]", listenAddr);
-        else
-            virBufferAdd(&opt, listenAddr, -1);
         virBufferAsprintf(&opt, ":%d",
                           graphics->data.vnc.port - 5900);
-
-        VIR_FREE(netAddr);
     }
 
     if (!graphics->data.vnc.socket &&
@@ -7499,7 +7461,6 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
     return 0;
 
  error:
-    VIR_FREE(netAddr);
     virBufferFreeAndReset(&opt);
     return -1;
 }
@@ -7513,9 +7474,6 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     virDomainGraphicsListenDefPtr glisten = NULL;
-    const char *listenAddr = NULL;
-    char *netAddr = NULL;
-    int ret;
     int defaultMode = graphics->data.spice.defaultMode;
     int port = graphics->data.spice.port;
     int tlsPort = graphics->data.spice.tlsPort;
@@ -7526,6 +7484,8 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
                        _("spice graphics are not supported with this QEMU"));
         goto error;
     }
+
+    glisten = virDomainGraphicsGetListen(graphics, 0);
 
     if (port > 0)
         virBufferAsprintf(&opt, "port=%u,", port);
@@ -7541,46 +7501,8 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     }
 
     if (port > 0 || tlsPort > 0) {
-        if ((glisten = virDomainGraphicsGetListen(graphics, 0))) {
-
-            switch (glisten->type) {
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-                listenAddr = glisten->address;
-                break;
-
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-                if (!glisten->network)
-                    break;
-
-                ret = networkGetNetworkAddress(glisten->network, &netAddr);
-                if (ret <= -2) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   "%s", _("network-based listen not possible, "
-                                           "network driver not present"));
-                    goto error;
-                }
-                if (ret < 0)
-                    goto error;
-
-                listenAddr = netAddr;
-                /* store the address we found in the <graphics> element so it will
-                 * show up in status. */
-                if (VIR_STRDUP(glisten->address, listenAddr) < 0)
-                    goto error;
-                break;
-
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
-                break;
-            }
-        }
-
-        if (!listenAddr)
-            listenAddr = cfg->spiceListen;
-        if (listenAddr)
-            virBufferAsprintf(&opt, "addr=%s,", listenAddr);
-
-        VIR_FREE(netAddr);
+        if (glisten && glisten->address)
+            virBufferAsprintf(&opt, "addr=%s,", glisten->address);
     }
 
     if (cfg->spiceSASL) {
@@ -7749,7 +7671,6 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     return 0;
 
  error:
-    VIR_FREE(netAddr);
     virBufferFreeAndReset(&opt);
     return -1;
 }

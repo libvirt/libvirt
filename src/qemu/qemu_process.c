@@ -3991,6 +3991,33 @@ qemuProcessGraphicsReservePorts(virQEMUDriverPtr driver,
 
 
 static int
+qemuProcessGraphicsSetupNetworkAddress(virDomainGraphicsListenDefPtr glisten,
+                                       const char *listenAddr)
+{
+    int rc;
+
+    /* TODO: reject configuration without network specified for network listen */
+    if (!glisten->network) {
+        if (VIR_STRDUP(glisten->address, listenAddr) < 0)
+            return -1;
+        return 0;
+    }
+
+    rc = networkGetNetworkAddress(glisten->network, &glisten->address);
+    if (rc <= -2) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("network-based listen isn't possible, "
+                         "network driver isn't present"));
+        return -1;
+    }
+    if (rc < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 qemuProcessSetupGraphics(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          unsigned int flags)
@@ -4032,12 +4059,29 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
         for (j = 0; j < graphics->nListens; j++) {
             virDomainGraphicsListenDefPtr glisten = &graphics->listens[j];
 
-            if (glisten->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS &&
-                !glisten->address && listenAddr) {
+            switch (glisten->type) {
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+                if (glisten->address || !listenAddr)
+                    continue;
+
                 if (VIR_STRDUP(glisten->address, listenAddr) < 0)
                     goto cleanup;
 
                 glisten->fromConfig = true;
+                break;
+
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+                if (glisten->address || !listenAddr)
+                    continue;
+
+                if (qemuProcessGraphicsSetupNetworkAddress(glisten,
+                                                           listenAddr) < 0)
+                    goto cleanup;
+                break;
+
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+                break;
             }
         }
     }
