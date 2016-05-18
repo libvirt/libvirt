@@ -61,6 +61,9 @@ struct _vzCapabilities {
 typedef struct _vzCapabilities vzCapabilities;
 typedef struct _vzCapabilities *vzCapabilitiesPtr;
 
+/* +2 to keep enclosing { and } */
+# define VIR_UUID_STRING_BRACED_BUFLEN (VIR_UUID_STRING_BUFLEN + 2)
+
 struct _vzDriver {
     virObjectLockable parent;
 

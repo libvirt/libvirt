@@ -276,7 +276,7 @@ prlsdkConnect(vzDriverPtr driver)
     PRL_HANDLE job = PRL_INVALID_HANDLE;
     PRL_HANDLE result = PRL_INVALID_HANDLE;
     PRL_HANDLE response = PRL_INVALID_HANDLE;
-    char session_uuid[VIR_UUID_STRING_BUFLEN + 2];
+    char session_uuid[VIR_UUID_STRING_BRACED_BUFLEN];
 
     pret = PrlSrv_Create(&driver->server);
     prlsdkCheckRetExit(pret, -1);
@@ -359,7 +359,7 @@ prlsdkUUIDFormat(const unsigned char *uuid, char *uuidstr)
 static PRL_HANDLE
 prlsdkSdkDomainLookupByUUID(vzDriverPtr driver, const unsigned char *uuid)
 {
-    char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
+    char uuidstr[VIR_UUID_STRING_BRACED_BUFLEN];
     PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
 
     prlsdkUUIDFormat(uuid, uuidstr);
@@ -404,7 +404,7 @@ prlsdkGetDomainIds(PRL_HANDLE sdkdom,
                    char **name,
                    unsigned char *uuid)
 {
-    char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
+    char uuidstr[VIR_UUID_STRING_BRACED_BUFLEN];
     PRL_RESULT pret;
 
     if (name && !(*name = prlsdkGetStringParamVar(PrlVmCfg_GetName, sdkdom)))
@@ -1893,7 +1893,7 @@ prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
     vzDriverPtr driver = opaque;
     PRL_RESULT pret = PRL_ERR_FAILURE;
     PRL_HANDLE_TYPE handleType;
-    char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
+    char uuidstr[VIR_UUID_STRING_BRACED_BUFLEN];
     unsigned char uuid[VIR_UUID_BUFLEN];
     PRL_EVENT_TYPE prlEventType;
 
@@ -3572,7 +3572,7 @@ prlsdkDoApplyConfig(vzDriverPtr driver,
 {
     PRL_RESULT pret;
     size_t i;
-    char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
+    char uuidstr[VIR_UUID_STRING_BRACED_BUFLEN];
     char *mask = NULL;
 
     if (prlsdkCheckUnsupportedParams(sdkdom, def) < 0)
@@ -4479,7 +4479,7 @@ int prlsdkMigrate(virDomainObjPtr dom, virURIPtr uri,
     int ret = -1;
     vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
-    char uuidstr[VIR_UUID_STRING_BUFLEN + 2];
+    char uuidstr[VIR_UUID_STRING_BRACED_BUFLEN];
     PRL_UINT32 vzflags = PRLSDK_MIGRATION_FLAGS;
 
     if (flags & VIR_MIGRATE_PAUSED)
