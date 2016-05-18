@@ -1178,6 +1178,7 @@ virtestmock_la_CFLAGS = $(AM_CFLAGS)
 virtestmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virtestmock_la_LIBADD = \
 	$(MOCKLIBS_LIBS) \
+	$(PROBES_O) \
 	../src/libvirt_util.la
 else ! WITH_LINUX
 	EXTRA_DIST += virusbtest.c virusbmock.c \
