@@ -4018,13 +4018,69 @@ qemuProcessGraphicsSetupNetworkAddress(virDomainGraphicsListenDefPtr glisten,
 
 
 static int
+qemuProcessGraphicsSetupListen(virQEMUDriverConfigPtr cfg,
+                               virDomainGraphicsDefPtr graphics)
+{
+    char *listenAddr = NULL;
+    size_t i;
+
+    switch (graphics->type) {
+    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        listenAddr = cfg->vncListen;
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        listenAddr = cfg->spiceListen;
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+        break;
+    }
+
+    for (i = 0; i < graphics->nListens; i++) {
+        virDomainGraphicsListenDefPtr glisten = &graphics->listens[i];
+
+        switch (glisten->type) {
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+            if (glisten->address || !listenAddr)
+                continue;
+
+            if (VIR_STRDUP(glisten->address, listenAddr) < 0)
+                return -1;
+
+            glisten->fromConfig = true;
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+            if (glisten->address || !listenAddr)
+                continue;
+
+            if (qemuProcessGraphicsSetupNetworkAddress(glisten,
+                                                       listenAddr) < 0)
+                return -1;
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuProcessSetupGraphics(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          unsigned int flags)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     bool allocate = !(flags & VIR_QEMU_PROCESS_START_PRETEND);
-    size_t i, j;
+    size_t i;
     int ret = -1;
 
     if (allocate && qemuProcessGraphicsReservePorts(driver, vm) < 0)
@@ -4032,21 +4088,16 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
-        char *listenAddr = NULL;
 
         switch (graphics->type) {
         case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
             if (qemuProcessVNCAllocatePorts(driver, graphics, allocate) < 0)
                 goto cleanup;
-
-            listenAddr = cfg->vncListen;
             break;
 
         case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
             if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics, allocate) < 0)
                 goto cleanup;
-
-            listenAddr = cfg->spiceListen;
             break;
 
         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
@@ -4056,34 +4107,8 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
             break;
         }
 
-        for (j = 0; j < graphics->nListens; j++) {
-            virDomainGraphicsListenDefPtr glisten = &graphics->listens[j];
-
-            switch (glisten->type) {
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-                if (glisten->address || !listenAddr)
-                    continue;
-
-                if (VIR_STRDUP(glisten->address, listenAddr) < 0)
-                    goto cleanup;
-
-                glisten->fromConfig = true;
-                break;
-
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
-                if (glisten->address || !listenAddr)
-                    continue;
-
-                if (qemuProcessGraphicsSetupNetworkAddress(glisten,
-                                                           listenAddr) < 0)
-                    goto cleanup;
-                break;
-
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
-            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
-                break;
-            }
-        }
+        if (qemuProcessGraphicsSetupListen(cfg, graphics) < 0)
+            goto cleanup;
     }
 
     ret = 0;
