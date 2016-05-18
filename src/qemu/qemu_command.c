@@ -7474,10 +7474,11 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     virDomainGraphicsListenDefPtr glisten = NULL;
-    int defaultMode = graphics->data.spice.defaultMode;
     int port = graphics->data.spice.port;
     int tlsPort = graphics->data.spice.tlsPort;
     size_t i;
+    bool hasSecure = false;
+    bool hasInsecure = false;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -7487,8 +7488,10 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
 
     glisten = virDomainGraphicsGetListen(graphics, 0);
 
-    if (port > 0)
+    if (port > 0) {
         virBufferAsprintf(&opt, "port=%u,", port);
+        hasInsecure = true;
+    }
 
     if (tlsPort > 0) {
         if (!cfg->spiceTLS) {
@@ -7498,6 +7501,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
             goto error;
         }
         virBufferAsprintf(&opt, "tls-port=%u,", tlsPort);
+        hasSecure = true;
     }
 
     if (port > 0 || tlsPort > 0) {
@@ -7535,17 +7539,32 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         !cfg->spicePassword)
         virBufferAddLit(&opt, "disable-ticketing,");
 
-    if (tlsPort > 0)
+    if (hasSecure)
         virBufferAsprintf(&opt, "x509-dir=%s,", cfg->spiceTLSx509certdir);
 
-    switch (defaultMode) {
+    switch (graphics->data.spice.defaultMode) {
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
+        if (!hasSecure) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("spice defaultMode secure requested in XML "
+                             "configuration, but TLS connection is not "
+                             "available"));
+            goto error;
+        }
         virBufferAddLit(&opt, "tls-channel=default,");
         break;
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
+        if (!hasInsecure) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("spice defaultMode insecure requested in XML "
+                             "configuration, but plaintext connection is not "
+                             "available"));
+            goto error;
+        }
         virBufferAddLit(&opt, "plaintext-channel=default,");
         break;
     case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
+    case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_LAST:
         /* nothing */
         break;
     }
@@ -7553,10 +7572,11 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
     for (i = 0; i < VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_LAST; i++) {
         switch (graphics->data.spice.channels[i]) {
         case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
-            if (tlsPort <= 0) {
+            if (!hasSecure) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("spice secure channels set in XML configuration, "
-                                 "but TLS port is not provided"));
+                               _("spice secure channels set in XML "
+                                 "configuration, but TLS connection is not "
+                                 "available"));
                 goto error;
             }
             virBufferAsprintf(&opt, "tls-channel=%s,",
@@ -7564,10 +7584,11 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
             break;
 
         case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
-            if (port <= 0) {
+            if (!hasInsecure) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("spice insecure channels set in XML "
-                                 "configuration, but plain port is not provided"));
+                                 "configuration, but plaintext connection "
+                                 "is not available"));
                 goto error;
             }
             virBufferAsprintf(&opt, "plaintext-channel=%s,",
@@ -7575,29 +7596,7 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
             break;
 
         case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
-            switch (defaultMode) {
-            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_SECURE:
-                if (tlsPort <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("spice defaultMode secure requested in XML "
-                                     "configuration but TLS port not provided"));
-                    goto error;
-                }
-                break;
-
-            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_INSECURE:
-                if (port <= 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("spice defaultMode insecure requested in XML "
-                                     "configuration but plain port not provided"));
-                    goto error;
-                }
-                break;
-
-            case VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY:
-                /* don't care */
             break;
-            }
         }
     }
 
