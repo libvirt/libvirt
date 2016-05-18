@@ -160,7 +160,7 @@ vzGetOutput(const char *binary, ...)
 }
 
 virDomainObjPtr
-vzNewDomain(vzDriverPtr driver, char *name, const unsigned char *uuid)
+vzNewDomain(vzDriverPtr driver, const char *name, const unsigned char *uuid)
 {
     virDomainDefPtr def = NULL;
     virDomainObjPtr dom = NULL;
