@@ -19321,7 +19321,6 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
                            virStorageSourcePtr src,
                            size_t block_idx,
                            unsigned int backing_idx,
-                           bool abbreviated,
                            virHashTablePtr stats)
 {
     qemuBlockStats *entry;
@@ -19340,7 +19339,7 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
         QEMU_ADD_BLOCK_PARAM_UI(record, maxparams, block_idx, "backingIndex",
                                 backing_idx);
 
-    if (abbreviated || !alias || !(entry = virHashLookup(stats, alias))) {
+    if (!stats || !alias || !(entry = virHashLookup(stats, alias))) {
         if (virStorageSourceIsEmpty(src)) {
             ret = 0;
             goto cleanup;
@@ -19417,15 +19416,12 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     int rc;
     virHashTablePtr stats = NULL;
     qemuDomainObjPrivatePtr priv = dom->privateData;
-    bool abbreviated = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int count_index = -1;
     size_t visited = 0;
     bool visitBacking = !!(privflags & QEMU_DOMAIN_STATS_BACKING);
 
-    if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom)) {
-        abbreviated = true; /* it's ok, just go ahead silently */
-    } else {
+    if (HAVE_JOB(privflags) && virDomainObjIsActive(dom)) {
         qemuDomainObjEnterMonitor(driver, dom);
         rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats,
                                              visitBacking);
@@ -19435,10 +19431,9 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
         if (qemuDomainObjExitMonitor(driver, dom) < 0)
             goto cleanup;
 
-        if (rc < 0) {
+        /* failure to retrieve stats is fine at this point */
+        if (rc < 0)
             virResetLastError();
-            abbreviated = true; /* still ok, again go ahead silently */
-        }
     }
 
     /* When listing backing chains, it's easier to fix up the count
@@ -19455,7 +19450,7 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
         while (src && (backing_idx == 0 || visitBacking)) {
             if (qemuDomainGetStatsOneBlock(driver, cfg, dom, record, maxparams,
                                            disk, src, visited, backing_idx,
-                                           abbreviated, stats) < 0)
+                                           stats) < 0)
                 goto cleanup;
             visited++;
             backing_idx++;
