@@ -104,6 +104,7 @@ libxlDriverConfigDispose(void *obj)
     VIR_FREE(cfg->saveDir);
     VIR_FREE(cfg->autoDumpDir);
     VIR_FREE(cfg->lockManagerName);
+    virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
 }
 
 
@@ -1776,6 +1777,33 @@ libxlDriverConfigNew(void)
         VIR_ERROR(_("Unable to configure libxl's memory management parameters"));
         goto error;
     }
+
+#ifdef DEFAULT_LOADER_NVRAM
+    if (virFirmwareParseList(DEFAULT_LOADER_NVRAM,
+                             &cfg->firmwares,
+                             &cfg->nfirmwares) < 0)
+        goto error;
+
+#else
+    if (VIR_ALLOC_N(cfg->firmwares, 1) < 0)
+        goto error;
+    cfg->nfirmwares = 1;
+    if (VIR_ALLOC(cfg->firmwares[0]) < 0)
+        goto error;
+    if (VIR_STRDUP(cfg->firmwares[0]->name,
+                   LIBXL_FIRMWARE_DIR "/ovmf.bin") < 0)
+        goto error;
+#endif
+
+    /* Always add hvmloader to firmwares */
+    if (VIR_REALLOC_N(cfg->firmwares, cfg->nfirmwares + 1) < 0)
+        goto error;
+    cfg->nfirmwares++;
+    if (VIR_ALLOC(cfg->firmwares[cfg->nfirmwares - 1]) < 0)
+        goto error;
+    if (VIR_STRDUP(cfg->firmwares[cfg->nfirmwares - 1]->name,
+                   LIBXL_FIRMWARE_DIR "/hvmloader") < 0)
+        goto error;
 
     return cfg;
 

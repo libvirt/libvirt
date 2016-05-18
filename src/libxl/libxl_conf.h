@@ -39,6 +39,7 @@
 # include "virchrdev.h"
 # include "virhostdev.h"
 # include "locking/lock_manager.h"
+# include "virfirmware.h"
 
 # define LIBXL_DRIVER_NAME "xenlight"
 # define LIBXL_VNC_PORT_MIN  5900
@@ -107,6 +108,9 @@ struct _libxlDriverConfig {
     char *libDir;
     char *saveDir;
     char *autoDumpDir;
+
+    virFirmwarePtr *firmwares;
+    size_t nfirmwares;
 };
 
 
