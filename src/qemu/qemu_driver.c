@@ -19310,6 +19310,40 @@ do { \
         goto cleanup; \
 } while (0)
 
+/* refresh information by opening images on the disk */
+static int
+qemuDomainGetStatsOneBlockFallback(virQEMUDriverPtr driver,
+                                   virQEMUDriverConfigPtr cfg,
+                                   virDomainObjPtr dom,
+                                   virDomainStatsRecordPtr record,
+                                   int *maxparams,
+                                   virStorageSourcePtr src,
+                                   size_t block_idx)
+{
+    int ret = -1;
+
+    if (virStorageSourceIsEmpty(src))
+        return 0;
+
+    if (qemuStorageLimitsRefresh(driver, cfg, dom, src) < 0) {
+        virResetLastError();
+        return 0;
+    }
+
+    if (src->allocation)
+        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+                                 "allocation", src->allocation);
+    if (src->capacity)
+        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+                                 "capacity", src->capacity);
+    if (src->physical)
+        QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+                                 "physical", src->physical);
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
 
 static int
 qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
@@ -19339,28 +19373,10 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
         QEMU_ADD_BLOCK_PARAM_UI(record, maxparams, block_idx, "backingIndex",
                                 backing_idx);
 
+    /* use fallback path if data is not available */
     if (!stats || !alias || !(entry = virHashLookup(stats, alias))) {
-        if (virStorageSourceIsEmpty(src)) {
-            ret = 0;
-            goto cleanup;
-        }
-
-        if (qemuStorageLimitsRefresh(driver, cfg, dom, src) < 0) {
-            virResetLastError();
-            ret = 0;
-            goto cleanup;
-        }
-
-        if (src->allocation)
-            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
-                                     "allocation", src->allocation);
-        if (src->capacity)
-            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
-                                     "capacity", src->capacity);
-        if (src->physical)
-            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
-                                     "physical", src->physical);
-        ret = 0;
+        ret = qemuDomainGetStatsOneBlockFallback(driver, cfg, dom, record,
+                                                 maxparams, src, block_idx);
         goto cleanup;
     }
 
