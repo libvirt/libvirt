@@ -21,9 +21,11 @@
 #include <config.h>
 
 #include "vircrypto.h"
+#include "virrandom.h"
 
 #include "testutils.h"
 
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 struct testCryptoHashData {
     virCryptoHash hash;
@@ -56,10 +58,74 @@ testCryptoHash(const void *opaque)
 }
 
 
+struct testCryptoEncryptData {
+    virCryptoCipher algorithm;
+    uint8_t *input;
+    size_t inputlen;
+    uint8_t *ciphertext;
+    size_t ciphertextlen;
+};
+
+static int
+testCryptoEncrypt(const void *opaque)
+{
+    const struct testCryptoEncryptData *data = opaque;
+    uint8_t *enckey = NULL;
+    size_t enckeylen = 32;
+    uint8_t *iv = NULL;
+    size_t ivlen = 16;
+    uint8_t *ciphertext = NULL;
+    size_t ciphertextlen = 0;
+    int ret = -1;
+
+    if (!virCryptoHaveCipher(data->algorithm)) {
+        fprintf(stderr, "cipher algorithm=%d unavailable\n", data->algorithm);
+        return EXIT_AM_SKIP;
+    }
+
+    if (VIR_ALLOC_N(enckey, enckeylen) < 0 ||
+        VIR_ALLOC_N(iv, ivlen) < 0)
+        goto cleanup;
+
+    if (virRandomBytes(enckey, enckeylen) < 0 ||
+        virRandomBytes(iv, ivlen) < 0)
+        goto cleanup;
+
+    if (virCryptoEncryptData(data->algorithm, enckey, enckeylen, iv, ivlen,
+                             data->input, data->inputlen,
+                             &ciphertext, &ciphertextlen) < 0)
+        goto cleanup;
+
+    if (data->ciphertextlen != ciphertextlen) {
+        fprintf(stderr, "Expected ciphertextlen(%zu) doesn't match (%zu)\n",
+                data->ciphertextlen, ciphertextlen);
+        goto cleanup;
+    }
+
+    if (memcmp(data->ciphertext, ciphertext, ciphertextlen)) {
+        fprintf(stderr, "Expected ciphertext doesn't match\n");
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(enckey);
+    VIR_FREE(iv);
+    VIR_FREE(ciphertext);
+
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
     int ret = 0;
+    uint8_t secretdata[8];
+    uint8_t expected_ciphertext[16] = {0x48, 0x8e, 0x9, 0xb9,
+                                       0x6a, 0xa6, 0x24, 0x5f,
+                                       0x1b, 0x8c, 0x3f, 0x48,
+                                       0x27, 0xae, 0xb6, 0x7a};
 
 #define VIR_CRYPTO_HASH(h, i, o)                \
     do {                                        \
@@ -84,7 +150,31 @@ mymain(void)
     VIR_CRYPTO_HASH(VIR_CRYPTO_HASH_MD5, "The quick brown fox", "a2004f37730b9445670a738fa0fc9ee5");
     VIR_CRYPTO_HASH(VIR_CRYPTO_HASH_SHA256, "The quick brown fox", "5cac4f980fedc3d3f1f99b4be3472c9b30d56523e632d151237ec9309048bda9");
 
+#undef VIR_CRYPTO_HASH
+
+#define VIR_CRYPTO_ENCRYPT(a, n, i, il, c, cl)   \
+    do {                                         \
+        struct testCryptoEncryptData data = {    \
+            .algorithm = a,                      \
+            .input = i,                          \
+            .inputlen = il,                      \
+            .ciphertext = c,                     \
+            .ciphertextlen = cl,                 \
+        };                                       \
+        if (virtTestRun("Encrypt " n, testCryptoEncrypt, &data) < 0) \
+            ret = -1;                                                \
+    } while (0)
+
+    memset(&secretdata, 0, 8);
+    memcpy(&secretdata, "letmein", 7);
+
+    VIR_CRYPTO_ENCRYPT(VIR_CRYPTO_CIPHER_AES256CBC, "aes265cbc",
+                       secretdata, 7, expected_ciphertext, 16);
+
+#undef VIR_CRYPTO_ENCRYPT
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN(mymain)
+/* Forces usage of not so random virRandomBytes */
+VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virrandommock.so")

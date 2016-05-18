@@ -1394,7 +1394,9 @@ virConfWriteMem;
 
 
 # util/vircrypto.h
+virCryptoEncryptData;
 virCryptoHashString;
+virCryptoHaveCipher;
 
 
 # util/virdbus.h

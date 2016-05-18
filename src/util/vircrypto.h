@@ -1,7 +1,7 @@
 /*
  * vircrypto.h: cryptographic helper APIs
  *
- * Copyright (C) 2014 Red Hat, Inc.
+ * Copyright (C) 2014, 2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,11 +30,29 @@ typedef enum {
     VIR_CRYPTO_HASH_LAST
 } virCryptoHash;
 
+
+typedef enum {
+    VIR_CRYPTO_CIPHER_NONE = 0,
+    VIR_CRYPTO_CIPHER_AES256CBC,
+
+    VIR_CRYPTO_CIPHER_LAST
+} virCryptoCipher;
+
 int
 virCryptoHashString(virCryptoHash hash,
                     const char *input,
                     char **output)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;
+
+bool virCryptoHaveCipher(virCryptoCipher algorithm);
+
+int virCryptoEncryptData(virCryptoCipher algorithm,
+                         uint8_t *enckey, size_t enckeylen,
+                         uint8_t *iv, size_t ivlen,
+                         uint8_t *data, size_t datalen,
+                         uint8_t **ciphertext, size_t *ciphertextlen)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(6)
+    ATTRIBUTE_NONNULL(8) ATTRIBUTE_NONNULL(9) ATTRIBUTE_RETURN_CHECK;
 
 #endif /* __VIR_CRYPTO_H__ */

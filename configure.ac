@@ -1261,6 +1261,7 @@ if test "x$with_gnutls" != "xno"; then
   ]])
 
   AC_CHECK_FUNCS([gnutls_rnd])
+  AC_CHECK_FUNCS([gnutls_cipher_encrypt])
 
   CFLAGS="$old_CFLAGS"
   LIBS="$old_LIBS"
