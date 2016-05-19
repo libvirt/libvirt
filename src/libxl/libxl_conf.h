@@ -184,6 +184,11 @@ libxlMakeVfb(virPortAllocatorPtr graphicsports,
 int
 libxlMakePCI(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev);
 
+# ifdef LIBXL_HAVE_PVUSB
+int
+libxlMakeUSB(virDomainHostdevDefPtr hostdev, libxl_device_usbdev *usbdev);
+# endif
+
 virDomainXMLOptionPtr
 libxlCreateXMLConf(void);
 

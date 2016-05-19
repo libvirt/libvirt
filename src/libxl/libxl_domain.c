@@ -731,9 +731,14 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
     int vnc_port;
     char *file;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
+
+#ifdef LIBXL_HAVE_PVUSB
+    hostdev_flags |= VIR_HOSTDEV_SP_USB;
+#endif
 
     virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
-                                    vm->def, VIR_HOSTDEV_SP_PCI, NULL);
+                                    vm->def, hostdev_flags, NULL);
 
     VIR_FREE(priv->lockState);
     if (virDomainLockProcessPause(driver->lockManager, vm, &priv->lockState) < 0)
@@ -1043,6 +1048,11 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     libxl_asyncprogress_how aop_console_how;
     libxl_domain_restore_params params;
+    unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
+
+#ifdef LIBXL_HAVE_PVUSB
+    hostdev_flags |= VIR_HOSTDEV_SP_USB;
+#endif
 
     libxl_domain_config_init(&d_config);
 
@@ -1118,7 +1128,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
         goto cleanup_dom;
 
     if (virHostdevPrepareDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
-                                       vm->def, VIR_HOSTDEV_SP_PCI) < 0)
+                                       vm->def, hostdev_flags) < 0)
         goto cleanup_dom;
 
     /* Unlock virDomainObj while creating the domain */

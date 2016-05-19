@@ -1514,6 +1514,75 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
 
 }
 
+#ifdef LIBXL_HAVE_PVUSB
+int
+libxlMakeUSB(virDomainHostdevDefPtr hostdev, libxl_device_usbdev *usbdev)
+{
+    virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
+
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+        return -1;
+    if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+        return -1;
+
+    if (usbsrc->bus <= 0 || usbsrc->device <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("libxenlight supports only USB device "
+                         "specified by busnum:devnum"));
+        return -1;
+    }
+
+    usbdev->u.hostdev.hostbus = usbsrc->bus;
+    usbdev->u.hostdev.hostaddr = usbsrc->device;
+
+    return 0;
+}
+
+static int
+libxlMakeUSBList(virDomainDefPtr def, libxl_domain_config *d_config)
+{
+    virDomainHostdevDefPtr *l_hostdevs = def->hostdevs;
+    size_t nhostdevs = def->nhostdevs;
+    size_t nusbdevs = 0;
+    libxl_device_usbdev *x_usbdevs;
+    size_t i, j;
+
+    if (nhostdevs == 0)
+        return 0;
+
+    if (VIR_ALLOC_N(x_usbdevs, nhostdevs) < 0)
+        return -1;
+
+    for (i = 0, j = 0; i < nhostdevs; i++) {
+        if (l_hostdevs[i]->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (l_hostdevs[i]->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+            continue;
+
+        libxl_device_usbdev_init(&x_usbdevs[j]);
+
+        if (libxlMakeUSB(l_hostdevs[i], &x_usbdevs[j]) < 0)
+            goto error;
+
+        nusbdevs++;
+        j++;
+    }
+
+    VIR_SHRINK_N(x_usbdevs, nhostdevs, nhostdevs - nusbdevs);
+    d_config->usbdevs = x_usbdevs;
+    d_config->num_usbdevs = nusbdevs;
+
+    return 0;
+
+ error:
+    for (i = 0; i < nusbdevs; i++)
+        libxl_device_usbdev_dispose(&x_usbdevs[i]);
+
+    VIR_FREE(x_usbdevs);
+    return -1;
+}
+#endif
+
 int
 libxlMakePCI(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev)
 {
@@ -1716,6 +1785,11 @@ libxlBuildDomainConfig(virPortAllocatorPtr graphicsports,
 
     if (libxlMakePCIList(def, d_config) < 0)
         return -1;
+
+#ifdef LIBXL_HAVE_PVUSB
+    if (libxlMakeUSBList(def, d_config) < 0)
+        return -1;
+#endif
 
     /*
      * Now that any potential VFBs are defined, update the build info with

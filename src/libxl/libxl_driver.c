@@ -351,6 +351,11 @@ libxlReconnectDomain(virDomainObjPtr vm,
     int len;
     uint8_t *data = NULL;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
+
+#ifdef LIBXL_HAVE_PVUSB
+    hostdev_flags |= VIR_HOSTDEV_SP_USB;
+#endif
 
     virObjectLock(vm);
 
@@ -378,7 +383,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
 
     /* Update hostdev state */
     if (virHostdevUpdateActiveDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
-                                            vm->def, VIR_HOSTDEV_SP_PCI) < 0)
+                                            vm->def, hostdev_flags) < 0)
         goto out;
 
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
