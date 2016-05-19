@@ -898,6 +898,10 @@ mymain(void)
     DO_TEST("graphics-vnc-websocket", QEMU_CAPS_VNC, QEMU_CAPS_VNC_WEBSOCKET);
     DO_TEST("graphics-vnc-policy", QEMU_CAPS_VNC, QEMU_CAPS_VNC_SHARE_POLICY);
     DO_TEST("graphics-vnc-no-listen-attr", QEMU_CAPS_VNC);
+    DO_TEST("graphics-vnc-remove-generated-socket", QEMU_CAPS_VNC);
+    driver.config->vncAutoUnixSocket = true;
+    DO_TEST("graphics-vnc-auto-socket-cfg", QEMU_CAPS_VNC);
+    driver.config->vncAutoUnixSocket = false;
 
     driver.config->vncSASL = 1;
     VIR_FREE(driver.config->vncSASLdir);

@@ -265,6 +265,8 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
+    cfg = virQEMUDriverGetConfig(&driver);
+
     /* TODO: test with format probing disabled too */
     driver.config->allowDiskFormatProbing = true;
 
@@ -430,6 +432,11 @@ mymain(void)
     DO_TEST("graphics-vnc-sasl");
     DO_TEST("graphics-vnc-tls");
     DO_TEST("graphics-vnc-no-listen-attr");
+    DO_TEST("graphics-vnc-remove-generated-socket");
+    cfg->vncAutoUnixSocket = true;
+    DO_TEST("graphics-vnc-auto-socket-cfg");
+    cfg->vncAutoUnixSocket = false;
+
     DO_TEST("graphics-sdl");
     DO_TEST("graphics-sdl-fullscreen");
     DO_TEST("graphics-spice");
@@ -798,11 +805,6 @@ mymain(void)
     DO_TEST("video-virtio-gpu-spice-gl");
     DO_TEST("virtio-input");
     DO_TEST("virtio-input-passthrough");
-
-    cfg = virQEMUDriverGetConfig(&driver);
-    cfg->vncAutoUnixSocket = true;
-    DO_TEST_FULL("graphics-vnc-autosocket", WHEN_INACTIVE, GIC_NONE, NONE);
-    cfg->vncAutoUnixSocket = false;
 
     virObjectUnref(cfg);
     qemuTestDriverFree(&driver);

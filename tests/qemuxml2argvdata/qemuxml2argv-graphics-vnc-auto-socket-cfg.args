@@ -18,5 +18,5 @@ QEMU_AUDIO_DRV=none \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
--vnc unix:/tmp/lib/domain--1-QEMUGuest1/vnc.socket \
+-vnc unix:/tmp/lib/domain--1-QEMUGuest1/vnc.sock \
 -vga cirrus
