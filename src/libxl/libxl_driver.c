@@ -3004,6 +3004,56 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
     return ret;
 }
 
+#ifdef LIBXL_HAVE_PVUSB
+static int
+libxlDomainAttachHostUSBDevice(libxlDriverPrivatePtr driver,
+                               virDomainObjPtr vm,
+                               virDomainHostdevDefPtr hostdev)
+{
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    libxl_device_usbdev usbdev;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    int ret = -1;
+
+    libxl_device_usbdev_init(&usbdev);
+
+    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+        hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+        goto cleanup;
+
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
+        goto cleanup;
+
+    if (virHostdevPrepareUSBDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+                                    vm->def->name, &hostdev, 1, 0) < 0)
+        goto cleanup;
+
+    if (libxlMakeUSB(hostdev, &usbdev) < 0)
+        goto reattach;
+
+    if (libxl_device_usbdev_add(cfg->ctx, vm->def->id, &usbdev, 0) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"),
+                       hostdev->source.subsys.u.usb.bus,
+                       hostdev->source.subsys.u.usb.device);
+        goto reattach;
+    }
+
+    vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
+    ret = 0;
+    goto cleanup;
+
+ reattach:
+    virHostdevReAttachUSBDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+                                 vm->def->name, &hostdev, 1);
+
+ cleanup:
+    virObjectUnref(cfg);
+    libxl_device_usbdev_dispose(&usbdev);
+    return ret;
+}
+#endif
+
 static int
 libxlDomainAttachHostDevice(libxlDriverPrivatePtr driver,
                             virDomainObjPtr vm,
@@ -3021,6 +3071,13 @@ libxlDomainAttachHostDevice(libxlDriverPrivatePtr driver,
         if (libxlDomainAttachHostPCIDevice(driver, vm, hostdev) < 0)
             return -1;
         break;
+
+#ifdef LIBXL_HAVE_PVUSB
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+        if (libxlDomainAttachHostUSBDevice(driver, vm, hostdev) < 0)
+            return -1;
+        break;
+#endif
 
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -3214,7 +3271,6 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
     virDomainNetDefPtr net;
     virDomainHostdevDefPtr hostdev;
     virDomainHostdevDefPtr found;
-    virDomainHostdevSubsysPCIPtr pcisrc;
     char mac[VIR_MAC_STRING_BUFLEN];
 
     switch (dev->type) {
@@ -3247,16 +3303,18 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
         case VIR_DOMAIN_DEVICE_HOSTDEV:
             hostdev = dev->data.hostdev;
 
-            if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
+            switch (hostdev->source.subsys.type) {
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+#ifndef LIBXL_HAVE_PVUSB
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+#endif
+            case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
                 return -1;
+            }
 
             if (virDomainHostdevFind(vmdef, hostdev, &found) >= 0) {
-                pcisrc = &hostdev->source.subsys.u.pci;
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               _("target pci device %.4x:%.2x:%.2x.%.1x\
-                                  already exists"),
-                               pcisrc->addr.domain, pcisrc->addr.bus,
-                               pcisrc->addr.slot, pcisrc->addr.function);
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("device is already in the domain configuration"));
                 return -1;
             }
 
@@ -3365,6 +3423,76 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
     return ret;
 }
 
+#ifdef LIBXL_HAVE_PVUSB
+static int
+libxlDomainDetachHostUSBDevice(libxlDriverPrivatePtr driver,
+                               virDomainObjPtr vm,
+                               virDomainHostdevDefPtr hostdev)
+{
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
+    virDomainHostdevSubsysUSBPtr usbsrc = &subsys->u.usb;
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    libxl_device_usbdev usbdev;
+    libxl_device_usbdev *usbdevs = NULL;
+    int num = 0;
+    virDomainHostdevDefPtr detach;
+    int idx;
+    size_t i;
+    bool found = false;
+    int ret = -1;
+
+    libxl_device_usbdev_init(&usbdev);
+
+    idx = virDomainHostdevFind(vm->def, hostdev, &detach);
+    if (idx < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("host USB device Busnum: %3x, Devnum: %3x not found"),
+                       usbsrc->bus, usbsrc->device);
+        goto cleanup;
+    }
+
+    usbdevs = libxl_device_usbdev_list(cfg->ctx, vm->def->id, &num);
+    for (i = 0; i < num; i++) {
+        if (usbdevs[i].u.hostdev.hostbus == usbsrc->bus &&
+            usbdevs[i].u.hostdev.hostaddr == usbsrc->device) {
+            libxl_device_usbdev_copy(cfg->ctx, &usbdev, &usbdevs[i]);
+            found = true;
+            break;
+        }
+    }
+    libxl_device_usbdev_list_free(usbdevs, num);
+
+    if (!found) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("host USB device Busnum: %3x, Devnum: %3x not found"),
+                       usbsrc->bus, usbsrc->device);
+        goto cleanup;
+    }
+
+    if (libxl_device_usbdev_remove(cfg->ctx, vm->def->id, &usbdev, 0) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("libxenlight failed to detach USB device\
+                          Busnum: %3x, Devnum: %3x"),
+                       usbsrc->bus, usbsrc->device);
+        goto cleanup;
+    }
+
+    virDomainHostdevRemove(vm->def, idx);
+
+    virHostdevReAttachUSBDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
+                                 vm->def->name, &hostdev, 1);
+
+    ret = 0;
+
+ cleanup:
+    virDomainHostdevDefFree(detach);
+    virObjectUnref(cfg);
+    libxl_device_usbdev_dispose(&usbdev);
+    return ret;
+}
+#endif
+
 static int
 libxlDomainDetachHostDevice(libxlDriverPrivatePtr driver,
                             virDomainObjPtr vm,
@@ -3382,6 +3510,11 @@ libxlDomainDetachHostDevice(libxlDriverPrivatePtr driver,
     switch (subsys->type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             return libxlDomainDetachHostPCIDevice(driver, vm, hostdev);
+
+#ifdef LIBXL_HAVE_PVUSB
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+            return libxlDomainDetachHostUSBDevice(driver, vm, hostdev);
+#endif
 
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
