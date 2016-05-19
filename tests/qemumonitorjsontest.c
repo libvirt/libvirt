@@ -114,6 +114,14 @@ const char *queryBlockReply =
 "            },"
 "            \"tray_open\": false,"
 "            \"type\": \"unknown\""
+"        },"
+"        {"
+"            \"io-status\": \"ok\","
+"            \"device\": \"drive-ide0-1-1\","
+"            \"locked\": false,"
+"            \"removable\": true,"
+"            \"tray_open\": false,"
+"            \"type\": \"unknown\""
 "        }"
 "    ],"
 "    \"id\": \"libvirt-10\""
@@ -1404,7 +1412,22 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockInfo(const void *data)
 
     info->locked = true;
     info->removable = true;
+    info->tray = true;
+
     if (virHashAddEntry(expectedBlockDevices, "ide0-1-0", info) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Unable to create expectedBlockDevices hash table");
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(info) < 0)
+        goto cleanup;
+
+    info->removable = true;
+    info->tray = true;
+    info->empty = true;
+
+    if (virHashAddEntry(expectedBlockDevices, "ide0-1-1", info) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Unable to create expectedBlockDevices hash table");
         goto cleanup;
