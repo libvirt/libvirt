@@ -75,7 +75,6 @@ testReadNetworkConf(const void *data ATTRIBUTE_UNUSED)
     int result = -1;
     virDomainDefPtr def = NULL;
     char *actual = NULL;
-    virErrorPtr err = NULL;
     const char *expected =
         "<domain type='openvz'>\n"
         "  <uuid>00000000-0000-0000-0000-000000000000</uuid>\n"
@@ -110,16 +109,14 @@ testReadNetworkConf(const void *data ATTRIBUTE_UNUSED)
     def->os.type = VIR_DOMAIN_OSTYPE_EXE;
 
     if (openvzReadNetworkConf(def, 1) < 0) {
-        err = virGetLastError();
-        fprintf(stderr, "ERROR: %s\n", err != NULL ? err->message : "<unknown>");
+        fprintf(stderr, "ERROR: %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
 
     actual = virDomainDefFormat(def, NULL, VIR_DOMAIN_DEF_FORMAT_INACTIVE);
 
     if (actual == NULL) {
-        err = virGetLastError();
-        fprintf(stderr, "ERROR: %s\n", err != NULL ? err->message : "<unknown>");
+        fprintf(stderr, "ERROR: %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
 

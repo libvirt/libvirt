@@ -35,9 +35,8 @@ eventLoop(void *opaque ATTRIBUTE_UNUSED)
 {
     while (1) {
         if (virEventRunDefaultImpl() < 0) {
-            virErrorPtr err = virGetLastError();
             fprintf(stderr, "Failed to run event loop: %s\n",
-                    err && err->message ? err->message : "Unknown error");
+                    virGetLastErrorMessage());
         }
     }
 }
@@ -63,9 +62,8 @@ main(int argc, char **argv)
     }
 
     if (virEventRegisterDefaultImpl() < 0) {
-        virErrorPtr err = virGetLastError();
         fprintf(stderr, "Failed to register event implementation: %s\n",
-                err && err->message ? err->message: "Unknown error");
+                virGetLastErrorMessage());
         return EXIT_FAILURE;
     }
 

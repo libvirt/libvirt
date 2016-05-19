@@ -178,8 +178,7 @@ static int test2(const void *unused ATTRIBUTE_UNUSED)
     int ret;
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         virCommandFree(cmd);
         return -1;
     }
@@ -190,8 +189,7 @@ static int test2(const void *unused ATTRIBUTE_UNUSED)
     }
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         virCommandFree(cmd);
         return -1;
     }
@@ -218,8 +216,7 @@ static int test3(const void *unused ATTRIBUTE_UNUSED)
                      VIR_COMMAND_PASS_FD_CLOSE_PARENT);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
 
@@ -260,8 +257,7 @@ static int test4(const void *unused ATTRIBUTE_UNUSED)
     virCommandDaemonize(cmd);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
 
@@ -294,8 +290,7 @@ static int test5(const void *unused ATTRIBUTE_UNUSED)
     virCommandAddEnvPassCommon(cmd);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         virCommandFree(cmd);
         return -1;
     }
@@ -318,8 +313,7 @@ static int test6(const void *unused ATTRIBUTE_UNUSED)
     virCommandAddEnvPassBlockSUID(cmd, "DOESNOTEXIST", NULL);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         virCommandFree(cmd);
         return -1;
     }
@@ -343,8 +337,7 @@ static int test7(const void *unused ATTRIBUTE_UNUSED)
     virCommandAddEnvPassBlockSUID(cmd, "DOESNOTEXIST", NULL);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         virCommandFree(cmd);
         return -1;
     }
@@ -368,8 +361,7 @@ static int test8(const void *unused ATTRIBUTE_UNUSED)
     virCommandAddEnvPair(cmd, "USER", "test");
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         virCommandFree(cmd);
         return -1;
     }
@@ -406,8 +398,7 @@ static int test9(const void *unused ATTRIBUTE_UNUSED)
     }
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         virCommandFree(cmd);
         return -1;
     }
@@ -432,8 +423,7 @@ static int test10(const void *unused ATTRIBUTE_UNUSED)
     virCommandAddArgSet(cmd, args);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         virCommandFree(cmd);
         return -1;
     }
@@ -456,8 +446,7 @@ static int test11(const void *unused ATTRIBUTE_UNUSED)
     virCommandPtr cmd = virCommandNewArgs(args);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         virCommandFree(cmd);
         return -1;
     }
@@ -478,8 +467,7 @@ static int test12(const void *unused ATTRIBUTE_UNUSED)
     virCommandSetInputBuffer(cmd, "Hello World\n");
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         virCommandFree(cmd);
         return -1;
     }
@@ -506,8 +494,7 @@ static int test13(const void *unused ATTRIBUTE_UNUSED)
     virCommandSetOutputBuffer(cmd, &outactual);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
     if (!outactual)
@@ -559,8 +546,7 @@ static int test14(const void *unused ATTRIBUTE_UNUSED)
     virCommandSetErrorBuffer(cmd, &erractual);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
     if (!outactual || !erractual)
@@ -573,8 +559,7 @@ static int test14(const void *unused ATTRIBUTE_UNUSED)
     virCommandSetOutputBuffer(cmd, &jointactual);
     virCommandSetErrorBuffer(cmd, &jointactual);
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
     if (!jointactual)
@@ -620,8 +605,7 @@ static int test15(const void *unused ATTRIBUTE_UNUSED)
     virCommandSetUmask(cmd, 002);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
 
@@ -651,8 +635,7 @@ static int test16(const void *unused ATTRIBUTE_UNUSED)
     virCommandAddArg(cmd, "G  H");
 
     if ((outactual = virCommandToString(cmd)) == NULL) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot convert to string: %s\n", err->message);
+        printf("Cannot convert to string: %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
     if ((fd = open(abs_builddir "/commandhelper.log",
@@ -697,8 +680,7 @@ static int test17(const void *unused ATTRIBUTE_UNUSED)
     }
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
 
@@ -720,8 +702,7 @@ static int test17(const void *unused ATTRIBUTE_UNUSED)
     }
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
 
@@ -756,8 +737,7 @@ static int test18(const void *unused ATTRIBUTE_UNUSED)
 
     alarm(5);
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
     alarm(0);
@@ -798,8 +778,7 @@ static int test19(const void *unused ATTRIBUTE_UNUSED)
 
     alarm(5);
     if (virCommandRunAsync(cmd, &pid) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
 
@@ -848,8 +827,7 @@ static int test20(const void *unused ATTRIBUTE_UNUSED)
     virCommandSetInputBuffer(cmd, buf);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
 
@@ -891,8 +869,7 @@ static int test21(const void *unused ATTRIBUTE_UNUSED)
     virCommandDoAsyncIO(cmd);
 
     if (virCommandRunAsync(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
 
@@ -930,8 +907,7 @@ test22(const void *unused ATTRIBUTE_UNUSED)
     cmd = virCommandNewArgList("/bin/sh", "-c", "exit 3", NULL);
 
     if (virCommandRun(cmd, &status) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
     if (status != 3) {
@@ -941,8 +917,7 @@ test22(const void *unused ATTRIBUTE_UNUSED)
 
     virCommandRawStatus(cmd);
     if (virCommandRun(cmd, &status) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
     if (!WIFEXITED(status) || WEXITSTATUS(status) != 3) {
@@ -960,8 +935,7 @@ test22(const void *unused ATTRIBUTE_UNUSED)
 
     virCommandRawStatus(cmd);
     if (virCommandRun(cmd, &status) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
     if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL) {
@@ -1057,8 +1031,7 @@ static int test24(const void *unused ATTRIBUTE_UNUSED)
     virCommandPassListenFDs(cmd);
 
     if (virCommandRun(cmd, NULL) < 0) {
-        virErrorPtr err = virGetLastError();
-        printf("Cannot run child %s\n", err->message);
+        printf("Cannot run child %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
 

@@ -102,7 +102,7 @@ testCorrupt(const void *opaque)
                                 data->params,
                                 data->paramnum,
                                 &type);
-    virErrorPtr err = NULL;
+    const char *err = NULL;
 
     if (!newdata)
         return -1;
@@ -115,15 +115,15 @@ testCorrupt(const void *opaque)
         goto cleanup;
     }
 
-    err = virGetLastError();
-    if (!err || !err->message) {
+    err = virGetLastErrorMessage();
+    if (!err) {
         VIR_DEBUG("No error or message %p", err);
         ret = -1;
         goto cleanup;
     }
 
 #if !WITH_SASL
-    if (strstr(err->message, "unsupported auth sasl")) {
+    if (strstr(err, "unsupported auth sasl")) {
         VIR_DEBUG("sasl unsupported, skipping this config");
         goto cleanup;
     }
@@ -131,24 +131,24 @@ testCorrupt(const void *opaque)
 
     switch (type) {
     case VIR_CONF_ULONG:
-        if (!strstr(err->message, "invalid type: got string; expected unsigned long") &&
-            !strstr(err->message, "invalid type: got string; expected long")) {
+        if (!strstr(err, "invalid type: got string; expected unsigned long") &&
+            !strstr(err, "invalid type: got string; expected long")) {
             VIR_DEBUG("Wrong error for long: '%s'",
-                      err->message);
+                      err);
             ret = -1;
         }
         break;
     case VIR_CONF_STRING:
-        if (!strstr(err->message, "invalid type: got unsigned long; expected string")) {
+        if (!strstr(err, "invalid type: got unsigned long; expected string")) {
             VIR_DEBUG("Wrong error for string: '%s'",
-                      err->message);
+                      err);
             ret = -1;
         }
         break;
     case VIR_CONF_LIST:
-        if (!strstr(err->message, "must be a string or list of strings")) {
+        if (!strstr(err, "must be a string or list of strings")) {
             VIR_DEBUG("Wrong error for list: '%s'",
-                      err->message);
+                      err);
             ret = -1;
         }
         break;
@@ -212,8 +212,8 @@ mymain(void)
     }
 
     if (virFileReadAll(filename, 1024*1024, &filedata) < 0) {
-        virErrorPtr err = virGetLastError();
-        fprintf(stderr, "Cannot load %s for testing: %s", filename, err->message);
+        const char *err = virGetLastErrorMessage();
+        fprintf(stderr, "Cannot load %s for testing: %s", filename, err);
         ret = -1;
         goto cleanup;
     }

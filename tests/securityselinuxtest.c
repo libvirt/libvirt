@@ -230,8 +230,7 @@ testSELinuxGenLabel(const void *opaque)
         goto cleanup;
 
     if (virSecurityManagerGenLabel(data->mgr, def) < 0) {
-        virErrorPtr err = virGetLastError();
-        fprintf(stderr, "Cannot generate label: %s\n", err->message);
+        fprintf(stderr, "Cannot generate label: %s\n", virGetLastErrorMessage());
         goto cleanup;
     }
 
@@ -275,9 +274,8 @@ mymain(void)
     if (!(mgr = virSecurityManagerNew("selinux", "QEMU",
                                       VIR_SECURITY_MANAGER_DEFAULT_CONFINED |
                                       VIR_SECURITY_MANAGER_PRIVILEGED))) {
-        virErrorPtr err = virGetLastError();
         fprintf(stderr, "Unable to initialize security driver: %s\n",
-                err->message);
+                virGetLastErrorMessage());
         return EXIT_FAILURE;
     }
 
