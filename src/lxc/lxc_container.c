@@ -2290,12 +2290,9 @@ static int lxcContainerChild(void *data)
 
     if (ret != 0) {
         VIR_DEBUG("Tearing down container");
-        virErrorPtr err = virGetLastError();
-        if (err && err->message)
-            fprintf(stderr, "%s\n", err->message);
-        else
-            fprintf(stderr, "%s\n",
-                    _("Unknown failure in libvirt_lxc startup"));
+        fprintf(stderr,
+                _("Failure in libvirt_lxc startup: %s\n"),
+                virGetLastErrorMessage());
     }
 
     virCommandFree(cmd);

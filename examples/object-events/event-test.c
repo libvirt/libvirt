@@ -917,9 +917,8 @@ main(int argc, char **argv)
     }
 
     if (virEventRegisterDefaultImpl() < 0) {
-        virErrorPtr err = virGetLastError();
         fprintf(stderr, "Failed to register event implementation: %s\n",
-                err && err->message ? err->message: "Unknown error");
+                virGetLastErrorMessage());
         goto cleanup;
     }
 
@@ -972,17 +971,15 @@ main(int argc, char **argv)
         goto cleanup;
 
     if (virConnectSetKeepAlive(dconn, 5, 3) < 0) {
-        virErrorPtr err = virGetLastError();
         fprintf(stderr, "Failed to start keepalive protocol: %s\n",
-                err && err->message ? err->message : "Unknown error");
+                virGetLastErrorMessage());
         run = 0;
     }
 
     while (run) {
         if (virEventRunDefaultImpl() < 0) {
-            virErrorPtr err = virGetLastError();
             fprintf(stderr, "Failed to run event loop: %s\n",
-                    err && err->message ? err->message : "Unknown error");
+                    virGetLastErrorMessage());
         }
     }
 

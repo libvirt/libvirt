@@ -1315,12 +1315,8 @@ int main(int argc, char **argv) {
     /* Read the config file if it exists*/
     if (remote_config_file &&
         daemonConfigLoadFile(config, remote_config_file, implicit_conf) < 0) {
-        virErrorPtr err = virGetLastError();
-        if (err && err->message)
-            VIR_ERROR(_("Can't load config file: %s: %s"),
-                      err->message, remote_config_file);
-        else
-            VIR_ERROR(_("Can't load config file: %s"), remote_config_file);
+        VIR_ERROR(_("Can't load config file: %s: %s"),
+                  virGetLastErrorMessage(), remote_config_file);
         exit(EXIT_FAILURE);
     }
 

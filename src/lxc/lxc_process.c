@@ -756,10 +756,9 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitorPtr mon ATTRIBUTE_UNUSED
     priv->initpid = initpid;
 
     if (virLXCProcessGetNsInode(initpid, "pid", &inode) < 0) {
-        virErrorPtr err = virGetLastError();
         VIR_WARN("Cannot obtain pid NS inode for %llu: %s",
                  (unsigned long long)initpid,
-                 err && err->message ? err->message : "<unknown>");
+                 virGetLastErrorMessage());
         virResetLastError();
     }
     virDomainAuditInit(vm, initpid, inode);
@@ -1618,10 +1617,9 @@ virLXCProcessAutostartDomain(virDomainObjPtr vm,
                                  VIR_DOMAIN_RUNNING_BOOTED);
         virDomainAuditStart(vm, "booted", ret >= 0);
         if (ret < 0) {
-            virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                       vm->def->name,
-                      err ? err->message : "");
+                      virGetLastErrorMessage());
         } else {
             virObjectEventPtr event =
                 virDomainEventLifecycleNewFromObj(vm,

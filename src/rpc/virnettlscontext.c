@@ -1141,8 +1141,7 @@ int virNetTLSContextCheckCertificate(virNetTLSContextPtr ctxt,
     virObjectLock(ctxt);
     virObjectLock(sess);
     if (virNetTLSContextValidCertificate(ctxt, sess) < 0) {
-        virErrorPtr err = virGetLastError();
-        VIR_WARN("Certificate check failed %s", err && err->message ? err->message : "<unknown>");
+        VIR_WARN("Certificate check failed %s", virGetLastErrorMessage());
         if (ctxt->requireValidCert) {
             virReportError(VIR_ERR_AUTH_FAILED, "%s",
                            _("Failed to verify peer's certificate"));

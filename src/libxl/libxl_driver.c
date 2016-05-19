@@ -307,7 +307,6 @@ libxlAutostartDomain(virDomainObjPtr vm,
                      void *opaque)
 {
     libxlDriverPrivatePtr driver = opaque;
-    virErrorPtr err;
     int ret = -1;
 
     virObjectLock(vm);
@@ -320,10 +319,9 @@ libxlAutostartDomain(virDomainObjPtr vm,
 
     if (vm->autostart && !virDomainObjIsActive(vm) &&
         libxlDomainStartNew(driver, vm, false) < 0) {
-        err = virGetLastError();
         VIR_ERROR(_("Failed to autostart VM '%s': %s"),
                   vm->def->name,
-                  err ? err->message : _("unknown error"));
+                  virGetLastErrorMessage());
         goto endjob;
     }
 

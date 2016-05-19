@@ -2736,12 +2736,9 @@ int main(int argc, char *argv[])
 
  cleanup:
     if (rc < 0) {
-        virErrorPtr err = virGetLastError();
-        if (err && err->message)
-            fprintf(stderr, "%s\n", err->message);
-        else
-            fprintf(stderr, "%s\n",
-                    _("Unknown failure in libvirt_lxc startup"));
+        fprintf(stderr,
+                _("Failure in libvirt_lxc startup: %s\n"),
+                virGetLastErrorMessage());
     }
 
     virPidFileDelete(LXC_STATE_DIR, name);

@@ -88,9 +88,8 @@ bhyveAutostartDomain(virDomainObjPtr vm, void *opaque)
         ret = virBhyveProcessStart(data->conn, data->driver, vm,
                                    VIR_DOMAIN_RUNNING_BOOTED, 0);
         if (ret < 0) {
-            virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
-                      vm->def->name, err ? err->message : _("unknown error"));
+                      vm->def->name, virGetLastErrorMessage());
         }
     }
     virObjectUnlock(vm);

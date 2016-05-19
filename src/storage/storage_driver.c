@@ -98,10 +98,8 @@ storagePoolUpdateState(virStoragePoolObjPtr pool)
     active = false;
     if (backend->checkPool &&
         backend->checkPool(pool, &active) < 0) {
-        virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to initialize storage pool '%s': %s"),
-                  pool->def->name, err ? err->message :
-                  _("no error message found"));
+                  pool->def->name, virGetLastErrorMessage());
         goto error;
     }
 
@@ -112,12 +110,10 @@ storagePoolUpdateState(virStoragePoolObjPtr pool)
     if (active) {
         virStoragePoolObjClearVols(pool);
         if (backend->refreshPool(NULL, pool) < 0) {
-            virErrorPtr err = virGetLastError();
             if (backend->stopPool)
                 backend->stopPool(NULL, pool);
             VIR_ERROR(_("Failed to restart storage pool '%s': %s"),
-                      pool->def->name, err ? err->message :
-                      _("no error message found"));
+                      pool->def->name, virGetLastErrorMessage());
             goto error;
         }
     }
@@ -176,10 +172,8 @@ storageDriverAutostart(void)
             !virStoragePoolObjIsActive(pool)) {
             if (backend->startPool &&
                 backend->startPool(conn, pool) < 0) {
-                virErrorPtr err = virGetLastError();
                 VIR_ERROR(_("Failed to autostart storage pool '%s': %s"),
-                          pool->def->name, err ? err->message :
-                          _("no error message found"));
+                          pool->def->name, virGetLastErrorMessage());
                 virStoragePoolObjUnlock(pool);
                 continue;
             }
@@ -195,14 +189,12 @@ storageDriverAutostart(void)
             if (!stateFile ||
                 virStoragePoolSaveState(stateFile, pool->def) < 0 ||
                 backend->refreshPool(conn, pool) < 0) {
-                virErrorPtr err = virGetLastError();
                 if (stateFile)
                     unlink(stateFile);
                 if (backend->stopPool)
                     backend->stopPool(conn, pool);
                 VIR_ERROR(_("Failed to autostart storage pool '%s': %s"),
-                          pool->def->name, err ? err->message :
-                          _("no error message found"));
+                          pool->def->name, virGetLastErrorMessage());
             } else {
                 pool->active = true;
             }

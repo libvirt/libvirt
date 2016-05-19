@@ -782,10 +782,9 @@ virHostdevReattachPCIDevice(virHostdevManagerPtr mgr,
     VIR_DEBUG("Reattaching PCI device %s", virPCIDeviceGetName(actual));
     if (virPCIDeviceReattach(actual, mgr->activePCIHostdevs,
                              mgr->inactivePCIHostdevs) < 0) {
-        virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to re-attach PCI device: %s"),
-                  err ? err->message : _("unknown error"));
-        virResetError(err);
+                  virGetLastErrorMessage());
+        virResetLastError();
     }
 }
 
@@ -810,10 +809,9 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
     virObjectLock(mgr->inactivePCIHostdevs);
 
     if (!(pcidevs = virHostdevGetPCIHostDeviceList(hostdevs, nhostdevs))) {
-        virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to allocate PCI device list: %s"),
-                  err ? err->message : _("unknown error"));
-        virResetError(err);
+                  virGetLastErrorMessage());
+        virResetLastError();
         goto cleanup;
     }
 
@@ -864,10 +862,9 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
         if (!actual ||
             virPCIDeviceListAdd(mgr->inactivePCIHostdevs, actual) < 0) {
 
-            virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to add PCI device %s to the inactive list"),
-                      err ? err->message : _("unknown error"));
-            virResetError(err);
+                      virGetLastErrorMessage());
+            virResetLastError();
         }
     }
 
@@ -909,10 +906,9 @@ virHostdevReAttachPCIDevices(virHostdevManagerPtr mgr,
         VIR_DEBUG("Resetting PCI device %s", virPCIDeviceGetName(pci));
         if (virPCIDeviceReset(pci, mgr->activePCIHostdevs,
                               mgr->inactivePCIHostdevs) < 0) {
-            virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to reset PCI device: %s"),
-                      err ? err->message : _("unknown error"));
-            virResetError(err);
+                      virGetLastErrorMessage());
+            virResetLastError();
         }
     }
 

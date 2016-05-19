@@ -218,7 +218,6 @@ int
 main(int argc, char **argv)
 {
     const char *path;
-    virErrorPtr err;
     unsigned long long offset;
     unsigned long long length;
     int oflags = -1;
@@ -303,12 +302,7 @@ main(int argc, char **argv)
     return 0;
 
  error:
-    err = virGetLastError();
-    if (err) {
-        fprintf(stderr, "%s: %s\n", program_name, err->message);
-    } else {
-        fprintf(stderr, _("%s: unknown failure with %s\n"),
-                program_name, path);
-    }
+    fprintf(stderr, _("%s: failure with %s\n: %s"),
+            program_name, path, virGetLastErrorMessage());
     exit(EXIT_FAILURE);
 }

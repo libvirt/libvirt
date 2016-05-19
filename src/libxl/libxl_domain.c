@@ -515,9 +515,8 @@ libxlDomainShutdownThread(void *opaque)
     libxlDomainDestroyInternal(driver, vm);
     libxlDomainCleanup(driver, vm);
     if (libxlDomainStartNew(driver, vm, false) < 0) {
-        virErrorPtr err = virGetLastError();
         VIR_ERROR(_("Failed to restart VM '%s': %s"),
-                  vm->def->name, err ? err->message : _("unknown error"));
+                  vm->def->name, virGetLastErrorMessage());
     }
 
  endjob:

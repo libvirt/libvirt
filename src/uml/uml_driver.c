@@ -188,9 +188,8 @@ umlAutostartDomain(virDomainObjPtr vm,
         ret = umlStartVMDaemon(data->conn, data->driver, vm, false);
         virDomainAuditStart(vm, "booted", ret >= 0);
         if (ret < 0) {
-            virErrorPtr err = virGetLastError();
             VIR_ERROR(_("Failed to autostart VM '%s': %s"),
-                      vm->def->name, err ? err->message : _("unknown error"));
+                      vm->def->name, virGetLastErrorMessage());
         } else {
             virObjectEventPtr event =
                 virDomainEventLifecycleNewFromObj(vm,

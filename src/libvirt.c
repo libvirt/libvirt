@@ -770,10 +770,9 @@ virStateInitialize(bool privileged,
             if (virStateDriverTab[i]->stateInitialize(privileged,
                                                       callback,
                                                       opaque) < 0) {
-                virErrorPtr err = virGetLastError();
                 VIR_ERROR(_("Initialization of %s state driver failed: %s"),
                           virStateDriverTab[i]->name,
-                          err && err->message ? err->message : _("Unknown problem"));
+                          virGetLastErrorMessage());
                 return -1;
             }
         }

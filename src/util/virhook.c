@@ -297,9 +297,8 @@ virHookCall(int driver,
     ret = virCommandRun(cmd, NULL);
     if (ret < 0) {
         /* Convert INTERNAL_ERROR into known error.  */
-        virErrorPtr err = virGetLastError();
         virReportError(VIR_ERR_HOOK_SCRIPT_FAILED, "%s",
-                       err ? err->message : _("unknown error"));
+                       virGetLastErrorMessage());
     }
 
     virCommandFree(cmd);

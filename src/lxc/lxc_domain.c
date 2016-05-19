@@ -353,8 +353,8 @@ virLXCDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     unsigned long long thepid;
 
     if (virXPathULongLong("string(./init[1]/@pid)", ctxt, &thepid) < 0) {
-        virErrorPtr err = virGetLastError();
-        VIR_WARN("Failed to load init pid from state %s", err ? err->message : "null");
+        VIR_WARN("Failed to load init pid from state %s",
+                 virGetLastErrorMessage());
         priv->initpid = 0;
     } else {
         priv->initpid = thepid;

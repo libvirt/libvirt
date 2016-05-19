@@ -990,11 +990,8 @@ virSecretLoadAllConfigs(virSecretObjListPtr secrets,
             continue;
 
         if (!(secret = virSecretLoad(secrets, de->d_name, path, configDir))) {
-            virErrorPtr err = virGetLastError();
-
             VIR_ERROR(_("Error reading secret: %s"),
-                      err != NULL ? err->message: _("unknown error"));
-            virResetError(err);
+                      virGetLastErrorMessage());
             VIR_FREE(path);
             continue;
         }
