@@ -45,6 +45,11 @@ int virStreamRecv(virStreamPtr st,
                   char *data,
                   size_t nbytes);
 
+int virStreamRecvFlags(virStreamPtr st,
+                       char *data,
+                       size_t nbytes,
+                       unsigned int flags);
+
 
 /**
  * virStreamSourceFunc:

@@ -286,6 +286,65 @@ virStreamRecv(virStreamPtr stream,
 
 
 /**
+ * virStreamRecvFlags:
+ * @stream: pointer to the stream object
+ * @data: buffer to read into from stream
+ * @nbytes: size of @data buffer
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Reads a series of bytes from the stream. This method may
+ * block the calling application for an arbitrary amount
+ * of time.
+ *
+ * This is just like virStreamRecv except this one has extra
+ * @flags. Calling this function with no @flags set (equal to
+ * zero) is equivalent to calling virStreamRecv(stream, data, nbytes).
+ *
+ * Returns 0 when the end of the stream is reached, at
+ * which time the caller should invoke virStreamFinish()
+ * to get confirmation of stream completion.
+ *
+ * Returns -1 upon error, at which time the stream will
+ * be marked as aborted, and the caller should now release
+ * the stream with virStreamFree.
+ *
+ * Returns -2 if there is no data pending to be read & the
+ * stream is marked as non-blocking.
+ */
+int
+virStreamRecvFlags(virStreamPtr stream,
+                   char *data,
+                   size_t nbytes,
+                   unsigned int flags)
+{
+    VIR_DEBUG("stream=%p, data=%p, nbytes=%zu flags=%x",
+              stream, data, nbytes, flags);
+
+    virResetLastError();
+
+    virCheckStreamReturn(stream, -1);
+    virCheckNonNullArgGoto(data, error);
+
+    if (stream->driver &&
+        stream->driver->streamRecvFlags) {
+        int ret;
+        ret = (stream->driver->streamRecvFlags)(stream, data, nbytes, flags);
+        if (ret == -2)
+            return -2;
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(stream->conn);
+    return -1;
+}
+
+
+/**
  * virStreamSendAll:
  * @stream: pointer to the stream object
  * @handler: source callback for reading data from application
