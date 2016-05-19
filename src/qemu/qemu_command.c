@@ -4066,18 +4066,20 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
 
     virBufferAsprintf(&buf, "%s,id=%s", model, video->info.alias);
 
-    if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
-        if (video->accel && video->accel->accel3d == VIR_TRISTATE_SWITCH_ON) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU_VIRGL)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("virtio-gpu 3d acceleration is not supported"));
-                goto error;
-            }
-
-            virBufferAsprintf(&buf, ",virgl=%s",
-                              virTristateSwitchTypeToString(video->accel->accel3d));
+    if (video->accel && video->accel->accel3d == VIR_TRISTATE_SWITCH_ON) {
+        if (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO ||
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU_VIRGL)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("%s 3d acceleration is not supported"),
+                           virDomainVideoTypeToString(video->type));
+            goto error;
         }
-    } else if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
+
+        virBufferAsprintf(&buf, ",virgl=%s",
+                          virTristateSwitchTypeToString(video->accel->accel3d));
+    }
+
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
         if (video->vram > (UINT_MAX / 1024)) {
             virReportError(VIR_ERR_OVERFLOW,
                            _("value for 'vram' must be less than '%u'"),
