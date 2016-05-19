@@ -1106,6 +1106,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     char *source = NULL;
     int actualType = virStorageSourceGetActualType(disk->src);
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    bool emitDeviceSyntax = qemuDiskBusNeedsDeviceArg(disk->bus);
 
     if (idx < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1246,7 +1247,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     }
     VIR_FREE(source);
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
+    if (emitDeviceSyntax)
         virBufferAddLit(&opt, "if=none");
     else
         virBufferAsprintf(&opt, "if=%s", bus);
@@ -1263,7 +1264,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         }
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
+    if (emitDeviceSyntax) {
         virBufferAsprintf(&opt, ",id=%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
     } else {
         if (busid == -1 && unitid == -1) {
@@ -1916,7 +1917,6 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
         char *optstr;
         unsigned int bootindex = 0;
         virDomainDiskDefPtr disk = def->disks[i];
-        bool deviceFlagMasked = false;
 
         /* PowerPC pseries based VMs do not support floppy device */
         if ((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) &&
@@ -1945,15 +1945,9 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
 
         virCommandAddArg(cmd, "-drive");
 
-        if (!qemuDiskBusNeedsDeviceArg(disk->bus)) {
-            virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE);
-            deviceFlagMasked = true;
-        }
         optstr = qemuBuildDriveStr(disk,
                                    emitBootindex ? false : !!bootindex,
                                    qemuCaps);
-        if (deviceFlagMasked)
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE);
         if (!optstr)
             return -1;
         virCommandAddArg(cmd, optstr);
