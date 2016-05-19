@@ -252,11 +252,16 @@ esxStreamSend(virStreamPtr stream, const char *data, size_t nbytes)
 }
 
 static int
-esxStreamRecv(virStreamPtr stream, char *data, size_t nbytes)
+esxStreamRecvFlags(virStreamPtr stream,
+                   char *data,
+                   size_t nbytes,
+                   unsigned int flags)
 {
     int result = -1;
     esxStreamPrivate *priv = stream->privateData;
     int status;
+
+    virCheckFlags(0, -1);
 
     if (nbytes == 0)
         return 0;
@@ -317,6 +322,14 @@ esxStreamRecv(virStreamPtr stream, char *data, size_t nbytes)
     return result;
 }
 
+static int
+esxStreamRecv(virStreamPtr stream,
+              char *data,
+              size_t nbytes)
+{
+    return esxStreamRecvFlags(stream, data, nbytes, 0);
+}
+
 static void
 esxFreeStreamPrivate(esxStreamPrivate **priv)
 {
@@ -369,6 +382,7 @@ esxStreamAbort(virStreamPtr stream)
 virStreamDriver esxStreamDriver = {
     .streamSend = esxStreamSend,
     .streamRecv = esxStreamRecv,
+    .streamRecvFlags = esxStreamRecvFlags,
     /* FIXME: streamAddCallback missing */
     /* FIXME: streamUpdateCallback missing */
     /* FIXME: streamRemoveCallback missing */
