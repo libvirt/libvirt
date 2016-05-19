@@ -4213,13 +4213,8 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
     size_t i;
     int primaryVideoType;
 
-    if (!def->nvideos) {
-        /* If we have -device, then we set -nodefaults already */
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_NONE))
-            virCommandAddArgList(cmd, "-vga", "none", NULL);
+    if (!def->videos)
         return 0;
-    }
 
     primaryVideoType = def->videos[0]->type;
 
@@ -8223,11 +8218,7 @@ qemuBuildNetCommandLine(virCommandPtr cmd,
     int last_good_net = -1;
     virErrorPtr originalError = NULL;
 
-    if (!def->nnets) {
-        /* If we have -device, then we set -nodefault already */
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-            virCommandAddArgList(cmd, "-net", "none", NULL);
-    } else {
+    if (def->nnets) {
         unsigned int bootNet = 0;
 
         if (emitBootindex) {
@@ -8545,7 +8536,6 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
                            virQEMUCapsPtr qemuCaps)
 {
     size_t i;
-    int actualSerials = 0;
     bool havespice = false;
 
     if (def->nserials) {
@@ -8582,12 +8572,7 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
         }
-        actualSerials++;
     }
-
-    /* If we have -device, then we set -nodefaults already */
-    if (!actualSerials && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-        virCommandAddArgList(cmd, "-serial", "none", NULL);
 
     return 0;
 }
@@ -8600,10 +8585,6 @@ qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
                               virQEMUCapsPtr qemuCaps)
 {
     size_t i;
-
-    /* If we have -device, then we set -nodefaults already */
-    if (!def->nparallels && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-        virCommandAddArgList(cmd, "-parallel", "none", NULL);
 
     for (i = 0; i < def->nparallels; i++) {
         virDomainChrDefPtr parallel = def->parallels[i];
@@ -9477,14 +9458,12 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
             virCommandAddEnvString(cmd, "QEMU_AUDIO_DRV=none");
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-        /* Disable global config files and default devices */
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_USER_CONFIG))
-            virCommandAddArg(cmd, "-no-user-config");
-        else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NODEFCONFIG))
-            virCommandAddArg(cmd, "-nodefconfig");
-        virCommandAddArg(cmd, "-nodefaults");
-    }
+    /* Disable global config files and default devices */
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_USER_CONFIG))
+        virCommandAddArg(cmd, "-no-user-config");
+    else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NODEFCONFIG))
+        virCommandAddArg(cmd, "-nodefconfig");
+    virCommandAddArg(cmd, "-nodefaults");
 
     if (qemuBuildSgaCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
