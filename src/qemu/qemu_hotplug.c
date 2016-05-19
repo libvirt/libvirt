@@ -209,6 +209,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     int ret = -1, rc;
     char *driveAlias = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     const char *format = NULL;
     char *sourcestr = NULL;
 
@@ -237,8 +238,9 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    /* If the tray change event is supported wait for it to open. */
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_TRAY_MOVED)) {
+    /* If the tray is present and tray change event is supported wait for it to open. */
+    if (diskPriv->tray &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_TRAY_MOVED)) {
         if (qemuHotplugWaitForTrayEject(driver, vm, disk, driveAlias, force) < 0)
             goto error;
     } else  {
