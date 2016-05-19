@@ -249,6 +249,9 @@ mymain(void)
     DO_TEST("no-source-cdrom");
     DO_TEST("pci-devs");
 
+    DO_TEST("disk-drv-blktap-raw");
+    DO_TEST("disk-drv-blktap2-raw");
+
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
 
