@@ -44,10 +44,8 @@ linuxTestCompareFiles(char *sysfs_prefix,
     memset(&nodeinfo, 0, sizeof(nodeinfo));
     if (linuxNodeInfoCPUPopulate(sysfs_prefix, cpuinfo, arch, &nodeinfo) < 0) {
         if (virTestGetDebug()) {
-            virErrorPtr error = virSaveLastError();
-            if (error && error->code != VIR_ERR_OK)
-                VIR_TEST_DEBUG("\n%s\n", error->message);
-            virFreeError(error);
+            if (virGetLastError())
+                VIR_TEST_DEBUG("\n%s\n", virGetLastErrorMessage());
         }
         VIR_FORCE_FCLOSE(cpuinfo);
         goto fail;
