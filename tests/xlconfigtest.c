@@ -277,6 +277,7 @@ mymain(void)
     DO_TEST_FORMAT("fullvirt-direct-kernel-boot-bogus-extra", false);
 #endif
     DO_TEST("vif-typename");
+    DO_TEST("usb");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
