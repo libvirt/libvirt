@@ -1907,22 +1907,6 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
         bool withDeviceArg = false;
         bool deviceFlagMasked = false;
 
-        /* Unless we have -device, then USB disks need special
-           handling */
-        if ((disk->bus == VIR_DOMAIN_DISK_BUS_USB) &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
-                virCommandAddArg(cmd, "-usbdevice");
-                virCommandAddArgFormat(cmd, "disk:%s", disk->src->path);
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unsupported usb disk type for '%s'"),
-                               disk->src->path);
-                return -1;
-            }
-            continue;
-        }
-
         /* PowerPC pseries based VMs do not support floppy device */
         if ((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) &&
             ARCH_IS_PPC64(def->os.arch) &&
@@ -1955,13 +1939,11 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
            devices. Fortunately, those don't need
            static PCI addresses, so we don't really
            care that we can't use -device */
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            if (disk->bus != VIR_DOMAIN_DISK_BUS_SD) {
-                withDeviceArg = true;
-            } else {
-                virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE);
-                deviceFlagMasked = true;
-            }
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_SD) {
+            withDeviceArg = true;
+        } else {
+            virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE);
+            deviceFlagMasked = true;
         }
         optstr = qemuBuildDriveStr(disk,
                                    emitBootindex ? false : !!bootindex,
