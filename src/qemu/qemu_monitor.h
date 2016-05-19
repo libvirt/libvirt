@@ -677,16 +677,6 @@ int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
                                        const char *bus,
                                        virPCIDeviceAddress *guestAddr);
 
-typedef struct _qemuMonitorPCIAddress qemuMonitorPCIAddress;
-struct _qemuMonitorPCIAddress {
-    unsigned int vendor;
-    unsigned int product;
-    virPCIDeviceAddress addr;
-};
-
-int qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
-                                  qemuMonitorPCIAddress **addrs);
-
 int qemuMonitorAddDevice(qemuMonitorPtr mon,
                          const char *devicestr);
 

@@ -2695,21 +2695,6 @@ qemuMonitorGetChardevInfo(qemuMonitorPtr mon,
 }
 
 
-int
-qemuMonitorGetAllPCIAddresses(qemuMonitorPtr mon,
-                              qemuMonitorPCIAddress **addrs)
-{
-    VIR_DEBUG("addrs=%p", addrs);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    if (mon->json)
-        return qemuMonitorJSONGetAllPCIAddresses(mon, addrs);
-    else
-        return qemuMonitorTextGetAllPCIAddresses(mon, addrs);
-}
-
-
 /**
  * qemuMonitorDriveDel:
  * @mon: monitor object

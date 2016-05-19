@@ -215,9 +215,6 @@ int qemuMonitorJSONAttachPCIDiskController(qemuMonitorPtr mon,
                                            const char *bus,
                                            virPCIDeviceAddress *guestAddr);
 
-int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon,
-                                      qemuMonitorPCIAddress **addrs);
-
 int qemuMonitorJSONAddDevice(qemuMonitorPtr mon,
                              const char *devicestr);
 

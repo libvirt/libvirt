@@ -3568,15 +3568,6 @@ qemuMonitorJSONGetChardevInfo(qemuMonitorPtr mon,
 }
 
 
-int qemuMonitorJSONGetAllPCIAddresses(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
-                                      qemuMonitorPCIAddress **addrs ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("query-pci not supported in JSON mode"));
-    return -1;
-}
-
-
 int qemuMonitorJSONDelDevice(qemuMonitorPtr mon,
                              const char *devalias)
 {

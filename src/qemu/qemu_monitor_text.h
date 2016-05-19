@@ -142,9 +142,6 @@ int qemuMonitorTextRemoveNetdev(qemuMonitorPtr mon,
 int qemuMonitorTextGetChardevInfo(qemuMonitorPtr mon,
                                   virHashTablePtr info);
 
-int qemuMonitorTextGetAllPCIAddresses(qemuMonitorPtr mon,
-                                      qemuMonitorPCIAddress **addrs);
-
 int qemuMonitorTextAddDevice(qemuMonitorPtr mon,
                              const char *devicestr);
 
