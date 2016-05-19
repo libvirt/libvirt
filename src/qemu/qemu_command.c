@@ -1080,6 +1080,18 @@ qemuCheckFips(void)
 }
 
 
+/* Unfortunately it is not possible to use
+   -device for floppies, or SD
+   devices. Fortunately, those don't need
+   static PCI addresses, so we don't really
+   care that we can't use -device */
+static bool
+qemuDiskBusNeedsDeviceArg(int bus)
+{
+    return bus != VIR_DOMAIN_DISK_BUS_SD;
+}
+
+
 char *
 qemuBuildDriveStr(virDomainDiskDefPtr disk,
                   bool bootable,
@@ -1904,7 +1916,6 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
         char *optstr;
         unsigned int bootindex = 0;
         virDomainDiskDefPtr disk = def->disks[i];
-        bool withDeviceArg = false;
         bool deviceFlagMasked = false;
 
         /* PowerPC pseries based VMs do not support floppy device */
@@ -1934,14 +1945,7 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
 
         virCommandAddArg(cmd, "-drive");
 
-        /* Unfortunately it is not possible to use
-           -device for floppies, or SD
-           devices. Fortunately, those don't need
-           static PCI addresses, so we don't really
-           care that we can't use -device */
-        if (disk->bus != VIR_DOMAIN_DISK_BUS_SD) {
-            withDeviceArg = true;
-        } else {
+        if (!qemuDiskBusNeedsDeviceArg(disk->bus)) {
             virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE);
             deviceFlagMasked = true;
         }
@@ -1960,7 +1964,7 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
         else if (disk->info.bootIndex)
             bootindex = disk->info.bootIndex;
 
-        if (withDeviceArg) {
+        if (qemuDiskBusNeedsDeviceArg(disk->bus)) {
             if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC) {
                 if (virAsprintf(&optstr, "drive%c=drive-%s",
                                 disk->info.addr.drive.unit ? 'B' : 'A',
