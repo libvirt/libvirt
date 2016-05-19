@@ -447,7 +447,7 @@ endif WITH_DBUS
 if WITH_LINUX
 test_libraries += virusbmock.la \
 		virnetdevbandwidthmock.la \
-		virtestmock.la
+		virtestmock.la \
 		$(NULL)
 endif WITH_LINUX
 
