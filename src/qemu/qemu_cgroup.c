@@ -51,7 +51,6 @@ static const char *const defaultDeviceACL[] = {
 };
 #define DEVICE_PTY_MAJOR 136
 #define DEVICE_SND_MAJOR 116
-#define DEVICE_DRI_MAJOR 226
 
 
 static int
@@ -625,20 +624,6 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
                                   "sound", "rw", rv == 0);
         if (rv < 0)
             goto cleanup;
-    }
-
-    if (vm->def->nvideos) {
-        /* currently libvirt only allows the primary video to be virtio */
-        virDomainVideoDefPtr vid = vm->def->videos[0];
-        if (vid->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
-            vid->accel && vid->accel->accel3d == VIR_TRISTATE_BOOL_YES) {
-            rv = virCgroupAllowDevice(priv->cgroup, 'c', DEVICE_DRI_MAJOR, -1,
-                                      VIR_CGROUP_DEVICE_RW);
-            virDomainAuditCgroupMajor(vm, priv->cgroup, "allow", DEVICE_DRI_MAJOR,
-                                      "video", "rw", rv == 0);
-            if (rv < 0)
-                goto cleanup;
-        }
     }
 
     for (i = 0; deviceACL[i] != NULL; i++) {
