@@ -385,9 +385,6 @@ int qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
 
 int qemuMonitorBlockIOStatusToError(const char *status);
 virHashTablePtr qemuMonitorGetBlockInfo(qemuMonitorPtr mon);
-struct qemuDomainDiskInfo *
-qemuMonitorBlockInfoLookup(virHashTablePtr blockInfo,
-                           const char *dev_name);
 
 typedef struct _qemuBlockStats qemuBlockStats;
 typedef qemuBlockStats *qemuBlockStatsPtr;

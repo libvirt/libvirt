@@ -236,6 +236,10 @@ struct _qemuDomainDiskPrivate {
     bool blockJobSync; /* the block job needs synchronized termination */
 
     bool migrating; /* the disk is being migrated */
+
+    /* information about the device */
+    bool tray; /* device has tray */
+    bool removable; /* device media can be removed/changed */
 };
 
 struct qemuDomainDiskInfo {
