@@ -307,7 +307,9 @@ struct _qemuDomainDiskPrivate {
 struct qemuDomainDiskInfo {
     bool removable;
     bool locked;
+    bool tray;
     bool tray_open;
+    bool empty;
     int io_status;
 };
 
