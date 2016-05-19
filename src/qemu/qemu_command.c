@@ -1951,13 +1951,12 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
         virCommandAddArg(cmd, "-drive");
 
         /* Unfortunately it is not possible to use
-           -device for floppies, xen PV, or SD
+           -device for floppies, or SD
            devices. Fortunately, those don't need
            static PCI addresses, so we don't really
            care that we can't use -device */
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE)) {
-            if (disk->bus != VIR_DOMAIN_DISK_BUS_XEN &&
-                disk->bus != VIR_DOMAIN_DISK_BUS_SD) {
+            if (disk->bus != VIR_DOMAIN_DISK_BUS_SD) {
                 withDeviceArg = true;
             } else {
                 virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE);

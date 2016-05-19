@@ -195,7 +195,6 @@ mymain(void)
     DO_TEST("disk-floppy");
     DO_TEST("disk-many");
     DO_TEST("disk-virtio");
-    DO_TEST("disk-xenvbd");
     DO_TEST("disk-drive-boot-disk");
     DO_TEST("disk-drive-boot-cdrom");
     DO_TEST("disk-drive-fmt-qcow");

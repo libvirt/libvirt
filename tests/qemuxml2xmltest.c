@@ -365,7 +365,6 @@ mymain(void)
     DO_TEST("disk-cdrom-empty");
     DO_TEST("disk-floppy");
     DO_TEST("disk-many");
-    DO_TEST("disk-xenvbd");
     DO_TEST("disk-usb-device");
     DO_TEST("disk-virtio");
     DO_TEST("floppy-drive-fat");

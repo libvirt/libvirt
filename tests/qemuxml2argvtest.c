@@ -752,7 +752,6 @@ mymain(void)
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST("disk-order",
             QEMU_CAPS_DRIVE_BOOT, QEMU_CAPS_VIRTIO_BLK_SCSI);
-    DO_TEST("disk-xenvbd", QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-drive-boot-disk",
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-drive-boot-cdrom",
