@@ -196,7 +196,8 @@ xenParseXMDisk(virConfPtr conf, virDomainDefPtr def)
                 }
 
                 /* And the sub-type for tap:XXX: type */
-                if (STREQ_NULLABLE(virDomainDiskGetDriver(disk), "tap")) {
+                if (STREQ_NULLABLE(virDomainDiskGetDriver(disk), "tap") ||
+                    STREQ_NULLABLE(virDomainDiskGetDriver(disk), "tap2")) {
                     char *driverType;
 
                     if (!(tmp = strchr(src, ':')))
@@ -300,7 +301,7 @@ xenFormatXMDisk(virConfValuePtr list,
 
             if (driver) {
                 virBufferAsprintf(&buf, "%s:", driver);
-                if (STREQ(driver, "tap"))
+                if (STREQ(driver, "tap") || STREQ(driver, "tap2"))
                     virBufferAsprintf(&buf, "%s:", type);
             }
         } else {
