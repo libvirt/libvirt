@@ -299,6 +299,10 @@ struct _qemuDomainDiskPrivate {
     /* for storage devices using auth/secret
      * NB: *not* to be written to qemu domain object XML */
     qemuDomainSecretInfoPtr secinfo;
+
+    /* information about the device */
+    bool tray; /* device has tray */
+    bool removable; /* device media can be removed/changed */
 };
 
 # define QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev)	\

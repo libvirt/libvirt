@@ -6254,25 +6254,27 @@ qemuProcessRefreshDisks(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
+        qemuDomainDiskPrivatePtr diskpriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         struct qemuDomainDiskInfo *info;
 
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
-            disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-                 continue;
-        }
+        if (!(info = virHashLookup(table, disk->info.alias)))
+            continue;
 
-        info = qemuMonitorBlockInfoLookup(table, disk->info.alias);
-        if (!info)
-            goto cleanup;
-
-        if (info->tray_open) {
-            if (virDomainDiskGetSource(disk))
+        if (info->removable) {
+            if (info->empty)
                 ignore_value(virDomainDiskSetSource(disk, NULL));
 
-            disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
-        } else {
-            disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
+            if (info->tray) {
+                if (info->tray_open)
+                    disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
+                else
+                    disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
+            }
         }
+
+        /* fill in additional data */
+        diskpriv->removable = info->removable;
+        diskpriv->tray = info->tray;
     }
 
     ret = 0;
