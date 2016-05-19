@@ -45,15 +45,8 @@
 #include "virthreadjob.h"
 #include "viratomic.h"
 #include "virprocess.h"
-#include "virrandom.h"
+#include "vircrypto.h"
 #include "secret_util.h"
-#include "base64.h"
-#ifdef WITH_GNUTLS
-# include <gnutls/gnutls.h>
-# if HAVE_GNUTLS_CRYPTO_H
-#  include <gnutls/crypto.h>
-# endif
-#endif
 #include "logging/log_manager.h"
 #include "locking/domain_lock.h"
 
@@ -630,48 +623,6 @@ qemuDomainMasterKeyReadFile(qemuDomainObjPrivatePtr priv)
 }
 
 
-/* qemuDomainGenerateRandomKey
- * @nbytes: Size in bytes of random key to generate
- *
- * Generate a random key of nbytes length and return it.
- *
- * Since the gnutls_rnd could be missing, provide an alternate less
- * secure mechanism to at least have something.
- *
- * Returns pointer memory containing key on success, NULL on failure
- */
-static uint8_t *
-qemuDomainGenerateRandomKey(size_t nbytes)
-{
-    uint8_t *key;
-    int ret;
-
-    if (VIR_ALLOC_N(key, nbytes) < 0)
-        return NULL;
-
-#if HAVE_GNUTLS_RND
-    /* Generate a master key using gnutls_rnd() if possible */
-    if ((ret = gnutls_rnd(GNUTLS_RND_RANDOM, key, nbytes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to generate master key, ret=%d"), ret);
-        VIR_FREE(key);
-        return NULL;
-    }
-#else
-    /* If we don't have gnutls_rnd(), we will generate a less cryptographically
-     * strong master key from /dev/urandom.
-     */
-    if ((ret = virRandomBytes(key, nbytes)) < 0) {
-        virReportSystemError(ret, "%s", _("failed to generate master key"));
-        VIR_FREE(key);
-        return NULL;
-    }
-#endif
-
-    return key;
-}
-
-
 /* qemuDomainMasterKeyRemove:
  * @priv: Pointer to the domain private object
  *
@@ -718,7 +669,7 @@ qemuDomainMasterKeyCreate(virDomainObjPtr vm)
         return 0;
 
     if (!(priv->masterKey =
-          qemuDomainGenerateRandomKey(QEMU_DOMAIN_MASTER_KEY_LEN)))
+          virCryptoGenerateRandom(QEMU_DOMAIN_MASTER_KEY_LEN)))
         return -1;
 
     priv->masterKeyLen = QEMU_DOMAIN_MASTER_KEY_LEN;
