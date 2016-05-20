@@ -1541,13 +1541,11 @@ lxcDomainDestroyFlags(virDomainPtr dom,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
     priv->doneStopEvent = true;
     virDomainAuditStop(vm, "destroyed");
-    if (!vm->persistent) {
-        virDomainObjListRemove(driver->domains, vm);
-        vm = NULL;
-    }
 
  endjob:
     virLXCDomainObjEndJob(driver, vm);
+    if (!vm->persistent)
+        virDomainObjListRemove(driver->domains, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
