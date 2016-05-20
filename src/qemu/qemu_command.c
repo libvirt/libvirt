@@ -4066,6 +4066,12 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
 
     virBufferAsprintf(&buf, "%s,id=%s", model, video->info.alias);
 
+    if (video->accel && video->accel->accel2d == VIR_TRISTATE_SWITCH_ON) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("qemu does not support the accel2d setting"));
+        goto error;
+    }
+
     if (video->accel && video->accel->accel3d == VIR_TRISTATE_SWITCH_ON) {
         if (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO ||
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU_VIRGL)) {
