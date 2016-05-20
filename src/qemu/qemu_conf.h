@@ -287,13 +287,6 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver);
 virCapsPtr virQEMUDriverGetCapabilities(virQEMUDriverPtr driver,
                                         bool refresh);
 
-struct qemuDomainDiskInfo {
-    bool removable;
-    bool locked;
-    bool tray_open;
-    int io_status;
-};
-
 typedef struct _qemuSharedDeviceEntry qemuSharedDeviceEntry;
 typedef qemuSharedDeviceEntry *qemuSharedDeviceEntryPtr;
 

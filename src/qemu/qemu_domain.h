@@ -238,6 +238,13 @@ struct _qemuDomainDiskPrivate {
     bool migrating; /* the disk is being migrated */
 };
 
+struct qemuDomainDiskInfo {
+    bool removable;
+    bool locked;
+    bool tray_open;
+    int io_status;
+};
+
 typedef enum {
     QEMU_PROCESS_EVENT_WATCHDOG = 0,
     QEMU_PROCESS_EVENT_GUESTPANIC,
