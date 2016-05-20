@@ -45,6 +45,10 @@ int virStreamRecv(virStreamPtr st,
                   char *data,
                   size_t nbytes);
 
+typedef enum {
+    VIR_STREAM_RECV_STOP_AT_HOLE = (1 << 0),
+} virStreamRecvFlagsValues;
+
 int virStreamRecvFlags(virStreamPtr st,
                        char *data,
                        size_t nbytes,
