@@ -69,7 +69,7 @@ typedef enum {
     /* 15 */
     X_QEMU_CAPS_VGA, /* Is -vga avail */
     X_QEMU_CAPS_0_10, /* features added in qemu-0.10.0 or later */
-    QEMU_CAPS_PCIDEVICE, /* PCI device assignment supported */
+    X_QEMU_CAPS_PCIDEVICE, /* PCI device assignment supported */
     QEMU_CAPS_MEM_PATH, /* mmap'ped guest backing supported */
     QEMU_CAPS_DRIVE_SERIAL, /* -driver serial=  available */
 

@@ -675,7 +675,7 @@ mymain(void)
 
     DO_TEST("cpu-eoi-disabled", QEMU_CAPS_ENABLE_KVM);
     DO_TEST("cpu-eoi-enabled", QEMU_CAPS_ENABLE_KVM);
-    DO_TEST("controller-order", QEMU_CAPS_PCIDEVICE,
+    DO_TEST("controller-order",
             QEMU_CAPS_KVM, QEMU_CAPS_ENABLE_KVM,
             QEMU_CAPS_BOOT_MENU, QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_DRIVE_AIO,
@@ -997,21 +997,19 @@ mymain(void)
     DO_TEST("net-mcast", NONE);
     DO_TEST("net-udp", NONE);
     DO_TEST("net-hostdev",
-            QEMU_CAPS_PCIDEVICE, QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_NODEFCONFIG);
     DO_TEST("net-hostdev-multidomain",
-            QEMU_CAPS_PCIDEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
     DO_TEST_FAILURE("net-hostdev-multidomain",
-                    QEMU_CAPS_PCIDEVICE,
                     QEMU_CAPS_NODEFCONFIG);
     DO_TEST("net-hostdev-vfio",
-            QEMU_CAPS_PCIDEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("net-hostdev-vfio-multidomain",
-            QEMU_CAPS_PCIDEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VFIO_PCI, QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
     DO_TEST_FAILURE("net-hostdev-vfio-multidomain",
-                    QEMU_CAPS_PCIDEVICE,
                     QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VFIO_PCI);
 
     DO_TEST("serial-vc", NONE);
@@ -1243,20 +1241,19 @@ mymain(void)
     DO_TEST("hostdev-usb-address-device-boot",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_BOOTINDEX,
             QEMU_CAPS_USB_HOST_BOOTINDEX);
-    DO_TEST("hostdev-pci-address", QEMU_CAPS_PCIDEVICE);
+    DO_TEST("hostdev-pci-address", NONE);
     DO_TEST("hostdev-pci-address-device",
-            QEMU_CAPS_PCIDEVICE, QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_NODEFCONFIG);
     DO_TEST("hostdev-vfio",
-            QEMU_CAPS_PCIDEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-vfio-multidomain",
-            QEMU_CAPS_PCIDEVICE, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VFIO_PCI, QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
     DO_TEST_FAILURE("hostdev-vfio-multidomain",
-                    QEMU_CAPS_PCIDEVICE,
                     QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pci-rom",
-            QEMU_CAPS_PCIDEVICE, QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_NODEFCONFIG);
 
     DO_TEST_FULL("restore-v2", "exec:cat", 7, 0, 0, GIC_NONE, NONE);
     DO_TEST_FULL("restore-v2-fd", "stdio", 7, 0, 0, GIC_NONE, NONE);
@@ -1845,14 +1842,13 @@ mymain(void)
 
     DO_TEST("fips-enabled", QEMU_CAPS_ENABLE_FIPS);
 
-    DO_TEST("shmem", QEMU_CAPS_PCIDEVICE,
-            QEMU_CAPS_DEVICE_IVSHMEM);
+    DO_TEST("shmem", QEMU_CAPS_DEVICE_IVSHMEM);
     DO_TEST_FAILURE("shmem", NONE);
-    DO_TEST_FAILURE("shmem-invalid-size", QEMU_CAPS_PCIDEVICE,
+    DO_TEST_FAILURE("shmem-invalid-size",
                     QEMU_CAPS_DEVICE_IVSHMEM);
-    DO_TEST_FAILURE("shmem-invalid-address", QEMU_CAPS_PCIDEVICE,
+    DO_TEST_FAILURE("shmem-invalid-address",
                     QEMU_CAPS_DEVICE_IVSHMEM);
-    DO_TEST_FAILURE("shmem-small-size", QEMU_CAPS_PCIDEVICE,
+    DO_TEST_FAILURE("shmem-small-size",
                     QEMU_CAPS_DEVICE_IVSHMEM);
     DO_TEST_PARSE_ERROR("shmem-msi-only", NONE);
     DO_TEST("cpu-host-passthrough-features", QEMU_CAPS_KVM);

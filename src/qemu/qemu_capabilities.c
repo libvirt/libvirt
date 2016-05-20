@@ -1158,8 +1158,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_BOOT);
     if (strstr(help, "serial=s"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL);
-    if (strstr(help, "-pcidevice"))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_PCIDEVICE);
     if (strstr(help, "host=[seg:]bus"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
     if (strstr(help, "-mem-path"))
