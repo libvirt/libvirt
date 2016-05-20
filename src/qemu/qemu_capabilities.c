@@ -1171,8 +1171,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
         if (strstr(help, "-chardev spiceport"))
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEPORT);
     }
-    if (strstr(help, "-device"))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE);
     if (strstr(help, "-nodefconfig"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NODEFCONFIG);
     if (strstr(help, "-no-user-config"))
@@ -3331,8 +3329,7 @@ virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid, const c
 
     /* virQEMUCapsExtractDeviceStr will only set additional caps if qemu
      * understands the 0.13.0+ notion of "-device driver,".  */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
-        strstr(help, "-device driver,?") &&
+    if (strstr(help, "-device driver,?") &&
         virQEMUCapsExtractDeviceStr(qemuCaps->binary,
                                     qemuCaps, runUid, runGid) < 0) {
         goto cleanup;
@@ -3374,7 +3371,6 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_SERIAL);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SMP_TOPOLOGY);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV);
@@ -4011,8 +4007,7 @@ virQEMUCapsSupportsChardev(const virDomainDef *def,
                            virQEMUCapsPtr qemuCaps,
                            virDomainChrDefPtr chr)
 {
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV) ||
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV))
         return false;
 
     if ((def->os.arch == VIR_ARCH_PPC) || ARCH_IS_PPC64(def->os.arch)) {
@@ -4214,8 +4209,7 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
     VIR_DOMAIN_CAPS_ENUM_SET(hostdev->subsysType,
                              VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB,
                              VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI);
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC))
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC))
         VIR_DOMAIN_CAPS_ENUM_SET(hostdev->subsysType,
                                  VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI);
 
@@ -4230,9 +4224,7 @@ virQEMUCapsFillDomainDeviceHostdevCaps(virQEMUCapsPtr qemuCaps,
                                  VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO);
     }
 
-    if (supportsPassthroughKVM &&
-        (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCIDEVICE) ||
-         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))) {
+    if (supportsPassthroughKVM) {
         VIR_DOMAIN_CAPS_ENUM_SET(hostdev->pciBackend,
                                  VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT,
                                  VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM);

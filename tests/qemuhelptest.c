@@ -70,19 +70,17 @@ static int testHelpStrParsing(const void *data)
         virQEMUCapsSet(flags, QEMU_CAPS_MONITOR_JSON);
 # endif
 
-    if (virQEMUCapsGet(info->flags, QEMU_CAPS_DEVICE)) {
-        VIR_FREE(path);
-        VIR_FREE(help);
-        if (virAsprintf(&path, "%s/qemuhelpdata/%s-device", abs_srcdir,
-                        info->name) < 0)
-            goto cleanup;
+    VIR_FREE(path);
+    VIR_FREE(help);
+    if (virAsprintf(&path, "%s/qemuhelpdata/%s-device", abs_srcdir,
+                    info->name) < 0)
+        goto cleanup;
 
-        if (virtTestLoadFile(path, &help) < 0)
-            goto cleanup;
+    if (virtTestLoadFile(path, &help) < 0)
+        goto cleanup;
 
-        if (virQEMUCapsParseDeviceStr(flags, help) < 0)
-            goto cleanup;
-    }
+    if (virQEMUCapsParseDeviceStr(flags, help) < 0)
+        goto cleanup;
 
     got = virQEMUCapsFlagsString(flags);
     expected = virQEMUCapsFlagsString(info->flags);
@@ -156,7 +154,6 @@ mymain(void)
             QEMU_CAPS_ENABLE_KVM,
             QEMU_CAPS_SDL,
             QEMU_CAPS_CHARDEV,
-            QEMU_CAPS_DEVICE,
             QEMU_CAPS_SMP_TOPOLOGY,
             QEMU_CAPS_RTC,
             QEMU_CAPS_NO_HPET,
@@ -177,7 +174,6 @@ mymain(void)
             QEMU_CAPS_CHARDEV,
             QEMU_CAPS_ENABLE_KVM,
             QEMU_CAPS_MONITOR_JSON,
-            QEMU_CAPS_DEVICE,
             QEMU_CAPS_SMP_TOPOLOGY,
             QEMU_CAPS_NETDEV,
             QEMU_CAPS_RTC,
@@ -220,7 +216,6 @@ mymain(void)
             QEMU_CAPS_MEM_PATH,
             QEMU_CAPS_SDL,
             QEMU_CAPS_CHARDEV,
-            QEMU_CAPS_DEVICE,
             QEMU_CAPS_SMP_TOPOLOGY,
             QEMU_CAPS_RTC,
             QEMU_CAPS_VHOST_NET,
@@ -247,7 +242,6 @@ mymain(void)
             QEMU_CAPS_CHARDEV,
             QEMU_CAPS_ENABLE_KVM,
             QEMU_CAPS_MONITOR_JSON,
-            QEMU_CAPS_DEVICE,
             QEMU_CAPS_SMP_TOPOLOGY,
             QEMU_CAPS_NETDEV,
             QEMU_CAPS_RTC,
@@ -300,7 +294,6 @@ mymain(void)
             QEMU_CAPS_CHARDEV,
             QEMU_CAPS_ENABLE_KVM,
             QEMU_CAPS_MONITOR_JSON,
-            QEMU_CAPS_DEVICE,
             QEMU_CAPS_SMP_TOPOLOGY,
             QEMU_CAPS_NETDEV,
             QEMU_CAPS_RTC,
@@ -351,7 +344,6 @@ mymain(void)
             QEMU_CAPS_CHARDEV,
             QEMU_CAPS_ENABLE_KVM,
             QEMU_CAPS_MONITOR_JSON,
-            QEMU_CAPS_DEVICE,
             QEMU_CAPS_SMP_TOPOLOGY,
             QEMU_CAPS_NETDEV,
             QEMU_CAPS_RTC,
@@ -409,7 +401,6 @@ mymain(void)
             QEMU_CAPS_CHARDEV,
             QEMU_CAPS_ENABLE_KVM,
             QEMU_CAPS_MONITOR_JSON,
-            QEMU_CAPS_DEVICE,
             QEMU_CAPS_SMP_TOPOLOGY,
             QEMU_CAPS_NETDEV,
             QEMU_CAPS_RTC,
@@ -483,7 +474,6 @@ mymain(void)
             QEMU_CAPS_CHARDEV,
             QEMU_CAPS_ENABLE_KVM,
             QEMU_CAPS_MONITOR_JSON,
-            QEMU_CAPS_DEVICE,
             QEMU_CAPS_SMP_TOPOLOGY,
             QEMU_CAPS_NETDEV,
             QEMU_CAPS_RTC,

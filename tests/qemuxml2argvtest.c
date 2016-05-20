@@ -299,7 +299,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     virQEMUCapsSetList(extraFlags,
                        QEMU_CAPS_NO_ACPI,
-                       QEMU_CAPS_DEVICE,
                        QEMU_CAPS_LAST);
 
     if (STREQ(vm->def->os.machine, "pc") &&
