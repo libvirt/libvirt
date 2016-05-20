@@ -762,6 +762,7 @@ LIBVIRT_3.1.0 {
 LIBVIRT_3.4.0 {
     global:
         virStreamRecvFlags;
+        virStreamRecvHole;
         virStreamSendHole;
 } LIBVIRT_3.1.0;
 

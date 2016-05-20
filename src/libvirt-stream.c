@@ -406,6 +406,50 @@ virStreamSendHole(virStreamPtr stream,
 
 
 /**
+ * virStreamRecvHole:
+ * @stream: pointer to the stream object
+ * @length: number of bytes to skip
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * This API is used to determine the @length in bytes of the
+ * empty space to be created in a @stream's target file when
+ * uploading or downloading sparsely populated files. This is the
+ * counterpart to virStreamSendHole().
+ *
+ * Returns 0 on success,
+ *        -1 on error or when there's currently no hole in the stream
+ */
+int
+virStreamRecvHole(virStreamPtr stream,
+                  long long *length,
+                  unsigned int flags)
+{
+    VIR_DEBUG("stream=%p, length=%p flags=%x",
+              stream, length, flags);
+
+    virResetLastError();
+
+    virCheckStreamReturn(stream, -1);
+    virCheckNonNullArgReturn(length, -1);
+
+    if (stream->driver &&
+        stream->driver->streamRecvHole) {
+        int ret;
+        ret = (stream->driver->streamRecvHole)(stream, length, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(stream->conn);
+    return -1;
+}
+
+
+/**
  * virStreamSendAll:
  * @stream: pointer to the stream object
  * @handler: source callback for reading data from application
