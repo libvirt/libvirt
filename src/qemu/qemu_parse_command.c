@@ -1645,8 +1645,15 @@ qemuParseCommandLineMem(virDomainDefPtr dom,
         return -1;
     }
 
-    virDomainDefSetMemoryTotal(dom, mem * 1024);
-    dom->mem.cur_balloon = mem * 1024;
+    if (virScaleInteger(&mem, end, 1024*1024, ULLONG_MAX) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot scale memory: %s"),
+                       virGetLastErrorMessage());
+        return -1;
+    }
+
+    virDomainDefSetMemoryTotal(dom, mem / 1024);
+    dom->mem.cur_balloon = mem / 1024;
 
     return 0;
 }
