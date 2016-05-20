@@ -96,7 +96,6 @@ typedef struct _vzConn *vzConnPtr;
 
 struct vzDomObj {
     int id;
-    char *home;
     PRL_HANDLE sdkdom;
     PRL_HANDLE stats;
 };

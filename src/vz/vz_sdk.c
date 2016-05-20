@@ -465,7 +465,6 @@ prlsdkDomObjFreePrivate(void *p)
 
     PrlHandle_Free(pdom->sdkdom);
     PrlHandle_Free(pdom->stats);
-    VIR_FREE(pdom->home);
     VIR_FREE(p);
 };
 
@@ -1504,7 +1503,6 @@ prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
     virDomainDefPtr def = NULL;
     vzDomObjPtr pdom = NULL;
     VIRTUAL_MACHINE_STATE domainState;
-    char *home = NULL;
 
     PRL_RESULT pret;
     PRL_UINT32 ram;
@@ -1562,17 +1560,6 @@ prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
     pret = PrlVmCfg_GetEnvId(sdkdom, &envId);
     prlsdkCheckRetGoto(pret, error);
 
-    if (!(home = prlsdkGetStringParamVar(PrlVmCfg_GetHomePath, sdkdom)))
-        goto error;
-
-    /* For VMs home is actually /directory/config.pvs */
-    if (!IS_CT(def)) {
-        /* Get rid of /config.pvs in path string */
-        char *s = strrchr(home, '/');
-        if (s)
-            *s = '\0';
-    }
-
     pret = PrlVmCfg_GetAutoStart(sdkdom, &autostart);
     prlsdkCheckRetGoto(pret, error);
     if (autostart != PAO_VM_START_ON_LOAD &&
@@ -1618,8 +1605,6 @@ prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
     virDomainDefFree(dom->def);
     dom->def = def;
     pdom->id = envId;
-    VIR_FREE(pdom->home);
-    pdom->home = home;
 
     prlsdkConvertDomainState(domainState, envId, dom);
 
@@ -1632,7 +1617,6 @@ prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
     return 0;
  error:
     PrlHandle_Free(sdkdom);
-    VIR_FREE(home);
     virDomainDefFree(def);
     return -1;
 }
