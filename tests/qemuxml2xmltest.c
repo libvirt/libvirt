@@ -375,7 +375,6 @@ mymain(void)
     DO_TEST("disk-drive-error-policy-stop");
     DO_TEST("disk-drive-error-policy-enospace");
     DO_TEST("disk-drive-error-policy-wreport-rignore");
-    DO_TEST("disk-drive-fat");
     DO_TEST("disk-drive-fmt-qcow");
     DO_TEST("disk-drive-copy-on-read");
     DO_TEST("disk-drive-cache-v2-wt");
