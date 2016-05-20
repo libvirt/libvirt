@@ -105,7 +105,7 @@ typedef enum {
     QEMU_CAPS_FSDEV, /* -fstype filesystem passthrough */
     QEMU_CAPS_NESTING, /* -enable-nesting (SVM/VMX) */
     QEMU_CAPS_NAME_PROCESS, /* Is -name process= available */
-    QEMU_CAPS_DRIVE_READONLY, /* -drive readonly=on|off */
+    X_QEMU_CAPS_DRIVE_READONLY, /* -drive readonly=on|off */
     QEMU_CAPS_SMBIOS_TYPE, /* Is -smbios type= available */
 
     /* 45 */

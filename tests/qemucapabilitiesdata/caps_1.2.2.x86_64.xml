@@ -20,7 +20,6 @@
   <flag name='boot-menu'/>
   <flag name='fsdev'/>
   <flag name='name-process'/>
-  <flag name='drive-readonly'/>
   <flag name='smbios-type'/>
   <flag name='vga-qxl'/>
   <flag name='spice'/>

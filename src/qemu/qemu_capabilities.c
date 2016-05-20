@@ -1134,8 +1134,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
         if (memmem(cache, p - cache, "unsafe", sizeof("unsafe") - 1))
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE);
     }
-    if (strstr(help, "readonly="))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_READONLY);
     if (strstr(help, "aio=threads|native"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_AIO);
     if (strstr(help, "copy-on-read=on|off"))
@@ -1173,14 +1171,8 @@ virQEMUCapsComputeCmdFlags(const char *help,
         if (strstr(help, "-chardev spiceport"))
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEPORT);
     }
-    if (strstr(help, "-device")) {
+    if (strstr(help, "-device"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE);
-        /*
-         * When -device was introduced, qemu already supported drive's
-         * readonly option but didn't advertise that.
-         */
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_READONLY);
-    }
     if (strstr(help, "-nodefconfig"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NODEFCONFIG);
     if (strstr(help, "-no-user-config"))
@@ -3392,7 +3384,6 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_BOOT_MENU);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_FSDEV);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NAME_PROCESS);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_READONLY);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SMBIOS_TYPE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VGA_NONE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_AIO);

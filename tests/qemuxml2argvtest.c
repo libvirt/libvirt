@@ -300,7 +300,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virQEMUCapsSetList(extraFlags,
                        QEMU_CAPS_NO_ACPI,
                        QEMU_CAPS_DEVICE,
-                       QEMU_CAPS_DRIVE_READONLY,
                        QEMU_CAPS_LAST);
 
     if (STREQ(vm->def->os.machine, "pc") &&
@@ -661,8 +660,7 @@ mymain(void)
     DO_TEST_FAILURE("reboot-timeout-enabled", NONE);
 
     DO_TEST("bios", QEMU_CAPS_SGA);
-    DO_TEST("bios-nvram",
-            QEMU_CAPS_DRIVE_READONLY);
+    DO_TEST("bios-nvram", NONE);
     DO_TEST("clock-utc", QEMU_CAPS_NODEFCONFIG);
     DO_TEST("clock-localtime", NONE);
     DO_TEST("clock-localtime-basis-localtime", QEMU_CAPS_RTC);
@@ -760,10 +758,9 @@ mymain(void)
     DO_TEST("floppy-drive-fat",
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-drive-readonly-disk",
-            QEMU_CAPS_DRIVE_READONLY,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("disk-drive-readonly-no-device",
-            QEMU_CAPS_DRIVE_READONLY, QEMU_CAPS_NODEFCONFIG);
+            QEMU_CAPS_NODEFCONFIG);
     DO_TEST("disk-drive-fmt-qcow",
             QEMU_CAPS_DRIVE_BOOT);
     DO_TEST("disk-drive-shared",
@@ -1647,7 +1644,7 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_DEVICE_SCSI_GENERIC);
     DO_TEST("hostdev-scsi-readonly",
-            QEMU_CAPS_DRIVE_READONLY, QEMU_CAPS_VIRTIO_SCSI,
+            QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_DEVICE_SCSI_GENERIC);
     DO_TEST("hostdev-scsi-virtio-scsi",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_VIRTIO_SCSI,
