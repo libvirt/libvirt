@@ -345,12 +345,6 @@
 %endif
 
 
-# Advertise OVMF and AAVMF from nightly firmware repo
-%if 0%{?fedora}
-    %define with_loader_nvram --with-loader-nvram="/usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd:/usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd:/usr/share/edk2.git/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2.git/aarch64/vars-template-pflash.raw"
-%endif
-
-
 # The RHEL-5 Xen package has some feature backports. This
 # flag is set to enable use of those special bits on RHEL-5
 %if 0%{?rhel} == 5
@@ -1483,6 +1477,18 @@ rm -rf .git
     %else
         %define with_selinux_mount --with-selinux-mount="/selinux"
     %endif
+%endif
+
+%if 0%{?fedora}
+    # Nightly firmware repo x86/OVMF
+    LOADERS="/usr/share/edk2.git/ovmf-x64/OVMF_CODE-pure-efi.fd:/usr/share/edk2.git/ovmf-x64/OVMF_VARS-pure-efi.fd"
+    # Nightly firmware repo aarch64/AAVMF
+    LOADERS="$LOADERS:/usr/share/edk2.git/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2.git/aarch64/vars-template-pflash.raw"
+    # Fedora official x86/OVMF
+    LOADERS="$LOADERS:/usr/share/edk2/ovmf/OVMF_CODE.fd:/usr/share/edk2/ovmf/OVMF_VARS.fd"
+    # Fedora official aarch64/AAVMF
+    LOADERS="$LOADERS:/usr/share/edk2/aarch64/QEMU_EFI-pflash.raw:/usr/share/edk2/aarch64/vars-template-pflash.raw"
+    %define with_loader_nvram --with-loader-nvram="$LOADERS"
 %endif
 
 # place macros above and build commands below this comment
