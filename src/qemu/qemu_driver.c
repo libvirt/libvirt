@@ -17790,12 +17790,12 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
+    virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
     virDomainBlockIoTuneInfo reply;
     char *device = NULL;
     int ret = -1;
     size_t i;
-    virCapsPtr caps = NULL;
     bool supportMaxOptions = true;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -17808,27 +17808,21 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     if (!(vm = qemuDomObjFromDomain(dom)))
         return -1;
 
-    if (virDomainGetBlockIoTuneEnsureACL(dom->conn, vm->def) < 0)
-        goto cleanup;
+    priv = vm->privateData;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (virDomainGetBlockIoTuneEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    /* the API check guarantees that only one of the definitions will be set */
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
-    sa_assert((flags & VIR_DOMAIN_AFFECT_LIVE) ||
-              (flags & VIR_DOMAIN_AFFECT_CONFIG));
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+    if (def) {
         /* If the VM is running, we can check if the current VM can use
-         * optional parameters or not. We didn't made this check sooner
-         * because we need vm->privateData which need
-         * virDomainLiveConfigHelperMethod to do so. */
-        priv = vm->privateData;
+         * optional parameters or not. */
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("block I/O throttling not supported with this "
@@ -17845,8 +17839,8 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
         goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (!(disk = qemuDomainDiskByName(vm->def, path)))
+    if (def) {
+        if (!(disk = qemuDomainDiskByName(def, path)))
             goto endjob;
 
         if (!(device = qemuAliasFromDisk(disk)))
@@ -17859,7 +17853,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
             goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         if (!(disk = virDomainDiskByName(persistentDef, path, true))) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("disk '%s' was not found in the domain config"),
@@ -17981,7 +17975,6 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
  cleanup:
     VIR_FREE(device);
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     return ret;
 }
 
