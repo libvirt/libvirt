@@ -1928,7 +1928,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     if (qemuDomainSecretHostdevPrepare(conn, priv, hostdev) < 0)
         goto cleanup;
 
-    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, priv->qemuCaps)))
+    if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev)))
         goto cleanup;
 
     if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))

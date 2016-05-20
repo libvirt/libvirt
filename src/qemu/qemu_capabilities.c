@@ -4079,8 +4079,7 @@ virQEMUCapsGetDefaultMachine(virQEMUCapsPtr qemuCaps)
 
 
 static int
-virQEMUCapsFillDomainLoaderCaps(virQEMUCapsPtr qemuCaps,
-                                virDomainCapsLoaderPtr capsLoader,
+virQEMUCapsFillDomainLoaderCaps(virDomainCapsLoaderPtr capsLoader,
                                 char **loader,
                                 size_t nloader)
 {
@@ -4112,25 +4111,22 @@ virQEMUCapsFillDomainLoaderCaps(virQEMUCapsPtr qemuCaps,
                              VIR_DOMAIN_LOADER_TYPE_PFLASH);
 
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY))
-        VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->readonly,
-                                 VIR_TRISTATE_BOOL_YES,
-                                 VIR_TRISTATE_BOOL_NO);
+    VIR_DOMAIN_CAPS_ENUM_SET(capsLoader->readonly,
+                             VIR_TRISTATE_BOOL_YES,
+                             VIR_TRISTATE_BOOL_NO);
     return 0;
 }
 
 
 static int
-virQEMUCapsFillDomainOSCaps(virQEMUCapsPtr qemuCaps,
-                            virDomainCapsOSPtr os,
+virQEMUCapsFillDomainOSCaps(virDomainCapsOSPtr os,
                             char **loader,
                             size_t nloader)
 {
     virDomainCapsLoaderPtr capsLoader = &os->loader;
 
     os->supported = true;
-    if (virQEMUCapsFillDomainLoaderCaps(qemuCaps, capsLoader,
-                                        loader, nloader) < 0)
+    if (virQEMUCapsFillDomainLoaderCaps(capsLoader, loader, nloader) < 0)
         return -1;
     return 0;
 }
@@ -4358,8 +4354,7 @@ virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
 
     domCaps->maxvcpus = maxvcpus;
 
-    if (virQEMUCapsFillDomainOSCaps(qemuCaps, os,
-                                    loader, nloader) < 0 ||
+    if (virQEMUCapsFillDomainOSCaps(os, loader, nloader) < 0 ||
         virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps,
                                             domCaps->machine, disk) < 0 ||
         virQEMUCapsFillDomainDeviceGraphicsCaps(qemuCaps, graphics) < 0 ||

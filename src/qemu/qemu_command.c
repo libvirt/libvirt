@@ -1393,8 +1393,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
          disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
         disk->bus != VIR_DOMAIN_DISK_BUS_IDE)
         virBufferAddLit(&opt, ",boot=on");
-    if (disk->src->readonly &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY)) {
+    if (disk->src->readonly) {
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
             if (disk->bus == VIR_DOMAIN_DISK_BUS_IDE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4608,8 +4607,7 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
 }
 
 char *
-qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
-                           virQEMUCapsPtr qemuCaps)
+qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *source = NULL;
@@ -4628,16 +4626,8 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev,
                       virDomainDeviceAddressTypeToString(dev->info->type),
                       dev->info->alias);
 
-    if (dev->readonly) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY)) {
-            virBufferAddLit(&buf, ",readonly=on");
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this qemu doesn't support 'readonly' "
-                             "for -drive"));
-            goto error;
-        }
-    }
+    if (dev->readonly)
+        virBufferAddLit(&buf, ",readonly=on");
 
     if (virBufferCheckError(&buf) < 0)
         goto error;
@@ -5040,7 +5030,7 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                 char *drvstr;
 
                 virCommandAddArg(cmd, "-drive");
-                if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev, qemuCaps)))
+                if (!(drvstr = qemuBuildSCSIHostdevDrvStr(hostdev)))
                     return -1;
                 virCommandAddArg(cmd, drvstr);
                 VIR_FREE(drvstr);
@@ -8775,13 +8765,6 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
         unit++;
 
         if (loader->readonly) {
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_READONLY)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("this qemu doesn't support passing "
-                                 "readonly attribute"));
-                goto cleanup;
-            }
-
             virBufferAsprintf(&buf, ",readonly=%s",
                               virTristateSwitchTypeToString(loader->readonly));
         }
