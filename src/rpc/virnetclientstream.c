@@ -457,13 +457,17 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
                                  virNetClientPtr client,
                                  char *data,
                                  size_t nbytes,
-                                 bool nonblock)
+                                 bool nonblock,
+                                 unsigned int flags)
 {
     int rv = -1;
     size_t want;
 
-    VIR_DEBUG("st=%p client=%p data=%p nbytes=%zu nonblock=%d",
-              st, client, data, nbytes, nonblock);
+    VIR_DEBUG("st=%p client=%p data=%p nbytes=%zu nonblock=%d flags=%x",
+              st, client, data, nbytes, nonblock, flags);
+
+    virCheckFlags(0, -1);
+
     virObjectLock(st);
     if (!st->rx && !st->incomingEOF) {
         virNetMessagePtr msg;

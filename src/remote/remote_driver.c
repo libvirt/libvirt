@@ -5665,7 +5665,8 @@ remoteStreamRecvFlags(virStreamPtr st,
                                       priv->client,
                                       data,
                                       nbytes,
-                                      (st->flags & VIR_STREAM_NONBLOCK));
+                                      (st->flags & VIR_STREAM_NONBLOCK),
+                                      flags);
 
     VIR_DEBUG("Done %d", rv);
 
