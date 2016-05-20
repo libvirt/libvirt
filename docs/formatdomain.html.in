@@ -5267,7 +5267,7 @@ qemu-kvm -net nic,model=? /dev/null
               Spice may provide accelerated server-side rendering with OpenGL.
               You can enable or disable OpenGL support explicitly with
               the <code>gl</code> element, by setting the <code>enable</code>
-              property. (QEMU only, <span class="since">since 1.3.2</span>).
+              property. (QEMU only, <span class="since">since 1.3.3</span>).
             </p>
           </dd>
           <dt><code>rdp</code></dt>
