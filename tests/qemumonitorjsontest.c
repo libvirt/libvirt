@@ -2431,6 +2431,7 @@ mymain(void)
 
     DO_TEST_CPU_DATA("host");
     DO_TEST_CPU_DATA("full");
+    DO_TEST_CPU_DATA("ecx");
 
     qemuTestDriverFree(&driver);
 
