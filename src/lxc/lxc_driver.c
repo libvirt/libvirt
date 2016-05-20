@@ -3642,6 +3642,7 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
                            unsigned int signum,
                            unsigned int flags)
 {
+    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     virLXCDomainObjPrivatePtr priv;
     pid_t victim;
@@ -3664,10 +3665,13 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
     if (virDomainSendProcessSignalEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     /*
@@ -3680,13 +3684,13 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
     if (pid_value != 1) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Only the init process may be killed"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (!priv->initpid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Init pid is not yet available"));
-        goto cleanup;
+        goto endjob;
     }
     victim = priv->initpid;
 
@@ -3697,10 +3701,14 @@ lxcDomainSendProcessSignal(virDomainPtr dom,
         virReportSystemError(errno,
                              _("Unable to send %d signal to process %d"),
                              signum, victim);
-        goto cleanup;
+        goto endjob;
     }
 
     ret = 0;
+
+ endjob:
+    if (!virLXCDomainObjEndJob(driver, vm))
+        vm = NULL;
 
  cleanup:
     if (vm)
@@ -5438,6 +5446,7 @@ static int lxcDomainLxcOpenNamespace(virDomainPtr dom,
                                      int **fdlist,
                                      unsigned int flags)
 {
+    virLXCDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm;
     virLXCDomainObjPrivatePtr priv;
     int ret = -1;
@@ -5454,22 +5463,30 @@ static int lxcDomainLxcOpenNamespace(virDomainPtr dom,
     if (virDomainLxcOpenNamespaceEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_QUERY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("Domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (!priv->initpid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Init pid is not yet available"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (virProcessGetNamespaces(priv->initpid, &nfds, fdlist) < 0)
-        goto cleanup;
+        goto endjob;
 
     ret = nfds;
+
+ endjob:
+    if (!virLXCDomainObjEndJob(driver, vm))
+        vm = NULL;
+
  cleanup:
     if (vm)
         virObjectUnlock(vm);
