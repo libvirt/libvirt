@@ -20,7 +20,8 @@ QEMU_AUDIO_DRV=none \
 -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x3 \
 -device lsi,id=scsi1,bus=pci.0,addr=0x4 \
 -usb \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-scsi0-0-1-0 \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-scsi0-0-1-0,\
+readonly=on \
 -device scsi-cd,bus=scsi0.0,channel=0,scsi-id=1,lun=0,drive=drive-scsi0-0-1-0,\
 id=scsi0-0-1-0,wwn=0x5000c50015ea71ac \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-scsi0-0-0-0 \

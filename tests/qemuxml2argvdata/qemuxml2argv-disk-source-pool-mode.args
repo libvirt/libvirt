@@ -18,10 +18,11 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=/some/block/device/unit:0:0:1,if=none,media=cdrom,id=drive-ide0-0-1 \
+-drive file=/some/block/device/unit:0:0:1,if=none,media=cdrom,id=drive-ide0-0-1,\
+readonly=on \
 -device ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
 -drive file=iscsi://iscsi.example.com:3260/demo-target/2,if=none,media=cdrom,\
-id=drive-ide0-0-2 \
+id=drive-ide0-0-2,readonly=on \
 -device ide-drive,bus=ide.0,unit=2,drive=drive-ide0-0-2,id=ide0-0-2 \
 -drive file=/tmp/idedisk.img,format=raw,if=none,id=drive-ide0-0-3 \
 -device ide-drive,bus=ide.0,unit=3,drive=drive-ide0-0-3,id=ide0-0-3 \

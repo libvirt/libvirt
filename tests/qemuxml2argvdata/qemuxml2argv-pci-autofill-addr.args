@@ -18,7 +18,7 @@ QEMU_AUDIO_DRV=none \
 -boot c \
 -usb \
 -drive file=/var/iso/f18kde.iso,format=raw,if=none,media=cdrom,\
-id=drive-virtio-disk0 \
+id=drive-virtio-disk0,readonly=on \
 -device virtio-blk-pci,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,\
 id=virtio-disk0 \
 -vga cirrus \

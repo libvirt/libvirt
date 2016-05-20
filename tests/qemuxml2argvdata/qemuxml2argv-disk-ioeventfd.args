@@ -23,7 +23,7 @@ id=drive-virtio-disk0 \
 -device virtio-blk-pci,ioeventfd=on,scsi=off,bus=pci.0,addr=0x4,\
 drive=drive-virtio-disk0,id=virtio-disk0 \
 -drive file=/var/lib/libvirt/Fedora-14-x86_64-Live-KDE.iso,format=raw,if=none,\
-media=cdrom,id=drive-ide0-1-0 \
+media=cdrom,id=drive-ide0-1-0,readonly=on \
 -device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
 -device virtio-net-pci,tx=bh,ioeventfd=off,vlan=0,id=net0,mac=52:54:00:e5:48:58,\
 bus=pci.0,addr=0x3 \
