@@ -102,10 +102,9 @@ virLXCDomainObjBeginJob(virLXCDriverPtr driver,
                        enum virLXCDomainJob job)
     ATTRIBUTE_RETURN_CHECK;
 
-bool
+void
 virLXCDomainObjEndJob(virLXCDriverPtr driver,
-                     virDomainObjPtr obj)
-    ATTRIBUTE_RETURN_CHECK;
+                     virDomainObjPtr obj);
 
 
 #endif /* __LXC_DOMAIN_H__ */

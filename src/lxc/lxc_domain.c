@@ -79,8 +79,8 @@ virLXCDomainObjFreeJob(virLXCDomainObjPrivatePtr priv)
  * This must be called by anything that will change the VM state
  * in any way
  *
- * Upon successful return, the object will have its ref count increased,
- * successful calls must be followed by EndJob eventually
+ * Upon successful return, the object will have its ref count increased.
+ * Successful calls must be followed by EndJob eventually.
  */
 int
 virLXCDomainObjBeginJob(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
@@ -94,8 +94,6 @@ virLXCDomainObjBeginJob(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
     if (virTimeMillisNow(&now) < 0)
         return -1;
     then = now + LXC_JOB_WAIT_TIME;
-
-    virObjectRef(obj);
 
     while (priv->job.active) {
         VIR_DEBUG("Wait normal job condition for starting job: %s",
@@ -126,23 +124,17 @@ virLXCDomainObjBeginJob(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
     else
         virReportSystemError(errno,
                              "%s", _("cannot acquire job mutex"));
-
-    virObjectUnref(obj);
     return -1;
 }
 
 
 /*
- * obj must be locked before calling
+ * obj must be locked and have a reference before calling
  *
  * To be called after completing the work associated with the
  * earlier virLXCDomainBeginJob() call
- *
- * Returns true if the remaining reference count on obj is
- * non-zero, false if the reference count has dropped to zero
- * and obj is disposed.
  */
-bool
+void
 virLXCDomainObjEndJob(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
                      virDomainObjPtr obj)
 {
@@ -154,8 +146,6 @@ virLXCDomainObjEndJob(virLXCDriverPtr driver ATTRIBUTE_UNUSED,
 
     virLXCDomainObjResetJob(priv);
     virCondSignal(&priv->job.cond);
-
-    return virObjectUnref(obj);
 }
 
 
