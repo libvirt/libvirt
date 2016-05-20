@@ -40,7 +40,7 @@ VIR_LOG_INIT("cpu.cpu_x86");
 
 #define VENDOR_STRING_LENGTH    12
 
-static const virCPUx86CPUID cpuidNull = { 0, 0, 0, 0, 0 };
+static const virCPUx86CPUID cpuidNull = { 0 };
 
 static const virArch archs[] = { VIR_ARCH_I686, VIR_ARCH_X86_64 };
 
@@ -250,6 +250,11 @@ virCPUx86CPUIDSorter(const void *a, const void *b)
     else if (da->eax_in < db->eax_in)
         return -1;
 
+    if (da->ecx_in > db->ecx_in)
+        return 1;
+    else if (da->ecx_in < db->ecx_in)
+        return -1;
+
     return 0;
 }
 
@@ -274,12 +279,13 @@ x86DataCpuidNext(virCPUx86DataIteratorPtr iterator)
 
 static virCPUx86CPUID *
 x86DataCpuid(const virCPUx86Data *data,
-             uint32_t eax_in)
+             const virCPUx86CPUID *cpuid)
 {
     size_t i;
 
     for (i = 0; i < data->len; i++) {
-        if (data->data[i].eax_in == eax_in)
+        if (data->data[i].eax_in == cpuid->eax_in &&
+            data->data[i].ecx_in == cpuid->ecx_in)
             return data->data + i;
     }
 
@@ -345,7 +351,7 @@ virCPUx86DataAddCPUID(virCPUx86Data *data,
 {
     virCPUx86CPUID *existing;
 
-    if ((existing = x86DataCpuid(data, cpuid->eax_in))) {
+    if ((existing = x86DataCpuid(data, cpuid))) {
         x86cpuidSetBits(existing, cpuid);
     } else {
         if (VIR_APPEND_ELEMENT_COPY(data->data, data->len,
@@ -369,7 +375,7 @@ x86DataAdd(virCPUx86Data *data1,
     virCPUx86CPUID *cpuid2;
 
     while ((cpuid2 = x86DataCpuidNext(&iter))) {
-        cpuid1 = x86DataCpuid(data1, cpuid2->eax_in);
+        cpuid1 = x86DataCpuid(data1, cpuid2);
 
         if (cpuid1) {
             x86cpuidSetBits(cpuid1, cpuid2);
@@ -392,7 +398,7 @@ x86DataSubtract(virCPUx86Data *data1,
     virCPUx86CPUID *cpuid2;
 
     while ((cpuid1 = x86DataCpuidNext(&iter))) {
-        cpuid2 = x86DataCpuid(data2, cpuid1->eax_in);
+        cpuid2 = x86DataCpuid(data2, cpuid1);
         x86cpuidClearBits(cpuid1, cpuid2);
     }
 }
@@ -407,7 +413,7 @@ x86DataIntersect(virCPUx86Data *data1,
     virCPUx86CPUID *cpuid2;
 
     while ((cpuid1 = x86DataCpuidNext(&iter))) {
-        cpuid2 = x86DataCpuid(data2, cpuid1->eax_in);
+        cpuid2 = x86DataCpuid(data2, cpuid1);
         if (cpuid2)
             x86cpuidAndBits(cpuid1, cpuid2);
         else
@@ -435,7 +441,7 @@ x86DataIsSubset(const virCPUx86Data *data,
     const virCPUx86CPUID *cpuidSubset;
 
     while ((cpuidSubset = x86DataCpuidNext(&iter))) {
-        if (!(cpuid = x86DataCpuid(data, cpuidSubset->eax_in)) ||
+        if (!(cpuid = x86DataCpuid(data, cpuidSubset)) ||
             !x86cpuidMatchMasked(cpuid, cpuidSubset))
             return false;
     }
@@ -476,7 +482,7 @@ x86DataToVendor(const virCPUx86Data *data,
 
     for (i = 0; i < map->nvendors; i++) {
         virCPUx86VendorPtr vendor = map->vendors[i];
-        if ((cpuid = x86DataCpuid(data, vendor->cpuid.eax_in)) &&
+        if ((cpuid = x86DataCpuid(data, &vendor->cpuid)) &&
             x86cpuidMatchMasked(cpuid, &vendor->cpuid)) {
             x86cpuidClearBits(cpuid, &vendor->cpuid);
             return vendor;
@@ -592,6 +598,7 @@ x86VendorParse(xmlXPathContextPtr ctxt,
     }
 
     vendor->cpuid.eax_in = 0;
+    vendor->cpuid.ecx_in = 0;
     vendor->cpuid.ebx = virReadBufInt32LE(string);
     vendor->cpuid.edx = virReadBufInt32LE(string + 4);
     vendor->cpuid.ecx = virReadBufInt32LE(string + 8);
@@ -715,25 +722,27 @@ static int
 x86ParseCPUID(xmlXPathContextPtr ctxt,
               virCPUx86CPUID *cpuid)
 {
-    unsigned long eax_in;
+    unsigned long eax_in, ecx_in;
     unsigned long eax, ebx, ecx, edx;
-    int ret_eax_in, ret_eax, ret_ebx, ret_ecx, ret_edx;
+    int ret_eax_in, ret_ecx_in, ret_eax, ret_ebx, ret_ecx, ret_edx;
 
     memset(cpuid, 0, sizeof(*cpuid));
 
-    eax_in = 0;
+    eax_in = ecx_in = 0;
     eax = ebx = ecx = edx = 0;
     ret_eax_in = virXPathULongHex("string(@eax_in)", ctxt, &eax_in);
+    ret_ecx_in = virXPathULongHex("string(@ecx_in)", ctxt, &ecx_in);
     ret_eax = virXPathULongHex("string(@eax)", ctxt, &eax);
     ret_ebx = virXPathULongHex("string(@ebx)", ctxt, &ebx);
     ret_ecx = virXPathULongHex("string(@ecx)", ctxt, &ecx);
     ret_edx = virXPathULongHex("string(@edx)", ctxt, &edx);
 
-    if (ret_eax_in < 0 ||
+    if (ret_eax_in < 0 || ret_ecx_in == -2 ||
         ret_eax == -2 || ret_ebx == -2 || ret_ecx == -2 || ret_edx == -2)
         return -1;
 
     cpuid->eax_in = eax_in;
+    cpuid->ecx_in = ecx_in;
     cpuid->eax = eax;
     cpuid->ebx = ebx;
     cpuid->ecx = ecx;
@@ -1004,7 +1013,7 @@ x86ModelCompare(virCPUx86ModelPtr model1,
     while ((cpuid1 = x86DataCpuidNext(&iter1))) {
         virCPUx86CompareResult match = SUPERSET;
 
-        if ((cpuid2 = x86DataCpuid(&model2->data, cpuid1->eax_in))) {
+        if ((cpuid2 = x86DataCpuid(&model2->data, cpuid1))) {
             if (x86cpuidMatch(cpuid1, cpuid2))
                 continue;
             else if (!x86cpuidMatchMasked(cpuid1, cpuid2))
@@ -1020,7 +1029,7 @@ x86ModelCompare(virCPUx86ModelPtr model1,
     while ((cpuid2 = x86DataCpuidNext(&iter2))) {
         virCPUx86CompareResult match = SUBSET;
 
-        if ((cpuid1 = x86DataCpuid(&model1->data, cpuid2->eax_in))) {
+        if ((cpuid1 = x86DataCpuid(&model1->data, cpuid2))) {
             if (x86cpuidMatch(cpuid2, cpuid1))
                 continue;
             else if (!x86cpuidMatchMasked(cpuid2, cpuid1))
@@ -1265,10 +1274,10 @@ x86CPUDataFormat(const virCPUData *data)
     virBufferAddLit(&buf, "<cpudata arch='x86'>\n");
     while ((cpuid = x86DataCpuidNext(&iter))) {
         virBufferAsprintf(&buf,
-                          "  <cpuid eax_in='0x%08x'"
+                          "  <cpuid eax_in='0x%08x' ecx_in='0x%08x'"
                           " eax='0x%08x' ebx='0x%08x'"
                           " ecx='0x%08x' edx='0x%08x'/>\n",
-                          cpuid->eax_in,
+                          cpuid->eax_in, cpuid->ecx_in,
                           cpuid->eax, cpuid->ebx, cpuid->ecx, cpuid->edx);
     }
     virBufferAddLit(&buf, "</cpudata>\n");
@@ -1853,22 +1862,21 @@ cpuidCall(virCPUx86CPUID *cpuid)
 {
 # if __x86_64__
     asm("xor %%ebx, %%ebx;" /* clear the other registers as some cpuid */
-        "xor %%ecx, %%ecx;" /* functions may use them as additional */
-        "xor %%edx, %%edx;" /* arguments */
+        "xor %%edx, %%edx;" /* functions may use them as additional arguments */
         "cpuid;"
         : "=a" (cpuid->eax),
           "=b" (cpuid->ebx),
           "=c" (cpuid->ecx),
           "=d" (cpuid->edx)
-        : "a" (cpuid->eax_in));
+        : "a" (cpuid->eax_in),
+          "c" (cpuid->ecx_in));
 # else
     /* we need to avoid direct use of ebx for CPUID output as it is used
      * for global offset table on i386 with -fPIC
      */
     asm("push %%ebx;"
         "xor %%ebx, %%ebx;" /* clear the other registers as some cpuid */
-        "xor %%ecx, %%ecx;" /* functions may use them as additional */
-        "xor %%edx, %%edx;" /* arguments */
+        "xor %%edx, %%edx;" /* functions may use them as additional arguments */
         "cpuid;"
         "mov %%ebx, %1;"
         "pop %%ebx;"
@@ -1876,7 +1884,8 @@ cpuidCall(virCPUx86CPUID *cpuid)
           "=r" (cpuid->ebx),
           "=c" (cpuid->ecx),
           "=d" (cpuid->edx)
-        : "a" (cpuid->eax_in)
+        : "a" (cpuid->eax_in),
+          "c" (cpuid->ecx_in)
         : "cc");
 # endif
 }
@@ -1887,13 +1896,14 @@ cpuidSet(uint32_t base, virCPUx86Data *data)
 {
     uint32_t max;
     uint32_t i;
-    virCPUx86CPUID cpuid = { base, 0, 0, 0, 0 };
+    virCPUx86CPUID cpuid = { .eax_in = base };
 
     cpuidCall(&cpuid);
     max = cpuid.eax;
 
     for (i = base; i <= max; i++) {
         cpuid.eax_in = i;
+        cpuid.ecx_in = 0;
         cpuidCall(&cpuid);
         if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
             return -1;

@@ -6364,6 +6364,7 @@ qemuMonitorJSONParseCPUx86FeatureWord(virJSONValuePtr data,
 {
     const char *reg;
     unsigned long long eax_in;
+    unsigned long long ecx_in = 0;
     unsigned long long features;
 
     memset(cpuid, 0, sizeof(*cpuid));
@@ -6378,6 +6379,8 @@ qemuMonitorJSONParseCPUx86FeatureWord(virJSONValuePtr data,
                        _("missing or invalid cpuid-input-eax in CPU data"));
         return -1;
     }
+    ignore_value(virJSONValueObjectGetNumberUlong(data, "cpuid-input-ecx",
+                                                  &ecx_in));
     if (virJSONValueObjectGetNumberUlong(data, "features", &features) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing or invalid features in CPU data"));
@@ -6385,6 +6388,7 @@ qemuMonitorJSONParseCPUx86FeatureWord(virJSONValuePtr data,
     }
 
     cpuid->eax_in = eax_in;
+    cpuid->ecx_in = ecx_in;
     if (STREQ(reg, "EAX")) {
         cpuid->eax = features;
     } else if (STREQ(reg, "EBX")) {

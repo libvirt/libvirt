@@ -29,6 +29,7 @@
 typedef struct _virCPUx86CPUID virCPUx86CPUID;
 struct _virCPUx86CPUID {
     uint32_t eax_in;
+    uint32_t ecx_in;
     uint32_t eax;
     uint32_t ebx;
     uint32_t ecx;
