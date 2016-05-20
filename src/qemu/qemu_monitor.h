@@ -804,8 +804,7 @@ int qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
 
 int qemuMonitorGetBlockIoThrottle(qemuMonitorPtr mon,
                                   const char *device,
-                                  virDomainBlockIoTuneInfoPtr reply,
-                                  bool supportMaxOptions);
+                                  virDomainBlockIoTuneInfoPtr reply);
 
 int qemuMonitorSystemWakeup(qemuMonitorPtr mon);
 

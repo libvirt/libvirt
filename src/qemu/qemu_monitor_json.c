@@ -4499,8 +4499,7 @@ int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
 static int
 qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
                                    const char *device,
-                                   virDomainBlockIoTuneInfoPtr reply,
-                                   bool supportMaxOptions)
+                                   virDomainBlockIoTuneInfoPtr reply)
 {
     virJSONValuePtr io_throttle;
     int ret = -1;
@@ -4549,15 +4548,13 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
         GET_THROTTLE_STATS("iops", total_iops_sec);
         GET_THROTTLE_STATS("iops_rd", read_iops_sec);
         GET_THROTTLE_STATS("iops_wr", write_iops_sec);
-        if (supportMaxOptions) {
-            GET_THROTTLE_STATS_OPTIONAL("bps_max", total_bytes_sec_max);
-            GET_THROTTLE_STATS_OPTIONAL("bps_rd_max", read_bytes_sec_max);
-            GET_THROTTLE_STATS_OPTIONAL("bps_wr_max", write_bytes_sec_max);
-            GET_THROTTLE_STATS_OPTIONAL("iops_max", total_iops_sec_max);
-            GET_THROTTLE_STATS_OPTIONAL("iops_rd_max", read_iops_sec_max);
-            GET_THROTTLE_STATS_OPTIONAL("iops_wr_max", write_iops_sec_max);
-            GET_THROTTLE_STATS_OPTIONAL("iops_size", size_iops_sec);
-        }
+        GET_THROTTLE_STATS_OPTIONAL("bps_max", total_bytes_sec_max);
+        GET_THROTTLE_STATS_OPTIONAL("bps_rd_max", read_bytes_sec_max);
+        GET_THROTTLE_STATS_OPTIONAL("bps_wr_max", write_bytes_sec_max);
+        GET_THROTTLE_STATS_OPTIONAL("iops_max", total_iops_sec_max);
+        GET_THROTTLE_STATS_OPTIONAL("iops_rd_max", read_iops_sec_max);
+        GET_THROTTLE_STATS_OPTIONAL("iops_wr_max", write_iops_sec_max);
+        GET_THROTTLE_STATS_OPTIONAL("iops_size", size_iops_sec);
 
         break;
     }
@@ -4643,8 +4640,7 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
 
 int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
                                       const char *device,
-                                      virDomainBlockIoTuneInfoPtr reply,
-                                      bool supportMaxOptions)
+                                      virDomainBlockIoTuneInfoPtr reply)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
@@ -4670,7 +4666,7 @@ int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    ret = qemuMonitorJSONBlockIoThrottleInfo(result, device, reply, supportMaxOptions);
+    ret = qemuMonitorJSONBlockIoThrottleInfo(result, device, reply);
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(result);
