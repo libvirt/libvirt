@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -842,9 +843,11 @@ virTestSetEnvPath(void)
 
 int virtTestMain(int argc,
                  char **argv,
-                 const char *lib,
-                 int (*func)(void))
+                 int (*func)(void),
+                 ...)
 {
+    const char *lib;
+    va_list ap;
     int ret;
     char *testRange = NULL;
 #ifdef TEST_OOM
@@ -854,8 +857,10 @@ int virtTestMain(int argc,
     if (getenv("VIR_TEST_FILE_ACCESS"))
         VIRT_TEST_PRELOAD(TEST_MOCK);
 
-    if (lib)
+    va_start(ap, func);
+    while ((lib = va_arg(ap, const char *)))
         VIRT_TEST_PRELOAD(lib);
+    va_end(ap);
 
     progname = last_component(argv[0]);
     if (STRPREFIX(progname, "lt-"))
