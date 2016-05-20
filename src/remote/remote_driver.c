@@ -5652,7 +5652,7 @@ remoteStreamRecvFlags(virStreamPtr st,
     virNetClientStreamPtr privst = st->privateData;
     int rv;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STREAM_RECV_STOP_AT_HOLE, -1);
 
     if (virNetClientStreamRaiseError(privst))
         return -1;
