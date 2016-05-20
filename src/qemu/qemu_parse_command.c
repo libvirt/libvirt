@@ -1633,6 +1633,26 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
 
 
 static int
+qemuParseCommandLineMem(virDomainDefPtr dom,
+                        const char *val)
+{
+    unsigned long long mem;
+    char *end;
+
+    if (virStrToLong_ull(val, &end, 10, &mem) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot parse memory level '%s'"), val);
+        return -1;
+    }
+
+    virDomainDefSetMemoryTotal(dom, mem * 1024);
+    dom->mem.cur_balloon = mem * 1024;
+
+    return 0;
+}
+
+
+static int
 qemuParseCommandLineSmp(virDomainDefPtr dom,
                         const char *val)
 {
@@ -1869,15 +1889,9 @@ qemuParseCommandLine(virCapsPtr caps,
         } else if (STREQ(arg, "-sdl")) {
             have_sdl = true;
         } else if (STREQ(arg, "-m")) {
-            int mem;
             WANT_VALUE();
-            if (virStrToLong_i(val, NULL, 10, &mem) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, \
-                               _("cannot parse memory level '%s'"), val);
+            if (qemuParseCommandLineMem(def, val) < 0)
                 goto error;
-            }
-            virDomainDefSetMemoryTotal(def, mem * 1024);
-            def->mem.cur_balloon = mem * 1024;
         } else if (STREQ(arg, "-smp")) {
             WANT_VALUE();
             if (qemuParseCommandLineSmp(def, val) < 0)
