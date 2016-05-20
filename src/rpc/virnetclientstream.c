@@ -296,6 +296,8 @@ int virNetClientStreamQueuePacket(virNetClientStreamPtr st,
 
     virObjectLock(st);
 
+    /* Don't distinguish VIR_NET_STREAM and VIR_NET_STREAM_SKIP
+     * here just yet. We want in order processing! */
     virNetMessageQueuePush(&st->rx, tmp_msg);
 
     virNetClientStreamEventTimerUpdate(st);
@@ -391,7 +393,7 @@ virNetClientStreamSetHole(virNetClientStreamPtr st,
  * Returns: 0 on success,
  *          -1 otherwise.
  */
-static int ATTRIBUTE_UNUSED
+static int
 virNetClientStreamHandleHole(virNetClientPtr client,
                              virNetClientStreamPtr st)
 {
@@ -469,6 +471,8 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
     virCheckFlags(0, -1);
 
     virObjectLock(st);
+
+ reread:
     if (!st->rx && !st->incomingEOF) {
         virNetMessagePtr msg;
         int ret;
@@ -500,8 +504,45 @@ int virNetClientStreamRecvPacket(virNetClientStreamPtr st,
     }
 
     VIR_DEBUG("After IO rx=%p", st->rx);
+
+    if (st->rx &&
+        st->rx->header.type == VIR_NET_STREAM_HOLE &&
+        st->holeLength == 0) {
+        /* Handle skip sent to us by server. */
+
+        if (virNetClientStreamHandleHole(client, st) < 0)
+            goto cleanup;
+    }
+
+    if (!st->rx && !st->incomingEOF && st->holeLength == 0) {
+        if (nonblock) {
+            VIR_DEBUG("Non-blocking mode and no data available");
+            rv = -2;
+            goto cleanup;
+        }
+
+        /* We have consumed all packets from incoming queue but those
+         * were only skip packets, no data. Read the stream again. */
+        goto reread;
+    }
+
     want = nbytes;
-    while (want && st->rx) {
+
+    if (st->holeLength) {
+        /* Pretend holeLength zeroes was read from stream. */
+        size_t len = want;
+
+        if (len > st->holeLength)
+            len = st->holeLength;
+
+        memset(data, 0, len);
+        st->holeLength -= len;
+        want -= len;
+    }
+
+    while (want &&
+           st->rx &&
+           st->rx->header.type == VIR_NET_STREAM) {
         virNetMessagePtr msg = st->rx;
         size_t len = want;
 
