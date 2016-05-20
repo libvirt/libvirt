@@ -304,6 +304,13 @@ struct _qemuDomainDiskPrivate {
 # define QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev)	\
     ((qemuDomainHostdevPrivatePtr) (hostdev)->privateData)
 
+struct qemuDomainDiskInfo {
+    bool removable;
+    bool locked;
+    bool tray_open;
+    int io_status;
+};
+
 typedef struct _qemuDomainHostdevPrivate qemuDomainHostdevPrivate;
 typedef qemuDomainHostdevPrivate *qemuDomainHostdevPrivatePtr;
 struct _qemuDomainHostdevPrivate {
