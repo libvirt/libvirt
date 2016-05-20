@@ -2357,7 +2357,6 @@ storageVolUpload(virStorageVolPtr obj,
      * interaction and we can just lookup the backend in the callback
      * routine in order to call the refresh API.
      */
-    virStoragePoolObjClearVols(pool);
     if (backend->refreshPool) {
         if (VIR_ALLOC(cbdata) < 0 ||
             VIR_STRDUP(cbdata->pool_name, pool->def->name) < 0)
