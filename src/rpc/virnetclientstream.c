@@ -584,6 +584,23 @@ virNetClientStreamSendHole(virNetClientStreamPtr st,
 }
 
 
+int
+virNetClientStreamRecvHole(virNetClientPtr client ATTRIBUTE_UNUSED,
+                           virNetClientStreamPtr st,
+                           long long *length)
+{
+    if (!st->allowSkip) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Holes are not supported with this stream"));
+        return -1;
+    }
+
+    *length = st->holeLength;
+    st->holeLength = 0;
+    return 0;
+}
+
+
 int virNetClientStreamEventAddCallback(virNetClientStreamPtr st,
                                        int events,
                                        virNetClientStreamEventCallback cb,

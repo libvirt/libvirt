@@ -52,6 +52,7 @@ virNetClientStreamMatches;
 virNetClientStreamNew;
 virNetClientStreamQueuePacket;
 virNetClientStreamRaiseError;
+virNetClientStreamRecvHole;
 virNetClientStreamRecvPacket;
 virNetClientStreamSendHole;
 virNetClientStreamSendPacket;

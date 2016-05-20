@@ -67,6 +67,10 @@ int virNetClientStreamSendHole(virNetClientStreamPtr st,
                                long long length,
                                unsigned int flags);
 
+int virNetClientStreamRecvHole(virNetClientPtr client,
+                               virNetClientStreamPtr st,
+                               long long *length);
+
 int virNetClientStreamEventAddCallback(virNetClientStreamPtr st,
                                        int events,
                                        virNetClientStreamEventCallback cb,
