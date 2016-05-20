@@ -17795,8 +17795,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     virDomainBlockIoTuneInfo reply;
     char *device = NULL;
     int ret = -1;
-    size_t i;
-    bool supportMaxOptions = true;
+    int maxparams = QEMU_NB_BLOCK_IO_TUNE_PARAM_MAX;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -17829,15 +17828,20 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
                          "QEMU binary"));
             goto endjob;
         }
-        supportMaxOptions = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX);
+
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX))
+            maxparams = QEMU_NB_BLOCK_IO_TUNE_PARAM;
     }
 
-    if ((*nparams) == 0) {
-        *nparams = supportMaxOptions ?
-                   QEMU_NB_BLOCK_IO_TUNE_PARAM_MAX : QEMU_NB_BLOCK_IO_TUNE_PARAM;
+    if (*nparams == 0) {
+        *nparams = maxparams;
         ret = 0;
         goto endjob;
+    } else if (*nparams < maxparams) {
+        maxparams = *nparams;
     }
+
+    *nparams = 0;
 
     if (def) {
         if (!(disk = qemuDomainDiskByName(def, path)))
@@ -17863,110 +17867,35 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
         reply = disk->blkdeviotune;
     }
 
-    for (i = 0; i < QEMU_NB_BLOCK_IO_TUNE_PARAM_MAX && i < *nparams; i++) {
-        virTypedParameterPtr param = &params[i];
+#define BLOCK_IOTUNE_ASSIGN(name, var)                                         \
+    if (*nparams < maxparams &&                                                \
+        virTypedParameterAssign(&params[(*nparams)++],                         \
+                                VIR_DOMAIN_BLOCK_IOTUNE_ ## name,              \
+                                VIR_TYPED_PARAM_ULLONG,                        \
+                                reply.var) < 0)                                \
+        goto endjob
 
-        switch (i) {
-        case 0:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.total_bytes_sec) < 0)
-                goto endjob;
-            break;
-        case 1:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.read_bytes_sec) < 0)
-                goto endjob;
-            break;
-        case 2:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.write_bytes_sec) < 0)
-                goto endjob;
-            break;
-        case 3:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.total_iops_sec) < 0)
-                goto endjob;
-            break;
-        case 4:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.read_iops_sec) < 0)
-                goto endjob;
-            break;
-        case 5:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.write_iops_sec) < 0)
-                goto endjob;
-            break;
-        case 6:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.total_bytes_sec_max) < 0)
-                goto endjob;
-            break;
-        case 7:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.read_bytes_sec_max) < 0)
-                goto endjob;
-            break;
-        case 8:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.write_bytes_sec_max) < 0)
-                goto endjob;
-            break;
-        case 9:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.total_iops_sec_max) < 0)
-                goto endjob;
-            break;
-        case 10:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.read_iops_sec_max) < 0)
-                goto endjob;
-            break;
-        case 11:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.write_iops_sec_max) < 0)
-                goto endjob;
-            break;
-        case 12:
-            if (virTypedParameterAssign(param,
-                                        VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        reply.size_iops_sec) < 0)
-                goto endjob;
-        /* coverity[dead_error_begin] */
-        default:
-            break;
-        }
-    }
 
-    if (!supportMaxOptions && *nparams > QEMU_NB_BLOCK_IO_TUNE_PARAM)
-        *nparams = QEMU_NB_BLOCK_IO_TUNE_PARAM;
-    else if (*nparams > QEMU_NB_BLOCK_IO_TUNE_PARAM_MAX)
-        *nparams = QEMU_NB_BLOCK_IO_TUNE_PARAM_MAX;
+    BLOCK_IOTUNE_ASSIGN(TOTAL_BYTES_SEC, total_bytes_sec);
+    BLOCK_IOTUNE_ASSIGN(READ_BYTES_SEC, read_bytes_sec);
+    BLOCK_IOTUNE_ASSIGN(WRITE_BYTES_SEC, write_bytes_sec);
+
+    BLOCK_IOTUNE_ASSIGN(TOTAL_IOPS_SEC, total_iops_sec);
+    BLOCK_IOTUNE_ASSIGN(READ_IOPS_SEC, read_iops_sec);
+    BLOCK_IOTUNE_ASSIGN(WRITE_IOPS_SEC, write_iops_sec);
+
+    BLOCK_IOTUNE_ASSIGN(TOTAL_BYTES_SEC_MAX, total_bytes_sec_max);
+    BLOCK_IOTUNE_ASSIGN(READ_BYTES_SEC_MAX, read_bytes_sec_max);
+    BLOCK_IOTUNE_ASSIGN(WRITE_BYTES_SEC_MAX, write_bytes_sec_max);
+
+    BLOCK_IOTUNE_ASSIGN(TOTAL_IOPS_SEC_MAX, total_iops_sec_max);
+    BLOCK_IOTUNE_ASSIGN(READ_IOPS_SEC_MAX, read_iops_sec_max);
+    BLOCK_IOTUNE_ASSIGN(WRITE_IOPS_SEC_MAX, write_iops_sec_max);
+
+    BLOCK_IOTUNE_ASSIGN(SIZE_IOPS_SEC, size_iops_sec);
+
+#undef BLOCK_IOTUNE_ASSIGN
+
     ret = 0;
 
  endjob:
