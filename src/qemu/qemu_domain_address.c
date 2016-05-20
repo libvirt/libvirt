@@ -1614,15 +1614,11 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
 
     if (obj && obj->privateData) {
         priv = obj->privateData;
-        if (addrs) {
-            /* if this is the live domain object, we persist the PCI addresses*/
-            virDomainPCIAddressSetFree(priv->pciaddrs);
-            priv->persistentAddrs = 1;
-            priv->pciaddrs = addrs;
-            addrs = NULL;
-        } else {
-            priv->persistentAddrs = 0;
-        }
+        /* if this is the live domain object, we persist the PCI addresses */
+        virDomainPCIAddressSetFree(priv->pciaddrs);
+        priv->persistentAddrs = 1;
+        priv->pciaddrs = addrs;
+        addrs = NULL;
     }
 
     ret = 0;
