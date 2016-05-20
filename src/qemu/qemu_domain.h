@@ -618,7 +618,6 @@ int qemuDomainDetectVcpuPids(virQEMUDriverPtr driver, virDomainObjPtr vm,
                              int asyncJob);
 
 bool qemuDomainSupportsNicdev(virDomainDefPtr def,
-                              virQEMUCapsPtr qemuCaps,
                               virDomainNetDefPtr net);
 
 bool qemuDomainSupportsNetdev(virDomainDefPtr def,

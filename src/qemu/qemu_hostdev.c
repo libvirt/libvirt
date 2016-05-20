@@ -197,9 +197,7 @@ qemuHostdevPreparePCIDevicesCheckSupport(virDomainHostdevDefPtr *hostdevs,
             if (supportsPassthroughVFIO &&
                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
                 *backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO;
-            } else if (supportsPassthroughKVM &&
-                       (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCIDEVICE) ||
-                        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))) {
+            } else if (supportsPassthroughKVM) {
                 *backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM;
             } else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

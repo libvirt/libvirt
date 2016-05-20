@@ -8007,7 +8007,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
             goto cleanup;
         virCommandAddArgList(cmd, "-netdev", host, NULL);
     }
-    if (qemuDomainSupportsNicdev(def, qemuCaps, net)) {
+    if (qemuDomainSupportsNicdev(def, net)) {
         if (!(nic = qemuBuildNicDevStr(def, net, vlan, bootindex,
                                        vhostfdSize, qemuCaps)))
             goto cleanup;

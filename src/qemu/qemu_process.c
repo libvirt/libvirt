@@ -4857,11 +4857,9 @@ qemuProcessPrepareDomain(virConnectPtr conn,
      * we also need to populate the PCI address set cache for later
      * use in hotplug
      */
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        VIR_DEBUG("Assigning domain PCI addresses");
-        if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
-            goto cleanup;
-    }
+    VIR_DEBUG("Assigning domain PCI addresses");
+    if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm)) < 0)
+        goto cleanup;
 
     if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
         goto cleanup;

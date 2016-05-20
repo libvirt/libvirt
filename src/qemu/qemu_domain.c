@@ -5396,12 +5396,8 @@ qemuDomainDetectVcpuPids(virQEMUDriverPtr driver,
 
 bool
 qemuDomainSupportsNicdev(virDomainDefPtr def,
-                         virQEMUCapsPtr qemuCaps,
                          virDomainNetDefPtr net)
 {
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE))
-        return false;
-
     /* non-virtio ARM nics require legacy -net nic */
     if (((def->os.arch == VIR_ARCH_ARMV7L) ||
         (def->os.arch == VIR_ARCH_AARCH64)) &&
@@ -5417,7 +5413,7 @@ qemuDomainSupportsNetdev(virDomainDefPtr def,
                          virQEMUCapsPtr qemuCaps,
                          virDomainNetDefPtr net)
 {
-    if (!qemuDomainSupportsNicdev(def, qemuCaps, net))
+    if (!qemuDomainSupportsNicdev(def, net))
         return false;
     return virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV);
 }

@@ -1334,12 +1334,6 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     char *charAlias = NULL;
     char *devstr = NULL;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("redirected devices are not supported by this QEMU"));
-        return ret;
-    }
-
     if (qemuAssignDeviceRedirdevAlias(vm->def, redirdev, -1) < 0)
         goto cleanup;
 
@@ -1536,12 +1530,6 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     char *devstr = NULL;
     char *charAlias = NULL;
     bool need_release = false;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("qemu does not support -device"));
-        goto cleanup;
-    }
 
     if (qemuAssignDeviceChrAlias(vmdef, chr, -1) < 0)
         goto cleanup;
@@ -1897,8 +1885,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     bool teardowncgroup = false;
     bool teardownlabel = false;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) ||
-        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("SCSI passthrough is not supported by this version of qemu"));
         return -1;
@@ -3092,8 +3079,7 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV) &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV)) {
         if (qemuMonitorRemoveNetdev(priv->mon, hostnet_name) < 0) {
             if (qemuDomainObjExitMonitor(driver, vm) < 0)
                 goto cleanup;
@@ -3472,13 +3458,6 @@ qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Underlying qemu does not support %s disk removal"),
-                       virDomainDiskBusTypeToString(detach->bus));
-        goto cleanup;
-    }
-
     if (detach->mirror) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
                        _("disk '%s' is in an active block job"),
@@ -3729,12 +3708,6 @@ qemuDomainDetachHostUSBDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("device cannot be detached with this QEMU version"));
-        return -1;
-    }
-
     qemuDomainMarkDeviceForRemoval(vm, detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -3759,12 +3732,6 @@ qemuDomainDetachHostSCSIDevice(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       "%s", _("device cannot be detached with this QEMU version"));
-        return -1;
-    }
-
     qemuDomainMarkDeviceForRemoval(vm, detach->info);
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -3781,11 +3748,9 @@ qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr detach)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE) &&
-        !detach->info->alias) {
+    if (!detach->info->alias) {
         if (qemuAssignDeviceHostdevAlias(vm->def, &detach->info->alias, -1) < 0)
             return -1;
     }
@@ -4111,12 +4076,6 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
         return ret;
     }
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("qemu does not support -device"));
-        return ret;
-    }
-
     if (!tmpChr->info.alias && qemuAssignDeviceChrAlias(vmdef, tmpChr, -1) < 0)
         return ret;
 
@@ -4166,12 +4125,6 @@ qemuDomainDetachRNGDevice(virQEMUDriverPtr driver,
 
     tmpRNG = vm->def->rngs[idx];
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("qemu does not support -device"));
-        return -1;
-    }
-
     if (!tmpRNG->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("alias not set for RNG device"));
@@ -4204,12 +4157,6 @@ qemuDomainDetachMemoryDevice(virQEMUDriverPtr driver,
     int idx;
     int rc;
     int ret = -1;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("qemu does not support -device"));
-        return -1;
-    }
 
     qemuDomainMemoryDeviceAlignSize(vm->def, memdef);
 
