@@ -24,6 +24,7 @@
 #include "virlog.h"
 #include "virerror.h"
 #include "viralloc.h"
+#include "virrandom.h"
 
 #include "md5.h"
 #include "sha256.h"
@@ -220,14 +221,14 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
  */
 int
 virCryptoEncryptData(virCryptoCipher algorithm,
-                     uint8_t *enckey,
+                     uint8_t *enckey ATTRIBUTE_UNUSED,
                      size_t enckeylen,
-                     uint8_t *iv,
+                     uint8_t *iv ATTRIBUTE_UNUSED,
                      size_t ivlen,
-                     uint8_t *data,
-                     size_t datalen,
-                     uint8_t **ciphertext,
-                     size_t *ciphertextlen)
+                     uint8_t *data ATTRIBUTE_UNUSED,
+                     size_t datalen ATTRIBUTE_UNUSED,
+                     uint8_t **ciphertext ATTRIBUTE_UNUSED,
+                     size_t *ciphertextlen ATTRIBUTE_UNUSED)
 {
     switch (algorithm) {
     case VIR_CRYPTO_CIPHER_AES256CBC:
