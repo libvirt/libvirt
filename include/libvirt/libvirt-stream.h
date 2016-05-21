@@ -104,9 +104,9 @@ int virStreamSendAll(virStreamPtr st,
  * @nbytes: size of the data array
  * @opaque: optional application provided data
  *
- * The virStreamSinkFunc callback is used together
- * with the virStreamRecvAll function for libvirt to
- * provide the data that has been received.
+ * The virStreamSinkFunc callback is used together with the
+ * virStreamRecvAll or virStreamSparseRecvAll functions for
+ * libvirt to provide the data that has been received.
  *
  * The callback will be invoked multiple times,
  * providing data in small chunks. The application
@@ -128,6 +128,33 @@ typedef int (*virStreamSinkFunc)(virStreamPtr st,
 int virStreamRecvAll(virStreamPtr st,
                      virStreamSinkFunc handler,
                      void *opaque);
+
+/**
+ * virStreamSinkHoleFunc:
+ * @st: the stream object
+ * @length: stream hole size
+ * @opaque: optional application provided data
+ *
+ * This callback is used together with the virStreamSparseRecvAll
+ * function for libvirt to provide the size of a hole that
+ * occurred in the stream.
+ *
+ * The callback may be invoked multiple times as holes are found
+ * during processing a stream. The application should create the
+ * hole in the stream target and then return. A return value of
+ * -1 at any time will abort the receive operation.
+ *
+ * Returns 0 on success,
+ *        -1 upon error
+ */
+typedef int (*virStreamSinkHoleFunc)(virStreamPtr st,
+                                     long long length,
+                                     void *opaque);
+
+int virStreamSparseRecvAll(virStreamPtr stream,
+                           virStreamSinkFunc handler,
+                           virStreamSinkHoleFunc holeHandler,
+                           void *opaque);
 
 typedef enum {
     VIR_STREAM_EVENT_READABLE  = (1 << 0),

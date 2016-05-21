@@ -669,6 +669,129 @@ virStreamRecvAll(virStreamPtr stream,
 
 
 /**
+ * virStreamSparseRecvAll:
+ * @stream: pointer to the stream object
+ * @handler: sink callback for writing data to application
+ * @holeHandler: stream hole callback for skipping holes
+ * @opaque: application defined data
+ *
+ * Receive the entire data stream, sending the data to the
+ * requested data sink @handler and calling the skip @holeHandler
+ * to generate holes for sparse stream targets. This is simply a
+ * convenient alternative to virStreamRecvFlags, for apps that do
+ * blocking-I/O.
+ *
+ * An example using this with a hypothetical file download
+ * API looks like:
+ *
+ *   int mysink(virStreamPtr st, const char *buf, int nbytes, void *opaque) {
+ *       int *fd = opaque;
+ *
+ *       return write(*fd, buf, nbytes);
+ *   }
+ *
+ *   int myskip(virStreamPtr st, long long offset, void *opaque) {
+ *       int *fd = opaque;
+ *
+ *       return lseek(*fd, offset, SEEK_CUR) == (off_t) -1 ? -1 : 0;
+ *   }
+ *
+ *   virStreamPtr st = virStreamNew(conn, 0);
+ *   int fd = open("demo.iso", O_WRONLY);
+ *
+ *   virConnectDownloadSparseFile(conn, st);
+ *   if (virStreamSparseRecvAll(st, mysink, myskip, &fd) < 0) {
+ *      ...report an error ...
+ *      goto done;
+ *   }
+ *   if (virStreamFinish(st) < 0)
+ *      ...report an error...
+ *   virStreamFree(st);
+ *   close(fd);
+ *
+ * Note that @opaque data is shared between both @handler and
+ * @holeHandler callbacks.
+ *
+ * Returns 0 if all the data was successfully received. The caller
+ * should invoke virStreamFinish(st) to flush the stream upon
+ * success and then virStreamFree(st).
+ *
+ * Returns -1 upon any error, with virStreamAbort() already
+ * having been called, so the caller need only call virStreamFree().
+ */
+int
+virStreamSparseRecvAll(virStreamPtr stream,
+                       virStreamSinkFunc handler,
+                       virStreamSinkHoleFunc holeHandler,
+                       void *opaque)
+{
+    char *bytes = NULL;
+    size_t want = VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX;
+    const unsigned int flags = VIR_STREAM_RECV_STOP_AT_HOLE;
+    int ret = -1;
+
+    VIR_DEBUG("stream=%p handler=%p holeHandler=%p opaque=%p",
+              stream, handler, holeHandler, opaque);
+
+    virResetLastError();
+
+    virCheckStreamReturn(stream, -1);
+    virCheckNonNullArgGoto(handler, cleanup);
+    virCheckNonNullArgGoto(holeHandler, cleanup);
+
+    if (stream->flags & VIR_STREAM_NONBLOCK) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("data sinks cannot be used for non-blocking streams"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(bytes, want) < 0)
+        goto cleanup;
+
+    for (;;) {
+        int got, offset = 0;
+        long long holeLen;
+        const unsigned int holeFlags = 0;
+
+        got = virStreamRecvFlags(stream, bytes, want, flags);
+        if (got == -3) {
+            if (virStreamRecvHole(stream, &holeLen, holeFlags) < 0) {
+                virStreamAbort(stream);
+                goto cleanup;
+            }
+
+            if (holeHandler(stream, holeLen, opaque) < 0) {
+                virStreamAbort(stream);
+                goto cleanup;
+            }
+            continue;
+        } else if (got < 0) {
+            goto cleanup;
+        } else if (got == 0) {
+            break;
+        }
+        while (offset < got) {
+            int done;
+            done = (handler)(stream, bytes + offset, got - offset, opaque);
+            if (done < 0) {
+                virStreamAbort(stream);
+                goto cleanup;
+            }
+            offset += done;
+        }
+    }
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(bytes);
+
+    if (ret != 0)
+        virDispatchError(stream->conn);
+
+    return ret;
+}
+
+/**
  * virStreamEventAddCallback:
  * @stream: pointer to the stream object
  * @events: set of events to monitor
