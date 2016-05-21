@@ -575,6 +575,165 @@ virStreamSendAll(virStreamPtr stream,
 
 
 /**
+ * virStreamSparseSendAll:
+ * @stream: pointer to the stream object
+ * @handler: source callback for reading data from application
+ * @holeHandler: source callback for determining holes
+ * @skipHandler: skip holes as reported by @holeHandler
+ * @opaque: application defined data
+ *
+ * Send the entire data stream, reading the data from the
+ * requested data source. This is simply a convenient alternative
+ * to virStreamSend, for apps that do blocking-I/O.
+ *
+ * An example using this with a hypothetical file upload
+ * API looks like
+ *
+ *   int mysource(virStreamPtr st, char *buf, int nbytes, void *opaque) {
+ *       int *fd = opaque;
+ *
+ *       return read(*fd, buf, nbytes);
+ *   }
+ *
+ *   int myskip(virStreamPtr st, long long offset, void *opaque) {
+ *       int *fd = opaque;
+ *
+ *       return lseek(*fd, offset, SEEK_CUR) == (off_t) -1 ? -1 : 0;
+ *   }
+ *
+ *   int myindata(virStreamPtr st, int *inData,
+ *                long long *offset, void *opaque) {
+ *       int *fd = opaque;
+ *
+ *       if (@fd in hole) {
+ *           *inData = 0;
+ *           *offset = holeSize;
+ *       } else {
+ *           *inData = 1;
+ *           *offset = dataSize;
+ *       }
+ *
+ *       return 0;
+ *   }
+ *
+ *   virStreamPtr st = virStreamNew(conn, 0);
+ *   int fd = open("demo.iso", O_RDONLY);
+ *
+ *   virConnectUploadSparseFile(conn, st);
+ *   if (virStreamSparseSendAll(st,
+ *                              mysource,
+ *                              myindata,
+ *                              myskip,
+ *                              &fd) < 0) {
+ *      ...report an error ...
+ *      goto done;
+ *   }
+ *   if (virStreamFinish(st) < 0)
+ *      ...report an error...
+ *   virStreamFree(st);
+ *   close(fd);
+ *
+ * Note that @opaque data are shared between @handler, @holeHandler and @skipHandler.
+ *
+ * Returns 0 if all the data was successfully sent. The caller
+ * should invoke virStreamFinish(st) to flush the stream upon
+ * success and then virStreamFree.
+ *
+ * Returns -1 upon any error, with virStreamAbort() already
+ * having been called,  so the caller need only call
+ * virStreamFree().
+ */
+int virStreamSparseSendAll(virStreamPtr stream,
+                           virStreamSourceFunc handler,
+                           virStreamSourceHoleFunc holeHandler,
+                           virStreamSourceSkipFunc skipHandler,
+                           void *opaque)
+{
+    char *bytes = NULL;
+    size_t want = VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX;
+    int ret = -1;
+    unsigned long long dataLen = 0;
+
+    VIR_DEBUG("stream=%p handler=%p holeHandler=%p opaque=%p",
+              stream, handler, holeHandler, opaque);
+
+    virResetLastError();
+
+    virCheckStreamReturn(stream, -1);
+    virCheckNonNullArgGoto(handler, cleanup);
+    virCheckNonNullArgGoto(holeHandler, cleanup);
+    virCheckNonNullArgGoto(skipHandler, cleanup);
+
+    if (stream->flags & VIR_STREAM_NONBLOCK) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("data sources cannot be used for non-blocking streams"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(bytes, want) < 0)
+        goto cleanup;
+
+    for (;;) {
+        int inData, got, offset = 0;
+        long long sectionLen;
+        const unsigned int skipFlags = 0;
+
+        if (!dataLen) {
+            if (holeHandler(stream, &inData, &sectionLen, opaque) < 0) {
+                virStreamAbort(stream);
+                goto cleanup;
+            }
+
+            if (!inData && sectionLen) {
+                if (virStreamSendHole(stream, sectionLen, skipFlags) < 0) {
+                    virStreamAbort(stream);
+                    goto cleanup;
+                }
+
+                if (skipHandler(stream, sectionLen, opaque) < 0) {
+                    virReportSystemError(errno, "%s",
+                                         _("unable to skip hole"));
+                    virStreamAbort(stream);
+                    goto cleanup;
+                }
+                continue;
+            } else {
+                dataLen = sectionLen;
+            }
+        }
+
+        if (want > dataLen)
+            want = dataLen;
+
+        got = (handler)(stream, bytes, want, opaque);
+        if (got < 0) {
+            virStreamAbort(stream);
+            goto cleanup;
+        }
+        if (got == 0)
+            break;
+        while (offset < got) {
+            int done;
+            done = virStreamSend(stream, bytes + offset, got - offset);
+            if (done < 0)
+                goto cleanup;
+            offset += done;
+            dataLen -= done;
+        }
+    }
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(bytes);
+
+    if (ret != 0)
+        virDispatchError(stream->conn);
+
+    return ret;
+}
+
+
+/**
  * virStreamRecvAll:
  * @stream: pointer to the stream object
  * @handler: sink callback for writing data to application
