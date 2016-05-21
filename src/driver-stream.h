@@ -52,6 +52,11 @@ typedef int
                         unsigned int flags);
 
 typedef int
+(*virDrvStreamInData)(virStreamPtr st,
+                      int *data,
+                      long long *length);
+
+typedef int
 (*virDrvStreamEventAddCallback)(virStreamPtr stream,
                                 int events,
                                 virStreamEventCallback cb,
@@ -80,6 +85,7 @@ struct _virStreamDriver {
     virDrvStreamRecvFlags streamRecvFlags;
     virDrvStreamSendHole streamSendHole;
     virDrvStreamRecvHole streamRecvHole;
+    virDrvStreamInData streamInData;
     virDrvStreamEventAddCallback streamEventAddCallback;
     virDrvStreamEventUpdateCallback streamEventUpdateCallback;
     virDrvStreamEventRemoveCallback streamEventRemoveCallback;

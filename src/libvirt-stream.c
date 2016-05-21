@@ -482,6 +482,54 @@ virStreamRecvHole(virStreamPtr stream,
 
 
 /**
+ * virStreamInData:
+ * @stream: stream
+ * @data: are we in data or hole
+ * @length: length to next section
+ *
+ * This function checks the underlying stream (typically a file)
+ * to learn whether the current stream position lies within a
+ * data section or a hole. Upon return @data is set to a nonzero
+ * value if former is the case, or to zero if @stream is in a
+ * hole. Moreover, @length is updated to tell caller how many
+ * bytes can be read from @stream until current section changes
+ * (from data to a hole or vice versa).
+ *
+ * NB: there's an implicit hole at EOF. In this situation this
+ * function should set @data = false, @length = 0 and return 0.
+ *
+ * To sum it up:
+ *
+ * data section: @data = true,  @length > 0
+ * hole:         @data = false, @length > 0
+ * EOF:          @data = false, @length = 0
+ *
+ * Returns 0 on success,
+ *        -1 otherwise
+ */
+int
+virStreamInData(virStreamPtr stream,
+                int *data,
+                long long *length)
+{
+    VIR_DEBUG("stream=%p, data=%p, length=%p", stream, data, length);
+
+    virResetLastError();
+    virCheckNonNullArgReturn(data, -1);
+    virCheckNonNullArgReturn(length, -1);
+
+    if (stream->driver->streamInData) {
+        int ret;
+        ret = (stream->driver->streamInData)(stream, data, length);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+    return -1;
+}
+
+
+/**
  * virStreamSendAll:
  * @stream: pointer to the stream object
  * @handler: source callback for reading data from application
