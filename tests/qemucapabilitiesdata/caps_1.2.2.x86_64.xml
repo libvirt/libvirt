@@ -141,8 +141,6 @@
   <cpu name='Opteron_G3'/>
   <cpu name='Opteron_G4'/>
   <machine name='pc-1.2' alias='pc' maxCpus='0'/>
-  <machine name='xenpv' maxCpus='0'/>
-  <machine name='xenfv' maxCpus='0'/>
   <machine name='isapc' maxCpus='0'/>
   <machine name='pc-0.10' maxCpus='0'/>
   <machine name='pc-0.11' maxCpus='0'/>
