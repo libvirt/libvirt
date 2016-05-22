@@ -376,7 +376,7 @@
 
 {
   "return": {
-    "fd": 10,
+    "fd": 11,
     "fdset-id": 0
   },
   "id": "libvirt-5"
@@ -669,9 +669,6 @@
       "name": "pc-0.14-machine"
     },
     {
-      "name": "xen-apic"
-    },
-    {
       "name": "pc-q35-2.0-machine"
     },
     {
@@ -699,16 +696,13 @@
       "name": "gus"
     },
     {
-      "name": "isa-applesmc"
-    },
-    {
       "name": "PIIX3"
     },
     {
-      "name": "kvm-pci-assign"
+      "name": "isa-applesmc"
     },
     {
-      "name": "xen-pci-passthrough"
+      "name": "kvm-pci-assign"
     },
     {
       "name": "i82559er"
@@ -774,9 +768,6 @@
       "name": "pc-0.15-machine"
     },
     {
-      "name": "xenfv-machine"
-    },
-    {
       "name": "usb-mouse"
     },
     {
@@ -831,13 +822,10 @@
       "name": "hda-duplex"
     },
     {
-      "name": "isapc-machine"
-    },
-    {
       "name": "ipoctal232"
     },
     {
-      "name": "pc-1.2-machine"
+      "name": "isapc-machine"
     },
     {
       "name": "xio3130-downstream"
@@ -879,7 +867,7 @@
       "name": "i440FX-pcihost"
     },
     {
-      "name": "qemu32-x86_64-cpu"
+      "name": "pc-1.2-machine"
     },
     {
       "name": "tpm-tis"
@@ -900,13 +888,13 @@
       "name": "pc-testdev"
     },
     {
-      "name": "sga"
+      "name": "qemu32-x86_64-cpu"
     },
     {
       "name": "Opteron_G1-x86_64-cpu"
     },
     {
-      "name": "xen-pvdevice"
+      "name": "sga"
     },
     {
       "name": "pcnet"
@@ -996,10 +984,10 @@
       "name": "pc-i440fx-1.6-machine"
     },
     {
-      "name": "kvmclock"
+      "name": "lsi53c810"
     },
     {
-      "name": "lsi53c810"
+      "name": "kvmclock"
     },
     {
       "name": "isa-cirrus-vga"
@@ -1089,9 +1077,6 @@
       "name": "pci-serial"
     },
     {
-      "name": "xenpv-machine"
-    },
-    {
       "name": "athlon-x86_64-cpu"
     },
     {
@@ -1162,9 +1147,6 @@
     },
     {
       "name": "pc-q35-1.6-machine"
-    },
-    {
-      "name": "xen-platform"
     },
     {
       "name": "pentium2-x86_64-cpu"
@@ -1566,17 +1548,73 @@
 }
 
 {
-    "return": [
-        {
-            "name": "ioeventfd",
-            "type": "on/off"
-        },
-        {
-            "name": "vectors",
-            "type": "uint32"
-        }
-    ],
-    "id": "libvirt-11"
+  "return": [
+    {
+      "name": "virtio-backend",
+      "type": "child<virtio-scsi-device>"
+    },
+    {
+      "name": "command_serr_enable",
+      "type": "on/off"
+    },
+    {
+      "name": "multifunction",
+      "type": "on/off"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "addr",
+      "type": "pci-devfn"
+    },
+    {
+      "name": "event_idx",
+      "type": "on/off"
+    },
+    {
+      "name": "indirect_desc",
+      "type": "on/off"
+    },
+    {
+      "name": "cmd_per_lun",
+      "type": "uint32"
+    },
+    {
+      "name": "max_sectors",
+      "type": "uint32"
+    },
+    {
+      "name": "num_queues",
+      "type": "uint32"
+    },
+    {
+      "name": "param_change",
+      "type": "on/off"
+    },
+    {
+      "name": "hotplug",
+      "type": "on/off"
+    },
+    {
+      "name": "any_layout",
+      "type": "on/off"
+    },
+    {
+      "name": "vectors",
+      "type": "uint32"
+    },
+    {
+      "name": "ioeventfd",
+      "type": "on/off"
+    }
+  ],
+  "id": "libvirt-11"
 }
 
 {
@@ -2188,223 +2226,269 @@
 }
 
 {
-    "return": [
-        {
-            "name": "command_serr_enable",
-            "type": "on/off"
-        },
-        {
-            "name": "multifunction",
-            "type": "on/off"
-        },
-        {
-            "name": "rombar",
-            "type": "uint32"
-        },
-        {
-            "name": "romfile",
-            "type": "string"
-        },
-        {
-            "name": "addr",
-            "type": "pci-devfn"
-        },
-        {
-            "name": "mmio",
-            "type": "on/off"
-        },
-        {
-            "name": "vgamem_mb",
-            "type": "uint32"
-        }
-    ],
-    "id": "libvirt-30"
-}
-
-{
-    "return": [
-        {
-            "name": "command_serr_enable",
-            "type": "on/off"
-        },
-        {
-            "name": "multifunction",
-            "type": "on/off"
-        },
-        {
-            "name": "rombar",
-            "type": "uint32"
-        },
-        {
-            "name": "romfile",
-            "type": "string"
-        },
-        {
-            "name": "addr",
-            "type": "pci-devfn"
-        },
-        {
-            "name": "vgamem_mb",
-            "type": "uint32"
-        }
-    ],
-    "id": "libvirt-31"
-}
-
-{
-    "return": [
-        {
-            "name": "command_serr_enable",
-            "type": "on/off"
-        },
-        {
-            "name": "multifunction",
-            "type": "on/off"
-        },
-        {
-            "name": "rombar",
-            "type": "uint32"
-        },
-        {
-            "name": "romfile",
-            "type": "string"
-        },
-        {
-            "name": "addr",
-            "type": "pci-devfn"
-        },
-        {
-            "name": "surfaces",
-            "type": "int32"
-        },
-        {
-            "name": "vgamem_mb",
-            "type": "uint32"
-        },
-        {
-            "name": "vram64_size_mb",
-            "type": "uint32"
-        },
-        {
-            "name": "vram_size_mb",
-            "type": "uint32"
-        },
-        {
-            "name": "ram_size_mb",
-            "type": "uint32"
-        },
-        {
-            "name": "cmdlog",
-            "type": "uint32"
-        },
-        {
-            "name": "guestdebug",
-            "type": "uint32"
-        },
-        {
-            "name": "debug",
-            "type": "uint32"
-        },
-        {
-            "name": "revision",
-            "type": "uint32"
-        },
-        {
-            "name": "vram_size",
-            "type": "uint32"
-        },
-        {
-            "name": "ram_size",
-            "type": "uint32"
-        }
-    ],
-    "id": "libvirt-32"
-}
-
-{
-    "return": [
-        {
-            "name": "command_serr_enable",
-            "type": "on/off"
-        },
-        {
-            "name": "multifunction",
-            "type": "on/off"
-        },
-        {
-            "name": "rombar",
-            "type": "uint32"
-        },
-        {
-            "name": "romfile",
-            "type": "string"
-        },
-        {
-            "name": "addr",
-            "type": "pci-devfn"
-        },
-        {
-            "name": "surfaces",
-            "type": "int32"
-        },
-        {
-            "name": "vgamem_mb",
-            "type": "uint32"
-        },
-        {
-            "name": "vram64_size_mb",
-            "type": "uint32"
-        },
-        {
-            "name": "vram_size_mb",
-            "type": "uint32"
-        },
-        {
-            "name": "ram_size_mb",
-            "type": "uint32"
-        },
-        {
-            "name": "cmdlog",
-            "type": "uint32"
-        },
-        {
-            "name": "guestdebug",
-            "type": "uint32"
-        },
-        {
-            "name": "debug",
-            "type": "uint32"
-        },
-        {
-            "name": "revision",
-            "type": "uint32"
-        },
-        {
-            "name": "vram_size",
-            "type": "uint32"
-        },
-        {
-            "name": "ram_size",
-            "type": "uint32"
-        }
-    ],
-    "id": "libvirt-33"
-}
-
-{
-    "id": "libvirt-34",
-    "error": {
-        "class": "DeviceNotFound",
-        "desc": "Device 'virtio-gpu-pci' not found"
+  "return": [
+    {
+      "name": "command_serr_enable",
+      "type": "on/off"
+    },
+    {
+      "name": "multifunction",
+      "type": "on/off"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "addr",
+      "type": "pci-devfn"
+    },
+    {
+      "name": "mmio",
+      "type": "on/off"
+    },
+    {
+      "name": "vgamem_mb",
+      "type": "uint32"
     }
+  ],
+  "id": "libvirt-30"
 }
 
 {
-    "id": "libvirt-35",
-    "error": {
-        "class": "DeviceNotFound",
-        "desc": "Device 'ICH9-LPC' not found"
+  "return": [
+    {
+      "name": "command_serr_enable",
+      "type": "on/off"
+    },
+    {
+      "name": "multifunction",
+      "type": "on/off"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "addr",
+      "type": "pci-devfn"
+    },
+    {
+      "name": "vgamem_mb",
+      "type": "uint32"
     }
+  ],
+  "id": "libvirt-31"
+}
+
+{
+  "return": [
+    {
+      "name": "command_serr_enable",
+      "type": "on/off"
+    },
+    {
+      "name": "multifunction",
+      "type": "on/off"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "addr",
+      "type": "pci-devfn"
+    },
+    {
+      "name": "surfaces",
+      "type": "int32"
+    },
+    {
+      "name": "vgamem_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "vram64_size_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "vram_size_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "ram_size_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "cmdlog",
+      "type": "uint32"
+    },
+    {
+      "name": "guestdebug",
+      "type": "uint32"
+    },
+    {
+      "name": "debug",
+      "type": "uint32"
+    },
+    {
+      "name": "revision",
+      "type": "uint32"
+    },
+    {
+      "name": "vram_size",
+      "type": "uint32"
+    },
+    {
+      "name": "ram_size",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-32"
+}
+
+{
+  "return": [
+    {
+      "name": "command_serr_enable",
+      "type": "on/off"
+    },
+    {
+      "name": "multifunction",
+      "type": "on/off"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "addr",
+      "type": "pci-devfn"
+    },
+    {
+      "name": "surfaces",
+      "type": "int32"
+    },
+    {
+      "name": "vgamem_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "vram64_size_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "vram_size_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "ram_size_mb",
+      "type": "uint32"
+    },
+    {
+      "name": "cmdlog",
+      "type": "uint32"
+    },
+    {
+      "name": "guestdebug",
+      "type": "uint32"
+    },
+    {
+      "name": "debug",
+      "type": "uint32"
+    },
+    {
+      "name": "revision",
+      "type": "uint32"
+    },
+    {
+      "name": "vram_size",
+      "type": "uint32"
+    },
+    {
+      "name": "ram_size",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-33"
+}
+
+{
+  "id": "libvirt-34",
+  "error": {
+    "class": "DeviceNotFound",
+    "desc": "Device 'virtio-gpu-pci' not found"
+  }
+}
+
+{
+  "return": [
+    {
+      "name": "memory-hotplug-support",
+      "type": "bool"
+    },
+    {
+      "name": "gpe0_blk_len",
+      "type": "uint32"
+    },
+    {
+      "name": "gpe0_blk",
+      "type": "uint32"
+    },
+    {
+      "name": "pm_io_base",
+      "type": "uint32"
+    },
+    {
+      "name": "acpi_disable_cmd",
+      "type": "uint8"
+    },
+    {
+      "name": "acpi_enable_cmd",
+      "type": "uint8"
+    },
+    {
+      "name": "sci_int",
+      "type": "uint32"
+    },
+    {
+      "name": "command_serr_enable",
+      "type": "on/off"
+    },
+    {
+      "name": "multifunction",
+      "type": "on/off"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "addr",
+      "type": "pci-devfn"
+    }
+  ],
+  "id": "libvirt-35"
 }
 
 {
@@ -2472,36 +2556,57 @@
 }
 
 {
-    "return": [
-        {
-            "name": "msi",
-            "type": "on/off"
-        },
-        {
-            "name": "msix",
-            "type": "on/off"
-        },
-        {
-            "name": "superspeed-ports-first",
-            "type": "on/off"
-        },
-        {
-            "name": "intrs",
-            "type": "uint32"
-        },
-        {
-            "name": "slots",
-            "type": "uint32"
-        },
-        {
-            "name": "2",
-            "type": "uint32"
-        },
-        {
-            "name": "p3",
-            "type": "uint32"
-        }
-    ]
+  "return": [
+    {
+      "name": "command_serr_enable",
+      "type": "on/off"
+    },
+    {
+      "name": "multifunction",
+      "type": "on/off"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "addr",
+      "type": "pci-devfn"
+    },
+    {
+      "name": "p3",
+      "type": "uint32"
+    },
+    {
+      "name": "p2",
+      "type": "uint32"
+    },
+    {
+      "name": "slots",
+      "type": "uint32"
+    },
+    {
+      "name": "intrs",
+      "type": "uint32"
+    },
+    {
+      "name": "superspeed-ports-first",
+      "type": "on/off"
+    },
+    {
+      "name": "msix",
+      "type": "on/off"
+    },
+    {
+      "name": "msi",
+      "type": "on/off"
+    }
+  ],
+  "id": "libvirt-39"
 }
 
 {
@@ -2521,10 +2626,6 @@
     {
       "name": "pc-q35-1.5",
       "cpu-max": 255
-    },
-    {
-      "name": "xenpv",
-      "cpu-max": 1
     },
     {
       "name": "none",
@@ -2562,10 +2663,6 @@
     {
       "name": "pc-q35-1.4",
       "cpu-max": 255
-    },
-    {
-      "name": "xenfv",
-      "cpu-max": 128
     },
     {
       "name": "pc-0.15",
@@ -2614,7 +2711,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -2695,7 +2792,7 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -2703,21 +2800,21 @@
     "enabled": false,
     "present": true
   },
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -3577,7 +3674,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -3599,5 +3696,5 @@
       "capability": "zero-blocks"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }

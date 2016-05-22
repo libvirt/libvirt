@@ -198,7 +198,6 @@
   <machine name='pc-0.12' maxCpus='255'/>
   <machine name='pc-q35-1.6' maxCpus='255'/>
   <machine name='pc-q35-1.5' maxCpus='255'/>
-  <machine name='xenpv' maxCpus='1'/>
   <machine name='pc-i440fx-1.6' maxCpus='255'/>
   <machine name='pc-i440fx-1.7' maxCpus='255'/>
   <machine name='pc-q35-2.1' alias='q35' maxCpus='255'/>
@@ -207,7 +206,6 @@
   <machine name='pc-1.2' maxCpus='255'/>
   <machine name='isapc' maxCpus='1'/>
   <machine name='pc-q35-1.4' maxCpus='255'/>
-  <machine name='xenfv' maxCpus='128'/>
   <machine name='pc-0.15' maxCpus='255'/>
   <machine name='pc-i440fx-1.5' maxCpus='255'/>
   <machine name='pc-i440fx-1.4' maxCpus='255'/>
