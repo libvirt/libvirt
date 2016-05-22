@@ -793,8 +793,10 @@ mymain(void)
     DO_TEST("disk-drive-network-rbd", NONE);
     DO_TEST("disk-drive-network-sheepdog", NONE);
     DO_TEST("disk-drive-network-rbd-auth", NONE);
+# ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
     DO_TEST("disk-drive-network-rbd-auth-AES",
             QEMU_CAPS_OBJECT_SECRET);
+# endif
     DO_TEST("disk-drive-network-rbd-ipv6", NONE);
     DO_TEST_FAILURE("disk-drive-network-rbd-no-colon", NONE);
     DO_TEST("disk-drive-no-boot",
