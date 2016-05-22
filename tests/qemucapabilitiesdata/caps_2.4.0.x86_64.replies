@@ -1215,6 +1215,9 @@
       "name": "athlon-x86_64-cpu"
     },
     {
+      "name": "ccid-card-emulated"
+    },
+    {
       "name": "ISA"
     },
     {
@@ -1800,106 +1803,106 @@
 }
 
 {
-    "return": [
-        {
-            "name": "iothread",
-            "type": "link<iothread>"
-        },
-        {
-            "name": "any_layout",
-            "description": "on/off",
-            "type": "bool"
-        },
-        {
-            "name": "notify_on_empty",
-            "description": "on/off",
-            "type": "bool"
-        },
-        {
-            "name": "event_idx",
-            "description": "on/off",
-            "type": "bool"
-        },
-        {
-            "name": "indirect_desc",
-            "description": "on/off",
-            "type": "bool"
-        },
-        {
-            "name": "param_change",
-            "description": "on/off",
-            "type": "bool"
-        },
-        {
-            "name": "hotplug",
-            "description": "on/off",
-            "type": "bool"
-        },
-        {
-            "name": "cmd_per_lun",
-            "type": "uint32"
-        },
-        {
-            "name": "max_sectors",
-            "type": "uint32"
-        },
-        {
-            "name": "num_queues",
-            "type": "uint32"
-        },
-        {
-            "name": "virtio-backend",
-            "type": "child<virtio-scsi-device>"
-        },
-        {
-            "name": "command_serr_enable",
-            "description":"on/off",
-            "type": "bool"
-        },
-        {
-            "name": "multifunction",
-            "description": "on/off",
-            "type": "bool"
-        },
-        {
-            "name": "rombar",
-            "type": "uint32"
-        },
-        {
-            "name": "romfile",
-            "type": "str"
-        },
-        {
-            "name": "addr",
-            "description": "Slot and optional function number, example: 06.0 or 06",
-            "type": "int32"
-        },
-        {
-            "name": "disable-modern",
-            "description": "on/off",
-            "type": "bool"
-        },
-        {
-            "name": "disable-legacy",
-            "description": "on/off",
-            "type": "bool"
-        },
-        {
-            "name": "virtio-pci-bus-master-bug-migration",
-            "description": "on/off",
-            "type": "bool"
-        },
-        {
-            "name": "vectors",
-            "type": "uint32"
-        },
-        {
-            "name": "ioeventfd",
-            "description": "on/off",
-            "type": "bool"
-        }
-    ],
-    "id": "libvirt-11"
+  "return": [
+    {
+      "name": "iothread",
+      "type": "link<iothread>"
+    },
+    {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "param_change",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "hotplug",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "cmd_per_lun",
+      "type": "uint32"
+    },
+    {
+      "name": "max_sectors",
+      "type": "uint32"
+    },
+    {
+      "name": "num_queues",
+      "type": "uint32"
+    },
+    {
+      "name": "virtio-backend",
+      "type": "child<virtio-scsi-device>"
+    },
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "disable-modern",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "disable-legacy",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "virtio-pci-bus-master-bug-migration",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "vectors",
+      "type": "uint32"
+    },
+    {
+      "name": "ioeventfd",
+      "description": "on/off",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-11"
 }
 
 {
@@ -2668,6 +2671,10 @@
       "type": "int32"
     },
     {
+      "name": "max_outputs",
+      "type": "uint16"
+    },
+    {
       "name": "surfaces",
       "type": "int32"
     },
@@ -2739,6 +2746,10 @@
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
       "type": "int32"
+    },
+    {
+      "name": "max_outputs",
+      "type": "uint16"
     },
     {
       "name": "surfaces",
@@ -2870,82 +2881,81 @@
 }
 
 {
-  "return":  [
+  "return": [
     {
-      "type": "bool",
-      "name": "memory-hotplug-support"
+      "name": "enable_tco",
+      "type": "bool"
     },
     {
-      "type": "uint32",
-      "name": "rombar"
+      "name": "s4_val",
+      "type": "uint8"
     },
     {
-      "type": "uint32",
-      "name": "sci_int"
+      "name": "disable_s4",
+      "type": "uint8"
     },
     {
-      "type": "uint32",
-      "name": "gpe0_blk_len"
+      "name": "disable_s3",
+      "type": "uint8"
     },
     {
-      "type": "uint32",
-      "name": "pm_io_base"
+      "name": "memory-hotplug-support",
+      "type": "bool"
     },
     {
-      "type": "bool",
-      "name": "noreboot"
+      "name": "gpe0_blk_len",
+      "type": "uint32"
     },
     {
-      "type": "bool",
-      "name": "multifunction",
-      "description": "on/off"
+      "name": "gpe0_blk",
+      "type": "uint32"
     },
     {
-      "type": "uint8",
-      "name": "disable_s4"
+      "name": "pm_io_base",
+      "type": "uint32"
     },
     {
-      "type": "uint8",
-      "name": "acpi_disable_cmd"
+      "name": "acpi_disable_cmd",
+      "type": "uint8"
     },
     {
-      "type": "str",
-      "name": "romfile"
+      "name": "acpi_enable_cmd",
+      "type": "uint8"
     },
     {
-      "type": "uint8",
-      "name": "disable_s3"
+      "name": "sci_int",
+      "type": "uint32"
     },
     {
-      "type": "uint8",
-      "name": "s4_val"
-    },
-    {
-      "type": "uint8",
-      "name": "acpi_enable_cmd"
-    },
-    {
-      "type": "bool",
       "name": "command_serr_enable",
-      "description": "on/off"
+      "description": "on/off",
+      "type": "bool"
     },
     {
-      "type": "int32",
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
       "name": "addr",
-      "description": "Slot and optional function number, example: 06.0 or 06"
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
     },
     {
-      "type": "bool",
-      "name": "enable_tco"
-    },
-    {
-      "type": "uint32",
-      "name": "gpe0_blk"
+      "name": "noreboot",
+      "type": "bool"
     }
   ],
   "id": "libvirt-35"
 }
-
 
 {
   "return": [
@@ -3080,44 +3090,73 @@
 }
 
 {
-    "return": [
-        {
-            "name": "msi",
-            "type": "on/off"
-        },
-        {
-            "name": "msix",
-            "type": "on/off"
-        },
-        {
-            "name": "superspeed-ports-first",
-            "type": "on/off"
-        },
-        {
-            "name": "force-pcie-endcap",
-            "type": "on/off"
-        },
-        {
-            "name": "streams",
-            "type": "on/off"
-        },
-        {
-            "name": "intrs",
-            "type": "uint32"
-        },
-        {
-            "name": "slots",
-            "type": "uint32"
-        },
-        {
-            "name": "2",
-            "type": "uint32"
-        },
-        {
-            "name": "p3",
-            "type": "uint32"
-        }
-    ]
+  "return": [
+    {
+      "name": "command_serr_enable",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "name": "p3",
+      "type": "uint32"
+    },
+    {
+      "name": "p2",
+      "type": "uint32"
+    },
+    {
+      "name": "slots",
+      "type": "uint32"
+    },
+    {
+      "name": "intrs",
+      "type": "uint32"
+    },
+    {
+      "name": "streams",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "force-pcie-endcap",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "superspeed-ports-first",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "msix",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "msi",
+      "description": "on/off",
+      "type": "bool"
+    }
+  ],
+  "id": "libvirt-39"
 }
 
 {
@@ -3246,7 +3285,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -3336,7 +3375,7 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -3344,21 +3383,21 @@
     "enabled": false,
     "present": true
   },
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -3559,6 +3598,10 @@
         {
           "name": "password",
           "type": "string"
+        },
+        {
+          "name": "unix",
+          "type": "boolean"
         },
         {
           "name": "ipv6",
@@ -4362,7 +4405,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -4392,5 +4435,5 @@
       "capability": "events"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-46"
 }

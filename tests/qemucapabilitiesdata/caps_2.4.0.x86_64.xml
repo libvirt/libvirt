@@ -29,6 +29,7 @@
   <flag name='drive-aio'/>
   <flag name='pci-multibus'/>
   <flag name='pci-bootindex'/>
+  <flag name='ccid-emulated'/>
   <flag name='ccid-passthru'/>
   <flag name='chardev-spicevmc'/>
   <flag name='virtio-tx-alg'/>
