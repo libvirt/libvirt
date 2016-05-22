@@ -46,6 +46,7 @@
   <flag name='ich9-usb-ehci1'/>
   <flag name='vt82c686b-usb-uhci'/>
   <flag name='pci-ohci'/>
+  <flag name='usb-redir'/>
   <flag name='usb-hub'/>
   <flag name='no-shutdown'/>
   <flag name='cache-unsafe'/>
@@ -74,6 +75,7 @@
   <flag name='blockio'/>
   <flag name='disable-s3'/>
   <flag name='disable-s4'/>
+  <flag name='usb-redir.filter'/>
   <flag name='ide-drive.wwn'/>
   <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
@@ -83,6 +85,7 @@
   <flag name='block-commit'/>
   <flag name='vnc'/>
   <flag name='drive-mirror'/>
+  <flag name='usb-redir.bootindex'/>
   <flag name='usb-host.bootindex'/>
   <flag name='blockdev-snapshot-sync'/>
   <flag name='qxl'/>
@@ -174,11 +177,9 @@
   <cpu name='phenom'/>
   <cpu name='qemu64'/>
   <machine name='pc-i440fx-1.6' alias='pc' maxCpus='255'/>
-  <machine name='xenpv' maxCpus='1'/>
   <machine name='pc-q35-1.4' maxCpus='255'/>
   <machine name='pc-q35-1.5' maxCpus='255'/>
   <machine name='pc-q35-1.6' alias='q35' maxCpus='255'/>
-  <machine name='xenfv' maxCpus='128'/>
   <machine name='isapc' maxCpus='1'/>
   <machine name='pc-0.10' maxCpus='255'/>
   <machine name='pc-0.11' maxCpus='255'/>
