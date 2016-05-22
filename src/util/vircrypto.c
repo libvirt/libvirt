@@ -200,7 +200,6 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
     memset(&iv_buf, 0, sizeof(gnutls_datum_t));
     return -1;
 }
-#endif
 
 
 /* virCryptoEncryptData:
@@ -221,14 +220,14 @@ virCryptoEncryptDataAESgnutls(gnutls_cipher_algorithm_t gnutls_enc_alg,
  */
 int
 virCryptoEncryptData(virCryptoCipher algorithm,
-                     uint8_t *enckey ATTRIBUTE_UNUSED,
+                     uint8_t *enckey,
                      size_t enckeylen,
-                     uint8_t *iv ATTRIBUTE_UNUSED,
+                     uint8_t *iv,
                      size_t ivlen,
-                     uint8_t *data ATTRIBUTE_UNUSED,
-                     size_t datalen ATTRIBUTE_UNUSED,
-                     uint8_t **ciphertext ATTRIBUTE_UNUSED,
-                     size_t *ciphertextlen ATTRIBUTE_UNUSED)
+                     uint8_t *data,
+                     size_t datalen,
+                     uint8_t **ciphertext,
+                     size_t *ciphertextlen)
 {
     switch (algorithm) {
     case VIR_CRYPTO_CIPHER_AES256CBC:
@@ -246,7 +245,6 @@ virCryptoEncryptData(virCryptoCipher algorithm,
             return -1;
         }
 
-#ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
         /*
          * Encrypt the data buffer using an encryption key and
          * initialization vector via the gnutls_cipher_encrypt API
@@ -256,9 +254,6 @@ virCryptoEncryptData(virCryptoCipher algorithm,
                                              enckey, enckeylen, iv, ivlen,
                                              data, datalen,
                                              ciphertext, ciphertextlen);
-#else
-        break;
-#endif
 
     case VIR_CRYPTO_CIPHER_NONE:
     case VIR_CRYPTO_CIPHER_LAST:
@@ -269,6 +264,25 @@ virCryptoEncryptData(virCryptoCipher algorithm,
                    _("algorithm=%d is not supported"), algorithm);
     return -1;
 }
+
+#else
+
+int
+virCryptoEncryptData(virCryptoCipher algorithm,
+                     uint8_t *enckey ATTRIBUTE_UNUSED,
+                     size_t enckeylen ATTRIBUTE_UNUSED,
+                     uint8_t *iv ATTRIBUTE_UNUSED,
+                     size_t ivlen ATTRIBUTE_UNUSED,
+                     uint8_t *data ATTRIBUTE_UNUSED,
+                     size_t datalen ATTRIBUTE_UNUSED,
+                     uint8_t **ciphertext ATTRIBUTE_UNUSED,
+                     size_t *ciphertextlen ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("algorithm=%d is not supported"), algorithm);
+    return -1;
+}
+#endif
 
 /* virCryptoGenerateRandom:
  * @nbytes: Size in bytes of random byte stream to generate
