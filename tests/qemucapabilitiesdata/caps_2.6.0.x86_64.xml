@@ -29,6 +29,7 @@
   <flag name='drive-aio'/>
   <flag name='pci-multibus'/>
   <flag name='pci-bootindex'/>
+  <flag name='ccid-emulated'/>
   <flag name='ccid-passthru'/>
   <flag name='chardev-spicevmc'/>
   <flag name='virtio-tx-alg'/>
@@ -150,6 +151,8 @@
   <flag name='qxl-vga.vgamem_mb'/>
   <flag name='pc-dimm'/>
   <flag name='machine-vmport-opt'/>
+  <flag name='aes-key-wrap'/>
+  <flag name='dea-key-wrap'/>
   <flag name='pci-serial'/>
   <flag name='vhost-user-multiqueue'/>
   <flag name='migration-event'/>
@@ -172,9 +175,11 @@
   <flag name='ich9-disable-s4'/>
   <flag name='vserport-change-event'/>
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
+  <flag name='mptsas1068'/>
   <flag name='spice-gl'/>
   <flag name='qxl.vram64_size_mb'/>
   <flag name='qxl-vga.vram64_size_mb'/>
+  <flag name='chardev-logfile'/>
   <flag name='debug-threads'/>
   <flag name='secret'/>
   <flag name='pxb'/>
@@ -183,7 +188,7 @@
   <flag name='nec-usb-xhci-ports'/>
   <flag name='virtio-scsi-pci.iothread'/>
   <flag name='name-guest'/>
-  <version>2005050</version>
+  <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
   <arch>x86_64</arch>
@@ -215,33 +220,29 @@
   <cpu name='core2duo'/>
   <cpu name='phenom'/>
   <cpu name='qemu64'/>
-  <machine name='pc-i440fx-2.4' alias='pc' maxCpus='255'/>
-  <machine name='pc-1.3' maxCpus='255'/>
+  <machine name='pc-i440fx-2.6' alias='pc' maxCpus='255'/>
   <machine name='pc-0.12' maxCpus='255'/>
-  <machine name='pc-q35-1.6' maxCpus='255'/>
-  <machine name='pc-q35-1.5' maxCpus='255'/>
-  <machine name='pc-i440fx-1.6' maxCpus='255'/>
-  <machine name='pc-q35-2.2' maxCpus='255'/>
+  <machine name='pc-i440fx-2.4' maxCpus='255'/>
+  <machine name='pc-1.3' maxCpus='255'/>
+  <machine name='pc-q35-2.6' alias='q35' maxCpus='255'/>
   <machine name='pc-i440fx-1.7' maxCpus='255'/>
-  <machine name='pc-q35-2.1' maxCpus='255'/>
+  <machine name='pc-i440fx-1.6' maxCpus='255'/>
   <machine name='pc-0.11' maxCpus='255'/>
-  <machine name='pc-0.10' maxCpus='255'/>
-  <machine name='pc-i440fx-2.2' maxCpus='255'/>
-  <machine name='pc-1.2' maxCpus='255'/>
-  <machine name='isapc' maxCpus='1'/>
   <machine name='pc-i440fx-2.3' maxCpus='255'/>
-  <machine name='pc-q35-1.4' maxCpus='255'/>
+  <machine name='pc-0.10' maxCpus='255'/>
+  <machine name='pc-1.2' maxCpus='255'/>
+  <machine name='pc-i440fx-2.2' maxCpus='255'/>
+  <machine name='isapc' maxCpus='1'/>
+  <machine name='pc-q35-2.5' maxCpus='255'/>
   <machine name='pc-0.15' maxCpus='255'/>
   <machine name='pc-i440fx-1.5' maxCpus='255'/>
-  <machine name='pc-q35-2.0' maxCpus='255'/>
-  <machine name='pc-i440fx-1.4' maxCpus='255'/>
   <machine name='pc-0.14' maxCpus='255'/>
+  <machine name='pc-i440fx-1.4' maxCpus='255'/>
+  <machine name='pc-i440fx-2.5' maxCpus='255'/>
   <machine name='pc-1.1' maxCpus='255'/>
   <machine name='pc-i440fx-2.1' maxCpus='255'/>
-  <machine name='pc-q35-1.7' maxCpus='255'/>
   <machine name='pc-1.0' maxCpus='255'/>
   <machine name='pc-i440fx-2.0' maxCpus='255'/>
-  <machine name='pc-q35-2.4' alias='q35' maxCpus='255'/>
-  <machine name='pc-q35-2.3' maxCpus='255'/>
+  <machine name='pc-q35-2.4' maxCpus='255'/>
   <machine name='pc-0.13' maxCpus='255'/>
 </qemuCaps>
