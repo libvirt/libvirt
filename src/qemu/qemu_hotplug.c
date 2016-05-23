@@ -145,6 +145,40 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuHotplugWaitForTrayEject(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virDomainDiskDefPtr disk,
+                            const char *driveAlias,
+                            bool force)
+{
+    unsigned long long now;
+    int rc;
+
+    if (virTimeMillisNow(&now) < 0)
+        return -1;
+
+    while (disk->tray_status != VIR_DOMAIN_DISK_TRAY_OPEN) {
+        if ((rc = virDomainObjWaitUntil(vm, now + CHANGE_MEDIA_TIMEOUT)) < 0)
+            return -1;
+
+        if (rc > 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("timed out waiting for disk tray status update"));
+            return -1;
+        }
+    }
+
+    /* re-issue ejection command to pop out the media */
+    qemuDomainObjEnterMonitor(driver, vm);
+    rc = qemuMonitorEjectMedia(qemuDomainGetMonitor(vm), driveAlias, force);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * qemuDomainChangeEjectableMedia:
  * @driver: qemu driver structure
@@ -172,8 +206,6 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     const char *format = NULL;
     char *sourcestr = NULL;
-    bool ejectRetry = false;
-    unsigned long long now;
 
     if (!disk->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -195,45 +227,20 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     if (!(driveAlias = qemuDeviceDriveHostAlias(disk)))
         goto error;
 
-    do {
-        qemuDomainObjEnterMonitor(driver, vm);
-        rc = qemuMonitorEjectMedia(priv->mon, driveAlias, force);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            goto cleanup;
+    qemuDomainObjEnterMonitor(driver, vm);
+    rc = qemuMonitorEjectMedia(priv->mon, driveAlias, force);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        goto cleanup;
 
-        /* skip all retrying if qemu doesn't notify us on tray change */
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_TRAY_MOVED)) {
-            if (rc == 0)
-                break;
-
-            if (rc < 0)
-                goto error;
-        }
-
-        if (rc < 0) {
-            /* we've already tried, error out */
-            if (ejectRetry)
-                goto error;
-
-            ejectRetry = true;
-            VIR_DEBUG("tray may be locked, wait for the guest to unlock "
-                      "the tray and try to eject it again");
-        }
-
-        if (virTimeMillisNow(&now) < 0)
+    /* If the tray change event is supported wait for it to open. */
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_TRAY_MOVED)) {
+        if (qemuHotplugWaitForTrayEject(driver, vm, disk, driveAlias, force) < 0)
             goto error;
-
-        while (disk->tray_status != VIR_DOMAIN_DISK_TRAY_OPEN) {
-            int wait_rc = virDomainObjWaitUntil(vm, now + CHANGE_MEDIA_TIMEOUT);
-            if (wait_rc > 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("timed out waiting for "
-                                 "disk tray status update"));
-            }
-            if (wait_rc != 0)
-                goto error;
-        }
-    } while (rc < 0);
+    } else  {
+        /* otherwise report possible errors from the attempt to eject the media*/
+        if (rc < 0)
+            goto error;
+    }
 
     if (!virStorageSourceIsEmpty(newsrc)) {
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
