@@ -1058,13 +1058,18 @@ libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
 int
 libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
 {
-    const char *driver;
-    int format;
+    const char *driver = virDomainDiskGetDriver(l_disk);
+    int format = virDomainDiskGetFormat(l_disk);
     int actual_type = virStorageSourceGetActualType(l_disk->src);
 
     libxl_device_disk_init(x_disk);
 
     if (actual_type == VIR_STORAGE_TYPE_NETWORK) {
+        if (STRNEQ_NULLABLE(driver, "qemu")) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("only the 'qemu' driver can be used with network disks"));
+            return -1;
+        }
         if (libxlMakeNetworkDiskSrc(l_disk->src, &x_disk->pdev_path) < 0)
             return -1;
     } else {
@@ -1075,8 +1080,6 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
     if (VIR_STRDUP(x_disk->vdev, l_disk->dst) < 0)
         return -1;
 
-    driver = virDomainDiskGetDriver(l_disk);
-    format = virDomainDiskGetFormat(l_disk);
     if (driver) {
         if (STREQ(driver, "tap") || STREQ(driver, "tap2")) {
             switch (format) {
