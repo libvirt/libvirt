@@ -7655,8 +7655,6 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
 {
     virDomainDiskDefPtr disk = dev->data.disk;
     virDomainDiskDefPtr orig_disk = NULL;
-    int startupPolicy;
-    int snapshot;
     int ret = -1;
 
     if (virStorageTranslateDiskSourcePool(conn, disk) < 0)
@@ -7674,17 +7672,11 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
         goto cleanup;
     }
 
-    startupPolicy = orig_disk->startupPolicy;
-    snapshot = orig_disk->snapshot;
-
     switch ((virDomainDiskDevice) disk->device) {
     case VIR_DOMAIN_DISK_DEVICE_CDROM:
     case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
         if (!qemuDomainDiskChangeSupported(disk, orig_disk))
             goto cleanup;
-
-        orig_disk->startupPolicy = dev->data.disk->startupPolicy;
-        orig_disk->snapshot = dev->data.disk->snapshot;
 
         if (qemuDomainDiskSourceDiffers(disk, orig_disk)) {
             /* Add the new disk src into shared disk hash table */
@@ -7696,11 +7688,14 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
                                                force) < 0) {
                 ignore_value(qemuRemoveSharedDisk(driver, dev->data.disk,
                                                   vm->def->name));
-                goto rollback;
+                goto cleanup;
             }
 
             dev->data.disk->src = NULL;
         }
+
+        orig_disk->startupPolicy = dev->data.disk->startupPolicy;
+        orig_disk->snapshot = dev->data.disk->snapshot;
         break;
 
     case VIR_DOMAIN_DISK_DEVICE_DISK:
@@ -7719,11 +7714,6 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
     ret = 0;
  cleanup:
     return ret;
-
- rollback:
-    orig_disk->snapshot = snapshot;
-    orig_disk->startupPolicy = startupPolicy;
-    goto cleanup;
 }
 
 static int
