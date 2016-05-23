@@ -966,9 +966,9 @@ esxStorageVolCreateXML(virStoragePoolPtr pool,
         /*
          * FIXME: The adapter type is a required parameter, but there is no
          * way to let the user specify it in the volume XML config. Therefore,
-         * default to 'busLogic' here.
+         * default to 'lsilogic' here.
          */
-        virtualDiskSpec->adapterType = (char *)"busLogic";
+        virtualDiskSpec->adapterType = (char *)"lsilogic";
 
         virtualDiskSpec->capacityKb->value =
           VIR_DIV_UP(def->target.capacity, 1024); /* Scale from byte to kilobyte */
