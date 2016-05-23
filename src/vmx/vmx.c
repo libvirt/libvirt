@@ -3383,24 +3383,28 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
             goto cleanup;
     }
 
-    if (virtualHW_version >= 7 && hasSCSI) {
-        virBufferAddLit(&buffer, "pciBridge0.present = \"true\"\n");
+    if (virtualHW_version >= 7) {
+        if (hasSCSI) {
+            virBufferAddLit(&buffer, "pciBridge0.present = \"true\"\n");
 
-        virBufferAddLit(&buffer, "pciBridge4.present = \"true\"\n");
-        virBufferAddLit(&buffer, "pciBridge4.virtualDev = \"pcieRootPort\"\n");
-        virBufferAddLit(&buffer, "pciBridge4.functions = \"8\"\n");
+            virBufferAddLit(&buffer, "pciBridge4.present = \"true\"\n");
+            virBufferAddLit(&buffer, "pciBridge4.virtualDev = \"pcieRootPort\"\n");
+            virBufferAddLit(&buffer, "pciBridge4.functions = \"8\"\n");
 
-        virBufferAddLit(&buffer, "pciBridge5.present = \"true\"\n");
-        virBufferAddLit(&buffer, "pciBridge5.virtualDev = \"pcieRootPort\"\n");
-        virBufferAddLit(&buffer, "pciBridge5.functions = \"8\"\n");
+            virBufferAddLit(&buffer, "pciBridge5.present = \"true\"\n");
+            virBufferAddLit(&buffer, "pciBridge5.virtualDev = \"pcieRootPort\"\n");
+            virBufferAddLit(&buffer, "pciBridge5.functions = \"8\"\n");
 
-        virBufferAddLit(&buffer, "pciBridge6.present = \"true\"\n");
-        virBufferAddLit(&buffer, "pciBridge6.virtualDev = \"pcieRootPort\"\n");
-        virBufferAddLit(&buffer, "pciBridge6.functions = \"8\"\n");
+            virBufferAddLit(&buffer, "pciBridge6.present = \"true\"\n");
+            virBufferAddLit(&buffer, "pciBridge6.virtualDev = \"pcieRootPort\"\n");
+            virBufferAddLit(&buffer, "pciBridge6.functions = \"8\"\n");
 
-        virBufferAddLit(&buffer, "pciBridge7.present = \"true\"\n");
-        virBufferAddLit(&buffer, "pciBridge7.virtualDev = \"pcieRootPort\"\n");
-        virBufferAddLit(&buffer, "pciBridge7.functions = \"8\"\n");
+            virBufferAddLit(&buffer, "pciBridge7.present = \"true\"\n");
+            virBufferAddLit(&buffer, "pciBridge7.virtualDev = \"pcieRootPort\"\n");
+            virBufferAddLit(&buffer, "pciBridge7.functions = \"8\"\n");
+        }
+
+        virBufferAddLit(&buffer, "vmci0.present = \"true\"\n");
     }
 
     /* Get final VMX output */
