@@ -3603,7 +3603,7 @@ qemuProcessReconnect(void *opaque)
     if (qemuProcessFiltersInstantiate(obj->def))
         goto error;
 
-    if (qemuDomainCheckEjectableMedia(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
+    if (qemuProcessRefreshDisks(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
         goto error;
 
     if (qemuRefreshVirtioChannelState(driver, obj) < 0)
@@ -5457,8 +5457,8 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessUpdateVideoRamSize(driver, vm, asyncJob) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Updating ejectable media status");
-    if (qemuDomainCheckEjectableMedia(driver, vm, asyncJob) < 0)
+    VIR_DEBUG("Updating disk data");
+    if (qemuProcessRefreshDisks(driver, vm, asyncJob) < 0)
         goto cleanup;
 
     if (flags & VIR_QEMU_PROCESS_START_AUTODESTROY &&
@@ -6379,4 +6379,54 @@ bool qemuProcessAutoDestroyActive(virQEMUDriverPtr driver,
     VIR_DEBUG("vm=%s", vm->def->name);
     cb = virCloseCallbacksGet(driver->closeCallbacks, vm, NULL);
     return cb == qemuProcessAutoDestroy;
+}
+
+
+int
+qemuProcessRefreshDisks(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm,
+                        qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virHashTablePtr table = NULL;
+    int ret = -1;
+    size_t i;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
+        table = qemuMonitorGetBlockInfo(priv->mon);
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            goto cleanup;
+    }
+
+    if (!table)
+        goto cleanup;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        virDomainDiskDefPtr disk = vm->def->disks[i];
+        struct qemuDomainDiskInfo *info;
+
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
+            disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+                 continue;
+        }
+
+        info = qemuMonitorBlockInfoLookup(table, disk->info.alias);
+        if (!info)
+            goto cleanup;
+
+        if (info->tray_open) {
+            if (virDomainDiskGetSource(disk))
+                ignore_value(virDomainDiskSetSource(disk, NULL));
+
+            disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
+        } else {
+            disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    virHashFree(table);
+    return ret;
 }

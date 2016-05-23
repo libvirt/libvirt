@@ -267,54 +267,6 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     goto cleanup;
 }
 
-int
-qemuDomainCheckEjectableMedia(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm,
-                              qemuDomainAsyncJob asyncJob)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virHashTablePtr table = NULL;
-    int ret = -1;
-    size_t i;
-
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
-        table = qemuMonitorGetBlockInfo(priv->mon);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            goto cleanup;
-    }
-
-    if (!table)
-        goto cleanup;
-
-    for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDiskDefPtr disk = vm->def->disks[i];
-        struct qemuDomainDiskInfo *info;
-
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
-            disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-                 continue;
-        }
-
-        info = qemuMonitorBlockInfoLookup(table, disk->info.alias);
-        if (!info)
-            goto cleanup;
-
-        if (info->tray_open) {
-            if (virDomainDiskGetSource(disk))
-                ignore_value(virDomainDiskSetSource(disk, NULL));
-
-            disk->tray_status = VIR_DOMAIN_DISK_TRAY_OPEN;
-        } else {
-            disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
-        }
-    }
-
-    ret = 0;
-
- cleanup:
-    virHashFree(table);
-    return ret;
-}
 
 static int
 qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
