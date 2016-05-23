@@ -88,7 +88,8 @@ storagePoolUpdateState(virStoragePoolObjPtr pool)
         goto error;
 
     if ((backend = virStorageBackendForType(pool->def->type)) == NULL) {
-        VIR_ERROR(_("Missing backend %d"), pool->def->type);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Missing backend %d"), pool->def->type);
         goto error;
     }
 
@@ -98,8 +99,9 @@ storagePoolUpdateState(virStoragePoolObjPtr pool)
     active = false;
     if (backend->checkPool &&
         backend->checkPool(pool, &active) < 0) {
-        VIR_ERROR(_("Failed to initialize storage pool '%s': %s"),
-                  pool->def->name, virGetLastErrorMessage());
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to initialize storage pool '%s': %s"),
+                       pool->def->name, virGetLastErrorMessage());
         goto error;
     }
 
@@ -112,8 +114,9 @@ storagePoolUpdateState(virStoragePoolObjPtr pool)
         if (backend->refreshPool(NULL, pool) < 0) {
             if (backend->stopPool)
                 backend->stopPool(NULL, pool);
-            VIR_ERROR(_("Failed to restart storage pool '%s': %s"),
-                      pool->def->name, virGetLastErrorMessage());
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to restart storage pool '%s': %s"),
+                           pool->def->name, virGetLastErrorMessage());
             goto error;
         }
     }
@@ -172,8 +175,9 @@ storageDriverAutostart(void)
             !virStoragePoolObjIsActive(pool)) {
             if (backend->startPool &&
                 backend->startPool(conn, pool) < 0) {
-                VIR_ERROR(_("Failed to autostart storage pool '%s': %s"),
-                          pool->def->name, virGetLastErrorMessage());
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to autostart storage pool '%s': %s"),
+                               pool->def->name, virGetLastErrorMessage());
                 virStoragePoolObjUnlock(pool);
                 continue;
             }
@@ -193,8 +197,9 @@ storageDriverAutostart(void)
                     unlink(stateFile);
                 if (backend->stopPool)
                     backend->stopPool(conn, pool);
-                VIR_ERROR(_("Failed to autostart storage pool '%s': %s"),
-                          pool->def->name, virGetLastErrorMessage());
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to autostart storage pool '%s': %s"),
+                               pool->def->name, virGetLastErrorMessage());
             } else {
                 pool->active = true;
             }
