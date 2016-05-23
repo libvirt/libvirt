@@ -3082,6 +3082,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
     int scsi_virtualDev[4] = { -1, -1, -1, -1 };
     bool floppy_present[2] = { false, false };
     unsigned int maxvcpus;
+    bool hasSCSI = false;
 
     if (ctx->formatFileName == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3288,6 +3289,8 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
     for (i = 0; i < 4; ++i) {
         if (scsi_present[i]) {
+            hasSCSI = true;
+
             virBufferAsprintf(&buffer, "scsi%zu.present = \"true\"\n", i);
 
             if (scsi_virtualDev[i] != -1) {
@@ -3378,6 +3381,26 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
     for (i = 0; i < def->nparallels; ++i) {
         if (virVMXFormatParallel(ctx, def->parallels[i], &buffer) < 0)
             goto cleanup;
+    }
+
+    if (virtualHW_version >= 7 && hasSCSI) {
+        virBufferAddLit(&buffer, "pciBridge0.present = \"true\"\n");
+
+        virBufferAddLit(&buffer, "pciBridge4.present = \"true\"\n");
+        virBufferAddLit(&buffer, "pciBridge4.virtualDev = \"pcieRootPort\"\n");
+        virBufferAddLit(&buffer, "pciBridge4.functions = \"8\"\n");
+
+        virBufferAddLit(&buffer, "pciBridge5.present = \"true\"\n");
+        virBufferAddLit(&buffer, "pciBridge5.virtualDev = \"pcieRootPort\"\n");
+        virBufferAddLit(&buffer, "pciBridge5.functions = \"8\"\n");
+
+        virBufferAddLit(&buffer, "pciBridge6.present = \"true\"\n");
+        virBufferAddLit(&buffer, "pciBridge6.virtualDev = \"pcieRootPort\"\n");
+        virBufferAddLit(&buffer, "pciBridge6.functions = \"8\"\n");
+
+        virBufferAddLit(&buffer, "pciBridge7.present = \"true\"\n");
+        virBufferAddLit(&buffer, "pciBridge7.virtualDev = \"pcieRootPort\"\n");
+        virBufferAddLit(&buffer, "pciBridge7.functions = \"8\"\n");
     }
 
     /* Get final VMX output */
