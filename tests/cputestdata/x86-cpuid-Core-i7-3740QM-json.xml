@@ -6,4 +6,5 @@
   <feature policy='require' name='pcid'/>
   <feature policy='require' name='hypervisor'/>
   <feature policy='require' name='tsc_adjust'/>
+  <feature policy='require' name='xsaveopt'/>
 </cpu>

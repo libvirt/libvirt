@@ -19,5 +19,6 @@
   <feature name='pdcm'/>
   <feature name='pcid'/>
   <feature name='osxsave'/>
+  <feature name='xsaveopt'/>
   <feature name='invtsc'/>
 </cpu>

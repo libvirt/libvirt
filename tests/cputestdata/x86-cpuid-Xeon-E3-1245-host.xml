@@ -24,6 +24,10 @@
   <feature name='tsc_adjust'/>
   <feature name='mpx'/>
   <feature name='clflushopt'/>
+  <feature name='xsaveopt'/>
+  <feature name='xsavec'/>
+  <feature name='xgetbv1'/>
+  <feature name='xsaves'/>
   <feature name='pdpe1gb'/>
   <feature name='abm'/>
   <feature name='invtsc'/>
