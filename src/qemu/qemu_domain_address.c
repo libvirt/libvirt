@@ -1587,14 +1587,15 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                 break;
             }
 
-            /* check if every PCI bridge controller's ID is greater than
+            /* check if every PCI bridge controller's index is larger than
              * the bus it is placed onto
              */
             if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE &&
                 idx <= addr->bus) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("PCI controller at index %d (0x%02x) has "
-                                 "bus='0x%02x', but bus must be <= index"),
+                                 "bus='0x%02x', but index must be "
+                                 "larger than bus"),
                                idx, idx, addr->bus);
                 goto cleanup;
             }
