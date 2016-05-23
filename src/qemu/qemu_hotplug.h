@@ -33,9 +33,6 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                    virDomainDiskDefPtr disk,
                                    virStorageSourcePtr newsrc,
                                    bool force);
-int qemuDomainCheckEjectableMedia(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm,
-                                  qemuDomainAsyncJob asyncJob);
 int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainControllerDefPtr controller);

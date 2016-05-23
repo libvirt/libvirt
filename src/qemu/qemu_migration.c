@@ -3263,7 +3263,7 @@ qemuMigrationBegin(virConnectPtr conn,
      * We don't want to require them on the destination.
      */
     if (!(flags & VIR_MIGRATE_OFFLINE) &&
-        qemuDomainCheckEjectableMedia(driver, vm, asyncJob) < 0)
+        qemuProcessRefreshDisks(driver, vm, asyncJob) < 0)
         goto endjob;
 
     if (!(xml = qemuMigrationBeginPhase(driver, vm, xmlin, dname,

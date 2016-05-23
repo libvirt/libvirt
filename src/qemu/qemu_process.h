@@ -192,4 +192,9 @@ int qemuRefreshVirtioChannelState(virQEMUDriverPtr driver,
 int qemuProcessRefreshBalloonState(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    int asyncJob);
+
+int qemuProcessRefreshDisks(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            qemuDomainAsyncJob asyncJob);
+
 #endif /* __QEMU_PROCESS_H__ */
