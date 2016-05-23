@@ -259,7 +259,7 @@ virCPUx86CPUIDSorter(const void *a, const void *b)
 }
 
 
-/* skips all zero CPUID leafs */
+/* skips all zero CPUID leaves */
 static virCPUx86CPUID *
 x86DataCpuidNext(virCPUx86DataIteratorPtr iterator)
 {
@@ -1891,21 +1891,284 @@ cpuidCall(virCPUx86CPUID *cpuid)
 }
 
 
+/* Leaf 0x04: deterministic cache parameters
+ *
+ * Sub leaf n+1 is invalid if eax[4:0] in sub leaf n equals 0.
+ */
+static int
+cpuidSetLeaf4(virCPUx86Data *data,
+              virCPUx86CPUID *subLeaf0)
+{
+    virCPUx86CPUID cpuid = *subLeaf0;
+
+    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+        return -1;
+
+    while (cpuid.eax & 0x1f) {
+        cpuid.ecx_in++;
+        cpuidCall(&cpuid);
+        if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
+            return -1;
+    }
+    return 0;
+}
+
+
+/* Leaf 0x07: structured extended feature flags enumeration
+ *
+ * Sub leaf n is invalid if n > eax in sub leaf 0.
+ */
+static int
+cpuidSetLeaf7(virCPUx86Data *data,
+              virCPUx86CPUID *subLeaf0)
+{
+    virCPUx86CPUID cpuid = { .eax_in = 0x7 };
+    uint32_t sub;
+
+    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+        return -1;
+
+    for (sub = 1; sub <= subLeaf0->eax; sub++) {
+        cpuid.ecx_in = sub;
+        cpuidCall(&cpuid);
+        if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
+            return -1;
+    }
+    return 0;
+}
+
+
+/* Leaf 0x0b: extended topology enumeration
+ *
+ * Sub leaf n is invalid if it returns 0 in ecx[15:8].
+ * Sub leaf n+1 is invalid if sub leaf n is invalid.
+ * Some output values do not depend on ecx, thus sub leaf 0 provides
+ * meaningful data even if it was (theoretically) considered invalid.
+ */
+static int
+cpuidSetLeafB(virCPUx86Data *data,
+              virCPUx86CPUID *subLeaf0)
+{
+    virCPUx86CPUID cpuid = *subLeaf0;
+
+    while (cpuid.ecx & 0xff00) {
+        if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
+            return -1;
+        cpuid.ecx_in++;
+        cpuidCall(&cpuid);
+    }
+    return 0;
+}
+
+
+/* Leaf 0x0d: processor extended state enumeration
+ *
+ * Sub leaves 0 and 1 are valid.
+ * Sub leaf n (2 <= n < 32) is invalid if eax[n] from sub leaf 0 is not set
+ * and ecx[n] from sub leaf 1 is not set.
+ * Sub leaf n (32 <= n < 64) is invalid if edx[n-32] from sub leaf 0 is not set
+ * and edx[n-32] from sub leaf 1 is not set.
+ */
+static int
+cpuidSetLeafD(virCPUx86Data *data,
+              virCPUx86CPUID *subLeaf0)
+{
+    virCPUx86CPUID cpuid = { .eax_in = 0xd };
+    virCPUx86CPUID sub0;
+    virCPUx86CPUID sub1;
+    uint32_t sub;
+
+    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+        return -1;
+
+    cpuid.ecx_in = 1;
+    cpuidCall(&cpuid);
+    if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
+        return -1;
+
+    sub0 = *subLeaf0;
+    sub1 = cpuid;
+    for (sub = 2; sub < 64; sub++) {
+        if (sub < 32 &&
+            !(sub0.eax & (1 << sub)) &&
+            !(sub1.ecx & (1 << sub)))
+            continue;
+        if (sub >= 32 &&
+            !(sub0.edx & (1 << (sub - 32))) &&
+            !(sub1.edx & (1 << (sub - 32))))
+            continue;
+
+        cpuid.ecx_in = sub;
+        cpuidCall(&cpuid);
+        if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
+            return -1;
+    }
+    return 0;
+}
+
+
+/* Leaf 0x0f: L3 cached RDT monitoring capability enumeration
+ * Leaf 0x10: RDT allocation enumeration
+ *
+ * res reports valid resource identification (ResID) starting at bit 1.
+ * Values associated with each valid ResID are reported by ResID sub leaf.
+ *
+ * 0x0f: Sub leaf n is valid if edx[n] (= res[ResID]) from sub leaf 0 is set.
+ * 0x10: Sub leaf n is valid if ebx[n] (= res[ResID]) from sub leaf 0 is set.
+ */
+static int
+cpuidSetLeafResID(virCPUx86Data *data,
+                  virCPUx86CPUID *subLeaf0,
+                  uint32_t res)
+{
+    virCPUx86CPUID cpuid = { .eax_in = subLeaf0->eax_in };
+    uint32_t sub;
+
+    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+        return -1;
+
+    for (sub = 1; sub < 32; sub++) {
+        if (!(res & (1 << sub)))
+            continue;
+        cpuid.ecx_in = sub;
+        cpuidCall(&cpuid);
+        if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
+            return -1;
+    }
+    return 0;
+}
+
+
+/* Leaf 0x12: SGX capability enumeration
+ *
+ * Sub leaves 0 and 1 is supported if ebx[2] from leaf 0x7 (SGX) is set.
+ * Sub leaves n >= 2 are valid as long as eax[3:0] != 0.
+ */
+static int
+cpuidSetLeaf12(virCPUx86Data *data,
+               virCPUx86CPUID *subLeaf0)
+{
+    virCPUx86CPUID cpuid = { .eax_in = 0x7 };
+    virCPUx86CPUID *cpuid7;
+
+    if (!(cpuid7 = x86DataCpuid(data, &cpuid)) ||
+        !(cpuid7->ebx & (1 << 2)))
+        return 0;
+
+    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+        return -1;
+
+    cpuid.eax_in = 0x12;
+    cpuid.ecx_in = 1;
+    cpuidCall(&cpuid);
+    if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
+        return -1;
+
+    cpuid.ecx_in = 2;
+    cpuidCall(&cpuid);
+    while (cpuid.eax & 0xf) {
+        if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
+            return -1;
+        cpuid.ecx_in++;
+        cpuidCall(&cpuid);
+    }
+    return 0;
+}
+
+
+/* Leaf 0x14: processor trace enumeration
+ *
+ * Sub leaf 0 reports the maximum supported sub leaf in eax.
+ */
+static int
+cpuidSetLeaf14(virCPUx86Data *data,
+               virCPUx86CPUID *subLeaf0)
+{
+    virCPUx86CPUID cpuid = { .eax_in = 0x14 };
+    uint32_t sub;
+
+    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+        return -1;
+
+    for (sub = 1; sub <= subLeaf0->eax; sub++) {
+        cpuid.ecx_in = sub;
+        cpuidCall(&cpuid);
+        if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
+            return -1;
+    }
+    return 0;
+}
+
+
+/* Leaf 0x17: SOC Vendor
+ *
+ * Sub leaf 0 is valid if eax >= 3.
+ * Sub leaf 0 reports the maximum supported sub leaf in eax.
+ */
+static int
+cpuidSetLeaf17(virCPUx86Data *data,
+               virCPUx86CPUID *subLeaf0)
+{
+    virCPUx86CPUID cpuid = { .eax_in = 0x17 };
+    uint32_t sub;
+
+    if (subLeaf0->eax < 3)
+        return 0;
+
+    if (virCPUx86DataAddCPUID(data, subLeaf0) < 0)
+        return -1;
+
+    for (sub = 1; sub <= subLeaf0->eax; sub++) {
+        cpuid.ecx_in = sub;
+        cpuidCall(&cpuid);
+        if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
+            return -1;
+    }
+    return 0;
+}
+
+
 static int
 cpuidSet(uint32_t base, virCPUx86Data *data)
 {
+    int rc;
     uint32_t max;
-    uint32_t i;
+    uint32_t leaf;
     virCPUx86CPUID cpuid = { .eax_in = base };
 
     cpuidCall(&cpuid);
     max = cpuid.eax;
 
-    for (i = base; i <= max; i++) {
-        cpuid.eax_in = i;
+    for (leaf = base; leaf <= max; leaf++) {
+        cpuid.eax_in = leaf;
         cpuid.ecx_in = 0;
         cpuidCall(&cpuid);
-        if (virCPUx86DataAddCPUID(data, &cpuid) < 0)
+
+        /* Handle CPUID leaves that depend on previously queried bits or
+         * which provide additional sub leaves for ecx_in > 0
+         */
+        if (leaf == 0x4)
+            rc = cpuidSetLeaf4(data, &cpuid);
+        else if (leaf == 0x7)
+            rc = cpuidSetLeaf7(data, &cpuid);
+        else if (leaf == 0xb)
+            rc = cpuidSetLeafB(data, &cpuid);
+        else if (leaf == 0xd)
+            rc = cpuidSetLeafD(data, &cpuid);
+        else if (leaf == 0xf)
+            rc = cpuidSetLeafResID(data, &cpuid, cpuid.edx);
+        else if (leaf == 0x10)
+            rc = cpuidSetLeafResID(data, &cpuid, cpuid.ebx);
+        else if (leaf == 0x12)
+            rc = cpuidSetLeaf12(data, &cpuid);
+        else if (leaf == 0x14)
+            rc = cpuidSetLeaf14(data, &cpuid);
+        else if (leaf == 0x17)
+            rc = cpuidSetLeaf17(data, &cpuid);
+        else
+            rc = virCPUx86DataAddCPUID(data, &cpuid);
+
+        if (rc < 0)
             return -1;
     }
 
