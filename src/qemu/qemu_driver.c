@@ -7672,44 +7672,35 @@ qemuDomainChangeDiskLive(virConnectPtr conn,
         goto cleanup;
     }
 
-    switch ((virDomainDiskDevice) disk->device) {
-    case VIR_DOMAIN_DISK_DEVICE_CDROM:
-    case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
-        if (!qemuDomainDiskChangeSupported(disk, orig_disk))
+    if (!qemuDomainDiskChangeSupported(disk, orig_disk))
+        goto cleanup;
+
+    if (qemuDomainDiskSourceDiffers(disk, orig_disk)) {
+        /* Disk source can be changed only for removable devices */
+        if (disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
+            disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("disk source can be changed only in removable "
+                             "drives"));
             goto cleanup;
-
-        if (qemuDomainDiskSourceDiffers(disk, orig_disk)) {
-            /* Add the new disk src into shared disk hash table */
-            if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
-                goto cleanup;
-
-            if (qemuDomainChangeEjectableMedia(driver, vm, orig_disk,
-                                               dev->data.disk->src,
-                                               force) < 0) {
-                ignore_value(qemuRemoveSharedDisk(driver, dev->data.disk,
-                                                  vm->def->name));
-                goto cleanup;
-            }
-
-            dev->data.disk->src = NULL;
         }
 
-        orig_disk->startupPolicy = dev->data.disk->startupPolicy;
-        orig_disk->snapshot = dev->data.disk->snapshot;
-        break;
+        /* Add the new disk src into shared disk hash table */
+        if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
+            goto cleanup;
 
-    case VIR_DOMAIN_DISK_DEVICE_DISK:
-    case VIR_DOMAIN_DISK_DEVICE_LUN:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("disk bus '%s' cannot be updated."),
-                       virDomainDiskBusTypeToString(disk->bus));
-        goto cleanup;
-        break;
+        if (qemuDomainChangeEjectableMedia(driver, vm, orig_disk,
+                                           dev->data.disk->src, force) < 0) {
+            ignore_value(qemuRemoveSharedDisk(driver, dev->data.disk,
+                                              vm->def->name));
+            goto cleanup;
+        }
 
-    case VIR_DOMAIN_DISK_DEVICE_LAST:
-        /* nada */
-        break;
+        dev->data.disk->src = NULL;
     }
+
+    orig_disk->startupPolicy = dev->data.disk->startupPolicy;
+    orig_disk->snapshot = dev->data.disk->snapshot;
 
     ret = 0;
  cleanup:
