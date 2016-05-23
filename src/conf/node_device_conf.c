@@ -1293,8 +1293,6 @@ virNodeDevPCICapabilityParseXML(xmlXPathContextPtr ctxt,
         if (VIR_ALLOC(data->pci_dev.physical_function) < 0)
             goto out;
 
-        data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
-
         if (!address) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing address in 'phys_function' capability"));
@@ -1304,6 +1302,8 @@ virNodeDevPCICapabilityParseXML(xmlXPathContextPtr ctxt,
         if (virPCIDeviceAddressParseXML(address,
                                         data->pci_dev.physical_function) < 0)
             goto out;
+
+        data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
     } else if (STREQ(type, "virt_functions")) {
         int naddresses;
 
