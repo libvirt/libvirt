@@ -215,8 +215,9 @@ nwfilterStateInitialize(bool privileged,
      */
     if (sysbus &&
         nwfilterDriverInstallDBusMatches(sysbus) < 0) {
-        VIR_ERROR(_("DBus matches could not be installed. Disabling nwfilter "
-                  "driver"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("DBus matches could not be installed. "
+                       "Disabling nwfilter driver"));
         /*
          * unfortunately this is fatal since virNWFilterTechDriversInit
          * may have caused the ebiptables driver to use the firewall tool
