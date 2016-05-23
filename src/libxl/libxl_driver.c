@@ -319,9 +319,9 @@ libxlAutostartDomain(virDomainObjPtr vm,
 
     if (vm->autostart && !virDomainObjIsActive(vm) &&
         libxlDomainStartNew(driver, vm, false) < 0) {
-        VIR_ERROR(_("Failed to autostart VM '%s': %s"),
-                  vm->def->name,
-                  virGetLastErrorMessage());
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to autostart VM '%s': %s"),
+                       vm->def->name, virGetLastErrorMessage());
         goto endjob;
     }
 
