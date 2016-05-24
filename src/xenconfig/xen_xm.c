@@ -297,9 +297,12 @@ xenFormatXMDisk(virConfValuePtr list,
                 type = "aio";
             else
                 type = virStorageFileFormatTypeToString(format);
-            virBufferAsprintf(&buf, "%s:", driver);
-            if (STREQ(driver, "tap"))
-                virBufferAsprintf(&buf, "%s:", type);
+
+            if (driver) {
+                virBufferAsprintf(&buf, "%s:", driver);
+                if (STREQ(driver, "tap"))
+                    virBufferAsprintf(&buf, "%s:", type);
+            }
         } else {
             switch (virDomainDiskGetType(disk)) {
             case VIR_STORAGE_TYPE_FILE:
