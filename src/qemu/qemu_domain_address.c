@@ -149,7 +149,6 @@ qemuDomainAssignVirtioSerialAddresses(virDomainDefPtr def,
         priv = obj->privateData;
         /* if this is the live domain object, we persist the addresses */
         virDomainVirtioSerialAddrSetFree(priv->vioserialaddrs);
-        priv->persistentAddrs = 1;
         priv->vioserialaddrs = addrs;
         addrs = NULL;
     }
@@ -382,11 +381,8 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
         if (addrs) {
             /* if this is the live domain object, we persist the CCW addresses*/
             virDomainCCWAddressSetFree(priv->ccwaddrs);
-            priv->persistentAddrs = 1;
             priv->ccwaddrs = addrs;
             addrs = NULL;
-        } else {
-            priv->persistentAddrs = 0;
         }
     }
     ret = 0;
@@ -1616,7 +1612,6 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
         priv = obj->privateData;
         /* if this is the live domain object, we persist the PCI addresses */
         virDomainPCIAddressSetFree(priv->pciaddrs);
-        priv->persistentAddrs = 1;
         priv->pciaddrs = addrs;
         addrs = NULL;
     }

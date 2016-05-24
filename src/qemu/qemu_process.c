@@ -5754,16 +5754,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     priv->qemuDevices = NULL;
 
     virDomainDefClearDeviceAliases(vm->def);
-    if (!priv->persistentAddrs) {
-        virDomainDefClearPCIAddresses(vm->def);
-        virDomainPCIAddressSetFree(priv->pciaddrs);
-        priv->pciaddrs = NULL;
-        virDomainDefClearCCWAddresses(vm->def);
-        virDomainCCWAddressSetFree(priv->ccwaddrs);
-        priv->ccwaddrs = NULL;
-        virDomainVirtioSerialAddrSetFree(priv->vioserialaddrs);
-        priv->vioserialaddrs = NULL;
-    }
 
     qemuHostdevReAttachDomainDevices(driver, vm->def);
 
