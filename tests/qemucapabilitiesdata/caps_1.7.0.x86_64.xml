@@ -46,6 +46,7 @@
   <flag name='ich9-usb-ehci1'/>
   <flag name='vt82c686b-usb-uhci'/>
   <flag name='pci-ohci'/>
+  <flag name='usb-redir'/>
   <flag name='usb-hub'/>
   <flag name='no-shutdown'/>
   <flag name='cache-unsafe'/>
@@ -74,6 +75,7 @@
   <flag name='blockio'/>
   <flag name='disable-s3'/>
   <flag name='disable-s4'/>
+  <flag name='usb-redir.filter'/>
   <flag name='ide-drive.wwn'/>
   <flag name='scsi-disk.wwn'/>
   <flag name='seccomp-sandbox'/>
@@ -83,6 +85,8 @@
   <flag name='block-commit'/>
   <flag name='vnc'/>
   <flag name='drive-mirror'/>
+  <flag name='usb-redir.bootindex'/>
+  <flag name='usb-host.bootindex'/>
   <flag name='blockdev-snapshot-sync'/>
   <flag name='qxl'/>
   <flag name='VGA'/>
@@ -108,6 +112,7 @@
   <flag name='scsi-generic.bootindex'/>
   <flag name='mem-merge'/>
   <flag name='vnc-websocket'/>
+  <flag name='drive-discard'/>
   <flag name='mlock'/>
   <flag name='vnc-share-policy'/>
   <flag name='device-del-event'/>
@@ -126,10 +131,10 @@
   <flag name='usb-kbd'/>
   <flag name='host-pci-multidomain'/>
   <flag name='msg-timestamp'/>
-  <flag name='numa'/>
   <flag name='usb-audio'/>
   <flag name='splash-timeout'/>
   <flag name='ivshmem'/>
+  <flag name='drive-iotune-max'/>
   <flag name='VGA.vgamem_mb'/>
   <flag name='vmware-svga.vgamem_mb'/>
   <flag name='qxl.vgamem_mb'/>
@@ -145,7 +150,7 @@
   <flag name='qxl-vga.vram64_size_mb'/>
   <flag name='device-tray-moved-event'/>
   <flag name='nec-usb-xhci-ports'/>
-  <version>1006050</version>
+  <version>1007000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
   <arch>x86_64</arch>
@@ -174,12 +179,10 @@
   <cpu name='phenom'/>
   <cpu name='qemu64'/>
   <machine name='pc-i440fx-1.7' alias='pc' maxCpus='255'/>
-  <machine name='xenpv' maxCpus='1'/>
   <machine name='pc-q35-1.4' maxCpus='255'/>
   <machine name='pc-q35-1.5' maxCpus='255'/>
   <machine name='pc-q35-1.6' maxCpus='255'/>
   <machine name='pc-q35-1.7' alias='q35' maxCpus='255'/>
-  <machine name='xenfv' maxCpus='128'/>
   <machine name='isapc' maxCpus='1'/>
   <machine name='pc-0.10' maxCpus='255'/>
   <machine name='pc-0.11' maxCpus='255'/>

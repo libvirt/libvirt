@@ -286,7 +286,7 @@ mymain(void)
 
 #if WITH_QEMU
 
-    DO_TEST_QEMU("1.6.50", "caps_1.6.50",
+    DO_TEST_QEMU("1.7.0", "caps_1.7.0",
                  "/usr/bin/qemu-system-x86_64", NULL,
                  "x86_64", VIR_DOMAIN_VIRT_KVM);
 
