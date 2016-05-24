@@ -15343,7 +15343,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     bool usb_master = false;
     char *netprefix = NULL;
 
-    if (flags & VIR_DOMAIN_DEF_PARSE_VALIDATE) {
+    if (flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA) {
         char *schema = virFileFindResource("domain.rng",
                                            abs_topsrcdir "/docs/schemas",
                                            PKGDATADIR "/schemas");

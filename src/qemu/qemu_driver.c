@@ -1780,7 +1780,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
                   VIR_DOMAIN_START_VALIDATE, NULL);
 
     if (flags & VIR_DOMAIN_START_VALIDATE)
-        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
     if (flags & VIR_DOMAIN_START_PAUSED)
         start_flags |= VIR_QEMU_PROCESS_START_PAUSED;
     if (flags & VIR_DOMAIN_START_AUTODESTROY)
@@ -7252,7 +7252,7 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
     virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
 
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
-        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     cfg = virQEMUDriverGetConfig(driver);
 

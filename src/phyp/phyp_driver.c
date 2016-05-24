@@ -3569,7 +3569,7 @@ phypDomainCreateXML(virConnectPtr conn,
     virCheckFlags(VIR_DOMAIN_START_VALIDATE, NULL);
 
     if (flags & VIR_DOMAIN_START_VALIDATE)
-        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     if (!(def = virDomainDefParseString(xml, phyp_driver->caps,
                                         phyp_driver->xmlopt,

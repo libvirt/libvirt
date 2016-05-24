@@ -1594,7 +1594,7 @@ static virDomainPtr umlDomainCreateXML(virConnectPtr conn, const char *xml,
                   VIR_DOMAIN_START_VALIDATE, NULL);
 
     if (flags & VIR_DOMAIN_START_VALIDATE)
-        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     virNWFilterReadLockFilterUpdates();
     umlDriverLock(driver);
@@ -2076,7 +2076,7 @@ umlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
 
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
-        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     umlDriverLock(driver);
     if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,

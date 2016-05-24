@@ -742,7 +742,7 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
 
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
-        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     virObjectLock(driver);
     if ((def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,

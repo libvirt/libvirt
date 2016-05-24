@@ -967,7 +967,7 @@ libxlDomainCreateXML(virConnectPtr conn, const char *xml,
                   VIR_DOMAIN_START_VALIDATE, NULL);
 
     if (flags & VIR_DOMAIN_START_VALIDATE)
-        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt,
                                         parse_flags)))
@@ -2714,7 +2714,7 @@ libxlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
 
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
-        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt,
                                         parse_flags)))

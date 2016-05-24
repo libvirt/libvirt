@@ -377,7 +377,7 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
 
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
-        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     ctx.parseFileName = NULL;
     ctx.formatFileName = vmwareCopyVMXFileName;
@@ -670,7 +670,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     virCheckFlags(VIR_DOMAIN_START_VALIDATE, NULL);
 
     if (flags & VIR_DOMAIN_START_VALIDATE)
-        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE;
+        parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     ctx.parseFileName = NULL;
     ctx.formatFileName = vmwareCopyVMXFileName;
