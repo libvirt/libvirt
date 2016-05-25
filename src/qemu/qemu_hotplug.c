@@ -1164,7 +1164,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
     unsigned int flags = 0;
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
-        return -1;
+        goto cleanup;
 
     if (!cfg->relaxedACS)
         flags |= VIR_HOSTDEV_STRICT_ACS_CHECK;
