@@ -17091,6 +17091,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     qemuDomainObjPrivatePtr priv;
+    virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
     virDomainBlockIoTuneInfo info;
     virDomainBlockIoTuneInfo *oldinfo;
@@ -17106,7 +17107,6 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     bool set_size_iops = false;
     bool supportMaxOptions = true;
     virQEMUDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
     virObjectEventPtr event = NULL;
     virTypedParameterPtr eventParams = NULL;
     int eventNparams = 0;
@@ -17159,11 +17159,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto endjob;
-
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
     if (virTypedParamsAddString(&eventParams, &eventNparams, &eventMaxparams,
@@ -17331,7 +17327,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         if (!(conf_disk = virDomainDiskByName(persistentDef, path, true))) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("missing persistent configuration for disk '%s'"),
@@ -17340,7 +17336,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         }
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+    if (def) {
         supportMaxOptions = virQEMUCapsGet(priv->qemuCaps,
                                            QEMU_CAPS_DRIVE_IOTUNE_MAX);
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
@@ -17358,7 +17354,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
              goto endjob;
         }
 
-        if (!(disk = qemuDomainDiskByName(vm->def, path)))
+        if (!(disk = qemuDomainDiskByName(def, path)))
             goto endjob;
 
         if (!(device = qemuAliasFromDisk(disk)))
@@ -17410,7 +17406,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         }
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         oldinfo = &conf_disk->blkdeviotune;
         if (!set_bytes) {
             info.total_bytes_sec = oldinfo->total_bytes_sec;
@@ -17437,7 +17433,6 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     virDomainObjEndAPI(&vm);
     if (eventNparams)
         virTypedParamsFree(eventParams, eventNparams);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
