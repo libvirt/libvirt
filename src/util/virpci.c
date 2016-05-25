@@ -2487,6 +2487,8 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path,
 {
     char *device_link = NULL;
 
+    *pf = NULL;
+
     if (virBuildPath(&device_link, vf_sysfs_path, "physfn") == -1) {
         virReportOOMError();
         return -1;
