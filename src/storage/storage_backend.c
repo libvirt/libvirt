@@ -1010,6 +1010,53 @@ virStorageBackendCreateQemuImgOpts(char **opts,
     return -1;
 }
 
+
+/* virStorageBackendCreateQemuImgCheckEncryption:
+ * @format: format of file found
+ * @conn: pointer to connection
+ * @vol: pointer to volume def
+ *
+ * Ensure the proper setup for encryption.
+ *
+ * Returns 0 on success, -1 on failure w/ error set
+ */
+static int
+virStorageBackendCreateQemuImgCheckEncryption(int format,
+                                              const char *type,
+                                              virConnectPtr conn,
+                                              virStorageVolDefPtr vol)
+{
+    virStorageEncryptionPtr enc = vol->target.encryption;
+
+    if (format == VIR_STORAGE_FILE_QCOW || format == VIR_STORAGE_FILE_QCOW2) {
+        if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_QCOW &&
+            enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported volume encryption format %d"),
+                           vol->target.encryption->format);
+            return -1;
+        }
+        if (enc->nsecrets > 1) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("too many secrets for qcow encryption"));
+            return -1;
+        }
+        if (enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT ||
+            enc->nsecrets == 0) {
+            if (virStorageGenerateQcowEncryption(conn, vol) < 0)
+                return -1;
+        }
+    } else {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("qcow volume encryption unsupported with "
+                         "volume format %s"), type);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /* Create a qemu-img virCommand from the supplied binary path,
  * volume definitions and imgformat
  */
@@ -1133,35 +1180,11 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
         }
     }
 
-    if (info.encryption) {
-        virStorageEncryptionPtr enc;
+    if (info.encryption &&
+        virStorageBackendCreateQemuImgCheckEncryption(info.format, type,
+                                                      conn, vol) < 0)
+        return NULL;
 
-        if (info.format != VIR_STORAGE_FILE_QCOW &&
-            info.format != VIR_STORAGE_FILE_QCOW2) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("qcow volume encryption unsupported with "
-                             "volume format %s"), type);
-            return NULL;
-        }
-        enc = vol->target.encryption;
-        if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_QCOW &&
-            enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported volume encryption format %d"),
-                           vol->target.encryption->format);
-            return NULL;
-        }
-        if (enc->nsecrets > 1) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("too many secrets for qcow encryption"));
-            return NULL;
-        }
-        if (enc->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT ||
-            enc->nsecrets == 0) {
-            if (virStorageGenerateQcowEncryption(conn, vol) < 0)
-                return NULL;
-        }
-    }
 
     /* Size in KB */
     info.size_arg = VIR_DIV_UP(vol->target.capacity, 1024);
