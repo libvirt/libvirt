@@ -2732,6 +2732,9 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
     if (virPCIGetPhysicalFunction(vf_sysfs_device_path, &pf_config_address) < 0)
         return ret;
 
+    if (!pf_config_address)
+        return ret;
+
     if (virPCIDeviceAddressGetSysfsFile(pf_config_address,
                                         &pf_sysfs_device_path) < 0) {
 
