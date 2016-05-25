@@ -15528,8 +15528,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     /* Extract cpu tunables. */
-    if ((n = virXPathULong("string(./cputune/shares[1])", ctxt,
-                           &def->cputune.shares)) < -1) {
+    if ((n = virXPathULongLong("string(./cputune/shares[1])", ctxt,
+                               &def->cputune.shares)) < -1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("can't parse cputune shares value"));
         goto error;
@@ -22158,7 +22158,7 @@ virDomainCputuneDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(&childrenBuf, virBufferGetIndent(buf, false) + 2);
 
     if (def->cputune.sharesSpecified)
-        virBufferAsprintf(&childrenBuf, "<shares>%lu</shares>\n",
+        virBufferAsprintf(&childrenBuf, "<shares>%llu</shares>\n",
                           def->cputune.shares);
     if (def->cputune.period)
         virBufferAsprintf(&childrenBuf, "<period>%llu</period>\n",

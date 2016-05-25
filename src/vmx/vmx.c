@@ -1547,8 +1547,8 @@ virVMXParseConfig(virVMXContext *ctx,
             def->cputune.shares = vcpus * 1000;
         } else if (STRCASEEQ(sched_cpu_shares, "high")) {
             def->cputune.shares = vcpus * 2000;
-        } else if (virStrToLong_ul(sched_cpu_shares, NULL, 10,
-                                   &def->cputune.shares) < 0) {
+        } else if (virStrToLong_ull(sched_cpu_shares, NULL, 10,
+                                    &def->cputune.shares) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Expecting VMX entry 'sched.cpu.shares' to be an "
                              "unsigned integer or 'low', 'normal' or 'high' but "
@@ -3251,7 +3251,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
         } else if (def->cputune.shares == vcpus * 2000) {
             virBufferAddLit(&buffer, "sched.cpu.shares = \"high\"\n");
         } else {
-            virBufferAsprintf(&buffer, "sched.cpu.shares = \"%lu\"\n",
+            virBufferAsprintf(&buffer, "sched.cpu.shares = \"%llu\"\n",
                               def->cputune.shares);
         }
     }

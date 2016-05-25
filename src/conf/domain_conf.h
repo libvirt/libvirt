@@ -2011,7 +2011,7 @@ typedef struct _virDomainCputune virDomainCputune;
 typedef virDomainCputune *virDomainCputunePtr;
 
 struct _virDomainCputune {
-    unsigned long shares;
+    unsigned long long shares;
     bool sharesSpecified;
     unsigned long long period;
     long long quota;

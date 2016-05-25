@@ -800,7 +800,7 @@ lxcSetCpuTune(virDomainDefPtr def, virConfPtr properties)
 
     if ((value = virConfGetValue(properties, "lxc.cgroup.cpu.shares")) &&
             value->str) {
-        if (virStrToLong_ul(value->str, NULL, 10, &def->cputune.shares) < 0)
+        if (virStrToLong_ull(value->str, NULL, 10, &def->cputune.shares) < 0)
             goto error;
         def->cputune.sharesSpecified = true;
     }
