@@ -2478,8 +2478,19 @@ virPCIGetDeviceAddressFromSysfsLink(const char *device_link)
     return bdf;
 }
 
-/*
- * Returns Physical function given a virtual function
+/**
+ * virPCIGetPhysicalFunction:
+ * @vf_sysfs_path: sysfs path for the virtual function
+ * @pf: where to store the physical function's address
+ *
+ * Given @vf_sysfs_path, this function will store the pointer
+ * to a newly-allocated virPCIDeviceAddress in @pf.
+ *
+ * @pf might be NULL if @vf_sysfs_path does not point to a
+ * virtual function. If it's not NULL, then it should be
+ * freed by the caller when no longer needed.
+ *
+ * Returns: >=0 on success, <0 on failure
  */
 int
 virPCIGetPhysicalFunction(const char *vf_sysfs_path,
