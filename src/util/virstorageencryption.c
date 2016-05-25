@@ -112,8 +112,7 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
 {
     xmlNodePtr old_node;
     virStorageEncryptionSecretPtr ret;
-    char *type_str;
-    int type;
+    char *type_str = NULL;
     char *uuidstr = NULL;
 
     if (VIR_ALLOC(ret) < 0)
@@ -122,25 +121,21 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
     old_node = ctxt->node;
     ctxt->node = node;
 
-    type_str = virXPathString("string(./@type)", ctxt);
-    if (type_str == NULL) {
+    if (!(type_str = virXPathString("string(./@type)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("unknown volume encryption secret type"));
         goto cleanup;
     }
-    type = virStorageEncryptionSecretTypeFromString(type_str);
-    if (type < 0) {
+
+    if ((ret->type = virStorageEncryptionSecretTypeFromString(type_str)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown volume encryption secret type %s"),
                        type_str);
-        VIR_FREE(type_str);
         goto cleanup;
     }
     VIR_FREE(type_str);
-    ret->type = type;
 
-    uuidstr = virXPathString("string(./@uuid)", ctxt);
-    if (uuidstr) {
+    if ((uuidstr = virXPathString("string(./@uuid)", ctxt))) {
         if (virUUIDParse(uuidstr, ret->uuid) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("malformed volume encryption uuid '%s'"),
@@ -157,6 +152,7 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
     return ret;
 
  cleanup:
+    VIR_FREE(type_str);
     virStorageEncryptionSecretFree(ret);
     VIR_FREE(uuidstr);
     ctxt->node = old_node;
@@ -168,46 +164,48 @@ virStorageEncryptionParseXML(xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *nodes = NULL;
     virStorageEncryptionPtr ret;
-    char *format_str;
-    int format, n;
+    char *format_str = NULL;
+    int n;
     size_t i;
 
     if (VIR_ALLOC(ret) < 0)
         return NULL;
 
-    format_str = virXPathString("string(./@format)", ctxt);
-    if (format_str == NULL) {
+    if (!(format_str = virXPathString("string(./@format)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("unknown volume encryption format"));
         goto cleanup;
     }
-    format = virStorageEncryptionFormatTypeFromString(format_str);
-    if (format < 0) {
+
+    if ((ret->format =
+         virStorageEncryptionFormatTypeFromString(format_str)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown volume encryption format type %s"),
                        format_str);
-        VIR_FREE(format_str);
         goto cleanup;
     }
     VIR_FREE(format_str);
-    ret->format = format;
 
-    n = virXPathNodeSet("./secret", ctxt, &nodes);
-    if (n < 0)
+    if ((n = virXPathNodeSet("./secret", ctxt, &nodes)) < 0)
         goto cleanup;
-    if (n != 0 && VIR_ALLOC_N(ret->secrets, n) < 0)
-        goto cleanup;
-    ret->nsecrets = n;
-    for (i = 0; i < n; i++) {
-        ret->secrets[i] = virStorageEncryptionSecretParse(ctxt, nodes[i]);
-        if (ret->secrets[i] == NULL)
+
+    if (n > 0) {
+        if (VIR_ALLOC_N(ret->secrets, n) < 0)
             goto cleanup;
+        ret->nsecrets = n;
+
+        for (i = 0; i < n; i++) {
+            if (!(ret->secrets[i] =
+                  virStorageEncryptionSecretParse(ctxt, nodes[i])))
+                goto cleanup;
+        }
+        VIR_FREE(nodes);
     }
-    VIR_FREE(nodes);
 
     return ret;
 
  cleanup:
+    VIR_FREE(format_str);
     VIR_FREE(nodes);
     virStorageEncryptionFree(ret);
     return NULL;
@@ -248,8 +246,7 @@ virStorageEncryptionSecretFormat(virBufferPtr buf,
     const char *type;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    type = virStorageEncryptionSecretTypeToString(secret->type);
-    if (!type) {
+    if (!(type = virStorageEncryptionSecretTypeToString(secret->type))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unexpected volume encryption secret type"));
         return -1;
@@ -268,8 +265,7 @@ virStorageEncryptionFormat(virBufferPtr buf,
     const char *format;
     size_t i;
 
-    format = virStorageEncryptionFormatTypeToString(enc->format);
-    if (!format) {
+    if (!(format = virStorageEncryptionFormatTypeToString(enc->format))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("unexpected encryption format"));
         return -1;
