@@ -10337,7 +10337,7 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
     bool cpu_bw_status = false;
     int saved_nparams = 0;
     virDomainDefPtr persistentDef;
-    virCapsPtr caps = NULL;
+    virDomainDefPtr def;
     qemuDomainObjPrivatePtr priv;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -10364,14 +10364,10 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
     if (*nparams > 1)
         cpu_bw_status = virCgroupSupportsCpuBW(priv->cgroup);
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
-        goto cleanup;
-
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         shares = persistentDef->cputune.shares;
         if (*nparams > 1) {
             period = persistentDef->cputune.period;
@@ -10477,7 +10473,6 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     return ret;
 }
 
