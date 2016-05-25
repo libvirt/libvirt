@@ -9497,6 +9497,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
                               unsigned int flags)
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
     virDomainObjPtr vm = NULL;
     unsigned long long swap_hard_limit;
@@ -9508,7 +9509,6 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     virQEMUDriverConfigPtr cfg = NULL;
     int rc;
     int ret = -1;
-    virCapsPtr caps = NULL;
     qemuDomainObjPrivatePtr priv;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -9540,22 +9540,17 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("cgroup memory controller is not mounted"));
-            goto endjob;
-        }
+    if (def &&
+        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cgroup memory controller is not mounted"));
+        goto endjob;
     }
 
 #define VIR_GET_LIMIT_PARAMETER(PARAM, VALUE)                                \
@@ -9592,13 +9587,13 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
 
 #define QEMU_SET_MEM_PARAMETER(FUNC, VALUE)                                     \
     if (set_ ## VALUE) {                                                        \
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {                                   \
+        if (def) {                                                              \
             if ((rc = FUNC(priv->cgroup, VALUE)) < 0)                           \
                 goto endjob;                                                    \
-            vm->def->mem.VALUE = VALUE;                                         \
+            def->mem.VALUE = VALUE;                                             \
         }                                                                       \
                                                                                 \
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG)                                   \
+        if (persistentDef)                                                      \
             persistentDef->mem.VALUE = VALUE;                                   \
     }
 
@@ -9606,7 +9601,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     QEMU_SET_MEM_PARAMETER(virCgroupSetMemorySoftLimit, soft_limit);
 
     /* set hard limit before swap hard limit if decreasing it */
-    if (vm->def->mem.hard_limit > hard_limit) {
+    if (def && def->mem.hard_limit > hard_limit) {
         QEMU_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
         /* inhibit changing the limit a second time */
         set_hard_limit = false;
@@ -9619,11 +9614,11 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
 
 #undef QEMU_SET_MEM_PARAMETER
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE &&
+    if (def &&
         virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         goto endjob;
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
+    if (persistentDef &&
         virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
         goto endjob;
 
@@ -9634,7 +9629,6 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
