@@ -9962,7 +9962,9 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     size_t i;
     virDomainObjPtr vm = NULL;
-    virDomainDefPtr vmdef = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainDefPtr persistentDef = NULL;
+    virDomainDefPtr persistentDefCopy = NULL;
     unsigned long long value_ul;
     long long value_l;
     int ret = -1;
@@ -10016,22 +10018,21 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &vmdef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         /* Make a copy for updated domain. */
-        if (!(vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt)))
+        if (!(persistentDefCopy = virDomainObjCopyPersistentDef(vm, caps,
+                                                                driver->xmlopt)))
             goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           "%s", _("cgroup CPU controller is not mounted"));
-            goto endjob;
-        }
+    if (def &&
+        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cgroup CPU controller is not mounted"));
+        goto endjob;
     }
 
     for (i = 0; i < nparams; i++) {
@@ -10040,7 +10041,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
         value_l = param->value.l;
 
         if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
-            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+            if (def) {
                 unsigned long long val;
                 if (virCgroupSetCpuShares(priv->cgroup, value_ul) < 0)
                     goto endjob;
@@ -10048,8 +10049,8 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                 if (virCgroupGetCpuShares(priv->cgroup, &val) < 0)
                     goto endjob;
 
-                vm->def->cputune.shares = val;
-                vm->def->cputune.sharesSpecified = true;
+                def->cputune.shares = val;
+                def->cputune.sharesSpecified = true;
 
                 if (virTypedParamsAddULLong(&eventParams, &eventNparams,
                                             &eventMaxNparams,
@@ -10058,9 +10059,9 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     goto endjob;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                vmdef->cputune.shares = value_ul;
-                vmdef->cputune.sharesSpecified = true;
+            if (persistentDef) {
+                persistentDefCopy->cputune.shares = value_ul;
+                persistentDefCopy->cputune.sharesSpecified = true;
             }
 
 
@@ -10068,11 +10069,11 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
             SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD,
                               QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
 
-            if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
+            if (def && value_ul) {
                 if ((rc = qemuSetVcpusBWLive(vm, priv->cgroup, value_ul, 0)))
                     goto endjob;
 
-                vm->def->cputune.period = value_ul;
+                def->cputune.period = value_ul;
 
                 if (virTypedParamsAddULLong(&eventParams, &eventNparams,
                                             &eventMaxNparams,
@@ -10081,18 +10082,18 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     goto endjob;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                vmdef->cputune.period = params[i].value.ul;
+            if (persistentDef)
+                persistentDefCopy->cputune.period = params[i].value.ul;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA)) {
             SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
                               QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
 
-            if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
+            if (def && value_l) {
                 if ((rc = qemuSetVcpusBWLive(vm, priv->cgroup, 0, value_l)))
                     goto endjob;
 
-                vm->def->cputune.quota = value_l;
+                def->cputune.quota = value_l;
 
                 if (virTypedParamsAddLLong(&eventParams, &eventNparams,
                                            &eventMaxNparams,
@@ -10101,18 +10102,18 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     goto endjob;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                vmdef->cputune.quota = value_l;
+            if (persistentDef)
+                persistentDefCopy->cputune.quota = value_l;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD)) {
             SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD,
                               QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
 
-            if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
+            if (def && value_ul) {
                 if ((rc = qemuSetGlobalBWLive(priv->cgroup, value_ul, 0)))
                     goto endjob;
 
-                vm->def->cputune.global_period = value_ul;
+                def->cputune.global_period = value_ul;
 
                 if (virTypedParamsAddULLong(&eventParams, &eventNparams,
                                             &eventMaxNparams,
@@ -10121,18 +10122,18 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     goto endjob;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                vmdef->cputune.period = params[i].value.ul;
+            if (persistentDef)
+                persistentDefCopy->cputune.period = params[i].value.ul;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA)) {
             SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA,
                               QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
 
-            if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
+            if (def && value_l) {
                 if ((rc = qemuSetGlobalBWLive(priv->cgroup, 0, value_l)))
                     goto endjob;
 
-                vm->def->cputune.global_quota = value_l;
+                def->cputune.global_quota = value_l;
 
                 if (virTypedParamsAddLLong(&eventParams, &eventNparams,
                                            &eventMaxNparams,
@@ -10141,19 +10142,19 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     goto endjob;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                vmdef->cputune.global_quota = value_l;
+            if (persistentDef)
+                persistentDefCopy->cputune.global_quota = value_l;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD)) {
             SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD,
                               QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
 
-            if (flags & VIR_DOMAIN_AFFECT_LIVE && value_ul) {
+            if (def && value_ul) {
                 if ((rc = qemuSetEmulatorBandwidthLive(priv->cgroup,
                                                        value_ul, 0)))
                     goto endjob;
 
-                vm->def->cputune.emulator_period = value_ul;
+                def->cputune.emulator_period = value_ul;
 
                 if (virTypedParamsAddULLong(&eventParams, &eventNparams,
                                             &eventMaxNparams,
@@ -10162,19 +10163,19 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     goto endjob;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                vmdef->cputune.emulator_period = value_ul;
+            if (persistentDef)
+                persistentDefCopy->cputune.emulator_period = value_ul;
 
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA)) {
             SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA,
                               QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
 
-            if (flags & VIR_DOMAIN_AFFECT_LIVE && value_l) {
+            if (def && value_l) {
                 if ((rc = qemuSetEmulatorBandwidthLive(priv->cgroup,
                                                        0, value_l)))
                     goto endjob;
 
-                vm->def->cputune.emulator_quota = value_l;
+                def->cputune.emulator_quota = value_l;
 
                 if (virTypedParamsAddLLong(&eventParams, &eventNparams,
                                            &eventMaxNparams,
@@ -10183,8 +10184,8 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                     goto endjob;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                vmdef->cputune.emulator_quota = value_l;
+            if (persistentDef)
+                persistentDefCopy->cputune.emulator_quota = value_l;
         }
     }
 
@@ -10197,13 +10198,13 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
         qemuDomainEventQueue(driver, event);
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        rc = virDomainSaveConfig(cfg->configDir, driver->caps, vmdef);
+    if (persistentDef) {
+        rc = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDefCopy);
         if (rc < 0)
             goto endjob;
 
-        virDomainObjAssignDef(vm, vmdef, false, NULL);
-        vmdef = NULL;
+        virDomainObjAssignDef(vm, persistentDefCopy, false, NULL);
+        persistentDefCopy = NULL;
     }
 
     ret = 0;
@@ -10212,7 +10213,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    virDomainDefFree(vmdef);
+    virDomainDefFree(persistentDefCopy);
     virDomainObjEndAPI(&vm);
     if (eventNparams)
         virTypedParamsFree(eventParams, eventNparams);
