@@ -8237,7 +8237,7 @@ qemuDomainAttachDeviceFlags(virDomainPtr dom,
     if (priv->qemuCaps)
         qemuCaps = virObjectRef(priv->qemuCaps);
     else if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, vm->def->emulator)))
-        goto cleanup;
+        goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Make a copy for updated domain. */
@@ -8366,7 +8366,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     if (priv->qemuCaps)
         qemuCaps = virObjectRef(priv->qemuCaps);
     else if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, vm->def->emulator)))
-        goto cleanup;
+        goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Make a copy for updated domain. */
@@ -8490,7 +8490,7 @@ qemuDomainDetachDeviceFlags(virDomainPtr dom,
     if (priv->qemuCaps)
         qemuCaps = virObjectRef(priv->qemuCaps);
     else if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, vm->def->emulator)))
-        goto cleanup;
+        goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Make a copy for updated domain. */
