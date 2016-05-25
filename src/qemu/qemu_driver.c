@@ -10325,27 +10325,19 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    unsigned long long shares;
-    unsigned long long period;
-    long long quota;
-    unsigned long long global_period;
-    long long global_quota;
-    unsigned long long emulator_period;
-    long long emulator_quota;
+    virDomainCputune data;
     int ret = -1;
-    int rc;
-    bool cpu_bw_status = false;
-    int saved_nparams = 0;
+    bool cpu_bw_status = true;
     virDomainDefPtr persistentDef;
     virDomainDefPtr def;
     qemuDomainObjPrivatePtr priv;
+    int maxparams = *nparams;
+
+    *nparams = 0;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_TYPED_PARAM_STRING_OKAY, -1);
-
-    /* We don't return strings, and thus trivially support this flag.  */
-    flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
@@ -10361,113 +10353,62 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (*nparams > 1)
-        cpu_bw_status = virCgroupSupportsCpuBW(priv->cgroup);
-
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto cleanup;
 
     if (persistentDef) {
-        shares = persistentDef->cputune.shares;
-        if (*nparams > 1) {
-            period = persistentDef->cputune.period;
-            quota = persistentDef->cputune.quota;
-            global_period = persistentDef->cputune.global_period;
-            global_quota = persistentDef->cputune.global_quota;
-            emulator_period = persistentDef->cputune.emulator_period;
-            emulator_quota = persistentDef->cputune.emulator_quota;
-            cpu_bw_status = true; /* Allow copy of data to params[] */
+        data = persistentDef->cputune;
+    } else if (def) {
+        if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s", _("cgroup CPU controller is not mounted"));
+            goto cleanup;
         }
-        goto out;
-    }
 
-    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("cgroup CPU controller is not mounted"));
-        goto cleanup;
-    }
-
-    if (virCgroupGetCpuShares(priv->cgroup, &shares) < 0)
-        goto cleanup;
-
-    if (*nparams > 1 && cpu_bw_status) {
-        rc = qemuGetVcpusBWLive(vm, &period, &quota);
-        if (rc != 0)
+        if (virCgroupGetCpuShares(priv->cgroup, &data.shares) < 0)
             goto cleanup;
+
+        if (virCgroupSupportsCpuBW(priv->cgroup)) {
+            if (maxparams > 1 &&
+                qemuGetVcpusBWLive(vm, &data.period, &data.quota) < 0)
+                goto cleanup;
+
+            if (maxparams > 3 &&
+                qemuGetEmulatorBandwidthLive(priv->cgroup, &data.emulator_period,
+                                             &data.emulator_quota) < 0)
+                goto cleanup;
+
+            if (maxparams > 5 &&
+                qemuGetGlobalBWLive(priv->cgroup, &data.global_period,
+                                    &data.global_quota) < 0)
+                goto cleanup;
+        } else {
+            cpu_bw_status = false;
+        }
     }
 
-    if (*nparams > 3 && cpu_bw_status) {
-        rc = qemuGetEmulatorBandwidthLive(priv->cgroup, &emulator_period,
-                                          &emulator_quota);
-        if (rc != 0)
-            goto cleanup;
-    }
+#define QEMU_SCHED_ASSIGN(param, name, type)                                   \
+    if (*nparams < maxparams &&                                                \
+        virTypedParameterAssign(&(params[(*nparams)++]),                       \
+                                VIR_DOMAIN_SCHEDULER_ ## name,                 \
+                                VIR_TYPED_PARAM_ ## type,                      \
+                                data.param) < 0)                               \
+            goto cleanup
 
-    if (*nparams > 5 && cpu_bw_status) {
-        rc = qemuGetGlobalBWLive(priv->cgroup, &global_period, &global_quota);
-        if (rc != 0)
-            goto cleanup;
-    }
-
- out:
-    if (virTypedParameterAssign(&params[0], VIR_DOMAIN_SCHEDULER_CPU_SHARES,
-                                VIR_TYPED_PARAM_ULLONG, shares) < 0)
-        goto cleanup;
-    saved_nparams++;
+    QEMU_SCHED_ASSIGN(shares, CPU_SHARES, ULLONG);
 
     if (cpu_bw_status) {
-        if (*nparams > saved_nparams) {
-            if (virTypedParameterAssign(&params[1],
-                                        VIR_DOMAIN_SCHEDULER_VCPU_PERIOD,
-                                        VIR_TYPED_PARAM_ULLONG, period) < 0)
-                goto cleanup;
-            saved_nparams++;
-        }
+        QEMU_SCHED_ASSIGN(period, VCPU_PERIOD, ULLONG);
+        QEMU_SCHED_ASSIGN(quota, VCPU_QUOTA, LLONG);
 
-        if (*nparams > saved_nparams) {
-            if (virTypedParameterAssign(&params[2],
-                                        VIR_DOMAIN_SCHEDULER_VCPU_QUOTA,
-                                        VIR_TYPED_PARAM_LLONG, quota) < 0)
-                goto cleanup;
-            saved_nparams++;
-        }
+        QEMU_SCHED_ASSIGN(emulator_period, EMULATOR_PERIOD, ULLONG);
+        QEMU_SCHED_ASSIGN(emulator_quota, EMULATOR_QUOTA, LLONG);
 
-        if (*nparams > saved_nparams) {
-            if (virTypedParameterAssign(&params[3],
-                                        VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD,
-                                        VIR_TYPED_PARAM_ULLONG,
-                                        emulator_period) < 0)
-                goto cleanup;
-            saved_nparams++;
-        }
-
-        if (*nparams > saved_nparams) {
-            if (virTypedParameterAssign(&params[4],
-                                        VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA,
-                                        VIR_TYPED_PARAM_LLONG,
-                                        emulator_quota) < 0)
-                goto cleanup;
-            saved_nparams++;
-        }
-
-        if (*nparams > saved_nparams) {
-            if (virTypedParameterAssign(&params[5],
-                                        VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD,
-                                        VIR_TYPED_PARAM_ULLONG, global_period) < 0)
-                goto cleanup;
-            saved_nparams++;
-        }
-
-        if (*nparams > saved_nparams) {
-            if (virTypedParameterAssign(&params[6],
-                                        VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA,
-                                        VIR_TYPED_PARAM_LLONG, global_quota) < 0)
-                goto cleanup;
-            saved_nparams++;
-        }
+        QEMU_SCHED_ASSIGN(global_period, GLOBAL_PERIOD, ULLONG);
+        QEMU_SCHED_ASSIGN(global_quota, GLOBAL_QUOTA, LLONG);
     }
 
-    *nparams = saved_nparams;
+#undef QEMU_SCHED_ASSIGN
 
     ret = 0;
 
