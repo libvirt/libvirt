@@ -396,7 +396,7 @@ void virTestCaptureProgramExecChild(const char *const argv[],
 }
 
 int
-virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen)
+virTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen)
 {
     int pipefd[2];
     int len;
@@ -428,9 +428,9 @@ virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen)
 }
 #else /* !WIN32 */
 int
-virtTestCaptureProgramOutput(const char *const argv[] ATTRIBUTE_UNUSED,
-                             char **buf ATTRIBUTE_UNUSED,
-                             int maxlen ATTRIBUTE_UNUSED)
+virTestCaptureProgramOutput(const char *const argv[] ATTRIBUTE_UNUSED,
+                            char **buf ATTRIBUTE_UNUSED,
+                            int maxlen ATTRIBUTE_UNUSED)
 {
     return -1;
 }

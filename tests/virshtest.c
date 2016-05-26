@@ -65,7 +65,7 @@ testCompareOutputLit(const char *expectData,
     int result = -1;
     char *actualData = NULL;
 
-    if (virtTestCaptureProgramOutput(argv, &actualData, 4096) < 0)
+    if (virTestCaptureProgramOutput(argv, &actualData, 4096) < 0)
         goto cleanup;
 
     if (filter && testFilterLine(actualData, filter) < 0)

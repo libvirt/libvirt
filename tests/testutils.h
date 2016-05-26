@@ -52,7 +52,7 @@ int virTestRun(const char *title,
                int (*body)(const void *data),
                const void *data);
 int virTestLoadFile(const char *file, char **buf);
-int virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen);
+int virTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen);
 
 void virTestClearCommandPath(char *cmdset);
 
