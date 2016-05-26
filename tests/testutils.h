@@ -46,7 +46,7 @@ extern char *progname;
 #  error Fix Makefile.am
 # endif
 
-bool virtTestOOMActive(void);
+bool virTestOOMActive(void);
 
 int virTestRun(const char *title,
                int (*body)(const void *data),

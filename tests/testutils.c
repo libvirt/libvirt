@@ -84,7 +84,7 @@ static size_t testEnd;
 
 char *progname;
 
-bool virtTestOOMActive(void)
+bool virTestOOMActive(void)
 {
     return testOOMActive;
 }

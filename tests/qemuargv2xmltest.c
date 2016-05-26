@@ -69,7 +69,7 @@ static int testCompareXMLToArgvFiles(const char *xmlfile,
                                              cmd, NULL, NULL, NULL)))
         goto fail;
 
-    if (!virtTestOOMActive()) {
+    if (!virTestOOMActive()) {
         if ((log = virtTestLogContentAndReset()) == NULL)
             goto fail;
         if (flags & FLAG_EXPECT_WARNING) {

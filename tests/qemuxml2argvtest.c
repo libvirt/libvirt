@@ -351,7 +351,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         VIR_TEST_DEBUG("Error expected but there wasn't any.\n");
         goto out;
     }
-    if (!virtTestOOMActive()) {
+    if (!virTestOOMActive()) {
         if (flags & FLAG_EXPECT_FAILURE) {
             if ((log = virtTestLogContentAndReset()))
                 VIR_TEST_DEBUG("Got expected error: \n%s", log);

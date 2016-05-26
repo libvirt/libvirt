@@ -611,7 +611,7 @@ testFirewallNoRollback(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virtTestOOMActive())
+    if (virTestOOMActive())
         goto cleanup;
 
     if (virBufferError(&cmdbuf))
@@ -701,7 +701,7 @@ testFirewallSingleRollback(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virtTestOOMActive())
+    if (virTestOOMActive())
         goto cleanup;
 
     if (virBufferError(&cmdbuf))
@@ -794,7 +794,7 @@ testFirewallManyRollback(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virtTestOOMActive())
+    if (virTestOOMActive())
         goto cleanup;
 
     if (virBufferError(&cmdbuf))
@@ -917,7 +917,7 @@ testFirewallChainedRollback(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    if (virtTestOOMActive())
+    if (virTestOOMActive())
         goto cleanup;
 
     if (virBufferError(&cmdbuf))
