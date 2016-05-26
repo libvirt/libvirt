@@ -996,10 +996,21 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                       const char *ipAddress, const char *username,
                       const char *password, esxUtil_ParsedUri *parsedUri)
 {
+    int result = -1;
+    char *escapedPassword = NULL;
+
     if (!ctx || !url || !ipAddress || !username ||
         !password || ctx->url || ctx->service || ctx->curl) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
+    }
+
+    escapedPassword = esxUtil_EscapeForXml(password);
+
+    if (!escapedPassword) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to escape password for XML"));
+        goto cleanup;
     }
 
     if (esxVI_CURL_Alloc(&ctx->curl) < 0 ||
@@ -1008,27 +1019,28 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         VIR_STRDUP(ctx->ipAddress, ipAddress) < 0 ||
         VIR_STRDUP(ctx->username, username) < 0 ||
         VIR_STRDUP(ctx->password, password) < 0) {
-        return -1;
+        goto cleanup;
     }
 
     if (VIR_ALLOC(ctx->sessionLock) < 0)
-        return -1;
+        goto cleanup;
+
 
     if (virMutexInit(ctx->sessionLock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not initialize session mutex"));
-        return -1;
+        goto cleanup;
     }
 
     if (esxVI_RetrieveServiceContent(ctx, &ctx->service) < 0)
-        return -1;
+        goto cleanup;
 
     if (STRNEQ(ctx->service->about->apiType, "HostAgent") &&
         STRNEQ(ctx->service->about->apiType, "VirtualCenter")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Expecting VI API type 'HostAgent' or 'VirtualCenter' "
                          "but found '%s'"), ctx->service->about->apiType);
-        return -1;
+        goto cleanup;
     }
 
     if (virParseVersionString(ctx->service->about->apiVersion,
@@ -1036,14 +1048,14 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse VI API version '%s'"),
                        ctx->service->about->apiVersion);
-        return -1;
+        goto cleanup;
     }
 
     if (ctx->apiVersion < 1000000 * 2 + 1000 * 5 /* 2.5 */) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Minimum supported %s version is %s but found version '%s'"),
                        "VI API", "2.5", ctx->service->about->apiVersion);
-        return -1;
+        goto cleanup;
     }
 
     if (virParseVersionString(ctx->service->about->version,
@@ -1051,7 +1063,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not parse product version '%s'"),
                        ctx->service->about->version);
-        return -1;
+        goto cleanup;
     }
 
     if (STREQ(ctx->service->about->productLineId, "gsx")) {
@@ -1060,7 +1072,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                            _("Minimum supported %s version is %s but found version '%s'"),
                            esxVI_ProductLineToDisplayName(esxVI_ProductLine_GSX),
                            "2.0", ctx->service->about->version);
-            return -1;
+            goto cleanup;
         }
 
         ctx->productLine = esxVI_ProductLine_GSX;
@@ -1071,7 +1083,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                            _("Minimum supported %s version is %s but found version '%s'"),
                            esxVI_ProductLineToDisplayName(esxVI_ProductLine_ESX),
                            "3.5", ctx->service->about->version);
-            return -1;
+            goto cleanup;
         }
 
         ctx->productLine = esxVI_ProductLine_ESX;
@@ -1081,7 +1093,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                            _("Minimum supported %s version is %s but found version '%s'"),
                            esxVI_ProductLineToDisplayName(esxVI_ProductLine_VPX),
                            "2.5", ctx->service->about->version);
-            return -1;
+            goto cleanup;
         }
 
         ctx->productLine = esxVI_ProductLine_VPX;
@@ -1090,7 +1102,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
                        _("Expecting product 'gsx' or 'esx' or 'embeddedEsx' "
                          "or 'vpx' but found '%s'"),
                        ctx->service->about->productLineId);
-        return -1;
+        goto cleanup;
     }
 
     if (ctx->productLine == esxVI_ProductLine_ESX) {
@@ -1107,12 +1119,19 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
     if (ctx->productLine == esxVI_ProductLine_VPX)
         ctx->hasSessionIsActive = true;
 
-    if (esxVI_Login(ctx, username, password, NULL, &ctx->session) < 0 ||
+
+
+    if (esxVI_Login(ctx, username, escapedPassword, NULL, &ctx->session) < 0 ||
         esxVI_BuildSelectSetCollection(ctx) < 0) {
-        return -1;
+        goto cleanup;
     }
 
-    return 0;
+    result = 0;
+
+ cleanup:
+    VIR_FREE(escapedPassword);
+
+    return result;
 }
 
 int
@@ -2062,6 +2081,7 @@ esxVI_EnsureSession(esxVI_Context *ctx)
     esxVI_ObjectContent *sessionManager = NULL;
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_UserSession *currentSession = NULL;
+    char *escapedPassword = NULL;
 
     if (!ctx->sessionLock) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call, no mutex"));
@@ -2072,6 +2092,14 @@ esxVI_EnsureSession(esxVI_Context *ctx)
 
     if (!ctx->session) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call, no session"));
+        goto cleanup;
+    }
+
+    escapedPassword = esxUtil_EscapeForXml(ctx->password);
+
+    if (!escapedPassword) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to escape password for XML"));
         goto cleanup;
     }
 
@@ -2101,7 +2129,7 @@ esxVI_EnsureSession(esxVI_Context *ctx)
     if (!currentSession) {
         esxVI_UserSession_Free(&ctx->session);
 
-        if (esxVI_Login(ctx, ctx->username, ctx->password, NULL,
+        if (esxVI_Login(ctx, ctx->username, escapedPassword, NULL,
                         &ctx->session) < 0) {
             goto cleanup;
         }
@@ -2117,6 +2145,7 @@ esxVI_EnsureSession(esxVI_Context *ctx)
  cleanup:
     virMutexUnlock(ctx->sessionLock);
 
+    VIR_FREE(escapedPassword);
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&sessionManager);
     esxVI_UserSession_Free(&currentSession);

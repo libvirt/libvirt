@@ -617,7 +617,6 @@ esxConnectToHost(esxPrivate *priv,
     int result = -1;
     char ipAddress[NI_MAXHOST] = "";
     char *username = NULL;
-    char *unescapedPassword = NULL;
     char *password = NULL;
     char *url = NULL;
     esxVI_String *propertyNameList = NULL;
@@ -647,17 +646,12 @@ esxConnectToHost(esxPrivate *priv,
         }
     }
 
-    unescapedPassword = virAuthGetPassword(conn, auth, "esx", username, conn->uri->server);
+    password = virAuthGetPassword(conn, auth, "esx", username, conn->uri->server);
 
-    if (!unescapedPassword) {
+    if (!password) {
         virReportError(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
         goto cleanup;
     }
-
-    password = esxUtil_EscapeForXml(unescapedPassword);
-
-    if (!password)
-        goto cleanup;
 
     if (virAsprintf(&url, "%s://%s:%d/sdk", priv->parsedUri->transport,
                     conn->uri->server, conn->uri->port) < 0)
@@ -705,7 +699,6 @@ esxConnectToHost(esxPrivate *priv,
 
  cleanup:
     VIR_FREE(username);
-    VIR_FREE(unescapedPassword);
     VIR_FREE(password);
     VIR_FREE(url);
     esxVI_String_Free(&propertyNameList);
@@ -726,7 +719,6 @@ esxConnectToVCenter(esxPrivate *priv,
     int result = -1;
     char ipAddress[NI_MAXHOST] = "";
     char *username = NULL;
-    char *unescapedPassword = NULL;
     char *password = NULL;
     char *url = NULL;
 
@@ -752,17 +744,12 @@ esxConnectToVCenter(esxPrivate *priv,
         }
     }
 
-    unescapedPassword = virAuthGetPassword(conn, auth, "esx", username, hostname);
+    password = virAuthGetPassword(conn, auth, "esx", username, hostname);
 
-    if (!unescapedPassword) {
+    if (!password) {
         virReportError(VIR_ERR_AUTH_FAILED, "%s", _("Password request failed"));
         goto cleanup;
     }
-
-    password = esxUtil_EscapeForXml(unescapedPassword);
-
-    if (!password)
-        goto cleanup;
 
     if (virAsprintf(&url, "%s://%s:%d/sdk", priv->parsedUri->transport,
                     hostname, conn->uri->port) < 0)
@@ -799,7 +786,6 @@ esxConnectToVCenter(esxPrivate *priv,
 
  cleanup:
     VIR_FREE(username);
-    VIR_FREE(unescapedPassword);
     VIR_FREE(password);
     VIR_FREE(url);
 
