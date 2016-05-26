@@ -695,8 +695,8 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
                                    unsigned int flags)
 {
     virDomainObjPtr vm;
+    virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
-    virCapsPtr caps = NULL;
     int ret = -1;
     virLXCDomainObjPrivatePtr priv;
     virLXCDriverPtr driver = dom->conn->privateData;
@@ -719,22 +719,18 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
-        goto endjob;
-
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
     if (flags & VIR_DOMAIN_MEM_MAXIMUM) {
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (def) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("Cannot resize the max memory "
                              "on an active domain"));
             goto endjob;
         }
 
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (persistentDef) {
             virDomainDefSetMemoryTotal(persistentDef, newmem);
             if (persistentDef->mem.cur_balloon > newmem)
                 persistentDef->mem.cur_balloon = newmem;
@@ -745,9 +741,9 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     } else {
         unsigned long oldmax = 0;
 
-        if (flags & VIR_DOMAIN_AFFECT_LIVE)
-            oldmax = virDomainDefGetMemoryActual(vm->def);
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (def)
+            oldmax = virDomainDefGetMemoryActual(def);
+        if (persistentDef) {
             if (!oldmax || oldmax > virDomainDefGetMemoryActual(persistentDef))
                 oldmax = virDomainDefGetMemoryActual(persistentDef);
         }
@@ -758,19 +754,19 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             goto endjob;
         }
 
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+        if (def) {
             if (virCgroupSetMemory(priv->cgroup, newmem) < 0) {
                 virReportError(VIR_ERR_OPERATION_FAILED,
                                "%s", _("Failed to set memory for domain"));
                 goto endjob;
             }
 
-            vm->def->mem.cur_balloon = newmem;
+            def->mem.cur_balloon = newmem;
             if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
                 goto endjob;
         }
 
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (persistentDef) {
             persistentDef->mem.cur_balloon = newmem;
             if (virDomainSaveConfig(cfg->configDir, driver->caps,
                                     persistentDef) < 0)
@@ -785,7 +781,6 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
