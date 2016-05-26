@@ -113,7 +113,7 @@ testNWFilterEBIPTablesAllTeardown(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virtTestClearCommandPath(actual);
+    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
@@ -184,7 +184,7 @@ testNWFilterEBIPTablesTearOldRules(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virtTestClearCommandPath(actual);
+    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
@@ -233,7 +233,7 @@ testNWFilterEBIPTablesRemoveBasicRules(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virtTestClearCommandPath(actual);
+    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
@@ -267,7 +267,7 @@ testNWFilterEBIPTablesTearNewRules(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virtTestClearCommandPath(actual);
+    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
@@ -339,7 +339,7 @@ testNWFilterEBIPTablesApplyBasicRules(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virtTestClearCommandPath(actual);
+    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
@@ -429,7 +429,7 @@ testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virtTestClearCommandPath(actual);
+    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);
@@ -502,7 +502,7 @@ testNWFilterEBIPTablesApplyDropAllRules(const void *opaque ATTRIBUTE_UNUSED)
         goto cleanup;
 
     actual = virBufferContentAndReset(&buf);
-    virtTestClearCommandPath(actual);
+    virTestClearCommandPath(actual);
 
     if (STRNEQ_NULLABLE(actual, expected)) {
         virTestDifference(stderr, expected, actual);

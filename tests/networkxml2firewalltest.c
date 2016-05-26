@@ -65,7 +65,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         goto cleanup;
 
     actualargv = virBufferContentAndReset(&buf);
-    virtTestClearCommandPath(actualargv);
+    virTestClearCommandPath(actualargv);
     virCommandSetDryRun(NULL, NULL, NULL);
 
     if (virTestCompareToFile(actualargv, cmdline) < 0)

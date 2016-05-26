@@ -54,7 +54,7 @@ int virTestRun(const char *title,
 int virTestLoadFile(const char *file, char **buf);
 int virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen);
 
-void virtTestClearCommandPath(char *cmdset);
+void virTestClearCommandPath(char *cmdset);
 
 int virTestDifference(FILE *stream,
                       const char *expect,

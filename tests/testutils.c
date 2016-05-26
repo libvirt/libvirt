@@ -1008,7 +1008,7 @@ int virtTestMain(int argc,
  *  iptables --table filter --insert FORWARD --out-interface virbr0 --jump REJECT
  *  iptables --table filter --insert FORWARD --in-interface virbr0 --out-interface virbr0 --jump ACCEPT"
  */
-void virtTestClearCommandPath(char *cmdset)
+void virTestClearCommandPath(char *cmdset)
 {
     size_t offset = 0;
     char *lineStart = cmdset;
