@@ -394,7 +394,7 @@ testStorageChain(const void *args)
             goto cleanup;
         }
         if (STRNEQ(expect, actual)) {
-            virtTestDifference(stderr, expect, actual);
+            virTestDifference(stderr, expect, actual);
             VIR_FREE(expect);
             VIR_FREE(actual);
             goto cleanup;

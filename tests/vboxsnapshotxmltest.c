@@ -85,7 +85,7 @@ testCompareXMLtoXMLFiles(const char *xml)
         goto cleanup;
 
     if (STRNEQ(actual, xmlData)) {
-        virtTestDifference(stderr, xmlData, actual);
+        virTestDifference(stderr, xmlData, actual);
         goto cleanup;
     }
 

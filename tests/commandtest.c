@@ -98,7 +98,7 @@ static int checkoutput(const char *testname,
     }
 
     if (STRNEQ(expectlog, actuallog)) {
-        virtTestDifference(stderr, expectlog, actuallog);
+        virTestDifference(stderr, expectlog, actuallog);
         goto cleanup;
     }
 
@@ -504,7 +504,7 @@ static int test13(const void *unused ATTRIBUTE_UNUSED)
     cmd = NULL;
 
     if (STRNEQ(outactual, outexpect)) {
-        virtTestDifference(stderr, outexpect, outactual);
+        virTestDifference(stderr, outexpect, outactual);
         goto cleanup;
     }
 
@@ -566,15 +566,15 @@ static int test14(const void *unused ATTRIBUTE_UNUSED)
         goto cleanup;
 
     if (STRNEQ(outactual, outexpect)) {
-        virtTestDifference(stderr, outexpect, outactual);
+        virTestDifference(stderr, outexpect, outactual);
         goto cleanup;
     }
     if (STRNEQ(erractual, errexpect)) {
-        virtTestDifference(stderr, errexpect, erractual);
+        virTestDifference(stderr, errexpect, erractual);
         goto cleanup;
     }
     if (STRNEQ(jointactual, jointexpect)) {
-        virtTestDifference(stderr, jointexpect, jointactual);
+        virTestDifference(stderr, jointexpect, jointactual);
         goto cleanup;
     }
 
@@ -650,7 +650,7 @@ static int test16(const void *unused ATTRIBUTE_UNUSED)
     }
 
     if (STRNEQ(outactual, outexpect)) {
-        virtTestDifference(stderr, outexpect, outactual);
+        virTestDifference(stderr, outexpect, outactual);
         goto cleanup;
     }
 
@@ -880,12 +880,12 @@ static int test21(const void *unused ATTRIBUTE_UNUSED)
         printf("STDOUT:%s\nSTDERR:%s\n", NULLSTR(outbuf), NULLSTR(errbuf));
 
     if (STRNEQ(outbuf, outbufExpected)) {
-        virtTestDifference(stderr, outbufExpected, outbuf);
+        virTestDifference(stderr, outbufExpected, outbuf);
         goto cleanup;
     }
 
     if (STRNEQ(errbuf, errbufExpected)) {
-        virtTestDifference(stderr, errbufExpected, errbuf);
+        virTestDifference(stderr, errbufExpected, errbuf);
         goto cleanup;
     }
 

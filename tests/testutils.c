@@ -607,9 +607,9 @@ virtTestDifferenceFullNoRegenerate(FILE *stream,
  * first and last characters at which differences occur
  */
 int
-virtTestDifference(FILE *stream,
-                   const char *expect,
-                   const char *actual)
+virTestDifference(FILE *stream,
+                  const char *expect,
+                  const char *actual)
 {
     return virtTestDifferenceFullNoRegenerate(stream,
                                               expect, NULL,

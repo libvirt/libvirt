@@ -52,7 +52,7 @@ testIndexToDiskName(const void *data ATTRIBUTE_UNUSED)
         diskName = virIndexToDiskName(i, "sd");
 
         if (STRNEQ(diskNames[i], diskName)) {
-            virtTestDifference(stderr, diskNames[i], diskName);
+            virTestDifference(stderr, diskNames[i], diskName);
             VIR_FREE(diskName);
 
             return -1;

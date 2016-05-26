@@ -55,7 +55,7 @@ testReadConfigParam(const void *data ATTRIBUTE_UNUSED)
             continue;
 
         if (STRNEQ(configParams[i].value, value)) {
-            virtTestDifference(stderr, configParams[i].value, value);
+            virTestDifference(stderr, configParams[i].value, value);
             goto cleanup;
         }
     }
@@ -121,7 +121,7 @@ testReadNetworkConf(const void *data ATTRIBUTE_UNUSED)
     }
 
     if (STRNEQ(expected, actual)) {
-        virtTestDifference(stderr, expected, actual);
+        virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 

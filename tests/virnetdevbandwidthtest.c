@@ -95,9 +95,9 @@ testVirNetDevBandwidthSet(const void *data)
     }
 
     if (STRNEQ_NULLABLE(info->exp_cmd, actual_cmd)) {
-        virtTestDifference(stderr,
-                           NULLSTR(info->exp_cmd),
-                           NULLSTR(actual_cmd));
+        virTestDifference(stderr,
+                          NULLSTR(info->exp_cmd),
+                          NULLSTR(actual_cmd));
         goto cleanup;
     }
 

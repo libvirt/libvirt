@@ -56,9 +56,9 @@ int virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxle
 
 void virtTestClearCommandPath(char *cmdset);
 
-int virtTestDifference(FILE *stream,
-                       const char *expect,
-                       const char *actual);
+int virTestDifference(FILE *stream,
+                      const char *expect,
+                      const char *actual);
 int virtTestDifferenceFull(FILE *stream,
                            const char *expect,
                            const char *expectName,

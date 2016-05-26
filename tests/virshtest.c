@@ -72,7 +72,7 @@ testCompareOutputLit(const char *expectData,
         goto cleanup;
 
     if (STRNEQ(expectData, actualData)) {
-        virtTestDifference(stderr, expectData, actualData);
+        virTestDifference(stderr, expectData, actualData);
         goto cleanup;
     }
 

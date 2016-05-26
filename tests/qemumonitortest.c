@@ -52,7 +52,7 @@ static int testEscapeArg(const void *data ATTRIBUTE_UNUSED)
             return -1;
         }
         if (STRNEQ(escapeStrings[i].escaped, escaped)) {
-            virtTestDifference(stderr, escapeStrings[i].escaped, escaped);
+            virTestDifference(stderr, escapeStrings[i].escaped, escaped);
             VIR_FREE(escaped);
             return -1;
         }
@@ -77,7 +77,7 @@ static int testUnescapeArg(const void *data ATTRIBUTE_UNUSED)
             return -1;
         }
         if (STRNEQ(escapeStrings[i].unescaped, unescaped)) {
-            virtTestDifference(stderr, escapeStrings[i].unescaped, unescaped);
+            virTestDifference(stderr, escapeStrings[i].unescaped, unescaped);
             VIR_FREE(unescaped);
             return -1;
         }

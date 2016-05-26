@@ -241,7 +241,7 @@ testFirewallSingleGroup(const void *opaque)
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexected command execution\n");
-        virtTestDifference(stderr, expected, actual);
+        virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -307,7 +307,7 @@ testFirewallRemoveRule(const void *opaque)
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexected command execution\n");
-        virtTestDifference(stderr, expected, actual);
+        virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -380,7 +380,7 @@ testFirewallManyGroups(const void *opaque ATTRIBUTE_UNUSED)
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexected command execution\n");
-        virtTestDifference(stderr, expected, actual);
+        virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -476,7 +476,7 @@ testFirewallIgnoreFailGroup(const void *opaque ATTRIBUTE_UNUSED)
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexected command execution\n");
-        virtTestDifference(stderr, expected, actual);
+        virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -550,7 +550,7 @@ testFirewallIgnoreFailRule(const void *opaque ATTRIBUTE_UNUSED)
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexected command execution\n");
-        virtTestDifference(stderr, expected, actual);
+        virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -621,7 +621,7 @@ testFirewallNoRollback(const void *opaque ATTRIBUTE_UNUSED)
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexected command execution\n");
-        virtTestDifference(stderr, expected, actual);
+        virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -711,7 +711,7 @@ testFirewallSingleRollback(const void *opaque ATTRIBUTE_UNUSED)
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexected command execution\n");
-        virtTestDifference(stderr, expected, actual);
+        virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -804,7 +804,7 @@ testFirewallManyRollback(const void *opaque ATTRIBUTE_UNUSED)
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexected command execution\n");
-        virtTestDifference(stderr, expected, actual);
+        virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -927,7 +927,7 @@ testFirewallChainedRollback(const void *opaque ATTRIBUTE_UNUSED)
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexected command execution\n");
-        virtTestDifference(stderr, expected, actual);
+        virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 
@@ -1110,7 +1110,7 @@ testFirewallQuery(const void *opaque ATTRIBUTE_UNUSED)
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexected command execution\n");
-        virtTestDifference(stderr, expected, actual);
+        virTestDifference(stderr, expected, actual);
         goto cleanup;
     }
 

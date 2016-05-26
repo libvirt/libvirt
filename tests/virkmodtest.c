@@ -74,7 +74,7 @@ checkOutput(virBufferPtr buf, const char *exp_cmd)
     }
 
     if (STRNEQ(exp_cmd, actual_cmd)) {
-        virtTestDifference(stderr, exp_cmd, actual_cmd);
+        virTestDifference(stderr, exp_cmd, actual_cmd);
         goto cleanup;
     }
 
