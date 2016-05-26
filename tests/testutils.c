@@ -89,7 +89,7 @@ bool virTestOOMActive(void)
     return testOOMActive;
 }
 
-static int virtTestUseTerminalColors(void)
+static int virTestUseTerminalColors(void)
 {
     return isatty(STDIN_FILENO);
 }
@@ -187,17 +187,17 @@ virTestRun(const char *title,
 
     if (virTestGetVerbose()) {
         if (ret == 0)
-            if (virtTestUseTerminalColors())
+            if (virTestUseTerminalColors())
                 fprintf(stderr, "\e[32mOK\e[0m\n");  /* green */
             else
                 fprintf(stderr, "OK\n");
         else if (ret == EXIT_AM_SKIP)
-            if (virtTestUseTerminalColors())
+            if (virTestUseTerminalColors())
                 fprintf(stderr, "\e[34m\e[1mSKIP\e[0m\n");  /* bold blue */
             else
                 fprintf(stderr, "SKIP\n");
         else
-            if (virtTestUseTerminalColors())
+            if (virTestUseTerminalColors())
                 fprintf(stderr, "\e[31m\e[1mFAILED\e[0m\n");  /* bold red */
             else
                 fprintf(stderr, "FAILED\n");
