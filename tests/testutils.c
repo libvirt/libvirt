@@ -351,8 +351,8 @@ virTestLoadFile(const char *file, char **buf)
 
 #ifndef WIN32
 static
-void virtTestCaptureProgramExecChild(const char *const argv[],
-                                     int pipefd)
+void virTestCaptureProgramExecChild(const char *const argv[],
+                                    int pipefd)
 {
     size_t i;
     int open_max;
@@ -408,7 +408,7 @@ virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen)
     switch (pid) {
     case 0:
         VIR_FORCE_CLOSE(pipefd[0]);
-        virtTestCaptureProgramExecChild(argv, pipefd[1]);
+        virTestCaptureProgramExecChild(argv, pipefd[1]);
 
         VIR_FORCE_CLOSE(pipefd[1]);
         _exit(EXIT_FAILURE);
