@@ -2086,9 +2086,8 @@ lxcDomainGetSchedulerParametersFlags(virDomainPtr dom,
                                      int *nparams,
                                      unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
-    virCapsPtr caps = NULL;
     virDomainObjPtr vm = NULL;
+    virDomainDefPtr def;
     virDomainDefPtr persistentDef;
     unsigned long long shares = 0;
     unsigned long long period = 0;
@@ -2117,14 +2116,10 @@ lxcDomainGetSchedulerParametersFlags(virDomainPtr dom,
     if (*nparams > 1)
         cpu_bw_status = virCgroupSupportsCpuBW(priv->cgroup);
 
-    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt,
-                                        vm, &flags, &persistentDef) < 0)
-        goto cleanup;
-
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         shares = persistentDef->cputune.shares;
         if (*nparams > 1) {
             period = persistentDef->cputune.period;
@@ -2178,7 +2173,6 @@ lxcDomainGetSchedulerParametersFlags(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     return ret;
 }
 
