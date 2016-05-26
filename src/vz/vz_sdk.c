@@ -139,10 +139,6 @@ logPrlEventErrorHelper(PRL_HANDLE event, const char *filename,
     return err;
 }
 
-#define logPrlEventError(event)                    \
-    logPrlEventErrorHelper(event, __FILE__,        \
-                           __FUNCTION__, __LINE__)
-
 static PRL_RESULT
 getJobResultHelper(PRL_HANDLE job, unsigned int timeout, PRL_HANDLE *result,
                    const char *filename, const char *funcname,
