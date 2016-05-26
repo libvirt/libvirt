@@ -588,11 +588,11 @@ virTestDifferenceFull(FILE *stream,
  * regenerate the expected file.
  */
 int
-virtTestDifferenceFullNoRegenerate(FILE *stream,
-                                   const char *expect,
-                                   const char *expectName,
-                                   const char *actual,
-                                   const char *actualName)
+virTestDifferenceFullNoRegenerate(FILE *stream,
+                                  const char *expect,
+                                  const char *expectName,
+                                  const char *actual,
+                                  const char *actualName)
 {
     return virtTestDifferenceFullInternal(stream, expect, expectName,
                                           actual, actualName, false);
@@ -611,9 +611,9 @@ virTestDifference(FILE *stream,
                   const char *expect,
                   const char *actual)
 {
-    return virtTestDifferenceFullNoRegenerate(stream,
-                                              expect, NULL,
-                                              actual, NULL);
+    return virTestDifferenceFullNoRegenerate(stream,
+                                             expect, NULL,
+                                             actual, NULL);
 }
 
 

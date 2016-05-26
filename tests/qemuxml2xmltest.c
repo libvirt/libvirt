@@ -159,9 +159,9 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     if (STRNEQ(actual, expect)) {
         /* For status test we don't want to regenerate output to not
          * add the status data.*/
-        virtTestDifferenceFullNoRegenerate(stderr,
-                                           expect, data->outActiveName,
-                                           actual, data->inName);
+        virTestDifferenceFullNoRegenerate(stderr,
+                                          expect, data->outActiveName,
+                                          actual, data->inName);
         goto cleanup;
     }
 
