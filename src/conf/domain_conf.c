@@ -4141,20 +4141,6 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
             }
         }
 
-        /* Validate LUN configuration */
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-            /* volumes haven't been translated at this point, so accept them */
-            if (!(disk->src->type == VIR_STORAGE_TYPE_BLOCK ||
-                  disk->src->type == VIR_STORAGE_TYPE_VOLUME ||
-                  (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
-                   disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI))) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("disk '%s' improperly configured for a "
-                                 "device='lun'"), disk->dst);
-                return -1;
-            }
-        }
-
         if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
             virDomainDiskDefAssignAddress(xmlopt, disk, def) < 0)
             return -1;
@@ -4532,9 +4518,59 @@ virDomainDefPostParse(virDomainDefPtr def,
 
 
 static int
-virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev ATTRIBUTE_UNUSED,
+virDomainDiskDefValidate(const virDomainDiskDef *disk)
+{
+    /* Validate LUN configuration */
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+        /* volumes haven't been translated at this point, so accept them */
+        if (!(disk->src->type == VIR_STORAGE_TYPE_BLOCK ||
+              disk->src->type == VIR_STORAGE_TYPE_VOLUME ||
+              (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
+               disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI))) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("disk '%s' improperly configured for a "
+                             "device='lun'"), disk->dst);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
                                    const virDomainDef *def ATTRIBUTE_UNUSED)
 {
+    switch ((virDomainDeviceType) dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        return virDomainDiskDefValidate(dev->data.disk);
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_NET:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_LAST:
+        break;
+    }
+
     return 0;
 }
 
