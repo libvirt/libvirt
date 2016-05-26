@@ -95,7 +95,7 @@ testCompareXMLToArgvFiles(bool shouldFail,
     if (!(actualCmdline = virCommandToString(cmd)))
         goto cleanup;
 
-    if (virtTestCompareToFile(actualCmdline, cmdline) < 0)
+    if (virTestCompareToFile(actualCmdline, cmdline) < 0)
         goto cleanup;
 
     ret = 0;

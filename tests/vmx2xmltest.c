@@ -90,7 +90,7 @@ testCompareFiles(const char *vmx, const char *xml)
                                          VIR_DOMAIN_DEF_FORMAT_SECURE)))
         goto cleanup;
 
-    if (virtTestCompareToFile(formatted, xml) < 0)
+    if (virTestCompareToFile(formatted, xml) < 0)
         goto cleanup;
 
     ret = 0;

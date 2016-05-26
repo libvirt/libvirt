@@ -41,7 +41,7 @@ testCompareXMLToXMLFiles(const char *netxml, const char *updatexml,
         goto fail;
 
     if (!expectFailure) {
-        if (virtTestCompareToFile(actual, outxml) < 0)
+        if (virTestCompareToFile(actual, outxml) < 0)
             goto error;
     }
 

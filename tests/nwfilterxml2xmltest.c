@@ -40,7 +40,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
     if (!(actual = virNWFilterDefFormat(dev)))
         goto fail;
 
-    if (virtTestCompareToFile(actual, outxml) < 0)
+    if (virTestCompareToFile(actual, outxml) < 0)
         goto fail;
 
  done:

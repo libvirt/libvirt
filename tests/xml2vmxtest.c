@@ -91,7 +91,7 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
     if (formatted == NULL)
         goto failure;
 
-    if (virtTestCompareToFile(formatted, vmx) < 0)
+    if (virTestCompareToFile(formatted, vmx) < 0)
         goto failure;
 
     result = 0;

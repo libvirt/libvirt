@@ -340,7 +340,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(actualargv = virCommandToString(cmd)))
         goto out;
 
-    if (virtTestCompareToFile(actualargv, cmdline) < 0)
+    if (virTestCompareToFile(actualargv, cmdline) < 0)
         goto out;
 
     ret = 0;

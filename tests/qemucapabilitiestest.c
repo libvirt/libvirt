@@ -118,7 +118,7 @@ testQemuCaps(const void *opaque)
     if (!(actual = virQEMUCapsFormatCache(capsActual, 0, 0)))
         goto cleanup;
 
-    if (virtTestCompareToFile(actual, capsFile) < 0)
+    if (virTestCompareToFile(actual, capsFile) < 0)
         goto cleanup;
 
     ret = 0;

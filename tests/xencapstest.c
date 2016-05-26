@@ -45,7 +45,7 @@ testCompareFiles(virArch hostmachine, const char *xml_rel,
   if (!(actualxml = virCapabilitiesFormatXML(caps)))
       goto fail;
 
-  if (virtTestCompareToFile(actualxml, xml) < 0)
+  if (virTestCompareToFile(actualxml, xml) < 0)
       goto fail;
 
   ret = 0;

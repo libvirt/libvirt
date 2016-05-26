@@ -217,7 +217,7 @@ test_virDomainCapsFormat(const void *opaque)
     if (!(domCapsXML = virDomainCapsFormat(domCaps)))
         goto cleanup;
 
-    if (virtTestCompareToFile(domCapsXML, path) < 0)
+    if (virTestCompareToFile(domCapsXML, path) < 0)
         goto cleanup;
 
     ret = 0;

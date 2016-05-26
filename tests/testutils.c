@@ -686,8 +686,8 @@ int virtTestDifferenceBin(FILE *stream,
  * @param filename: File to compare strcontent against
  */
 int
-virtTestCompareToFile(const char *strcontent,
-                      const char *filename)
+virTestCompareToFile(const char *strcontent,
+                     const char *filename)
 {
     int ret = -1;
     char *filecontent = NULL;
@@ -1138,7 +1138,7 @@ testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
         goto out;
     }
 
-    if (virtTestCompareToFile(actual, outfile) < 0) {
+    if (virTestCompareToFile(actual, outfile) < 0) {
         result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_COMPARE;
         goto out;
     }

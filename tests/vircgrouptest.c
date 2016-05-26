@@ -190,7 +190,7 @@ testCgroupDetectMounts(const void *args)
         goto cleanup;
 
     actual = virBufferCurrentContent(&buf);
-    if (virtTestCompareToFile(actual, parsed) < 0)
+    if (virTestCompareToFile(actual, parsed) < 0)
         goto cleanup;
 
     result = 0;

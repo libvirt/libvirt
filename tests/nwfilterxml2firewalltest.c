@@ -405,7 +405,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     testRemoveCommonRules(actualargv);
 
-    if (virtTestCompareToFile(actualargv, cmdline) < 0)
+    if (virTestCompareToFile(actualargv, cmdline) < 0)
         goto cleanup;
 
     ret = 0;

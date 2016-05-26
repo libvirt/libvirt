@@ -47,7 +47,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
     if (expectResult == TEST_COMPARE_NET_XML2XML_RESULT_FAIL_FORMAT)
         goto cleanup;
 
-    if (virtTestCompareToFile(actual, outxml) < 0) {
+    if (virTestCompareToFile(actual, outxml) < 0) {
         result = TEST_COMPARE_NET_XML2XML_RESULT_FAIL_COMPARE;
         goto cleanup;
     }

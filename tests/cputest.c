@@ -168,7 +168,7 @@ cpuTestCompareXML(const char *arch,
     if (!(actual = virCPUDefFormat(cpu, NULL, updateCPU)))
         goto cleanup;
 
-    if (virtTestCompareToFile(actual, xml) < 0)
+    if (virTestCompareToFile(actual, xml) < 0)
         goto cleanup;
 
     ret = 0;

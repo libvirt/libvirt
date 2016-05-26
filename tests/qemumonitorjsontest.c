@@ -2189,7 +2189,7 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
     if (!(actual = cpuDataFormat(cpuData)))
         goto cleanup;
 
-    if (virtTestCompareToFile(actual, dataFile) < 0)
+    if (virTestCompareToFile(actual, dataFile) < 0)
         goto cleanup;
 
     ret = 0;

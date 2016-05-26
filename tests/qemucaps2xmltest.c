@@ -145,7 +145,7 @@ testQemuCapsXML(const void *opaque)
     if (!capsXml)
         goto cleanup;
 
-    if (virtTestCompareToFile(capsXml, xmlFile) < 0)
+    if (virTestCompareToFile(capsXml, xmlFile) < 0)
         goto cleanup;
 
     ret = 0;

@@ -66,14 +66,14 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(actualld = virCommandToString(ldcmd)))
         goto out;
 
-    if (virtTestCompareToFile(actualargv, cmdline) < 0)
+    if (virTestCompareToFile(actualargv, cmdline) < 0)
         goto out;
 
-    if (virtTestCompareToFile(actualld, ldcmdline) < 0)
+    if (virTestCompareToFile(actualld, ldcmdline) < 0)
         goto out;
 
     if (virFileExists(dmcmdline) || actualdm) {
-        if (virtTestCompareToFile(actualdm, dmcmdline) < 0)
+        if (virTestCompareToFile(actualdm, dmcmdline) < 0)
             goto out;
     }
 

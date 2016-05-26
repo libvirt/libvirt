@@ -79,7 +79,7 @@ testSysinfo(const void *data)
     if (!(sysfsActualData = virBufferCurrentContent(&buf)))
         goto cleanup;
 
-    if (virtTestCompareToFile(sysfsActualData, testdata->expected) < 0)
+    if (virTestCompareToFile(sysfsActualData, testdata->expected) < 0)
         goto cleanup;
 
     result = 0;

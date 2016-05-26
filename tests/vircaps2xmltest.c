@@ -120,7 +120,7 @@ test_virCapabilitiesFormat(const void *opaque)
                     abs_srcdir, data->filename) < 0)
         goto cleanup;
 
-    if (virtTestCompareToFile(capsXML, path) < 0)
+    if (virTestCompareToFile(capsXML, path) < 0)
         goto cleanup;
 
     ret = 0;

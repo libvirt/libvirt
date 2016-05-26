@@ -73,8 +73,8 @@ int virtTestDifferenceBin(FILE *stream,
                           const char *expect,
                           const char *actual,
                           size_t length);
-int virtTestCompareToFile(const char *strcontent,
-                          const char *filename);
+int virTestCompareToFile(const char *strcontent,
+                         const char *filename);
 
 unsigned int virTestGetDebug(void);
 unsigned int virTestGetVerbose(void);

@@ -29,7 +29,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml)
     if (!(actual = virStoragePoolDefFormat(dev)))
         goto fail;
 
-    if (virtTestCompareToFile(actual, outxml) < 0)
+    if (virTestCompareToFile(actual, outxml) < 0)
         goto fail;
 
     ret = 0;

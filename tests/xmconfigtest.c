@@ -79,7 +79,7 @@ testCompareParseXML(const char *xmcfg, const char *xml)
         goto fail;
     gotxmcfgData[wrote] = '\0';
 
-    if (virtTestCompareToFile(gotxmcfgData, xmcfg) < 0)
+    if (virTestCompareToFile(gotxmcfgData, xmcfg) < 0)
         goto fail;
 
     ret = 0;
@@ -124,7 +124,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     if (!(gotxml = virDomainDefFormat(def, caps, VIR_DOMAIN_DEF_FORMAT_SECURE)))
         goto fail;
 
-    if (virtTestCompareToFile(gotxml, xml) < 0)
+    if (virTestCompareToFile(gotxml, xml) < 0)
         goto fail;
 
     ret = 0;

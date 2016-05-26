@@ -60,7 +60,7 @@ linuxTestCompareFiles(char *sysfs_prefix,
                     nodeinfo.cores, nodeinfo.threads) < 0)
         goto fail;
 
-    if (virtTestCompareToFile(actualData, outputfile) < 0)
+    if (virTestCompareToFile(actualData, outputfile) < 0)
         goto fail;
 
     ret = 0;
@@ -137,7 +137,7 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
         goto fail;
     }
 
-    if (virtTestCompareToFile(actualData, outfile) < 0)
+    if (virTestCompareToFile(actualData, outfile) < 0)
         goto fail;
 
     ret = 0;

@@ -258,7 +258,7 @@ static int testExecRestart(const void *opaque)
     if (!(outjsonstr = virJSONValueToString(outjson, true)))
         goto cleanup;
 
-    if (virtTestCompareToFile(outjsonstr, outfile) < 0)
+    if (virTestCompareToFile(outjsonstr, outfile) < 0)
         goto cleanup;
 
     ret = 0;
