@@ -683,7 +683,8 @@ libxlDomainSaveImageOpen(libxlDriverPrivatePtr driver,
     }
 
     if (!(def = virDomainDefParseString(xml, cfg->caps, driver->xmlopt,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
 
     VIR_FREE(xml);

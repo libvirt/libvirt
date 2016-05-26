@@ -419,7 +419,8 @@ libxlDomainMigrationBegin(virConnectPtr conn,
     if (xmlin) {
         if (!(tmpdef = virDomainDefParseString(xmlin, cfg->caps,
                                                driver->xmlopt,
-                                               VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                               VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                               VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto endjob;
 
         if (!libxlDomainDefCheckABIStability(driver, vm->def, tmpdef))
@@ -465,7 +466,8 @@ libxlDomainMigrationPrepareDef(libxlDriverPrivatePtr driver,
     }
 
     if (!(def = virDomainDefParseString(dom_xml, cfg->caps, driver->xmlopt,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto cleanup;
 
     if (dname) {

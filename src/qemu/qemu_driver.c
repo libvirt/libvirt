@@ -3227,7 +3227,8 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
         virDomainDefPtr def = NULL;
 
         if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt,
-                                            VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
+                                            VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                            VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE))) {
             goto endjob;
         }
         if (!qemuDomainDefCheckABIStability(driver, vm->def, def)) {
@@ -6414,7 +6415,8 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
 
     /* Create a domain from this XML */
     if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
 
     if (xmlout)
@@ -14481,7 +14483,8 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
          * conversion in and back out of xml.  */
         if (!(xml = qemuDomainDefFormatLive(driver, vm->def, true, true)) ||
             !(def->dom = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                                 VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto endjob;
 
         if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {

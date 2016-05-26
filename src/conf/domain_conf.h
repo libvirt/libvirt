@@ -2361,6 +2361,12 @@ typedef int (*virDomainDefAssignAddressesCallback)(virDomainDef *def,
                                                    unsigned int parseFlags,
                                                    void *opaque);
 
+/* Called in appropriate places where the domain conf parser can return failure
+ * for configurations that were previously accepted. This shall not modify the
+ * config. */
+typedef int (*virDomainDefValidateCallback)(const virDomainDef *def,
+                                            virCapsPtr caps,
+                                            void *opaque);
 
 typedef struct _virDomainDefParserConfig virDomainDefParserConfig;
 typedef virDomainDefParserConfig *virDomainDefParserConfigPtr;
@@ -2369,6 +2375,9 @@ struct _virDomainDefParserConfig {
     virDomainDefPostParseCallback domainPostParseCallback;
     virDomainDeviceDefPostParseCallback devicesPostParseCallback;
     virDomainDefAssignAddressesCallback assignAddressesCallback;
+
+    /* validation callbacks */
+    virDomainDefValidateCallback domainValidateCallback;
 
     /* private data for the callbacks */
     void *priv;
@@ -2414,6 +2423,11 @@ virDomainDefPostParse(virDomainDefPtr def,
                       virCapsPtr caps,
                       unsigned int parseFlags,
                       virDomainXMLOptionPtr xmlopt);
+
+int virDomainDefValidate(const virDomainDef *def,
+                         virCapsPtr caps,
+                         unsigned int parseFlags,
+                         virDomainXMLOptionPtr xmlopt);
 
 static inline bool
 virDomainObjIsActive(virDomainObjPtr dom)
@@ -2580,6 +2594,8 @@ typedef enum {
     VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS = 1 << 8,
     /* allow updates in post parse callback that would break ABI otherwise */
     VIR_DOMAIN_DEF_PARSE_ABI_UPDATE = 1 << 9,
+    /* skip definition validation checks meant to be executed on define time only */
+    VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE = 1 << 10,
 } virDomainDefParseFlags;
 
 typedef enum {

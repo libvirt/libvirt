@@ -1279,7 +1279,8 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         mig->persistent = virDomainDefParseNode(doc, nodes[0],
                                                 caps, driver->xmlopt,
                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                                VIR_DOMAIN_DEF_PARSE_ABI_UPDATE);
+                                                VIR_DOMAIN_DEF_PARSE_ABI_UPDATE |
+                                                VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
         if (!mig->persistent) {
             /* virDomainDefParseNode already reported
              * an error for us */
@@ -3207,7 +3208,8 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
 
     if (xmlin) {
         if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt,
-                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                            VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                            VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto cleanup;
 
         if (!qemuDomainDefCheckABIStability(driver, vm->def, def))
@@ -3550,7 +3552,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
 
                 VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
                 newdef = virDomainDefParseString(xmlout, caps, driver->xmlopt,
-                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE);
+                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                                 VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
                 if (!newdef)
                     goto cleanup;
 
@@ -4023,7 +4026,8 @@ qemuMigrationPrepareDef(virQEMUDriverPtr driver,
         return NULL;
 
     if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto cleanup;
 
     if (dname) {

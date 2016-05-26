@@ -4533,6 +4533,50 @@ virDomainDefPostParse(virDomainDefPtr def,
 }
 
 
+static int
+virDomainDefValidateInternal(const virDomainDef *def ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+/**
+ * virDomainDefValidate:
+ * @def: domain definition
+ * @caps: driver capabilities object
+ * @parseFlags: virDomainDefParseFlags
+ * @xmlopt: XML parser option object
+ *
+ * This validation function is designed to take checks of globally invalid
+ * configurations that the parser needs to accept so that VMs don't vanish upon
+ * daemon restart. Such definition can be rejected upon startup or define, where
+ * this function shall be called.
+ *
+ * Returns 0 if domain definition is valid, -1 on error and reports an
+ * appropriate message.
+ */
+int
+virDomainDefValidate(const virDomainDef *def,
+                     virCapsPtr caps,
+                     unsigned int parseFlags,
+                     virDomainXMLOptionPtr xmlopt)
+{
+    /* validate configuration only in certain places */
+    if (parseFlags & VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)
+        return 0;
+
+    /* call the domain config callback */
+    if (xmlopt->config.domainValidateCallback &&
+        xmlopt->config.domainValidateCallback(def, caps, xmlopt->config.priv) < 0)
+        return -1;
+
+    if (virDomainDefValidateInternal(def) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 void virDomainDefClearPCIAddresses(virDomainDefPtr def)
 {
     virDomainDeviceInfoIterate(def, virDomainDeviceInfoClearPCIAddress, NULL);
@@ -16951,6 +16995,10 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (virDomainDefPostParse(def, caps, flags, xmlopt) < 0)
         goto error;
 
+    /* valdiate configuration */
+    if (virDomainDefValidate(def, caps, flags, xmlopt) < 0)
+        goto error;
+
     virHashFree(bootHash);
 
     return def;
@@ -23729,7 +23777,8 @@ virDomainDefCopy(virDomainDefPtr src,
     char *xml;
     virDomainDefPtr ret;
     unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
-    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                               VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE;
 
     if (migratable)
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE | VIR_DOMAIN_DEF_FORMAT_MIGRATABLE;

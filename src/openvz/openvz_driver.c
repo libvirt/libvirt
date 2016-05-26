@@ -2315,7 +2315,8 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
     }
 
     if (!(def = virDomainDefParseString(dom_xml, driver->caps, driver->xmlopt,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
 
     if (!(vm = virDomainObjListAdd(driver->domains, def,

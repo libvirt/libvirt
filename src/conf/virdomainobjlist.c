@@ -443,7 +443,8 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
         goto error;
     if (!(def = virDomainDefParseFile(configFile, caps, xmlopt,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                      VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS)))
+                                      VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS |
+                                      VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
 
     if ((autostartLink = virDomainConfigFile(autostartDir, name)) == NULL)
@@ -493,7 +494,8 @@ virDomainObjListLoadStatus(virDomainObjListPtr doms,
                                       VIR_DOMAIN_DEF_PARSE_STATUS |
                                       VIR_DOMAIN_DEF_PARSE_ACTUAL_NET |
                                       VIR_DOMAIN_DEF_PARSE_PCI_ORIG_STATES |
-                                      VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS)))
+                                      VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS |
+                                      VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
 
     virUUIDFormat(obj->def->uuid, uuidstr);
