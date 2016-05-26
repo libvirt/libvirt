@@ -4413,7 +4413,6 @@ virDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
 
 struct virDomainDefPostParseDeviceIteratorData {
-    virDomainDefPtr def;
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
     unsigned int parseFlags;
@@ -4421,13 +4420,13 @@ struct virDomainDefPostParseDeviceIteratorData {
 
 
 static int
-virDomainDefPostParseDeviceIterator(virDomainDefPtr def ATTRIBUTE_UNUSED,
+virDomainDefPostParseDeviceIterator(virDomainDefPtr def,
                                     virDomainDeviceDefPtr dev,
                                     virDomainDeviceInfoPtr info ATTRIBUTE_UNUSED,
                                     void *opaque)
 {
     struct virDomainDefPostParseDeviceIteratorData *data = opaque;
-    return virDomainDeviceDefPostParse(dev, data->def, data->caps,
+    return virDomainDeviceDefPostParse(dev, def, data->caps,
                                        data->parseFlags, data->xmlopt);
 }
 
@@ -4470,7 +4469,7 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
 
         /* videos[0] might have been added in AddImplicitDevices, after we've
          * done the per-device post-parse */
-        if (virDomainDefPostParseDeviceIterator(NULL, &device, NULL, data) < 0)
+        if (virDomainDefPostParseDeviceIterator(def, &device, NULL, data) < 0)
             return -1;
     }
 
@@ -4489,7 +4488,6 @@ virDomainDefPostParse(virDomainDefPtr def,
 {
     int ret;
     struct virDomainDefPostParseDeviceIteratorData data = {
-        .def = def,
         .caps = caps,
         .xmlopt = xmlopt,
         .parseFlags = parseFlags,
