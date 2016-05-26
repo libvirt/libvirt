@@ -693,7 +693,7 @@ mymain(void)
         for (i = 0; i < ARRAY_CARDINALITY(data.files); i++)          \
             if (data.files[i])                                       \
                 data.nfiles++;                                       \
-        if (virTestRun(virtTestCounterNext(),                        \
+        if (virTestRun(virTestCounterNext(),                         \
                        testStorageChain, &data) < 0)                 \
             ret = -1;                                                \
     } while (0)

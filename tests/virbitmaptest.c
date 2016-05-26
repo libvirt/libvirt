@@ -645,7 +645,7 @@ test12(const void *opaque ATTRIBUTE_UNUSED)
     testBinaryOpData.a = A;                                                   \
     testBinaryOpData.b = B;                                                   \
     testBinaryOpData.res = RES;                                               \
-    if (virTestRun(virtTestCounterNext(), FUNC, &testBinaryOpData) < 0)       \
+    if (virTestRun(virTestCounterNext(), FUNC, &testBinaryOpData) < 0)        \
         ret = -1;
 
 static int

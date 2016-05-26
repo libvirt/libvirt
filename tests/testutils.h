@@ -98,7 +98,7 @@ char *virTestLogContentAndReset(void);
 void virTestQuiesceLibvirtErrors(bool always);
 
 void virTestCounterReset(const char *prefix);
-const char *virtTestCounterNext(void);
+const char *virTestCounterNext(void);
 
 int virtTestMain(int argc,
                  char **argv,

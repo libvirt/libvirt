@@ -86,7 +86,7 @@ mymain(void)
     do {                                                            \
         data1.props = PROPS;                                        \
         data1.expectprops = EXPECT;                                 \
-        if (virTestRun(virtTestCounterNext(),                       \
+        if (virTestRun(virTestCounterNext(),                        \
                        testQemuCommandBuildObjectFromJSON,          \
                        &data1) < 0)                                 \
             ret = -1;                                               \

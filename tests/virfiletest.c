@@ -160,7 +160,7 @@ mymain(void)
     do {                                                                       \
         data1.path = PATH;                                                     \
         data1.expect = EXPECT;                                                 \
-        if (virTestRun(virtTestCounterNext(), testFileSanitizePath,            \
+        if (virTestRun(virTestCounterNext(), testFileSanitizePath,             \
                        &data1) < 0)                                            \
             ret = -1;                                                          \
     } while (0)

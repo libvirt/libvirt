@@ -1174,7 +1174,7 @@ static char *virtTestCounterPrefixEndOffset;
  * @prefix: name of the test group
  *
  * Resets the counter and sets up the test group name to use with
- * virtTestCounterNext(). This function is not thread safe.
+ * virTestCounterNext(). This function is not thread safe.
  *
  * Note: The buffer for the assembled message is 128 bytes long. Longer test
  * case names (including the number index) will be silently truncated.
@@ -1190,7 +1190,7 @@ virTestCounterReset(const char *prefix)
 
 
 /**
- * virtTestCounterNext:
+ * virTestCounterNext:
  *
  * This function is designed to ease test creation and reordering by adding
  * a way to do automagic test case numbering.
@@ -1203,7 +1203,7 @@ virTestCounterReset(const char *prefix)
  * case names (including the number index) will be silently truncated.
  */
 const char
-*virtTestCounterNext(void)
+*virTestCounterNext(void)
 {
     size_t len = ARRAY_CARDINALITY(virtTestCounterStr);
 
