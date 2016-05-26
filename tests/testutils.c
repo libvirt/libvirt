@@ -476,12 +476,12 @@ virTestRewrapFile(const char *filename)
  * non-NULL.
  */
 static int
-virtTestDifferenceFullInternal(FILE *stream,
-                               const char *expect,
-                               const char *expectName,
-                               const char *actual,
-                               const char *actualName,
-                               bool regenerate)
+virTestDifferenceFullInternal(FILE *stream,
+                              const char *expect,
+                              const char *expectName,
+                              const char *actual,
+                              const char *actualName,
+                              bool regenerate)
 {
     const char *expectStart;
     const char *expectEnd;
@@ -571,8 +571,8 @@ virTestDifferenceFull(FILE *stream,
                       const char *actual,
                       const char *actualName)
 {
-    return virtTestDifferenceFullInternal(stream, expect, expectName,
-                                          actual, actualName, true);
+    return virTestDifferenceFullInternal(stream, expect, expectName,
+                                         actual, actualName, true);
 }
 
 /**
@@ -594,8 +594,8 @@ virTestDifferenceFullNoRegenerate(FILE *stream,
                                   const char *actual,
                                   const char *actualName)
 {
-    return virtTestDifferenceFullInternal(stream, expect, expectName,
-                                          actual, actualName, false);
+    return virTestDifferenceFullInternal(stream, expect, expectName,
+                                         actual, actualName, false);
 }
 
 /**
