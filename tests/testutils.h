@@ -93,7 +93,7 @@ unsigned int virTestGetRegenerate(void);
             fprintf(stderr, __VA_ARGS__);       \
     } while (0)
 
-char *virtTestLogContentAndReset(void);
+char *virTestLogContentAndReset(void);
 
 void virtTestQuiesceLibvirtErrors(bool always);
 

@@ -70,7 +70,7 @@ static int testCompareXMLToArgvFiles(const char *xmlfile,
         goto fail;
 
     if (!virTestOOMActive()) {
-        if ((log = virtTestLogContentAndReset()) == NULL)
+        if ((log = virTestLogContentAndReset()) == NULL)
             goto fail;
         if (flags & FLAG_EXPECT_WARNING) {
             if (*log) {

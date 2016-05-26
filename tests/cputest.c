@@ -476,13 +476,13 @@ cpuTestRun(const char *name, const struct data *data)
     if (virAsprintf(&label, "CPU %s(%s): %s", apis[data->api], data->arch, name) < 0)
         return -1;
 
-    tmp = virtTestLogContentAndReset();
+    tmp = virTestLogContentAndReset();
     VIR_FREE(tmp);
 
     if (virTestRun(label, cpuTest[data->api], data) < 0) {
         if (virTestGetDebug()) {
             char *log;
-            if ((log = virtTestLogContentAndReset()) &&
+            if ((log = virTestLogContentAndReset()) &&
                  strlen(log) > 0)
                 VIR_TEST_DEBUG("\n%s\n", log);
             VIR_FREE(log);

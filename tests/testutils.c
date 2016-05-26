@@ -768,7 +768,7 @@ virtTestLogClose(void *data)
 /* Return a malloc'd string (possibly with strlen of 0) of all data
  * logged since the last call to this function, or NULL on failure.  */
 char *
-virtTestLogContentAndReset(void)
+virTestLogContentAndReset(void)
 {
     char *ret;
 

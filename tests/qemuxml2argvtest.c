@@ -310,7 +310,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     virQEMUCapsFilterByMachineType(extraFlags, vm->def->os.machine);
 
-    log = virtTestLogContentAndReset();
+    log = virTestLogContentAndReset();
     VIR_FREE(log);
     virResetLastError();
 
@@ -353,7 +353,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     }
     if (!virTestOOMActive()) {
         if (flags & FLAG_EXPECT_FAILURE) {
-            if ((log = virtTestLogContentAndReset()))
+            if ((log = virTestLogContentAndReset()))
                 VIR_TEST_DEBUG("Got expected error: \n%s", log);
         }
         virResetLastError();
