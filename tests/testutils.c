@@ -726,7 +726,7 @@ virtTestErrorFuncQuiet(void *data ATTRIBUTE_UNUSED,
 
 /* register an error handler in tests when using connections */
 void
-virtTestQuiesceLibvirtErrors(bool always)
+virTestQuiesceLibvirtErrors(bool always)
 {
     if (always || !virTestGetVerbose())
         virSetErrorFunc(NULL, virtTestErrorFuncQuiet);

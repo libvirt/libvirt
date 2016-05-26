@@ -279,7 +279,7 @@ mymain(void)
         return EXIT_FAILURE;
     }
 
-    virtTestQuiesceLibvirtErrors(false);
+    virTestQuiesceLibvirtErrors(false);
 
     if (virTestRun("Assign metadata ", testAssignMetadata, &test) < 0)
         ret = EXIT_FAILURE;

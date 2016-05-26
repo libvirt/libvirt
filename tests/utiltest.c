@@ -263,7 +263,7 @@ mymain(void)
 {
     int result = 0;
 
-    virtTestQuiesceLibvirtErrors(true);
+    virTestQuiesceLibvirtErrors(true);
 
 #define DO_TEST(_name)                                                        \
         do {                                                                  \

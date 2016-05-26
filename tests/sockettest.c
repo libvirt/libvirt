@@ -272,7 +272,7 @@ mymain(void)
      * register a handler to stop error messages cluttering
      * up display
      */
-    virtTestQuiesceLibvirtErrors(false);
+    virTestQuiesceLibvirtErrors(false);
 
 #define DO_TEST_PARSE_AND_FORMAT(addrstr, family, pass)                 \
     do {                                                                \

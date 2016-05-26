@@ -95,7 +95,7 @@ unsigned int virTestGetRegenerate(void);
 
 char *virTestLogContentAndReset(void);
 
-void virtTestQuiesceLibvirtErrors(bool always);
+void virTestQuiesceLibvirtErrors(bool always);
 
 void virTestCounterReset(const char *prefix);
 const char *virtTestCounterNext(void);

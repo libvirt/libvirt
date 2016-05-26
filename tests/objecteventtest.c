@@ -546,7 +546,7 @@ mymain(void)
     if (!(test.conn = virConnectOpen("test:///default")))
         return EXIT_FAILURE;
 
-    virtTestQuiesceLibvirtErrors(false);
+    virTestQuiesceLibvirtErrors(false);
 
     /* Domain event tests */
     if (virTestRun("Domain createXML start event (old API)",
