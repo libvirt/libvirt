@@ -719,8 +719,8 @@ virTestCompareToFile(const char *strcontent,
 }
 
 static void
-virtTestErrorFuncQuiet(void *data ATTRIBUTE_UNUSED,
-                       virErrorPtr err ATTRIBUTE_UNUSED)
+virTestErrorFuncQuiet(void *data ATTRIBUTE_UNUSED,
+                      virErrorPtr err ATTRIBUTE_UNUSED)
 { }
 
 
@@ -729,7 +729,7 @@ void
 virTestQuiesceLibvirtErrors(bool always)
 {
     if (always || !virTestGetVerbose())
-        virSetErrorFunc(NULL, virtTestErrorFuncQuiet);
+        virSetErrorFunc(NULL, virTestErrorFuncQuiet);
 }
 
 struct virtTestLogData {
