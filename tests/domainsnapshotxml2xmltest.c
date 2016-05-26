@@ -114,7 +114,7 @@ testCompareXMLToXMLFiles(const char *inxml,
     }
 
     if (STRNEQ(outXmlData, actual)) {
-        virtTestDifferenceFull(stderr, outXmlData, outxml, actual, inxml);
+        virTestDifferenceFull(stderr, outXmlData, outxml, actual, inxml);
         goto cleanup;
     }
 

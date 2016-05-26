@@ -192,9 +192,9 @@ testQemuHotplugCheckResult(virDomainObjPtr vm,
         ret = 0;
     } else {
         if (!fail)
-            virtTestDifferenceFull(stderr,
-                                   expected, expectedFile,
-                                   actual, NULL);
+            virTestDifferenceFull(stderr,
+                                  expected, expectedFile,
+                                  actual, NULL);
         ret = -1;
     }
 

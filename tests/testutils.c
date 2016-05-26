@@ -565,11 +565,11 @@ virtTestDifferenceFullInternal(FILE *stream,
  * regenerate the expected file.
  */
 int
-virtTestDifferenceFull(FILE *stream,
-                       const char *expect,
-                       const char *expectName,
-                       const char *actual,
-                       const char *actualName)
+virTestDifferenceFull(FILE *stream,
+                      const char *expect,
+                      const char *expectName,
+                      const char *actual,
+                      const char *actualName)
 {
     return virtTestDifferenceFullInternal(stream, expect, expectName,
                                           actual, actualName, true);
@@ -705,9 +705,9 @@ virTestCompareToFile(const char *strcontent,
 
     if (STRNEQ_NULLABLE(fixedcontent ? fixedcontent : strcontent,
                         filecontent)) {
-        virtTestDifferenceFull(stderr,
-                               filecontent, filename,
-                               strcontent, NULL);
+        virTestDifferenceFull(stderr,
+                              filecontent, filename,
+                              strcontent, NULL);
         goto failure;
     }
 

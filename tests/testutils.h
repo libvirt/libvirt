@@ -59,11 +59,11 @@ void virtTestClearCommandPath(char *cmdset);
 int virTestDifference(FILE *stream,
                       const char *expect,
                       const char *actual);
-int virtTestDifferenceFull(FILE *stream,
-                           const char *expect,
-                           const char *expectName,
-                           const char *actual,
-                           const char *actualName);
+int virTestDifferenceFull(FILE *stream,
+                          const char *expect,
+                          const char *expectName,
+                          const char *actual,
+                          const char *actualName);
 int virtTestDifferenceFullNoRegenerate(FILE *stream,
                                        const char *expect,
                                        const char *expectName,

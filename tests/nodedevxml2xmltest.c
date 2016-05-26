@@ -34,7 +34,7 @@ testCompareXMLToXMLFiles(const char *xml)
         goto fail;
 
     if (STRNEQ(xmlData, actual)) {
-        virtTestDifferenceFull(stderr, xmlData, xml, actual, NULL);
+        virTestDifferenceFull(stderr, xmlData, xml, actual, NULL);
         goto fail;
     }
 
