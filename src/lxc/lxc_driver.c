@@ -1947,6 +1947,7 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
     virCapsPtr caps = NULL;
     size_t i;
     virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDefCopy = NULL;
     virDomainDefPtr persistentDef = NULL;
     int ret = -1;
@@ -1980,18 +1981,17 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
     if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt,
-                                        vm, &flags, &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         /* Make a copy for updated domain. */
         persistentDefCopy = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt);
         if (!persistentDefCopy)
             goto endjob;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+    if (def) {
         if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            "%s", _("cgroup CPU controller is not mounted"));
@@ -2003,7 +2003,7 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
         virTypedParameterPtr param = &params[i];
 
         if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_CPU_SHARES)) {
-            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+            if (def) {
                 unsigned long long val;
                 if (virCgroupSetCpuShares(priv->cgroup, params[i].value.ul) < 0)
                     goto endjob;
@@ -2011,37 +2011,37 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
                 if (virCgroupGetCpuShares(priv->cgroup, &val) < 0)
                     goto endjob;
 
-                vm->def->cputune.shares = val;
-                vm->def->cputune.sharesSpecified = true;
+                def->cputune.shares = val;
+                def->cputune.sharesSpecified = true;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            if (persistentDef) {
                 persistentDefCopy->cputune.shares = params[i].value.ul;
                 persistentDefCopy->cputune.sharesSpecified = true;
             }
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD)) {
-            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+            if (def) {
                 rc = lxcSetVcpuBWLive(priv->cgroup, params[i].value.ul, 0);
                 if (rc != 0)
                     goto endjob;
 
                 if (params[i].value.ul)
-                    vm->def->cputune.period = params[i].value.ul;
+                    def->cputune.period = params[i].value.ul;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+            if (persistentDef)
                 persistentDefCopy->cputune.period = params[i].value.ul;
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA)) {
-            if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+            if (def) {
                 rc = lxcSetVcpuBWLive(priv->cgroup, 0, params[i].value.l);
                 if (rc != 0)
                     goto endjob;
 
                 if (params[i].value.l)
-                    vm->def->cputune.quota = params[i].value.l;
+                    def->cputune.quota = params[i].value.l;
             }
 
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG)
+            if (persistentDef)
                 persistentDefCopy->cputune.quota = params[i].value.l;
         }
     }
@@ -2050,7 +2050,7 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
         goto endjob;
 
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         rc = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDefCopy);
         if (rc < 0)
             goto endjob;
