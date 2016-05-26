@@ -278,7 +278,7 @@ testTypedParamsValidator(void)
     };
 
     for (i = 0; test[i].name; ++i) {
-        if (virtTestRun(test[i].name, testTypedParamsValidate, &test[i]) < 0)
+        if (virTestRun(test[i].name, testTypedParamsValidate, &test[i]) < 0)
             rv = -1;
     }
 
@@ -293,13 +293,13 @@ mymain(void)
     if (testTypedParamsValidator() < 0)
         rv = -1;
 
-    if (virtTestRun("Filtering", testTypedParamsFilter, NULL) < 0)
+    if (virTestRun("Filtering", testTypedParamsFilter, NULL) < 0)
         rv = -1;
 
-    if (virtTestRun("Get All Strings", testTypedParamsGetStringList, NULL) < 0)
+    if (virTestRun("Get All Strings", testTypedParamsGetStringList, NULL) < 0)
         rv = -1;
 
-    if (virtTestRun("Add string list", testTypedParamsAddStringList, NULL) < 0)
+    if (virTestRun("Add string list", testTypedParamsAddStringList, NULL) < 0)
         rv = -1;
 
     if (rv < 0)

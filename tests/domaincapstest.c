@@ -250,7 +250,7 @@ mymain(void)
             .type = Type,                                               \
             .capsType = CapsType,                                       \
         };                                                              \
-        if (virtTestRun(Name, test_virDomainCapsFormat, &data) < 0)     \
+        if (virTestRun(Name, test_virDomainCapsFormat, &data) < 0)      \
             ret = -1;                                                   \
     } while (0)
 
@@ -274,7 +274,7 @@ mymain(void)
             .capsName = CapsName,                                       \
             .capsOpaque = cfg,                                          \
         };                                                              \
-        if (virtTestRun(name, test_virDomainCapsFormat, &data) < 0)     \
+        if (virTestRun(name, test_virDomainCapsFormat, &data) < 0)      \
             ret = -1;                                                   \
         VIR_FREE(name);                                                 \
     } while (0)

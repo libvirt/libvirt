@@ -118,8 +118,8 @@ mymain(void)
         const struct testInfo info = {name, updatexml, netxml, outxml,      \
                                       command, section, flags,              \
                                       parentIndex, expectFailure};          \
-        if (virtTestRun("Network XML-2-XML " name,                          \
-                        testCompareXMLToXMLHelper, &info) < 0)              \
+        if (virTestRun("Network XML-2-XML " name,                           \
+                       testCompareXMLToXMLHelper, &info) < 0)               \
             ret = -1;                                                       \
     } while (0)
 

@@ -530,39 +530,39 @@ mymain(void)
         goto cleanup;
     }
 
-    if (virtTestRun("ebiptablesAllTeardown",
-                    testNWFilterEBIPTablesAllTeardown,
-                    NULL) < 0)
+    if (virTestRun("ebiptablesAllTeardown",
+                   testNWFilterEBIPTablesAllTeardown,
+                   NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("ebiptablesTearOldRules",
-                    testNWFilterEBIPTablesTearOldRules,
-                    NULL) < 0)
+    if (virTestRun("ebiptablesTearOldRules",
+                   testNWFilterEBIPTablesTearOldRules,
+                   NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("ebiptablesRemoveBasicRules",
-                    testNWFilterEBIPTablesRemoveBasicRules,
-                    NULL) < 0)
+    if (virTestRun("ebiptablesRemoveBasicRules",
+                   testNWFilterEBIPTablesRemoveBasicRules,
+                   NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("ebiptablesTearNewRules",
-                    testNWFilterEBIPTablesTearNewRules,
-                    NULL) < 0)
+    if (virTestRun("ebiptablesTearNewRules",
+                   testNWFilterEBIPTablesTearNewRules,
+                   NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("ebiptablesApplyBasicRules",
-                    testNWFilterEBIPTablesApplyBasicRules,
-                    NULL) < 0)
+    if (virTestRun("ebiptablesApplyBasicRules",
+                   testNWFilterEBIPTablesApplyBasicRules,
+                   NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("ebiptablesApplyDHCPOnlyRules",
-                    testNWFilterEBIPTablesApplyDHCPOnlyRules,
-                    NULL) < 0)
+    if (virTestRun("ebiptablesApplyDHCPOnlyRules",
+                   testNWFilterEBIPTablesApplyDHCPOnlyRules,
+                   NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("ebiptablesApplyDropAllRules",
-                    testNWFilterEBIPTablesApplyDropAllRules,
-                    NULL) < 0)
+    if (virTestRun("ebiptablesApplyDropAllRules",
+                   testNWFilterEBIPTablesApplyDropAllRules,
+                   NULL) < 0)
         ret = -1;
 
  cleanup:

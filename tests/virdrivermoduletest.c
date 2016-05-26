@@ -47,10 +47,10 @@ mymain(void)
 {
     int ret = 0;
 
-#define TEST(name, dep1)                                                \
-    do  {                                                               \
-        if (virtTestRun("Test driver " # name, testDriverModule, name) < 0) \
-            ret = -1;                                                   \
+#define TEST(name, dep1)                                                   \
+    do  {                                                                  \
+        if (virTestRun("Test driver " # name, testDriverModule, name) < 0) \
+            ret = -1;                                                      \
     } while (0)
 
 #ifdef WITH_NETWORK

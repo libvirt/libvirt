@@ -136,7 +136,7 @@ mymain(void)
         static struct testInfo info = {                        \
             name, (flags)                                      \
         };                                                     \
-        if (virtTestRun("BHYVE XML-2-ARGV " name,              \
+        if (virTestRun("BHYVE XML-2-ARGV " name,               \
                        testCompareXMLToArgvHelper, &info) < 0) \
             ret = -1;                                          \
     } while (0)

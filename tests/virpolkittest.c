@@ -334,17 +334,17 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virtTestRun("Polkit auth success ", testPolkitAuthSuccess, NULL) < 0)
+    if (virTestRun("Polkit auth success ", testPolkitAuthSuccess, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Polkit auth deny ", testPolkitAuthDenied, NULL) < 0)
+    if (virTestRun("Polkit auth deny ", testPolkitAuthDenied, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Polkit auth challenge ", testPolkitAuthChallenge, NULL) < 0)
+    if (virTestRun("Polkit auth challenge ", testPolkitAuthChallenge, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Polkit auth cancel ", testPolkitAuthCancelled, NULL) < 0)
+    if (virTestRun("Polkit auth cancel ", testPolkitAuthCancelled, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Polkit auth details success ", testPolkitAuthDetailsSuccess, NULL) < 0)
+    if (virTestRun("Polkit auth details success ", testPolkitAuthDetailsSuccess, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Polkit auth details deny ", testPolkitAuthDetailsDenied, NULL) < 0)
+    if (virTestRun("Polkit auth details deny ", testPolkitAuthDetailsDenied, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

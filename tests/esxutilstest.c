@@ -249,8 +249,8 @@ mymain(void)
 
 # define DO_TEST(_name)                                                       \
         do {                                                                  \
-            if (virtTestRun("VMware "#_name, test##_name,                     \
-                            NULL) < 0) {                                      \
+            if (virTestRun("VMware "#_name, test##_name,                      \
+                           NULL) < 0) {                                       \
                 result = -1;                                                  \
             }                                                                 \
         } while (0)

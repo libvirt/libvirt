@@ -590,9 +590,9 @@ mymain(void)
             .delim = del,                                               \
             .tokens = toks,                                             \
         };                                                              \
-        if (virtTestRun("Split " #str, testSplit, &splitData) < 0)      \
+        if (virTestRun("Split " #str, testSplit, &splitData) < 0)       \
             ret = -1;                                                   \
-        if (virtTestRun("Join " #str, testJoin, &joinData) < 0)         \
+        if (virTestRun("Join " #str, testJoin, &joinData) < 0)          \
             ret = -1;                                                   \
     } while (0)
 
@@ -620,27 +620,27 @@ mymain(void)
     const char *tokens8[] = { "gluster", "rdma", NULL };
     TEST_SPLIT("gluster+rdma", "+", 2, tokens8);
 
-    if (virtTestRun("strdup", testStrdup, NULL) < 0)
+    if (virTestRun("strdup", testStrdup, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("strdup", testStrndupNegative, NULL) < 0)
+    if (virTestRun("strdup", testStrndupNegative, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("virStringSortCompare", testStringSortCompare, NULL) < 0)
+    if (virTestRun("virStringSortCompare", testStringSortCompare, NULL) < 0)
         ret = -1;
 
-#define TEST_SEARCH(s, r, x, n, m, e)                                   \
-    do {                                                                \
-        struct stringSearchData data = {                                \
-            .str = s,                                                   \
-            .maxMatches = x,                                            \
-            .regexp = r,                                                \
-            .expectNMatches = n,                                        \
-            .expectMatches = m,                                         \
-            .expectError = e,                                           \
-        };                                                              \
-        if (virtTestRun("virStringSearch " s, testStringSearch, &data) < 0) \
-            ret = -1;                                                   \
+#define TEST_SEARCH(s, r, x, n, m, e)                                      \
+    do {                                                                   \
+        struct stringSearchData data = {                                   \
+            .str = s,                                                      \
+            .maxMatches = x,                                               \
+            .regexp = r,                                                   \
+            .expectNMatches = n,                                           \
+            .expectMatches = m,                                            \
+            .expectError = e,                                              \
+        };                                                                 \
+        if (virTestRun("virStringSearch " s, testStringSearch, &data) < 0) \
+            ret = -1;                                                      \
     } while (0)
 
     /* error due to missing () in regexp */
@@ -664,16 +664,16 @@ mymain(void)
     const char *matches3[] = { "foo", "bar" };
     TEST_SEARCH("1foo2bar3eek", "([a-z]+)", 2, 2, matches3, false);
 
-#define TEST_REPLACE(h, o, n, r)                                        \
-    do {                                                                \
-        struct stringReplaceData data = {                               \
-            .haystack = h,                                              \
-            .oldneedle = o,                                             \
-            .newneedle = n,                                             \
-            .result = r                                                 \
-        };                                                              \
-        if (virtTestRun("virStringReplace " h, testStringReplace, &data) < 0) \
-            ret = -1;                                                   \
+#define TEST_REPLACE(h, o, n, r)                                             \
+    do {                                                                     \
+        struct stringReplaceData data = {                                    \
+            .haystack = h,                                                   \
+            .oldneedle = o,                                                  \
+            .newneedle = n,                                                  \
+            .result = r                                                      \
+        };                                                                   \
+        if (virTestRun("virStringReplace " h, testStringReplace, &data) < 0) \
+            ret = -1;                                                        \
     } while (0)
 
     /* no matches */
@@ -701,8 +701,8 @@ mymain(void)
         struct stringToLongData data = {                                \
             str, suff, i, i_ret, u, u_ret, ll, ll_ret, ull, ull_ret,    \
         };                                                              \
-        if (virtTestRun("virStringToLong '" str "'", testStringToLong,  \
-                        &data) < 0)                                     \
+        if (virTestRun("virStringToLong '" str "'", testStringToLong,   \
+                       &data) < 0)                                      \
             ret = -1;                                                   \
     } while (0)
 
@@ -780,8 +780,8 @@ mymain(void)
                 0LL, -1, 0ULL, -1);
 
     /* test virStringFreeListCount */
-    if (virtTestRun("virStringFreeListCount", testVirStringFreeListCount,
-                    NULL) < 0)
+    if (virTestRun("virStringFreeListCount", testVirStringFreeListCount,
+                   NULL) < 0)
         ret = -1;
 
 #define TEST_STRIP_IPV6_BRACKETS(str, res)                              \
@@ -790,8 +790,8 @@ mymain(void)
             .string = str,                                              \
             .result = res,                                              \
         };                                                              \
-        if (virtTestRun("Strip brackets from IPv6 " #str,               \
-                        testStripIPv6Brackets, &stripData) < 0)         \
+        if (virTestRun("Strip brackets from IPv6 " #str,                \
+                       testStripIPv6Brackets, &stripData) < 0)          \
             ret = -1;                                                   \
     } while (0)
 
@@ -809,8 +809,8 @@ mymain(void)
             .string = str,                                              \
             .result = res,                                              \
         };                                                              \
-        if (virtTestRun("Strip control chars from " #str,               \
-                        testStripControlChars, &stripData) < 0)         \
+        if (virTestRun("Strip control chars from " #str,                \
+                       testStripControlChars, &stripData) < 0)          \
             ret = -1;                                                   \
     } while (0)
 

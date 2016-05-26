@@ -136,7 +136,7 @@ mymain(void)
             .input = i,                         \
             .output = o,                        \
         };                                      \
-        if (virtTestRun("Hash " i, testCryptoHash, &data) < 0) \
+        if (virTestRun("Hash " i, testCryptoHash, &data) < 0)  \
             ret = -1;                                          \
     } while (0)
 
@@ -163,7 +163,7 @@ mymain(void)
             .ciphertext = c,                     \
             .ciphertextlen = cl,                 \
         };                                       \
-        if (virtTestRun("Encrypt " n, testCryptoEncrypt, &data) < 0) \
+        if (virTestRun("Encrypt " n, testCryptoEncrypt, &data) < 0)  \
             ret = -1;                                                \
     } while (0)
 

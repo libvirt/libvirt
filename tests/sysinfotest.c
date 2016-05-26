@@ -112,7 +112,7 @@ sysinfotest_run(const char *test,
         goto error;
     }
 
-    if (virtTestRun(test, testSysinfo, &testdata) < 0)
+    if (virTestRun(test, testSysinfo, &testdata) < 0)
         goto error;
 
     ret = EXIT_SUCCESS;

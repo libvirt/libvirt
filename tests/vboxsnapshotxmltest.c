@@ -135,8 +135,8 @@ mymain(void)
     }
 
 # define DO_TEST(name)                                       \
-    if (virtTestRun("VBox Snapshot XML-2-XML " name,        \
-                    testCompareXMLToXMLHelper, (name)) < 0) \
+    if (virTestRun("VBox Snapshot XML-2-XML " name,          \
+                   testCompareXMLToXMLHelper, (name)) < 0)   \
         ret = -1
 
     DO_TEST("2disks-nosnap");

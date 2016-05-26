@@ -245,13 +245,13 @@ mymain(void)
         return EXIT_FAILURE;
 
     for (i = 0; i < ARRAY_CARDINALITY(nodeData); i++)
-      if (virtTestRun(nodeData[i].testName, linuxTestNodeInfo, &nodeData[i]) != 0)
+      if (virTestRun(nodeData[i].testName, linuxTestNodeInfo, &nodeData[i]) != 0)
         ret = -1;
 
 # define DO_TEST_CPU_STATS(name, ncpus) \
     do { \
         static struct nodeCPUStatsData data = { name, ncpus }; \
-        if (virtTestRun("CPU stats " name, linuxTestNodeCPUStats, &data) < 0) \
+        if (virTestRun("CPU stats " name, linuxTestNodeCPUStats, &data) < 0) \
             ret = -1; \
     } while (0)
 

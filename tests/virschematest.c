@@ -99,7 +99,7 @@ testSchemaDir(const char *schema,
             goto cleanup;
 
         data.xml_path = xml_path;
-        if (virtTestRun(test_name, testSchemaFile, &data) < 0)
+        if (virTestRun(test_name, testSchemaFile, &data) < 0)
             ret = -1;
 
         VIR_FREE(test_name);

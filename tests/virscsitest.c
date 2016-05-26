@@ -235,9 +235,9 @@ mymain(void)
         goto cleanup;
     }
 
-    if (virtTestRun("test1", test1, NULL) < 0)
+    if (virTestRun("test1", test1, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test2", test2, NULL) < 0)
+    if (virTestRun("test2", test2, NULL) < 0)
         ret = -1;
 
  cleanup:

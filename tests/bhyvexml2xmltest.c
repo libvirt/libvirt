@@ -55,7 +55,7 @@ mymain(void)
 # define DO_TEST_FULL(name, is_different)                        \
     do {                                                         \
         const struct testInfo info = {name, is_different};       \
-        if (virtTestRun("BHYVE XML-2-XML " name,                 \
+        if (virTestRun("BHYVE XML-2-XML " name,                  \
                        testCompareXMLToXMLHelper, &info) < 0)    \
             ret = -1;                                            \
     } while (0)

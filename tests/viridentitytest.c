@@ -226,17 +226,17 @@ mymain(void)
     const char *context = "unconfined_u:unconfined_r:unconfined_t:s0";
     int ret = 0;
 
-    if (virtTestRun("Identity attributes ", testIdentityAttrs, NULL) < 0)
+    if (virTestRun("Identity attributes ", testIdentityAttrs, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Identity equality ", testIdentityEqual, NULL) < 0)
+    if (virTestRun("Identity equality ", testIdentityEqual, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Setting fake SELinux context ", testSetFakeSELinuxContext, context) < 0)
+    if (virTestRun("Setting fake SELinux context ", testSetFakeSELinuxContext, context) < 0)
         ret = -1;
-    if (virtTestRun("System identity (fake SELinux enabled) ", testIdentityGetSystem, context) < 0)
+    if (virTestRun("System identity (fake SELinux enabled) ", testIdentityGetSystem, context) < 0)
         ret = -1;
-    if (virtTestRun("Disabling fake SELinux ", testDisableFakeSELinux, NULL) < 0)
+    if (virTestRun("Disabling fake SELinux ", testDisableFakeSELinux, NULL) < 0)
         ret = -1;
-    if (virtTestRun("System identity (fake SELinux disabled) ", testIdentityGetSystem, NULL) < 0)
+    if (virTestRun("System identity (fake SELinux disabled) ", testIdentityGetSystem, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

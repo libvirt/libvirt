@@ -70,8 +70,8 @@ mymain(void)
     int ret = 0;
 
 #define DO_TEST(name)                                           \
-    if (virtTestRun("Node device XML-2-XML " name,              \
-                    testCompareXMLToXMLHelper, (name)) < 0)     \
+    if (virTestRun("Node device XML-2-XML " name,               \
+                   testCompareXMLToXMLHelper, (name)) < 0)      \
         ret = -1
 
     DO_TEST("computer");

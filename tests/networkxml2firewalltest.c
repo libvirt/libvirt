@@ -123,8 +123,8 @@ mymain(void)
         static struct testInfo info = {                                 \
             name,                                                       \
         };                                                              \
-        if (virtTestRun("Network XML-2-iptables " name,                 \
-                        testCompareXMLToIPTablesHelper, &info) < 0)     \
+        if (virTestRun("Network XML-2-iptables " name,                  \
+                       testCompareXMLToIPTablesHelper, &info) < 0)      \
             ret = -1;                                                   \
     } while (0)
 

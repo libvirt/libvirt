@@ -120,9 +120,9 @@ mymain(void)
         struct testSetStruct data = {.band = Band,          \
                                      .exp_cmd = Exp_cmd,    \
                                      __VA_ARGS__};          \
-        if (virtTestRun("virNetDevBandwidthSet",            \
-                        testVirNetDevBandwidthSet,          \
-                        &data) < 0)                         \
+        if (virTestRun("virNetDevBandwidthSet",             \
+                       testVirNetDevBandwidthSet,           \
+                       &data) < 0)                          \
             ret = -1;                                       \
     } while (0)
 

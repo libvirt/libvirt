@@ -70,8 +70,8 @@ mymain(void)
     do {                                                                \
         const struct testInfo info = {name, is_different, inactive,     \
                                       parse_flags};                     \
-        if (virtTestRun("LXC XML-2-XML " name,                          \
-                        testCompareXMLToXMLHelper, &info) < 0)          \
+        if (virTestRun("LXC XML-2-XML " name,                           \
+                       testCompareXMLToXMLHelper, &info) < 0)           \
             ret = -1;                                                   \
     } while (0)
 

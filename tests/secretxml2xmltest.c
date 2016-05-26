@@ -71,8 +71,8 @@ mymain(void)
 #define DO_TEST(name)                                           \
     do {                                                        \
         const struct testInfo info = {name, false};             \
-        if (virtTestRun("Secret XML->XML " name,                \
-                        testCompareXMLToXMLHelper, &info) < 0)  \
+        if (virTestRun("Secret XML->XML " name,                 \
+                       testCompareXMLToXMLHelper, &info) < 0)   \
             ret = -1;                                           \
     } while (0)
 

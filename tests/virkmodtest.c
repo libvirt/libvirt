@@ -150,7 +150,7 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virtTestRun("config", testKModConfig, NULL) < 0)
+    if (virTestRun("config", testKModConfig, NULL) < 0)
         ret = -1;
 
     /* Although we cannot run the command on the host, we can compare
@@ -162,7 +162,7 @@ mymain(void)
         struct testInfo data = {.module = "vfio-pci",         \
                                 .exp_cmd = _exp_cmd,          \
                                 .useBlacklist = _blkflag};    \
-        if (virtTestRun(_name, _cb,  &data) < 0)              \
+        if (virTestRun(_name, _cb,  &data) < 0)               \
             ret = -1;                                         \
     } while (0)
 

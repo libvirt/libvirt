@@ -89,8 +89,8 @@ mymain(void)
 #define DO_TEST_FULL(pool, name, flags)                         \
     do {                                                        \
         struct testInfo info = { pool, name, flags };           \
-        if (virtTestRun("Storage Vol XML-2-XML " name,          \
-                        testCompareXMLToXMLHelper, &info) < 0)  \
+        if (virTestRun("Storage Vol XML-2-XML " name,           \
+                       testCompareXMLToXMLHelper, &info) < 0)   \
             ret = -1;                                           \
     }                                                           \
     while (0);

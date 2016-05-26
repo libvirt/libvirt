@@ -240,12 +240,12 @@ mymain(void)
     int rv = 0;
 
 #define DO_TEST_FIND_FULL(name, vend, prod, bus, devno, vroot, mand, how, fail) \
-    do {                                                                    \
-        struct findTestInfo data = { name, vend, prod, bus,                 \
-            devno, vroot, mand, how, fail                                   \
-        };                                                                  \
-        if (virtTestRun("USBDeviceFind " name, testDeviceFind, &data) < 0)  \
-            rv = -1;                                                        \
+    do {                                                                        \
+        struct findTestInfo data = { name, vend, prod, bus,                     \
+            devno, vroot, mand, how, fail                                       \
+        };                                                                      \
+        if (virTestRun("USBDeviceFind " name, testDeviceFind, &data) < 0)       \
+            rv = -1;                                                            \
     } while (0)
 
 #define DO_TEST_FIND(name, vend, prod, bus, devno)                          \
@@ -282,7 +282,7 @@ mymain(void)
     DO_TEST_FIND_BY_VENDOR_FAIL("Bogus vendor and product", 0xf00d, 0xbeef);
     DO_TEST_FIND_BY_VENDOR_FAIL("Valid vendor", 0x1d6b, 0xbeef);
 
-    if (virtTestRun("USB List test", testUSBList, NULL) < 0)
+    if (virTestRun("USB List test", testUSBList, NULL) < 0)
         rv = -1;
 
     if (rv < 0)

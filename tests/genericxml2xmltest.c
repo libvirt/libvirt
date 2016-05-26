@@ -64,8 +64,8 @@ mymain(void)
     do {                                                                \
         const struct testInfo info = {name, is_different, inactive,     \
                                       expectResult};                    \
-        if (virtTestRun("GENERIC XML-2-XML " name,                      \
-                        testCompareXMLToXMLHelper, &info) < 0)          \
+        if (virTestRun("GENERIC XML-2-XML " name,                       \
+                       testCompareXMLToXMLHelper, &info) < 0)           \
             ret = -1;                                                   \
     } while (0)
 

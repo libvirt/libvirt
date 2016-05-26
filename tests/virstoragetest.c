@@ -693,8 +693,8 @@ mymain(void)
         for (i = 0; i < ARRAY_CARDINALITY(data.files); i++)          \
             if (data.files[i])                                       \
                 data.nfiles++;                                       \
-        if (virtTestRun(virtTestCounterNext(),                      \
-                        testStorageChain, &data) < 0)                \
+        if (virTestRun(virtTestCounterNext(),                        \
+                       testStorageChain, &data) < 0)                 \
             ret = -1;                                                \
     } while (0)
 
@@ -1051,8 +1051,8 @@ mymain(void)
         data2 = (struct testLookupData){                                \
             chain, target, from, name, index,                           \
             result, meta, parent, };                                    \
-        if (virtTestRun("Chain lookup " #id,                            \
-                        testStorageLookup, &data2) < 0)                 \
+        if (virTestRun("Chain lookup " #id,                             \
+                       testStorageLookup, &data2) < 0)                  \
             ret = -1;                                                   \
     } while (0)
 #define TEST_LOOKUP(id, from, name, result, meta, parent)               \
@@ -1190,8 +1190,8 @@ mymain(void)
     do {                                                                    \
         data3.path = PATH;                                                  \
         data3.expect = EXPECT;                                              \
-        if (virtTestRun("Path canonicalize " #id,                           \
-                        testPathCanonicalize, &data3) < 0)                  \
+        if (virTestRun("Path canonicalize " #id,                            \
+                       testPathCanonicalize, &data3) < 0)                   \
             ret = -1;                                                       \
     } while (0)
 
@@ -1234,8 +1234,8 @@ mymain(void)
         data4.top = &TOP;                                                   \
         data4.base = &BASE;                                                 \
         data4.expect = EXPECT;                                              \
-        if (virtTestRun("Path relative resolve " #id,                       \
-                        testPathRelative, &data4) < 0)                      \
+        if (virTestRun("Path relative resolve " #id,                        \
+                       testPathRelative, &data4) < 0)                       \
             ret = -1;                                                       \
     } while (0)
 

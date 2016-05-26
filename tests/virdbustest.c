@@ -704,25 +704,25 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virtTestRun("Test message simple ", testMessageSimple, NULL) < 0)
+    if (virTestRun("Test message simple ", testMessageSimple, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test message variant ", testMessageVariant, NULL) < 0)
+    if (virTestRun("Test message variant ", testMessageVariant, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test message array ", testMessageArray, NULL) < 0)
+    if (virTestRun("Test message array ", testMessageArray, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test message array empty ref ", testMessageEmptyArrayRef, NULL) < 0)
+    if (virTestRun("Test message array empty ref ", testMessageEmptyArrayRef, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test message array single ref ", testMessageSingleArrayRef, NULL) < 0)
+    if (virTestRun("Test message array single ref ", testMessageSingleArrayRef, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test message array ref ", testMessageArrayRef, NULL) < 0)
+    if (virTestRun("Test message array ref ", testMessageArrayRef, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test message struct ", testMessageStruct, NULL) < 0)
+    if (virTestRun("Test message struct ", testMessageStruct, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test message dict ", testMessageDict, NULL) < 0)
+    if (virTestRun("Test message dict ", testMessageDict, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test message dict empty ref ", testMessageEmptyDictRef, NULL) < 0)
+    if (virTestRun("Test message dict empty ref ", testMessageEmptyDictRef, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Test message dict ref ", testMessageDictRef, NULL) < 0)
+    if (virTestRun("Test message dict ref ", testMessageDictRef, NULL) < 0)
         ret = -1;
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -72,8 +72,8 @@ mymain(void)
 # define DO_TEST_LINK(ifname, state, speed)                                 \
     do {                                                                    \
         struct testVirNetDevGetLinkInfoData data = {ifname, state, speed};  \
-        if (virtTestRun("Link info: " # ifname,                             \
-                        testVirNetDevGetLinkInfo, &data) < 0)               \
+        if (virTestRun("Link info: " # ifname,                              \
+                       testVirNetDevGetLinkInfo, &data) < 0)                \
             ret = -1;                                                       \
     } while (0)
 

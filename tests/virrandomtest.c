@@ -67,7 +67,7 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virtTestRun("RandomBytes", testRandomBytes, NULL) < 0)
+    if (virTestRun("RandomBytes", testRandomBytes, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

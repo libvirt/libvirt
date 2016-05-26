@@ -549,31 +549,31 @@ mymain(void)
     virtTestQuiesceLibvirtErrors(false);
 
     /* Domain event tests */
-    if (virtTestRun("Domain createXML start event (old API)",
-                    testDomainCreateXMLOld, &test) < 0)
+    if (virTestRun("Domain createXML start event (old API)",
+                   testDomainCreateXMLOld, &test) < 0)
         ret = EXIT_FAILURE;
-    if (virtTestRun("Domain createXML start event (new API)",
-                    testDomainCreateXMLNew, &test) < 0)
+    if (virTestRun("Domain createXML start event (new API)",
+                   testDomainCreateXMLNew, &test) < 0)
         ret = EXIT_FAILURE;
-    if (virtTestRun("Domain createXML start event (both API)",
-                    testDomainCreateXMLMixed, &test) < 0)
+    if (virTestRun("Domain createXML start event (both API)",
+                   testDomainCreateXMLMixed, &test) < 0)
         ret = EXIT_FAILURE;
-    if (virtTestRun("Domain (un)define events", testDomainDefine, &test) < 0)
+    if (virTestRun("Domain (un)define events", testDomainDefine, &test) < 0)
         ret = EXIT_FAILURE;
-    if (virtTestRun("Domain start stop events", testDomainStartStopEvent, &test) < 0)
+    if (virTestRun("Domain start stop events", testDomainStartStopEvent, &test) < 0)
         ret = EXIT_FAILURE;
 
     /* Network event tests */
     /* Tests requiring the test network not to be set up*/
-    if (virtTestRun("Network createXML start event ", testNetworkCreateXML, &test) < 0)
+    if (virTestRun("Network createXML start event ", testNetworkCreateXML, &test) < 0)
         ret = EXIT_FAILURE;
-    if (virtTestRun("Network (un)define events", testNetworkDefine, &test) < 0)
+    if (virTestRun("Network (un)define events", testNetworkDefine, &test) < 0)
         ret = EXIT_FAILURE;
 
     /* Define a test network */
     if (!(test.net = virNetworkDefineXML(test.conn, networkDef)))
         ret = EXIT_FAILURE;
-    if (virtTestRun("Network start stop events ", testNetworkStartStopEvent, &test) < 0)
+    if (virTestRun("Network start stop events ", testNetworkStartStopEvent, &test) < 0)
         ret = EXIT_FAILURE;
 
     /* Cleanup */

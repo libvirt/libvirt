@@ -529,19 +529,19 @@ mymain(void)
 
     signal(SIGPIPE, SIG_IGN);
 
-    if (virtTestRun("Message Header Encode", testMessageHeaderEncode, NULL) < 0)
+    if (virTestRun("Message Header Encode", testMessageHeaderEncode, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Message Header Decode", testMessageHeaderDecode, NULL) < 0)
+    if (virTestRun("Message Header Decode", testMessageHeaderDecode, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Message Payload Encode", testMessagePayloadEncode, NULL) < 0)
+    if (virTestRun("Message Payload Encode", testMessagePayloadEncode, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Message Payload Decode", testMessagePayloadDecode, NULL) < 0)
+    if (virTestRun("Message Payload Decode", testMessagePayloadDecode, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Message Payload Stream Encode", testMessagePayloadStreamEncode, NULL) < 0)
+    if (virTestRun("Message Payload Stream Encode", testMessagePayloadStreamEncode, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

@@ -187,16 +187,16 @@ mymain(void)
 #define DO_TEST_PARSE(name)                                             \
     do {                                                                \
         struct testInfo info0 = { name, 0 };                            \
-        if (virtTestRun("Xen XL-2-XML Parse  " name,                    \
-                        testCompareHelper, &info0) < 0)                 \
+        if (virTestRun("Xen XL-2-XML Parse  " name,                     \
+                       testCompareHelper, &info0) < 0)                  \
             ret = -1;                                                   \
     } while (0)
 
 #define DO_TEST_FORMAT(name)                                            \
     do {                                                                \
         struct testInfo info1 = { name, 1 };                            \
-        if (virtTestRun("Xen XL-2-XML Format " name,                    \
-                        testCompareHelper, &info1) < 0)                 \
+        if (virTestRun("Xen XL-2-XML Format " name,                     \
+                       testCompareHelper, &info1) < 0)                  \
             ret = -1;                                                   \
     } while (0)
 

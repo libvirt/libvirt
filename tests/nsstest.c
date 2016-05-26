@@ -180,7 +180,7 @@ mymain(void)
         struct testNSSData data = {                             \
             .hostname = name, .ipAddr = addr, .af = family,     \
         };                                                      \
-        if (virtTestRun(name, testGetHostByName, &data) < 0)    \
+        if (virTestRun(name, testGetHostByName, &data) < 0)     \
             ret = -1;                                           \
     } while (0)
 

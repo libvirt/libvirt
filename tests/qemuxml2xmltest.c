@@ -272,23 +272,23 @@ mymain(void)
 # define DO_TEST_FULL(name, when, gic, ...)                                    \
     do {                                                                       \
         if (testInfoSet(&info, name, when, gic) < 0) {                         \
-            VIR_TEST_DEBUG("Failed to generate test data for '%s'", name);    \
+            VIR_TEST_DEBUG("Failed to generate test data for '%s'", name);     \
             return -1;                                                         \
         }                                                                      \
         virQEMUCapsSetList(info.qemuCaps, __VA_ARGS__, QEMU_CAPS_LAST);        \
                                                                                \
         if (info.outInactiveName) {                                            \
-            if (virtTestRun("QEMU XML-2-XML-inactive " name,                   \
+            if (virTestRun("QEMU XML-2-XML-inactive " name,                    \
                             testXML2XMLInactive, &info) < 0)                   \
                 ret = -1;                                                      \
         }                                                                      \
                                                                                \
         if (info.outActiveName) {                                              \
-            if (virtTestRun("QEMU XML-2-XML-active " name,                     \
+            if (virTestRun("QEMU XML-2-XML-active " name,                      \
                             testXML2XMLActive, &info) < 0)                     \
                 ret = -1;                                                      \
                                                                                \
-            if (virtTestRun("QEMU XML-2-XML-status " name,                     \
+            if (virTestRun("QEMU XML-2-XML-status " name,                      \
                             testCompareStatusXMLToXMLFiles, &info) < 0)        \
                 ret = -1;                                                      \
         }                                                                      \

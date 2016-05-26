@@ -447,35 +447,35 @@ mymain(void)
 
     if (hasIPv4) {
         struct testTCPData tcpData = { "127.0.0.1", freePort, "127.0.0.1" };
-        if (virtTestRun("Socket TCP/IPv4 Accept", testSocketTCPAccept, &tcpData) < 0)
+        if (virTestRun("Socket TCP/IPv4 Accept", testSocketTCPAccept, &tcpData) < 0)
             ret = -1;
     }
     if (hasIPv6) {
         struct testTCPData tcpData = { "::1", freePort, "::1" };
-        if (virtTestRun("Socket TCP/IPv6 Accept", testSocketTCPAccept, &tcpData) < 0)
+        if (virTestRun("Socket TCP/IPv6 Accept", testSocketTCPAccept, &tcpData) < 0)
             ret = -1;
     }
     if (hasIPv6 && hasIPv4) {
         struct testTCPData tcpData = { NULL, freePort, "127.0.0.1" };
-        if (virtTestRun("Socket TCP/IPv4+IPv6 Accept", testSocketTCPAccept, &tcpData) < 0)
+        if (virTestRun("Socket TCP/IPv4+IPv6 Accept", testSocketTCPAccept, &tcpData) < 0)
             ret = -1;
 
         tcpData.cnode = "::1";
-        if (virtTestRun("Socket TCP/IPv4+IPv6 Accept", testSocketTCPAccept, &tcpData) < 0)
+        if (virTestRun("Socket TCP/IPv4+IPv6 Accept", testSocketTCPAccept, &tcpData) < 0)
             ret = -1;
     }
 #endif
 
 #ifndef WIN32
-    if (virtTestRun("Socket UNIX Accept", testSocketUNIXAccept, NULL) < 0)
+    if (virTestRun("Socket UNIX Accept", testSocketUNIXAccept, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Socket UNIX Addrs", testSocketUNIXAddrs, NULL) < 0)
+    if (virTestRun("Socket UNIX Addrs", testSocketUNIXAddrs, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Socket External Command /dev/zero", testSocketCommandNormal, NULL) < 0)
+    if (virTestRun("Socket External Command /dev/zero", testSocketCommandNormal, NULL) < 0)
         ret = -1;
-    if (virtTestRun("Socket External Command /dev/does-not-exist", testSocketCommandFail, NULL) < 0)
+    if (virTestRun("Socket External Command /dev/does-not-exist", testSocketCommandFail, NULL) < 0)
         ret = -1;
 
     struct testSSHData sshData1 = {
@@ -488,7 +488,7 @@ mymain(void)
                                      "fi;"
                                      "'nc' $ARG -U /tmp/socket'\n",
     };
-    if (virtTestRun("SSH test 1", testSocketSSH, &sshData1) < 0)
+    if (virTestRun("SSH test 1", testSocketSSH, &sshData1) < 0)
         ret = -1;
 
     struct testSSHData sshData2 = {
@@ -507,7 +507,7 @@ mymain(void)
                      "fi;"
                      "'netcat' $ARG -U /tmp/socket'\n",
     };
-    if (virtTestRun("SSH test 2", testSocketSSH, &sshData2) < 0)
+    if (virTestRun("SSH test 2", testSocketSSH, &sshData2) < 0)
         ret = -1;
 
     struct testSSHData sshData3 = {
@@ -526,7 +526,7 @@ mymain(void)
                      "fi;"
                      "'netcat' $ARG -U /tmp/socket'\n",
     };
-    if (virtTestRun("SSH test 3", testSocketSSH, &sshData3) < 0)
+    if (virTestRun("SSH test 3", testSocketSSH, &sshData3) < 0)
         ret = -1;
 
     struct testSSHData sshData4 = {
@@ -534,7 +534,7 @@ mymain(void)
         .path = "/tmp/socket",
         .failConnect = true,
     };
-    if (virtTestRun("SSH test 4", testSocketSSH, &sshData4) < 0)
+    if (virTestRun("SSH test 4", testSocketSSH, &sshData4) < 0)
         ret = -1;
 
     struct testSSHData sshData5 = {
@@ -549,7 +549,7 @@ mymain(void)
                      "'nc' $ARG -U /tmp/socket'\n",
         .dieEarly = true,
     };
-    if (virtTestRun("SSH test 5", testSocketSSH, &sshData5) < 0)
+    if (virTestRun("SSH test 5", testSocketSSH, &sshData5) < 0)
         ret = -1;
 
     struct testSSHData sshData6 = {
@@ -565,7 +565,7 @@ mymain(void)
                      "fi;"
                      "'nc' $ARG -U /tmp/socket'\n",
     };
-    if (virtTestRun("SSH test 6", testSocketSSH, &sshData6) < 0)
+    if (virTestRun("SSH test 6", testSocketSSH, &sshData6) < 0)
         ret = -1;
 
     struct testSSHData sshData7 = {
@@ -579,7 +579,7 @@ mymain(void)
                                      "fi;"
                                      "''nc -4'' $ARG -U /tmp/socket'\n",
     };
-    if (virtTestRun("SSH test 7", testSocketSSH, &sshData7) < 0)
+    if (virTestRun("SSH test 7", testSocketSSH, &sshData7) < 0)
         ret = -1;
 
 #endif

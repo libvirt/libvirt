@@ -115,7 +115,7 @@ mymain(void)
         struct testLogData data = {                                         \
             str, count, pass                                                \
         };                                                                  \
-        if (virtTestRun(name, test, &data) < 0)                             \
+        if (virTestRun(name, test, &data) < 0)                              \
             ret = -1;                                                       \
     } while (0)
 

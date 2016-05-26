@@ -175,8 +175,8 @@ mymain(void)
         const struct testInfo info = {abs_srcdir "/" inpath "/" name ".xml",  \
                                       abs_srcdir "/" outpath "/" name ".xml", \
                                       uuid, internal, redefine};              \
-        if (virtTestRun("SNAPSHOT XML-2-XML " prefix " " name,                \
-                        testCompareXMLToXMLHelper, &info) < 0)                \
+        if (virTestRun("SNAPSHOT XML-2-XML " prefix " " name,                 \
+                       testCompareXMLToXMLHelper, &info) < 0)                 \
             ret = -1;                                                         \
     } while (0)
 

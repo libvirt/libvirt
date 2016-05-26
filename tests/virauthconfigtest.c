@@ -92,14 +92,14 @@ mymain(void)
 
     signal(SIGPIPE, SIG_IGN);
 
-#define TEST_LOOKUP(config, hostname, service, credname, expect)        \
-    do  {                                                               \
-        const struct ConfigLookupData data = {                          \
-            config, hostname, service, credname, expect                 \
-        };                                                              \
-        if (virtTestRun("Test Lookup " hostname "-" service "-" credname, \
-                        testAuthLookup, &data) < 0)                     \
-            ret = -1;                                                   \
+#define TEST_LOOKUP(config, hostname, service, credname, expect)         \
+    do  {                                                                \
+        const struct ConfigLookupData data = {                           \
+            config, hostname, service, credname, expect                  \
+        };                                                               \
+        if (virTestRun("Test Lookup " hostname "-" service "-" credname, \
+                        testAuthLookup, &data) < 0)                      \
+            ret = -1;                                                    \
     } while (0)
 
     const char *confdata =

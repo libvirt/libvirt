@@ -92,8 +92,8 @@ mymain(void)
             .name = NAME,                                         \
             .expect_warning = EXPECT_WARN,                        \
         };                                                        \
-        if (virtTestRun("NWFilter XML-2-XML " NAME,               \
-                        testCompareXMLToXMLHelper, (&tp)) < 0)    \
+        if (virTestRun("NWFilter XML-2-XML " NAME,                \
+                       testCompareXMLToXMLHelper, (&tp)) < 0)     \
             ret = -1;                                             \
     } while (0)
 

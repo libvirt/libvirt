@@ -82,8 +82,8 @@ mymain(void)
         struct testInfo info = {                                        \
             vmware_type, name, version                                  \
         };                                                              \
-        if (virtTestRun("VMware Version String Parsing " name,          \
-                        testVerStrParse, &info) < 0)                    \
+        if (virTestRun("VMware Version String Parsing " name,           \
+                       testVerStrParse, &info) < 0)                     \
             ret = -1;                                                   \
     } while (0)
 

@@ -112,8 +112,8 @@ mymain(void)
 #define DO_TEST_FULL(name, flags, expectResult)                         \
     do {                                                                \
         const struct testInfo info = {name, flags, expectResult};       \
-        if (virtTestRun("Network XML-2-XML " name,                      \
-                        testCompareXMLToXMLHelper, &info) < 0) \
+        if (virTestRun("Network XML-2-XML " name,                       \
+                       testCompareXMLToXMLHelper, &info) < 0)           \
             ret = -1;                                                   \
     } while (0)
 #define DO_TEST(name) \

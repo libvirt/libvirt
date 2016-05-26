@@ -146,7 +146,7 @@ mymain(void)
         struct testFileGetMountSubtreeData data = {                \
             path, prefix, mounts, ARRAY_CARDINALITY(mounts), rev   \
         };                                                         \
-        if (virtTestRun(name, testFileGetMountSubtree, &data) < 0) \
+        if (virTestRun(name, testFileGetMountSubtree, &data) < 0)  \
             ret = -1;                                              \
     } while (0)
 
@@ -160,8 +160,8 @@ mymain(void)
     do {                                                                       \
         data1.path = PATH;                                                     \
         data1.expect = EXPECT;                                                 \
-        if (virtTestRun(virtTestCounterNext(), testFileSanitizePath,           \
-                        &data1) < 0)                                           \
+        if (virTestRun(virtTestCounterNext(), testFileSanitizePath,            \
+                       &data1) < 0)                                            \
             ret = -1;                                                          \
     } while (0)
 

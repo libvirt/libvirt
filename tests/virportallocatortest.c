@@ -157,18 +157,18 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virtTestRun("Test alloc all", testAllocAll, NULL) < 0)
+    if (virTestRun("Test alloc all", testAllocAll, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Test alloc reuse", testAllocReuse, NULL) < 0)
+    if (virTestRun("Test alloc reuse", testAllocReuse, NULL) < 0)
         ret = -1;
 
     setenv("LIBVIRT_TEST_IPV4ONLY", "really", 1);
 
-    if (virtTestRun("Test IPv4-only alloc all", testAllocAll, NULL) < 0)
+    if (virTestRun("Test IPv4-only alloc all", testAllocAll, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Test IPv4-only alloc reuse", testAllocReuse, NULL) < 0)
+    if (virTestRun("Test IPv4-only alloc reuse", testAllocReuse, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

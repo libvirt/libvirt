@@ -423,19 +423,19 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virtTestRun("alloc scalar", testAllocScalar, NULL) < 0)
+    if (virTestRun("alloc scalar", testAllocScalar, NULL) < 0)
         ret = -1;
-    if (virtTestRun("alloc array", testAllocArray, NULL) < 0)
+    if (virTestRun("alloc array", testAllocArray, NULL) < 0)
         ret = -1;
-    if (virtTestRun("realloc array", testReallocArray, NULL) < 0)
+    if (virTestRun("realloc array", testReallocArray, NULL) < 0)
         ret = -1;
-    if (virtTestRun("expand array", testExpandArray, NULL) < 0)
+    if (virTestRun("expand array", testExpandArray, NULL) < 0)
         ret = -1;
-    if (virtTestRun("resize array", testResizeArray, NULL) < 0)
+    if (virTestRun("resize array", testResizeArray, NULL) < 0)
         ret = -1;
-    if (virtTestRun("insert array", testInsertArray, NULL) < 0)
+    if (virTestRun("insert array", testInsertArray, NULL) < 0)
         ret = -1;
-    if (virtTestRun("dispose tests", testDispose, NULL) < 0)
+    if (virTestRun("dispose tests", testDispose, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

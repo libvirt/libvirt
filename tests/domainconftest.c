@@ -97,7 +97,7 @@ mymain(void)
             .path = fspath,                                             \
             .expectEntry = expect,                                      \
         };                                                              \
-        if (virtTestRun("Get FS " fspath, testGetFilesystem, &data) < 0) \
+        if (virTestRun("Get FS " fspath, testGetFilesystem, &data) < 0) \
             ret = -1;                                                   \
     } while (0)
 

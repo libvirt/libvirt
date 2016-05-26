@@ -101,9 +101,9 @@ mymain(void)
 # define DO_TEST(name, expectError)                         \
     do {                                                    \
         const struct testInfo info = { name, expectError }; \
-        if (virtTestRun("LXC Native-2-XML " name,           \
-                        testCompareXMLToConfigHelper,       \
-                        &info) < 0)                         \
+        if (virTestRun("LXC Native-2-XML " name,            \
+                       testCompareXMLToConfigHelper,        \
+                       &info) < 0)                          \
             ret = EXIT_FAILURE;                             \
     } while (0)
 

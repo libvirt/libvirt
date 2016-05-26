@@ -376,7 +376,7 @@ mymain(void)
 
 # define DO_TEST(fnc)                                   \
     do {                                                \
-        if (virtTestRun(#fnc, fnc, NULL) < 0)           \
+        if (virTestRun(#fnc, fnc, NULL) < 0)            \
             ret = -1;                                   \
     } while (0)
 
@@ -391,7 +391,7 @@ mymain(void)
             ret = -1;                                                   \
             break;                                                      \
         }                                                               \
-        if (virtTestRun(label, fnc, &data) < 0)                         \
+        if (virTestRun(label, fnc, &data) < 0)                          \
             ret = -1;                                                   \
         VIR_FREE(label);                                                \
     } while (0)
@@ -408,8 +408,8 @@ mymain(void)
             ret = -1;                                                   \
             break;                                                      \
         }                                                               \
-        if (virtTestRun(label, testVirPCIDeviceCheckDriverTest,         \
-                        &data) < 0)                                     \
+        if (virTestRun(label, testVirPCIDeviceCheckDriverTest,          \
+                       &data) < 0)                                      \
             ret = -1;                                                   \
         VIR_FREE(label);                                                \
     } while (0)

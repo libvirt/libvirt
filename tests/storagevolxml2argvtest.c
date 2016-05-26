@@ -187,8 +187,8 @@ mymain(void)
     do {                                                                     \
         struct testInfo info = { shouldFail, pool, vol, inputpool, inputvol, \
                                  cmdline, flags, imgformat, parseflags };    \
-        if (virtTestRun("Storage Vol XML-2-argv " cmdline,                   \
-                        testCompareXMLToArgvHelper, &info) < 0)              \
+        if (virTestRun("Storage Vol XML-2-argv " cmdline,                    \
+                       testCompareXMLToArgvHelper, &info) < 0)               \
             ret = -1;                                                        \
        }                                                                     \
     while (0);

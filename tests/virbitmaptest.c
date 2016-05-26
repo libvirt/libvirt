@@ -645,7 +645,7 @@ test12(const void *opaque ATTRIBUTE_UNUSED)
     testBinaryOpData.a = A;                                                   \
     testBinaryOpData.b = B;                                                   \
     testBinaryOpData.res = RES;                                               \
-    if (virtTestRun(virtTestCounterNext(), FUNC, &testBinaryOpData) < 0)      \
+    if (virTestRun(virtTestCounterNext(), FUNC, &testBinaryOpData) < 0)       \
         ret = -1;
 
 static int
@@ -654,25 +654,25 @@ mymain(void)
     struct testBinaryOpData testBinaryOpData;
     int ret = 0;
 
-    if (virtTestRun("test1", test1, NULL) < 0)
+    if (virTestRun("test1", test1, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test2", test2, NULL) < 0)
+    if (virTestRun("test2", test2, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test3", test3, NULL) < 0)
+    if (virTestRun("test3", test3, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test4", test4, NULL) < 0)
+    if (virTestRun("test4", test4, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test5", test5, NULL) < 0)
+    if (virTestRun("test5", test5, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test6", test6, NULL) < 0)
+    if (virTestRun("test6", test6, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test7", test7, NULL) < 0)
+    if (virTestRun("test7", test7, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test8", test8, NULL) < 0)
+    if (virTestRun("test8", test8, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test9", test9, NULL) < 0)
+    if (virTestRun("test9", test9, NULL) < 0)
         ret = -1;
-    if (virtTestRun("test10", test10, NULL) < 0)
+    if (virTestRun("test10", test10, NULL) < 0)
         ret = -1;
 
     virtTestCounterReset("test11-");
@@ -684,7 +684,7 @@ mymain(void)
     TESTBINARYOP("0-3", "0,^0", "0-3", test11);
     TESTBINARYOP("0,2", "1,3", "0,2", test11);
 
-    if (virtTestRun("test12", test12, NULL) < 0)
+    if (virTestRun("test12", test12, NULL) < 0)
         ret = -1;
 
     return ret;

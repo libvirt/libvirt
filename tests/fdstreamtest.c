@@ -327,13 +327,13 @@ mymain(void)
         abort();
     }
 
-    if (virtTestRun("Stream read blocking ", testFDStreamReadBlock, scratchdir) < 0)
+    if (virTestRun("Stream read blocking ", testFDStreamReadBlock, scratchdir) < 0)
         ret = -1;
-    if (virtTestRun("Stream read non-blocking ", testFDStreamReadNonblock, scratchdir) < 0)
+    if (virTestRun("Stream read non-blocking ", testFDStreamReadNonblock, scratchdir) < 0)
         ret = -1;
-    if (virtTestRun("Stream write blocking ", testFDStreamWriteBlock, scratchdir) < 0)
+    if (virTestRun("Stream write blocking ", testFDStreamWriteBlock, scratchdir) < 0)
         ret = -1;
-    if (virtTestRun("Stream write non-blocking ", testFDStreamWriteNonblock, scratchdir) < 0)
+    if (virTestRun("Stream write non-blocking ", testFDStreamWriteNonblock, scratchdir) < 0)
         ret = -1;
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)

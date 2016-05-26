@@ -125,8 +125,8 @@ mymain(void)
     do {                                                               \
         struct testInfo info = { in, out };                            \
         virResetLastError();                                           \
-        if (virtTestRun("Xen SEXPR-2-XML " in " -> " out,              \
-                        testCompareHelper, &info) < 0)                 \
+        if (virTestRun("Xen SEXPR-2-XML " in " -> " out,               \
+                       testCompareHelper, &info) < 0)                  \
             ret = -1;                                                  \
     } while (0)
 

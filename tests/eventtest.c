@@ -92,7 +92,7 @@ testEventReport(const char *name, bool failed, const char *msg, ...)
 
     data.failed = failed;
     data.msg = str;
-    ignore_value(virtTestRun(name, testEventResultCallback, &data));
+    ignore_value(virTestRun(name, testEventResultCallback, &data));
 
     va_end(vargs);
     VIR_FREE(str);

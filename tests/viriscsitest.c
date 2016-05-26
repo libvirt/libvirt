@@ -182,12 +182,12 @@ mymain(void)
 # define DO_SESSION_TEST(name, session)                                     \
     do {                                                                    \
         struct testSessionInfo info = {name, 0, session};                   \
-        if (virtTestRun("ISCSI get session test" name,                      \
-                        testISCSIGetSession, &info) < 0)                    \
+        if (virTestRun("ISCSI get session test" name,                       \
+                       testISCSIGetSession, &info) < 0)                     \
             rv = -1;                                                        \
         info.output_version = 1;                                            \
-        if (virtTestRun("ISCSI get (non-flash) session test" name,          \
-                        testISCSIGetSession, &info) < 0)                    \
+        if (virTestRun("ISCSI get (non-flash) session test" name,           \
+                       testISCSIGetSession, &info) < 0)                     \
             rv = -1;                                                        \
     } while (0)
 
@@ -209,7 +209,7 @@ mymain(void)
         .expected_targets = targets,
         .nexpected = ARRAY_CARDINALITY(targets),
     };
-    if (virtTestRun("ISCSI scan targets", testISCSIScanTargets, &infoTargets) < 0)
+    if (virTestRun("ISCSI scan targets", testISCSIScanTargets, &infoTargets) < 0)
         rv = -1;
 
     if (rv < 0)

@@ -191,8 +191,8 @@ mymain(void)
             .data = collie,                                             \
             .poolxml = poolxml,                                         \
         };                                                              \
-        if (virtTestRun("node_info_parser", test_node_info_parser,      \
-                        &data) < 0)                                     \
+        if (virTestRun("node_info_parser", test_node_info_parser,       \
+                       &data) < 0)                                      \
             ret = -1;                                                   \
     } while (0)
 
@@ -209,8 +209,8 @@ mymain(void)
             .poolxml = poolxml,                                         \
             .volxml = volxml,                                           \
         };                                                              \
-        if (virtTestRun("vdi_list_parser", test_vdi_list_parser,        \
-                        &data) < 0)                                     \
+        if (virTestRun("vdi_list_parser", test_vdi_list_parser,         \
+                       &data) < 0)                                      \
             ret = -1;                                                   \
     } while (0)
 

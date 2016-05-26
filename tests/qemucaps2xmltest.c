@@ -178,7 +178,7 @@ mymain(void)
 #define DO_TEST_FULL(name, guest)                       \
     data.base = name;                                   \
     data.guestarch = guest;                             \
-    if (virtTestRun(name, testQemuCapsXML, &data) < 0)  \
+    if (virTestRun(name, testQemuCapsXML, &data) < 0)   \
         ret = -1
 
 #define DO_TEST(name) DO_TEST_FULL(name, VIR_ARCH_I686)

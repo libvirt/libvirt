@@ -156,7 +156,7 @@ mymain(void)
     do {                                                                \
         data.archName = arch;                                           \
         data.base = name;                                               \
-        if (virtTestRun(name "(" arch ")", testQemuCaps, &data) < 0)    \
+        if (virTestRun(name "(" arch ")", testQemuCaps, &data) < 0)     \
             ret = -1;                                                   \
     } while (0)
 

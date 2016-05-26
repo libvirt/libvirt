@@ -384,7 +384,7 @@ mymain(void)
 #define DO_TEST(msg, cb, data)                                         \
     do {                                                               \
         struct testInfo info = { data };                               \
-        if (virtTestRun("Buf: " msg, cb, &info) < 0)                   \
+        if (virTestRun("Buf: " msg, cb, &info) < 0)                    \
             ret = -1;                                                  \
     } while (0)
 
@@ -397,7 +397,7 @@ mymain(void)
 #define DO_TEST_ADD_STR(DATA, EXPECT)                                  \
     do {                                                               \
         struct testBufAddStrData info = { DATA, EXPECT };              \
-        if (virtTestRun("Buf: AddStr", testBufAddStr, &info) < 0)      \
+        if (virTestRun("Buf: AddStr", testBufAddStr, &info) < 0)       \
             ret = -1;                                                  \
     } while (0)
 
@@ -409,7 +409,7 @@ mymain(void)
 #define DO_TEST_ESCAPE(data, expect)                                   \
     do {                                                               \
         struct testBufAddStrData info = { data, expect };              \
-        if (virtTestRun("Buf: EscapeStr", testBufEscapeStr, &info) < 0)   \
+        if (virTestRun("Buf: EscapeStr", testBufEscapeStr, &info) < 0) \
             ret = -1;                                                  \
     } while (0)
 

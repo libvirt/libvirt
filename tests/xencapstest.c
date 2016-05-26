@@ -170,51 +170,51 @@ mymain(void)
     if (virInitialize() < 0)
         return EXIT_FAILURE;
 
-    if (virtTestRun("Capabilities for i686, no PAE, no HVM",
-                    testXeni686, NULL) != 0)
+    if (virTestRun("Capabilities for i686, no PAE, no HVM",
+                   testXeni686, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("Capabilities for i686, PAE, no HVM",
-                    testXeni686PAE, NULL) != 0)
+    if (virTestRun("Capabilities for i686, PAE, no HVM",
+                   testXeni686PAE, NULL) != 0)
         ret = -1;
 
     /* No PAE + HVM is non-sensical - all VMX capable
        CPUs have PAE */
-    /*if (virtTestRun("Capabilities for i686, no PAE, HVM",
+    /*if (virTestRun("Capabilities for i686, no PAE, HVM",
                     testXeni686HVM, NULL) != 0)
         ret = -1;
     */
 
-    if (virtTestRun("Capabilities for i686, PAE, HVM",
-                    testXeni686PAEHVM, NULL) != 0)
+    if (virTestRun("Capabilities for i686, PAE, HVM",
+                   testXeni686PAEHVM, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("Capabilities for x86_64, no HVM",
-                    testXenx86_64, NULL) != 0)
+    if (virTestRun("Capabilities for x86_64, no HVM",
+                   testXenx86_64, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("Capabilities for x86_64, HVM",
-                    testXenx86_64HVM, NULL) != 0)
+    if (virTestRun("Capabilities for x86_64, HVM",
+                   testXenx86_64HVM, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("Capabilities for ia64, no HVM, LE",
-                    testXenia64, NULL) != 0)
+    if (virTestRun("Capabilities for ia64, no HVM, LE",
+                   testXenia64, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("Capabilities for ia64, HVM, LE",
-                    testXenia64HVM, NULL) != 0)
+    if (virTestRun("Capabilities for ia64, HVM, LE",
+                   testXenia64HVM, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("Capabilities for ia64, no HVM, BE",
-                    testXenia64BE, NULL) != 0)
+    if (virTestRun("Capabilities for ia64, no HVM, BE",
+                   testXenia64BE, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("Capabilities for ia64, HVM, BE",
-                    testXenia64BEHVM, NULL) != 0)
+    if (virTestRun("Capabilities for ia64, HVM, BE",
+                   testXenia64BEHVM, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("Capabilities for ppc64",
-                    testXenppc64, NULL) != 0)
+    if (virTestRun("Capabilities for ppc64",
+                   testXenppc64, NULL) != 0)
         ret = -1;
 
 

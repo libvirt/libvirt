@@ -699,43 +699,43 @@ mymain(void)
 {
     int ret = 0;
 
-    if (virtTestRun("Rotating file write new", testRotatingFileWriterNew, NULL) < 0)
+    if (virTestRun("Rotating file write new", testRotatingFileWriterNew, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Rotating file write append", testRotatingFileWriterAppend, NULL) < 0)
+    if (virTestRun("Rotating file write append", testRotatingFileWriterAppend, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Rotating file write truncate", testRotatingFileWriterTruncate, NULL) < 0)
+    if (virTestRun("Rotating file write truncate", testRotatingFileWriterTruncate, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Rotating file write rollover no backup", testRotatingFileWriterRolloverNone, NULL) < 0)
+    if (virTestRun("Rotating file write rollover no backup", testRotatingFileWriterRolloverNone, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Rotating file write rollover one", testRotatingFileWriterRolloverOne, NULL) < 0)
+    if (virTestRun("Rotating file write rollover one", testRotatingFileWriterRolloverOne, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Rotating file write rollover append", testRotatingFileWriterRolloverAppend, NULL) < 0)
+    if (virTestRun("Rotating file write rollover append", testRotatingFileWriterRolloverAppend, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Rotating file write rollover many", testRotatingFileWriterRolloverMany, NULL) < 0)
+    if (virTestRun("Rotating file write rollover many", testRotatingFileWriterRolloverMany, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Rotating file write rollover line break", testRotatingFileWriterRolloverLineBreak, NULL) < 0)
+    if (virTestRun("Rotating file write rollover line break", testRotatingFileWriterRolloverLineBreak, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Rotating file write to file larger then maxlen", testRotatingFileWriterLargeFile, NULL) < 0)
+    if (virTestRun("Rotating file write to file larger then maxlen", testRotatingFileWriterLargeFile, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Rotating file read one", testRotatingFileReaderOne, NULL) < 0)
+    if (virTestRun("Rotating file read one", testRotatingFileReaderOne, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Rotating file read all", testRotatingFileReaderAll, NULL) < 0)
+    if (virTestRun("Rotating file read all", testRotatingFileReaderAll, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Rotating file read partial", testRotatingFileReaderPartial, NULL) < 0)
+    if (virTestRun("Rotating file read partial", testRotatingFileReaderPartial, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Rotating file read seek", testRotatingFileReaderSeek, NULL) < 0)
+    if (virTestRun("Rotating file read seek", testRotatingFileReaderSeek, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

@@ -321,8 +321,8 @@ mymain(void)
         struct testExecRestartData data = {                   \
             file, server_names, nservers, pass                \
         };                                                    \
-        if (virtTestRun("ExecRestart " file,                  \
-                        testExecRestart, &data) < 0)          \
+        if (virTestRun("ExecRestart " file,                   \
+                       testExecRestart, &data) < 0)           \
             ret = -1;                                         \
     } while (0)
 

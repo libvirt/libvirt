@@ -105,8 +105,8 @@ mymain(void)
                                                                      \
         info.name = xname;                                           \
         info.caps = xcaps;                                           \
-        if (virtTestRun("Network XML-2-Conf " xname,                 \
-                        testCompareXMLToConfHelper, &info) < 0) {    \
+        if (virTestRun("Network XML-2-Conf " xname,                  \
+                       testCompareXMLToConfHelper, &info) < 0) {     \
             ret = -1;                                                \
         }                                                            \
     } while (0)

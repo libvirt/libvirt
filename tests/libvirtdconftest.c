@@ -231,7 +231,7 @@ mymain(void)
             STRPREFIX(filedata + params[i], "keepalive_required") ||
             STRPREFIX(filedata + params[i], "admin_keepalive_required"))
             continue;
-        if (virtTestRun("Test corruption", testCorrupt, &data) < 0)
+        if (virTestRun("Test corruption", testCorrupt, &data) < 0)
             ret = -1;
     }
 

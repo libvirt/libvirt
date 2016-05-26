@@ -267,8 +267,8 @@ mymain(void)
 
 #define DO_TEST(_name)                                                        \
         do {                                                                  \
-            if (virtTestRun("Util "#_name, test##_name,                       \
-                            NULL) < 0) {                                      \
+            if (virTestRun("Util "#_name, test##_name,                        \
+                           NULL) < 0) {                                       \
                 result = -1;                                                  \
             }                                                                 \
         } while (0)

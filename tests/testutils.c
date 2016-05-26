@@ -152,8 +152,8 @@ virTestShowTrace(void)
  * returns: -1 = error, 0 = success
  */
 int
-virtTestRun(const char *title,
-            int (*body)(const void *data), const void *data)
+virTestRun(const char *title,
+           int (*body)(const void *data), const void *data)
 {
     int ret = 0;
 

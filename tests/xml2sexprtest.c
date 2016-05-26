@@ -90,8 +90,8 @@ mymain(void)
     do {                                                               \
         struct testInfo info = { in, out, name };                      \
         virResetLastError();                                           \
-        if (virtTestRun("Xen XML-2-SEXPR " in " -> " out,              \
-                        testCompareHelper, &info) < 0)                 \
+        if (virTestRun("Xen XML-2-SEXPR " in " -> " out,               \
+                       testCompareHelper, &info) < 0)                  \
             ret = -1;                                                  \
     } while (0)
 

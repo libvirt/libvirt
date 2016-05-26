@@ -158,8 +158,8 @@ mymain(void)
 # define DO_TEST_FULL(name, flags)                                      \
     do {                                                                \
         const struct testInfo info = { name, (flags) };                 \
-        if (virtTestRun("QEMU ARGV-2-XML " name,                        \
-                        testCompareXMLToArgvHelper, &info) < 0)         \
+        if (virTestRun("QEMU ARGV-2-XML " name,                         \
+                       testCompareXMLToArgvHelper, &info) < 0)          \
             ret = -1;                                                   \
     } while (0)
 

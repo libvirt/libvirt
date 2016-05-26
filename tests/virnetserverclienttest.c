@@ -143,8 +143,8 @@ mymain(void)
     int ret = 0;
 
 
-    if (virtTestRun("Identity",
-                    testIdentity, NULL) < 0)
+    if (virTestRun("Identity",
+                   testIdentity, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

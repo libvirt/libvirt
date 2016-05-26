@@ -460,8 +460,8 @@ mymain(void)
         static struct testInfo info = {                                 \
             name,                                                       \
         };                                                              \
-        if (virtTestRun("NWFilter XML-2-firewall " name,                \
-                        testCompareXMLToIPTablesHelper, &info) < 0)     \
+        if (virTestRun("NWFilter XML-2-firewall " name,                 \
+                       testCompareXMLToIPTablesHelper, &info) < 0)      \
             ret = -1;                                                   \
     } while (0)
 

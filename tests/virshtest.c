@@ -258,68 +258,68 @@ mymain(void)
                     abs_srcdir) < 0)
         return EXIT_FAILURE;
 
-    if (virtTestRun("virsh list (default)",
-                    testCompareListDefault, NULL) != 0)
+    if (virTestRun("virsh list (default)",
+                   testCompareListDefault, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh list (custom)",
-                    testCompareListCustom, NULL) != 0)
+    if (virTestRun("virsh list (custom)",
+                   testCompareListCustom, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh nodeinfo (default)",
-                    testCompareNodeinfoDefault, NULL) != 0)
+    if (virTestRun("virsh nodeinfo (default)",
+                   testCompareNodeinfoDefault, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh nodeinfo (custom)",
-                    testCompareNodeinfoCustom, NULL) != 0)
+    if (virTestRun("virsh nodeinfo (custom)",
+                   testCompareNodeinfoCustom, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh dominfo (by id)",
-                    testCompareDominfoByID, NULL) != 0)
+    if (virTestRun("virsh dominfo (by id)",
+                   testCompareDominfoByID, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh dominfo (by uuid)",
-                    testCompareDominfoByUUID, NULL) != 0)
+    if (virTestRun("virsh dominfo (by uuid)",
+                   testCompareDominfoByUUID, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh dominfo (by name)",
-                    testCompareDominfoByName, NULL) != 0)
+    if (virTestRun("virsh dominfo (by name)",
+                   testCompareDominfoByName, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh domid (by name)",
-                    testCompareDomidByName, NULL) != 0)
+    if (virTestRun("virsh domid (by name)",
+                   testCompareDomidByName, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh domid (by uuid)",
-                    testCompareDomidByUUID, NULL) != 0)
+    if (virTestRun("virsh domid (by uuid)",
+                   testCompareDomidByUUID, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh domuuid (by id)",
-                    testCompareDomuuidByID, NULL) != 0)
+    if (virTestRun("virsh domuuid (by id)",
+                   testCompareDomuuidByID, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh domuuid (by name)",
-                    testCompareDomuuidByName, NULL) != 0)
+    if (virTestRun("virsh domuuid (by name)",
+                   testCompareDomuuidByName, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh domname (by id)",
-                    testCompareDomnameByID, NULL) != 0)
+    if (virTestRun("virsh domname (by id)",
+                   testCompareDomnameByID, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh domname (by uuid)",
-                    testCompareDomnameByUUID, NULL) != 0)
+    if (virTestRun("virsh domname (by uuid)",
+                   testCompareDomnameByUUID, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh domstate (by id)",
-                    testCompareDomstateByID, NULL) != 0)
+    if (virTestRun("virsh domstate (by id)",
+                   testCompareDomstateByID, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh domstate (by uuid)",
-                    testCompareDomstateByUUID, NULL) != 0)
+    if (virTestRun("virsh domstate (by uuid)",
+                   testCompareDomstateByUUID, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("virsh domstate (by name)",
-                    testCompareDomstateByName, NULL) != 0)
+    if (virTestRun("virsh domstate (by name)",
+                   testCompareDomstateByName, NULL) != 0)
         ret = -1;
 
     /* It's a bit awkward listing result before argument, but that's a
@@ -328,8 +328,8 @@ mymain(void)
     do {                                                                \
         const char *myargv[] = { VIRSH_DEFAULT, __VA_ARGS__, NULL };    \
         const struct testInfo info = { myargv, result };                \
-        if (virtTestRun("virsh echo " #i,                               \
-                        testCompareEcho, &info) < 0)                    \
+        if (virTestRun("virsh echo " #i,                                \
+                       testCompareEcho, &info) < 0)                     \
             ret = -1;                                                   \
     } while (0)
 

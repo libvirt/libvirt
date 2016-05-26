@@ -521,42 +521,42 @@ mymain(void)
     if (VIR_STRDUP_QUIET(driver.config->spicePassword, "123456") < 0)
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, migrateFrom, migrateFd, flags,              \
-                      parseFlags, gic, ...)                             \
-    do {                                                                \
-        static struct testInfo info = {                                 \
-            name, NULL, migrateFrom, migrateFd, (flags), parseFlags     \
-        };                                                              \
-        if (testPrepareExtraFlags(&info, skipLegacyCPUs, gic) < 0)      \
-            return EXIT_FAILURE;                                        \
+# define DO_TEST_FULL(name, migrateFrom, migrateFd, flags,               \
+                      parseFlags, gic, ...)                              \
+    do {                                                                 \
+        static struct testInfo info = {                                  \
+            name, NULL, migrateFrom, migrateFd, (flags), parseFlags      \
+        };                                                               \
+        if (testPrepareExtraFlags(&info, skipLegacyCPUs, gic) < 0)       \
+            return EXIT_FAILURE;                                         \
         virQEMUCapsSetList(info.extraFlags, __VA_ARGS__, QEMU_CAPS_LAST);\
-        if (virtTestRun("QEMU XML-2-ARGV " name,                        \
-                        testCompareXMLToArgvHelper, &info) < 0)         \
-            ret = -1;                                                   \
-        virObjectUnref(info.extraFlags);                                \
+        if (virTestRun("QEMU XML-2-ARGV " name,                          \
+                       testCompareXMLToArgvHelper, &info) < 0)           \
+            ret = -1;                                                    \
+        virObjectUnref(info.extraFlags);                                 \
     } while (0)
 
-# define DO_TEST(name, ...)                                             \
+# define DO_TEST(name, ...)                                              \
     DO_TEST_FULL(name, NULL, -1, 0, 0, GIC_NONE, __VA_ARGS__)
 
-# define DO_TEST_GIC(name, gic, ...)                                    \
+# define DO_TEST_GIC(name, gic, ...)                                     \
     DO_TEST_FULL(name, NULL, -1, 0, 0, gic, __VA_ARGS__)
 
-# define DO_TEST_FAILURE(name, ...)                                     \
-    DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_FAILURE,                   \
+# define DO_TEST_FAILURE(name, ...)                                      \
+    DO_TEST_FULL(name, NULL, -1, FLAG_EXPECT_FAILURE,                    \
                  0, GIC_NONE, __VA_ARGS__)
 
-# define DO_TEST_PARSE_ERROR(name, ...)                                 \
-    DO_TEST_FULL(name, NULL, -1,                                        \
-                 FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE,         \
+# define DO_TEST_PARSE_ERROR(name, ...)                                  \
+    DO_TEST_FULL(name, NULL, -1,                                         \
+                 FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE,          \
                  0, GIC_NONE, __VA_ARGS__)
 
-# define DO_TEST_PARSE_FLAGS_ERROR(name, parseFlags, ...)               \
-    DO_TEST_FULL(name, NULL, -1,                                        \
-                 FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE,         \
+# define DO_TEST_PARSE_FLAGS_ERROR(name, parseFlags, ...)                \
+    DO_TEST_FULL(name, NULL, -1,                                         \
+                 FLAG_EXPECT_PARSE_ERROR | FLAG_EXPECT_FAILURE,          \
                  parseFlags, GIC_NONE, __VA_ARGS__)
 
-# define DO_TEST_LINUX(name, ...)                                       \
+# define DO_TEST_LINUX(name, ...)                                        \
     DO_TEST_LINUX_FULL(name, NULL, -1, 0, 0, GIC_NONE, __VA_ARGS__)
 
 # ifdef __linux__
@@ -565,12 +565,12 @@ mymain(void)
      * cooperation is expected (e.g. we need a fixed time,
      * predictable NUMA topology and so on). On non-Linux
      * platforms the macro just consume its argument. */
-#  define DO_TEST_LINUX_FULL(name, ...)                                 \
+#  define DO_TEST_LINUX_FULL(name, ...)                                  \
     DO_TEST_FULL(name, __VA_ARGS__)
 # else  /* __linux__ */
-#  define DO_TEST_LINUX_FULL(name, ...)                                 \
-    do {                                                                \
-        const char *tmp ATTRIBUTE_UNUSED = name;                        \
+#  define DO_TEST_LINUX_FULL(name, ...)                                  \
+    do {                                                                 \
+        const char *tmp ATTRIBUTE_UNUSED = name;                         \
     } while (0)
 # endif /* __linux__ */
 

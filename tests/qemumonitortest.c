@@ -176,8 +176,8 @@ mymain(void)
 
 # define DO_TEST(_name)                                                 \
     do {                                                                \
-        if (virtTestRun("qemu monitor "#_name, test##_name,             \
-                        driver.xmlopt) < 0) {                           \
+        if (virTestRun("qemu monitor "#_name, test##_name,              \
+                       driver.xmlopt) < 0) {                            \
             result = -1;                                                \
         }                                                               \
     } while (0)

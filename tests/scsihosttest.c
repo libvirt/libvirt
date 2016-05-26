@@ -280,14 +280,14 @@ mymain(void)
     }
     VIR_DEBUG("Reading from '%s'", scsihost_class_path);
 
-    if (virtTestRun("testVirReadSCSIUniqueId",
-                    testVirReadSCSIUniqueId, NULL) < 0) {
+    if (virTestRun("testVirReadSCSIUniqueId",
+                   testVirReadSCSIUniqueId, NULL) < 0) {
         ret = -1;
         goto cleanup;
     }
 
-    if (virtTestRun("testVirFindSCSIHostByPCI",
-                    testVirFindSCSIHostByPCI, NULL) < 0) {
+    if (virTestRun("testVirFindSCSIHostByPCI",
+                   testVirFindSCSIHostByPCI, NULL) < 0) {
         ret = -1;
         goto cleanup;
     }

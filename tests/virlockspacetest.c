@@ -347,25 +347,25 @@ mymain(void)
 
     signal(SIGPIPE, SIG_IGN);
 
-    if (virtTestRun("Lockspace creation", testLockSpaceCreate, NULL) < 0)
+    if (virTestRun("Lockspace creation", testLockSpaceCreate, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Lockspace res lifecycle", testLockSpaceResourceLifecycle, NULL) < 0)
+    if (virTestRun("Lockspace res lifecycle", testLockSpaceResourceLifecycle, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Lockspace res lock excl", testLockSpaceResourceLockExcl, NULL) < 0)
+    if (virTestRun("Lockspace res lock excl", testLockSpaceResourceLockExcl, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Lockspace res lock shr", testLockSpaceResourceLockShr, NULL) < 0)
+    if (virTestRun("Lockspace res lock shr", testLockSpaceResourceLockShr, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Lockspace res lock excl auto", testLockSpaceResourceLockExclAuto, NULL) < 0)
+    if (virTestRun("Lockspace res lock excl auto", testLockSpaceResourceLockExclAuto, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Lockspace res lock shr auto", testLockSpaceResourceLockShrAuto, NULL) < 0)
+    if (virTestRun("Lockspace res lock shr auto", testLockSpaceResourceLockShrAuto, NULL) < 0)
         ret = -1;
 
-    if (virtTestRun("Lockspace res full path", testLockSpaceResourceLockPath, NULL) < 0)
+    if (virTestRun("Lockspace res full path", testLockSpaceResourceLockPath, NULL) < 0)
         ret = -1;
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

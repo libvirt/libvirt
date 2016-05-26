@@ -2336,26 +2336,26 @@ mymain(void)
     virEventRegisterDefaultImpl();
 
 #define DO_TEST(name)                                                          \
-    if (virtTestRun(# name, testQemuMonitorJSON ## name, driver.xmlopt) < 0)   \
+    if (virTestRun(# name, testQemuMonitorJSON ## name, driver.xmlopt) < 0)    \
         ret = -1
 
-#define DO_TEST_SIMPLE(CMD, FNC, ...)                                   \
+#define DO_TEST_SIMPLE(CMD, FNC, ...)                                          \
     simpleFunc = (testQemuMonitorJSONSimpleFuncData) {.cmd = CMD, .func = FNC, \
                                        .xmlopt = driver.xmlopt, __VA_ARGS__ }; \
-    if (virtTestRun(# FNC, testQemuMonitorJSONSimpleFunc, &simpleFunc) < 0)    \
+    if (virTestRun(# FNC, testQemuMonitorJSONSimpleFunc, &simpleFunc) < 0)     \
         ret = -1
 
 #define DO_TEST_GEN(name, ...) \
     simpleFunc = (testQemuMonitorJSONSimpleFuncData) {.xmlopt = driver.xmlopt, \
                                                      __VA_ARGS__ };            \
-    if (virtTestRun(# name, testQemuMonitorJSON ## name, &simpleFunc) < 0)     \
+    if (virTestRun(# name, testQemuMonitorJSON ## name, &simpleFunc) < 0)      \
         ret = -1
 
 #define DO_TEST_CPU_DATA(name) \
     do {                                                                  \
         struct testCPUData data = { name, driver.xmlopt };                \
         const char *label = "GetCPUData(" name ")";                       \
-        if (virtTestRun(label, testQemuMonitorJSONGetCPUData, &data) < 0) \
+        if (virTestRun(label, testQemuMonitorJSONGetCPUData, &data) < 0)  \
             ret = -1;                                                     \
     } while (0)
 

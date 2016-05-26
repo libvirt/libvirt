@@ -1134,12 +1134,12 @@ mymain(void)
         data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC;               \
         data.expectBackend = VIR_FIREWALL_BACKEND_DIRECT;               \
         data.fwDisabled = true;                                         \
-        if (virtTestRun(name " auto direct", method, &data) < 0)        \
+        if (virTestRun(name " auto direct", method, &data) < 0)         \
             ret = -1;                                                   \
         data.tryBackend = VIR_FIREWALL_BACKEND_DIRECT;                  \
         data.expectBackend = VIR_FIREWALL_BACKEND_DIRECT;               \
         data.fwDisabled = true;                                         \
-        if (virtTestRun(name " manual direct", method, &data) < 0)      \
+        if (virTestRun(name " manual direct", method, &data) < 0)       \
             ret = -1;                                                   \
     } while (0)
 
@@ -1150,12 +1150,12 @@ mymain(void)
         data.tryBackend = VIR_FIREWALL_BACKEND_AUTOMATIC;               \
         data.expectBackend = VIR_FIREWALL_BACKEND_FIREWALLD;            \
         data.fwDisabled = false;                                        \
-        if (virtTestRun(name " auto firewalld", method, &data) < 0)     \
+        if (virTestRun(name " auto firewalld", method, &data) < 0)      \
             ret = -1;                                                   \
         data.tryBackend = VIR_FIREWALL_BACKEND_FIREWALLD;               \
         data.expectBackend = VIR_FIREWALL_BACKEND_FIREWALLD;            \
         data.fwDisabled = false;                                        \
-        if (virtTestRun(name " manual firewalld", method, &data) < 0)   \
+        if (virTestRun(name " manual firewalld", method, &data) < 0)    \
             ret = -1;                                                   \
     } while (0)
 
