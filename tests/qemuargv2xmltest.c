@@ -62,7 +62,7 @@ static int testCompareXMLToArgvFiles(const char *xmlfile,
     int ret = -1;
     virDomainDefPtr vmdef = NULL;
 
-    if (virtTestLoadFile(cmdfile, &cmd) < 0)
+    if (virTestLoadFile(cmdfile, &cmd) < 0)
         goto fail;
 
     if (!(vmdef = qemuParseCommandLineString(driver.caps, driver.xmlopt,

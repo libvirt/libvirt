@@ -51,7 +51,7 @@ bool virtTestOOMActive(void);
 int virTestRun(const char *title,
                int (*body)(const void *data),
                const void *data);
-int virtTestLoadFile(const char *file, char **buf);
+int virTestLoadFile(const char *file, char **buf);
 int virtTestCaptureProgramOutput(const char *const argv[], char **buf, int maxlen);
 
 void virtTestClearCommandPath(char *cmdset);

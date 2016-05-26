@@ -36,7 +36,7 @@ testCompareFiles(const char *xml, const char *sexpr)
   conn = virGetConnect();
   if (!conn) goto fail;
 
-  if (virtTestLoadFile(sexpr, &sexprData) < 0)
+  if (virTestLoadFile(sexpr, &sexprData) < 0)
       goto fail;
 
   memset(&priv, 0, sizeof(priv));

@@ -108,7 +108,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     conn = virGetConnect();
     if (!conn) goto fail;
 
-    if (virtTestLoadFile(xmcfg, &xmcfgData) < 0)
+    if (virTestLoadFile(xmcfg, &xmcfgData) < 0)
         goto fail;
 
     /* Many puppies died to bring you this code. */

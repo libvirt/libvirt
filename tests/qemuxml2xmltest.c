@@ -109,9 +109,9 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     int ret = -1;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
-    if (virtTestLoadFile(data->inName, &inFile) < 0)
+    if (virTestLoadFile(data->inName, &inFile) < 0)
         goto cleanup;
-    if (virtTestLoadFile(data->outActiveName, &outActiveFile) < 0)
+    if (virTestLoadFile(data->outActiveName, &outActiveFile) < 0)
         goto cleanup;
 
     /* construct faked source status XML */

@@ -194,7 +194,7 @@ fakeStoragePoolGetXMLDesc(virStoragePoolPtr pool,
                     pool->name) < 0)
         return NULL;
 
-    if (virtTestLoadFile(xmlpath, &xmlbuf) < 0) {
+    if (virTestLoadFile(xmlpath, &xmlbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "failed to load XML file '%s'",
                        xmlpath);

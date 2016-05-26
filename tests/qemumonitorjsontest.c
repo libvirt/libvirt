@@ -2159,7 +2159,7 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
                     abs_srcdir, data->name) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(jsonFile, &jsonStr) < 0)
+    if (virTestLoadFile(jsonFile, &jsonStr) < 0)
         goto cleanup;
 
     if (qemuMonitorTestAddItem(test, "qom-list",

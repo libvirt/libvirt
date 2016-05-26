@@ -111,7 +111,7 @@ testCompareFormatXML(const char *xlcfg, const char *xml)
     conn = virGetConnect();
     if (!conn) goto fail;
 
-    if (virtTestLoadFile(xlcfg, &xlcfgData) < 0)
+    if (virTestLoadFile(xlcfg, &xlcfgData) < 0)
         goto fail;
 
     if (!(conf = virConfReadMem(xlcfgData, strlen(xlcfgData), 0)))

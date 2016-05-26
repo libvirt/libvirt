@@ -104,7 +104,7 @@ testQemuCaps(const void *opaque)
                     abs_srcdir, data->base, data->archName) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(repliesFile, &replies) < 0)
+    if (virTestLoadFile(repliesFile, &replies) < 0)
         goto cleanup;
 
     if (!(mon = testQemuFeedMonitor(replies, data->xmlopt)))

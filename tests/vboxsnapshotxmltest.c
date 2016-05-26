@@ -67,7 +67,7 @@ testCompareXMLtoXMLFiles(const char *xml)
     if (virFileMakePath(abs_builddir "/vboxsnapshotxmldata") < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(xml, &xmlData) < 0)
+    if (virTestLoadFile(xml, &xmlData) < 0)
         goto cleanup;
 
     if (!(machine = virVBoxSnapshotConfLoadVboxFile(xml, (char*)"")))
@@ -76,7 +76,7 @@ testCompareXMLtoXMLFiles(const char *xml)
     if (virVBoxSnapshotConfSaveVboxFile(machine, pathResult) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(pathResult, &actual) < 0)
+    if (virTestLoadFile(pathResult, &actual) < 0)
         goto cleanup;
 
     if (!(actual = testFilterXML(actual)))

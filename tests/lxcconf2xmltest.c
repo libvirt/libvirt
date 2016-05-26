@@ -31,7 +31,7 @@ testCompareXMLToConfigFiles(const char *xmlfile,
     char *actualxml = NULL;
     virDomainDefPtr vmdef = NULL;
 
-    if (virtTestLoadFile(configfile, &config) < 0)
+    if (virTestLoadFile(configfile, &config) < 0)
         goto fail;
 
     vmdef = lxcParseConfigString(config, caps, xmlopt);

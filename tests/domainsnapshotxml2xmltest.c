@@ -89,10 +89,10 @@ testCompareXMLToXMLFiles(const char *inxml,
     if (redefine)
         flags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
 
-    if (virtTestLoadFile(inxml, &inXmlData) < 0)
+    if (virTestLoadFile(inxml, &inXmlData) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(outxml, &outXmlData) < 0)
+    if (virTestLoadFile(outxml, &outXmlData) < 0)
         goto cleanup;
 
     if (!(def = virDomainSnapshotDefParseString(inXmlData, driver.caps,

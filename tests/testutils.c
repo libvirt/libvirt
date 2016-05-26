@@ -294,7 +294,7 @@ virTestRun(const char *title,
    Upon any failure, diagnose it and return -1, but don't bother trying
    to preserve errno. Otherwise, return the number of bytes copied into BUF. */
 int
-virtTestLoadFile(const char *file, char **buf)
+virTestLoadFile(const char *file, char **buf)
 {
     FILE *fp = fopen(file, "r");
     struct stat st;
@@ -693,7 +693,7 @@ virtTestCompareToFile(const char *strcontent,
     char *filecontent = NULL;
     char *fixedcontent = NULL;
 
-    if (virtTestLoadFile(filename, &filecontent) < 0 && !virTestGetRegenerate())
+    if (virTestLoadFile(filename, &filecontent) < 0 && !virTestGetRegenerate())
         goto failure;
 
     if (filecontent &&

@@ -24,7 +24,7 @@ testCompareXMLToXMLFiles(const char *xml)
     int ret = -1;
     virNodeDeviceDefPtr dev = NULL;
 
-    if (virtTestLoadFile(xml, &xmlData) < 0)
+    if (virTestLoadFile(xml, &xmlData) < 0)
         goto fail;
 
     if (!(dev = virNodeDeviceDefParseString(xmlData, EXISTING_DEVICE, NULL)))

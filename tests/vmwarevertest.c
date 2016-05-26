@@ -49,7 +49,7 @@ testVerStrParse(const void *data)
                     info->name) < 0)
         return -1;
 
-    if (virtTestLoadFile(path, &databuf) < 0)
+    if (virTestLoadFile(path, &databuf) < 0)
         goto cleanup;
 
     if ((vmware_type = vmwareDriverTypeFromString(info->vmware_type)) < 0)

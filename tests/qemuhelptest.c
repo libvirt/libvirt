@@ -52,7 +52,7 @@ static int testHelpStrParsing(const void *data)
     if (virAsprintf(&path, "%s/qemuhelpdata/%s", abs_srcdir, info->name) < 0)
         return -1;
 
-    if (virtTestLoadFile(path, &help) < 0)
+    if (virTestLoadFile(path, &help) < 0)
         goto cleanup;
 
     if (!(flags = virQEMUCapsNew()))
@@ -76,7 +76,7 @@ static int testHelpStrParsing(const void *data)
                     info->name) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(path, &help) < 0)
+    if (virTestLoadFile(path, &help) < 0)
         goto cleanup;
 
     if (virQEMUCapsParseDeviceStr(flags, help) < 0)

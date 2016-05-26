@@ -135,7 +135,7 @@ testQemuCapsXML(const void *opaque)
                     abs_srcdir, data->base) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(capsFile, &capsData) < 0)
+    if (virTestLoadFile(capsFile, &capsData) < 0)
         goto cleanup;
 
     if (!(capsProvided = testGetCaps(capsData, data)))

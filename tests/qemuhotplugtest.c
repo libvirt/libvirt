@@ -233,12 +233,12 @@ testQemuHotplug(const void *data)
                     test->device_filename) < 0)
         goto cleanup;
 
-    if (virtTestLoadFile(domain_filename, &domain_xml) < 0 ||
-        virtTestLoadFile(device_filename, &device_xml) < 0)
+    if (virTestLoadFile(domain_filename, &domain_xml) < 0 ||
+        virTestLoadFile(device_filename, &device_xml) < 0)
         goto cleanup;
 
     if (test->action != UPDATE &&
-        virtTestLoadFile(result_filename, &result_xml) < 0)
+        virTestLoadFile(result_filename, &result_xml) < 0)
         goto cleanup;
 
     if (!(caps = virQEMUDriverGetCapabilities(&driver, false)))
