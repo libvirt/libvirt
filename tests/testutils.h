@@ -69,10 +69,10 @@ int virTestDifferenceFullNoRegenerate(FILE *stream,
                                       const char *expectName,
                                       const char *actual,
                                       const char *actualName);
-int virtTestDifferenceBin(FILE *stream,
-                          const char *expect,
-                          const char *actual,
-                          size_t length);
+int virTestDifferenceBin(FILE *stream,
+                         const char *expect,
+                         const char *actual,
+                         size_t length);
 int virTestCompareToFile(const char *strcontent,
                          const char *filename);
 

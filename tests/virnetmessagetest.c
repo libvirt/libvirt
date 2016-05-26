@@ -77,7 +77,7 @@ static int testMessageHeaderEncode(const void *args ATTRIBUTE_UNUSED)
     }
 
     if (memcmp(expect, msg->buffer, sizeof(expect)) != 0) {
-        virtTestDifferenceBin(stderr, expect, msg->buffer, sizeof(expect));
+        virTestDifferenceBin(stderr, expect, msg->buffer, sizeof(expect));
         goto cleanup;
     }
 
@@ -269,7 +269,7 @@ static int testMessagePayloadEncode(const void *args ATTRIBUTE_UNUSED)
     }
 
     if (memcmp(expect, msg->buffer, sizeof(expect)) != 0) {
-        virtTestDifferenceBin(stderr, expect, msg->buffer, sizeof(expect));
+        virTestDifferenceBin(stderr, expect, msg->buffer, sizeof(expect));
         goto cleanup;
     }
 
@@ -511,7 +511,7 @@ static int testMessagePayloadStreamEncode(const void *args ATTRIBUTE_UNUSED)
     }
 
     if (memcmp(expect, msg->buffer, sizeof(expect)) != 0) {
-        virtTestDifferenceBin(stderr, expect, msg->buffer, sizeof(expect));
+        virTestDifferenceBin(stderr, expect, msg->buffer, sizeof(expect));
         goto cleanup;
     }
 

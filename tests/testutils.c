@@ -625,10 +625,10 @@ virTestDifference(FILE *stream,
  * Display expected and actual output text, trimmed to
  * first and last characters at which differences occur
  */
-int virtTestDifferenceBin(FILE *stream,
-                          const char *expect,
-                          const char *actual,
-                          size_t length)
+int virTestDifferenceBin(FILE *stream,
+                         const char *expect,
+                         const char *actual,
+                         size_t length)
 {
     size_t start = 0, end = length;
     ssize_t i;
