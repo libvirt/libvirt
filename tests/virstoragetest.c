@@ -708,7 +708,7 @@ mymain(void)
     } while (0)
 
     /* The actual tests, in several groups. */
-    virtTestCounterReset("Storage backing chain ");
+    virTestCounterReset("Storage backing chain ");
 
     /* Missing file */
     TEST_ONE_CHAIN("bogus", VIR_STORAGE_FILE_RAW, EXP_FAIL);

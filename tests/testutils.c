@@ -1170,7 +1170,7 @@ static char *virtTestCounterPrefixEndOffset;
 
 
 /**
- * virtTestCounterReset:
+ * virTestCounterReset:
  * @prefix: name of the test group
  *
  * Resets the counter and sets up the test group name to use with
@@ -1180,7 +1180,7 @@ static char *virtTestCounterPrefixEndOffset;
  * case names (including the number index) will be silently truncated.
  */
 void
-virtTestCounterReset(const char *prefix)
+virTestCounterReset(const char *prefix)
 {
     virtTestCounter = 0;
 
@@ -1196,7 +1196,7 @@ virtTestCounterReset(const char *prefix)
  * a way to do automagic test case numbering.
  *
  * Returns string consisting of test name prefix configured via
- * virtTestCounterReset() and a number that increments in every call of this
+ * virTestCounterReset() and a number that increments in every call of this
  * function. This function is not thread safe.
  *
  * Note: The buffer for the assembled message is 128 bytes long. Longer test

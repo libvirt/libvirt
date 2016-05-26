@@ -80,7 +80,7 @@ mymain(void)
     return EXIT_AM_SKIP;
 #endif
 
-    virtTestCounterReset("testQemuCommandBuildObjectFromJSON");
+    virTestCounterReset("testQemuCommandBuildObjectFromJSON");
 
 #define DO_TEST_COMMAND_OBJECT_FROM_JSON(PROPS, EXPECT)             \
     do {                                                            \

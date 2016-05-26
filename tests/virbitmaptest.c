@@ -675,7 +675,7 @@ mymain(void)
     if (virTestRun("test10", test10, NULL) < 0)
         ret = -1;
 
-    virtTestCounterReset("test11-");
+    virTestCounterReset("test11-");
     TESTBINARYOP("0", "0", "0,^0", test11);
     TESTBINARYOP("0-3", "0", "1-3", test11);
     TESTBINARYOP("0-3", "0,3", "1-2", test11);

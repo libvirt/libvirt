@@ -167,7 +167,7 @@ mymain(void)
 
 #define DO_TEST_SANITIZE_PATH_SAME(PATH) DO_TEST_SANITIZE_PATH(PATH, PATH)
 
-    virtTestCounterReset("testFileSanitizePath ");
+    virTestCounterReset("testFileSanitizePath ");
     DO_TEST_SANITIZE_PATH("", "");
     DO_TEST_SANITIZE_PATH("/", "/");
     DO_TEST_SANITIZE_PATH("/path", "/path");
