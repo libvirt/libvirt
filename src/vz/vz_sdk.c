@@ -105,19 +105,12 @@ logPrlErrorHelper(PRL_RESULT err, const char *filename,
         }                                          \
     } while (0)
 
-static PRL_RESULT
+static void
 logPrlEventErrorHelper(PRL_HANDLE event, const char *filename,
                        const char *funcname, size_t linenr)
 {
-    PRL_RESULT ret, retCode;
     char *msg1 = NULL, *msg2 = NULL;
     PRL_UINT32 len = 0;
-    int err = -1;
-
-    if ((ret = PrlEvent_GetErrCode(event, &retCode))) {
-        logPrlError(ret);
-        return ret;
-    }
 
     PrlEvent_GetErrString(event, PRL_TRUE, PRL_FALSE, NULL, &len);
 
@@ -136,13 +129,9 @@ logPrlEventErrorHelper(PRL_HANDLE event, const char *filename,
     virReportErrorHelper(VIR_FROM_THIS, VIR_ERR_INTERNAL_ERROR,
                          filename, funcname, linenr,
                          _("%s %s"), msg1, msg2);
-    err = 0;
-
  cleanup:
     VIR_FREE(msg1);
     VIR_FREE(msg2);
-
-    return err;
 }
 
 static PRL_RESULT
@@ -152,12 +141,12 @@ getJobResultHelper(PRL_HANDLE job, unsigned int timeout, PRL_HANDLE *result,
 {
     PRL_RESULT ret, retCode;
 
-    if ((ret = PrlJob_Wait(job, timeout))) {
+    if (PRL_FAILED(ret = PrlJob_Wait(job, timeout))) {
         logPrlErrorHelper(ret, filename, funcname, linenr);
         goto cleanup;
     }
 
-    if ((ret = PrlJob_GetRetCode(job, &retCode))) {
+    if (PRL_FAILED(ret = PrlJob_GetRetCode(job, &retCode))) {
         logPrlErrorHelper(ret, filename, funcname, linenr);
         goto cleanup;
     }
@@ -165,17 +154,25 @@ getJobResultHelper(PRL_HANDLE job, unsigned int timeout, PRL_HANDLE *result,
     if (retCode) {
         PRL_HANDLE err_handle;
 
+        ret = retCode;
+
         /* Sometimes it's possible to get additional error info. */
-        if ((ret = PrlJob_GetError(job, &err_handle))) {
+        if (PRL_FAILED(retCode = PrlJob_GetError(job, &err_handle))) {
             logPrlErrorHelper(ret, filename, funcname, linenr);
             goto cleanup;
         }
 
-        if (logPrlEventErrorHelper(err_handle, filename, funcname, linenr))
-            logPrlErrorHelper(retCode, filename, funcname, linenr);
+        if (PRL_FAILED(retCode = PrlEvent_GetErrCode(err_handle, &retCode))) {
+            logPrlErrorHelper(ret, filename, funcname, linenr);
+            if (PRL_ERR_NO_DATA != retCode)
+                logPrlError(retCode);
+            PrlHandle_Free(err_handle);
+            goto cleanup;
+        }
+
+        logPrlEventErrorHelper(err_handle, filename, funcname, linenr);
 
         PrlHandle_Free(err_handle);
-        ret = retCode;
     } else {
         ret = PrlJob_GetResult(job, result);
         if (PRL_FAILED(ret)) {
