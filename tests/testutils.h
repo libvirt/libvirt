@@ -100,15 +100,15 @@ void virTestQuiesceLibvirtErrors(bool always);
 void virTestCounterReset(const char *prefix);
 const char *virTestCounterNext(void);
 
-int virtTestMain(int argc,
-                 char **argv,
-                 int (*func)(void),
-                 ...);
+int virTestMain(int argc,
+                char **argv,
+                int (*func)(void),
+                ...);
 
 /* Setup, then call func() */
 # define VIRT_TEST_MAIN(func)                           \
     int main(int argc, char **argv) {                   \
-        return virtTestMain(argc, argv, func, NULL);    \
+        return virTestMain(argc, argv, func, NULL);     \
     }
 
 # define VIRT_TEST_PRELOAD(lib)                                         \
@@ -133,7 +133,7 @@ int virtTestMain(int argc,
 
 # define VIRT_TEST_MAIN_PRELOAD(func, ...)                              \
     int main(int argc, char **argv) {                                   \
-        return virtTestMain(argc, argv, func, __VA_ARGS__, NULL);       \
+        return virTestMain(argc, argv, func, __VA_ARGS__, NULL);        \
     }
 
 virCapsPtr virTestGenericCapsInit(void);

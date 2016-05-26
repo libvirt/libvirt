@@ -841,10 +841,10 @@ virTestSetEnvPath(void)
 
 #define TEST_MOCK (abs_builddir "/.libs/virtestmock.so")
 
-int virtTestMain(int argc,
-                 char **argv,
-                 int (*func)(void),
-                 ...)
+int virTestMain(int argc,
+                char **argv,
+                int (*func)(void),
+                ...)
 {
     const char *lib;
     va_list ap;
