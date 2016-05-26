@@ -2026,6 +2026,7 @@ prlsdkDomainChangeStateLocked(vzDriverPtr driver,
         case PRL_ERR_DISP_VM_IS_NOT_STARTED:
         case PRL_ERR_DISP_VM_IS_NOT_STOPPED:
         case PRL_ERR_INVALID_ACTION_REQUESTED:
+        case PRL_ERR_UNIMPLEMENTED:
             virerr = VIR_ERR_OPERATION_INVALID;
             break;
         default:
