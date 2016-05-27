@@ -2936,7 +2936,8 @@ virDomainObjGetPersistentDef(virCapsPtr caps,
                              virDomainXMLOptionPtr xmlopt,
                              virDomainObjPtr domain)
 {
-    if (virDomainObjSetDefTransient(caps, xmlopt, domain, false) < 0)
+    if (virDomainObjIsActive(domain) &&
+        virDomainObjSetDefTransient(caps, xmlopt, domain, false) < 0)
         return NULL;
 
     if (domain->newDef)
