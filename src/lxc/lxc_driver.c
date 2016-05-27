@@ -5317,7 +5317,8 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
 
     dev = dev_copy = virDomainDeviceDefParse(xml, vm->def,
                                              caps, driver->xmlopt,
-                                             VIR_DOMAIN_DEF_PARSE_INACTIVE);
+                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                             VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
     if (dev == NULL)
         goto endjob;
 

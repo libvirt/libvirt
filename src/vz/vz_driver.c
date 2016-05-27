@@ -1211,7 +1211,9 @@ static int vzDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
         goto cleanup;
 
     dev = virDomainDeviceDefParse(xml, privdom->def, privconn->driver->caps,
-                                  privconn->driver->xmlopt, VIR_DOMAIN_XML_INACTIVE);
+                                  privconn->driver->xmlopt,
+                                  VIR_DOMAIN_XML_INACTIVE |
+                                  VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
     if (dev == NULL)
         goto cleanup;
 

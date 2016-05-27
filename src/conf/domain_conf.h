@@ -2368,6 +2368,12 @@ typedef int (*virDomainDefValidateCallback)(const virDomainDef *def,
                                             virCapsPtr caps,
                                             void *opaque);
 
+/* Called once per device, for adjusting per-device settings while
+ * leaving the overall domain otherwise unchanged.  */
+typedef int (*virDomainDeviceDefValidateCallback)(const virDomainDeviceDef *dev,
+                                                  const virDomainDef *def,
+                                                  void *opaque);
+
 typedef struct _virDomainDefParserConfig virDomainDefParserConfig;
 typedef virDomainDefParserConfig *virDomainDefParserConfigPtr;
 struct _virDomainDefParserConfig {
@@ -2378,6 +2384,7 @@ struct _virDomainDefParserConfig {
 
     /* validation callbacks */
     virDomainDefValidateCallback domainValidateCallback;
+    virDomainDeviceDefValidateCallback deviceValidateCallback;
 
     /* private data for the callbacks */
     void *priv;
@@ -2424,7 +2431,7 @@ virDomainDefPostParse(virDomainDefPtr def,
                       unsigned int parseFlags,
                       virDomainXMLOptionPtr xmlopt);
 
-int virDomainDefValidate(const virDomainDef *def,
+int virDomainDefValidate(virDomainDefPtr def,
                          virCapsPtr caps,
                          unsigned int parseFlags,
                          virDomainXMLOptionPtr xmlopt);

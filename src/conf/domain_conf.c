@@ -4532,6 +4532,47 @@ virDomainDefPostParse(virDomainDefPtr def,
 
 
 static int
+virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev ATTRIBUTE_UNUSED,
+                                   const virDomainDef *def ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+
+static int
+virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
+                           const virDomainDef *def,
+                           unsigned int parseFlags,
+                           virDomainXMLOptionPtr xmlopt)
+{
+    /* validate configuration only in certain places */
+    if (parseFlags & VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)
+        return 0;
+
+    if (xmlopt->config.deviceValidateCallback &&
+        xmlopt->config.deviceValidateCallback(dev, def, xmlopt->config.priv))
+        return -1;
+
+    if (virDomainDeviceDefValidateInternal(dev, def) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+virDomainDefValidateDeviceIterator(virDomainDefPtr def,
+                                   virDomainDeviceDefPtr dev,
+                                   virDomainDeviceInfoPtr info ATTRIBUTE_UNUSED,
+                                   void *opaque)
+{
+    struct virDomainDefPostParseDeviceIteratorData *data = opaque;
+    return virDomainDeviceDefValidate(dev, def,
+                                      data->parseFlags, data->xmlopt);
+}
+
+
+static int
 virDomainDefValidateInternal(const virDomainDef *def ATTRIBUTE_UNUSED)
 {
     return 0;
@@ -4554,11 +4595,17 @@ virDomainDefValidateInternal(const virDomainDef *def ATTRIBUTE_UNUSED)
  * appropriate message.
  */
 int
-virDomainDefValidate(const virDomainDef *def,
+virDomainDefValidate(virDomainDefPtr def,
                      virCapsPtr caps,
                      unsigned int parseFlags,
                      virDomainXMLOptionPtr xmlopt)
 {
+    struct virDomainDefPostParseDeviceIteratorData data = {
+        .caps = caps,
+        .xmlopt = xmlopt,
+        .parseFlags = parseFlags,
+    };
+
     /* validate configuration only in certain places */
     if (parseFlags & VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)
         return 0;
@@ -4566,6 +4613,12 @@ virDomainDefValidate(const virDomainDef *def,
     /* call the domain config callback */
     if (xmlopt->config.domainValidateCallback &&
         xmlopt->config.domainValidateCallback(def, caps, xmlopt->config.priv) < 0)
+        return -1;
+
+    /* iterate the devices */
+    if (virDomainDeviceInfoIterateInternal(def,
+                                           virDomainDefValidateDeviceIterator,
+                                           true, &data) < 0)
         return -1;
 
     if (virDomainDefValidateInternal(def) < 0)
@@ -13177,6 +13230,10 @@ virDomainDeviceDefParse(const char *xmlStr,
 
     /* callback to fill driver specific device aspects */
     if (virDomainDeviceDefPostParse(dev, def, caps, flags, xmlopt) < 0)
+        goto error;
+
+    /* validate the configuration */
+    if (virDomainDeviceDefValidate(dev, def, flags, xmlopt) < 0)
         goto error;
 
  cleanup:
@@ -24234,7 +24291,8 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
 
     xmlStr = virBufferContentAndReset(&buf);
     ret = virDomainDeviceDefParse(xmlStr, def, caps, xmlopt,
-                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                  VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
 
  cleanup:
     VIR_FREE(xmlStr);

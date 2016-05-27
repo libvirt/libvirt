@@ -4242,7 +4242,8 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
     def->os.type = VIR_DOMAIN_OSTYPE_HVM;
 
     dev = virDomainDeviceDefParse(xml, def, data->caps, data->xmlopt,
-                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                  VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
     if (dev == NULL)
         goto cleanup;
 

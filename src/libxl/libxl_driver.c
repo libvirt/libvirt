@@ -3742,7 +3742,8 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
     if (flags & VIR_DOMAIN_DEVICE_MODIFY_CONFIG) {
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
                                             cfg->caps, driver->xmlopt,
-                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                            VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                            VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto endjob;
 
         /* Make a copy for updated domain. */
@@ -3759,7 +3760,8 @@ libxlDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
         virDomainDeviceDefFree(dev);
         if (!(dev = virDomainDeviceDefParse(xml, vm->def,
                                             cfg->caps, driver->xmlopt,
-                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                            VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                            VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto endjob;
 
         if (libxlDomainDetachDeviceLive(driver, vm, dev) < 0)

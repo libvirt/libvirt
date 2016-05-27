@@ -2355,7 +2355,8 @@ xenDaemonDetachDeviceFlags(virConnectPtr conn,
         goto cleanup;
 
     if (!(dev = virDomainDeviceDefParse(xml, def, priv->caps, priv->xmlopt,
-                                        VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto cleanup;
 
     if (virDomainXMLDevID(conn, minidef, dev, class, ref, sizeof(ref)))

@@ -2365,7 +2365,8 @@ static int umlDomainDetachDevice(virDomainPtr dom, const char *xml)
     }
 
     dev = virDomainDeviceDefParse(xml, vm->def, driver->caps, driver->xmlopt,
-                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
+                                  VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                  VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
     if (dev == NULL)
         goto cleanup;
 
