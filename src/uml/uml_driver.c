@@ -1099,8 +1099,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
      * report implicit runtime defaults in the XML, like vnc listen/socket
      */
     VIR_DEBUG("Setting current domain def as transient");
-    if (virDomainObjSetDefTransient(driver->caps, driver->xmlopt,
-                                    vm, true) < 0) {
+    if (virDomainObjSetDefTransient(driver->caps, driver->xmlopt, vm) < 0) {
         VIR_FORCE_CLOSE(logfd);
         return -1;
     }

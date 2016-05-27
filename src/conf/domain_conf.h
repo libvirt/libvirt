@@ -2525,8 +2525,7 @@ void virDomainObjAssignDef(virDomainObjPtr domain,
                            virDomainDefPtr *oldDef);
 int virDomainObjSetDefTransient(virCapsPtr caps,
                                 virDomainXMLOptionPtr xmlopt,
-                                virDomainObjPtr domain,
-                                bool live);
+                                virDomainObjPtr domain);
 virDomainDefPtr
 virDomainObjGetPersistentDef(virCapsPtr caps,
                              virDomainXMLOptionPtr xmlopt,

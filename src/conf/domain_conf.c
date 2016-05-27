@@ -2885,28 +2885,20 @@ virDomainObjWaitUntil(virDomainObjPtr vm,
 
 
 /*
- * Mark the running VM config as transient. Ensures transient hotplug
+ * Mark the current VM config as transient. Ensures transient hotplug
  * operations do not persist past shutdown.
  *
  * @param caps pointer to capabilities info
  * @param xmlopt pointer to XML parser configuration object
  * @param domain domain object pointer
- * @param live if true, run this operation even for an inactive domain.
- *   this allows freely updated domain->def with runtime defaults before
- *   starting the VM, which will be discarded on VM shutdown. Any cleanup
- *   paths need to be sure to handle newDef if the domain is never started.
  * @return 0 on success, -1 on failure
  */
 int
 virDomainObjSetDefTransient(virCapsPtr caps,
                             virDomainXMLOptionPtr xmlopt,
-                            virDomainObjPtr domain,
-                            bool live)
+                            virDomainObjPtr domain)
 {
     int ret = -1;
-
-    if (!virDomainObjIsActive(domain) && !live)
-        return 0;
 
     if (!domain->persistent)
         return 0;
@@ -2937,7 +2929,7 @@ virDomainObjGetPersistentDef(virCapsPtr caps,
                              virDomainObjPtr domain)
 {
     if (virDomainObjIsActive(domain) &&
-        virDomainObjSetDefTransient(caps, xmlopt, domain, false) < 0)
+        virDomainObjSetDefTransient(caps, xmlopt, domain) < 0)
         return NULL;
 
     if (domain->newDef)

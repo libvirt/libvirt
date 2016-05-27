@@ -1096,8 +1096,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
         VIR_FREE(managed_save_path);
     }
 
-    if (virDomainObjSetDefTransient(cfg->caps, driver->xmlopt,
-                                    vm, true) < 0)
+    if (virDomainObjSetDefTransient(cfg->caps, driver->xmlopt, vm) < 0)
         goto cleanup;
 
     if (virDomainLockProcessStart(driver->lockManager,
