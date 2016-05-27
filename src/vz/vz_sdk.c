@@ -3534,6 +3534,37 @@ prlsdkSetBootOrderVm(PRL_HANDLE sdkdom, virDomainDefPtr def)
     return 0;
 }
 
+int
+prlsdkDomainSetUserPassword(virDomainObjPtr dom,
+                            const char *user,
+                            const char *password)
+{
+    int ret = -1;
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+
+    job = PrlVm_BeginEdit(privdom->sdkdom);
+    if (PRL_FAILED(waitJob(job)))
+        goto cleanup;
+
+    job = PrlVm_SetUserPasswd(privdom->sdkdom,
+                              user,
+                              password,
+                              0);
+
+    if (PRL_FAILED(waitJob(job)))
+        goto cleanup;
+
+    job = PrlVm_CommitEx(privdom->sdkdom, 0);
+    if (PRL_FAILED(waitJob(job)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
 static int
 prlsdkDoApplyConfig(vzDriverPtr driver,
                     PRL_HANDLE sdkdom,

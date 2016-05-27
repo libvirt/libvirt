@@ -1264,6 +1264,25 @@ static int vzDomainDetachDevice(virDomainPtr domain, const char *xml)
                                      VIR_DOMAIN_AFFECT_CONFIG | VIR_DOMAIN_AFFECT_LIVE);
 }
 
+static int
+vzDomainSetUserPassword(virDomainPtr domain,
+                        const char *user,
+                        const char *password,
+                        unsigned int flags)
+{
+    virDomainObjPtr dom = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+    if (!(dom = vzDomObjFromDomain(domain)))
+        return -1;
+
+    ret = prlsdkDomainSetUserPassword(dom, user, password);
+
+    virObjectUnlock(dom);
+    return ret;
+}
+
 static unsigned long long
 vzDomainGetMaxMemory(virDomainPtr domain)
 {
@@ -2737,6 +2756,7 @@ static virHypervisorDriver vzHypervisorDriver = {
     .domainIsUpdated = vzDomainIsUpdated,     /* 1.2.21 */
     .domainGetVcpusFlags = vzDomainGetVcpusFlags, /* 1.2.21 */
     .domainGetMaxVcpus = vzDomainGetMaxVcpus, /* 1.2.21 */
+    .domainSetUserPassword = vzDomainSetUserPassword, /* 1.3.6 */
     .connectDomainEventRegisterAny = vzConnectDomainEventRegisterAny, /* 1.2.10 */
     .connectDomainEventDeregisterAny = vzConnectDomainEventDeregisterAny, /* 1.2.10 */
     .nodeGetCPUMap = vzNodeGetCPUMap, /* 1.2.8 */
