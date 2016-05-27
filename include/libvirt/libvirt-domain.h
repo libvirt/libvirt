@@ -1616,6 +1616,7 @@ typedef enum {
                                                           snapshot metadata */
     VIR_DOMAIN_UNDEFINE_NVRAM              = (1 << 2), /* Also remove any
                                                           nvram file */
+    VIR_DOMAIN_UNDEFINE_KEEP_NVRAM         = (1 << 3), /* Keep nvram file */
 
     /* Future undefine control flags should come here. */
 } virDomainUndefineFlagsValues;
