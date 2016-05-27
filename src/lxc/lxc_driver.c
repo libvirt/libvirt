@@ -840,13 +840,15 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
     cfg = virLXCDriverGetConfig(driver);
 
     if (virDomainSetMemoryParametersEnsureACL(dom->conn, vm->def, flags) < 0 ||
-        !(caps = virLXCDriverGetCapabilities(driver, false)) ||
-        virDomainLiveConfigHelperMethod(caps, driver->xmlopt,
-                                        vm, &flags, &vmdef) < 0)
+        !(caps = virLXCDriverGetCapabilities(driver, false)))
         goto cleanup;
 
     if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0)
         goto cleanup;
+
+    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt,
+                                        vm, &flags, &vmdef) < 0)
+        goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE &&
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
