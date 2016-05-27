@@ -4283,8 +4283,10 @@ qemuProcessStartWarnShmem(virDomainObjPtr vm)
 }
 
 static int
-qemuProcessStartValidateXML(virDomainObjPtr vm,
+qemuProcessStartValidateXML(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
                             virQEMUCapsPtr qemuCaps,
+                            virCapsPtr caps,
                             unsigned int flags)
 {
     /* The bits we validate here are XML configs that we previously
@@ -4301,9 +4303,14 @@ qemuProcessStartValidateXML(virDomainObjPtr vm,
     /* checks below should not be executed when starting a qemu process for a
      * VM that was running before (migration, snapshots, save). It's more
      * important to start such VM than keep the configuration clean */
-    if ((flags & VIR_QEMU_PROCESS_START_NEW) &&
-        virDomainDefCheckDuplicateDiskInfo(vm->def) < 0)
-        return -1;
+    if ((flags & VIR_QEMU_PROCESS_START_NEW)) {
+        if (virDomainDefValidate(vm->def, caps, 0, driver->xmlopt) < 0)
+            return -1;
+
+        if (virDomainDefCheckDuplicateDiskInfo(vm->def) < 0)
+            return -1;
+    }
+
 
     if (vm->def->mem.min_guarantee) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4331,6 +4338,7 @@ static int
 qemuProcessStartValidate(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          virQEMUCapsPtr qemuCaps,
+                         virCapsPtr caps,
                          unsigned int flags)
 {
     size_t i;
@@ -4358,7 +4366,7 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
 
     }
 
-    if (qemuProcessStartValidateXML(vm, qemuCaps, flags) < 0)
+    if (qemuProcessStartValidateXML(driver, vm, qemuCaps, caps, flags) < 0)
         return -1;
 
     VIR_DEBUG("Checking for any possible (non-fatal) issues");
@@ -4437,7 +4445,7 @@ qemuProcessInit(virQEMUDriverPtr driver,
                                                       vm->def->os.machine)))
         goto cleanup;
 
-    if (qemuProcessStartValidate(driver, vm, priv->qemuCaps, flags) < 0)
+    if (qemuProcessStartValidate(driver, vm, priv->qemuCaps, caps, flags) < 0)
         goto cleanup;
 
     /* Do this upfront, so any part of the startup process can add
