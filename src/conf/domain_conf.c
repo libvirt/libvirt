@@ -4573,8 +4573,29 @@ virDomainDefValidateDeviceIterator(virDomainDefPtr def,
 
 
 static int
-virDomainDefValidateInternal(const virDomainDef *def ATTRIBUTE_UNUSED)
+virDomainDefCheckDuplicateDiskInfo(const virDomainDef *def)
 {
+    size_t i;
+    size_t j;
+
+    for (i = 0; i < def->ndisks; i++) {
+        for (j = i + 1; j < def->ndisks; j++) {
+            if (virDomainDiskDefCheckDuplicateInfo(def->disks[i],
+                                                   def->disks[j]) < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+virDomainDefValidateInternal(const virDomainDef *def)
+{
+    if (virDomainDefCheckDuplicateDiskInfo(def) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -24583,8 +24604,8 @@ virDomainDefNeedsPlacementAdvice(virDomainDefPtr def)
 
 
 int
-virDomainDiskDefCheckDuplicateInfo(virDomainDiskDefPtr a,
-                                   virDomainDiskDefPtr b)
+virDomainDiskDefCheckDuplicateInfo(const virDomainDiskDef *a,
+                                   const virDomainDiskDef *b)
 {
     if (STREQ(a->dst, b->dst)) {
         virReportError(VIR_ERR_XML_ERROR,
@@ -24607,24 +24628,6 @@ virDomainDiskDefCheckDuplicateInfo(virDomainDiskDefPtr a,
                        _("Disks '%s' and '%s' have identical serial"),
                        a->dst, b->dst);
         return -1;
-    }
-
-    return 0;
-}
-
-
-int
-virDomainDefCheckDuplicateDiskInfo(virDomainDefPtr def)
-{
-    size_t i;
-    size_t j;
-
-    for (i = 0; i < def->ndisks; i++) {
-        for (j = i + 1; j < def->ndisks; j++) {
-            if (virDomainDiskDefCheckDuplicateInfo(def->disks[i],
-                                                   def->disks[j]) < 0)
-                return -1;
-        }
     }
 
     return 0;

@@ -207,7 +207,6 @@ virDomainDefAddController;
 virDomainDefAddImplicitDevices;
 virDomainDefAddUSBController;
 virDomainDefCheckABIStability;
-virDomainDefCheckDuplicateDiskInfo;
 virDomainDefClearCCWAddresses;
 virDomainDefClearDeviceAliases;
 virDomainDefClearPCIAddresses;

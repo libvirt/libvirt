@@ -4303,14 +4303,9 @@ qemuProcessStartValidateXML(virQEMUDriverPtr driver,
     /* checks below should not be executed when starting a qemu process for a
      * VM that was running before (migration, snapshots, save). It's more
      * important to start such VM than keep the configuration clean */
-    if ((flags & VIR_QEMU_PROCESS_START_NEW)) {
-        if (virDomainDefValidate(vm->def, caps, 0, driver->xmlopt) < 0)
-            return -1;
-
-        if (virDomainDefCheckDuplicateDiskInfo(vm->def) < 0)
-            return -1;
-    }
-
+    if ((flags & VIR_QEMU_PROCESS_START_NEW) &&
+        virDomainDefValidate(vm->def, caps, 0, driver->xmlopt) < 0)
+        return -1;
 
     if (vm->def->mem.min_guarantee) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

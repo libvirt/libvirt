@@ -876,9 +876,9 @@ mymain(void)
     DO_TEST("disk-drive-discard",
             QEMU_CAPS_DRIVE_DISCARD);
     DO_TEST("disk-snapshot", NONE);
-    DO_TEST_FAILURE("disk-same-targets",
-                    QEMU_CAPS_SCSI_LSI,
-                    QEMU_CAPS_DEVICE_USB_STORAGE, QEMU_CAPS_NODEFCONFIG);
+    DO_TEST_PARSE_ERROR("disk-same-targets",
+                        QEMU_CAPS_SCSI_LSI,
+                        QEMU_CAPS_DEVICE_USB_STORAGE, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("event_idx",
             QEMU_CAPS_VIRTIO_BLK_EVENT_IDX,
             QEMU_CAPS_VIRTIO_NET_EVENT_IDX,

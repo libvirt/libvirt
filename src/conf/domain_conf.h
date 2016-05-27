@@ -3067,11 +3067,9 @@ virDomainParseMemory(const char *xpath,
 bool virDomainDefNeedsPlacementAdvice(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);
 
-int virDomainDiskDefCheckDuplicateInfo(virDomainDiskDefPtr a,
-                                       virDomainDiskDefPtr b)
+int virDomainDiskDefCheckDuplicateInfo(const virDomainDiskDef *a,
+                                       const virDomainDiskDef *b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int virDomainDefCheckDuplicateDiskInfo(virDomainDefPtr def)
-    ATTRIBUTE_NONNULL(1);
 
 int virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
                                      int maplen,
