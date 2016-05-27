@@ -4325,7 +4325,7 @@ qemuProcessStartValidateXML(virDomainObjPtr vm,
  * start the domain but create a valid qemu command.  If some code shouldn't be
  * executed in this case, make sure to check this flag.
  */
-int
+static int
 qemuProcessStartValidate(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          virQEMUCapsPtr qemuCaps,

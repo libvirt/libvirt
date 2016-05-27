@@ -89,13 +89,6 @@ virCommandPtr qemuProcessCreatePretendCmd(virConnectPtr conn,
                                           bool standalone,
                                           unsigned int flags);
 
-int qemuProcessStartValidate(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             virQEMUCapsPtr qemuCaps,
-                             bool migration,
-                             bool snap,
-                             unsigned int flags);
-
 int qemuProcessInit(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
                     qemuDomainAsyncJob asyncJob,
