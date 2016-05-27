@@ -3605,6 +3605,10 @@ static const vshCmdOptDef opts_undefine[] = {
      .type = VSH_OT_BOOL,
      .help = N_("remove nvram file, if inactive")
     },
+    {.name = "keep-nvram",
+     .type = VSH_OT_BOOL,
+     .help = N_("keep nvram file, if inactive")
+    },
     {.name = NULL}
 };
 
@@ -3630,6 +3634,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     bool remove_all_storage = vshCommandOptBool(cmd, "remove-all-storage");
     bool delete_snapshots = vshCommandOptBool(cmd, "delete-snapshots");
     bool nvram = vshCommandOptBool(cmd, "nvram");
+    bool keep_nvram = vshCommandOptBool(cmd, "keep-nvram");
     /* Positive if these items exist.  */
     int has_managed_save = 0;
     int has_snapshots_metadata = 0;
@@ -3658,6 +3663,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     virshControlPtr priv = ctl->privData;
 
     VSH_REQUIRE_OPTION("delete-snapshots", "remove-all-storage");
+    VSH_EXCLUSIVE_OPTIONS("nvram", "keep-nvram");
 
     ignore_value(vshCommandOptStringQuiet(ctl, cmd, "storage", &vol_string));
 
@@ -3681,6 +3687,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     }
     if (nvram)
         flags |= VIR_DOMAIN_UNDEFINE_NVRAM;
+    if (keep_nvram)
+        flags |= VIR_DOMAIN_UNDEFINE_KEEP_NVRAM;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
         return false;
