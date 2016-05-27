@@ -4285,8 +4285,7 @@ qemuProcessStartWarnShmem(virDomainObjPtr vm)
 static int
 qemuProcessStartValidateXML(virDomainObjPtr vm,
                             virQEMUCapsPtr qemuCaps,
-                            bool migration,
-                            bool snapshot)
+                            unsigned int flags)
 {
     /* The bits we validate here are XML configs that we previously
      * accepted. We reject them at VM startup time rather than parse
@@ -4299,7 +4298,10 @@ qemuProcessStartValidateXML(virDomainObjPtr vm,
     if (qemuValidateCpuCount(vm->def, qemuCaps) < 0)
         return -1;
 
-    if (!migration && !snapshot &&
+    /* checks below should not be executed when starting a qemu process for a
+     * VM that was running before (migration, snapshots, save). It's more
+     * important to start such VM than keep the configuration clean */
+    if ((flags & VIR_QEMU_PROCESS_START_NEW) &&
         virDomainDefCheckDuplicateDiskInfo(vm->def) < 0)
         return -1;
 
@@ -4329,8 +4331,6 @@ static int
 qemuProcessStartValidate(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          virQEMUCapsPtr qemuCaps,
-                         bool migration,
-                         bool snapshot,
                          unsigned int flags)
 {
     size_t i;
@@ -4358,7 +4358,7 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
 
     }
 
-    if (qemuProcessStartValidateXML(vm, qemuCaps, migration, snapshot) < 0)
+    if (qemuProcessStartValidateXML(vm, qemuCaps, flags) < 0)
         return -1;
 
     VIR_DEBUG("Checking for any possible (non-fatal) issues");
@@ -4408,7 +4408,6 @@ qemuProcessInit(virQEMUDriverPtr driver,
                 virDomainObjPtr vm,
                 qemuDomainAsyncJob asyncJob,
                 bool migration,
-                bool snap,
                 unsigned int flags)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -4438,8 +4437,7 @@ qemuProcessInit(virQEMUDriverPtr driver,
                                                       vm->def->os.machine)))
         goto cleanup;
 
-    if (qemuProcessStartValidate(driver, vm, priv->qemuCaps,
-                                 migration, snap, flags) < 0)
+    if (qemuProcessStartValidate(driver, vm, priv->qemuCaps, flags) < 0)
         goto cleanup;
 
     /* Do this upfront, so any part of the startup process can add
@@ -5415,8 +5413,10 @@ qemuProcessStart(virConnectPtr conn,
                       VIR_QEMU_PROCESS_START_PAUSED |
                       VIR_QEMU_PROCESS_START_AUTODESTROY, cleanup);
 
-    if (qemuProcessInit(driver, vm, asyncJob, !!migrateFrom,
-                        !!snapshot, flags) < 0)
+    if (!migrateFrom && !snapshot)
+        flags |= VIR_QEMU_PROCESS_START_NEW;
+
+    if (qemuProcessInit(driver, vm, asyncJob, !!migrateFrom, flags) < 0)
         goto cleanup;
 
     if (migrateFrom) {
@@ -5493,9 +5493,9 @@ qemuProcessCreatePretendCmd(virConnectPtr conn,
                       VIR_QEMU_PROCESS_START_AUTODESTROY, cleanup);
 
     flags |= VIR_QEMU_PROCESS_START_PRETEND;
+    flags |= VIR_QEMU_PROCESS_START_NEW;
 
-    if (qemuProcessInit(driver, vm, QEMU_ASYNC_JOB_NONE, !!migrateURI,
-                        false, flags) < 0)
+    if (qemuProcessInit(driver, vm, QEMU_ASYNC_JOB_NONE, !!migrateURI, flags) < 0)
         goto cleanup;
 
     if (qemuProcessPrepareDomain(conn, driver, vm, flags) < 0)
