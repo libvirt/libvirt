@@ -1542,10 +1542,6 @@ int virLXCProcessStart(virConnectPtr conn,
                              conn, lxcProcessAutoDestroy) < 0)
         goto cleanup;
 
-    if (virDomainObjSetDefTransient(caps, driver->xmlopt,
-                                    vm, false) < 0)
-        goto cleanup;
-
     /* We don't need the temporary NIC names anymore, clear them */
     virLXCProcessCleanInterfaces(vm->def);
 

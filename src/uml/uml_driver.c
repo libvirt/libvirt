@@ -1130,7 +1130,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
         umlProcessAutoDestroyAdd(driver, vm, conn) < 0)
         goto cleanup;
 
-    ret = virDomainObjSetDefTransient(driver->caps, driver->xmlopt, vm, false);
+    ret = 0;
  cleanup:
     VIR_FORCE_CLOSE(logfd);
     virCommandFree(cmd);
