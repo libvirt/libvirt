@@ -807,7 +807,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
                              unsigned int flags)
 {
     virCapsPtr caps = NULL;
-    virDomainDefPtr vmdef = NULL;
+    virDomainDefPtr persistentDef = NULL;
     virDomainObjPtr vm = NULL;
     virLXCDomainObjPrivatePtr priv = NULL;
     virLXCDriverConfigPtr cfg = NULL;
@@ -848,7 +848,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
         goto cleanup;
 
     if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt,
-                                        vm, &flags, &vmdef) < 0)
+                                        vm, &flags, &persistentDef) < 0)
         goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE &&
@@ -904,7 +904,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
         }                                                                       \
                                                                                 \
         if (flags & VIR_DOMAIN_AFFECT_CONFIG)                                   \
-            vmdef->mem.VALUE = VALUE;                                           \
+            persistentDef->mem.VALUE = VALUE;                                   \
     }
 
     /* Soft limit doesn't clash with the others */
@@ -925,7 +925,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
 #undef LXC_SET_MEM_PARAMETER
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
-        virDomainSaveConfig(cfg->configDir, driver->caps, vmdef) < 0)
+        virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
         goto endjob;
 
     ret = 0;
@@ -947,7 +947,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
                              unsigned int flags)
 {
     virCapsPtr caps = NULL;
-    virDomainDefPtr vmdef = NULL;
+    virDomainDefPtr persistentDef = NULL;
     virDomainObjPtr vm = NULL;
     virLXCDomainObjPrivatePtr priv = NULL;
     virLXCDriverPtr driver = dom->conn->privateData;
@@ -970,7 +970,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
     if (virDomainGetMemoryParametersEnsureACL(dom->conn, vm->def) < 0 ||
         !(caps = virLXCDriverGetCapabilities(driver, false)) ||
         virDomainLiveConfigHelperMethod(caps, driver->xmlopt,
-                                        vm, &flags, &vmdef) < 0)
+                                        vm, &flags, &persistentDef) < 0)
         goto cleanup;
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE &&
@@ -994,7 +994,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
         switch (i) {
         case 0: /* fill memory hard limit here */
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                val = vmdef->mem.hard_limit;
+                val = persistentDef->mem.hard_limit;
             } else if (virCgroupGetMemoryHardLimit(priv->cgroup, &val) < 0) {
                 goto cleanup;
             }
@@ -1004,7 +1004,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
             break;
         case 1: /* fill memory soft limit here */
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                val = vmdef->mem.soft_limit;
+                val = persistentDef->mem.soft_limit;
             } else if (virCgroupGetMemorySoftLimit(priv->cgroup, &val) < 0) {
                 goto cleanup;
             }
@@ -1014,7 +1014,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
             break;
         case 2: /* fill swap hard limit here */
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                val = vmdef->mem.swap_hard_limit;
+                val = persistentDef->mem.swap_hard_limit;
             } else if (virCgroupGetMemSwapHardLimit(priv->cgroup, &val) < 0) {
                 goto cleanup;
             }
@@ -1952,7 +1952,8 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
     virCapsPtr caps = NULL;
     size_t i;
     virDomainObjPtr vm = NULL;
-    virDomainDefPtr vmdef = NULL;
+    virDomainDefPtr persistentDefCopy = NULL;
+    virDomainDefPtr persistentDef = NULL;
     int ret = -1;
     int rc;
     virLXCDomainObjPrivatePtr priv;
@@ -1985,13 +1986,13 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
 
     if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt,
-                                        vm, &flags, &vmdef) < 0)
+                                        vm, &flags, &persistentDef) < 0)
         goto endjob;
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         /* Make a copy for updated domain. */
-        vmdef = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt);
-        if (!vmdef)
+        persistentDefCopy = virDomainObjCopyPersistentDef(vm, caps, driver->xmlopt);
+        if (!persistentDefCopy)
             goto endjob;
     }
 
@@ -2020,8 +2021,8 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-                vmdef->cputune.shares = params[i].value.ul;
-                vmdef->cputune.sharesSpecified = true;
+                persistentDefCopy->cputune.shares = params[i].value.ul;
+                persistentDefCopy->cputune.sharesSpecified = true;
             }
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_PERIOD)) {
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {
@@ -2034,7 +2035,7 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                vmdef->cputune.period = params[i].value.ul;
+                persistentDefCopy->cputune.period = params[i].value.ul;
         } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_VCPU_QUOTA)) {
             if (flags & VIR_DOMAIN_AFFECT_LIVE) {
                 rc = lxcSetVcpuBWLive(priv->cgroup, 0, params[i].value.l);
@@ -2046,7 +2047,7 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
             }
 
             if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-                vmdef->cputune.quota = params[i].value.l;
+                persistentDefCopy->cputune.quota = params[i].value.l;
         }
     }
 
@@ -2055,12 +2056,12 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
 
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        rc = virDomainSaveConfig(cfg->configDir, driver->caps, vmdef);
+        rc = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDefCopy);
         if (rc < 0)
             goto endjob;
 
-        virDomainObjAssignDef(vm, vmdef, false, NULL);
-        vmdef = NULL;
+        virDomainObjAssignDef(vm, persistentDefCopy, false, NULL);
+        persistentDefCopy = NULL;
     }
 
     ret = 0;
@@ -2069,7 +2070,7 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
     virLXCDomainObjEndJob(driver, vm);
 
  cleanup:
-    virDomainDefFree(vmdef);
+    virDomainDefFree(persistentDefCopy);
     virDomainObjEndAPI(&vm);
     virObjectUnref(caps);
     virObjectUnref(cfg);
