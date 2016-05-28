@@ -1878,7 +1878,7 @@ typedef enum {
     VIR_CONNECT_GET_ALL_DOMAINS_STATS_OTHER = VIR_CONNECT_LIST_DOMAINS_OTHER,
 
     VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING = 1 << 30, /* include backing chain for block stats */
-    VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS = 1 << 31, /* enforce requested stats */
+    VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS = 1U << 31, /* enforce requested stats */
 } virConnectGetAllDomainStatsFlags;
 
 int virConnectGetAllDomainStats(virConnectPtr conn,

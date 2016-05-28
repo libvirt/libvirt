@@ -32,7 +32,7 @@
  * Flag indicating that the params has multiple occurrences of the parameter.
  * Only used as a flag for @type argument of the virTypedParamsValidate.
  */
-# define VIR_TYPED_PARAM_MULTIPLE (1 << 31)
+# define VIR_TYPED_PARAM_MULTIPLE (1U << 31)
 
 verify(!(VIR_TYPED_PARAM_LAST & VIR_TYPED_PARAM_MULTIPLE));
 
