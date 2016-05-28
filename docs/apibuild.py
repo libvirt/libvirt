@@ -1398,7 +1398,8 @@ class CParser:
                     token = self.token()
                     while token[0] != "sep" or (token[1] != ',' and
                           token[1] != '}'):
-                        value = value + token[1]
+                        # We might be dealing with '1U << 12' here
+                        value = value + re.sub("(\d+)U","\\1", token[1])
                         token = self.token()
                 else:
                     try:
