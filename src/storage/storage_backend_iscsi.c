@@ -1,7 +1,7 @@
 /*
  * storage_backend_iscsi.c: storage backend for iSCSI handling
  *
- * Copyright (C) 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2007-2016 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -43,6 +43,7 @@
 #include "virobject.h"
 #include "virstring.h"
 #include "viruuid.h"
+#include "secret_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -277,11 +278,10 @@ virStorageBackendISCSISetAuth(const char *portal,
                               virConnectPtr conn,
                               virStoragePoolSourcePtr source)
 {
-    virSecretPtr secret = NULL;
     unsigned char *secret_value = NULL;
+    size_t secret_size;
     virStorageAuthDefPtr authdef = source->auth;
     int ret = -1;
-    char uuidStr[VIR_UUID_STRING_BUFLEN];
 
     if (!authdef || authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE)
         return 0;
@@ -301,45 +301,9 @@ virStorageBackendISCSISetAuth(const char *portal,
         return -1;
     }
 
-    if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID)
-        secret = virSecretLookupByUUID(conn, authdef->secret.uuid);
-    else
-        secret = virSecretLookupByUsage(conn, VIR_SECRET_USAGE_TYPE_ISCSI,
-                                        authdef->secret.usage);
-
-    if (secret) {
-        size_t secret_size;
-        secret_value =
-            conn->secretDriver->secretGetValue(secret, &secret_size, 0,
-                                               VIR_SECRET_GET_VALUE_INTERNAL_CALL);
-        if (!secret_value) {
-            if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
-                virUUIDFormat(authdef->secret.uuid, uuidStr);
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("could not get the value of the secret "
-                                 "for username %s using uuid '%s'"),
-                               authdef->username, uuidStr);
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("could not get the value of the secret "
-                                 "for username %s using usage value '%s'"),
-                               authdef->username, authdef->secret.usage);
-            }
-            goto cleanup;
-        }
-    } else {
-        if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
-            virUUIDFormat(authdef->secret.uuid, uuidStr);
-            virReportError(VIR_ERR_NO_SECRET,
-                           _("no secret matches uuid '%s'"),
-                           uuidStr);
-        } else {
-            virReportError(VIR_ERR_NO_SECRET,
-                           _("no secret matches usage value '%s'"),
-                           authdef->secret.usage);
-        }
+    if (virSecretGetSecretString(conn, authdef, VIR_SECRET_USAGE_TYPE_ISCSI,
+                                 &secret_value, &secret_size) < 0)
         goto cleanup;
-    }
 
     if (virISCSINodeUpdate(portal,
                            source->devices[0].path,
@@ -358,8 +322,7 @@ virStorageBackendISCSISetAuth(const char *portal,
     ret = 0;
 
  cleanup:
-    virObjectUnref(secret);
-    VIR_FREE(secret_value);
+    VIR_DISPOSE_N(secret_value, secret_size);
     return ret;
 }
 

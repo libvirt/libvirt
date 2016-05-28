@@ -36,6 +36,7 @@
 #include "virrandom.h"
 #include "rados/librados.h"
 #include "rbd/librbd.h"
+#include "secret_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -62,8 +63,6 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
     size_t secret_value_size = 0;
     char *rados_key = NULL;
     virBuffer mon_host = VIR_BUFFER_INITIALIZER;
-    virSecretPtr secret = NULL;
-    char secretUuid[VIR_UUID_STRING_BUFLEN];
     size_t i;
     char *mon_buff = NULL;
     const char *client_mount_timeout = "30";
@@ -86,48 +85,9 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
             return -1;
         }
 
-        if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
-            virUUIDFormat(authdef->secret.uuid, secretUuid);
-            VIR_DEBUG("Looking up secret by UUID: %s", secretUuid);
-            secret = virSecretLookupByUUIDString(conn, secretUuid);
-        } else if (authdef->secret.usage != NULL) {
-            VIR_DEBUG("Looking up secret by usage: %s",
-                      authdef->secret.usage);
-            secret = virSecretLookupByUsage(conn, VIR_SECRET_USAGE_TYPE_CEPH,
-                                            authdef->secret.usage);
-        }
-
-        if (secret == NULL) {
-            if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
-                virReportError(VIR_ERR_NO_SECRET,
-                               _("no secret matches uuid '%s'"),
-                                 secretUuid);
-            } else {
-                virReportError(VIR_ERR_NO_SECRET,
-                               _("no secret matches usage value '%s'"),
-                                 authdef->secret.usage);
-            }
+        if (virSecretGetSecretString(conn, authdef, VIR_SECRET_USAGE_TYPE_CEPH,
+                                     &secret_value, &secret_value_size) < 0)
             goto cleanup;
-        }
-
-        secret_value = conn->secretDriver->secretGetValue(secret,
-                                                          &secret_value_size, 0,
-                                                          VIR_SECRET_GET_VALUE_INTERNAL_CALL);
-
-        if (!secret_value) {
-            if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("could not get the value of the secret "
-                                 "for username '%s' using uuid '%s'"),
-                               authdef->username, secretUuid);
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("could not get the value of the secret "
-                                 "for username '%s' using usage value '%s'"),
-                               authdef->username, authdef->secret.usage);
-            }
-            goto cleanup;
-        }
 
         if (!(rados_key = virStringEncodeBase64(secret_value, secret_value_size)))
             goto cleanup;
@@ -226,8 +186,6 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
  cleanup:
     VIR_DISPOSE_N(secret_value, secret_value_size);
     VIR_DISPOSE_STRING(rados_key);
-
-    virObjectUnref(secret);
 
     virBufferFreeAndReset(&mon_host);
     VIR_FREE(mon_buff);

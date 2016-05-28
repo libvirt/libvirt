@@ -1622,6 +1622,7 @@ libvirt_driver_storage_impl_la_SOURCES =
 libvirt_driver_storage_impl_la_CFLAGS = \
 		-I$(srcdir)/access \
 		-I$(srcdir)/conf \
+		-I$(srcdir)/secret \
 		$(AM_CFLAGS)
 libvirt_driver_storage_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_storage_impl_la_LIBADD =
