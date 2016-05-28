@@ -85,7 +85,8 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
             return -1;
         }
 
-        if (virSecretGetSecretString(conn, authdef, VIR_SECRET_USAGE_TYPE_CEPH,
+        if (virSecretGetSecretString(conn, &authdef->seclookupdef,
+                                     VIR_SECRET_USAGE_TYPE_CEPH,
                                      &secret_value, &secret_value_size) < 0)
             goto cleanup;
 

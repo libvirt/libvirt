@@ -286,8 +286,8 @@ virStorageBackendISCSISetAuth(const char *portal,
     if (!authdef || authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE)
         return 0;
 
-    VIR_DEBUG("username='%s' authType=%d secretType=%d",
-              authdef->username, authdef->authType, authdef->secretType);
+    VIR_DEBUG("username='%s' authType=%d seclookupdef.type=%d",
+              authdef->username, authdef->authType, authdef->seclookupdef.type);
     if (authdef->authType != VIR_STORAGE_AUTH_TYPE_CHAP) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("iscsi pool only supports 'chap' auth type"));
@@ -301,7 +301,8 @@ virStorageBackendISCSISetAuth(const char *portal,
         return -1;
     }
 
-    if (virSecretGetSecretString(conn, authdef, VIR_SECRET_USAGE_TYPE_ISCSI,
+    if (virSecretGetSecretString(conn, &authdef->seclookupdef,
+                                 VIR_SECRET_USAGE_TYPE_ISCSI,
                                  &secret_value, &secret_size) < 0)
         goto cleanup;
 

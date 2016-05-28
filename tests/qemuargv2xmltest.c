@@ -36,8 +36,8 @@ static int testSanitizeDef(virDomainDefPtr vmdef)
         virDomainDiskDefPtr disk = vmdef->disks[i];
 
         if (disk->src->auth) {
-            disk->src->auth->secretType = VIR_STORAGE_SECRET_TYPE_USAGE;
-            if (VIR_STRDUP(disk->src->auth->secret.usage,
+            disk->src->auth->seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_USAGE;
+            if (VIR_STRDUP(disk->src->auth->seclookupdef.u.usage,
                           "qemuargv2xml_usage") < 0)
                 goto fail;
         }

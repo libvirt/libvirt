@@ -35,7 +35,7 @@ struct _virSecretDef {
     bool isprivate;
     unsigned char uuid[VIR_UUID_BUFLEN];
     char *description;          /* May be NULL */
-    int usage_type;
+    int usage_type;  /* virSecretUsageType */
     union {
         char *volume;               /* May be NULL */
         char *ceph;

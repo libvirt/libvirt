@@ -1,7 +1,7 @@
 /*
  * virstoragefile.h: file utility functions for FS storage backend
  *
- * Copyright (C) 2007-2009, 2012-2014 Red Hat, Inc.
+ * Copyright (C) 2007-2009, 2012-2016 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@
 # include "virseclabel.h"
 # include "virstorageencryption.h"
 # include "virutil.h"
+# include "virsecret.h"
 
 /* Minimum header size required to probe all known formats with
  * virStorageFileProbeFormat, or obtain metadata from a known format.
@@ -201,25 +202,13 @@ typedef enum {
 } virStorageAuthType;
 VIR_ENUM_DECL(virStorageAuth)
 
-typedef enum {
-    VIR_STORAGE_SECRET_TYPE_NONE,
-    VIR_STORAGE_SECRET_TYPE_UUID,
-    VIR_STORAGE_SECRET_TYPE_USAGE,
-
-    VIR_STORAGE_SECRET_TYPE_LAST
-} virStorageSecretType;
-
 typedef struct _virStorageAuthDef virStorageAuthDef;
 typedef virStorageAuthDef *virStorageAuthDefPtr;
 struct _virStorageAuthDef {
     char *username;
     char *secrettype; /* <secret type='%s' for disk source */
     int authType;     /* virStorageAuthType */
-    int secretType;   /* virStorageSecretType */
-    union {
-        unsigned char uuid[VIR_UUID_BUFLEN];
-        char *usage;
-    } secret;
+    virSecretLookupTypeDef seclookupdef;
 };
 
 typedef struct _virStorageDriverData virStorageDriverData;

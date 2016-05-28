@@ -2218,6 +2218,11 @@ virSecurityLabelDefFree;
 virSecurityLabelDefNew;
 
 
+# util/virsecret.h
+virSecretLookupDefClear;
+virSecretLookupDefCopy;
+
+
 # util/virsexpr.h
 sexpr2string;
 sexpr_append;

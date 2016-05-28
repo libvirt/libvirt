@@ -36,12 +36,12 @@ VIR_LOG_INIT("secret.secret_util");
 
 /* virSecretGetSecretString:
  * @conn: Pointer to the connection driver to make secret driver call
- * @authdef: Pointer to the disk storage authentication
- * @secretUsageType: Type of secret usage for authdef lookup
+ * @seclookupdef: Secret lookup def
+ * @secretUsageType: Type of secret usage for usage lookup
  * @secret: returned secret as a sized stream of unsigned chars
  * @secret_size: Return size of the secret - either raw text or base64
  *
- * Lookup the secret for the authdef usage type and return it as raw text.
+ * Lookup the secret for the usage type and return it as raw text.
  * It is up to the caller to encode the secret further.
  *
  * Returns 0 on success, -1 on failure.  On success the memory in secret
@@ -49,7 +49,7 @@ VIR_LOG_INIT("secret.secret_util");
  */
 int
 virSecretGetSecretString(virConnectPtr conn,
-                         virStorageAuthDefPtr authdef,
+                         virSecretLookupTypeDefPtr seclookupdef,
                          virSecretUsageType secretUsageType,
                          uint8_t **secret,
                          size_t *secret_size)
@@ -57,14 +57,14 @@ virSecretGetSecretString(virConnectPtr conn,
     virSecretPtr sec = NULL;
     int ret = -1;
 
-    switch (authdef->secretType) {
-    case VIR_STORAGE_SECRET_TYPE_UUID:
-        sec = conn->secretDriver->secretLookupByUUID(conn, authdef->secret.uuid);
+    switch (seclookupdef->type) {
+    case VIR_SECRET_LOOKUP_TYPE_UUID:
+        sec = conn->secretDriver->secretLookupByUUID(conn, seclookupdef->u.uuid);
         break;
 
-    case VIR_STORAGE_SECRET_TYPE_USAGE:
+    case VIR_SECRET_LOOKUP_TYPE_USAGE:
         sec = conn->secretDriver->secretLookupByUsage(conn, secretUsageType,
-                                                      authdef->secret.usage);
+                                                      seclookupdef->u.usage);
         break;
     }
 

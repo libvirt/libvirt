@@ -1506,8 +1506,7 @@ virStorageAuthDefFree(virStorageAuthDefPtr authdef)
 
     VIR_FREE(authdef->username);
     VIR_FREE(authdef->secrettype);
-    if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_USAGE)
-        VIR_FREE(authdef->secret.usage);
+    virSecretLookupDefClear(&authdef->seclookupdef);
     VIR_FREE(authdef);
 }
 
@@ -1526,13 +1525,10 @@ virStorageAuthDefCopy(const virStorageAuthDef *src)
     if (VIR_STRDUP(ret->secrettype, src->secrettype) < 0)
         goto error;
     ret->authType = src->authType;
-    ret->secretType = src->secretType;
-    if (ret->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
-        memcpy(ret->secret.uuid, src->secret.uuid, sizeof(ret->secret.uuid));
-    } else if (ret->secretType == VIR_STORAGE_SECRET_TYPE_USAGE) {
-        if (VIR_STRDUP(ret->secret.usage, src->secret.usage) < 0)
-            goto error;
-    }
+
+    if (virSecretLookupDefCopy(&ret->seclookupdef, &src->seclookupdef) < 0)
+        goto error;
+
     return ret;
 
  error:
@@ -1573,16 +1569,16 @@ virStorageAuthDefParseSecret(xmlXPathContextPtr ctxt,
     }
 
     if (uuid) {
-        if (virUUIDParse(uuid, authdef->secret.uuid) < 0) {
+        if (virUUIDParse(uuid, authdef->seclookupdef.u.uuid) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                             _("invalid auth secret uuid"));
             goto cleanup;
         }
-        authdef->secretType = VIR_STORAGE_SECRET_TYPE_UUID;
+        authdef->seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
     } else {
-        authdef->secret.usage = usage;
+        authdef->seclookupdef.u.usage = usage;
         usage = NULL;
-        authdef->secretType = VIR_STORAGE_SECRET_TYPE_USAGE;
+        authdef->seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_USAGE;
     }
     ret = 0;
 
@@ -1625,7 +1621,7 @@ virStorageAuthDefParseXML(xmlXPathContextPtr ctxt)
         VIR_FREE(authtype);
     }
 
-    authdef->secretType = VIR_STORAGE_SECRET_TYPE_NONE;
+    authdef->seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_NONE;
     if (virStorageAuthDefParseSecret(ctxt, authdef) < 0)
         goto error;
 
@@ -1680,12 +1676,12 @@ virStorageAuthDefFormat(virBufferPtr buf,
     else
         virBufferAddLit(buf, "<secret");
 
-    if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_UUID) {
-        virUUIDFormat(authdef->secret.uuid, uuidstr);
+    if (authdef->seclookupdef.type == VIR_SECRET_LOOKUP_TYPE_UUID) {
+        virUUIDFormat(authdef->seclookupdef.u.uuid, uuidstr);
         virBufferAsprintf(buf, " uuid='%s'/>\n", uuidstr);
-    } else if (authdef->secretType == VIR_STORAGE_SECRET_TYPE_USAGE) {
+    } else if (authdef->seclookupdef.type == VIR_SECRET_LOOKUP_TYPE_USAGE) {
         virBufferEscapeString(buf, " usage='%s'/>\n",
-                              authdef->secret.usage);
+                              authdef->seclookupdef.u.usage);
     } else {
         virBufferAddLit(buf, "/>\n");
     }

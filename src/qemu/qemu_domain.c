@@ -835,7 +835,7 @@ qemuDomainSecretPlainSetup(virConnectPtr conn,
     if (protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
         secretType = VIR_SECRET_USAGE_TYPE_CEPH;
 
-    return virSecretGetSecretString(conn, authdef, secretType,
+    return virSecretGetSecretString(conn, &authdef->seclookupdef, secretType,
                                     &secinfo->s.plain.secret,
                                     &secinfo->s.plain.secretlen);
 }
@@ -908,7 +908,7 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
         goto cleanup;
 
     /* Grab the unencoded secret */
-    if (virSecretGetSecretString(conn, authdef, secretType,
+    if (virSecretGetSecretString(conn, &authdef->seclookupdef, secretType,
                                  &secret, &secretlen) < 0)
         goto cleanup;
 

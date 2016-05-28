@@ -656,7 +656,7 @@ libxlMakeNetworkDiskSrc(virStorageSourcePtr src, char **srcstr)
         if (!(conn = virConnectOpen("xen:///system")))
             goto cleanup;
 
-        if (virSecretGetSecretString(conn, src->auth,
+        if (virSecretGetSecretString(conn, &src->auth->seclookupdef,
                                      VIR_SECRET_USAGE_TYPE_CEPH,
                                      &secret, &secretlen) < 0)
             goto cleanup;
