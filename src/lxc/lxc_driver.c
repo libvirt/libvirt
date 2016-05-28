@@ -941,11 +941,10 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
                              int *nparams,
                              unsigned int flags)
 {
-    virCapsPtr caps = NULL;
     virDomainDefPtr persistentDef = NULL;
+    virDomainDefPtr def = NULL;
     virDomainObjPtr vm = NULL;
     virLXCDomainObjPrivatePtr priv = NULL;
-    virLXCDriverPtr driver = dom->conn->privateData;
     unsigned long long val;
     int ret = -1;
     size_t i;
@@ -962,13 +961,13 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (virDomainGetMemoryParametersEnsureACL(dom->conn, vm->def) < 0 ||
-        !(caps = virLXCDriverGetCapabilities(driver, false)) ||
-        virDomainLiveConfigHelperMethod(caps, driver->xmlopt,
-                                        vm, &flags, &persistentDef) < 0)
+    if (virDomainGetMemoryParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE &&
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+        goto cleanup;
+
+    if (def &&
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("cgroup memory controller is not mounted"));
@@ -988,7 +987,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
 
         switch (i) {
         case 0: /* fill memory hard limit here */
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            if (persistentDef) {
                 val = persistentDef->mem.hard_limit;
             } else if (virCgroupGetMemoryHardLimit(priv->cgroup, &val) < 0) {
                 goto cleanup;
@@ -998,7 +997,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
                 goto cleanup;
             break;
         case 1: /* fill memory soft limit here */
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            if (persistentDef) {
                 val = persistentDef->mem.soft_limit;
             } else if (virCgroupGetMemorySoftLimit(priv->cgroup, &val) < 0) {
                 goto cleanup;
@@ -1008,7 +1007,7 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
                 goto cleanup;
             break;
         case 2: /* fill swap hard limit here */
-            if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            if (persistentDef) {
                 val = persistentDef->mem.swap_hard_limit;
             } else if (virCgroupGetMemSwapHardLimit(priv->cgroup, &val) < 0) {
                 goto cleanup;
@@ -1027,7 +1026,6 @@ lxcDomainGetMemoryParameters(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     return ret;
 }
 
