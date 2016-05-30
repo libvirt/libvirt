@@ -27,9 +27,14 @@
           <value>passphrase</value>
         </choice>
       </attribute>
-      <attribute name='uuid'>
-        <ref name="UUID"/>
-      </attribute>
+      <choice>
+        <attribute name='uuid'>
+          <ref name="UUID"/>
+        </attribute>
+        <attribute name='usage'>
+          <text/>
+        </attribute>
+      </choice>
     </element>
   </define>
 

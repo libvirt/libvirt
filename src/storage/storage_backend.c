@@ -648,7 +648,8 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
         goto cleanup;
 
     enc_secret->type = VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE;
-    memcpy(enc_secret->uuid, secret->uuid, VIR_UUID_BUFLEN);
+    enc_secret->seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
+    memcpy(enc_secret->seclookupdef.u.uuid, secret->uuid, VIR_UUID_BUFLEN);
     enc->format = VIR_STORAGE_ENCRYPTION_FORMAT_QCOW;
     enc->secrets[0] = enc_secret; /* Space for secrets[0] allocated above */
     enc_secret = NULL;

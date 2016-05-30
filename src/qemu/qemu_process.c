@@ -70,6 +70,7 @@
 #include "virnuma.h"
 #include "virstring.h"
 #include "virhostdev.h"
+#include "secret_util.h"
 #include "storage/storage_driver.h"
 #include "configmake.h"
 #include "nwfilter_conf.h"
@@ -377,7 +378,6 @@ qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
                                    char **secretRet,
                                    size_t *secretLen)
 {
-    virSecretPtr secret;
     char *passphrase;
     unsigned char *data;
     size_t size;
@@ -416,14 +416,9 @@ qemuProcessGetVolumeQcowPassphrase(virConnectPtr conn,
         goto cleanup;
     }
 
-    secret = conn->secretDriver->secretLookupByUUID(conn,
-                                                    enc->secrets[0]->uuid);
-    if (secret == NULL)
-        goto cleanup;
-    data = conn->secretDriver->secretGetValue(secret, &size, 0,
-                                              VIR_SECRET_GET_VALUE_INTERNAL_CALL);
-    virObjectUnref(secret);
-    if (data == NULL)
+    if (virSecretGetSecretString(conn, &enc->secrets[0]->seclookupdef,
+                                 VIR_SECRET_USAGE_TYPE_VOLUME,
+                                 &data, &size) < 0)
         goto cleanup;
 
     if (memchr(data, '\0', size) != NULL) {

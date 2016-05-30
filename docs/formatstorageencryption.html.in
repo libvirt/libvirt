@@ -25,10 +25,14 @@
     <p>
       The <code>encryption</code> tag can currently contain a sequence of
       <code>secret</code> tags, each with mandatory attributes <code>type</code>
-      and <code>uuid</code>.  The only currently defined value of
-      <code>type</code> is <code>passphrase</code>.  <code>uuid</code>
-      refers to a secret known to libvirt.  libvirt can use a secret value
-      previously set using <code>virSecretSetValue()</code>, or, if supported
+      and either <code>uuid</code> or <code>usage</code>
+      (<span class="since">since 2.1.0</span>). The only currently defined
+      value of <code>type</code> is <code>passphrase</code>. The
+      <code>uuid</code> is "uuid" of the <code>secret</code> while
+      <code>usage</code> is the value "usage" subelement field.
+      A secret value can be set in libvirt by the
+      <a href="html/libvirt-libvirt-secret.html#virSecretSetValue">
+      <code>virSecretSetValue</code></a> API. Alternatively, if supported
       by the particular volume format and driver, automatically generate a
       secret value at the time of volume creation, and store it using the
       specified <code>uuid</code>.

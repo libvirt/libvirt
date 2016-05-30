@@ -1341,6 +1341,7 @@ mymain(void)
     driver.caps->host.cpu = cpuDefault;
 
     DO_TEST("encrypted-disk", NONE);
+    DO_TEST("encrypted-disk-usage", NONE);
 
     DO_TEST("memtune", NONE);
     DO_TEST("memtune-unlimited", NONE);

@@ -25,6 +25,7 @@
 
 # include "internal.h"
 # include "virbuffer.h"
+# include "virsecret.h"
 # include "virutil.h"
 
 # include <libxml/tree.h>
@@ -40,7 +41,7 @@ typedef struct _virStorageEncryptionSecret virStorageEncryptionSecret;
 typedef virStorageEncryptionSecret *virStorageEncryptionSecretPtr;
 struct _virStorageEncryptionSecret {
     int type; /* virStorageEncryptionSecretType */
-    unsigned char uuid[VIR_UUID_BUFLEN];
+    virSecretLookupTypeDef seclookupdef;
 };
 
 typedef enum {

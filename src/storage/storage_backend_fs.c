@@ -1312,7 +1312,8 @@ virStorageBackendFileSystemLoadDefaultSecrets(virConnectPtr conn,
     vol->target.encryption->secrets[0] = encsec;
 
     encsec->type = VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE;
-    virSecretGetUUID(sec, encsec->uuid);
+    encsec->seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
+    virSecretGetUUID(sec, encsec->seclookupdef.u.uuid);
     virObjectUnref(sec);
 
     return 0;

@@ -34,6 +34,7 @@
 #include "virerror.h"
 #include "viruuid.h"
 #include "virfile.h"
+#include "virsecret.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -114,6 +115,7 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
     virStorageEncryptionSecretPtr ret;
     char *type_str = NULL;
     char *uuidstr = NULL;
+    char *usagestr = NULL;
 
     if (VIR_ALLOC(ret) < 0)
         return NULL;
@@ -133,21 +135,12 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
                        type_str);
         goto cleanup;
     }
+
+    if (virSecretLookupParseSecret(node, &ret->seclookupdef) < 0)
+        goto cleanup;
+
     VIR_FREE(type_str);
 
-    if ((uuidstr = virXPathString("string(./@uuid)", ctxt))) {
-        if (virUUIDParse(uuidstr, ret->uuid) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("malformed volume encryption uuid '%s'"),
-                           uuidstr);
-            goto cleanup;
-        }
-        VIR_FREE(uuidstr);
-    } else {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing volume encryption uuid"));
-        goto cleanup;
-    }
     ctxt->node = old_node;
     return ret;
 
@@ -155,6 +148,7 @@ virStorageEncryptionSecretParse(xmlXPathContextPtr ctxt,
     VIR_FREE(type_str);
     virStorageEncryptionSecretFree(ret);
     VIR_FREE(uuidstr);
+    VIR_FREE(usagestr);
     ctxt->node = old_node;
     return NULL;
 }
@@ -244,7 +238,6 @@ virStorageEncryptionSecretFormat(virBufferPtr buf,
                                  virStorageEncryptionSecretPtr secret)
 {
     const char *type;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (!(type = virStorageEncryptionSecretTypeToString(secret->type))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -252,9 +245,8 @@ virStorageEncryptionSecretFormat(virBufferPtr buf,
         return -1;
     }
 
-    virUUIDFormat(secret->uuid, uuidstr);
-    virBufferAsprintf(buf, "<secret type='%s' uuid='%s'/>\n",
-                      type, uuidstr);
+    virSecretLookupFormatSecret(buf, type, &secret->seclookupdef);
+
     return 0;
 }
 

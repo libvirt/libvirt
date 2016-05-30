@@ -501,6 +501,7 @@ mymain(void)
     DO_TEST("pci-serial-dev-chardev");
 
     DO_TEST("encrypted-disk");
+    DO_TEST("encrypted-disk-usage");
     DO_TEST("memtune");
     DO_TEST("memtune-unlimited");
     DO_TEST("blkiotune");
