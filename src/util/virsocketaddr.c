@@ -286,9 +286,9 @@ virSocketAddrIsPrivate(const virSocketAddr *addr)
     case AF_INET:
        val = ntohl(addr->data.inet4.sin_addr.s_addr);
 
-       return ((val & 0xFFFF0000) == ((192L << 24) + (168 << 16)) ||
-               (val & 0xFFF00000) == ((172L << 24) + (16  << 16)) ||
-               (val & 0xFF000000) == ((10L  << 24)));
+       return ((val & 0xFFFF0000) == ((192UL << 24) + (168 << 16)) ||
+               (val & 0xFFF00000) == ((172UL << 24) + (16  << 16)) ||
+               (val & 0xFF000000) == ((10UL  << 24)));
 
     case AF_INET6:
         return ((addr->data.inet6.sin6_addr.s6_addr[0] & 0xFE) == 0xFC ||
