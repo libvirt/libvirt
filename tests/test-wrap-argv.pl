@@ -59,70 +59,76 @@ sub rewrap {
     # Now each @lines represents a single command, we
     # can process them
     foreach my $line (@lines) {
-        my @bits = split / /, join('', $line);
+        &rewrap_line ($line);
+    }
 
-        # @bits contains env vars, then the command line
-        # and then the arguments
-        my @env;
-        my $cmd;
-        my @args;
+}
 
-        if ($bits[0] !~ /=/) {
-            $cmd = shift @bits;
-        }
+sub rewrap_line {
+    my $line = shift;
+    my @bits = split / /, join('', $line);
 
-        foreach my $bit (@bits) {
-            # If no command is defined yet, we must still
-            # have env vars
-            if (!defined $cmd) {
-                # Look for leading / to indicate command name
-                if ($bit =~ m,^/,) {
-                    $cmd = $bit;
-                } else {
-                    push @env, $bit;
-                }
+    # @bits contains env vars, then the command line
+    # and then the arguments
+    my @env;
+    my $cmd;
+    my @args;
+
+    if ($bits[0] !~ /=/) {
+        $cmd = shift @bits;
+    }
+
+    foreach my $bit (@bits) {
+        # If no command is defined yet, we must still
+        # have env vars
+        if (!defined $cmd) {
+            # Look for leading / to indicate command name
+            if ($bit =~ m,^/,) {
+                $cmd = $bit;
             } else {
-                # If there's a leading '-' then this is a new
-                # parameter, otherwise its a value for the prev
-                # parameter.
-                if ($bit =~ m,^-,) {
-                    push @args, $bit;
-                } else {
-                    $args[$#args] .= " " . $bit;
-                }
+                push @env, $bit;
+            }
+        } else {
+            # If there's a leading '-' then this is a new
+            # parameter, otherwise its a value for the prev
+            # parameter.
+            if ($bit =~ m,^-,) {
+                push @args, $bit;
+            } else {
+                $args[$#args] .= " " . $bit;
             }
         }
+    }
 
-        # Print env + command first
-        print join(" \\\n", @env, $cmd), " \\\n";
-        # We might have to split line argument values...
-        for (my $i = 0; $i <= $#args; $i++) {
-            my $arg = $args[$i];
-            while (length($arg) > 80) {
-                my $split = rindex $arg, ",", 80;
-                if ($split == -1) {
-                    $split = rindex $arg, ":", 80;
-                }
-                if ($split == -1) {
-                    $split = rindex $arg, " ", 80;
-                }
-                if ($split == -1) {
-                    warn "$file: cannot find nice place to split '$arg' below 80 chars\n";
-                    $split = 79;
-                }
-                $split++;
-
-                my $head = substr $arg, 0, $split;
-                $arg = substr $arg, $split;
-
-                print $head, "\\\n";
+    # Print env + command first
+    print join(" \\\n", @env, $cmd), " \\\n";
+    # We might have to split line argument values...
+    for (my $i = 0; $i <= $#args; $i++) {
+        my $arg = $args[$i];
+        while (length($arg) > 80) {
+            my $split = rindex $arg, ",", 80;
+            if ($split == -1) {
+                $split = rindex $arg, ":", 80;
             }
-            print $arg;
-            if ($i != $#args) {
-                print " \\\n";
-            } else {
-                print "\n";
+            if ($split == -1) {
+                $split = rindex $arg, " ", 80;
             }
+            if ($split == -1) {
+                warn "cannot find nice place to split '$arg' below 80 chars\n";
+                $split = 79;
+            }
+            $split++;
+
+            my $head = substr $arg, 0, $split;
+            $arg = substr $arg, $split;
+
+            print $head, "\\\n";
+        }
+        print $arg;
+        if ($i != $#args) {
+            print " \\\n";
+        } else {
+            print "\n";
         }
     }
 }
