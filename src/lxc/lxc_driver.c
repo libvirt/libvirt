@@ -2777,13 +2777,12 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                             int *nparams,
                             unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
     size_t i, j;
     virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
     unsigned int val;
     int ret = -1;
-    virCapsPtr caps = NULL;
     virLXCDomainObjPrivatePtr priv;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -2803,9 +2802,6 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
     if (virDomainGetBlkioParametersEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     if ((*nparams) == 0) {
         /* Current number of blkio parameters supported by cgroups */
         *nparams = LXC_NB_BLKIO_PARAM;
@@ -2813,11 +2809,10 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto cleanup;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+    if (def) {
         if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_BLKIO)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("blkio cgroup isn't mounted"));
@@ -2838,20 +2833,20 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                 break;
 
             case 1: /* blkiotune.device_weight */
-                if (vm->def->blkio.ndevices > 0) {
+                if (def->blkio.ndevices > 0) {
                     virBuffer buf = VIR_BUFFER_INITIALIZER;
                     bool comma = false;
 
-                    for (j = 0; j < vm->def->blkio.ndevices; j++) {
-                        if (!vm->def->blkio.devices[j].weight)
+                    for (j = 0; j < def->blkio.ndevices; j++) {
+                        if (!def->blkio.devices[j].weight)
                             continue;
                         if (comma)
                             virBufferAddChar(&buf, ',');
                         else
                             comma = true;
                         virBufferAsprintf(&buf, "%s,%u",
-                                          vm->def->blkio.devices[j].path,
-                                          vm->def->blkio.devices[j].weight);
+                                          def->blkio.devices[j].path,
+                                          def->blkio.devices[j].weight);
                     }
                     if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
@@ -2865,20 +2860,20 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                 break;
 
             case 2: /* blkiotune.device_read_iops */
-                if (vm->def->blkio.ndevices > 0) {
+                if (def->blkio.ndevices > 0) {
                     virBuffer buf = VIR_BUFFER_INITIALIZER;
                     bool comma = false;
 
-                    for (j = 0; j < vm->def->blkio.ndevices; j++) {
-                        if (!vm->def->blkio.devices[j].riops)
+                    for (j = 0; j < def->blkio.ndevices; j++) {
+                        if (!def->blkio.devices[j].riops)
                             continue;
                         if (comma)
                             virBufferAddChar(&buf, ',');
                         else
                             comma = true;
                         virBufferAsprintf(&buf, "%s,%u",
-                                          vm->def->blkio.devices[j].path,
-                                          vm->def->blkio.devices[j].riops);
+                                          def->blkio.devices[j].path,
+                                          def->blkio.devices[j].riops);
                     }
                     if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
@@ -2892,20 +2887,20 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                 break;
 
             case 3: /* blkiotune.device_write_iops */
-                if (vm->def->blkio.ndevices > 0) {
+                if (def->blkio.ndevices > 0) {
                     virBuffer buf = VIR_BUFFER_INITIALIZER;
                     bool comma = false;
 
-                    for (j = 0; j < vm->def->blkio.ndevices; j++) {
-                        if (!vm->def->blkio.devices[j].wiops)
+                    for (j = 0; j < def->blkio.ndevices; j++) {
+                        if (!def->blkio.devices[j].wiops)
                             continue;
                         if (comma)
                             virBufferAddChar(&buf, ',');
                         else
                             comma = true;
                         virBufferAsprintf(&buf, "%s,%u",
-                                          vm->def->blkio.devices[j].path,
-                                          vm->def->blkio.devices[j].wiops);
+                                          def->blkio.devices[j].path,
+                                          def->blkio.devices[j].wiops);
                     }
                     if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
@@ -2919,20 +2914,20 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                 break;
 
              case 4: /* blkiotune.device_read_bps */
-                if (vm->def->blkio.ndevices > 0) {
+                if (def->blkio.ndevices > 0) {
                     virBuffer buf = VIR_BUFFER_INITIALIZER;
                     bool comma = false;
 
-                    for (j = 0; j < vm->def->blkio.ndevices; j++) {
-                        if (!vm->def->blkio.devices[j].rbps)
+                    for (j = 0; j < def->blkio.ndevices; j++) {
+                        if (!def->blkio.devices[j].rbps)
                             continue;
                         if (comma)
                             virBufferAddChar(&buf, ',');
                         else
                             comma = true;
                         virBufferAsprintf(&buf, "%s,%llu",
-                                          vm->def->blkio.devices[j].path,
-                                          vm->def->blkio.devices[j].rbps);
+                                          def->blkio.devices[j].path,
+                                          def->blkio.devices[j].rbps);
                     }
                     if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
@@ -2946,20 +2941,20 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                 break;
 
              case 5: /* blkiotune.device_write_bps */
-                if (vm->def->blkio.ndevices > 0) {
+                if (def->blkio.ndevices > 0) {
                     virBuffer buf = VIR_BUFFER_INITIALIZER;
                     bool comma = false;
 
-                    for (j = 0; j < vm->def->blkio.ndevices; j++) {
-                        if (!vm->def->blkio.devices[j].wbps)
+                    for (j = 0; j < def->blkio.ndevices; j++) {
+                        if (!def->blkio.devices[j].wbps)
                             continue;
                         if (comma)
                             virBufferAddChar(&buf, ',');
                         else
                             comma = true;
                         virBufferAsprintf(&buf, "%s,%llu",
-                                          vm->def->blkio.devices[j].path,
-                                          vm->def->blkio.devices[j].wbps);
+                                          def->blkio.devices[j].path,
+                                          def->blkio.devices[j].wbps);
                     }
                     if (virBufferCheckError(&buf) < 0)
                         goto cleanup;
@@ -2973,7 +2968,7 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                 break;
             }
         }
-    } else if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    } else if (persistentDef) {
         for (i = 0; i < *nparams && i < LXC_NB_BLKIO_PARAM; i++) {
             virTypedParameterPtr param = &params[i];
             val = 0;
@@ -3158,7 +3153,6 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     return ret;
 }
 
