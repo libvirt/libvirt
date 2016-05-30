@@ -104,7 +104,7 @@ sub rewrap_line {
     print join(" \\\n", @env, $cmd), " \\\n";
     # We might have to split line argument values...
     for (my $i = 0; $i <= $#args; $i++) {
-        &rewrap_arg($args[$i]);
+        print &rewrap_arg($args[$i]);
 
         if ($i != $#args) {
             print " \\\n";
@@ -116,6 +116,7 @@ sub rewrap_line {
 
 sub rewrap_arg {
     my $arg = shift;
+    my @ret;
 
     while (length($arg) > 80) {
         my $split = rindex $arg, ",", 80;
@@ -131,10 +132,9 @@ sub rewrap_arg {
         }
         $split++;
 
-        my $head = substr $arg, 0, $split;
+        push @ret, substr $arg, 0, $split;
         $arg = substr $arg, $split;
-
-        print $head, "\\\n";
     }
-    print $arg;
+    push @ret, $arg;
+    return join("\\\n", @ret);
 }
