@@ -104,31 +104,37 @@ sub rewrap_line {
     print join(" \\\n", @env, $cmd), " \\\n";
     # We might have to split line argument values...
     for (my $i = 0; $i <= $#args; $i++) {
-        my $arg = $args[$i];
-        while (length($arg) > 80) {
-            my $split = rindex $arg, ",", 80;
-            if ($split == -1) {
-                $split = rindex $arg, ":", 80;
-            }
-            if ($split == -1) {
-                $split = rindex $arg, " ", 80;
-            }
-            if ($split == -1) {
-                warn "cannot find nice place to split '$arg' below 80 chars\n";
-                $split = 79;
-            }
-            $split++;
+        &rewrap_arg($args[$i]);
 
-            my $head = substr $arg, 0, $split;
-            $arg = substr $arg, $split;
-
-            print $head, "\\\n";
-        }
-        print $arg;
         if ($i != $#args) {
             print " \\\n";
         } else {
             print "\n";
         }
     }
+}
+
+sub rewrap_arg {
+    my $arg = shift;
+
+    while (length($arg) > 80) {
+        my $split = rindex $arg, ",", 80;
+        if ($split == -1) {
+            $split = rindex $arg, ":", 80;
+        }
+        if ($split == -1) {
+            $split = rindex $arg, " ", 80;
+        }
+        if ($split == -1) {
+            warn "cannot find nice place to split '$arg' below 80 chars\n";
+            $split = 79;
+        }
+        $split++;
+
+        my $head = substr $arg, 0, $split;
+        $arg = substr $arg, $split;
+
+        print $head, "\\\n";
+    }
+    print $arg;
 }
