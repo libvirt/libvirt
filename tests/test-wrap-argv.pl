@@ -59,7 +59,7 @@ sub rewrap {
     # Now each @lines represents a single command, we
     # can process them
     foreach my $line (@lines) {
-        &rewrap_line ($line);
+        print &rewrap_line ($line);
     }
 
 }
@@ -103,7 +103,7 @@ sub rewrap_line {
     # We might have to split line argument values...
     @args = map { &rewrap_arg($_) } @args;
     # Print env + command first
-    print join(" \\\n", @env, $cmd, @args), "\n";
+    return join(" \\\n", @env, $cmd, @args), "\n";
 }
 
 sub rewrap_arg {
