@@ -9103,57 +9103,6 @@ qemuDomainSetBlkioParameters(virDomainPtr dom,
 
 
 static int
-qemuDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
-                                          virTypedParameterPtr params,
-                                          int *nparams,
-                                          int maxparams)
-{
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
-    char *data = NULL;
-    size_t i;
-
-#define QEMU_BLKIO_ASSIGN(param, format, name)                                 \
-    if (*nparams < maxparams) {                                                \
-        for (i = 0; i < def->blkio.ndevices; i++) {                            \
-            if (!def->blkio.devices[i].param)                                  \
-                continue;                                                      \
-            virBufferAsprintf(&buf, "%s," format ",",                          \
-                              def->blkio.devices[i].path,                      \
-                              def->blkio.devices[i].param);                    \
-        }                                                                      \
-        virBufferTrim(&buf, ",", -1);                                          \
-        if (virBufferCheckError(&buf) < 0)                                     \
-            goto error;                                                        \
-        data = virBufferContentAndReset(&buf);                                 \
-        if (virTypedParameterAssign(&(params[(*nparams)++]), name,             \
-                                    VIR_TYPED_PARAM_STRING, data) < 0)         \
-            goto error;                                                        \
-        VIR_FREE(data);                                                        \
-    }
-
-    /* blkiotune.device_weight */
-    QEMU_BLKIO_ASSIGN(weight, "%u", VIR_DOMAIN_BLKIO_DEVICE_WEIGHT);
-    /* blkiotune.device_read_iops */
-    QEMU_BLKIO_ASSIGN(riops, "%u", VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS);
-    /* blkiotune.device_write_iops */
-    QEMU_BLKIO_ASSIGN(wiops, "%u", VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS);
-    /* blkiotune.device_read_bps */
-    QEMU_BLKIO_ASSIGN(rbps, "%llu", VIR_DOMAIN_BLKIO_DEVICE_READ_BPS);
-    /* blkiotune.device_write_bps */
-    QEMU_BLKIO_ASSIGN(wbps, "%llu", VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS);
-
-#undef QEMU_BLKIO_ASSIGN
-
-    return 0;
-
- error:
-    VIR_FREE(data);
-    virBufferFreeAndReset(&buf);
-    return -1;
-}
-
-
-static int
 qemuDomainGetBlkioParameters(virDomainPtr dom,
                              virTypedParameterPtr params,
                              int *nparams,
@@ -9220,8 +9169,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                                     VIR_TYPED_PARAM_UINT, val) < 0)
             goto cleanup;
 
-        if (qemuDomainGetBlkioParametersAssignFromDef(def, params, nparams,
-                                                      maxparams) < 0)
+        if (virDomainGetBlkioParametersAssignFromDef(def, params, nparams,
+                                                     maxparams) < 0)
             goto cleanup;
 
     } else if (persistentDef) {
@@ -9232,8 +9181,8 @@ qemuDomainGetBlkioParameters(virDomainPtr dom,
                                     persistentDef->blkio.weight) < 0)
             goto cleanup;
 
-        if (qemuDomainGetBlkioParametersAssignFromDef(persistentDef, params,
-                                                      nparams, maxparams) < 0)
+        if (virDomainGetBlkioParametersAssignFromDef(persistentDef, params,
+                                                     nparams, maxparams) < 0)
             goto cleanup;
     }
 

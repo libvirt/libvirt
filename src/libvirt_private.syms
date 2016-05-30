@@ -93,6 +93,7 @@ virDomainCCWAddressReleaseAddr;
 virDomainCCWAddressSetCreate;
 virDomainCCWAddressSetFree;
 virDomainCCWAddressValidate;
+virDomainGetBlkioParametersAssignFromDef;
 virDomainPCIAddressAsString;
 virDomainPCIAddressBusSetModel;
 virDomainPCIAddressEnsureAddr;

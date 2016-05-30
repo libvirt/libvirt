@@ -52,6 +52,7 @@
 # include "virprocess.h"
 # include "virgic.h"
 # include "virperf.h"
+# include "virtypedparam.h"
 
 /* forward declarations of all device types, required by
  * virDomainDeviceDef
@@ -3083,4 +3084,9 @@ bool virDomainDefHasMemballoon(const virDomainDef *def) ATTRIBUTE_NONNULL(1);
 
 char *virDomainObjGetShortName(virDomainObjPtr vm);
 
+int
+virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
+                                         virTypedParameterPtr params,
+                                         int *nparams,
+                                         int maxparams);
 #endif /* __DOMAIN_CONF_H */
