@@ -2571,10 +2571,10 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
     virLXCDriverPtr driver = dom->conn->privateData;
     size_t i;
     virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
     int ret = -1;
     virLXCDriverConfigPtr cfg = NULL;
-    virCapsPtr caps = NULL;
     virLXCDomainObjPrivatePtr priv;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -2604,17 +2604,13 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
     if (virDomainSetBlkioParametersEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
     if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+    if (def) {
         if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_BLKIO)) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("blkio cgroup isn't mounted"));
@@ -2623,7 +2619,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
     }
 
     ret = 0;
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
+    if (def) {
         for (i = 0; i < nparams; i++) {
             virTypedParameterPtr param = &params[i];
 
@@ -2718,8 +2714,8 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
                 }
 
                 if (j != ndevices ||
-                    lxcDomainMergeBlkioDevice(&vm->def->blkio.devices,
-                                              &vm->def->blkio.ndevices,
+                    lxcDomainMergeBlkioDevice(&def->blkio.devices,
+                                              &def->blkio.ndevices,
                                               devices, ndevices, param->field) < 0)
                     ret = -1;
                 virBlkioDeviceArrayClear(devices, ndevices);
@@ -2729,10 +2725,7 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
     }
     if (ret < 0)
         goto endjob;
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
-        /* Clang can't see that if we get here, persistentDef was set.  */
-        sa_assert(persistentDef);
-
+    if (persistentDef) {
         for (i = 0; i < nparams; i++) {
             virTypedParameterPtr param = &params[i];
 
@@ -2771,7 +2764,6 @@ lxcDomainSetBlkioParameters(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }
