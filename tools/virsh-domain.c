@@ -57,6 +57,7 @@
 #include "virtypedparam.h"
 #include "virxml.h"
 #include "virsh-nodedev.h"
+#include "viruri.h"
 
 /* Gnulib doesn't guarantee SA_SIGINFO support.  */
 #ifndef SA_SIGINFO
@@ -10617,6 +10618,30 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
             VIR_FREE(xpath);
         }
 
+        /* If listen_addr is 0.0.0.0 or [::] we should try to parse URI and set
+         * listen_addr based on current URI. */
+        if (listen_addr) {
+            if (virSocketAddrParse(&addr, listen_addr, AF_UNSPEC) > 0 &&
+                virSocketAddrIsWildcard(&addr)) {
+
+                virConnectPtr conn = ((virshControlPtr)(ctl->privData))->conn;
+                char *uriStr = virConnectGetURI(conn);
+                virURIPtr uri = NULL;
+
+                if (uriStr) {
+                    uri = virURIParse(uriStr);
+                    VIR_FREE(uriStr);
+                }
+
+                /* It's safe to free the listen_addr even if parsing of URI
+                 * fails, if there is no listen_addr we will print "localhost". */
+                VIR_FREE(listen_addr);
+
+                if (uri && VIR_STRDUP(listen_addr, uri->server) < 0)
+                    goto cleanup;
+            }
+        }
+
         /* We can query this info for all the graphics types since we'll
          * get nothing for the unsupported ones (just rdp for now).
          * Also the parameter '--include-password' was already taken
@@ -10638,9 +10663,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
             virBufferAsprintf(&buf, ":%s@", passwd);
 
         /* Then host name or IP */
-        if (!listen_addr ||
-            (virSocketAddrParse(&addr, listen_addr, AF_UNSPEC) > 0 &&
-             virSocketAddrIsWildcard(&addr)))
+        if (!listen_addr)
             virBufferAddLit(&buf, "localhost");
         else if (strchr(listen_addr, ':'))
             virBufferAsprintf(&buf, "[%s]", listen_addr);
