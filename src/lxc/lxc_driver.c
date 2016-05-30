@@ -2777,10 +2777,10 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
                             int *nparams,
                             unsigned int flags)
 {
-    size_t i, j;
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
+    int maxparams = LXC_NB_BLKIO_PARAM;
     unsigned int val;
     int ret = -1;
     virLXCDomainObjPrivatePtr priv;
@@ -2807,7 +2807,11 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
         *nparams = LXC_NB_BLKIO_PARAM;
         ret = 0;
         goto cleanup;
+    } else if (*nparams < maxparams) {
+        maxparams = *nparams;
     }
+
+    *nparams = 0;
 
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto cleanup;
@@ -2819,336 +2823,31 @@ lxcDomainGetBlkioParameters(virDomainPtr dom,
             goto cleanup;
         }
 
-        for (i = 0; i < *nparams && i < LXC_NB_BLKIO_PARAM; i++) {
-            virTypedParameterPtr param = &params[i];
-            val = 0;
+        /* fill blkio weight here */
+        if (virCgroupGetBlkioWeight(priv->cgroup, &val) < 0)
+            goto cleanup;
+        if (virTypedParameterAssign(&(params[(*nparams)++]),
+                                    VIR_DOMAIN_BLKIO_WEIGHT,
+                                    VIR_TYPED_PARAM_UINT, val) < 0)
+            goto cleanup;
 
-            switch (i) {
-            case 0: /* fill blkio weight here */
-                if (virCgroupGetBlkioWeight(priv->cgroup, &val) < 0)
-                    goto cleanup;
-                if (virTypedParameterAssign(param, VIR_DOMAIN_BLKIO_WEIGHT,
-                                            VIR_TYPED_PARAM_UINT, val) < 0)
-                    goto cleanup;
-                break;
+        if (virDomainGetBlkioParametersAssignFromDef(def, params, nparams,
+                                                     maxparams) < 0)
+            goto cleanup;
 
-            case 1: /* blkiotune.device_weight */
-                if (def->blkio.ndevices > 0) {
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
-                    bool comma = false;
-
-                    for (j = 0; j < def->blkio.ndevices; j++) {
-                        if (!def->blkio.devices[j].weight)
-                            continue;
-                        if (comma)
-                            virBufferAddChar(&buf, ',');
-                        else
-                            comma = true;
-                        virBufferAsprintf(&buf, "%s,%u",
-                                          def->blkio.devices[j].path,
-                                          def->blkio.devices[j].weight);
-                    }
-                    if (virBufferCheckError(&buf) < 0)
-                        goto cleanup;
-                    param->value.s = virBufferContentAndReset(&buf);
-                }
-                if (virTypedParameterAssign(param,
-                                            VIR_DOMAIN_BLKIO_DEVICE_WEIGHT,
-                                            VIR_TYPED_PARAM_STRING,
-                                            param->value.s) < 0)
-                    goto cleanup;
-                break;
-
-            case 2: /* blkiotune.device_read_iops */
-                if (def->blkio.ndevices > 0) {
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
-                    bool comma = false;
-
-                    for (j = 0; j < def->blkio.ndevices; j++) {
-                        if (!def->blkio.devices[j].riops)
-                            continue;
-                        if (comma)
-                            virBufferAddChar(&buf, ',');
-                        else
-                            comma = true;
-                        virBufferAsprintf(&buf, "%s,%u",
-                                          def->blkio.devices[j].path,
-                                          def->blkio.devices[j].riops);
-                    }
-                    if (virBufferCheckError(&buf) < 0)
-                        goto cleanup;
-                    param->value.s = virBufferContentAndReset(&buf);
-                }
-                if (virTypedParameterAssign(param,
-                                            VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS,
-                                            VIR_TYPED_PARAM_STRING,
-                                            param->value.s) < 0)
-                    goto cleanup;
-                break;
-
-            case 3: /* blkiotune.device_write_iops */
-                if (def->blkio.ndevices > 0) {
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
-                    bool comma = false;
-
-                    for (j = 0; j < def->blkio.ndevices; j++) {
-                        if (!def->blkio.devices[j].wiops)
-                            continue;
-                        if (comma)
-                            virBufferAddChar(&buf, ',');
-                        else
-                            comma = true;
-                        virBufferAsprintf(&buf, "%s,%u",
-                                          def->blkio.devices[j].path,
-                                          def->blkio.devices[j].wiops);
-                    }
-                    if (virBufferCheckError(&buf) < 0)
-                        goto cleanup;
-                    param->value.s = virBufferContentAndReset(&buf);
-                }
-                if (virTypedParameterAssign(param,
-                                            VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS,
-                                            VIR_TYPED_PARAM_STRING,
-                                            param->value.s) < 0)
-                    goto cleanup;
-                break;
-
-             case 4: /* blkiotune.device_read_bps */
-                if (def->blkio.ndevices > 0) {
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
-                    bool comma = false;
-
-                    for (j = 0; j < def->blkio.ndevices; j++) {
-                        if (!def->blkio.devices[j].rbps)
-                            continue;
-                        if (comma)
-                            virBufferAddChar(&buf, ',');
-                        else
-                            comma = true;
-                        virBufferAsprintf(&buf, "%s,%llu",
-                                          def->blkio.devices[j].path,
-                                          def->blkio.devices[j].rbps);
-                    }
-                    if (virBufferCheckError(&buf) < 0)
-                        goto cleanup;
-                    param->value.s = virBufferContentAndReset(&buf);
-                }
-                if (virTypedParameterAssign(param,
-                                            VIR_DOMAIN_BLKIO_DEVICE_READ_BPS,
-                                            VIR_TYPED_PARAM_STRING,
-                                            param->value.s) < 0)
-                    goto cleanup;
-                break;
-
-             case 5: /* blkiotune.device_write_bps */
-                if (def->blkio.ndevices > 0) {
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
-                    bool comma = false;
-
-                    for (j = 0; j < def->blkio.ndevices; j++) {
-                        if (!def->blkio.devices[j].wbps)
-                            continue;
-                        if (comma)
-                            virBufferAddChar(&buf, ',');
-                        else
-                            comma = true;
-                        virBufferAsprintf(&buf, "%s,%llu",
-                                          def->blkio.devices[j].path,
-                                          def->blkio.devices[j].wbps);
-                    }
-                    if (virBufferCheckError(&buf) < 0)
-                        goto cleanup;
-                    param->value.s = virBufferContentAndReset(&buf);
-                }
-                if (virTypedParameterAssign(param,
-                                            VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS,
-                                            VIR_TYPED_PARAM_STRING,
-                                            param->value.s) < 0)
-                    goto cleanup;
-                break;
-            }
-        }
     } else if (persistentDef) {
-        for (i = 0; i < *nparams && i < LXC_NB_BLKIO_PARAM; i++) {
-            virTypedParameterPtr param = &params[i];
-            val = 0;
-            param->value.ui = 0;
-            param->type = VIR_TYPED_PARAM_UINT;
+        /* fill blkio weight here */
+        if (virTypedParameterAssign(&(params[(*nparams)++]),
+                                    VIR_DOMAIN_BLKIO_WEIGHT,
+                                    VIR_TYPED_PARAM_UINT,
+                                    persistentDef->blkio.weight) < 0)
+            goto cleanup;
 
-            switch (i) {
-            case 0: /* fill blkio weight here */
-                if (virStrcpyStatic(param->field, VIR_DOMAIN_BLKIO_WEIGHT) == NULL) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Field name '%s' too long"),
-                                   VIR_DOMAIN_BLKIO_WEIGHT);
-                    goto cleanup;
-                }
-                param->value.ui = persistentDef->blkio.weight;
-                break;
-
-            case 1: /* blkiotune.device_weight */
-                if (persistentDef->blkio.ndevices > 0) {
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
-                    bool comma = false;
-
-                    for (j = 0; j < persistentDef->blkio.ndevices; j++) {
-                        if (!persistentDef->blkio.devices[j].weight)
-                            continue;
-                        if (comma)
-                            virBufferAddChar(&buf, ',');
-                        else
-                            comma = true;
-                        virBufferAsprintf(&buf, "%s,%u",
-                                          persistentDef->blkio.devices[j].path,
-                                          persistentDef->blkio.devices[j].weight);
-                    }
-                    if (virBufferCheckError(&buf) < 0)
-                        goto cleanup;
-                    param->value.s = virBufferContentAndReset(&buf);
-                }
-                if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
-                    goto cleanup;
-                param->type = VIR_TYPED_PARAM_STRING;
-                if (virStrcpyStatic(param->field,
-                                    VIR_DOMAIN_BLKIO_DEVICE_WEIGHT) == NULL) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Field name '%s' too long"),
-                                   VIR_DOMAIN_BLKIO_DEVICE_WEIGHT);
-                    goto cleanup;
-                }
-                break;
-
-            case 2: /* blkiotune.device_read_iops */
-                if (persistentDef->blkio.ndevices > 0) {
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
-                    bool comma = false;
-
-                    for (j = 0; j < persistentDef->blkio.ndevices; j++) {
-                        if (!persistentDef->blkio.devices[j].riops)
-                            continue;
-                        if (comma)
-                            virBufferAddChar(&buf, ',');
-                        else
-                            comma = true;
-                        virBufferAsprintf(&buf, "%s,%u",
-                                          persistentDef->blkio.devices[j].path,
-                                          persistentDef->blkio.devices[j].riops);
-                    }
-                    if (virBufferCheckError(&buf) < 0)
-                        goto cleanup;
-                    param->value.s = virBufferContentAndReset(&buf);
-                }
-                if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
-                    goto cleanup;
-                param->type = VIR_TYPED_PARAM_STRING;
-                if (virStrcpyStatic(param->field,
-                                    VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS) == NULL) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Field name '%s' too long"),
-                                   VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS);
-                    goto cleanup;
-                }
-                break;
-            case 3: /* blkiotune.device_write_iops */
-                if (persistentDef->blkio.ndevices > 0) {
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
-                    bool comma = false;
-
-                    for (j = 0; j < persistentDef->blkio.ndevices; j++) {
-                        if (!persistentDef->blkio.devices[j].wiops)
-                            continue;
-                        if (comma)
-                            virBufferAddChar(&buf, ',');
-                        else
-                            comma = true;
-                        virBufferAsprintf(&buf, "%s,%u",
-                                          persistentDef->blkio.devices[j].path,
-                                          persistentDef->blkio.devices[j].wiops);
-                    }
-                    if (virBufferCheckError(&buf) < 0)
-                        goto cleanup;
-                    param->value.s = virBufferContentAndReset(&buf);
-                }
-                if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
-                    goto cleanup;
-                param->type = VIR_TYPED_PARAM_STRING;
-                if (virStrcpyStatic(param->field,
-                                    VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS) == NULL) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Field name '%s' too long"),
-                                   VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS);
-                    goto cleanup;
-                }
-                break;
-            case 4: /* blkiotune.device_read_bps */
-                if (persistentDef->blkio.ndevices > 0) {
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
-                    bool comma = false;
-
-                    for (j = 0; j < persistentDef->blkio.ndevices; j++) {
-                        if (!persistentDef->blkio.devices[j].rbps)
-                            continue;
-                        if (comma)
-                            virBufferAddChar(&buf, ',');
-                        else
-                            comma = true;
-                        virBufferAsprintf(&buf, "%s,%llu",
-                                          persistentDef->blkio.devices[j].path,
-                                          persistentDef->blkio.devices[j].rbps);
-                    }
-                    if (virBufferCheckError(&buf) < 0)
-                        goto cleanup;
-                    param->value.s = virBufferContentAndReset(&buf);
-                }
-                if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
-                    goto cleanup;
-                param->type = VIR_TYPED_PARAM_STRING;
-                if (virStrcpyStatic(param->field,
-                                    VIR_DOMAIN_BLKIO_DEVICE_READ_BPS) == NULL) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Field name '%s' too long"),
-                                   VIR_DOMAIN_BLKIO_DEVICE_READ_BPS);
-                    goto cleanup;
-                }
-                break;
-
-            case 5: /* blkiotune.device_write_bps */
-                if (persistentDef->blkio.ndevices > 0) {
-                    virBuffer buf = VIR_BUFFER_INITIALIZER;
-                    bool comma = false;
-
-                    for (j = 0; j < persistentDef->blkio.ndevices; j++) {
-                        if (!persistentDef->blkio.devices[j].wbps)
-                            continue;
-                        if (comma)
-                            virBufferAddChar(&buf, ',');
-                        else
-                            comma = true;
-                        virBufferAsprintf(&buf, "%s,%llu",
-                                          persistentDef->blkio.devices[j].path,
-                                          persistentDef->blkio.devices[j].wbps);
-                    }
-                    if (virBufferCheckError(&buf) < 0)
-                        goto cleanup;
-                    param->value.s = virBufferContentAndReset(&buf);
-                }
-                if (!param->value.s && VIR_STRDUP(param->value.s, "") < 0)
-                    goto cleanup;
-                param->type = VIR_TYPED_PARAM_STRING;
-                if (virStrcpyStatic(param->field,
-                                    VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS) == NULL) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Field name '%s' too long"),
-                                   VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS);
-                    goto cleanup;
-                }
-                break;
-            }
-        }
+        if (virDomainGetBlkioParametersAssignFromDef(persistentDef, params,
+                                                     nparams, maxparams) < 0)
+            goto cleanup;
     }
 
-    if (LXC_NB_BLKIO_PARAM < *nparams)
-        *nparams = LXC_NB_BLKIO_PARAM;
     ret = 0;
 
  cleanup:
