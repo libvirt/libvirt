@@ -100,18 +100,10 @@ sub rewrap_line {
         }
     }
 
-    # Print env + command first
-    print join(" \\\n", @env, $cmd), " \\\n";
     # We might have to split line argument values...
-    for (my $i = 0; $i <= $#args; $i++) {
-        print &rewrap_arg($args[$i]);
-
-        if ($i != $#args) {
-            print " \\\n";
-        } else {
-            print "\n";
-        }
-    }
+    @args = map { &rewrap_arg($_) } @args;
+    # Print env + command first
+    print join(" \\\n", @env, $cmd, @args), "\n";
 }
 
 sub rewrap_arg {
