@@ -3404,9 +3404,14 @@ networkUpdate(virNetworkPtr net,
         if (section == VIR_NETWORK_SECTION_BRIDGE ||
             section == VIR_NETWORK_SECTION_DOMAIN ||
             section == VIR_NETWORK_SECTION_IP ||
-            section == VIR_NETWORK_SECTION_IP_DHCP_RANGE) {
-            /* these sections all change things on the dnsmasq commandline,
-             * so we need to kill and restart dnsmasq.
+            section == VIR_NETWORK_SECTION_IP_DHCP_RANGE ||
+            section == VIR_NETWORK_SECTION_DNS_TXT ||
+            section == VIR_NETWORK_SECTION_DNS_SRV) {
+            /* these sections all change things on the dnsmasq
+             * commandline (i.e. in the .conf file), so we need to
+             * kill and restart dnsmasq, because dnsmasq sets its uid
+             * to "nobody" after it starts, and is unable to re-read
+             * the conf file (owned by root, mode 600)
              */
             if (networkRestartDhcpDaemon(driver, network) < 0)
                 goto cleanup;
@@ -3434,12 +3439,10 @@ networkUpdate(virNetworkPtr net,
                 goto cleanup;
             }
 
-        } else if (section == VIR_NETWORK_SECTION_DNS_HOST ||
-                   section == VIR_NETWORK_SECTION_DNS_TXT ||
-                   section == VIR_NETWORK_SECTION_DNS_SRV) {
-            /* these sections only change things in config files, so we
-             * can just update the config files and send SIGHUP to
-             * dnsmasq.
+        } else if (section == VIR_NETWORK_SECTION_DNS_HOST) {
+            /* this section only changes data in an external file
+             * (not the .conf file) so we can just update the config
+             * files and send SIGHUP to dnsmasq.
              */
             if (networkRefreshDhcpDaemon(driver, network) < 0)
                 goto cleanup;
