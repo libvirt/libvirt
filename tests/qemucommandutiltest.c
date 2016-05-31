@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Red Hat, Inc.
+ * Copyright (C) 2015-2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,8 +19,8 @@
 
 #include <config.h>
 
-#include "qemu/qemu_command.h"
 #include "util/virjson.h"
+#include "util/virqemu.h"
 #include "testutils.h"
 #include "testutilsqemu.h"
 
@@ -51,9 +51,8 @@ testQemuCommandBuildObjectFromJSON(const void *opaque)
                     data->expectprops ? data->expectprops : "") < 0)
         return -1;
 
-    result = qemuBuildObjectCommandlineFromJSON("testobject",
-                                                "testalias",
-                                                val);
+    result = virQEMUBuildObjectCommandlineFromJSON("testobject",
+                                                   "testalias", val);
 
     if (STRNEQ_NULLABLE(expect, result)) {
         fprintf(stderr, "\nFailed to create object string. "

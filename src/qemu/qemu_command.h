@@ -44,10 +44,6 @@
 
 VIR_ENUM_DECL(qemuVideo)
 
-char *qemuBuildObjectCommandlineFromJSON(const char *type,
-                                         const char *alias,
-                                         virJSONValuePtr props);
-
 virCommandPtr qemuBuildCommandLine(virQEMUDriverPtr driver,
                                    virLogManagerPtr logManager,
                                    virDomainDefPtr def,

@@ -2141,6 +2141,10 @@ virProcessTranslateStatus;
 virProcessWait;
 
 
+# util/virqemu.h
+virQEMUBuildObjectCommandlineFromJSON;
+
+
 # util/virrandom.h
 virRandom;
 virRandomBits;

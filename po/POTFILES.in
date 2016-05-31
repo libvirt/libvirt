@@ -225,6 +225,7 @@ src/util/virpidfile.c
 src/util/virpolkit.c
 src/util/virportallocator.c
 src/util/virprocess.c
+src/util/virqemu.c
 src/util/virrandom.c
 src/util/virrotatingfile.c
 src/util/virscsi.c
