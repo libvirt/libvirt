@@ -869,10 +869,15 @@ virStoragePloopResize(virStorageVolDefPtr vol,
     return ret;
 }
 
+/* Flag values shared w/ storagevolxml2argvtest.c.
+ *
+ * QEMU_IMG_BACKING_FORMAT_OPTIONS (added in qemu 0.11)
+ * QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT
+ *    was made necessary due to 2.0 change to change the default
+ *    qcow2 file format from 0.10 to 1.1.
+ */
 enum {
-    QEMU_IMG_BACKING_FORMAT_NONE = 0,
-    QEMU_IMG_BACKING_FORMAT_FLAG,
-    QEMU_IMG_BACKING_FORMAT_OPTIONS,
+    QEMU_IMG_BACKING_FORMAT_OPTIONS = 0,
     QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT,
 };
 
@@ -904,46 +909,18 @@ virStorageBackendQemuImgSupportsCompat(const char *qemuimg)
 static int
 virStorageBackendQEMUImgBackingFormat(const char *qemuimg)
 {
-    char *help = NULL;
-    char *start;
-    char *end;
-    char *tmp;
-    int ret = -1;
-    int exitstatus;
-    virCommandPtr cmd = virCommandNewArgList(qemuimg, "-h", NULL);
+    /* As of QEMU 0.11 the [-o options] support was added via qemu
+     * commit id '9ea2ea71', so we start with that base and figure
+     * out what else we have */
+    int ret = QEMU_IMG_BACKING_FORMAT_OPTIONS;
 
-    virCommandAddEnvString(cmd, "LC_ALL=C");
-    virCommandSetOutputBuffer(cmd, &help);
-    virCommandClearCaps(cmd);
+    /* QEMU 2.0 changed to using a format that only QEMU 1.1 and newer
+     * understands. Since we still support QEMU 0.12 and newer, we need
+     * to be able to handle the previous format as can be set via a
+     * compat=0.10 option. */
+    if (virStorageBackendQemuImgSupportsCompat(qemuimg))
+        ret = QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT;
 
-    /* qemuimg doesn't return zero exit status on -h,
-     * therefore we need to provide pointer for storing
-     * exit status, although we don't parse it any later */
-    if (virCommandRun(cmd, &exitstatus) < 0)
-        goto cleanup;
-
-    if ((start = strstr(help, " create ")) == NULL ||
-        (end = strstr(start, "\n")) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unable to parse qemu-img output '%s'"),
-                       help);
-        goto cleanup;
-    }
-    if (((tmp = strstr(start, "-F fmt")) && tmp < end) ||
-        ((tmp = strstr(start, "-F backing_fmt")) && tmp < end)) {
-        ret = QEMU_IMG_BACKING_FORMAT_FLAG;
-    } else if ((tmp = strstr(start, "[-o options]")) && tmp < end) {
-        if (virStorageBackendQemuImgSupportsCompat(qemuimg))
-            ret = QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT;
-        else
-            ret = QEMU_IMG_BACKING_FORMAT_OPTIONS;
-    } else {
-        ret = QEMU_IMG_BACKING_FORMAT_NONE;
-    }
-
- cleanup:
-    virCommandFree(cmd);
-    VIR_FREE(help);
     return ret;
 }
 
@@ -1218,29 +1195,17 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
     if (info.backingPath)
         virCommandAddArgList(cmd, "-b", info.backingPath, NULL);
 
-    if (imgformat >= QEMU_IMG_BACKING_FORMAT_OPTIONS) {
-        if (info.format == VIR_STORAGE_FILE_QCOW2 && !info.compat &&
-            imgformat == QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT)
-            info.compat = "0.10";
+    if (info.format == VIR_STORAGE_FILE_QCOW2 && !info.compat &&
+        imgformat >= QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT)
+        info.compat = "0.10";
 
-        if (virStorageBackendCreateQemuImgOpts(&opts, info) < 0) {
-            virCommandFree(cmd);
-            return NULL;
-        }
-        if (opts)
-            virCommandAddArgList(cmd, "-o", opts, NULL);
-        VIR_FREE(opts);
-    } else {
-        if (info.backingPath) {
-            if (imgformat == QEMU_IMG_BACKING_FORMAT_FLAG)
-                virCommandAddArgList(cmd, "-F", backingType, NULL);
-            else
-                VIR_DEBUG("Unable to set backing store format for %s with %s",
-                          info.path, create_tool);
-        }
-        if (info.encryption)
-            virCommandAddArg(cmd, "-e");
+    if (virStorageBackendCreateQemuImgOpts(&opts, info) < 0) {
+        virCommandFree(cmd);
+        return NULL;
     }
+    if (opts)
+        virCommandAddArgList(cmd, "-o", opts, NULL);
+    VIR_FREE(opts);
 
     if (info.inputPath)
         virCommandAddArg(cmd, info.inputPath);

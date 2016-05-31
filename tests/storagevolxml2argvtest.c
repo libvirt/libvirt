@@ -168,9 +168,7 @@ testCompareXMLToArgvHelper(const void *data)
 }
 
 enum {
-    FMT_NONE = 0,
-    FMT_FLAG,
-    FMT_OPTIONS,
+    FMT_OPTIONS = 0,
     FMT_COMPAT,
 };
 
@@ -217,24 +215,6 @@ mymain(void)
     DO_TEST_FAIL("pool-dir", "vol-qcow2",
                  "pool-dir", "vol-file",
                  "qcow2-convert-prealloc", flags, FMT_OPTIONS);
-    DO_TEST("pool-dir", "vol-qcow2",
-            NULL, NULL,
-            "qcow2-flag", 0, FMT_FLAG);
-    DO_TEST("pool-dir", "vol-qcow2-nobacking",
-            NULL, NULL,
-            "qcow2-nobacking-flag", 0, FMT_FLAG);
-    DO_TEST("pool-dir", "vol-qcow2-nobacking",
-            "pool-dir", "vol-file",
-            "qcow2-nobacking-convert-flag", 0, FMT_FLAG);
-    DO_TEST("pool-dir", "vol-qcow2",
-            NULL, NULL,
-            "qcow2-none", 0, FMT_NONE);
-    DO_TEST("pool-dir", "vol-qcow2-nobacking",
-            NULL, NULL,
-            "qcow2-nobacking-none", 0, FMT_NONE);
-    DO_TEST("pool-dir", "vol-qcow2-nobacking",
-            "pool-dir", "vol-file",
-            "qcow2-nobacking-convert-none", 0, FMT_NONE);
     DO_TEST("pool-dir", "vol-qcow2-lazy",
             NULL, NULL,
             "qcow2-lazy", 0, FMT_OPTIONS);
