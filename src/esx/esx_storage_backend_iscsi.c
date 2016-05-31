@@ -687,7 +687,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
         }
     }
 
-    if (!hostScsiDisk) {
+    if (!scsiLun) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could find volume with name: %s"), volume->name);
         goto cleanup;
@@ -697,7 +697,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 
     def.name = volume->name;
 
-    md5_buffer(scsiLun->uuid, strlen(hostScsiDisk->uuid), md5);
+    md5_buffer(scsiLun->uuid, strlen(scsiLun->uuid), md5);
 
     virUUIDFormat(md5, uuid_string);
 
