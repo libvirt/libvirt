@@ -22,7 +22,16 @@
 # of the file. Parameter values that are longer than 80 chars will
 # also be split.
 #
+# If --in-place is supplied as the first parameter of this script,
+# the files will be changed in place.
+# Otherwise the rewrapped files are printed to the standard output.
 
+$in_place = 0;
+
+if (@ARGV[0] eq "--in-place") {
+    $in_place = 1;
+    shift @ARGV;
+}
 
 foreach my $file (@ARGV) {
     &rewrap($file);
@@ -57,10 +66,19 @@ sub rewrap {
 
     # Now each @lines represents a single command, we
     # can process them
-    foreach my $line (@lines) {
-        print &rewrap_line ($line);
-    }
+    @lines = map { &rewrap_line($_) } @lines;
 
+    if ($in_place) {
+        open FILE, ">", $file or die "cannot write $file: $!";
+        foreach my $line (@lines) {
+            print FILE $line;
+        }
+        close FILE;
+    } else {
+        foreach my $line (@lines) {
+            print $line;
+        }
+    }
 }
 
 sub rewrap_line {

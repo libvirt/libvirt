@@ -438,26 +438,20 @@ static int
 virTestRewrapFile(const char *filename)
 {
     int ret = -1;
-    char *outbuf = NULL;
     char *script = NULL;
     virCommandPtr cmd = NULL;
 
     if (virAsprintf(&script, "%s/test-wrap-argv.pl", abs_srcdir) < 0)
         goto cleanup;
 
-    cmd = virCommandNewArgList(script, filename, NULL);
-    virCommandSetOutputBuffer(cmd, &outbuf);
+    cmd = virCommandNewArgList(script, "--in-place", filename, NULL);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    if (virFileWriteStr(filename, outbuf, 0666) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
     VIR_FREE(script);
     virCommandFree(cmd);
-    VIR_FREE(outbuf);
     return ret;
 }
 
