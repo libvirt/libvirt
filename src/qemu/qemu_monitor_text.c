@@ -892,7 +892,7 @@ qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
         /* extract device name and make sure that it's followed by
          * a colon and space */
         dev_name = line;
-        if (!(line = strchr(line, ':')) && line[1] != ' ') {
+        if (!(line = strchr(line, ':')) || line[1] != ' ') {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("info blockstats reply was malformed"));
             goto cleanup;
