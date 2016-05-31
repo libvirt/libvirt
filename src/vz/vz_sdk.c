@@ -1077,6 +1077,7 @@ prlsdkGetSerialInfo(PRL_HANDLE serialPort, virDomainChrDefPtr chr)
     PRL_UINT32 serialPortIndex;
     PRL_UINT32 emulatedType;
     char *friendlyName = NULL;
+    PRL_SERIAL_PORT_SOCKET_OPERATION_MODE socket_mode;
 
     chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
     chr->targetTypeAttr = false;
@@ -1091,6 +1092,9 @@ prlsdkGetSerialInfo(PRL_HANDLE serialPort, virDomainChrDefPtr chr)
                                                  serialPort)))
         goto error;
 
+    pret = PrlVmDevSerial_GetSocketMode(serialPort, &socket_mode);
+    prlsdkCheckRetGoto(pret, error);
+
     switch (emulatedType) {
     case PDT_USE_OUTPUT_FILE:
         chr->source.type = VIR_DOMAIN_CHR_TYPE_FILE;
@@ -1099,6 +1103,7 @@ prlsdkGetSerialInfo(PRL_HANDLE serialPort, virDomainChrDefPtr chr)
     case PDT_USE_SERIAL_PORT_SOCKET_MODE:
         chr->source.type = VIR_DOMAIN_CHR_TYPE_UNIX;
         chr->source.data.nix.path = friendlyName;
+        chr->source.data.nix.listen = socket_mode == PSP_SERIAL_SOCKET_SERVER;
         break;
     case PDT_USE_REAL_DEVICE:
         chr->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
