@@ -21,8 +21,8 @@
   <feature name='osxsave'/>
   <feature name='f16c'/>
   <feature name='rdrand'/>
+  <feature name='tsc_adjust'/>
   <feature name='pdpe1gb'/>
   <feature name='abm'/>
-  <feature name='tsc_adjust'/>
   <feature name='invtsc'/>
 </cpu>

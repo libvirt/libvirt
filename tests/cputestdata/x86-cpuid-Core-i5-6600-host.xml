@@ -21,10 +21,10 @@
   <feature name='osxsave'/>
   <feature name='f16c'/>
   <feature name='rdrand'/>
-  <feature name='pdpe1gb'/>
-  <feature name='abm'/>
   <feature name='tsc_adjust'/>
   <feature name='mpx'/>
   <feature name='clflushopt'/>
+  <feature name='pdpe1gb'/>
+  <feature name='abm'/>
   <feature name='invtsc'/>
 </cpu>

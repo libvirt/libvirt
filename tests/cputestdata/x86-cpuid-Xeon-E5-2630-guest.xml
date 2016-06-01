@@ -22,8 +22,8 @@
   <feature policy='require' name='osxsave'/>
   <feature policy='require' name='f16c'/>
   <feature policy='require' name='rdrand'/>
+  <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='pdpe1gb'/>
   <feature policy='require' name='abm'/>
-  <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='invtsc'/>
 </cpu>

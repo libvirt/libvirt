@@ -188,6 +188,65 @@
       <cpuid eax_in='0x01' ecx='0x80000000'/>
     </feature>
 
+    <!-- cpuid function 0x7 ecx 0x0 features -->
+    <feature name='fsgsbase'>
+      <cpuid eax_in='0x07' ebx='0x00000001'/>
+    </feature>
+    <feature name='tsc_adjust'>
+      <cpuid eax_in='0x07' ebx='0x00000002'/>
+    </feature>
+    <feature name='bmi1'>
+      <cpuid eax_in='0x07' ebx='0x00000008'/>
+    </feature>
+    <feature name='hle'>
+      <cpuid eax_in='0x07' ebx='0x00000010'/>
+    </feature>
+    <feature name='avx2'>
+      <cpuid eax_in='0x07' ebx='0x00000020'/>
+    </feature>
+    <feature name='smep'>
+      <cpuid eax_in='0x07' ebx='0x00000080'/>
+    </feature>
+    <feature name='bmi2'>
+      <cpuid eax_in='0x07' ebx='0x00000100'/>
+    </feature>
+    <feature name='erms'>
+      <cpuid eax_in='0x07' ebx='0x00000200'/>
+    </feature>
+    <feature name='invpcid'>
+      <cpuid eax_in='0x07' ebx='0x00000400'/>
+    </feature>
+    <feature name='rtm'>
+      <cpuid eax_in='0x07' ebx='0x00000800'/>
+    </feature>
+    <feature name='mpx'>
+      <cpuid eax_in='0x07' ebx='0x00004000'/>
+    </feature>
+    <feature name='avx512f'> <!-- AVX-512 Foundation -->
+      <cpuid eax_in='0x07' ebx='0x00010000'/>
+    </feature>
+    <feature name='rdseed'>
+      <cpuid eax_in='0x07' ebx='0x00040000'/>
+    </feature>
+    <feature name='adx'>
+      <cpuid eax_in='0x07' ebx='0x00080000'/>
+    </feature>
+    <feature name='smap'>
+      <cpuid eax_in='0x07' ebx='0x00100000'/>
+    </feature>
+    <feature name='clflushopt'>
+      <cpuid eax_in='0x07' ebx='0x00800000'/>
+    </feature>
+    <feature name='avx512pf'> <!-- AVX-512 Prefetch -->
+      <cpuid eax_in='0x07' ebx='0x04000000'/>
+    </feature>
+    <feature name='avx512er'> <!-- AVX-512 Exponential and Reciprocal -->
+      <cpuid eax_in='0x07' ebx='0x08000000'/>
+    </feature>
+    <feature name='avx512cd'> <!-- AVX-512 Conflict Detection -->
+      <cpuid eax_in='0x07' ebx='0x10000000'/>
+    </feature>
+
     <!-- extended features, EDX -->
     <feature name='syscall'> <!-- CPUID_EXT2_SYSCALL -->
       <cpuid eax_in='0x80000001' edx='0x00000800'/>
@@ -286,65 +345,6 @@
     </feature>
     <feature name='perfctr_nb'>
       <cpuid eax_in='0x80000001' ecx='0x01000000'/>
-    </feature>
-
-    <!-- cpuid function 0x7 ecx 0x0 features -->
-    <feature name='fsgsbase'>
-      <cpuid eax_in='0x07' ebx='0x00000001'/>
-    </feature>
-    <feature name='tsc_adjust'>
-      <cpuid eax_in='0x07' ebx='0x00000002'/>
-    </feature>
-    <feature name='bmi1'>
-      <cpuid eax_in='0x07' ebx='0x00000008'/>
-    </feature>
-    <feature name='hle'>
-      <cpuid eax_in='0x07' ebx='0x00000010'/>
-    </feature>
-    <feature name='avx2'>
-      <cpuid eax_in='0x07' ebx='0x00000020'/>
-    </feature>
-    <feature name='smep'>
-      <cpuid eax_in='0x07' ebx='0x00000080'/>
-    </feature>
-    <feature name='bmi2'>
-      <cpuid eax_in='0x07' ebx='0x00000100'/>
-    </feature>
-    <feature name='erms'>
-      <cpuid eax_in='0x07' ebx='0x00000200'/>
-    </feature>
-    <feature name='invpcid'>
-      <cpuid eax_in='0x07' ebx='0x00000400'/>
-    </feature>
-    <feature name='rtm'>
-      <cpuid eax_in='0x07' ebx='0x00000800'/>
-    </feature>
-    <feature name='mpx'>
-      <cpuid eax_in='0x07' ebx='0x00004000'/>
-    </feature>
-    <feature name='avx512f'> <!-- AVX-512 Foundation -->
-      <cpuid eax_in='0x07' ebx='0x00010000'/>
-    </feature>
-    <feature name='rdseed'>
-      <cpuid eax_in='0x07' ebx='0x00040000'/>
-    </feature>
-    <feature name='adx'>
-      <cpuid eax_in='0x07' ebx='0x00080000'/>
-    </feature>
-    <feature name='smap'>
-      <cpuid eax_in='0x07' ebx='0x00100000'/>
-    </feature>
-    <feature name='clflushopt'>
-      <cpuid eax_in='0x07' ebx='0x00800000'/>
-    </feature>
-    <feature name='avx512pf'> <!-- AVX-512 Prefetch -->
-      <cpuid eax_in='0x07' ebx='0x04000000'/>
-    </feature>
-    <feature name='avx512er'> <!-- AVX-512 Exponential and Reciprocal -->
-      <cpuid eax_in='0x07' ebx='0x08000000'/>
-    </feature>
-    <feature name='avx512cd'> <!-- AVX-512 Conflict Detection -->
-      <cpuid eax_in='0x07' ebx='0x10000000'/>
     </feature>
 
     <!-- Advanced Power Management edx features -->

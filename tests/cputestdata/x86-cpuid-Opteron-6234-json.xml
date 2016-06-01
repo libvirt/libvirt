@@ -5,12 +5,12 @@
   <feature policy='require' name='x2apic'/>
   <feature policy='require' name='tsc-deadline'/>
   <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='mmxext'/>
   <feature policy='require' name='fxsr_opt'/>
   <feature policy='require' name='cmp_legacy'/>
   <feature policy='require' name='cr8legacy'/>
   <feature policy='require' name='osvw'/>
-  <feature policy='require' name='tsc_adjust'/>
   <feature policy='disable' name='rdtscp'/>
   <feature policy='disable' name='svm'/>
 </cpu>
