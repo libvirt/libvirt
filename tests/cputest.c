@@ -848,6 +848,7 @@ mymain(void)
     DO_TEST_CPUID("x86", "A10-5800K", true);
     DO_TEST_CPUID("x86", "Atom-D510", false);
     DO_TEST_CPUID("x86", "Atom-N450", false);
+    DO_TEST_CPUID("x86", "Core-i5-2500", true);
 
 #if WITH_QEMU && WITH_YAJL
     qemuTestDriverFree(&driver);
