@@ -870,6 +870,7 @@ mymain(void)
     DO_TEST_CPUID("x86", "Xeon-5110", false);
     DO_TEST_CPUID("x86", "Xeon-E3-1245", true);
     DO_TEST_CPUID("x86", "Xeon-E5-2630", true);
+    DO_TEST_CPUID("x86", "Xeon-E5-2650", true);
 
 #if WITH_QEMU && WITH_YAJL
     qemuTestDriverFree(&driver);
