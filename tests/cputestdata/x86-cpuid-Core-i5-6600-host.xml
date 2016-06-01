@@ -1,8 +1,7 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Broadwell</model>
+  <model>Skylake-Client</model>
   <vendor>Intel</vendor>
-  <feature name='vme'/>
   <feature name='ds'/>
   <feature name='acpi'/>
   <feature name='ss'/>
@@ -19,17 +18,9 @@
   <feature name='xtpr'/>
   <feature name='pdcm'/>
   <feature name='osxsave'/>
-  <feature name='f16c'/>
-  <feature name='rdrand'/>
-  <feature name='arat'/>
   <feature name='tsc_adjust'/>
-  <feature name='mpx'/>
   <feature name='clflushopt'/>
-  <feature name='xsaveopt'/>
-  <feature name='xsavec'/>
-  <feature name='xgetbv1'/>
   <feature name='xsaves'/>
   <feature name='pdpe1gb'/>
-  <feature name='abm'/>
   <feature name='invtsc'/>
 </cpu>
