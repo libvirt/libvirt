@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
+ * Copyright (c) 2011 NetApp, Inc.
  * Copyright (C) 2016 Fabian Freyer
  *
  * This library is free software; you can redistribute it and/or
@@ -23,6 +24,8 @@
  */
 
 #include <config.h>
+#include <libutil.h>
+#include <getopt_int.h>
 
 #include "bhyve_capabilities.h"
 #include "bhyve_command.h"
@@ -82,6 +85,36 @@ bhyveParseCommandLineUnescape(const char *command)
     }
 
     return unescaped;
+}
+
+/*
+ * This function is adapted from vm_parse_memsize in
+ * /lib/libvmmapi/vmmapi.c in the FreeBSD Source tree.
+ */
+static int
+bhyveParseMemsize(const char *arg, size_t *ret_memsize)
+{
+    size_t val;
+    int error;
+
+    if (virStrToLong_ul(arg, NULL, 10, &val) == 0) {
+        /*
+         * For the sake of backward compatibility if the memory size
+         * specified on the command line is less than a megabyte then
+         * it is interpreted as being in units of MB.
+         */
+        if (val < 1024 * 1024UL)
+            val *= 1024 * 1024UL;
+        *ret_memsize = val;
+        error = 0;
+    } else {
+        error = expand_number(arg, ret_memsize);
+    }
+
+    /* use memory in KiB here */
+    *ret_memsize /= 1024UL;
+
+    return error;
 }
 
 /*
@@ -231,10 +264,484 @@ bhyveCommandLineToArgv(const char *nativeConfig,
     return -1;
 }
 
+static int
+bhyveParseBhyveLPCArg(virDomainDefPtr def,
+                      unsigned caps ATTRIBUTE_UNUSED,
+                      const char *arg)
+{
+    /* -l emulation[,config] */
+    const char *separator = NULL;
+    const char *param = NULL;
+    size_t last = 0;
+    virDomainChrDefPtr chr = NULL;
+    char *type = NULL;
+
+    separator = strchr(arg, ',');
+    param = separator + 1;
+
+    if (!separator)
+        goto error;
+
+    if (VIR_STRNDUP(type, arg, separator - arg) < 0)
+        goto error;
+
+    /* Only support com%d */
+    if (STRPREFIX(type, "com") && type[4] == 0) {
+        if (!(chr = virDomainChrDefNew()))
+            goto error;
+
+        chr->source.type = VIR_DOMAIN_CHR_TYPE_NMDM;
+        chr->source.data.nmdm.master = NULL;
+        chr->source.data.nmdm.slave = NULL;
+        chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
+
+        if (!STRPREFIX(param, "/dev/nmdm")) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("Failed to set com port %s: does not start with "
+                             "'/dev/nmdm'."), type);
+                goto error;
+        }
+
+        if (VIR_STRDUP(chr->source.data.nmdm.master, param) < 0) {
+            virDomainChrDefFree(chr);
+            goto error;
+        }
+
+        if (VIR_STRDUP(chr->source.data.nmdm.slave, chr->source.data.file.path)
+            < 0) {
+            virDomainChrDefFree(chr);
+            goto error;
+        }
+
+        /* If the last character of the master is 'A', the slave will be 'B'
+         * and vice versa */
+        last = strlen(chr->source.data.nmdm.master) - 1;
+        switch (chr->source.data.file.path[last]) {
+            case 'A':
+                chr->source.data.nmdm.slave[last] = 'B';
+                break;
+            case 'B':
+                chr->source.data.nmdm.slave[last] = 'A';
+                break;
+            default:
+                virReportError(VIR_ERR_OPERATION_FAILED,
+                               _("Failed to set slave for %s: last letter not "
+                                 "'A' or 'B'"),
+                               NULLSTR(chr->source.data.nmdm.master));
+                goto error;
+        }
+
+        switch (type[3]-'0') {
+        case 1:
+        case 2:
+            chr->target.port = type[3] - '1';
+            break;
+        default:
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("Failed to parse %s: only com1 and com2"
+                             " supported."), type);
+            goto error;
+            break;
+        }
+
+        if (VIR_APPEND_ELEMENT(def->serials, def->nserials, chr) < 0) {
+            virDomainChrDefFree(chr);
+            goto error;
+        }
+    }
+
+    VIR_FREE(type);
+    return 0;
+
+ error:
+    virDomainChrDefFree(chr);
+    VIR_FREE(type);
+    return -1;
+}
+
+static int
+bhyveParsePCISlot(const char *slotdef,
+                  unsigned *pcislot,
+                  unsigned *bus,
+                  unsigned *function)
+{
+    /* slot[:function] | bus:slot:function */
+    const char *curr = NULL;
+    const char *next = NULL;
+    unsigned values[3];
+    size_t i;
+
+    curr = slotdef;
+    for (i = 0; i < 3; i++) {
+       char *val = NULL;
+
+       next = strchr(curr, ':');
+
+       if (VIR_STRNDUP(val, curr, next? next - curr : -1) < 0)
+           goto error;
+
+       if (virStrToLong_ui(val, NULL, 10, &values[i]) < 0)
+           goto error;
+
+       VIR_FREE(val);
+
+       if (!next)
+           break;
+
+       curr = next +1;
+    }
+
+    *bus = 0;
+    *pcislot = 0;
+    *function = 0;
+
+    switch (i + 1) {
+    case 2:
+        /* pcislot[:function] */
+        *function = values[1];
+    case 1:
+        *pcislot = values[0];
+        break;
+    case 3:
+        /* bus:pcislot:function */
+        *bus = values[0];
+        *pcislot = values[1];
+        *function = values[2];
+        break;
+    }
+
+    return 0;
+ error:
+    return -1;
+}
+
+static int
+bhyveParsePCIDisk(virDomainDefPtr def,
+                  unsigned caps ATTRIBUTE_UNUSED,
+                  unsigned pcislot,
+                  unsigned pcibus,
+                  unsigned function,
+                  int bus,
+                  int device,
+                  unsigned *nvirtiodisk,
+                  unsigned *nahcidisk,
+                  char *config)
+{
+    /* -s slot,virtio-blk|ahci-cd|ahci-hd,/path/to/file */
+    const char *separator = NULL;
+    int idx = -1;
+    virDomainDiskDefPtr disk = NULL;
+
+    if (VIR_ALLOC(disk) < 0)
+        goto cleanup;
+    if (VIR_ALLOC(disk->src) < 0)
+        goto error;
+
+    disk->bus = bus;
+    disk->device = device;
+
+    disk->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    disk->info.addr.pci.slot = pcislot;
+    disk->info.addr.pci.bus = pcibus;
+    disk->info.addr.pci.function = function;
+
+    if (STRPREFIX(config, "/dev/"))
+        disk->src->type = VIR_STORAGE_TYPE_BLOCK;
+    else
+        disk->src->type = VIR_STORAGE_TYPE_FILE;
+
+    if (!config)
+        goto error;
+
+    separator = strchr(config, ',');
+    if (VIR_STRNDUP(disk->src->path, config,
+                    separator? separator - config : -1) < 0)
+        goto error;
+
+    if (bus == VIR_DOMAIN_DISK_BUS_VIRTIO) {
+        idx = *nvirtiodisk;
+        *nvirtiodisk += 1;
+        if (VIR_STRDUP(disk->dst, "vda") < 0)
+            goto error;
+    } else if (bus == VIR_DOMAIN_DISK_BUS_SATA) {
+        idx = *nahcidisk;
+        *nahcidisk += 1;
+        if (VIR_STRDUP(disk->dst, "sda") < 0)
+            goto error;
+    }
+
+    if (idx > 'z' - 'a') {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("too many disks"));
+        goto error;
+    }
+
+    disk->dst[2] = 'a' + idx;
+
+    if (VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk) < 0)
+        goto error;
+
+ cleanup:
+    return 0;
+
+ error:
+    virDomainDiskDefFree(disk);
+    return -1;
+}
+
+static int
+bhyveParsePCINet(virDomainDefPtr def,
+                 virDomainXMLOptionPtr xmlopt,
+                 unsigned caps ATTRIBUTE_UNUSED,
+                 unsigned pcislot,
+                 unsigned pcibus,
+                 unsigned function,
+                 const char *config)
+{
+    /* -s slot,virtio-net,tapN[,mac=xx:xx:xx:xx:xx:xx] */
+
+    virDomainNetDefPtr net = NULL;
+    const char *separator = NULL;
+    const char *mac = NULL;
+
+    if (VIR_ALLOC(net) < 0)
+        goto cleanup;
+
+    /* Let's just assume it is VIR_DOMAIN_NET_TYPE_ETHERNET, it could also be
+     * a bridge, but this is the most generic option. */
+    net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+
+    net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+    net->info.addr.pci.slot = pcislot;
+    net->info.addr.pci.bus = pcibus;
+    net->info.addr.pci.function = function;
+
+    if (!config)
+        goto error;
+
+    if (!STRPREFIX(config, "tap")) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only tap devices supported"));
+        goto error;
+    }
+
+    separator = strchr(config, ',');
+    if (VIR_STRNDUP(net->ifname, config,
+                    separator? separator - config : -1) < 0)
+        goto error;
+
+    if (!separator)
+        goto cleanup;
+
+    if (!STRPREFIX(++separator, "mac=")) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only mac option can be specified for virt-net"));
+        goto error;
+    }
+    mac = separator + 4;
+
+    if (virMacAddrParse(mac, &net->mac) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to parse mac address '%s'"),
+                       mac);
+        goto cleanup;
+     }
+
+ cleanup:
+    if (!mac)
+        virDomainNetGenerateMAC(xmlopt, &net->mac);
+
+    if (VIR_APPEND_ELEMENT(def->nets, def->nnets, net) < 0)
+        goto error;
+    return 0;
+
+ error:
+    virDomainNetDefFree(net);
+    return -1;
+}
+
+static int
+bhyveParseBhyvePCIArg(virDomainDefPtr def,
+                      virDomainXMLOptionPtr xmlopt,
+                      unsigned caps,
+                      unsigned *nvirtiodisk,
+                      unsigned *nahcidisk,
+                      const char *arg)
+{
+    /* -s slot,emulation[,conf] */
+    const char *separator = NULL;
+    char *slotdef = NULL;
+    char *emulation = NULL;
+    char *conf = NULL;
+    unsigned pcislot, bus, function;
+
+    separator = strchr(arg, ',');
+
+    if (!separator)
+        goto error;
+    else
+        separator++; /* Skip comma */
+
+    if (VIR_STRNDUP(slotdef, arg, separator - arg - 1) < 0)
+        goto error;
+
+    conf = strchr(separator+1, ',');
+    if (conf)
+        conf++; /* Skip initial comma */
+
+    if (VIR_STRNDUP(emulation, separator, conf? conf - separator - 1 : -1) < 0)
+        goto error;
+
+    if (bhyveParsePCISlot(slotdef, &pcislot, &bus, &function) < 0)
+        goto error;
+
+    if (STREQ(emulation, "ahci-cd"))
+        bhyveParsePCIDisk(def, caps, pcislot, bus, function,
+                          VIR_DOMAIN_DISK_BUS_SATA,
+                          VIR_DOMAIN_DISK_DEVICE_CDROM,
+                          nvirtiodisk,
+                          nahcidisk,
+                          conf);
+    else if (STREQ(emulation, "ahci-hd"))
+        bhyveParsePCIDisk(def, caps, pcislot, bus, function,
+                          VIR_DOMAIN_DISK_BUS_SATA,
+                          VIR_DOMAIN_DISK_DEVICE_DISK,
+                          nvirtiodisk,
+                          nahcidisk,
+                          conf);
+    else if (STREQ(emulation, "virtio-blk"))
+        bhyveParsePCIDisk(def, caps, pcislot, bus, function,
+                          VIR_DOMAIN_DISK_BUS_VIRTIO,
+                          VIR_DOMAIN_DISK_DEVICE_DISK,
+                          nvirtiodisk,
+                          nahcidisk,
+                          conf);
+    else if (STREQ(emulation, "virtio-net"))
+        bhyveParsePCINet(def, xmlopt, caps, pcislot, bus, function, conf);
+
+    VIR_FREE(emulation);
+    VIR_FREE(slotdef);
+    return 0;
+ error:
+    VIR_FREE(emulation);
+    VIR_FREE(slotdef);
+    return -1;
+}
+
+/*
+ * Parse the /usr/sbin/bhyve command line.
+ */
+static int
+bhyveParseBhyveCommandLine(virDomainDefPtr def,
+                           virDomainXMLOptionPtr xmlopt,
+                           unsigned caps,
+                           int argc, char **argv)
+{
+    int c;
+    const char optstr[] = "abehuwxACHIPSWYp:g:c:s:m:l:U:";
+    int vcpus = 1;
+    size_t memory = 0;
+    unsigned nahcidisks = 0;
+    unsigned nvirtiodisks = 0;
+    struct _getopt_data *parser;
+
+    if (!argv)
+        goto error;
+
+    if (VIR_ALLOC(parser) < 0)
+        goto error;
+
+    while ((c = _getopt_internal_r(argc, argv, optstr,
+            NULL, NULL, 0, parser, 0)) != -1) {
+        switch (c) {
+        case 'A':
+            def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
+            break;
+        case 'c':
+            if (virStrToLong_i(parser->optarg, NULL, 10, &vcpus) < 0) {
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("Failed to parse number of vCPUs"));
+                goto error;
+            }
+            if (virDomainDefSetVcpusMax(def, vcpus) < 0)
+                goto error;
+            if (virDomainDefSetVcpus(def, vcpus) < 0)
+                goto error;
+            break;
+        case 'l':
+            if (bhyveParseBhyveLPCArg(def, caps, parser->optarg))
+                goto error;
+            break;
+        case 's':
+            if (bhyveParseBhyvePCIArg(def,
+                                      xmlopt,
+                                      caps,
+                                      &nahcidisks,
+                                      &nvirtiodisks,
+                                      parser->optarg))
+                goto error;
+            break;
+        case 'm':
+            if (bhyveParseMemsize(parser->optarg, &memory)) {
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("Failed to parse memory"));
+                goto error;
+            }
+            if (def->mem.cur_balloon != 0 && def->mem.cur_balloon != memory) {
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Failed to parse memory: size mismatch"));
+                goto error;
+            }
+            def->mem.cur_balloon = memory;
+            virDomainDefSetMemoryTotal(def, memory);
+            break;
+        case 'I':
+            /* While this flag was deprecated in FreeBSD r257423, keep checking
+             * for it for backwards compatibility. */
+            def->features[VIR_DOMAIN_FEATURE_APIC] = VIR_TRISTATE_SWITCH_ON;
+            break;
+        case 'u':
+            def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_UTC;
+            break;
+        case 'U':
+            if (virUUIDParse(parser->optarg, def->uuid) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Cannot parse UUID '%s'"), parser->optarg);
+                goto error;
+            }
+            break;
+        }
+    }
+
+    if (argc != parser->optind) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Failed to parse arguments for bhyve command"));
+        goto error;
+    }
+
+    if (def->name == NULL) {
+        if (VIR_STRDUP(def->name, argv[argc]) < 0)
+            goto error;
+    } else if (STRNEQ(def->name, argv[argc])) {
+        /* the vm name of the loader and the bhyverun command differ, throw an
+         * error here */
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Failed to parse arguments: VM name mismatch"));
+        goto error;
+    }
+
+    VIR_FREE(parser);
+    return 0;
+
+ error:
+    VIR_FREE(parser);
+    return -1;
+}
+
 virDomainDefPtr
 bhyveParseCommandLineString(const char* nativeConfig,
-                            unsigned caps ATTRIBUTE_UNUSED,
-                            virDomainXMLOptionPtr xmlopt ATTRIBUTE_UNUSED)
+                            unsigned caps,
+                            virDomainXMLOptionPtr xmlopt)
 {
     virDomainDefPtr def = NULL;
     int bhyve_argc = 0;
@@ -264,6 +771,9 @@ bhyveParseCommandLineString(const char* nativeConfig,
                        _("Failed to convert the command string to argv-lists"));
         goto error;
     }
+
+    if (bhyveParseBhyveCommandLine(def, xmlopt, caps, bhyve_argc, bhyve_argv))
+        goto error;
 
  cleanup:
     virStringFreeList(loader_argv);
