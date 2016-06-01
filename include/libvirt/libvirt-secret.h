@@ -4,7 +4,7 @@
  * Description: Provides APIs for the management of secrets
  * Author: Daniel Veillard <veillard@redhat.com>
  *
- * Copyright (C) 2006-2014 Red Hat, Inc.
+ * Copyright (C) 2006-2014, 2016 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,6 +43,7 @@ typedef enum {
     VIR_SECRET_USAGE_TYPE_VOLUME = 1,
     VIR_SECRET_USAGE_TYPE_CEPH = 2,
     VIR_SECRET_USAGE_TYPE_ISCSI = 3,
+    VIR_SECRET_USAGE_TYPE_PASSPHRASE = 4,
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_SECRET_USAGE_TYPE_LAST
