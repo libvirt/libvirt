@@ -738,6 +738,116 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
     return -1;
 }
 
+/*
+ * Parse the /usr/sbin/bhyveload command line.
+ */
+static int
+bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
+                               int argc, char **argv)
+{
+    int c;
+    /* bhyveload called with default arguments when only -m and -d are given.
+     * Store this in a bit field and check if only those two options are given
+     * later */
+    unsigned arguments = 0;
+    size_t memory = 0;
+    struct _getopt_data *parser;
+    size_t i = 0;
+    int ret = -1;
+
+    const char optstr[] = "CSc:d:e:h:l:m:";
+
+    if (!argv)
+        goto error;
+
+    if (VIR_ALLOC(parser) < 0)
+        goto error;
+
+    while ((c = _getopt_internal_r(argc, argv, optstr,
+            NULL, NULL, 0, parser, 0)) != -1) {
+        switch (c) {
+        case 'd':
+            arguments |= 1;
+            /* Iterate over the disks of the domain trying to match up the
+             * source */
+            for (i = 0; i < def->ndisks; i++) {
+                if (STREQ(virDomainDiskGetSource(def->disks[i]),
+                          parser->optarg)) {
+                    def->disks[i]->info.bootIndex = i;
+                    break;
+                }
+            }
+            break;
+        case 'm':
+            arguments |= 2;
+            if (bhyveParseMemsize(parser->optarg, &memory)) {
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("Failed to parse memory"));
+                goto error;
+            }
+            if (def->mem.cur_balloon != 0 && def->mem.cur_balloon != memory) {
+                virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                               _("Failed to parse memory: size mismatch"));
+                goto error;
+            }
+            def->mem.cur_balloon = memory;
+            virDomainDefSetMemoryTotal(def, memory);
+            break;
+        default:
+            arguments |= 4;
+        }
+    }
+
+    if (arguments != 3) {
+        /* Set os.bootloader since virDomainDefFormatInternal will only format
+         * the bootloader arguments if os->bootloader is set. */
+        if (VIR_STRDUP(def->os.bootloader, argv[0]) < 0)
+           goto error;
+
+        def->os.bootloaderArgs = virStringJoin((const char**) &argv[1], " ");
+    }
+
+    if (argc != parser->optind) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Failed to parse arguments for bhyveload command"));
+        goto error;
+    }
+
+    if (def->name == NULL) {
+        if (VIR_STRDUP(def->name, argv[argc]) < 0)
+            goto error;
+    } else if (STRNEQ(def->name, argv[argc])) {
+        /* the vm name of the loader and the bhyverun command differ, throw an
+         * error here */
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Failed to parse arguments: VM name mismatch"));
+        goto error;
+    }
+
+    ret = 0;
+ error:
+    VIR_FREE(parser);
+    return ret;
+}
+
+static int
+bhyveParseCustomLoaderCommandLine(virDomainDefPtr def,
+                                  int argc ATTRIBUTE_UNUSED,
+                                  char **argv)
+{
+    if (!argv)
+        goto error;
+
+    if (VIR_STRDUP(def->os.bootloader, argv[0]) < 0)
+       goto error;
+
+    def->os.bootloaderArgs = virStringJoin((const char**) &argv[1], " ");
+
+    return 0;
+ error:
+    return -1;
+}
+
 virDomainDefPtr
 bhyveParseCommandLineString(const char* nativeConfig,
                             unsigned caps,
@@ -774,6 +884,13 @@ bhyveParseCommandLineString(const char* nativeConfig,
 
     if (bhyveParseBhyveCommandLine(def, xmlopt, caps, bhyve_argc, bhyve_argv))
         goto error;
+    if (loader_argv && STREQ(loader_argv[0], "/usr/sbin/bhyveload")) {
+        if (bhyveParseBhyveLoadCommandLine(def, loader_argc, loader_argv))
+            goto error;
+    } else if (loader_argv) {
+        if (bhyveParseCustomLoaderCommandLine(def, loader_argc, loader_argv))
+            goto error;
+    }
 
  cleanup:
     virStringFreeList(loader_argv);
