@@ -1,0 +1,20 @@
+<cpu mode='custom' match='exact'>
+  <arch>x86_64</arch>
+  <model fallback='forbid'>Opteron_G3</model>
+  <feature policy='require' name='vme'/>
+  <feature policy='require' name='x2apic'/>
+  <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='mmxext'/>
+  <feature policy='require' name='fxsr_opt'/>
+  <feature policy='require' name='pdpe1gb'/>
+  <feature policy='require' name='3dnowext'/>
+  <feature policy='require' name='3dnow'/>
+  <feature policy='require' name='cmp_legacy'/>
+  <feature policy='require' name='cr8legacy'/>
+  <feature policy='require' name='3dnowprefetch'/>
+  <feature policy='require' name='osvw'/>
+  <feature policy='disable' name='monitor'/>
+  <feature policy='disable' name='nx'/>
+  <feature policy='disable' name='rdtscp'/>
+  <feature policy='disable' name='svm'/>
+</cpu>

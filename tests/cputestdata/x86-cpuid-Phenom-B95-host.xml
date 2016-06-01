@@ -1,0 +1,31 @@
+<cpu>
+  <arch>x86_64</arch>
+  <model>athlon</model>
+  <vendor>AMD</vendor>
+  <feature name='mca'/>
+  <feature name='clflush'/>
+  <feature name='ht'/>
+  <feature name='pni'/>
+  <feature name='monitor'/>
+  <feature name='cx16'/>
+  <feature name='popcnt'/>
+  <feature name='syscall'/>
+  <feature name='fxsr_opt'/>
+  <feature name='pdpe1gb'/>
+  <feature name='rdtscp'/>
+  <feature name='lm'/>
+  <feature name='lahf_lm'/>
+  <feature name='cmp_legacy'/>
+  <feature name='svm'/>
+  <feature name='extapic'/>
+  <feature name='cr8legacy'/>
+  <feature name='abm'/>
+  <feature name='sse4a'/>
+  <feature name='misalignsse'/>
+  <feature name='3dnowprefetch'/>
+  <feature name='osvw'/>
+  <feature name='ibs'/>
+  <feature name='skinit'/>
+  <feature name='wdt'/>
+  <feature name='invtsc'/>
+</cpu>
