@@ -169,12 +169,12 @@ static int virNetDevBridgeSet(const char *brname,
 
 static int virNetDevBridgeGet(const char *brname,
                               const char *paramname,  /* sysfs param name */
-                              unsigned long *value,   /* current value */
-                              int fd,                 /* control socket */
-                              struct ifreq *ifr)      /* pre-filled bridge name */
+                              unsigned long *value)   /* current value */
 {
     char *path = NULL;
     int ret = -1;
+    int fd = -1;
+    struct ifreq ifr;
 
     if (virAsprintf(&path, SYSFS_NET_DIR "%s/bridge/%s", brname, paramname) < 0)
         return -1;
@@ -196,7 +196,11 @@ static int virNetDevBridgeGet(const char *brname,
     } else {
         struct __bridge_info info;
         unsigned long args[] = { BRCTL_GET_BRIDGE_INFO, (unsigned long)&info, 0, 0 };
-        ifr->ifr_data = (char*)&args;
+
+        if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
+            goto cleanup;
+
+        ifr.ifr_data = (char*)&args;
         if (ioctl(fd, SIOCDEVPRIVATE, ifr) < 0) {
             virReportSystemError(errno,
                                  _("Unable to get bridge %s %s"), brname, paramname);
@@ -216,6 +220,7 @@ static int virNetDevBridgeGet(const char *brname,
 
     ret = 0;
  cleanup:
+    VIR_FORCE_CLOSE(fd);
     VIR_FREE(path);
     return ret;
 }
@@ -825,20 +830,12 @@ int virNetDevBridgeSetSTPDelay(const char *brname,
 int virNetDevBridgeGetSTPDelay(const char *brname,
                                int *delayms)
 {
-    int fd = -1;
     int ret = -1;
-    struct ifreq ifr;
     unsigned long val;
 
-    if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
-        goto cleanup;
-
-    ret = virNetDevBridgeGet(brname, "forward_delay", &val,
-                             fd, &ifr);
+    ret = virNetDevBridgeGet(brname, "forward_delay", &val);
     *delayms = JIFFIES_TO_MS(val);
 
- cleanup:
-    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
@@ -885,20 +882,12 @@ int virNetDevBridgeSetSTP(const char *brname,
 int virNetDevBridgeGetSTP(const char *brname,
                           bool *enabled)
 {
-    int fd = -1;
     int ret = -1;
-    struct ifreq ifr;
     unsigned long val;
 
-    if ((fd = virNetDevSetupControl(brname, &ifr)) < 0)
-        goto cleanup;
-
-    ret = virNetDevBridgeGet(brname, "stp_state", &val,
-                             fd, &ifr);
+    ret = virNetDevBridgeGet(brname, "stp_state", &val);
     *enabled = val ? true : false;
 
- cleanup:
-    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 #elif defined(HAVE_BSD_BRIDGE_MGMT)
@@ -1000,7 +989,7 @@ virNetDevBridgeGetVlanFiltering(const char *brname,
     int ret = -1;
     unsigned long value;
 
-    if (virNetDevBridgeGet(brname, "vlan_filtering", &value, -1, NULL) < 0)
+    if (virNetDevBridgeGet(brname, "vlan_filtering", &value) < 0)
         goto cleanup;
 
     *enable = !!value;
