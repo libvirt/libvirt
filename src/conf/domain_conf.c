@@ -7802,6 +7802,17 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->startupPolicy = val;
     }
 
+    if (encryption) {
+        if (encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
+            encryption->encinfo.cipher_name) {
+
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("supplying the <cipher> for a domain is "
+                             "unnecessary"));
+            goto error;
+        }
+    }
+
     def->dst = target;
     target = NULL;
     def->src->auth = authdef;

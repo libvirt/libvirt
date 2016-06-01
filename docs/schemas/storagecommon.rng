@@ -15,9 +15,19 @@
           <value>luks</value>
         </choice>
       </attribute>
-      <zeroOrMore>
-        <ref name='secret'/>
-      </zeroOrMore>
+      <interleave>
+        <zeroOrMore>
+          <ref name='secret'/>
+        </zeroOrMore>
+        <optional>
+          <element name='cipher'>
+            <ref name='keycipher'/>
+          </element>
+          <element name='ivgen'>
+            <ref name='keyivgen'/>
+          </element>
+        </optional>
+      </interleave>
     </element>
   </define>
 
@@ -133,6 +143,34 @@
           </optional>
         </interleave>
       </element>
+    </optional>
+  </define>
+
+  <define name='keycipher'>
+    <attribute name='name'>
+      <text/>
+    </attribute>
+    <attribute name='size'>
+      <ref name="unsignedInt"/>
+    </attribute>
+    <optional>
+      <attribute name='mode'>
+        <text/>
+      </attribute>
+      <attribute name='hash'>
+        <text/>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name='keyivgen'>
+    <attribute name='name'>
+      <text/>
+    </attribute>
+    <optional>
+      <attribute name='hash'>
+        <text/>
+      </attribute>
     </optional>
   </define>
 
