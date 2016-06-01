@@ -867,6 +867,7 @@ mymain(void)
     DO_TEST_CPUID("x86", "Opteron-6282", false);
     DO_TEST_CPUID("x86", "Pentium-P6100", false);
     DO_TEST_CPUID("x86", "Phenom-B95", true);
+    DO_TEST_CPUID("x86", "Xeon-5110", false);
 
 #if WITH_QEMU && WITH_YAJL
     qemuTestDriverFree(&driver);
