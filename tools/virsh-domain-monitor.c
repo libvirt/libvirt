@@ -375,6 +375,8 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "actual %llu\n", stats[i].val);
         if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_RSS)
             vshPrint(ctl, "rss %llu\n", stats[i].val);
+        if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE)
+            vshPrint(ctl, "last_update %llu\n", stats[i].val);
     }
 
     ret = true;

@@ -1633,10 +1633,10 @@ qemuMonitorJSONGetBalloonInfo(qemuMonitorPtr mon,
  * rates and/or whether data has been collected since a previous cycle.
  * It's currently unused.
  */
-#define GET_BALLOON_STATS(FIELD, TAG, DIVISOR)                                \
-    if (virJSONValueObjectHasKey(statsdata, FIELD) &&                         \
+#define GET_BALLOON_STATS(OBJECT, FIELD, TAG, DIVISOR)                        \
+    if (virJSONValueObjectHasKey(OBJECT, FIELD) &&                            \
        (got < nr_stats)) {                                                    \
-        if (virJSONValueObjectGetNumberUlong(statsdata, FIELD, &mem) < 0) {   \
+        if (virJSONValueObjectGetNumberUlong(OBJECT, FIELD, &mem) < 0) {      \
             VIR_DEBUG("Failed to get '%s' value", FIELD);                     \
         } else {                                                              \
             /* Not being collected? No point in providing bad data */         \
@@ -1707,20 +1707,22 @@ int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
         goto cleanup;
     }
 
-    GET_BALLOON_STATS("stat-swap-in",
+    GET_BALLOON_STATS(statsdata, "stat-swap-in",
                       VIR_DOMAIN_MEMORY_STAT_SWAP_IN, 1024);
-    GET_BALLOON_STATS("stat-swap-out",
+    GET_BALLOON_STATS(statsdata, "stat-swap-out",
                       VIR_DOMAIN_MEMORY_STAT_SWAP_OUT, 1024);
-    GET_BALLOON_STATS("stat-major-faults",
+    GET_BALLOON_STATS(statsdata, "stat-major-faults",
                       VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT, 1);
-    GET_BALLOON_STATS("stat-minor-faults",
+    GET_BALLOON_STATS(statsdata, "stat-minor-faults",
                       VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT, 1);
-    GET_BALLOON_STATS("stat-free-memory",
+    GET_BALLOON_STATS(statsdata, "stat-free-memory",
                       VIR_DOMAIN_MEMORY_STAT_UNUSED, 1024);
-    GET_BALLOON_STATS("stat-total-memory",
+    GET_BALLOON_STATS(statsdata, "stat-total-memory",
                       VIR_DOMAIN_MEMORY_STAT_AVAILABLE, 1024);
-    GET_BALLOON_STATS("stat-available-memory",
+    GET_BALLOON_STATS(statsdata, "stat-available-memory",
                       VIR_DOMAIN_MEMORY_STAT_USABLE, 1024);
+    GET_BALLOON_STATS(data, "last-update",
+                      VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE, 1);
     ret = got;
  cleanup:
     virJSONValueFree(cmd);

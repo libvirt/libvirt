@@ -609,11 +609,14 @@ typedef enum {
      */
     VIR_DOMAIN_MEMORY_STAT_USABLE          = 8,
 
+    /* Timestamp of the last update of statistics */
+    VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE     = 9,
+
     /*
      * The number of statistics supported by this version of the interface.
      * To add new statistics, add them to the enum and increase this value.
      */
-    VIR_DOMAIN_MEMORY_STAT_NR              = 9,
+    VIR_DOMAIN_MEMORY_STAT_NR              = 10,
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_MEMORY_STAT_LAST = VIR_DOMAIN_MEMORY_STAT_NR

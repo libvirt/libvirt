@@ -5991,6 +5991,8 @@ virDomainGetInterfaceParameters(virDomainPtr domain,
  *     to swap, corresponds to 'Available' in /proc/meminfo
  * VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON:
  *     Current balloon value (in kb).
+ * VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE
+ *     Timestamp of the last statistic
  *
  * Returns: The number of stats provided or -1 in case of failure.
  */
