@@ -1,0 +1,19 @@
+<cpu>
+  <arch>x86_64</arch>
+  <model>Opteron_G3</model>
+  <vendor>AMD</vendor>
+  <feature name='vme'/>
+  <feature name='ht'/>
+  <feature name='mmxext'/>
+  <feature name='fxsr_opt'/>
+  <feature name='pdpe1gb'/>
+  <feature name='3dnowext'/>
+  <feature name='3dnow'/>
+  <feature name='cmp_legacy'/>
+  <feature name='extapic'/>
+  <feature name='cr8legacy'/>
+  <feature name='3dnowprefetch'/>
+  <feature name='osvw'/>
+  <feature name='ibs'/>
+  <feature name='invtsc'/>
+</cpu>
