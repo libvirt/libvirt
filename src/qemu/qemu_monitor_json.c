@@ -1719,6 +1719,8 @@ int qemuMonitorJSONGetMemoryStats(qemuMonitorPtr mon,
                       VIR_DOMAIN_MEMORY_STAT_UNUSED, 1024);
     GET_BALLOON_STATS("stat-total-memory",
                       VIR_DOMAIN_MEMORY_STAT_AVAILABLE, 1024);
+    GET_BALLOON_STATS("stat-available-memory",
+                      VIR_DOMAIN_MEMORY_STAT_USABLE, 1024);
     ret = got;
  cleanup:
     virJSONValueFree(cmd);

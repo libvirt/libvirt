@@ -604,10 +604,16 @@ typedef enum {
     VIR_DOMAIN_MEMORY_STAT_RSS             = 7,
 
     /*
+     * How big the balloon can be inflated without pushing the guest system
+     * to swap, corresponds to 'Available' in /proc/meminfo
+     */
+    VIR_DOMAIN_MEMORY_STAT_USABLE          = 8,
+
+    /*
      * The number of statistics supported by this version of the interface.
      * To add new statistics, add them to the enum and increase this value.
      */
-    VIR_DOMAIN_MEMORY_STAT_NR              = 8,
+    VIR_DOMAIN_MEMORY_STAT_NR              = 9,
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_MEMORY_STAT_LAST = VIR_DOMAIN_MEMORY_STAT_NR
