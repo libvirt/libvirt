@@ -20,6 +20,7 @@
   <feature policy='require' name='pdcm'/>
   <feature policy='require' name='pcid'/>
   <feature policy='require' name='osxsave'/>
+  <feature policy='require' name='arat'/>
   <feature policy='require' name='xsaveopt'/>
   <feature policy='require' name='invtsc'/>
 </cpu>

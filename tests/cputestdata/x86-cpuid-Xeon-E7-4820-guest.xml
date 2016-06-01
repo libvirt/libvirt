@@ -20,6 +20,7 @@
   <feature policy='require' name='pdcm'/>
   <feature policy='require' name='pcid'/>
   <feature policy='require' name='dca'/>
+  <feature policy='require' name='arat'/>
   <feature policy='require' name='pdpe1gb'/>
   <feature policy='require' name='invtsc'/>
   <feature policy='disable' name='tsc-deadline'/>

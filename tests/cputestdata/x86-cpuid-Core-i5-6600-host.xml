@@ -21,6 +21,7 @@
   <feature name='osxsave'/>
   <feature name='f16c'/>
   <feature name='rdrand'/>
+  <feature name='arat'/>
   <feature name='tsc_adjust'/>
   <feature name='mpx'/>
   <feature name='clflushopt'/>

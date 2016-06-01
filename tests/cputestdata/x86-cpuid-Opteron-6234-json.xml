@@ -5,6 +5,7 @@
   <feature policy='require' name='x2apic'/>
   <feature policy='require' name='tsc-deadline'/>
   <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='arat'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='mmxext'/>
   <feature policy='require' name='fxsr_opt'/>

@@ -17,6 +17,7 @@
   <feature policy='require' name='pdcm'/>
   <feature policy='require' name='pcid'/>
   <feature policy='require' name='popcnt'/>
+  <feature policy='require' name='arat'/>
   <feature policy='require' name='rdtscp'/>
   <feature policy='require' name='lahf_lm'/>
   <feature policy='require' name='invtsc'/>

@@ -22,6 +22,7 @@
   <feature name='pcid'/>
   <feature name='dca'/>
   <feature name='x2apic'/>
+  <feature name='arat'/>
   <feature name='pdpe1gb'/>
   <feature name='rdtscp'/>
   <feature name='invtsc'/>

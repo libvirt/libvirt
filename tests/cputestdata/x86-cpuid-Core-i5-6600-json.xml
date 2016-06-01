@@ -6,6 +6,7 @@
   <feature policy='require' name='f16c'/>
   <feature policy='require' name='rdrand'/>
   <feature policy='require' name='hypervisor'/>
+  <feature policy='require' name='arat'/>
   <feature policy='require' name='tsc_adjust'/>
   <feature policy='require' name='mpx'/>
   <feature policy='require' name='clflushopt'/>
