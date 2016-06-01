@@ -860,6 +860,7 @@ mymain(void)
     DO_TEST_CPUID("x86", "Core-i7-5600U", true);
     DO_TEST_CPUID("x86", "Core2-E6850", true);
     DO_TEST_CPUID("x86", "Core2-Q9500", false);
+    DO_TEST_CPUID("x86", "FX-8150", false);
 
 #if WITH_QEMU && WITH_YAJL
     qemuTestDriverFree(&driver);
