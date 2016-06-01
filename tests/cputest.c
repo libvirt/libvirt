@@ -846,6 +846,7 @@ mymain(void)
     DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-invalid", ppc_models, NULL, -1);
 
     DO_TEST_CPUID("x86", "A10-5800K", true);
+    DO_TEST_CPUID("x86", "Atom-D510", false);
 
 #if WITH_QEMU && WITH_YAJL
     qemuTestDriverFree(&driver);
