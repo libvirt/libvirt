@@ -40,6 +40,12 @@
 #include "cpu/cpu_map.h"
 #include "virstring.h"
 
+#if WITH_QEMU && WITH_YAJL
+# include "testutilsqemu.h"
+# include "qemumonitortestutils.h"
+# include "qemu/qemu_monitor_json.h"
+#endif
+
 #define VIR_FROM_THIS VIR_FROM_CPU
 
 enum cpuTestBoolWithError {
@@ -53,7 +59,10 @@ enum api {
     API_GUEST_DATA,
     API_BASELINE,
     API_UPDATE,
-    API_HAS_FEATURE
+    API_HAS_FEATURE,
+    API_HOST_CPUID,
+    API_GUEST_CPUID,
+    API_JSON_CPUID,
 };
 
 static const char *apis[] = {
@@ -61,7 +70,10 @@ static const char *apis[] = {
     "guest data",
     "baseline",
     "update",
-    "has feature"
+    "has feature",
+    "host CPUID",
+    "guest CPUID",
+    "json CPUID",
 };
 
 struct data {
@@ -76,6 +88,10 @@ struct data {
     unsigned int flags;
     int result;
 };
+
+#if WITH_QEMU && WITH_YAJL
+static virQEMUDriver driver;
+#endif
 
 
 static virCPUDefPtr
@@ -458,12 +474,118 @@ cpuTestHasFeature(const void *arg)
 }
 
 
+static int
+cpuTestCPUID(const void *arg)
+{
+    const struct data *data = arg;
+    int ret = -1;
+    virCPUDataPtr hostData = NULL;
+    char *hostFile = NULL;
+    char *host = NULL;
+    virCPUDefPtr cpu = NULL;
+    char *result = NULL;
+
+    if (virAsprintf(&hostFile, "%s/cputestdata/%s-cpuid-%s.xml",
+                    abs_srcdir, data->arch, data->host) < 0)
+        goto cleanup;
+
+    if (virTestLoadFile(hostFile, &host) < 0 ||
+        !(hostData = cpuDataParse(host)))
+        goto cleanup;
+
+    if (VIR_ALLOC(cpu) < 0)
+        goto cleanup;
+
+    cpu->arch = hostData->arch;
+    if (data->api == API_GUEST_CPUID) {
+        cpu->type = VIR_CPU_TYPE_GUEST;
+        cpu->match = VIR_CPU_MATCH_EXACT;
+        cpu->fallback = VIR_CPU_FALLBACK_FORBID;
+    } else {
+        cpu->type = VIR_CPU_TYPE_HOST;
+    }
+
+    if (cpuDecode(cpu, hostData, NULL, 0, NULL) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&result, "cpuid-%s-%s",
+                    data->host,
+                    data->api == API_HOST_CPUID ? "host" : "guest") < 0)
+        goto cleanup;
+
+    ret = cpuTestCompareXML(data->arch, cpu, result, false);
+
+ cleanup:
+    VIR_FREE(hostFile);
+    VIR_FREE(host);
+    cpuDataFree(hostData);
+    virCPUDefFree(cpu);
+    VIR_FREE(result);
+    return ret;
+}
+
+
+#if WITH_QEMU && WITH_YAJL
+static int
+cpuTestJSONCPUID(const void *arg)
+{
+    const struct data *data = arg;
+    virCPUDataPtr cpuData = NULL;
+    virCPUDefPtr cpu = NULL;
+    qemuMonitorTestPtr testMon = NULL;
+    char *json = NULL;
+    char *result = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&json, "%s/cputestdata/%s-cpuid-%s.json",
+                    abs_srcdir, data->arch, data->host) < 0 ||
+        virAsprintf(&result, "cpuid-%s-json", data->host) < 0)
+        goto cleanup;
+
+    if (!(testMon = qemuMonitorTestNewFromFile(json, driver.xmlopt, true)))
+        goto cleanup;
+
+    if (qemuMonitorJSONGetCPUx86Data(qemuMonitorTestGetMonitor(testMon),
+                                     "feature-words", &cpuData) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC(cpu) < 0)
+        goto cleanup;
+
+    cpu->arch = cpuData->arch;
+    cpu->type = VIR_CPU_TYPE_GUEST;
+    cpu->match = VIR_CPU_MATCH_EXACT;
+    cpu->fallback = VIR_CPU_FALLBACK_FORBID;
+
+    if (cpuDecode(cpu, cpuData, NULL, 0, NULL) < 0)
+        goto cleanup;
+
+    ret = cpuTestCompareXML(data->arch, cpu, result, false);
+
+ cleanup:
+    qemuMonitorTestFree(testMon);
+    cpuDataFree(cpuData);
+    virCPUDefFree(cpu);
+    VIR_FREE(result);
+    VIR_FREE(json);
+    return ret;
+}
+#endif
+
+
 static int (*cpuTest[])(const void *) = {
     cpuTestCompare,
     cpuTestGuestData,
     cpuTestBaseline,
     cpuTestUpdate,
-    cpuTestHasFeature
+    cpuTestHasFeature,
+    cpuTestCPUID,
+    cpuTestCPUID,
+#if WITH_QEMU && WITH_YAJL
+    cpuTestJSONCPUID,
+#else
+    NULL,
+#endif
 };
 
 
@@ -507,6 +629,13 @@ static int
 mymain(void)
 {
     int ret = 0;
+
+#if WITH_QEMU && WITH_YAJL
+    if (qemuTestDriverInit(&driver) < 0)
+        return EXIT_FAILURE;
+
+    virEventRegisterDefaultImpl();
+#endif
 
 #define DO_TEST(arch, api, name, host, cpu,                             \
                 models, nmodels, preferred, flags, result)              \
@@ -561,6 +690,27 @@ mymain(void)
             host, cpu, models,                                          \
             models == NULL ? 0 : sizeof(models) / sizeof(char *),       \
             preferred, 0, result)
+
+#if WITH_QEMU && WITH_YAJL
+# define DO_TEST_CPUID_JSON(arch, host, json)                           \
+    do {                                                                \
+        if (json) {                                                     \
+            DO_TEST(arch, API_JSON_CPUID, host, host,                   \
+                    NULL, NULL, 0, NULL, 0, 0);                         \
+        }                                                               \
+    } while (0)
+#else
+# define DO_TEST_CPUID_JSON(arch, host)
+#endif
+
+#define DO_TEST_CPUID(arch, host, json)                                 \
+    do {                                                                \
+        DO_TEST(arch, API_HOST_CPUID, host, host,                       \
+                NULL, NULL, 0, NULL, 0, 0);                             \
+        DO_TEST(arch, API_GUEST_CPUID, host, host,                      \
+                NULL, NULL, 0, NULL, 0, 0);                             \
+        DO_TEST_CPUID_JSON(arch, host, json);                           \
+    } while (0)
 
     /* host to host comparison */
     DO_TEST_COMPARE("x86", "host", "host", VIR_CPU_COMPARE_IDENTICAL);
@@ -694,6 +844,10 @@ mymain(void)
     DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy", ppc_models, NULL, 0);
     DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-incompatible", ppc_models, NULL, -1);
     DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-invalid", ppc_models, NULL, -1);
+
+#if WITH_QEMU && WITH_YAJL
+    qemuTestDriverFree(&driver);
+#endif
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
