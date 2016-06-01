@@ -1,0 +1,24 @@
+<cpu>
+  <arch>x86_64</arch>
+  <model>Opteron_G4</model>
+  <vendor>AMD</vendor>
+  <feature name='vme'/>
+  <feature name='ht'/>
+  <feature name='monitor'/>
+  <feature name='osxsave'/>
+  <feature name='mmxext'/>
+  <feature name='fxsr_opt'/>
+  <feature name='cmp_legacy'/>
+  <feature name='extapic'/>
+  <feature name='cr8legacy'/>
+  <feature name='osvw'/>
+  <feature name='ibs'/>
+  <feature name='skinit'/>
+  <feature name='wdt'/>
+  <feature name='lwp'/>
+  <feature name='nodeid_msr'/>
+  <feature name='topoext'/>
+  <feature name='perfctr_core'/>
+  <feature name='perfctr_nb'/>
+  <feature name='invtsc'/>
+</cpu>
