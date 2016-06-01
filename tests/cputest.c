@@ -863,6 +863,7 @@ mymain(void)
     DO_TEST_CPUID("x86", "FX-8150", false);
     DO_TEST_CPUID("x86", "Opteron-1352", false);
     DO_TEST_CPUID("x86", "Opteron-2350", true);
+    DO_TEST_CPUID("x86", "Opteron-6234", true);
 
 #if WITH_QEMU && WITH_YAJL
     qemuTestDriverFree(&driver);
