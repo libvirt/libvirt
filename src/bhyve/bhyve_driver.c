@@ -57,6 +57,7 @@
 #include "bhyve_device.h"
 #include "bhyve_driver.h"
 #include "bhyve_command.h"
+#include "bhyve_parse_command.h"
 #include "bhyve_domain.h"
 #include "bhyve_process.h"
 #include "bhyve_capabilities.h"
@@ -1532,6 +1533,45 @@ bhyveConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)
     return 0;
 }
 
+static char *
+bhyveConnectDomainXMLFromNative(virConnectPtr conn,
+                                const char *nativeFormat,
+                                const char *nativeConfig,
+                                unsigned int flags)
+{
+    char *xml = NULL;
+    virDomainDefPtr def = NULL;
+    bhyveConnPtr privconn = conn->privateData;
+    virCapsPtr capabilities = NULL;
+    unsigned caps = bhyveDriverGetCaps(conn);
+
+    virCheckFlags(0, NULL);
+
+    if (virConnectDomainXMLFromNativeEnsureACL(conn) < 0)
+        return NULL;
+
+    capabilities = bhyveDriverGetCapabilities(privconn);
+    if (!capabilities)
+        return NULL;
+
+    if (STRNEQ(nativeFormat, BHYVE_CONFIG_FORMAT_ARGV)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unsupported config type %s"), nativeFormat);
+        goto cleanup;
+    }
+
+    def = bhyveParseCommandLineString(nativeConfig, caps, privconn->xmlopt);
+    if (def == NULL)
+        goto cleanup;
+
+    xml = virDomainDefFormat(def, capabilities, 0);
+
+ cleanup:
+    virObjectUnref(capabilities);
+    virDomainDefFree(def);
+    return xml;
+}
+
 static virHypervisorDriver bhyveHypervisorDriver = {
     .name = "bhyve",
     .connectOpen = bhyveConnectOpen, /* 1.2.2 */
@@ -1585,6 +1625,7 @@ static virHypervisorDriver bhyveHypervisorDriver = {
     .connectIsAlive = bhyveConnectIsAlive, /* 1.3.5 */
     .connectIsSecure = bhyveConnectIsSecure, /* 1.3.5 */
     .connectIsEncrypted = bhyveConnectIsEncrypted, /* 1.3.5 */
+    .connectDomainXMLFromNative = bhyveConnectDomainXMLFromNative, /* 2.1.0 */
 };
 
 
