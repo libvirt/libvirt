@@ -321,6 +321,8 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterStatePtr state,
         if (vol->target.format == VIR_STORAGE_FILE_QCOW ||
             vol->target.format == VIR_STORAGE_FILE_QCOW2)
             vol->target.encryption->format = VIR_STORAGE_ENCRYPTION_FORMAT_QCOW;
+        if (vol->target.format == VIR_STORAGE_FILE_LUKS)
+            vol->target.encryption->format = VIR_STORAGE_ENCRYPTION_FORMAT_LUKS;
     }
     vol->target.features = meta->features;
     meta->features = NULL;

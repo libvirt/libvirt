@@ -502,6 +502,7 @@ mymain(void)
 
     DO_TEST("encrypted-disk");
     DO_TEST("encrypted-disk-usage");
+    DO_TEST("luks-disks");
     DO_TEST("memtune");
     DO_TEST("memtune-unlimited");
     DO_TEST("blkiotune");

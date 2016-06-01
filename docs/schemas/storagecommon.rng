@@ -12,6 +12,7 @@
         <choice>
           <value>default</value>
           <value>qcow</value>
+          <value>luks</value>
         </choice>
       </attribute>
       <zeroOrMore>
@@ -81,6 +82,7 @@
       <value>fat</value>
       <value>vhd</value>
       <value>ploop</value>
+      <value>luks</value>
       <ref name='storageFormatBacking'/>
     </choice>
   </define>

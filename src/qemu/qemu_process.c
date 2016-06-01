@@ -2414,6 +2414,12 @@ qemuProcessInitPasswords(virConnectPtr conn,
             !virDomainDiskGetSource(vm->def->disks[i]))
             continue;
 
+        if (vm->def->disks[i]->src->encryption->format !=
+            VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT &&
+            vm->def->disks[i]->src->encryption->format !=
+            VIR_STORAGE_ENCRYPTION_FORMAT_QCOW)
+            continue;
+
         VIR_FREE(secret);
         if (qemuProcessGetVolumeQcowPassphrase(conn,
                                                vm->def->disks[i],

@@ -1027,8 +1027,7 @@ virStorageBackendCreateQemuImgCheckEncryption(int format,
         }
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("qcow volume encryption unsupported with "
-                         "volume format %s"), type);
+                       _("volume encryption unsupported with format %s"), type);
         return -1;
     }
 

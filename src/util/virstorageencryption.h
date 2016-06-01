@@ -48,6 +48,7 @@ typedef enum {
     /* "default" is only valid for volume creation */
     VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT = 0,
     VIR_STORAGE_ENCRYPTION_FORMAT_QCOW, /* Both qcow and qcow2 */
+    VIR_STORAGE_ENCRYPTION_FORMAT_LUKS,
 
     VIR_STORAGE_ENCRYPTION_FORMAT_LAST,
 } virStorageEncryptionFormatType;

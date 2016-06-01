@@ -157,7 +157,12 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
         case VIR_STORAGE_FILE_QCOW2:
             (*encryption)->format = VIR_STORAGE_ENCRYPTION_FORMAT_QCOW;
             break;
-        default:
+
+        case VIR_STORAGE_FILE_LUKS:
+            (*encryption)->format = VIR_STORAGE_ENCRYPTION_FORMAT_LUKS;
+            break;
+
+        case VIR_STORAGE_ENCRYPTION_FORMAT_LAST:
             break;
         }
 
