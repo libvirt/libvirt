@@ -3943,7 +3943,7 @@ qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
     virObjectUnref(cfg);
 }
 
-static int
+static void
 qemuDomainCheckRemoveOptionalDisk(virQEMUDriverPtr driver,
                                   virDomainObjPtr vm,
                                   size_t diskIndex)
@@ -3975,8 +3975,6 @@ qemuDomainCheckRemoveOptionalDisk(virQEMUDriverPtr driver,
     }
 
     qemuDomainEventQueue(driver, event);
-
-    return 0;
 }
 
 static int
@@ -3996,15 +3994,15 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
             if (!cold_boot &&
                 device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
                 device != VIR_DOMAIN_DISK_DEVICE_CDROM)
-                goto error;
+                return -1;
             break;
 
         case VIR_DOMAIN_STARTUP_POLICY_MANDATORY:
-            goto error;
+            return -1;
 
         case VIR_DOMAIN_STARTUP_POLICY_REQUISITE:
             if (cold_boot)
-                goto error;
+                return -1;
             break;
 
         case VIR_DOMAIN_STARTUP_POLICY_DEFAULT:
@@ -4013,13 +4011,9 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
             break;
     }
 
-    if (qemuDomainCheckRemoveOptionalDisk(driver, vm, diskIndex) < 0)
-        goto error;
+    qemuDomainCheckRemoveOptionalDisk(driver, vm, diskIndex);
 
     return 0;
-
- error:
-    return -1;
 }
 
 
