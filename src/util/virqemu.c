@@ -155,3 +155,61 @@ virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str)
 {
     virBufferEscape(buf, ',', ",", "%s", str);
 }
+
+
+/**
+ * virQEMUBuildLuksOpts:
+ * @buf: buffer to build the string into
+ * @enc: pointer to encryption info
+ * @alias: alias to use
+ *
+ * Generate the string for id=$alias and any encryption options for
+ * into the buffer.
+ *
+ * Important note, a trailing comma (",") is built into the return since
+ * it's expected other arguments are appended after the id=$alias string.
+ * So either turn something like:
+ *
+ *     "key-secret=$alias,"
+ *
+ * or
+ *     "key-secret=$alias,cipher-alg=twofish-256,cipher-mode=cbc,
+ *     hash-alg=sha256,ivgen-alg=plain64,igven-hash-alg=sha256,"
+ *
+ */
+void
+virQEMUBuildLuksOpts(virBufferPtr buf,
+                     virStorageEncryptionInfoDefPtr enc,
+                     const char *alias)
+{
+    virBufferAsprintf(buf, "key-secret=%s,", alias);
+
+    if (!enc->cipher_name)
+        return;
+
+    virBufferAddLit(buf, "cipher-alg=");
+    virQEMUBuildBufferEscapeComma(buf, enc->cipher_name);
+    virBufferAsprintf(buf, "-%u,", enc->cipher_size);
+    if (enc->cipher_mode) {
+        virBufferAddLit(buf, "cipher-mode=");
+        virQEMUBuildBufferEscapeComma(buf, enc->cipher_mode);
+        virBufferAddLit(buf, ",");
+    }
+    if (enc->cipher_hash) {
+        virBufferAddLit(buf, "hash-alg=");
+        virQEMUBuildBufferEscapeComma(buf, enc->cipher_hash);
+        virBufferAddLit(buf, ",");
+    }
+    if (!enc->ivgen_name)
+        return;
+
+    virBufferAddLit(buf, "ivgen-alg=");
+    virQEMUBuildBufferEscapeComma(buf, enc->ivgen_name);
+    virBufferAddLit(buf, ",");
+
+    if (enc->ivgen_hash) {
+        virBufferAddLit(buf, "ivgen-hash-alg=");
+        virQEMUBuildBufferEscapeComma(buf, enc->ivgen_hash);
+        virBufferAddLit(buf, ",");
+    }
+}

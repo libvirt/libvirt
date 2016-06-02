@@ -27,10 +27,16 @@
 # include "internal.h"
 # include "virbuffer.h"
 # include "virjson.h"
+# include "virstorageencryption.h"
 
 char *virQEMUBuildObjectCommandlineFromJSON(const char *type,
                                             const char *alias,
                                             virJSONValuePtr props);
 
 void virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str);
+void virQEMUBuildLuksOpts(virBufferPtr buf,
+                          virStorageEncryptionInfoDefPtr enc,
+                          const char *alias)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
 #endif /* __VIR_QEMU_H_ */

@@ -241,7 +241,8 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
                                          virStorageVolDefPtr inputvol,
                                          unsigned int flags,
                                          const char *create_tool,
-                                         int imgformat);
+                                         int imgformat,
+                                         const char *secretPath);
 
 /* ------- virStorageFile backends ------------ */
 typedef struct _virStorageFileBackend virStorageFileBackend;

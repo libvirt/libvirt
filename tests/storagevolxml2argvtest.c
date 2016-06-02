@@ -83,7 +83,8 @@ testCompareXMLToArgvFiles(bool shouldFail,
 
     cmd = virStorageBackendCreateQemuImgCmdFromVol(conn, &poolobj, vol,
                                                    inputvol, flags,
-                                                   create_tool, imgformat);
+                                                   create_tool, imgformat,
+                                                   NULL);
     if (!cmd) {
         if (shouldFail) {
             virResetLastError();

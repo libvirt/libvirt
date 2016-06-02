@@ -2197,6 +2197,7 @@ virProcessWait;
 
 # util/virqemu.h
 virQEMUBuildBufferEscapeComma;
+virQEMUBuildLuksOpts;
 virQEMUBuildObjectCommandlineFromJSON;
 
 
