@@ -749,7 +749,7 @@ mymain(void)
     DO_TEST_COMPARE("x86", "host", "guest", VIR_CPU_COMPARE_SUPERSET);
     DO_TEST_COMPARE("x86", "host", "pentium3-amd", VIR_CPU_COMPARE_INCOMPATIBLE);
     DO_TEST_COMPARE("x86", "host-amd", "pentium3-amd", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host-worse", "nehalem-force", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86", "host-worse", "penryn-force", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_COMPARE("x86", "host-SandyBridge", "exact-force-Haswell", VIR_CPU_COMPARE_IDENTICAL);
 
     DO_TEST_COMPARE("ppc64", "host", "guest-strict", VIR_CPU_COMPARE_IDENTICAL);
@@ -820,7 +820,7 @@ mymain(void)
     DO_TEST_GUESTDATA("x86", "host-better", "pentium3", NULL, "core2duo", 0);
     DO_TEST_GUESTDATA("x86", "host-worse", "guest", NULL, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host", "strict-force-extra", NULL, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host", "nehalem-force", NULL, NULL, 0);
+    DO_TEST_GUESTDATA("x86", "host", "penryn-force", NULL, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host", "guest", model486, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host", "guest", models, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host", "guest", models, "Penryn", 0);
