@@ -1087,6 +1087,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     int actualType = virStorageSourceGetActualType(disk->src);
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     qemuDomainSecretInfoPtr secinfo = diskPriv->secinfo;
+    qemuDomainSecretInfoPtr encinfo = diskPriv->encinfo;
     bool emitDeviceSyntax = qemuDiskBusNeedsDeviceArg(disk->bus);
 
     if (idx < 0) {
@@ -1225,6 +1226,10 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
             virBufferAsprintf(&opt, "password-secret=%s,",
                               secinfo->s.aes.alias);
         }
+
+        if (encinfo)
+            virQEMUBuildLuksOpts(&opt, &disk->src->encryption->encinfo,
+                                 encinfo->s.aes.alias);
 
         if (disk->src->format > 0 &&
             disk->src->type != VIR_STORAGE_TYPE_DIR)
@@ -1929,6 +1934,7 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
         virDomainDiskDefPtr disk = def->disks[i];
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         qemuDomainSecretInfoPtr secinfo = diskPriv->secinfo;
+        qemuDomainSecretInfoPtr encinfo = diskPriv->encinfo;
 
         /* PowerPC pseries based VMs do not support floppy device */
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
@@ -1963,6 +1969,9 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
         }
 
         if (qemuBuildDiskSecinfoCommandLine(cmd, secinfo) < 0)
+            return -1;
+
+        if (qemuBuildDiskSecinfoCommandLine(cmd, encinfo) < 0)
             return -1;
 
         virCommandAddArg(cmd, "-drive");

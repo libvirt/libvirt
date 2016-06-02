@@ -311,11 +311,14 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     bool releaseaddr = false;
     bool driveAdded = false;
     bool secobjAdded = false;
+    bool encobjAdded = false;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *src = virDomainDiskGetSource(disk);
     virJSONValuePtr secobjProps = NULL;
+    virJSONValuePtr encobjProps = NULL;
     qemuDomainDiskPrivatePtr diskPriv;
     qemuDomainSecretInfoPtr secinfo;
+    qemuDomainSecretInfoPtr encinfo;
 
     if (!disk->info.type) {
         if (qemuDomainMachineIsS390CCW(vm->def) &&
@@ -355,6 +358,10 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
             goto error;
     }
 
+    encinfo = diskPriv->encinfo;
+    if (encinfo && qemuBuildSecretInfoProps(encinfo, &encobjProps) < 0)
+        goto error;
+
     if (!(drivestr = qemuBuildDriveStr(disk, false, priv->qemuCaps)))
         goto error;
 
@@ -378,6 +385,15 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     }
     secobjAdded = true;
 
+    if (encobjProps) {
+        rv = qemuMonitorAddObject(priv->mon, "secret", encinfo->s.aes.alias,
+                                  encobjProps);
+        encobjProps = NULL; /* qemuMonitorAddObject consumes */
+        if (rv < 0)
+            goto exit_monitor;
+    }
+    encobjAdded = true;
+
     if (qemuMonitorAddDrive(priv->mon, drivestr) < 0)
         goto exit_monitor;
     driveAdded = true;
@@ -397,6 +413,7 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
 
  cleanup:
     virJSONValueFree(secobjProps);
+    virJSONValueFree(encobjProps);
     qemuDomainSecretDiskDestroy(disk);
     VIR_FREE(devstr);
     VIR_FREE(drivestr);
@@ -412,6 +429,8 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
     }
     if (secobjAdded)
         ignore_value(qemuMonitorDelObject(priv->mon, secinfo->s.aes.alias));
+    if (encobjAdded)
+        ignore_value(qemuMonitorDelObject(priv->mon, encinfo->s.aes.alias));
     if (orig_err) {
         virSetError(orig_err);
         virFreeError(orig_err);
@@ -569,11 +588,17 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
 {
     size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virErrorPtr orig_err;
     char *drivestr = NULL;
     char *devstr = NULL;
     bool driveAdded = false;
+    bool encobjAdded = false;
     int ret = -1;
+    int rv;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virJSONValuePtr encobjProps = NULL;
+    qemuDomainDiskPrivatePtr diskPriv;
+    qemuDomainSecretInfoPtr encinfo;
 
     if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
@@ -604,6 +629,11 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     if (qemuDomainSecretDiskPrepare(conn, priv, disk) < 0)
         goto error;
 
+    diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    encinfo = diskPriv->encinfo;
+    if (encinfo && qemuBuildSecretInfoProps(encinfo, &encobjProps) < 0)
+        goto error;
+
     if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
         goto error;
 
@@ -614,6 +644,15 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
         goto error;
 
     qemuDomainObjEnterMonitor(driver, vm);
+
+    if (encobjProps) {
+        rv = qemuMonitorAddObject(priv->mon, "secret", encinfo->s.aes.alias,
+                                  encobjProps);
+        encobjProps = NULL; /* qemuMonitorAddObject consumes */
+        if (rv < 0)
+            goto exit_monitor;
+    }
+    encobjAdded = true;
 
     if (qemuMonitorAddDrive(priv->mon, drivestr) < 0)
         goto exit_monitor;
@@ -631,6 +670,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     ret = 0;
 
  cleanup:
+    virJSONValueFree(encobjProps);
     qemuDomainSecretDiskDestroy(disk);
     VIR_FREE(devstr);
     VIR_FREE(drivestr);
@@ -641,6 +681,14 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     /* XXX should call 'drive_del' on error but this does not exist yet */
     if (driveAdded)
         VIR_WARN("qemuMonitorAddDevice failed on %s (%s)", drivestr, devstr);
+
+    orig_err = virSaveLastError();
+    if (encobjAdded)
+        ignore_value(qemuMonitorDelObject(priv->mon, encinfo->s.aes.alias));
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
 
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
 
@@ -2856,6 +2904,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *drivestr;
     char *objAlias = NULL;
+    char *encAlias = NULL;
 
     VIR_DEBUG("Removing disk %s from domain %p %s",
               disk->info.alias, vm, vm->def->name);
@@ -2881,12 +2930,31 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
         }
     }
 
+    /* Similarly, if this is possible a device using LUKS encryption, we
+     * can remove the luks object password too
+     */
+    if (!virStorageSourceIsEmpty(disk->src) && disk->src->encryption &&
+        disk->src->format == VIR_STORAGE_FILE_LUKS) {
+
+        if (!(encAlias =
+              qemuDomainGetSecretAESAlias(disk->info.alias, true))) {
+            VIR_FREE(objAlias);
+            VIR_FREE(drivestr);
+            return -1;
+        }
+    }
+
     qemuDomainObjEnterMonitor(driver, vm);
 
     /* If it fails, then so be it - it was a best shot */
     if (objAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, objAlias));
     VIR_FREE(objAlias);
+
+    /* If it fails, then so be it - it was a best shot */
+    if (encAlias)
+        ignore_value(qemuMonitorDelObject(priv->mon, encAlias));
+    VIR_FREE(encAlias);
 
     qemuMonitorDriveDel(priv->mon, drivestr);
     VIR_FREE(drivestr);

@@ -49,12 +49,22 @@ fakeSecretGetValue(virSecretPtr obj ATTRIBUTE_UNUSED,
 
 static virSecretPtr
 fakeSecretLookupByUsage(virConnectPtr conn,
-                        int usageType ATTRIBUTE_UNUSED,
+                        int usageType,
                         const char *usageID)
 {
     unsigned char uuid[VIR_UUID_BUFLEN];
-    if (STRNEQ(usageID, "mycluster_myname"))
+    if (usageType == VIR_SECRET_USAGE_TYPE_VOLUME) {
+        if (!STRPREFIX(usageID, "/storage/guest_disks/")) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "test provided invalid volume storage prefix '%s'",
+                           usageID);
+            return NULL;
+        }
+    } else if (STRNEQ(usageID, "mycluster_myname")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "test provided incorrect usage '%s'", usageID);
         return NULL;
+    }
 
     if (virUUIDGenerate(uuid) < 0)
         return NULL;
@@ -62,10 +72,17 @@ fakeSecretLookupByUsage(virConnectPtr conn,
     return virGetSecret(conn, uuid, usageType, usageID);
 }
 
+static virSecretPtr
+fakeSecretLookupByUUID(virConnectPtr conn,
+                       const unsigned char *uuid)
+{
+    return virGetSecret(conn, uuid, 0, "");
+}
+
 static virSecretDriver fakeSecretDriver = {
     .connectNumOfSecrets = NULL,
     .connectListSecrets = NULL,
-    .secretLookupByUUID = NULL,
+    .secretLookupByUUID = fakeSecretLookupByUUID,
     .secretLookupByUsage = fakeSecretLookupByUsage,
     .secretDefineXML = NULL,
     .secretGetXMLDesc = NULL,
@@ -1348,6 +1365,7 @@ mymain(void)
 
     DO_TEST("encrypted-disk", NONE);
     DO_TEST("encrypted-disk-usage", NONE);
+    DO_TEST("luks-disks", QEMU_CAPS_OBJECT_SECRET);
 
     DO_TEST("memtune", NONE);
     DO_TEST("memtune-unlimited", NONE);

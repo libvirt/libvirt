@@ -993,7 +993,8 @@ qemuDomainSecretSetup(virConnectPtr conn,
 {
     if (virCryptoHaveCipher(VIR_CRYPTO_CIPHER_AES256CBC) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
-        secretUsageType == VIR_SECRET_USAGE_TYPE_CEPH) {
+        (secretUsageType == VIR_SECRET_USAGE_TYPE_CEPH ||
+         secretUsageType == VIR_SECRET_USAGE_TYPE_VOLUME)) {
         if (qemuDomainSecretAESSetup(conn, priv, secinfo, srcalias,
                                      secretUsageType, username,
                                      seclookupdef, isLuks) < 0)
@@ -1053,11 +1054,14 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
                             virDomainDiskDefPtr disk)
 {
     virStorageSourcePtr src = disk->src;
+    qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     qemuDomainSecretInfoPtr secinfo = NULL;
 
-    if (conn && qemuDomainSecretDiskCapable(src)) {
+    if (!conn)
+        return 0;
+
+    if (qemuDomainSecretDiskCapable(src)) {
         virSecretUsageType secretUsageType = VIR_SECRET_USAGE_TYPE_ISCSI;
-        qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
         if (VIR_ALLOC(secinfo) < 0)
             return -1;
@@ -1071,6 +1075,21 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
             goto error;
 
         diskPriv->secinfo = secinfo;
+    }
+
+    if (!virStorageSourceIsEmpty(src) && src->encryption &&
+        src->format == VIR_STORAGE_FILE_LUKS) {
+
+        if (VIR_ALLOC(secinfo) < 0)
+            return -1;
+
+        if (qemuDomainSecretSetup(conn, priv, secinfo, disk->info.alias,
+                                  VIR_SECRET_USAGE_TYPE_VOLUME, NULL,
+                                  &src->encryption->secrets[0]->seclookupdef,
+                                  true) < 0)
+            goto error;
+
+        diskPriv->encinfo = secinfo;
     }
 
     return 0;
