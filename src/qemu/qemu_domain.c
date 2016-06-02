@@ -814,7 +814,7 @@ qemuDomainHostdevPrivateDispose(void *obj)
 /* qemuDomainSecretPlainSetup:
  * @conn: Pointer to connection
  * @secinfo: Pointer to secret info
- * @protocol: Protocol for secret
+ * @secretUsageType: The virSecretUsageType
  * @authdef: Pointer to auth data
  *
  * Taking a secinfo, fill in the plaintext information
@@ -824,19 +824,15 @@ qemuDomainHostdevPrivateDispose(void *obj)
 static int
 qemuDomainSecretPlainSetup(virConnectPtr conn,
                            qemuDomainSecretInfoPtr secinfo,
-                           virStorageNetProtocol protocol,
+                           virSecretUsageType secretUsageType,
                            virStorageAuthDefPtr authdef)
 {
-    int secretType = VIR_SECRET_USAGE_TYPE_ISCSI;
-
     secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN;
     if (VIR_STRDUP(secinfo->s.plain.username, authdef->username) < 0)
         return -1;
 
-    if (protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
-        secretType = VIR_SECRET_USAGE_TYPE_CEPH;
-
-    return virSecretGetSecretString(conn, &authdef->seclookupdef, secretType,
+    return virSecretGetSecretString(conn, &authdef->seclookupdef,
+                                    secretUsageType,
                                     &secinfo->s.plain.secret,
                                     &secinfo->s.plain.secretlen);
 }
@@ -847,7 +843,7 @@ qemuDomainSecretPlainSetup(virConnectPtr conn,
  * @priv: pointer to domain private object
  * @secinfo: Pointer to secret info
  * @srcalias: Alias of the disk/hostdev used to generate the secret alias
- * @protocol: Protocol for secret
+ * @secretUsageType: The virSecretUsageType
  * @authdef: Pointer to auth data
  *
  * Taking a secinfo, fill in the AES specific information using the
@@ -859,7 +855,7 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
                          qemuDomainObjPrivatePtr priv,
                          qemuDomainSecretInfoPtr secinfo,
                          const char *srcalias,
-                         virStorageNetProtocol protocol,
+                         virSecretUsageType secretUsageType,
                          virStorageAuthDefPtr authdef)
 {
     int ret = -1;
@@ -869,33 +865,10 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
     size_t secretlen = 0;
     uint8_t *ciphertext = NULL;
     size_t ciphertextlen = 0;
-    int secretType = VIR_SECRET_USAGE_TYPE_NONE;
 
     secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
     if (VIR_STRDUP(secinfo->s.aes.username, authdef->username) < 0)
         return -1;
-
-    switch ((virStorageNetProtocol)protocol) {
-    case VIR_STORAGE_NET_PROTOCOL_RBD:
-        secretType = VIR_SECRET_USAGE_TYPE_CEPH;
-        break;
-
-    case VIR_STORAGE_NET_PROTOCOL_NONE:
-    case VIR_STORAGE_NET_PROTOCOL_NBD:
-    case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
-    case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-    case VIR_STORAGE_NET_PROTOCOL_ISCSI:
-    case VIR_STORAGE_NET_PROTOCOL_HTTP:
-    case VIR_STORAGE_NET_PROTOCOL_HTTPS:
-    case VIR_STORAGE_NET_PROTOCOL_FTP:
-    case VIR_STORAGE_NET_PROTOCOL_FTPS:
-    case VIR_STORAGE_NET_PROTOCOL_TFTP:
-    case VIR_STORAGE_NET_PROTOCOL_LAST:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("protocol '%s' cannot be used for encrypted secrets"),
-                       virStorageNetProtocolTypeToString(protocol));
-        return -1;
-    }
 
     if (!(secinfo->s.aes.alias = qemuDomainGetSecretAESAlias(srcalias)))
         return -1;
@@ -909,7 +882,7 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
         goto cleanup;
 
     /* Grab the unencoded secret */
-    if (virSecretGetSecretString(conn, &authdef->seclookupdef, secretType,
+    if (virSecretGetSecretString(conn, &authdef->seclookupdef, secretUsageType,
                                  &secret, &secretlen) < 0)
         goto cleanup;
 
@@ -943,7 +916,7 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
  * @priv: pointer to domain private object
  * @secinfo: Pointer to secret info
  * @srcalias: Alias of the disk/hostdev used to generate the secret alias
- * @protocol: Protocol for secret
+ * @secretUsageType: The virSecretUsageType
  * @authdef: Pointer to auth data
  *
  * If we have the encryption API present and can support a secret object, then
@@ -958,17 +931,18 @@ qemuDomainSecretSetup(virConnectPtr conn,
                       qemuDomainObjPrivatePtr priv,
                       qemuDomainSecretInfoPtr secinfo,
                       const char *srcalias,
-                      virStorageNetProtocol protocol,
+                      virSecretUsageType secretUsageType,
                       virStorageAuthDefPtr authdef)
 {
     if (virCryptoHaveCipher(VIR_CRYPTO_CIPHER_AES256CBC) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
-        protocol == VIR_STORAGE_NET_PROTOCOL_RBD) {
-        if (qemuDomainSecretAESSetup(conn, priv, secinfo,
-                                     srcalias, protocol, authdef) < 0)
+        secretUsageType == VIR_SECRET_USAGE_TYPE_CEPH) {
+        if (qemuDomainSecretAESSetup(conn, priv, secinfo, srcalias,
+                                     secretUsageType, authdef) < 0)
             return -1;
     } else {
-        if (qemuDomainSecretPlainSetup(conn, secinfo, protocol, authdef) < 0)
+        if (qemuDomainSecretPlainSetup(conn, secinfo, secretUsageType,
+                                       authdef) < 0)
             return -1;
     }
     return 0;
@@ -1015,13 +989,17 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
         (src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI ||
          src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
 
+        virSecretUsageType secretUsageType = VIR_SECRET_USAGE_TYPE_ISCSI;
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
         if (VIR_ALLOC(secinfo) < 0)
             return -1;
 
+        if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
+            secretUsageType = VIR_SECRET_USAGE_TYPE_CEPH;
+
         if (qemuDomainSecretSetup(conn, priv, secinfo, disk->info.alias,
-                                  src->protocol, src->auth) < 0)
+                                  secretUsageType, src->auth) < 0)
             goto error;
 
         diskPriv->secinfo = secinfo;
@@ -1086,7 +1064,7 @@ qemuDomainSecretHostdevPrepare(virConnectPtr conn,
                 return -1;
 
             if (qemuDomainSecretSetup(conn, priv, secinfo, hostdev->info->alias,
-                                      VIR_STORAGE_NET_PROTOCOL_ISCSI,
+                                      VIR_SECRET_USAGE_TYPE_ISCSI,
                                       iscsisrc->auth) < 0)
                 goto error;
 
