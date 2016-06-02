@@ -4344,10 +4344,6 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
             }
         }
 
-        if (qemuDomainCheckDiskPresence(driver, vm,
-                                        flags & VIR_QEMU_PROCESS_START_COLD) < 0)
-            return -1;
-
         VIR_DEBUG("Checking domain and device security labels");
         if (virSecurityManagerCheckAllLabel(driver->securityManager, vm->def) < 0)
             return -1;
@@ -4867,6 +4863,14 @@ qemuProcessPrepareDomain(virConnectPtr conn,
      */
     for (i = 0; i < vm->def->ndisks; i++) {
         if (virStorageTranslateDiskSourcePool(conn, vm->def->disks[i]) < 0)
+            goto cleanup;
+    }
+
+    /* drop possibly missing disks from the definition. This needs to happen
+     * after the def is copied, aliases are set and disk sources are translated */
+    if (!(flags & VIR_QEMU_PROCESS_START_PRETEND)) {
+        if (qemuDomainCheckDiskPresence(driver, vm,
+                                        flags & VIR_QEMU_PROCESS_START_COLD) < 0)
             goto cleanup;
     }
 
