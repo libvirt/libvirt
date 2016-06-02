@@ -1119,6 +1119,26 @@ virStorageBackendCreateQemuImgSetBacking(virStoragePoolObjPtr pool,
 }
 
 
+static int
+virStorageBackendCreateQemuImgSetOptions(virCommandPtr cmd,
+                                         int imgformat,
+                                         struct _virStorageBackendQemuImgInfo info)
+{
+    char *opts = NULL;
+
+    if (info.format == VIR_STORAGE_FILE_QCOW2 && !info.compat &&
+        imgformat >= QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT)
+        info.compat = "0.10";
+
+    if (virStorageBackendCreateQemuImgOpts(&opts, info) < 0)
+        return -1;
+    if (opts)
+        virCommandAddArgList(cmd, "-o", opts, NULL);
+    VIR_FREE(opts);
+
+    return 0;
+}
+
 
 /* Create a qemu-img virCommand from the supplied binary path,
  * volume definitions and imgformat
@@ -1134,7 +1154,6 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
 {
     virCommandPtr cmd = NULL;
     const char *type;
-    char *opts = NULL;
     struct _virStorageBackendQemuImgInfo info = {
         .format = vol->target.format,
         .path = vol->target.path,
@@ -1207,17 +1226,10 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
     if (info.backingPath)
         virCommandAddArgList(cmd, "-b", info.backingPath, NULL);
 
-    if (info.format == VIR_STORAGE_FILE_QCOW2 && !info.compat &&
-        imgformat >= QEMU_IMG_BACKING_FORMAT_OPTIONS_COMPAT)
-        info.compat = "0.10";
-
-    if (virStorageBackendCreateQemuImgOpts(&opts, info) < 0) {
+    if (virStorageBackendCreateQemuImgSetOptions(cmd, imgformat, info) < 0) {
         virCommandFree(cmd);
         return NULL;
     }
-    if (opts)
-        virCommandAddArgList(cmd, "-o", opts, NULL);
-    VIR_FREE(opts);
 
     if (info.inputPath)
         virCommandAddArg(cmd, info.inputPath);
