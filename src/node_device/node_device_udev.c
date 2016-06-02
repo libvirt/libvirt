@@ -1165,13 +1165,38 @@ static int udevProcessDeviceListEntry(struct udev *udev,
 }
 
 
+/* We do not care about every device (see udevGetDeviceType).
+ * Do not bother enumerating over subsystems that do not
+ * contain interesting devices.
+ */
+const char *subsystem_blacklist[] = {
+    "acpi", "tty", "vc", "i2c",
+};
+
+static int udevEnumerateAddMatches(struct udev_enumerate *udev_enumerate)
+{
+    size_t i;
+
+    for (i = 0; i < ARRAY_CARDINALITY(subsystem_blacklist); i++) {
+        const char *s = subsystem_blacklist[i];
+        if (udev_enumerate_add_nomatch_subsystem(udev_enumerate, s) < 0) {
+            virReportSystemError(errno, "%s", _("failed to add susbsystem filter"));
+            return -1;
+        }
+    }
+    return 0;
+}
+
+
 static int udevEnumerateDevices(struct udev *udev)
 {
     struct udev_enumerate *udev_enumerate = NULL;
     struct udev_list_entry *list_entry = NULL;
-    int ret = 0;
+    int ret = -1;
 
     udev_enumerate = udev_enumerate_new(udev);
+    if (udevEnumerateAddMatches(udev_enumerate) < 0)
+        goto cleanup;
 
     ret = udev_enumerate_scan_devices(udev_enumerate);
     if (ret != 0) {
