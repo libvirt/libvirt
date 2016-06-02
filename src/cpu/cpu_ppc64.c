@@ -600,22 +600,22 @@ ppc64Compute(virCPUDefPtr host,
         case VIR_CPU_MODE_HOST_PASSTHROUGH:
             /* host-model and host-passthrough:
              * the guest CPU is the same as the host */
-            if (!(guest_model = ppc64ModelCopy(host_model)))
-                goto cleanup;
+            guest_model = ppc64ModelCopy(host_model);
             break;
 
         case VIR_CPU_MODE_CUSTOM:
             /* custom:
              * look up guest CPU information */
-            if (!(guest_model = ppc64ModelFromCPU(cpu, map)))
-                goto cleanup;
+            guest_model = ppc64ModelFromCPU(cpu, map);
             break;
         }
     } else {
         /* Other host CPU information */
-        if (!(guest_model = ppc64ModelFromCPU(cpu, map)))
-            goto cleanup;
+        guest_model = ppc64ModelFromCPU(cpu, map);
     }
+
+    if (!guest_model)
+        goto cleanup;
 
     if (STRNEQ(guest_model->name, host_model->name)) {
         VIR_DEBUG("host CPU model does not match required CPU model %s",
