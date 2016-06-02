@@ -1060,6 +1060,65 @@ virStorageBackendCreateQemuImgSetInput(virStorageVolDefPtr inputvol,
 }
 
 
+static int
+virStorageBackendCreateQemuImgSetBacking(virStoragePoolObjPtr pool,
+                                         virStorageVolDefPtr vol,
+                                         virStorageVolDefPtr inputvol,
+                                         struct _virStorageBackendQemuImgInfo *info)
+{
+    int accessRetCode = -1;
+    char *absolutePath = NULL;
+
+    info->backingFormat = vol->target.backingStore->format;
+    info->backingPath = vol->target.backingStore->path;
+
+    if (info->preallocate) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("metadata preallocation conflicts with backing"
+                         " store"));
+        return -1;
+    }
+
+    /* XXX: Not strictly required: qemu-img has an option a different
+     * backing store, not really sure what use it serves though, and it
+     * may cause issues with lvm. Untested essentially.
+     */
+    if (inputvol && inputvol->target.backingStore &&
+        STRNEQ_NULLABLE(inputvol->target.backingStore->path,
+                        info->backingPath)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("a different backing store cannot be specified."));
+        return -1;
+    }
+
+    if (!virStorageFileFormatTypeToString(info->backingFormat)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown storage vol backing store type %d"),
+                       info->backingFormat);
+        return -1;
+    }
+
+    /* Convert relative backing store paths to absolute paths for access
+     * validation.
+     */
+    if ('/' != *(info->backingPath) &&
+        virAsprintf(&absolutePath, "%s/%s", pool->def->target.path,
+                    info->backingPath) < 0)
+        return -1;
+    accessRetCode = access(absolutePath ? absolutePath :
+                           info->backingPath, R_OK);
+    VIR_FREE(absolutePath);
+    if (accessRetCode != 0) {
+        virReportSystemError(errno,
+                             _("inaccessible backing store volume %s"),
+                             info->backingPath);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 
 /* Create a qemu-img virCommand from the supplied binary path,
  * volume definitions and imgformat
@@ -1075,7 +1134,6 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
 {
     virCommandPtr cmd = NULL;
     const char *type;
-    const char *backingType = NULL;
     char *opts = NULL;
     struct _virStorageBackendQemuImgInfo info = {
         .format = vol->target.format,
@@ -1120,54 +1178,10 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
         virStorageBackendCreateQemuImgSetInput(inputvol, &info) < 0)
         return NULL;
 
-    if (vol->target.backingStore) {
-        int accessRetCode = -1;
-        char *absolutePath = NULL;
-
-        info.backingFormat = vol->target.backingStore->format;
-        info.backingPath = vol->target.backingStore->path;
-
-        if (info.preallocate) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("metadata preallocation conflicts with backing"
-                             " store"));
-            return NULL;
-        }
-
-        /* XXX: Not strictly required: qemu-img has an option a different
-         * backing store, not really sure what use it serves though, and it
-         * may cause issues with lvm. Untested essentially.
-         */
-        if (inputvol && inputvol->target.backingStore &&
-            STRNEQ_NULLABLE(inputvol->target.backingStore->path, info.backingPath)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("a different backing store cannot be specified."));
-            return NULL;
-        }
-
-        if (!(backingType = virStorageFileFormatTypeToString(info.backingFormat))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown storage vol backing store type %d"),
-                           info.backingFormat);
-            return NULL;
-        }
-
-        /* Convert relative backing store paths to absolute paths for access
-         * validation.
-         */
-        if ('/' != *(info.backingPath) &&
-            virAsprintf(&absolutePath, "%s/%s", pool->def->target.path,
-                        info.backingPath) < 0)
-            return NULL;
-        accessRetCode = access(absolutePath ? absolutePath : info.backingPath, R_OK);
-        VIR_FREE(absolutePath);
-        if (accessRetCode != 0) {
-            virReportSystemError(errno,
-                                 _("inaccessible backing store volume %s"),
-                                 info.backingPath);
-            return NULL;
-        }
-    }
+    if (vol->target.backingStore &&
+        virStorageBackendCreateQemuImgSetBacking(pool, vol, inputvol,
+                                                 &info) < 0)
+        return NULL;
 
     if (info.encryption &&
         virStorageBackendCreateQemuImgCheckEncryption(info.format, type,
@@ -1181,10 +1195,8 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
     cmd = virCommandNew(create_tool);
 
     /* ignore the backing volume when we're converting a volume */
-    if (info.inputPath) {
+    if (info.inputPath)
         info.backingPath = NULL;
-        backingType = NULL;
-    }
 
     if (info.inputPath)
         virCommandAddArgList(cmd, "convert", "-f", info.inputFormatStr,
