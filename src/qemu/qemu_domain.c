@@ -815,7 +815,8 @@ qemuDomainHostdevPrivateDispose(void *obj)
  * @conn: Pointer to connection
  * @secinfo: Pointer to secret info
  * @secretUsageType: The virSecretUsageType
- * @authdef: Pointer to auth data
+ * @username: username to use for authentication (may be NULL)
+ * @seclookupdef: Pointer to seclookupdef data
  *
  * Taking a secinfo, fill in the plaintext information
  *
@@ -825,14 +826,14 @@ static int
 qemuDomainSecretPlainSetup(virConnectPtr conn,
                            qemuDomainSecretInfoPtr secinfo,
                            virSecretUsageType secretUsageType,
-                           virStorageAuthDefPtr authdef)
+                           const char *username,
+                           virSecretLookupTypeDefPtr seclookupdef)
 {
     secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN;
-    if (VIR_STRDUP(secinfo->s.plain.username, authdef->username) < 0)
+    if (VIR_STRDUP(secinfo->s.plain.username, username) < 0)
         return -1;
 
-    return virSecretGetSecretString(conn, &authdef->seclookupdef,
-                                    secretUsageType,
+    return virSecretGetSecretString(conn, seclookupdef, secretUsageType,
                                     &secinfo->s.plain.secret,
                                     &secinfo->s.plain.secretlen);
 }
@@ -844,7 +845,8 @@ qemuDomainSecretPlainSetup(virConnectPtr conn,
  * @secinfo: Pointer to secret info
  * @srcalias: Alias of the disk/hostdev used to generate the secret alias
  * @secretUsageType: The virSecretUsageType
- * @authdef: Pointer to auth data
+ * @username: username to use for authentication (may be NULL)
+ * @seclookupdef: Pointer to seclookupdef data
  *
  * Taking a secinfo, fill in the AES specific information using the
  *
@@ -856,7 +858,8 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
                          qemuDomainSecretInfoPtr secinfo,
                          const char *srcalias,
                          virSecretUsageType secretUsageType,
-                         virStorageAuthDefPtr authdef)
+                         const char *username,
+                         virSecretLookupTypeDefPtr seclookupdef)
 {
     int ret = -1;
     uint8_t *raw_iv = NULL;
@@ -867,7 +870,7 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
     size_t ciphertextlen = 0;
 
     secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
-    if (VIR_STRDUP(secinfo->s.aes.username, authdef->username) < 0)
+    if (VIR_STRDUP(secinfo->s.aes.username, username) < 0)
         return -1;
 
     if (!(secinfo->s.aes.alias = qemuDomainGetSecretAESAlias(srcalias)))
@@ -882,7 +885,7 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
         goto cleanup;
 
     /* Grab the unencoded secret */
-    if (virSecretGetSecretString(conn, &authdef->seclookupdef, secretUsageType,
+    if (virSecretGetSecretString(conn, seclookupdef, secretUsageType,
                                  &secret, &secretlen) < 0)
         goto cleanup;
 
@@ -917,7 +920,8 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
  * @secinfo: Pointer to secret info
  * @srcalias: Alias of the disk/hostdev used to generate the secret alias
  * @secretUsageType: The virSecretUsageType
- * @authdef: Pointer to auth data
+ * @username: username to use for authentication (may be NULL)
+ * @seclookupdef: Pointer to seclookupdef data
  *
  * If we have the encryption API present and can support a secret object, then
  * build the AES secret; otherwise, build the Plain secret. This is the magic
@@ -932,17 +936,19 @@ qemuDomainSecretSetup(virConnectPtr conn,
                       qemuDomainSecretInfoPtr secinfo,
                       const char *srcalias,
                       virSecretUsageType secretUsageType,
-                      virStorageAuthDefPtr authdef)
+                      const char *username,
+                      virSecretLookupTypeDefPtr seclookupdef)
 {
     if (virCryptoHaveCipher(VIR_CRYPTO_CIPHER_AES256CBC) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
         secretUsageType == VIR_SECRET_USAGE_TYPE_CEPH) {
         if (qemuDomainSecretAESSetup(conn, priv, secinfo, srcalias,
-                                     secretUsageType, authdef) < 0)
+                                     secretUsageType, username,
+                                     seclookupdef) < 0)
             return -1;
     } else {
         if (qemuDomainSecretPlainSetup(conn, secinfo, secretUsageType,
-                                       authdef) < 0)
+                                       username, seclookupdef) < 0)
             return -1;
     }
     return 0;
@@ -999,7 +1005,8 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
             secretUsageType = VIR_SECRET_USAGE_TYPE_CEPH;
 
         if (qemuDomainSecretSetup(conn, priv, secinfo, disk->info.alias,
-                                  secretUsageType, src->auth) < 0)
+                                  secretUsageType, src->auth->username,
+                                  &src->auth->seclookupdef) < 0)
             goto error;
 
         diskPriv->secinfo = secinfo;
@@ -1065,7 +1072,8 @@ qemuDomainSecretHostdevPrepare(virConnectPtr conn,
 
             if (qemuDomainSecretSetup(conn, priv, secinfo, hostdev->info->alias,
                                       VIR_SECRET_USAGE_TYPE_ISCSI,
-                                      iscsisrc->auth) < 0)
+                                      iscsisrc->auth->username,
+                                      &iscsisrc->auth->seclookupdef) < 0)
                 goto error;
 
             hostdevPriv->secinfo = secinfo;
