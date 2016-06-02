@@ -961,6 +961,7 @@ struct _virStorageBackendQemuImgInfo {
     int backingFormat;
 
     const char *inputPath;
+    const char *inputFormatStr;
     int inputFormat;
 };
 
@@ -1057,6 +1058,32 @@ virStorageBackendCreateQemuImgCheckEncryption(int format,
 }
 
 
+static int
+virStorageBackendCreateQemuImgSetInput(virStorageVolDefPtr inputvol,
+                                       struct _virStorageBackendQemuImgInfo *info)
+{
+    if (!(info->inputPath = inputvol->target.path)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing input volume target path"));
+        return -1;
+    }
+
+    info->inputFormat = inputvol->target.format;
+    if (inputvol->type == VIR_STORAGE_VOL_BLOCK)
+        info->inputFormat = VIR_STORAGE_FILE_RAW;
+    if (!(info->inputFormatStr =
+          virStorageFileFormatTypeToString(info->inputFormat))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown storage vol type %d"),
+                       info->inputFormat);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+
 /* Create a qemu-img virCommand from the supplied binary path,
  * volume definitions and imgformat
  */
@@ -1072,7 +1099,6 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
     virCommandPtr cmd = NULL;
     const char *type;
     const char *backingType = NULL;
-    const char *inputType = NULL;
     char *opts = NULL;
     struct _virStorageBackendQemuImgInfo info = {
         .format = vol->target.format,
@@ -1113,23 +1139,9 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
         return NULL;
     }
 
-    if (inputvol) {
-        if (!(info.inputPath = inputvol->target.path)) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("missing input volume target path"));
-            return NULL;
-        }
-
-        info.inputFormat = inputvol->target.format;
-        if (inputvol->type == VIR_STORAGE_VOL_BLOCK)
-            info.inputFormat = VIR_STORAGE_FILE_RAW;
-        if (!(inputType = virStorageFileFormatTypeToString(info.inputFormat))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown storage vol type %d"),
-                           info.inputFormat);
-            return NULL;
-        }
-    }
+    if (inputvol &&
+        virStorageBackendCreateQemuImgSetInput(inputvol, &info) < 0)
+        return NULL;
 
     if (vol->target.backingStore) {
         int accessRetCode = -1;
@@ -1198,7 +1210,8 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
     }
 
     if (info.inputPath)
-        virCommandAddArgList(cmd, "convert", "-f", inputType, "-O", type, NULL);
+        virCommandAddArgList(cmd, "convert", "-f", info.inputFormatStr,
+                             "-O", type, NULL);
     else
         virCommandAddArgList(cmd, "create", "-f", type, NULL);
 
