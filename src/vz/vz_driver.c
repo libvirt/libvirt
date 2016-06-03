@@ -602,24 +602,24 @@ vzDomainLookupByName(virConnectPtr conn, const char *name)
 static int
 vzDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
-    virDomainObjPtr privdom;
+    virDomainObjPtr dom;
     int ret = -1;
 
-    if (!(privdom = vzDomObjFromDomainRef(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         goto cleanup;
 
-    info->state = virDomainObjGetState(privdom, NULL);
-    info->memory = privdom->def->mem.cur_balloon;
-    info->maxMem = virDomainDefGetMemoryActual(privdom->def);
-    info->nrVirtCpu = virDomainDefGetVcpus(privdom->def);
+    info->state = virDomainObjGetState(dom, NULL);
+    info->memory = dom->def->mem.cur_balloon;
+    info->maxMem = virDomainDefGetMemoryActual(dom->def);
+    info->nrVirtCpu = virDomainDefGetVcpus(dom->def);
     info->cpuTime = 0;
 
-    if (virDomainObjIsActive(privdom)) {
+    if (virDomainObjIsActive(dom)) {
         unsigned long long vtime;
         size_t i;
 
-        for (i = 0; i < virDomainDefGetVcpus(privdom->def); ++i) {
-            if (prlsdkGetVcpuStats(privdom, i, &vtime) < 0) {
+        for (i = 0; i < virDomainDefGetVcpus(dom->def); ++i) {
+            if (prlsdkGetVcpuStats(dom, i, &vtime) < 0) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("cannot read cputime for domain"));
                 goto cleanup;
@@ -630,42 +630,42 @@ vzDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     ret = 0;
 
  cleanup:
-    virDomainObjEndAPI(&privdom);
+    virDomainObjEndAPI(&dom);
     return ret;
 }
 
 static char *
 vzDomainGetOSType(virDomainPtr domain)
 {
-    virDomainObjPtr privdom;
+    virDomainObjPtr dom;
 
     char *ret = NULL;
 
-    if (!(privdom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomain(domain)))
         goto cleanup;
 
-    ignore_value(VIR_STRDUP(ret, virDomainOSTypeToString(privdom->def->os.type)));
+    ignore_value(VIR_STRDUP(ret, virDomainOSTypeToString(dom->def->os.type)));
 
  cleanup:
-    if (privdom)
-        virObjectUnlock(privdom);
+    if (dom)
+        virObjectUnlock(dom);
     return ret;
 }
 
 static int
 vzDomainIsPersistent(virDomainPtr domain)
 {
-    virDomainObjPtr privdom;
+    virDomainObjPtr dom;
     int ret = -1;
 
-    if (!(privdom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomain(domain)))
         goto cleanup;
 
     ret = 1;
 
  cleanup:
-    if (privdom)
-        virObjectUnlock(privdom);
+    if (dom)
+        virObjectUnlock(dom);
     return ret;
 }
 
@@ -673,19 +673,19 @@ static int
 vzDomainGetState(virDomainPtr domain,
                  int *state, int *reason, unsigned int flags)
 {
-    virDomainObjPtr privdom;
+    virDomainObjPtr dom;
     int ret = -1;
     virCheckFlags(0, -1);
 
-    if (!(privdom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomain(domain)))
         goto cleanup;
 
-    *state = virDomainObjGetState(privdom, reason);
+    *state = virDomainObjGetState(dom, reason);
     ret = 0;
 
  cleanup:
-    if (privdom)
-        virObjectUnlock(privdom);
+    if (dom)
+        virObjectUnlock(dom);
     return ret;
 }
 
@@ -694,40 +694,40 @@ vzDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
 {
     vzConnPtr privconn = domain->conn->privateData;
     virDomainDefPtr def;
-    virDomainObjPtr privdom;
+    virDomainObjPtr dom;
     char *ret = NULL;
 
     /* Flags checked by virDomainDefFormat */
 
-    if (!(privdom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomain(domain)))
         goto cleanup;
 
     def = (flags & VIR_DOMAIN_XML_INACTIVE) &&
-        privdom->newDef ? privdom->newDef : privdom->def;
+        dom->newDef ? dom->newDef : dom->def;
 
     ret = virDomainDefFormat(def, privconn->driver->caps, flags);
 
  cleanup:
-    if (privdom)
-        virObjectUnlock(privdom);
+    if (dom)
+        virObjectUnlock(dom);
     return ret;
 }
 
 static int
 vzDomainGetAutostart(virDomainPtr domain, int *autostart)
 {
-    virDomainObjPtr privdom;
+    virDomainObjPtr dom;
     int ret = -1;
 
-    if (!(privdom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomain(domain)))
         goto cleanup;
 
-    *autostart = privdom->autostart;
+    *autostart = dom->autostart;
     ret = 0;
 
  cleanup:
-    if (privdom)
-        virObjectUnlock(privdom);
+    if (dom)
+        virObjectUnlock(dom);
     return ret;
 }
 
@@ -874,14 +874,14 @@ vzDomainGetVcpus(virDomainPtr domain,
                  unsigned char *cpumaps,
                  int maplen)
 {
-    virDomainObjPtr privdom = NULL;
+    virDomainObjPtr dom = NULL;
     size_t i;
     int ret = -1;
 
-    if (!(privdom = vzDomObjFromDomainRef(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         goto cleanup;
 
-    if (!virDomainObjIsActive(privdom)) {
+    if (!virDomainObjIsActive(dom)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s",
                        _("cannot list vcpu pinning for an inactive domain"));
@@ -894,14 +894,14 @@ vzDomainGetVcpus(virDomainPtr domain,
             for (i = 0; i < maxinfo; i++) {
                 info[i].number = i;
                 info[i].state = VIR_VCPU_RUNNING;
-                if (prlsdkGetVcpuStats(privdom, i, &info[i].cpuTime) < 0)
+                if (prlsdkGetVcpuStats(dom, i, &info[i].cpuTime) < 0)
                     goto cleanup;
             }
         }
         if (cpumaps != NULL) {
             memset(cpumaps, 0, maplen * maxinfo);
             for (i = 0; i < maxinfo; i++)
-                virBitmapToDataBuf(privdom->def->cpumask,
+                virBitmapToDataBuf(dom->def->cpumask,
                                    VIR_GET_CPUMAP(cpumaps, maplen, i),
                                    maplen);
         }
@@ -909,8 +909,8 @@ vzDomainGetVcpus(virDomainPtr domain,
     ret = maxinfo;
 
  cleanup:
-    if (privdom)
-        virDomainObjEndAPI(&privdom);
+    if (dom)
+        virDomainObjEndAPI(&dom);
     return ret;
 }
 
@@ -1137,31 +1137,31 @@ static int vzCheckConfigUpdateFlags(virDomainObjPtr dom, unsigned int *flags)
     return 0;
 }
 
-static int vzDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
+static int vzDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
                                      unsigned int flags)
 {
     int ret = -1;
-    vzConnPtr privconn = dom->conn->privateData;
+    vzConnPtr privconn = domain->conn->privateData;
     virDomainDeviceDefPtr dev = NULL;
-    virDomainObjPtr privdom = NULL;
+    virDomainObjPtr dom = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (!(privdom = vzDomObjFromDomain(dom)))
+    if (!(dom = vzDomObjFromDomain(domain)))
         return -1;
 
-    if (vzCheckConfigUpdateFlags(privdom, &flags) < 0)
+    if (vzCheckConfigUpdateFlags(dom, &flags) < 0)
         goto cleanup;
 
-    dev = virDomainDeviceDefParse(xml, privdom->def, privconn->driver->caps,
+    dev = virDomainDeviceDefParse(xml, dom->def, privconn->driver->caps,
                                   privconn->driver->xmlopt, VIR_DOMAIN_XML_INACTIVE);
     if (dev == NULL)
         goto cleanup;
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = prlsdkAttachVolume(privconn->driver, privdom, dev->data.disk);
+        ret = prlsdkAttachVolume(privconn->driver, dom, dev->data.disk);
         if (ret) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("disk attach failed"));
@@ -1169,7 +1169,7 @@ static int vzDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
         }
         break;
     case VIR_DOMAIN_DEVICE_NET:
-        ret = prlsdkAttachNet(privconn->driver, privdom, dev->data.net);
+        ret = prlsdkAttachNet(privconn->driver, dom, dev->data.net);
         if (ret) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("network attach failed"));
@@ -1185,35 +1185,35 @@ static int vzDomainAttachDeviceFlags(virDomainPtr dom, const char *xml,
 
     ret = 0;
  cleanup:
-    virObjectUnlock(privdom);
+    virObjectUnlock(dom);
     return ret;
 }
 
-static int vzDomainAttachDevice(virDomainPtr dom, const char *xml)
+static int vzDomainAttachDevice(virDomainPtr domain, const char *xml)
 {
-    return vzDomainAttachDeviceFlags(dom, xml,
+    return vzDomainAttachDeviceFlags(domain, xml,
                                      VIR_DOMAIN_AFFECT_CONFIG | VIR_DOMAIN_AFFECT_LIVE);
 }
 
-static int vzDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
+static int vzDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
                                      unsigned int flags)
 {
     int ret = -1;
-    vzConnPtr privconn = dom->conn->privateData;
+    vzConnPtr privconn = domain->conn->privateData;
     virDomainDeviceDefPtr dev = NULL;
-    virDomainObjPtr privdom = NULL;
+    virDomainObjPtr dom = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    privdom = vzDomObjFromDomain(dom);
-    if (privdom == NULL)
+    dom = vzDomObjFromDomain(domain);
+    if (dom == NULL)
         return -1;
 
-    if (vzCheckConfigUpdateFlags(privdom, &flags) < 0)
+    if (vzCheckConfigUpdateFlags(dom, &flags) < 0)
         goto cleanup;
 
-    dev = virDomainDeviceDefParse(xml, privdom->def, privconn->driver->caps,
+    dev = virDomainDeviceDefParse(xml, dom->def, privconn->driver->caps,
                                   privconn->driver->xmlopt,
                                   VIR_DOMAIN_XML_INACTIVE |
                                   VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
@@ -1222,7 +1222,7 @@ static int vzDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = prlsdkDetachVolume(privdom, dev->data.disk);
+        ret = prlsdkDetachVolume(dom, dev->data.disk);
         if (ret) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("disk detach failed"));
@@ -1230,7 +1230,7 @@ static int vzDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
         }
         break;
     case VIR_DOMAIN_DEVICE_NET:
-        ret = prlsdkDetachNet(privconn->driver, privdom, dev->data.net);
+        ret = prlsdkDetachNet(privconn->driver, dom, dev->data.net);
         if (ret) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("network detach failed"));
@@ -1246,14 +1246,14 @@ static int vzDomainDetachDeviceFlags(virDomainPtr dom, const char *xml,
 
     ret = 0;
  cleanup:
-    virObjectUnlock(privdom);
+    virObjectUnlock(dom);
 
     return ret;
 }
 
-static int vzDomainDetachDevice(virDomainPtr dom, const char *xml)
+static int vzDomainDetachDevice(virDomainPtr domain, const char *xml)
 {
-    return vzDomainDetachDeviceFlags(dom, xml,
+    return vzDomainDetachDeviceFlags(domain, xml,
                                      VIR_DOMAIN_AFFECT_CONFIG | VIR_DOMAIN_AFFECT_LIVE);
 }
 
@@ -1410,52 +1410,52 @@ vzDomainMemoryStats(virDomainPtr domain,
 }
 
 static int
-vzDomainGetVcpusFlags(virDomainPtr dom,
+vzDomainGetVcpusFlags(virDomainPtr domain,
                       unsigned int flags)
 {
-    virDomainObjPtr privdom = NULL;
+    virDomainObjPtr dom = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
-    if (!(privdom = vzDomObjFromDomain(dom)))
+    if (!(dom = vzDomObjFromDomain(domain)))
         goto cleanup;
 
     if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
-        ret = virDomainDefGetVcpusMax(privdom->def);
+        ret = virDomainDefGetVcpusMax(dom->def);
     else
-        ret = virDomainDefGetVcpus(privdom->def);
+        ret = virDomainDefGetVcpus(dom->def);
 
  cleanup:
-    if (privdom)
-        virObjectUnlock(privdom);
+    if (dom)
+        virObjectUnlock(dom);
 
     return ret;
 }
 
-static int vzDomainGetMaxVcpus(virDomainPtr dom)
+static int vzDomainGetMaxVcpus(virDomainPtr domain)
 {
-    return vzDomainGetVcpusFlags(dom, (VIR_DOMAIN_AFFECT_LIVE |
-                                       VIR_DOMAIN_VCPU_MAXIMUM));
+    return vzDomainGetVcpusFlags(domain, (VIR_DOMAIN_AFFECT_LIVE |
+                                          VIR_DOMAIN_VCPU_MAXIMUM));
 }
 
-static int vzDomainIsUpdated(virDomainPtr dom)
+static int vzDomainIsUpdated(virDomainPtr domain)
 {
-    virDomainObjPtr privdom;
+    virDomainObjPtr dom;
     int ret = -1;
 
     /* As far as VZ domains are always updated (e.g. current==persistent),
      * we just check for domain existence */
-    if (!(privdom = vzDomObjFromDomain(dom)))
+    if (!(dom = vzDomObjFromDomain(domain)))
         goto cleanup;
 
     ret = 0;
 
  cleanup:
-    if (privdom)
-        virObjectUnlock(privdom);
+    if (dom)
+        virObjectUnlock(dom);
     return ret;
 }
 
