@@ -6404,94 +6404,23 @@ qemuMonitorJSONParseCPUx86FeatureWord(virJSONValuePtr data,
 
 
 static int
-qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
-                             const char *property,
-                             virCPUDataPtr *cpudata)
+qemuMonitorJSONParseCPUx86Features(virJSONValuePtr data,
+                                   virCPUDataPtr *cpudata)
 {
-    virJSONValuePtr cmd = NULL;
-    virJSONValuePtr reply = NULL;
-    virJSONValuePtr data;
-    virJSONValuePtr element;
     virCPUx86Data *x86Data = NULL;
     virCPUx86CPUID cpuid;
     size_t i;
     ssize_t n;
     int ret = -1;
 
-    /* look up if the property exists before asking */
-    if (!(cmd = qemuMonitorJSONMakeCommand("qom-list",
-                                           "s:path", QOM_CPU_PATH,
-                                           NULL)))
-        goto cleanup;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    /* check if device exists */
-    if ((data = virJSONValueObjectGet(reply, "error"))) {
-        const char *klass = virJSONValueObjectGetString(data, "class");
-        if (STREQ_NULLABLE(klass, "DeviceNotFound") ||
-            STREQ_NULLABLE(klass, "CommandNotFound")) {
-            ret = -2;
-            goto cleanup;
-        }
-    }
-
-    if (qemuMonitorJSONCheckError(cmd, reply))
-        goto cleanup;
-
-    data = virJSONValueObjectGetArray(reply, "return");
-
     if ((n = virJSONValueArraySize(data)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s CPU property did not return an array"),
-                       property);
-        goto cleanup;
-    }
-
-    for (i = 0; i < n; i++) {
-        element = virJSONValueArrayGet(data, i);
-        if (STREQ_NULLABLE(virJSONValueObjectGetString(element, "name"),
-                           property))
-            break;
-    }
-
-    /* "property" was not found */
-    if (i == n) {
-        ret = -2;
-        goto cleanup;
-    }
-
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
-
-    if (!(cmd = qemuMonitorJSONMakeCommand("qom-get",
-                                           "s:path", QOM_CPU_PATH,
-                                           "s:property", property,
-                                           NULL)))
-        goto cleanup;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONCheckError(cmd, reply))
-        goto cleanup;
-
-    if (!(data = virJSONValueObjectGetArray(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("qom-get reply was missing return data"));
-        goto cleanup;
-    }
-
-    if ((n = virJSONValueArraySize(data)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s CPU property did not return an array"),
-                       property);
-        goto cleanup;
+                       _("invalid array of CPUID features"));
+        return -1;
     }
 
     if (VIR_ALLOC(x86Data) < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < n; i++) {
         if (qemuMonitorJSONParseCPUx86FeatureWord(virJSONValueArrayGet(data, i),
@@ -6506,9 +6435,100 @@ qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
     ret = 0;
 
  cleanup:
+    virCPUx86DataFree(x86Data);
+    return ret;
+}
+
+
+int
+qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
+                             const char *property,
+                             virCPUDataPtr *cpudata)
+{
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    int ret = -1;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-get",
+                                           "s:path", QOM_CPU_PATH,
+                                           "s:property", property,
+                                           NULL)))
+        goto cleanup;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply))
+        goto cleanup;
+
+    data = virJSONValueObjectGetArray(reply, "return");
+    ret = qemuMonitorJSONParseCPUx86Features(data, cpudata);
+
+ cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
-    virCPUx86DataFree(x86Data);
+    return ret;
+}
+
+
+/*
+ * Returns -1 on error, 0 if QEMU does not support reporting CPUID features
+ * of a guest CPU, and 1 if the feature is supported.
+ */
+static int
+qemuMonitorJSONCheckCPUx86(qemuMonitorPtr mon)
+{
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    size_t i;
+    ssize_t n;
+    int ret = -1;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("qom-list",
+                                           "s:path", QOM_CPU_PATH,
+                                           NULL)))
+        goto cleanup;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if ((data = virJSONValueObjectGet(reply, "error"))) {
+        const char *klass = virJSONValueObjectGetString(data, "class");
+        if (STREQ_NULLABLE(klass, "DeviceNotFound") ||
+            STREQ_NULLABLE(klass, "CommandNotFound")) {
+            ret = 0;
+            goto cleanup;
+        }
+    }
+
+    if (qemuMonitorJSONCheckError(cmd, reply))
+        goto cleanup;
+
+    data = virJSONValueObjectGetArray(reply, "return");
+
+    if ((n = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("qom-list reply data was not an array"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < n; i++) {
+        virJSONValuePtr element = virJSONValueArrayGet(data, i);
+        if (STREQ_NULLABLE(virJSONValueObjectGetString(element, "name"),
+                           "feature-words"))
+            break;
+    }
+
+    if (i == n)
+        ret = 0;
+    else
+        ret = 1;
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
     return ret;
 }
 
@@ -6529,9 +6549,16 @@ qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
                            virArch arch,
                            virCPUDataPtr *data)
 {
+    int rc;
+
     switch (arch) {
     case VIR_ARCH_X86_64:
     case VIR_ARCH_I686:
+        if ((rc = qemuMonitorJSONCheckCPUx86(mon)) < 0)
+            return -1;
+        else if (!rc)
+            return -2;
+
         return qemuMonitorJSONGetCPUx86Data(mon, "feature-words", data);
 
     default:

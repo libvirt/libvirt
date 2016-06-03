@@ -457,6 +457,10 @@ int qemuMonitorJSONDetachCharDev(qemuMonitorPtr mon,
 int qemuMonitorJSONGetDeviceAliases(qemuMonitorPtr mon,
                                     char ***aliases);
 
+int qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
+                                 const char *property,
+                                 virCPUDataPtr *cpudata);
+
 int qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
                                virArch arch,
                                virCPUDataPtr *data);
