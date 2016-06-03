@@ -58,36 +58,16 @@ struct _udevPrivate {
 };
 
 
-/* This function allocates memory from the heap for the property
- * value.  That memory must be later freed by some other code. */
-static int udevGetDeviceProperty(struct udev_device *udev_device,
-                                 const char *property_key,
-                                 char **property_value)
+static const char *udevGetDeviceProperty(struct udev_device *udev_device,
+                                         const char *property_key)
 {
-    const char *udev_value = NULL;
-    int ret = PROPERTY_FOUND;
+    const char *ret = NULL;
 
-    udev_value = udev_device_get_property_value(udev_device, property_key);
-    if (udev_value == NULL) {
-        VIR_DEBUG("udev reports device '%s' does not have property '%s'",
-                  udev_device_get_sysname(udev_device), property_key);
-        ret = PROPERTY_MISSING;
-        goto out;
-    }
+    ret = udev_device_get_property_value(udev_device, property_key);
 
-    /* If this allocation is changed, the comment at the beginning
-     * of the function must also be changed. */
-    if (VIR_STRDUP(*property_value, udev_value) < 0) {
-        ret = PROPERTY_ERROR;
-        goto out;
-    }
+    VIR_DEBUG("Found property key '%s' value '%s' for device with sysname '%s'",
+              property_key, NULLSTR(ret), udev_device_get_sysname(udev_device));
 
-    VIR_DEBUG("Found property key '%s' value '%s' "
-              "for device with sysname '%s'",
-              property_key, *property_value,
-              udev_device_get_sysname(udev_device));
-
- out:
     return ret;
 }
 
@@ -96,7 +76,11 @@ static int udevGetStringProperty(struct udev_device *udev_device,
                                  const char *property_key,
                                  char **value)
 {
-    return udevGetDeviceProperty(udev_device, property_key, value);
+    if (VIR_STRDUP(*value,
+                   udevGetDeviceProperty(udev_device, property_key)) < 0)
+        return PROPERTY_ERROR;
+
+    return *value == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
 }
 
 
@@ -105,20 +89,15 @@ static int udevGetIntProperty(struct udev_device *udev_device,
                               int *value,
                               int base)
 {
-    char *udev_value = NULL;
-    int ret = PROPERTY_FOUND;
+    const char *str = NULL;
 
-    ret = udevGetDeviceProperty(udev_device, property_key, &udev_value);
+    str = udevGetDeviceProperty(udev_device, property_key);
 
-    if (ret == PROPERTY_FOUND) {
-        if (virStrToLong_i(udev_value, NULL, base, value) < 0) {
-            VIR_ERROR(_("Failed to convert '%s' to int"), udev_value);
-            ret = PROPERTY_ERROR;
-        }
+    if (str && virStrToLong_i(str, NULL, base, value) < 0) {
+        VIR_ERROR(_("Failed to convert '%s' to int"), str);
+        return PROPERTY_ERROR;
     }
-
-    VIR_FREE(udev_value);
-    return ret;
+    return str == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
 }
 
 
@@ -127,20 +106,15 @@ static int udevGetUintProperty(struct udev_device *udev_device,
                                unsigned int *value,
                                int base)
 {
-    char *udev_value = NULL;
-    int ret = PROPERTY_FOUND;
+    const char *str = NULL;
 
-    ret = udevGetDeviceProperty(udev_device, property_key, &udev_value);
+    str = udevGetDeviceProperty(udev_device, property_key);
 
-    if (ret == PROPERTY_FOUND) {
-        if (virStrToLong_ui(udev_value, NULL, base, value) < 0) {
-            VIR_ERROR(_("Failed to convert '%s' to unsigned int"), udev_value);
-            ret = PROPERTY_ERROR;
-        }
+    if (str && virStrToLong_ui(str, NULL, base, value) < 0) {
+        VIR_ERROR(_("Failed to convert '%s' to int"), str);
+        return PROPERTY_ERROR;
     }
-
-    VIR_FREE(udev_value);
-    return ret;
+    return str == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
 }
 
 
