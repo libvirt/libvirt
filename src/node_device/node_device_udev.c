@@ -891,17 +891,14 @@ static int udevProcessFloppy(struct udev_device *device,
 {
     int tmp_int = 0;
     int has_media = 0;
-    char *tmp_str = NULL;
 
     if ((udevGetIntProperty(device, "DKD_MEDIA_AVAILABLE",
-                            &tmp_int, 0) == PROPERTY_FOUND))
+                            &tmp_int, 0) == PROPERTY_FOUND)) {
         /* USB floppy */
         has_media = tmp_int;
-    else if (udevGetStringProperty(device, "ID_FS_LABEL",
-                                   &tmp_str) == PROPERTY_FOUND) {
+    } else if (udevHasDeviceProperty(device, "ID_FS_LABEL")) {
         /* Legacy floppy */
         has_media = 1;
-        VIR_FREE(tmp_str);
     }
 
     return udevProcessRemoveableMedia(device, def, has_media);
