@@ -3266,6 +3266,64 @@ virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
 }
 
 
+static void
+virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
+                            const char *ifname)
+{
+    size_t i;
+    struct ethtool_value cmd = { 0 };
+
+    /* legacy ethtool getters */
+    struct virNetDevEthtoolFeatureCmd ethtool_cmds[] = {
+        {ETHTOOL_GRXCSUM, VIR_NET_DEV_FEAT_GRXCSUM},
+        {ETHTOOL_GTXCSUM, VIR_NET_DEV_FEAT_GTXCSUM},
+        {ETHTOOL_GSG, VIR_NET_DEV_FEAT_GSG},
+        {ETHTOOL_GTSO, VIR_NET_DEV_FEAT_GTSO},
+# if HAVE_DECL_ETHTOOL_GGSO
+        {ETHTOOL_GGSO, VIR_NET_DEV_FEAT_GGSO},
+# endif
+# if HAVE_DECL_ETHTOOL_GGRO
+        {ETHTOOL_GGRO, VIR_NET_DEV_FEAT_GGRO},
+# endif
+    };
+
+# if HAVE_DECL_ETHTOOL_GFLAGS
+    /* ethtool masks */
+    struct virNetDevEthtoolFeatureCmd flags[] = {
+#  if HAVE_DECL_ETH_FLAG_LRO
+        {ETH_FLAG_LRO, VIR_NET_DEV_FEAT_LRO},
+#  endif
+#  if HAVE_DECL_ETH_FLAG_TXVLAN
+        {ETH_FLAG_RXVLAN, VIR_NET_DEV_FEAT_RXVLAN},
+        {ETH_FLAG_TXVLAN, VIR_NET_DEV_FEAT_TXVLAN},
+#  endif
+#  if HAVE_DECL_ETH_FLAG_NTUBLE
+        {ETH_FLAG_NTUPLE, VIR_NET_DEV_FEAT_NTUPLE},
+#  endif
+#  if HAVE_DECL_ETH_FLAG_RXHASH
+        {ETH_FLAG_RXHASH, VIR_NET_DEV_FEAT_RXHASH},
+#  endif
+    };
+# endif
+
+    for (i = 0; i < ARRAY_CARDINALITY(ethtool_cmds); i++) {
+        cmd.cmd = ethtool_cmds[i].cmd;
+        if (virNetDevFeatureAvailable(ifname, &cmd) == 1)
+            ignore_value(virBitmapSetBit(bitmap, ethtool_cmds[i].feat));
+    }
+
+# if HAVE_DECL_ETHTOOL_GFLAGS
+    cmd.cmd = ETHTOOL_GFLAGS;
+    if (virNetDevFeatureAvailable(ifname, &cmd) == 1) {
+        for (i = 0; i < ARRAY_CARDINALITY(flags); i++) {
+            if (cmd.data & flags[i].cmd)
+                ignore_value(virBitmapSetBit(bitmap, flags[i].feat));
+        }
+    }
+# endif
+}
+
+
 # if HAVE_DECL_ETHTOOL_GFEATURES
 /**
  * virNetDevGFeatureAvailable
@@ -3303,24 +3361,9 @@ int
 virNetDevGetFeatures(const char *ifname,
                      virBitmapPtr *out)
 {
-    size_t i = -1;
-    struct ethtool_value cmd = { 0 };
 # if HAVE_DECL_ETHTOOL_GFEATURES
     struct ethtool_gfeatures *g_cmd;
 # endif
-    /* legacy ethtool getters */
-    struct virNetDevEthtoolFeatureCmd cmds[] = {
-        {ETHTOOL_GRXCSUM, VIR_NET_DEV_FEAT_GRXCSUM},
-        {ETHTOOL_GTXCSUM, VIR_NET_DEV_FEAT_GTXCSUM},
-        {ETHTOOL_GSG, VIR_NET_DEV_FEAT_GSG},
-        {ETHTOOL_GTSO, VIR_NET_DEV_FEAT_GTSO},
-# if HAVE_DECL_ETHTOOL_GGSO
-        {ETHTOOL_GGSO, VIR_NET_DEV_FEAT_GGSO},
-# endif
-# if HAVE_DECL_ETHTOOL_GGRO
-        {ETHTOOL_GGRO, VIR_NET_DEV_FEAT_GGRO},
-# endif
-    };
 
     if (!(*out = virBitmapNew(VIR_NET_DEV_FEAT_LAST)))
         return -1;
@@ -3331,39 +3374,7 @@ virNetDevGetFeatures(const char *ifname,
         return 0;
     }
 
-    for (i = 0; i < ARRAY_CARDINALITY(cmds); i++) {
-        cmd.cmd = cmds[i].cmd;
-        if (virNetDevFeatureAvailable(ifname, &cmd) == 1)
-            ignore_value(virBitmapSetBit(*out, cmds[i].feat));
-    }
-
-# if HAVE_DECL_ETHTOOL_GFLAGS
-    size_t j = -1;
-    /* ethtool masks */
-    struct virNetDevEthtoolFeatureCmd flags[] = {
-#  if HAVE_DECL_ETH_FLAG_LRO
-        {ETH_FLAG_LRO, VIR_NET_DEV_FEAT_LRO},
-#  endif
-#  if HAVE_DECL_ETH_FLAG_TXVLAN
-        {ETH_FLAG_RXVLAN, VIR_NET_DEV_FEAT_RXVLAN},
-        {ETH_FLAG_TXVLAN, VIR_NET_DEV_FEAT_TXVLAN},
-#  endif
-#  if HAVE_DECL_ETH_FLAG_NTUBLE
-        {ETH_FLAG_NTUPLE, VIR_NET_DEV_FEAT_NTUPLE},
-#  endif
-#  if HAVE_DECL_ETH_FLAG_RXHASH
-        {ETH_FLAG_RXHASH, VIR_NET_DEV_FEAT_RXHASH},
-#  endif
-    };
-
-    cmd.cmd = ETHTOOL_GFLAGS;
-    if (virNetDevFeatureAvailable(ifname, &cmd) == 1) {
-        for (j = 0; j < ARRAY_CARDINALITY(flags); j++) {
-            if (cmd.data & flags[j].cmd)
-                ignore_value(virBitmapSetBit(*out, flags[j].feat));
-        }
-    }
-# endif
+    virNetDevGetEthtoolFeatures(*out, ifname);
 
 # if HAVE_DECL_ETHTOOL_GFEATURES
     if (VIR_ALLOC_VAR(g_cmd,
