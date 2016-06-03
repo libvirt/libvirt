@@ -585,7 +585,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                                                        config->cert_file,
                                                        config->key_file,
                                                        (const char *const*)config->tls_allowed_dn_list,
-                                                       NULL,
+                                                       config->tls_priority,
                                                        config->tls_no_sanity_certificate ? false : true,
                                                        config->tls_no_verify_certificate ? false : true)))
                     goto cleanup;
@@ -593,7 +593,7 @@ daemonSetupNetworking(virNetServerPtr srv,
                 if (!(ctxt = virNetTLSContextNewServerPath(NULL,
                                                            !privileged,
                                                            (const char *const*)config->tls_allowed_dn_list,
-                                                           NULL,
+                                                           config->tls_priority,
                                                            config->tls_no_sanity_certificate ? false : true,
                                                            config->tls_no_verify_certificate ? false : true)))
                     goto cleanup;

@@ -53,6 +53,7 @@ module Libvirtd =
                            | str_array_entry "tls_allowed_dn_list"
                            | str_array_entry "sasl_allowed_username_list"
                            | str_array_entry "access_drivers"
+                           | str_entry "tls_priority"
 
    let processing_entry = int_entry "min_workers"
                         | int_entry "max_workers"

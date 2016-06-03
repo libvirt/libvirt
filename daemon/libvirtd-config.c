@@ -367,6 +367,7 @@ daemonConfigFree(struct daemonConfig *data)
         tmp++;
     }
     VIR_FREE(data->sasl_allowed_username_list);
+    VIR_FREE(data->tls_priority);
 
     VIR_FREE(data->key_file);
     VIR_FREE(data->ca_file);
@@ -442,6 +443,7 @@ daemonConfigLoadOptions(struct daemonConfig *data,
                                   &data->sasl_allowed_username_list, filename) < 0)
         goto error;
 
+    GET_CONF_STR(conf, filename, tls_priority);
 
     GET_CONF_UINT(conf, filename, min_workers);
     GET_CONF_UINT(conf, filename, max_workers);
