@@ -129,38 +129,17 @@ static int udevGetUintProperty(struct udev_device *udev_device,
 }
 
 
-/* This function allocates memory from the heap for the property
- * value.  That memory must be later freed by some other code.
- * Any control characters that cannot be printed in the XML are stripped
- * from the string */
-static int udevGetDeviceSysfsAttr(struct udev_device *udev_device,
-                                  const char *attr_name,
-                                  char **attr_value)
+static const char *udevGetDeviceSysfsAttr(struct udev_device *udev_device,
+                                          const char *attr_name)
 {
-    const char *udev_value = NULL;
-    int ret = PROPERTY_FOUND;
+    const char *ret = NULL;
 
-    udev_value = udev_device_get_sysattr_value(udev_device, attr_name);
-    if (udev_value == NULL) {
-        VIR_DEBUG("udev reports device '%s' does not have sysfs attr '%s'",
-                  udev_device_get_sysname(udev_device), attr_name);
-        ret = PROPERTY_MISSING;
-        goto out;
-    }
-
-    /* If this allocation is changed, the comment at the beginning
-     * of the function must also be changed. */
-    if (VIR_STRDUP(*attr_value, udev_value) < 0) {
-        ret = PROPERTY_ERROR;
-        goto out;
-    }
+    ret = udev_device_get_sysattr_value(udev_device, attr_name);
 
     VIR_DEBUG("Found sysfs attribute '%s' value '%s' "
               "for device with sysname '%s'",
-              attr_name, *attr_value,
+              attr_name, NULLSTR(ret),
               udev_device_get_sysname(udev_device));
-
- out:
     return ret;
 }
 
@@ -169,22 +148,15 @@ static int udevGetStringSysfsAttr(struct udev_device *udev_device,
                                   const char *attr_name,
                                   char **value)
 {
-    char *tmp = NULL;
-    int ret = PROPERTY_MISSING;
+    if (VIR_STRDUP(*value, udevGetDeviceSysfsAttr(udev_device, attr_name)) < 0)
+        return PROPERTY_ERROR;
 
-    ret = udevGetDeviceSysfsAttr(udev_device, attr_name, &tmp);
+    virStringStripControlChars(*value);
 
-    virStringStripControlChars(tmp);
+    if (*value != NULL && (STREQ(*value, "")))
+        VIR_FREE(*value);
 
-    if (tmp != NULL && (STREQ(tmp, ""))) {
-        VIR_FREE(tmp);
-        tmp = NULL;
-        ret = PROPERTY_MISSING;
-    }
-
-    *value = tmp;
-
-    return ret;
+    return *value == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
 }
 
 
@@ -193,20 +165,16 @@ static int udevGetIntSysfsAttr(struct udev_device *udev_device,
                                int *value,
                                int base)
 {
-    char *udev_value = NULL;
-    int ret = PROPERTY_FOUND;
+    const char *str = NULL;
 
-    ret = udevGetDeviceSysfsAttr(udev_device, attr_name, &udev_value);
+    str = udevGetDeviceSysfsAttr(udev_device, attr_name);
 
-    if (ret == PROPERTY_FOUND) {
-        if (virStrToLong_i(udev_value, NULL, base, value) < 0) {
-            VIR_ERROR(_("Failed to convert '%s' to int"), udev_value);
-            ret = PROPERTY_ERROR;
-        }
+    if (str && virStrToLong_i(str, NULL, base, value) < 0) {
+        VIR_ERROR(_("Failed to convert '%s' to int"), str);
+        return PROPERTY_ERROR;
     }
 
-    VIR_FREE(udev_value);
-    return ret;
+    return str == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
 }
 
 
@@ -215,20 +183,16 @@ static int udevGetUintSysfsAttr(struct udev_device *udev_device,
                                 unsigned int *value,
                                 int base)
 {
-    char *udev_value = NULL;
-    int ret = PROPERTY_FOUND;
+    const char *str = NULL;
 
-    ret = udevGetDeviceSysfsAttr(udev_device, attr_name, &udev_value);
+    str = udevGetDeviceSysfsAttr(udev_device, attr_name);
 
-    if (ret == PROPERTY_FOUND) {
-        if (virStrToLong_ui(udev_value, NULL, base, value) < 0) {
-            VIR_ERROR(_("Failed to convert '%s' to unsigned int"), udev_value);
-            ret = PROPERTY_ERROR;
-        }
+    if (str && virStrToLong_ui(str, NULL, base, value) < 0) {
+        VIR_ERROR(_("Failed to convert '%s' to unsigned int"), str);
+        return PROPERTY_ERROR;
     }
 
-    VIR_FREE(udev_value);
-    return ret;
+    return str == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
 }
 
 
@@ -236,20 +200,16 @@ static int udevGetUint64SysfsAttr(struct udev_device *udev_device,
                                   const char *attr_name,
                                   unsigned long long *value)
 {
-    char *udev_value = NULL;
-    int ret = PROPERTY_FOUND;
+    const char *str = NULL;
 
-    ret = udevGetDeviceSysfsAttr(udev_device, attr_name, &udev_value);
+    str = udevGetDeviceSysfsAttr(udev_device, attr_name);
 
-    if (ret == PROPERTY_FOUND) {
-        if (virStrToLong_ull(udev_value, NULL, 0, value) < 0) {
-            VIR_ERROR(_("Failed to convert '%s' to unsigned long long"), udev_value);
-            ret = PROPERTY_ERROR;
-        }
+    if (str && virStrToLong_ull(str, NULL, 0, value) < 0) {
+        VIR_ERROR(_("Failed to convert '%s' to unsigned long long"), str);
+        return PROPERTY_ERROR;
     }
 
-    VIR_FREE(udev_value);
-    return ret;
+    return str == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
 }
 
 
