@@ -1709,21 +1709,21 @@ static int nodeStateInitialize(bool privileged,
     int ret = -1;
 
     if (VIR_ALLOC(priv) < 0)
-        goto out;
+        return -1;
 
     priv->watch = -1;
     priv->privileged = privileged;
 
     if (VIR_ALLOC(driver) < 0) {
         VIR_FREE(priv);
-        goto out;
+        return -1;
     }
 
     if (virMutexInit(&driver->lock) < 0) {
         VIR_ERROR(_("Failed to initialize mutex for driver"));
         VIR_FREE(priv);
         VIR_FREE(driver);
-        goto out;
+        return -1;
     }
 
     nodeDeviceLock();
@@ -1785,7 +1785,6 @@ static int nodeStateInitialize(bool privileged,
  out_unlock:
     nodeDeviceUnlock();
 
- out:
     if (ret == -1)
         nodeStateCleanup();
     return ret;
