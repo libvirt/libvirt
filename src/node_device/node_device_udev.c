@@ -712,16 +712,17 @@ static int udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
     int ret = -1;
     virNodeDevCapDataPtr data = &def->caps->data;
     char *filename = NULL;
+    char *str;
 
     filename = last_component(def->sysfs_path);
 
-    if (!STRPREFIX(filename, "host")) {
+    if (!(str = STRSKIP(filename, "host"))) {
         VIR_ERROR(_("SCSI host found, but its udev name '%s' does "
                     "not begin with 'host'"), filename);
         goto out;
     }
 
-    if (udevStrToLong_ui(filename + strlen("host"),
+    if (udevStrToLong_ui(str,
                          NULL,
                          0,
                          &data->scsi_host.host) == -1) {
