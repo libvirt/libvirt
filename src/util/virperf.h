@@ -51,9 +51,6 @@ int virPerfEventDisable(virPerfPtr perf,
 bool virPerfEventIsEnabled(virPerfPtr perf,
                            virPerfEventType type);
 
-int virPerfGetEventFd(virPerfPtr perf,
-                      virPerfEventType type);
-
 int virPerfReadEvent(virPerfPtr perf,
                      virPerfEventType type,
                      uint64_t *value);

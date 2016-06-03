@@ -241,16 +241,6 @@ bool virPerfEventIsEnabled(virPerfPtr perf,
     return event->enabled;
 }
 
-int virPerfGetEventFd(virPerfPtr perf,
-                      virPerfEventType type)
-{
-    virPerfEventPtr event = virPerfGetEvent(perf, type);
-    if (event == NULL)
-        return false;
-
-    return event->fd;
-}
-
 int
 virPerfReadEvent(virPerfPtr perf,
                  virPerfEventType type,
@@ -297,15 +287,6 @@ virPerfEventIsEnabled(virPerfPtr perf ATTRIBUTE_UNUSED,
                       virPerfEventType type ATTRIBUTE_UNUSED)
 {
     return false;
-}
-
-int
-virPerfGetEventFd(virPerfPtr perf ATTRIBUTE_UNUSED,
-                  virPerfEventType type ATTRIBUTE_UNUSED)
-{
-    virReportSystemError(ENXIO, "%s",
-                         _("Perf not supported on this platform"));
-    return -1;
 }
 
 int

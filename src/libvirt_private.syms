@@ -2083,7 +2083,6 @@ virPerfEventIsEnabled;
 virPerfEventTypeFromString;
 virPerfEventTypeToString;
 virPerfFree;
-virPerfGetEventFd;
 virPerfNew;
 virPerfReadEvent;
 
