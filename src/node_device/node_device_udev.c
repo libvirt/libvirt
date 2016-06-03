@@ -713,41 +713,40 @@ static int udevProcessRemoveableMedia(struct udev_device *device,
                                       int has_media)
 {
     virNodeDevCapDataPtr data = &def->caps->data;
-    int is_removable = 0, ret = 0;
+    int is_removable = 0;
 
     if (udevGetIntSysfsAttr(device, "removable", &is_removable, 0) < 0)
         return -1;
     if (is_removable == 1)
         def->caps->data.storage.flags |= VIR_NODE_DEV_CAP_STORAGE_REMOVABLE;
 
-    if (has_media) {
+    if (!has_media)
+        return 0;
 
-        def->caps->data.storage.flags |=
-            VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE;
+    def->caps->data.storage.flags |=
+        VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE;
 
-        if (udevGetStringProperty(device, "ID_FS_LABEL",
-                                  &data->storage.media_label) < 0)
-            goto out;
+    if (udevGetStringProperty(device, "ID_FS_LABEL",
+                              &data->storage.media_label) < 0)
+        return -1;
 
-        if (udevGetUint64SysfsAttr(device, "size",
-                                   &data->storage.num_blocks) < 0)
-            goto out;
+    if (udevGetUint64SysfsAttr(device, "size",
+                               &data->storage.num_blocks) < 0)
+        return -1;
 
-        if (udevGetUint64SysfsAttr(device, "queue/logical_block_size",
-                                   &data->storage.logical_block_size) < 0)
-            goto out;
+    if (udevGetUint64SysfsAttr(device, "queue/logical_block_size",
+                               &data->storage.logical_block_size) < 0)
+        return -1;
 
-        /* XXX This calculation is wrong for the qemu virtual cdrom
-         * which reports the size in 512 byte blocks, but the logical
-         * block size as 2048.  I don't have a physical cdrom on a
-         * devel system to see how they behave. */
-        def->caps->data.storage.removable_media_size =
-            def->caps->data.storage.num_blocks *
-            def->caps->data.storage.logical_block_size;
-    }
+    /* XXX This calculation is wrong for the qemu virtual cdrom
+     * which reports the size in 512 byte blocks, but the logical
+     * block size as 2048.  I don't have a physical cdrom on a
+     * devel system to see how they behave. */
+    def->caps->data.storage.removable_media_size =
+        def->caps->data.storage.num_blocks *
+        def->caps->data.storage.logical_block_size;
 
- out:
-    return ret;
+    return 0;
 }
 
 static int udevProcessCDROM(struct udev_device *device,
