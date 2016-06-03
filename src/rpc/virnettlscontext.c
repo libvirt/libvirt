@@ -65,6 +65,7 @@ struct _virNetTLSContext {
     bool isServer;
     bool requireValidCert;
     const char *const*x509dnWhitelist;
+    char *priority;
 };
 
 struct _virNetTLSSession {
@@ -696,6 +697,7 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
                                                const char *cert,
                                                const char *key,
                                                const char *const*x509dnWhitelist,
+                                               const char *priority,
                                                bool sanityCheckCert,
                                                bool requireValidCert,
                                                bool isServer)
@@ -708,6 +710,9 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
 
     if (!(ctxt = virObjectLockableNew(virNetTLSContextClass)))
         return NULL;
+
+    if (VIR_STRDUP(ctxt->priority, priority) < 0)
+        goto error;
 
     err = gnutls_certificate_allocate_credentials(&ctxt->x509cred);
     if (err) {
@@ -896,6 +901,7 @@ static int virNetTLSContextLocateCredentials(const char *pkipath,
 static virNetTLSContextPtr virNetTLSContextNewPath(const char *pkipath,
                                                    bool tryUserPkiPath,
                                                    const char *const*x509dnWhitelist,
+                                                   const char *priority,
                                                    bool sanityCheckCert,
                                                    bool requireValidCert,
                                                    bool isServer)
@@ -908,7 +914,7 @@ static virNetTLSContextPtr virNetTLSContextNewPath(const char *pkipath,
         return NULL;
 
     ctxt = virNetTLSContextNew(cacert, cacrl, cert, key,
-                               x509dnWhitelist, sanityCheckCert,
+                               x509dnWhitelist, priority, sanityCheckCert,
                                requireValidCert, isServer);
 
     VIR_FREE(cacert);
@@ -922,19 +928,21 @@ static virNetTLSContextPtr virNetTLSContextNewPath(const char *pkipath,
 virNetTLSContextPtr virNetTLSContextNewServerPath(const char *pkipath,
                                                   bool tryUserPkiPath,
                                                   const char *const*x509dnWhitelist,
+                                                  const char *priority,
                                                   bool sanityCheckCert,
                                                   bool requireValidCert)
 {
-    return virNetTLSContextNewPath(pkipath, tryUserPkiPath, x509dnWhitelist,
+    return virNetTLSContextNewPath(pkipath, tryUserPkiPath, x509dnWhitelist, priority,
                                    sanityCheckCert, requireValidCert, true);
 }
 
 virNetTLSContextPtr virNetTLSContextNewClientPath(const char *pkipath,
                                                   bool tryUserPkiPath,
+                                                  const char *priority,
                                                   bool sanityCheckCert,
                                                   bool requireValidCert)
 {
-    return virNetTLSContextNewPath(pkipath, tryUserPkiPath, NULL,
+    return virNetTLSContextNewPath(pkipath, tryUserPkiPath, NULL, priority,
                                    sanityCheckCert, requireValidCert, false);
 }
 
@@ -944,10 +952,11 @@ virNetTLSContextPtr virNetTLSContextNewServer(const char *cacert,
                                               const char *cert,
                                               const char *key,
                                               const char *const*x509dnWhitelist,
+                                              const char *priority,
                                               bool sanityCheckCert,
                                               bool requireValidCert)
 {
-    return virNetTLSContextNew(cacert, cacrl, cert, key, x509dnWhitelist,
+    return virNetTLSContextNew(cacert, cacrl, cert, key, x509dnWhitelist, priority,
                                sanityCheckCert, requireValidCert, true);
 }
 
@@ -956,10 +965,11 @@ virNetTLSContextPtr virNetTLSContextNewClient(const char *cacert,
                                               const char *cacrl,
                                               const char *cert,
                                               const char *key,
+                                              const char *priority,
                                               bool sanityCheckCert,
                                               bool requireValidCert)
 {
-    return virNetTLSContextNew(cacert, cacrl, cert, key, NULL,
+    return virNetTLSContextNew(cacert, cacrl, cert, key, NULL, priority,
                                sanityCheckCert, requireValidCert, false);
 }
 
@@ -1138,6 +1148,7 @@ void virNetTLSContextDispose(void *obj)
     PROBE(RPC_TLS_CONTEXT_DISPOSE,
           "ctxt=%p", ctxt);
 
+    VIR_FREE(ctxt->priority);
     gnutls_dh_params_deinit(ctxt->dhParams);
     gnutls_certificate_free_credentials(ctxt->x509cred);
 }
@@ -1197,10 +1208,12 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
     /* avoid calling all the priority functions, since the defaults
      * are adequate.
      */
-    if ((err = gnutls_priority_set_direct(sess->session, TLS_PRIORITY, NULL)) != 0) {
+    if ((err = gnutls_priority_set_direct(sess->session,
+                                          ctxt->priority ? ctxt->priority : TLS_PRIORITY,
+                                          NULL)) != 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Failed to set TLS session priority to %s: %s"),
-                       TLS_PRIORITY, gnutls_strerror(err));
+                       ctxt->priority ? ctxt->priority : TLS_PRIORITY, gnutls_strerror(err));
         goto error;
     }
 

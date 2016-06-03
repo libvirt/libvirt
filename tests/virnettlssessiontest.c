@@ -113,6 +113,7 @@ static int testTLSSessionInit(const void *opaque)
                                            data->servercrt,
                                            KEYFILE,
                                            data->wildcards,
+                                           NULL,
                                            false,
                                            true);
 
@@ -120,6 +121,7 @@ static int testTLSSessionInit(const void *opaque)
                                            NULL,
                                            data->clientcrt,
                                            KEYFILE,
+                                           NULL,
                                            false,
                                            true);
 

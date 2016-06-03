@@ -845,6 +845,7 @@ doRemoteOpen(virConnectPtr conn,
 #ifdef WITH_GNUTLS
         priv->tls = virNetTLSContextNewClientPath(pkipath,
                                                   geteuid() != 0 ? true : false,
+                                                  NULL,
                                                   sanity, verify);
         if (!priv->tls)
             goto failed;
