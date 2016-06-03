@@ -89,9 +89,9 @@ static int udevGetStringProperty(struct udev_device *udev_device,
 {
     if (VIR_STRDUP(*value,
                    udevGetDeviceProperty(udev_device, property_key)) < 0)
-        return PROPERTY_ERROR;
+        return -1;
 
-    return *value == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
+    return 0;
 }
 
 
@@ -473,7 +473,6 @@ static int udevProcessUSBDevice(struct udev_device *device,
 {
     virNodeDevCapDataPtr data = &def->caps->data;
     int ret = -1;
-    int err;
 
     if (udevGetUintProperty(device,
                             "BUSNUM",
@@ -496,18 +495,16 @@ static int udevProcessUSBDevice(struct udev_device *device,
         goto out;
     }
 
-    err = udevGetStringProperty(device,
-                                "ID_VENDOR_FROM_DATABASE",
-                                &data->usb_dev.vendor_name);
-    if (err == PROPERTY_ERROR)
+    if (udevGetStringProperty(device,
+                              "ID_VENDOR_FROM_DATABASE",
+                              &data->usb_dev.vendor_name) < 0)
         goto out;
-    if (err == PROPERTY_MISSING) {
-        if (udevGetStringSysfsAttr(device,
-                                  "manufacturer",
-                                  &data->usb_dev.vendor_name) == PROPERTY_ERROR) {
-            goto out;
-        }
-    }
+
+    if (!data->usb_dev.vendor_name &&
+        udevGetStringSysfsAttr(device,
+                               "manufacturer",
+                               &data->usb_dev.vendor_name) == PROPERTY_ERROR)
+        goto out;
 
     if (udevGetUintProperty(device,
                             "ID_MODEL_ID",
@@ -516,18 +513,16 @@ static int udevProcessUSBDevice(struct udev_device *device,
         goto out;
     }
 
-    err = udevGetStringProperty(device,
-                                "ID_MODEL_FROM_DATABASE",
-                                &data->usb_dev.product_name);
-    if (err == PROPERTY_ERROR)
+    if (udevGetStringProperty(device,
+                              "ID_MODEL_FROM_DATABASE",
+                              &data->usb_dev.product_name) < 0)
         goto out;
-    if (err == PROPERTY_MISSING) {
-        if (udevGetStringSysfsAttr(device,
-                                  "product",
-                                  &data->usb_dev.product_name) == PROPERTY_ERROR) {
-            goto out;
-        }
-    }
+
+    if (!data->usb_dev.product_name &&
+        udevGetStringSysfsAttr(device,
+                               "product",
+                               &data->usb_dev.product_name) == PROPERTY_ERROR)
+        goto out;
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
         goto out;
@@ -598,9 +593,8 @@ static int udevProcessNetworkInterface(struct udev_device *device,
 
     if (udevGetStringProperty(device,
                               "INTERFACE",
-                              &data->net.ifname) == PROPERTY_ERROR) {
+                              &data->net.ifname) < 0)
         goto out;
-    }
 
     if (udevGetStringSysfsAttr(device,
                                "address",
@@ -833,9 +827,8 @@ static int udevProcessRemoveableMedia(struct udev_device *device,
             VIR_NODE_DEV_CAP_STORAGE_REMOVABLE_MEDIA_AVAILABLE;
 
         if (udevGetStringProperty(device, "ID_FS_LABEL",
-                                  &data->storage.media_label) == PROPERTY_ERROR) {
+                                  &data->storage.media_label) < 0)
             goto out;
-        }
 
         if (udevGetUint64SysfsAttr(device,
                                    "size",
@@ -988,16 +981,11 @@ static int udevProcessStorage(struct udev_device *device,
     if (VIR_STRDUP(data->storage.block, devnode) < 0)
         goto out;
 
-    if (udevGetStringProperty(device,
-                              "ID_BUS",
-                              &data->storage.bus) == PROPERTY_ERROR) {
+    if (udevGetStringProperty(device, "ID_BUS", &data->storage.bus) < 0)
         goto out;
-    }
-    if (udevGetStringProperty(device,
-                              "ID_SERIAL",
-                              &data->storage.serial) == PROPERTY_ERROR) {
+    if (udevGetStringProperty(device, "ID_SERIAL", &data->storage.serial) < 0)
         goto out;
-    }
+
     if (udevGetStringSysfsAttr(device,
                                "device/vendor",
                                &data->storage.vendor) == PROPERTY_ERROR) {
@@ -1015,9 +1003,10 @@ static int udevProcessStorage(struct udev_device *device,
      * expected, so I don't see a problem with not having a property
      * for it. */
 
-    if (udevGetStringProperty(device,
-                              "ID_TYPE",
-                              &data->storage.drive_type) != PROPERTY_FOUND ||
+    if (udevGetStringProperty(device, "ID_TYPE", &data->storage.drive_type) < 0)
+        goto out;
+
+    if (!data->storage.drive_type ||
         STREQ(def->caps->data.storage.drive_type, "generic")) {
         int val = 0;
         const char *str = NULL;
@@ -1079,9 +1068,8 @@ static int
 udevProcessSCSIGeneric(struct udev_device *dev,
                        virNodeDeviceDefPtr def)
 {
-    if (udevGetStringProperty(dev,
-                              "DEVNAME",
-                              &def->caps->data.sg.path) != PROPERTY_FOUND)
+    if (udevGetStringProperty(dev, "DEVNAME", &def->caps->data.sg.path) < 0 ||
+        !def->caps->data.sg.path)
         return -1;
 
     if (udevGenerateDeviceName(dev, def, NULL) != 0)
@@ -1129,9 +1117,10 @@ udevGetDeviceType(struct udev_device *device,
             *type = VIR_NODE_DEV_CAP_NET;
 
         /* SCSI generic device doesn't set DEVTYPE property */
-        if (udevGetStringProperty(device, "SUBSYSTEM", &subsystem) ==
-            PROPERTY_FOUND &&
-            STREQ(subsystem, "scsi_generic"))
+        if (udevGetStringProperty(device, "SUBSYSTEM", &subsystem) < 0)
+            return -1;
+
+        if (STREQ_NULLABLE(subsystem, "scsi_generic"))
             *type = VIR_NODE_DEV_CAP_SCSI_GENERIC;
         VIR_FREE(subsystem);
     }
@@ -1276,11 +1265,8 @@ static int udevAddOneDevice(struct udev_device *device)
     if (VIR_STRDUP(def->sysfs_path, udev_device_get_syspath(device)) < 0)
         goto out;
 
-    if (udevGetStringProperty(device,
-                              "DRIVER",
-                              &def->driver) == PROPERTY_ERROR) {
+    if (udevGetStringProperty(device, "DRIVER", &def->driver) < 0)
         goto out;
-    }
 
     if (VIR_ALLOC(def->caps) != 0)
         goto out;
