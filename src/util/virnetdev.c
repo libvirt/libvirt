@@ -3200,26 +3200,17 @@ virNetDevRDMAFeature(const char *ifname,
  * virNetDevSendEthtoolIoctl
  * This function sends ethtool ioctl request
  *
- * @ifname: name of the interface
- * @cmd: reference to an ethtool command structure
+ * @fd: socket to operate on
+ * @ifr: struct ifreq with the command
  *
  * Returns 0 on success, -1 on failure.
  */
 static int
-virNetDevSendEthtoolIoctl(const char *ifname, void *cmd)
+virNetDevSendEthtoolIoctl(int fd, struct ifreq *ifr)
 {
     int ret = -1;
-    int fd = -1;
-    struct ifreq ifr;
 
-    /* Ultimately uses AF_PACKET for socket which requires privileged
-     * daemon support.
-     */
-    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
-        return ret;
-
-    ifr.ifr_data = cmd;
-    ret = ioctl(fd, SIOCETHTOOL, &ifr);
+    ret = ioctl(fd, SIOCETHTOOL, ifr);
     if (ret != 0) {
         switch (errno) {
             case EINVAL: /* kernel doesn't support SIOCETHTOOL */
@@ -3230,12 +3221,10 @@ virNetDevSendEthtoolIoctl(const char *ifname, void *cmd)
                 break;
             default:
                 virReportSystemError(errno, "%s", _("ethtool ioctl error"));
-                goto cleanup;
+                break;
         }
     }
 
- cleanup:
-    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
@@ -3249,16 +3238,17 @@ struct virNetDevEthtoolFeatureCmd {
  * virNetDevFeatureAvailable
  * This function checks for the availability of a network device feature
  *
- * @ifname: name of the interface
+ * @fd: socket to operate on
+ * @ifr: struct ifreq with the command
  * @cmd: reference to an ethtool command structure
  *
  * Returns true if the feature is available, false otherwise.
  */
 static bool
-virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
+virNetDevFeatureAvailable(int fd, struct ifreq *ifr, struct ethtool_value *cmd)
 {
-    cmd = (void*)cmd;
-    if (virNetDevSendEthtoolIoctl(ifname, cmd) == 0 &&
+    ifr->ifr_data = (void*)cmd;
+    if (virNetDevSendEthtoolIoctl(fd, ifr) == 0 &&
         cmd->data > 0)
         return true;
     return false;
@@ -3267,7 +3257,8 @@ virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
 
 static void
 virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
-                            const char *ifname)
+                            int fd,
+                            struct ifreq *ifr)
 {
     size_t i;
     struct ethtool_value cmd = { 0 };
@@ -3307,13 +3298,13 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
 
     for (i = 0; i < ARRAY_CARDINALITY(ethtool_cmds); i++) {
         cmd.cmd = ethtool_cmds[i].cmd;
-        if (virNetDevFeatureAvailable(ifname, &cmd))
+        if (virNetDevFeatureAvailable(fd, ifr, &cmd))
             ignore_value(virBitmapSetBit(bitmap, ethtool_cmds[i].feat));
     }
 
 # if HAVE_DECL_ETHTOOL_GFLAGS
     cmd.cmd = ETHTOOL_GFLAGS;
-    if (virNetDevFeatureAvailable(ifname, &cmd)) {
+    if (virNetDevFeatureAvailable(fd, ifr, &cmd)) {
         for (i = 0; i < ARRAY_CARDINALITY(flags); i++) {
             if (cmd.data & flags[i].cmd)
                 ignore_value(virBitmapSetBit(bitmap, flags[i].feat));
@@ -3328,16 +3319,19 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
  * virNetDevGFeatureAvailable
  * This function checks for the availability of a network device gfeature
  *
- * @ifname: name of the interface
- * @cmd: reference to a gfeatures ethtool command structure
+ * @fd: socket to operate on
+ * @ifr: struct ifreq with the command
+ * @cmd: reference to an ethtool command structure
  *
  * Returns true if the feature is available, false otherwise.
  */
 static bool
-virNetDevGFeatureAvailable(const char *ifname, struct ethtool_gfeatures *cmd)
+virNetDevGFeatureAvailable(int fd,
+                           struct ifreq *ifr,
+                           struct ethtool_gfeatures *cmd)
 {
-    cmd = (void*)cmd;
-    if (virNetDevSendEthtoolIoctl(ifname, cmd) == 0)
+    ifr->ifr_data = (void*)cmd;
+    if (virNetDevSendEthtoolIoctl(fd, ifr) == 0)
         return !!FEATURE_BIT_IS_SET(cmd->features, TX_UDP_TNL, active);
     return false;
 }
@@ -3345,7 +3339,8 @@ virNetDevGFeatureAvailable(const char *ifname, struct ethtool_gfeatures *cmd)
 
 static int
 virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap,
-                             const char *ifname)
+                             int fd,
+                             struct ifreq *ifr)
 {
     struct ethtool_gfeatures *g_cmd;
 
@@ -3355,7 +3350,7 @@ virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap,
 
     g_cmd->cmd = ETHTOOL_GFEATURES;
     g_cmd->size = GFEATURES_SIZE;
-    if (virNetDevGFeatureAvailable(ifname, g_cmd))
+    if (virNetDevGFeatureAvailable(fd, ifr, g_cmd))
         ignore_value(virBitmapSetBit(bitmap, VIR_NET_DEV_FEAT_TXUDPTNL));
     VIR_FREE(g_cmd);
     return 0;
@@ -3363,7 +3358,8 @@ virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap,
 # else
 static int
 virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap ATTRIBUTE_UNUSED,
-                             const char *ifname ATTRIBUTE_UNUSED)
+                             int fd ATTRIBUTE_UNUSED,
+                             struct ifreq *ifr ATTRIBUGE_UNUSED)
 {
     return 0;
 }
@@ -3384,6 +3380,10 @@ int
 virNetDevGetFeatures(const char *ifname,
                      virBitmapPtr *out)
 {
+    struct ifreq ifr;
+    int ret = -1;
+    int fd = -1;
+
     if (!(*out = virBitmapNew(VIR_NET_DEV_FEAT_LAST)))
         return -1;
 
@@ -3393,14 +3393,24 @@ virNetDevGetFeatures(const char *ifname,
         return 0;
     }
 
-    virNetDevGetEthtoolFeatures(*out, ifname);
+    /* Ultimately uses AF_PACKET for socket which requires privileged
+     * daemon support.
+     */
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
+        goto cleanup;
 
-    if (virNetDevGetEthtoolGFeatures(*out, ifname) < 0)
-        return -1;
+    virNetDevGetEthtoolFeatures(*out, fd, &ifr);
+
+    if (virNetDevGetEthtoolGFeatures(*out, fd, &ifr) < 0)
+        goto cleanup;
 
     if (virNetDevRDMAFeature(ifname, out) < 0)
-        return -1;
-    return 0;
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
 }
 #else
 int
