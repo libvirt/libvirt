@@ -1499,14 +1499,16 @@ static int nodeStateCleanup(void)
 
     priv = driver->privateData;
 
-    if (priv->watch != -1)
-        virEventRemoveHandle(priv->watch);
+    if (priv) {
+        if (priv->watch != -1)
+            virEventRemoveHandle(priv->watch);
 
-    udev_monitor = DRV_STATE_UDEV_MONITOR(driver);
+        udev_monitor = DRV_STATE_UDEV_MONITOR(driver);
 
-    if (udev_monitor != NULL) {
-        udev = udev_monitor_get_udev(udev_monitor);
-        udev_monitor_unref(udev_monitor);
+        if (udev_monitor != NULL) {
+            udev = udev_monitor_get_udev(udev_monitor);
+            udev_monitor_unref(udev_monitor);
+        }
     }
 
     if (udev != NULL)
@@ -1726,12 +1728,11 @@ static int nodeStateInitialize(bool privileged,
         return -1;
     }
 
+    driver->privateData = priv;
     nodeDeviceLock();
 
-    if (udevPCITranslateInit(privileged) < 0) {
-        VIR_FREE(priv);
+    if (udevPCITranslateInit(privileged) < 0)
         goto out_unlock;
-    }
 
     /*
      * http://www.kernel.org/pub/linux/utils/kernel/hotplug/libudev/libudev-udev.html#udev-new
@@ -1747,15 +1748,11 @@ static int nodeStateInitialize(bool privileged,
 
     priv->udev_monitor = udev_monitor_new_from_netlink(udev, "udev");
     if (priv->udev_monitor == NULL) {
-        VIR_FREE(priv);
         VIR_ERROR(_("udev_monitor_new_from_netlink returned NULL"));
         goto out_unlock;
     }
 
     udev_monitor_enable_receiving(priv->udev_monitor);
-
-    /* udev can be retrieved from udev_monitor */
-    driver->privateData = priv;
 
     /* We register the monitor with the event callback so we are
      * notified by udev of device changes before we enumerate existing
