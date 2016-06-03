@@ -32,8 +32,9 @@ int virHostValidateQEMU(void)
     virBitmapPtr flags;
     int ret = 0;
     bool hasHwVirt = false;
-
-    virHostMsgCheck("QEMU", "%s", _("for hardware virtualization"));
+    bool hasVirtFlag = false;
+    char *kvmhint = _("Check that CPU and firmware supports virtualization "
+                      "and kvm module is loaded");
 
     if (!(flags = virHostValidateGetCPUFlags()))
         return -1;
@@ -41,12 +42,16 @@ int virHostValidateQEMU(void)
     switch (virArchFromHost()) {
     case VIR_ARCH_I686:
     case VIR_ARCH_X86_64:
+        hasVirtFlag = true;
+        kvmhint = _("Check that the 'kvm-intel' or 'kvm-amd' modules are "
+                    "loaded & the BIOS has enabled virtualization");
         if (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SVM) ||
             virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_VMX))
             hasHwVirt = true;
         break;
     case VIR_ARCH_S390:
     case VIR_ARCH_S390X:
+        hasVirtFlag = true;
         if (virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SIE))
             hasHwVirt = true;
         break;
@@ -54,21 +59,27 @@ int virHostValidateQEMU(void)
         hasHwVirt = false;
     }
 
-    if (hasHwVirt) {
-        virHostMsgPass();
+    if (hasVirtFlag) {
+        virHostMsgCheck("QEMU", "%s", _("for hardware virtualization"));
+        if (hasHwVirt) {
+            virHostMsgPass();
+        } else {
+            virHostMsgFail(VIR_HOST_VALIDATE_FAIL,
+                           _("Only emulated CPUs are available, performance will be significantly limited"));
+            ret = -1;
+        }
+    }
+
+    if (hasHwVirt || !hasVirtFlag) {
         if (virHostValidateDeviceExists("QEMU", "/dev/kvm",
                                         VIR_HOST_VALIDATE_FAIL,
-                                        _("Check that the 'kvm-intel' or 'kvm-amd' modules are "
-                                          "loaded & the BIOS has enabled virtualization")) < 0)
+                                        kvmhint) <0)
             ret = -1;
         else if (virHostValidateDeviceAccessible("QEMU", "/dev/kvm",
                                                  VIR_HOST_VALIDATE_FAIL,
                                                  _("Check /dev/kvm is world writable or you are in "
                                                    "a group that is allowed to access it")) < 0)
             ret = -1;
-    } else {
-        virHostMsgFail(VIR_HOST_VALIDATE_WARN,
-                       _("Only emulated CPUs are available, performance will be significantly limited"));
     }
 
     virBitmapFree(flags);
