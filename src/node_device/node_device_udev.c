@@ -57,23 +57,6 @@ struct _udevPrivate {
     bool privileged;
 };
 
-static int udevStrToLong_ull(char const *s,
-                             char **end_ptr,
-                             int base,
-                             unsigned long long *result)
-{
-    int ret = 0;
-
-    ret = virStrToLong_ull(s, end_ptr, base, result);
-    if (ret != 0) {
-        VIR_ERROR(_("Failed to convert '%s' to unsigned long long"), s);
-    } else {
-        VIR_DEBUG("Converted '%s' to unsigned long %llu", s, *result);
-    }
-
-    return ret;
-}
-
 
 static int udevStrToLong_ui(char const *s,
                             char **end_ptr,
@@ -300,8 +283,10 @@ static int udevGetUint64SysfsAttr(struct udev_device *udev_device,
     ret = udevGetDeviceSysfsAttr(udev_device, attr_name, &udev_value);
 
     if (ret == PROPERTY_FOUND) {
-        if (udevStrToLong_ull(udev_value, NULL, 0, value) != 0)
+        if (virStrToLong_ull(udev_value, NULL, 0, value) < 0) {
+            VIR_ERROR(_("Failed to convert '%s' to unsigned long long"), udev_value);
             ret = PROPERTY_ERROR;
+        }
     }
 
     VIR_FREE(udev_value);
