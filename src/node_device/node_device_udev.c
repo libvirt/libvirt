@@ -1517,11 +1517,12 @@ static int nodeStateCleanup(void)
         virMutexDestroy(&driver->lock);
         VIR_FREE(driver);
         VIR_FREE(priv);
+
+        udevPCITranslateDeinit();
     } else {
         ret = -1;
     }
 
-    udevPCITranslateDeinit();
     return ret;
 }
 
@@ -1711,9 +1712,6 @@ static int nodeStateInitialize(bool privileged,
     struct udev *udev = NULL;
     int ret = -1;
 
-    if (udevPCITranslateInit(privileged) < 0)
-        goto out;
-
     if (VIR_ALLOC(priv) < 0)
         goto out;
 
@@ -1733,6 +1731,11 @@ static int nodeStateInitialize(bool privileged,
     }
 
     nodeDeviceLock();
+
+    if (udevPCITranslateInit(privileged) < 0) {
+        VIR_FREE(priv);
+        goto out_unlock;
+    }
 
     /*
      * http://www.kernel.org/pub/linux/utils/kernel/hotplug/libudev/libudev-udev.html#udev-new
