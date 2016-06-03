@@ -3344,6 +3344,32 @@ virNetDevGFeatureAvailable(const char *ifname, struct ethtool_gfeatures *cmd)
         ret = FEATURE_BIT_IS_SET(cmd->features, TX_UDP_TNL, active);
     return ret;
 }
+
+
+static int
+virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap,
+                             const char *ifname)
+{
+    struct ethtool_gfeatures *g_cmd;
+
+    if (VIR_ALLOC_VAR(g_cmd,
+                      struct ethtool_get_features_block, GFEATURES_SIZE) < 0)
+        return -1;
+
+    g_cmd->cmd = ETHTOOL_GFEATURES;
+    g_cmd->size = GFEATURES_SIZE;
+    if (virNetDevGFeatureAvailable(ifname, g_cmd) == 1)
+        ignore_value(virBitmapSetBit(bitmap, VIR_NET_DEV_FEAT_TXUDPTNL));
+    VIR_FREE(g_cmd);
+    return 0;
+}
+# else
+static int
+virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap ATTRIBUTE_UNUSED,
+                             const char *ifname ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
 # endif
 
 
@@ -3361,10 +3387,6 @@ int
 virNetDevGetFeatures(const char *ifname,
                      virBitmapPtr *out)
 {
-# if HAVE_DECL_ETHTOOL_GFEATURES
-    struct ethtool_gfeatures *g_cmd;
-# endif
-
     if (!(*out = virBitmapNew(VIR_NET_DEV_FEAT_LAST)))
         return -1;
 
@@ -3376,16 +3398,8 @@ virNetDevGetFeatures(const char *ifname,
 
     virNetDevGetEthtoolFeatures(*out, ifname);
 
-# if HAVE_DECL_ETHTOOL_GFEATURES
-    if (VIR_ALLOC_VAR(g_cmd,
-                      struct ethtool_get_features_block, GFEATURES_SIZE) < 0)
+    if (virNetDevGetEthtoolGFeatures(*out, ifname) < 0)
         return -1;
-    g_cmd->cmd = ETHTOOL_GFEATURES;
-    g_cmd->size = GFEATURES_SIZE;
-    if (virNetDevGFeatureAvailable(ifname, g_cmd) == 1)
-        ignore_value(virBitmapSetBit(*out, VIR_NET_DEV_FEAT_TXUDPTNL));
-    VIR_FREE(g_cmd);
-# endif
 
     if (virNetDevRDMAFeature(ifname, out) < 0)
         return -1;
