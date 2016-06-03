@@ -118,6 +118,7 @@ vmwareDomainXMLConfigInit(void)
 static virDrvOpenStatus
 vmwareConnectOpen(virConnectPtr conn,
                   virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                  virConfPtr conf ATTRIBUTE_UNUSED,
                   unsigned int flags)
 {
     struct vmware_driver *driver;

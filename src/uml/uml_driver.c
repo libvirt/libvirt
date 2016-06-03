@@ -1195,6 +1195,7 @@ static void umlShutdownVMDaemon(struct uml_driver *driver,
 
 static virDrvOpenStatus umlConnectOpen(virConnectPtr conn,
                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                       virConfPtr conf ATTRIBUTE_UNUSED,
                                        unsigned int flags)
 {
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);

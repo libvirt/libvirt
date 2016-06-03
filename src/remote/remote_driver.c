@@ -1180,6 +1180,7 @@ remoteAllocPrivateData(void)
 static virDrvOpenStatus
 remoteConnectOpen(virConnectPtr conn,
                   virConnectAuthPtr auth,
+                  virConfPtr conf ATTRIBUTE_UNUSED,
                   unsigned int flags)
 {
     struct private_data *priv;

@@ -1123,7 +1123,9 @@ virDomainDefParserConfig virPhypDriverDomainDefParserConfig = {
 
 static virDrvOpenStatus
 phypConnectOpen(virConnectPtr conn,
-                virConnectAuthPtr auth, unsigned int flags)
+                virConnectAuthPtr auth,
+                virConfPtr conf ATTRIBUTE_UNUSED,
+                unsigned int flags)
 {
     LIBSSH2_SESSION *session = NULL;
     int internal_socket = -1;

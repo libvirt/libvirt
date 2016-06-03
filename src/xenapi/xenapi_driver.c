@@ -135,6 +135,7 @@ getCapsObject(void)
  */
 static virDrvOpenStatus
 xenapiConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                  virConfPtr conf ATTRIBUTE_UNUSED,
                   unsigned int flags)
 {
     char *username = NULL;

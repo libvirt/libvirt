@@ -404,7 +404,9 @@ xenDomainXMLConfInit(void)
 
 
 static virDrvOpenStatus
-xenUnifiedConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
+xenUnifiedConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                      virConfPtr conf ATTRIBUTE_UNUSED,
+                      unsigned int flags)
 {
     xenUnifiedPrivatePtr priv;
 

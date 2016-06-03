@@ -391,6 +391,7 @@ static void vboxUninitialize(vboxGlobalData *data)
 static virDrvOpenStatus
 vboxConnectOpen(virConnectPtr conn,
                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                virConfPtr conf ATTRIBUTE_UNUSED,
                 unsigned int flags)
 {
     vboxGlobalData *data = NULL;

@@ -1423,6 +1423,7 @@ openvzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
 
 static virDrvOpenStatus openvzConnectOpen(virConnectPtr conn,
                                           virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                          virConfPtr conf ATTRIBUTE_UNUSED,
                                           unsigned int flags)
 {
     struct openvz_driver *driver;

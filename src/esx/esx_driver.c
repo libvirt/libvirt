@@ -841,6 +841,7 @@ esxConnectToVCenter(esxPrivate *priv,
  */
 static virDrvOpenStatus
 esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
+               virConfPtr conf ATTRIBUTE_UNUSED,
                unsigned int flags)
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;

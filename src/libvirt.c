@@ -1084,7 +1084,7 @@ virConnectOpenInternal(const char *name,
         ret->secretDriver = virConnectDriverTab[i]->secretDriver;
         ret->storageDriver = virConnectDriverTab[i]->storageDriver;
 
-        res = virConnectDriverTab[i]->hypervisorDriver->connectOpen(ret, auth, flags);
+        res = virConnectDriverTab[i]->hypervisorDriver->connectOpen(ret, auth, conf, flags);
         VIR_DEBUG("driver %zu %s returned %s",
                   i, virConnectDriverTab[i]->hypervisorDriver->name,
                   res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :

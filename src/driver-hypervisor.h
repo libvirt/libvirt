@@ -28,6 +28,7 @@
 typedef virDrvOpenStatus
 (*virDrvConnectOpen)(virConnectPtr conn,
                      virConnectAuthPtr auth,
+                     virConfPtr conf,
                      unsigned int flags);
 
 typedef int

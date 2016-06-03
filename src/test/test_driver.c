@@ -1411,6 +1411,7 @@ testConnectAuthenticate(virConnectPtr conn,
 
 static virDrvOpenStatus testConnectOpen(virConnectPtr conn,
                                         virConnectAuthPtr auth,
+                                        virConfPtr conf ATTRIBUTE_UNUSED,
                                         unsigned int flags)
 {
     int ret;

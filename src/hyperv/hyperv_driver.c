@@ -58,7 +58,9 @@ hypervFreePrivate(hypervPrivate **priv)
 
 
 static virDrvOpenStatus
-hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
+hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
+                  virConfPtr conf ATTRIBUTE_UNUSED,
+                  unsigned int flags)
 {
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
     char *plus;
