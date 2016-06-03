@@ -106,9 +106,9 @@ static int udevGetIntProperty(struct udev_device *udev_device,
 
     if (str && virStrToLong_i(str, NULL, base, value) < 0) {
         VIR_ERROR(_("Failed to convert '%s' to int"), str);
-        return PROPERTY_ERROR;
+        return -1;
     }
-    return str == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
+    return 0;
 }
 
 
@@ -123,9 +123,9 @@ static int udevGetUintProperty(struct udev_device *udev_device,
 
     if (str && virStrToLong_ui(str, NULL, base, value) < 0) {
         VIR_ERROR(_("Failed to convert '%s' to int"), str);
-        return PROPERTY_ERROR;
+        return -1;
     }
-    return str == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
+    return 0;
 }
 
 
@@ -366,12 +366,8 @@ static int udevProcessPCI(struct udev_device *device,
 
     syspath = udev_device_get_syspath(device);
 
-    if (udevGetUintProperty(device,
-                            "PCI_CLASS",
-                            &data->pci_dev.class,
-                            16) == PROPERTY_ERROR) {
+    if (udevGetUintProperty(device, "PCI_CLASS", &data->pci_dev.class, 16) < 0)
         goto out;
-    }
 
     if ((p = strrchr(syspath, '/')) == NULL ||
         virStrToLong_ui(p + 1, &p, 16, &data->pci_dev.domain) < 0 || p == NULL ||
@@ -474,26 +470,12 @@ static int udevProcessUSBDevice(struct udev_device *device,
     virNodeDevCapDataPtr data = &def->caps->data;
     int ret = -1;
 
-    if (udevGetUintProperty(device,
-                            "BUSNUM",
-                            &data->usb_dev.bus,
-                            10) == PROPERTY_ERROR) {
+    if (udevGetUintProperty(device, "BUSNUM", &data->usb_dev.bus, 10) < 0)
         goto out;
-    }
-
-    if (udevGetUintProperty(device,
-                            "DEVNUM",
-                            &data->usb_dev.device,
-                            10) == PROPERTY_ERROR) {
+    if (udevGetUintProperty(device, "DEVNUM", &data->usb_dev.device, 10) < 0)
         goto out;
-    }
-
-    if (udevGetUintProperty(device,
-                            "ID_VENDOR_ID",
-                            &data->usb_dev.vendor,
-                            16) == PROPERTY_ERROR) {
+    if (udevGetUintProperty(device, "ID_VENDOR_ID", &data->usb_dev.vendor, 16) < 0)
         goto out;
-    }
 
     if (udevGetStringProperty(device,
                               "ID_VENDOR_FROM_DATABASE",
@@ -506,12 +488,8 @@ static int udevProcessUSBDevice(struct udev_device *device,
                                &data->usb_dev.vendor_name) == PROPERTY_ERROR)
         goto out;
 
-    if (udevGetUintProperty(device,
-                            "ID_MODEL_ID",
-                            &data->usb_dev.product,
-                            16) == PROPERTY_ERROR) {
+    if (udevGetUintProperty(device, "ID_MODEL_ID", &data->usb_dev.product, 16) < 0)
         goto out;
-    }
 
     if (udevGetStringProperty(device,
                               "ID_MODEL_FROM_DATABASE",
@@ -859,7 +837,6 @@ static int udevProcessCDROM(struct udev_device *device,
                             virNodeDeviceDefPtr def)
 {
     int ret = -1;
-    int tmp_int = 0;
     int has_media = 0;
 
     /* NB: the drive_type string provided by udev is different from
@@ -870,9 +847,9 @@ static int udevProcessCDROM(struct udev_device *device,
     if (VIR_STRDUP(def->caps->data.storage.drive_type, "cdrom") < 0)
         goto out;
 
-    if ((udevGetIntProperty(device, "ID_CDROM_MEDIA",
-                            &tmp_int, 0) == PROPERTY_FOUND))
-        has_media = tmp_int;
+    if (udevHasDeviceProperty(device, "ID_CDROM_MEDIA") &&
+        udevGetIntProperty(device, "ID_CDROM_MEDIA", &has_media, 0) < 0)
+        goto out;
 
     ret = udevProcessRemoveableMedia(device, def, has_media);
  out:
@@ -882,13 +859,12 @@ static int udevProcessCDROM(struct udev_device *device,
 static int udevProcessFloppy(struct udev_device *device,
                              virNodeDeviceDefPtr def)
 {
-    int tmp_int = 0;
     int has_media = 0;
 
-    if ((udevGetIntProperty(device, "DKD_MEDIA_AVAILABLE",
-                            &tmp_int, 0) == PROPERTY_FOUND)) {
+    if (udevHasDeviceProperty(device, "ID_CDROM_MEDIA")) {
         /* USB floppy */
-        has_media = tmp_int;
+        if (udevGetIntProperty(device, "DKD_MEDIA_AVAILABLE", &has_media, 0) < 0)
+            return -1;
     } else if (udevHasDeviceProperty(device, "ID_FS_LABEL")) {
         /* Legacy floppy */
         has_media = 1;
@@ -1013,20 +989,20 @@ static int udevProcessStorage(struct udev_device *device,
 
         /* All floppy drives have the ID_DRIVE_FLOPPY prop. This is
          * needed since legacy floppies don't have a drive_type */
-        if (udevGetIntProperty(device, "ID_DRIVE_FLOPPY", &val, 0) == PROPERTY_ERROR)
+        if (udevGetIntProperty(device, "ID_DRIVE_FLOPPY", &val, 0) < 0)
             goto out;
         else if (val == 1)
             str = "floppy";
 
         if (!str) {
-            if (udevGetIntProperty(device, "ID_CDROM", &val, 0) == PROPERTY_ERROR)
+            if (udevGetIntProperty(device, "ID_CDROM", &val, 0) < 0)
                 goto out;
             else if (val == 1)
                 str = "cd";
         }
 
         if (!str) {
-            if (udevGetIntProperty(device, "ID_DRIVE_FLASH_SD", &val, 0) == PROPERTY_ERROR)
+            if (udevGetIntProperty(device, "ID_DRIVE_FLASH_SD", &val, 0) < 0)
                 goto out;
             if (val == 1)
                 str = "sd";
