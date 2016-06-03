@@ -4183,7 +4183,7 @@ lxcDomainAttachDeviceNetLive(virConnectPtr conn,
     if (!priv->initpid) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("Cannot attach disk until init PID is known"));
-        goto cleanup;
+        return -1;
     }
 
     /* preallocate new slot for device */
