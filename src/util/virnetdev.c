@@ -3252,17 +3252,16 @@ struct virNetDevEthtoolFeatureCmd {
  * @ifname: name of the interface
  * @cmd: reference to an ethtool command structure
  *
- * Returns 0 if not found, 1 on success, and -1 on failure.
+ * Returns true if the feature is available, false otherwise.
  */
-static int
+static bool
 virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
 {
-    int ret = -1;
-
     cmd = (void*)cmd;
-    if (!virNetDevSendEthtoolIoctl(ifname, cmd))
-        ret = cmd->data > 0 ? 1 : 0;
-    return ret;
+    if (virNetDevSendEthtoolIoctl(ifname, cmd) == 0 &&
+        cmd->data > 0)
+        return true;
+    return false;
 }
 
 
@@ -3308,13 +3307,13 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
 
     for (i = 0; i < ARRAY_CARDINALITY(ethtool_cmds); i++) {
         cmd.cmd = ethtool_cmds[i].cmd;
-        if (virNetDevFeatureAvailable(ifname, &cmd) == 1)
+        if (virNetDevFeatureAvailable(ifname, &cmd))
             ignore_value(virBitmapSetBit(bitmap, ethtool_cmds[i].feat));
     }
 
 # if HAVE_DECL_ETHTOOL_GFLAGS
     cmd.cmd = ETHTOOL_GFLAGS;
-    if (virNetDevFeatureAvailable(ifname, &cmd) == 1) {
+    if (virNetDevFeatureAvailable(ifname, &cmd)) {
         for (i = 0; i < ARRAY_CARDINALITY(flags); i++) {
             if (cmd.data & flags[i].cmd)
                 ignore_value(virBitmapSetBit(bitmap, flags[i].feat));
@@ -3332,17 +3331,15 @@ virNetDevGetEthtoolFeatures(virBitmapPtr bitmap,
  * @ifname: name of the interface
  * @cmd: reference to a gfeatures ethtool command structure
  *
- * Returns 0 if not found, 1 on success, and -1 on failure.
+ * Returns true if the feature is available, false otherwise.
  */
-static int
+static bool
 virNetDevGFeatureAvailable(const char *ifname, struct ethtool_gfeatures *cmd)
 {
-    int ret = -1;
-
     cmd = (void*)cmd;
-    if (!virNetDevSendEthtoolIoctl(ifname, cmd))
-        ret = FEATURE_BIT_IS_SET(cmd->features, TX_UDP_TNL, active);
-    return ret;
+    if (virNetDevSendEthtoolIoctl(ifname, cmd) == 0)
+        return !!FEATURE_BIT_IS_SET(cmd->features, TX_UDP_TNL, active);
+    return false;
 }
 
 
@@ -3358,7 +3355,7 @@ virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap,
 
     g_cmd->cmd = ETHTOOL_GFEATURES;
     g_cmd->size = GFEATURES_SIZE;
-    if (virNetDevGFeatureAvailable(ifname, g_cmd) == 1)
+    if (virNetDevGFeatureAvailable(ifname, g_cmd))
         ignore_value(virBitmapSetBit(bitmap, VIR_NET_DEV_FEAT_TXUDPTNL));
     VIR_FREE(g_cmd);
     return 0;
