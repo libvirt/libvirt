@@ -1019,30 +1019,34 @@ static int udevProcessStorage(struct udev_device *device,
                               "ID_TYPE",
                               &data->storage.drive_type) != PROPERTY_FOUND ||
         STREQ(def->caps->data.storage.drive_type, "generic")) {
-        int tmp_int = 0;
+        int val = 0;
+        const char *str = NULL;
 
         /* All floppy drives have the ID_DRIVE_FLOPPY prop. This is
          * needed since legacy floppies don't have a drive_type */
-        if (udevGetIntProperty(device, "ID_DRIVE_FLOPPY",
-                               &tmp_int, 0) == PROPERTY_FOUND &&
-            tmp_int == 1) {
+        if (udevGetIntProperty(device, "ID_DRIVE_FLOPPY", &val, 0) == PROPERTY_ERROR)
+            goto out;
+        else if (val == 1)
+            str = "floppy";
 
-            if (VIR_STRDUP(data->storage.drive_type, "floppy") < 0)
+        if (!str) {
+            if (udevGetIntProperty(device, "ID_CDROM", &val, 0) == PROPERTY_ERROR)
                 goto out;
-        } else if (udevGetIntProperty(device, "ID_CDROM",
-                                      &tmp_int, 0) == PROPERTY_FOUND &&
-                   tmp_int == 1) {
+            else if (val == 1)
+                str = "cd";
+        }
 
-            if (VIR_STRDUP(data->storage.drive_type, "cd") < 0)
+        if (!str) {
+            if (udevGetIntProperty(device, "ID_DRIVE_FLASH_SD", &val, 0) == PROPERTY_ERROR)
                 goto out;
-        } else if (udevGetIntProperty(device, "ID_DRIVE_FLASH_SD",
-                                      &tmp_int, 0) == PROPERTY_FOUND &&
-                   tmp_int == 1) {
+            if (val == 1)
+                str = "sd";
+        }
 
-            if (VIR_STRDUP(data->storage.drive_type, "sd") < 0)
+        if (str) {
+            if (VIR_STRDUP(data->storage.drive_type, str) < 0)
                 goto out;
         } else {
-
             /* If udev doesn't have it, perhaps we can guess it. */
             if (udevKludgeStorageType(def) != 0)
                 goto out;
