@@ -58,6 +58,17 @@ struct _udevPrivate {
 };
 
 
+static bool
+udevHasDeviceProperty(struct udev_device *dev,
+                      const char *key)
+{
+    if (udev_device_get_property_value(dev, key))
+        return true;
+
+    return false;
+}
+
+
 static const char *udevGetDeviceProperty(struct udev_device *udev_device,
                                          const char *property_key)
 {
@@ -1082,16 +1093,6 @@ udevProcessSCSIGeneric(struct udev_device *dev,
         return -1;
 
     return 0;
-}
-
-static bool
-udevHasDeviceProperty(struct udev_device *dev,
-                      const char *key)
-{
-    if (udev_device_get_property_value(dev, key))
-        return true;
-
-    return false;
 }
 
 static int
