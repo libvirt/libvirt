@@ -1570,7 +1570,7 @@ iptablesCreateRuleInstanceStateCtrl(virFirewallPtr fw,
                                     const char *ifname,
                                     virNWFilterVarCombIterPtr vars)
 {
-    int rc;
+    int rc = 0;
     bool directionIn = false;
     char chainPrefix[2];
     bool maySkipICMP, inout = false;

@@ -817,7 +817,7 @@ virBitmapLastSetBit(virBitmapPtr bitmap)
     ssize_t i;
     int unusedBits;
     ssize_t sz;
-    unsigned long bits;
+    unsigned long bits = 0;
 
     unusedBits = bitmap->map_len * VIR_BITMAP_BITS_PER_UNIT - bitmap->max_bit;
 
