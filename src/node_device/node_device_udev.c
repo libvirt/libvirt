@@ -222,7 +222,6 @@ static int udevGenerateDeviceName(struct udev_device *device,
                                   virNodeDeviceDefPtr def,
                                   const char *s)
 {
-    int ret = 0;
     size_t i;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
@@ -243,7 +242,7 @@ static int udevGenerateDeviceName(struct udev_device *device,
             *(def->name + i) = '_';
     }
 
-    return ret;
+    return 0;
 }
 
 #if HAVE_UDEV_LOGGING
@@ -287,7 +286,6 @@ static int udevTranslatePCIIds(unsigned int vendor,
                                char **vendor_string,
                                char **product_string)
 {
-    int ret = -1;
     struct pci_id_match m;
     const char *vendor_name = NULL, *device_name = NULL;
 
@@ -306,14 +304,11 @@ static int udevTranslatePCIIds(unsigned int vendor,
                     NULL,
                     NULL);
 
-    if (VIR_STRDUP(*vendor_string, vendor_name) < 0||
+    if (VIR_STRDUP(*vendor_string, vendor_name) < 0 ||
         VIR_STRDUP(*product_string, device_name) < 0)
-        goto out;
+        return -1;
 
-    ret = 0;
-
- out:
-    return ret;
+    return 0;
 }
 
 
@@ -419,84 +414,75 @@ static int udevProcessUSBDevice(struct udev_device *device,
                                 virNodeDeviceDefPtr def)
 {
     virNodeDevCapDataPtr data = &def->caps->data;
-    int ret = -1;
 
     if (udevGetUintProperty(device, "BUSNUM", &data->usb_dev.bus, 10) < 0)
-        goto out;
+        return -1;
     if (udevGetUintProperty(device, "DEVNUM", &data->usb_dev.device, 10) < 0)
-        goto out;
+        return -1;
     if (udevGetUintProperty(device, "ID_VENDOR_ID", &data->usb_dev.vendor, 16) < 0)
-        goto out;
+        return -1;
 
     if (udevGetStringProperty(device,
                               "ID_VENDOR_FROM_DATABASE",
                               &data->usb_dev.vendor_name) < 0)
-        goto out;
+        return -1;
 
     if (!data->usb_dev.vendor_name &&
         udevGetStringSysfsAttr(device, "manufacturer",
                                &data->usb_dev.vendor_name) < 0)
-        goto out;
+        return -1;
 
     if (udevGetUintProperty(device, "ID_MODEL_ID", &data->usb_dev.product, 16) < 0)
-        goto out;
+        return -1;
 
     if (udevGetStringProperty(device,
                               "ID_MODEL_FROM_DATABASE",
                               &data->usb_dev.product_name) < 0)
-        goto out;
+        return -1;
 
     if (!data->usb_dev.product_name &&
         udevGetStringSysfsAttr(device, "product",
                                &data->usb_dev.product_name) < 0)
-        goto out;
+        return -1;
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
-        goto out;
+        return -1;
 
-    ret = 0;
-
- out:
-    return ret;
+    return 0;
 }
 
 
 static int udevProcessUSBInterface(struct udev_device *device,
                                    virNodeDeviceDefPtr def)
 {
-    int ret = -1;
     virNodeDevCapDataPtr data = &def->caps->data;
 
     if (udevGetUintSysfsAttr(device, "bInterfaceNumber",
                              &data->usb_if.number, 16) < 0)
-        goto out;
+        return -1;
 
     if (udevGetUintSysfsAttr(device, "bInterfaceClass",
                              &data->usb_if._class, 16) < 0)
-        goto out;
+        return -1;
 
     if (udevGetUintSysfsAttr(device, "bInterfaceSubClass",
                              &data->usb_if.subclass, 16) < 0)
-        goto out;
+        return -1;
 
     if (udevGetUintSysfsAttr(device, "bInterfaceProtocol",
                              &data->usb_if.protocol, 16) < 0)
-        goto out;
+        return -1;
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
-        goto out;
+        return -1;
 
-    ret = 0;
-
- out:
-    return ret;
+    return 0;
 }
 
 
 static int udevProcessNetworkInterface(struct udev_device *device,
                                        virNodeDeviceDefPtr def)
 {
-    int ret = -1;
     const char *devtype = udev_device_get_devtype(device);
     virNodeDevCapDataPtr data = &def->caps->data;
 
@@ -509,35 +495,31 @@ static int udevProcessNetworkInterface(struct udev_device *device,
     if (udevGetStringProperty(device,
                               "INTERFACE",
                               &data->net.ifname) < 0)
-        goto out;
+        return -1;
 
     if (udevGetStringSysfsAttr(device, "address",
                                &data->net.address) < 0)
-        goto out;
+        return -1;
 
     if (udevGetUintSysfsAttr(device, "addr_len", &data->net.address_len, 0) < 0)
-        goto out;
+        return -1;
 
     if (udevGenerateDeviceName(device, def, data->net.address) != 0)
-        goto out;
+        return -1;
 
     if (virNetDevGetLinkInfo(data->net.ifname, &data->net.lnk) < 0)
-        goto out;
+        return -1;
 
     if (virNetDevGetFeatures(data->net.ifname, &data->net.features) < 0)
-        goto out;
+        return -1;
 
-    ret = 0;
-
- out:
-    return ret;
+    return 0;
 }
 
 
 static int udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
                                virNodeDeviceDefPtr def)
 {
-    int ret = -1;
     virNodeDevCapDataPtr data = &def->caps->data;
     char *filename = NULL;
     char *str;
@@ -549,40 +531,33 @@ static int udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to parse SCSI host '%s'"),
                        filename);
-        goto out;
+        return -1;
     }
 
     nodeDeviceSysfsGetSCSIHostCaps(&def->caps->data);
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
-        goto out;
+        return -1;
 
-    ret = 0;
-
- out:
-    return ret;
+    return 0;
 }
 
 
 static int udevProcessSCSITarget(struct udev_device *device ATTRIBUTE_UNUSED,
                                  virNodeDeviceDefPtr def)
 {
-    int ret = -1;
     const char *sysname = NULL;
     virNodeDevCapDataPtr data = &def->caps->data;
 
     sysname = udev_device_get_sysname(device);
 
     if (VIR_STRDUP(data->scsi_target.name, sysname) < 0)
-        goto out;
+        return -1;
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
-        goto out;
+        return -1;
 
-    ret = 0;
-
- out:
-    return ret;
+    return 0;
 }
 
 
@@ -691,20 +666,18 @@ static int udevProcessDisk(struct udev_device *device,
                            virNodeDeviceDefPtr def)
 {
     virNodeDevCapDataPtr data = &def->caps->data;
-    int ret = 0;
 
     if (udevGetUint64SysfsAttr(device, "size", &data->storage.num_blocks) < 0)
-        goto out;
+        return -1;
 
     if (udevGetUint64SysfsAttr(device, "queue/logical_block_size",
                                &data->storage.logical_block_size) < 0)
-        goto out;
+        return -1;
 
     data->storage.size = data->storage.num_blocks *
         data->storage.logical_block_size;
 
- out:
-    return ret;
+    return 0;
 }
 
 
@@ -752,7 +725,6 @@ static int udevProcessRemoveableMedia(struct udev_device *device,
 static int udevProcessCDROM(struct udev_device *device,
                             virNodeDeviceDefPtr def)
 {
-    int ret = -1;
     int has_media = 0;
 
     /* NB: the drive_type string provided by udev is different from
@@ -761,15 +733,13 @@ static int udevProcessCDROM(struct udev_device *device,
      * versions of libvirt.  */
     VIR_FREE(def->caps->data.storage.drive_type);
     if (VIR_STRDUP(def->caps->data.storage.drive_type, "cdrom") < 0)
-        goto out;
+        return -1;
 
     if (udevHasDeviceProperty(device, "ID_CDROM_MEDIA") &&
         udevGetIntProperty(device, "ID_CDROM_MEDIA", &has_media, 0) < 0)
-        goto out;
+        return -1;
 
-    ret = udevProcessRemoveableMedia(device, def, has_media);
- out:
-    return ret;
+    return udevProcessRemoveableMedia(device, def, has_media);
 }
 
 static int udevProcessFloppy(struct udev_device *device,
@@ -794,21 +764,19 @@ static int udevProcessSD(struct udev_device *device,
                          virNodeDeviceDefPtr def)
 {
     virNodeDevCapDataPtr data = &def->caps->data;
-    int ret = 0;
 
     if (udevGetUint64SysfsAttr(device, "size",
                                &data->storage.num_blocks) < 0)
-        goto out;
+        return -1;
 
     if (udevGetUint64SysfsAttr(device, "queue/logical_block_size",
                                &data->storage.logical_block_size) < 0)
-        goto out;
+        return -1;
 
     data->storage.size = data->storage.num_blocks *
         data->storage.logical_block_size;
 
- out:
-    return ret;
+    return 0;
 }
 
 
