@@ -149,14 +149,14 @@ static int udevGetStringSysfsAttr(struct udev_device *udev_device,
                                   char **value)
 {
     if (VIR_STRDUP(*value, udevGetDeviceSysfsAttr(udev_device, attr_name)) < 0)
-        return PROPERTY_ERROR;
+        return -1;
 
     virStringStripControlChars(*value);
 
     if (*value != NULL && (STREQ(*value, "")))
         VIR_FREE(*value);
 
-    return *value == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
+    return 0;
 }
 
 
@@ -443,9 +443,8 @@ static int udevProcessUSBDevice(struct udev_device *device,
         goto out;
 
     if (!data->usb_dev.vendor_name &&
-        udevGetStringSysfsAttr(device,
-                               "manufacturer",
-                               &data->usb_dev.vendor_name) == PROPERTY_ERROR)
+        udevGetStringSysfsAttr(device, "manufacturer",
+                               &data->usb_dev.vendor_name) < 0)
         goto out;
 
     if (udevGetUintProperty(device, "ID_MODEL_ID", &data->usb_dev.product, 16) < 0)
@@ -457,9 +456,8 @@ static int udevProcessUSBDevice(struct udev_device *device,
         goto out;
 
     if (!data->usb_dev.product_name &&
-        udevGetStringSysfsAttr(device,
-                               "product",
-                               &data->usb_dev.product_name) == PROPERTY_ERROR)
+        udevGetStringSysfsAttr(device, "product",
+                               &data->usb_dev.product_name) < 0)
         goto out;
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
@@ -534,11 +532,9 @@ static int udevProcessNetworkInterface(struct udev_device *device,
                               &data->net.ifname) < 0)
         goto out;
 
-    if (udevGetStringSysfsAttr(device,
-                               "address",
-                               &data->net.address) == PROPERTY_ERROR) {
+    if (udevGetStringSysfsAttr(device, "address",
+                               &data->net.address) < 0)
         goto out;
-    }
 
     if (udevGetUintSysfsAttr(device,
                              "addr_len",
@@ -922,17 +918,11 @@ static int udevProcessStorage(struct udev_device *device,
     if (udevGetStringProperty(device, "ID_SERIAL", &data->storage.serial) < 0)
         goto out;
 
-    if (udevGetStringSysfsAttr(device,
-                               "device/vendor",
-                               &data->storage.vendor) == PROPERTY_ERROR) {
+    if (udevGetStringSysfsAttr(device, "device/vendor", &data->storage.vendor) < 0)
         goto out;
-    }
     udevStripSpaces(def->caps->data.storage.vendor);
-    if (udevGetStringSysfsAttr(device,
-                               "device/model",
-                               &data->storage.model) == PROPERTY_ERROR) {
+    if (udevGetStringSysfsAttr(device, "device/model", &data->storage.model) < 0)
         goto out;
-    }
     udevStripSpaces(def->caps->data.storage.model);
     /* There is no equivalent of the hotpluggable property in libudev,
      * but storage is going toward a world in which hotpluggable is
@@ -1403,51 +1393,31 @@ udevGetDMIData(virNodeDevCapDataPtr data)
         }
     }
 
-    if (udevGetStringSysfsAttr(device,
-                               "product_name",
-                               &data->system.product_name) == PROPERTY_ERROR) {
+    if (udevGetStringSysfsAttr(device, "product_name",
+                               &data->system.product_name) < 0)
         goto out;
-    }
-    if (udevGetStringSysfsAttr(device,
-                               "sys_vendor",
-                               &data->system.hardware.vendor_name)
-        == PROPERTY_ERROR) {
+    if (udevGetStringSysfsAttr(device, "sys_vendor",
+                               &data->system.hardware.vendor_name) < 0)
         goto out;
-    }
-    if (udevGetStringSysfsAttr(device,
-                               "product_version",
-                               &data->system.hardware.version)
-        == PROPERTY_ERROR) {
+    if (udevGetStringSysfsAttr(device, "product_version",
+                               &data->system.hardware.version) < 0)
         goto out;
-    }
-    if (udevGetStringSysfsAttr(device,
-                               "product_serial",
-                               &data->system.hardware.serial)
-        == PROPERTY_ERROR) {
+    if (udevGetStringSysfsAttr(device, "product_serial",
+                               &data->system.hardware.serial) < 0)
         goto out;
-    }
 
     if (virGetHostUUID(data->system.hardware.uuid))
         goto out;
 
-    if (udevGetStringSysfsAttr(device,
-                               "bios_vendor",
-                               &data->system.firmware.vendor_name)
-        == PROPERTY_ERROR) {
+    if (udevGetStringSysfsAttr(device, "bios_vendor",
+                               &data->system.firmware.vendor_name) < 0)
         goto out;
-    }
-    if (udevGetStringSysfsAttr(device,
-                               "bios_version",
-                               &data->system.firmware.version)
-        == PROPERTY_ERROR) {
+    if (udevGetStringSysfsAttr(device, "bios_version",
+                               &data->system.firmware.version) < 0)
         goto out;
-    }
-    if (udevGetStringSysfsAttr(device,
-                               "bios_date",
-                               &data->system.firmware.release_date)
-        == PROPERTY_ERROR) {
+    if (udevGetStringSysfsAttr(device, "bios_date",
+                               &data->system.firmware.release_date) < 0)
         goto out;
-    }
 
  out:
     if (device != NULL)
