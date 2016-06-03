@@ -701,7 +701,6 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
                                                bool isServer)
 {
     virNetTLSContextPtr ctxt;
-    const char *gnutlsdebug;
     int err;
 
     if (virNetTLSContextInitialize() < 0)
@@ -709,16 +708,6 @@ static virNetTLSContextPtr virNetTLSContextNew(const char *cacert,
 
     if (!(ctxt = virObjectLockableNew(virNetTLSContextClass)))
         return NULL;
-
-    if ((gnutlsdebug = virGetEnvAllowSUID("LIBVIRT_GNUTLS_DEBUG")) != NULL) {
-        int val;
-        if (virStrToLong_i(gnutlsdebug, NULL, 10, &val) < 0)
-            val = 10;
-        gnutls_global_set_log_level(val);
-        gnutls_global_set_log_function(virNetTLSLog);
-        VIR_DEBUG("Enabled GNUTLS debug");
-    }
-
 
     err = gnutls_certificate_allocate_credentials(&ctxt->x509cred);
     if (err) {
@@ -1433,5 +1422,15 @@ void virNetTLSSessionDispose(void *obj)
  */
 void virNetTLSInit(void)
 {
+    const char *gnutlsdebug;
+    if ((gnutlsdebug = virGetEnvAllowSUID("LIBVIRT_GNUTLS_DEBUG")) != NULL) {
+        int val;
+        if (virStrToLong_i(gnutlsdebug, NULL, 10, &val) < 0)
+            val = 10;
+        gnutls_global_set_log_level(val);
+        gnutls_global_set_log_function(virNetTLSLog);
+        VIR_DEBUG("Enabled GNUTLS debug");
+    }
+
     gnutls_global_init();
 }
