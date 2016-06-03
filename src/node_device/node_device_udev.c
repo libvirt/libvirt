@@ -839,20 +839,6 @@ static int udevKludgeStorageType(virNodeDeviceDefPtr def)
 }
 
 
-static void udevStripSpaces(char *s)
-{
-    if (s == NULL)
-        return;
-
-    while (virFileStripSuffix(s, " ")) {
-        /* do nothing */
-        ;
-    }
-
-    return;
-}
-
-
 static int udevProcessStorage(struct udev_device *device,
                               virNodeDeviceDefPtr def)
 {
@@ -876,10 +862,13 @@ static int udevProcessStorage(struct udev_device *device,
 
     if (udevGetStringSysfsAttr(device, "device/vendor", &data->storage.vendor) < 0)
         goto out;
-    udevStripSpaces(def->caps->data.storage.vendor);
+    if (def->caps->data.storage.vendor)
+        virTrimSpaces(def->caps->data.storage.vendor, NULL);
+
     if (udevGetStringSysfsAttr(device, "device/model", &data->storage.model) < 0)
         goto out;
-    udevStripSpaces(def->caps->data.storage.model);
+    if (def->caps->data.storage.model)
+        virTrimSpaces(def->caps->data.storage.model, NULL);
     /* There is no equivalent of the hotpluggable property in libudev,
      * but storage is going toward a world in which hotpluggable is
      * expected, so I don't see a problem with not having a property
