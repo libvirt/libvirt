@@ -638,6 +638,7 @@ static int
 doRemoteOpen(virConnectPtr conn,
              struct private_data *priv,
              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+             virConfPtr conf,
              unsigned int flags)
 {
     char *transport_str = NULL;
@@ -844,6 +845,19 @@ doRemoteOpen(virConnectPtr conn,
     /* Connect to the remote service. */
     switch (transport) {
     case trans_tls:
+        if (conf && !tls_priority) {
+            virConfValuePtr val = virConfGetValue(conf, "tls_priority");
+            if (val) {
+                if (val->type != VIR_CONF_STRING) {
+                    virReportError(VIR_ERR_INVALID_ARG, "%s",
+                                   _("Config file 'tls_priority' must be a string"));
+                    goto failed;
+                }
+                if (VIR_STRDUP(tls_priority, val->str) < 0)
+                    goto failed;
+            }
+        }
+
 #ifdef WITH_GNUTLS
         priv->tls = virNetTLSContextNewClientPath(pkipath,
                                                   geteuid() != 0 ? true : false,
@@ -1180,7 +1194,7 @@ remoteAllocPrivateData(void)
 static virDrvOpenStatus
 remoteConnectOpen(virConnectPtr conn,
                   virConnectAuthPtr auth,
-                  virConfPtr conf ATTRIBUTE_UNUSED,
+                  virConfPtr conf,
                   unsigned int flags)
 {
     struct private_data *priv;
@@ -1239,7 +1253,7 @@ remoteConnectOpen(virConnectPtr conn,
 #endif
     }
 
-    ret = doRemoteOpen(conn, priv, auth, rflags);
+    ret = doRemoteOpen(conn, priv, auth, conf, rflags);
     if (ret != VIR_DRV_OPEN_SUCCESS) {
         conn->privateData = NULL;
         remoteDriverUnlock(priv);
