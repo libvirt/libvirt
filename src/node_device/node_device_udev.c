@@ -1206,7 +1206,7 @@ static int udevEnumerateDevices(struct udev *udev)
     udev_enumerate = udev_enumerate_new(udev);
 
     ret = udev_enumerate_scan_devices(udev_enumerate);
-    if (0 != ret) {
+    if (ret != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("udev scan devices returned %d"),
                        ret);
