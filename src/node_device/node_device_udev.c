@@ -1384,8 +1384,8 @@ static int udevSetupSystemDev(void)
     virNodeDeviceObjPtr dev = NULL;
     int ret = -1;
 
-    if (VIR_ALLOC(def) != 0)
-        goto out;
+    if (VIR_ALLOC(def) < 0)
+        return -1;
 
     if (VIR_STRDUP(def->name, "computer") < 0)
         goto out;
