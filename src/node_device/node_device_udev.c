@@ -58,23 +58,6 @@ struct _udevPrivate {
 };
 
 
-static int udevStrToLong_i(char const *s,
-                           char **end_ptr,
-                           int base,
-                           int *result)
-{
-    int ret = 0;
-
-    ret = virStrToLong_i(s, end_ptr, base, result);
-    if (ret != 0) {
-        VIR_ERROR(_("Failed to convert '%s' to int"), s);
-    } else {
-        VIR_DEBUG("Converted '%s' to int %u", s, *result);
-    }
-
-    return ret;
-}
-
 /* This function allocates memory from the heap for the property
  * value.  That memory must be later freed by some other code. */
 static int udevGetDeviceProperty(struct udev_device *udev_device,
@@ -128,8 +111,10 @@ static int udevGetIntProperty(struct udev_device *udev_device,
     ret = udevGetDeviceProperty(udev_device, property_key, &udev_value);
 
     if (ret == PROPERTY_FOUND) {
-        if (udevStrToLong_i(udev_value, NULL, base, value) != 0)
+        if (virStrToLong_i(udev_value, NULL, base, value) < 0) {
+            VIR_ERROR(_("Failed to convert '%s' to int"), udev_value);
             ret = PROPERTY_ERROR;
+        }
     }
 
     VIR_FREE(udev_value);
@@ -229,8 +214,10 @@ static int udevGetIntSysfsAttr(struct udev_device *udev_device,
     ret = udevGetDeviceSysfsAttr(udev_device, attr_name, &udev_value);
 
     if (ret == PROPERTY_FOUND) {
-        if (udevStrToLong_i(udev_value, NULL, base, value) != 0)
+        if (virStrToLong_i(udev_value, NULL, base, value) < 0) {
+            VIR_ERROR(_("Failed to convert '%s' to int"), udev_value);
             ret = PROPERTY_ERROR;
+        }
     }
 
     VIR_FREE(udev_value);
