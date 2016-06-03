@@ -206,10 +206,10 @@ static int udevGetUint64SysfsAttr(struct udev_device *udev_device,
 
     if (str && virStrToLong_ull(str, NULL, 0, value) < 0) {
         VIR_ERROR(_("Failed to convert '%s' to unsigned long long"), str);
-        return PROPERTY_ERROR;
+        return -1;
     }
 
-    return str == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
+    return 0;
 }
 
 
@@ -687,18 +687,12 @@ static int udevProcessDisk(struct udev_device *device,
     virNodeDevCapDataPtr data = &def->caps->data;
     int ret = 0;
 
-    if (udevGetUint64SysfsAttr(device,
-                               "size",
-                               &data->storage.num_blocks) == PROPERTY_ERROR) {
+    if (udevGetUint64SysfsAttr(device, "size", &data->storage.num_blocks) < 0)
         goto out;
-    }
 
-    if (udevGetUint64SysfsAttr(device,
-                               "queue/logical_block_size",
-                               &data->storage.logical_block_size)
-        == PROPERTY_ERROR) {
+    if (udevGetUint64SysfsAttr(device, "queue/logical_block_size",
+                               &data->storage.logical_block_size) < 0)
         goto out;
-    }
 
     data->storage.size = data->storage.num_blocks *
         data->storage.logical_block_size;
@@ -729,17 +723,13 @@ static int udevProcessRemoveableMedia(struct udev_device *device,
                                   &data->storage.media_label) < 0)
             goto out;
 
-        if (udevGetUint64SysfsAttr(device,
-                                   "size",
-                                   &data->storage.num_blocks) == PROPERTY_ERROR) {
+        if (udevGetUint64SysfsAttr(device, "size",
+                                   &data->storage.num_blocks) < 0)
             goto out;
-        }
 
-        if (udevGetUint64SysfsAttr(device,
-                                   "queue/logical_block_size",
-                                   &data->storage.logical_block_size) == PROPERTY_ERROR) {
+        if (udevGetUint64SysfsAttr(device, "queue/logical_block_size",
+                                   &data->storage.logical_block_size) < 0)
             goto out;
-        }
 
         /* XXX This calculation is wrong for the qemu virtual cdrom
          * which reports the size in 512 byte blocks, but the logical
@@ -801,18 +791,13 @@ static int udevProcessSD(struct udev_device *device,
     virNodeDevCapDataPtr data = &def->caps->data;
     int ret = 0;
 
-    if (udevGetUint64SysfsAttr(device,
-                               "size",
-                               &data->storage.num_blocks) == PROPERTY_ERROR) {
+    if (udevGetUint64SysfsAttr(device, "size",
+                               &data->storage.num_blocks) < 0)
         goto out;
-    }
 
-    if (udevGetUint64SysfsAttr(device,
-                               "queue/logical_block_size",
-                               &data->storage.logical_block_size)
-        == PROPERTY_ERROR) {
+    if (udevGetUint64SysfsAttr(device, "queue/logical_block_size",
+                               &data->storage.logical_block_size) < 0)
         goto out;
-    }
 
     data->storage.size = data->storage.num_blocks *
         data->storage.logical_block_size;
