@@ -3239,6 +3239,11 @@ virNetDevSendEthtoolIoctl(const char *ifname, void *cmd)
     return ret;
 }
 
+struct virNetDevEthtoolFeatureCmd {
+    const int cmd;
+    const virNetDevFeature feat;
+};
+
 
 /**
  * virNetDevFeatureAvailable
@@ -3303,12 +3308,8 @@ virNetDevGetFeatures(const char *ifname,
 # if HAVE_DECL_ETHTOOL_GFEATURES
     struct ethtool_gfeatures *g_cmd;
 # endif
-    struct elem{
-        const int cmd;
-        const virNetDevFeature feat;
-    };
     /* legacy ethtool getters */
-    struct elem cmds[] = {
+    struct virNetDevEthtoolFeatureCmd cmds[] = {
         {ETHTOOL_GRXCSUM, VIR_NET_DEV_FEAT_GRXCSUM},
         {ETHTOOL_GTXCSUM, VIR_NET_DEV_FEAT_GTXCSUM},
         {ETHTOOL_GSG, VIR_NET_DEV_FEAT_GSG},
@@ -3339,7 +3340,7 @@ virNetDevGetFeatures(const char *ifname,
 # if HAVE_DECL_ETHTOOL_GFLAGS
     size_t j = -1;
     /* ethtool masks */
-    struct elem flags[] = {
+    struct virNetDevEthtoolFeatureCmd flags[] = {
 #  if HAVE_DECL_ETH_FLAG_LRO
         {ETH_FLAG_LRO, VIR_NET_DEV_FEAT_LRO},
 #  endif
