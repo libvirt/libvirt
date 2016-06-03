@@ -58,23 +58,6 @@ struct _udevPrivate {
 };
 
 
-static int udevStrToLong_ui(char const *s,
-                            char **end_ptr,
-                            int base,
-                            unsigned int *result)
-{
-    int ret = 0;
-
-    ret = virStrToLong_ui(s, end_ptr, base, result);
-    if (ret != 0) {
-        VIR_ERROR(_("Failed to convert '%s' to unsigned int"), s);
-    } else {
-        VIR_DEBUG("Converted '%s' to unsigned int %u", s, *result);
-    }
-
-    return ret;
-}
-
 static int udevStrToLong_i(char const *s,
                            char **end_ptr,
                            int base,
@@ -165,8 +148,10 @@ static int udevGetUintProperty(struct udev_device *udev_device,
     ret = udevGetDeviceProperty(udev_device, property_key, &udev_value);
 
     if (ret == PROPERTY_FOUND) {
-        if (udevStrToLong_ui(udev_value, NULL, base, value) != 0)
+        if (virStrToLong_ui(udev_value, NULL, base, value) < 0) {
+            VIR_ERROR(_("Failed to convert '%s' to unsigned int"), udev_value);
             ret = PROPERTY_ERROR;
+        }
     }
 
     VIR_FREE(udev_value);
@@ -264,8 +249,10 @@ static int udevGetUintSysfsAttr(struct udev_device *udev_device,
     ret = udevGetDeviceSysfsAttr(udev_device, attr_name, &udev_value);
 
     if (ret == PROPERTY_FOUND) {
-        if (udevStrToLong_ui(udev_value, NULL, base, value) != 0)
+        if (virStrToLong_ui(udev_value, NULL, base, value) < 0) {
+            VIR_ERROR(_("Failed to convert '%s' to unsigned int"), udev_value);
             ret = PROPERTY_ERROR;
+        }
     }
 
     VIR_FREE(udev_value);
