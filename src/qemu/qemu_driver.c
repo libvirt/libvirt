@@ -6523,6 +6523,11 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
     if (!restored)
         goto cleanup;
 
+    /* qemuProcessStart doesn't unset the qemu error reporting infrastructure
+     * in case of migration (which is used in this case) so we need to reset it
+     * so that the handle to virtlogd is not held open unnecessarily */
+    qemuMonitorSetDomainLog(qemuDomainGetMonitor(vm), NULL, NULL, NULL);
+
     event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STARTED,
                                      VIR_DOMAIN_EVENT_STARTED_RESTORED);
