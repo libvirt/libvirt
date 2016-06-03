@@ -189,10 +189,10 @@ static int udevGetUintSysfsAttr(struct udev_device *udev_device,
 
     if (str && virStrToLong_ui(str, NULL, base, value) < 0) {
         VIR_ERROR(_("Failed to convert '%s' to unsigned int"), str);
-        return PROPERTY_ERROR;
+        return -1;
     }
 
-    return str == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
+    return 0;
 }
 
 
@@ -339,19 +339,11 @@ static int udevProcessPCI(struct udev_device *device,
         goto out;
     }
 
-    if (udevGetUintSysfsAttr(device,
-                             "vendor",
-                             &data->pci_dev.vendor,
-                             16) == PROPERTY_ERROR) {
+    if (udevGetUintSysfsAttr(device, "vendor", &data->pci_dev.vendor, 16) < 0)
         goto out;
-    }
 
-    if (udevGetUintSysfsAttr(device,
-                             "device",
-                             &data->pci_dev.product,
-                             16) == PROPERTY_ERROR) {
+    if (udevGetUintSysfsAttr(device, "device", &data->pci_dev.product, 16) < 0)
         goto out;
-    }
 
     if (udevTranslatePCIIds(data->pci_dev.vendor,
                             data->pci_dev.product,
@@ -470,33 +462,21 @@ static int udevProcessUSBInterface(struct udev_device *device,
     int ret = -1;
     virNodeDevCapDataPtr data = &def->caps->data;
 
-    if (udevGetUintSysfsAttr(device,
-                             "bInterfaceNumber",
-                             &data->usb_if.number,
-                             16) == PROPERTY_ERROR) {
+    if (udevGetUintSysfsAttr(device, "bInterfaceNumber",
+                             &data->usb_if.number, 16) < 0)
         goto out;
-    }
 
-    if (udevGetUintSysfsAttr(device,
-                             "bInterfaceClass",
-                             &data->usb_if._class,
-                             16) == PROPERTY_ERROR) {
+    if (udevGetUintSysfsAttr(device, "bInterfaceClass",
+                             &data->usb_if._class, 16) < 0)
         goto out;
-    }
 
-    if (udevGetUintSysfsAttr(device,
-                             "bInterfaceSubClass",
-                             &data->usb_if.subclass,
-                             16) == PROPERTY_ERROR) {
+    if (udevGetUintSysfsAttr(device, "bInterfaceSubClass",
+                             &data->usb_if.subclass, 16) < 0)
         goto out;
-    }
 
-    if (udevGetUintSysfsAttr(device,
-                             "bInterfaceProtocol",
-                             &data->usb_if.protocol,
-                             16) == PROPERTY_ERROR) {
+    if (udevGetUintSysfsAttr(device, "bInterfaceProtocol",
+                             &data->usb_if.protocol, 16) < 0)
         goto out;
-    }
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
         goto out;
@@ -530,12 +510,8 @@ static int udevProcessNetworkInterface(struct udev_device *device,
                                &data->net.address) < 0)
         goto out;
 
-    if (udevGetUintSysfsAttr(device,
-                             "addr_len",
-                             &data->net.address_len,
-                             0) == PROPERTY_ERROR) {
+    if (udevGetUintSysfsAttr(device, "addr_len", &data->net.address_len, 0) < 0)
         goto out;
-    }
 
     if (udevGenerateDeviceName(device, def, data->net.address) != 0)
         goto out;
@@ -683,17 +659,12 @@ static int udevProcessSCSIDevice(struct udev_device *device ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    switch (udevGetUintSysfsAttr(device, "type", &tmp, 0)) {
-    case PROPERTY_FOUND:
-        if (udevGetSCSIType(def, tmp, &data->scsi.type) == -1)
+    if (udev_device_get_sysattr_value(device, "type")) {
+        if (udevGetUintSysfsAttr(device, "type", &tmp, 0) < 0)
             goto out;
-        break;
-    case PROPERTY_MISSING:
-        break; /* No type is not an error */
-    case PROPERTY_ERROR:
-    default:
-        goto out;
-        break;
+
+        if (udevGetSCSIType(def, tmp, &data->scsi.type) < 0)
+            goto out;
     }
 
     if (udevGenerateDeviceName(device, def, NULL) != 0)
