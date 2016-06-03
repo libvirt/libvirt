@@ -105,7 +105,8 @@ static int udevGetIntProperty(struct udev_device *udev_device,
     str = udevGetDeviceProperty(udev_device, property_key);
 
     if (str && virStrToLong_i(str, NULL, base, value) < 0) {
-        VIR_ERROR(_("Failed to convert '%s' to int"), str);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to convert '%s' to int"), str);
         return -1;
     }
     return 0;
@@ -122,7 +123,8 @@ static int udevGetUintProperty(struct udev_device *udev_device,
     str = udevGetDeviceProperty(udev_device, property_key);
 
     if (str && virStrToLong_ui(str, NULL, base, value) < 0) {
-        VIR_ERROR(_("Failed to convert '%s' to int"), str);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to convert '%s' to int"), str);
         return -1;
     }
     return 0;
@@ -170,7 +172,8 @@ static int udevGetIntSysfsAttr(struct udev_device *udev_device,
     str = udevGetDeviceSysfsAttr(udev_device, attr_name);
 
     if (str && virStrToLong_i(str, NULL, base, value) < 0) {
-        VIR_ERROR(_("Failed to convert '%s' to int"), str);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to convert '%s' to int"), str);
         return -1;
     }
 
@@ -188,7 +191,8 @@ static int udevGetUintSysfsAttr(struct udev_device *udev_device,
     str = udevGetDeviceSysfsAttr(udev_device, attr_name);
 
     if (str && virStrToLong_ui(str, NULL, base, value) < 0) {
-        VIR_ERROR(_("Failed to convert '%s' to unsigned int"), str);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to convert '%s' to unsigned int"), str);
         return -1;
     }
 
@@ -205,7 +209,8 @@ static int udevGetUint64SysfsAttr(struct udev_device *udev_device,
     str = udevGetDeviceSysfsAttr(udev_device, attr_name);
 
     if (str && virStrToLong_ull(str, NULL, 0, value) < 0) {
-        VIR_ERROR(_("Failed to convert '%s' to unsigned long long"), str);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to convert '%s' to unsigned long long"), str);
         return -1;
     }
 
@@ -674,8 +679,9 @@ static int udevProcessSCSIDevice(struct udev_device *device ATTRIBUTE_UNUSED,
 
  out:
     if (ret != 0) {
-        VIR_ERROR(_("Failed to process SCSI device with sysfs path '%s'"),
-                  def->sysfs_path);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to process SCSI device with sysfs path '%s'"),
+                       def->sysfs_path);
     }
     return ret;
 }
@@ -1049,7 +1055,8 @@ static int udevGetDeviceDetails(struct udev_device *device,
         ret = udevProcessSCSIGeneric(device, def);
         break;
     default:
-        VIR_ERROR(_("Unknown device type %d"), def->caps->data.type);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown device type %d"), def->caps->data.type);
         ret = -1;
         break;
     }
@@ -1212,7 +1219,9 @@ static int udevEnumerateDevices(struct udev *udev)
 
     ret = udev_enumerate_scan_devices(udev_enumerate);
     if (0 != ret) {
-        VIR_ERROR(_("udev scan devices returned %d"), ret);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("udev scan devices returned %d"),
+                       ret);
         goto out;
     }
 
@@ -1292,14 +1301,17 @@ static void udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
     nodeDeviceLock();
     udev_fd = udev_monitor_get_fd(udev_monitor);
     if (fd != udev_fd) {
-        VIR_ERROR(_("File descriptor returned by udev %d does not "
-                    "match node device file descriptor %d"), fd, udev_fd);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("File descriptor returned by udev %d does not "
+                         "match node device file descriptor %d"),
+                       fd, udev_fd);
         goto out;
     }
 
     device = udev_monitor_receive_device(udev_monitor);
     if (device == NULL) {
-        VIR_ERROR(_("udev_monitor_receive_device returned NULL"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("udev_monitor_receive_device returned NULL"));
         goto out;
     }
 
@@ -1337,8 +1349,9 @@ udevGetDMIData(virNodeDevCapDataPtr data)
     if (device == NULL) {
         device = udev_device_new_from_syspath(udev, DMI_DEVPATH_FALLBACK);
         if (device == NULL) {
-            VIR_ERROR(_("Failed to get udev device for syspath '%s' or '%s'"),
-                      DMI_DEVPATH, DMI_DEVPATH_FALLBACK);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to get udev device for syspath '%s' or '%s'"),
+                           DMI_DEVPATH, DMI_DEVPATH_FALLBACK);
             goto out;
         }
     }
@@ -1417,16 +1430,15 @@ static int udevPCITranslateInit(bool privileged ATTRIBUTE_UNUSED)
     /* On s390(x) system there is no PCI bus.
      * Therefore there is nothing to initialize here. */
 #else
-    int pciret;
+    int rc;
 
-    if ((pciret = pci_system_init()) != 0) {
+    if ((rc = pci_system_init()) != 0) {
         /* Ignore failure as non-root; udev is not as helpful in that
          * situation, but a non-privileged user won't benefit much
          * from udev in the first place.  */
         if (errno != ENOENT && (privileged  || errno != EACCES)) {
-            char ebuf[256];
-            VIR_ERROR(_("Failed to initialize libpciaccess: %s"),
-                      virStrerror(pciret, ebuf, sizeof(ebuf)));
+            virReportSystemError(rc, "%s",
+                                 _("Failed to initialize libpciaccess"));
             return -1;
         }
     }
@@ -1454,7 +1466,8 @@ static int nodeStateInitialize(bool privileged,
     }
 
     if (virMutexInit(&driver->lock) < 0) {
-        VIR_ERROR(_("Failed to initialize mutex for driver"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to initialize mutex"));
         VIR_FREE(priv);
         VIR_FREE(driver);
         return -1;
@@ -1480,7 +1493,8 @@ static int nodeStateInitialize(bool privileged,
 
     priv->udev_monitor = udev_monitor_new_from_netlink(udev, "udev");
     if (priv->udev_monitor == NULL) {
-        VIR_ERROR(_("udev_monitor_new_from_netlink returned NULL"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("udev_monitor_new_from_netlink returned NULL"));
         goto out_unlock;
     }
 
