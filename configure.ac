@@ -1276,6 +1276,16 @@ AC_SUBST([GNUTLS_CFLAGS])
 AC_SUBST([GNUTLS_LIBS])
 
 
+AC_ARG_WITH([tls-priority],
+  [AS_HELP_STRING([--with-tls-priority],
+    [set the default TLS session priority string @<:@default=NORMAL@:>@])],
+  [],
+  [with_tls_priority=NORMAL])
+
+AC_DEFINE_UNQUOTED([TLS_PRIORITY], ["$with_tls_priority"],
+		   [TLS default priority string])
+
+
 dnl PolicyKit library
 POLKIT_CFLAGS=
 POLKIT_LIBS=
@@ -2874,6 +2884,7 @@ AC_MSG_NOTICE([    Default Editor: $DEFAULT_EDITOR])
 AC_MSG_NOTICE([      Loader/NVRAM: $with_loader_nvram])
 AC_MSG_NOTICE([  virt-login-shell: $with_login_shell])
 AC_MSG_NOTICE([virt-host-validate: $with_host_validate])
+AC_MSG_NOTICE([      TLS priority: $with_tls_priority])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Developer Tools])
 AC_MSG_NOTICE([])

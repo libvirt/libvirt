@@ -1197,10 +1197,10 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
     /* avoid calling all the priority functions, since the defaults
      * are adequate.
      */
-    if ((err = gnutls_set_default_priority(sess->session)) != 0) {
+    if ((err = gnutls_priority_set_direct(sess->session, TLS_PRIORITY, NULL)) != 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
-                       _("Failed to set TLS session priority %s"),
-                       gnutls_strerror(err));
+                       _("Failed to set TLS session priority to %s: %s"),
+                       TLS_PRIORITY, gnutls_strerror(err));
         goto error;
     }
 
