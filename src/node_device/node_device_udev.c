@@ -171,10 +171,10 @@ static int udevGetIntSysfsAttr(struct udev_device *udev_device,
 
     if (str && virStrToLong_i(str, NULL, base, value) < 0) {
         VIR_ERROR(_("Failed to convert '%s' to int"), str);
-        return PROPERTY_ERROR;
+        return -1;
     }
 
-    return str == NULL ? PROPERTY_MISSING : PROPERTY_FOUND;
+    return 0;
 }
 
 
@@ -322,7 +322,6 @@ static int udevProcessPCI(struct udev_device *device,
     udevPrivate *priv = driver->privateData;
     int ret = -1;
     char *p;
-    int rc;
 
     syspath = udev_device_get_syspath(device);
 
@@ -364,17 +363,12 @@ static int udevProcessPCI(struct udev_device *device,
     if (udevGenerateDeviceName(device, def, NULL) != 0)
         goto out;
 
-    rc = udevGetIntSysfsAttr(device,
-                            "numa_node",
-                            &data->pci_dev.numa_node,
-                            10);
-    if (rc == PROPERTY_ERROR) {
+    /* The default value is -1, because it can't be 0
+     * as zero is valid node number. */
+    data->pci_dev.numa_node = -1;
+    if (udevGetIntSysfsAttr(device, "numa_node",
+                            &data->pci_dev.numa_node, 10) < 0)
         goto out;
-    } else if (rc == PROPERTY_MISSING) {
-        /* The default value is -1, because it can't be 0
-         * as zero is valid node number. */
-        data->pci_dev.numa_node = -1;
-    }
 
     if (nodeDeviceSysfsGetPCIRelatedDevCaps(syspath, data) < 0)
         goto out;
@@ -748,12 +742,12 @@ static int udevProcessRemoveableMedia(struct udev_device *device,
                                       int has_media)
 {
     virNodeDevCapDataPtr data = &def->caps->data;
-    int tmp_int = 0, ret = 0;
+    int is_removable = 0, ret = 0;
 
-    if ((udevGetIntSysfsAttr(device, "removable", &tmp_int, 0) == PROPERTY_FOUND) &&
-        (tmp_int == 1)) {
+    if (udevGetIntSysfsAttr(device, "removable", &is_removable, 0) < 0)
+        return -1;
+    if (is_removable == 1)
         def->caps->data.storage.flags |= VIR_NODE_DEV_CAP_STORAGE_REMOVABLE;
-    }
 
     if (has_media) {
 
