@@ -172,13 +172,7 @@ vzNewDomain(vzDriverPtr driver, const char *name, const unsigned char *uuid)
     if (VIR_ALLOC(pdom) < 0)
         goto error;
 
-    if (virCondInit(&pdom->cache.cond) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("cannot initialize condition"));
-        goto error;
-    }
-    pdom->cache.stats = PRL_INVALID_HANDLE;
-    pdom->cache.count = -1;
-
+    pdom->stats = PRL_INVALID_HANDLE;
     def->virtType = VIR_DOMAIN_VIRT_VZ;
 
     if (!(dom = virDomainObjListAdd(driver->domains, def,
@@ -192,8 +186,6 @@ vzNewDomain(vzDriverPtr driver, const char *name, const unsigned char *uuid)
     return dom;
 
  error:
-    if (pdom && pdom->cache.count == -1)
-        virCondDestroy(&pdom->cache.cond);
     virDomainDefFree(def);
     VIR_FREE(pdom);
     return NULL;

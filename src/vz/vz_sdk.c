@@ -468,8 +468,7 @@ prlsdkDomObjFreePrivate(void *p)
         return;
 
     PrlHandle_Free(pdom->sdkdom);
-    PrlHandle_Free(pdom->cache.stats);
-    virCondDestroy(&pdom->cache.cond);
+    PrlHandle_Free(pdom->stats);
     VIR_FREE(pdom->home);
     VIR_FREE(p);
 };
@@ -1513,6 +1512,7 @@ prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
     PRL_UINT32 envId;
     PRL_VM_AUTOSTART_OPTION autostart;
     PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
+    PRL_HANDLE job;
 
     virCheckNonNullArgGoto(dom, error);
 
@@ -1604,6 +1604,15 @@ prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
             goto error;
     }
 
+    if (!pdom->sdkdom) {
+        job = PrlVm_SubscribeToPerfStats(sdkdom, NULL);
+        if (PRL_FAILED(waitJob(job)))
+            goto error;
+
+        PrlHandle_AddRef(sdkdom);
+        pdom->sdkdom = sdkdom;
+    }
+
     /* assign new virDomainDef without any checks
      * we can't use virDomainObjAssignDef, because it checks
      * for state and domain name */
@@ -1614,11 +1623,6 @@ prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
     pdom->home = home;
 
     prlsdkConvertDomainState(domainState, envId, dom);
-
-    if (!pdom->sdkdom) {
-        PrlHandle_AddRef(sdkdom);
-        pdom->sdkdom = sdkdom;
-    }
 
     if (autostart == PAO_VM_START_ON_LOAD)
         dom->autostart = 1;
@@ -1844,47 +1848,22 @@ prlsdkHandleVmRemovedEvent(vzDriverPtr driver,
 
 #define PARALLELS_STATISTICS_DROP_COUNT 3
 
-static PRL_RESULT
+static void
 prlsdkHandlePerfEvent(vzDriverPtr driver,
                       PRL_HANDLE event,
                       unsigned char *uuid)
 {
     virDomainObjPtr dom = NULL;
     vzDomObjPtr privdom = NULL;
-    PRL_HANDLE job = PRL_INVALID_HANDLE;
 
-    dom = virDomainObjListFindByUUID(driver->domains, uuid);
-    if (dom == NULL)
-        goto cleanup;
+    if (!(dom = virDomainObjListFindByUUID(driver->domains, uuid)))
+        return;
+
     privdom = dom->privateData;
+    PrlHandle_Free(privdom->stats);
+    privdom->stats = event;
 
-    /* delayed event after unsubscribe */
-    if (privdom->cache.count == -1)
-        goto cleanup;
-
-    PrlHandle_Free(privdom->cache.stats);
-    privdom->cache.stats = PRL_INVALID_HANDLE;
-
-    if (privdom->cache.count > PARALLELS_STATISTICS_DROP_COUNT) {
-        job = PrlVm_UnsubscribeFromPerfStats(privdom->sdkdom);
-        if (PRL_FAILED(waitJob(job)))
-            goto cleanup;
-        /* change state to unsubscribed */
-        privdom->cache.count = -1;
-    } else {
-        ++privdom->cache.count;
-        privdom->cache.stats = event;
-        /* thus we get own of event handle */
-        event = PRL_INVALID_HANDLE;
-        virCondSignal(&privdom->cache.cond);
-    }
-
- cleanup:
-    PrlHandle_Free(event);
-    if (dom)
-        virObjectUnlock(dom);
-
-    return PRL_ERR_SUCCESS;
+    virObjectUnlock(dom);
 }
 
 static PRL_RESULT
@@ -3955,56 +3934,10 @@ prlsdkExtractStatsParam(PRL_HANDLE sdkstats, const char *name, long long *val)
 
 #define PARALLELS_STATISTICS_TIMEOUT (60 * 1000)
 
-static int
-prlsdkGetStatsParam(virDomainObjPtr dom, const char *name, long long *val)
-{
-    vzDomObjPtr privdom = dom->privateData;
-    PRL_HANDLE job = PRL_INVALID_HANDLE;
-    unsigned long long now;
-
-    if (privdom->cache.stats != PRL_INVALID_HANDLE) {
-        /* reset count to keep subscribtion */
-        privdom->cache.count = 0;
-        return prlsdkExtractStatsParam(privdom->cache.stats, name, val);
-    }
-
-    if (privdom->cache.count == -1) {
-        job = PrlVm_SubscribeToPerfStats(privdom->sdkdom, NULL);
-        if (PRL_FAILED(waitJob(job)))
-            goto error;
-    }
-
-    /* change state to subscribed in case of unsubscribed
-       or reset count so we stop unsubscribe attempts */
-    privdom->cache.count = 0;
-
-    if (virTimeMillisNow(&now) < 0) {
-        virReportSystemError(errno, "%s", _("Unable to get current time"));
-        goto error;
-    }
-
-    while (privdom->cache.stats == PRL_INVALID_HANDLE) {
-        if (virCondWaitUntil(&privdom->cache.cond, &dom->parent.lock,
-                             now + PARALLELS_STATISTICS_TIMEOUT) < 0) {
-            if (errno == ETIMEDOUT) {
-                virReportError(VIR_ERR_OPERATION_TIMEOUT, "%s",
-                               _("Timeout on waiting statistics event."));
-                goto error;
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Unable to wait on monitor condition"));
-                goto error;
-            }
-        }
-    }
-
-    return prlsdkExtractStatsParam(privdom->cache.stats, name, val);
- error:
-    return -1;
-}
-
 int
-prlsdkGetBlockStats(virDomainObjPtr dom, virDomainDiskDefPtr disk, virDomainBlockStatsPtr stats)
+prlsdkGetBlockStats(PRL_HANDLE sdkstats,
+                    virDomainDiskDefPtr disk,
+                    virDomainBlockStatsPtr stats)
 {
     virDomainDeviceDriveAddressPtr address;
     int idx;
@@ -4036,7 +3969,7 @@ prlsdkGetBlockStats(virDomainObjPtr dom, virDomainDiskDefPtr disk, virDomainBloc
 #define PRLSDK_GET_STAT_PARAM(VAL, TYPE, NAME)                          \
     if (virAsprintf(&name, "devices.%s%d.%s", prefix, idx, NAME) < 0)   \
         goto cleanup;                                                   \
-    if (prlsdkGetStatsParam(dom, name, &stats->VAL) < 0)                \
+    if (prlsdkExtractStatsParam(sdkstats, name, &stats->VAL) < 0)       \
         goto cleanup;                                                   \
     VIR_FREE(name);
 
@@ -4054,20 +3987,19 @@ prlsdkGetBlockStats(virDomainObjPtr dom, virDomainDiskDefPtr disk, virDomainBloc
 
 
 static PRL_HANDLE
-prlsdkFindNetByPath(virDomainObjPtr dom, const char *path)
+prlsdkFindNetByPath(PRL_HANDLE sdkdom, const char *path)
 {
     PRL_UINT32 count = 0;
-    vzDomObjPtr privdom = dom->privateData;
     PRL_RESULT pret;
     size_t i;
     char *name = NULL;
     PRL_HANDLE net = PRL_INVALID_HANDLE;
 
-    pret = PrlVmCfg_GetNetAdaptersCount(privdom->sdkdom, &count);
+    pret = PrlVmCfg_GetNetAdaptersCount(sdkdom, &count);
     prlsdkCheckRetGoto(pret, error);
 
     for (i = 0; i < count; ++i) {
-        pret = PrlVmCfg_GetNetAdapter(privdom->sdkdom, i, &net);
+        pret = PrlVmCfg_GetNetAdapter(sdkdom, i, &net);
         prlsdkCheckRetGoto(pret, error);
 
         if (!(name = prlsdkGetStringParamVar(PrlVmDevNet_GetHostInterfaceName,
@@ -4094,7 +4026,7 @@ prlsdkFindNetByPath(virDomainObjPtr dom, const char *path)
 }
 
 int
-prlsdkGetNetStats(virDomainObjPtr dom, const char *path,
+prlsdkGetNetStats(PRL_HANDLE sdkstats, PRL_HANDLE sdkdom, const char *path,
                   virDomainInterfaceStatsPtr stats)
 {
     int ret = -1;
@@ -4103,7 +4035,7 @@ prlsdkGetNetStats(virDomainObjPtr dom, const char *path,
     PRL_RESULT pret;
     PRL_HANDLE net = PRL_INVALID_HANDLE;
 
-    net = prlsdkFindNetByPath(dom, path);
+    net = prlsdkFindNetByPath(sdkdom, path);
     if (net == PRL_INVALID_HANDLE)
        goto cleanup;
 
@@ -4113,7 +4045,7 @@ prlsdkGetNetStats(virDomainObjPtr dom, const char *path,
 #define PRLSDK_GET_NET_COUNTER(VAL, NAME)                           \
     if (virAsprintf(&name, "net.nic%d.%s", net_index, NAME) < 0)    \
         goto cleanup;                                               \
-    if (prlsdkGetStatsParam(dom, name, &stats->VAL) < 0)            \
+    if (prlsdkExtractStatsParam(sdkstats, name, &stats->VAL) < 0)   \
         goto cleanup;                                               \
     VIR_FREE(name);
 
@@ -4137,7 +4069,7 @@ prlsdkGetNetStats(virDomainObjPtr dom, const char *path,
 }
 
 int
-prlsdkGetVcpuStats(virDomainObjPtr dom, int idx, unsigned long long *vtime)
+prlsdkGetVcpuStats(PRL_HANDLE sdkstats, int idx, unsigned long long *vtime)
 {
     char *name = NULL;
     long long ptime = 0;
@@ -4145,7 +4077,7 @@ prlsdkGetVcpuStats(virDomainObjPtr dom, int idx, unsigned long long *vtime)
 
     if (virAsprintf(&name, "guest.vcpu%u.time", (unsigned int)idx) < 0)
         goto cleanup;
-    if (prlsdkGetStatsParam(dom, name, &ptime) < 0)
+    if (prlsdkExtractStatsParam(sdkstats, name, &ptime) < 0)
         goto cleanup;
     *vtime = ptime == -1 ? 0 : ptime;
     ret = 0;
@@ -4156,7 +4088,7 @@ prlsdkGetVcpuStats(virDomainObjPtr dom, int idx, unsigned long long *vtime)
 }
 
 int
-prlsdkGetMemoryStats(virDomainObjPtr dom,
+prlsdkGetMemoryStats(PRL_HANDLE sdkstats,
                      virDomainMemoryStatPtr stats,
                      unsigned int nr_stats)
 {
@@ -4165,7 +4097,7 @@ prlsdkGetMemoryStats(virDomainObjPtr dom,
     size_t i = 0;
 
 #define PRLSDK_GET_COUNTER(NAME, VALUE)                             \
-    if (prlsdkGetStatsParam(dom, NAME, &VALUE) < 0)                 \
+    if (prlsdkExtractStatsParam(sdkstats, NAME, &VALUE) < 0)        \
         goto cleanup;                                               \
 
 #define PRLSDK_MEMORY_STAT_SET(TAG, VALUE)                          \

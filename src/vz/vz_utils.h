@@ -94,21 +94,11 @@ typedef struct _vzConn vzConn;
 typedef struct _vzConn *vzConnPtr;
 
 
-struct _vzCountersCache {
-    PRL_HANDLE stats;
-    virCond cond;
-    /* = -1 - unsubscribed
-       > -1 - subscribed */
-    int count;
-};
-
-typedef struct _vzCountersCache vzCountersCache;
-
 struct vzDomObj {
     int id;
     char *home;
     PRL_HANDLE sdkdom;
-    vzCountersCache cache;
+    PRL_HANDLE stats;
 };
 
 typedef struct vzDomObj *vzDomObjPtr;

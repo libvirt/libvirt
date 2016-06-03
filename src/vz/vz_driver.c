@@ -616,10 +616,13 @@ vzDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
     if (virDomainObjIsActive(dom)) {
         unsigned long long vtime;
+        vzDomObjPtr privdom;
         size_t i;
 
+        privdom = dom->privateData;
+
         for (i = 0; i < virDomainDefGetVcpus(dom->def); ++i) {
-            if (prlsdkGetVcpuStats(dom, i, &vtime) < 0) {
+            if (prlsdkGetVcpuStats(privdom->stats, i, &vtime) < 0) {
                 virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                                _("cannot read cputime for domain"));
                 goto cleanup;
@@ -890,11 +893,15 @@ vzDomainGetVcpus(virDomainPtr domain,
 
     if (maxinfo >= 1) {
         if (info != NULL) {
+        vzDomObjPtr privdom;
+
             memset(info, 0, sizeof(*info) * maxinfo);
+            privdom = dom->privateData;
+
             for (i = 0; i < maxinfo; i++) {
                 info[i].number = i;
                 info[i].state = VIR_VCPU_RUNNING;
-                if (prlsdkGetVcpuStats(dom, i, &info[i].cpuTime) < 0)
+                if (prlsdkGetVcpuStats(privdom->stats, i, &info[i].cpuTime) < 0)
                     goto cleanup;
             }
         }
@@ -1276,6 +1283,7 @@ vzDomainBlockStats(virDomainPtr domain, const char *path,
                    virDomainBlockStatsPtr stats)
 {
     virDomainObjPtr dom = NULL;
+    vzDomObjPtr privdom;
     int ret = -1;
     size_t i;
     int idx;
@@ -1283,12 +1291,14 @@ vzDomainBlockStats(virDomainPtr domain, const char *path,
     if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
+    privdom = dom->privateData;
+
     if (*path) {
         if ((idx = virDomainDiskIndexByName(dom->def, path, false)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG, _("invalid path: %s"), path);
             goto cleanup;
         }
-        if (prlsdkGetBlockStats(dom, dom->def->disks[idx], stats) < 0)
+        if (prlsdkGetBlockStats(privdom->stats, dom->def->disks[idx], stats) < 0)
             goto cleanup;
     } else {
         virDomainBlockStatsStruct s;
@@ -1301,7 +1311,7 @@ vzDomainBlockStats(virDomainPtr domain, const char *path,
 #undef PARALLELS_ZERO_STATS
 
         for (i = 0; i < dom->def->ndisks; i++) {
-            if (prlsdkGetBlockStats(dom, dom->def->disks[i], &s) < 0)
+            if (prlsdkGetBlockStats(privdom->stats, dom->def->disks[i], &s) < 0)
                 goto cleanup;
 
 #define PARALLELS_SUM_STATS(VAR, TYPE, NAME)        \
@@ -1379,12 +1389,15 @@ vzDomainInterfaceStats(virDomainPtr domain,
                          virDomainInterfaceStatsPtr stats)
 {
     virDomainObjPtr dom = NULL;
+    vzDomObjPtr privdom;
     int ret;
 
     if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
-    ret = prlsdkGetNetStats(dom, path, stats);
+    privdom = dom->privateData;
+
+    ret = prlsdkGetNetStats(privdom->stats, privdom->sdkdom, path, stats);
     virDomainObjEndAPI(&dom);
 
     return ret;
@@ -1397,13 +1410,16 @@ vzDomainMemoryStats(virDomainPtr domain,
                     unsigned int flags)
 {
     virDomainObjPtr dom = NULL;
+    vzDomObjPtr privdom;
     int ret = -1;
 
     virCheckFlags(0, -1);
     if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
-    ret = prlsdkGetMemoryStats(dom, stats, nr_stats);
+    privdom = dom->privateData;
+
+    ret = prlsdkGetMemoryStats(privdom->stats, stats, nr_stats);
     virDomainObjEndAPI(&dom);
 
     return ret;

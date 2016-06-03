@@ -67,17 +67,17 @@ prlsdkAttachVolume(vzDriverPtr driver, virDomainObjPtr dom, virDomainDiskDefPtr 
 int
 prlsdkDetachVolume(virDomainObjPtr dom, virDomainDiskDefPtr disk);
 int
-prlsdkGetBlockStats(virDomainObjPtr dom, virDomainDiskDefPtr disk, virDomainBlockStatsPtr stats);
+prlsdkGetBlockStats(PRL_HANDLE sdkstats, virDomainDiskDefPtr disk, virDomainBlockStatsPtr stats);
 int
 prlsdkAttachNet(vzDriverPtr driver, virDomainObjPtr dom, virDomainNetDefPtr net);
 int
 prlsdkDetachNet(vzDriverPtr driver, virDomainObjPtr dom, virDomainNetDefPtr net);
 int
-prlsdkGetNetStats(virDomainObjPtr dom, const char *path, virDomainInterfaceStatsPtr stats);
+prlsdkGetNetStats(PRL_HANDLE sdkstas, PRL_HANDLE sdkdom, const char *path, virDomainInterfaceStatsPtr stats);
 int
-prlsdkGetVcpuStats(virDomainObjPtr dom, int idx, unsigned long long *time);
+prlsdkGetVcpuStats(PRL_HANDLE sdkstas, int idx, unsigned long long *time);
 int
-prlsdkGetMemoryStats(virDomainObjPtr dom, virDomainMemoryStatPtr stats, unsigned int nr_stats);
+prlsdkGetMemoryStats(PRL_HANDLE sdkstas, virDomainMemoryStatPtr stats, unsigned int nr_stats);
 void
 prlsdkDomObjFreePrivate(void *p);
 /* memsize is in MiB */
