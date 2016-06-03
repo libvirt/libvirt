@@ -1488,42 +1488,38 @@ static void udevPCITranslateDeinit(void)
 
 static int nodeStateCleanup(void)
 {
-    int ret = 0;
-
     udevPrivate *priv = NULL;
     struct udev_monitor *udev_monitor = NULL;
     struct udev *udev = NULL;
 
-    if (driver) {
-        nodeDeviceLock();
+    if (!driver)
+        return -1;
 
-        priv = driver->privateData;
+    nodeDeviceLock();
 
-        if (priv->watch != -1)
-            virEventRemoveHandle(priv->watch);
+    priv = driver->privateData;
 
-        udev_monitor = DRV_STATE_UDEV_MONITOR(driver);
+    if (priv->watch != -1)
+        virEventRemoveHandle(priv->watch);
 
-        if (udev_monitor != NULL) {
-            udev = udev_monitor_get_udev(udev_monitor);
-            udev_monitor_unref(udev_monitor);
-        }
+    udev_monitor = DRV_STATE_UDEV_MONITOR(driver);
 
-        if (udev != NULL)
-            udev_unref(udev);
-
-        virNodeDeviceObjListFree(&driver->devs);
-        nodeDeviceUnlock();
-        virMutexDestroy(&driver->lock);
-        VIR_FREE(driver);
-        VIR_FREE(priv);
-
-        udevPCITranslateDeinit();
-    } else {
-        ret = -1;
+    if (udev_monitor != NULL) {
+        udev = udev_monitor_get_udev(udev_monitor);
+        udev_monitor_unref(udev_monitor);
     }
 
-    return ret;
+    if (udev != NULL)
+        udev_unref(udev);
+
+    virNodeDeviceObjListFree(&driver->devs);
+    nodeDeviceUnlock();
+    virMutexDestroy(&driver->lock);
+    VIR_FREE(driver);
+    VIR_FREE(priv);
+
+    udevPCITranslateDeinit();
+    return 0;
 }
 
 
