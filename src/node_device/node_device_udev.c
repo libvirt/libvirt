@@ -429,33 +429,14 @@ static int udevProcessPCI(struct udev_device *device,
         goto out;
     }
 
-    p = strrchr(syspath, '/');
-
-    if ((p == NULL) || (udevStrToLong_ui(p+1,
-                                         &p,
-                                         16,
-                                         &data->pci_dev.domain) == -1)) {
-        goto out;
-    }
-
-    if ((p == NULL) || (udevStrToLong_ui(p+1,
-                                         &p,
-                                         16,
-                                         &data->pci_dev.bus) == -1)) {
-        goto out;
-    }
-
-    if ((p == NULL) || (udevStrToLong_ui(p+1,
-                                         &p,
-                                         16,
-                                         &data->pci_dev.slot) == -1)) {
-        goto out;
-    }
-
-    if ((p == NULL) || (udevStrToLong_ui(p+1,
-                                         &p,
-                                         16,
-                                         &data->pci_dev.function) == -1)) {
+    if ((p = strrchr(syspath, '/')) == NULL ||
+        virStrToLong_ui(p + 1, &p, 16, &data->pci_dev.domain) < 0 || p == NULL ||
+        virStrToLong_ui(p + 1, &p, 16, &data->pci_dev.bus) < 0 || p == NULL ||
+        virStrToLong_ui(p + 1, &p, 16, &data->pci_dev.slot) < 0 || p == NULL ||
+        virStrToLong_ui(p + 1, &p, 16, &data->pci_dev.function) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to parse the PCI address from sysfs path: '%s'"),
+                       syspath);
         goto out;
     }
 
@@ -716,16 +697,11 @@ static int udevProcessSCSIHost(struct udev_device *device ATTRIBUTE_UNUSED,
 
     filename = last_component(def->sysfs_path);
 
-    if (!(str = STRSKIP(filename, "host"))) {
-        VIR_ERROR(_("SCSI host found, but its udev name '%s' does "
-                    "not begin with 'host'"), filename);
-        goto out;
-    }
-
-    if (udevStrToLong_ui(str,
-                         NULL,
-                         0,
-                         &data->scsi_host.host) == -1) {
+    if (!(str = STRSKIP(filename, "host")) ||
+        virStrToLong_ui(str, NULL, 0, &data->scsi_host.host) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to parse SCSI host '%s'"),
+                       filename);
         goto out;
     }
 
@@ -831,28 +807,14 @@ static int udevProcessSCSIDevice(struct udev_device *device ATTRIBUTE_UNUSED,
 
     filename = last_component(def->sysfs_path);
 
-    if (udevStrToLong_ui(filename, &p, 10, &data->scsi.host) == -1)
-        goto out;
-
-    if ((p == NULL) || (udevStrToLong_ui(p+1,
-                                         &p,
-                                         10,
-                                         &data->scsi.bus) == -1)) {
-        goto out;
-    }
-
-    if ((p == NULL) || (udevStrToLong_ui(p+1,
-                                         &p,
-                                         10,
-                                         &data->scsi.target) == -1)) {
-        goto out;
-    }
-
-    if ((p == NULL) || (udevStrToLong_ui(p+1,
-                                         &p,
-                                         10,
-                                         &data->scsi.lun) == -1)) {
-        goto out;
+    if (virStrToLong_ui(filename, &p, 10, &data->scsi.host) < 0 || p == NULL ||
+        virStrToLong_ui(p + 1, &p, 10, &data->scsi.bus) < 0 || p == NULL ||
+        virStrToLong_ui(p + 1, &p, 10, &data->scsi.target) < 0 || p == NULL ||
+        virStrToLong_ui(p + 1, &p, 10, &data->scsi.lun) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to parse the SCSI address from filename: '%s'"),
+                       filename);
+        return -1;
     }
 
     switch (udevGetUintSysfsAttr(device, "type", &tmp, 0)) {
