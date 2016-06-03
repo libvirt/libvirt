@@ -939,28 +939,22 @@ static int udevProcessSD(struct udev_device *device,
  * storage device it is from other information that is provided. */
 static int udevKludgeStorageType(virNodeDeviceDefPtr def)
 {
-    int ret = -1;
-
     VIR_DEBUG("Could not find definitive storage type for device "
               "with sysfs path '%s', trying to guess it",
               def->sysfs_path);
 
-    if (STRPREFIX(def->caps->data.storage.block, "/dev/vd")) {
-        /* virtio disk */
-        ret = VIR_STRDUP(def->caps->data.storage.drive_type, "disk");
-    }
-
-    if (ret != 0) {
-        VIR_DEBUG("Could not determine storage type for device "
-                  "with sysfs path '%s'", def->sysfs_path);
-    } else {
+    /* virtio disk */
+    if (STRPREFIX(def->caps->data.storage.block, "/dev/vd") &&
+        VIR_STRDUP(def->caps->data.storage.drive_type, "disk") > 0) {
         VIR_DEBUG("Found storage type '%s' for device "
                   "with sysfs path '%s'",
                   def->caps->data.storage.drive_type,
                   def->sysfs_path);
+        return 0;
     }
-
-    return ret;
+    VIR_DEBUG("Could not determine storage type "
+              "for device with sysfs path '%s'", def->sysfs_path);
+    return -1;
 }
 
 
