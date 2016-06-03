@@ -99,6 +99,9 @@ static virPerfEventPtr
 virPerfGetEvent(virPerfPtr perf,
                 virPerfEventType type)
 {
+    if (!perf)
+        return NULL;
+
     if (type >= VIR_PERF_EVENT_LAST) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Event '%d' is not supported"),
