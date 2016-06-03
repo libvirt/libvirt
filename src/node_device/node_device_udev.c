@@ -1576,7 +1576,6 @@ udevGetDMIData(virNodeDevCapDataPtr data)
 {
     struct udev *udev = NULL;
     struct udev_device *device = NULL;
-    char *tmp = NULL;
 
     udev = udev_monitor_get_udev(DRV_STATE_UDEV_MONITOR(driver));
 
@@ -1637,7 +1636,6 @@ udevGetDMIData(virNodeDevCapDataPtr data)
     }
 
  out:
-    VIR_FREE(tmp);
     if (device != NULL)
         udev_device_unref(device);
     return;
