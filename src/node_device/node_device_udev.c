@@ -1680,7 +1680,7 @@ static int nodeStateInitialize(bool privileged,
 {
     udevPrivate *priv = NULL;
     struct udev *udev = NULL;
-    int ret = 0;
+    int ret = -1;
 
 #if defined __s390__ || defined __s390x_
     /* On s390(x) system there is no PCI bus.
@@ -1696,23 +1696,19 @@ static int nodeStateInitialize(bool privileged,
             char ebuf[256];
             VIR_ERROR(_("Failed to initialize libpciaccess: %s"),
                       virStrerror(pciret, ebuf, sizeof(ebuf)));
-            ret = -1;
             goto out;
         }
     }
 #endif
 
-    if (VIR_ALLOC(priv) < 0) {
-        ret = -1;
+    if (VIR_ALLOC(priv) < 0)
         goto out;
-    }
 
     priv->watch = -1;
     priv->privileged = privileged;
 
     if (VIR_ALLOC(driver) < 0) {
         VIR_FREE(priv);
-        ret = -1;
         goto out;
     }
 
@@ -1720,7 +1716,6 @@ static int nodeStateInitialize(bool privileged,
         VIR_ERROR(_("Failed to initialize mutex for driver"));
         VIR_FREE(priv);
         VIR_FREE(driver);
-        ret = -1;
         goto out;
     }
 
@@ -1742,7 +1737,6 @@ static int nodeStateInitialize(bool privileged,
     if (priv->udev_monitor == NULL) {
         VIR_FREE(priv);
         VIR_ERROR(_("udev_monitor_new_from_netlink returned NULL"));
-        ret = -1;
         goto out_unlock;
     }
 
@@ -1762,23 +1756,19 @@ static int nodeStateInitialize(bool privileged,
     priv->watch = virEventAddHandle(udev_monitor_get_fd(priv->udev_monitor),
                                     VIR_EVENT_HANDLE_READABLE,
                                     udevEventHandleCallback, NULL, NULL);
-    if (priv->watch == -1) {
-        ret = -1;
+    if (priv->watch == -1)
         goto out_unlock;
-    }
 
     /* Create a fictional 'computer' device to root the device tree. */
-    if (udevSetupSystemDev() != 0) {
-        ret = -1;
+    if (udevSetupSystemDev() != 0)
         goto out_unlock;
-    }
 
     /* Populate with known devices */
 
-    if (udevEnumerateDevices(udev) != 0) {
-        ret = -1;
+    if (udevEnumerateDevices(udev) != 0)
         goto out_unlock;
-    }
+
+    ret = 0;
 
  out_unlock:
     nodeDeviceUnlock();
