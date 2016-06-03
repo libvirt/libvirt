@@ -1474,6 +1474,18 @@ static int udevEnumerateDevices(struct udev *udev)
 }
 
 
+static void udevPCITranslateDeinit(void)
+{
+#if defined __s390__ || defined __s390x_
+    /* Nothing was initialized, nothing needs to be cleaned up */
+#else
+    /* pci_system_cleanup returns void */
+    pci_system_cleanup();
+#endif
+    return;
+}
+
+
 static int nodeStateCleanup(void)
 {
     int ret = 0;
@@ -1509,13 +1521,7 @@ static int nodeStateCleanup(void)
         ret = -1;
     }
 
-#if defined __s390__ || defined __s390x_
-    /* Nothing was initialized, nothing needs to be cleaned up */
-#else
-    /* pci_system_cleanup returns void */
-    pci_system_cleanup();
-#endif
-
+    udevPCITranslateDeinit();
     return ret;
 }
 
@@ -1674,14 +1680,8 @@ static int udevSetupSystemDev(void)
     return ret;
 }
 
-static int nodeStateInitialize(bool privileged,
-                               virStateInhibitCallback callback ATTRIBUTE_UNUSED,
-                               void *opaque ATTRIBUTE_UNUSED)
+static int udevPCITranslateInit(bool privileged ATTRIBUTE_UNUSED)
 {
-    udevPrivate *priv = NULL;
-    struct udev *udev = NULL;
-    int ret = -1;
-
 #if defined __s390__ || defined __s390x_
     /* On s390(x) system there is no PCI bus.
      * Therefore there is nothing to initialize here. */
@@ -1696,10 +1696,23 @@ static int nodeStateInitialize(bool privileged,
             char ebuf[256];
             VIR_ERROR(_("Failed to initialize libpciaccess: %s"),
                       virStrerror(pciret, ebuf, sizeof(ebuf)));
-            goto out;
+            return -1;
         }
     }
 #endif
+    return 0;
+}
+
+static int nodeStateInitialize(bool privileged,
+                               virStateInhibitCallback callback ATTRIBUTE_UNUSED,
+                               void *opaque ATTRIBUTE_UNUSED)
+{
+    udevPrivate *priv = NULL;
+    struct udev *udev = NULL;
+    int ret = -1;
+
+    if (udevPCITranslateInit(privileged) < 0)
+        goto out;
 
     if (VIR_ALLOC(priv) < 0)
         goto out;
