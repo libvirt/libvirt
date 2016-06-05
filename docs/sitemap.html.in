@@ -397,6 +397,10 @@
                 <span>Adding new public libvirt APIs</span>
               </li>
               <li>
+                <a href="internals/eventloop.html">Event loop and worker pool</a>
+                <span>Libvirt's event loop and worker pool mode</span>
+              </li>
+              <li>
                 <a href="internals/command.html">Spawning commands</a>
                 <span>Spawning commands from libvirt driver code</span>
               </li>
