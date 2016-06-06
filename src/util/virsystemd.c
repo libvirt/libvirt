@@ -21,8 +21,9 @@
 
 #include <config.h>
 
-#ifdef WITH_SYSTEMD_DAEMON
-# include <systemd/sd-daemon.h>
+#include <sys/socket.h>
+#ifdef HAVE_SYS_UN_H
+# include <sys/un.h>
 #endif
 
 #include "virsystemd.h"
@@ -34,6 +35,7 @@
 #include "virutil.h"
 #include "virlog.h"
 #include "virerror.h"
+#include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_SYSTEMD
 
@@ -480,9 +482,50 @@ int virSystemdTerminateMachine(const char *name)
 void
 virSystemdNotifyStartup(void)
 {
-#ifdef WITH_SYSTEMD_DAEMON
-    sd_notify(0, "READY=1");
-#endif
+#ifdef HAVE_SYS_UN_H
+    const char *path;
+    const char *msg = "READY=1";
+    int fd;
+    struct sockaddr_un un = {
+        .sun_family = AF_UNIX,
+    };
+    struct iovec iov = {
+        .iov_base = (char *)msg,
+        .iov_len = strlen(msg),
+    };
+    struct msghdr mh = {
+        .msg_name = &un,
+        .msg_namelen = sizeof(un),
+        .msg_iov = &iov,
+        .msg_iovlen = 1,
+    };
+
+    if (!(path = virGetEnvBlockSUID("NOTIFY_SOCKET"))) {
+        VIR_DEBUG("Skipping systemd notify, not requested");
+        return;
+    }
+
+    /* NB sun_path field is *not* NUL-terminated, hence >, not >= */
+    if (strlen(path) > sizeof(un.sun_path)) {
+        VIR_WARN("Systemd notify socket path '%s' too long", path);
+        return;
+    }
+
+    memcpy(un.sun_path, path, strlen(path));
+    if (un.sun_path[0] == '@')
+        un.sun_path[0] = '\0';
+
+    fd = socket(AF_UNIX, SOCK_DGRAM, 0);
+    if (fd < 0) {
+        VIR_WARN("Unable to create socket FD");
+        return;
+    }
+
+    if (sendmsg(fd, &mh, MSG_NOSIGNAL) < 0)
+        VIR_WARN("Failed to notify systemd");
+
+    VIR_FORCE_CLOSE(fd);
+#endif /* HAVE_SYS_UN_H */
 }
 
 static int
