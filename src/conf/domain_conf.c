@@ -1745,6 +1745,7 @@ virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->product);
     VIR_FREE(def->domain_name);
     VIR_FREE(def->blkdeviotune.group_name);
+    VIR_FREE(def->virtio);
     virDomainDeviceInfoClear(&def->info);
     virObjectUnref(def->privateData);
 
@@ -4466,6 +4467,10 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
                 return -1;
             }
         }
+
+        if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO &&
+            virDomainCheckVirtioOptions(disk->virtio) < 0)
+            return -1;
 
         if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
             virDomainDiskDefAssignAddress(xmlopt, disk, def) < 0)
@@ -8446,6 +8451,9 @@ virDomainDiskDefParseXML(virDomainXMLOptionPtr xmlopt,
             /* boot is parsed as part of virDomainDeviceInfoParseXML */
         }
     }
+
+    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
+        goto error;
 
     /* Disk volume types will have authentication information handled in
      * virStorageTranslateDiskSourcePool
@@ -19172,6 +19180,10 @@ virDomainDiskDefCheckABIStability(virDomainDiskDefPtr src,
         return false;
     }
 
+    if (src->virtio && dst->virtio &&
+        !virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
+        return false;
+
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
         return false;
 
@@ -21360,6 +21372,9 @@ virDomainDiskDefFormat(virBufferPtr buf,
         virBufferAsprintf(&driverBuf, " iothread='%u'", def->iothread);
     if (def->detect_zeroes)
         virBufferAsprintf(&driverBuf, " detect_zeroes='%s'", detect_zeroes);
+
+    virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
+
     if (virBufferUse(&driverBuf)) {
         virBufferAddLit(buf, "<driver");
         virBufferAddBuffer(buf, &driverBuf);

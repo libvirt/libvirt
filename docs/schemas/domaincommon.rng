@@ -1770,6 +1770,7 @@
       <optional>
         <ref name="detect_zeroes"/>
       </optional>
+      <ref name="virtioOptions"/>
       <empty/>
     </element>
   </define>

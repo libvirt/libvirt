@@ -3011,6 +3011,11 @@
             <code>bus</code> and "pci" or "ccw" <code>address</code> types.
             <span class='since'>Since 1.2.8 (QEMU 2.1)</span>
           </li>
+          <li>
+          For virtio disks,
+          <a href="#elementsVirtio">Virtio-specific options</a> can also be
+          set. (<span class="since">Since 3.5.0</span>)
+          </li>
         </ul>
       </dd>
       <dt><code>backenddomain</code></dt>
