@@ -4966,6 +4966,11 @@
       <interleave>
         <ref name="rng-backend"/>
         <optional>
+          <element name="driver">
+            <ref name="virtioOptions"/>
+          </element>
+        </optional>
+        <optional>
           <ref name="rng-rate"/>
         </optional>
         <optional>

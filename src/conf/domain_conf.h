@@ -2020,6 +2020,7 @@ struct _virDomainRNGDef {
     } source;
 
     virDomainDeviceInfo info;
+    virDomainVirtioOptionsPtr virtio;
 };
 
 typedef enum {

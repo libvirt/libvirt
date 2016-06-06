@@ -80,6 +80,7 @@
     </memballoon>
     <rng model='virtio'>
       <backend model='random'>/dev/random</backend>
+      <driver iommu='on' ats='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>
     </rng>
   </devices>
