@@ -230,6 +230,19 @@ Note that parameter values must be
       </tr>
       <tr>
         <td>
+          <code>tls_priority</code>
+        </td>
+        <td> tls </td>
+        <td>
+  A vaid GNUTLS priority string
+</td>
+      </tr>
+      <tr>
+        <td colspan="2"/>
+        <td> Example: <code>tls_priority=NORMAL:-VERS-SSL3.0</code> </td>
+      </tr>
+      <tr>
+        <td>
           <code>command</code>
         </td>
         <td> ssh, ext </td>

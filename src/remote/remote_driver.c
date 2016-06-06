@@ -652,6 +652,7 @@ doRemoteOpen(virConnectPtr conn,
 #ifndef WIN32
     char *daemonPath = NULL;
 #endif
+    char *tls_priority = NULL;
 
     /* We handle *ALL* URIs here. The caller has rejected any
      * URIs we don't care about */
@@ -774,6 +775,7 @@ doRemoteOpen(virConnectPtr conn,
             EXTRACT_URI_ARG_STR("pkipath", pkipath);
             EXTRACT_URI_ARG_STR("known_hosts", knownHosts);
             EXTRACT_URI_ARG_STR("known_hosts_verify", knownHostsVerify);
+            EXTRACT_URI_ARG_STR("tls_priority", tls_priority);
 
             EXTRACT_URI_ARG_BOOL("no_sanity", sanity);
             EXTRACT_URI_ARG_BOOL("no_verify", verify);
@@ -845,12 +847,13 @@ doRemoteOpen(virConnectPtr conn,
 #ifdef WITH_GNUTLS
         priv->tls = virNetTLSContextNewClientPath(pkipath,
                                                   geteuid() != 0 ? true : false,
-                                                  NULL,
+                                                  tls_priority,
                                                   sanity, verify);
         if (!priv->tls)
             goto failed;
         priv->is_secure = 1;
 #else
+        (void)tls_priority;
         (void)sanity;
         (void)verify;
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -1126,6 +1129,7 @@ doRemoteOpen(virConnectPtr conn,
     VIR_FREE(username);
     VIR_FREE(port);
     VIR_FREE(pkipath);
+    VIR_FREE(tls_priority);
     VIR_FREE(knownHostsVerify);
     VIR_FREE(knownHosts);
 #ifndef WIN32
