@@ -3219,6 +3219,11 @@
   <define name="video">
     <element name="video">
       <optional>
+        <element name="driver">
+          <ref name="virtioOptions"/>
+        </element>
+      </optional>
+      <optional>
         <element name="model">
           <choice>
             <attribute name="type">

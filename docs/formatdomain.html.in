@@ -6136,6 +6136,18 @@ qemu-kvm -net nic,model=? /dev/null
         The optional <code>address</code> sub-element can be used to
         tie the video device to a particular PCI slot.
       </dd>
+
+      <dt><code>driver</code></dt>
+      <dd>
+        The subelement <code>driver</code> can be used to tune the device:
+        <dl>
+          <dt>virtio options</dt>
+          <dd>
+          <a href="#elementsVirtio">Virtio-specific options</a> can also be
+          set. (<span class="since">Since 3.5.0</span>)
+          </dd>
+        </dl>
+      </dd>
     </dl>
 
     <h4><a name="elementsConsole">Consoles, serial, parallel &amp; channel devices</a></h4>
