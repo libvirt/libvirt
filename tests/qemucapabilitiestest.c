@@ -35,56 +35,6 @@ struct _testQemuData {
     const char *base;
 };
 
-static qemuMonitorTestPtr
-testQemuFeedMonitor(char *replies,
-                    virDomainXMLOptionPtr xmlopt)
-{
-    qemuMonitorTestPtr test = NULL;
-    char *tmp = replies;
-    char *singleReply = tmp;
-
-    /* Our JSON parser expects replies to be separated by a newline character.
-     * Hence we must preprocess the file a bit. */
-    while ((tmp = strchr(tmp, '\n'))) {
-        /* It is safe to touch tmp[1] since all strings ends with '\0'. */
-        bool eof = !tmp[1];
-
-        if (*(tmp + 1) != '\n') {
-            *tmp = ' ';
-            tmp++;
-        } else {
-            /* Cut off a single reply. */
-            *(tmp + 1) = '\0';
-
-            if (test) {
-                if (qemuMonitorTestAddItem(test, NULL, singleReply) < 0)
-                    goto error;
-            } else {
-                /* Create new mocked monitor with our greeting */
-                if (!(test = qemuMonitorTestNew(true, xmlopt, NULL, NULL, singleReply)))
-                    goto error;
-            }
-
-            if (!eof) {
-                /* Move the @tmp and @singleReply. */
-                tmp += 2;
-                singleReply = tmp;
-            }
-        }
-
-        if (eof)
-            break;
-    }
-
-    if (test && qemuMonitorTestAddItem(test, NULL, singleReply) < 0)
-        goto error;
-
-    return test;
-
- error:
-    qemuMonitorTestFree(test);
-    return NULL;
-}
 
 static int
 testQemuCaps(const void *opaque)
@@ -93,7 +43,6 @@ testQemuCaps(const void *opaque)
     const testQemuData *data = opaque;
     char *repliesFile = NULL;
     char *capsFile = NULL;
-    char *replies = NULL;
     qemuMonitorTestPtr mon = NULL;
     virQEMUCapsPtr capsActual = NULL;
     char *actual = NULL;
@@ -104,10 +53,7 @@ testQemuCaps(const void *opaque)
                     abs_srcdir, data->base, data->archName) < 0)
         goto cleanup;
 
-    if (virTestLoadFile(repliesFile, &replies) < 0)
-        goto cleanup;
-
-    if (!(mon = testQemuFeedMonitor(replies, data->xmlopt)))
+    if (!(mon = qemuMonitorTestNewFromFile(repliesFile, data->xmlopt)))
         goto cleanup;
 
     if (!(capsActual = virQEMUCapsNew()) ||
@@ -125,7 +71,6 @@ testQemuCaps(const void *opaque)
  cleanup:
     VIR_FREE(repliesFile);
     VIR_FREE(capsFile);
-    VIR_FREE(replies);
     VIR_FREE(actual);
     qemuMonitorTestFree(mon);
     virObjectUnref(capsActual);

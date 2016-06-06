@@ -24,6 +24,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "testutils.h"
 #include "qemumonitortestutils.h"
 
 #include "virthread.h"
@@ -925,6 +926,67 @@ qemuMonitorTestNew(bool json,
     qemuMonitorTestFree(test);
     return NULL;
 }
+
+
+qemuMonitorTestPtr
+qemuMonitorTestNewFromFile(const char *fileName,
+                           virDomainXMLOptionPtr xmlopt)
+{
+    qemuMonitorTestPtr test = NULL;
+    char *json = NULL;
+    char *tmp;
+    char *singleReply;
+
+    if (virTestLoadFile(fileName, &json) < 0)
+        goto cleanup;
+
+    /* Our JSON parser expects replies to be separated by a newline character.
+     * Hence we must preprocess the file a bit. */
+    tmp = singleReply = json;
+    while ((tmp = strchr(tmp, '\n'))) {
+        /* It is safe to touch tmp[1] since all strings ends with '\0'. */
+        bool eof = !tmp[1];
+
+        if (*(tmp + 1) != '\n') {
+            *tmp = ' ';
+            tmp++;
+        } else {
+            /* Cut off a single reply. */
+            *(tmp + 1) = '\0';
+
+            if (test) {
+                if (qemuMonitorTestAddItem(test, NULL, singleReply) < 0)
+                    goto error;
+            } else {
+                /* Create new mocked monitor with our greeting */
+                if (!(test = qemuMonitorTestNew(true, xmlopt, NULL, NULL, singleReply)))
+                    goto error;
+            }
+
+            if (!eof) {
+                /* Move the @tmp and @singleReply. */
+                tmp += 2;
+                singleReply = tmp;
+            }
+        }
+
+        if (eof)
+            break;
+    }
+
+    if (test && qemuMonitorTestAddItem(test, NULL, singleReply) < 0)
+        goto error;
+
+ cleanup:
+    VIR_FREE(json);
+    return test;
+
+ error:
+    qemuMonitorTestFree(test);
+    test = NULL;
+    goto cleanup;
+}
+
 
 qemuMonitorTestPtr
 qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt)
