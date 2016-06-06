@@ -36,12 +36,13 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
     </controller>
     <filesystem type='mount' accessmode='passthrough'>
+      <driver iommu='on' ats='on'/>
       <source dir='/export/fs1'/>
       <target dir='fs1'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </filesystem>
     <filesystem type='mount' accessmode='mapped'>
-      <driver type='path' wrpolicy='immediate'/>
+      <driver type='path' wrpolicy='immediate' iommu='on' ats='on'/>
       <source dir='/export/fs2'/>
       <target dir='fs2'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>

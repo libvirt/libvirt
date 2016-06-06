@@ -1918,6 +1918,7 @@ void virDomainFSDefFree(virDomainFSDefPtr def)
     virStorageSourceFree(def->src);
     VIR_FREE(def->dst);
     virDomainDeviceInfoClear(&def->info);
+    VIR_FREE(def->virtio);
 
     VIR_FREE(def);
 }
@@ -9477,6 +9478,9 @@ virDomainFSDefParseXML(xmlNodePtr node,
                             1024, ULLONG_MAX) < 0)
             goto error;
     }
+
+    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
+        goto error;
 
     def->src->path = source;
     source = NULL;
@@ -19272,6 +19276,10 @@ virDomainFsDefCheckABIStability(virDomainFSDefPtr src,
         return false;
     }
 
+    if (src->virtio && dst->virtio &&
+        !virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
+        return false;
+
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
         return false;
 
@@ -21756,6 +21764,8 @@ virDomainFSDefFormat(virBufferPtr buf,
             virBufferAsprintf(&driverBuf, " wrpolicy='%s'", wrpolicy);
 
     }
+
+    virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
 
     if (virBufferUse(&driverBuf)) {
         virBufferAddLit(buf, "<driver");

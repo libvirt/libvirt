@@ -2256,6 +2256,7 @@
           <value>immediate</value>
         </attribute>
       </optional>
+      <ref name='virtioOptions'/>
       <empty/>
     </element>
   </define>

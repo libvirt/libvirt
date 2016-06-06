@@ -3296,6 +3296,11 @@
             or "handle", but no formats. Virtuozzo driver supports
             a type of "ploop" with a format of "ploop".
           </li>
+          <li>
+          For virtio-backed devices,
+          <a href="#elementsVirtio">Virtio-specific options</a> can also be
+          set. (<span class="since">Since 3.5.0</span>)
+          </li>
         </ul>
       </dd>
 
