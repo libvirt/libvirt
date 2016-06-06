@@ -8827,7 +8827,7 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
 
     vlanNode = virXPathNode("./vlan", ctxt);
     if (vlanNode && virNetDevVlanParse(vlanNode, ctxt, &actual->vlan) < 0)
-       goto error;
+        goto error;
 
     *def = actual;
     actual = NULL;
