@@ -1339,6 +1339,8 @@ mymain(void)
     DO_TEST("cpu-Haswell-noTSX", QEMU_CAPS_KVM);
     driver.caps->host.cpu = cpuDefault;
 
+    DO_TEST("encrypted-disk", NONE);
+
     DO_TEST("memtune", NONE);
     DO_TEST("memtune-unlimited", NONE);
     DO_TEST("blkiotune", NONE);
