@@ -206,6 +206,12 @@
     %define enable_werror --disable-werror
 %endif
 
+%if 0%{?fedora} >= 21
+    %define tls_priority "@SYSTEM"
+%else
+    %define tls_priority "NORMAL"
+%endif
+
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
@@ -1152,6 +1158,7 @@ rm -f po/stamp-po
            %{arg_packager_version} \
            --with-qemu-user=%{qemu_user} \
            --with-qemu-group=%{qemu_group} \
+           --with-tls-priority=%{tls_priority} \
            %{?arg_loader_nvram} \
            %{?enable_werror} \
            --enable-expensive-tests \
