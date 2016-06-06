@@ -117,7 +117,7 @@ fi
 
 dnl Required minimum versions of all libs we depend on
 LIBXML_REQUIRED="2.6.0"
-GNUTLS_REQUIRED="1.0.25"
+GNUTLS_REQUIRED="2.2.0"
 POLKIT_REQUIRED="0.6"
 PARTED_REQUIRED="1.8.0"
 DEVMAPPER_REQUIRED=1.0.0

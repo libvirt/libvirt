@@ -29,7 +29,6 @@
 # include <gnutls/crypto.h>
 #endif
 #include <gnutls/x509.h>
-#include "gnutls_1_0_compat.h"
 
 #include "virnettlscontext.h"
 #include "virstring.h"
@@ -170,14 +169,6 @@ static int virNetTLSContextCheckCertTimes(gnutls_x509_crt_t cert,
 }
 
 
-#ifndef GNUTLS_1_0_COMPAT
-/*
- * The gnutls_x509_crt_get_basic_constraints function isn't
- * available in GNUTLS 1.0.x branches. This isn't critical
- * though, since gnutls_certificate_verify_peers2 will do
- * pretty much the same check at runtime, so we can just
- * disable this code
- */
 static int virNetTLSContextCheckCertBasicConstraints(gnutls_x509_crt_t cert,
                                                      const char *certFile,
                                                      bool isServer,
@@ -219,7 +210,6 @@ static int virNetTLSContextCheckCertBasicConstraints(gnutls_x509_crt_t cert,
 
     return 0;
 }
-#endif
 
 
 static int virNetTLSContextCheckCertKeyUsage(gnutls_x509_crt_t cert,
@@ -438,11 +428,9 @@ static int virNetTLSContextCheckCert(gnutls_x509_crt_t cert,
                                        isServer, isCA) < 0)
         return -1;
 
-#ifndef GNUTLS_1_0_COMPAT
     if (virNetTLSContextCheckCertBasicConstraints(cert, certFile,
                                                   isServer, isCA) < 0)
         return -1;
-#endif
 
     if (virNetTLSContextCheckCertKeyUsage(cert, certFile,
                                           isCA) < 0)
@@ -489,10 +477,8 @@ static int virNetTLSContextCheckCertPair(gnutls_x509_crt_t cert,
         if (status & GNUTLS_CERT_REVOKED)
             reason = _("The certificate has been revoked.");
 
-#ifndef GNUTLS_1_0_COMPAT
         if (status & GNUTLS_CERT_INSECURE_ALGORITHM)
             reason = _("The certificate uses an insecure algorithm");
-#endif
 
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Our own certificate %s failed validation against %s: %s"),
@@ -1022,10 +1008,8 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
         if (status & GNUTLS_CERT_REVOKED)
             reason = _("The certificate has been revoked.");
 
-#ifndef GNUTLS_1_0_COMPAT
         if (status & GNUTLS_CERT_INSECURE_ALGORITHM)
             reason = _("The certificate uses an insecure algorithm");
-#endif
 
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Certificate failed validation: %s"),
@@ -1088,13 +1072,11 @@ static int virNetTLSContextValidCertificate(virNetTLSContextPtr ctxt,
             /* !sess->isServer, since on the client, we're validating the
              * server's cert, and on the server, the client's cert
              */
-#ifndef GNUTLS_1_0_COMPAT
             if (virNetTLSContextCheckCertBasicConstraints(cert, "[session]",
                                                           !sess->isServer, false) < 0) {
                 gnutls_x509_crt_deinit(cert);
                 goto authdeny;
             }
-#endif
 
             if (virNetTLSContextCheckCertKeyUsage(cert, "[session]",
                                                   false) < 0) {

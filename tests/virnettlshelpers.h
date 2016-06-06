@@ -22,7 +22,6 @@
 #include <gnutls/x509.h>
 
 #if !defined WIN32 && HAVE_LIBTASN1_H && LIBGNUTLS_VERSION_NUMBER >= 0x020600
-# include "gnutls_1_0_compat.h"
 
 # include <libtasn1.h>
 

@@ -437,7 +437,6 @@ remote/qemu_client_bodies.h: $(srcdir)/rpc/gendispatch.pl \
 	  > $(srcdir)/remote/qemu_client_bodies.h
 
 REMOTE_DRIVER_SOURCES =						\
-		gnutls_1_0_compat.h				\
 		remote/remote_driver.c remote/remote_driver.h	\
 		$(REMOTE_DRIVER_GENERATED)
 
