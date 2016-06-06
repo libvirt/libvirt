@@ -141,6 +141,7 @@ virCloseCallbacksSet(virCloseCallbacksPtr closeCallbacks,
         virObjectRef(vm);
     }
 
+    virObjectRef(closeCallbacks);
     ret = 0;
  cleanup:
     virObjectUnlock(closeCallbacks);
@@ -180,6 +181,8 @@ virCloseCallbacksUnset(virCloseCallbacksPtr closeCallbacks,
     ret = 0;
  cleanup:
     virObjectUnlock(closeCallbacks);
+    if (!ret)
+        virObjectUnref(closeCallbacks);
     return ret;
 }
 
