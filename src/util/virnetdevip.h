@@ -47,6 +47,14 @@ typedef struct {
     virSocketAddr gateway;      /* gateway IP address for ip-route */
 } virNetDevIPRoute, *virNetDevIPRoutePtr;
 
+/* A full set of all IP config info for a network device */
+typedef struct {
+    size_t nips;
+    virNetDevIPAddrPtr *ips;
+    size_t nroutes;
+    virNetDevIPRoutePtr *routes;
+} virNetDevIPInfo, *virNetDevIPInfoPtr;
+
 /* manipulating/querying the netdev */
 int virNetDevIPAddrAdd(const char *ifname,
                        virSocketAddr *addr,
@@ -75,5 +83,8 @@ virSocketAddrPtr virNetDevIPRouteGetAddress(virNetDevIPRoutePtr def);
 int virNetDevIPRouteGetPrefix(virNetDevIPRoutePtr def);
 unsigned int virNetDevIPRouteGetMetric(virNetDevIPRoutePtr def);
 virSocketAddrPtr virNetDevIPRouteGetGateway(virNetDevIPRoutePtr def);
+
+/* virNetDevIPInfo object */
+void virNetDevIPInfoClear(virNetDevIPInfoPtr ip);
 
 #endif /* __VIR_NETDEVIP_H__ */

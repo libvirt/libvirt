@@ -2629,6 +2629,33 @@
       </optional>
     </interleave>
   </define>
+
+  <!--
+      All ip-related info for either the host or guest side of an interface
+  -->
+  <define name="interface-ip-info">
+    <zeroOrMore>
+      <element name="ip">
+        <attribute name="address">
+          <ref name="ipAddr"/>
+        </attribute>
+        <optional>
+          <attribute name="family">
+            <ref name="addr-family"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="prefix">
+            <ref name="ipPrefix"/>
+          </attribute>
+        </optional>
+        <empty/>
+      </element>
+    </zeroOrMore>
+    <zeroOrMore>
+      <ref name="route"/>
+    </zeroOrMore>
+  </define>
   <!--
       An emulator description is just a path to the binary used for the task
     -->

@@ -1931,6 +1931,7 @@ virNetDevBridgeSetVlanFiltering;
 virNetDevIPAddrAdd;
 virNetDevIPAddrDel;
 virNetDevIPAddrGet;
+virNetDevIPInfoClear;
 virNetDevIPRouteAdd;
 virNetDevIPRouteFree;
 virNetDevIPRouteGetAddress;

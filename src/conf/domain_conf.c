@@ -6186,6 +6186,53 @@ virDomainNetIPParseXML(xmlNodePtr node)
     return ret;
 }
 
+
+/* fill in a virNetDevIPInfoPtr from the <route> and <ip>
+ * elements found in the given XML context.
+ *
+ * return 0 on success (including none found) and -1 on failure.
+ */
+static int ATTRIBUTE_UNUSED
+virDomainNetIPInfoParseXML(const char *source,
+                           xmlXPathContextPtr ctxt,
+                           virNetDevIPInfoPtr def)
+{
+    xmlNodePtr *nodes = NULL;
+    virNetDevIPAddrPtr ip = NULL;
+    virNetDevIPRoutePtr route = NULL;
+    int nnodes;
+    int ret = -1;
+    size_t i;
+
+    if ((nnodes = virXPathNodeSet("./ip", ctxt, &nodes)) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nnodes; i++) {
+        if (!(ip = virDomainNetIPParseXML(nodes[i])) ||
+            VIR_APPEND_ELEMENT(def->ips, def->nips, ip) < 0)
+            goto cleanup;
+    }
+    VIR_FREE(nodes);
+
+    if ((nnodes = virXPathNodeSet("./route", ctxt, &nodes)) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nnodes; i++) {
+        if (!(route = virNetDevIPRouteParseXML(source, nodes[i], ctxt)) ||
+            VIR_APPEND_ELEMENT(def->routes, def->nroutes, route) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    if (ret < 0)
+        virNetDevIPInfoClear(def);
+    VIR_FREE(ip);
+    virNetDevIPRouteFree(route);
+    VIR_FREE(nodes);
+    return ret;
+}
+
 static int
 virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
                                 xmlXPathContextPtr ctxt,
@@ -20321,6 +20368,19 @@ virDomainNetRoutesFormat(virBufferPtr buf,
             return -1;
     return 0;
 }
+
+
+static int ATTRIBUTE_UNUSED
+virDomainNetIPInfoFormat(virBufferPtr buf,
+                         virNetDevIPInfoPtr def)
+{
+    if (virDomainNetIPsFormat(buf, def->ips, def->nips) < 0)
+        return -1;
+    if (virDomainNetRoutesFormat(buf, def->routes, def->nroutes) < 0)
+        return -1;
+    return 0;
+}
+
 
 static int
 virDomainHostdevDefFormatSubsys(virBufferPtr buf,

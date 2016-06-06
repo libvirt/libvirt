@@ -845,3 +845,19 @@ virNetDevIPRouteGetGateway(virNetDevIPRoutePtr def)
         return &def->gateway;
     return NULL;
 }
+
+/* manipulating the virNetDevIPInfo object */
+
+void
+virNetDevIPInfoClear(virNetDevIPInfoPtr ip)
+{
+    size_t i;
+
+    for (i = 0; i < ip->nips; i++)
+        VIR_FREE(ip->ips[i]);
+    VIR_FREE(ip->ips);
+
+    for (i = 0; i < ip->nroutes; i++)
+        virNetDevIPRouteFree(ip->routes[i]);
+    VIR_FREE(ip->routes);
+}
