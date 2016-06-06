@@ -539,6 +539,9 @@ prlsdkGetDiskId(PRL_HANDLE disk, bool isCt, int *bus, char **dst)
         return -1;
     }
 
+    if (NULL == *dst)
+        return -1;
+
     return 0;
 }
 
