@@ -1886,6 +1886,7 @@ void virDomainControllerDefFree(virDomainControllerDefPtr def)
         return;
 
     virDomainDeviceInfoClear(&def->info);
+    VIR_FREE(def->virtio);
 
     VIR_FREE(def);
 }
@@ -9063,6 +9064,9 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         }
         cur = cur->next;
     }
+
+    if (virDomainVirtioOptionsParseXML(ctxt, &def->virtio) < 0)
+        goto error;
 
     /* node is parsed differently from target attributes because
      * someone thought it should be a subelement instead...
@@ -19240,6 +19244,10 @@ virDomainControllerDefCheckABIStability(virDomainControllerDefPtr src,
         }
     }
 
+    if (src->virtio && dst->virtio &&
+        !virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
+        return false;
+
     if (!virDomainDeviceInfoCheckABIStability(&src->info, &dst->info))
         return false;
 
@@ -21556,6 +21564,8 @@ virDomainControllerDriverFormat(virBufferPtr buf,
 
     if (def->iothread)
         virBufferAsprintf(&driverBuf, " iothread='%u'", def->iothread);
+
+    virDomainVirtioOptionsFormat(&driverBuf, def->virtio);
 
     if (virBufferUse(&driverBuf)) {
         virBufferAddLit(buf, "<driver");

@@ -2073,6 +2073,7 @@
             <optional>
               <ref name="driverIOThread"/>
             </optional>
+            <ref name="virtioOptions"/>
           </element>
         </optional>
       </interleave>

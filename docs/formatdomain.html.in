@@ -3600,6 +3600,12 @@
         <code>iothread</code> value. The <code>iothread</code> value
         must be within the range 1 to the domain iothreads value.
       </dd>
+      <dt>virtio options</dt>
+      <dd>
+        For virtio controllers,
+        <a href="#elementsVirtio">Virtio-specific options</a> can also be
+        set. (<span class="since">Since 3.5.0</span>)
+      </dd>
     </dl>
     <p>
       USB companion controllers have an optional
