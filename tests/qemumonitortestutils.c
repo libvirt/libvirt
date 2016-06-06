@@ -930,7 +930,8 @@ qemuMonitorTestNew(bool json,
 
 qemuMonitorTestPtr
 qemuMonitorTestNewFromFile(const char *fileName,
-                           virDomainXMLOptionPtr xmlopt)
+                           virDomainXMLOptionPtr xmlopt,
+                           bool simple)
 {
     qemuMonitorTestPtr test = NULL;
     char *json = NULL;
@@ -938,6 +939,9 @@ qemuMonitorTestNewFromFile(const char *fileName,
     char *singleReply;
 
     if (virTestLoadFile(fileName, &json) < 0)
+        goto cleanup;
+
+    if (simple && !(test = qemuMonitorTestNewSimple(true, xmlopt)))
         goto cleanup;
 
     /* Our JSON parser expects replies to be separated by a newline character.

@@ -70,7 +70,8 @@ qemuMonitorTestPtr qemuMonitorTestNew(bool json,
                                       const char *greeting);
 
 qemuMonitorTestPtr qemuMonitorTestNewFromFile(const char *fileName,
-                                              virDomainXMLOptionPtr xmlopt);
+                                              virDomainXMLOptionPtr xmlopt,
+                                              bool simple);
 
 qemuMonitorTestPtr qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt);
 

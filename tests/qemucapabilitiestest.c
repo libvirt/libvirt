@@ -53,7 +53,7 @@ testQemuCaps(const void *opaque)
                     abs_srcdir, data->base, data->archName) < 0)
         goto cleanup;
 
-    if (!(mon = qemuMonitorTestNewFromFile(repliesFile, data->xmlopt)))
+    if (!(mon = qemuMonitorTestNewFromFile(repliesFile, data->xmlopt, false)))
         goto cleanup;
 
     if (!(capsActual = virQEMUCapsNew()) ||
