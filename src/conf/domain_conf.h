@@ -395,11 +395,8 @@ struct _virDomainHostdevCaps {
             char *chardev;
         } misc;
         struct {
-            char *iface;
-            size_t nips;
-            virNetDevIPAddrPtr *ips;
-            size_t nroutes;
-            virNetDevIPRoutePtr *routes;
+            char *ifname;
+            virNetDevIPInfo ip;
         } net;
     } u;
 };

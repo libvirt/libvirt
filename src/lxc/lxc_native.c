@@ -402,7 +402,7 @@ lxcCreateHostdevDef(int mode, int type, const char *data)
     hostdev->source.caps.type = type;
 
     if (type == VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET &&
-        VIR_STRDUP(hostdev->source.caps.u.net.iface, data) < 0) {
+        VIR_STRDUP(hostdev->source.caps.u.net.ifname, data) < 0) {
         virDomainHostdevDefFree(hostdev);
         hostdev = NULL;
     }
@@ -492,25 +492,25 @@ lxcAddNetworkDefinition(lxcNetworkParseData *data)
         /* This still requires the user to manually setup the vlan interface
          * on the host */
         if (isVlan && data->vlanid) {
-            VIR_FREE(hostdev->source.caps.u.net.iface);
-            if (virAsprintf(&hostdev->source.caps.u.net.iface,
+            VIR_FREE(hostdev->source.caps.u.net.ifname);
+            if (virAsprintf(&hostdev->source.caps.u.net.ifname,
                             "%s.%s", data->link, data->vlanid) < 0)
                 goto error;
         }
 
-        hostdev->source.caps.u.net.ips = data->ips;
-        hostdev->source.caps.u.net.nips = data->nips;
+        hostdev->source.caps.u.net.ip.ips = data->ips;
+        hostdev->source.caps.u.net.ip.nips = data->nips;
 
         if (data->gateway_ipv4 &&
             lxcAddNetworkRouteDefinition(data->gateway_ipv4, AF_INET,
-                                         &hostdev->source.caps.u.net.routes,
-                                         &hostdev->source.caps.u.net.nroutes) < 0)
+                                         &hostdev->source.caps.u.net.ip.routes,
+                                         &hostdev->source.caps.u.net.ip.nroutes) < 0)
                 goto error;
 
         if (data->gateway_ipv6 &&
             lxcAddNetworkRouteDefinition(data->gateway_ipv6, AF_INET6,
-                                         &hostdev->source.caps.u.net.routes,
-                                         &hostdev->source.caps.u.net.nroutes) < 0)
+                                         &hostdev->source.caps.u.net.ip.routes,
+                                         &hostdev->source.caps.u.net.ip.nroutes) < 0)
                 goto error;
 
         if (VIR_EXPAND_N(data->def->hostdevs, data->def->nhostdevs, 1) < 0)

@@ -1984,7 +1984,7 @@ static int virLXCControllerMoveInterfaces(virLXCControllerPtr ctrl)
         if (hdcaps.type != VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET)
             continue;
 
-        if (virNetDevSetNamespace(hdcaps.u.net.iface, ctrl->initpid) < 0)
+        if (virNetDevSetNamespace(hdcaps.u.net.ifname, ctrl->initpid) < 0)
             return -1;
     }
 
