@@ -2565,6 +2565,7 @@ virXMLPickShellSafeComment;
 virXMLPropString;
 virXMLSaveFile;
 virXMLValidateAgainstSchema;
+virXMLValidatorFree;
 virXPathBoolean;
 virXPathInt;
 virXPathLong;

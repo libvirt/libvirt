@@ -1161,11 +1161,21 @@ virXMLValidateAgainstSchema(const char *schemafile,
     ret = 0;
 
  cleanup:
+    virXMLValidatorFree(validator);
+    return ret;
+}
+
+
+void
+virXMLValidatorFree(virXMLValidatorPtr validator)
+{
+    if (!validator)
+        return;
+
     VIR_FREE(validator->schemafile);
     virBufferFreeAndReset(&validator->buf);
     xmlRelaxNGFreeParserCtxt(validator->rngParser);
     xmlRelaxNGFreeValidCtxt(validator->rngValid);
     xmlRelaxNGFree(validator->rng);
     VIR_FREE(validator);
-    return ret;
 }

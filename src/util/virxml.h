@@ -192,5 +192,7 @@ typedef virXMLValidator *virXMLValidatorPtr;
 int
 virXMLValidateAgainstSchema(const char *schemafile,
                             xmlDocPtr xml);
+void
+virXMLValidatorFree(virXMLValidatorPtr validator);
 
 #endif                          /* __VIR_XML_H__ */
