@@ -1,9 +1,0 @@
-#!/bin/sh
-
-. "$(dirname $0)/test-lib.sh"
-. $abs_srcdir/schematestutils.sh
-
-DIRS="capabilityschemadata xencapsdata"
-SCHEMA="capability.rng"
-
-check_schema "$DIRS" "$SCHEMA"

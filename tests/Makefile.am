@@ -88,15 +88,11 @@ EXTRA_DIST =		\
 	bhyvexml2argvdata \
 	bhyvexml2xmloutdata \
 	capabilityschemadata \
-	capabilityschematest \
 	commanddata \
 	cputestdata \
 	domaincapsschemadata \
-	domaincapsschematest \
 	domainconfdata \
 	domainschemadata \
-	domainschematest \
-	domainsnapshotschematest \
 	domainsnapshotxml2xmlin \
 	domainsnapshotxml2xmlout \
 	fchostdata \
@@ -106,7 +102,6 @@ EXTRA_DIST =		\
 	lxcconf2xmldata \
 	lxcxml2xmldata \
 	lxcxml2xmloutdata \
-	networkschematest \
 	networkxml2confdata \
 	networkxml2firewalldata \
 	networkxml2xmlin \
@@ -114,10 +109,8 @@ EXTRA_DIST =		\
 	networkxml2xmlupdatein \
 	networkxml2xmlupdateout \
 	nodedevschemadata \
-	nodedevschematest \
 	nodeinfodata     \
 	nssdata \
-	nwfilterschematest \
 	nwfilterxml2firewalldata \
 	nwfilterxml2xmlin \
 	nwfilterxml2xmlout \
@@ -131,17 +124,14 @@ EXTRA_DIST =		\
 	qemumonitorjsondata \
 	qemuxml2argvdata \
 	qemuxml2xmloutdata \
-	schematestutils.sh \
 	secretxml2xmlin \
 	securityselinuxhelperdata \
 	securityselinuxlabeldata \
 	sexpr2xmldata \
 	storagepoolschemadata \
-	storagepoolschematest \
 	storagepoolxml2xmlin \
 	storagepoolxml2xmlout \
 	storagevolschemadata \
-	storagevolschematest \
 	storagevolxml2argvdata \
 	storagevolxml2xmlin \
 	storagevolxml2xmlout \
@@ -190,6 +180,7 @@ test_programs = virshtest sockettest \
 	virlockspacetest \
 	virlogtest \
 	virrotatingfiletest \
+	virschematest \
 	virstringtest \
 	virportallocatortest \
 	sysinfotest \
@@ -365,19 +356,7 @@ test_programs += virusbtest \
 	$(NULL)
 endif WITH_LINUX
 
-test_scripts = \
-	capabilityschematest \
-	interfaceschematest \
-	networkschematest \
-	storagepoolschematest \
-	storagevolschematest \
-	domaincapsschematest \
-	domainschematest \
-	nodedevschematest \
-	nwfilterschematest \
-	domainsnapshotschematest \
-	secretschematest
-
+test_scripts =
 libvirtd_test_scripts =		\
 	libvirtd-fail			\
 	libvirtd-pool			\
@@ -1018,6 +997,10 @@ endif ! WITH_GNUTLS
 virtimetest_SOURCES = \
 	virtimetest.c testutils.h testutils.c
 virtimetest_LDADD = $(LDADDS)
+
+virschematest_SOURCES = \
+	virschematest.c testutils.h testutils.c
+virschematest_LDADD = $(LDADDS)
 
 virstringtest_SOURCES = \
 	virstringtest.c testutils.h testutils.c

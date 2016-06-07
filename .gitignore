@@ -162,7 +162,6 @@
 /tests/*test
 /tests/commandhelper
 /tests/qemucapsprobe
-!/tests/*schematest
 !/tests/virt-aa-helper-test
 /tests/objectlocking
 /tests/objectlocking-files.txt

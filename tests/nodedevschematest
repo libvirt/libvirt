@@ -1,9 +1,0 @@
-#!/bin/sh
-
-. "$(dirname $0)/test-lib.sh"
-. $abs_srcdir/schematestutils.sh
-
-DIRS="nodedevschemadata"
-SCHEMA="nodedev.rng"
-
-check_schema "$DIRS" "$SCHEMA"

@@ -1,9 +1,0 @@
-#!/bin/sh
-
-. "$(dirname $0)/test-lib.sh"
-. $abs_srcdir/schematestutils.sh
-
-DIRS="../src/network networkxml2xmlin networkxml2xmlout"
-SCHEMA="network.rng"
-
-check_schema "$DIRS" "$SCHEMA"
