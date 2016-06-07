@@ -6938,7 +6938,6 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                 (brname = virDomainNetGetActualBridgeName(net))) {
 
                 char *brnamecopy;
-                size_t j;
 
                 if (VIR_STRDUP(brnamecopy, brname) < 0)
                     goto cleanup;
@@ -6950,29 +6949,18 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
                 net->script = NULL;
                 net->data.ethernet.dev = brnamecopy;
-                for (j = 0; j < net->nips; j++)
-                    VIR_FREE(net->ips[j]);
-                VIR_FREE(net->ips);
-                net->nips = 0;
-
             } else {
                 /* actualType is either NETWORK or DIRECT. In either
                  * case, the best we can do is NULL everything out.
                  */
-                size_t j;
                 virDomainActualNetDefFree(net->data.network.actual);
                 memset(net, 0, sizeof(*net));
 
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
                 net->script = NULL;
                 net->data.ethernet.dev = NULL;
-                for (j = 0; j < net->nips; j++)
-                    VIR_FREE(net->ips[j]);
-                VIR_FREE(net->ips);
-                net->nips = 0;
             }
         } else if (net->type == VIR_DOMAIN_NET_TYPE_DIRECT) {
-            size_t j;
             VIR_FREE(net->data.direct.linkdev);
 
             memset(net, 0, sizeof(*net));
@@ -6980,23 +6968,15 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
             net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
             net->script = NULL;
             net->data.ethernet.dev = NULL;
-            for (j = 0; j < net->nips; j++)
-                VIR_FREE(net->ips[j]);
-            VIR_FREE(net->ips);
-            net->nips = 0;
         } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
             char *script = net->script;
             char *brname = net->data.bridge.brname;
-            size_t nips = net->nips;
-            virDomainNetIPDefPtr *ips = net->ips;
 
             memset(net, 0, sizeof(*net));
 
             net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
             net->script = script;
             net->data.ethernet.dev = brname;
-            net->nips = nips;
-            net->ips = ips;
         }
 
         VIR_FREE(net->virtPortProfile);
