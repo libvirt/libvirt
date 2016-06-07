@@ -1108,56 +1108,64 @@ int
 virXMLValidateAgainstSchema(const char *schemafile,
                             xmlDocPtr doc)
 {
-    xmlRelaxNGParserCtxtPtr rngParser = NULL;
-    xmlRelaxNGPtr rng = NULL;
-    xmlRelaxNGValidCtxtPtr rngValid = NULL;
-    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virXMLValidatorPtr validator = NULL;
     int ret = -1;
 
-    if (!(rngParser = xmlRelaxNGNewParserCtxt(schemafile))) {
+    if (VIR_ALLOC(validator) < 0)
+        return -1;
+
+    if (VIR_STRDUP(validator->schemafile, schemafile) < 0)
+        goto cleanup;
+
+    if (!(validator->rngParser =
+              xmlRelaxNGNewParserCtxt(validator->schemafile))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to create RNG parser for %s"),
-                       schemafile);
+                       validator->schemafile);
         goto cleanup;
     }
 
-    xmlRelaxNGSetParserErrors(rngParser,
+    xmlRelaxNGSetParserErrors(validator->rngParser,
                               catchRNGError,
                               ignoreRNGError,
-                              &buf);
+                              &validator->buf);
 
-    if (!(rng = xmlRelaxNGParse(rngParser))) {
+    if (!(validator->rng = xmlRelaxNGParse(validator->rngParser))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to parse RNG %s: %s"),
-                       schemafile, virBufferCurrentContent(&buf));
+                       validator->schemafile,
+                       virBufferCurrentContent(&validator->buf));
         goto cleanup;
     }
 
-    if (!(rngValid = xmlRelaxNGNewValidCtxt(rng))) {
+    if (!(validator->rngValid = xmlRelaxNGNewValidCtxt(validator->rng))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to create RNG validation context %s"),
-                       schemafile);
+                       validator->schemafile);
         goto cleanup;
     }
 
-    xmlRelaxNGSetValidErrors(rngValid,
+    xmlRelaxNGSetValidErrors(validator->rngValid,
                              catchRNGError,
                              ignoreRNGError,
-                             &buf);
+                             &validator->buf);
 
-    if (xmlRelaxNGValidateDoc(rngValid, doc) != 0) {
+    if (xmlRelaxNGValidateDoc(validator->rngValid, doc) != 0) {
         virReportError(VIR_ERR_XML_INVALID_SCHEMA,
                        _("Unable to validate doc against %s\n%s"),
-                       schemafile, virBufferCurrentContent(&buf));
+                       validator->schemafile,
+                       virBufferCurrentContent(&validator->buf));
         goto cleanup;
     }
 
     ret = 0;
 
  cleanup:
-    virBufferFreeAndReset(&buf);
-    xmlRelaxNGFreeParserCtxt(rngParser);
-    xmlRelaxNGFreeValidCtxt(rngValid);
-    xmlRelaxNGFree(rng);
+    VIR_FREE(validator->schemafile);
+    virBufferFreeAndReset(&validator->buf);
+    xmlRelaxNGFreeParserCtxt(validator->rngParser);
+    xmlRelaxNGFreeValidCtxt(validator->rngValid);
+    xmlRelaxNGFree(validator->rng);
+    VIR_FREE(validator);
     return ret;
 }
