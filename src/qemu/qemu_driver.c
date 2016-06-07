@@ -17358,6 +17358,27 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         }
         if (!set_size_iops)
             info.size_iops_sec = oldinfo->size_iops_sec;
+
+#define CHECK_MAX(val)                                                  \
+        do {                                                            \
+            if (info.val##_max && !info.val) {                          \
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,              \
+                               _("value '%s' cannot be set if "         \
+                                 "'%s' is not set"),                    \
+                               #val "_max", #val);                      \
+                goto endjob;                                            \
+            }                                                           \
+        } while (false);
+
+        CHECK_MAX(total_bytes_sec);
+        CHECK_MAX(read_bytes_sec);
+        CHECK_MAX(write_bytes_sec);
+        CHECK_MAX(total_iops_sec);
+        CHECK_MAX(read_iops_sec);
+        CHECK_MAX(write_iops_sec);
+
+#undef CHECK_MAX
+
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorSetBlockIoThrottle(priv->mon, device,
                                             &info, supportMaxOptions);
