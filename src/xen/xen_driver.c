@@ -407,7 +407,6 @@ static virDrvOpenStatus
 xenUnifiedConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int flags)
 {
     xenUnifiedPrivatePtr priv;
-    char ebuf[1024];
 
     /*
      * Only the libvirtd instance can open this driver.
@@ -532,8 +531,8 @@ xenUnifiedConnectOpen(virConnectPtr conn, virConnectAuthPtr auth, unsigned int f
         goto error;
 
     if (virFileMakePath(priv->saveDir) < 0) {
-        VIR_ERROR(_("Errored to create save dir '%s': %s"), priv->saveDir,
-                  virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportSystemError(errno, _("Errored to create save dir '%s'"),
+                             priv->saveDir);
         goto error;
     }
 
