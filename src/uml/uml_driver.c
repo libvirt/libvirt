@@ -188,8 +188,8 @@ umlAutostartDomain(virDomainObjPtr vm,
         ret = umlStartVMDaemon(data->conn, data->driver, vm, false);
         virDomainAuditStart(vm, "booted", ret >= 0);
         if (ret < 0) {
-            VIR_ERROR(_("Failed to autostart VM '%s': %s"),
-                      vm->def->name, virGetLastErrorMessage());
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Failed to autostart VM '%s': %s"),
+                           vm->def->name, virGetLastErrorMessage());
         } else {
             virObjectEventPtr event =
                 virDomainEventLifecycleNewFromObj(vm,
@@ -535,15 +535,13 @@ umlStateInitialize(bool privileged,
         goto error;
 
     if ((uml_driver->inotifyFD = inotify_init()) < 0) {
-        VIR_ERROR(_("cannot initialize inotify"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("cannot initialize inotify"));
         goto error;
     }
 
     if (virFileMakePath(uml_driver->monitorDir) < 0) {
-        char ebuf[1024];
-        VIR_ERROR(_("Failed to create monitor directory %s: %s"),
-                  uml_driver->monitorDir,
-                  virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportSystemError(errno, _("Failed to create monitor directory %s"),
+                             uml_driver->monitorDir);
         goto error;
     }
 
@@ -551,10 +549,8 @@ umlStateInitialize(bool privileged,
     if (inotify_add_watch(uml_driver->inotifyFD,
                           uml_driver->monitorDir,
                           IN_CREATE | IN_MODIFY | IN_DELETE) < 0) {
-        char ebuf[1024];
-        VIR_ERROR(_("Failed to create inotify watch on %s: %s"),
-                  uml_driver->monitorDir,
-                  virStrerror(errno, ebuf, sizeof(ebuf)));
+        virReportSystemError(errno, _("Failed to create inotify watch on %s"),
+                             uml_driver->monitorDir);
         goto error;
     }
 
@@ -582,7 +578,7 @@ umlStateInitialize(bool privileged,
     return 0;
 
  out_of_memory:
-    VIR_ERROR(_("umlStartup: out of memory"));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("umlStartup: out of memory"));
 
  error:
     VIR_FREE(userdir);
