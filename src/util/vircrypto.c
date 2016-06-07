@@ -315,7 +315,7 @@ virCryptoGenerateRandom(size_t nbytes)
     /* If we don't have gnutls_rnd(), we will generate a less cryptographically
      * strong master buf from /dev/urandom.
      */
-    if ((ret = virRandomBytes(buf, nbytes)) < 0) {
+    if ((ret = virRandomBytes(buf, nbytes))) {
         virReportSystemError(ret, "%s", _("failed to generate byte stream"));
         VIR_FREE(buf);
         return NULL;

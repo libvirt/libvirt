@@ -40,7 +40,7 @@ testRandomBytes(const void *unused ATTRIBUTE_UNUSED)
     if (VIR_ALLOC_N(data, datalen) < 0)
         return -1;
 
-    if (virRandomBytes(data, datalen) < 0) {
+    if (virRandomBytes(data, datalen)) {
         fprintf(stderr, "Failed to generate random bytes");
         goto cleanup;
     }
