@@ -364,6 +364,7 @@ typedef enum {
     /* 225 */
     QEMU_CAPS_QXL_MAX_OUTPUTS, /* -device qxl,max-outputs= */
     QEMU_CAPS_QXL_VGA_MAX_OUTPUTS, /* -device qxl-vga,max-outputs= */
+    QEMU_CAPS_SPICE_UNIX, /* -spice unix */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

@@ -332,6 +332,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "qxl.max_outputs", /* 225 */
               "qxl-vga.max_outputs",
+              "spice-unix",
     );
 
 
@@ -2664,6 +2665,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "chardev", "logfile", QEMU_CAPS_CHARDEV_LOGFILE },
     { "name", "debug-threads", QEMU_CAPS_NAME_DEBUG_THREADS },
     { "name", "guest", QEMU_CAPS_NAME_GUEST },
+    { "spice", "unix", QEMU_CAPS_SPICE_UNIX },
 };
 
 static int
