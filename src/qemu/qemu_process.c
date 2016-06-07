@@ -5062,7 +5062,8 @@ qemuProcessLaunch(virConnectPtr conn,
      * but doesn't hurt to check */
     virCheckFlags(VIR_QEMU_PROCESS_START_COLD |
                   VIR_QEMU_PROCESS_START_PAUSED |
-                  VIR_QEMU_PROCESS_START_AUTODESTROY, -1);
+                  VIR_QEMU_PROCESS_START_AUTODESTROY |
+                  VIR_QEMU_PROCESS_START_NEW, -1);
 
     cfg = virQEMUDriverGetConfig(driver);
 
