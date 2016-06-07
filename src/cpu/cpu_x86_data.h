@@ -58,6 +58,8 @@ struct _virCPUx86CPUID {
 # define VIR_CPU_x86_KVM_HV_RESET     "__kvm_hv_reset"
 
 
+# define VIR_CPU_X86_DATA_INIT { 0 }
+
 typedef struct _virCPUx86Data virCPUx86Data;
 struct _virCPUx86Data {
     size_t len;

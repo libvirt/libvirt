@@ -6407,7 +6407,7 @@ static int
 qemuMonitorJSONParseCPUx86Features(virJSONValuePtr data,
                                    virCPUDataPtr *cpudata)
 {
-    virCPUx86Data *x86Data = NULL;
+    virCPUx86Data x86Data = VIR_CPU_X86_DATA_INIT;
     virCPUx86CPUID cpuid;
     size_t i;
     ssize_t n;
@@ -6419,13 +6419,10 @@ qemuMonitorJSONParseCPUx86Features(virJSONValuePtr data,
         return -1;
     }
 
-    if (VIR_ALLOC(x86Data) < 0)
-        return -1;
-
     for (i = 0; i < n; i++) {
         if (qemuMonitorJSONParseCPUx86FeatureWord(virJSONValueArrayGet(data, i),
                                                   &cpuid) < 0 ||
-            virCPUx86DataAddCPUID(x86Data, &cpuid) < 0)
+            virCPUx86DataAddCPUID(&x86Data, &cpuid) < 0)
             goto cleanup;
     }
 
@@ -6435,7 +6432,7 @@ qemuMonitorJSONParseCPUx86Features(virJSONValuePtr data,
     ret = 0;
 
  cleanup:
-    virCPUx86DataFree(x86Data);
+    virCPUx86DataClear(&x86Data);
     return ret;
 }
 
