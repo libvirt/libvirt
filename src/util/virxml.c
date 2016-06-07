@@ -1104,25 +1104,23 @@ static void ignoreRNGError(void *ctx ATTRIBUTE_UNUSED,
 {}
 
 
-int
-virXMLValidateAgainstSchema(const char *schemafile,
-                            xmlDocPtr doc)
+virXMLValidatorPtr
+virXMLValidatorInit(const char *schemafile)
 {
     virXMLValidatorPtr validator = NULL;
-    int ret = -1;
 
     if (VIR_ALLOC(validator) < 0)
-        return -1;
+        return NULL;
 
     if (VIR_STRDUP(validator->schemafile, schemafile) < 0)
-        goto cleanup;
+        goto error;
 
     if (!(validator->rngParser =
               xmlRelaxNGNewParserCtxt(validator->schemafile))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to create RNG parser for %s"),
                        validator->schemafile);
-        goto cleanup;
+        goto error;
     }
 
     xmlRelaxNGSetParserErrors(validator->rngParser,
@@ -1135,20 +1133,37 @@ virXMLValidateAgainstSchema(const char *schemafile,
                        _("Unable to parse RNG %s: %s"),
                        validator->schemafile,
                        virBufferCurrentContent(&validator->buf));
-        goto cleanup;
+        goto error;
     }
 
     if (!(validator->rngValid = xmlRelaxNGNewValidCtxt(validator->rng))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to create RNG validation context %s"),
                        validator->schemafile);
-        goto cleanup;
+        goto error;
     }
 
     xmlRelaxNGSetValidErrors(validator->rngValid,
                              catchRNGError,
                              ignoreRNGError,
                              &validator->buf);
+    return validator;
+
+ error:
+    virXMLValidatorFree(validator);
+    return NULL;
+}
+
+
+int
+virXMLValidateAgainstSchema(const char *schemafile,
+                            xmlDocPtr doc)
+{
+    virXMLValidatorPtr validator = NULL;
+    int ret = -1;
+
+    if (!(validator = virXMLValidatorInit(schemafile)))
+        return -1;
 
     if (xmlRelaxNGValidateDoc(validator->rngValid, doc) != 0) {
         virReportError(VIR_ERR_XML_INVALID_SCHEMA,

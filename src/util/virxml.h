@@ -189,6 +189,9 @@ struct _virXMLValidator {
 typedef struct _virXMLValidator virXMLValidator;
 typedef virXMLValidator *virXMLValidatorPtr;
 
+virXMLValidatorPtr
+virXMLValidatorInit(const char *schemafile);
+
 int
 virXMLValidateAgainstSchema(const char *schemafile,
                             xmlDocPtr xml);

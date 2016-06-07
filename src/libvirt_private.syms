@@ -2566,6 +2566,7 @@ virXMLPropString;
 virXMLSaveFile;
 virXMLValidateAgainstSchema;
 virXMLValidatorFree;
+virXMLValidatorInit;
 virXPathBoolean;
 virXPathInt;
 virXPathLong;
