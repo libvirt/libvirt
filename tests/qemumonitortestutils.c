@@ -96,8 +96,8 @@ qemuMonitorTestItemFree(qemuMonitorTestItemPtr item)
  * Appends data for a reply to the outgoing buffer
  */
 int
-qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
-                          const char *response)
+qemuMonitorTestAddResponse(qemuMonitorTestPtr test,
+                           const char *response)
 {
     size_t want = strlen(response) + 2;
     size_t have = test->outgoingCapacity - test->outgoingLength;
@@ -122,12 +122,12 @@ int
 qemuMonitorTestAddUnexpectedErrorResponse(qemuMonitorTestPtr test)
 {
     if (test->agent || test->json) {
-        return qemuMonitorTestAddReponse(test,
-                                         "{ \"error\": "
-                                         " { \"desc\": \"Unexpected command\", "
-                                         "   \"class\": \"UnexpectedCommand\" } }");
+        return qemuMonitorTestAddResponse(test,
+                                          "{ \"error\": "
+                                          " { \"desc\": \"Unexpected command\", "
+                                          "   \"class\": \"UnexpectedCommand\" } }");
     } else {
-        return qemuMonitorTestAddReponse(test, "unexpected command");
+        return qemuMonitorTestAddResponse(test, "unexpected command");
     }
 }
 
@@ -162,7 +162,7 @@ qemuMonitorReportError(qemuMonitorTestPtr test, const char *errmsg, ...)
             goto cleanup;
     }
 
-    ret = qemuMonitorTestAddReponse(test, jsonmsg);
+    ret = qemuMonitorTestAddResponse(test, jsonmsg);
 
  cleanup:
     va_end(msgargs);
@@ -499,7 +499,7 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
     if (data->command_name && STRNEQ(data->command_name, cmdname))
         ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
     else
-        ret = qemuMonitorTestAddReponse(test, data->response);
+        ret = qemuMonitorTestAddResponse(test, data->response);
 
  cleanup:
     VIR_FREE(cmdcopy);
@@ -569,7 +569,7 @@ qemuMonitorTestProcessGuestAgentSync(qemuMonitorTestPtr test,
         goto cleanup;
 
 
-    ret = qemuMonitorTestAddReponse(test, retmsg);
+    ret = qemuMonitorTestAddResponse(test, retmsg);
 
  cleanup:
     virJSONValueFree(val);
@@ -659,7 +659,7 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
     }
 
     /* arguments checked out, return the response */
-    ret = qemuMonitorTestAddReponse(test, data->response);
+    ret = qemuMonitorTestAddResponse(test, data->response);
 
  cleanup:
     VIR_FREE(argstr);
@@ -911,7 +911,7 @@ qemuMonitorTestNew(bool json,
     if (!greeting)
         greeting = json ? QEMU_JSON_GREETING : QEMU_TEXT_GREETING;
 
-    if (qemuMonitorTestAddReponse(test, greeting) < 0)
+    if (qemuMonitorTestAddResponse(test, greeting) < 0)
         goto error;
 
     if (qemuMonitorCommonTestInit(test) < 0)

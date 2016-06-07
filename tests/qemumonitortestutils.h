@@ -39,8 +39,8 @@ int qemuMonitorTestAddHandler(qemuMonitorTestPtr test,
                               void *opaque,
                               virFreeCallback freecb);
 
-int qemuMonitorTestAddReponse(qemuMonitorTestPtr test,
-                              const char *response);
+int qemuMonitorTestAddResponse(qemuMonitorTestPtr test,
+                               const char *response);
 
 int qemuMonitorTestAddUnexpectedErrorResponse(qemuMonitorTestPtr test);
 
