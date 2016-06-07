@@ -3213,15 +3213,15 @@ virNetDevSendEthtoolIoctl(int fd, struct ifreq *ifr)
     ret = ioctl(fd, SIOCETHTOOL, ifr);
     if (ret != 0) {
         switch (errno) {
-            case EINVAL: /* kernel doesn't support SIOCETHTOOL */
-                VIR_DEBUG("ethtool ioctl: invalid request");
-                break;
-            case EOPNOTSUPP: /* kernel doesn't support specific feature */
-                VIR_DEBUG("ethtool ioctl: request not supported");
-                break;
-            default:
-                virReportSystemError(errno, "%s", _("ethtool ioctl error"));
-                break;
+        case EINVAL: /* kernel doesn't support SIOCETHTOOL */
+            VIR_DEBUG("ethtool ioctl: invalid request");
+            break;
+        case EOPNOTSUPP: /* kernel doesn't support specific feature */
+            VIR_DEBUG("ethtool ioctl: request not supported");
+            break;
+        default:
+            virReportSystemError(errno, "%s", _("ethtool ioctl error"));
+            break;
         }
     }
 
