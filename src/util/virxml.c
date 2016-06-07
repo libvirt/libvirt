@@ -1156,14 +1156,10 @@ virXMLValidatorInit(const char *schemafile)
 
 
 int
-virXMLValidateAgainstSchema(const char *schemafile,
-                            xmlDocPtr doc)
+virXMLValidatorValidate(virXMLValidatorPtr validator,
+                        xmlDocPtr doc)
 {
-    virXMLValidatorPtr validator = NULL;
     int ret = -1;
-
-    if (!(validator = virXMLValidatorInit(schemafile)))
-        return -1;
 
     if (xmlRelaxNGValidateDoc(validator->rngValid, doc) != 0) {
         virReportError(VIR_ERR_XML_INVALID_SCHEMA,
@@ -1174,7 +1170,26 @@ virXMLValidateAgainstSchema(const char *schemafile,
     }
 
     ret = 0;
+ cleanup:
+    virBufferFreeAndReset(&validator->buf);
+    return ret;
+}
 
+
+int
+virXMLValidateAgainstSchema(const char *schemafile,
+                            xmlDocPtr doc)
+{
+    virXMLValidatorPtr validator = NULL;
+    int ret = -1;
+
+    if (!(validator = virXMLValidatorInit(schemafile)))
+        return -1;
+
+    if (virXMLValidatorValidate(validator, doc) < 0)
+        goto cleanup;
+
+    ret = 0;
  cleanup:
     virXMLValidatorFree(validator);
     return ret;

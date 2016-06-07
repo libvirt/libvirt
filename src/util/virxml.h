@@ -193,6 +193,10 @@ virXMLValidatorPtr
 virXMLValidatorInit(const char *schemafile);
 
 int
+virXMLValidatorValidate(virXMLValidatorPtr validator,
+                        xmlDocPtr doc);
+
+int
 virXMLValidateAgainstSchema(const char *schemafile,
                             xmlDocPtr xml);
 void
