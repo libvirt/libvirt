@@ -368,6 +368,9 @@ typedef enum {
     QEMU_CAPS_SPICE_UNIX, /* -spice unix */
     QEMU_CAPS_DRIVE_DETECT_ZEROES, /* -drive detect-zeroes= */
 
+    /* 230 */
+    QEMU_CAPS_OBJECT_TLS_CREDS_X509, /* -object tls-creds-x509 */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

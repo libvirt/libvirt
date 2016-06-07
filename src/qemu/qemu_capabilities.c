@@ -334,6 +334,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "qxl-vga.max_outputs",
               "spice-unix",
               "drive-detect-zeroes",
+
+              "tls-creds-x509", /* 230 */
     );
 
 
@@ -1561,6 +1563,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "secret", QEMU_CAPS_OBJECT_SECRET },
     { "pxb", QEMU_CAPS_DEVICE_PXB },
     { "pxb-pcie", QEMU_CAPS_DEVICE_PXB_PCIE },
+    { "tls-creds-x509", QEMU_CAPS_OBJECT_TLS_CREDS_X509 },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {

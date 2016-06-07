@@ -186,6 +186,7 @@
   <flag name='qxl-vga.max_outputs'/>
   <flag name='spice-unix'/>
   <flag name='drive-detect-zeroes'/>
+  <flag name='tls-creds-x509'/>
   <version>2005000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
