@@ -4519,6 +4519,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     bool inPostCopy = false;
     unsigned int waitFlags;
     virDomainDefPtr persistDef = NULL;
+    char *timestamp;
     int rc;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
@@ -4643,6 +4644,12 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     if (spec->destType == MIGRATION_DEST_CONNECT_HOST &&
         qemuMigrationConnect(driver, vm, spec) < 0) {
         goto exit_monitor;
+    }
+
+    /* log start of migration */
+    if ((timestamp = virTimeStringNow()) != NULL) {
+        qemuDomainLogAppendMessage(driver, vm, "%s: initiating migration\n", timestamp);
+        VIR_FREE(timestamp);
     }
 
     switch (spec->destType) {
