@@ -38,7 +38,7 @@ struct _virCPUData {
     virArch arch;
     union {
         virCPUx86Data x86;
-        virCPUppc64Data *ppc64;
+        virCPUppc64Data ppc64;
         /* generic driver needs no data */
     } data;
 };

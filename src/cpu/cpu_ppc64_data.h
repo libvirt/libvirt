@@ -32,6 +32,8 @@ struct _virCPUppc64PVR {
     uint32_t mask;
 };
 
+# define VIR_CPU_PPC64_DATA_INIT { 0 }
+
 typedef struct _virCPUppc64Data virCPUppc64Data;
 struct _virCPUppc64Data {
     size_t len;
