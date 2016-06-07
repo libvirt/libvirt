@@ -59,33 +59,75 @@ struct _virCPUx86Feature {
     bool migratable;
 };
 
-typedef struct _virCPUx86KVMFeature virCPUx86KVMFeature;
-typedef virCPUx86KVMFeature *virCPUx86KVMFeaturePtr;
-struct _virCPUx86KVMFeature {
-    const char *name;
-    const virCPUx86CPUID cpuid;
-};
 
-static const virCPUx86KVMFeature x86_kvm_features[] =
+#define KVM_FEATURE_DEF(Name, Eax_in, Eax)                          \
+    static virCPUx86CPUID Name ## _cpuid[] = {                      \
+        { .eax_in = Eax_in, .eax = Eax },                           \
+    }
+
+#define KVM_FEATURE(Name)                                           \
+    {                                                               \
+        .name = (char *) Name,                                      \
+        .data = {                                                   \
+            .len = ARRAY_CARDINALITY(Name ## _cpuid),               \
+            .data = Name ## _cpuid                                  \
+        }                                                           \
+    }
+
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_CLOCKSOURCE,
+                0x40000001, 0x00000001);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_NOP_IO_DELAY,
+                0x40000001, 0x00000002);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_MMU_OP,
+                0x40000001, 0x00000004);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_CLOCKSOURCE2,
+                0x40000001, 0x00000008);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_ASYNC_PF,
+                0x40000001, 0x00000010);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_STEAL_TIME,
+                0x40000001, 0x00000020);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_PV_EOI,
+                0x40000001, 0x00000040);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_PV_UNHALT,
+                0x40000001, 0x00000080);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_CLOCKSOURCE_STABLE_BIT,
+                0x40000001, 0x01000000);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_RUNTIME,
+                0x40000003, 0x00000001);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_SYNIC,
+                0x40000003, 0x00000004);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_STIMER,
+                0x40000003, 0x00000008);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_RELAXED,
+                0x40000003, 0x00000020);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_SPINLOCK,
+                0x40000003, 0x00000022);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_VAPIC,
+                0x40000003, 0x00000030);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_VPINDEX,
+                0x40000003, 0x00000040);
+KVM_FEATURE_DEF(VIR_CPU_x86_KVM_HV_RESET,
+                0x40000003, 0x00000080);
+
+static virCPUx86Feature x86_kvm_features[] =
 {
-    {VIR_CPU_x86_KVM_CLOCKSOURCE,  { .eax_in = 0x40000001, .eax = 0x00000001 }},
-    {VIR_CPU_x86_KVM_NOP_IO_DELAY, { .eax_in = 0x40000001, .eax = 0x00000002 }},
-    {VIR_CPU_x86_KVM_MMU_OP,       { .eax_in = 0x40000001, .eax = 0x00000004 }},
-    {VIR_CPU_x86_KVM_CLOCKSOURCE2, { .eax_in = 0x40000001, .eax = 0x00000008 }},
-    {VIR_CPU_x86_KVM_ASYNC_PF,     { .eax_in = 0x40000001, .eax = 0x00000010 }},
-    {VIR_CPU_x86_KVM_STEAL_TIME,   { .eax_in = 0x40000001, .eax = 0x00000020 }},
-    {VIR_CPU_x86_KVM_PV_EOI,       { .eax_in = 0x40000001, .eax = 0x00000040 }},
-    {VIR_CPU_x86_KVM_PV_UNHALT,    { .eax_in = 0x40000001, .eax = 0x00000080 }},
-    {VIR_CPU_x86_KVM_CLOCKSOURCE_STABLE_BIT,
-                                   { .eax_in = 0x40000001, .eax = 0x01000000 }},
-    {VIR_CPU_x86_KVM_HV_RUNTIME,   { .eax_in = 0x40000003, .eax = 0x00000001 }},
-    {VIR_CPU_x86_KVM_HV_SYNIC,     { .eax_in = 0x40000003, .eax = 0x00000004 }},
-    {VIR_CPU_x86_KVM_HV_STIMER,    { .eax_in = 0x40000003, .eax = 0x00000008 }},
-    {VIR_CPU_x86_KVM_HV_RELAXED,   { .eax_in = 0x40000003, .eax = 0x00000020 }},
-    {VIR_CPU_x86_KVM_HV_SPINLOCK,  { .eax_in = 0x40000003, .eax = 0x00000022 }},
-    {VIR_CPU_x86_KVM_HV_VAPIC,     { .eax_in = 0x40000003, .eax = 0x00000030 }},
-    {VIR_CPU_x86_KVM_HV_VPINDEX,   { .eax_in = 0x40000003, .eax = 0x00000040 }},
-    {VIR_CPU_x86_KVM_HV_RESET,     { .eax_in = 0x40000003, .eax = 0x00000080 }},
+    KVM_FEATURE(VIR_CPU_x86_KVM_CLOCKSOURCE),
+    KVM_FEATURE(VIR_CPU_x86_KVM_NOP_IO_DELAY),
+    KVM_FEATURE(VIR_CPU_x86_KVM_MMU_OP),
+    KVM_FEATURE(VIR_CPU_x86_KVM_CLOCKSOURCE2),
+    KVM_FEATURE(VIR_CPU_x86_KVM_ASYNC_PF),
+    KVM_FEATURE(VIR_CPU_x86_KVM_STEAL_TIME),
+    KVM_FEATURE(VIR_CPU_x86_KVM_PV_EOI),
+    KVM_FEATURE(VIR_CPU_x86_KVM_PV_UNHALT),
+    KVM_FEATURE(VIR_CPU_x86_KVM_CLOCKSOURCE_STABLE_BIT),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_RUNTIME),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_SYNIC),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_STIMER),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_RELAXED),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_SPINLOCK),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_VAPIC),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_VPINDEX),
+    KVM_FEATURE(VIR_CPU_x86_KVM_HV_RESET),
 };
 
 typedef struct _virCPUx86Model virCPUx86Model;
@@ -627,6 +669,21 @@ x86FeatureFind(virCPUx86MapPtr map,
 }
 
 
+static virCPUx86FeaturePtr
+x86FeatureFindInternal(const char *name)
+{
+    size_t i;
+    size_t count = ARRAY_CARDINALITY(x86_kvm_features);
+
+    for (i = 0; i < count; i++) {
+        if (STREQ(x86_kvm_features[i].name, name))
+            return x86_kvm_features + i;
+    }
+
+    return NULL;
+}
+
+
 static char *
 x86FeatureNames(virCPUx86MapPtr map,
                 const char *separator,
@@ -1159,47 +1216,6 @@ x86MapLoadCallback(cpuMapElement element,
 }
 
 
-static int
-x86MapLoadInternalFeatures(virCPUx86MapPtr map)
-{
-    size_t i;
-    virCPUx86FeaturePtr feature = NULL;
-    size_t nfeatures = map->nfeatures;
-    size_t count = ARRAY_CARDINALITY(x86_kvm_features);
-
-    if (VIR_EXPAND_N(map->features, nfeatures, count) < 0)
-        goto error;
-
-    for (i = 0; i < count; i++) {
-        const char *name = x86_kvm_features[i].name;
-
-        if (x86FeatureFind(map, name)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("CPU feature %s already defined"), name);
-            goto error;
-        }
-
-        if (!(feature = x86FeatureNew()))
-            goto error;
-
-        if (VIR_STRDUP(feature->name, name) < 0)
-            goto error;
-
-        if (virCPUx86DataAddCPUID(&feature->data, &x86_kvm_features[i].cpuid))
-            goto error;
-
-        map->features[map->nfeatures++] = feature;
-        feature = NULL;
-    }
-
-    return 0;
-
- error:
-    x86FeatureFree(feature);
-    return -1;
-}
-
-
 static virCPUx86MapPtr
 virCPUx86LoadMap(void)
 {
@@ -1209,9 +1225,6 @@ virCPUx86LoadMap(void)
         return NULL;
 
     if (cpuMapLoad("x86", x86MapLoadCallback, map) < 0)
-        goto error;
-
-    if (x86MapLoadInternalFeatures(map) < 0)
         goto error;
 
     return map;
@@ -2177,7 +2190,8 @@ x86HasFeature(const virCPUData *data,
     if (!(map = virCPUx86GetMap()))
         return -1;
 
-    if (!(feature = x86FeatureFind(map, name)))
+    if (!(feature = x86FeatureFind(map, name)) &&
+        !(feature = x86FeatureFindInternal(name)))
         goto cleanup;
 
     ret = x86DataIsSubset(&data->data.x86, &feature->data) ? 1 : 0;
