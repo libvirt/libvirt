@@ -290,15 +290,17 @@ qemuAutostartDomain(virDomainObjPtr vm,
     if (vm->autostart &&
         !virDomainObjIsActive(vm)) {
         if (qemuProcessBeginJob(data->driver, vm) < 0) {
-            VIR_ERROR(_("Failed to start job on VM '%s': %s"),
-                      vm->def->name, virGetLastErrorMessage());
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to start job on VM '%s': %s"),
+                           vm->def->name, virGetLastErrorMessage());
             goto cleanup;
         }
 
         if (qemuDomainObjStart(data->conn, data->driver, vm, flags,
                                QEMU_ASYNC_JOB_START) < 0) {
-            VIR_ERROR(_("Failed to autostart VM '%s': %s"),
-                      vm->def->name, virGetLastErrorMessage());
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to autostart VM '%s': %s"),
+                           vm->def->name, virGetLastErrorMessage());
         }
 
         qemuProcessEndJob(data->driver, vm);
@@ -450,7 +452,8 @@ qemuSecurityInit(virQEMUDriverPtr driver)
     return 0;
 
  error:
-    VIR_ERROR(_("Failed to initialize security drivers"));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("Failed to initialize security drivers"));
     virObjectUnref(stack);
     virObjectUnref(mgr);
     virObjectUnref(cfg);
@@ -471,7 +474,6 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
     virDomainSnapshotDefPtr def = NULL;
     virDomainSnapshotObjPtr snap = NULL;
     virDomainSnapshotObjPtr current = NULL;
-    char ebuf[1024];
     unsigned int flags = (VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE |
                           VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                           VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL);
@@ -481,8 +483,10 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
 
     virObjectLock(vm);
     if (virAsprintf(&snapDir, "%s/%s", baseDir, vm->def->name) < 0) {
-        VIR_ERROR(_("Failed to allocate memory for snapshot directory for domain %s"),
-                   vm->def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to allocate memory for "
+                       "snapshot directory for domain %s"),
+                       vm->def->name);
         goto cleanup;
     }
 
@@ -494,9 +498,10 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
 
     if (!(dir = opendir(snapDir))) {
         if (errno != ENOENT)
-            VIR_ERROR(_("Failed to open snapshot directory %s for domain %s: %s"),
-                      snapDir, vm->def->name,
-                      virStrerror(errno, ebuf, sizeof(ebuf)));
+            virReportSystemError(errno,
+                                 _("Failed to open snapshot directory %s "
+                                 "for domain %s"),
+                                 snapDir, vm->def->name);
         goto cleanup;
     }
 
@@ -509,14 +514,16 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
         VIR_INFO("Loading snapshot file '%s'", entry->d_name);
 
         if (virAsprintf(&fullpath, "%s/%s", snapDir, entry->d_name) < 0) {
-            VIR_ERROR(_("Failed to allocate memory for path"));
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Failed to allocate memory for path"));
             continue;
         }
 
         if (virFileReadAll(fullpath, 1024*1024*1, &xmlStr) < 0) {
             /* Nothing we can do here, skip this one */
-            VIR_ERROR(_("Failed to read snapshot file %s: %s"), fullpath,
-                      virStrerror(errno, ebuf, sizeof(ebuf)));
+            virReportSystemError(errno,
+                                 _("Failed to read snapshot file %s"),
+                                 fullpath);
             VIR_FREE(fullpath);
             continue;
         }
@@ -526,8 +533,9 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
                                               flags);
         if (def == NULL) {
             /* Nothing we can do here, skip this one */
-            VIR_ERROR(_("Failed to parse snapshot XML from file '%s'"),
-                      fullpath);
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to parse snapshot XML from file '%s'"),
+                           fullpath);
             VIR_FREE(fullpath);
             VIR_FREE(xmlStr);
             continue;
@@ -546,17 +554,21 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
         VIR_FREE(xmlStr);
     }
     if (direrr < 0)
-        VIR_ERROR(_("Failed to fully read directory %s"), snapDir);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to fully read directory %s"),
+                       snapDir);
 
     if (vm->current_snapshot != current) {
-        VIR_ERROR(_("Too many snapshots claiming to be current for domain %s"),
-                  vm->def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Too many snapshots claiming to be current for domain %s"),
+                       vm->def->name);
         vm->current_snapshot = NULL;
     }
 
     if (virDomainSnapshotUpdateRelations(vm->snapshots) < 0)
-        VIR_ERROR(_("Snapshots have inconsistent relations for domain %s"),
-                  vm->def->name);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Snapshots have inconsistent relations for domain %s"),
+                       vm->def->name);
 
     /* FIXME: qemu keeps internal track of snapshots.  We can get access
      * to this info via the "info snapshots" monitor command for running
