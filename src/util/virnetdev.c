@@ -3241,14 +3241,14 @@ virNetDevSendEthtoolIoctl(const char *ifname, void *cmd)
 
 
 /**
-* virNetDevFeatureAvailable
-* This function checks for the availability of a network device feature
-*
-* @ifname: name of the interface
-* @cmd: reference to an ethtool command structure
-*
-* Returns 0 if not found, 1 on success, and -1 on failure.
-*/
+ * virNetDevFeatureAvailable
+ * This function checks for the availability of a network device feature
+ *
+ * @ifname: name of the interface
+ * @cmd: reference to an ethtool command structure
+ *
+ * Returns 0 if not found, 1 on success, and -1 on failure.
+ */
 static int
 virNetDevFeatureAvailable(const char *ifname, struct ethtool_value *cmd)
 {
