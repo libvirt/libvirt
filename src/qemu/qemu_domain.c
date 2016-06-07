@@ -3506,6 +3506,68 @@ ssize_t qemuDomainLogContextRead(qemuDomainLogContextPtr ctxt,
 }
 
 
+/**
+ * qemuDomainLogAppendMessage:
+ *
+ * This is a best-effort attempt to add a log message to the qemu log file
+ * either by using virtlogd or the legacy approach */
+int
+qemuDomainLogAppendMessage(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           const char *fmt,
+                           ...)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virLogManagerPtr manager = NULL;
+    va_list ap;
+    char *path = NULL;
+    int writefd = -1;
+    char *message = NULL;
+    int ret = -1;
+
+    va_start(ap, fmt);
+
+    if (virVasprintf(&message, fmt, ap) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Append log message (vm='%s' message='%s) stdioLogD=%d",
+              vm->def->name, message, cfg->stdioLogD);
+
+    if (virAsprintf(&path, "%s/%s.log", cfg->logDir, vm->def->name) < 0)
+        goto cleanup;
+
+    if (cfg->stdioLogD) {
+        if (!(manager = virLogManagerNew(virQEMUDriverIsPrivileged(driver))))
+            goto cleanup;
+
+        if (virLogManagerDomainAppendMessage(manager, "qemu", vm->def->uuid,
+                                             vm->def->name, path, message, 0) < 0)
+            goto cleanup;
+    } else {
+        if ((writefd = open(path, O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR)) < 0) {
+            virReportSystemError(errno, _("failed to create logfile %s"),
+                                 path);
+            goto cleanup;
+        }
+
+        if (safewrite(writefd, message, strlen(message)) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    va_end(ap);
+    VIR_FREE(message);
+    VIR_FORCE_CLOSE(writefd);
+    virLogManagerFree(manager);
+    virObjectUnref(cfg);
+    VIR_FREE(path);
+
+    return ret;
+}
+
+
 int qemuDomainLogContextGetWriteFD(qemuDomainLogContextPtr ctxt)
 {
     return ctxt->writefd;

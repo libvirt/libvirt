@@ -480,6 +480,11 @@ void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt);
 
 virLogManagerPtr qemuDomainLogContextGetManager(qemuDomainLogContextPtr ctxt);
 
+int qemuDomainLogAppendMessage(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               const char *fmt,
+                               ...) ATTRIBUTE_FMT_PRINTF(3, 4);
+
 const char *qemuFindQemuImgBinary(virQEMUDriverPtr driver);
 
 int qemuDomainSnapshotWriteMetadata(virDomainObjPtr vm,
