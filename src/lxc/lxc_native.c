@@ -522,19 +522,19 @@ lxcAddNetworkDefinition(lxcNetworkParseData *data)
                                     data->name)))
             goto error;
 
-        net->ips = data->ips;
-        net->nips = data->nips;
+        net->guestIP.ips = data->ips;
+        net->guestIP.nips = data->nips;
 
         if (data->gateway_ipv4 &&
             lxcAddNetworkRouteDefinition(data->gateway_ipv4, AF_INET,
-                                         &net->routes,
-                                         &net->nroutes) < 0)
+                                         &net->guestIP.routes,
+                                         &net->guestIP.nroutes) < 0)
                 goto error;
 
         if (data->gateway_ipv6 &&
             lxcAddNetworkRouteDefinition(data->gateway_ipv6, AF_INET6,
-                                         &net->routes,
-                                         &net->nroutes) < 0)
+                                         &net->guestIP.routes,
+                                         &net->guestIP.nroutes) < 0)
                 goto error;
 
         if (VIR_EXPAND_N(data->def->nets, data->def->nnets, 1) < 0)

@@ -1313,11 +1313,11 @@ vboxAttachNetwork(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         } else if (def->nets[i]->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
             VIR_DEBUG("NIC(%zu): brname: %s", i, def->nets[i]->data.bridge.brname);
             VIR_DEBUG("NIC(%zu): script: %s", i, def->nets[i]->script);
-            if (def->nets[i]->nips == 1) {
-                char *ipStr = virSocketAddrFormat(&def->nets[i]->ips[0]->address);
+            if (def->nets[i]->guestIP.nips == 1) {
+                char *ipStr = virSocketAddrFormat(&def->nets[i]->guestIP.ips[0]->address);
                 VIR_DEBUG("NIC(%zu): ipaddr: %s", i, ipStr);
                 VIR_FREE(ipStr);
-            } else if (def->nets[i]->nips > 1) {
+            } else if (def->nets[i]->guestIP.nips > 1) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("Driver does not support setting multiple IP addresses"));
                 return -1;

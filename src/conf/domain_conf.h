@@ -964,8 +964,9 @@ struct _virDomainNetDef {
     char *script;
     char *domain_name; /* backend domain name */
     char *ifname;
-    char *ifname_guest;
     char *ifname_guest_actual;
+    char *ifname_guest;
+    virNetDevIPInfo guestIP;
     virDomainDeviceInfo info;
     char *filter;
     virNWFilterHashTablePtr filterparams;
@@ -973,10 +974,6 @@ struct _virDomainNetDef {
     virNetDevVlan vlan;
     int trustGuestRxFilters; /* enum virTristateBool */
     int linkstate;
-    size_t nips;
-    virNetDevIPAddrPtr *ips;
-    size_t nroutes;
-    virNetDevIPRoutePtr *routes;
 };
 
 /* Used for prefix of ifname of any network name generated dynamically

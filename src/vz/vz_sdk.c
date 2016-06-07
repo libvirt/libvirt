@@ -2654,7 +2654,7 @@ static int prlsdkCheckNetUnsupportedParams(virDomainNetDefPtr net)
         return -1;
     }
 
-    if (net->ifname_guest) {
+    if (net->guestIf.name) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting guest interface name is not "
                          "supported by vz driver."));

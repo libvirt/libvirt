@@ -512,8 +512,8 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
         if (rc < 0)
             goto error_out;
 
-        for (j = 0; j < netDef->nips; j++) {
-            virNetDevIPAddrPtr ip = netDef->ips[j];
+        for (j = 0; j < netDef->guestIP.nips; j++) {
+            virNetDevIPAddrPtr ip = netDef->guestIP.ips[j];
             int prefix;
             char *ipStr = virSocketAddrFormat(&ip->address);
 
@@ -538,7 +538,7 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
             VIR_FREE(ipStr);
         }
 
-        if (netDef->nips ||
+        if (netDef->guestIP.nips ||
             netDef->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP) {
             VIR_DEBUG("Enabling %s", newname);
             rc = virNetDevSetOnline(newname, true);
@@ -546,8 +546,8 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
                 goto error_out;
 
             /* Set the routes */
-            for (j = 0; j < netDef->nroutes; j++) {
-                virNetDevIPRoutePtr route = netDef->routes[j];
+            for (j = 0; j < netDef->guestIP.nroutes; j++) {
+                virNetDevIPRoutePtr route = netDef->guestIP.routes[j];
 
                 if (virNetDevIPRouteAdd(newname,
                                         virNetDevIPRouteGetAddress(route),

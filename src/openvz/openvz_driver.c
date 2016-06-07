@@ -1,7 +1,7 @@
 /*
  * openvz_driver.c: core driver methods for managing OpenVZ VEs
  *
- * Copyright (C) 2010-2015 Red Hat, Inc.
+ * Copyright (C) 2010-2016 Red Hat, Inc.
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
  * Copyright (C) 2007 Anoop Joe Cyriac
@@ -856,7 +856,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
 
     if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE ||
         (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
-         net->nips == 0)) {
+         net->guestIP.nips == 0)) {
         virBuffer buf = VIR_BUFFER_INITIALIZER;
         int veid = openvzGetVEID(vpsid);
 
@@ -906,12 +906,12 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
         virCommandAddArg(cmd, "--netif_add");
         virCommandAddArgBuffer(cmd, &buf);
     } else if (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
-              net->nips > 0) {
+              net->guestIP.nips > 0) {
         size_t i;
 
         /* --ipadd ip */
-        for (i = 0; i < net->nips; i++) {
-            char *ipStr = virSocketAddrFormat(&net->ips[i]->address);
+        for (i = 0; i < net->guestIP.nips; i++) {
+            char *ipStr = virSocketAddrFormat(&net->guestIP.ips[i]->address);
             if (!ipStr)
                 goto cleanup;
             virCommandAddArgList(cmd, "--ipadd", ipStr, NULL);

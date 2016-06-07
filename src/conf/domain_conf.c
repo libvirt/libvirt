@@ -1740,8 +1740,6 @@ virDomainActualNetDefFree(virDomainActualNetDefPtr def)
 void
 virDomainNetDefClear(virDomainNetDefPtr def)
 {
-    size_t i;
-
     if (!def)
         return;
 
@@ -1799,14 +1797,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
     VIR_FREE(def->ifname_guest);
     VIR_FREE(def->ifname_guest_actual);
 
-    for (i = 0; i < def->nips; i++)
-        VIR_FREE(def->ips[i]);
-    VIR_FREE(def->ips);
-
-    for (i = 0; i < def->nroutes; i++)
-        virNetDevIPRouteFree(def->routes[i]);
-    VIR_FREE(def->routes);
-
+    virNetDevIPInfoClear(&def->guestIP);
     virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def->filter);
@@ -8898,7 +8889,7 @@ virDomainNetAppendIPAddress(virDomainNetDefPtr def,
         goto error;
     ipDef->prefix = prefix;
 
-    if (VIR_APPEND_ELEMENT(def->ips, def->nips, ipDef) < 0)
+    if (VIR_APPEND_ELEMENT(def->guestIP.ips, def->guestIP.nips, ipDef) < 0)
         goto error;
 
     return 0;
@@ -8960,11 +8951,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     virDomainActualNetDefPtr actual = NULL;
     xmlNodePtr oldnode = ctxt->node;
     int ret, val;
-    size_t i;
-    size_t nips = 0;
-    virNetDevIPAddrPtr *ips = NULL;
-    size_t nroutes = 0;
-    virNetDevIPRoutePtr *routes = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -9079,24 +9065,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                     localaddr = virXPathString("string(./local/@address)", ctxt);
                     localport = virXPathString("string(./local/@port)", ctxt);
                     ctxt->node = tmpnode;
-                }
-            } else if (xmlStrEqual(cur->name, BAD_CAST "ip")) {
-                virNetDevIPAddrPtr ip = NULL;
-
-                if (!(ip = virDomainNetIPParseXML(cur)))
-                    goto error;
-
-                if (VIR_APPEND_ELEMENT(ips, nips, ip) < 0)
-                    goto error;
-            } else if (xmlStrEqual(cur->name, BAD_CAST "route")) {
-                virNetDevIPRoutePtr route = NULL;
-                if (!(route = virNetDevIPRouteParseXML(_("Domain interface"),
-                                                       cur, ctxt)))
-                    goto error;
-
-                if (VIR_APPEND_ELEMENT(routes, nroutes, route) < 0) {
-                    virNetDevIPRouteFree(route);
-                    goto error;
                 }
             } else if (!ifname &&
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
@@ -9418,12 +9386,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         break;
     }
 
-    for (i = 0; i < nips; i++) {
-        if (VIR_APPEND_ELEMENT(def->ips, def->nips, ips[i]) < 0)
-            goto error;
-    }
-    def->nroutes = nroutes;
-    def->routes = routes;
+    if (virDomainNetIPInfoParseXML(_("guest interface"),
+                                   ctxt, &def->guestIP) < 0)
+        goto error;
 
     if (script != NULL) {
         def->script = script;
@@ -9705,7 +9670,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(addrtype);
     VIR_FREE(domain_name);
     VIR_FREE(trustGuestRxFilters);
-    VIR_FREE(ips);
     VIR_FREE(vhost_path);
     VIR_FREE(localaddr);
     VIR_FREE(localport);
@@ -20894,9 +20858,7 @@ virDomainNetDefFormat(virBufferPtr buf,
             return -1;
     }
 
-    if (virDomainNetIPsFormat(buf, def->ips, def->nips) < 0)
-        return -1;
-    if (virDomainNetRoutesFormat(buf, def->routes, def->nroutes) < 0)
+    if (virDomainNetIPInfoFormat(buf, &def->guestIP) < 0)
         return -1;
 
     virBufferEscapeString(buf, "<script path='%s'/>\n",

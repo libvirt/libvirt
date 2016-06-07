@@ -1,7 +1,7 @@
 /*
  * libxl_conf.c: libxl configuration management
  *
- * Copyright (C) 2012-2014 Red Hat, Inc.
+ * Copyright (C) 2012-2014, 2016 Red Hat, Inc.
  * Copyright (c) 2011-2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
  * Copyright (C) 2011 Univention GmbH.
  *
@@ -908,8 +908,8 @@ libxlMakeNic(virDomainDefPtr def,
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
             if (VIR_STRDUP(x_nic->script, l_nic->script) < 0)
                 goto cleanup;
-            if (l_nic->nips > 0) {
-                x_nic->ip = virSocketAddrFormat(&l_nic->ips[0]->address);
+            if (l_nic->guestIP.nips > 0) {
+                x_nic->ip = virSocketAddrFormat(&l_nic->guestIP.ips[0]->address);
                 if (!x_nic->ip)
                     goto cleanup;
             }
@@ -924,8 +924,8 @@ libxlMakeNic(virDomainDefPtr def,
                 goto cleanup;
             }
 
-            if (l_nic->nips > 0) {
-                x_nic->ip = virSocketAddrFormat(&l_nic->ips[0]->address);
+            if (l_nic->guestIP.nips > 0) {
+                x_nic->ip = virSocketAddrFormat(&l_nic->guestIP.ips[0]->address);
                 if (!x_nic->ip)
                     goto cleanup;
             }
