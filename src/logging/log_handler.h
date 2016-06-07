@@ -65,6 +65,14 @@ char *virLogHandlerDomainReadLogFile(virLogHandlerPtr handler,
                                      size_t maxlen,
                                      unsigned int flags);
 
+int virLogHandlerDomainAppendLogFile(virLogHandlerPtr handler,
+                                     const char *driver,
+                                     const unsigned char *domuuid,
+                                     const char *domname,
+                                     const char *path,
+                                     const char *message,
+                                     unsigned int flags);
+
 virJSONValuePtr virLogHandlerPreExecRestart(virLogHandlerPtr handler);
 
 #endif /** __VIR_LOG_HANDLER_H__ */

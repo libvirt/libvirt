@@ -513,6 +513,56 @@ virLogHandlerDomainReadLogFile(virLogHandlerPtr handler,
 }
 
 
+int
+virLogHandlerDomainAppendLogFile(virLogHandlerPtr handler,
+                                 const char *driver ATTRIBUTE_UNUSED,
+                                 const unsigned char *domuuid ATTRIBUTE_UNUSED,
+                                 const char *domname ATTRIBUTE_UNUSED,
+                                 const char *path,
+                                 const char *message,
+                                 unsigned int flags)
+{
+    size_t i;
+    virRotatingFileWriterPtr writer = NULL;
+    virRotatingFileWriterPtr newwriter = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    VIR_DEBUG("Appending to log '%s' message: '%s'", path, message);
+
+    virObjectLock(handler);
+
+    for (i = 0; i < handler->nfiles; i++) {
+        if (STREQ(virRotatingFileWriterGetPath(handler->files[i]->file), path)) {
+            writer = handler->files[i]->file;
+            break;
+        }
+    }
+
+    if (!writer) {
+        if (!(newwriter = virRotatingFileWriterNew(path,
+                                                   DEFAULT_FILE_SIZE,
+                                                   DEFAULT_MAX_BACKUP,
+                                                   false,
+                                                   DEFAULT_MODE)))
+            goto cleanup;
+
+        writer = newwriter;
+    }
+
+    if (virRotatingFileWriterAppend(writer, message, strlen(message)) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virRotatingFileWriterFree(newwriter);
+    virObjectUnlock(handler);
+    return ret;
+}
+
+
 virJSONValuePtr
 virLogHandlerPreExecRestart(virLogHandlerPtr handler)
 {
