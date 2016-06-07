@@ -5605,7 +5605,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     size_t i;
     char *timestamp;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainLogContextPtr logCtxt = NULL;
 
     VIR_DEBUG("Shutting down vm=%p name=%s id=%d pid=%llu, "
               "reason=%s, asyncJob=%s, flags=%x",
@@ -5642,13 +5641,9 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     /* Wake up anything waiting on domain condition */
     virDomainObjBroadcast(vm);
 
-    if ((logCtxt = qemuDomainLogContextNew(driver, vm,
-                                           QEMU_DOMAIN_LOG_CONTEXT_MODE_STOP))) {
-        if ((timestamp = virTimeStringNow()) != NULL) {
-            qemuDomainLogContextWrite(logCtxt, "%s: shutting down\n", timestamp);
-            VIR_FREE(timestamp);
-        }
-        qemuDomainLogContextFree(logCtxt);
+    if ((timestamp = virTimeStringNow()) != NULL) {
+        qemuDomainLogAppendMessage(driver, vm, "%s: shutting down\n", timestamp);
+        VIR_FREE(timestamp);
     }
 
     /* Clear network bandwidth */
