@@ -57,4 +57,12 @@ char *virLogManagerDomainReadLogFile(virLogManagerPtr mgr,
                                      size_t maxlen,
                                      unsigned int flags);
 
+int virLogManagerDomainAppendMessage(virLogManagerPtr mgr,
+                                     const char *driver,
+                                     const unsigned char *domuuid,
+                                     const char *domname,
+                                     const char *path,
+                                     const char *message,
+                                     unsigned int flags);
+
 #endif /* __VIR_LOG_MANAGER_H__ */

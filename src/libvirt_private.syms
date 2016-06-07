@@ -1048,6 +1048,7 @@ virLockManagerRelease;
 
 
 # logging/log_manager.h
+virLogManagerDomainAppendMessage;
 virLogManagerDomainGetLogFilePosition;
 virLogManagerDomainOpenLogFile;
 virLogManagerDomainReadLogFile;

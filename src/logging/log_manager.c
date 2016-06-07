@@ -282,3 +282,37 @@ virLogManagerDomainReadLogFile(virLogManagerPtr mgr,
  cleanup:
     return rv;
 }
+
+
+int
+virLogManagerDomainAppendMessage(virLogManagerPtr mgr,
+                                 const char *driver,
+                                 const unsigned char *domuuid,
+                                 const char *domname,
+                                 const char *path,
+                                 const char *message,
+                                 unsigned int flags)
+{
+    struct virLogManagerProtocolDomainAppendLogFileArgs args;
+    struct virLogManagerProtocolDomainAppendLogFileRet ret;
+
+    memset(&args, 0, sizeof(args));
+
+    args.driver = (char *)driver;
+    memcpy(args.dom.uuid, domuuid, VIR_UUID_BUFLEN);
+    args.dom.name = (char *)domname;
+    args.path = (char *)path;
+    args.message = (char *)message;
+    args.flags = flags;
+
+    if (virNetClientProgramCall(mgr->program,
+                                mgr->client,
+                                mgr->serial++,
+                                VIR_LOG_MANAGER_PROTOCOL_PROC_DOMAIN_APPEND_LOG_FILE,
+                                0, NULL, NULL, NULL,
+                                (xdrproc_t)xdr_virLogManagerProtocolDomainAppendLogFileArgs, &args,
+                                (xdrproc_t)xdr_virLogManagerProtocolDomainAppendLogFileRet, &ret) < 0)
+        return -1;
+
+    return ret.ret;
+}

@@ -143,3 +143,29 @@ virLogManagerProtocolDispatchDomainReadLogFile(virNetServerPtr server ATTRIBUTE_
         virNetMessageSaveError(rerr);
     return rv;
 }
+
+
+static int
+virLogManagerProtocolDispatchDomainAppendLogFile(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                                 virNetServerClientPtr client ATTRIBUTE_UNUSED,
+                                                 virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                                 virNetMessageErrorPtr rerr,
+                                                 virLogManagerProtocolDomainAppendLogFileArgs *args,
+                                                 virLogManagerProtocolDomainAppendLogFileRet *ret)
+{
+    int rv;
+
+    if ((rv = virLogHandlerDomainAppendLogFile(virLogDaemonGetHandler(logDaemon),
+                                               args->driver,
+                                               (unsigned char *)args->dom.uuid,
+                                               args->dom.name,
+                                               args->path,
+                                               args->message,
+                                               args->flags)) < 0) {
+        virNetMessageSaveError(rerr);
+        return -1;
+    }
+
+    ret->ret = rv;
+    return 0;
+}

@@ -68,6 +68,18 @@ struct virLogManagerProtocolDomainReadLogFileRet {
     virLogManagerProtocolNonNullString data;
 };
 
+struct virLogManagerProtocolDomainAppendLogFileArgs {
+    virLogManagerProtocolNonNullString driver;
+    virLogManagerProtocolDomain dom;
+    virLogManagerProtocolNonNullString path;
+    virLogManagerProtocolNonNullString message;
+    unsigned int flags;
+};
+
+struct virLogManagerProtocolDomainAppendLogFileRet {
+    int ret;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const VIR_LOG_MANAGER_PROTOCOL_PROGRAM = 0x87539319;
 const VIR_LOG_MANAGER_PROTOCOL_PROGRAM_VERSION = 1;
@@ -115,5 +127,11 @@ enum virLogManagerProtocolProcedure {
      * @generate: none
      * @acl: none
      */
-    VIR_LOG_MANAGER_PROTOCOL_PROC_DOMAIN_READ_LOG_FILE = 3
+    VIR_LOG_MANAGER_PROTOCOL_PROC_DOMAIN_READ_LOG_FILE = 3,
+
+    /**
+     * @generate: none
+     * @acl: none
+     */
+    VIR_LOG_MANAGER_PROTOCOL_PROC_DOMAIN_APPEND_LOG_FILE = 4
 };
