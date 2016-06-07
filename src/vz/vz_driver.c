@@ -600,6 +600,7 @@ static int
 vzDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
     virDomainObjPtr dom;
+    vzDomObjPtr privdom;
     int ret = -1;
 
     if (!(dom = vzDomObjFromDomainRef(domain)))
@@ -611,12 +612,11 @@ vzDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     info->nrVirtCpu = virDomainDefGetVcpus(dom->def);
     info->cpuTime = 0;
 
-    if (virDomainObjIsActive(dom)) {
-        unsigned long long vtime;
-        vzDomObjPtr privdom;
-        size_t i;
+    privdom = dom->privateData;
 
-        privdom = dom->privateData;
+    if (PRL_INVALID_HANDLE != privdom->stats && virDomainObjIsActive(dom)) {
+        unsigned long long vtime;
+        size_t i;
 
         for (i = 0; i < virDomainDefGetVcpus(dom->def); ++i) {
             if (prlsdkGetVcpuStats(privdom->stats, i, &vtime) < 0) {
