@@ -764,6 +764,7 @@ qemuDomainDiskPrivateDispose(void *obj)
     qemuDomainDiskPrivatePtr priv = obj;
 
     qemuDomainSecretInfoFree(&priv->secinfo);
+    qemuDomainSecretInfoFree(&priv->encinfo);
 }
 
 
