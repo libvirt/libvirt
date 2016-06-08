@@ -94,3 +94,8 @@ prlsdkMigrate(virDomainObjPtr dom,
               const char unsigned *session_uuid,
               const char *dname,
               unsigned int flags);
+
+PRL_HANDLE
+prlsdkSdkDomainLookupByName(vzDriverPtr driver, const char *name);
+virDomainObjPtr
+prlsdkNewDomainByHandle(vzDriverPtr driver, PRL_HANDLE sdkdom);

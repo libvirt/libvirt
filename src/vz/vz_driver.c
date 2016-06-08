@@ -2318,7 +2318,7 @@ vzDomainMigrateBegin3Params(virDomainPtr domain,
     if (!(dom = vzDomObjFromDomain(domain)))
         goto cleanup;
 
-    /* session uuid is for backward compat */
+    /* session uuid, domain uuid and domain name are for backward compat */
     if (vzBakeCookie(privconn->driver, dom, cookieout, cookieoutlen,
                      VZ_MIGRATION_COOKIE_SESSION_UUID
                      | VZ_MIGRATION_COOKIE_DOMAIN_UUID
@@ -2363,8 +2363,8 @@ static int
 vzDomainMigratePrepare3Params(virConnectPtr conn,
                               virTypedParameterPtr params,
                               int nparams,
-                              const char *cookiein,
-                              int cookieinlen,
+                              const char *cookiein ATTRIBUTE_UNUSED,
+                              int cookieinlen ATTRIBUTE_UNUSED,
                               char **cookieout,
                               int *cookieoutlen,
                               char **uri_out,
@@ -2373,8 +2373,6 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
     vzConnPtr privconn = conn->privateData;
     const char *miguri = NULL;
     const char *dname = NULL;
-    virDomainObjPtr dom = NULL;
-    vzMigrationCookiePtr mig = NULL;
     int ret = -1;
 
     virCheckFlags(VZ_MIGRATION_FLAGS, -1);
@@ -2393,11 +2391,6 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
     if (!miguri && !(*uri_out = vzMigrationCreateURI()))
         goto cleanup;
 
-    if (!(mig = vzEatCookie(cookiein, cookieinlen,
-                            VZ_MIGRATION_COOKIE_DOMAIN_UUID
-                            | VZ_MIGRATION_COOKIE_DOMAIN_NAME)))
-        goto cleanup;
-
     /* domain uuid and domain name are for backward compat */
     if (vzBakeCookie(privconn->driver, NULL,
                      cookieout, cookieoutlen,
@@ -2406,30 +2399,9 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
                      | VZ_MIGRATION_COOKIE_DOMAIN_NAME) < 0)
         goto cleanup;
 
-    virObjectLock(privconn->driver);
-    dom = virDomainObjListFindByUUID(privconn->driver->domains, mig->uuid);
-    if (dom) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(mig->uuid, uuidstr);
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("A domain with uuid '%s' already exists"),
-                       uuidstr);
-        goto unlock;
-    }
-
-    if (!(dom = vzNewDomain(privconn->driver,
-                            dname ? dname : mig->name, mig->uuid)))
-        goto unlock;
-
     ret = 0;
 
- unlock:
-    virObjectUnlock(privconn->driver);
-
  cleanup:
-    vzMigrationCookieFree(mig);
-    if (dom)
-        virObjectUnlock(dom);
     return ret;
 }
 
@@ -2674,29 +2646,25 @@ vzDomainMigrateFinish3Params(virConnectPtr dconn,
     vzConnPtr privconn = dconn->privateData;
     vzDriverPtr driver = privconn->driver;
     const char *name = NULL;
+    PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
 
     virCheckFlags(VZ_MIGRATION_FLAGS, NULL);
 
     if (virTypedParamsValidate(params, nparams, VZ_MIGRATION_PARAMETERS) < 0)
-        goto cleanup;
+        return NULL;
+
+    if (cancelled)
+        return NULL;
 
     if (virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_DEST_NAME, &name) < 0)
+        return NULL;
+
+    sdkdom = prlsdkSdkDomainLookupByName(driver, name);
+    if (sdkdom == PRL_INVALID_HANDLE)
         goto cleanup;
 
-    if (!(dom = virDomainObjListFindByName(driver->domains, name))) {
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching name '%s'"), name);
-        goto cleanup;
-    }
-
-    if (cancelled) {
-        virDomainObjListRemove(driver->domains, dom);
-        dom = NULL;
-        goto cleanup;
-    }
-
-    if (prlsdkLoadDomain(driver, dom))
+    if (!(dom = prlsdkNewDomainByHandle(driver, sdkdom)))
         goto cleanup;
 
     domain = virGetDomain(dconn, dom->def->name, dom->def->uuid);
@@ -2706,9 +2674,11 @@ vzDomainMigrateFinish3Params(virConnectPtr dconn,
  cleanup:
     /* In this situation we have to restore domain on source. But the migration
      * is already finished. */
-    if (!cancelled && !domain)
+    if (!domain)
         VIR_WARN("Can't provide domain '%s' after successfull migration.", name);
-    virDomainObjEndAPI(&dom);
+    if (dom)
+        virObjectUnlock(dom);
+    PrlHandle_Free(sdkdom);
     return domain;
 }
 

@@ -377,6 +377,21 @@ prlsdkSdkDomainLookupByUUID(vzDriverPtr driver, const unsigned char *uuid)
     return sdkdom;
 }
 
+PRL_HANDLE
+prlsdkSdkDomainLookupByName(vzDriverPtr driver, const char *name)
+{
+    PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
+
+    if (prlsdkSdkDomainLookup(driver, name,
+                              PGVC_SEARCH_BY_NAME, &sdkdom) < 0) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching name '%s'"), name);
+        return PRL_INVALID_HANDLE;
+    }
+
+    return sdkdom;
+}
+
 static int
 prlsdkUUIDParse(const char *uuidstr, unsigned char *uuid)
 {
@@ -1409,7 +1424,7 @@ prlsdkConvertCpuMode(PRL_HANDLE sdkdom, virDomainDefPtr def)
     return -1;
 }
 
-static virDomainObjPtr
+virDomainObjPtr
 prlsdkNewDomainByHandle(vzDriverPtr driver, PRL_HANDLE sdkdom)
 {
     virDomainObjPtr dom = NULL;
