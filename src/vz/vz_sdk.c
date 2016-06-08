@@ -1810,10 +1810,9 @@ prlsdkLoadDomains(vzDriverPtr driver)
         pret = PrlResult_GetParamByIndex(result, i, &sdkdom);
         prlsdkCheckRetGoto(pret, error);
 
-        if (!(dom = prlsdkNewDomainByHandle(driver, sdkdom)))
-            continue;
+        if ((dom = prlsdkNewDomainByHandle(driver, sdkdom)))
+            virObjectUnlock(dom);
 
-        virObjectUnlock(dom);
         PrlHandle_Free(sdkdom);
         sdkdom = PRL_INVALID_HANDLE;
     }
