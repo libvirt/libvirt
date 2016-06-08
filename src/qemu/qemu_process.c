@@ -1809,8 +1809,11 @@ qemuProcessReportLogError(qemuDomainLogContextPtr logCtxt,
         return -1;
 
     virResetLastError();
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("%s: %s"), msgprefix, logmsg);
+    if (virStringIsEmpty(logmsg))
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", msgprefix);
+    else
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("%s: %s"), msgprefix, logmsg);
+
     VIR_FREE(logmsg);
     return 0;
 }
