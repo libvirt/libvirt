@@ -7212,8 +7212,7 @@ static int
 qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
                                 virCommandPtr cmd,
                                 virQEMUCapsPtr qemuCaps,
-                                virDomainGraphicsDefPtr graphics,
-                                const char *domainLibDir)
+                                virDomainGraphicsDefPtr graphics)
 {
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     virDomainGraphicsListenDefPtr glisten = NULL;
@@ -7227,15 +7226,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
 
     glisten = virDomainGraphicsGetListen(graphics, 0);
 
-    if (graphics->data.vnc.socket || cfg->vncAutoUnixSocket) {
-        if (!graphics->data.vnc.socket) {
-            if (virAsprintf(&graphics->data.vnc.socket,
-                            "%s/vnc.sock", domainLibDir) < 0)
-                goto error;
-
-            graphics->data.vnc.socketFromConfig = true;
-        }
-
+    if (graphics->data.vnc.socket) {
         virBufferAddLit(&opt, "unix:");
         qemuBufferEscapeComma(&opt, graphics->data.vnc.socket);
 
@@ -7537,8 +7528,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
                              virCommandPtr cmd,
                              virDomainDefPtr def,
                              virQEMUCapsPtr qemuCaps,
-                             virDomainGraphicsDefPtr graphics,
-                             const char *domainLibDir)
+                             virDomainGraphicsDefPtr graphics)
 {
     switch (graphics->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
@@ -7570,8 +7560,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfigPtr cfg,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        return qemuBuildGraphicsVNCCommandLine(cfg, cmd, qemuCaps,
-                                               graphics, domainLibDir);
+        return qemuBuildGraphicsVNCCommandLine(cfg, cmd, qemuCaps, graphics);
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         return qemuBuildGraphicsSPICECommandLine(cfg, cmd, qemuCaps, graphics);
@@ -9232,7 +9221,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
 
     for (i = 0; i < def->ngraphics; ++i) {
         if (qemuBuildGraphicsCommandLine(cfg, cmd, def, qemuCaps,
-                                         def->graphics[i], domainLibDir) < 0)
+                                         def->graphics[i]) < 0)
             goto error;
     }
 

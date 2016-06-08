@@ -4022,13 +4022,18 @@ qemuProcessGraphicsSetupNetworkAddress(virDomainGraphicsListenDefPtr glisten,
 
 static int
 qemuProcessGraphicsSetupListen(virQEMUDriverConfigPtr cfg,
-                               virDomainGraphicsDefPtr graphics)
+                               virDomainGraphicsDefPtr graphics,
+                               virDomainObjPtr vm)
 {
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    const char *type = virDomainGraphicsTypeToString(graphics->type);
     char *listenAddr = NULL;
+    bool useSocket = false;
     size_t i;
 
     switch (graphics->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        useSocket = cfg->vncAutoUnixSocket;
         listenAddr = cfg->vncListen;
         break;
 
@@ -4048,13 +4053,22 @@ qemuProcessGraphicsSetupListen(virQEMUDriverConfigPtr cfg,
 
         switch (glisten->type) {
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
-            if (glisten->address || !listenAddr)
-                continue;
-
-            if (VIR_STRDUP(glisten->address, listenAddr) < 0)
-                return -1;
-
-            glisten->fromConfig = true;
+            if (!glisten->address) {
+                /* If there is no address specified and qemu.conf has
+                 * *_auto_unix_socket set we should use unix socket as
+                 * default instead of tcp listen. */
+                if (useSocket) {
+                    VIR_DELETE_ELEMENT(graphics->listens, i, graphics->nListens);
+                    if (virAsprintf(&graphics->data.vnc.socket, "%s/%s.sock",
+                                    priv->libDir, type) < 0)
+                        return -1;
+                    graphics->data.vnc.socketFromConfig = true;
+                } else if (listenAddr) {
+                    if (VIR_STRDUP(glisten->address, listenAddr) < 0)
+                        return -1;
+                    glisten->fromConfig = true;
+                }
+            }
             break;
 
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
@@ -4110,7 +4124,7 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
             break;
         }
 
-        if (qemuProcessGraphicsSetupListen(cfg, graphics) < 0)
+        if (qemuProcessGraphicsSetupListen(cfg, graphics, vm) < 0)
             goto cleanup;
     }
 
