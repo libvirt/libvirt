@@ -719,8 +719,7 @@ qemuMonitorIO(int watch, int fd, int events, void *opaque)
              * "connection reset by peer" message.
              */
             mon->logFunc(mon,
-                         _("early end of file from monitor, "
-                           "possible problem"),
+                         _("qemu unexpectedly closed the monitor"),
                          mon->logOpaque);
             virCopyLastError(&mon->lastError);
             virResetLastError();
