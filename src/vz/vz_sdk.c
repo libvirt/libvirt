@@ -1421,12 +1421,8 @@ prlsdkNewDomainByHandle(vzDriverPtr driver, PRL_HANDLE sdkdom)
         goto cleanup;
 
     /* we should make sure that there is no such a VM exists */
-    dom = virDomainObjListFindByUUID(driver->domains, uuid);
-    if (dom) {
-        virObjectUnlock(dom);
-        dom = NULL;
+    if ((dom = virDomainObjListFindByUUID(driver->domains, uuid)))
         goto cleanup;
-    }
 
     if (!(dom = vzNewDomain(driver, name, uuid)))
         goto cleanup;
