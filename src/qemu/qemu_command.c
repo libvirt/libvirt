@@ -7268,6 +7268,9 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
         break;
 
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+        virBufferAddLit(&opt, "none");
+        break;
+
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
         break;
     }

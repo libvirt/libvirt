@@ -10982,7 +10982,8 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
         }
         break;
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
-        if (graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+        if (graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
+            graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("listen type 'none' is not available for "
                              "graphics type '%s'"), graphicsType);

@@ -903,6 +903,7 @@ mymain(void)
     driver.config->vncAutoUnixSocket = false;
     DO_TEST("graphics-vnc-socket", QEMU_CAPS_VNC);
     DO_TEST("graphics-vnc-auto-socket", QEMU_CAPS_VNC);
+    DO_TEST("graphics-vnc-none", QEMU_CAPS_VNC);
 
     driver.config->vncSASL = 1;
     VIR_FREE(driver.config->vncSASLdir);

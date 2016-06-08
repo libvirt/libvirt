@@ -5384,7 +5384,8 @@ qemu-kvm -net nic,model=? /dev/null
           virDomainOpenGraphicsFD(). No other listen types are allowed if this
           one is used and the graphics device doesn't listen anywhere. You need
           to use one of the two APIs to pass a FD to QEMU in order to connect to
-          this graphics device. Supported by graphics type <code>spice</code>.
+          this graphics device. Supported by graphics type <code>vnc</code> and
+          <code>spice</code>.
         </p>
       </dd>
     </dl>
