@@ -641,24 +641,29 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
 
     dbus_error_init(&err);
     if (!(sysbus = virDBusGetSystemBus())) {
-        VIR_ERROR(_("DBus not available, disabling HAL driver: %s"),
-                    virGetLastErrorMessage());
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("DBus not available, disabling HAL driver: %s"),
+                       virGetLastErrorMessage());
         ret = 0;
         goto failure;
     }
 
     hal_ctx = libhal_ctx_new();
     if (hal_ctx == NULL) {
-        VIR_ERROR(_("libhal_ctx_new returned NULL"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libhal_ctx_new returned NULL"));
         goto failure;
     }
 
     if (!libhal_ctx_set_dbus_connection(hal_ctx, sysbus)) {
-        VIR_ERROR(_("libhal_ctx_set_dbus_connection failed"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libhal_ctx_set_dbus_connection failed"));
         goto failure;
     }
     if (!libhal_ctx_init(hal_ctx, &err)) {
-        VIR_ERROR(_("libhal_ctx_init failed, haldaemon is probably not running"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libhal_ctx_init failed, haldaemon is probably "
+                         "not running"));
         /* We don't want to show a fatal error here,
            otherwise entire libvirtd shuts down when
            hald isn't running */
@@ -683,13 +688,15 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
         !libhal_ctx_set_device_lost_capability(hal_ctx, device_cap_lost) ||
         !libhal_ctx_set_device_property_modified(hal_ctx, device_prop_modified) ||
         !libhal_device_property_watch_all(hal_ctx, &err)) {
-        VIR_ERROR(_("setting up HAL callbacks failed"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("setting up HAL callbacks failed"));
         goto failure;
     }
 
     udi = libhal_get_all_devices(hal_ctx, &num_devs, &err);
     if (udi == NULL) {
-        VIR_ERROR(_("libhal_get_all_devices failed"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libhal_get_all_devices failed"));
         goto failure;
     }
     for (i = 0; i < num_devs; i++) {
@@ -702,7 +709,8 @@ nodeStateInitialize(bool privileged ATTRIBUTE_UNUSED,
 
  failure:
     if (dbus_error_is_set(&err)) {
-        VIR_ERROR(_("%s: %s"), err.name, err.message);
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s: %s"), err.name, err.message);
         dbus_error_free(&err);
     }
     virNodeDeviceObjListFree(&driver->devs);
@@ -753,7 +761,8 @@ nodeStateReload(void)
     dbus_error_init(&err);
     udi = libhal_get_all_devices(hal_ctx, &num_devs, &err);
     if (udi == NULL) {
-        VIR_ERROR(_("libhal_get_all_devices failed"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libhal_get_all_devices failed"));
         return -1;
     }
     for (i = 0; i < num_devs; i++) {
