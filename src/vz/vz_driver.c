@@ -2138,11 +2138,17 @@ vzDomainRevertToSnapshot(virDomainSnapshotPtr snapshot, unsigned int flags)
     return ret;
 }
 
+enum vzMigrationCookieFeatures {
+    VZ_MIGRATION_COOKIE_SESSION_UUID  = (1 << 0),
+    VZ_MIGRATION_COOKIE_DOMAIN_UUID = (1 << 1),
+    VZ_MIGRATION_COOKIE_DOMAIN_NAME = (1 << 1),
+};
+
 typedef struct _vzMigrationCookie vzMigrationCookie;
 typedef vzMigrationCookie *vzMigrationCookiePtr;
 struct _vzMigrationCookie {
-    unsigned char session_uuid[VIR_UUID_BUFLEN];
-    unsigned char uuid[VIR_UUID_BUFLEN];
+    unsigned char *session_uuid;
+    unsigned char *uuid;
     char *name;
 };
 
@@ -2151,12 +2157,18 @@ vzMigrationCookieFree(vzMigrationCookiePtr mig)
 {
     if (!mig)
         return;
+
+    VIR_FREE(mig->session_uuid);
+    VIR_FREE(mig->uuid);
     VIR_FREE(mig->name);
     VIR_FREE(mig);
 }
 
 static int
-vzBakeCookie(vzMigrationCookiePtr mig, char **cookieout, int *cookieoutlen)
+vzBakeCookie(vzDriverPtr driver,
+             virDomainObjPtr dom,
+             char **cookieout, int *cookieoutlen,
+             unsigned int flags)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -2172,11 +2184,28 @@ vzBakeCookie(vzMigrationCookiePtr mig, char **cookieout, int *cookieoutlen)
 
     virBufferAddLit(&buf, "<vz-migration>\n");
     virBufferAdjustIndent(&buf, 2);
-    virUUIDFormat(mig->session_uuid, uuidstr);
-    virBufferAsprintf(&buf, "<session-uuid>%s</session-uuid>\n", uuidstr);
-    virUUIDFormat(mig->uuid, uuidstr);
-    virBufferAsprintf(&buf, "<uuid>%s</uuid>\n", uuidstr);
-    virBufferAsprintf(&buf, "<name>%s</name>\n", mig->name);
+
+    if (flags & VZ_MIGRATION_COOKIE_SESSION_UUID) {
+        virUUIDFormat(driver->session_uuid, uuidstr);
+        virBufferAsprintf(&buf, "<session-uuid>%s</session-uuid>\n", uuidstr);
+    }
+
+    if (flags & VZ_MIGRATION_COOKIE_DOMAIN_UUID) {
+        unsigned char fakeuuid[VIR_UUID_BUFLEN] = { 0 };
+
+        /* if dom is NULL just pass some parsable uuid for backward compat.
+         * It is not used by peer */
+        virUUIDFormat(dom ? dom->def->uuid : fakeuuid, uuidstr);
+        virBufferAsprintf(&buf, "<uuid>%s</uuid>\n", uuidstr);
+    }
+
+    if (flags & VZ_MIGRATION_COOKIE_DOMAIN_NAME) {
+        /* if dom is NULL just pass some name for backward compat.
+         * It is not used by peer */
+        virBufferAsprintf(&buf, "<name>%s</name>\n", dom ? dom->def->name :
+                                                           "__fakename__");
+    }
+
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</vz-migration>\n");
 
@@ -2190,11 +2219,11 @@ vzBakeCookie(vzMigrationCookiePtr mig, char **cookieout, int *cookieoutlen)
 }
 
 static vzMigrationCookiePtr
-vzEatCookie(const char *cookiein, int cookieinlen)
+vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
 {
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctx = NULL;
-    char *tmp;
+    char *tmp = NULL;
     vzMigrationCookiePtr mig = NULL;
 
     if (VIR_ALLOC(mig) < 0)
@@ -2210,33 +2239,31 @@ vzEatCookie(const char *cookiein, int cookieinlen)
                                       _("(_migration_cookie)"), &ctx)))
         goto error;
 
-    if (!(tmp = virXPathString("string(./session-uuid[1])", ctx))) {
+    if ((flags & VZ_MIGRATION_COOKIE_SESSION_UUID)
+        && (!(tmp = virXPathString("string(./session-uuid[1])", ctx))
+            || (VIR_ALLOC_N(mig->session_uuid, VIR_UUID_BUFLEN) < 0)
+            || (virUUIDParse(tmp, mig->session_uuid) < 0))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing session-uuid element in migration data"));
-        goto error;
-    }
-    if (virUUIDParse(tmp, mig->session_uuid) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("malformed session-uuid element in migration data"));
+                       _("missing or malformed session-uuid element "
+                         "in migration data"));
         VIR_FREE(tmp);
         goto error;
     }
     VIR_FREE(tmp);
 
-    if (!(tmp = virXPathString("string(./uuid[1])", ctx))) {
+    if ((flags & VZ_MIGRATION_COOKIE_DOMAIN_UUID)
+        && (!(tmp = virXPathString("string(./uuid[1])", ctx))
+            || (VIR_ALLOC_N(mig->uuid, VIR_UUID_BUFLEN) < 0)
+            || (virUUIDParse(tmp, mig->uuid) < 0))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing uuid element in migration data"));
-        goto error;
-    }
-    if (virUUIDParse(tmp, mig->uuid) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("malformed uuid element in migration data"));
+                       _("missing or malformed uuid element in migration data"));
         VIR_FREE(tmp);
         goto error;
     }
     VIR_FREE(tmp);
 
-    if (!(mig->name = virXPathString("string(./name[1])", ctx))) {
+    if ((flags & VZ_MIGRATION_COOKIE_DOMAIN_NAME)
+        && !(mig->name = virXPathString("string(./name[1])", ctx))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing name element in migration data"));
         goto error;
@@ -2273,7 +2300,6 @@ vzDomainMigrateBegin3Params(virDomainPtr domain,
     char *xml = NULL;
     virDomainObjPtr dom = NULL;
     vzConnPtr privconn = domain->conn->privateData;
-    vzMigrationCookiePtr mig = NULL;
 
     virCheckFlags(VZ_MIGRATION_FLAGS, NULL);
 
@@ -2292,15 +2318,11 @@ vzDomainMigrateBegin3Params(virDomainPtr domain,
     if (!(dom = vzDomObjFromDomain(domain)))
         goto cleanup;
 
-    if (VIR_ALLOC(mig) < 0)
-        goto cleanup;
-
-    if (VIR_STRDUP(mig->name, dom->def->name) < 0)
-        goto cleanup;
-
-    memcpy(mig->uuid, dom->def->uuid, VIR_UUID_BUFLEN);
-
-    if (vzBakeCookie(mig, cookieout, cookieoutlen) < 0)
+    /* session uuid is for backward compat */
+    if (vzBakeCookie(privconn->driver, dom, cookieout, cookieoutlen,
+                     VZ_MIGRATION_COOKIE_SESSION_UUID
+                     | VZ_MIGRATION_COOKIE_DOMAIN_UUID
+                     | VZ_MIGRATION_COOKIE_DOMAIN_NAME) < 0)
         goto cleanup;
 
     xml = virDomainDefFormat(dom->def, privconn->driver->caps,
@@ -2308,7 +2330,6 @@ vzDomainMigrateBegin3Params(virDomainPtr domain,
 
  cleanup:
 
-    vzMigrationCookieFree(mig);
     if (dom)
         virObjectUnlock(dom);
     return xml;
@@ -2372,12 +2393,17 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
     if (!miguri && !(*uri_out = vzMigrationCreateURI()))
         goto cleanup;
 
-    if (!(mig = vzEatCookie(cookiein, cookieinlen)))
+    if (!(mig = vzEatCookie(cookiein, cookieinlen,
+                            VZ_MIGRATION_COOKIE_DOMAIN_UUID
+                            | VZ_MIGRATION_COOKIE_DOMAIN_NAME)))
         goto cleanup;
 
-    memcpy(mig->session_uuid, privconn->driver->session_uuid, VIR_UUID_BUFLEN);
-
-    if (vzBakeCookie(mig, cookieout, cookieoutlen) < 0)
+    /* domain uuid and domain name are for backward compat */
+    if (vzBakeCookie(privconn->driver, NULL,
+                     cookieout, cookieoutlen,
+                     VZ_MIGRATION_COOKIE_SESSION_UUID
+                     | VZ_MIGRATION_COOKIE_DOMAIN_UUID
+                     | VZ_MIGRATION_COOKIE_DOMAIN_NAME) < 0)
         goto cleanup;
 
     virObjectLock(privconn->driver);
@@ -2488,7 +2514,8 @@ vzDomainMigratePerformStep(virDomainPtr domain,
         goto cleanup;
     }
 
-    if (!(mig = vzEatCookie(cookiein, cookieinlen)))
+    if (!(mig = vzEatCookie(cookiein, cookieinlen,
+                            VZ_MIGRATION_COOKIE_SESSION_UUID)))
         goto cleanup;
 
     if (!(dom = vzDomObjFromDomain(domain)))
