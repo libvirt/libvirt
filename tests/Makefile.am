@@ -1000,7 +1000,7 @@ virtimetest_LDADD = $(LDADDS)
 
 virschematest_SOURCES = \
 	virschematest.c testutils.h testutils.c
-virschematest_LDADD = $(LDADDS)
+virschematest_LDADD = $(LDADDS) $(LIBXML_LIBS)
 
 virstringtest_SOURCES = \
 	virstringtest.c testutils.h testutils.c
