@@ -140,7 +140,7 @@ testSchemaDirs(const char *schema, ...)
             ret = -1;
             goto cleanup;
         }
-        if (testSchemaDir(schema, validator, dir) < 0)
+        if (testSchemaDir(schema, validator, dir_path) < 0)
             ret = -1;
         VIR_FREE(dir_path);
     }
