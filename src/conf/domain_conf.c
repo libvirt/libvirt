@@ -1244,7 +1244,6 @@ void virDomainGraphicsDefFree(virDomainGraphicsDefPtr def)
 
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        VIR_FREE(def->data.vnc.socket);
         VIR_FREE(def->data.vnc.keymap);
         virDomainGraphicsAuthDefClear(&def->data.vnc.auth);
         break;
@@ -10921,11 +10920,14 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     char *socket = virXMLPropString(node, "socket");
     char *fromConfig = virXMLPropString(node, "fromConfig");
     char *addressCompat = NULL;
+    char *socketCompat = NULL;
     const char *graphicsType = virDomainGraphicsTypeToString(graphics->type);
     int tmp, typeVal;
 
-    if (parent)
+    if (parent) {
         addressCompat = virXMLPropString(parent, "listen");
+        socketCompat = virXMLPropString(parent, "socket");
+    }
 
     if (!type) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -10940,7 +10942,8 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     }
     def->type = typeVal;
 
-    if (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET) {
+    if (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET &&
+        graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("listen type 'socket' is not available for "
                          "graphics type '%s'"), graphicsType);
@@ -10959,6 +10962,21 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
         if (!address) {
             address = addressCompat;
             addressCompat = NULL;
+        }
+    }
+
+    if (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET) {
+        if (socket && socketCompat && STRNEQ(socket, socketCompat)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("graphics 'socket' attribute '%s' must match "
+                             "'socket' attribute of first listen element "
+                             "(found '%s')"), socketCompat, socket);
+            goto error;
+        }
+
+        if (!socket) {
+            socket = socketCompat;
+            socketCompat = NULL;
         }
     }
 
@@ -11013,6 +11031,7 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     VIR_FREE(socket);
     VIR_FREE(fromConfig);
     VIR_FREE(addressCompat);
+    VIR_FREE(socketCompat);
     return ret;
 }
 
@@ -11031,12 +11050,6 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
     int ret = -1;
 
     ctxt->node = node;
-
-    if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        (socketPath = virXMLPropString(node, "socket"))) {
-        ret = 0;
-        goto error;
-    }
 
     /* parse the <listen> subelements for graphics types that support it */
     nListens = virXPathNodeSet("./listen", ctxt, &listenNodes);
@@ -11059,16 +11072,43 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
             def->nListens++;
         }
         VIR_FREE(listenNodes);
+    }
+
+    /* If no <listen/> element was found in XML for backward compatibility
+     * we should try to parse 'listen' or 'socket' attribute from <graphics/>
+     * element. */
+    if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
+        socketPath = virXMLPropString(node, "socket");
+
+    if (socketPath) {
+        newListen.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET;
+        newListen.socket = socketPath;
+        socketPath = NULL;
     } else {
-        /* If no <listen/> element was found in XML for backward compatibility
-         * we should try to parse 'listen' attribute from <graphics/> element. */
         newListen.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
         newListen.address = virXMLPropString(node, "listen");
         if (STREQ_NULLABLE(newListen.address, ""))
             VIR_FREE(newListen.address);
+    }
 
+    /* If no <listen/> element was found add a new one created by parsing
+     * <graphics/> element. */
+    if (def->nListens == 0) {
         if (VIR_APPEND_ELEMENT(def->listens, def->nListens, newListen) < 0)
             goto error;
+    } else {
+        virDomainGraphicsListenDefPtr glisten = &def->listens[0];
+
+        /* If the first <listen/> element is 'address' or 'network' and we found
+         * 'socket' attribute inside <graphics/> element for backward
+         * compatibility we need to replace the first listen by
+         * <listen type='socket' .../> element based on the 'socket' attribute. */
+        if ((glisten->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS ||
+             glisten->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK) &&
+            newListen.type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET) {
+            virDomainGraphicsListenDefClear(glisten);
+            *glisten = newListen;
+        }
     }
 
     ret = 0;
@@ -11146,7 +11186,6 @@ virDomainGraphicsDefParseXMLVNC(virDomainGraphicsDefPtr def,
         }
     }
 
-    def->data.vnc.socket = virXMLPropString(node, "socket");
     def->data.vnc.keymap = virXMLPropString(node, "keymap");
 
     if (virDomainGraphicsAuthDefParseXML(node, &def->data.vnc.auth,
@@ -21796,11 +21835,21 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
 
     switch (def->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        if (def->data.vnc.socket) {
-            if (!def->data.vnc.socketFromConfig ||
-                !(flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE)) {
-                virBufferEscapeString(buf, " socket='%s'",
-                                      def->data.vnc.socket);
+        if (!glisten) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing listen element for graphics"));
+            return -1;
+        }
+
+        if (glisten->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET) {
+            /* To not break migration we shouldn't print the 'socket' attribute
+             * if it's auto-generated or if it's based on config option from
+             * qemu.conf.  If the socket is provided by user we need to print it
+             * into migratable XML. */
+            if (glisten->socket &&
+                !((glisten->autoGenerated || glisten->fromConfig) &&
+                  (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE))) {
+                virBufferEscapeString(buf, " socket='%s'", glisten->socket);
             }
         } else {
             if (def->data.vnc.port &&
@@ -21906,9 +21955,23 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
     for (i = 0; i < def->nListens; i++) {
         if (def->listens[i].type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE)
             continue;
-        if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
-            def->listens[i].fromConfig)
-            continue;
+        if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE) {
+            /* If the listen is based on config options from qemu.conf we need
+             * to skip it.  It's up to user to properly configure both hosts for
+             * migration. */
+            if (def->listens[i].fromConfig)
+                continue;
+
+            /* If the socket is provided by user in the XML we need to skip this
+             * listen type to support migration back to old libvirt since old
+             * libvirt supports specifying socket path inside graphics element
+             * as 'socket' attribute.  Auto-generated socket is a new feature
+             * thus we can generate it in the migrateble XML. */
+            if (def->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+                def->listens[i].type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET &&
+                !def->listens[i].autoGenerated)
+                continue;
+        }
         if (!children) {
             virBufferAddLit(buf, ">\n");
             virBufferAdjustIndent(buf, 2);

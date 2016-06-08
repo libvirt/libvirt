@@ -509,7 +509,7 @@ qemuParseCommandLineVnc(virDomainDefPtr def,
 
     if (STRPREFIX(val, "unix:")) {
         /* -vnc unix:/some/big/path */
-        if (VIR_STRDUP(vnc->data.vnc.socket, val + 5) < 0)
+        if (virDomainGraphicsListenAppendSocket(vnc, val + 5) < 0)
             goto cleanup;
     } else {
         /*

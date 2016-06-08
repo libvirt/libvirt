@@ -16,5 +16,5 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--vnc unix:/tmp/vnc.sock \
+-vnc unix:/tmp/lib/domain--1-QEMUGuest1/vnc.sock \
 -vga cirrus

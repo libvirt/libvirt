@@ -7224,13 +7224,20 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
         goto error;
     }
 
-    glisten = virDomainGraphicsGetListen(graphics, 0);
+    if (!(glisten = virDomainGraphicsGetListen(graphics, 0))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing listen element"));
+        goto error;
+    }
 
-    if (graphics->data.vnc.socket) {
+    switch (glisten->type) {
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
         virBufferAddLit(&opt, "unix:");
-        qemuBufferEscapeComma(&opt, graphics->data.vnc.socket);
+        qemuBufferEscapeComma(&opt, glisten->socket);
+        break;
 
-    } else {
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
         if (!graphics->data.vnc.autoport &&
             (graphics->data.vnc.port < 5900 ||
              graphics->data.vnc.port > 65535)) {
@@ -7239,7 +7246,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
             goto error;
         }
 
-        if (glisten && glisten->address) {
+        if (glisten->address) {
             escapeAddr = strchr(glisten->address, ':') != NULL;
             if (escapeAddr)
                 virBufferAsprintf(&opt, "[%s]", glisten->address);
@@ -7258,6 +7265,11 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
             }
             virBufferAsprintf(&opt, ",websocket=%d", graphics->data.vnc.websocket);
         }
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+        break;
     }
 
     if (graphics->data.vnc.sharePolicy) {

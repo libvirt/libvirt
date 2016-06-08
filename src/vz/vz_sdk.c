@@ -1019,7 +1019,6 @@ prlsdkAddVNCInfo(PRL_HANDLE sdkdom, virDomainDefPtr def)
     gr->type = VIR_DOMAIN_GRAPHICS_TYPE_VNC;
     gr->data.vnc.port = port;
     gr->data.vnc.keymap = NULL;
-    gr->data.vnc.socket = NULL;
     gr->data.vnc.auth.passwd = NULL;
     gr->data.vnc.auth.expires = false;
     gr->data.vnc.auth.connected = 0;
@@ -2439,13 +2438,6 @@ static int prlsdkCheckGraphicsUnsupportedParams(virDomainDefPtr def)
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("vz driver doesn't support "
                          "exclusive share policy for VNC graphics."));
-        return -1;
-    }
-
-    if (gr->data.vnc.socket) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("vz driver doesn't support "
-                         "VNC graphics over unix sockets."));
         return -1;
     }
 

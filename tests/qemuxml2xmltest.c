@@ -434,6 +434,8 @@ mymain(void)
     cfg->vncAutoUnixSocket = true;
     DO_TEST("graphics-vnc-auto-socket-cfg");
     cfg->vncAutoUnixSocket = false;
+    DO_TEST("graphics-vnc-socket");
+    DO_TEST("graphics-vnc-auto-socket");
 
     DO_TEST("graphics-sdl");
     DO_TEST("graphics-sdl-fullscreen");

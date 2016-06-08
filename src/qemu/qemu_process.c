@@ -3469,9 +3469,6 @@ qemuProcessVNCAllocatePorts(virQEMUDriverPtr driver,
 {
     unsigned short port;
 
-    if (graphics->data.vnc.socket)
-        return 0;
-
     if (!allocate) {
         if (graphics->data.vnc.autoport)
             graphics->data.vnc.port = 5900;
@@ -4058,11 +4055,12 @@ qemuProcessGraphicsSetupListen(virQEMUDriverConfigPtr cfg,
                  * *_auto_unix_socket set we should use unix socket as
                  * default instead of tcp listen. */
                 if (useSocket) {
-                    VIR_DELETE_ELEMENT(graphics->listens, i, graphics->nListens);
-                    if (virAsprintf(&graphics->data.vnc.socket, "%s/%s.sock",
+                    memset(glisten, 0, sizeof(virDomainGraphicsListenDef));
+                    if (virAsprintf(&glisten->socket, "%s/%s.sock",
                                     priv->libDir, type) < 0)
                         return -1;
-                    graphics->data.vnc.socketFromConfig = true;
+                    glisten->fromConfig = true;
+                    glisten->type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET;
                 } else if (listenAddr) {
                     if (VIR_STRDUP(glisten->address, listenAddr) < 0)
                         return -1;
@@ -4115,22 +4113,27 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
 
-        switch (graphics->type) {
-        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-            if (qemuProcessVNCAllocatePorts(driver, graphics, allocate) < 0)
-                goto cleanup;
-            break;
+        if (graphics->nListens > 0 &&
+            (graphics->listens[0].type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS ||
+             graphics->listens[0].type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK)) {
+            switch (graphics->type) {
+            case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+                if (qemuProcessVNCAllocatePorts(driver, graphics, allocate) < 0)
+                    goto cleanup;
+                break;
 
-        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-            if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics, allocate) < 0)
-                goto cleanup;
-            break;
+            case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+                if (qemuProcessSPICEAllocatePorts(driver, cfg, graphics,
+                                                  allocate) < 0)
+                    goto cleanup;
+                break;
 
-        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
-        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
-            break;
+            case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+            case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+            case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+            case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+                break;
+            }
         }
 
         if (qemuProcessGraphicsSetupListen(cfg, graphics, vm) < 0)

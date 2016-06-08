@@ -2085,20 +2085,30 @@ qemuDomainRecheckInternalPaths(virDomainDefPtr def,
                                unsigned int flags)
 {
     size_t i = 0;
+    size_t j = 0;
 
     for (i = 0; i < def->ngraphics; ++i) {
         virDomainGraphicsDefPtr graphics = def->graphics[i];
 
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-            graphics->data.vnc.socket &&
-            STRPREFIX(graphics->data.vnc.socket, cfg->libDir)) {
-            if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) {
-                VIR_FREE(graphics->data.vnc.socket);
-                if (virDomainGraphicsListenAppendAddress(graphics, NULL) < 0)
-                    return -1;
+        for (j = 0; j < graphics->nListens; ++j) {
+            virDomainGraphicsListenDefPtr glisten =  &graphics->listens[j];
+
+            /* This will happen only if we parse XML from old libvirts where
+             * unix socket was available only for VNC graphics.  In this
+             * particular case we should follow the behavior and if we remove
+             * the auto-generated socket base on config option from qemu.conf
+             * we need to change the listen type to address. */
+            if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+                glisten->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET &&
+                glisten->socket &&
+                STRPREFIX(glisten->socket, cfg->libDir)) {
+                if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) {
+                    VIR_FREE(glisten->socket);
+                    glisten->type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS;
+                } else {
+                    glisten->fromConfig = true;
+                }
             }
-            else
-                graphics->data.vnc.socketFromConfig = true;
         }
     }
 

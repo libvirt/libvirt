@@ -1010,11 +1010,6 @@ get_files(vahControl * ctl)
         virDomainGraphicsDefPtr graphics = ctl->def->graphics[i];
         size_t n;
 
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-            graphics->data.vnc.socket &&
-            vah_add_file(&buf, graphics->data.vnc.socket, "w"))
-            goto cleanup;
-
         for (n = 0; n < graphics->nListens; n++) {
             virDomainGraphicsListenDef listenObj = graphics->listens[n];
 
