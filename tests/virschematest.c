@@ -120,7 +120,7 @@ testSchemaDir(const char *schema,
 static int
 testSchemaDirs(const char *schema, ...)
 {
-    virXMLValidatorPtr validator;
+    virXMLValidatorPtr validator = NULL;
     va_list args;
     int ret = 0;
     char *schema_path = NULL;
@@ -130,7 +130,7 @@ testSchemaDirs(const char *schema, ...)
     va_start(args, schema);
 
     if (virAsprintf(&schema_path, "%s/docs/schemas/%s", abs_topsrcdir, schema) < 0)
-        return -1;
+        goto cleanup;
 
     if (!(validator = virXMLValidatorInit(schema_path)))
         goto cleanup;
