@@ -54,31 +54,9 @@ enum cpuTestBoolWithError {
     YES     = 1
 };
 
-enum api {
-    API_COMPARE,
-    API_GUEST_DATA,
-    API_BASELINE,
-    API_UPDATE,
-    API_HAS_FEATURE,
-    API_HOST_CPUID,
-    API_GUEST_CPUID,
-    API_JSON_CPUID,
-};
-
-static const char *apis[] = {
-    "compare",
-    "guest data",
-    "baseline",
-    "update",
-    "has feature",
-    "host CPUID",
-    "guest CPUID",
-    "json CPUID",
-};
 
 struct data {
     const char *arch;
-    enum api api;
     const char *host;
     const char *name;
     const char **models;
@@ -475,7 +453,7 @@ cpuTestHasFeature(const void *arg)
 
 
 static int
-cpuTestCPUID(const void *arg)
+cpuTestCPUID(bool guest, const void *arg)
 {
     const struct data *data = arg;
     int ret = -1;
@@ -497,7 +475,7 @@ cpuTestCPUID(const void *arg)
         goto cleanup;
 
     cpu->arch = hostData->arch;
-    if (data->api == API_GUEST_CPUID) {
+    if (guest) {
         cpu->type = VIR_CPU_TYPE_GUEST;
         cpu->match = VIR_CPU_MATCH_EXACT;
         cpu->fallback = VIR_CPU_FALLBACK_FORBID;
@@ -510,7 +488,7 @@ cpuTestCPUID(const void *arg)
 
     if (virAsprintf(&result, "cpuid-%s-%s",
                     data->host,
-                    data->api == API_HOST_CPUID ? "host" : "guest") < 0)
+                    guest ? "guest" : "host") < 0)
         goto cleanup;
 
     ret = cpuTestCompareXML(data->arch, cpu, result, false);
@@ -522,6 +500,20 @@ cpuTestCPUID(const void *arg)
     virCPUDefFree(cpu);
     VIR_FREE(result);
     return ret;
+}
+
+
+static int
+cpuTestHostCPUID(const void *arg)
+{
+    return cpuTestCPUID(false, arg);
+}
+
+
+static int
+cpuTestGuestCPUID(const void *arg)
+{
+    return cpuTestCPUID(true, arg);
 }
 
 
@@ -573,52 +565,6 @@ cpuTestJSONCPUID(const void *arg)
 #endif
 
 
-static int (*cpuTest[])(const void *) = {
-    cpuTestCompare,
-    cpuTestGuestData,
-    cpuTestBaseline,
-    cpuTestUpdate,
-    cpuTestHasFeature,
-    cpuTestCPUID,
-    cpuTestCPUID,
-#if WITH_QEMU && WITH_YAJL
-    cpuTestJSONCPUID,
-#else
-    NULL,
-#endif
-};
-
-
-static int
-cpuTestRun(const char *name, const struct data *data)
-{
-    char *label = NULL;
-    char *tmp;
-
-    if (virAsprintf(&label, "CPU %s(%s): %s", apis[data->api], data->arch, name) < 0)
-        return -1;
-
-    tmp = virTestLogContentAndReset();
-    VIR_FREE(tmp);
-
-    if (virTestRun(label, cpuTest[data->api], data) < 0) {
-        if (virTestGetDebug()) {
-            char *log;
-            if ((log = virTestLogContentAndReset()) &&
-                 strlen(log) > 0)
-                VIR_TEST_DEBUG("\n%s\n", log);
-            VIR_FREE(log);
-        }
-
-        VIR_FREE(label);
-        return -1;
-    }
-
-    VIR_FREE(label);
-    return 0;
-}
-
-
 static const char *model486[]   = { "486" };
 static const char *nomodel[]    = { "nomodel" };
 static const char *models[]     = { "qemu64", "core2duo", "Nehalem" };
@@ -640,23 +586,45 @@ mymain(void)
 #define DO_TEST(arch, api, name, host, cpu,                             \
                 models, nmodels, preferred, flags, result)              \
     do {                                                                \
-        static struct data data = {                                     \
-            arch, api, host, cpu, models,                               \
+        struct data data = {                                            \
+            arch, host, cpu, models,                                    \
             models == NULL ? NULL : #models,                            \
             nmodels, preferred, flags, result                           \
         };                                                              \
-        if (cpuTestRun(name, &data) < 0)                                \
+        char *testLabel;                                                \
+        char *tmp;                                                      \
+                                                                        \
+        tmp = virTestLogContentAndReset();                              \
+        VIR_FREE(tmp);                                                  \
+                                                                        \
+        if (virAsprintf(&testLabel, "%s(%s): %s",                       \
+                        #api, arch, name) < 0) {                        \
             ret = -1;                                                   \
+            break;                                                      \
+        }                                                               \
+                                                                        \
+        if (virTestRun(testLabel, api, &data) < 0) {                    \
+            if (virTestGetDebug()) {                                    \
+                char *log;                                              \
+                if ((log = virTestLogContentAndReset()) &&              \
+                     strlen(log) > 0)                                   \
+                    VIR_TEST_DEBUG("\n%s\n", log);                      \
+                VIR_FREE(log);                                          \
+            }                                                           \
+            ret = -1;                                                   \
+        }                                                               \
+                                                                        \
+        VIR_FREE(testLabel);                                            \
     } while (0)
 
 #define DO_TEST_COMPARE(arch, host, cpu, result)                        \
-    DO_TEST(arch, API_COMPARE,                                          \
+    DO_TEST(arch, cpuTestCompare,                                       \
             host "/" cpu " (" #result ")",                              \
             host, cpu, NULL, 0, NULL, 0, result)
 
 #define DO_TEST_UPDATE(arch, host, cpu, result)                         \
     do {                                                                \
-        DO_TEST(arch, API_UPDATE,                                       \
+        DO_TEST(arch, cpuTestUpdate,                                    \
                 cpu " on " host,                                        \
                 host, cpu, NULL, 0, NULL, 0, 0);                        \
         DO_TEST_COMPARE(arch, host, host "+" cpu, result);              \
@@ -673,19 +641,19 @@ mymain(void)
         if (virAsprintf(&label, "%s%s", name, suffix) < 0) {            \
             ret = -1;                                                   \
         } else {                                                        \
-            DO_TEST(arch, API_BASELINE, label, NULL, "baseline-" name,  \
-                    NULL, 0, NULL, flags, result);                      \
+            DO_TEST(arch, cpuTestBaseline, label, NULL,                 \
+                    "baseline-" name, NULL, 0, NULL, flags, result);    \
         }                                                               \
         VIR_FREE(label);                                                \
     } while (0)
 
 #define DO_TEST_HASFEATURE(arch, host, feature, result)                 \
-    DO_TEST(arch, API_HAS_FEATURE,                                      \
+    DO_TEST(arch, cpuTestHasFeature,                                    \
             host "/" feature " (" #result ")",                          \
             host, feature, NULL, 0, NULL, 0, result)
 
 #define DO_TEST_GUESTDATA(arch, host, cpu, models, preferred, result)   \
-    DO_TEST(arch, API_GUEST_DATA,                                       \
+    DO_TEST(arch, cpuTestGuestData,                                     \
             host "/" cpu " (" #models ", pref=" #preferred ")",         \
             host, cpu, models,                                          \
             models == NULL ? 0 : sizeof(models) / sizeof(char *),       \
@@ -695,7 +663,7 @@ mymain(void)
 # define DO_TEST_CPUID_JSON(arch, host, json)                           \
     do {                                                                \
         if (json) {                                                     \
-            DO_TEST(arch, API_JSON_CPUID, host, host,                   \
+            DO_TEST(arch, cpuTestJSONCPUID, host, host,                 \
                     NULL, NULL, 0, NULL, 0, 0);                         \
         }                                                               \
     } while (0)
@@ -705,9 +673,9 @@ mymain(void)
 
 #define DO_TEST_CPUID(arch, host, json)                                 \
     do {                                                                \
-        DO_TEST(arch, API_HOST_CPUID, host, host,                       \
+        DO_TEST(arch, cpuTestHostCPUID, host, host,                     \
                 NULL, NULL, 0, NULL, 0, 0);                             \
-        DO_TEST(arch, API_GUEST_CPUID, host, host,                      \
+        DO_TEST(arch, cpuTestGuestCPUID, host, host,                    \
                 NULL, NULL, 0, NULL, 0, 0);                             \
         DO_TEST_CPUID_JSON(arch, host, json);                           \
     } while (0)
