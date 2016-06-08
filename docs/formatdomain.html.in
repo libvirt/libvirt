@@ -5360,6 +5360,14 @@ qemu-kvm -net nic,model=? /dev/null
           of the first forward dev will be used.
         </p>
       </dd>
+      <dt><code>socket</code> <span class="since">since 1.3.6 (QEMU only)</span></dt>
+      <dd>
+        <p>
+          This listen type tells a graphics server to listen on unix socket.
+          Attribute <code>socket</code> contains a path to unix socket. If this
+          attribute is omitted libvirt will generate this path for you.
+        </p>
+      </dd>
     </dl>
 
     <h4><a name="elementsVideo">Video devices</a></h4>

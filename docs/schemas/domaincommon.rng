@@ -2976,6 +2976,16 @@
               </attribute>
             </optional>
           </group>
+          <group>
+            <attribute name="type">
+              <value>socket</value>
+            </attribute>
+            <optional>
+              <attribute name="socket">
+                <ref name="absFilePath"/>
+              </attribute>
+            </optional>
+          </group>
         </choice>
       </element>
     </zeroOrMore>

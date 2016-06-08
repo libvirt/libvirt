@@ -2624,6 +2624,15 @@ qemuDomainChangeGraphics(virQEMUDriverPtr driver,
 
             break;
 
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
+            if (STRNEQ_NULLABLE(newlisten->socket, oldlisten->socket)) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                               _("cannot change listen socket setting "
+                                 "on '%s' graphics"), type);
+                goto cleanup;
+            }
+            break;
+
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
             /* nada */

@@ -1007,10 +1007,22 @@ get_files(vahControl * ctl)
             goto cleanup;
 
     for (i = 0; i < ctl->def->ngraphics; i++) {
-        if (ctl->def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-            ctl->def->graphics[i]->data.vnc.socket &&
-            vah_add_file(&buf, ctl->def->graphics[i]->data.vnc.socket, "w"))
+        virDomainGraphicsDefPtr graphics = ctl->def->graphics[i];
+        size_t n;
+
+        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+            graphics->data.vnc.socket &&
+            vah_add_file(&buf, graphics->data.vnc.socket, "w"))
             goto cleanup;
+
+        for (n = 0; n < graphics->nListens; n++) {
+            virDomainGraphicsListenDef listenObj = graphics->listens[n];
+
+            if (listenObj.type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET &&
+                listenObj.socket &&
+                vah_add_file(&buf, listenObj.socket, "rw"))
+                goto cleanup;
+        }
     }
 
     if (ctl->def->ngraphics == 1 &&

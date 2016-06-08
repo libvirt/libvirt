@@ -307,6 +307,7 @@ virDomainGraphicsAuthConnectedTypeToString;
 virDomainGraphicsDefFree;
 virDomainGraphicsGetListen;
 virDomainGraphicsListenAppendAddress;
+virDomainGraphicsListenAppendSocket;
 virDomainGraphicsSpiceChannelModeTypeFromString;
 virDomainGraphicsSpiceChannelModeTypeToString;
 virDomainGraphicsSpiceChannelNameTypeFromString;
