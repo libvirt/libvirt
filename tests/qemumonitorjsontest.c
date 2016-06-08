@@ -769,7 +769,7 @@ testQemuMonitorJSONAttachChardev(const void *data)
     CHECK("chr_unix", "{\"return\": {}}");
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_SPICEVMC };
-    CHECK_FAIL("chr_spicevmc", "{\"return\": {}}");
+    CHECK("chr_spicevmc", "{\"return\": {}}");
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PIPE };
     CHECK_FAIL("chr_pipe", "{\"return\": {}}");

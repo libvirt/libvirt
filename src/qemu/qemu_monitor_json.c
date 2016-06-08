@@ -6209,6 +6209,13 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+        backend_type = "spicevmc";
+
+        if (virJSONValueObjectAppendString(data, "type",
+                                           virDomainChrSpicevmcTypeToString(chr->data.spicevmc)) < 0)
+            goto error;
+        break;
+
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
