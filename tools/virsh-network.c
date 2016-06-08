@@ -1367,7 +1367,7 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
         time_t expirytime_tmp = lease->expirytime;
         struct tm ts;
         char expirytime[32];
-        ts = *localtime_r(&expirytime_tmp, &ts);
+        localtime_r(&expirytime_tmp, &ts);
         strftime(expirytime, sizeof(expirytime), "%Y-%m-%d %H:%M:%S", &ts);
 
         if (lease->type == VIR_IP_ADDR_TYPE_IPV4)
