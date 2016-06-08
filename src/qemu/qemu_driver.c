@@ -6988,7 +6988,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
             char *script = net->script;
             char *brname = net->data.bridge.brname;
             size_t nips = net->nips;
-            virDomainNetIpDefPtr *ips = net->ips;
+            virDomainNetIPDefPtr *ips = net->ips;
 
             memset(net, 0, sizeof(*net));
 

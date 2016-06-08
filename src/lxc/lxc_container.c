@@ -513,7 +513,7 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
             goto error_out;
 
         for (j = 0; j < netDef->nips; j++) {
-            virDomainNetIpDefPtr ip = netDef->ips[j];
+            virDomainNetIPDefPtr ip = netDef->ips[j];
             unsigned int prefix = (ip->prefix > 0) ? ip->prefix :
                                   VIR_SOCKET_ADDR_DEFAULT_PREFIX;
             char *ipStr = virSocketAddrFormat(&ip->address);

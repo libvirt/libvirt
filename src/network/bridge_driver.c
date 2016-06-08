@@ -863,7 +863,7 @@ networkKillDaemon(pid_t pid, const char *daemonName, const char *networkName)
 
 static int
 networkBuildDnsmasqDhcpHostsList(dnsmasqContext *dctx,
-                                 virNetworkIpDefPtr ipdef)
+                                 virNetworkIPDefPtr ipdef)
 {
     size_t i;
     bool ipv6 = false;
@@ -914,7 +914,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     int nbleases = 0;
     size_t i;
     virNetworkDNSDefPtr dns = &network->def->dns;
-    virNetworkIpDefPtr tmpipdef, ipdef, ipv4def, ipv6def;
+    virNetworkIPDefPtr tmpipdef, ipdef, ipv4def, ipv6def;
     bool ipv6SLAAC;
     char *saddr = NULL, *eaddr = NULL;
 
@@ -1004,7 +1004,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
          * So listen on all defined IPv[46] addresses
          */
         for (i = 0;
-             (tmpipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
+             (tmpipdef = virNetworkDefGetIPByIndex(network->def, AF_UNSPEC, i));
              i++) {
             char *ipaddr = virSocketAddrFormat(&tmpipdef->address);
 
@@ -1114,7 +1114,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
 
     /* Find the first dhcp for both IPv4 and IPv6 */
     for (i = 0, ipv4def = NULL, ipv6def = NULL, ipv6SLAAC = false;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
+         (ipdef = virNetworkDefGetIPByIndex(network->def, AF_UNSPEC, i));
          i++) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
             if (ipdef->nranges || ipdef->nhosts) {
@@ -1172,7 +1172,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     while (ipdef) {
         int prefix;
 
-        prefix = virNetworkIpDefPrefix(ipdef);
+        prefix = virNetworkIPDefPrefix(ipdef);
         if (prefix < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("bridge '%s' has an invalid prefix"),
@@ -1197,7 +1197,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
             thisRange = virSocketAddrGetRange(&ipdef->ranges[r].start,
                                               &ipdef->ranges[r].end,
                                               &ipdef->address,
-                                              virNetworkIpDefPrefix(ipdef));
+                                              virNetworkIPDefPrefix(ipdef));
             if (thisRange < 0)
                 goto cleanup;
             nbleases += thisRange;
@@ -1278,7 +1278,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
             virBufferAddLit(&configbuf, "enable-ra\n");
         } else {
             for (i = 0;
-                 (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, i));
+                 (ipdef = virNetworkDefGetIPByIndex(network->def, AF_INET6, i));
                  i++) {
                 if (!(ipdef->nranges || ipdef->nhosts)) {
                     char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
@@ -1371,7 +1371,7 @@ networkStartDhcpDaemon(virNetworkDriverStatePtr driver,
     int ret = -1;
     dnsmasqContext *dctx = NULL;
 
-    if (!virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, 0)) {
+    if (!virNetworkDefGetIPByIndex(network->def, AF_UNSPEC, 0)) {
         /* no IP addresses, so we don't need to run */
         ret = 0;
         goto cleanup;
@@ -1448,11 +1448,11 @@ networkRefreshDhcpDaemon(virNetworkDriverStatePtr driver,
 {
     int ret = -1;
     size_t i;
-    virNetworkIpDefPtr ipdef, ipv4def, ipv6def;
+    virNetworkIPDefPtr ipdef, ipv4def, ipv6def;
     dnsmasqContext *dctx = NULL;
 
     /* if no IP addresses specified, nothing to do */
-    if (!virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, 0))
+    if (!virNetworkDefGetIPByIndex(network->def, AF_UNSPEC, 0))
         return 0;
 
     /* if there's no running dnsmasq, just start it */
@@ -1471,7 +1471,7 @@ networkRefreshDhcpDaemon(virNetworkDriverStatePtr driver,
      */
     ipv4def = NULL;
     for (i = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+         (ipdef = virNetworkDefGetIPByIndex(network->def, AF_INET, i));
          i++) {
         if (!ipv4def && (ipdef->nranges || ipdef->nhosts))
             ipv4def = ipdef;
@@ -1479,7 +1479,7 @@ networkRefreshDhcpDaemon(virNetworkDriverStatePtr driver,
 
     ipv6def = NULL;
     for (i = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, i));
+         (ipdef = virNetworkDefGetIPByIndex(network->def, AF_INET6, i));
          i++) {
         if (!ipv6def && (ipdef->nranges || ipdef->nhosts))
             ipv6def = ipdef;
@@ -1536,14 +1536,14 @@ networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
     virBuffer configbuf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
     size_t i;
-    virNetworkIpDefPtr ipdef;
+    virNetworkIPDefPtr ipdef;
     bool v6present = false, dhcp6 = false;
 
     *configstr = NULL;
 
     /* Check if DHCPv6 is needed */
     for (i = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, i));
+         (ipdef = virNetworkDefGetIPByIndex(network->def, AF_INET6, i));
          i++) {
         v6present = true;
         if (ipdef->nranges || ipdef->nhosts) {
@@ -1573,12 +1573,12 @@ networkRadvdConfContents(virNetworkObjPtr network, char **configstr)
 
     /* add a section for each IPv6 address in the config */
     for (i = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET6, i));
+         (ipdef = virNetworkDefGetIPByIndex(network->def, AF_INET6, i));
          i++) {
         int prefix;
         char *netaddr;
 
-        prefix = virNetworkIpDefPrefix(ipdef);
+        prefix = virNetworkIPDefPrefix(ipdef);
         if (prefix < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("bridge '%s' has an invalid prefix"),
@@ -1668,7 +1668,7 @@ networkStartRadvd(virNetworkDriverStatePtr driver,
         goto cleanup;
     }
 
-    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0)) {
+    if (!virNetworkDefGetIPByIndex(network->def, AF_INET6, 0)) {
         /* no IPv6 addresses, so we don't need to run radvd */
         ret = 0;
         goto cleanup;
@@ -1766,7 +1766,7 @@ networkRefreshRadvd(virNetworkDriverStatePtr driver,
     if (network->radvdPid <= 0 || (kill(network->radvdPid, 0) < 0))
         return networkStartRadvd(driver, network);
 
-    if (!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0)) {
+    if (!virNetworkDefGetIPByIndex(network->def, AF_INET6, 0)) {
         /* no IPv6 addresses, so we don't need to run radvd */
         return 0;
     }
@@ -1873,7 +1873,7 @@ networkReloadFirewallRules(virNetworkDriverStatePtr driver)
 
 /* Enable IP Forwarding. Return 0 for success, -1 for failure. */
 static int
-networkEnableIpForwarding(bool enableIPv4, bool enableIPv6)
+networkEnableIPForwarding(bool enableIPv4, bool enableIPv6)
 {
     int ret = 0;
 #ifdef HAVE_SYSCTLBYNAME
@@ -1900,7 +1900,7 @@ networkSetIPv6Sysctls(virNetworkObjPtr network)
 {
     char *field = NULL;
     int ret = -1;
-    bool enableIPv6 =  !!virNetworkDefGetIpByIndex(network->def, AF_INET6, 0);
+    bool enableIPv6 =  !!virNetworkDefGetIPByIndex(network->def, AF_INET6, 0);
 
     /* set disable_ipv6 if there are no ipv6 addresses defined for the
      * network. But also unset it if there *are* ipv6 addresses, as we
@@ -1966,9 +1966,9 @@ networkSetIPv6Sysctls(virNetworkObjPtr network)
 /* add an IP address to a bridge */
 static int
 networkAddAddrToBridge(virNetworkObjPtr network,
-                       virNetworkIpDefPtr ipdef)
+                       virNetworkIPDefPtr ipdef)
 {
-    int prefix = virNetworkIpDefPrefix(ipdef);
+    int prefix = virNetworkIPDefPrefix(ipdef);
 
     if (prefix < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2035,14 +2035,14 @@ networkAddRouteToBridge(virNetworkObjPtr network,
 static int
 networkWaitDadFinish(virNetworkObjPtr network)
 {
-    virNetworkIpDefPtr ipdef;
+    virNetworkIPDefPtr ipdef;
     virSocketAddrPtr *addrs = NULL, addr = NULL;
     size_t naddrs = 0;
     int ret = -1;
 
     VIR_DEBUG("Begin waiting for IPv6 DAD on network %s", network->def->name);
 
-    while ((ipdef = virNetworkDefGetIpByIndex(network->def,
+    while ((ipdef = virNetworkDefGetIPByIndex(network->def,
                                               AF_INET6, naddrs))) {
         addr = &ipdef->address;
         if (VIR_APPEND_ELEMENT_COPY(addrs, naddrs, addr) < 0)
@@ -2065,7 +2065,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     size_t i;
     bool v4present = false, v6present = false;
     virErrorPtr save_err = NULL;
-    virNetworkIpDefPtr ipdef;
+    virNetworkIPDefPtr ipdef;
     virNetworkRouteDefPtr routedef;
     char *macTapIfName = NULL;
     int tapfd = -1;
@@ -2138,7 +2138,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         goto err1;
 
     for (i = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_UNSPEC, i));
+         (ipdef = virNetworkDefGetIPByIndex(network->def, AF_UNSPEC, i));
          i++) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET))
             v4present = true;
@@ -2176,7 +2176,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
 
     /* If forward.type != NONE, turn on global IP forwarding */
     if (network->def->forward.type != VIR_NETWORK_FORWARD_NONE &&
-        networkEnableIpForwarding(v4present, v6present) < 0) {
+        networkEnableIPForwarding(v4present, v6present) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to enable IP forwarding"));
         goto err3;
@@ -2908,7 +2908,7 @@ networkValidate(virNetworkDriverStatePtr driver,
     size_t i, j;
     bool vlanUsed, vlanAllowed, badVlanUse = false;
     virPortGroupDefPtr defaultPortGroup = NULL;
-    virNetworkIpDefPtr ipdef;
+    virNetworkIPDefPtr ipdef;
     bool ipv4def = false, ipv6def = false;
     bool bandwidthAllowed = true;
     bool usesInterface = false, usesAddress = false;
@@ -2940,7 +2940,7 @@ networkValidate(virNetworkDriverStatePtr driver,
                            virNetworkForwardTypeToString(def->forward.type));
             return -1;
         }
-        if (virNetworkDefGetIpByIndex(def, AF_UNSPEC, 0)) {
+        if (virNetworkDefGetIPByIndex(def, AF_UNSPEC, 0)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported <ip> element in network %s "
                              "with forward mode='%s'"),
@@ -3013,7 +3013,7 @@ networkValidate(virNetworkDriverStatePtr driver,
      * on one IPv6 address per defined network
      */
     for (i = 0;
-         (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, i));
+         (ipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, i));
          i++) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
             if (ipdef->nranges || ipdef->nhosts) {
@@ -3304,7 +3304,7 @@ networkUpdate(virNetworkPtr net,
     virNetworkObjPtr network = NULL;
     int isActive, ret = -1;
     size_t i;
-    virNetworkIpDefPtr ipdef;
+    virNetworkIPDefPtr ipdef;
     bool oldDhcpActive = false;
     bool needFirewallRefresh = false;
 
@@ -3321,7 +3321,7 @@ networkUpdate(virNetworkPtr net,
 
     /* see if we are listening for dhcp pre-modification */
     for (i = 0;
-         (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+         (ipdef = virNetworkDefGetIPByIndex(network->def, AF_INET, i));
          i++) {
         if (ipdef->nranges || ipdef->nhosts) {
             oldDhcpActive = true;
@@ -3416,7 +3416,7 @@ networkUpdate(virNetworkPtr net,
             bool newDhcpActive = false;
 
             for (i = 0;
-                 (ipdef = virNetworkDefGetIpByIndex(network->def, AF_INET, i));
+                 (ipdef = virNetworkDefGetIPByIndex(network->def, AF_INET, i));
                  i++) {
                 if (ipdef->nranges || ipdef->nhosts) {
                     newDhcpActive = true;
@@ -3685,7 +3685,7 @@ networkGetDHCPLeases(virNetworkPtr network,
     const char *mac_tmp = NULL;
     virJSONValuePtr lease_tmp = NULL;
     virJSONValuePtr leases_array = NULL;
-    virNetworkIpDefPtr ipdef_tmp = NULL;
+    virNetworkIPDefPtr ipdef_tmp = NULL;
     virNetworkDHCPLeasePtr lease = NULL;
     virNetworkDHCPLeasePtr *leases_ret = NULL;
     virNetworkObjPtr obj;
@@ -3792,7 +3792,7 @@ networkGetDHCPLeases(virNetworkPtr network,
                 }
                 if (!ipv6 && VIR_SOCKET_ADDR_IS_FAMILY(&ipdef_tmp->address,
                                                       AF_INET)) {
-                    lease->prefix = virSocketAddrGetIpPrefix(&ipdef_tmp->address,
+                    lease->prefix = virSocketAddrGetIPPrefix(&ipdef_tmp->address,
                                                              &ipdef_tmp->netmask,
                                                              ipdef_tmp->prefix);
                     break;
@@ -4708,7 +4708,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     int ret = -1;
     virNetworkObjPtr network;
     virNetworkDefPtr netdef;
-    virNetworkIpDefPtr ipdef;
+    virNetworkIPDefPtr ipdef;
     virSocketAddr addr;
     virSocketAddrPtr addrptr = NULL;
     char *dev_name = NULL;
@@ -4727,7 +4727,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     case VIR_NETWORK_FORWARD_NONE:
     case VIR_NETWORK_FORWARD_NAT:
     case VIR_NETWORK_FORWARD_ROUTE:
-        ipdef = virNetworkDefGetIpByIndex(netdef, AF_UNSPEC, 0);
+        ipdef = virNetworkDefGetIPByIndex(netdef, AF_UNSPEC, 0);
         if (!ipdef) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("network '%s' doesn't have an IP address"),

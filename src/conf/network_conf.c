@@ -310,7 +310,7 @@ virNetworkDHCPHostDefClear(virNetworkDHCPHostDefPtr def)
 }
 
 static void
-virNetworkIpDefClear(virNetworkIpDefPtr def)
+virNetworkIPDefClear(virNetworkIPDefPtr def)
 {
     VIR_FREE(def->family);
     VIR_FREE(def->ranges);
@@ -402,7 +402,7 @@ virNetworkDefFree(virNetworkDefPtr def)
     virNetworkForwardDefClear(&def->forward);
 
     for (i = 0; i < def->nips && def->ips; i++)
-        virNetworkIpDefClear(&def->ips[i]);
+        virNetworkIPDefClear(&def->ips[i]);
     VIR_FREE(def->ips);
 
     for (i = 0; i < def->nroutes && def->routes; i++)
@@ -780,8 +780,8 @@ void virNetworkRemoveInactive(virNetworkObjListPtr nets,
 }
 
 /* return ips[index], or NULL if there aren't enough ips */
-virNetworkIpDefPtr
-virNetworkDefGetIpByIndex(const virNetworkDef *def,
+virNetworkIPDefPtr
+virNetworkDefGetIPByIndex(const virNetworkDef *def,
                           int family, size_t n)
 {
     size_t i;
@@ -832,9 +832,9 @@ virNetworkDefGetRouteByIndex(const virNetworkDef *def,
 /* return number of 1 bits in netmask for the network's ipAddress,
  * or -1 on error
  */
-int virNetworkIpDefPrefix(const virNetworkIpDef *def)
+int virNetworkIPDefPrefix(const virNetworkIPDef *def)
 {
-    return virSocketAddrGetIpPrefix(&def->address,
+    return virSocketAddrGetIPPrefix(&def->address,
                                     &def->netmask,
                                     def->prefix);
 }
@@ -843,7 +843,7 @@ int virNetworkIpDefPrefix(const virNetworkIpDef *def)
  * definition, based on either the definition's netmask, or its
  * prefix. Return -1 on error (and set the netmask family to AF_UNSPEC)
  */
-int virNetworkIpDefNetmask(const virNetworkIpDef *def,
+int virNetworkIPDefNetmask(const virNetworkIPDef *def,
                            virSocketAddrPtr netmask)
 {
     if (VIR_SOCKET_ADDR_IS_FAMILY(&def->netmask, AF_INET)) {
@@ -851,14 +851,14 @@ int virNetworkIpDefNetmask(const virNetworkIpDef *def,
         return 0;
     }
 
-    return virSocketAddrPrefixToNetmask(virNetworkIpDefPrefix(def), netmask,
+    return virSocketAddrPrefixToNetmask(virNetworkIPDefPrefix(def), netmask,
                                         VIR_SOCKET_ADDR_FAMILY(&def->address));
 }
 
 
 static int
 virSocketAddrRangeParseXML(const char *networkName,
-                           virNetworkIpDefPtr ipdef,
+                           virNetworkIPDefPtr ipdef,
                            xmlNodePtr node,
                            virSocketAddrRangePtr range)
 {
@@ -887,7 +887,7 @@ virSocketAddrRangeParseXML(const char *networkName,
 
     /* do a sanity check of the range */
     if (virSocketAddrGetRange(&range->start, &range->end, &ipdef->address,
-                              virNetworkIpDefPrefix(ipdef)) < 0)
+                              virNetworkIPDefPrefix(ipdef)) < 0)
         goto cleanup;
 
     ret = 0;
@@ -900,7 +900,7 @@ virSocketAddrRangeParseXML(const char *networkName,
 
 static int
 virNetworkDHCPHostDefParseXML(const char *networkName,
-                              virNetworkIpDefPtr def,
+                              virNetworkIPDefPtr def,
                               xmlNodePtr node,
                               virNetworkDHCPHostDefPtr host,
                               bool partialOkay)
@@ -1021,7 +1021,7 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
 static int
 virNetworkDHCPDefParseXML(const char *networkName,
                           xmlNodePtr node,
-                          virNetworkIpDefPtr def)
+                          virNetworkIPDefPtr def)
 {
     int ret = -1;
     xmlNodePtr cur;
@@ -1448,10 +1448,10 @@ static int
 virNetworkIPDefParseXML(const char *networkName,
                         xmlNodePtr node,
                         xmlXPathContextPtr ctxt,
-                        virNetworkIpDefPtr def)
+                        virNetworkIPDefPtr def)
 {
     /*
-     * virNetworkIpDef object is already allocated as part of an array.
+     * virNetworkIPDef object is already allocated as part of an array.
      * On failure clear it out, but don't free it.
      */
 
@@ -1586,7 +1586,7 @@ virNetworkIPDefParseXML(const char *networkName,
 
  cleanup:
     if (result < 0)
-        virNetworkIpDefClear(def);
+        virNetworkIPDefClear(def);
     VIR_FREE(address);
     VIR_FREE(netmask);
 
@@ -2050,7 +2050,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     xmlNodePtr *ipNodes = NULL;
     xmlNodePtr *routeNodes = NULL;
     xmlNodePtr *portGroupNodes = NULL;
-    int nIps, nPortGroups, nRoutes;
+    int nips, nPortGroups, nRoutes;
     xmlNodePtr dnsNode = NULL;
     xmlNodePtr virtPortNode = NULL;
     xmlNodePtr forwardNode = NULL;
@@ -2227,18 +2227,18 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     }
     VIR_FREE(portGroupNodes);
 
-    nIps = virXPathNodeSet("./ip", ctxt, &ipNodes);
-    if (nIps < 0)
+    nips = virXPathNodeSet("./ip", ctxt, &ipNodes);
+    if (nips < 0)
         goto error;
 
-    if (nIps > 0) {
+    if (nips > 0) {
         size_t i;
 
         /* allocate array to hold all the addrs */
-        if (VIR_ALLOC_N(def->ips, nIps) < 0)
+        if (VIR_ALLOC_N(def->ips, nips) < 0)
             goto error;
         /* parse each addr */
-        for (i = 0; i < nIps; i++) {
+        for (i = 0; i < nips; i++) {
             if (virNetworkIPDefParseXML(def->name,
                                         ipNodes[i],
                                         ctxt,
@@ -2278,7 +2278,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
          * is directly reachable from this bridge.
          */
         nRoutes = def->nroutes;
-        nIps = def->nips;
+        nips = def->nips;
         for (i = 0; i < nRoutes; i++) {
             size_t j;
             virSocketAddr testAddr, testGw;
@@ -2286,13 +2286,13 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             virNetworkRouteDefPtr gwdef = def->routes[i];
             virSocketAddrPtr gateway = virNetworkRouteDefGetGateway(gwdef);
             addrMatch = false;
-            for (j = 0; j < nIps; j++) {
-                virNetworkIpDefPtr def2 = &def->ips[j];
+            for (j = 0; j < nips; j++) {
+                virNetworkIPDefPtr def2 = &def->ips[j];
                 if (VIR_SOCKET_ADDR_FAMILY(gateway)
                     != VIR_SOCKET_ADDR_FAMILY(&def2->address)) {
                     continue;
                 }
-                int prefix = virNetworkIpDefPrefix(def2);
+                int prefix = virNetworkIPDefPrefix(def2);
                 virSocketAddrMaskByPrefix(&def2->address, prefix, &testAddr);
                 virSocketAddrMaskByPrefix(gateway, prefix, &testGw);
                 if (VIR_SOCKET_ADDR_VALID(&testAddr) &&
@@ -2544,8 +2544,8 @@ virNetworkDNSDefFormat(virBufferPtr buf,
 }
 
 static int
-virNetworkIpDefFormat(virBufferPtr buf,
-                      const virNetworkIpDef *def)
+virNetworkIPDefFormat(virBufferPtr buf,
+                      const virNetworkIPDef *def)
 {
     int result = -1;
 
@@ -2871,7 +2871,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
         goto error;
 
     for (i = 0; i < def->nips; i++) {
-        if (virNetworkIpDefFormat(buf, &def->ips[i]) < 0)
+        if (virNetworkIPDefFormat(buf, &def->ips[i]) < 0)
             goto error;
     }
 
@@ -3452,15 +3452,15 @@ virNetworkDefUpdateIP(virNetworkDefPtr def,
     return -1;
 }
 
-static virNetworkIpDefPtr
-virNetworkIpDefByIndex(virNetworkDefPtr def, int parentIndex)
+static virNetworkIPDefPtr
+virNetworkIPDefByIndex(virNetworkDefPtr def, int parentIndex)
 {
-    virNetworkIpDefPtr ipdef = NULL;
+    virNetworkIPDefPtr ipdef = NULL;
     size_t i;
 
     /* first find which ip element's dhcp host list to work on */
     if (parentIndex >= 0) {
-        ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, parentIndex);
+        ipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, parentIndex);
         if (!(ipdef)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("couldn't update dhcp host entry - no <ip> "
@@ -3474,15 +3474,15 @@ virNetworkIpDefByIndex(virNetworkDefPtr def, int parentIndex)
      * means the one and only <ip> that has <dhcp> element
      */
     for (i = 0;
-         (ipdef = virNetworkDefGetIpByIndex(def, AF_UNSPEC, i));
+         (ipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, i));
          i++) {
         if (ipdef->nranges || ipdef->nhosts)
             break;
     }
     if (!ipdef) {
-        ipdef = virNetworkDefGetIpByIndex(def, AF_INET, 0);
+        ipdef = virNetworkDefGetIPByIndex(def, AF_INET, 0);
         if (!ipdef)
-            ipdef = virNetworkDefGetIpByIndex(def, AF_INET6, 0);
+            ipdef = virNetworkDefGetIPByIndex(def, AF_INET6, 0);
     }
     if (!ipdef) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -3495,13 +3495,13 @@ virNetworkIpDefByIndex(virNetworkDefPtr def, int parentIndex)
 
 static int
 virNetworkDefUpdateCheckMultiDHCP(virNetworkDefPtr def,
-                                  virNetworkIpDefPtr ipdef)
+                                  virNetworkIPDefPtr ipdef)
 {
     int family = VIR_SOCKET_ADDR_FAMILY(&ipdef->address);
     size_t i;
-    virNetworkIpDefPtr ip;
+    virNetworkIPDefPtr ip;
 
-    for (i = 0; (ip = virNetworkDefGetIpByIndex(def, family, i)); i++) {
+    for (i = 0; (ip = virNetworkDefGetIPByIndex(def, family, i)); i++) {
         if (ip != ipdef) {
             if (ip->nranges || ip->nhosts) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
@@ -3526,7 +3526,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
 {
     size_t i;
     int ret = -1;
-    virNetworkIpDefPtr ipdef = virNetworkIpDefByIndex(def, parentIndex);
+    virNetworkIPDefPtr ipdef = virNetworkIPDefByIndex(def, parentIndex);
     virNetworkDHCPHostDef host;
     bool partialOkay = (command == VIR_NETWORK_UPDATE_COMMAND_DELETE);
 
@@ -3665,7 +3665,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
 {
     size_t i;
     int ret = -1;
-    virNetworkIpDefPtr ipdef = virNetworkIpDefByIndex(def, parentIndex);
+    virNetworkIPDefPtr ipdef = virNetworkIPDefByIndex(def, parentIndex);
     virSocketAddrRange range;
 
     memset(&range, 0, sizeof(range));

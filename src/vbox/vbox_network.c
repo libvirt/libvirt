@@ -376,7 +376,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
     char *networkNameUtf8 = NULL;
     IHostNetworkInterface *networkInterface = NULL;
     virNetworkDefPtr def = virNetworkDefParseString(xml);
-    virNetworkIpDefPtr ipdef = NULL;
+    virNetworkIPDefPtr ipdef = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     vboxIIDUnion vboxnetiid;
     virSocketAddr netmask;
@@ -402,11 +402,11 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
      * If there weren't any IPv4 addresses, ignore the network (since it's
      * required below to have an IPv4 address)
     */
-    ipdef = virNetworkDefGetIpByIndex(def, AF_INET, 0);
+    ipdef = virNetworkDefGetIPByIndex(def, AF_INET, 0);
     if (!ipdef)
         goto cleanup;
 
-    if (virNetworkIpDefNetmask(ipdef, &netmask) < 0)
+    if (virNetworkIPDefNetmask(ipdef, &netmask) < 0)
         goto cleanup;
 
     /* the current limitation of hostonly network is that you can't
@@ -762,7 +762,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
 {
     vboxGlobalData *data = network->conn->privateData;
     virNetworkDefPtr def = NULL;
-    virNetworkIpDefPtr ipdef = NULL;
+    virNetworkIPDefPtr ipdef = NULL;
     char *networkNameUtf8 = NULL;
     PRUnichar *networkInterfaceNameUtf16 = NULL;
     IHostNetworkInterface *networkInterface = NULL;

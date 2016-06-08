@@ -220,7 +220,7 @@ openvzReadNetworkConf(virDomainDefPtr def,
                 goto error;
 
             net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
-            if (virDomainNetAppendIpAddress(net, token, AF_UNSPEC, 0) < 0)
+            if (virDomainNetAppendIPAddress(net, token, AF_UNSPEC, 0) < 0)
                 goto error;
 
             if (VIR_APPEND_ELEMENT_COPY(def->nets, def->nnets, net) < 0)

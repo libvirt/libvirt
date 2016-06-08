@@ -38,7 +38,7 @@ struct _virNetworkRouteDef {
 
     /* One or the other of the following two will be used for a given
      * Network address, but never both. The parser guarantees this.
-     * The virSocketAddrGetIpPrefix() can be used to get a
+     * The virSocketAddrGetIPPrefix() can be used to get a
      * valid prefix.
      */
     virSocketAddr netmask;      /* ipv4 - either netmask or prefix specified */
@@ -387,10 +387,10 @@ virNetworkRouteDefGetPrefix(virNetworkRouteDefPtr def)
                   virSocketAddrEqual(&def->netmask, &zero)))
             prefix = 0;
         else
-            prefix = virSocketAddrGetIpPrefix(&def->address, &def->netmask,
+            prefix = virSocketAddrGetIPPrefix(&def->address, &def->netmask,
                                               def->prefix);
     } else {
-        prefix = virSocketAddrGetIpPrefix(&def->address, &def->netmask,
+        prefix = virSocketAddrGetIPPrefix(&def->address, &def->netmask,
                                           def->prefix);
     }
 

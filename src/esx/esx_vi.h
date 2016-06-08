@@ -220,7 +220,7 @@ int esxVI_Context_Connect(esxVI_Context *ctx, const char *ipAddress,
 int esxVI_Context_LookupManagedObjects(esxVI_Context *ctx);
 int esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path);
 int esxVI_Context_LookupManagedObjectsByHostSystemIp(esxVI_Context *ctx,
-                                                     const char *hostSystemIpAddress);
+                                                     const char *hostSystemIPAddress);
 int esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
                           const char *request, esxVI_Response **response,
                           esxVI_Occurrence occurrence);

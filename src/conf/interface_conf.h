@@ -119,9 +119,9 @@ struct _virInterfaceVlanDef {
     char *dev_name;   /* device name for vlan */
 };
 
-typedef struct _virInterfaceIpDef virInterfaceIpDef;
-typedef virInterfaceIpDef *virInterfaceIpDefPtr;
-struct _virInterfaceIpDef {
+typedef struct _virInterfaceIPDef virInterfaceIPDef;
+typedef virInterfaceIPDef *virInterfaceIPDefPtr;
+struct _virInterfaceIPDef {
     char *address;   /* ip address */
     int prefix;      /* ip prefix */
 };
@@ -135,7 +135,7 @@ struct _virInterfaceProtocolDef {
     int peerdns;     /* dhcp peerdns ? */
     int autoconf;    /* only useful if family is ipv6 */
     int nips;
-    virInterfaceIpDefPtr *ips; /* ptr to array of ips[nips] */
+    virInterfaceIPDefPtr *ips; /* ptr to array of ips[nips] */
     char *gateway;   /* route gateway */
 };
 

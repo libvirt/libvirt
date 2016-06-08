@@ -820,7 +820,7 @@ iptablesHandleSrcMacAddr(virFirewallPtr fw,
 
 
 static int
-iptablesHandleIpHdr(virFirewallPtr fw,
+iptablesHandleIPHdr(virFirewallPtr fw,
                     virFirewallRulePtr fwrule,
                     virNWFilterVarCombIterPtr vars,
                     ipHdrDataDefPtr ipHdr,
@@ -972,7 +972,7 @@ iptablesHandleIpHdr(virFirewallPtr fw,
 
 
 static int
-iptablesHandleIpHdrAfterStateMatch(virFirewallPtr fw,
+iptablesHandleIPHdrAfterStateMatch(virFirewallPtr fw,
                                    virFirewallRulePtr fwrule,
                                    virNWFilterVarCombIterPtr vars,
                                    ipHdrDataDefPtr ipHdr,
@@ -1200,7 +1200,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
                                      &srcMacSkipped) < 0)
             goto cleanup;
 
-        if (iptablesHandleIpHdr(fw, fwrule,
+        if (iptablesHandleIPHdr(fw, fwrule,
                                 vars,
                                 &rule->p.tcpHdrFilter.ipHdr,
                                 directionIn,
@@ -1259,7 +1259,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
                                      &srcMacSkipped) < 0)
             goto cleanup;
 
-        if (iptablesHandleIpHdr(fw, fwrule,
+        if (iptablesHandleIPHdr(fw, fwrule,
                                 vars,
                                 &rule->p.udpHdrFilter.ipHdr,
                                 directionIn,
@@ -1289,7 +1289,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
                                      &srcMacSkipped) < 0)
             goto cleanup;
 
-        if (iptablesHandleIpHdr(fw, fwrule,
+        if (iptablesHandleIPHdr(fw, fwrule,
                                 vars,
                                 &rule->p.udpliteHdrFilter.ipHdr,
                                 directionIn,
@@ -1314,7 +1314,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
                                      &srcMacSkipped) < 0)
             goto cleanup;
 
-        if (iptablesHandleIpHdr(fw, fwrule,
+        if (iptablesHandleIPHdr(fw, fwrule,
                                 vars,
                                 &rule->p.espHdrFilter.ipHdr,
                                 directionIn,
@@ -1339,7 +1339,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
                                      &srcMacSkipped) < 0)
             goto cleanup;
 
-        if (iptablesHandleIpHdr(fw, fwrule,
+        if (iptablesHandleIPHdr(fw, fwrule,
                                 vars,
                                 &rule->p.ahHdrFilter.ipHdr,
                                 directionIn,
@@ -1364,7 +1364,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
                                      &srcMacSkipped) < 0)
             goto cleanup;
 
-        if (iptablesHandleIpHdr(fw, fwrule,
+        if (iptablesHandleIPHdr(fw, fwrule,
                                 vars,
                                 &rule->p.sctpHdrFilter.ipHdr,
                                 directionIn,
@@ -1400,7 +1400,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
                                      &srcMacSkipped) < 0)
             goto cleanup;
 
-        if (iptablesHandleIpHdr(fw, fwrule,
+        if (iptablesHandleIPHdr(fw, fwrule,
                                 vars,
                                 &rule->p.icmpHdrFilter.ipHdr,
                                 directionIn,
@@ -1461,7 +1461,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
                                      &srcMacSkipped) < 0)
             goto cleanup;
 
-        if (iptablesHandleIpHdr(fw, fwrule,
+        if (iptablesHandleIPHdr(fw, fwrule,
                                 vars,
                                 &rule->p.igmpHdrFilter.ipHdr,
                                 directionIn,
@@ -1486,7 +1486,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
                                      &srcMacSkipped) < 0)
             goto cleanup;
 
-        if (iptablesHandleIpHdr(fw, fwrule,
+        if (iptablesHandleIPHdr(fw, fwrule,
                                 vars,
                                 &rule->p.allHdrFilter.ipHdr,
                                 directionIn,
@@ -1534,7 +1534,7 @@ _iptablesCreateRuleInstance(virFirewallPtr fw,
                                  directionIn,
                                  rule);
 
-    if (iptablesHandleIpHdrAfterStateMatch(fw, fwrule,
+    if (iptablesHandleIPHdrAfterStateMatch(fw, fwrule,
                                            vars,
                                            &rule->p.allHdrFilter.ipHdr,
                                            directionIn) < 0)

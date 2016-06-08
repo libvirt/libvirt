@@ -1011,7 +1011,7 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
  }
 
 /**
- * virSocketAddrGetIpPrefix:
+ * virSocketAddrGetIPPrefix:
  * @address: network address
  * @netmask: netmask for this network
  * @prefix: prefix if specified instead of netmask
@@ -1020,7 +1020,7 @@ virSocketAddrPrefixToNetmask(unsigned int prefix,
  */
 
 int
-virSocketAddrGetIpPrefix(const virSocketAddr *address,
+virSocketAddrGetIPPrefix(const virSocketAddr *address,
                          const virSocketAddr *netmask,
                          int prefix)
 {

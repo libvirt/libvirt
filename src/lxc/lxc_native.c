@@ -419,7 +419,7 @@ typedef struct {
     char *macvlanmode;
     char *vlanid;
     char *name;
-    virDomainNetIpDefPtr *ips;
+    virDomainNetIPDefPtr *ips;
     size_t nips;
     char *gateway_ipv4;
     char *gateway_ipv6;
@@ -601,7 +601,7 @@ lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
              STREQ(name, "lxc.network.ipv6")) {
         int family = AF_INET;
         char **ipparts = NULL;
-        virDomainNetIpDefPtr ip = NULL;
+        virDomainNetIPDefPtr ip = NULL;
 
         if (VIR_ALLOC(ip) < 0)
             return -1;

@@ -45,7 +45,7 @@ virInterfaceDefDevFormat(virBufferPtr buf, const virInterfaceDef *def,
                          virInterfaceType parentIfType);
 
 static
-void virInterfaceIpDefFree(virInterfaceIpDefPtr def)
+void virInterfaceIPDefFree(virInterfaceIPDefPtr def)
 {
     if (def == NULL)
         return;
@@ -61,7 +61,7 @@ void virInterfaceProtocolDefFree(virInterfaceProtocolDefPtr def)
     if (def == NULL)
         return;
     for (i = 0; i < def->nips; i++)
-        virInterfaceIpDefFree(def->ips[i]);
+        virInterfaceIPDefFree(def->ips[i]);
     VIR_FREE(def->ips);
     VIR_FREE(def->family);
     VIR_FREE(def->gateway);
@@ -281,7 +281,7 @@ virInterfaceDefParseDhcp(virInterfaceProtocolDefPtr def,
 }
 
 static int
-virInterfaceDefParseIp(virInterfaceIpDefPtr def,
+virInterfaceDefParseIP(virInterfaceIPDefPtr def,
                        xmlXPathContextPtr ctxt)
 {
     int ret = 0;
@@ -310,7 +310,7 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDefPtr def,
 {
     xmlNodePtr dhcp;
     xmlNodePtr *ipNodes = NULL;
-    int nIpNodes, ret = -1;
+    int nipNodes, ret = -1;
     size_t i;
     char *tmp;
 
@@ -323,26 +323,26 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDefPtr def,
             return -1;
     }
 
-    nIpNodes = virXPathNodeSet("./ip", ctxt, &ipNodes);
-    if (nIpNodes < 0)
+    nipNodes = virXPathNodeSet("./ip", ctxt, &ipNodes);
+    if (nipNodes < 0)
         return -1;
     if (ipNodes == NULL)
         return 0;
 
-    if (VIR_ALLOC_N(def->ips, nIpNodes) < 0)
+    if (VIR_ALLOC_N(def->ips, nipNodes) < 0)
         goto error;
 
     def->nips = 0;
-    for (i = 0; i < nIpNodes; i++) {
+    for (i = 0; i < nipNodes; i++) {
 
-        virInterfaceIpDefPtr ip;
+        virInterfaceIPDefPtr ip;
 
         if (VIR_ALLOC(ip) < 0)
             goto error;
 
         ctxt->node = ipNodes[i];
-        if (virInterfaceDefParseIp(ip, ctxt) < 0) {
-            virInterfaceIpDefFree(ip);
+        if (virInterfaceDefParseIP(ip, ctxt) < 0) {
+            virInterfaceIPDefFree(ip);
             goto error;
         }
         def->ips[def->nips++] = ip;
@@ -361,7 +361,7 @@ virInterfaceDefParseProtoIPv6(virInterfaceProtocolDefPtr def,
 {
     xmlNodePtr dhcp, autoconf;
     xmlNodePtr *ipNodes = NULL;
-    int nIpNodes, ret = -1;
+    int nipNodes, ret = -1;
     size_t i;
     char *tmp;
 
@@ -378,26 +378,26 @@ virInterfaceDefParseProtoIPv6(virInterfaceProtocolDefPtr def,
             return -1;
     }
 
-    nIpNodes = virXPathNodeSet("./ip", ctxt, &ipNodes);
-    if (nIpNodes < 0)
+    nipNodes = virXPathNodeSet("./ip", ctxt, &ipNodes);
+    if (nipNodes < 0)
         return -1;
     if (ipNodes == NULL)
         return 0;
 
-    if (VIR_ALLOC_N(def->ips, nIpNodes) < 0)
+    if (VIR_ALLOC_N(def->ips, nipNodes) < 0)
         goto error;
 
     def->nips = 0;
-    for (i = 0; i < nIpNodes; i++) {
+    for (i = 0; i < nipNodes; i++) {
 
-        virInterfaceIpDefPtr ip;
+        virInterfaceIPDefPtr ip;
 
         if (VIR_ALLOC(ip) < 0)
             goto error;
 
         ctxt->node = ipNodes[i];
-        if (virInterfaceDefParseIp(ip, ctxt) < 0) {
-            virInterfaceIpDefFree(ip);
+        if (virInterfaceDefParseIP(ip, ctxt) < 0) {
+            virInterfaceIPDefFree(ip);
             goto error;
         }
         def->ips[def->nips++] = ip;

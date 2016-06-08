@@ -935,7 +935,7 @@ xenParseVif(virConfPtr conf, virDomainDefPtr def, const char *vif_typename)
                 if (bridge[0] && VIR_STRDUP(net->data.bridge.brname, bridge) < 0)
                     goto cleanup;
             }
-            if (ip[0] && virDomainNetAppendIpAddress(net, ip, AF_INET, 0) < 0)
+            if (ip[0] && virDomainNetAppendIPAddress(net, ip, AF_INET, 0) < 0)
                 goto cleanup;
 
             if (script && script[0] &&

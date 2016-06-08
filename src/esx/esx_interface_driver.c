@@ -181,8 +181,8 @@ esxInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
     virInterfaceProtocolDefPtr protocols;
     virInterfaceProtocolDef protocol;
     virSocketAddr socketAddress;
-    virInterfaceIpDefPtr ips;
-    virInterfaceIpDef ip;
+    virInterfaceIPDefPtr ips;
+    virInterfaceIPDef ip;
 
     virCheckFlags(VIR_INTERFACE_XML_INACTIVE, NULL);
 

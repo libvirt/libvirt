@@ -619,14 +619,14 @@ xenParseSxprNets(virDomainDefPtr def,
                     VIR_STRDUP(net->script, tmp2) < 0)
                     goto cleanup;
                 tmp = sexpr_node(node, "device/vif/ip");
-                if (tmp && virDomainNetAppendIpAddress(net, tmp, AF_UNSPEC, 0) < 0)
+                if (tmp && virDomainNetAppendIPAddress(net, tmp, AF_UNSPEC, 0) < 0)
                     goto cleanup;
             } else {
                 net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
                 if (VIR_STRDUP(net->script, tmp2) < 0)
                     goto cleanup;
                 tmp = sexpr_node(node, "device/vif/ip");
-                if (tmp && virDomainNetAppendIpAddress(net, tmp, AF_UNSPEC, 0) < 0)
+                if (tmp && virDomainNetAppendIPAddress(net, tmp, AF_UNSPEC, 0) < 0)
                     goto cleanup;
             }
 

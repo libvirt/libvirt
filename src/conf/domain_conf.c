@@ -6119,11 +6119,11 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     return ret;
 }
 
-static virDomainNetIpDefPtr
-virDomainNetIpParseXML(xmlNodePtr node)
+static virDomainNetIPDefPtr
+virDomainNetIPParseXML(xmlNodePtr node)
 {
     /* Parse the prefix in every case */
-    virDomainNetIpDefPtr ip = NULL, ret = NULL;
+    virDomainNetIPDefPtr ip = NULL, ret = NULL;
     char *prefixStr = NULL;
     unsigned int prefixValue = 0;
     char *familyStr = NULL;
@@ -6245,7 +6245,7 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
         if (nipnodes) {
             size_t i;
             for (i = 0; i < nipnodes; i++) {
-                virDomainNetIpDefPtr ip = virDomainNetIpParseXML(ipnodes[i]);
+                virDomainNetIPDefPtr ip = virDomainNetIPParseXML(ipnodes[i]);
 
                 if (!ip)
                     goto error;
@@ -8877,12 +8877,12 @@ virDomainActualNetDefParseXML(xmlNodePtr node,
 
 
 int
-virDomainNetAppendIpAddress(virDomainNetDefPtr def,
+virDomainNetAppendIPAddress(virDomainNetDefPtr def,
                             const char *address,
                             int family,
                             unsigned int prefix)
 {
-    virDomainNetIpDefPtr ipDef = NULL;
+    virDomainNetIPDefPtr ipDef = NULL;
     if (VIR_ALLOC(ipDef) < 0)
         return -1;
 
@@ -8954,7 +8954,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     int ret, val;
     size_t i;
     size_t nips = 0;
-    virDomainNetIpDefPtr *ips = NULL;
+    virDomainNetIPDefPtr *ips = NULL;
     size_t nroutes = 0;
     virNetworkRouteDefPtr *routes = NULL;
 
@@ -9054,9 +9054,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                     ctxt->node = tmpnode;
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "ip")) {
-                virDomainNetIpDefPtr ip = NULL;
+                virDomainNetIPDefPtr ip = NULL;
 
-                if (!(ip = virDomainNetIpParseXML(cur)))
+                if (!(ip = virDomainNetIPParseXML(cur)))
                     goto error;
 
                 if (VIR_APPEND_ELEMENT(ips, nips, ip) < 0)
@@ -20254,7 +20254,7 @@ virDomainFSDefFormat(virBufferPtr buf,
 }
 
 static int
-virDomainNetIpsFormat(virBufferPtr buf, virDomainNetIpDefPtr *ips, size_t nips)
+virDomainNetIPsFormat(virBufferPtr buf, virDomainNetIPDefPtr *ips, size_t nips)
 {
     size_t i;
 
@@ -20448,7 +20448,7 @@ virDomainHostdevDefFormatCaps(virBufferPtr buf,
     virBufferAddLit(buf, "</source>\n");
 
     if (def->source.caps.type == VIR_DOMAIN_HOSTDEV_CAPS_TYPE_NET) {
-        if (virDomainNetIpsFormat(buf, def->source.caps.u.net.ips,
+        if (virDomainNetIPsFormat(buf, def->source.caps.u.net.ips,
                                  def->source.caps.u.net.nips) < 0)
             return -1;
         if (virDomainNetRoutesFormat(buf, def->source.caps.u.net.routes,
@@ -20867,7 +20867,7 @@ virDomainNetDefFormat(virBufferPtr buf,
             return -1;
     }
 
-    if (virDomainNetIpsFormat(buf, def->ips, def->nips) < 0)
+    if (virDomainNetIPsFormat(buf, def->ips, def->nips) < 0)
         return -1;
     if (virDomainNetRoutesFormat(buf, def->routes, def->nroutes) < 0)
         return -1;

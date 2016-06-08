@@ -1367,13 +1367,13 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
 
 int
 esxVI_Context_LookupManagedObjectsByHostSystemIp(esxVI_Context *ctx,
-                                                 const char *hostSystemIpAddress)
+                                                 const char *hostSystemIPAddress)
 {
     int result = -1;
     esxVI_ManagedObjectReference *managedObjectReference = NULL;
 
     /* Lookup HostSystem */
-    if (esxVI_FindByIp(ctx, NULL, hostSystemIpAddress, esxVI_Boolean_False,
+    if (esxVI_FindByIp(ctx, NULL, hostSystemIPAddress, esxVI_Boolean_False,
                        &managedObjectReference) < 0 ||
         esxVI_LookupHostSystem(ctx, NULL, managedObjectReference, NULL,
                                &ctx->hostSystem,

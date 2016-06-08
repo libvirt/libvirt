@@ -125,7 +125,7 @@ int virSocketAddrGetNumNetmaskBits(const virSocketAddr *netmask);
 int virSocketAddrPrefixToNetmask(unsigned int prefix,
                                  virSocketAddrPtr netmask,
                                  int family);
-int virSocketAddrGetIpPrefix(const virSocketAddr *address,
+int virSocketAddrGetIPPrefix(const virSocketAddr *address,
                              const virSocketAddr *netmask,
                              int prefix);
 bool virSocketAddrEqual(const virSocketAddr *s1,

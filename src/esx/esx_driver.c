@@ -612,7 +612,7 @@ static int
 esxConnectToHost(esxPrivate *priv,
                  virConnectPtr conn,
                  virConnectAuthPtr auth,
-                 char **vCenterIpAddress)
+                 char **vCenterIPAddress)
 {
     int result = -1;
     char ipAddress[NI_MAXHOST] = "";
@@ -626,7 +626,7 @@ esxConnectToHost(esxPrivate *priv,
         ? esxVI_ProductLine_ESX
         : esxVI_ProductLine_GSX;
 
-    if (!vCenterIpAddress || *vCenterIpAddress) {
+    if (!vCenterIPAddress || *vCenterIPAddress) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
         return -1;
     }
@@ -683,7 +683,7 @@ esxConnectToHost(esxPrivate *priv,
                          &inMaintenanceMode,
                          esxVI_Occurrence_RequiredItem) < 0 ||
         esxVI_GetStringValue(hostSystem, "summary.managementServerIp",
-                             vCenterIpAddress,
+                             vCenterIPAddress,
                              esxVI_Occurrence_OptionalItem) < 0) {
         goto cleanup;
     }
@@ -692,7 +692,7 @@ esxConnectToHost(esxPrivate *priv,
     if (inMaintenanceMode == esxVI_Boolean_True)
         VIR_WARN("The server is in maintenance mode");
 
-    if (VIR_STRDUP(*vCenterIpAddress, *vCenterIpAddress) < 0)
+    if (VIR_STRDUP(*vCenterIPAddress, *vCenterIPAddress) < 0)
         goto cleanup;
 
     result = 0;
@@ -714,7 +714,7 @@ esxConnectToVCenter(esxPrivate *priv,
                     virConnectPtr conn,
                     virConnectAuthPtr auth,
                     const char *hostname,
-                    const char *hostSystemIpAddress)
+                    const char *hostSystemIPAddress)
 {
     int result = -1;
     char ipAddress[NI_MAXHOST] = "";
@@ -722,7 +722,7 @@ esxConnectToVCenter(esxPrivate *priv,
     char *password = NULL;
     char *url = NULL;
 
-    if (!hostSystemIpAddress &&
+    if (!hostSystemIPAddress &&
         (!priv->parsedUri->path || STREQ(priv->parsedUri->path, "/"))) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Path has to specify the datacenter and compute resource"));
@@ -770,9 +770,9 @@ esxConnectToVCenter(esxPrivate *priv,
         goto cleanup;
     }
 
-    if (hostSystemIpAddress) {
+    if (hostSystemIPAddress) {
         if (esxVI_Context_LookupManagedObjectsByHostSystemIp
-              (priv->vCenter, hostSystemIpAddress) < 0) {
+              (priv->vCenter, hostSystemIPAddress) < 0) {
             goto cleanup;
         }
     } else {
@@ -847,8 +847,8 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
     virDrvOpenStatus result = VIR_DRV_OPEN_ERROR;
     char *plus;
     esxPrivate *priv = NULL;
-    char *potentialVCenterIpAddress = NULL;
-    char vCenterIpAddress[NI_MAXHOST] = "";
+    char *potentialVCenterIPAddress = NULL;
+    char vCenterIPAddress[NI_MAXHOST] = "";
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
 
@@ -939,46 +939,46 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
         STRCASEEQ(conn->uri->scheme, "gsx")) {
         /* Connect to host */
         if (esxConnectToHost(priv, conn, auth,
-                             &potentialVCenterIpAddress) < 0) {
+                             &potentialVCenterIPAddress) < 0) {
             goto cleanup;
         }
 
         /* Connect to vCenter */
         if (priv->parsedUri->vCenter) {
             if (STREQ(priv->parsedUri->vCenter, "*")) {
-                if (!potentialVCenterIpAddress) {
+                if (!potentialVCenterIPAddress) {
                     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                    _("This host is not managed by a vCenter"));
                     goto cleanup;
                 }
 
-                if (!virStrcpyStatic(vCenterIpAddress,
-                                     potentialVCenterIpAddress)) {
+                if (!virStrcpyStatic(vCenterIPAddress,
+                                     potentialVCenterIPAddress)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("vCenter IP address %s too big for destination"),
-                                   potentialVCenterIpAddress);
+                                   potentialVCenterIPAddress);
                     goto cleanup;
                 }
             } else {
                 if (esxUtil_ResolveHostname(priv->parsedUri->vCenter,
-                                            vCenterIpAddress, NI_MAXHOST) < 0) {
+                                            vCenterIPAddress, NI_MAXHOST) < 0) {
                     goto cleanup;
                 }
 
-                if (potentialVCenterIpAddress &&
-                    STRNEQ(vCenterIpAddress, potentialVCenterIpAddress)) {
+                if (potentialVCenterIPAddress &&
+                    STRNEQ(vCenterIPAddress, potentialVCenterIPAddress)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("This host is managed by a vCenter with IP "
                                      "address %s, but a mismachting vCenter '%s' "
                                      "(%s) has been specified"),
-                                   potentialVCenterIpAddress, priv->parsedUri->vCenter,
-                                   vCenterIpAddress);
+                                   potentialVCenterIPAddress, priv->parsedUri->vCenter,
+                                   vCenterIPAddress);
                     goto cleanup;
                 }
             }
 
             if (esxConnectToVCenter(priv, conn, auth,
-                                    vCenterIpAddress,
+                                    vCenterIPAddress,
                                     priv->host->ipAddress) < 0) {
                 goto cleanup;
             }
@@ -1011,7 +1011,7 @@ esxConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
 
  cleanup:
     esxFreePrivate(&priv);
-    VIR_FREE(potentialVCenterIpAddress);
+    VIR_FREE(potentialVCenterIPAddress);
 
     return result;
 }

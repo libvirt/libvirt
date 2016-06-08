@@ -382,9 +382,9 @@ typedef enum {
     VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST
 } virDomainHostdevCapsType;
 
-typedef struct _virDomainNetIpDef virDomainNetIpDef;
-typedef virDomainNetIpDef *virDomainNetIpDefPtr;
-struct _virDomainNetIpDef {
+typedef struct _virDomainNetIPDef virDomainNetIPDef;
+typedef virDomainNetIPDef *virDomainNetIPDefPtr;
+struct _virDomainNetIPDef {
     virSocketAddr address;       /* ipv4 or ipv6 address */
     unsigned int prefix; /* number of 1 bits in the net mask */
 };
@@ -403,7 +403,7 @@ struct _virDomainHostdevCaps {
         struct {
             char *iface;
             size_t nips;
-            virDomainNetIpDefPtr *ips;
+            virDomainNetIPDefPtr *ips;
             size_t nroutes;
             virNetworkRouteDefPtr *routes;
         } net;
@@ -986,7 +986,7 @@ struct _virDomainNetDef {
     int trustGuestRxFilters; /* enum virTristateBool */
     int linkstate;
     size_t nips;
-    virDomainNetIpDefPtr *ips;
+    virDomainNetIPDefPtr *ips;
     size_t nroutes;
     virNetworkRouteDefPtr *routes;
 };
@@ -2775,7 +2775,7 @@ virNetDevBandwidthPtr
 virDomainNetGetActualBandwidth(virDomainNetDefPtr iface);
 virNetDevVlanPtr virDomainNetGetActualVlan(virDomainNetDefPtr iface);
 bool virDomainNetGetActualTrustGuestRxFilters(virDomainNetDefPtr iface);
-int virDomainNetAppendIpAddress(virDomainNetDefPtr def,
+int virDomainNetAppendIPAddress(virDomainNetDefPtr def,
                                 const char *address,
                                 int family,
                                 unsigned int prefix);

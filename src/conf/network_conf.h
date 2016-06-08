@@ -1,7 +1,7 @@
 /*
  * network_conf.h: network XML handling
  *
- * Copyright (C) 2006-2015 Red Hat, Inc.
+ * Copyright (C) 2006-2016 Red Hat, Inc.
  * Copyright (C) 2006-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -138,15 +138,15 @@ struct _virNetworkDNSDef {
     char **forwarders;
 };
 
-typedef struct _virNetworkIpDef virNetworkIpDef;
-typedef virNetworkIpDef *virNetworkIpDefPtr;
-struct _virNetworkIpDef {
+typedef struct _virNetworkIPDef virNetworkIPDef;
+typedef virNetworkIPDef *virNetworkIPDefPtr;
+struct _virNetworkIPDef {
     char *family;               /* ipv4 or ipv6 - default is ipv4 */
     virSocketAddr address;      /* Bridge IP address */
 
     /* One or the other of the following two will be used for a given
      * IP address, but never both. The parser guarantees this.
-     * Use virNetworkIpDefPrefix/virNetworkIpDefNetmask rather
+     * Use virNetworkIPDefPrefix/virNetworkIPDefNetmask rather
      * than accessing the data directly - these utility functions
      * will convert one into the other as necessary.
      */
@@ -240,7 +240,7 @@ struct _virNetworkDef {
     virNetworkForwardDef forward;
 
     size_t nips;
-    virNetworkIpDefPtr ips; /* ptr to array of IP addresses on this network */
+    virNetworkIPDefPtr ips; /* ptr to array of IP addresses on this network */
 
     size_t nroutes;
     virNetworkRouteDefPtr *routes; /* ptr to array of static routes on this interface */
@@ -351,14 +351,14 @@ const char * virNetworkDefForwardIf(const virNetworkDef *def, size_t n);
 virPortGroupDefPtr virPortGroupFindByName(virNetworkDefPtr net,
                                           const char *portgroup);
 
-virNetworkIpDefPtr
-virNetworkDefGetIpByIndex(const virNetworkDef *def,
+virNetworkIPDefPtr
+virNetworkDefGetIPByIndex(const virNetworkDef *def,
                           int family, size_t n);
 virNetworkRouteDefPtr
 virNetworkDefGetRouteByIndex(const virNetworkDef *def,
                              int family, size_t n);
-int virNetworkIpDefPrefix(const virNetworkIpDef *def);
-int virNetworkIpDefNetmask(const virNetworkIpDef *def,
+int virNetworkIPDefPrefix(const virNetworkIPDef *def);
+int virNetworkIPDefNetmask(const virNetworkIPDef *def,
                            virSocketAddrPtr netmask);
 
 int virNetworkSaveXML(const char *configDir,
