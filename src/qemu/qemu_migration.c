@@ -315,17 +315,17 @@ qemuDomainExtractTLSSubject(const char *certdir)
 
 static qemuMigrationCookieGraphicsPtr
 qemuMigrationCookieGraphicsSpiceAlloc(virQEMUDriverPtr driver,
-                                      virDomainGraphicsDefPtr def)
+                                      virDomainGraphicsDefPtr def,
+                                      virDomainGraphicsListenDefPtr glisten)
 {
     qemuMigrationCookieGraphicsPtr mig = NULL;
     const char *listenAddr;
-    virDomainGraphicsListenDefPtr glisten = virDomainGraphicsGetListen(def, 0);
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
     if (VIR_ALLOC(mig) < 0)
         goto error;
 
-    mig->type = def->type;
+    mig->type = VIR_DOMAIN_GRAPHICS_TYPE_SPICE;
     mig->port = def->data.spice.port;
     if (cfg->spiceTLS)
         mig->tlsPort = def->data.spice.tlsPort;
@@ -452,14 +452,39 @@ qemuMigrationCookieAddGraphics(qemuMigrationCookiePtr mig,
     }
 
     for (i = 0; i < dom->def->ngraphics; i++) {
-       if (dom->def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-           if (!(mig->graphics =
-                 qemuMigrationCookieGraphicsSpiceAlloc(driver,
-                                                       dom->def->graphics[i])))
-               return -1;
-           mig->flags |= QEMU_MIGRATION_COOKIE_GRAPHICS;
-           break;
-       }
+        if (dom->def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+            virDomainGraphicsListenDefPtr glisten =
+                virDomainGraphicsGetListen(dom->def->graphics[i], 0);
+
+            if (!glisten) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing listen element"));
+                return -1;
+            }
+
+            switch (glisten->type) {
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+                /* Seamless migration is supported only for listen types
+                 * 'address and 'network'. */
+                if (!(mig->graphics =
+                      qemuMigrationCookieGraphicsSpiceAlloc(driver,
+                                                            dom->def->graphics[i],
+                                                            glisten)))
+                    return -1;
+                mig->flags |= QEMU_MIGRATION_COOKIE_GRAPHICS;
+                break;
+
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+            case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+                break;
+            }
+
+            /* Seamless migration is supported only for one graphics. */
+            if (mig->graphics)
+                break;
+        }
     }
 
     return 0;

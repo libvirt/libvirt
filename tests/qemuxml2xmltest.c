@@ -442,6 +442,8 @@ mymain(void)
     DO_TEST("graphics-spice");
     DO_TEST("graphics-spice-compression");
     DO_TEST("graphics-spice-qxl-vga");
+    DO_TEST("graphics-spice-socket");
+    DO_TEST("graphics-spice-auto-socket");
     DO_TEST("nographics-vga");
     DO_TEST("input-usbmouse");
     DO_TEST("input-usbtablet");

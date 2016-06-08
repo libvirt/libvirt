@@ -7347,27 +7347,53 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
         goto error;
     }
 
-    glisten = virDomainGraphicsGetListen(graphics, 0);
-
-    if (port > 0) {
-        virBufferAsprintf(&opt, "port=%u,", port);
-        hasInsecure = true;
+    if (!(glisten = virDomainGraphicsGetListen(graphics, 0))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing listen element"));
+        goto error;
     }
 
-    if (tlsPort > 0) {
-        if (!cfg->spiceTLS) {
+    switch (glisten->type) {
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_UNIX)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("spice TLS port set in XML configuration,"
-                             " but TLS is disabled in qemu.conf"));
+                           _("unix socket for spice graphics are not supported "
+                             "with this QEMU"));
             goto error;
         }
-        virBufferAsprintf(&opt, "tls-port=%u,", tlsPort);
-        hasSecure = true;
-    }
 
-    if (port > 0 || tlsPort > 0) {
-        if (glisten && glisten->address)
-            virBufferAsprintf(&opt, "addr=%s,", glisten->address);
+        virBufferAsprintf(&opt, "unix,addr=%s,", glisten->socket);
+        hasInsecure = true;
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+        if (port > 0) {
+            virBufferAsprintf(&opt, "port=%u,", port);
+            hasInsecure = true;
+        }
+
+        if (tlsPort > 0) {
+            if (!cfg->spiceTLS) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("spice TLS port set in XML configuration, "
+                                 "but TLS is disabled in qemu.conf"));
+                goto error;
+            }
+            virBufferAsprintf(&opt, "tls-port=%u,", tlsPort);
+            hasSecure = true;
+        }
+
+        if (port > 0 || tlsPort > 0) {
+            if (glisten->address)
+                virBufferAsprintf(&opt, "addr=%s,", glisten->address);
+        }
+
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+        break;
     }
 
     if (cfg->spiceSASL) {

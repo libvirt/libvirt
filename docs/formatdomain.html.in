@@ -5366,7 +5366,7 @@ qemu-kvm -net nic,model=? /dev/null
           This listen type tells a graphics server to listen on unix socket.
           Attribute <code>socket</code> contains a path to unix socket. If this
           attribute is omitted libvirt will generate this path for you.
-          Supported by graphics type <code>vnc</code>.
+          Supported by graphics type <code>vnc</code> and <code>spice</code>.
         </p>
         <p>
           For <code>vnc</code> graphics be backward compatible

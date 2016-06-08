@@ -966,6 +966,12 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL_VGA,
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_SPICE_FILE_XFER_DISABLE);
+    DO_TEST("graphics-spice-socket",
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_SPICE_UNIX);
+    DO_TEST("graphics-spice-auto-socket",
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_SPICE_UNIX);
 
     DO_TEST("input-usbmouse", NONE);
     DO_TEST("input-usbtablet", NONE);

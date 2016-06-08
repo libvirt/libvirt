@@ -10943,7 +10943,8 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     def->type = typeVal;
 
     if (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET &&
-        graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+        graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+        graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("listen type 'socket' is not available for "
                          "graphics type '%s'"), graphicsType);
@@ -21924,18 +21925,28 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-        if (def->data.spice.port)
-            virBufferAsprintf(buf, " port='%d'",
-                              def->data.spice.port);
+        switch (glisten->type) {
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+            if (def->data.spice.port)
+                virBufferAsprintf(buf, " port='%d'",
+                                  def->data.spice.port);
 
-        if (def->data.spice.tlsPort)
-            virBufferAsprintf(buf, " tlsPort='%d'",
-                              def->data.spice.tlsPort);
+            if (def->data.spice.tlsPort)
+                virBufferAsprintf(buf, " tlsPort='%d'",
+                                  def->data.spice.tlsPort);
 
-        virBufferAsprintf(buf, " autoport='%s'",
-                          def->data.spice.autoport ? "yes" : "no");
+            virBufferAsprintf(buf, " autoport='%s'",
+                              def->data.spice.autoport ? "yes" : "no");
 
-        virDomainGraphicsListenDefFormatAddr(buf, glisten, flags);
+            virDomainGraphicsListenDefFormatAddr(buf, glisten, flags);
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+            break;
+        }
 
         if (def->data.spice.keymap)
             virBufferEscapeString(buf, " keymap='%s'",
