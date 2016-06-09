@@ -13712,15 +13712,10 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
     for (i = 0; i < def->ndisks; i++) {
         virDomainSnapshotDiskDefPtr disk = &def->disks[i];
         virDomainDiskDefPtr dom_disk = vm->def->disks[i];
-        qemuDomainDiskPrivatePtr dom_diskPriv = QEMU_DOMAIN_DISK_PRIVATE(dom_disk);
 
         if (disk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_NONE &&
-            dom_diskPriv->blockjob) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("disk '%s' has an active block job"),
-                           disk->name);
+            qemuDomainDiskBlockJobIsActive(dom_disk))
             goto cleanup;
-        }
 
         switch ((virDomainSnapshotLocation) disk->snapshot) {
         case VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL:

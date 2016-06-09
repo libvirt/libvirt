@@ -3444,12 +3444,8 @@ qemuDomainDetachDiskDevice(virQEMUDriverPtr driver,
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
-    if (detach->mirror) {
-        virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
-                       _("disk '%s' is in an active block job"),
-                       detach->dst);
+    if (qemuDomainDiskBlockJobIsActive(detach))
         goto cleanup;
-    }
 
     qemuDomainMarkDeviceForRemoval(vm, &detach->info);
 
