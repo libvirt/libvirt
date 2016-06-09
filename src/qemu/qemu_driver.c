@@ -15279,7 +15279,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             /* Transitions 5, 6, 8, 9 */
             /* Check for ABI compatibility. We need to do this check against
              * the migratable XML or it will always fail otherwise */
-            if (config && !qemuDomainDefCheckABIStability(driver, vm->def, config)) {
+            if (config &&
+                !qemuDomainDefCheckABIStability(driver, vm->def, config)) {
                 virErrorPtr err = virGetLastError();
 
                 if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {

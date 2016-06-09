@@ -2644,6 +2644,15 @@ typedef enum {
     VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST    = 1 << 9,
 } virDomainDefFormatFlags;
 
+/* Use these flags to skip specific domain ABI consistency checks done
+ * in virDomainDefCheckABIStabilityFlags.
+ */
+typedef enum {
+    /* Set when domain lock must be released and there exists the possibility
+     * that some external action could alter the value, such as cur_balloon. */
+    VIR_DOMAIN_DEF_ABI_CHECK_SKIP_VOLATILE = 1 << 0,
+} virDomainDefABICheckFlags;
+
 virDomainDeviceDefPtr virDomainDeviceDefParse(const char *xmlStr,
                                               const virDomainDef *def,
                                               virCapsPtr caps,
@@ -2678,6 +2687,10 @@ virDomainObjPtr virDomainObjParseFile(const char *filename,
 
 bool virDomainDefCheckABIStability(virDomainDefPtr src,
                                    virDomainDefPtr dst);
+
+bool virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
+                                        virDomainDefPtr dst,
+                                        unsigned int flags);
 
 int virDomainDefAddImplicitDevices(virDomainDefPtr def);
 

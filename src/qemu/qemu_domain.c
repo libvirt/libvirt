@@ -4989,14 +4989,25 @@ qemuDomainDefCheckABIStability(virQEMUDriverPtr driver,
 {
     virDomainDefPtr migratableDefSrc = NULL;
     virDomainDefPtr migratableDefDst = NULL;
-    const int flags = VIR_DOMAIN_XML_SECURE | VIR_DOMAIN_XML_UPDATE_CPU | VIR_DOMAIN_XML_MIGRATABLE;
+    const unsigned int flags = VIR_DOMAIN_XML_SECURE |
+                               VIR_DOMAIN_XML_UPDATE_CPU |
+                               VIR_DOMAIN_XML_MIGRATABLE;
+    const unsigned int check_flags = VIR_DOMAIN_DEF_ABI_CHECK_SKIP_VOLATILE;
     bool ret = false;
 
     if (!(migratableDefSrc = qemuDomainDefCopy(driver, src, flags)) ||
         !(migratableDefDst = qemuDomainDefCopy(driver, dst, flags)))
         goto cleanup;
 
-    ret = virDomainDefCheckABIStability(migratableDefSrc, migratableDefDst);
+    if (!virDomainDefCheckABIStabilityFlags(migratableDefSrc,
+                                            migratableDefDst,
+                                            check_flags))
+        goto cleanup;
+
+    /* Force update any skipped values from the volatile flag */
+    dst->mem.cur_balloon = src->mem.cur_balloon;
+
+    ret = true;
 
  cleanup:
     virDomainDefFree(migratableDefSrc);

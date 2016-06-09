@@ -18775,8 +18775,9 @@ virDomainDefVcpuCheckAbiStability(virDomainDefPtr src,
  * validation of custom XML config passed in during migration
  */
 bool
-virDomainDefCheckABIStability(virDomainDefPtr src,
-                              virDomainDefPtr dst)
+virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
+                                   virDomainDefPtr dst,
+                                   unsigned int flags)
 {
     size_t i;
     virErrorPtr err;
@@ -18820,7 +18821,8 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
                        virDomainDefGetMemoryInitial(src));
         goto error;
     }
-    if (src->mem.cur_balloon != dst->mem.cur_balloon) {
+    if (!(flags & VIR_DOMAIN_DEF_ABI_CHECK_SKIP_VOLATILE) &&
+        src->mem.cur_balloon != dst->mem.cur_balloon) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target domain current memory %lld does not match source %lld"),
                        dst->mem.cur_balloon, src->mem.cur_balloon);
@@ -19261,6 +19263,14 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
         virFreeError(err);
     }
     return false;
+}
+
+
+bool
+virDomainDefCheckABIStability(virDomainDefPtr src,
+                              virDomainDefPtr dst)
+{
+    return virDomainDefCheckABIStabilityFlags(src, dst, 0);
 }
 
 

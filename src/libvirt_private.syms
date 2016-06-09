@@ -219,6 +219,7 @@ virDomainDefAddController;
 virDomainDefAddImplicitDevices;
 virDomainDefAddUSBController;
 virDomainDefCheckABIStability;
+virDomainDefCheckABIStabilityFlags;
 virDomainDefCompatibleDevice;
 virDomainDefCopy;
 virDomainDefFindDevice;
