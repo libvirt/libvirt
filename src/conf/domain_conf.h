@@ -963,7 +963,8 @@ struct _virDomainNetDef {
     } tune;
     char *script;
     char *domain_name; /* backend domain name */
-    char *ifname;
+    char *ifname; /* interface name on the host (<target dev='x'/>) */
+    virNetDevIPInfo hostIP;
     char *ifname_guest_actual;
     char *ifname_guest;
     virNetDevIPInfo guestIP;

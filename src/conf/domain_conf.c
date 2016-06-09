@@ -1798,6 +1798,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
     VIR_FREE(def->ifname_guest_actual);
 
     virNetDevIPInfoClear(&def->guestIP);
+    virNetDevIPInfoClear(&def->hostIP);
     virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def->filter);
@@ -4608,6 +4609,23 @@ virDomainRedirdevDefValidate(const virDomainDef *def,
 
 
 static int
+virDomainNetDefValidate(const virDomainNetDef *net)
+{
+    if ((net->hostIP.nroutes || net->hostIP.nips) &&
+        net->type != VIR_DOMAIN_NET_TYPE_ETHERNET) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid attempt to set network interface "
+                         "host-side IP route and/or address info on "
+                         "interface of type '%s'. This is only supported "
+                         "on interfaces of type 'ethernet'"),
+                       virDomainNetTypeToString(net->type));
+        return -1;
+    }
+    return 0;
+}
+
+
+static int
 virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
                                    const virDomainDef *def)
 {
@@ -4618,9 +4636,11 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_REDIRDEV:
         return virDomainRedirdevDefValidate(def, dev->data.redirdev);
 
+    case VIR_DOMAIN_DEVICE_NET:
+        return virDomainNetDefValidate(dev->data.net);
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
-    case VIR_DOMAIN_DEVICE_NET:
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
@@ -8989,6 +9009,15 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
+            if (xmlStrEqual(cur->name, BAD_CAST "source")) {
+                xmlNodePtr tmpnode = ctxt->node;
+
+                ctxt->node = cur;
+                if (virDomainNetIPInfoParseXML(_("interface host IP"),
+                                               ctxt, &def->hostIP) < 0)
+                    goto error;
+                ctxt->node = tmpnode;
+            }
             if (!macaddr && xmlStrEqual(cur->name, BAD_CAST "mac")) {
                 macaddr = virXMLPropString(cur, "address");
             } else if (!network &&
@@ -20692,6 +20721,7 @@ virDomainNetDefFormat(virBufferPtr buf,
 {
     unsigned int actualType = virDomainNetGetActualType(def);
     bool publicActual = false;
+    int sourceLines = 0;
     const char *typeStr;
     virDomainHostdevDefPtr hostdef = NULL;
     char macstr[VIR_MAC_STRING_BUFLEN];
@@ -20761,15 +20791,7 @@ virDomainNetDefFormat(virBufferPtr buf,
                                   def->data.network.name);
             virBufferEscapeString(buf, " portgroup='%s'",
                                   def->data.network.portgroup);
-            virBufferAddLit(buf, "/>\n");
-
-            /* ONLY for internal status storage - format the ActualNetDef
-             * as a subelement of <interface> so that no persistent config
-             * data is overwritten.
-             */
-            if ((flags & VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET) &&
-                (virDomainActualNetDefFormat(buf, def, flags) < 0))
-                return -1;
+            sourceLines++;
             break;
 
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
@@ -20783,13 +20805,16 @@ virDomainNetDefFormat(virBufferPtr buf,
                 virBufferAsprintf(buf, " mode='%s'",
                                   def->data.vhostuser->data.nix.listen ?
                                   "server"  : "client");
-                virBufferAddLit(buf, "/>\n");
+                sourceLines++;
             }
             break;
 
         case VIR_DOMAIN_NET_TYPE_BRIDGE:
-            virBufferEscapeString(buf, "<source bridge='%s'/>\n",
-                                  def->data.bridge.brname);
+           if (def->data.bridge.brname) {
+               virBufferEscapeString(buf, "<source bridge='%s'",
+                                     def->data.bridge.brname);
+               sourceLines++;
+           }
             break;
 
         case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -20804,25 +20829,27 @@ virDomainNetDefFormat(virBufferPtr buf,
                 virBufferAsprintf(buf, "<source port='%d'",
                                   def->data.socket.port);
             }
+            sourceLines++;
 
-            if (def->type != VIR_DOMAIN_NET_TYPE_UDP) {
-                virBufferAddLit(buf, "/>\n");
+            if (def->type != VIR_DOMAIN_NET_TYPE_UDP)
                 break;
-            }
 
             virBufferAddLit(buf, ">\n");
+            sourceLines++;
             virBufferAdjustIndent(buf, 2);
 
             virBufferAsprintf(buf, "<local address='%s' port='%d'/>\n",
                               def->data.socket.localaddr,
                               def->data.socket.localport);
             virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</source>\n");
             break;
 
         case VIR_DOMAIN_NET_TYPE_INTERNAL:
-            virBufferEscapeString(buf, "<source name='%s'/>\n",
-                                  def->data.internal.name);
+            if (def->data.internal.name) {
+                virBufferEscapeString(buf, "<source name='%s'",
+                                      def->data.internal.name);
+                sourceLines++;
+            }
             break;
 
         case VIR_DOMAIN_NET_TYPE_DIRECT:
@@ -20830,7 +20857,7 @@ virDomainNetDefFormat(virBufferPtr buf,
                                   def->data.direct.linkdev);
             virBufferAsprintf(buf, " mode='%s'",
                               virNetDevMacVLanModeTypeToString(def->data.direct.mode));
-            virBufferAddLit(buf, "/>\n");
+            sourceLines++;
             break;
 
         case VIR_DOMAIN_NET_TYPE_HOSTDEV:
@@ -20845,12 +20872,44 @@ virDomainNetDefFormat(virBufferPtr buf,
             break;
         }
 
+        /* if sourceLines == 0 - no <source> info at all so far
+         *    sourceLines == 1 - first line written, no terminating ">"
+         *    sourceLines > 1 - multiple lines, including subelements
+         */
+        if (def->hostIP.nips || def->hostIP.nroutes) {
+            if (sourceLines == 0) {
+                virBufferAddLit(buf, "<source>\n");
+                sourceLines += 2;
+            } else if (sourceLines == 1) {
+                virBufferAddLit(buf, ">\n");
+                sourceLines++;
+            }
+            virBufferAdjustIndent(buf, 2);
+            if (virDomainNetIPInfoFormat(buf, &def->hostIP) < 0)
+                return -1;
+            virBufferAdjustIndent(buf, -2);
+        }
+        if (sourceLines == 1)
+            virBufferAddLit(buf, "/>\n");
+        else if (sourceLines > 1)
+            virBufferAddLit(buf, "</source>\n");
+
         if (virNetDevVlanFormat(&def->vlan, buf) < 0)
             return -1;
         if (virNetDevVPortProfileFormat(def->virtPortProfile, buf) < 0)
             return -1;
         if (virNetDevBandwidthFormat(def->bandwidth, buf) < 0)
             return -1;
+
+        /* ONLY for internal status storage - format the ActualNetDef
+         * as a subelement of <interface> so that no persistent config
+         * data is overwritten.
+         */
+        if (def->type == VIR_DOMAIN_NET_TYPE_NETWORK &&
+            (flags & VIR_DOMAIN_DEF_FORMAT_ACTUAL_NET) &&
+            (virDomainActualNetDefFormat(buf, def, flags) < 0))
+            return -1;
+
     }
 
     if (virDomainNetIPInfoFormat(buf, &def->guestIP) < 0)
@@ -20859,6 +20918,7 @@ virDomainNetDefFormat(virBufferPtr buf,
     virBufferEscapeString(buf, "<script path='%s'/>\n",
                           def->script);
     virBufferEscapeString(buf, "<backenddomain name='%s'/>\n", def->domain_name);
+
     if (def->ifname &&
         !((flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
           (STRPREFIX(def->ifname, VIR_NET_GENERATED_PREFIX) ||
@@ -20866,6 +20926,7 @@ virDomainNetDefFormat(virBufferPtr buf,
         /* Skip auto-generated target names for inactive config. */
         virBufferEscapeString(buf, "<target dev='%s'/>\n", def->ifname);
     }
+
     if (def->ifname_guest || def->ifname_guest_actual) {
         virBufferAddLit(buf, "<guest");
         /* Skip auto-generated target names for inactive config. */

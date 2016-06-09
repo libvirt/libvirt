@@ -5012,6 +5012,32 @@ qemu-kvm -net nic,model=? /dev/null
     definitions</a>.  This is used by the LXC driver.
     </p>
 
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;interface type='ethernet'&gt;
+      <b>&lt;source/&gt;</b>
+        <b>&lt;ip address='192.168.123.1' prefix='24'/&gt;</b>
+        <b>&lt;ip address='10.0.0.10' prefix='24' peer='192.168.122.5'/&gt;</b>
+        <b>&lt;route family='ipv4' address='192.168.42.0' prefix='24' gateway='192.168.123.4'/&gt;</b>
+      <b>&lt;source/&gt;</b>
+      ...
+    &lt;/interface&gt;
+    ...
+  &lt;/devices&gt;
+  ...
+</pre>
+
+    <p>
+      <span class="since">Since 2.0.0</span> network devices of type
+      "ethernet" can optionally be provided one or more IP addresses
+      and one or more routes to set on the <b>host</b> side of the
+      network device. These are configured as subelements of
+      the <code>&lt;source&gt;</code> element of the interface, and
+      have the same attributes as the similarly named elements used to
+      configure the guest side of the interface (described above).
+    </p>
+
     <h5><a name="elementVhostuser">vhost-user interface</a></h5>
 
     <p>
