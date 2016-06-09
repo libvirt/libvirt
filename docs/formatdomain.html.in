@@ -5961,9 +5961,13 @@ qemu-kvm -net nic,model=? /dev/null
 
     <p>
       Alternatively you can use <code>telnet</code> instead
-      of <code>raw</code> TCP.  <span class="since">Since 0.8.5</span>
-      you can also use <code>telnets</code>
-      (secure telnet) and <code>tls</code>.
+      of <code>raw</code> TCP in order to utilize the telnet protocol
+      for the connection.
+    </p>
+    <p>
+      <span class="since">Since 0.8.5,</span> some hypervisors support
+      use of either <code>telnets</code> (secure telnet) or <code>tls</code>
+      (via secure sockets layer) as the transport protocol for connections.
     </p>
 
 <pre>
