@@ -10637,8 +10637,10 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
                  * fails, if there is no listen_addr we will print "localhost". */
                 VIR_FREE(listen_addr);
 
-                if (uri && VIR_STRDUP(listen_addr, uri->server) < 0)
-                    goto cleanup;
+                if (uri) {
+                    listen_addr = vshStrdup(ctl, uri->server);
+                    virURIFree(uri);
+                }
             }
         }
 
