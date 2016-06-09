@@ -424,6 +424,7 @@ virDomainPMSuspendedReasonTypeFromString;
 virDomainPMSuspendedReasonTypeToString;
 virDomainRedirdevBusTypeFromString;
 virDomainRedirdevBusTypeToString;
+virDomainRedirdevDefFree;
 virDomainRNGBackendTypeToString;
 virDomainRNGDefFree;
 virDomainRNGFind;
