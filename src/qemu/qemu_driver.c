@@ -8064,6 +8064,18 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         virDomainMemoryDefFree(virDomainMemoryRemove(vmdef, idx));
         break;
 
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        if ((idx = virDomainRedirdevDefFind(vmdef,
+                                            dev->data.redirdev)) < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("no matching redirdev was not found"));
+            return -1;
+        }
+
+        virDomainRedirdevDefFree(virDomainRedirdevDefRemove(vmdef, idx));
+        break;
+
+
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
@@ -8074,7 +8086,6 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_SHMEM:
-    case VIR_DOMAIN_DEVICE_REDIRDEV:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
