@@ -4576,14 +4576,47 @@ virDomainDiskDefValidate(const virDomainDiskDef *disk)
     return 0;
 }
 
+static bool
+virDomainDefHasUSB(const virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+            def->controllers[i]->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
+            return true;
+    }
+
+    return false;
+}
+
+static int
+virDomainRedirdevDefValidate(const virDomainDef *def,
+                             const virDomainRedirdevDef *redirdev)
+{
+    if (redirdev->bus == VIR_DOMAIN_REDIRDEV_BUS_USB &&
+        !virDomainDefHasUSB(def)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cannot add redirected USB device: "
+                         "USB is disabled for this domain"));
+        return -1;
+    }
+
+    return 0;
+}
+
 
 static int
 virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
-                                   const virDomainDef *def ATTRIBUTE_UNUSED)
+                                   const virDomainDef *def)
 {
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         return virDomainDiskDefValidate(dev->data.disk);
+
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        return virDomainRedirdevDefValidate(def, dev->data.redirdev);
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_NET:
@@ -4595,7 +4628,6 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_CONTROLLER:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:
-    case VIR_DOMAIN_DEVICE_REDIRDEV:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
@@ -17070,14 +17102,6 @@ virDomainDefParseXML(xmlDocPtr xml,
         if (!redirdev)
             goto error;
 
-        if (redirdev->bus == VIR_DOMAIN_REDIRDEV_BUS_USB && usb_none) {
-             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                            _("Can't add redirected USB device: "
-                              "USB is disabled for this domain"));
-            virDomainRedirdevDefFree(redirdev);
-            goto error;
-        }
-
         def->redirdevs[def->nredirdevs++] = redirdev;
     }
     VIR_FREE(nodes);
@@ -23588,20 +23612,6 @@ virDomainObjFormat(virDomainXMLOptionPtr xmlopt,
  error:
     virBufferFreeAndReset(&buf);
     return NULL;
-}
-
-static bool
-virDomainDefHasUSB(virDomainDefPtr def)
-{
-    size_t i;
-
-    for (i = 0; i < def->ncontrollers; i++) {
-        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-            def->controllers[i]->model != VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE)
-            return true;
-    }
-
-    return false;
 }
 
 static bool
