@@ -6176,7 +6176,7 @@ virDomainNetIPParseXML(xmlNodePtr node)
  *
  * return 0 on success (including none found) and -1 on failure.
  */
-static int ATTRIBUTE_UNUSED
+static int
 virDomainNetIPInfoParseXML(const char *source,
                            xmlXPathContextPtr ctxt,
                            virNetDevIPInfoPtr def)
@@ -20238,14 +20238,16 @@ virDomainFSDefFormat(virBufferPtr buf,
     return 0;
 }
 
+
 static int
-virDomainNetIPsFormat(virBufferPtr buf, virNetDevIPAddrPtr *ips, size_t nips)
+virDomainNetIPInfoFormat(virBufferPtr buf,
+                         virNetDevIPInfoPtr def)
 {
     size_t i;
 
     /* Output IP addresses */
-    for (i = 0; i < nips; i++) {
-        virSocketAddrPtr address = &ips[i]->address;
+    for (i = 0; i < def->nips; i++) {
+        virSocketAddrPtr address = &def->ips[i]->address;
         char *ipStr = virSocketAddrFormat(address);
         const char *familyStr = NULL;
 
@@ -20260,35 +20262,14 @@ virDomainNetIPsFormat(virBufferPtr buf, virNetDevIPAddrPtr *ips, size_t nips)
         VIR_FREE(ipStr);
         if (familyStr)
             virBufferAsprintf(buf, " family='%s'", familyStr);
-        if (ips[i]->prefix != 0)
-            virBufferAsprintf(buf, " prefix='%u'", ips[i]->prefix);
+        if (def->ips[i]->prefix)
+            virBufferAsprintf(buf, " prefix='%u'", def->ips[i]->prefix);
         virBufferAddLit(buf, "/>\n");
     }
-    return 0;
-}
 
-static int
-virDomainNetRoutesFormat(virBufferPtr buf,
-                         virNetDevIPRoutePtr *routes,
-                         size_t nroutes)
-{
-    size_t i;
-
-    for (i = 0; i < nroutes; i++)
-        if (virNetDevIPRouteFormat(buf, routes[i]) < 0)
+    for (i = 0; i < def->nroutes; i++)
+        if (virNetDevIPRouteFormat(buf, def->routes[i]) < 0)
             return -1;
-    return 0;
-}
-
-
-static int ATTRIBUTE_UNUSED
-virDomainNetIPInfoFormat(virBufferPtr buf,
-                         virNetDevIPInfoPtr def)
-{
-    if (virDomainNetIPsFormat(buf, def->ips, def->nips) < 0)
-        return -1;
-    if (virDomainNetRoutesFormat(buf, def->routes, def->nroutes) < 0)
-        return -1;
     return 0;
 }
 
