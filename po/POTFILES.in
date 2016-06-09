@@ -8,6 +8,7 @@ daemon/remote.c
 daemon/remote_dispatch.h
 daemon/stream.c
 gnulib/lib/gai_strerror.c
+gnulib/lib/getopt.c
 gnulib/lib/regcomp.c
 src/access/viraccessdriverpolkit.c
 src/access/viraccessmanager.c

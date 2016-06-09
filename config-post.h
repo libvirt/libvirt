@@ -69,3 +69,21 @@
 # undef WITH_SECDRIVER_APPARMOR
 # undef WITH_CAPNG
 #endif /* LIBVIRT_NSS */
+
+/*
+ * Define __GNUC__ to a sane default if it isn't yet defined.
+ * This is done here so that it's included as early as possible; gnulib relies
+ * on this to be defined in features.h, which should be included from ctype.h.
+ * This doesn't happen on many non-glibc systems.
+ * When __GNUC__ is not defined, gnulib defines it to 0, which breaks things.
+ */
+#ifdef __GNUC__
+# ifndef __GNUC_PREREQ
+#  if defined __GNUC__ && defined __GNUC_MINOR__
+#   define __GNUC_PREREQ(maj, min)                                        \
+   ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+#  else
+#   define __GNUC_PREREQ(maj, min) 0
+#  endif
+# endif
+#endif
