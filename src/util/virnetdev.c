@@ -3359,7 +3359,7 @@ virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap,
 static int
 virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap ATTRIBUTE_UNUSED,
                              int fd ATTRIBUTE_UNUSED,
-                             struct ifreq *ifr ATTRIBUGE_UNUSED)
+                             struct ifreq *ifr ATTRIBUTE_UNUSED)
 {
     return 0;
 }
