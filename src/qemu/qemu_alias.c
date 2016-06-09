@@ -560,3 +560,19 @@ qemuDomainGetSecretAESAlias(const char *srcalias,
 
     return alias;
 }
+
+
+/* qemuAliasTLSObjFromChardevAlias
+ * @chardev_alias: Pointer to the chardev alias string
+ *
+ * Generate and return a string to be used as the TLS object alias
+ */
+char *
+qemuAliasTLSObjFromChardevAlias(const char *chardev_alias)
+{
+    char *ret;
+
+    ignore_value(virAsprintf(&ret, "obj%s_tls0", chardev_alias));
+
+    return ret;
+}

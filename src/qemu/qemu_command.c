@@ -679,6 +679,103 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
 }
 
 
+/* qemuBuildTLSx509BackendProps:
+ * @tlspath: path to the TLS credentials
+ * @listen: boolen listen for client or server setting
+ * @verifypeer: boolean to enable peer verification (form of authorization)
+ * @qemuCaps: capabilities
+ * @propsret: json properties to return
+ *
+ * Create a backend string for the tls-creds-x509 object.
+ *
+ * Returns 0 on success, -1 on failure with error set.
+ */
+static int
+qemuBuildTLSx509BackendProps(const char *tlspath,
+                             bool listen,
+                             bool verifypeer,
+                             virQEMUCapsPtr qemuCaps,
+                             virJSONValuePtr *propsret)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *path = NULL;
+    int ret = -1;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_TLS_CREDS_X509)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("tls-creds-x509 not supported in this QEMU binary"));
+        return -1;
+    }
+
+    virQEMUBuildBufferEscapeComma(&buf, tlspath);
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
+    path = virBufferContentAndReset(&buf);
+
+    if (virJSONValueObjectCreate(propsret,
+                                 "s:dir", path,
+                                 "s:endpoint", (listen ? "server": "client"),
+                                 "b:verify-peer", verifypeer,
+                                 NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    VIR_FREE(path);
+    return ret;
+}
+
+
+/* qemuBuildTLSx509CommandLine:
+ * @cmd: Pointer to command
+ * @tlspath: path to the TLS credentials
+ * @listen: boolen listen for client or server setting
+ * @verifypeer: boolean to enable peer verification (form of authorization)
+ * @inalias: Alias for the parent to generate object alias
+ * @qemuCaps: capabilities
+ *
+ * Create the command line for a TLS object
+ *
+ * Returns 0 on success, -1 on failure with error set.
+ */
+static int
+qemuBuildTLSx509CommandLine(virCommandPtr cmd,
+                            const char *tlspath,
+                            bool listen,
+                            bool verifypeer,
+                            const char *inalias,
+                            virQEMUCapsPtr qemuCaps)
+{
+    int ret = -1;
+    char *objalias = NULL;
+    virJSONValuePtr props = NULL;
+    char *tmp = NULL;
+
+    if (qemuBuildTLSx509BackendProps(tlspath, listen, verifypeer,
+                                     qemuCaps, &props) < 0)
+        return -1;
+
+    if (!(objalias = qemuAliasTLSObjFromChardevAlias(inalias)))
+        goto cleanup;
+
+    if (!(tmp = virQEMUBuildObjectCommandlineFromJSON("tls-creds-x509",
+                                                      objalias, props)))
+        goto cleanup;
+
+    virCommandAddArgList(cmd, "-object", tmp, NULL);
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(props);
+    VIR_FREE(objalias);
+    VIR_FREE(tmp);
+    return ret;
+}
+
+
 #define QEMU_DEFAULT_NBD_PORT "10809"
 #define QEMU_DEFAULT_GLUSTER_PORT "24007"
 
@@ -4868,7 +4965,7 @@ qemuBuildChrChardevFileStr(virLogManagerPtr logManager,
 static char *
 qemuBuildChrChardevStr(virLogManagerPtr logManager,
                        virCommandPtr cmd,
-                       virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+                       virQEMUDriverConfigPtr cfg,
                        const virDomainDef *def,
                        const virDomainChrSourceDef *dev,
                        const char *alias,
@@ -4951,6 +5048,21 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                           dev->data.tcp.service,
                           telnet ? ",telnet" : "",
                           dev->data.tcp.listen ? ",server,nowait" : "");
+
+            if (cfg->chardevTLS) {
+                char *objalias = NULL;
+
+                if (qemuBuildTLSx509CommandLine(cmd, cfg->chardevTLSx509certdir,
+                                                dev->data.tcp.listen,
+                                                cfg->chardevTLSx509verify,
+                                                alias, qemuCaps) < 0)
+                    goto error;
+
+                if (!(objalias = qemuAliasTLSObjFromChardevAlias(alias)))
+                    goto error;
+                virBufferAsprintf(&buf, ",tls-creds=%s", objalias);
+                VIR_FREE(objalias);
+            }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
