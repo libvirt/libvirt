@@ -2834,6 +2834,10 @@ virDomainChrRemove(virDomainDefPtr vmdef,
 ssize_t virDomainRNGFind(virDomainDefPtr def, virDomainRNGDefPtr rng);
 virDomainRNGDefPtr virDomainRNGRemove(virDomainDefPtr def, size_t idx);
 
+ssize_t virDomainRedirdevDefFind(virDomainDefPtr def,
+                                 virDomainRedirdevDefPtr redirdev);
+virDomainRedirdevDefPtr virDomainRedirdevDefRemove(virDomainDefPtr def, size_t idx);
+
 int virDomainSaveXML(const char *configDir,
                      virDomainDefPtr def,
                      const char *xml);

@@ -14615,6 +14615,48 @@ virDomainMemoryRemove(virDomainDefPtr def,
 }
 
 
+ssize_t
+virDomainRedirdevDefFind(virDomainDefPtr def,
+                         virDomainRedirdevDefPtr redirdev)
+{
+    size_t i;
+
+    for (i = 0; i < def->nredirdevs; i++) {
+        virDomainRedirdevDefPtr tmp = def->redirdevs[i];
+
+        if (redirdev->bus != tmp->bus)
+            continue;
+
+        if (!virDomainChrSourceDefIsEqual(&redirdev->source.chr,
+                                          &tmp->source.chr))
+            continue;
+
+        if (redirdev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            !virDomainDeviceInfoAddressIsEqual(&redirdev->info, &tmp->info))
+            continue;
+
+        if (redirdev->info.alias &&
+            STRNEQ_NULLABLE(redirdev->info.alias, tmp->info.alias))
+            continue;
+
+        return i;
+    }
+
+    return -1;
+}
+
+
+virDomainRedirdevDefPtr
+virDomainRedirdevDefRemove(virDomainDefPtr def, size_t idx)
+{
+    virDomainRedirdevDefPtr ret = def->redirdevs[idx];
+
+    VIR_DELETE_ELEMENT(def->redirdevs, idx, def->nredirdevs);
+
+    return ret;
+}
+
+
 char *
 virDomainDefGetDefaultEmulator(virDomainDefPtr def,
                                virCapsPtr caps)
