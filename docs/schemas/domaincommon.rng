@@ -2142,7 +2142,7 @@
           <interleave>
             <optional>
               <element name="source">
-                <empty/>
+                <ref name="interface-ip-info"/>
               </element>
             </optional>
             <ref name="interface-options"/>
