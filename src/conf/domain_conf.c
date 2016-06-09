@@ -3509,6 +3509,13 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
             return -1;
     }
 
+    device.type = VIR_DOMAIN_DEVICE_REDIRDEV;
+    for (i = 0; i < def->nredirdevs; i++) {
+        device.data.redirdev = def->redirdevs[i];
+        if (cb(def, &device, &def->redirdevs[i]->info, opaque) < 0)
+            return -1;
+    }
+
     /* Coverity is not very happy with this - all dead_error_condition */
 #if !STATIC_ANALYSIS
     /* This switch statement is here to trigger compiler warning when adding
