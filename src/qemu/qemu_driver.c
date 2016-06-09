@@ -7796,6 +7796,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
     virDomainLeaseDefPtr lease;
     virDomainControllerDefPtr controller;
     virDomainFSDefPtr fs;
+    virDomainRedirdevDefPtr redirdev;
 
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
@@ -7913,6 +7914,14 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
         dev->data.memory = NULL;
         break;
 
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        redirdev = dev->data.redirdev;
+
+        if (VIR_APPEND_ELEMENT(vmdef->redirdevs, vmdef->nredirdevs, redirdev) < 0)
+            return -1;
+        dev->data.redirdev = NULL;
+        break;
+
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
@@ -7923,7 +7932,6 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_SHMEM:
-    case VIR_DOMAIN_DEVICE_REDIRDEV:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
