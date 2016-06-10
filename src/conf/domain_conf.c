@@ -10946,7 +10946,7 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     char *type = virXMLPropString(node, "type");
     char *address = virXMLPropString(node, "address");
     char *network = virXMLPropString(node, "network");
-    char *socket = virXMLPropString(node, "socket");
+    char *socketPath = virXMLPropString(node, "socket");
     char *fromConfig = virXMLPropString(node, "fromConfig");
     char *addressCompat = NULL;
     char *socketCompat = NULL;
@@ -11012,16 +11012,16 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     }
 
     if (def->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET) {
-        if (socket && socketCompat && STRNEQ(socket, socketCompat)) {
+        if (socketPath && socketCompat && STRNEQ(socketPath, socketCompat)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("graphics 'socket' attribute '%s' must match "
                              "'socket' attribute of first listen element "
-                             "(found '%s')"), socketCompat, socket);
+                             "(found '%s')"), socketCompat, socketPath);
             goto error;
         }
 
-        if (!socket) {
-            socket = socketCompat;
+        if (!socketPath) {
+            socketPath = socketCompat;
             socketCompat = NULL;
         }
     }
@@ -11045,15 +11045,15 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
         network = NULL;
     }
 
-    if (socket && socket[0]) {
+    if (socketPath && socketPath[0]) {
         if (def->type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("'socket' attribute is valid only for listen "
                              "type 'socket'"));
             goto error;
         }
-        def->socket = socket;
-        socket = NULL;
+        def->socket = socketPath;
+        socketPath = NULL;
     }
 
     if (fromConfig &&
@@ -11074,7 +11074,7 @@ virDomainGraphicsListenDefParseXML(virDomainGraphicsListenDefPtr def,
     VIR_FREE(type);
     VIR_FREE(address);
     VIR_FREE(network);
-    VIR_FREE(socket);
+    VIR_FREE(socketPath);
     VIR_FREE(fromConfig);
     VIR_FREE(addressCompat);
     VIR_FREE(socketCompat);
@@ -24368,24 +24368,24 @@ virDomainGraphicsListenAppendAddress(virDomainGraphicsDefPtr def,
 
 int
 virDomainGraphicsListenAppendSocket(virDomainGraphicsDefPtr def,
-                                    const char *socket)
+                                    const char *socketPath)
 {
-    virDomainGraphicsListenDef listen;
+    virDomainGraphicsListenDef glisten;
 
-    memset(&listen, 0, sizeof(listen));
+    memset(&glisten, 0, sizeof(glisten));
 
-    listen.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET;
+    glisten.type = VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET;
 
-    if (VIR_STRDUP(listen.socket, socket) < 0)
+    if (VIR_STRDUP(glisten.socket, socketPath) < 0)
         goto error;
 
-    if (VIR_APPEND_ELEMENT_COPY(def->listens, def->nListens, listen) < 0)
+    if (VIR_APPEND_ELEMENT_COPY(def->listens, def->nListens, glisten) < 0)
         goto error;
 
     return 0;
 
  error:
-    VIR_FREE(listen.socket);
+    VIR_FREE(glisten.socket);
     return -1;
 }
 
