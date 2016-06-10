@@ -62,6 +62,7 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
                              const char *line,
                              qemuMonitorMessagePtr msg)
 {
+    static bool first = true;
     virJSONValuePtr value = NULL;
     char *json = NULL;
     int ret;
@@ -76,6 +77,11 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
         char *p;
         bool skip = false;
 
+        if (first)
+            first = false;
+        else
+            putchar('\n');
+
         for (p = json; *p; p++) {
             if (skip && *p == '\n') {
                 continue;
@@ -84,7 +90,6 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
                 putchar(*p);
             }
         }
-        putchar('\n');
     }
 
     VIR_FREE(json);
