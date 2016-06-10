@@ -343,6 +343,14 @@
 }
 
 {
+  "return": {
+    "enabled": false,
+    "present": true
+  },
+  "id": "libvirt-7"
+}
+
+{
   "return": [
     {
       "name": "GUEST_PANICKED"
@@ -423,7 +431,7 @@
       "name": "SHUTDOWN"
     }
   ],
-  "id": "libvirt-7"
+  "id": "libvirt-8"
 }
 
 {
@@ -999,7 +1007,7 @@
       "name": "VGA"
     }
   ],
-  "id": "libvirt-8"
+  "id": "libvirt-9"
 }
 
 {
@@ -1101,7 +1109,7 @@
       "type": "hex32"
     }
   ],
-  "id": "libvirt-9"
+  "id": "libvirt-10"
 }
 
 {
@@ -1247,7 +1255,7 @@
       "type": "on/off"
     }
   ],
-  "id": "libvirt-10"
+  "id": "libvirt-11"
 }
 
 {
@@ -1309,11 +1317,11 @@
       "type": "on/off"
     }
   ],
-  "id": "libvirt-11"
+  "id": "libvirt-12"
 }
 
 {
-  "id": "libvirt-12",
+  "id": "libvirt-13",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-blk-ccw' not found"
@@ -1321,7 +1329,7 @@
 }
 
 {
-  "id": "libvirt-13",
+  "id": "libvirt-14",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-net-ccw' not found"
@@ -1329,7 +1337,7 @@
 }
 
 {
-  "id": "libvirt-14",
+  "id": "libvirt-15",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-scsi-ccw' not found"
@@ -1337,7 +1345,7 @@
 }
 
 {
-  "id": "libvirt-15",
+  "id": "libvirt-16",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-blk-s390' not found"
@@ -1345,7 +1353,7 @@
 }
 
 {
-  "id": "libvirt-16",
+  "id": "libvirt-17",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-net-s390' not found"
@@ -1353,7 +1361,7 @@
 }
 
 {
-  "id": "libvirt-17",
+  "id": "libvirt-18",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'pci-assign' not found"
@@ -1403,7 +1411,7 @@
       "type": "pci-host-devaddr"
     }
   ],
-  "id": "libvirt-18"
+  "id": "libvirt-19"
 }
 
 {
@@ -1445,7 +1453,7 @@
       "type": "pci-host-devaddr"
     }
   ],
-  "id": "libvirt-19"
+  "id": "libvirt-20"
 }
 
 {
@@ -1519,7 +1527,7 @@
       "type": "drive"
     }
   ],
-  "id": "libvirt-20"
+  "id": "libvirt-21"
 }
 
 {
@@ -1573,7 +1581,7 @@
       "type": "drive"
     }
   ],
-  "id": "libvirt-21"
+  "id": "libvirt-22"
 }
 
 {
@@ -1615,7 +1623,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-22"
+  "id": "libvirt-23"
 }
 
 {
@@ -1645,7 +1653,7 @@
       "type": "chr"
     }
   ],
-  "id": "libvirt-23"
+  "id": "libvirt-24"
 }
 
 {
@@ -1699,7 +1707,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-24"
+  "id": "libvirt-25"
 }
 
 {
@@ -1725,13 +1733,13 @@
       "type": "drive"
     }
   ],
-  "id": "libvirt-25"
+  "id": "libvirt-26"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-26"
+  "id": "libvirt-27"
 }
 
 {
@@ -1741,7 +1749,7 @@
       "type": "uint64"
     }
   ],
-  "id": "libvirt-27"
+  "id": "libvirt-28"
 }
 
 {
@@ -1791,7 +1799,7 @@
       "type": "drive"
     }
   ],
-  "id": "libvirt-28"
+  "id": "libvirt-29"
 }
 
 {
@@ -1805,7 +1813,7 @@
       "type": "hex32"
     }
   ],
-  "id": "libvirt-29"
+  "id": "libvirt-30"
 }
 
 {
@@ -1839,7 +1847,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-30"
+  "id": "libvirt-31"
 }
 
 {
@@ -1869,7 +1877,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
@@ -1939,11 +1947,11 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
-  "id": "libvirt-33",
+  "id": "libvirt-34",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-gpu-pci' not found"
@@ -1951,7 +1959,7 @@
 }
 
 {
-  "id": "libvirt-34",
+  "id": "libvirt-35",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-gpu-device' not found"
@@ -1959,7 +1967,7 @@
 }
 
 {
-  "id": "libvirt-35",
+  "id": "libvirt-36",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'ICH9-LPC' not found"
@@ -2001,11 +2009,11 @@
       "type": "on/off"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
-  "id": "libvirt-37",
+  "id": "libvirt-38",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-ccw' not found"
@@ -2015,7 +2023,7 @@
 {
   "return": [
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -2065,7 +2073,7 @@
       "type": "on/off"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -2138,7 +2146,7 @@
       "cpu-max": 1
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -2216,14 +2224,6 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-41"
-}
-
-{
-  "return": {
-    "enabled": false,
-    "present": true
-  },
   "id": "libvirt-42"
 }
 

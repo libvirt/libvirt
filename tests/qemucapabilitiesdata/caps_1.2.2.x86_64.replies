@@ -278,6 +278,14 @@
 }
 
 {
+  "return": {
+    "enabled": false,
+    "present": true
+  },
+  "id": "libvirt-6"
+}
+
+{
   "return": [
     {
       "name": "SPICE_MIGRATE_COMPLETED"
@@ -346,7 +354,7 @@
       "name": "SHUTDOWN"
     }
   ],
-  "id": "libvirt-6"
+  "id": "libvirt-7"
 }
 
 {
@@ -769,7 +777,7 @@
       "name": "VGA"
     }
   ],
-  "id": "libvirt-7"
+  "id": "libvirt-8"
 }
 
 {
@@ -871,7 +879,7 @@
       "type": "hex32"
     }
   ],
-  "id": "libvirt-8"
+  "id": "libvirt-9"
 }
 
 {
@@ -1009,7 +1017,7 @@
       "type": "on/off"
     }
   ],
-  "id": "libvirt-9"
+  "id": "libvirt-10"
 }
 
 {
@@ -1071,11 +1079,11 @@
       "type": "on/off"
     }
   ],
-  "id": "libvirt-10"
+  "id": "libvirt-11"
 }
 
 {
-  "id": "libvirt-11",
+  "id": "libvirt-12",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-blk-ccw' not found"
@@ -1083,7 +1091,7 @@
 }
 
 {
-  "id": "libvirt-12",
+  "id": "libvirt-13",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-net-ccw' not found"
@@ -1091,7 +1099,7 @@
 }
 
 {
-  "id": "libvirt-13",
+  "id": "libvirt-14",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-scsi-ccw' not found"
@@ -1099,7 +1107,7 @@
 }
 
 {
-  "id": "libvirt-14",
+  "id": "libvirt-15",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-blk-s390' not found"
@@ -1107,7 +1115,7 @@
 }
 
 {
-  "id": "libvirt-15",
+  "id": "libvirt-16",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-net-s390' not found"
@@ -1115,7 +1123,7 @@
 }
 
 {
-  "id": "libvirt-16",
+  "id": "libvirt-17",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'pci-assign' not found"
@@ -1123,7 +1131,7 @@
 }
 
 {
-  "id": "libvirt-17",
+  "id": "libvirt-18",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'kvm-pci-assign' not found"
@@ -1131,7 +1139,7 @@
 }
 
 {
-  "id": "libvirt-18",
+  "id": "libvirt-19",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'vfio-pci' not found"
@@ -1209,7 +1217,7 @@
       "type": "drive"
     }
   ],
-  "id": "libvirt-19"
+  "id": "libvirt-20"
 }
 
 {
@@ -1263,7 +1271,7 @@
       "type": "drive"
     }
   ],
-  "id": "libvirt-20"
+  "id": "libvirt-21"
 }
 
 {
@@ -1305,11 +1313,11 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-21"
+  "id": "libvirt-22"
 }
 
 {
-  "id": "libvirt-22",
+  "id": "libvirt-23",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'usb-redir' not found"
@@ -1359,7 +1367,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-23"
+  "id": "libvirt-24"
 }
 
 {
@@ -1385,17 +1393,17 @@
       "type": "drive"
     }
   ],
-  "id": "libvirt-24"
+  "id": "libvirt-25"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-25"
+  "id": "libvirt-26"
 }
 
 {
-  "id": "libvirt-26",
+  "id": "libvirt-27",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'q35-pcihost' not found"
@@ -1449,7 +1457,7 @@
       "type": "drive"
     }
   ],
-  "id": "libvirt-27"
+  "id": "libvirt-28"
 }
 
 {
@@ -1461,36 +1469,6 @@
     {
       "name": "iobase",
       "type": "hex32"
-    }
-  ],
-  "id": "libvirt-28"
-}
-
-{
-  "return": [
-    {
-      "name": "command_serr_enable",
-      "type": "on/off"
-    },
-    {
-      "name": "multifunction",
-      "type": "on/off"
-    },
-    {
-      "name": "rombar",
-      "type": "uint32"
-    },
-    {
-      "name": "romfile",
-      "type": "string"
-    },
-    {
-      "name": "addr",
-      "type": "pci-devfn"
-    },
-    {
-      "name": "vgamem_mb",
-      "type": "uint32"
     }
   ],
   "id": "libvirt-29"
@@ -1524,6 +1502,36 @@
     }
   ],
   "id": "libvirt-30"
+}
+
+{
+  "return": [
+    {
+      "name": "command_serr_enable",
+      "type": "on/off"
+    },
+    {
+      "name": "multifunction",
+      "type": "on/off"
+    },
+    {
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "name": "romfile",
+      "type": "string"
+    },
+    {
+      "name": "addr",
+      "type": "pci-devfn"
+    },
+    {
+      "name": "vgamem_mb",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-31"
 }
 
 {
@@ -1589,11 +1597,11 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-31"
+  "id": "libvirt-32"
 }
 
 {
-  "id": "libvirt-32",
+  "id": "libvirt-33",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-gpu-pci' not found"
@@ -1601,7 +1609,7 @@
 }
 
 {
-  "id": "libvirt-33",
+  "id": "libvirt-34",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-gpu-device' not found"
@@ -1609,7 +1617,7 @@
 }
 
 {
-  "id": "libvirt-34",
+  "id": "libvirt-35",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'ICH9-LPC' not found"
@@ -1651,11 +1659,11 @@
       "type": "on/off"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
-  "id": "libvirt-36",
+  "id": "libvirt-37",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-ccw' not found"
@@ -1663,7 +1671,7 @@
 }
 
 {
-  "id": "libvirt-37",
+  "id": "libvirt-38",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-device' not found"
@@ -1697,7 +1705,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -1738,7 +1746,7 @@
       "name": "none"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -1810,14 +1818,6 @@
       "name": "Opteron_G4"
     }
   ],
-  "id": "libvirt-40"
-}
-
-{
-  "return": {
-    "enabled": false,
-    "present": true
-  },
   "id": "libvirt-41"
 }
 
