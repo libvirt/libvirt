@@ -920,7 +920,7 @@ virNetDevIPInfoAddToDev(const char *ifname,
             VIR_FREE(ipStr);
             goto cleanup;
         }
-        if (virNetDevIPAddrAdd(ifname, &ip->address, NULL, prefix) < 0)
+        if (virNetDevIPAddrAdd(ifname, &ip->address, &ip->peer, prefix) < 0)
             goto cleanup;
     }
 
