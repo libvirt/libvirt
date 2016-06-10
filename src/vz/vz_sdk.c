@@ -31,6 +31,7 @@
 #include "datatypes.h"
 #include "domain_conf.h"
 #include "virtime.h"
+#include "virhostcpu.h"
 
 #include "vz_sdk.h"
 

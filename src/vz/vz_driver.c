@@ -51,6 +51,8 @@
 #include "virstring.h"
 #include "cpu/cpu.h"
 #include "virtypedparam.h"
+#include "virhostmem.h"
+#include "virhostcpu.h"
 
 #include "vz_driver.h"
 #include "vz_utils.h"
