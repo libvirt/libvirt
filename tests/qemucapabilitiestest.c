@@ -61,6 +61,11 @@ testQemuCaps(const void *opaque)
                                   qemuMonitorTestGetMonitor(mon)) < 0)
         goto cleanup;
 
+    if (virQEMUCapsGet(capsActual, QEMU_CAPS_KVM) &&
+        virQEMUCapsInitQMPMonitorTCG(capsActual,
+                                     qemuMonitorTestGetMonitor(mon)) < 0)
+        goto cleanup;
+
     if (!(actual = virQEMUCapsFormatCache(capsActual, 0, 0)))
         goto cleanup;
 

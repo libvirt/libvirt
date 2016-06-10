@@ -57,6 +57,14 @@ char *virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
                              time_t selfCTime,
                              unsigned long selfVersion);
 
+int
+virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
+                          qemuMonitorPtr mon);
+
+int
+virQEMUCapsInitQMPMonitorTCG(virQEMUCapsPtr qemuCaps,
+                             qemuMonitorPtr mon);
+
 void
 virQEMUCapsSetArch(virQEMUCapsPtr qemuCaps,
                    virArch arch);

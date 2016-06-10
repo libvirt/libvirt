@@ -4028,6 +4028,25 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 }
 
 
+int
+virQEMUCapsInitQMPMonitorTCG(virQEMUCapsPtr qemuCaps ATTRIBUTE_UNUSED,
+                             qemuMonitorPtr mon)
+{
+    int ret = -1;
+
+    if (qemuMonitorSetCapabilities(mon) < 0) {
+        VIR_DEBUG("Failed to set monitor capabilities %s",
+                  virGetLastErrorMessage());
+        ret = 0;
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
 typedef struct _virQEMUCapsInitQMPCommand virQEMUCapsInitQMPCommand;
 typedef virQEMUCapsInitQMPCommand *virQEMUCapsInitQMPCommandPtr;
 struct _virQEMUCapsInitQMPCommand {
@@ -4151,13 +4170,21 @@ virQEMUCapsInitQMPCommandNew(char *binary,
  *          1 when probing QEMU failed
  */
 static int
-virQEMUCapsInitQMPCommandRun(virQEMUCapsInitQMPCommandPtr cmd)
+virQEMUCapsInitQMPCommandRun(virQEMUCapsInitQMPCommandPtr cmd,
+                             bool forceTCG)
 {
     virDomainXMLOptionPtr xmlopt = NULL;
+    const char *machine;
     int status = 0;
     int ret = -1;
 
-    VIR_DEBUG("Try to probe capabilities of '%s' via QMP", cmd->binary);
+    if (forceTCG)
+        machine = "none,accel=tcg";
+    else
+        machine = "none,accel=kvm:tcg";
+
+    VIR_DEBUG("Try to probe capabilities of '%s' via QMP, machine %s",
+              cmd->binary, machine);
 
     /*
      * We explicitly need to use -daemonize here, rather than
@@ -4171,7 +4198,7 @@ virQEMUCapsInitQMPCommandRun(virQEMUCapsInitQMPCommandPtr cmd)
                                     "-no-user-config",
                                     "-nodefaults",
                                     "-nographic",
-                                    "-machine", "none",
+                                    "-machine", machine,
                                     "-qmp", cmd->monarg,
                                     "-pidfile", cmd->pidfile,
                                     "-daemonize",
@@ -4240,7 +4267,7 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
                                              runUid, runGid, qmperr)))
         goto cleanup;
 
-    if ((rc = virQEMUCapsInitQMPCommandRun(cmd)) != 0) {
+    if ((rc = virQEMUCapsInitQMPCommandRun(cmd, false)) != 0) {
         if (rc == 1)
             ret = 0;
         goto cleanup;
@@ -4248,6 +4275,18 @@ virQEMUCapsInitQMP(virQEMUCapsPtr qemuCaps,
 
     if (virQEMUCapsInitQMPMonitor(qemuCaps, cmd->mon) < 0)
         goto cleanup;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
+        virQEMUCapsInitQMPCommandAbort(cmd);
+        if ((rc = virQEMUCapsInitQMPCommandRun(cmd, true)) != 0) {
+            if (rc == 1)
+                ret = 0;
+            goto cleanup;
+        }
+
+        if (virQEMUCapsInitQMPMonitorTCG(qemuCaps, cmd->mon) < 0)
+            goto cleanup;
+    }
 
     ret = 0;
 
