@@ -45,6 +45,7 @@
   /bin/* PUx,
   /sbin/* PUx,
   /usr/bin/* PUx,
+  /usr/sbin/virtlogd pix,
   /usr/sbin/* PUx,
   /lib/udev/scsi_id PUx,
   /usr/{lib,lib64}/xen-common/bin/xen-toolstack PUx,
