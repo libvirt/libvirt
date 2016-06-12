@@ -888,6 +888,7 @@ virDomainObjListCollect;
 virDomainObjListConvert;
 virDomainObjListExport;
 virDomainObjListFindByID;
+virDomainObjListFindByIDRef;
 virDomainObjListFindByName;
 virDomainObjListFindByUUID;
 virDomainObjListFindByUUIDRef;

@@ -123,8 +123,6 @@ libxlDomainObjBeginJob(libxlDriverPrivatePtr driver ATTRIBUTE_UNUSED,
         return -1;
     then = now + LIBXL_JOB_WAIT_TIME;
 
-    virObjectRef(obj);
-
     while (priv->job.active) {
         VIR_DEBUG("Wait normal job condition for starting job: %s",
                   libxlDomainJobTypeToString(job));
@@ -157,7 +155,6 @@ libxlDomainObjBeginJob(libxlDriverPrivatePtr driver ATTRIBUTE_UNUSED,
         virReportSystemError(errno,
                              "%s", _("cannot acquire job mutex"));
 
-    virObjectUnref(obj);
     return -1;
 }
 
@@ -171,7 +168,7 @@ libxlDomainObjBeginJob(libxlDriverPrivatePtr driver ATTRIBUTE_UNUSED,
  * non-zero, false if the reference count has dropped to zero
  * and obj is disposed.
  */
-bool
+void
 libxlDomainObjEndJob(libxlDriverPrivatePtr driver ATTRIBUTE_UNUSED,
                      virDomainObjPtr obj)
 {
@@ -183,8 +180,6 @@ libxlDomainObjEndJob(libxlDriverPrivatePtr driver ATTRIBUTE_UNUSED,
 
     libxlDomainObjResetJob(priv);
     virCondSignal(&priv->job.cond);
-
-    return virObjectUnref(obj);
 }
 
 int
@@ -532,12 +527,10 @@ libxlDomainShutdownThread(void *opaque)
     }
 
  endjob:
-    if (!libxlDomainObjEndJob(driver, vm))
-        vm = NULL;
+    libxlDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     if (dom_event)
         libxlDomainEventQueue(driver, dom_event);
     libxl_event_free(cfg->ctx, ev);
@@ -570,7 +563,7 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     if (xl_reason == LIBXL_SHUTDOWN_REASON_SUSPEND)
         goto error;
 
-    vm = virDomainObjListFindByID(driver->domains, event->domid);
+    vm = virDomainObjListFindByIDRef(driver->domains, event->domid);
     if (!vm) {
         VIR_INFO("Received event for unknown domain ID %d", event->domid);
         goto error;
@@ -605,8 +598,7 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     /* Cast away any const */
     libxl_event_free(cfg->ctx, (libxl_event *)event);
     virObjectUnref(cfg);
-    if (vm)
-        virObjectUnlock(vm);
+    virDomainObjEndAPI(&vm);
     VIR_FREE(shutdown_info);
 }
 

@@ -85,10 +85,9 @@ libxlDomainObjBeginJob(libxlDriverPrivatePtr driver,
                        enum libxlDomainJob job)
     ATTRIBUTE_RETURN_CHECK;
 
-bool
+void
 libxlDomainObjEndJob(libxlDriverPrivatePtr driver,
-                     virDomainObjPtr obj)
-    ATTRIBUTE_RETURN_CHECK;
+                     virDomainObjPtr obj);
 
 int
 libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)

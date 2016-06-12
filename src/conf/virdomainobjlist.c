@@ -112,24 +112,45 @@ static int virDomainObjListSearchID(const void *payload,
     return want;
 }
 
-
-virDomainObjPtr virDomainObjListFindByID(virDomainObjListPtr doms,
-                                         int id)
+static virDomainObjPtr
+virDomainObjListFindByIDInternal(virDomainObjListPtr doms,
+                                 int id,
+                                 bool ref)
 {
     virDomainObjPtr obj;
     virObjectLock(doms);
     obj = virHashSearch(doms->objs, virDomainObjListSearchID, &id);
+    if (ref) {
+        virObjectRef(obj);
+        virObjectUnlock(doms);
+    }
     if (obj) {
         virObjectLock(obj);
         if (obj->removing) {
             virObjectUnlock(obj);
+            if (ref)
+                virObjectUnref(obj);
             obj = NULL;
         }
     }
-    virObjectUnlock(doms);
+    if (!ref)
+        virObjectUnlock(doms);
     return obj;
 }
 
+virDomainObjPtr
+virDomainObjListFindByID(virDomainObjListPtr doms,
+                         int id)
+{
+    return virDomainObjListFindByIDInternal(doms, id, false);
+}
+
+virDomainObjPtr
+virDomainObjListFindByIDRef(virDomainObjListPtr doms,
+                            int id)
+{
+    return virDomainObjListFindByIDInternal(doms, id, true);
+}
 
 static virDomainObjPtr
 virDomainObjListFindByUUIDInternal(virDomainObjListPtr doms,
