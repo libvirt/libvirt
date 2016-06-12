@@ -17,7 +17,7 @@
     <disk type='file' device='cdrom'>
       <driver name='file' type='raw'/>
       <source file='/tmp/cdrom.iso'/>
-      <target dev='hda' bus='sata'/>
+      <target dev='hdb' bus='sata'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
       <boot order='1'/>
     </disk>

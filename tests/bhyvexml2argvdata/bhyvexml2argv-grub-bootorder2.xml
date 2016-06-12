@@ -18,14 +18,14 @@
     <disk type='file'>
       <driver name='file' type='raw'/>
       <source file='/tmp/freebsd2.img'/>
-      <target dev='hda' bus='sata'/>
+      <target dev='hdb' bus='sata'/>
       <boot order='22'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </disk>
     <disk type='file'>
       <driver name='file' type='raw'/>
       <source file='/tmp/freebsd3.img'/>
-      <target dev='hda' bus='sata'/>
+      <target dev='hdc' bus='sata'/>
       <boot order='3'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
     </disk>
