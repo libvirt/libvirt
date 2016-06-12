@@ -21,9 +21,9 @@ AC_DEFUN([LIBVIRT_CHECK_LOGIN_SHELL], [
   m4_divert_text([DEFAULTS], [with_login_shell=check])
 
   if test "x$with_login_shell" != "xno"; then
-    if test "x$with_win" = "xyes"; then
+    if test "x$with_linux" != "xyes"; then
       if test "x$with_login_shell" = "xyes"; then
-        AC_MSG_ERROR([virt-login-shell is not supported on Windows])
+        AC_MSG_ERROR([virt-login-shell is supported on Linux only])
       else
         with_login_shell=no;
       fi
