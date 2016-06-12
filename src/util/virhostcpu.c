@@ -88,7 +88,7 @@ virHostCPUGetCountAppleFreeBSD(void)
 # define TICK_TO_NSEC (1000ull * 1000ull * 1000ull / (stathz ? stathz : hz))
 
 static int
-virHostCPUGetStatsFreebsd(int cpuNum,
+virHostCPUGetStatsFreeBSD(int cpuNum,
                           virNodeCPUStatsPtr params,
                           int *nparams)
 {
@@ -962,7 +962,7 @@ virHostCPUParseMapLinux(int max_cpuid, const char *path)
 
 
 int
-virHostCPUGetInfo(virArch hostarch,
+virHostCPUGetInfo(virArch hostarch ATTRIBUTE_UNUSED,
                   unsigned int *cpus,
                   unsigned int *mhz,
                   unsigned int *nodes,
