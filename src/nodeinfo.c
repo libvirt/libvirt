@@ -129,6 +129,8 @@ virNodeGetSiblingsListLinux(const char *dir, int cpu_id)
     VIR_FREE(path);
     return ret;
 }
+#else
+# define SYSFS_SYSTEM_PATH "fake"
 #endif
 
 
