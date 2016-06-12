@@ -51,6 +51,8 @@
 #include "cpu/cpu.h"
 #include "viraccessapicheck.h"
 #include "nodeinfo.h"
+#include "virhostcpu.h"
+#include "virhostmem.h"
 
 #include "bhyve_device.h"
 #include "bhyve_driver.h"
