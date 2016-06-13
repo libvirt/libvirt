@@ -700,7 +700,7 @@ mymain(void)
         }                                                               \
     } while (0)
 #else
-# define DO_TEST_CPUID_JSON(arch, host)
+# define DO_TEST_CPUID_JSON(arch, host, json)
 #endif
 
 #define DO_TEST_CPUID(arch, host, json)                                 \
