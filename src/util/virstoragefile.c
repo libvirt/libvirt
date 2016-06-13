@@ -1537,62 +1537,11 @@ virStorageAuthDefCopy(const virStorageAuthDef *src)
 }
 
 
-static int
-virStorageAuthDefParseSecret(xmlXPathContextPtr ctxt,
-                             virStorageAuthDefPtr authdef)
-{
-    char *uuid;
-    char *usage;
-    int ret = -1;
-
-    /* Used by the domain disk xml parsing in order to ensure the
-     * <secret type='%s' value matches the expected secret type for
-     * the style of disk (iscsi is chap, nbd is ceph). For some reason
-     * the virSecretUsageType{From|To}String() cannot be linked here
-     * and because only the domain parsing code cares - just keep
-     * it as a string.
-     */
-    authdef->secrettype = virXPathString("string(./secret/@type)", ctxt);
-
-    uuid = virXPathString("string(./secret/@uuid)", ctxt);
-    usage = virXPathString("string(./secret/@usage)", ctxt);
-    if (uuid == NULL && usage == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing auth secret uuid or usage attribute"));
-        goto cleanup;
-    }
-
-    if (uuid && usage) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("either auth secret uuid or usage expected"));
-        goto cleanup;
-    }
-
-    if (uuid) {
-        if (virUUIDParse(uuid, authdef->seclookupdef.u.uuid) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                            _("invalid auth secret uuid"));
-            goto cleanup;
-        }
-        authdef->seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
-    } else {
-        authdef->seclookupdef.u.usage = usage;
-        usage = NULL;
-        authdef->seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_USAGE;
-    }
-    ret = 0;
-
- cleanup:
-    VIR_FREE(uuid);
-    VIR_FREE(usage);
-    return ret;
-}
-
-
 static virStorageAuthDefPtr
 virStorageAuthDefParseXML(xmlXPathContextPtr ctxt)
 {
     virStorageAuthDefPtr authdef = NULL;
+    xmlNodePtr secretnode = NULL;
     char *username = NULL;
     char *authtype = NULL;
 
@@ -1621,8 +1570,22 @@ virStorageAuthDefParseXML(xmlXPathContextPtr ctxt)
         VIR_FREE(authtype);
     }
 
-    authdef->seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_NONE;
-    if (virStorageAuthDefParseSecret(ctxt, authdef) < 0)
+    if (!(secretnode = virXPathNode("./secret ", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing <secret> element in auth"));
+        goto error;
+    }
+
+    /* Used by the domain disk xml parsing in order to ensure the
+     * <secret type='%s' value matches the expected secret type for
+     * the style of disk (iscsi is chap, nbd is ceph). For some reason
+     * the virSecretUsageType{From|To}String() cannot be linked here
+     * and because only the domain parsing code cares - just keep
+     * it as a string.
+     */
+    authdef->secrettype = virXMLPropString(secretnode, "type");
+
+    if (virSecretLookupParseSecret(secretnode, &authdef->seclookupdef) < 0)
         goto error;
 
     return authdef;

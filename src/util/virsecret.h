@@ -24,6 +24,8 @@
 
 # include "internal.h"
 
+# include "virxml.h"
+
 typedef enum {
     VIR_SECRET_LOOKUP_TYPE_NONE,
     VIR_SECRET_LOOKUP_TYPE_UUID,
@@ -46,5 +48,6 @@ struct _virSecretLookupTypeDef {
 void virSecretLookupDefClear(virSecretLookupTypeDefPtr def);
 int virSecretLookupDefCopy(virSecretLookupTypeDefPtr dst,
                            const virSecretLookupTypeDef *src);
-
+int virSecretLookupParseSecret(xmlNodePtr secretnode,
+                               virSecretLookupTypeDefPtr def);
 #endif /* __VIR_SECRET_H__ */

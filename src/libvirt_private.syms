@@ -2221,6 +2221,7 @@ virSecurityLabelDefNew;
 # util/virsecret.h
 virSecretLookupDefClear;
 virSecretLookupDefCopy;
+virSecretLookupParseSecret;
 
 
 # util/virsexpr.h
