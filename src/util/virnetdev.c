@@ -2547,10 +2547,33 @@ virNetDevRestoreNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
 
 #endif /* defined(__linux__) && defined(HAVE_LIBNL) */
 
+VIR_ENUM_IMPL(virNetDevIfState,
+              VIR_NETDEV_IF_STATE_LAST,
+              "" /* value of zero means no state */,
+              "unknown", "notpresent",
+              "down", "lowerlayerdown",
+              "testing", "dormant", "up")
+
+VIR_ENUM_IMPL(virNetDevFeature,
+              VIR_NET_DEV_FEAT_LAST,
+              "rx",
+              "tx",
+              "sg",
+              "tso",
+              "gso",
+              "gro",
+              "lro",
+              "rxvlan",
+              "txvlan",
+              "ntuple",
+              "rxhash",
+              "rdma",
+              "txudptnl")
+
 #ifdef __linux__
 int
 virNetDevGetLinkInfo(const char *ifname,
-                     virInterfaceLinkPtr lnk)
+                     virNetDevIfLinkPtr lnk)
 {
     int ret = -1;
     char *path = NULL;
@@ -2580,7 +2603,7 @@ virNetDevGetLinkInfo(const char *ifname,
 
     /* We shouldn't allow 0 here, because
      * virInterfaceState enum starts from 1. */
-    if ((tmp_state = virInterfaceStateTypeFromString(buf)) <= 0) {
+    if ((tmp_state = virNetDevIfStateTypeFromString(buf)) <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unable to parse: %s"),
                        buf);
@@ -2593,7 +2616,7 @@ virNetDevGetLinkInfo(const char *ifname,
      * report several misleading values. While igb reports 65535, realtek goes
      * with 10. To avoid muddying XML with insane values, don't report link
      * speed if that's the case. */
-    if (lnk->state != VIR_INTERFACE_STATE_UP) {
+    if (lnk->state != VIR_NETDEV_IF_STATE_UP) {
         lnk->speed = 0;
         ret = 0;
         goto cleanup;
@@ -2638,7 +2661,7 @@ virNetDevGetLinkInfo(const char *ifname,
 
 int
 virNetDevGetLinkInfo(const char *ifname,
-                     virInterfaceLinkPtr lnk)
+                     virNetDevIfLinkPtr lnk)
 {
     /* Port me */
     VIR_DEBUG("Getting link info on %s is not implemented on this platform",

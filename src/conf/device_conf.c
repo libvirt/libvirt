@@ -32,29 +32,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_DEVICE
 
-VIR_ENUM_IMPL(virInterfaceState,
-              VIR_INTERFACE_STATE_LAST,
-              "" /* value of zero means no state */,
-              "unknown", "notpresent",
-              "down", "lowerlayerdown",
-              "testing", "dormant", "up")
-
-VIR_ENUM_IMPL(virNetDevFeature,
-              VIR_NET_DEV_FEAT_LAST,
-              "rx",
-              "tx",
-              "sg",
-              "tso",
-              "gso",
-              "gro",
-              "lro",
-              "rxvlan",
-              "txvlan",
-              "ntuple",
-              "rxhash",
-              "rdma",
-              "txudptnl")
-
 int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
                                bool report)
 {
@@ -196,7 +173,7 @@ virPCIDeviceAddressEqual(virPCIDeviceAddress *addr1,
 
 int
 virInterfaceLinkParseXML(xmlNodePtr node,
-                         virInterfaceLinkPtr lnk)
+                         virNetDevIfLinkPtr lnk)
 {
     int ret = -1;
     char *stateStr, *speedStr;
@@ -206,7 +183,7 @@ virInterfaceLinkParseXML(xmlNodePtr node,
     speedStr = virXMLPropString(node, "speed");
 
     if (stateStr) {
-        if ((state = virInterfaceStateTypeFromString(stateStr)) < 0) {
+        if ((state = virNetDevIfStateTypeFromString(stateStr)) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown link state: %s"),
                            stateStr);
@@ -232,7 +209,7 @@ virInterfaceLinkParseXML(xmlNodePtr node,
 
 int
 virInterfaceLinkFormat(virBufferPtr buf,
-                       const virInterfaceLink *lnk)
+                       const virNetDevIfLink *lnk)
 {
     if (!lnk->speed && !lnk->state) {
         /* If there's nothing to format, return early. */
@@ -244,7 +221,7 @@ virInterfaceLinkFormat(virBufferPtr buf,
         virBufferAsprintf(buf, " speed='%u'", lnk->speed);
     if (lnk->state)
         virBufferAsprintf(buf, " state='%s'",
-                          virInterfaceStateTypeToString(lnk->state));
+                          virNetDevIfStateTypeToString(lnk->state));
     virBufferAddLit(buf, "/>\n");
     return 0;
 }

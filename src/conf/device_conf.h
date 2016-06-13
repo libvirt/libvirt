@@ -32,45 +32,7 @@
 # include "virthread.h"
 # include "virbuffer.h"
 # include "virpci.h"
-
-typedef enum {
-    VIR_INTERFACE_STATE_UNKNOWN = 1,
-    VIR_INTERFACE_STATE_NOT_PRESENT,
-    VIR_INTERFACE_STATE_DOWN,
-    VIR_INTERFACE_STATE_LOWER_LAYER_DOWN,
-    VIR_INTERFACE_STATE_TESTING,
-    VIR_INTERFACE_STATE_DORMANT,
-    VIR_INTERFACE_STATE_UP,
-    VIR_INTERFACE_STATE_LAST
-} virInterfaceState;
-
-VIR_ENUM_DECL(virInterfaceState)
-
-typedef struct _virInterfaceLink virInterfaceLink;
-typedef virInterfaceLink *virInterfaceLinkPtr;
-struct _virInterfaceLink {
-    virInterfaceState state; /* link state */
-    unsigned int speed;      /* link speed in Mbits per second */
-};
-
-typedef enum {
-    VIR_NET_DEV_FEAT_GRXCSUM,
-    VIR_NET_DEV_FEAT_GTXCSUM,
-    VIR_NET_DEV_FEAT_GSG,
-    VIR_NET_DEV_FEAT_GTSO,
-    VIR_NET_DEV_FEAT_GGSO,
-    VIR_NET_DEV_FEAT_GGRO,
-    VIR_NET_DEV_FEAT_LRO,
-    VIR_NET_DEV_FEAT_RXVLAN,
-    VIR_NET_DEV_FEAT_TXVLAN,
-    VIR_NET_DEV_FEAT_NTUPLE,
-    VIR_NET_DEV_FEAT_RXHASH,
-    VIR_NET_DEV_FEAT_RDMA,
-    VIR_NET_DEV_FEAT_TXUDPTNL,
-    VIR_NET_DEV_FEAT_LAST
-} virNetDevFeature;
-
-VIR_ENUM_DECL(virNetDevFeature)
+# include "virnetdev.h"
 
 typedef enum {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE,
@@ -218,9 +180,9 @@ bool virPCIDeviceAddressEqual(virPCIDeviceAddress *addr1,
                               virPCIDeviceAddress *addr2);
 
 int virInterfaceLinkParseXML(xmlNodePtr node,
-                             virInterfaceLinkPtr lnk);
+                             virNetDevIfLinkPtr lnk);
 
 int virInterfaceLinkFormat(virBufferPtr buf,
-                           const virInterfaceLink *lnk);
+                           const virNetDevIfLink *lnk);
 
 #endif /* __DEVICE_CONF_H__ */

@@ -30,7 +30,6 @@
 # include "virmacaddr.h"
 # include "virpci.h"
 # include "virnetdevvlan.h"
-# include "device_conf.h"
 
 # ifdef HAVE_STRUCT_IFREQ
 typedef struct ifreq virIfreq;
@@ -73,6 +72,43 @@ struct _virNetDevRxFilter {
         size_t nTable;
     } vlan;
 };
+
+typedef enum {
+    VIR_NETDEV_IF_STATE_UNKNOWN = 1,
+    VIR_NETDEV_IF_STATE_NOT_PRESENT,
+    VIR_NETDEV_IF_STATE_DOWN,
+    VIR_NETDEV_IF_STATE_LOWER_LAYER_DOWN,
+    VIR_NETDEV_IF_STATE_TESTING,
+    VIR_NETDEV_IF_STATE_DORMANT,
+    VIR_NETDEV_IF_STATE_UP,
+    VIR_NETDEV_IF_STATE_LAST
+} virNetDevIfState;
+
+VIR_ENUM_DECL(virNetDevIfState)
+
+typedef struct {
+    virNetDevIfState state; /* link state */
+    unsigned int speed;      /* link speed in Mbits per second */
+} virNetDevIfLink, *virNetDevIfLinkPtr;
+
+typedef enum {
+    VIR_NET_DEV_FEAT_GRXCSUM,
+    VIR_NET_DEV_FEAT_GTXCSUM,
+    VIR_NET_DEV_FEAT_GSG,
+    VIR_NET_DEV_FEAT_GTSO,
+    VIR_NET_DEV_FEAT_GGSO,
+    VIR_NET_DEV_FEAT_GGRO,
+    VIR_NET_DEV_FEAT_LRO,
+    VIR_NET_DEV_FEAT_RXVLAN,
+    VIR_NET_DEV_FEAT_TXVLAN,
+    VIR_NET_DEV_FEAT_NTUPLE,
+    VIR_NET_DEV_FEAT_RXHASH,
+    VIR_NET_DEV_FEAT_RDMA,
+    VIR_NET_DEV_FEAT_TXUDPTNL,
+    VIR_NET_DEV_FEAT_LAST
+} virNetDevFeature;
+
+VIR_ENUM_DECL(virNetDevFeature)
 
 int virNetDevSetupControl(const char *ifname,
                           virIfreq *ifr)
@@ -187,7 +223,7 @@ int virNetDevGetFeatures(const char *ifname,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevGetLinkInfo(const char *ifname,
-                         virInterfaceLinkPtr lnk)
+                         virNetDevIfLinkPtr lnk)
     ATTRIBUTE_NONNULL(1);
 
 virNetDevRxFilterPtr virNetDevRxFilterNew(void)

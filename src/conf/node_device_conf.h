@@ -140,7 +140,7 @@ typedef struct _virNodeDevCapData {
             char *address;
             unsigned int address_len;
             char *ifname;
-            virInterfaceLink lnk;
+            virNetDevIfLink lnk;
             virNodeDevNetCapType subtype;  /* LAST -> no subtype */
             virBitmapPtr features; /* enum virNetDevFeature */
         } net;

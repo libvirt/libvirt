@@ -30,7 +30,7 @@
 
 struct testVirNetDevGetLinkInfoData {
     const char *ifname;         /* ifname to get info on */
-    virInterfaceState state;    /* expected state */
+    virNetDevIfState state;     /* expected state */
     unsigned int speed;         /* expected speed */
 };
 
@@ -39,7 +39,7 @@ testVirNetDevGetLinkInfo(const void *opaque)
 {
     int ret = -1;
     const struct testVirNetDevGetLinkInfoData *data = opaque;
-    virInterfaceLink lnk;
+    virNetDevIfLink lnk;
 
     if (virNetDevGetLinkInfo(data->ifname, &lnk) < 0)
         goto cleanup;
@@ -47,8 +47,8 @@ testVirNetDevGetLinkInfo(const void *opaque)
     if (lnk.state != data->state) {
         fprintf(stderr,
                 "Fetched link state (%s) doesn't match the expected one (%s)",
-                virInterfaceStateTypeToString(lnk.state),
-                virInterfaceStateTypeToString(data->state));
+                virNetDevIfStateTypeToString(lnk.state),
+                virNetDevIfStateTypeToString(data->state));
         goto cleanup;
     }
 
@@ -77,9 +77,9 @@ mymain(void)
             ret = -1;                                                       \
     } while (0)
 
-    DO_TEST_LINK("eth0", VIR_INTERFACE_STATE_UP, 1000);
-    DO_TEST_LINK("lo", VIR_INTERFACE_STATE_UNKNOWN, 0);
-    DO_TEST_LINK("eth0-broken", VIR_INTERFACE_STATE_DOWN, 0);
+    DO_TEST_LINK("eth0", VIR_NETDEV_IF_STATE_UP, 1000);
+    DO_TEST_LINK("lo", VIR_NETDEV_IF_STATE_UNKNOWN, 0);
+    DO_TEST_LINK("eth0-broken", VIR_NETDEV_IF_STATE_DOWN, 0);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

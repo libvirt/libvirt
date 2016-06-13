@@ -147,7 +147,7 @@ struct _virInterfaceDef {
     char *name;              /* interface name */
     unsigned int mtu;        /* maximum transmit size in byte */
     char *mac;               /* MAC address */
-    virInterfaceLink lnk;    /* interface link info */
+    virNetDevIfLink lnk;    /* interface link info */
 
     virInterfaceStartMode startmode; /* how it is started */
 
