@@ -1524,17 +1524,12 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (qemuMonitorAttachCharDev(priv->mon, charAlias, &chr->source) < 0) {
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
-        goto audit;
-    }
+    if (qemuMonitorAttachCharDev(priv->mon, charAlias, &chr->source) < 0)
+        goto failchardev;
 
-    if (devstr && qemuMonitorAddDevice(priv->mon, devstr) < 0) {
-        /* detach associated chardev on error */
-        qemuMonitorDetachCharDev(priv->mon, charAlias);
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
-        goto audit;
-    }
+    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+        goto failadddev;
+
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto audit;
 
@@ -1550,6 +1545,13 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     VIR_FREE(charAlias);
     VIR_FREE(devstr);
     return ret;
+
+ failadddev:
+    /* detach associated chardev on error */
+    qemuMonitorDetachCharDev(priv->mon, charAlias);
+ failchardev:
+    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    goto audit;
 }
 
 
