@@ -99,3 +99,26 @@ virSecretLookupParseSecret(xmlNodePtr secretnode,
     VIR_FREE(usage);
     return ret;
 }
+
+
+void
+virSecretLookupFormatSecret(virBufferPtr buf,
+                            const char *secrettype,
+                            virSecretLookupTypeDefPtr def)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (secrettype)
+        virBufferAsprintf(buf, "<secret type='%s'", secrettype);
+    else
+        virBufferAddLit(buf, "<secret");
+
+    if (def->type == VIR_SECRET_LOOKUP_TYPE_UUID) {
+        virUUIDFormat(def->u.uuid, uuidstr);
+        virBufferAsprintf(buf, " uuid='%s'/>\n", uuidstr);
+    } else if (def->type == VIR_SECRET_LOOKUP_TYPE_USAGE) {
+        virBufferEscapeString(buf, " usage='%s'/>\n", def->u.usage);
+    } else {
+        virBufferAddLit(buf, "/>\n");
+    }
+}

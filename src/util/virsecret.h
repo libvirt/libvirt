@@ -50,4 +50,7 @@ int virSecretLookupDefCopy(virSecretLookupTypeDefPtr dst,
                            const virSecretLookupTypeDef *src);
 int virSecretLookupParseSecret(xmlNodePtr secretnode,
                                virSecretLookupTypeDefPtr def);
+void virSecretLookupFormatSecret(virBufferPtr buf,
+                                 const char *secrettype,
+                                 virSecretLookupTypeDefPtr def);
 #endif /* __VIR_SECRET_H__ */

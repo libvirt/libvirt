@@ -1623,8 +1623,6 @@ int
 virStorageAuthDefFormat(virBufferPtr buf,
                         virStorageAuthDefPtr authdef)
 {
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-
     if (authdef->authType == VIR_STORAGE_AUTH_TYPE_NONE) {
         virBufferEscapeString(buf, "<auth username='%s'>\n", authdef->username);
     } else {
@@ -1634,20 +1632,8 @@ virStorageAuthDefFormat(virBufferPtr buf,
     }
 
     virBufferAdjustIndent(buf, 2);
-    if (authdef->secrettype)
-        virBufferAsprintf(buf, "<secret type='%s'", authdef->secrettype);
-    else
-        virBufferAddLit(buf, "<secret");
-
-    if (authdef->seclookupdef.type == VIR_SECRET_LOOKUP_TYPE_UUID) {
-        virUUIDFormat(authdef->seclookupdef.u.uuid, uuidstr);
-        virBufferAsprintf(buf, " uuid='%s'/>\n", uuidstr);
-    } else if (authdef->seclookupdef.type == VIR_SECRET_LOOKUP_TYPE_USAGE) {
-        virBufferEscapeString(buf, " usage='%s'/>\n",
-                              authdef->seclookupdef.u.usage);
-    } else {
-        virBufferAddLit(buf, "/>\n");
-    }
+    virSecretLookupFormatSecret(buf, authdef->secrettype,
+                                &authdef->seclookupdef);
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</auth>\n");
 
