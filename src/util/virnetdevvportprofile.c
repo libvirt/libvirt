@@ -880,7 +880,7 @@ virNetDevVPortProfileGetNthParent(const char *ifname, int ifindex, unsigned int 
 
     while (!end && i <= nthParent) {
         VIR_FREE(nlData);
-        rc = virNetDevLinkDump(ifname, ifindex, &nlData, tb, 0, 0);
+        rc = virNetlinkDumpLink(ifname, ifindex, &nlData, tb, 0, 0);
         if (rc < 0)
             break;
 
@@ -964,7 +964,7 @@ virNetDevVPortProfileOpCommon(const char *ifname, int ifindex,
 
     while (--repeats >= 0) {
         VIR_FREE(nlData);
-        rc = virNetDevLinkDump(NULL, ifindex, &nlData, tb, src_pid, dst_pid);
+        rc = virNetlinkDumpLink(NULL, ifindex, &nlData, tb, src_pid, dst_pid);
         if (rc < 0)
             goto cleanup;
 

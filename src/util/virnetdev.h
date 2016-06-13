@@ -27,7 +27,6 @@
 
 # include "virbitmap.h"
 # include "virsocketaddr.h"
-# include "virnetlink.h"
 # include "virmacaddr.h"
 # include "virpci.h"
 # include "virnetdevvlan.h"
@@ -169,11 +168,6 @@ int virNetDevGetVirtualFunctions(const char *pfname,
                                  unsigned int *max_vfs)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
-
-int virNetDevLinkDump(const char *ifname, int ifindex,
-                      void **nlData, struct nlattr **tb,
-                      uint32_t src_pid, uint32_t dst_pid)
-    ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevReplaceNetConfig(const char *linkdev, int vf,
                               const virMacAddr *macaddress,

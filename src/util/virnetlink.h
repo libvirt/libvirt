@@ -58,6 +58,11 @@ int virNetlinkDelLink(const char *ifname, virNetlinkDelLinkFallback fallback);
 
 int virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen);
 
+int virNetlinkDumpLink(const char *ifname, int ifindex,
+                       void **nlData, struct nlattr **tb,
+                       uint32_t src_pid, uint32_t dst_pid)
+    ATTRIBUTE_RETURN_CHECK;
+
 typedef void (*virNetlinkEventHandleCallback)(struct nlmsghdr *,
                                               unsigned int length,
                                               struct sockaddr_nl *peer,

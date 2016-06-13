@@ -36,6 +36,7 @@
 #include <sys/socket.h>
 
 #include "virnetlink.h"
+#include "virnetdev.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "virthread.h"
@@ -312,6 +313,126 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
 
     virNetlinkFree(nlhandle);
     return ret;
+}
+
+
+/**
+ * virNetlinkDumpLink:
+ *
+ * @ifname:  The name of the interface; only use if ifindex <= 0
+ * @ifindex: The interface index; may be <= 0 if ifname is given
+ * @data:    Gets a pointer to the raw data from netlink.
+             MUST BE FREED BY CALLER!
+ * @nlattr:  Pointer to a pointer of netlink attributes that will contain
+ *           the results
+ * @src_pid: pid used for nl_pid of the local end of the netlink message
+ *           (0 == "use getpid()")
+ * @dst_pid: pid of destination nl_pid if the kernel
+ *           is not the target of the netlink message but it is to be
+ *           sent to another process (0 if sending to the kernel)
+ *
+ * Get information from netlink about an interface given its name or index.
+ *
+ * Returns 0 on success, -1 on fatal error.
+ */
+int
+virNetlinkDumpLink(const char *ifname, int ifindex,
+                   void **nlData, struct nlattr **tb,
+                   uint32_t src_pid, uint32_t dst_pid)
+{
+    int rc = -1;
+    struct nlmsghdr *resp = NULL;
+    struct nlmsgerr *err;
+    struct ifinfomsg ifinfo = {
+        .ifi_family = AF_UNSPEC,
+        .ifi_index  = ifindex
+    };
+    unsigned int recvbuflen;
+    struct nl_msg *nl_msg;
+
+    if (ifname && ifindex <= 0 && virNetDevGetIndex(ifname, &ifindex) < 0)
+        return -1;
+
+    ifinfo.ifi_index = ifindex;
+
+    nl_msg = nlmsg_alloc_simple(RTM_GETLINK, NLM_F_REQUEST);
+    if (!nl_msg) {
+        virReportOOMError();
+        return -1;
+    }
+
+    if (nlmsg_append(nl_msg,  &ifinfo, sizeof(ifinfo), NLMSG_ALIGNTO) < 0)
+        goto buffer_too_small;
+
+    if (ifname) {
+        if (nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
+            goto buffer_too_small;
+    }
+
+# ifdef RTEXT_FILTER_VF
+    /* if this filter exists in the kernel's netlink implementation,
+     * we need to set it, otherwise the response message will not
+     * contain the IFLA_VFINFO_LIST that we're looking for.
+     */
+    {
+        uint32_t ifla_ext_mask = RTEXT_FILTER_VF;
+
+        if (nla_put(nl_msg, IFLA_EXT_MASK,
+                    sizeof(ifla_ext_mask), &ifla_ext_mask) < 0) {
+            goto buffer_too_small;
+        }
+    }
+# endif
+
+    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen,
+                          src_pid, dst_pid, NETLINK_ROUTE, 0) < 0)
+        goto cleanup;
+
+    if (recvbuflen < NLMSG_LENGTH(0) || resp == NULL)
+        goto malformed_resp;
+
+    switch (resp->nlmsg_type) {
+    case NLMSG_ERROR:
+        err = (struct nlmsgerr *)NLMSG_DATA(resp);
+        if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
+            goto malformed_resp;
+
+        if (err->error) {
+            virReportSystemError(-err->error,
+                                 _("error dumping %s (%d) interface"),
+                                 ifname, ifindex);
+            goto cleanup;
+        }
+        break;
+
+    case GENL_ID_CTRL:
+    case NLMSG_DONE:
+        rc = nlmsg_parse(resp, sizeof(struct ifinfomsg),
+                         tb, IFLA_MAX, NULL);
+        if (rc < 0)
+            goto malformed_resp;
+        break;
+
+    default:
+        goto malformed_resp;
+    }
+    rc = 0;
+ cleanup:
+    nlmsg_free(nl_msg);
+    if (rc < 0)
+       VIR_FREE(resp);
+    *nlData = resp;
+    return rc;
+
+ malformed_resp:
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("malformed netlink response message"));
+    goto cleanup;
+
+ buffer_too_small:
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("allocated netlink buffer is too small"));
+    goto cleanup;
 }
 
 
@@ -918,6 +1039,20 @@ int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
                       unsigned int groups ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    return -1;
+}
+
+
+int
+virNetlinkDumpLink(const char *ifname ATTRIBUTE_UNUSED,
+                   int ifindex ATTRIBUTE_UNUSED,
+                   void **nlData ATTRIBUTE_UNUSED,
+                   struct nlattr **tb ATTRIBUTE_UNUSED,
+                   uint32_t src_pid ATTRIBUTE_UNUSED,
+                   uint32_t dst_pid ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to dump link info on this platform"));
     return -1;
 }
 

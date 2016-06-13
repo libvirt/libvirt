@@ -1878,7 +1878,6 @@ virNetDevGetVirtualFunctionInfo;
 virNetDevGetVirtualFunctions;
 virNetDevGetVLanID;
 virNetDevIsVirtualFunction;
-virNetDevLinkDump;
 virNetDevReplaceMacAddress;
 virNetDevReplaceNetConfig;
 virNetDevRestoreMacAddress;
@@ -1992,6 +1991,7 @@ virNetDevVPortProfileOpTypeToString;
 # util/virnetlink.h
 virNetlinkCommand;
 virNetlinkDelLink;
+virNetlinkDumpLink;
 virNetlinkEventAddClient;
 virNetlinkEventRemoveClient;
 virNetlinkEventServiceIsRunning;
