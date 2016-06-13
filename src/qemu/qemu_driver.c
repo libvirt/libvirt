@@ -3906,6 +3906,10 @@ static void processWatchdogEvent(virQEMUDriverPtr driver, virDomainObjPtr vm, in
 {
     int ret;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    char *domname = virDomainObjGetShortName(vm);
+
+    if (!domname)
+        goto cleanup;
 
     switch (action) {
     case VIR_DOMAIN_WATCHDOG_ACTION_DUMP:
@@ -3915,7 +3919,7 @@ static void processWatchdogEvent(virQEMUDriverPtr driver, virDomainObjPtr vm, in
 
             if (virAsprintf(&dumpfile, "%s/%s-%u",
                             cfg->autoDumpPath,
-                            vm->def->name,
+                            domname,
                             (unsigned int)time(NULL)) < 0)
                 goto cleanup;
 
@@ -3959,6 +3963,7 @@ static void processWatchdogEvent(virQEMUDriverPtr driver, virDomainObjPtr vm, in
     qemuDomainObjEndAsyncJob(driver, vm);
 
  cleanup:
+    VIR_FREE(domname);
     virObjectUnref(cfg);
 }
 
