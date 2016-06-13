@@ -138,6 +138,7 @@ UTIL_SOURCES =							\
 		util/virnetdev.h util/virnetdev.c		\
 		util/virnetdevbandwidth.h util/virnetdevbandwidth.c \
 		util/virnetdevbridge.h util/virnetdevbridge.c	\
+		util/virnetdevip.h util/virnetdevip.c		\
 		util/virnetdevmacvlan.c util/virnetdevmacvlan.h	\
 		util/virnetdevmidonet.h util/virnetdevmidonet.c \
 		util/virnetdevopenvswitch.h util/virnetdevopenvswitch.c \

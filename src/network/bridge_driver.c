@@ -62,10 +62,11 @@
 #include "virdnsmasq.h"
 #include "configmake.h"
 #include "virnetdev.h"
-#include "virpci.h"
+#include "virnetdevip.h"
 #include "virnetdevbridge.h"
 #include "virnetdevtap.h"
 #include "virnetdevvportprofile.h"
+#include "virpci.h"
 #include "virdbus.h"
 #include "virfile.h"
 #include "virstring.h"
@@ -1977,8 +1978,8 @@ networkAddAddrToBridge(virNetworkObjPtr network,
         return -1;
     }
 
-    if (virNetDevSetIPAddress(network->def->bridge,
-                              &ipdef->address, NULL, prefix) < 0)
+    if (virNetDevIPAddrAdd(network->def->bridge,
+                           &ipdef->address, NULL, prefix) < 0)
         return -1;
 
     return 0;
@@ -2025,8 +2026,8 @@ networkAddRouteToBridge(virNetworkObjPtr network,
         return -1;
     }
 
-    if (virNetDevAddRoute(network->def->bridge, addr,
-                          prefix, gateway, metric) < 0) {
+    if (virNetDevIPRouteAdd(network->def->bridge, addr,
+                            prefix, gateway, metric) < 0) {
         return -1;
     }
     return 0;
@@ -2049,7 +2050,7 @@ networkWaitDadFinish(virNetworkObjPtr network)
             goto cleanup;
     }
 
-    ret = (naddrs == 0) ? 0 : virNetDevWaitDadFinish(addrs, naddrs);
+    ret = (naddrs == 0) ? 0 : virNetDevIPWaitDadFinish(addrs, naddrs);
 
  cleanup:
     VIR_FREE(addrs);
@@ -4760,7 +4761,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     }
 
     if (dev_name) {
-        if (virNetDevGetIPAddress(dev_name, &addr) < 0)
+        if (virNetDevIPAddrGet(dev_name, &addr) < 0)
             goto cleanup;
         addrptr = &addr;
     }

@@ -1856,15 +1856,12 @@ virMacAddrSetRaw;
 
 # util/virnetdev.h
 virNetDevAddMulti;
-virNetDevAddRoute;
-virNetDevClearIPAddress;
 virNetDevDelMulti;
 virNetDevExists;
 virNetDevFeatureTypeFromString;
 virNetDevFeatureTypeToString;
 virNetDevGetFeatures;
 virNetDevGetIndex;
-virNetDevGetIPAddress;
 virNetDevGetLinkInfo;
 virNetDevGetMAC;
 virNetDevGetMTU;
@@ -1890,7 +1887,6 @@ virNetDevRxFilterFree;
 virNetDevRxFilterModeTypeFromString;
 virNetDevRxFilterModeTypeToString;
 virNetDevRxFilterNew;
-virNetDevSetIPAddress;
 virNetDevSetMAC;
 virNetDevSetMTU;
 virNetDevSetMTUFromDevice;
@@ -1903,7 +1899,6 @@ virNetDevSetRcvMulti;
 virNetDevSetupControl;
 virNetDevSysfsFile;
 virNetDevValidateConfig;
-virNetDevWaitDadFinish;
 
 
 # util/virnetdevbandwidth.h
@@ -1935,6 +1930,14 @@ virNetDevBridgeRemovePort;
 virNetDevBridgeSetSTP;
 virNetDevBridgeSetSTPDelay;
 virNetDevBridgeSetVlanFiltering;
+
+
+# util/virnetdevip.h
+virNetDevIPAddrAdd;
+virNetDevIPAddrDel;
+virNetDevIPAddrGet;
+virNetDevIPRouteAdd;
+virNetDevIPWaitDadFinish;
 
 
 # util/virnetdevmacvlan.h

@@ -66,7 +66,7 @@
 #include "virfile.h"
 #include "virusb.h"
 #include "vircommand.h"
-#include "virnetdev.h"
+#include "virnetdevip.h"
 #include "virprocess.h"
 #include "virstring.h"
 
@@ -528,7 +528,7 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
 
             VIR_DEBUG("Adding IP address '%s/%d' to '%s'",
                       ipStr, prefix, newname);
-            if (virNetDevSetIPAddress(newname, &ip->address, NULL, prefix) < 0) {
+            if (virNetDevIPAddrAdd(newname, &ip->address, NULL, prefix) < 0) {
                 virReportError(VIR_ERR_SYSTEM_ERROR,
                                _("Failed to set IP address '%s' on %s"),
                                ipStr, newname);
@@ -549,11 +549,11 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
             for (j = 0; j < netDef->nroutes; j++) {
                 virNetworkRouteDefPtr route = netDef->routes[j];
 
-                if (virNetDevAddRoute(newname,
-                                      virNetworkRouteDefGetAddress(route),
-                                      virNetworkRouteDefGetPrefix(route),
-                                      virNetworkRouteDefGetGateway(route),
-                                      virNetworkRouteDefGetMetric(route)) < 0) {
+                if (virNetDevIPRouteAdd(newname,
+                                        virNetworkRouteDefGetAddress(route),
+                                        virNetworkRouteDefGetPrefix(route),
+                                        virNetworkRouteDefGetGateway(route),
+                                        virNetworkRouteDefGetMetric(route)) < 0) {
                     goto error_out;
                 }
                 VIR_FREE(toStr);
