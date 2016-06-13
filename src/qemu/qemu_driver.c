@@ -5388,24 +5388,18 @@ qemuDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
         goto cleanup;
 
     if (flags & VIR_DOMAIN_VCPU_GUEST) {
+        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+            goto cleanup;
+
         if (!virDomainObjIsActive(vm)) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("vCPU count provided by the guest agent can only be "
                              "requested for live domains"));
-            goto cleanup;
+            goto endjob;
         }
-
-        if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
-            goto cleanup;
 
         if (!qemuDomainAgentAvailable(vm, true))
             goto endjob;
-
-        if (!virDomainObjIsActive(vm)) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("domain is not running"));
-            goto endjob;
-        }
 
         qemuDomainObjEnterAgent(vm);
         ncpuinfo = qemuAgentGetVCPUs(priv->agent, &cpuinfo);
@@ -17796,10 +17790,13 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
     if (virDomainPMSuspendForDurationEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_WAKEUP) &&
@@ -17808,7 +17805,7 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("Unable to suspend domain due to "
                          "missing system_wakeup monitor command"));
-        goto cleanup;
+        goto endjob;
     }
 
     if (vm->def->pm.s3 || vm->def->pm.s4) {
@@ -17817,28 +17814,19 @@ qemuDomainPMSuspendForDuration(virDomainPtr dom,
              target == VIR_NODE_SUSPEND_TARGET_HYBRID)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("S3 state is disabled for this domain"));
-            goto cleanup;
+            goto endjob;
         }
 
         if (vm->def->pm.s4 == VIR_TRISTATE_BOOL_NO &&
             target == VIR_NODE_SUSPEND_TARGET_DISK) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("S4 state is disabled for this domain"));
-            goto cleanup;
+            goto endjob;
         }
     }
 
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
-
     if (!qemuDomainAgentAvailable(vm, true))
         goto endjob;
-
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
-        goto endjob;
-    }
 
     qemuDomainObjEnterAgent(vm);
     ret = qemuAgentSuspend(priv->agent, target);
@@ -17942,23 +17930,17 @@ qemuDomainQemuAgentCommand(virDomainPtr domain,
     if (virDomainQemuAgentCommandEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("domain is not running"));
-        goto cleanup;
-    }
-
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (!qemuDomainAgentAvailable(vm, true))
-        goto endjob;
-
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
         goto endjob;
     }
+
+    if (!qemuDomainAgentAvailable(vm, true))
+        goto endjob;
 
     qemuDomainObjEnterAgent(vm);
     ret = qemuAgentArbitraryCommand(priv->agent, cmd, &result, timeout);
