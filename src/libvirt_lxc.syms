@@ -21,7 +21,7 @@ LIBVIRT_LXC_1.0.4 {
         virDomainLxcEnterSecurityLabel;
 } LIBVIRT_LXC_1.0.2;
 
-LIBVIRT_LXC_1.3.6 {
+LIBVIRT_LXC_2.0.0 {
     global:
         virDomainLxcEnterCGroup;
 } LIBVIRT_LXC_1.0.4;

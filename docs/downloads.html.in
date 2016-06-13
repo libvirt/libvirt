@@ -32,20 +32,71 @@
       <li><a href="http://libvirt.org/sources/libvirt-git-snapshot.tar.gz">libvirt.org HTTP server</a></li>
     </ul>
 
+    <h2><a name="schedule">Primary release schedule</a></h2>
+
+    <p>
+      Libvirt follows a time based plan, with releases made once a month
+      on the 1st of each month give or take a few days. The only exception
+      is at the start of the year where there are two 6 weeks gaps, giving
+      a total of 11 releases a year. Expect to see releases on approx:
+    </p>
+
+    <ul>
+      <li>Jan 15th</li>
+      <li>Mar 1st</li>
+      <li>Apr 1st</li>
+      <li>May 1st</li>
+      <li>Jun 1st</li>
+      <li>Jul 1st</li>
+      <li>Aug 1st</li>
+      <li>Sep 1st</li>
+      <li>Oct 1st</li>
+      <li>Nov 1st</li>
+      <li>Dec 1st</li>
+    </ul>
+
+    <h2><a name="numbering">Release numbering</a></h2>
+
+    <p>
+      Since libvirt 2.0.0, a time based version numbering rule
+      is applied. As such, the changes in version number have
+      do not have any implications wrt the scope of features
+      or bugfixes included, the stability of the code, or the
+      API / ABI compatibility (libvirt API / ABI is guaranteed
+      stable forever). The rules applied for changing the libvirt
+      version number are:
+    </p>
+
+    <ul>
+      <li><code>major</code> - incremented by 1 for the first release of the year (the Jan 15th release)</li>
+      <li><code>minor</code> - incremented by 1 for each monthly release from git master</li>
+      <li><code>micro</code> - always 0 for releases from git master, incremented by 1 for each stable maintenance release</li>
+    </ul>
+
+    <p>
+      Prior to to 2.0.0 the major/minor numbers were incremented
+      fairly arbitrarily, and maintenance releases appended a
+      fourth digit.
+    </p>
+
     <h2><a name="maintenance">Maintenance releases</a></h2>
     <p>
       In the git repository are several stable maintenance branches,
       matching the
-      pattern <code>v<i>major</i>.<i>minor</i>.<i>micro</i>-maint</code>;
+      pattern <code>v<i>major</i>.<i>minor</i>-maint</code>;
       these branches are forked off the corresponding
-      <code>v<i>major</i>.<i>minor</i>.<i>micro</i></code> formal
+      <code>v<i>major</i>.<i>minor</i>.0</code> formal
       release, and may have further releases of the
-      form <code>v<i>major</i>.<i>minor</i>.<i>micro</i>.<i>rel</i></code>.
+      form <code>v<i>major</i>.<i>minor</i>.<i>micro</i></code>.
       These maintenance branches should only contain bug fixes, and no
       new features, backported from the master branch, and are
       supported as long as at least one downstream distribution
       expresses interest in a given branch.  These maintenance
-      branches are considered during CVE analysis.
+      branches are considered during CVE analysis. In contrast
+      to the primary releases which are made once a month, there
+      is no formal schedule for the maintenance releases, which
+      are made whenever there is a need to make available key
+      bugfixes to downstream consumers.
     </p>
 
     <p>
