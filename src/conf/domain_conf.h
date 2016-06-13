@@ -1091,6 +1091,7 @@ struct _virDomainChrSourceDef {
             char *service;
             bool listen;
             int protocol;
+            bool tlscreds;
         } tcp;
         struct {
             char *bindHost;

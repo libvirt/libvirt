@@ -6155,6 +6155,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
     virJSONValuePtr data = NULL;
     virJSONValuePtr addr = NULL;
     const char *backend_type = NULL;
+    char *tlsalias = NULL;
     bool telnet;
 
     if (!(backend = virJSONValueNewObject()) ||
@@ -6200,6 +6201,13 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
             virJSONValueObjectAppendBoolean(data, "telnet", telnet) < 0 ||
             virJSONValueObjectAppendBoolean(data, "server", chr->data.tcp.listen) < 0)
             goto error;
+        if (chr->data.tcp.tlscreds) {
+            if (!(tlsalias = qemuAliasTLSObjFromChardevAlias(chrID)))
+                goto error;
+
+            if (virJSONValueObjectAppendString(data, "tls-creds", tlsalias) < 0)
+                goto error;
+        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
@@ -6265,6 +6273,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
     return ret;
 
  error:
+    VIR_FREE(tlsalias);
     virJSONValueFree(addr);
     virJSONValueFree(data);
     virJSONValueFree(backend);

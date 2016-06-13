@@ -690,7 +690,7 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
  *
  * Returns 0 on success, -1 on failure with error set.
  */
-static int
+int
 qemuBuildTLSx509BackendProps(const char *tlspath,
                              bool listen,
                              bool verifypeer,
