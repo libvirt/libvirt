@@ -101,10 +101,8 @@ foreach my $file (@ARGV) {
             }
         }
 
-        # Require whitespace immediately after keywords,
-        # but none after the opening bracket
-        if ($data =~ /\b(if|for|while|switch|return)\(/ ||
-            $data =~ /\b(if|for|while|switch|return)\s+\(\s/) {
+        # Require whitespace immediately after keywords
+        if ($data =~ /\b(if|for|while|switch|return)\(/) {
             print "No whitespace after keyword:\n";
             print "$file:$.: $line";
             $ret = 1;
@@ -121,7 +119,7 @@ foreach my $file (@ARGV) {
         # but allow whitespace before ) on a single line
         # (optionally followed by a semicolon)
         if (($data =~ /\s\)/ && not $data =~ /^\s+\);?$/) ||
-            $data =~ /\(\s+\S/) {
+            $data =~ /\((?!$)\s/) {
             print "Whitespace after '(' or before ')':\n";
             print "$file:$.: $line";
             $ret = 1;
