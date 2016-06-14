@@ -2011,12 +2011,12 @@ networkStartHandleMACTableManagerMode(virNetworkObjPtr network,
 /* add an IP (static) route to a bridge */
 static int
 networkAddRouteToBridge(virNetworkObjPtr network,
-                        virNetworkRouteDefPtr routedef)
+                        virNetDevIPRoutePtr routedef)
 {
-    int prefix = virNetworkRouteDefGetPrefix(routedef);
-    unsigned int metric = virNetworkRouteDefGetMetric(routedef);
-    virSocketAddrPtr addr = virNetworkRouteDefGetAddress(routedef);
-    virSocketAddrPtr gateway = virNetworkRouteDefGetGateway(routedef);
+    int prefix = virNetDevIPRouteGetPrefix(routedef);
+    unsigned int metric = virNetDevIPRouteGetMetric(routedef);
+    virSocketAddrPtr addr = virNetDevIPRouteGetAddress(routedef);
+    virSocketAddrPtr gateway = virNetDevIPRouteGetGateway(routedef);
 
     if (prefix < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2067,7 +2067,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     bool v4present = false, v6present = false;
     virErrorPtr save_err = NULL;
     virNetworkIPDefPtr ipdef;
-    virNetworkRouteDefPtr routedef;
+    virNetDevIPRoutePtr routedef;
     char *macTapIfName = NULL;
     int tapfd = -1;
 
@@ -2162,7 +2162,7 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         virSocketAddrPtr gateway = NULL;
 
         routedef = network->def->routes[i];
-        gateway = virNetworkRouteDefGetGateway(routedef);
+        gateway = virNetDevIPRouteGetGateway(routedef);
 
         /* Add the IP route to the bridge */
         /* ignore errors, error msg will be generated */

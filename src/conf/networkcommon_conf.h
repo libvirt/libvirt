@@ -31,42 +31,25 @@
 # include "internal.h"
 # include "virbuffer.h"
 # include "virsocketaddr.h"
+# include "virnetdevip.h"
 
-typedef struct _virNetworkRouteDef virNetworkRouteDef;
-typedef virNetworkRouteDef *virNetworkRouteDefPtr;
+virNetDevIPRoutePtr
+virNetDevIPRouteCreate(const char *networkName,
+                       const char *family,
+                       const char *address,
+                       const char *netmask,
+                       const char *gateway,
+                       unsigned int prefix,
+                       bool hasPrefix,
+                       unsigned int metric,
+                       bool hasMetric);
 
-void
-virNetworkRouteDefFree(virNetworkRouteDefPtr def);
-
-virNetworkRouteDefPtr
-virNetworkRouteDefCreate(const char *networkName,
-                         const char *family,
-                         const char *address,
-                         const char *netmask,
-                         const char *gateway,
-                         unsigned int prefix,
-                         bool hasPrefix,
-                         unsigned int metric,
-                         bool hasMetric);
-
-virNetworkRouteDefPtr
-virNetworkRouteDefParseXML(const char *networkName,
-                           xmlNodePtr node,
-                           xmlXPathContextPtr ctxt);
+virNetDevIPRoutePtr
+virNetDevIPRouteParseXML(const char *networkName,
+                         xmlNodePtr node,
+                         xmlXPathContextPtr ctxt);
 int
-virNetworkRouteDefFormat(virBufferPtr buf,
-                         const virNetworkRouteDef *def);
-
-virSocketAddrPtr
-virNetworkRouteDefGetAddress(virNetworkRouteDefPtr def);
-
-int
-virNetworkRouteDefGetPrefix(virNetworkRouteDefPtr def);
-
-unsigned int
-virNetworkRouteDefGetMetric(virNetworkRouteDefPtr def);
-
-virSocketAddrPtr
-virNetworkRouteDefGetGateway(virNetworkRouteDefPtr def);
+virNetDevIPRouteFormat(virBufferPtr buf,
+                       const virNetDevIPRoute *def);
 
 #endif /* __NETWORKCOMMON_CONF_H__ */

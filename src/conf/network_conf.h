@@ -243,7 +243,7 @@ struct _virNetworkDef {
     virNetworkIPDefPtr ips; /* ptr to array of IP addresses on this network */
 
     size_t nroutes;
-    virNetworkRouteDefPtr *routes; /* ptr to array of static routes on this interface */
+    virNetDevIPRoutePtr *routes; /* ptr to array of static routes on this interface */
 
     virNetworkDNSDef dns;   /* dns related configuration */
     virNetDevVPortProfilePtr virtPortProfile;
@@ -354,7 +354,7 @@ virPortGroupDefPtr virPortGroupFindByName(virNetworkDefPtr net,
 virNetworkIPDefPtr
 virNetworkDefGetIPByIndex(const virNetworkDef *def,
                           int family, size_t n);
-virNetworkRouteDefPtr
+virNetDevIPRoutePtr
 virNetworkDefGetRouteByIndex(const virNetworkDef *def,
                              int family, size_t n);
 int virNetworkIPDefPrefix(const virNetworkIPDef *def);

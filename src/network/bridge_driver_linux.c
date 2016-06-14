@@ -69,7 +69,7 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
         char iface[17], dest[128], mask[128];
         unsigned int addr_val, mask_val;
         virNetworkIPDefPtr ipdef;
-        virNetworkRouteDefPtr routedef;
+        virNetDevIPRoutePtr routedef;
         int num;
         size_t i;
 
@@ -130,8 +130,8 @@ int networkCheckRouteCollision(virNetworkDefPtr def)
              i++) {
 
             virSocketAddr r_mask, r_addr;
-            virSocketAddrPtr tmp_addr = virNetworkRouteDefGetAddress(routedef);
-            int r_prefix = virNetworkRouteDefGetPrefix(routedef);
+            virSocketAddrPtr tmp_addr = virNetDevIPRouteGetAddress(routedef);
+            int r_prefix = virNetDevIPRouteGetPrefix(routedef);
 
             if (!tmp_addr ||
                 virSocketAddrMaskByPrefix(tmp_addr, r_prefix, &r_addr) < 0 ||

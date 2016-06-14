@@ -1804,7 +1804,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
     VIR_FREE(def->ips);
 
     for (i = 0; i < def->nroutes; i++)
-        virNetworkRouteDefFree(def->routes[i]);
+        virNetDevIPRouteFree(def->routes[i]);
     VIR_FREE(def->routes);
 
     virDomainDeviceInfoClear(&def->info);
@@ -2212,7 +2212,7 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
                 VIR_FREE(def->source.caps.u.net.ips[i]);
             VIR_FREE(def->source.caps.u.net.ips);
             for (i = 0; i < def->source.caps.u.net.nroutes; i++)
-                virNetworkRouteDefFree(def->source.caps.u.net.routes[i]);
+                virNetDevIPRouteFree(def->source.caps.u.net.routes[i]);
             VIR_FREE(def->source.caps.u.net.routes);
             break;
         }
@@ -6128,11 +6128,11 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     return ret;
 }
 
-static virDomainNetIPDefPtr
+static virNetDevIPAddrPtr
 virDomainNetIPParseXML(xmlNodePtr node)
 {
     /* Parse the prefix in every case */
-    virDomainNetIPDefPtr ip = NULL, ret = NULL;
+    virNetDevIPAddrPtr ip = NULL, ret = NULL;
     char *prefixStr = NULL;
     unsigned int prefixValue = 0;
     char *familyStr = NULL;
@@ -6259,7 +6259,7 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
         if (nipnodes) {
             size_t i;
             for (i = 0; i < nipnodes; i++) {
-                virDomainNetIPDefPtr ip = virDomainNetIPParseXML(ipnodes[i]);
+                virNetDevIPAddrPtr ip = virDomainNetIPParseXML(ipnodes[i]);
 
                 if (!ip)
                     goto error;
@@ -6279,17 +6279,17 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
         if (nroutenodes) {
             size_t i;
             for (i = 0; i < nroutenodes; i++) {
-                virNetworkRouteDefPtr route = NULL;
+                virNetDevIPRoutePtr route = NULL;
 
-                if (!(route = virNetworkRouteDefParseXML(_("Domain hostdev device"),
-                                                         routenodes[i],
-                                                         ctxt)))
+                if (!(route = virNetDevIPRouteParseXML(_("Domain hostdev device"),
+                                                       routenodes[i],
+                                                       ctxt)))
                     goto error;
 
 
                 if (VIR_APPEND_ELEMENT(def->source.caps.u.net.routes,
                                        def->source.caps.u.net.nroutes, route) < 0) {
-                    virNetworkRouteDefFree(route);
+                    virNetDevIPRouteFree(route);
                     goto error;
                 }
             }
@@ -8896,7 +8896,7 @@ virDomainNetAppendIPAddress(virDomainNetDefPtr def,
                             int family,
                             unsigned int prefix)
 {
-    virDomainNetIPDefPtr ipDef = NULL;
+    virNetDevIPAddrPtr ipDef = NULL;
     if (VIR_ALLOC(ipDef) < 0)
         return -1;
 
@@ -8968,9 +8968,9 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     int ret, val;
     size_t i;
     size_t nips = 0;
-    virDomainNetIPDefPtr *ips = NULL;
+    virNetDevIPAddrPtr *ips = NULL;
     size_t nroutes = 0;
-    virNetworkRouteDefPtr *routes = NULL;
+    virNetDevIPRoutePtr *routes = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -9087,7 +9087,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                     ctxt->node = tmpnode;
                 }
             } else if (xmlStrEqual(cur->name, BAD_CAST "ip")) {
-                virDomainNetIPDefPtr ip = NULL;
+                virNetDevIPAddrPtr ip = NULL;
 
                 if (!(ip = virDomainNetIPParseXML(cur)))
                     goto error;
@@ -9095,13 +9095,13 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 if (VIR_APPEND_ELEMENT(ips, nips, ip) < 0)
                     goto error;
             } else if (xmlStrEqual(cur->name, BAD_CAST "route")) {
-                virNetworkRouteDefPtr route = NULL;
-                if (!(route = virNetworkRouteDefParseXML(_("Domain interface"),
-                                                         cur, ctxt)))
+                virNetDevIPRoutePtr route = NULL;
+                if (!(route = virNetDevIPRouteParseXML(_("Domain interface"),
+                                                       cur, ctxt)))
                     goto error;
 
                 if (VIR_APPEND_ELEMENT(routes, nroutes, route) < 0) {
-                    virNetworkRouteDefFree(route);
+                    virNetDevIPRouteFree(route);
                     goto error;
                 }
             } else if (!ifname &&
@@ -20281,7 +20281,7 @@ virDomainFSDefFormat(virBufferPtr buf,
 }
 
 static int
-virDomainNetIPsFormat(virBufferPtr buf, virDomainNetIPDefPtr *ips, size_t nips)
+virDomainNetIPsFormat(virBufferPtr buf, virNetDevIPAddrPtr *ips, size_t nips)
 {
     size_t i;
 
@@ -20311,13 +20311,13 @@ virDomainNetIPsFormat(virBufferPtr buf, virDomainNetIPDefPtr *ips, size_t nips)
 
 static int
 virDomainNetRoutesFormat(virBufferPtr buf,
-                         virNetworkRouteDefPtr *routes,
+                         virNetDevIPRoutePtr *routes,
                          size_t nroutes)
 {
     size_t i;
 
     for (i = 0; i < nroutes; i++)
-        if (virNetworkRouteDefFormat(buf, routes[i]) < 0)
+        if (virNetDevIPRouteFormat(buf, routes[i]) < 0)
             return -1;
     return 0;
 }

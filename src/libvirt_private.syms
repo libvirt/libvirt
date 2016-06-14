@@ -644,14 +644,9 @@ virNetworkEventStateRegisterID;
 
 
 # conf/networkcommon_conf.h
-virNetworkRouteDefCreate;
-virNetworkRouteDefFormat;
-virNetworkRouteDefFree;
-virNetworkRouteDefGetAddress;
-virNetworkRouteDefGetGateway;
-virNetworkRouteDefGetMetric;
-virNetworkRouteDefGetPrefix;
-virNetworkRouteDefParseXML;
+virNetDevIPRouteCreate;
+virNetDevIPRouteFormat;
+virNetDevIPRouteParseXML;
 
 
 # conf/node_device_conf.h
@@ -1937,6 +1932,11 @@ virNetDevIPAddrAdd;
 virNetDevIPAddrDel;
 virNetDevIPAddrGet;
 virNetDevIPRouteAdd;
+virNetDevIPRouteFree;
+virNetDevIPRouteGetAddress;
+virNetDevIPRouteGetGateway;
+virNetDevIPRouteGetMetric;
+virNetDevIPRouteGetPrefix;
 virNetDevIPWaitDadFinish;
 
 

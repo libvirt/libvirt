@@ -513,7 +513,7 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
             goto error_out;
 
         for (j = 0; j < netDef->nips; j++) {
-            virDomainNetIPDefPtr ip = netDef->ips[j];
+            virNetDevIPAddrPtr ip = netDef->ips[j];
             int prefix;
             char *ipStr = virSocketAddrFormat(&ip->address);
 
@@ -547,13 +547,13 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
 
             /* Set the routes */
             for (j = 0; j < netDef->nroutes; j++) {
-                virNetworkRouteDefPtr route = netDef->routes[j];
+                virNetDevIPRoutePtr route = netDef->routes[j];
 
                 if (virNetDevIPRouteAdd(newname,
-                                        virNetworkRouteDefGetAddress(route),
-                                        virNetworkRouteDefGetPrefix(route),
-                                        virNetworkRouteDefGetGateway(route),
-                                        virNetworkRouteDefGetMetric(route)) < 0) {
+                                        virNetDevIPRouteGetAddress(route),
+                                        virNetDevIPRouteGetPrefix(route),
+                                        virNetDevIPRouteGetGateway(route),
+                                        virNetDevIPRouteGetMetric(route)) < 0) {
                     goto error_out;
                 }
                 VIR_FREE(toStr);

@@ -41,6 +41,7 @@
 # include "numa_conf.h"
 # include "virnetdevmacvlan.h"
 # include "virsysinfo.h"
+# include "virnetdevip.h"
 # include "virnetdevvportprofile.h"
 # include "virnetdevbandwidth.h"
 # include "virnetdevvlan.h"
@@ -382,13 +383,6 @@ typedef enum {
     VIR_DOMAIN_HOSTDEV_CAPS_TYPE_LAST
 } virDomainHostdevCapsType;
 
-typedef struct _virDomainNetIPDef virDomainNetIPDef;
-typedef virDomainNetIPDef *virDomainNetIPDefPtr;
-struct _virDomainNetIPDef {
-    virSocketAddr address;       /* ipv4 or ipv6 address */
-    unsigned int prefix; /* number of 1 bits in the net mask */
-};
-
 typedef struct _virDomainHostdevCaps virDomainHostdevCaps;
 typedef virDomainHostdevCaps *virDomainHostdevCapsPtr;
 struct _virDomainHostdevCaps {
@@ -403,9 +397,9 @@ struct _virDomainHostdevCaps {
         struct {
             char *iface;
             size_t nips;
-            virDomainNetIPDefPtr *ips;
+            virNetDevIPAddrPtr *ips;
             size_t nroutes;
-            virNetworkRouteDefPtr *routes;
+            virNetDevIPRoutePtr *routes;
         } net;
     } u;
 };
@@ -983,9 +977,9 @@ struct _virDomainNetDef {
     int trustGuestRxFilters; /* enum virTristateBool */
     int linkstate;
     size_t nips;
-    virDomainNetIPDefPtr *ips;
+    virNetDevIPAddrPtr *ips;
     size_t nroutes;
-    virNetworkRouteDefPtr *routes;
+    virNetDevIPRoutePtr *routes;
 };
 
 /* Used for prefix of ifname of any network name generated dynamically

@@ -406,7 +406,7 @@ virNetworkDefFree(virNetworkDefPtr def)
     VIR_FREE(def->ips);
 
     for (i = 0; i < def->nroutes && def->routes; i++)
-        virNetworkRouteDefFree(def->routes[i]);
+        virNetDevIPRouteFree(def->routes[i]);
     VIR_FREE(def->routes);
 
     for (i = 0; i < def->nPortGroups && def->portGroups; i++)
@@ -804,7 +804,7 @@ virNetworkDefGetIPByIndex(const virNetworkDef *def,
 }
 
 /* return routes[index], or NULL if there aren't enough routes */
-virNetworkRouteDefPtr
+virNetDevIPRoutePtr
 virNetworkDefGetRouteByIndex(const virNetworkDef *def,
                              int family, size_t n)
 {
@@ -818,7 +818,7 @@ virNetworkDefGetRouteByIndex(const virNetworkDef *def,
 
     /* find the nth route of type "family" */
     for (i = 0; i < def->nroutes; i++) {
-        virSocketAddrPtr addr = virNetworkRouteDefGetAddress(def->routes[i]);
+        virSocketAddrPtr addr = virNetDevIPRouteGetAddress(def->routes[i]);
         if (VIR_SOCKET_ADDR_IS_FAMILY(addr, family)
             && (n-- <= 0)) {
             return def->routes[i];
@@ -2261,11 +2261,11 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             goto error;
         /* parse each definition */
         for (i = 0; i < nRoutes; i++) {
-            virNetworkRouteDefPtr route = NULL;
+            virNetDevIPRoutePtr route = NULL;
 
-            if (!(route = virNetworkRouteDefParseXML(def->name,
-                                                     routeNodes[i],
-                                                     ctxt)))
+            if (!(route = virNetDevIPRouteParseXML(def->name,
+                                                   routeNodes[i],
+                                                   ctxt)))
                 goto error;
             def->routes[i] = route;
             def->nroutes++;
@@ -2283,8 +2283,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
             size_t j;
             virSocketAddr testAddr, testGw;
             bool addrMatch;
-            virNetworkRouteDefPtr gwdef = def->routes[i];
-            virSocketAddrPtr gateway = virNetworkRouteDefGetGateway(gwdef);
+            virNetDevIPRoutePtr gwdef = def->routes[i];
+            virSocketAddrPtr gateway = virNetDevIPRouteGetGateway(gwdef);
             addrMatch = false;
             for (j = 0; j < nips; j++) {
                 virNetworkIPDefPtr def2 = &def->ips[j];
@@ -2876,7 +2876,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     }
 
     for (i = 0; i < def->nroutes; i++) {
-        if (virNetworkRouteDefFormat(buf, def->routes[i]) < 0)
+        if (virNetDevIPRouteFormat(buf, def->routes[i]) < 0)
             goto error;
     }
 

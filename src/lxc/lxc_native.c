@@ -419,7 +419,7 @@ typedef struct {
     char *macvlanmode;
     char *vlanid;
     char *name;
-    virDomainNetIPDefPtr *ips;
+    virNetDevIPAddrPtr *ips;
     size_t nips;
     char *gateway_ipv4;
     char *gateway_ipv6;
@@ -430,10 +430,10 @@ typedef struct {
 static int
 lxcAddNetworkRouteDefinition(const char *address,
                              int family,
-                             virNetworkRouteDefPtr **routes,
+                             virNetDevIPRoutePtr **routes,
                              size_t *nroutes)
 {
-    virNetworkRouteDefPtr route = NULL;
+    virNetDevIPRoutePtr route = NULL;
     char *familyStr = NULL;
     char *zero = NULL;
 
@@ -444,9 +444,9 @@ lxcAddNetworkRouteDefinition(const char *address,
     if (VIR_STRDUP(familyStr, family == AF_INET ? "ipv4" : "ipv6") < 0)
         goto error;
 
-    if (!(route = virNetworkRouteDefCreate(_("Domain interface"), familyStr,
-                                          zero, NULL, address, 0, false,
-                                          0, false)))
+    if (!(route = virNetDevIPRouteCreate(_("Domain interface"), familyStr,
+                                         zero, NULL, address, 0, false,
+                                         0, false)))
         goto error;
 
     if (VIR_APPEND_ELEMENT(*routes, *nroutes, route) < 0)
@@ -460,7 +460,7 @@ lxcAddNetworkRouteDefinition(const char *address,
  error:
     VIR_FREE(familyStr);
     VIR_FREE(zero);
-    virNetworkRouteDefFree(route);
+    virNetDevIPRouteFree(route);
     return -1;
 }
 
@@ -601,7 +601,7 @@ lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
              STREQ(name, "lxc.network.ipv6")) {
         int family = AF_INET;
         char **ipparts = NULL;
-        virDomainNetIPDefPtr ip = NULL;
+        virNetDevIPAddrPtr ip = NULL;
 
         if (VIR_ALLOC(ip) < 0)
             return -1;

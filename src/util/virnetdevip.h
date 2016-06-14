@@ -25,6 +25,28 @@
 
 # include "virsocketaddr.h"
 
+typedef struct {
+    virSocketAddr address;       /* ipv4 or ipv6 address */
+    unsigned int prefix; /* number of 1 bits in the net mask */
+} virNetDevIPAddr, *virNetDevIPAddrPtr;
+
+typedef struct {
+    char *family;               /* ipv4 or ipv6 - default is ipv4 */
+    virSocketAddr address;      /* Routed Network IP address */
+
+    /* One or the other of the following two will be used for a given
+     * Network address, but never both. The parser guarantees this.
+     * The virSocketAddrGetIPPrefix() can be used to get a
+     * valid prefix.
+     */
+    virSocketAddr netmask;      /* ipv4 - either netmask or prefix specified */
+    unsigned int prefix;        /* ipv6 - only prefix allowed */
+    bool has_prefix;            /* prefix= was specified */
+    unsigned int metric;        /* value for metric (defaults to 1) */
+    bool has_metric;            /* metric= was specified */
+    virSocketAddr gateway;      /* gateway IP address for ip-route */
+} virNetDevIPRoute, *virNetDevIPRoutePtr;
+
 /* manipulating/querying the netdev */
 int virNetDevIPAddrAdd(const char *ifname,
                        virSocketAddr *addr,
@@ -46,5 +68,12 @@ int virNetDevIPAddrGet(const char *ifname, virSocketAddrPtr addr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 int virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs, size_t count)
     ATTRIBUTE_NONNULL(1);
+
+/* virNetDevIPRoute object */
+void virNetDevIPRouteFree(virNetDevIPRoutePtr def);
+virSocketAddrPtr virNetDevIPRouteGetAddress(virNetDevIPRoutePtr def);
+int virNetDevIPRouteGetPrefix(virNetDevIPRoutePtr def);
+unsigned int virNetDevIPRouteGetMetric(virNetDevIPRoutePtr def);
+virSocketAddrPtr virNetDevIPRouteGetGateway(virNetDevIPRoutePtr def);
 
 #endif /* __VIR_NETDEVIP_H__ */

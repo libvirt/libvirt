@@ -776,3 +776,72 @@ virNetDevIPAddrGet(const char *ifname,
                          _("Unable to get IP address on this platform"));
     return -1;
 }
+
+/* manipulating the virNetDevIPRoute object */
+void
+virNetDevIPRouteFree(virNetDevIPRoutePtr def)
+{
+    if (!def)
+        return;
+    VIR_FREE(def->family);
+    VIR_FREE(def);
+}
+
+virSocketAddrPtr
+virNetDevIPRouteGetAddress(virNetDevIPRoutePtr def)
+{
+    if (def)
+        return &def->address;
+
+    return NULL;
+}
+
+int
+virNetDevIPRouteGetPrefix(virNetDevIPRoutePtr def)
+{
+    int prefix = 0;
+    virSocketAddr zero;
+
+    if (!def)
+        return -1;
+
+    /* this creates an all-0 address of the appropriate family */
+    ignore_value(virSocketAddrParse(&zero,
+                                    (VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET)
+                                     ? VIR_SOCKET_ADDR_IPV4_ALL
+                                     : VIR_SOCKET_ADDR_IPV6_ALL),
+                                    VIR_SOCKET_ADDR_FAMILY(&def->address)));
+
+    if (virSocketAddrEqual(&def->address, &zero)) {
+        if (def->has_prefix && def->prefix == 0)
+            prefix = 0;
+        else if ((VIR_SOCKET_ADDR_IS_FAMILY(&def->netmask, AF_INET) &&
+                  virSocketAddrEqual(&def->netmask, &zero)))
+            prefix = 0;
+        else
+            prefix = virSocketAddrGetIPPrefix(&def->address, &def->netmask,
+                                              def->prefix);
+    } else {
+        prefix = virSocketAddrGetIPPrefix(&def->address, &def->netmask,
+                                          def->prefix);
+    }
+
+    return prefix;
+}
+
+unsigned int
+virNetDevIPRouteGetMetric(virNetDevIPRoutePtr def)
+{
+    if (def && def->has_metric && def->metric > 0)
+        return def->metric;
+
+    return 1;
+}
+
+virSocketAddrPtr
+virNetDevIPRouteGetGateway(virNetDevIPRoutePtr def)
+{
+    if (def)
+        return &def->gateway;
+    return NULL;
+}
