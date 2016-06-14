@@ -118,7 +118,9 @@ foreach my $file (@ARGV) {
         }
 
         # Forbid whitespace following ( or prior to )
-        if ($data =~ /\S\s+\)/ ||
+        # but allow whitespace before ) on a single line
+        # (optionally followed by a semicolon)
+        if (($data =~ /\s\)/ && not $data =~ /^\s+\);?$/) ||
             $data =~ /\(\s+\S/) {
             print "Whitespace after '(' or before ')':\n";
             print "$file:$.: $line";
