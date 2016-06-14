@@ -2,7 +2,9 @@
 # define _TESTUTILSXEN_H_
 
 # include "capabilities.h"
-# include "libxl/libxl_capabilities.h"
+# ifdef WITH_LIBXL
+#  include "libxl/libxl_capabilities.h"
+# endif
 
 virCapsPtr testXenCapsInit(void);
 
