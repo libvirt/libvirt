@@ -750,9 +750,13 @@ cpuModelIsAllowed(const char *model,
  * @arch: CPU architecture
  * @models: where to store the NULL-terminated list of supported models
  *
- * Fetches all CPU models supported by libvirt on @archName.
+ * Fetches all CPU models supported by libvirt on @archName. If there are
+ * no restrictions on CPU models on @archName (i.e., the CPU model is just
+ * passed directly to a hypervisor), this function returns 0 and sets
+ * @models to NULL.
  *
- * Returns number of supported CPU models or -1 on error.
+ * Returns number of supported CPU models, 0 if any CPU model is supported,
+ * or -1 on error.
  */
 int
 cpuGetModels(virArch arch, char ***models)
@@ -770,10 +774,9 @@ cpuGetModels(virArch arch, char ***models)
     }
 
     if (!driver->getModels) {
-        virReportError(VIR_ERR_NO_SUPPORT,
-                       _("CPU driver for %s has no CPU model support"),
-                       virArchToString(arch));
-        return -1;
+        if (models)
+            *models = NULL;
+        return 0;
     }
 
     return driver->getModels(models);

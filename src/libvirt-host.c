@@ -1005,7 +1005,8 @@ virConnectCompareCPU(virConnectPtr conn,
  *
  * Get the list of supported CPU models for a specific architecture.
  *
- * Returns -1 on error, number of elements in @models on success.
+ * Returns -1 on error, number of elements in @models on success (0 means
+ * libvirt accepts any CPU model).
  */
 int
 virConnectGetCPUModelNames(virConnectPtr conn, const char *arch, char ***models,
