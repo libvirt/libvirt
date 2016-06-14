@@ -405,7 +405,6 @@ static struct pollfd *virEventPollMakePollFDs(int *nfds) {
         fds[*nfds].events = eventLoop.handles[i].events;
         fds[*nfds].revents = 0;
         (*nfds)++;
-        //EVENT_DEBUG("Wait for %d %d", eventLoop.handles[i].fd, eventLoop.handles[i].events);
     }
 
     return fds;
