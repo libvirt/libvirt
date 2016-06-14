@@ -1882,21 +1882,19 @@ prlsdkUpdateDomain(vzDriverPtr driver, virDomainObjPtr dom)
     return prlsdkLoadDomain(driver, pdom->sdkdom, dom) ? 0 : -1;
 }
 
-static int prlsdkSendEvent(vzDriverPtr driver,
-                           virDomainObjPtr dom,
-                           virDomainEventType lvEventType,
-                           int lvEventTypeDetails)
+static void
+prlsdkSendEvent(vzDriverPtr driver,
+                virDomainObjPtr dom,
+                virDomainEventType lvEventType,
+                int lvEventTypeDetails)
 {
-    virObjectEventPtr event = NULL;
+    virObjectEventPtr event;
 
     event = virDomainEventLifecycleNewFromObj(dom,
                                               lvEventType,
                                               lvEventTypeDetails);
-    if (!event)
-        return -1;
-
-    virObjectEventStateQueue(driver->domainEventState, event);
-    return 0;
+    if (event)
+        virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 static void
@@ -4102,9 +4100,8 @@ prlsdkUnregisterDomain(vzDriverPtr driver, virDomainObjPtr dom, unsigned int fla
     for (i = 0; i < dom->def->nnets; i++)
         prlsdkCleanupBridgedNet(driver, dom->def->nets[i]);
 
-    if (prlsdkSendEvent(driver, dom, VIR_DOMAIN_EVENT_UNDEFINED,
-                        VIR_DOMAIN_EVENT_UNDEFINED_REMOVED) < 0)
-        goto cleanup;
+    prlsdkSendEvent(driver, dom, VIR_DOMAIN_EVENT_UNDEFINED,
+                    VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
 
     virDomainObjListRemove(driver->domains, dom);
 
