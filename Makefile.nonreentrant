@@ -113,3 +113,11 @@ NON_REENTRANT += inet_nsap_ntoa
 NON_REENTRANT += inet_ntoa
 NON_REENTRANT += inet_ntop
 NON_REENTRANT += inet_pton
+
+# Separate two nothings by space to get one space in a variable
+space =
+space +=
+# The space needs to be in a variable otherwise it would be ignored.
+# And there must be no spaces around the commas because they would
+# not be ignored, logically.
+NON_REENTRANT_RE=$(subst $(space),|,$(NON_REENTRANT))

@@ -440,18 +440,11 @@ sc_prohibit_PATH_MAX:
 	halt='dynamically allocate paths, do not use PATH_MAX'	\
 	  $(_sc_search_regexp)
 
-# Use a subshell for each function, to give the optimal warning message.
 include $(srcdir)/Makefile.nonreentrant
 sc_prohibit_nonreentrant:
-	@fail=0 ; \
-	for i in $(NON_REENTRANT) ; \
-	do \
-	    (prohibit="\\<$$i *\\("					\
-	     halt="use $${i}_r, not $$i"				\
-	     $(_sc_search_regexp)					\
-	    ) || fail=1;						\
-	done ; \
-	exit $$fail
+	@prohibit="\\<(${NON_REENTRANT_RE}) *\\("			\
+	halt="use re-entrant functions (usually ending with _r)"	\
+	  $(_sc_search_regexp)
 
 sc_prohibit_select:
 	@prohibit='\<select *\('					\
