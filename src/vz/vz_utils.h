@@ -117,10 +117,6 @@ vzGetDriverConnection(void);
 void
 vzDestroyDriverConnection(void);
 
-virDomainObjPtr
-vzNewDomain(vzDriverPtr driver,
-            const char *name,
-            const unsigned char *uuid);
 int
 vzInitVersion(vzDriverPtr driver);
 int

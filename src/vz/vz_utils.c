@@ -159,30 +159,6 @@ vzGetOutput(const char *binary, ...)
     return outbuf;
 }
 
-virDomainObjPtr
-vzNewDomain(vzDriverPtr driver, const char *name, const unsigned char *uuid)
-{
-    virDomainDefPtr def = NULL;
-    virDomainObjPtr dom = NULL;
-
-    if (!(def = virDomainDefNewFull(name, uuid, -1)))
-        goto error;
-
-    def->virtType = VIR_DOMAIN_VIRT_VZ;
-
-    if (!(dom = virDomainObjListAdd(driver->domains, def,
-                                    driver->xmlopt,
-                                    0, NULL)))
-        goto error;
-
-    dom->persistent = 1;
-    return dom;
-
- error:
-    virDomainDefFree(def);
-    return NULL;
-}
-
 static void
 vzInitCaps(unsigned long vzVersion, vzCapabilitiesPtr vzCaps)
 {

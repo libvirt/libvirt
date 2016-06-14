@@ -730,7 +730,6 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    virObjectLock(driver);
     if ((def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
                                        parse_flags)) == NULL)
         goto cleanup;
@@ -738,9 +737,6 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     olddom = virDomainObjListFindByUUID(driver->domains, def->uuid);
     if (olddom == NULL) {
         virResetLastError();
-        newdom = vzNewDomain(driver, def->name, def->uuid);
-        if (!newdom)
-            goto cleanup;
         if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
             if (prlsdkCreateVm(driver, def))
                 goto cleanup;
@@ -754,7 +750,7 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
             goto cleanup;
         }
 
-        if (prlsdkLoadDomain(driver, newdom))
+        if (!(newdom = prlsdkAddDomainByUUID(driver, def->uuid)))
             goto cleanup;
     } else {
         int state, reason;
@@ -802,7 +798,6 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
              virObjectUnlock(newdom);
     }
     virDomainDefFree(def);
-    virObjectUnlock(driver);
     return retdom;
 }
 
@@ -2621,7 +2616,6 @@ vzDomainMigrateFinish3Params(virConnectPtr dconn,
     vzConnPtr privconn = dconn->privateData;
     vzDriverPtr driver = privconn->driver;
     const char *name = NULL;
-    PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
 
     virCheckFlags(VZ_MIGRATION_FLAGS, NULL);
 
@@ -2635,11 +2629,8 @@ vzDomainMigrateFinish3Params(virConnectPtr dconn,
                                 VIR_MIGRATE_PARAM_DEST_NAME, &name) < 0)
         return NULL;
 
-    sdkdom = prlsdkSdkDomainLookupByName(driver, name);
-    if (sdkdom == PRL_INVALID_HANDLE)
-        goto cleanup;
 
-    if (!(dom = prlsdkNewDomainByHandle(driver, sdkdom)))
+    if (!(dom = prlsdkAddDomainByName(driver, name)))
         goto cleanup;
 
     domain = virGetDomain(dconn, dom->def->name, dom->def->uuid);
@@ -2653,7 +2644,6 @@ vzDomainMigrateFinish3Params(virConnectPtr dconn,
         VIR_WARN("Can't provide domain '%s' after successfull migration.", name);
     if (dom)
         virObjectUnlock(dom);
-    PrlHandle_Free(sdkdom);
     return domain;
 }
 

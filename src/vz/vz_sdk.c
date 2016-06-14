@@ -418,37 +418,6 @@ prlsdkUUIDParse(const char *uuidstr, unsigned char *uuid)
 }
 
 static int
-prlsdkGetDomainIds(PRL_HANDLE sdkdom,
-                   char **name,
-                   unsigned char *uuid)
-{
-    char uuidstr[VIR_UUID_STRING_BRACED_BUFLEN];
-    PRL_RESULT pret;
-
-    if (name && !(*name = prlsdkGetStringParamVar(PrlVmCfg_GetName, sdkdom)))
-        goto error;
-
-    if (uuid) {
-        pret = prlsdkGetStringParamBuf(PrlVmCfg_GetUuid,
-                                       sdkdom, uuidstr, sizeof(uuidstr));
-        prlsdkCheckRetGoto(pret, error);
-
-        if (prlsdkUUIDParse(uuidstr, uuid) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Domain UUID is malformed or empty"));
-            goto error;
-        }
-    }
-
-    return 0;
-
- error:
-    if (name)
-        VIR_FREE(*name);
-    return -1;
-}
-
-static int
 prlsdkGetDomainState(PRL_HANDLE sdkdom, VIRTUAL_MACHINE_STATE_PTR vmState)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
@@ -1454,36 +1423,6 @@ prlsdkConvertCpuMode(PRL_HANDLE sdkdom, virDomainDefPtr def)
     return -1;
 }
 
-virDomainObjPtr
-prlsdkNewDomainByHandle(vzDriverPtr driver, PRL_HANDLE sdkdom)
-{
-    virDomainObjPtr dom = NULL;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    char *name = NULL;
-
-    virObjectLock(driver);
-    if (prlsdkGetDomainIds(sdkdom, &name, uuid) < 0)
-        goto cleanup;
-
-    /* we should make sure that there is no such a VM exists */
-    if ((dom = virDomainObjListFindByUUID(driver->domains, uuid)))
-        goto cleanup;
-
-    if (!(dom = vzNewDomain(driver, name, uuid)))
-        goto cleanup;
-
-    if (prlsdkLoadDomain(driver, dom) < 0) {
-        virDomainObjListRemove(driver->domains, dom);
-        dom = NULL;
-        goto cleanup;
-    }
-
- cleanup:
-    virObjectUnlock(driver);
-    VIR_FREE(name);
-    return dom;
-}
-
 static PRL_HANDLE
 prlsdkGetDevByDevIndex(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE type, PRL_UINT32 devIndex)
 {
@@ -1707,8 +1646,16 @@ prlsdkConvertBootOrder(PRL_HANDLE sdkdom, virDomainDefPtr def)
     return ret;
 }
 
-int
-prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
+/* if dom is NULL adds new domain into domain list
+ * if dom not NULL updates given locked dom object.
+ *
+ * Returned object is locked.
+ */
+
+static virDomainObjPtr
+prlsdkLoadDomain(vzDriverPtr driver,
+                 PRL_HANDLE sdkdom,
+                 virDomainObjPtr dom)
 {
     virDomainDefPtr def = NULL;
     vzDomObjPtr pdom = NULL;
@@ -1718,24 +1665,26 @@ prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
     PRL_UINT32 ram;
     PRL_UINT32 envId;
     PRL_VM_AUTOSTART_OPTION autostart;
-    PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
     PRL_HANDLE job;
-
-    virCheckNonNullArgGoto(dom, error);
-
-    pdom = dom->privateData;
-    sdkdom = prlsdkSdkDomainLookupByUUID(driver, dom->def->uuid);
-    if (sdkdom == PRL_INVALID_HANDLE)
-        return -1;
+    char uuidstr[VIR_UUID_STRING_BRACED_BUFLEN];
 
     if (!(def = virDomainDefNew()))
         goto error;
 
-    def->virtType = dom->def->virtType;
-    def->id = dom->def->id;
-
-    if (prlsdkGetDomainIds(sdkdom, &def->name, def->uuid) < 0)
+    if (!(def->name = prlsdkGetStringParamVar(PrlVmCfg_GetName, sdkdom)))
         goto error;
+
+    pret = prlsdkGetStringParamBuf(PrlVmCfg_GetUuid,
+                                   sdkdom, uuidstr, sizeof(uuidstr));
+    prlsdkCheckRetGoto(pret, error);
+
+    if (prlsdkUUIDParse(uuidstr, def->uuid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Domain UUID is malformed or empty"));
+        goto error;
+    }
+
+    def->virtType = VIR_DOMAIN_VIRT_VZ;
 
     def->onReboot = VIR_DOMAIN_LIFECYCLE_RESTART;
     def->onPoweroff = VIR_DOMAIN_LIFECYCLE_DESTROY;
@@ -1801,20 +1750,38 @@ prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
             goto error;
     }
 
-    if (!pdom->sdkdom) {
+    if (!dom) {
+        virDomainObjPtr olddom = NULL;
+
         job = PrlVm_SubscribeToPerfStats(sdkdom, NULL);
         if (PRL_FAILED(waitJob(job)))
             goto error;
 
-        PrlHandle_AddRef(sdkdom);
+        virObjectLock(driver);
+        if (!(olddom = virDomainObjListFindByUUID(driver->domains, def->uuid)))
+            dom = virDomainObjListAdd(driver->domains, def, driver->xmlopt, 0, NULL);
+        virObjectUnlock(driver);
+
+        if (olddom) {
+            virDomainDefFree(def);
+            return olddom;
+        } else if (!dom) {
+            goto error;
+        }
+
+        pdom = dom->privateData;
         pdom->sdkdom = sdkdom;
+        PrlHandle_AddRef(sdkdom);
+        dom->persistent = 1;
+    } else {
+        /* assign new virDomainDef without any checks
+         * we can't use virDomainObjAssignDef, because it checks
+         * for state and domain name */
+        virDomainDefFree(dom->def);
+        dom->def = def;
     }
 
-    /* assign new virDomainDef without any checks
-     * we can't use virDomainObjAssignDef, because it checks
-     * for state and domain name */
-    virDomainDefFree(dom->def);
-    dom->def = def;
+    pdom = dom->privateData;
     pdom->id = envId;
 
     prlsdkConvertDomainState(domainState, envId, dom);
@@ -1824,12 +1791,11 @@ prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
     else
         dom->autostart = 0;
 
-    PrlHandle_Free(sdkdom);
-    return 0;
+    return dom;
+
  error:
-    PrlHandle_Free(sdkdom);
     virDomainDefFree(def);
-    return -1;
+    return NULL;
 }
 
 int
@@ -1855,7 +1821,7 @@ prlsdkLoadDomains(vzDriverPtr driver)
         pret = PrlResult_GetParamByIndex(result, i, &sdkdom);
         prlsdkCheckRetGoto(pret, error);
 
-        if ((dom = prlsdkNewDomainByHandle(driver, sdkdom)))
+        if ((dom = prlsdkLoadDomain(driver, sdkdom, NULL)))
             virObjectUnlock(dom);
 
         PrlHandle_Free(sdkdom);
@@ -1871,6 +1837,38 @@ prlsdkLoadDomains(vzDriverPtr driver)
     return -1;
 }
 
+virDomainObjPtr
+prlsdkAddDomainByUUID(vzDriverPtr driver, const unsigned char *uuid)
+{
+    PRL_HANDLE sdkdom;
+    virDomainObjPtr dom;
+
+    sdkdom = prlsdkSdkDomainLookupByUUID(driver, uuid);
+    if (sdkdom == PRL_INVALID_HANDLE)
+        return NULL;
+
+    dom = prlsdkLoadDomain(driver, sdkdom, NULL);
+
+    PrlHandle_Free(sdkdom);
+    return dom;
+}
+
+virDomainObjPtr
+prlsdkAddDomainByName(vzDriverPtr driver, const char *name)
+{
+    PRL_HANDLE sdkdom;
+    virDomainObjPtr dom;
+
+    sdkdom = prlsdkSdkDomainLookupByName(driver, name);
+    if (sdkdom == PRL_INVALID_HANDLE)
+        return NULL;
+
+    dom = prlsdkLoadDomain(driver, sdkdom, NULL);
+
+    PrlHandle_Free(sdkdom);
+    return dom;
+}
+
 int
 prlsdkUpdateDomain(vzDriverPtr driver, virDomainObjPtr dom)
 {
@@ -1881,7 +1879,7 @@ prlsdkUpdateDomain(vzDriverPtr driver, virDomainObjPtr dom)
     if (waitJob(job))
         return -1;
 
-    return prlsdkLoadDomain(driver, dom);
+    return prlsdkLoadDomain(driver, pdom->sdkdom, dom) ? 0 : -1;
 }
 
 static int prlsdkSendEvent(vzDriverPtr driver,
@@ -2000,15 +1998,9 @@ prlsdkHandleVmAddedEvent(vzDriverPtr driver,
     virDomainObjPtr dom = NULL;
     PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
 
-    dom = virDomainObjListFindByUUID(driver->domains, uuid);
-    if (!dom) {
-        sdkdom = prlsdkSdkDomainLookupByUUID(driver, uuid);
-        if (sdkdom == PRL_INVALID_HANDLE)
-            goto cleanup;
-
-        if (!(dom = prlsdkNewDomainByHandle(driver, sdkdom)))
-            goto cleanup;
-    }
+    if (!(dom = virDomainObjListFindByUUID(driver->domains, uuid)) &&
+        !(dom = prlsdkAddDomainByUUID(driver, uuid)))
+        goto cleanup;
 
     prlsdkSendEvent(driver, dom, VIR_DOMAIN_EVENT_DEFINED,
                     VIR_DOMAIN_EVENT_DEFINED_ADDED);
