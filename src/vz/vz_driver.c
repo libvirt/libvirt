@@ -1514,6 +1514,8 @@ vzConnectRegisterCloseCallback(virConnectPtr conn,
     vzConnPtr privconn = conn->privateData;
     int ret = -1;
 
+    virObjectLock(privconn->driver);
+
     if (virConnectCloseCallbackDataGetCallback(privconn->closeCallback) != NULL) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("A close callback is already registered"));
@@ -1525,6 +1527,7 @@ vzConnectRegisterCloseCallback(virConnectPtr conn,
     ret = 0;
 
  cleanup:
+    virObjectUnlock(privconn->driver);
 
     return ret;
 }
@@ -1535,6 +1538,7 @@ vzConnectUnregisterCloseCallback(virConnectPtr conn, virConnectCloseFunc cb)
     vzConnPtr privconn = conn->privateData;
     int ret = -1;
 
+    virObjectLock(privconn->driver);
 
     if (virConnectCloseCallbackDataGetCallback(privconn->closeCallback) != cb) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -1546,6 +1550,7 @@ vzConnectUnregisterCloseCallback(virConnectPtr conn, virConnectCloseFunc cb)
     ret = 0;
 
  cleanup:
+    virObjectUnlock(privconn->driver);
 
     return ret;
 }
