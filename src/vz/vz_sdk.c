@@ -3900,13 +3900,14 @@ prlsdkCreateVm(vzDriverPtr driver, virDomainDefPtr def)
     pret = PrlVmCfg_SetOfflineManagementEnabled(sdkdom, 0);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    ret = prlsdkDoApplyConfig(driver, sdkdom, def, NULL);
-    if (ret)
+    if (prlsdkDoApplyConfig(driver, sdkdom, def, NULL) < 0)
         goto cleanup;
 
     job = PrlVm_Reg(sdkdom, "", 1);
     if (PRL_FAILED(waitJob(job)))
-        ret = -1;
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
     PrlHandle_Free(sdkdom);
