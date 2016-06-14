@@ -160,11 +160,8 @@ foreach my $file (@ARGV) {
         }
 
         # Require spaces around assignment '=', compounds and '=='
-        # with the exception of virAssertCmpInt()
-        $tmpdata = $data;
-        $tmpdata =~ s/(virAssertCmpInt\(.* ).?=,/$1op,/;
-        if ($tmpdata =~ /[^ ]\b[!<>&|\-+*\/%\^=]?=[^=]/ ||
-            $tmpdata =~ /=[^= \\\n]/) {
+        if ($data =~ /[^ ]\b[!<>&|\-+*\/%\^=]?=/ ||
+            $data =~ /=[^= \\\n]/) {
             print "Spacing around '=' or '==':\n";
             print "$file:$.: $line";
             $ret = 1;
