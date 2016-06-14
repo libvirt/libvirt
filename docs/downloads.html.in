@@ -37,44 +37,36 @@
     <p>
       Libvirt follows a time based plan, with releases made once a month
       on the 1st of each month give or take a few days. The only exception
-      is at the start of the year where there are two 6 weeks gaps, giving
-      a total of 11 releases a year. Expect to see releases on approx:
+      is at the start of the year where there are two 6 weeks gaps (first
+      release in the middle of Jan, then skip the Feb release), giving
+      a total of 11 releases a year.
     </p>
-
-    <ul>
-      <li>Jan 15th</li>
-      <li>Mar 1st</li>
-      <li>Apr 1st</li>
-      <li>May 1st</li>
-      <li>Jun 1st</li>
-      <li>Jul 1st</li>
-      <li>Aug 1st</li>
-      <li>Sep 1st</li>
-      <li>Oct 1st</li>
-      <li>Nov 1st</li>
-      <li>Dec 1st</li>
-    </ul>
 
     <h2><a name="numbering">Release numbering</a></h2>
 
     <p>
       Since libvirt 2.0.0, a time based version numbering rule
       is applied. As such, the changes in version number have
-      do not have any implications wrt the scope of features
-      or bugfixes included, the stability of the code, or the
-      API / ABI compatibility (libvirt API / ABI is guaranteed
+      do not have any implications with respect to the scope of
+      features or bugfixes included, the stability of the code,
+      or the API / ABI compatibility (libvirt API / ABI is guaranteed
       stable forever). The rules applied for changing the libvirt
       version number are:
     </p>
 
-    <ul>
-      <li><code>major</code> - incremented by 1 for the first release of the year (the Jan 15th release)</li>
-      <li><code>minor</code> - incremented by 1 for each monthly release from git master</li>
-      <li><code>micro</code> - always 0 for releases from git master, incremented by 1 for each stable maintenance release</li>
-    </ul>
+    <dl>
+      <dt>major</dt>
+      <dd>incremented by 1 for the first release of the year (the
+        Jan 15th release)</dd>
+      <dt>minor</dt>
+      <dd>incremented by 1 for each monthly release from git master</dd>
+      <dt>micro</dt>
+      <dd>always 0 for releases from git master, incremented by 1
+        for each stable maintenance release</dd>
+    </dl>
 
     <p>
-      Prior to to 2.0.0 the major/minor numbers were incremented
+      Prior to 2.0.0, the major/minor numbers were incremented
       fairly arbitrarily, and maintenance releases appended a
       fourth digit.
     </p>
