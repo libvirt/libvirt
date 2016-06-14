@@ -22779,6 +22779,35 @@ virDomainCputuneDefFormat(virBufferPtr buf,
 }
 
 
+static int
+virDomainCpuDefFormat(virBufferPtr buf,
+                      const virDomainDef *def)
+{
+    char *cpumask = NULL;
+    int ret = -1;
+
+    virBufferAddLit(buf, "<vcpu");
+    virBufferAsprintf(buf, " placement='%s'",
+                      virDomainCpuPlacementModeTypeToString(def->placement_mode));
+
+    if (def->cpumask && !virBitmapIsAllSet(def->cpumask)) {
+        if ((cpumask = virBitmapFormat(def->cpumask)) == NULL)
+            goto cleanup;
+        virBufferAsprintf(buf, " cpuset='%s'", cpumask);
+    }
+    if (virDomainDefHasVcpusOffline(def))
+        virBufferAsprintf(buf, " current='%u'", virDomainDefGetVcpus(def));
+    virBufferAsprintf(buf, ">%u</vcpu>\n", virDomainDefGetVcpusMax(def));
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(cpumask);
+
+    return ret;
+}
+
+
 /* This internal version appends to an existing buffer
  * (possibly with auto-indent), rather than flattening
  * to string.
@@ -22954,20 +22983,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, "</memoryBacking>\n");
     }
 
-    virBufferAddLit(buf, "<vcpu");
-    virBufferAsprintf(buf, " placement='%s'",
-                      virDomainCpuPlacementModeTypeToString(def->placement_mode));
-
-    if (def->cpumask && !virBitmapIsAllSet(def->cpumask)) {
-        char *cpumask = NULL;
-        if ((cpumask = virBitmapFormat(def->cpumask)) == NULL)
-            goto error;
-        virBufferAsprintf(buf, " cpuset='%s'", cpumask);
-        VIR_FREE(cpumask);
-    }
-    if (virDomainDefHasVcpusOffline(def))
-        virBufferAsprintf(buf, " current='%u'", virDomainDefGetVcpus(def));
-    virBufferAsprintf(buf, ">%u</vcpu>\n", virDomainDefGetVcpusMax(def));
+    if (virDomainCpuDefFormat(buf, def) < 0)
+        goto error;
 
     if (def->niothreadids > 0) {
         virBufferAsprintf(buf, "<iothreads>%u</iothreads>\n",
