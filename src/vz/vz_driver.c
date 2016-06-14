@@ -720,8 +720,7 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     vzConnPtr privconn = conn->privateData;
     virDomainPtr retdom = NULL;
     virDomainDefPtr def;
-    virDomainObjPtr olddom = NULL;
-    virDomainObjPtr newdom = NULL;
+    virDomainObjPtr dom = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
     vzDriverPtr driver = privconn->driver;
 
@@ -734,8 +733,8 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
                                        parse_flags)) == NULL)
         goto cleanup;
 
-    olddom = virDomainObjListFindByUUID(driver->domains, def->uuid);
-    if (olddom == NULL) {
+    dom = virDomainObjListFindByUUID(driver->domains, def->uuid);
+    if (dom == NULL) {
         virResetLastError();
         if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
             if (prlsdkCreateVm(driver, def))
@@ -750,12 +749,12 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
             goto cleanup;
         }
 
-        if (!(newdom = prlsdkAddDomainByUUID(driver, def->uuid)))
+        if (!(dom = prlsdkAddDomainByUUID(driver, def->uuid)))
             goto cleanup;
     } else {
         int state, reason;
 
-        state = virDomainObjGetState(olddom, &reason);
+        state = virDomainObjGetState(dom, &reason);
 
         if (state == VIR_DOMAIN_SHUTOFF &&
             reason == VIR_DOMAIN_SHUTOFF_SAVED) {
@@ -769,17 +768,17 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
              * So forbid this operation, if config is changed. If it's
              * not changed - just do nothing. */
 
-            if (!virDomainDefCheckABIStability(olddom->def, def)) {
+            if (!virDomainDefCheckABIStability(dom->def, def)) {
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                                _("Can't change domain configuration "
                                  "in managed save state"));
                 goto cleanup;
             }
         } else {
-            if (prlsdkApplyConfig(driver, olddom, def))
+            if (prlsdkApplyConfig(driver, dom, def))
                 goto cleanup;
 
-            if (prlsdkUpdateDomain(driver, olddom))
+            if (prlsdkUpdateDomain(driver, dom))
                 goto cleanup;
         }
     }
@@ -789,10 +788,8 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
         retdom->id = def->id;
 
  cleanup:
-    if (olddom)
-        virObjectUnlock(olddom);
-    if (newdom)
-        virObjectUnlock(newdom);
+    if (dom)
+        virObjectUnlock(dom);
     virDomainDefFree(def);
     return retdom;
 }
