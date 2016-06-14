@@ -525,23 +525,21 @@ static virDomainPtr
 vzDomainLookupByID(virConnectPtr conn, int id)
 {
     vzConnPtr privconn = conn->privateData;
-    virDomainPtr ret = NULL;
+    virDomainPtr ret;
     virDomainObjPtr dom;
 
     dom = virDomainObjListFindByID(privconn->driver->domains, id);
 
     if (dom == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN, NULL);
-        goto cleanup;
+        return NULL;
     }
 
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
     if (ret)
         ret->id = dom->def->id;
 
- cleanup:
-    if (dom)
-        virObjectUnlock(dom);
+    virObjectUnlock(dom);
     return ret;
 }
 
@@ -549,7 +547,7 @@ static virDomainPtr
 vzDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     vzConnPtr privconn = conn->privateData;
-    virDomainPtr ret = NULL;
+    virDomainPtr ret;
     virDomainObjPtr dom;
 
     dom = virDomainObjListFindByUUID(privconn->driver->domains, uuid);
@@ -559,16 +557,14 @@ vzDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         virUUIDFormat(uuid, uuidstr);
         virReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching uuid '%s'"), uuidstr);
-        goto cleanup;
+        return NULL;
     }
 
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
     if (ret)
         ret->id = dom->def->id;
 
- cleanup:
-    if (dom)
-        virObjectUnlock(dom);
+    virObjectUnlock(dom);
     return ret;
 }
 
@@ -576,7 +572,7 @@ static virDomainPtr
 vzDomainLookupByName(virConnectPtr conn, const char *name)
 {
     vzConnPtr privconn = conn->privateData;
-    virDomainPtr ret = NULL;
+    virDomainPtr ret;
     virDomainObjPtr dom;
 
     dom = virDomainObjListFindByName(privconn->driver->domains, name);
@@ -584,14 +580,13 @@ vzDomainLookupByName(virConnectPtr conn, const char *name)
     if (dom == NULL) {
         virReportError(VIR_ERR_NO_DOMAIN,
                        _("no domain with matching name '%s'"), name);
-        goto cleanup;
+        return NULL;
     }
 
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
     if (ret)
         ret->id = dom->def->id;
 
- cleanup:
     virDomainObjEndAPI(&dom);
     return ret;
 }
@@ -638,17 +633,14 @@ static char *
 vzDomainGetOSType(virDomainPtr domain)
 {
     virDomainObjPtr dom;
-
     char *ret = NULL;
 
     if (!(dom = vzDomObjFromDomain(domain)))
-        goto cleanup;
+        return NULL;
 
     ignore_value(VIR_STRDUP(ret, virDomainOSTypeToString(dom->def->os.type)));
 
- cleanup:
-    if (dom)
-        virObjectUnlock(dom);
+    virObjectUnlock(dom);
     return ret;
 }
 
@@ -656,17 +648,12 @@ static int
 vzDomainIsPersistent(virDomainPtr domain)
 {
     virDomainObjPtr dom;
-    int ret = -1;
 
     if (!(dom = vzDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
-    ret = 1;
-
- cleanup:
-    if (dom)
-        virObjectUnlock(dom);
-    return ret;
+    virObjectUnlock(dom);
+    return 1;
 }
 
 static int
@@ -674,19 +661,16 @@ vzDomainGetState(virDomainPtr domain,
                  int *state, int *reason, unsigned int flags)
 {
     virDomainObjPtr dom;
-    int ret = -1;
+
     virCheckFlags(0, -1);
 
     if (!(dom = vzDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
     *state = virDomainObjGetState(dom, reason);
-    ret = 0;
 
- cleanup:
-    if (dom)
-        virObjectUnlock(dom);
-    return ret;
+    virObjectUnlock(dom);
+    return 0;
 }
 
 static char *
@@ -700,16 +684,14 @@ vzDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     /* Flags checked by virDomainDefFormat */
 
     if (!(dom = vzDomObjFromDomain(domain)))
-        goto cleanup;
+        return NULL;
 
     def = (flags & VIR_DOMAIN_XML_INACTIVE) &&
         dom->newDef ? dom->newDef : dom->def;
 
     ret = virDomainDefFormat(def, privconn->driver->caps, flags);
 
- cleanup:
-    if (dom)
-        virObjectUnlock(dom);
+    virObjectUnlock(dom);
     return ret;
 }
 
@@ -717,18 +699,14 @@ static int
 vzDomainGetAutostart(virDomainPtr domain, int *autostart)
 {
     virDomainObjPtr dom;
-    int ret = -1;
 
     if (!(dom = vzDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
     *autostart = dom->autostart;
-    ret = 0;
 
- cleanup:
-    if (dom)
-        virObjectUnlock(dom);
-    return ret;
+    virObjectUnlock(dom);
+    return 0;
 }
 
 static virDomainPtr
@@ -879,7 +857,7 @@ vzDomainGetVcpus(virDomainPtr domain,
     int ret = -1;
 
     if (!(dom = vzDomObjFromDomainRef(domain)))
-        goto cleanup;
+        return -1;
 
     if (!virDomainObjIsActive(dom)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -913,8 +891,7 @@ vzDomainGetVcpus(virDomainPtr domain,
     ret = maxinfo;
 
  cleanup:
-    if (dom)
-        virDomainObjEndAPI(&dom);
+    virDomainObjEndAPI(&dom);
     return ret;
 }
 
@@ -951,17 +928,13 @@ vzConnectDomainEventDeregisterAny(virConnectPtr conn,
                                   int callbackID)
 {
     vzConnPtr privconn = conn->privateData;
-    int ret = -1;
 
     if (virObjectEventStateDeregisterID(conn,
                                         privconn->driver->domainEventState,
                                         callbackID) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int vzDomainSuspend(virDomainPtr domain)
@@ -1341,8 +1314,7 @@ vzDomainBlockStats(virDomainPtr domain, const char *path,
     ret = 0;
 
  cleanup:
-    if (dom)
-        virDomainObjEndAPI(&dom);
+    virDomainObjEndAPI(&dom);
 
     return ret;
 }
@@ -1443,24 +1415,22 @@ static int
 vzDomainGetVcpusFlags(virDomainPtr domain,
                       unsigned int flags)
 {
-    virDomainObjPtr dom = NULL;
-    int ret = -1;
+    virDomainObjPtr dom;
+    int ret;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM, -1);
 
     if (!(dom = vzDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
     if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
         ret = virDomainDefGetVcpusMax(dom->def);
     else
         ret = virDomainDefGetVcpus(dom->def);
 
- cleanup:
-    if (dom)
-        virObjectUnlock(dom);
+    virObjectUnlock(dom);
 
     return ret;
 }
@@ -1474,19 +1444,14 @@ static int vzDomainGetMaxVcpus(virDomainPtr domain)
 static int vzDomainIsUpdated(virDomainPtr domain)
 {
     virDomainObjPtr dom;
-    int ret = -1;
 
     /* As far as VZ domains are always updated (e.g. current==persistent),
      * we just check for domain existence */
     if (!(dom = vzDomObjFromDomain(domain)))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    if (dom)
-        virObjectUnlock(dom);
-    return ret;
+    virObjectUnlock(dom);
+    return 0;
 }
 
 static int vzConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED,
