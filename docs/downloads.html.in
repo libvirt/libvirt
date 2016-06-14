@@ -55,12 +55,12 @@
     </p>
 
     <dl>
-      <dt>major</dt>
+      <dt><code>major</code></dt>
       <dd>incremented by 1 for the first release of the year (the
         Jan 15th release)</dd>
-      <dt>minor</dt>
+      <dt><code>minor</code></dt>
       <dd>incremented by 1 for each monthly release from git master</dd>
-      <dt>micro</dt>
+      <dt><code>micro</code></dt>
       <dd>always 0 for releases from git master, incremented by 1
         for each stable maintenance release</dd>
     </dl>
