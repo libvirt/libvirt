@@ -2,6 +2,8 @@ module Test_libvirtd_qemu =
   ::CONFIG::
 
    test Libvirtd_qemu.lns get conf =
+{ "default_tls_x509_cert_dir" = "/etc/pki/qemu" }
+{ "default_tls_x509_verify" = "1" }
 { "vnc_listen" = "0.0.0.0" }
 { "vnc_auto_unix_socket" = "1" }
 { "vnc_tls" = "1" }

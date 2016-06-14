@@ -109,6 +109,9 @@ struct _virQEMUDriverConfig {
     char *channelTargetDir;
     char *nvramDir;
 
+    char *defaultTLSx509certdir;
+    bool defaultTLSx509verify;
+
     bool vncAutoUnixSocket;
     bool vncTLS;
     bool vncTLSx509verify;

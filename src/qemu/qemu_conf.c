@@ -238,19 +238,44 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     if (virAsprintf(&cfg->autostartDir, "%s/qemu/autostart", cfg->configBaseDir) < 0)
         goto error;
 
-
-    if (VIR_STRDUP(cfg->vncListen, "127.0.0.1") < 0)
+    /* Set the default directory to find TLS X.509 certificates.
+     * This will then be used as a fallback if the service specific
+     * directory doesn't exist (although we don't check if this exists).
+     */
+    if (VIR_STRDUP(cfg->defaultTLSx509certdir,
+                   SYSCONFDIR "/pki/qemu") < 0)
         goto error;
 
-    if (VIR_STRDUP(cfg->vncTLSx509certdir, SYSCONFDIR "/pki/libvirt-vnc") < 0)
+    if (VIR_STRDUP(cfg->vncListen, "127.0.0.1") < 0)
         goto error;
 
     if (VIR_STRDUP(cfg->spiceListen, "127.0.0.1") < 0)
         goto error;
 
-    if (VIR_STRDUP(cfg->spiceTLSx509certdir,
-                   SYSCONFDIR "/pki/libvirt-spice") < 0)
-        goto error;
+    /*
+     * If a "SYSCONFDIR" + "pki/libvirt-<val>" exists, then assume someone
+     * has created a val specific area to place service specific certificates.
+     *
+     * If the service specific directory doesn't exist, 'assume' that the
+     * user has created and populated the "SYSCONFDIR" + "pki/libvirt-default".
+     */
+#define SET_TLS_X509_CERT_DEFAULT(val)                                 \
+    do {                                                               \
+        if (virFileExists(SYSCONFDIR "/pki/libvirt-"#val)) {           \
+            if (VIR_STRDUP(cfg->val ## TLSx509certdir,                 \
+                           SYSCONFDIR "/pki/libvirt-"#val) < 0)        \
+                goto error;                                            \
+        } else {                                                       \
+            if (VIR_STRDUP(cfg->val ## TLSx509certdir,                 \
+                           cfg->defaultTLSx509certdir) < 0)            \
+                goto error;                                            \
+        }                                                              \
+    } while (false);
+
+    SET_TLS_X509_CERT_DEFAULT(vnc);
+    SET_TLS_X509_CERT_DEFAULT(spice);
+
+#undef SET_TLS_X509_CERT_DEFAULT
 
     cfg->remotePortMin = QEMU_REMOTE_PORT_MIN;
     cfg->remotePortMax = QEMU_REMOTE_PORT_MAX;
@@ -338,6 +363,8 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->channelTargetDir);
     VIR_FREE(cfg->nvramDir);
 
+    VIR_FREE(cfg->defaultTLSx509certdir);
+
     VIR_FREE(cfg->vncTLSx509certdir);
     VIR_FREE(cfg->vncListen);
     VIR_FREE(cfg->vncPassword);
@@ -392,6 +419,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
 {
     virConfPtr conf = NULL;
     int ret = -1;
+    int rv;
     size_t i, j;
     char *stdioHandler = NULL;
     char *user = NULL, *group = NULL;
@@ -411,12 +439,18 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (!(conf = virConfReadFile(filename, 0)))
         goto cleanup;
 
+    if (virConfGetValueString(conf, "default_tls_x509_cert_dir", &cfg->defaultTLSx509certdir) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "default_tls_x509_verify", &cfg->defaultTLSx509verify) < 0)
+        goto cleanup;
     if (virConfGetValueBool(conf, "vnc_auto_unix_socket", &cfg->vncAutoUnixSocket) < 0)
         goto cleanup;
     if (virConfGetValueBool(conf, "vnc_tls", &cfg->vncTLS) < 0)
         goto cleanup;
-    if (virConfGetValueBool(conf, "vnc_tls_x509_verify", &cfg->vncTLSx509verify) < 0)
+    if ((rv = virConfGetValueBool(conf, "vnc_tls_x509_verify", &cfg->vncTLSx509verify)) < 0)
         goto cleanup;
+    if (rv == 0)
+        cfg->vncTLSx509verify = cfg->defaultTLSx509verify;
     if (virConfGetValueString(conf, "vnc_tls_x509_cert_dir", &cfg->vncTLSx509certdir) < 0)
         goto cleanup;
     if (virConfGetValueString(conf, "vnc_listen", &cfg->vncListen) < 0)
