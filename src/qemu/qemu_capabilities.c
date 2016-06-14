@@ -433,6 +433,29 @@ static const char *virQEMUCapsArchToString(virArch arch)
     return virArchToString(arch);
 }
 
+
+/* Checks whether a domain with @guest arch can run natively on @host.
+ */
+static bool
+virQEMUCapsGuestIsNative(virArch host,
+                         virArch guest)
+{
+    if (host == guest)
+        return true;
+
+    if (host == VIR_ARCH_X86_64 && guest == VIR_ARCH_I686)
+        return true;
+
+    if (host == VIR_ARCH_AARCH64 && guest == VIR_ARCH_ARMV7L)
+        return true;
+
+    if (ARCH_IS_PPC64(host) && ARCH_IS_PPC64(guest))
+        return true;
+
+    return false;
+}
+
+
 /* Given a host and guest architectures, find a suitable QEMU target.
  *
  * This is meant to be used as a second attempt if qemu-system-$guestarch
@@ -446,12 +469,8 @@ virQEMUCapsFindTarget(virArch hostarch,
     if (ARCH_IS_PPC64(guestarch))
         guestarch = VIR_ARCH_PPC64;
 
-    /* armv7l guests on aarch64 hosts can use the aarch64 target
-     * i686 guests on x86_64 hosts can use the x86_64 target */
-    if ((guestarch == VIR_ARCH_ARMV7L && hostarch == VIR_ARCH_AARCH64) ||
-        (guestarch == VIR_ARCH_I686 && hostarch == VIR_ARCH_X86_64)) {
-        return hostarch;
-    }
+    if (virQEMUCapsGuestIsNative(hostarch, guestarch))
+        guestarch = hostarch;
 
     return guestarch;
 }
@@ -813,7 +832,6 @@ virQEMUCapsInitGuest(virCapsPtr caps,
     char *binary = NULL;
     virQEMUCapsPtr qemubinCaps = NULL;
     virQEMUCapsPtr kvmbinCaps = NULL;
-    bool native_kvm, x86_32on64_kvm, arm_32on64_kvm, ppc64_kvm;
     int ret = -1;
 
     /* Check for existence of base emulator, or alternate base
@@ -835,14 +853,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
      *  - hostarch is aarch64 and guest arch is armv7l (needs -cpu aarch64=off)
      *  - hostarch and guestarch are both ppc64*
      */
-    native_kvm = (hostarch == guestarch);
-    x86_32on64_kvm = (hostarch == VIR_ARCH_X86_64 &&
-        guestarch == VIR_ARCH_I686);
-    arm_32on64_kvm = (hostarch == VIR_ARCH_AARCH64 &&
-        guestarch == VIR_ARCH_ARMV7L);
-    ppc64_kvm = (ARCH_IS_PPC64(hostarch) && ARCH_IS_PPC64(guestarch));
-
-    if (native_kvm || x86_32on64_kvm || arm_32on64_kvm || ppc64_kvm) {
+    if (virQEMUCapsGuestIsNative(hostarch, guestarch)) {
         const char *kvmbins[] = {
             "/usr/libexec/qemu-kvm", /* RHEL */
             "qemu-kvm", /* Fedora */
@@ -858,7 +869,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
          * arm is different in that 32-on-64 _only_ works with
          * qemu-system-aarch64. So we have to add it to the kvmbins list
          */
-        if (arm_32on64_kvm)
+        if (hostarch == VIR_ARCH_AARCH64 && guestarch == VIR_ARCH_ARMV7L)
             kvmbins[3] = "qemu-system-aarch64";
 
         for (i = 0; i < ARRAY_CARDINALITY(kvmbins); ++i) {
