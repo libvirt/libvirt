@@ -231,15 +231,17 @@ virCgroupPartitionNeedsEscaping(const char *path)
 static int
 virCgroupPartitionEscape(char **path)
 {
-    size_t len = strlen(*path) + 1;
     int rc;
-    char escape = '_';
+    char *newstr = NULL;
 
     if ((rc = virCgroupPartitionNeedsEscaping(*path)) <= 0)
         return rc;
 
-    if (VIR_INSERT_ELEMENT(*path, 0, len, escape) < 0)
+    if (virAsprintf(&newstr, "_%s", *path) < 0)
         return -1;
+
+    VIR_FREE(*path);
+    *path = newstr;
 
     return 0;
 }
