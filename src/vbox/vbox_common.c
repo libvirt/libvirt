@@ -4367,8 +4367,8 @@ static int vboxCloseDisksRecursively(virDomainPtr dom, char *location)
     }
     rc = gVBoxAPI.UIMedium.GetChildren(medium, &childrenSize, &children);
     if (NS_FAILED(rc)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s"
-                       , _("Unable to get disk children"));
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Unable to get disk children"));
         goto cleanup;
     }
     for (i = 0; i < childrenSize; i++) {
@@ -4385,8 +4385,8 @@ static int vboxCloseDisksRecursively(virDomainPtr dom, char *location)
             VBOX_UTF16_TO_UTF8(childLocationUtf, &childLocation);
             VBOX_UTF16_FREE(childLocationUtf);
             if (vboxCloseDisksRecursively(dom, childLocation) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s"
-                               , _("Unable to close disk children"));
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Unable to close disk children"));
                 goto cleanup;
             }
             VIR_FREE(childLocation);

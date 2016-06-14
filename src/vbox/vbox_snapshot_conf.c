@@ -70,8 +70,8 @@ virVBoxSnapshotConfCreateVBoxSnapshotConfHardDiskPtr(xmlNodePtr diskNode,
                                  1,
                                  &searchTabResult);
     if (resultSize != 1) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <HardDisk> 'uuid' attribute"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <HardDisk> 'uuid' attribute"));
         goto cleanup;
     }
     if (VIR_STRDUP(hardDisk->uuid, searchTabResult[0]) < 0)
@@ -79,8 +79,8 @@ virVBoxSnapshotConfCreateVBoxSnapshotConfHardDiskPtr(xmlNodePtr diskNode,
 
     location = virXMLPropString(diskNode, "location");
     if (location == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <HardDisk> 'location' attribute"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <HardDisk> 'location' attribute"));
         goto cleanup;
     }
     if (location[0] != '/') {
@@ -95,8 +95,8 @@ virVBoxSnapshotConfCreateVBoxSnapshotConfHardDiskPtr(xmlNodePtr diskNode,
     }
     hardDisk->format = virXMLPropString(diskNode, "format");
     if (hardDisk->format == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <HardDisk> 'format' attribute"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <HardDisk> 'format' attribute"));
         goto cleanup;
     }
     hardDisk->type = virXMLPropString(diskNode, "type");
@@ -204,8 +204,8 @@ virVBoxSnapshotConfRetrieveSnapshot(xmlNodePtr snapshotNode,
                                  1,
                                  &searchTabResult);
     if (resultSize != 1) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <Snapshot> 'uuid' attribute"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <Snapshot> 'uuid' attribute"));
         goto cleanup;
     }
     if (VIR_STRDUP(snapshot->uuid, searchTabResult[0]) < 0)
@@ -213,14 +213,14 @@ virVBoxSnapshotConfRetrieveSnapshot(xmlNodePtr snapshotNode,
 
     snapshot->name = virXMLPropString(snapshotNode, "name");
     if (snapshot->name == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <Snapshot> 'name' attribute"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <Snapshot> 'name' attribute"));
         goto cleanup;
     }
     snapshot->timeStamp = virXMLPropString(snapshotNode, "timeStamp");
     if (snapshot->timeStamp == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <Snapshot> 'timeStamp' attribute"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <Snapshot> 'timeStamp' attribute"));
         goto cleanup;
     }
 
@@ -231,16 +231,16 @@ virVBoxSnapshotConfRetrieveSnapshot(xmlNodePtr snapshotNode,
 
     hardwareNode = virXPathNode("./vbox:Hardware", xPathContext);
     if (hardwareNode == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <Snapshot> <Hardware> node"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <Snapshot> <Hardware> node"));
         goto cleanup;
     }
     snapshot->hardware = virXMLNodeToString(snapshotNode->doc, hardwareNode);
 
     storageControllerNode = virXPathNode("./vbox:StorageControllers", xPathContext);
     if (storageControllerNode == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <Snapshot> <StorageControllers> node"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <Snapshot> <StorageControllers> node"));
         goto cleanup;
     }
     snapshot->storageController = virXMLNodeToString(snapshotNode->doc,
@@ -633,21 +633,21 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
     xPathContext->node = cur;
     machineNode = virXPathNode("./vbox:Machine", xPathContext);
     if (machineNode == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <VirtualBox> <Machine> node"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <VirtualBox> <Machine> node"));
         goto cleanup;
     }
 
     machineDescription->uuid = virXMLPropString(machineNode, "uuid");
     if (machineDescription->uuid == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <Machine> 'uuid' attribute"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <Machine> 'uuid' attribute"));
         goto cleanup;
     }
     machineDescription->name = virXMLPropString(machineNode, "name");
     if (machineDescription->name == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <Machine> 'name' attribute"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <Machine> 'name' attribute"));
         goto cleanup;
     }
 
@@ -659,8 +659,8 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
                                            1,
                                            &searchResultTab);
         if (searchResultSize != 1) {
-            virReportError(VIR_ERR_XML_ERROR, "%s"
-                           , _("Cannot parse <Machine> 'currentSnapshot' attribute"));
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Cannot parse <Machine> 'currentSnapshot' attribute"));
             goto cleanup;
         }
         if (VIR_STRDUP(machineDescription->currentSnapshot, searchResultTab[0]) < 0)
@@ -669,8 +669,8 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
 
     machineDescription->snapshotFolder = virXMLPropString(machineNode, "snapshotFolder");
     if (machineDescription->snapshotFolder == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <Machine> 'snapshotFolder' attribute"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <Machine> 'snapshotFolder' attribute"));
         goto cleanup;
     }
 
@@ -682,16 +682,16 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
     }
     machineDescription->lastStateChange = virXMLPropString(machineNode, "lastStateChange");
     if (machineDescription->lastStateChange == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <Machine> 'lastStateChange' attribute"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <Machine> 'lastStateChange' attribute"));
         goto cleanup;
     }
 
     xPathContext->node = machineNode;
     cur = virXPathNode("./vbox:Hardware", xPathContext);
     if (cur == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <Machine> <Hardware> node"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <Machine> <Hardware> node"));
         goto cleanup;
     }
     machineDescription->hardware = virXMLNodeToString(xml, cur);
@@ -702,8 +702,8 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
 
     cur = virXPathNode("./vbox:StorageControllers", xPathContext);
     if (cur == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <Machine> <StorageControllers> node"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <Machine> <StorageControllers> node"));
         goto cleanup;
     }
     machineDescription->storageController = virXMLNodeToString(xml, cur);
@@ -711,8 +711,8 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
     /*retrieve mediaRegistry*/
     cur = virXPathNode("./vbox:MediaRegistry", xPathContext);
     if (cur == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s"
-                       , _("Cannot parse <Machine> <MediaRegistry> node"));
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Cannot parse <Machine> <MediaRegistry> node"));
         goto cleanup;
     }
     machineDescription->mediaRegistry = virVBoxSnapshotConfRetrieveMediaRegistry(cur, xPathContext, machineLocation);
