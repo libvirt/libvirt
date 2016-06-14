@@ -33,8 +33,8 @@ int virHostValidateQEMU(void)
     int ret = 0;
     bool hasHwVirt = false;
     bool hasVirtFlag = false;
-    char *kvmhint = _("Check that CPU and firmware supports virtualization "
-                      "and kvm module is loaded");
+    const char *kvmhint = _("Check that CPU and firmware supports virtualization "
+                            "and kvm module is loaded");
 
     if (!(flags = virHostValidateGetCPUFlags()))
         return -1;
