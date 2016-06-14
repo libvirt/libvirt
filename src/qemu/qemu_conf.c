@@ -274,6 +274,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
 
     SET_TLS_X509_CERT_DEFAULT(vnc);
     SET_TLS_X509_CERT_DEFAULT(spice);
+    SET_TLS_X509_CERT_DEFAULT(chardev);
 
 #undef SET_TLS_X509_CERT_DEFAULT
 
@@ -374,6 +375,8 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->spiceListen);
     VIR_FREE(cfg->spicePassword);
     VIR_FREE(cfg->spiceSASLdir);
+
+    VIR_FREE(cfg->chardevTLSx509certdir);
 
     while (cfg->nhugetlbfs) {
         cfg->nhugetlbfs--;
@@ -502,6 +505,14 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueBool(conf, "spice_auto_unix_socket", &cfg->spiceAutoUnixSocket) < 0)
         goto cleanup;
 
+    if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "chardev_tls_x509_cert_dir", &cfg->chardevTLSx509certdir) < 0)
+        goto cleanup;
+    if ((rv = virConfGetValueBool(conf, "chardev_tls_x509_verify", &cfg->chardevTLSx509verify)) < 0)
+        goto cleanup;
+    if (rv == 0)
+        cfg->chardevTLSx509verify = cfg->defaultTLSx509verify;
 
     if (virConfGetValueUInt(conf, "remote_websocket_port_min", &cfg->webSocketPortMin) < 0)
         goto cleanup;

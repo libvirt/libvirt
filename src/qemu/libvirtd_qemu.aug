@@ -48,6 +48,10 @@ module Libvirtd_qemu =
                  | bool_entry "spice_sasl"
                  | str_entry "spice_sasl_dir"
 
+   let chardev_entry = bool_entry "chardev_tls"
+                 | str_entry "chardev_tls_x509_cert_dir"
+                 | bool_entry "chardev_tls_x509_verify"
+
    let nogfx_entry = bool_entry "nographics_allow_host_audio"
 
    let remote_display_entry = int_entry "remote_display_port_min"
@@ -104,6 +108,7 @@ module Libvirtd_qemu =
    let entry = default_tls_entry
              | vnc_entry
              | spice_entry
+             | chardev_entry
              | nogfx_entry
              | remote_display_entry
              | security_entry

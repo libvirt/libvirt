@@ -129,6 +129,10 @@ struct _virQEMUDriverConfig {
     char *spicePassword;
     bool spiceAutoUnixSocket;
 
+    bool chardevTLS;
+    char *chardevTLSx509certdir;
+    bool chardevTLSx509verify;
+
     unsigned int remotePortMin;
     unsigned int remotePortMax;
 
