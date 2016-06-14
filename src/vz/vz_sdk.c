@@ -3910,6 +3910,9 @@ prlsdkCreateVm(vzDriverPtr driver, virDomainDefPtr def)
 
  cleanup:
     PrlHandle_Free(sdkdom);
+    PrlHandle_Free(srvconf);
+    PrlHandle_Free(result);
+
     return ret;
 }
 
@@ -4024,6 +4027,7 @@ prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
 
  cleanup:
     PrlHandle_Free(sdkdom);
+    PrlHandle_Free(result);
     return ret;
 }
 
