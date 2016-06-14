@@ -43,7 +43,7 @@ foreach my $file (@ARGV) {
         $data =~ s/'[";,=]'/'X'/g;
 
         # Kill any quoted strings
-        $data =~ s,"([^\\\"]|\\.)*","XXX",g;
+        $data =~ s,"(?:[^\\\"]|\\.)*","XXX",g;
 
         # Kill any C++ style comments
         $data =~ s,//.*$,//,;
@@ -91,8 +91,8 @@ foreach my $file (@ARGV) {
             my $kw = $1;
 
             # Allow space after keywords only
-            if ($kw =~ /^(if|for|while|switch|return)$/) {
-                $tmpdata =~ s/($kw\s\()/XXX(/;
+            if ($kw =~ /^(?:if|for|while|switch|return)$/) {
+                $tmpdata =~ s/(?:$kw\s\()/XXX(/;
             } else {
                 print "Whitespace after non-keyword:\n";
                 print "$file:$.: $line";
@@ -102,7 +102,7 @@ foreach my $file (@ARGV) {
         }
 
         # Require whitespace immediately after keywords
-        if ($data =~ /\b(if|for|while|switch|return)\(/) {
+        if ($data =~ /\b(?:if|for|while|switch|return)\(/) {
             print "No whitespace after keyword:\n";
             print "$file:$.: $line";
             $ret = 1;
