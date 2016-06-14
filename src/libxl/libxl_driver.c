@@ -5700,7 +5700,7 @@ static virHypervisorDriver libxlHypervisorDriver = {
     .domainMigrateConfirm3Params = libxlDomainMigrateConfirm3Params, /* 1.2.6 */
     .nodeGetSecurityModel = libxlNodeGetSecurityModel, /* 1.2.16 */
     .domainInterfaceAddresses = libxlDomainInterfaceAddresses, /* 1.3.5 */
-    .connectGetDomainCapabilities = libxlConnectGetDomainCapabilities, /* 1.3.6 */
+    .connectGetDomainCapabilities = libxlConnectGetDomainCapabilities, /* 2.0.0 */
 };
 
 static virConnectDriver libxlConnectDriver = {
