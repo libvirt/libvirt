@@ -4718,6 +4718,7 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
     unsigned long long maxmemkb = virMemoryMaxValue(false) >> 10;
     unsigned long long maxmemcapped = virMemoryMaxValue(true) >> 10;
     unsigned long long initialmem = 0;
+    unsigned long long hotplugmem = 0;
     unsigned long long mem;
     unsigned long long align = qemuDomainGetMemorySizeAlignment(def);
     size_t ncells = virDomainNumaGetNodeCount(def->numa);
@@ -4748,8 +4749,6 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
         return -1;
     }
 
-    virDomainDefSetMemoryInitial(def, initialmem);
-
     def->mem.max_memory = VIR_ROUND_UP(def->mem.max_memory, align);
     if (def->mem.max_memory > maxmemkb) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4761,6 +4760,7 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
     for (i = 0; i < def->nmems; i++) {
         align = qemuDomainGetMemoryModuleSizeAlignment(def, def->mems[i]);
         def->mems[i]->size = VIR_ROUND_UP(def->mems[i]->size, align);
+        hotplugmem += def->mems[i]->size;
 
         if (def->mems[i]->size > maxmemkb) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -4769,6 +4769,8 @@ qemuDomainAlignMemorySizes(virDomainDefPtr def)
             return -1;
         }
     }
+
+    virDomainDefSetMemoryTotal(def, initialmem + hotplugmem);
 
     return 0;
 }

@@ -240,7 +240,6 @@ virDomainDefParseFile;
 virDomainDefParseNode;
 virDomainDefParseString;
 virDomainDefPostParse;
-virDomainDefSetMemoryInitial;
 virDomainDefSetMemoryTotal;
 virDomainDefSetVcpus;
 virDomainDefSetVcpusMax;

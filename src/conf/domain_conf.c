@@ -3714,21 +3714,24 @@ virDomainDefPostParseMemory(virDomainDefPtr def,
         parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE)
         numaMemory = virDomainNumaGetMemorySize(def->numa);
 
-    if (numaMemory) {
-        virDomainDefSetMemoryInitial(def, numaMemory);
-    } else {
-        /* calculate the sizes of hotplug memory */
-        for (i = 0; i < def->nmems; i++)
-            hotplugMemory += def->mems[i]->size;
+    /* calculate the sizes of hotplug memory */
+    for (i = 0; i < def->nmems; i++)
+        hotplugMemory += def->mems[i]->size;
 
+    if (numaMemory) {
+        /* update the sizes in XML if nothing was set in the XML or ABI update
+         * is supported*/
+        virDomainDefSetMemoryTotal(def, numaMemory + hotplugMemory);
+    } else {
+        /* verify that the sum of memory modules doesn't exceed the total
+         * memory. This is necessary for virDomainDefGetMemoryInitial to work
+         * properly. */
         if (hotplugMemory > def->mem.total_memory) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Total size of memory devices exceeds the total "
                              "memory size"));
             return -1;
         }
-
-        virDomainDefSetMemoryInitial(def, def->mem.total_memory - hotplugMemory);
     }
 
     if (virDomainDefGetMemoryInitial(def) == 0) {
@@ -8041,13 +8044,18 @@ virDomainDefHasMemoryHotplug(const virDomainDef *def)
  * @def: domain definition
  *
  * Returns the size of the initial amount of guest memory. The initial amount
- * is the memory size is either the configured amount in the <memory> element
- * or the sum of memory sizes of NUMA nodes in case NUMA is enabled in @def.
+ * is the memory size excluding possible memory modules.
  */
 unsigned long long
 virDomainDefGetMemoryInitial(const virDomainDef *def)
 {
-    return def->mem.initial_memory;
+    size_t i;
+    unsigned long long ret = def->mem.total_memory;
+
+    for (i = 0; i < def->nmems; i++)
+        ret -= def->mems[i]->size;
+
+    return ret;
 }
 
 
@@ -8056,30 +8064,14 @@ virDomainDefGetMemoryInitial(const virDomainDef *def)
  * @def: domain definition
  * @size: size to set
  *
- * Sets the total memory size in @def. This function should be used only by
- * hypervisors that don't support memory hotplug.
+ * Sets the total memory size in @def. This value needs to include possible
+ * additional memory modules.
  */
 void
 virDomainDefSetMemoryTotal(virDomainDefPtr def,
                            unsigned long long size)
 {
     def->mem.total_memory = size;
-    def->mem.initial_memory = size;
-}
-
-
-/**
- * virDomainDefSetMemoryInitial:
- * @def: domain definition
- * @size: size to set
- *
- * Sets the initial memory size (without memory modules) in @def.
- */
-void
-virDomainDefSetMemoryInitial(virDomainDefPtr def,
-                             unsigned long long size)
-{
-    def->mem.initial_memory = size;
 }
 
 
@@ -8088,21 +8080,12 @@ virDomainDefSetMemoryInitial(virDomainDefPtr def,
  * @def: domain definition
  *
  * Returns the current maximum memory size usable by the domain described by
- * @def. This size is a sum of size returned by virDomainDefGetMemoryInitial
- * and possible additional memory devices.
+ * @def. This size includes possible additional memory devices.
  */
 unsigned long long
 virDomainDefGetMemoryActual(virDomainDefPtr def)
 {
-    unsigned long long ret;
-    size_t i;
-
-    ret = def->mem.initial_memory;
-
-    for (i = 0; i < def->nmems; i++)
-        ret += def->mems[i]->size;
-
-    return ret;
+    return def->mem.total_memory;
 }
 
 
@@ -14542,10 +14525,18 @@ virDomainMemoryFindInactiveByDef(virDomainDefPtr def,
 }
 
 
+/**
+ * virDomainMemoryInsert:
+ *
+ * Inserts a memory device definition into the domain definition. This helper
+ * should be used only in hot/cold-plug cases as it's blindly modifying the
+ * total memory size.
+ */
 int
 virDomainMemoryInsert(virDomainDefPtr def,
                       virDomainMemoryDefPtr mem)
 {
+    unsigned long long memory = virDomainDefGetMemoryActual(def);
     int id = def->nmems;
 
     if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
@@ -14556,23 +14547,37 @@ virDomainMemoryInsert(virDomainDefPtr def,
         return -1;
     }
 
-    if (VIR_APPEND_ELEMENT(def->mems, def->nmems, mem) < 0)
+    if (VIR_APPEND_ELEMENT_COPY(def->mems, def->nmems, mem) < 0)
         return -1;
+
+    virDomainDefSetMemoryTotal(def, memory + mem->size);
 
     return id;
 }
 
 
+/**
+ * virDomainMemoryRemove:
+ *
+ * Removes a memory device definition from the domain definition. This helper
+ * should be used only in hot/cold-plug cases as it's blindly modifying the
+ * total memory size.
+ */
 virDomainMemoryDefPtr
 virDomainMemoryRemove(virDomainDefPtr def,
                       int idx)
 {
+    unsigned long long memory = virDomainDefGetMemoryActual(def);
     virDomainMemoryDefPtr ret = def->mems[idx];
+
     VIR_DELETE_ELEMENT(def->mems, idx, def->nmems);
 
     /* fix up balloon size */
     if (def->mem.cur_balloon > virDomainDefGetMemoryActual(def))
         def->mem.cur_balloon = virDomainDefGetMemoryActual(def);
+
+    /* fix total memory size of the domain */
+    virDomainDefSetMemoryTotal(def, memory - ret->size);
 
     return ret;
 }
