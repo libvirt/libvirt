@@ -791,12 +791,8 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
  cleanup:
     if (olddom)
         virObjectUnlock(olddom);
-    if (newdom) {
-        if (!retdom)
-             virDomainObjListRemove(driver->domains, newdom);
-        else
-             virObjectUnlock(newdom);
-    }
+    if (newdom)
+        virObjectUnlock(newdom);
     virDomainDefFree(def);
     return retdom;
 }
