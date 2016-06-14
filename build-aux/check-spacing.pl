@@ -135,10 +135,13 @@ foreach my $file (@ARGV) {
         #          errno == EINTR)
         #       ;
         #
-        if ($data =~ /[^;\s]\s+[;,]/) {
-            print "Whitespace before (semi)colon:\n";
-            print "$file:$.: $line";
-            $ret = 1;
+        if ($data =~ /\s[;,]/) {
+            unless ($data =~ /\S; ; / ||
+                    $data =~ /^\s+;/) {
+                print "Whitespace before (semi)colon:\n";
+                print "$file:$.: $line";
+                $ret = 1;
+            }
         }
 
         # Require EOL, macro line continuation, or whitespace after ";".
