@@ -963,12 +963,12 @@ virHostCPUParseMapLinux(int max_cpuid, const char *path)
 
 int
 virHostCPUGetInfo(virArch hostarch ATTRIBUTE_UNUSED,
-                  unsigned int *cpus,
-                  unsigned int *mhz,
-                  unsigned int *nodes,
-                  unsigned int *sockets,
-                  unsigned int *cores,
-                  unsigned int *threads)
+                  unsigned int *cpus ATTRIBUTE_UNUSED,
+                  unsigned int *mhz ATTRIBUTE_UNUSED,
+                  unsigned int *nodes ATTRIBUTE_UNUSED,
+                  unsigned int *sockets ATTRIBUTE_UNUSED,
+                  unsigned int *cores ATTRIBUTE_UNUSED,
+                  unsigned int *threads ATTRIBUTE_UNUSED)
 {
 #ifdef __linux__
     int ret = -1;
