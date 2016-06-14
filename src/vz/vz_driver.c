@@ -292,6 +292,10 @@ vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     return 0;
 }
 
+static virDomainXMLPrivateDataCallbacks vzDomainXMLPrivateDataCallbacksPtr = {
+    .alloc = vzDomObjAlloc,
+    .free = vzDomObjFree,
+};
 
 static virDomainDefParserConfig vzDomainDefParserConfig = {
     .macPrefix = {0x42, 0x1C, 0x00},
@@ -314,7 +318,8 @@ vzDriverObjNew(void)
 
     if (!(driver->caps = vzBuildCapabilities()) ||
         !(driver->xmlopt = virDomainXMLOptionNew(&vzDomainDefParserConfig,
-                                                   NULL, NULL)) ||
+                                                 &vzDomainXMLPrivateDataCallbacksPtr,
+                                                 NULL)) ||
         !(driver->domains = virDomainObjListNew()) ||
         !(driver->domainEventState = virObjectEventStateNew()) ||
         (vzInitVersion(driver) < 0) ||

@@ -476,19 +476,6 @@ prlsdkGetDomainState(PRL_HANDLE sdkdom, VIRTUAL_MACHINE_STATE_PTR vmState)
     return ret;
 }
 
-void
-prlsdkDomObjFreePrivate(void *p)
-{
-    vzDomObjPtr pdom = p;
-
-    if (!pdom)
-        return;
-
-    PrlHandle_Free(pdom->sdkdom);
-    PrlHandle_Free(pdom->stats);
-    VIR_FREE(p);
-};
-
 static int
 prlsdkAddDomainVideoInfoCt(virDomainDefPtr def)
 {

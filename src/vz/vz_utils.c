@@ -164,15 +164,10 @@ vzNewDomain(vzDriverPtr driver, const char *name, const unsigned char *uuid)
 {
     virDomainDefPtr def = NULL;
     virDomainObjPtr dom = NULL;
-    vzDomObjPtr pdom = NULL;
 
     if (!(def = virDomainDefNewFull(name, uuid, -1)))
         goto error;
 
-    if (VIR_ALLOC(pdom) < 0)
-        goto error;
-
-    pdom->stats = PRL_INVALID_HANDLE;
     def->virtType = VIR_DOMAIN_VIRT_VZ;
 
     if (!(dom = virDomainObjListAdd(driver->domains, def,
@@ -180,14 +175,11 @@ vzNewDomain(vzDriverPtr driver, const char *name, const unsigned char *uuid)
                                     0, NULL)))
         goto error;
 
-    dom->privateData = pdom;
-    dom->privateDataFreeFunc = prlsdkDomObjFreePrivate;
     dom->persistent = 1;
     return dom;
 
  error:
     virDomainDefFree(def);
-    VIR_FREE(pdom);
     return NULL;
 }
 
@@ -610,3 +602,29 @@ int vzCheckUnsupportedGraphics(virDomainGraphicsDefPtr gr)
 
     return 0;
 }
+
+void*
+vzDomObjAlloc(void)
+{
+    vzDomObjPtr pdom = NULL;
+
+    if (VIR_ALLOC(pdom) < 0)
+        return NULL;
+
+    pdom->stats = PRL_INVALID_HANDLE;
+
+    return pdom;
+}
+
+void
+vzDomObjFree(void* p)
+{
+    vzDomObjPtr pdom = p;
+
+    if (!pdom)
+        return;
+
+    PrlHandle_Free(pdom->sdkdom);
+    PrlHandle_Free(pdom->stats);
+    VIR_FREE(pdom);
+};
