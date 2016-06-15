@@ -9750,7 +9750,7 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
     if (def) {
         for (i = 0; i < nparams; i++) {
             virTypedParameterPtr param = &params[i];
-            enabled = params->value.b;
+            enabled = param->value.b;
             type = virPerfEventTypeFromString(param->field);
 
             if (!enabled && virPerfEventDisable(priv->perf, type) < 0)
@@ -9769,7 +9769,7 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
     if (persistentDef) {
         for (i = 0; i < nparams; i++) {
             virTypedParameterPtr param = &params[i];
-            enabled = params->value.b;
+            enabled = param->value.b;
             type = virPerfEventTypeFromString(param->field);
 
             persistentDef->perf->events[type] = enabled ?
