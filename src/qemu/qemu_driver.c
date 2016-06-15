@@ -18453,7 +18453,8 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    if (qemuHostdevHostSupportsPassthroughLegacy())
+    if (qemuHostdevHostSupportsPassthroughLegacy() ||
+        qemuHostdevHostSupportsPassthroughVFIO())
         virttype = VIR_DOMAIN_VIRT_KVM;
     else
         virttype = VIR_DOMAIN_VIRT_QEMU;
