@@ -814,30 +814,6 @@ sc_prohibit_exit_in_tests:
 	halt='use return, not exit(), in tests'				\
 	  $(_sc_search_regexp)
 
-# Don't include duplicate header in the source (either *.c or *.h)
-sc_prohibit_duplicate_header:
-	@fail=0; for i in $$($(VC_LIST_EXCEPT) | grep '\.[chx]$$'); do	\
-	  awk '/# *include.*\.h/ {					\
-	    match($$0, /[<"][^>"]*[">]/);				\
-	    arr[substr($$0, RSTART + 1, RLENGTH - 2)]++;		\
-	  }								\
-	  END {								\
-	    for (key in arr) {						\
-	      if (arr[key] > 1)	{					\
-		fail=1;							\
-		printf("%d %s are included\n", arr[key], key);		\
-	      }								\
-	    }								\
-	    if (fail == 1) {						\
-	      printf("duplicate header(s) in " FILENAME "\n");		\
-	      exit 1;							\
-	    }								\
-	  }' $$i || fail=1;						\
-	done;								\
-	if test $$fail -eq 1; then					\
-	  { echo '$(ME): avoid duplicate headers' 1>&2; exit 1; }	\
-	fi;
-
 # Don't include "libvirt/*.h" in "" form.
 sc_prohibit_include_public_headers_quote:
 	@prohibit='# *include *"libvirt/.*\.h"'				\
@@ -1098,8 +1074,14 @@ _autogen:
 
 # regenerate HACKING as part of the syntax-check
 ifneq ($(_gl-Makefile),)
-syntax-check: $(top_srcdir)/HACKING spacing-check test-wrap-argv
+syntax-check: $(top_srcdir)/HACKING spacing-check test-wrap-argv \
+	prohibit-duplicate-header
 endif
+
+# Don't include duplicate header in the source (either *.c or *.h)
+prohibit-duplicate-header:
+	$(AM_V_GEN)files=$$($(VC_LIST_EXCEPT) | grep '\.[chx]$$'); \
+	$(PERL) -W $(top_srcdir)/build-aux/prohibit-duplicate-header.pl $$files
 
 spacing-check:
 	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.c$$'`; \
