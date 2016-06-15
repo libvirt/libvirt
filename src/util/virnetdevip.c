@@ -173,36 +173,61 @@ virNetDevIPAddrAdd(const char *ifname,
     struct nl_msg *nlmsg = NULL;
     struct nlmsghdr *resp = NULL;
     unsigned int recvbuflen;
+    char *ipStr = NULL;
+    char *peerStr = NULL;
+    char *bcastStr = NULL;
+
+    ipStr = virSocketAddrFormat(addr);
+    if (peer && VIR_SOCKET_ADDR_VALID(peer))
+       peerStr = virSocketAddrFormat(peer);
 
     /* The caller needs to provide a correct address */
     if (VIR_SOCKET_ADDR_FAMILY(addr) == AF_INET &&
         !(peer && VIR_SOCKET_ADDR_VALID(peer))) {
         /* compute a broadcast address if this is IPv4 */
         if (VIR_ALLOC(broadcast) < 0)
-            return -1;
-
-        if (virSocketAddrBroadcastByPrefix(addr, prefix, broadcast) < 0)
             goto cleanup;
+
+        if (virSocketAddrBroadcastByPrefix(addr, prefix, broadcast) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to determine broadcast address for '%s/%d'"),
+                       ipStr, prefix);
+            goto cleanup;
+        }
+        bcastStr = virSocketAddrFormat(broadcast);
     }
+
+    VIR_DEBUG("Adding IP address %s/%d%s%s%s%s to %s",
+              NULLSTR(ipStr), prefix,
+              peerStr ? " peer " : "", peerStr ? peerStr : "",
+              bcastStr ? " bcast " : "", bcastStr ? bcastStr : "",
+              ifname);
 
     if (!(nlmsg = virNetDevCreateNetlinkAddressMessage(RTM_NEWADDR, ifname,
                                                        addr, prefix,
                                                        broadcast, peer)))
         goto cleanup;
 
-    if (virNetlinkCommand(nlmsg, &resp, &recvbuflen, 0, 0,
-                          NETLINK_ROUTE, 0) < 0)
+    if (virNetlinkCommand(nlmsg, &resp, &recvbuflen,
+                          0, 0, NETLINK_ROUTE, 0) < 0)
         goto cleanup;
 
 
     if (virNetlinkGetErrorCode(resp, recvbuflen) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
-                       _("Error adding IP address to %s"), ifname);
+                       _("Failed to add IP address %s/%d%s%s%s%s to %s"),
+                       ipStr, prefix,
+                       peerStr ? " peer " : "", peerStr ? peerStr : "",
+                       bcastStr ? " bcast " : "", bcastStr ? bcastStr : "",
+                       ifname);
         goto cleanup;
     }
 
     ret = 0;
  cleanup:
+    VIR_FREE(ipStr);
+    VIR_FREE(peerStr);
+    VIR_FREE(bcastStr);
     nlmsg_free(nlmsg);
     VIR_FREE(resp);
     VIR_FREE(broadcast);

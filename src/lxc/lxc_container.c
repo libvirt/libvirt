@@ -484,33 +484,32 @@ lxcContainerGetNetDef(virDomainDefPtr vmDef, const char *devName)
  *
  * Returns 0 on success or nonzero in case of error
  */
-static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
-                                                 size_t nveths,
-                                                 char **veths)
+static int
+lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
+                                      size_t nveths,
+                                      char **veths)
 {
-    int rc = 0;
+    int ret = -1;
     size_t i, j;
     const char *newname;
-    char *toStr = NULL;
-    char *viaStr = NULL;
     virDomainNetDefPtr netDef;
     bool privNet = vmDef->features[VIR_DOMAIN_FEATURE_PRIVNET] ==
                    VIR_TRISTATE_SWITCH_ON;
 
     for (i = 0; i < nveths; i++) {
         if (!(netDef = lxcContainerGetNetDef(vmDef, veths[i])))
-            return -1;
+            goto cleanup;
 
         newname = netDef->ifname_guest;
         if (!newname) {
-            rc = -1;
-            goto error_out;
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Missing device name for container-side veth"));
+            goto cleanup;
         }
 
         VIR_DEBUG("Renaming %s to %s", veths[i], newname);
-        rc = virNetDevSetName(veths[i], newname);
-        if (rc < 0)
-            goto error_out;
+        if (virNetDevSetName(veths[i], newname) < 0)
+           goto cleanup;
 
         for (j = 0; j < netDef->guestIP.nips; j++) {
             virNetDevIPAddrPtr ip = netDef->guestIP.ips[j];
@@ -519,31 +518,24 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
 
             if ((prefix = virSocketAddrGetIPPrefix(&ip->address,
                                                    NULL, ip->prefix)) < 0) {
+                ipStr = virSocketAddrFormat(&ip->address);
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Failed to determine prefix for IP address '%s'"),
                                ipStr);
                 VIR_FREE(ipStr);
-                goto error_out;
-            }
-
-            VIR_DEBUG("Adding IP address '%s/%d' to '%s'",
-                      ipStr, prefix, newname);
-            if (virNetDevIPAddrAdd(newname, &ip->address, NULL, prefix) < 0) {
-                virReportError(VIR_ERR_SYSTEM_ERROR,
-                               _("Failed to set IP address '%s' on %s"),
-                               ipStr, newname);
-                VIR_FREE(ipStr);
-                goto error_out;
+                goto cleanup;
             }
             VIR_FREE(ipStr);
+
+            if (virNetDevIPAddrAdd(newname, &ip->address, NULL, prefix) < 0)
+                goto cleanup;
         }
 
         if (netDef->guestIP.nips ||
             netDef->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP) {
             VIR_DEBUG("Enabling %s", newname);
-            rc = virNetDevSetOnline(newname, true);
-            if (rc < 0)
-                goto error_out;
+            if (virNetDevSetOnline(newname, true) < 0)
+                goto cleanup;
 
             /* Set the routes */
             for (j = 0; j < netDef->guestIP.nroutes; j++) {
@@ -554,22 +546,20 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
                                         virNetDevIPRouteGetPrefix(route),
                                         virNetDevIPRouteGetGateway(route),
                                         virNetDevIPRouteGetMetric(route)) < 0) {
-                    goto error_out;
+                    goto cleanup;
                 }
-                VIR_FREE(toStr);
-                VIR_FREE(viaStr);
             }
         }
     }
 
     /* enable lo device only if there were other net devices */
-    if (veths || privNet)
-        rc = virNetDevSetOnline("lo", true);
+    if ((veths || privNet) &&
+        virNetDevSetOnline("lo", true) < 0)
+       goto cleanup;
 
- error_out:
-    VIR_FREE(toStr);
-    VIR_FREE(viaStr);
-    return rc;
+    ret = 0;
+ cleanup:
+    return ret;
 }
 
 
