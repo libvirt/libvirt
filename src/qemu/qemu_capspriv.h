@@ -48,7 +48,8 @@ virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
                                 gid_t runGid,
                                 bool qmpOnly);
 
-int virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps,
+int virQEMUCapsLoadCache(virCapsPtr caps,
+                         virQEMUCapsPtr qemuCaps,
                          const char *filename,
                          time_t *qemuctime,
                          time_t *selfctime,
@@ -60,4 +61,8 @@ char *virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
 void
 virQEMUCapsSetArch(virQEMUCapsPtr qemuCaps,
                    virArch arch);
+
+void
+virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
+                            virCapsHostPtr host);
 #endif

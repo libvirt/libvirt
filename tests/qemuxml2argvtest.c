@@ -347,7 +347,8 @@ testInitQEMUCaps(struct testInfo *info,
 
 static int
 testUpdateQEMUCaps(const struct testInfo *info,
-                   virDomainObjPtr vm)
+                   virDomainObjPtr vm,
+                   virCapsPtr caps)
 {
     int ret = -1;
 
@@ -355,6 +356,8 @@ testUpdateQEMUCaps(const struct testInfo *info,
 
     if (testAddCPUModels(info->qemuCaps, info->skipLegacyCPUs) < 0)
         goto cleanup;
+
+    virQEMUCapsInitHostCPUModel(info->qemuCaps, &caps->host);
 
     virQEMUCapsFilterByMachineType(info->qemuCaps, vm->def->os.machine);
 
@@ -448,7 +451,7 @@ testCompareXMLToArgv(const void *data)
             goto cleanup;
     }
 
-    if (testUpdateQEMUCaps(info, vm) < 0)
+    if (testUpdateQEMUCaps(info, vm, driver.caps) < 0)
         goto cleanup;
 
     log = virTestLogContentAndReset();

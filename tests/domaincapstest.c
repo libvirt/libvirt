@@ -173,9 +173,13 @@ fillQemuCaps(virDomainCapsPtr domCaps,
     virQEMUCapsPtr qemuCaps = NULL;
     virDomainCapsLoaderPtr loader = &domCaps->os.loader;
 
+    if (!(caps = virCapabilitiesNew(domCaps->arch, false, false)) ||
+        fakeHostCPU(caps, domCaps->arch) < 0)
+        goto cleanup;
+
     if (virAsprintf(&path, "%s/qemucapabilitiesdata/%s.%s.xml",
                     abs_srcdir, name, arch) < 0 ||
-        !(qemuCaps = qemuTestParseCapabilities(path)))
+        !(qemuCaps = qemuTestParseCapabilities(caps, path)))
         goto cleanup;
 
     if (machine &&
@@ -186,10 +190,6 @@ fillQemuCaps(virDomainCapsPtr domCaps,
     if (!domCaps->machine &&
         VIR_STRDUP(domCaps->machine,
                    virQEMUCapsGetDefaultMachine(qemuCaps)) < 0)
-        goto cleanup;
-
-    if (!(caps = virCapabilitiesNew(domCaps->arch, false, false)) ||
-        fakeHostCPU(caps, domCaps->arch) < 0)
         goto cleanup;
 
     if (virQEMUCapsFillDomainCaps(caps, domCaps, qemuCaps,

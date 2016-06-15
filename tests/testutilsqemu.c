@@ -491,7 +491,8 @@ qemuTestSetHostCPU(virCapsPtr caps,
 
 
 virQEMUCapsPtr
-qemuTestParseCapabilities(const char *capsFile)
+qemuTestParseCapabilities(virCapsPtr caps,
+                          const char *capsFile)
 {
     virQEMUCapsPtr qemuCaps = NULL;
     time_t qemuctime;
@@ -499,7 +500,7 @@ qemuTestParseCapabilities(const char *capsFile)
     unsigned long version;
 
     if (!(qemuCaps = virQEMUCapsNew()) ||
-        virQEMUCapsLoadCache(qemuCaps, capsFile,
+        virQEMUCapsLoadCache(caps, qemuCaps, capsFile,
                              &qemuctime, &selfctime, &version) < 0)
         goto error;
 

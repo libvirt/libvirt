@@ -97,7 +97,7 @@ testQemuCapsCopy(const void *opaque)
                                     false, false)))
         goto cleanup;
 
-    if (!(orig = qemuTestParseCapabilities(capsFile)))
+    if (!(orig = qemuTestParseCapabilities(caps, capsFile)))
         goto cleanup;
 
     if (!(copy = virQEMUCapsNewCopy(orig)))
