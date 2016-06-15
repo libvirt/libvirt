@@ -24,18 +24,29 @@
 #
 # If --in-place is supplied as the first parameter of this script,
 # the files will be changed in place.
+# If --check is the first parameter, the script will return
+# a non-zero value if a file is not wrapped correctly.
 # Otherwise the rewrapped files are printed to the standard output.
 
 $in_place = 0;
+$check = 0;
 
 if (@ARGV[0] eq "--in-place") {
     $in_place = 1;
     shift @ARGV;
+} elsif (@ARGV[0] eq "--check") {
+    $check = 1;
+    shift @ARGV;
 }
 
 foreach my $file (@ARGV) {
-    &rewrap($file);
+    $ret = 0;
+    if (&rewrap($file) < 0) {
+        $ret = 1;
+    }
 }
+
+exit $ret;
 
 sub rewrap {
     my $file = shift;
@@ -74,11 +85,21 @@ sub rewrap {
             print FILE $line;
         }
         close FILE;
+    } elsif ($check) {
+        my $nl = join('', @lines);
+        my $ol = join('', @orig_lines);
+        unless ($nl eq $ol) {
+            print STDERR $ol;
+            print STDERR "Incorrect line wrapping in $file\n";
+            print STDERR "Use test-wrap-argv.pl to wrap test data files\n";
+            return -1;
+        }
     } else {
         foreach my $line (@lines) {
             print $line;
         }
     }
+    return 0;
 }
 
 sub rewrap_line {
