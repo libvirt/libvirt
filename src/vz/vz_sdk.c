@@ -2266,8 +2266,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
             !((def->inputs[0]->type == VIR_DOMAIN_INPUT_TYPE_MOUSE &&
                def->inputs[1]->type == VIR_DOMAIN_INPUT_TYPE_KBD) ||
               (def->inputs[0]->type == VIR_DOMAIN_INPUT_TYPE_KBD &&
-               def->inputs[1]->type == VIR_DOMAIN_INPUT_TYPE_MOUSE))
-           ) {
+               def->inputs[1]->type == VIR_DOMAIN_INPUT_TYPE_MOUSE))) {
 
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("unsupported input device configuration"));

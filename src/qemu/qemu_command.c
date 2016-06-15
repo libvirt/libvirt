@@ -4178,8 +4178,7 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
          (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_QXL &&
              virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL_VGA)) ||
          (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
-             virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU)))
-        ) {
+             virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU)))) {
         for (i = 0; i < def->nvideos; i++) {
             char *str;
             virCommandAddArg(cmd, "-device");

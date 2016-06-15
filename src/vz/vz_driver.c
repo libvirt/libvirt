@@ -321,8 +321,7 @@ vzDriverObjNew(void)
         !(driver->domainEventState = virObjectEventStateNew()) ||
         (vzInitVersion(driver) < 0) ||
         (prlsdkConnect(driver) < 0) ||
-        (prlsdkSubscribeToPCSEvents(driver) < 0)
-        ) {
+        (prlsdkSubscribeToPCSEvents(driver) < 0)) {
         virObjectUnref(driver);
         return NULL;
     }
