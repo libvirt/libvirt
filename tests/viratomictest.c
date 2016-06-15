@@ -35,72 +35,72 @@ testTypes(const void *data ATTRIBUTE_UNUSED)
     int s, s2;
     bool res;
 
-#define virAssertCmpInt(a, op, b) \
-    if (!(a op b)) \
+#define testAssertEq(a, b) \
+    if (!(a == b)) \
         return -1;
     virAtomicIntSet(&u, 5);
     u2 = virAtomicIntGet(&u);
-    virAssertCmpInt(u2, ==, 5);
+    testAssertEq(u2, 5);
 
     res = virAtomicIntCompareExchange(&u, 6, 7);
     if (res)
         return -1;
-    virAssertCmpInt(u, ==, 5);
+    testAssertEq(u, 5);
 
-    virAssertCmpInt(virAtomicIntAdd(&u, 1), ==, 5);
-    virAssertCmpInt(u, ==, 6);
+    testAssertEq(virAtomicIntAdd(&u, 1), 5);
+    testAssertEq(u, 6);
 
-    virAssertCmpInt(virAtomicIntInc(&u), ==, 7);
-    virAssertCmpInt(u, ==, 7);
+    testAssertEq(virAtomicIntInc(&u), 7);
+    testAssertEq(u, 7);
 
     res = virAtomicIntDecAndTest(&u);
     if (res)
         return -1;
-    virAssertCmpInt(u, ==, 6);
+    testAssertEq(u, 6);
 
     u2 = virAtomicIntAnd(&u, 5);
-    virAssertCmpInt(u2, ==, 6);
-    virAssertCmpInt(u, ==, 4);
+    testAssertEq(u2, 6);
+    testAssertEq(u, 4);
 
     u2 = virAtomicIntOr(&u, 8);
-    virAssertCmpInt(u2, ==, 4);
-    virAssertCmpInt(u, ==, 12);
+    testAssertEq(u2, 4);
+    testAssertEq(u, 12);
 
     u2 = virAtomicIntXor(&u, 4);
-    virAssertCmpInt(u2, ==, 12);
-    virAssertCmpInt(u, ==, 8);
+    testAssertEq(u2, 12);
+    testAssertEq(u, 8);
 
     virAtomicIntSet(&s, 5);
     s2 = virAtomicIntGet(&s);
-    virAssertCmpInt(s2, ==, 5);
+    testAssertEq(s2, 5);
 
     res = virAtomicIntCompareExchange(&s, 6, 7);
     if (res)
         return -1;
-    virAssertCmpInt(s, ==, 5);
+    testAssertEq(s, 5);
 
     virAtomicIntAdd(&s, 1);
-    virAssertCmpInt(s, ==, 6);
+    testAssertEq(s, 6);
 
     virAtomicIntInc(&s);
-    virAssertCmpInt(s, ==, 7);
+    testAssertEq(s, 7);
 
     res = virAtomicIntDecAndTest(&s);
     if (res)
         return -1;
-    virAssertCmpInt(s, ==, 6);
+    testAssertEq(s, 6);
 
     s2 = virAtomicIntAnd(&s, 5);
-    virAssertCmpInt(s2, ==, 6);
-    virAssertCmpInt(s, ==, 4);
+    testAssertEq(s2, 6);
+    testAssertEq(s, 4);
 
     s2 = virAtomicIntOr(&s, 8);
-    virAssertCmpInt(s2, ==, 4);
-    virAssertCmpInt(s, ==, 12);
+    testAssertEq(s2, 4);
+    testAssertEq(s, 12);
 
     s2 = virAtomicIntXor(&s, 4);
-    virAssertCmpInt(s2, ==, 12);
-    virAssertCmpInt(s, ==, 8);
+    testAssertEq(s2, 12);
+    testAssertEq(s, 8);
 
     return 0;
 }
