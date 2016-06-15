@@ -3741,9 +3741,9 @@ virDomainDefPostParseMemory(virDomainDefPtr def,
         return -1;
     }
 
-    if (def->mem.cur_balloon > virDomainDefGetMemoryActual(def) ||
+    if (def->mem.cur_balloon > virDomainDefGetMemoryTotal(def) ||
         def->mem.cur_balloon == 0)
-        def->mem.cur_balloon = virDomainDefGetMemoryActual(def);
+        def->mem.cur_balloon = virDomainDefGetMemoryTotal(def);
 
     if ((def->mem.max_memory || def->mem.memory_slots) &&
         !(def->mem.max_memory && def->mem.memory_slots)) {
@@ -3754,7 +3754,7 @@ virDomainDefPostParseMemory(virDomainDefPtr def,
     }
 
     if (def->mem.max_memory &&
-        def->mem.max_memory < virDomainDefGetMemoryActual(def)) {
+        def->mem.max_memory < virDomainDefGetMemoryTotal(def)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("maximum memory size must be equal or greater than "
                          "the actual memory size"));
@@ -8076,14 +8076,14 @@ virDomainDefSetMemoryTotal(virDomainDefPtr def,
 
 
 /**
- * virDomainDefGetMemoryActual:
+ * virDomainDefGetMemoryTotal:
  * @def: domain definition
  *
  * Returns the current maximum memory size usable by the domain described by
  * @def. This size includes possible additional memory devices.
  */
 unsigned long long
-virDomainDefGetMemoryActual(virDomainDefPtr def)
+virDomainDefGetMemoryTotal(const virDomainDef *def)
 {
     return def->mem.total_memory;
 }
@@ -14536,7 +14536,7 @@ int
 virDomainMemoryInsert(virDomainDefPtr def,
                       virDomainMemoryDefPtr mem)
 {
-    unsigned long long memory = virDomainDefGetMemoryActual(def);
+    unsigned long long memory = virDomainDefGetMemoryTotal(def);
     int id = def->nmems;
 
     if (mem->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
@@ -14567,14 +14567,14 @@ virDomainMemoryDefPtr
 virDomainMemoryRemove(virDomainDefPtr def,
                       int idx)
 {
-    unsigned long long memory = virDomainDefGetMemoryActual(def);
+    unsigned long long memory = virDomainDefGetMemoryTotal(def);
     virDomainMemoryDefPtr ret = def->mems[idx];
 
     VIR_DELETE_ELEMENT(def->mems, idx, def->nmems);
 
     /* fix up balloon size */
-    if (def->mem.cur_balloon > virDomainDefGetMemoryActual(def))
-        def->mem.cur_balloon = virDomainDefGetMemoryActual(def);
+    if (def->mem.cur_balloon > virDomainDefGetMemoryTotal(def))
+        def->mem.cur_balloon = virDomainDefGetMemoryTotal(def);
 
     /* fix total memory size of the domain */
     virDomainDefSetMemoryTotal(def, memory - ret->size);
@@ -22809,7 +22809,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAsprintf(buf, " dumpCore='%s'",
                           virTristateSwitchTypeToString(def->mem.dump_core));
     virBufferAsprintf(buf, " unit='KiB'>%llu</memory>\n",
-                      virDomainDefGetMemoryActual(def));
+                      virDomainDefGetMemoryTotal(def));
 
     virBufferAsprintf(buf, "<currentMemory unit='KiB'>%llu</currentMemory>\n",
                       def->mem.cur_balloon);
@@ -23705,7 +23705,7 @@ virDomainDefCompatibleDevice(virDomainDefPtr def,
     if (dev->type == VIR_DOMAIN_DEVICE_MEMORY) {
         unsigned long long sz = dev->data.memory->size;
 
-        if ((virDomainDefGetMemoryActual(def) + sz) > def->mem.max_memory) {
+        if ((virDomainDefGetMemoryTotal(def) + sz) > def->mem.max_memory) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Attaching memory device with size '%llu' would "
                              "exceed domain's maxMemory config"), sz);

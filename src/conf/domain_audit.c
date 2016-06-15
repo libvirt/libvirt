@@ -889,7 +889,7 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
     if (vm->def->tpm)
         virDomainAuditTPM(vm, vm->def->tpm, "start", true);
 
-    virDomainAuditMemory(vm, 0, virDomainDefGetMemoryActual(vm->def),
+    virDomainAuditMemory(vm, 0, virDomainDefGetMemoryTotal(vm->def),
                          "start", true);
     virDomainAuditVcpu(vm, 0, virDomainDefGetVcpus(vm->def), "start", true);
     if (vm->def->niothreadids)

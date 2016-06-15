@@ -460,7 +460,7 @@ static int openvzDomainGetInfo(virDomainPtr dom,
         }
     }
 
-    info->maxMem = virDomainDefGetMemoryActual(vm->def);
+    info->maxMem = virDomainDefGetMemoryTotal(vm->def);
     info->memory = vm->def->mem.cur_balloon;
     info->nrVirtCpu = virDomainDefGetVcpus(vm->def);
     ret = 0;

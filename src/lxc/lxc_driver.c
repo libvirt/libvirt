@@ -620,7 +620,7 @@ static int lxcDomainGetInfo(virDomainPtr dom,
         }
     }
 
-    info->maxMem = virDomainDefGetMemoryActual(vm->def);
+    info->maxMem = virDomainDefGetMemoryTotal(vm->def);
     info->nrVirtCpu = virDomainDefGetVcpus(vm->def);
     ret = 0;
 
@@ -686,7 +686,7 @@ lxcDomainGetMaxMemory(virDomainPtr dom)
     if (virDomainGetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    ret = virDomainDefGetMemoryActual(vm->def);
+    ret = virDomainDefGetMemoryTotal(vm->def);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -744,10 +744,10 @@ static int lxcDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         unsigned long oldmax = 0;
 
         if (def)
-            oldmax = virDomainDefGetMemoryActual(def);
+            oldmax = virDomainDefGetMemoryTotal(def);
         if (persistentDef) {
-            if (!oldmax || oldmax > virDomainDefGetMemoryActual(persistentDef))
-                oldmax = virDomainDefGetMemoryActual(persistentDef);
+            if (!oldmax || oldmax > virDomainDefGetMemoryTotal(persistentDef))
+                oldmax = virDomainDefGetMemoryTotal(persistentDef);
         }
 
         if (newmem > oldmax) {

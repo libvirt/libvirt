@@ -499,8 +499,8 @@ createVMRecordFromXml(virConnectPtr conn, virDomainDefPtr def,
 
     if (def->mem.cur_balloon)
         (*record)->memory_static_max = (int64_t) (def->mem.cur_balloon * 1024);
-    if (virDomainDefGetMemoryActual(def))
-        (*record)->memory_dynamic_max = (int64_t) (virDomainDefGetMemoryActual(def) * 1024);
+    if (virDomainDefGetMemoryTotal(def))
+        (*record)->memory_dynamic_max = (int64_t) (virDomainDefGetMemoryTotal(def) * 1024);
     else
         (*record)->memory_dynamic_max = (*record)->memory_static_max;
 

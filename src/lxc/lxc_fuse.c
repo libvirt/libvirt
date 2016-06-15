@@ -166,17 +166,17 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDefPtr def,
 
         if (STREQ(line, "MemTotal") &&
             (virMemoryLimitIsSet(def->mem.hard_limit) ||
-             virDomainDefGetMemoryActual(def))) {
+             virDomainDefGetMemoryTotal(def))) {
             virBufferAsprintf(new_meminfo, "MemTotal:       %8llu kB\n",
                               meminfo.memtotal);
         } else if (STREQ(line, "MemFree") &&
                    (virMemoryLimitIsSet(def->mem.hard_limit) ||
-                    virDomainDefGetMemoryActual(def))) {
+                    virDomainDefGetMemoryTotal(def))) {
             virBufferAsprintf(new_meminfo, "MemFree:        %8llu kB\n",
                               (meminfo.memtotal - meminfo.memusage));
         } else if (STREQ(line, "MemAvailable") &&
                    (virMemoryLimitIsSet(def->mem.hard_limit) ||
-                    virDomainDefGetMemoryActual(def))) {
+                    virDomainDefGetMemoryTotal(def))) {
             /* MemAvailable is actually MemFree + SRReclaimable +
                some other bits, but MemFree is the closest approximation
                we have */

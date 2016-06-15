@@ -480,7 +480,7 @@ xenXMDomainGetInfo(virConnectPtr conn,
         goto error;
 
     memset(info, 0, sizeof(virDomainInfo));
-    info->maxMem = virDomainDefGetMemoryActual(entry->def);
+    info->maxMem = virDomainDefGetMemoryTotal(entry->def);
     info->memory = entry->def->mem.cur_balloon;
     info->nrVirtCpu = virDomainDefGetVcpus(entry->def);
     info->state = VIR_DOMAIN_SHUTOFF;
@@ -558,8 +558,8 @@ xenXMDomainSetMemory(virConnectPtr conn,
         goto cleanup;
 
     entry->def->mem.cur_balloon = memory;
-    if (entry->def->mem.cur_balloon > virDomainDefGetMemoryActual(entry->def))
-        entry->def->mem.cur_balloon = virDomainDefGetMemoryActual(entry->def);
+    if (entry->def->mem.cur_balloon > virDomainDefGetMemoryTotal(entry->def))
+        entry->def->mem.cur_balloon = virDomainDefGetMemoryTotal(entry->def);
 
     /* If this fails, should we try to undo our changes to the
      * in-memory representation of the config file. I say not!
@@ -637,7 +637,7 @@ xenXMDomainGetMaxMemory(virConnectPtr conn,
     if (!(entry = virHashLookup(priv->configCache, filename)))
         goto cleanup;
 
-    ret = virDomainDefGetMemoryActual(entry->def);
+    ret = virDomainDefGetMemoryTotal(entry->def);
 
  cleanup:
     xenUnifiedUnlock(priv);

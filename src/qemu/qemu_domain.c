@@ -5119,7 +5119,7 @@ qemuDomainUpdateCurrentMemorySize(virQEMUDriverPtr driver,
     /* if no balloning is available, the current size equals to the current
      * full memory size */
     if (!virDomainDefHasMemballoon(vm->def)) {
-        vm->def->mem.cur_balloon = virDomainDefGetMemoryActual(vm->def);
+        vm->def->mem.cur_balloon = virDomainDefGetMemoryTotal(vm->def);
         return 0;
     }
 
@@ -5204,7 +5204,7 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def)
             }
         }
 
-        memory = virDomainDefGetMemoryActual(def);
+        memory = virDomainDefGetMemoryTotal(def);
 
         if (def->mem.max_memory)
             maxMemory = def->mem.max_memory;
@@ -5276,7 +5276,7 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def)
      *
      * Note that this may not be valid for all platforms.
      */
-    memKB = virDomainDefGetMemoryActual(def) + 1024 * 1024;
+    memKB = virDomainDefGetMemoryTotal(def) + 1024 * 1024;
 
  done:
     return memKB << 10;

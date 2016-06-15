@@ -1218,8 +1218,8 @@ xenParseSxpr(const struct sexpr *root,
     virDomainDefSetMemoryTotal(def, (sexpr_u64(root, "domain/maxmem") << 10));
     def->mem.cur_balloon = (sexpr_u64(root, "domain/memory") << 10);
 
-    if (def->mem.cur_balloon > virDomainDefGetMemoryActual(def))
-        def->mem.cur_balloon = virDomainDefGetMemoryActual(def);
+    if (def->mem.cur_balloon > virDomainDefGetMemoryTotal(def))
+        def->mem.cur_balloon = virDomainDefGetMemoryTotal(def);
 
     if (cpus != NULL) {
         if (virBitmapParse(cpus, 0, &def->cpumask,
@@ -2183,7 +2183,7 @@ xenFormatSxpr(virConnectPtr conn, virDomainDefPtr def)
     virBufferEscapeSexpr(&buf, "(name '%s')", def->name);
     virBufferAsprintf(&buf, "(memory %llu)(maxmem %llu)",
                       VIR_DIV_UP(def->mem.cur_balloon, 1024),
-                      VIR_DIV_UP(virDomainDefGetMemoryActual(def), 1024));
+                      VIR_DIV_UP(virDomainDefGetMemoryTotal(def), 1024));
     virBufferAsprintf(&buf, "(vcpus %u)", virDomainDefGetVcpusMax(def));
     /* Computing the vcpu_avail bitmask works because MAX_VIRT_CPUS is
        either 32, or 64 on a platform where long is big enough.  */

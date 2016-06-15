@@ -2066,14 +2066,14 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
         return -1;
     }
 
-    if (virDomainDefGetMemoryActual(def) != def->mem.cur_balloon) {
+    if (virDomainDefGetMemoryTotal(def) != def->mem.cur_balloon) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("changing balloon parameters is not supported "
                          "by vz driver"));
         return -1;
     }
 
-    if (virDomainDefGetMemoryActual(def) % (1 << 10) != 0) {
+    if (virDomainDefGetMemoryTotal(def) % (1 << 10) != 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Memory size should be multiple of 1Mb."));
         return -1;
@@ -3582,7 +3582,7 @@ prlsdkDoApplyConfig(vzDriverPtr driver,
         prlsdkCheckRetGoto(pret, error);
     }
 
-    pret = PrlVmCfg_SetRamSize(sdkdom, virDomainDefGetMemoryActual(def) >> 10);
+    pret = PrlVmCfg_SetRamSize(sdkdom, virDomainDefGetMemoryTotal(def) >> 10);
     prlsdkCheckRetGoto(pret, error);
 
     pret = PrlVmCfg_SetCpuCount(sdkdom, virDomainDefGetVcpus(def));

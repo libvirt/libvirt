@@ -2270,7 +2270,7 @@ virDomainVcpuInfoPtr virDomainDefGetVcpu(virDomainDefPtr def, unsigned int vcpu)
 
 unsigned long long virDomainDefGetMemoryInitial(const virDomainDef *def);
 void virDomainDefSetMemoryTotal(virDomainDefPtr def, unsigned long long size);
-unsigned long long virDomainDefGetMemoryActual(virDomainDefPtr def);
+unsigned long long virDomainDefGetMemoryTotal(const virDomainDef *def);
 bool virDomainDefHasMemoryHotplug(const virDomainDef *def);
 
 typedef enum {

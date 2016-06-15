@@ -609,7 +609,7 @@ vzDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
     info->state = virDomainObjGetState(dom, NULL);
     info->memory = dom->def->mem.cur_balloon;
-    info->maxMem = virDomainDefGetMemoryActual(dom->def);
+    info->maxMem = virDomainDefGetMemoryTotal(dom->def);
     info->nrVirtCpu = virDomainDefGetVcpus(dom->def);
     info->cpuTime = 0;
 
@@ -1291,7 +1291,7 @@ vzDomainGetMaxMemory(virDomainPtr domain)
     if (!(dom = vzDomObjFromDomain(domain)))
         return -1;
 
-    ret = virDomainDefGetMemoryActual(dom->def);
+    ret = virDomainDefGetMemoryTotal(dom->def);
     virObjectUnlock(dom);
     return ret;
 }

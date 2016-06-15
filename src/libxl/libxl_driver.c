@@ -1423,7 +1423,7 @@ libxlDomainGetMaxMemory(virDomainPtr dom)
     if (virDomainGetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    ret = virDomainDefGetMemoryActual(vm->def);
+    ret = virDomainDefGetMemoryTotal(vm->def);
 
  cleanup:
     if (vm)
@@ -1483,7 +1483,7 @@ libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
     } else {
         /* resize the current memory */
 
-        if (newmem > virDomainDefGetMemoryActual(vm->def)) {
+        if (newmem > virDomainDefGetMemoryTotal(vm->def)) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("cannot set memory higher than max memory"));
             goto endjob;
@@ -1554,7 +1554,7 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
         info->memory = vm->def->mem.cur_balloon;
-        info->maxMem = virDomainDefGetMemoryActual(vm->def);
+        info->maxMem = virDomainDefGetMemoryTotal(vm->def);
     } else {
         libxl_dominfo_init(&d_info);
 

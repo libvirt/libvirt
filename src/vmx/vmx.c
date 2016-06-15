@@ -1429,8 +1429,8 @@ virVMXParseConfig(virVMXContext *ctx,
 
     def->mem.cur_balloon = sched_mem_max * 1024; /* Scale from megabytes to kilobytes */
 
-    if (def->mem.cur_balloon > virDomainDefGetMemoryActual(def))
-        def->mem.cur_balloon = virDomainDefGetMemoryActual(def);
+    if (def->mem.cur_balloon > virDomainDefGetMemoryTotal(def))
+        def->mem.cur_balloon = virDomainDefGetMemoryTotal(def);
 
     /* vmx:sched.mem.minsize -> def:mem.min_guarantee */
     if (virVMXGetConfigLong(conf, "sched.mem.minsize", &sched_mem_minsize, 0,
@@ -1443,8 +1443,8 @@ virVMXParseConfig(virVMXContext *ctx,
 
     def->mem.min_guarantee = sched_mem_minsize * 1024; /* Scale from megabytes to kilobytes */
 
-    if (def->mem.min_guarantee > virDomainDefGetMemoryActual(def))
-        def->mem.min_guarantee = virDomainDefGetMemoryActual(def);
+    if (def->mem.min_guarantee > virDomainDefGetMemoryTotal(def))
+        def->mem.min_guarantee = virDomainDefGetMemoryTotal(def);
 
     /* vmx:numvcpus -> def:vcpus */
     if (virVMXGetConfigLong(conf, "numvcpus", &numvcpus, 1, true) < 0)
@@ -3172,7 +3172,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOptionPtr xmlopt, virDomainDe
 
     /* def:mem.max_balloon -> vmx:memsize */
     /* max-memory must be a multiple of 4096 kilobyte */
-    max_balloon = VIR_DIV_UP(virDomainDefGetMemoryActual(def), 4096) * 4096;
+    max_balloon = VIR_DIV_UP(virDomainDefGetMemoryTotal(def), 4096) * 4096;
 
     virBufferAsprintf(&buffer, "memsize = \"%llu\"\n",
                       max_balloon / 1024); /* Scale from kilobytes to megabytes */

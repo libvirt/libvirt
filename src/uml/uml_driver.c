@@ -1785,7 +1785,7 @@ umlDomainGetMaxMemory(virDomainPtr dom)
     if (virDomainGetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    ret = virDomainDefGetMemoryActual(vm->def);
+    ret = virDomainDefGetMemoryTotal(vm->def);
 
  cleanup:
     if (vm)
@@ -1858,7 +1858,7 @@ static int umlDomainSetMemory(virDomainPtr dom, unsigned long newmem)
         goto cleanup;
     }
 
-    if (newmem > virDomainDefGetMemoryActual(vm->def)) {
+    if (newmem > virDomainDefGetMemoryTotal(vm->def)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("cannot set memory higher than max memory"));
         goto cleanup;
@@ -1905,7 +1905,7 @@ static int umlDomainGetInfo(virDomainPtr dom,
         }
     }
 
-    info->maxMem = virDomainDefGetMemoryActual(vm->def);
+    info->maxMem = virDomainDefGetMemoryTotal(vm->def);
     info->memory = vm->def->mem.cur_balloon;
     info->nrVirtCpu = virDomainDefGetVcpus(vm->def);
     ret = 0;

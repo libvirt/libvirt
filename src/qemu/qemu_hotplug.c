@@ -1680,7 +1680,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    unsigned long long oldmem = virDomainDefGetMemoryActual(vm->def);
+    unsigned long long oldmem = virDomainDefGetMemoryTotal(vm->def);
     unsigned long long newmem = oldmem + mem->size;
     char *devstr = NULL;
     char *objalias = NULL;
@@ -2873,7 +2873,7 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
                              virDomainMemoryDefPtr mem)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    unsigned long long oldmem = virDomainDefGetMemoryActual(vm->def);
+    unsigned long long oldmem = virDomainDefGetMemoryTotal(vm->def);
     unsigned long long newmem = oldmem - mem->size;
     virObjectEventPtr event;
     char *backendAlias = NULL;

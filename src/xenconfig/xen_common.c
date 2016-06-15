@@ -1339,7 +1339,7 @@ static int
 xenFormatMem(virConfPtr conf, virDomainDefPtr def)
 {
     if (xenConfigSetInt(conf, "maxmem",
-                        VIR_DIV_UP(virDomainDefGetMemoryActual(def), 1024)) < 0)
+                        VIR_DIV_UP(virDomainDefGetMemoryTotal(def), 1024)) < 0)
         return -1;
 
     if (xenConfigSetInt(conf, "memory",

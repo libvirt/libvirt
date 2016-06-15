@@ -2337,7 +2337,7 @@ qemuDomainGetMaxMemory(virDomainPtr dom)
     if (virDomainGetMaxMemoryEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    ret = virDomainDefGetMemoryActual(vm->def);
+    ret = virDomainDefGetMemoryTotal(vm->def);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -2416,10 +2416,10 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
         unsigned long oldmax = 0;
 
         if (def)
-            oldmax = virDomainDefGetMemoryActual(def);
+            oldmax = virDomainDefGetMemoryTotal(def);
         if (persistentDef) {
-            if (!oldmax || oldmax > virDomainDefGetMemoryActual(persistentDef))
-                oldmax = virDomainDefGetMemoryActual(persistentDef);
+            if (!oldmax || oldmax > virDomainDefGetMemoryTotal(persistentDef))
+                oldmax = virDomainDefGetMemoryTotal(persistentDef);
         }
 
         if (newmem > oldmax) {
@@ -2675,7 +2675,7 @@ qemuDomainGetInfo(virDomainPtr dom,
 
     info->state = virDomainObjGetState(vm, NULL);
 
-    maxmem = virDomainDefGetMemoryActual(vm->def);
+    maxmem = virDomainDefGetMemoryTotal(vm->def);
     if (VIR_ASSIGN_IS_OVERFLOW(info->maxMem, maxmem)) {
         virReportError(VIR_ERR_OVERFLOW, "%s",
                        _("Initial memory size too large"));
@@ -7905,7 +7905,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         }
 
-        if (vmdef->mem.cur_balloon == virDomainDefGetMemoryActual(vmdef))
+        if (vmdef->mem.cur_balloon == virDomainDefGetMemoryTotal(vmdef))
             vmdef->mem.cur_balloon += dev->data.memory->size;
 
         if (virDomainMemoryInsert(vmdef, dev->data.memory) < 0)
@@ -18620,7 +18620,7 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     int err = 0;
 
     if (!virDomainDefHasMemballoon(dom->def)) {
-        cur_balloon = virDomainDefGetMemoryActual(dom->def);
+        cur_balloon = virDomainDefGetMemoryTotal(dom->def);
     } else if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BALLOON_EVENT)) {
         cur_balloon = dom->def->mem.cur_balloon;
     } else {
@@ -18638,7 +18638,7 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                                 &record->nparams,
                                 maxparams,
                                 "balloon.maximum",
-                                virDomainDefGetMemoryActual(dom->def)) < 0)
+                                virDomainDefGetMemoryTotal(dom->def)) < 0)
         return -1;
 
     return 0;

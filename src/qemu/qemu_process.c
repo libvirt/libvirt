@@ -2043,7 +2043,7 @@ qemuProcessRefreshBalloonState(virQEMUDriverPtr driver,
     /* if no ballooning is available, the current size equals to the current
      * full memory size */
     if (!virDomainDefHasMemballoon(vm->def)) {
-        vm->def->mem.cur_balloon = virDomainDefGetMemoryActual(vm->def);
+        vm->def->mem.cur_balloon = virDomainDefGetMemoryTotal(vm->def);
         return 0;
     }
 
@@ -4854,7 +4854,7 @@ qemuProcessPrepareDomain(virConnectPtr conn,
          */
         if (virDomainDefNeedsPlacementAdvice(vm->def)) {
             nodeset = virNumaGetAutoPlacementAdvice(virDomainDefGetVcpus(vm->def),
-                                                    virDomainDefGetMemoryActual(vm->def));
+                                                    virDomainDefGetMemoryTotal(vm->def));
             if (!nodeset)
                 goto cleanup;
 
