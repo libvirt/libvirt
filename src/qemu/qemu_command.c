@@ -4685,6 +4685,7 @@ qemuBuildChrChardevFileStr(virLogManagerPtr logManager,
 static char *
 qemuBuildChrChardevStr(virLogManagerPtr logManager,
                        virCommandPtr cmd,
+                       virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
                        const virDomainDef *def,
                        const virDomainChrSourceDef *dev,
                        const char *alias,
@@ -5081,6 +5082,7 @@ qemuBuildChrArgStr(const virDomainChrSourceDef *dev,
 static int
 qemuBuildMonitorCommandLine(virLogManagerPtr logManager,
                             virCommandPtr cmd,
+                            virQEMUDriverConfigPtr cfg,
                             virDomainDefPtr def,
                             virQEMUCapsPtr qemuCaps,
                             const virDomainChrSourceDef *monitor_chr,
@@ -5094,7 +5096,7 @@ qemuBuildMonitorCommandLine(virLogManagerPtr logManager,
     /* Use -chardev if it's available */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV)) {
 
-        if (!(chrdev = qemuBuildChrChardevStr(logManager, cmd, def,
+        if (!(chrdev = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                               monitor_chr, "monitor",
                                               qemuCaps)))
             return -1;
@@ -5239,6 +5241,7 @@ qemuBuildSclpDevStr(virDomainChrDefPtr dev)
 static int
 qemuBuildRNGBackendChrdevStr(virLogManagerPtr logManager,
                              virCommandPtr cmd,
+                             virQEMUDriverConfigPtr cfg,
                              const virDomainDef *def,
                              virDomainRNGDefPtr rng,
                              virQEMUCapsPtr qemuCaps,
@@ -5253,7 +5256,7 @@ qemuBuildRNGBackendChrdevStr(virLogManagerPtr logManager,
         return 0;
 
     case VIR_DOMAIN_RNG_BACKEND_EGD:
-        if (!(*chr = qemuBuildChrChardevStr(logManager, cmd, def,
+        if (!(*chr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                             rng->source.chardev,
                                             rng->info.alias, qemuCaps)))
             return -1;
@@ -5401,6 +5404,7 @@ qemuBuildRNGDevStr(const virDomainDef *def,
 static int
 qemuBuildRNGCommandLine(virLogManagerPtr logManager,
                         virCommandPtr cmd,
+                        virQEMUDriverConfigPtr cfg,
                         const virDomainDef *def,
                         virQEMUCapsPtr qemuCaps)
 {
@@ -5417,7 +5421,7 @@ qemuBuildRNGCommandLine(virLogManagerPtr logManager,
         }
 
         /* possibly add character device for backend */
-        if (qemuBuildRNGBackendChrdevStr(logManager, cmd, def,
+        if (qemuBuildRNGBackendChrdevStr(logManager, cmd, cfg, def,
                                          rng, qemuCaps, &tmp) < 0)
             return -1;
 
@@ -8089,6 +8093,7 @@ qemuBuildNetCommandLine(virCommandPtr cmd,
 static int
 qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
                               virCommandPtr cmd,
+                              virQEMUDriverConfigPtr cfg,
                               const virDomainDef *def,
                               virQEMUCapsPtr qemuCaps)
 {
@@ -8174,7 +8179,7 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
             return -1;
         }
 
-        if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+        if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                               &smartcard->data.passthru,
                                               smartcard->info.alias,
                                               qemuCaps))) {
@@ -8276,6 +8281,7 @@ qemuBuildShmemDevStr(virDomainDefPtr def,
 static char *
 qemuBuildShmemBackendStr(virLogManagerPtr logManager,
                          virCommandPtr cmd,
+                         virQEMUDriverConfigPtr cfg,
                          virDomainDefPtr def,
                          virDomainShmemDefPtr shmem,
                          virQEMUCapsPtr qemuCaps)
@@ -8288,7 +8294,7 @@ qemuBuildShmemBackendStr(virLogManagerPtr logManager,
                     shmem->name) < 0)
         return NULL;
 
-    devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+    devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                     &shmem->server.chr,
                                     shmem->info.alias, qemuCaps);
 
@@ -8298,6 +8304,7 @@ qemuBuildShmemBackendStr(virLogManagerPtr logManager,
 static int
 qemuBuildShmemCommandLine(virLogManagerPtr logManager,
                           virCommandPtr cmd,
+                          virQEMUDriverConfigPtr cfg,
                           virDomainDefPtr def,
                           virDomainShmemDefPtr shmem,
                           virQEMUCapsPtr qemuCaps)
@@ -8310,7 +8317,7 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
     VIR_FREE(devstr);
 
     if (shmem->server.enabled) {
-        if (!(devstr = qemuBuildShmemBackendStr(logManager, cmd, def,
+        if (!(devstr = qemuBuildShmemBackendStr(logManager, cmd, cfg, def,
                                                 shmem, qemuCaps)))
             return -1;
 
@@ -8341,6 +8348,7 @@ qemuBuildChrDeviceCommandLine(virCommandPtr cmd,
 static int
 qemuBuildSerialCommandLine(virLogManagerPtr logManager,
                            virCommandPtr cmd,
+                           virQEMUDriverConfigPtr cfg,
                            const virDomainDef *def,
                            virQEMUCapsPtr qemuCaps)
 {
@@ -8363,7 +8371,7 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
 
         /* Use -chardev with -device if they are available */
         if (virQEMUCapsSupportsChardev(def, qemuCaps, serial)) {
-            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                                   &serial->source,
                                                   serial->info.alias,
                                                   qemuCaps)))
@@ -8390,6 +8398,7 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
 static int
 qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
                               virCommandPtr cmd,
+                              virQEMUDriverConfigPtr cfg,
                               const virDomainDef *def,
                               virQEMUCapsPtr qemuCaps)
 {
@@ -8401,7 +8410,7 @@ qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
 
         /* Use -chardev with -device if they are available */
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV)) {
-            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                                   &parallel->source,
                                                   parallel->info.alias,
                                                   qemuCaps)))
@@ -8429,6 +8438,7 @@ qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
 static int
 qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
                              virCommandPtr cmd,
+                             virQEMUDriverConfigPtr cfg,
                              const virDomainDef *def,
                              virQEMUCapsPtr qemuCaps)
 {
@@ -8446,7 +8456,7 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
                 return -1;
             }
 
-            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                                   &channel->source,
                                                   channel->info.alias,
                                                   qemuCaps)))
@@ -8469,7 +8479,7 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
                  * the newer -chardev interface.  */
                 ;
             } else {
-                if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+                if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                                       &channel->source,
                                                       channel->info.alias,
                                                       qemuCaps)))
@@ -8492,6 +8502,7 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
 static int
 qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
                             virCommandPtr cmd,
+                            virQEMUDriverConfigPtr cfg,
                             const virDomainDef *def,
                             virQEMUCapsPtr qemuCaps)
 {
@@ -8511,7 +8522,7 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
                 return -1;
             }
 
-            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                                   &console->source,
                                                   console->info.alias,
                                                   qemuCaps)))
@@ -8525,7 +8536,7 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
             break;
 
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
-            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+            if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                                   &console->source,
                                                   console->info.alias,
                                                   qemuCaps)))
@@ -8644,6 +8655,7 @@ qemuBuildRedirdevDevStr(const virDomainDef *def,
 static int
 qemuBuildRedirdevCommandLine(virLogManagerPtr logManager,
                              virCommandPtr cmd,
+                             virQEMUDriverConfigPtr cfg,
                              const virDomainDef *def,
                              virQEMUCapsPtr qemuCaps)
 {
@@ -8653,7 +8665,7 @@ qemuBuildRedirdevCommandLine(virLogManagerPtr logManager,
         virDomainRedirdevDefPtr redirdev = def->redirdevs[i];
         char *devstr;
 
-        if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, def,
+        if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
                                               &redirdev->source.chr,
                                               redirdev->info.alias,
                                               qemuCaps))) {
@@ -9227,7 +9239,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildSgaCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildMonitorCommandLine(logManager, cmd, def,
+    if (qemuBuildMonitorCommandLine(logManager, cmd, cfg, def,
                                     qemuCaps, monitor_chr,
                                     monitor_json) < 0)
         goto error;
@@ -9261,19 +9273,19 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
                                 &bootHostdevNet) < 0)
         goto error;
 
-    if (qemuBuildSmartcardCommandLine(logManager, cmd, def, qemuCaps) < 0)
+    if (qemuBuildSmartcardCommandLine(logManager, cmd, cfg, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildSerialCommandLine(logManager, cmd, def, qemuCaps) < 0)
+    if (qemuBuildSerialCommandLine(logManager, cmd, cfg, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildParallelsCommandLine(logManager, cmd, def, qemuCaps) < 0)
+    if (qemuBuildParallelsCommandLine(logManager, cmd, cfg, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildChannelsCommandLine(logManager, cmd, def, qemuCaps) < 0)
+    if (qemuBuildChannelsCommandLine(logManager, cmd, cfg, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildConsoleCommandLine(logManager, cmd, def, qemuCaps) < 0)
+    if (qemuBuildConsoleCommandLine(logManager, cmd, cfg, def, qemuCaps) < 0)
         goto error;
 
     if (qemuBuildTPMCommandLine(cmd, def, qemuCaps) < 0)
@@ -9297,7 +9309,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildWatchdogCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildRedirdevCommandLine(logManager, cmd, def, qemuCaps) < 0)
+    if (qemuBuildRedirdevCommandLine(logManager, cmd, cfg, def, qemuCaps) < 0)
         goto error;
 
     if (qemuBuildHostdevCommandLine(cmd, def, qemuCaps, &bootHostdevNet) < 0)
@@ -9309,7 +9321,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildMemballoonCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildRNGCommandLine(logManager, cmd, def, qemuCaps) < 0)
+    if (qemuBuildRNGCommandLine(logManager, cmd, cfg, def, qemuCaps) < 0)
         goto error;
 
     if (qemuBuildNVRAMCommandLine(cmd, def, qemuCaps) < 0)
@@ -9345,7 +9357,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         goto error;
 
     for (i = 0; i < def->nshmems; i++) {
-        if (qemuBuildShmemCommandLine(logManager, cmd,
+        if (qemuBuildShmemCommandLine(logManager, cmd, cfg,
                                       def, def->shmems[i], qemuCaps))
             goto error;
     }
