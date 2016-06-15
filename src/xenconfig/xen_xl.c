@@ -503,6 +503,110 @@ xenParseXLInputDevs(virConfPtr conf, virDomainDefPtr def)
 }
 
 static int
+xenParseXLUSBController(virConfPtr conf, virDomainDefPtr def)
+{
+    virConfValuePtr list = virConfGetValue(conf, "usbctrl");
+    virDomainControllerDefPtr controller = NULL;
+
+    if (list && list->type == VIR_CONF_LIST) {
+        list = list->list;
+        while (list) {
+            char type[8];
+            char version[4];
+            char ports[4];
+            char *key;
+            int usbctrl_version = 2; /* by default USB 2.0 */
+            int usbctrl_ports = 8; /* by default 8 ports */
+            int usbctrl_type = -1;
+
+            type[0] = version[0] = ports[0] = '\0';
+
+            if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
+                goto skipusbctrl;
+            /* usbctrl=['type=pv,version=2,ports=8'] */
+            key = list->str;
+            while (key) {
+                char *data;
+                char *nextkey = strchr(key, ',');
+
+                if (!(data = strchr(key, '=')))
+                    goto skipusbctrl;
+                data++;
+
+                if (STRPREFIX(key, "type=")) {
+                    int len = nextkey ? (nextkey - data) : sizeof(type) - 1;
+                    if (virStrncpy(type, data, len, sizeof(type)) == NULL) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("type %s invalid"),
+                                       data);
+                        goto skipusbctrl;
+                    }
+                } else if (STRPREFIX(key, "version=")) {
+                    int len = nextkey ? (nextkey - data) : sizeof(version) - 1;
+                    if (virStrncpy(version, data, len, sizeof(version)) == NULL) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("version %s invalid"),
+                                       data);
+                        goto skipusbctrl;
+                    }
+                    if (virStrToLong_i(version, NULL, 16, &usbctrl_version) < 0)
+                        goto skipusbctrl;
+                } else if (STRPREFIX(key, "ports=")) {
+                    int len = nextkey ? (nextkey - data) : sizeof(ports) - 1;
+                    if (virStrncpy(ports, data, len, sizeof(ports)) == NULL) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("version %s invalid"),
+                                       data);
+                        goto skipusbctrl;
+                    }
+                    if (virStrToLong_i(ports, NULL, 16, &usbctrl_ports) < 0)
+                        goto skipusbctrl;
+                }
+
+                while (nextkey && (nextkey[0] == ',' ||
+                                   nextkey[0] == ' ' ||
+                                   nextkey[0] == '\t'))
+                    nextkey++;
+                key = nextkey;
+            }
+
+            if (type[0] == '\0') {
+                if (usbctrl_version == 1)
+                    usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1;
+                else
+                    usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2;
+            } else {
+                if (STREQLEN(type, "qusb", 4)) {
+                    if (usbctrl_version == 1)
+                        usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1;
+                    else
+                        usbctrl_type = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2;
+                } else {
+                    goto skipusbctrl;
+                }
+            }
+
+            if (!(controller = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_USB)))
+                return -1;
+
+            controller->type = VIR_DOMAIN_CONTROLLER_TYPE_USB;
+            controller->model = usbctrl_type;
+            controller->opts.usbopts.ports = usbctrl_ports;
+
+            if (VIR_APPEND_ELEMENT(def->controllers, def->ncontrollers, controller) < 0) {
+                virDomainControllerDefFree(controller);
+                return -1;
+            }
+
+        skipusbctrl:
+            list = list->next;
+        }
+    }
+
+    return 0;
+}
+
+static int
 xenParseXLUSB(virConfPtr conf, virDomainDefPtr def)
 {
     virConfValuePtr list = virConfGetValue(conf, "usbdev");
@@ -611,6 +715,9 @@ xenParseXL(virConfPtr conf,
         goto cleanup;
 
     if (xenParseXLUSB(conf, def) < 0)
+        goto cleanup;
+
+    if (xenParseXLUSBController(conf, def) < 0)
         goto cleanup;
 
     if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
@@ -1094,6 +1201,86 @@ xenFormatXLInputDevs(virConfPtr conf, virDomainDefPtr def)
 }
 
 static int
+xenFormatXLUSBController(virConfPtr conf,
+                         virDomainDefPtr def)
+{
+    virConfValuePtr usbctrlVal = NULL;
+    int hasUSBCtrl = 0;
+    size_t i;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
+            hasUSBCtrl = 1;
+            break;
+        }
+    }
+
+    if (!hasUSBCtrl)
+        return 0;
+
+    if (VIR_ALLOC(usbctrlVal) < 0)
+        return -1;
+
+    usbctrlVal->type = VIR_CONF_LIST;
+    usbctrlVal->list = NULL;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) {
+            virConfValuePtr val, tmp;
+            virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+            if (def->controllers[i]->model != -1) {
+                switch (def->controllers[i]->model) {
+                case VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1:
+                    virBufferAddLit(&buf, "type=qusb,version=1,");
+                    break;
+
+                case VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2:
+                    virBufferAddLit(&buf, "type=qusb,version=2,");
+                    break;
+
+                default:
+                    goto error;
+                }
+            }
+
+            if (def->controllers[i]->opts.usbopts.ports != -1)
+                virBufferAsprintf(&buf, "ports=%x",
+                                  def->controllers[i]->opts.usbopts.ports);
+
+            if (VIR_ALLOC(val) < 0) {
+                virBufferFreeAndReset(&buf);
+                goto error;
+            }
+            val->type = VIR_CONF_STRING;
+            val->str = virBufferContentAndReset(&buf);
+            tmp = usbctrlVal->list;
+            while (tmp && tmp->next)
+                tmp = tmp->next;
+            if (tmp)
+                tmp->next = val;
+            else
+                usbctrlVal->list = val;
+        }
+    }
+
+    if (usbctrlVal->list != NULL) {
+        int ret = virConfSetValue(conf, "usbctrl", usbctrlVal);
+        usbctrlVal = NULL;
+        if (ret < 0)
+            return -1;
+    }
+    VIR_FREE(usbctrlVal);
+
+    return 0;
+
+ error:
+    virConfFreeValue(usbctrlVal);
+    return -1;
+}
+
+
+static int
 xenFormatXLUSB(virConfPtr conf,
                virDomainDefPtr def)
 {
@@ -1184,6 +1371,9 @@ xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
         goto cleanup;
 
     if (xenFormatXLUSB(conf, def) < 0)
+        goto cleanup;
+
+    if (xenFormatXLUSBController(conf, def) < 0)
         goto cleanup;
 
     return conf;

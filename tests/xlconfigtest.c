@@ -278,6 +278,7 @@ mymain(void)
 #endif
     DO_TEST("vif-typename");
     DO_TEST("usb");
+    DO_TEST("usbctrl");
 
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
