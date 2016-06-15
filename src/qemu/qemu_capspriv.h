@@ -40,7 +40,8 @@ struct _virQEMUCapsCache {
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
 
 virQEMUCapsPtr
-virQEMUCapsNewForBinaryInternal(const char *binary,
+virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
+                                const char *binary,
                                 const char *libDir,
                                 const char *cacheDir,
                                 uid_t runUid,

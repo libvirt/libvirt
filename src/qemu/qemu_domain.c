@@ -2359,7 +2359,8 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
         goto cleanup;
 
-    if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
+    if (!(qemuCaps = virQEMUCapsCacheLookup(caps,
+                                            driver->qemuCapsCache,
                                             def->emulator)))
         goto cleanup;
 
@@ -2390,7 +2391,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
 
 static int
 qemuDomainDefValidate(const virDomainDef *def,
-                      virCapsPtr caps ATTRIBUTE_UNUSED,
+                      virCapsPtr caps,
                       void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
@@ -2398,7 +2399,8 @@ qemuDomainDefValidate(const virDomainDef *def,
     size_t topologycpus;
     int ret = -1;
 
-    if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
+    if (!(qemuCaps = virQEMUCapsCacheLookup(caps,
+                                            driver->qemuCapsCache,
                                             def->emulator)))
         goto cleanup;
 
@@ -2552,7 +2554,7 @@ qemuDomainChrDefDropDefaultPath(virDomainChrDefPtr chr,
 static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
-                             virCapsPtr caps ATTRIBUTE_UNUSED,
+                             virCapsPtr caps,
                              unsigned int parseFlags,
                              void *opaque)
 {
@@ -2561,7 +2563,8 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
 
-    qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
+    qemuCaps = virQEMUCapsCacheLookup(caps, driver->qemuCapsCache,
+                                      def->emulator);
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
         dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
@@ -2758,7 +2761,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
 static int
 qemuDomainDefAssignAddresses(virDomainDef *def,
-                             virCapsPtr caps ATTRIBUTE_UNUSED,
+                             virCapsPtr caps,
                              unsigned int parseFlags ATTRIBUTE_UNUSED,
                              void *opaque)
 {
@@ -2767,7 +2770,8 @@ qemuDomainDefAssignAddresses(virDomainDef *def,
     int ret = -1;
     bool newDomain = parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
 
-    if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
+    if (!(qemuCaps = virQEMUCapsCacheLookup(caps,
+                                            driver->qemuCapsCache,
                                             def->emulator)))
         goto cleanup;
 

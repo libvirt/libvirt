@@ -452,9 +452,11 @@ void virQEMUCapsSetGICCapabilities(virQEMUCapsPtr qemuCaps,
 virQEMUCapsCachePtr virQEMUCapsCacheNew(const char *libDir,
                                         const char *cacheDir,
                                         uid_t uid, gid_t gid);
-virQEMUCapsPtr virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache,
+virQEMUCapsPtr virQEMUCapsCacheLookup(virCapsPtr caps,
+                                      virQEMUCapsCachePtr cache,
                                       const char *binary);
-virQEMUCapsPtr virQEMUCapsCacheLookupCopy(virQEMUCapsCachePtr cache,
+virQEMUCapsPtr virQEMUCapsCacheLookupCopy(virCapsPtr caps,
+                                          virQEMUCapsCachePtr cache,
                                           const char *binary,
                                           const char *machineType);
 virQEMUCapsPtr virQEMUCapsCacheLookupByArch(virQEMUCapsCachePtr cache,

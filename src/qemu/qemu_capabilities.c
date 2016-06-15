@@ -843,7 +843,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
 
     /* Ignore binary if extracting version info fails */
     if (binary) {
-        if (!(qemubinCaps = virQEMUCapsCacheLookup(cache, binary))) {
+        if (!(qemubinCaps = virQEMUCapsCacheLookup(caps, cache, binary))) {
             virResetLastError();
             VIR_FREE(binary);
         }
@@ -883,7 +883,7 @@ virQEMUCapsInitGuest(virCapsPtr caps,
             if (!kvmbin)
                 continue;
 
-            if (!(kvmbinCaps = virQEMUCapsCacheLookup(cache, kvmbin))) {
+            if (!(kvmbinCaps = virQEMUCapsCacheLookup(caps, cache, kvmbin))) {
                 virResetLastError();
                 VIR_FREE(kvmbin);
                 continue;
@@ -2047,7 +2047,7 @@ int virQEMUCapsGetDefaultVersion(virCapsPtr caps,
         return -1;
     }
 
-    qemucaps = virQEMUCapsCacheLookup(capsCache, capsdata->emulator);
+    qemucaps = virQEMUCapsCacheLookup(caps, capsCache, capsdata->emulator);
     VIR_FREE(capsdata);
     if (!qemucaps)
         return -1;
@@ -3871,7 +3871,8 @@ virQEMUCapsLogProbeFailure(const char *binary)
 
 
 virQEMUCapsPtr
-virQEMUCapsNewForBinaryInternal(const char *binary,
+virQEMUCapsNewForBinaryInternal(virCapsPtr caps ATTRIBUTE_UNUSED,
+                                const char *binary,
                                 const char *libDir,
                                 const char *cacheDir,
                                 uid_t runUid,
@@ -3949,13 +3950,14 @@ virQEMUCapsNewForBinaryInternal(const char *binary,
 }
 
 static virQEMUCapsPtr
-virQEMUCapsNewForBinary(const char *binary,
+virQEMUCapsNewForBinary(virCapsPtr caps,
+                        const char *binary,
                         const char *libDir,
                         const char *cacheDir,
                         uid_t runUid,
                         gid_t runGid)
 {
-    return virQEMUCapsNewForBinaryInternal(binary, libDir, cacheDir,
+    return virQEMUCapsNewForBinaryInternal(caps, binary, libDir, cacheDir,
                                            runUid, runGid, false);
 }
 
@@ -4050,7 +4052,9 @@ virQEMUCapsCacheNew(const char *libDir,
 const char *qemuTestCapsName;
 
 virQEMUCapsPtr
-virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache, const char *binary)
+virQEMUCapsCacheLookup(virCapsPtr caps,
+                       virQEMUCapsCachePtr cache,
+                       const char *binary)
 {
     virQEMUCapsPtr ret = NULL;
 
@@ -4070,7 +4074,7 @@ virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache, const char *binary)
     if (!ret) {
         VIR_DEBUG("Creating capabilities for %s",
                   binary);
-        ret = virQEMUCapsNewForBinary(binary, cache->libDir,
+        ret = virQEMUCapsNewForBinary(caps, binary, cache->libDir,
                                       cache->cacheDir,
                                       cache->runUid, cache->runGid);
         if (ret) {
@@ -4090,11 +4094,12 @@ virQEMUCapsCacheLookup(virQEMUCapsCachePtr cache, const char *binary)
 
 
 virQEMUCapsPtr
-virQEMUCapsCacheLookupCopy(virQEMUCapsCachePtr cache,
+virQEMUCapsCacheLookupCopy(virCapsPtr caps,
+                           virQEMUCapsCachePtr cache,
                            const char *binary,
                            const char *machineType)
 {
-    virQEMUCapsPtr qemuCaps = virQEMUCapsCacheLookup(cache, binary);
+    virQEMUCapsPtr qemuCaps = virQEMUCapsCacheLookup(caps, cache, binary);
     virQEMUCapsPtr ret;
 
     if (!qemuCaps)

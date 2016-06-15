@@ -3248,6 +3248,7 @@ qemuProcessReconnect(void *opaque)
     int ret;
     unsigned int stopFlags = 0;
     bool jobStarted = false;
+    virCapsPtr caps = NULL;
 
     VIR_FREE(data);
 
@@ -3257,6 +3258,9 @@ qemuProcessReconnect(void *opaque)
 
     cfg = virQEMUDriverGetConfig(driver);
     priv = obj->privateData;
+
+    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
+        goto error;
 
     if (qemuDomainObjBeginJob(driver, obj, QEMU_JOB_MODIFY) < 0)
         goto error;
@@ -3327,7 +3331,8 @@ qemuProcessReconnect(void *opaque)
      * caps in the domain status, so re-query them
      */
     if (!priv->qemuCaps &&
-        !(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
+        !(priv->qemuCaps = virQEMUCapsCacheLookupCopy(caps,
+                                                      driver->qemuCapsCache,
                                                       obj->def->emulator,
                                                       obj->def->os.machine)))
         goto error;
@@ -3427,6 +3432,7 @@ qemuProcessReconnect(void *opaque)
     virDomainObjEndAPI(&obj);
     virObjectUnref(conn);
     virObjectUnref(cfg);
+    virObjectUnref(caps);
     virNWFilterUnlockFilterUpdates();
     return;
 
@@ -4664,7 +4670,8 @@ qemuProcessInit(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Determining emulator version");
     virObjectUnref(priv->qemuCaps);
-    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
+    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(caps,
+                                                      driver->qemuCapsCache,
                                                       vm->def->emulator,
                                                       vm->def->os.machine)))
         goto cleanup;
@@ -6282,7 +6289,8 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     VIR_DEBUG("Determining emulator version");
     virObjectUnref(priv->qemuCaps);
-    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(driver->qemuCapsCache,
+    if (!(priv->qemuCaps = virQEMUCapsCacheLookupCopy(caps,
+                                                      driver->qemuCapsCache,
                                                       vm->def->emulator,
                                                       vm->def->os.machine)))
         goto error;
