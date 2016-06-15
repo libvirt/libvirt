@@ -142,12 +142,6 @@ int qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
 char *qemuBuildShmemDevStr(virDomainDefPtr def,
                            virDomainShmemDefPtr shmem,
                            virQEMUCapsPtr qemuCaps);
-char *qemuBuildShmemBackendStr(virLogManagerPtr logManager,
-                               virCommandPtr cmd,
-                               virDomainDefPtr def,
-                               virDomainShmemDefPtr shmem,
-                               virQEMUCapsPtr qemuCaps);
-
 
 int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
 

@@ -8273,7 +8273,7 @@ qemuBuildShmemDevStr(virDomainDefPtr def,
     return NULL;
 }
 
-char *
+static char *
 qemuBuildShmemBackendStr(virLogManagerPtr logManager,
                          virCommandPtr cmd,
                          virDomainDefPtr def,
