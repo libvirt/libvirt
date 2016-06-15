@@ -186,6 +186,10 @@ libxlMakePCI(virDomainHostdevDefPtr hostdev, libxl_device_pci *pcidev);
 
 # ifdef LIBXL_HAVE_PVUSB
 int
+libxlMakeUSBController(virDomainControllerDefPtr controller,
+                       libxl_device_usbctrl *usbctrl);
+
+int
 libxlMakeUSB(virDomainHostdevDefPtr hostdev, libxl_device_usbdev *usbdev);
 # endif
 
