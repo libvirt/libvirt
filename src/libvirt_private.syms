@@ -878,6 +878,11 @@ virStorageVolTypeFromString;
 virStorageVolTypeToString;
 
 
+# conf/storage_event.h
+virStoragePoolEventLifecycleNew;
+virStoragePoolEventStateRegisterID;
+
+
 # conf/virchrdev.h
 virChrdevAlloc;
 virChrdevFree;
