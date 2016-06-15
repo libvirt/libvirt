@@ -490,7 +490,7 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
 {
     int rc = 0;
     size_t i, j;
-    char *newname = NULL;
+    const char *newname;
     char *toStr = NULL;
     char *viaStr = NULL;
     virDomainNetDefPtr netDef;
@@ -552,8 +552,6 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
                 VIR_FREE(viaStr);
             }
         }
-
-        VIR_FREE(newname);
     }
 
     /* enable lo device only if there were other net devices */
@@ -563,7 +561,6 @@ static int lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
  error_out:
     VIR_FREE(toStr);
     VIR_FREE(viaStr);
-    VIR_FREE(newname);
     return rc;
 }
 
