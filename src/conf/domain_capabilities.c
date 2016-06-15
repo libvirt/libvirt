@@ -402,9 +402,19 @@ virDomainCapsCPUFormat(virBufferPtr buf,
                       virCPUModeTypeToString(VIR_CPU_MODE_HOST_PASSTHROUGH),
                       cpu->hostPassthrough ? "yes" : "no");
 
-    virBufferAsprintf(buf, "<mode name='%s' supported='%s'/>\n",
-                      virCPUModeTypeToString(VIR_CPU_MODE_HOST_MODEL),
-                      cpu->hostModel ? "yes" : "no");
+    virBufferAsprintf(buf, "<mode name='%s' ",
+                      virCPUModeTypeToString(VIR_CPU_MODE_HOST_MODEL));
+    if (cpu->hostModel) {
+        virBufferAddLit(buf, "supported='yes'>\n");
+        virBufferAdjustIndent(buf, 2);
+
+        virCPUDefFormatBuf(buf, cpu->hostModel, false);
+
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</mode>\n");
+    } else {
+        virBufferAddLit(buf, "supported='no'/>\n");
+    }
 
     virBufferAsprintf(buf, "<mode name='%s' ",
                       virCPUModeTypeToString(VIR_CPU_MODE_CUSTOM));

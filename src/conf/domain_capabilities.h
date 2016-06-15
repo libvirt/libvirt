@@ -132,7 +132,7 @@ typedef struct _virDomainCapsCPU virDomainCapsCPU;
 typedef virDomainCapsCPU *virDomainCapsCPUPtr;
 struct _virDomainCapsCPU {
     bool hostPassthrough;
-    bool hostModel;
+    virCPUDefPtr hostModel;
     virDomainCapsCPUModelsPtr custom;
 };
 

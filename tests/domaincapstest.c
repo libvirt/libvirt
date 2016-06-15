@@ -65,8 +65,14 @@ fillAllCaps(virDomainCapsPtr domCaps)
     virDomainCapsDeviceGraphicsPtr graphics = &domCaps->graphics;
     virDomainCapsDeviceVideoPtr video = &domCaps->video;
     virDomainCapsDeviceHostdevPtr hostdev = &domCaps->hostdev;
-    domCaps->maxvcpus = 255;
+    virCPUDef host = {
+        VIR_CPU_TYPE_HOST, 0, 0,
+        VIR_ARCH_X86_64, (char *) "host",
+        NULL, 0, (char *) "CPU Vendorrr",
+        0, 0, 0, 0, 0, NULL,
+    };
 
+    domCaps->maxvcpus = 255;
     os->supported = true;
 
     loader->supported = true;
@@ -79,7 +85,7 @@ fillAllCaps(virDomainCapsPtr domCaps)
         return -1;
 
     cpu->hostPassthrough = true;
-    cpu->hostModel = true;
+    cpu->hostModel = virCPUDefCopy(&host);
     if (!(cpu->custom = virDomainCapsCPUModelsNew(3)) ||
         virDomainCapsCPUModelsAdd(cpu->custom, "Model1", -1,
                                   VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0 ||

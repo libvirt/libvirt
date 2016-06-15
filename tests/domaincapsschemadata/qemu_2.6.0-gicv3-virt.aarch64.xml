@@ -20,7 +20,7 @@
   </os>
   <cpu>
     <mode name='host-passthrough' supported='yes'/>
-    <mode name='host-model' supported='yes'/>
+    <mode name='host-model' supported='no'/>
     <mode name='custom' supported='yes'>
       <model usable='unknown'>pxa262</model>
       <model usable='unknown'>pxa270-a0</model>

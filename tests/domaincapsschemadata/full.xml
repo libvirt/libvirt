@@ -21,7 +21,10 @@
   </os>
   <cpu>
     <mode name='host-passthrough' supported='yes'/>
-    <mode name='host-model' supported='yes'/>
+    <mode name='host-model' supported='yes'>
+      <model>host</model>
+      <vendor>CPU Vendorrr</vendor>
+    </mode>
     <mode name='custom' supported='yes'>
       <model usable='unknown'>Model1</model>
       <model usable='no'>Model2</model>

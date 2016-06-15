@@ -154,7 +154,12 @@
   ...
   &lt;cpu&gt;
     &lt;mode name='host-passthrough' supported='yes'/&gt;
-    &lt;mode name='host-model' supported='yes'/&gt;
+    &lt;mode name='host-model' supported='yes'&gt;
+      &lt;model fallback='allow'&gt;Broadwell&lt;/model&gt;
+      &lt;vendor&gt;Intel&lt;/vendor&gt;
+      &lt;feature policy='disable' name='aes'/&gt;
+      &lt;feature policy='require' name='vmx'/&gt;
+    &lt;/mode&gt;
     &lt;mode name='custom' supported='yes'&gt;
       &lt;model usable='no'&gt;Broadwell&lt;/model&gt;
       &lt;model usable='yes'&gt;Broadwell-noTSX&lt;/model&gt;
@@ -177,7 +182,19 @@
       <dd>No mode specific details are provided.</dd>
 
       <dt><code>host-model</code></dt>
-      <dd>No mode specific details are provided yet.</dd>
+      <dd>
+        If <code>host-model</code> is supported by the hypervisor, the
+        <code>mode</code> describes the guest CPU which will be used when
+        starting a domain with <code>host-model</code> CPU. The hypervisor
+        specifics (such as unsupported CPU models or features, machine type,
+        etc.) may be accounted for in this guest CPU specification and thus
+        the CPU can be different from the one shown in host capabilities XML.
+        This is indicated by the <code>fallback</code> attribute of the
+        <code>model</code> sub element: <code>allow</code> means not all
+        specifics were accounted for and thus the CPU a guest will see may
+        be different; <code>forbid</code> indicates that the CPU a guest will
+        see should match this CPU definition.
+      </dd>
 
       <dt><code>custom</code></dt>
       <dd>

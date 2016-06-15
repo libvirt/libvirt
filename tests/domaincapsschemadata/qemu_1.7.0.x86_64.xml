@@ -20,7 +20,9 @@
   </os>
   <cpu>
     <mode name='host-passthrough' supported='yes'/>
-    <mode name='host-model' supported='yes'/>
+    <mode name='host-model' supported='yes'>
+      <model fallback='allow'>Broadwell</model>
+    </mode>
     <mode name='custom' supported='yes'>
       <model usable='unknown'>Opteron_G5</model>
       <model usable='unknown'>Opteron_G4</model>
