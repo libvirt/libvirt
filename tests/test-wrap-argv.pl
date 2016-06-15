@@ -33,15 +33,15 @@ sub rewrap {
 
     # Read the original file
     open FILE, "<", $file or die "cannot read $file: $!";
-    my @lines;
-    while (<FILE>) {
+    my @orig_lines = <FILE>;
+    close FILE;
+    my @lines = @orig_lines;
+    foreach (@lines) {
         # If there is a trailing '\' then kill the new line
         if (/\\$/) {
             chomp;
             $_ =~ s/\\$//;
         }
-
-        push @lines, $_;
     }
 
     # Skip empty files
@@ -49,7 +49,6 @@ sub rewrap {
 
     # Kill the last new line in the file
     chomp @lines[$#lines];
-    close FILE;
 
     # Reconstruct the master data by joining all lines
     # and then split again based on the real desired
