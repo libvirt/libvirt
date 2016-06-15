@@ -732,4 +732,10 @@ LIBVIRT_1.3.3 {
         virDomainSetPerfEvents;
 } LIBVIRT_1.2.19;
 
+LIBVIRT_2.0.0 {
+    global:
+        virConnectStoragePoolEventRegisterAny;
+        virConnectStoragePoolEventDeregisterAny;
+} LIBVIRT_1.3.3;
+
 # .... define new API here using predicted next version number ....

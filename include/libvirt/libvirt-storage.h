@@ -377,5 +377,98 @@ int                     virStorageVolResize             (virStorageVolPtr vol,
 int virStoragePoolIsActive(virStoragePoolPtr pool);
 int virStoragePoolIsPersistent(virStoragePoolPtr pool);
 
+/**
+ * VIR_STORAGE_POOL_EVENT_CALLBACK:
+ *
+ * Used to cast the event specific callback into the generic one
+ * for use for virConnectStoragePoolEventRegisterAny()
+ */
+# define VIR_STORAGE_POOL_EVENT_CALLBACK(cb)((virConnectStoragePoolEventGenericCallback)(cb))
+
+/**
+ * virStoragePoolEventID:
+ *
+ * An enumeration of supported eventId parameters for
+ * virConnectStoragePoolEventRegisterAny(). Each event id determines which
+ * signature of callback function will be used.
+ */
+typedef enum {
+    VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE = 0, /* virConnectStoragePoolEventLifecycleCallback */
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_STORAGE_POOL_EVENT_ID_LAST
+    /*
+     * NB: this enum value will increase over time as new events are
+     * added to the libvirt API. It reflects the last event ID supported
+     * by this version of the libvirt API.
+     */
+# endif
+} virStoragePoolEventID;
+
+/**
+ * virConnectStoragePoolEventGenericCallback:
+ * @conn: the connection pointer
+ * @pool: the pool pointer
+ * @opaque: application specified data
+ *
+ * A generic storage pool event callback handler, for use with
+ * virConnectStoragePoolEventRegisterAny(). Specific events usually
+ * have a customization with extra parameters, often with @opaque being
+ * passed in a different parameter position; use
+ * VIR_STORAGE_POOL_EVENT_CALLBACK() when registering an appropriate handler.
+ */
+typedef void (*virConnectStoragePoolEventGenericCallback)(virConnectPtr conn,
+                                                          virStoragePoolPtr pool,
+                                                          void *opaque);
+
+/* Use VIR_STORAGE_POOL_EVENT_CALLBACK() to cast the 'cb' parameter  */
+int virConnectStoragePoolEventRegisterAny(virConnectPtr conn,
+                                          virStoragePoolPtr pool, /* optional, to filter */
+                                          int eventID,
+                                          virConnectStoragePoolEventGenericCallback cb,
+                                          void *opaque,
+                                          virFreeCallback freecb);
+
+int virConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
+                                            int callbackID);
+
+/**
+ * virStoragePoolEventLifecycleType:
+ *
+ * a virStoragePoolEventLifecycleType is emitted during storage pool
+ * lifecycle events
+ */
+typedef enum {
+    VIR_STORAGE_POOL_EVENT_DEFINED = 0,
+    VIR_STORAGE_POOL_EVENT_UNDEFINED = 1,
+    VIR_STORAGE_POOL_EVENT_STARTED = 2,
+    VIR_STORAGE_POOL_EVENT_STOPPED = 3,
+    VIR_STORAGE_POOL_EVENT_REFRESHED = 4,
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_STORAGE_POOL_EVENT_LAST
+# endif
+} virStoragePoolEventLifecycleType;
+
+/**
+ * virConnectStoragePoolEventLifecycleCallback:
+ * @conn: connection object
+ * @pool: pool on which the event occurred
+ * @event: The specific virStoragePoolEventLifeCycleType which occurred
+ * @detail: contains some details on the reason of the event.
+ * @opaque: application specified data
+ *
+ * This callback is called when a pool lifecycle action is performed, like start
+ * or stop.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE with
+ * virConnectStoragePoolEventRegisterAny()
+ */
+typedef void (*virConnectStoragePoolEventLifecycleCallback)(virConnectPtr conn,
+                                                            virStoragePoolPtr pool,
+                                                            int event,
+                                                            int detail,
+                                                            void *opaque);
 
 #endif /* __VIR_LIBVIRT_STORAGE_H__ */

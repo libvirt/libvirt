@@ -143,6 +143,19 @@ extern virClassPtr virAdmClientClass;
         }                                                               \
     } while (0)
 
+# define virCheckStoragePoolGoto(obj, label)                            \
+    do {                                                                \
+        virStoragePoolPtr _pool= (obj);                                 \
+        if (!virObjectIsClass(_pool, virStoragePoolClass) ||            \
+            !virObjectIsClass(_pool->conn, virConnectClass)) {          \
+            virReportErrorHelper(VIR_FROM_STORAGE,                      \
+                                 VIR_ERR_INVALID_STORAGE_POOL,          \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            goto label;                                                 \
+        }                                                               \
+    } while (0)
+
 # define virCheckStorageVolReturn(obj, retval)                          \
     do {                                                                \
         virStorageVolPtr _vol = (obj);                                  \

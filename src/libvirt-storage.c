@@ -2124,3 +2124,128 @@ virStoragePoolIsPersistent(virStoragePoolPtr pool)
     virDispatchError(pool->conn);
     return -1;
 }
+
+/**
+ * virConnectStoragePoolEventRegisterAny:
+ * @conn: pointer to the connection
+ * @pool: pointer to the storage pool
+ * @eventID: the event type to receive
+ * @cb: callback to the function handling network events
+ * @opaque: opaque data to pass on to the callback
+ * @freecb: optional function to deallocate opaque when not used anymore
+ *
+ * Adds a callback to receive notifications of arbitrary storage pool events
+ * occurring on a storage pool. This function requires that an event loop
+ * has been previously registered with virEventRegisterImpl() or
+ * virEventRegisterDefaultImpl().
+ *
+ * If @pool is NULL, then events will be monitored for any storage pool.
+ * If @pool is non-NULL, then only the specific storage pool will be monitored.
+ *
+ * Most types of events have a callback providing a custom set of parameters
+ * for the event. When registering an event, it is thus necessary to use
+ * the VIR_STORAGE_POOL_EVENT_CALLBACK() macro to cast the
+ * supplied function pointer to match the signature of this method.
+ *
+ * The virStoragePoolPtr object handle passed into the callback upon delivery
+ * of an event is only valid for the duration of execution of the callback.
+ * If the callback wishes to keep the storage pool object after the callback
+ * returns, it shall take a reference to it, by calling virStoragePoolRef().
+ * The reference can be released once the object is no longer required
+ * by calling virStoragePoolFree().
+ *
+ * The return value from this method is a positive integer identifier
+ * for the callback. To unregister a callback, this callback ID should
+ * be passed to the virConnectStoragePoolEventDeregisterAny() method.
+ *
+ * Returns a callback identifier on success, -1 on failure.
+ */
+int
+virConnectStoragePoolEventRegisterAny(virConnectPtr conn,
+                                      virStoragePoolPtr pool,
+                                      int eventID,
+                                      virConnectStoragePoolEventGenericCallback cb,
+                                      void *opaque,
+                                      virFreeCallback freecb)
+{
+    VIR_DEBUG("conn=%p, pool=%p, eventID=%d, cb=%p, opaque=%p, freecb=%p",
+              conn, pool, eventID, cb, opaque, freecb);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    if (pool) {
+        virCheckStoragePoolGoto(pool, error);
+        if (pool->conn != conn) {
+            virReportInvalidArg(pool,
+                                _("storage pool '%s' in %s must match connection"),
+                                pool->name, __FUNCTION__);
+            goto error;
+        }
+    }
+    virCheckNonNullArgGoto(cb, error);
+    virCheckNonNegativeArgGoto(eventID, error);
+
+    if (eventID >= VIR_STORAGE_POOL_EVENT_ID_LAST) {
+        virReportInvalidArg(eventID,
+                            _("eventID in %s must be less than %d"),
+                            __FUNCTION__, VIR_STORAGE_POOL_EVENT_ID_LAST);
+        goto error;
+    }
+
+    if (conn->storageDriver &&
+        conn->storageDriver->connectStoragePoolEventRegisterAny) {
+        int ret;
+        ret = conn->storageDriver->connectStoragePoolEventRegisterAny(conn,
+                                                                      pool,
+                                                                      eventID,
+                                                                      cb,
+                                                                      opaque,
+                                                                      freecb);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+/**
+ * virConnectStoragePoolEventDeregisterAny:
+ * @conn: pointer to the connection
+ * @callbackID: the callback identifier
+ *
+ * Removes an event callback. The callbackID parameter should be the
+ * value obtained from a previous virConnectStoragePoolEventRegisterAny() method.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+virConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
+                                        int callbackID)
+{
+    VIR_DEBUG("conn=%p, callbackID=%d", conn, callbackID);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckNonNegativeArgGoto(callbackID, error);
+
+    if (conn->storageDriver &&
+        conn->storageDriver->connectStoragePoolEventDeregisterAny) {
+        int ret;
+        ret = conn->storageDriver->connectStoragePoolEventDeregisterAny(conn,
+                                                                        callbackID);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(conn);
+    return -1;
+}
