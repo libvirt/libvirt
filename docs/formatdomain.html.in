@@ -1462,7 +1462,7 @@
     <dl>
       <dt><code>pm</code></dt>
       <dd>These elements enable ('yes') or disable ('no') BIOS support
-        for S3 (suspend-to-disk) and S4 (suspend-to-mem) ACPI sleep
+        for S3 (suspend-to-mem) and S4 (suspend-to-disk) ACPI sleep
         states. If nothing is specified, then the hypervisor will be
         left with its default value.</dd>
     </dl>
