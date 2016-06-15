@@ -337,6 +337,26 @@ guestAgentLifecycleEventReasonToString(int event)
     return "unknown";
 }
 
+static const char *
+storagePoolEventToString(int event)
+{
+    switch ((virStoragePoolEventLifecycleType) event) {
+        case VIR_STORAGE_POOL_EVENT_DEFINED:
+            return "Defined";
+        case VIR_STORAGE_POOL_EVENT_UNDEFINED:
+            return "Undefined";
+        case VIR_STORAGE_POOL_EVENT_STARTED:
+            return "Started";
+        case VIR_STORAGE_POOL_EVENT_STOPPED:
+            return "Stopped";
+        case VIR_STORAGE_POOL_EVENT_REFRESHED:
+            return "Refreshed";
+        case VIR_STORAGE_POOL_EVENT_LAST:
+            break;
+    }
+    return "unknown";
+}
+
 
 static int
 myDomainEventCallback1(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -644,6 +664,21 @@ myNetworkEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+myStoragePoolEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                           virStoragePoolPtr pool,
+                           int event,
+                           int detail,
+                           void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Storage pool %s %s %d\n", __func__,
+           virStoragePoolGetName(pool),
+           storagePoolEventToString(event),
+           detail);
+    return 0;
+}
+
+
 static void
 eventTypedParamsPrint(virTypedParameterPtr params,
                       int nparams)
@@ -889,8 +924,23 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED, myDomainEventDeviceRemovalFailedCallback),
 };
 
+struct storagePoolEventData {
+    int event;
+    int id;
+    virConnectStoragePoolEventGenericCallback cb;
+    const char *name;
+};
+
+#define STORAGE_POOL_EVENT(event, callback)                                          \
+    {event, -1, VIR_STORAGE_POOL_EVENT_CALLBACK(callback), #event}
+
+struct storagePoolEventData storagePoolEvents[] = {
+    STORAGE_POOL_EVENT(VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE, myStoragePoolEventCallback),
+};
+
 /* make sure that the events are kept in sync */
 verify(ARRAY_CARDINALITY(domainEvents) == VIR_DOMAIN_EVENT_ID_LAST);
+verify(ARRAY_CARDINALITY(storagePoolEvents) == VIR_STORAGE_POOL_EVENT_ID_LAST);
 
 int
 main(int argc, char **argv)
@@ -966,6 +1016,22 @@ main(int argc, char **argv)
                                                       VIR_NETWORK_EVENT_CALLBACK(myNetworkEventCallback),
                                                       strdup("net callback"), myFreeFunc);
 
+    /* register common storage pool callbacks */
+    for (i = 0; i < ARRAY_CARDINALITY(storagePoolEvents); i++) {
+        struct storagePoolEventData *event = storagePoolEvents + i;
+
+        event->id = virConnectStoragePoolEventRegisterAny(dconn, NULL,
+                                                          event->event,
+                                                          event->cb,
+                                                          strdup(event->name),
+                                                          myFreeFunc);
+
+        if (event->id < 0) {
+            fprintf(stderr, "Failed to register event '%s'\n", event->name);
+            goto cleanup;
+        }
+    }
+
     if ((callback1ret == -1) ||
         (callback16ret == -1))
         goto cleanup;
@@ -992,6 +1058,13 @@ main(int argc, char **argv)
     for (i = 0; i < ARRAY_CARDINALITY(domainEvents); i++) {
         if (domainEvents[i].id > 0)
             virConnectDomainEventDeregisterAny(dconn, domainEvents[i].id);
+    }
+
+
+    printf("Deregistering storage pool event callbacks\n");
+    for (i = 0; i < ARRAY_CARDINALITY(storagePoolEvents); i++) {
+        if (storagePoolEvents[i].id > 0)
+            virConnectStoragePoolEventDeregisterAny(dconn, storagePoolEvents[i].id);
     }
 
     virConnectUnregisterCloseCallback(dconn, connectClose);
