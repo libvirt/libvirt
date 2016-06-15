@@ -34,6 +34,7 @@
 #include "datatypes.h"
 #include "domain_event.h"
 #include "network_event.h"
+#include "storage_event.h"
 #include "driver.h"
 #include "virbuffer.h"
 #include "remote_driver.h"
@@ -356,6 +357,11 @@ remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                  void *evdata, void *opaque);
 
 static void
+remoteStoragePoolBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                     virNetClientPtr client ATTRIBUTE_UNUSED,
+                                     void *evdata, void *opaque);
+
+static void
 remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                          virNetClientPtr client ATTRIBUTE_UNUSED,
                                          void *evdata, void *opaque);
@@ -534,6 +540,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteDomainBuildEventCallbackDeviceRemovalFailed,
       sizeof(remote_domain_event_callback_device_removal_failed_msg),
       (xdrproc_t)xdr_remote_domain_event_callback_device_removal_failed_msg },
+    { REMOTE_PROC_STORAGE_POOL_EVENT_LIFECYCLE,
+      remoteStoragePoolBuildEventLifecycle,
+      sizeof(remote_storage_pool_event_lifecycle_msg),
+      (xdrproc_t)xdr_remote_storage_pool_event_lifecycle_msg },
 };
 
 static void
@@ -3040,6 +3050,101 @@ remoteConnectNetworkEventDeregisterAny(virConnectPtr conn,
     return rv;
 }
 
+static int
+remoteConnectStoragePoolEventRegisterAny(virConnectPtr conn,
+                                         virStoragePoolPtr pool,
+                                         int eventID,
+                                         virConnectStoragePoolEventGenericCallback callback,
+                                         void *opaque,
+                                         virFreeCallback freecb)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    remote_connect_storage_pool_event_register_any_args args;
+    remote_connect_storage_pool_event_register_any_ret ret;
+    int callbackID;
+    int count;
+    remote_nonnull_storage_pool storage_pool;
+
+    remoteDriverLock(priv);
+
+    if ((count = virStoragePoolEventStateRegisterClient(conn, priv->eventState,
+                                                        pool, eventID, callback,
+                                                        opaque, freecb,
+                                                        &callbackID)) < 0)
+        goto done;
+
+    /* If this is the first callback for this eventID, we need to enable
+     * events on the server */
+    if (count == 1) {
+        args.eventID = eventID;
+        if (pool) {
+            make_nonnull_storage_pool(&storage_pool, pool);
+            args.pool = &storage_pool;
+        } else {
+            args.pool = NULL;
+        }
+
+        memset(&ret, 0, sizeof(ret));
+        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_STORAGE_POOL_EVENT_REGISTER_ANY,
+                 (xdrproc_t) xdr_remote_connect_storage_pool_event_register_any_args, (char *) &args,
+                 (xdrproc_t) xdr_remote_connect_storage_pool_event_register_any_ret, (char *) &ret) == -1) {
+            virObjectEventStateDeregisterID(conn, priv->eventState,
+                                            callbackID);
+            goto done;
+        }
+
+        virObjectEventStateSetRemote(conn, priv->eventState, callbackID,
+                                     ret.callbackID);
+    }
+
+    rv = callbackID;
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+static int
+remoteConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
+                                           int callbackID)
+{
+    struct private_data *priv = conn->privateData;
+    int rv = -1;
+    remote_connect_storage_pool_event_deregister_any_args args;
+    int eventID;
+    int remoteID;
+    int count;
+
+    remoteDriverLock(priv);
+
+    if ((eventID = virObjectEventStateEventID(conn, priv->eventState,
+                                              callbackID, &remoteID)) < 0)
+        goto done;
+
+    if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
+                                                 callbackID)) < 0)
+        goto done;
+
+    /* If that was the last callback for this eventID, we need to disable
+     * events on the server */
+    if (count == 0) {
+        args.callbackID = remoteID;
+
+        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_STORAGE_POOL_EVENT_DEREGISTER_ANY,
+                 (xdrproc_t) xdr_remote_connect_storage_pool_event_deregister_any_args, (char *) &args,
+                 (xdrproc_t) xdr_void, (char *) NULL) == -1)
+            goto done;
+
+    }
+
+    rv = 0;
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
 
 static int
 remoteConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
@@ -5013,6 +5118,27 @@ remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
     remoteEventQueue(priv, event, msg->callbackID);
 }
 
+static void
+remoteStoragePoolBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                     virNetClientPtr client ATTRIBUTE_UNUSED,
+                                     void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_storage_pool_event_lifecycle_msg *msg = evdata;
+    virStoragePoolPtr pool;
+    virObjectEventPtr event = NULL;
+
+    pool = get_nonnull_storage_pool(conn, msg->pool);
+    if (!pool)
+        return;
+
+    event = virStoragePoolEventLifecycleNew(pool->name, pool->uuid, msg->event,
+                                            msg->detail);
+    virObjectUnref(pool);
+
+    remoteEventQueue(priv, event, msg->callbackID);
+}
 
 static void
 remoteDomainBuildQemuMonitorEvent(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
@@ -7908,6 +8034,8 @@ static virStorageDriver storage_driver = {
     .connectListDefinedStoragePools = remoteConnectListDefinedStoragePools, /* 0.4.1 */
     .connectListAllStoragePools = remoteConnectListAllStoragePools, /* 0.10.2 */
     .connectFindStoragePoolSources = remoteConnectFindStoragePoolSources, /* 0.4.5 */
+    .connectStoragePoolEventDeregisterAny = remoteConnectStoragePoolEventDeregisterAny, /* 2.0.0 */
+    .connectStoragePoolEventRegisterAny = remoteConnectStoragePoolEventRegisterAny, /* 2.0.0 */
     .storagePoolLookupByName = remoteStoragePoolLookupByName, /* 0.4.1 */
     .storagePoolLookupByUUID = remoteStoragePoolLookupByUUID, /* 0.4.1 */
     .storagePoolLookupByVolume = remoteStoragePoolLookupByVolume, /* 0.4.1 */

@@ -3098,6 +3098,26 @@ struct remote_network_event_lifecycle_msg {
     int detail;
 };
 
+struct remote_connect_storage_pool_event_register_any_args {
+    int eventID;
+    remote_storage_pool pool;
+};
+
+struct remote_connect_storage_pool_event_register_any_ret {
+    int callbackID;
+};
+
+struct remote_connect_storage_pool_event_deregister_any_args {
+    int callbackID;
+};
+
+struct remote_storage_pool_event_lifecycle_msg {
+    int callbackID;
+    remote_nonnull_storage_pool pool;
+    int event;
+    int detail;
+};
+
 struct remote_domain_fsfreeze_args {
     remote_nonnull_domain dom;
     remote_nonnull_string mountpoints<REMOTE_DOMAIN_FSFREEZE_MOUNTPOINTS_MAX>; /* (const char **) */
@@ -5793,5 +5813,26 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_REMOVAL_FAILED = 367
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_DEVICE_REMOVAL_FAILED = 367,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:search_storage_pools
+     * @aclfilter: storage_pool:getattr
+     */
+    REMOTE_PROC_CONNECT_STORAGE_POOL_EVENT_REGISTER_ANY = 368,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:read
+     */
+    REMOTE_PROC_CONNECT_STORAGE_POOL_EVENT_DEREGISTER_ANY = 369,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_STORAGE_POOL_EVENT_LIFECYCLE = 370
 };

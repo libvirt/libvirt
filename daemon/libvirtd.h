@@ -60,6 +60,8 @@ struct daemonClientPrivate {
     size_t nnetworkEventCallbacks;
     daemonClientEventCallbackPtr *qemuEventCallbacks;
     size_t nqemuEventCallbacks;
+    daemonClientEventCallbackPtr *storageEventCallbacks;
+    size_t nstorageEventCallbacks;
     bool closeRegistered;
 
 # if WITH_SASL
