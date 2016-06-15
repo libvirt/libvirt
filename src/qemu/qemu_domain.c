@@ -2134,13 +2134,13 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     if (def->os.bootloader || def->os.bootloaderArgs) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("bootloader is not supported by QEMU"));
-        return ret;
+        goto cleanup;
     }
 
     if (!def->os.machine) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing machine type"));
-        return ret;
+        goto cleanup;
     }
 
     if (def->os.loader &&
@@ -2155,7 +2155,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&
         !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
-        return ret;
+        goto cleanup;
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                             def->emulator)))
