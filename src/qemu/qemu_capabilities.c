@@ -3455,7 +3455,9 @@ virQEMUCapsReset(virQEMUCapsPtr qemuCaps)
 static int
 virQEMUCapsInitCached(virCapsPtr caps,
                       virQEMUCapsPtr qemuCaps,
-                      const char *cacheDir)
+                      const char *cacheDir,
+                      uid_t runUid,
+                      gid_t runGid)
 {
     char *capsdir = NULL;
     char *capsfile = NULL;
@@ -3505,7 +3507,7 @@ virQEMUCapsInitCached(virCapsPtr caps,
         goto discard;
     }
 
-    if (!virQEMUCapsIsValid(qemuCaps, qemuctime))
+    if (!virQEMUCapsIsValid(qemuCaps, qemuctime, runUid, runGid))
         goto discard;
 
     /* Discard cache if QEMU binary or libvirtd changed */
@@ -4357,7 +4359,8 @@ virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
 
     if (!cacheDir)
         rv = 0;
-    else if ((rv = virQEMUCapsInitCached(caps, qemuCaps, cacheDir)) < 0)
+    else if ((rv = virQEMUCapsInitCached(caps, qemuCaps, cacheDir,
+                                         runUid, runGid)) < 0)
         goto error;
 
     if (rv == 0) {
@@ -4412,8 +4415,12 @@ virQEMUCapsNewForBinary(virCapsPtr caps,
 
 bool
 virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
-                   time_t qemuctime)
+                   time_t qemuctime,
+                   uid_t runUid,
+                   gid_t runGid)
 {
+    bool kvmUsable;
+
     if (!qemuCaps->binary)
         return true;
 
@@ -4435,6 +4442,26 @@ virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
                   "(%lld vs %lld)",
                   qemuCaps->binary,
                   (long long) qemuctime, (long long) qemuCaps->ctime);
+        return false;
+    }
+
+    kvmUsable = virFileAccessibleAs("/dev/kvm", R_OK | W_OK,
+                                    runUid, runGid) == 0;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_KVM) &&
+        kvmUsable) {
+        VIR_DEBUG("KVM was not enabled when probing '%s', "
+                  "but it should be usable now",
+                  qemuCaps->binary);
+        return false;
+    }
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM) &&
+        !kvmUsable) {
+        VIR_DEBUG("KVM was enabled when probing '%s', "
+                  "but it is not available now",
+                  qemuCaps->binary);
         return false;
     }
 
@@ -4531,7 +4558,7 @@ virQEMUCapsCacheLookup(virCapsPtr caps,
     virMutexLock(&cache->lock);
     ret = virHashLookup(cache->binaries, binary);
     if (ret &&
-        !virQEMUCapsIsValid(ret, 0)) {
+        !virQEMUCapsIsValid(ret, 0, cache->runUid, cache->runGid)) {
         VIR_DEBUG("Cached capabilities %p no longer valid for %s",
                   ret, binary);
         virHashRemoveEntry(cache->binaries, binary);
