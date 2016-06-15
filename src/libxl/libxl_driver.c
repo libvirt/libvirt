@@ -3119,12 +3119,44 @@ libxlDomainAttachHostUSBDevice(libxlDriverPrivatePtr driver,
     libxl_device_usbdev usbdev;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     int ret = -1;
+    size_t i;
+    int ports = 0, usbdevs = 0;
 
     libxl_device_usbdev_init(&usbdev);
 
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
         hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
         goto cleanup;
+
+    /* search for available controller:port */
+    for (i = 0; i < vm->def->ncontrollers; i++)
+        ports += vm->def->controllers[i]->opts.usbopts.ports;
+
+    for (i = 0; i < vm->def->nhostdevs; i++) {
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+            usbdevs++;
+    }
+
+    if (ports <= usbdevs) {
+        /* no free ports, we will create a new usb controller */
+        virDomainControllerDefPtr controller;
+
+        if (!(controller = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_USB)))
+            goto cleanup;
+
+        controller->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2;
+        controller->idx = -1;
+        controller->opts.usbopts.ports = 8;
+
+        if (libxlDomainAttachControllerDevice(driver, vm, controller) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("No available USB controller and port, and "
+                             "failed to attach a new one"));
+            virDomainControllerDefFree(controller);
+            goto cleanup;
+        }
+    }
 
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
         goto cleanup;
