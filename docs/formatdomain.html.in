@@ -1822,6 +1822,50 @@
       </dd>
     </dl>
 
+    <h3><a name="elementsPerf">Performance monitoring events</a></h3>
+
+    <p>
+      Some platforms allow monitoring of performance of the virtual machine and
+      the code executed inside. To enable the performance monitoring events
+      you can either specify them in the <code>perf</code> element or enable
+      them via <code>virDomainSetPerfEvents</code> API. The performance values
+      are then retrieved using the virConnectGetAllDomainStats API.
+      <span class="since">Since 2.0.0</span>
+    </p>
+
+<pre>
+  ...
+  &lt;perf&gt;
+    &lt;event name='cmt' enabled='yes'/&gt;
+    &lt;event name='mbmt' enabled='no'/&gt;
+    &lt;event name='mbml' enabled='yes'/&gt;
+  &lt;/perf&gt;
+  ...
+</pre>
+
+  <table class="top_table">
+    <tr>
+      <th>event name</th>
+      <th>Description</th>
+      <th>stats parameter name</th>
+    </tr>
+    <tr>
+      <td><code>cmt</code></td>
+      <td>usage of l3 cache in bytes by applications running on the platform</td>
+      <td><code>perf.cmt</code></td>
+    </tr>
+    <tr>
+      <td><code>mbmt</code></td>
+      <td>total system bandwidth from one level of cache</td>
+      <td><code>perf.mbmt</code></td>
+    </tr>
+    <tr>
+      <td><code>mbml</code></td>
+      <td>bandwidth of memory traffic for a memory controller</td>
+      <td><code>perf.mbml</code></td>
+    </tr>
+  </table>
+
     <h3><a name="elementsDevices">Devices</a></h3>
 
     <p>

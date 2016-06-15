@@ -412,6 +412,8 @@
           <attribute name="name">
             <choice>
               <value>cmt</value>
+              <value>mbmt</value>
+              <value>mbml</value>
             </choice>
           </attribute>
           <attribute name="enabled">
