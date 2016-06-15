@@ -88,7 +88,7 @@
 /gnulib/tests/*
 /include/libvirt/libvirt-common.h
 /libtool
-/libvirt-*.tar.gz
+/libvirt-*.tar.xz
 /libvirt-[0-9]*
 /libvirt*.pc
 /libvirt.spec

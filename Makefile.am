@@ -63,7 +63,7 @@ $(top_srcdir)/HACKING: $(top_srcdir)/docs/hacking1.xsl \
 	   > $@-t && mv $@-t $@ ; fi;
 
 rpm: clean
-	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ta $(distdir).tar.gz)
+	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ta $(distdir).tar.xz)
 
 check-local: all tests
 

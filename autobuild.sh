@@ -56,7 +56,7 @@ exec 3>&-
 test "$st" = 0
 test -x /usr/bin/lcov && make cov
 
-rm -f *.tar.gz
+rm -f *.tar.xz
 make dist
 
 if test -n "$AUTOBUILD_COUNTER" ; then

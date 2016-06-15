@@ -28,8 +28,8 @@
     </p>
 
     <ul>
-      <li><a href="ftp://libvirt.org/libvirt/libvirt-git-snapshot.tar.gz">libvirt.org FTP server</a></li>
-      <li><a href="http://libvirt.org/sources/libvirt-git-snapshot.tar.gz">libvirt.org HTTP server</a></li>
+      <li><a href="ftp://libvirt.org/libvirt/libvirt-git-snapshot.tar.xz">libvirt.org FTP server</a></li>
+      <li><a href="http://libvirt.org/sources/libvirt-git-snapshot.tar.xz">libvirt.org HTTP server</a></li>
     </ul>
 
     <h2><a name="schedule">Primary release schedule</a></h2>
