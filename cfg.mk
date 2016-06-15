@@ -64,6 +64,7 @@ local-checks-to-skip =			\
   sc_prohibit_quote_without_use		\
   sc_prohibit_quotearg_without_use	\
   sc_prohibit_stat_st_blocks		\
+  sc_prohibit_undesirable_word_seq	\
   sc_root_tests				\
   sc_space_tab				\
   sc_sun_os_names			\
