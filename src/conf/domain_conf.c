@@ -13056,57 +13056,48 @@ virDomainPMStateParseXML(xmlXPathContextPtr ctxt,
 
 static int
 virDomainPerfEventDefParseXML(virDomainPerfDefPtr perf,
-                              xmlNodePtr node,
-                              xmlXPathContextPtr ctxt)
+                              xmlNodePtr node)
 {
     char *name = NULL;
     char *enabled = NULL;
-    int enabled_type;
-    int name_type;
+    int event;
     int ret = -1;
 
-    xmlNodePtr oldnode = ctxt->node;
-
-    ctxt->node = node;
-    if (!(name = virXPathString("string(./@name)", ctxt))) {
-        virReportError(VIR_ERR_CONF_SYNTAX, "%s",
-                       _("missing name for event"));
+    if (!(name = virXMLPropString(node, "name"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s", _("missing perf event name"));
         goto cleanup;
     }
 
-    if ((name_type = virPerfEventTypeFromString(name)) < 0) {
-        virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("%s is not a supported event name"), name);
+    if ((event = virPerfEventTypeFromString(name)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("'unsupported perf event '%s'"), name);
         goto cleanup;
     }
 
-    if (!(enabled = virXPathString("string(./@enabled)", ctxt))) {
-        virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("missing state for cipher named %s"), name);
+    if (perf->events[event] != VIR_TRISTATE_BOOL_ABSENT) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("perf event '%s' was already specified"), name);
         goto cleanup;
     }
 
-    if ((enabled_type = virTristateBoolTypeFromString(enabled)) < 0) {
-        virReportError(VIR_ERR_CONF_SYNTAX,
-                       _("%s is not a supported enabled state"), enabled);
+    if (!(enabled = virXMLPropString(node, "enabled"))) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("missing state of perf event '%s'"), name);
         goto cleanup;
     }
 
-    if (perf->events[VIR_PERF_EVENT_CMT] != VIR_TRISTATE_BOOL_ABSENT) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("A domain definition can have no more than "
-                         "one event node with name %s"),
-                       virTristateBoolTypeToString(name_type));
-
+    if ((perf->events[event] = virTristateBoolTypeFromString(enabled)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid state '%s' of perf event '%s'"),
+                       enabled, name);
         goto cleanup;
     }
-    perf->events[VIR_PERF_EVENT_CMT] = enabled_type;
 
     ret = 0;
+
  cleanup:
     VIR_FREE(name);
     VIR_FREE(enabled);
-    ctxt->node = oldnode;
     return ret;
 }
 
@@ -13126,7 +13117,7 @@ virDomainPerfDefParseXML(virDomainDefPtr def,
         goto cleanup;
 
     for (i = 0; i < n; i++) {
-        if (virDomainPerfEventDefParseXML(def->perf, nodes[i], ctxt) < 0)
+        if (virDomainPerfEventDefParseXML(def->perf, nodes[i]) < 0)
             goto cleanup;
     }
 
