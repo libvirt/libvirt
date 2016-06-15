@@ -2484,6 +2484,19 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         ARCH_IS_S390(def->os.arch))
         dev->data.controller->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
 
+    /* forbid usb model 'qusb1' and 'qusb2' in this kind of hyperviosr */
+    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
+        dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+        (dev->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1 ||
+         dev->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("USB controller model type 'qusb1' or 'qusb2' "
+                         "is not supported in %s"),
+                       virDomainVirtTypeToString(def->virtType));
+        goto cleanup;
+    }
+
+
     /* set the default SCSI controller model for S390 arches */
     if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
         dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
