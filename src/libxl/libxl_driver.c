@@ -3057,6 +3057,60 @@ libxlDomainAttachHostPCIDevice(libxlDriverPrivatePtr driver,
 
 #ifdef LIBXL_HAVE_PVUSB
 static int
+libxlDomainAttachControllerDevice(libxlDriverPrivatePtr driver,
+                                  virDomainObjPtr vm,
+                                  virDomainControllerDefPtr controller)
+{
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+    const char *type = virDomainControllerTypeToString(controller->type);
+    libxl_device_usbctrl usbctrl;
+    int ret = -1;
+
+    libxl_device_usbctrl_init(&usbctrl);
+
+    if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_USB) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("'%s' controller cannot be hot plugged."),
+                       type);
+        goto cleanup;
+    }
+
+    if (controller->idx == -1)
+        controller->idx = virDomainControllerFindUnusedIndex(vm->def,
+                                                             controller->type);
+
+    if (controller->opts.usbopts.ports == -1)
+        controller->opts.usbopts.ports = 8;
+
+    if (virDomainControllerFind(vm->def, controller->type, controller->idx) >= 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("target %s:%d already exists"),
+                       type, controller->idx);
+        goto cleanup;
+    }
+
+    if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers + 1) < 0)
+        goto cleanup;
+
+    if (libxlMakeUSBController(controller, &usbctrl) < 0)
+        goto cleanup;
+
+    if (libxl_device_usbctrl_add(cfg->ctx, vm->def->id, &usbctrl, 0) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libxenlight failed to attach USB controller"));
+        goto cleanup;
+    }
+
+    virDomainControllerInsertPreAlloced(vm->def, controller);
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(cfg);
+    libxl_device_usbctrl_dispose(&usbctrl);
+    return ret;
+}
+
+static int
 libxlDomainAttachHostUSBDevice(libxlDriverPrivatePtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev)
@@ -3291,6 +3345,12 @@ libxlDomainAttachDeviceLive(libxlDriverPrivatePtr driver,
                 dev->data.disk = NULL;
             break;
 
+        case VIR_DOMAIN_DEVICE_CONTROLLER:
+            ret = libxlDomainAttachControllerDevice(driver, vm, dev->data.controller);
+            if (!ret)
+                dev->data.controller = NULL;
+            break;
+
         case VIR_DOMAIN_DEVICE_NET:
             ret = libxlDomainAttachNetDevice(driver, vm,
                                              dev->data.net);
@@ -3321,6 +3381,7 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
     virDomainDiskDefPtr disk;
     virDomainNetDefPtr net;
     virDomainHostdevDefPtr hostdev;
+    virDomainControllerDefPtr controller;
     virDomainHostdevDefPtr found;
     char mac[VIR_MAC_STRING_BUFLEN];
 
@@ -3336,6 +3397,21 @@ libxlDomainAttachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
                 return -1;
             /* vmdef has the pointer. Generic codes for vmdef will do all jobs */
             dev->data.disk = NULL;
+            break;
+
+        case VIR_DOMAIN_DEVICE_CONTROLLER:
+            controller = dev->data.controller;
+            if (controller->idx != -1 &&
+                virDomainControllerFind(vmdef, controller->type,
+                                        controller->idx) >= 0) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("Target already exists"));
+                return -1;
+            }
+
+            if (virDomainControllerInsert(vmdef, controller) < 0)
+                return -1;
+            dev->data.controller = NULL;
             break;
 
         case VIR_DOMAIN_DEVICE_NET:
@@ -3475,6 +3551,57 @@ libxlDomainDetachHostPCIDevice(libxlDriverPrivatePtr driver,
 }
 
 #ifdef LIBXL_HAVE_PVUSB
+static int
+libxlDomainDetachControllerDevice(libxlDriverPrivatePtr driver,
+                                  virDomainObjPtr vm,
+                                  virDomainDeviceDefPtr dev)
+{
+    int idx, ret = -1;
+    virDomainControllerDefPtr detach = NULL;
+    virDomainControllerDefPtr controller = dev->data.controller;
+    const char *type = virDomainControllerTypeToString(controller->type);
+    libxl_device_usbctrl usbctrl;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+
+    libxl_device_usbctrl_init(&usbctrl);
+
+    if (controller->type != VIR_DOMAIN_CONTROLLER_TYPE_USB) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("'%s' controller cannot be hot plugged."),
+                       type);
+        goto cleanup;
+    }
+
+    if ((idx = virDomainControllerFind(vm->def,
+                                       controller->type,
+                                       controller->idx)) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("controller %s:%d not found"),
+                       type, controller->idx);
+        goto cleanup;
+    }
+
+    detach = vm->def->controllers[idx];
+
+    if (libxlMakeUSBController(controller, &usbctrl) < 0)
+        goto cleanup;
+
+    if (libxl_device_usbctrl_remove(cfg->ctx, vm->def->id, &usbctrl, 0) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("libxenlight failed to detach USB controller"));
+        goto cleanup;
+    }
+
+    virDomainControllerRemove(vm->def, idx);
+    ret = 0;
+
+ cleanup:
+    virDomainControllerDefFree(detach);
+    virObjectUnref(cfg);
+    libxl_device_usbctrl_dispose(&usbctrl);
+    return ret;
+}
+
 static int
 libxlDomainDetachHostUSBDevice(libxlDriverPrivatePtr driver,
                                virDomainObjPtr vm,
@@ -3639,6 +3766,10 @@ libxlDomainDetachDeviceLive(libxlDriverPrivatePtr driver,
             ret = libxlDomainDetachDeviceDiskLive(vm, dev);
             break;
 
+        case VIR_DOMAIN_DEVICE_CONTROLLER:
+            ret = libxlDomainDetachControllerDevice(driver, vm, dev);
+            break;
+
         case VIR_DOMAIN_DEVICE_NET:
             ret = libxlDomainDetachNetDevice(driver, vm,
                                              dev->data.net);
@@ -3673,6 +3804,7 @@ libxlDomainDetachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
 {
     virDomainDiskDefPtr disk, detach;
     virDomainHostdevDefPtr hostdev, det_hostdev;
+    virDomainControllerDefPtr cont, det_cont;
     virDomainNetDefPtr net;
     int idx;
 
@@ -3685,6 +3817,18 @@ libxlDomainDetachDeviceConfig(virDomainDefPtr vmdef, virDomainDeviceDefPtr dev)
                 return -1;
             }
             virDomainDiskDefFree(detach);
+            break;
+
+        case VIR_DOMAIN_DEVICE_CONTROLLER:
+            cont = dev->data.controller;
+            if ((idx = virDomainControllerFind(vmdef, cont->type,
+                                               cont->idx)) < 0) {
+                virReportError(VIR_ERR_INVALID_ARG, "%s",
+                               _("device not present in domain configuration"));
+                return -1;
+            }
+            det_cont = virDomainControllerRemove(vmdef, idx);
+            virDomainControllerDefFree(det_cont);
             break;
 
         case VIR_DOMAIN_DEVICE_NET:
