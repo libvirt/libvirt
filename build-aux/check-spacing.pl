@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# bracket-spacing.pl: Report any usage of 'function (..args..)'
+# check-spacing.pl: Report any usage of 'function (..args..)'
 # Also check for other syntax issues, such as correct use of ';'
 #
 # This library is free software; you can redistribute it and/or

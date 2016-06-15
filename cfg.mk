@@ -1097,12 +1097,12 @@ _autogen:
 
 # regenerate HACKING as part of the syntax-check
 ifneq ($(_gl-Makefile),)
-syntax-check: $(top_srcdir)/HACKING bracket-spacing-check test-wrap-argv
+syntax-check: $(top_srcdir)/HACKING spacing-check test-wrap-argv
 endif
 
-bracket-spacing-check:
+spacing-check:
 	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.c$$'`; \
-	$(PERL) $(top_srcdir)/build-aux/bracket-spacing.pl $$files || \
+	$(PERL) $(top_srcdir)/build-aux/check-spacing.pl $$files || \
 	  { echo '$(ME): incorrect formatting, see HACKING for rules' 1>&2; \
 	    exit 1; }
 
