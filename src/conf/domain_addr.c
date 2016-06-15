@@ -1393,6 +1393,12 @@ virDomainUSBAddressControllerModelToPorts(virDomainControllerDefPtr cont)
             return cont->opts.usbopts.ports;
         return 4;
 
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2:
+        if (cont->opts.usbopts.ports != -1)
+            return cont->opts.usbopts.ports;
+        return 8;
+
     case VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE:
     case VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST:
         break;

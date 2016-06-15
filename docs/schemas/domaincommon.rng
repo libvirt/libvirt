@@ -1782,6 +1782,8 @@
                   <value>pci-ohci</value>
                   <value>nec-xhci</value>
                   <value>none</value>
+                  <value>qusb1</value>
+                  <value>qusb2</value>
                 </choice>
               </attribute>
             </optional>

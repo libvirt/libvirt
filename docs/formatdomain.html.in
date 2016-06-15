@@ -3122,7 +3122,9 @@
         <dd>A <code>usb</code> controller has an optional attribute
         <code>model</code>, which is one of "piix3-uhci", "piix4-uhci",
         "ehci", "ich9-ehci1", "ich9-uhci1", "ich9-uhci2", "ich9-uhci3",
-        "vt82c686b-uhci", "pci-ohci" or "nec-xhci".  Additionally,
+        "vt82c686b-uhci", "pci-ohci", "nec-xhci", "qusb1" (xen pvusb
+        with qemu backend, version 1.1) or "qusb2" (xen pvusb with qemu
+        backend, version 2.0). Additionally,
          <span class="since">since 0.10.0</span>, if the USB bus needs to
          be explicitly disabled for the guest, <code>model='none'</code>
          may be used.  <span class="since">Since 1.0.5</span>, no default

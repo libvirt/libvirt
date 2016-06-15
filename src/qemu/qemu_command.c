@@ -133,6 +133,8 @@ VIR_ENUM_IMPL(qemuControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
               "vt82c686b-usb-uhci",
               "pci-ohci",
               "nec-usb-xhci",
+              "qusb1",
+              "qusb2",
               "none");
 
 VIR_ENUM_DECL(qemuDomainFSDriver)

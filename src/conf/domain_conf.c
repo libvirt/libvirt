@@ -359,6 +359,8 @@ VIR_ENUM_IMPL(virDomainControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
               "vt82c686b-uhci",
               "pci-ohci",
               "nec-xhci",
+              "qusb1",
+              "qusb2",
               "none")
 
 VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
