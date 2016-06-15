@@ -3801,7 +3801,7 @@ virQEMUCapsNewForBinaryInternal(const char *binary,
     return NULL;
 }
 
-virQEMUCapsPtr
+static virQEMUCapsPtr
 virQEMUCapsNewForBinary(const char *binary,
                         const char *libDir,
                         const char *cacheDir,

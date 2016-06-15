@@ -382,11 +382,6 @@ typedef virQEMUCapsCache *virQEMUCapsCachePtr;
 
 virQEMUCapsPtr virQEMUCapsNew(void);
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
-virQEMUCapsPtr virQEMUCapsNewForBinary(const char *binary,
-                                       const char *libDir,
-                                       const char *cacheDir,
-                                       uid_t runUid,
-                                       gid_t runGid);
 
 int virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
                               qemuMonitorPtr mon);
