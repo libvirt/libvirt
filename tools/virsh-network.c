@@ -282,7 +282,7 @@ static const vshCmdOptDef opts_network_dumpxml[] = {
     VIRSH_COMMON_OPT_NETWORK,
     {.name = "inactive",
      .type = VSH_OT_BOOL,
-     .help = N_("network information of an inactive domain")
+     .help = N_("show inactive defined XML")
     },
     {.name = NULL}
 };
