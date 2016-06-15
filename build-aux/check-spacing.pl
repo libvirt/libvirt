@@ -138,7 +138,7 @@ foreach my $file (@ARGV) {
         if ($data =~ /\s[;,]/) {
             unless ($data =~ /\S; ; / ||
                     $data =~ /^\s+;/) {
-                print "Whitespace before (semi)colon:\n";
+                print "Whitespace before semicolon or comma:\n";
                 print "$file:$.: $line";
                 $ret = 1;
             }
