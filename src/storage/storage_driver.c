@@ -41,6 +41,7 @@
 #include "driver.h"
 #include "storage_driver.h"
 #include "storage_conf.h"
+#include "storage_event.h"
 #include "viralloc.h"
 #include "storage_backend.h"
 #include "virlog.h"
@@ -276,6 +277,8 @@ storageStateInitialize(bool privileged,
 
     storagePoolUpdateAllState();
 
+    driver->storageEventState = virObjectEventStateNew();
+
     storageDriverUnlock();
 
     ret = 0;
@@ -343,6 +346,8 @@ storageStateCleanup(void)
         return -1;
 
     storageDriverLock();
+
+    virObjectEventStateFree(driver->storageEventState);
 
     /* free inactive pools */
     virStoragePoolObjListFree(&driver->pools);
@@ -668,6 +673,7 @@ storagePoolCreateXML(virConnectPtr conn,
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolPtr ret = NULL;
     virStorageBackendPtr backend;
+    virObjectEventPtr event = NULL;
     char *stateFile = NULL;
     unsigned int build_flags = 0;
 
@@ -735,6 +741,12 @@ storagePoolCreateXML(virConnectPtr conn,
         pool = NULL;
         goto cleanup;
     }
+
+    event = virStoragePoolEventLifecycleNew(pool->def->name,
+                                            pool->def->uuid,
+                                            VIR_STORAGE_POOL_EVENT_STARTED,
+                                            0);
+
     VIR_INFO("Creating storage pool '%s'", pool->def->name);
     pool->active = true;
 
@@ -744,6 +756,8 @@ storagePoolCreateXML(virConnectPtr conn,
  cleanup:
     VIR_FREE(stateFile);
     virStoragePoolDefFree(def);
+    if (event)
+        virObjectEventStateQueue(driver->storageEventState, event);
     if (pool)
         virStoragePoolObjUnlock(pool);
     storageDriverUnlock();
@@ -758,6 +772,7 @@ storagePoolDefineXML(virConnectPtr conn,
     virStoragePoolDefPtr def;
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolPtr ret = NULL;
+    virObjectEventPtr event = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -786,6 +801,11 @@ storagePoolDefineXML(virConnectPtr conn,
         pool = NULL;
         goto cleanup;
     }
+
+    event = virStoragePoolEventLifecycleNew(def->name, def->uuid,
+                                            VIR_STORAGE_POOL_EVENT_DEFINED,
+                                            0);
+
     def = NULL;
 
     VIR_INFO("Defining storage pool '%s'", pool->def->name);
@@ -793,6 +813,8 @@ storagePoolDefineXML(virConnectPtr conn,
                             NULL, NULL);
 
  cleanup:
+    if (event)
+        virObjectEventStateQueue(driver->storageEventState, event);
     virStoragePoolDefFree(def);
     if (pool)
         virStoragePoolObjUnlock(pool);
@@ -804,6 +826,7 @@ static int
 storagePoolUndefine(virStoragePoolPtr obj)
 {
     virStoragePoolObjPtr pool;
+    virObjectEventPtr event = NULL;
     int ret = -1;
 
     storageDriverLock();
@@ -847,12 +870,19 @@ storagePoolUndefine(virStoragePoolPtr obj)
     VIR_FREE(pool->configFile);
     VIR_FREE(pool->autostartLink);
 
+    event = virStoragePoolEventLifecycleNew(pool->def->name,
+                                            pool->def->uuid,
+                                            VIR_STORAGE_POOL_EVENT_UNDEFINED,
+                                            0);
+
     VIR_INFO("Undefining storage pool '%s'", pool->def->name);
     virStoragePoolObjRemove(&driver->pools, pool);
     pool = NULL;
     ret = 0;
 
  cleanup:
+    if (event)
+        virObjectEventStateQueue(driver->storageEventState, event);
     if (pool)
         virStoragePoolObjUnlock(pool);
     storageDriverUnlock();
@@ -865,6 +895,7 @@ storagePoolCreate(virStoragePoolPtr obj,
 {
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
+    virObjectEventPtr event = NULL;
     int ret = -1;
     char *stateFile = NULL;
     unsigned int build_flags = 0;
@@ -926,11 +957,18 @@ storagePoolCreate(virStoragePoolPtr obj,
         goto cleanup;
     }
 
+    event = virStoragePoolEventLifecycleNew(pool->def->name,
+                                            pool->def->uuid,
+                                            VIR_STORAGE_POOL_EVENT_STARTED,
+                                            0);
+
     pool->active = true;
     ret = 0;
 
  cleanup:
     VIR_FREE(stateFile);
+    if (event)
+        virObjectEventStateQueue(driver->storageEventState, event);
     if (pool)
         virStoragePoolObjUnlock(pool);
     return ret;
@@ -976,6 +1014,7 @@ storagePoolDestroy(virStoragePoolPtr obj)
 {
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
+    virObjectEventPtr event = NULL;
     char *stateFile = NULL;
     int ret = -1;
 
@@ -1024,6 +1063,11 @@ storagePoolDestroy(virStoragePoolPtr obj)
 
     virStoragePoolObjClearVols(pool);
 
+    event = virStoragePoolEventLifecycleNew(pool->def->name,
+                                            pool->def->uuid,
+                                            VIR_STORAGE_POOL_EVENT_STOPPED,
+                                            0);
+
     pool->active = false;
 
     if (pool->configFile == NULL) {
@@ -1038,6 +1082,8 @@ storagePoolDestroy(virStoragePoolPtr obj)
     ret = 0;
 
  cleanup:
+    if (event)
+        virObjectEventStateQueue(driver->storageEventState, event);
     if (pool)
         virStoragePoolObjUnlock(pool);
     storageDriverUnlock();
@@ -1109,6 +1155,7 @@ storagePoolRefresh(virStoragePoolPtr obj,
     virStoragePoolObjPtr pool;
     virStorageBackendPtr backend;
     int ret = -1;
+    virObjectEventPtr event = NULL;
 
     virCheckFlags(0, -1);
 
@@ -1146,6 +1193,10 @@ storagePoolRefresh(virStoragePoolPtr obj,
         if (backend->stopPool)
             backend->stopPool(obj->conn, pool);
 
+        event = virStoragePoolEventLifecycleNew(pool->def->name,
+                                                pool->def->uuid,
+                                                VIR_STORAGE_POOL_EVENT_STOPPED,
+                                                0);
         pool->active = false;
 
         if (pool->configFile == NULL) {
@@ -1154,9 +1205,16 @@ storagePoolRefresh(virStoragePoolPtr obj,
         }
         goto cleanup;
     }
+
+    event = virStoragePoolEventLifecycleNew(pool->def->name,
+                                            pool->def->uuid,
+                                            VIR_STORAGE_POOL_EVENT_REFRESHED,
+                                            0);
     ret = 0;
 
  cleanup:
+    if (event)
+        virObjectEventStateQueue(driver->storageEventState, event);
     if (pool)
         virStoragePoolObjUnlock(pool);
     storageDriverUnlock();
@@ -2266,6 +2324,7 @@ virStorageVolPoolRefreshThread(void *opaque)
     virStorageVolStreamInfoPtr cbdata = opaque;
     virStoragePoolObjPtr pool = NULL;
     virStorageBackendPtr backend;
+    virObjectEventPtr event = NULL;
 
     storageDriverLock();
     if (cbdata->vol_path) {
@@ -2283,7 +2342,14 @@ virStorageVolPoolRefreshThread(void *opaque)
     if (backend->refreshPool(NULL, pool) < 0)
         VIR_DEBUG("Failed to refresh storage pool");
 
+    event = virStoragePoolEventLifecycleNew(pool->def->name,
+                                            pool->def->uuid,
+                                            VIR_STORAGE_POOL_EVENT_REFRESHED,
+                                            0);
+
  cleanup:
+    if (event)
+        virObjectEventStateQueue(driver->storageEventState, event);
     if (pool)
         virStoragePoolObjUnlock(pool);
     storageDriverUnlock();
@@ -2662,6 +2728,48 @@ storageConnectListAllStoragePools(virConnectPtr conn,
     return ret;
 }
 
+static int
+storageConnectStoragePoolEventRegisterAny(virConnectPtr conn,
+                                          virStoragePoolPtr pool,
+                                          int eventID,
+                                          virConnectStoragePoolEventGenericCallback callback,
+                                          void *opaque,
+                                          virFreeCallback freecb)
+{
+    int callbackID = -1;
+
+    if (virConnectStoragePoolEventRegisterAnyEnsureACL(conn) < 0)
+        goto cleanup;
+
+    if (virStoragePoolEventStateRegisterID(conn, driver->storageEventState,
+                                           pool, eventID, callback,
+                                           opaque, freecb, &callbackID) < 0)
+        callbackID = -1;
+ cleanup:
+    return callbackID;
+}
+
+static int
+storageConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
+                                            int callbackID)
+{
+    int ret = -1;
+
+    if (virConnectStoragePoolEventDeregisterAnyEnsureACL(conn) < 0)
+        goto cleanup;
+
+    if (virObjectEventStateDeregisterID(conn,
+                                        driver->storageEventState,
+                                        callbackID) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
 
 static virStorageDriver storageDriver = {
     .name = "storage",
@@ -2670,6 +2778,8 @@ static virStorageDriver storageDriver = {
     .connectNumOfDefinedStoragePools = storageConnectNumOfDefinedStoragePools, /* 0.4.0 */
     .connectListDefinedStoragePools = storageConnectListDefinedStoragePools, /* 0.4.0 */
     .connectListAllStoragePools = storageConnectListAllStoragePools, /* 0.10.2 */
+    .connectStoragePoolEventRegisterAny = storageConnectStoragePoolEventRegisterAny, /* 2.0.0 */
+    .connectStoragePoolEventDeregisterAny = storageConnectStoragePoolEventDeregisterAny, /* 2.0.0 */
     .connectFindStoragePoolSources = storageConnectFindStoragePoolSources, /* 0.4.0 */
     .storagePoolLookupByName = storagePoolLookupByName, /* 0.4.0 */
     .storagePoolLookupByUUID = storagePoolLookupByUUID, /* 0.4.0 */

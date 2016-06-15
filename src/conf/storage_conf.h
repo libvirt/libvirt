@@ -31,6 +31,7 @@
 # include "virthread.h"
 # include "device_conf.h"
 # include "node_device_conf.h"
+# include "object_event.h"
 
 # include <libxml/tree.h>
 
@@ -296,6 +297,9 @@ struct _virStorageDriverState {
     char *autostartDir;
     char *stateDir;
     bool privileged;
+
+    /* Immutable pointer, self-locking APIs */
+    virObjectEventStatePtr storageEventState;
 };
 
 typedef struct _virStoragePoolSourceList virStoragePoolSourceList;
