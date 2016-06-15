@@ -29,6 +29,9 @@
 
 #define VIR_FROM_THIS VIR_FROM_CAPABILITIES
 
+VIR_ENUM_IMPL(virDomainCapsCPUUsable, VIR_DOMCAPS_CPU_USABLE_LAST,
+              "unknown", "yes", "no");
+
 static virClassPtr virDomainCapsClass;
 static virClassPtr virDomainCapsCPUModelsClass;
 
@@ -157,7 +160,9 @@ virDomainCapsCPUModelsCopy(virDomainCapsCPUModelsPtr old)
         return NULL;
 
     for (i = 0; i < old->nmodels; i++) {
-        if (virDomainCapsCPUModelsAdd(cpuModels, old->models[i].name, -1) < 0)
+        if (virDomainCapsCPUModelsAdd(cpuModels,
+                                      old->models[i].name, -1,
+                                      old->models[i].usable) < 0)
             goto error;
     }
 
@@ -184,7 +189,8 @@ virDomainCapsCPUModelsFilter(virDomainCapsCPUModelsPtr old,
             continue;
 
         if (virDomainCapsCPUModelsAdd(cpuModels,
-                                      old->models[i].name, -1) < 0)
+                                      old->models[i].name, -1,
+                                      old->models[i].usable) < 0)
             goto error;
     }
 
@@ -198,13 +204,16 @@ virDomainCapsCPUModelsFilter(virDomainCapsCPUModelsPtr old,
 
 int
 virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
-                               char **name)
+                               char **name,
+                               virDomainCapsCPUUsable usable)
 {
     if (VIR_RESIZE_N(cpuModels->models, cpuModels->nmodels_max,
                      cpuModels->nmodels, 1) < 0)
         return -1;
 
-    VIR_STEAL_PTR(cpuModels->models[cpuModels->nmodels++].name, *name);
+    cpuModels->models[cpuModels->nmodels].usable = usable;
+    VIR_STEAL_PTR(cpuModels->models[cpuModels->nmodels].name, *name);
+    cpuModels->nmodels++;
     return 0;
 }
 
@@ -212,14 +221,15 @@ virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
 int
 virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
                           const char *name,
-                          ssize_t nameLen)
+                          ssize_t nameLen,
+                          virDomainCapsCPUUsable usable)
 {
     char *copy = NULL;
 
     if (VIR_STRNDUP(copy, name, nameLen) < 0)
         goto error;
 
-    if (virDomainCapsCPUModelsAddSteal(cpuModels, &copy) < 0)
+    if (virDomainCapsCPUModelsAddSteal(cpuModels, &copy, usable) < 0)
         goto error;
 
     return 0;
@@ -372,8 +382,10 @@ virDomainCapsCPUCustomFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
 
     for (i = 0; i < custom->nmodels; i++) {
-        virBufferAsprintf(buf, "<model>%s</model>\n",
-                          custom->models[i].name);
+        virDomainCapsCPUModelPtr model = custom->models + i;
+        virBufferAsprintf(buf, "<model usable='%s'>%s</model>\n",
+                          virDomainCapsCPUUsableTypeToString(model->usable),
+                          model->name);
     }
 
     virBufferAdjustIndent(buf, -2);

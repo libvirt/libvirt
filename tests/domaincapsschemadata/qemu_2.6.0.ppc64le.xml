@@ -22,8 +22,8 @@
     <mode name='host-passthrough' supported='yes'/>
     <mode name='host-model' supported='yes'/>
     <mode name='custom' supported='yes'>
-      <model>POWER8</model>
-      <model>POWER7</model>
+      <model usable='unknown'>POWER8</model>
+      <model usable='unknown'>POWER7</model>
     </mode>
   </cpu>
   <devices>

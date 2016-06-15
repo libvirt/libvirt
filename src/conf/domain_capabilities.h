@@ -102,10 +102,20 @@ struct _virDomainCapsFeatureGIC {
     virDomainCapsEnum version; /* Info about virGICVersion */
 };
 
+typedef enum {
+    VIR_DOMCAPS_CPU_USABLE_UNKNOWN,
+    VIR_DOMCAPS_CPU_USABLE_YES,
+    VIR_DOMCAPS_CPU_USABLE_NO,
+
+    VIR_DOMCAPS_CPU_USABLE_LAST
+} virDomainCapsCPUUsable;
+VIR_ENUM_DECL(virDomainCapsCPUUsable);
+
 typedef struct _virDomainCapsCPUModel virDomainCapsCPUModel;
 typedef virDomainCapsCPUModel *virDomainCapsCPUModelPtr;
 struct _virDomainCapsCPUModel {
     char *name;
+    virDomainCapsCPUUsable usable;
 };
 
 typedef struct _virDomainCapsCPUModels virDomainCapsCPUModels;
@@ -159,10 +169,12 @@ virDomainCapsCPUModelsPtr virDomainCapsCPUModelsCopy(virDomainCapsCPUModelsPtr o
 virDomainCapsCPUModelsPtr virDomainCapsCPUModelsFilter(virDomainCapsCPUModelsPtr old,
                                                        const char **models);
 int virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
-                                   char **name);
+                                   char **name,
+                                   virDomainCapsCPUUsable usable);
 int virDomainCapsCPUModelsAdd(virDomainCapsCPUModelsPtr cpuModels,
                               const char *name,
-                              ssize_t nameLen);
+                              ssize_t nameLen,
+                              virDomainCapsCPUUsable usable);
 
 # define VIR_DOMAIN_CAPS_ENUM_SET(capsEnum, ...)            \
     do {                                                    \

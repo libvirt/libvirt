@@ -156,9 +156,9 @@
     &lt;mode name='host-passthrough' supported='yes'/&gt;
     &lt;mode name='host-model' supported='yes'/&gt;
     &lt;mode name='custom' supported='yes'&gt;
-      &lt;model&gt;Broadwell&lt;/model&gt;
-      &lt;model&gt;Broadwell-noTSX&lt;/model&gt;
-      &lt;model&gt;Haswell&lt;/model&gt;
+      &lt;model usable='no'&gt;Broadwell&lt;/model&gt;
+      &lt;model usable='yes'&gt;Broadwell-noTSX&lt;/model&gt;
+      &lt;model usable='no'&gt;Haswell&lt;/model&gt;
       ...
     &lt;/mode&gt;
   &lt;/cpu&gt;
@@ -183,6 +183,10 @@
       <dd>
         The <code>mode</code> element contains a list of supported CPU
         models, each described by a dedicated <code>model</code> element.
+        The <code>usable</code> attribute specifies whether the model can
+        be used on the host. A special value <code>unknown</code> indicates
+        libvirt does not have enough information to provide the usability
+        data.
       </dd>
     </dl>
 

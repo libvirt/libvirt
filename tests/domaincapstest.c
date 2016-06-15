@@ -81,9 +81,12 @@ fillAllCaps(virDomainCapsPtr domCaps)
     cpu->hostPassthrough = true;
     cpu->hostModel = true;
     if (!(cpu->custom = virDomainCapsCPUModelsNew(3)) ||
-        virDomainCapsCPUModelsAdd(cpu->custom, "Model1", -1) < 0 ||
-        virDomainCapsCPUModelsAdd(cpu->custom, "Model2", -1) < 0 ||
-        virDomainCapsCPUModelsAdd(cpu->custom, "Model3", -1) < 0)
+        virDomainCapsCPUModelsAdd(cpu->custom, "Model1", -1,
+                                  VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0 ||
+        virDomainCapsCPUModelsAdd(cpu->custom, "Model2", -1,
+                                  VIR_DOMCAPS_CPU_USABLE_NO) < 0 ||
+        virDomainCapsCPUModelsAdd(cpu->custom, "Model3", -1,
+                                  VIR_DOMCAPS_CPU_USABLE_YES) < 0)
         return -1;
 
     disk->supported = true;

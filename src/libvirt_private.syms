@@ -158,6 +158,8 @@ virDomainCapsCPUModelsAddSteal;
 virDomainCapsCPUModelsCopy;
 virDomainCapsCPUModelsFilter;
 virDomainCapsCPUModelsNew;
+virDomainCapsCPUUsableTypeFromString;
+virDomainCapsCPUUsableTypeToString;
 virDomainCapsEnumClear;
 virDomainCapsEnumSet;
 virDomainCapsFormat;

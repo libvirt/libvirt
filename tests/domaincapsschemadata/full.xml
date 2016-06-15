@@ -23,9 +23,9 @@
     <mode name='host-passthrough' supported='yes'/>
     <mode name='host-model' supported='yes'/>
     <mode name='custom' supported='yes'>
-      <model>Model1</model>
-      <model>Model2</model>
-      <model>Model3</model>
+      <model usable='unknown'>Model1</model>
+      <model usable='no'>Model2</model>
+      <model usable='yes'>Model3</model>
     </mode>
   </cpu>
   <devices>

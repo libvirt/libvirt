@@ -105,6 +105,13 @@
       <ref name='supported'/>
       <zeroOrMore>
         <element name='model'>
+          <attribute name='usable'>
+            <choice>
+              <value>yes</value>
+              <value>no</value>
+              <value>unknown</value>
+            </choice>
+          </attribute>
           <text/>
         </element>
       </zeroOrMore>
