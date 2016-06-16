@@ -857,13 +857,15 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
     }
 
     /* backendtype */
-    virBufferAddLit(&buf, "backendtype=");
-    if (STREQ_NULLABLE(driver, "qemu"))
-        virBufferAddLit(&buf, "qdisk,");
-    else if (STREQ_NULLABLE(driver, "tap"))
-        virBufferAddLit(&buf, "tap,");
-    else if (STREQ_NULLABLE(driver, "phy"))
-        virBufferAddLit(&buf, "phy,");
+    if (driver) {
+        virBufferAddLit(&buf, "backendtype=");
+        if (STREQ(driver, "qemu") || STREQ(driver, "file"))
+            virBufferAddLit(&buf, "qdisk,");
+        else if (STREQ(driver, "tap"))
+            virBufferAddLit(&buf, "tap,");
+        else if (STREQ(driver, "phy"))
+            virBufferAddLit(&buf, "phy,");
+    }
 
     /* devtype */
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
