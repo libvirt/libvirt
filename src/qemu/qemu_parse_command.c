@@ -2626,8 +2626,7 @@ qemuParseCommandLine(virCapsPtr caps,
 
     VIR_FREE(nics);
 
-    if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                              xmlopt) < 0)
+    if (virDomainDefPostParse(def, caps, 0, xmlopt) < 0)
         goto error;
 
     if (cmd->num_args || cmd->num_env) {
