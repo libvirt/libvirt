@@ -490,7 +490,7 @@ lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
                                       char **veths)
 {
     int ret = -1;
-    size_t i, j;
+    size_t i;
     const char *newname;
     virDomainNetDefPtr netDef;
     bool privNet = vmDef->features[VIR_DOMAIN_FEATURE_PRIVNET] ==
@@ -509,53 +509,28 @@ lxcContainerRenameAndEnableInterfaces(virDomainDefPtr vmDef,
 
         VIR_DEBUG("Renaming %s to %s", veths[i], newname);
         if (virNetDevSetName(veths[i], newname) < 0)
-           goto cleanup;
+            goto cleanup;
 
-        for (j = 0; j < netDef->guestIP.nips; j++) {
-            virNetDevIPAddrPtr ip = netDef->guestIP.ips[j];
-            int prefix;
-            char *ipStr = virSocketAddrFormat(&ip->address);
-
-            if ((prefix = virSocketAddrGetIPPrefix(&ip->address,
-                                                   NULL, ip->prefix)) < 0) {
-                ipStr = virSocketAddrFormat(&ip->address);
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to determine prefix for IP address '%s'"),
-                               ipStr);
-                VIR_FREE(ipStr);
-                goto cleanup;
-            }
-            VIR_FREE(ipStr);
-
-            if (virNetDevIPAddrAdd(newname, &ip->address, NULL, prefix) < 0)
-                goto cleanup;
-        }
-
+        /* Only enable this device if there is a reason to do so (either
+         * at least one IP was specified, or link state was set to up in
+         * the config)
+         */
         if (netDef->guestIP.nips ||
             netDef->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP) {
             VIR_DEBUG("Enabling %s", newname);
             if (virNetDevSetOnline(newname, true) < 0)
                 goto cleanup;
-
-            /* Set the routes */
-            for (j = 0; j < netDef->guestIP.nroutes; j++) {
-                virNetDevIPRoutePtr route = netDef->guestIP.routes[j];
-
-                if (virNetDevIPRouteAdd(newname,
-                                        virNetDevIPRouteGetAddress(route),
-                                        virNetDevIPRouteGetPrefix(route),
-                                        virNetDevIPRouteGetGateway(route),
-                                        virNetDevIPRouteGetMetric(route)) < 0) {
-                    goto cleanup;
-                }
-            }
         }
+
+        /* set IP addresses and routes */
+        if (virNetDevIPInfoAddToDev(newname, &netDef->guestIP) < 0)
+            goto cleanup;
     }
 
     /* enable lo device only if there were other net devices */
     if ((veths || privNet) &&
         virNetDevSetOnline("lo", true) < 0)
-       goto cleanup;
+        goto cleanup;
 
     ret = 0;
  cleanup:

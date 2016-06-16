@@ -886,3 +886,63 @@ virNetDevIPInfoClear(virNetDevIPInfoPtr ip)
         virNetDevIPRouteFree(ip->routes[i]);
     VIR_FREE(ip->routes);
 }
+
+
+/**
+ * virNetDevIPInfoAddToDev:
+ * @ifname: name of device to operate on
+ * @ipInfo: list of routes and IP addresses to add to this device
+ *
+ * All IP routes and IP addresses in ipInfo are added to the named device.
+ *
+ * Returns: 0 on success, -1 (and error reported) on failure.
+ */
+int
+virNetDevIPInfoAddToDev(const char *ifname,
+                        virNetDevIPInfo const *ipInfo)
+{
+    int ret = -1;
+    size_t i;
+    char *ipStr = NULL;
+    int prefix;
+
+    /* add all IP addresses */
+    for (i = 0; i < ipInfo->nips; i++) {
+        virNetDevIPAddrPtr ip = ipInfo->ips[i];
+
+        ipStr = virSocketAddrFormat(&ip->address);
+        if ((prefix = virSocketAddrGetIPPrefix(&ip->address,
+                                               NULL, ip->prefix)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to determine prefix for IP address '%s'"),
+                           ipStr);
+            goto cleanup;
+        }
+        if (virNetDevIPAddrAdd(ifname, &ip->address, NULL, prefix) < 0)
+            goto cleanup;
+        VIR_FREE(ipStr);
+    }
+
+    /* add all routes */
+    for (i = 0; i < ipInfo->nroutes; i++) {
+        virNetDevIPRoutePtr route = ipInfo->routes[i];
+
+        ipStr = virSocketAddrFormat(&route->address);
+        if ((prefix = virNetDevIPRouteGetPrefix(route)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to determine prefix for route with destination '%s'"),
+                           ipStr);
+            goto cleanup;
+        }
+        if (virNetDevIPRouteAdd(ifname, &route->address, prefix,
+                                &route->gateway,
+                                virNetDevIPRouteGetMetric(route)) < 0)
+            goto cleanup;
+        VIR_FREE(ipStr);
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(ipStr);
+    return ret;
+}
