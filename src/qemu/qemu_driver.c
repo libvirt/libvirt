@@ -3938,42 +3938,39 @@ processWatchdogEvent(virQEMUDriverPtr driver,
     int ret;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     char *dumpfile = getAutoDumpPath(driver, vm);
+    unsigned int flags = VIR_DUMP_MEMORY_ONLY;
 
     if (!dumpfile)
         goto cleanup;
 
     switch (action) {
     case VIR_DOMAIN_WATCHDOG_ACTION_DUMP:
-        {
-            unsigned int flags = VIR_DUMP_MEMORY_ONLY;
-
-            if (qemuDomainObjBeginAsyncJob(driver, vm,
-                                           QEMU_ASYNC_JOB_DUMP) < 0) {
-                goto cleanup;
-            }
-
-            if (!virDomainObjIsActive(vm)) {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               "%s", _("domain is not running"));
-                goto endjob;
-            }
-
-            flags |= cfg->autoDumpBypassCache ? VIR_DUMP_BYPASS_CACHE: 0;
-            ret = doCoreDump(driver, vm, dumpfile,
-                             getCompressionType(driver), flags,
-                             VIR_DOMAIN_CORE_DUMP_FORMAT_RAW);
-            if (ret < 0)
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               "%s", _("Dump failed"));
-
-            ret = qemuProcessStartCPUs(driver, vm, NULL,
-                                       VIR_DOMAIN_RUNNING_UNPAUSED,
-                                       QEMU_ASYNC_JOB_DUMP);
-
-            if (ret < 0)
-                virReportError(VIR_ERR_OPERATION_FAILED,
-                               "%s", _("Resuming after dump failed"));
+        if (qemuDomainObjBeginAsyncJob(driver, vm,
+                                       QEMU_ASYNC_JOB_DUMP) < 0) {
+            goto cleanup;
         }
+
+        if (!virDomainObjIsActive(vm)) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s", _("domain is not running"));
+            goto endjob;
+        }
+
+        flags |= cfg->autoDumpBypassCache ? VIR_DUMP_BYPASS_CACHE: 0;
+        ret = doCoreDump(driver, vm, dumpfile,
+                         getCompressionType(driver), flags,
+                         VIR_DOMAIN_CORE_DUMP_FORMAT_RAW);
+        if (ret < 0)
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           "%s", _("Dump failed"));
+
+        ret = qemuProcessStartCPUs(driver, vm, NULL,
+                                   VIR_DOMAIN_RUNNING_UNPAUSED,
+                                   QEMU_ASYNC_JOB_DUMP);
+
+        if (ret < 0)
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           "%s", _("Resuming after dump failed"));
         break;
     default:
         goto cleanup;
