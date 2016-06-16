@@ -3902,37 +3902,56 @@ qemuDomainScreenshot(virDomainPtr dom,
     return ret;
 }
 
+static char *
+getAutoDumpPath(virQEMUDriverPtr driver,
+                virDomainObjPtr vm)
+{
+    char *dumpfile = NULL;
+    char *domname = virDomainObjGetShortName(vm);
+    char timestr[100];
+    struct tm time_info;
+    time_t curtime = time(NULL);
+    virQEMUDriverConfigPtr cfg = NULL;
+
+    if (!domname)
+        return NULL;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    localtime_r(&curtime, &time_info);
+    strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
+
+    ignore_value(virAsprintf(&dumpfile, "%s/%s-%s",
+                             cfg->autoDumpPath,
+                             domname,
+                             timestr));
+
+    virObjectUnref(cfg);
+    return domname;
+}
+
 static void processWatchdogEvent(virQEMUDriverPtr driver, virDomainObjPtr vm, int action)
 {
     int ret;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    char *domname = virDomainObjGetShortName(vm);
+    char *dumpfile = getAutoDumpPath(driver, vm);
 
-    if (!domname)
+    if (!dumpfile)
         goto cleanup;
 
     switch (action) {
     case VIR_DOMAIN_WATCHDOG_ACTION_DUMP:
         {
-            char *dumpfile;
             unsigned int flags = VIR_DUMP_MEMORY_ONLY;
-
-            if (virAsprintf(&dumpfile, "%s/%s-%u",
-                            cfg->autoDumpPath,
-                            domname,
-                            (unsigned int)time(NULL)) < 0)
-                goto cleanup;
 
             if (qemuDomainObjBeginAsyncJob(driver, vm,
                                            QEMU_ASYNC_JOB_DUMP) < 0) {
-                VIR_FREE(dumpfile);
                 goto cleanup;
             }
 
             if (!virDomainObjIsActive(vm)) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                "%s", _("domain is not running"));
-                VIR_FREE(dumpfile);
                 goto endjob;
             }
 
@@ -3951,8 +3970,6 @@ static void processWatchdogEvent(virQEMUDriverPtr driver, virDomainObjPtr vm, in
             if (ret < 0)
                 virReportError(VIR_ERR_OPERATION_FAILED,
                                "%s", _("Resuming after dump failed"));
-
-            VIR_FREE(dumpfile);
         }
         break;
     default:
@@ -3963,7 +3980,7 @@ static void processWatchdogEvent(virQEMUDriverPtr driver, virDomainObjPtr vm, in
     qemuDomainObjEndAsyncJob(driver, vm);
 
  cleanup:
-    VIR_FREE(domname);
+    VIR_FREE(dumpfile);
     virObjectUnref(cfg);
 }
 
@@ -3973,23 +3990,10 @@ doCoreDumpToAutoDumpPath(virQEMUDriverPtr driver,
                          unsigned int flags)
 {
     int ret = -1;
-    char *dumpfile = NULL;
-    time_t curtime = time(NULL);
-    char timestr[100];
-    struct tm time_info;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    char *domname = virDomainObjGetShortName(vm);
+    char *dumpfile = getAutoDumpPath(driver, vm);
 
-    if (!domname)
-        goto cleanup;
-
-    localtime_r(&curtime, &time_info);
-    strftime(timestr, sizeof(timestr), "%Y-%m-%d-%H:%M:%S", &time_info);
-
-    if (virAsprintf(&dumpfile, "%s/%s-%s",
-                    cfg->autoDumpPath,
-                    domname,
-                    timestr) < 0)
+    if (!dumpfile)
         goto cleanup;
 
     flags |= cfg->autoDumpBypassCache ? VIR_DUMP_BYPASS_CACHE: 0;
@@ -4001,7 +4005,6 @@ doCoreDumpToAutoDumpPath(virQEMUDriverPtr driver,
                        "%s", _("Dump failed"));
  cleanup:
     VIR_FREE(dumpfile);
-    VIR_FREE(domname);
     virObjectUnref(cfg);
     return ret;
 }
