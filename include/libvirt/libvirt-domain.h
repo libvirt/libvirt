@@ -4097,4 +4097,9 @@ int virDomainRename(virDomainPtr dom,
                     const char *new_name,
                     unsigned int flags);
 
+int virDomainGetGuestVcpus(virDomainPtr domain,
+                           virTypedParameterPtr *params,
+                           unsigned int *nparams,
+                           unsigned int flags);
+
 #endif /* __VIR_LIBVIRT_DOMAIN_H__ */

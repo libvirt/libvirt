@@ -736,6 +736,7 @@ LIBVIRT_2.0.0 {
     global:
         virConnectStoragePoolEventRegisterAny;
         virConnectStoragePoolEventDeregisterAny;
+        virDomainGetGuestVcpus;
 } LIBVIRT_1.3.3;
 
 # .... define new API here using predicted next version number ....

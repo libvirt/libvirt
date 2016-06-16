@@ -11835,3 +11835,59 @@ virDomainInterfaceFree(virDomainInterfacePtr iface)
 
     VIR_FREE(iface);
 }
+
+
+/**
+ * virDomainGetGuestVcpus:
+ * @domain: pointer to domain object
+ * @params: pointer that will be filled with an array of typed parameters
+ * @nparams: pointer filled with number of elements in @params
+ * @flags: currently unused, callers shall pass 0
+ *
+ * Queries the guest agent for state and information regarding vCPUs from
+ * guest's perspective. The reported data depends on the guest agent
+ * implementation.
+ *
+ * Reported fields stored in @params:
+ * 'vcpus': string containing bitmap representing vCPU ids as reported by the
+ *          guest
+ * 'online': string containing bitmap representing online vCPUs as reported
+ *           by the guest agent.
+ * 'offlinable': string containing bitmap representing ids of vCPUs that can be
+ *               offlined
+ *
+ * This API requires the VM to run. The caller is responsible for calling
+ * virTypedParamsFree to free memory returned in @params.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virDomainGetGuestVcpus(virDomainPtr domain,
+                       virTypedParameterPtr *params,
+                       unsigned int *nparams,
+                       unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%p, flags=%x",
+                     params, nparams, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    virCheckNonNullArgGoto(params, error);
+    virCheckNonNullArgGoto(nparams, error);
+
+    if (domain->conn->driver->domainGetGuestVcpus) {
+        int ret;
+        ret = domain->conn->driver->domainGetGuestVcpus(domain, params, nparams,
+                                                        flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}

@@ -250,6 +250,9 @@ const REMOTE_DOMAIN_INTERFACE_MAX = 2048;
 /* Upper limit on number of IP addresses per interface */
 const REMOTE_DOMAIN_IP_ADDR_MAX = 2048;
 
+/* Upper limit on number of guest vcpu information entries */
+const REMOTE_DOMAIN_GUEST_VCPU_PARAMS_MAX = 64;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -3292,6 +3295,16 @@ struct remote_domain_event_callback_device_removal_failed_msg {
     remote_nonnull_string devAlias;
 };
 
+struct remote_domain_get_guest_vcpus_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+struct remote_domain_get_guest_vcpus_ret {
+    remote_typed_param params<REMOTE_DOMAIN_GUEST_VCPU_PARAMS_MAX>; /* alloc@1@unsigned int@2 */
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -5839,5 +5852,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_STORAGE_POOL_EVENT_LIFECYCLE = 370
+    REMOTE_PROC_STORAGE_POOL_EVENT_LIFECYCLE = 370,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_GET_GUEST_VCPUS = 371
 };

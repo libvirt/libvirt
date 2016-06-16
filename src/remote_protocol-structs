@@ -2751,6 +2751,16 @@ struct remote_domain_event_callback_device_removal_failed_msg {
         remote_nonnull_domain      dom;
         remote_nonnull_string      devAlias;
 };
+struct remote_domain_get_guest_vcpus_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
+struct remote_domain_get_guest_vcpus_ret {
+        struct {
+                u_int              params_len;
+                remote_typed_param * params_val;
+        } params;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3122,4 +3132,5 @@ enum remote_procedure {
         REMOTE_PROC_CONNECT_STORAGE_POOL_EVENT_REGISTER_ANY = 368,
         REMOTE_PROC_CONNECT_STORAGE_POOL_EVENT_DEREGISTER_ANY = 369,
         REMOTE_PROC_STORAGE_POOL_EVENT_LIFECYCLE = 370,
+        REMOTE_PROC_DOMAIN_GET_GUEST_VCPUS = 371,
 };
