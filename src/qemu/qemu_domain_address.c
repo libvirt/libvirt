@@ -1628,7 +1628,8 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
 int
 qemuDomainAssignAddresses(virDomainDefPtr def,
                           virQEMUCapsPtr qemuCaps,
-                          virDomainObjPtr obj)
+                          virDomainObjPtr obj,
+                          bool newDomain ATTRIBUTE_UNUSED)
 {
     if (qemuDomainAssignVirtioSerialAddresses(def, obj) < 0)
         return -1;

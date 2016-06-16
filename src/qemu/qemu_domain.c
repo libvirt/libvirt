@@ -2436,12 +2436,13 @@ qemuDomainDefAssignAddresses(virDomainDef *def,
     virQEMUDriverPtr driver = opaque;
     virQEMUCapsPtr qemuCaps = NULL;
     int ret = -1;
+    bool newDomain = parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE;
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
                                             def->emulator)))
         goto cleanup;
 
-    if (qemuDomainAssignAddresses(def, qemuCaps, NULL) < 0)
+    if (qemuDomainAssignAddresses(def, qemuCaps, NULL, newDomain) < 0)
         goto cleanup;
 
     ret = 0;
