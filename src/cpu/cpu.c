@@ -765,13 +765,8 @@ cpuGetModels(virArch arch, char ***models)
 
     VIR_DEBUG("arch=%s", virArchToString(arch));
 
-    driver = cpuGetSubDriver(arch);
-    if (driver == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("cannot find a driver for the architecture %s"),
-                       virArchToString(arch));
+    if (!(driver = cpuGetSubDriver(arch)))
         return -1;
-    }
 
     if (!driver->getModels) {
         if (models)
