@@ -698,7 +698,7 @@ testBackingParse(const void *args)
         goto cleanup;
     }
 
-    if (!STREQ(xml, data->expect)) {
+    if (STRNEQ(xml, data->expect)) {
         fprintf(stderr, "\n backing store string '%s'\n"
                         "expected storage source xml:\n%s\n"
                         "actual storage source xml:\n%s\n",
