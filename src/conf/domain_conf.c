@@ -5101,11 +5101,30 @@ virDomainDeviceCcidAddressParseXML(xmlNodePtr node,
 }
 
 static int
+virDomainDeviceUSBAddressParsePort(char *port)
+{
+    unsigned int p;
+    char *tmp;
+
+    if ((virStrToLong_uip(port, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.')) ||
+        (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.'))) ||
+        (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.'))) ||
+        (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0'))))
+        goto error;
+
+    return 0;
+
+ error:
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("Cannot parse <address> 'port' attribute"));
+    return -1;
+}
+
+static int
 virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
                                   virDomainDeviceUSBAddressPtr addr)
 {
-    char *port, *bus, *tmp;
-    unsigned int p;
+    char *port, *bus;
     int ret = -1;
 
     memset(addr, 0, sizeof(*addr));
@@ -5113,15 +5132,8 @@ virDomainDeviceUSBAddressParseXML(xmlNodePtr node,
     port = virXMLPropString(node, "port");
     bus = virXMLPropString(node, "bus");
 
-    if (port &&
-        ((virStrToLong_uip(port, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.')) ||
-         (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.'))) ||
-         (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.'))) ||
-         (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0'))))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot parse <address> 'port' attribute"));
+    if (port && virDomainDeviceUSBAddressParsePort(port) < 0)
         goto cleanup;
-    }
 
     addr->port = port;
     port = NULL;
