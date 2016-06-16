@@ -3466,6 +3466,24 @@ Undefine the configuration for an inactive I<pool>.
 
 Returns the UUID of the named I<pool>.
 
+=item B<pool-event> {[I<pool>] I<event> [I<--loop>] [I<--timeout>
+I<seconds>] [I<--timestamp>] | I<--list>}
+
+Wait for a class of storage pool events to occur, and print appropriate
+details of events as they happen.  The events can optionally be filtered
+by I<pool>.  Using I<--list> as the only argument will provide a list
+of possible I<event> values known by this client, although the connection
+might not allow registering for all these events.
+
+By default, this command is one-shot, and returns success once an event
+occurs; you can send SIGINT (usually via C<Ctrl-C>) to quit immediately.
+If I<--timeout> is specified, the command gives up waiting for events
+after I<seconds> have elapsed.   With I<--loop>, the command prints all
+events until a timeout or interrupt key.
+
+When I<--timestamp> is used, a human-readable timestamp will be printed
+before the event.
+
 =back
 
 =head1 VOLUME COMMANDS

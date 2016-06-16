@@ -32,6 +32,7 @@
 #include "virfile.h"
 #include "conf/storage_conf.h"
 #include "virstring.h"
+#include "virtime.h"
 
 #define VIRSH_COMMON_OPT_POOL_FULL                            \
     VIRSH_COMMON_OPT_POOL(N_("pool name or uuid"))            \
@@ -1889,6 +1890,183 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+/*
+ * "pool-event" command
+ */
+VIR_ENUM_DECL(virshPoolEvent)
+VIR_ENUM_IMPL(virshPoolEvent,
+              VIR_STORAGE_POOL_EVENT_LAST,
+              N_("Defined"),
+              N_("Undefined"),
+              N_("Started"),
+              N_("Stopped"),
+              N_("Refreshed"))
+
+static const char *
+virshPoolEventToString(int event)
+{
+    const char *str = virshPoolEventTypeToString(event);
+    return str ? _(str) : _("unknown");
+}
+
+struct virshPoolEventData {
+    vshControl *ctl;
+    bool loop;
+    bool timestamp;
+    int count;
+};
+typedef struct virshPoolEventData virshPoolEventData;
+
+VIR_ENUM_DECL(virshPoolEventId)
+VIR_ENUM_IMPL(virshPoolEventId,
+              VIR_STORAGE_POOL_EVENT_ID_LAST,
+              "lifecycle")
+
+static void
+vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                       virStoragePoolPtr pool,
+                       int event,
+                       int detail ATTRIBUTE_UNUSED,
+                       void *opaque)
+{
+    virshPoolEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+
+    if (data->timestamp) {
+        char timestamp[VIR_TIME_STRING_BUFLEN];
+
+        if (virTimeStringNowRaw(timestamp) < 0)
+            timestamp[0] = '\0';
+
+        vshPrint(data->ctl, _("%s: event 'lifecycle' for storage pool %s: %s\n"),
+                 timestamp,
+                 virStoragePoolGetName(pool),
+                 virshPoolEventToString(event));
+    } else {
+        vshPrint(data->ctl, _("event 'lifecycle' for storage pool %s: %s\n"),
+                 virStoragePoolGetName(pool),
+                 virshPoolEventToString(event));
+    }
+
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static const vshCmdInfo info_pool_event[] = {
+    {.name = "help",
+     .data = N_("Storage Pool Events")
+    },
+    {.name = "desc",
+     .data = N_("List event types, or wait for storage pool events to occur")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_pool_event[] = {
+    {.name = "pool",
+     .type = VSH_OT_STRING,
+     .help = N_("filter by storage pool name or uuid")
+    },
+    {.name = "event",
+     .type = VSH_OT_STRING,
+     .help = N_("which event type to wait for")
+    },
+    {.name = "loop",
+     .type = VSH_OT_BOOL,
+     .help = N_("loop until timeout or interrupt, rather than one-shot")
+    },
+    {.name = "timeout",
+     .type = VSH_OT_INT,
+     .help = N_("timeout seconds")
+    },
+    {.name = "list",
+     .type = VSH_OT_BOOL,
+     .help = N_("list valid event types")
+    },
+    {.name = "timestamp",
+     .type = VSH_OT_BOOL,
+     .help = N_("show timestamp for each printed event")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
+{
+    virStoragePoolPtr pool = NULL;
+    bool ret = false;
+    int eventId = -1;
+    int timeout = 0;
+    virshPoolEventData data;
+    const char *eventName = NULL;
+    int event;
+    virshControlPtr priv = ctl->privData;
+
+    if (vshCommandOptBool(cmd, "list")) {
+        size_t i;
+
+        for (i = 0; i < VIR_STORAGE_POOL_EVENT_ID_LAST; i++)
+            vshPrint(ctl, "%s\n", virshPoolEventIdTypeToString(i));
+        return true;
+    }
+
+    if (vshCommandOptStringReq(ctl, cmd, "event", &eventName) < 0)
+        return false;
+    if (!eventName) {
+        vshError(ctl, "%s", _("either --list or event type is required"));
+        return false;
+    }
+    if ((event = virshPoolEventIdTypeFromString(eventName)) < 0) {
+        vshError(ctl, _("unknown event type %s"), eventName);
+        return false;
+    }
+
+    data.ctl = ctl;
+    data.loop = vshCommandOptBool(cmd, "loop");
+    data.timestamp = vshCommandOptBool(cmd, "timestamp");
+    data.count = 0;
+    if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
+        return false;
+
+    if (vshCommandOptBool(cmd, "pool"))
+        pool = virshCommandOptPool(ctl, cmd, "pool", NULL);
+    if (vshEventStart(ctl, timeout) < 0)
+        goto cleanup;
+
+    if ((eventId = virConnectStoragePoolEventRegisterAny(priv->conn, pool, event,
+                                                         VIR_STORAGE_POOL_EVENT_CALLBACK(vshEventLifecyclePrint),
+                                                         &data, NULL)) < 0)
+        goto cleanup;
+    switch (vshEventWait(ctl)) {
+    case VSH_EVENT_INTERRUPT:
+        vshPrint(ctl, "%s", _("event loop interrupted\n"));
+        break;
+    case VSH_EVENT_TIMEOUT:
+        vshPrint(ctl, "%s", _("event loop timed out\n"));
+        break;
+    case VSH_EVENT_DONE:
+        break;
+    default:
+        goto cleanup;
+    }
+    vshPrint(ctl, _("events received: %d\n"), data.count);
+    if (data.count)
+        ret = true;
+
+ cleanup:
+    vshEventCleanup(ctl);
+    if (eventId >= 0 &&
+        virConnectStoragePoolEventDeregisterAny(priv->conn, eventId) < 0)
+        ret = false;
+    if (pool)
+        virStoragePoolFree(pool);
+    return ret;
+}
+
+
 const vshCmdDef storagePoolCmds[] = {
     {.name = "find-storage-pool-sources-as",
      .handler = cmdPoolDiscoverSourcesAs,
@@ -2002,6 +2180,12 @@ const vshCmdDef storagePoolCmds[] = {
      .handler = cmdPoolUuid,
      .opts = opts_pool_uuid,
      .info = info_pool_uuid,
+     .flags = 0
+    },
+    {.name = "pool-event",
+     .handler = cmdPoolEvent,
+     .opts = opts_pool_event,
+     .info = info_pool_event,
      .flags = 0
     },
     {.name = NULL}
