@@ -123,9 +123,8 @@ int virAuthConfigLookup(virAuthConfigPtr auth,
 
     if (!virKeyFileHasGroup(auth->keyfile, authgroup)) {
        VIR_FREE(authgroup);
-       if (virAsprintf(&authgroup, "auth-%s-%s", service, "default") < 0){
+       if (virAsprintf(&authgroup, "auth-%s-%s", service, "default") < 0)
            goto cleanup;
-       }
     }
 
     if (!virKeyFileHasGroup(auth->keyfile, authgroup)) {
