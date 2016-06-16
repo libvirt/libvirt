@@ -3930,7 +3930,10 @@ getAutoDumpPath(virQEMUDriverPtr driver,
     return domname;
 }
 
-static void processWatchdogEvent(virQEMUDriverPtr driver, virDomainObjPtr vm, int action)
+static void
+processWatchdogEvent(virQEMUDriverPtr driver,
+                     virDomainObjPtr vm,
+                     int action)
 {
     int ret;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
