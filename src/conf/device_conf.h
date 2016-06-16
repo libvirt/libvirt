@@ -118,6 +118,8 @@ typedef struct _virDomainDeviceCcidAddress {
     unsigned int slot;
 } virDomainDeviceCcidAddress, *virDomainDeviceCcidAddressPtr;
 
+# define VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH 4
+
 typedef struct _virDomainDeviceUSBAddress {
     unsigned int bus;
     char *port;

@@ -5104,17 +5104,20 @@ static int
 virDomainDeviceUSBAddressParsePort(char *port)
 {
     unsigned int p;
-    char *tmp;
+    char *tmp = port;
+    size_t i;
 
-    if ((virStrToLong_uip(port, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.')) ||
-        (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.'))) ||
-        (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0' && *tmp != '.'))) ||
-        (*tmp == '.' && (virStrToLong_ui(tmp + 1, &tmp, 10, &p) < 0 || (*tmp != '\0'))))
-        goto error;
+    for (i = 0; i < VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH; i++) {
+        if (virStrToLong_uip(tmp, &tmp, 10, &p) < 0)
+            break;
 
-    return 0;
+        if (*tmp == '\0')
+            return 0;
 
- error:
+        if (*tmp == '.')
+            tmp++;
+    }
+
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("Cannot parse <address> 'port' attribute"));
     return -1;
