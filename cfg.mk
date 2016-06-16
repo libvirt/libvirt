@@ -614,8 +614,9 @@ msg_gen_function += xenapiSessionErrorHandler
 # msg_gen_function += vshPrint
 # msg_gen_function += vshError
 
-func_or := $(shell echo $(msg_gen_function)|tr -s ' ' '|')
-func_re := ($(func_or))
+space =
+space +=
+func_re= ($(subst $(space),|,$(msg_gen_function)))
 
 # Look for diagnostics that aren't marked for translation.
 # This won't find any for which error's format string is on a separate line.
