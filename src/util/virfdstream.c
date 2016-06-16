@@ -50,6 +50,8 @@
 VIR_LOG_INIT("fdstream");
 
 /* Tunnelled migration stream support */
+typedef struct virFDStreamData virFDStreamData;
+typedef virFDStreamData *virFDStreamDataPtr;
 struct virFDStreamData {
     int fd;
     int errfd;
@@ -82,7 +84,7 @@ struct virFDStreamData {
 
 static int virFDStreamRemoveCallback(virStreamPtr stream)
 {
-    struct virFDStreamData *fdst = stream->privateData;
+    virFDStreamDataPtr fdst = stream->privateData;
     int ret = -1;
 
     if (!fdst) {
@@ -119,7 +121,7 @@ static int virFDStreamRemoveCallback(virStreamPtr stream)
 
 static int virFDStreamUpdateCallback(virStreamPtr stream, int events)
 {
-    struct virFDStreamData *fdst = stream->privateData;
+    virFDStreamDataPtr fdst = stream->privateData;
     int ret = -1;
 
     if (!fdst) {
@@ -151,7 +153,7 @@ static void virFDStreamEvent(int watch ATTRIBUTE_UNUSED,
                              void *opaque)
 {
     virStreamPtr stream = opaque;
-    struct virFDStreamData *fdst = stream->privateData;
+    virFDStreamDataPtr fdst = stream->privateData;
     virStreamEventCallback cb;
     void *cbopaque;
     virFreeCallback ff;
@@ -200,7 +202,7 @@ virFDStreamAddCallback(virStreamPtr st,
                        void *opaque,
                        virFreeCallback ff)
 {
-    struct virFDStreamData *fdst = st->privateData;
+    virFDStreamDataPtr fdst = st->privateData;
     int ret = -1;
 
     if (!fdst) {
@@ -242,7 +244,7 @@ virFDStreamAddCallback(virStreamPtr st,
 }
 
 static int
-virFDStreamCloseCommand(struct virFDStreamData *fdst, bool streamAbort)
+virFDStreamCloseCommand(virFDStreamDataPtr fdst, bool streamAbort)
 {
     char buf[1024];
     ssize_t len;
@@ -295,7 +297,7 @@ virFDStreamCloseCommand(struct virFDStreamData *fdst, bool streamAbort)
 static int
 virFDStreamCloseInt(virStreamPtr st, bool streamAbort)
 {
-    struct virFDStreamData *fdst;
+    virFDStreamDataPtr fdst;
     virStreamEventCallback cb;
     void *opaque;
     int ret;
@@ -378,7 +380,7 @@ virFDStreamAbort(virStreamPtr st)
 
 static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
 {
-    struct virFDStreamData *fdst = st->privateData;
+    virFDStreamDataPtr fdst = st->privateData;
     int ret;
 
     if (nbytes > INT_MAX) {
@@ -432,7 +434,7 @@ static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
 
 static int virFDStreamRead(virStreamPtr st, char *bytes, size_t nbytes)
 {
-    struct virFDStreamData *fdst = st->privateData;
+    virFDStreamDataPtr fdst = st->privateData;
     int ret;
 
     if (nbytes > INT_MAX) {
@@ -498,7 +500,7 @@ static int virFDStreamOpenInternal(virStreamPtr st,
                                    int errfd,
                                    unsigned long long length)
 {
-    struct virFDStreamData *fdst;
+    virFDStreamDataPtr fdst;
 
     VIR_DEBUG("st=%p fd=%d cmd=%p errfd=%d length=%llu",
               st, fd, cmd, errfd, length);
@@ -754,7 +756,7 @@ int virFDStreamOpenPTY(virStreamPtr st,
                        unsigned long long length,
                        int oflags)
 {
-    struct virFDStreamData *fdst = NULL;
+    virFDStreamDataPtr fdst = NULL;
     struct termios rawattr;
 
     if (virFDStreamOpenFileInternal(st, path,
@@ -817,7 +819,7 @@ int virFDStreamSetInternalCloseCb(virStreamPtr st,
                                   void *opaque,
                                   virFDStreamInternalCloseCbFreeOpaque fcb)
 {
-    struct virFDStreamData *fdst = st->privateData;
+    virFDStreamDataPtr fdst = st->privateData;
 
     virMutexLock(&fdst->lock);
 
