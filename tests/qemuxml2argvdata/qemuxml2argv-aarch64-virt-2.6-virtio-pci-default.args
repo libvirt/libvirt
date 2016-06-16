@@ -22,7 +22,6 @@ QEMU_AUDIO_DRV=none \
 -append 'earlyprintk console=ttyAMA0,115200n8 rw root=/dev/vda rootwait' \
 -dtb /aarch64.dtb \
 -device virtio-serial-device,id=virtio-serial0 \
--usb \
 -drive file=/aarch64.raw,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0 \
 -device virtio-net-device,vlan=0,id=net0,mac=52:54:00:09:a4:37 \

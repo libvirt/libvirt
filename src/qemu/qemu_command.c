@@ -2875,6 +2875,7 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
 
     if (usbcontroller == 0 &&
         !qemuDomainMachineIsQ35(def) &&
+        !qemuDomainMachineIsVirt(def) &&
         !ARCH_IS_S390(def->os.arch))
         virCommandAddArg(cmd, "-usb");
 

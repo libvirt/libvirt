@@ -21,5 +21,4 @@ QEMU_AUDIO_DRV=none \
 -initrd /aarch64.initrd \
 -append 'earlyprintk console=ttyAMA0,115200n8 rw root=/dev/vda rootwait' \
 -dtb /aarch64.dtb \
--usb \
 -device virtio-balloon-device,id=balloon0,deflate-on-oom=on
