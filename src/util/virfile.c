@@ -3793,6 +3793,114 @@ virFileComparePaths(const char *p1, const char *p2)
  cleanup:
     VIR_FREE(res1);
     VIR_FREE(res2);
+
+    return ret;
+}
+
+
+/**
+ * virFileInData:
+ * @fd: file to check
+ * @inData: true if current position in the @fd is in data section
+ * @length: amount of bytes until the end of the current section
+ *
+ * With sparse files not every extent has to be physically stored on
+ * the disk. This results in so called data or hole sections.  This
+ * function checks whether the current position in the file @fd is
+ * in a data section (@inData = 1) or in a hole (@inData = 0). Also,
+ * it sets @length to match the number of bytes remaining until the
+ * end of the current section.
+ *
+ * As a special case, there is an implicit hole at the end of any
+ * file. In this case, the function sets @inData = 0, @length = 0.
+ *
+ * Upon its return, the position in the @fd is left unchanged, i.e.
+ * despite this function lseek()-ing back and forth it always
+ * restores the original position in the file.
+ *
+ * NB, @length is type of long long because it corresponds to off_t
+ * the best.
+ *
+ * Returns 0 on success,
+ *        -1 otherwise.
+ */
+int
+virFileInData(int fd,
+              int *inData,
+              long long *length)
+{
+    int ret = -1;
+    off_t cur, data, hole, end;
+
+    /* Get current position */
+    cur = lseek(fd, 0, SEEK_CUR);
+    if (cur == (off_t) -1) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to get current position in file"));
+        goto cleanup;
+    }
+
+    /* Now try to get data and hole offsets */
+    data = lseek(fd, cur, SEEK_DATA);
+
+    /* There are four options:
+     * 1) data == cur;  @cur is in data
+     * 2) data > cur; @cur is in a hole, next data at @data
+     * 3) data < 0, errno = ENXIO; either @cur is in trailing hole, or @cur is beyond EOF.
+     * 4) data < 0, errno != ENXIO; we learned nothing
+     */
+
+    if (data == (off_t) -1) {
+        /* cases 3 and 4 */
+        if (errno != ENXIO) {
+            virReportSystemError(errno, "%s",
+                                 _("Unable to seek to data"));
+            goto cleanup;
+        }
+
+        *inData = 0;
+        /* There are two situations now. There is always an
+         * implicit hole at EOF. However, there might be a
+         * trailing hole just before EOF too. If that's the case
+         * report it. */
+        if ((end = lseek(fd, 0, SEEK_END)) == (off_t) -1) {
+            virReportSystemError(errno, "%s",
+                                 _("Unable to seek to EOF"));
+            goto cleanup;
+        }
+        *length = end - cur;
+    } else if (data > cur) {
+        /* case 2 */
+        *inData = 0;
+        *length = data - cur;
+    } else {
+        /* case 1 */
+        *inData = 1;
+
+        /* We don't know where does the next hole start. Let's
+         * find out. Here we get the same 4 possibilities as
+         * described above.*/
+        hole = lseek(fd, data, SEEK_HOLE);
+        if (hole == (off_t) -1 || hole == data) {
+            /* cases 1, 3 and 4 */
+            /* Wait a second. The reason why we are here is
+             * because we are in data. But at the same time we
+             * are in a trailing hole? Wut!? Do the best what we
+             * can do here. */
+            virReportSystemError(errno, "%s",
+                                 _("unable to seek to hole"));
+            goto cleanup;
+        } else {
+            /* case 2 */
+            *length = (hole - data);
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    /* At any rate, reposition back to where we started. */
+    if (cur != (off_t) -1)
+        ignore_value(lseek(fd, cur, SEEK_SET));
     return ret;
 }
 

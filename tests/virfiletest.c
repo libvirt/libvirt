@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include <stdlib.h>
+#include <fcntl.h>
 
 #include "testutils.h"
 #include "virfile.h"
@@ -119,6 +120,190 @@ testFileSanitizePath(const void *opaque)
 
 
 static int
+makeSparseFile(const off_t offsets[],
+               const bool startData);
+
+#ifdef __linux__
+/* Create a sparse file. @offsets in KiB. */
+static int
+makeSparseFile(const off_t offsets[],
+               const bool startData)
+{
+    int fd = -1;
+    char path[] = abs_builddir "fileInData.XXXXXX";
+    off_t len = 0;
+    size_t i;
+
+    if ((fd = mkostemp(path,  O_CLOEXEC|O_RDWR)) < 0)
+        goto error;
+
+    if (unlink(path) < 0)
+        goto error;
+
+    for (i = 0; offsets[i] != (off_t) -1; i++)
+        len += offsets[i] * 1024;
+
+    while (len) {
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+        off_t toWrite = sizeof(buf);
+
+        if (toWrite > len)
+            toWrite = len;
+
+        if (safewrite(fd, buf, toWrite) < 0) {
+            fprintf(stderr, "unable to write to %s (errno=%d)\n", path, errno);
+            goto error;
+        }
+
+        len -= toWrite;
+    }
+
+    len = 0;
+    for (i = 0; offsets[i] != (off_t) -1; i++) {
+        bool inData = startData;
+
+        if (i % 2)
+            inData = !inData;
+
+        if (!inData &&
+            fallocate(fd,
+                      FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,
+                      len, offsets[i] * 1024) < 0) {
+            fprintf(stderr, "unable to punch a hole at offset %lld length %lld\n",
+                    (long long) len, (long long) offsets[i]);
+            goto error;
+        }
+
+        len += offsets[i] * 1024;
+    }
+
+    if (lseek(fd, 0, SEEK_SET) == (off_t) -1) {
+        fprintf(stderr, "unable to lseek (errno=%d)\n", errno);
+        goto error;
+    }
+
+    return fd;
+ error:
+    VIR_FORCE_CLOSE(fd);
+    return -1;
+}
+
+#else /* !__linux__ */
+
+static int
+makeSparseFile(const off_t offsets[] ATTRIBUTE_UNUSED,
+               const bool startData ATTRIBUTE_UNUSED)
+{
+    return -1;
+}
+
+#endif /* !__linux__ */
+
+
+#define EXTENT 4
+static bool
+holesSupported(void)
+{
+    off_t offsets[] = {EXTENT, EXTENT, EXTENT, -1};
+    off_t tmp;
+    int fd;
+    bool ret = false;
+
+    if ((fd = makeSparseFile(offsets, true)) < 0)
+        goto cleanup;
+
+    /* The way this works is: there are 4K of data followed by 4K hole followed
+     * by 4K hole again. Check if the filesystem we are running the test suite
+     * on supports holes. */
+    if ((tmp = lseek(fd, 0, SEEK_DATA)) == (off_t) -1)
+        goto cleanup;
+
+    if (tmp != 0)
+        goto cleanup;
+
+    if ((tmp = lseek(fd, tmp, SEEK_HOLE)) == (off_t) -1)
+        goto cleanup;
+
+    if (tmp != EXTENT * 1024)
+        goto cleanup;
+
+    if ((tmp = lseek(fd, tmp, SEEK_DATA)) == (off_t) -1)
+        goto cleanup;
+
+    if (tmp != 2 * EXTENT * 1024)
+        goto cleanup;
+
+    if ((tmp = lseek(fd, tmp, SEEK_HOLE)) == (off_t) -1)
+        goto cleanup;
+
+    if (tmp != 3 * EXTENT * 1024)
+        goto cleanup;
+
+    ret = true;
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+
+struct testFileInData {
+    bool startData;     /* whether the list of offsets starts with data section */
+    off_t *offsets;
+};
+
+
+static int
+testFileInData(const void *opaque)
+{
+    const struct testFileInData *data = opaque;
+    int fd = -1;
+    int ret = -1;
+    size_t i;
+
+    if ((fd = makeSparseFile(data->offsets, data->startData)) < 0)
+        goto cleanup;
+
+    for (i = 0; data->offsets[i] != (off_t) -1; i++) {
+        bool shouldInData = data->startData;
+        int realInData;
+        long long shouldLen;
+        long long realLen;
+
+        if (i % 2)
+            shouldInData = !shouldInData;
+
+        if (virFileInData(fd, &realInData, &realLen) < 0)
+            goto cleanup;
+
+        if (realInData != shouldInData) {
+            fprintf(stderr, "Unexpected data/hole. Expected %s got %s\n",
+                    shouldInData ? "data" : "hole",
+                    realInData ? "data" : "hole");
+            goto cleanup;
+        }
+
+        shouldLen = data->offsets[i] * 1024;
+        if (realLen != shouldLen) {
+            fprintf(stderr, "Unexpected section length. Expected %lld got %lld\n",
+                    shouldLen, realLen);
+            goto cleanup;
+        }
+
+        if (lseek(fd, shouldLen, SEEK_CUR) < 0) {
+            fprintf(stderr, "Unable to seek\n");
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -186,6 +371,24 @@ mymain(void)
     DO_TEST_SANITIZE_PATH_SAME("gluster://bar.baz/fooo//hoo");
     DO_TEST_SANITIZE_PATH_SAME("gluster://bar.baz/fooo///////hoo");
 
+#define DO_TEST_IN_DATA(inData, ...)                                        \
+    do {                                                                    \
+        off_t offsets[] = {__VA_ARGS__, -1};                                \
+        struct testFileInData data = {                                      \
+            .startData = inData, .offsets = offsets,                        \
+        };                                                                  \
+        if (virTestRun(virTestCounterNext(), testFileInData, &data) < 0)    \
+            ret = -1;                                                       \
+    } while (0)
+
+    if (holesSupported()) {
+        DO_TEST_IN_DATA(true, 4, 4, 4);
+        DO_TEST_IN_DATA(false, 4, 4, 4);
+        DO_TEST_IN_DATA(true, 8, 8, 8);
+        DO_TEST_IN_DATA(false, 8, 8, 8);
+        DO_TEST_IN_DATA(true, 8, 16, 32, 64, 128, 256, 512);
+        DO_TEST_IN_DATA(false, 8, 16, 32, 64, 128, 256, 512);
+    }
     return ret != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 

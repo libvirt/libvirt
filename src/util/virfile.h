@@ -348,4 +348,8 @@ int virFileReadValueString(char **value, const char *format, ...)
  ATTRIBUTE_FMT_PRINTF(2, 3);
 
 
+int virFileInData(int fd,
+                  int *inData,
+                  long long *length);
+
 #endif /* __VIR_FILE_H */
