@@ -76,7 +76,11 @@ password=letmein
 
 [credentials-dev]
 username=joe
-password=hello</pre>
+password=hello
+
+[credentials-defgrp]
+username=defuser
+password=defpw</pre>
 
     <p>
       The second set of groups provide mappings of credentials to
@@ -90,7 +94,8 @@ credentials=$CREDENTIALS</pre>
 
     <p>
       For example, following the previous example, here is how to
-      list some machines
+      map some machines. For convenience libvirt supports a default
+      mapping of credentials to machines:
     </p>
 
     <pre>
@@ -106,8 +111,15 @@ credentials=test
 [auth-libvirt-prod1.example.com]
 credentials=prod
 
+[auth-libvirt-default]
+credentials=defgrp
+
 [auth-esx-dev1.example.com]
-credentials=dev</pre>
+credentials=dev
+
+[auth-esx-default]
+credentials=defgrp</pre>
+
 
     <p>
       The following service types are known to libvirt
