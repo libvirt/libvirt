@@ -33,10 +33,6 @@
       <address type='virtio-mmio'/>
     </disk>
     <controller type='pci' index='0' model='pcie-root'/>
-    <controller type='pci' index='1' model='dmi-to-pci-bridge'>
-      <model name='i82801b11-bridge'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
-    </controller>
     <controller type='virtio-serial' index='0'>
       <address type='virtio-mmio'/>
     </controller>
