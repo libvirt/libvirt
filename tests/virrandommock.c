@@ -37,3 +37,43 @@ virRandomBytes(unsigned char *buf,
 
     return 0;
 }
+
+
+#ifdef WITH_GNUTLS
+# include <stdio.h>
+# include <gnutls/gnutls.h>
+
+static int (*real_gnutls_dh_params_generate2)(gnutls_dh_params_t dparams,
+                                              unsigned int bits);
+
+static gnutls_dh_params_t params_cache;
+static unsigned int cachebits;
+
+int
+gnutls_dh_params_generate2(gnutls_dh_params_t dparams,
+                           unsigned int bits)
+{
+    int rc = 0;
+
+    VIR_MOCK_REAL_INIT(gnutls_dh_params_generate2);
+
+    if (!params_cache) {
+        if (gnutls_dh_params_init(&params_cache) < 0) {
+            fprintf(stderr, "Error initializing params cache");
+            abort();
+        }
+        rc = real_gnutls_dh_params_generate2(params_cache, bits);
+
+        if (rc < 0)
+            return rc;
+        cachebits = bits;
+    }
+
+    if (cachebits != bits) {
+        fprintf(stderr, "Requested bits do not match the cached value");
+        abort();
+    }
+
+    return gnutls_dh_params_cpy(dparams, params_cache);
+}
+#endif
