@@ -1604,6 +1604,26 @@ virDomainUSBAddressFindFreePort(virDomainUSBAddressHubPtr hub,
 }
 
 
+size_t
+virDomainUSBAddressCountAllPorts(virDomainDefPtr def)
+{
+    size_t i, ret = 0;
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        virDomainControllerDefPtr cont = def->controllers[i];
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB)
+            ret += virDomainUSBAddressControllerModelToPorts(cont);
+    }
+
+    for (i = 0; i < def->nhubs; i++) {
+        virDomainHubDefPtr hub = def->hubs[i];
+        if (hub->type == VIR_DOMAIN_HUB_TYPE_USB)
+            ret += VIR_DOMAIN_USB_HUB_PORTS;
+    }
+    return ret;
+}
+
+
 /* Try to find a free port on bus @bus.
  *
  * Returns  0 on success

@@ -1680,6 +1680,51 @@ qemuDomainAssignUSBPorts(virDomainUSBAddressSetPtr addrs,
 
 
 static int
+qemuDomainAssignUSBPortsCounter(virDomainDeviceInfoPtr info ATTRIBUTE_UNUSED,
+                                void *opaque)
+{
+    struct qemuAssignUSBIteratorInfo *data = opaque;
+
+    data->count++;
+    return 0;
+}
+
+
+static int
+qemuDomainUSBAddressAddHubs(virDomainDefPtr def)
+{
+    struct qemuAssignUSBIteratorInfo data = { .count = 0 };
+    virDomainHubDefPtr hub = NULL;
+    size_t available_ports;
+    int ret = -1;
+
+    available_ports = virDomainUSBAddressCountAllPorts(def);
+    ignore_value(virDomainUSBDeviceDefForeach(def,
+                                              qemuDomainAssignUSBPortsCounter,
+                                              &data,
+                                              false));
+    VIR_DEBUG("Found %zu USB devices and %zu provided USB ports",
+              data.count, available_ports);
+
+    /* Add one hub if there are more devices than ports
+     * otherwise it's up to the user to specify more hubs/controllers */
+    if (data.count > available_ports) {
+        if (VIR_ALLOC(hub) < 0)
+            return -1;
+        hub->type = VIR_DOMAIN_HUB_TYPE_USB;
+
+        if (VIR_APPEND_ELEMENT(def->hubs, def->nhubs, hub) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(hub);
+    return ret;
+}
+
+
+static int
 qemuDomainAssignUSBAddresses(virDomainDefPtr def,
                              virDomainObjPtr obj)
 {
@@ -1688,6 +1733,9 @@ qemuDomainAssignUSBAddresses(virDomainDefPtr def,
     qemuDomainObjPrivatePtr priv = NULL;
 
     if (!(addrs = virDomainUSBAddressSetCreate()))
+        goto cleanup;
+
+    if (qemuDomainUSBAddressAddHubs(def) < 0)
         goto cleanup;
 
     if (virDomainUSBAddressSetAddControllers(addrs, def) < 0)

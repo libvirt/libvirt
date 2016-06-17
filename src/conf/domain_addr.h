@@ -277,6 +277,8 @@ int
 virDomainUSBAddressSetAddHub(virDomainUSBAddressSetPtr addrs,
                              virDomainHubDefPtr hub)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+size_t
+virDomainUSBAddressCountAllPorts(virDomainDefPtr def);
 void virDomainUSBAddressSetFree(virDomainUSBAddressSetPtr addrs);
 
 int

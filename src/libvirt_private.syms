@@ -108,6 +108,7 @@ virDomainPCIAddressSlotInUse;
 virDomainPCIAddressValidate;
 virDomainPCIControllerModelToConnectType;
 virDomainUSBAddressAssign;
+virDomainUSBAddressCountAllPorts;
 virDomainUSBAddressEnsure;
 virDomainUSBAddressPortFormat;
 virDomainUSBAddressPortFormatBuf;

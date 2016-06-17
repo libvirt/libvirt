@@ -1184,6 +1184,9 @@ mymain(void)
     DO_TEST("usb-hub",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
             QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("usb-hub-autoadd",
+            QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
+            QEMU_CAPS_NODEFCONFIG);
     DO_TEST_PARSE_ERROR("usb-hub-conflict",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
             QEMU_CAPS_NODEFCONFIG);
