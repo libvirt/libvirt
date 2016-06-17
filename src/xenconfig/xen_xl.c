@@ -737,7 +737,7 @@ xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
                 key = nextkey;
             }
 
-            if (!(channel = virDomainChrDefNew()))
+            if (!(channel = virDomainChrDefNew(NULL)))
                 goto cleanup;
 
             if (STRPREFIX(type, "socket")) {

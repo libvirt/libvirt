@@ -703,7 +703,7 @@ lxcCreateConsoles(virDomainDefPtr def, virConfPtr properties)
 
     def->nconsoles = nbttys;
     for (i = 0; i < nbttys; i++) {
-        if (!(console = virDomainChrDefNew()))
+        if (!(console = virDomainChrDefNew(NULL)))
             goto error;
 
         console->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;

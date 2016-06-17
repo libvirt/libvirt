@@ -190,7 +190,7 @@ xenParseSxprChar(const char *value,
     char *tmp;
     virDomainChrDefPtr def;
 
-    if (!(def = virDomainChrDefNew()))
+    if (!(def = virDomainChrDefNew(NULL)))
         return NULL;
 
     prefix = value;

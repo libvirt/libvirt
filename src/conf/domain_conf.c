@@ -2125,6 +2125,8 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
         VIR_FREE(def->seclabels);
     }
 
+    virObjectUnref(def->privateData);
+
     VIR_FREE(def);
 }
 
@@ -10318,7 +10320,7 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
  * default port.
  */
 virDomainChrDefPtr
-virDomainChrDefNew(void)
+virDomainChrDefNew(virDomainXMLOptionPtr xmlopt)
 {
     virDomainChrDefPtr def = NULL;
 
@@ -10326,6 +10328,11 @@ virDomainChrDefNew(void)
         return NULL;
 
     def->target.port = -1;
+
+    if (xmlopt && xmlopt->privateData.chardevNew &&
+        !(def->privateData = xmlopt->privateData.chardevNew()))
+        VIR_FREE(def);
+
     return def;
 }
 
@@ -10373,7 +10380,8 @@ virDomainChrDefNew(void)
  *
  */
 static virDomainChrDefPtr
-virDomainChrDefParseXML(xmlXPathContextPtr ctxt,
+virDomainChrDefParseXML(virDomainXMLOptionPtr xmlopt,
+                        xmlXPathContextPtr ctxt,
                         xmlNodePtr node,
                         virSecurityLabelDefPtr* vmSeclabels,
                         int nvmSeclabels,
@@ -10385,7 +10393,7 @@ virDomainChrDefParseXML(xmlXPathContextPtr ctxt,
     virDomainChrDefPtr def;
     bool seenTarget = false;
 
-    if (!(def = virDomainChrDefNew()))
+    if (!(def = virDomainChrDefNew(xmlopt)))
         return NULL;
 
     type = virXMLPropString(node, "type");
@@ -13563,7 +13571,8 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_CHR:
-        if (!(dev->data.chr = virDomainChrDefParseXML(ctxt,
+        if (!(dev->data.chr = virDomainChrDefParseXML(xmlopt,
+                                                      ctxt,
                                                       node,
                                                       def->seclabels,
                                                       def->nseclabels,
@@ -17182,7 +17191,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(xmlopt,
+                                                         ctxt,
                                                          nodes[i],
                                                          def->seclabels,
                                                          def->nseclabels,
@@ -17209,7 +17219,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(xmlopt,
+                                                         ctxt,
                                                          nodes[i],
                                                          def->seclabels,
                                                          def->nseclabels,
@@ -17238,7 +17249,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(xmlopt,
+                                                         ctxt,
                                                          nodes[i],
                                                          def->seclabels,
                                                          def->nseclabels,
@@ -17257,7 +17269,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        virDomainChrDefPtr chr = virDomainChrDefParseXML(ctxt,
+        virDomainChrDefPtr chr = virDomainChrDefParseXML(xmlopt,
+                                                         ctxt,
                                                          nodes[i],
                                                          def->seclabels,
                                                          def->nseclabels,

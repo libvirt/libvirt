@@ -2189,7 +2189,7 @@ qemuParseCommandLine(virCapsPtr caps,
             if (STRNEQ(val, "none")) {
                 virDomainChrDefPtr chr;
 
-                if (!(chr = virDomainChrDefNew()))
+                if (!(chr = virDomainChrDefNew(NULL)))
                     goto error;
 
                 if (qemuParseCommandLineChr(&chr->source, val) < 0) {
@@ -2208,7 +2208,7 @@ qemuParseCommandLine(virCapsPtr caps,
             if (STRNEQ(val, "none")) {
                 virDomainChrDefPtr chr;
 
-                if (!(chr = virDomainChrDefNew()))
+                if (!(chr = virDomainChrDefNew(NULL)))
                     goto error;
 
                 if (qemuParseCommandLineChr(&chr->source, val) < 0) {

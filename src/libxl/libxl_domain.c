@@ -389,7 +389,7 @@ libxlDomainDefPostParse(virDomainDefPtr def,
     if (def->os.type != VIR_DOMAIN_OSTYPE_HVM && def->nconsoles == 0) {
         virDomainChrDefPtr chrdef;
 
-        if (!(chrdef = virDomainChrDefNew()))
+        if (!(chrdef = virDomainChrDefNew(NULL)))
             return -1;
 
         chrdef->source.type = VIR_DOMAIN_CHR_TYPE_PTY;

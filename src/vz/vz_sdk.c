@@ -1214,7 +1214,7 @@ prlsdkAddSerialInfo(PRL_HANDLE sdkdom,
         ret = PrlVmCfg_GetSerialPort(sdkdom, i, &serialPort);
         prlsdkCheckRetGoto(ret, cleanup);
 
-        if (!(chr = virDomainChrDefNew()))
+        if (!(chr = virDomainChrDefNew(NULL)))
             goto cleanup;
 
         if (prlsdkGetSerialInfo(serialPort, chr))
