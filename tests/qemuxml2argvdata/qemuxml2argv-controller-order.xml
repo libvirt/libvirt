@@ -81,6 +81,7 @@
         <address bus='14' device='6'/>
       </source>
     </hostdev>
+    <hub type='usb'/>
     <memballoon model='virtio'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </memballoon>
