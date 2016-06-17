@@ -64,7 +64,7 @@ static int virLoginShellAllowedUser(virConfPtr conf,
         for (pp = p->list; pp; pp = pp->next) {
             if (pp->type != VIR_CONF_STRING) {
                 virReportSystemError(EINVAL, "%s",
-                                     _("shell must be a list of strings"));
+                                     _("allowed_users must be a list of strings"));
                 goto cleanup;
             } else {
                 /*
