@@ -114,8 +114,9 @@ virCPUDefCopyModel(virCPUDefPtr dst,
     return 0;
 }
 
+
 virCPUDefPtr
-virCPUDefCopy(const virCPUDef *cpu)
+virCPUDefCopyWithoutModel(const virCPUDef *cpu)
 {
     virCPUDefPtr copy;
 
@@ -131,6 +132,18 @@ virCPUDefCopy(const virCPUDef *cpu)
     copy->threads = cpu->threads;
     copy->arch = cpu->arch;
 
+    return copy;
+}
+
+
+virCPUDefPtr
+virCPUDefCopy(const virCPUDef *cpu)
+{
+    virCPUDefPtr copy;
+
+    if (!(copy = virCPUDefCopyWithoutModel(cpu)))
+        return NULL;
+
     if (virCPUDefCopyModel(copy, cpu, false) < 0)
         goto error;
 
@@ -140,6 +153,7 @@ virCPUDefCopy(const virCPUDef *cpu)
     virCPUDefFree(copy);
     return NULL;
 }
+
 
 virCPUDefPtr
 virCPUDefParseXML(xmlNodePtr node,

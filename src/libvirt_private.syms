@@ -66,6 +66,7 @@ virCapabilitiesSetNetPrefix;
 virCPUDefAddFeature;
 virCPUDefCopy;
 virCPUDefCopyModel;
+virCPUDefCopyWithoutModel;
 virCPUDefFormat;
 virCPUDefFormatBuf;
 virCPUDefFree;

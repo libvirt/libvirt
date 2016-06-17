@@ -127,6 +127,9 @@ virCPUDefPtr
 virCPUDefCopy(const virCPUDef *cpu);
 
 virCPUDefPtr
+virCPUDefCopyWithoutModel(const virCPUDef *cpu);
+
+virCPUDefPtr
 virCPUDefParseXML(xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
                   virCPUType mode);
