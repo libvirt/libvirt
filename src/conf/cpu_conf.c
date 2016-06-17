@@ -77,9 +77,6 @@ virCPUDefFree(virCPUDefPtr def)
         return;
 
     virCPUDefFreeModel(def);
-
-    VIR_FREE(def->vendor_id);
-
     VIR_FREE(def);
 }
 
