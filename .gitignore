@@ -43,7 +43,6 @@
 /NEWS
 /aclocal.m4
 /autom4te.cache
-/build-aux
 /build-aux/
 /build/
 /confdefs.h
@@ -197,6 +196,7 @@ stamp-h
 stamp-h.in
 stamp-h1
 tags
+!/build-aux/*.pl
 !/gnulib/lib/Makefile.am
 !/gnulib/tests/Makefile.am
 !/m4/virt-*.m4
