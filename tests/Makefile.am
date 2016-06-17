@@ -368,6 +368,7 @@ libvirtd_test_scripts =		\
 	virsh-read-bufsiz		\
 	virsh-read-non-seekable		\
 	virsh-schedinfo			\
+	virsh-self-test			\
 	virsh-start			\
 	virsh-synopsis			\
 	virsh-undefine			\
