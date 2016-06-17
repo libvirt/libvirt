@@ -1851,7 +1851,7 @@ else
 fi
 AM_CONDITIONAL([WITH_STORAGE_ISCSI], [test "$with_storage_iscsi" = "yes"])
 
-if test "$with_storage_scsi" = "check"; then
+if test "$with_storage_scsi" = "check" || test "$with_storage_scsi" = "yes"; then
    with_storage_scsi=yes
 
    AC_DEFINE_UNQUOTED([WITH_STORAGE_SCSI], 1,
@@ -1859,7 +1859,7 @@ if test "$with_storage_scsi" = "check"; then
 fi
 AM_CONDITIONAL([WITH_STORAGE_SCSI], [test "$with_storage_scsi" = "yes"])
 
-if test "$with_storage_mpath" = "check"; then
+if test "$with_storage_mpath" = "check" || test "$with_storage_mpath" = "yes"; then
    if test "$with_linux" = "yes"; then
       with_storage_mpath=yes
 
