@@ -59,6 +59,7 @@
 
 VIR_LOG_INIT("tests.testutils");
 
+#include "virbitmap.h"
 #include "virfile.h"
 
 static unsigned int testDebug = -1;
@@ -79,8 +80,7 @@ int ntestAllocStack;
 static bool testOOMActive;
 
 static size_t testCounter;
-static size_t testStart;
-static size_t testEnd;
+static virBitmapPtr testBitmap;
 
 char *progname;
 
@@ -169,9 +169,7 @@ virTestRun(const char *title,
 
 
     /* Skip tests if out of range */
-    if ((testStart != 0) &&
-        (testCounter < testStart ||
-         testCounter > testEnd))
+    if (testBitmap && !virBitmapIsBitSet(testBitmap, testCounter))
         return 0;
 
     if (virTestGetVerbose())
@@ -914,29 +912,9 @@ int virTestMain(int argc,
     }
 
     if ((testRange = getenv("VIR_TEST_RANGE")) != NULL) {
-        char *end = NULL;
-        unsigned int iv;
-        if (virStrToLong_ui(testRange, &end, 10, &iv) < 0) {
+        if (virBitmapParseUnlimited(testRange, &testBitmap) < 0) {
             fprintf(stderr, "Cannot parse range %s\n", testRange);
             return EXIT_FAILURE;
-        }
-        testStart = testEnd = iv;
-        if (end && *end) {
-            if (*end != '-') {
-                fprintf(stderr, "Cannot parse range %s\n", testRange);
-                return EXIT_FAILURE;
-            }
-            end++;
-            if (virStrToLong_ui(end, NULL, 10, &iv) < 0) {
-                fprintf(stderr, "Cannot parse range %s\n", testRange);
-                return EXIT_FAILURE;
-            }
-            testEnd = iv;
-
-            if (testEnd < testStart) {
-                fprintf(stderr, "Test range end %zu must be >= %zu\n", testEnd, testStart);
-                return EXIT_FAILURE;
-            }
         }
     }
 
