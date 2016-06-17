@@ -417,10 +417,6 @@ AC_CHECK_LIB([intl],[gettext],[])
 dnl Do we have rpcgen?
 AC_PATH_PROGS([RPCGEN], [rpcgen portable-rpcgen], [no])
 AM_CONDITIONAL([HAVE_RPCGEN], [test "x$ac_cv_path_RPCGEN" != "xno"])
-dnl Is this GLIBC's buggy rpcgen?
-AM_CONDITIONAL([HAVE_GLIBC_RPCGEN],
-	       [test "x$ac_cv_path_RPCGEN" != "xno" &&
-	        $ac_cv_path_RPCGEN -t </dev/null >/dev/null 2>&1])
 
 dnl Miscellaneous external programs.
 AC_PATH_PROG([XMLLINT], [xmllint], [/usr/bin/xmllint])
