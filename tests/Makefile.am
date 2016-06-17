@@ -370,7 +370,6 @@ libvirtd_test_scripts =		\
 	virsh-schedinfo			\
 	virsh-self-test			\
 	virsh-start			\
-	virsh-synopsis			\
 	virsh-undefine			\
 	virsh-uriprecedence		\
 	virsh-vcpupin			\
