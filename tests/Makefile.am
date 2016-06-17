@@ -170,7 +170,6 @@ test_programs = virshtest sockettest \
 	virbitmaptest \
 	vircgrouptest \
 	vircryptotest \
-	virrandomtest \
 	virpcitest \
 	virendiantest \
 	virfiletest \
@@ -1072,10 +1071,6 @@ vircgroupmock_la_LIBADD = $(MOCKLIBS_LIBS)
 vircryptotest_SOURCES = \
 	vircryptotest.c testutils.h testutils.c
 vircryptotest_LDADD = $(LDADDS)
-
-virrandomtest_SOURCES = \
-	virrandomtest.c testutils.h testutils.c
-virrandomtest_LDADD = $(LDADDS)
 
 virhostdevtest_SOURCES = \
 	virhostdevtest.c testutils.h testutils.c
