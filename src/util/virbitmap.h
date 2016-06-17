@@ -94,6 +94,10 @@ virBitmapParseSeparator(const char *str,
                         char terminator,
                         virBitmapPtr *bitmap,
                         size_t bitmapSize);
+int
+virBitmapParseUnlimited(const char *str,
+                        virBitmapPtr *bitmap)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 virBitmapPtr virBitmapNewCopy(virBitmapPtr src) ATTRIBUTE_NONNULL(1);
 

@@ -632,12 +632,19 @@ test12(const void *opaque ATTRIBUTE_UNUSED)
 
     TEST_MAP(151, "100");
 
+    virBitmapFree(map);
+    if (virBitmapParseUnlimited("34,1023", &map) < 0)
+        goto cleanup;
+
+    TEST_MAP(1024, "34,1023");
+
     ret = 0;
 
  cleanup:
     virBitmapFree(map);
     return ret;
 }
+
 #undef TEST_MAP
 
 

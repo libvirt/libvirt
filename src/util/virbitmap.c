@@ -543,6 +543,118 @@ virBitmapParse(const char *str,
 }
 
 /**
+ * virBitmapParseUnlimited:
+ * @str: points to a string representing a human-readable bitmap
+ * @bitmap: a bitmap created from @str
+ *
+ * This function is the counterpart of virBitmapFormat. This function creates
+ * a bitmap, in which bits are set according to the content of @str.
+ *
+ * The bitmap is expanded to accomodate all the bits.
+ *
+ * @str is a comma separated string of fields N, which means a number of bit
+ * to set, and ^N, which means to unset the bit, and N-M for ranges of bits
+ * to set.
+ *
+ * Returns 0 on success, or -1 in case of error.
+ */
+int
+virBitmapParseUnlimited(const char *str,
+                        virBitmapPtr *bitmap)
+{
+    bool neg = false;
+    const char *cur = str;
+    char *tmp;
+    size_t i;
+    int start, last;
+
+    if (!(*bitmap = virBitmapNewEmpty()))
+        return -1;
+
+    if (!str)
+        goto error;
+
+    virSkipSpaces(&cur);
+
+    if (*cur == '\0')
+        goto error;
+
+    while (*cur != 0) {
+        /*
+         * 3 constructs are allowed:
+         *     - N   : a single CPU number
+         *     - N-M : a range of CPU numbers with N < M
+         *     - ^N  : remove a single CPU number from the current set
+         */
+        if (*cur == '^') {
+            cur++;
+            neg = true;
+        }
+
+        if (!c_isdigit(*cur))
+            goto error;
+
+        if (virStrToLong_i(cur, &tmp, 10, &start) < 0)
+            goto error;
+        if (start < 0)
+            goto error;
+
+        cur = tmp;
+
+        virSkipSpaces(&cur);
+
+        if (*cur == ',' || *cur == 0) {
+            if (neg) {
+                if (virBitmapClearBitExpand(*bitmap, start) < 0)
+                    goto error;
+            } else {
+                if (virBitmapSetBitExpand(*bitmap, start) < 0)
+                    goto error;
+            }
+        } else if (*cur == '-') {
+            if (neg)
+                goto error;
+
+            cur++;
+            virSkipSpaces(&cur);
+
+            if (virStrToLong_i(cur, &tmp, 10, &last) < 0)
+                goto error;
+            if (last < start)
+                goto error;
+
+            cur = tmp;
+
+            for (i = start; i <= last; i++) {
+                if (virBitmapSetBitExpand(*bitmap, i) < 0)
+                    goto error;
+            }
+
+            virSkipSpaces(&cur);
+        }
+
+        if (*cur == ',') {
+            cur++;
+            virSkipSpaces(&cur);
+            neg = false;
+        } else if (*cur == 0) {
+            break;
+        } else {
+            goto error;
+        }
+    }
+
+    return 0;
+
+ error:
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("Failed to parse bitmap '%s'"), str);
+    virBitmapFree(*bitmap);
+    *bitmap = NULL;
+    return -1;
+}
+
+/**
  * virBitmapNewCopy:
  * @src: the source bitmap.
  *
