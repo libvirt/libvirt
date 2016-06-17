@@ -1120,29 +1120,30 @@ virGetGroupID(const char *group, gid_t *gid)
 
 /* Compute the list of primary and supplementary groups associated
  * with @uid, and including @gid in the list (unless it is -1),
- * storing a malloc'd result into @list. Return the size of the list
- * on success, or -1 on failure with error reported and errno set. May
- * not be called between fork and exec. */
+ * storing a malloc'd result into @list. If uid is -1 or doesn't exist in the
+ * system database querying of the supplementary groups is skipped.
+ *
+ * Returns the size of the list on success, or -1 on failure with error
+ * reported and errno set. May not be called between fork and exec.
+ * */
 int
 virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
 {
-    int ret = -1;
+    int ret = 0;
     char *user = NULL;
     gid_t primary;
 
     *list = NULL;
-    if (uid == (uid_t)-1)
-        return 0;
 
-    if (virGetUserEnt(uid, &user, &primary, NULL, NULL, false) < 0)
-        return -1;
-
-    ret = mgetgroups(user, primary, list);
-    if (ret < 0) {
-        sa_assert(!*list);
-        virReportSystemError(errno,
-                             _("cannot get group list for '%s'"), user);
-        goto cleanup;
+    /* invalid users have no supplementary groups */
+    if (uid != (uid_t)-1 &&
+        virGetUserEnt(uid, &user, &primary, NULL, NULL, true) >= 0) {
+        if ((ret = mgetgroups(user, primary, list)) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot get group list for '%s'"), user);
+            ret = -1;
+            goto cleanup;
+        }
     }
 
     if (gid != (gid_t)-1) {
