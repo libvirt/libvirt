@@ -900,7 +900,9 @@ I<--interface> returns:
 "net.<num>.tx.drop" - number of transmit packets dropped
 
 I<--perf> returns the statistics of all enabled perf events:
-"perf.cache" - the cache usage in Byte currently used
+"perf.cmt" - the cache usage in Byte currently used
+"perf.mbmt" - total system bandwidth from one level of cache
+"perf.mbml" - bandwidth of memory traffic for a memory controller
 
 I<--block> returns information about disks associated with each
 domain.  Using the I<--backing> flag extends this information to
@@ -2180,9 +2182,16 @@ from different sources can be supported by perf.
 Currently only QEMU/KVM supports this command. The I<--enable> and I<--disable>
 option combined with B<eventSpec> can be used to enabled or disable specific
 performance event. B<eventSpec> is a string list of one or more events
-separated by commas. However, just "cmt" event is supported presently. CMT is a
-PQos (Platform Qos) feature to monitor the usage of cache by applications
-running on the platform.
+separated by commas. Valid event names are "cmt", "mbmt", "mbml".
+CMT is a PQos (Platform Qos) feature to monitor the usage of cache by
+applications running on the platform.
+MBM (Memory Bandwidth Monitoring) provides a way to monitor the Total
+system memory bandwidth between one level of cache and another (mbmt)
+and the amount of data (bytes/s) sent through the memory controller on
+the socket (mbml).
+
+The statistics can be retrieved using the B<domstats> command using the
+I<--perf> flag.
 
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
