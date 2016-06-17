@@ -1866,6 +1866,9 @@ if test "$with_storage_mpath" = "check" || test "$with_storage_mpath" = "yes"; t
       AC_DEFINE_UNQUOTED([WITH_STORAGE_MPATH], 1,
         [whether mpath backend for storage driver is enabled])
    else
+      if test "$with_storage_mpath" = "yes"; then
+        AC_MSG_ERROR([mpath storage is only supported on Linux])
+      fi
       with_storage_mpath=no
    fi
 fi
