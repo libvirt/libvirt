@@ -1222,8 +1222,7 @@ xenParseSxpr(const struct sexpr *root,
         def->mem.cur_balloon = virDomainDefGetMemoryTotal(def);
 
     if (cpus != NULL) {
-        if (virBitmapParse(cpus, 0, &def->cpumask,
-                           VIR_DOMAIN_CPUMASK_LEN) < 0)
+        if (virBitmapParse(cpus, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto error;
 
         if (virBitmapIsAllClear(def->cpumask)) {

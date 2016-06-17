@@ -3097,7 +3097,7 @@ virNetworkLoadState(virNetworkObjListPtr nets,
 
         ctxt->node = node;
         if ((class_id = virXPathString("string(./class_id[1]/@bitmap)", ctxt))) {
-            if (virBitmapParse(class_id, 0, &class_id_map,
+            if (virBitmapParse(class_id, &class_id_map,
                                CLASS_ID_BITMAP_SIZE) < 0) {
                 VIR_FREE(class_id);
                 goto error;

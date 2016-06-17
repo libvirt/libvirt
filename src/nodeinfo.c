@@ -121,7 +121,7 @@ virNodeGetSiblingsListLinux(const char *dir, int cpu_id)
     if (virFileReadAll(path, SYSFS_THREAD_SIBLINGS_LIST_LENGTH_MAX, &buf) < 0)
         goto cleanup;
 
-    if (virBitmapParse(buf, 0, &ret, virNumaGetMaxCPUs()) < 0)
+    if (virBitmapParse(buf, &ret, virNumaGetMaxCPUs()) < 0)
         goto cleanup;
 
  cleanup:

@@ -784,7 +784,7 @@ static int virLXCControllerGetNumadAdvice(virLXCControllerPtr ctrl,
 
         VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
 
-        if (virBitmapParse(nodeset, 0, &nodemask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+        if (virBitmapParse(nodeset, &nodemask, VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto cleanup;
     }
 

@@ -509,7 +509,7 @@ xenParseCPUFeatures(virConfPtr conf, virDomainDefPtr def)
     if (xenConfigGetString(conf, "cpus", &str, NULL) < 0)
         return -1;
 
-    if (str && (virBitmapParse(str, 0, &def->cpumask, 4096) < 0))
+    if (str && (virBitmapParse(str, &def->cpumask, 4096) < 0))
         return -1;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {

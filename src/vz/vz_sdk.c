@@ -1173,7 +1173,7 @@ prlsdkConvertCpuInfo(PRL_HANDLE sdkdom,
             goto cleanup;
         virBitmapSetAll(def->cpumask);
     } else {
-        if (virBitmapParse(buf, 0, &def->cpumask, hostcpus) < 0)
+        if (virBitmapParse(buf, &def->cpumask, hostcpus) < 0)
             goto cleanup;
     }
 

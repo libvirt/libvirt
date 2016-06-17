@@ -4860,7 +4860,7 @@ qemuProcessPrepareDomain(virConnectPtr conn,
 
             VIR_DEBUG("Nodeset returned from numad: %s", nodeset);
 
-            if (virBitmapParse(nodeset, 0, &priv->autoNodeset,
+            if (virBitmapParse(nodeset, &priv->autoNodeset,
                                VIR_DOMAIN_CPUMASK_LEN) < 0)
                 goto cleanup;
 

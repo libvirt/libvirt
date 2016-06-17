@@ -833,7 +833,7 @@ lxcSetCpusetTune(virDomainDefPtr def, virConfPtr properties)
 
     if ((value = virConfGetValue(properties, "lxc.cgroup.cpuset.cpus")) &&
             value->str) {
-        if (virBitmapParse(value->str, 0, &def->cpumask,
+        if (virBitmapParse(value->str, &def->cpumask,
                            VIR_DOMAIN_CPUMASK_LEN) < 0)
             return -1;
 
@@ -842,7 +842,7 @@ lxcSetCpusetTune(virDomainDefPtr def, virConfPtr properties)
 
     if ((value = virConfGetValue(properties, "lxc.cgroup.cpuset.mems")) &&
         value->str) {
-        if (virBitmapParse(value->str, 0, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
+        if (virBitmapParse(value->str, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
             return -1;
         if (virDomainNumatuneSet(def->numa,
                                  def->placement_mode ==

@@ -175,8 +175,7 @@ virDomainNumatuneNodeParseXML(virDomainNumaPtr numa,
                              "in memnode element"));
             goto cleanup;
         }
-        if (virBitmapParse(tmp, 0, &mem_node->nodeset,
-                           VIR_DOMAIN_CPUMASK_LEN) < 0)
+        if (virBitmapParse(tmp, &mem_node->nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto cleanup;
 
         if (virBitmapIsAllClear(mem_node->nodeset)) {
@@ -241,7 +240,7 @@ virDomainNumatuneParseXML(virDomainNumaPtr numa,
 
         tmp = virXMLPropString(node, "nodeset");
         if (tmp) {
-            if (virBitmapParse(tmp, 0, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
+            if (virBitmapParse(tmp, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
                 goto cleanup;
 
             if (virBitmapIsAllClear(nodeset)) {
@@ -748,7 +747,7 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
             goto cleanup;
         }
 
-        if (virBitmapParse(tmp, 0, &def->mem_nodes[cur_cell].cpumask,
+        if (virBitmapParse(tmp, &def->mem_nodes[cur_cell].cpumask,
                            VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto cleanup;
 

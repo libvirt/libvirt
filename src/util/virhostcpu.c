@@ -947,7 +947,7 @@ virHostCPUParseMapLinux(int max_cpuid, const char *path)
     if (virFileReadAll(path, 5 * VIR_HOST_CPU_MASK_LEN, &str) < 0)
         goto error;
 
-    if (virBitmapParse(str, 0, &map, max_cpuid) < 0)
+    if (virBitmapParse(str, &map, max_cpuid) < 0)
         goto error;
 
     VIR_FREE(str);

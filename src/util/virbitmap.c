@@ -522,7 +522,6 @@ virBitmapParseSeparator(const char *str,
 /**
  * virBitmapParse:
  * @str: points to a string representing a human-readable bitmap
- * @terminator: character separating the bitmap to parse
  * @bitmap: a bitmap created from @str
  * @bitmapSize: the upper limit of num of bits in created bitmap
  *
@@ -533,21 +532,14 @@ virBitmapParseSeparator(const char *str,
  * to set, and ^N, which means to unset the bit, and N-M for ranges of bits
  * to set.
  *
- * To allow parsing of bitmaps within larger strings it is possible to set
- * a termination character in the argument @terminator. When the character
- * in @terminator is encountered in @str, the parsing of the bitmap stops.
- * Pass 0 as @terminator if it is not needed. Whitespace characters may not
- * be used as terminators.
- *
  * Returns 0 on success, or -1 in case of error.
  */
 int
 virBitmapParse(const char *str,
-               char terminator,
                virBitmapPtr *bitmap,
                size_t bitmapSize)
 {
-    return virBitmapParseSeparator(str, terminator, bitmap, bitmapSize);
+    return virBitmapParseSeparator(str, '\0', bitmap, bitmapSize);
 }
 
 /**

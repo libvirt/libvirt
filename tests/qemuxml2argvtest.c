@@ -282,7 +282,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     }
     priv = vm->privateData;
 
-    if (virBitmapParse("0-3", '\0', &priv->autoNodeset, 4) < 0)
+    if (virBitmapParse("0-3", &priv->autoNodeset, 4) < 0)
         goto out;
 
     if (!virDomainDefCheckABIStability(vm->def, vm->def)) {

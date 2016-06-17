@@ -9559,7 +9559,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             }
 
         } else if (STREQ(param->field, VIR_DOMAIN_NUMA_NODESET)) {
-            if (virBitmapParse(param->value.s, 0, &nodeset,
+            if (virBitmapParse(param->value.s, &nodeset,
                                VIR_DOMAIN_CPUMASK_LEN) < 0)
                 goto cleanup;
 

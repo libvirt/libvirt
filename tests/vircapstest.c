@@ -104,7 +104,7 @@ test_virCapabilitiesGetCpusForNodemask(const void *data ATTRIBUTE_UNUSED)
     if (!(caps = buildNUMATopology(3)))
         goto error;
 
-    if (virBitmapParse(nodestr, VIR_ARCH_NONE, &nodemask, mask_size) < 0)
+    if (virBitmapParse(nodestr, &nodemask, mask_size) < 0)
         goto error;
 
     if (!(cpumap = virCapabilitiesGetCpusForNodemask(caps, nodemask)))

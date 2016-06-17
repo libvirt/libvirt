@@ -90,7 +90,7 @@ test2(const void *data ATTRIBUTE_UNUSED)
     int ret = -1;
     int size = 1025;
 
-    if (virBitmapParse(bitsString1, 0, &bitmap, size) < 0)
+    if (virBitmapParse(bitsString1, &bitmap, size) < 0)
         goto error;
 
     if (testBit(bitmap, 1, 32, true) < 0)
@@ -218,7 +218,7 @@ test4(const void *data ATTRIBUTE_UNUSED)
 
     /* 2. partial set */
 
-    if (virBitmapParse(bitsString, 0, &bitmap, size) < 0)
+    if (virBitmapParse(bitsString, &bitmap, size) < 0)
         goto error;
     if (!bitmap)
         goto error;
@@ -495,19 +495,19 @@ test9(const void *opaque ATTRIBUTE_UNUSED)
     int ret = -1;
     virBitmapPtr bitmap = NULL;
 
-    if (virBitmapParse("100000000", 0, &bitmap, 20) != -1)
+    if (virBitmapParse("100000000", &bitmap, 20) != -1)
         goto cleanup;
 
     if (bitmap)
         goto cleanup;
 
-    if (virBitmapParse("1-1000000000", 0, &bitmap, 20) != -1)
+    if (virBitmapParse("1-1000000000", &bitmap, 20) != -1)
         goto cleanup;
 
     if (bitmap)
         goto cleanup;
 
-    if (virBitmapParse("1-10^10000000000", 0, &bitmap, 20) != -1)
+    if (virBitmapParse("1-10^10000000000", &bitmap, 20) != -1)
         goto cleanup;
 
     if (bitmap)
@@ -527,9 +527,9 @@ test10(const void *opaque ATTRIBUTE_UNUSED)
     virBitmapPtr b1 = NULL, b2 = NULL, b3 = NULL, b4 = NULL;
 
     if (virBitmapParseSeparator("0-3,5-8,11-15f16", 'f', &b1, 20) < 0 ||
-        virBitmapParse("4,9,10,16-19", 0, &b2, 20) < 0 ||
-        virBitmapParse("15", 0, &b3, 20) < 0 ||
-        virBitmapParse("0,^0", 0, &b4, 20) < 0)
+        virBitmapParse("4,9,10,16-19", &b2, 20) < 0 ||
+        virBitmapParse("15", &b3, 20) < 0 ||
+        virBitmapParse("0,^0", &b4, 20) < 0)
         goto cleanup;
 
     if (!virBitmapIsAllClear(b4))
@@ -567,9 +567,9 @@ test11(const void *opaque)
     virBitmapPtr resmap = NULL;
     int ret = -1;
 
-    if (virBitmapParse(data->a, 0, &amap, 256) < 0 ||
-        virBitmapParse(data->b, 0, &bmap, 256) < 0 ||
-        virBitmapParse(data->res, 0, &resmap, 256) < 0)
+    if (virBitmapParse(data->a, &amap, 256) < 0 ||
+        virBitmapParse(data->b, &bmap, 256) < 0 ||
+        virBitmapParse(data->res, &resmap, 256) < 0)
         goto cleanup;
 
     virBitmapSubtract(amap, bmap);

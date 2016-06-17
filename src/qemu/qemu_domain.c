@@ -1594,7 +1594,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
         goto error;
 
     if ((tmp = virXPathString("string(./numad/@nodeset)", ctxt))) {
-        if (virBitmapParse(tmp, 0, &priv->autoNodeset,
+        if (virBitmapParse(tmp, &priv->autoNodeset,
                            caps->host.nnumaCell_max) < 0)
             goto error;
 

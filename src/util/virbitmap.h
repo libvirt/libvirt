@@ -86,10 +86,9 @@ char *virBitmapString(virBitmapPtr bitmap)
 char *virBitmapFormat(virBitmapPtr bitmap);
 
 int virBitmapParse(const char *str,
-                   char sep,
                    virBitmapPtr *bitmap,
                    size_t bitmapSize)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int
 virBitmapParseSeparator(const char *str,
                         char terminator,

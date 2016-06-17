@@ -13167,7 +13167,7 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
         goto cleanup;
 
     if ((nodemask = virXPathString("string(./nodemask)", ctxt))) {
-        if (virBitmapParse(nodemask, 0, &def->sourceNodes,
+        if (virBitmapParse(nodemask, &def->sourceNodes,
                            VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto cleanup;
 
@@ -14957,7 +14957,7 @@ virDomainVcpuPinDefParseXML(virDomainDefPtr def,
         goto cleanup;
     }
 
-    if (virBitmapParse(tmp, 0, &vcpu->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+    if (virBitmapParse(tmp, &vcpu->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
         goto cleanup;
 
     if (virBitmapIsAllClear(vcpu->cpumask)) {
@@ -15024,7 +15024,7 @@ virDomainIOThreadPinDefParseXML(xmlNodePtr node,
         goto cleanup;
     }
 
-    if (virBitmapParse(tmp, 0, &cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+    if (virBitmapParse(tmp, &cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
         goto cleanup;
 
     if (virBitmapIsAllClear(cpumask)) {
@@ -15069,7 +15069,7 @@ virDomainEmulatorPinDefParseXML(xmlNodePtr node)
         return NULL;
     }
 
-    if (virBitmapParse(tmp, 0, &def, VIR_DOMAIN_CPUMASK_LEN) < 0)
+    if (virBitmapParse(tmp, &def, VIR_DOMAIN_CPUMASK_LEN) < 0)
         goto cleanup;
 
     if (virBitmapIsAllClear(def)) {
@@ -15232,7 +15232,7 @@ virDomainHugepagesParseXML(xmlNodePtr node,
     }
 
     if ((nodeset = virXMLPropString(node, "nodeset"))) {
-        if (virBitmapParse(nodeset, 0, &hugepage->nodemask,
+        if (virBitmapParse(nodeset, &hugepage->nodemask,
                            VIR_DOMAIN_CPUMASK_LEN) < 0)
             goto cleanup;
 
@@ -15362,7 +15362,7 @@ virDomainSchedulerParse(xmlNodePtr node,
         goto error;
     }
 
-    if (virBitmapParse(tmp, 0, &ret, VIR_DOMAIN_CPUMASK_LEN) < 0)
+    if (virBitmapParse(tmp, &ret, VIR_DOMAIN_CPUMASK_LEN) < 0)
         goto error;
 
     if (virBitmapIsAllClear(ret)) {
@@ -15539,8 +15539,7 @@ virDomainVcpuParse(virDomainDefPtr def,
     if (def->placement_mode != VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
         tmp = virXPathString("string(./vcpu[1]/@cpuset)", ctxt);
         if (tmp) {
-            if (virBitmapParse(tmp, 0, &def->cpumask,
-                               VIR_DOMAIN_CPUMASK_LEN) < 0)
+            if (virBitmapParse(tmp, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
                 goto cleanup;
 
             if (virBitmapIsAllClear(def->cpumask)) {

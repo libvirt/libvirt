@@ -6476,7 +6476,7 @@ virshParseCPUList(vshControl *ctl, int *cpumaplen,
             return NULL;
         virBitmapSetAll(map);
     } else {
-        if ((virBitmapParse(cpulist, '\0', &map, 1024) < 0) ||
+        if (virBitmapParse(cpulist, &map, 1024) < 0 ||
             virBitmapIsAllClear(map)) {
             vshError(ctl, _("Invalid cpulist '%s'"), cpulist);
             goto cleanup;
