@@ -1957,7 +1957,7 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
          */
         if (virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 1) < 0 &&
             !virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 1,
-                                      VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE))
+                                       VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE))
             goto cleanup;
     }
 
