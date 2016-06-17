@@ -361,7 +361,6 @@ libvirtd_test_scripts =		\
 	libvirtd-fail			\
 	libvirtd-pool			\
 	virconftest.sh			\
-	virsh-all			\
 	virsh-cpuset			\
 	virsh-define-dev-segfault	\
 	virsh-int-overflow		\
