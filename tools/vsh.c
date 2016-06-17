@@ -2858,7 +2858,7 @@ const vshCmdInfo info_help[] = {
 
 bool
 cmdHelp(vshControl *ctl, const vshCmd *cmd)
- {
+{
     const char *name = NULL;
 
     if (vshCommandOptStringQuiet(ctl, cmd, "command", &name) <= 0) {
