@@ -526,7 +526,7 @@ test10(const void *opaque ATTRIBUTE_UNUSED)
     int ret = -1;
     virBitmapPtr b1 = NULL, b2 = NULL, b3 = NULL, b4 = NULL;
 
-    if (virBitmapParse("0-3,5-8,11-15", 0, &b1, 20) < 0 ||
+    if (virBitmapParseSeparator("0-3,5-8,11-15f16", 'f', &b1, 20) < 0 ||
         virBitmapParse("4,9,10,16-19", 0, &b2, 20) < 0 ||
         virBitmapParse("15", 0, &b3, 20) < 0 ||
         virBitmapParse("0,^0", 0, &b4, 20) < 0)

@@ -400,7 +400,7 @@ char *virBitmapFormat(virBitmapPtr bitmap)
 }
 
 /**
- * virBitmapParse:
+ * virBitmapParseSeparator:
  * @str: points to a string representing a human-readable bitmap
  * @terminator: character separating the bitmap to parse
  * @bitmap: a bitmap created from @str
@@ -422,10 +422,10 @@ char *virBitmapFormat(virBitmapPtr bitmap)
  * Returns 0 on success, or -1 in case of error.
  */
 int
-virBitmapParse(const char *str,
-               char terminator,
-               virBitmapPtr *bitmap,
-               size_t bitmapSize)
+virBitmapParseSeparator(const char *str,
+                        char terminator,
+                        virBitmapPtr *bitmap,
+                        size_t bitmapSize)
 {
     bool neg = false;
     const char *cur = str;
@@ -517,6 +517,37 @@ virBitmapParse(const char *str,
     virBitmapFree(*bitmap);
     *bitmap = NULL;
     return -1;
+}
+
+/**
+ * virBitmapParse:
+ * @str: points to a string representing a human-readable bitmap
+ * @terminator: character separating the bitmap to parse
+ * @bitmap: a bitmap created from @str
+ * @bitmapSize: the upper limit of num of bits in created bitmap
+ *
+ * This function is the counterpart of virBitmapFormat. This function creates
+ * a bitmap, in which bits are set according to the content of @str.
+ *
+ * @str is a comma separated string of fields N, which means a number of bit
+ * to set, and ^N, which means to unset the bit, and N-M for ranges of bits
+ * to set.
+ *
+ * To allow parsing of bitmaps within larger strings it is possible to set
+ * a termination character in the argument @terminator. When the character
+ * in @terminator is encountered in @str, the parsing of the bitmap stops.
+ * Pass 0 as @terminator if it is not needed. Whitespace characters may not
+ * be used as terminators.
+ *
+ * Returns 0 on success, or -1 in case of error.
+ */
+int
+virBitmapParse(const char *str,
+               char terminator,
+               virBitmapPtr *bitmap,
+               size_t bitmapSize)
+{
+    return virBitmapParseSeparator(str, terminator, bitmap, bitmapSize);
 }
 
 /**

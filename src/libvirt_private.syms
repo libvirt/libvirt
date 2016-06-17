@@ -1207,6 +1207,7 @@ virBitmapNextClearBit;
 virBitmapNextSetBit;
 virBitmapOverlaps;
 virBitmapParse;
+virBitmapParseSeparator;
 virBitmapSetAll;
 virBitmapSetBit;
 virBitmapSetBitExpand;
