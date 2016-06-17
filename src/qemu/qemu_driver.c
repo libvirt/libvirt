@@ -7567,7 +7567,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
 
     case VIR_DOMAIN_DEVICE_REDIRDEV:
-        ret = qemuDomainAttachRedirdevDevice(driver, vm,
+        ret = qemuDomainAttachRedirdevDevice(conn, driver, vm,
                                              dev->data.redirdev);
         if (!ret) {
             alias = dev->data.redirdev->info.alias;
@@ -7576,7 +7576,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
 
     case VIR_DOMAIN_DEVICE_CHR:
-        ret = qemuDomainAttachChrDevice(driver, vm,
+        ret = qemuDomainAttachChrDevice(conn, driver, vm,
                                         dev->data.chr);
         if (!ret) {
             alias = dev->data.chr->info.alias;
@@ -7585,7 +7585,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
         break;
 
     case VIR_DOMAIN_DEVICE_RNG:
-        ret = qemuDomainAttachRNGDevice(driver, vm,
+        ret = qemuDomainAttachRNGDevice(conn, driver, vm,
                                         dev->data.rng);
         if (!ret) {
             alias = dev->data.rng->info.alias;

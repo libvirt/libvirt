@@ -118,7 +118,7 @@ testQemuHotplugAttach(virDomainObjPtr vm,
         ret = qemuDomainAttachDeviceDiskLive(NULL, &driver, vm, dev);
         break;
     case VIR_DOMAIN_DEVICE_CHR:
-        ret = qemuDomainAttachChrDevice(&driver, vm, dev->data.chr);
+        ret = qemuDomainAttachChrDevice(NULL, &driver, vm, dev->data.chr);
         break;
     default:
         VIR_TEST_VERBOSE("device type '%s' cannot be attached\n",

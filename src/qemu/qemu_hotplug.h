@@ -43,7 +43,8 @@ int qemuDomainAttachDeviceDiskLive(virConnectPtr conn,
 int qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainNetDefPtr net);
-int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
+int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
+                                   virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainRedirdevDefPtr hostdev);
 int qemuDomainAttachHostDevice(virConnectPtr conn,
@@ -92,13 +93,15 @@ int qemuDomainAttachLease(virQEMUDriverPtr driver,
 int qemuDomainDetachLease(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainLeaseDefPtr lease);
-int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
+int qemuDomainAttachChrDevice(virConnectPtr conn,
+                              virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainChrDefPtr chr);
 int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainChrDefPtr chr);
-int qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
+int qemuDomainAttachRNGDevice(virConnectPtr conn,
+                              virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainRNGDefPtr rng);
 int qemuDomainDetachRNGDevice(virQEMUDriverPtr driver,
