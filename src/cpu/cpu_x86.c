@@ -2643,6 +2643,56 @@ x86GetModels(char ***models)
 }
 
 
+static int
+virCPUx86Translate(virCPUDefPtr cpu,
+                   const char **models,
+                   unsigned int nmodels)
+{
+    virCPUDefPtr translated = NULL;
+    virCPUx86MapPtr map;
+    virCPUx86ModelPtr model = NULL;
+    size_t i;
+    int ret = -1;
+
+    if (!(map = virCPUx86GetMap()))
+        goto cleanup;
+
+    if (!(model = x86ModelFromCPU(cpu, map, -1)))
+        goto cleanup;
+
+    if (model->vendor &&
+        virCPUx86DataAddCPUID(&model->data, &model->vendor->cpuid) < 0)
+        goto cleanup;
+
+    if (x86DataAddSignature(&model->data, model->signature) < 0)
+        goto cleanup;
+
+    if (!(translated = virCPUDefCopyWithoutModel(cpu)))
+        goto cleanup;
+
+    if (VIR_STRDUP(translated->vendor, cpu->vendor) < 0 ||
+        VIR_STRDUP(translated->vendor_id, cpu->vendor_id) < 0)
+        goto cleanup;
+
+    if (x86Decode(translated, &model->data, models, nmodels, NULL, 0) < 0)
+        goto cleanup;
+
+    for (i = 0; i < cpu->nfeatures; i++) {
+        virCPUFeatureDefPtr f = cpu->features + i;
+        if (virCPUDefUpdateFeature(translated, f->name, f->policy) < 0)
+            goto cleanup;
+    }
+
+    virCPUDefStealModel(cpu, translated);
+    ret = 0;
+
+ cleanup:
+    virCPUDefFree(translated);
+    x86ModelFree(model);
+    return ret;
+}
+
+
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
     .arch = archs,
@@ -2663,4 +2713,5 @@ struct cpuArchDriver cpuDriverX86 = {
     .dataFormat = x86CPUDataFormat,
     .dataParse  = x86CPUDataParse,
     .getModels  = x86GetModels,
+    .translate  = virCPUx86Translate,
 };

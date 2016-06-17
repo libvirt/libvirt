@@ -103,6 +103,11 @@ typedef virCPUDataPtr
 typedef int
 (*cpuArchGetModels) (char ***models);
 
+typedef int
+(*virCPUArchTranslate)(virCPUDefPtr cpu,
+                       const char **models,
+                       unsigned int nmodels);
+
 struct cpuArchDriver {
     const char *name;
     const virArch *arch;
@@ -119,6 +124,7 @@ struct cpuArchDriver {
     cpuArchDataFormat   dataFormat;
     cpuArchDataParse    dataParse;
     cpuArchGetModels    getModels;
+    virCPUArchTranslate translate;
 };
 
 
@@ -201,6 +207,14 @@ cpuModelIsAllowed(const char *model,
 
 int
 cpuGetModels(virArch arch, char ***models);
+
+int
+virCPUTranslate(virArch arch,
+                virCPUDefPtr cpu,
+                char **models,
+                unsigned int nmodels)
+    ATTRIBUTE_NONNULL(2);
+
 
 /* cpuDataFormat and cpuDataParse are implemented for unit tests only and
  * have no real-life usage

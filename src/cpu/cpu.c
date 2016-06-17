@@ -809,3 +809,62 @@ cpuGetModels(virArch arch, char ***models)
 
     return driver->getModels(models);
 }
+
+
+/**
+ * virCPUTranslate:
+ *
+ * @arch: CPU architecture
+ * @cpu: CPU definition to be translated
+ * @models: NULL-terminated list of allowed CPU models (NULL if all are allowed)
+ * @nmodels: number of CPU models in @models
+ *
+ * Translates @cpu model (if allowed by @cpu->fallback) to a closest CPU model
+ * from @models list.
+ *
+ * The function does nothing (and returns 0) if @cpu does not have to be
+ * translated.
+ *
+ * Returns -1 on error, 0 on success.
+ */
+int
+virCPUTranslate(virArch arch,
+                virCPUDefPtr cpu,
+                char **models,
+                unsigned int nmodels)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s, cpu=%p, model=%s, models=%p, nmodels=%u",
+              virArchToString(arch), cpu, NULLSTR(cpu->model), models, nmodels);
+
+    if (!(driver = cpuGetSubDriver(arch)))
+        return -1;
+
+    if (cpu->mode == VIR_CPU_MODE_HOST_MODEL ||
+        cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
+        return 0;
+
+    if (cpuModelIsAllowed(cpu->model, (const char **) models, nmodels))
+        return 0;
+
+    if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("CPU model %s is not supported by hypervisor"),
+                       cpu->model);
+        return -1;
+    }
+
+    if (!driver->translate) {
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot translate CPU model %s to a supported model"),
+                       cpu->model);
+        return -1;
+    }
+
+    if (driver->translate(cpu, (const char **) models, nmodels) < 0)
+        return -1;
+
+    VIR_DEBUG("model=%s", NULLSTR(cpu->model));
+    return 0;
+}
