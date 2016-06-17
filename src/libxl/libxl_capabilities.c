@@ -492,6 +492,11 @@ libxlMakeDomainDeviceHostdevCaps(virDomainCapsDeviceHostdevPtr dev)
     VIR_DOMAIN_CAPS_ENUM_SET(dev->subsysType,
                              VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI);
 
+#ifdef LIBXL_HAVE_PVUSB
+    VIR_DOMAIN_CAPS_ENUM_SET(dev->subsysType,
+                             VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB);
+#endif
+
     /* No virDomainHostdevCapsType for libxl */
     virDomainCapsEnumClear(&dev->capsType);
 

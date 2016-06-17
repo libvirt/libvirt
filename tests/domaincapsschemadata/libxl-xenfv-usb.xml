@@ -1,0 +1,69 @@
+<domainCapabilities>
+  <path>/usr/bin/qemu-system-x86_64</path>
+  <domain>xen</domain>
+  <machine>xenfv</machine>
+  <arch>x86_64</arch>
+  <vcpu max='128'/>
+  <os supported='yes'>
+    <loader supported='yes'>
+      <value>/usr/lib/xen/boot/hvmloader</value>
+      <value>/usr/lib/xen/boot/ovmf.bin</value>
+      <enum name='type'>
+        <value>rom</value>
+        <value>pflash</value>
+      </enum>
+      <enum name='readonly'>
+        <value>yes</value>
+      </enum>
+    </loader>
+  </os>
+  <devices>
+    <disk supported='yes'>
+      <enum name='diskDevice'>
+        <value>disk</value>
+        <value>cdrom</value>
+      </enum>
+      <enum name='bus'>
+        <value>ide</value>
+        <value>scsi</value>
+        <value>xen</value>
+      </enum>
+    </disk>
+    <graphics supported='yes'>
+      <enum name='type'>
+        <value>sdl</value>
+        <value>vnc</value>
+        <value>spice</value>
+      </enum>
+    </graphics>
+    <video supported='yes'>
+      <enum name='modelType'>
+        <value>vga</value>
+        <value>cirrus</value>
+        <value>xen</value>
+      </enum>
+    </video>
+    <hostdev supported='yes'>
+      <enum name='mode'>
+        <value>subsystem</value>
+      </enum>
+      <enum name='startupPolicy'>
+        <value>default</value>
+        <value>mandatory</value>
+        <value>requisite</value>
+        <value>optional</value>
+      </enum>
+      <enum name='subsysType'>
+        <value>usb</value>
+        <value>pci</value>
+      </enum>
+      <enum name='capsType'/>
+      <enum name='pciBackend'>
+        <value>xen</value>
+      </enum>
+    </hostdev>
+  </devices>
+  <features>
+    <gic supported='no'/>
+  </features>
+</domainCapabilities>
