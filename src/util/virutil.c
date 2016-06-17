@@ -755,9 +755,10 @@ virGetUserDirectory(void)
 
 #ifdef HAVE_GETPWUID_R
 /* Look up fields from the user database for the given user.  On
- * error, set errno, report the error, and return -1.  */
+ * error, set errno, report the error if not instructed otherwise via @quiet,
+ * and return -1.  */
 static int
-virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir, char **shell)
+virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir, char **shell, bool quiet)
 {
     char *strbuf;
     struct passwd pwbuf;
@@ -792,12 +793,19 @@ virGetUserEnt(uid_t uid, char **name, gid_t *group, char **dir, char **shell)
         if (VIR_RESIZE_N(strbuf, strbuflen, strbuflen, strbuflen) < 0)
             goto cleanup;
     }
+
     if (rc != 0) {
+        if (quiet)
+            goto cleanup;
+
         virReportSystemError(rc,
                              _("Failed to find user record for uid '%u'"),
                              (unsigned int) uid);
         goto cleanup;
     } else if (pw == NULL) {
+        if (quiet)
+            goto cleanup;
+
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Failed to find user record for uid '%u'"),
                        (unsigned int) uid);
@@ -882,7 +890,7 @@ char *
 virGetUserDirectoryByUID(uid_t uid)
 {
     char *ret;
-    virGetUserEnt(uid, NULL, NULL, &ret, NULL);
+    virGetUserEnt(uid, NULL, NULL, &ret, NULL, false);
     return ret;
 }
 
@@ -890,7 +898,7 @@ virGetUserDirectoryByUID(uid_t uid)
 char *virGetUserShell(uid_t uid)
 {
     char *ret;
-    virGetUserEnt(uid, NULL, NULL, NULL, &ret);
+    virGetUserEnt(uid, NULL, NULL, NULL, &ret, false);
     return ret;
 }
 
@@ -940,7 +948,7 @@ char *virGetUserRuntimeDirectory(void)
 char *virGetUserName(uid_t uid)
 {
     char *ret;
-    virGetUserEnt(uid, &ret, NULL, NULL, NULL);
+    virGetUserEnt(uid, &ret, NULL, NULL, NULL, false);
     return ret;
 }
 
@@ -1126,7 +1134,7 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
     if (uid == (uid_t)-1)
         return 0;
 
-    if (virGetUserEnt(uid, &user, &primary, NULL, NULL) < 0)
+    if (virGetUserEnt(uid, &user, &primary, NULL, NULL, false) < 0)
         return -1;
 
     ret = mgetgroups(user, primary, list);
