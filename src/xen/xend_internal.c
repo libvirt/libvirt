@@ -1049,9 +1049,10 @@ sexpr_to_xend_topology(const struct sexpr *root, virCapsPtr caps)
             if (!(cpuset = virBitmapNew(numCpus)))
                 goto error;
         } else {
-            nb_cpus = virBitmapParse(cur, 'n', &cpuset, numCpus);
-            if (nb_cpus < 0)
+            if (virBitmapParse(cur, 'n', &cpuset, numCpus) < 0)
                 goto error;
+
+            nb_cpus = virBitmapCountBits(cpuset);
         }
 
         if (VIR_ALLOC_N(cpuInfo, numCpus) < 0) {

@@ -419,7 +419,7 @@ char *virBitmapFormat(virBitmapPtr bitmap)
  * Pass 0 as @terminator if it is not needed. Whitespace characters may not
  * be used as terminators.
  *
- * Returns the number of bits set in @bitmap, or -1 in case of error.
+ * Returns 0 on success, or -1 in case of error.
  */
 int
 virBitmapParse(const char *str,
@@ -509,7 +509,7 @@ virBitmapParse(const char *str,
         }
     }
 
-    return virBitmapCountBits(*bitmap);
+    return 0;
 
  error:
     virReportError(VIR_ERR_INVALID_ARG,
