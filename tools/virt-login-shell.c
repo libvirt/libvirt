@@ -47,7 +47,8 @@ static const char *conf_file = SYSCONFDIR "/libvirt/virt-login-shell.conf";
 
 static int virLoginShellAllowedUser(virConfPtr conf,
                                     const char *name,
-                                    gid_t *groups)
+                                    gid_t *groups,
+                                    size_t ngroups)
 {
     virConfValuePtr p;
     int ret = -1;
@@ -74,7 +75,7 @@ static int virLoginShellAllowedUser(virConfPtr conf,
                     ptr = &pp->str[1];
                     if (!*ptr)
                         continue;
-                    for (i = 0; groups[i]; i++) {
+                    for (i = 0; i < ngroups; i++) {
                         if (!(gname = virGetGroupName(groups[i])))
                             continue;
                         if (fnmatch(ptr, gname, 0) == 0) {
@@ -306,7 +307,7 @@ main(int argc, char **argv)
     if ((ngroups = virGetGroupList(uid, gid, &groups)) < 0)
         goto cleanup;
 
-    if (virLoginShellAllowedUser(conf, name, groups) < 0)
+    if (virLoginShellAllowedUser(conf, name, groups, ngroups) < 0)
         goto cleanup;
 
     if (virLoginShellGetShellArgv(conf, &shargv, &shargvlen) < 0)
