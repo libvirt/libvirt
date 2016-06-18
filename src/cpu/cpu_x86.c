@@ -1019,20 +1019,27 @@ x86ModelFromCPU(const virCPUDef *cpu,
     virCPUx86ModelPtr model = NULL;
     size_t i;
 
+    /* host CPU only contains required features; requesting other features
+     * just returns an empty model
+     */
+    if (cpu->type == VIR_CPU_TYPE_HOST &&
+        policy != VIR_CPU_FEATURE_REQUIRE)
+        return x86ModelNew();
+
     if (policy == VIR_CPU_FEATURE_REQUIRE) {
         if (!(model = x86ModelFind(map, cpu->model))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown CPU model %s"), cpu->model);
-            goto error;
+            return NULL;
         }
 
-        if (!(model = x86ModelCopy(model)))
-            goto error;
-    } else if (!(model = x86ModelNew())) {
-        goto error;
-    } else if (cpu->type == VIR_CPU_TYPE_HOST) {
-        return model;
+        model = x86ModelCopy(model);
+    } else {
+        model = x86ModelNew();
     }
+
+    if (!model)
+        return NULL;
 
     for (i = 0; i < cpu->nfeatures; i++) {
         virCPUx86FeaturePtr feature;
