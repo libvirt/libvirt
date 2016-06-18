@@ -1011,6 +1011,15 @@ x86ModelFind(virCPUx86MapPtr map,
 }
 
 
+/*
+ * Computes CPU model data from a CPU definition associated with features
+ * matching @policy. If @policy equals -1, the computed model will describe
+ * all CPU features, i.e., it will contain:
+ *
+ *      features from model
+ *      + required and forced features
+ *      - disabled and forbidden features
+ */
 static virCPUx86ModelPtr
 x86ModelFromCPU(const virCPUDef *cpu,
                 virCPUx86MapPtr map,
@@ -1023,10 +1032,11 @@ x86ModelFromCPU(const virCPUDef *cpu,
      * just returns an empty model
      */
     if (cpu->type == VIR_CPU_TYPE_HOST &&
-        policy != VIR_CPU_FEATURE_REQUIRE)
+        policy != VIR_CPU_FEATURE_REQUIRE &&
+        policy != -1)
         return x86ModelNew();
 
-    if (policy == VIR_CPU_FEATURE_REQUIRE) {
+    if (policy == VIR_CPU_FEATURE_REQUIRE || policy == -1) {
         if (!(model = x86ModelFind(map, cpu->model))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown CPU model %s"), cpu->model);
@@ -1043,9 +1053,15 @@ x86ModelFromCPU(const virCPUDef *cpu,
 
     for (i = 0; i < cpu->nfeatures; i++) {
         virCPUx86FeaturePtr feature;
+        virCPUFeaturePolicy fpol;
 
-        if (cpu->type == VIR_CPU_TYPE_GUEST
-            && cpu->features[i].policy != policy)
+        if (cpu->features[i].policy == -1)
+            fpol = VIR_CPU_FEATURE_REQUIRE;
+        else
+            fpol = cpu->features[i].policy;
+
+        if ((policy == -1 && fpol == VIR_CPU_FEATURE_OPTIONAL) ||
+            (policy != -1 && fpol != policy))
             continue;
 
         if (!(feature = x86FeatureFind(map, cpu->features[i].name))) {
@@ -1054,8 +1070,27 @@ x86ModelFromCPU(const virCPUDef *cpu,
             goto error;
         }
 
-        if (x86DataAdd(&model->data, &feature->data))
+        if (policy == -1) {
+            switch (fpol) {
+            case VIR_CPU_FEATURE_FORCE:
+            case VIR_CPU_FEATURE_REQUIRE:
+                if (x86DataAdd(&model->data, &feature->data) < 0)
+                    goto error;
+                break;
+
+            case VIR_CPU_FEATURE_DISABLE:
+            case VIR_CPU_FEATURE_FORBID:
+                x86DataSubtract(&model->data, &feature->data);
+                break;
+
+            /* coverity[dead_error_condition] */
+            case VIR_CPU_FEATURE_OPTIONAL:
+            case VIR_CPU_FEATURE_LAST:
+                break;
+            }
+        } else if (x86DataAdd(&model->data, &feature->data) < 0) {
             goto error;
+        }
     }
 
     return model;
