@@ -862,6 +862,25 @@ elsif ($mode eq "server") {
                     $single_ret_var = $2;
                     $single_ret_by_ref = 0;
                     $single_ret_check = " == NULL";
+                } elsif ($ret_member =~ m/^remote_typed_param (\S+)<(\S+)>;\s*\/\*\s*alloc@(\d+)@([^@]+)@(\d+)\s*\*\//) {
+                    push(@vars_list, "virTypedParameterPtr $1 = NULL");
+                    push(@vars_list, "$4 $1_len = 0");
+
+                    $single_ret_by_ref = 1;
+                    $single_ret_var = undef;
+
+                    splice(@args_list, int($3), 0, "&$1");
+                    splice(@args_list, int($5), 0, "&$1_len");
+
+                    push(@ret_list, "if (virTypedParamsSerialize($1, $1_len,\n" .
+                                    "                                (virTypedParameterRemotePtr *) &ret->$1.$1_val,\n" .
+                                    "                                &ret->$1.$1_len,\n" .
+                                    "                                VIR_TYPED_PARAM_STRING_OKAY) < 0)\n" .
+                                    "        goto cleanup;\n");
+
+                    push(@free_list, "    virTypedParamsFree($1, $1_len);");
+                    push(@free_list_on_error, "virTypedParamsRemoteFree((virTypedParameterRemotePtr) ret->params.params_val,\n" .
+                                              "                                 ret->params.params_len);\n");
                 } elsif ($ret_member =~ m/^(\/)?\*/) {
                     # ignore comments
                 } else {
@@ -1422,6 +1441,7 @@ elsif ($mode eq "client") {
         my $modern_ret_as_list = 0;
         my $modern_ret_struct_name = "undefined";
         my $modern_ret_var_type = "undefined";
+        my @custom_error_cleanup = ();
 
         if ($rettype ne "void" and
             scalar(@{$call->{ret_members}}) > 1) {
@@ -1519,6 +1539,23 @@ elsif ($mode eq "client") {
                         $single_ret_var = "vir${type_name}Ptr rv = NULL";
                         $single_ret_type = "vir${type_name}Ptr";
                     }
+                } elsif ($ret_member =~ m/^remote_typed_param (\S+)<(\S+)>;\s*\/\*\s*alloc@(\d+)@([^@]+)@(\d+)\s*\*\//) {
+                    # handle self allocating arrays of typed parameters
+                    splice(@args_list, int($3), 0, ("virTypedParameterPtr *$1"));
+                    splice(@args_list, int($5), 0, ("$4 *n$1"));
+                    push(@vars_list, "virTypedParameterPtr ret_params = NULL");
+                    push(@vars_list, "int ret_nparams = 0");
+                    # virTypedParamsDeserialize allocates the array if @params is null
+                    push(@ret_list2, "if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.$1.$1_val,\n" .
+                                     "                                  ret.$1.$1_len,\n" .
+                                     "                                  $2,\n" .
+                                     "                                  &ret_params,\n" .
+                                     "                                  &ret_nparams) < 0)\n" .
+                                     "        goto cleanup;\n");
+                    push(@ret_list2, "*$1 = ret_params;");
+                    push(@ret_list2, "*n$1 = ret_nparams;");
+                    push(@custom_error_cleanup, "virTypedParamsFree(ret_params, ret_nparams);\n");
+                    $single_ret_cleanup = 1;
                 } elsif ($ret_member =~ m/^remote_typed_param (\S+)<(\S+)>;\s*\/\*\s*insert@(\d+)\s*\*\//) {
                     splice(@args_list, int($3), 0, ("virTypedParameterPtr $1"));
                     push(@ret_list2, "if (virTypedParamsDeserialize((virTypedParameterRemotePtr) ret.$1.$1_val,\n" .
@@ -1530,7 +1567,7 @@ elsif ($mode eq "client") {
                     $single_ret_cleanup = 1;
                 } elsif ($ret_member =~ m/^remote_typed_param (\S+)<\S+>;/) {
                     # error out on unannotated arrays
-                    die "remote_typed_param array without insert@<offset> annotation: $ret_member";
+                    die "remote_typed_param array without insert@... or alloc@... annotation: $ret_member";
                 } elsif ($ret_member =~ m/^int (\S+);/) {
                     my $arg_name = $1;
 
@@ -1876,6 +1913,12 @@ elsif ($mode eq "client") {
         if ($single_ret_as_list or $single_ret_cleanup or $modern_ret_as_list) {
             print "\n";
             print "cleanup:\n";
+            if (@custom_error_cleanup) {
+                print "    if (rv != 0) {\n";
+                print "        ";
+                print join("\n        ", @custom_error_cleanup);
+                print "    }\n";
+            }
             if ($modern_ret_as_list) {
                 print "    if (tmp_results) {\n";
                 print "        for (i = 0; i < ret.$single_ret_list_name.${single_ret_list_name}_len; i++)\n";

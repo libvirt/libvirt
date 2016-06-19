@@ -414,6 +414,11 @@ struct remote_domain_disk_error {
  * insert@<offset> comment to indicate the offset in the parameter list of
  * the function to be called.
  *
+ * For cases where the API allocates memory and fills the arguments (mostly
+ * typed parameters) a similar comment indicates the type and offset
+ * of the variable to be filled with the count of returned elements.
+ * alloc@<offset>@unsigned int@<count offset>
+ *
  * Dynamic opaque and remote_nonnull_string arrays can be annotated with an
  * optional typecast */
 
