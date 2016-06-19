@@ -1305,7 +1305,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     char *charAlias = NULL;
     char *devstr = NULL;
 
-    if (qemuAssignDeviceRedirdevAlias(vm->def, redirdev, -1) < 0)
+    if (qemuAssignDeviceRedirdevAlias(def, redirdev, -1) < 0)
         goto cleanup;
 
     if (virAsprintf(&charAlias, "char%s", redirdev->info.alias) < 0)
@@ -1314,7 +1314,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, priv->qemuCaps)))
         goto cleanup;
 
-    if (VIR_REALLOC_N(vm->def->redirdevs, vm->def->nredirdevs+1) < 0)
+    if (VIR_REALLOC_N(def->redirdevs, def->nredirdevs+1) < 0)
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -1335,7 +1335,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto audit;
 
-    vm->def->redirdevs[vm->def->nredirdevs++] = redirdev;
+    def->redirdevs[def->nredirdevs++] = redirdev;
     ret = 0;
  audit:
     virDomainAuditRedirdev(vm, redirdev, "attach", ret == 0);
@@ -1514,7 +1514,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     if (rc == 1)
         need_release = true;
 
-    if (qemuBuildChrDeviceStr(&devstr, vm->def, chr, priv->qemuCaps) < 0)
+    if (qemuBuildChrDeviceStr(&devstr, vmdef, chr, priv->qemuCaps) < 0)
         goto cleanup;
 
     if (virAsprintf(&charAlias, "char%s", chr->info.alias) < 0)
@@ -1533,13 +1533,13 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto audit;
 
-    qemuDomainChrInsertPreAlloced(vm->def, chr);
+    qemuDomainChrInsertPreAlloced(vmdef, chr);
     ret = 0;
  audit:
     virDomainAuditChardev(vm, NULL, chr, "attach", ret == 0);
  cleanup:
     if (ret < 0 && virDomainObjIsActive(vm))
-        qemuDomainChrInsertPreAllocCleanup(vm->def, chr);
+        qemuDomainChrInsertPreAllocCleanup(vmdef, chr);
     if (ret < 0 && need_release)
         qemuDomainReleaseDeviceAddress(vm, &chr->info, NULL);
     VIR_FREE(charAlias);
@@ -4066,7 +4066,7 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
 
     sa_assert(tmpChr->info.alias);
 
-    if (qemuBuildChrDeviceStr(&devstr, vm->def, chr, priv->qemuCaps) < 0)
+    if (qemuBuildChrDeviceStr(&devstr, vmdef, chr, priv->qemuCaps) < 0)
         return ret;
 
     qemuDomainMarkDeviceForRemoval(vm, &tmpChr->info);
