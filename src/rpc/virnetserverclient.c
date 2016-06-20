@@ -903,7 +903,7 @@ void virNetServerClientSetDispatcher(virNetServerClientPtr client,
 }
 
 
-const char *virNetServerClientLocalAddrString(virNetServerClientPtr client)
+const char *virNetServerClientLocalAddrStringSASL(virNetServerClientPtr client)
 {
     if (!client->sock)
         return NULL;
@@ -911,7 +911,7 @@ const char *virNetServerClientLocalAddrString(virNetServerClientPtr client)
 }
 
 
-const char *virNetServerClientRemoteAddrString(virNetServerClientPtr client)
+const char *virNetServerClientRemoteAddrStringSASL(virNetServerClientPtr client)
 {
     if (!client->sock)
         return NULL;

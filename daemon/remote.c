@@ -3028,8 +3028,8 @@ remoteDispatchAuthSaslInit(virNetServerPtr server ATTRIBUTE_UNUSED,
 
     sasl = virNetSASLSessionNewServer(saslCtxt,
                                       "libvirt",
-                                      virNetServerClientLocalAddrString(client),
-                                      virNetServerClientRemoteAddrString(client));
+                                      virNetServerClientLocalAddrStringSASL(client),
+                                      virNetServerClientRemoteAddrStringSASL(client));
     if (!sasl)
         goto authfail;
 

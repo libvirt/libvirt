@@ -138,8 +138,8 @@ bool virNetServerClientCheckKeepAlive(virNetServerClientPtr client,
                                       virNetMessagePtr msg);
 int virNetServerClientStartKeepAlive(virNetServerClientPtr client);
 
-const char *virNetServerClientLocalAddrString(virNetServerClientPtr client);
-const char *virNetServerClientRemoteAddrString(virNetServerClientPtr client);
+const char *virNetServerClientLocalAddrStringSASL(virNetServerClientPtr client);
+const char *virNetServerClientRemoteAddrStringSASL(virNetServerClientPtr client);
 const char *virNetServerClientRemoteAddrStringURI(virNetServerClientPtr client);
 
 int virNetServerClientSendMessage(virNetServerClientPtr client,
