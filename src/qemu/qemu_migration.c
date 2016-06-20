@@ -3455,8 +3455,7 @@ qemuMigrationSetCompression(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, job) < 0)
         return -1;
 
-    if ((params->level_set || params->threads_set || params->dthreads_set) &&
-        qemuMonitorSetMigrationCompression(priv->mon, params) < 0)
+    if (qemuMonitorSetMigrationCompression(priv->mon, params) < 0)
         goto cleanup;
 
     if (compression->xbzrle_cache_set &&

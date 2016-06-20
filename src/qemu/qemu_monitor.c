@@ -2177,6 +2177,11 @@ qemuMonitorSetMigrationCompression(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR_JSON(mon);
 
+    if (!compress->level_set &&
+        !compress->threads_set &&
+        !compress->dthreads_set)
+        return 0;
+
     return qemuMonitorJSONSetMigrationCompression(mon, compress);
 }
 
