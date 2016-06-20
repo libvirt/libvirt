@@ -19839,6 +19839,88 @@ qemuDomainGetGuestVcpus(virDomainPtr dom,
 }
 
 
+static int
+qemuDomainSetGuestVcpus(virDomainPtr dom,
+                        const char *cpumap,
+                        int state,
+                        unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    virBitmapPtr map = NULL;
+    qemuAgentCPUInfoPtr info = NULL;
+    int ninfo = 0;
+    size_t i;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (state != 0 && state != 1) {
+        virReportInvalidArg(state, "%s", _("unsupported state value"));
+        return -1;
+    }
+
+    if (virBitmapParse(cpumap, &map, QEMU_GUEST_VCPU_MAX_ID) < 0)
+        goto cleanup;
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainSetGuestVcpusEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!qemuDomainAgentAvailable(vm, true))
+        goto endjob;
+
+    qemuDomainObjEnterAgent(vm);
+    ninfo = qemuAgentGetVCPUs(qemuDomainGetAgent(vm), &info);
+    qemuDomainObjExitAgent(vm);
+
+    if (ninfo < 0)
+        goto endjob;
+
+    for (i = 0; i < ninfo; i++) {
+        if (!virBitmapIsBitSet(map, info[i].id))
+            continue;
+
+        if (!state && !info[i].offlinable) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("vCPU '%u' is not offlinable"), info[i].id);
+            goto endjob;
+        }
+
+        info[i].online = !!state;
+        info[i].modified = true;
+
+        ignore_value(virBitmapClearBit(map, info[i].id));
+    }
+
+    if (!virBitmapIsAllClear(map)) {
+        char *tmp = virBitmapFormat(map);
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("guest is missing vCPUs '%s'"), NULLSTR(tmp));
+        VIR_FREE(tmp);
+        goto endjob;
+    }
+
+    qemuDomainObjEnterAgent(vm);
+    ret = qemuAgentSetVCPUs(qemuDomainGetAgent(vm), info, ninfo);
+    qemuDomainObjExitAgent(vm);
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    VIR_FREE(info);
+    virBitmapFree(map);
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectOpen = qemuConnectOpen, /* 0.2.0 */
@@ -20051,6 +20133,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainRename = qemuDomainRename, /* 1.2.19 */
     .domainMigrateStartPostCopy = qemuDomainMigrateStartPostCopy, /* 1.3.3 */
     .domainGetGuestVcpus = qemuDomainGetGuestVcpus, /* 2.0.0 */
+    .domainSetGuestVcpus = qemuDomainSetGuestVcpus, /* 2.0.0 */
 };
 
 
