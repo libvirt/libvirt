@@ -406,7 +406,7 @@ int virFileLock(int fd, bool shared, off_t start, off_t len, bool waitForLock)
  * NB the lock will also be released if any open file descriptor
  * pointing to the same file as @fd is closed
  *
- * Returns 0 on succcess, or -errno on error
+ * Returns 0 on success, or -errno on error
  */
 int virFileUnlock(int fd, off_t start, off_t len)
 {
