@@ -6762,6 +6762,93 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     return ret;
 }
 
+
+/*
+ * "guestvcpus" command
+ */
+static const vshCmdInfo info_guestvcpus[] = {
+    {.name = "help",
+     .data = N_("query or modify state of vcpu in the guest (via agent)")
+    },
+    {.name = "desc",
+     .data = N_("Use the guest agent to query or set cpu state from guest's "
+                "point of view")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_guestvcpus[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    {.name = "cpulist",
+     .type = VSH_OT_STRING,
+     .help = N_("list of cpus to enable or disable")
+    },
+    {.name = "enable",
+     .type = VSH_OT_BOOL,
+     .help = N_("enable cpus specified by cpulist")
+    },
+    {.name = "disable",
+     .type = VSH_OT_BOOL,
+     .help = N_("disable cpus specified by cpulist")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdGuestvcpus(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    bool enable = vshCommandOptBool(cmd, "enable");
+    bool disable = vshCommandOptBool(cmd, "disable");
+    virTypedParameterPtr params = NULL;
+    unsigned int nparams = 0;
+    const char *cpulist = NULL;
+    int state = 0;
+    size_t i;
+    bool ret = false;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(enable, disable);
+    VSH_REQUIRE_OPTION("enable", "cpulist");
+    VSH_REQUIRE_OPTION("disable", "cpulist");
+
+    if (vshCommandOptStringReq(ctl, cmd, "cpulist", &cpulist))
+        return false;
+
+    if (cpulist && !(enable | disable)) {
+        vshError(ctl, _("One of options --enable or --disable is required by "
+                        "option --cpulist"));
+        return false;
+    }
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (enable)
+        state = 1;
+
+    if (cpulist) {
+        if (virDomainSetGuestVcpus(dom, cpulist, state, 0) < 0)
+            goto cleanup;
+    } else {
+        if (virDomainGetGuestVcpus(dom, &params, &nparams, 0) < 0)
+            goto cleanup;
+
+        for (i = 0; i < nparams; i++) {
+            char *str = vshGetTypedParamValue(ctl, &params[i]);
+            vshPrint(ctl, "%-15s: %s\n", params[i].field, str);
+            VIR_FREE(str);
+        }
+    }
+
+    ret = true;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    virDomainFree(dom);
+    return ret;
+}
+
+
 /*
  * "iothreadinfo" command
  */
@@ -13600,6 +13687,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdVNCDisplay,
      .opts = opts_vncdisplay,
      .info = info_vncdisplay,
+     .flags = 0
+    },
+    {.name = "guestvcpus",
+     .handler = cmdGuestvcpus,
+     .opts = opts_guestvcpus,
+     .info = info_guestvcpus,
      .flags = 0
     },
     {.name = NULL}

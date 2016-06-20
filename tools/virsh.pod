@@ -2501,6 +2501,16 @@ Both I<--live> and I<--config> flags may be given if I<cpulist> is present,
 but I<--current> is exclusive.
 If no flag is specified, behavior is different depending on hypervisor.
 
+=item B<guestvcpus> I<domain> [[I<--enable>] | [I<--disable>]] [I<cpulist>]
+
+Query or change state of vCPUs from guest's point of view using the guest agent.
+When invoked without I<cpulist> the guest is queried for available guest vCPUs,
+their state and possibility to be offlined.
+
+If I<cpulist> is provided then one of I<--enable> or I<--disable> must be
+provided too. The desired operation is then executed on the domain.
+
+See B<vcpupin> for information on I<cpulist>.
 
 =item B<vncdisplay> I<domain>
 
