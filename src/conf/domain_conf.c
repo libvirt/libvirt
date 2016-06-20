@@ -11136,20 +11136,20 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
     /* parse the <listen> subelements for graphics types that support it */
     nListens = virXPathNodeSet("./listen", ctxt, &listenNodes);
     if (nListens < 0)
-        goto error;
+        goto cleanup;
 
     if (nListens > 0) {
         size_t i;
 
         if (VIR_ALLOC_N(def->listens, nListens) < 0)
-            goto error;
+            goto cleanup;
 
         for (i = 0; i < nListens; i++) {
             if (virDomainGraphicsListenDefParseXML(&def->listens[i], def,
                                                    listenNodes[i],
                                                    i == 0 ? node : NULL,
                                                    flags) < 0)
-                goto error;
+                goto cleanup;
 
             def->nListens++;
         }
@@ -11177,7 +11177,7 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
      * <graphics/> element. */
     if (def->nListens == 0) {
         if (VIR_APPEND_ELEMENT(def->listens, def->nListens, newListen) < 0)
-            goto error;
+            goto cleanup;
     } else {
         virDomainGraphicsListenDefPtr glisten = &def->listens[0];
 
@@ -11195,7 +11195,7 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
     }
 
     ret = 0;
- error:
+ cleanup:
     virDomainGraphicsListenDefClear(&newListen);
     VIR_FREE(listenNodes);
     VIR_FREE(socketPath);
