@@ -243,7 +243,7 @@ int virNetServerAddClient(virNetServerPtr srv,
     if (srv->nclients >= srv->nclients_max) {
         virReportError(VIR_ERR_RPC,
                        _("Too many active clients (%zu), dropping connection from %s"),
-                       srv->nclients_max, virNetServerClientRemoteAddrString(client));
+                       srv->nclients_max, virNetServerClientRemoteAddrStringURI(client));
         goto error;
     }
 

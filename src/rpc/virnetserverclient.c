@@ -918,6 +918,12 @@ const char *virNetServerClientRemoteAddrString(virNetServerClientPtr client)
     return virNetSocketRemoteAddrString(client->sock);
 }
 
+const char *virNetServerClientRemoteAddrStringURI(virNetServerClientPtr client)
+{
+    if (!client->sock)
+        return NULL;
+    return virNetSocketRemoteAddrStringURI(client->sock);
+}
 
 void virNetServerClientDispose(void *obj)
 {
@@ -1608,7 +1614,7 @@ virNetServerClientGetInfo(virNetServerClientPtr client,
     virObjectLock(client);
     *readonly = client->readonly;
 
-    if (!(*sock_addr = virNetServerClientRemoteAddrString(client))) {
+    if (!(*sock_addr = virNetServerClientRemoteAddrStringURI(client))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("No network socket associated with client"));
         goto cleanup;

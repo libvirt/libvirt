@@ -145,6 +145,7 @@ virNetServerClientNew;
 virNetServerClientNewPostExecRestart;
 virNetServerClientPreExecRestart;
 virNetServerClientRemoteAddrString;
+virNetServerClientRemoteAddrStringURI;
 virNetServerClientRemoveFilter;
 virNetServerClientSendMessage;
 virNetServerClientSetAuth;

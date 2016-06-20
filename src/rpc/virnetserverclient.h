@@ -140,6 +140,7 @@ int virNetServerClientStartKeepAlive(virNetServerClientPtr client);
 
 const char *virNetServerClientLocalAddrString(virNetServerClientPtr client);
 const char *virNetServerClientRemoteAddrString(virNetServerClientPtr client);
+const char *virNetServerClientRemoteAddrStringURI(virNetServerClientPtr client);
 
 int virNetServerClientSendMessage(virNetServerClientPtr client,
                                   virNetMessagePtr msg);
