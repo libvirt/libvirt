@@ -453,16 +453,6 @@ char *_vshStrdup(vshControl *ctl, const char *s, const char *filename,
                  int line);
 # define vshStrdup(_ctl, _s)    _vshStrdup(_ctl, _s, __FILE__, __LINE__)
 
-/* Poison the raw allocating identifiers in favor of our vsh variants.  */
-# undef malloc
-# undef calloc
-# undef realloc
-# undef strdup
-# define malloc use_vshMalloc_instead_of_malloc
-# define calloc use_vshCalloc_instead_of_calloc
-# define realloc use_vshRealloc_instead_of_realloc
-# define strdup use_vshStrdup_instead_of_strdup
-
 /* Macros to help dealing with mutually exclusive options. */
 
 /* VSH_EXCLUSIVE_OPTIONS_EXPR:

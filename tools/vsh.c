@@ -71,9 +71,6 @@
 const vshCmdGrp *cmdGroups;
 const vshCmdDef *cmdSet;
 
-/* Bypass header poison */
-#undef strdup
-
 
 /* simple handler for oom conditions */
 static void
@@ -163,9 +160,6 @@ _vshStrdup(vshControl *ctl, const char *s, const char *filename, int line)
              filename, line, (unsigned long)strlen(s));
     exit(EXIT_FAILURE);
 }
-
-/* Poison the raw allocating identifiers in favor of our vsh variants.  */
-#define strdup use_vshStrdup_instead_of_strdup
 
 int
 vshNameSorter(const void *a, const void *b)
