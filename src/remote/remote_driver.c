@@ -3809,8 +3809,6 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
     sasl_callback_t *saslcb = NULL;
     int ret = -1;
     const char *mechlist;
-    char *localAddr = NULL;
-    char *remoteAddr = NULL;
     virNetSASLContextPtr saslCtxt;
     virNetSASLSessionPtr sasl = NULL;
     struct remoteAuthInteractState state;
@@ -3828,9 +3826,6 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
     } else {
         saslcb = NULL;
     }
-
-    localAddr = virNetClientLocalAddrFormatSASL(priv->client);
-    remoteAddr = virNetClientRemoteAddrFormatSASL(priv->client);
 
     /* Setup a handle for being a client */
     if (!(sasl = virNetSASLSessionNewClient(saslCtxt,
@@ -4019,8 +4014,6 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
 
  cleanup:
     VIR_FREE(serverin);
-    VIR_FREE(localAddr);
-    VIR_FREE(remoteAddr);
 
     remoteAuthInteractStateClear(&state, true);
     VIR_FREE(saslcb);

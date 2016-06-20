@@ -150,8 +150,6 @@ bool virNetSocketHasPendingData(virNetSocketPtr sock);
 
 const char *virNetSocketLocalAddrString(virNetSocketPtr sock);
 const char *virNetSocketRemoteAddrString(virNetSocketPtr sock);
-char *virNetSocketLocalAddrFormatSASL(virNetSocketPtr sock);
-char *virNetSocketRemoteAddrFormatSASL(virNetSocketPtr sock);
 
 int virNetSocketListen(virNetSocketPtr sock, int backlog);
 int virNetSocketAccept(virNetSocketPtr sock,
