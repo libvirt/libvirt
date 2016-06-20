@@ -122,6 +122,8 @@ VIR_LOG_INIT("qemu.qemu_driver");
 #define QEMU_SCHED_MIN_QUOTA               1000LL
 #define QEMU_SCHED_MAX_QUOTA  18446744073709551LL
 
+#define QEMU_GUEST_VCPU_MAX_ID 4096
+
 #if HAVE_LINUX_KVM_H
 # include <linux/kvm.h>
 #endif
@@ -19724,6 +19726,119 @@ static int qemuDomainRename(virDomainPtr dom,
     return ret;
 }
 
+
+static int
+qemuDomainGetGuestVcpusParams(virTypedParameterPtr *params,
+                              unsigned int *nparams,
+                              qemuAgentCPUInfoPtr info,
+                              int ninfo)
+{
+    virTypedParameterPtr par = NULL;
+    int npar = 0;
+    int maxpar = 0;
+    virBitmapPtr vcpus = NULL;
+    virBitmapPtr online = NULL;
+    virBitmapPtr offlinable = NULL;
+    char *tmp = NULL;
+    size_t i;
+    int ret = -1;
+
+    if (!(vcpus = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID)) ||
+        !(online = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID)) ||
+        !(offlinable = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID)))
+        goto cleanup;
+
+    for (i = 0; i < ninfo; i++) {
+        if (virBitmapSetBit(vcpus, info[i].id) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("vcpu id '%u' reported by guest agent is out of "
+                             "range"), info[i].id);
+            goto cleanup;
+        }
+
+        if (info[i].online)
+            ignore_value(virBitmapSetBit(online, info[i].id));
+
+        if (info[i].offlinable)
+            ignore_value(virBitmapSetBit(offlinable, info[i].id));
+    }
+
+#define ADD_BITMAP(name)                                                       \
+    if (!(tmp = virBitmapFormat(name)))                                        \
+        goto cleanup;                                                          \
+    if (virTypedParamsAddString(&par, &npar, &maxpar, #name, tmp) < 0)         \
+        goto cleanup;                                                          \
+    VIR_FREE(tmp)
+
+    ADD_BITMAP(vcpus);
+    ADD_BITMAP(online);
+    ADD_BITMAP(offlinable);
+
+#undef ADD_BITMAP
+
+    *params = par;
+    *nparams = npar;
+    par = NULL;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(tmp);
+    virBitmapFree(vcpus);
+    virBitmapFree(online);
+    virBitmapFree(offlinable);
+    virTypedParamsFree(par, npar);
+    return ret;
+}
+
+
+static int
+qemuDomainGetGuestVcpus(virDomainPtr dom,
+                        virTypedParameterPtr *params,
+                        unsigned int *nparams,
+                        unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    qemuAgentCPUInfoPtr info = NULL;
+    int ninfo = 0;
+    int ret = -1;
+
+    virCheckFlags(0, ret);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainGetGuestVcpusEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!qemuDomainAgentAvailable(vm, true))
+        goto endjob;
+
+    qemuDomainObjEnterAgent(vm);
+    ninfo = qemuAgentGetVCPUs(qemuDomainGetAgent(vm), &info);
+    qemuDomainObjExitAgent(vm);
+
+    if (ninfo < 0)
+        goto endjob;
+
+    if (qemuDomainGetGuestVcpusParams(params, nparams, info, ninfo) < 0)
+        goto endjob;
+
+    ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    VIR_FREE(info);
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectOpen = qemuConnectOpen, /* 0.2.0 */
@@ -19935,6 +20050,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainSetUserPassword = qemuDomainSetUserPassword, /* 1.2.16 */
     .domainRename = qemuDomainRename, /* 1.2.19 */
     .domainMigrateStartPostCopy = qemuDomainMigrateStartPostCopy, /* 1.3.3 */
+    .domainGetGuestVcpus = qemuDomainGetGuestVcpus, /* 2.0.0 */
 };
 
 
