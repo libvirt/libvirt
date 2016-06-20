@@ -588,7 +588,7 @@ vzDomObjAlloc(void)
     if (VIR_ALLOC(pdom) < 0)
         return NULL;
 
-    if (virCondInit(&pdom->jobCond) < 0)
+    if (virCondInit(&pdom->job.cond) < 0)
         goto error;
 
     pdom->stats = PRL_INVALID_HANDLE;
@@ -611,7 +611,7 @@ vzDomObjFree(void* p)
 
     PrlHandle_Free(pdom->sdkdom);
     PrlHandle_Free(pdom->stats);
-    virCondDestroy(&pdom->jobCond);
+    virCondDestroy(&pdom->job.cond);
     VIR_FREE(pdom);
 };
 
@@ -628,12 +628,19 @@ vzDomainObjBeginJob(virDomainObjPtr dom)
         return -1;
     then = now + VZ_JOB_WAIT_TIME;
 
-    while (pdom->job) {
-        if (virCondWaitUntil(&pdom->jobCond, &dom->parent.lock, then) < 0)
+    while (pdom->job.active) {
+        if (virCondWaitUntil(&pdom->job.cond, &dom->parent.lock, then) < 0)
             goto error;
     }
 
-    pdom->job = true;
+    if (virTimeMillisNow(&now) < 0)
+        return -1;
+
+    pdom->job.active = true;
+    pdom->job.started = now;
+    pdom->job.elapsed = 0;
+    pdom->job.progress = 0;
+    pdom->job.hasProgress = false;
     return 0;
 
  error:
@@ -651,6 +658,27 @@ vzDomainObjEndJob(virDomainObjPtr dom)
 {
     vzDomObjPtr pdom = dom->privateData;
 
-    pdom->job = false;
-    virCondSignal(&pdom->jobCond);
+    pdom->job.active = false;
+    virCondSignal(&pdom->job.cond);
+}
+
+int
+vzDomainJobUpdateTime(vzDomainJobObjPtr job)
+{
+    unsigned long long now;
+
+    if (!job->started)
+        return 0;
+
+    if (virTimeMillisNow(&now) < 0)
+        return -1;
+
+    if (now < job->started) {
+        VIR_WARN("Async job starts in the future");
+        job->started = 0;
+        return 0;
+    }
+
+    job->elapsed = now - job->started;
+    return 0;
 }

@@ -2140,6 +2140,34 @@ prlsdkHandlePerfEvent(vzDriverPtr driver,
     virObjectUnlock(dom);
 }
 
+static void
+prlsdkHandleMigrationProgress(vzDriverPtr driver,
+                              PRL_HANDLE event,
+                              unsigned char *uuid)
+{
+    virDomainObjPtr dom = NULL;
+    vzDomObjPtr privdom = NULL;
+    PRL_UINT32 progress;
+    PRL_HANDLE param = PRL_INVALID_HANDLE;
+    PRL_RESULT pret;
+
+    if (!(dom = virDomainObjListFindByUUID(driver->domains, uuid)))
+        return;
+
+    pret = PrlEvent_GetParam(event, 0, &param);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    pret = PrlEvtPrm_ToUint32(param, &progress);
+    prlsdkCheckRetGoto(pret, cleanup);
+
+    privdom = dom->privateData;
+    privdom->job.progress = progress;
+
+ cleanup:
+    PrlHandle_Free(param);
+    virObjectUnlock(dom);
+}
+
 static PRL_RESULT
 prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
 {
@@ -2194,6 +2222,9 @@ prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
         break;
     case PET_DSP_EVT_DISP_CONNECTION_CLOSED:
         vzDestroyDriverConnection();
+        break;
+    case PET_DSP_EVT_VM_MIGRATE_PROGRESS_CHANGED:
+        prlsdkHandleMigrationProgress(driver, prlEvent, uuid);
         break;
     default:
         VIR_DEBUG("Skipping event of type %d", prlEventType);

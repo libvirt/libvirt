@@ -2545,6 +2545,7 @@ vzDomainMigratePerformStep(virDomainPtr domain,
 {
     int ret = -1;
     virDomainObjPtr dom = NULL;
+    vzDomObjPtr privdom;
     virURIPtr vzuri = NULL;
     vzConnPtr privconn = domain->conn->privateData;
     const char *miguri = NULL;
@@ -2579,6 +2580,8 @@ vzDomainMigratePerformStep(virDomainPtr domain,
     if (vzDomainObjBeginJob(dom) < 0)
         goto cleanup;
     job = true;
+    privdom = dom->privateData;
+    privdom->job.hasProgress = true;
 
     if (vzEnsureDomainExists(dom) < 0)
         goto cleanup;
@@ -2784,6 +2787,44 @@ vzDomainMigrateConfirm3Params(virDomainPtr domain ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+vzDomainGetJobInfoImpl(virDomainObjPtr dom, virDomainJobInfoPtr info)
+{
+    vzDomObjPtr privdom = dom->privateData;
+    vzDomainJobObjPtr job = &privdom->job;
+
+    memset(info, 0, sizeof(*info));
+
+    if (!job->active || !job->hasProgress)
+        return 0;
+
+    if (vzDomainJobUpdateTime(job) < 0)
+        return -1;
+
+    info->type = VIR_DOMAIN_JOB_UNBOUNDED;
+    info->dataTotal = 100;
+    info->dataProcessed = job->progress;
+    info->dataRemaining = 100 - job->progress;
+    info->timeElapsed = job->elapsed;
+
+    return 0;
+}
+
+static int
+vzDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
+{
+    virDomainObjPtr dom;
+    int ret;
+
+    if (!(dom = vzDomObjFromDomain(domain)))
+        return -1;
+
+    ret = vzDomainGetJobInfoImpl(dom, info);
+
+    virObjectUnlock(dom);
+    return ret;
+}
+
 static virHypervisorDriver vzHypervisorDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
@@ -2875,6 +2916,7 @@ static virHypervisorDriver vzHypervisorDriver = {
     .domainMigrateFinish3Params = vzDomainMigrateFinish3Params, /* 1.3.5 */
     .domainMigrateConfirm3Params = vzDomainMigrateConfirm3Params, /* 1.3.5 */
     .domainUpdateDeviceFlags = vzDomainUpdateDeviceFlags, /* 2.0.0 */
+    .domainGetJobInfo = vzDomainGetJobInfo, /* 2.2.0 */
 };
 
 static virConnectDriver vzConnectDriver = {

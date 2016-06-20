@@ -93,13 +93,24 @@ struct _vzConn {
 typedef struct _vzConn vzConn;
 typedef struct _vzConn *vzConnPtr;
 
+struct _vzDomainJobObj {
+    virCond cond;
+    bool active;
+    /* when the job started, zeroed on time discontinuities */
+    unsigned long long started;
+    unsigned long long elapsed;
+    bool hasProgress;
+    int progress; /* percents */
+};
+
+typedef struct _vzDomainJobObj vzDomainJobObj;
+typedef struct _vzDomainJobObj *vzDomainJobObjPtr;
 
 struct vzDomObj {
     int id;
     PRL_HANDLE sdkdom;
     PRL_HANDLE stats;
-    bool job;
-    virCond jobCond;
+    vzDomainJobObj job;
 };
 
 typedef struct vzDomObj *vzDomObjPtr;
@@ -146,3 +157,5 @@ int
 vzDomainObjBeginJob(virDomainObjPtr dom);
 void
 vzDomainObjEndJob(virDomainObjPtr dom);
+int
+vzDomainJobUpdateTime(vzDomainJobObjPtr job);
