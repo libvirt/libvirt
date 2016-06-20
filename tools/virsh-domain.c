@@ -9792,26 +9792,6 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_BOOL,
      .help = N_("compress repeated pages during live migration")
     },
-    {.name = "comp-methods",
-     .type = VSH_OT_STRING,
-     .help = N_("comma separated list of compression methods to be used")
-    },
-    {.name = "comp-mt-level",
-     .type = VSH_OT_INT,
-     .help = N_("compress level for multithread compression")
-    },
-    {.name = "comp-mt-threads",
-     .type = VSH_OT_INT,
-     .help = N_("number of compression threads for multithread compression")
-    },
-    {.name = "comp-mt-dthreads",
-     .type = VSH_OT_INT,
-     .help = N_("number of decompression threads for multithread compression")
-    },
-    {.name = "comp-xbzrle-cache",
-     .type = VSH_OT_INT,
-     .help = N_("page cache size for xbzrle compression")
-    },
     {.name = "auto-converge",
      .type = VSH_OT_BOOL,
      .help = N_("force convergence during live migration")
@@ -9872,6 +9852,26 @@ static const vshCmdOptDef opts_migrate[] = {
     {.name = "disks-port",
      .type = VSH_OT_INT,
      .help = N_("port to use by target server for incoming disks migration")
+    },
+    {.name = "comp-methods",
+     .type = VSH_OT_STRING,
+     .help = N_("comma separated list of compression methods to be used")
+    },
+    {.name = "comp-mt-level",
+     .type = VSH_OT_INT,
+     .help = N_("compress level for multithread compression")
+    },
+    {.name = "comp-mt-threads",
+     .type = VSH_OT_INT,
+     .help = N_("number of compression threads for multithread compression")
+    },
+    {.name = "comp-mt-dthreads",
+     .type = VSH_OT_INT,
+     .help = N_("number of decompression threads for multithread compression")
+    },
+    {.name = "comp-xbzrle-cache",
+     .type = VSH_OT_INT,
+     .help = N_("page cache size for xbzrle compression")
     },
     {.name = NULL}
 };
