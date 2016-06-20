@@ -1523,16 +1523,13 @@ qemuAgentGetVCPUs(qemuAgentPtr mon,
     return ret;
 }
 
-/**
- * Set the VCPU state using guest agent.
- *
- * Returns -1 on error, ninfo in case everything was successful and less than
- * ninfo on a partial failure.
- */
-int
-qemuAgentSetVCPUs(qemuAgentPtr mon,
-                  qemuAgentCPUInfoPtr info,
-                  size_t ninfo)
+
+/* returns the value provided by the guest agent or -1 on internal error */
+static int
+qemuAgentSetVCPUsCommand(qemuAgentPtr mon,
+                         qemuAgentCPUInfoPtr info,
+                         size_t ninfo,
+                         int *nmodified)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
@@ -1541,12 +1538,20 @@ qemuAgentSetVCPUs(qemuAgentPtr mon,
     virJSONValuePtr cpu = NULL;
     size_t i;
 
+    *nmodified = 0;
+
     /* create the key data array */
     if (!(cpus = virJSONValueNewArray()))
         goto cleanup;
 
     for (i = 0; i < ninfo; i++) {
         qemuAgentCPUInfoPtr in = &info[i];
+
+        /* don't set state for cpus that were not touched */
+        if (!in->modified)
+            continue;
+
+        (*nmodified)++;
 
         /* create single cpu object */
         if (!(cpu = virJSONValueNewObject()))
@@ -1564,6 +1569,11 @@ qemuAgentSetVCPUs(qemuAgentPtr mon,
         cpu = NULL;
     }
 
+    if (*nmodified == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
     if (!(cmd = qemuAgentMakeCommand("guest-set-vcpus",
                                      "a:vcpus", cpus,
                                      NULL)))
@@ -1575,9 +1585,17 @@ qemuAgentSetVCPUs(qemuAgentPtr mon,
                          VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
         goto cleanup;
 
-    if (virJSONValueObjectGetNumberInt(reply, "return", &ret) < 0) {
+    if (qemuAgentCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    /* All negative values are invalid. Return of 0 is bogus since we wouldn't
+     * call the guest agent so that 0 cpus would be set successfully. Reporting
+     * more successfully set vcpus that we've asked for is invalid. */
+    if (virJSONValueObjectGetNumberInt(reply, "return", &ret) < 0 ||
+        ret <= 0 || ret > *nmodified) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("malformed return value"));
+                       _("guest agent returned malformed or invalid return value"));
+        ret = -1;
     }
 
  cleanup:
@@ -1586,6 +1604,45 @@ qemuAgentSetVCPUs(qemuAgentPtr mon,
     virJSONValueFree(cpu);
     virJSONValueFree(cpus);
     return ret;
+}
+
+
+/**
+ * Set the VCPU state using guest agent.
+ *
+ * Attempts to set the guest agent state for all cpus or until a proper error is
+ * reported by the guest agent. This may require multiple calls.
+ *
+ * Returns -1 on error, 0 on success.
+ */
+int
+qemuAgentSetVCPUs(qemuAgentPtr mon,
+                  qemuAgentCPUInfoPtr info,
+                  size_t ninfo)
+{
+    int rv;
+    int nmodified;
+    size_t i;
+
+    do {
+        if ((rv = qemuAgentSetVCPUsCommand(mon, info, ninfo, &nmodified)) < 0)
+            return -1;
+
+        /* all vcpus were set successfully */
+        if (rv == nmodified)
+            return 0;
+
+        /* un-mark vcpus that were already set */
+        for (i = 0; i < ninfo && rv > 0; i++) {
+            if (!info[i].modified)
+                continue;
+
+            info[i].modified = false;
+            rv--;
+        }
+    } while (1);
+
+    return 0;
 }
 
 
@@ -1647,12 +1704,14 @@ qemuAgentUpdateCPUInfo(unsigned int nvcpus,
             /* unplug */
             if (cpuinfo[i].offlinable && cpuinfo[i].online) {
                 cpuinfo[i].online = false;
+                cpuinfo[i].modified = true;
                 nonline--;
             }
         } else if (nvcpus > nonline) {
             /* plug */
             if (!cpuinfo[i].online) {
                 cpuinfo[i].online = true;
+                cpuinfo[i].modified = true;
                 nonline++;
             }
         } else {

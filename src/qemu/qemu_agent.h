@@ -95,6 +95,8 @@ struct _qemuAgentCPUInfo {
     unsigned int id;    /* logical cpu ID */
     bool online;        /* true if the CPU is activated */
     bool offlinable;    /* true if the CPU can be offlined */
+
+    bool modified; /* set to true if the vcpu state needs to be changed */
 };
 
 int qemuAgentGetVCPUs(qemuAgentPtr mon, qemuAgentCPUInfoPtr *info);

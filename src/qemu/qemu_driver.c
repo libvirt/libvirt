@@ -4804,19 +4804,6 @@ qemuDomainSetVcpusAgent(virDomainObjPtr vm,
     ret = qemuAgentSetVCPUs(qemuDomainGetAgent(vm), cpuinfo, ncpuinfo);
     qemuDomainObjExitAgent(vm);
 
-    if (ret < 0)
-        goto cleanup;
-
-    if (ret < ncpuinfo) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to set state of cpu %d via guest agent"),
-                       cpuinfo[ret-1].id);
-        ret = -1;
-        goto cleanup;
-    }
-
-    ret = 0;
-
  cleanup:
     VIR_FREE(cpuinfo);
 

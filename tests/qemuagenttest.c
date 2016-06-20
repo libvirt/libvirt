@@ -517,16 +517,14 @@ static const char testQemuAgentCPUResponse[] =
     "}";
 
 static const char testQemuAgentCPUArguments1[] =
-    "[{\"logical-id\":0,\"online\":true},"
-     "{\"logical-id\":1,\"online\":false},"
-     "{\"logical-id\":2,\"online\":true},"
-     "{\"logical-id\":3,\"online\":false}]";
+    "[{\"logical-id\":1,\"online\":false}]";
 
 static const char testQemuAgentCPUArguments2[] =
-    "[{\"logical-id\":0,\"online\":true},"
-     "{\"logical-id\":1,\"online\":true},"
-     "{\"logical-id\":2,\"online\":true},"
+    "[{\"logical-id\":1,\"online\":true},"
      "{\"logical-id\":3,\"online\":true}]";
+
+static const char testQemuAgentCPUArguments3[] =
+    "[{\"logical-id\":3,\"online\":true}]";
 
 static int
 testQemuAgentCPU(const void *data)
@@ -566,43 +564,39 @@ testQemuAgentCPU(const void *data)
         goto cleanup;
 
     if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
-                                     "{ \"return\" : 4 }",
+                                     "{ \"return\" : 1 }",
                                      "vcpus", testQemuAgentCPUArguments1,
                                      NULL) < 0)
         goto cleanup;
 
-    if ((nvcpus = qemuAgentSetVCPUs(qemuMonitorTestGetAgent(test),
-                                    cpuinfo, nvcpus)) < 0)
+    if (qemuAgentSetVCPUs(qemuMonitorTestGetAgent(test), cpuinfo, nvcpus) < 0)
         goto cleanup;
 
-    if (nvcpus != 4) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Expected '4' cpus updated , got '%d'", nvcpus);
-        goto cleanup;
-    }
-
-    /* try to hotplug two */
+    /* try to hotplug two, second one will fail*/
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
         goto cleanup;
 
     if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
-                                     "{ \"return\" : 4 }",
+                                     "{ \"return\" : 1 }",
                                      "vcpus", testQemuAgentCPUArguments2,
+                                     NULL) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
+        goto cleanup;
+
+    if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
+                                     "{ \"error\" : \"random error\" }",
+                                     "vcpus", testQemuAgentCPUArguments3,
                                      NULL) < 0)
         goto cleanup;
 
     if (qemuAgentUpdateCPUInfo(4, cpuinfo, nvcpus) < 0)
         goto cleanup;
 
-    if ((nvcpus = qemuAgentSetVCPUs(qemuMonitorTestGetAgent(test),
-                                    cpuinfo, nvcpus)) < 0)
+    /* this should fail */
+    if (qemuAgentSetVCPUs(qemuMonitorTestGetAgent(test), cpuinfo, nvcpus) != -1)
         goto cleanup;
-
-    if (nvcpus != 4) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Expected '4' cpus updated , got '%d'", nvcpus);
-        goto cleanup;
-    }
 
     ret = 0;
 
