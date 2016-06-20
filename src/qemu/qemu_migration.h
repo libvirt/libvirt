@@ -95,7 +95,14 @@ VIR_ENUM_DECL(qemuMigrationCompressMethod)
 struct _qemuMigrationCompression {
     unsigned long long methods;
 
-    qemuMonitorMigrationCompression params;
+    bool level_set;
+    int level;
+
+    bool threads_set;
+    int threads;
+
+    bool dthreads_set;
+    int dthreads;
 
     bool xbzrle_cache_set;
     unsigned long long xbzrle_cache;
