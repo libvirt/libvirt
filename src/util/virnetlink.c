@@ -42,10 +42,6 @@
 #include "virmacaddr.h"
 #include "virerror.h"
 
-#ifndef SOL_NETLINK
-# define SOL_NETLINK 270
-#endif
-
 #define VIR_FROM_THIS VIR_FROM_NET
 
 VIR_LOG_INIT("util.netlink");
