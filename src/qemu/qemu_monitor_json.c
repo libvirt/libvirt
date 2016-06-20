@@ -2537,6 +2537,8 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
 
+    memset(params, 0, sizeof(*params));
+
     if (!(cmd = qemuMonitorJSONMakeCommand("query-migrate-parameters", NULL)))
         return -1;
 
@@ -2548,32 +2550,18 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
 
     result = virJSONValueObjectGet(reply, "return");
 
-    if (virJSONValueObjectGetNumberInt(result, "compress-level",
-                                       &params->compressLevel) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("malformed/missing compress-level "
-                         "in migrate parameters"));
-        goto cleanup;
-    }
-    params->compressLevel_set = true;
+#define PARSE(VAR, FIELD)                                                   \
+    do {                                                                    \
+        if (virJSONValueObjectGetNumberInt(result, FIELD,                   \
+                                           &params->VAR) == 0)              \
+            params->VAR ## _set = true;                                     \
+    } while (0)
 
-    if (virJSONValueObjectGetNumberInt(result, "compress-threads",
-                                       &params->compressThreads) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("malformed/missing compress-threads "
-                         "in migrate parameters"));
-        goto cleanup;
-    }
-    params->compressThreads_set = true;
+    PARSE(compressLevel, "compress-level");
+    PARSE(compressThreads, "compress-threads");
+    PARSE(decompressThreads, "decompress-threads");
 
-    if (virJSONValueObjectGetNumberInt(result, "decompress-threads",
-                                       &params->decompressThreads) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("malformed/missing decompress-threads "
-                         "in migrate parameters"));
-        goto cleanup;
-    }
-    params->decompressThreads_set = true;
+#undef PARSE
 
     ret = 0;
  cleanup:
