@@ -1630,8 +1630,10 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
                                "{"
                                "    \"return\": {"
                                "        \"decompress-threads\": 2,"
+                               "        \"cpu-throttle-increment\": 10,"
                                "        \"compress-threads\": 8,"
-                               "        \"compress-level\": 1"
+                               "        \"compress-level\": 1,"
+                               "        \"cpu-throttle-initial\": 20"
                                "    }"
                                "}") < 0) {
         goto cleanup;
@@ -1658,6 +1660,8 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
     CHECK(compressLevel, "compress-level", 1);
     CHECK(compressThreads, "compress-threads", 8);
     CHECK(decompressThreads, "decompress-threads", 2);
+    CHECK(cpuThrottleInitial, "cpu-throttle-initial", 20);
+    CHECK(cpuThrottleIncrement, "cpu-throttle-increment", 10);
 
 #undef CHECK
 

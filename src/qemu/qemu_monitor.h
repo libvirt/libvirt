@@ -496,6 +496,12 @@ struct _qemuMonitorMigrationParams {
 
     bool decompressThreads_set;
     int decompressThreads;
+
+    bool cpuThrottleInitial_set;
+    int cpuThrottleInitial;
+
+    bool cpuThrottleIncrement_set;
+    int cpuThrottleIncrement;
 };
 
 int qemuMonitorGetMigrationParams(qemuMonitorPtr mon,

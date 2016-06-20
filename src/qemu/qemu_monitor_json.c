@@ -2560,6 +2560,8 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
     PARSE(compressLevel, "compress-level");
     PARSE(compressThreads, "compress-threads");
     PARSE(decompressThreads, "decompress-threads");
+    PARSE(cpuThrottleInitial, "cpu-throttle-initial");
+    PARSE(cpuThrottleIncrement, "cpu-throttle-increment");
 
 #undef PARSE
 
@@ -2600,6 +2602,8 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
     APPEND(compressLevel, "compress-level");
     APPEND(compressThreads, "compress-threads");
     APPEND(decompressThreads, "decompress-threads");
+    APPEND(cpuThrottleInitial, "cpu-throttle-initial");
+    APPEND(cpuThrottleIncrement, "cpu-throttle-increment");
 
 #undef APPEND
 
