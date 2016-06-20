@@ -87,6 +87,7 @@ struct _virNetSocket {
     virSocketAddr remoteAddr;
     char *localAddrStr;
     char *remoteAddrStr;
+    char *remoteAddrStrURI;
 
 #if WITH_GNUTLS
     virNetTLSSessionPtr tlsSession;
@@ -267,6 +268,10 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
 
     if (remoteAddr &&
         !(sock->remoteAddrStr = virSocketAddrFormatFull(remoteAddr, true, ";")))
+        goto error;
+
+    if (remoteAddr &&
+        !(sock->remoteAddrStrURI = virSocketAddrFormatFull(remoteAddr, true, NULL)))
         goto error;
 
     sock->client = isClient;
@@ -1204,6 +1209,7 @@ void virNetSocketDispose(void *obj)
 
     VIR_FREE(sock->localAddrStr);
     VIR_FREE(sock->remoteAddrStr);
+    VIR_FREE(sock->remoteAddrStrURI);
 }
 
 
@@ -1465,6 +1471,10 @@ const char *virNetSocketRemoteAddrString(virNetSocketPtr sock)
     return sock->remoteAddrStr;
 }
 
+const char *virNetSocketRemoteAddrStringURI(virNetSocketPtr sock)
+{
+    return sock->remoteAddrStrURI;
+}
 
 #if WITH_GNUTLS
 static ssize_t virNetSocketTLSSessionWrite(const char *buf,

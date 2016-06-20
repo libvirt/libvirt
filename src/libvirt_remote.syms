@@ -227,6 +227,7 @@ virNetSocketPreExecRestart;
 virNetSocketRead;
 virNetSocketRecvFD;
 virNetSocketRemoteAddrString;
+virNetSocketRemoteAddrStringURI;
 virNetSocketRemoveIOCallback;
 virNetSocketSendFD;
 virNetSocketSetBlocking;
