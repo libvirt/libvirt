@@ -8405,11 +8405,11 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                                chassisNr);
                 goto error;
             }
-            if (def->opts.pciopts.chassisNr < 0 ||
+            if (def->opts.pciopts.chassisNr < 1 ||
                 def->opts.pciopts.chassisNr > 255) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("PCI controller chassisNr '%s' out of range "
-                                 "- must be 0-255"),
+                                 "- must be 1-255"),
                                chassisNr);
                 goto error;
             }
@@ -8456,11 +8456,11 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                                busNr);
                 goto error;
             }
-            if (def->opts.pciopts.busNr < 0 ||
+            if (def->opts.pciopts.busNr < 1 ||
                 def->opts.pciopts.busNr > 254) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("PCI controller busNr '%s' out of range "
-                                 "- must be 0-254"),
+                                 "- must be 1-254"),
                                busNr);
                 goto error;
             }

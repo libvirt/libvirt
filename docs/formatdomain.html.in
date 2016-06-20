@@ -3277,7 +3277,7 @@
         control QEMU's "chassis_nr" option for the pci-bridge device
         (normally libvirt automatically sets this to the same value as
         the index attribute of the pci controller). If set, chassisNr
-        must be between 0 and 255.
+        must be between 1 and 255.
       </dd>
       <dt><code>chassis</code></dt>
       <dd>
