@@ -1641,32 +1641,26 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
                                           &params) < 0)
         goto cleanup;
 
-    if (!params.compressLevel_set ||
-        !params.compressThreads_set ||
-        !params.decompressThreads_set) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "One of level, threads or dthreads flags is not set");
-        return -1;
-    }
+#define CHECK(VAR, FIELD, VALUE)                                            \
+    do {                                                                    \
+        if (!params.VAR ## _set) {                                          \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s is not set", FIELD); \
+            goto cleanup;                                                   \
+        }                                                                   \
+        if (params.VAR != VALUE) {                                          \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                          \
+                           "Invalid %s: %d, expected %d",                   \
+                           FIELD, params.VAR, VALUE);                       \
+            goto cleanup;                                                   \
+        }                                                                   \
+    } while (0)
 
-    if (params.compressLevel != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Invalid decompress-threads: %d, expected 1",
-                       params.compressLevel);
-        goto cleanup;
-    }
-    if (params.compressThreads != 8) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Invalid decompress-threads: %d, expected 8",
-                       params.compressThreads);
-        goto cleanup;
-    }
-    if (params.decompressThreads != 2) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Invalid decompress-threads: %d, expected 2",
-                       params.decompressThreads);
-        goto cleanup;
-    }
+    CHECK(compressLevel, "compress-level", 1);
+    CHECK(compressThreads, "compress-threads", 8);
+    CHECK(decompressThreads, "decompress-threads", 2);
+
+#undef CHECK
+
     ret = 0;
 
  cleanup:
