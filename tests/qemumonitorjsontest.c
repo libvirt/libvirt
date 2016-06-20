@@ -1616,11 +1616,11 @@ testQemuMonitorJSONqemuMonitorJSONGetBlockStatsInfo(const void *data)
 }
 
 static int
-testQemuMonitorJSONqemuMonitorJSONGetMigrationCompression(const void *data)
+testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
-    qemuMonitorMigrationCompression compress;
+    qemuMonitorMigrationParams params;
     int ret = -1;
 
     if (!test)
@@ -1637,34 +1637,34 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCompression(const void *data)
         goto cleanup;
     }
 
-    if (qemuMonitorJSONGetMigrationCompression(qemuMonitorTestGetMonitor(test),
-                                               &compress) < 0)
+    if (qemuMonitorJSONGetMigrationParams(qemuMonitorTestGetMonitor(test),
+                                          &params) < 0)
         goto cleanup;
 
-    if (!compress.level_set ||
-        !compress.threads_set ||
-        !compress.dthreads_set) {
+    if (!params.compressLevel_set ||
+        !params.compressThreads_set ||
+        !params.decompressThreads_set) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "One of level, threads or dthreads flags is not set");
         return -1;
     }
 
-    if (compress.level != 1) {
+    if (params.compressLevel != 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Invalid decompress-threads: %d, expected 1",
-                       compress.level);
+                       params.compressLevel);
         goto cleanup;
     }
-    if (compress.threads != 8) {
+    if (params.compressThreads != 8) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Invalid decompress-threads: %d, expected 8",
-                       compress.threads);
+                       params.compressThreads);
         goto cleanup;
     }
-    if (compress.dthreads != 2) {
+    if (params.decompressThreads != 2) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Invalid decompress-threads: %d, expected 2",
-                       compress.dthreads);
+                       params.decompressThreads);
         goto cleanup;
     }
     ret = 0;
@@ -2416,7 +2416,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetBlockInfo);
     DO_TEST(qemuMonitorJSONGetBlockStatsInfo);
     DO_TEST(qemuMonitorJSONGetMigrationCacheSize);
-    DO_TEST(qemuMonitorJSONGetMigrationCompression);
+    DO_TEST(qemuMonitorJSONGetMigrationParams);
     DO_TEST(qemuMonitorJSONGetMigrationStats);
     DO_TEST(qemuMonitorJSONGetChardevInfo);
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);

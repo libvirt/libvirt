@@ -2529,8 +2529,8 @@ qemuMonitorJSONSetMigrationCacheSize(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorJSONGetMigrationCompression(qemuMonitorPtr mon,
-                                       qemuMonitorMigrationCompressionPtr compress)
+qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
+                                  qemuMonitorMigrationParamsPtr params)
 {
     int ret = -1;
     virJSONValuePtr result;
@@ -2549,31 +2549,31 @@ qemuMonitorJSONGetMigrationCompression(qemuMonitorPtr mon,
     result = virJSONValueObjectGet(reply, "return");
 
     if (virJSONValueObjectGetNumberInt(result, "compress-level",
-                                       &compress->level) < 0) {
+                                       &params->compressLevel) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("malformed/missing compress-level "
                          "in migrate parameters"));
         goto cleanup;
     }
-    compress->level_set = true;
+    params->compressLevel_set = true;
 
     if (virJSONValueObjectGetNumberInt(result, "compress-threads",
-                                       &compress->threads) < 0) {
+                                       &params->compressThreads) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("malformed/missing compress-threads "
                          "in migrate parameters"));
         goto cleanup;
     }
-    compress->threads_set = true;
+    params->compressThreads_set = true;
 
     if (virJSONValueObjectGetNumberInt(result, "decompress-threads",
-                                       &compress->dthreads) < 0) {
+                                       &params->decompressThreads) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("malformed/missing decompress-threads "
                          "in migrate parameters"));
         goto cleanup;
     }
-    compress->dthreads_set = true;
+    params->decompressThreads_set = true;
 
     ret = 0;
  cleanup:
@@ -2583,8 +2583,8 @@ qemuMonitorJSONGetMigrationCompression(qemuMonitorPtr mon,
 }
 
 int
-qemuMonitorJSONSetMigrationCompression(qemuMonitorPtr mon,
-                                       qemuMonitorMigrationCompressionPtr compress)
+qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
+                                  qemuMonitorMigrationParamsPtr params)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
@@ -2601,19 +2601,19 @@ qemuMonitorJSONSetMigrationCompression(qemuMonitorPtr mon,
     if (!(args = virJSONValueNewObject()))
         goto cleanup;
 
-    if (compress->level_set &&
+    if (params->compressLevel_set &&
         virJSONValueObjectAppendNumberInt(args, "compress-level",
-                                          compress->level) < 0)
+                                          params->compressLevel) < 0)
         goto cleanup;
 
-    if (compress->threads_set &&
+    if (params->compressThreads_set &&
         virJSONValueObjectAppendNumberInt(args, "compress-threads",
-                                          compress->threads) < 0)
+                                          params->compressThreads) < 0)
         goto cleanup;
 
-    if (compress->dthreads_set &&
+    if (params->decompressThreads_set &&
         virJSONValueObjectAppendNumberInt(args, "decompress-threads",
-                                          compress->dthreads) < 0)
+                                          params->decompressThreads) < 0)
         goto cleanup;
 
     if (virJSONValueObjectAppend(cmd, "arguments", args) < 0)

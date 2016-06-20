@@ -2160,29 +2160,32 @@ qemuMonitorSetMigrationCacheSize(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorGetMigrationCompression(qemuMonitorPtr mon,
-                                   qemuMonitorMigrationCompressionPtr compress)
+qemuMonitorGetMigrationParams(qemuMonitorPtr mon,
+                              qemuMonitorMigrationParamsPtr params)
 {
     QEMU_CHECK_MONITOR_JSON(mon);
 
-    return qemuMonitorJSONGetMigrationCompression(mon, compress);
+    return qemuMonitorJSONGetMigrationParams(mon, params);
 }
 
 int
-qemuMonitorSetMigrationCompression(qemuMonitorPtr mon,
-                                   qemuMonitorMigrationCompressionPtr compress)
+qemuMonitorSetMigrationParams(qemuMonitorPtr mon,
+                              qemuMonitorMigrationParamsPtr params)
 {
-    VIR_DEBUG("level=%d threads=%d dthreads=%d",
-              compress->level, compress->threads, compress->dthreads);
+    VIR_DEBUG("compressLevel=%d:%d compressThreads=%d:%d "
+              "decompressThreads=%d:%d",
+              params->compressLevel_set, params->compressLevel,
+              params->compressThreads_set, params->compressThreads,
+              params->decompressThreads_set, params->decompressThreads);
 
     QEMU_CHECK_MONITOR_JSON(mon);
 
-    if (!compress->level_set &&
-        !compress->threads_set &&
-        !compress->dthreads_set)
+    if (!params->compressLevel_set &&
+        !params->compressThreads_set &&
+        !params->decompressThreads_set)
         return 0;
 
-    return qemuMonitorJSONSetMigrationCompression(mon, compress);
+    return qemuMonitorJSONSetMigrationParams(mon, params);
 }
 
 
