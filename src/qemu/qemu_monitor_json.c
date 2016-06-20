@@ -2589,20 +2589,19 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
     if (!(args = virJSONValueNewObject()))
         goto cleanup;
 
-    if (params->compressLevel_set &&
-        virJSONValueObjectAppendNumberInt(args, "compress-level",
-                                          params->compressLevel) < 0)
-        goto cleanup;
+#define APPEND(VAR, FIELD)                                                  \
+    do {                                                                    \
+        if (params->VAR ## _set &&                                          \
+            virJSONValueObjectAppendNumberInt(args, FIELD,                  \
+                                              params->VAR) < 0)             \
+            goto cleanup;                                                   \
+    } while (0)
 
-    if (params->compressThreads_set &&
-        virJSONValueObjectAppendNumberInt(args, "compress-threads",
-                                          params->compressThreads) < 0)
-        goto cleanup;
+    APPEND(compressLevel, "compress-level");
+    APPEND(compressThreads, "compress-threads");
+    APPEND(decompressThreads, "decompress-threads");
 
-    if (params->decompressThreads_set &&
-        virJSONValueObjectAppendNumberInt(args, "decompress-threads",
-                                          params->decompressThreads) < 0)
-        goto cleanup;
+#undef APPEND
 
     if (virJSONValueObjectAppend(cmd, "arguments", args) < 0)
         goto cleanup;
