@@ -3432,11 +3432,11 @@ static int
 qemuMigrationSetCompression(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             qemuDomainAsyncJob job,
-                            qemuMigrationCompressionPtr compression)
+                            qemuMigrationCompressionPtr compression,
+                            qemuMonitorMigrationParamsPtr migParams)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    qemuMonitorMigrationParams migParams = { 0 };
 
     if (qemuMigrationSetOption(driver, vm,
                                QEMU_MONITOR_MIGRATION_CAPS_XBZRLE,
@@ -3455,17 +3455,14 @@ qemuMigrationSetCompression(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, job) < 0)
         return -1;
 
-    migParams.compressLevel_set = compression->level_set;
-    migParams.compressLevel = compression->level;
+    migParams->compressLevel_set = compression->level_set;
+    migParams->compressLevel = compression->level;
 
-    migParams.compressThreads_set = compression->threads_set;
-    migParams.compressThreads = compression->threads;
+    migParams->compressThreads_set = compression->threads_set;
+    migParams->compressThreads = compression->threads;
 
-    migParams.decompressThreads_set = compression->dthreads_set;
-    migParams.decompressThreads = compression->dthreads;
-
-    if (qemuMonitorSetMigrationParams(priv->mon, &migParams) < 0)
-        goto cleanup;
+    migParams->decompressThreads_set = compression->dthreads_set;
+    migParams->decompressThreads = compression->dthreads;
 
     if (compression->xbzrle_cache_set &&
         qemuMonitorSetMigrationCacheSize(priv->mon,
@@ -3480,6 +3477,32 @@ qemuMigrationSetCompression(virQEMUDriverPtr driver,
 
     return ret;
 }
+
+
+static int
+qemuMigrationSetParams(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       qemuDomainAsyncJob job,
+                       qemuMonitorMigrationParamsPtr migParams)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, job) < 0)
+        return -1;
+
+    if (qemuMonitorSetMigrationParams(priv->mon, migParams) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+    return ret;
+}
+
 
 static int
 qemuMigrationPrepareAny(virQEMUDriverPtr driver,
@@ -3516,6 +3539,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     bool stopProcess = false;
     bool relabel = false;
     int rv;
+    qemuMonitorMigrationParams migParams = { 0 };
 
     virNWFilterReadLockFilterUpdates();
 
@@ -3698,7 +3722,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     }
 
     if (qemuMigrationSetCompression(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
-                                    compression) < 0)
+                                    compression, &migParams) < 0)
         goto stopjob;
 
     if (STREQ_NULLABLE(protocol, "rdma") &&
@@ -3715,6 +3739,10 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     if (qemuMigrationSetPostCopy(driver, vm,
                                  flags & VIR_MIGRATE_POSTCOPY,
                                  QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+        goto stopjob;
+
+    if (qemuMigrationSetParams(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
+                               &migParams) < 0)
         goto stopjob;
 
     if (mig->nbd &&
@@ -4554,6 +4582,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     virDomainDefPtr persistDef = NULL;
     char *timestamp;
     int rc;
+    qemuMonitorMigrationParams migParams = { 0 };
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=%lx, resource=%lu, "
@@ -4634,7 +4663,7 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     }
 
     if (qemuMigrationSetCompression(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                    compression) < 0)
+                                    compression, &migParams) < 0)
         goto cleanup;
 
     if (qemuMigrationSetOption(driver, vm,
@@ -4652,6 +4681,10 @@ qemuMigrationRun(virQEMUDriverPtr driver,
     if (qemuMigrationSetPostCopy(driver, vm,
                                  flags & VIR_MIGRATE_POSTCOPY,
                                  QEMU_ASYNC_JOB_MIGRATION_OUT) < 0)
+        goto cleanup;
+
+    if (qemuMigrationSetParams(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
+                               &migParams) < 0)
         goto cleanup;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm,
