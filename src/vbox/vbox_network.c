@@ -37,49 +37,6 @@
 
 VIR_LOG_INIT("vbox.vbox_network");
 
-#define RC_SUCCEEDED(rc) NS_SUCCEEDED(rc.resultCode)
-#define RC_FAILED(rc) NS_FAILED(rc.resultCode)
-
-#define VBOX_UTF16_FREE(arg)                                            \
-    do {                                                                \
-        if (arg) {                                                      \
-            gVBoxAPI.UPFN.Utf16Free(data->pFuncs, arg);                 \
-            (arg) = NULL;                                               \
-        }                                                               \
-    } while (0)
-
-#define VBOX_UTF8_FREE(arg)                                             \
-    do {                                                                \
-        if (arg) {                                                      \
-            gVBoxAPI.UPFN.Utf8Free(data->pFuncs, arg);                  \
-            (arg) = NULL;                                               \
-        }                                                               \
-    } while (0)
-
-#define VBOX_UTF16_TO_UTF8(arg1, arg2)  gVBoxAPI.UPFN.Utf16ToUtf8(data->pFuncs, arg1, arg2)
-#define VBOX_UTF8_TO_UTF16(arg1, arg2)  gVBoxAPI.UPFN.Utf8ToUtf16(data->pFuncs, arg1, arg2)
-
-#define VBOX_RELEASE(arg)                                                     \
-    do {                                                                      \
-        if (arg) {                                                            \
-            gVBoxAPI.nsUISupports.Release((void *)arg);                       \
-            (arg) = NULL;                                                     \
-        }                                                                     \
-    } while (0)
-
-#define vboxIIDUnalloc(iid)                     gVBoxAPI.UIID.vboxIIDUnalloc(data, iid)
-#define vboxIIDToUUID(iid, uuid)                gVBoxAPI.UIID.vboxIIDToUUID(data, iid, uuid)
-#define vboxIIDFromUUID(iid, uuid)              gVBoxAPI.UIID.vboxIIDFromUUID(data, iid, uuid)
-#define vboxIIDIsEqual(iid1, iid2)              gVBoxAPI.UIID.vboxIIDIsEqual(data, iid1, iid2)
-#define DEBUGIID(msg, iid)                      gVBoxAPI.UIID.DEBUGIID(msg, iid)
-#define vboxIIDFromArrayItem(iid, array, idx) \
-    gVBoxAPI.UIID.vboxIIDFromArrayItem(data, iid, array, idx)
-
-#define VBOX_IID_INITIALIZE(iid)                gVBoxAPI.UIID.vboxIIDInitialize(iid)
-
-#define ARRAY_GET_MACHINES \
-    (gVBoxAPI.UArray.handleGetMachines(data->vboxObj))
-
 static vboxUniformedAPI gVBoxAPI;
 
 /**
