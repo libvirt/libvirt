@@ -3304,6 +3304,13 @@ struct remote_domain_get_guest_vcpus_ret {
     remote_typed_param params<REMOTE_DOMAIN_GUEST_VCPU_PARAMS_MAX>; /* alloc@1@unsigned int@2 */
 };
 
+struct remote_domain_set_guest_vcpus_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string cpumap;
+    int state;
+    unsigned int flags;
+};
+
 
 /*----- Protocol. -----*/
 
@@ -5858,5 +5865,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:write
      */
-    REMOTE_PROC_DOMAIN_GET_GUEST_VCPUS = 371
+    REMOTE_PROC_DOMAIN_GET_GUEST_VCPUS = 371,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_SET_GUEST_VCPUS = 372
 };

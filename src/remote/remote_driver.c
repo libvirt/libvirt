@@ -7982,6 +7982,7 @@ static virHypervisorDriver hypervisor_driver = {
     .connectUnregisterCloseCallback = remoteConnectUnregisterCloseCallback, /* 1.3.2 */
     .domainMigrateStartPostCopy = remoteDomainMigrateStartPostCopy, /* 1.3.3 */
     .domainGetGuestVcpus = remoteDomainGetGuestVcpus, /* 2.0.0 */
+    .domainSetGuestVcpus = remoteDomainSetGuestVcpus, /* 2.0.0 */
 };
 
 static virNetworkDriver network_driver = {

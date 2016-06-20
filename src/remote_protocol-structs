@@ -2761,6 +2761,12 @@ struct remote_domain_get_guest_vcpus_ret {
                 remote_typed_param * params_val;
         } params;
 };
+struct remote_domain_set_guest_vcpus_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      cpumap;
+        int                        state;
+        u_int                      flags;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3133,4 +3139,5 @@ enum remote_procedure {
         REMOTE_PROC_CONNECT_STORAGE_POOL_EVENT_DEREGISTER_ANY = 369,
         REMOTE_PROC_STORAGE_POOL_EVENT_LIFECYCLE = 370,
         REMOTE_PROC_DOMAIN_GET_GUEST_VCPUS = 371,
+        REMOTE_PROC_DOMAIN_SET_GUEST_VCPUS = 372,
 };

@@ -11891,3 +11891,58 @@ virDomainGetGuestVcpus(virDomainPtr domain,
     virDispatchError(domain->conn);
     return -1;
 }
+
+
+/**
+ * virDomainSetGuestVcpus:
+ * @domain: pointer to domain object
+ * @cpumap: text representation of a bitmap of vcpus to set
+ * @state: 0 to disable/1 to enable cpus described by @cpumap
+ * @flags: currently unused, callers shall pass 0
+ *
+ * Sets state of individual vcpus described by @cpumap via guest agent. Other
+ * vcpus are not modified.
+ *
+ * This API requires the VM to run. Various hypervisors or guest agent
+ * implementation may limit to operate on just 1 vCPU per call.
+ *
+ * @cpumap is a list of vCPU numbers. Its syntax is a comma separated list and
+ * a special markup using '-' and '^' (ex. '0-4', '0-3,^2'). The '-' denotes
+ * the range and the '^' denotes exclusive. The expression is sequentially
+ * evaluated, so "0-15,^8" is identical to "9-14,0-7,15" but not identical to
+ * "^8,0-15".
+ *
+ * Note that OSes (notably Linux) may require vCPU 0 to stay online to support
+ * low-level features a S3 sleep.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virDomainSetGuestVcpus(virDomainPtr domain,
+                       const char *cpumap,
+                       int state,
+                       unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(domain, "cpumap='%s' state=%x flags=%x",
+                     NULLSTR(cpumap), state, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    virCheckNonNullArgGoto(cpumap, error);
+
+    if (domain->conn->driver->domainSetGuestVcpus) {
+        int ret;
+        ret = domain->conn->driver->domainSetGuestVcpus(domain, cpumap, state,
+                                                        flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}

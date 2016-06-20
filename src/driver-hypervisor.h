@@ -1245,6 +1245,12 @@ typedef int
                              unsigned int *nparams,
                              unsigned int flags);
 
+typedef int
+(*virDrvDomainSetGuestVcpus)(virDomainPtr domain,
+                             const char *cpumap,
+                             int state,
+                             unsigned int flags);
+
 typedef struct _virHypervisorDriver virHypervisorDriver;
 typedef virHypervisorDriver *virHypervisorDriverPtr;
 
@@ -1482,6 +1488,7 @@ struct _virHypervisorDriver {
     virDrvConnectUnregisterCloseCallback connectUnregisterCloseCallback;
     virDrvDomainMigrateStartPostCopy domainMigrateStartPostCopy;
     virDrvDomainGetGuestVcpus domainGetGuestVcpus;
+    virDrvDomainSetGuestVcpus domainSetGuestVcpus;
 };
 
 
