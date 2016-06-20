@@ -2825,6 +2825,76 @@ vzDomainGetJobInfo(virDomainPtr domain, virDomainJobInfoPtr info)
     return ret;
 }
 
+static int
+vzDomainJobInfoToParams(virDomainJobInfoPtr info,
+                        int *type,
+                        virTypedParameterPtr *params,
+                        int *nparams)
+{
+    virTypedParameterPtr par = NULL;
+    int maxpar = 0;
+    int npar = 0;
+
+    if (virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_TIME_ELAPSED,
+                                info->timeElapsed) < 0 ||
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_DATA_TOTAL,
+                                info->dataTotal) < 0 ||
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_DATA_PROCESSED,
+                                info->dataProcessed) < 0 ||
+        virTypedParamsAddULLong(&par, &npar, &maxpar,
+                                VIR_DOMAIN_JOB_DATA_REMAINING,
+                                info->dataRemaining) < 0)
+        goto error;
+
+
+    *type = info->type;
+    *params = par;
+    *nparams = npar;
+    return 0;
+
+ error:
+    virTypedParamsFree(par, npar);
+    return -1;
+}
+
+static int
+vzDomainGetJobStats(virDomainPtr domain,
+                    int *type,
+                    virTypedParameterPtr *params,
+                    int *nparams,
+                    unsigned int flags)
+{
+    virDomainJobInfo info;
+    virDomainObjPtr dom;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(dom = vzDomObjFromDomain(domain)))
+        return -1;
+
+    if (vzDomainGetJobInfoImpl(dom, &info) < 0)
+        goto cleanup;
+
+    if (info.type == VIR_DOMAIN_JOB_NONE) {
+        *type = VIR_DOMAIN_JOB_NONE;
+        *params = NULL;
+        *nparams = 0;
+        ret = 0;
+        goto cleanup;
+    }
+
+    ret = vzDomainJobInfoToParams(&info, type, params, nparams);
+
+ cleanup:
+    virObjectUnlock(dom);
+
+    return ret;
+}
+
 static virHypervisorDriver vzHypervisorDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
@@ -2917,6 +2987,7 @@ static virHypervisorDriver vzHypervisorDriver = {
     .domainMigrateConfirm3Params = vzDomainMigrateConfirm3Params, /* 1.3.5 */
     .domainUpdateDeviceFlags = vzDomainUpdateDeviceFlags, /* 2.0.0 */
     .domainGetJobInfo = vzDomainGetJobInfo, /* 2.2.0 */
+    .domainGetJobStats = vzDomainGetJobStats, /* 2.2.0 */
 };
 
 static virConnectDriver vzConnectDriver = {
