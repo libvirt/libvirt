@@ -946,12 +946,12 @@ void virNetClientRemoveStream(virNetClientPtr client,
 
 const char *virNetClientLocalAddrString(virNetClientPtr client)
 {
-    return virNetSocketLocalAddrString(client->sock);
+    return virNetSocketLocalAddrStringSASL(client->sock);
 }
 
 const char *virNetClientRemoteAddrString(virNetClientPtr client)
 {
-    return virNetSocketRemoteAddrString(client->sock);
+    return virNetSocketRemoteAddrStringSASL(client->sock);
 }
 
 #if WITH_GNUTLS

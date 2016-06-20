@@ -1461,12 +1461,12 @@ int virNetSocketSetBlocking(virNetSocketPtr sock,
 }
 
 
-const char *virNetSocketLocalAddrString(virNetSocketPtr sock)
+const char *virNetSocketLocalAddrStringSASL(virNetSocketPtr sock)
 {
     return sock->localAddrStrSASL;
 }
 
-const char *virNetSocketRemoteAddrString(virNetSocketPtr sock)
+const char *virNetSocketRemoteAddrStringSASL(virNetSocketPtr sock)
 {
     return sock->remoteAddrStrSASL;
 }

@@ -907,7 +907,7 @@ const char *virNetServerClientLocalAddrString(virNetServerClientPtr client)
 {
     if (!client->sock)
         return NULL;
-    return virNetSocketLocalAddrString(client->sock);
+    return virNetSocketLocalAddrStringSASL(client->sock);
 }
 
 
@@ -915,7 +915,7 @@ const char *virNetServerClientRemoteAddrString(virNetServerClientPtr client)
 {
     if (!client->sock)
         return NULL;
-    return virNetSocketRemoteAddrString(client->sock);
+    return virNetSocketRemoteAddrStringSASL(client->sock);
 }
 
 const char *virNetServerClientRemoteAddrStringURI(virNetServerClientPtr client)
