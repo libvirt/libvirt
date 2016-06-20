@@ -85,8 +85,8 @@ struct _virNetSocket {
 
     virSocketAddr localAddr;
     virSocketAddr remoteAddr;
-    char *localAddrStr;
-    char *remoteAddrStr;
+    char *localAddrStrSASL;
+    char *remoteAddrStrSASL;
     char *remoteAddrStrURI;
 
 #if WITH_GNUTLS
@@ -263,11 +263,11 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
 
 
     if (localAddr &&
-        !(sock->localAddrStr = virSocketAddrFormatFull(localAddr, true, ";")))
+        !(sock->localAddrStrSASL = virSocketAddrFormatFull(localAddr, true, ";")))
         goto error;
 
     if (remoteAddr &&
-        !(sock->remoteAddrStr = virSocketAddrFormatFull(remoteAddr, true, ";")))
+        !(sock->remoteAddrStrSASL = virSocketAddrFormatFull(remoteAddr, true, ";")))
         goto error;
 
     if (remoteAddr &&
@@ -279,7 +279,7 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
     PROBE(RPC_SOCKET_NEW,
           "sock=%p fd=%d errfd=%d pid=%lld localAddr=%s, remoteAddr=%s",
           sock, fd, errfd, (long long) pid,
-          NULLSTR(sock->localAddrStr), NULLSTR(sock->remoteAddrStr));
+          NULLSTR(sock->localAddrStrSASL), NULLSTR(sock->remoteAddrStrSASL));
 
     return sock;
 
@@ -1207,8 +1207,8 @@ void virNetSocketDispose(void *obj)
 
     virProcessAbort(sock->pid);
 
-    VIR_FREE(sock->localAddrStr);
-    VIR_FREE(sock->remoteAddrStr);
+    VIR_FREE(sock->localAddrStrSASL);
+    VIR_FREE(sock->remoteAddrStrSASL);
     VIR_FREE(sock->remoteAddrStrURI);
 }
 
@@ -1463,12 +1463,12 @@ int virNetSocketSetBlocking(virNetSocketPtr sock,
 
 const char *virNetSocketLocalAddrString(virNetSocketPtr sock)
 {
-    return sock->localAddrStr;
+    return sock->localAddrStrSASL;
 }
 
 const char *virNetSocketRemoteAddrString(virNetSocketPtr sock)
 {
-    return sock->remoteAddrStr;
+    return sock->remoteAddrStrSASL;
 }
 
 const char *virNetSocketRemoteAddrStringURI(virNetSocketPtr sock)
