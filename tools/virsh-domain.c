@@ -9960,6 +9960,14 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_INT,
      .help = N_("page cache size for xbzrle compression")
     },
+    {.name = "auto-converge-initial",
+     .type = VSH_OT_INT,
+     .help = N_("initial CPU throttling rate for auto-convergence")
+    },
+    {.name = "auto-converge-increment",
+     .type = VSH_OT_INT,
+     .help = N_("CPU throttling rate increment for auto-convergence")
+    },
     {.name = NULL}
 };
 
@@ -10118,6 +10126,24 @@ doMigrate(void *opaque)
             goto save_error;
         }
         VIR_FREE(xml);
+    }
+
+    if ((rv = vshCommandOptInt(ctl, cmd, "auto-converge-initial", &intOpt)) < 0) {
+        goto out;
+    } else if (rv > 0) {
+        if (virTypedParamsAddInt(&params, &nparams, &maxparams,
+                                 VIR_MIGRATE_PARAM_AUTO_CONVERGE_INITIAL,
+                                 intOpt) < 0)
+            goto save_error;
+    }
+
+    if ((rv = vshCommandOptInt(ctl, cmd, "auto-converge-increment", &intOpt)) < 0) {
+        goto out;
+    } else if (rv > 0) {
+        if (virTypedParamsAddInt(&params, &nparams, &maxparams,
+                                 VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT,
+                                 intOpt) < 0)
+            goto save_error;
     }
 
     if (vshCommandOptBool(cmd, "live"))

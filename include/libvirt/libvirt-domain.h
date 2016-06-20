@@ -845,6 +845,25 @@ typedef enum {
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE "compression.xbzrle.cache"
 
+/**
+ * VIR_MIGRATE_PARAM_AUTO_CONVERGE_INITIAL:
+ *
+ * virDomainMigrate* params field: the initial percentage guest CPUs are
+ * throttled to when auto-convergence decides migration is not converging.
+ * As VIR_TYPED_PARAM_INT.
+ */
+# define VIR_MIGRATE_PARAM_AUTO_CONVERGE_INITIAL    "auto_converge.initial"
+
+/**
+ * VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT:
+ *
+ * virDomainMigrate* params field: the increment added to
+ * VIR_MIGRATE_PARAM_AUTO_CONVERGE_INITIAL whenever the hypervisor decides
+ * the current rate is not enough to ensure convergence of the migration.
+ * As VIR_TYPED_PARAM_INT.
+ */
+# define VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT  "auto_converge.increment"
+
 /* Domain migration. */
 virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
                                unsigned long flags, const char *dname,
