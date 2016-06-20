@@ -22,6 +22,9 @@ GENHTML = genhtml
 SUBDIRS = . gnulib/lib include/libvirt src daemon tools docs gnulib/tests \
   tests po examples
 
+XZ_OPT ?= -9ev
+export XZ_OPT
+
 ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = \
