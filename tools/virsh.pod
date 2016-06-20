@@ -1355,6 +1355,11 @@ B<dump> command. I<--verbose> displays the progress of dump.
 NOTE: Some hypervisors may require the user to manually ensure proper
 permissions on file and path specified by argument I<corefilepath>.
 
+NOTE: Crash dump in a old kvmdump format is being obsolete and cannot be loaded
+and processed by crash utility since its version 6.1.0. A --memory-only option
+is required in order to produce valid ELF file which can be later processed by
+the crash utility.
+
 =item B<dumpxml> I<domain> [I<--inactive>] [I<--security-info>]
 [I<--update-cpu>] [I<--migratable>]
 
