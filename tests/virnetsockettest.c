@@ -271,7 +271,7 @@ static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
     }
 
     if (STRNEQ(virNetSocketRemoteAddrString(csock), "127.0.0.1;0")) {
-        VIR_DEBUG("Unexpected local address");
+        VIR_DEBUG("Unexpected remote address");
         goto cleanup;
     }
 
@@ -293,7 +293,7 @@ static int testSocketUNIXAddrs(const void *data ATTRIBUTE_UNUSED)
     }
 
     if (STRNEQ(virNetSocketRemoteAddrString(ssock), "127.0.0.1;0")) {
-        VIR_DEBUG("Unexpected local address");
+        VIR_DEBUG("Unexpected remote address");
         goto cleanup;
     }
 
