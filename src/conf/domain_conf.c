@@ -11190,13 +11190,13 @@ virDomainGraphicsListensParseXML(virDomainGraphicsDefPtr def,
             newListen.type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET) {
             virDomainGraphicsListenDefClear(glisten);
             *glisten = newListen;
+            memset(&newListen, 0, sizeof(newListen));
         }
     }
 
     ret = 0;
  error:
-    if (ret < 0)
-        virDomainGraphicsListenDefClear(&newListen);
+    virDomainGraphicsListenDefClear(&newListen);
     VIR_FREE(listenNodes);
     VIR_FREE(socketPath);
     ctxt->node = save;
