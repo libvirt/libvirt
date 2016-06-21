@@ -1495,6 +1495,7 @@ safezero;
 virBuildPathInternal;
 virDirClose;
 virDirCreate;
+virDirOpen;
 virDirRead;
 virFileAbsPath;
 virFileAccessibleAs;

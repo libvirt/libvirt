@@ -2732,6 +2732,31 @@ virFileRemove(const char *path,
 }
 #endif /* WIN32 */
 
+static int
+virDirOpenInternal(DIR **dirp, const char *name)
+{
+    *dirp = opendir(name);
+    if (!*dirp) {
+        virReportSystemError(errno, _("cannot open directory '%s'"), name);
+        return -1;
+    }
+    return 1;
+}
+
+/**
+ * virDirOpen
+ * @dirp: directory stream
+ * @name: path of the directory
+ *
+ * Returns 1 on success.
+ * On failure, -1 is returned and an error is reported.
+ */
+int
+virDirOpen(DIR **dirp, const char *name)
+{
+    return virDirOpenInternal(dirp, name);
+}
+
 /**
  * virDirRead:
  * @dirp: directory to read
@@ -2740,13 +2765,13 @@ virFileRemove(const char *path,
  *
  * Wrapper around readdir. Typical usage:
  *   struct dirent ent;
- *   int value;
+ *   int rc;
  *   DIR *dir;
- *   if (!(dir = opendir(name)))
+ *   if (virDirOpen(&dir, name) < 0)
  *       goto error;
- *   while ((value = virDirRead(dir, &ent, name)) > 0)
+ *   while ((rc = virDirRead(dir, &ent, name)) > 0)
  *       process ent;
- *   if (value < 0)
+ *   if (rc < 0)
  *       goto error;
  *
  * Returns -1 on error, with error already reported if @name was
