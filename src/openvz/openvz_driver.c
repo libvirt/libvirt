@@ -862,9 +862,8 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
 
         /* if net is ethernet and the user has specified guest interface name,
          * let's use it; otherwise generate a new one */
-        if (net->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
-            net->data.ethernet.dev != NULL) {
-            if (VIR_STRDUP(guest_ifname, net->data.ethernet.dev) == -1)
+        if (net->ifname_guest) {
+            if (VIR_STRDUP(guest_ifname, net->ifname_guest) < 0)
                 goto cleanup;
         } else {
             guest_ifname = openvzGenerateContainerVethName(veid);

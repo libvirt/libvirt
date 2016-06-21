@@ -2345,11 +2345,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
             break;
 
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
-            if (STRNEQ_NULLABLE(olddev->data.ethernet.dev,
-                                newdev->data.ethernet.dev)) {
-                needReconnect = true;
-            }
-        break;
+            break;
 
         case VIR_DOMAIN_NET_TYPE_SERVER:
         case VIR_DOMAIN_NET_TYPE_CLIENT:

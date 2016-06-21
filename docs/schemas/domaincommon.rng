@@ -2142,9 +2142,6 @@
           <interleave>
             <optional>
               <element name="source">
-                <attribute name="dev">
-                  <ref name="deviceName"/>
-                </attribute>
                 <empty/>
               </element>
             </optional>

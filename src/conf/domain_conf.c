@@ -1748,10 +1748,6 @@ virDomainNetDefClear(virDomainNetDefPtr def)
     VIR_FREE(def->model);
 
     switch (def->type) {
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        VIR_FREE(def->data.ethernet.dev);
-        break;
-
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         virDomainChrSourceDefFree(def->data.vhostuser);
         def->data.vhostuser = NULL;
@@ -1788,6 +1784,7 @@ virDomainNetDefClear(virDomainNetDefPtr def)
         virDomainHostdevDefClear(&def->data.hostdev.def);
         break;
 
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
@@ -9019,12 +9016,31 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                        def->type == VIR_DOMAIN_NET_TYPE_BRIDGE &&
                        xmlStrEqual(cur->name, BAD_CAST "source")) {
                 bridge = virXMLPropString(cur, "bridge");
-            } else if (!dev &&
-                       (def->type == VIR_DOMAIN_NET_TYPE_ETHERNET ||
-                        def->type == VIR_DOMAIN_NET_TYPE_DIRECT) &&
+            } else if (!dev && def->type == VIR_DOMAIN_NET_TYPE_DIRECT &&
                        xmlStrEqual(cur->name, BAD_CAST "source")) {
                 dev  = virXMLPropString(cur, "dev");
                 mode = virXMLPropString(cur, "mode");
+            } else if (!dev && def->type == VIR_DOMAIN_NET_TYPE_ETHERNET &&
+                       xmlStrEqual(cur->name, BAD_CAST "source")) {
+                /* This clause is only necessary because from 2010 to
+                 * 2016 it was possible (but never documented) to
+                 * configure the name of the guest-side interface of
+                 * an openvz domain with <source dev='blah'/>.  That
+                 * was blatant misuse of <source>, so was likely
+                 * (hopefully) never used, but just in case there was
+                 * somebody using it, we need to generate an error. If
+                 * the openvz driver is ever deprecated, this clause
+                 * can be removed from here.
+                 */
+                if ((dev = virXMLPropString(cur, "dev"))) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("Invalid attempt to set <interface type='ethernet'> "
+                                     "device name with <source dev='%s'/>. "
+                                     "Use <target dev='%s'/> (for host-side) "
+                                     "or <guest dev='%s'/> (for guest-side) instead."),
+                                   dev, dev, dev);
+                    goto error;
+                }
             } else if (!vhostuser_path && !vhostuser_mode && !vhostuser_type
                        && def->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
                        xmlStrEqual(cur->name, BAD_CAST "source")) {
@@ -9274,13 +9290,6 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
         break;
 
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        if (dev != NULL) {
-            def->data.ethernet.dev = dev;
-            dev = NULL;
-        }
-        break;
-
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         if (bridge == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -9409,6 +9418,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
         break;
 
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
@@ -20802,8 +20812,6 @@ virDomainNetDefFormat(virBufferPtr buf,
             break;
 
         case VIR_DOMAIN_NET_TYPE_ETHERNET:
-            virBufferEscapeString(buf, "<source dev='%s'/>\n",
-                                  def->data.ethernet.dev);
             break;
 
         case VIR_DOMAIN_NET_TYPE_VHOSTUSER:

@@ -930,9 +930,6 @@ struct _virDomainNetDef {
         char *vhost;
     } backend;
     union {
-        struct {
-            char *dev;
-        } ethernet;
         virDomainChrSourceDefPtr vhostuser;
         struct {
             char *address;

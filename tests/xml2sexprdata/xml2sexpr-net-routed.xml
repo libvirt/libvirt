@@ -20,7 +20,6 @@
     <interface type="ethernet">
       <mac address="00:11:22:33:44:55"/>
       <ip address="172.14.5.6"/>
-      <source dev="eth3"/>
       <script path="vif-routed"/>
       <target dev="vif4.0"/>
     </interface>
