@@ -3236,14 +3236,10 @@ virNetworkLoadAllState(virNetworkObjListPtr nets,
     DIR *dir;
     struct dirent *entry;
     int ret = -1;
+    int rc;
 
-    if (!(dir = opendir(stateDir))) {
-        if (errno == ENOENT)
-            return 0;
-
-        virReportSystemError(errno, _("Failed to open dir '%s'"), stateDir);
-        return -1;
-    }
+    if ((rc = virDirOpenIfExists(&dir, stateDir)) <= 0)
+        return rc;
 
     while ((ret = virDirRead(dir, &entry, stateDir)) > 0) {
         virNetworkObjPtr net;
@@ -3267,15 +3263,10 @@ int virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
     DIR *dir;
     struct dirent *entry;
     int ret = -1;
+    int rc;
 
-    if (!(dir = opendir(configDir))) {
-        if (errno == ENOENT)
-            return 0;
-        virReportSystemError(errno,
-                             _("Failed to open dir '%s'"),
-                             configDir);
-        return -1;
-    }
+    if ((rc = virDirOpenIfExists(&dir, configDir)) <= 0)
+        return rc;
 
     while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
         virNetworkObjPtr net;

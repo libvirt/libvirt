@@ -566,17 +566,12 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
     DIR *dir;
     struct dirent *entry;
     int ret = -1;
+    int rc;
 
     VIR_INFO("Scanning for configs in %s", configDir);
 
-    if (!(dir = opendir(configDir))) {
-        if (errno == ENOENT)
-            return 0;
-        virReportSystemError(errno,
-                             _("Failed to open dir '%s'"),
-                             configDir);
-        return -1;
-    }
+    if ((rc = virDirOpenIfExists(&dir, configDir)) <= 0)
+        return rc;
 
     virObjectLock(doms);
 

@@ -500,14 +500,8 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
     VIR_INFO("Scanning for snapshots for domain %s in %s", vm->def->name,
              snapDir);
 
-    if (!(dir = opendir(snapDir))) {
-        if (errno != ENOENT)
-            virReportSystemError(errno,
-                                 _("Failed to open snapshot directory %s "
-                                 "for domain %s"),
-                                 snapDir, vm->def->name);
+    if (virDirOpenIfExists(&dir, snapDir) <= 0)
         goto cleanup;
-    }
 
     while ((direrr = virDirRead(dir, &entry, NULL)) > 0) {
         /* NB: ignoring errors, so one malformed config doesn't

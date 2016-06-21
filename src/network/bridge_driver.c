@@ -509,15 +509,10 @@ networkMigrateStateFiles(virNetworkDriverStatePtr driver)
     struct dirent *entry;
     char *oldPath = NULL, *newPath = NULL;
     char *contents = NULL;
+    int rc;
 
-    if (!(dir = opendir(oldStateDir))) {
-        if (errno == ENOENT)
-            return 0;
-
-        virReportSystemError(errno, _("failed to open directory '%s'"),
-                             oldStateDir);
-        return -1;
-    }
+    if ((rc = virDirOpenIfExists(&dir, oldStateDir)) <= 0)
+        return rc;
 
     if (virFileMakePath(driver->stateDir) < 0) {
         virReportSystemError(errno, _("cannot create directory %s"),

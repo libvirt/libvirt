@@ -3624,15 +3624,13 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
         killedAny = true;
 
     VIR_DEBUG("Iterate over children of %s (killedAny=%d)", keypath, killedAny);
-    if (!(dp = opendir(keypath))) {
-        if (errno == ENOENT) {
-            VIR_DEBUG("Path %s does not exist, assuming done", keypath);
-            killedAny = false;
-            goto done;
-        }
-        virReportSystemError(errno,
-                             _("Cannot open %s"), keypath);
+    if ((rc = virDirOpenIfExists(&dp, keypath)) < 0)
         goto cleanup;
+
+    if (rc == 0) {
+        VIR_DEBUG("Path %s does not exist, assuming done", keypath);
+        killedAny = false;
+        goto done;
     }
 
     while ((direrr = virDirRead(dp, &ent, keypath)) > 0) {
