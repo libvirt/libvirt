@@ -37,36 +37,6 @@ static const virArch archs[] = {
     VIR_ARCH_AARCH64,
 };
 
-static virCPUDataPtr
-armNodeData(virArch arch)
-{
-    virCPUDataPtr data;
-
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
-
-    data->arch = arch;
-
-    return data;
-}
-
-static int
-armDecode(virCPUDefPtr cpu,
-          const virCPUData *data ATTRIBUTE_UNUSED,
-          const char **models ATTRIBUTE_UNUSED,
-          unsigned int nmodels ATTRIBUTE_UNUSED,
-          const char *preferred ATTRIBUTE_UNUSED,
-          unsigned int flags)
-{
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
-
-    if (cpu->model == NULL &&
-        VIR_STRDUP(cpu->model, "host") < 0)
-        return -1;
-
-    return 0;
-}
-
 static void
 armDataFree(virCPUDataPtr data)
 {
@@ -128,10 +98,10 @@ struct cpuArchDriver cpuDriverArm = {
     .arch = archs,
     .narch = ARRAY_CARDINALITY(archs),
     .compare = armCompare,
-    .decode = armDecode,
+    .decode = NULL,
     .encode = NULL,
     .free = armDataFree,
-    .nodeData = armNodeData,
+    .nodeData = NULL,
     .guestData = armGuestData,
     .baseline = armBaseline,
     .update = armUpdate,
