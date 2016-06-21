@@ -1940,9 +1940,6 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
      */
  retry:
     while ((direrr = virDirRead(dh, &dent, NULL)) > 0) {
-        if (dent->d_name[0] == '.')
-            continue;
-
         if (virAsprintf(&stablepath, "%s/%s",
                         pool->def->target.path,
                         dent->d_name) == -1) {
