@@ -477,11 +477,8 @@ virHostCPUParseNode(const char *node,
     ret = processors;
 
  cleanup:
-    /* don't shadow a more serious error */
-    if (cpudir && closedir(cpudir) < 0 && ret >= 0) {
-        virReportSystemError(errno, _("problem closing %s"), node);
-        ret = -1;
-    }
+    if (cpudir)
+        closedir(cpudir);
     if (cores_maps)
         for (i = 0; i < sock_max; i++)
             virBitmapFree(cores_maps[i]);
@@ -777,12 +774,8 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
     ret = 0;
 
  cleanup:
-    /* don't shadow a more serious error */
-    if (nodedir && closedir(nodedir) < 0 && ret >= 0) {
-        virReportSystemError(errno, _("problem closing %s"), sysfs_nodedir);
-        ret = -1;
-    }
-
+    if (nodedir)
+        closedir(nodedir);
     virBitmapFree(present_cpus_map);
     virBitmapFree(online_cpus_map);
     VIR_FREE(sysfs_nodedir);
