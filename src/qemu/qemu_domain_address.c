@@ -1382,7 +1382,7 @@ qemuDomainAddressFindNewBusNr(virDomainDefPtr def)
  *    bus and busNr of the next highest bus for the guest to assign a
  *    unique bus number to each PCI bus that is a child of this
  *    bus. Each PCI controller. On top of this, the pxb device (which
- *    implements the pci-extender-bus) includes a pci-bridge within
+ *    implements the pci-expander-bus) includes a pci-bridge within
  *    it, and that bridge also uses one bus number (so each pxb device
  *    requires at least 2 bus numbers).
  *
