@@ -91,7 +91,7 @@ static int
 virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
                                     uint32_t *host)
 {
-    int retval = 0;
+    int ret = -1;
     DIR *sysdir = NULL;
     struct dirent *dirent = NULL;
     int direrr;
@@ -100,27 +100,32 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
 
     virFileWaitForDevices();
 
-    if (virDirOpen(&sysdir, sysfs_path) < 0) {
-        retval = -1;
-        goto out;
-    }
+    if (virDirOpen(&sysdir, sysfs_path) < 0)
+        goto cleanup;
 
     while ((direrr = virDirRead(sysdir, &dirent, sysfs_path)) > 0) {
         if (STRPREFIX(dirent->d_name, "target")) {
-            if (sscanf(dirent->d_name,
-                       "target%u:", host) != 1) {
-                VIR_DEBUG("Failed to parse target '%s'", dirent->d_name);
-                retval = -1;
-                break;
+            if (sscanf(dirent->d_name, "target%u:", host) == 1) {
+                ret = 0;
+                goto cleanup;
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to parse target '%s'"), dirent->d_name);
+                goto cleanup;
             }
         }
     }
-    if (direrr < 0)
-        retval = -1;
 
+    if (direrr == 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to get host number for iSCSI session "
+                         "with path '%s'"), sysfs_path);
+        goto cleanup;
+    }
+
+ cleanup:
     VIR_DIR_CLOSE(sysdir);
- out:
-    return retval;
+    return ret;
 }
 
 static int
@@ -135,13 +140,8 @@ virStorageBackendISCSIFindLUs(virStoragePoolObjPtr pool,
                     "/sys/class/iscsi_session/session%s/device", session) < 0)
         goto cleanup;
 
-    if (virStorageBackendISCSIGetHostNumber(sysfs_path, &host) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to get host number for iSCSI session "
-                               "with path '%s'"),
-                             sysfs_path);
+    if (virStorageBackendISCSIGetHostNumber(sysfs_path, &host) < 0)
         goto cleanup;
-    }
 
     if (virStorageBackendSCSIFindLUs(pool, host) < 0)
         goto cleanup;
