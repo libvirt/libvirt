@@ -936,7 +936,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
                                                 &vol->target.encryption)) < 0) {
             if (err == -2) {
                 /* Silently ignore non-regular files,
-                 * eg '.' '..', 'lost+found', dangling symbolic link */
+                 * eg 'lost+found', dangling symbolic link */
                 virStorageVolDefFree(vol);
                 vol = NULL;
                 continue;
