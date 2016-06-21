@@ -65,6 +65,8 @@ typedef qemuMigrationCompression *qemuMigrationCompressionPtr;
     VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS,      VIR_TYPED_PARAM_INT,    \
     VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE,     VIR_TYPED_PARAM_ULLONG, \
     VIR_MIGRATE_PARAM_PERSIST_XML,      VIR_TYPED_PARAM_STRING,   \
+    VIR_MIGRATE_PARAM_AUTO_CONVERGE_INITIAL,        VIR_TYPED_PARAM_INT,    \
+    VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT,      VIR_TYPED_PARAM_INT,    \
     NULL
 
 
@@ -117,6 +119,11 @@ int qemuMigrationCompressionDump(qemuMigrationCompressionPtr compression,
                                  int *nparams,
                                  int *maxparams,
                                  unsigned long *flags);
+
+qemuMonitorMigrationParamsPtr
+qemuMigrationParams(virTypedParameterPtr params,
+                    int nparams,
+                    unsigned long flags);
 
 int qemuMigrationJobStart(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
@@ -197,6 +204,7 @@ int qemuMigrationPerform(virQEMUDriverPtr driver,
                          const char **migrate_disks,
                          int nbdPort,
                          qemuMigrationCompressionPtr compression,
+                         qemuMonitorMigrationParamsPtr migParams,
                          const char *cookiein,
                          int cookieinlen,
                          char **cookieout,
