@@ -20210,6 +20210,79 @@ qemuDomainSetGuestVcpus(virDomainPtr dom,
 }
 
 
+static int
+qemuDomainSetVcpu(virDomainPtr dom,
+                  const char *cpumap,
+                  int state,
+                  unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm = NULL;
+    virDomainDefPtr def = NULL;
+    virDomainDefPtr persistentDef = NULL;
+    virBitmapPtr map = NULL;
+    ssize_t lastvcpu;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (state != 0 && state != 1) {
+        virReportInvalidArg(state, "%s", _("unsupported state value"));
+        return -1;
+    }
+
+    if (virBitmapParse(cpumap, &map, QEMU_GUEST_VCPU_MAX_ID) < 0)
+        goto cleanup;
+
+    if ((lastvcpu = virBitmapLastSetBit(map)) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("no vcpus selected for modification"));
+        goto cleanup;
+    }
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainSetVcpuEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
+        goto endjob;
+
+    if (persistentDef) {
+        if (lastvcpu >= virDomainDefGetVcpusMax(persistentDef)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("vcpu %zd is not present in persistent config"),
+                           lastvcpu);
+            goto endjob;
+        }
+    }
+
+    if (def) {
+        if (lastvcpu >= virDomainDefGetVcpusMax(def)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("vcpu %zd is not present in live config"),
+                           lastvcpu);
+            goto endjob;
+        }
+    }
+
+    ret = qemuDomainSetVcpuInternal(driver, vm, def, persistentDef, map, !!state);
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virBitmapFree(map);
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectOpen = qemuConnectOpen, /* 0.2.0 */
@@ -20423,6 +20496,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainMigrateStartPostCopy = qemuDomainMigrateStartPostCopy, /* 1.3.3 */
     .domainGetGuestVcpus = qemuDomainGetGuestVcpus, /* 2.0.0 */
     .domainSetGuestVcpus = qemuDomainSetGuestVcpus, /* 2.0.0 */
+    .domainSetVcpu = qemuDomainSetVcpu, /* 3.1.0 */
 };
 
 

@@ -5700,3 +5700,156 @@ qemuDomainSetVcpusInternal(virQEMUDriverPtr driver,
     virObjectUnref(cfg);
     return ret;
 }
+
+
+static void
+qemuDomainSetVcpuConfig(virDomainDefPtr def,
+                        virBitmapPtr map,
+                        bool state)
+{
+    virDomainVcpuDefPtr vcpu;
+    ssize_t next = -1;
+
+    def->individualvcpus = true;
+
+    while ((next = virBitmapNextSetBit(map, next)) > 0) {
+        if (!(vcpu = virDomainDefGetVcpu(def, next)))
+            continue;
+
+        vcpu->online = state;
+        vcpu->hotpluggable = VIR_TRISTATE_BOOL_YES;
+        vcpu->order = 0;
+    }
+}
+
+
+/**
+ * qemuDomainFilterHotplugVcpuEntities:
+ *
+ * Returns a bitmap of hotpluggable vcpu entities that correspond to the logical
+ * vcpus requested in @vcpus.
+ */
+static virBitmapPtr
+qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
+                                    virBitmapPtr vcpus,
+                                    bool state)
+{
+    qemuDomainVcpuPrivatePtr vcpupriv;
+    virDomainVcpuDefPtr vcpu;
+    virBitmapPtr map = NULL;
+    virBitmapPtr ret = NULL;
+    ssize_t next = -1;
+    size_t i;
+
+    if (!(map = virBitmapNewCopy(vcpus)))
+        return NULL;
+
+    /* make sure that all selected vcpus are in the correct state */
+    while ((next = virBitmapNextSetBit(map, next)) > 0) {
+        if (!(vcpu = virDomainDefGetVcpu(def, next)))
+            continue;
+
+        if (vcpu->online == state) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("vcpu '%zu' is already in requested state"), next);
+            goto cleanup;
+        }
+
+        if (vcpu->online && !vcpu->hotpluggable) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("vcpu '%zu' can't be hotunplugged"), next);
+            goto cleanup;
+        }
+    }
+
+    /* Make sure that all vCPUs belonging to a single hotpluggable entity were
+     * selected and then de-select any sub-threads of it. */
+    next = -1;
+    while ((next = virBitmapNextSetBit(map, next)) > 0) {
+        if (!(vcpu = virDomainDefGetVcpu(def, next)))
+            continue;
+
+        vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
+
+        if (vcpupriv->vcpus == 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("vcpu '%zu' belongs to a larger hotpluggable entity, "
+                             "but siblings were not selected"), next);
+            goto cleanup;
+        }
+
+        for (i = next + 1; i < next + vcpupriv->vcpus; i++) {
+            if (!virBitmapIsBitSet(map, i)) {
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("vcpu '%zu' was not selected but it belongs to "
+                                 "hotpluggable entity '%zu-%zu' which was "
+                                 "partially selected"),
+                               i, next, next + vcpupriv->vcpus - 1);
+                goto cleanup;
+            }
+
+            /* clear the subthreads */
+            ignore_value(virBitmapClearBit(map, i));
+        }
+    }
+
+    VIR_STEAL_PTR(ret, map);
+
+ cleanup:
+    virBitmapFree(map);
+    return ret;
+}
+
+
+int
+qemuDomainSetVcpuInternal(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          virDomainDefPtr def,
+                          virDomainDefPtr persistentDef,
+                          virBitmapPtr map,
+                          bool state)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virBitmapPtr livevcpus = NULL;
+    int ret = -1;
+
+    if (def) {
+        if (!qemuDomainSupportsNewVcpuHotplug(vm)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("this qemu version does not support specific "
+                             "vCPU hotplug"));
+            goto cleanup;
+        }
+
+        if (!(livevcpus = qemuDomainFilterHotplugVcpuEntities(def, map, state)))
+            goto cleanup;
+
+        /* Make sure that only one hotpluggable entity is selected.
+         * qemuDomainSetVcpusLive allows setting more at once but error
+         * resolution in case of a partial failure is hard, so don't let users
+         * do so */
+        if (virBitmapCountBits(livevcpus) != 1) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("only one hotpluggable entity can be selected"));
+            goto cleanup;
+        }
+    }
+
+    if (livevcpus &&
+        qemuDomainSetVcpusLive(driver, cfg, vm, livevcpus, state) < 0)
+        goto cleanup;
+
+    if (persistentDef) {
+        qemuDomainSetVcpuConfig(persistentDef, map, state);
+
+        if (virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virBitmapFree(livevcpus);
+    virObjectUnref(cfg);
+    return ret;
+}
