@@ -753,4 +753,9 @@ LIBVIRT_3.0.0 {
         virConnectSecretEventDeregisterAny;
 } LIBVIRT_2.2.0;
 
+LIBVIRT_3.1.0 {
+    global:
+        virDomainSetVcpu;
+} LIBVIRT_3.0.0;
+
 # .... define new API here using predicted next version number ....

@@ -11749,3 +11749,51 @@ virDomainSetGuestVcpus(virDomainPtr domain,
     virDispatchError(domain->conn);
     return -1;
 }
+
+
+/**
+ * virDomainSetVcpu:
+ * @domain: pointer to domain object
+ * @vcpumap: text representation of a bitmap of vcpus to set
+ * @state: 0 to disable/1 to enable cpus described by @vcpumap
+ * @flags: bitwise-OR of virDomainModificationImpact
+ *
+ * Enables/disables individual vcpus described by @vcpumap in the hypervisor.
+ *
+ * Various hypervisor implementations may limit to operate on just 1
+ * hotpluggable entity (which may contain multiple vCPUs on certain platforms).
+ *
+ * Note that OSes and hypervisors may require vCPU 0 to stay online.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virDomainSetVcpu(virDomainPtr domain,
+                 const char *vcpumap,
+                 int state,
+                 unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(domain, "vcpumap='%s' state=%i flags=%x",
+                     NULLSTR(vcpumap), state, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    virCheckReadOnlyGoto(domain->conn->flags, error);
+
+    virCheckNonNullArgGoto(vcpumap, error);
+
+    if (domain->conn->driver->domainSetVcpu) {
+        int ret;
+        ret = domain->conn->driver->domainSetVcpu(domain, vcpumap, state, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}

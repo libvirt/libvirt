@@ -3353,6 +3353,13 @@ struct remote_domain_set_guest_vcpus_args {
     unsigned int flags;
 };
 
+struct remote_domain_set_vcpu_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string cpumap;
+    int state;
+    unsigned int flags;
+};
+
 
 struct remote_domain_event_callback_metadata_change_msg {
     int callbackID;
@@ -6018,6 +6025,13 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_SECRET_EVENT_VALUE_CHANGED = 383
+    REMOTE_PROC_SECRET_EVENT_VALUE_CHANGED = 383,
 
+    /**
+     * @generate: both
+     * @acl: domain:write
+     * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
+     * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
+     */
+    REMOTE_PROC_DOMAIN_SET_VCPU = 384
 };

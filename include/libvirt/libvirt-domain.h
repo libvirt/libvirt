@@ -4528,4 +4528,9 @@ int virDomainSetGuestVcpus(virDomainPtr domain,
                            int state,
                            unsigned int flags);
 
+int virDomainSetVcpu(virDomainPtr domain,
+                     const char *vcpumap,
+                     int state,
+                     unsigned int flags);
+
 #endif /* __VIR_LIBVIRT_DOMAIN_H__ */
