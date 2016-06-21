@@ -2725,7 +2725,7 @@ virFileRemove(const char *path,
 static int
 virDirOpenInternal(DIR **dirp, const char *name, bool ignoreENOENT, bool quiet)
 {
-    *dirp = opendir(name);
+    *dirp = opendir(name); /* exempt from syntax-check */
     if (!*dirp) {
         if (quiet)
             return -1;

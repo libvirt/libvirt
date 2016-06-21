@@ -421,9 +421,9 @@ sc_prohibit_gethostname:
 	  $(_sc_search_regexp)
 
 sc_prohibit_readdir:
-	@prohibit='\b(read|close)dir *\('				\
+	@prohibit='\b(read|close|open)dir *\('				\
 	exclude='exempt from syntax-check'				\
-	halt='use virDirRead and VIR_DIR_CLOSE'				\
+	halt='use virDirOpen, virDirRead and VIR_DIR_CLOSE'		\
 	  $(_sc_search_regexp)
 
 sc_prohibit_gettext_noop:
@@ -1265,3 +1265,6 @@ exclude_file_name_regexp--sc_prohibit_dt_without_code = \
 
 exclude_file_name_regexp--sc_prohibit_always-defined_macros = \
   ^tests/virtestmock.c$$
+
+exclude_file_name_regexp--sc_prohibit_readdir = \
+  ^tests/.*mock\.c$$
