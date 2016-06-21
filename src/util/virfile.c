@@ -614,11 +614,8 @@ static int virFileLoopDeviceOpenSearch(char **dev_name)
 
     VIR_DEBUG("Looking for loop devices in /dev");
 
-    if (!(dh = opendir("/dev"))) {
-        virReportSystemError(errno, "%s",
-                             _("Unable to read /dev"));
+    if (virDirOpen(&dh, "/dev") < 0)
         goto cleanup;
-    }
 
     while ((direrr = virDirRead(dh, &de, "/dev")) > 0) {
         /* Checking 'loop' prefix is insufficient, since
@@ -782,12 +779,8 @@ virFileNBDDeviceFindUnused(void)
     struct dirent *de;
     int direrr;
 
-    if (!(dh = opendir(SYSFS_BLOCK_DIR))) {
-        virReportSystemError(errno,
-                             _("Cannot read directory %s"),
-                             SYSFS_BLOCK_DIR);
+    if (virDirOpen(&dh, SYSFS_BLOCK_DIR) < 0)
         return NULL;
-    }
 
     while ((direrr = virDirRead(dh, &de, SYSFS_BLOCK_DIR)) > 0) {
         if (STRPREFIX(de->d_name, "nbd")) {
@@ -942,11 +935,8 @@ int virFileDeleteTree(const char *dir)
     if (!dir || !virFileExists(dir))
         return 0;
 
-    if (!(dh = opendir(dir))) {
-        virReportSystemError(errno, _("Cannot open dir '%s'"),
-                             dir);
+    if (virDirOpen(&dh, dir) < 0)
         return -1;
-    }
 
     while ((direrr = virDirRead(dh, &de, dir)) > 0) {
         struct stat sb;

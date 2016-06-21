@@ -360,12 +360,9 @@ xenInotifyOpen(virConnectPtr conn,
             return -1;
 
         /* populate initial list */
-        if (!(dh = opendir(priv->configDir))) {
-            virReportSystemError(errno,
-                                 _("cannot open directory: %s"),
-                                 priv->configDir);
+        if (virDirOpen(&dh, priv->configDir) < 0)
             return -1;
-        }
+
         while ((direrr = virDirRead(dh, &ent, priv->configDir)) > 0) {
             if (STRPREFIX(ent->d_name, "."))
                 continue;

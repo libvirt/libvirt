@@ -460,11 +460,8 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
 
     VIR_DEBUG("%s %s: iterating over " PCI_SYSFS "devices", dev->id, dev->name);
 
-    dir = opendir(PCI_SYSFS "devices");
-    if (!dir) {
-        VIR_WARN("Failed to open " PCI_SYSFS "devices");
+    if (virDirOpen(&dir, PCI_SYSFS "devices") < 0)
         return -1;
-    }
 
     while ((ret = virDirRead(dir, &entry, PCI_SYSFS "devices")) > 0) {
         unsigned int domain, bus, slot, function;
@@ -1958,11 +1955,8 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
                     dev->address.slot, dev->address.function) < 0)
         goto cleanup;
 
-    if (!(dir = opendir(pcidir))) {
-        virReportSystemError(errno,
-                             _("cannot open %s"), pcidir);
+    if (virDirOpen(&dir, pcidir) < 0)
         goto cleanup;
-    }
 
     while ((direrr = virDirRead(dir, &ent, pcidir)) > 0) {
         /* Device assignment requires:

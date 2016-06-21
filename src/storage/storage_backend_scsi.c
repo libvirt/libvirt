@@ -265,12 +265,8 @@ getNewStyleBlockDevice(const char *lun_path,
 
     VIR_DEBUG("Looking for block device in '%s'", block_path);
 
-    if (!(block_dir = opendir(block_path))) {
-        virReportSystemError(errno,
-                             _("Failed to opendir sysfs path '%s'"),
-                             block_path);
+    if (virDirOpen(&block_dir, block_path) < 0)
         goto cleanup;
-    }
 
     while ((direrr = virDirRead(block_dir, &block_dirent, block_path)) > 0) {
         if (VIR_STRDUP(*block_device, block_dirent->d_name) < 0)
@@ -350,12 +346,8 @@ getBlockDevice(uint32_t host,
                     host, bus, target, lun) < 0)
         goto cleanup;
 
-    if (!(lun_dir = opendir(lun_path))) {
-        virReportSystemError(errno,
-                             _("Failed to opendir sysfs path '%s'"),
-                             lun_path);
+    if (virDirOpen(&lun_dir, lun_path) < 0)
         goto cleanup;
-    }
 
     while ((direrr = virDirRead(lun_dir, &lun_dirent, lun_path)) > 0) {
         if (STREQLEN(lun_dirent->d_name, "block", 5)) {
@@ -467,13 +459,8 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
 
     virFileWaitForDevices();
 
-    devicedir = opendir(device_path);
-
-    if (devicedir == NULL) {
-        virReportSystemError(errno,
-                             _("Failed to opendir path '%s'"), device_path);
+    if (virDirOpen(&devicedir, device_path) < 0)
         return -1;
-    }
 
     snprintf(devicepattern, sizeof(devicepattern), "%u:%%u:%%u:%%u\n", scanhost);
 

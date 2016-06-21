@@ -3952,11 +3952,8 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
                         cgroup->controllers[i].placement) < 0)
             goto cleanup;
 
-        if (!(dh = opendir(base))) {
-            virReportSystemError(errno,
-                                 _("Unable to open dir '%s'"), base);
+        if (virDirOpen(&dh, base) < 0)
             goto cleanup;
-        }
 
         while ((direrr = virDirRead(dh, &de, base)) > 0) {
             if (virAsprintf(&entry, "%s/%s", base, de->d_name) < 0)

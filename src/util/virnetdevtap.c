@@ -98,13 +98,8 @@ virNetDevTapGetRealDeviceName(char *ifname ATTRIBUTE_UNUSED)
     char *devpath = NULL;
     int fd;
 
-    DIR *dirp = opendir("/dev");
-    if (dirp == NULL) {
-        virReportSystemError(errno,
-                             _("Failed to opendir path '%s'"),
-                             "/dev");
+    if (virDirOpen(&dirp, "/dev") < 0)
         return NULL;
-    }
 
     while (virDirRead(dirp, &dp, "/dev") > 0) {
         if (STRPREFIX(dp->d_name, "tap")) {

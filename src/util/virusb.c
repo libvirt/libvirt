@@ -138,13 +138,8 @@ virUSBDeviceSearch(unsigned int vendor,
     if (!(list = virUSBDeviceListNew()))
         goto cleanup;
 
-    dir = opendir(USB_SYSFS "/devices");
-    if (!dir) {
-        virReportSystemError(errno,
-                             _("Could not open directory %s"),
-                             USB_SYSFS "/devices");
+    if (virDirOpen(&dir, USB_SYSFS "/devices") < 0)
         goto cleanup;
-    }
 
     while ((direrr = virDirRead(dir, &de, USB_SYSFS "/devices")) > 0) {
         unsigned int found_prod, found_vend, found_bus, found_devno;

@@ -900,12 +900,8 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
     int direrr;
     int fd = -1, ret = -1;
 
-    if (!(dir = opendir(pool->def->target.path))) {
-        virReportSystemError(errno,
-                             _("cannot open path '%s'"),
-                             pool->def->target.path);
+    if (virDirOpen(&dir, pool->def->target.path) < 0)
         goto cleanup;
-    }
 
     while ((direrr = virDirRead(dir, &ent, pool->def->target.path)) > 0) {
         int err;

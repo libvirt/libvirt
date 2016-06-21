@@ -1860,12 +1860,8 @@ virFindSCSIHostByPCI(const char *sysfs_prefix,
     char *unique_path = NULL;
     unsigned int read_unique_id;
 
-    if (!(dir = opendir(prefix))) {
-        virReportSystemError(errno,
-                             _("Failed to opendir path '%s'"),
-                             prefix);
+    if (virDirOpen(&dir, prefix) < 0)
         return NULL;
-    }
 
     while (virDirRead(dir, &entry, prefix) > 0) {
         if (!virFileIsLink(entry->d_name))
@@ -2198,12 +2194,8 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
     char *p;
     char *ret = NULL;
 
-    if (!(dir = opendir(prefix))) {
-        virReportSystemError(errno,
-                             _("Failed to opendir path '%s'"),
-                             prefix);
+    if (virDirOpen(&dir, prefix) < 0)
         return NULL;
-    }
 
 # define READ_WWN(wwn_path, buf)                      \
     do {                                              \
@@ -2289,12 +2281,8 @@ virFindFCHostCapableVport(const char *sysfs_prefix)
     char *state = NULL;
     char *ret = NULL;
 
-    if (!(dir = opendir(prefix))) {
-        virReportSystemError(errno,
-                             _("Failed to opendir path '%s'"),
-                             prefix);
+    if (virDirOpen(&dir, prefix) < 0)
         return NULL;
-    }
 
     while (virDirRead(dir, &entry, prefix) > 0) {
         unsigned int host;

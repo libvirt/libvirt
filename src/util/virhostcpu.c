@@ -339,10 +339,8 @@ virHostCPUParseNode(const char *node,
     *cores = 0;
     *sockets = 0;
 
-    if (!(cpudir = opendir(node))) {
-        virReportSystemError(errno, _("cannot opendir %s"), node);
+    if (virDirOpen(&cpudir, node) < 0)
         goto cleanup;
-    }
 
     /* Keep track of the CPUs that belong to the current node */
     if (!(node_cpus_map = virBitmapNew(npresent_cpus)))

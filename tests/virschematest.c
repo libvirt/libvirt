@@ -80,12 +80,8 @@ testSchemaDir(const char *schema,
         .validator = validator,
     };
 
-    if (!(dir = opendir(dir_path))) {
-        virReportSystemError(errno,
-                             "Failed to opendir path '%s'",
-                             dir_path);
+    if (virDirOpen(&dir, dir_path) < 0)
         return -1;
-    }
 
     while ((rc = virDirRead(dir, &ent, dir_path)) > 0) {
         if (!virFileHasSuffix(ent->d_name, ".xml"))

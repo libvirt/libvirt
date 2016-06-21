@@ -319,12 +319,8 @@ xenXMConfigCacheRefresh(virConnectPtr conn)
     priv->lastRefresh = now;
 
     /* Process the files in the config dir */
-    if (!(dh = opendir(priv->configDir))) {
-        virReportSystemError(errno,
-                             _("cannot read directory %s"),
-                             priv->configDir);
+    if (virDirOpen(&dh, priv->configDir) < 0)
         return -1;
-    }
 
     while ((ret = virDirRead(dh, &ent, priv->configDir)) > 0) {
         struct stat st;

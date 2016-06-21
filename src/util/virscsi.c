@@ -127,11 +127,8 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix,
                     prefix, adapter_id, bus, target, unit) < 0)
         return NULL;
 
-    if (!(dir = opendir(path))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to open %s"), path);
+    if (virDirOpen(&dir, path) < 0)
         goto cleanup;
-    }
 
     while (virDirRead(dir, &entry, path) > 0) {
         /* Assume a single directory entry */
@@ -170,11 +167,8 @@ virSCSIDeviceGetDevName(const char *sysfs_prefix,
                     prefix, adapter_id, bus, target, unit) < 0)
         return NULL;
 
-    if (!(dir = opendir(path))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to open %s"), path);
+    if (virDirOpen(&dir, path) < 0)
         goto cleanup;
-    }
 
     while (virDirRead(dir, &entry, path) > 0) {
         ignore_value(VIR_STRDUP(name, entry->d_name));
