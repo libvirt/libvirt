@@ -5759,6 +5759,7 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     int nparams = 0;
     unsigned long long value;
     unsigned int flags = 0;
+    int ivalue;
     int rc;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
@@ -5992,6 +5993,14 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
         goto save_error;
     } else if (rc) {
         vshPrint(ctl, "%-17s %-13llu\n", _("Compression overflows:"), value);
+    }
+
+    if ((rc = virTypedParamsGetInt(params, nparams,
+                                   VIR_DOMAIN_JOB_AUTO_CONVERGE_THROTTLE,
+                                   &ivalue)) < 0) {
+        goto save_error;
+    } else if (rc) {
+        vshPrint(ctl, "%-17s %-13d\n", _("Auto converge throttle:"), ivalue);
     }
 
     ret = true;

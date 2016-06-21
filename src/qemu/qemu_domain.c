@@ -458,6 +458,12 @@ qemuDomainJobInfoToParams(qemuDomainJobInfoPtr jobInfo,
             goto error;
     }
 
+    if (stats->cpu_throttle_percentage &&
+        virTypedParamsAddInt(&par, &npar, &maxpar,
+                             VIR_DOMAIN_JOB_AUTO_CONVERGE_THROTTLE,
+                             stats->cpu_throttle_percentage) < 0)
+        goto error;
+
     *type = jobInfo->type;
     *params = par;
     *nparams = npar;

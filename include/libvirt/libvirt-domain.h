@@ -2985,6 +2985,14 @@ int virDomainAbortJob(virDomainPtr dom);
  */
 # define VIR_DOMAIN_JOB_COMPRESSION_OVERFLOW     "compression_overflow"
 
+/**
+ * VIR_DOMAIN_JOB_AUTO_CONVERGE_THROTTLE:
+ *
+ * virDomainGetJobStats field: current percentage guest CPUs are throttled
+ * to when auto-convergence decided migration was not converging, as
+ * VIR_TYPED_PARAM_INT.
+ */
+# define VIR_DOMAIN_JOB_AUTO_CONVERGE_THROTTLE  "auto_converge_throttle"
 
 
 /**

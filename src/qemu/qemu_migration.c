@@ -807,6 +807,10 @@ qemuMigrationCookieStatisticsXMLFormat(virBufferPtr buf,
                           stats->xbzrle_overflow);
     }
 
+    virBufferAsprintf(buf, "<%1$s>%2$d</%1$s>\n",
+                      VIR_DOMAIN_JOB_AUTO_CONVERGE_THROTTLE,
+                      stats->cpu_throttle_percentage);
+
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</statistics>\n");
 }
@@ -1152,6 +1156,8 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_COMPRESSION_OVERFLOW "[1])",
                       ctxt, &stats->xbzrle_overflow);
 
+    virXPathInt("string(./" VIR_DOMAIN_JOB_AUTO_CONVERGE_THROTTLE "[1])",
+                ctxt, &stats->cpu_throttle_percentage);
  cleanup:
     ctxt->node = save_ctxt;
     return jobInfo;

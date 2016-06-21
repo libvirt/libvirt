@@ -2673,6 +2673,9 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValuePtr reply,
                                          &stats->setup_time) == 0)
         stats->setup_time_set = true;
 
+    ignore_value(virJSONValueObjectGetNumberInt(ret, "cpu-throttle-percentage",
+                                                &stats->cpu_throttle_percentage));
+
     switch ((qemuMonitorMigrationStatus) stats->status) {
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
     case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
