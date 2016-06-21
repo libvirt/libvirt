@@ -1,7 +1,7 @@
 /*
  * virstoragefile.c: file utility functions for FS storage backend
  *
- * Copyright (C) 2007-2014 Red Hat, Inc.
+ * Copyright (C) 2007-2014, 2016 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -120,10 +120,12 @@ struct FileTypeInfo {
                          * to check at head of file */
     const char *extension; /* Optional file extension to check */
     enum lv_endian endian; /* Endianness of file format */
+
     int versionOffset;    /* Byte offset from start of file
                            * where we find version number,
                            * -1 to always fail the version test,
                            * -2 to always pass the version test */
+    int versionSize;      /* Size in bytes of version data (0, 2, or 4) */
     int versionNumbers[FILE_TYPE_VERSIONS_LAST];
                           /* Version numbers to validate. Zeroes are ignored. */
     int sizeOffset;       /* Byte offset from start of file
@@ -189,15 +191,15 @@ qedGetBackingStore(char **, int *, const char *, size_t);
 
 static struct FileTypeInfo const fileTypeInfo[] = {
     [VIR_STORAGE_FILE_NONE] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
-                                -1, {0}, 0, 0, 0, 0, NULL, NULL },
+                                -1, 0, {0}, 0, 0, 0, 0, NULL, NULL },
     [VIR_STORAGE_FILE_RAW] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
-                               -1, {0}, 0, 0, 0, 0, NULL, NULL },
+                               -1, 0, {0}, 0, 0, 0, 0, NULL, NULL },
     [VIR_STORAGE_FILE_DIR] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
-                               -1, {0}, 0, 0, 0, 0, NULL, NULL },
+                               -1, 0, {0}, 0, 0, 0, 0, NULL, NULL },
     [VIR_STORAGE_FILE_BOCHS] = {
         /*"Bochs Virtual HD Image", */ /* Untested */
         0, NULL, NULL,
-        LV_LITTLE_ENDIAN, 64, {0x20000},
+        LV_LITTLE_ENDIAN, 64, 4, {0x20000},
         32+16+16+4+4+4+4+4, 8, 1, -1, NULL, NULL
     },
     [VIR_STORAGE_FILE_CLOOP] = {
@@ -206,7 +208,7 @@ static struct FileTypeInfo const fileTypeInfo[] = {
            modprobe cloop file=$0 && mount -r -t iso9660 /dev/cloop $1
         */ /* Untested */
         0, NULL, NULL,
-        LV_LITTLE_ENDIAN, -1, {0},
+        LV_LITTLE_ENDIAN, -1, 0, {0},
         -1, 0, 0, -1, NULL, NULL
     },
     [VIR_STORAGE_FILE_DMG] = {
@@ -214,60 +216,60 @@ static struct FileTypeInfo const fileTypeInfo[] = {
          * /usr/share/misc/magic lists double magic (both offsets
          * would have to match) but then disables that check. */
         0, NULL, ".dmg",
-        0, -1, {0},
+        0, -1, 0, {0},
         -1, 0, 0, -1, NULL, NULL
     },
     [VIR_STORAGE_FILE_ISO] = {
         32769, "CD001", ".iso",
-        LV_LITTLE_ENDIAN, -2, {0},
+        LV_LITTLE_ENDIAN, -2, 0, {0},
         -1, 0, 0, -1, NULL, NULL
     },
     [VIR_STORAGE_FILE_VPC] = {
         0, "conectix", NULL,
-        LV_BIG_ENDIAN, 12, {0x10000},
+        LV_BIG_ENDIAN, 12, 4, {0x10000},
         8 + 4 + 4 + 8 + 4 + 4 + 2 + 2 + 4, 8, 1, -1, NULL, NULL
     },
     /* TODO: add getBackingStore function */
     [VIR_STORAGE_FILE_VDI] = {
         64, "\x7f\x10\xda\xbe", ".vdi",
-        LV_LITTLE_ENDIAN, 68, {0x00010001},
+        LV_LITTLE_ENDIAN, 68, 4, {0x00010001},
         64 + 5 * 4 + 256 + 7 * 4, 8, 1, -1, NULL, NULL},
 
     /* Not direct file formats, but used for various drivers */
     [VIR_STORAGE_FILE_FAT] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
-                               -1, {0}, 0, 0, 0, 0, NULL, NULL },
+                               -1, 0, {0}, 0, 0, 0, 0, NULL, NULL },
     [VIR_STORAGE_FILE_VHD] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
-                               -1, {0}, 0, 0, 0, 0, NULL, NULL },
+                               -1, 0, {0}, 0, 0, 0, 0, NULL, NULL },
     [VIR_STORAGE_FILE_PLOOP] = { 0, "WithouFreSpacExt", NULL, LV_LITTLE_ENDIAN,
-                                 -2, {0}, PLOOP_IMAGE_SIZE_OFFSET, 0,
+                                 -2, 0, {0}, PLOOP_IMAGE_SIZE_OFFSET, 0,
                                  PLOOP_SIZE_MULTIPLIER, -1, NULL, NULL },
 
     /* All formats with a backing store probe below here */
     [VIR_STORAGE_FILE_COW] = {
         0, "OOOM", NULL,
-        LV_BIG_ENDIAN, 4, {2},
+        LV_BIG_ENDIAN, 4, 4, {2},
         4+4+1024+4, 8, 1, -1, cowGetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_QCOW] = {
         0, "QFI", NULL,
-        LV_BIG_ENDIAN, 4, {1},
+        LV_BIG_ENDIAN, 4, 4, {1},
         QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW1_HDR_CRYPT, qcow1GetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_QCOW2] = {
         0, "QFI", NULL,
-        LV_BIG_ENDIAN, 4, {2, 3},
+        LV_BIG_ENDIAN, 4, 4, {2, 3},
         QCOWX_HDR_IMAGE_SIZE, 8, 1, QCOW2_HDR_CRYPT, qcow2GetBackingStore,
         qcow2GetFeatures
     },
     [VIR_STORAGE_FILE_QED] = {
         /* http://wiki.qemu.org/Features/QED */
         0, "QED", NULL,
-        LV_LITTLE_ENDIAN, -2, {0},
+        LV_LITTLE_ENDIAN, -2, 0, {0},
         QED_HDR_IMAGE_SIZE, 8, 1, -1, qedGetBackingStore, NULL
     },
     [VIR_STORAGE_FILE_VMDK] = {
         0, "KDMV", NULL,
-        LV_LITTLE_ENDIAN, 4, {1, 2},
+        LV_LITTLE_ENDIAN, 4, 4, {1, 2},
         4+4+4, 8, 512, -1, vmdk4GetBackingStore, NULL
     },
 };
@@ -635,13 +637,30 @@ virStorageFileMatchesVersion(int format,
     if (fileTypeInfo[format].versionOffset == -2)
         return true;
 
-    if ((fileTypeInfo[format].versionOffset + 4) > buflen)
+    /* A positive versionOffset, requires using a valid versionSize */
+    if (fileTypeInfo[format].versionSize != 2 &&
+        fileTypeInfo[format].versionSize != 4)
         return false;
 
-    if (fileTypeInfo[format].endian == LV_LITTLE_ENDIAN)
-        version = virReadBufInt32LE(buf + fileTypeInfo[format].versionOffset);
-    else
-        version = virReadBufInt32BE(buf + fileTypeInfo[format].versionOffset);
+    if ((fileTypeInfo[format].versionOffset +
+         fileTypeInfo[format].versionSize) > buflen)
+        return false;
+
+    if (fileTypeInfo[format].endian == LV_LITTLE_ENDIAN) {
+        if (fileTypeInfo[format].versionSize == 4)
+            version = virReadBufInt32LE(buf +
+                                        fileTypeInfo[format].versionOffset);
+        else
+            version = virReadBufInt16LE(buf +
+                                        fileTypeInfo[format].versionOffset);
+    } else {
+        if (fileTypeInfo[format].versionSize == 4)
+            version = virReadBufInt32BE(buf +
+                                        fileTypeInfo[format].versionOffset);
+        else
+            version = virReadBufInt16BE(buf +
+                                        fileTypeInfo[format].versionOffset);
+    }
 
     for (i = 0;
          i < FILE_TYPE_VERSIONS_LAST && fileTypeInfo[format].versionNumbers[i];
