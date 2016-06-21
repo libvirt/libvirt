@@ -63,7 +63,7 @@ VIR_ENUM_IMPL(virStorageFileFormat,
               "cloop", "dmg", "iso",
               "vpc", "vdi",
               /* Not direct file formats, but used for various drivers */
-              "fat", "vhd", "ploop",
+              "fat", "vhd", "ploop", "luks",
               /* Formats with backing file below here */
               "cow", "qcow", "qcow2", "qed", "vmdk")
 
@@ -189,6 +189,13 @@ qedGetBackingStore(char **, int *, const char *, size_t);
 #define PLOOP_IMAGE_SIZE_OFFSET 36
 #define PLOOP_SIZE_MULTIPLIER 512
 
+#define LUKS_HDR_MAGIC_LEN 6
+#define LUKS_HDR_VERSION_LEN 2
+
+/* Format described by qemu commit id '3e308f20e' */
+#define LUKS_HDR_VERSION_OFFSET LUKS_HDR_MAGIC_LEN
+
+
 static struct FileTypeInfo const fileTypeInfo[] = {
     [VIR_STORAGE_FILE_NONE] = { 0, NULL, NULL, LV_LITTLE_ENDIAN,
                                 -1, 0, {0}, 0, 0, 0, 0, NULL, NULL },
@@ -244,6 +251,13 @@ static struct FileTypeInfo const fileTypeInfo[] = {
                                  -2, 0, {0}, PLOOP_IMAGE_SIZE_OFFSET, 0,
                                  PLOOP_SIZE_MULTIPLIER, -1, NULL, NULL },
 
+    /* Magic is 'L','U','K','S', 0xBA, 0xBE
+     * Set sizeOffset = -1 and let hypervisor handle */
+    [VIR_STORAGE_FILE_LUKS] = {
+        0, "\x4c\x55\x4b\x53\xba\xbe", NULL,
+        LV_BIG_ENDIAN, LUKS_HDR_VERSION_OFFSET, 2, {1},
+        -1, 0, 0, -1, NULL, NULL
+    },
     /* All formats with a backing store probe below here */
     [VIR_STORAGE_FILE_COW] = {
         0, "OOOM", NULL,
@@ -626,7 +640,7 @@ virStorageFileMatchesVersion(int format,
                              char *buf,
                              size_t buflen)
 {
-    int version;
+    int version = 0;
     size_t i;
 
     /* Validate version number info */
@@ -840,6 +854,12 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                          fileTypeInfo[meta->format].qcowCryptOffset);
         if (crypt_format && !meta->encryption &&
             VIR_ALLOC(meta->encryption) < 0)
+            goto cleanup;
+    }
+
+    if (meta->format == VIR_STORAGE_FILE_LUKS) {
+        /* By definition, this is encrypted */
+        if (!meta->encryption && VIR_ALLOC(meta->encryption) < 0)
             goto cleanup;
     }
 
