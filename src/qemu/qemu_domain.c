@@ -2190,6 +2190,38 @@ qemuDomainDefValidate(const virDomainDef *def,
 }
 
 
+static int
+qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
+                            const virDomainDef *def ATTRIBUTE_UNUSED,
+                            void *opaque)
+{
+    virQEMUDriverPtr driver = opaque;
+    virQEMUCapsPtr qemuCaps = NULL;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int ret = -1;
+
+    qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
+
+    if (dev->type == VIR_DOMAIN_DEVICE_NET) {
+        const virDomainNetDef *net = dev->data.net;
+
+        if (net->guestIP.nroutes || net->guestIP.nips) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Invalid attempt to set network interface "
+                             "guest-side IP route and/or address info, "
+                             "not supported by QEMU"));
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    virObjectUnref(qemuCaps);
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
 static const char *
 qemuDomainDefaultNetModel(const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
@@ -2442,6 +2474,8 @@ virDomainDefParserConfig virQEMUDriverDomainDefParserConfig = {
     .domainPostParseCallback = qemuDomainDefPostParse,
     .assignAddressesCallback = qemuDomainDefAssignAddresses,
     .domainValidateCallback = qemuDomainDefValidate,
+    .deviceValidateCallback = qemuDomainDeviceDefValidate,
+
     .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG |
                 VIR_DOMAIN_DEF_FEATURE_OFFLINE_VCPUPIN
 };
