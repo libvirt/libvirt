@@ -50,6 +50,15 @@ test1(const void *data ATTRIBUTE_UNUSED)
     if (virReadBufInt32LE(array + 9) != 0x8d8c8b8aU)
         goto cleanup;
 
+    if (virReadBufInt16BE(array) != 0x0102U)
+        goto cleanup;
+    if (virReadBufInt16BE(array + 11) != 0x8c8dU)
+        goto cleanup;
+    if (virReadBufInt16LE(array) != 0x0201U)
+        goto cleanup;
+    if (virReadBufInt16LE(array + 11) != 0x8d8cU)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     return ret;
@@ -79,6 +88,15 @@ test2(const void *data ATTRIBUTE_UNUSED)
     if (virReadBufInt32LE(array) != 0x04030201U)
         goto cleanup;
     if (virReadBufInt32LE(array + 9) != 0x8d8c8b8aU)
+        goto cleanup;
+
+    if (virReadBufInt16BE(array) != 0x0102U)
+        goto cleanup;
+    if (virReadBufInt16BE(array + 11) != 0x8c8dU)
+        goto cleanup;
+    if (virReadBufInt16LE(array) != 0x0201U)
+        goto cleanup;
+    if (virReadBufInt16LE(array + 11) != 0x8d8cU)
         goto cleanup;
 
     ret = 0;

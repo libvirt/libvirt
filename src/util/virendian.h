@@ -90,4 +90,28 @@
      ((uint32_t)(uint8_t)((buf)[2]) << 16) |             \
      ((uint32_t)(uint8_t)((buf)[3]) << 24))
 
+/**
+ * virReadBufInt16BE:
+ * @buf: byte to start reading at (can be 'char*' or 'unsigned char*');
+ *       evaluating buf must not have any side effects
+ *
+ * Read 2 bytes at BUF as a big-endian 16-bit number.  Caller is
+ * responsible to avoid reading beyond array bounds.
+ */
+# define virReadBufInt16BE(buf)                          \
+    (((uint16_t)(uint8_t)((buf)[0]) << 8) |              \
+     (uint16_t)(uint8_t)((buf)[1]))
+
+/**
+ * virReadBufInt16LE:
+ * @buf: byte to start reading at (can be 'char*' or 'unsigned char*');
+ *       evaluating buf must not have any side effects
+ *
+ * Read 2 bytes at BUF as a little-endian 16-bit number.  Caller is
+ * responsible to avoid reading beyond array bounds.
+ */
+# define virReadBufInt16LE(buf)                          \
+    ((uint16_t)(uint8_t)((buf)[0]) |                     \
+     ((uint16_t)(uint8_t)((buf)[1]) << 8))
+
 #endif /* __VIR_ENDIAN_H__ */
