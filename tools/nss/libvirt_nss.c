@@ -125,7 +125,7 @@ findLease(const char *name,
     }
 
 
-    if (!(dir = opendir(leaseDir))) {
+    if (virDirOpenQuiet(&dir, leaseDir) < 0) {
         ERROR("Failed to open dir '%s'", leaseDir);
         goto cleanup;
     }

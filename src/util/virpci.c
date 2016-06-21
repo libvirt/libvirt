@@ -2011,7 +2011,7 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
                     orig->domain, orig->bus, orig->slot, orig->function) < 0)
         goto cleanup;
 
-    if (!(groupDir = opendir(groupPath))) {
+    if (virDirOpenQuiet(&groupDir, groupPath) < 0) {
         /* just process the original device, nothing more */
         ret = (actor)(orig, opaque);
         goto cleanup;
@@ -2683,8 +2683,7 @@ virPCIGetNetName(char *device_link_sysfs_path, char **netname)
         return -1;
     }
 
-    dir = opendir(pcidev_sysfs_net_path);
-    if (dir == NULL)
+    if (virDirOpenQuiet(&dir, pcidev_sysfs_net_path) < 0)
         goto out;
 
     while (virDirRead(dir, &entry, pcidev_sysfs_net_path) > 0) {

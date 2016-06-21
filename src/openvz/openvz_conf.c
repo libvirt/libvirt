@@ -1058,8 +1058,7 @@ static int openvzAssignUUIDs(void)
     if (conf_dir == NULL)
         return -1;
 
-    dp = opendir(conf_dir);
-    if (dp == NULL) {
+    if (virDirOpenQuiet(&dp, conf_dir) < 0) {
         VIR_FREE(conf_dir);
         return 0;
     }

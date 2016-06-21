@@ -1917,7 +1917,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
      * get created.
      */
  reopen:
-    if ((dh = opendir(pool->def->target.path)) == NULL) {
+    if (virDirOpenQuiet(&dh, pool->def->target.path) < 0) {
         opentries++;
         if (loop && errno == ENOENT && opentries < 50) {
             usleep(100 * 1000);

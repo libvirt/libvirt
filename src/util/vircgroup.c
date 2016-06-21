@@ -3378,8 +3378,7 @@ virCgroupRemoveRecursively(char *grppath)
     int rc = 0;
     int direrr;
 
-    grpdir = opendir(grppath);
-    if (grpdir == NULL) {
+    if (virDirOpenQuiet(&grpdir, grppath) < 0) {
         if (errno == ENOENT)
             return 0;
         rc = -errno;

@@ -641,7 +641,7 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
     if (virAsprintf(&sysfs_nodedir, "%s/node", sysfs_system_path) < 0)
         goto cleanup;
 
-    if (!(nodedir = opendir(sysfs_nodedir))) {
+    if (virDirOpenQuiet(&nodedir, sysfs_nodedir) < 0) {
         /* the host isn't probably running a NUMA architecture */
         goto fallback;
     }
