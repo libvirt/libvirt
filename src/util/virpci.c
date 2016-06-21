@@ -2701,10 +2701,6 @@ virPCIGetNetName(char *device_link_sysfs_path, char **netname)
         goto out;
 
     while (virDirRead(dir, &entry, pcidev_sysfs_net_path) > 0) {
-        if (STREQ(entry->d_name, ".") ||
-            STREQ(entry->d_name, ".."))
-            continue;
-
         /* Assume a single directory entry */
         if (VIR_STRDUP(*netname, entry->d_name) > 0)
             ret = 0;

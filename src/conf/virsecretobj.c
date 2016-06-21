@@ -980,9 +980,6 @@ virSecretLoadAllConfigs(virSecretObjListPtr secrets,
         char *path;
         virSecretObjPtr secret;
 
-        if (STREQ(de->d_name, ".") || STREQ(de->d_name, ".."))
-            continue;
-
         if (!virFileHasSuffix(de->d_name, ".xml"))
             continue;
 

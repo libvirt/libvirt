@@ -3637,10 +3637,6 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
     }
 
     while ((direrr = virDirRead(dp, &ent, keypath)) > 0) {
-        if (STREQ(ent->d_name, "."))
-            continue;
-        if (STREQ(ent->d_name, ".."))
-            continue;
         if (ent->d_type != DT_DIR)
             continue;
 
@@ -3964,10 +3960,6 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
         }
 
         while ((direrr = virDirRead(dh, &de, base)) > 0) {
-            if (STREQ(de->d_name, ".") ||
-                STREQ(de->d_name, ".."))
-                continue;
-
             if (virAsprintf(&entry, "%s/%s", base, de->d_name) < 0)
                 goto cleanup;
 

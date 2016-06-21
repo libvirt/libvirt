@@ -951,10 +951,6 @@ int virFileDeleteTree(const char *dir)
     while ((direrr = virDirRead(dh, &de, dir)) > 0) {
         struct stat sb;
 
-        if (STREQ(de->d_name, ".") ||
-            STREQ(de->d_name, ".."))
-            continue;
-
         if (virAsprintf(&filepath, "%s/%s",
                         dir, de->d_name) < 0)
             goto cleanup;

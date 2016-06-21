@@ -530,10 +530,6 @@ networkMigrateStateFiles(virNetworkDriverStatePtr driver)
             entry->d_type != DT_REG)
             continue;
 
-        if (STREQ(entry->d_name, ".") ||
-            STREQ(entry->d_name, ".."))
-            continue;
-
         if (virAsprintf(&oldPath, "%s/%s",
                         oldStateDir, entry->d_name) < 0)
             goto cleanup;
