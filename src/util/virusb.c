@@ -150,7 +150,7 @@ virUSBDeviceSearch(unsigned int vendor,
         unsigned int found_prod, found_vend, found_bus, found_devno;
         char *tmpstr = de->d_name;
 
-        if (de->d_name[0] == '.' || strchr(de->d_name, ':'))
+        if (strchr(de->d_name, ':'))
             continue;
 
         if (virUSBSysReadFile("idVendor", de->d_name,

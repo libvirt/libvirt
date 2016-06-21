@@ -115,10 +115,6 @@ qemuHostdevHostSupportsPassthroughVFIO(void)
         goto cleanup;
 
     while ((direrr = virDirRead(iommuDir, &iommuGroup, NULL)) > 0) {
-        /* skip ./ ../ */
-        if (STRPREFIX(iommuGroup->d_name, "."))
-            continue;
-
         /* assume we found a group */
         break;
     }

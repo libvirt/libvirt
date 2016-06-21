@@ -273,9 +273,6 @@ getNewStyleBlockDevice(const char *lun_path,
     }
 
     while ((direrr = virDirRead(block_dir, &block_dirent, block_path)) > 0) {
-        if (STREQLEN(block_dirent->d_name, ".", 1))
-            continue;
-
         if (VIR_STRDUP(*block_device, block_dirent->d_name) < 0)
             goto cleanup;
 

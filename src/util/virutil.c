@@ -1868,7 +1868,7 @@ virFindSCSIHostByPCI(const char *sysfs_prefix,
     }
 
     while (virDirRead(dir, &entry, prefix) > 0) {
-        if (entry->d_name[0] == '.' || !virFileIsLink(entry->d_name))
+        if (!virFileIsLink(entry->d_name))
             continue;
 
         if (virAsprintf(&host_link, "%s/%s", prefix, entry->d_name) < 0)
@@ -2218,9 +2218,6 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
     } while (0)
 
     while (virDirRead(dir, &entry, prefix) > 0) {
-        if (entry->d_name[0] == '.')
-            continue;
-
         if (virAsprintf(&wwnn_path, "%s/%s/node_name", prefix,
                         entry->d_name) < 0)
             goto cleanup;
@@ -2302,9 +2299,6 @@ virFindFCHostCapableVport(const char *sysfs_prefix)
     while (virDirRead(dir, &entry, prefix) > 0) {
         unsigned int host;
         char *p = NULL;
-
-        if (entry->d_name[0] == '.')
-            continue;
 
         p = entry->d_name + strlen("host");
         if (virStrToLong_ui(p, NULL, 10, &host) == -1) {

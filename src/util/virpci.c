@@ -471,10 +471,6 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
         virPCIDevicePtr check;
         char *tmp;
 
-        /* Ignore '.' and '..' */
-        if (entry->d_name[0] == '.')
-            continue;
-
         /* expected format: <domain>:<bus>:<slot>.<function> */
         if (/* domain */
             virStrToLong_ui(entry->d_name, &tmp, 16, &domain) < 0 || *tmp != ':' ||
@@ -2029,9 +2025,6 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
 
     while ((direrr = virDirRead(groupDir, &ent, groupPath)) > 0) {
         virPCIDeviceAddress newDev;
-
-        if (ent->d_name[0] == '.')
-            continue;
 
         if (virPCIDeviceAddressParse(ent->d_name, &newDev) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

@@ -619,10 +619,6 @@ int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)
         long long tmp;
         pid_t tmp_pid;
 
-        /* Skip . and .. */
-        if (STRPREFIX(ent->d_name, "."))
-            continue;
-
         if (virStrToLong_ll(ent->d_name, NULL, 10, &tmp) < 0)
             goto cleanup;
         tmp_pid = tmp;

@@ -3392,7 +3392,6 @@ virCgroupRemoveRecursively(char *grppath)
     while ((direrr = virDirRead(grpdir, &ent, NULL)) > 0) {
         char *path;
 
-        if (ent->d_name[0] == '.') continue;
         if (ent->d_type != DT_DIR) continue;
 
         if (virAsprintf(&path, "%s/%s", grppath, ent->d_name) == -1) {

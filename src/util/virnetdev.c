@@ -3172,8 +3172,6 @@ virNetDevRDMAFeature(const char *ifname,
         goto cleanup;
 
     while (virDirRead(dirp, &dp, SYSFS_INFINIBAND_DIR) > 0) {
-        if (dp->d_name[0] == '.')
-            continue;
         if (virAsprintf(&ib_devpath, SYSFS_INFINIBAND_DIR "%s/device/resource",
                         dp->d_name) < 0)
             continue;
