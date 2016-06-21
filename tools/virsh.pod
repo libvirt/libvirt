@@ -2418,6 +2418,25 @@ be hot-plugged the next time the domain is booted.  As such, it must only be
 used with the I<--config> flag, and not with the I<--live> or the I<--current>
 flag.
 
+=item B<setvcpu> I<domain> I<vcpulist> [I<--enable>] | [I<--disable>]
+[[I<--live>] [I<--config>] | [I<--current>]]
+
+Change state of individual vCPUs using hot(un)plug mechanism.
+
+See B<vcpupin> for information on format of I<vcpulist>. Hypervisor drivers may
+require that I<vcpulist> contains exactly vCPUs belonging to one hotpluggable
+entity. This is usually just a single vCPU but certain architectures such as
+ppc64 require a full core to be specified at once.
+
+Note that hypervisors may refuse to disable certain vcpus such as vcpu 0 or
+others.
+
+If I<--live> is specified, affect a running domain.
+If I<--config> is specified, affect the next startup of a persistent domain.
+If I<--current> is specified, affect the current domain state. This is the
+default. Both I<--live> and I<--config> flags may be given, but I<--current> is
+exclusive.
+
 =item B<shutdown> I<domain> [I<--mode MODE-LIST>]
 
 Gracefully shuts down a domain.  This coordinates with the domain OS

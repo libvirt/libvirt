@@ -7015,6 +7015,88 @@ cmdGuestvcpus(vshControl *ctl, const vshCmd *cmd)
 
 
 /*
+ * "setvcpu" command
+ */
+static const vshCmdInfo info_setvcpu[] = {
+    {.name = "help",
+     .data = N_("attach/detach vcpu or groups of threads")
+    },
+    {.name = "desc",
+     .data = N_("Add or remove vcpus")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_setvcpu[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    {.name = "vcpulist",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("ids of vcpus to manipulate")
+    },
+    {.name = "enable",
+     .type = VSH_OT_BOOL,
+     .help = N_("enable cpus specified by cpumap")
+    },
+    {.name = "disable",
+     .type = VSH_OT_BOOL,
+     .help = N_("disable cpus specified by cpumap")
+    },
+    VIRSH_COMMON_OPT_DOMAIN_CONFIG,
+    VIRSH_COMMON_OPT_DOMAIN_LIVE,
+    VIRSH_COMMON_OPT_DOMAIN_CURRENT,
+    {.name = NULL}
+};
+
+static bool
+cmdSetvcpu(vshControl *ctl, const vshCmd *cmd)
+{
+    virDomainPtr dom;
+    bool enable = vshCommandOptBool(cmd, "enable");
+    bool disable = vshCommandOptBool(cmd, "disable");
+    bool config = vshCommandOptBool(cmd, "config");
+    bool live = vshCommandOptBool(cmd, "live");
+    const char *vcpulist = NULL;
+    int state = 0;
+    bool ret = false;
+    unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+
+    VSH_EXCLUSIVE_OPTIONS_VAR(enable, disable);
+
+    VSH_EXCLUSIVE_OPTIONS("current", "live");
+    VSH_EXCLUSIVE_OPTIONS("current", "config");
+
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
+    if (live)
+        flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    if (!(enable || disable)) {
+        vshError(ctl, "%s", _("one of --enable, --disable is required"));
+        return false;
+    }
+
+    if (vshCommandOptStringReq(ctl, cmd, "vcpulist", &vcpulist))
+        return false;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (enable)
+        state = 1;
+
+    if (virDomainSetVcpu(dom, vcpulist, state, flags) < 0)
+        goto cleanup;
+
+    ret = true;
+
+ cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+
+/*
  * "iothreadinfo" command
  */
 static const vshCmdInfo info_iothreadinfo[] = {
@@ -13949,6 +14031,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdGuestvcpus,
      .opts = opts_guestvcpus,
      .info = info_guestvcpus,
+     .flags = 0
+    },
+    {.name = "setvcpu",
+     .handler = cmdSetvcpu,
+     .opts = opts_setvcpu,
+     .info = info_setvcpu,
      .flags = 0
     },
     {.name = NULL}
