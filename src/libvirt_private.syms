@@ -1497,6 +1497,7 @@ virDirClose;
 virDirCreate;
 virDirOpen;
 virDirOpenIfExists;
+virDirOpenQuiet;
 virDirRead;
 virFileAbsPath;
 virFileAccessibleAs;
