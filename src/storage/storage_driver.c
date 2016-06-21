@@ -3602,3 +3602,27 @@ virStoragePoolObjFindPoolByUUID(const unsigned char *uuid)
     storageDriverUnlock();
     return pool;
 }
+
+
+/*
+ * virStoragePoolObjBuildTempFilePath
+ * @pool: pool object pointer
+ * @vol: volume definition
+ *
+ * Generate a name for a temporary file using the driver stateDir
+ * as a path, the pool name, and the volume name to be used as input
+ * for a mkostemp
+ *
+ * Returns a string pointer on success, NULL on failure
+ */
+char *
+virStoragePoolObjBuildTempFilePath(virStoragePoolObjPtr pool,
+                                   virStorageVolDefPtr vol)
+
+{
+    char *tmp = NULL;
+
+    ignore_value(virAsprintf(&tmp, "%s/%s.%s.secret.XXXXXX",
+                             driver->stateDir, pool->def->name, vol->name));
+    return tmp;
+}
