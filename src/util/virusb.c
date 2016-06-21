@@ -202,11 +202,8 @@ virUSBDeviceSearch(unsigned int vendor,
     ret = list;
 
  cleanup:
-    if (dir) {
-        int saved_errno = errno;
+    if (dir)
         closedir(dir);
-        errno = saved_errno;
-    }
 
     if (!ret)
         virObjectUnref(list);
