@@ -3216,9 +3216,6 @@ virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
     while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
         virNWFilterObjPtr nwfilter;
 
-        if (entry->d_name[0] == '.')
-            continue;
-
         if (!virFileStripSuffix(entry->d_name, ".xml"))
             continue;
 

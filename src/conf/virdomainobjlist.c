@@ -583,9 +583,6 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
     while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
         virDomainObjPtr dom;
 
-        if (entry->d_name[0] == '.')
-            continue;
-
         if (!virFileStripSuffix(entry->d_name, ".xml"))
             continue;
 

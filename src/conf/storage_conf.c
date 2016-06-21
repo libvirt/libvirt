@@ -1953,9 +1953,6 @@ virStoragePoolLoadAllState(virStoragePoolObjListPtr pools,
     while ((ret = virDirRead(dir, &entry, stateDir)) > 0) {
         virStoragePoolObjPtr pool;
 
-        if (entry->d_name[0] == '.')
-            continue;
-
         if (!virFileStripSuffix(entry->d_name, ".xml"))
             continue;
 
@@ -1990,9 +1987,6 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
         char *path;
         char *autostartLink;
         virStoragePoolObjPtr pool;
-
-        if (entry->d_name[0] == '.')
-            continue;
 
         if (!virFileHasSuffix(entry->d_name, ".xml"))
             continue;

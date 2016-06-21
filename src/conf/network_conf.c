@@ -3248,9 +3248,6 @@ virNetworkLoadAllState(virNetworkObjListPtr nets,
     while ((ret = virDirRead(dir, &entry, stateDir)) > 0) {
         virNetworkObjPtr net;
 
-        if (entry->d_name[0] == '.')
-            continue;
-
         if (!virFileStripSuffix(entry->d_name, ".xml"))
             continue;
 
@@ -3282,9 +3279,6 @@ int virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
 
     while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
         virNetworkObjPtr net;
-
-        if (entry->d_name[0] == '.')
-            continue;
 
         if (!virFileStripSuffix(entry->d_name, ".xml"))
             continue;

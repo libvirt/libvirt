@@ -510,9 +510,6 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
     }
 
     while ((direrr = virDirRead(dir, &entry, NULL)) > 0) {
-        if (entry->d_name[0] == '.')
-            continue;
-
         /* NB: ignoring errors, so one malformed config doesn't
            kill the whole process */
         VIR_INFO("Loading snapshot file '%s'", entry->d_name);
