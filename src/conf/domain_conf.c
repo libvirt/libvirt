@@ -1737,7 +1737,8 @@ virDomainActualNetDefFree(virDomainActualNetDefPtr def)
     VIR_FREE(def);
 }
 
-void virDomainNetDefFree(virDomainNetDefPtr def)
+void
+virDomainNetDefClear(virDomainNetDefPtr def)
 {
     size_t i;
 
@@ -1753,6 +1754,7 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         virDomainChrSourceDefFree(def->data.vhostuser);
+        def->data.vhostuser = NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -1767,6 +1769,7 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
         VIR_FREE(def->data.network.name);
         VIR_FREE(def->data.network.portgroup);
         virDomainActualNetDefFree(def->data.network.actual);
+        def->data.network.actual = NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
@@ -1811,10 +1814,19 @@ void virDomainNetDefFree(virDomainNetDefPtr def)
 
     VIR_FREE(def->filter);
     virNWFilterHashTableFree(def->filterparams);
+    def->filterparams = NULL;
 
     virNetDevBandwidthFree(def->bandwidth);
+    def->bandwidth = NULL;
     virNetDevVlanClear(&def->vlan);
+}
 
+void
+virDomainNetDefFree(virDomainNetDefPtr def)
+{
+    if (!def)
+        return;
+    virDomainNetDefClear(def);
     VIR_FREE(def);
 }
 

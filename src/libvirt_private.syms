@@ -372,6 +372,7 @@ virDomainMemoryFindInactiveByDef;
 virDomainMemoryInsert;
 virDomainMemoryRemove;
 virDomainNetAppendIPAddress;
+virDomainNetDefClear;
 virDomainNetDefFormat;
 virDomainNetDefFree;
 virDomainNetFind;

@@ -2492,6 +2492,7 @@ virDomainControllerDefPtr
 virDomainControllerDefNew(virDomainControllerType type);
 void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainActualNetDefFree(virDomainActualNetDefPtr def);
+void virDomainNetDefClear(virDomainNetDefPtr def);
 void virDomainNetDefFree(virDomainNetDefPtr def);
 void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def);
 void virDomainChrDefFree(virDomainChrDefPtr def);
