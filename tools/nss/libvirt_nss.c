@@ -139,9 +139,6 @@ findLease(const char *name,
     while ((ret = virDirRead(dir, &entry, leaseDir)) > 0) {
         char *path;
 
-        if (entry->d_name[0] == '.')
-            continue;
-
         if (!virFileHasSuffix(entry->d_name, ".status"))
             continue;
 
