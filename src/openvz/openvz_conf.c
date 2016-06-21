@@ -1072,7 +1072,7 @@ static int openvzAssignUUIDs(void)
             openvzSetUUID(vpsid);
     }
 
-    closedir(dp);
+    VIR_DIR_CLOSE(dp);
     VIR_FREE(conf_dir);
     return ret;
 }

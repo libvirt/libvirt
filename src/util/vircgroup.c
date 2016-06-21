@@ -3409,7 +3409,7 @@ virCgroupRemoveRecursively(char *grppath)
         VIR_ERROR(_("Failed to readdir for %s (%d)"), grppath, errno);
     }
 
-    closedir(grpdir);
+    VIR_DIR_CLOSE(grpdir);
 
     VIR_DEBUG("Removing cgroup %s", grppath);
     if (rmdir(grppath) != 0 && errno != ENOENT) {
@@ -3669,9 +3669,7 @@ virCgroupKillRecursiveInternal(virCgroupPtr group,
  cleanup:
     virCgroupFree(&subgroup);
     VIR_FREE(keypath);
-    if (dp)
-        closedir(dp);
-
+    VIR_DIR_CLOSE(dp);
     return ret;
 }
 
@@ -3993,15 +3991,13 @@ int virCgroupSetOwner(virCgroupPtr cgroup,
         }
 
         VIR_FREE(base);
-        closedir(dh);
-        dh = NULL;
+        VIR_DIR_CLOSE(dh);
     }
 
     ret = 0;
 
  cleanup:
-    if (dh)
-        closedir(dh);
+    VIR_DIR_CLOSE(dh);
     VIR_FREE(entry);
     VIR_FREE(base);
     return ret;

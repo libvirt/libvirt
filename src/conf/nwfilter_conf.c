@@ -3227,7 +3227,7 @@ virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
             virNWFilterObjUnlock(nwfilter);
     }
 
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

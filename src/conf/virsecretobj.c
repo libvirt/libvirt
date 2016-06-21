@@ -1000,6 +1000,6 @@ virSecretLoadAllConfigs(virSecretObjListPtr secrets,
         virSecretObjEndAPI(&secret);
     }
 
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     return 0;
 }

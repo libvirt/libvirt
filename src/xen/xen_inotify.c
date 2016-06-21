@@ -372,21 +372,21 @@ xenInotifyOpen(virConnectPtr conn,
 
             /* Build the full file path */
             if (!(path = virFileBuildPath(priv->configDir, ent->d_name, NULL))) {
-                closedir(dh);
+                VIR_DIR_CLOSE(dh);
                 return -1;
             }
 
             if (xenInotifyAddDomainConfigInfo(conn, path, now) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Error adding file to config list"));
-                closedir(dh);
+                VIR_DIR_CLOSE(dh);
                 VIR_FREE(path);
                 return -1;
             }
 
             VIR_FREE(path);
         }
-        closedir(dh);
+        VIR_DIR_CLOSE(dh);
         if (direrr < 0)
             return -1;
     }

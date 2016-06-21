@@ -290,8 +290,7 @@ getNewStyleBlockDevice(const char *lun_path,
     retval = 0;
 
  cleanup:
-    if (block_dir)
-        closedir(block_dir);
+    VIR_DIR_CLOSE(block_dir);
     VIR_FREE(block_path);
     return retval;
 }
@@ -387,8 +386,7 @@ getBlockDevice(uint32_t host,
     retval = 0;
 
  cleanup:
-    if (lun_dir)
-        closedir(lun_dir);
+    VIR_DIR_CLOSE(lun_dir);
     VIR_FREE(lun_path);
     return retval;
 }
@@ -501,7 +499,7 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
             found++;
     }
 
-    closedir(devicedir);
+    VIR_DIR_CLOSE(devicedir);
 
     if (retval < 0)
         return -1;

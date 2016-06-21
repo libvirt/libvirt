@@ -1964,7 +1964,7 @@ virStoragePoolLoadAllState(virStoragePoolObjListPtr pools,
         virStoragePoolObjUnlock(pool);
     }
 
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -2015,7 +2015,7 @@ virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
         VIR_FREE(autostartLink);
     }
 
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

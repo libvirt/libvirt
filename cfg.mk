@@ -421,9 +421,9 @@ sc_prohibit_gethostname:
 	  $(_sc_search_regexp)
 
 sc_prohibit_readdir:
-	@prohibit='\breaddir *\('					\
+	@prohibit='\b(read|close)dir *\('				\
 	exclude='exempt from syntax-check'				\
-	halt='use virDirRead, not readdir'				\
+	halt='use virDirRead and VIR_DIR_CLOSE'				\
 	  $(_sc_search_regexp)
 
 sc_prohibit_gettext_noop:

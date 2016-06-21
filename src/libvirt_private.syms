@@ -1493,6 +1493,7 @@ saferead;
 safewrite;
 safezero;
 virBuildPathInternal;
+virDirClose;
 virDirCreate;
 virDirRead;
 virFileAbsPath;

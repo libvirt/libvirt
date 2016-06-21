@@ -122,7 +122,7 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
     if (direrr < 0)
         retval = -1;
 
-    closedir(sysdir);
+    VIR_DIR_CLOSE(sysdir);
  out:
     return retval;
 }

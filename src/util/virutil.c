@@ -1915,7 +1915,7 @@ virFindSCSIHostByPCI(const char *sysfs_prefix,
     }
 
  cleanup:
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     VIR_FREE(unique_path);
     VIR_FREE(host_link);
     VIR_FREE(host_path);
@@ -2265,7 +2265,7 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
 
  cleanup:
 # undef READ_WWN
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     VIR_FREE(wwnn_path);
     VIR_FREE(wwpn_path);
     VIR_FREE(wwnn_buf);
@@ -2354,7 +2354,7 @@ virFindFCHostCapableVport(const char *sysfs_prefix)
     }
 
  cleanup:
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     VIR_FREE(max_vports);
     VIR_FREE(vports);
     return ret;

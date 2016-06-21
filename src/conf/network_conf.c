@@ -3258,7 +3258,7 @@ virNetworkLoadAllState(virNetworkObjListPtr nets,
         virNetworkObjEndAPI(&net);
     }
 
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -3298,7 +3298,7 @@ int virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
         virNetworkObjEndAPI(&net);
     }
 
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

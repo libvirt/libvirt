@@ -159,8 +159,7 @@ findLease(const char *name,
         VIR_FREE(path);
     }
 
-    closedir(dir);
-    dir = NULL;
+    VIR_DIR_CLOSE(dir);
 
     nleases = virJSONValueArraySize(leases_array);
     DEBUG("Read %zd leases", nleases);
@@ -231,8 +230,7 @@ findLease(const char *name,
     *errnop = errno;
     VIR_FREE(tmpAddress);
     virJSONValueFree(leases_array);
-    if (dir)
-        closedir(dir);
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

@@ -667,8 +667,7 @@ static int virFileLoopDeviceOpenSearch(char **dev_name)
         VIR_DEBUG("No free loop devices available");
         VIR_FREE(looppath);
     }
-    if (dh)
-        closedir(dh);
+    VIR_DIR_CLOSE(dh);
     return fd;
 }
 
@@ -807,7 +806,7 @@ virFileNBDDeviceFindUnused(void)
                          _("No free NBD devices"));
 
  cleanup:
-    closedir(dh);
+    VIR_DIR_CLOSE(dh);
     return ret;
 }
 
@@ -994,7 +993,7 @@ int virFileDeleteTree(const char *dir)
 
  cleanup:
     VIR_FREE(filepath);
-    closedir(dh);
+    VIR_DIR_CLOSE(dh);
     return ret;
 }
 
@@ -2768,6 +2767,15 @@ int virDirRead(DIR *dirp, struct dirent **ent, const char *name)
         return -1;
     }
     return !!*ent;
+}
+
+void virDirClose(DIR **dirp)
+{
+    if (!*dirp)
+        return;
+
+    closedir(*dirp); /* exempt from syntax-check */
+    *dirp = NULL;
 }
 
 static int

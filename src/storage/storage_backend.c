@@ -1946,12 +1946,12 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
         if (virAsprintf(&stablepath, "%s/%s",
                         pool->def->target.path,
                         dent->d_name) == -1) {
-            closedir(dh);
+            VIR_DIR_CLOSE(dh);
             return NULL;
         }
 
         if (virFileLinkPointsTo(stablepath, devpath)) {
-            closedir(dh);
+            VIR_DIR_CLOSE(dh);
             return stablepath;
         }
 
@@ -1963,7 +1963,7 @@ virStorageBackendStablePath(virStoragePoolObjPtr pool,
         goto retry;
     }
 
-    closedir(dh);
+    VIR_DIR_CLOSE(dh);
 
  ret_strdup:
     /* Couldn't find any matching stable link so give back

@@ -144,7 +144,7 @@ virNetDevTapGetRealDeviceName(char *ifname ATTRIBUTE_UNUSED)
  cleanup:
     VIR_FREE(devpath);
     VIR_FORCE_CLOSE(fd);
-    closedir(dirp);
+    VIR_DIR_CLOSE(dirp);
     return ret;
 #else
     return NULL;

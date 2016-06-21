@@ -232,6 +232,9 @@ int virDirCreate(const char *path, mode_t mode, uid_t uid, gid_t gid,
                  unsigned int flags) ATTRIBUTE_RETURN_CHECK;
 int virDirRead(DIR *dirp, struct dirent **ent, const char *dirname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+void virDirClose(DIR **dirp)
+    ATTRIBUTE_NONNULL(1);
+# define VIR_DIR_CLOSE(dir)  virDirClose(&(dir))
 
 int virFileMakePath(const char *path) ATTRIBUTE_RETURN_CHECK;
 int virFileMakePathWithMode(const char *path,

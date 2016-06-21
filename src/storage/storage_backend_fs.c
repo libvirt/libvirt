@@ -972,8 +972,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
     if (direrr < 0)
         goto cleanup;
-    closedir(dir);
-    dir = NULL;
+    VIR_DIR_CLOSE(dir);
     vol = NULL;
 
     if (VIR_ALLOC(target))
@@ -1019,8 +1018,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     ret = 0;
  cleanup:
-    if (dir)
-        closedir(dir);
+    VIR_DIR_CLOSE(dir);
     VIR_FORCE_CLOSE(fd);
     virStorageVolDefFree(vol);
     virStorageSourceFree(target);

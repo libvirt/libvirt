@@ -143,8 +143,7 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix,
     }
 
  cleanup:
-    if (dir)
-        closedir(dir);
+    VIR_DIR_CLOSE(dir);
     VIR_FREE(path);
     return sg;
 }
@@ -189,8 +188,7 @@ virSCSIDeviceGetDevName(const char *sysfs_prefix,
     }
 
  cleanup:
-    if (dir)
-        closedir(dir);
+    VIR_DIR_CLOSE(dir);
     VIR_FREE(path);
     return name;
 }

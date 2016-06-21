@@ -112,7 +112,7 @@ testSchemaDir(const char *schema,
  cleanup:
     VIR_FREE(test_name);
     VIR_FREE(xml_path);
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 

@@ -577,7 +577,7 @@ networkMigrateStateFiles(virNetworkDriverStatePtr driver)
 
     ret = 0;
  cleanup:
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     VIR_FREE(oldPath);
     VIR_FREE(newPath);
     VIR_FREE(contents);

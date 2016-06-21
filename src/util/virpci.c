@@ -509,7 +509,7 @@ virPCIDeviceIterDevices(virPCIDeviceIterPredicate predicate,
 
         virPCIDeviceFree(check);
     }
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     return ret;
 }
 
@@ -1993,8 +1993,7 @@ int virPCIDeviceFileIterate(virPCIDevicePtr dev,
     ret = 0;
 
  cleanup:
-    if (dir)
-        closedir(dir);
+    VIR_DIR_CLOSE(dir);
     VIR_FREE(file);
     VIR_FREE(pcidir);
     return ret;
@@ -2051,8 +2050,7 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddressPtr orig,
 
  cleanup:
     VIR_FREE(groupPath);
-    if (groupDir)
-        closedir(groupDir);
+    VIR_DIR_CLOSE(groupDir);
     return ret;
 }
 
@@ -2713,7 +2711,7 @@ virPCIGetNetName(char *device_link_sysfs_path, char **netname)
         break;
     }
 
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
 
  out:
     VIR_FREE(pcidev_sysfs_net_path);

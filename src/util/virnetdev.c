@@ -3188,7 +3188,7 @@ virNetDevRDMAFeature(const char *ifname,
     ret = 0;
 
  cleanup:
-    closedir(dirp);
+    VIR_DIR_CLOSE(dirp);
     VIR_FREE(eth_devpath);
     VIR_FREE(ib_devpath);
     VIR_FREE(eth_res_buf);

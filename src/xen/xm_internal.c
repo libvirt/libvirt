@@ -358,7 +358,7 @@ xenXMConfigCacheRefresh(virConnectPtr conn)
 
         /* Build the full file path */
         if (!(path = virFileBuildPath(priv->configDir, ent->d_name, NULL))) {
-            closedir(dh);
+            VIR_DIR_CLOSE(dh);
             return -1;
         }
 
@@ -386,7 +386,7 @@ xenXMConfigCacheRefresh(virConnectPtr conn)
     args.priv = priv;
     virHashRemoveSet(priv->configCache, xenXMConfigReaper, &args);
 
-    closedir(dh);
+    VIR_DIR_CLOSE(dh);
 
     return ret;
 }

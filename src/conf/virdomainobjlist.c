@@ -616,7 +616,7 @@ virDomainObjListLoadAllConfigs(virDomainObjListPtr doms,
         }
     }
 
-    closedir(dir);
+    VIR_DIR_CLOSE(dir);
     virObjectUnlock(doms);
     return ret;
 }

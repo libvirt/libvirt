@@ -833,8 +833,7 @@ virNumaGetPages(int node,
     VIR_FREE(tmp_free);
     VIR_FREE(tmp_avail);
     VIR_FREE(tmp_size);
-    if (dir)
-        closedir(dir);
+    VIR_DIR_CLOSE(dir);
     VIR_FREE(path);
     return ret;
 }

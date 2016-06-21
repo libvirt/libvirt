@@ -134,9 +134,7 @@ qemuHostdevHostSupportsPassthroughVFIO(void)
     ret = true;
 
  cleanup:
-    if (iommuDir)
-        closedir(iommuDir);
-
+    VIR_DIR_CLOSE(iommuDir);
     return ret;
 }
 

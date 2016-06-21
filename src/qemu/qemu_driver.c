@@ -587,8 +587,7 @@ qemuDomainSnapshotLoad(virDomainObjPtr vm,
 
     ret = 0;
  cleanup:
-    if (dir)
-        closedir(dir);
+    VIR_DIR_CLOSE(dir);
     VIR_FREE(snapDir);
     virObjectUnref(caps);
     virObjectUnlock(vm);

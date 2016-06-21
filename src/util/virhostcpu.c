@@ -477,8 +477,7 @@ virHostCPUParseNode(const char *node,
     ret = processors;
 
  cleanup:
-    if (cpudir)
-        closedir(cpudir);
+    VIR_DIR_CLOSE(cpudir);
     if (cores_maps)
         for (i = 0; i < sock_max; i++)
             virBitmapFree(cores_maps[i]);
@@ -774,8 +773,7 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
     ret = 0;
 
  cleanup:
-    if (nodedir)
-        closedir(nodedir);
+    VIR_DIR_CLOSE(nodedir);
     virBitmapFree(present_cpus_map);
     virBitmapFree(online_cpus_map);
     VIR_FREE(sysfs_nodedir);
