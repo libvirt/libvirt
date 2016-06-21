@@ -1496,6 +1496,7 @@ virBuildPathInternal;
 virDirClose;
 virDirCreate;
 virDirOpen;
+virDirOpenIfExists;
 virDirRead;
 virFileAbsPath;
 virFileAccessibleAs;

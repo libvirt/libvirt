@@ -2723,10 +2723,12 @@ virFileRemove(const char *path,
 #endif /* WIN32 */
 
 static int
-virDirOpenInternal(DIR **dirp, const char *name)
+virDirOpenInternal(DIR **dirp, const char *name, bool ignoreENOENT)
 {
     *dirp = opendir(name);
     if (!*dirp) {
+        if (ignoreENOENT && errno == ENOENT)
+            return 0;
         virReportSystemError(errno, _("cannot open directory '%s'"), name);
         return -1;
     }
@@ -2744,7 +2746,22 @@ virDirOpenInternal(DIR **dirp, const char *name)
 int
 virDirOpen(DIR **dirp, const char *name)
 {
-    return virDirOpenInternal(dirp, name);
+    return virDirOpenInternal(dirp, name, false);
+}
+
+/**
+ * virDirOpenIfExists
+ * @dirp: directory stream
+ * @name: path of the directory
+ *
+ * Returns 1 on success.
+ * If opendir returns ENOENT, 0 is returned without reporting an error.
+ * On other errors, -1 is returned and an error is reported.
+ */
+int
+virDirOpenIfExists(DIR **dirp, const char *name)
+{
+    return virDirOpenInternal(dirp, name, true);
 }
 
 /**
