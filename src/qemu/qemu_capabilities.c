@@ -2364,6 +2364,13 @@ virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
 }
 
 
+virCPUDefPtr
+virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps)
+{
+    return qemuCaps->hostCPUModel;
+}
+
+
 int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
                                    size_t *nmachines,
                                    virCapsGuestMachinePtr **machines)
