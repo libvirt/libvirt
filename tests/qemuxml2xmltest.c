@@ -886,6 +886,10 @@ mymain(void)
     DO_TEST("video-qxl-heads");
     DO_TEST("video-qxl-noheads");
 
+    DO_TEST_FULL("intel-iommu", WHEN_ACTIVE, GIC_NONE,
+                 QEMU_CAPS_DEVICE_PCI_BRIDGE,
+                 QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE);
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;

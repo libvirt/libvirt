@@ -6752,6 +6752,32 @@ qemu-kvm -net nic,model=? /dev/null
       </dd>
     </dl>
 
+    <h4><a name="elementsIommu">IOMMU devices</a></h4>
+
+    <p>
+      The <code>iommu</code> element can be used to add an IOMMU device.
+      <span class="since">Since 2.1.0</span>
+    </p>
+
+    <p>
+      Example:
+    </p>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;iommu model='intel'/&gt;
+  &lt;/devices&gt;
+  ...
+</pre>
+    <dl>
+      <dt><code>model</code></dt>
+      <dd>
+        <p>
+          Currently only the <code>intel</code> model is supported.
+        </p>
+      </dd>
+    </dl>
+
     <h3><a name="seclabel">Security label</a></h3>
 
     <p>

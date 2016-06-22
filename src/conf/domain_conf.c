@@ -240,7 +240,8 @@ VIR_ENUM_IMPL(virDomainDevice, VIR_DOMAIN_DEVICE_LAST,
               "shmem",
               "tpm",
               "panic",
-              "memory")
+              "memory",
+              "iommu")
 
 VIR_ENUM_IMPL(virDomainDeviceAddress, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST,
               "none",
@@ -802,6 +803,9 @@ VIR_ENUM_IMPL(virDomainTPMModel, VIR_DOMAIN_TPM_MODEL_LAST,
 
 VIR_ENUM_IMPL(virDomainTPMBackend, VIR_DOMAIN_TPM_TYPE_LAST,
               "passthrough")
+
+VIR_ENUM_IMPL(virDomainIOMMUModel, VIR_DOMAIN_IOMMU_MODEL_LAST,
+              "intel")
 
 VIR_ENUM_IMPL(virDomainDiskDiscard, VIR_DOMAIN_DISK_DISCARD_LAST,
               "default",
@@ -2394,6 +2398,9 @@ void virDomainDeviceDefFree(virDomainDeviceDefPtr def)
     case VIR_DOMAIN_DEVICE_MEMORY:
         virDomainMemoryDefFree(def->data.memory);
         break;
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        VIR_FREE(def->data.iommu);
+        break;
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
         break;
@@ -2639,6 +2646,8 @@ void virDomainDefFree(virDomainDefPtr def)
     for (i = 0; i < def->npanics; i++)
         virDomainPanicDefFree(def->panics[i]);
     VIR_FREE(def->panics);
+
+    VIR_FREE(def->iommu);
 
     VIR_FREE(def->idmap.uidmap);
     VIR_FREE(def->idmap.gidmap);
@@ -3180,6 +3189,7 @@ virDomainDeviceGetInfo(virDomainDeviceDefPtr device)
     /* The following devices do not contain virDomainDeviceInfo */
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
         break;
@@ -3543,6 +3553,7 @@ virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_RNG:
     case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
         break;
     }
 #endif
@@ -4604,6 +4615,7 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
         break;
@@ -13266,6 +13278,39 @@ virDomainMemoryDefParseXML(xmlNodePtr memdevNode,
 }
 
 
+static virDomainIOMMUDefPtr
+virDomainIOMMUDefParseXML(xmlNodePtr node)
+{
+    virDomainIOMMUDefPtr iommu = NULL, ret = NULL;
+    char *tmp = NULL;
+    int val;
+
+    if (VIR_ALLOC(iommu) < 0)
+        goto cleanup;
+
+    if (!(tmp = virXMLPropString(node, "model"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing model for IOMMU device"));
+        goto cleanup;
+    }
+
+    if ((val = virDomainIOMMUModelTypeFromString(tmp)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, _("unknown IOMMU model: %s"), tmp);
+        goto cleanup;
+    }
+
+    iommu->model = val;
+
+    ret = iommu;
+    iommu = NULL;
+
+ cleanup:
+    VIR_FREE(iommu);
+    VIR_FREE(tmp);
+    return ret;
+}
+
+
 virDomainDeviceDefPtr
 virDomainDeviceDefParse(const char *xmlStr,
                         const virDomainDef *def,
@@ -13405,6 +13450,10 @@ virDomainDeviceDefParse(const char *xmlStr,
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
         if (!(dev->data.memory = virDomainMemoryDefParseXML(node, ctxt, flags)))
+            goto error;
+        break;
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        if (!(dev->data.iommu = virDomainIOMMUDefParseXML(node)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_NONE:
@@ -17215,6 +17264,21 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
+    if ((n = virXPathNodeSet("./devices/iommu", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (n > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("only a single IOMMU device is supported"));
+        goto error;
+    }
+
+    if (n > 0) {
+        if (!(def->iommu = virDomainIOMMUDefParseXML(nodes[0])))
+            goto error;
+    }
+    VIR_FREE(nodes);
+
     /* analysis of the user namespace mapping */
     if ((n = virXPathNodeSet("./idmap/uid", ctxt, &nodes)) < 0)
         goto error;
@@ -18981,6 +19045,23 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
             goto error;
     }
 
+    if (!!src->iommu != !!dst->iommu) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Target domain IOMMU device count "
+                         "does not match source"));
+        goto error;
+    }
+
+    if (src->iommu &&
+        src->iommu->model != dst->iommu->model) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target domain IOMMU device model '%s' "
+                         "does not match source '%s'"),
+                       virDomainIOMMUModelTypeToString(dst->iommu->model),
+                       virDomainIOMMUModelTypeToString(src->iommu->model));
+        goto error;
+    }
+
     /* Coverity is not very happy with this - all dead_error_condition */
 #if !STATIC_ANALYSIS
     /* This switch statement is here to trigger compiler warning when adding
@@ -19013,6 +19094,7 @@ virDomainDefCheckABIStability(virDomainDefPtr src,
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
         break;
     }
 #endif
@@ -23576,6 +23658,11 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             goto error;
     }
 
+    if (def->iommu) {
+        virBufferAsprintf(buf, "<iommu model='%s'/>\n",
+                          virDomainIOMMUModelTypeToString(def->iommu->model));
+    }
+
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</devices>\n");
 
@@ -24693,6 +24780,7 @@ virDomainDeviceDefCopy(virDomainDeviceDefPtr src,
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Copying definition of '%d' type "

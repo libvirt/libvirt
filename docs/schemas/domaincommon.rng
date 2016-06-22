@@ -3718,6 +3718,14 @@
    </optional>
   </define>
 
+  <define name="iommu">
+    <element name="iommu">
+      <attribute name="model">
+        <value>intel</value>
+      </attribute>
+    </element>
+  </define>
+
   <define name="input">
     <element name="input">
       <choice>
@@ -4187,6 +4195,9 @@
         <zeroOrMore>
           <ref name="panic"/>
         </zeroOrMore>
+        <optional>
+          <ref name="iommu"/>
+        </optional>
       </interleave>
     </element>
   </define>
