@@ -8790,7 +8790,7 @@ virDomainRename(virDomainPtr dom,
 
     virResetLastError();
     virCheckDomainReturn(dom, -1);
-    virCheckNonNullArgGoto(new_name, error);
+    virCheckNonEmptyStringArgGoto(new_name, error);
     virCheckReadOnlyGoto(dom->conn->flags, error);
 
     if (dom->conn->driver->domainRename) {
