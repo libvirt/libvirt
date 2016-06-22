@@ -2027,6 +2027,8 @@ mymain(void)
                               QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_USB_HUB);
 
     DO_TEST("acpi-table", NONE);
+    DO_TEST("intel-iommu", QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_DEVICE_INTEL_IOMMU);
 
     qemuTestDriverFree(&driver);
 

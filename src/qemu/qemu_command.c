@@ -6164,6 +6164,38 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
 
 
 static int
+qemuBuildIOMMUCommandLine(virCommandPtr cmd,
+                          const virDomainDef *def,
+                          virQEMUCapsPtr qemuCaps)
+{
+    if (!def->iommu)
+        return 0;
+
+    switch (def->iommu->model) {
+    case VIR_DOMAIN_IOMMU_MODEL_INTEL:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("IOMMU device: '%s' is not supported with "
+                             "this QEMU binary"),
+                           virDomainIOMMUModelTypeToString(def->iommu->model));
+            return -1;
+        }
+        if (!qemuDomainMachineIsQ35(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("IOMMU device: '%s' is only supported with "
+                             "Q35 machines"),
+                           virDomainIOMMUModelTypeToString(def->iommu->model));
+            return -1;
+        }
+        virCommandAddArgList(cmd, "-device", "intel-iommu", NULL);
+    case VIR_DOMAIN_IOMMU_MODEL_LAST:
+        break;
+    }
+    return 0;
+}
+
+
+static int
 qemuBuildGlobalControllerCommandLine(virCommandPtr cmd,
                                      const virDomainDef *def,
                                      virQEMUCapsPtr qemuCaps)
@@ -9234,6 +9266,9 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
         goto error;
 
     if (qemuBuildBootCommandLine(cmd, def, qemuCaps) < 0)
+        goto error;
+
+    if (qemuBuildIOMMUCommandLine(cmd, def, qemuCaps) < 0)
         goto error;
 
     if (qemuBuildGlobalControllerCommandLine(cmd, def, qemuCaps) < 0)
