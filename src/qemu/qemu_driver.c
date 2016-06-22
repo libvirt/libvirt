@@ -15521,7 +15521,7 @@ static int qemuDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
     if (virDomainQemuMonitorCommandEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
