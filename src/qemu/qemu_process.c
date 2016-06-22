@@ -4443,9 +4443,6 @@ qemuProcessStartValidateGraphics(virDomainObjPtr vm)
         }
     }
 
-    if (qemuProcessStartValidateGuestCPU(vm, qemuCaps, caps, flags) < 0)
-        return -1;
-
     return 0;
 }
 
@@ -4476,107 +4473,6 @@ qemuProcessStartValidateXML(virQEMUDriverPtr driver,
         return -1;
 
     return 0;
-}
-
-
-static int
-qemuProcessStartValidateGuestCPU(virDomainObjPtr vm,
-                                 virQEMUCapsPtr qemuCaps,
-                                 virCapsPtr caps,
-                                 unsigned int flags)
-{
-    int ret = -1;
-    virCPUDefPtr host = NULL;
-    virCPUDefPtr cpu = NULL;
-    size_t ncpus = 0;
-    char **cpus = NULL;
-    bool noTSX = false;
-    virCPUCompareResult cmp;
-    virCPUDataPtr data = NULL;
-    virCPUDataPtr hostData = NULL;
-    char *compare_msg = NULL;
-
-    if (!vm->def->cpu ||
-        (vm->def->cpu->mode == VIR_CPU_MODE_CUSTOM &&
-         !vm->def->cpu->model))
-        return 0;
-
-    if ((vm->def->virtType != VIR_DOMAIN_VIRT_KVM &&
-         vm->def->cpu->mode == VIR_CPU_MODE_CUSTOM) ||
-        vm->def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
-        return 0;
-
-    host = caps->host.cpu;
-
-    if (virQEMUCapsGetCPUDefinitions(qemuCaps, &cpus, &ncpus) < 0)
-        goto cleanup;
-
-    if (!host || !host->model || ncpus == 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("CPU specification not supported by hypervisor"));
-        goto cleanup;
-    }
-
-    if (!(cpu = virCPUDefCopy(vm->def->cpu)))
-        goto cleanup;
-
-    if (cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
-        flags & VIR_QEMU_PROCESS_START_NEW &&
-        virCPUUpdate(vm->def->os.arch, cpu, host) < 0)
-        goto cleanup;
-
-    cmp = cpuGuestData(host, cpu, &data, &compare_msg);
-    switch (cmp) {
-    case VIR_CPU_COMPARE_INCOMPATIBLE:
-        if (cpuEncode(host->arch, host, NULL, &hostData,
-                      NULL, NULL, NULL, NULL) == 0 &&
-            (!virCPUDataCheckFeature(hostData, "hle") ||
-             !virCPUDataCheckFeature(hostData, "rtm")) &&
-            (STREQ_NULLABLE(cpu->model, "Haswell") ||
-             STREQ_NULLABLE(cpu->model, "Broadwell")))
-            noTSX = true;
-
-        if (compare_msg) {
-            if (noTSX) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("guest and host CPU are not compatible: "
-                                 "%s; try using '%s-noTSX' CPU model"),
-                               compare_msg, cpu->model);
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("guest and host CPU are not compatible: "
-                                 "%s"),
-                               compare_msg);
-            }
-        } else {
-            if (noTSX) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("guest CPU is not compatible with host "
-                                 "CPU; try using '%s-noTSX' CPU model"),
-                               cpu->model);
-            } else {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("guest CPU is not compatible with host "
-                                 "CPU"));
-            }
-        }
-        /* fall through */
-    case VIR_CPU_COMPARE_ERROR:
-        goto cleanup;
-
-    default:
-        break;
-    }
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(compare_msg);
-    cpuDataFree(data);
-    cpuDataFree(hostData);
-    virCPUDefFree(cpu);
-    virStringFreeListCount(cpus, ncpus);
-    return ret;
 }
 
 
@@ -5052,6 +4948,76 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuProcessUpdateGuestCPU(virDomainDefPtr def,
+                          virQEMUCapsPtr qemuCaps,
+                          virCapsPtr caps,
+                          unsigned int flags)
+{
+    int ret = -1;
+    size_t nmodels = 0;
+    char **models = NULL;
+
+    if (!def->cpu)
+        return 0;
+
+    /* nothing to do if only topology part of CPU def is used */
+    if (def->cpu->mode == VIR_CPU_MODE_CUSTOM && !def->cpu->model)
+        return 0;
+
+    /* Old libvirt added host CPU model to host-model CPUs for migrations,
+     * while new libvirt just turns host-model into custom mode. We need
+     * to fix the mode to maintain backward compatibility and to avoid
+     * the CPU model to be replaced in virCPUUpdate.
+     */
+    if (!(flags & VIR_QEMU_PROCESS_START_NEW) &&
+        ARCH_IS_X86(def->os.arch) &&
+        def->cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
+        def->cpu->model) {
+        def->cpu->mode = VIR_CPU_MODE_CUSTOM;
+    }
+
+    if (!virQEMUCapsIsCPUModeSupported(qemuCaps, caps, def->virtType,
+                                       def->cpu->mode)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("CPU mode '%s' for %s %s domain on %s host is not "
+                         "supported by hypervisor"),
+                       virCPUModeTypeToString(def->cpu->mode),
+                       virArchToString(def->os.arch),
+                       virDomainVirtTypeToString(def->virtType),
+                       virArchToString(caps->host.arch));
+        return -1;
+    }
+
+    /* nothing to update for host-passthrough */
+    if (def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
+        return 0;
+
+    /* custom CPUs in TCG mode don't need to be compared to host CPU */
+    if (def->virtType != VIR_DOMAIN_VIRT_QEMU ||
+        def->cpu->mode != VIR_CPU_MODE_CUSTOM) {
+        if (virCPUCompare(caps->host.arch, virQEMUCapsGetHostModel(qemuCaps),
+                          def->cpu, true) < 0)
+            return -1;
+    }
+
+    if (virCPUUpdate(def->os.arch, def->cpu,
+                     virQEMUCapsGetHostModel(qemuCaps)) < 0)
+        goto cleanup;
+
+    if (virQEMUCapsGetCPUDefinitions(qemuCaps, &models, &nmodels) < 0 ||
+        virCPUTranslate(def->os.arch, def->cpu, models, nmodels) < 0)
+        goto cleanup;
+
+    def->cpu->fallback = VIR_CPU_FALLBACK_FORBID;
+    ret = 0;
+
+ cleanup:
+    virStringFreeListCount(models, nmodels);
+    return ret;
+}
+
+
 /**
  * qemuProcessPrepareDomain
  *
@@ -5161,6 +5127,10 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     priv->monError = false;
     priv->monStart = 0;
     priv->gotShutdown = false;
+
+    VIR_DEBUG("Updating guest CPU definition");
+    if (qemuProcessUpdateGuestCPU(vm->def, priv->qemuCaps, caps, flags) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:

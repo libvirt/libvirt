@@ -8,7 +8,7 @@ QEMU_AUDIO_DRV=none \
 -name QEMUGuest1 \
 -S \
 -M pc \
--cpu Haswell \
+-cpu Haswell,+rtm,+hle \
 -m 214 \
 -smp 6,sockets=6,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \

@@ -9,7 +9,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -M pc \
 -cpu Haswell,+vme,+ds,+acpi,+ss,+ht,+tm,+pbe,+dtes64,+monitor,+ds_cpl,+vmx,\
-+smx,+est,+tm2,+xtpr,+pdcm,+osxsave,+f16c,+rdrand,+pdpe1gb,+abm \
++smx,+est,+tm2,+xtpr,+pdcm,+osxsave,+f16c,+rdrand,+pdpe1gb,+abm,+lahf_lm \
 -m 214 \
 -smp 6,sockets=6,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \

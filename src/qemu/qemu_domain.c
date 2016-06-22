@@ -3399,14 +3399,8 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
     /* Update guest CPU requirements according to host CPU */
     if ((flags & VIR_DOMAIN_XML_UPDATE_CPU) &&
         def->cpu &&
-        (def->cpu->mode != VIR_CPU_MODE_CUSTOM || def->cpu->model)) {
-        if (!caps->host.cpu ||
-            !caps->host.cpu->model) {
-            virReportError(VIR_ERR_OPERATION_FAILED,
-                           "%s", _("cannot get host CPU capabilities"));
-            goto cleanup;
-        }
-
+        (def->cpu->mode != VIR_CPU_MODE_CUSTOM ||
+         def->cpu->model)) {
         if (virCPUUpdate(def->os.arch, def->cpu, caps->host.cpu) < 0)
             goto cleanup;
     }
@@ -3542,10 +3536,13 @@ char *qemuDomainFormatXML(virQEMUDriverPtr driver,
 {
     virDomainDefPtr def;
 
-    if ((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef)
+    if ((flags & VIR_DOMAIN_XML_INACTIVE) && vm->newDef) {
         def = vm->newDef;
-    else
+    } else {
         def = vm->def;
+        if (virDomainObjIsActive(vm))
+            flags &= ~VIR_DOMAIN_XML_UPDATE_CPU;
+    }
 
     return qemuDomainDefFormatXML(driver, def, flags);
 }

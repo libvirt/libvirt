@@ -8,7 +8,8 @@ QEMU_AUDIO_DRV=none \
 -name QEMUGuest1 \
 -S \
 -M pc \
--cpu core2duo,+ds,+ht,+tm,+ds_cpl,+xtpr,+3dnowext,+lahf_lm,-nx \
+-cpu core2duo,+ds,+ht,+tm,+ds_cpl,+xtpr,+3dnowext,+lahf_lm,-nx,-cx16,-tm2,-pbe,\
+-ss,-sse4a,-wdt \
 -m 214 \
 -smp 6,sockets=6,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
