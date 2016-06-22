@@ -2041,7 +2041,6 @@ qemuDomainDefEnableDefaultFeatures(virDomainDefPtr def,
      * was not included in the domain XML, we need to choose a suitable
      * GIC version ourselves */
     if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ABSENT &&
-        (def->os.arch == VIR_ARCH_ARMV7L || def->os.arch == VIR_ARCH_AARCH64) &&
         qemuDomainMachineIsVirt(def)) {
 
         VIR_DEBUG("Looking for usable GIC version in domain capabilities");
@@ -4920,8 +4919,15 @@ qemuDomainMachineIsS390CCW(const virDomainDef *def)
 bool
 qemuDomainMachineIsVirt(const virDomainDef *def)
 {
-    return STREQ(def->os.machine, "virt") ||
-           STRPREFIX(def->os.machine, "virt-");
+    if (def->os.arch != VIR_ARCH_ARMV7L &&
+        def->os.arch != VIR_ARCH_AARCH64)
+        return false;
+
+    if (STRNEQ(def->os.machine, "virt") &&
+        !STRPREFIX(def->os.machine, "virt-"))
+        return false;
+
+    return true;
 }
 
 

@@ -2174,13 +2174,11 @@ bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
         return false;
     }
 
-    if (ARCH_IS_ARM(def->os.arch)) {
-        /* If 'virt' supports PCI, it supports multibus.
-         * No extra conditions here for simplicity.
-         */
-        if (qemuDomainMachineIsVirt(def))
-            return true;
-    }
+    /* If 'virt' supports PCI, it supports multibus.
+     * No extra conditions here for simplicity.
+     */
+    if (qemuDomainMachineIsVirt(def))
+        return true;
 
     return false;
 }
