@@ -419,6 +419,9 @@ virNetworkDefFree(virNetworkDefPtr def)
 
     virNetDevBandwidthFree(def->bandwidth);
     virNetDevVlanClear(&def->vlan);
+
+    xmlFreeNode(def->metadata);
+
     VIR_FREE(def);
 }
 
@@ -2059,6 +2062,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     xmlNodePtr save = ctxt->node;
     xmlNodePtr bandwidthNode = NULL;
     xmlNodePtr vlanNode;
+    xmlNodePtr metadataNode = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -2390,6 +2394,13 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     }
 
     VIR_FREE(stp);
+
+    /* Extract custom metadata */
+    if ((metadataNode = virXPathNode("./metadata[1]", ctxt)) != NULL) {
+        def->metadata = xmlCopyNode(metadataNode, 1);
+        virXMLNodeSanitizeNamespaces(def->metadata);
+    }
+
     ctxt->node = save;
     return def;
 
@@ -2412,12 +2423,14 @@ virNetworkDefParse(const char *xmlStr,
 {
     xmlDocPtr xml;
     virNetworkDefPtr def = NULL;
+    int keepBlanksDefault = xmlKeepBlanksDefault(0);
 
     if ((xml = virXMLParse(filename, xmlStr, _("(network_definition)")))) {
         def = virNetworkDefParseNode(xml, xmlDocGetRootElement(xml));
         xmlFreeDoc(xml);
     }
 
+    xmlKeepBlanksDefault(keepBlanksDefault);
     return def;
 }
 
@@ -2735,6 +2748,29 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     uuid = def->uuid;
     virUUIDFormat(uuid, uuidstr);
     virBufferAsprintf(buf, "<uuid>%s</uuid>\n", uuidstr);
+
+    if (def->metadata) {
+        xmlBufferPtr xmlbuf;
+        int oldIndentTreeOutput = xmlIndentTreeOutput;
+
+        /* Indentation on output requires that we previously set
+         * xmlKeepBlanksDefault to 0 when parsing; also, libxml does 2
+         * spaces per level of indentation of intermediate elements,
+         * but no leading indentation before the starting element.
+         * Thankfully, libxml maps what looks like globals into
+         * thread-local uses, so we are thread-safe.  */
+        xmlIndentTreeOutput = 1;
+        xmlbuf = xmlBufferCreate();
+        if (xmlNodeDump(xmlbuf, def->metadata->doc, def->metadata,
+                        virBufferGetIndent(buf, false) / 2, 1) < 0) {
+            xmlBufferFree(xmlbuf);
+            xmlIndentTreeOutput = oldIndentTreeOutput;
+            goto error;
+        }
+        virBufferAsprintf(buf, "%s\n", (char *) xmlBufferContent(xmlbuf));
+        xmlBufferFree(xmlbuf);
+        xmlIndentTreeOutput = oldIndentTreeOutput;
+    }
 
     if (def->forward.type != VIR_NETWORK_FORWARD_NONE) {
         const char *dev = NULL;

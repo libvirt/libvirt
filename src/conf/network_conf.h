@@ -253,6 +253,9 @@ struct _virNetworkDef {
     virNetDevBandwidthPtr bandwidth;
     virNetDevVlan vlan;
     int trustGuestRxFilters; /* enum virTristateBool */
+
+    /* Application-specific custom metadata */
+    xmlNodePtr metadata;
 };
 
 typedef struct _virNetworkObj virNetworkObj;

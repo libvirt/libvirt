@@ -495,4 +495,27 @@
     </choice>
   </define>
 
+  <define name="metadata">
+    <element name="metadata">
+      <zeroOrMore>
+        <ref name="customElement"/>
+      </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="customElement">
+    <element>
+      <anyName/>
+      <zeroOrMore>
+        <choice>
+          <attribute>
+            <anyName/>
+          </attribute>
+          <text/>
+          <ref name="customElement"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+
 </grammar>

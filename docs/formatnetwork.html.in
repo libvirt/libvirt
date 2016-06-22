@@ -38,6 +38,10 @@
       &lt;network ipv6='yes' trustGuestRxFilters='no'&gt;
         &lt;name&gt;default&lt;/name&gt;
         &lt;uuid&gt;3e3fce45-4f53-4fa7-bb32-11f34168b82b&lt;/uuid&gt;
+        &lt;metadata&gt;
+          &lt;app1:foo xmlns:app1="http://app1.org/app1/"&gt;..&lt;/app1:foo&gt;
+          &lt;app2:bar xmlns:app2="http://app1.org/app2/"&gt;..&lt;/app2:bar&gt;
+        &lt;/metadata&gt;
         ...</pre>
 
     <dl>
@@ -54,6 +58,12 @@
         The format must be RFC 4122 compliant, eg <code>3e3fce45-4f53-4fa7-bb32-11f34168b82b</code>.
         If omitted when defining/creating a new network, a random
         UUID is generated. <span class="since">Since 0.3.0</span></dd>
+      <dd>The <code>metadata</code> node can be used by applications to
+        store custom metadata in the form of XML nodes/trees. Applications
+        must use custom namespaces on their XML nodes/trees, with only
+        one top-level element per namespace (if the application needs
+        structure, they should have sub-elements to their namespace
+        element). <span class="since">Since 2.1.0</span></dd>
       <dt><code>ipv6</code></dt>
       <dd>When set to <code>yes</code>, the optional parameter
         <code>ipv6</code> enables

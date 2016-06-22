@@ -153,6 +153,7 @@ mymain(void)
     DO_TEST("host-bridge-no-flood");
     DO_TEST_PARSE_ERROR("hostdev-duplicate");
     DO_TEST_PARSE_ERROR("passthrough-duplicate");
+    DO_TEST("metadata");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

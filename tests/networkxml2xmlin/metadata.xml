@@ -1,0 +1,10 @@
+<network>
+  <name>host-bridge-net</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a8e</uuid>
+  <forward mode='bridge'/>
+  <bridge name='br0'/>
+  <metadata>
+    <app1:foo xmlns:app1="http://foo.org/">fooish</app1:foo>
+    <app2:bar xmlns:app2="http://bar.com/" maman="baz">barish</app2:bar>
+  </metadata>
+</network>

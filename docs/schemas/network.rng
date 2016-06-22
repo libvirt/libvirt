@@ -37,6 +37,11 @@
           <text/>
         </element>
 
+        <!-- <metadata> element -->
+        <optional>
+          <ref name="metadata"/>
+        </optional>
+
         <!-- <uuid> element -->
         <optional>
           <element name="uuid"><ref name="UUID"/></element>
