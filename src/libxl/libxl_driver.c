@@ -4443,8 +4443,11 @@ libxlDomainOpenConsole(virDomainPtr dom,
 
     priv = vm->privateData;
 
-    if (vm->def->nconsoles)
+    if (vm->def->nconsoles) {
         chr = vm->def->consoles[0];
+        if (chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
+            chr = vm->def->serials[0];
+    }
 
     if (!chr) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

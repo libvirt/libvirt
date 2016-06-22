@@ -964,13 +964,17 @@ libxlConsoleCallback(libxl_ctx *ctx, libxl_event *ev, void *for_callback)
     virObjectLock(vm);
     for (i = 0; i < vm->def->nconsoles; i++) {
         virDomainChrDefPtr chr = vm->def->consoles[i];
-        if (chr && chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
+        if (i == 0 &&
+            chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
+            chr = vm->def->serials[0];
+
+        if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
             libxl_console_type console_type;
             char *console = NULL;
             int ret;
 
             console_type =
-                (chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL ?
+                (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL ?
                  LIBXL_CONSOLE_TYPE_SERIAL : LIBXL_CONSOLE_TYPE_PV);
             ret = libxl_console_get_tty(ctx, ev->domid,
                                         chr->target.port, console_type,
