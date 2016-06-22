@@ -510,7 +510,6 @@ qemuNetworkDriveGetPort(int protocol,
 /**
  * qemuBuildSecretInfoProps:
  * @secinfo: pointer to the secret info object
- * @type: returns a pointer to a character string for object name
  * @props: json properties to return
  *
  * Build the JSON properties for the secret info type.
@@ -520,13 +519,10 @@ qemuNetworkDriveGetPort(int protocol,
  */
 static int
 qemuBuildSecretInfoProps(qemuDomainSecretInfoPtr secinfo,
-                         const char **type,
                          virJSONValuePtr *propsret)
 {
     int ret = -1;
     char *keyid = NULL;
-
-    *type = "secret";
 
     if (!(keyid = qemuDomainGetMasterKeyAlias()))
         return -1;
@@ -565,13 +561,12 @@ qemuBuildObjectSecretCommandLine(virCommandPtr cmd,
 {
     int ret = -1;
     virJSONValuePtr props = NULL;
-    const char *type;
     char *tmp = NULL;
 
-    if (qemuBuildSecretInfoProps(secinfo, &type, &props) < 0)
+    if (qemuBuildSecretInfoProps(secinfo, &props) < 0)
         return -1;
 
-    if (!(tmp = virQEMUBuildObjectCommandlineFromJSON(type,
+    if (!(tmp = virQEMUBuildObjectCommandlineFromJSON("secret",
                                                       secinfo->s.aes.alias,
                                                       props)))
         goto cleanup;
