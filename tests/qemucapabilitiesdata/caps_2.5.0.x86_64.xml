@@ -187,6 +187,7 @@
   <flag name='drive-detect-zeroes'/>
   <flag name='tls-creds-x509'/>
   <flag name='display'/>
+  <flag name='intel-iommu'/>
   <version>2005000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

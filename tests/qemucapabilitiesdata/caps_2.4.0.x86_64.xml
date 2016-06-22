@@ -182,6 +182,7 @@
   <flag name='spice-unix'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='display'/>
+  <flag name='intel-iommu'/>
   <version>2004000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
