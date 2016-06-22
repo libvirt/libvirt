@@ -23478,20 +23478,6 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         if (virDomainChrDefFormat(buf, &console, flags) < 0)
             goto error;
     }
-    /* The back-compat console device stub is added when parsing the domain XML
-     * and handled above, this is for formatting definitions created via other
-     * means.
-     */
-    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
-        def->nconsoles == 0 &&
-        def->nserials > 0) {
-        virDomainChrDef console;
-        memcpy(&console, def->serials[n], sizeof(console));
-        console.deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
-        console.targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
-        if (virDomainChrDefFormat(buf, &console, flags) < 0)
-            goto error;
-    }
 
     for (n = 0; n < def->nchannels; n++)
         if (virDomainChrDefFormat(buf, def->channels[n], flags) < 0)
