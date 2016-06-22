@@ -517,7 +517,7 @@ qemuNetworkDriveGetPort(int protocol,
  * Returns 0 on success with the filled in JSON property; otherwise,
  * returns -1 on failure error message set.
  */
-static int
+int
 qemuBuildSecretInfoProps(qemuDomainSecretInfoPtr secinfo,
                          virJSONValuePtr *propsret)
 {

@@ -61,6 +61,10 @@ virCommandPtr qemuBuildCommandLine(virQEMUDriverPtr driver,
                                    const char *domainLibDir)
     ATTRIBUTE_NONNULL(15);
 
+/* Generate the object properties for a secret */
+int qemuBuildSecretInfoProps(qemuDomainSecretInfoPtr secinfo,
+                             virJSONValuePtr *propsret);
+
 /* Generate '-device' string for chardev device */
 int
 qemuBuildChrDeviceStr(char **deviceStr,
