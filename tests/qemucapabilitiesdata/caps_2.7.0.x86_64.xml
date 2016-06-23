@@ -193,6 +193,7 @@
   <flag name='intel-iommu'/>
   <flag name='smm'/>
   <flag name='virtio-pci-disable-legacy'/>
+  <flag name='query-hotpluggable-cpus'/>
   <version>2006091</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.7.0-rc1-52-g42e0d60)</package>

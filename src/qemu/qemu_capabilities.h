@@ -374,6 +374,7 @@ typedef enum {
     QEMU_CAPS_DEVICE_INTEL_IOMMU, /* -device intel-iommu */
     QEMU_CAPS_MACHINE_SMM_OPT, /* -machine xxx,smm=on/off/auto */
     QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, /* virtio-*pci.disable-legacy */
+    QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS, /* qmp command query-hotpluggable-cpus */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

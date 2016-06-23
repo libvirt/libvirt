@@ -341,6 +341,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "intel-iommu",
               "smm",
               "virtio-pci-disable-legacy",
+              "query-hotpluggable-cpus",
     );
 
 
@@ -1462,6 +1463,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "change-backing-file", QEMU_CAPS_CHANGE_BACKING_FILE },
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
     { "migrate-incoming", QEMU_CAPS_INCOMING_DEFER },
+    { "query-hotpluggable-cpus", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
