@@ -126,6 +126,22 @@ virObjectEventDispose(void *obj)
 }
 
 /**
+ * virObjectEventCallbackFree:
+ * @list: event callback to free
+ *
+ * Free the memory in the domain event callback
+ */
+static void
+virObjectEventCallbackFree(virObjectEventCallbackPtr cb)
+{
+    if (!cb)
+        return;
+
+    virObjectUnref(cb->conn);
+    VIR_FREE(cb);
+}
+
+/**
  * virObjectEventCallbackListFree:
  * @list: event callback list head
  *
@@ -230,8 +246,7 @@ virObjectEventCallbackListRemoveID(virConnectPtr conn,
 
             if (cb->freecb)
                 (*cb->freecb)(cb->opaque);
-            virObjectUnref(cb->conn);
-            VIR_FREE(cb);
+            virObjectEventCallbackFree(cb);
             VIR_DELETE_ELEMENT(cbList->callbacks, i, cbList->count);
             return ret;
         }
@@ -280,8 +295,7 @@ virObjectEventCallbackListPurgeMarked(virObjectEventCallbackListPtr cbList)
             virFreeCallback freecb = cbList->callbacks[n]->freecb;
             if (freecb)
                 (*freecb)(cbList->callbacks[n]->opaque);
-            virObjectUnref(cbList->callbacks[n]->conn);
-            VIR_FREE(cbList->callbacks[n]);
+            virObjectEventCallbackFree(cbList->callbacks[n]);
 
             VIR_DELETE_ELEMENT(cbList->callbacks, n, cbList->count);
             n--;
@@ -441,9 +455,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     }
 
  cleanup:
-    if (event)
-        virObjectUnref(event->conn);
-    VIR_FREE(event);
+    virObjectEventCallbackFree(event);
     return ret;
 }
 
