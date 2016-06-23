@@ -29,9 +29,6 @@
 #ifndef __OBJECT_EVENT_H__
 # define __OBJECT_EVENT_H__
 
-typedef struct _virObjectEventCallback virObjectEventCallback;
-typedef virObjectEventCallback *virObjectEventCallbackPtr;
-
 /**
  * Dispatching domain events that come in while
  * in a call / response rpc

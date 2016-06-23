@@ -38,6 +38,25 @@
 
 VIR_LOG_INIT("conf.object_event");
 
+struct _virObjectEventCallback {
+    int callbackID;
+    virClassPtr klass;
+    int eventID;
+    virConnectPtr conn;
+    int remoteID;
+    bool uuid_filter;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    virObjectEventCallbackFilter filter;
+    void *filter_opaque;
+    virConnectObjectEventGenericCallback cb;
+    void *opaque;
+    virFreeCallback freecb;
+    bool deleted;
+    bool legacy; /* true if end user does not know callbackID */
+};
+typedef struct _virObjectEventCallback virObjectEventCallback;
+typedef virObjectEventCallback *virObjectEventCallbackPtr;
+
 struct _virObjectEventCallbackList {
     unsigned int nextID;
     size_t count;
@@ -61,23 +80,6 @@ struct _virObjectEventState {
     /* Flag if we're in process of dispatching */
     bool isDispatching;
     virMutex lock;
-};
-
-struct _virObjectEventCallback {
-    int callbackID;
-    virClassPtr klass;
-    int eventID;
-    virConnectPtr conn;
-    int remoteID;
-    bool uuid_filter;
-    unsigned char uuid[VIR_UUID_BUFLEN];
-    virObjectEventCallbackFilter filter;
-    void *filter_opaque;
-    virConnectObjectEventGenericCallback cb;
-    void *opaque;
-    virFreeCallback freecb;
-    bool deleted;
-    bool legacy; /* true if end user does not know callbackID */
 };
 
 static virClassPtr virObjectEventClass;
