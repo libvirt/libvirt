@@ -72,7 +72,7 @@ virClassForObjectEvent(void);
 int
 virObjectEventStateRegisterID(virConnectPtr conn,
                               virObjectEventStatePtr state,
-                              unsigned char *uuid,
+                              const char *uuid,
                               virObjectEventCallbackFilter filter,
                               void *filter_opaque,
                               virClassPtr klass,

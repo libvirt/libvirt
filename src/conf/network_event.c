@@ -150,10 +150,14 @@ virNetworkEventStateRegisterID(virConnectPtr conn,
                                virFreeCallback freecb,
                                int *callbackID)
 {
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
     if (virNetworkEventsInitialize() < 0)
         return -1;
 
-    return virObjectEventStateRegisterID(conn, state, net ? net->uuid : NULL,
+    if (net)
+        virUUIDFormat(net->uuid, uuidstr);
+    return virObjectEventStateRegisterID(conn, state, net ? uuidstr : NULL,
                                          NULL, NULL,
                                          virNetworkEventClass, eventID,
                                          VIR_OBJECT_EVENT_CALLBACK(cb),
@@ -190,10 +194,14 @@ virNetworkEventStateRegisterClient(virConnectPtr conn,
                                    virFreeCallback freecb,
                                    int *callbackID)
 {
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
     if (virNetworkEventsInitialize() < 0)
         return -1;
 
-    return virObjectEventStateRegisterID(conn, state, net ? net->uuid : NULL,
+    if (net)
+        virUUIDFormat(net->uuid, uuidstr);
+    return virObjectEventStateRegisterID(conn, state, net ? uuidstr : NULL,
                                          NULL, NULL,
                                          virNetworkEventClass, eventID,
                                          VIR_OBJECT_EVENT_CALLBACK(cb),

@@ -45,7 +45,7 @@ struct _virObjectEventCallback {
     virConnectPtr conn;
     int remoteID;
     bool uuid_filter;
-    unsigned char uuid[VIR_UUID_BUFLEN];
+    char *uuid;
     virObjectEventCallbackFilter filter;
     void *filter_opaque;
     virConnectObjectEventGenericCallback cb;
@@ -138,6 +138,7 @@ virObjectEventCallbackFree(virObjectEventCallbackPtr cb)
         return;
 
     virObjectUnref(cb->conn);
+    VIR_FREE(cb->uuid);
     VIR_FREE(cb);
 }
 
@@ -192,7 +193,7 @@ virObjectEventCallbackListCount(virConnectPtr conn,
                                 virObjectEventCallbackListPtr cbList,
                                 virClassPtr klass,
                                 int eventID,
-                                unsigned char uuid[VIR_UUID_BUFLEN],
+                                const char *uuid,
                                 bool serverFilter)
 {
     size_t i;
@@ -209,8 +210,7 @@ virObjectEventCallbackListCount(virConnectPtr conn,
             !cb->deleted &&
             (!serverFilter ||
              (cb->remoteID >= 0 &&
-              ((uuid && cb->uuid_filter &&
-                memcmp(cb->uuid, uuid, VIR_UUID_BUFLEN) == 0) ||
+              ((uuid && cb->uuid_filter && STREQ(cb->uuid, uuid)) ||
                (!uuid && !cb->uuid_filter)))))
             ret++;
     }
@@ -326,7 +326,7 @@ virObjectEventCallbackListPurgeMarked(virObjectEventCallbackListPtr cbList)
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 virObjectEventCallbackLookup(virConnectPtr conn,
                              virObjectEventCallbackListPtr cbList,
-                             unsigned char uuid[VIR_UUID_BUFLEN],
+                             const char *uuid,
                              virClassPtr klass,
                              int eventID,
                              virConnectObjectEventGenericCallback callback,
@@ -346,8 +346,7 @@ virObjectEventCallbackLookup(virConnectPtr conn,
         if (cb->klass == klass &&
             cb->eventID == eventID &&
             cb->conn == conn &&
-            ((uuid && cb->uuid_filter &&
-              memcmp(cb->uuid, uuid, VIR_UUID_BUFLEN) == 0) ||
+            ((uuid && cb->uuid_filter && STREQ(cb->uuid, uuid)) ||
              (!uuid && !cb->uuid_filter))) {
             if (remoteID)
                 *remoteID = cb->remoteID;
@@ -381,7 +380,7 @@ virObjectEventCallbackLookup(virConnectPtr conn,
 static int
 virObjectEventCallbackListAddID(virConnectPtr conn,
                                 virObjectEventCallbackListPtr cbList,
-                                unsigned char uuid[VIR_UUID_BUFLEN],
+                                const char *uuid,
                                 virObjectEventCallbackFilter filter,
                                 void *filter_opaque,
                                 virClassPtr klass,
@@ -434,7 +433,8 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
      * Xen migration.  */
     if (uuid) {
         cb->uuid_filter = true;
-        memcpy(cb->uuid, uuid, VIR_UUID_BUFLEN);
+        if (VIR_STRDUP(cb->uuid, uuid) < 0)
+            goto cleanup;
     }
     cb->filter = filter;
     cb->filter_opaque = filter_opaque;
@@ -707,8 +707,10 @@ virObjectEventDispatchMatchCallback(virObjectEventPtr event,
          * running & shutoff states & ignoring 'name' since
          * Xen sometimes renames guests during migration, thus
          * leaving 'uuid' as the only truly reliable ID we can use. */
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(event->meta.uuid, uuidstr);
 
-        return memcmp(event->meta.uuid, cb->uuid, VIR_UUID_BUFLEN) == 0;
+        return STREQ(uuidstr, cb->uuid);
     }
     return true;
 }
@@ -874,7 +876,7 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
 int
 virObjectEventStateRegisterID(virConnectPtr conn,
                               virObjectEventStatePtr state,
-                              unsigned char *uuid,
+                              const char *uuid,
                               virObjectEventCallbackFilter filter,
                               void *filter_opaque,
                               virClassPtr klass,
