@@ -4139,7 +4139,8 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
                              VIR_DOMAIN_DISK_DEVICE_LUN);
 
     /* PowerPC pseries based VMs do not support floppy device */
-    if (!(ARCH_IS_PPC64(qemuCaps->arch) && STRPREFIX(machine, "pseries")))
+    if (!ARCH_IS_PPC64(qemuCaps->arch) ||
+        (STRNEQ(machine, "pseries") && !STRPREFIX(machine, "pseries-")))
         VIR_DOMAIN_CAPS_ENUM_SET(disk->diskDevice, VIR_DOMAIN_DISK_DEVICE_FLOPPY);
 
     VIR_DOMAIN_CAPS_ENUM_SET(disk->bus,
@@ -4149,7 +4150,8 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
                              /* VIR_DOMAIN_DISK_BUS_SD */);
 
     /* PowerPC pseries based VMs do not support floppy device */
-    if (!(ARCH_IS_PPC64(qemuCaps->arch) && STRPREFIX(machine, "pseries")))
+    if (!ARCH_IS_PPC64(qemuCaps->arch) ||
+        (STRNEQ(machine, "pseries") && !STRPREFIX(machine, "pseries-")))
         VIR_DOMAIN_CAPS_ENUM_SET(disk->bus, VIR_DOMAIN_DISK_BUS_FDC);
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE))
