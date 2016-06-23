@@ -92,7 +92,7 @@ mymain(void)
     DO_TEST_FULL("graphics-vnc-socket-attr-listen-socket-mismatch", 0, false,
         TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
 
-    DO_TEST_FULL("name-slash-parse", 0, false,
+    DO_TEST_FULL("name-slash-fail", 0, false,
         TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE);
 
     DO_TEST("perf");
