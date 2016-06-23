@@ -654,8 +654,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
     if (VIR_ALLOC(def->src) < 0)
         goto error;
 
-    if ((ARCH_IS_PPC64(dom->os.arch) &&
-        dom->os.machine && STRPREFIX(dom->os.machine, "pseries")))
+    if (qemuDomainMachineIsPSeries(dom))
         def->bus = VIR_DOMAIN_DISK_BUS_SCSI;
     else
        def->bus = VIR_DOMAIN_DISK_BUS_IDE;
@@ -747,8 +746,7 @@ qemuParseCommandLineDisk(virDomainXMLOptionPtr xmlopt,
         } else if (STREQ(keywords[i], "if")) {
             if (STREQ(values[i], "ide")) {
                 def->bus = VIR_DOMAIN_DISK_BUS_IDE;
-                if ((ARCH_IS_PPC64(dom->os.arch) &&
-                     dom->os.machine && STRPREFIX(dom->os.machine, "pseries"))) {
+                if (qemuDomainMachineIsPSeries(dom)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("pseries systems do not support ide devices '%s'"), val);
                     goto error;
@@ -1939,8 +1937,7 @@ qemuParseCommandLine(virCapsPtr caps,
             }
             if (STREQ(arg, "-cdrom")) {
                 disk->device = VIR_DOMAIN_DISK_DEVICE_CDROM;
-                if ((ARCH_IS_PPC64(def->os.arch) &&
-                    def->os.machine && STRPREFIX(def->os.machine, "pseries")))
+                if (qemuDomainMachineIsPSeries(def))
                     disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 if (VIR_STRDUP(disk->dst, "hdc") < 0)
                     goto error;
@@ -1955,8 +1952,7 @@ qemuParseCommandLine(virCapsPtr caps,
                         disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
                     else
                         disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
-                   if ((ARCH_IS_PPC64(def->os.arch) &&
-                       def->os.machine && STRPREFIX(def->os.machine, "pseries")))
+                   if (qemuDomainMachineIsPSeries(def))
                        disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
                 }
                 if (VIR_STRDUP(disk->dst, arg + 1) < 0)

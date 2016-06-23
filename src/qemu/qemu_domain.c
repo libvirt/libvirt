@@ -1879,7 +1879,7 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
         /* For pSeries guests, the firmware provides the same
          * functionality as the pvpanic device, so automatically
          * add the definition if not already present */
-        if (STRPREFIX(def->os.machine, "pseries"))
+        if (qemuDomainMachineIsPSeries(def))
             addPanicDevice = true;
         break;
 
@@ -2367,8 +2367,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
     if (dev->type == VIR_DOMAIN_DEVICE_PANIC &&
         dev->data.panic->model == VIR_DOMAIN_PANIC_MODEL_DEFAULT) {
-        if (ARCH_IS_PPC64(def->os.arch) &&
-            STRPREFIX(def->os.machine, "pseries"))
+        if (qemuDomainMachineIsPSeries(def))
             dev->data.panic->model = VIR_DOMAIN_PANIC_MODEL_PSERIES;
         else if (ARCH_IS_S390(def->os.arch))
             dev->data.panic->model = VIR_DOMAIN_PANIC_MODEL_S390;
@@ -4925,6 +4924,20 @@ qemuDomainMachineIsVirt(const virDomainDef *def)
 
     if (STRNEQ(def->os.machine, "virt") &&
         !STRPREFIX(def->os.machine, "virt-"))
+        return false;
+
+    return true;
+}
+
+
+bool
+qemuDomainMachineIsPSeries(const virDomainDef *def)
+{
+    if (!ARCH_IS_PPC64(def->os.arch))
+        return false;
+
+    if (STRNEQ(def->os.machine, "pseries") &&
+        !STRPREFIX(def->os.machine, "pseries-"))
         return false;
 
     return true;

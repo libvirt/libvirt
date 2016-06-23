@@ -88,8 +88,7 @@ qemuDomainSetSCSIControllerModel(const virDomainDef *def,
             return -1;
         }
     } else {
-        if (ARCH_IS_PPC64(def->os.arch) &&
-            STRPREFIX(def->os.machine, "pseries")) {
+        if (qemuDomainMachineIsPSeries(def)) {
             *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
         } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI)) {
             *model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
@@ -253,8 +252,7 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
 
     for (i = 0; i < def->nserials; i++) {
         if (def->serials[i]->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
-            ARCH_IS_PPC64(def->os.arch) &&
-            STRPREFIX(def->os.machine, "pseries"))
+            qemuDomainMachineIsPSeries(def))
             def->serials[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         if (qemuDomainAssignSpaprVIOAddress(def, &def->serials[i]->info,
                                             VIO_ADDR_SERIAL) < 0)
@@ -262,8 +260,7 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
     }
 
     if (def->nvram) {
-        if (ARCH_IS_PPC64(def->os.arch) &&
-            STRPREFIX(def->os.machine, "pseries"))
+        if (qemuDomainMachineIsPSeries(def))
             def->nvram->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
         if (qemuDomainAssignSpaprVIOAddress(def, &def->nvram->info,
                                             VIO_ADDR_NVRAM) < 0)

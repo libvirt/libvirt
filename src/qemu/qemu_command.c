@@ -1946,9 +1946,8 @@ qemuBuildDiskDriveCommandLine(virCommandPtr cmd,
         qemuDomainSecretInfoPtr secinfo = diskPriv->secinfo;
 
         /* PowerPC pseries based VMs do not support floppy device */
-        if ((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) &&
-            ARCH_IS_PPC64(def->os.arch) &&
-            STRPREFIX(def->os.machine, "pseries")) {
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+            qemuDomainMachineIsPSeries(def)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("PowerPC pseries machines do not support floppy device"));
             return -1;
@@ -3701,8 +3700,7 @@ qemuBuildNVRAMCommandLine(virCommandPtr cmd,
     if (!def->nvram)
         return 0;
 
-    if (ARCH_IS_PPC64(def->os.arch) &&
-        STRPREFIX(def->os.machine, "pseries")) {
+    if (qemuDomainMachineIsPSeries(def)) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVRAM)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("nvram device is not supported by "
@@ -8976,8 +8974,7 @@ qemuBuildPanicCommandLine(virCommandPtr cmd,
             /* For pSeries guests, the firmware provides the same
              * functionality as the pvpanic device. The address
              * cannot be configured by the user */
-            if (!ARCH_IS_PPC64(def->os.arch) ||
-                !STRPREFIX(def->os.machine, "pseries")) {
+            if (!qemuDomainMachineIsPSeries(def)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("only pSeries guests support panic device "
                                  "of model 'pseries'"));
@@ -9398,7 +9395,7 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
 {
     virBuffer cmd = VIR_BUFFER_INITIALIZER;
 
-    if (ARCH_IS_PPC64(def->os.arch) && STRPREFIX(def->os.machine, "pseries")) {
+    if (qemuDomainMachineIsPSeries(def)) {
         if (serial->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
             serial->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
             virBufferAsprintf(&cmd, "spapr-vty,chardev=char%s",
