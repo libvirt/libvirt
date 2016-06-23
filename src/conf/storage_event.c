@@ -259,14 +259,16 @@ virStoragePoolEventLifecycleNew(const char *name,
                                 int detail)
 {
     virStoragePoolEventLifecyclePtr event;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (virStoragePoolEventsInitialize() < 0)
         return NULL;
 
+    virUUIDFormat(uuid, uuidstr);
     if (!(event = virObjectEventNew(virStoragePoolEventLifecycleClass,
                                     virStoragePoolEventDispatchDefaultFunc,
                                     VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE,
-                                    0, name, uuid)))
+                                    0, name, uuid, uuidstr)))
         return NULL;
 
     event->type = type;
@@ -288,14 +290,16 @@ virStoragePoolEventRefreshNew(const char *name,
                               const unsigned char *uuid)
 {
     virStoragePoolEventRefreshPtr event;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (virStoragePoolEventsInitialize() < 0)
         return NULL;
 
+    virUUIDFormat(uuid, uuidstr);
     if (!(event = virObjectEventNew(virStoragePoolEventRefreshClass,
                                     virStoragePoolEventDispatchDefaultFunc,
                                     VIR_STORAGE_POOL_EVENT_ID_REFRESH,
-                                    0, name, uuid)))
+                                    0, name, uuid, uuidstr)))
         return NULL;
 
     return (virObjectEventPtr)event;

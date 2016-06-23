@@ -31,6 +31,7 @@ struct _virObjectMeta {
     int id;
     char *name;
     unsigned char uuid[VIR_UUID_BUFLEN];
+    char *key;
 };
 typedef struct _virObjectMeta virObjectMeta;
 typedef virObjectMeta *virObjectMetaPtr;
@@ -102,8 +103,9 @@ virObjectEventNew(virClassPtr klass,
                   int eventID,
                   int id,
                   const char *name,
-                  const unsigned char *uuid)
+                  const unsigned char *uuid,
+                  const char *key)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
-    ATTRIBUTE_NONNULL(6);
+    ATTRIBUTE_NONNULL(6) ATTRIBUTE_NONNULL(7);
 
 #endif

@@ -226,14 +226,16 @@ virNetworkEventLifecycleNew(const char *name,
                             int detail)
 {
     virNetworkEventLifecyclePtr event;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (virNetworkEventsInitialize() < 0)
         return NULL;
 
+    virUUIDFormat(uuid, uuidstr);
     if (!(event = virObjectEventNew(virNetworkEventLifecycleClass,
                                     virNetworkEventDispatchDefaultFunc,
                                     VIR_NETWORK_EVENT_ID_LIFECYCLE,
-                                    0, name, uuid)))
+                                    0, name, uuid, uuidstr)))
         return NULL;
 
     event->type = type;

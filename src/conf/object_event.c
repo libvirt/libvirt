@@ -123,6 +123,7 @@ virObjectEventDispose(void *obj)
     VIR_DEBUG("obj=%p", event);
 
     VIR_FREE(event->meta.name);
+    VIR_FREE(event->meta.key);
 }
 
 /**
@@ -619,6 +620,7 @@ virObjectEventStateNew(void)
  * @id: id of the object the event describes, or 0
  * @name: name of the object the event describes
  * @uuid: uuid of the object the event describes
+ * @key: key for per-object filtering
  *
  * Create a new event, with the information common to all events.
  */
@@ -628,7 +630,8 @@ virObjectEventNew(virClassPtr klass,
                   int eventID,
                   int id,
                   const char *name,
-                  const unsigned char *uuid)
+                  const unsigned char *uuid,
+                  const char *key)
 {
     virObjectEventPtr event;
 
@@ -650,6 +653,11 @@ virObjectEventNew(virClassPtr klass,
     event->remoteID = -1;
 
     if (VIR_STRDUP(event->meta.name, name) < 0) {
+        VIR_FREE(event);
+        return NULL;
+    }
+    if (VIR_STRDUP(event->meta.key, key) < 0) {
+        VIR_FREE(event->meta.name);
         VIR_FREE(event);
         return NULL;
     }
@@ -701,17 +709,8 @@ virObjectEventDispatchMatchCallback(virObjectEventPtr event,
     if (cb->filter && !(cb->filter)(cb->conn, event, cb->filter_opaque))
         return false;
 
-    if (cb->uuid_filter) {
-        /* Deliberately ignoring 'id' for matching, since that
-         * will cause problems when a domain switches between
-         * running & shutoff states & ignoring 'name' since
-         * Xen sometimes renames guests during migration, thus
-         * leaving 'uuid' as the only truly reliable ID we can use. */
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(event->meta.uuid, uuidstr);
-
-        return STREQ(uuidstr, cb->uuid);
-    }
+    if (cb->uuid_filter)
+        return STREQ(event->meta.key, cb->uuid);
     return true;
 }
 

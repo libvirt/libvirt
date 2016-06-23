@@ -581,6 +581,7 @@ virDomainEventNew(virClassPtr klass,
                   const unsigned char *uuid)
 {
     virDomainEventPtr event;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (virDomainEventsInitialize() < 0)
         return NULL;
@@ -592,10 +593,14 @@ virDomainEventNew(virClassPtr klass,
         return NULL;
     }
 
+    /* We use uuid for matching key. We ignore 'name' because
+     * Xen sometimes renames guests during migration, thus
+     * 'uuid' is the only truly reliable key we can use. */
+    virUUIDFormat(uuid, uuidstr);
     if (!(event = virObjectEventNew(klass,
                                     virDomainEventDispatchDefaultFunc,
                                     eventID,
-                                    id, name, uuid)))
+                                    id, name, uuid, uuidstr)))
         return NULL;
 
     return (virObjectEventPtr)event;
@@ -1873,13 +1878,15 @@ virDomainQemuMonitorEventNew(int id,
                              const char *details)
 {
     virDomainQemuMonitorEventPtr ev;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (virDomainEventsInitialize() < 0)
         return NULL;
 
+    virUUIDFormat(uuid, uuidstr);
     if (!(ev = virObjectEventNew(virDomainQemuMonitorEventClass,
                                  virDomainQemuMonitorEventDispatchFunc,
-                                 0, id, name, uuid)))
+                                 0, id, name, uuid, uuidstr)))
         return NULL;
 
     /* event is mandatory, details are optional */
