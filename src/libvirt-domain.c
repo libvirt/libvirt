@@ -11873,6 +11873,8 @@ virDomainGetGuestVcpus(virDomainPtr domain,
     virResetLastError();
 
     virCheckDomainReturn(domain, -1);
+    virCheckReadOnlyGoto(domain->conn->flags, error);
+
     virCheckNonNullArgGoto(params, error);
     virCheckNonNullArgGoto(nparams, error);
 
@@ -11929,6 +11931,8 @@ virDomainSetGuestVcpus(virDomainPtr domain,
     virResetLastError();
 
     virCheckDomainReturn(domain, -1);
+    virCheckReadOnlyGoto(domain->conn->flags, error);
+
     virCheckNonNullArgGoto(cpumap, error);
 
     if (domain->conn->driver->domainSetGuestVcpus) {
