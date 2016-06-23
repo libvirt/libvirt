@@ -2442,12 +2442,10 @@ storageVolUpload(virStorageVolPtr obj,
     /* Add cleanup callback - call after uploadVol since the stream
      * is then fully set up
      */
-    if (cbdata) {
-        virFDStreamSetInternalCloseCb(stream,
-                                      virStorageVolFDStreamCloseCb,
-                                      cbdata, NULL);
-        cbdata = NULL;
-    }
+    virFDStreamSetInternalCloseCb(stream,
+                                  virStorageVolFDStreamCloseCb,
+                                  cbdata, NULL);
+    cbdata = NULL;
 
  cleanup:
     virStoragePoolObjUnlock(pool);
