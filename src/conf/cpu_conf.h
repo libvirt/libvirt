@@ -123,6 +123,10 @@ virCPUDefCopyModel(virCPUDefPtr dst,
                    const virCPUDef *src,
                    bool resetPolicy);
 
+void
+virCPUDefStealModel(virCPUDefPtr dst,
+                    virCPUDefPtr src);
+
 virCPUDefPtr
 virCPUDefCopy(const virCPUDef *cpu);
 

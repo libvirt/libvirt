@@ -115,6 +115,23 @@ virCPUDefCopyModel(virCPUDefPtr dst,
 }
 
 
+void
+virCPUDefStealModel(virCPUDefPtr dst,
+                    virCPUDefPtr src)
+{
+    virCPUDefFreeModel(dst);
+
+    VIR_STEAL_PTR(dst->model, src->model);
+    VIR_STEAL_PTR(dst->vendor, src->vendor);
+    VIR_STEAL_PTR(dst->vendor_id, src->vendor_id);
+    VIR_STEAL_PTR(dst->features, src->features);
+    dst->nfeatures_max = src->nfeatures_max;
+    src->nfeatures_max = 0;
+    dst->nfeatures = src->nfeatures;
+    src->nfeatures = 0;
+}
+
+
 virCPUDefPtr
 virCPUDefCopyWithoutModel(const virCPUDef *cpu)
 {
