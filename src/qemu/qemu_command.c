@@ -9396,13 +9396,11 @@ static int
 qemuBuildSerialChrDeviceStr(char **deviceStr,
                             const virDomainDef *def,
                             virDomainChrDefPtr serial,
-                            virQEMUCapsPtr qemuCaps,
-                            virArch arch,
-                            char *machine)
+                            virQEMUCapsPtr qemuCaps)
 {
     virBuffer cmd = VIR_BUFFER_INITIALIZER;
 
-    if (ARCH_IS_PPC64(arch) && STRPREFIX(machine, "pseries")) {
+    if (ARCH_IS_PPC64(def->os.arch) && STRPREFIX(def->os.machine, "pseries")) {
         if (serial->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
             serial->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO) {
             virBufferAsprintf(&cmd, "spapr-vty,chardev=char%s",
@@ -9577,9 +9575,7 @@ qemuBuildChrDeviceStr(char **deviceStr,
 
     switch ((virDomainChrDeviceType) chr->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
-        ret = qemuBuildSerialChrDeviceStr(deviceStr, vmdef, chr, qemuCaps,
-                                          vmdef->os.arch,
-                                          vmdef->os.machine);
+        ret = qemuBuildSerialChrDeviceStr(deviceStr, vmdef, chr, qemuCaps);
         break;
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
