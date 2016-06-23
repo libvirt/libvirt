@@ -87,8 +87,8 @@ typedef virCPUDefPtr
                      unsigned int flags);
 
 typedef int
-(*cpuArchUpdate)    (virCPUDefPtr guest,
-                     const virCPUDef *host);
+(*virCPUArchUpdate)(virCPUDefPtr guest,
+                    const virCPUDef *host);
 
 typedef int
 (*cpuArchHasFeature) (const virCPUData *data,
@@ -114,7 +114,7 @@ struct cpuArchDriver {
     cpuArchNodeData     nodeData;
     cpuArchGuestData    guestData;
     cpuArchBaseline     baseline;
-    cpuArchUpdate       update;
+    virCPUArchUpdate    update;
     cpuArchHasFeature    hasFeature;
     cpuArchDataFormat   dataFormat;
     cpuArchDataParse    dataParse;
@@ -182,9 +182,10 @@ cpuBaseline (virCPUDefPtr *cpus,
     ATTRIBUTE_NONNULL(1);
 
 int
-cpuUpdate   (virCPUDefPtr guest,
+virCPUUpdate(virArch arch,
+             virCPUDefPtr guest,
              const virCPUDef *host)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+    ATTRIBUTE_NONNULL(2);
 
 int
 cpuHasFeature(const virCPUData *data,

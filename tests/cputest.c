@@ -398,7 +398,7 @@ cpuTestUpdate(const void *arg)
         !(cpu = cpuTestLoadXML(data->arch, data->name)))
         goto cleanup;
 
-    if (cpuUpdate(cpu, host) < 0)
+    if (virCPUUpdate(host->arch, cpu, host) < 0)
         goto cleanup;
 
     if (virAsprintf(&result, "%s+%s", data->host, data->name) < 0)
@@ -622,11 +622,14 @@ mymain(void)
             host "/" cpu " (" #result ")",                              \
             host, cpu, NULL, 0, NULL, 0, result)
 
+#define DO_TEST_UPDATE_ONLY(arch, host, cpu)                            \
+    DO_TEST(arch, cpuTestUpdate,                                        \
+            cpu " on " host,                                            \
+            host, cpu, NULL, 0, NULL, 0, 0)                             \
+
 #define DO_TEST_UPDATE(arch, host, cpu, result)                         \
     do {                                                                \
-        DO_TEST(arch, cpuTestUpdate,                                    \
-                cpu " on " host,                                        \
-                host, cpu, NULL, 0, NULL, 0, 0);                        \
+        DO_TEST_UPDATE_ONLY(arch, host, cpu);                           \
         DO_TEST_COMPARE(arch, host, host "+" cpu, result);              \
     } while (0)
 
@@ -737,8 +740,9 @@ mymain(void)
     DO_TEST_UPDATE("x86", "host", "guest", VIR_CPU_COMPARE_SUPERSET);
     DO_TEST_UPDATE("x86", "host", "host-model", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_UPDATE("x86", "host", "host-model-nofallback", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_UPDATE("x86", "host", "host-passthrough", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_UPDATE("x86", "host-invtsc", "host-model", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_UPDATE_ONLY("x86", "host", "host-passthrough");
+    DO_TEST_UPDATE_ONLY("x86", "host", "host-passthrough-features");
 
     DO_TEST_UPDATE("ppc64", "host", "guest", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_UPDATE("ppc64", "host", "guest-nofallback", VIR_CPU_COMPARE_INCOMPATIBLE);

@@ -4522,7 +4522,7 @@ qemuProcessStartValidateGuestCPU(virDomainObjPtr vm,
 
     if (cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
         flags & VIR_QEMU_PROCESS_START_NEW &&
-        cpuUpdate(cpu, host) < 0)
+        virCPUUpdate(vm->def->os.arch, cpu, host) < 0)
         goto cleanup;
 
     cmp = cpuGuestData(host, cpu, &data, &compare_msg);

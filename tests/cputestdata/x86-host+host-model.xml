@@ -1,4 +1,4 @@
-<cpu mode='host-model' match='exact'>
+<cpu mode='custom' match='exact'>
   <model fallback='allow'>Penryn</model>
   <vendor>Intel</vendor>
   <feature policy='require' name='dca'/>

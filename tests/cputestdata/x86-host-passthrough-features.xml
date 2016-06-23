@@ -1,0 +1,4 @@
+<cpu mode='host-passthrough'>
+  <feature policy='disable' name='dca'/>
+  <feature policy='force' name='vmx'/>
+</cpu>

@@ -43,6 +43,7 @@ src/conf/virchrdev.c
 src/conf/virdomainobjlist.c
 src/conf/virsecretobj.c
 src/cpu/cpu.c
+src/cpu/cpu_arm.c
 src/cpu/cpu_map.c
 src/cpu/cpu_ppc64.c
 src/cpu/cpu_x86.c

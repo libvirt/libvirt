@@ -1122,40 +1122,6 @@ x86ModelFromCPU(const virCPUDef *cpu,
 }
 
 
-static int
-x86ModelSubtractCPU(virCPUx86ModelPtr model,
-                    const virCPUDef *cpu,
-                    virCPUx86MapPtr map)
-{
-    virCPUx86ModelPtr cpu_model;
-    size_t i;
-
-    if (!(cpu_model = x86ModelFind(map, cpu->model))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown CPU model %s"),
-                       cpu->model);
-        return -1;
-    }
-
-    x86DataSubtract(&model->data, &cpu_model->data);
-
-    for (i = 0; i < cpu->nfeatures; i++) {
-        virCPUx86FeaturePtr feature;
-
-        if (!(feature = x86FeatureFind(map, cpu->features[i].name))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown CPU feature %s"),
-                           cpu->features[i].name);
-            return -1;
-        }
-
-        x86DataSubtract(&model->data, &feature->data);
-    }
-
-    return 0;
-}
-
-
 static virCPUx86CompareResult
 x86ModelCompare(virCPUx86ModelPtr model1,
                 virCPUx86ModelPtr model2)
@@ -2533,23 +2499,85 @@ x86Baseline(virCPUDefPtr *cpus,
 
 
 static int
-x86UpdateCustom(virCPUDefPtr guest,
+x86UpdateHostModel(virCPUDefPtr guest,
+                   const virCPUDef *host,
+                   virCPUx86MapPtr map)
+{
+    virCPUDefPtr updated = NULL;
+    size_t i;
+    int ret = -1;
+
+    if (!(updated = virCPUDefCopyWithoutModel(host)))
+        goto cleanup;
+
+    /* Remove non-migratable features by default */
+    updated->type = VIR_CPU_TYPE_GUEST;
+    updated->mode = VIR_CPU_MODE_CUSTOM;
+    if (virCPUDefCopyModel(updated, host, true) < 0)
+        goto cleanup;
+
+    i = 0;
+    while (i < updated->nfeatures) {
+        if (x86FeatureIsMigratable(updated->features[i].name, map) &&
+            STRNEQ(updated->features[i].name, "cmt") &&
+            STRNEQ(updated->features[i].name, "mbm_total") &&
+            STRNEQ(updated->features[i].name, "mbm_local")) {
+            i++;
+        } else {
+            VIR_FREE(updated->features[i].name);
+            VIR_DELETE_ELEMENT_INPLACE(updated->features, i, updated->nfeatures);
+        }
+    }
+
+    if (guest->vendor_id) {
+        VIR_FREE(updated->vendor_id);
+        if (VIR_STRDUP(updated->vendor_id, guest->vendor_id) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < guest->nfeatures; i++) {
+        if (virCPUDefUpdateFeature(updated,
+                                   guest->features[i].name,
+                                   guest->features[i].policy) < 0)
+            goto cleanup;
+    }
+
+    virCPUDefStealModel(guest, updated);
+    guest->mode = VIR_CPU_MODE_CUSTOM;
+    guest->match = VIR_CPU_MATCH_EXACT;
+    ret = 0;
+
+ cleanup:
+    virCPUDefFree(updated);
+    return ret;
+}
+
+
+static int
+virCPUx86Update(virCPUDefPtr guest,
                 const virCPUDef *host)
 {
+    virCPUx86ModelPtr model = NULL;
+    virCPUx86MapPtr map;
     int ret = -1;
     size_t i;
-    virCPUx86MapPtr map;
-    virCPUx86ModelPtr host_model = NULL;
 
-    if (!(map = virCPUx86GetMap()) ||
-        !(host_model = x86ModelFromCPU(host, map, VIR_CPU_FEATURE_REQUIRE)))
+    if (!host) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unknown host CPU model"));
+        return -1;
+    }
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    if (!(model = x86ModelFromCPU(host, map, -1)))
         goto cleanup;
 
     for (i = 0; i < guest->nfeatures; i++) {
         if (guest->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
             int supported = x86FeatureInData(guest->features[i].name,
-                                             &host_model->data, map);
-
+                                             &model->data, map);
             if (supported < 0)
                 goto cleanup;
             else if (supported)
@@ -2559,103 +2587,15 @@ x86UpdateCustom(virCPUDefPtr guest,
         }
     }
 
-    if (guest->match == VIR_CPU_MATCH_MINIMUM) {
-        guest->match = VIR_CPU_MATCH_EXACT;
-        if (x86ModelSubtractCPU(host_model, guest, map) ||
-            x86DataToCPUFeatures(guest, VIR_CPU_FEATURE_REQUIRE,
-                                 &host_model->data, map))
-            goto cleanup;
-    }
-
-    ret = 0;
+    if (guest->mode == VIR_CPU_MODE_HOST_MODEL ||
+        guest->match == VIR_CPU_MATCH_MINIMUM)
+        ret = x86UpdateHostModel(guest, host, map);
+    else
+        ret = 0;
 
  cleanup:
-    x86ModelFree(host_model);
+    x86ModelFree(model);
     return ret;
-}
-
-
-static int
-x86UpdateHostModel(virCPUDefPtr guest,
-                   const virCPUDef *host,
-                   bool passthrough)
-{
-    virCPUDefPtr oldguest = NULL;
-    virCPUx86MapPtr map;
-    size_t i;
-    int ret = -1;
-
-    if (!(map = virCPUx86GetMap()))
-        goto cleanup;
-
-    /* update the host model according to the desired configuration */
-    if (!(oldguest = virCPUDefCopy(guest)))
-        goto cleanup;
-
-    virCPUDefFreeModel(guest);
-    if (virCPUDefCopyModel(guest, host, true) < 0)
-        goto cleanup;
-
-    if (oldguest->vendor_id) {
-        VIR_FREE(guest->vendor_id);
-        if (VIR_STRDUP(guest->vendor_id, oldguest->vendor_id) < 0)
-            goto cleanup;
-    }
-
-    /* Remove non-migratable features and CMT related features which QEMU
-     * knows nothing about.
-     * Note: this only works as long as no CPU model contains non-migratable
-     * features directly */
-    i = 0;
-    while (i < guest->nfeatures) {
-        if (x86FeatureIsMigratable(guest->features[i].name, map) &&
-            STRNEQ(guest->features[i].name, "cmt") &&
-            STRNEQ(guest->features[i].name, "mbm_total") &&
-            STRNEQ(guest->features[i].name, "mbm_local")) {
-            i++;
-        } else {
-            VIR_FREE(guest->features[i].name);
-            VIR_DELETE_ELEMENT_INPLACE(guest->features, i, guest->nfeatures);
-        }
-    }
-    for (i = 0; !passthrough && i < oldguest->nfeatures; i++) {
-        if (virCPUDefUpdateFeature(guest,
-                                   oldguest->features[i].name,
-                                   oldguest->features[i].policy) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    virCPUDefFree(oldguest);
-    return ret;
-}
-
-
-static int
-x86Update(virCPUDefPtr guest,
-          const virCPUDef *host)
-{
-    switch ((virCPUMode) guest->mode) {
-    case VIR_CPU_MODE_CUSTOM:
-        return x86UpdateCustom(guest, host);
-
-    case VIR_CPU_MODE_HOST_MODEL:
-        guest->match = VIR_CPU_MATCH_EXACT;
-        return x86UpdateHostModel(guest, host, false);
-
-    case VIR_CPU_MODE_HOST_PASSTHROUGH:
-        guest->match = VIR_CPU_MATCH_MINIMUM;
-        return x86UpdateHostModel(guest, host, true);
-
-    case VIR_CPU_MODE_LAST:
-        break;
-    }
-
-    virReportError(VIR_ERR_INTERNAL_ERROR,
-                   _("Unexpected CPU mode: %d"), guest->mode);
-    return -1;
 }
 
 
@@ -2716,7 +2656,7 @@ struct cpuArchDriver cpuDriverX86 = {
 #endif
     .guestData  = x86GuestData,
     .baseline   = x86Baseline,
-    .update     = x86Update,
+    .update     = virCPUx86Update,
     .hasFeature = x86HasFeature,
     .dataFormat = x86CPUDataFormat,
     .dataParse  = x86CPUDataParse,

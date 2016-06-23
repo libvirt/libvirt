@@ -1,4 +1,4 @@
-<cpu mode='host-model' match='exact'>
+<cpu mode='custom' match='exact'>
   <model fallback='forbid'>Penryn</model>
   <vendor>Intel</vendor>
   <topology sockets='1' cores='2' threads='1'/>

@@ -579,38 +579,71 @@ cpuBaseline(virCPUDefPtr *cpus,
 
 
 /**
- * cpuUpdate:
+ * virCPUUpdate:
  *
- * @guest: guest CPU definition
+ * @arch: CPU architecture
+ * @guest: guest CPU definition to be updated
  * @host: host CPU definition
  *
  * Updates @guest CPU definition according to @host CPU. This is required to
- * support guest CPU definition which are relative to host CPU, such as CPUs
- * with VIR_CPU_MODE_CUSTOM and optional features or VIR_CPU_MATCH_MINIMUM, or
- * CPUs with non-custom mode (VIR_CPU_MODE_HOST_MODEL,
- * VIR_CPU_MODE_HOST_PASSTHROUGH).
+ * support guest CPU definitions specified relatively to host CPU, such as
+ * CPUs with VIR_CPU_MODE_CUSTOM and optional features or
+ * VIR_CPU_MATCH_MINIMUM, or CPUs with VIR_CPU_MODE_HOST_MODEL.
+ * When the guest CPU was not specified relatively, the function does nothing
+ * and returns success.
  *
  * Returns 0 on success, -1 on error.
  */
 int
-cpuUpdate(virCPUDefPtr guest,
-          const virCPUDef *host)
+virCPUUpdate(virArch arch,
+             virCPUDefPtr guest,
+             const virCPUDef *host)
 {
     struct cpuArchDriver *driver;
 
-    VIR_DEBUG("guest=%p, host=%p", guest, host);
+    VIR_DEBUG("arch=%s, guest=%p mode=%s model=%s, host=%p model=%s",
+              virArchToString(arch), guest, virCPUModeTypeToString(guest->mode),
+              NULLSTR(guest->model), host, NULLSTR(host ? host->model : NULL));
 
-    if ((driver = cpuGetSubDriver(host->arch)) == NULL)
+    if (!(driver = cpuGetSubDriver(arch)))
         return -1;
 
-    if (driver->update == NULL) {
+    if (guest->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
+        return 0;
+
+    if (guest->mode == VIR_CPU_MODE_CUSTOM &&
+        guest->match != VIR_CPU_MATCH_MINIMUM) {
+        size_t i;
+        bool optional = false;
+
+        for (i = 0; i < guest->nfeatures; i++) {
+            if (guest->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
+                optional = true;
+                break;
+            }
+        }
+
+        if (!optional)
+            return 0;
+    }
+
+    /* We get here if guest CPU is either
+     *  - host-model
+     *  - custom with minimum match
+     *  - custom with optional features
+     */
+    if (!driver->update) {
         virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot update guest CPU data for %s architecture"),
-                       virArchToString(host->arch));
+                       _("cannot update guest CPU for %s architecture"),
+                       virArchToString(arch));
         return -1;
     }
 
-    return driver->update(guest, host);
+    if (driver->update(guest, host) < 0)
+        return -1;
+
+    VIR_DEBUG("model=%s", NULLSTR(guest->model));
+    return 0;
 }
 
 

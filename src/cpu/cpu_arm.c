@@ -43,14 +43,40 @@ armDataFree(virCPUDataPtr data)
     VIR_FREE(data);
 }
 
+
 static int
-armUpdate(virCPUDefPtr guest,
-          const virCPUDef *host)
+virCPUarmUpdate(virCPUDefPtr guest,
+                const virCPUDef *host)
 {
+    int ret = -1;
+    virCPUDefPtr updated = NULL;
+
+    if (guest->mode != VIR_CPU_MODE_HOST_MODEL)
+        return 0;
+
+    if (!host) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unknown host CPU model"));
+        goto cleanup;
+    }
+
+    if (!(updated = virCPUDefCopyWithoutModel(guest)))
+        goto cleanup;
+
+    updated->mode = VIR_CPU_MODE_CUSTOM;
+    if (virCPUDefCopyModel(updated, host, true) < 0)
+        goto cleanup;
+
+    virCPUDefStealModel(guest, updated);
+    guest->mode = VIR_CPU_MODE_CUSTOM;
     guest->match = VIR_CPU_MATCH_EXACT;
-    virCPUDefFreeModel(guest);
-    return virCPUDefCopyModel(guest, host, true);
+    ret = 0;
+
+ cleanup:
+    virCPUDefFree(updated);
+    return ret;
 }
+
 
 static virCPUCompareResult
 armGuestData(virCPUDefPtr host ATTRIBUTE_UNUSED,
@@ -104,6 +130,6 @@ struct cpuArchDriver cpuDriverArm = {
     .nodeData = NULL,
     .guestData = armGuestData,
     .baseline = armBaseline,
-    .update = armUpdate,
+    .update = virCPUarmUpdate,
     .hasFeature = NULL,
 };

@@ -3407,7 +3407,7 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (cpuUpdate(def->cpu, caps->host.cpu) < 0)
+        if (virCPUUpdate(def->os.arch, def->cpu, caps->host.cpu) < 0)
             goto cleanup;
     }
 
