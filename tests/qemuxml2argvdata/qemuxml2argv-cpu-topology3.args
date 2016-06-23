@@ -9,7 +9,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -M pc \
 -m 214 \
--smp 6 \
+-smp 6,sockets=3,cores=2,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -nographic \
 -nodefaults \

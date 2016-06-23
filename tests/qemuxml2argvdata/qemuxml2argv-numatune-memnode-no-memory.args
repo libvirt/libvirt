@@ -9,7 +9,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -M pc \
 -m 64 \
--smp 2 \
+-smp 2,sockets=2,cores=1,threads=1 \
 -object memory-backend-ram,id=ram-node0,size=33554432,host-nodes=3,\
 policy=preferred \
 -numa node,nodeid=0,cpus=0,memdev=ram-node0 \

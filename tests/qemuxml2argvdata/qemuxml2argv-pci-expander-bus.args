@@ -9,7 +9,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -M pc-i440fx-2.5 \
 -m 214 \
--smp 16 \
+-smp 16,sockets=2,cores=4,threads=2 \
 -numa node,nodeid=0,cpus=0-7,mem=107 \
 -numa node,nodeid=1,cpus=8-15,mem=107 \
 -uuid 3ec6cbe1-b5a2-4515-b800-31a61855df41 \

@@ -9,7 +9,6 @@
   <flag name='enable-kvm'/>
   <flag name='monitor-json'/>
   <flag name='sdl'/>
-  <flag name='smp-topology'/>
   <flag name='netdev'/>
   <flag name='rtc'/>
   <flag name='vhost-net'/>

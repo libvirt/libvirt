@@ -10,7 +10,7 @@ QEMU_AUDIO_DRV=none \
 -M pseries \
 -cpu POWER7_v2.3 \
 -m 512 \
--smp 1 \
+-smp 1,sockets=1,cores=1,threads=1 \
 -uuid 1ccfd97d-5eb4-478a-bbe6-88d254c16db7 \
 -nographic \
 -nodefconfig \

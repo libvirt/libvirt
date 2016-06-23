@@ -9,7 +9,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -M s390-ccw-virtio \
 -m 256 \
--smp 1 \
+-smp 1,sockets=1,cores=1,threads=1 \
 -uuid 9aa4b45c-b9dd-45ef-91fe-862b27b4231f \
 -nographic \
 -nodefconfig \

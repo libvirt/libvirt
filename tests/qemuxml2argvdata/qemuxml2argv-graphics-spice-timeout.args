@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=spice \
 -cpu core2duo,+ds,+acpi,+ss,+ht,+tm,+pbe,+ds_cpl,+vmx,+est,+tm2,+cx16,+xtpr,\
 +lahf_lm \
 -m 1024 \
--smp 2 \
+-smp 2,sockets=1,cores=2,threads=1 \
 -uuid 553effab-b5e1-2d80-dfe3-da4344826c43 \
 -nodefaults \
 -monitor unix:/tmp/lib/domain--1-f14/monitor.sock,server,nowait \

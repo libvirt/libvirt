@@ -9,7 +9,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -M pseries \
 -m size=1310720k,slots=16,maxmem=4194304k \
--smp 1 \
+-smp 1,sockets=1,cores=1,threads=1 \
 -object memory-backend-ram,id=memdimm0,size=536870912 \
 -device pc-dimm,memdev=memdimm0,id=dimm0 \
 -object memory-backend-ram,id=memdimm1,size=536870912 \

@@ -9,7 +9,7 @@ QEMU_AUDIO_DRV=spice \
 -S \
 -M pc-i440fx-2.3 \
 -m size=1048576k,slots=16,maxmem=1099511627776k \
--smp 2 \
+-smp 2,sockets=2,cores=1,threads=1 \
 -mem-prealloc \
 -mem-path /dev/hugepages2M/libvirt/qemu \
 -numa node,nodeid=0,cpus=0-1,mem=1024 \

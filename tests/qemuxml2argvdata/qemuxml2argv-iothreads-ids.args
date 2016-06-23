@@ -9,7 +9,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -M pc \
 -m 214 \
--smp 2 \
+-smp 2,sockets=2,cores=1,threads=1 \
 -object iothread,id=iothread2 \
 -object iothread,id=iothread4 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \

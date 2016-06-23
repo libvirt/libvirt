@@ -9,7 +9,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -M ppce500 \
 -m 256 \
--smp 1 \
+-smp 1,sockets=1,cores=1,threads=1 \
 -uuid 49545eb3-75e1-2d0a-acdd-f0294406c99e \
 -nographic \
 -nodefaults \

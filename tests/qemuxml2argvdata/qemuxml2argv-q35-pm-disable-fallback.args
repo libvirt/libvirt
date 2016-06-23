@@ -9,7 +9,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -M pc-q35-2.5 \
 -m 1024 \
--smp 1 \
+-smp 1,sockets=1,cores=1,threads=1 \
 -uuid 56f5055c-1b8d-490c-844a-ad646a1caaaa \
 -nographic \
 -nodefaults \

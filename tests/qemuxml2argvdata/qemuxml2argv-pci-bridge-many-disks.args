@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=none \
 -cpu qemu64,-kvmclock \
 -bios /usr/share/seabios/bios.bin \
 -m 3907 \
--smp 1 \
+-smp 1,sockets=1,cores=1,threads=1 \
 -uuid 04872dc1-e1de-434b-ab21-e3e80e416349 \
 -nographic \
 -nodefaults \

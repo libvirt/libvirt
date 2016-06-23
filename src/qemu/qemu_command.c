@@ -6862,8 +6862,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
 
 static int
 qemuBuildSmpCommandLine(virCommandPtr cmd,
-                        const virDomainDef *def,
-                        virQEMUCapsPtr qemuCaps)
+                        const virDomainDef *def)
 {
     char *smp;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -6872,29 +6871,18 @@ qemuBuildSmpCommandLine(virCommandPtr cmd,
 
     virBufferAsprintf(&buf, "%u", virDomainDefGetVcpus(def));
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SMP_TOPOLOGY)) {
-        if (virDomainDefHasVcpusOffline(def))
-            virBufferAsprintf(&buf, ",maxcpus=%u",
-                              virDomainDefGetVcpusMax(def));
-        /* sockets, cores, and threads are either all zero
-         * or all non-zero, thus checking one of them is enough */
-        if (def->cpu && def->cpu->sockets) {
-            virBufferAsprintf(&buf, ",sockets=%u", def->cpu->sockets);
-            virBufferAsprintf(&buf, ",cores=%u", def->cpu->cores);
-            virBufferAsprintf(&buf, ",threads=%u", def->cpu->threads);
-        } else {
-            virBufferAsprintf(&buf, ",sockets=%u",
-                              virDomainDefGetVcpusMax(def));
-            virBufferAsprintf(&buf, ",cores=%u", 1);
-            virBufferAsprintf(&buf, ",threads=%u", 1);
-        }
-    } else if (virDomainDefHasVcpusOffline(def)) {
-        virBufferFreeAndReset(&buf);
-        /* FIXME - consider hot-unplugging cpus after boot for older qemu */
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("setting current vcpu count less than maximum is "
-                         "not supported with this QEMU binary"));
-        return -1;
+    if (virDomainDefHasVcpusOffline(def))
+        virBufferAsprintf(&buf, ",maxcpus=%u", virDomainDefGetVcpusMax(def));
+    /* sockets, cores, and threads are either all zero
+     * or all non-zero, thus checking one of them is enough */
+    if (def->cpu && def->cpu->sockets) {
+        virBufferAsprintf(&buf, ",sockets=%u", def->cpu->sockets);
+        virBufferAsprintf(&buf, ",cores=%u", def->cpu->cores);
+        virBufferAsprintf(&buf, ",threads=%u", def->cpu->threads);
+    } else {
+        virBufferAsprintf(&buf, ",sockets=%u", virDomainDefGetVcpusMax(def));
+        virBufferAsprintf(&buf, ",cores=%u", 1);
+        virBufferAsprintf(&buf, ",threads=%u", 1);
     }
 
     if (virBufferCheckError(&buf) < 0)
@@ -9183,7 +9171,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildMemCommandLine(cmd, cfg, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildSmpCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildSmpCommandLine(cmd, def) < 0)
         goto error;
 
     if (qemuBuildIOThreadCommandLine(cmd, def, qemuCaps) < 0)

@@ -1232,10 +1232,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
 
     if (strstr(help, "-sdl"))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL);
-    if (strstr(help, "cores=") &&
-        strstr(help, "threads=") &&
-        strstr(help, "sockets="))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_SMP_TOPOLOGY);
 
     if (strstr(help, ",vhost="))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOST_NET);
@@ -3384,7 +3380,6 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_MONITOR_JSON);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_SDL);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_SMP_TOPOLOGY);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NETDEV);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_RTC);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VHOST_NET);

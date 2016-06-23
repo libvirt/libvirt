@@ -10,7 +10,7 @@ QEMU_AUDIO_DRV=spice \
 -M rhel6.1.0 \
 -enable-kvm \
 -m 4096 \
--smp 4 \
+-smp 4,sockets=4,cores=1,threads=1 \
 -uuid d091ea82-29e6-2e34-3005-f02617b36e87 \
 -nodefaults \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-fdr/monitor.sock,server,\

@@ -11,7 +11,7 @@ BAR='' \
 -S \
 -M pc \
 -m 214 \
--smp 1 \
+-smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -nographic \
 -nodefaults \

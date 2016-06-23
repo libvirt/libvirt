@@ -1290,7 +1290,7 @@ mymain(void)
     DO_TEST("qemu-ns", NONE);
     DO_TEST("qemu-ns-no-env", NONE);
 
-    DO_TEST("smp", QEMU_CAPS_SMP_TOPOLOGY);
+    DO_TEST("smp", NONE);
 
     DO_TEST("iothreads", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST("iothreads-ids", QEMU_CAPS_OBJECT_IOTHREAD);
@@ -1306,8 +1306,8 @@ mymain(void)
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_VIRTIO_SCSI_IOTHREAD,
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
 
-    DO_TEST("cpu-topology1", QEMU_CAPS_SMP_TOPOLOGY);
-    DO_TEST("cpu-topology2", QEMU_CAPS_SMP_TOPOLOGY);
+    DO_TEST("cpu-topology1", NONE);
+    DO_TEST("cpu-topology2", NONE);
     DO_TEST("cpu-topology3", NONE);
     DO_TEST("cpu-minimum1", QEMU_CAPS_KVM);
     DO_TEST("cpu-minimum2", QEMU_CAPS_KVM);
@@ -1318,14 +1318,13 @@ mymain(void)
     DO_TEST_FAILURE("cpu-nofallback", QEMU_CAPS_KVM);
     DO_TEST("cpu-strict1", QEMU_CAPS_KVM);
     DO_TEST("cpu-numa1", NONE);
-    DO_TEST("cpu-numa2", QEMU_CAPS_SMP_TOPOLOGY);
-    DO_TEST("cpu-numa-no-memory-element", QEMU_CAPS_SMP_TOPOLOGY);
+    DO_TEST("cpu-numa2", NONE);
+    DO_TEST("cpu-numa-no-memory-element", NONE);
     DO_TEST_PARSE_ERROR("cpu-numa3", NONE);
     DO_TEST_FAILURE("cpu-numa-disjoint", NONE);
     DO_TEST("cpu-numa-disjoint", QEMU_CAPS_NUMA);
-    DO_TEST_FAILURE("cpu-numa-memshared", QEMU_CAPS_SMP_TOPOLOGY,
-                    QEMU_CAPS_OBJECT_MEMORY_RAM);
-    DO_TEST_FAILURE("cpu-numa-memshared", QEMU_CAPS_SMP_TOPOLOGY);
+    DO_TEST_FAILURE("cpu-numa-memshared", QEMU_CAPS_OBJECT_MEMORY_RAM);
+    DO_TEST_FAILURE("cpu-numa-memshared", NONE);
     DO_TEST("cpu-host-model", NONE);
     DO_TEST("cpu-host-model-vendor", NONE);
     skipLegacyCPUs = true;
@@ -1354,7 +1353,7 @@ mymain(void)
     DO_TEST("cputune-zero-shares", NONE);
     DO_TEST_PARSE_ERROR("cputune-iothreadsched-toomuch", NONE);
     DO_TEST_PARSE_ERROR("cputune-vcpusched-overlap", NONE);
-    DO_TEST("cputune-numatune", QEMU_CAPS_SMP_TOPOLOGY,
+    DO_TEST("cputune-numatune",
             QEMU_CAPS_KVM,
             QEMU_CAPS_OBJECT_IOTHREAD,
             QEMU_CAPS_OBJECT_MEMORY_RAM,
