@@ -121,8 +121,8 @@ int virNetClientSetTLSSession(virNetClientPtr client,
 bool virNetClientIsEncrypted(virNetClientPtr client);
 bool virNetClientIsOpen(virNetClientPtr client);
 
-const char *virNetClientLocalAddrString(virNetClientPtr client);
-const char *virNetClientRemoteAddrString(virNetClientPtr client);
+const char *virNetClientLocalAddrStringSASL(virNetClientPtr client);
+const char *virNetClientRemoteAddrStringSASL(virNetClientPtr client);
 
 # ifdef WITH_GNUTLS
 int virNetClientGetTLSKeySize(virNetClientPtr client);

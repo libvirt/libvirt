@@ -944,12 +944,12 @@ void virNetClientRemoveStream(virNetClientPtr client,
 }
 
 
-const char *virNetClientLocalAddrString(virNetClientPtr client)
+const char *virNetClientLocalAddrStringSASL(virNetClientPtr client)
 {
     return virNetSocketLocalAddrStringSASL(client->sock);
 }
 
-const char *virNetClientRemoteAddrString(virNetClientPtr client)
+const char *virNetClientRemoteAddrStringSASL(virNetClientPtr client)
 {
     return virNetSocketRemoteAddrStringSASL(client->sock);
 }

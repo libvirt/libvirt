@@ -3831,8 +3831,8 @@ remoteAuthSASL(virConnectPtr conn, struct private_data *priv,
     if (!(sasl = virNetSASLSessionNewClient(saslCtxt,
                                             "libvirt",
                                             priv->hostname,
-                                            virNetClientLocalAddrString(priv->client),
-                                            virNetClientRemoteAddrString(priv->client),
+                                            virNetClientLocalAddrStringSASL(priv->client),
+                                            virNetClientRemoteAddrStringSASL(priv->client),
                                             saslcb)))
         goto cleanup;
     /* saslcb is now owned by sasl */
