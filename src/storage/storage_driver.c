@@ -2422,20 +2422,18 @@ storageVolUpload(virStorageVolPtr obj,
         goto cleanup;
     }
 
-    /* If we have a refreshPool, use the callback routine in order to
+    /* Use the callback routine in order to
      * refresh the pool after the volume upload stream closes. This way
      * we make sure the volume and pool data are refreshed without user
      * interaction and we can just lookup the backend in the callback
      * routine in order to call the refresh API.
      */
-    if (backend->refreshPool) {
-        if (VIR_ALLOC(cbdata) < 0 ||
-            VIR_STRDUP(cbdata->pool_name, pool->def->name) < 0)
-            goto cleanup;
-        if (vol->target.type == VIR_STORAGE_VOL_PLOOP &&
-            VIR_STRDUP(cbdata->vol_path, vol->target.path) < 0)
-            goto cleanup;
-    }
+    if (VIR_ALLOC(cbdata) < 0 ||
+        VIR_STRDUP(cbdata->pool_name, pool->def->name) < 0)
+        goto cleanup;
+    if (vol->target.type == VIR_STORAGE_VOL_PLOOP &&
+        VIR_STRDUP(cbdata->vol_path, vol->target.path) < 0)
+        goto cleanup;
 
     if ((ret = backend->uploadVol(obj->conn, pool, vol, stream,
                                   offset, length, flags)) < 0)
