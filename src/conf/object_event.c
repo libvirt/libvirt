@@ -393,7 +393,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
                                 int *callbackID,
                                 bool serverFilter)
 {
-    virObjectEventCallbackPtr event;
+    virObjectEventCallbackPtr cb;
     int ret = -1;
     int remoteID = -1;
 
@@ -417,30 +417,30 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
                        _("event callback already tracked"));
         return -1;
     }
-    /* Allocate new event */
-    if (VIR_ALLOC(event) < 0)
+    /* Allocate new cb */
+    if (VIR_ALLOC(cb) < 0)
         goto cleanup;
-    event->conn = virObjectRef(conn);
-    *callbackID = event->callbackID = cbList->nextID++;
-    event->cb = callback;
-    event->klass = klass;
-    event->eventID = eventID;
-    event->opaque = opaque;
-    event->freecb = freecb;
-    event->remoteID = remoteID;
+    cb->conn = virObjectRef(conn);
+    *callbackID = cb->callbackID = cbList->nextID++;
+    cb->cb = callback;
+    cb->klass = klass;
+    cb->eventID = eventID;
+    cb->opaque = opaque;
+    cb->freecb = freecb;
+    cb->remoteID = remoteID;
 
     /* Only need 'uuid' for matching; 'id' can change as domain
      * switches between running and shutoff, and 'name' can change in
      * Xen migration.  */
     if (uuid) {
-        event->uuid_filter = true;
-        memcpy(event->uuid, uuid, VIR_UUID_BUFLEN);
+        cb->uuid_filter = true;
+        memcpy(cb->uuid, uuid, VIR_UUID_BUFLEN);
     }
-    event->filter = filter;
-    event->filter_opaque = filter_opaque;
-    event->legacy = legacy;
+    cb->filter = filter;
+    cb->filter_opaque = filter_opaque;
+    cb->legacy = legacy;
 
-    if (VIR_APPEND_ELEMENT(cbList->callbacks, cbList->count, event) < 0)
+    if (VIR_APPEND_ELEMENT(cbList->callbacks, cbList->count, cb) < 0)
         goto cleanup;
 
     /* When additional filtering is being done, every client callback
@@ -455,7 +455,7 @@ virObjectEventCallbackListAddID(virConnectPtr conn,
     }
 
  cleanup:
-    virObjectEventCallbackFree(event);
+    virObjectEventCallbackFree(cb);
     return ret;
 }
 
