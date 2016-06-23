@@ -1102,6 +1102,11 @@ testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
 
     parse_flags |= parseFlags;
 
+    if (!virFileExists(infile)) {
+        VIR_TEST_DEBUG("Test input file '%s' is missing", infile);
+        return -1;
+    }
+
     if (!live)
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
