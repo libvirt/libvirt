@@ -2884,6 +2884,13 @@ typedef int (*virDomainDiskDefPathIterator)(virDomainDiskDefPtr disk,
                                             size_t depth,
                                             void *opaque);
 
+typedef int (*virDomainUSBDeviceDefIterator)(virDomainDeviceInfoPtr info,
+                                             void *opaque);
+int virDomainUSBDeviceDefForeach(virDomainDefPtr def,
+                                 virDomainUSBDeviceDefIterator iter,
+                                 void *opaque,
+                                 bool skipHubs);
+
 int virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
                                 bool ignoreOpenFailure,
                                 virDomainDiskDefPathIterator iter,

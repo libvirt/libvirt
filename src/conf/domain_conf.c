@@ -24020,6 +24020,95 @@ virDomainSmartcardDefForeach(virDomainDefPtr def,
 }
 
 
+int
+virDomainUSBDeviceDefForeach(virDomainDefPtr def,
+                             virDomainUSBDeviceDefIterator iter,
+                             void *opaque,
+                             bool skipHubs)
+{
+    size_t i;
+
+    /* usb-hub */
+    if (!skipHubs) {
+        for (i = 0; i < def->nhubs; i++) {
+            virDomainHubDefPtr hub = def->hubs[i];
+            if (hub->type == VIR_DOMAIN_HUB_TYPE_USB) {
+                if (iter(&hub->info, opaque) < 0)
+                    return -1;
+            }
+        }
+    }
+
+    /* usb-host */
+    for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = def->hostdevs[i];
+        if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
+            if (iter(hostdev->info, opaque) < 0)
+                return -1;
+        }
+    }
+
+    /* usb-storage */
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDefPtr disk = def->disks[i];
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
+            if (iter(&disk->info, opaque) < 0)
+                return -1;
+        }
+    }
+
+    /* TODO: add def->nets here when libvirt starts supporting usb-net */
+
+    /* usb-ccid */
+    for (i = 0; i < def->ncontrollers; i++) {
+        virDomainControllerDefPtr cont = def->controllers[i];
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_CCID) {
+            if (iter(&cont->info, opaque) < 0)
+                return -1;
+        }
+    }
+
+    /* usb-kbd, usb-mouse, usb-tablet */
+    for (i = 0; i < def->ninputs; i++) {
+        virDomainInputDefPtr input = def->inputs[i];
+
+        if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
+            if (iter(&input->info, opaque) < 0)
+                return -1;
+        }
+    }
+
+    /* usb-serial */
+    for (i = 0; i < def->nserials; i++) {
+        virDomainChrDefPtr serial = def->serials[i];
+        if (serial->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB) {
+            if (iter(&serial->info, opaque) < 0)
+                return -1;
+        }
+    }
+
+    /* usb-audio model=usb */
+    for (i = 0; i < def->nsounds; i++) {
+        virDomainSoundDefPtr sound = def->sounds[i];
+        if (sound->model == VIR_DOMAIN_SOUND_MODEL_USB) {
+            if (iter(&sound->info, opaque) < 0)
+                return -1;
+        }
+    }
+
+    /* usb-redir */
+    for (i = 0; i < def->nredirdevs; i++) {
+        virDomainRedirdevDefPtr redirdev = def->redirdevs[i];
+        if (redirdev->bus == VIR_DOMAIN_REDIRDEV_BUS_USB) {
+            if (iter(&redirdev->info, opaque) < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /* Call iter(disk, name, depth, opaque) for each element of disk and
  * its backing chain in the pre-populated disk->src.backingStore.
  * ignoreOpenFailure determines whether to warn about a chain that
