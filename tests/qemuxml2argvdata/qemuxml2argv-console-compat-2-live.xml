@@ -95,6 +95,7 @@
     </channel>
     <input type='tablet' bus='usb'>
       <alias name='input0'/>
+      <address type='usb' bus='0' port='1'/>
     </input>
     <input type='mouse' bus='ps2'>
       <alias name='input1'/>
