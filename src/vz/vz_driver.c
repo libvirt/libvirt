@@ -1554,27 +1554,21 @@ vzDomainGetMaxMemory(virDomainPtr domain)
 }
 
 static int
-vzDomainBlockStats(virDomainPtr domain, const char *path,
-                   virDomainBlockStatsPtr stats)
+vzDomainBlockStatsImpl(virDomainObjPtr dom,
+                       const char *path,
+                       virDomainBlockStatsPtr stats)
 {
-    virDomainObjPtr dom = NULL;
-    vzDomObjPtr privdom;
-    int ret = -1;
+    vzDomObjPtr privdom = dom->privateData;
     size_t i;
     int idx;
-
-    if (!(dom = vzDomObjFromDomainRef(domain)))
-        return -1;
-
-    privdom = dom->privateData;
 
     if (*path) {
         if ((idx = virDomainDiskIndexByName(dom->def, path, false)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG, _("invalid path: %s"), path);
-            goto cleanup;
+            return -1;
         }
         if (prlsdkGetBlockStats(privdom->stats, dom->def->disks[idx], stats) < 0)
-            goto cleanup;
+            return -1;
     } else {
         virDomainBlockStatsStruct s;
 
@@ -1587,7 +1581,7 @@ vzDomainBlockStats(virDomainPtr domain, const char *path,
 
         for (i = 0; i < dom->def->ndisks; i++) {
             if (prlsdkGetBlockStats(privdom->stats, dom->def->disks[i], &s) < 0)
-                goto cleanup;
+                return -1;
 
 #define PARALLELS_SUM_STATS(VAR, TYPE, NAME)        \
     if (s.VAR != -1)                                \
@@ -1599,6 +1593,23 @@ vzDomainBlockStats(virDomainPtr domain, const char *path,
         }
     }
     stats->errs = -1;
+    return 0;
+}
+
+static int
+vzDomainBlockStats(virDomainPtr domain,
+                   const char *path,
+                   virDomainBlockStatsPtr stats)
+{
+    virDomainObjPtr dom;
+    int ret = -1;
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    if (vzDomainBlockStatsImpl(dom, path, stats) < 0)
+        goto cleanup;
+
     ret = 0;
 
  cleanup:
@@ -1615,6 +1626,7 @@ vzDomainBlockStatsFlags(virDomainPtr domain,
                         unsigned int flags)
 {
     virDomainBlockStatsStruct stats;
+    virDomainObjPtr dom;
     int ret = -1;
     size_t i;
 
@@ -1622,7 +1634,10 @@ vzDomainBlockStatsFlags(virDomainPtr domain,
     /* We don't return strings, and thus trivially support this flag.  */
     flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
 
-    if (vzDomainBlockStats(domain, path, &stats) < 0)
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    if (vzDomainBlockStatsImpl(dom, path, &stats) < 0)
         goto cleanup;
 
     if (*nparams == 0) {
@@ -1654,6 +1669,8 @@ vzDomainBlockStatsFlags(virDomainPtr domain,
     ret = 0;
 
  cleanup:
+    virDomainObjEndAPI(&dom);
+
     return ret;
 }
 
