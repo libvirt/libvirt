@@ -3610,7 +3610,7 @@ qemuBuildMemballoonCommandLine(virCommandPtr cmd,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (STREQLEN(def->os.machine, "s390-virtio", 10) &&
+    if (STRPREFIX(def->os.machine, "s390-virtio") &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390) && def->memballoon)
         def->memballoon->model = VIR_DOMAIN_MEMBALLOON_MODEL_NONE;
 

@@ -2255,7 +2255,7 @@ get_cpu_flags(virConnectPtr conn, const char **hvm, int *pae, int *longmode)
     *pae = 0;
     *hvm = "";
 
-    if (STREQLEN((const char *)&regs.r_ebx, "AuthcAMDenti", 12)) {
+    if (STRPREFIX((const char *)&regs.r_ebx, "AuthcAMDenti")) {
         if (pread(fd, &regs, sizeof(regs), 0x80000001) == sizeof(regs)) {
             /* Read secure virtual machine bit (bit 2 of ECX feature ID) */
             if ((regs.r_ecx >> 2) & 1)
@@ -2263,7 +2263,7 @@ get_cpu_flags(virConnectPtr conn, const char **hvm, int *pae, int *longmode)
             if ((regs.r_edx >> 6) & 1)
                 *pae = 1;
         }
-    } else if (STREQLEN((const char *)&regs.r_ebx, "GenuntelineI", 12)) {
+    } else if (STRPREFIX((const char *)&regs.r_ebx, "GenuntelineI")) {
         if (pread(fd, &regs, sizeof(regs), 0x00000001) == sizeof(regs)) {
             /* Read VMXE feature bit (bit 5 of ECX feature ID) */
             if ((regs.r_ecx >> 5) & 1)

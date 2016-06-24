@@ -106,7 +106,7 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
     }
 
     while ((direrr = virDirRead(sysdir, &dirent, sysfs_path)) > 0) {
-        if (STREQLEN(dirent->d_name, "target", strlen("target"))) {
+        if (STRPREFIX(dirent->d_name, "target")) {
             if (sscanf(dirent->d_name,
                        "target%u:", host) != 1) {
                 VIR_DEBUG("Failed to parse target '%s'", dirent->d_name);

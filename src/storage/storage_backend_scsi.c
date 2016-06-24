@@ -350,7 +350,7 @@ getBlockDevice(uint32_t host,
         goto cleanup;
 
     while ((direrr = virDirRead(lun_dir, &lun_dirent, lun_path)) > 0) {
-        if (STREQLEN(lun_dirent->d_name, "block", 5)) {
+        if (STRPREFIX(lun_dirent->d_name, "block")) {
             if (strlen(lun_dirent->d_name) == 5) {
                 if (getNewStyleBlockDevice(lun_path,
                                            lun_dirent->d_name,
