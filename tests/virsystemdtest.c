@@ -27,6 +27,9 @@
 # include <stdlib.h>
 # include <dbus/dbus.h>
 
+# define __VIR_SYSTEMD_PRIV_H_ALLOW__ 1
+# include "virsystemdpriv.h"
+
 # include "virsystemd.h"
 # include "virdbus.h"
 # include "virlog.h"
@@ -522,6 +525,7 @@ mymain(void)
     do {                                                                \
         if (virTestRun(_name, func, NULL) < 0)                          \
             ret = -1;                                                   \
+        virSystemdHasMachinedResetCachedValue();                        \
     } while (0)
 
     DO_TEST("Test create container ", testCreateContainer);

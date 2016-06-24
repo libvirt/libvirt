@@ -2567,6 +2567,7 @@ virSystemdCanHybridSleep;
 virSystemdCanSuspend;
 virSystemdCreateMachine;
 virSystemdGetMachineNameByPID;
+virSystemdHasMachinedResetCachedValue;
 virSystemdMakeMachineName;
 virSystemdMakeScopeName;
 virSystemdMakeSliceName;

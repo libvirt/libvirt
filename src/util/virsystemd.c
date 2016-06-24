@@ -26,6 +26,9 @@
 # include <sys/un.h>
 #endif
 
+#define __VIR_SYSTEMD_PRIV_H_ALLOW__ 1
+#include "virsystemdpriv.h"
+
 #include "virsystemd.h"
 #include "viratomic.h"
 #include "virbuffer.h"
@@ -182,6 +185,15 @@ virSystemdMakeMachineName(const char *drivername,
     return machinename;
 }
 
+static int virSystemdHasMachinedCachedValue = -1;
+
+/* Reset the cache from tests for testing the underlying dbus calls
+ * as well */
+void virSystemdHasMachinedResetCachedValue(void)
+{
+    virSystemdHasMachinedCachedValue = -1;
+}
+
 /* -2 = machine1 is not supported on this machine
  * -1 = error
  *  0 = machine1 is available
@@ -190,10 +202,22 @@ static int
 virSystemdHasMachined(void)
 {
     int ret;
-    if ((ret = virDBusIsServiceEnabled("org.freedesktop.machine1")) < 0)
-        return ret;
+    int val;
 
-    return virDBusIsServiceRegistered("org.freedesktop.systemd1");
+    val = virAtomicIntGet(&virSystemdHasMachinedCachedValue);
+    if (val != -1)
+        return val;
+
+    if ((ret = virDBusIsServiceEnabled("org.freedesktop.machine1")) < 0) {
+        if (ret == -2)
+            virAtomicIntSet(&virSystemdHasMachinedCachedValue, -2);
+        return ret;
+    }
+
+    if ((ret = virDBusIsServiceRegistered("org.freedesktop.systemd1")) == -1)
+        return ret;
+    virAtomicIntSet(&virSystemdHasMachinedCachedValue, ret);
+    return ret;
 }
 
 
