@@ -100,9 +100,7 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
 
     virFileWaitForDevices();
 
-    if (virDirOpen(&sysdir, sysfs_path) < 0)
-        virReportSystemError(errno,
-                             _("Failed to opendir path '%s'"), sysfs_path);
+    if (virDirOpen(&sysdir, sysfs_path) < 0) {
         retval = -1;
         goto out;
     }
