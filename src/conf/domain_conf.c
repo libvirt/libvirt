@@ -24339,19 +24339,8 @@ virDomainDiskDefCheckDuplicateInfo(virDomainDiskDefPtr a,
         return -1;
     }
 
-    if (a->wwn && b->wwn && STREQ(a->wwn, b->wwn)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Disks '%s' and '%s' have identical WWN"),
-                       a->dst, b->dst);
-        return -1;
-    }
-
-    if (a->serial && b->serial && STREQ(a->serial, b->serial)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Disks '%s' and '%s' have identical serial"),
-                       a->dst, b->dst);
-        return -1;
-    }
+    /* Duplicate WWN/serial isn't usually problematic for the OS and
+     * forbiding it would possibly inhibit using multipath configurations */
 
     return 0;
 }
