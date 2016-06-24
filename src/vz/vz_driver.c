@@ -1048,12 +1048,14 @@ vzDomainResume(virDomainPtr domain)
 }
 
 static int
-vzDomainCreate(virDomainPtr domain)
+vzDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
 {
     vzConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr dom;
     int ret = -1;
     bool job = false;
+
+    virCheckFlags(0, -1);
 
     if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
@@ -1200,12 +1202,9 @@ static int vzDomainIsActive(virDomainPtr domain)
 }
 
 static int
-vzDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
+vzDomainCreate(virDomainPtr domain)
 {
-    /* we don't support any create flags */
-    virCheckFlags(0, -1);
-
-    return vzDomainCreate(domain);
+    return vzDomainCreateWithFlags(domain, 0);
 }
 
 static int
