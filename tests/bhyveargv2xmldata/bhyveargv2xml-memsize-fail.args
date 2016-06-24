@@ -1,0 +1,6 @@
+/usr/sbin/bhyve \
+-c 1 \
+-m bogus \
+-H \
+-P \
+-s 0:0,hostbridge bhyve

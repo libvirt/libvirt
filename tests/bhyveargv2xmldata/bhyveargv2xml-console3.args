@@ -1,0 +1,10 @@
+/usr/sbin/bhyve \
+-c 1 \
+-m 214 \
+-H \
+-P \
+-s 0:0,hostbridge \
+-s 1,lpc \
+-l com1,/dev/nmdm0A \
+-l com2,/dev/nmdm1B \
+-l com3,/dev/nmdm2B bhyve

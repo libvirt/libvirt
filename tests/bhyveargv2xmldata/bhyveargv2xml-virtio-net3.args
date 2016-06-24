@@ -1,0 +1,7 @@
+/usr/sbin/bhyve \
+-c 1 \
+-m 214 \
+-H \
+-P \
+-s 0:0,hostbridge \
+-s 1:1,virtio-net,tap1,notamac bhyve

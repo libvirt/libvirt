@@ -1,0 +1,10 @@
+/usr/sbin/bhyveload \
+-m 214 \
+-d /tmp/freebsd.img bhyve
+/usr/sbin/bhyve \
+-c 1 \
+-m 214 \
+-H \
+-P \
+-s 0:0,hostbridge \
+-s 2:0,virtio-blk,/tmp/freebsd.img othervm

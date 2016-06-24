@@ -1,0 +1,146 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type>hvm</type>
+  </os>
+  <clock offset='localtime'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>destroy</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vda' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdb' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdc' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdd' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vde' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdf' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdg' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdh' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdi' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdj' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdk' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdl' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0c' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdm' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdn' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0e' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdo' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0f' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdp' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x10' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdq' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x11' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdr' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x12' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vds' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x13' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdt' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x14' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdu' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x15' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdv' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x16' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdw' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x17' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdx' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x18' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdy' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x19' function='0x0'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <source file='/tmp/freebsd.img'/>
+      <target dev='vdz' bus='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x1a' function='0x0'/>
+    </disk>
+  </devices>
+</domain>

@@ -1,0 +1,7 @@
+/usr/sbin/bhyve \
+-c 1 \
+-m 214 \
+-H \
+-P \
+-U 2a793ea6-8e52-440a-8458-355e98492e17 \
+-s 0:0,hostbridge bhyve

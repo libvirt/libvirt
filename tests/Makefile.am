@@ -86,6 +86,7 @@ MOCKLIBS_LIBS = \
 EXTRA_DIST =		\
 	.valgrind.supp \
 	bhyvexml2argvdata \
+	bhyveargv2xmldata \
 	bhyvexml2xmloutdata \
 	capabilityschemadata \
 	commanddata \
@@ -284,7 +285,7 @@ test_programs += vmwarevertest
 endif WITH_VMWARE
 
 if WITH_BHYVE
-test_programs += bhyvexml2argvtest bhyvexml2xmltest
+test_programs += bhyvexml2argvtest bhyvexml2xmltest bhyveargv2xmltest
 endif WITH_BHYVE
 
 if WITH_CIL
@@ -416,7 +417,7 @@ test_libraries += libqemumonitortestutils.la \
 endif WITH_QEMU
 
 if WITH_BHYVE
-test_libraries += bhyvexml2argvmock.la
+test_libraries += bhyvexml2argvmock.la bhyveargv2xmlmock.la
 endif WITH_BHYVE
 
 if WITH_DBUS
@@ -742,6 +743,12 @@ bhyvexml2argvmock_la_CFLAGS = $(AM_CFLAGS)
 bhyvexml2argvmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 bhyvexml2argvmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
+bhyveargv2xmlmock_la_SOURCES = \
+	bhyveargv2xmlmock.c
+bhyveargv2xmlmock_la_CFLAGS = $(AM_CFLAGS)
+bhyveargv2xmlmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+bhyveargv2xmlmock_la_LIBADD = $(MOCKLIBS_LIBS)
+
 bhyve_LDADDS = ../src/libvirt_driver_bhyve_impl.la
 if WITH_STORAGE
 bhyve_LDADDS += ../src/libvirt_driver_storage_impl.la
@@ -756,8 +763,18 @@ bhyvexml2xmltest_SOURCES = \
 	bhyvexml2xmltest.c \
 	testutils.c testutils.h
 bhyvexml2xmltest_LDADD = $(bhyve_LDADDS)
+
+bhyveargv2xmltest_SOURCES = \
+	bhyveargv2xmltest.c \
+	testutils.c testutils.h
+bhyveargv2xmltest_LDADD = $(bhyve_LDADDS)
 else ! WITH_BHYVE
-EXTRA_DIST += bhyvexml2argvtest.c bhyvexml2xmltest.c bhyvexml2argvmock.c
+EXTRA_DIST += \
+	bhyvexml2argvtest.c \
+	bhyveargv2xmltest.c \
+	bhyvexml2xmltest.c \
+	bhyvexml2argvmock.c \
+	bhyveargv2xmlmock.c
 endif ! WITH_BHYVE
 
 networkxml2xmltest_SOURCES = \

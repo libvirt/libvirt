@@ -1,0 +1,11 @@
+/usr/sbin/bhyveload \
+-m 214 \
+-d /tmp/disk2.img bhyve
+/usr/sbin/bhyve \
+-c 1 \
+-m 214 \
+-H \
+-P \
+-s 0:0,hostbridge \
+-s 2:0,virtio-blk,/tmp/disk1.img \
+-s 3:0,virtio-blk,/tmp/disk2.img bhyve

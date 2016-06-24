@@ -1,0 +1,16 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>2a793ea6-8e52-440a-8458-355e98492e17</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type>hvm</type>
+  </os>
+  <clock offset='localtime'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>destroy</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+  </devices>
+</domain>
