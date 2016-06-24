@@ -659,6 +659,7 @@ STATEFUL_DRIVER_SOURCE_FILES = \
 	$(STORAGE_DRIVER_SOURCES) \
 	$(UML_DRIVER_SOURCES) \
 	$(XEN_DRIVER_SOURCES) \
+	$(VZ_DRIVER_SOURCES) \
 	$(NULL)
 
 
@@ -1524,7 +1525,9 @@ else ! WITH_DRIVER_MODULES
 noinst_LTLIBRARIES += libvirt_driver_vz.la
 endif ! WITH_DRIVER_MODULES
 libvirt_driver_vz_impl_la_CFLAGS = \
-		-I$(srcdir)/conf $(AM_CFLAGS) \
+		-I$(srcdir)/conf \
+		-I$(srcdir)/access \
+		$(AM_CFLAGS) \
 		$(PARALLELS_SDK_CFLAGS) $(LIBNL_CFLAGS)
 libvirt_driver_vz_impl_la_SOURCES = $(VZ_DRIVER_SOURCES)
 libvirt_driver_vz_impl_la_LIBADD =  $(PARALLELS_SDK_LIBS) $(LIBNL_LIBS)

@@ -5824,13 +5824,13 @@ enum remote_procedure {
 
     /**
      * @generate: none
-     * @acl: none
+     * @acl: connect:getattr
      */
     REMOTE_PROC_CONNECT_REGISTER_CLOSE_CALLBACK = 360,
 
     /**
      * @generate: none
-     * @acl: none
+     * @acl: connect:getattr
      */
     REMOTE_PROC_CONNECT_UNREGISTER_CLOSE_CALLBACK = 361,
 

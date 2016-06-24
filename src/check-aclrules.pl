@@ -73,6 +73,7 @@ my %implwhitelist = (
     "xenUnifiedDomainIsPersistent" => 1,
     "xenUnifiedDomainIsUpdated" => 1,
     "xenUnifiedDomainOpenConsole" => 1,
+    "vzDomainMigrateConfirm3Params" => 1,
     );
 my %filterimplwhitelist = (
     "xenUnifiedConnectListDomains" => 1,
