@@ -1084,12 +1084,14 @@ vzDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
 }
 
 static int
-vzDomainDestroy(virDomainPtr domain)
+vzDomainDestroyFlags(virDomainPtr domain, unsigned int flags)
 {
     vzConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr dom;
     int ret = -1;
     bool job = false;
+
+    virCheckFlags(0, -1);
 
     if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
@@ -1118,12 +1120,20 @@ vzDomainDestroy(virDomainPtr domain)
 }
 
 static int
-vzDomainShutdown(virDomainPtr domain)
+vzDomainDestroy(virDomainPtr dom)
+{
+    return vzDomainDestroyFlags(dom, 0);
+}
+
+static int
+vzDomainShutdownFlags(virDomainPtr domain, unsigned int flags)
 {
     vzConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr dom;
     int ret = -1;
     bool job = false;
+
+    virCheckFlags(0, -1);
 
     if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
@@ -1149,6 +1159,11 @@ vzDomainShutdown(virDomainPtr domain)
     virDomainObjEndAPI(&dom);
 
     return ret;
+}
+
+static int vzDomainShutdown(virDomainPtr dom)
+{
+    return vzDomainShutdownFlags(dom, 0);
 }
 
 static int
@@ -3163,7 +3178,9 @@ static virHypervisorDriver vzHypervisorDriver = {
     .domainSuspend = vzDomainSuspend,    /* 0.10.0 */
     .domainResume = vzDomainResume,    /* 0.10.0 */
     .domainDestroy = vzDomainDestroy,  /* 0.10.0 */
+    .domainDestroyFlags = vzDomainDestroyFlags,  /* 2.2.0 */
     .domainShutdown = vzDomainShutdown, /* 0.10.0 */
+    .domainShutdownFlags = vzDomainShutdownFlags, /* 2.2.0 */
     .domainCreate = vzDomainCreate,    /* 0.10.0 */
     .domainCreateWithFlags = vzDomainCreateWithFlags, /* 1.2.10 */
     .domainReboot = vzDomainReboot, /* 1.3.0 */
