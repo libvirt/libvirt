@@ -1083,6 +1083,58 @@ virXMLInjectNamespace(xmlNodePtr node,
     return 0;
 }
 
+/**
+ * virXMLNodeSanitizeNamespaces()
+ * @node: Sanitize the namespaces for this node
+ *
+ * This function removes subnodes in node that share the namespace.
+ * The first instance of every duplicate namespace is kept.
+ * Additionally nodes with no namespace are deleted.
+ */
+void
+virXMLNodeSanitizeNamespaces(xmlNodePtr node)
+{
+    xmlNodePtr child;
+    xmlNodePtr next;
+    xmlNodePtr dupl;
+
+    if (!node)
+       return;
+
+    child = node->children;
+    while (child) {
+        /* remove subelements that don't have any namespace at all */
+        if (!child->ns || !child->ns->href) {
+            dupl = child;
+            child = child->next;
+
+            xmlUnlinkNode(dupl);
+            xmlFreeNode(dupl);
+            continue;
+        }
+
+        /* check that every other child of @root doesn't share the namespace of
+         * the current one and delete them possibly */
+        next = child->next;
+        while (next) {
+            dupl = NULL;
+
+            if (child->ns && next->ns &&
+                STREQ_NULLABLE((const char *) child->ns->href,
+                               (const char *) next->ns->href))
+                dupl = next;
+
+            next = next->next;
+            if (dupl) {
+                xmlUnlinkNode(dupl);
+                xmlFreeNode(dupl);
+            }
+        }
+        child = child->next;
+    }
+}
+
+
 static void catchRNGError(void *ctx,
                           const char *msg,
                           ...)

@@ -2602,6 +2602,7 @@ virUUIDParse;
 # util/virxml.h
 virXMLChildElementCount;
 virXMLExtractNamespaceXML;
+virXMLNodeSanitizeNamespaces;
 virXMLNodeToString;
 virXMLParseHelper;
 virXMLPickShellSafeComment;

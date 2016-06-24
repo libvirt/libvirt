@@ -3645,59 +3645,6 @@ virDomainDefRejectDuplicatePanics(virDomainDefPtr def)
     return 0;
 }
 
-/**
- * virDomainDefMetadataSanitize:
- * @def: Sanitize metadata for this def
- *
- * This function removes metadata elements in @def that share the namespace.
- * The first metadata entry of every duplicate namespace is kept. Additionally
- * elements with no namespace are deleted.
- */
-static void
-virDomainDefMetadataSanitize(virDomainDefPtr def)
-{
-    xmlNodePtr child;
-    xmlNodePtr next;
-    xmlNodePtr dupl;
-
-    if (!def || !def->metadata)
-        return;
-
-    child = def->metadata->children;
-    while (child) {
-        /* remove metadata entries that don't have any namespace at all */
-        if (!child->ns || !child->ns->href) {
-            dupl = child;
-            child = child->next;
-
-            xmlUnlinkNode(dupl);
-            xmlFreeNode(dupl);
-            continue;
-        }
-
-        /* check that every other child of @root doesn't share the namespace of
-         * the current one and delete them possibly */
-        next = child->next;
-        while (next) {
-            dupl = NULL;
-
-            if (child->ns && next->ns &&
-                STREQ_NULLABLE((const char *) child->ns->href,
-                               (const char *) next->ns->href))
-                dupl = next;
-
-            next = next->next;
-
-            if (dupl) {
-                xmlUnlinkNode(dupl);
-                xmlFreeNode(dupl);
-            }
-        }
-
-        child = child->next;
-    }
-}
-
 
 static int
 virDomainDefPostParseMemory(virDomainDefPtr def,
@@ -4496,7 +4443,7 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
     }
 
     /* clean up possibly duplicated metadata entries */
-    virDomainDefMetadataSanitize(def);
+    virXMLNodeSanitizeNamespaces(def->metadata);
 
     virDomainDefPostParseGraphics(def);
 

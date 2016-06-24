@@ -179,6 +179,8 @@ int virXMLInjectNamespace(xmlNodePtr node,
                           const char *uri,
                           const char *key);
 
+void virXMLNodeSanitizeNamespaces(xmlNodePtr node);
+
 struct _virXMLValidator {
     xmlRelaxNGParserCtxtPtr rngParser;
     xmlRelaxNGPtr rng;
