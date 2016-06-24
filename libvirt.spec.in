@@ -1189,12 +1189,6 @@ mv $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/*/libvirt.so \
    $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/libvirt.so
 %endif
 
-# Temporarily get rid of not-installed admin-related files
-rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt-admin.so
-rm -f $RPM_BUILD_ROOT%{_bindir}/virt-admin
-rm -f $RPM_BUILD_ROOT%{_mandir}/man1/virt-admin.1*
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/libvirt-admin.conf
-
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
 # We don't want to install /etc/libvirt/qemu/networks in the main %files list
 # because if the admin wants to delete the default network completely, we don't
@@ -1536,6 +1530,7 @@ exit 0
 %doc examples/xml
 %doc examples/rename
 %doc examples/systemtap
+%doc examples/admin
 
 
 %files daemon
@@ -1746,11 +1741,14 @@ exit 0
 %doc COPYING COPYING.LESSER
 
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt.conf
+%config(noreplace) %{_sysconfdir}/libvirt/libvirt-admin.conf
 %{_mandir}/man1/virsh.1*
+%{_mandir}/man1/virt-admin.1*
 %{_mandir}/man1/virt-xml-validate.1*
 %{_mandir}/man1/virt-pki-validate.1*
 %{_mandir}/man1/virt-host-validate.1*
 %{_bindir}/virsh
+%{_bindir}/virt-admin
 %{_bindir}/virt-xml-validate
 %{_bindir}/virt-pki-validate
 %{_bindir}/virt-host-validate
@@ -1813,11 +1811,13 @@ exit 0
 
 %files devel
 %{_libdir}/libvirt.so
+%{_libdir}/libvirt-admin.so
 %{_libdir}/libvirt-qemu.so
 %{_libdir}/libvirt-lxc.so
 %dir %{_includedir}/libvirt
 %{_includedir}/libvirt/virterror.h
 %{_includedir}/libvirt/libvirt.h
+%{_includedir}/libvirt/libvirt-admin.h
 %{_includedir}/libvirt/libvirt-common.h
 %{_includedir}/libvirt/libvirt-domain.h
 %{_includedir}/libvirt/libvirt-domain-snapshot.h
@@ -1833,11 +1833,13 @@ exit 0
 %{_includedir}/libvirt/libvirt-qemu.h
 %{_includedir}/libvirt/libvirt-lxc.h
 %{_libdir}/pkgconfig/libvirt.pc
+%{_libdir}/pkgconfig/libvirt-admin.pc
 %{_libdir}/pkgconfig/libvirt-qemu.pc
 %{_libdir}/pkgconfig/libvirt-lxc.pc
 
 %dir %{_datadir}/libvirt/api/
 %{_datadir}/libvirt/api/libvirt-api.xml
+%{_datadir}/libvirt/api/libvirt-admin-api.xml
 %{_datadir}/libvirt/api/libvirt-qemu-api.xml
 %{_datadir}/libvirt/api/libvirt-lxc-api.xml
 # Needed building python bindings
