@@ -51,4 +51,6 @@ int virHostCPUGetInfo(virArch hostarch,
                       unsigned int *cores,
                       unsigned int *threads);
 
+int virHostCPUGetKVMMaxVCPUs(void);
+
 #endif /* __VIR_HOSTCPU_H__*/

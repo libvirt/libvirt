@@ -124,24 +124,6 @@ VIR_LOG_INIT("qemu.qemu_driver");
 
 #define QEMU_GUEST_VCPU_MAX_ID 4096
 
-#if HAVE_LINUX_KVM_H
-# include <linux/kvm.h>
-#endif
-
-/* device for kvm ioctls */
-#define KVM_DEVICE "/dev/kvm"
-
-/* add definitions missing in older linux/kvm.h */
-#ifndef KVMIO
-# define KVMIO 0xAE
-#endif
-#ifndef KVM_CHECK_EXTENSION
-# define KVM_CHECK_EXTENSION       _IO(KVMIO,   0x03)
-#endif
-#ifndef KVM_CAP_NR_VCPUS
-# define KVM_CAP_NR_VCPUS 9       /* returns max vcpus per vm */
-#endif
-
 #define QEMU_NB_BLKIO_PARAM  6
 
 #define QEMU_NB_BANDWIDTH_PARAM 7
@@ -1261,38 +1243,6 @@ static int qemuConnectIsAlive(virConnectPtr conn ATTRIBUTE_UNUSED)
 }
 
 
-static int
-kvmGetMaxVCPUs(void)
-{
-    int fd;
-    int ret;
-
-    if ((fd = open(KVM_DEVICE, O_RDONLY)) < 0) {
-        virReportSystemError(errno, _("Unable to open %s"), KVM_DEVICE);
-        return -1;
-    }
-
-#ifdef KVM_CAP_MAX_VCPUS
-    /* at first try KVM_CAP_MAX_VCPUS to determine the maximum count */
-    if ((ret = ioctl(fd, KVM_CHECK_EXTENSION, KVM_CAP_MAX_VCPUS)) > 0)
-        goto cleanup;
-#endif /* KVM_CAP_MAX_VCPUS */
-
-    /* as a fallback get KVM_CAP_NR_VCPUS (the recommended maximum number of
-     * vcpus). Note that on most machines this is set to 160. */
-    if ((ret = ioctl(fd, KVM_CHECK_EXTENSION, KVM_CAP_NR_VCPUS)) > 0)
-        goto cleanup;
-
-    /* if KVM_CAP_NR_VCPUS doesn't exist either, kernel documentation states
-     * that 4 should be used as the maximum number of cpus */
-    ret = 4;
-
- cleanup:
-    VIR_FORCE_CLOSE(fd);
-    return ret;
-}
-
-
 static char *
 qemuConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
 {
@@ -1330,7 +1280,7 @@ qemuConnectGetMaxVcpus(virConnectPtr conn ATTRIBUTE_UNUSED, const char *type)
         return 16;
 
     if (STRCASEEQ(type, "kvm"))
-        return kvmGetMaxVCPUs();
+        return virHostCPUGetKVMMaxVCPUs();
 
     if (STRCASEEQ(type, "kqemu"))
         return 1;

@@ -1072,6 +1072,7 @@ virLogManagerNew;
 nodeCapsInitNUMA;
 nodeGetInfo;
 virHostCPUGetCount;
+virHostCPUGetKVMMaxVCPUs;
 virHostCPUGetMap;
 virHostCPUGetOnlineBitmap;
 virHostCPUGetPresentBitmap;
