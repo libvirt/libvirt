@@ -286,23 +286,15 @@ virSecretDefFormatUsage(virBufferPtr buf,
         break;
 
     case VIR_SECRET_USAGE_TYPE_VOLUME:
-        if (def->usage.volume != NULL)
-            virBufferEscapeString(buf, "<volume>%s</volume>\n",
-                                  def->usage.volume);
+        virBufferEscapeString(buf, "<volume>%s</volume>\n", def->usage.volume);
         break;
 
     case VIR_SECRET_USAGE_TYPE_CEPH:
-        if (def->usage.ceph != NULL) {
-            virBufferEscapeString(buf, "<name>%s</name>\n",
-                                  def->usage.ceph);
-        }
+        virBufferEscapeString(buf, "<name>%s</name>\n", def->usage.ceph);
         break;
 
     case VIR_SECRET_USAGE_TYPE_ISCSI:
-        if (def->usage.target != NULL) {
-            virBufferEscapeString(buf, "<target>%s</target>\n",
-                                  def->usage.target);
-        }
+        virBufferEscapeString(buf, "<target>%s</target>\n", def->usage.target);
         break;
 
     default:
