@@ -44,7 +44,7 @@ EXTRA_DIST = \
   AUTHORS.in
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libvirt.pc libvirt-qemu.pc libvirt-lxc.pc
+pkgconfig_DATA = libvirt.pc libvirt-qemu.pc libvirt-lxc.pc libvirt-admin.pc
 
 NEWS: $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html.in
 	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then			\

@@ -10,7 +10,7 @@
 # soname version info can't enforce this since we never
 # change the soname
 #
-LIBVIRT_ADMIN_1.3.0 {
+LIBVIRT_ADMIN_2.0.0 {
     global:
         virAdmClientFree;
         virAdmClientGetID;

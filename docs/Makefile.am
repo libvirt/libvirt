@@ -132,7 +132,8 @@ apidir = $(pkgdatadir)/api
 api_DATA = \
        libvirt-api.xml \
        libvirt-qemu-api.xml \
-       libvirt-lxc-api.xml
+       libvirt-lxc-api.xml \
+       libvirt-admin-api.xml
 
 fig = \
   libvirt-net-logical.fig \
@@ -155,7 +156,7 @@ EXTRA_DIST=					\
   hacking1.xsl hacking2.xsl wrapstring.xsl \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
-  $(xml) $(qemu_xml) $(lxc_xml) $(fig) $(png) $(css) \
+  $(xml) $(qemu_xml) $(lxc_xml) $(admin_xml) $(fig) $(png) $(css) \
   $(patches) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
   $(internals_html_in) $(internals_html) \
   sitemap.html.in aclperms.htmlinc \

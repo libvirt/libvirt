@@ -19,14 +19,10 @@
 virincdir = $(includedir)/libvirt
 
 allheaders = $(wildcard $(srcdir)/*.h)
-virinc_HEADERS = $(filter-out $(srcdir)/libvirt-admin.h \
-				 $(srcdir)/libvirt-common.h, $(allheaders))
+virinc_HEADERS = $(filter-out $(srcdir)/libvirt-common.h, $(allheaders))
 virinc_HEADERS += libvirt-common.h
 
 EXTRA_DIST = libvirt-common.h.in
-
-# Temporarily disabled, but we need it for building
-EXTRA_DIST += libvirt-admin.h
 
 install-exec-hook:
 	$(mkinstalldirs) $(DESTDIR)$(virincdir)
