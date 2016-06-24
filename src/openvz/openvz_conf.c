@@ -737,10 +737,9 @@ openvzReadConfigParam(const char *conf_file, const char *param, char **value)
             break;
         }
 
-        if (! STREQLEN(line, param, strlen(param)))
+        if (!(sf = STRSKIP(line, param)))
             continue;
 
-        sf = line + strlen(param);
         if (*sf++ != '=')
             continue;
 
