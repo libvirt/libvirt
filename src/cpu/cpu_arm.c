@@ -30,12 +30,15 @@
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
-static const virArch archs[] = {VIR_ARCH_ARMV6L,
-                                VIR_ARCH_ARMV7B,
-                                VIR_ARCH_ARMV7L};
+static const virArch archs[] = {
+    VIR_ARCH_ARMV6L,
+    VIR_ARCH_ARMV7B,
+    VIR_ARCH_ARMV7L,
+    VIR_ARCH_AARCH64,
+};
 
 static virCPUDataPtr
-ArmNodeData(virArch arch)
+armNodeData(virArch arch)
 {
     virCPUDataPtr data;
 
@@ -48,7 +51,7 @@ ArmNodeData(virArch arch)
 }
 
 static int
-ArmDecode(virCPUDefPtr cpu,
+armDecode(virCPUDefPtr cpu,
           const virCPUData *data ATTRIBUTE_UNUSED,
           const char **models ATTRIBUTE_UNUSED,
           unsigned int nmodels ATTRIBUTE_UNUSED,
@@ -65,13 +68,13 @@ ArmDecode(virCPUDefPtr cpu,
 }
 
 static void
-ArmDataFree(virCPUDataPtr data)
+armDataFree(virCPUDataPtr data)
 {
     VIR_FREE(data);
 }
 
 static int
-ArmUpdate(virCPUDefPtr guest,
+armUpdate(virCPUDefPtr guest,
           const virCPUDef *host)
 {
     guest->match = VIR_CPU_MATCH_EXACT;
@@ -80,7 +83,7 @@ ArmUpdate(virCPUDefPtr guest,
 }
 
 static virCPUCompareResult
-ArmGuestData(virCPUDefPtr host ATTRIBUTE_UNUSED,
+armGuestData(virCPUDefPtr host ATTRIBUTE_UNUSED,
              virCPUDefPtr guest ATTRIBUTE_UNUSED,
              virCPUDataPtr *data ATTRIBUTE_UNUSED,
              char **message ATTRIBUTE_UNUSED)
@@ -89,7 +92,7 @@ ArmGuestData(virCPUDefPtr host ATTRIBUTE_UNUSED,
 }
 
 static virCPUDefPtr
-ArmBaseline(virCPUDefPtr *cpus,
+armBaseline(virCPUDefPtr *cpus,
             unsigned int ncpus ATTRIBUTE_UNUSED,
             const char **models ATTRIBUTE_UNUSED,
             unsigned int nmodels ATTRIBUTE_UNUSED,
@@ -113,7 +116,7 @@ ArmBaseline(virCPUDefPtr *cpus,
 }
 
 static virCPUCompareResult
-ArmCompare(virCPUDefPtr host ATTRIBUTE_UNUSED,
+armCompare(virCPUDefPtr host ATTRIBUTE_UNUSED,
            virCPUDefPtr cpu ATTRIBUTE_UNUSED,
            bool failMessages ATTRIBUTE_UNUSED)
 {
@@ -124,13 +127,13 @@ struct cpuArchDriver cpuDriverArm = {
     .name = "arm",
     .arch = archs,
     .narch = ARRAY_CARDINALITY(archs),
-    .compare = ArmCompare,
-    .decode = ArmDecode,
+    .compare = armCompare,
+    .decode = armDecode,
     .encode = NULL,
-    .free = ArmDataFree,
-    .nodeData = ArmNodeData,
-    .guestData = ArmGuestData,
-    .baseline = ArmBaseline,
-    .update = ArmUpdate,
+    .free = armDataFree,
+    .nodeData = armNodeData,
+    .guestData = armGuestData,
+    .baseline = armBaseline,
+    .update = armUpdate,
     .hasFeature = NULL,
 };

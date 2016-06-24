@@ -1080,7 +1080,6 @@ CPU_SOURCES =							\
 		cpu/cpu_x86.h cpu/cpu_x86.c cpu/cpu_x86_data.h	\
 		cpu/cpu_s390.h cpu/cpu_s390.c			\
 		cpu/cpu_arm.h cpu/cpu_arm.c			\
-		cpu/cpu_aarch64.h cpu/cpu_aarch64.c		\
 		cpu/cpu_ppc64.h cpu/cpu_ppc64.c			\
 		cpu/cpu_ppc64_data.h				\
 		cpu/cpu_map.h cpu/cpu_map.c

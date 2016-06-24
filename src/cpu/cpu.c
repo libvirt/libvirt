@@ -32,7 +32,6 @@
 #include "cpu_ppc64.h"
 #include "cpu_s390.h"
 #include "cpu_arm.h"
-#include "cpu_aarch64.h"
 #include "cpu_generic.h"
 #include "util/virstring.h"
 
@@ -47,7 +46,6 @@ static struct cpuArchDriver *drivers[] = {
     &cpuDriverPPC64,
     &cpuDriverS390,
     &cpuDriverArm,
-    &cpuDriverAARCH64,
     /* generic driver must always be the last one */
     &cpuDriverGeneric
 };
