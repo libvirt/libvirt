@@ -35,7 +35,6 @@
 #include "util/virstring.h"
 
 
-#define NR_DRIVERS ARRAY_CARDINALITY(drivers)
 #define VIR_FROM_THIS VIR_FROM_CPU
 
 VIR_LOG_INIT("cpu.cpu");
@@ -60,7 +59,7 @@ cpuGetSubDriver(virArch arch)
         return NULL;
     }
 
-    for (i = 0; i < NR_DRIVERS; i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(drivers); i++) {
         for (j = 0; j < drivers[i]->narch; j++) {
             if (arch == drivers[i]->arch[j])
                 return drivers[i];
@@ -79,7 +78,7 @@ cpuGetSubDriverByName(const char *name)
 {
     size_t i;
 
-    for (i = 0; i < NR_DRIVERS; i++) {
+    for (i = 0; i < ARRAY_CARDINALITY(drivers); i++) {
         if (STREQ_NULLABLE(name, drivers[i]->name))
             return drivers[i];
     }
