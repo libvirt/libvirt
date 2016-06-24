@@ -1619,6 +1619,41 @@ vzDomainBlockStats(virDomainPtr domain,
 }
 
 static int
+vzDomainBlockStatsToParams(virDomainBlockStatsPtr stats,
+                           virTypedParameterPtr params,
+                           int *nparams)
+{
+    size_t i;
+
+    if (*nparams == 0) {
+#define PARALLELS_COUNT_STATS(VAR, TYPE, NAME)      \
+        if ((stats->VAR) != -1)                     \
+            ++*nparams;
+
+        PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_COUNT_STATS)
+
+#undef PARALLELS_COUNT_STATS
+        return 0;
+    }
+
+    i = 0;
+#define PARALLELS_BLOCK_STATS_ASSIGN_PARAM(VAR, TYPE, NAME)                     \
+    if (i < *nparams && (stats->VAR) != -1) {                                   \
+        if (virTypedParameterAssign(params + i, TYPE,                           \
+                                    VIR_TYPED_PARAM_LLONG, (stats->VAR)) < 0)   \
+            return -1;                                                          \
+        i++;                                                                    \
+    }
+
+    PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_BLOCK_STATS_ASSIGN_PARAM)
+
+#undef PARALLELS_BLOCK_STATS_ASSIGN_PARAM
+
+    *nparams = i;
+    return 0;
+}
+
+static int
 vzDomainBlockStatsFlags(virDomainPtr domain,
                         const char *path,
                         virTypedParameterPtr params,
@@ -1628,7 +1663,6 @@ vzDomainBlockStatsFlags(virDomainPtr domain,
     virDomainBlockStatsStruct stats;
     virDomainObjPtr dom;
     int ret = -1;
-    size_t i;
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
     /* We don't return strings, and thus trivially support this flag.  */
@@ -1640,32 +1674,9 @@ vzDomainBlockStatsFlags(virDomainPtr domain,
     if (vzDomainBlockStatsImpl(dom, path, &stats) < 0)
         goto cleanup;
 
-    if (*nparams == 0) {
-#define PARALLELS_COUNT_STATS(VAR, TYPE, NAME)       \
-        if ((stats.VAR) != -1)                       \
-            ++*nparams;
-
-        PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_COUNT_STATS)
-
-#undef PARALLELS_COUNT_STATS
-        ret = 0;
+    if (vzDomainBlockStatsToParams(&stats, params, nparams) < 0)
         goto cleanup;
-    }
 
-    i = 0;
-#define PARALLELS_BLOCK_STATS_ASSIGN_PARAM(VAR, TYPE, NAME)                    \
-    if (i < *nparams && (stats.VAR) != -1) {                                   \
-        if (virTypedParameterAssign(params + i, TYPE,                          \
-                                    VIR_TYPED_PARAM_LLONG, (stats.VAR)) < 0)   \
-            goto cleanup;                                                      \
-        i++;                                                                   \
-    }
-
-    PARALLELS_BLOCK_STATS_FOREACH(PARALLELS_BLOCK_STATS_ASSIGN_PARAM)
-
-#undef PARALLELS_BLOCK_STATS_ASSIGN_PARAM
-
-    *nparams = i;
     ret = 0;
 
  cleanup:
