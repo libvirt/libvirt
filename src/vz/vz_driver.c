@@ -979,36 +979,210 @@ vzConnectDomainEventDeregisterAny(virConnectPtr conn,
     return 0;
 }
 
-static int vzDomainSuspend(virDomainPtr domain)
+static int
+vzDomainSuspend(virDomainPtr domain)
 {
-    return prlsdkDomainChangeState(domain, prlsdkPause);
+    vzConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom;
+    int ret = -1;
+    bool job = false;
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
+    if (vzEnsureDomainExists(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkPause(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkUpdateDomain(privconn->driver, dom) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
+
+    return ret;
 }
 
-static int vzDomainResume(virDomainPtr domain)
+static int
+vzDomainResume(virDomainPtr domain)
 {
-    return prlsdkDomainChangeState(domain, prlsdkResume);
+    vzConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom;
+    int ret = -1;
+    bool job = false;
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
+    if (vzEnsureDomainExists(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkResume(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkUpdateDomain(privconn->driver, dom) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
+
+    return ret;
 }
 
-static int vzDomainCreate(virDomainPtr domain)
+static int
+vzDomainCreate(virDomainPtr domain)
 {
-    return prlsdkDomainChangeState(domain, prlsdkStart);
+    vzConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom;
+    int ret = -1;
+    bool job = false;
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
+    if (vzEnsureDomainExists(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkStart(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkUpdateDomain(privconn->driver, dom) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
+
+    return ret;
 }
 
-static int vzDomainDestroy(virDomainPtr domain)
+static int
+vzDomainDestroy(virDomainPtr domain)
 {
-    return prlsdkDomainChangeState(domain, prlsdkKill);
+    vzConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom;
+    int ret = -1;
+    bool job = false;
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
+    if (vzEnsureDomainExists(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkKill(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkUpdateDomain(privconn->driver, dom) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
+
+    return ret;
 }
 
-static int vzDomainShutdown(virDomainPtr domain)
+static int
+vzDomainShutdown(virDomainPtr domain)
 {
-    return prlsdkDomainChangeState(domain, prlsdkStop);
+    vzConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom;
+    int ret = -1;
+    bool job = false;
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
+    if (vzEnsureDomainExists(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkStop(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkUpdateDomain(privconn->driver, dom) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
+
+    return ret;
 }
 
-static int vzDomainReboot(virDomainPtr domain,
-                          unsigned int flags)
+static int
+vzDomainReboot(virDomainPtr domain, unsigned int flags)
 {
+    vzConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom;
+    int ret = -1;
+    bool job = false;
+
     virCheckFlags(0, -1);
-    return prlsdkDomainChangeState(domain, prlsdkRestart);
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
+    if (vzEnsureDomainExists(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkRestart(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkUpdateDomain(privconn->driver, dom) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
+
+    return ret;
 }
 
 static int vzDomainIsActive(virDomainPtr domain)
@@ -1117,13 +1291,17 @@ vzDomainManagedSave(virDomainPtr domain, unsigned int flags)
 
     state = virDomainObjGetState(dom, &reason);
 
-    if (state == VIR_DOMAIN_RUNNING && (flags & VIR_DOMAIN_SAVE_PAUSED)) {
-        ret = prlsdkDomainChangeStateLocked(privconn->driver, dom, prlsdkPause);
-        if (ret)
-            goto cleanup;
-    }
+    if (state == VIR_DOMAIN_RUNNING && (flags & VIR_DOMAIN_SAVE_PAUSED) &&
+        prlsdkPause(dom) < 0)
+        goto cleanup;
 
-    ret = prlsdkDomainChangeStateLocked(privconn->driver, dom, prlsdkSuspend);
+    if (prlsdkSuspend(dom) < 0)
+        goto cleanup;
+
+    if (prlsdkUpdateDomain(privconn->driver, dom) < 0)
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
     if (job)

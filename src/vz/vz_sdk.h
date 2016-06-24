@@ -37,22 +37,15 @@ prlsdkAddDomainByName(vzDriverPtr driver, const char *name);
 int prlsdkUpdateDomain(vzDriverPtr driver, virDomainObjPtr dom);
 int prlsdkSubscribeToPCSEvents(vzDriverPtr driver);
 void prlsdkUnsubscribeFromPCSEvents(vzDriverPtr driver);
-PRL_RESULT prlsdkStart(PRL_HANDLE sdkdom);
-PRL_RESULT prlsdkKill(PRL_HANDLE sdkdom);
-PRL_RESULT prlsdkStop(PRL_HANDLE sdkdom);
-PRL_RESULT prlsdkPause(PRL_HANDLE sdkdom);
-PRL_RESULT prlsdkResume(PRL_HANDLE sdkdom);
-PRL_RESULT prlsdkSuspend(PRL_HANDLE sdkdom);
-PRL_RESULT prlsdkRestart(PRL_HANDLE sdkdom);
 
-typedef PRL_RESULT (*prlsdkChangeStateFunc)(PRL_HANDLE sdkdom);
-int
-prlsdkDomainChangeState(virDomainPtr domain,
-                        prlsdkChangeStateFunc chstate);
-int
-prlsdkDomainChangeStateLocked(vzDriverPtr driver,
-                              virDomainObjPtr dom,
-                              prlsdkChangeStateFunc chstate);
+int prlsdkStart(virDomainObjPtr dom);
+int prlsdkKill(virDomainObjPtr dom);
+int prlsdkStop(virDomainObjPtr dom);
+int prlsdkPause(virDomainObjPtr dom);
+int prlsdkResume(virDomainObjPtr dom);
+int prlsdkSuspend(virDomainObjPtr dom);
+int prlsdkRestart(virDomainObjPtr dom);
+
 int
 prlsdkApplyConfig(vzDriverPtr driver,
                   virDomainObjPtr dom,

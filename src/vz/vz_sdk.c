@@ -41,6 +41,8 @@
 
 static int
 prlsdkUUIDParse(const char *uuidstr, unsigned char *uuid);
+static void
+prlsdkConvertError(PRL_RESULT pret);
 
 VIR_LOG_INIT("parallels.sdk");
 
@@ -2258,131 +2260,129 @@ void prlsdkUnsubscribeFromPCSEvents(vzDriverPtr driver)
         logPrlError(ret);
 }
 
-PRL_RESULT prlsdkStart(PRL_HANDLE sdkdom)
+int prlsdkStart(virDomainObjPtr dom)
 {
     PRL_HANDLE job = PRL_INVALID_HANDLE;
-
-    job = PrlVm_StartEx(sdkdom, PSM_VM_START, 0);
-    return waitJob(job);
-}
-
-static PRL_RESULT prlsdkStopEx(PRL_HANDLE sdkdom, PRL_UINT32 mode)
-{
-    PRL_HANDLE job = PRL_INVALID_HANDLE;
-
-    job = PrlVm_StopEx(sdkdom, mode, 0);
-    return waitJob(job);
-}
-
-PRL_RESULT prlsdkKill(PRL_HANDLE sdkdom)
-{
-    return prlsdkStopEx(sdkdom, PSM_KILL);
-}
-
-PRL_RESULT prlsdkStop(PRL_HANDLE sdkdom)
-{
-    return prlsdkStopEx(sdkdom, PSM_SHUTDOWN);
-}
-
-PRL_RESULT prlsdkPause(PRL_HANDLE sdkdom)
-{
-    PRL_HANDLE job = PRL_INVALID_HANDLE;
-
-    job = PrlVm_Pause(sdkdom, false);
-    return waitJob(job);
-}
-
-PRL_RESULT prlsdkResume(PRL_HANDLE sdkdom)
-{
-    PRL_HANDLE job = PRL_INVALID_HANDLE;
-
-    job = PrlVm_Resume(sdkdom);
-    return waitJob(job);
-}
-
-PRL_RESULT prlsdkSuspend(PRL_HANDLE sdkdom)
-{
-    PRL_HANDLE job = PRL_INVALID_HANDLE;
-
-    job = PrlVm_Suspend(sdkdom);
-    return waitJob(job);
-}
-
-PRL_RESULT prlsdkRestart(PRL_HANDLE sdkdom)
-{
-    PRL_HANDLE job = PRL_INVALID_HANDLE;
-
-    job = PrlVm_Restart(sdkdom);
-    return waitJob(job);
-}
-
-int
-prlsdkDomainChangeStateLocked(vzDriverPtr driver,
-                              virDomainObjPtr dom,
-                              prlsdkChangeStateFunc chstate)
-{
-    vzDomObjPtr pdom;
+    vzDomObjPtr privdom = dom->privateData;
     PRL_RESULT pret;
+
+    job = PrlVm_StartEx(privdom->sdkdom, PSM_VM_START, 0);
+    if (PRL_FAILED(pret = waitDomainJob(job, dom))) {
+        prlsdkConvertError(pret);
+        return -1;
+    }
+
+    return 0;
+}
+
+int prlsdkKill(virDomainObjPtr dom)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_RESULT pret;
+
+    job = PrlVm_StopEx(privdom->sdkdom, PSM_KILL, 0);
+    if (PRL_FAILED(pret = waitDomainJob(job, dom))) {
+        prlsdkConvertError(pret);
+        return -1;
+    }
+
+    return 0;
+}
+
+int prlsdkStop(virDomainObjPtr dom)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_RESULT pret;
+
+    job = PrlVm_StopEx(privdom->sdkdom, PSM_SHUTDOWN, 0);
+    if (PRL_FAILED(pret = waitDomainJob(job, dom))) {
+        prlsdkConvertError(pret);
+        return -1;
+    }
+
+    return 0;
+}
+
+int prlsdkPause(virDomainObjPtr dom)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_RESULT pret;
+
+    job = PrlVm_Pause(privdom->sdkdom, false);
+    if (PRL_FAILED(pret = waitDomainJob(job, dom))) {
+        prlsdkConvertError(pret);
+        return -1;
+    }
+
+    return 0;
+}
+
+int prlsdkResume(virDomainObjPtr dom)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_RESULT pret;
+
+    job = PrlVm_Resume(privdom->sdkdom);
+    if (PRL_FAILED(pret = waitDomainJob(job, dom))) {
+        prlsdkConvertError(pret);
+        return -1;
+    }
+
+    return 0;
+}
+
+int prlsdkSuspend(virDomainObjPtr dom)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_RESULT pret;
+
+    job = PrlVm_Suspend(privdom->sdkdom);
+    if (PRL_FAILED(pret = waitDomainJob(job, dom))) {
+        prlsdkConvertError(pret);
+        return -1;
+    }
+
+    return 0;
+}
+
+int prlsdkRestart(virDomainObjPtr dom)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_RESULT pret;
+
+    job = PrlVm_Restart(privdom->sdkdom);
+    if (PRL_FAILED(pret = waitDomainJob(job, dom))) {
+        prlsdkConvertError(pret);
+        return -1;
+    }
+
+    return 0;
+}
+
+static void
+prlsdkConvertError(PRL_RESULT pret)
+{
     virErrorNumber virerr;
 
-    pdom = dom->privateData;
-    virObjectUnlock(dom);
-    pret = chstate(pdom->sdkdom);
-    virObjectLock(dom);
-    if (PRL_FAILED(pret)) {
-        virResetLastError();
-
-        switch (pret) {
-        case PRL_ERR_DISP_VM_IS_NOT_STARTED:
-        case PRL_ERR_DISP_VM_IS_NOT_STOPPED:
-        case PRL_ERR_INVALID_ACTION_REQUESTED:
-        case PRL_ERR_UNIMPLEMENTED:
-            virerr = VIR_ERR_OPERATION_INVALID;
-            break;
-        default:
-            virerr = VIR_ERR_OPERATION_FAILED;
-        }
-
-        virReportError(virerr, "%s", _("Can't change domain state."));
-        return -1;
+    switch (pret) {
+    case PRL_ERR_DISP_VM_IS_NOT_STARTED:
+    case PRL_ERR_DISP_VM_IS_NOT_STOPPED:
+    case PRL_ERR_INVALID_ACTION_REQUESTED:
+    case PRL_ERR_UNIMPLEMENTED:
+        virerr = VIR_ERR_OPERATION_INVALID;
+        break;
+    default:
+        virerr = VIR_ERR_OPERATION_FAILED;
     }
 
-    return prlsdkUpdateDomain(driver, dom);
-}
-
-int
-prlsdkDomainChangeState(virDomainPtr domain,
-                        prlsdkChangeStateFunc chstate)
-{
-    vzConnPtr privconn = domain->conn->privateData;
-    virDomainObjPtr dom;
-    int ret = -1;
-    bool job = false;
-
-    if (!(dom = vzDomObjFromDomainRef(domain)))
-        return -1;
-
-    if (vzDomainObjBeginJob(dom) < 0)
-        goto cleanup;
-    job = true;
-
-    if (dom->removing) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-        virUUIDFormat(dom->def->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s' (%s)"),
-                       uuidstr, dom->def->name);
-        goto cleanup;
-    }
-
-    ret = prlsdkDomainChangeStateLocked(privconn->driver, dom, chstate);
-
- cleanup:
-    if (job)
-        vzDomainObjEndJob(dom);
-    virDomainObjEndAPI(&dom);
-    return ret;
+    virResetLastError();
+    virReportError(virerr, "%s", _("Can't change domain state."));
 }
 
 static int
