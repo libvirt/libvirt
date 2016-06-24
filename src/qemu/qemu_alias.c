@@ -485,13 +485,16 @@ qemuDomainGetMasterKeyAlias(void)
 
 
 /* qemuDomainGetSecretAESAlias:
+ * @srcalias: Source alias used to generate the secret alias
+ * @isLuks: True when we are generating a secret for LUKS encrypt/decrypt
  *
  * Generate and return an alias for the encrypted secret
  *
  * Returns NULL or a string containing the alias
  */
 char *
-qemuDomainGetSecretAESAlias(const char *srcalias)
+qemuDomainGetSecretAESAlias(const char *srcalias,
+                            bool isLuks)
 {
     char *alias;
 
@@ -501,7 +504,10 @@ qemuDomainGetSecretAESAlias(const char *srcalias)
         return NULL;
     }
 
-    ignore_value(virAsprintf(&alias, "%s-secret0", srcalias));
+    if (isLuks)
+        ignore_value(virAsprintf(&alias, "%s-luks-secret0", srcalias));
+    else
+        ignore_value(virAsprintf(&alias, "%s-secret0", srcalias));
 
     return alias;
 }

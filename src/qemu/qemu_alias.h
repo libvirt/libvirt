@@ -69,6 +69,7 @@ char *qemuAliasFromDisk(const virDomainDiskDef *disk);
 
 char *qemuDomainGetMasterKeyAlias(void);
 
-char *qemuDomainGetSecretAESAlias(const char *srcalias);
+char *qemuDomainGetSecretAESAlias(const char *srcalias,
+                                  bool isLuks);
 
 #endif /* __QEMU_ALIAS_H__*/
