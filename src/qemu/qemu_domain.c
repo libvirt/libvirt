@@ -972,6 +972,20 @@ qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
 }
 
 
+bool
+qemuDomainSecretDiskCapable(virStorageSourcePtr src)
+{
+    if (!virStorageSourceIsEmpty(src) &&
+        virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_NETWORK &&
+        src->auth &&
+        (src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI ||
+         src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD))
+        return true;
+
+    return false;
+}
+
+
 /* qemuDomainSecretDiskPrepare:
  * @conn: Pointer to connection
  * @priv: pointer to domain private object
@@ -989,11 +1003,7 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
     virStorageSourcePtr src = disk->src;
     qemuDomainSecretInfoPtr secinfo = NULL;
 
-    if (conn && !virStorageSourceIsEmpty(src) &&
-        virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_NETWORK &&
-        src->auth &&
-        (src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI ||
-         src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)) {
+    if (conn && qemuDomainSecretDiskCapable(src)) {
 
         virSecretUsageType secretUsageType = VIR_SECRET_USAGE_TYPE_ISCSI;
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);

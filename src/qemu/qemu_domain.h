@@ -670,6 +670,9 @@ void qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv);
 void qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
     ATTRIBUTE_NONNULL(1);
 
+bool qemuDomainSecretDiskCapable(virStorageSourcePtr src)
+    ATTRIBUTE_NONNULL(1);
+
 int qemuDomainSecretDiskPrepare(virConnectPtr conn,
                                 qemuDomainObjPrivatePtr priv,
                                 virDomainDiskDefPtr disk)
