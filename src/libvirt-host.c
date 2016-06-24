@@ -313,7 +313,10 @@ virConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
  *
  * Provides the maximum number of virtual CPUs supported for a guest VM of a
  * specific type. The 'type' parameter here corresponds to the 'type'
- * attribute in the <domain> element of the XML.
+ * attribute in the <domain> element of the XML. This API doesn't take emulator
+ * limits into consideration, hence the returned value is not guaranteed to be
+ * usable. It is recommended to use virConnectGetDomainCapabilities() and look
+ * for "<vcpu max='...'>" in its output instead.
  *
  * Returns the maximum of virtual CPU or -1 in case of error.
  */
