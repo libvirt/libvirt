@@ -5826,13 +5826,13 @@ enum remote_procedure {
      * @generate: none
      * @acl: none
      */
-    REMOTE_PROC_CONNECT_CLOSE_CALLBACK_REGISTER = 360,
+    REMOTE_PROC_CONNECT_REGISTER_CLOSE_CALLBACK = 360,
 
     /**
      * @generate: none
      * @acl: none
      */
-    REMOTE_PROC_CONNECT_CLOSE_CALLBACK_UNREGISTER = 361,
+    REMOTE_PROC_CONNECT_UNREGISTER_CLOSE_CALLBACK = 361,
 
     /**
      * @generate: none

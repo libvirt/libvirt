@@ -7715,7 +7715,7 @@ remoteConnectRegisterCloseCallback(virConnectPtr conn,
     }
 
     if (priv->serverCloseCallback &&
-        call(conn, priv, 0, REMOTE_PROC_CONNECT_CLOSE_CALLBACK_REGISTER,
+        call(conn, priv, 0, REMOTE_PROC_CONNECT_REGISTER_CLOSE_CALLBACK,
              (xdrproc_t) xdr_void, (char *) NULL,
              (xdrproc_t) xdr_void, (char *) NULL) == -1)
         goto cleanup;
@@ -7746,7 +7746,7 @@ remoteConnectUnregisterCloseCallback(virConnectPtr conn,
     }
 
     if (priv->serverCloseCallback &&
-        call(conn, priv, 0, REMOTE_PROC_CONNECT_CLOSE_CALLBACK_UNREGISTER,
+        call(conn, priv, 0, REMOTE_PROC_CONNECT_UNREGISTER_CLOSE_CALLBACK,
              (xdrproc_t) xdr_void, (char *) NULL,
              (xdrproc_t) xdr_void, (char *) NULL) == -1)
         goto cleanup;

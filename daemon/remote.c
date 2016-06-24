@@ -3652,7 +3652,7 @@ remoteDispatchNodeDeviceGetParent(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 static int
-remoteDispatchConnectCloseCallbackRegister(virNetServerPtr server ATTRIBUTE_UNUSED,
+remoteDispatchConnectRegisterCloseCallback(virNetServerPtr server ATTRIBUTE_UNUSED,
                                            virNetServerClientPtr client,
                                            virNetMessagePtr msg ATTRIBUTE_UNUSED,
                                            virNetMessageErrorPtr rerr)
@@ -3684,7 +3684,7 @@ remoteDispatchConnectCloseCallbackRegister(virNetServerPtr server ATTRIBUTE_UNUS
 }
 
 static int
-remoteDispatchConnectCloseCallbackUnregister(virNetServerPtr server ATTRIBUTE_UNUSED,
+remoteDispatchConnectUnregisterCloseCallback(virNetServerPtr server ATTRIBUTE_UNUSED,
                                              virNetServerClientPtr client,
                                              virNetMessagePtr msg ATTRIBUTE_UNUSED,
                                              virNetMessageErrorPtr rerr)
