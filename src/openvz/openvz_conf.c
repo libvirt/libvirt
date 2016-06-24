@@ -741,7 +741,8 @@ openvzReadConfigParam(const char *conf_file, const char *param, char **value)
             continue;
 
         sf = line + strlen(param);
-        if (*sf++ != '=') continue;
+        if (*sf++ != '=')
+            continue;
 
         saveptr = NULL;
         if ((token = strtok_r(sf, "\"\t\n", &saveptr)) != NULL) {
