@@ -38,6 +38,7 @@
 #include "virbitmap.h"
 #include "virnodesuspend.h"
 #include "virnuma.h"
+#include "virhostcpu.h"
 #include "qemu_monitor.h"
 #include "virstring.h"
 #include "qemu_hostdev.h"
@@ -4336,16 +4337,22 @@ int
 virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
                           virQEMUCapsPtr qemuCaps,
                           virFirmwarePtr *firmwares,
-                          size_t nfirmwares)
+                          size_t nfirmwares,
+                          virDomainVirtType virttype)
 {
     virDomainCapsOSPtr os = &domCaps->os;
     virDomainCapsDeviceDiskPtr disk = &domCaps->disk;
     virDomainCapsDeviceHostdevPtr hostdev = &domCaps->hostdev;
     virDomainCapsDeviceGraphicsPtr graphics = &domCaps->graphics;
     virDomainCapsDeviceVideoPtr video = &domCaps->video;
-    int maxvcpus = virQEMUCapsGetMachineMaxCpus(qemuCaps, domCaps->machine);
 
-    domCaps->maxvcpus = maxvcpus;
+    domCaps->maxvcpus = virQEMUCapsGetMachineMaxCpus(qemuCaps,
+                                                     domCaps->machine);
+    if (virttype == VIR_DOMAIN_VIRT_KVM) {
+        int hostmaxvcpus = virHostCPUGetKVMMaxVCPUs();
+        if (hostmaxvcpus >= 0)
+            domCaps->maxvcpus = MIN(domCaps->maxvcpus, hostmaxvcpus);
+    }
 
     if (virQEMUCapsFillDomainOSCaps(os, firmwares, nfirmwares) < 0 ||
         virQEMUCapsFillDomainDeviceDiskCaps(qemuCaps,

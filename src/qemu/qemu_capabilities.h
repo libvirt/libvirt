@@ -492,6 +492,7 @@ int virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 int virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
                               virQEMUCapsPtr qemuCaps,
                               virFirmwarePtr *firmwares,
-                              size_t nfirmwares);
+                              size_t nfirmwares,
+                              virDomainVirtType virttype);
 
 #endif /* __QEMU_CAPABILITIES_H__*/
