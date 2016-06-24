@@ -1249,7 +1249,6 @@ int
 virHostCPUGetThreadsPerSubcore(virArch arch)
 {
     int threads_per_subcore = 0;
-    const char *kvmpath = "/dev/kvm";
     int kvmfd;
 
     if (ARCH_IS_PPC64(arch)) {
@@ -1259,17 +1258,17 @@ virHostCPUGetThreadsPerSubcore(virArch arch)
          *   b. the kvm module might not be installed or enabled
          * In either case, falling back to the subcore-unaware thread
          * counting logic is the right thing to do */
-        if (!virFileExists(kvmpath))
+        if (!virFileExists(KVM_DEVICE))
             goto out;
 
-        if ((kvmfd = open(kvmpath, O_RDONLY)) < 0) {
+        if ((kvmfd = open(KVM_DEVICE, O_RDONLY)) < 0) {
             /* This can happen when running as a regular user if
              * permissions are tight enough, in which case erroring out
              * is better than silently falling back and reporting
              * different nodeinfo depending on the user */
             virReportSystemError(errno,
                                  _("Failed to open '%s'"),
-                                 kvmpath);
+                                 KVM_DEVICE);
             threads_per_subcore = -1;
             goto out;
         }
