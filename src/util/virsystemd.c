@@ -182,6 +182,20 @@ virSystemdMakeMachineName(const char *drivername,
     return machinename;
 }
 
+/* -2 = machine1 is not supported on this machine
+ * -1 = error
+ *  0 = machine1 is available
+ */
+static int
+virSystemdHasMachined(void)
+{
+    int ret;
+    if ((ret = virDBusIsServiceEnabled("org.freedesktop.machine1")) < 0)
+        return ret;
+
+    return virDBusIsServiceRegistered("org.freedesktop.systemd1");
+}
+
 
 char *
 virSystemdGetMachineNameByPID(pid_t pid)
@@ -190,10 +204,7 @@ virSystemdGetMachineNameByPID(pid_t pid)
     DBusMessage *reply = NULL;
     char *name = NULL, *object = NULL;
 
-    if (virDBusIsServiceEnabled("org.freedesktop.machine1") < 0)
-        goto cleanup;
-
-    if (virDBusIsServiceRegistered("org.freedesktop.systemd1") < 0)
+    if (virSystemdHasMachined() < 0)
         goto cleanup;
 
     if (!(conn = virDBusGetSystemBus()))
@@ -268,11 +279,7 @@ int virSystemdCreateMachine(const char *name,
     char *slicename = NULL;
     static int hasCreateWithNetwork = 1;
 
-    ret = virDBusIsServiceEnabled("org.freedesktop.machine1");
-    if (ret < 0)
-        return ret;
-
-    if ((ret = virDBusIsServiceRegistered("org.freedesktop.systemd1")) < 0)
+    if ((ret = virSystemdHasMachined()) < 0)
         return ret;
 
     if (!(conn = virDBusGetSystemBus()))
@@ -434,11 +441,7 @@ int virSystemdTerminateMachine(const char *name)
 
     memset(&error, 0, sizeof(error));
 
-    ret = virDBusIsServiceEnabled("org.freedesktop.machine1");
-    if (ret < 0)
-        goto cleanup;
-
-    if ((ret = virDBusIsServiceRegistered("org.freedesktop.systemd1")) < 0)
+    if ((ret = virSystemdHasMachined()) < 0)
         goto cleanup;
 
     ret = -1;
