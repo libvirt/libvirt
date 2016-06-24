@@ -1294,8 +1294,37 @@ remoteRelayStoragePoolEventLifecycle(virConnectPtr conn,
     return 0;
 }
 
+static int
+remoteRelayStoragePoolEventRefresh(virConnectPtr conn,
+                                   virStoragePoolPtr pool,
+                                   void *opaque)
+{
+    daemonClientEventCallbackPtr callback = opaque;
+    remote_storage_pool_event_refresh_msg data;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayStoragePoolEventCheckACL(callback->client, conn, pool))
+        return -1;
+
+    VIR_DEBUG("Relaying storage pool refresh event callback %d",
+              callback->callbackID);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    make_nonnull_storage_pool(&data.pool, pool);
+    data.callbackID = callback->callbackID;
+
+    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+                                  REMOTE_PROC_STORAGE_POOL_EVENT_REFRESH,
+                                  (xdrproc_t)xdr_remote_storage_pool_event_refresh_msg,
+                                  &data);
+
+    return 0;
+}
+
 static virConnectStoragePoolEventGenericCallback storageEventCallbacks[] = {
     VIR_STORAGE_POOL_EVENT_CALLBACK(remoteRelayStoragePoolEventLifecycle),
+    VIR_STORAGE_POOL_EVENT_CALLBACK(remoteRelayStoragePoolEventRefresh),
 };
 
 verify(ARRAY_CARDINALITY(storageEventCallbacks) == VIR_STORAGE_POOL_EVENT_ID_LAST);

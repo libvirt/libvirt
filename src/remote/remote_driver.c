@@ -362,6 +362,11 @@ remoteStoragePoolBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSE
                                      void *evdata, void *opaque);
 
 static void
+remoteStoragePoolBuildEventRefresh(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                   virNetClientPtr client ATTRIBUTE_UNUSED,
+                                   void *evdata, void *opaque);
+
+static void
 remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                          virNetClientPtr client ATTRIBUTE_UNUSED,
                                          void *evdata, void *opaque);
@@ -544,6 +549,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteStoragePoolBuildEventLifecycle,
       sizeof(remote_storage_pool_event_lifecycle_msg),
       (xdrproc_t)xdr_remote_storage_pool_event_lifecycle_msg },
+    { REMOTE_PROC_STORAGE_POOL_EVENT_REFRESH,
+      remoteStoragePoolBuildEventRefresh,
+      sizeof(remote_storage_pool_event_refresh_msg),
+      (xdrproc_t)xdr_remote_storage_pool_event_refresh_msg },
 };
 
 static void
@@ -5128,6 +5137,27 @@ remoteStoragePoolBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSE
 
     event = virStoragePoolEventLifecycleNew(pool->name, pool->uuid, msg->event,
                                             msg->detail);
+    virObjectUnref(pool);
+
+    remoteEventQueue(priv, event, msg->callbackID);
+}
+
+static void
+remoteStoragePoolBuildEventRefresh(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                   virNetClientPtr client ATTRIBUTE_UNUSED,
+                                   void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_storage_pool_event_refresh_msg *msg = evdata;
+    virStoragePoolPtr pool;
+    virObjectEventPtr event = NULL;
+
+    pool = get_nonnull_storage_pool(conn, msg->pool);
+    if (!pool)
+        return;
+
+    event = virStoragePoolEventRefreshNew(pool->name, pool->uuid);
     virObjectUnref(pool);
 
     remoteEventQueue(priv, event, msg->callbackID);

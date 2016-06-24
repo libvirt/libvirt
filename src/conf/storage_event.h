@@ -57,4 +57,8 @@ virStoragePoolEventLifecycleNew(const char *name,
                                 int type,
                                 int detail);
 
+virObjectEventPtr
+virStoragePoolEventRefreshNew(const char *name,
+                              const unsigned char *uuid);
+
 #endif

@@ -1206,10 +1206,8 @@ storagePoolRefresh(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    event = virStoragePoolEventLifecycleNew(pool->def->name,
-                                            pool->def->uuid,
-                                            VIR_STORAGE_POOL_EVENT_REFRESHED,
-                                            0);
+    event = virStoragePoolEventRefreshNew(pool->def->name,
+                                          pool->def->uuid);
     ret = 0;
 
  cleanup:
@@ -2342,10 +2340,8 @@ virStorageVolPoolRefreshThread(void *opaque)
     if (backend->refreshPool(NULL, pool) < 0)
         VIR_DEBUG("Failed to refresh storage pool");
 
-    event = virStoragePoolEventLifecycleNew(pool->def->name,
-                                            pool->def->uuid,
-                                            VIR_STORAGE_POOL_EVENT_REFRESHED,
-                                            0);
+    event = virStoragePoolEventRefreshNew(pool->def->name,
+                                          pool->def->uuid);
 
  cleanup:
     if (event)

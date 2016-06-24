@@ -2567,6 +2567,10 @@ struct remote_storage_pool_event_lifecycle_msg {
         int                        event;
         int                        detail;
 };
+struct remote_storage_pool_event_refresh_msg {
+        int                        callbackID;
+        remote_nonnull_storage_pool pool;
+};
 struct remote_domain_fsfreeze_args {
         remote_nonnull_domain      dom;
         struct {
@@ -3140,4 +3144,5 @@ enum remote_procedure {
         REMOTE_PROC_STORAGE_POOL_EVENT_LIFECYCLE = 370,
         REMOTE_PROC_DOMAIN_GET_GUEST_VCPUS = 371,
         REMOTE_PROC_DOMAIN_SET_GUEST_VCPUS = 372,
+        REMOTE_PROC_STORAGE_POOL_EVENT_REFRESH = 373,
 };

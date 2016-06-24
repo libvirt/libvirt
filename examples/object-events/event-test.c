@@ -349,8 +349,6 @@ storagePoolEventToString(int event)
             return "Started";
         case VIR_STORAGE_POOL_EVENT_STOPPED:
             return "Stopped";
-        case VIR_STORAGE_POOL_EVENT_REFRESHED:
-            return "Refreshed";
         case VIR_STORAGE_POOL_EVENT_LAST:
             break;
     }
@@ -679,6 +677,17 @@ myStoragePoolEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int
+myStoragePoolEventRefreshCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  virStoragePoolPtr pool,
+                                  void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Storage pool %s refresh\n", __func__,
+           virStoragePoolGetName(pool));
+    return 0;
+}
+
+
 static void
 eventTypedParamsPrint(virTypedParameterPtr params,
                       int nparams)
@@ -936,6 +945,7 @@ struct storagePoolEventData {
 
 struct storagePoolEventData storagePoolEvents[] = {
     STORAGE_POOL_EVENT(VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE, myStoragePoolEventCallback),
+    STORAGE_POOL_EVENT(VIR_STORAGE_POOL_EVENT_ID_REFRESH, myStoragePoolEventRefreshCallback),
 };
 
 /* make sure that the events are kept in sync */

@@ -48,10 +48,20 @@ struct _virStoragePoolEventLifecycle {
 typedef struct _virStoragePoolEventLifecycle virStoragePoolEventLifecycle;
 typedef virStoragePoolEventLifecycle *virStoragePoolEventLifecyclePtr;
 
+struct _virStoragePoolEventRefresh {
+    virStoragePoolEvent parent;
+
+    bool dummy;
+};
+typedef struct _virStoragePoolEventRefresh virStoragePoolEventRefresh;
+typedef virStoragePoolEventRefresh *virStoragePoolEventRefreshPtr;
+
 static virClassPtr virStoragePoolEventClass;
 static virClassPtr virStoragePoolEventLifecycleClass;
+static virClassPtr virStoragePoolEventRefreshClass;
 static void virStoragePoolEventDispose(void *obj);
 static void virStoragePoolEventLifecycleDispose(void *obj);
+static void virStoragePoolEventRefreshDispose(void *obj);
 
 static int
 virStoragePoolEventsOnceInit(void)
@@ -67,6 +77,12 @@ virStoragePoolEventsOnceInit(void)
                       "virStoragePoolEventLifecycle",
                       sizeof(virStoragePoolEventLifecycle),
                       virStoragePoolEventLifecycleDispose)))
+        return -1;
+    if (!(virStoragePoolEventRefreshClass =
+          virClassNew(virStoragePoolEventClass,
+                      "virStoragePoolEventRefresh",
+                      sizeof(virStoragePoolEventRefresh),
+                      virStoragePoolEventRefreshDispose)))
         return -1;
     return 0;
 }
@@ -85,6 +101,14 @@ static void
 virStoragePoolEventLifecycleDispose(void *obj)
 {
     virStoragePoolEventLifecyclePtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+}
+
+
+static void
+virStoragePoolEventRefreshDispose(void *obj)
+{
+    virStoragePoolEventRefreshPtr event = obj;
     VIR_DEBUG("obj=%p", event);
 }
 
@@ -112,6 +136,13 @@ virStoragePoolEventDispatchDefaultFunc(virConnectPtr conn,
                                                               storagePoolLifecycleEvent->type,
                                                               storagePoolLifecycleEvent->detail,
                                                               cbopaque);
+            goto cleanup;
+        }
+
+    case VIR_STORAGE_POOL_EVENT_ID_REFRESH:
+        {
+            ((virConnectStoragePoolEventGenericCallback)cb)(conn, pool,
+                                                            cbopaque);
             goto cleanup;
         }
 
@@ -232,6 +263,32 @@ virStoragePoolEventLifecycleNew(const char *name,
 
     event->type = type;
     event->detail = detail;
+
+    return (virObjectEventPtr)event;
+}
+
+
+/**
+ * virStoragePoolEventRefreshNew:
+ * @name: name of the storage pool object the event describes
+ * @uuid: uuid of the storage pool object the event describes
+ *
+ * Create a new storage pool refresh event.
+ */
+virObjectEventPtr
+virStoragePoolEventRefreshNew(const char *name,
+                              const unsigned char *uuid)
+{
+    virStoragePoolEventRefreshPtr event;
+
+    if (virStoragePoolEventsInitialize() < 0)
+        return NULL;
+
+    if (!(event = virObjectEventNew(virStoragePoolEventRefreshClass,
+                                    virStoragePoolEventDispatchDefaultFunc,
+                                    VIR_STORAGE_POOL_EVENT_ID_REFRESH,
+                                    0, name, uuid)))
+        return NULL;
 
     return (virObjectEventPtr)event;
 }

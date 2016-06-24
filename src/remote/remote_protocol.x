@@ -3126,6 +3126,11 @@ struct remote_storage_pool_event_lifecycle_msg {
     int detail;
 };
 
+struct remote_storage_pool_event_refresh_msg {
+    int callbackID;
+    remote_nonnull_storage_pool pool;
+};
+
 struct remote_domain_fsfreeze_args {
     remote_nonnull_domain dom;
     remote_nonnull_string mountpoints<REMOTE_DOMAIN_FSFREEZE_MOUNTPOINTS_MAX>; /* (const char **) */
@@ -5871,5 +5876,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:write
      */
-    REMOTE_PROC_DOMAIN_SET_GUEST_VCPUS = 372
+    REMOTE_PROC_DOMAIN_SET_GUEST_VCPUS = 372,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_STORAGE_POOL_EVENT_REFRESH = 373
 };

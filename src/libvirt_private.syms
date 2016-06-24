@@ -881,6 +881,7 @@ virStorageVolTypeToString;
 
 # conf/storage_event.h
 virStoragePoolEventLifecycleNew;
+virStoragePoolEventRefreshNew;
 virStoragePoolEventStateRegisterID;
 
 

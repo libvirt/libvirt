@@ -4480,9 +4480,7 @@ testStoragePoolRefresh(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    event = virStoragePoolEventLifecycleNew(pool->name, pool->uuid,
-                                            VIR_STORAGE_POOL_EVENT_REFRESHED,
-                                            0);
+    event = virStoragePoolEventRefreshNew(pool->name, pool->uuid);
     ret = 0;
 
  cleanup:

@@ -1899,8 +1899,7 @@ VIR_ENUM_IMPL(virshPoolEvent,
               N_("Defined"),
               N_("Undefined"),
               N_("Started"),
-              N_("Stopped"),
-              N_("Refreshed"))
+              N_("Stopped"))
 
 static const char *
 virshPoolEventToString(int event)
@@ -1909,18 +1908,21 @@ virshPoolEventToString(int event)
     return str ? _(str) : _("unknown");
 }
 
+struct vshEventCallback {
+    const char *name;
+    virConnectStoragePoolEventGenericCallback cb;
+};
+typedef struct vshEventCallback vshEventCallback;
+
 struct virshPoolEventData {
     vshControl *ctl;
     bool loop;
     bool timestamp;
     int count;
+    vshEventCallback *cb;
 };
 typedef struct virshPoolEventData virshPoolEventData;
 
-VIR_ENUM_DECL(virshPoolEventId)
-VIR_ENUM_IMPL(virshPoolEventId,
-              VIR_STORAGE_POOL_EVENT_ID_LAST,
-              "lifecycle")
 
 static void
 vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -1954,6 +1956,45 @@ vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (!data->loop)
         vshEventDone(data->ctl);
 }
+
+static void
+vshEventGenericPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     virStoragePoolPtr pool,
+                     void *opaque)
+{
+    virshPoolEventData *data = opaque;
+
+    if (!data->loop && data->count)
+        return;
+
+    if (data->timestamp) {
+        char timestamp[VIR_TIME_STRING_BUFLEN];
+
+        if (virTimeStringNowRaw(timestamp) < 0)
+            timestamp[0] = '\0';
+
+        vshPrint(data->ctl, _("%s: event '%s'' for storage pool %s\n"),
+                 timestamp,
+                 data->cb->name,
+                 virStoragePoolGetName(pool));
+    } else {
+        vshPrint(data->ctl, _("event '%s' for storage pool %s\n"),
+                 data->cb->name,
+                 virStoragePoolGetName(pool));
+    }
+
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static vshEventCallback vshEventCallbacks[] = {
+    { "lifecycle",
+      VIR_STORAGE_POOL_EVENT_CALLBACK(vshEventLifecyclePrint), },
+    { "refresh", vshEventGenericPrint, }
+};
+verify(VIR_STORAGE_POOL_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
+
 
 static const vshCmdInfo info_pool_event[] = {
     {.name = "help",
@@ -2009,7 +2050,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
         size_t i;
 
         for (i = 0; i < VIR_STORAGE_POOL_EVENT_ID_LAST; i++)
-            vshPrint(ctl, "%s\n", virshPoolEventIdTypeToString(i));
+            vshPrint(ctl, "%s\n", vshEventCallbacks[i].name);
         return true;
     }
 
@@ -2019,7 +2060,11 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, "%s", _("either --list or event type is required"));
         return false;
     }
-    if ((event = virshPoolEventIdTypeFromString(eventName)) < 0) {
+
+    for (event = 0; event < VIR_STORAGE_POOL_EVENT_ID_LAST; event++)
+        if (STREQ(eventName, vshEventCallbacks[event].name))
+            break;
+    if (event == VIR_STORAGE_POOL_EVENT_ID_LAST) {
         vshError(ctl, _("unknown event type %s"), eventName);
         return false;
     }
@@ -2028,6 +2073,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
     data.loop = vshCommandOptBool(cmd, "loop");
     data.timestamp = vshCommandOptBool(cmd, "timestamp");
     data.count = 0;
+    data.cb = &vshEventCallbacks[event];
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
         return false;
 
@@ -2037,7 +2083,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if ((eventId = virConnectStoragePoolEventRegisterAny(priv->conn, pool, event,
-                                                         VIR_STORAGE_POOL_EVENT_CALLBACK(vshEventLifecyclePrint),
+                                                         data.cb->cb,
                                                          &data, NULL)) < 0)
         goto cleanup;
     switch (vshEventWait(ctl)) {

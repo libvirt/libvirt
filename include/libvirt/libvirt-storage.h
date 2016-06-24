@@ -394,6 +394,7 @@ int virStoragePoolIsPersistent(virStoragePoolPtr pool);
  */
 typedef enum {
     VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE = 0, /* virConnectStoragePoolEventLifecycleCallback */
+    VIR_STORAGE_POOL_EVENT_ID_REFRESH = 1, /* virConnectStoragePoolEventGenericCallback */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_STORAGE_POOL_EVENT_ID_LAST
@@ -443,7 +444,6 @@ typedef enum {
     VIR_STORAGE_POOL_EVENT_UNDEFINED = 1,
     VIR_STORAGE_POOL_EVENT_STARTED = 2,
     VIR_STORAGE_POOL_EVENT_STOPPED = 3,
-    VIR_STORAGE_POOL_EVENT_REFRESHED = 4,
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_STORAGE_POOL_EVENT_LAST

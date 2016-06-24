@@ -67,7 +67,6 @@ typedef struct {
     int defineEvents;
     int undefineEvents;
     int unexpectedEvents;
-    int refreshEvents;
 } lifecycleEventCounter;
 
 static void
@@ -78,7 +77,6 @@ lifecycleEventCounter_reset(lifecycleEventCounter *counter)
     counter->defineEvents = 0;
     counter->undefineEvents = 0;
     counter->unexpectedEvents = 0;
-    counter->refreshEvents = 0;
 }
 
 typedef struct {
@@ -153,8 +151,16 @@ storagePoolLifecycleCb(virConnectPtr conn ATTRIBUTE_UNUSED,
         counter->defineEvents++;
     else if (event == VIR_STORAGE_POOL_EVENT_UNDEFINED)
         counter->undefineEvents++;
-    else if (event == VIR_STORAGE_POOL_EVENT_REFRESHED)
-        counter->refreshEvents++;
+}
+
+static void
+storagePoolRefreshCb(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     virStoragePoolPtr pool ATTRIBUTE_UNUSED,
+                     void* opaque)
+{
+    int *counter = opaque;
+
+    (*counter)++;
 }
 
 static int
@@ -646,18 +652,24 @@ testStoragePoolStartStopEvent(const void *data)
 {
     const objecteventTest *test = data;
     lifecycleEventCounter counter;
-    int id;
+    int refreshCounter;
+    int id1, id2;
     int ret = 0;
 
     if (!test->pool)
         return -1;
 
     lifecycleEventCounter_reset(&counter);
+    refreshCounter = 0;
 
-    id = virConnectStoragePoolEventRegisterAny(test->conn, test->pool,
+    id1 = virConnectStoragePoolEventRegisterAny(test->conn, test->pool,
                       VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE,
                       VIR_STORAGE_POOL_EVENT_CALLBACK(&storagePoolLifecycleCb),
                       &counter, NULL);
+    id2 = virConnectStoragePoolEventRegisterAny(test->conn, test->pool,
+                      VIR_STORAGE_POOL_EVENT_ID_REFRESH,
+                      VIR_STORAGE_POOL_EVENT_CALLBACK(&storagePoolRefreshCb),
+                      &refreshCounter, NULL);
     virStoragePoolCreate(test->pool, 0);
     virStoragePoolRefresh(test->pool, 0);
     virStoragePoolDestroy(test->pool);
@@ -668,13 +680,14 @@ testStoragePoolStartStopEvent(const void *data)
     }
 
     if (counter.startEvents != 1 || counter.stopEvents != 1 ||
-        counter.refreshEvents != 1 || counter.unexpectedEvents > 0) {
+        refreshCounter != 1 || counter.unexpectedEvents > 0) {
         ret = -1;
         goto cleanup;
     }
 
  cleanup:
-    virConnectStoragePoolEventDeregisterAny(test->conn, id);
+    virConnectStoragePoolEventDeregisterAny(test->conn, id1);
+    virConnectStoragePoolEventDeregisterAny(test->conn, id2);
     return ret;
 }
 
