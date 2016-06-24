@@ -1886,8 +1886,8 @@ vzConnectUnregisterCloseCallback(virConnectPtr conn, virConnectCloseFunc cb)
     return ret;
 }
 
-static int vzDomainSetMemoryFlagsImpl(virDomainPtr domain, unsigned long memory,
-                                      unsigned int flags, bool useflags)
+static int vzDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
+                                  unsigned int flags)
 {
     virDomainObjPtr dom = NULL;
     int ret = -1;
@@ -1899,7 +1899,7 @@ static int vzDomainSetMemoryFlagsImpl(virDomainPtr domain, unsigned long memory,
     if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
-    if (useflags && vzCheckConfigUpdateFlags(dom, &flags) < 0)
+    if (vzCheckConfigUpdateFlags(dom, &flags) < 0)
         goto cleanup;
 
     if (vzDomainObjBeginJob(dom) < 0)
@@ -1919,15 +1919,30 @@ static int vzDomainSetMemoryFlagsImpl(virDomainPtr domain, unsigned long memory,
     return ret;
 }
 
-static int vzDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
-                                  unsigned int flags)
-{
-    return vzDomainSetMemoryFlagsImpl(domain, memory, flags, true);
-}
-
 static int vzDomainSetMemory(virDomainPtr domain, unsigned long memory)
 {
-    return vzDomainSetMemoryFlagsImpl(domain, memory, 0, false);
+    virDomainObjPtr dom = NULL;
+    int ret = -1;
+    bool job = false;
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
+    if (vzEnsureDomainExists(dom) < 0)
+        goto cleanup;
+
+    ret = prlsdkSetMemsize(dom, memory >> 10);
+
+ cleanup:
+
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
+    return ret;
 }
 
 static virDomainSnapshotObjPtr
