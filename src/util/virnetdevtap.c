@@ -95,6 +95,7 @@ virNetDevTapGetRealDeviceName(char *ifname ATTRIBUTE_UNUSED)
 #ifdef TAPGIFNAME
     char *ret = NULL;
     struct dirent *dp;
+    DIR *dirp = NULL;
     char *devpath = NULL;
     int fd;
 
