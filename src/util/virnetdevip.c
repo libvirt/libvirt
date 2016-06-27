@@ -647,8 +647,8 @@ virNetDevIPRouteAdd(const char *ifname,
 
 /* return after DAD finishes for all known IPv6 addresses or an error */
 int
-virNetDevWaitDadFinish(virSocketAddrPtr *addrs ATTRIBUTE_UNUSED,
-                       size_t count ATTRIBUTE_UNUSED)
+virNetDevIPWaitDadFinish(virSocketAddrPtr *addrs ATTRIBUTE_UNUSED,
+                         size_t count ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to wait for IPv6 DAD on this platform"));

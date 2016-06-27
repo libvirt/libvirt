@@ -26,6 +26,7 @@
 #include "vircrypto.h"
 #include "virmock.h"
 #include "virnetdev.h"
+#include "virnetdevip.h"
 #include "virnetdevtap.h"
 #include "virnuma.h"
 #include "virrandom.h"
@@ -127,10 +128,10 @@ virNetDevSetMAC(const char *ifname ATTRIBUTE_UNUSED,
     return 0;
 }
 
-int virNetDevSetIPAddress(const char *ifname ATTRIBUTE_UNUSED,
-                          virSocketAddr *addr ATTRIBUTE_UNUSED,
-                          virSocketAddr *peer ATTRIBUTE_UNUSED,
-                          unsigned int prefix ATTRIBUTE_UNUSED)
+int virNetDevIPAddrAdd(const char *ifname ATTRIBUTE_UNUSED,
+                       virSocketAddr *addr ATTRIBUTE_UNUSED,
+                       virSocketAddr *peer ATTRIBUTE_UNUSED,
+                       unsigned int prefix ATTRIBUTE_UNUSED)
 {
     return 0;
 }
