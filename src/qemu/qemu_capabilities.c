@@ -4347,9 +4347,12 @@ virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
     domCaps->maxvcpus = virQEMUCapsGetMachineMaxCpus(qemuCaps,
                                                      domCaps->machine);
     if (domCaps->virttype == VIR_DOMAIN_VIRT_KVM) {
-        int hostmaxvcpus = virHostCPUGetKVMMaxVCPUs();
-        if (hostmaxvcpus >= 0)
-            domCaps->maxvcpus = MIN(domCaps->maxvcpus, hostmaxvcpus);
+        int hostmaxvcpus;
+
+        if ((hostmaxvcpus = virHostCPUGetKVMMaxVCPUs()) < 0)
+            return -1;
+
+        domCaps->maxvcpus = MIN(domCaps->maxvcpus, hostmaxvcpus);
     }
 
     if (virQEMUCapsFillDomainOSCaps(os, firmwares, nfirmwares) < 0 ||
