@@ -1918,9 +1918,9 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr hostdev)
 {
+    size_t i;
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainControllerDefPtr cont = NULL;
     char *devstr = NULL;
     char *drvstr = NULL;
     bool teardowncgroup = false;
@@ -1933,9 +1933,17 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
         return -1;
     }
 
-    cont = qemuDomainFindOrCreateSCSIDiskController(driver, vm, hostdev->info->addr.drive.controller);
-    if (!cont)
-        return -1;
+    /* Let's make sure the disk has a controller defined and loaded before
+     * trying to add it. The controller used by the disk must exist before a
+     * qemu command line string is generated.
+     *
+     * Ensure that the given controller and all controllers with a smaller index
+     * exist; there must not be any missing index in between.
+     */
+    for (i = 0; i <= hostdev->info->addr.drive.controller; i++) {
+        if (!qemuDomainFindOrCreateSCSIDiskController(driver, vm, i))
+            return -1;
+    }
 
     if (qemuHostdevPrepareSCSIDevices(driver, vm->def->name,
                                       &hostdev, 1)) {
