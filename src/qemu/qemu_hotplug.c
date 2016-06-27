@@ -544,6 +544,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
                          virDomainObjPtr vm,
                          virDomainDiskDefPtr disk)
 {
+    size_t i;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *drivestr = NULL;
     char *devstr = NULL;
@@ -559,6 +560,18 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
                        _("unexpected disk address type %s"),
                        virDomainDeviceAddressTypeToString(disk->info.type));
         goto error;
+    }
+
+    /* Let's make sure the disk has a controller defined and loaded before
+     * trying to add it. The controller used by the disk must exist before a
+     * qemu command line string is generated.
+     *
+     * Ensure that the given controller and all controllers with a smaller index
+     * exist; there must not be any missing index in between.
+     */
+    for (i = 0; i <= disk->info.addr.drive.controller; i++) {
+        if (!qemuDomainFindOrCreateSCSIDiskController(driver, vm, i))
+            goto error;
     }
 
     if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
