@@ -304,14 +304,6 @@ virLXCProcessSetupInterfaceTap(virDomainDefPtr vm,
     if (virNetDevSetOnline(parentVeth, true) < 0)
         goto cleanup;
 
-    if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_ETHERNET) {
-        /* Set IP info for the host side, but only if the type is
-         * 'ethernet'.
-         */
-        if (virNetDevIPInfoAddToDev(parentVeth, &net->hostIP) < 0)
-            goto cleanup;
-    }
-
     if (net->filter &&
         virDomainConfNWFilterInstantiate(vm->uuid, net) < 0)
         goto cleanup;
