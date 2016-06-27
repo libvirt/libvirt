@@ -86,7 +86,5 @@ virSocketAddrPtr virNetDevIPRouteGetGateway(virNetDevIPRoutePtr def);
 
 /* virNetDevIPInfo object */
 void virNetDevIPInfoClear(virNetDevIPInfoPtr ip);
-int virNetDevIPInfoAddToDev(const char *ifname,
-                            virNetDevIPInfo const *ipInfo);
 
 #endif /* __VIR_NETDEVIP_H__ */
