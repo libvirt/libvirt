@@ -2196,11 +2196,8 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                             void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virQEMUCapsPtr qemuCaps = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
-
-    qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache, def->emulator);
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET) {
         const virDomainNetDef *net = dev->data.net;
@@ -2216,7 +2213,6 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
 
     ret = 0;
  cleanup:
-    virObjectUnref(qemuCaps);
     virObjectUnref(cfg);
     return ret;
 }
