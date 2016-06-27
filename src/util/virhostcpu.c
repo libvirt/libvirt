@@ -1299,6 +1299,7 @@ virHostCPUGetThreadsPerSubcore(virArch arch ATTRIBUTE_UNUSED)
 
 #endif /* HAVE_LINUX_KVM_H && defined(KVM_CAP_PPC_SMT) */
 
+#if HAVE_LINUX_KVM_H
 int
 virHostCPUGetKVMMaxVCPUs(void)
 {
@@ -1310,11 +1311,11 @@ virHostCPUGetKVMMaxVCPUs(void)
         return -1;
     }
 
-#ifdef KVM_CAP_MAX_VCPUS
+# ifdef KVM_CAP_MAX_VCPUS
     /* at first try KVM_CAP_MAX_VCPUS to determine the maximum count */
     if ((ret = ioctl(fd, KVM_CHECK_EXTENSION, KVM_CAP_MAX_VCPUS)) > 0)
         goto cleanup;
-#endif /* KVM_CAP_MAX_VCPUS */
+# endif /* KVM_CAP_MAX_VCPUS */
 
     /* as a fallback get KVM_CAP_NR_VCPUS (the recommended maximum number of
      * vcpus). Note that on most machines this is set to 160. */
@@ -1329,3 +1330,12 @@ virHostCPUGetKVMMaxVCPUs(void)
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
+#else
+int
+virHostCPUGetKVMMaxVCPUs(void)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("KVM is not supported on this platform"));
+    return -1;
+}
+#endif /* HAVE_LINUX_KVM_H */
