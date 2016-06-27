@@ -4337,8 +4337,7 @@ int
 virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
                           virQEMUCapsPtr qemuCaps,
                           virFirmwarePtr *firmwares,
-                          size_t nfirmwares,
-                          virDomainVirtType virttype)
+                          size_t nfirmwares)
 {
     virDomainCapsOSPtr os = &domCaps->os;
     virDomainCapsDeviceDiskPtr disk = &domCaps->disk;
@@ -4348,7 +4347,7 @@ virQEMUCapsFillDomainCaps(virDomainCapsPtr domCaps,
 
     domCaps->maxvcpus = virQEMUCapsGetMachineMaxCpus(qemuCaps,
                                                      domCaps->machine);
-    if (virttype == VIR_DOMAIN_VIRT_KVM) {
+    if (domCaps->virttype == VIR_DOMAIN_VIRT_KVM) {
         int hostmaxvcpus = virHostCPUGetKVMMaxVCPUs();
         if (hostmaxvcpus >= 0)
             domCaps->maxvcpus = MIN(domCaps->maxvcpus, hostmaxvcpus);
