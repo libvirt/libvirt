@@ -31,6 +31,7 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "vircommand.h"
 
 #if HAVE_GETIFADDRS
 # include <ifaddrs.h>
