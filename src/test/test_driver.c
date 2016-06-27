@@ -1296,6 +1296,37 @@ testParseAuthUsers(testDriverPtr privconn,
     return ret;
 }
 
+static int
+testOpenParse(testDriverPtr privconn,
+              const char *file,
+              xmlXPathContextPtr ctxt)
+{
+    if (!xmlStrEqual(ctxt->node->name, BAD_CAST "node")) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Root element is not 'node'"));
+        goto error;
+    }
+
+    if (testParseNodeInfo(&privconn->nodeInfo, ctxt) < 0)
+        goto error;
+    if (testParseDomains(privconn, file, ctxt) < 0)
+        goto error;
+    if (testParseNetworks(privconn, file, ctxt) < 0)
+        goto error;
+    if (testParseInterfaces(privconn, file, ctxt) < 0)
+        goto error;
+    if (testParseStorage(privconn, file, ctxt) < 0)
+        goto error;
+    if (testParseNodedevs(privconn, file, ctxt) < 0)
+        goto error;
+    if (testParseAuthUsers(privconn, ctxt) < 0)
+        goto error;
+
+    return 0;
+ error:
+    return -1;
+}
+
 /* No shared state between simultaneous test connections initialized
  * from a file.  */
 static int
@@ -1317,28 +1348,10 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     if (!(doc = virXMLParseFileCtxt(file, &ctxt)))
         goto error;
 
-    if (!xmlStrEqual(ctxt->node->name, BAD_CAST "node")) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Root element is not 'node'"));
-        goto error;
-    }
-
     privconn->numCells = 0;
     memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
 
-    if (testParseNodeInfo(&privconn->nodeInfo, ctxt) < 0)
-        goto error;
-    if (testParseDomains(privconn, file, ctxt) < 0)
-        goto error;
-    if (testParseNetworks(privconn, file, ctxt) < 0)
-        goto error;
-    if (testParseInterfaces(privconn, file, ctxt) < 0)
-        goto error;
-    if (testParseStorage(privconn, file, ctxt) < 0)
-        goto error;
-    if (testParseNodedevs(privconn, file, ctxt) < 0)
-        goto error;
-    if (testParseAuthUsers(privconn, ctxt) < 0)
+    if (testOpenParse(privconn, file, ctxt) < 0)
         goto error;
 
     xmlXPathFreeContext(ctxt);
