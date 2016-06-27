@@ -855,6 +855,15 @@ Requires: cyrus-sasl-md5
 %description libs
 Shared libraries for accessing the libvirt daemon.
 
+%package admin
+Summary: Set of tools to control libvirt daemon
+Group: Development/Libraries
+Requires: %{name}-libs = %{version}-%{release}
+Requires: readline
+
+%description admin
+The client side utilities to control the libvirt daemon.
+
 %if %{with_wireshark}
 %package wireshark
 Summary: Wireshark dissector plugin for libvirt RPC transactions
@@ -1752,12 +1761,10 @@ exit 0
 
 %files client
 %{_mandir}/man1/virsh.1*
-%{_mandir}/man1/virt-admin.1*
 %{_mandir}/man1/virt-xml-validate.1*
 %{_mandir}/man1/virt-pki-validate.1*
 %{_mandir}/man1/virt-host-validate.1*
 %{_bindir}/virsh
-%{_bindir}/virt-admin
 %{_bindir}/virt-xml-validate
 %{_bindir}/virt-pki-validate
 %{_bindir}/virt-host-validate
@@ -1807,6 +1814,11 @@ exit 0
 %{_datadir}/libvirt/libvirtLogo.png
 
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
+
+%files admin
+%{_mandir}/man1/virt-admin.1*
+%{_bindir}/virt-admin
+
 
 %if %{with_wireshark}
 %files wireshark
