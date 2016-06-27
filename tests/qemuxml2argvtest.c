@@ -1012,7 +1012,6 @@ mymain(void)
     DO_TEST("net-eth", NONE);
     DO_TEST("net-eth-ifname", NONE);
     DO_TEST("net-eth-names", NONE);
-    DO_TEST("net-eth-hostip", NONE);
     DO_TEST("net-client", NONE);
     DO_TEST("net-server", NONE);
     DO_TEST("net-mcast", NONE);

@@ -196,12 +196,8 @@ qemuInterfaceStopDevice(virDomainNetDefPtr net)
         break;
     }
 
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        if (virNetDevIPInfoAddToDev(net->ifname, &net->hostIP) < 0)
-            goto cleanup;
-        break;
-
     case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
