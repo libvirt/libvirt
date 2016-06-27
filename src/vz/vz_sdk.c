@@ -773,13 +773,13 @@ prlsdkAddDomainOpticalDisksInfo(vzDriverPtr driver, PRL_HANDLE sdkdom, virDomain
     return -1;
 }
 
-static virDomainNetIpDefPtr
+static virNetDevIPAddrPtr
 prlsdkParseNetAddress(char *addr)
 {
     char *maskstr = NULL;
     int nbits;
     virSocketAddr mask;
-    virDomainNetIpDefPtr ip = NULL, ret = NULL;
+    virNetDevIPAddrPtr ip = NULL, ret = NULL;
 
     if (!(maskstr = strchr(addr, '/')))
         goto cleanup;
@@ -829,7 +829,7 @@ prlsdkGetNetAddresses(PRL_HANDLE sdknet, virDomainNetDefPtr net)
     prlsdkCheckRetGoto(pret, cleanup);
 
     for (i = 0; i < num; ++i) {
-        virDomainNetIpDefPtr ip = NULL;
+       virNetDevIPAddrPtr ip = NULL;
         PRL_UINT32 buflen = 0;
         char *addr;
 
@@ -845,7 +845,7 @@ prlsdkGetNetAddresses(PRL_HANDLE sdknet, virDomainNetDefPtr net)
         if (!(ip = prlsdkParseNetAddress(addr)))
             continue;
 
-        if (VIR_APPEND_ELEMENT(net->ips, net->nips, ip) < 0) {
+        if (VIR_APPEND_ELEMENT(net->guestIP.ips, net->guestIP.nips, ip) < 0) {
             VIR_FREE(ip);
             goto cleanup;
         }
@@ -864,7 +864,7 @@ prlsdkGetRoutes(PRL_HANDLE sdknet, virDomainNetDefPtr net)
     int ret = -1;
     char *gw = NULL;
     char *gw6 = NULL;
-    virNetworkRouteDefPtr route = NULL;
+    virNetDevIPRoutePtr route = NULL;
 
     if (!(gw = prlsdkGetStringParamVar(PrlVmDevNet_GetDefaultGateway, sdknet)))
         goto cleanup;
@@ -873,29 +873,30 @@ prlsdkGetRoutes(PRL_HANDLE sdknet, virDomainNetDefPtr net)
         goto cleanup;
 
     if (*gw != '\0') {
-        if (!(route = virNetworkRouteDefCreate(_("Domain interface"),
+
+        if (!(route = virNetDevIPRouteCreate(_("Domain interface"),
                                                "ipv4", VIR_SOCKET_ADDR_IPV4_ALL,
                                                NULL, gw, 0, true, 0, false)))
             goto cleanup;
 
-        if (VIR_APPEND_ELEMENT(net->routes, net->nroutes, route) < 0)
+        if (VIR_APPEND_ELEMENT(net->guestIP.routes, net->guestIP.nroutes, route) < 0)
             goto cleanup;
     }
 
     if (*gw6 != '\0') {
-        if (!(route = virNetworkRouteDefCreate(_("Domain interface"),
+        if (!(route = virNetDevIPRouteCreate(_("Domain interface"),
                                                "ipv6", VIR_SOCKET_ADDR_IPV6_ALL,
                                                NULL, gw6, 0, true, 0, false)))
             goto cleanup;
 
-        if (VIR_APPEND_ELEMENT(net->routes, net->nroutes, route) < 0)
+        if (VIR_APPEND_ELEMENT(net->guestIP.routes, net->guestIP.nroutes, route) < 0)
             goto cleanup;
     }
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(route);
+    virNetDevIPRouteFree(route);
     VIR_FREE(gw);
     VIR_FREE(gw6);
 
@@ -2654,7 +2655,7 @@ static int prlsdkCheckNetUnsupportedParams(virDomainNetDefPtr net)
         return -1;
     }
 
-    if (net->guestIf.name) {
+    if (net->ifname_guest) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Setting guest interface name is not "
                          "supported by vz driver."));
@@ -2886,16 +2887,16 @@ static int prlsdkConfigureGateways(PRL_HANDLE sdknet, virDomainNetDefPtr net)
 {
     int ret = -1;
     size_t i;
-    virNetworkRouteDefPtr route4 = NULL, route6 = NULL;
+    virNetDevIPRoutePtr route4 = NULL, route6 = NULL;
     char *gw4 = NULL, *gw6 = NULL;
     PRL_RESULT pret;
 
-    for (i = 0; i < net->nroutes; i++) {
+    for (i = 0; i < net->guestIP.nroutes; i++) {
         virSocketAddrPtr addrdst, gateway;
         virSocketAddr zero;
 
-        addrdst = virNetworkRouteDefGetAddress(net->routes[i]);
-        gateway = virNetworkRouteDefGetGateway(net->routes[i]);
+        addrdst = virNetDevIPRouteGetAddress(net->guestIP.routes[i]);
+        gateway = virNetDevIPRouteGetGateway(net->guestIP.routes[i]);
 
         ignore_value(virSocketAddrParse(&zero,
                                 (VIR_SOCKET_ADDR_IS_FAMILY(addrdst, AF_INET)
@@ -2917,7 +2918,7 @@ static int prlsdkConfigureGateways(PRL_HANDLE sdknet, virDomainNetDefPtr net)
                 return -1;
             }
 
-            route4 = net->routes[i];
+            route4 = net->guestIP.routes[i];
 
             break;
         case AF_INET6:
@@ -2927,7 +2928,7 @@ static int prlsdkConfigureGateways(PRL_HANDLE sdknet, virDomainNetDefPtr net)
                 return -1;
             }
 
-            route6 = net->routes[i];
+            route6 = net->guestIP.routes[i];
 
             break;
         default:
@@ -2941,14 +2942,14 @@ static int prlsdkConfigureGateways(PRL_HANDLE sdknet, virDomainNetDefPtr net)
     }
 
     if (route4 &&
-        !(gw4 = virSocketAddrFormat(virNetworkRouteDefGetGateway(route4))))
+        !(gw4 = virSocketAddrFormat(virNetDevIPRouteGetGateway(route4))))
         goto cleanup;
 
     pret = PrlVmDevNet_SetDefaultGateway(sdknet, gw4 ? : "");
     prlsdkCheckRetGoto(pret, cleanup);
 
     if (route6 &&
-        !(gw6 = virSocketAddrFormat(virNetworkRouteDefGetGateway(route6))))
+        !(gw6 = virSocketAddrFormat(virNetDevIPRouteGetGateway(route6))))
         goto cleanup;
 
     pret = PrlVmDevNet_SetDefaultGatewayIPv6(sdknet, gw6 ? : "");
@@ -3012,20 +3013,20 @@ static int prlsdkConfigureNet(vzDriverPtr driver,
     pret = PrlApi_CreateStringsList(&addrlist);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    for (i = 0; i < net->nips; i++) {
+    for (i = 0; i < net->guestIP.nips; i++) {
         char *tmpstr;
 
-        if (AF_INET == VIR_SOCKET_ADDR_FAMILY(&net->ips[i]->address))
+        if (AF_INET == VIR_SOCKET_ADDR_FAMILY(&net->guestIP.ips[i]->address))
             ipv4present = true;
-        else if (AF_INET6 == VIR_SOCKET_ADDR_FAMILY(&net->ips[i]->address))
+        else if (AF_INET6 == VIR_SOCKET_ADDR_FAMILY(&net->guestIP.ips[i]->address))
             ipv6present = true;
         else
             continue;
 
-        if (!(tmpstr = virSocketAddrFormat(&net->ips[i]->address)))
+        if (!(tmpstr = virSocketAddrFormat(&net->guestIP.ips[i]->address)))
             goto cleanup;
 
-        if (virAsprintf(&addrstr, "%s/%d", tmpstr, net->ips[i]->prefix) < 0) {
+        if (virAsprintf(&addrstr, "%s/%d", tmpstr, net->guestIP.ips[i]->prefix) < 0) {
             VIR_FREE(tmpstr);
             goto cleanup;
         }
