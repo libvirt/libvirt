@@ -615,143 +615,6 @@ testDomainStartState(testDriverPtr privconn,
 }
 
 
-/* Simultaneous test:///default connections should share the same
- * common state (among other things, this allows testing event
- * detection in one connection for an action caused in another).  */
-static int
-testOpenDefault(virConnectPtr conn)
-{
-    int u;
-    testDriverPtr privconn = NULL;
-    virDomainDefPtr domdef = NULL;
-    virDomainObjPtr domobj = NULL;
-    virNetworkDefPtr netdef = NULL;
-    virNetworkObjPtr netobj = NULL;
-    virInterfaceDefPtr interfacedef = NULL;
-    virInterfaceObjPtr interfaceobj = NULL;
-    virStoragePoolDefPtr pooldef = NULL;
-    virStoragePoolObjPtr poolobj = NULL;
-    virNodeDeviceDefPtr nodedef = NULL;
-    virNodeDeviceObjPtr nodeobj = NULL;
-
-    virMutexLock(&defaultLock);
-    if (defaultConnections++) {
-        conn->privateData = defaultConn;
-        virMutexUnlock(&defaultLock);
-        return VIR_DRV_OPEN_SUCCESS;
-    }
-
-    if (!(privconn = testDriverNew()))
-        goto error;
-
-    conn->privateData = privconn;
-
-    memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
-
-    /* Numa setup */
-    privconn->numCells = 2;
-    for (u = 0; u < 2; ++u) {
-        privconn->cells[u].numCpus = 8;
-        privconn->cells[u].mem = (u + 1) * 2048 * 1024;
-    }
-    for (u = 0; u < 16; u++) {
-        virBitmapPtr siblings = virBitmapNew(16);
-        if (!siblings)
-            goto error;
-        ignore_value(virBitmapSetBit(siblings, u));
-        privconn->cells[u / 8].cpus[(u % 8)].id = u;
-        privconn->cells[u / 8].cpus[(u % 8)].socket_id = u / 8;
-        privconn->cells[u / 8].cpus[(u % 8)].core_id = u % 8;
-        privconn->cells[u / 8].cpus[(u % 8)].siblings = siblings;
-    }
-
-    if (!(privconn->caps = testBuildCapabilities(conn)))
-        goto error;
-
-    if (!(domdef = virDomainDefParseString(defaultDomainXML,
-                                           privconn->caps,
-                                           privconn->xmlopt,
-                                           VIR_DOMAIN_DEF_PARSE_INACTIVE)))
-        goto error;
-
-    if (testDomainGenerateIfnames(domdef) < 0)
-        goto error;
-    if (!(domobj = virDomainObjListAdd(privconn->domains,
-                                       domdef,
-                                       privconn->xmlopt,
-                                       0, NULL)))
-        goto error;
-    domdef = NULL;
-
-    domobj->persistent = 1;
-    if (testDomainStartState(privconn, domobj,
-                             VIR_DOMAIN_RUNNING_BOOTED) < 0) {
-        virObjectUnlock(domobj);
-        goto error;
-    }
-
-    virObjectUnlock(domobj);
-
-    if (!(netdef = virNetworkDefParseString(defaultNetworkXML)))
-        goto error;
-    if (!(netobj = virNetworkAssignDef(privconn->networks, netdef, 0))) {
-        virNetworkDefFree(netdef);
-        goto error;
-    }
-    netobj->active = 1;
-    virNetworkObjEndAPI(&netobj);
-
-    if (!(interfacedef = virInterfaceDefParseString(defaultInterfaceXML)))
-        goto error;
-    if (!(interfaceobj = virInterfaceAssignDef(&privconn->ifaces, interfacedef))) {
-        virInterfaceDefFree(interfacedef);
-        goto error;
-    }
-    interfaceobj->active = 1;
-    virInterfaceObjUnlock(interfaceobj);
-
-    if (!(pooldef = virStoragePoolDefParseString(defaultPoolXML)))
-        goto error;
-
-    if (!(poolobj = virStoragePoolObjAssignDef(&privconn->pools,
-                                               pooldef))) {
-        virStoragePoolDefFree(pooldef);
-        goto error;
-    }
-
-    if (testStoragePoolObjSetDefaults(poolobj) == -1) {
-        virStoragePoolObjUnlock(poolobj);
-        goto error;
-    }
-    poolobj->active = 1;
-    virStoragePoolObjUnlock(poolobj);
-
-    /* Init default node device */
-    if (!(nodedef = virNodeDeviceDefParseString(defaultNodeXML, 0, NULL)))
-        goto error;
-    if (!(nodeobj = virNodeDeviceAssignDef(&privconn->devs,
-                                           nodedef))) {
-        virNodeDeviceDefFree(nodedef);
-        goto error;
-    }
-    virNodeDeviceObjUnlock(nodeobj);
-
-    defaultConn = privconn;
-
-    virMutexUnlock(&defaultLock);
-
-    return VIR_DRV_OPEN_SUCCESS;
-
- error:
-    testDriverFree(privconn);
-    conn->privateData = NULL;
-    virDomainDefFree(domdef);
-    defaultConnections--;
-    virMutexUnlock(&defaultLock);
-    return VIR_DRV_OPEN_ERROR;
-}
-
-
 static char *testBuildFilename(const char *relativeTo,
                                const char *filename)
 {
@@ -1365,6 +1228,142 @@ testOpenFromFile(virConnectPtr conn, const char *file)
     xmlFreeDoc(doc);
     testDriverFree(privconn);
     conn->privateData = NULL;
+    return VIR_DRV_OPEN_ERROR;
+}
+
+/* Simultaneous test:///default connections should share the same
+ * common state (among other things, this allows testing event
+ * detection in one connection for an action caused in another).  */
+static int
+testOpenDefault(virConnectPtr conn)
+{
+    int u;
+    testDriverPtr privconn = NULL;
+    virDomainDefPtr domdef = NULL;
+    virDomainObjPtr domobj = NULL;
+    virNetworkDefPtr netdef = NULL;
+    virNetworkObjPtr netobj = NULL;
+    virInterfaceDefPtr interfacedef = NULL;
+    virInterfaceObjPtr interfaceobj = NULL;
+    virStoragePoolDefPtr pooldef = NULL;
+    virStoragePoolObjPtr poolobj = NULL;
+    virNodeDeviceDefPtr nodedef = NULL;
+    virNodeDeviceObjPtr nodeobj = NULL;
+
+    virMutexLock(&defaultLock);
+    if (defaultConnections++) {
+        conn->privateData = defaultConn;
+        virMutexUnlock(&defaultLock);
+        return VIR_DRV_OPEN_SUCCESS;
+    }
+
+    if (!(privconn = testDriverNew()))
+        goto error;
+
+    conn->privateData = privconn;
+
+    memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
+
+    /* Numa setup */
+    privconn->numCells = 2;
+    for (u = 0; u < 2; ++u) {
+        privconn->cells[u].numCpus = 8;
+        privconn->cells[u].mem = (u + 1) * 2048 * 1024;
+    }
+    for (u = 0; u < 16; u++) {
+        virBitmapPtr siblings = virBitmapNew(16);
+        if (!siblings)
+            goto error;
+        ignore_value(virBitmapSetBit(siblings, u));
+        privconn->cells[u / 8].cpus[(u % 8)].id = u;
+        privconn->cells[u / 8].cpus[(u % 8)].socket_id = u / 8;
+        privconn->cells[u / 8].cpus[(u % 8)].core_id = u % 8;
+        privconn->cells[u / 8].cpus[(u % 8)].siblings = siblings;
+    }
+
+    if (!(privconn->caps = testBuildCapabilities(conn)))
+        goto error;
+
+    if (!(domdef = virDomainDefParseString(defaultDomainXML,
+                                           privconn->caps,
+                                           privconn->xmlopt,
+                                           VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+        goto error;
+
+    if (testDomainGenerateIfnames(domdef) < 0)
+        goto error;
+    if (!(domobj = virDomainObjListAdd(privconn->domains,
+                                       domdef,
+                                       privconn->xmlopt,
+                                       0, NULL)))
+        goto error;
+    domdef = NULL;
+
+    domobj->persistent = 1;
+    if (testDomainStartState(privconn, domobj,
+                             VIR_DOMAIN_RUNNING_BOOTED) < 0) {
+        virObjectUnlock(domobj);
+        goto error;
+    }
+
+    virObjectUnlock(domobj);
+
+    if (!(netdef = virNetworkDefParseString(defaultNetworkXML)))
+        goto error;
+    if (!(netobj = virNetworkAssignDef(privconn->networks, netdef, 0))) {
+        virNetworkDefFree(netdef);
+        goto error;
+    }
+    netobj->active = 1;
+    virNetworkObjEndAPI(&netobj);
+
+    if (!(interfacedef = virInterfaceDefParseString(defaultInterfaceXML)))
+        goto error;
+    if (!(interfaceobj = virInterfaceAssignDef(&privconn->ifaces, interfacedef))) {
+        virInterfaceDefFree(interfacedef);
+        goto error;
+    }
+    interfaceobj->active = 1;
+    virInterfaceObjUnlock(interfaceobj);
+
+    if (!(pooldef = virStoragePoolDefParseString(defaultPoolXML)))
+        goto error;
+
+    if (!(poolobj = virStoragePoolObjAssignDef(&privconn->pools,
+                                               pooldef))) {
+        virStoragePoolDefFree(pooldef);
+        goto error;
+    }
+
+    if (testStoragePoolObjSetDefaults(poolobj) == -1) {
+        virStoragePoolObjUnlock(poolobj);
+        goto error;
+    }
+    poolobj->active = 1;
+    virStoragePoolObjUnlock(poolobj);
+
+    /* Init default node device */
+    if (!(nodedef = virNodeDeviceDefParseString(defaultNodeXML, 0, NULL)))
+        goto error;
+    if (!(nodeobj = virNodeDeviceAssignDef(&privconn->devs,
+                                           nodedef))) {
+        virNodeDeviceDefFree(nodedef);
+        goto error;
+    }
+    virNodeDeviceObjUnlock(nodeobj);
+
+    defaultConn = privconn;
+
+    virMutexUnlock(&defaultLock);
+
+    return VIR_DRV_OPEN_SUCCESS;
+
+ error:
+    testDriverFree(privconn);
+    conn->privateData = NULL;
+    virDomainDefFree(domdef);
+    defaultConnections--;
+    virMutexUnlock(&defaultLock);
     return VIR_DRV_OPEN_ERROR;
 }
 
