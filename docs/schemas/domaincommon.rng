@@ -2142,7 +2142,7 @@
           <interleave>
             <optional>
               <element name="source">
-                <ref name="interface-ip-info"/>
+                <empty/>
               </element>
             </optional>
             <ref name="interface-options"/>
@@ -2392,6 +2392,7 @@
           <attribute name="dev">
             <ref name="deviceName"/>
           </attribute>
+          <empty/>
         </element>
       </optional>
       <optional>

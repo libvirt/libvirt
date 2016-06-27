@@ -95,7 +95,6 @@ mymain(void)
     DO_TEST("capabilities");
     DO_TEST("sharenet");
     DO_TEST("ethernet");
-    DO_TEST("ethernet-hostip");
     DO_TEST_FULL("filesystem-root", 0, false,
                  VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS);
 
