@@ -404,6 +404,7 @@ test_libraries = libshunload.la \
 		virrandommock.la \
 		virhostcpumock.la \
 		nssmock.la \
+		domaincapsmock.la \
 		$(NULL)
 if WITH_QEMU
 test_libraries += libqemumonitortestutils.la \
@@ -918,6 +919,12 @@ vircapstest_LDADD = $(qemu_LDADDS) $(LDADDS)
 vircaps2xmltest_SOURCES = \
 	vircaps2xmltest.c testutils.h testutils.c
 vircaps2xmltest_LDADD = $(LDADDS)
+
+
+domaincapsmock_la_SOURCES = domaincapsmock.c
+domaincapsmock_la_CFLAGS = $(AM_CFLAGS)
+domaincapsmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+domaincapsmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 domaincapstest_SOURCES = \
 	domaincapstest.c testutils.h testutils.c
