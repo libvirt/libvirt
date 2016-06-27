@@ -487,6 +487,35 @@ mymain(void)
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-5") QMP_OK,
                    "human-monitor-command", HMP(""));
 
+    DO_TEST_ATTACH("hotplug-base-without-scsi-controller-live", "disk-scsi-2", false, true,
+                   /* Four controllers added */
+                   "device_add", QMP_OK,
+                   "device_add", QMP_OK,
+                   "device_add", QMP_OK,
+                   "device_add", QMP_OK,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   /* Disk added */
+                   "device_add", QMP_OK);
+    DO_TEST_DETACH("hotplug-base-with-scsi-controller-live", "disk-scsi-2", false, false,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+
+    DO_TEST_ATTACH_EVENT("hotplug-base-without-scsi-controller-live", "disk-scsi-2", false, true,
+                         /* Four controllers added */
+                         "device_add", QMP_OK,
+                         "device_add", QMP_OK,
+                         "device_add", QMP_OK,
+                         "device_add", QMP_OK,
+                         "human-monitor-command", HMP("OK\\r\\n"),
+                         /* Disk added */
+                         "device_add", QMP_OK);
+    DO_TEST_DETACH("hotplug-base-with-scsi-controller-live", "disk-scsi-2", true, true,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+    DO_TEST_DETACH("hotplug-base-with-scsi-controller-live", "disk-scsi-2", false, false,
+                   "device_del", QMP_DEVICE_DELETED("scsi3-0-5-7") QMP_OK,
+                   "human-monitor-command", HMP(""));
+
     DO_TEST_ATTACH("hotplug-base-live", "qemu-agent", false, true,
                    "chardev-add", QMP_OK,
                    "device_add", QMP_OK);
