@@ -405,6 +405,12 @@ virLogDaemonSetupLogging(virLogDaemonConfigPtr config,
         virLogParseOutputs(config->log_outputs);
 
     /*
+     * Command line override for --verbose
+     */
+    if ((verbose) && (virLogGetDefaultPriority() > VIR_LOG_INFO))
+        virLogSetDefaultPriority(VIR_LOG_INFO);
+
+    /*
      * If no defined outputs, and either running
      * as daemon or not on a tty, then first try
      * to direct it to the systemd journal
@@ -463,12 +469,6 @@ virLogDaemonSetupLogging(virLogDaemonConfigPtr config,
         virLogParseOutputs(tmp);
         VIR_FREE(tmp);
     }
-
-    /*
-     * Command line override for --verbose
-     */
-    if ((verbose) && (virLogGetDefaultPriority() > VIR_LOG_INFO))
-        virLogSetDefaultPriority(VIR_LOG_INFO);
 
     return 0;
 
