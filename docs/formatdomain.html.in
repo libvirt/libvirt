@@ -862,8 +862,11 @@
         be allowed to swap them out. For QEMU/KVM this requires
         <code>hard_limit</code> <a href="#elementsMemoryTuning">memory tuning</a>
         element to be used and set to the maximum memory configured for the
-        domain plus any memory consumed by the QEMU process itself.
-        <span class="since">Since 1.0.6</span></dd>
+        domain plus any memory consumed by the QEMU process itself. Beware of
+        setting the memory limit too high (and thus allowing the domain to lock
+        most of the host's memory). Doing so may be dangerous to both the
+        domain and the host itself since the host's kernel may run out of
+        memory. <span class="since">Since 1.0.6</span></dd>
     </dl>
 
 
