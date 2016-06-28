@@ -86,28 +86,45 @@ virCPUDefCopyModel(virCPUDefPtr dst,
                    const virCPUDef *src,
                    bool resetPolicy)
 {
+    return virCPUDefCopyModelFilter(dst, src, resetPolicy, NULL, NULL);
+}
+
+
+int
+virCPUDefCopyModelFilter(virCPUDefPtr dst,
+                         const virCPUDef *src,
+                         bool resetPolicy,
+                         virCPUDefFeatureFilter filter,
+                         void *opaque)
+{
     size_t i;
+    size_t n;
 
     if (VIR_STRDUP(dst->model, src->model) < 0 ||
         VIR_STRDUP(dst->vendor, src->vendor) < 0 ||
         VIR_STRDUP(dst->vendor_id, src->vendor_id) < 0 ||
         VIR_ALLOC_N(dst->features, src->nfeatures) < 0)
         return -1;
-    dst->nfeatures_max = dst->nfeatures = src->nfeatures;
+    dst->nfeatures_max = src->nfeatures;
+    dst->nfeatures = 0;
 
-    for (i = 0; i < dst->nfeatures; i++) {
+    for (i = 0; i < src->nfeatures; i++) {
+        if (filter && !filter(src->features[i].name, opaque))
+            continue;
+
+        n = dst->nfeatures++;
         if (dst->type != src->type && resetPolicy) {
             if (dst->type == VIR_CPU_TYPE_HOST)
-                dst->features[i].policy = -1;
+                dst->features[n].policy = -1;
             else if (src->features[i].policy == -1)
-                dst->features[i].policy = VIR_CPU_FEATURE_REQUIRE;
+                dst->features[n].policy = VIR_CPU_FEATURE_REQUIRE;
             else
-                dst->features[i].policy = src->features[i].policy;
+                dst->features[n].policy = src->features[i].policy;
         } else {
-            dst->features[i].policy = src->features[i].policy;
+            dst->features[n].policy = src->features[i].policy;
         }
 
-        if (VIR_STRDUP(dst->features[i].name, src->features[i].name) < 0)
+        if (VIR_STRDUP(dst->features[n].name, src->features[i].name) < 0)
             return -1;
     }
 

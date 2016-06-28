@@ -123,6 +123,20 @@ virCPUDefCopyModel(virCPUDefPtr dst,
                    const virCPUDef *src,
                    bool resetPolicy);
 
+/*
+ * Returns true if feature @name should copied, false otherwise.
+ */
+typedef bool (*virCPUDefFeatureFilter)(const char *name,
+                                       void *opaque);
+
+int
+virCPUDefCopyModelFilter(virCPUDefPtr dst,
+                         const virCPUDef *src,
+                         bool resetPolicy,
+                         virCPUDefFeatureFilter filter,
+                         void *opaque)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 void
 virCPUDefStealModel(virCPUDefPtr dst,
                     virCPUDefPtr src);
