@@ -2657,19 +2657,19 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
     time_t now = time(NULL);
     char expire_time [64];
     const char *connected = NULL;
+    const char *password;
     int ret;
 
     if (!auth->passwd && !driver->vncPassword)
         return 0;
 
+    password = auth->passwd ? auth->passwd : defaultPasswd;
+
     if (auth->connected)
         connected = virDomainGraphicsAuthConnectedTypeToString(auth->connected);
 
     qemuDomainObjEnterMonitorWithDriver(driver, vm);
-    ret = qemuMonitorSetPassword(priv->mon,
-                                 type,
-                                 auth->passwd ? auth->passwd : defaultPasswd,
-                                 connected);
+    ret = qemuMonitorSetPassword(priv->mon, type, password, connected);
 
     if (ret == -2) {
         if (type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
@@ -2677,14 +2677,15 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
                            _("Graphics password only supported for VNC"));
             ret = -1;
         } else {
-            ret = qemuMonitorSetVNCPassword(priv->mon,
-                                            auth->passwd ? auth->passwd : defaultPasswd);
+            ret = qemuMonitorSetVNCPassword(priv->mon, password);
         }
     }
     if (ret != 0)
         goto cleanup;
 
-    if (auth->expires) {
+    if (password[0] == '\0') {
+        snprintf(expire_time, sizeof(expire_time), "now");
+    } else if (auth->expires) {
         time_t lifetime = auth->validTo - now;
         if (lifetime <= 0)
             snprintf(expire_time, sizeof(expire_time), "now");
