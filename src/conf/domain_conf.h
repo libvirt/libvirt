@@ -2140,7 +2140,7 @@ struct _virDomainDef {
 
     virDomainPowerManagement pm;
 
-    virDomainPerfDefPtr perf;
+    virDomainPerfDef perf;
 
     virDomainOSDef os;
     char *emulator;

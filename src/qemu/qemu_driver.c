@@ -9642,7 +9642,7 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
             if (enabled && virPerfEventEnable(priv->perf, type, vm->pid) < 0)
                 goto endjob;
 
-            def->perf->events[type] = enabled ?
+            def->perf.events[type] = enabled ?
                 VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
         }
 
@@ -9656,7 +9656,7 @@ qemuDomainSetPerfEvents(virDomainPtr dom,
             enabled = param->value.b;
             type = virPerfEventTypeFromString(param->field);
 
-            persistentDef->perf->events[type] = enabled ?
+            persistentDef->perf.events[type] = enabled ?
                 VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
         }
 
@@ -9716,7 +9716,7 @@ qemuDomainGetPerfEvents(virDomainPtr dom,
         bool perf_enabled;
 
         if (flags & VIR_DOMAIN_AFFECT_CONFIG)
-            perf_enabled = def->perf->events[i] == VIR_TRISTATE_BOOL_YES;
+            perf_enabled = def->perf.events[i] == VIR_TRISTATE_BOOL_YES;
         else
             perf_enabled = virPerfEventIsEnabled(priv->perf, i);
 

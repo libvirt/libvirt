@@ -2671,8 +2671,6 @@ void virDomainDefFree(virDomainDefPtr def)
 
     VIR_FREE(def->keywrap);
 
-    VIR_FREE(def->perf);
-
     if (def->namespaceData && def->ns.free)
         (def->ns.free)(def->namespaceData);
 
@@ -13136,19 +13134,14 @@ virDomainPerfDefParseXML(virDomainDefPtr def,
     if ((n = virXPathNodeSet("./perf/event", ctxt, &nodes)) < 0)
         return n;
 
-    if (VIR_ALLOC(def->perf) < 0)
-        goto cleanup;
-
     for (i = 0; i < n; i++) {
-        if (virDomainPerfEventDefParseXML(def->perf, nodes[i]) < 0)
+        if (virDomainPerfEventDefParseXML(&def->perf, nodes[i]) < 0)
             goto cleanup;
     }
 
     ret = 0;
 
  cleanup:
-    if (ret < 0)
-        VIR_FREE(def->perf);
     VIR_FREE(nodes);
     return ret;
 }
@@ -23388,8 +23381,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, "</pm>\n");
     }
 
-    if (def->perf)
-        virDomainPerfDefFormat(buf, def->perf);
+    virDomainPerfDefFormat(buf, &def->perf);
 
     virBufferAddLit(buf, "<devices>\n");
     virBufferAdjustIndent(buf, 2);
