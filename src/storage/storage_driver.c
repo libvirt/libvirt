@@ -3472,7 +3472,10 @@ virStorageTranslateDiskSourcePool(virConnectPtr conn,
 
     VIR_FREE(def->src->path);
     virStorageNetHostDefFree(def->src->nhosts, def->src->hosts);
+    def->src->nhosts = 0;
+    def->src->hosts = NULL;
     virStorageAuthDefFree(def->src->auth);
+    def->src->auth = NULL;
 
     switch ((virStoragePoolType) pooldef->type) {
     case VIR_STORAGE_POOL_DIR:
