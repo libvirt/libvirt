@@ -2653,8 +2653,11 @@ x86HasFeature(const virCPUData *data,
         return -1;
 
     if (!(feature = x86FeatureFind(map, name)) &&
-        !(feature = x86FeatureFindInternal(name)))
+        !(feature = x86FeatureFindInternal(name))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown CPU feature %s"), name);
         goto cleanup;
+    }
 
     ret = x86DataIsSubset(&data->data.x86, &feature->data) ? 1 : 0;
 
