@@ -4,8 +4,6 @@ use strict;
 use warnings;
 
 use File::Find;
-use XML::XPath;
-use XML::XPath::XMLParser;
 
 die "syntax: $0 SRCDIR\n" unless int(@ARGV) == 1;
 
@@ -45,6 +43,32 @@ find({
         }
     }, no_chdir => 1}, $srcdir);
 
+# Map API functions to the header and documentation files they're in
+# so that we can generate proper hyperlinks to their documentation.
+#
+# The function names are grep'd from the XML output of apibuild.py.
+sub getAPIFilenames {
+    my $filename = shift;
+
+    my %files;
+    my $line;
+
+    open FILE, "<", $filename or die "cannot read $filename: $!";
+
+    while (defined($line = <FILE>)) {
+        if ($line =~ /function name='([^']+)' file='([^']+)'/) {
+            $files{$1} = $2;
+        }
+    }
+
+    close FILE;
+
+    if (keys %files == 0) {
+        die "No functions found in $filename. Has the apibuild.py output changed?";
+    }
+    return \%files;
+}
+
 sub parseSymsFile {
     my $apisref = shift;
     my $prefix = shift;
@@ -55,7 +79,7 @@ sub parseSymsFile {
     my $vers;
     my $prevvers;
 
-    my $apixpath = XML::XPath->new(filename => $xmlfilename);
+    my $filenames = getAPIFilenames($xmlfilename);
 
     open FILE, "<$filename"
         or die "cannot read $filename: $!";
@@ -83,10 +107,9 @@ sub parseSymsFile {
             $prevvers = $vers;
             $vers = undef;
         } elsif ($line =~ /\s*(\w+)\s*;\s*$/) {
-            my $file = $apixpath->find("/api/symbols/function[\@name='$1']/\@file");
             $$apisref{$1} = {};
             $$apisref{$1}->{vers} = $vers;
-            $$apisref{$1}->{file} = $file;
+            $$apisref{$1}->{file} = $$filenames{$1};
         } else {
             die "unexpected data $line\n";
         }

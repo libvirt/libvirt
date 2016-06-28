@@ -2267,6 +2267,7 @@ class docBuilder:
         if name == debugsym and not quiet:
             print "=>", id
 
+        # NB: this is consumed by a regex in 'getAPIFilenames' in hvsupport.pl
         output.write("    <%s name='%s' file='%s' module='%s'>\n" % (id.type,
                      name, self.modulename_file(id.header),
                      self.modulename_file(id.module)))
