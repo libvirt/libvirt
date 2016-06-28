@@ -767,6 +767,27 @@ x86FeatureFindInternal(const char *name)
 }
 
 
+static int
+x86FeatureInData(const char *name,
+                 const virCPUx86Data *data,
+                 virCPUx86MapPtr map)
+{
+    virCPUx86FeaturePtr feature;
+
+    if (!(feature = x86FeatureFind(map, name)) &&
+        !(feature = x86FeatureFindInternal(name))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown CPU feature %s"), name);
+        return -1;
+    }
+
+    if (x86DataIsSubset(data, &feature->data))
+        return 1;
+    else
+        return 0;
+}
+
+
 static bool
 x86FeatureIsMigratable(const char *name,
                        void *cpu_map)
@@ -2526,15 +2547,12 @@ x86UpdateCustom(virCPUDefPtr guest,
 
     for (i = 0; i < guest->nfeatures; i++) {
         if (guest->features[i].policy == VIR_CPU_FEATURE_OPTIONAL) {
-            virCPUx86FeaturePtr feature;
-            if (!(feature = x86FeatureFind(map, guest->features[i].name))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unknown CPU feature %s"),
-                               guest->features[i].name);
-                goto cleanup;
-            }
+            int supported = x86FeatureInData(guest->features[i].name,
+                                             &host_model->data, map);
 
-            if (x86DataIsSubset(&host_model->data, &feature->data))
+            if (supported < 0)
+                goto cleanup;
+            else if (supported)
                 guest->features[i].policy = VIR_CPU_FEATURE_REQUIRE;
             else
                 guest->features[i].policy = VIR_CPU_FEATURE_DISABLE;
@@ -2646,23 +2664,11 @@ x86HasFeature(const virCPUData *data,
               const char *name)
 {
     virCPUx86MapPtr map;
-    virCPUx86FeaturePtr feature;
-    int ret = -1;
 
     if (!(map = virCPUx86GetMap()))
         return -1;
 
-    if (!(feature = x86FeatureFind(map, name)) &&
-        !(feature = x86FeatureFindInternal(name))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown CPU feature %s"), name);
-        goto cleanup;
-    }
-
-    ret = x86DataIsSubset(&data->data.x86, &feature->data) ? 1 : 0;
-
- cleanup:
-    return ret;
+    return x86FeatureInData(name, &data->data.x86, map);
 }
 
 static int
