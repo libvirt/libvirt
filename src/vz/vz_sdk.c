@@ -829,7 +829,7 @@ prlsdkGetNetAddresses(PRL_HANDLE sdknet, virDomainNetDefPtr net)
     prlsdkCheckRetGoto(pret, cleanup);
 
     for (i = 0; i < num; ++i) {
-       virNetDevIPAddrPtr ip = NULL;
+        virNetDevIPAddrPtr ip = NULL;
         PRL_UINT32 buflen = 0;
         char *addr;
 
