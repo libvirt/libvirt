@@ -44,136 +44,66 @@ find({
             push @srcs, $_ if $_ !~ /vbox_driver\.c/;
         }
     }, no_chdir => 1}, $srcdir);
-my $line;
 
-# Get the list of all public APIs and their corresponding version
+sub parseSymsFile {
+    my $apisref = shift;
+    my $prefix = shift;
+    my $filename = shift;
+    my $xmlfilename = shift;
+
+    my $line;
+    my $vers;
+    my $prevvers;
+
+    my $apixpath = XML::XPath->new(filename => $xmlfilename);
+
+    open FILE, "<$filename"
+        or die "cannot read $filename: $!";
+
+    while (defined($line = <FILE>)) {
+        chomp $line;
+        next if $line =~ /^\s*#/;
+        next if $line =~ /^\s*$/;
+        next if $line =~ /^\s*(global|local):/;
+        if ($line =~ /^\s*${prefix}_(\d+\.\d+\.\d+)\s*{\s*$/) {
+            if (defined $vers) {
+                die "malformed syms file";
+            }
+            $vers = $1;
+        } elsif ($line =~ /\s*}\s*;\s*$/) {
+            if (defined $prevvers) {
+                die "malformed syms file";
+            }
+            $prevvers = $vers;
+            $vers = undef;
+        } elsif ($line =~ /\s*}\s*${prefix}_(\d+\.\d+\.\d+)\s*;\s*$/) {
+            if ($1 ne $prevvers) {
+                die "malformed syms file $1 != $vers";
+            }
+            $prevvers = $vers;
+            $vers = undef;
+        } elsif ($line =~ /\s*(\w+)\s*;\s*$/) {
+            my $file = $apixpath->find("/api/symbols/function[\@name='$1']/\@file");
+            $$apisref{$1} = {};
+            $$apisref{$1}->{vers} = $vers;
+            $$apisref{$1}->{file} = $file;
+        } else {
+            die "unexpected data $line\n";
+        }
+    }
+
+    close FILE;
+}
 
 my %apis;
-open FILE, "<$symslibvirt"
-    or die "cannot read $symslibvirt: $!";
-
-my $vers;
-my $prevvers;
-my $apixpath = XML::XPath->new(filename => "$srcdir/../docs/libvirt-api.xml");
-while (defined($line = <FILE>)) {
-    chomp $line;
-    next if $line =~ /^\s*#/;
-    next if $line =~ /^\s*$/;
-    next if $line =~ /^\s*(global|local):/;
-    if ($line =~ /^\s*LIBVIRT_(\d+\.\d+\.\d+)\s*{\s*$/) {
-        if (defined $vers) {
-            die "malformed syms file";
-        }
-        $vers = $1;
-    } elsif ($line =~ /\s*}\s*;\s*$/) {
-        if (defined $prevvers) {
-            die "malformed syms file";
-        }
-        $prevvers = $vers;
-        $vers = undef;
-    } elsif ($line =~ /\s*}\s*LIBVIRT_(\d+\.\d+\.\d+)\s*;\s*$/) {
-        if ($1 ne $prevvers) {
-            die "malformed syms file $1 != $vers";
-        }
-        $prevvers = $vers;
-        $vers = undef;
-    } elsif ($line =~ /\s*(\w+)\s*;\s*$/) {
-        my $file = $apixpath->find("/api/symbols/function[\@name='$1']/\@file");
-        $apis{$1} = {};
-        $apis{$1}->{vers} = $vers;
-        $apis{$1}->{file} = $file;
-    } else {
-        die "unexpected data $line\n";
-    }
-}
-
-close FILE;
-
+# Get the list of all public APIs and their corresponding version
+parseSymsFile(\%apis, "LIBVIRT", $symslibvirt, "$srcdir/../docs/libvirt-api.xml");
 
 # And the same for the QEMU specific APIs
-
-open FILE, "<$symsqemu"
-    or die "cannot read $symsqemu: $!";
-
-$prevvers = undef;
-$vers = undef;
-$apixpath = XML::XPath->new(filename => "$srcdir/../docs/libvirt-qemu-api.xml");
-while (defined($line = <FILE>)) {
-    chomp $line;
-    next if $line =~ /^\s*#/;
-    next if $line =~ /^\s*$/;
-    next if $line =~ /^\s*(global|local):/;
-    if ($line =~ /^\s*LIBVIRT_QEMU_(\d+\.\d+\.\d+)\s*{\s*$/) {
-        if (defined $vers) {
-            die "malformed syms file";
-        }
-        $vers = $1;
-    } elsif ($line =~ /\s*}\s*;\s*$/) {
-        if (defined $prevvers) {
-            die "malformed syms file";
-        }
-        $prevvers = $vers;
-        $vers = undef;
-    } elsif ($line =~ /\s*}\s*LIBVIRT_QEMU_(\d+\.\d+\.\d+)\s*;\s*$/) {
-        if ($1 ne $prevvers) {
-            die "malformed syms file $1 != $vers";
-        }
-        $prevvers = $vers;
-        $vers = undef;
-    } elsif ($line =~ /\s*(\w+)\s*;\s*$/) {
-        my $file = $apixpath->find("/api/symbols/function[\@name='$1']/\@file");
-        $apis{$1} = {};
-        $apis{$1}->{vers} = $vers;
-        $apis{$1}->{file} = $file;
-    } else {
-        die "unexpected data $line\n";
-    }
-}
-
-close FILE;
-
+parseSymsFile(\%apis, "LIBVIRT_QEMU", $symsqemu, "$srcdir/../docs/libvirt-qemu-api.xml");
 
 # And the same for the LXC specific APIs
-
-open FILE, "<$symslxc"
-    or die "cannot read $symslxc: $!";
-
-$prevvers = undef;
-$vers = undef;
-$apixpath = XML::XPath->new(filename => "$srcdir/../docs/libvirt-lxc-api.xml");
-while (defined($line = <FILE>)) {
-    chomp $line;
-    next if $line =~ /^\s*#/;
-    next if $line =~ /^\s*$/;
-    next if $line =~ /^\s*(global|local):/;
-    if ($line =~ /^\s*LIBVIRT_LXC_(\d+\.\d+\.\d+)\s*{\s*$/) {
-        if (defined $vers) {
-            die "malformed syms file";
-        }
-        $vers = $1;
-    } elsif ($line =~ /\s*}\s*;\s*$/) {
-        if (defined $prevvers) {
-            die "malformed syms file";
-        }
-        $prevvers = $vers;
-        $vers = undef;
-    } elsif ($line =~ /\s*}\s*LIBVIRT_LXC_(\d+\.\d+\.\d+)\s*;\s*$/) {
-        if ($1 ne $prevvers) {
-            die "malformed syms file $1 != $vers";
-        }
-        $prevvers = $vers;
-        $vers = undef;
-    } elsif ($line =~ /\s*(\w+)\s*;\s*$/) {
-        my $file = $apixpath->find("/api/symbols/function[\@name='$1']/\@file");
-        $apis{$1} = {};
-        $apis{$1}->{vers} = $vers;
-        $apis{$1}->{file} = $file;
-    } else {
-        die "unexpected data $line\n";
-    }
-}
-
-close FILE;
+parseSymsFile(\%apis, "LIBVIRT_LXC", $symslxc, "$srcdir/../docs/libvirt-lxc-api.xml");
 
 
 # Some special things which aren't public APIs,
@@ -205,6 +135,8 @@ $apis{virDomainMigrateConfirm3Params}->{vers} = "1.1.0";
 # Now we want to get the mapping between public APIs
 # and driver struct fields. This lets us later match
 # update the driver impls with the public APis.
+
+my $line;
 
 # Group name -> hash of APIs { fields -> api name }
 my %groups;
