@@ -1816,8 +1816,11 @@ x86Decode(virCPUDefPtr cpu,
      * Note: this only works as long as no CPU model contains non-migratable
      * features directly */
     if (flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE) {
-        for (i = 0; i < cpuModel->nfeatures; i++) {
-            if (!x86FeatureIsMigratable(cpuModel->features[i].name, map)) {
+        i = 0;
+        while (i < cpuModel->nfeatures) {
+            if (x86FeatureIsMigratable(cpuModel->features[i].name, map)) {
+                i++;
+            } else {
                 VIR_FREE(cpuModel->features[i].name);
                 VIR_DELETE_ELEMENT_INPLACE(cpuModel->features, i,
                                            cpuModel->nfeatures);
@@ -2542,8 +2545,11 @@ x86UpdateHostModel(virCPUDefPtr guest,
     /* Remove non-migratable features by default
      * Note: this only works as long as no CPU model contains non-migratable
      * features directly */
-    for (i = 0; i < guest->nfeatures; i++) {
-        if (!x86FeatureIsMigratable(guest->features[i].name, map)) {
+    i = 0;
+    while (i < guest->nfeatures) {
+        if (x86FeatureIsMigratable(guest->features[i].name, map)) {
+            i++;
+        } else {
             VIR_FREE(guest->features[i].name);
             VIR_DELETE_ELEMENT_INPLACE(guest->features, i, guest->nfeatures);
         }
