@@ -622,7 +622,7 @@ mymain(void)
     DO_TEST("boot-multi", QEMU_CAPS_BOOT_MENU);
     DO_TEST("boot-menu-enable",
             QEMU_CAPS_BOOT_MENU);
-    DO_TEST("boot-menu-enable",
+    DO_TEST("boot-menu-enable-bootindex",
             QEMU_CAPS_BOOT_MENU,
             QEMU_CAPS_BOOTINDEX);
     DO_TEST("boot-menu-enable-with-timeout",

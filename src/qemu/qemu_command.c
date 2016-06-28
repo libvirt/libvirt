@@ -6028,22 +6028,18 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
     /*
      * We prefer using explicit bootindex=N parameters for predictable
      * results even though domain XML doesn't use per device boot elements.
-     * However, we can't use bootindex if boot menu was requested.
      */
-    if (!def->os.nBootDevs) {
-        /* def->os.nBootDevs is guaranteed to be > 0 unless per-device boot
-         * configuration is used
-         */
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX)) {
+    *emitBootindex = true;
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX)) {
+        if (def->os.nBootDevs == 0) {
+            /* def->os.nBootDevs is guaranteed to be > 0 unless per-device boot
+             * configuration is used
+             */
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("hypervisor lacks deviceboot feature"));
             goto error;
         }
-        *emitBootindex = true;
-    } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX) &&
-               (def->os.bootmenu != VIR_TRISTATE_BOOL_YES ||
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_MENU))) {
-        *emitBootindex = true;
+        *emitBootindex = false;
     }
 
     if (!*emitBootindex) {
