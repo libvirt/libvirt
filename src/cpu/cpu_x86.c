@@ -767,6 +767,22 @@ x86FeatureFindInternal(const char *name)
 }
 
 
+static bool
+x86FeatureIsMigratable(const char *name,
+                       void *cpu_map)
+{
+    virCPUx86MapPtr map = cpu_map;
+    size_t i;
+
+    for (i = 0; i < map->nblockers; i++) {
+        if (STREQ(name, map->migrate_blockers[i]->name))
+            return false;
+    }
+
+    return true;
+}
+
+
 static char *
 x86FeatureNames(virCPUx86MapPtr map,
                 const char *separator,
@@ -1801,14 +1817,10 @@ x86Decode(virCPUDefPtr cpu,
      * features directly */
     if (flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE) {
         for (i = 0; i < cpuModel->nfeatures; i++) {
-            size_t j;
-            for (j = 0; j < map->nblockers; j++) {
-                if (STREQ(map->migrate_blockers[j]->name,
-                          cpuModel->features[i].name)) {
-                    VIR_FREE(cpuModel->features[i].name);
-                    VIR_DELETE_ELEMENT_INPLACE(cpuModel->features, i,
-                                               cpuModel->nfeatures);
-                }
+            if (!x86FeatureIsMigratable(cpuModel->features[i].name, map)) {
+                VIR_FREE(cpuModel->features[i].name);
+                VIR_DELETE_ELEMENT_INPLACE(cpuModel->features, i,
+                                           cpuModel->nfeatures);
             }
         }
     }
@@ -2531,12 +2543,9 @@ x86UpdateHostModel(virCPUDefPtr guest,
      * Note: this only works as long as no CPU model contains non-migratable
      * features directly */
     for (i = 0; i < guest->nfeatures; i++) {
-        size_t j;
-        for (j = 0; j < map->nblockers; j++) {
-            if (STREQ(map->migrate_blockers[j]->name, guest->features[i].name)) {
-                VIR_FREE(guest->features[i].name);
-                VIR_DELETE_ELEMENT_INPLACE(guest->features, i, guest->nfeatures);
-            }
+        if (!x86FeatureIsMigratable(guest->features[i].name, map)) {
+            VIR_FREE(guest->features[i].name);
+            VIR_DELETE_ELEMENT_INPLACE(guest->features, i, guest->nfeatures);
         }
     }
     for (i = 0; !passthrough && i < oldguest->nfeatures; i++) {
