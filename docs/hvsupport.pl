@@ -207,28 +207,27 @@ foreach my $src (@srcs) {
     open FILE, "<$src" or
         die "cannot read $src: $!";
 
+    my $groups_regex = join("|", keys %groups);
     $ingrp = undef;
     my $impl;
     while (defined($line = <FILE>)) {
         if (!$ingrp) {
-            foreach my $grp (keys %groups) {
-                if ($line =~ /^\s*(?:static\s+)?$grp\s+(\w+)\s*=\s*{/ ||
-                    $line =~ /^\s*(?:static\s+)?$grp\s+NAME\(\w+\)\s*=\s*{/) {
-                    $ingrp = $grp;
-                    $impl = $src;
+            if ($line =~ /^\s*(?:static\s+)?($groups_regex)\s+(\w+)\s*=\s*{/ ||
+                $line =~ /^\s*(?:static\s+)?($groups_regex)\s+NAME\(\w+\)\s*=\s*{/) {
+                $ingrp = $1;
+                $impl = $src;
 
-                    if ($impl =~ m,.*/node_device_(\w+)\.c,) {
-                        $impl = $1;
-                    } else {
-                        $impl =~ s,.*/(\w+?)_((\w+)_)?(\w+)\.c,$1,;
-                    }
-
-                    if ($groups{$ingrp}->{drivers}->{$impl}) {
-                        die "Group $ingrp already contains $impl";
-                    }
-
-                    $groups{$ingrp}->{drivers}->{$impl} = {};
+                if ($impl =~ m,.*/node_device_(\w+)\.c,) {
+                    $impl = $1;
+                } else {
+                    $impl =~ s,.*/(\w+?)_((\w+)_)?(\w+)\.c,$1,;
                 }
+
+                if ($groups{$ingrp}->{drivers}->{$impl}) {
+                    die "Group $ingrp already contains $impl";
+                }
+
+                $groups{$ingrp}->{drivers}->{$impl} = {};
             }
 
         } else {
