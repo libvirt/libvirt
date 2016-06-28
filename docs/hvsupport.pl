@@ -212,6 +212,9 @@ foreach my $src (@srcs) {
     my $impl;
     while (defined($line = <FILE>)) {
         if (!$ingrp) {
+            # skip non-matching lines early to save time
+            next if not $line =~ /$groups_regex/;
+
             if ($line =~ /^\s*(?:static\s+)?($groups_regex)\s+(\w+)\s*=\s*{/ ||
                 $line =~ /^\s*(?:static\s+)?($groups_regex)\s+NAME\(\w+\)\s*=\s*{/) {
                 $ingrp = $1;
