@@ -2972,8 +2972,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 
     /* build the actual drive id string as the disk->info.alias doesn't
      * contain the QEMU_DRIVE_HOST_PREFIX that is passed to qemu */
-    if (virAsprintf(&drivestr, "%s%s",
-                    QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0)
+    if (!(drivestr = qemuAliasFromDisk(disk)))
         return -1;
 
     /* Let's look for some markers for a secret object and create an alias

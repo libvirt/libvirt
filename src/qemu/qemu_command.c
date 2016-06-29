@@ -1427,7 +1427,11 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     }
 
     if (emitDeviceSyntax) {
-        virBufferAsprintf(&opt, ",id=%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
+        char *drivealias = qemuAliasFromDisk(disk);
+        if (!drivealias)
+            goto error;
+        virBufferAsprintf(&opt, ",id=%s", drivealias);
+        VIR_FREE(drivealias);
     } else {
         if (busid == -1 && unitid == -1) {
             if (idx != -1)
@@ -1788,6 +1792,7 @@ qemuBuildDriveDevStr(const virDomainDef *def,
     virBuffer opt = VIR_BUFFER_INITIALIZER;
     const char *bus = virDomainDiskQEMUBusTypeToString(disk->bus);
     const char *contAlias;
+    char *drivealias;
     int controllerModel;
 
     if (qemuCheckDiskConfig(disk) < 0)
@@ -2013,8 +2018,10 @@ qemuBuildDriveDevStr(const virDomainDef *def,
         goto error;
     }
 
-    virBufferAsprintf(&opt, ",drive=%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
-    virBufferAsprintf(&opt, ",id=%s", disk->info.alias);
+    if (!(drivealias = qemuAliasFromDisk(disk)))
+        goto error;
+    virBufferAsprintf(&opt, ",drive=%s,id=%s", drivealias, disk->info.alias);
+    VIR_FREE(drivealias);
     if (bootindex && virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOTINDEX))
         virBufferAsprintf(&opt, ",bootindex=%u", bootindex);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKIO)) {

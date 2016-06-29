@@ -1761,8 +1761,7 @@ qemuMigrationStartNBDServer(virQEMUDriverPtr driver,
             continue;
 
         VIR_FREE(diskAlias);
-        if (virAsprintf(&diskAlias, "%s%s",
-                        QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0)
+        if (!(diskAlias = qemuAliasFromDisk(disk)))
             goto cleanup;
 
         if (qemuDomainObjEnterMonitorAsync(driver, vm,
@@ -1978,8 +1977,7 @@ qemuMigrationCancelOneDriveMirror(virQEMUDriverPtr driver,
         return 1;
     }
 
-    if (virAsprintf(&diskAlias, "%s%s",
-                    QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0)
+    if (!(diskAlias = qemuAliasFromDisk(disk)))
         return -1;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -2154,8 +2152,7 @@ qemuMigrationDriveMirror(virQEMUDriverPtr driver,
         if (!qemuMigrateDisk(disk, nmigrate_disks, migrate_disks))
             continue;
 
-        if ((virAsprintf(&diskAlias, "%s%s",
-                         QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0) ||
+        if (!(diskAlias = qemuAliasFromDisk(disk)) ||
             (virAsprintf(&nbd_dest, "nbd:%s:%d:exportname=%s",
                          hoststr, port, diskAlias) < 0))
             goto cleanup;
