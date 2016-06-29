@@ -2768,6 +2768,7 @@ static int prlsdkApplyGraphicsParams(PRL_HANDLE sdkdom,
     if (!gr) {
         pret = PrlVmCfg_SetVNCMode(sdkdom, PRD_DISABLED);
         prlsdkCheckRetExit(pret, -1);
+        return 0;
     }
 
     pret = PrlVmCfg_SetVNCPassword(sdkdom, gr->data.vnc.auth.passwd ? : "");
