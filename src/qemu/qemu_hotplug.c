@@ -715,7 +715,9 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
                                      virDomainDiskDefPtr disk)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virErrorPtr orig_err;
     int ret = -1;
+    char *drivealias = NULL;
     char *drivestr = NULL;
     char *devstr = NULL;
     bool driveAdded = false;
@@ -741,8 +743,13 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
 
     if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
         goto error;
+
     if (!(drivestr = qemuBuildDriveStr(disk, false, priv->qemuCaps)))
         goto error;
+
+    if (!(drivealias = qemuAliasFromDisk(disk)))
+        goto error;
+
     if (!(devstr = qemuBuildDriveDevStr(vm->def, disk, 0, priv->qemuCaps)))
         goto error;
 
@@ -770,16 +777,20 @@ qemuDomainAttachUSBMassStorageDevice(virQEMUDriverPtr driver,
     if (ret < 0 && releaseaddr)
         virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
     VIR_FREE(devstr);
+    VIR_FREE(drivealias);
     VIR_FREE(drivestr);
     virObjectUnref(cfg);
     return ret;
 
  exit_monitor:
-    if (driveAdded) {
-        VIR_WARN("qemuMonitorAddDevice failed on %s (%s)",
-                 drivestr, devstr);
-        /* XXX should call 'drive_del' on error but this does not
-           exist yet */
+    orig_err = virSaveLastError();
+    if (driveAdded && qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
+        VIR_WARN("Unable to remove drive %s (%s) after failed "
+                 "qemuMonitorAddDevice", drivealias, drivestr);
+    }
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
     }
 
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
