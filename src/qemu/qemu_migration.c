@@ -6237,7 +6237,8 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     if (qemuMigrationStopNBDServer(driver, vm, mig) < 0)
         goto endjob;
 
-    if (qemuRefreshVirtioChannelState(driver, vm) < 0)
+    if (qemuRefreshVirtioChannelState(driver, vm,
+                                      QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto endjob;
 
     if ((rc = qemuConnectAgent(driver, vm)) < 0) {

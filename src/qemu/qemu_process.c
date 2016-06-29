@@ -1974,13 +1974,16 @@ qemuProcessRefreshChannelVirtioState(virQEMUDriverPtr driver,
 
 int
 qemuRefreshVirtioChannelState(virQEMUDriverPtr driver,
-                              virDomainObjPtr vm)
+                              virDomainObjPtr vm,
+                              qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virHashTablePtr info = NULL;
     int ret = -1;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
+
     ret = qemuMonitorGetChardevInfo(priv->mon, &info);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
@@ -3312,7 +3315,7 @@ qemuProcessReconnect(void *opaque)
     if (qemuProcessRefreshDisks(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
         goto error;
 
-    if (qemuRefreshVirtioChannelState(driver, obj) < 0)
+    if (qemuRefreshVirtioChannelState(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
         goto error;
 
     /* If querying of guest's RTC failed, report error, but do not kill the domain. */

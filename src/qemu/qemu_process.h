@@ -180,7 +180,8 @@ int qemuProcessSetupIOThread(virDomainObjPtr vm,
                              virDomainIOThreadIDDefPtr iothread);
 
 int qemuRefreshVirtioChannelState(virQEMUDriverPtr driver,
-                                  virDomainObjPtr vm);
+                                  virDomainObjPtr vm,
+                                  qemuDomainAsyncJob asyncJob);
 
 int qemuProcessRefreshBalloonState(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
