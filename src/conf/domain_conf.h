@@ -2117,7 +2117,7 @@ struct _virDomainDef {
     virDomainBlkiotune blkio;
     virDomainMemtune mem;
 
-    virDomainVcpuDefPtr vcpus;
+    virDomainVcpuDefPtr *vcpus;
     size_t maxvcpus;
     int placement_mode;
     virBitmapPtr cpumask;

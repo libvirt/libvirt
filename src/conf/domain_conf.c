@@ -1306,14 +1306,26 @@ void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
 }
 
 
+static virDomainVcpuDefPtr
+virDomainVcpuDefNew(void)
+{
+    virDomainVcpuDefPtr ret;
+
+    ignore_value(VIR_ALLOC(ret));
+
+    return ret;
+}
+
+
 static void
-virDomainVcpuDefClear(virDomainVcpuDefPtr info)
+virDomainVcpuDefFree(virDomainVcpuDefPtr info)
 {
     if (!info)
         return;
 
     virBitmapFree(info->cpumask);
     info->cpumask = NULL;
+    VIR_FREE(info);
 }
 
 
@@ -1321,6 +1333,7 @@ int
 virDomainDefSetVcpusMax(virDomainDefPtr def,
                         unsigned int maxvcpus)
 {
+    size_t oldmax = def->maxvcpus;
     size_t i;
 
     if (def->maxvcpus == maxvcpus)
@@ -1329,9 +1342,14 @@ virDomainDefSetVcpusMax(virDomainDefPtr def,
     if (def->maxvcpus < maxvcpus) {
         if (VIR_EXPAND_N(def->vcpus, def->maxvcpus, maxvcpus - def->maxvcpus) < 0)
             return -1;
+
+        for (i = oldmax; i < def->maxvcpus; i++) {
+            if (!(def->vcpus[i] = virDomainVcpuDefNew()))
+                return -1;
+        }
     } else {
         for (i = maxvcpus; i < def->maxvcpus; i++)
-            virDomainVcpuDefClear(&def->vcpus[i]);
+            virDomainVcpuDefFree(def->vcpus[i]);
 
         VIR_SHRINK_N(def->vcpus, def->maxvcpus, def->maxvcpus - maxvcpus);
     }
@@ -1346,7 +1364,7 @@ virDomainDefHasVcpusOffline(const virDomainDef *def)
     size_t i;
 
     for (i = 0; i < def->maxvcpus; i++) {
-        if (!def->vcpus[i].online)
+        if (!def->vcpus[i]->online)
             return true;
     }
 
@@ -1375,10 +1393,10 @@ virDomainDefSetVcpus(virDomainDefPtr def,
     }
 
     for (i = 0; i < vcpus; i++)
-        def->vcpus[i].online = true;
+        def->vcpus[i]->online = true;
 
     for (i = vcpus; i < def->maxvcpus; i++)
-        def->vcpus[i].online = false;
+        def->vcpus[i]->online = false;
 
     return 0;
 }
@@ -1391,7 +1409,7 @@ virDomainDefGetVcpus(const virDomainDef *def)
     unsigned int ret = 0;
 
     for (i = 0; i < def->maxvcpus; i++) {
-        if (def->vcpus[i].online)
+        if (def->vcpus[i]->online)
             ret++;
     }
 
@@ -1415,7 +1433,7 @@ virDomainDefGetOnlineVcpumap(const virDomainDef *def)
         return NULL;
 
     for (i = 0; i < def->maxvcpus; i++) {
-        if (def->vcpus[i].online)
+        if (def->vcpus[i]->online)
             ignore_value(virBitmapSetBit(ret, i));
     }
 
@@ -1430,7 +1448,7 @@ virDomainDefGetVcpu(virDomainDefPtr def,
     if (vcpu >= def->maxvcpus)
         return NULL;
 
-    return &def->vcpus[vcpu];
+    return def->vcpus[vcpu];
 }
 
 
@@ -1459,7 +1477,7 @@ virDomainDefHasVcpuPin(const virDomainDef *def)
     size_t i;
 
     for (i = 0; i < def->maxvcpus; i++) {
-        if (def->vcpus[i].cpumask)
+        if (def->vcpus[i]->cpumask)
             return true;
     }
 
@@ -2518,7 +2536,7 @@ void virDomainDefFree(virDomainDefPtr def)
     virDomainResourceDefFree(def->resource);
 
     for (i = 0; i < def->maxvcpus; i++)
-        virDomainVcpuDefClear(&def->vcpus[i]);
+        virDomainVcpuDefFree(def->vcpus[i]);
     VIR_FREE(def->vcpus);
 
     /* hostdevs must be freed before nets (or any future "intelligent
@@ -18514,8 +18532,8 @@ virDomainDefVcpuCheckAbiStability(virDomainDefPtr src,
     }
 
     for (i = 0; i < src->maxvcpus; i++) {
-        virDomainVcpuDefPtr svcpu = &src->vcpus[i];
-        virDomainVcpuDefPtr dvcpu = &dst->vcpus[i];
+        virDomainVcpuDefPtr svcpu = src->vcpus[i];
+        virDomainVcpuDefPtr dvcpu = dst->vcpus[i];
 
         if (svcpu->online != dvcpu->online) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -22713,7 +22731,7 @@ virDomainCputuneDefFormat(virBufferPtr buf,
 
     for (i = 0; i < def->maxvcpus; i++) {
         char *cpumask;
-        virDomainVcpuDefPtr vcpu = def->vcpus + i;
+        virDomainVcpuDefPtr vcpu = def->vcpus[i];
 
         if (!vcpu->cpumask)
             continue;
