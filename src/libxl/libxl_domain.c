@@ -841,7 +841,7 @@ int
 libxlDomainSetVcpuAffinities(libxlDriverPrivatePtr driver, virDomainObjPtr vm)
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
-    virDomainVcpuInfoPtr vcpu;
+    virDomainVcpuDefPtr vcpu;
     libxl_bitmap map;
     virBitmapPtr cpumask = NULL;
     size_t i;

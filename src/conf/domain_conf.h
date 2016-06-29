@@ -2029,10 +2029,10 @@ struct _virDomainCputune {
 };
 
 
-typedef struct _virDomainVcpuInfo virDomainVcpuInfo;
-typedef virDomainVcpuInfo *virDomainVcpuInfoPtr;
+typedef struct _virDomainVcpuDef virDomainVcpuDef;
+typedef virDomainVcpuDef *virDomainVcpuDefPtr;
 
-struct _virDomainVcpuInfo {
+struct _virDomainVcpuDef {
     bool online;
     virBitmapPtr cpumask;
 
@@ -2117,7 +2117,7 @@ struct _virDomainDef {
     virDomainBlkiotune blkio;
     virDomainMemtune mem;
 
-    virDomainVcpuInfoPtr vcpus;
+    virDomainVcpuDefPtr vcpus;
     size_t maxvcpus;
     int placement_mode;
     virBitmapPtr cpumask;
@@ -2251,7 +2251,7 @@ unsigned int virDomainDefGetVcpusMax(const virDomainDef *def);
 int virDomainDefSetVcpus(virDomainDefPtr def, unsigned int vcpus);
 unsigned int virDomainDefGetVcpus(const virDomainDef *def);
 virBitmapPtr virDomainDefGetOnlineVcpumap(const virDomainDef *def);
-virDomainVcpuInfoPtr virDomainDefGetVcpu(virDomainDefPtr def, unsigned int vcpu)
+virDomainVcpuDefPtr virDomainDefGetVcpu(virDomainDefPtr def, unsigned int vcpu)
     ATTRIBUTE_RETURN_CHECK;
 
 unsigned long long virDomainDefGetMemoryInitial(const virDomainDef *def);

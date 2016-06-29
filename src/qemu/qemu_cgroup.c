@@ -874,7 +874,7 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
         goto error;
 
     for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
-        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(vm->def, i);
+        virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, i);
 
         if (!vcpu->online)
             continue;

@@ -2457,7 +2457,7 @@ static int testDomainGetVcpus(virDomainPtr domain,
     memset(cpumaps, 0, maxinfo * maplen);
 
     for (i = 0; i < maxinfo; i++) {
-        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(def, i);
+        virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(def, i);
         virBitmapPtr bitmap = NULL;
 
         if (!vcpu->online)
@@ -2493,7 +2493,7 @@ static int testDomainPinVcpu(virDomainPtr domain,
                              unsigned char *cpumap,
                              int maplen)
 {
-    virDomainVcpuInfoPtr vcpuinfo;
+    virDomainVcpuDefPtr vcpuinfo;
     virDomainObjPtr privdom;
     virDomainDefPtr def;
     int ret = -1;

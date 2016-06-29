@@ -4577,7 +4577,7 @@ qemuProcessSetupVcpu(virDomainObjPtr vm,
                      unsigned int vcpuid)
 {
     pid_t vcpupid = qemuDomainGetVcpuPid(vm, vcpuid);
-    virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(vm->def, vcpuid);
+    virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, vcpuid);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *mem_mask = NULL;
     virDomainNumatuneMemMode mem_mode;
@@ -4658,7 +4658,7 @@ qemuProcessSetupVcpu(virDomainObjPtr vm,
 static int
 qemuProcessSetupVcpus(virDomainObjPtr vm)
 {
-    virDomainVcpuInfoPtr vcpu;
+    virDomainVcpuDefPtr vcpu;
     unsigned int maxvcpus = virDomainDefGetVcpusMax(vm->def);
     size_t i;
 

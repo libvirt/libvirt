@@ -2314,7 +2314,7 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     virDomainDefPtr targetDef = NULL;
     virBitmapPtr pcpumap = NULL;
-    virDomainVcpuInfoPtr vcpuinfo;
+    virDomainVcpuDefPtr vcpuinfo;
     virDomainObjPtr vm;
     int ret = -1;
 

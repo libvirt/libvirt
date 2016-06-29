@@ -1307,7 +1307,7 @@ void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
 
 
 static void
-virDomainVcpuInfoClear(virDomainVcpuInfoPtr info)
+virDomainVcpuDefClear(virDomainVcpuDefPtr info)
 {
     if (!info)
         return;
@@ -1331,7 +1331,7 @@ virDomainDefSetVcpusMax(virDomainDefPtr def,
             return -1;
     } else {
         for (i = maxvcpus; i < def->maxvcpus; i++)
-            virDomainVcpuInfoClear(&def->vcpus[i]);
+            virDomainVcpuDefClear(&def->vcpus[i]);
 
         VIR_SHRINK_N(def->vcpus, def->maxvcpus, def->maxvcpus - maxvcpus);
     }
@@ -1423,7 +1423,7 @@ virDomainDefGetOnlineVcpumap(const virDomainDef *def)
 }
 
 
-virDomainVcpuInfoPtr
+virDomainVcpuDefPtr
 virDomainDefGetVcpu(virDomainDefPtr def,
                     unsigned int vcpu)
 {
@@ -1442,7 +1442,7 @@ static virDomainThreadSchedParamPtr
 virDomainDefGetVcpuSched(virDomainDefPtr def,
                          unsigned int vcpu)
 {
-    virDomainVcpuInfoPtr vcpuinfo;
+    virDomainVcpuDefPtr vcpuinfo;
 
     if (!(vcpuinfo = virDomainDefGetVcpu(def, vcpu)))
         return NULL;
@@ -1508,7 +1508,7 @@ virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
     virBitmapSetAll(allcpumap);
 
     for (i = 0; i < maxvcpus && i < ncpumaps; i++) {
-        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(def, i);
+        virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(def, i);
         virBitmapPtr bitmap = NULL;
 
         if (vcpu->cpumask)
@@ -2522,7 +2522,7 @@ void virDomainDefFree(virDomainDefPtr def)
     virDomainResourceDefFree(def->resource);
 
     for (i = 0; i < def->maxvcpus; i++)
-        virDomainVcpuInfoClear(&def->vcpus[i]);
+        virDomainVcpuDefClear(&def->vcpus[i]);
     VIR_FREE(def->vcpus);
 
     /* hostdevs must be freed before nets (or any future "intelligent
@@ -4178,7 +4178,7 @@ static void
 virDomainDefRemoveOfflineVcpuPin(virDomainDefPtr def)
 {
     size_t i;
-    virDomainVcpuInfoPtr vcpu;
+    virDomainVcpuDefPtr vcpu;
 
     for (i = 0; i < virDomainDefGetVcpusMax(def); i++) {
         vcpu = virDomainDefGetVcpu(def, i);
@@ -14885,7 +14885,7 @@ static int
 virDomainVcpuPinDefParseXML(virDomainDefPtr def,
                             xmlNodePtr node)
 {
-    virDomainVcpuInfoPtr vcpu;
+    virDomainVcpuDefPtr vcpu;
     unsigned int vcpuid;
     char *tmp = NULL;
     int ret = -1;
@@ -18518,8 +18518,8 @@ virDomainDefVcpuCheckAbiStability(virDomainDefPtr src,
     }
 
     for (i = 0; i < src->maxvcpus; i++) {
-        virDomainVcpuInfoPtr svcpu = &src->vcpus[i];
-        virDomainVcpuInfoPtr dvcpu = &dst->vcpus[i];
+        virDomainVcpuDefPtr svcpu = &src->vcpus[i];
+        virDomainVcpuDefPtr dvcpu = &dst->vcpus[i];
 
         if (svcpu->online != dvcpu->online) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -22717,7 +22717,7 @@ virDomainCputuneDefFormat(virBufferPtr buf,
 
     for (i = 0; i < def->maxvcpus; i++) {
         char *cpumask;
-        virDomainVcpuInfoPtr vcpu = def->vcpus + i;
+        virDomainVcpuDefPtr vcpu = def->vcpus + i;
 
         if (!vcpu->cpumask)
             continue;

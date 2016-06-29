@@ -2284,7 +2284,7 @@ prlsdkCheckUnsupportedParams(PRL_HANDLE sdkdom, virDomainDefPtr def)
     }
 
     for (i = 0; i < virDomainDefGetVcpusMax(def); i++) {
-        virDomainVcpuInfoPtr vcpu = virDomainDefGetVcpu(def, i);
+        virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(def, i);
 
         if (vcpu->cpumask &&
             !virBitmapEqual(def->cpumask, vcpu->cpumask)) {
