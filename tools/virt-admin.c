@@ -1371,6 +1371,11 @@ main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+    if (virAdmInitialize() < 0) {
+        vshError(ctl, "%s", _("Failed to initialize libvirt"));
+        return EXIT_FAILURE;
+    }
+
     virFileActivateDirOverride(argv[0]);
 
     if (!vshInit(ctl, cmdGroups, NULL))

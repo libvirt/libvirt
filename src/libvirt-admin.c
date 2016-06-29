@@ -81,9 +81,16 @@ virAdmGlobalInit(void)
  *
  * Initialize the library.
  *
+ * This method is automatically invoked by virAdmConnectOpen() API. Therefore,
+ * in most cases it is unnecessary to call this method manually, unless an
+ * event loop should be set up by calling virEventRegisterImpl() or the error
+ * reporting of the first connection attempt with virSetErrorFunc() should be
+ * altered prior to setting up connections. If the latter is the case, it is
+ * necessary for the application to call virAdmInitialize.
+ *
  * Returns 0 in case of success, -1 in case of error
  */
-static int
+int
 virAdmInitialize(void)
 {
     if (virOnce(&virAdmGlobalOnce, virAdmGlobalInit) < 0)
