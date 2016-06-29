@@ -33,6 +33,8 @@ INCLUDES = \
 	-I$(top_srcdir)/src/conf \
 	$(GETTEXT_CPPFLAGS)
 
+WARN_CFLAGS += $(RELAXED_FRAME_LIMIT_CFLAGS)
+
 AM_CFLAGS = \
 	-Dabs_builddir="\"$(abs_builddir)\"" \
 	-Dabs_topbuilddir="\"$(abs_topbuilddir)\"" \

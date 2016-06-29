@@ -37,6 +37,8 @@ INCLUDES =	-I../gnulib/lib					\
 		-Dabs_topsrcdir="\"$(abs_topsrcdir)\""		\
 		$(GETTEXT_CPPFLAGS)
 
+WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
+
 AM_CFLAGS =	$(LIBXML_CFLAGS)				\
 		$(WARN_CFLAGS)					\
 		$(LOCK_CHECKING_CFLAGS)				\
