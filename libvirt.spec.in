@@ -302,7 +302,11 @@ BuildRequires: yajl-devel
 BuildRequires: sanlock-devel >= 2.4
 %endif
 BuildRequires: libpcap-devel
+%if 0%{?rhel} && 0%{?rhel} < 7
+BuildRequires: libnl-devel
+%else
 BuildRequires: libnl3-devel
+%endif
 BuildRequires: avahi-devel
 BuildRequires: libselinux-devel
 BuildRequires: dnsmasq >= 2.41
