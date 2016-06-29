@@ -3952,7 +3952,8 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     time_t now = time(NULL);
-    char expire_time [64];
+    const char *expire;
+    char *validTo = NULL;
     const char *connected = NULL;
     const char *password;
     int ret = -1;
@@ -3983,19 +3984,18 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
     if (ret != 0)
         goto end_job;
 
-    if (password[0] == '\0') {
-        snprintf(expire_time, sizeof(expire_time), "now");
+    if (password[0] == '\0' ||
+        (auth->expires && auth->validTo <= now)) {
+        expire = "now";
     } else if (auth->expires) {
-        time_t lifetime = auth->validTo - now;
-        if (lifetime <= 0)
-            snprintf(expire_time, sizeof(expire_time), "now");
-        else
-            snprintf(expire_time, sizeof(expire_time), "%lu", (long unsigned)auth->validTo);
+        if (virAsprintf(&validTo, "%lu", (unsigned long) auth->validTo) < 0)
+            goto end_job;
+        expire = validTo;
     } else {
-        snprintf(expire_time, sizeof(expire_time), "never");
+        expire = "never";
     }
 
-    ret = qemuMonitorExpirePassword(priv->mon, type, expire_time);
+    ret = qemuMonitorExpirePassword(priv->mon, type, expire);
 
     if (ret == -2) {
         /* XXX we could fake this with a timer */
@@ -4012,6 +4012,7 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
  cleanup:
+    VIR_FREE(validTo);
     virObjectUnref(cfg);
     return ret;
 }
