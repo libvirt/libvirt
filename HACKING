@@ -23,18 +23,10 @@ libvirt-python) online <http://libvirt.org/git/>.
 join the appropriate language team. The libvirt release process automatically
 pulls the latest version of each translation file from zanata.
 
-(4) Post patches in unified diff format, with git rename detection enabled. You
+(4) Post patches using "git send-email", with git rename detection enabled. You
 need a one-time setup of:
 
   git config diff.renames true
-
-After that, a command similar to this should work:
-
-  diff -urp libvirt.orig/ libvirt.modified/ > libvirt-myfeature.patch
-
-or:
-
-  git diff > libvirt-myfeature.patch
 
 Also, for code motion patches, you may find that "git diff --patience"
 provides an easier-to-read patch. However, the usual workflow of libvirt
