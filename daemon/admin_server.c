@@ -221,7 +221,7 @@ adminClientGetInfo(virNetServerClientPtr client,
     int ret = -1;
     int maxparams = 0;
     bool readonly;
-    const char *sock_addr = NULL;
+    char *sock_addr = NULL;
     const char *attr = NULL;
     virTypedParameterPtr tmpparams = NULL;
     virIdentityPtr identity = NULL;
@@ -300,6 +300,7 @@ adminClientGetInfo(virNetServerClientPtr client,
 
  cleanup:
     virObjectUnref(identity);
+    VIR_FREE(sock_addr);
     return ret;
 }
 

@@ -1606,19 +1606,23 @@ virNetServerClientGetTransport(virNetServerClientPtr client)
 
 int
 virNetServerClientGetInfo(virNetServerClientPtr client,
-                          bool *readonly, const char **sock_addr,
+                          bool *readonly, char **sock_addr,
                           virIdentityPtr *identity)
 {
     int ret = -1;
+    const char *addr;
 
     virObjectLock(client);
     *readonly = client->readonly;
 
-    if (!(*sock_addr = virNetServerClientRemoteAddrStringURI(client))) {
+    if (!(addr = virNetServerClientRemoteAddrStringURI(client))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("No network socket associated with client"));
         goto cleanup;
     }
+
+    if (VIR_STRDUP(*sock_addr, addr) < 0)
+        goto cleanup;
 
     if (!client->identity) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

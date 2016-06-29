@@ -149,7 +149,7 @@ bool virNetServerClientNeedAuth(virNetServerClientPtr client);
 
 int virNetServerClientGetTransport(virNetServerClientPtr client);
 int virNetServerClientGetInfo(virNetServerClientPtr client,
-                              bool *readonly, const char **sock_addr,
+                              bool *readonly, char **sock_addr,
                               virIdentityPtr *identity);
 
 #endif /* __VIR_NET_SERVER_CLIENT_H__ */
