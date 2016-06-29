@@ -274,17 +274,6 @@ qemuVirCommandGetDevSet(virCommandPtr cmd, int fd)
 }
 
 
-char *qemuDeviceDriveHostAlias(virDomainDiskDefPtr disk)
-{
-    char *ret;
-
-    if (virAsprintf(&ret, "%s%s",
-                    QEMU_DRIVE_HOST_PREFIX, disk->info.alias) < 0)
-        return NULL;
-    return ret;
-}
-
-
 static int
 qemuBuildDeviceAddressStr(virBufferPtr buf,
                           const virDomainDef *domainDef,

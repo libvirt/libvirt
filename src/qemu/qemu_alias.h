@@ -30,6 +30,8 @@
 # include "qemu_domain.h"
 # include "qemu_domain_address.h"
 
+# define QEMU_DRIVE_HOST_PREFIX "drive-"
+
 int qemuAssignDeviceChrAlias(virDomainDefPtr def,
                              virDomainChrDefPtr chr,
                              ssize_t idx);

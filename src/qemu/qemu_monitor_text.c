@@ -31,7 +31,7 @@
 #include <string.h>
 
 #include "qemu_monitor_text.h"
-#include "qemu_command.h"
+#include "qemu_alias.h"
 #include "c-ctype.h"
 #include "c-strcasestr.h"
 #include "viralloc.h"

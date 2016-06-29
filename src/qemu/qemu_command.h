@@ -37,7 +37,6 @@
 /* Config type for XML import/export conversions */
 # define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"
 
-# define QEMU_DRIVE_HOST_PREFIX "drive-"
 # define QEMU_FSDEV_HOST_PREFIX "fsdev-"
 
 # define QEMU_BLOCK_IOTUNE_MAX 1000000000000000LL

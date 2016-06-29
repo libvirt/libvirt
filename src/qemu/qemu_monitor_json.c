@@ -33,7 +33,7 @@
 
 #include "qemu_monitor_text.h"
 #include "qemu_monitor_json.h"
-#include "qemu_command.h"
+#include "qemu_alias.h"
 #include "qemu_parse_command.h"
 #include "qemu_capabilities.h"
 #include "viralloc.h"
