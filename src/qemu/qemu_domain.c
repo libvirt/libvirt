@@ -5355,10 +5355,6 @@ qemuDomainRequiresMemLock(virDomainDefPtr def)
     if (def->mem.locked)
         return true;
 
-    /* ppc64 domains need to lock some memory even when VFIO is not used */
-    if (ARCH_IS_PPC64(def->os.arch))
-        return true;
-
     for (i = 0; i < def->nhostdevs; i++) {
         virDomainHostdevDefPtr dev = def->hostdevs[i];
 
@@ -5367,6 +5363,10 @@ qemuDomainRequiresMemLock(virDomainDefPtr def)
             dev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
             return true;
     }
+
+    /* ppc64 KVM domains need to lock some memory even when VFIO is not used */
+    if (ARCH_IS_PPC64(def->os.arch) && def->virtType == VIR_DOMAIN_VIRT_KVM)
+        return true;
 
     return false;
 }
