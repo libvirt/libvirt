@@ -312,6 +312,19 @@ struct _qemuDomainDiskPrivate {
 # define QEMU_DOMAIN_HOSTDEV_PRIVATE(hostdev)	\
     ((qemuDomainHostdevPrivatePtr) (hostdev)->privateData)
 
+
+typedef struct _qemuDomainVcpuPrivate qemuDomainVcpuPrivate;
+typedef qemuDomainVcpuPrivate *qemuDomainVcpuPrivatePtr;
+struct _qemuDomainVcpuPrivate {
+    virObject parent;
+
+    int dummy;
+};
+
+# define QEMU_DOMAIN_VCPU_PRIVATE(vcpu)    \
+    ((qemuDomainVcpuPrivatePtr) (vcpu)->privateData)
+
+
 struct qemuDomainDiskInfo {
     bool removable;
     bool locked;
