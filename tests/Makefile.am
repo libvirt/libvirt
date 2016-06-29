@@ -76,7 +76,6 @@ GNULIB_LIBS = \
        ../gnulib/lib/libgnu.la
 
 LDADDS = \
-	$(WARN_CFLAGS) \
 	$(NO_INDIRECT_LDFLAGS) \
 	$(PROBES_O) \
 	$(GNULIB_LIBS) \
@@ -934,7 +933,6 @@ commandtest_LDADD = $(LDADDS)
 commandhelper_SOURCES = \
 	commandhelper.c
 commandhelper_LDADD = \
-	$(WARN_CFLAGS) \
 	$(NO_INDIRECT_LDFLAGS) \
 	$(PROBES_O) \
 	../src/libvirt_util.la \
