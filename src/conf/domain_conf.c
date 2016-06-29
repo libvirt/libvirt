@@ -1307,12 +1307,23 @@ void virDomainLeaseDefFree(virDomainLeaseDefPtr def)
 
 
 static virDomainVcpuDefPtr
-virDomainVcpuDefNew(void)
+virDomainVcpuDefNew(virDomainXMLOptionPtr xmlopt)
 {
-    virDomainVcpuDefPtr ret;
+    virObjectPtr priv = NULL;
+    virDomainVcpuDefPtr ret = NULL;
 
-    ignore_value(VIR_ALLOC(ret));
+    if (xmlopt && xmlopt->privateData.vcpuNew &&
+        !(priv = xmlopt->privateData.vcpuNew()))
+        goto cleanup;
 
+    if (VIR_ALLOC(ret) < 0)
+        goto cleanup;
+
+    ret->privateData = priv;
+    priv = NULL;
+
+ cleanup:
+    virObjectUnref(priv);
     return ret;
 }
 
@@ -1325,13 +1336,15 @@ virDomainVcpuDefFree(virDomainVcpuDefPtr info)
 
     virBitmapFree(info->cpumask);
     info->cpumask = NULL;
+    virObjectUnref(info->privateData);
     VIR_FREE(info);
 }
 
 
 int
 virDomainDefSetVcpusMax(virDomainDefPtr def,
-                        unsigned int maxvcpus)
+                        unsigned int maxvcpus,
+                        virDomainXMLOptionPtr xmlopt)
 {
     size_t oldmax = def->maxvcpus;
     size_t i;
@@ -1344,7 +1357,7 @@ virDomainDefSetVcpusMax(virDomainDefPtr def,
             return -1;
 
         for (i = oldmax; i < def->maxvcpus; i++) {
-            if (!(def->vcpus[i] = virDomainVcpuDefNew()))
+            if (!(def->vcpus[i] = virDomainVcpuDefNew(xmlopt)))
                 return -1;
         }
     } else {
@@ -15465,7 +15478,8 @@ virDomainIOThreadSchedParse(xmlNodePtr node,
 
 static int
 virDomainVcpuParse(virDomainDefPtr def,
-                   xmlXPathContextPtr ctxt)
+                   xmlXPathContextPtr ctxt,
+                   virDomainXMLOptionPtr xmlopt)
 {
     int n;
     char *tmp = NULL;
@@ -15483,7 +15497,7 @@ virDomainVcpuParse(virDomainDefPtr def,
         maxvcpus = 1;
     }
 
-    if (virDomainDefSetVcpusMax(def, maxvcpus) < 0)
+    if (virDomainDefSetVcpusMax(def, maxvcpus, xmlopt) < 0)
         goto cleanup;
 
     if ((n = virXPathUInt("string(./vcpu[1]/@current)", ctxt, &vcpus)) < 0) {
@@ -15952,7 +15966,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                                   &def->mem.swap_hard_limit) < 0)
         goto error;
 
-    if (virDomainVcpuParse(def, ctxt) < 0)
+    if (virDomainVcpuParse(def, ctxt, xmlopt) < 0)
         goto error;
 
     /* Optional - iothreads */

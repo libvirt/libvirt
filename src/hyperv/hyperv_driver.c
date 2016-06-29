@@ -876,7 +876,8 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     def->mem.cur_balloon = memorySettingData->data->VirtualQuantity * 1024; /* megabyte to kilobyte */
 
     if (virDomainDefSetVcpusMax(def,
-                                processorSettingData->data->VirtualQuantity) < 0)
+                                processorSettingData->data->VirtualQuantity,
+                                NULL) < 0)
         goto cleanup;
 
     if (virDomainDefSetVcpus(def,

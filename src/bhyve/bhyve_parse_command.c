@@ -663,7 +663,7 @@ bhyveParseBhyveCommandLine(virDomainDefPtr def,
                                _("Failed to parse number of vCPUs"));
                 goto error;
             }
-            if (virDomainDefSetVcpusMax(def, vcpus) < 0)
+            if (virDomainDefSetVcpusMax(def, vcpus, xmlopt) < 0)
                 goto error;
             if (virDomainDefSetVcpus(def, vcpus) < 0)
                 goto error;

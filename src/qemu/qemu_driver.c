@@ -4849,7 +4849,7 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                 goto endjob;
             }
 
-            if (virDomainDefSetVcpusMax(persistentDef, nvcpus) < 0)
+            if (virDomainDefSetVcpusMax(persistentDef, nvcpus, driver->xmlopt) < 0)
                 goto endjob;
         } else {
             if (virDomainDefSetVcpus(persistentDef, nvcpus) < 0)

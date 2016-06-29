@@ -3885,7 +3885,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     virDomainDefSetMemoryTotal(def, memorySize * 1024);
 
     gVBoxAPI.UIMachine.GetCPUCount(machine, &CPUCount);
-    if (virDomainDefSetVcpusMax(def, CPUCount) < 0)
+    if (virDomainDefSetVcpusMax(def, CPUCount, data->xmlopt) < 0)
         goto cleanup;
 
     if (virDomainDefSetVcpus(def, CPUCount) < 0)
@@ -6044,7 +6044,7 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
         def->dom->os.type = VIR_DOMAIN_OSTYPE_HVM;
         def->dom->os.arch = virArchFromHost();
         gVBoxAPI.UIMachine.GetCPUCount(machine, &CPUCount);
-        if (virDomainDefSetVcpusMax(def->dom, CPUCount) < 0)
+        if (virDomainDefSetVcpusMax(def->dom, CPUCount, data->xmlopt) < 0)
             goto cleanup;
 
         if (virDomainDefSetVcpus(def->dom, CPUCount) < 0)

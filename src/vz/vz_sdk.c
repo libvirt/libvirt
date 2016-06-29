@@ -1309,7 +1309,8 @@ prlsdkConvertDomainState(VIRTUAL_MACHINE_STATE domainState,
 
 static int
 prlsdkConvertCpuInfo(PRL_HANDLE sdkdom,
-                     virDomainDefPtr def)
+                     virDomainDefPtr def,
+                     virDomainXMLOptionPtr xmlopt)
 {
     char *buf;
     int hostcpus;
@@ -1327,7 +1328,7 @@ prlsdkConvertCpuInfo(PRL_HANDLE sdkdom,
     if (cpuCount > hostcpus)
         cpuCount = hostcpus;
 
-    if (virDomainDefSetVcpusMax(def, cpuCount) < 0)
+    if (virDomainDefSetVcpusMax(def, cpuCount, xmlopt) < 0)
         goto cleanup;
 
     if (virDomainDefSetVcpus(def, cpuCount) < 0)
@@ -1706,7 +1707,7 @@ prlsdkLoadDomain(vzDriverPtr driver, virDomainObjPtr dom)
                                                      convert to Kbytes */
     def->mem.cur_balloon = ram << 10;
 
-    if (prlsdkConvertCpuInfo(sdkdom, def) < 0)
+    if (prlsdkConvertCpuInfo(sdkdom, def, driver->xmlopt) < 0)
         goto error;
 
     if (prlsdkConvertCpuMode(sdkdom, def) < 0)

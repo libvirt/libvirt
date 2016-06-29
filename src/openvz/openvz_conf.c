@@ -572,7 +572,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
         if (ret == 0 || vcpus == 0)
             vcpus = openvzGetNodeCPUs();
 
-        if (virDomainDefSetVcpusMax(def, vcpus) < 0)
+        if (virDomainDefSetVcpusMax(def, vcpus, driver->xmlopt) < 0)
             goto cleanup;
 
         if (virDomainDefSetVcpus(def, vcpus) < 0)

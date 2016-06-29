@@ -2336,6 +2336,7 @@ static int
 testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
                         unsigned int flags)
 {
+    testDriverPtr driver = domain->conn->privateData;
     virDomainObjPtr privdom = NULL;
     virDomainDefPtr def;
     virDomainDefPtr persistentDef;
@@ -2383,7 +2384,8 @@ testDomainSetVcpusFlags(virDomainPtr domain, unsigned int nrCpus,
 
     if (persistentDef) {
         if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
-            if (virDomainDefSetVcpusMax(persistentDef, nrCpus) < 0)
+            if (virDomainDefSetVcpusMax(persistentDef, nrCpus,
+                                        driver->xmlopt) < 0)
                 goto cleanup;
         } else {
             if (virDomainDefSetVcpus(persistentDef, nrCpus) < 0)

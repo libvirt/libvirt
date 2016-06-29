@@ -1020,7 +1020,7 @@ lxcParseConfigString(const char *config,
 
     /* Value not handled by the LXC driver, setting to
      * minimum required to make XML parsing pass */
-    if (virDomainDefSetVcpusMax(vmdef, 1) < 0)
+    if (virDomainDefSetVcpusMax(vmdef, 1, xmlopt) < 0)
         goto error;
 
     if (virDomainDefSetVcpus(vmdef, 1) < 0)

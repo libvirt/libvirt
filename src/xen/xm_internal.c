@@ -700,7 +700,7 @@ xenXMDomainSetVcpusFlags(virConnectPtr conn,
     }
 
     if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
-        if (virDomainDefSetVcpusMax(entry->def, vcpus) < 0)
+        if (virDomainDefSetVcpusMax(entry->def, vcpus, priv->xmlopt) < 0)
             goto cleanup;
     } else {
         if (virDomainDefSetVcpus(entry->def, vcpus) < 0)

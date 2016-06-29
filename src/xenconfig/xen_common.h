@@ -59,7 +59,8 @@ int xenConfigCopyStringOpt(virConfPtr conf,
 int xenParseConfigCommon(virConfPtr conf,
                          virDomainDefPtr def,
                          virCapsPtr caps,
-                         const char *nativeFormat);
+                         const char *nativeFormat,
+                         virDomainXMLOptionPtr xmlopt);
 
 int xenFormatConfigCommon(virConfPtr conf,
                           virDomainDefPtr def,

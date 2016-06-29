@@ -447,7 +447,8 @@ xenParseXM(virConfPtr conf,
     def->virtType = VIR_DOMAIN_VIRT_XEN;
     def->id = -1;
 
-    if (xenParseConfigCommon(conf, def, caps, XEN_CONFIG_FORMAT_XM) < 0)
+    if (xenParseConfigCommon(conf, def, caps, XEN_CONFIG_FORMAT_XM,
+                             xmlopt) < 0)
         goto cleanup;
 
     if (xenParseXMOS(conf, def) < 0)

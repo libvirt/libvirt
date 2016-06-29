@@ -1505,7 +1505,7 @@ xenapiDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 
     vcpus = xenapiDomainGetMaxVcpus(dom);
 
-    if (virDomainDefSetVcpusMax(defPtr, vcpus) < 0)
+    if (virDomainDefSetVcpusMax(defPtr, vcpus, priv->xmlopt) < 0)
         goto error;
 
     if (virDomainDefSetVcpus(defPtr, vcpus) < 0)

@@ -70,7 +70,8 @@ static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid);
 static int openvzConnectGetMaxVcpus(virConnectPtr conn, const char *type);
 static int openvzDomainGetMaxVcpus(virDomainPtr dom);
 static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
-                                        unsigned int nvcpus);
+                                        unsigned int nvcpus,
+                                        virDomainXMLOptionPtr xmlopt);
 static int openvzDomainSetMemoryInternal(virDomainObjPtr vm,
                                          unsigned long long memory);
 static int openvzGetVEStatus(virDomainObjPtr vm, int *status, int *reason);
@@ -1032,7 +1033,8 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
         goto cleanup;
     }
     if (virDomainDefGetVcpusMax(vm->def)) {
-        if (openvzDomainSetVcpusInternal(vm, virDomainDefGetVcpusMax(vm->def)) < 0) {
+        if (openvzDomainSetVcpusInternal(vm, virDomainDefGetVcpusMax(vm->def),
+                                         driver->xmlopt) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not set number of vCPUs"));
              goto cleanup;
@@ -1130,7 +1132,8 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
 
     if (virDomainDefGetVcpusMax(vm->def) > 0) {
-        if (openvzDomainSetVcpusInternal(vm, virDomainDefGetVcpusMax(vm->def)) < 0) {
+        if (openvzDomainSetVcpusInternal(vm, virDomainDefGetVcpusMax(vm->def),
+                                         driver->xmlopt) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not set number of vCPUs"));
             goto cleanup;
@@ -1347,7 +1350,8 @@ static int openvzDomainGetMaxVcpus(virDomainPtr dom)
 }
 
 static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
-                                        unsigned int nvcpus)
+                                        unsigned int nvcpus,
+                                        virDomainXMLOptionPtr xmlopt)
 {
     char        str_vcpus[32];
     const char *prog[] = { VZCTL, "--quiet", "set", PROGRAM_SENTINEL,
@@ -1364,7 +1368,7 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
     if (virRun(prog, NULL) < 0)
         return -1;
 
-    if (virDomainDefSetVcpusMax(vm->def, nvcpus) < 0)
+    if (virDomainDefSetVcpusMax(vm->def, nvcpus, xmlopt) < 0)
         return -1;
 
     if (virDomainDefSetVcpus(vm->def, nvcpus) < 0)
@@ -1402,7 +1406,7 @@ static int openvzDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         goto cleanup;
     }
 
-    if (openvzDomainSetVcpusInternal(vm, nvcpus) < 0) {
+    if (openvzDomainSetVcpusInternal(vm, nvcpus, driver->xmlopt) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not set number of vCPUs"));
         goto cleanup;

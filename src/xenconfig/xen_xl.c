@@ -594,7 +594,8 @@ xenParseXL(virConfPtr conf,
     def->virtType = VIR_DOMAIN_VIRT_XEN;
     def->id = -1;
 
-    if (xenParseConfigCommon(conf, def, caps, XEN_CONFIG_FORMAT_XL) < 0)
+    if (xenParseConfigCommon(conf, def, caps, XEN_CONFIG_FORMAT_XL,
+                             xmlopt) < 0)
         goto cleanup;
 
     if (xenParseXLOS(conf, def, caps) < 0)

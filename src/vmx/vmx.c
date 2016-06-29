@@ -1457,7 +1457,7 @@ virVMXParseConfig(virVMXContext *ctx,
         goto cleanup;
     }
 
-    if (virDomainDefSetVcpusMax(def, numvcpus) < 0)
+    if (virDomainDefSetVcpusMax(def, numvcpus, xmlopt) < 0)
         goto cleanup;
 
     if (virDomainDefSetVcpus(def, numvcpus) < 0)

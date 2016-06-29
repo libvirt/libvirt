@@ -3296,7 +3296,7 @@ phypDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         goto err;
     }
 
-    if (virDomainDefSetVcpusMax(&def, vcpus) < 0)
+    if (virDomainDefSetVcpusMax(&def, vcpus, phyp_driver->xmlopt) < 0)
         goto err;
 
     if (virDomainDefSetVcpus(&def, vcpus) < 0)

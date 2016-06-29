@@ -557,7 +557,7 @@ libxlAddDom0(libxlDriverPrivatePtr driver)
     def = NULL;
 
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, VIR_DOMAIN_RUNNING_BOOTED);
-    if (virDomainDefSetVcpusMax(vm->def, d_info.vcpu_max_id + 1))
+    if (virDomainDefSetVcpusMax(vm->def, d_info.vcpu_max_id + 1, driver->xmlopt))
         goto cleanup;
 
     if (virDomainDefSetVcpus(vm->def, d_info.vcpu_online) < 0)
@@ -2182,7 +2182,7 @@ libxlDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     switch (flags) {
     case VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_CONFIG:
-        if (virDomainDefSetVcpusMax(def, nvcpus) < 0)
+        if (virDomainDefSetVcpusMax(def, nvcpus, driver->xmlopt) < 0)
             goto cleanup;
         break;
 

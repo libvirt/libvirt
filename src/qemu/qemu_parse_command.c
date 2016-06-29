@@ -1659,7 +1659,8 @@ qemuParseCommandLineMem(virDomainDefPtr dom,
 
 static int
 qemuParseCommandLineSmp(virDomainDefPtr dom,
-                        const char *val)
+                        const char *val,
+                        virDomainXMLOptionPtr xmlopt)
 {
     unsigned int sockets = 0;
     unsigned int cores = 0;
@@ -1701,7 +1702,7 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
     if (maxcpus == 0)
         maxcpus = vcpus;
 
-    if (virDomainDefSetVcpusMax(dom, maxcpus) < 0)
+    if (virDomainDefSetVcpusMax(dom, maxcpus, xmlopt) < 0)
         goto error;
 
     if (virDomainDefSetVcpus(dom, vcpus) < 0)
@@ -1819,7 +1820,7 @@ qemuParseCommandLine(virCapsPtr caps,
     def->id = -1;
     def->mem.cur_balloon = 64 * 1024;
     virDomainDefSetMemoryTotal(def, def->mem.cur_balloon);
-    if (virDomainDefSetVcpusMax(def, 1) < 0)
+    if (virDomainDefSetVcpusMax(def, 1, xmlopt) < 0)
         goto error;
     if (virDomainDefSetVcpus(def, 1) < 0)
         goto error;
@@ -1899,7 +1900,7 @@ qemuParseCommandLine(virCapsPtr caps,
                 goto error;
         } else if (STREQ(arg, "-smp")) {
             WANT_VALUE();
-            if (qemuParseCommandLineSmp(def, val) < 0)
+            if (qemuParseCommandLineSmp(def, val, xmlopt) < 0)
                 goto error;
         } else if (STREQ(arg, "-uuid")) {
             WANT_VALUE();
