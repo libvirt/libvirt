@@ -31,6 +31,8 @@ INCLUDES = \
 
 CLEANFILES =
 
+WARN_CFLAGS += $(STRICT_FRAME_LIMIT_CFLAGS)
+
 DAEMON_GENERATED =			\
 		remote_dispatch.h	\
 		lxc_dispatch.h		\
