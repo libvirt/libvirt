@@ -4403,8 +4403,7 @@ qemuDomainStorageAlias(const char *device, int depth)
 {
     char *alias;
 
-    if (STRPREFIX(device, QEMU_DRIVE_HOST_PREFIX))
-        device += strlen(QEMU_DRIVE_HOST_PREFIX);
+    device = qemuAliasDiskDriveSkipPrefix(device);
 
     if (!depth)
         ignore_value(VIR_STRDUP(alias, device));

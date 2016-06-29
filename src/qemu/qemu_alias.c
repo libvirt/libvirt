@@ -29,6 +29,8 @@
 #include "virstring.h"
 #include "network/bridge_driver.h"
 
+#define QEMU_DRIVE_HOST_PREFIX "drive-"
+
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 VIR_LOG_INIT("qemu.qemu_alias");
@@ -473,6 +475,21 @@ qemuAliasFromDisk(const virDomainDiskDef *disk)
                              disk->info.alias));
 
     return ret;
+}
+
+
+/* qemuAliasDiskDriveSkipPrefix:
+ * @dev_name: Pointer to a const char string
+ *
+ * If the QEMU_DRIVE_HOST_PREFIX exists in the input string, then
+ * increment the pointer and return it
+ */
+const char *
+qemuAliasDiskDriveSkipPrefix(const char *dev_name)
+{
+    if (STRPREFIX(dev_name, QEMU_DRIVE_HOST_PREFIX))
+        dev_name += strlen(QEMU_DRIVE_HOST_PREFIX);
+    return dev_name;
 }
 
 

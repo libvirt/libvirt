@@ -30,8 +30,6 @@
 # include "qemu_domain.h"
 # include "qemu_domain_address.h"
 
-# define QEMU_DRIVE_HOST_PREFIX "drive-"
-
 int qemuAssignDeviceChrAlias(virDomainDefPtr def,
                              virDomainChrDefPtr chr,
                              ssize_t idx);
@@ -68,6 +66,8 @@ int qemuDomainDeviceAliasIndex(const virDomainDeviceInfo *info,
                                const char *prefix);
 
 char *qemuAliasFromDisk(const virDomainDiskDef *disk);
+
+const char *qemuAliasDiskDriveSkipPrefix(const char *dev_name);
 
 char *qemuDomainGetMasterKeyAlias(void);
 

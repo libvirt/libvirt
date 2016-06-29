@@ -753,8 +753,7 @@ int qemuMonitorTextGetBlockInfo(qemuMonitorPtr mon,
     p = reply;
 
     while (*p) {
-        if (STRPREFIX(p, QEMU_DRIVE_HOST_PREFIX))
-            p += strlen(QEMU_DRIVE_HOST_PREFIX);
+        p = (char *)qemuAliasDiskDriveSkipPrefix(p);
 
         eol = strchr(p, '\n');
         if (!eol)
@@ -839,7 +838,7 @@ qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
 {
     qemuBlockStatsPtr stats = NULL;
     char *info = NULL;
-    char *dev_name;
+    const char *dev_name;
     char **lines = NULL;
     char **values = NULL;
     char *line;
@@ -901,8 +900,7 @@ qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
         *line = '\0';
         line += 2;
 
-        if (STRPREFIX(dev_name, QEMU_DRIVE_HOST_PREFIX))
-            dev_name += strlen(QEMU_DRIVE_HOST_PREFIX);
+        dev_name = qemuAliasDiskDriveSkipPrefix(dev_name);
 
         if (!(values = virStringSplit(line, " ", 0)))
             goto cleanup;

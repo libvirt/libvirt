@@ -1800,8 +1800,7 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
             goto cleanup;
         }
 
-        if (STRPREFIX(thisdev, QEMU_DRIVE_HOST_PREFIX))
-            thisdev += strlen(QEMU_DRIVE_HOST_PREFIX);
+        thisdev = qemuAliasDiskDriveSkipPrefix(thisdev);
 
         if (VIR_ALLOC(info) < 0)
             goto cleanup;
@@ -4195,8 +4194,7 @@ qemuMonitorJSONParseBlockJobInfo(virHashTablePtr blockJobs,
                        _("entry was missing 'device'"));
         return -1;
     }
-    if (STRPREFIX(device, QEMU_DRIVE_HOST_PREFIX))
-        device += strlen(QEMU_DRIVE_HOST_PREFIX);
+    device = qemuAliasDiskDriveSkipPrefix(device);
 
     if (VIR_ALLOC(info) < 0 ||
         virHashAddEntry(blockJobs, device, info) < 0) {
