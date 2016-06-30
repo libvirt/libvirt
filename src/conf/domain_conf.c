@@ -24936,7 +24936,7 @@ virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
         if (virTypedParameterAssign(&(params[(*nparams)++]), name,             \
                                     VIR_TYPED_PARAM_STRING, data) < 0)         \
             goto error;                                                        \
-        VIR_FREE(data);                                                        \
+        data = NULL;                                                           \
     }
 
     /* blkiotune.device_weight */
