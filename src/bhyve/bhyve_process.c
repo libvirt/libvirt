@@ -165,38 +165,41 @@ virBhyveProcessStart(virConnectPtr conn,
     virCommandSetPidFile(cmd, privconn->pidfile);
     virCommandDaemonize(cmd);
 
-    /* Now bhyve command is constructed, meaning the
-     * domain is ready to be started, so we can build
-     * and execute bhyveload command */
-    rc = virBhyveFormatDevMapFile(vm->def->name, &devmap_file);
-    if (rc < 0)
-        goto cleanup;
+    if (vm->def->os.loader == NULL) {
+        /* Now bhyve command is constructed, meaning the
+         * domain is ready to be started, so we can build
+         * and execute bhyveload command */
 
-    if (!(load_cmd = virBhyveProcessBuildLoadCmd(conn, vm->def, devmap_file,
-                                                 &devicemap)))
-        goto cleanup;
-    virCommandSetOutputFD(load_cmd, &logfd);
-    virCommandSetErrorFD(load_cmd, &logfd);
-
-    if (devicemap != NULL) {
-        rc = virFileWriteStr(devmap_file, devicemap, 0644);
-        if (rc) {
-            virReportSystemError(errno,
-                                 _("Cannot write device.map '%s'"),
-                                 devmap_file);
+        rc = virBhyveFormatDevMapFile(vm->def->name, &devmap_file);
+        if (rc < 0)
             goto cleanup;
+
+        if (!(load_cmd = virBhyveProcessBuildLoadCmd(conn, vm->def, devmap_file,
+                                                     &devicemap)))
+            goto cleanup;
+        virCommandSetOutputFD(load_cmd, &logfd);
+        virCommandSetErrorFD(load_cmd, &logfd);
+
+        if (devicemap != NULL) {
+            rc = virFileWriteStr(devmap_file, devicemap, 0644);
+            if (rc) {
+                virReportSystemError(errno,
+                                     _("Cannot write device.map '%s'"),
+                                     devmap_file);
+                goto cleanup;
+            }
         }
+
+        /* Log generated command line */
+        virCommandWriteArgLog(load_cmd, logfd);
+        if ((pos = lseek(logfd, 0, SEEK_END)) < 0)
+            VIR_WARN("Unable to seek to end of logfile: %s",
+                     virStrerror(errno, ebuf, sizeof(ebuf)));
+
+        VIR_DEBUG("Loading domain '%s'", vm->def->name);
+        if (virCommandRun(load_cmd, NULL) < 0)
+            goto cleanup;
     }
-
-    /* Log generated command line */
-    virCommandWriteArgLog(load_cmd, logfd);
-    if ((pos = lseek(logfd, 0, SEEK_END)) < 0)
-        VIR_WARN("Unable to seek to end of logfile: %s",
-                 virStrerror(errno, ebuf, sizeof(ebuf)));
-
-    VIR_DEBUG("Loading domain '%s'", vm->def->name);
-    if (virCommandRun(load_cmd, NULL) < 0)
-        goto cleanup;
 
     /* Now we can start the domain */
     VIR_DEBUG("Starting domain '%s'", vm->def->name);

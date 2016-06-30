@@ -163,7 +163,6 @@ bhyveBuildConsoleArgStr(const virDomainDef *def, virCommandPtr cmd)
         return -1;
     }
 
-    virCommandAddArgList(cmd, "-s", "1,lpc", NULL);
     virCommandAddArg(cmd, "-l");
     virCommandAddArgFormat(cmd, "com%d,%s",
                            chr->target.port + 1, chr->source->data.file.path);
@@ -283,6 +282,14 @@ bhyveBuildVirtIODiskArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+bhyveBuildLPCArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
+                    virCommandPtr cmd)
+{
+    virCommandAddArgList(cmd, "-s", "1,lpc", NULL);
+    return 0;
+}
+
 virCommandPtr
 virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
                              virDomainDefPtr def, bool dryRun)
@@ -296,6 +303,7 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
      *            vm0
      */
     size_t i;
+    bool add_lpc = false;
 
     virCommandPtr cmd = virCommandNew(BHYVE);
 
@@ -350,6 +358,21 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
     virCommandAddArg(cmd, "-P"); /* vmexit from guest on pause */
 
     virCommandAddArgList(cmd, "-s", "0:0,hostbridge", NULL);
+
+    if (def->os.bootloader == NULL &&
+        def->os.loader) {
+        if ((bhyveDriverGetCaps(conn) & BHYVE_CAP_LPC_BOOTROM)) {
+            virCommandAddArg(cmd, "-l");
+            virCommandAddArgFormat(cmd, "bootrom,%s", def->os.loader->path);
+            add_lpc = true;
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Installed bhyve binary does not support "
+                             "UEFI loader"));
+            goto error;
+        }
+    }
+
     /* Devices */
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr controller = def->controllers[i];
@@ -389,8 +412,13 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
             goto error;
         }
     }
+
+    if (add_lpc || def->nserials)
+        bhyveBuildLPCArgStr(def, cmd);
+
     if (bhyveBuildConsoleArgStr(def, cmd) < 0)
         goto error;
+
     virCommandAddArg(cmd, def->name);
 
     return cmd;

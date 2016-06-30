@@ -734,15 +734,34 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
     if (bhyveDomainAssignAddresses(def, NULL) < 0)
         goto cleanup;
 
-    if (!(loadcmd = virBhyveProcessBuildLoadCmd(conn, def, "<device.map>",
+    if (def->os.bootloader == NULL &&
+        def->os.loader) {
+
+        if ((def->os.loader->readonly != VIR_TRISTATE_BOOL_YES) ||
+            (def->os.loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Only read-only pflash is supported."));
+            goto cleanup;
+        }
+
+        if ((bhyveDriverGetCaps(conn) & BHYVE_CAP_LPC_BOOTROM) == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Installed bhyve binary does not support "
+                          "bootrom"));
+            goto cleanup;
+        }
+    } else {
+        if (!(loadcmd = virBhyveProcessBuildLoadCmd(conn, def, "<device.map>",
                                                 NULL)))
-        goto cleanup;
+            goto cleanup;
+
+        virBufferAdd(&buf, virCommandToString(loadcmd), -1);
+        virBufferAddChar(&buf, '\n');
+    }
 
     if (!(cmd = virBhyveProcessBuildBhyveCmd(conn, def, true)))
         goto cleanup;
 
-    virBufferAdd(&buf, virCommandToString(loadcmd), -1);
-    virBufferAddChar(&buf, '\n');
     virBufferAdd(&buf, virCommandToString(cmd), -1);
 
     if (virBufferCheckError(&buf) < 0)
