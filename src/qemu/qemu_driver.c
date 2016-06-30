@@ -4606,13 +4606,10 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
                          unsigned int vcpu)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainVcpuDefPtr vcpuinfo;
+    virDomainVcpuDefPtr vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu);
     int ret = -1;
     int rc;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
-
-    if (!(vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu)))
-        return -1;
 
     if (vcpuinfo->online) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -4658,13 +4655,10 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
                          unsigned int vcpu)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainVcpuDefPtr vcpuinfo;
+    virDomainVcpuDefPtr vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu);
     int ret = -1;
     int rc;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
-
-    if (!(vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu)))
-        return -1;
 
     if (!vcpuinfo->online) {
         virReportError(VIR_ERR_INVALID_ARG,
