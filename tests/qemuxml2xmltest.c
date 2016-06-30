@@ -113,7 +113,8 @@ testGetStatuXMLPrefixVcpus(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
 
     while ((vcpuid = virBitmapNextSetBit(data->activeVcpus, vcpuid)) >= 0)
-        virBufferAsprintf(buf, "<vcpu pid='%zd'/>\n", vcpuid + 3803519);
+        virBufferAsprintf(buf, "<vcpu id='%zd' pid='%zd'/>\n",
+                          vcpuid, vcpuid + 3803519);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</vcpus>\n");
