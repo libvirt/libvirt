@@ -1323,6 +1323,27 @@ qemuDomainObjPrivateFree(void *data)
 }
 
 
+static void
+qemuDomainObjPrivateXMLFormatVcpus(virBufferPtr buf,
+                                   int *vcpupids,
+                                   int nvcpupids)
+{
+    size_t i;
+
+    if (!nvcpupids)
+        return;
+
+    virBufferAddLit(buf, "<vcpus>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < nvcpupids; i++)
+        virBufferAsprintf(buf, "<vcpu pid='%d'/>\n", vcpupids[i]);
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</vcpus>\n");
+}
+
+
 static int
 qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
                               virDomainObjPtr vm)
@@ -1350,16 +1371,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
                           virDomainChrTypeToString(priv->monConfig->type));
     }
 
-
-    if (priv->nvcpupids) {
-        size_t i;
-        virBufferAddLit(buf, "<vcpus>\n");
-        virBufferAdjustIndent(buf, 2);
-        for (i = 0; i < priv->nvcpupids; i++)
-            virBufferAsprintf(buf, "<vcpu pid='%d'/>\n", priv->vcpupids[i]);
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</vcpus>\n");
-    }
+    qemuDomainObjPrivateXMLFormatVcpus(buf, priv->vcpupids, priv->nvcpupids);
 
     if (priv->qemuCaps) {
         size_t i;
@@ -1448,6 +1460,29 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
     return 0;
 }
 
+
+static int
+qemuDomainObjPrivateXMLParseVcpu(xmlNodePtr node,
+                                 unsigned int idx,
+                                 qemuDomainObjPrivatePtr priv)
+{
+    char *pidstr;
+    int ret = -1;
+
+    if (!(pidstr = virXMLPropString(node, "pid")))
+        goto cleanup;
+
+    if (virStrToLong_i(pidstr, NULL, 10, &(priv->vcpupids[idx])) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(pidstr);
+    return ret;
+}
+
+
 static int
 qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                              virDomainObjPtr vm,
@@ -1498,27 +1533,18 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
         goto error;
     }
 
-    n = virXPathNodeSet("./vcpus/vcpu", ctxt, &nodes);
-    if (n < 0)
+    if ((n = virXPathNodeSet("./vcpus/vcpu", ctxt, &nodes)) < 0)
         goto error;
-    if (n) {
-        priv->nvcpupids = n;
-        if (VIR_REALLOC_N(priv->vcpupids, priv->nvcpupids) < 0)
+
+    priv->nvcpupids = n;
+    if (VIR_REALLOC_N(priv->vcpupids, priv->nvcpupids) < 0)
+        goto error;
+
+    for (i = 0; i < n; i++) {
+        if (qemuDomainObjPrivateXMLParseVcpu(nodes[i], i, priv) < 0)
             goto error;
-
-        for (i = 0; i < n; i++) {
-            char *pidstr = virXMLPropString(nodes[i], "pid");
-            if (!pidstr)
-                goto error;
-
-            if (virStrToLong_i(pidstr, NULL, 10, &(priv->vcpupids[i])) < 0) {
-                VIR_FREE(pidstr);
-                goto error;
-            }
-            VIR_FREE(pidstr);
-        }
-        VIR_FREE(nodes);
     }
+    VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./qemuCaps/flag", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
