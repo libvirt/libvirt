@@ -33,13 +33,21 @@ struct testInfo {
     char *outActiveName;
     char *outInactiveName;
 
+    virBitmapPtr activeVcpus;
+
     virQEMUCapsPtr qemuCaps;
 };
 
 static int
-qemuXML2XMLPreFormatCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                             const void *opaque ATTRIBUTE_UNUSED)
+qemuXML2XMLActivePreFormatCallback(virDomainDefPtr def,
+                                   const void *opaque)
 {
+    struct testInfo *info = (struct testInfo *) opaque;
+
+    /* store vCPU bitmap so that the status XML can be created faithfully */
+    if (!info->activeVcpus)
+        info->activeVcpus = virDomainDefGetOnlineVcpumap(def);
+
     return 0;
 }
 
@@ -50,7 +58,8 @@ testXML2XMLActive(const void *opaque)
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt,
                                       info->inName, info->outActiveName, true,
-                                      qemuXML2XMLPreFormatCallback, opaque, 0,
+                                      qemuXML2XMLActivePreFormatCallback,
+                                      opaque, 0,
                                       TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
 }
 
@@ -62,18 +71,17 @@ testXML2XMLInactive(const void *opaque)
 
     return testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, info->inName,
                                       info->outInactiveName, false,
-                                      qemuXML2XMLPreFormatCallback, opaque, 0,
+                                      NULL, opaque, 0,
                                       TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
 }
 
 
-static const char testStatusXMLPrefix[] =
+static const char testStatusXMLPrefixHeader[] =
 "<domstatus state='running' reason='booted' pid='3803518'>\n"
 "  <taint flag='high-privileges'/>\n"
-"  <monitor path='/var/lib/libvirt/qemu/test.monitor' json='1' type='unix'/>\n"
-"  <vcpus>\n"
-"    <vcpu pid='3803519'/>\n"
-"  </vcpus>\n"
+"  <monitor path='/var/lib/libvirt/qemu/test.monitor' json='1' type='unix'/>\n";
+
+static const char testStatusXMLPrefixFooter[] =
 "  <qemuCaps>\n"
 "    <flag name='vnet-hdr'/>\n"
 "    <flag name='qxl.vgamem_mb'/>\n"
@@ -95,6 +103,40 @@ static const char testStatusXMLSuffix[] =
 "</domstatus>\n";
 
 
+static void
+testGetStatuXMLPrefixVcpus(virBufferPtr buf,
+                           const struct testInfo *data)
+{
+    ssize_t vcpuid = -1;
+
+    virBufferAddLit(buf, "<vcpus>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    while ((vcpuid = virBitmapNextSetBit(data->activeVcpus, vcpuid)) >= 0)
+        virBufferAsprintf(buf, "<vcpu pid='%zd'/>\n", vcpuid + 3803519);
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</vcpus>\n");
+}
+
+
+static char *
+testGetStatusXMLPrefix(const struct testInfo *data)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAdd(&buf, testStatusXMLPrefixHeader, -1);
+    virBufferAdjustIndent(&buf, 2);
+
+    testGetStatuXMLPrefixVcpus(&buf, data);
+
+    virBufferAdjustIndent(&buf, -2);
+    virBufferAdd(&buf, testStatusXMLPrefixFooter, -1);
+
+    return virBufferContentAndReset(&buf);
+}
+
+
 static int
 testCompareStatusXMLToXMLFiles(const void *opaque)
 {
@@ -105,6 +147,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     char *expect = NULL;
     char *actual = NULL;
     char *source = NULL;
+    char *header = NULL;
     char *inFile = NULL, *outActiveFile = NULL;
     int ret = -1;
     int keepBlanksDefault = xmlKeepBlanksDefault(0);
@@ -114,8 +157,11 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     if (virTestLoadFile(data->outActiveName, &outActiveFile) < 0)
         goto cleanup;
 
+    if (!(header = testGetStatusXMLPrefix(data)))
+        goto cleanup;
+
     /* construct faked source status XML */
-    virBufferAdd(&buf, testStatusXMLPrefix, -1);
+    virBufferAdd(&buf, header, -1);
     virBufferAdjustIndent(&buf, 2);
     virBufferAddStr(&buf, inFile);
     virBufferAdjustIndent(&buf, -2);
@@ -127,7 +173,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     }
 
     /* construct the expect string */
-    virBufferAdd(&buf, testStatusXMLPrefix, -1);
+    virBufferAdd(&buf, header, -1);
     virBufferAdjustIndent(&buf, 2);
     virBufferAddStr(&buf, outActiveFile);
     virBufferAdjustIndent(&buf, -2);
@@ -175,6 +221,7 @@ testCompareStatusXMLToXMLFiles(const void *opaque)
     VIR_FREE(actual);
     VIR_FREE(source);
     VIR_FREE(inFile);
+    VIR_FREE(header);
     VIR_FREE(outActiveFile);
     return ret;
 }
@@ -186,6 +233,9 @@ testInfoFree(struct testInfo *info)
     VIR_FREE(info->inName);
     VIR_FREE(info->outActiveName);
     VIR_FREE(info->outInactiveName);
+
+    virBitmapFree(info->activeVcpus);
+    info->activeVcpus = NULL;
 
     virObjectUnref(info->qemuCaps);
 }
@@ -260,6 +310,8 @@ mymain(void)
     int ret = 0;
     struct testInfo info;
     virQEMUDriverConfigPtr cfg = NULL;
+
+    memset(&info, 0, sizeof(info));
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
