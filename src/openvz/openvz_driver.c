@@ -2084,7 +2084,7 @@ openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
     struct  openvz_driver *driver = dom->conn->privateData;
     virDomainDeviceDefPtr dev = NULL;
     virDomainObjPtr vm = NULL;
-    virDomainDefPtr vmdef = NULL;
+    virDomainDefPtr def = NULL;
     bool persist = false;
 
     virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_LIVE |
@@ -2098,22 +2098,17 @@ openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
                        _("no domain with matching uuid"));
         goto cleanup;
     }
-    vmdef = vm->def;
 
-    if (virStrToLong_i(vmdef->name, NULL, 10, &veid) < 0) {
+    if (virStrToLong_i(vm->def->name, NULL, 10, &veid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not convert domain name to VEID"));
         goto cleanup;
     }
 
-    if (virDomainLiveConfigHelperMethod(driver->caps,
-                                        driver->xmlopt,
-                                        vm,
-                                        &flags,
-                                        &vmdef) < 0)
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
 
-    dev = virDomainDeviceDefParse(xml, vmdef, driver->caps, driver->xmlopt,
+    dev = virDomainDeviceDefParse(xml, def, driver->caps, driver->xmlopt,
                                   VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (!dev)
         goto cleanup;
@@ -2121,7 +2116,7 @@ openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
     if (flags & VIR_DOMAIN_AFFECT_CONFIG)
         persist = true;
 
-    if (openvzUpdateDevice(vmdef, dev, persist) < 0)
+    if (openvzUpdateDevice(def, dev, persist) < 0)
         goto cleanup;
 
     ret = 0;
