@@ -24935,24 +24935,24 @@ virDomainObjSetMetadata(virDomainObjPtr vm,
                         const char *configDir,
                         unsigned int flags)
 {
+    virDomainDefPtr def;
     virDomainDefPtr persistentDef;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (virDomainLiveConfigHelperMethod(caps, xmlopt, vm, &flags,
-                                        &persistentDef) < 0)
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         return -1;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (virDomainDefSetMetadata(vm->def, type, metadata, key, uri) < 0)
+    if (def) {
+        if (virDomainDefSetMetadata(def, type, metadata, key, uri) < 0)
             return -1;
 
         if (virDomainSaveStatus(xmlopt, stateDir, vm, caps) < 0)
             return -1;
     }
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
+    if (persistentDef) {
         if (virDomainDefSetMetadata(persistentDef, type, metadata, key,
                                     uri) < 0)
             return -1;
