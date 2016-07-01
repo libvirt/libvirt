@@ -1296,7 +1296,6 @@ qemuDomainObjPrivateFree(void *data)
     virDomainVirtioSerialAddrSetFree(priv->vioserialaddrs);
     virDomainChrSourceDefFree(priv->monConfig);
     qemuDomainObjFreeJob(priv);
-    VIR_FREE(priv->vcpupids);
     VIR_FREE(priv->lockState);
     VIR_FREE(priv->origname);
 
@@ -1325,19 +1324,25 @@ qemuDomainObjPrivateFree(void *data)
 
 static void
 qemuDomainObjPrivateXMLFormatVcpus(virBufferPtr buf,
-                                   int *vcpupids,
-                                   int nvcpupids)
+                                   virDomainDefPtr def)
 {
     size_t i;
-
-    if (!nvcpupids)
-        return;
+    size_t maxvcpus = virDomainDefGetVcpusMax(def);
+    virDomainVcpuDefPtr vcpu;
+    pid_t tid;
 
     virBufferAddLit(buf, "<vcpus>\n");
     virBufferAdjustIndent(buf, 2);
 
-    for (i = 0; i < nvcpupids; i++)
-        virBufferAsprintf(buf, "<vcpu id='%zu' pid='%d'/>\n", i, vcpupids[i]);
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(def, i);
+        tid = QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->tid;
+
+        if (!vcpu->online || tid == 0)
+            continue;
+
+        virBufferAsprintf(buf, "<vcpu id='%zu' pid='%d'/>\n", i, tid);
+    }
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</vcpus>\n");
@@ -1371,7 +1376,7 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
                           virDomainChrTypeToString(priv->monConfig->type));
     }
 
-    qemuDomainObjPrivateXMLFormatVcpus(buf, priv->vcpupids, priv->nvcpupids);
+    qemuDomainObjPrivateXMLFormatVcpus(buf, vm->def);
 
     if (priv->qemuCaps) {
         size_t i;
@@ -1464,26 +1469,30 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
 static int
 qemuDomainObjPrivateXMLParseVcpu(xmlNodePtr node,
                                  unsigned int idx,
-                                 qemuDomainObjPrivatePtr priv)
+                                 virDomainDefPtr def)
 {
+    virDomainVcpuDefPtr vcpu;
     char *idstr;
     char *pidstr;
+    unsigned int tmp;
     int ret = -1;
 
-    if ((idstr = virXMLPropString(node, "id"))) {
-        if (virStrToLong_uip(idstr, NULL, 10, &idx) < 0 ||
-            idx >= priv->nvcpupids) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid vcpu index '%s'"), idstr);
-            goto cleanup;
-        }
+    idstr = virXMLPropString(node, "id");
+
+    if ((idstr && virStrToLong_uip(idstr, NULL, 10, &idx)) < 0 ||
+        !(vcpu = virDomainDefGetVcpu(def, idx))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid vcpu index '%s'"), idstr);
+        goto cleanup;
     }
 
     if (!(pidstr = virXMLPropString(node, "pid")))
         goto cleanup;
 
-    if (virStrToLong_i(pidstr, NULL, 10, &(priv->vcpupids[idx])) < 0)
+    if (virStrToLong_uip(pidstr, NULL, 10, &tmp) < 0)
         goto cleanup;
+
+    QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->tid = tmp;
 
     ret = 0;
 
@@ -1547,12 +1556,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     if ((n = virXPathNodeSet("./vcpus/vcpu", ctxt, &nodes)) < 0)
         goto error;
 
-    priv->nvcpupids = n;
-    if (VIR_REALLOC_N(priv->vcpupids, priv->nvcpupids) < 0)
-        goto error;
-
     for (i = 0; i < n; i++) {
-        if (qemuDomainObjPrivateXMLParseVcpu(nodes[i], i, priv) < 0)
+        if (qemuDomainObjPrivateXMLParseVcpu(nodes[i], i, vm->def) < 0)
             goto error;
     }
     VIR_FREE(nodes);
@@ -5506,9 +5511,18 @@ qemuDomainAdjustMaxMemLock(virDomainObjPtr vm)
 bool
 qemuDomainHasVcpuPids(virDomainObjPtr vm)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    size_t i;
+    size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
+    virDomainVcpuDefPtr vcpu;
 
-    return priv->nvcpupids > 0;
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(vm->def, i);
+
+        if (QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->tid > 0)
+            return true;
+    }
+
+    return false;
 }
 
 
@@ -5521,14 +5535,10 @@ qemuDomainHasVcpuPids(virDomainObjPtr vm)
  */
 pid_t
 qemuDomainGetVcpuPid(virDomainObjPtr vm,
-                     unsigned int vcpu)
+                     unsigned int vcpuid)
 {
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-
-    if (vcpu >= priv->nvcpupids)
-        return 0;
-
-    return priv->vcpupids[vcpu];
+    virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, vcpuid);
+    return QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->tid;
 }
 
 
@@ -5548,9 +5558,12 @@ qemuDomainDetectVcpuPids(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          int asyncJob)
 {
+    virDomainVcpuDefPtr vcpu;
+    size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
     pid_t *cpupids = NULL;
-    int ncpupids = 0;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ncpupids;
+    size_t i;
+    int ret = -1;
 
     /*
      * Current QEMU *can* report info about host threads mapped
@@ -5581,22 +5594,32 @@ qemuDomainDetectVcpuPids(virQEMUDriverPtr driver,
      * to try to do this hard work.
      */
     if (vm->def->virtType == VIR_DOMAIN_VIRT_QEMU)
-        goto done;
+        return 0;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
-    ncpupids = qemuMonitorGetCPUInfo(priv->mon, &cpupids);
+    ncpupids = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &cpupids);
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        VIR_FREE(cpupids);
-        return -2;
+        ret = -2;
+        goto cleanup;
     }
+
     /* failure to get the VCPU <-> PID mapping or to execute the query
      * command will not be treated fatal as some versions of qemu don't
      * support this command */
     if (ncpupids <= 0) {
         virResetLastError();
-        ncpupids = 0;
-        goto done;
+        ret = 0;
+        goto cleanup;
+    }
+
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(vm->def, i);
+
+        if (i < ncpupids)
+            QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->tid = cpupids[i];
+        else
+            QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->tid = 0;
     }
 
     if (ncpupids != virDomainDefGetVcpus(vm->def)) {
@@ -5604,15 +5627,14 @@ qemuDomainDetectVcpuPids(virQEMUDriverPtr driver,
                        _("got wrong number of vCPU pids from QEMU monitor. "
                          "got %d, wanted %d"),
                        ncpupids, virDomainDefGetVcpus(vm->def));
-        VIR_FREE(cpupids);
-        return -1;
+        goto cleanup;
     }
 
- done:
-    VIR_FREE(priv->vcpupids);
-    priv->nvcpupids = ncpupids;
-    priv->vcpupids = cpupids;
-    return ncpupids;
+    ret = ncpupids;
+
+ cleanup:
+    VIR_FREE(cpupids);
+    return ret;
 }
 
 

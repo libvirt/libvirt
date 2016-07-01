@@ -5899,8 +5899,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     vm->taint = 0;
     vm->pid = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
-    VIR_FREE(priv->vcpupids);
-    priv->nvcpupids = 0;
     for (i = 0; i < vm->def->niothreadids; i++)
         vm->def->iothreadids[i]->thread_id = 0;
     virObjectUnref(priv->qemuCaps);

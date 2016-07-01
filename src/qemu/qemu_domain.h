@@ -184,9 +184,6 @@ struct _qemuDomainObjPrivate {
     bool beingDestroyed;
     char *pidfile;
 
-    int nvcpupids;
-    int *vcpupids;
-
     virDomainPCIAddressSetPtr pciaddrs;
     virDomainCCWAddressSetPtr ccwaddrs;
     virDomainVirtioSerialAddrSetPtr vioserialaddrs;
@@ -318,7 +315,7 @@ typedef qemuDomainVcpuPrivate *qemuDomainVcpuPrivatePtr;
 struct _qemuDomainVcpuPrivate {
     virObject parent;
 
-    int dummy;
+    pid_t tid; /* vcpu thread id */
 };
 
 # define QEMU_DOMAIN_VCPU_PRIVATE(vcpu)    \
@@ -649,7 +646,7 @@ int qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
                                        const virDomainMemoryDef *mem);
 
 bool qemuDomainHasVcpuPids(virDomainObjPtr vm);
-pid_t qemuDomainGetVcpuPid(virDomainObjPtr vm, unsigned int vcpu);
+pid_t qemuDomainGetVcpuPid(virDomainObjPtr vm, unsigned int vcpuid);
 int qemuDomainDetectVcpuPids(virQEMUDriverPtr driver, virDomainObjPtr vm,
                              int asyncJob);
 
