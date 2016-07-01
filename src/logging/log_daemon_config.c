@@ -128,7 +128,7 @@ virLogDaemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
         return NULL;
 
     data->max_clients = 1024;
-    data->max_size = 128 * 1024;
+    data->max_size = 1024 * 1024 * 2;
     data->max_backups = 3;
 
     return data;
