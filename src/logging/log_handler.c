@@ -41,8 +41,6 @@ VIR_LOG_INIT("logging.log_handler");
 
 #define VIR_FROM_THIS VIR_FROM_LOGGING
 
-#define DEFAULT_FILE_SIZE (128 * 1024)
-#define DEFAULT_MAX_BACKUP 3
 #define DEFAULT_MODE 0600
 
 typedef struct _virLogHandlerLogFile virLogHandlerLogFile;
@@ -62,6 +60,9 @@ struct _virLogHandler {
     virObjectLockable parent;
 
     bool privileged;
+    size_t max_size;
+    size_t max_backups;
+
     virLogHandlerLogFilePtr *files;
     size_t nfiles;
 
@@ -184,6 +185,8 @@ virLogHandlerDomainLogFileEvent(int watch,
 
 virLogHandlerPtr
 virLogHandlerNew(bool privileged,
+                 size_t max_size,
+                 size_t max_backups,
                  virLogHandlerShutdownInhibitor inhibitor,
                  void *opaque)
 {
@@ -196,6 +199,8 @@ virLogHandlerNew(bool privileged,
         goto error;
 
     handler->privileged = privileged;
+    handler->max_size = max_size;
+    handler->max_backups = max_backups;
     handler->inhibitor = inhibitor;
     handler->opaque = opaque;
 
@@ -254,8 +259,8 @@ virLogHandlerLogFilePostExecRestart(virLogHandlerPtr handler,
     }
 
     if ((file->file = virRotatingFileWriterNew(path,
-                                               DEFAULT_FILE_SIZE,
-                                               DEFAULT_MAX_BACKUP,
+                                               handler->max_size,
+                                               handler->max_backups,
                                                false,
                                                DEFAULT_MODE)) == NULL)
         goto error;
@@ -283,6 +288,8 @@ virLogHandlerLogFilePostExecRestart(virLogHandlerPtr handler,
 virLogHandlerPtr
 virLogHandlerNewPostExecRestart(virJSONValuePtr object,
                                 bool privileged,
+                                size_t max_size,
+                                size_t max_backups,
                                 virLogHandlerShutdownInhibitor inhibitor,
                                 void *opaque)
 {
@@ -292,6 +299,8 @@ virLogHandlerNewPostExecRestart(virJSONValuePtr object,
     size_t i;
 
     if (!(handler = virLogHandlerNew(privileged,
+                                     max_size,
+                                     max_backups,
                                      inhibitor,
                                      opaque)))
         return NULL;
@@ -396,8 +405,8 @@ virLogHandlerDomainOpenLogFile(virLogHandlerPtr handler,
         goto error;
 
     if ((file->file = virRotatingFileWriterNew(path,
-                                               DEFAULT_FILE_SIZE,
-                                               DEFAULT_MAX_BACKUP,
+                                               handler->max_size,
+                                               handler->max_backups,
                                                trunc,
                                                DEFAULT_MODE)) == NULL)
         goto error;
@@ -487,7 +496,7 @@ virLogHandlerDomainReadLogFile(virLogHandlerPtr handler,
 
     virObjectLock(handler);
 
-    if (!(file = virRotatingFileReaderNew(path, DEFAULT_MAX_BACKUP)))
+    if (!(file = virRotatingFileReaderNew(path, handler->max_backups)))
         goto error;
 
     if (virRotatingFileReaderSeek(file, inode, offset) < 0)
@@ -542,8 +551,8 @@ virLogHandlerDomainAppendLogFile(virLogHandlerPtr handler,
 
     if (!writer) {
         if (!(newwriter = virRotatingFileWriterNew(path,
-                                                   DEFAULT_FILE_SIZE,
-                                                   DEFAULT_MAX_BACKUP,
+                                                   handler->max_size,
+                                                   handler->max_backups,
                                                    false,
                                                    DEFAULT_MODE)))
             goto cleanup;

@@ -165,6 +165,8 @@ virLogDaemonNew(virLogDaemonConfigPtr config, bool privileged)
         goto error;
 
     if (!(logd->handler = virLogHandlerNew(privileged,
+                                           config->max_size,
+                                           config->max_backups,
                                            virLogDaemonInhibitor,
                                            logd)))
         goto error;
@@ -185,7 +187,8 @@ virLogDaemonGetHandler(virLogDaemonPtr dmn)
 
 
 static virLogDaemonPtr
-virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
+virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged,
+                               virLogDaemonConfigPtr config)
 {
     virLogDaemonPtr logd;
     virJSONValuePtr child;
@@ -226,6 +229,8 @@ virLogDaemonNewPostExecRestart(virJSONValuePtr object, bool privileged)
 
     if (!(logd->handler = virLogHandlerNewPostExecRestart(child,
                                                           privileged,
+                                                          config->max_size,
+                                                          config->max_backups,
                                                           virLogDaemonInhibitor,
                                                           logd)))
         goto error;
@@ -717,7 +722,8 @@ static int
 virLogDaemonPostExecRestart(const char *state_file,
                             const char *pid_file,
                             int *pid_file_fd,
-                            bool privileged)
+                            bool privileged,
+                            virLogDaemonConfigPtr config)
 {
     const char *gotmagic;
     char *wantmagic = NULL;
@@ -766,7 +772,9 @@ virLogDaemonPostExecRestart(const char *state_file,
         (*pid_file_fd = virPidFileAcquirePath(pid_file, false, getpid())) < 0)
         goto cleanup;
 
-    if (!(logDaemon = virLogDaemonNewPostExecRestart(object, privileged)))
+    if (!(logDaemon = virLogDaemonNewPostExecRestart(object,
+                                                     privileged,
+                                                     config)))
         goto cleanup;
 
     ret = 1;
@@ -1086,7 +1094,8 @@ int main(int argc, char **argv) {
     if ((rv = virLogDaemonPostExecRestart(state_file,
                                           pid_file,
                                           &pid_file_fd,
-                                          privileged)) < 0) {
+                                          privileged,
+                                          config)) < 0) {
         ret = VIR_LOG_DAEMON_ERR_INIT;
         goto cleanup;
     }

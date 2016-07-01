@@ -34,6 +34,9 @@ struct _virLogDaemonConfig {
     char *log_filters;
     char *log_outputs;
     int max_clients;
+
+    size_t max_backups;
+    size_t max_size;
 };
 
 

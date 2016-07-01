@@ -128,6 +128,8 @@ virLogDaemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
         return NULL;
 
     data->max_clients = 1024;
+    data->max_size = 128 * 1024;
+    data->max_backups = 3;
 
     return data;
 }
@@ -153,6 +155,9 @@ virLogDaemonConfigLoadOptions(virLogDaemonConfigPtr data,
     GET_CONF_STR(conf, filename, log_filters);
     GET_CONF_STR(conf, filename, log_outputs);
     GET_CONF_UINT(conf, filename, max_clients);
+
+    GET_CONF_UINT(conf, filename, max_size);
+    GET_CONF_UINT(conf, filename, max_backups);
 
     return 0;
 
