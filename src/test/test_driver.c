@@ -2659,7 +2659,6 @@ static char *testDomainGetMetadata(virDomainPtr dom,
                                    const char *uri,
                                    unsigned int flags)
 {
-    testDriverPtr privconn = dom->conn->privateData;
     virDomainObjPtr privdom;
     char *ret;
 
@@ -2669,8 +2668,7 @@ static char *testDomainGetMetadata(virDomainPtr dom,
     if (!(privdom = testDomObjFromDomain(dom)))
         return NULL;
 
-    ret = virDomainObjGetMetadata(privdom, type, uri, privconn->caps,
-                                  privconn->xmlopt, flags);
+    ret = virDomainObjGetMetadata(privdom, type, uri, flags);
 
     virDomainObjEndAPI(&privdom);
     return ret;

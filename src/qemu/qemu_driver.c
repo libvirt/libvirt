@@ -17576,8 +17576,6 @@ qemuDomainGetMetadata(virDomainPtr dom,
                       const char *uri,
                       unsigned int flags)
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
-    virCapsPtr caps = NULL;
     virDomainObjPtr vm;
     char *ret = NULL;
 
@@ -17587,14 +17585,10 @@ qemuDomainGetMetadata(virDomainPtr dom,
     if (virDomainGetMetadataEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
-    ret = virDomainObjGetMetadata(vm, type, uri, caps, driver->xmlopt, flags);
+    ret = virDomainObjGetMetadata(vm, type, uri, flags);
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     return ret;
 }
 

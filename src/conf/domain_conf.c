@@ -24781,9 +24781,7 @@ virDomainDefFindDevice(virDomainDefPtr def,
 char *
 virDomainObjGetMetadata(virDomainObjPtr vm,
                         int type,
-                        const char *uri ATTRIBUTE_UNUSED,
-                        virCapsPtr caps,
-                        virDomainXMLOptionPtr xmlopt,
+                        const char *uri,
                         unsigned int flags)
 {
     virDomainDefPtr def;
@@ -24798,12 +24796,8 @@ virDomainObjGetMetadata(virDomainObjPtr vm,
         goto cleanup;
     }
 
-    if (virDomainLiveConfigHelperMethod(caps, xmlopt, vm, &flags, &def) < 0)
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
         goto cleanup;
-
-    /* use correct domain definition according to flags */
-    if (flags & VIR_DOMAIN_AFFECT_LIVE)
-        def = vm->def;
 
     switch ((virDomainMetadataType) type) {
     case VIR_DOMAIN_METADATA_DESCRIPTION:

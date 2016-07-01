@@ -3052,8 +3052,6 @@ void virDomainChrSourceDefClear(virDomainChrSourceDefPtr def);
 char *virDomainObjGetMetadata(virDomainObjPtr vm,
                               int type,
                               const char *uri,
-                              virCapsPtr caps,
-                              virDomainXMLOptionPtr xmlopt,
                               unsigned int flags);
 
 int virDomainObjSetMetadata(virDomainObjPtr vm,

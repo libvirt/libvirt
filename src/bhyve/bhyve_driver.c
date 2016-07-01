@@ -1131,9 +1131,7 @@ bhyveDomainGetMetadata(virDomainPtr dom,
                       const char *uri,
                       unsigned int flags)
 {
-    bhyveConnPtr privconn = dom->conn->privateData;
     virDomainObjPtr vm;
-    virCapsPtr caps = NULL;
     char *ret = NULL;
 
     if (!(vm = bhyveDomObjFromDomain(dom)))
@@ -1142,14 +1140,9 @@ bhyveDomainGetMetadata(virDomainPtr dom,
     if (virDomainGetMetadataEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(caps = bhyveDriverGetCapabilities(privconn)))
-        goto cleanup;
-
-    ret = virDomainObjGetMetadata(vm, type, uri, caps,
-                                  privconn->xmlopt, flags);
+    ret = virDomainObjGetMetadata(vm, type, uri, flags);
 
  cleanup:
-    virObjectUnref(caps);
     virObjectUnlock(vm);
     return ret;
 }

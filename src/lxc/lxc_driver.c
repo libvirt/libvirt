@@ -5381,8 +5381,6 @@ lxcDomainGetMetadata(virDomainPtr dom,
                       const char *uri,
                       unsigned int flags)
 {
-    virLXCDriverPtr driver = dom->conn->privateData;
-    virCapsPtr caps = NULL;
     virDomainObjPtr vm;
     char *ret = NULL;
 
@@ -5392,14 +5390,10 @@ lxcDomainGetMetadata(virDomainPtr dom,
     if (virDomainGetMetadataEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
-        goto cleanup;
-
-    ret = virDomainObjGetMetadata(vm, type, uri, caps, driver->xmlopt, flags);
+    ret = virDomainObjGetMetadata(vm, type, uri, flags);
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     return ret;
 }
 
