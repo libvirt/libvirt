@@ -466,6 +466,18 @@ static const char *defaultConnXML =
 "    </firmware>"
 "  </capability>"
 "</device>"
+"<device>"
+"  <name>test-scsi-host-vport</name>"
+"  <parent>computer</parent>"
+"  <capability type='scsi_host'>"
+"    <host>1</host>"
+"    <capability type='fc_host'>"
+"      <wwnn>2000000012341234</wwnn>"
+"      <wwpn>1000000012341234</wwpn>"
+"    </capability>"
+"    <capability type='vport_ops'/>"
+"  </capability>"
+"</device>"
 "</node>";
 
 
