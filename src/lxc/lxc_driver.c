@@ -803,7 +803,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
                              int nparams,
                              unsigned int flags)
 {
-    virCapsPtr caps = NULL;
+    virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
     virDomainObjPtr vm = NULL;
     virLXCDomainObjPrivatePtr priv = NULL;
@@ -837,21 +837,20 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
     priv = vm->privateData;
     cfg = virLXCDriverGetConfig(driver);
 
-    if (virDomainSetMemoryParametersEnsureACL(dom->conn, vm->def, flags) < 0 ||
-        !(caps = virLXCDriverGetCapabilities(driver, false)))
+    if (virDomainSetMemoryParametersEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
     if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0)
         goto cleanup;
 
-    if (virDomainLiveConfigHelperMethod(caps, driver->xmlopt,
-                                        vm, &flags, &persistentDef) < 0)
+    /* QEMU and LXC implementation are identical */
+    if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
-    if (flags & VIR_DOMAIN_AFFECT_LIVE &&
+    if (def &&
         !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s", _("cgroup memory controller is not mounted"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cgroup memory controller is not mounted"));
         goto endjob;
     }
 
@@ -868,8 +867,7 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
 
 #undef VIR_GET_LIMIT_PARAMETER
 
-    /* Swap hard limit must be greater than hard limit.
-     * Note that limit of 0 denotes unlimited */
+    /* Swap hard limit must be greater than hard limit. */
     if (set_swap_hard_limit || set_hard_limit) {
         unsigned long long mem_limit = vm->def->mem.hard_limit;
         unsigned long long swap_limit = vm->def->mem.swap_hard_limit;
@@ -888,42 +886,43 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
         }
     }
 
-#define LXC_SET_MEM_PARAMETER(FUNC, VALUE)                                      \
+#define VIR_SET_MEM_PARAMETER(FUNC, VALUE)                                      \
     if (set_ ## VALUE) {                                                        \
-        if (flags & VIR_DOMAIN_AFFECT_LIVE) {                                   \
-            if ((rc = FUNC(priv->cgroup, VALUE)) < 0) {                         \
-                virReportSystemError(-rc, _("unable to set memory %s tunable"), \
-                                     #VALUE);                                   \
-                                                                                \
+        if (def) {                                                              \
+            if ((rc = FUNC(priv->cgroup, VALUE)) < 0)                           \
                 goto endjob;                                                    \
-            }                                                                   \
-            vm->def->mem.VALUE = VALUE;                                         \
+            def->mem.VALUE = VALUE;                                             \
         }                                                                       \
                                                                                 \
-        if (flags & VIR_DOMAIN_AFFECT_CONFIG)                                   \
+        if (persistentDef)                                                      \
             persistentDef->mem.VALUE = VALUE;                                   \
     }
 
     /* Soft limit doesn't clash with the others */
-    LXC_SET_MEM_PARAMETER(virCgroupSetMemorySoftLimit, soft_limit);
+    VIR_SET_MEM_PARAMETER(virCgroupSetMemorySoftLimit, soft_limit);
 
     /* set hard limit before swap hard limit if decreasing it */
-    if (vm->def->mem.hard_limit > hard_limit) {
-        LXC_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
+    if (def && def->mem.hard_limit > hard_limit) {
+        VIR_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
         /* inhibit changing the limit a second time */
         set_hard_limit = false;
     }
 
-    LXC_SET_MEM_PARAMETER(virCgroupSetMemSwapHardLimit, swap_hard_limit);
+    VIR_SET_MEM_PARAMETER(virCgroupSetMemSwapHardLimit, swap_hard_limit);
 
     /* otherwise increase it after swap hard limit */
-    LXC_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
+    VIR_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
 
-#undef LXC_SET_MEM_PARAMETER
+#undef VIR_SET_MEM_PARAMETER
 
-    if (flags & VIR_DOMAIN_AFFECT_CONFIG &&
+    if (def &&
+        virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
+        goto endjob;
+
+    if (persistentDef &&
         virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
         goto endjob;
+    /* QEMU and LXC implementations are identical */
 
     ret = 0;
 
@@ -932,7 +931,6 @@ lxcDomainSetMemoryParameters(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virObjectUnref(caps);
     virObjectUnref(cfg);
     return ret;
 }

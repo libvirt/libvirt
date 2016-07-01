@@ -9134,6 +9134,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 
+    /* QEMU and LXC implementation are identical */
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
@@ -9212,6 +9213,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     if (persistentDef &&
         virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
         goto endjob;
+    /* QEMU and LXC implementations are identical */
 
     ret = 0;
 
