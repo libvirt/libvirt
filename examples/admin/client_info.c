@@ -86,6 +86,11 @@ exampleGetTypedParamValue(virTypedParameterPtr item)
         return NULL;
     }
 
+    if (ret < 0) {
+        fprintf(stderr, "error formatting typed param value\n");
+        return NULL;
+    }
+
     return str;
 }
 
