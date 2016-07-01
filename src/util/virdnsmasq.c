@@ -693,7 +693,7 @@ dnsmasqCapsSetFromBuffer(dnsmasqCapsPtr caps, const char *buf)
              (int)caps->version / 1000000,
              (int)(caps->version % 1000000) / 1000,
              dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC) ? "" : "NOT ",
-             dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC) ? "" : "NOT ");
+             dnsmasqCapsGet(caps, DNSMASQ_CAPS_BINDTODEVICE) ? "" : "NOT ");
     return 0;
 
  fail:
