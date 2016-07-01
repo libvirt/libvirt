@@ -4068,9 +4068,11 @@
     <attribute name="bus">
       <ref name="usbAddr"/>
     </attribute>
-    <attribute name="port">
-      <ref name="usbPort"/>
-    </attribute>
+    <optional>
+      <attribute name="port">
+        <ref name="usbPort"/>
+      </attribute>
+    </optional>
   </define>
   <define name="spaprvioaddress">
     <optional>

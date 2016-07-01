@@ -1163,6 +1163,9 @@ mymain(void)
     DO_TEST("usb-hub",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
             QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("usb-port-missing",
+            QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
+            QEMU_CAPS_NODEFCONFIG);
     DO_TEST("usb-ports",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
             QEMU_CAPS_NODEFCONFIG);

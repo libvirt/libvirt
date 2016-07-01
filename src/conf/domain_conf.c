@@ -4839,9 +4839,8 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
-        virBufferAsprintf(buf, " bus='%d' port='%s'",
-                          info->addr.usb.bus,
-                          info->addr.usb.port);
+        virBufferAsprintf(buf, " bus='%d'", info->addr.usb.bus);
+        virBufferEscapeString(buf, " port='%s'", info->addr.usb.port);
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:

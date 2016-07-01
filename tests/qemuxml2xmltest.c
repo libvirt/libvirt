@@ -591,6 +591,7 @@ mymain(void)
     DO_TEST("interface-server");
     DO_TEST("virtio-lun");
 
+    DO_TEST("usb-port-missing");
     DO_TEST("usb-redir");
     DO_TEST("usb-redir-filter");
     DO_TEST("usb-redir-filter-version");
