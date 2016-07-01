@@ -1431,6 +1431,36 @@ libxlDomainGetMaxMemory(virDomainPtr dom)
     return ret;
 }
 
+
+/*
+ * Helper method for --current, --live, and --config options, and check
+ * whether domain is active or can get persistent domain configuration.
+ *
+ * Return 0 if success, also change the flags and get the persistent
+ * domain configuration if needed. Return -1 on error.
+ */
+static int
+virDomainLiveConfigHelperMethod(virCapsPtr caps,
+                                virDomainXMLOptionPtr xmlopt,
+                                virDomainObjPtr dom,
+                                unsigned int *flags,
+                                virDomainDefPtr *persistentDef)
+{
+    if (virDomainObjUpdateModificationImpact(dom, flags) < 0)
+        return -1;
+
+    if (*flags & VIR_DOMAIN_AFFECT_CONFIG) {
+        if (!(*persistentDef = virDomainObjGetPersistentDef(caps, xmlopt, dom))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Get persistent config failed"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 static int
 libxlDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
                           unsigned int flags)

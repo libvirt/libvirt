@@ -358,7 +358,6 @@ virDomainLifecycleCrashTypeFromString;
 virDomainLifecycleCrashTypeToString;
 virDomainLifecycleTypeFromString;
 virDomainLifecycleTypeToString;
-virDomainLiveConfigHelperMethod;
 virDomainLoaderDefFree;
 virDomainLoaderTypeFromString;
 virDomainLoaderTypeToString;

@@ -2557,13 +2557,6 @@ int virDomainObjGetDefs(virDomainObjPtr vm,
                         virDomainDefPtr *persDef);
 virDomainDefPtr virDomainObjGetOneDef(virDomainObjPtr vm, unsigned int flags);
 
-int
-virDomainLiveConfigHelperMethod(virCapsPtr caps,
-                                virDomainXMLOptionPtr xmlopt,
-                                virDomainObjPtr dom,
-                                unsigned int *flags,
-                                virDomainDefPtr *persistentDef);
-
 virDomainDefPtr virDomainDefCopy(virDomainDefPtr src,
                                  virCapsPtr caps,
                                  virDomainXMLOptionPtr xmlopt,
