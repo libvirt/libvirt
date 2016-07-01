@@ -16,6 +16,562 @@
     to gauge progress.
     </p>
 
+   <h3>2.0.0: Jul 01 2016</h3>
+    <ul>
+      <li>Features:<br/>
+      Many improvements in Xen support (Jim Fehlig, Philipp Hahn, Chunyan Liu),<br/>
+      Many improvements in OpenVZ support (Nikolay Shirokovskiy, mfeoktistov@virtuozzo.com),<br/>
+      Guest agent vCPU APIs (Peter Krempa),<br/>
+      storage lifecycle event APIs (Jovanka Gulicoska),<br/>
+      CPU type detection (Jiri Denemark)<br/>
+      </li>
+
+      <li>Documentation:<br/>
+      Document to not rely on virConnectGetMaxVcpus API (Shivaprasad G Bhat),<br/>
+      add help document relevant to default mapping of credentials to machines (yuelongguang),<br/>
+      docs: Fix whitespace in output (John Ferlan),<br/>
+      util: fix a typo (Chen Hanxiao),<br/>
+      docs: virsh: Added note for the dump command (Jaroslav Suchanek),<br/>
+      docs: Add at least some docs and fix schema entry for perf events (Peter Krempa),<br/>
+      virsh: Fix help string for net-dumpxml (sannyshao),<br/>
+      doc: Fix explanation of S3 and S4 states (Jingjing Shao),<br/>
+      docs: Clarify chardev protocol (John Ferlan),<br/>
+      docs: Document our event loop (Michal Privoznik)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      libvirt.spec.in: Use libnl-devel for RHEL-6 (Jean-Marc Liger),<br/>
+      qemuDomainDeviceDefValidate: Drop unused qemuCaps (Jiri Denemark),<br/>
+      vz: Fix indentation in prlsdkGetNetAddresses() (Andrea Bolognani),<br/>
+      Revert "util: new function virNetDevIPInfoAddToDev" (Ján Tomko),<br/>
+      Revert "conf: allow setting peer address in &lt;ip&gt; element of &lt;interface&gt;" (Ján Tomko),<br/>
+      Revert "conf: support host-side IP/route information in &lt;interface&gt;" (Ján Tomko),<br/>
+      Revert "util: support setting peer for virNetDevIPInfo addresses" (Ján Tomko),<br/>
+      Revert "lxc: support setting host-side IP addresses/routes" (Ján Tomko),<br/>
+      Revert "qemu: support setting host-side IP addresses/routes" (Ján Tomko),<br/>
+      Clean up after virNetDevIP creation (Andrea Bolognani),<br/>
+      util: netdevip: Include vircommand.h (Andrea Bolognani),<br/>
+      qemu: support setting host-side IP addresses/routes (Laine Stump),<br/>
+      lxc: support setting host-side IP addresses/routes (Laine Stump),<br/>
+      util: support setting peer for virNetDevIPInfo addresses (Laine Stump),<br/>
+      conf: support host-side IP/route information in &lt;interface&gt; (Laine Stump),<br/>
+      conf: allow setting peer address in &lt;ip&gt; element of &lt;interface&gt; (Vasiliy Tolstov),<br/>
+      util: new function virNetDevIPInfoAddToDev (Laine Stump),<br/>
+      lxc: move debug/error log when adding IP addresses to virNetDevIPAddrAdd (Laine Stump),<br/>
+      conf: clean up after adding calls to virNetDevIPInfo helpers (Laine Stump),<br/>
+      qemu: forbid setting guest-side IP address/route info of &lt;interface&gt; (Laine Stump),<br/>
+      conf: use virNetDevIPInfo for guest-side &lt;interface&gt; config (Laine Stump),<br/>
+      conf: use virNetDevIPInfo in virDomainHostdevCaps (Laine Stump),<br/>
+      conf: single object containing list of IP addresses, list of routes (Laine Stump),<br/>
+      util: move IP route &amp; address object-related functions to virnetdevip.c (Laine Stump),<br/>
+      util: new files virnetdevip.[ch] for IP-related netdev functions (Laine Stump),<br/>
+      conf/openvz: eliminate incorrect/undocumented use of &lt;source dev='blah'/&gt; (Laine Stump),<br/>
+      qemu: eliminate memory leaks when converting NetDefs to type='ethernet' (Laine Stump),<br/>
+      qemu: don't set/clear NetDef IP addresses in qemuConnectDomainXMLToNative() (Laine Stump),<br/>
+      conf: new function virDomainNetDefClear (Laine Stump),<br/>
+      virHostCPUGetInfo: Fix build on non-Unix like systems (Michal Privoznik),<br/>
+      Fix build without xen (Martin Kletzander),<br/>
+      bhyve: add missing virhost(cpu|mem).h headers (Roman Bogorodskiy),<br/>
+      hostcpu: fix build on FreeBSD (Roman Bogorodskiy),<br/>
+      nodeinfo: fix build on non-Linux (Roman Bogorodskiy),<br/>
+      domain_conf: silence gcc warnings (Pavel Hrdina),<br/>
+      vz: fixed build by including necessary headers (Maxim Nestratov),<br/>
+      nodeinfo: remove FreeBSD specific code for getting memory (Daniel P. Berrange),<br/>
+      util: Alter virCryptoEncryptData for non GNUTLS builds (John Ferlan)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      conf: Don't free the constructed string in virDomainGetBlkioParametersAssignFromDef (Peter Krempa),<br/>
+      conf: def: Avoid unnecessary allocation of 'perf' events definition (Peter Krempa),<br/>
+      docs: Warn against locked memory limit too high (Jiri Denemark),<br/>
+      qemu: SCSI hostdev hot-plug: Fix automatic creation of SCSI controllers (Marc Hartmayer),<br/>
+      qemu: hot-plug: Fix broken SCSI disk hot-plug (Marc Hartmayer),<br/>
+      qemu: Let empty default VNC password work as documented (Jiri Denemark),<br/>
+      admin: fix virt-admin startup crash by calling virAdmInitialize (Erik Skultety),<br/>
+      Fix possible invalid read in adminClientGetInfo (Ján Tomko),<br/>
+      virStorageTranslateDiskSourcePool: Avoid double free (Michal Privoznik),<br/>
+      logging: fixing log level initialization from cmdline (Jaroslav Suchanek),<br/>
+      vz: fix build for virNetDev* changes (Olga Krishtal),<br/>
+      libvirtd.conf: Fix invalid default of max_anonymous_clients (Michal Privoznik),<br/>
+      lxc: eliminate extraneous free of netDef-&gt;ifname_guest (Laine Stump),<br/>
+      vz: fix memory leaks in attach/detach functions (Nikolay Shirokovskiy),<br/>
+      Fix error detection in virStorageBackendISCSIGetHostNumber (Ján Tomko),<br/>
+      virStorageBackendISCSIGetHostNumber: correctly use virDirOpen (Ján Tomko),<br/>
+      storage: Fix coverity warning (Cole Robinson),<br/>
+      Don't allow raneming domains to empty strings (Martin Kletzander),<br/>
+      Revert "virnetsocket: Provide socket address format in a more standard form" (Ján Tomko),<br/>
+      Allow configs to start with a dot (Ján Tomko),<br/>
+      Do not skip hidden entries when looking for a stable path (Ján Tomko),<br/>
+      Do not ignore hidden files in /sys and /proc (Ján Tomko),<br/>
+      tests: genericxml2xml: Fix test file name (Peter Krempa),<br/>
+      qemu: command: Error on accel2d (Cole Robinson),<br/>
+      qemu: command: Error on accel3d with non-virtio (Cole Robinson),<br/>
+      Allow virDomain(SG)etGuestVcpus on read-write connection only (Peter Krempa),<br/>
+      libxl: use serial device for console when targetType is serial (Jim Fehlig),<br/>
+      conf: Remove redundant free in virCPUDefFree (Jiri Denemark),<br/>
+      qemu: Fix reference leak in qemuDomainDefPostParse (Jiri Denemark),<br/>
+      tests: Adjust tests for encrypted storage (John Ferlan),<br/>
+      conf: limit chassisNr, and busNr to a minimum value of 1, not 0 (Laine Stump),<br/>
+      virsh migrate: Fix positional parameters (Jiri Denemark),<br/>
+      util: Make failure to get supplementary group list for a uid non-fatal (Peter Krempa),<br/>
+      tools: virt-login-shell: Fix group list bounds checking (Peter Krempa),<br/>
+      conf: Fix memory leak in graphics XML parser (Peter Krempa),<br/>
+      qemu: restore non-pci hostdev labels after detach (Ján Tomko),<br/>
+      configure: define preprocessor macros for SCSI and MPATH (Ján Tomko),<br/>
+      spec: Make driver-qemu require driver-storage (Martin Kletzander),<br/>
+      conf: Remove pre-calculation of initial memory size (Peter Krempa),<br/>
+      conf: Fix perf event parser (Peter Krempa),<br/>
+      qemu: perf: Don't set state of first event for every other event (Peter Krempa),<br/>
+      xenconfig: fix conversion of &lt;driver&gt; to backendtype (Jim Fehlig),<br/>
+      util: fix missing broadcast address in bridge and tap device IP addresses (Laine Stump),<br/>
+      qemu: Shorten domain name for watchdog coredump (Martin Kletzander),<br/>
+      util: Fix broken syntax-check (John Ferlan),<br/>
+      docs: document rng backend path restrictions of older libvirt (Ján Tomko),<br/>
+      docs: Fix syntax-check (John Ferlan),<br/>
+      Fix renumbering once again (Martin Kletzander),<br/>
+      qemu: Allow ACPI shutdown only for running domains (Martin Kletzander),<br/>
+      virt-host-validate: fix build with clang (Roman Bogorodskiy),<br/>
+      tests: fix CPUID detection tests compilation failure (Wei Liu),<br/>
+      apparmor: Don't scrub environment of virtlogd process (Guido Günther),<br/>
+      bhyve: fix bhyvexml2arg test (Roman Bogorodskiy),<br/>
+      vz: fix crash when parsing unexpected disk configuration (Maxim Nestratov),<br/>
+      vz: return correct result for unimplemented ChangeState actions (Maxim Nestratov),<br/>
+      qemuMonitorJSONAttachCharDev: Teach spicevmc (Michal Privoznik),<br/>
+      qemu: Yet another check for blkdeviotune values (Martin Kletzander),<br/>
+      qemu: Generate channel target paths on hotplug as well (Martin Kletzander),<br/>
+      virsh-domain: fix memory leak in cmdDomDisplay (Pavel Hrdina),<br/>
+      virsh-network: Avoid possible NULL deref in cmdNetworkDHCPLeases (Michal Privoznik),<br/>
+      virsh: domdisplay: if listen is 0.0.0.0 or [::] print address from URI (Pavel Hrdina),<br/>
+      qemu_process: don't print empty line if qemu exits without any error (Pavel Hrdina),<br/>
+      virschematest: Link with libxml2 (Michal Privoznik),<br/>
+      virschematest: Access the right directory containing XMLs (Michal Privoznik),<br/>
+      qemu: process: Call disk startup policy check after cloning domain def (Peter Krempa),<br/>
+      qemu: driver: Unset log file watcher after restoring a VM save file (Peter Krempa),<br/>
+      test: Remove executable permission from Xen xm files (Philipp Hahn),<br/>
+      qemu: process: Append the "shutting down" message using the new APIs (Peter Krempa),<br/>
+      Do not VIR_STRDUP the string in udevGetDeviceProperty (Ján Tomko),<br/>
+      systemd: directly notify systemd instead of using sd_notify (Daniel P. Berrange)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      dist: Speed up distribution compression (Martin Kletzander),<br/>
+      tests: Add test cases for SCSI disk hot-plug with QEMU (Marc Hartmayer),<br/>
+      qemu: Use proper async job to refresh virtio channels (Jiri Denemark),<br/>
+      lxc: use correct prefix when setting veth IP address (Laine Stump),<br/>
+      util: allow calling virSocketAddrGetIPPrefix with NULL netmask or address (Laine Stump),<br/>
+      tests: mock virNetDevSetIPAddress (Laine Stump),<br/>
+      conf: clean up virDomainNetIPParseXML() (Laine Stump),<br/>
+      global: consistently use IP rather than Ip in identifiers (Laine Stump),<br/>
+      util: move virInterface(State|Link)/virNetDevFeature from conf to util (Laine Stump),<br/>
+      util: move virNetDevLinkDump to virnetlink.c (Laine Stump),<br/>
+      spec: distribute admin API within libvirt-client package (Erik Skultety),<br/>
+      examples: admin: Add some examples for the new admin APIs (Erik Skultety),<br/>
+      admin: enable both admin API functionality and tarball distribution (Erik Skultety),<br/>
+      vz: always pass graphics address to sdk (Nikolay Shirokovskiy),<br/>
+      vz: support vnc password (Nikolay Shirokovskiy),<br/>
+      vz: remove exlicitly setting zeros in dumping graphics (Nikolay Shirokovskiy),<br/>
+      vz: support attach/detach/update/ of graphics device (Nikolay Shirokovskiy),<br/>
+      vz: move getting container video devices out from vnc code (Nikolay Shirokovskiy),<br/>
+      vz: trustGuestRxFilters fixes (Nikolay Shirokovskiy),<br/>
+      vz: fix minor type safey issues with net union usage (Nikolay Shirokovskiy),<br/>
+      vz: fix updating to no gateways (Nikolay Shirokovskiy),<br/>
+      vz: dump route info in domain xml (Nikolay Shirokovskiy),<br/>
+      vz: dump ip addresses to domain xml (Nikolay Shirokovskiy),<br/>
+      vz: give nice report if network device not found (Nikolay Shirokovskiy),<br/>
+      vz: move disks checks to device post parse (Nikolay Shirokovskiy),<br/>
+      vz: leverage disks parameters check on disks updates too (Nikolay Shirokovskiy),<br/>
+      vz: add device updates (Nikolay Shirokovskiy),<br/>
+      vz: reuse edit config frame in for attach/detach functions (Nikolay Shirokovskiy),<br/>
+      vz: make prlsdkGetDisk more generic (Nikolay Shirokovskiy),<br/>
+      vz: remove disk cache mode hunk (Nikolay Shirokovskiy),<br/>
+      cpu_map.xml: add cmt/mbm feature to x86 (Qiaowei Ren),<br/>
+      cpu: Consolidate ARM drivers (Jiri Denemark),<br/>
+      util: fix build in virNetDevTapGetRealDeviceName (Roman Bogorodskiy),<br/>
+      storage: Introduce virStoragePoolObjBuildTempFilePath (John Ferlan),<br/>
+      Promote storage pool refresh lifecycle event to top level event (Daniel P. Berrange),<br/>
+      util: Add 'luks' to the FileTypeInfo (John Ferlan),<br/>
+      util: Modify the FileTypeInfo to add a version size (John Ferlan),<br/>
+      util: Introduce virReadBufInt16LE and virReadBufInt16BE (John Ferlan),<br/>
+      qemu: Remove authdef from secret setup (John Ferlan),<br/>
+      qemu: Change protocol parameter for secret setup (John Ferlan),<br/>
+      qemu: check the kvm host cpu max limits in virConnectGetDomainCapabilities (Shivaprasad G Bhat),<br/>
+      qemu: Make qemuBuildSecretInfoProps global (John Ferlan),<br/>
+      qemu: Remove type from qemuBuildSecretInfoProps (John Ferlan),<br/>
+      Rename kvmGetMaxVCPUs() to virHostCPUGetKVMMaxVCPUs() (Shivaprasad G Bhat),<br/>
+      conf: Allow disks with identical WWN or serial (Peter Krempa),<br/>
+      build: increase xz compression level (Ján Tomko),<br/>
+      openvz: do not open-code STRSKIP (Ján Tomko),<br/>
+      Replace some uses STREQLEN with STRPREFIX (Ján Tomko),<br/>
+      qemu: Check for VFIO too where legacy passthrough is checked (Shivaprasad G Bhat),<br/>
+      Prohibit opendir in syntax-check (Ján Tomko),<br/>
+      Use virDirOpenQuiet (Ján Tomko),<br/>
+      Introduce virDirOpenQuiet (Ján Tomko),<br/>
+      Use virDirOpenIfExists (Ján Tomko),<br/>
+      Add virDirOpenIfExists (Ján Tomko),<br/>
+      Use virDirOpen (Ján Tomko),<br/>
+      Introduce virDirOpen (Ján Tomko),<br/>
+      openvz: split single-line if (Ján Tomko),<br/>
+      qemu: Use stricter checks in virQEMUCapsFillDomainDeviceDiskCaps() (Andrea Bolognani),<br/>
+      qemu: Introduce qemuDomainMachineIsPSeries() (Andrea Bolognani),<br/>
+      qemu: Add architecture checks to qemuDomainMachineIsVirt() (Andrea Bolognani),<br/>
+      qemu: Remove redundant arguments to qemuBuildSerialChrDeviceStr() (Andrea Bolognani),<br/>
+      Add support for VirtualBox 5 (Martin Pietsch),<br/>
+      Rename virNetClient*AddrString (Ján Tomko),<br/>
+      Rename virNetServerClient*AddrString (Ján Tomko),<br/>
+      Add SASL to virNetSocket{Local,Remote}AddrString (Ján Tomko),<br/>
+      virNetSocket: rename AddrStr to AddrStrSASL (Ján Tomko),<br/>
+      virnetsockettest: fix error messages (Ján Tomko),<br/>
+      Introduce virNetServerClientRemoteAddrStringURI (Ján Tomko),<br/>
+      Introduce virNetSocketRemoteAddrStringURI (Ján Tomko),<br/>
+      Do not skip files starting with a dot in leases directory (Ján Tomko),<br/>
+      Fix comment in virStorageBackendFileSystemRefresh (Ján Tomko),<br/>
+      Do not check for '.' and '..' after virDirRead (Ján Tomko),<br/>
+      Skip '.' and '..' in virDirRead (Ján Tomko),<br/>
+      Introduce VIR_DIR_CLOSE (Ján Tomko),<br/>
+      Do not check the return value of closedir (Ján Tomko),<br/>
+      Do not save errno in virUSBDeviceSearch (Ján Tomko),<br/>
+      tests: utils: Fail XML file comparison if input file doesn't exist (Peter Krempa),<br/>
+      qemu: Add new secret info type (John Ferlan),<br/>
+      util: Introduce virSecretLookupFormatSecret (John Ferlan),<br/>
+      util: Move and rename virStorageAuthDefParseSecret (John Ferlan),<br/>
+      secret: Move virStorageSecretType and rename (John Ferlan),<br/>
+      storage: Remove redundant refreshPool check (Cole Robinson),<br/>
+      qemu: make monitor command API available during async jobs (Nikolay Shirokovskiy),<br/>
+      prohibit-duplicate-header: print file name and line (Ján Tomko),<br/>
+      syntax-check: rewrite prohibit-duplicate-header in perl (Ján Tomko),<br/>
+      Do not ignore perl scripts in build-aux (Ján Tomko),<br/>
+      Add newDomain parameter to qemuDomainAssignAddresses (Ján Tomko),<br/>
+      Add a USB hub to controller order test (Ján Tomko),<br/>
+      conf: Remove dead console compat formatting (Cole Robinson),<br/>
+      Use for instead of code duplication when parsing USB port (Ján Tomko),<br/>
+      Split out USB port parsing (Ján Tomko),<br/>
+      Add a test for long USB port paths (Ján Tomko),<br/>
+      Report auto convergence throttle rate in migration stats (Jiri Denemark),<br/>
+      qemu: Implement auto convergence migration parameters (Jiri Denemark),<br/>
+      qemu: Add support for cpu throttling parameters (Jiri Denemark),<br/>
+      qemu: Introduce qemuMigrationSetParams (Jiri Denemark),<br/>
+      Add auto convergence migration parameters (Jiri Denemark),<br/>
+      test: Rework qemuMonitorJSONGetMigrationParams test (Jiri Denemark),<br/>
+      qemu: Rework qemuMonitorJSONSetMigrationParams (Jiri Denemark),<br/>
+      qemu: Rework qemuMonitorJSONGetMigrationParams (Jiri Denemark),<br/>
+      qemu: Rename qemuMonitorMigrationCompression (Jiri Denemark),<br/>
+      qemu: Decouple migration parameters from compression settings (Jiri Denemark),<br/>
+      qemu: Make qemuMonitorSetMigrationCompression saner (Jiri Denemark),<br/>
+      conf: Simplify conditions in CPU parser/formatter (Jiri Denemark),<br/>
+      qemucapsprobe: Don't put empty line at EOF (Jiri Denemark),<br/>
+      qemu: Hide virQEMUCapsNewForBinary (Jiri Denemark),<br/>
+      qemu: Implement virDomainSetGuestVcpus (Peter Krempa),<br/>
+      qemu: Implement virDomainGetGuestVcpus (Peter Krempa),<br/>
+      qemu: agent: Make setting of vcpus more robust (Peter Krempa),<br/>
+      virsh: Add command 'guestvcpus' implementing virDomain(GS)etGuestVcpus (Peter Krempa),<br/>
+      lib: Add API to set individual vcpu usage in the guest via guest agent (Peter Krempa),<br/>
+      lib: Add API to query guest vcpu info using guest agent (Peter Krempa),<br/>
+      rpcgen: Add support for generating funcs returning alloc'd typed params (Peter Krempa),<br/>
+      storage: Use virSecretGetSecretString (John Ferlan),<br/>
+      storage: Create helper to set options for CreateQemuImg code (John Ferlan),<br/>
+      storage: Create helper to set backing for CreateQemuImg code (John Ferlan),<br/>
+      storage: Adjust qemu-img switches check (John Ferlan),<br/>
+      Do not call postParse with ABI_UPDATE when parsing cmdline (Ján Tomko),<br/>
+      Fix USB port in input-usbmouse test (Ján Tomko),<br/>
+      test-wrap-argv: add --check parameter (Ján Tomko),<br/>
+      test-wrap-argv: add --in-place parameter (Ján Tomko),<br/>
+      test-wrap-argv: hold a copy of the original file in an array (Ján Tomko),<br/>
+      test-wrap-argv: return a string in rewrap_line (Ján Tomko),<br/>
+      test-wrap-argv: use map and join instead of a for cycle (Ján Tomko),<br/>
+      test-wrap-argv: return a string in rewrap_arg (Ján Tomko),<br/>
+      test-wrap-argv: split out rewrap_arg (Ján Tomko),<br/>
+      test-wrap-argv: split out rewrap_line (Ján Tomko),<br/>
+      vsh: remove namespace poisoning (Ján Tomko),<br/>
+      vbox: remove duplicate macros (Ján Tomko),<br/>
+      Remove unused SOL_NETLINK macro (Ján Tomko),<br/>
+      qemu: Fix typo pci-extender-bus -&gt; pci-expander-bus (Andrea Bolognani),<br/>
+      Mark virsh-optparse as expensive (Ján Tomko),<br/>
+      Drop virrandomtest (Ján Tomko),<br/>
+      Remove virsh-synopsis (Ján Tomko),<br/>
+      Introduce virsh self-test (Ján Tomko),<br/>
+      tests: mock gnutls_dh_params_generate2 (Ján Tomko),<br/>
+      Remove virsh-all (Ján Tomko),<br/>
+      util: Add option not to report errors in virGetUserEnt (Peter Krempa),<br/>
+      tools: virt-login-shell: Fix cut'n'paste mistake in error message (Peter Krempa),<br/>
+      conf: Fix label name in virDomainGraphicsListensParseXML (Peter Krempa),<br/>
+      Allow disjunct ranges in VIR_TEST_RANGE (Ján Tomko),<br/>
+      Introduce virBitmapParseUnlimited (Ján Tomko),<br/>
+      Remove separator argument from virBitmapParse (Ján Tomko),<br/>
+      Introduce virBitmapParseSeparator (Ján Tomko),<br/>
+      Do not return number of set bits in virBitmapParse (Ján Tomko),<br/>
+      qemu: Don't use legacy USB for aarch64 mach-virt guests (Andrea Bolognani),<br/>
+      qemu_hotplug: Use a helper variable consistently (Tomasz Flendrich),<br/>
+      virsh: Introduce pool-event command (Jovanka Gulicoska),<br/>
+      libxl: add USB to hostdev domcapabilities (Jim Fehlig),<br/>
+      Remove stray space in cmdHelp (Ján Tomko),<br/>
+      qemu: Permit PCI-free aarch64 mach-virt guests (Andrea Bolognani),<br/>
+      qemuDomainDetachDeviceConfig: Allow cold unplug of redirdevs (Michal Privoznik),<br/>
+      qemuDomainAttachDeviceConfig: Allow redirdev coldplug (Michal Privoznik),<br/>
+      virDomainDeviceInfoIterateInternal: Iterate through redirdevs too (Michal Privoznik),<br/>
+      virDomainRedirdevDef: Introduce find &amp; remove routines (Michal Privoznik),<br/>
+      domain_conf: Validate redirdev after parsing (Michal Privoznik),<br/>
+      configure: remove definition of HAVE_GLIBC_RPCGEN (Ján Tomko),<br/>
+      configure: error out when asked for mpath on non-Linux (Ján Tomko),<br/>
+      qemu: Fix alignment in virDomainDefAddController() call (Andrea Bolognani),<br/>
+      tests: schema: Remove useless perf schema data (Peter Krempa),<br/>
+      docs: virsh: Add minimal documentation for 'mbmt' and 'mbml' perf events (Peter Krempa),<br/>
+      cpu_x86: Use signature in CPU detection code (Jiri Denemark),<br/>
+      cpu: Add Skylake-Client x86 CPU model (Jiri Denemark),<br/>
+      conf: Rename virDomainDefGetMemoryActual to virDomainDefGetMemoryTotal (Peter Krempa),<br/>
+      qemu: don't add pci-bridge to Q35/arm domains unless it's needed (Laine Stump),<br/>
+      qemu: don't be as insistent about adding dmi-to-pci-bridge or pci-bridge (Laine Stump),<br/>
+      util: remove redundant comments (Chen Hanxiao),<br/>
+      event-test: support storage lifecycle event APIs (Jovanka Gulicoska),<br/>
+      storage: implement storage lifecycle event APIs (Jovanka Gulicoska),<br/>
+      remote: implement storage lifecycle event APIs (Jovanka Gulicoska),<br/>
+      test: implement storage lifecycle event APIs (Jovanka Gulicoska),<br/>
+      conf: add storage_event handling (Jovanka Gulicoska),<br/>
+      Introduce storage lifecycle event APIs (Jovanka Gulicoska),<br/>
+      qemu: Remove useless block in processWatchdogEvent (Martin Kletzander),<br/>
+      qemu: Follow coding style convention (Martin Kletzander),<br/>
+      qemu: Unify automatic coredump filenames (Martin Kletzander),<br/>
+      qemu: Add cfg pointer to various command line helpers (John Ferlan),<br/>
+      qemu: Make qemuBuildShmemBackendStr private (John Ferlan),<br/>
+      qemu: migration: use consistent error message (Cole Robinson),<br/>
+      qemu: More usage of qemuDomainDiskBlockJobIsActive (Cole Robinson),<br/>
+      add default mapping of credentials to machine (yuelongguang),<br/>
+      syntax-check: drop prohibit_undesirable_word_seq (Ján Tomko),<br/>
+      maint: Switch to xz compressed PAX release archives (Andrea Bolognani),<br/>
+      vz: get rid of unused home state variable in private domain obj (Nikolay Shirokovskiy),<br/>
+      check-spacing: fix error message (Ján Tomko),<br/>
+      check-spacing: use non-capturing groups (Ján Tomko),<br/>
+      check-spacing: remove virAssertCmpInt exception (Ján Tomko),<br/>
+      check-spacing: simplify keyword spacing check (Ján Tomko),<br/>
+      check-spacing: rewrite regex for checking the closing parenthesis (Ján Tomko),<br/>
+      check-spacing: rewrite whitespace check before (semi)colon (Ján Tomko),<br/>
+      Rename bracket-spacing.pl to check-spacing.pl (Ján Tomko),<br/>
+      Rename virAssertCmpInt to testAssertEq (Ján Tomko),<br/>
+      maint: remove whitespace from closing parentheses (Ján Tomko),<br/>
+      vbox: reformat multi-line error reports (Ján Tomko),<br/>
+      cfg.mk: use a single regex for all non-reentrant functions (Ján Tomko),<br/>
+      xlconfigtest: add test for USB config conversion (Chunyan Liu),<br/>
+      Add conversion of domxml USB config to/from xl.cfg (Chunyan Liu),<br/>
+      libxl: support hotplug USB host device (Chunyan Liu),<br/>
+      libxl: support creating guest with USB hostdev (Chunyan Liu),<br/>
+      qemu: Refactor qemuDomainAttachChrDevice error paths (John Ferlan),<br/>
+      caps: Add capability for tls-x509-creds (John Ferlan),<br/>
+      Change 1.3.6 occurrences to 2.0.0 to follow version bump (Martin Kletzander),<br/>
+      qemu: Obtain job before checking if domain is live (Martin Kletzander),<br/>
+      Bump release to 2.0.0 and document release schedule &amp; versioning (Daniel P. Berrange),<br/>
+      cputest: Get rid of the array of test functions (Jiri Denemark),<br/>
+      qemu: Add support for zero-detection writes (Martin Kletzander),<br/>
+      conf: Add support of zero-detection for disks (Martin Kletzander),<br/>
+      libxl: Add support for ovmf firmware (Jim Fehlig),<br/>
+      xenconfig: support bios=ovmf xl.cfg (Jim Fehlig),<br/>
+      libxl: implement connectGetDomainCapabilities (Jim Fehlig),<br/>
+      libxl: introduce libxl_capabilities.{ch} (Jim Fehlig),<br/>
+      libxl: add default firmwares to driver config object (Jim Fehlig),<br/>
+      driver config: Introduce virFirmware object (Jim Fehlig),<br/>
+      libxl: fix vm lock overwritten bug (Wang Yufei),<br/>
+      virt-host-validate: improve tests for arm/aarch64 (Riku Voipio),<br/>
+      virt-login-shell: mark as Linux only (Roman Bogorodskiy),<br/>
+      vz: implementation of domainSetUserPassword callback (Mikhail Feoktistov),<br/>
+      vz: remove unused macro logPrlEventError (Maxim Nestratov),<br/>
+      vz: keep subscription to performance events thru domain lifetime (Nikolay Shirokovskiy),<br/>
+      vz: use consistent naming for different domain object in vz_driver.c (Nikolay Shirokovskiy),<br/>
+      Export virDomainRedirdevDefFree (Michal Privoznik),<br/>
+      virt-login-shell: add ability to join the container cgroups (Daniel P. Berrange),<br/>
+      virt-login-shell: add ability to auto-detect shell from container (Daniel P. Berrange),<br/>
+      virt-login-shell: fully reset container environment (Daniel P. Berrange),<br/>
+      virt-login-shell: avoid loosing error during cleanup (Daniel P. Berrange),<br/>
+      virt-login-shell: allow shell to be a simple string argument (Daniel P. Berrange),<br/>
+      virt-login-shell: change way we request a login shell (Daniel P. Berrange),<br/>
+      virt-login-shell: honour the -c option to launch commands (Daniel P. Berrange),<br/>
+      virsh: make lxc-enter-namespace also join the cgroups (Daniel P. Berrange),<br/>
+      libvirt-lxc: add virDomainLxcEnterCGroup API (Daniel P. Berrange),<br/>
+      util: add function for looking up the user shell (Daniel P. Berrange),<br/>
+      nodeinfo: move host memory APIs out into virhostmem file (Daniel P. Berrange),<br/>
+      nodeinfo: move host CPU APIs out into virhostcpu.c file (Daniel P. Berrange),<br/>
+      nodeinfo: rename all CPU APIs to have a virHostCPU prefix (Daniel P. Berrange),<br/>
+      nodeinfo: rename all memory APIs to have a virHostMem prefix (Daniel P. Berrange),<br/>
+      nodeinfo: split CPU info retrieval out of nodeGetInfo (Daniel P. Berrange),<br/>
+      nodeinfo: make nodeGetInfo() call nodeGetMemory for memory size (Daniel P. Berrange),<br/>
+      nodeinfo: remove sysfs_prefix from all methods (Daniel P. Berrange),<br/>
+      vnc: add support for listen type none (Pavel Hrdina),<br/>
+      spice: introduce listen type none (Pavel Hrdina),<br/>
+      spice: introduce spice_auto_unix_socket config option (Pavel Hrdina),<br/>
+      spice: add support for listen type socket (Pavel Hrdina),<br/>
+      qemu_capabilites: add QEMU_CAPS_SPICE_UNIX (Pavel Hrdina),<br/>
+      vnc: add support for listen type 'socket' (Pavel Hrdina),<br/>
+      graphics: introduce new listen type 'socket' (Pavel Hrdina),<br/>
+      vnc: move generation of socket path to qemuProcessGraphicsSetupListen (Pavel Hrdina),<br/>
+      vnc: rename socketAutogenerated to socketFromConfig (Pavel Hrdina),<br/>
+      qemu_command: move websocket code into else part for address listen (Pavel Hrdina),<br/>
+      qemuhotplugtest: Test live data (Martin Kletzander),<br/>
+      qemu: Move channel path generation out of command creation (Martin Kletzander),<br/>
+      cputest: Rename nehalem-force to penryn-force (Jiri Denemark),<br/>
+      cpu: Add ARAT x86 CPU feature (Jiri Denemark),<br/>
+      cpu: Add x86 feature flags for CPUID leaf 0xd, sub leaf 1 (Jiri Denemark),<br/>
+      cpu: Sort CPU map features on eax_in (Jiri Denemark),<br/>
+      cpu: Shorten eax_in values in CPU map (Jiri Denemark),<br/>
+      cpu_x86: Add full support for ecx_in CPUID parameter (Jiri Denemark),<br/>
+      cpu_x86: Prepare for ecx_in CPUID parameter (Jiri Denemark),<br/>
+      qemumonitorjsontest: Add getcpu test data (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Xeon X5460 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Xeon W3520 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Xeon E7-4820 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Xeon E5-2650 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Xeon E5-2630 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Xeon E3-1245 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Xeon 5110 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for AMD Phenom II X4 B95 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Pentium P6100 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for AMD Opteron 6282 SE (Jiri Denemark),<br/>
+      tests: Add CPU detection test for AMD Opteron 6234 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for AMD Opteron 2350 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for AMD Opteron 1352 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for AMD FX 8150 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Core2 Quad Q9500 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Core2 Duo E6850 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Core i7-5600U (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Core i7-4600U (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Core i7-3770 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Core i7-3740QM (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Core i7-3520M (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Core i7-2600 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Core i5-6600 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Core i5-4670T (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Core i5-2540M (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Core i5-2500 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Atom N450 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for Intel Atom D510 (Jiri Denemark),<br/>
+      tests: Add CPU detection test for AMD A10-5800K (Jiri Denemark),<br/>
+      tests: Add CPU detection tests (Jiri Denemark),<br/>
+      cpu_x86: Refactor internal KVM features (Jiri Denemark),<br/>
+      cpu_ppc64: Avoid unnecessary pointer to virCPUppc64Data (Jiri Denemark),<br/>
+      cpu_x86: Avoid unnecessary pointers to virCPUx86Data (Jiri Denemark),<br/>
+      tests: Create simple monitor in qemuMonitorTestNewFromFile (Jiri Denemark),<br/>
+      tests: Fix "Reponse" typo (Jiri Denemark),<br/>
+      tests: Introduce qemuMonitorTestNewFromFile (Jiri Denemark),<br/>
+      qemu: Refactor qemuMonitorJSONGetCPUx86Data (Jiri Denemark),<br/>
+      cpu_x86: Rename CPUID function to eax_in (Jiri Denemark),<br/>
+      cpu: Detect arch when parsing CPU data (Jiri Denemark),<br/>
+      cpu_x86: Fix CPU data parser (Jiri Denemark),<br/>
+      cpu_x86: Propagate vendor to guest's virCPUData (Jiri Denemark),<br/>
+      Fix typo in virNetDevGetEthtoolGFeatures stub (Ján Tomko),<br/>
+      tests: Rename virtTestMain to virTestMain. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestErrorFuncQuiet to virTestErrorFuncQuiet. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestCounterNext to virTestCounterNext. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestCaptureProgramOutput to virTestCaptureProgramOutput. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestDifferenceBin to virTestDifferenceBin. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestCaptureProgramExecChild to virTestCaptureProgramExecChild. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestDifferenceFullInternal to virTestDifferenceFullInternal. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestDifferenceFullNoRegenerate. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestQuiesceLibvirtErrors to virTestQuiesceLibvirtErrors. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestUseTerminalColors to virTestUseTerminalColors. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestLogContentAndReset to virTestLogContentAndReset. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestCounterReset to virTestCounterReset. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTest00MActive to virTest00MActive. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestClearCommandPath to virTestClearCommandPath. (Tomáš Ryšavý),<br/>
+      Rename virtTestDifferenceFull to virTestDifferenceFull. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestCompareToFile to virTestCompareToFile. (Tomáš Ryšavý),<br/>
+      Rename virtTestLoadFile to virTestLoadFile. (Tomáš Ryšavý),<br/>
+      Rename virtTestDifference to virTestDifference. (Tomáš Ryšavý),<br/>
+      tests: Rename virtTestRun to virTestRun. (Tomáš Ryšavý),<br/>
+      virschematest: call va_end even on OOM (Ján Tomko),<br/>
+      node_device: Replace VIR_ERROR with standard vir*Error in state driver init (Jovanka Gulicoska),<br/>
+      lxc: simplify lxcDomainGetBlkioParameters (Ján Tomko),<br/>
+      Export virDomainGetBlkioParametersAssignFromDef (Ján Tomko),<br/>
+      Use virDomainObjGetDefs in lxcDomainGetBlkioParameters (Ján Tomko),<br/>
+      Use virDomainObjGetDefs in lxcDomainSetBlkioParameters (Ján Tomko),<br/>
+      Use virDomainObjGetDefs in lxcDomainGetMemoryParameters (Ján Tomko),<br/>
+      Use virDomainObjGetDefs in lxcDomainGetSchedulerParametersFlags (Ján Tomko),<br/>
+      Use virDomainObjGetDefs in lxcDomainSetSchedulerParametersFlags (Ján Tomko),<br/>
+      Use virDomainObjGetDefs in lxcDomainSetMemoryFlags (Ján Tomko),<br/>
+      lxc: rename vmdef to persistentDef (Ján Tomko),<br/>
+      Use @SYSTEM priority for TLS on Fedora &gt;= 21 (Daniel P. Berrange),<br/>
+      remote: allow TLS priority to be customized (Daniel P. Berrange),<br/>
+      Pass config file object through to driver open methods (Daniel P. Berrange),<br/>
+      remote: allow TLS protocol/cipher priority override in URI (Daniel P. Berrange),<br/>
+      libvirtd: add config option for TLS priority (Daniel P. Berrange),<br/>
+      rpc: allow priority string to be passed to TLS context (Daniel P. Berrange),<br/>
+      configure: allow setting default TLS priority string (Daniel P. Berrange),<br/>
+      rpc: set gnutls log function at global init time (Daniel P. Berrange),<br/>
+      tls: remove support for gnutls 1.x.x, require 2.2.0 (Daniel P. Berrange),<br/>
+      qemu_monitor: rephrase error message if qemu closes monitor (Pavel Hrdina),<br/>
+      Introduce virschematest (Ján Tomko),<br/>
+      Introduce virXMLValidatorValidate (Ján Tomko),<br/>
+      Introduce virXMLValidatorInit (Ján Tomko),<br/>
+      Introduce virXMLValidatorFree (Ján Tomko),<br/>
+      Introduce virXMLValidator structure (Ján Tomko),<br/>
+      qemu: domain: Sanitize return value handling in disk presence checker (Peter Krempa),<br/>
+      xen: test for driver=tap2 sub-type in xen-xm (Philipp Hahn),<br/>
+      xen: Also add sub-type for driver=tap2 in xen-xm (Philipp Hahn),<br/>
+      qemu: Replace VIR_ERROR with standard vir*Error in state driver init (Jovanka Gulicoska),<br/>
+      xen: Replace VIR_ERROR with standard vir*Error in state driver init (Jovanka Gulicoska),<br/>
+      uml: Replace VIR_ERROR with standard vir*Error in state driver init (Jovanka Gulicoska),<br/>
+      qemu: migration: Add VM log entry on start of migration (Peter Krempa),<br/>
+      qemu: domain: Implement helper for one-shot log entries to the VM log file (Peter Krempa),<br/>
+      log: daemon: Add remote protocol handling for the log appending API (Peter Krempa),<br/>
+      log: handler: Add new API to append to logging files (Peter Krempa),<br/>
+      util: Perform proper virRandomBytes return value checking (John Ferlan),<br/>
+      Reindent virNetDevSendEthtoolIoctl (Ján Tomko),<br/>
+      Reuse the socket in virNetDevGetFeatures (Ján Tomko),<br/>
+      Return bool in virNetDevFeatureAvailable (Ján Tomko),<br/>
+      Split out virNetDevGetEthtoolGFeatures (Ján Tomko),<br/>
+      Split out virNetDevGetEthtoolFeatures (Ján Tomko),<br/>
+      Move struct elem out of virNetDevGetFeatures (Ján Tomko),<br/>
+      Reindent comment of virNetDevFeatureAvailable (Ján Tomko),<br/>
+      qemu: process: Allow VIR_QEMU_PROCESS_START_NEW in qemuProcessLaunch (Peter Krempa),<br/>
+      Add nomatch filters when enumerating udev devices (Ján Tomko),<br/>
+      node_device_udev: rename labels to cleanup (Ján Tomko),<br/>
+      node_device_udev: remove unnecessary ret variables (Ján Tomko),<br/>
+      qemu: Move check that validates 'min_guarantee' to qemuDomainDefValidate (Peter Krempa),<br/>
+      conf: Move validation of disk LUN device to the appropriate place (Peter Krempa),<br/>
+      conf: Move disk info validator to the domain conf validator (Peter Krempa),<br/>
+      qemu: process: Call the domain config validator when starting a new VM (Peter Krempa),<br/>
+      qemu: process: Convert multiple boolean args to a single flag (Peter Krempa),<br/>
+      qemu: process: Unexport qemuProcessStartValidate (Peter Krempa),<br/>
+      conf: Add device def validation callback (Peter Krempa),<br/>
+      conf: drop 'def' from struct virDomainDefPostParseDeviceIteratorData (Peter Krempa),<br/>
+      conf: Add infrastructure for adding configuration validation (Peter Krempa),<br/>
+      conf: Rename VIR_DOMAIN_DEF_PARSE_VALIDATE to VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA (Peter Krempa),<br/>
+      node_device_udev: remove yoda condition (Ján Tomko),<br/>
+      udevSetupSystemDev: return if allocation fails (Ján Tomko),<br/>
+      Reformat udevProcessRemoveableMedia (Ján Tomko),<br/>
+      udevProcessStorage: trim all whitespace from model and vendor (Ján Tomko),<br/>
+      node_device_udev: switch to using virReportError (Ján Tomko),<br/>
+      Remove PROPERTY_* constants (Ján Tomko),<br/>
+      Only return two values in udevGetUintSysfsAttr (Ján Tomko),<br/>
+      Only return two values in udevGetIntSysfsAttr (Ján Tomko),<br/>
+      Only return two values in udevGetStringSysfsAttr (Ján Tomko),<br/>
+      Remove extra allocation in udevGetDeviceSysfsAttr (Ján Tomko),<br/>
+      Only return two values in udevGetUintProperty (Ján Tomko),<br/>
+      Only return two values in udevGetStringProperty (Ján Tomko),<br/>
+      qemu: Add support to QXL's max_outputs parameter (Martin Kletzander),<br/>
+      qemu: Check for qxl's max_outputs parameter (Martin Kletzander),<br/>
+      Rewrite disk type checking in udevProcessStorage (Ján Tomko),<br/>
+      Fix the return value in udevKludgeStorageType (Ján Tomko),<br/>
+      udevProcessFloppy; remove unnecessary allocation (Ján Tomko),<br/>
+      Move udevHasDeviceProperty earlier (Ján Tomko),<br/>
+      Remove udevStrToLong_i (Ján Tomko),<br/>
+      Remove udevStrToLong_ui (Ján Tomko),<br/>
+      Remove udevStrToLong_ull (Ján Tomko),<br/>
+      Rewrite usage of StrToLong_ui in udevProcess{PCI,SCSI} (Ján Tomko),<br/>
+      udevProcessSCSIHost: use STRSKIP (Ján Tomko),<br/>
+      udevGetDMIData: remove unused variable (Ján Tomko),<br/>
+      Assign node device driver private data earlier (Ján Tomko),<br/>
+      Do not call nodeStateCleanup on early initialization error (Ján Tomko),<br/>
+      Reformat nodeStateCleanup (Ján Tomko),<br/>
+      node_device_udev: initialize libpciaccess after the driver lock (Ján Tomko),<br/>
+      Split out pciaccess (de)initialization (Ján Tomko),<br/>
+      Initialize ret to -1 in nodeStateInitialize (Ján Tomko),<br/>
+      qemu: Move and rename qemuBuildObjectCommandlineFromJSON (John Ferlan),<br/>
+      storage: Create helper to set input for CreateQemuImg code (John Ferlan),<br/>
+      storage: Split out a helper for encryption checks (John Ferlan),<br/>
+      storage: Split out setting default secret for encryption (John Ferlan),<br/>
+      util: Clean up code formatting in virstorageencryption (John Ferlan),<br/>
+      Do not check for domain liveness in virDomainObjSetDefTransient (Ján Tomko),<br/>
+      Check if the domain is active in virDomainObjGetPersistentDef (Ján Tomko),<br/>
+      Clean up redundant usage of virDomainObjSetDefTransient (Ján Tomko),<br/>
+      Post-release version bump to 1.3.6 (Ján Tomko)<br/>
+      </li>
+    </ul>
    <h3>v1.3.5: Jun 04 2016</h3>
     <ul>
       <li>Features:<br/>
