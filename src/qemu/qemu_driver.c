@@ -9176,7 +9176,7 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
         }
     }
 
-#define QEMU_SET_MEM_PARAMETER(FUNC, VALUE)                                     \
+#define VIR_SET_MEM_PARAMETER(FUNC, VALUE)                                      \
     if (set_ ## VALUE) {                                                        \
         if (def) {                                                              \
             if ((rc = FUNC(priv->cgroup, VALUE)) < 0)                           \
@@ -9189,21 +9189,21 @@ qemuDomainSetMemoryParameters(virDomainPtr dom,
     }
 
     /* Soft limit doesn't clash with the others */
-    QEMU_SET_MEM_PARAMETER(virCgroupSetMemorySoftLimit, soft_limit);
+    VIR_SET_MEM_PARAMETER(virCgroupSetMemorySoftLimit, soft_limit);
 
     /* set hard limit before swap hard limit if decreasing it */
     if (def && def->mem.hard_limit > hard_limit) {
-        QEMU_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
+        VIR_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
         /* inhibit changing the limit a second time */
         set_hard_limit = false;
     }
 
-    QEMU_SET_MEM_PARAMETER(virCgroupSetMemSwapHardLimit, swap_hard_limit);
+    VIR_SET_MEM_PARAMETER(virCgroupSetMemSwapHardLimit, swap_hard_limit);
 
     /* otherwise increase it after swap hard limit */
-    QEMU_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
+    VIR_SET_MEM_PARAMETER(virCgroupSetMemoryHardLimit, hard_limit);
 
-#undef QEMU_SET_MEM_PARAMETER
+#undef VIR_SET_MEM_PARAMETER
 
     if (def &&
         virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
