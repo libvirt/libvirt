@@ -71,6 +71,7 @@ typedef struct
 typedef enum {
    DNSMASQ_CAPS_BIND_DYNAMIC = 0, /* support for --bind-dynamic */
    DNSMASQ_CAPS_BINDTODEVICE = 1, /* uses SO_BINDTODEVICE for --bind-interfaces */
+   DNSMASQ_CAPS_RA_PARAM = 2,     /* support for --ra-param */
 
    DNSMASQ_CAPS_LAST,             /* this must always be the last item */
 } dnsmasqCapsFlags;

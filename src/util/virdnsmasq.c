@@ -688,12 +688,16 @@ dnsmasqCapsSetFromBuffer(dnsmasqCapsPtr caps, const char *buf)
     if (strstr(buf, "--bind-interfaces with SO_BINDTODEVICE"))
         dnsmasqCapsSet(caps, DNSMASQ_CAPS_BINDTODEVICE);
 
+    if (strstr(buf, "--ra-param"))
+        dnsmasqCapsSet(caps, DNSMASQ_CAPS_RA_PARAM);
+
     VIR_INFO("dnsmasq version is %d.%d, --bind-dynamic is %spresent, "
-             "SO_BINDTODEVICE is %sin use",
+             "SO_BINDTODEVICE is %sin use, --ra-param is %spresent",
              (int)caps->version / 1000000,
              (int)(caps->version % 1000000) / 1000,
              dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC) ? "" : "NOT ",
-             dnsmasqCapsGet(caps, DNSMASQ_CAPS_BINDTODEVICE) ? "" : "NOT ");
+             dnsmasqCapsGet(caps, DNSMASQ_CAPS_BINDTODEVICE) ? "" : "NOT ",
+             dnsmasqCapsGet(caps, DNSMASQ_CAPS_RA_PARAM) ? "" : "NOT ");
     return 0;
 
  fail:

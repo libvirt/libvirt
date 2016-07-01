@@ -1047,10 +1047,17 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
      * requests are forwarded on to the dns server listed in the
      * host's /etc/resolv.conf (since this could be used as a channel
      * to build a connection to the outside).
+     * IPv6 RA always contains an implicit default route
+     * via the sender's link-local address. The only thing we can do
+     * is set the lifetime of this route to 0, i.e. disable it.
      */
     if (network->def->forward.type == VIR_NETWORK_FORWARD_NONE) {
         virBufferAddLit(&configbuf, "dhcp-option=3\n"
                         "no-resolv\n");
+        if (dnsmasqCapsGet(caps, DNSMASQ_CAPS_RA_PARAM)) {
+            /* interface=* (any), interval=0 (default), lifetime=0 (seconds) */
+            virBufferAddLit(&configbuf, "ra-param=*,0,0\n");
+        }
     }
 
     for (i = 0; i < dns->ntxts; i++) {
