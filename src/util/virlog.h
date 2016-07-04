@@ -130,6 +130,9 @@ struct _virLogMetadata {
 typedef struct _virLogMetadata virLogMetadata;
 typedef struct _virLogMetadata *virLogMetadataPtr;
 
+typedef struct _virLogOutput virLogOutput;
+typedef virLogOutput *virLogOutputPtr;
+
 /**
  * virLogOutputFunc:
  * @src: the source of the log message
@@ -187,6 +190,7 @@ int virLogDefineOutput(virLogOutputFunc f,
                        virLogDestination dest,
                        const char *name,
                        unsigned int flags);
+void virLogOutputFree(virLogOutputPtr output);
 
 /*
  * Internal logging API

@@ -106,8 +106,6 @@ struct _virLogOutput {
     virLogDestination dest;
     char *name;
 };
-typedef struct _virLogOutput virLogOutput;
-typedef virLogOutput *virLogOutputPtr;
 
 static virLogOutputPtr *virLogOutputs;
 static size_t virLogNbOutputs;
@@ -329,16 +327,26 @@ virLogResetOutputs(void)
 {
     size_t i;
 
-    for (i = 0; i < virLogNbOutputs; i++) {
-        if (virLogOutputs[i]->c != NULL)
-            virLogOutputs[i]->c(virLogOutputs[i]->data);
-        VIR_FREE(virLogOutputs[i]->name);
-        VIR_FREE(virLogOutputs[i]);
-    }
+    for (i = 0; i < virLogNbOutputs; i++)
+        virLogOutputFree(virLogOutputs[i]);
+
     VIR_FREE(virLogOutputs);
     virLogNbOutputs = 0;
 }
 
+
+void
+virLogOutputFree(virLogOutputPtr output)
+{
+    if (!output)
+        return;
+
+    if (output->c)
+        output->c(output->data);
+    VIR_FREE(output->name);
+    VIR_FREE(output);
+
+}
 
 /**
  * virLogDefineOutput:
