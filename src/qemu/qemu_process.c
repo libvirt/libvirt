@@ -4627,80 +4627,12 @@ qemuProcessSetupVcpu(virDomainObjPtr vm,
 {
     pid_t vcpupid = qemuDomainGetVcpuPid(vm, vcpuid);
     virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, vcpuid);
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *mem_mask = NULL;
-    virDomainNumatuneMemMode mem_mode;
-    unsigned long long period = vm->def->cputune.period;
-    long long quota = vm->def->cputune.quota;
-    virCgroupPtr cgroup_vcpu = NULL;
-    virBitmapPtr cpumask;
-    int ret = -1;
 
-    if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) ||
-        virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-
-        if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
-            mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
-            virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
-                                                priv->autoNodeset,
-                                                &mem_mask, -1) < 0)
-            goto cleanup;
-
-        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, vcpuid,
-                               true, &cgroup_vcpu) < 0)
-            goto cleanup;
-
-        if (period || quota) {
-            if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
-                goto cleanup;
-        }
-    }
-
-    /* infer which cpumask shall be used */
-    if (vcpu->cpumask)
-        cpumask = vcpu->cpumask;
-    else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO)
-        cpumask = priv->autoCpuset;
-    else
-        cpumask = vm->def->cpumask;
-
-    /* setup cgroups */
-    if (cgroup_vcpu) {
-        if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-            if (mem_mask && virCgroupSetCpusetMems(cgroup_vcpu, mem_mask) < 0)
-                goto cleanup;
-
-            if (cpumask && qemuSetupCgroupCpusetCpus(cgroup_vcpu, cpumask) < 0)
-                goto cleanup;
-        }
-
-        /* move the thread for vcpu to sub dir */
-        if (virCgroupAddTask(cgroup_vcpu, vcpupid) < 0)
-            goto cleanup;
-    }
-
-    /* setup legacy affinty */
-    if (cpumask && virProcessSetAffinity(vcpupid, cpumask) < 0)
-        goto cleanup;
-
-    /* set scheduler type and priority */
-    if (vcpu->sched.policy != VIR_PROC_POLICY_NONE) {
-        if (virProcessSetScheduler(vcpupid, vcpu->sched.policy,
-                                   vcpu->sched.priority) < 0)
-            goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(mem_mask);
-    if (cgroup_vcpu) {
-        if (ret < 0)
-            virCgroupRemove(cgroup_vcpu);
-        virCgroupFree(&cgroup_vcpu);
-    }
-
-    return ret;
+    return qemuProcessSetupPid(vm, vcpupid, VIR_CGROUP_THREAD_VCPU,
+                               vcpuid, vcpu->cpumask,
+                               vm->def->cputune.period,
+                               vm->def->cputune.quota,
+                               &vcpu->sched);
 }
 
 
