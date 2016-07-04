@@ -2415,70 +2415,11 @@ qemuProcessSetupPid(virDomainObjPtr vm,
 static int
 qemuProcessSetupEmulator(virDomainObjPtr vm)
 {
-    virBitmapPtr cpumask = NULL;
-    virCgroupPtr cgroup_emulator = NULL;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    unsigned long long period = vm->def->cputune.emulator_period;
-    long long quota = vm->def->cputune.emulator_quota;
-    int ret = -1;
-
-    if ((period || quota) &&
-        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("cgroup cpu is required for scheduler tuning"));
-        return -1;
-    }
-
-    if (vm->def->cputune.emulatorpin)
-        cpumask = vm->def->cputune.emulatorpin;
-    else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
-             priv->autoCpuset)
-        cpumask = priv->autoCpuset;
-    else
-        cpumask = vm->def->cpumask;
-
-    /* If CPU cgroup controller is not initialized here, then we need
-     * neither period nor quota settings.  And if CPUSET controller is
-     * not initialized either, then there's nothing to do anyway. */
-    if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) ||
-        virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-
-        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
-                               true, &cgroup_emulator) < 0)
-            goto cleanup;
-
-        if (virCgroupAddTask(cgroup_emulator, vm->pid) < 0)
-            goto cleanup;
-
-
-        if (cpumask) {
-            if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET) &&
-                qemuSetupCgroupCpusetCpus(cgroup_emulator, cpumask) < 0)
-                goto cleanup;
-        }
-
-        if (period || quota) {
-            if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) &&
-                qemuSetupCgroupVcpuBW(cgroup_emulator, period,
-                                      quota) < 0)
-                goto cleanup;
-        }
-    }
-
-    if (cpumask &&
-        virProcessSetAffinity(vm->pid, cpumask) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    if (cgroup_emulator) {
-        if (ret < 0)
-            virCgroupRemove(cgroup_emulator);
-        virCgroupFree(&cgroup_emulator);
-    }
-
-    return ret;
+    return qemuProcessSetupPid(vm, vm->pid, VIR_CGROUP_THREAD_EMULATOR,
+                               0, vm->def->cputune.emulatorpin,
+                               vm->def->cputune.emulator_period,
+                               vm->def->cputune.emulator_quota,
+                               NULL);
 }
 
 
