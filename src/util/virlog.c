@@ -86,8 +86,6 @@ struct _virLogFilter {
     virLogPriority priority;
     unsigned int flags;
 };
-typedef struct _virLogFilter virLogFilter;
-typedef virLogFilter *virLogFilterPtr;
 
 static int virLogFiltersSerial = 1;
 static virLogFilterPtr *virLogFilters;
@@ -243,15 +241,23 @@ virLogResetFilters(void)
 {
     size_t i;
 
-    for (i = 0; i < virLogNbFilters; i++) {
-        VIR_FREE(virLogFilters[i]->match);
-        VIR_FREE(virLogFilters[i]);
-    }
+    for (i = 0; i < virLogNbFilters; i++)
+        virLogFilterFree(virLogFilters[i]);
     VIR_FREE(virLogFilters);
     virLogNbFilters = 0;
     virLogFiltersSerial++;
 }
 
+
+void
+virLogFilterFree(virLogFilterPtr filter)
+{
+    if (!filter)
+        return;
+
+    VIR_FREE(filter->match);
+    VIR_FREE(filter);
+}
 
 /**
  * virLogDefineFilter:

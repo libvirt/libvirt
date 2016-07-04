@@ -133,6 +133,9 @@ typedef struct _virLogMetadata *virLogMetadataPtr;
 typedef struct _virLogOutput virLogOutput;
 typedef virLogOutput *virLogOutputPtr;
 
+typedef struct _virLogFilter virLogFilter;
+typedef virLogFilter *virLogFilterPtr;
+
 /**
  * virLogOutputFunc:
  * @src: the source of the log message
@@ -192,6 +195,7 @@ int virLogDefineOutput(virLogOutputFunc f,
                        unsigned int flags);
 void virLogOutputFree(virLogOutputPtr output);
 void virLogOutputListFree(virLogOutputPtr *list, int count);
+void virLogFilterFree(virLogFilterPtr filter);
 
 /*
  * Internal logging API
