@@ -150,6 +150,7 @@
   <flag name='qxl-vga.vram64_size_mb'/>
   <flag name='device-tray-moved-event'/>
   <flag name='nec-usb-xhci-ports'/>
+  <flag name='display'/>
   <version>1007000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

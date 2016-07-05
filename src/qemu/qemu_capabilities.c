@@ -337,6 +337,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "drive-detect-zeroes",
 
               "tls-creds-x509", /* 230 */
+              "display",
     );
 
 
@@ -1149,6 +1150,8 @@ virQEMUCapsComputeCmdFlags(const char *help,
     if (strstr(help, "bps="))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE);
 
+    if (strstr(help, "-display"))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_DISPLAY);
     if ((p = strstr(help, "-vga")) && !strstr(help, "-std-vga")) {
         const char *nl = strstr(p, "\n");
         if (strstr(p, "|qxl"))
@@ -3411,6 +3414,7 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DUMP_GUEST_CORE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VNC_SHARE_POLICY);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DISPLAY);
 }
 
 /* Capabilities that are architecture depending

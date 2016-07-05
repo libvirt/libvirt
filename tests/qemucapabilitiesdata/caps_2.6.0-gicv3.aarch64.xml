@@ -157,6 +157,7 @@
   <flag name='name-guest'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='tls-creds-x509'/>
+  <flag name='display'/>
   <version>2005094</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

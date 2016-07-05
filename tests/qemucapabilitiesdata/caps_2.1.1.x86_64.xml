@@ -165,6 +165,7 @@
   <flag name='nec-usb-xhci-ports'/>
   <flag name='name-guest'/>
   <flag name='drive-detect-zeroes'/>
+  <flag name='display'/>
   <version>2001001</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
