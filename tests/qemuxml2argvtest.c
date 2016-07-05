@@ -923,6 +923,8 @@ mymain(void)
     DO_TEST("graphics-sdl", QEMU_CAPS_SDL);
     DO_TEST("graphics-sdl-fullscreen", QEMU_CAPS_SDL);
     DO_TEST("nographics", NONE);
+    DO_TEST("nographics-display",
+            QEMU_CAPS_DISPLAY);
     DO_TEST("nographics-vga",
             QEMU_CAPS_VGA_NONE);
     DO_TEST("graphics-spice",

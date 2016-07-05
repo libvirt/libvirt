@@ -448,7 +448,7 @@ mymain(void)
     DO_TEST("graphics-spice-auto-socket-cfg");
     cfg->spiceAutoUnixSocket = false;
 
-    DO_TEST("nographics-vga");
+    DO_TEST_FULL("nographics-vga", WHEN_BOTH, GIC_NONE, QEMU_CAPS_DISPLAY);
     DO_TEST("input-usbmouse");
     DO_TEST("input-usbtablet");
     DO_TEST("misc-acpi");

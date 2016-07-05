@@ -232,6 +232,7 @@ mymain(void)
     DO_TEST("graphics-sdl");
     DO_TEST("graphics-sdl-fullscreen");
     DO_TEST("nographics-vga");
+    DO_TEST("nographics-vga-display");
     DO_TEST("input-usbmouse");
     DO_TEST("input-usbtablet");
     DO_TEST("misc-acpi");

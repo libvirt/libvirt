@@ -2039,6 +2039,10 @@ qemuParseCommandLine(virCapsPtr caps,
             def->virtType = VIR_DOMAIN_VIRT_KVM;
         } else if (STREQ(arg, "-nographic")) {
             nographics = true;
+        } else if (STREQ(arg, "-display")) {
+            WANT_VALUE();
+            if (STREQ(val, "none"))
+                nographics = true;
         } else if (STREQ(arg, "-full-screen")) {
             fullscreen = true;
         } else if (STREQ(arg, "-localtime")) {
