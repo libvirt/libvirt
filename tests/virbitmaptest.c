@@ -191,6 +191,23 @@ test4(const void *data ATTRIBUTE_UNUSED)
     if (ARRAY_CARDINALITY(bitsPos) + ARRAY_CARDINALITY(bitsPosInv) != size)
         goto error;
 
+    /* 0. empty set */
+
+    if (!(bitmap = virBitmapNewEmpty()))
+        goto error;
+
+    if (virBitmapNextSetBit(bitmap, -1) != -1)
+        goto error;
+
+    if (virBitmapLastSetBit(bitmap) != -1)
+        goto error;
+
+    if (virBitmapNextClearBit(bitmap, -1) != -1)
+        goto error;
+
+    virBitmapFree(bitmap);
+    bitmap = NULL;
+
     /* 1. zero set */
 
     bitmap = virBitmapNew(size);
