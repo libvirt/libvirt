@@ -60,8 +60,8 @@ struct _virBitmap {
  *
  * Allocate a bitmap capable of containing @size bits.
  *
- * Returns a pointer to the allocated bitmap or NULL if memory cannot be
- * allocated. Does not report libvirt errors.
+ * Returns a pointer to the allocated bitmap or NULL if either memory cannot be
+ * allocated or size is 0. Does not report libvirt errors.
  */
 virBitmapPtr
 virBitmapNewQuiet(size_t size)
@@ -95,8 +95,8 @@ virBitmapNewQuiet(size_t size)
  *
  * Allocate a bitmap capable of containing @size bits.
  *
- * Returns a pointer to the allocated bitmap or NULL if memory cannot be
- * allocated. Reports libvirt errors.
+ * Returns a pointer to the allocated bitmap or NULL if either memory cannot be
+ * allocated or size is 0. Reports libvirt errors.
  */
 virBitmapPtr
 virBitmapNew(size_t size)
