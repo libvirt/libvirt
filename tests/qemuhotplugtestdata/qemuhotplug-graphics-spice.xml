@@ -23,22 +23,24 @@
     <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
-    <graphics autoport='yes' connected='disconnect' keymap='en-us' passwd='password' passwdValidTo='2013-06-20T01:34:37' port='5900' tlsPort='5901' type='spice'>
-      <listen address='10.65.210.231' network='vdsm-rhevm' type='network'/>
-      <channel mode='secure' name='main'/>
-      <channel mode='secure' name='display'/>
-      <channel mode='secure' name='inputs'/>
-      <channel mode='secure' name='cursor'/>
-      <channel mode='secure' name='playback'/>
-      <channel mode='secure' name='record'/>
-      <channel mode='secure' name='smartcard'/>
-      <channel mode='secure' name='usbredir'/>
+    <input type='keyboard' bus='ps2'/>
+    <graphics type='spice' port='5903' tlsPort='5904' autoport='no' listen='127.0.0.1' defaultMode='secure'>
+      <listen type='address' address='127.0.0.1'/>
+      <channel name='main' mode='secure'/>
+      <channel name='inputs' mode='insecure'/>
+      <image compression='auto_glz'/>
+      <jpeg compression='auto'/>
+      <zlib compression='auto'/>
+      <playback compression='on'/>
+      <streaming mode='filter'/>
+      <clipboard copypaste='no'/>
+      <filetransfer enable='no'/>
     </graphics>
     <video>
-      <model type='qxl' ram='65536' vram='18432' heads='1'/>
+      <model type='qxl' ram='65536' vram='32768' vgamem='8192' heads='1'/>
     </video>
     <video>
-      <model type='qxl' ram='65536' vram='32768' heads='1'/>
+      <model type='qxl' ram='65536' vram='32768' vgamem='8192' heads='1'/>
     </video>
     <memballoon model='virtio'/>
   </devices>
