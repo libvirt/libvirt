@@ -158,11 +158,11 @@ EXTRA_DIST =		\
 	xml2sexprdata \
 	xml2vmxdata
 
-test_helpers = commandhelper ssh virconftest
+test_helpers = commandhelper ssh
 test_programs = virshtest sockettest \
 	virhostcputest virbuftest \
 	commandtest seclabeltest \
-	virhashtest \
+	virhashtest virconftest \
 	viratomictest \
 	utiltest shunloadtest \
 	virtimetest viruritest virkeyfiletest \
@@ -360,7 +360,6 @@ test_scripts =
 libvirtd_test_scripts =		\
 	libvirtd-fail			\
 	libvirtd-pool			\
-	virconftest.sh			\
 	virsh-cpuset			\
 	virsh-define-dev-segfault	\
 	virsh-int-overflow		\
@@ -893,7 +892,7 @@ virshtest_SOURCES = \
 virshtest_LDADD = $(LDADDS)
 
 virconftest_SOURCES = \
-	virconftest.c
+	virconftest.c testutils.h testutils.c
 virconftest_LDADD = $(LDADDS)
 
 virhostcputest_SOURCES = \
