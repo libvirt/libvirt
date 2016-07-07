@@ -2214,6 +2214,9 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
         }
         break;
     }
+
+    virObjectUnref(def->privateData);
+    def->privateData = NULL;
 }
 
 void virDomainTPMDefFree(virDomainTPMDefPtr def)
