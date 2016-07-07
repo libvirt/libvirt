@@ -61,7 +61,7 @@ typedef virConfValue *virConfValuePtr;
 struct _virConfValue {
     virConfType type;		/* the virConfType */
     virConfValuePtr next;	/* next element if in a list */
-    long  l;			/* long integer */
+    long long  l;		/* very long integer */
     char *str;			/* pointer to 0 terminated string */
     virConfValuePtr list;	/* list of a list */
 };
@@ -85,6 +85,38 @@ int virConfFree(virConfPtr conf);
 void virConfFreeValue(virConfValuePtr val);
 virConfValuePtr virConfGetValue(virConfPtr conf,
                                 const char *setting);
+
+virConfType virConfGetValueType(virConfPtr conf,
+                                const char *setting);
+int virConfGetValueString(virConfPtr conf,
+                          const char *setting,
+                          char **value);
+int virConfGetValueStringList(virConfPtr conf,
+                              const char *setting,
+                              bool compatString,
+                              char ***values);
+int virConfGetValueBool(virConfPtr conf,
+                        const char *setting,
+                        bool *value);
+int virConfGetValueInt(virConfPtr conf,
+                       const char *setting,
+                       int *value);
+int virConfGetValueUInt(virConfPtr conf,
+                        const char *setting,
+                        unsigned int *value);
+int virConfGetValueSizeT(virConfPtr conf,
+                         const char *setting,
+                         size_t *value);
+int virConfGetValueSSizeT(virConfPtr conf,
+                          const char *setting,
+                          ssize_t *value);
+int virConfGetValueLLong(virConfPtr conf,
+                        const char *setting,
+                        long long *value);
+int virConfGetValueULLong(virConfPtr conf,
+                          const char *setting,
+                          unsigned long long *value);
+
 int virConfSetValue(virConfPtr conf,
                     const char *setting,
                     virConfValuePtr value);
