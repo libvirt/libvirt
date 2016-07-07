@@ -225,12 +225,12 @@ testQemuHotplug(const void *data)
     qemuMonitorTestPtr test_mon = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
 
-    if (virAsprintf(&domain_filename, "%s/qemuhotplugtestdata/qemuhotplug-%s.xml",
+    if (virAsprintf(&domain_filename, "%s/qemuhotplugtestdomains/qemuhotplug-%s.xml",
                     abs_srcdir, test->domain_filename) < 0 ||
-        virAsprintf(&device_filename, "%s/qemuhotplugtestdata/qemuhotplug-%s.xml",
+        virAsprintf(&device_filename, "%s/qemuhotplugtestdevices/qemuhotplug-%s.xml",
                     abs_srcdir, test->device_filename) < 0 ||
         virAsprintf(&result_filename,
-                    "%s/qemuhotplugtestdata/qemuhotplug-%s+%s.xml",
+                    "%s/qemuhotplugtestdomains/qemuhotplug-%s+%s.xml",
                     abs_srcdir, test->domain_filename,
                     test->device_filename) < 0)
         goto cleanup;
