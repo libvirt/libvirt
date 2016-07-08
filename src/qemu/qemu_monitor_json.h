@@ -494,4 +494,9 @@ int qemuMonitorJSONMigrateStartPostCopy(qemuMonitorPtr mon)
 int qemuMonitorJSONGetRTCTime(qemuMonitorPtr mon,
                               struct tm *tm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int qemuMonitorJSONGetHotpluggableCPUs(qemuMonitorPtr mon,
+                                       struct qemuMonitorQueryHotpluggableCpusEntry **entries,
+                                       size_t *nentries)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 #endif /* QEMU_MONITOR_JSON_H */

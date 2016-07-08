@@ -7070,3 +7070,173 @@ qemuMonitorJSONGetRTCTime(qemuMonitorPtr mon,
     virJSONValueFree(reply);
     return ret;
 }
+
+
+void
+qemuMonitorQueryHotpluggableCpusFree(struct qemuMonitorQueryHotpluggableCpusEntry *entries,
+                                     size_t nentries)
+{
+    struct qemuMonitorQueryHotpluggableCpusEntry *entry;
+    size_t i;
+
+    if (!entries)
+        return;
+
+    for (i = 0; i < nentries; i++) {
+        entry = entries + i;
+
+        VIR_FREE(entry->type);
+        VIR_FREE(entry->qom_path);
+        VIR_FREE(entry->alias);
+    }
+
+    VIR_FREE(entries);
+}
+
+
+/**
+ * [{
+ *    "props": {
+ *      "core-id": 0,
+ *      "thread-id": 0,
+ *      "socket-id": 0
+ *    },
+ *    "vcpus-count": 1,
+ *    "qom-path": "/machine/unattached/device[0]",
+ *    "type": "qemu64-x86_64-cpu"
+ *  },
+ *  {...}
+ * ]
+ */
+static int
+qemuMonitorJSONProcessHotpluggableCpusReply(virJSONValuePtr vcpu,
+                                            struct qemuMonitorQueryHotpluggableCpusEntry *entry)
+{
+    virJSONValuePtr props;
+    const char *tmp;
+
+    if (!(tmp = virJSONValueObjectGetString(vcpu, "type"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-hotpluggable-cpus didn't return device type"));
+        return -1;
+    }
+
+    if (VIR_STRDUP(entry->type, tmp) < 0)
+        return -1;
+
+    if (virJSONValueObjectGetNumberUint(vcpu, "vcpus-count", &entry->vcpus) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-hotpluggable-cpus didn't return vcpus-count"));
+        return -1;
+    }
+
+    if (!(props = virJSONValueObjectGetObject(vcpu, "props"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-hotpluggable-cpus didn't return device props"));
+        return -1;
+    }
+
+    entry->node_id = -1;
+    entry->socket_id = -1;
+    entry->core_id = -1;
+    entry->thread_id = -1;
+
+    ignore_value(virJSONValueObjectGetNumberInt(props, "node-id", &entry->node_id));
+    ignore_value(virJSONValueObjectGetNumberInt(props, "socket-id", &entry->socket_id));
+    ignore_value(virJSONValueObjectGetNumberInt(props, "core-id", &entry->core_id));
+    ignore_value(virJSONValueObjectGetNumberInt(props, "thread-id", &entry->thread_id));
+
+    if (entry->node_id == -1 && entry->socket_id == -1 &&
+        entry->core_id == -1 && entry->thread_id == -1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-hotpluggable-cpus entry doesn't report "
+                         "topology information"));
+        return -1;
+    }
+
+    /* qom path is not present unless the vCPU is online */
+    if ((tmp = virJSONValueObjectGetString(vcpu, "qom-path"))) {
+        if (VIR_STRDUP(entry->qom_path, tmp) < 0)
+            return -1;
+
+        /* alias is the part after last slash having a "vcpu" prefix */
+        if ((tmp = strrchr(tmp, '/')) && STRPREFIX(tmp + 1, "vcpu")) {
+            if (VIR_STRDUP(entry->alias, tmp + 1) < 0)
+                return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+qemuMonitorQueryHotpluggableCpusEntrySort(const void *p1,
+                                          const void *p2)
+{
+    const struct qemuMonitorQueryHotpluggableCpusEntry *a = p1;
+    const struct qemuMonitorQueryHotpluggableCpusEntry *b = p2;
+
+    if (a->socket_id != b->socket_id)
+        return a->socket_id - b->socket_id;
+
+    if (a->core_id != b->core_id)
+        return a->core_id - b->core_id;
+
+    return a->thread_id - b->thread_id;
+}
+
+
+int
+qemuMonitorJSONGetHotpluggableCPUs(qemuMonitorPtr mon,
+                                   struct qemuMonitorQueryHotpluggableCpusEntry **entries,
+                                   size_t *nentries)
+{
+    struct qemuMonitorQueryHotpluggableCpusEntry *info = NULL;
+    ssize_t ninfo = 0;
+    int ret = -1;
+    size_t i;
+    virJSONValuePtr data;
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr vcpu;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-hotpluggable-cpus", NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    data = virJSONValueObjectGet(reply, "return");
+
+    if ((ninfo = virJSONValueArraySize(data)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-hotpluggable-cpus reply is not an array"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(info, ninfo) < 0)
+        goto cleanup;
+
+    for (i = 0; i < ninfo; i++) {
+        vcpu = virJSONValueArrayGet(data, i);
+
+        if (qemuMonitorJSONProcessHotpluggableCpusReply(vcpu, info + i) < 0)
+            goto cleanup;
+    }
+
+    qsort(info, ninfo, sizeof(*info), qemuMonitorQueryHotpluggableCpusEntrySort);
+
+    VIR_STEAL_PTR(*entries, info);
+    *nentries = ninfo;
+    ret = 0;
+
+ cleanup:
+    qemuMonitorQueryHotpluggableCpusFree(info, ninfo);
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return ret;
+}

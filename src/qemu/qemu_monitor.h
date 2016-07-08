@@ -398,6 +398,22 @@ void qemuMonitorQueryCpusFree(struct qemuMonitorQueryCpusEntry *entries,
                               size_t nentries);
 
 
+struct qemuMonitorQueryHotpluggableCpusEntry {
+    char *type; /* name of the cpu to use with device_add */
+    unsigned int vcpus; /* count of virtual cpus in the guest this entry adds */
+    char *qom_path; /* full device qom path only present for online cpus */
+    char *alias; /* device alias, may be NULL for non-hotpluggable entities */
+
+    /* topology information -1 if qemu didn't report given parameter */
+    int node_id;
+    int socket_id;
+    int core_id;
+    int thread_id;
+};
+void qemuMonitorQueryHotpluggableCpusFree(struct qemuMonitorQueryHotpluggableCpusEntry *entries,
+                                          size_t nentries);
+
+
 struct _qemuMonitorCPUInfo {
     pid_t tid;
 };
