@@ -547,6 +547,15 @@ qemuDomainWriteMasterKeyFile(virQEMUDriverPtr driver,
 }
 
 
+static void
+qemuDomainMasterKeyFree(qemuDomainObjPrivatePtr priv)
+{
+    if (!priv->masterKey)
+        return;
+
+    VIR_DISPOSE_N(priv->masterKey, priv->masterKeyLen);
+}
+
 /* qemuDomainMasterKeyReadFile:
  * @priv: pointer to domain private object
  *
@@ -645,9 +654,7 @@ qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv)
         return;
 
     /* Clear the contents */
-    memset(priv->masterKey, 0, priv->masterKeyLen);
-    VIR_FREE(priv->masterKey);
-    priv->masterKeyLen = 0;
+    qemuDomainMasterKeyFree(priv);
 
     /* Delete the master key file */
     path = qemuDomainGetMasterKeyFilePath(priv->libDir);
@@ -1317,6 +1324,7 @@ qemuDomainObjPrivateFree(void *data)
 
     VIR_FREE(priv->libDir);
     VIR_FREE(priv->channelTargetDir);
+    qemuDomainMasterKeyFree(priv);
 
     VIR_FREE(priv);
 }
