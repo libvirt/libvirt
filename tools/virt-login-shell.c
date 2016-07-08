@@ -50,46 +50,38 @@ static int virLoginShellAllowedUser(virConfPtr conf,
                                     gid_t *groups,
                                     size_t ngroups)
 {
-    virConfValuePtr p;
     int ret = -1;
-    char *ptr = NULL;
     size_t i;
     char *gname = NULL;
+    char **users = NULL, **entries;
 
-    p = virConfGetValue(conf, "allowed_users");
-    if (p && p->type == VIR_CONF_LIST) {
-        virConfValuePtr pp;
+    if (virConfGetValueStringList(conf, "allowed_users", false, &users) < 0)
+        goto cleanup;
 
-        /* Calc length and check items */
-        for (pp = p->list; pp; pp = pp->next) {
-            if (pp->type != VIR_CONF_STRING) {
-                virReportSystemError(EINVAL, "%s",
-                                     _("allowed_users must be a list of strings"));
-                goto cleanup;
-            } else {
-                /*
-                  If string begins with a % this indicates a linux group.
-                  Check to see if the user is in the Linux Group.
-                */
-                if (pp->str[0] == '%') {
-                    ptr = &pp->str[1];
-                    if (!*ptr)
-                        continue;
-                    for (i = 0; i < ngroups; i++) {
-                        if (!(gname = virGetGroupName(groups[i])))
-                            continue;
-                        if (fnmatch(ptr, gname, 0) == 0) {
-                            ret = 0;
-                            goto cleanup;
-                        }
-                        VIR_FREE(gname);
-                    }
+
+    for (entries = users; *entries; entries++) {
+        char *entry = *entries;
+        /*
+          If string begins with a % this indicates a linux group.
+          Check to see if the user is in the Linux Group.
+        */
+        if (entry[0] == '%') {
+            entry++;
+            if (!*entry)
+                continue;
+            for (i = 0; i < ngroups; i++) {
+                if (!(gname = virGetGroupName(groups[i])))
                     continue;
-                }
-                if (fnmatch(pp->str, name, 0) == 0) {
+                if (fnmatch(entry, gname, 0) == 0) {
                     ret = 0;
                     goto cleanup;
                 }
+                VIR_FREE(gname);
+            }
+        } else {
+            if (fnmatch(entry, name, 0) == 0) {
+                ret = 0;
+                goto cleanup;
             }
         }
     }
@@ -98,87 +90,30 @@ static int virLoginShellAllowedUser(virConfPtr conf,
                          name, conf_file);
  cleanup:
     VIR_FREE(gname);
+    virStringFreeList(users);
     return ret;
 }
 
-static int virLoginShellGetAutoShell(virConfPtr conf,
-                                     bool *autoshell)
-{
-    virConfValuePtr p;
-
-    p = virConfGetValue(conf, "auto_shell");
-    if (!p) {
-        *autoshell = false;
-    } else if (p->type == VIR_CONF_LONG ||
-               p->type == VIR_CONF_ULONG) {
-        *autoshell = (p->l != 0);
-    } else {
-        virReportSystemError(EINVAL, "%s",
-                             _("auto_shell must be a boolean value"));
-        return -1;
-    }
-    return 0;
-}
 
 static int virLoginShellGetShellArgv(virConfPtr conf,
-                                     char ***retshargv,
-                                     size_t *retshargvlen)
+                                     char ***shargv,
+                                     size_t *shargvlen)
 {
-    size_t i;
-    size_t len;
-    char **shargv = NULL;
-    virConfValuePtr p, pp;
+    if (virConfGetValueStringList(conf, "shell", true, shargv) < 0)
+        return -1;
 
-    p = virConfGetValue(conf, "shell");
-    if (!p) {
-        len = 1; /* /bin/sh */
-    } else if (p->type == VIR_CONF_LIST) {
-        /* Calc length and check items */
-        for (len = 0, pp = p->list; pp; len++, pp = pp->next) {
-            if (pp->type != VIR_CONF_STRING) {
-                virReportSystemError(EINVAL, "%s",
-                                     _("shell must be a list of strings"));
-                goto error;
-            }
+    if (!shargv) {
+        if (VIR_ALLOC_N(*shargv, 2) < 0)
+            return -1;
+        if (VIR_STRDUP((*shargv)[0], "/bin/sh") < 0) {
+            VIR_FREE(*shargv);
+            return -1;
         }
-    } else if (p->type == VIR_CONF_STRING) {
-        len = 1; /* /path/to/shell */
+        *shargvlen = 1;
     } else {
-        virReportSystemError(EINVAL, "%s",
-                             _("shell must be a list of strings"));
-        goto error;
+        *shargvlen = virStringListLength((const char *const *)shargv);
     }
-
-    len++; /* NULL terminator */
-
-    if (VIR_ALLOC_N(shargv, len) < 0)
-        goto error;
-
-    i = 0;
-    if (!p) {
-        if (VIR_STRDUP(shargv[i++], "/bin/sh") < 0)
-            goto error;
-    } else if (p->type == VIR_CONF_LIST) {
-        for (pp = p->list; pp; pp = pp->next) {
-            if (VIR_STRDUP(shargv[i++], pp->str) < 0)
-                goto error;
-        }
-    } else if (p->type == VIR_CONF_STRING) {
-        if (VIR_STRDUP(shargv[i++], p->str) < 0)
-            goto error;
-    }
-
-    shargv[i] = NULL;
-
-    *retshargvlen = i;
-    *retshargv = shargv;
-
     return 0;
- error:
-    *retshargv = NULL;
-    *retshargvlen = 0;
-    virStringFreeList(shargv);
-    return -1;
 }
 
 static char *progname;
@@ -313,7 +248,7 @@ main(int argc, char **argv)
     if (virLoginShellGetShellArgv(conf, &shargv, &shargvlen) < 0)
         goto cleanup;
 
-    if (virLoginShellGetAutoShell(conf, &autoshell) < 0)
+    if (virConfGetValueBool(conf, "auto_shell", &autoshell) < 0)
         goto cleanup;
 
     conn = virConnectOpen("lxc:///");
