@@ -30,10 +30,10 @@ typedef struct _virLogDaemonConfig virLogDaemonConfig;
 typedef virLogDaemonConfig *virLogDaemonConfigPtr;
 
 struct _virLogDaemonConfig {
-    int log_level;
+    unsigned int log_level;
     char *log_filters;
     char *log_outputs;
-    int max_clients;
+    unsigned int max_clients;
 
     size_t max_backups;
     size_t max_size;
@@ -46,8 +46,5 @@ void virLogDaemonConfigFree(virLogDaemonConfigPtr data);
 int virLogDaemonConfigLoadFile(virLogDaemonConfigPtr data,
                                const char *filename,
                                bool allow_missing);
-int virLogDaemonConfigLoadData(virLogDaemonConfigPtr data,
-                               const char *filename,
-                               const char *filedata);
 
 #endif /* __LIBVIRTD_CONFIG_H__ */

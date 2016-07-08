@@ -88,7 +88,6 @@ src/locking/lock_driver_sanlock.c
 src/locking/lock_manager.c
 src/locking/sanlock_helper.c
 src/logging/log_daemon.c
-src/logging/log_daemon_config.c
 src/logging/log_daemon_dispatch.c
 src/logging/log_handler.c
 src/logging/log_manager.c
