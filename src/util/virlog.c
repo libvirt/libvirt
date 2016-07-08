@@ -1601,3 +1601,51 @@ virLogOutputNew(virLogOutputFunc f,
 
     return ret;
 }
+
+
+/**
+ * virLogFilterNew:
+ * @match: the pattern to match
+ * @priority: the priority to give to messages matching the pattern
+ * @flags: extra flags, see virLogFilterFlags enum
+ *
+ * Allocates and returns a new log filter object. The object has to be later
+ * defined, so that the pattern will be taken into account when executing the
+ * log filters (to select or reject a particular message) on messages.
+ *
+ * The filter defines a rules that will apply only to messages matching
+ * the pattern (currently if @match is a substring of the message category)
+ *
+ * Returns a reference to a newly created filter that needs to be defined using
+ * virLogDefineFilters, or NULL in case of an error.
+ */
+virLogFilterPtr
+virLogFilterNew(const char *match,
+                virLogPriority priority,
+                unsigned int flags)
+{
+    virLogFilterPtr ret = NULL;
+    char *mdup = NULL;
+
+    virCheckFlags(VIR_LOG_STACK_TRACE, NULL);
+
+    if (priority < VIR_LOG_DEBUG || priority > VIR_LOG_ERROR) {
+        virReportError(VIR_ERR_INVALID_ARG, _("Invalid log priority %d"),
+                       priority);
+        return NULL;
+    }
+
+    if (VIR_STRDUP_QUIET(mdup, match) < 0)
+        return NULL;
+
+    if (VIR_ALLOC_QUIET(ret) < 0) {
+        VIR_FREE(mdup);
+        return NULL;
+    }
+
+    ret->match = mdup;
+    ret->priority = priority;
+    ret->flags = flags;
+
+    return ret;
+}

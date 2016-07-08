@@ -1873,6 +1873,7 @@ virLogDefineFilter;
 virLogDefineOutput;
 virLogFilterFree;
 virLogFilterListFree;
+virLogFilterNew;
 virLogGetDefaultPriority;
 virLogGetFilters;
 virLogGetNbFilters;
