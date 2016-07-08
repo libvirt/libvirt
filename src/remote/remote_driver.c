@@ -864,18 +864,9 @@ doRemoteOpen(virConnectPtr conn,
     /* Connect to the remote service. */
     switch (transport) {
     case trans_tls:
-        if (conf && !tls_priority) {
-            virConfValuePtr val = virConfGetValue(conf, "tls_priority");
-            if (val) {
-                if (val->type != VIR_CONF_STRING) {
-                    virReportError(VIR_ERR_INVALID_ARG, "%s",
-                                   _("Config file 'tls_priority' must be a string"));
-                    goto failed;
-                }
-                if (VIR_STRDUP(tls_priority, val->str) < 0)
-                    goto failed;
-            }
-        }
+        if (conf && !tls_priority &&
+            virConfGetValueString(conf, "tls_priority", &tls_priority) < 0)
+            goto failed;
 
 #ifdef WITH_GNUTLS
         priv->tls = virNetTLSContextNewClientPath(pkipath,
