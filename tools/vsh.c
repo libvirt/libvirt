@@ -434,7 +434,8 @@ static vshCmdOptDef helpopt = {
 };
 static const vshCmdOptDef *
 vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
-                   uint64_t *opts_seen, int *opt_index, char **optstr)
+                   uint64_t *opts_seen, int *opt_index, char **optstr,
+                   bool report)
 {
     size_t i;
     const vshCmdOptDef *ret = NULL;
@@ -461,8 +462,9 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                 if ((value = strchr(name, '='))) {
                     *value = '\0';
                     if (*optstr) {
-                        vshError(ctl, _("invalid '=' after option --%s"),
-                                 opt->name);
+                        if (report)
+                            vshError(ctl, _("invalid '=' after option --%s"),
+                                     opt->name);
                         goto cleanup;
                     }
                     if (VIR_STRDUP(*optstr, value + 1) < 0)
@@ -471,7 +473,8 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
                 continue;
             }
             if ((*opts_seen & (1ULL << i)) && opt->type != VSH_OT_ARGV) {
-                vshError(ctl, _("option --%s already seen"), name);
+                if (report)
+                    vshError(ctl, _("option --%s already seen"), name);
                 goto cleanup;
             }
             *opts_seen |= 1ULL << i;
@@ -481,7 +484,7 @@ vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
         }
     }
 
-    if (STRNEQ(cmd->name, "help")) {
+    if (STRNEQ(cmd->name, "help") && report) {
         vshError(ctl, _("command '%s' doesn't support option --%s"),
                  cmd->name, name);
     }
@@ -1352,7 +1355,7 @@ typedef enum {
 typedef struct _vshCommandParser vshCommandParser;
 struct _vshCommandParser {
     vshCommandToken(*getNextArg)(vshControl *, vshCommandParser *,
-                                 char **);
+                                 char **, bool);
     /* vshCommandStringGetArg() */
     char *pos;
     /* vshCommandArgvGetArg() */
@@ -1387,7 +1390,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
             const vshCmdOptDef *opt = NULL;
 
             tkdata = NULL;
-            tk = parser->getNextArg(ctl, parser, &tkdata);
+            tk = parser->getNextArg(ctl, parser, &tkdata, true);
 
             if (tk == VSH_TK_ERROR)
                 goto syntaxError;
@@ -1424,7 +1427,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                 /* Special case 'help' to ignore all spurious options */
                 if (!(opt = vshCmddefGetOption(ctl, cmd, tkdata + 2,
                                                &opts_seen, &opt_index,
-                                               &optstr))) {
+                                               &optstr, true))) {
                     VIR_FREE(optstr);
                     if (STREQ(cmd->name, "help"))
                         continue;
@@ -1437,7 +1440,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                     if (optstr)
                         tkdata = optstr;
                     else
-                        tk = parser->getNextArg(ctl, parser, &tkdata);
+                        tk = parser->getNextArg(ctl, parser, &tkdata, true);
                     if (tk == VSH_TK_ERROR)
                         goto syntaxError;
                     if (tk != VSH_TK_ARG) {
@@ -1559,7 +1562,8 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
  */
 
 static vshCommandToken ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-vshCommandArgvGetArg(vshControl *ctl, vshCommandParser *parser, char **res)
+vshCommandArgvGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
+                     bool report ATTRIBUTE_UNUSED)
 {
     if (parser->arg_pos == parser->arg_end) {
         *res = NULL;
@@ -1591,7 +1595,8 @@ vshCommandArgvParse(vshControl *ctl, int nargs, char **argv)
  */
 
 static vshCommandToken ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res)
+vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res,
+                       bool report)
 {
     bool single_quote = false;
     bool double_quote = false;
@@ -1628,7 +1633,8 @@ vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res)
              */
             p++;
             if (*p == '\0') {
-                vshError(ctl, "%s", _("dangling \\"));
+                if (report)
+                    vshError(ctl, "%s", _("dangling \\"));
                 return VSH_TK_ERROR;
             }
         } else if (!single_quote && *p == '"') { /* double quote */
@@ -1641,7 +1647,8 @@ vshCommandStringGetArg(vshControl *ctl, vshCommandParser *parser, char **res)
         sz++;
     }
     if (double_quote) {
-        vshError(ctl, "%s", _("missing \""));
+        if (report)
+            vshError(ctl, "%s", _("missing \""));
         return VSH_TK_ERROR;
     }
 
