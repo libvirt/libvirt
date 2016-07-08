@@ -240,7 +240,8 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
     /* If the tray is present and tray change event is supported wait for it to open. */
     if (diskPriv->tray &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_TRAY_MOVED)) {
-        if (qemuHotplugWaitForTrayEject(driver, vm, disk, driveAlias, force) < 0)
+        rc = qemuHotplugWaitForTrayEject(driver, vm, disk, driveAlias, force);
+        if (rc < 0)
             goto error;
     } else  {
         /* otherwise report possible errors from the attempt to eject the media*/
