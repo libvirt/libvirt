@@ -37,62 +37,6 @@
 
 VIR_LOG_INIT("locking.lock_daemon_config");
 
-
-/* A helper function used by each of the following macros.  */
-static int
-checkType(virConfValuePtr p, const char *filename,
-          const char *key, virConfType required_type)
-{
-    if (p->type != required_type) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("remoteReadConfigFile: %s: %s: invalid type:"
-                         " got %s; expected %s"), filename, key,
-                       virConfTypeToString(p->type),
-                       virConfTypeToString(required_type));
-        return -1;
-    }
-    return 0;
-}
-
-/* If there is no config data for the key, #var_name, then do nothing.
-   If there is valid data of type VIR_CONF_STRING, and VIR_STRDUP succeeds,
-   store the result in var_name.  Otherwise, (i.e. invalid type, or VIR_STRDUP
-   failure), give a diagnostic and "goto" the cleanup-and-fail label.  */
-#define GET_CONF_STR(conf, filename, var_name)                          \
-    do {                                                                \
-        virConfValuePtr p = virConfGetValue(conf, #var_name);           \
-        if (p) {                                                        \
-            if (checkType(p, filename, #var_name, VIR_CONF_STRING) < 0) \
-                goto error;                                             \
-            VIR_FREE(data->var_name);                                   \
-            if (VIR_STRDUP(data->var_name, p->str) < 0)                 \
-                goto error;                                             \
-        }                                                               \
-    } while (0)
-
-/* Like GET_CONF_STR, but for signed integer values.  */
-#define GET_CONF_INT(conf, filename, var_name)                          \
-    do {                                                                \
-        virConfValuePtr p = virConfGetValue(conf, #var_name);           \
-        if (p) {                                                        \
-            if (p->type != VIR_CONF_ULONG &&                            \
-                checkType(p, filename, #var_name, VIR_CONF_LONG) < 0)   \
-                goto error;                                             \
-            data->var_name = p->l;                                      \
-        }                                                               \
-    } while (0)
-
-/* Like GET_CONF_STR, but for unsigned integer values.  */
-#define GET_CONF_UINT(conf, filename, var_name)                         \
-    do {                                                                \
-        virConfValuePtr p = virConfGetValue(conf, #var_name);           \
-        if (p) {                                                        \
-            if (checkType(p, filename, #var_name, VIR_CONF_ULONG) < 0)  \
-                goto error;                                             \
-            data->var_name = p->l;                                      \
-        }                                                               \
-    } while (0)
-
 int
 virLockDaemonConfigFilePath(bool privileged, char **configfile)
 {
@@ -146,18 +90,18 @@ virLockDaemonConfigFree(virLockDaemonConfigPtr data)
 
 static int
 virLockDaemonConfigLoadOptions(virLockDaemonConfigPtr data,
-                               const char *filename,
                                virConfPtr conf)
 {
-    GET_CONF_UINT(conf, filename, log_level);
-    GET_CONF_STR(conf, filename, log_filters);
-    GET_CONF_STR(conf, filename, log_outputs);
-    GET_CONF_UINT(conf, filename, max_clients);
+    if (virConfGetValueUInt(conf, "log_level", &data->log_level) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "log_filters", &data->log_filters) < 0)
+        return -1;
+    if (virConfGetValueString(conf, "log_outputs", &data->log_filters) < 0)
+        return -1;
+    if (virConfGetValueUInt(conf, "max_clients", &data->max_clients) < 0)
+        return -1;
 
     return 0;
-
- error:
-    return -1;
 }
 
 
@@ -181,23 +125,7 @@ virLockDaemonConfigLoadFile(virLockDaemonConfigPtr data,
     if (!conf)
         return -1;
 
-    ret = virLockDaemonConfigLoadOptions(data, filename, conf);
-    virConfFree(conf);
-    return ret;
-}
-
-int virLockDaemonConfigLoadData(virLockDaemonConfigPtr data,
-                                const char *filename,
-                                const char *filedata)
-{
-    virConfPtr conf;
-    int ret;
-
-    conf = virConfReadMem(filedata, strlen(filedata), 0);
-    if (!conf)
-        return -1;
-
-    ret = virLockDaemonConfigLoadOptions(data, filename, conf);
+    ret = virLockDaemonConfigLoadOptions(data, conf);
     virConfFree(conf);
     return ret;
 }

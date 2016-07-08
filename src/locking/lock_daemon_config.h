@@ -30,10 +30,10 @@ typedef struct _virLockDaemonConfig virLockDaemonConfig;
 typedef virLockDaemonConfig *virLockDaemonConfigPtr;
 
 struct _virLockDaemonConfig {
-    int log_level;
+    unsigned int log_level;
     char *log_filters;
     char *log_outputs;
-    int max_clients;
+    unsigned int max_clients;
 };
 
 
@@ -42,9 +42,6 @@ virLockDaemonConfigPtr virLockDaemonConfigNew(bool privileged);
 void virLockDaemonConfigFree(virLockDaemonConfigPtr data);
 int virLockDaemonConfigLoadFile(virLockDaemonConfigPtr data,
                                 const char *filename,
-                         bool allow_missing);
-int virLockDaemonConfigLoadData(virLockDaemonConfigPtr data,
-                                const char *filename,
-                                const char *filedata);
+                                bool allow_missing);
 
 #endif /* __LIBVIRTD_CONFIG_H__ */

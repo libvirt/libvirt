@@ -82,7 +82,6 @@ src/libxl/libxl_domain.c
 src/libxl/libxl_driver.c
 src/libxl/libxl_migration.c
 src/locking/lock_daemon.c
-src/locking/lock_daemon_config.c
 src/locking/lock_daemon_dispatch.c
 src/locking/lock_driver_lockd.c
 src/locking/lock_driver_sanlock.c
