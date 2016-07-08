@@ -22,6 +22,9 @@
  */
 #include <config.h>
 #include <sys/utsname.h>
+#include <dirent.h>
+#include <stdio.h>
+#include <sys/types.h>
 
 #include "viralloc.h"
 #include "virfile.h"
@@ -114,11 +117,35 @@ virBhyveDomainCapsBuild(const char *emulatorbin,
                         virDomainVirtType virttype)
 {
     virDomainCapsPtr caps = NULL;
+    DIR *dir;
+    struct dirent *entry;
+    const char *firmware_dir = "/usr/local/share/uefi-firmware";
+    size_t firmwares_alloc = 0;
 
     if (!(caps = virDomainCapsNew(emulatorbin, machine, arch, virttype)))
         goto cleanup;
 
     caps->os.supported = true;
+    caps->os.loader.supported = true;
+    VIR_DOMAIN_CAPS_ENUM_SET(caps->os.loader.type,
+                             VIR_DOMAIN_LOADER_TYPE_PFLASH);
+    VIR_DOMAIN_CAPS_ENUM_SET(caps->os.loader.readonly,
+                             VIR_TRISTATE_BOOL_YES);
+
+    if (virDirOpenIfExists(&dir, firmware_dir) > 0) {
+        while ((virDirRead(dir, &entry, firmware_dir)) > 0) {
+            if (VIR_RESIZE_N(caps->os.loader.values.values,
+                firmwares_alloc, caps->os.loader.values.nvalues, 2) < 0)
+                goto cleanup;
+
+            if (virAsprintf(
+                    &caps->os.loader.values.values[caps->os.loader.values.nvalues],
+                    "%s/%s", firmware_dir, entry->d_name) < 0)
+                goto cleanup;
+
+           caps->os.loader.values.nvalues++;
+        }
+    }
     caps->disk.supported = true;
     VIR_DOMAIN_CAPS_ENUM_SET(caps->disk.diskDevice,
                              VIR_DOMAIN_DISK_DEVICE_DISK,
@@ -129,6 +156,7 @@ virBhyveDomainCapsBuild(const char *emulatorbin,
                              VIR_DOMAIN_DISK_BUS_VIRTIO);
 
  cleanup:
+    VIR_DIR_CLOSE(dir);
     return caps;
 }
 
