@@ -3167,19 +3167,25 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
                        virBuffer *buf)
 {
     int ret = -1;
-    virCPUDefPtr cpu = NULL;
-    virCPUDefPtr def_cpu = def->cpu;
-    virDomainControllerDefPtr *controllers = NULL;
-    int ncontrollers = 0;
+    virDomainDefPtr copy = NULL;
     virCapsPtr caps = NULL;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
+    if (!(flags & (VIR_DOMAIN_XML_UPDATE_CPU | VIR_DOMAIN_XML_MIGRATABLE)))
+        goto format;
+
+    if (!(copy = virDomainDefCopy(def, caps, driver->xmlopt,
+                                  flags & VIR_DOMAIN_XML_MIGRATABLE)))
+        goto cleanup;
+
+    def = copy;
+
     /* Update guest CPU requirements according to host CPU */
     if ((flags & VIR_DOMAIN_XML_UPDATE_CPU) &&
-        def_cpu &&
-        (def_cpu->mode != VIR_CPU_MODE_CUSTOM || def_cpu->model)) {
+        def->cpu &&
+        (def->cpu->mode != VIR_CPU_MODE_CUSTOM || def->cpu->model)) {
         if (!caps->host.cpu ||
             !caps->host.cpu->model) {
             virReportError(VIR_ERR_OPERATION_FAILED,
@@ -3187,10 +3193,8 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (!(cpu = virCPUDefCopy(def_cpu)) ||
-            cpuUpdate(cpu, caps->host.cpu) < 0)
+        if (cpuUpdate(def->cpu, caps->host.cpu) < 0)
             goto cleanup;
-        def->cpu = cpu;
     }
 
     if ((flags & VIR_DOMAIN_XML_MIGRATABLE)) {
@@ -3247,10 +3251,11 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
         }
 
         if (toremove) {
-            controllers = def->controllers;
-            ncontrollers = def->ncontrollers;
+            virDomainControllerDefPtr *controllers = def->controllers;
+            int ncontrollers = def->ncontrollers;
+
             if (VIR_ALLOC_N(def->controllers, ncontrollers - toremove) < 0) {
-                controllers = NULL;
+                def->controllers = controllers;
                 goto cleanup;
             }
 
@@ -3259,23 +3264,22 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
                 if (controllers[i] != usb && controllers[i] != pci)
                     def->controllers[def->ncontrollers++] = controllers[i];
             }
+
+            VIR_FREE(controllers);
+            virDomainControllerDefFree(pci);
+            virDomainControllerDefFree(usb);
         }
 
 
     }
 
-    ret = virDomainDefFormatInternal(def, driver->caps,
+ format:
+    ret = virDomainDefFormatInternal(def, caps,
                                      virDomainDefFormatConvertXMLFlags(flags),
                                      buf);
 
  cleanup:
-    def->cpu = def_cpu;
-    virCPUDefFree(cpu);
-    if (controllers) {
-        VIR_FREE(def->controllers);
-        def->controllers = controllers;
-        def->ncontrollers = ncontrollers;
-    }
+    virDomainDefFree(copy);
     virObjectUnref(caps);
     return ret;
 }

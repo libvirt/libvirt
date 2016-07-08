@@ -21149,10 +21149,12 @@ virDomainChrSourceDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        virBufferAsprintf(buf, "<source mode='%s'",
-                          def->data.nix.listen ? "bind" : "connect");
-        virBufferEscapeString(buf, " path='%s'", def->data.nix.path);
-        virDomainSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
+        if (def->data.nix.path) {
+            virBufferAsprintf(buf, "<source mode='%s'",
+                              def->data.nix.listen ? "bind" : "connect");
+            virBufferEscapeString(buf, " path='%s'", def->data.nix.path);
+            virDomainSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags);
+        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
