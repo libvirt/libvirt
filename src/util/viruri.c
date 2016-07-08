@@ -320,55 +320,40 @@ void virURIFree(virURIPtr uri)
 #define URI_ALIAS_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
 
 static int
-virURIFindAliasMatch(virConfValuePtr value, const char *alias,
+virURIFindAliasMatch(char *const*aliases, const char *alias,
                      char **uri)
 {
-    virConfValuePtr entry;
     size_t alias_len;
 
-    if (value->type != VIR_CONF_LIST) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Expected a list for 'uri_aliases' config parameter"));
-        return -1;
-    }
-
-    entry = value->list;
     alias_len = strlen(alias);
-    while (entry) {
+    while (*aliases) {
         char *offset;
         size_t safe;
 
-        if (entry->type != VIR_CONF_STRING) {
-            virReportError(VIR_ERR_CONF_SYNTAX, "%s",
-                           _("Expected a string for 'uri_aliases' config "
-                             "parameter list entry"));
-            return -1;
-        }
-
-        if (!(offset = strchr(entry->str, '='))) {
+        if (!(offset = strchr(*aliases, '='))) {
             virReportError(VIR_ERR_CONF_SYNTAX,
                            _("Malformed 'uri_aliases' config entry '%s', "
-                             "expected 'alias=uri://host/path'"), entry->str);
+                             "expected 'alias=uri://host/path'"), *aliases);
             return -1;
         }
 
-        safe = strspn(entry->str, URI_ALIAS_CHARS);
-        if (safe < (offset - entry->str)) {
+        safe = strspn(*aliases, URI_ALIAS_CHARS);
+        if (safe < (offset - *aliases)) {
             virReportError(VIR_ERR_CONF_SYNTAX,
                            _("Malformed 'uri_aliases' config entry '%s', "
                              "aliases may only contain 'a-Z, 0-9, _, -'"),
-                            entry->str);
+                            *aliases);
             return -1;
         }
 
-        if (alias_len == (offset - entry->str) &&
-            STREQLEN(entry->str, alias, alias_len)) {
+        if (alias_len == (offset - *aliases) &&
+            STREQLEN(*aliases, alias, alias_len)) {
             VIR_DEBUG("Resolved alias '%s' to '%s'",
                       alias, offset+1);
             return VIR_STRDUP(*uri, offset+1);
         }
 
-        entry = entry->next;
+        aliases++;
     }
 
     VIR_DEBUG("No alias found for '%s', continuing...",
@@ -392,14 +377,19 @@ int
 virURIResolveAlias(virConfPtr conf, const char *alias, char **uri)
 {
     int ret = -1;
-    virConfValuePtr value = NULL;
+    char **aliases = NULL;
 
     *uri = NULL;
 
-    if ((value = virConfGetValue(conf, "uri_aliases")))
-        ret = virURIFindAliasMatch(value, alias, uri);
-    else
+    if (virConfGetValueStringList(conf, "uri_aliases", false, &aliases) < 0)
+        return -1;
+
+    if (aliases && *aliases) {
+        ret = virURIFindAliasMatch(aliases, alias, uri);
+        virStringFreeList(aliases);
+    } else {
         ret = 0;
+    }
 
     return ret;
 }
