@@ -82,7 +82,7 @@ static virLockManagerLockDaemonDriverPtr driver;
 static int virLockManagerLockDaemonLoadConfig(const char *configFile)
 {
     virConfPtr conf;
-    virConfValuePtr p;
+    int ret = -1;
 
     if (access(configFile, R_OK) == -1) {
         if (errno != ENOENT) {
@@ -97,57 +97,26 @@ static int virLockManagerLockDaemonLoadConfig(const char *configFile)
     if (!(conf = virConfReadFile(configFile, 0)))
         return -1;
 
-#define CHECK_TYPE(name, typ) if (p && p->type != (typ)) {              \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                          \
-                       "%s: %s: expected type " #typ,                   \
-                       configFile, (name));                             \
-        virConfFree(conf);                                              \
-        return -1;                                                      \
-    }
+    if (virConfGetValueBool(conf, "auto_disk_leases", &driver->autoDiskLease) < 0)
+        goto cleanup;
 
-    p = virConfGetValue(conf, "auto_disk_leases");
-    CHECK_TYPE("auto_disk_leases", VIR_CONF_ULONG);
-    if (p) driver->autoDiskLease = p->l;
+    if (virConfGetValueString(conf, "file_lockspace_dir", &driver->fileLockSpaceDir) < 0)
+        goto cleanup;
 
-    p = virConfGetValue(conf, "file_lockspace_dir");
-    CHECK_TYPE("file_lockspace_dir", VIR_CONF_STRING);
-    if (p && p->str) {
-        VIR_FREE(driver->fileLockSpaceDir);
-        if (VIR_STRDUP(driver->fileLockSpaceDir, p->str) < 0) {
-            virConfFree(conf);
-            return -1;
-        }
-    }
+    if (virConfGetValueString(conf, "lvm_lockspace_dir", &driver->lvmLockSpaceDir) < 0)
+        goto cleanup;
 
-    p = virConfGetValue(conf, "lvm_lockspace_dir");
-    CHECK_TYPE("lvm_lockspace_dir", VIR_CONF_STRING);
-    if (p && p->str) {
-        VIR_FREE(driver->lvmLockSpaceDir);
-        if (VIR_STRDUP(driver->lvmLockSpaceDir, p->str) < 0) {
-            virConfFree(conf);
-            return -1;
-        }
-    }
+    if (virConfGetValueString(conf, "scsi_lockspace_dir", &driver->scsiLockSpaceDir) < 0)
+        goto cleanup;
 
-    p = virConfGetValue(conf, "scsi_lockspace_dir");
-    CHECK_TYPE("scsi_lockspace_dir", VIR_CONF_STRING);
-    if (p && p->str) {
-        VIR_FREE(driver->scsiLockSpaceDir);
-        if (VIR_STRDUP(driver->scsiLockSpaceDir, p->str) < 0) {
-            virConfFree(conf);
-            return -1;
-        }
-    }
+    driver->requireLeaseForDisks = !driver->autoDiskLease;
+    if (virConfGetValueBool(conf, "require_lease_for_disks", &driver->requireLeaseForDisks) < 0)
+        goto cleanup;
 
-    p = virConfGetValue(conf, "require_lease_for_disks");
-    CHECK_TYPE("require_lease_for_disks", VIR_CONF_ULONG);
-    if (p)
-        driver->requireLeaseForDisks = p->l;
-    else
-        driver->requireLeaseForDisks = !driver->autoDiskLease;
-
+    ret = 0;
+ cleanup:
     virConfFree(conf);
-    return 0;
+    return ret;
 }
 
 
