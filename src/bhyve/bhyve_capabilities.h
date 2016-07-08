@@ -23,8 +23,13 @@
 # define _BHYVE_CAPABILITIES
 
 # include "capabilities.h"
+# include "conf/domain_capabilities.h"
 
 virCapsPtr virBhyveCapsBuild(void);
+virDomainCapsPtr virBhyveDomainCapsBuild(const char *emulatorbin,
+                                         const char *machine,
+                                         virArch arch,
+                                         virDomainVirtType virttype);
 
 /* These are bit flags: */
 typedef enum {

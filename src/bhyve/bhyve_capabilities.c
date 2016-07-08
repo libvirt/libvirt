@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2014 Roman Bogorodskiy
  * Copyright (C) 2014 Semihalf
+ * Copyright (C) 2016 Fabian Freyer
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -104,6 +105,31 @@ virBhyveCapsBuild(void)
  error:
     virObjectUnref(caps);
     return NULL;
+}
+
+virDomainCapsPtr
+virBhyveDomainCapsBuild(const char *emulatorbin,
+                        const char *machine,
+                        virArch arch,
+                        virDomainVirtType virttype)
+{
+    virDomainCapsPtr caps = NULL;
+
+    if (!(caps = virDomainCapsNew(emulatorbin, machine, arch, virttype)))
+        goto cleanup;
+
+    caps->os.supported = true;
+    caps->disk.supported = true;
+    VIR_DOMAIN_CAPS_ENUM_SET(caps->disk.diskDevice,
+                             VIR_DOMAIN_DISK_DEVICE_DISK,
+                             VIR_DOMAIN_DISK_DEVICE_CDROM);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(caps->disk.bus,
+                             VIR_DOMAIN_DISK_BUS_SATA,
+                             VIR_DOMAIN_DISK_BUS_VIRTIO);
+
+ cleanup:
+    return caps;
 }
 
 int
