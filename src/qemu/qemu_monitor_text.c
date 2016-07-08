@@ -500,8 +500,9 @@ int qemuMonitorTextSystemReset(qemuMonitorPtr mon)
 }
 
 
-int qemuMonitorTextGetCPUInfo(qemuMonitorPtr mon,
-                              int **pids)
+int
+qemuMonitorTextQueryCPUs(qemuMonitorPtr mon,
+                         int **pids)
 {
     char *qemucpus = NULL;
     char *line;

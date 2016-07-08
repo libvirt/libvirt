@@ -1672,9 +1672,9 @@ qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
     QEMU_CHECK_MONITOR(mon);
 
     if (mon->json)
-        return qemuMonitorJSONGetCPUInfo(mon, pids);
+        return qemuMonitorJSONQueryCPUs(mon, pids);
     else
-        return qemuMonitorTextGetCPUInfo(mon, pids);
+        return qemuMonitorTextQueryCPUs(mon, pids);
 }
 
 

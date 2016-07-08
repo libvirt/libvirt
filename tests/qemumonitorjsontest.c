@@ -1203,7 +1203,7 @@ GEN_TEST_FUNC(qemuMonitorJSONDetachCharDev, "serial1")
 
 
 static int
-testQemuMonitorJSONqemuMonitorJSONGetCPUInfo(const void *data)
+testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
@@ -1252,7 +1252,7 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUInfo(const void *data)
                                "}") < 0)
         goto cleanup;
 
-    ncpupids = qemuMonitorJSONGetCPUInfo(qemuMonitorTestGetMonitor(test), &cpupids);
+    ncpupids = qemuMonitorJSONQueryCPUs(qemuMonitorTestGetMonitor(test), &cpupids);
 
     if (ncpupids != 4) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2420,7 +2420,7 @@ mymain(void)
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);
     DO_TEST(qemuMonitorJSONGetTargetArch);
     DO_TEST(qemuMonitorJSONGetMigrationCapability);
-    DO_TEST(qemuMonitorJSONGetCPUInfo);
+    DO_TEST(qemuMonitorJSONQueryCPUs);
     DO_TEST(qemuMonitorJSONGetVirtType);
     DO_TEST(qemuMonitorJSONSendKey);
     DO_TEST(qemuMonitorJSONGetDumpGuestMemoryCapability);
