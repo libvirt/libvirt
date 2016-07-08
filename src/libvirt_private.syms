@@ -1882,6 +1882,7 @@ virLogLock;
 virLogMessage;
 virLogOutputFree;
 virLogOutputListFree;
+virLogOutputNew;
 virLogParseAndDefineFilters;
 virLogParseAndDefineOutputs;
 virLogParseDefaultPriority;

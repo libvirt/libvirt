@@ -226,5 +226,11 @@ void virLogVMessage(virLogSourcePtr source,
                     va_list vargs) ATTRIBUTE_FMT_PRINTF(7, 0);
 
 bool virLogProbablyLogMessage(const char *str);
+virLogOutputPtr virLogOutputNew(virLogOutputFunc f,
+                                virLogCloseFunc c,
+                                void *data,
+                                virLogPriority priority,
+                                virLogDestination dest,
+                                const char *name) ATTRIBUTE_NONNULL(1);
 
 #endif
