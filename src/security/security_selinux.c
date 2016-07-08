@@ -400,9 +400,6 @@ virSecuritySELinuxGenNewContext(const char *basecontext,
 static int
 virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
 {
-    virConfValuePtr scon = NULL;
-    virConfValuePtr tcon = NULL;
-    virConfValuePtr dcon = NULL;
     virConfPtr selinux_conf;
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
 
@@ -420,34 +417,35 @@ virSecuritySELinuxLXCInitialize(virSecurityManagerPtr mgr)
     if (!(selinux_conf = virConfReadFile(selinux_lxc_contexts_path(), 0)))
         goto error;
 
-    scon = virConfGetValue(selinux_conf, "process");
-    if (! scon || scon->type != VIR_CONF_STRING || (! scon->str)) {
-        virReportSystemError(errno,
-                             _("cannot read 'process' value from selinux lxc contexts file '%s'"),
-                             selinux_lxc_contexts_path());
+    if (virConfGetValueString(selinux_conf, "process", &data->domain_context) < 0)
+        goto error;
+
+    if (!data->domain_context) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing 'process' value in selinux lxc contexts file '%s'"),
+                       selinux_lxc_contexts_path());
         goto error;
     }
 
-    tcon = virConfGetValue(selinux_conf, "file");
-    if (! tcon || tcon->type != VIR_CONF_STRING || (! tcon->str)) {
-        virReportSystemError(errno,
-                             _("cannot read 'file' value from selinux lxc contexts file '%s'"),
-                             selinux_lxc_contexts_path());
+    if (virConfGetValueString(selinux_conf, "file", &data->file_context) < 0)
+        goto error;
+
+    if (!data->file_context) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing 'file' value in selinux lxc contexts file '%s'"),
+                       selinux_lxc_contexts_path());
         goto error;
     }
 
-    dcon = virConfGetValue(selinux_conf, "content");
-    if (! dcon || dcon->type != VIR_CONF_STRING || (! dcon->str)) {
-        virReportSystemError(errno,
-                             _("cannot read 'content' value from selinux lxc contexts file '%s'"),
-                             selinux_lxc_contexts_path());
+    if (virConfGetValueString(selinux_conf, "content", &data->content_context) < 0)
+        goto error;
+
+    if (!data->content_context) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing 'content' value in selinux lxc contexts file '%s'"),
+                       selinux_lxc_contexts_path());
         goto error;
     }
-
-    if (VIR_STRDUP(data->domain_context, scon->str) < 0 ||
-        VIR_STRDUP(data->file_context, tcon->str) < 0 ||
-        VIR_STRDUP(data->content_context, dcon->str) < 0)
-        goto error;
 
     if (!(data->mcs = virHashCreate(10, NULL)))
         goto error;
