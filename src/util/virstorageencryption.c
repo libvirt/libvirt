@@ -62,6 +62,7 @@ virStorageEncryptionSecretFree(virStorageEncryptionSecretPtr secret)
 {
     if (!secret)
         return;
+    virSecretLookupDefClear(&secret->seclookupdef);
     VIR_FREE(secret);
 }
 
