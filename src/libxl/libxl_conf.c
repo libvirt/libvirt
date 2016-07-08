@@ -1271,22 +1271,11 @@ static int
 libxlGetAutoballoonConf(libxlDriverConfigPtr cfg,
                         virConfPtr conf)
 {
-    virConfValuePtr p;
     regex_t regex;
     int res;
 
-    p = virConfGetValue(conf, "autoballoon");
-    if (p) {
-        if (p->type != VIR_CONF_ULONG) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s",
-                           _("Unexpected type for 'autoballoon' setting"));
-
-            return -1;
-        }
-        cfg->autoballoon = p->l != 0;
-        return 0;
-    }
+    if (virConfGetValueBool(conf, "autoballoon", &cfg->autoballoon) < 0)
+        return -1;
 
     if ((res = regcomp(&regex,
                       "(^| )dom0_mem=((|min:|max:)[0-9]+[bBkKmMgG]?,?)+($| )",
@@ -1450,7 +1439,6 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
                               const char *filename)
 {
     virConfPtr conf = NULL;
-    virConfValuePtr p;
     int ret = -1;
 
     /* defaults for keepalive messages */
@@ -1472,39 +1460,14 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
     if (libxlGetAutoballoonConf(cfg, conf) < 0)
         goto cleanup;
 
-    if ((p = virConfGetValue(conf, "lock_manager"))) {
-        if (p->type != VIR_CONF_STRING) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s",
-                           _("Unexpected type for 'lock_manager' setting"));
-            goto cleanup;
-        }
+    if (virConfGetValueString(conf, "lock_manager", &cfg->lockManagerName) < 0)
+        goto cleanup;
 
-        if (VIR_STRDUP(cfg->lockManagerName, p->str) < 0)
-            goto cleanup;
-    }
+    if (virConfGetValueInt(conf, "keepalive_interval", &cfg->keepAliveInterval) < 0)
+        goto cleanup;
 
-    if ((p = virConfGetValue(conf, "keepalive_interval"))) {
-        if (p->type != VIR_CONF_LONG && p->type != VIR_CONF_ULONG) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s",
-                           _("Unexpected type for 'keepalive_interval' setting"));
-            goto cleanup;
-        }
-
-        cfg->keepAliveInterval = p->l;
-    }
-
-    if ((p = virConfGetValue(conf, "keepalive_count"))) {
-        if (p->type != VIR_CONF_ULONG) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s",
-                           _("Unexpected type for 'keepalive_count' setting"));
-            goto cleanup;
-        }
-
-        cfg->keepAliveCount = p->l;
-    }
+    if (virConfGetValueUInt(conf, "keepalive_count", &cfg->keepAliveCount) < 0)
+        goto cleanup;
 
     ret = 0;
 
