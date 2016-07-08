@@ -158,35 +158,32 @@ getSocketPath(virURIPtr uri)
     goto cleanup;
 }
 
-static const char *
-virAdmGetDefaultURI(virConfPtr conf)
+static int
+virAdmGetDefaultURI(virConfPtr conf, char **uristr)
 {
-    virConfValuePtr value = NULL;
-    const char *uristr = NULL;
-
-    uristr = virGetEnvAllowSUID("LIBVIRT_ADMIN_DEFAULT_URI");
-    if (uristr && *uristr) {
-        VIR_DEBUG("Using LIBVIRT_ADMIN_DEFAULT_URI '%s'", uristr);
-    } else if ((value = virConfGetValue(conf, "admin_uri_default"))) {
-        if (value->type != VIR_CONF_STRING) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Expected a string for 'admin_uri_default' config "
-                             "parameter"));
-            return NULL;
-        }
-
-        VIR_DEBUG("Using config file uri '%s'", value->str);
-        uristr = value->str;
+    const char *defname = virGetEnvAllowSUID("LIBVIRT_ADMIN_DEFAULT_URI");
+    if (defname && *defname) {
+        if (VIR_STRDUP(*uristr, defname) < 0)
+            return -1;
+        VIR_DEBUG("Using LIBVIRT_ADMIN_DEFAULT_URI '%s'", *uristr);
     } else {
-        /* Since we can't probe connecting via any hypervisor driver as libvirt
-         * does, if no explicit URI was given and neither the environment
-         * variable, nor the configuration parameter had previously been set,
-         * we set the default admin server URI to 'libvirtd://system'.
-         */
-        uristr = "libvirtd:///system";
+        if (virConfGetValueString(conf, "admin_uri_default", uristr) < 0)
+            return -1;
+
+        if (*uristr) {
+            VIR_DEBUG("Using config file uri '%s'", *uristr);
+        } else {
+            /* Since we can't probe connecting via any hypervisor driver as libvirt
+             * does, if no explicit URI was given and neither the environment
+             * variable, nor the configuration parameter had previously been set,
+             * we set the default admin server URI to 'libvirtd://system'.
+             */
+            if (VIR_STRDUP(*uristr, "libvirtd:///system") < 0)
+                return -1;
+        }
     }
 
-    return uristr;
+    return 0;
 }
 
 /**
@@ -206,6 +203,7 @@ virAdmConnectOpen(const char *name, unsigned int flags)
     char *alias = NULL;
     virAdmConnectPtr conn = NULL;
     virConfPtr conf = NULL;
+    char *uristr = NULL;
 
     if (virAdmInitialize() < 0)
         goto error;
@@ -219,14 +217,24 @@ virAdmConnectOpen(const char *name, unsigned int flags)
     if (virConfLoadConfig(&conf, "libvirt-admin.conf") < 0)
         goto error;
 
-    if (!name && !(name = virAdmGetDefaultURI(conf)))
-        goto error;
+    if (name) {
+        if (VIR_STRDUP(uristr, name) < 0)
+            goto error;
+    } else {
+        if (virAdmGetDefaultURI(conf, &uristr) < 0)
+            goto error;
+    }
 
     if ((!(flags & VIR_CONNECT_NO_ALIASES) &&
-         virURIResolveAlias(conf, name, &alias) < 0))
+         virURIResolveAlias(conf, uristr, &alias) < 0))
         goto error;
 
-    if (!(conn->uri = virURIParse(alias ? alias : name)))
+    if (alias) {
+        VIR_FREE(uristr);
+        uristr = alias;
+    }
+
+    if (!(conn->uri = virURIParse(uristr)))
         goto error;
 
     if (!(sock_path = getSocketPath(conn->uri)))
@@ -242,7 +250,7 @@ virAdmConnectOpen(const char *name, unsigned int flags)
 
  cleanup:
     VIR_FREE(sock_path);
-    VIR_FREE(alias);
+    VIR_FREE(uristr);
     virConfFree(conf);
     return conn;
 

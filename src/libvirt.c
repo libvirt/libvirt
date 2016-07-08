@@ -903,22 +903,20 @@ virGetVersion(unsigned long *libVer, const char *type ATTRIBUTE_UNUSED,
 
 static int
 virConnectGetDefaultURI(virConfPtr conf,
-                        const char **name)
+                        char **name)
 {
     int ret = -1;
-    virConfValuePtr value = NULL;
     const char *defname = virGetEnvBlockSUID("LIBVIRT_DEFAULT_URI");
     if (defname && *defname) {
         VIR_DEBUG("Using LIBVIRT_DEFAULT_URI '%s'", defname);
-        *name = defname;
-    } else if ((value = virConfGetValue(conf, "uri_default"))) {
-        if (value->type != VIR_CONF_STRING) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Expected a string for 'uri_default' config parameter"));
+        if (VIR_STRDUP(*name, defname) < 0)
             goto cleanup;
-        }
-        VIR_DEBUG("Using config file uri '%s'", value->str);
-        *name = value->str;
+    } else {
+        if (virConfGetValueString(conf, "uri_default", name) < 0)
+            goto cleanup;
+
+        if (*name)
+            VIR_DEBUG("Using config file uri '%s'", *name);
     }
 
     ret = 0;
@@ -965,6 +963,7 @@ virConnectOpenInternal(const char *name,
     int res;
     virConnectPtr ret;
     virConfPtr conf = NULL;
+    char *uristr = NULL;
 
     ret = virGetConnect();
     if (ret == NULL)
@@ -982,54 +981,61 @@ virConnectOpenInternal(const char *name,
         goto failed;
     }
 
+    /* Convert xen -> xen:/// for back compat */
+    if (name && STRCASEEQ(name, "xen"))
+        name = "xen:///";
+
+    /* Convert xen:// -> xen:/// because xmlParseURI cannot parse the
+     * former.  This allows URIs such as xen://localhost to work.
+     */
+    if (name && STREQ(name, "xen://"))
+        name = "xen:///";
+
     /*
      * If no URI is passed, then check for an environment string if not
      * available probe the compiled in drivers to find a default hypervisor
      * if detectable.
      */
-    if (!name &&
-        virConnectGetDefaultURI(conf, &name) < 0)
-        goto failed;
-
     if (name) {
-        char *alias = NULL;
-        /* Convert xen -> xen:/// for back compat */
-        if (STRCASEEQ(name, "xen"))
-            name = "xen:///";
+        if (VIR_STRDUP(uristr, name) < 0)
+            goto failed;
+    } else {
+        if (virConnectGetDefaultURI(conf, &uristr) < 0)
+            goto failed;
+    }
 
-        /* Convert xen:// -> xen:/// because xmlParseURI cannot parse the
-         * former.  This allows URIs such as xen://localhost to work.
-         */
-        if (STREQ(name, "xen://"))
-            name = "xen:///";
+    if (uristr) {
+        char *alias = NULL;
 
         if (!(flags & VIR_CONNECT_NO_ALIASES) &&
-            virURIResolveAlias(conf, name, &alias) < 0)
+            virURIResolveAlias(conf, uristr, &alias) < 0)
             goto failed;
 
-        if (!(ret->uri = virURIParse(alias ? alias : name))) {
+        if (alias) {
+            VIR_FREE(uristr);
+            uristr = alias;
+        }
+
+        if (!(ret->uri = virURIParse(uristr))) {
             VIR_FREE(alias);
             goto failed;
         }
 
-        VIR_DEBUG("name \"%s\" to URI components:\n"
+        VIR_DEBUG("Split \"%s\" to URI components:\n"
                   "  scheme %s\n"
                   "  server %s\n"
                   "  user %s\n"
                   "  port %d\n"
                   "  path %s",
-                  alias ? alias : name,
+                  uristr,
                   NULLSTR(ret->uri->scheme), NULLSTR(ret->uri->server),
                   NULLSTR(ret->uri->user), ret->uri->port,
                   NULLSTR(ret->uri->path));
 
-        if (virConnectCheckURIMissingSlash(alias ? alias : name,
+        if (virConnectCheckURIMissingSlash(uristr,
                                            ret->uri) < 0) {
-            VIR_FREE(alias);
             goto failed;
         }
-
-        VIR_FREE(alias);
     } else {
         VIR_DEBUG("no name, allowing driver auto-select");
     }
@@ -1114,10 +1120,12 @@ virConnectOpenInternal(const char *name,
     }
 
     virConfFree(conf);
+    VIR_FREE(uristr);
 
     return ret;
 
  failed:
+    VIR_FREE(uristr);
     virConfFree(conf);
     virObjectUnref(ret);
 
