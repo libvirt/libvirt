@@ -265,6 +265,8 @@ static int testCompareXMLToArgvFiles(const char *xml,
     size_t i;
     qemuDomainObjPrivatePtr priv = NULL;
 
+    memset(&monitor_chr, 0, sizeof(monitor_chr));
+
     if (!(conn = virGetConnect()))
         goto out;
     conn->secretDriver = &fakeSecretDriver;
@@ -292,8 +294,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     vm->def->id = -1;
 
-
-    memset(&monitor_chr, 0, sizeof(monitor_chr));
     if (qemuProcessPrepareMonitorChr(&monitor_chr, priv->libDir) < 0)
         goto out;
 
@@ -363,6 +363,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
  out:
     VIR_FREE(log);
     VIR_FREE(actualargv);
+    virDomainChrSourceDefClear(&monitor_chr);
     virCommandFree(cmd);
     virObjectUnref(vm);
     virObjectUnref(conn);
