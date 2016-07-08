@@ -5624,6 +5624,48 @@ qemuDomainGetVcpuPid(virDomainObjPtr vm,
 
 
 /**
+ * qemuDomainValidateVcpuInfo:
+ *
+ * Validates vcpu thread information. If vcpu thread IDs are reported by qemu,
+ * this function validates that online vcpus have thread info present and
+ * offline vcpus don't.
+ *
+ * Returns 0 on success -1 on error.
+ */
+int
+qemuDomainValidateVcpuInfo(virDomainObjPtr vm)
+{
+    size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
+    virDomainVcpuDefPtr vcpu;
+    qemuDomainVcpuPrivatePtr vcpupriv;
+    size_t i;
+
+    if (!qemuDomainHasVcpuPids(vm))
+        return 0;
+
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(vm->def, i);
+        vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
+
+        if (vcpu->online && vcpupriv->tid == 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("qemu didn't report thread id for vcpu '%zu'"), i);
+            return -1;
+        }
+
+        if (!vcpu->online && vcpupriv->tid != 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("qemu reported thread id for inactive vcpu '%zu'"),
+                           i);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+/**
  * qemuDomainRefreshVcpuInfo:
  * @driver: qemu driver data
  * @vm: domain object
@@ -5703,13 +5745,8 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
             QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->tid = 0;
     }
 
-    if (ncpupids != virDomainDefGetVcpus(vm->def)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("got wrong number of vCPU pids from QEMU monitor. "
-                         "got %d, wanted %d"),
-                       ncpupids, virDomainDefGetVcpus(vm->def));
+    if (qemuDomainValidateVcpuInfo(vm) < 0)
         goto cleanup;
-    }
 
     ret = ncpupids;
 
