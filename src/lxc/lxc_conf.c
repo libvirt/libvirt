@@ -252,51 +252,32 @@ virLXCLoadDriverConfig(virLXCDriverConfigPtr cfg,
                        const char *filename)
 {
     virConfPtr conf;
-    virConfValuePtr p;
+    int ret = -1;
 
     /* Avoid error from non-existent or unreadable file. */
     if (access(filename, R_OK) == -1)
-        goto done;
+        return 0;
+
     conf = virConfReadFile(filename, 0);
     if (!conf)
-        goto done;
+        return -1;
 
-#define CHECK_TYPE(name, typ) if (p && p->type != (typ)) {              \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                          \
-                       "%s: %s: expected type " #typ,                   \
-                       filename, (name));                               \
-        virConfFree(conf);                                              \
-        return -1;                                                      \
-    }
+    if (virConfGetValueBool(conf, "log_with_libvirtd", &cfg->log_libvirtd) < 0)
+        goto cleanup;
 
-    p = virConfGetValue(conf, "log_with_libvirtd");
-    CHECK_TYPE("log_with_libvirtd", VIR_CONF_ULONG);
-    if (p) cfg->log_libvirtd = p->l;
+    if (virConfGetValueString(conf, "security_driver", &cfg->securityDriverName) < 0)
+        goto cleanup;
 
-    p = virConfGetValue(conf, "security_driver");
-    CHECK_TYPE("security_driver", VIR_CONF_STRING);
-    if (p && p->str) {
-        if (VIR_STRDUP(cfg->securityDriverName, p->str) < 0) {
-            virConfFree(conf);
-            return -1;
-        }
-    }
+    if (virConfGetValueBool(conf, "security_default_confined", &cfg->securityDefaultConfined) < 0)
+        goto cleanup;
 
-    p = virConfGetValue(conf, "security_default_confined");
-    CHECK_TYPE("security_default_confined", VIR_CONF_ULONG);
-    if (p) cfg->securityDefaultConfined = p->l;
+    if (virConfGetValueBool(conf, "security_require_confined", &cfg->securityRequireConfined) < 0)
+        goto cleanup;
 
-    p = virConfGetValue(conf, "security_require_confined");
-    CHECK_TYPE("security_require_confined", VIR_CONF_ULONG);
-    if (p) cfg->securityRequireConfined = p->l;
-
-
-#undef CHECK_TYPE
-
+    ret = 0;
+ cleanup:
     virConfFree(conf);
-
- done:
-    return 0;
+    return ret;
 }
 
 virLXCDriverConfigPtr virLXCDriverGetConfig(virLXCDriverPtr driver)

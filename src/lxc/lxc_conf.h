@@ -59,7 +59,7 @@ struct _virLXCDriverConfig {
     char *autostartDir;
     char *stateDir;
     char *logDir;
-    int log_libvirtd;
+    bool log_libvirtd;
     int have_netns;
 
     char *securityDriverName;
