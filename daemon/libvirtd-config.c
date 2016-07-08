@@ -39,171 +39,38 @@
 
 VIR_LOG_INIT("daemon.libvirtd-config");
 
-/* Allocate an array of malloc'd strings from the config file, filename
- * (used only in diagnostics), using handle "conf".  Upon error, return -1
- * and free any allocated memory.  Otherwise, save the array in *list_arg
- * and return 0.
- */
-static int
-remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
-                          const char *filename)
-{
-    char **list;
-    virConfValuePtr p = virConfGetValue(conf, key);
-    if (!p)
-        return 0;
-
-    switch (p->type) {
-    case VIR_CONF_STRING:
-        if (VIR_ALLOC_N(list, 2) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("failed to allocate memory for %s config list"),
-                           key);
-            return -1;
-        }
-        if (VIR_STRDUP(list[0], p->str) < 0) {
-            VIR_FREE(list);
-            return -1;
-        }
-        list[1] = NULL;
-        break;
-
-    case VIR_CONF_LIST: {
-        int len = 0;
-        size_t i;
-        virConfValuePtr pp;
-        for (pp = p->list; pp; pp = pp->next)
-            len++;
-        if (VIR_ALLOC_N(list, 1+len) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("failed to allocate memory for %s config list"),
-                           key);
-            return -1;
-        }
-        for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
-            if (pp->type != VIR_CONF_STRING) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("remoteReadConfigFile: %s: %s:"
-                                 " must be a string or list of strings"),
-                               filename, key);
-                VIR_FREE(list);
-                return -1;
-            }
-            if (VIR_STRDUP(list[i], pp->str) < 0) {
-                size_t j;
-                for (j = 0; j < i; j++)
-                    VIR_FREE(list[j]);
-                VIR_FREE(list);
-                return -1;
-            }
-
-        }
-        list[i] = NULL;
-        break;
-    }
-
-    default:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("remoteReadConfigFile: %s: %s:"
-                         " must be a string or list of strings"),
-                       filename, key);
-        return -1;
-    }
-
-    *list_arg = list;
-    return 0;
-}
-
-/* A helper function used by each of the following macros.  */
-static int
-checkType(virConfValuePtr p, const char *filename,
-          const char *key, virConfType required_type)
-{
-    if (p->type != required_type) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("remoteReadConfigFile: %s: %s: invalid type:"
-                         " got %s; expected %s"), filename, key,
-                       virConfTypeToString(p->type),
-                       virConfTypeToString(required_type));
-        return -1;
-    }
-    return 0;
-}
-
-/* If there is no config data for the key, #var_name, then do nothing.
-   If there is valid data of type VIR_CONF_STRING, and VIR_STRDUP succeeds,
-   store the result in var_name.  Otherwise, (i.e. invalid type, or VIR_STRDUP
-   failure), give a diagnostic and "goto" the cleanup-and-fail label.  */
-#define GET_CONF_STR(conf, filename, var_name)                          \
-    do {                                                                \
-        virConfValuePtr p = virConfGetValue(conf, #var_name);           \
-        if (p) {                                                        \
-            if (checkType(p, filename, #var_name, VIR_CONF_STRING) < 0) \
-                goto error;                                             \
-            VIR_FREE(data->var_name);                                   \
-            if (VIR_STRDUP(data->var_name, p->str) < 0)                 \
-                goto error;                                             \
-        }                                                               \
-    } while (0)
-
-/* Like GET_CONF_STR, but for signed integral values.  */
-#define GET_CONF_INT(conf, filename, var_name)                          \
-    do {                                                                \
-        virConfValuePtr p = virConfGetValue(conf, #var_name);           \
-        if (p) {                                                        \
-            if (p->type != VIR_CONF_ULONG &&                            \
-                checkType(p, filename, #var_name, VIR_CONF_LONG) < 0)   \
-                goto error;                                             \
-            data->var_name = p->l;                                      \
-        }                                                               \
-    } while (0)
-
-/* Like GET_CONF_STR, but for unsigned integral values.  */
-#define GET_CONF_UINT(conf, filename, var_name)                         \
-    do {                                                                \
-        virConfValuePtr p = virConfGetValue(conf, #var_name);           \
-        if (p) {                                                        \
-            if (checkType(p, filename, #var_name, VIR_CONF_ULONG) < 0)  \
-                goto error;                                             \
-            data->var_name = p->l;                                      \
-        }                                                               \
-    } while (0)
-
-
 
 static int
 remoteConfigGetAuth(virConfPtr conf,
+                    const char *filename,
                     const char *key,
-                    int *auth,
-                    const char *filename)
+                    int *auth)
 {
-    virConfValuePtr p;
+    char *authstr = NULL;
 
-    p = virConfGetValue(conf, key);
-    if (!p)
-        return 0;
-
-    if (checkType(p, filename, key, VIR_CONF_STRING) < 0)
+    if (virConfGetValueString(conf, key, &authstr) < 0)
         return -1;
 
-    if (!p->str)
+    if (!authstr)
         return 0;
 
-    if (STREQ(p->str, "none")) {
+    if (STREQ(authstr, "none")) {
         *auth = VIR_NET_SERVER_SERVICE_AUTH_NONE;
 #if WITH_SASL
-    } else if (STREQ(p->str, "sasl")) {
+    } else if (STREQ(authstr, "sasl")) {
         *auth = VIR_NET_SERVER_SERVICE_AUTH_SASL;
 #endif
-    } else if (STREQ(p->str, "polkit")) {
+    } else if (STREQ(authstr, "polkit")) {
         *auth = VIR_NET_SERVER_SERVICE_AUTH_POLKIT;
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("remoteReadConfigFile: %s: %s: unsupported auth %s"),
-                       filename, key, p->str);
+                       _("%s: %s: unsupported auth %s"),
+                       filename, key, authstr);
+        VIR_FREE(authstr);
         return -1;
     }
 
+    VIR_FREE(authstr);
     return 0;
 }
 
@@ -387,13 +254,18 @@ daemonConfigLoadOptions(struct daemonConfig *data,
                         const char *filename,
                         virConfPtr conf)
 {
-    GET_CONF_UINT(conf, filename, listen_tcp);
-    GET_CONF_UINT(conf, filename, listen_tls);
-    GET_CONF_STR(conf, filename, tls_port);
-    GET_CONF_STR(conf, filename, tcp_port);
-    GET_CONF_STR(conf, filename, listen_addr);
+    if (virConfGetValueBool(conf, "listen_tcp", &data->listen_tcp) < 0)
+        goto error;
+    if (virConfGetValueBool(conf, "listen_tls", &data->listen_tls) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "tls_port", &data->tls_port) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "tcp_port", &data->tcp_port) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "listen_addr", &data->listen_addr) < 0)
+        goto error;
 
-    if (remoteConfigGetAuth(conf, "auth_unix_rw", &data->auth_unix_rw, filename) < 0)
+    if (remoteConfigGetAuth(conf, filename, "auth_unix_rw", &data->auth_unix_rw) < 0)
         goto error;
 #if WITH_POLKIT
     /* Change default perms to be wide-open if PolicyKit is enabled.
@@ -405,78 +277,116 @@ daemonConfigLoadOptions(struct daemonConfig *data,
             goto error;
     }
 #endif
-    if (remoteConfigGetAuth(conf, "auth_unix_ro", &data->auth_unix_ro, filename) < 0)
+    if (remoteConfigGetAuth(conf, filename, "auth_unix_ro", &data->auth_unix_ro) < 0)
         goto error;
-    if (remoteConfigGetAuth(conf, "auth_tcp", &data->auth_tcp, filename) < 0)
+    if (remoteConfigGetAuth(conf, filename, "auth_tcp", &data->auth_tcp) < 0)
         goto error;
-    if (remoteConfigGetAuth(conf, "auth_tls", &data->auth_tls, filename) < 0)
-        goto error;
-
-    if (remoteConfigGetStringList(conf, "access_drivers",
-                                  &data->access_drivers, filename) < 0)
+    if (remoteConfigGetAuth(conf, filename, "auth_tls", &data->auth_tls) < 0)
         goto error;
 
-    GET_CONF_STR(conf, filename, unix_sock_group);
-    GET_CONF_STR(conf, filename, unix_sock_admin_perms);
-    GET_CONF_STR(conf, filename, unix_sock_ro_perms);
-    GET_CONF_STR(conf, filename, unix_sock_rw_perms);
+    if (virConfGetValueStringList(conf, "access_drivers", false,
+                                  &data->access_drivers) < 0)
+        goto error;
 
-    GET_CONF_STR(conf, filename, unix_sock_dir);
+    if (virConfGetValueString(conf, "unix_sock_group", &data->unix_sock_group) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "unix_sock_admin_perms", &data->unix_sock_admin_perms) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "unix_sock_ro_perms", &data->unix_sock_ro_perms) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "unix_sock_rw_perms", &data->unix_sock_rw_perms) < 0)
+        goto error;
 
-    GET_CONF_UINT(conf, filename, mdns_adv);
-    GET_CONF_STR(conf, filename, mdns_name);
+    if (virConfGetValueString(conf, "unix_sock_dir", &data->unix_sock_dir) < 0)
+        goto error;
 
-    GET_CONF_UINT(conf, filename, tls_no_sanity_certificate);
-    GET_CONF_UINT(conf, filename, tls_no_verify_certificate);
+    if (virConfGetValueBool(conf, "mdns_adv", &data->mdns_adv) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "mdns_name", &data->mdns_name) < 0)
+        goto error;
 
-    GET_CONF_STR(conf, filename, key_file);
-    GET_CONF_STR(conf, filename, cert_file);
-    GET_CONF_STR(conf, filename, ca_file);
-    GET_CONF_STR(conf, filename, crl_file);
+    if (virConfGetValueBool(conf, "tls_no_sanity_certificate", &data->tls_no_sanity_certificate) < 0)
+        goto error;
+    if (virConfGetValueBool(conf, "tls_no_verify_certificate", &data->tls_no_verify_certificate) < 0)
+        goto error;
 
-    if (remoteConfigGetStringList(conf, "tls_allowed_dn_list",
-                                  &data->tls_allowed_dn_list, filename) < 0)
+    if (virConfGetValueString(conf, "key_file", &data->key_file) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "cert_file", &data->cert_file) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "ca_file", &data->ca_file) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "crl_file", &data->crl_file) < 0)
+        goto error;
+
+    if (virConfGetValueStringList(conf, "tls_allowed_dn_list", false,
+                                  &data->tls_allowed_dn_list) < 0)
         goto error;
 
 
-    if (remoteConfigGetStringList(conf, "sasl_allowed_username_list",
-                                  &data->sasl_allowed_username_list, filename) < 0)
+    if (virConfGetValueStringList(conf, "sasl_allowed_username_list", false,
+                                  &data->sasl_allowed_username_list) < 0)
         goto error;
 
-    GET_CONF_STR(conf, filename, tls_priority);
+    if (virConfGetValueString(conf, "tls_priority", &data->tls_priority) < 0)
+        goto error;
 
-    GET_CONF_UINT(conf, filename, min_workers);
-    GET_CONF_UINT(conf, filename, max_workers);
-    GET_CONF_UINT(conf, filename, max_clients);
-    GET_CONF_UINT(conf, filename, max_queued_clients);
-    GET_CONF_UINT(conf, filename, max_anonymous_clients);
+    if (virConfGetValueUInt(conf, "min_workers", &data->min_workers) < 0)
+        goto error;
+    if (virConfGetValueUInt(conf, "max_workers", &data->max_workers) < 0)
+        goto error;
+    if (virConfGetValueUInt(conf, "max_clients", &data->max_clients) < 0)
+        goto error;
+    if (virConfGetValueUInt(conf, "max_queued_clients", &data->max_queued_clients) < 0)
+        goto error;
+    if (virConfGetValueUInt(conf, "max_anonymous_clients", &data->max_anonymous_clients) < 0)
+        goto error;
 
-    GET_CONF_UINT(conf, filename, prio_workers);
+    if (virConfGetValueUInt(conf, "prio_workers", &data->prio_workers) < 0)
+        goto error;
 
-    GET_CONF_INT(conf, filename, max_requests);
-    GET_CONF_UINT(conf, filename, max_client_requests);
+    if (virConfGetValueUInt(conf, "max_requests", &data->max_requests) < 0)
+        goto error;
+    if (virConfGetValueUInt(conf, "max_client_requests", &data->max_client_requests) < 0)
+        goto error;
 
-    GET_CONF_UINT(conf, filename, admin_min_workers);
-    GET_CONF_UINT(conf, filename, admin_max_workers);
-    GET_CONF_UINT(conf, filename, admin_max_clients);
-    GET_CONF_UINT(conf, filename, admin_max_queued_clients);
-    GET_CONF_UINT(conf, filename, admin_max_client_requests);
+    if (virConfGetValueUInt(conf, "admin_min_workers", &data->admin_min_workers) < 0)
+        goto error;
+    if (virConfGetValueUInt(conf, "admin_max_workers", &data->admin_max_workers) < 0)
+        goto error;
+    if (virConfGetValueUInt(conf, "admin_max_clients", &data->admin_max_clients) < 0)
+        goto error;
+    if (virConfGetValueUInt(conf, "admin_max_queued_clients", &data->admin_max_queued_clients) < 0)
+        goto error;
+    if (virConfGetValueUInt(conf, "admin_max_client_requests", &data->admin_max_client_requests) < 0)
+        goto error;
 
-    GET_CONF_UINT(conf, filename, audit_level);
-    GET_CONF_UINT(conf, filename, audit_logging);
+    if (virConfGetValueUInt(conf, "audit_level", &data->audit_level) < 0)
+        goto error;
+    if (virConfGetValueBool(conf, "audit_logging", &data->audit_logging) < 0)
+        goto error;
 
-    GET_CONF_STR(conf, filename, host_uuid);
-    GET_CONF_STR(conf, filename, host_uuid_source);
+    if (virConfGetValueString(conf, "host_uuid", &data->host_uuid) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "host_uuid_source", &data->host_uuid_source) < 0)
+        goto error;
 
-    GET_CONF_UINT(conf, filename, log_level);
-    GET_CONF_STR(conf, filename, log_filters);
-    GET_CONF_STR(conf, filename, log_outputs);
+    if (virConfGetValueUInt(conf, "log_level", &data->log_level) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "log_filters", &data->log_filters) < 0)
+        goto error;
+    if (virConfGetValueString(conf, "log_outputs", &data->log_outputs) < 0)
+        goto error;
 
-    GET_CONF_INT(conf, filename, keepalive_interval);
-    GET_CONF_UINT(conf, filename, keepalive_count);
+    if (virConfGetValueInt(conf, "keepalive_interval", &data->keepalive_interval) < 0)
+        goto error;
+    if (virConfGetValueUInt(conf, "keepalive_count", &data->keepalive_count) < 0)
+        goto error;
 
-    GET_CONF_INT(conf, filename, admin_keepalive_interval);
-    GET_CONF_UINT(conf, filename, admin_keepalive_count);
+    if (virConfGetValueInt(conf, "admin_keepalive_interval", &data->admin_keepalive_interval) < 0)
+        goto error;
+    if (virConfGetValueUInt(conf, "admin_keepalive_count", &data->admin_keepalive_count) < 0)
+        goto error;
 
     return 0;
 

@@ -378,8 +378,7 @@ if WITH_LIBVIRTD
 test_scripts += $(libvirtd_test_scripts)
 
 test_programs += 			\
-	eventtest			\
-	libvirtdconftest
+	eventtest
 else ! WITH_LIBVIRTD
 EXTRA_DIST += $(libvirtd_test_scripts)
 endif ! WITH_LIBVIRTD
@@ -955,15 +954,6 @@ if WITH_LIBXL
 domaincapstest_SOURCES += testutilsxen.c testutilsxen.h
 domaincapstest_LDADD += ../src/libvirt_driver_libxl_impl.la
 endif WITH_LIBXL
-
-if WITH_LIBVIRTD
-libvirtdconftest_SOURCES = \
-	libvirtdconftest.c testutils.h testutils.c \
-	$(NULL)
-libvirtdconftest_LDADD = ../daemon/libvirtd_conf.la $(LDADDS)
-else ! WITH_LIBVIRTD
-EXTRA_DIST += libvirtdconftest.c
-endif ! WITH_LIBVIRTD
 
 virnetmessagetest_SOURCES = \
 	virnetmessagetest.c testutils.h testutils.c

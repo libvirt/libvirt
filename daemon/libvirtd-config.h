@@ -30,8 +30,8 @@ struct daemonConfig {
     char *host_uuid;
     char *host_uuid_source;
 
-    int listen_tls;
-    int listen_tcp;
+    bool listen_tls;
+    bool listen_tcp;
     char *listen_addr;
     char *tls_port;
     char *tcp_port;
@@ -49,11 +49,11 @@ struct daemonConfig {
 
     char **access_drivers;
 
-    int mdns_adv;
+    bool mdns_adv;
     char *mdns_name;
 
-    int tls_no_verify_certificate;
-    int tls_no_sanity_certificate;
+    bool tls_no_verify_certificate;
+    bool tls_no_sanity_certificate;
     char **tls_allowed_dn_list;
     char **sasl_allowed_username_list;
     char *tls_priority;
@@ -63,32 +63,32 @@ struct daemonConfig {
     char *ca_file;
     char *crl_file;
 
-    int min_workers;
-    int max_workers;
-    int max_clients;
-    int max_queued_clients;
-    int max_anonymous_clients;
+    unsigned int min_workers;
+    unsigned int max_workers;
+    unsigned int max_clients;
+    unsigned int max_queued_clients;
+    unsigned int max_anonymous_clients;
 
-    int prio_workers;
+    unsigned int prio_workers;
 
-    int max_requests;
-    int max_client_requests;
+    unsigned int max_requests;
+    unsigned int max_client_requests;
 
-    int log_level;
+    unsigned int log_level;
     char *log_filters;
     char *log_outputs;
 
-    int audit_level;
-    int audit_logging;
+    unsigned int audit_level;
+    bool audit_logging;
 
     int keepalive_interval;
     unsigned int keepalive_count;
 
-    int admin_min_workers;
-    int admin_max_workers;
-    int admin_max_clients;
-    int admin_max_queued_clients;
-    int admin_max_client_requests;
+    unsigned int admin_min_workers;
+    unsigned int admin_max_workers;
+    unsigned int admin_max_clients;
+    unsigned int admin_max_queued_clients;
+    unsigned int admin_max_client_requests;
 
     int admin_keepalive_interval;
     unsigned int admin_keepalive_count;
