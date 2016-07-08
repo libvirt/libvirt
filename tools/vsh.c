@@ -318,16 +318,11 @@ vshCmddefGetInfo(const vshCmdDef * cmd, const char *name)
     return NULL;
 }
 
-/* Validate that the options associated with cmd can be parsed.  */
+/* Check if the internal command definitions are correct */
 static int
-vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
-                  uint64_t *opts_required)
+vshCmddefCheckInternals(const vshCmdDef *cmd)
 {
     size_t i;
-    bool optional = false;
-
-    *opts_need_arg = 0;
-    *opts_required = 0;
 
     if (!cmd->opts)
         return 0;
@@ -338,7 +333,6 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
         if (i > 63)
             return -1; /* too many options */
         if (opt->type == VSH_OT_BOOL) {
-            optional = true;
             if (opt->flags & VSH_OFLAG_REQ)
                 return -1; /* bool options can't be mandatory */
             continue;
@@ -368,6 +362,34 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
                 return -1; /* alias option must map to a later option name */
             continue;
         }
+        if (opt->type == VSH_OT_ARGV && cmd->opts[i + 1].name)
+            return -1; /* argv option must be listed last */
+    }
+    return 0;
+}
+
+/* Keeps track of options that are required or need and argument */
+static int
+vshCmddefOptFill(const vshCmdDef *cmd, uint64_t *opts_need_arg,
+                 uint64_t *opts_required)
+{
+    size_t i;
+    bool optional = false;
+
+    *opts_need_arg = 0;
+    *opts_required = 0;
+
+    if (!cmd->opts)
+        return 0;
+
+    for (i = 0; cmd->opts[i].name; i++) {
+        const vshCmdOptDef *opt = &cmd->opts[i];
+
+        if (opt->type == VSH_OT_BOOL) {
+            optional = true;
+            continue;
+        }
+
         if (opt->flags & VSH_OFLAG_REQ_OPT) {
             if (opt->flags & VSH_OFLAG_REQ)
                 *opts_required |= 1ULL << i;
@@ -375,6 +397,9 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
                 optional = true;
             continue;
         }
+
+        if (opt->type == VSH_OT_ALIAS)
+            continue; /* skip the alias option */
 
         *opts_need_arg |= 1ULL << i;
         if (opt->flags & VSH_OFLAG_REQ) {
@@ -384,10 +409,21 @@ vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
         } else {
             optional = true;
         }
-
-        if (opt->type == VSH_OT_ARGV && cmd->opts[i + 1].name)
-            return -1; /* argv option must be listed last */
     }
+    return 0;
+}
+
+/* Validate that the options associated with cmd can be parsed.  */
+static int
+vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
+                  uint64_t *opts_required)
+{
+    if (vshCmddefCheckInternals(cmd) < 0)
+        return -1;
+
+    if (vshCmddefOptFill(cmd, opts_need_arg, opts_required) < 0)
+        return -1;
+
     return 0;
 }
 
