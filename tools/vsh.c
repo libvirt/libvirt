@@ -2537,7 +2537,8 @@ vshTreePrint(vshControl *ctl, vshTreeLookup lookup, void *opaque,
 static char *
 vshReadlineCommandGenerator(const char *text, int state)
 {
-    static int grp_list_index, cmd_list_index, len;
+    static unsigned int grp_list_index, cmd_list_index;
+    static size_t len;
     const char *name;
     const vshCmdGrp *grp;
     const vshCmdDef *cmds;
@@ -2576,7 +2577,8 @@ vshReadlineCommandGenerator(const char *text, int state)
 static char *
 vshReadlineOptionsGenerator(const char *text, int state)
 {
-    static int list_index, len;
+    static unsigned int list_index;
+    static size_t len;
     static const vshCmdDef *cmd;
     const char *name;
 
