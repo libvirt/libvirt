@@ -386,10 +386,13 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                                 const char *filename)
 {
     virConfPtr conf = NULL;
-    virConfValuePtr p;
     int ret = -1;
-    size_t i;
+    size_t i, j;
     char *stdioHandler = NULL;
+    char *user = NULL, *group = NULL;
+    char **controllers = NULL;
+    char **hugetlbfs = NULL;
+    char **nvram = NULL;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
@@ -402,114 +405,66 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (!(conf = virConfReadFile(filename, 0)))
         goto cleanup;
 
-#define CHECK_TYPE(name, typ)                         \
-    if (p && p->type != (typ)) {                      \
-        virReportError(VIR_ERR_INTERNAL_ERROR,        \
-                       "%s: %s: expected type " #typ, \
-                       filename, (name));             \
-        goto cleanup;                                 \
-    }
+    if (virConfGetValueBool(conf, "vnc_auto_unix_socket", &cfg->vncAutoUnixSocket) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "vnc_tls", &cfg->vncTLS) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "vnc_tls_x509_verify", &cfg->vncTLSx509verify) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "vnc_tls_x509_cert_dir", &cfg->vncTLSx509certdir) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "vnc_listen", &cfg->vncListen) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "vnc_password", &cfg->vncPassword) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "vnc_sasl", &cfg->vncSASL) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "vnc_sasl_dir", &cfg->vncSASLdir) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "vnc_allow_host_audio", &cfg->vncAllowHostAudio) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "nographics_allow_host_audio", &cfg->nogfxAllowHostAudio) < 0)
+        goto cleanup;
 
-#define CHECK_TYPE_ALT(name, type1, type2)                      \
-    if (p && (p->type != (type1) && p->type != (type2))) {      \
-        virReportError(VIR_ERR_INTERNAL_ERROR,                  \
-                       "%s: %s: expected type " #type1,         \
-                       filename, (name));                       \
-        goto cleanup;                                           \
-    }
 
-#define GET_VALUE_LONG(NAME, VAR)                               \
-    p = virConfGetValue(conf, NAME);                            \
-    CHECK_TYPE_ALT(NAME, VIR_CONF_LONG, VIR_CONF_ULONG);        \
-    if (p)                                                      \
-        VAR = p->l;
+    if (virConfGetValueStringList(conf, "security_driver", true, &cfg->securityDriverNames) < 0)
+        goto cleanup;
 
-#define GET_VALUE_ULONG(NAME, VAR)    \
-    p = virConfGetValue(conf, NAME);  \
-    CHECK_TYPE(NAME, VIR_CONF_ULONG); \
-    if (p)                            \
-        VAR = p->l;
-
-#define GET_VALUE_BOOL(NAME, VAR)     \
-    p = virConfGetValue(conf, NAME);  \
-    CHECK_TYPE(NAME, VIR_CONF_ULONG); \
-    if (p)                            \
-        VAR = p->l != 0;
-
-#define GET_VALUE_STR(NAME, VAR)           \
-    p = virConfGetValue(conf, NAME);       \
-    CHECK_TYPE(NAME, VIR_CONF_STRING);     \
-    if (p && p->str) {                     \
-        VIR_FREE(VAR);                     \
-        if (VIR_STRDUP(VAR, p->str) < 0)   \
-            goto cleanup;                  \
-    }
-
-    GET_VALUE_BOOL("vnc_auto_unix_socket", cfg->vncAutoUnixSocket);
-    GET_VALUE_BOOL("vnc_tls", cfg->vncTLS);
-    GET_VALUE_BOOL("vnc_tls_x509_verify", cfg->vncTLSx509verify);
-    GET_VALUE_STR("vnc_tls_x509_cert_dir", cfg->vncTLSx509certdir);
-    GET_VALUE_STR("vnc_listen", cfg->vncListen);
-    GET_VALUE_STR("vnc_password", cfg->vncPassword);
-    GET_VALUE_BOOL("vnc_sasl", cfg->vncSASL);
-    GET_VALUE_STR("vnc_sasl_dir", cfg->vncSASLdir);
-    GET_VALUE_BOOL("vnc_allow_host_audio", cfg->vncAllowHostAudio);
-    GET_VALUE_BOOL("nographics_allow_host_audio", cfg->nogfxAllowHostAudio);
-
-    p = virConfGetValue(conf, "security_driver");
-    if (p && p->type == VIR_CONF_LIST) {
-        size_t len, j;
-        virConfValuePtr pp;
-
-        /* Calc length and check items */
-        for (len = 0, pp = p->list; pp; len++, pp = pp->next) {
-            if (pp->type != VIR_CONF_STRING) {
-                virReportError(VIR_ERR_CONF_SYNTAX, "%s",
-                               _("security_driver must be a list of strings"));
+    for (i = 0; cfg->securityDriverNames && cfg->securityDriverNames[i] != NULL; i++) {
+        for (j = i; cfg->securityDriverNames[j] != NULL; j++) {
+            if (STREQ(cfg->securityDriverNames[i],
+                      cfg->securityDriverNames[j])) {
+                virReportError(VIR_ERR_CONF_SYNTAX,
+                               _("Duplicate security driver %s"),
+                               cfg->securityDriverNames[i]);
                 goto cleanup;
             }
         }
-
-        if (VIR_ALLOC_N(cfg->securityDriverNames, len + 1) < 0)
-            goto cleanup;
-
-        for (i = 0, pp = p->list; pp; i++, pp = pp->next) {
-            for (j = 0; j < i; j++) {
-                if (STREQ(pp->str, cfg->securityDriverNames[j])) {
-                    virReportError(VIR_ERR_CONF_SYNTAX,
-                                   _("Duplicate security driver %s"), pp->str);
-                    goto cleanup;
-                }
-            }
-            if (VIR_STRDUP(cfg->securityDriverNames[i], pp->str) < 0)
-                goto cleanup;
-        }
-        cfg->securityDriverNames[len] = NULL;
-    } else {
-        CHECK_TYPE("security_driver", VIR_CONF_STRING);
-        if (p && p->str) {
-            if (VIR_ALLOC_N(cfg->securityDriverNames, 2) < 0)
-                goto cleanup;
-            if (VIR_STRDUP(cfg->securityDriverNames[0], p->str) < 0)
-                goto cleanup;
-
-            cfg->securityDriverNames[1] = NULL;
-        }
     }
 
-    GET_VALUE_BOOL("security_default_confined", cfg->securityDefaultConfined);
-    GET_VALUE_BOOL("security_require_confined", cfg->securityRequireConfined);
+    if (virConfGetValueBool(conf, "security_default_confined", &cfg->securityDefaultConfined) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "security_require_confined", &cfg->securityRequireConfined) < 0)
+        goto cleanup;
 
-    GET_VALUE_BOOL("spice_tls", cfg->spiceTLS);
-    GET_VALUE_STR("spice_tls_x509_cert_dir", cfg->spiceTLSx509certdir);
-    GET_VALUE_BOOL("spice_sasl", cfg->spiceSASL);
-    GET_VALUE_STR("spice_sasl_dir", cfg->spiceSASLdir);
-    GET_VALUE_STR("spice_listen", cfg->spiceListen);
-    GET_VALUE_STR("spice_password", cfg->spicePassword);
-    GET_VALUE_BOOL("spice_auto_unix_socket", cfg->spiceAutoUnixSocket);
+    if (virConfGetValueBool(conf, "spice_tls", &cfg->spiceTLS) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "spice_tls_x509_cert_dir", &cfg->spiceTLSx509certdir) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "spice_sasl", &cfg->spiceSASL) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "spice_sasl_dir", &cfg->spiceSASLdir) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "spice_listen", &cfg->spiceListen) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "spice_password", &cfg->spicePassword) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "spice_auto_unix_socket", &cfg->spiceAutoUnixSocket) < 0)
+        goto cleanup;
 
 
-    GET_VALUE_ULONG("remote_websocket_port_min", cfg->webSocketPortMin);
+    if (virConfGetValueUInt(conf, "remote_websocket_port_min", &cfg->webSocketPortMin) < 0)
+        goto cleanup;
     if (cfg->webSocketPortMin < QEMU_WEBSOCKET_PORT_MIN) {
         /* if the port is too low, we can't get the display name
          * to tell to vnc (usually subtract 5700, e.g. localhost:1
@@ -521,7 +476,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    GET_VALUE_ULONG("remote_websocket_port_max", cfg->webSocketPortMax);
+    if (virConfGetValueUInt(conf, "remote_websocket_port_max", &cfg->webSocketPortMax) < 0)
+        goto cleanup;
     if (cfg->webSocketPortMax > QEMU_WEBSOCKET_PORT_MAX ||
         cfg->webSocketPortMax < cfg->webSocketPortMin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -538,7 +494,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    GET_VALUE_ULONG("remote_display_port_min", cfg->remotePortMin);
+    if (virConfGetValueUInt(conf, "remote_display_port_min", &cfg->remotePortMin) < 0)
+        goto cleanup;
     if (cfg->remotePortMin < QEMU_REMOTE_PORT_MIN) {
         /* if the port is too low, we can't get the display name
          * to tell to vnc (usually subtract 5900, e.g. localhost:1
@@ -550,7 +507,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    GET_VALUE_ULONG("remote_display_port_max", cfg->remotePortMax);
+    if (virConfGetValueUInt(conf, "remote_display_port_max", &cfg->remotePortMax) < 0)
+        goto cleanup;
     if (cfg->remotePortMax > QEMU_REMOTE_PORT_MAX ||
         cfg->remotePortMax < cfg->remotePortMin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -567,7 +525,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    GET_VALUE_ULONG("migration_port_min", cfg->migrationPortMin);
+    if (virConfGetValueUInt(conf, "migration_port_min", &cfg->migrationPortMin) < 0)
+        goto cleanup;
     if (cfg->migrationPortMin <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: migration_port_min: port must be greater than 0"),
@@ -575,7 +534,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    GET_VALUE_ULONG("migration_port_max", cfg->migrationPortMax);
+    if (virConfGetValueUInt(conf, "migration_port_max", &cfg->migrationPortMax) < 0)
+        goto cleanup;
     if (cfg->migrationPortMax > 65535 ||
         cfg->migrationPortMax < cfg->migrationPortMin) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -585,79 +545,56 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    p = virConfGetValue(conf, "user");
-    CHECK_TYPE("user", VIR_CONF_STRING);
-    if (p && p->str &&
-        virGetUserID(p->str, &cfg->user) < 0)
+    if (virConfGetValueString(conf, "user", &user) < 0)
+        goto cleanup;
+    if (user && virGetUserID(user, &cfg->user) < 0)
         goto cleanup;
 
-    p = virConfGetValue(conf, "group");
-    CHECK_TYPE("group", VIR_CONF_STRING);
-    if (p && p->str &&
-        virGetGroupID(p->str, &cfg->group) < 0)
+    if (virConfGetValueString(conf, "group", &group) < 0)
+        goto cleanup;
+    if (group && virGetGroupID(group, &cfg->group) < 0)
         goto cleanup;
 
-    GET_VALUE_BOOL("dynamic_ownership", cfg->dynamicOwnership);
+    if (virConfGetValueBool(conf, "dynamic_ownership", &cfg->dynamicOwnership) < 0)
+        goto cleanup;
 
-    p = virConfGetValue(conf, "cgroup_controllers");
-    CHECK_TYPE("cgroup_controllers", VIR_CONF_LIST);
-    if (p) {
-        cfg->cgroupControllers = 0;
-        virConfValuePtr pp;
-        for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
-            int ctl;
-            if (pp->type != VIR_CONF_STRING) {
-                virReportError(VIR_ERR_CONF_SYNTAX, "%s",
-                               _("cgroup_controllers must be a "
-                                 "list of strings"));
-                goto cleanup;
-            }
+    if (virConfGetValueStringList(conf,  "cgroup_controllers", false,
+                                  &controllers) < 0)
+        goto cleanup;
 
-            if ((ctl = virCgroupControllerTypeFromString(pp->str)) < 0) {
-                virReportError(VIR_ERR_CONF_SYNTAX,
-                               _("Unknown cgroup controller '%s'"), pp->str);
-                goto cleanup;
-            }
-            cfg->cgroupControllers |= (1 << ctl);
-        }
-    }
-
-    p = virConfGetValue(conf, "cgroup_device_acl");
-    CHECK_TYPE("cgroup_device_acl", VIR_CONF_LIST);
-    if (p) {
-        int len = 0;
-        virConfValuePtr pp;
-        for (pp = p->list; pp; pp = pp->next)
-            len++;
-        if (VIR_ALLOC_N(cfg->cgroupDeviceACL, 1+len) < 0)
+    for (i = 0; controllers != NULL && controllers[i] != NULL; i++) {
+        int ctl;
+        if ((ctl = virCgroupControllerTypeFromString(controllers[i])) < 0) {
+            virReportError(VIR_ERR_CONF_SYNTAX,
+                           _("Unknown cgroup controller '%s'"),
+                           controllers[i]);
             goto cleanup;
-
-        for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
-            if (pp->type != VIR_CONF_STRING) {
-                virReportError(VIR_ERR_CONF_SYNTAX, "%s",
-                               _("cgroup_device_acl must be a "
-                                 "list of strings"));
-                goto cleanup;
-            }
-            if (VIR_STRDUP(cfg->cgroupDeviceACL[i], pp->str) < 0)
-                goto cleanup;
         }
-        cfg->cgroupDeviceACL[i] = NULL;
+        cfg->cgroupControllers |= (1 << ctl);
     }
 
-    GET_VALUE_STR("save_image_format", cfg->saveImageFormat);
-    GET_VALUE_STR("dump_image_format", cfg->dumpImageFormat);
-    GET_VALUE_STR("snapshot_image_format", cfg->snapshotImageFormat);
+    if (virConfGetValueStringList(conf,  "cgroup_device_acl", false,
+                                  &cfg->cgroupDeviceACL) < 0)
+        goto cleanup;
 
-    GET_VALUE_STR("auto_dump_path", cfg->autoDumpPath);
-    GET_VALUE_BOOL("auto_dump_bypass_cache", cfg->autoDumpBypassCache);
-    GET_VALUE_BOOL("auto_start_bypass_cache", cfg->autoStartBypassCache);
+    if (virConfGetValueString(conf, "save_image_format", &cfg->saveImageFormat) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "dump_image_format", &cfg->dumpImageFormat) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "snapshot_image_format", &cfg->snapshotImageFormat) < 0)
+        goto cleanup;
 
-    /* Some crazy backcompat. Back in the old days, this was just a pure
-     * string. We must continue supporting it. These days however, this may be
-     * an array of strings. */
-    p = virConfGetValue(conf, "hugetlbfs_mount");
-    if (p) {
+    if (virConfGetValueString(conf, "auto_dump_path", &cfg->autoDumpPath) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "auto_dump_bypass_cache", &cfg->autoDumpBypassCache) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "auto_start_bypass_cache", &cfg->autoStartBypassCache) < 0)
+        goto cleanup;
+
+    if (virConfGetValueStringList(conf, "hugetlbfs_mount", true,
+                                  &hugetlbfs) < 0)
+        goto cleanup;
+    if (hugetlbfs) {
         /* There already might be something autodetected. Avoid leaking it. */
         while (cfg->nhugetlbfs) {
             cfg->nhugetlbfs--;
@@ -665,60 +602,41 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         }
         VIR_FREE(cfg->hugetlbfs);
 
-        if (p->type == VIR_CONF_LIST) {
-            size_t len = 0;
-            virConfValuePtr pp = p->list;
+        cfg->nhugetlbfs = virStringListLength((const char *const *)hugetlbfs);
+        if (hugetlbfs[0] &&
+            VIR_ALLOC_N(cfg->hugetlbfs, cfg->nhugetlbfs) < 0)
+            goto cleanup;
 
-            /* Calc length and check items */
-            while (pp) {
-                if (pp->type != VIR_CONF_STRING) {
-                    virReportError(VIR_ERR_CONF_SYNTAX, "%s",
-                                   _("hugetlbfs_mount must be a list of strings"));
-                    goto cleanup;
-                }
-                len++;
-                pp = pp->next;
-            }
-
-            if (len && VIR_ALLOC_N(cfg->hugetlbfs, len) < 0)
+        for (i = 0; hugetlbfs[i] != NULL; i++) {
+            if (virQEMUDriverConfigHugeTLBFSInit(&cfg->hugetlbfs[i],
+                                                 hugetlbfs[i], i != 0) < 0)
                 goto cleanup;
-            cfg->nhugetlbfs = len;
-
-            pp = p->list;
-            len = 0;
-            while (pp) {
-                if (virQEMUDriverConfigHugeTLBFSInit(&cfg->hugetlbfs[len],
-                                                     pp->str, !len) < 0)
-                    goto cleanup;
-                len++;
-                pp = pp->next;
-            }
-        } else {
-            CHECK_TYPE("hugetlbfs_mount", VIR_CONF_STRING);
-            if (STRNEQ(p->str, "")) {
-                if (VIR_ALLOC_N(cfg->hugetlbfs, 1) < 0)
-                    goto cleanup;
-                cfg->nhugetlbfs = 1;
-                if (virQEMUDriverConfigHugeTLBFSInit(&cfg->hugetlbfs[0],
-                                                     p->str, true) < 0)
-                    goto cleanup;
-            }
         }
     }
 
-    GET_VALUE_STR("bridge_helper", cfg->bridgeHelperName);
+    if (virConfGetValueString(conf, "bridge_helper", &cfg->bridgeHelperName) < 0)
+        goto cleanup;
 
-    GET_VALUE_BOOL("mac_filter", cfg->macFilter);
+    if (virConfGetValueBool(conf, "mac_filter", &cfg->macFilter) < 0)
+        goto cleanup;
 
-    GET_VALUE_BOOL("relaxed_acs_check", cfg->relaxedACS);
-    GET_VALUE_BOOL("clear_emulator_capabilities", cfg->clearEmulatorCapabilities);
-    GET_VALUE_BOOL("allow_disk_format_probing", cfg->allowDiskFormatProbing);
-    GET_VALUE_BOOL("set_process_name", cfg->setProcessName);
-    GET_VALUE_ULONG("max_processes", cfg->maxProcesses);
-    GET_VALUE_ULONG("max_files", cfg->maxFiles);
+    if (virConfGetValueBool(conf, "relaxed_acs_check", &cfg->relaxedACS) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "clear_emulator_capabilities", &cfg->clearEmulatorCapabilities) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "allow_disk_format_probing", &cfg->allowDiskFormatProbing) < 0)
+        goto cleanup;
+    if (virConfGetValueBool(conf, "set_process_name", &cfg->setProcessName) < 0)
+        goto cleanup;
+    if (virConfGetValueUInt(conf, "max_processes", &cfg->maxProcesses) < 0)
+        goto cleanup;
+    if (virConfGetValueUInt(conf, "max_files", &cfg->maxFiles) < 0)
+        goto cleanup;
 
-    GET_VALUE_STR("lock_manager", cfg->lockManagerName);
-    GET_VALUE_STR("stdio_handler", stdioHandler);
+    if (virConfGetValueString(conf, "lock_manager", &cfg->lockManagerName) < 0)
+        goto cleanup;
+    if (virConfGetValueString(conf, "stdio_handler", &stdioHandler) < 0)
+        goto cleanup;
     if (stdioHandler) {
         if (STREQ(stdioHandler, "logd")) {
             cfg->stdioLogD = true;
@@ -734,14 +652,19 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         VIR_FREE(stdioHandler);
     }
 
-    GET_VALUE_ULONG("max_queued", cfg->maxQueuedJobs);
+    if (virConfGetValueUInt(conf, "max_queued", &cfg->maxQueuedJobs) < 0)
+        goto cleanup;
 
-    GET_VALUE_LONG("keepalive_interval", cfg->keepAliveInterval);
-    GET_VALUE_ULONG("keepalive_count", cfg->keepAliveCount);
+    if (virConfGetValueInt(conf, "keepalive_interval", &cfg->keepAliveInterval) < 0)
+        goto cleanup;
+    if (virConfGetValueUInt(conf, "keepalive_count", &cfg->keepAliveCount) < 0)
+        goto cleanup;
 
-    GET_VALUE_LONG("seccomp_sandbox", cfg->seccompSandbox);
+    if (virConfGetValueInt(conf, "seccomp_sandbox", &cfg->seccompSandbox) < 0)
+        goto cleanup;
 
-    GET_VALUE_STR("migration_host", cfg->migrateHost);
+    if (virConfGetValueString(conf, "migration_host", &cfg->migrateHost) < 0)
+        goto cleanup;
     virStringStripIPv6Brackets(cfg->migrateHost);
     if (cfg->migrateHost &&
         (STRPREFIX(cfg->migrateHost, "localhost") ||
@@ -753,7 +676,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    GET_VALUE_STR("migration_address", cfg->migrationAddress);
+    if (virConfGetValueString(conf, "migration_address", &cfg->migrationAddress) < 0)
+        goto cleanup;
     virStringStripIPv6Brackets(cfg->migrationAddress);
     if (cfg->migrationAddress &&
         (STRPREFIX(cfg->migrationAddress, "localhost") ||
@@ -765,32 +689,22 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
-    GET_VALUE_BOOL("log_timestamp", cfg->logTimestamp);
+    if (virConfGetValueBool(conf, "log_timestamp", &cfg->logTimestamp) < 0)
+        goto cleanup;
 
-    if ((p = virConfGetValue(conf, "nvram"))) {
-        size_t len;
-        virConfValuePtr pp;
-
-        CHECK_TYPE("nvram", VIR_CONF_LIST);
-
+    if (virConfGetValueStringList(conf, "nvram", false, &nvram) < 0)
+        goto cleanup;
+    if (nvram) {
         virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
-        /* Calc length and check items */
-        for (len = 0, pp = p->list; pp; len++, pp = pp->next) {
-            if (pp->type != VIR_CONF_STRING) {
-                virReportError(VIR_ERR_CONF_SYNTAX, "%s",
-                               _("nvram must be a list of strings"));
-                goto cleanup;
-            }
-        }
 
-        if (len && VIR_ALLOC_N(cfg->firmwares, len) < 0)
+        cfg->nfirmwares = virStringListLength((const char *const *)nvram);
+        if (nvram[0] && VIR_ALLOC_N(cfg->firmwares, cfg->nfirmwares) < 0)
             goto cleanup;
-        cfg->nfirmwares = len;
 
-        for (i = 0, pp = p->list; pp; i++, pp = pp->next) {
+        for (i = 0; nvram[i] != NULL; i++) {
             if (VIR_ALLOC(cfg->firmwares[i]) < 0)
                 goto cleanup;
-            if (virFirmwareParse(pp->str, cfg->firmwares[i]) < 0)
+            if (virFirmwareParse(nvram[i], cfg->firmwares[i]) < 0)
                 goto cleanup;
         }
     }
@@ -798,13 +712,14 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     ret = 0;
 
  cleanup:
+    virStringFreeList(controllers);
+    virStringFreeList(hugetlbfs);
+    virStringFreeList(nvram);
+    VIR_FREE(user);
+    VIR_FREE(group);
     virConfFree(conf);
     return ret;
 }
-#undef GET_VALUE_LONG
-#undef GET_VALUE_ULONG
-#undef GET_VALUE_BOOL
-#undef GET_VALUE_STR
 
 virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver)
 {

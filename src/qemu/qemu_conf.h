@@ -88,7 +88,7 @@ struct _virQEMUDriverConfig {
 
     uid_t user;
     gid_t group;
-    int dynamicOwnership;
+    bool dynamicOwnership;
 
     int cgroupControllers;
     char **cgroupDeviceACL;
@@ -126,11 +126,11 @@ struct _virQEMUDriverConfig {
     char *spicePassword;
     bool spiceAutoUnixSocket;
 
-    int remotePortMin;
-    int remotePortMax;
+    unsigned int remotePortMin;
+    unsigned int remotePortMax;
 
-    int webSocketPortMin;
-    int webSocketPortMax;
+    unsigned int webSocketPortMin;
+    unsigned int webSocketPortMax;
 
     virHugeTLBFSPtr hugetlbfs;
     size_t nhugetlbfs;
@@ -146,10 +146,10 @@ struct _virQEMUDriverConfig {
     bool allowDiskFormatProbing;
     bool setProcessName;
 
-    int maxProcesses;
-    int maxFiles;
+    unsigned int maxProcesses;
+    unsigned int maxFiles;
 
-    int maxQueuedJobs;
+    unsigned int maxQueuedJobs;
 
     char **securityDriverNames;
     bool securityDefaultConfined;
@@ -173,8 +173,8 @@ struct _virQEMUDriverConfig {
     char *migrateHost;
     /* The default for -incoming */
     char *migrationAddress;
-    int migrationPortMin;
-    int migrationPortMax;
+    unsigned int migrationPortMin;
+    unsigned int migrationPortMax;
 
     bool logTimestamp;
     bool stdioLogD;
