@@ -779,7 +779,7 @@ virConfReadFile(const char *filename, unsigned int flags)
 
     if (len && len < MAX_CONFIG_FILE_SIZE && content[len - 1] != '\n') {
         VIR_DEBUG("appending newline to busted config file %s", filename);
-        if (VIR_REALLOC_N(content, len + 1) < 0)
+        if (VIR_REALLOC_N(content, len + 2) < 0)
             goto cleanup;
         content[len++] = '\n';
         content[len] = '\0';
