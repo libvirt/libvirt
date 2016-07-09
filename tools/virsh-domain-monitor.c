@@ -1844,12 +1844,8 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
     FILTER("state-shutoff", VIR_CONNECT_LIST_DOMAINS_SHUTOFF);
     FILTER("state-other",   VIR_CONNECT_LIST_DOMAINS_OTHER);
 
-    if (optTable + optName + optUUID > 1) {
-        vshError(ctl, "%s",
-                 _("Only one argument from --table, --name and --uuid "
-                   "may be specified."));
-        return false;
-    }
+    VSH_EXCLUSIVE_OPTIONS("table", "name");
+    VSH_EXCLUSIVE_OPTIONS("table", "uuid");
 
     if (!optUUID && !optName)
         optTable = true;
@@ -1907,6 +1903,12 @@ cmdList(vshControl *ctl, const vshCmd *cmd)
                          state == -2 ? _("saved")
                          : virshDomainStateToString(state));
             }
+        } else if (optUUID && optName) {
+            if (virDomainGetUUIDString(dom, uuid) < 0) {
+                vshError(ctl, "%s", _("Failed to get domain's UUID"));
+                goto cleanup;
+            }
+            vshPrint(ctl, "%-36s %-30s\n", uuid, virDomainGetName(dom));
         } else if (optUUID) {
             if (virDomainGetUUIDString(dom, uuid) < 0) {
                 vshError(ctl, "%s", _("Failed to get domain's UUID"));
