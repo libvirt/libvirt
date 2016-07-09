@@ -118,6 +118,7 @@ virNetDevTapCreate(char **ifname,
     for (i = 0; i < tapfdSize; i++)
         tapfd[i] = STDERR_FILENO + 1 + i;
 
+    VIR_FREE(*ifname);
     return VIR_STRDUP(*ifname, "vnet0");
 }
 
