@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>219136</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <bootloader>/usr/bin/custom-loader</bootloader>
-  <bootloader_args>with several arguments</bootloader_args>
+  <bootloader_args>-s ome --args</bootloader_args>
   <os>
     <type>hvm</type>
   </os>
