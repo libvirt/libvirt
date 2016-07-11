@@ -752,5 +752,21 @@
           &lt;/permissions&gt;
         &lt;/target&gt;
       &lt;/volume&gt;</pre>
+
+    <h3><a name="exampleLuks">Storage volume using LUKS</a></h3>
+
+    <pre>
+      &lt;volume&gt;
+        &lt;name&gt;MyLuks.img&lt;/name&gt;
+        &lt;capacity unit="G"&gt;5&lt;/capacity&gt;
+        &lt;target&gt;
+          &lt;path&gt;/var/lib/virt/images/MyLuks.img&lt;/path&gt;
+          &lt;format type='luks'/&gt;
+          &lt;encryption format='luks'&gt;
+            &lt;secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc572'/&gt;
+          &lt;/encryption&gt;
+        &lt;/target&gt;
+      &lt;/volume&gt;
+    </pre>
   </body>
 </html>
