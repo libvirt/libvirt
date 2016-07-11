@@ -31,6 +31,7 @@ typedef enum {
     VIR_HOOK_DRIVER_QEMU,              /* QEmu domains related events */
     VIR_HOOK_DRIVER_LXC,               /* LXC domains related events */
     VIR_HOOK_DRIVER_NETWORK,           /* network related events */
+    VIR_HOOK_DRIVER_LIBXL,             /* Xen libxl domains related events */
 
     VIR_HOOK_DRIVER_LAST,
 } virHookDriverType;
@@ -86,6 +87,18 @@ typedef enum {
 
     VIR_HOOK_NETWORK_OP_LAST,
 } virHookNetworkOpType;
+
+typedef enum {
+    VIR_HOOK_LIBXL_OP_START,            /* domain is about to start */
+    VIR_HOOK_LIBXL_OP_STOPPED,          /* domain has stopped */
+    VIR_HOOK_LIBXL_OP_PREPARE,          /* domain startup initiated */
+    VIR_HOOK_LIBXL_OP_RELEASE,          /* domain destruction is over */
+    VIR_HOOK_LIBXL_OP_MIGRATE,          /* domain is being migrated */
+    VIR_HOOK_LIBXL_OP_STARTED,          /* domain has started */
+    VIR_HOOK_LIBXL_OP_RECONNECT,        /* domain is being reconnected by libvirt */
+
+    VIR_HOOK_LIBXL_OP_LAST,
+} virHookLibxlOpType;
 
 int virHookInitialize(void);
 

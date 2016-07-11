@@ -42,6 +42,7 @@
 #include "virfile.h"
 #include "viralloc.h"
 #include "viruuid.h"
+#include "virhook.h"
 #include "vircommand.h"
 #include "libxl_domain.h"
 #include "libxl_driver.h"
@@ -414,6 +415,27 @@ libxlReconnectDomain(virDomainObjPtr vm,
 
     /* Enable domain death events */
     libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW);
+
+    /* now that we know it's reconnected call the hook if present */
+    if (virHookPresent(VIR_HOOK_DRIVER_LIBXL) &&
+        STRNEQ("Domain-0", vm->def->name)) {
+        char *xml = virDomainDefFormat(vm->def, cfg->caps, 0);
+        int hookret;
+
+        /* we can't stop the operation even if the script raised an error */
+        hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
+                              VIR_HOOK_LIBXL_OP_RECONNECT, VIR_HOOK_SUBOP_BEGIN,
+                              NULL, xml, NULL);
+        VIR_FREE(xml);
+        if (hookret < 0) {
+            /* Stop the domain if the hook failed */
+            if (virDomainObjIsActive(vm)) {
+                libxlDomainDestroyInternal(driver, vm);
+                virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_FAILED);
+            }
+            goto error;
+        }
+    }
 
     ret = 0;
 

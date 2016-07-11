@@ -36,6 +36,7 @@
 #include "virstring.h"
 #include "virobject.h"
 #include "virthread.h"
+#include "virhook.h"
 #include "rpc/virnetsocket.h"
 #include "libxl_domain.h"
 #include "libxl_driver.h"
@@ -490,9 +491,11 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
                             unsigned int flags)
 {
     libxlDriverPrivatePtr driver = dconn->privateData;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     libxlMigrationCookiePtr mig = NULL;
     virDomainObjPtr vm = NULL;
     char *hostname = NULL;
+    char *xmlout = NULL;
     unsigned short port;
     char portstr[100];
     virURIPtr uri = NULL;
@@ -500,6 +503,8 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     size_t nsocks = 0;
     int nsocks_listen = 0;
     libxlMigrationDstArgs *args = NULL;
+    bool taint_hook = false;
+    libxlDomainObjPrivatePtr priv = NULL;
     size_t i;
     int ret = -1;
 
@@ -513,6 +518,50 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
         goto error;
     }
 
+    /* Let migration hook filter domain XML */
+    if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
+        char *xml;
+        int hookret;
+
+        if (!(xml = virDomainDefFormat(*def, cfg->caps,
+                                       VIR_DOMAIN_XML_SECURE |
+                                       VIR_DOMAIN_XML_MIGRATABLE)))
+            goto error;
+
+        hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, (*def)->name,
+                              VIR_HOOK_LIBXL_OP_MIGRATE, VIR_HOOK_SUBOP_BEGIN,
+                              NULL, xml, &xmlout);
+        VIR_FREE(xml);
+
+        if (hookret < 0) {
+            goto error;
+        } else if (hookret == 0) {
+            if (virStringIsEmpty(xmlout)) {
+                VIR_DEBUG("Migrate hook filter returned nothing; using the"
+                          " original XML");
+            } else {
+                virDomainDefPtr newdef;
+
+                VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
+                newdef = virDomainDefParseString(xmlout, cfg->caps, driver->xmlopt,
+                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                                 VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
+                if (!newdef)
+                    goto error;
+
+                /* TODO At some stage we will want to have some check of what the user
+                 * did in the hook. */
+
+                virDomainDefFree(*def);
+                *def = newdef;
+                /* We should taint the domain here. However, @vm and therefore
+                 * privateData too are still NULL, so just notice the fact and
+                 * taint it later. */
+                taint_hook = true;
+            }
+        }
+    }
+
     if (!(vm = virDomainObjListAdd(driver->domains, *def,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
@@ -520,6 +569,12 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
                                    NULL)))
         goto error;
     *def = NULL;
+    priv = vm->privateData;
+
+    if (taint_hook) {
+        /* Domain XML has been altered by a hook script. */
+        priv->hookRun = true;
+    }
 
     /* Create socket connection to receive migration data */
     if (!uri_in) {
@@ -640,6 +695,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     }
 
  done:
+    VIR_FREE(xmlout);
     libxlMigrationCookieFree(mig);
     if (!uri_in)
         VIR_FREE(hostname);
@@ -647,6 +703,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
         virURIFree(uri);
     if (vm)
         virObjectUnlock(vm);
+    virObjectUnref(cfg);
     return ret;
 }
 

@@ -17,8 +17,10 @@
           (<span class="since">since 0.8.0</span>)<br/><br/></li>
       <li>A QEMU guest is started or stopped
          (<span class="since">since 0.8.0</span>)<br/><br/></li>
-         <li>An LXC guest is started or stopped
+      <li>An LXC guest is started or stopped
          (<span class="since">since 0.8.0</span>)<br/><br/></li>
+      <li>A libxl-handled Xen guest is started or stopped
+         (<span class="since">since 2.1.0</span>)<br/><br/></li>
       <li>A network is started or stopped or an interface is
           plugged/unplugged to/from the network
           (<span class="since">since 1.2.2</span>)<br/><br/></li>
@@ -41,7 +43,7 @@
     <br/>
 
     <h2><a name="names">Script names</a></h2>
-    <p>At present, there are three hook scripts that can be called:</p>
+    <p>At present, there are five hook scripts that can be called:</p>
     <ul>
       <li><code>/etc/libvirt/hooks/daemon</code><br/><br/>
           Executed when the libvirt daemon is started, stopped, or reloads
@@ -50,6 +52,9 @@
           Executed when a QEMU guest is started, stopped, or migrated<br/><br/></li>
       <li><code>/etc/libvirt/hooks/lxc</code><br /><br/>
           Executed when an LXC guest is started or stopped</li>
+      <li><code>/etc/libvirt/hooks/libxl</code><br/><br/>
+          Executed when a libxl-handled Xen guest is started, stopped, or
+          migrated<br/><br/></li>
       <li><code>/etc/libvirt/hooks/network</code><br/><br/>
           Executed when a network is started or stopped or an
           interface is plugged/unplugged to/from the network</li>
@@ -232,6 +237,50 @@
         to previously running LXC processes. If the script fails, the
         existing LXC process will be killed off. It is called as:
         <pre>/etc/libvirt/hooks/lxc guest_name reconnect begin -</pre>
+      </li>
+    </ul>
+
+    <h5><a name="libxl">/etc/libvirt/hooks/libxl</a></h5>
+    <ul>
+      <li>Before a Xen guest is started using libxl driver, the libxl hook
+        script is called in three locations; if any location fails, the guest
+        is not started.  The first location, <span class="since">since
+        2.1.0</span>, is before libvirt performs any resource
+        labeling, and the hook can allocate resources not managed by
+        libvirt.  This is called as:<br/>
+        <pre>/etc/libvirt/hooks/libxl guest_name prepare begin -</pre>
+        The second location, available <span class="since">Since
+        2.1.0</span>, occurs after libvirt has finished labeling
+        all resources, but has not yet started the guest, called as:<br/>
+        <pre>/etc/libvirt/hooks/libxl guest_name start begin -</pre>
+        The third location, <span class="since">2.1.0</span>,
+        occurs after the domain has successfully started up:<br/>
+        <pre>/etc/libvirt/hooks/libxl guest_name started begin -</pre>
+      </li>
+      <li>When a libxl-handled Xen guest is stopped, the libxl hook script
+        is called in two locations, to match the startup.
+        First, <span class="since">since 2.1.0</span>, the hook is
+        called before libvirt restores any labels:<br/>
+        <pre>/etc/libvirt/hooks/libxl guest_name stopped end -</pre>
+        Then, after libvirt has released all resources, the hook is
+        called again, <span class="since">since 2.1.0</span>, to allow
+        any additional resource cleanup:<br/>
+        <pre>/etc/libvirt/hooks/libxl guest_name release end -</pre></li>
+      <li><span class="since">Since 2.1.0</span>, the libxl hook script
+        is also called at the beginning of incoming migration. It is called
+        as: <pre>/etc/libvirt/hooks/libxl guest_name migrate begin -</pre>
+        with domain XML sent to standard input of the script. In this case,
+        the script acts as a filter and is supposed to modify the domain
+        XML and print it out on its standard output. Empty output is
+        identical to copying the input XML without changing it. In case the
+        script returns failure or the output XML is not valid, incoming
+        migration will be canceled. This hook may be used, e.g., to change
+        location of disk images for incoming domains.</li>
+      <li><span class="since">Since 2.1.0</span>, the libxl hook script
+        is also called when the libvirtd daemon restarts and reconnects
+        to previously running Xen domains. If the script fails, the
+        existing Xen domains will be killed off. It is called as:
+        <pre>/etc/libvirt/hooks/libxl guest_name reconnect begin -</pre>
       </li>
     </ul>
 

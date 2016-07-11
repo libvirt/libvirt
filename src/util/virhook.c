@@ -51,13 +51,15 @@ VIR_ENUM_DECL(virHookSubop)
 VIR_ENUM_DECL(virHookQemuOp)
 VIR_ENUM_DECL(virHookLxcOp)
 VIR_ENUM_DECL(virHookNetworkOp)
+VIR_ENUM_DECL(virHookLibxlOp)
 
 VIR_ENUM_IMPL(virHookDriver,
               VIR_HOOK_DRIVER_LAST,
               "daemon",
               "qemu",
               "lxc",
-              "network")
+              "network",
+              "libxl")
 
 VIR_ENUM_IMPL(virHookDaemonOp, VIR_HOOK_DAEMON_OP_LAST,
               "start",
@@ -95,6 +97,15 @@ VIR_ENUM_IMPL(virHookNetworkOp, VIR_HOOK_NETWORK_OP_LAST,
               "plugged",
               "unplugged",
               "updated")
+
+VIR_ENUM_IMPL(virHookLibxlOp, VIR_HOOK_LIBXL_OP_LAST,
+              "start",
+              "stopped",
+              "prepare",
+              "release",
+              "migrate",
+              "started",
+              "reconnect")
 
 static int virHooksFound = -1;
 
@@ -260,6 +271,9 @@ virHookCall(int driver,
             break;
         case VIR_HOOK_DRIVER_LXC:
             opstr = virHookLxcOpTypeToString(op);
+            break;
+        case VIR_HOOK_DRIVER_LIBXL:
+            opstr = virHookLibxlOpTypeToString(op);
             break;
         case VIR_HOOK_DRIVER_NETWORK:
             opstr = virHookNetworkOpTypeToString(op);
