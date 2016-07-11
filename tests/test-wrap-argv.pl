@@ -150,18 +150,19 @@ sub rewrap_line {
 sub rewrap_arg {
     my $arg = shift;
     my @ret;
+    my $max_len = 78;
 
-    while (length($arg) > 80) {
-        my $split = rindex $arg, ",", 80;
+    while (length($arg) > $max_len) {
+        my $split = rindex $arg, ",", $max_len;
         if ($split == -1) {
-            $split = rindex $arg, ":", 80;
+            $split = rindex $arg, ":", $max_len;
         }
         if ($split == -1) {
-            $split = rindex $arg, " ", 80;
+            $split = rindex $arg, " ", $max_len;
         }
         if ($split == -1) {
             warn "cannot find nice place to split '$arg' below 80 chars\n";
-            $split = 79;
+            $split = $max_len - 1;
         }
         $split++;
 

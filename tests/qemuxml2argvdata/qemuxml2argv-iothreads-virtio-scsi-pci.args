@@ -28,5 +28,5 @@ id=drive-virtio-disk1 \
 drive=drive-virtio-disk1,id=virtio-disk1 \
 -drive file=/var/lib/libvirt/images/iothrtest2.img,format=raw,if=none,\
 id=drive-scsi0-0-0-3 \
--device scsi-disk,bus=scsi0.0,channel=0,scsi-id=0,lun=3,drive=drive-scsi0-0-0-3,\
-id=scsi0-0-0-3
+-device scsi-disk,bus=scsi0.0,channel=0,scsi-id=0,lun=3,\
+drive=drive-scsi0-0-0-3,id=scsi0-0-0-3

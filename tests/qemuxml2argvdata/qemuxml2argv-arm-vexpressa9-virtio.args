@@ -18,7 +18,8 @@ QEMU_AUDIO_DRV=none \
 -boot c \
 -kernel /arm.kernel \
 -initrd /arm.initrd \
--append 'console=ttyAMA0,115200n8 rw root=/dev/vda3 rootwait physmap.enabled=0' \
+-append 'console=ttyAMA0,\
+115200n8 rw root=/dev/vda3 rootwait physmap.enabled=0' \
 -dtb /arm.dtb \
 -device virtio-serial-device,id=virtio-serial0 \
 -usb \

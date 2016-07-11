@@ -19,7 +19,8 @@ mem-path=/dev/hugepages2M/libvirt/qemu,size=805306368 \
 -uuid ef1bdff4-27f3-4e85-a807-5fb4d58463cc \
 -nographic \
 -nodefaults \
--monitor unix:/tmp/lib/domain--1-SomeDummyHugepagesGu/monitor.sock,server,nowait \
+-monitor unix:/tmp/lib/domain--1-SomeDummyHugepagesGu/monitor.sock,server,\
+nowait \
 -no-acpi \
 -boot c \
 -usb \

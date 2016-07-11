@@ -20,8 +20,8 @@ server,nowait \
 -no-acpi \
 -device virtio-serial-ccw,id=virtio-serial0,devno=fe.0.0001 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,id=virtio-disk0,\
-bootindex=1 \
+-device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,\
+id=virtio-disk0,bootindex=1 \
 -chardev pty,id=charconsole0 \
 -device virtconsole,chardev=charconsole0,id=console0 \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a \

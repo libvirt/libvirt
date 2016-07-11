@@ -28,4 +28,5 @@ addr=0x3 \
 -device virtio-net-pci,netdev=hostnet1,id=net1,mac=52:54:00:ee:96:6c,bus=pci.0,\
 addr=0x4 \
 -netdev socket,listen=:2015,id=hostnet2 \
--device rtl8139,netdev=hostnet2,id=net2,mac=52:54:00:95:db:c0,bus=pci.0,addr=0x5
+-device rtl8139,netdev=hostnet2,id=net2,mac=52:54:00:95:db:c0,bus=pci.0,\
+addr=0x5

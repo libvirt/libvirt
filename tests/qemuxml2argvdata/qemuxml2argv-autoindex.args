@@ -36,8 +36,8 @@ addr=0x1d \
 -device ich9-usb-uhci2,masterbus=usb.0,firstport=2,bus=pcie.0,addr=0x1d.0x1 \
 -device ich9-usb-uhci3,masterbus=usb.0,firstport=4,bus=pcie.0,addr=0x1d.0x2 \
 -device ich9-usb-ehci1,id=usb1,bus=pcie.0,addr=0x1a.0x7 \
--device ich9-usb-uhci1,masterbus=usb1.0,firstport=0,bus=pcie.0,multifunction=on,\
-addr=0x1a \
+-device ich9-usb-uhci1,masterbus=usb1.0,firstport=0,bus=pcie.0,\
+multifunction=on,addr=0x1a \
 -device ich9-usb-uhci1,masterbus=usb2.0,firstport=0,bus=pci.2,multifunction=on,\
 addr=0x1 \
 -device ich9-usb-uhci2,masterbus=usb2.0,firstport=2,bus=pci.2,addr=0x1.0x1 \
