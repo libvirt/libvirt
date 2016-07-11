@@ -442,6 +442,10 @@ virTestRewrapFile(const char *filename)
     char *script = NULL;
     virCommandPtr cmd = NULL;
 
+    if (!(virFileHasSuffix(filename, ".args") ||
+          virFileHasSuffix(filename, ".ldargs")))
+        return 0;
+
     if (!perl) {
         fprintf(stderr, "cannot rewrap %s: unable to find perl in path", filename);
         return -1;
