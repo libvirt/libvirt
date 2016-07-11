@@ -83,6 +83,7 @@ static size_t testCounter;
 static virBitmapPtr testBitmap;
 
 char *progname;
+static char *perl;
 
 bool virTestOOMActive(void)
 {
@@ -441,10 +442,15 @@ virTestRewrapFile(const char *filename)
     char *script = NULL;
     virCommandPtr cmd = NULL;
 
+    if (!perl) {
+        fprintf(stderr, "cannot rewrap %s: unable to find perl in path", filename);
+        return -1;
+    }
+
     if (virAsprintf(&script, "%s/test-wrap-argv.pl", abs_srcdir) < 0)
         goto cleanup;
 
-    cmd = virCommandNewArgList(script, "--in-place", filename, NULL);
+    cmd = virCommandNewArgList(perl, script, "--in-place", filename, NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
 
@@ -966,6 +972,9 @@ int virTestMain(int argc,
     }
 #endif /* TEST_OOM */
 
+    /* Find perl early because some tests override PATH */
+    perl = virFindFileInPath("perl");
+
     ret = (func)();
 
     virResetLastError();
@@ -974,6 +983,7 @@ int virTestMain(int argc,
             fprintf(stderr, "%*s", 40 - (int)(testCounter % 40), "");
         fprintf(stderr, " %-3zu %s\n", testCounter, ret == 0 ? "OK" : "FAIL");
     }
+    VIR_FREE(perl);
     return ret;
 }
 
