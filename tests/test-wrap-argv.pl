@@ -89,7 +89,10 @@ sub rewrap {
         my $nl = join('', @lines);
         my $ol = join('', @orig_lines);
         unless ($nl eq $ol) {
-            print STDERR $ol;
+            open DIFF, "| diff -u $file -" or die "cannot run diff: $!";
+            print DIFF $nl;
+            close DIFF;
+
             print STDERR "Incorrect line wrapping in $file\n";
             print STDERR "Use test-wrap-argv.pl to wrap test data files\n";
             return -1;
