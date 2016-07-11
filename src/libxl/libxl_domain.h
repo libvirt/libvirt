@@ -69,6 +69,8 @@ struct _libxlDomainObjPrivate {
     char *lockState;
 
     struct libxlDomainJobObj job;
+
+    bool hookRun;  /* true if there was a hook run over this domain */
 };
 
 

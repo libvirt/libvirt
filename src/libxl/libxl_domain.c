@@ -1135,6 +1135,16 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
                                        vm->def, hostdev_flags) < 0)
         goto cleanup_dom;
 
+    if (priv->hookRun) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        virUUIDFormat(vm->def->uuid, uuidstr);
+
+        VIR_WARN("Domain id='%d' name='%s' uuid='%s' is tainted: hook",
+                 vm->def->id,
+                 vm->def->name,
+                 uuidstr);
+    }
+
     /* Unlock virDomainObj while creating the domain */
     virObjectUnlock(vm);
 
