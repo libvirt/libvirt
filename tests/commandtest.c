@@ -1063,6 +1063,74 @@ static int test24(const void *unused ATTRIBUTE_UNUSED)
     return ret;
 }
 
+
+static int test25(const void *unused ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    int pipeFD[2] = { -1, -1};
+    char rv = 0;
+    ssize_t tries = 100;
+    pid_t pid;
+
+    if (pipe(pipeFD) < 0) {
+        fprintf(stderr, "Unable to create pipe\n");
+        goto cleanup;
+    }
+
+    if (virSetNonBlock(pipeFD[0]) < 0) {
+        fprintf(stderr, "Unable to make read end of pipe nonblocking\n");
+        goto cleanup;
+    }
+
+    /* Now, fork and try to exec a nonexistent binary. */
+    pid = virFork();
+    if (pid < 0) {
+        fprintf(stderr, "Unable to spawn child\n");
+        goto cleanup;
+    }
+
+    if (pid == 0) {
+        /* Child */
+        virCommandPtr cmd = virCommandNew("some/nonexistent/binary");
+
+        rv = virCommandExec(cmd);
+        if (safewrite(pipeFD[1], &rv, sizeof(rv)) < 0)
+            fprintf(stderr, "Unable to write to pipe\n");
+        _exit(EXIT_FAILURE);
+    }
+
+    /* Parent */
+    while (--tries) {
+        if (saferead(pipeFD[0], &rv, sizeof(rv)) < 0) {
+            if (errno != EWOULDBLOCK) {
+                fprintf(stderr, "Unable to read from pipe\n");
+                goto cleanup;
+            }
+
+            usleep(10 * 1000);
+        } else {
+            break;
+        }
+    }
+
+    if (!tries) {
+        fprintf(stderr, "Child hasn't returned anything\n");
+        goto cleanup;
+    }
+
+    if (rv >= 0) {
+        fprintf(stderr, "Child should have returned an error\n");
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FORCE_CLOSE(pipeFD[0]);
+    VIR_FORCE_CLOSE(pipeFD[1]);
+    return ret;
+}
+
+
 static void virCommandThreadWorker(void *opaque)
 {
     virCommandTestDataPtr test = opaque;
@@ -1215,6 +1283,7 @@ mymain(void)
     DO_TEST(test22);
     DO_TEST(test23);
     DO_TEST(test24);
+    DO_TEST(test25);
 
     virMutexLock(&test->lock);
     if (test->running) {

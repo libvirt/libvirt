@@ -2152,7 +2152,12 @@ int virCommandExec(virCommandPtr cmd)
         return -1;
     }
 
-    return execve(cmd->args[0], cmd->args, cmd->env);
+    execve(cmd->args[0], cmd->args, cmd->env);
+
+    virReportSystemError(errno,
+                         _("cannot execute binary %s"),
+                         cmd->args[0]);
+    return -1;
 }
 #else
 int virCommandExec(virCommandPtr cmd ATTRIBUTE_UNUSED)
