@@ -1479,10 +1479,15 @@ qemuDomainObjPrivateXMLParseVcpu(xmlNodePtr node,
 
     idstr = virXMLPropString(node, "id");
 
-    if ((idstr && virStrToLong_uip(idstr, NULL, 10, &idx)) < 0 ||
-        !(vcpu = virDomainDefGetVcpu(def, idx))) {
+    if (idstr &&
+        (virStrToLong_uip(idstr, NULL, 10, &idx) < 0)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid vcpu index '%s'"), idstr);
+                       _("cannot parse vcpu index '%s'"), idstr);
+        goto cleanup;
+    }
+    if (!(vcpu = virDomainDefGetVcpu(def, idx))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid vcpu index '%u'"), idx);
         goto cleanup;
     }
 
