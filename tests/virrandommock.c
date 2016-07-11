@@ -20,11 +20,13 @@
 
 #include <config.h>
 
-#include "internal.h"
-#include "virrandom.h"
-#include "virmock.h"
+#ifndef WIN32
 
-#define VIR_FROM_THIS VIR_FROM_NONE
+# include "internal.h"
+# include "virrandom.h"
+# include "virmock.h"
+
+# define VIR_FROM_THIS VIR_FROM_NONE
 
 int
 virRandomBytes(unsigned char *buf,
@@ -39,9 +41,9 @@ virRandomBytes(unsigned char *buf,
 }
 
 
-#ifdef WITH_GNUTLS
-# include <stdio.h>
-# include <gnutls/gnutls.h>
+# ifdef WITH_GNUTLS
+#  include <stdio.h>
+#  include <gnutls/gnutls.h>
 
 static int (*real_gnutls_dh_params_generate2)(gnutls_dh_params_t dparams,
                                               unsigned int bits);
@@ -76,4 +78,7 @@ gnutls_dh_params_generate2(gnutls_dh_params_t dparams,
 
     return gnutls_dh_params_cpy(dparams, params_cache);
 }
+# endif
+#else /* WIN32 */
+/* Can't mock on WIN32 */
 #endif
