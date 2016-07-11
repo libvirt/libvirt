@@ -15,7 +15,7 @@
       <label>unconfined_u:object_r:virt_image_t:s0</label>
     </permissions>
     <encryption format='luks'>
-      <secret type='passphrase' usage='mumblyfratz'/>
+      <secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc572'/>
       <cipher name='serpent' size='256' mode='cbc' hash='sha256'/>
       <ivgen name='plain64' hash='sha256'/>
     </encryption>

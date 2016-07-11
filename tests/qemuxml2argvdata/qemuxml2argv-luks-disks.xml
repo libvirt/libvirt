@@ -28,7 +28,7 @@
       <source file='/storage/guest_disks/encryptdisk2'/>
       <target dev='vdb' bus='virtio'/>
       <encryption format='luks'>
-        <secret type='passphrase' usage='mycluster_myname'/>
+        <secret type='passphrase' usage='/storage/guest_disks/encryptdisk2'/>
       </encryption>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </disk>
