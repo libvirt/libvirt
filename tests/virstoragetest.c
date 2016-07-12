@@ -665,6 +665,58 @@ testPathRelative(const void *args)
 }
 
 
+struct testBackingParseData {
+    const char *backing;
+    const char *expect;
+};
+
+static int
+testBackingParse(const void *args)
+{
+    const struct testBackingParseData *data = args;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virStorageSourcePtr src = NULL;
+    char *xml = NULL;
+    int ret = -1;
+
+    if (!(src = virStorageSourceNewFromBackingAbsolute(data->backing))) {
+        if (!data->expect)
+            ret = 0;
+
+        goto cleanup;
+    }
+
+    if (src && !data->expect) {
+        fprintf(stderr, "parsing of backing store string '%s' should "
+                        "have failed\n", data->backing);
+        goto cleanup;
+    }
+
+    if (virDomainDiskSourceFormat(&buf, src, 0, 0) < 0 ||
+        !(xml = virBufferContentAndReset(&buf))) {
+        fprintf(stderr, "failed to format disk source xml\n");
+        goto cleanup;
+    }
+
+    if (!STREQ(xml, data->expect)) {
+        fprintf(stderr, "\n backing store string '%s'\n"
+                        "expected storage source xml:\n%s\n"
+                        "actual storage source xml:\n%s\n",
+                        data->backing, data->expect, xml);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virStorageSourceFree(src);
+    virBufferFreeAndReset(&buf);
+    VIR_FREE(xml);
+
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -674,6 +726,7 @@ mymain(void)
     struct testLookupData data2;
     struct testPathCanonicalizeData data3;
     struct testPathRelativeBacking data4;
+    struct testBackingParseData data5;
     virStorageSourcePtr chain = NULL;
     virStorageSourcePtr chain2; /* short for chain->backingStore */
     virStorageSourcePtr chain3; /* short for chain2->backingStore */
@@ -1275,6 +1328,33 @@ mymain(void)
     TEST_RELATIVE_BACKING(20, backingchain[10], backingchain[10], "../../../image3");
     TEST_RELATIVE_BACKING(21, backingchain[10], backingchain[11], "../../../../blah/image4");
     TEST_RELATIVE_BACKING(22, backingchain[11], backingchain[11], "../blah/image4");
+
+
+    virTestCounterReset("Backing store parse ");
+
+#define TEST_BACKING_PARSE(bck, xml)                                           \
+    do {                                                                       \
+        data5.backing = bck;                                                   \
+        data5.expect = xml;                                                    \
+        if (virTestRun(virTestCounterNext(),                                   \
+                       testBackingParse, &data5) < 0)                          \
+            ret = -1;                                                          \
+    } while (0)
+
+    TEST_BACKING_PARSE("path", "<source file='path'/>\n");
+    TEST_BACKING_PARSE("://", NULL);
+    TEST_BACKING_PARSE("http://example.com/file",
+                       "<source protocol='http' name='file'>\n"
+                       "  <host name='example.com'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("rbd:testshare:id=asdf:mon_host=example.com",
+                       "<source protocol='rbd' name='testshare'>\n"
+                       "  <host name='example.com'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("nbd:example.org:6000:exportname=blah",
+                       "<source protocol='nbd' name='blah'>\n"
+                       "  <host name='example.org' port='6000'/>\n"
+                       "</source>\n");
 
  cleanup:
     /* Final cleanup */

@@ -380,4 +380,7 @@ int virStorageFileGetRelativeBackingPath(virStorageSourcePtr from,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int virStorageFileCheckCompat(const char *compat);
+
+virStorageSourcePtr virStorageSourceNewFromBackingAbsolute(const char *path);
+
 #endif /* __VIR_STORAGE_FILE_H__ */

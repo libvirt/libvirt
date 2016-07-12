@@ -2514,7 +2514,7 @@ virStorageSourceParseBackingColon(virStorageSourcePtr src,
 }
 
 
-static virStorageSourcePtr
+virStorageSourcePtr
 virStorageSourceNewFromBackingAbsolute(const char *path)
 {
     virStorageSourcePtr ret;
