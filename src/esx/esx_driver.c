@@ -4924,6 +4924,7 @@ esxConnectListAllDomains(virConnectPtr conn,
     int count = 0;
     bool autostart;
     int state;
+    esxVI_DynamicProperty *dynamicProperty = NULL;
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
 
@@ -4985,6 +4986,13 @@ esxConnectListAllDomains(virConnectPtr conn,
         }
     }
 
+    if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)) {
+        if (esxVI_String_AppendValueToList(&propertyNameList,
+                                           "snapshot.rootSnapshotList") < 0) {
+            goto cleanup;
+        }
+    }
+
     if (esxVI_LookupVirtualMachineList(priv->primary, propertyNameList,
                                        &virtualMachineList) < 0)
         goto cleanup;
@@ -5023,11 +5031,19 @@ esxConnectListAllDomains(virConnectPtr conn,
 
         /* filter by snapshot existence */
         if (MATCH(VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT)) {
+
             esxVI_VirtualMachineSnapshotTree_Free(&rootSnapshotTreeList);
 
-            if (esxVI_LookupRootSnapshotTreeList(priv->primary, uuid,
-                                                 &rootSnapshotTreeList) < 0) {
-                goto cleanup;
+            for (dynamicProperty = virtualMachine->propSet; dynamicProperty;
+                dynamicProperty = dynamicProperty->_next) {
+                if (STREQ(dynamicProperty->name, "snapshot.rootSnapshotList")) {
+                    if (esxVI_VirtualMachineSnapshotTree_CastListFromAnyType
+                        (dynamicProperty->val, &rootSnapshotTreeList) < 0) {
+                        goto cleanup;
+                    }
+
+                    break;
+                }
             }
 
             if (!((MATCH(VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT) &&
