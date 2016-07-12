@@ -4221,7 +4221,7 @@ virDomainDefRemoveOfflineVcpuPin(virDomainDefPtr def)
     for (i = 0; i < virDomainDefGetVcpusMax(def); i++) {
         vcpu = virDomainDefGetVcpu(def, i);
 
-        if (!vcpu->online && vcpu->cpumask) {
+        if (vcpu && !vcpu->online && vcpu->cpumask) {
             virBitmapFree(vcpu->cpumask);
             vcpu->cpumask = NULL;
 
