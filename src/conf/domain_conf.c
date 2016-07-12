@@ -1542,7 +1542,7 @@ virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
         virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(def, i);
         virBitmapPtr bitmap = NULL;
 
-        if (vcpu->cpumask)
+        if (vcpu && vcpu->cpumask)
             bitmap = vcpu->cpumask;
         else if (def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
                  autoCpuset)
