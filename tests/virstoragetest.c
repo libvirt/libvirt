@@ -1376,6 +1376,21 @@ mymain(void)
     TEST_BACKING_PARSE("json:{\"file.driver\":\"host_cdrom\", "
                              "\"file.filename\":\"/path/to/cdrom\"}",
                        "<source dev='/path/to/cdrom'/>\n");
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"http\", "
+                             "\"file.uri\":\"http://example.com/file\"}",
+                       "<source protocol='http' name='file'>\n"
+                       "  <host name='example.com'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file\":{ \"driver\":\"http\","
+                                        "\"uri\":\"http://example.com/file\""
+                                      "}"
+                            "}",
+                       "<source protocol='http' name='file'>\n"
+                       "  <host name='example.com'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"ftp\", "
+                             "\"file.uri\":\"http://example.com/file\"}",
+                       NULL);
 
  cleanup:
     /* Final cleanup */

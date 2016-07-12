@@ -2537,6 +2537,44 @@ virStorageSourceParseBackingJSONPath(virStorageSourcePtr src,
 }
 
 
+static int
+virStorageSourceParseBackingJSONUriStr(virStorageSourcePtr src,
+                                       const char *uri,
+                                       int protocol)
+{
+    if (virStorageSourceParseBackingURI(src, uri) < 0)
+        return -1;
+
+    if (src->protocol != protocol) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("expected protocol '%s' but got '%s' in URI JSON volume "
+                         "definition"),
+                       virStorageNetProtocolTypeToString(protocol),
+                       virStorageNetProtocolTypeToString(src->protocol));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virStorageSourceParseBackingJSONUri(virStorageSourcePtr src,
+                                    virJSONValuePtr json,
+                                    int protocol)
+{
+    const char *uri;
+
+    if (!(uri = virJSONValueObjectGetString(json, "uri"))) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing URI in JSON backing volume definition"));
+        return -1;
+    }
+
+    return virStorageSourceParseBackingJSONUriStr(src, uri, protocol);
+}
+
+
 struct virStorageSourceJSONDriverParser {
     const char *drvname;
     int (*func)(virStorageSourcePtr src, virJSONValuePtr json, int opaque);
@@ -2547,6 +2585,11 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
     {"file", virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_FILE},
     {"host_device", virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_BLOCK},
     {"host_cdrom", virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_BLOCK},
+    {"http", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_HTTP},
+    {"https", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_HTTPS},
+    {"ftp", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_FTP},
+    {"ftps", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_FTPS},
+    {"tftp", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_TFTP},
 };
 
 
