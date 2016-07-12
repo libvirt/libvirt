@@ -612,6 +612,9 @@ Requires: gzip
 Requires: bzip2
 Requires: lzop
 Requires: xz
+%if 0%{?fedora} >= 24
+Requires: systemd-container
+%endif
 
 %description daemon-driver-qemu
 The qemu driver plugin for the libvirtd daemon, providing
@@ -627,6 +630,9 @@ Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 # There really is a hard cross-driver dependency here
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
+%if 0%{?fedora} >= 24
+Requires: systemd-container
+%endif
 
 %description daemon-driver-lxc
 The LXC driver plugin for the libvirtd daemon, providing
