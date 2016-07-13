@@ -2139,6 +2139,7 @@ qemuDomainReset(virDomainPtr dom, unsigned int flags)
     virDomainObjPtr vm;
     int ret = -1;
     qemuDomainObjPrivatePtr priv;
+    virDomainState state;
 
     virCheckFlags(0, -1);
 
@@ -2164,6 +2165,10 @@ qemuDomainReset(virDomainPtr dom, unsigned int flags)
         ret = -1;
 
     priv->fakeReboot = false;
+
+    state = virDomainObjGetState(vm, NULL);
+    if (state == VIR_DOMAIN_CRASHED)
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_CRASHED);
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
