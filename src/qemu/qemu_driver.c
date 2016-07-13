@@ -10973,32 +10973,21 @@ qemuDomainGetInterfaceParameters(virDomainPtr dom,
     return ret;
 }
 
+/* This functions assumes that job QEMU_JOB_QUERY is started by a caller */
 static int
-qemuDomainMemoryStats(virDomainPtr dom,
-                      virDomainMemoryStatPtr stats,
-                      unsigned int nr_stats,
-                      unsigned int flags)
+qemuDomainMemoryStatsInternal(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virDomainMemoryStatPtr stats,
+                              unsigned int nr_stats)
+
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
-    virDomainObjPtr vm;
     int ret = -1;
     long rss;
-
-    virCheckFlags(0, -1);
-
-    if (!(vm = qemuDomObjFromDomain(dom)))
-        goto cleanup;
-
-    if (virDomainMemoryStatsEnsureACL(dom->conn, vm->def) < 0)
-        goto cleanup;
-
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
-        goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
-        goto endjob;
+        return -1;
     }
 
     if (vm->def->memballoon &&
@@ -11010,7 +10999,7 @@ qemuDomainMemoryStats(virDomainPtr dom,
             ret = -1;
 
         if (ret < 0 || ret >= nr_stats)
-            goto endjob;
+            return ret;
     } else {
         ret = 0;
     }
@@ -11024,7 +11013,32 @@ qemuDomainMemoryStats(virDomainPtr dom,
         ret++;
     }
 
- endjob:
+    return ret;
+}
+
+static int
+qemuDomainMemoryStats(virDomainPtr dom,
+                      virDomainMemoryStatPtr stats,
+                      unsigned int nr_stats,
+                      unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainMemoryStatsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
+        goto cleanup;
+
+    ret = qemuDomainMemoryStatsInternal(driver, vm, stats, nr_stats);
+
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
