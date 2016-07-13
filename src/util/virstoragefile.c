@@ -2575,6 +2575,113 @@ virStorageSourceParseBackingJSONUri(virStorageSourcePtr src,
 }
 
 
+static int
+virStorageSourceParseBackingJSONGlusterHost(virStorageNetHostDefPtr host,
+                                            virJSONValuePtr json)
+{
+    const char *type = virJSONValueObjectGetString(json, "type");
+    const char *hostname = virJSONValueObjectGetString(json, "host");
+    const char *port = virJSONValueObjectGetString(json, "port");
+    const char *socket = virJSONValueObjectGetString(json, "socket");
+    int transport;
+
+    if ((transport = virStorageNetHostTransportTypeFromString(type)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown backing store transport protocol '%s'"), type);
+        return -1;
+    }
+
+    host->transport = transport;
+
+    switch ((virStorageNetHostTransport) transport) {
+    case VIR_STORAGE_NET_HOST_TRANS_TCP:
+        if (!hostname) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("missing hostname for tcp backing server in "
+                             "JSON backing definition for gluster volume"));
+            return -1;
+        }
+
+        if (VIR_STRDUP(host->name, hostname) < 0 ||
+            VIR_STRDUP(host->port, port) < 0)
+            return -1;
+        break;
+
+    case VIR_STORAGE_NET_HOST_TRANS_UNIX:
+        if (!socket) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s",
+                           _("missing socket path for udp backing server in "
+                             "JSON backing definition for gluster volume"));
+            return -1;
+        }
+
+
+        if (VIR_STRDUP(host->socket, socket) < 0)
+            return -1;
+        break;
+
+    case VIR_STORAGE_NET_HOST_TRANS_RDMA:
+    case VIR_STORAGE_NET_HOST_TRANS_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("backing store protocol '%s' is not yet supported"),
+                       type);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+virStorageSourceParseBackingJSONGluster(virStorageSourcePtr src,
+                                        virJSONValuePtr json,
+                                        int opaque ATTRIBUTE_UNUSED)
+{
+    const char *uri = virJSONValueObjectGetString(json, "filename");
+    const char *volume = virJSONValueObjectGetString(json, "volume");
+    const char *path = virJSONValueObjectGetString(json, "path");
+    virJSONValuePtr server = virJSONValueObjectGetArray(json, "server");
+    size_t nservers;
+    size_t i;
+
+    /* legacy URI based syntax passed via 'filename' option */
+    if (uri)
+        return virStorageSourceParseBackingJSONUriStr(src, uri,
+                                                      VIR_STORAGE_NET_PROTOCOL_GLUSTER);
+
+    if (!volume || !path || !server) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing 'volume', 'path' or 'server' attribute in "
+                         "JSON backing definition for gluster volume"));
+        return -1;
+    }
+
+    if (VIR_STRDUP(src->volume, volume) < 0 ||
+        virAsprintf(&src->path, "/%s", path) < 0)
+        return -1;
+
+    nservers = virJSONValueArraySize(server);
+
+    if (nservers < 1) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("at least 1 server is necessary in "
+                         "JSON backing definition for gluster volume"));
+    }
+
+    if (VIR_ALLOC_N(src->hosts, nservers) < 0)
+        return -1;
+    src->nhosts = nservers;
+
+    for (i = 0; i < nservers; i++) {
+        if (virStorageSourceParseBackingJSONGlusterHost(src->hosts + i,
+                                                        virJSONValueArrayGet(server, i)) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 struct virStorageSourceJSONDriverParser {
     const char *drvname;
     int (*func)(virStorageSourcePtr src, virJSONValuePtr json, int opaque);
@@ -2590,6 +2697,7 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
     {"ftp", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_FTP},
     {"ftps", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_FTPS},
     {"tftp", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_TFTP},
+    {"gluster", virStorageSourceParseBackingJSONGluster, 0},
 };
 
 

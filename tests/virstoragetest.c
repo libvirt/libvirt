@@ -1391,6 +1391,52 @@ mymain(void)
     TEST_BACKING_PARSE("json:{\"file.driver\":\"ftp\", "
                              "\"file.uri\":\"http://example.com/file\"}",
                        NULL);
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"gluster\", "
+                             "\"file.filename\":\"gluster://example.com/vol/file\"}",
+                       "<source protocol='gluster' name='vol/file'>\n"
+                       "  <host name='example.com'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"gluster\","
+                                       "\"volume\":\"testvol\","
+                                       "\"path\":\"img.qcow2\","
+                                       "\"server\":[ { \"type\":\"tcp\","
+                                                      "\"host\":\"example.com\","
+                                                      "\"port\":\"1234\""
+                                                    "},"
+                                                    "{ \"type\":\"unix\","
+                                                      "\"socket\":\"/path/socket\""
+                                                    "},"
+                                                    "{ \"type\":\"tcp\","
+                                                      "\"host\":\"example.com\""
+                                                    "}"
+                                                  "]"
+                                      "}"
+                             "}",
+                        "<source protocol='none' name='testvol/img.qcow2'>\n"
+                        "  <host name='example.com' port='1234'/>\n"
+                        "  <host transport='unix' socket='/path/socket'/>\n"
+                        "  <host name='example.com'/>\n"
+                        "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"gluster\","
+                             "\"file.volume\":\"testvol\","
+                             "\"file.path\":\"img.qcow2\","
+                             "\"file.server\":[ { \"type\":\"tcp\","
+                                                 "\"host\":\"example.com\","
+                                                 "\"port\":\"1234\""
+                                               "},"
+                                               "{ \"type\":\"unix\","
+                                                 "\"socket\":\"/path/socket\""
+                                               "},"
+                                               "{ \"type\":\"tcp\","
+                                                 "\"host\":\"example.com\""
+                                               "}"
+                                             "]"
+                            "}",
+                        "<source protocol='none' name='testvol/img.qcow2'>\n"
+                        "  <host name='example.com' port='1234'/>\n"
+                        "  <host transport='unix' socket='/path/socket'/>\n"
+                        "  <host name='example.com'/>\n"
+                        "</source>\n");
 
  cleanup:
     /* Final cleanup */
