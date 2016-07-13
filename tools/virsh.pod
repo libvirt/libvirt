@@ -899,7 +899,17 @@ I<--cpu-total> returns:
 
 I<--balloon> returns:
 "balloon.current" - the memory in kiB currently used,
-"balloon.maximum" - the maximum memory in kiB allowed
+"balloon.maximum" - the maximum memory in kiB allowed,
+"balloon.swap_in" - the amount of data read from swap space (in kB),
+"balloon.swap_out" - the amount of memory written out to swap space (in kB),
+"balloon.major_fault" - the number of page faults then disk IO was required,
+"balloon.minor_fault" - the number of other page faults,
+"balloon.unused" - the amount of memory left unused by the system (in kB),
+"balloon.available" - the amount of usable memory as seen by the domain (in kB),
+"balloon.rss" - Resident Set Size of running domain's process (in kB),
+"balloon.usable" - the amount of memory which can be reclaimed by balloon
+without causing host swapping (in KB),
+"balloon.last-update" - timestamp of the last update of statistics (in seconds),
 
 I<--vcpu> returns:
 "vcpu.current" - current number of online virtual CPUs,

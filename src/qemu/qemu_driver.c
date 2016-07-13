@@ -18529,14 +18529,17 @@ qemuDomainGetStatsCpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 }
 
 static int
-qemuDomainGetStatsBalloon(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainGetStatsBalloon(virQEMUDriverPtr driver,
                           virDomainObjPtr dom,
                           virDomainStatsRecordPtr record,
                           int *maxparams,
-                          unsigned int privflags ATTRIBUTE_UNUSED)
+                          unsigned int privflags)
 {
     qemuDomainObjPrivatePtr priv = dom->privateData;
+    virDomainMemoryStatStruct stats[VIR_DOMAIN_MEMORY_STAT_NR];
+    int nr_stats;
     unsigned long long cur_balloon = 0;
+    size_t i;
     int err = 0;
 
     if (!virDomainDefHasMemballoon(dom->def)) {
@@ -18560,6 +18563,37 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                                 "balloon.maximum",
                                 virDomainDefGetMemoryTotal(dom->def)) < 0)
         return -1;
+
+    if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
+        return 0;
+
+    nr_stats = qemuDomainMemoryStatsInternal(driver, dom, stats,
+                                             VIR_DOMAIN_MEMORY_STAT_NR);
+    if (nr_stats < 0)
+        return 0;
+
+#define STORE_MEM_RECORD(TAG, NAME)                                             \
+    if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_ ##TAG)                          \
+        if (virTypedParamsAddULLong(&record->params,                            \
+                                    &record->nparams,                           \
+                                    maxparams,                                  \
+                                    "balloon." NAME,                            \
+                                    stats[i].val) < 0)                          \
+            return -1;
+
+    for (i = 0; i < nr_stats; i++) {
+        STORE_MEM_RECORD(SWAP_IN, "swap_in")
+        STORE_MEM_RECORD(SWAP_OUT, "swap_out")
+        STORE_MEM_RECORD(MAJOR_FAULT, "major_fault")
+        STORE_MEM_RECORD(MINOR_FAULT, "minor_fault")
+        STORE_MEM_RECORD(UNUSED, "unused")
+        STORE_MEM_RECORD(AVAILABLE, "available")
+        STORE_MEM_RECORD(RSS, "rss")
+        STORE_MEM_RECORD(LAST_UPDATE, "last-update")
+        STORE_MEM_RECORD(USABLE, "usable")
+    }
+
+#undef STORE_MEM_RECORD
 
     return 0;
 }
