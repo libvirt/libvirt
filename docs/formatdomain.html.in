@@ -102,7 +102,7 @@
   ...
   &lt;os&gt;
     &lt;type&gt;hvm&lt;/type&gt;
-    &lt;loader readonly='yes' type='rom'&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
+    &lt;loader readonly='yes' secure='no' type='rom'&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
     &lt;nvram template='/usr/share/OVMF/OVMF_VARS.fd'&gt;/var/lib/libvirt/nvram/guest_VARS.fd&lt;/nvram&gt;
     &lt;boot dev='hd'/&gt;
     &lt;boot dev='cdrom'/&gt;
@@ -140,7 +140,10 @@
         <code>pflash</code>. It tells the hypervisor where in the guest
         memory the file should be mapped.  For instance, if the loader
         path points to an UEFI image, <code>type</code> should be
-        <code>pflash</code>.</dd>
+        <code>pflash</code>. Moreover, some firmwares may
+        implement the Secure boot feature. Attribute
+        <code>secure</code> can be used then to control it.
+        <span class="since">Since 2.1.0</span></dd>
       <dt><code>nvram</code></dt>
       <dd>Some UEFI firmwares may want to use a non-volatile memory to store
         some variables. In the host, this is represented as a file and the

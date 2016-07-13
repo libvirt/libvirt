@@ -260,6 +260,14 @@
               </attribute>
             </optional>
             <optional>
+              <attribute name="secure">
+                <choice>
+                  <value>yes</value>
+                  <value>no</value>
+                </choice>
+              </attribute>
+            </optional>
+            <optional>
               <attribute name="type">
                 <choice>
                   <value>rom</value>

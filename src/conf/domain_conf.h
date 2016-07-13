@@ -1735,6 +1735,7 @@ struct _virDomainLoaderDef {
     char *path;
     int readonly;   /* enum virTristateBool */
     virDomainLoader type;
+    int secure;     /* enum virTristateBool */
     char *nvram;    /* path to non-volatile RAM */
     char *templt;   /* user override of path to master nvram */
 };
