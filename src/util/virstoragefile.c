@@ -2682,6 +2682,26 @@ virStorageSourceParseBackingJSONGluster(virStorageSourcePtr src,
 }
 
 
+static int
+virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
+                                      virJSONValuePtr json,
+                                      int opaque ATTRIBUTE_UNUSED)
+{
+    const char *uri;
+
+    /* legacy URI based syntax passed via 'filename' option */
+    if ((uri = virJSONValueObjectGetString(json, "filename")))
+        return virStorageSourceParseBackingJSONUriStr(src, uri,
+                                                      VIR_STORAGE_NET_PROTOCOL_ISCSI);
+
+    /* iSCSI currently supports only URI syntax passed in as filename */
+    virReportError(VIR_ERR_INVALID_ARG, "%s",
+                   _("missing iSCSI URI in JSON backing volume definition"));
+
+    return -1;
+}
+
+
 struct virStorageSourceJSONDriverParser {
     const char *drvname;
     int (*func)(virStorageSourcePtr src, virJSONValuePtr json, int opaque);
@@ -2698,6 +2718,7 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
     {"ftps", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_FTPS},
     {"tftp", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_TFTP},
     {"gluster", virStorageSourceParseBackingJSONGluster, 0},
+    {"iscsi", virStorageSourceParseBackingJSONiSCSI, 0},
 };
 
 
