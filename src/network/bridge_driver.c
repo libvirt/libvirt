@@ -3462,6 +3462,12 @@ networkUpdate(virNetworkPtr net,
             goto cleanup;
         }
     }
+
+    /* call the 'updated' network hook script */
+    if (networkRunHook(network, NULL, NULL, VIR_HOOK_NETWORK_OP_UPDATED,
+                       VIR_HOOK_SUBOP_BEGIN) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     virNetworkObjEndAPI(&network);

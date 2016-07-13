@@ -93,7 +93,8 @@ VIR_ENUM_IMPL(virHookNetworkOp, VIR_HOOK_NETWORK_OP_LAST,
               "started",
               "stopped",
               "plugged",
-              "unplugged")
+              "unplugged",
+              "updated")
 
 static int virHooksFound = -1;
 

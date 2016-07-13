@@ -250,6 +250,8 @@
           <pre>/etc/libvirt/hooks/network network_name plugged begin -</pre>
         Please note, that in this case, the script is passed both network and
         domain XMLs on its stdin.</li>
+      <li>When network is updated, the hook script is called as:<br/>
+          <pre>/etc/libvirt/hooks/network network_name updated begin -</pre></li>
       <li>When the domain from previous case is shutting down, the interface
         is unplugged. This leads to another script invocation:<br/>
           <pre>/etc/libvirt/hooks/network network_name unplugged begin -</pre>
