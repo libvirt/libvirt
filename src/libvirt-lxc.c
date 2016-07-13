@@ -257,6 +257,8 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
                        _("Support for AppArmor is not enabled"));
         goto error;
 #endif
+    } else if (STREQ(model->model, "none")) {
+        /* nothing todo */
     } else {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
                        _("Security model %s cannot be entered"),
