@@ -5158,9 +5158,7 @@ qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
         dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
         dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390) {
         /* Check it's a virtio-serial address */
-        if (dev->info.type !=
-            VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL)
-        {
+        if (dev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("virtio serial device has invalid address type"));
             goto error;
