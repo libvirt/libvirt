@@ -6930,7 +6930,9 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                             const virDomainDef *def,
                             virQEMUCapsPtr qemuCaps)
 {
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool obsoleteAccel = false;
+    int ret = -1;
 
     /* This should *never* be NULL, since we always provide
      * a machine in the capabilities data for QEMU. So this
@@ -6955,7 +6957,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("disable shared memory is not available "
                              "with this QEMU binary"));
-             return -1;
+            return -1;
         }
 
         obsoleteAccel = true;
@@ -6967,7 +6969,6 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
             return -1;
         }
     } else {
-        virBuffer buf = VIR_BUFFER_INITIALIZER;
         virTristateSwitch vmport = def->features[VIR_DOMAIN_FEATURE_VMPORT];
 
         virCommandAddArg(cmd, "-machine");
@@ -6991,8 +6992,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("vmport is not available "
                                  "with this QEMU binary"));
-                virBufferFreeAndReset(&buf);
-                return -1;
+                goto cleanup;
             }
 
             virBufferAsprintf(&buf, ",vmport=%s",
@@ -7004,8 +7004,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("dump-guest-core is not available "
                                  "with this QEMU binary"));
-                virBufferFreeAndReset(&buf);
-                return -1;
+                goto cleanup;
             }
 
             virBufferAsprintf(&buf, ",dump-guest-core=%s",
@@ -7013,22 +7012,19 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         }
 
         if (def->mem.nosharepages) {
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MEM_MERGE)) {
-                virBufferAddLit(&buf, ",mem-merge=off");
-            } else {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MEM_MERGE)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("disable shared memory is not available "
                                  "with this QEMU binary"));
-                virBufferFreeAndReset(&buf);
-                return -1;
+                goto cleanup;
             }
+
+            virBufferAddLit(&buf, ",mem-merge=off");
         }
 
         if (def->keywrap &&
-            !qemuAppendKeyWrapMachineParms(&buf, qemuCaps, def->keywrap)) {
-            virBufferFreeAndReset(&buf);
-            return -1;
-        }
+            !qemuAppendKeyWrapMachineParms(&buf, qemuCaps, def->keywrap))
+            goto cleanup;
 
         if (def->features[VIR_DOMAIN_FEATURE_GIC] == VIR_TRISTATE_SWITCH_ON) {
             if (def->gic_version != VIR_GIC_VERSION_NONE) {
@@ -7036,8 +7032,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("gic-version option is available "
                                      "only for ARM virt machine"));
-                    virBufferFreeAndReset(&buf);
-                    return -1;
+                    goto cleanup;
                 }
 
                 /* The default GIC version should not be specified on the
@@ -7048,8 +7043,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                        _("gic-version option is not available "
                                          "with this QEMU binary"));
-                        virBufferFreeAndReset(&buf);
-                        return -1;
+                        goto cleanup;
                     }
 
                     virBufferAsprintf(&buf, ",gic-version=%s",
@@ -7063,9 +7057,12 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
 
     if (obsoleteAccel &&
         qemuBuildObsoleteAccelArg(cmd, def, qemuCaps) < 0)
-        return -1;
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
 }
 
 static int
