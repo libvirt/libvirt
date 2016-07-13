@@ -6970,6 +6970,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         }
     } else {
         virTristateSwitch vmport = def->features[VIR_DOMAIN_FEATURE_VMPORT];
+        virTristateSwitch smm = def->features[VIR_DOMAIN_FEATURE_SMM];
 
         virCommandAddArg(cmd, "-machine");
         virBufferAdd(&buf, def->os.machine, -1);
@@ -6997,6 +6998,17 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
 
             virBufferAsprintf(&buf, ",vmport=%s",
                               virTristateSwitchTypeToString(vmport));
+        }
+
+        if (smm) {
+            if (!virQEMUCapsSupportsSMM(qemuCaps, def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("smm is not available with this QEMU binary"));
+                goto cleanup;
+            }
+
+            virBufferAsprintf(&buf, ",smm=%s",
+                              virTristateSwitchTypeToString(smm));
         }
 
         if (def->mem.dump_core) {

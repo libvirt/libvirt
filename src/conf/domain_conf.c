@@ -137,7 +137,8 @@ VIR_ENUM_IMPL(virDomainFeature, VIR_DOMAIN_FEATURE_LAST,
               "capabilities",
               "pmu",
               "vmport",
-              "gic")
+              "gic",
+              "smm")
 
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy, VIR_DOMAIN_CAPABILITIES_POLICY_LAST,
               "default",
@@ -16348,6 +16349,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         case VIR_DOMAIN_FEATURE_PMU:
         case VIR_DOMAIN_FEATURE_PVSPINLOCK:
         case VIR_DOMAIN_FEATURE_VMPORT:
+        case VIR_DOMAIN_FEATURE_SMM:
             node = ctxt->node;
             ctxt->node = nodes[i];
             if ((tmp = virXPathString("string(./@state)", ctxt))) {
@@ -23331,6 +23333,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             case VIR_DOMAIN_FEATURE_PMU:
             case VIR_DOMAIN_FEATURE_PVSPINLOCK:
             case VIR_DOMAIN_FEATURE_VMPORT:
+            case VIR_DOMAIN_FEATURE_SMM:
                 switch ((virTristateSwitch) def->features[i]) {
                 case VIR_TRISTATE_SWITCH_LAST:
                 case VIR_TRISTATE_SWITCH_ABSENT:

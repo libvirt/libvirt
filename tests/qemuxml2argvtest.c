@@ -618,6 +618,13 @@ mymain(void)
             QEMU_CAPS_DUMP_GUEST_CORE);
     DO_TEST_FAILURE("machine-core-on", NONE);
     DO_TEST_FAILURE("machine-core-on", QEMU_CAPS_MACHINE_OPT);
+    DO_TEST("machine-smm-opt",
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_ICH9_AHCI,
+            QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_MACHINE_SMM_OPT,
+            QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("machine-usb-opt", QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_USB_OPT);
     DO_TEST("machine-vmport-opt", QEMU_CAPS_MACHINE_OPT,

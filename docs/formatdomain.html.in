@@ -1680,6 +1680,12 @@
           values are <code>2</code>, <code>3</code> and <code>host</code>.
           <span class="since">Since 1.2.16</span>
       </dd>
+      <dt><code>smm</code></dt>
+      <dd>Enable System Management Mode. Possible values are
+          <code>on</code> and <code>off</code>. The default is left
+          for hypervisor to decide.
+          <span class="since">Since 2.1.0</span>
+      </dd>
     </dl>
 
     <h3><a name="elementsTime">Time keeping</a></h3>

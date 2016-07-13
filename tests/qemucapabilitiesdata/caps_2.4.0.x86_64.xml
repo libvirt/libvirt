@@ -183,6 +183,7 @@
   <flag name='drive-detect-zeroes'/>
   <flag name='display'/>
   <flag name='intel-iommu'/>
+  <flag name='smm'/>
   <version>2004000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

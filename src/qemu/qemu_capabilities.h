@@ -372,6 +372,7 @@ typedef enum {
     QEMU_CAPS_OBJECT_TLS_CREDS_X509, /* -object tls-creds-x509 */
     QEMU_CAPS_DISPLAY, /* -display */
     QEMU_CAPS_DEVICE_INTEL_IOMMU, /* -device intel-iommu */
+    QEMU_CAPS_MACHINE_SMM_OPT, /* -machine xxx,smm=on/off/auto */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
@@ -407,6 +408,9 @@ bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
 
 bool virQEMUCapsSupportsVmport(virQEMUCapsPtr qemuCaps,
                                const virDomainDef *def);
+
+bool virQEMUCapsSupportsSMM(virQEMUCapsPtr qemuCaps,
+                            const virDomainDef *def);
 
 char *virQEMUCapsFlagsString(virQEMUCapsPtr qemuCaps);
 

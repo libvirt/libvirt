@@ -188,6 +188,7 @@
   <flag name='tls-creds-x509'/>
   <flag name='display'/>
   <flag name='intel-iommu'/>
+  <flag name='smm'/>
   <version>2005000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
