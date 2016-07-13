@@ -2322,6 +2322,33 @@ qemuDomainDefValidate(const virDomainDef *def,
         return -1;
     }
 
+    if (def->os.loader &&
+        def->os.loader->secure == VIR_TRISTATE_BOOL_YES) {
+        /* These are the QEMU implementation limitations. But we
+         * have to live with them for now. */
+
+        if (!qemuDomainMachineIsQ35(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Secure boot is supported with q35 machine types only"));
+            return -1;
+        }
+
+        /* Now, technically it is possible to have secure boot on
+         * 32bits too, but that would require some -cpu xxx magic
+         * too. Not worth it unless we are explicitly asked. */
+        if (def->os.arch != VIR_ARCH_X86_64) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Secure boot is supported for x86_64 architecture only"));
+            return -1;
+        }
+
+        if (def->features[VIR_DOMAIN_FEATURE_SMM] != VIR_TRISTATE_SWITCH_ON) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Secure boot requires SMM feature enabled"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 

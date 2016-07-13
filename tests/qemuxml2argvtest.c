@@ -685,6 +685,13 @@ mymain(void)
 
     DO_TEST("bios", QEMU_CAPS_SGA);
     DO_TEST("bios-nvram", NONE);
+    DO_TEST("bios-nvram-secure",
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_ICH9_AHCI,
+            QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_MACHINE_SMM_OPT,
+            QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("clock-utc", QEMU_CAPS_NODEFCONFIG);
     DO_TEST("clock-localtime", NONE);
     DO_TEST("clock-localtime-basis-localtime", QEMU_CAPS_RTC);
