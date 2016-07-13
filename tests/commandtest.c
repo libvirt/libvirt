@@ -1068,7 +1068,7 @@ static int test25(const void *unused ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     int pipeFD[2] = { -1, -1};
-    char rv = 0;
+    int rv = 0;
     ssize_t tries = 100;
     pid_t pid;
 
