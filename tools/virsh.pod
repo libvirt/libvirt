@@ -806,7 +806,19 @@ on hypervisor.
 
 Get memory stats for a running domain.
 
-Depending on the hypervisor a variety of statistics can be returned
+Availability of these fields depends on hypervisor. Unsupported fields are
+missing from the output. Other fields may appear if communicating with a newer
+version of libvirtd.
+
+B<Explanation of fields>:
+  swap_in           - The amount of data read from swap space (in kB)
+  swap_out          - The amount of memory written out to swap space (in kB)
+  major_fault       - The number of page faults where disk IO was required
+  minor_fault       - The number of other page faults
+  unused            - The amount of memory left unused by the system (in kB)
+  available         - The amount of usable memory as seen by the domain (in kB)
+  actual            - Current balloon value (in KB)
+  rss               - Resident Set Size of the running domain's process (in kB)
 
 For QEMU/KVM with a memory balloon, setting the optional I<--period> to a
 value larger than 0 in seconds will allow the balloon driver to return
