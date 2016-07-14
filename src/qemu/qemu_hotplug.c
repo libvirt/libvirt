@@ -1581,12 +1581,17 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
                           virDomainRNGDefPtr rng)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virErrorPtr orig_err;
     char *devstr = NULL;
     char *charAlias = NULL;
     char *objAlias = NULL;
+    bool releaseaddr = false;
+    bool chardevAdded = false;
+    bool objAdded = false;
     virJSONValuePtr props = NULL;
     const char *type;
     int ret = -1;
+    int rv;
 
     if (qemuAssignDeviceRNGAlias(vm->def, rng) < 0)
         return -1;
@@ -1607,6 +1612,7 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
                                             rng->source.file))
             return -1;
     }
+    releaseaddr = true;
 
     if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
         rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
@@ -1631,23 +1637,25 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
     if (virAsprintf(&charAlias, "char%s", rng->info.alias) < 0)
         goto cleanup;
 
-    /* attach the device - up to a 3 stage process */
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
         qemuMonitorAttachCharDev(priv->mon, charAlias,
                                  rng->source.chardev) < 0)
-        goto failchardev;
+        goto exit_monitor;
+    chardevAdded = true;
 
-    if (qemuMonitorAddObject(priv->mon, type, objAlias, props) < 0)
-        goto failbackend;
-    props = NULL;
+    rv = qemuMonitorAddObject(priv->mon, type, objAlias, props);
+    props = NULL; /* qemuMonitorAddObject consumes */
+    if (rv < 0)
+        goto exit_monitor;
+    objAdded = true;
 
     if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
-        goto failfrontend;
+        goto exit_monitor;
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        vm = NULL;
+        releaseaddr = false;
         goto cleanup;
     }
 
@@ -1659,26 +1667,26 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
     virDomainAuditRNG(vm, NULL, rng, "attach", ret == 0);
  cleanup:
     virJSONValueFree(props);
-    if (ret < 0 && vm)
+    if (ret < 0 && releaseaddr)
         qemuDomainReleaseDeviceAddress(vm, &rng->info, NULL);
     VIR_FREE(charAlias);
     VIR_FREE(objAlias);
     VIR_FREE(devstr);
     return ret;
 
-    /* rollback */
- failfrontend:
-    ignore_value(qemuMonitorDelObject(priv->mon, objAlias));
- failbackend:
-    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD)
+ exit_monitor:
+    orig_err = virSaveLastError();
+    if (objAdded)
+        ignore_value(qemuMonitorDelObject(priv->mon, objAlias));
+    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD && chardevAdded)
         ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
-    props = NULL;  /* qemuMonitorAddObject consumes on failure */
- failchardev:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        vm = NULL;
-        goto cleanup;
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
     }
 
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        releaseaddr = false;
     goto audit;
 }
 
