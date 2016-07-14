@@ -764,6 +764,7 @@ typedef enum {
     VIR_DOMAIN_FS_TYPE_TEMPLATE, /* Expands a OS template to a guest dir */
     VIR_DOMAIN_FS_TYPE_RAM,   /* Mount a RAM filesystem on a guest dir */
     VIR_DOMAIN_FS_TYPE_BIND,  /* Binds a guest dir to another guest dir */
+    VIR_DOMAIN_FS_TYPE_VOLUME, /* Mounts storage pool volume to a guest */
 
     VIR_DOMAIN_FS_TYPE_LAST
 } virDomainFSType;

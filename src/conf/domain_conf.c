@@ -367,7 +367,8 @@ VIR_ENUM_IMPL(virDomainFS, VIR_DOMAIN_FS_TYPE_LAST,
               "file",
               "template",
               "ram",
-              "bind")
+              "bind",
+              "volume")
 
 VIR_ENUM_IMPL(virDomainFSDriver, VIR_DOMAIN_FS_DRIVER_TYPE_LAST,
               "default",
@@ -8612,6 +8613,10 @@ virDomainFSDefParseXML(xmlNodePtr node,
                 } else if (def->type == VIR_DOMAIN_FS_TYPE_RAM) {
                     usage = virXMLPropString(cur, "usage");
                     units = virXMLPropString(cur, "units");
+                } else if (def->type == VIR_DOMAIN_FS_TYPE_VOLUME) {
+                    def->src->type = VIR_STORAGE_TYPE_VOLUME;
+                    if (virDomainDiskSourcePoolDefParse(cur, &def->src->srcpool) < 0)
+                        goto error;
                 }
             } else if (!target &&
                        xmlStrEqual(cur->name, BAD_CAST "target")) {
@@ -8656,8 +8661,8 @@ virDomainFSDefParseXML(xmlNodePtr node,
         def->wrpolicy = VIR_DOMAIN_FS_WRPOLICY_DEFAULT;
     }
 
-    if (source == NULL &&
-        def->type != VIR_DOMAIN_FS_TYPE_RAM) {
+    if (source == NULL && def->type != VIR_DOMAIN_FS_TYPE_RAM
+        && def->type != VIR_DOMAIN_FS_TYPE_VOLUME) {
         virReportError(VIR_ERR_NO_SOURCE,
                        target ? "%s" : NULL, target);
         goto error;
@@ -20304,6 +20309,13 @@ virDomainFSDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_FS_TYPE_RAM:
         virBufferAsprintf(buf, "<source usage='%lld' units='KiB'/>\n",
                           def->usage / 1024);
+        break;
+
+    case VIR_DOMAIN_FS_TYPE_VOLUME:
+        virBufferAddLit(buf, "<source");
+        virBufferEscapeString(buf, " pool='%s'", def->src->srcpool->pool);
+        virBufferEscapeString(buf, " volume='%s'", def->src->srcpool->volume);
+        virBufferAddLit(buf, "/>\n");
         break;
     }
 
