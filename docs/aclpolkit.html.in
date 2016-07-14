@@ -224,6 +224,10 @@
           <td>secret_usage_target</td>
           <td>Name of the associated iSCSI target, if any</td>
         </tr>
+        <tr>
+          <td>secret_usage_name</td>
+          <td>Name of the associated TLS secret, if any</td>
+        </tr>
       </tbody>
     </table>
 

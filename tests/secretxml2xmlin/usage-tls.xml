@@ -1,0 +1,7 @@
+<secret ephemeral='no' private='no'>
+  <uuid>f52a81b2-424e-490c-823d-6bd4235bc572</uuid>
+  <description>Sample TLS Secret</description>
+  <usage type='tls'>
+    <name>mumblyfratz</name>
+  </usage>
+</secret>

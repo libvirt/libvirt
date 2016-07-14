@@ -30,6 +30,7 @@
 #include "secret_conf.h"
 #include "virsecretobj.h"
 #include "virerror.h"
+#include "virstring.h"
 #include "virxml.h"
 #include "viruuid.h"
 
@@ -38,7 +39,7 @@
 VIR_LOG_INIT("conf.secret_conf");
 
 VIR_ENUM_IMPL(virSecretUsage, VIR_SECRET_USAGE_TYPE_LAST,
-              "none", "volume", "ceph", "iscsi")
+              "none", "volume", "ceph", "iscsi", "tls")
 
 const char *
 virSecretUsageIDForDef(virSecretDefPtr def)
@@ -55,6 +56,9 @@ virSecretUsageIDForDef(virSecretDefPtr def)
 
     case VIR_SECRET_USAGE_TYPE_ISCSI:
         return def->usage.target;
+
+    case VIR_SECRET_USAGE_TYPE_TLS:
+        return def->usage.name;
 
     default:
         return NULL;
@@ -83,6 +87,10 @@ virSecretDefFree(virSecretDefPtr def)
 
     case VIR_SECRET_USAGE_TYPE_ISCSI:
         VIR_FREE(def->usage.target);
+        break;
+
+    case VIR_SECRET_USAGE_TYPE_TLS:
+        VIR_FREE(def->usage.name);
         break;
 
     default:
@@ -141,6 +149,15 @@ virSecretDefParseUsage(xmlXPathContextPtr ctxt,
         if (!def->usage.target) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("iSCSI usage specified, but target is missing"));
+            return -1;
+        }
+        break;
+
+    case VIR_SECRET_USAGE_TYPE_TLS:
+        def->usage.name = virXPathString("string(./usage/name)", ctxt);
+        if (!def->usage.name) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("TLS usage specified, but name is missing"));
             return -1;
         }
         break;
@@ -295,6 +312,10 @@ virSecretDefFormatUsage(virBufferPtr buf,
 
     case VIR_SECRET_USAGE_TYPE_ISCSI:
         virBufferEscapeString(buf, "<target>%s</target>\n", def->usage.target);
+        break;
+
+    case VIR_SECRET_USAGE_TYPE_TLS:
+        virBufferEscapeString(buf, "<name>%s</name>\n", def->usage.name);
         break;
 
     default:
