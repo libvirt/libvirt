@@ -1508,9 +1508,11 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
 {
     int ret = -1, rc;
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virErrorPtr orig_err;
     virDomainDefPtr vmdef = vm->def;
     char *devstr = NULL;
     char *charAlias = NULL;
+    bool chardevAttached = false;
     bool need_release = false;
 
     if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
@@ -1536,10 +1538,11 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorAttachCharDev(priv->mon, charAlias, &chr->source) < 0)
-        goto failchardev;
+        goto exit_monitor;
+    chardevAttached = true;
 
     if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
-        goto failadddev;
+        goto exit_monitor;
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto audit;
@@ -1557,10 +1560,16 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     VIR_FREE(devstr);
     return ret;
 
- failadddev:
+ exit_monitor:
+    orig_err = virSaveLastError();
     /* detach associated chardev on error */
-    qemuMonitorDetachCharDev(priv->mon, charAlias);
- failchardev:
+    if (chardevAttached)
+        qemuMonitorDetachCharDev(priv->mon, charAlias);
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
+
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
     goto audit;
 }
