@@ -3509,6 +3509,10 @@ virStorageTranslateDiskSourcePool(virConnectPtr conn,
             def->src->srcpool->actualtype = VIR_STORAGE_TYPE_BLOCK;
             break;
 
+        case VIR_STORAGE_VOL_PLOOP:
+            def->src->srcpool->actualtype = VIR_STORAGE_TYPE_FILE;
+            break;
+
         case VIR_STORAGE_VOL_NETWORK:
         case VIR_STORAGE_VOL_NETDIR:
             virReportError(VIR_ERR_INTERNAL_ERROR,

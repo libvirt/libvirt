@@ -762,7 +762,7 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
             if (prlsdkCreateVm(driver, def))
                 goto cleanup;
         } else if (def->os.type == VIR_DOMAIN_OSTYPE_EXE) {
-            if (prlsdkCreateCt(driver, def))
+            if (prlsdkCreateCt(conn, def))
                 goto cleanup;
         } else {
             virReportError(VIR_ERR_INVALID_ARG,

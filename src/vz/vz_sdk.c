@@ -33,6 +33,7 @@
 #include "virtime.h"
 #include "virhostcpu.h"
 
+#include "storage/storage_driver.h"
 #include "vz_sdk.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
@@ -660,6 +661,8 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
 {
     char *buf = NULL;
     int ret = -1;
+    char **matches = NULL;
+    virURIPtr uri = NULL;
 
     fs->type = VIR_DOMAIN_FS_TYPE_FILE;
     fs->fsdriver = VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP;
@@ -670,12 +673,51 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
     fs->readonly = false;
     fs->symlinksResolved = false;
 
-    if (!(buf = prlsdkGetStringParamVar(PrlVmDev_GetImagePath, prldisk)))
+    if (!(buf = prlsdkGetStringParamVar(PrlVmDevHd_GetStorageURL, prldisk)))
         goto cleanup;
 
-    fs->src->path = buf;
-    buf = NULL;
+    if (!virStringIsEmpty(buf)) {
+        if (!(uri = virURIParse(buf)))
+            goto cleanup;
+        if (STRNEQ("libvirt", uri->scheme)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown uri scheme: '%s'"),
+                           uri->scheme);
+            goto cleanup;
+        }
 
+        if (!(matches = virStringSplitCount(uri->path, "/", 0, NULL)) ||
+            !matches[0]) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("splitting StorageUrl failed %s"), uri->path);
+            goto cleanup;
+        }
+        if (!matches[1]) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("can't identify pool in uri %s "), uri->path);
+            goto cleanup;
+        }
+        if (!matches[2]) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("can't identify volume in uri %s"), uri->path);
+            goto cleanup;
+        }
+        fs->type = VIR_DOMAIN_FS_TYPE_VOLUME;
+        if (VIR_ALLOC(fs->src->srcpool) < 0)
+            goto cleanup;
+        if (VIR_STRDUP(fs->src->srcpool->pool, matches[1]) < 0)
+            goto cleanup;
+        if (VIR_STRDUP(fs->src->srcpool->volume, matches[2]) < 0)
+            goto cleanup;
+        VIR_FREE(buf);
+    } else {
+        fs->type = VIR_DOMAIN_FS_TYPE_FILE;
+        if (!(buf = prlsdkGetStringParamVar(PrlVmDev_GetImagePath, prldisk)))
+            goto cleanup;
+
+        fs->src->path = buf;
+        buf = NULL;
+    }
     if (!(buf = prlsdkGetStringParamVar(PrlVmDevHd_GetMountPoint, prldisk)))
         goto cleanup;
 
@@ -686,6 +728,7 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
 
  cleanup:
     VIR_FREE(buf);
+    virStringFreeList(matches);
     return ret;
 }
 
@@ -2706,10 +2749,11 @@ static int prlsdkCheckNetUnsupportedParams(virDomainNetDefPtr net)
 
 static int prlsdkCheckFSUnsupportedParams(virDomainFSDefPtr fs)
 {
-    if (fs->type != VIR_DOMAIN_FS_TYPE_FILE) {
+    if (fs->type != VIR_DOMAIN_FS_TYPE_FILE &&
+        fs->type != VIR_DOMAIN_FS_TYPE_VOLUME) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Only file based filesystems are "
-                         "supported by vz driver."));
+                       _("Only file based or volume based filesystems "
+                         "are supported by vz driver."));
         return -1;
     }
 
@@ -3525,6 +3569,7 @@ prlsdkAddFS(PRL_HANDLE sdkdom, virDomainFSDefPtr fs)
     PRL_RESULT pret;
     PRL_HANDLE sdkdisk = PRL_INVALID_HANDLE;
     int ret = -1;
+    char *storage = NULL;
 
     if (fs->type == VIR_DOMAIN_FS_TYPE_TEMPLATE)
         return 0;
@@ -3534,6 +3579,14 @@ prlsdkAddFS(PRL_HANDLE sdkdom, virDomainFSDefPtr fs)
 
     pret = PrlVmCfg_CreateVmDev(sdkdom, PDE_HARD_DISK, &sdkdisk);
     prlsdkCheckRetGoto(pret, cleanup);
+
+    if (fs->type == VIR_DOMAIN_FS_TYPE_VOLUME) {
+        if (virAsprintf(&storage, "libvirt://localhost/%s/%s", fs->src->srcpool->pool,
+                        fs->src->srcpool->volume) < 0)
+            goto cleanup;
+        pret = PrlVmDevHd_SetStorageURL(sdkdisk, storage);
+        prlsdkCheckRetGoto(pret, cleanup);
+    }
 
     pret = PrlVmDev_SetEnabled(sdkdisk, 1);
     prlsdkCheckRetGoto(pret, cleanup);
@@ -3559,6 +3612,7 @@ prlsdkAddFS(PRL_HANDLE sdkdom, virDomainFSDefPtr fs)
     ret = 0;
 
  cleanup:
+    VIR_FREE(storage);
     PrlHandle_Free(sdkdisk);
     return ret;
 }
@@ -3859,8 +3913,52 @@ prlsdkCreateVm(vzDriverPtr driver, virDomainDefPtr def)
     return ret;
 }
 
+static int
+virStorageTranslatePoolLocal(virConnectPtr conn, virStorageSourcePtr src)
+{
+
+    virStoragePoolPtr pool = NULL;
+    virStorageVolPtr vol = NULL;
+    virStorageVolInfo info;
+    int ret = -1;
+
+    if (!(pool = virStoragePoolLookupByName(conn, src->srcpool->pool)))
+        return -1;
+    if (virStoragePoolIsActive(pool) != 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("storage pool '%s' containing volume '%s' "
+                         "is not active"), src->srcpool->pool,
+                       src->srcpool->volume);
+        goto cleanup;
+    }
+
+    if (!(vol = virStorageVolLookupByName(pool, src->srcpool->volume)))
+        goto cleanup;
+
+    if (virStorageVolGetInfo(vol, &info) < 0)
+        goto cleanup;
+
+    if (info.type != VIR_STORAGE_VOL_PLOOP) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported volume format '%s'"),
+                       virStorageVolTypeToString(info.type));
+        goto cleanup;
+    }
+
+    if (!(src->path = virStorageVolGetPath(vol)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(pool);
+    virObjectUnref(vol);
+    return ret;
+}
+
+
 int
-prlsdkCreateCt(vzDriverPtr driver, virDomainDefPtr def)
+prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def)
 {
     PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
     PRL_GET_VM_CONFIG_PARAM_DATA confParam;
@@ -3868,6 +3966,8 @@ prlsdkCreateCt(vzDriverPtr driver, virDomainDefPtr def)
     PRL_HANDLE result = PRL_INVALID_HANDLE;
     PRL_RESULT pret;
     PRL_UINT32 flags;
+    vzConnPtr privconn = conn->privateData;
+    vzDriverPtr driver = privconn->driver;
     int ret = -1;
     int useTemplate = 0;
     size_t i;
@@ -3880,6 +3980,11 @@ prlsdkCreateCt(vzDriverPtr driver, virDomainDefPtr def)
         }
         if (def->fss[i]->type == VIR_DOMAIN_FS_TYPE_TEMPLATE)
             useTemplate = 1;
+        if (def->fss[i]->type == VIR_DOMAIN_FS_TYPE_VOLUME) {
+            if (virStorageTranslatePoolLocal(conn, def->fss[i]->src) < 0)
+                goto cleanup;
+        }
+
     }
 
     if (useTemplate && def->nfss > 1) {

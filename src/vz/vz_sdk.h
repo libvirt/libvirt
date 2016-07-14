@@ -57,7 +57,7 @@ prlsdkApplyConfig(vzDriverPtr driver,
                   virDomainObjPtr dom,
                   virDomainDefPtr new);
 int prlsdkCreateVm(vzDriverPtr driver, virDomainDefPtr def);
-int prlsdkCreateCt(vzDriverPtr driver, virDomainDefPtr def);
+int prlsdkCreateCt(virConnectPtr conn, virDomainDefPtr def);
 int
 prlsdkUnregisterDomain(vzDriverPtr driver, virDomainObjPtr dom, unsigned int flags);
 int
