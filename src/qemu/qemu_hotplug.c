@@ -546,6 +546,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     char *drivestr = NULL;
     char *devstr = NULL;
+    bool driveAdded = false;
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
@@ -587,17 +588,17 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
         goto error;
 
-    /* Attach the device - 2 step process */
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (qemuMonitorAddDrive(priv->mon, drivestr) < 0)
-        goto failadddrive;
+        goto exit_monitor;
+    driveAdded = true;
 
     if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
-        goto failadddevice;
+        goto exit_monitor;
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto failexitmonitor;
+        goto error;
 
     virDomainAuditDisk(vm, NULL, disk->src, "attach", true);
 
@@ -611,14 +612,13 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     virObjectUnref(cfg);
     return ret;
 
- failadddevice:
+ exit_monitor:
     /* XXX should call 'drive_del' on error but this does not exist yet */
-    VIR_WARN("qemuMonitorAddDevice failed on %s (%s)", drivestr, devstr);
+    if (driveAdded)
+        VIR_WARN("qemuMonitorAddDevice failed on %s (%s)", drivestr, devstr);
 
- failadddrive:
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
 
- failexitmonitor:
     virDomainAuditDisk(vm, NULL, disk->src, "attach", false);
 
  error:
