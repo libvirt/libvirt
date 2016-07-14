@@ -404,6 +404,14 @@
         infrastructure. You can deploy a new service just dragging and
         dropping a VM.
       </dd>
+      <dt><a href="https://kimchi-project.github.io/kimchi/">Kimchi</a></dt>
+      <dd>
+        Kimchi is an HTML5 based management tool for KVM. It is designed to
+        make it as easy as possible to get started with KVM and create your first guest.
+
+        Kimchi manages KVM guests through libvirt. The management interface is accessed
+        over the web using a browser that supports HTML5.
+      </dd>
       <dt><a href="http://ovirt.org/">oVirt</a></dt>
       <dd>
         oVirt provides the ability to manage large numbers of virtual
