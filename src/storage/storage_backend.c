@@ -2401,47 +2401,28 @@ virStorageBackendWipeLocal(const char *path,
 }
 
 
-/* In here just for a clean patch series, will be removed in future patch */
-static int virStorageBackendVolWipePloop(virStorageVolDefPtr vol);
-
-
-int
-virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
-                              virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
-                              virStorageVolDefPtr vol,
-                              unsigned int algorithm,
-                              unsigned int flags)
+static int
+virStorageBackendVolWipeLocalFile(const char *path,
+                                  unsigned int algorithm,
+                                  unsigned long long allocation)
 {
     int ret = -1, fd = -1;
     const char *alg_char = NULL;
     struct stat st;
     virCommandPtr cmd = NULL;
-    char *path = NULL;
-    char *target_path = vol->target.path;
 
-    virCheckFlags(0, -1);
-
-    VIR_DEBUG("Wiping volume with path '%s' and algorithm %u",
-              vol->target.path, algorithm);
-
-    if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
-        if (virAsprintf(&path, "%s/root.hds", vol->target.path) < 0)
-            goto cleanup;
-        target_path = path;
-    }
-
-    fd = open(target_path, O_RDWR);
+    fd = open(path, O_RDWR);
     if (fd == -1) {
         virReportSystemError(errno,
                              _("Failed to open storage volume with path '%s'"),
-                             vol->target.path);
+                             path);
         goto cleanup;
     }
 
     if (fstat(fd, &st) == -1) {
         virReportSystemError(errno,
                              _("Failed to stat storage volume with path '%s'"),
-                             vol->target.path);
+                             path);
         goto cleanup;
     }
 
@@ -2484,10 +2465,11 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
+    VIR_DEBUG("Wiping file '%s' with algorithm '%s'", path, alg_char);
+
     if (algorithm != VIR_STORAGE_VOL_WIPE_ALG_ZERO) {
         cmd = virCommandNew(SCRUB);
-        virCommandAddArgList(cmd, "-f", "-p", alg_char,
-                             target_path, NULL);
+        virCommandAddArgList(cmd, "-f", "-p", alg_char, path, NULL);
 
         if (virCommandRun(cmd, NULL) < 0)
             goto cleanup;
@@ -2499,26 +2481,23 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
         } else {
             ret = virStorageBackendWipeLocal(path,
                                              fd,
-                                             vol->target.allocation,
+                                             allocation,
                                              st.st_blksize);
         }
         if (ret < 0)
             goto cleanup;
     }
 
-    if (vol->target.format == VIR_STORAGE_FILE_PLOOP)
-        ret = virStorageBackendVolWipePloop(vol);
-
  cleanup:
     virCommandFree(cmd);
-    VIR_FREE(path);
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
 
 static int
-virStorageBackendVolWipePloop(virStorageVolDefPtr vol)
+virStorageBackendVolWipePloop(virStorageVolDefPtr vol,
+                              unsigned int algorithm)
 {
     virCommandPtr cmd = NULL;
     char *target_path = NULL;
@@ -2540,6 +2519,11 @@ virStorageBackendVolWipePloop(virStorageVolDefPtr vol)
     if (virAsprintf(&disk_desc, "%s/DiskDescriptor.xml", vol->target.path) < 0)
         goto cleanup;
 
+    if (virStorageBackendVolWipeLocalFile(target_path,
+                                          algorithm,
+                                          vol->target.allocation) < 0)
+        goto cleanup;
+
     if (virFileRemove(disk_desc, 0, 0) < 0) {
         virReportError(errno, _("Failed to delete DiskDescriptor.xml of volume '%s'"),
                        vol->target.path);
@@ -2554,7 +2538,7 @@ virStorageBackendVolWipePloop(virStorageVolDefPtr vol)
     cmd = virCommandNewArgList(create_tool, "init", "-s", NULL);
 
     virCommandAddArgFormat(cmd, "%lluM", VIR_DIV_UP(vol->target.capacity,
-                                                        (1024 * 1024)));
+                                                    (1024 * 1024)));
     virCommandAddArgList(cmd, "-t", "ext4", NULL);
     virCommandAddArg(cmd, target_path);
     ret = virCommandRun(cmd, NULL);
@@ -2564,6 +2548,32 @@ virStorageBackendVolWipePloop(virStorageVolDefPtr vol)
     VIR_FREE(target_path);
     VIR_FREE(create_tool);
     virCommandFree(cmd);
+    return ret;
+}
+
+
+int
+virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
+                              virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
+                              virStorageVolDefPtr vol,
+                              unsigned int algorithm,
+                              unsigned int flags)
+{
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    VIR_DEBUG("Wiping volume with path '%s' and algorithm %u",
+              vol->target.path, algorithm);
+
+    if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
+        ret = virStorageBackendVolWipePloop(vol, algorithm);
+    } else {
+        ret = virStorageBackendVolWipeLocalFile(vol->target.path,
+                                                algorithm,
+                                                vol->target.allocation);
+    }
+
     return ret;
 }
 
