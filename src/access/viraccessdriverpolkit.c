@@ -338,19 +338,6 @@ virAccessDriverPolkitCheckSecret(virAccessManagerPtr manager,
                                           virAccessPermSecretTypeToString(perm),
                                           attrs);
     }   break;
-    case VIR_SECRET_USAGE_TYPE_PASSPHRASE: {
-        const char *attrs[] = {
-            "connect_driver", driverName,
-            "secret_uuid", uuidstr,
-            "secret_usage_name", secret->usage.name,
-            NULL,
-        };
-
-        return virAccessDriverPolkitCheck(manager,
-                                          "secret",
-                                          virAccessPermSecretTypeToString(perm),
-                                          attrs);
-    }   break;
     }
 }
 

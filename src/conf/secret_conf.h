@@ -40,7 +40,6 @@ struct _virSecretDef {
         char *volume;               /* May be NULL */
         char *ceph;
         char *target;
-        char *name;
     } usage;
 };
 

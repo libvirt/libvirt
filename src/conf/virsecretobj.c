@@ -237,11 +237,6 @@ virSecretObjSearchName(const void *payload,
         if (STREQ(secret->def->usage.target, data->usageID))
             found = 1;
         break;
-
-    case VIR_SECRET_USAGE_TYPE_PASSPHRASE:
-        if (STREQ(secret->def->usage.name, data->usageID))
-            found = 1;
-        break;
     }
 
  cleanup:
