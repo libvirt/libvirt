@@ -1874,6 +1874,7 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     char *drvstr = NULL;
     bool teardowncgroup = false;
     bool teardownlabel = false;
+    bool driveAdded = false;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -1935,17 +1936,17 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
         goto cleanup;
 
-    /* Attach the device - 2 step process */
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (qemuMonitorAddDrive(priv->mon, drvstr) < 0)
-        goto failadddrive;
+        goto exit_monitor;
+    driveAdded = true;
 
     if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
-        goto failadddevice;
+        goto exit_monitor;
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto failexitmonitor;
+        goto cleanup;
 
     virDomainAuditHostdev(vm, hostdev, "attach", true);
 
@@ -1968,21 +1969,19 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     VIR_FREE(devstr);
     return ret;
 
- failadddevice:
+ exit_monitor:
     orig_err = virSaveLastError();
-    if (qemuMonitorDriveDel(priv->mon, drvstr) < 0)
+    if (driveAdded && qemuMonitorDriveDel(priv->mon, drvstr) < 0) {
         VIR_WARN("Unable to remove drive %s (%s) after failed "
                  "qemuMonitorAddDevice",
                  drvstr, devstr);
+    }
     if (orig_err) {
         virSetError(orig_err);
         virFreeError(orig_err);
     }
 
- failadddrive:
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
-
- failexitmonitor:
     virDomainAuditHostdev(vm, hostdev, "attach", false);
 
     goto cleanup;
