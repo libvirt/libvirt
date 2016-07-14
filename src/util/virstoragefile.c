@@ -2702,6 +2702,50 @@ virStorageSourceParseBackingJSONiSCSI(virStorageSourcePtr src,
 }
 
 
+static int
+virStorageSourceParseBackingJSONNbd(virStorageSourcePtr src,
+                                    virJSONValuePtr json,
+                                    int opaque ATTRIBUTE_UNUSED)
+{
+    const char *path = virJSONValueObjectGetString(json, "path");
+    const char *host = virJSONValueObjectGetString(json, "host");
+    const char *port = virJSONValueObjectGetString(json, "port");
+    const char *export = virJSONValueObjectGetString(json, "export");
+
+    if (!path && !host) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing path or host of NBD server in JSON backing "
+                         "volume definition"));
+        return -1;
+    }
+
+    src->type = VIR_STORAGE_TYPE_NETWORK;
+    src->protocol = VIR_STORAGE_NET_PROTOCOL_NBD;
+
+    if (VIR_STRDUP(src->path, export) < 0)
+        return -1;
+
+    if (VIR_ALLOC_N(src->hosts, 1) < 0)
+        return -1;
+    src->nhosts = 1;
+
+    if (path) {
+        src->hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_UNIX;
+        if (VIR_STRDUP(src->hosts[0].socket, path) < 0)
+            return -1;
+    } else {
+        src->hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+        if (VIR_STRDUP(src->hosts[0].name, host) < 0)
+            return -1;
+
+        if (VIR_STRDUP(src->hosts[0].port, port) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 struct virStorageSourceJSONDriverParser {
     const char *drvname;
     int (*func)(virStorageSourcePtr src, virJSONValuePtr json, int opaque);
@@ -2719,6 +2763,7 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
     {"tftp", virStorageSourceParseBackingJSONUri, VIR_STORAGE_NET_PROTOCOL_TFTP},
     {"gluster", virStorageSourceParseBackingJSONGluster, 0},
     {"iscsi", virStorageSourceParseBackingJSONiSCSI, 0},
+    {"nbd", virStorageSourceParseBackingJSONNbd, 0},
 };
 
 

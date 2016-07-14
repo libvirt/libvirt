@@ -1437,6 +1437,36 @@ mymain(void)
                         "  <host transport='unix' socket='/path/socket'/>\n"
                         "  <host name='example.com'/>\n"
                         "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"nbd\","
+                                       "\"path\":\"/path/to/socket\""
+                                      "}"
+                            "}",
+                       "<source protocol='nbd'>\n"
+                       "  <host transport='unix' socket='/path/to/socket'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"nbd\","
+                             "\"file.path\":\"/path/to/socket\""
+                            "}",
+                       "<source protocol='nbd'>\n"
+                       "  <host transport='unix' socket='/path/to/socket'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"nbd\","
+                                       "\"export\":\"blah\","
+                                       "\"host\":\"example.org\","
+                                       "\"port\":\"6000\""
+                                      "}"
+                            "}",
+                       "<source protocol='nbd' name='blah'>\n"
+                       "  <host name='example.org' port='6000'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"nbd\","
+                             "\"file.export\":\"blah\","
+                             "\"file.host\":\"example.org\","
+                             "\"file.port\":\"6000\""
+                            "}",
+                       "<source protocol='nbd' name='blah'>\n"
+                       "  <host name='example.org' port='6000'/>\n"
+                       "</source>\n");
 
  cleanup:
     /* Final cleanup */
