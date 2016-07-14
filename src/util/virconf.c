@@ -1267,7 +1267,8 @@ int virConfGetValueSSizeT(virConfPtr conf,
     if (cval->l > SSIZE_MAX || cval->l < (-SSIZE_MAX - 1)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: value for '%s' parameter must be in range %zd:%zd"),
-                       conf->filename, setting, -SSIZE_MAX - 1, SSIZE_MAX);
+                       conf->filename, setting,
+                       (ssize_t) -SSIZE_MAX - 1, (ssize_t) SSIZE_MAX);
         return -1;
     }
 
