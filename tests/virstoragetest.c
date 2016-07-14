@@ -1370,6 +1370,12 @@ mymain(void)
                                         "}"
                             "}",
                        "<source file='/path/to/file'/>\n");
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"host_device\", "
+                             "\"file.filename\":\"/path/to/dev\"}",
+                       "<source dev='/path/to/dev'/>\n");
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"host_cdrom\", "
+                             "\"file.filename\":\"/path/to/cdrom\"}",
+                       "<source dev='/path/to/cdrom'/>\n");
 
  cleanup:
     /* Final cleanup */

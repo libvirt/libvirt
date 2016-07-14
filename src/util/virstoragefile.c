@@ -2545,6 +2545,8 @@ struct virStorageSourceJSONDriverParser {
 
 static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
     {"file", virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_FILE},
+    {"host_device", virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_BLOCK},
+    {"host_cdrom", virStorageSourceParseBackingJSONPath, VIR_STORAGE_TYPE_BLOCK},
 };
 
 
