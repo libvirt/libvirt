@@ -1997,9 +1997,9 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
         useAgent = false;
     }
 
-    qemuDomainSetFakeReboot(driver, vm, isReboot);
 
     if (useAgent) {
+        qemuDomainSetFakeReboot(driver, vm, false);
         qemuDomainObjEnterAgent(vm);
         ret = qemuAgentShutdown(priv->agent, agentFlag);
         qemuDomainObjExitAgent(vm);
@@ -2018,6 +2018,7 @@ static int qemuDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
             goto endjob;
         }
 
+        qemuDomainSetFakeReboot(driver, vm, isReboot);
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorSystemPowerdown(priv->mon);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
