@@ -2746,6 +2746,30 @@ virStorageSourceParseBackingJSONNbd(virStorageSourcePtr src,
 }
 
 
+static int
+virStorageSourceParseBackingJSONSheepdog(virStorageSourcePtr src,
+                                         virJSONValuePtr json,
+                                         int opaque ATTRIBUTE_UNUSED)
+{
+    const char *filename;
+
+    /* legacy URI based syntax passed via 'filename' option */
+    if ((filename = virJSONValueObjectGetString(json, "filename"))) {
+        if (strstr(filename, "://"))
+            return virStorageSourceParseBackingJSONUriStr(src, filename,
+                                                          VIR_STORAGE_NET_PROTOCOL_SHEEPDOG);
+
+        /* libvirt doesn't implement a parser for the legacy non-URI syntax */
+    }
+
+    /* Sheepdog currently supports only URI and legacy syntax passed in as filename */
+    virReportError(VIR_ERR_INVALID_ARG, "%s",
+                   _("missing sheepdog URI in JSON backing volume definition"));
+
+    return -1;
+}
+
+
 struct virStorageSourceJSONDriverParser {
     const char *drvname;
     int (*func)(virStorageSourcePtr src, virJSONValuePtr json, int opaque);
@@ -2764,6 +2788,7 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
     {"gluster", virStorageSourceParseBackingJSONGluster, 0},
     {"iscsi", virStorageSourceParseBackingJSONiSCSI, 0},
     {"nbd", virStorageSourceParseBackingJSONNbd, 0},
+    {"sheepdog", virStorageSourceParseBackingJSONSheepdog, 0},
 };
 
 
