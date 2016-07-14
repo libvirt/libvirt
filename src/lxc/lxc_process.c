@@ -1153,12 +1153,12 @@ virLXCProcessEnsureRootFS(virDomainObjPtr vm)
     if (root)
         return 0;
 
-    if (VIR_ALLOC(root) < 0)
+    if (!(root = virDomainFSDefNew()) < 0)
         goto error;
 
     root->type = VIR_DOMAIN_FS_TYPE_MOUNT;
 
-    if (VIR_STRDUP(root->src, "/") < 0 ||
+    if (VIR_STRDUP(root->src->path, "/") < 0 ||
         VIR_STRDUP(root->dst, "/") < 0)
         goto error;
 

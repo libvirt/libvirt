@@ -2422,7 +2422,7 @@ int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
         return -1;
     }
 
-    if (VIR_ALLOC(*def) < 0)
+    if (!(*def = virDomainFSDefNew()))
         return -1;
 
     (*def)->type = VIR_DOMAIN_FS_TYPE_MOUNT;
@@ -2450,7 +2450,7 @@ int virVMXParseFileSystem(virConfPtr conf, int number, virDomainFSDefPtr *def)
     if (virVMXGetConfigString(conf, hostPath_name, &hostPath, false) < 0)
         goto cleanup;
 
-    (*def)->src = hostPath;
+    (*def)->src->path = hostPath;
     hostPath = NULL;
 
     /* vmx:guestName */
@@ -3690,7 +3690,7 @@ virVMXFormatFileSystem(virDomainFSDefPtr def, int number, virBufferPtr buffer)
     virBufferAsprintf(buffer, "sharedFolder%d.writeAccess = \"%s\"\n", number,
                       def->readonly ? "false" : "true");
     virBufferAsprintf(buffer, "sharedFolder%d.hostPath = \"%s\"\n", number,
-                      def->src);
+                      def->src->path);
     virBufferAsprintf(buffer, "sharedFolder%d.guestName = \"%s\"\n", number,
                       def->dst);
 

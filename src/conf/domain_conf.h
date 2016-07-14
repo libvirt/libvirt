@@ -807,7 +807,7 @@ struct _virDomainFSDef {
     int wrpolicy; /* enum virDomainFSWrpolicy */
     int format; /* virStorageFileFormat */
     unsigned long long usage; /* in bytes */
-    char *src;
+    virStorageSourcePtr src;
     char *dst;
     bool readonly;
     virDomainDeviceInfo info;
@@ -2497,6 +2497,7 @@ virDomainDiskDefPtr virDomainDiskFindByBusAndDst(virDomainDefPtr def,
                                                  int bus,
                                                  char *dst);
 void virDomainControllerDefFree(virDomainControllerDefPtr def);
+virDomainFSDefPtr virDomainFSDefNew(void);
 virDomainControllerDefPtr
 virDomainControllerDefNew(virDomainControllerType type);
 void virDomainFSDefFree(virDomainFSDefPtr def);

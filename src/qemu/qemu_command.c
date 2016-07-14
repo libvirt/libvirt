@@ -2091,7 +2091,7 @@ qemuBuildFSStr(virDomainFSDefPtr fs,
     }
 
     virBufferAsprintf(&opt, ",id=%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
-    virBufferAsprintf(&opt, ",path=%s", fs->src);
+    virBufferAsprintf(&opt, ",path=%s", fs->src->path);
 
     if (fs->readonly) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV_READONLY)) {

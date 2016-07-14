@@ -1839,7 +1839,7 @@ vboxAttachSharedFolder(virDomainDefPtr def, vboxGlobalData *data, IMachine *mach
             continue;
 
         VBOX_UTF8_TO_UTF16(def->fss[i]->dst, &nameUtf16);
-        VBOX_UTF8_TO_UTF16(def->fss[i]->src, &hostPathUtf16);
+        VBOX_UTF8_TO_UTF16(def->fss[i]->src->path, &hostPathUtf16);
         writable = !def->fss[i]->readonly;
 
         gVBoxAPI.UIMachine.CreateSharedFolder(machine, nameUtf16, hostPathUtf16,
@@ -3448,7 +3448,7 @@ vboxDumpSharedFolders(virDomainDefPtr def, vboxGlobalData *data, IMachine *machi
 
         gVBoxAPI.UISharedFolder.GetHostPath(sharedFolder, &hostPathUtf16);
         VBOX_UTF16_TO_UTF8(hostPathUtf16, &hostPath);
-        if (VIR_STRDUP(def->fss[i]->src, hostPath) < 0) {
+        if (VIR_STRDUP(def->fss[i]->src->path, hostPath) < 0) {
             VBOX_UTF8_FREE(hostPath);
             VBOX_UTF16_FREE(hostPathUtf16);
             goto sharedFoldersCleanup;
@@ -4159,7 +4159,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
             PRBool writable;
 
             VBOX_UTF8_TO_UTF16(dev->data.fs->dst, &nameUtf16);
-            VBOX_UTF8_TO_UTF16(dev->data.fs->src, &hostPathUtf16);
+            VBOX_UTF8_TO_UTF16(dev->data.fs->src->path, &hostPathUtf16);
             writable = !dev->data.fs->readonly;
 
             rc = gVBoxAPI.UIMachine.CreateSharedFolder(machine, nameUtf16, hostPathUtf16,

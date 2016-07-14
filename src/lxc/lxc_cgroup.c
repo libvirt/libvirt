@@ -412,7 +412,7 @@ static int virLXCCgroupSetupDeviceACL(virDomainDefPtr def,
             continue;
 
         if (virCgroupAllowDevicePath(cgroup,
-                                     def->fss[i]->src,
+                                     def->fss[i]->src->path,
                                      def->fss[i]->readonly ?
                                      VIR_CGROUP_DEVICE_READ :
                                      VIR_CGROUP_DEVICE_RW, false) < 0)

@@ -673,7 +673,7 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
     if (!(buf = prlsdkGetStringParamVar(PrlVmDev_GetImagePath, prldisk)))
         goto cleanup;
 
-    fs->src = buf;
+    fs->src->path = buf;
     buf = NULL;
 
     if (!(buf = prlsdkGetStringParamVar(PrlVmDevHd_GetMountPoint, prldisk)))
@@ -714,7 +714,7 @@ prlsdkAddDomainHardDisksInfo(vzDriverPtr driver, PRL_HANDLE sdkdom, virDomainDef
 
         if (PDT_USE_REAL_DEVICE != emulatedType && IS_CT(def)) {
 
-            if (VIR_ALLOC(fs) < 0)
+            if (!(fs = virDomainFSDefNew()))
                 goto error;
 
             if (prlsdkGetFSInfo(hdd, fs) < 0)
@@ -3544,13 +3544,13 @@ prlsdkAddFS(PRL_HANDLE sdkdom, virDomainFSDefPtr fs)
     pret = PrlVmDev_SetEmulatedType(sdkdisk, PDT_USE_IMAGE_FILE);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    pret = PrlVmDev_SetSysName(sdkdisk, fs->src);
+    pret = PrlVmDev_SetSysName(sdkdisk, fs->src->path);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    pret = PrlVmDev_SetImagePath(sdkdisk, fs->src);
+    pret = PrlVmDev_SetImagePath(sdkdisk, fs->src->path);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    pret = PrlVmDev_SetFriendlyName(sdkdisk, fs->src);
+    pret = PrlVmDev_SetFriendlyName(sdkdisk, fs->src->path);
     prlsdkCheckRetGoto(pret, cleanup);
 
     pret = PrlVmDevHd_SetMountPoint(sdkdisk, fs->dst);
@@ -3903,7 +3903,7 @@ prlsdkCreateCt(vzDriverPtr driver, virDomainDefPtr def)
     prlsdkCheckRetGoto(pret, cleanup);
 
     if (useTemplate) {
-        pret = PrlVmCfg_SetOsTemplate(sdkdom, def->fss[0]->src);
+        pret = PrlVmCfg_SetOsTemplate(sdkdom, def->fss[0]->src->path);
         prlsdkCheckRetGoto(pret, cleanup);
 
     }

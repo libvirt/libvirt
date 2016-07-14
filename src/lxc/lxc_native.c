@@ -32,6 +32,7 @@
 #include "util/virlog.h"
 #include "util/virstring.h"
 #include "util/virconf.h"
+#include "conf/domain_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
@@ -46,12 +47,12 @@ lxcCreateFSDef(int type,
 {
     virDomainFSDefPtr def;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainFSDefNew()))
         return NULL;
 
     def->type = type;
     def->accessmode = VIR_DOMAIN_FS_ACCESSMODE_PASSTHROUGH;
-    if (src && VIR_STRDUP(def->src, src) < 0)
+    if (src && VIR_STRDUP(def->src->path, src) < 0)
         goto error;
     if (VIR_STRDUP(def->dst, dst) < 0)
         goto error;

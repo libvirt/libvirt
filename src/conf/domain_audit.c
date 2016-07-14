@@ -296,8 +296,8 @@ virDomainAuditFS(virDomainObjPtr vm,
                  const char *reason, bool success)
 {
     virDomainAuditGenericDev(vm, "fs",
-                             oldDef ? oldDef->src : NULL,
-                             newDef ? newDef->src : NULL,
+                             oldDef ? oldDef->src->path : NULL,
+                             newDef ? newDef->src->path : NULL,
                              reason, success);
 }
 

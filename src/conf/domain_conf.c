@@ -1730,12 +1730,31 @@ void virDomainControllerDefFree(virDomainControllerDefPtr def)
     VIR_FREE(def);
 }
 
+virDomainFSDefPtr
+virDomainFSDefNew(void)
+{
+    virDomainFSDefPtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    if (VIR_ALLOC(ret->src) < 0)
+        goto cleanup;
+
+    return ret;
+
+ cleanup:
+    virDomainFSDefFree(ret);
+    return NULL;
+
+}
+
 void virDomainFSDefFree(virDomainFSDefPtr def)
 {
     if (!def)
         return;
 
-    VIR_FREE(def->src);
+    virStorageSourceFree(def->src);
     VIR_FREE(def->dst);
     virDomainDeviceInfoClear(&def->info);
 
@@ -8540,7 +8559,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
-    if (VIR_ALLOC(def) < 0)
+    if (!(def = virDomainFSDefNew()))
         return NULL;
 
     type = virXMLPropString(node, "type");
@@ -8667,7 +8686,7 @@ virDomainFSDefParseXML(xmlNodePtr node,
             goto error;
     }
 
-    def->src = source;
+    def->src->path = source;
     source = NULL;
     def->dst = target;
     target = NULL;
@@ -20227,6 +20246,7 @@ virDomainFSDefFormat(virBufferPtr buf,
     const char *accessmode = virDomainFSAccessModeTypeToString(def->accessmode);
     const char *fsdriver = virDomainFSDriverTypeToString(def->fsdriver);
     const char *wrpolicy = virDomainFSWrpolicyTypeToString(def->wrpolicy);
+    const char *src = def->src->path;
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -20263,22 +20283,22 @@ virDomainFSDefFormat(virBufferPtr buf,
     case VIR_DOMAIN_FS_TYPE_MOUNT:
     case VIR_DOMAIN_FS_TYPE_BIND:
         virBufferEscapeString(buf, "<source dir='%s'/>\n",
-                              def->src);
+                              src);
         break;
 
     case VIR_DOMAIN_FS_TYPE_BLOCK:
         virBufferEscapeString(buf, "<source dev='%s'/>\n",
-                              def->src);
+                              src);
         break;
 
     case VIR_DOMAIN_FS_TYPE_FILE:
         virBufferEscapeString(buf, "<source file='%s'/>\n",
-                              def->src);
+                              src);
         break;
 
     case VIR_DOMAIN_FS_TYPE_TEMPLATE:
         virBufferEscapeString(buf, "<source name='%s'/>\n",
-                              def->src);
+                              src);
         break;
 
     case VIR_DOMAIN_FS_TYPE_RAM:

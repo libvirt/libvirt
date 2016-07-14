@@ -424,18 +424,18 @@ static int virLXCControllerSetupLoopDeviceFS(virDomainFSDefPtr fs)
     int lofd;
     char *loname = NULL;
 
-    if ((lofd = virFileLoopDeviceAssociate(fs->src, &loname)) < 0)
+    if ((lofd = virFileLoopDeviceAssociate(fs->src->path, &loname)) < 0)
         return -1;
 
     VIR_DEBUG("Changing fs %s to use type=block for dev %s",
-              fs->src, loname);
+              fs->src->path, loname);
     /*
      * We now change it into a block device type, so that
      * the rest of container setup 'just works'
      */
     fs->type = VIR_DOMAIN_FS_TYPE_BLOCK;
-    VIR_FREE(fs->src);
-    fs->src = loname;
+    VIR_FREE(fs->src->path);
+    fs->src->path = loname;
     loname = NULL;
 
     return lofd;
@@ -485,21 +485,21 @@ static int virLXCControllerSetupNBDDeviceFS(virDomainFSDefPtr fs)
         return -1;
     }
 
-    if (virFileNBDDeviceAssociate(fs->src,
+    if (virFileNBDDeviceAssociate(fs->src->path,
                                   fs->format,
                                   fs->readonly,
                                   &dev) < 0)
         return -1;
 
     VIR_DEBUG("Changing fs %s to use type=block for dev %s",
-              fs->src, dev);
+              fs->src->path, dev);
     /*
      * We now change it into a block device type, so that
      * the rest of container setup 'just works'
      */
     fs->type = VIR_DOMAIN_FS_TYPE_BLOCK;
-    VIR_FREE(fs->src);
-    fs->src = dev;
+    VIR_FREE(fs->src->path);
+    fs->src->path = dev;
 
     return 0;
 }
@@ -635,7 +635,7 @@ static int virLXCControllerSetupLoopDevices(virLXCControllerPtr ctrl)
             /* The NBD device will be cleaned up while the cgroup will end.
              * For this we need to remember the qemu-nbd pid and add it to
              * the cgroup*/
-            if (virLXCControllerAppendNBDPids(ctrl, fs->src) < 0)
+            if (virLXCControllerAppendNBDPids(ctrl, fs->src->path) < 0)
                 goto cleanup;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

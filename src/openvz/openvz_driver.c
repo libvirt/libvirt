@@ -207,7 +207,7 @@ static int openvzSetInitialConfig(virDomainDefPtr vmdef)
             goto cleanup;
         }
 
-        if (openvzWriteVPSConfigParam(vpsid, "VE_PRIVATE", vmdef->fss[0]->src) < 0) {
+        if (openvzWriteVPSConfigParam(vpsid, "VE_PRIVATE", vmdef->fss[0]->src->path) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not set the source dir for the filesystem"));
             goto cleanup;
@@ -2054,7 +2054,7 @@ openvzUpdateDevice(virDomainDefPtr vmdef,
         cur = vmdef->fss[pos];
 
         /* We only allow updating the quota */
-        if (STRNEQ(cur->src, fs->src)
+        if (STRNEQ(cur->src->path, fs->src->path)
             || cur->type != fs->type
             || cur->accessmode != fs->accessmode
             || cur->wrpolicy != fs->wrpolicy
