@@ -1208,21 +1208,28 @@ int virConfGetValueSizeT(virConfPtr conf,
     if (!cval)
         return 0;
 
-    if (cval->type != VIR_CONF_ULONG) {
+    if (cval->type == VIR_CONF_LONG) {
+        if (cval->l < 0 || cval->l > SIZE_MAX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s: value for '%s' parameter must be in range 0:%zu"),
+                           conf->filename, setting, SIZE_MAX);
+            return -1;
+        }
+   } else if (cval->type == VIR_CONF_ULONG) {
+        if (((unsigned long long)cval->l) > SIZE_MAX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s: value for '%s' parameter must be in range 0:%zu"),
+                           conf->filename, setting, SIZE_MAX);
+            return -1;
+        }
+    } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: expected an unsigned integer for '%s' parameter"),
                        conf->filename, setting);
         return -1;
     }
 
-    if (cval->l > SIZE_MAX || cval->l < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: value for '%s' parameter must be in range 0:%zu"),
-                       conf->filename, setting, SIZE_MAX);
-        return -1;
-    }
-
-    *value = cval->l;
+    *value = (size_t)cval->l;
 
     return 1;
 }
@@ -1256,23 +1263,28 @@ int virConfGetValueSSizeT(virConfPtr conf,
     if (!cval)
         return 0;
 
-    if (cval->type != VIR_CONF_LONG &&
-        cval->type != VIR_CONF_ULONG) {
+    if (cval->type == VIR_CONF_ULONG) {
+        if (((unsigned long long)cval->l) > SSIZE_MAX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s: value for '%s' parameter must be in range %zd:%zd"),
+                           conf->filename, setting, (ssize_t)-SSIZE_MAX - 1, (ssize_t)SSIZE_MAX);
+            return -1;
+        }
+    } else if (cval->type == VIR_CONF_LONG) {
+        if (cval->l < (-SSIZE_MAX - 1) || cval->l > SSIZE_MAX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s: value for '%s' parameter must be in range %zd:%zd"),
+                           conf->filename, setting, (ssize_t)-SSIZE_MAX - 1, (ssize_t)SSIZE_MAX);
+            return -1;
+        }
+    } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: expected a signed integer for '%s' parameter"),
                        conf->filename, setting);
         return -1;
     }
 
-    if (cval->l > SSIZE_MAX || cval->l < (-SSIZE_MAX - 1)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: value for '%s' parameter must be in range %zd:%zd"),
-                       conf->filename, setting,
-                       (ssize_t) -SSIZE_MAX - 1, (ssize_t) SSIZE_MAX);
-        return -1;
-    }
-
-    *value = cval->l;
+    *value = (ssize_t)cval->l;
 
     return 1;
 }
@@ -1306,19 +1318,17 @@ int virConfGetValueLLong(virConfPtr conf,
     if (!cval)
         return 0;
 
-    if (cval->type != VIR_CONF_LONG &&
-        cval->type != VIR_CONF_ULONG) {
+    if (cval->type == VIR_CONF_ULONG) {
+        if (((unsigned long long)cval->l) > LLONG_MAX) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s: value for '%s' parameter must be in range 0:%lld"),
+                           conf->filename, setting, LLONG_MAX);
+            return -1;
+        }
+    } else if (cval->type != VIR_CONF_LONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: expected a signed integer for '%s' parameter"),
                        conf->filename, setting);
-        return -1;
-    }
-
-    if (cval->type == VIR_CONF_ULONG &&
-        cval->l > LLONG_MAX) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("%s: value for '%s' parameter must be in range 0:%lld"),
-                       conf->filename, setting, LLONG_MAX);
         return -1;
     }
 
@@ -1355,15 +1365,21 @@ int virConfGetValueULLong(virConfPtr conf,
     if (!cval)
         return 0;
 
-    if (cval->type != VIR_CONF_LONG &&
-        cval->type != VIR_CONF_ULONG) {
+    if (cval->type == VIR_CONF_LONG) {
+        if (cval->l < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("%s: value for '%s' parameter must be in range 0:%llu"),
+                           conf->filename, setting, ULLONG_MAX);
+            return -1;
+        }
+    } else if (cval->type != VIR_CONF_ULONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: expected an unsigned integer for '%s' parameter"),
                        conf->filename, setting);
         return -1;
     }
 
-    *value = cval->l;
+    *value = (unsigned long long)cval->l;
 
     return 1;
 }
