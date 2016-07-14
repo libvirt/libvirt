@@ -3872,23 +3872,20 @@ prlsdkCreateCt(vzDriverPtr driver, virDomainDefPtr def)
     int useTemplate = 0;
     size_t i;
 
-    if (def->nfss > 1) {
-        /* Check all filesystems */
-        for (i = 0; i < def->nfss; i++) {
-            if (def->fss[i]->type != VIR_DOMAIN_FS_TYPE_FILE) {
-                virReportError(VIR_ERR_INVALID_ARG, "%s",
-                               _("Unsupported filesystem type."));
-                return -1;
-            }
-        }
-    } else if (def->nfss == 1) {
-        if (def->fss[0]->type == VIR_DOMAIN_FS_TYPE_TEMPLATE) {
-            useTemplate = 1;
-        } else if (def->fss[0]->type != VIR_DOMAIN_FS_TYPE_FILE) {
+    for (i = 0; i < def->nfss; i++) {
+        if (useTemplate) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("Unsupported filesystem type."));
+                           _("Unsupported configuration"));
             return -1;
         }
+        if (def->fss[i]->type == VIR_DOMAIN_FS_TYPE_TEMPLATE)
+            useTemplate = 1;
+    }
+
+    if (useTemplate && def->nfss > 1) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Unsupported configuration"));
+        return -1;
     }
 
     confParam.nVmType = PVT_CT;
