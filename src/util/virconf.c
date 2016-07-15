@@ -1304,8 +1304,8 @@ int virConfGetValueSSizeT(virConfPtr conf,
  * Returns: 1 if the value was present, 0 if missing, -1 on error
  */
 int virConfGetValueLLong(virConfPtr conf,
-                        const char *setting,
-                        long long *value)
+                         const char *setting,
+                         long long *value)
 {
     virConfValuePtr cval = virConfGetValue(conf, setting);
 
