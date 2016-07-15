@@ -140,3 +140,18 @@ virQEMUBuildObjectCommandlineFromJSON(const char *type,
     virBufferFreeAndReset(&buf);
     return ret;
 }
+
+
+/**
+ * virQEMUBuildBufferEscapeComma:
+ * @buf: buffer to append the escaped string
+ * @str: the string to escape
+ *
+ * qemu requires that any values passed on the command line which contain
+ * a ',' must escape it using an extra ',' as the escape character
+ */
+void
+virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str)
+{
+    virBufferEscape(buf, ',', ",", "%s", str);
+}

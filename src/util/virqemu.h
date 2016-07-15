@@ -25,10 +25,12 @@
 # define __VIR_QEMU_H_
 
 # include "internal.h"
+# include "virbuffer.h"
 # include "virjson.h"
 
 char *virQEMUBuildObjectCommandlineFromJSON(const char *type,
                                             const char *alias,
                                             virJSONValuePtr props);
 
+void virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str);
 #endif /* __VIR_QEMU_H_ */

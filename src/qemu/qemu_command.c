@@ -152,21 +152,6 @@ VIR_ENUM_IMPL(qemuNumaPolicy, VIR_DOMAIN_NUMATUNE_MEM_LAST,
 
 
 /**
- * qemuBufferEscapeComma:
- * @buf: buffer to append the escaped string
- * @str: the string to escape
- *
- * qemu requires that any values passed on the command line which contain
- * a ',' must escape it using an extra ',' as the escape character
- */
-static void
-qemuBufferEscapeComma(virBufferPtr buf, const char *str)
-{
-    virBufferEscape(buf, ',', ",", "%s", str);
-}
-
-
-/**
  * qemuBuildHasMasterKey:
  * @qemuCaps: QEMU binary capabilities
  *
@@ -221,7 +206,7 @@ qemuBuildMasterKeyCommandLine(virCommandPtr cmd,
 
     virCommandAddArg(cmd, "-object");
     virBufferAsprintf(&buf, "secret,id=%s,format=raw,file=", alias);
-    qemuBufferEscapeComma(&buf, path);
+    virQEMUBuildBufferEscapeComma(&buf, path);
     virCommandAddArgBuffer(cmd, &buf);
 
     ret = 0;
@@ -1233,7 +1218,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
             break;
         }
 
-        qemuBufferEscapeComma(&opt, source);
+        virQEMUBuildBufferEscapeComma(&opt, source);
         virBufferAddLit(&opt, ",");
 
         if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
@@ -3777,7 +3762,7 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
             goto error;
         }
         virBufferAsprintf(&buf, "virtio-input-host%s,id=%s,evdev=", suffix, dev->info.alias);
-        qemuBufferEscapeComma(&buf, dev->source.evdev);
+        virQEMUBuildBufferEscapeComma(&buf, dev->source.evdev);
         break;
     case VIR_DOMAIN_INPUT_TYPE_LAST:
         break;
@@ -4779,7 +4764,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         virBufferAsprintf(&buf, "socket,id=char%s,path=", alias);
-        qemuBufferEscapeComma(&buf, dev->data.nix.path);
+        virQEMUBuildBufferEscapeComma(&buf, dev->data.nix.path);
         if (dev->data.nix.listen)
             virBufferAddLit(&buf, ",server,nowait");
         break;
@@ -6151,7 +6136,7 @@ qemuBuildBootCommandLine(virCommandPtr cmd,
         virBuffer buf = VIR_BUFFER_INITIALIZER;
         virCommandAddArg(cmd, "-acpitable");
         virBufferAddLit(&buf, "sig=SLIC,file=");
-        qemuBufferEscapeComma(&buf, def->os.slic_table);
+        virQEMUBuildBufferEscapeComma(&buf, def->os.slic_table);
         virCommandAddArgBuffer(cmd, &buf);
     }
 
@@ -6738,7 +6723,7 @@ qemuBuildNameCommandLine(virCommandPtr cmd,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NAME_GUEST))
         virBufferAddLit(&buf, "guest=");
 
-    qemuBufferEscapeComma(&buf, def->name);
+    virQEMUBuildBufferEscapeComma(&buf, def->name);
 
     if (cfg->setProcessName &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_NAME_PROCESS))
@@ -7275,7 +7260,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
     switch (glisten->type) {
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
         virBufferAddLit(&opt, "unix:");
-        qemuBufferEscapeComma(&opt, glisten->socket);
+        virQEMUBuildBufferEscapeComma(&opt, glisten->socket);
         break;
 
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
@@ -8851,10 +8836,10 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
                 goto error;
         }
         virBufferAddLit(&buf, ",path=");
-        qemuBufferEscapeComma(&buf, devset ? devset : tpmdev);
+        virQEMUBuildBufferEscapeComma(&buf, devset ? devset : tpmdev);
 
         virBufferAddLit(&buf, ",cancel-path=");
-        qemuBufferEscapeComma(&buf, cancel_path);
+        virQEMUBuildBufferEscapeComma(&buf, cancel_path);
 
         VIR_FREE(devset);
         VIR_FREE(cancel_path);
