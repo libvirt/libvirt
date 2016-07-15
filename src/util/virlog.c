@@ -782,6 +782,14 @@ virLogAddOutputToStderr(virLogPriority priority)
 }
 
 
+static virLogOutputPtr ATTRIBUTE_UNUSED
+virLogNewOutputToStderr(virLogPriority priority)
+{
+    return virLogOutputNew(virLogOutputToFd, NULL, (void *)STDERR_FILENO,
+                           priority, VIR_LOG_TO_STDERR, NULL);
+}
+
+
 static int
 virLogAddOutputToFile(virLogPriority priority,
                       const char *file)
@@ -798,6 +806,27 @@ virLogAddOutputToFile(virLogPriority priority,
         return -1;
     }
     return 0;
+}
+
+
+static virLogOutputPtr ATTRIBUTE_UNUSED
+virLogNewOutputToFile(virLogPriority priority,
+                      const char *file)
+{
+    int fd;
+    virLogOutputPtr ret = NULL;
+
+    fd = open(file, O_CREAT | O_APPEND | O_WRONLY, S_IRUSR | S_IWUSR);
+    if (fd < 0)
+        return NULL;
+
+    if (!(ret = virLogOutputNew(virLogOutputToFd, virLogCloseFd,
+                                (void *)(intptr_t)fd,
+                                priority, VIR_LOG_TO_FILE, file))) {
+        VIR_LOG_CLOSE(fd);
+        return NULL;
+    }
+    return ret;
 }
 
 
@@ -885,6 +914,51 @@ virLogAddOutputToSyslog(virLogPriority priority,
         return -1;
     }
     return 0;
+}
+
+
+static virLogOutputPtr ATTRIBUTE_UNUSED
+virLogNewOutputToSyslog(virLogPriority priority,
+                        const char *ident)
+{
+    virLogOutputPtr ret = NULL;
+    int at = -1;
+
+    /* There are a couple of issues with syslog:
+     * 1) If we re-opened the connection by calling openlog now, it would change
+     * the message tag immediately which is not what we want, since we might be
+     * in the middle of parsing of a new set of outputs where anything still can
+     * go wrong and we would introduce an inconsistent state to the log. We're
+     * also not holding a lock on the logger if we tried to change the tag
+     * while other workers are actively logging.
+     *
+     * 2) Syslog keeps the open file descriptor private, so we can't just dup()
+     * it like we would do with files if an output already existed.
+     *
+     * If a syslog connection already exists changing the message tag has to be
+     * therefore special-cased and postponed until the very last moment.
+     */
+    if ((at = virLogFindOutput(virLogOutputs, virLogNbOutputs,
+                               VIR_LOG_TO_SYSLOG, NULL)) < 0) {
+        /*
+         * rather than copying @ident, syslog uses caller's reference instead
+         */
+        VIR_FREE(current_ident);
+        if (VIR_STRDUP(current_ident, ident) < 0)
+            return NULL;
+
+        openlog(current_ident, 0, 0);
+    }
+
+    if (!(ret = virLogOutputNew(virLogOutputToSyslog, virLogCloseSyslog,
+                                NULL, priority, VIR_LOG_TO_SYSLOG, ident))) {
+        if (at < 0) {
+            closelog();
+            VIR_FREE(current_ident);
+        }
+        return NULL;
+    }
+    return ret;
 }
 
 
@@ -1101,6 +1175,31 @@ static int virLogAddOutputToJournald(int priority)
     }
 
     return 0;
+}
+
+
+static virLogOutputPtr ATTRIBUTE_UNUSED
+virLogNewOutputToJournald(int priority)
+{
+    int journalfd;
+    virLogOutputPtr ret = NULL;
+
+    if ((journalfd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
+        return NULL;
+
+    if (virSetInherit(journalfd, false) < 0) {
+        VIR_LOG_CLOSE(journalfd);
+        return NULL;
+    }
+
+    if (!(ret = virLogOutputNew(virLogOutputToJournald, virLogCloseFd,
+                                (void *)(intptr_t) journalfd, priority,
+                                VIR_LOG_TO_JOURNALD, NULL))) {
+        VIR_LOG_CLOSE(journalfd);
+        return NULL;
+    }
+
+    return ret;
 }
 # endif /* USE_JOURNALD */
 
