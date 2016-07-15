@@ -1467,6 +1467,25 @@ mymain(void)
                        "<source protocol='nbd' name='blah'>\n"
                        "  <host name='example.org' port='6000'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file\":{\"driver\":\"ssh\","
+                                       "\"host\":\"example.org\","
+                                       "\"port\":\"6000\","
+                                       "\"path\":\"blah\","
+                                       "\"user\":\"user\""
+                                      "}"
+                            "}",
+                       "<source protocol='ssh' name='blah'>\n"
+                       "  <host name='example.org' port='6000'/>\n"
+                       "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"ssh\","
+                             "\"file.host\":\"example.org\","
+                             "\"file.port\":\"6000\","
+                             "\"file.path\":\"blah\","
+                             "\"file.user\":\"user\""
+                            "}",
+                       "<source protocol='ssh' name='blah'>\n"
+                       "  <host name='example.org' port='6000'/>\n"
+                       "</source>\n");
 
  cleanup:
     /* Final cleanup */

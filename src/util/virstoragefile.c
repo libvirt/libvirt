@@ -2772,6 +2772,43 @@ virStorageSourceParseBackingJSONSheepdog(virStorageSourcePtr src,
 }
 
 
+static int
+virStorageSourceParseBackingJSONSSH(virStorageSourcePtr src,
+                                    virJSONValuePtr json,
+                                    int opaque ATTRIBUTE_UNUSED)
+{
+    const char *path = virJSONValueObjectGetString(json, "path");
+    const char *host = virJSONValueObjectGetString(json, "host");
+    const char *port = virJSONValueObjectGetString(json, "port");
+
+    if (!host || !path) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing host or path of SSH JSON backing "
+                         "volume definition"));
+        return -1;
+    }
+
+    src->type = VIR_STORAGE_TYPE_NETWORK;
+    src->protocol = VIR_STORAGE_NET_PROTOCOL_SSH;
+
+    if (VIR_STRDUP(src->path, path) < 0)
+        return -1;
+
+    if (VIR_ALLOC_N(src->hosts, 1) < 0)
+        return -1;
+    src->nhosts = 1;
+
+    src->hosts[0].transport = VIR_STORAGE_NET_HOST_TRANS_TCP;
+    if (VIR_STRDUP(src->hosts[0].name, host) < 0)
+        return -1;
+
+    if (VIR_STRDUP(src->hosts[0].port, port) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 struct virStorageSourceJSONDriverParser {
     const char *drvname;
     int (*func)(virStorageSourcePtr src, virJSONValuePtr json, int opaque);
@@ -2791,6 +2828,7 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
     {"iscsi", virStorageSourceParseBackingJSONiSCSI, 0},
     {"nbd", virStorageSourceParseBackingJSONNbd, 0},
     {"sheepdog", virStorageSourceParseBackingJSONSheepdog, 0},
+    {"ssh", virStorageSourceParseBackingJSONSSH, 0},
 };
 
 
