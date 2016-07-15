@@ -545,7 +545,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
                          _("numbers not allowed in VMX format"));
             return NULL;
         }
-        type = (c_isdigit(CUR) || CUR == '+') ? VIR_CONF_ULONG : VIR_CONF_LONG;
+        type = (CUR == '-') ? VIR_CONF_LONG : VIR_CONF_ULONG;
         if (virConfParseLong(ctxt, &l) < 0)
             return NULL;
     } else {
