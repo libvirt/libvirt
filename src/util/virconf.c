@@ -364,9 +364,9 @@ virConfSaveEntry(virBufferPtr buf, virConfEntryPtr cur)
  * Returns 0 in case of success and -1 in case of error
  */
 static int
-virConfParseLong(virConfParserCtxtPtr ctxt, long *val)
+virConfParseLong(virConfParserCtxtPtr ctxt, long long *val)
 {
-    long l = 0;
+    long long l = 0;
     int neg = 0;
 
     if (CUR == '-') {
@@ -476,7 +476,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
     virConfValuePtr ret, lst = NULL, tmp, prev;
     virConfType type = VIR_CONF_NONE;
     char *str = NULL;
-    long  l = 0;
+    long long l = 0;
 
     SKIP_BLANKS;
     if (ctxt->cur >= ctxt->end) {
