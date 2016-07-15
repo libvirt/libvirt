@@ -33,8 +33,8 @@
  */
 typedef enum {
     VIR_CONF_NONE = 0,      /* undefined */
-    VIR_CONF_LONG,          /* a long int */
-    VIR_CONF_ULONG,         /* an unsigned long int */
+    VIR_CONF_LLONG,         /* a long long int */
+    VIR_CONF_ULLONG,        /* an unsigned long long int */
     VIR_CONF_STRING,        /* a string */
     VIR_CONF_LIST,          /* a list */
     VIR_CONF_LAST,          /* sentinel */

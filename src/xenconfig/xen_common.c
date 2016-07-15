@@ -58,7 +58,7 @@ xenConfigGetBool(virConfPtr conf,
         return 0;
     }
 
-    if (val->type == VIR_CONF_ULONG) {
+    if (val->type == VIR_CONF_ULLONG) {
         *value = val->l ? 1 : 0;
     } else if (val->type == VIR_CONF_STRING) {
         *value = STREQ(val->str, "1") ? 1 : 0;
@@ -88,7 +88,7 @@ xenConfigGetULong(virConfPtr conf,
         return 0;
     }
 
-    if (val->type == VIR_CONF_ULONG) {
+    if (val->type == VIR_CONF_ULLONG) {
         *value = val->l;
     } else if (val->type == VIR_CONF_STRING) {
         if (virStrToLong_ul(val->str, NULL, 10, value) < 0) {
@@ -122,7 +122,7 @@ xenConfigGetULongLong(virConfPtr conf,
         return 0;
     }
 
-    if (val->type == VIR_CONF_ULONG) {
+    if (val->type == VIR_CONF_ULLONG) {
         *value = val->l;
     } else if (val->type == VIR_CONF_STRING) {
         if (virStrToLong_ull(val->str, NULL, 10, value) < 0) {
@@ -276,7 +276,7 @@ xenConfigSetInt(virConfPtr conf, const char *setting, long long l)
     if (VIR_ALLOC(value) < 0)
         return -1;
 
-    value->type = VIR_CONF_LONG;
+    value->type = VIR_CONF_LLONG;
     value->next = NULL;
     value->l = l;
 

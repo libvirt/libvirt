@@ -101,7 +101,7 @@ static int testConfParseInt(const void *opaque ATTRIBUTE_UNUSED)
         return -1;
 
     if (virConfGetValueType(conf, "int") !=
-        VIR_CONF_LONG) {
+        VIR_CONF_LLONG) {
         fprintf(stderr, "expected a long for 'int'\n");
         goto cleanup;
     }
@@ -121,7 +121,7 @@ static int testConfParseInt(const void *opaque ATTRIBUTE_UNUSED)
 
 
     if (virConfGetValueType(conf, "uint") !=
-        VIR_CONF_ULONG) {
+        VIR_CONF_ULLONG) {
         fprintf(stderr, "expected a unsigned long for 'uint'\n");
         goto cleanup;
     }
@@ -142,7 +142,7 @@ static int testConfParseInt(const void *opaque ATTRIBUTE_UNUSED)
 
 
     if (virConfGetValueType(conf, "llong") !=
-        VIR_CONF_LONG) {
+        VIR_CONF_LLONG) {
         fprintf(stderr, "expected a long for 'llong'\n");
         goto cleanup;
     }
@@ -163,7 +163,7 @@ static int testConfParseInt(const void *opaque ATTRIBUTE_UNUSED)
 
 
     if (virConfGetValueType(conf, "ullong") !=
-        VIR_CONF_ULONG) {
+        VIR_CONF_ULLONG) {
         fprintf(stderr, "expected a unsigned long for 'ullong'\n");
         goto cleanup;
     }
@@ -184,7 +184,7 @@ static int testConfParseInt(const void *opaque ATTRIBUTE_UNUSED)
 
 
     if (virConfGetValueType(conf, "size_t") !=
-        VIR_CONF_ULONG) {
+        VIR_CONF_ULLONG) {
         fprintf(stderr, "expected a unsigned long for 'size_T'\n");
         goto cleanup;
     }
@@ -205,7 +205,7 @@ static int testConfParseInt(const void *opaque ATTRIBUTE_UNUSED)
 
 
     if (virConfGetValueType(conf, "ssize_t") !=
-        VIR_CONF_LONG) {
+        VIR_CONF_LLONG) {
         fprintf(stderr, "expected a unsigned long for 'ssize_t'\n");
         goto cleanup;
     }
@@ -246,7 +246,7 @@ static int testConfParseBool(const void *opaque ATTRIBUTE_UNUSED)
         return -1;
 
     if (virConfGetValueType(conf, "false") !=
-        VIR_CONF_ULONG) {
+        VIR_CONF_ULLONG) {
         fprintf(stderr, "expected a long for 'false'\n");
         goto cleanup;
     }
@@ -262,7 +262,7 @@ static int testConfParseBool(const void *opaque ATTRIBUTE_UNUSED)
 
 
     if (virConfGetValueType(conf, "true") !=
-        VIR_CONF_ULONG) {
+        VIR_CONF_ULLONG) {
         fprintf(stderr, "expected a long for 'true'\n");
         goto cleanup;
     }

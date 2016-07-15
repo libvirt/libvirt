@@ -280,10 +280,10 @@ virConfSaveValue(virBufferPtr buf, virConfValuePtr val)
     switch (val->type) {
         case VIR_CONF_NONE:
             return -1;
-        case VIR_CONF_LONG:
+        case VIR_CONF_LLONG:
             virBufferAsprintf(buf, "%lld", val->l);
             break;
-        case VIR_CONF_ULONG:
+        case VIR_CONF_ULLONG:
             virBufferAsprintf(buf, "%llu", val->l);
             break;
         case VIR_CONF_STRING:
@@ -545,7 +545,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
                          _("numbers not allowed in VMX format"));
             return NULL;
         }
-        type = (CUR == '-') ? VIR_CONF_LONG : VIR_CONF_ULONG;
+        type = (CUR == '-') ? VIR_CONF_LLONG : VIR_CONF_ULLONG;
         if (virConfParseLong(ctxt, &l) < 0)
             return NULL;
     } else {
@@ -1063,7 +1063,7 @@ int virConfGetValueBool(virConfPtr conf,
     if (!cval)
         return 0;
 
-    if (cval->type != VIR_CONF_ULONG) {
+    if (cval->type != VIR_CONF_ULLONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: expected a bool for '%s' parameter"),
                        conf->filename, setting);
@@ -1111,8 +1111,8 @@ int virConfGetValueInt(virConfPtr conf,
     if (!cval)
         return 0;
 
-    if (cval->type != VIR_CONF_LONG &&
-        cval->type != VIR_CONF_ULONG) {
+    if (cval->type != VIR_CONF_LLONG &&
+        cval->type != VIR_CONF_ULLONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: expected a signed integer for '%s' parameter"),
                        conf->filename, setting);
@@ -1160,7 +1160,7 @@ int virConfGetValueUInt(virConfPtr conf,
     if (!cval)
         return 0;
 
-    if (cval->type != VIR_CONF_ULONG) {
+    if (cval->type != VIR_CONF_ULLONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: expected an unsigned integer for '%s' parameter"),
                        conf->filename, setting);
@@ -1208,7 +1208,7 @@ int virConfGetValueSizeT(virConfPtr conf,
     if (!cval)
         return 0;
 
-    if (cval->type != VIR_CONF_ULONG) {
+    if (cval->type != VIR_CONF_ULLONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: expected an unsigned integer for '%s' parameter"),
                        conf->filename, setting);
@@ -1258,14 +1258,14 @@ int virConfGetValueSSizeT(virConfPtr conf,
     if (!cval)
         return 0;
 
-    if (cval->type == VIR_CONF_ULONG) {
+    if (cval->type == VIR_CONF_ULLONG) {
         if (((unsigned long long)cval->l) > SSIZE_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("%s: value for '%s' parameter must be in range %zd:%zd"),
                            conf->filename, setting, (ssize_t)-SSIZE_MAX - 1, (ssize_t)SSIZE_MAX);
             return -1;
         }
-    } else if (cval->type == VIR_CONF_LONG) {
+    } else if (cval->type == VIR_CONF_LLONG) {
 #if SSIZE_MAX < LLONG_MAX
         if (cval->l < (-SSIZE_MAX - 1) || cval->l > SSIZE_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1315,14 +1315,14 @@ int virConfGetValueLLong(virConfPtr conf,
     if (!cval)
         return 0;
 
-    if (cval->type == VIR_CONF_ULONG) {
+    if (cval->type == VIR_CONF_ULLONG) {
         if (((unsigned long long)cval->l) > LLONG_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("%s: value for '%s' parameter must be in range %lld:%lld"),
                            conf->filename, setting, LLONG_MIN, LLONG_MAX);
             return -1;
         }
-    } else if (cval->type != VIR_CONF_LONG) {
+    } else if (cval->type != VIR_CONF_LLONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: expected a signed integer for '%s' parameter"),
                        conf->filename, setting);
@@ -1362,7 +1362,7 @@ int virConfGetValueULLong(virConfPtr conf,
     if (!cval)
         return 0;
 
-    if (cval->type != VIR_CONF_ULONG) {
+    if (cval->type != VIR_CONF_ULLONG) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("%s: expected an unsigned integer for '%s' parameter"),
                        conf->filename, setting);
