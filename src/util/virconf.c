@@ -1318,8 +1318,8 @@ int virConfGetValueLLong(virConfPtr conf,
     if (cval->type == VIR_CONF_ULONG) {
         if (((unsigned long long)cval->l) > LLONG_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("%s: value for '%s' parameter must be in range 0:%lld"),
-                           conf->filename, setting, LLONG_MAX);
+                           _("%s: value for '%s' parameter must be in range %lld:%lld"),
+                           conf->filename, setting, LLONG_MIN, LLONG_MAX);
             return -1;
         }
     } else if (cval->type != VIR_CONF_LONG) {
