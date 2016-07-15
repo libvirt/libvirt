@@ -1126,7 +1126,7 @@ int virConfGetValueInt(virConfPtr conf,
         return -1;
     }
 
-    *value = cval->l;
+    *value = (int)cval->l;
 
     return 1;
 }
@@ -1174,7 +1174,7 @@ int virConfGetValueUInt(virConfPtr conf,
         return -1;
     }
 
-    *value = cval->l;
+    *value = (unsigned int)cval->l;
 
     return 1;
 }
