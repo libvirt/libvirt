@@ -1336,7 +1336,7 @@ int virConfGetValueLLong(virConfPtr conf,
 
 
 /**
- * virConfGetValueULongLong:
+ * virConfGetValueULLong:
  * @conf: the config object
  * @setting: the config entry name
  * @value: pointer to hold integer value
