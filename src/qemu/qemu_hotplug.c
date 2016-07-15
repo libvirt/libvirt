@@ -1707,16 +1707,19 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
                        virDomainMemoryDefPtr mem)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virErrorPtr orig_err;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     unsigned long long oldmem = virDomainDefGetMemoryTotal(vm->def);
     unsigned long long newmem = oldmem + mem->size;
     char *devstr = NULL;
     char *objalias = NULL;
     const char *backendType;
+    bool objAdded = false;
     virJSONValuePtr props = NULL;
     virObjectEventPtr event;
     int id;
     int ret = -1;
+    int rv;
 
     qemuDomainMemoryDeviceAlignSize(vm->def, mem);
 
@@ -1749,16 +1752,14 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
-    if (qemuMonitorAddObject(priv->mon, backendType, objalias, props) < 0)
+    rv = qemuMonitorAddObject(priv->mon, backendType, objalias, props);
+    props = NULL; /* qemuMonitorAddObject consumes */
+    if (rv < 0)
         goto exit_monitor;
+    objAdded = true;
 
-    if (qemuMonitorAddDevice(priv->mon, devstr) < 0) {
-        virErrorPtr err = virSaveLastError();
-        ignore_value(qemuMonitorDelObject(priv->mon, objalias));
-        virSetError(err);
-        virFreeError(err);
+    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
         goto exit_monitor;
-    }
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         /* we shouldn't touch mem now, as the def might be freed */
@@ -1791,6 +1792,13 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     return ret;
 
  exit_monitor:
+    orig_err = virSaveLastError();
+    if (objAdded)
+        ignore_value(qemuMonitorDelObject(priv->mon, objalias));
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         mem = NULL;
         goto audit;
@@ -1803,10 +1811,10 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
         mem = NULL;
 
     /* reset the mlock limit */
-    virErrorPtr err = virSaveLastError();
+    orig_err = virSaveLastError();
     ignore_value(qemuDomainAdjustMaxMemLock(vm));
-    virSetError(err);
-    virFreeError(err);
+    virSetError(orig_err);
+    virFreeError(orig_err);
 
     goto audit;
 }
