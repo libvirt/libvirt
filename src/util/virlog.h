@@ -206,8 +206,8 @@ void virLogLock(void);
 void virLogUnlock(void);
 int virLogReset(void);
 int virLogParseDefaultPriority(const char *priority);
-int virLogParseFilters(const char *filters);
-int virLogParseOutputs(const char *output);
+int virLogParseAndDefineFilters(const char *filters);
+int virLogParseAndDefineOutputs(const char *output);
 int virLogPriorityFromSyslog(int priority);
 void virLogMessage(virLogSourcePtr source,
                    virLogPriority priority,

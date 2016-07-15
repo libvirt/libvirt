@@ -50,7 +50,7 @@ testLogParseOutputs(const void *opaque)
     int noutputs;
     const struct testLogData *data = opaque;
 
-    noutputs = virLogParseOutputs(data->str);
+    noutputs = virLogParseAndDefineOutputs(data->str);
     if (noutputs < 0) {
         if (!data->pass) {
             VIR_TEST_DEBUG("Got expected error: %s\n",
@@ -81,7 +81,7 @@ testLogParseFilters(const void *opaque)
     int nfilters;
     const struct testLogData *data = opaque;
 
-    nfilters = virLogParseFilters(data->str);
+    nfilters = virLogParseAndDefineFilters(data->str);
     if (nfilters < 0) {
         if (!data->pass) {
             VIR_TEST_DEBUG("Got expected error: %s\n",
