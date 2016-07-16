@@ -54,6 +54,12 @@ virISCSIScanTargets(const char *portal,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 int
+virISCSINodeNew(const char *portal,
+                const char *target)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_RETURN_CHECK;
+
+int
 virISCSINodeUpdate(const char *portal,
                    const char *target,
                    const char *name,

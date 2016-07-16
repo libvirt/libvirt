@@ -444,6 +444,57 @@ virISCSIScanTargets(const char *portal,
     return ret;
 }
 
+/*
+ * virISCSINodeNew:
+ * @portal: address for iSCSI target
+ * @target: IQN and specific LUN target
+ *
+ * Usage of nonpersistent discovery in virISCSIScanTargets is useful primarily
+ * only when the target IQN is not known; however, since we have the target IQN
+ * usage of the "--op new" can be done. This avoids problems if "--op delete"
+ * had been used wiping out the static nodes determined by the scanning of
+ * all targets.
+ *
+ * NB: If an iSCSI node record is already created for this portal and
+ * target, subsequent "--op new" commands do not return an error.
+ *
+ * Returns 0 on success, -1 w/ error message on error
+ */
+int
+virISCSINodeNew(const char *portal,
+                const char *target)
+{
+    virCommandPtr cmd = NULL;
+    int status;
+    int ret = -1;
+
+    cmd = virCommandNewArgList(ISCSIADM,
+                               "--mode", "node",
+                               "--portal", portal,
+                               "--targetname", target,
+                               "--op", "new",
+                               NULL);
+
+    if (virCommandRun(cmd, &status) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed new node mode for target '%s'"),
+                       target);
+        goto cleanup;
+    }
+
+    if (status != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("%s failed new mode for target '%s' with status '%d'"),
+                       ISCSIADM, target, status);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virCommandFree(cmd);
+    return ret;
+}
+
 
 int
 virISCSINodeUpdate(const char *portal,
