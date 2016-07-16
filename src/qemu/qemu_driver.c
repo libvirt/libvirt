@@ -7472,9 +7472,8 @@ qemuDomainDetachDeviceControllerLive(virQEMUDriverPtr driver,
 static int
 qemuDomainDetachDeviceLive(virDomainObjPtr vm,
                            virDomainDeviceDefPtr dev,
-                           virDomainPtr dom)
+                           virQEMUDriverPtr driver)
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
     int ret = -1;
 
     switch ((virDomainDeviceType) dev->type) {
@@ -8402,7 +8401,7 @@ qemuDomainDetachDeviceFlags(virDomainPtr dom,
                                          VIR_DOMAIN_DEVICE_ACTION_DETACH) < 0)
             goto endjob;
 
-        if ((ret = qemuDomainDetachDeviceLive(vm, dev_copy, dom)) < 0)
+        if ((ret = qemuDomainDetachDeviceLive(vm, dev_copy, driver)) < 0)
             goto endjob;
         /*
          * update domain status forcibly because the domain status may be
