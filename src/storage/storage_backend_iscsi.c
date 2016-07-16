@@ -353,11 +353,10 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
     if ((session = virStorageBackendISCSISession(pool, true)) == NULL) {
         if ((portal = virStorageBackendISCSIPortal(&pool->def->source)) == NULL)
             goto cleanup;
-        /*
-         * iscsiadm doesn't let you login to a target, unless you've
-         * first issued a 'sendtargets' command to the portal :-(
-         */
-        if (virISCSIScanTargets(portal, NULL, NULL) < 0)
+
+        /* Create a static node record for the IQN target. Must be done
+         * in order for login to the target */
+        if (virISCSINodeNew(portal, pool->def->source.devices[0].path) < 0)
             goto cleanup;
 
         if (virStorageBackendISCSISetAuth(portal, conn, &pool->def->source) < 0)
