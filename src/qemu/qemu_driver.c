@@ -7327,16 +7327,16 @@ qemuDomainUndefine(virDomainPtr dom)
 static int
 qemuDomainAttachDeviceLive(virDomainObjPtr vm,
                            virDomainDeviceDefPtr dev,
-                           virDomainPtr dom)
+                           virConnectPtr conn,
+                           virQEMUDriverPtr driver)
 {
-    virQEMUDriverPtr driver = dom->conn->privateData;
     int ret = -1;
     const char *alias = NULL;
 
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
-        ret = qemuDomainAttachDeviceDiskLive(dom->conn, driver, vm, dev);
+        ret = qemuDomainAttachDeviceDiskLive(conn, driver, vm, dev);
         if (!ret) {
             alias = dev->data.disk->info.alias;
             dev->data.disk = NULL;
@@ -7369,7 +7369,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
         qemuDomainObjCheckHostdevTaint(driver, vm, dev->data.hostdev, NULL);
-        ret = qemuDomainAttachHostDevice(dom->conn, driver, vm,
+        ret = qemuDomainAttachHostDevice(conn, driver, vm,
                                          dev->data.hostdev);
         if (!ret) {
             alias = dev->data.hostdev->info->alias;
@@ -8151,7 +8151,8 @@ qemuDomainAttachDeviceFlags(virDomainPtr dom,
                                          VIR_DOMAIN_DEVICE_ACTION_ATTACH) < 0)
             goto endjob;
 
-        if ((ret = qemuDomainAttachDeviceLive(vm, dev_copy, dom)) < 0)
+        if ((ret = qemuDomainAttachDeviceLive(vm, dev_copy, dom->conn,
+                                              driver)) < 0)
             goto endjob;
         /*
          * update domain status forcibly because the domain status may be
