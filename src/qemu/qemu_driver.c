@@ -19256,10 +19256,10 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 #undef QEMU_ADD_COUNT_PARAM
 
 static int
-qemuDomainGetStatsPerfRdt(virPerfPtr perf,
-                          virPerfEventType type,
-                          virDomainStatsRecordPtr record,
-                          int *maxparams)
+qemuDomainGetStatsPerfOneEvent(virPerfPtr perf,
+                               virPerfEventType type,
+                               virDomainStatsRecordPtr record,
+                               int *maxparams)
 {
     char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
     uint64_t value = 0;
@@ -19299,7 +19299,8 @@ qemuDomainGetStatsPerf(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
         case VIR_PERF_EVENT_CMT:
         case VIR_PERF_EVENT_MBMT:
         case VIR_PERF_EVENT_MBML:
-            if (qemuDomainGetStatsPerfRdt(priv->perf, i, record, maxparams) < 0)
+            if (qemuDomainGetStatsPerfOneEvent(priv->perf, i, record,
+                                               maxparams) < 0)
                 goto cleanup;
             break;
         }
