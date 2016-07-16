@@ -11457,6 +11457,15 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * "perf.mbml" - the amount of data (bytes/s) sent through the memory controller
  *               on the socket as unsigned long long. It is produced by mbml
  *               perf event.
+ * "perf.cache_misses"     - the count of cache misses as unsigned long long.
+ *                           It is produced by cache_misses perf event.
+ * "perf.cache_references" - the count of cache hits as unsigned long long.
+ *                           It is produced by cache_references perf event.
+ * "perf.instructions"     - The count of instructions as unsigned long long.
+ *                           It is produced by instructions perf event.
+ * "perf.cpu_cycles"       - The number of cpu cycles one instruction needs as
+ *                           unsigned long long. It is produced by cpu_cycles
+ *                           perf event.
  *
  * Note that entire stats groups or individual stat fields may be missing from
  * the output in case they are not supported by the given hypervisor, are not

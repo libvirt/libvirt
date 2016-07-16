@@ -934,6 +934,10 @@ I<--perf> returns the statistics of all enabled perf events:
 "perf.cmt" - the cache usage in Byte currently used
 "perf.mbmt" - total system bandwidth from one level of cache
 "perf.mbml" - bandwidth of memory traffic for a memory controller
+"perf.cpu_cycles" - the number of cpu cycles one instruction needs
+"perf.instructions" - the count of instructions
+"perf.cache_references" - the count of cache hits
+"perf.cache_misses" - the count of caches misses
 
 See the B<perf> command for more details about each event.
 
@@ -2237,6 +2241,15 @@ B<Valid perf event names>
   mbml             - Provides a way to limit the amount of data
                      (bytes/s) send through the memory controller
                      on the socket.
+  cache_misses     - Provides the count of cache misses by
+                     applications running on the platform.
+  cache_references - Provides the count of cache hits by
+                     applications running on th e platform.
+  instructions     - Provides the count of instructions executed
+                     by applications running on the platform.
+  cpu_cycles       - Provides the number of cpu_cycles for one
+                     instruction. May be used with instructions
+                     in order to get a cycles per instruction.
 
 B<Note>: The statistics can be retrieved using the B<domstats> command using
 the I<--perf> flag.

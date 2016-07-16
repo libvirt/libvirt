@@ -16,6 +16,10 @@
     <event name='cmt' enabled='yes'/>
     <event name='mbmt' enabled='no'/>
     <event name='mbml' enabled='yes'/>
+    <event name='cpu_cycles' enabled='no'/>
+    <event name='instructions' enabled='yes'/>
+    <event name='cache_references' enabled='no'/>
+    <event name='cache_misses' enabled='no'/>
   </perf>
   <devices>
   </devices>

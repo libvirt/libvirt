@@ -1922,6 +1922,10 @@
     &lt;event name='cmt' enabled='yes'/&gt;
     &lt;event name='mbmt' enabled='no'/&gt;
     &lt;event name='mbml' enabled='yes'/&gt;
+    &lt;event name='cpu_cycles' enabled='no'/&gt;
+    &lt;event name='instructions' enabled='yes'/&gt;
+    &lt;event name='cache_references' enabled='no'/&gt;
+    &lt;event name='cache_misses' enabled='no'/&gt;
   &lt;/perf&gt;
   ...
 </pre>
@@ -1946,6 +1950,26 @@
       <td><code>mbml</code></td>
       <td>bandwidth of memory traffic for a memory controller</td>
       <td><code>perf.mbml</code></td>
+    </tr>
+    <tr>
+      <td><code>cpu_cycles</code></td>
+      <td>the number of cpu cycles one instruction needs</td>
+      <td><code>perf.cpu_cycles</code></td>
+    </tr>
+    <tr>
+      <td><code>instructions</code></td>
+      <td>the count of instructions by applications running on the platform</td>
+      <td><code>perf.instructions</code></td>
+    </tr>
+    <tr>
+      <td><code>cache_references</code></td>
+      <td>the count of cache hits by applications running on the platform</td>
+      <td><code>perf.cache_references</code></td>
+    </tr>
+    <tr>
+      <td><code>cache_misses</code></td>
+      <td>the count of cache misses by applications running on the platform</td>
+      <td><code>perf.cache_misses</code></td>
     </tr>
   </table>
 

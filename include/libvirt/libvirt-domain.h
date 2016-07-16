@@ -1972,6 +1972,45 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_MBML "mbml"
 
+/**
+ * VIR_PERF_PARAM_CACHE_MISSES:
+ *
+ * Macro for typed parameter name that represents cache_misses perf
+ * event which can be used to measure the count of cache misses by
+ * applications running on the platform. It corresponds to the
+ * "perf.cache_misses" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_CACHE_MISSES "cache_misses"
+
+/**
+ * VIR_PERF_PARAM_CACHE_REFERENCES:
+ *
+ * Macro for typed parameter name that represents cache_references
+ * perf event which can be used to measure the count of cache hits
+ * by applications running on the platform. It corresponds to the
+ * "perf.cache_references" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_CACHE_REFERENCES "cache_references"
+
+/**
+ * VIR_PERF_PARAM_INSTRUCTIONS:
+ *
+ * Macro for typed parameter name that represents instructions perf
+ * event which can be used to measure the count of instructions
+ * by applications running on the platform. It corresponds to the
+ * "perf.instructions" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_INSTRUCTIONS "instructions"
+
+/**
+ * VIR_PERF_PARAM_CPU_CYCLES:
+ *
+ * Macro for typed parameter name that represents cpu_cycles perf event
+ * which can be used to measure how many cpu cycles one instruction needs.
+ * It corresponds to the "perf.cpu_cycles" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_CPU_CYCLES "cpu_cycles"
+
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
                            int *nparams,
