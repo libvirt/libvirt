@@ -290,6 +290,94 @@ bhyveBuildLPCArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+bhyveBuildGraphicsArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
+                         virDomainGraphicsDefPtr graphics,
+                         virDomainVideoDefPtr video,
+                         virConnectPtr conn,
+                         virCommandPtr cmd)
+{
+    virBuffer opt = VIR_BUFFER_INITIALIZER;
+    virDomainGraphicsListenDefPtr glisten = NULL;
+    bool escapeAddr;
+
+    if (!(bhyveDriverGetCaps(conn) & BHYVE_CAP_LPC_BOOTROM) ||
+        def->os.bootloader ||
+        !def->os.loader) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Graphics are only supported"
+                         " when booting using UEFI"));
+        return -1;
+    }
+
+    if (!(bhyveDriverGetCaps(conn) & BHYVE_CAP_FBUF)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Bhyve version does not support framebuffer"));
+        return -1;
+    }
+
+    if (graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Only VNC supported"));
+        return -1;
+    }
+
+    if (!(glisten = virDomainGraphicsGetListen(graphics, 0))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing listen element"));
+        goto error;
+    }
+
+    virBufferAsprintf(&opt, "%d:%d,fbuf", video->info.addr.pci.slot, video->info.addr.pci.function);
+
+    switch (glisten->type) {
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+    case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
+        virBufferAddLit(&opt, ",tcp=");
+
+        if (!graphics->data.vnc.autoport &&
+            (graphics->data.vnc.port < 5900 ||
+             graphics->data.vnc.port > 65535)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vnc port must be in range [5900,65535]"));
+            goto error;
+        }
+
+        if (graphics->data.vnc.auth.passwd) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vnc password auth not supported"));
+            goto error;
+        } else {
+             /* Bhyve doesn't support VNC Auth yet, so print a warning about
+              * unauthenticated VNC sessions */
+             VIR_WARN("%s", _("Security warning: currently VNC auth is not"
+                              " supported."));
+        }
+
+        if (glisten->address) {
+            escapeAddr = strchr(glisten->address, ':') != NULL;
+            if (escapeAddr)
+                virBufferAsprintf(&opt, "[%s]", glisten->address);
+            else
+                virBufferAdd(&opt, glisten->address, -1);
+        }
+
+        virBufferAsprintf(&opt, ":%d", graphics->data.vnc.port);
+        break;
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Unsupported listen type"));
+    }
+
+    virCommandAddArg(cmd, "-s");
+    virCommandAddArgBuffer(cmd, &opt);
+    return 0;
+
+ error:
+    virBufferFreeAndReset(&opt);
+    return -1;
+}
+
 virCommandPtr
 virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
                              virDomainDefPtr def, bool dryRun)
@@ -410,6 +498,18 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("unsupported disk device"));
             goto error;
+        }
+    }
+
+    if (def->ngraphics && def->nvideos) {
+        if (def->ngraphics == 1 && def->nvideos == 1) {
+            if (bhyveBuildGraphicsArgStr(def, def->graphics[0], def->videos[0], conn, cmd) < 0)
+                goto error;
+            add_lpc = true;
+        } else {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Multiple graphics devices are not supported"));
+             goto error;
         }
     }
 

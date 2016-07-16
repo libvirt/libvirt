@@ -70,6 +70,7 @@
         <value>qxl</value>
         <value>parallels</value>
         <value>virtio</value>
+        <value>gop</value>
       </enum>
     </video>
     <hostdev supported='yes'>

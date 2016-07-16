@@ -742,6 +742,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
             return pciFlags;
 
+        case VIR_DOMAIN_VIDEO_TYPE_GOP:
         case VIR_DOMAIN_VIDEO_TYPE_LAST:
             return 0;
         }

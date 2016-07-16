@@ -12,6 +12,7 @@ gnulib/lib/getopt.c
 gnulib/lib/regcomp.c
 src/access/viraccessdriverpolkit.c
 src/access/viraccessmanager.c
+src/bhyve/bhyve_capabilities.c
 src/bhyve/bhyve_command.c
 src/bhyve/bhyve_device.c
 src/bhyve/bhyve_domain.c

@@ -3166,6 +3166,7 @@
                 <value>xen</value>
                 <value>vbox</value>
                 <value>virtio</value>
+                <value>gop</value>
               </choice>
             </attribute>
             <group>

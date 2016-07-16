@@ -145,6 +145,17 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
             goto error;
     }
 
+    for (i = 0; i < def->nvideos; i++) {
+        if (!virDeviceInfoPCIAddressWanted(&def->videos[i]->info))
+            continue;
+        if (virDomainPCIAddressReserveNextAddr(addrs,
+                                               &def->videos[i]->info,
+                                               VIR_PCI_CONNECT_TYPE_PCI_DEVICE,
+                                               -1) < 0)
+            goto error;
+    }
+
+
     return 0;
 
  error:

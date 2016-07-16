@@ -545,7 +545,8 @@ VIR_ENUM_IMPL(virDomainVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "vbox",
               "qxl",
               "parallels",
-              "virtio")
+              "virtio",
+              "gop")
 
 VIR_ENUM_IMPL(virDomainInput, VIR_DOMAIN_INPUT_TYPE_LAST,
               "mouse",
@@ -13049,6 +13050,8 @@ virDomainVideoDefaultType(const virDomainDef *def)
             return VIR_DOMAIN_VIDEO_TYPE_VGA;
         else
             return VIR_DOMAIN_VIDEO_TYPE_PARALLELS;
+    case VIR_DOMAIN_VIRT_BHYVE:
+        return VIR_DOMAIN_VIDEO_TYPE_GOP;
     default:
         return -1;
     }
