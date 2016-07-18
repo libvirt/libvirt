@@ -99,10 +99,12 @@ static int virLoginShellGetShellArgv(virConfPtr conf,
                                      char ***shargv,
                                      size_t *shargvlen)
 {
-    if (virConfGetValueStringList(conf, "shell", true, shargv) < 0)
+    int rv;
+
+    if ((rv = virConfGetValueStringList(conf, "shell", true, shargv)) < 0)
         return -1;
 
-    if (!shargv) {
+    if (rv == 0) {
         if (VIR_ALLOC_N(*shargv, 2) < 0)
             return -1;
         if (VIR_STRDUP((*shargv)[0], "/bin/sh") < 0) {
