@@ -60,7 +60,9 @@ static int testHelpStrParsing(const void *data)
 
     if (virQEMUCapsParseHelpStr("QEMU", help, flags,
                                 &version, &is_kvm, &kvm_version, false, NULL) == -1) {
-        if (info->error && virGetLastError()->code == info->error)
+        virErrorPtr err = virGetLastError();
+
+        if (info->error && err && err->code == info->error)
             ret = 0;
         goto cleanup;
     }
