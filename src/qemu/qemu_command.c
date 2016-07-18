@@ -4712,6 +4712,7 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *source = NULL;
+    char *drivealias = NULL;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
 
     if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
@@ -4723,9 +4724,12 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
             goto error;
         virBufferAsprintf(&buf, "file=/dev/%s,if=none", source);
     }
-    virBufferAsprintf(&buf, ",id=%s-%s",
-                      virDomainDeviceAddressTypeToString(dev->info->type),
-                      dev->info->alias);
+    VIR_FREE(source);
+
+    if (!(drivealias = qemuAliasFromHostdev(dev)))
+        goto error;
+    virBufferAsprintf(&buf, ",id=%s", drivealias);
+    VIR_FREE(drivealias);
 
     if (dev->readonly)
         virBufferAddLit(&buf, ",readonly=on");
@@ -4733,10 +4737,8 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
     if (virBufferCheckError(&buf) < 0)
         goto error;
 
-    VIR_FREE(source);
     return virBufferContentAndReset(&buf);
  error:
-    VIR_FREE(source);
     virBufferFreeAndReset(&buf);
     return NULL;
 }
@@ -4748,6 +4750,7 @@ qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int model = -1;
+    char *driveAlias;
     const char *contAlias;
 
     model = virDomainDeviceFindControllerModel(def, dev->info,
@@ -4791,9 +4794,10 @@ qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
                           dev->info->addr.drive.unit);
     }
 
-    virBufferAsprintf(&buf, ",drive=%s-%s,id=%s",
-                      virDomainDeviceAddressTypeToString(dev->info->type),
-                      dev->info->alias, dev->info->alias);
+    if (!(driveAlias = qemuAliasFromHostdev(dev)))
+        goto error;
+    virBufferAsprintf(&buf, ",drive=%s,id=%s", driveAlias, dev->info->alias);
+    VIR_FREE(driveAlias);
 
     if (dev->info->bootIndex)
         virBufferAsprintf(&buf, ",bootindex=%u", dev->info->bootIndex);

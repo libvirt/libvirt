@@ -3184,7 +3184,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     size_t i;
     int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *drivestr = NULL;
+    char *drivealias = NULL;
     bool is_vfio = false;
 
     VIR_DEBUG("Removing host device %s from domain %p %s",
@@ -3196,15 +3196,11 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     }
 
     if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
-        /* build the actual drive id string as generated during
-         * qemuBuildSCSIHostdevDrvStr that is passed to qemu */
-        if (virAsprintf(&drivestr, "%s-%s",
-                        virDomainDeviceAddressTypeToString(hostdev->info->type),
-                        hostdev->info->alias) < 0)
+        if (!(drivealias = qemuAliasFromHostdev(hostdev)))
             goto cleanup;
 
         qemuDomainObjEnterMonitor(driver, vm);
-        qemuMonitorDriveDel(priv->mon, drivestr);
+        qemuMonitorDriveDel(priv->mon, drivealias);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;
     }
@@ -3268,7 +3264,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    VIR_FREE(drivestr);
+    VIR_FREE(drivealias);
     virObjectUnref(cfg);
     return ret;
 }
