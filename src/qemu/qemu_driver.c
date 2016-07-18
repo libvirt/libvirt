@@ -5284,9 +5284,8 @@ qemuDomainGetVcpus(virDomainPtr dom,
         goto cleanup;
 
     if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s",
-                       _("cannot list vcpu pinning for an inactive domain"));
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot retrieve vcpu information for inactive domain"));
         goto cleanup;
     }
 
