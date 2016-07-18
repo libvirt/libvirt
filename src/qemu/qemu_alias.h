@@ -69,6 +69,8 @@ char *qemuAliasFromDisk(const virDomainDiskDef *disk);
 
 const char *qemuAliasDiskDriveSkipPrefix(const char *dev_name);
 
+char *qemuAliasFromHostdev(const virDomainHostdevDef *hostdev);
+
 char *qemuDomainGetMasterKeyAlias(void);
 
 char *qemuDomainGetSecretAESAlias(const char *srcalias,
