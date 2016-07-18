@@ -1177,6 +1177,10 @@ mymain(void)
     DO_TEST_PARSE_ERROR("usb-ich9-no-companion",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_ICH9_USB_EHCI1);
+    DO_TEST("usb-ich9-autoassign",
+            QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_ICH9_USB_EHCI1,
+            QEMU_CAPS_USB_HUB);
     DO_TEST("usb-hub",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
             QEMU_CAPS_NODEFCONFIG);
@@ -1187,6 +1191,9 @@ mymain(void)
             QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("usb-ports",
+            QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
+            QEMU_CAPS_NODEFCONFIG);
+    DO_TEST("usb-port-autoassign",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("usb-redir",
@@ -1243,6 +1250,10 @@ mymain(void)
     DO_TEST("usb-controller-xhci",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_NEC_USB_XHCI_PORTS);
+    DO_TEST("usb-xhci-autoassign",
+            QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_PIIX3_USB_UHCI,
+            QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_NEC_USB_XHCI_PORTS,
+            QEMU_CAPS_USB_HUB);
 
     DO_TEST("smbios", QEMU_CAPS_SMBIOS_TYPE);
     DO_TEST_PARSE_ERROR("smbios-date", QEMU_CAPS_SMBIOS_TYPE);
