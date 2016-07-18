@@ -2636,7 +2636,8 @@ vshReadlineParse(const char *text, int state)
     vshCommandToken tk;
     static const vshCmdDef *cmd;
     const vshCmdOptDef *opt;
-    char *tkdata, *optstr, *const_tkdata, *res;
+    char *tkdata, *optstr, *const_tkdata;
+    char *res = NULL;
     static char *ctext, *sanitized_text;
     static uint64_t const_opts_need_arg, const_opts_required, const_opts_seen;
     uint64_t opts_need_arg, opts_required, opts_seen;
@@ -2656,7 +2657,6 @@ vshReadlineParse(const char *text, int state)
         tkdata = NULL;
         sanitized_text = NULL;
         optstr = NULL;
-        res = NULL;
 
         /* Sanitize/de-quote the autocomplete text */
         tk = sanitizer.getNextArg(NULL, &sanitizer, &sanitized_text, false);
