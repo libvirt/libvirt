@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 1.2.13\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2016-05-04 19:50-0400\n"
+"POT-Creation-Date: 2016-07-18 18:34-0400\n"
 "PO-Revision-Date: 2014-10-28 11:16-0400\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -19147,7 +19147,7 @@ msgstr "CCW ଠିକଣା ବିନା ଉପକରଣକୁ ପୃଥକ କ�
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr "ଏକାଧିକ କାର୍ଯ୍ୟ ବିଶିଷ୍ଟ PCI ଉପକରଣକୁ ହଟ ଅନପ୍ଲଗ କରିପାରିବେ ନାହିଁ :%s"
 
-#: src/qemu/qemu_hotplug.c:4058
+#: src/qemu/qemu_hotplug.c:4057
 msgid "Graphics password only supported for VNC"
 msgstr "ଆଲେଖିକ ପ୍ରବେଶ ସଂକେତ କେବଳ VNC ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ"
 

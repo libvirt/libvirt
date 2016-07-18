@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 1.2.13\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2016-05-04 19:50-0400\n"
+"POT-Creation-Date: 2016-07-18 18:34-0400\n"
 "PO-Revision-Date: 2014-10-28 11:16-0400\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -19407,7 +19407,7 @@ msgstr "ഒരു സിസിവി വിലാസമില്ലാതെ ഡ
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr "അനവധി പ്രവര്‍ത്തനങ്ങളിലുള്ള പിസിഐ ഡിവൈസ് ഹോട്ട് അണ്‍പ്ലഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല:%s"
 
-#: src/qemu/qemu_hotplug.c:4058
+#: src/qemu/qemu_hotplug.c:4057
 msgid "Graphics password only supported for VNC"
 msgstr "ഗ്രാഫിക്സ് രഹസ്യവാക്ക് വിഎന്‍സി മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
 

@@ -2344,6 +2344,9 @@ exit 0
 %doc docs/libvirt-api.xml
 
 %changelog
+* Mon Jul 18 2016 Cole Robinson <crobinso@redhat.com> - 1.2.18.4-1
+- Maintenance release 1.2.18.4
+
 * Wed May 04 2016 Cole Robinson <crobinso@redhat.com> - 1.2.18.3-1
 - Maintenance release 1.2.18.3
 

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 1.2.13\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2016-05-04 19:50-0400\n"
+"POT-Creation-Date: 2016-07-18 18:34-0400\n"
 "PO-Revision-Date: 2013-09-27 05:51-0400\n"
 "Last-Translator: readmanr <robert_readman@hotmail.com>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
@@ -19622,7 +19622,7 @@ msgstr "device cannot be detached without a CCW address"
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr "cannot hot unplug multifunction PCI device :%s"
 
-#: src/qemu/qemu_hotplug.c:4058
+#: src/qemu/qemu_hotplug.c:4057
 msgid "Graphics password only supported for VNC"
 msgstr "Graphics password only supported for VNC"
 

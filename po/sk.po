@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 1.2.13\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2016-05-04 19:50-0400\n"
+"POT-Creation-Date: 2016-07-18 18:34-0400\n"
 "PO-Revision-Date: 2013-01-28 09:12-0500\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Slovak (http://www.transifex.com/projects/p/fedora/language/"
@@ -19010,7 +19010,7 @@ msgstr ""
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4058
+#: src/qemu/qemu_hotplug.c:4057
 msgid "Graphics password only supported for VNC"
 msgstr ""
 
