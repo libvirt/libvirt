@@ -1016,7 +1016,7 @@ int virConfGetValueStringList(virConfPtr conf,
                 return -1;
             if (cval->str &&
                 VIR_STRDUP((*values)[0], cval->str) < 0) {
-                VIR_FREE(values);
+                VIR_FREE(*values);
                 return -1;
             }
             break;
