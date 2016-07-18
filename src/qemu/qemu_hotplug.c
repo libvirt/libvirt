@@ -602,6 +602,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     char *devstr = NULL;
     bool driveAdded = false;
     bool encobjAdded = false;
+    char *drivealias = NULL;
     int ret = -1;
     int rv;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -649,6 +650,9 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     if (!(drivestr = qemuBuildDriveStr(disk, false, priv->qemuCaps)))
         goto error;
 
+    if (!(drivealias = qemuAliasFromDisk(disk)))
+        goto error;
+
     if (VIR_REALLOC_N(vm->def->disks, vm->def->ndisks+1) < 0)
         goto error;
 
@@ -683,15 +687,16 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     qemuDomainSecretDiskDestroy(disk);
     VIR_FREE(devstr);
     VIR_FREE(drivestr);
+    VIR_FREE(drivealias);
     virObjectUnref(cfg);
     return ret;
 
  exit_monitor:
-    /* XXX should call 'drive_del' on error but this does not exist yet */
-    if (driveAdded)
-        VIR_WARN("qemuMonitorAddDevice failed on %s (%s)", drivestr, devstr);
-
     orig_err = virSaveLastError();
+    if (driveAdded && qemuMonitorDriveDel(priv->mon, drivealias) < 0) {
+        VIR_WARN("Unable to remove drive %s (%s) after failed "
+                 "qemuMonitorAddDevice", drivealias, drivestr);
+    }
     if (encobjAdded)
         ignore_value(qemuMonitorDelObject(priv->mon, encinfo->s.aes.alias));
     if (orig_err) {
