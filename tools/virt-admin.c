@@ -458,7 +458,7 @@ cmdSrvThreadpoolInfo(vshControl *ctl, const vshCmd *cmd)
     }
 
     for (i = 0; i < nparams; i++)
-        vshPrint(ctl, "%-15s: %d\n", params[i].field, params[i].value.ui);
+        vshPrint(ctl, "%-15s: %u\n", params[i].field, params[i].value.ui);
 
     ret = true;
 
