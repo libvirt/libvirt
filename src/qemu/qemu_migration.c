@@ -6183,8 +6183,9 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     cookie_flags = QEMU_MIGRATION_COOKIE_NETWORK |
                    QEMU_MIGRATION_COOKIE_STATS |
                    QEMU_MIGRATION_COOKIE_NBD;
-    if (flags & VIR_MIGRATE_PERSIST_DEST)
-        cookie_flags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
+    /* Some older versions of libvirt always send persistent XML in the cookie
+     * even though VIR_MIGRATE_PERSIST_DEST was not used. */
+    cookie_flags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
 
     if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein,
                                        cookieinlen, cookie_flags)))
