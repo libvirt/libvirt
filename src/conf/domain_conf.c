@@ -22182,6 +22182,12 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        if (!glisten) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing listen element for spice graphics"));
+            return -1;
+        }
+
         switch (glisten->type) {
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
