@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 1.2.13\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2016-05-04 19:40-0400\n"
+"POT-Creation-Date: 2016-07-18 18:32-0400\n"
 "PO-Revision-Date: 2014-10-28 11:16-0400\n"
 "Last-Translator: Daniel <veillard@redhat.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/libvirt/"
@@ -1260,7 +1260,7 @@ msgstr "CPU 技术参数中无效的 match 属性"
 msgid "Missing CPU architecture"
 msgstr "缺少 CPU 架构"
 
-#: src/conf/cpu_conf.c:241 src/conf/domain_conf.c:15083
+#: src/conf/cpu_conf.c:241 src/conf/domain_conf.c:15091
 #, c-format
 msgid "Unknown architecture %s"
 msgstr "未知架构 %s"
@@ -1437,12 +1437,12 @@ msgstr ""
 msgid "Cannot parse <address> 'domain' attribute"
 msgstr "无法解析 <address> 'domain' 属性"
 
-#: src/conf/device_conf.c:129 src/conf/domain_conf.c:4563
-#: src/conf/domain_conf.c:4617 src/conf/domain_conf.c:4758
+#: src/conf/device_conf.c:129 src/conf/domain_conf.c:4579
+#: src/conf/domain_conf.c:4633 src/conf/domain_conf.c:4774
 msgid "Cannot parse <address> 'bus' attribute"
 msgstr "无法解析 <address> 'bus' 属性"
 
-#: src/conf/device_conf.c:136 src/conf/domain_conf.c:4717
+#: src/conf/device_conf.c:136 src/conf/domain_conf.c:4733
 msgid "Cannot parse <address> 'slot' attribute"
 msgstr "无法解析 <address> 'slot' 属性"
 
@@ -1625,7 +1625,7 @@ msgstr "缺少主机名称"
 msgid "%s is not a supported cipher name"
 msgstr "文件 '%s' 不是支持的随机源"
 
-#: src/conf/domain_conf.c:903 src/conf/domain_conf.c:12597
+#: src/conf/domain_conf.c:903 src/conf/domain_conf.c:12605
 #, fuzzy, c-format
 msgid "missing state for cipher named %s"
 msgstr "缺少计时器名称"
@@ -1779,2514 +1779,2514 @@ msgstr ""
 msgid "timer %s doesn't support setting of timer track"
 msgstr ""
 
-#: src/conf/domain_conf.c:3910
-msgid "init binary must be specified"
-msgstr "必须指定起始二进制代码"
-
-#: src/conf/domain_conf.c:4149
+#: src/conf/domain_conf.c:4110
 #, fuzzy
 msgid "<snapshot> element is currently supported only with 'rbd' disks"
 msgstr "只有外部检查点支持实时快照生成"
 
-#: src/conf/domain_conf.c:4156
+#: src/conf/domain_conf.c:4117
 msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr ""
 
-#: src/conf/domain_conf.c:4178
+#: src/conf/domain_conf.c:4139
 #, c-format
 msgid "disk '%s' improperly configured for a device='lun'"
 msgstr ""
 
-#: src/conf/domain_conf.c:4204
+#: src/conf/domain_conf.c:4171
 #, fuzzy
 msgid "Cannot assign SCSI host device address"
 msgstr "无法在 '%s' 中获取接口标签"
 
-#: src/conf/domain_conf.c:4218
+#: src/conf/domain_conf.c:4185
 #, c-format
 msgid ""
 "SCSI host address controller='%u' bus='%u' target='%u' unit='%u' in use by a "
 "SCSI disk"
 msgstr ""
 
-#: src/conf/domain_conf.c:4442
+#: src/conf/domain_conf.c:4329
+msgid "init binary must be specified"
+msgstr "必须指定起始二进制代码"
+
+#: src/conf/domain_conf.c:4458
 #, c-format
 msgid "unexpected rom bar value %d"
 msgstr "意外的 rom bar 值 %d"
 
-#: src/conf/domain_conf.c:4556 src/conf/domain_conf.c:4610
-#: src/conf/domain_conf.c:4710
+#: src/conf/domain_conf.c:4572 src/conf/domain_conf.c:4626
+#: src/conf/domain_conf.c:4726
 msgid "Cannot parse <address> 'controller' attribute"
 msgstr "无法解析 <address> 'controller' 属性"
 
-#: src/conf/domain_conf.c:4570
+#: src/conf/domain_conf.c:4586
 msgid "Cannot parse <address> 'target' attribute"
 msgstr "无法解析 <address> 'target' 属性"
 
-#: src/conf/domain_conf.c:4577
+#: src/conf/domain_conf.c:4593
 msgid "Cannot parse <address> 'unit' attribute"
 msgstr "无法解析 <address> 'unit' 属性"
 
-#: src/conf/domain_conf.c:4624 src/conf/domain_conf.c:4748
+#: src/conf/domain_conf.c:4640 src/conf/domain_conf.c:4764
 msgid "Cannot parse <address> 'port' attribute"
 msgstr "无法解析 <address> 'port' 属性"
 
-#: src/conf/domain_conf.c:4656
+#: src/conf/domain_conf.c:4672
 msgid "Cannot parse <address> 'cssid' attribute"
 msgstr "无法解析 <address> 'cssid' 属性"
 
-#: src/conf/domain_conf.c:4662
+#: src/conf/domain_conf.c:4678
 msgid "Cannot parse <address> 'ssid' attribute"
 msgstr "无法解析 <address> 'ssid' 属性"
 
-#: src/conf/domain_conf.c:4668
+#: src/conf/domain_conf.c:4684
 msgid "Cannot parse <address> 'devno' attribute"
 msgstr "无法解析 <address> 'devno' 属性"
 
-#: src/conf/domain_conf.c:4673
+#: src/conf/domain_conf.c:4689
 #, c-format
 msgid ""
 "Invalid specification for virtio ccw address: cssid='%s' ssid='%s' devno='%s'"
 msgstr "irtio ccw 地址的无效说明：cssid='%s' ssid='%s' devno='%s'"
 
-#: src/conf/domain_conf.c:4681
+#: src/conf/domain_conf.c:4697
 msgid "Invalid partial specification for virtio ccw address"
 msgstr "irtio ccw 地址的无效说明"
 
-#: src/conf/domain_conf.c:4783
+#: src/conf/domain_conf.c:4799
 msgid "Cannot parse <address> 'reg' attribute"
 msgstr "无法解析 <address> 'reg' 属性 "
 
-#: src/conf/domain_conf.c:4811
+#: src/conf/domain_conf.c:4827
 msgid "Cannot parse <master> 'startport' attribute"
 msgstr "无法解析 <master> 'startport' 属性"
 
-#: src/conf/domain_conf.c:4834
+#: src/conf/domain_conf.c:4850
 msgid "missing boot order attribute"
 msgstr "缺少引导顺序属性"
 
-#: src/conf/domain_conf.c:4839
+#: src/conf/domain_conf.c:4855
 #, c-format
 msgid "incorrect boot order '%s', expecting positive integer"
 msgstr "错误的引导顺序 '%s‘，应为正整数。"
 
-#: src/conf/domain_conf.c:4847
+#: src/conf/domain_conf.c:4863
 #, c-format
 msgid "boot order '%s' used for more than one device"
 msgstr "在一个以上设备中采用引导顺序 '%s'"
 
-#: src/conf/domain_conf.c:4880
+#: src/conf/domain_conf.c:4896
 msgid "Cannot parse <address> 'iobase' attribute"
 msgstr ""
 
-#: src/conf/domain_conf.c:4887
+#: src/conf/domain_conf.c:4903
 msgid "Cannot parse <address> 'irq' attribute"
 msgstr ""
 
-#: src/conf/domain_conf.c:4909
+#: src/conf/domain_conf.c:4925
 #, fuzzy, c-format
 msgid "invalid or missing dimm slot id '%s'"
 msgstr "无效的域状态 '%s'"
 
-#: src/conf/domain_conf.c:4918
+#: src/conf/domain_conf.c:4934
 #, fuzzy, c-format
 msgid "invalid or missing dimm base address '%s'"
 msgstr "无效域状态原因 '%s'"
 
-#: src/conf/domain_conf.c:4998
+#: src/conf/domain_conf.c:5014
 #, c-format
 msgid "unknown rom bar value '%s'"
 msgstr "未知 rom bar 值 '%s'"
 
-#: src/conf/domain_conf.c:5014
+#: src/conf/domain_conf.c:5030
 #, c-format
 msgid "unknown address type '%s'"
 msgstr "未知地址类型 '%s'"
 
-#: src/conf/domain_conf.c:5019
+#: src/conf/domain_conf.c:5035
 msgid "No type specified for device address"
 msgstr "没有指定设备地址类型"
 
-#: src/conf/domain_conf.c:5071
+#: src/conf/domain_conf.c:5087
 msgid "virtio-s390 bus doesn't have an address"
 msgstr ""
 
-#: src/conf/domain_conf.c:5128
+#: src/conf/domain_conf.c:5144
 #, c-format
 msgid "Unknown startup policy '%s'"
 msgstr "位置启动策略 '%s'"
 
-#: src/conf/domain_conf.c:5157
+#: src/conf/domain_conf.c:5173
 #, c-format
 msgid "cannot parse vendor id %s"
 msgstr "无法解析零售商 id %s"
 
-#: src/conf/domain_conf.c:5164
+#: src/conf/domain_conf.c:5180
 msgid "usb vendor needs id"
 msgstr "usb 零售商需要 id"
 
-#: src/conf/domain_conf.c:5175
+#: src/conf/domain_conf.c:5191
 #, c-format
 msgid "cannot parse product %s"
 msgstr "无法解析产品 %s"
 
-#: src/conf/domain_conf.c:5183
+#: src/conf/domain_conf.c:5199
 msgid "usb product needs id"
 msgstr "usb 产品需要 id"
 
-#: src/conf/domain_conf.c:5193
+#: src/conf/domain_conf.c:5209
 #, c-format
 msgid "cannot parse bus %s"
 msgstr "无法解析总线 %s"
 
-#: src/conf/domain_conf.c:5200
+#: src/conf/domain_conf.c:5216
 msgid "usb address needs bus id"
 msgstr "usb 地址需要总线 id"
 
-#: src/conf/domain_conf.c:5208
+#: src/conf/domain_conf.c:5224
 #, c-format
 msgid "cannot parse device %s"
 msgstr "无法解析设备 %s"
 
-#: src/conf/domain_conf.c:5216
+#: src/conf/domain_conf.c:5232
 msgid "usb address needs device id"
 msgstr "usb 地址需要设备 id"
 
-#: src/conf/domain_conf.c:5221
+#: src/conf/domain_conf.c:5237
 #, c-format
 msgid "unknown usb source type '%s'"
 msgstr "未知 usb 源类型 '%s'"
 
-#: src/conf/domain_conf.c:5231
+#: src/conf/domain_conf.c:5247
 msgid "vendor cannot be 0."
 msgstr "零售商不可为 0。"
 
-#: src/conf/domain_conf.c:5237
+#: src/conf/domain_conf.c:5253
 msgid "missing vendor"
 msgstr "缺少经销商"
 
-#: src/conf/domain_conf.c:5242
+#: src/conf/domain_conf.c:5258
 msgid "missing product"
 msgstr "缺少产品"
 
-#: src/conf/domain_conf.c:5276
+#: src/conf/domain_conf.c:5292
 #, c-format
 msgid "unsupported element '%s' of 'origstates'"
 msgstr "不支持 'origstates' 的元素 '%s'"
 
-#: src/conf/domain_conf.c:5312 src/conf/domain_conf.c:7480
-#: src/conf/domain_conf.c:8810
+#: src/conf/domain_conf.c:5328 src/conf/domain_conf.c:7496
+#: src/conf/domain_conf.c:8826
 #, c-format
 msgid "Unable to parse devaddr parameter '%s'"
 msgstr "无法解析设备地址参数 '%s'"
 
-#: src/conf/domain_conf.c:5325
+#: src/conf/domain_conf.c:5341
 #, c-format
 msgid "unknown pci source type '%s'"
 msgstr "未知 pci 源类型 '%s'"
 
-#: src/conf/domain_conf.c:5362
+#: src/conf/domain_conf.c:5378
 #, c-format
 msgid "unknown protocol transport type '%s'"
 msgstr "未知协议传输类型 '%s'"
 
-#: src/conf/domain_conf.c:5373
+#: src/conf/domain_conf.c:5389
 msgid "missing socket for unix transport"
 msgstr "Unix 传输缺少套接字"
 
-#: src/conf/domain_conf.c:5380
+#: src/conf/domain_conf.c:5396
 #, c-format
 msgid "transport '%s' does not support socket attribute"
 msgstr ""
 
-#: src/conf/domain_conf.c:5391
+#: src/conf/domain_conf.c:5407
 msgid "missing name for host"
 msgstr "缺少主机名称"
 
-#: src/conf/domain_conf.c:5427
+#: src/conf/domain_conf.c:5443
 msgid "more than one source addresses is specified for scsi hostdev"
 msgstr "为 scsi hostdev 指定一个以上源地址"
 
-#: src/conf/domain_conf.c:5436
+#: src/conf/domain_conf.c:5452
 msgid ""
 "'bus', 'target', and 'unit' must be specified for scsi hostdev source address"
 msgstr "必须为 scsi hostdev 源地址指定 'bus', 'target', 和 'unit'"
 
-#: src/conf/domain_conf.c:5443
+#: src/conf/domain_conf.c:5459
 #, c-format
 msgid "cannot parse bus '%s'"
 msgstr "无法解析总线 '%s'"
 
-#: src/conf/domain_conf.c:5450
+#: src/conf/domain_conf.c:5466
 #, c-format
 msgid "cannot parse target '%s'"
 msgstr "无法解析目标 '%s'"
 
-#: src/conf/domain_conf.c:5456
+#: src/conf/domain_conf.c:5472
 #, c-format
 msgid "cannot parse unit '%s'"
 msgstr "无法解析单位 '%s'"
 
-#: src/conf/domain_conf.c:5464
+#: src/conf/domain_conf.c:5480
 msgid "more than one adapters is specified for scsi hostdev source"
 msgstr "为 scsi hostdev 源指定了一个以上的适配器"
 
-#: src/conf/domain_conf.c:5470
+#: src/conf/domain_conf.c:5486
 msgid "'adapter' must be specified for scsi hostdev source"
 msgstr "必须为 scsi hostdev 源地址指定 'adapter'"
 
-#: src/conf/domain_conf.c:5477
+#: src/conf/domain_conf.c:5493
 #, c-format
 msgid "unsupported element '%s' of scsi hostdev source"
 msgstr "scsi hostdev 源不支持的元素 '%s'"
 
-#: src/conf/domain_conf.c:5487
+#: src/conf/domain_conf.c:5503
 msgid "'adapter' and 'address' must be specified for scsi hostdev source"
 msgstr "必须为 scsi hostdev 源地址指定 'adapter' 和 'address'"
 
-#: src/conf/domain_conf.c:5514
+#: src/conf/domain_conf.c:5530
 msgid "missing iSCSI hostdev source path name"
 msgstr ""
 
-#: src/conf/domain_conf.c:5524
+#: src/conf/domain_conf.c:5540
 msgid "missing the host address for the iSCSI hostdev"
 msgstr ""
 
-#: src/conf/domain_conf.c:5529
+#: src/conf/domain_conf.c:5545
 msgid "only one source host address may be specified for the iSCSI hostdev"
 msgstr ""
 
-#: src/conf/domain_conf.c:5543 src/conf/domain_conf.c:6963
+#: src/conf/domain_conf.c:5559 src/conf/domain_conf.c:6979
 #, c-format
 msgid "invalid secret type %s"
 msgstr "无效保密类型 %s"
 
-#: src/conf/domain_conf.c:5549
+#: src/conf/domain_conf.c:5565
 #, c-format
 msgid "hostdev invalid secret type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:5577
+#: src/conf/domain_conf.c:5593
 #, c-format
 msgid "Unknown SCSI subsystem protocol '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:5636 src/conf/domain_conf.c:5811
+#: src/conf/domain_conf.c:5652 src/conf/domain_conf.c:5827
 #, c-format
 msgid "unknown host device source address type '%s'"
 msgstr "未知主机设备源地址类型 '%s'"
 
-#: src/conf/domain_conf.c:5642 src/conf/domain_conf.c:5817
+#: src/conf/domain_conf.c:5658 src/conf/domain_conf.c:5833
 msgid "missing source address type"
 msgstr "缺少源地址类型"
 
-#: src/conf/domain_conf.c:5648 src/conf/domain_conf.c:5823
+#: src/conf/domain_conf.c:5664 src/conf/domain_conf.c:5839
 msgid "Missing <source> element in hostdev device"
 msgstr "在 hostdev 设备中缺少 <source> 元素"
 
-#: src/conf/domain_conf.c:5655
+#: src/conf/domain_conf.c:5671
 msgid "Setting startupPolicy is only allowed for USB devices"
 msgstr "只允许为 USB 设备设置 startupPolicy"
 
-#: src/conf/domain_conf.c:5663
+#: src/conf/domain_conf.c:5679
 msgid "sgio is only supported for scsi host device"
 msgstr "只有 scsi 主机设备支持 sgio"
 
-#: src/conf/domain_conf.c:5669
+#: src/conf/domain_conf.c:5685
 #, c-format
 msgid "unknown sgio mode '%s'"
 msgstr "未知 sgio 模式 '%s' "
 
-#: src/conf/domain_conf.c:5677
+#: src/conf/domain_conf.c:5693
 msgid "rawio is only supported for scsi host device"
-msgstr ""
-
-#: src/conf/domain_conf.c:5683
-#, c-format
-msgid "unknown hostdev rawio setting '%s'"
 msgstr ""
 
 #: src/conf/domain_conf.c:5699
 #, c-format
+msgid "unknown hostdev rawio setting '%s'"
+msgstr ""
+
+#: src/conf/domain_conf.c:5715
+#, c-format
 msgid "Unknown PCI device <driver name='%s'/> has been specified"
 msgstr "已指定未知 PCI 设备 <driver name='%s'/>"
 
-#: src/conf/domain_conf.c:5719 src/conf/domain_conf.c:5897
+#: src/conf/domain_conf.c:5735 src/conf/domain_conf.c:5913
 #, c-format
 msgid "address type='%s' not supported in hostdev interfaces"
 msgstr "hostdev 接口不支持地址类型 '%s' "
 
-#: src/conf/domain_conf.c:5752
+#: src/conf/domain_conf.c:5768
 #, fuzzy
 msgid "Missing network address"
 msgstr "缺少地址"
 
-#: src/conf/domain_conf.c:5769
+#: src/conf/domain_conf.c:5785
 #, fuzzy, c-format
 msgid "Failed to parse IP address: '%s'"
 msgstr "解析 PCI 配置地址 '%s' 失败"
 
-#: src/conf/domain_conf.c:5832
+#: src/conf/domain_conf.c:5848
 msgid "Missing <block> element in hostdev storage device"
 msgstr "在 hostdev 存储设备中缺少 <block> 元素"
 
-#: src/conf/domain_conf.c:5840
+#: src/conf/domain_conf.c:5856
 msgid "Missing <char> element in hostdev character device"
 msgstr "在 hostdev 设备中缺少 <char> 元素"
 
-#: src/conf/domain_conf.c:5848
+#: src/conf/domain_conf.c:5864
 msgid "Missing <interface> element in hostdev net device"
 msgstr "在 hostdev 设备中缺少 <interface> 元素"
 
-#: src/conf/domain_conf.c:5881
+#: src/conf/domain_conf.c:5897
 #, fuzzy
 msgid "Domain hostdev device"
 msgstr "缺少引导设备"
 
-#: src/conf/domain_conf.c:5954
+#: src/conf/domain_conf.c:5970
 #, c-format
 msgid "Unknown disk name '%s' and no address specified"
 msgstr "未知磁盘名称 '%s' 且未指定地址"
 
-#: src/conf/domain_conf.c:5989
+#: src/conf/domain_conf.c:6005
 #, c-format
 msgid ""
 "using disk target name '%s' conflicts with SCSI host device address "
 "controller='%u' bus='%u' target='%u' unit='%u"
 msgstr ""
 
-#: src/conf/domain_conf.c:6061
+#: src/conf/domain_conf.c:6077
 #, c-format
 msgid "invalid security type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:6080 src/conf/domain_conf.c:6343
+#: src/conf/domain_conf.c:6096 src/conf/domain_conf.c:6359
 #, c-format
 msgid "invalid security relabel value %s"
 msgstr "无效安全重新标记值 %s"
 
-#: src/conf/domain_conf.c:6089
+#: src/conf/domain_conf.c:6105
 msgid "dynamic label type must use resource relabeling"
 msgstr "动态标签类型必须使用资源重新标记"
 
-#: src/conf/domain_conf.c:6095
+#: src/conf/domain_conf.c:6111
 msgid "resource relabeling is not compatible with 'none' label type"
 msgstr "资源重新标记与 'none' 标签类型不兼容"
 
-#: src/conf/domain_conf.c:6110
+#: src/conf/domain_conf.c:6126
 #, c-format
 msgid "unsupported type='%s' to model 'none'"
 msgstr ""
 
-#: src/conf/domain_conf.c:6130
+#: src/conf/domain_conf.c:6146
 msgid "security label is missing"
 msgstr "缺少安全性标签"
 
-#: src/conf/domain_conf.c:6146
+#: src/conf/domain_conf.c:6162
 msgid "security imagelabel is missing"
 msgstr "缺少安全性映像标签"
 
-#: src/conf/domain_conf.c:6205 src/conf/domain_conf.c:6320
+#: src/conf/domain_conf.c:6221 src/conf/domain_conf.c:6336
 #, c-format
 msgid "seclabel for model %s is already provided"
 msgstr ""
 
-#: src/conf/domain_conf.c:6246
+#: src/conf/domain_conf.c:6262
 msgid "missing security model in domain seclabel"
 msgstr "域 seclabel 中缺少安全型号"
 
-#: src/conf/domain_conf.c:6256
+#: src/conf/domain_conf.c:6272
 msgid "missing security model when using multiple labels"
 msgstr "使用多重标签时缺少安全型号"
 
-#: src/conf/domain_conf.c:6330
+#: src/conf/domain_conf.c:6346
 msgid "label overrides require relabeling to be enabled at the domain level"
 msgstr "标签覆盖要求在域级别启用重新标记"
 
-#: src/conf/domain_conf.c:6367
+#: src/conf/domain_conf.c:6383
 #, c-format
 msgid "Cannot specify a label if relabelling is turned off. model=%s"
 msgstr "如果关闭重新标记功能则无法指定标签。model=%s"
 
-#: src/conf/domain_conf.c:6423
+#: src/conf/domain_conf.c:6439
 msgid "Missing 'key' element for lease"
 msgstr "租约缺少 'key' 元素"
 
-#: src/conf/domain_conf.c:6428
+#: src/conf/domain_conf.c:6444
 msgid "Missing 'target' element for lease"
 msgstr "租约缺少 'target' 元素"
 
-#: src/conf/domain_conf.c:6435
+#: src/conf/domain_conf.c:6451
 #, c-format
 msgid "Malformed lease target offset %s"
 msgstr "有缺陷的租约目标补偿 %s"
 
-#: src/conf/domain_conf.c:6483
+#: src/conf/domain_conf.c:6499
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr "必须为 'pool' 类型源同时指定 'pool' 和 'volume'"
 
-#: src/conf/domain_conf.c:6491
+#: src/conf/domain_conf.c:6507
 #, c-format
 msgid "unknown source mode '%s' for volume type disk"
 msgstr "卷类型磁盘的未知源模式 '%s'"
 
-#: src/conf/domain_conf.c:6531
+#: src/conf/domain_conf.c:6547
 msgid "missing network source protocol type"
 msgstr ""
 
-#: src/conf/domain_conf.c:6537
+#: src/conf/domain_conf.c:6553
 #, c-format
 msgid "unknown protocol type '%s'"
 msgstr "未知协议类型 '%s'"
 
-#: src/conf/domain_conf.c:6544
+#: src/conf/domain_conf.c:6560
 msgid "missing name for disk source"
 msgstr "缺少磁盘源名称"
 
-#: src/conf/domain_conf.c:6556 src/util/virstoragefile.c:2193
+#: src/conf/domain_conf.c:6572 src/util/virstoragefile.c:2193
 #, c-format
 msgid "missing volume name or file name in gluster source path '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:6585
+#: src/conf/domain_conf.c:6601
 #, c-format
 msgid "unexpected disk type %s"
 msgstr "意外的磁盘类型 %s"
 
-#: src/conf/domain_conf.c:6626
+#: src/conf/domain_conf.c:6642
 msgid "missing disk backing store type"
 msgstr ""
 
-#: src/conf/domain_conf.c:6633
+#: src/conf/domain_conf.c:6649
 #, c-format
 msgid "unknown disk backing store type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:6639
+#: src/conf/domain_conf.c:6655
 msgid "missing disk backing store format"
 msgstr ""
 
-#: src/conf/domain_conf.c:6646
+#: src/conf/domain_conf.c:6662
 #, c-format
 msgid "unknown disk backing store format '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:6652
+#: src/conf/domain_conf.c:6668
 msgid "missing disk backing store source"
 msgstr ""
 
-#: src/conf/domain_conf.c:6748
+#: src/conf/domain_conf.c:6764
 #, c-format
 msgid "unknown disk type '%s'"
 msgstr "未知磁盘类型 '%s'"
 
-#: src/conf/domain_conf.c:6799
+#: src/conf/domain_conf.c:6815
 msgid "invalid geometry settings (cyls)"
 msgstr "无效几何设置（磁道数）"
 
-#: src/conf/domain_conf.c:6805
+#: src/conf/domain_conf.c:6821
 msgid "invalid geometry settings (heads)"
 msgstr "无效几何设置（磁头）"
 
-#: src/conf/domain_conf.c:6811
+#: src/conf/domain_conf.c:6827
 msgid "invalid geometry settings (secs)"
 msgstr "无效几何设置（扇区）"
 
-#: src/conf/domain_conf.c:6819
+#: src/conf/domain_conf.c:6835
 #, c-format
 msgid "invalid translation value '%s'"
 msgstr "无效转换值 '%s'"
 
-#: src/conf/domain_conf.c:6831
+#: src/conf/domain_conf.c:6847
 #, c-format
 msgid "invalid logical block size '%s'"
 msgstr "无效逻辑块大小 '%s'"
 
-#: src/conf/domain_conf.c:6841
+#: src/conf/domain_conf.c:6857
 #, c-format
 msgid "invalid physical block size '%s'"
 msgstr "无效物理块大小 '%s'"
 
-#: src/conf/domain_conf.c:6878
+#: src/conf/domain_conf.c:6894
 #, c-format
 msgid "unknown mirror job type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:6893
+#: src/conf/domain_conf.c:6909
 #, c-format
 msgid "unknown mirror backing store type '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:6907
+#: src/conf/domain_conf.c:6923
 msgid "mirror requires file name"
 msgstr "镜像需要文件名"
 
-#: src/conf/domain_conf.c:6912
+#: src/conf/domain_conf.c:6928
 msgid "mirror without type only supported by copy job"
 msgstr ""
 
-#: src/conf/domain_conf.c:6923
+#: src/conf/domain_conf.c:6939
 #, c-format
 msgid "unknown mirror format value '%s'"
 msgstr "未知镜像格式值 '%s'"
 
-#: src/conf/domain_conf.c:6933
+#: src/conf/domain_conf.c:6949
 msgid "mirror requires source element"
 msgstr ""
 
-#: src/conf/domain_conf.c:6945
+#: src/conf/domain_conf.c:6961
 #, c-format
 msgid "unknown mirror ready state %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:6973
+#: src/conf/domain_conf.c:6989
 msgid "total throughput limit must be an integer"
 msgstr ""
 
-#: src/conf/domain_conf.c:6984
+#: src/conf/domain_conf.c:7000
 msgid "read throughput limit must be an integer"
 msgstr ""
 
-#: src/conf/domain_conf.c:6995
+#: src/conf/domain_conf.c:7011
 msgid "write throughput limit must be an integer"
 msgstr ""
 
-#: src/conf/domain_conf.c:7006
+#: src/conf/domain_conf.c:7022
 msgid "total I/O operations limit must be an integer"
 msgstr ""
 
-#: src/conf/domain_conf.c:7017
+#: src/conf/domain_conf.c:7033
 msgid "read I/O operations limit must be an integer"
 msgstr ""
 
-#: src/conf/domain_conf.c:7028
+#: src/conf/domain_conf.c:7044
 msgid "write I/O operations limit must be an integer"
 msgstr ""
 
-#: src/conf/domain_conf.c:7082
+#: src/conf/domain_conf.c:7098
 msgid "total and read/write bytes_sec cannot be set at the same time"
 msgstr "无法在同时设置读取/写入 bytes_sec"
 
-#: src/conf/domain_conf.c:7092
+#: src/conf/domain_conf.c:7108
 msgid "total and read/write iops_sec cannot be set at the same time"
 msgstr "无法同时设置总的和读取/写入 iops_sec "
 
-#: src/conf/domain_conf.c:7102
+#: src/conf/domain_conf.c:7118
 #, fuzzy
 msgid "total and read/write bytes_sec_max cannot be set at the same time"
 msgstr "无法在同时设置读取/写入 bytes_sec"
 
-#: src/conf/domain_conf.c:7112
+#: src/conf/domain_conf.c:7128
 #, fuzzy
 msgid "total and read/write iops_sec_max cannot be set at the same time"
 msgstr "无法同时设置总的和读取/写入 iops_sec "
 
-#: src/conf/domain_conf.c:7148
+#: src/conf/domain_conf.c:7164
 msgid "disk vendor is more than 8 characters"
 msgstr "磁盘经销商超过 8 个字符"
 
-#: src/conf/domain_conf.c:7154
+#: src/conf/domain_conf.c:7170
 msgid "disk vendor is not printable string"
 msgstr "磁盘销售商不是可输出字符串"
 
-#: src/conf/domain_conf.c:7163
+#: src/conf/domain_conf.c:7179
 msgid "disk product is more than 16 characters"
 msgstr "磁盘产品超过 16 个字符"
 
-#: src/conf/domain_conf.c:7169
+#: src/conf/domain_conf.c:7185
 msgid "disk product is not printable string"
 msgstr "磁盘产品不是可输出字符串"
 
-#: src/conf/domain_conf.c:7185
+#: src/conf/domain_conf.c:7201
 #, c-format
 msgid "invalid secret type '%s'"
 msgstr "无效 secret 类型 '%s'"
 
-#: src/conf/domain_conf.c:7194
+#: src/conf/domain_conf.c:7210
 #, c-format
 msgid "unknown disk device '%s'"
 msgstr "未知磁盘设备 '%s'"
 
-#: src/conf/domain_conf.c:7245
+#: src/conf/domain_conf.c:7261
 #, c-format
 msgid "Invalid floppy device name: %s"
 msgstr "无效软盘设备名称：%s"
 
-#: src/conf/domain_conf.c:7261
+#: src/conf/domain_conf.c:7277
 #, c-format
 msgid "Invalid harddisk device name: %s"
 msgstr "无效硬盘设备名称：%s"
 
-#: src/conf/domain_conf.c:7270 src/conf/snapshot_conf.c:137
+#: src/conf/domain_conf.c:7286 src/conf/snapshot_conf.c:137
 #, c-format
 msgid "unknown disk snapshot setting '%s'"
 msgstr "未知磁盘快照设置 '%s'"
 
-#: src/conf/domain_conf.c:7281
+#: src/conf/domain_conf.c:7297
 msgid "rawio or sgio can be used only with device='lun'"
 msgstr "rawio 或者 sgio 只能与 device='lun' 一同使用"
 
-#: src/conf/domain_conf.c:7289
+#: src/conf/domain_conf.c:7305
 #, c-format
 msgid "unknown disk rawio setting '%s'"
 msgstr "未知磁盘 rawio 设置 '%s'"
 
-#: src/conf/domain_conf.c:7298
+#: src/conf/domain_conf.c:7314
 #, c-format
 msgid "unknown disk sgio mode '%s'"
 msgstr "未知磁盘 sgio 模式 '%s'"
 
-#: src/conf/domain_conf.c:7306
+#: src/conf/domain_conf.c:7322
 #, c-format
 msgid "unknown disk bus type '%s'"
 msgstr "未知磁盘总线类型 '%s'"
 
-#: src/conf/domain_conf.c:7331
+#: src/conf/domain_conf.c:7347
 #, c-format
 msgid "unknown disk tray status '%s'"
 msgstr "未知磁盘托盘状态 '%s'"
 
-#: src/conf/domain_conf.c:7338
+#: src/conf/domain_conf.c:7354
 msgid "tray is only valid for cdrom and floppy"
 msgstr "托盘只能在光驱盒软盘中使用"
 
-#: src/conf/domain_conf.c:7350
+#: src/conf/domain_conf.c:7366
 #, c-format
 msgid "unknown disk removable status '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:7356
+#: src/conf/domain_conf.c:7372
 msgid "removable is only valid for usb disks"
 msgstr ""
 
-#: src/conf/domain_conf.c:7367
+#: src/conf/domain_conf.c:7383
 #, c-format
 msgid "Invalid bus type '%s' for floppy disk"
 msgstr "软盘的无效总线类型 '%s' "
 
-#: src/conf/domain_conf.c:7373
+#: src/conf/domain_conf.c:7389
 #, c-format
 msgid "Invalid bus type '%s' for disk"
 msgstr "软盘的无效总线类型 '%s' "
 
-#: src/conf/domain_conf.c:7380
+#: src/conf/domain_conf.c:7396
 #, c-format
 msgid "unknown disk cache mode '%s'"
 msgstr "未知磁盘缓存模式类型 '%s'"
 
-#: src/conf/domain_conf.c:7387
+#: src/conf/domain_conf.c:7403
 #, c-format
 msgid "unknown disk error policy '%s'"
 msgstr "未知磁盘错误策略 '%s'"
 
-#: src/conf/domain_conf.c:7396
+#: src/conf/domain_conf.c:7412
 #, c-format
 msgid "unknown disk read error policy '%s'"
 msgstr "未知磁盘读取错误策略 '%s'"
 
-#: src/conf/domain_conf.c:7405
+#: src/conf/domain_conf.c:7421
 #, c-format
 msgid "unknown disk io mode '%s'"
 msgstr "未知磁盘 io 模式 '%s'"
 
-#: src/conf/domain_conf.c:7415
+#: src/conf/domain_conf.c:7431
 msgid "disk ioeventfd mode supported only for virtio bus"
 msgstr "只有 virtio 总线支持磁盘 ioeventfd 模式"
 
-#: src/conf/domain_conf.c:7422
+#: src/conf/domain_conf.c:7438
 #, c-format
 msgid "unknown disk ioeventfd mode '%s'"
 msgstr "未知磁盘 ioeventfd 模式 '%s'"
 
-#: src/conf/domain_conf.c:7432
+#: src/conf/domain_conf.c:7448
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "只有 virtio 总线支持 event_idx 模式"
 
-#: src/conf/domain_conf.c:7440
+#: src/conf/domain_conf.c:7456
 #, c-format
 msgid "unknown disk event_idx mode '%s'"
 msgstr "未知磁盘 event_idx 模式 '%s'"
 
-#: src/conf/domain_conf.c:7451
+#: src/conf/domain_conf.c:7467
 #, c-format
 msgid "unknown disk copy_on_read mode '%s'"
 msgstr "未知磁盘 copy_on_read 模式 '%s'"
 
-#: src/conf/domain_conf.c:7461
+#: src/conf/domain_conf.c:7477
 #, c-format
 msgid "unknown disk discard mode '%s'"
 msgstr "未知磁盘 discard 模式 '%s'"
 
-#: src/conf/domain_conf.c:7470
+#: src/conf/domain_conf.c:7486
 #, c-format
 msgid "Invalid iothread attribute in disk driver element: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:7496
+#: src/conf/domain_conf.c:7512
 #, c-format
 msgid "unknown startupPolicy value '%s'"
 msgstr "未知 startupPolicy 值 '%s'"
 
-#: src/conf/domain_conf.c:7503
+#: src/conf/domain_conf.c:7519
 #, c-format
 msgid "Setting disk %s is not allowed for disk of network type"
 msgstr ""
 
-#: src/conf/domain_conf.c:7513
+#: src/conf/domain_conf.c:7529
 msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
 msgstr ""
 
-#: src/conf/domain_conf.c:7543 src/conf/domain_conf.c:8267
+#: src/conf/domain_conf.c:7559 src/conf/domain_conf.c:8283
 #, c-format
 msgid "unknown driver format value '%s'"
 msgstr "未知驱动程序格式值 '%s'"
 
-#: src/conf/domain_conf.c:7646
+#: src/conf/domain_conf.c:7662
 #, fuzzy, c-format
 msgid "missing element or attribute '%s'"
 msgstr "缺少引导顺序属性"
 
-#: src/conf/domain_conf.c:7655
+#: src/conf/domain_conf.c:7671
 #, fuzzy, c-format
 msgid "Invalid value '%s' for element or attribute '%s'"
 msgstr "VMX 条目 '%s' 无效值 '%s'"
 
-#: src/conf/domain_conf.c:7722
+#: src/conf/domain_conf.c:7738
 #, fuzzy
 msgid "size value too large"
 msgstr "数值太大：%llu%s"
 
-#: src/conf/domain_conf.c:7897
+#: src/conf/domain_conf.c:7913
 #, c-format
 msgid "Unknown controller type '%s'"
 msgstr "未知控制器类型 '%s'"
 
-#: src/conf/domain_conf.c:7910
+#: src/conf/domain_conf.c:7926
 #, c-format
 msgid "Cannot parse controller index %s"
 msgstr "无法解析控制器索引 %s"
 
-#: src/conf/domain_conf.c:7919
+#: src/conf/domain_conf.c:7935
 #, c-format
 msgid "Unknown model type '%s'"
 msgstr "位置型号类型 '%s'"
 
-#: src/conf/domain_conf.c:7935
+#: src/conf/domain_conf.c:7951
 msgid "Multiple <model> elements in controller definition not allowed"
 msgstr ""
 
-#: src/conf/domain_conf.c:7944
+#: src/conf/domain_conf.c:7960
 msgid "Multiple <target> elements in controller definition not allowed"
 msgstr ""
 
-#: src/conf/domain_conf.c:7959
+#: src/conf/domain_conf.c:7975
 #, c-format
 msgid "Malformed 'queues' value '%s'"
 msgstr "畸形 'queues' 值 '%s' "
 
-#: src/conf/domain_conf.c:7965
+#: src/conf/domain_conf.c:7981
 #, c-format
 msgid "Malformed 'cmd_per_lun' value '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:7971
+#: src/conf/domain_conf.c:7987
 #, c-format
 msgid "Malformed 'max_sectors' value %s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:7978
+#: src/conf/domain_conf.c:7994
 #, fuzzy, c-format
 msgid "Malformed 'ioeventfd' value %s'"
 msgstr "畸形 'queues' 值 '%s' "
 
-#: src/conf/domain_conf.c:7997
+#: src/conf/domain_conf.c:8013
 #, c-format
 msgid "Invalid ports: %s"
 msgstr "无效端口：%s"
 
-#: src/conf/domain_conf.c:8010
+#: src/conf/domain_conf.c:8026
 #, c-format
 msgid "Invalid vectors: %s"
 msgstr "无效矢量：%s"
 
-#: src/conf/domain_conf.c:8047
+#: src/conf/domain_conf.c:8063
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr ""
 
-#: src/conf/domain_conf.c:8053
+#: src/conf/domain_conf.c:8069
 msgid "pci-root and pcie-root controllers should have index 0"
 msgstr ""
 
-#: src/conf/domain_conf.c:8071
+#: src/conf/domain_conf.c:8087
 #, fuzzy, c-format
 msgid "Unknown PCI controller model name '%s'"
 msgstr "未知控制器类型 '%s'"
 
-#: src/conf/domain_conf.c:8079
+#: src/conf/domain_conf.c:8095
 #, fuzzy, c-format
 msgid "Invalid chassisNr '%s' in PCI controller"
 msgstr "网络 '%s' 中的无效地址 '%s'"
 
-#: src/conf/domain_conf.c:8086
+#: src/conf/domain_conf.c:8102
 #, c-format
 msgid "PCI controller chassisNr '%s' out of range - must be 0-255"
 msgstr ""
 
-#: src/conf/domain_conf.c:8096
+#: src/conf/domain_conf.c:8112
 #, fuzzy, c-format
 msgid "Invalid chassis '%s' in PCI controller"
 msgstr "网络 '%s' 中的无效地址 '%s'"
 
-#: src/conf/domain_conf.c:8103
+#: src/conf/domain_conf.c:8119
 #, fuzzy, c-format
 msgid "PCI controller chassis '%s' out of range - must be 0-255"
 msgstr "控制器 %d 超出范围"
 
-#: src/conf/domain_conf.c:8113
+#: src/conf/domain_conf.c:8129
 #, fuzzy, c-format
 msgid "Invalid port '%s' in PCI controller"
 msgstr "无效的控制器型号：%d"
 
-#: src/conf/domain_conf.c:8120
+#: src/conf/domain_conf.c:8136
 #, fuzzy, c-format
 msgid "PCI controller port '%s' out of range - must be 0-255"
 msgstr "控制器 %d 超出范围"
 
-#: src/conf/domain_conf.c:8192
+#: src/conf/domain_conf.c:8208
 #, c-format
 msgid "unknown filesystem type '%s'"
 msgstr "未知文件系统类型 '%s'"
 
-#: src/conf/domain_conf.c:8203
+#: src/conf/domain_conf.c:8219
 #, c-format
 msgid "unknown accessmode '%s'"
 msgstr "未知访问模式 '%s'"
 
-#: src/conf/domain_conf.c:8259
+#: src/conf/domain_conf.c:8275
 #, c-format
 msgid "unknown fs driver type '%s'"
 msgstr "未知 fs 驱动器类型 '%s'"
 
-#: src/conf/domain_conf.c:8275
+#: src/conf/domain_conf.c:8291
 #, c-format
 msgid "unknown filesystem write policy '%s'"
 msgstr "未知文件系统写入策略 '%s'"
 
-#: src/conf/domain_conf.c:8298
+#: src/conf/domain_conf.c:8314
 msgid "missing 'usage' attribute for RAM filesystem"
 msgstr "RAM 文件系统缺少 'usage' 属性"
 
-#: src/conf/domain_conf.c:8303
+#: src/conf/domain_conf.c:8319
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
 msgstr "无法为 RAM 文件系统解析 usage '%s'"
 
-#: src/conf/domain_conf.c:8367
+#: src/conf/domain_conf.c:8383
 msgid "missing type attribute in interface's <actual> element"
 msgstr "接口的 <actual> 元素缺少 type 属性"
 
-#: src/conf/domain_conf.c:8372
+#: src/conf/domain_conf.c:8388
 #, c-format
 msgid "unknown type '%s' in interface's <actual> element"
 msgstr "接口的 <actual> 元素缺少 type 类型 '%s'"
 
-#: src/conf/domain_conf.c:8380
+#: src/conf/domain_conf.c:8396
 #, c-format
 msgid "unsupported type '%s' in interface's <actual> element"
 msgstr "不支持接口 <actual> 元素中的类型 '%s'"
 
-#: src/conf/domain_conf.c:8390 src/conf/domain_conf.c:8619
+#: src/conf/domain_conf.c:8406 src/conf/domain_conf.c:8635
 #, c-format
 msgid "unknown trustGuestRxFilters value '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:8411
+#: src/conf/domain_conf.c:8427
 #, c-format
 msgid ""
 "<virtualport> element unsupported for type='%s' in interface's <actual> "
 "element"
 msgstr "<virtualport> 元素不支持接口 <actual> 元素中的 type='%s'"
 
-#: src/conf/domain_conf.c:8425
+#: src/conf/domain_conf.c:8441
 #, c-format
 msgid "Unknown mode '%s' in interface <actual> element"
 msgstr "接口 <actual> 元素中的未知模式 '%s'"
 
-#: src/conf/domain_conf.c:8456
+#: src/conf/domain_conf.c:8472
 #, c-format
 msgid "Unable to parse class id '%s'"
 msgstr "无法解析等级 id '%s'"
 
-#: src/conf/domain_conf.c:8469
+#: src/conf/domain_conf.c:8485
 msgid ""
 "Missing <source> element with bridge name in interface's <actual> element"
 msgstr ""
 
-#: src/conf/domain_conf.c:8479
+#: src/conf/domain_conf.c:8495
 #, fuzzy, c-format
 msgid ""
 "Invalid macTableManager setting '%s' in domain interface's <actual> element"
 msgstr "接口的 <actual> 元素缺少 type 类型 '%s'"
 
-#: src/conf/domain_conf.c:8607
+#: src/conf/domain_conf.c:8623
 #, c-format
 msgid "unknown interface type '%s'"
 msgstr "未知接口类型 '%s'"
 
-#: src/conf/domain_conf.c:8674
+#: src/conf/domain_conf.c:8690
 #, c-format
 msgid "<virtualport> element unsupported for <interface type='%s'>"
 msgstr "不支持 <interface type='%s'> 的 <virtualport> 元素"
 
-#: src/conf/domain_conf.c:8703 src/lxc/lxc_native.c:448
+#: src/conf/domain_conf.c:8719 src/lxc/lxc_native.c:448
 #, fuzzy
 msgid "Domain interface"
 msgstr "域不活跃"
 
-#: src/conf/domain_conf.c:8745
+#: src/conf/domain_conf.c:8761
 msgid "Invalid specification of multiple <filterref>s in a single <interface>"
 msgstr "单一 <interface> 中有多个 <filterref> 的无效说明"
 
-#: src/conf/domain_conf.c:8792 src/qemu/qemu_parse_command.c:1116
+#: src/conf/domain_conf.c:8808 src/qemu/qemu_parse_command.c:1116
 #, c-format
 msgid "unable to parse mac address '%s'"
 msgstr "无法解析 mac 地址 '%s'"
 
-#: src/conf/domain_conf.c:8798
+#: src/conf/domain_conf.c:8814
 #, c-format
 msgid "expected unicast mac address, found multicast '%s'"
 msgstr "意外单播 mac 地址，找到多播 '%s'"
 
-#: src/conf/domain_conf.c:8826
+#: src/conf/domain_conf.c:8842
 msgid ""
 "No <source> 'network' attribute specified with <interface type='network'/>"
 msgstr "没有使用 <interface type='network'/> 指定 <source>‘networking’属性"
 
-#: src/conf/domain_conf.c:8841
+#: src/conf/domain_conf.c:8857
 msgid ""
 "Wrong or no <model> 'type' attribute specified with <interface "
 "type='vhostuser'/>. vhostuser requires the virtio-net* frontend"
 msgstr ""
 
-#: src/conf/domain_conf.c:8850
+#: src/conf/domain_conf.c:8866
 #, c-format
 msgid "Type='%s' unsupported for <interface type='vhostuser'>"
 msgstr ""
 
-#: src/conf/domain_conf.c:8855
+#: src/conf/domain_conf.c:8871
 msgid "No <source> 'type' attribute specified for <interface type='vhostuser'>"
 msgstr ""
 
-#: src/conf/domain_conf.c:8863
+#: src/conf/domain_conf.c:8879
 msgid ""
 "No <source> 'path' attribute specified with <interface type='vhostuser'/>"
 msgstr ""
 
-#: src/conf/domain_conf.c:8871
+#: src/conf/domain_conf.c:8887
 msgid ""
 "No <source> 'mode' attribute specified with <interface type='vhostuser'/>"
 msgstr ""
 
-#: src/conf/domain_conf.c:8890
+#: src/conf/domain_conf.c:8906
 msgid ""
 "Wrong <source> 'mode' attribute specified with <interface type='vhostuser'/>"
 msgstr ""
 
-#: src/conf/domain_conf.c:8907
+#: src/conf/domain_conf.c:8923
 msgid ""
 "No <source> 'bridge' attribute specified with <interface type='bridge'/>"
 msgstr "没有<source> <interface type='bridge'/> 指定的 'bridge' 属性"
 
-#: src/conf/domain_conf.c:8921
+#: src/conf/domain_conf.c:8937
 msgid "No <source> 'port' attribute specified with socket interface"
 msgstr "没有使用套接字接口指定 <source>‘port’属性"
 
-#: src/conf/domain_conf.c:8927
+#: src/conf/domain_conf.c:8943
 msgid "Cannot parse <source> 'port' attribute with socket interface"
 msgstr "无法使用套接自接口解析 <source> 'port' 属性"
 
-#: src/conf/domain_conf.c:8937
+#: src/conf/domain_conf.c:8953
 msgid "No <source> 'address' attribute specified with socket interface"
 msgstr "没有使用套接自接口指定的 <source> 'address' 属性"
 
-#: src/conf/domain_conf.c:8951
+#: src/conf/domain_conf.c:8967
 #, fuzzy
 msgid "No <local> 'port' attribute specified with socket interface"
 msgstr "没有使用套接字接口指定 <source>‘port’属性"
 
-#: src/conf/domain_conf.c:8957
+#: src/conf/domain_conf.c:8973
 #, fuzzy
 msgid "Cannot parse <local> 'port' attribute with socket interface"
 msgstr "无法使用套接自接口解析 <source> 'port' 属性"
 
-#: src/conf/domain_conf.c:8964
+#: src/conf/domain_conf.c:8980
 #, fuzzy
 msgid "No <local> 'address' attribute specified with socket interface"
 msgstr "没有使用套接自接口指定的 <source> 'address' 属性"
 
-#: src/conf/domain_conf.c:8976
+#: src/conf/domain_conf.c:8992
 msgid ""
 "No <source> 'name' attribute specified with <interface type='internal'/>"
 msgstr "没有指定为 <interface type='internal'/> 的 <source> 'name' 属性"
 
-#: src/conf/domain_conf.c:8987
+#: src/conf/domain_conf.c:9003
 msgid "No <source> 'dev' attribute specified with <interface type='direct'/>"
 msgstr "<source> 'dev' 属性中未指定任何 <interface type='direct'/>"
 
-#: src/conf/domain_conf.c:8995
+#: src/conf/domain_conf.c:9011
 msgid "Unknown mode has been specified"
 msgstr "指定了未知模式"
 
-#: src/conf/domain_conf.c:9074
+#: src/conf/domain_conf.c:9090
 msgid "Model name contains invalid characters"
 msgstr "模块名称中含有无效字符"
 
-#: src/conf/domain_conf.c:9087
+#: src/conf/domain_conf.c:9103
 #, c-format
 msgid "Unknown interface <driver name='%s'> has been specified"
 msgstr "已指定未知接口 <driver name='%s'>"
 
-#: src/conf/domain_conf.c:9098
+#: src/conf/domain_conf.c:9114
 #, c-format
 msgid "Unknown interface <driver txmode='%s'> has been specified"
 msgstr "已指定未知接口 <driver txmode='%s'>"
 
-#: src/conf/domain_conf.c:9108
+#: src/conf/domain_conf.c:9124
 #, c-format
 msgid "unknown interface ioeventfd mode '%s'"
 msgstr "未知接口 ioeventfd 模式 '%s'"
 
-#: src/conf/domain_conf.c:9117
+#: src/conf/domain_conf.c:9133
 #, c-format
 msgid "unknown interface event_idx mode '%s'"
 msgstr "未知接口 event_idx 模式 '%s'"
 
-#: src/conf/domain_conf.c:9127
+#: src/conf/domain_conf.c:9143
 #, c-format
 msgid "'queues' attribute must be positive number: %s"
 msgstr "'queues' 属性必须是正数：%s"
 
-#: src/conf/domain_conf.c:9137
+#: src/conf/domain_conf.c:9153
 #, c-format
 msgid "unknown host csum mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9147
+#: src/conf/domain_conf.c:9163
 #, c-format
 msgid "unknown host gso mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9157
+#: src/conf/domain_conf.c:9173
 #, c-format
 msgid "unknown host tso4 mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9167
+#: src/conf/domain_conf.c:9183
 #, c-format
 msgid "unknown host tso6 mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9177
+#: src/conf/domain_conf.c:9193
 #, c-format
 msgid "unknown host ecn mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9187
+#: src/conf/domain_conf.c:9203
 #, c-format
 msgid "unknown host ufo mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9197
+#: src/conf/domain_conf.c:9213
 #, c-format
 msgid "unknown host mrg_rxbuf mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9207
+#: src/conf/domain_conf.c:9223
 #, c-format
 msgid "unknown guest csum mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9217
+#: src/conf/domain_conf.c:9233
 #, c-format
 msgid "unknown guest tso4 mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9227
+#: src/conf/domain_conf.c:9243
 #, c-format
 msgid "unknown guest tso6 mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9237
+#: src/conf/domain_conf.c:9253
 #, c-format
 msgid "unknown guest ecn mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9247
+#: src/conf/domain_conf.c:9263
 #, c-format
 msgid "unknown guest ufo mode '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:9261
+#: src/conf/domain_conf.c:9277
 #, c-format
 msgid "unknown interface link state '%s'"
 msgstr "未知接口链接状态 '%s'"
 
-#: src/conf/domain_conf.c:9287
+#: src/conf/domain_conf.c:9303
 msgid "sndbuf must be a positive integer"
 msgstr "sndbuf 必须是一个正整数"
 
-#: src/conf/domain_conf.c:9344
+#: src/conf/domain_conf.c:9360
 #, c-format
 msgid "target type must be specified for %s device"
 msgstr "必须为 %s 设备指定目标类型"
 
-#: src/conf/domain_conf.c:9414
+#: src/conf/domain_conf.c:9430
 #, c-format
 msgid "unknown target type '%s' specified for character device"
 msgstr "为字符设备制定的未知目标类型 '%s'"
 
-#: src/conf/domain_conf.c:9431
+#: src/conf/domain_conf.c:9447
 msgid "guestfwd channel does not define a target address"
 msgstr "guestfwd 频道没有定义目标地址"
 
-#: src/conf/domain_conf.c:9441
+#: src/conf/domain_conf.c:9457
 msgid "guestfwd channel only supports IPv4 addresses"
 msgstr "guestfwd 频道只支持 IPv2 地址"
 
-#: src/conf/domain_conf.c:9448
+#: src/conf/domain_conf.c:9464
 msgid "guestfwd channel does not define a target port"
 msgstr "guestfwd 频道没有定义目标端口"
 
-#: src/conf/domain_conf.c:9455 src/conf/domain_conf.c:9493
+#: src/conf/domain_conf.c:9471 src/conf/domain_conf.c:9509
 #: src/conf/storage_conf.c:515
 #, c-format
 msgid "Invalid port number: %s"
 msgstr "无效端口号：%s"
 
-#: src/conf/domain_conf.c:9472
+#: src/conf/domain_conf.c:9488
 #, fuzzy, c-format
 msgid "invalid channel state value '%s'"
 msgstr "无效转换值 '%s'"
 
-#: src/conf/domain_conf.c:9579
+#: src/conf/domain_conf.c:9595
 #, c-format
 msgid "Unknown source mode '%s'"
 msgstr "未知的来源模式类型 '%s'"
 
-#: src/conf/domain_conf.c:9652 src/conf/domain_conf.c:9791
+#: src/conf/domain_conf.c:9668 src/conf/domain_conf.c:9807
 #, fuzzy, c-format
 msgid "Invalid append attribute value '%s'"
 msgstr "无效内存 core dump 属性值 '%s'"
 
-#: src/conf/domain_conf.c:9658 src/conf/domain_conf.c:9759
+#: src/conf/domain_conf.c:9674 src/conf/domain_conf.c:9775
 msgid "Missing source path attribute for char device"
 msgstr "缺少字符设备的源路径属性"
 
-#: src/conf/domain_conf.c:9669
+#: src/conf/domain_conf.c:9685
 msgid "Missing master path attribute for nmdm device"
 msgstr ""
 
-#: src/conf/domain_conf.c:9675
+#: src/conf/domain_conf.c:9691
 msgid "Missing slave path attribute for nmdm device"
 msgstr ""
 
-#: src/conf/domain_conf.c:9689 src/conf/domain_conf.c:9707
+#: src/conf/domain_conf.c:9705 src/conf/domain_conf.c:9723
 msgid "Missing source host attribute for char device"
 msgstr "缺少字符设备的源主机属性"
 
-#: src/conf/domain_conf.c:9695 src/conf/domain_conf.c:9713
-#: src/conf/domain_conf.c:9738
+#: src/conf/domain_conf.c:9711 src/conf/domain_conf.c:9729
+#: src/conf/domain_conf.c:9754
 msgid "Missing source service attribute for char device"
 msgstr "缺少字符设备的源服务属性"
 
-#: src/conf/domain_conf.c:9729
+#: src/conf/domain_conf.c:9745
 #, c-format
 msgid "Unknown protocol '%s'"
 msgstr "未知的协议 '%s'"
 
-#: src/conf/domain_conf.c:9772
+#: src/conf/domain_conf.c:9788
 msgid "Missing source channel attribute for char device"
 msgstr ""
 
-#: src/conf/domain_conf.c:9777
+#: src/conf/domain_conf.c:9793
 msgid "Invalid character in source channel for char device"
 msgstr ""
 
-#: src/conf/domain_conf.c:9895 src/conf/domain_conf.c:10050
+#: src/conf/domain_conf.c:9911 src/conf/domain_conf.c:10066
 #, c-format
 msgid "unknown type presented to host for character device: %s"
 msgstr "主机中出现字符设备的未知类型：%s"
 
-#: src/conf/domain_conf.c:9903
+#: src/conf/domain_conf.c:9919
 #, c-format
 msgid "unknown character device type: %s"
 msgstr "未知字符设备类型：%s"
 
-#: src/conf/domain_conf.c:9931
+#: src/conf/domain_conf.c:9947
 msgid "spicevmc device type only supports virtio"
 msgstr "spicevmc 设备类型只支持 virtio"
 
-#: src/conf/domain_conf.c:9952 src/qemu/qemu_command.c:9489
+#: src/conf/domain_conf.c:9968 src/qemu/qemu_command.c:9489
 msgid "usb-serial requires address of usb type"
 msgstr "usb-serial 需要 usb 类型地址"
 
-#: src/conf/domain_conf.c:9983
+#: src/conf/domain_conf.c:9999
 msgid "missing smartcard device mode"
 msgstr "缺少智能卡设备类型"
 
-#: src/conf/domain_conf.c:9988
+#: src/conf/domain_conf.c:10004
 #, c-format
 msgid "unknown smartcard device mode: %s"
 msgstr "未知智能卡设备类型：%s"
 
-#: src/conf/domain_conf.c:10005 src/conf/domain_conf.c:10034
+#: src/conf/domain_conf.c:10021 src/conf/domain_conf.c:10050
 msgid "host-certificates mode needs exactly three certificates"
 msgstr "主机认证模式需要三个证书"
 
-#: src/conf/domain_conf.c:10025
+#: src/conf/domain_conf.c:10041
 #, c-format
 msgid "expecting absolute path: %s"
 msgstr "需要绝对路径：%s"
 
-#: src/conf/domain_conf.c:10044
+#: src/conf/domain_conf.c:10060
 msgid "passthrough mode requires a character device type attribute"
 msgstr "绕行模式需要字符设备类型属性"
 
-#: src/conf/domain_conf.c:10069
+#: src/conf/domain_conf.c:10085
 msgid "unknown smartcard mode"
 msgstr "未知智能卡模式"
 
-#: src/conf/domain_conf.c:10078
+#: src/conf/domain_conf.c:10094
 msgid "Controllers must use the 'ccid' address type"
 msgstr "控制器无法使用 ‘ccid’ 地址类型"
 
-#: src/conf/domain_conf.c:10126
+#: src/conf/domain_conf.c:10142
 #, c-format
 msgid "Unknown TPM frontend model '%s'"
 msgstr "未知 TPM 前台型号 '%s'"
 
-#: src/conf/domain_conf.c:10139
+#: src/conf/domain_conf.c:10155
 msgid "only one TPM backend is supported"
 msgstr "只支持一个 TPM 后端"
 
-#: src/conf/domain_conf.c:10145
+#: src/conf/domain_conf.c:10161
 msgid "missing TPM device backend"
 msgstr "缺少 TPM 设备后端"
 
-#: src/conf/domain_conf.c:10151
+#: src/conf/domain_conf.c:10167
 msgid "missing TPM device backend type"
 msgstr "缺少 TPM 设备后端类型"
 
-#: src/conf/domain_conf.c:10157
+#: src/conf/domain_conf.c:10173
 #, c-format
 msgid "Unknown TPM backend type '%s'"
 msgstr "未知 TPM 后端类型 '%s'"
 
-#: src/conf/domain_conf.c:10209
+#: src/conf/domain_conf.c:10225
 #, fuzzy, c-format
 msgid "unknown panic model '%s'"
 msgstr "未知声音模式类型 '%s'"
 
-#: src/conf/domain_conf.c:10246
+#: src/conf/domain_conf.c:10262
 msgid "missing input device type"
 msgstr "缺少输入设备类型"
 
-#: src/conf/domain_conf.c:10252
+#: src/conf/domain_conf.c:10268
 #, c-format
 msgid "unknown input device type '%s'"
 msgstr "未知输入设备类型 '%s'"
 
-#: src/conf/domain_conf.c:10259
+#: src/conf/domain_conf.c:10275
 #, c-format
 msgid "unknown input bus type '%s'"
 msgstr "未知输入总线类型 '%s'"
 
-#: src/conf/domain_conf.c:10268
+#: src/conf/domain_conf.c:10284
 #, c-format
 msgid "ps2 bus does not support %s input device"
 msgstr "ps2 总线不支持 %s 输入设备"
 
-#: src/conf/domain_conf.c:10274 src/conf/domain_conf.c:10281
+#: src/conf/domain_conf.c:10290 src/conf/domain_conf.c:10297
 #, c-format
 msgid "unsupported input bus %s"
 msgstr "不支持的输入总线 %s"
 
-#: src/conf/domain_conf.c:10288
+#: src/conf/domain_conf.c:10304
 #, c-format
 msgid "xen bus does not support %s input device"
 msgstr "xen 总线不支持 %s 输入设备"
 
-#: src/conf/domain_conf.c:10297
+#: src/conf/domain_conf.c:10313
 #, c-format
 msgid "parallels containers don't support input bus %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:10306
+#: src/conf/domain_conf.c:10322
 #, fuzzy, c-format
 msgid "parallels bus does not support %s input device"
 msgstr "ps2 总线不支持 %s 输入设备"
 
-#: src/conf/domain_conf.c:10313
+#: src/conf/domain_conf.c:10329
 #, fuzzy
 msgid "Input devices are not supported by this virtualization driver."
 msgstr "这个 QEMU 不支持磁盘 device='lun' "
 
-#: src/conf/domain_conf.c:10343 src/conf/domain_conf.c:12338
+#: src/conf/domain_conf.c:10359 src/conf/domain_conf.c:12346
 msgid "Invalid address for a USB device"
 msgstr "USB 设备的无效地址"
 
-#: src/conf/domain_conf.c:10351
+#: src/conf/domain_conf.c:10367
 msgid "Missing evdev path for input device passthrough"
 msgstr ""
 
-#: src/conf/domain_conf.c:10384
+#: src/conf/domain_conf.c:10400
 msgid "missing hub device type"
 msgstr "缺少集线器设备类型"
 
-#: src/conf/domain_conf.c:10390
+#: src/conf/domain_conf.c:10406
 #, c-format
 msgid "unknown hub device type '%s'"
 msgstr "未知集线器设备类型 '%s'"
 
-#: src/conf/domain_conf.c:10433
+#: src/conf/domain_conf.c:10449
 msgid "missing timer name"
 msgstr "缺少计时器名称"
 
-#: src/conf/domain_conf.c:10438
+#: src/conf/domain_conf.c:10454
 #, c-format
 msgid "unknown timer name '%s'"
 msgstr "未知计时器名称 '%s'"
 
-#: src/conf/domain_conf.c:10450
+#: src/conf/domain_conf.c:10466
 #, c-format
 msgid "unknown timer present value '%s'"
 msgstr "未知计时器当前值 '%s'"
 
-#: src/conf/domain_conf.c:10460
+#: src/conf/domain_conf.c:10476
 #, c-format
 msgid "unknown timer tickpolicy '%s'"
 msgstr "未知计时器 tickpolicy '%s'"
 
-#: src/conf/domain_conf.c:10470
+#: src/conf/domain_conf.c:10486
 #, c-format
 msgid "unknown timer track '%s'"
 msgstr "位置计时器跟踪 ‘%s’"
 
-#: src/conf/domain_conf.c:10480
+#: src/conf/domain_conf.c:10496
 msgid "invalid timer frequency"
 msgstr "无效计时器频率"
 
-#: src/conf/domain_conf.c:10489
+#: src/conf/domain_conf.c:10505
 #, c-format
 msgid "unknown timer mode '%s'"
 msgstr "未知计时器模式 ‘%s’"
 
-#: src/conf/domain_conf.c:10502
+#: src/conf/domain_conf.c:10518
 msgid "invalid catchup threshold"
 msgstr "无效 catchup 临界值"
 
-#: src/conf/domain_conf.c:10511
+#: src/conf/domain_conf.c:10527
 msgid "invalid catchup slew"
 msgstr "无效 catchup 回转"
 
-#: src/conf/domain_conf.c:10520
+#: src/conf/domain_conf.c:10536
 msgid "invalid catchup limit"
 msgstr "无效 catchup 极限"
 
-#: src/conf/domain_conf.c:10573
+#: src/conf/domain_conf.c:10589
 #, c-format
 msgid "cannot parse password validity time '%s', expect YYYY-MM-DDTHH:MM:SS"
 msgstr "无法解析密码有效时间 ‘%s’，应为 YYYY-MM-DDTHH:MM:SS"
 
-#: src/conf/domain_conf.c:10592
+#: src/conf/domain_conf.c:10608
 #, c-format
 msgid "unknown connected value %s"
 msgstr "未知的连接值 %s"
 
-#: src/conf/domain_conf.c:10603
+#: src/conf/domain_conf.c:10619
 msgid "VNC supports connected='keep' only"
 msgstr "VNC 只支持 connected='keep' "
 
-#: src/conf/domain_conf.c:10627
+#: src/conf/domain_conf.c:10643
 msgid "graphics listen type must be specified"
 msgstr "必须指定图形侦听类型"
 
-#: src/conf/domain_conf.c:10633
+#: src/conf/domain_conf.c:10649
 #, c-format
 msgid "unknown graphics listen type '%s'"
 msgstr "未知图形侦听类型 '%s'"
 
-#: src/conf/domain_conf.c:10653
+#: src/conf/domain_conf.c:10669
 msgid "network attribute not allowed when listen type is not network"
 msgstr "侦听类型不是 network 时不允许使用 network 属性"
 
-#: src/conf/domain_conf.c:10664
+#: src/conf/domain_conf.c:10680
 #, c-format
 msgid "Invalid fromConfig value: %s"
 msgstr "无效 fromConfig 值：%s"
 
-#: src/conf/domain_conf.c:10705
+#: src/conf/domain_conf.c:10721
 msgid "missing graphics device type"
 msgstr "缺少图形设备类型"
 
-#: src/conf/domain_conf.c:10711
+#: src/conf/domain_conf.c:10727
 #, c-format
 msgid "unknown graphics device type '%s'"
 msgstr "未知图形设备类型 '%s'"
 
-#: src/conf/domain_conf.c:10775
+#: src/conf/domain_conf.c:10791
 #, c-format
 msgid ""
 "graphics listen attribute %s must match address attribute of first listen "
 "element (found %s)"
 msgstr "图形侦听属性 %s 必须与第一个侦听元素的地址属性匹配（找到 %s）"
 
-#: src/conf/domain_conf.c:10797
+#: src/conf/domain_conf.c:10813
 #, c-format
 msgid "cannot parse vnc port %s"
 msgstr "无法解析 vnc 端口 %s"
 
-#: src/conf/domain_conf.c:10827
+#: src/conf/domain_conf.c:10843
 #, c-format
 msgid "cannot parse vnc WebSocket port %s"
 msgstr "无法解析 vnc WebSocket 端口 %s"
 
-#: src/conf/domain_conf.c:10840 src/qemu/qemu_parse_command.c:586
+#: src/conf/domain_conf.c:10856 src/qemu/qemu_parse_command.c:586
 #, c-format
 msgid "unknown vnc display sharing policy '%s'"
 msgstr "显示共享策略 '%s' 的未知 vnc"
 
-#: src/conf/domain_conf.c:10865 src/conf/domain_conf.c:10930
+#: src/conf/domain_conf.c:10881 src/conf/domain_conf.c:10946
 #, c-format
 msgid "unknown fullscreen value '%s'"
 msgstr "未知全屏值 '%s'"
 
-#: src/conf/domain_conf.c:10884
+#: src/conf/domain_conf.c:10900
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "无法解析 rdp 端口 %s"
 
-#: src/conf/domain_conf.c:10951
+#: src/conf/domain_conf.c:10967
 #, c-format
 msgid "cannot parse spice port %s"
 msgstr "无法解析 spice 端口 %s"
 
-#: src/conf/domain_conf.c:10964
+#: src/conf/domain_conf.c:10980
 #, c-format
 msgid "cannot parse spice tlsPort %s"
 msgstr "无法解析 spice tls 端口 %s"
 
-#: src/conf/domain_conf.c:10984
+#: src/conf/domain_conf.c:11000
 #, c-format
 msgid "unknown default spice channel mode %s"
 msgstr "未知默认 spice 通道模式 %s"
 
-#: src/conf/domain_conf.c:11020
+#: src/conf/domain_conf.c:11036
 msgid "spice channel missing name/mode"
 msgstr "spice 通道缺少名称/型号"
 
-#: src/conf/domain_conf.c:11028
+#: src/conf/domain_conf.c:11044
 #, c-format
 msgid "unknown spice channel name %s"
 msgstr "未知 spice 通道名称 %s"
 
-#: src/conf/domain_conf.c:11036
+#: src/conf/domain_conf.c:11052
 #, c-format
 msgid "unknown spice channel mode %s"
 msgstr "未知 spice 通道模式 %s"
 
-#: src/conf/domain_conf.c:11052
+#: src/conf/domain_conf.c:11068
 msgid "spice image missing compression"
 msgstr "spice 映像没有压缩"
 
-#: src/conf/domain_conf.c:11059
+#: src/conf/domain_conf.c:11075
 #, c-format
 msgid "unknown spice image compression %s"
 msgstr "未知 spice 映像压缩 %s"
 
-#: src/conf/domain_conf.c:11073
+#: src/conf/domain_conf.c:11089
 msgid "spice jpeg missing compression"
 msgstr "spice jpeg 缺少压缩"
 
-#: src/conf/domain_conf.c:11080
+#: src/conf/domain_conf.c:11096
 #, c-format
 msgid "unknown spice jpeg compression %s"
 msgstr "未知 spice jpeg 压缩 %s"
 
-#: src/conf/domain_conf.c:11094
+#: src/conf/domain_conf.c:11110
 msgid "spice zlib missing compression"
 msgstr "spice zlib 缺少压缩"
 
-#: src/conf/domain_conf.c:11101
+#: src/conf/domain_conf.c:11117
 #, c-format
 msgid "unknown spice zlib compression %s"
 msgstr "未知 spice zlib 压缩 %s"
 
-#: src/conf/domain_conf.c:11115
+#: src/conf/domain_conf.c:11131
 msgid "spice playback missing compression"
 msgstr "spice 回放缺少压缩"
 
-#: src/conf/domain_conf.c:11122
+#: src/conf/domain_conf.c:11138
 msgid "unknown spice playback compression"
 msgstr "未知 spice 回放压缩"
 
-#: src/conf/domain_conf.c:11136
+#: src/conf/domain_conf.c:11152
 msgid "spice streaming missing mode"
 msgstr "spice 流缺少模式"
 
-#: src/conf/domain_conf.c:11142
+#: src/conf/domain_conf.c:11158
 msgid "unknown spice streaming mode"
 msgstr "未知 spice 流模式"
 
-#: src/conf/domain_conf.c:11156
+#: src/conf/domain_conf.c:11172
 msgid "spice clipboard missing copypaste"
 msgstr "spice 剪切板缺少 copypaste"
 
-#: src/conf/domain_conf.c:11163
+#: src/conf/domain_conf.c:11179
 #, c-format
 msgid "unknown copypaste value '%s'"
 msgstr "未知 copypasta 值 '%s'"
 
-#: src/conf/domain_conf.c:11176
+#: src/conf/domain_conf.c:11192
 msgid "spice filetransfer missing enable"
 msgstr ""
 
-#: src/conf/domain_conf.c:11183 src/conf/domain_conf.c:11203
+#: src/conf/domain_conf.c:11199 src/conf/domain_conf.c:11219
 #, c-format
 msgid "unknown enable value '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:11196
+#: src/conf/domain_conf.c:11212
 #, fuzzy
 msgid "spice gl element missing enable"
 msgstr "spice 鼠标缺少模式"
 
-#: src/conf/domain_conf.c:11216
+#: src/conf/domain_conf.c:11232
 msgid "spice mouse missing mode"
 msgstr "spice 鼠标缺少模式"
 
-#: src/conf/domain_conf.c:11222
+#: src/conf/domain_conf.c:11238
 #, c-format
 msgid "unknown mouse mode value '%s'"
 msgstr "未知鼠标模式值 '%s'"
 
-#: src/conf/domain_conf.c:11263
+#: src/conf/domain_conf.c:11279
 #, c-format
 msgid "unknown codec type '%s'"
 msgstr "未知编解码器类型 '%s'"
 
-#: src/conf/domain_conf.c:11296
+#: src/conf/domain_conf.c:11312
 #, c-format
 msgid "unknown sound model '%s'"
 msgstr "未知声音模式类型 '%s'"
 
-#: src/conf/domain_conf.c:11363
+#: src/conf/domain_conf.c:11379
 msgid "watchdog must contain model name"
 msgstr "计时器必须包含模型名称"
 
-#: src/conf/domain_conf.c:11369
+#: src/conf/domain_conf.c:11385
 #, c-format
 msgid "unknown watchdog model '%s'"
 msgstr "未知监视器模型 '%s'"
 
-#: src/conf/domain_conf.c:11380
+#: src/conf/domain_conf.c:11396
 #, c-format
 msgid "unknown watchdog action '%s'"
 msgstr "未知监视器动作 '%s'"
 
-#: src/conf/domain_conf.c:11418
+#: src/conf/domain_conf.c:11434
 msgid "missing RNG device model"
 msgstr "缺少 RNG 设备型号"
 
-#: src/conf/domain_conf.c:11423
+#: src/conf/domain_conf.c:11439
 #, c-format
 msgid "unknown RNG model '%s'"
 msgstr "未知 RNG 型号 '%s'"
 
-#: src/conf/domain_conf.c:11431
+#: src/conf/domain_conf.c:11447
 msgid "invalid RNG rate bytes value"
 msgstr "无效 RNG 率字节值"
 
-#: src/conf/domain_conf.c:11438
+#: src/conf/domain_conf.c:11454
 msgid "invalid RNG rate period value"
 msgstr "无效 RNG 率区间值"
 
-#: src/conf/domain_conf.c:11447
+#: src/conf/domain_conf.c:11463
 msgid "only one RNG backend is supported"
 msgstr "只支持一个 RNG 后端"
 
-#: src/conf/domain_conf.c:11453
+#: src/conf/domain_conf.c:11469
 msgid "missing RNG device backend model"
 msgstr "缺少 RNG 设备后端型号"
 
-#: src/conf/domain_conf.c:11459
+#: src/conf/domain_conf.c:11475
 #, c-format
 msgid "unknown RNG backend model '%s'"
 msgstr "未知 RNG 后端型号 '%s'"
 
-#: src/conf/domain_conf.c:11471
+#: src/conf/domain_conf.c:11487
 msgid "missing EGD backend type"
 msgstr "缺少 EGD 后端类型"
 
-#: src/conf/domain_conf.c:11481
+#: src/conf/domain_conf.c:11497
 #, c-format
 msgid "unknown backend type '%s' for egd"
 msgstr "未知 egd 后端类型 '%s'"
 
-#: src/conf/domain_conf.c:11531
+#: src/conf/domain_conf.c:11547
 msgid "balloon memory must contain model name"
 msgstr "balloon 内存必须包含型号名"
 
-#: src/conf/domain_conf.c:11537
+#: src/conf/domain_conf.c:11553
 #, c-format
 msgid "unknown memory balloon model '%s'"
 msgstr "未知内存 balloon 型号 ‘%s’"
 
-#: src/conf/domain_conf.c:11544
+#: src/conf/domain_conf.c:11560
 #, fuzzy, c-format
 msgid "invalid autodeflate attribute value '%s'"
 msgstr "无效属性模式 '%s'"
 
-#: src/conf/domain_conf.c:11551
+#: src/conf/domain_conf.c:11567
 msgid "invalid statistics collection period"
 msgstr "无效统计集合区间"
 
-#: src/conf/domain_conf.c:11616
+#: src/conf/domain_conf.c:11632
 msgid "shmem element must contain 'name' attribute"
 msgstr ""
 
-#: src/conf/domain_conf.c:11640
+#: src/conf/domain_conf.c:11656
 #, c-format
 msgid "invalid number of vectors for shmem: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:11651
+#: src/conf/domain_conf.c:11667
 #, c-format
 msgid "invalid msi ioeventfd setting for shmem: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:11663
+#: src/conf/domain_conf.c:11679
 msgid "msi option is only supported with a server"
 msgstr ""
 
-#: src/conf/domain_conf.c:11690
+#: src/conf/domain_conf.c:11706
 #, fuzzy
 msgid "XML does not contain expected 'bios' element"
 msgstr "XML 不包含应有的 ‘sysinfo’ 元素"
 
-#: src/conf/domain_conf.c:11720
+#: src/conf/domain_conf.c:11736
 msgid "Invalid BIOS 'date' format"
 msgstr "无效 BIOS 'date' 格式"
 
-#: src/conf/domain_conf.c:11752
+#: src/conf/domain_conf.c:11768
 #, fuzzy
 msgid "XML does not contain expected 'system' element"
 msgstr "XML 不包含应有的 ‘sysinfo’ 元素"
 
-#: src/conf/domain_conf.c:11773
+#: src/conf/domain_conf.c:11789
 msgid "malformed <sysinfo> uuid element"
 msgstr "畸形的 <sysinfo> uuid 元素"
 
-#: src/conf/domain_conf.c:11780
+#: src/conf/domain_conf.c:11796
 msgid "UUID mismatch between <uuid> and <sysinfo>"
 msgstr "<uuid> 和 <sysinfo> 的 UUID 不匹配"
 
-#: src/conf/domain_conf.c:11881
+#: src/conf/domain_conf.c:11897
 msgid "XML does not contain expected 'sysinfo' element"
 msgstr "XML 不包含应有的 ‘sysinfo’ 元素"
 
-#: src/conf/domain_conf.c:11891
+#: src/conf/domain_conf.c:11907
 msgid "sysinfo must contain a type attribute"
 msgstr "sysinfo 必须包含 type 属性"
 
-#: src/conf/domain_conf.c:11896
+#: src/conf/domain_conf.c:11912
 #, c-format
 msgid "unknown sysinfo type '%s'"
 msgstr "未知 sysinfo type '%s'"
 
-#: src/conf/domain_conf.c:12035
+#: src/conf/domain_conf.c:12047
 #, fuzzy, c-format
 msgid "unknown accel3d value '%s'"
 msgstr "未知的连接值 %s"
 
-#: src/conf/domain_conf.c:12044
+#: src/conf/domain_conf.c:12056
 #, fuzzy, c-format
 msgid "unknown accel2d value '%s'"
 msgstr "未知的连接值 %s"
 
-#: src/conf/domain_conf.c:12101
+#: src/conf/domain_conf.c:12113
 #, c-format
 msgid "unknown video model '%s'"
 msgstr "未知视频模型 '%s'"
 
-#: src/conf/domain_conf.c:12107
+#: src/conf/domain_conf.c:12119
 msgid "missing video model and cannot determine default"
 msgstr "缺少视频模式且无法确定默认模式"
 
-#: src/conf/domain_conf.c:12115
+#: src/conf/domain_conf.c:12127
 msgid "ram attribute only supported for type of qxl"
 msgstr "只有 qxl 类型支持 ram 属性"
 
-#: src/conf/domain_conf.c:12120
+#: src/conf/domain_conf.c:12132
 #, c-format
 msgid "cannot parse video ram '%s'"
 msgstr "无法解析显存 '%s'"
 
-#: src/conf/domain_conf.c:12130
+#: src/conf/domain_conf.c:12140
 #, fuzzy, c-format
 msgid "cannot parse video vram '%s'"
 msgstr "无法解析显存 '%s'"
 
-#: src/conf/domain_conf.c:12140
+#: src/conf/domain_conf.c:12148
 #, fuzzy
 msgid "vram64 attribute only supported for type of qxl"
 msgstr "只有 qxl 类型支持 ram 属性"
 
-#: src/conf/domain_conf.c:12145
+#: src/conf/domain_conf.c:12153
 #, fuzzy, c-format
 msgid "cannot parse video vram64 '%s'"
 msgstr "无法解析显存 '%s'"
 
-#: src/conf/domain_conf.c:12153
+#: src/conf/domain_conf.c:12161
 #, fuzzy
 msgid "vgamem attribute only supported for type of qxl"
 msgstr "只有 qxl 类型支持 ram 属性"
 
-#: src/conf/domain_conf.c:12158
+#: src/conf/domain_conf.c:12166
 #, fuzzy, c-format
 msgid "cannot parse video vgamem '%s'"
 msgstr "无法解析显存 '%s'"
 
-#: src/conf/domain_conf.c:12166
+#: src/conf/domain_conf.c:12174
 #, c-format
 msgid "cannot parse video heads '%s'"
 msgstr "无法解析影像头 '%s'"
 
-#: src/conf/domain_conf.c:12211
+#: src/conf/domain_conf.c:12219
 #, c-format
 msgid "unknown hostdev mode '%s'"
 msgstr "未知 hostdev 模式 '%s'"
 
-#: src/conf/domain_conf.c:12231
+#: src/conf/domain_conf.c:12239
 #, c-format
 msgid "Unexpected hostdev mode %d"
 msgstr "意外的 hostdev 模式 %d"
 
-#: src/conf/domain_conf.c:12248
+#: src/conf/domain_conf.c:12256
 msgid "PCI host devices must use 'pci' address type"
 msgstr "PCI 主机设备必须使用 ‘pci’ 地址类型"
 
-#: src/conf/domain_conf.c:12256
+#: src/conf/domain_conf.c:12264
 #, fuzzy
 msgid "SCSI host device must use 'drive' address type"
 msgstr "PCI 主机设备必须使用 ‘pci’ 地址类型"
 
-#: src/conf/domain_conf.c:12298
+#: src/conf/domain_conf.c:12306
 #, c-format
 msgid "unknown redirdev bus '%s'"
 msgstr "未知 redirdev 总线 '%s'"
 
-#: src/conf/domain_conf.c:12309
+#: src/conf/domain_conf.c:12317
 #, c-format
 msgid "unknown redirdev character device type '%s'"
 msgstr "未知 redirdev 字符设备类型 '%s'"
 
-#: src/conf/domain_conf.c:12314
+#: src/conf/domain_conf.c:12322
 msgid "missing type in redirdev"
 msgstr "redirdev 中缺少类型"
 
-#: src/conf/domain_conf.c:12388
+#: src/conf/domain_conf.c:12396
 #, fuzzy, c-format
 msgid "Cannot parse USB device version %s"
 msgstr "无法解析 USB 版本 %s"
 
-#: src/conf/domain_conf.c:12407
+#: src/conf/domain_conf.c:12415
 #, c-format
 msgid "Cannot parse USB Class code %s"
 msgstr "无法解析 USB 级别 %s"
 
-#: src/conf/domain_conf.c:12413
+#: src/conf/domain_conf.c:12421
 #, c-format
 msgid "Invalid USB Class code %s"
 msgstr "无效 USB 级别代码 %s"
 
-#: src/conf/domain_conf.c:12424
+#: src/conf/domain_conf.c:12432
 #, c-format
 msgid "Cannot parse USB vendor ID %s"
 msgstr "无法解析 USB 零售商 ID %s"
 
-#: src/conf/domain_conf.c:12435
+#: src/conf/domain_conf.c:12443
 #, c-format
 msgid "Cannot parse USB product ID %s"
 msgstr "无法解析 USB 产品 ID %s"
 
-#: src/conf/domain_conf.c:12460
+#: src/conf/domain_conf.c:12468
 msgid "Invalid allow value, either 'yes' or 'no'"
 msgstr "无效允许值，可以是 'yes' 或者 'no'"
 
-#: src/conf/domain_conf.c:12465
+#: src/conf/domain_conf.c:12473
 msgid "Missing allow attribute for USB redirection filter"
 msgstr "缺少 USB 重新定向过滤器的 allow 属性"
 
-#: src/conf/domain_conf.c:12537
+#: src/conf/domain_conf.c:12545
 #, c-format
 msgid "unknown %s action: %s"
 msgstr "位置 %s 动作：%s"
 
-#: src/conf/domain_conf.c:12557
+#: src/conf/domain_conf.c:12565
 #, c-format
 msgid "unknown PM state value %s"
 msgstr "位置 PM 状态值 %s"
 
-#: src/conf/domain_conf.c:12585
+#: src/conf/domain_conf.c:12593
 #, fuzzy
 msgid "missing name for event"
 msgstr "缺少主机名称"
 
-#: src/conf/domain_conf.c:12591
+#: src/conf/domain_conf.c:12599
 #, fuzzy, c-format
 msgid "%s is not a supported event name"
 msgstr "文件 '%s' 不是支持的随机源"
 
-#: src/conf/domain_conf.c:12603
+#: src/conf/domain_conf.c:12611
 #, fuzzy, c-format
 msgid "%s is not a supported enabled state"
 msgstr "文件 '%s' 不是支持的随机源"
 
-#: src/conf/domain_conf.c:12609
+#: src/conf/domain_conf.c:12617
 #, c-format
 msgid "A domain definition can have no more than one event node with name %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:12675
+#: src/conf/domain_conf.c:12683
 #, fuzzy, c-format
 msgid "Invalid value of 'nodemask': %s"
 msgstr "无效 'ephemeral' 值"
 
-#: src/conf/domain_conf.c:12705
+#: src/conf/domain_conf.c:12713
 #, fuzzy
 msgid "invalid value of memory device node"
 msgstr "无效的节点设备"
 
-#: src/conf/domain_conf.c:12738
+#: src/conf/domain_conf.c:12746
 #, fuzzy
 msgid "missing memory model"
 msgstr "缺少计时器名称"
 
-#: src/conf/domain_conf.c:12744
+#: src/conf/domain_conf.c:12752
 #, fuzzy, c-format
 msgid "invalid memory model '%s'"
 msgstr "无效序列号：'%s'"
 
-#: src/conf/domain_conf.c:12757
+#: src/conf/domain_conf.c:12765
 #, fuzzy
 msgid "missing <target> element for <memory> device"
 msgstr "租约缺少 'target' 元素"
 
-#: src/conf/domain_conf.c:12791
+#: src/conf/domain_conf.c:12799
 msgid "(device_definition)"
 msgstr "(device_definition)"
 
-#: src/conf/domain_conf.c:12809
+#: src/conf/domain_conf.c:12817
 #, c-format
 msgid "unknown device type '%s'"
 msgstr "未知设备类型 '%s'"
 
-#: src/conf/domain_conf.c:12950
+#: src/conf/domain_conf.c:12958
 msgid "(disk_definition)"
 msgstr ""
 
-#: src/conf/domain_conf.c:12956
+#: src/conf/domain_conf.c:12964
 #, c-format
 msgid "expecting root element of 'disk', not '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:13423
+#: src/conf/domain_conf.c:13431
 #, c-format
 msgid "multiple devices matching mac address %s found"
 msgstr "找到的 mac 地址 %s 与多台设备映射"
 
-#: src/conf/domain_conf.c:13444
+#: src/conf/domain_conf.c:13452
 #, c-format
 msgid "no device matching mac address %s found on %.4x:%.2x:%.2x.%.1x"
 msgstr ""
 
-#: src/conf/domain_conf.c:13453
+#: src/conf/domain_conf.c:13461
 #, c-format
 msgid "no device matching mac address %s found"
 msgstr ""
 
-#: src/conf/domain_conf.c:13609
+#: src/conf/domain_conf.c:13617
 #, fuzzy, c-format
 msgid "Unknown controller type %d"
 msgstr "未知控制器类型：%s"
 
-#: src/conf/domain_conf.c:13617
+#: src/conf/domain_conf.c:13625
 #, fuzzy, c-format
 msgid "Could not find %s controller with index %d required for device"
 msgstr "多个 '%s' 控制器附带索引 '%d'"
 
-#: src/conf/domain_conf.c:13624
+#: src/conf/domain_conf.c:13632
 #, fuzzy, c-format
 msgid "Device alias was not set for %s controller with index %d "
 msgstr "多个 '%s' 控制器附带索引 '%d'"
 
-#: src/conf/domain_conf.c:14067
+#: src/conf/domain_conf.c:14075
 msgid "Domain already contains a device with the same address"
 msgstr ""
 
-#: src/conf/domain_conf.c:14129
+#: src/conf/domain_conf.c:14137
 msgid "cannot count boot devices"
 msgstr "无法统计引导设备"
 
-#: src/conf/domain_conf.c:14139 src/conf/domain_conf.c:23042
+#: src/conf/domain_conf.c:14147 src/conf/domain_conf.c:23050
 msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr "每个设备的 boot 元素无法与 os/boot 元素联合使用"
 
-#: src/conf/domain_conf.c:14149
+#: src/conf/domain_conf.c:14157
 msgid "missing boot device"
 msgstr "缺少引导设备"
 
-#: src/conf/domain_conf.c:14154
+#: src/conf/domain_conf.c:14162
 #, c-format
 msgid "unknown boot device '%s'"
 msgstr "未知引导设备 '%s'"
 
-#: src/conf/domain_conf.c:14186
+#: src/conf/domain_conf.c:14194
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr ""
 
-#: src/conf/domain_conf.c:14200
+#: src/conf/domain_conf.c:14208
 msgid "need at least one serial port for useserial"
 msgstr "useserial 至少需要一个串口"
 
-#: src/conf/domain_conf.c:14218
+#: src/conf/domain_conf.c:14226
 msgid "invalid value for rebootTimeout, must be in range [-1,65535]"
 msgstr "rebootTimeout 的无效值，必须在 [-1,65535] 范围内。"
 
-#: src/conf/domain_conf.c:14272
+#: src/conf/domain_conf.c:14280
 msgid "invalid idmap start/target/count settings"
 msgstr ""
 
-#: src/conf/domain_conf.c:14284
+#: src/conf/domain_conf.c:14292
 msgid "You must map the root user of container"
 msgstr "您必须匹配容器的 root 用户"
 
-#: src/conf/domain_conf.c:14321
+#: src/conf/domain_conf.c:14329
 #, fuzzy
 msgid "Missing 'id' attribute in <iothread> element"
 msgstr "<interface> 元素中缺少 dev 属性"
 
-#: src/conf/domain_conf.c:14327
+#: src/conf/domain_conf.c:14335
 #, fuzzy, c-format
 msgid "invalid iothread 'id' value '%s'"
 msgstr "无效转换值 '%s'"
 
-#: src/conf/domain_conf.c:14358
+#: src/conf/domain_conf.c:14366
 #, fuzzy
 msgid "missing vcpu id in vcpupin"
 msgstr "vcpupin  缺少 cpuset"
 
-#: src/conf/domain_conf.c:14364
+#: src/conf/domain_conf.c:14372
 #, fuzzy, c-format
 msgid "invalid setting for vcpu '%s'"
 msgstr "卷 %s 的无效 <encryption>"
 
-#: src/conf/domain_conf.c:14377
+#: src/conf/domain_conf.c:14385
 msgid "missing cpuset for vcpupin"
 msgstr "vcpupin  缺少 cpuset"
 
-#: src/conf/domain_conf.c:14383
+#: src/conf/domain_conf.c:14391
 #, fuzzy, c-format
 msgid "duplicate vcpupin for vcpu '%d'"
 msgstr "同一 vcpu 的重复 vcpupin"
 
-#: src/conf/domain_conf.c:14392 src/conf/domain_conf.c:14459
-#: src/conf/domain_conf.c:14504 src/conf/domain_conf.c:14975
+#: src/conf/domain_conf.c:14400 src/conf/domain_conf.c:14467
+#: src/conf/domain_conf.c:14512 src/conf/domain_conf.c:14983
 #, fuzzy, c-format
 msgid "Invalid value of 'cpuset': %s"
 msgstr "cpuNum 的无效值"
 
-#: src/conf/domain_conf.c:14424
+#: src/conf/domain_conf.c:14432
 #, fuzzy
 msgid "missing iothread id in iothreadpin"
 msgstr "缺少接口信息"
 
-#: src/conf/domain_conf.c:14430
+#: src/conf/domain_conf.c:14438
 #, c-format
 msgid "invalid setting for iothread '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:14437
+#: src/conf/domain_conf.c:14445
 msgid "zero is an invalid iothread id value"
 msgstr ""
 
-#: src/conf/domain_conf.c:14443
+#: src/conf/domain_conf.c:14451
 #, fuzzy, c-format
 msgid "Cannot find 'iothread' : %u"
 msgstr "无法找到 %s 中的启示时间"
 
-#: src/conf/domain_conf.c:14450
+#: src/conf/domain_conf.c:14458
 msgid "missing cpuset for iothreadpin"
 msgstr ""
 
-#: src/conf/domain_conf.c:14466
+#: src/conf/domain_conf.c:14474
 #, fuzzy, c-format
 msgid "duplicate iothreadpin for same iothread '%u'"
 msgstr "同一 vcpu 的重复 vcpupin"
 
-#: src/conf/domain_conf.c:14495
+#: src/conf/domain_conf.c:14503
 msgid "missing cpuset for emulatorpin"
 msgstr ""
 
-#: src/conf/domain_conf.c:14657
+#: src/conf/domain_conf.c:14665
 msgid "hugepage size can't be zero"
 msgstr ""
 
-#: src/conf/domain_conf.c:14668 src/conf/numa_conf.c:184
+#: src/conf/domain_conf.c:14676 src/conf/numa_conf.c:184
 #: src/conf/numa_conf.c:249
 #, fuzzy, c-format
 msgid "Invalid value of 'nodeset': %s"
 msgstr "无效 'ephemeral' 值"
 
-#: src/conf/domain_conf.c:14697
+#: src/conf/domain_conf.c:14705
 msgid "missing resource partition attribute"
 msgstr "缺少 resource partition 属性"
 
-#: src/conf/domain_conf.c:14753
+#: src/conf/domain_conf.c:14761
 #, c-format
 msgid "unknown readonly value: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:14761
+#: src/conf/domain_conf.c:14769
 #, c-format
 msgid "unknown type value: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:14787
+#: src/conf/domain_conf.c:14795
 #, c-format
 msgid "Missing attribute '%s' in element '%sched'"
 msgstr ""
 
-#: src/conf/domain_conf.c:14797
+#: src/conf/domain_conf.c:14805
 #, c-format
 msgid "'%s' scheduler bitmap '%s' is empty"
 msgstr ""
 
-#: src/conf/domain_conf.c:14806
+#: src/conf/domain_conf.c:14814
 #, fuzzy
 msgid "Missing scheduler attribute"
 msgstr "缺少引导顺序属性"
 
-#: src/conf/domain_conf.c:14812
+#: src/conf/domain_conf.c:14820
 #, c-format
 msgid "Invalid scheduler attribute: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:14823
+#: src/conf/domain_conf.c:14831
 msgid "Missing scheduler priority"
 msgstr ""
 
-#: src/conf/domain_conf.c:14829
+#: src/conf/domain_conf.c:14837
 msgid "Invalid value for element priority"
 msgstr ""
 
-#: src/conf/domain_conf.c:14866
+#: src/conf/domain_conf.c:14874
 #, c-format
 msgid "%ssched attributes 'vcpus' must not overlap"
 msgstr ""
 
-#: src/conf/domain_conf.c:14929
+#: src/conf/domain_conf.c:14937
 #, fuzzy
 msgid "maximum vcpus count must be an integer"
 msgstr "最大 vcpus 必须是一个整数"
 
-#: src/conf/domain_conf.c:14942
+#: src/conf/domain_conf.c:14950
 #, fuzzy
 msgid "current vcpus count must be an integer"
 msgstr "当前 vcpus 必须是一个整数"
 
-#: src/conf/domain_conf.c:14957
+#: src/conf/domain_conf.c:14965
 #, c-format
 msgid "Unsupported CPU placement mode '%s'"
 msgstr "不支持的 CPU 定位模式 '%s'"
 
-#: src/conf/domain_conf.c:15037
+#: src/conf/domain_conf.c:15045
 msgid "missing domain type attribute"
 msgstr "缺少域类型属性"
 
-#: src/conf/domain_conf.c:15043
+#: src/conf/domain_conf.c:15051
 #, c-format
 msgid "invalid domain type %s"
 msgstr "无效域类型 %s"
 
-#: src/conf/domain_conf.c:15058
+#: src/conf/domain_conf.c:15066
 #, fuzzy
 msgid "an os <type> must be specified"
 msgstr "必须指定图形侦听类型"
 
-#: src/conf/domain_conf.c:15064
+#: src/conf/domain_conf.c:15072
 #, fuzzy, c-format
 msgid "unknown OS type '%s'"
 msgstr "未知操作系统类型 %s"
 
-#: src/conf/domain_conf.c:15130 src/conf/network_conf.c:2055
+#: src/conf/domain_conf.c:15138 src/conf/network_conf.c:2055
 #: src/conf/secret_conf.c:192 src/openvz/openvz_conf.c:1033
 #: src/xenconfig/xen_common.c:207
 msgid "Failed to generate UUID"
 msgstr "生成 UUID 失败"
 
-#: src/conf/domain_conf.c:15137 src/conf/network_conf.c:2061
+#: src/conf/domain_conf.c:15145 src/conf/network_conf.c:2061
 #: src/conf/nwfilter_conf.c:2672 src/conf/secret_conf.c:198
 #: src/conf/storage_conf.c:865
 msgid "malformed uuid element"
 msgstr "畸形的 uuid 元素"
 
-#: src/conf/domain_conf.c:15147
+#: src/conf/domain_conf.c:15155
 msgid "Domain title can't contain newlines"
 msgstr "域标题不能包含换行符"
 
-#: src/conf/domain_conf.c:15174
+#: src/conf/domain_conf.c:15182
 #, fuzzy
 msgid "Failed to parse memory slot count"
 msgstr "为域设定内存失败"
 
-#: src/conf/domain_conf.c:15182
+#: src/conf/domain_conf.c:15190
 #, c-format
 msgid "Invalid memory core dump attribute value '%s'"
 msgstr "无效内存 core dump 属性值 '%s'"
 
-#: src/conf/domain_conf.c:15189
+#: src/conf/domain_conf.c:15197
 msgid "cannot extract hugepages nodes"
-msgstr ""
-
-#: src/conf/domain_conf.c:15209
-#, c-format
-msgid "nodeset attribute of hugepages of sizes %llu and %llu intersect"
 msgstr ""
 
 #: src/conf/domain_conf.c:15217
 #, c-format
+msgid "nodeset attribute of hugepages of sizes %llu and %llu intersect"
+msgstr ""
+
+#: src/conf/domain_conf.c:15225
+#, c-format
 msgid "two master hugepages detected: %llu and %llu"
 msgstr ""
 
-#: src/conf/domain_conf.c:15249
+#: src/conf/domain_conf.c:15257
 msgid "cannot extract blkiotune nodes"
 msgstr "无法提取 blkiotune 节点"
 
-#: src/conf/domain_conf.c:15264
+#: src/conf/domain_conf.c:15272
 #, c-format
 msgid "duplicate blkio device path '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15296
+#: src/conf/domain_conf.c:15304
 #, c-format
 msgid "invalid iothreads count '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15318
+#: src/conf/domain_conf.c:15326
 #, c-format
 msgid "duplicate iothread id '%u' found"
 msgstr ""
 
-#: src/conf/domain_conf.c:15334
+#: src/conf/domain_conf.c:15342
 msgid "can't parse cputune shares value"
 msgstr "无法解析 cputune 共享值"
 
-#: src/conf/domain_conf.c:15343
+#: src/conf/domain_conf.c:15351
 msgid "can't parse cputune period value"
 msgstr "无法解析 cputune 区间值"
 
-#: src/conf/domain_conf.c:15350
+#: src/conf/domain_conf.c:15358
 msgid "Value of cputune period must be in range [1000, 1000000]"
 msgstr "cputune 区间值必须在 [1000, 1000000] 范围内"
 
-#: src/conf/domain_conf.c:15358
+#: src/conf/domain_conf.c:15366
 msgid "can't parse cputune quota value"
 msgstr "无法解析 cputune 配额值"
 
-#: src/conf/domain_conf.c:15366
+#: src/conf/domain_conf.c:15374
 msgid "Value of cputune quota must be in range [1000, 18446744073709551]"
 msgstr "cputune 配额值必须在 [1000, 18446744073709551] 范围内"
 
-#: src/conf/domain_conf.c:15374
+#: src/conf/domain_conf.c:15382
 #, fuzzy
 msgid "can't parse cputune global period value"
 msgstr "无法解析 cputune 区间值"
 
-#: src/conf/domain_conf.c:15381
+#: src/conf/domain_conf.c:15389
 #, fuzzy
 msgid "Value of cputune global period must be in range [1000, 1000000]"
 msgstr "cputune 区间值必须在 [1000, 1000000] 范围内"
 
-#: src/conf/domain_conf.c:15389
+#: src/conf/domain_conf.c:15397
 #, fuzzy
 msgid "can't parse cputune global quota value"
 msgstr "无法解析 cputune 配额值"
 
-#: src/conf/domain_conf.c:15397
+#: src/conf/domain_conf.c:15405
 #, fuzzy
 msgid ""
 "Value of cputune global quota must be in range [1000, 18446744073709551]"
 msgstr "cputune 配额值必须在 [1000, 18446744073709551] 范围内"
 
-#: src/conf/domain_conf.c:15405
+#: src/conf/domain_conf.c:15413
 msgid "can't parse cputune emulator period value"
 msgstr "无法解析 cputune 模拟程序区间值"
 
-#: src/conf/domain_conf.c:15413
+#: src/conf/domain_conf.c:15421
 msgid "Value of cputune emulator_period must be in range [1000, 1000000]"
 msgstr "cputune emulator_period 值必须在 [1000, 1000000] 范围内"
 
-#: src/conf/domain_conf.c:15421
+#: src/conf/domain_conf.c:15429
 msgid "can't parse cputune emulator quota value"
 msgstr "无法解析 cputune 模拟程序配额值"
 
-#: src/conf/domain_conf.c:15429
+#: src/conf/domain_conf.c:15437
 msgid ""
 "Value of cputune emulator_quota must be in range [1000, 18446744073709551]"
 msgstr "cputune emulator_quota 值必须在 [1000, 18446744073709551] 范围内"
 
-#: src/conf/domain_conf.c:15445
+#: src/conf/domain_conf.c:15453
 msgid "cannot extract emulatorpin nodes"
 msgstr "无法提取 emulatorpin 节点"
 
-#: src/conf/domain_conf.c:15452
+#: src/conf/domain_conf.c:15460
 msgid "only one emulatorpin is supported"
 msgstr "只支持一种 emulatorpin"
 
-#: src/conf/domain_conf.c:15465
+#: src/conf/domain_conf.c:15473
 msgid "cannot extract iothreadpin nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:15477
+#: src/conf/domain_conf.c:15485
 msgid "cannot extract vcpusched nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:15489
+#: src/conf/domain_conf.c:15497
 msgid "cannot extract iothreadsched nodes"
 msgstr ""
 
-#: src/conf/domain_conf.c:15513
+#: src/conf/domain_conf.c:15521
 msgid "Maximum CPUs greater than topology limit"
 msgstr "CPUs 最大值超过拓扑限制"
 
-#: src/conf/domain_conf.c:15524
+#: src/conf/domain_conf.c:15532
 msgid "Number of CPUs in <numa> exceeds the <vcpu> count"
 msgstr "<numa> 中的 CPUs 数超过 <vcpu> 计数"
 
-#: src/conf/domain_conf.c:15531
+#: src/conf/domain_conf.c:15539
 #, fuzzy
 msgid "CPU IDs in <numa> exceed the <vcpu> count"
 msgstr "<numa> 中的 CPUs 数超过 <vcpu> 计数"
 
-#: src/conf/domain_conf.c:15549
+#: src/conf/domain_conf.c:15557
 msgid "cannot extract resource nodes"
 msgstr "无法提取资源节点"
 
-#: src/conf/domain_conf.c:15555
+#: src/conf/domain_conf.c:15563
 msgid "only one resource element is supported"
 msgstr "只支持一种资源元素"
 
-#: src/conf/domain_conf.c:15571
+#: src/conf/domain_conf.c:15579
 #, c-format
 msgid "unexpected feature '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15581
+#: src/conf/domain_conf.c:15589
 #, c-format
 msgid "unknown value for attribute eoi: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15604 src/conf/domain_conf.c:15624
+#: src/conf/domain_conf.c:15612 src/conf/domain_conf.c:15632
 #, c-format
 msgid "unknown state attribute '%s' of feature '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15642
+#: src/conf/domain_conf.c:15650
 #, fuzzy, c-format
 msgid "malformed gic version: %s"
 msgstr "畸形 PID 值：%s"
 
-#: src/conf/domain_conf.c:15670
+#: src/conf/domain_conf.c:15678
 #, c-format
 msgid "unsupported HyperV Enlightenment feature: %s"
 msgstr "不支持的 HyperV Enlightenment 功能：%s"
 
-#: src/conf/domain_conf.c:15679
+#: src/conf/domain_conf.c:15687
 #, c-format
 msgid "missing 'state' attribute for HyperV Enlightenment feature '%s'"
 msgstr "HyperV Enlightenment 功能 '%s' 缺少 'state' 属性"
 
-#: src/conf/domain_conf.c:15687
+#: src/conf/domain_conf.c:15695
 #, c-format
 msgid "invalid value of state argument for HyperV Enlightenment feature '%s'"
 msgstr "HyperV Enlightenment 功能 '%s' state 参数的无效值"
 
-#: src/conf/domain_conf.c:15713
+#: src/conf/domain_conf.c:15721
 msgid "invalid HyperV spinlock retry count"
 msgstr "无效 HyperV spinlock，重试 count"
 
-#: src/conf/domain_conf.c:15719
+#: src/conf/domain_conf.c:15727
 msgid "HyperV spinlock retry count must be at least 4095"
 msgstr "HyperV spinlock 重试计数必须不少于 4095"
 
-#: src/conf/domain_conf.c:15732
+#: src/conf/domain_conf.c:15740
 #, fuzzy
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
 msgstr "HyperV Enlightenment 功能 '%s' 缺少 'state' 属性"
 
-#: src/conf/domain_conf.c:15739
+#: src/conf/domain_conf.c:15747
 #, fuzzy, c-format
 msgid "HyperV vendor_id value must not be more than %d characters."
 msgstr "vendor_id 必须是 %d 个字符"
 
-#: src/conf/domain_conf.c:15748
+#: src/conf/domain_conf.c:15756
 #, fuzzy
 msgid "HyperV vendor_id value is invalid"
 msgstr "销售商 id 无效"
 
-#: src/conf/domain_conf.c:15772
+#: src/conf/domain_conf.c:15780
 #, c-format
 msgid "unsupported KVM feature: %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:15783
+#: src/conf/domain_conf.c:15791
 #, c-format
 msgid "missing 'state' attribute for KVM feature '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15791
+#: src/conf/domain_conf.c:15799
 #, c-format
 msgid "invalid value of state argument for KVM feature '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15817
+#: src/conf/domain_conf.c:15825
 #, c-format
 msgid "unexpected capability feature '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15828
+#: src/conf/domain_conf.c:15836
 #, c-format
 msgid "unknown state attribute '%s' of feature capability '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:15885
+#: src/conf/domain_conf.c:15893
 #, c-format
 msgid "unknown clock offset '%s'"
 msgstr "未知时钟补偿 '%s'"
 
-#: src/conf/domain_conf.c:15901
+#: src/conf/domain_conf.c:15909
 #, c-format
 msgid "unknown clock adjustment '%s'"
 msgstr "未知时钟调整 '%s'"
 
-#: src/conf/domain_conf.c:15932
+#: src/conf/domain_conf.c:15940
 #, c-format
 msgid "unknown clock basis '%s'"
 msgstr "未知时钟基点 '%s'"
 
-#: src/conf/domain_conf.c:15945
+#: src/conf/domain_conf.c:15953
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "使用 offset='timezone' 的时钟缺少 ‘timezone’ 属性"
 
-#: src/conf/domain_conf.c:15990
+#: src/conf/domain_conf.c:15998
 msgid "No data supplied for <initarg> element"
 msgstr "没有 <initarg> 元素的数据"
 
-#: src/conf/domain_conf.c:16073 src/conf/domain_conf.c:16082
+#: src/conf/domain_conf.c:16081 src/conf/domain_conf.c:16090
 msgid "Can't add another USB controller: USB is disabled for this domain"
 msgstr "无法添加另一个 USB 控制器：这个域禁用 USB"
 
-#: src/conf/domain_conf.c:16099
+#: src/conf/domain_conf.c:16107
 msgid "No master USB controller specified"
 msgstr "未指定任何主 USB 控制程序"
 
-#: src/conf/domain_conf.c:16106
+#: src/conf/domain_conf.c:16114
 msgid "cannot extract device leases"
 msgstr "无法提取设备租约"
 
-#: src/conf/domain_conf.c:16238
+#: src/conf/domain_conf.c:16246
 msgid "cannot extract console devices"
 msgstr "无法提取控制台设备"
 
-#: src/conf/domain_conf.c:16295
+#: src/conf/domain_conf.c:16303
 msgid "Can't add USB input device. USB bus is disabled"
 msgstr "无法添加 USB 输入设备。已禁用 USB 总线。"
 
-#: src/conf/domain_conf.c:16353
+#: src/conf/domain_conf.c:16361
 msgid "Only one primary video device is supported"
 msgstr "只支持一个主视频设备"
 
-#: src/conf/domain_conf.c:16386
+#: src/conf/domain_conf.c:16394
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr "无法添加主机 USB 设备：这台主机禁用了 USB"
 
-#: src/conf/domain_conf.c:16411
+#: src/conf/domain_conf.c:16419
 msgid "only a single watchdog device is supported"
 msgstr "只支持单一监视器设备"
 
-#: src/conf/domain_conf.c:16430
+#: src/conf/domain_conf.c:16438
 msgid "only a single memory balloon device is supported"
 msgstr "只支持单一内存 balloon 设备"
 
-#: src/conf/domain_conf.c:16465
+#: src/conf/domain_conf.c:16473
 msgid "only a single TPM device is supported"
 msgstr "只支持单一 TPM 设备"
 
-#: src/conf/domain_conf.c:16480
+#: src/conf/domain_conf.c:16488
 msgid "only a single nvram device is supported"
 msgstr "只支持单一 nvram 设备"
 
-#: src/conf/domain_conf.c:16504
+#: src/conf/domain_conf.c:16512
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "无法添加 USB 集线器：这个域禁用了 USB"
 
-#: src/conf/domain_conf.c:16527
+#: src/conf/domain_conf.c:16535
 msgid "Can't add redirected USB device: USB is disabled for this domain"
 msgstr "无法添加重新定向的 USB 设备：这个域禁用了 USB"
 
-#: src/conf/domain_conf.c:16542
+#: src/conf/domain_conf.c:16550
 msgid "only one set of redirection filter rule is supported"
 msgstr "只支持一组重新定向过滤器规则"
 
-#: src/conf/domain_conf.c:16635
+#: src/conf/domain_conf.c:16643
 msgid "uid and gid should be mapped both"
 msgstr "uid 和 gid 之间应彼此映射"
 
-#: src/conf/domain_conf.c:16655
+#: src/conf/domain_conf.c:16663
 #, c-format
 msgid "unknown smbios mode '%s'"
 msgstr "未知 smbios 模式 ‘%s’"
 
-#: src/conf/domain_conf.c:16718
+#: src/conf/domain_conf.c:16726
 msgid "no domain config"
 msgstr "节点域配置"
 
-#: src/conf/domain_conf.c:16731
+#: src/conf/domain_conf.c:16739
 msgid "missing domain state"
 msgstr "缺失域状态"
 
-#: src/conf/domain_conf.c:16736
+#: src/conf/domain_conf.c:16744
 #, c-format
 msgid "invalid domain state '%s'"
 msgstr "无效的域状态 '%s'"
 
-#: src/conf/domain_conf.c:16745
+#: src/conf/domain_conf.c:16753
 #, c-format
 msgid "invalid domain state reason '%s'"
 msgstr "无效域状态原因 '%s'"
 
-#: src/conf/domain_conf.c:16756
+#: src/conf/domain_conf.c:16764
 msgid "invalid pid"
 msgstr "无效 pid"
 
-#: src/conf/domain_conf.c:16769 src/conf/network_conf.c:3099
+#: src/conf/domain_conf.c:16777 src/conf/network_conf.c:3099
 #, c-format
 msgid "Unknown taint flag %s"
 msgstr "未知 taint 标签 %s"
 
-#: src/conf/domain_conf.c:16803 src/security/virt-aa-helper.c:668
+#: src/conf/domain_conf.c:16811 src/security/virt-aa-helper.c:668
 #: tools/virsh-domain-monitor.c:98 tools/virsh-domain-monitor.c:491
 #: tools/virsh-domain-monitor.c:598 tools/virsh-domain-monitor.c:713
 #: tools/virsh-domain.c:3104 tools/virsh-domain.c:3759
@@ -4296,927 +4296,917 @@ msgstr "未知 taint 标签 %s"
 msgid "(domain_definition)"
 msgstr "(domain_definition)"
 
-#: src/conf/domain_conf.c:16844
+#: src/conf/domain_conf.c:16852
 #, c-format
 msgid "unexpected root element <%s>, expecting <domain>"
 msgstr "意外的 root 元素 <%s>，应为 <domain>"
 
-#: src/conf/domain_conf.c:16877
+#: src/conf/domain_conf.c:16885
 #, c-format
 msgid "unexpected root element <%s>, expecting <domstatus>"
 msgstr "意外的 root 元素 <%s>，应为 <domstatus>"
 
-#: src/conf/domain_conf.c:16924
+#: src/conf/domain_conf.c:16932
 #, c-format
 msgid "Target timer %s does not match source %s"
 msgstr "目标计时器 %s 与源计时器 %s 不匹配"
 
-#: src/conf/domain_conf.c:16932
+#: src/conf/domain_conf.c:16940
 #, c-format
 msgid "Target timer presence %d does not match source %d"
 msgstr "目标计时器显示 %d 与源 %d 不匹配"
 
-#: src/conf/domain_conf.c:16940
+#: src/conf/domain_conf.c:16948
 #, c-format
 msgid "Target TSC frequency %lu does not match source %lu"
 msgstr "目标 TSC 频率 %lu 与源 %lu 不匹配"
 
-#: src/conf/domain_conf.c:16947
+#: src/conf/domain_conf.c:16955
 #, c-format
 msgid "Target TSC mode %s does not match source %s"
 msgstr "目标 TSC 模式 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:16964
+#: src/conf/domain_conf.c:16972
 #, c-format
 msgid "Target device address type %s does not match source %s"
 msgstr "目标设备地址类型 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:16977
+#: src/conf/domain_conf.c:16985
 #, c-format
 msgid ""
 "Target device PCI address %04x:%02x:%02x.%02x does not match source %04x:"
 "%02x:%02x.%02x"
 msgstr "目标设备 PCI 地址 %04x:%02x:%02x.%02x 与源 %04x:%02x:%02x.%02x 不匹配"
 
-#: src/conf/domain_conf.c:16992
+#: src/conf/domain_conf.c:17000
 #, c-format
 msgid "Target device drive address %d:%d:%d does not match source %d:%d:%d"
 msgstr "目标设备驱动地址 %d:%d:%d 与源 %d:%d:%d 不匹配"
 
-#: src/conf/domain_conf.c:17007
+#: src/conf/domain_conf.c:17015
 #, c-format
 msgid ""
 "Target device virtio serial address %d:%d:%d does not match source %d:%d:%d"
 msgstr "目标设备 virtio 串口地址 %d:%d:%d 与源 %d:%d:%d 不匹配"
 
-#: src/conf/domain_conf.c:17021
+#: src/conf/domain_conf.c:17029
 #, c-format
 msgid "Target device ccid address %d:%d does not match source %d:%d"
 msgstr "目标设备 ccid 地址 %d:%d 与源 %d:%d 不匹配"
 
-#: src/conf/domain_conf.c:17035
+#: src/conf/domain_conf.c:17043
 #, c-format
 msgid "Target device isa address %d:%d does not match source %d:%d"
 msgstr ""
 
-#: src/conf/domain_conf.c:17048
+#: src/conf/domain_conf.c:17056
 #, fuzzy, c-format
 msgid "Target device dimm slot %u does not match source %u"
 msgstr "目标主机设备型号 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17057
+#: src/conf/domain_conf.c:17065
 #, fuzzy, c-format
 msgid "Target device dimm base address '%llx' does not match source '%llx'"
 msgstr "目标设备地址类型 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17085
+#: src/conf/domain_conf.c:17093
 #, c-format
 msgid "Target disk device %s does not match source %s"
 msgstr "目标磁盘设备 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17093
+#: src/conf/domain_conf.c:17101
 #, c-format
 msgid "Target disk bus %s does not match source %s"
 msgstr "目标磁盘总线 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17101
+#: src/conf/domain_conf.c:17109
 #, c-format
 msgid "Target disk %s does not match source %s"
 msgstr "目标磁盘 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17108
+#: src/conf/domain_conf.c:17116
 #, c-format
 msgid "Target disk serial %s does not match source %s"
 msgstr "目标磁盘串口 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17115
+#: src/conf/domain_conf.c:17123
 #, fuzzy, c-format
 msgid "Target disk wwn '%s' does not match source '%s'"
 msgstr "目标磁盘 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17124
+#: src/conf/domain_conf.c:17132
 msgid "Target disk access mode does not match source"
 msgstr "目标磁盘访问模式与源不匹配"
 
-#: src/conf/domain_conf.c:17141
+#: src/conf/domain_conf.c:17149
 #, c-format
 msgid "Target controller type %s does not match source %s"
 msgstr "目标控制器类型 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17149
+#: src/conf/domain_conf.c:17157
 #, c-format
 msgid "Target controller index %d does not match source %d"
 msgstr "目标控制器索引 %d 与源 %d 不匹配"
 
-#: src/conf/domain_conf.c:17156
+#: src/conf/domain_conf.c:17164
 #, c-format
 msgid "Target controller model %d does not match source %d"
 msgstr "目标控制器型号 %d 与源 %d 不匹配"
 
-#: src/conf/domain_conf.c:17164
+#: src/conf/domain_conf.c:17172
 #, c-format
 msgid "Target controller ports %d does not match source %d"
 msgstr "目标控制器端口 %d 与源 %d 不匹配"
 
-#: src/conf/domain_conf.c:17171
+#: src/conf/domain_conf.c:17179
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
 msgstr "目标控制器矢量 %d 与源 %d 不匹配"
 
-#: src/conf/domain_conf.c:17190
+#: src/conf/domain_conf.c:17198
 #, c-format
 msgid "Target filesystem guest target %s does not match source %s"
 msgstr "目标文件系统虚拟机目标 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17197
+#: src/conf/domain_conf.c:17205
 msgid "Target filesystem access mode does not match source"
 msgstr "目标文件系统访问模式与源不匹配"
 
-#: src/conf/domain_conf.c:17217
+#: src/conf/domain_conf.c:17225
 #, c-format
 msgid "Target network card mac %s does not match source %s"
 msgstr "目标网卡 mac %s 与源 %s 不映射"
 
-#: src/conf/domain_conf.c:17226
+#: src/conf/domain_conf.c:17234
 #, c-format
 msgid "Target network card model %s does not match source %s"
 msgstr "目标网卡型号 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17244
+#: src/conf/domain_conf.c:17252
 #, c-format
 msgid "Target input device type %s does not match source %s"
 msgstr "目标输入设备类型 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17252
+#: src/conf/domain_conf.c:17260
 #, c-format
 msgid "Target input device bus %s does not match source %s"
 msgstr "目标输入设备总线 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17271
+#: src/conf/domain_conf.c:17279
 #, c-format
 msgid "Target sound card model %s does not match source %s"
 msgstr "目标声卡型号 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17290
+#: src/conf/domain_conf.c:17298
 #, c-format
 msgid "Target video card model %s does not match source %s"
 msgstr "目标显卡型号 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17298
+#: src/conf/domain_conf.c:17306
 #, c-format
 msgid "Target video card ram %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:17305
+#: src/conf/domain_conf.c:17313
 #, c-format
 msgid "Target video card vram %u does not match source %u"
 msgstr "目标显卡 vram %u 与源 %u 不匹配"
 
-#: src/conf/domain_conf.c:17312
+#: src/conf/domain_conf.c:17320
 #, fuzzy, c-format
 msgid "Target video card vram64 %u does not match source %u"
 msgstr "目标显卡 vram %u 与源 %u 不匹配"
 
-#: src/conf/domain_conf.c:17319
+#: src/conf/domain_conf.c:17327
 #, fuzzy, c-format
 msgid "Target video card vgamem %u does not match source %u"
 msgstr "目标显卡 vram %u 与源 %u 不匹配"
 
-#: src/conf/domain_conf.c:17326
+#: src/conf/domain_conf.c:17334
 #, c-format
 msgid "Target video card heads %u does not match source %u"
 msgstr "目标显卡标头 %u 与源 %u 不匹配"
 
-#: src/conf/domain_conf.c:17334
+#: src/conf/domain_conf.c:17342
 msgid "Target video card acceleration does not match source"
 msgstr "目标显卡加速与源不匹配"
 
-#: src/conf/domain_conf.c:17341
+#: src/conf/domain_conf.c:17349
 #, c-format
 msgid "Target video card 2d accel %u does not match source %u"
 msgstr "目标显卡 2d 加速 %u 与源 %u 不匹配"
 
-#: src/conf/domain_conf.c:17348
+#: src/conf/domain_conf.c:17356
 #, c-format
 msgid "Target video card 3d accel %u does not match source %u"
 msgstr "目标显卡 3d 加速 %u 与源 %u 不匹配"
 
-#: src/conf/domain_conf.c:17367
+#: src/conf/domain_conf.c:17375
 #, c-format
 msgid "Target host device mode %s does not match source %s"
 msgstr "目标主机设备型号 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17376
+#: src/conf/domain_conf.c:17384
 #, c-format
 msgid "Target host device subsystem %s does not match source %s"
 msgstr "目标主机设备子系统 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17406
+#: src/conf/domain_conf.c:17414
 #, fuzzy, c-format
 msgid "Target serial type %s does not match source %s"
 msgstr "目标通道类型 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17414
+#: src/conf/domain_conf.c:17422
 #, c-format
 msgid "Target serial port %d does not match source %d"
 msgstr "目标串口 %d 与源 %d 不匹配"
 
-#: src/conf/domain_conf.c:17432
+#: src/conf/domain_conf.c:17440
 #, c-format
 msgid "Target parallel port %d does not match source %d"
 msgstr "目标平行端口 %d 与源 %d 不映射"
 
-#: src/conf/domain_conf.c:17450
+#: src/conf/domain_conf.c:17458
 #, c-format
 msgid "Target channel type %s does not match source %s"
 msgstr "目标通道类型 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17460
+#: src/conf/domain_conf.c:17468
 #, c-format
 msgid "Target channel name %s does not match source %s"
 msgstr "目标通道名称 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17469
+#: src/conf/domain_conf.c:17477
 msgid ""
 "Changing device type to/from spicevmc would change default target channel "
 "name"
 msgstr "将设备类型改为（/或者改变）spicevmc 会更改默认目标通道名称"
 
-#: src/conf/domain_conf.c:17480
+#: src/conf/domain_conf.c:17488
 #, c-format
 msgid "Target channel addr %s does not match source %s"
 msgstr "目标通道地址 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17502
+#: src/conf/domain_conf.c:17510
 #, c-format
 msgid "Target console type %s does not match source %s"
 msgstr "目标控制台类型 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17521
+#: src/conf/domain_conf.c:17529
 #, c-format
 msgid "Target watchdog model %s does not match source %s"
 msgstr "目标监控程序型号 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17540
+#: src/conf/domain_conf.c:17548
 #, c-format
 msgid "Target balloon model %s does not match source %s"
 msgstr "目标布尔值型号 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17548
+#: src/conf/domain_conf.c:17556
 #, fuzzy, c-format
 msgid ""
 "Target balloon autodeflate attribute value '%s' does not match source '%s'"
 msgstr "目标布尔值型号 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17568
+#: src/conf/domain_conf.c:17576
 #, c-format
 msgid "Target RNG model '%s' does not match source '%s'"
 msgstr "目标 RNG 型号 '%s' 与源 '%s' 不映射"
 
-#: src/conf/domain_conf.c:17587
+#: src/conf/domain_conf.c:17595
 #, c-format
 msgid "Target hub device type %s does not match source %s"
 msgstr "目标集线设备类型 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17606
+#: src/conf/domain_conf.c:17614
 #, c-format
 msgid "Target redirected device bus %s does not match source %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:17617
+#: src/conf/domain_conf.c:17625
 #, c-format
 msgid ""
 "Target redirected device source type %s does not match source device source "
 "type %s"
 msgstr ""
 
-#: src/conf/domain_conf.c:17643
+#: src/conf/domain_conf.c:17651
 #, c-format
 msgid "Target USB redirection filter rule count %zu does not match source %zu"
 msgstr "目标 USB 重新定向过滤器规则技术 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:17654
+#: src/conf/domain_conf.c:17662
 msgid "Target USB Class code does not match source"
 msgstr "目标 USB 类别与源不映射"
 
-#: src/conf/domain_conf.c:17660
+#: src/conf/domain_conf.c:17668
 msgid "Target USB vendor ID does not match source"
 msgstr "目标 USB 销售商 ID  与源不映射"
 
-#: src/conf/domain_conf.c:17666
+#: src/conf/domain_conf.c:17674
 msgid "Target USB product ID does not match source"
 msgstr "目标 USB 产品 ID 与源不映射"
 
-#: src/conf/domain_conf.c:17672
+#: src/conf/domain_conf.c:17680
 msgid "Target USB version does not match source"
 msgstr "目标 USB 版本与源不映射"
 
-#: src/conf/domain_conf.c:17678
+#: src/conf/domain_conf.c:17686
 #, c-format
 msgid "Target USB allow '%s' does not match source '%s'"
 msgstr "目标 USB allow '%s' 与源 '%s' 不映射"
 
-#: src/conf/domain_conf.c:17698
+#: src/conf/domain_conf.c:17706
 #, c-format
 msgid "State of feature '%s' differs: source: '%s', destination: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17710
+#: src/conf/domain_conf.c:17718
 #, c-format
 msgid "State of APIC EOI differs: source: '%s', destination: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17720
+#: src/conf/domain_conf.c:17728
 #, fuzzy, c-format
 msgid "Source GIC version '%s' does not match destination '%s'"
 msgstr "目标 USB 版本与源不映射"
 
-#: src/conf/domain_conf.c:17739
+#: src/conf/domain_conf.c:17747
 #, c-format
 msgid ""
 "State of HyperV enlightenment feature '%s' differs: source: '%s', "
 "destination: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17754
+#: src/conf/domain_conf.c:17762
 #, c-format
 msgid "HyperV spinlock retry count differs: source: '%u', destination: '%u'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17765
+#: src/conf/domain_conf.c:17773
 #, c-format
 msgid "HyperV vendor_id differs: source: '%s', destination: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17787
+#: src/conf/domain_conf.c:17795
 #, c-format
 msgid "State of KVM feature '%s' differs: source: '%s', destination: '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17813
+#: src/conf/domain_conf.c:17821
 #, fuzzy, c-format
 msgid "Target panic model '%s' does not match source '%s'"
 msgstr "目标 RNG 型号 '%s' 与源 '%s' 不映射"
 
-#: src/conf/domain_conf.c:17829
+#: src/conf/domain_conf.c:17837
 #, c-format
 msgid "Target shared memory name '%s' does not match source '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17836
+#: src/conf/domain_conf.c:17844
 #, c-format
 msgid "Target shared memory size '%llu' does not match source size '%llu'"
 msgstr ""
 
-#: src/conf/domain_conf.c:17843
+#: src/conf/domain_conf.c:17851
 msgid "Target shared memory server usage doesn't match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:17852
+#: src/conf/domain_conf.c:17860
 msgid "Target shared memory MSI configuration doesn't match source"
 msgstr ""
 
-#: src/conf/domain_conf.c:17867
+#: src/conf/domain_conf.c:17875
 #, fuzzy
 msgid "Target TPM device type doesn't match source"
 msgstr "目标集线设备类型 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17873
+#: src/conf/domain_conf.c:17881
 #, fuzzy
 msgid "Target TPM device model doesn't match source"
 msgstr "目标主机设备型号 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17886
+#: src/conf/domain_conf.c:17894
 #, fuzzy, c-format
 msgid "Target memory device model '%s' doesn't match source model '%s'"
 msgstr "目标主机设备型号 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17895
+#: src/conf/domain_conf.c:17903
 #, fuzzy, c-format
 msgid ""
 "Target memory device targetNode '%d' doesn't match source targetNode '%d'"
 msgstr "目标主机设备型号 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17903
+#: src/conf/domain_conf.c:17911
 #, fuzzy, c-format
 msgid ""
 "Target memory device size '%llu' doesn't match source memory device size "
 "'%llu'"
 msgstr "目标主机设备型号 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17921
+#: src/conf/domain_conf.c:17929
 #, fuzzy, c-format
 msgid "Target domain vCPU max %zu does not match source %zu"
 msgstr "目标域 vCPU 最大 %d 与源 %d 不映射"
 
-#: src/conf/domain_conf.c:17932
+#: src/conf/domain_conf.c:17940
 #, c-format
 msgid "State of vCPU '%zu' differs between source and destination definitions"
 msgstr ""
 
-#: src/conf/domain_conf.c:17957
+#: src/conf/domain_conf.c:17965
 #, c-format
 msgid "Target domain virt type %s does not match source %s"
 msgstr "目标域 virt 类型 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17969
+#: src/conf/domain_conf.c:17977
 #, c-format
 msgid "Target domain uuid %s does not match source %s"
 msgstr "目标域 uuid %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:17980
+#: src/conf/domain_conf.c:17988
 #, c-format
 msgid "Target domain name '%s' does not match source '%s'"
 msgstr "目标域名 '%s' 与源 '%s' 不映射"
 
-#: src/conf/domain_conf.c:17987
+#: src/conf/domain_conf.c:17995
 #, c-format
 msgid "Target domain max memory %lld does not match source %lld"
 msgstr "目标域最大内存 %lld 与源 %lld 不匹配"
 
-#: src/conf/domain_conf.c:17994
+#: src/conf/domain_conf.c:18002
 #, c-format
 msgid "Target domain current memory %lld does not match source %lld"
 msgstr "目标域当前内存 %lld 与源 %lld 不匹配"
 
-#: src/conf/domain_conf.c:18004
+#: src/conf/domain_conf.c:18012
 #, fuzzy, c-format
 msgid "Target domain memory slots count '%u' doesn't match source '%u'"
 msgstr "目标域内存布尔计数 %d 与源 %d 不匹配"
 
-#: src/conf/domain_conf.c:18010
+#: src/conf/domain_conf.c:18018
 #, fuzzy, c-format
 msgid "Target maximum memory size '%llu' doesn't match source '%llu'"
 msgstr "目标域最大内存 %lld 与源 %lld 不匹配"
 
-#: src/conf/domain_conf.c:18020
+#: src/conf/domain_conf.c:18028
 #, c-format
 msgid "Target domain iothreads count %u does not match source %u"
 msgstr ""
 
-#: src/conf/domain_conf.c:18028
+#: src/conf/domain_conf.c:18036
 #, c-format
 msgid "Target domain OS type %s does not match source %s"
 msgstr "目标域 OS 类型 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:18035
+#: src/conf/domain_conf.c:18043
 #, c-format
 msgid "Target domain architecture %s does not match source %s"
 msgstr "目标域架构 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:18042
+#: src/conf/domain_conf.c:18050
 #, fuzzy, c-format
 msgid "Target domain machine type %s does not match source %s"
 msgstr "目标域 virt 类型 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:18049
+#: src/conf/domain_conf.c:18057
 #, c-format
 msgid "Target domain SMBIOS mode %s does not match source %s"
 msgstr "目标域 SMBIOS 模式 %s 与源 %s 不匹配"
 
-#: src/conf/domain_conf.c:18060
+#: src/conf/domain_conf.c:18068
 msgid "Target domain timers do not match source"
 msgstr "目标域计时器与源不匹配"
 
-#: src/conf/domain_conf.c:18078
+#: src/conf/domain_conf.c:18086
 #, c-format
 msgid "Target domain disk count %zu does not match source %zu"
 msgstr "目标域磁盘计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18089
+#: src/conf/domain_conf.c:18097
 #, c-format
 msgid "Target domain controller count %zu does not match source %zu"
 msgstr "目标域控制器计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18102
+#: src/conf/domain_conf.c:18110
 #, c-format
 msgid "Target domain filesystem count %zu does not match source %zu"
 msgstr "目标域文件系统计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18114
+#: src/conf/domain_conf.c:18122
 #, c-format
 msgid "Target domain net card count %zu does not match source %zu"
 msgstr "目标域网卡计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18126
+#: src/conf/domain_conf.c:18134
 #, c-format
 msgid "Target domain input device count %zu does not match source %zu"
 msgstr "目标域输入设备计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18138
+#: src/conf/domain_conf.c:18146
 #, c-format
 msgid "Target domain sound card count %zu does not match source %zu"
 msgstr "目标域声卡计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18150
+#: src/conf/domain_conf.c:18158
 #, c-format
 msgid "Target domain video card count %zu does not match source %zu"
 msgstr "目标域显卡计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18162
+#: src/conf/domain_conf.c:18170
 #, c-format
 msgid "Target domain host device count %zu does not match source %zu"
 msgstr "目标域主机设备计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18175
+#: src/conf/domain_conf.c:18183
 #, c-format
 msgid "Target domain smartcard count %zu does not match source %zu"
 msgstr "目标域智能卡计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18188
+#: src/conf/domain_conf.c:18196
 #, c-format
 msgid "Target domain serial port count %zu does not match source %zu"
 msgstr "目标域串口端口计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18201
+#: src/conf/domain_conf.c:18209
 #, c-format
 msgid "Target domain parallel port count %zu does not match source %zu"
 msgstr "目标域并口端口计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18214
+#: src/conf/domain_conf.c:18222
 #, c-format
 msgid "Target domain channel count %zu does not match source %zu"
 msgstr "目标域频道计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18227
+#: src/conf/domain_conf.c:18235
 #, c-format
 msgid "Target domain console count %zu does not match source %zu"
 msgstr "目标域控制台卡计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18240
+#: src/conf/domain_conf.c:18248
 #, c-format
 msgid "Target domain hub device count %zu does not match source %zu"
 msgstr "目标域集线器设备计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18252
+#: src/conf/domain_conf.c:18260
 #, c-format
 msgid "Target domain redirected devices count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:18267
+#: src/conf/domain_conf.c:18275
 #, c-format
 msgid "Target domain USB redirection filter count %d does not match source %d"
 msgstr "目标域 USB 重新定向过滤器计数 %d 与源 %d 不匹配"
 
-#: src/conf/domain_conf.c:18281
+#: src/conf/domain_conf.c:18289
 #, c-format
 msgid "Target domain watchdog count %d does not match source %d"
 msgstr "目标域监控程序计数 %d 与源 %d 不匹配"
 
-#: src/conf/domain_conf.c:18294
+#: src/conf/domain_conf.c:18302
 #, c-format
 msgid "Target domain memory balloon count %d does not match source %d"
 msgstr "目标域内存布尔计数 %d 与源 %d 不匹配"
 
-#: src/conf/domain_conf.c:18307
+#: src/conf/domain_conf.c:18315
 #, c-format
 msgid "Target domain RNG device count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:18318
+#: src/conf/domain_conf.c:18326
 #, fuzzy, c-format
 msgid "Target domain panic device count %zu does not match source %zu"
 msgstr "目标域输入设备计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18330
+#: src/conf/domain_conf.c:18338
 #, c-format
 msgid "Target domain shared memory device count %zu does not match source %zu"
 msgstr ""
 
-#: src/conf/domain_conf.c:18345
+#: src/conf/domain_conf.c:18353
 msgid ""
 "Either both target and source domains or none of them must have TPM device "
 "present"
 msgstr ""
 
-#: src/conf/domain_conf.c:18352
+#: src/conf/domain_conf.c:18360
 #, fuzzy, c-format
 msgid "Target domain memory device count %zu does not match source %zu"
 msgstr "目标域主机设备计数 %zu 与源 %zu 不映射"
 
-#: src/conf/domain_conf.c:18581 src/vz/vz_sdk.c:1040
+#: src/conf/domain_conf.c:18591 src/vz/vz_sdk.c:1040
 msgid "cannot determine default video type"
 msgstr "无法确定默认视频类型"
 
-#: src/conf/domain_conf.c:18638
+#: src/conf/domain_conf.c:18644
 #, c-format
 msgid "cannot duplicate iothread_id '%u' in iothreadids"
 msgstr ""
 
-#: src/conf/domain_conf.c:18694
+#: src/conf/domain_conf.c:18700
 #, c-format
 msgid "unexpected %s action: %d"
 msgstr "意外 %s 动作：%d"
 
-#: src/conf/domain_conf.c:18998 src/conf/domain_conf.c:19087
+#: src/conf/domain_conf.c:19004 src/conf/domain_conf.c:19093
 #, c-format
 msgid "unexpected disk type %d"
 msgstr "意外的磁盘类型 %d"
 
-#: src/conf/domain_conf.c:19035
+#: src/conf/domain_conf.c:19041
 #, c-format
 msgid "unexpected disk backing store type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:19043
+#: src/conf/domain_conf.c:19049
 #, c-format
 msgid "unexpected disk backing store format %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:19092
+#: src/conf/domain_conf.c:19098
 #, c-format
 msgid "unexpected disk device %d"
 msgstr "意外的磁盘设备 %d"
 
-#: src/conf/domain_conf.c:19097
+#: src/conf/domain_conf.c:19103
 #, c-format
 msgid "unexpected disk bus %d"
 msgstr "意外的磁盘总线 %d"
 
-#: src/conf/domain_conf.c:19102
+#: src/conf/domain_conf.c:19108
 #, c-format
 msgid "unexpected disk cache mode %d"
 msgstr "意外的磁盘缓存模式 %d"
 
-#: src/conf/domain_conf.c:19107
+#: src/conf/domain_conf.c:19113
 #, c-format
 msgid "unexpected disk io mode %d"
 msgstr "意外的磁盘 io 模式 %d"
 
-#: src/conf/domain_conf.c:19112
+#: src/conf/domain_conf.c:19118
 #, c-format
 msgid "Unexpected disk sgio mode '%d'"
 msgstr "意外磁盘 sgio 模式 '%d'"
 
-#: src/conf/domain_conf.c:19369
+#: src/conf/domain_conf.c:19375
 #, c-format
 msgid "unexpected controller type %d"
 msgstr "意外的控制器类型 %d"
 
-#: src/conf/domain_conf.c:19378
+#: src/conf/domain_conf.c:19384
 #, c-format
 msgid "unexpected model type %d"
 msgstr "意外的型号类型 %d"
 
-#: src/conf/domain_conf.c:19427
+#: src/conf/domain_conf.c:19433
 #, fuzzy, c-format
 msgid "unexpected model name value %d"
 msgstr "意外的 rom bar 值 %d"
 
-#: src/conf/domain_conf.c:19513
+#: src/conf/domain_conf.c:19519
 #, c-format
 msgid "unexpected filesystem type %d"
 msgstr "意外的文件系统类型 %d"
 
-#: src/conf/domain_conf.c:19519
+#: src/conf/domain_conf.c:19525
 #, c-format
 msgid "unexpected accessmode %d"
 msgstr "意外的访问模式 %d"
 
-#: src/conf/domain_conf.c:19653
+#: src/conf/domain_conf.c:19659
 #, c-format
 msgid "unexpected pci hostdev driver name type %d"
 msgstr "意外的 pci hostdev 驱动程序名称类型 %d"
 
-#: src/conf/domain_conf.c:19702
+#: src/conf/domain_conf.c:19708
 msgid "PCI address Formatting failed"
 msgstr "PCI 地址格式化失败"
 
-#: src/conf/domain_conf.c:19738 src/conf/domain_conf.c:19778
-#: src/conf/domain_conf.c:21508 src/conf/domain_conf.c:21517
-#: src/libxl/libxl_driver.c:3407 src/qemu/qemu_hotplug.c:3920
+#: src/conf/domain_conf.c:19744 src/conf/domain_conf.c:19784
+#: src/conf/domain_conf.c:21516 src/conf/domain_conf.c:21525
+#: src/libxl/libxl_driver.c:3407 src/qemu/qemu_hotplug.c:3927
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "意外的 hostdev 类型 %d"
 
-#: src/conf/domain_conf.c:19856
+#: src/conf/domain_conf.c:19862
 #, c-format
 msgid "unexpected source mode %d"
 msgstr "意外的源模式 %d"
 
-#: src/conf/domain_conf.c:19899 src/conf/domain_conf.c:20069
-#: src/conf/domain_conf.c:21274
+#: src/conf/domain_conf.c:19905 src/conf/domain_conf.c:20075
+#: src/conf/domain_conf.c:21282
 #, c-format
 msgid "unexpected net type %d"
 msgstr "意外的网络类型 %d"
 
-#: src/conf/domain_conf.c:20061
+#: src/conf/domain_conf.c:20067
 #, c-format
 msgid "unexpected actual net type %d"
 msgstr ""
 
-#: src/conf/domain_conf.c:20323
+#: src/conf/domain_conf.c:20329
 #, c-format
 msgid "unexpected char type %d"
 msgstr "意外的字符类型 %d"
 
-#: src/conf/domain_conf.c:20447
+#: src/conf/domain_conf.c:20453
 #, c-format
 msgid "unexpected char device type %d"
 msgstr "意外的 char 设备类型 %d"
 
-#: src/conf/domain_conf.c:20467
+#: src/conf/domain_conf.c:20473
 msgid "Could not format channel target type"
 msgstr "无法格式化通道目标类型"
 
-#: src/conf/domain_conf.c:20477
+#: src/conf/domain_conf.c:20483
 msgid "Unable to format guestfwd port"
 msgstr "无法格式化 guestfwd 端口"
 
-#: src/conf/domain_conf.c:20551 src/conf/domain_conf.c:20584
+#: src/conf/domain_conf.c:20557 src/conf/domain_conf.c:20590
 #: src/qemu/qemu_command.c:8226
 #, c-format
 msgid "unexpected smartcard type %d"
 msgstr "意外的智能卡类型 %d"
 
-#: src/conf/domain_conf.c:20602
+#: src/conf/domain_conf.c:20608
 #, c-format
 msgid "unexpected codec type %d"
 msgstr "意外的编码解码类型 %d"
 
-#: src/conf/domain_conf.c:20658 src/xenconfig/xen_sxpr.c:2099
+#: src/conf/domain_conf.c:20664 src/xenconfig/xen_sxpr.c:2099
 #, c-format
 msgid "unexpected sound model %d"
 msgstr "意外声音模型 %d"
 
-#: src/conf/domain_conf.c:20705
+#: src/conf/domain_conf.c:20711
 #, c-format
 msgid "unexpected memballoon model %d"
 msgstr "意外的内存 balloon 型号 %d"
 
-#: src/conf/domain_conf.c:20765
+#: src/conf/domain_conf.c:20771
 #, c-format
 msgid "unexpected watchdog model %d"
 msgstr "意外监视器模型 %d"
 
-#: src/conf/domain_conf.c:20771
+#: src/conf/domain_conf.c:20777
 #, c-format
 msgid "unexpected watchdog action %d"
 msgstr "意外监视器动作 %d"
 
-#: src/conf/domain_conf.c:21033
+#: src/conf/domain_conf.c:21039
 #, c-format
 msgid "unexpected video model %d"
 msgstr "意外视频模型 %d"
 
-#: src/conf/domain_conf.c:21086 src/xenconfig/xen_sxpr.c:2135
+#: src/conf/domain_conf.c:21094 src/xenconfig/xen_sxpr.c:2135
 #, c-format
 msgid "unexpected input type %d"
 msgstr "意外输入类型 %d"
 
-#: src/conf/domain_conf.c:21091
+#: src/conf/domain_conf.c:21099
 #, c-format
 msgid "unexpected input bus type %d"
 msgstr "意外输入总线类型 %d"
 
-#: src/conf/domain_conf.c:21123
+#: src/conf/domain_conf.c:21131
 #, c-format
 msgid "unexpected timer name %d"
 msgstr "意外的计时器名称 %d"
 
-#: src/conf/domain_conf.c:21139
+#: src/conf/domain_conf.c:21147
 #, c-format
 msgid "unexpected timer tickpolicy %d"
 msgstr "意外的计时器 tickpolicy %d"
 
-#: src/conf/domain_conf.c:21153
+#: src/conf/domain_conf.c:21161
 #, c-format
 msgid "unexpected timer track %d"
 msgstr "意外的计时器跟踪 %d"
 
-#: src/conf/domain_conf.c:21170
+#: src/conf/domain_conf.c:21178
 #, c-format
 msgid "unexpected timer mode %d"
 msgstr "意外的计时器模式 %d"
 
-#: src/conf/domain_conf.c:21499 src/conf/domain_conf.c:21524
+#: src/conf/domain_conf.c:21507 src/conf/domain_conf.c:21532
 #, c-format
 msgid "unexpected hostdev mode %d"
 msgstr "意外的 hostdev 模式 %d"
 
-#: src/conf/domain_conf.c:21644
+#: src/conf/domain_conf.c:21652
 #, c-format
 msgid "unexpected hub type %d"
 msgstr "意外的集线器类型 %d"
 
-#: src/conf/domain_conf.c:22107
+#: src/conf/domain_conf.c:22115
 #, c-format
 msgid "unexpected domain type %d"
 msgstr "意外的域类型 %d"
 
-#: src/conf/domain_conf.c:22355
+#: src/conf/domain_conf.c:22363
 #, c-format
 msgid "unexpected boot device type %d"
 msgstr "意外的引导设备类型 %d"
 
-#: src/conf/domain_conf.c:22388
+#: src/conf/domain_conf.c:22396
 #, c-format
 msgid "unexpected smbios mode %d"
 msgstr "意外的 smbios 模式 %d"
 
-#: src/conf/domain_conf.c:22435
+#: src/conf/domain_conf.c:22443
 #, c-format
 msgid "unexpected feature %zu"
 msgstr "意外功能 %zu"
 
-#: src/conf/domain_conf.c:22455
+#: src/conf/domain_conf.c:22463
 #, c-format
 msgid "Unexpected state of feature '%s'"
 msgstr ""
 
-#: src/conf/domain_conf.c:22985
+#: src/conf/domain_conf.c:22993
 #, c-format
 msgid "boot order %d is already used by another device"
 msgstr ""
 
-#: src/conf/domain_conf.c:23034
+#: src/conf/domain_conf.c:23042
 msgid "Device configuration is not compatible: Domain has no USB bus support"
 msgstr "失败配置不兼容：域不支持 USB 总线"
 
-#: src/conf/domain_conf.c:23057
+#: src/conf/domain_conf.c:23065
 #, c-format
 msgid ""
 "Attaching memory device with size '%llu' would exceed domain's maxMemory "
 "config"
 msgstr ""
 
-#: src/conf/domain_conf.c:23066
+#: src/conf/domain_conf.c:23074
 #, fuzzy, c-format
 msgid "Domain already has a disk with wwn '%s'"
 msgstr "使用 uuid %s 的域 '%s' 已存在"
 
-#: src/conf/domain_conf.c:23092 src/conf/network_conf.c:2965
+#: src/conf/domain_conf.c:23100 src/conf/network_conf.c:2965
 #: src/conf/nwfilter_conf.c:2829 src/util/virdnsmasq.c:561
 #, c-format
 msgid "cannot create config directory '%s'"
 msgstr "无法生成配置目录 '%s'"
 
-#: src/conf/domain_conf.c:23176
+#: src/conf/domain_conf.c:23184
 #, c-format
 msgid "cannot remove config %s"
 msgstr "无法为删除配置 %s"
 
-#: src/conf/domain_conf.c:23370
+#: src/conf/domain_conf.c:23378
 #, c-format
 msgid "unable to visit backing chain file %s"
 msgstr "无法访问后端链文件 %s"
 
-#: src/conf/domain_conf.c:23482
+#: src/conf/domain_conf.c:23490
 #, c-format
 msgid "invalid domain state: %d"
 msgstr "无效域状态：%d"
 
-#: src/conf/domain_conf.c:23968
+#: src/conf/domain_conf.c:23976
 #, c-format
 msgid "Copying definition of '%d' type is not implemented yet."
 msgstr "还没有采用复制 '%d' 类型定义的方法"
 
-#: src/conf/domain_conf.c:24058
+#: src/conf/domain_conf.c:24066
 #, c-format
 msgid "no device found with alias %s"
 msgstr "没有找到别名为 %s 的设备"
 
-#: src/conf/domain_conf.c:24084
+#: src/conf/domain_conf.c:24092
 #, c-format
 msgid "source path not found for device='lun' using type='%d'"
 msgstr ""
 
-#: src/conf/domain_conf.c:24106
+#: src/conf/domain_conf.c:24114
 #, fuzzy
 msgid "disk device='lun' for iSCSI is not supported with mode='direct'."
 msgstr "磁盘 device='lun' 不支持 bus='%s'"
 
-#: src/conf/domain_conf.c:24115
+#: src/conf/domain_conf.c:24123
 msgid "disk device='lun' is only valid for block type disk source"
 msgstr "disk device='lun' 只能用于块类型磁盘源"
 
-#: src/conf/domain_conf.c:24137 src/conf/domain_conf.c:24196
+#: src/conf/domain_conf.c:24145 src/conf/domain_conf.c:24204
 #, c-format
 msgid "unknown metadata type '%d'"
 msgstr ""
 
-#: src/conf/domain_conf.c:24174
+#: src/conf/domain_conf.c:24182
 msgid "Requested metadata element is not present"
 msgstr "所需元数据元素未出现"
 
-#: src/conf/domain_conf.c:24220
+#: src/conf/domain_conf.c:24228
 msgid "(metadata_xml)"
 msgstr ""
 
-#: src/conf/domain_conf.c:24327
+#: src/conf/domain_conf.c:24335
 #, c-format
 msgid "target '%s' duplicated for disk sources '%s' and '%s'"
 msgstr ""
-
-#: src/conf/domain_conf.c:24336
-#, c-format
-msgid "Disks '%s' and '%s' have identical WWN"
-msgstr ""
-
-#: src/conf/domain_conf.c:24343
-#, fuzzy, c-format
-msgid "Disks '%s' and '%s' have identical serial"
-msgstr "--%s 和 --%s 选项互斥"
 
 #: src/conf/domain_event.c:561
 #, c-format
@@ -9340,7 +9330,7 @@ msgstr ""
 
 #: src/fdstream.c:500 src/locking/lock_daemon.c:158
 #: src/locking/lock_daemon.c:207 src/logging/log_daemon.c:148
-#: src/logging/log_daemon.c:198 src/qemu/qemu_capabilities.c:3700
+#: src/logging/log_daemon.c:198 src/qemu/qemu_capabilities.c:3702
 #: src/util/vireventpoll.c:692 src/util/virobject.c:224
 msgid "Unable to initialize mutex"
 msgstr "无法初始化互斥"
@@ -10600,7 +10590,7 @@ msgstr "无法生成锁空间 %s"
 
 #: src/locking/lock_driver_sanlock.c:267 src/locking/lock_driver_sanlock.c:322
 #: src/locking/lock_driver_sanlock.c:690 src/storage/storage_backend.c:365
-#: src/util/vircgroup.c:3963 src/util/vircgroup.c:3975 src/util/virfile.c:2037
+#: src/util/vircgroup.c:3972 src/util/vircgroup.c:3984 src/util/virfile.c:2037
 #: src/util/virfile.c:2488
 #, c-format
 msgid "cannot chown '%s' to (%u, %u)"
@@ -11007,7 +10997,7 @@ msgstr "无法获取 MEMORY cgroup 控制器路径"
 msgid "Resource partition '%s' must start with '/'"
 msgstr "资源分区 '%s' 必须以 '/' 开始"
 
-#: src/lxc/lxc_fuse.c:149 src/util/vircgroup.c:3620
+#: src/lxc/lxc_fuse.c:149 src/util/vircgroup.c:3629
 #, c-format
 msgid "Cannot open %s"
 msgstr "无法打开 %s"
@@ -11846,7 +11836,7 @@ msgstr "无效路径：%s"
 
 #: src/lxc/lxc_driver.c:2393 src/lxc/lxc_driver.c:2474
 #: src/qemu/qemu_driver.c:10947 src/qemu/qemu_driver.c:11868
-#: src/qemu/qemu_hotplug.c:181
+#: src/qemu/qemu_hotplug.c:218
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "缺少 %s 的磁盘设备别名"
@@ -11968,8 +11958,8 @@ msgstr "无目标设备 %s"
 
 #: src/lxc/lxc_driver.c:3908 src/libxl/libxl_driver.c:3538
 #: src/qemu/qemu_driver.c:8009 src/qemu/qemu_driver.c:8033
-#: src/qemu/qemu_hotplug.c:1506 src/qemu/qemu_hotplug.c:4164
-#: src/qemu/qemu_hotplug.c:4221 src/qemu/qemu_hotplug.c:4279
+#: src/qemu/qemu_hotplug.c:1505 src/qemu/qemu_hotplug.c:4171
+#: src/qemu/qemu_hotplug.c:4228 src/qemu/qemu_hotplug.c:4286
 msgid "device not present in domain configuration"
 msgstr "域配置中没有设备"
 
@@ -12052,7 +12042,7 @@ msgid "device type '%s' cannot be attached"
 msgstr "无法附加设备类型 '%s'"
 
 #: src/lxc/lxc_driver.c:4627 src/libxl/libxl_driver.c:3071
-#: src/qemu/qemu_hotplug.c:3552 src/uml/uml_driver.c:2316
+#: src/qemu/qemu_hotplug.c:3559 src/uml/uml_driver.c:2316
 #, c-format
 msgid "disk %s not found"
 msgstr "未找到磁盘 %s"
@@ -12541,7 +12531,7 @@ msgstr "域管理的保存映像存在时拒绝取消定义"
 msgid "No device with bus '%s' and target '%s'"
 msgstr "没有总线为 '%s' 且目标为 '%s' 的设备"
 
-#: src/libxl/libxl_driver.c:2873 src/qemu/qemu_hotplug.c:188
+#: src/libxl/libxl_driver.c:2873 src/qemu/qemu_hotplug.c:225
 #, c-format
 msgid "Removable media not supported for %s device"
 msgstr "%s 设备不支持可移动介质"
@@ -12551,7 +12541,7 @@ msgstr "%s 设备不支持可移动介质"
 msgid "libxenlight failed to change media for disk '%s'"
 msgstr "libxenlight 无法在域 '%s' 中更改介质"
 
-#: src/libxl/libxl_driver.c:2923 src/qemu/qemu_hotplug.c:648
+#: src/libxl/libxl_driver.c:2923 src/qemu/qemu_hotplug.c:647
 #: src/uml/uml_driver.c:2192
 msgid "disk source path is missing"
 msgstr "缺少磁盘源"
@@ -12561,7 +12551,7 @@ msgstr "缺少磁盘源"
 msgid "libxenlight failed to attach disk '%s'"
 msgstr "libxenlight 附加磁盘 '%s' 失败"
 
-#: src/libxl/libxl_driver.c:2955 src/qemu/qemu_hotplug.c:789
+#: src/libxl/libxl_driver.c:2955 src/qemu/qemu_hotplug.c:788
 #: src/uml/uml_driver.c:2262
 #, c-format
 msgid "disk bus '%s' cannot be hotplugged."
@@ -12583,13 +12573,13 @@ msgid "libxenlight failed to attach pci device %.4x:%.2x:%.2x.%.1x"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3033 src/libxl/libxl_driver.c:3396
-#: src/qemu/qemu_hotplug.c:2029 src/qemu/qemu_hotplug.c:3875
+#: src/qemu/qemu_hotplug.c:2036 src/qemu/qemu_hotplug.c:3882
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr "不支持 hostdev 模式 '%s'"
 
-#: src/libxl/libxl_driver.c:3046 src/qemu/qemu_hotplug.c:2055
-#: src/qemu/qemu_hotplug.c:3841
+#: src/libxl/libxl_driver.c:3046 src/qemu/qemu_hotplug.c:2062
+#: src/qemu/qemu_hotplug.c:3848
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "不支持 hostdev 子系统类型 '%s'"
@@ -12625,12 +12615,12 @@ msgid ""
 "already exists"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3343 src/qemu/qemu_hotplug.c:3886
+#: src/libxl/libxl_driver.c:3343 src/qemu/qemu_hotplug.c:3893
 #, c-format
 msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
 msgstr "未找到主机 pci 设备 %.4x:%.2x:%.2x.%.1x"
 
-#: src/libxl/libxl_driver.c:3351 src/qemu/qemu_hotplug.c:3727
+#: src/libxl/libxl_driver.c:3351 src/qemu/qemu_hotplug.c:3734
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr "无法热插拔多功能 PCI 设备：%.4x:%.2x:%.2x.%.1x"
@@ -12666,7 +12656,7 @@ msgstr "目标 %s 不存在"
 msgid "this disk doesn't support update"
 msgstr "这个磁盘不支持更新"
 
-#: src/libxl/libxl_driver.c:3900 src/libxl/libxl_conf.c:2067
+#: src/libxl/libxl_driver.c:3900 src/libxl/libxl_conf.c:2070
 msgid "libxl_get_physinfo_info failed"
 msgstr "libxl_get_physinfo_info 失败"
 
@@ -12764,8 +12754,8 @@ msgstr "从 libxenlight 获取版本信息失败"
 msgid "Failed to get capabilities from libxenlight"
 msgstr "无法为 libxenlight 生成容量"
 
-#: src/libxl/libxl_conf.c:337 src/libxl/libxl_conf.c:1726
-#: src/storage/storage_backend_logical.c:148 src/util/vircommand.c:2942
+#: src/libxl/libxl_conf.c:337 src/libxl/libxl_conf.c:1729
+#: src/storage/storage_backend_logical.c:148 src/util/vircommand.c:2944
 #, c-format
 msgid "Failed to compile regex %s"
 msgstr "编译表达式 %s 失败"
@@ -12822,143 +12812,143 @@ msgid ""
 "This version of libxenlight does not support disk 'discard' option passing"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:965 src/qemu/qemu_command.c:517
+#: src/libxl/libxl_conf.c:968 src/qemu/qemu_command.c:517
 #, c-format
 msgid "%s no secret matches uuid '%s'"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:969 src/qemu/qemu_command.c:521
+#: src/libxl/libxl_conf.c:972 src/qemu/qemu_command.c:521
 #, c-format
 msgid "%s no secret matches usage value '%s'"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:980 src/qemu/qemu_command.c:532
+#: src/libxl/libxl_conf.c:983 src/qemu/qemu_command.c:532
 #, c-format
 msgid "could not get value of the secret for username '%s' using uuid '%s'"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:985 src/qemu/qemu_command.c:537
+#: src/libxl/libxl_conf.c:988 src/qemu/qemu_command.c:537
 #, c-format
 msgid ""
 "could not get value of the secret for username '%s' using usage value '%s'"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1031 src/xenconfig/xen_xl.c:630
+#: src/libxl/libxl_conf.c:1034 src/xenconfig/xen_xl.c:630
 #, fuzzy, c-format
 msgid "Unsupported network block protocol '%s'"
 msgstr "未知的协议 '%s'"
 
-#: src/libxl/libxl_conf.c:1038 src/qemu/qemu_command.c:776
+#: src/libxl/libxl_conf.c:1041 src/qemu/qemu_command.c:776
 #: src/xenconfig/xen_xl.c:637
 #, c-format
 msgid "':' not allowed in RBD source volume name '%s'"
 msgstr "RBD 源卷名称 '%s' 中部允许使用 ':'"
 
-#: src/libxl/libxl_conf.c:1167 src/libxl/libxl_conf.c:1192
-#: src/libxl/libxl_conf.c:1202 src/libxl/libxl_conf.c:1214
+#: src/libxl/libxl_conf.c:1170 src/libxl/libxl_conf.c:1195
+#: src/libxl/libxl_conf.c:1205 src/libxl/libxl_conf.c:1217
 #, c-format
 msgid "libxenlight does not support disk format %s with disk driver %s"
 msgstr "libxenlight 不支持使用磁盘驱动程序 %s 的磁盘格式 %s "
 
-#: src/libxl/libxl_conf.c:1224
+#: src/libxl/libxl_conf.c:1227
 #, c-format
 msgid "libxenlight does not support disk driver %s"
 msgstr "libxenlight 不支持磁盘驱动程序 %s"
 
-#: src/libxl/libxl_conf.c:1249
+#: src/libxl/libxl_conf.c:1252
 msgid "libxenlight does not support transient disks"
 msgstr "libxenlight 不支持临时磁盘"
 
-#: src/libxl/libxl_conf.c:1259 src/libxl/libxl_conf.c:1397
+#: src/libxl/libxl_conf.c:1262 src/libxl/libxl_conf.c:1400
 msgid "this version of libxenlight does not support backend domain name"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1316
+#: src/libxl/libxl_conf.c:1319
 msgid ""
 "specifying a script is only supported with interface types bridge and "
 "ethernet"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1386
+#: src/libxl/libxl_conf.c:1389
 #, c-format
 msgid "unsupported interface type %s"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1712
+#: src/libxl/libxl_conf.c:1715
 #, fuzzy
 msgid "Unexpected type for 'autoballoon' setting"
 msgstr "字段 %d 的意外类型 %s"
 
-#: src/libxl/libxl_conf.c:1775
+#: src/libxl/libxl_conf.c:1778
 #, c-format
 msgid "failed to create log dir '%s': %s"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1782
+#: src/libxl/libxl_conf.c:1785
 #, c-format
 msgid "Failed to create log file '%s': %s"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1807
+#: src/libxl/libxl_conf.c:1810
 msgid "cannot create logger for libxenlight, disabling driver"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1812
+#: src/libxl/libxl_conf.c:1815
 msgid ""
 "cannot initialize libxenlight context, probably not running in a Xen Dom0, "
 "disabling driver"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1818
+#: src/libxl/libxl_conf.c:1821
 msgid "cannot version information from libxenlight, disabling driver"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:1828
+#: src/libxl/libxl_conf.c:1831
 msgid "Unable to configure libxl's memory management parameters"
 msgstr "无法配置 libxl 的内存管理参数"
 
-#: src/libxl/libxl_conf.c:1881
+#: src/libxl/libxl_conf.c:1884
 #, fuzzy
 msgid "Unexpected type for 'lock_manager' setting"
 msgstr "字段 %d 的意外类型 %s"
 
-#: src/libxl/libxl_conf.c:1893
+#: src/libxl/libxl_conf.c:1896
 #, fuzzy
 msgid "Unexpected type for 'keepalive_interval' setting"
 msgstr "字段 %d 的意外类型 %s"
 
-#: src/libxl/libxl_conf.c:1904
+#: src/libxl/libxl_conf.c:1907
 #, fuzzy
 msgid "Unexpected type for 'keepalive_count' setting"
 msgstr "字段 %d 的意外类型 %s"
 
-#: src/libxl/libxl_conf.c:2002
+#: src/libxl/libxl_conf.c:2005
 msgid "videoram must be at least 16MB for VGA"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:2008
+#: src/libxl/libxl_conf.c:2011
 msgid "videoram must be at least 8MB for VGA"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:2019
+#: src/libxl/libxl_conf.c:2022
 msgid "videoram must be at least 8MB for CIRRUS"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:2025
+#: src/libxl/libxl_conf.c:2028
 msgid "videoram must be at least 4MB for CIRRUS"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:2036
+#: src/libxl/libxl_conf.c:2039
 #, fuzzy
 msgid "videoram must be at least 128MB for QXL"
 msgstr "'vram' 值必须小于 '%u'"
 
-#: src/libxl/libxl_conf.c:2044
+#: src/libxl/libxl_conf.c:2047
 #, c-format
 msgid "video type %s is not supported by libxl"
 msgstr ""
 
-#: src/libxl/libxl_conf.c:2073
+#: src/libxl/libxl_conf.c:2076
 #, c-format
 msgid "machine type %s too big for destination"
 msgstr "对于目的地来说极其类型 %s 太大"
@@ -15562,147 +15552,147 @@ msgstr "无法为创新定向的设备确定设备索引"
 msgid "disk does not have an alias"
 msgstr "secret '%s' 没有数值"
 
-#: src/qemu/qemu_capabilities.c:558
+#: src/qemu/qemu_capabilities.c:559
 #, c-format
 msgid "Cannot find QEMU binary %s"
 msgstr "无法找到 QEMU 二进制 %s"
 
-#: src/qemu/qemu_capabilities.c:1285
+#: src/qemu/qemu_capabilities.c:1286
 msgid "this qemu binary requires libvirt to be compiled with yajl"
 msgstr "这个 qemu 二进制需要 libvirt 方可与 yajl 编译"
 
-#: src/qemu/qemu_capabilities.c:1410
+#: src/qemu/qemu_capabilities.c:1411
 #, c-format
 msgid "QEMU version >= 0.12.00 is required, but %d.%d.%d found"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:1421
+#: src/qemu/qemu_capabilities.c:1422
 #, c-format
 msgid "QEMU / QMP failed: %s"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:1425
+#: src/qemu/qemu_capabilities.c:1426
 #, c-format
 msgid "QEMU %u.%u.%u is too new for help parsing"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:1453 src/util/virdnsmasq.c:702
+#: src/qemu/qemu_capabilities.c:1454 src/util/virdnsmasq.c:702
 #, c-format
 msgid "cannot parse %s version number in '%.*s'"
 msgstr "无法在 '%s' 中接卸 %.*s 版本号"
 
-#: src/qemu/qemu_capabilities.c:1795
+#: src/qemu/qemu_capabilities.c:1797
 msgid "Malformed QEMU device list string, missing quote"
 msgstr "畸形 QEMU 设备列表字符串，缺少 quote。"
 
-#: src/qemu/qemu_capabilities.c:1849
+#: src/qemu/qemu_capabilities.c:1851
 msgid "Malformed QEMU device list string, missing '='"
 msgstr "畸形 QEMU 设备列表字符串，缺少 '='。"
 
-#: src/qemu/qemu_capabilities.c:1970
+#: src/qemu/qemu_capabilities.c:1972
 #, c-format
 msgid "Cannot find suitable emulator for %s"
 msgstr "无法找到适合 %s 的模拟器"
 
-#: src/qemu/qemu_capabilities.c:2387
+#: src/qemu/qemu_capabilities.c:2389
 msgid "unable to probe for add-fd"
 msgstr "无法为 add-fd 进行探测"
 
-#: src/qemu/qemu_capabilities.c:2756
+#: src/qemu/qemu_capabilities.c:2758
 #, c-format
 msgid "unexpected root element <%s>, expecting <qemuCaps>"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2764
+#: src/qemu/qemu_capabilities.c:2766
 msgid "missing qemuctime in QEMU capabilities XML"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2771
+#: src/qemu/qemu_capabilities.c:2773
 msgid "missing selfctime in QEMU capabilities XML"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2785 src/qemu/qemu_domain.c:844
+#: src/qemu/qemu_capabilities.c:2787 src/qemu/qemu_domain.c:844
 msgid "failed to parse qemu capabilities flags"
 msgstr "解析 qemu 功能标签失败"
 
-#: src/qemu/qemu_capabilities.c:2793
+#: src/qemu/qemu_capabilities.c:2795
 msgid "missing flag name in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2799 src/qemu/qemu_domain.c:857
+#: src/qemu/qemu_capabilities.c:2801 src/qemu/qemu_domain.c:857
 #, c-format
 msgid "Unknown qemu capabilities flag %s"
 msgstr "未知 qemu 功能标签 %s"
 
-#: src/qemu/qemu_capabilities.c:2809 src/qemu/qemu_capabilities.c:2815
+#: src/qemu/qemu_capabilities.c:2811 src/qemu/qemu_capabilities.c:2817
 msgid "missing version in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2824
+#: src/qemu/qemu_capabilities.c:2826
 msgid "missing arch in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2829
+#: src/qemu/qemu_capabilities.c:2831
 #, c-format
 msgid "unknown arch %s in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2836
+#: src/qemu/qemu_capabilities.c:2838
 msgid "failed to parse qemu capabilities cpus"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2848
+#: src/qemu/qemu_capabilities.c:2850
 msgid "missing cpu name in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2858
+#: src/qemu/qemu_capabilities.c:2860
 msgid "failed to parse qemu capabilities machines"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2874
+#: src/qemu/qemu_capabilities.c:2876
 msgid "missing machine name in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2883
+#: src/qemu/qemu_capabilities.c:2885
 msgid "malformed machine cpu count in QEMU capabilities cache"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:2967
+#: src/qemu/qemu_capabilities.c:2969
 #, c-format
 msgid "Failed to save '%s' for '%s'"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:3004 src/qemu/qemu_capabilities.c:3073
+#: src/qemu/qemu_capabilities.c:3006 src/qemu/qemu_capabilities.c:3075
 #, c-format
 msgid "Unable to create directory '%s'"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:3086
+#: src/qemu/qemu_capabilities.c:3088
 #, c-format
 msgid "Unable to access cache '%s' for '%s'"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:3283
+#: src/qemu/qemu_capabilities.c:3285
 #, c-format
 msgid "Unknown QEMU arch %s"
 msgstr "未知 QEMU arch %s"
 
-#: src/qemu/qemu_capabilities.c:3537
+#: src/qemu/qemu_capabilities.c:3539
 #, c-format
 msgid "Failed to kill process %lld: %s"
 msgstr "杀死进程 %lld 失败：%s"
 
-#: src/qemu/qemu_capabilities.c:3566
+#: src/qemu/qemu_capabilities.c:3568
 #, c-format
 msgid "Failed to probe capabilities for %s: %s"
 msgstr ""
 
-#: src/qemu/qemu_capabilities.c:3591
+#: src/qemu/qemu_capabilities.c:3593
 #, c-format
 msgid "Cannot check QEMU binary %s"
 msgstr "无法检查 QEMU 二进制 %s"
 
-#: src/qemu/qemu_capabilities.c:3602
+#: src/qemu/qemu_capabilities.c:3604
 #, c-format
 msgid "QEMU binary %s is not executable"
 msgstr "QEMU 二进制 %s 不能执行"
@@ -16429,7 +16419,7 @@ msgid "invalid PCI passthrough type '%s'"
 msgstr ""
 
 #: src/qemu/qemu_command.c:4252 src/qemu/qemu_command.c:4293
-#: src/qemu/qemu_hotplug.c:1300
+#: src/qemu/qemu_hotplug.c:1299
 #, c-format
 msgid ""
 "non-zero domain='%.4x' in host device PCI address not supported in this QEMU "
@@ -16512,7 +16502,7 @@ msgid ""
 "booting from assigned SCSI devices is not supported with this version of qemu"
 msgstr "这个版本的 qemu 不支持使用分配的 SCSI 设备引导"
 
-#: src/qemu/qemu_command.c:4883 src/qemu/qemu_hotplug.c:1230
+#: src/qemu/qemu_command.c:4883 src/qemu/qemu_hotplug.c:1229
 msgid "VFIO PCI device assignment is not supported by this version of qemu"
 msgstr "qemu 的这个版本不支持 VFIO PCI 设备分配"
 
@@ -16520,7 +16510,7 @@ msgstr "qemu 的这个版本不支持 VFIO PCI 设备分配"
 msgid "PCI device assignment is not supported by this version of qemu"
 msgstr "qemu 的这个版本不支持 PCI 设备分配"
 
-#: src/qemu/qemu_command.c:4958 src/qemu/qemu_hotplug.c:1933
+#: src/qemu/qemu_command.c:4958 src/qemu/qemu_hotplug.c:1932
 msgid "SCSI passthrough is not supported by this version of qemu"
 msgstr "这个版本的 qemu 不支持 SCSI 转移"
 
@@ -16576,9 +16566,9 @@ msgstr "域 '%s' sysinfo 不可用"
 msgid "qemu does not support more than one entry to Type 2 in SMBIOS table"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5637 src/qemu/qemu_hotplug.c:1564
-#: src/qemu/qemu_hotplug.c:4170 src/qemu/qemu_hotplug.c:4229
-#: src/qemu/qemu_hotplug.c:4271
+#: src/qemu/qemu_command.c:5637 src/qemu/qemu_hotplug.c:1563
+#: src/qemu/qemu_hotplug.c:4177 src/qemu/qemu_hotplug.c:4236
+#: src/qemu/qemu_hotplug.c:4278
 msgid "qemu does not support -device"
 msgstr "qemu 不支持 -device"
 
@@ -16875,12 +16865,12 @@ msgstr "这个 QEMU 二进制中不支持重新使用"
 msgid "Error generating NIC -device string"
 msgstr ""
 
-#: src/qemu/qemu_command.c:7801 src/qemu/qemu_hotplug.c:862
+#: src/qemu/qemu_command.c:7801 src/qemu/qemu_hotplug.c:861
 #, c-format
 msgid "Multiqueue network is not supported for: %s"
 msgstr "%s 不支持多队列网络"
 
-#: src/qemu/qemu_command.c:7812 src/qemu/qemu_hotplug.c:873
+#: src/qemu/qemu_command.c:7812 src/qemu/qemu_hotplug.c:872
 #, fuzzy, c-format
 msgid "filterref is not supported for network interfaces of type %s"
 msgstr "%s 类型接口不支持过滤器"
@@ -16967,7 +16957,7 @@ msgstr "QEMU 的这个版本不支持 USB 重新定向过滤器"
 msgid "USB redirection booting is not supported by this version of QEMU"
 msgstr "QEMU 的这个版本不支持 USB 重新定向引导"
 
-#: src/qemu/qemu_command.c:8747 src/qemu/qemu_hotplug.c:1361
+#: src/qemu/qemu_command.c:8747 src/qemu/qemu_hotplug.c:1360
 #, fuzzy
 msgid "redirected devices are not supported by this QEMU"
 msgstr "这个 QEMU 不支持磁盘 device='lun' "
@@ -17051,7 +17041,7 @@ msgstr "为每种类型只支持一个图形设备（sdl、vnc、spice）"
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qemu 模拟器 '%s' 不支持 xen"
 
-#: src/qemu/qemu_command.c:9168 src/qemu/qemu_hotplug.c:717
+#: src/qemu/qemu_command.c:9168 src/qemu/qemu_hotplug.c:716
 #, c-format
 msgid "unsupported driver name '%s' for disk '%s'"
 msgstr "磁盘 '%s' 不支持驱动程序名称 '%s' "
@@ -17689,7 +17679,7 @@ msgstr "应为 QEMU URI 路径 '%s'，尝试 qemu:///system"
 msgid "unexpected QEMU URI path '%s', try qemu:///session"
 msgstr "应为 QEMU URI 路径 '%s'，尝试 qemu:///session"
 
-#: src/qemu/qemu_driver.c:1266 src/util/iohelper.c:58 src/util/vircgroup.c:370
+#: src/qemu/qemu_driver.c:1266 src/util/iohelper.c:58 src/util/vircgroup.c:379
 #: src/util/virfile.c:596 src/util/virfile.c:637 src/util/virfile.c:712
 #: src/util/virfile.c:3324 src/util/virnetdevtap.c:438
 #, c-format
@@ -17727,7 +17717,7 @@ msgid "domain is pmsuspended"
 msgstr "域为 pm 暂停的"
 
 #: src/qemu/qemu_driver.c:1987 src/qemu/qemu_migration.c:6074
-#: src/qemu/qemu_process.c:562 src/qemu/qemu_process.c:5499
+#: src/qemu/qemu_process.c:562 src/qemu/qemu_process.c:5503
 msgid "resume operation failed"
 msgstr "恢复操作失败"
 
@@ -17853,7 +17843,7 @@ msgstr "无法写入 %s"
 #: src/qemu/qemu_driver.c:3218 src/qemu/qemu_driver.c:3233
 #: src/qemu/qemu_driver.c:3755 src/qemu/qemu_driver.c:13752
 #: src/qemu/qemu_driver.c:14548 src/qemu/qemu_driver.c:15502
-#: src/qemu/qemu_driver.c:15558 src/qemu/qemu_hotplug.c:548
+#: src/qemu/qemu_driver.c:15558 src/qemu/qemu_hotplug.c:534
 #: src/qemu/qemu_migration.c:4987 src/qemu/qemu_migration.c:5536
 #: src/qemu/qemu_migration.c:6000 src/qemu/qemu_migration.c:6239
 #: src/qemu/qemu_process.c:541
@@ -18148,7 +18138,7 @@ msgstr "没有可用 FLR、PM 重置 或者总线重置"
 msgid "persistent attach of device '%s' is not supported"
 msgstr "不支持永久附加设备 '%s'"
 
-#: src/qemu/qemu_driver.c:8021 src/qemu/qemu_hotplug.c:4138
+#: src/qemu/qemu_driver.c:8021 src/qemu/qemu_hotplug.c:4145
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr "锁空间 %s 中租赁 %s 已不存在"
@@ -18368,7 +18358,7 @@ msgstr "QEMU 二进制文件不支持压缩迁移"
 #: src/qemu/qemu_driver.c:13429 src/qemu/qemu_driver.c:16357
 #: src/qemu/qemu_driver.c:16626 src/qemu/qemu_driver.c:16908
 #: src/qemu/qemu_driver.c:17095 src/qemu/qemu_migration.c:2105
-#: src/qemu/qemu_monitor.c:2111 tools/virsh-domain.c:2360
+#: src/qemu/qemu_monitor.c:2093 tools/virsh-domain.c:2360
 #, c-format
 msgid "bandwidth must be less than %llu"
 msgstr "带宽必须小于 %llu"
@@ -18920,337 +18910,341 @@ msgstr ""
 msgid "host doesn't support legacy PCI passthrough"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:440
+#: src/qemu/qemu_hotplug.c:169
+msgid "timed out waiting for disk tray status update"
+msgstr ""
+
+#: src/qemu/qemu_hotplug.c:426
 #, c-format
 msgid "'%s' controller cannot be hot plugged."
 msgstr "不能热插拔 '%s' 控制器。"
 
-#: src/qemu/qemu_hotplug.c:447
+#: src/qemu/qemu_hotplug.c:433
 #, c-format
 msgid "target %s:%d already exists"
 msgstr "目标 %s:%d 已存在"
 
-#: src/qemu/qemu_hotplug.c:576
+#: src/qemu/qemu_hotplug.c:563
 #, c-format
 msgid "unexpected disk address type %s"
 msgstr "错误的磁盘地址类型 %s"
 
-#: src/qemu/qemu_hotplug.c:740
+#: src/qemu/qemu_hotplug.c:739
 #, c-format
 msgid ""
 "No device with bus '%s' and target '%s'. cdrom and floppy device hotplug "
 "isn't supported by libvirt"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:767
+#: src/qemu/qemu_hotplug.c:766
 msgid "disk device='lun' is not supported for usb bus"
 msgstr "usb 总线不支持 disk device='lun'"
 
-#: src/qemu/qemu_hotplug.c:970
+#: src/qemu/qemu_hotplug.c:969
 msgid "virtio-s390 net device cannot be hotplugged."
 msgstr "virtio-s390 网络设备不能热插拔。"
 
-#: src/qemu/qemu_hotplug.c:987
+#: src/qemu/qemu_hotplug.c:986
 msgid "Unable to attach network devices without vlan"
 msgstr "没有 vlan 无法附加网络设备"
 
-#: src/qemu/qemu_hotplug.c:1082
+#: src/qemu/qemu_hotplug.c:1081
 msgid "device alias not found: cannot set link state to down"
 msgstr "未找到设备别名：无法将链接状态设定为 down"
 
-#: src/qemu/qemu_hotplug.c:1094
+#: src/qemu/qemu_hotplug.c:1093
 msgid "setting of link state not supported: Link is up"
 msgstr "不支持设定链接状态：链接为 up"
 
-#: src/qemu/qemu_hotplug.c:1280
+#: src/qemu/qemu_hotplug.c:1279
 msgid "guest unexpectedly quit during hotplug"
 msgstr "热插拔过程中虚拟机意外退出"
 
-#: src/qemu/qemu_hotplug.c:1412
+#: src/qemu/qemu_hotplug.c:1411
 msgid "attaching serial console is not supported"
 msgstr "不支持附加串口控制台"
 
-#: src/qemu/qemu_hotplug.c:1418
+#: src/qemu/qemu_hotplug.c:1417
 msgid "chardev already exists"
 msgstr "chardev 已存在"
 
-#: src/qemu/qemu_hotplug.c:1492
+#: src/qemu/qemu_hotplug.c:1491
 msgid "detaching serial console is not supported"
 msgstr "不支持断开串口控制台"
 
-#: src/qemu/qemu_hotplug.c:1544
+#: src/qemu/qemu_hotplug.c:1543
 #, fuzzy
 msgid "Unsupported address type for character device"
 msgstr "不支持的字符设备类型 '%s'"
 
-#: src/qemu/qemu_hotplug.c:1947
+#: src/qemu/qemu_hotplug.c:1954
 #, c-format
 msgid "Unable to prepare scsi hostdev for iSCSI: %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1952
+#: src/qemu/qemu_hotplug.c:1959
 #, fuzzy, c-format
 msgid "Unable to prepare scsi hostdev: %s:%u:%u:%llu"
 msgstr "无法准备 scsi hostdev: %s:%d:%d:%d"
 
-#: src/qemu/qemu_hotplug.c:2076 src/qemu/qemu_interface.c:543
+#: src/qemu/qemu_hotplug.c:2083 src/qemu/qemu_interface.c:543
 #, fuzzy
 msgid "Missing bridge name"
 msgstr "缺少计时器名称"
 
-#: src/qemu/qemu_hotplug.c:2085
+#: src/qemu/qemu_hotplug.c:2092
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "桥接 %s 不存在"
 
-#: src/qemu/qemu_hotplug.c:2109
+#: src/qemu/qemu_hotplug.c:2116
 #, c-format
 msgid "unable to recover former state by adding port to bridge %s"
 msgstr "无法通过在桥接 %s 中添加端口恢复之前的状态"
 
-#: src/qemu/qemu_hotplug.c:2133
+#: src/qemu/qemu_hotplug.c:2140
 #, c-format
 msgid "filters not supported on interfaces of type %s"
 msgstr "%s 类型接口不支持过滤器"
 
-#: src/qemu/qemu_hotplug.c:2145
+#: src/qemu/qemu_hotplug.c:2152
 #, c-format
 msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
 msgstr "添加过滤器规则 '%s' 失败 - 尝试恢复原来的规则"
 
-#: src/qemu/qemu_hotplug.c:2167
+#: src/qemu/qemu_hotplug.c:2174
 msgid "can't change link state: device alias not found"
 msgstr "无法更改链接状态：未找到设备别名"
 
-#: src/qemu/qemu_hotplug.c:2228
+#: src/qemu/qemu_hotplug.c:2235
 msgid "cannot find existing network device to modify"
 msgstr "无法找到要修改的现有网络设备"
 
-#: src/qemu/qemu_hotplug.c:2236
+#: src/qemu/qemu_hotplug.c:2243
 #, c-format
 msgid "cannot change config of '%s' network type"
 msgstr "无法在  '%s' 网络类型中更改配置"
 
-#: src/qemu/qemu_hotplug.c:2259
+#: src/qemu/qemu_hotplug.c:2266
 #, c-format
 msgid "cannot change network interface mac address from %s to %s"
 msgstr "无法将网络接口 mac 地址从 %s 改为 %s"
 
-#: src/qemu/qemu_hotplug.c:2268
+#: src/qemu/qemu_hotplug.c:2275
 #, c-format
 msgid "cannot modify network device model from %s to %s"
 msgstr "无法将网络设备型号从 %s 改为 %s"
 
-#: src/qemu/qemu_hotplug.c:2293
+#: src/qemu/qemu_hotplug.c:2300
 msgid "cannot modify virtio network device driver attributes"
 msgstr "无法修改 virtio 网络设备驱动程序属性"
 
-#: src/qemu/qemu_hotplug.c:2307
+#: src/qemu/qemu_hotplug.c:2314
 msgid "cannot modify network device script attribute"
 msgstr "无法修改网络设备脚本属性"
 
-#: src/qemu/qemu_hotplug.c:2316
+#: src/qemu/qemu_hotplug.c:2323
 msgid "cannot modify network device tap name"
 msgstr "无法修改网络设备 tap 名称"
 
-#: src/qemu/qemu_hotplug.c:2334
+#: src/qemu/qemu_hotplug.c:2341
 msgid "cannot modify network device guest PCI address"
 msgstr "无法修改网络设备虚拟机 PCI 地址"
 
-#: src/qemu/qemu_hotplug.c:2343
+#: src/qemu/qemu_hotplug.c:2350
 msgid "cannot modify network device alias"
 msgstr "无法修改网络设备别名"
 
-#: src/qemu/qemu_hotplug.c:2348
+#: src/qemu/qemu_hotplug.c:2355
 msgid "cannot modify network device rom bar setting"
 msgstr "无法修改网络设备 rom 栏设置"
 
-#: src/qemu/qemu_hotplug.c:2353
+#: src/qemu/qemu_hotplug.c:2360
 msgid "cannot modify network rom file"
 msgstr "无法修改网络 rom 文件"
 
-#: src/qemu/qemu_hotplug.c:2358
+#: src/qemu/qemu_hotplug.c:2365
 msgid "cannot modify network device boot index setting"
 msgstr "无法修改网络设备引导索引设置"
 
-#: src/qemu/qemu_hotplug.c:2385
+#: src/qemu/qemu_hotplug.c:2392
 #, c-format
 msgid "cannot change network interface type to '%s'"
 msgstr "无法将网络接口类型改为 '%s'"
 
-#: src/qemu/qemu_hotplug.c:2442 src/qemu/qemu_hotplug.c:2515
+#: src/qemu/qemu_hotplug.c:2449 src/qemu/qemu_hotplug.c:2522
 #, c-format
 msgid "unable to change config on '%s' network type"
 msgstr "无法在  '%s' 网络类型中更改配置"
 
-#: src/qemu/qemu_hotplug.c:2635
+#: src/qemu/qemu_hotplug.c:2642
 msgid "cannot find existing graphics device to modify"
 msgstr "无法找到现有图形设备进行修改"
 
-#: src/qemu/qemu_hotplug.c:2641
+#: src/qemu/qemu_hotplug.c:2648
 msgid "cannot change the number of listen addresses"
 msgstr "无法更改侦听地址数"
 
-#: src/qemu/qemu_hotplug.c:2651
+#: src/qemu/qemu_hotplug.c:2658
 msgid "cannot change the type of listen address"
 msgstr "无法更改侦听地址类型"
 
-#: src/qemu/qemu_hotplug.c:2660
+#: src/qemu/qemu_hotplug.c:2667
 msgid "cannot change listen address setting on vnc graphics"
 msgstr "无法在 vnc 图形中更改侦听地址设置"
 
-#: src/qemu/qemu_hotplug.c:2661
+#: src/qemu/qemu_hotplug.c:2668
 msgid "cannot change listen address setting on spice graphics"
 msgstr "无法在 spice 图形中更改侦听地址设置"
 
-#: src/qemu/qemu_hotplug.c:2670
+#: src/qemu/qemu_hotplug.c:2677
 msgid "cannot change listen network setting on vnc graphics"
 msgstr "无法在 vnc 图形中更改侦听网络设置"
 
-#: src/qemu/qemu_hotplug.c:2671
+#: src/qemu/qemu_hotplug.c:2678
 msgid "cannot change listen network setting on spice graphics"
 msgstr "无法更改 spice 图形中的侦听网络设置"
 
-#: src/qemu/qemu_hotplug.c:2689
+#: src/qemu/qemu_hotplug.c:2696
 msgid "cannot change port settings on vnc graphics"
 msgstr "无法在 vnc 图形中更改端口设置"
 
-#: src/qemu/qemu_hotplug.c:2694
+#: src/qemu/qemu_hotplug.c:2701
 msgid "cannot change keymap setting on vnc graphics"
 msgstr "无法在 vnc 图形中更改 keymap 设置"
 
-#: src/qemu/qemu_hotplug.c:2735
+#: src/qemu/qemu_hotplug.c:2742
 msgid "cannot change port settings on spice graphics"
 msgstr "无法在 spice 图形中更改端口设置"
 
-#: src/qemu/qemu_hotplug.c:2741
+#: src/qemu/qemu_hotplug.c:2748
 msgid "cannot change keymap setting on spice graphics"
 msgstr "无法在 spice 图形中更改 keymap 设置"
 
-#: src/qemu/qemu_hotplug.c:2783
+#: src/qemu/qemu_hotplug.c:2790
 #, c-format
 msgid "unable to change config on '%s' graphics type"
 msgstr "无法在  '%s' 图形类型中更改配置"
 
-#: src/qemu/qemu_hotplug.c:3122
+#: src/qemu/qemu_hotplug.c:3129
 msgid "unable to determine original VLAN"
 msgstr "无法确定原始 VLAN"
 
-#: src/qemu/qemu_hotplug.c:3326
+#: src/qemu/qemu_hotplug.c:3333
 #, c-format
 msgid "don't know how to remove a %s device"
 msgstr "不知道如何删除 %s 设备"
 
-#: src/qemu/qemu_hotplug.c:3380
+#: src/qemu/qemu_hotplug.c:3387
 msgid "Unable to wait on unplug condition"
 msgstr "无法等待 unplug 条件"
 
-#: src/qemu/qemu_hotplug.c:3421 src/qemu/qemu_hotplug.c:3670
+#: src/qemu/qemu_hotplug.c:3428 src/qemu/qemu_hotplug.c:3677
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %s"
 msgstr "不能热插拔多功能 PCI 设备：%s"
 
-#: src/qemu/qemu_hotplug.c:3431
+#: src/qemu/qemu_hotplug.c:3438
 msgid "device cannot be detached without a valid CCW address"
 msgstr "没有有效 CCW 地址就无法断开设备"
 
-#: src/qemu/qemu_hotplug.c:3438
+#: src/qemu/qemu_hotplug.c:3445
 msgid "device cannot be detached without a valid PCI address"
 msgstr "没有有效 PCI 地址无法断开设备"
 
-#: src/qemu/qemu_hotplug.c:3493
+#: src/qemu/qemu_hotplug.c:3500
 #, c-format
 msgid "Underlying qemu does not support %s disk removal"
 msgstr "基础 qemu 不支持 %s 磁盘删除"
 
-#: src/qemu/qemu_hotplug.c:3500
+#: src/qemu/qemu_hotplug.c:3507
 #, c-format
 msgid "disk '%s' is in an active block job"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3567 src/uml/uml_driver.c:2380
+#: src/qemu/qemu_hotplug.c:3574 src/uml/uml_driver.c:2380
 msgid "This type of disk cannot be hot unplugged"
 msgstr "无法热插拔此类磁盘"
 
-#: src/qemu/qemu_hotplug.c:3571
+#: src/qemu/qemu_hotplug.c:3578
 #, c-format
 msgid "disk device type '%s' cannot be detached"
 msgstr "无法分离磁盘设备类型 '%s' "
 
-#: src/qemu/qemu_hotplug.c:3643
+#: src/qemu/qemu_hotplug.c:3650
 #, c-format
 msgid "controller %s:%d not found"
 msgstr "未找到控制器 %s:%d"
 
-#: src/qemu/qemu_hotplug.c:3655
+#: src/qemu/qemu_hotplug.c:3662
 #, c-format
 msgid "device with '%s' address cannot be detached"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3662
+#: src/qemu/qemu_hotplug.c:3669
 #, c-format
 msgid "device with invalid '%s' address cannot be detached"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3677
+#: src/qemu/qemu_hotplug.c:3684
 msgid "device cannot be detached: device is busy"
 msgstr "不分离设备：设备忙"
 
-#: src/qemu/qemu_hotplug.c:3736 src/qemu/qemu_hotplug.c:3968
+#: src/qemu/qemu_hotplug.c:3743 src/qemu/qemu_hotplug.c:3975
 msgid "device cannot be detached without a PCI address"
 msgstr "没有 PCI 地址无法分割设备"
 
-#: src/qemu/qemu_hotplug.c:3764 src/qemu/qemu_hotplug.c:3794
+#: src/qemu/qemu_hotplug.c:3771 src/qemu/qemu_hotplug.c:3801
 msgid "device cannot be detached without a device alias"
 msgstr "没有设备别名无法分割设备"
 
-#: src/qemu/qemu_hotplug.c:3770 src/qemu/qemu_hotplug.c:3800
+#: src/qemu/qemu_hotplug.c:3777 src/qemu/qemu_hotplug.c:3807
 msgid "device cannot be detached with this QEMU version"
 msgstr "在这个 QEMU 版本中无法分割设备"
 
-#: src/qemu/qemu_hotplug.c:3893
+#: src/qemu/qemu_hotplug.c:3900
 #, c-format
 msgid "host usb device %03d.%03d not found"
 msgstr "未找到主机 usb 设备%03d.%03d"
 
-#: src/qemu/qemu_hotplug.c:3897
+#: src/qemu/qemu_hotplug.c:3904
 #, c-format
 msgid "host usb device vendor=0x%.4x product=0x%.4x not found"
 msgstr "未找到 host usb device vendor=0x%.4x product=0x%.4x"
 
-#: src/qemu/qemu_hotplug.c:3906
+#: src/qemu/qemu_hotplug.c:3913
 #, c-format
 msgid "host scsi iSCSI path %s not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3912
+#: src/qemu/qemu_hotplug.c:3919
 #, fuzzy, c-format
 msgid "host scsi device %s:%u:%u.%llu not found"
 msgstr "未找到主机 scsi 设备 %s:%d:%d.%d"
 
-#: src/qemu/qemu_hotplug.c:3961
+#: src/qemu/qemu_hotplug.c:3968
 msgid "device cannot be detached without a CCW address"
 msgstr "没有 CCW 地址就无法断开设备"
 
-#: src/qemu/qemu_hotplug.c:3974
+#: src/qemu/qemu_hotplug.c:3981
 #, c-format
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr "不能热插拔多功能 PCI 设备：%s"
 
-#: src/qemu/qemu_hotplug.c:4064
+#: src/qemu/qemu_hotplug.c:4070
 msgid "Graphics password only supported for VNC"
 msgstr "图形密码只可用于 VNC"
 
-#: src/qemu/qemu_hotplug.c:4090
+#: src/qemu/qemu_hotplug.c:4097
 msgid "Expiry of passwords is not supported"
 msgstr "不支持密码过期"
 
-#: src/qemu/qemu_hotplug.c:4235
+#: src/qemu/qemu_hotplug.c:4242
 msgid "alias not set for RNG device"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4287
+#: src/qemu/qemu_hotplug.c:4294
 #, fuzzy
 msgid "alias for the memory device was not found"
 msgstr "未找到节点设备"
@@ -19801,38 +19795,33 @@ msgstr "无法取消退出命令"
 msgid "unknown block IO status: %s"
 msgstr "未知块 IO 状态：%s"
 
-#: src/qemu/qemu_monitor.c:1820
-#, c-format
-msgid "cannot find info for device '%s'"
-msgstr "无法找到设备 '%s' 的信息"
-
-#: src/qemu/qemu_monitor.c:1859
+#: src/qemu/qemu_monitor.c:1841
 msgid "text monitor doesn't support block stats for backing chain members"
 msgstr ""
 
-#: src/qemu/qemu_monitor.c:1937
+#: src/qemu/qemu_monitor.c:1919
 #, c-format
 msgid "unsupported protocol type %s"
 msgstr "不支持的协议类型 %s"
 
-#: src/qemu/qemu_monitor.c:2491
+#: src/qemu/qemu_monitor.c:2473
 msgid "fd must be valid"
 msgstr "fd 必须有效"
 
-#: src/qemu/qemu_monitor.c:2497 src/qemu/qemu_monitor.c:2554
+#: src/qemu/qemu_monitor.c:2479 src/qemu/qemu_monitor.c:2536
 #, c-format
 msgid "qemu is not using a unix socket monitor, cannot send fd %s"
 msgstr "qemu 不使用 unix 插槽监控程序，无法发送 fd %s"
 
-#: src/qemu/qemu_monitor.c:2548
+#: src/qemu/qemu_monitor.c:2530
 msgid "fd and fdset must be valid"
 msgstr "fd 和 feset 必须有效"
 
-#: src/qemu/qemu_monitor.c:2616
+#: src/qemu/qemu_monitor.c:2598
 msgid "JSON monitor should be using AddNetdev"
 msgstr "JSON 监视器应使用 AddNetdev"
 
-#: src/qemu/qemu_monitor.c:2647
+#: src/qemu/qemu_monitor.c:2629
 msgid "JSON monitor should be using RemoveNetdev"
 msgstr "JSON 监视器应使用 RemoveNetdev"
 
@@ -19925,17 +19914,17 @@ msgstr "info 布尔值回复缺少布尔数据"
 msgid "the guest hasn't updated any stats yet"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:1670 src/qemu/qemu_monitor_json.c:5330
-#: src/qemu/qemu_monitor_json.c:5373 src/qemu/qemu_monitor_json.c:6280
+#: src/qemu/qemu_monitor_json.c:1670 src/qemu/qemu_monitor_json.c:5332
+#: src/qemu/qemu_monitor_json.c:5375 src/qemu/qemu_monitor_json.c:6282
 msgid "qom-get reply was missing return data"
 msgstr "qom-get 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:1753 src/qemu/qemu_monitor_json.c:3873
+#: src/qemu/qemu_monitor_json.c:1753 src/qemu/qemu_monitor_json.c:3875
 msgid "block info reply was missing device list"
 msgstr "块信息回复缺少设备列表"
 
 #: src/qemu/qemu_monitor_json.c:1765 src/qemu/qemu_monitor_json.c:1771
-#: src/qemu/qemu_monitor_json.c:3885 src/qemu/qemu_monitor_json.c:3891
+#: src/qemu/qemu_monitor_json.c:3887 src/qemu/qemu_monitor_json.c:3893
 msgid "block info device entry was not in expected format"
 msgstr "块信息 device 条目未使用预期的格式"
 
@@ -19944,646 +19933,646 @@ msgstr "块信息 device 条目未使用预期的格式"
 msgid "cannot read %s value"
 msgstr "无法读取 %s 值"
 
-#: src/qemu/qemu_monitor_json.c:1846
+#: src/qemu/qemu_monitor_json.c:1848
 msgid "blockstats stats entry was not in expected format"
 msgstr "块状态条目不是预期的格式"
 
-#: src/qemu/qemu_monitor_json.c:1856
+#: src/qemu/qemu_monitor_json.c:1858
 #, c-format
 msgid "cannot read %s statistic"
 msgstr "无法读取 %s 统计数据"
 
-#: src/qemu/qemu_monitor_json.c:1919
+#: src/qemu/qemu_monitor_json.c:1921
 msgid "blockstats reply was missing device list"
 msgstr "块状态回复缺少设备列表"
 
-#: src/qemu/qemu_monitor_json.c:1929 src/qemu/qemu_monitor_json.c:1936
+#: src/qemu/qemu_monitor_json.c:1931 src/qemu/qemu_monitor_json.c:1938
 msgid "blockstats device entry was not in expected format"
 msgstr "块状态设备条目不是预期的格式"
 
-#: src/qemu/qemu_monitor_json.c:2032
+#: src/qemu/qemu_monitor_json.c:2034
 msgid "query-block reply was missing device list"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:2044 src/qemu/qemu_monitor_json.c:2051
+#: src/qemu/qemu_monitor_json.c:2046 src/qemu/qemu_monitor_json.c:2053
 msgid "query-block device entry was not in expected format"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:2447
+#: src/qemu/qemu_monitor_json.c:2449
 msgid "query-migrate-cache-size reply was missing 'return' data"
 msgstr "query-migrate-cache-size 回复缺少 'return' 数据"
 
-#: src/qemu/qemu_monitor_json.c:2499
+#: src/qemu/qemu_monitor_json.c:2501
 msgid "info migration reply was missing return data"
 msgstr "info 迁移回复缺少返回数据"
 
-#: src/qemu/qemu_monitor_json.c:2505
+#: src/qemu/qemu_monitor_json.c:2507
 msgid "info migration reply was missing return status"
 msgstr "信息迁移回复缺少返回的状态"
 
-#: src/qemu/qemu_monitor_json.c:2512 src/qemu/qemu_monitor_text.c:1371
+#: src/qemu/qemu_monitor_json.c:2514 src/qemu/qemu_monitor_text.c:1371
 #: src/qemu/qemu_monitor_text.c:1379
 #, c-format
 msgid "unexpected migration status in %s"
 msgstr "%s 中意外的迁移状态"
 
-#: src/qemu/qemu_monitor_json.c:2547
+#: src/qemu/qemu_monitor_json.c:2549
 msgid "migration was active, but no RAM info was set"
 msgstr "迁移是活跃的但没有设定 RAM 信息"
 
-#: src/qemu/qemu_monitor_json.c:2554
+#: src/qemu/qemu_monitor_json.c:2556
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "迁移是活跃的但缺少 RAM 'transferred' 数据"
 
-#: src/qemu/qemu_monitor_json.c:2561
+#: src/qemu/qemu_monitor_json.c:2563
 msgid "migration was active, but RAM 'remaining' data was missing"
 msgstr "迁移是活跃的但缺少 RAM 'remaining' 数据"
 
-#: src/qemu/qemu_monitor_json.c:2568
+#: src/qemu/qemu_monitor_json.c:2570
 msgid "migration was active, but RAM 'total' data was missing"
 msgstr "迁移是活跃的但缺少 RAM 'total' 数据"
 
-#: src/qemu/qemu_monitor_json.c:2597
+#: src/qemu/qemu_monitor_json.c:2599
 msgid "disk migration was active, but 'transferred' data was missing"
 msgstr "磁盘迁移是活跃的但缺少 'transferred' 数据"
 
-#: src/qemu/qemu_monitor_json.c:2606
+#: src/qemu/qemu_monitor_json.c:2608
 msgid "disk migration was active, but 'remaining' data was missing"
 msgstr "磁盘迁移是活跃的但缺少 'remaining' 数据"
 
-#: src/qemu/qemu_monitor_json.c:2615
+#: src/qemu/qemu_monitor_json.c:2617
 msgid "disk migration was active, but 'total' data was missing"
 msgstr "磁盘迁移是活跃的但缺少 'total' 数据"
 
-#: src/qemu/qemu_monitor_json.c:2634
+#: src/qemu/qemu_monitor_json.c:2636
 msgid "XBZRLE is active, but 'cache-size' data was missing"
 msgstr "XBZRLE 是活跃的，但缺少 'cache-size' 数据。"
 
-#: src/qemu/qemu_monitor_json.c:2643
+#: src/qemu/qemu_monitor_json.c:2645
 msgid "XBZRLE is active, but 'bytes' data was missing"
 msgstr "XBZRLE 是活跃的，但缺少 'bytes' 数据。"
 
-#: src/qemu/qemu_monitor_json.c:2652
+#: src/qemu/qemu_monitor_json.c:2654
 msgid "XBZRLE is active, but 'pages' data was missing"
 msgstr "XBZRLE 是活跃的，但缺少 'page' 数据。"
 
-#: src/qemu/qemu_monitor_json.c:2661
+#: src/qemu/qemu_monitor_json.c:2663
 msgid "XBZRLE is active, but 'cache-miss' data was missing"
 msgstr "XBZRLE 是活跃的，但缺少 'cache-miss' 数据。"
 
-#: src/qemu/qemu_monitor_json.c:2670
+#: src/qemu/qemu_monitor_json.c:2672
 msgid "XBZRLE is active, but 'overflow' data was missing"
 msgstr "XBZRLE 是活跃的，但缺少 'overflow' 数据。"
 
-#: src/qemu/qemu_monitor_json.c:2787
+#: src/qemu/qemu_monitor_json.c:2789
 msgid "missing dump guest memory capabilities"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:2793
+#: src/qemu/qemu_monitor_json.c:2795
 msgid "missing supported dump formats"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:2802
+#: src/qemu/qemu_monitor_json.c:2804
 msgid "missing entry in supported dump formats"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:2890 src/qemu/qemu_monitor_json.c:2900
-#: src/qemu/qemu_monitor_json.c:2910
+#: src/qemu/qemu_monitor_json.c:2892 src/qemu/qemu_monitor_json.c:2902
+#: src/qemu/qemu_monitor_json.c:2912
 msgid "usb_add not supported in JSON mode"
 msgstr "JSON 模式中不支持 usb_add"
 
-#: src/qemu/qemu_monitor_json.c:2920 src/qemu/qemu_monitor_json.c:2931
-#: src/qemu/qemu_monitor_json.c:2941 src/qemu/qemu_monitor_json.c:3458
+#: src/qemu/qemu_monitor_json.c:2922 src/qemu/qemu_monitor_json.c:2933
+#: src/qemu/qemu_monitor_json.c:2943 src/qemu/qemu_monitor_json.c:3460
 msgid "pci_add not supported in JSON mode"
 msgstr "JSON 模式中不支持 pci_add"
 
-#: src/qemu/qemu_monitor_json.c:2950
+#: src/qemu/qemu_monitor_json.c:2952
 msgid "pci_del not supported in JSON mode"
 msgstr "JSON 模式中不支持 pci_del"
 
-#: src/qemu/qemu_monitor_json.c:3029
+#: src/qemu/qemu_monitor_json.c:3031
 msgid "missing return information"
 msgstr "缺少返回信息"
 
-#: src/qemu/qemu_monitor_json.c:3034
+#: src/qemu/qemu_monitor_json.c:3036
 msgid "incomplete return information"
 msgstr "不完整的返回信息"
 
-#: src/qemu/qemu_monitor_json.c:3148
+#: src/qemu/qemu_monitor_json.c:3150
 msgid "query-rx-filter reply was missing return data"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3153
+#: src/qemu/qemu_monitor_json.c:3155
 msgid "query -rx-filter return data missing array element"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3159
+#: src/qemu/qemu_monitor_json.c:3161
 msgid "Missing or invalid name in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3168
+#: src/qemu/qemu_monitor_json.c:3170
 msgid "Missing or invalid 'main-mac' in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3175
+#: src/qemu/qemu_monitor_json.c:3177
 msgid "Missing or invalid 'promiscuous' in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3182
+#: src/qemu/qemu_monitor_json.c:3184
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3191
+#: src/qemu/qemu_monitor_json.c:3193
 msgid "Missing or invalid 'unicast' in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3198
+#: src/qemu/qemu_monitor_json.c:3200
 msgid "Missing or invalid 'unicast-overflow' in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3205
+#: src/qemu/qemu_monitor_json.c:3207
 msgid "Missing or invalid 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3215
+#: src/qemu/qemu_monitor_json.c:3217
 #, c-format
 msgid ""
 "Missing or invalid element %zu of 'unicast' list in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3221
+#: src/qemu/qemu_monitor_json.c:3223
 #, c-format
 msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3232
+#: src/qemu/qemu_monitor_json.c:3234
 msgid "Missing or invalid 'multicast' in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3239
+#: src/qemu/qemu_monitor_json.c:3241
 msgid "Missing or invalid 'multicast-overflow' in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3246
+#: src/qemu/qemu_monitor_json.c:3248
 msgid "Missing or invalid 'multicast-table' array in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3256
+#: src/qemu/qemu_monitor_json.c:3258
 #, c-format
 msgid ""
 "Missing or invalid element %zu of 'multicast' list in query-rx-filter "
 "response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3262
+#: src/qemu/qemu_monitor_json.c:3264
 #, c-format
 msgid ""
 "invalid mac address '%s' in 'multicast-table' array in query-rx-filter "
 "response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3273
+#: src/qemu/qemu_monitor_json.c:3275
 msgid "Missing or invalid 'vlan' in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3280
+#: src/qemu/qemu_monitor_json.c:3282
 msgid "Missing or invalid 'vlan-table' array in query-rx-filter response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3290
+#: src/qemu/qemu_monitor_json.c:3292
 #, c-format
 msgid ""
 "Missing or invalid element %zu of 'vlan-table' array in query-rx-filter "
 "response"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:3363
+#: src/qemu/qemu_monitor_json.c:3365
 msgid "character device reply was missing return data"
 msgstr "字符设备回复缺少返回的状态"
 
-#: src/qemu/qemu_monitor_json.c:3375
+#: src/qemu/qemu_monitor_json.c:3377
 msgid "character device information was missing array element"
 msgstr "字符设备信息缺少 array 元素"
 
-#: src/qemu/qemu_monitor_json.c:3381
+#: src/qemu/qemu_monitor_json.c:3383
 #, fuzzy
 msgid "character device information was missing label"
 msgstr "字符设备信息缺少文件名"
 
-#: src/qemu/qemu_monitor_json.c:3387
+#: src/qemu/qemu_monitor_json.c:3389
 msgid "character device information was missing filename"
 msgstr "字符设备信息缺少文件名"
 
-#: src/qemu/qemu_monitor_json.c:3407
+#: src/qemu/qemu_monitor_json.c:3409
 #, fuzzy, c-format
 msgid "failed to add chardev '%s' info"
 msgstr "保存 chardev 路径 '%s' 失败"
 
-#: src/qemu/qemu_monitor_json.c:3467
+#: src/qemu/qemu_monitor_json.c:3469
 msgid "query-pci not supported in JSON mode"
 msgstr "JSON 模式中不支持 query-pci"
 
-#: src/qemu/qemu_monitor_json.c:3845
+#: src/qemu/qemu_monitor_json.c:3847
 #, fuzzy, c-format
 msgid "qemu block name '%s' doesn't match expected '%s'"
 msgstr "目标域名 '%s' 与源 '%s' 不映射"
 
-#: src/qemu/qemu_monitor_json.c:3907
+#: src/qemu/qemu_monitor_json.c:3909
 #, fuzzy, c-format
 msgid "unable to find backing name for device %s"
 msgstr "无法访问后端链文件 %s"
 
-#: src/qemu/qemu_monitor_json.c:3994 src/qemu/qemu_monitor_text.c:2715
+#: src/qemu/qemu_monitor_json.c:3996 src/qemu/qemu_monitor_text.c:2715
 #, c-format
 msgid "keycode %zu is invalid: 0x%X"
 msgstr "按键代码 %zu 无效：0x%X"
 
-#: src/qemu/qemu_monitor_json.c:4080
+#: src/qemu/qemu_monitor_json.c:4082
 msgid "entry was missing 'device'"
 msgstr "条目缺少 'device' "
 
-#: src/qemu/qemu_monitor_json.c:4097
+#: src/qemu/qemu_monitor_json.c:4099
 msgid "entry was missing 'type'"
 msgstr "条目缺少 'type' "
 
-#: src/qemu/qemu_monitor_json.c:4111
+#: src/qemu/qemu_monitor_json.c:4113
 msgid "entry was missing 'speed'"
 msgstr "条目缺少 'speed' "
 
-#: src/qemu/qemu_monitor_json.c:4117
+#: src/qemu/qemu_monitor_json.c:4119
 msgid "entry was missing 'offset'"
 msgstr "条目缺少 'offset' "
 
-#: src/qemu/qemu_monitor_json.c:4123
+#: src/qemu/qemu_monitor_json.c:4125
 msgid "entry was missing 'len'"
 msgstr "条目缺少 'len' "
 
-#: src/qemu/qemu_monitor_json.c:4151
+#: src/qemu/qemu_monitor_json.c:4153
 msgid "reply was missing return data"
 msgstr "条目缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:4157
+#: src/qemu/qemu_monitor_json.c:4159
 msgid "unable to determine array size"
 msgstr "无法确定阵列大小"
 
-#: src/qemu/qemu_monitor_json.c:4168
+#: src/qemu/qemu_monitor_json.c:4170
 msgid "missing array element"
 msgstr "缺少 array 元素"
 
-#: src/qemu/qemu_monitor_json.c:4199 src/qemu/qemu_monitor_json.c:4490
-#: src/qemu/qemu_monitor_json.c:4523
+#: src/qemu/qemu_monitor_json.c:4201 src/qemu/qemu_monitor_json.c:4492
+#: src/qemu/qemu_monitor_json.c:4525
 #, c-format
 msgid "No active operation on device: %s"
 msgstr "设备中没有活跃操作：%s"
 
-#: src/qemu/qemu_monitor_json.c:4202
+#: src/qemu/qemu_monitor_json.c:4204
 #, c-format
 msgid "Device %s in use"
 msgstr "设备 %s 使用者"
 
-#: src/qemu/qemu_monitor_json.c:4205 src/qemu/qemu_monitor_json.c:4493
-#: src/qemu/qemu_monitor_json.c:4526
+#: src/qemu/qemu_monitor_json.c:4207 src/qemu/qemu_monitor_json.c:4495
+#: src/qemu/qemu_monitor_json.c:4528
 #, c-format
 msgid "Operation is not supported for device: %s"
 msgstr "设备不支持操作：%s"
 
-#: src/qemu/qemu_monitor_json.c:4208 src/qemu/qemu_monitor_text.c:2826
+#: src/qemu/qemu_monitor_json.c:4210 src/qemu/qemu_monitor_text.c:2826
 #: src/qemu/qemu_monitor_text.c:2925
 #, c-format
 msgid "Command '%s' is not found"
 msgstr "未找到命令 '%s'"
 
-#: src/qemu/qemu_monitor_json.c:4211
+#: src/qemu/qemu_monitor_json.c:4213
 #, c-format
 msgid "Unexpected error: (%s) '%s'"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:4358
+#: src/qemu/qemu_monitor_json.c:4360
 #, c-format
 msgid "block_io_throttle field '%s' missing in qemu's output"
 msgstr "qemu 输出结果中缺少 block_io_throttle 字段 '%s'"
 
-#: src/qemu/qemu_monitor_json.c:4376
+#: src/qemu/qemu_monitor_json.c:4378
 msgid " block_io_throttle reply was missing device list"
 msgstr " block_io_throttle 恢复缺少设备列表"
 
-#: src/qemu/qemu_monitor_json.c:4387 src/qemu/qemu_monitor_json.c:4394
+#: src/qemu/qemu_monitor_json.c:4389 src/qemu/qemu_monitor_json.c:4396
 msgid "block_io_throttle device entry was not in expected format"
 msgstr "block_io_throttle 设备条目格式不正确"
 
-#: src/qemu/qemu_monitor_json.c:4405
+#: src/qemu/qemu_monitor_json.c:4407
 msgid "block_io_throttle inserted entry was not in expected format"
 msgstr "block_io_throttle 插入的条目不是正确的格式"
 
-#: src/qemu/qemu_monitor_json.c:4431
+#: src/qemu/qemu_monitor_json.c:4433
 #, c-format
 msgid "cannot find throttling info for device '%s'"
 msgstr "无法找到设备 '%s' 的节流信息"
 
-#: src/qemu/qemu_monitor_json.c:4496 src/qemu/qemu_monitor_json.c:4529
+#: src/qemu/qemu_monitor_json.c:4498 src/qemu/qemu_monitor_json.c:4531
 msgid "Unexpected error"
 msgstr "意外错误"
 
-#: src/qemu/qemu_monitor_json.c:4592
+#: src/qemu/qemu_monitor_json.c:4594
 msgid "query-version reply was missing 'return' data"
 msgstr "query-version 回复缺少 'return' 数据"
 
-#: src/qemu/qemu_monitor_json.c:4598
+#: src/qemu/qemu_monitor_json.c:4600
 msgid "query-version reply was missing 'qemu' data"
 msgstr "query-version 回复缺少 'qemu' 数据"
 
-#: src/qemu/qemu_monitor_json.c:4604
+#: src/qemu/qemu_monitor_json.c:4606
 msgid "query-version reply was missing 'major' version"
 msgstr "query-version 回复缺少 'major' 数据"
 
-#: src/qemu/qemu_monitor_json.c:4609
+#: src/qemu/qemu_monitor_json.c:4611
 msgid "query-version reply was missing 'minor' version"
 msgstr "query-version 回复缺少 'minor' 数据"
 
-#: src/qemu/qemu_monitor_json.c:4614
+#: src/qemu/qemu_monitor_json.c:4616
 msgid "query-version reply was missing 'micro' version"
 msgstr "query-version 回复缺少 'micro' 数据"
 
-#: src/qemu/qemu_monitor_json.c:4622
+#: src/qemu/qemu_monitor_json.c:4624
 msgid "query-version reply was missing 'package' version"
 msgstr "query-version 回复缺少 'package' 数据"
 
-#: src/qemu/qemu_monitor_json.c:4666
+#: src/qemu/qemu_monitor_json.c:4668
 msgid "query-machines reply was missing return data"
 msgstr "query-machines 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:4672
+#: src/qemu/qemu_monitor_json.c:4674
 msgid "query-machines reply data was not an array"
 msgstr "query-machine 回复数据不是一个阵列"
 
-#: src/qemu/qemu_monitor_json.c:4692
+#: src/qemu/qemu_monitor_json.c:4694
 msgid "query-machines reply data was missing 'name'"
 msgstr "query-machines 回复缺少 'name'"
 
-#: src/qemu/qemu_monitor_json.c:4702
+#: src/qemu/qemu_monitor_json.c:4704
 msgid "query-machines reply has malformed 'is-default' data"
 msgstr "query-machines 回复中包含畸形 'is-default' 数据"
 
-#: src/qemu/qemu_monitor_json.c:4709
+#: src/qemu/qemu_monitor_json.c:4711
 msgid "query-machines reply has malformed 'alias' data"
 msgstr "query-machines 回复包含畸形 'alias' 数据"
 
-#: src/qemu/qemu_monitor_json.c:4718
+#: src/qemu/qemu_monitor_json.c:4720
 msgid "query-machines reply has malformed 'cpu-max' data"
 msgstr "query-machines 回复中包含畸形 'cpu-max' 数据"
 
-#: src/qemu/qemu_monitor_json.c:4778
+#: src/qemu/qemu_monitor_json.c:4780
 msgid "query-cpu-definitions reply was missing return data"
 msgstr "query-cpu-definitions 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:4784
+#: src/qemu/qemu_monitor_json.c:4786
 msgid "query-cpu-definitions reply data was not an array"
 msgstr "query-cpu-definitions 回复数据不是一个阵列"
 
-#: src/qemu/qemu_monitor_json.c:4798
+#: src/qemu/qemu_monitor_json.c:4800
 msgid "query-cpu-definitions reply data was missing 'name'"
 msgstr "query-cpu-definitions 回复缺少 'name'"
 
-#: src/qemu/qemu_monitor_json.c:4846
+#: src/qemu/qemu_monitor_json.c:4848
 msgid "query-commands reply was missing return data"
 msgstr "query-commands 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:4852
+#: src/qemu/qemu_monitor_json.c:4854
 msgid "query-commands reply data was not an array"
 msgstr "query-commands 回复数据不是一个阵列"
 
-#: src/qemu/qemu_monitor_json.c:4866
+#: src/qemu/qemu_monitor_json.c:4868
 msgid "query-commands reply data was missing 'name'"
 msgstr "query-commands 回复缺少 'name'"
 
-#: src/qemu/qemu_monitor_json.c:4919
+#: src/qemu/qemu_monitor_json.c:4921
 msgid "query-events reply was missing return data"
 msgstr "query-events 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:4925
+#: src/qemu/qemu_monitor_json.c:4927
 msgid "query-events reply data was not an array"
 msgstr "query-events 回复数据不是一个阵列"
 
-#: src/qemu/qemu_monitor_json.c:4939
+#: src/qemu/qemu_monitor_json.c:4941
 msgid "query-events reply data was missing 'name'"
 msgstr "query-events 回复缺少 'name'"
 
-#: src/qemu/qemu_monitor_json.c:4999
+#: src/qemu/qemu_monitor_json.c:5001
 msgid "query-command-line-options reply was missing return data"
 msgstr "query-command-line-options 回复缺少返回数据"
 
-#: src/qemu/qemu_monitor_json.c:5010
+#: src/qemu/qemu_monitor_json.c:5012
 msgid "query-command-line-options reply data was not an array"
 msgstr "query-command-line-options 回复数据不是一个阵列"
 
-#: src/qemu/qemu_monitor_json.c:5021
+#: src/qemu/qemu_monitor_json.c:5023
 msgid "query-command-line-options reply data was missing 'option'"
 msgstr "query-command-line-options 回复数据缺少'option'"
 
-#: src/qemu/qemu_monitor_json.c:5042
+#: src/qemu/qemu_monitor_json.c:5044
 msgid "query-command-line-options parameter data was not an array"
 msgstr "query-command-line-options 参数数据不是一个阵列"
 
-#: src/qemu/qemu_monitor_json.c:5057
+#: src/qemu/qemu_monitor_json.c:5059
 msgid "query-command-line-options parameter data was missing 'name'"
 msgstr "query-command-line-options 参数数据缺少 'name'"
 
-#: src/qemu/qemu_monitor_json.c:5114
+#: src/qemu/qemu_monitor_json.c:5116
 msgid "query-kvm reply was missing return data"
 msgstr "query-kvm 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:5121
+#: src/qemu/qemu_monitor_json.c:5123
 msgid "query-kvm replied unexpected data"
 msgstr "query-kvm 回复意外数据"
 
-#: src/qemu/qemu_monitor_json.c:5162
+#: src/qemu/qemu_monitor_json.c:5164
 msgid "qom-list-types reply was missing return data"
 msgstr "qom-list-types 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:5168
+#: src/qemu/qemu_monitor_json.c:5170
 msgid "qom-list-types reply data was not an array"
 msgstr "qom-list-types  回复数据不是一个阵列"
 
-#: src/qemu/qemu_monitor_json.c:5182
+#: src/qemu/qemu_monitor_json.c:5184
 msgid "qom-list-types reply data was missing 'name'"
 msgstr "qom-list-types 回复缺少 'name'"
 
-#: src/qemu/qemu_monitor_json.c:5233
+#: src/qemu/qemu_monitor_json.c:5235
 msgid "qom-list reply was missing return data"
 msgstr "qom-list 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:5239
+#: src/qemu/qemu_monitor_json.c:5241
 msgid "qom-list reply data was not an array"
 msgstr "qom-list 回复数据不是一个阵列"
 
-#: src/qemu/qemu_monitor_json.c:5259
+#: src/qemu/qemu_monitor_json.c:5261
 msgid "qom-list reply data was missing 'name'"
 msgstr "qom-list 回复缺少 'name'"
 
-#: src/qemu/qemu_monitor_json.c:5269
+#: src/qemu/qemu_monitor_json.c:5271
 msgid "qom-list reply has malformed 'type' data"
 msgstr "qom-list 回复中包含畸形 'type' 数据"
 
-#: src/qemu/qemu_monitor_json.c:5365
+#: src/qemu/qemu_monitor_json.c:5367
 #, c-format
 msgid "qom-get invalid object property type %d"
 msgstr "qom-get 无效对象属性类型 %d"
 
-#: src/qemu/qemu_monitor_json.c:5428
+#: src/qemu/qemu_monitor_json.c:5430
 #, c-format
 msgid "qom-set invalid object property type %d"
 msgstr "qom-set 无效属性类型 %d"
 
-#: src/qemu/qemu_monitor_json.c:5484
+#: src/qemu/qemu_monitor_json.c:5486
 msgid "device-list-properties reply was missing return data"
 msgstr "device-list-properties 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:5490
+#: src/qemu/qemu_monitor_json.c:5492
 msgid "device-list-properties reply data was not an array"
 msgstr "device-list-properties 回复数据不是一个阵列"
 
-#: src/qemu/qemu_monitor_json.c:5504
+#: src/qemu/qemu_monitor_json.c:5506
 msgid "device-list-properties reply data was missing 'name'"
 msgstr "device-list-properties 回复缺少 'name'"
 
-#: src/qemu/qemu_monitor_json.c:5547
+#: src/qemu/qemu_monitor_json.c:5549
 msgid "query-target reply was missing return data"
 msgstr "query-target 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:5553
+#: src/qemu/qemu_monitor_json.c:5555
 msgid "query-target reply was missing arch data"
 msgstr "query-target 回复条目缺少 arch 值"
 
-#: src/qemu/qemu_monitor_json.c:5600
+#: src/qemu/qemu_monitor_json.c:5602
 msgid "missing migration capabilities"
 msgstr "缺少迁移功能"
 
-#: src/qemu/qemu_monitor_json.c:5613
+#: src/qemu/qemu_monitor_json.c:5615
 msgid "missing entry in migration capabilities list"
 msgstr "迁移功能列表中缺少条目"
 
-#: src/qemu/qemu_monitor_json.c:5619
+#: src/qemu/qemu_monitor_json.c:5621
 msgid "missing migration capability name"
 msgstr "缺少迁移功能名称"
 
-#: src/qemu/qemu_monitor_json.c:5877
+#: src/qemu/qemu_monitor_json.c:5879
 #, c-format
 msgid "%s reply was missing return data"
 msgstr "%s 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:5884
+#: src/qemu/qemu_monitor_json.c:5886
 #, c-format
 msgid "%s reply data was not an array"
 msgstr "%s 回复数据不是一个阵列"
 
-#: src/qemu/qemu_monitor_json.c:5899
+#: src/qemu/qemu_monitor_json.c:5901
 #, c-format
 msgid "%s array element does not contain data"
 msgstr "%s 阵列元素不包含数据"
 
-#: src/qemu/qemu_monitor_json.c:6020
+#: src/qemu/qemu_monitor_json.c:6022
 #, fuzzy, c-format
 msgid "Hotplug unsupported for char device type '%s'"
 msgstr "不支持的 chr 设备类型 '%s'"
 
-#: src/qemu/qemu_monitor_json.c:6024
+#: src/qemu/qemu_monitor_json.c:6026
 #, fuzzy, c-format
 msgid "Hotplug unsupported for char device type '%d'"
 msgstr "不支持的设备类型 '%d'"
 
-#: src/qemu/qemu_monitor_json.c:6075
+#: src/qemu/qemu_monitor_json.c:6077
 msgid "chardev-add reply was missing return data"
 msgstr "chardev-add 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:6081
+#: src/qemu/qemu_monitor_json.c:6083
 msgid "chardev-add reply was missing pty path"
 msgstr "chardev-add 回复缺少 pty 值"
 
-#: src/qemu/qemu_monitor_json.c:6171
+#: src/qemu/qemu_monitor_json.c:6173
 msgid "missing cpuid-register in CPU data"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6176
+#: src/qemu/qemu_monitor_json.c:6178
 msgid "missing or invalid cpuid-input-eax in CPU data"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6181
+#: src/qemu/qemu_monitor_json.c:6183
 msgid "missing or invalid features in CPU data"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6196
+#: src/qemu/qemu_monitor_json.c:6198
 #, c-format
 msgid "unknown CPU register '%s'"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6245 src/qemu/qemu_monitor_json.c:6286
+#: src/qemu/qemu_monitor_json.c:6247 src/qemu/qemu_monitor_json.c:6288
 #, c-format
 msgid "%s CPU property did not return an array"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6337
+#: src/qemu/qemu_monitor_json.c:6339
 #, c-format
 msgid "CPU definition retrieval isn't supported for '%s'"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6399
+#: src/qemu/qemu_monitor_json.c:6401
 msgid "query-iothreads reply was missing return data"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6405
+#: src/qemu/qemu_monitor_json.c:6407
 msgid "query-iothreads reply data was not an array"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6420
+#: src/qemu/qemu_monitor_json.c:6422
 msgid "query-iothreads reply data was missing 'id'"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6435
+#: src/qemu/qemu_monitor_json.c:6437
 #, fuzzy, c-format
 msgid "failed to find iothread id for '%s'"
 msgstr "查找 %s 的上级设备失败"
 
-#: src/qemu/qemu_monitor_json.c:6443
+#: src/qemu/qemu_monitor_json.c:6445
 msgid "query-iothreads reply has malformed 'thread-id' data"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6497
+#: src/qemu/qemu_monitor_json.c:6499
 #, fuzzy
 msgid "query-memory-devices reply was missing return data"
 msgstr "query-events 回复缺少返回值"
 
-#: src/qemu/qemu_monitor_json.c:6503
+#: src/qemu/qemu_monitor_json.c:6505
 #, fuzzy
 msgid "query-memory-devices reply data was not an array"
 msgstr "query-events 回复数据不是一个阵列"
 
-#: src/qemu/qemu_monitor_json.c:6513
+#: src/qemu/qemu_monitor_json.c:6515
 msgid "query-memory-devices reply data doesn't contain enum type discriminator"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6525
+#: src/qemu/qemu_monitor_json.c:6527
 #, fuzzy
 msgid "query-memory-devices reply data doesn't contain enum data"
 msgstr "query-events 回复数据不是一个阵列"
 
-#: src/qemu/qemu_monitor_json.c:6532
+#: src/qemu/qemu_monitor_json.c:6534
 msgid "dimm memory info data is missing 'id'"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6542
+#: src/qemu/qemu_monitor_json.c:6544
 msgid "malformed/missing addr in dimm memory info"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6549
+#: src/qemu/qemu_monitor_json.c:6551
 msgid "malformed/missing slot in dimm memory info"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6556
+#: src/qemu/qemu_monitor_json.c:6558
 msgid "malformed/missing hotplugged in dimm memory info"
 msgstr ""
 
-#: src/qemu/qemu_monitor_json.c:6564
+#: src/qemu/qemu_monitor_json.c:6566
 msgid "malformed/missing hotpluggable in dimm memory info"
 msgstr ""
 
@@ -21130,7 +21119,7 @@ msgstr "无法解析 CEPH_ARGS '%s'"
 msgid "found no rbd hosts in CEPH_ARGS '%s'"
 msgstr "没有在 CEPH_ARGS '%s' 中找到 rbd 主机"
 
-#: src/qemu/qemu_parse_command.c:2747
+#: src/qemu/qemu_parse_command.c:2745
 #, c-format
 msgid "Unable to resolve %s for pid %u"
 msgstr "无法为 pid %s 解析 %u"
@@ -21352,7 +21341,7 @@ msgstr ""
 msgid "Parameter 'min_guarantee' not supported by QEMU."
 msgstr ""
 
-#: src/qemu/qemu_process.c:4573 src/qemu/qemu_process.c:6079
+#: src/qemu/qemu_process.c:4573 src/qemu/qemu_process.c:6083
 #: src/uml/uml_driver.c:1050
 msgid "VM is already active"
 msgstr "VM 已经激活"
@@ -21368,7 +21357,7 @@ msgstr "PCI 设备 %04x:%02x:%02x.%x 是为网络 %s 分配，但已被域 %s �
 msgid "Unable to set huge path in security driver"
 msgstr "无法在安全驱动程序中设定超大路径"
 
-#: src/qemu/qemu_process.c:5119 src/qemu/qemu_process.c:6103
+#: src/qemu/qemu_process.c:5119 src/qemu/qemu_process.c:6107
 #: src/uml/uml_driver.c:1072
 #, c-format
 msgid "cannot create log directory %s"
@@ -23759,7 +23748,7 @@ msgid "cannot sync data to file '%s'"
 msgstr "无法将数据同步到 '%s'"
 
 #: src/storage/storage_backend.c:293 src/storage/storage_backend.c:381
-#: src/storage/storage_backend_logical.c:980
+#: src/storage/storage_backend_logical.c:982
 #, c-format
 msgid "cannot close file '%s'"
 msgstr "无法关闭文件 '%s'"
@@ -23804,7 +23793,7 @@ msgid "backing storage not supported for raw volumes"
 msgstr ""
 
 #: src/storage/storage_backend.c:513 src/storage/storage_backend_disk.c:902
-#: src/storage/storage_backend_logical.c:917
+#: src/storage/storage_backend_logical.c:919
 #: src/storage/storage_backend_rbd.c:739
 #: src/storage/storage_backend_sheepdog.c:241
 #: src/storage/storage_backend_zfs.c:306
@@ -24182,8 +24171,8 @@ msgstr "必须为 netfs 源指定主机名"
 #: src/storage/storage_backend_gluster.c:511
 #: src/storage/storage_backend_iscsi.c:60
 #: src/storage/storage_backend_iscsi.c:193
-#: src/storage/storage_backend_iscsi.c:250
-#: src/storage/storage_backend_iscsi.c:378 src/storage/storage_driver.c:3190
+#: src/storage/storage_backend_iscsi.c:248
+#: src/storage/storage_backend_iscsi.c:376 src/storage/storage_driver.c:3190
 msgid "Expected exactly 1 host for the storage pool"
 msgstr "该存储池应只有一台主机"
 
@@ -24192,8 +24181,8 @@ msgstr "该存储池应只有一台主机"
 msgid "expected exactly 1 host for the storage pool"
 msgstr "该存储池应只有一台主机"
 
-#: src/storage/storage_backend_fs.c:355 src/storage/storage_backend_iscsi.c:256
-#: src/storage/storage_backend_iscsi.c:384
+#: src/storage/storage_backend_fs.c:355 src/storage/storage_backend_iscsi.c:254
+#: src/storage/storage_backend_iscsi.c:382
 msgid "missing source host"
 msgstr "源主机缺失"
 
@@ -24201,8 +24190,8 @@ msgstr "源主机缺失"
 msgid "missing source path"
 msgstr "缺少源路径"
 
-#: src/storage/storage_backend_fs.c:367 src/storage/storage_backend_iscsi.c:263
-#: src/storage/storage_backend_iscsi.c:391
+#: src/storage/storage_backend_fs.c:367 src/storage/storage_backend_iscsi.c:261
+#: src/storage/storage_backend_iscsi.c:389
 msgid "missing source device"
 msgstr "缺少源设备"
 
@@ -24443,32 +24432,32 @@ msgstr "为路径为 '%s' 的 iSCSI 会话获取主机名失败"
 msgid "hostname must be specified for iscsi sources"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:295
+#: src/storage/storage_backend_iscsi.c:293
 msgid "iscsi pool only supports 'chap' auth type"
 msgstr "iscsi 池只支持 'chap' 验证类型"
 
-#: src/storage/storage_backend_iscsi.c:301
+#: src/storage/storage_backend_iscsi.c:299
 msgid "iscsi 'chap' authentication not supported for autostarted pools"
 msgstr "自动启动的池不支持 iscsi 'chap' 认证"
 
-#: src/storage/storage_backend_iscsi.c:321
+#: src/storage/storage_backend_iscsi.c:319
 #, c-format
 msgid "could not get the value of the secret for username %s using uuid '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:326
+#: src/storage/storage_backend_iscsi.c:324
 #, c-format
 msgid ""
 "could not get the value of the secret for username %s using usage value '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:336
+#: src/storage/storage_backend_iscsi.c:334
 #: src/storage/storage_backend_rbd.c:103
 #, c-format
 msgid "no secret matches uuid '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_iscsi.c:340
+#: src/storage/storage_backend_iscsi.c:338
 #: src/storage/storage_backend_rbd.c:107
 #, c-format
 msgid "no secret matches usage value '%s'"
@@ -24498,56 +24487,56 @@ msgstr "畸形的卷扩展补偿值"
 msgid "malformed volume allocation value"
 msgstr "畸形的卷分配值"
 
-#: src/storage/storage_backend_logical.c:547
+#: src/storage/storage_backend_logical.c:548
 msgid "failed to get source from sourceList"
 msgstr "从 sourceList 获得源失败"
 
-#: src/storage/storage_backend_logical.c:598
+#: src/storage/storage_backend_logical.c:599
 #, fuzzy, c-format
 msgid "cannot find logical volume group name '%s'"
 msgstr "无法找到新生成的卷 '%s'"
 
-#: src/storage/storage_backend_logical.c:628
+#: src/storage/storage_backend_logical.c:629
 #, c-format
 msgid "cannot find any matching source devices for logical volume group '%s'"
 msgstr ""
 
-#: src/storage/storage_backend_logical.c:705
+#: src/storage/storage_backend_logical.c:706
 #, c-format
 msgid "cannot open device '%s'"
 msgstr "无法打开设备 '%s'"
 
-#: src/storage/storage_backend_logical.c:711
+#: src/storage/storage_backend_logical.c:712
 #, c-format
 msgid "cannot clear device header of '%s'"
 msgstr "无法清除设备标题 '%s'"
 
-#: src/storage/storage_backend_logical.c:718
+#: src/storage/storage_backend_logical.c:719
 #, c-format
 msgid "cannot flush header of device'%s'"
 msgstr "无法清除失败 '%s' 的标头"
 
-#: src/storage/storage_backend_logical.c:725
+#: src/storage/storage_backend_logical.c:726
 #, c-format
 msgid "cannot close device '%s'"
 msgstr "无法关闭设备 '%s'"
 
-#: src/storage/storage_backend_logical.c:964
+#: src/storage/storage_backend_logical.c:966
 #, c-format
 msgid "cannot set file owner '%s'"
 msgstr "无法设定文件拥有者 '%s'"
 
-#: src/storage/storage_backend_logical.c:973
+#: src/storage/storage_backend_logical.c:975
 #, c-format
 msgid "cannot set file mode '%s'"
 msgstr "无法设定文件模式 '%s'"
 
-#: src/storage/storage_backend_logical.c:988
+#: src/storage/storage_backend_logical.c:990
 #, c-format
 msgid "cannot find newly created volume '%s'"
 msgstr "无法找到新生成的卷 '%s'"
 
-#: src/storage/storage_backend_logical.c:1045
+#: src/storage/storage_backend_logical.c:1047
 #, fuzzy, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr "不支持生成 %s 卷"
@@ -25698,289 +25687,289 @@ msgstr "无法打开 /proc/cgroups"
 msgid "Error while reading /proc/cgroups"
 msgstr "读取 /proc/cgroups 时出错"
 
-#: src/util/vircgroup.c:408
+#: src/util/vircgroup.c:417
 #, c-format
 msgid "Missing '/' separator in cgroup mount '%s'"
 msgstr "cgroup 挂载 '%s' 中缺少 '/' 分隔符"
 
-#: src/util/vircgroup.c:429
+#: src/util/vircgroup.c:438
 #, c-format
 msgid "Cannot stat %s"
 msgstr "无法统计 %s"
 
-#: src/util/vircgroup.c:547 src/util/virnetdevtap.c:120
+#: src/util/vircgroup.c:556 src/util/virnetdevtap.c:120
 #: src/util/virstoragefile.c:1115
 #, c-format
 msgid "Unable to open '%s'"
 msgstr "无法打开 '%s' "
 
-#: src/util/vircgroup.c:665
+#: src/util/vircgroup.c:674
 #, c-format
 msgid "Controller '%s' is not wanted, but '%s' is co-mounted"
 msgstr "不需要控制程序 '%s'，但 '%s' 是共同挂载。"
 
-#: src/util/vircgroup.c:690
+#: src/util/vircgroup.c:699
 msgid "At least one cgroup controller is required"
 msgstr "至少需要一个 cgroup 控制器"
 
-#: src/util/vircgroup.c:712
+#: src/util/vircgroup.c:721
 #, c-format
 msgid "Could not find placement for controller %s at %s"
 msgstr "无法在 %s 为控制器 %s 查找位置"
 
-#: src/util/vircgroup.c:737 src/util/vircgroup.c:2917 src/util/vircgroup.c:3008
+#: src/util/vircgroup.c:746 src/util/vircgroup.c:2926 src/util/vircgroup.c:3017
 #, c-format
 msgid "Path '%s' is not accessible"
 msgstr "路径 '%s' 不可访问"
 
-#: src/util/vircgroup.c:744
+#: src/util/vircgroup.c:753
 #, c-format
 msgid "Path '%s' must be a block device"
 msgstr "路径 '%s' 必须是一个块设备"
 
-#: src/util/vircgroup.c:776
+#: src/util/vircgroup.c:785
 #, c-format
 msgid "Invalid value '%s' for '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:781
+#: src/util/vircgroup.c:790
 #, c-format
 msgid "Unable to write to '%s'"
 msgstr "无法写入 '%s'"
 
-#: src/util/vircgroup.c:811
+#: src/util/vircgroup.c:820
 #, c-format
 msgid "Unable to read from '%s'"
 msgstr "无法从 '%s' 中读取"
 
-#: src/util/vircgroup.c:914 src/util/vircgroup.c:941 src/util/vircgroup.c:2274
-#: src/util/vircgroup.c:2312 src/util/vircgroup.c:2350
-#: src/util/vircgroup.c:2388 src/util/vircgroup.c:2426
+#: src/util/vircgroup.c:923 src/util/vircgroup.c:950 src/util/vircgroup.c:2283
+#: src/util/vircgroup.c:2321 src/util/vircgroup.c:2359
+#: src/util/vircgroup.c:2397 src/util/vircgroup.c:2435
 #, c-format
 msgid "Unable to parse '%s' as an integer"
 msgstr "无法将 '%s' 解析为整数"
 
-#: src/util/vircgroup.c:1067
+#: src/util/vircgroup.c:1076
 #, c-format
 msgid "Failed to create controller %s for group"
 msgstr "为组生成控制器 %s 失败"
 
-#: src/util/vircgroup.c:1210
+#: src/util/vircgroup.c:1219
 #, c-format
 msgid "Controller %d out of range"
 msgstr "控制器 %d 超出范围"
 
-#: src/util/vircgroup.c:1216
+#: src/util/vircgroup.c:1225
 #, c-format
 msgid "Controller '%s' not mounted"
 msgstr "未挂载控制器 '%s'"
 
-#: src/util/vircgroup.c:1298
+#: src/util/vircgroup.c:1307
 #, c-format
 msgid "Partition path '%s' must start with '/'"
 msgstr "分区路径 '%s' 必须以 '/' 开始"
 
-#: src/util/vircgroup.c:1447
+#: src/util/vircgroup.c:1456
 #, fuzzy, c-format
 msgid "unexpected name value %d"
 msgstr "意外的 rom bar 值 %d"
 
-#: src/util/vircgroup.c:1799
+#: src/util/vircgroup.c:1808
 msgid "No controllers are mounted"
 msgstr "未挂载控制器"
 
-#: src/util/vircgroup.c:1805
+#: src/util/vircgroup.c:1814
 #, c-format
 msgid "Controller '%s' is not mounted"
 msgstr "未挂载控制器 '%s'"
 
-#: src/util/vircgroup.c:1812
+#: src/util/vircgroup.c:1821
 #, c-format
 msgid "Controller '%s' is not enabled for group"
 msgstr "没有为组启用控制器 '%s'"
 
-#: src/util/vircgroup.c:1887
+#: src/util/vircgroup.c:1896
 #, c-format
 msgid "Cannot parse byte %sstat '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:1897
+#: src/util/vircgroup.c:1906
 #, c-format
 msgid "Sum of byte %sstat overflows"
 msgstr ""
 
-#: src/util/vircgroup.c:1908
+#: src/util/vircgroup.c:1917
 #, c-format
 msgid "Cannot parse %srequest stat '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:1918
+#: src/util/vircgroup.c:1927
 #, c-format
 msgid "Sum of %srequest stat overflows"
 msgstr ""
 
-#: src/util/vircgroup.c:1987
+#: src/util/vircgroup.c:1996
 #, c-format
 msgid "Cannot find byte stats for block device '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:1994
+#: src/util/vircgroup.c:2003
 #, c-format
 msgid "Cannot find request stats for block device '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:2002
+#: src/util/vircgroup.c:2011
 #, c-format
 msgid "Cannot find byte %sstats for block device '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:2009 src/util/vircgroup.c:2023
+#: src/util/vircgroup.c:2018 src/util/vircgroup.c:2032
 #, c-format
 msgid "Cannot parse %sstat '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:2016
+#: src/util/vircgroup.c:2025
 #, c-format
 msgid "Cannot find request %sstats for block device '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:2453 src/util/vircgroup.c:2552
-#: src/util/vircgroup.c:2614
+#: src/util/vircgroup.c:2462 src/util/vircgroup.c:2561
+#: src/util/vircgroup.c:2623
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
 msgstr "内存 '%llu' 大小必须小于 %llu"
 
-#: src/util/vircgroup.c:3068 src/util/vircgroup.c:3168
+#: src/util/vircgroup.c:3077 src/util/vircgroup.c:3177
 msgid "cpuacct parse error"
 msgstr "cpuacct 解析出错"
 
-#: src/util/vircgroup.c:3147
+#: src/util/vircgroup.c:3156
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
 msgstr "start_cpu %d 大于最大值 %d"
 
-#: src/util/vircgroup.c:3224 src/util/vircgroup.c:3238
+#: src/util/vircgroup.c:3233 src/util/vircgroup.c:3247
 msgid "unable to get cpu account"
 msgstr "无法获取 cpu 计数"
 
-#: src/util/vircgroup.c:3294
+#: src/util/vircgroup.c:3303
 #, c-format
 msgid "cfs_period '%llu' must be in range (1000, 1000000)"
 msgstr "cfs_period '%llu' 必须在范围 (1000, 1000000) 中"
 
-#: src/util/vircgroup.c:3339
+#: src/util/vircgroup.c:3348
 #, c-format
 msgid "cfs_quota '%lld' must be in range (1000, %llu)"
 msgstr "cfs_quota '%lld' 必须在范围 (1000, %llu) 中"
 
-#: src/util/vircgroup.c:3371
+#: src/util/vircgroup.c:3380
 #, c-format
 msgid "Unable to open %s (%d)"
 msgstr "无法打开 %s (%d)"
 
-#: src/util/vircgroup.c:3394
+#: src/util/vircgroup.c:3403
 #, c-format
 msgid "Failed to readdir for %s (%d)"
 msgstr "读取 %s (%d) 目录失败"
 
-#: src/util/vircgroup.c:3402
+#: src/util/vircgroup.c:3411
 #, c-format
 msgid "Unable to remove %s (%d)"
 msgstr "无法删除 %s (%d)"
 
-#: src/util/vircgroup.c:3489 src/util/vircgroup.c:3499 src/util/virfile.c:1845
+#: src/util/vircgroup.c:3498 src/util/vircgroup.c:3508 src/util/virfile.c:1845
 #, c-format
 msgid "Failed to read %s"
 msgstr "读取 %s 失败"
 
-#: src/util/vircgroup.c:3511
+#: src/util/vircgroup.c:3520
 #, c-format
 msgid "Failed to kill process %lu"
 msgstr "杀死进程 %lu 失败"
 
-#: src/util/vircgroup.c:3724
+#: src/util/vircgroup.c:3733
 #, c-format
 msgid "Could not find directory separator in %s"
 msgstr "无法在目录分隔符中找到 %s"
 
-#: src/util/vircgroup.c:3736
+#: src/util/vircgroup.c:3745
 msgid "Could not find any mounted controllers"
 msgstr "未找到任何挂载的控制器"
 
-#: src/util/vircgroup.c:3784
+#: src/util/vircgroup.c:3793
 #, c-format
 msgid "Cannot parse user stat '%s'"
 msgstr "无法解析用户统计 '%s'"
 
-#: src/util/vircgroup.c:3791
+#: src/util/vircgroup.c:3800
 #, c-format
 msgid "Cannot parse sys stat '%s'"
 msgstr "无法解析系统统计 '%s'"
 
-#: src/util/vircgroup.c:3802
+#: src/util/vircgroup.c:3811
 msgid "Cannot determine system clock HZ"
 msgstr "无法确定系统时钟 HZ"
 
-#: src/util/vircgroup.c:3851 src/util/vircgroup.c:3882
+#: src/util/vircgroup.c:3860 src/util/vircgroup.c:3891
 #, c-format
 msgid "Unable to create directory %s"
 msgstr "无法生成目录 %s"
 
-#: src/util/vircgroup.c:3862
+#: src/util/vircgroup.c:3871
 #, c-format
 msgid "Failed to mount %s on %s type %s"
 msgstr "将 %s 在 %s 类型 %s 中挂载失败"
 
-#: src/util/vircgroup.c:3891
+#: src/util/vircgroup.c:3900
 #, c-format
 msgid "Failed to bind cgroup '%s' on '%s'"
 msgstr "在 '%s' 中捆绑 cgroup '%s' 失败"
 
-#: src/util/vircgroup.c:3907
+#: src/util/vircgroup.c:3916
 #, c-format
 msgid "Unable to symlink directory %s to %s"
 msgstr "无法将目录 %s 符号链接到 %s"
 
-#: src/util/vircgroup.c:3949
+#: src/util/vircgroup.c:3958
 #, c-format
 msgid "Unable to open dir '%s'"
 msgstr ""
 
-#: src/util/vircgroup.c:4072 src/util/vircgroup.c:4084
-#: src/util/vircgroup.c:4093 src/util/vircgroup.c:4106
-#: src/util/vircgroup.c:4119 src/util/vircgroup.c:4130
-#: src/util/vircgroup.c:4145 src/util/vircgroup.c:4153
-#: src/util/vircgroup.c:4172 src/util/vircgroup.c:4189
-#: src/util/vircgroup.c:4208 src/util/vircgroup.c:4218
-#: src/util/vircgroup.c:4229 src/util/vircgroup.c:4242
-#: src/util/vircgroup.c:4256 src/util/vircgroup.c:4266
-#: src/util/vircgroup.c:4276 src/util/vircgroup.c:4287
-#: src/util/vircgroup.c:4297 src/util/vircgroup.c:4307
-#: src/util/vircgroup.c:4317 src/util/vircgroup.c:4327
-#: src/util/vircgroup.c:4337 src/util/vircgroup.c:4347
-#: src/util/vircgroup.c:4357 src/util/vircgroup.c:4367
-#: src/util/vircgroup.c:4377 src/util/vircgroup.c:4386
-#: src/util/vircgroup.c:4396 src/util/vircgroup.c:4406
-#: src/util/vircgroup.c:4416 src/util/vircgroup.c:4426
-#: src/util/vircgroup.c:4436 src/util/vircgroup.c:4446
-#: src/util/vircgroup.c:4456 src/util/vircgroup.c:4466
-#: src/util/vircgroup.c:4476 src/util/vircgroup.c:4486
-#: src/util/vircgroup.c:4496 src/util/vircgroup.c:4506
-#: src/util/vircgroup.c:4516 src/util/vircgroup.c:4526
-#: src/util/vircgroup.c:4535 src/util/vircgroup.c:4543
-#: src/util/vircgroup.c:4556 src/util/vircgroup.c:4568
-#: src/util/vircgroup.c:4581 src/util/vircgroup.c:4593
-#: src/util/vircgroup.c:4603 src/util/vircgroup.c:4613
-#: src/util/vircgroup.c:4623 src/util/vircgroup.c:4633
-#: src/util/vircgroup.c:4643 src/util/vircgroup.c:4652
-#: src/util/vircgroup.c:4661 src/util/vircgroup.c:4671
-#: src/util/vircgroup.c:4681 src/util/vircgroup.c:4690
-#: src/util/vircgroup.c:4700 src/util/vircgroup.c:4710
-#: src/util/vircgroup.c:4720 src/util/vircgroup.c:4731
-#: src/util/vircgroup.c:4742 src/util/vircgroup.c:4752
-#: src/util/vircgroup.c:4762 src/util/vircgroup.c:4773
-#: src/util/vircgroup.c:4795 src/util/vircgroup.c:4807
-#: src/util/vircgroup.c:4816
+#: src/util/vircgroup.c:4081 src/util/vircgroup.c:4093
+#: src/util/vircgroup.c:4102 src/util/vircgroup.c:4115
+#: src/util/vircgroup.c:4128 src/util/vircgroup.c:4139
+#: src/util/vircgroup.c:4154 src/util/vircgroup.c:4162
+#: src/util/vircgroup.c:4181 src/util/vircgroup.c:4198
+#: src/util/vircgroup.c:4217 src/util/vircgroup.c:4227
+#: src/util/vircgroup.c:4238 src/util/vircgroup.c:4251
+#: src/util/vircgroup.c:4265 src/util/vircgroup.c:4275
+#: src/util/vircgroup.c:4285 src/util/vircgroup.c:4296
+#: src/util/vircgroup.c:4306 src/util/vircgroup.c:4316
+#: src/util/vircgroup.c:4326 src/util/vircgroup.c:4336
+#: src/util/vircgroup.c:4346 src/util/vircgroup.c:4356
+#: src/util/vircgroup.c:4366 src/util/vircgroup.c:4376
+#: src/util/vircgroup.c:4386 src/util/vircgroup.c:4395
+#: src/util/vircgroup.c:4405 src/util/vircgroup.c:4415
+#: src/util/vircgroup.c:4425 src/util/vircgroup.c:4435
+#: src/util/vircgroup.c:4445 src/util/vircgroup.c:4455
+#: src/util/vircgroup.c:4465 src/util/vircgroup.c:4475
+#: src/util/vircgroup.c:4485 src/util/vircgroup.c:4495
+#: src/util/vircgroup.c:4505 src/util/vircgroup.c:4515
+#: src/util/vircgroup.c:4525 src/util/vircgroup.c:4535
+#: src/util/vircgroup.c:4544 src/util/vircgroup.c:4552
+#: src/util/vircgroup.c:4565 src/util/vircgroup.c:4577
+#: src/util/vircgroup.c:4590 src/util/vircgroup.c:4602
+#: src/util/vircgroup.c:4612 src/util/vircgroup.c:4622
+#: src/util/vircgroup.c:4632 src/util/vircgroup.c:4642
+#: src/util/vircgroup.c:4652 src/util/vircgroup.c:4661
+#: src/util/vircgroup.c:4670 src/util/vircgroup.c:4680
+#: src/util/vircgroup.c:4690 src/util/vircgroup.c:4699
+#: src/util/vircgroup.c:4709 src/util/vircgroup.c:4719
+#: src/util/vircgroup.c:4729 src/util/vircgroup.c:4740
+#: src/util/vircgroup.c:4751 src/util/vircgroup.c:4761
+#: src/util/vircgroup.c:4771 src/util/vircgroup.c:4782
+#: src/util/vircgroup.c:4804 src/util/vircgroup.c:4816
+#: src/util/vircgroup.c:4825
 msgid "Control groups not supported on this platform"
 msgstr "这个平台不支持控制组"
 
@@ -26220,15 +26209,15 @@ msgstr "没有子进程失败的出错信息"
 msgid "Unable to notify child process"
 msgstr "无法通知子进程"
 
-#: src/util/vircommand.c:3062
+#: src/util/vircommand.c:3064
 msgid "cannot open file using fd"
 msgstr "无法使用 fd 打开文件"
 
-#: src/util/vircommand.c:3092
+#: src/util/vircommand.c:3094
 msgid "read error on pipe"
 msgstr "管道中的读取错误"
 
-#: src/util/vircommand.c:3120 src/util/vircommand.c:3131
+#: src/util/vircommand.c:3123 src/util/vircommand.c:3134
 #, c-format
 msgid "%s not implemented on Win32"
 msgstr "在 Win32 中没有使用 %s"
@@ -27748,42 +27737,43 @@ msgstr "尝试 NAT '%s'。只有 IPv4 支持 NAT。"
 msgid "Invalid port range '%u-%u'."
 msgstr "无效端口范围 '%u-%u'。"
 
-#: src/util/viriscsi.c:95
-msgid "cannot find session"
+#: src/util/viriscsi.c:99
+#, fuzzy, c-format
+msgid "cannot find iscsiadm session: %s"
 msgstr "无法找到会话"
 
-#: src/util/viriscsi.c:125
+#: src/util/viriscsi.c:129
 #, c-format
 msgid "Could not allocate memory for output of '%s'"
 msgstr "无法为 '%s' 的输出分配内存 "
 
-#: src/util/viriscsi.c:140
+#: src/util/viriscsi.c:144
 #, c-format
 msgid ""
 "Failed to open stream for file descriptor when reading output from '%s': '%s'"
 msgstr "从  '%s' 读取输出结果时为文件描述符打开流失败： '%s'"
 
-#: src/util/viriscsi.c:152
+#: src/util/viriscsi.c:156
 #, c-format
 msgid "Unexpected line > %d characters when parsing output of '%s'"
 msgstr "解析  '%d' 的输出时行超过 %s 字符"
 
-#: src/util/viriscsi.c:169
+#: src/util/viriscsi.c:173
 #, c-format
 msgid "Missing space when parsing output of '%s'"
 msgstr "解析 '%s' 输出时缺少空格"
 
-#: src/util/viriscsi.c:226
+#: src/util/viriscsi.c:230
 #, c-format
 msgid "Failed to run command '%s' to create new iscsi interface"
 msgstr "运行  '%s' 命令生成新的 iscsi 接口失败"
 
-#: src/util/viriscsi.c:245
+#: src/util/viriscsi.c:249
 #, c-format
 msgid "Failed to run command '%s' to update iscsi interface with IQN '%s'"
 msgstr "运行  '%s' 命令使用 IQN  '%s' 更新 iscsi 接口失败"
 
-#: src/util/viriscsi.c:493
+#: src/util/viriscsi.c:470
 #, c-format
 msgid "Failed to update '%s' of node mode for target '%s'"
 msgstr "为目标 '%s' 更新节点模式 '%s' 失败"
@@ -41903,6 +41893,13 @@ msgstr "--%s 和 --%s 选项互斥"
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Disks '%s' and '%s' have identical serial"
+#~ msgstr "--%s 和 --%s 选项互斥"
+
+#~ msgid "cannot find info for device '%s'"
+#~ msgstr "无法找到设备 '%s' 的信息"
 
 #~ msgid "file '%s' is not a supported random source"
 #~ msgstr "文件 '%s' 不是支持的随机源"
