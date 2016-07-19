@@ -382,8 +382,8 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
         secobjProps = NULL; /* qemuMonitorAddObject consumes */
         if (rv < 0)
             goto exit_monitor;
+        secobjAdded = true;
     }
-    secobjAdded = true;
 
     if (encobjProps) {
         rv = qemuMonitorAddObject(priv->mon, "secret", encinfo->s.aes.alias,
@@ -391,8 +391,8 @@ qemuDomainAttachVirtioDiskDevice(virConnectPtr conn,
         encobjProps = NULL; /* qemuMonitorAddObject consumes */
         if (rv < 0)
             goto exit_monitor;
+        encobjAdded = true;
     }
-    encobjAdded = true;
 
     if (qemuMonitorAddDrive(priv->mon, drivestr) < 0)
         goto exit_monitor;
