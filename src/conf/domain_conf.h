@@ -2534,8 +2534,6 @@ virDomainDeviceInfoPtr virDomainDeviceGetInfo(virDomainDeviceDefPtr device);
 int virDomainDeviceInfoCopy(virDomainDeviceInfoPtr dst,
                             virDomainDeviceInfoPtr src);
 void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info);
-void virDomainDefClearPCIAddresses(virDomainDefPtr def);
-void virDomainDefClearCCWAddresses(virDomainDefPtr def);
 void virDomainDefClearDeviceAliases(virDomainDefPtr def);
 void virDomainTPMDefFree(virDomainTPMDefPtr def);
 

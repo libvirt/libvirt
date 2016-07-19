@@ -3361,31 +3361,6 @@ static int virDomainDeviceInfoClearAlias(virDomainDefPtr def ATTRIBUTE_UNUSED,
     return 0;
 }
 
-static int virDomainDeviceInfoClearPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                              virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
-                                              virDomainDeviceInfoPtr info,
-                                              void *opaque ATTRIBUTE_UNUSED)
-{
-    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-        memset(&info->addr, 0, sizeof(info->addr));
-        info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
-    }
-    return 0;
-}
-
-static int
-virDomainDeviceInfoClearCCWAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                   virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
-                                   virDomainDeviceInfoPtr info,
-                                   void *opaque ATTRIBUTE_UNUSED)
-{
-    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-        memset(&info->addr, 0, sizeof(info->addr));
-        info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE;
-    }
-    return 0;
-}
-
 static int
 virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
                                    virDomainDeviceInfoCallback cb,
@@ -4753,16 +4728,6 @@ virDomainDefValidate(virDomainDefPtr def,
     return 0;
 }
 
-
-void virDomainDefClearPCIAddresses(virDomainDefPtr def)
-{
-    virDomainDeviceInfoIterate(def, virDomainDeviceInfoClearPCIAddress, NULL);
-}
-
-void virDomainDefClearCCWAddresses(virDomainDefPtr def)
-{
-    virDomainDeviceInfoIterate(def, virDomainDeviceInfoClearCCWAddress, NULL);
-}
 
 void virDomainDefClearDeviceAliases(virDomainDefPtr def)
 {
