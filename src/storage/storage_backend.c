@@ -1063,6 +1063,7 @@ virStorageBackendCreateQemuImgCheckEncryption(int format,
         if (enc->nsecrets == 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("no secret provided for luks encryption"));
+            return -1;
         }
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
