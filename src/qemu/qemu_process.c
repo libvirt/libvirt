@@ -5687,8 +5687,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virStringFreeList(priv->qemuDevices);
     priv->qemuDevices = NULL;
 
-    virDomainDefClearDeviceAliases(vm->def);
-
     qemuHostdevReAttachDomainDevices(driver, vm->def);
 
     def = vm->def;

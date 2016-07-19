@@ -3352,15 +3352,6 @@ void virDomainDeviceInfoClear(virDomainDeviceInfoPtr info)
 }
 
 
-static int virDomainDeviceInfoClearAlias(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                                         virDomainDeviceDefPtr device ATTRIBUTE_UNUSED,
-                                         virDomainDeviceInfoPtr info,
-                                         void *opaque ATTRIBUTE_UNUSED)
-{
-    VIR_FREE(info->alias);
-    return 0;
-}
-
 static int
 virDomainDeviceInfoIterateInternal(virDomainDefPtr def,
                                    virDomainDeviceInfoCallback cb,
@@ -4726,12 +4717,6 @@ virDomainDefValidate(virDomainDefPtr def,
         return -1;
 
     return 0;
-}
-
-
-void virDomainDefClearDeviceAliases(virDomainDefPtr def)
-{
-    virDomainDeviceInfoIterate(def, virDomainDeviceInfoClearAlias, NULL);
 }
 
 
