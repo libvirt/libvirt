@@ -1153,7 +1153,7 @@ virLXCProcessEnsureRootFS(virDomainObjPtr vm)
     if (root)
         return 0;
 
-    if (!(root = virDomainFSDefNew()) < 0)
+    if (!(root = virDomainFSDefNew()))
         goto error;
 
     root->type = VIR_DOMAIN_FS_TYPE_MOUNT;
