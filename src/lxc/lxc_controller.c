@@ -2444,12 +2444,12 @@ virLXCControllerRun(virLXCControllerPtr ctrl)
     if (lxcControllerClearCapabilities() < 0)
         goto cleanup;
 
-    if (virLXCControllerDaemonHandshake(ctrl) < 0)
-        goto cleanup;
-
     for (i = 0; i < ctrl->nconsoles; i++)
         if (virLXCControllerConsoleSetNonblocking(&(ctrl->consoles[i])) < 0)
             goto cleanup;
+
+    if (virLXCControllerDaemonHandshake(ctrl) < 0)
+        goto cleanup;
 
     /* We must not hold open a dbus connection for life
      * of LXC instance, since dbus-daemon is limited to
