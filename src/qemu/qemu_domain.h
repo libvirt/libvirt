@@ -647,8 +647,9 @@ int qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
 
 bool qemuDomainHasVcpuPids(virDomainObjPtr vm);
 pid_t qemuDomainGetVcpuPid(virDomainObjPtr vm, unsigned int vcpuid);
-int qemuDomainDetectVcpuPids(virQEMUDriverPtr driver, virDomainObjPtr vm,
-                             int asyncJob);
+int qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              int asyncJob);
 
 bool qemuDomainSupportsNicdev(virDomainDefPtr def,
                               virDomainNetDefPtr net);

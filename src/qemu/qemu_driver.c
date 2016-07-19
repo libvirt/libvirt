@@ -4639,7 +4639,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
 
     vcpuinfo->online = true;
 
-    if ((rc = qemuDomainDetectVcpuPids(driver, vm, QEMU_ASYNC_JOB_NONE)) <= 0) {
+    if ((rc = qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE)) <= 0) {
         /* vcpu pids were not detected, skip setting of affinity */
         if (rc == 0)
             ret = 0;
@@ -4689,7 +4689,7 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if ((rc = qemuDomainDetectVcpuPids(driver, vm, QEMU_ASYNC_JOB_NONE)) < 0) {
+    if ((rc = qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE)) < 0) {
         /* rollback only if domain didn't exit */
         if (rc == -2)
             goto cleanup;

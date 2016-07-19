@@ -5624,20 +5624,20 @@ qemuDomainGetVcpuPid(virDomainObjPtr vm,
 
 
 /**
- * qemuDomainDetectVcpuPids:
+ * qemuDomainRefreshVcpuInfo:
  * @driver: qemu driver data
  * @vm: domain object
  * @asyncJob: current asynchronous job type
  *
- * Updates vCPU thread ids in the private data of @vm.
+ * Updates vCPU information private data of @vm.
  *
  * Returns number of detected vCPU threads on success, -1 on error and reports
  * an appropriate error, -2 if the domain doesn't exist any more.
  */
 int
-qemuDomainDetectVcpuPids(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm,
-                         int asyncJob)
+qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          int asyncJob)
 {
     virDomainVcpuDefPtr vcpu;
     size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
