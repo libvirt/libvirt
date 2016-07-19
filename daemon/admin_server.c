@@ -237,17 +237,17 @@ adminClientGetInfo(virNetServerClientPtr client,
                                  readonly) < 0)
         goto cleanup;
 
+    if (virIdentityGetSASLUserName(identity, &attr) < 0 ||
+        (attr &&
+         virTypedParamsAddString(&tmpparams, nparams, &maxparams,
+                                 VIR_CLIENT_INFO_SASL_USER_NAME,
+                                 attr) < 0))
+        goto cleanup;
+
     if (!virNetServerClientIsLocal(client)) {
         if (virTypedParamsAddString(&tmpparams, nparams, &maxparams,
                                     VIR_CLIENT_INFO_SOCKET_ADDR,
                                     sock_addr) < 0)
-            goto cleanup;
-
-        if (virIdentityGetSASLUserName(identity, &attr) < 0 ||
-            (attr &&
-             virTypedParamsAddString(&tmpparams, nparams, &maxparams,
-                                     VIR_CLIENT_INFO_SASL_USER_NAME,
-                                     attr) < 0))
             goto cleanup;
 
         if (virIdentityGetX509DName(identity, &attr) < 0 ||
