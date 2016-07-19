@@ -1365,7 +1365,11 @@ mymain(void)
 
     DO_TEST("encrypted-disk", NONE);
     DO_TEST("encrypted-disk-usage", NONE);
+# ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
     DO_TEST("luks-disks", QEMU_CAPS_OBJECT_SECRET);
+# else
+    DO_TEST_FAILURE("luks-disks", QEMU_CAPS_OBJECT_SECRET);
+# endif
 
     DO_TEST("memtune", NONE);
     DO_TEST("memtune-unlimited", NONE);

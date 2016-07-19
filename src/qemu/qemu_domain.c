@@ -1089,6 +1089,13 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
                                   true) < 0)
             goto error;
 
+        if (secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("luks encryption requires encrypted secrets "
+                             "to be supported"));
+            goto error;
+        }
+
         diskPriv->encinfo = secinfo;
     }
 
