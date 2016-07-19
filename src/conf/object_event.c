@@ -659,7 +659,8 @@ virObjectEventNew(virClassPtr klass,
         return NULL;
     }
     event->meta.id = id;
-    memcpy(event->meta.uuid, uuid, VIR_UUID_BUFLEN);
+    if (uuid)
+        memcpy(event->meta.uuid, uuid, VIR_UUID_BUFLEN);
 
     VIR_DEBUG("obj=%p", event);
     return event;
