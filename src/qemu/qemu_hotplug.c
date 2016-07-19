@@ -651,8 +651,8 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
         encobjProps = NULL; /* qemuMonitorAddObject consumes */
         if (rv < 0)
             goto exit_monitor;
+        encobjAdded = true;
     }
-    encobjAdded = true;
 
     if (qemuMonitorAddDrive(priv->mon, drivestr) < 0)
         goto exit_monitor;
