@@ -116,8 +116,8 @@ size_t virNetServerGetCurrentClients(virNetServerPtr srv);
 size_t virNetServerGetMaxUnauthClients(virNetServerPtr srv);
 size_t virNetServerGetCurrentUnauthClients(virNetServerPtr srv);
 
-int virNetServerSetClientProcessingControls(virNetServerPtr srv,
-                                            long long int maxClients,
-                                            long long int maxClientsUnauth);
+int virNetServerSetClientLimits(virNetServerPtr srv,
+                                long long int maxClients,
+                                long long int maxClientsUnauth);
 
 #endif /* __VIR_NET_SERVER_H__ */

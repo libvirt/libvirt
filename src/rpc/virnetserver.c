@@ -1046,9 +1046,9 @@ virNetServerGetClient(virNetServerPtr srv,
 }
 
 int
-virNetServerSetClientProcessingControls(virNetServerPtr srv,
-                                        long long int maxClients,
-                                        long long int maxClientsUnauth)
+virNetServerSetClientLimits(virNetServerPtr srv,
+                            long long int maxClients,
+                            long long int maxClientsUnauth)
 {
     int ret = -1;
     size_t max, max_unauth;

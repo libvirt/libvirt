@@ -382,8 +382,8 @@ adminServerSetClientLimits(virNetServerPtr srv,
                                    VIR_SERVER_CLIENTS_UNAUTH_MAX)))
         maxClientsUnauth = param->value.ui;
 
-    if (virNetServerSetClientProcessingControls(srv, maxClients,
-                                                maxClientsUnauth) < 0)
+    if (virNetServerSetClientLimits(srv, maxClients,
+                                    maxClientsUnauth) < 0)
         return -1;
 
     return 0;
