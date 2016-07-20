@@ -3906,27 +3906,21 @@ prlsdkApplyConfig(vzDriverPtr driver,
                   virDomainObjPtr dom,
                   virDomainDefPtr new)
 {
-    PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
+    vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job = PRL_INVALID_HANDLE;
     int ret;
 
-    sdkdom = prlsdkSdkDomainLookupByUUID(driver, dom->def->uuid);
-    if (sdkdom == PRL_INVALID_HANDLE)
-        return -1;
-
-    job = PrlVm_BeginEdit(sdkdom);
+    job = PrlVm_BeginEdit(privdom->sdkdom);
     if (PRL_FAILED(waitJob(job)))
         return -1;
 
-    ret = prlsdkDoApplyConfig(driver, sdkdom, new, dom->def);
+    ret = prlsdkDoApplyConfig(driver, privdom->sdkdom, new, dom->def);
 
     if (ret == 0) {
-        job = PrlVm_CommitEx(sdkdom, PVCF_DETACH_HDD_BUNDLE);
+        job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
         if (PRL_FAILED(waitJob(job)))
             ret = -1;
     }
-
-    PrlHandle_Free(sdkdom);
 
     return ret;
 }
