@@ -57,12 +57,47 @@ struct guest_arch {
 
 #define XEN_CAP_REGEX "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(aarch64|armv7l|x86_32|x86_64|ia64|powerpc64)(p|be)?"
 
+/* hw_caps is an array of 32-bit words whose meaning is listed in
+ * xen-unstable.hg/xen/include/asm-x86/cpufeature.h.  Each feature
+ * is defined in the form X*32+Y, corresponding to the Y'th bit in
+ * the X'th 32-bit word of hw_cap.
+ */
+static int
+libxlCapsInitCPU(virCapsPtr caps, libxl_physinfo *phy_info)
+{
+    virCPUDefPtr cpu = NULL;
+    int ret = -1;
+    int host_pae;
+
+    if (VIR_ALLOC(cpu) < 0)
+        goto error;
+
+    host_pae = phy_info->hw_cap[0] & LIBXL_X86_FEATURE_PAE_MASK;
+    if (host_pae &&
+        virCapabilitiesAddHostFeature(caps, "pae") < 0)
+        goto error;
+
+    cpu->type = VIR_CPU_TYPE_HOST;
+    cpu->cores = phy_info->cores_per_socket;
+    cpu->threads = phy_info->threads_per_core;
+    cpu->sockets = phy_info->nr_cpus / (cpu->cores * cpu->threads);
+    caps->host.cpu = cpu;
+
+    ret = 0;
+
+ cleanup:
+
+    return ret;
+
+ error:
+    virCPUDefFree(cpu);
+    goto cleanup;
+}
 
 static int
 libxlCapsInitHost(libxl_ctx *ctx, virCapsPtr caps)
 {
     libxl_physinfo phy_info;
-    int host_pae;
 
     if (libxl_get_physinfo(ctx, &phy_info) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -70,14 +105,7 @@ libxlCapsInitHost(libxl_ctx *ctx, virCapsPtr caps)
         return -1;
     }
 
-    /* hw_caps is an array of 32-bit words whose meaning is listed in
-     * xen-unstable.hg/xen/include/asm-x86/cpufeature.h.  Each feature
-     * is defined in the form X*32+Y, corresponding to the Y'th bit in
-     * the X'th 32-bit word of hw_cap.
-     */
-    host_pae = phy_info.hw_cap[0] & LIBXL_X86_FEATURE_PAE_MASK;
-    if (host_pae &&
-        virCapabilitiesAddHostFeature(caps, "pae") < 0)
+    if (libxlCapsInitCPU(caps, &phy_info) < 0)
         return -1;
 
     if (virCapabilitiesSetNetPrefix(caps, LIBXL_GENERATED_PREFIX_XEN) < 0)
