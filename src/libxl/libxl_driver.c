@@ -62,6 +62,7 @@
 #include "network/bridge_driver.h"
 #include "locking/domain_lock.h"
 #include "virstats.h"
+#include "cpu/cpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -6348,6 +6349,43 @@ libxlConnectGetDomainCapabilities(virConnectPtr conn,
 }
 
 
+static int
+libxlConnectCompareCPU(virConnectPtr conn,
+                       const char *xmlDesc,
+                       unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = conn->privateData;
+    libxlDriverConfigPtr cfg;
+    int ret = VIR_CPU_COMPARE_ERROR;
+    bool failIncompatible;
+
+    virCheckFlags(VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE,
+                  VIR_CPU_COMPARE_ERROR);
+
+    if (virConnectCompareCPUEnsureACL(conn) < 0)
+        return ret;
+
+    failIncompatible = !!(flags & VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE);
+
+    cfg = libxlDriverConfigGet(driver);
+
+    if (!cfg->caps->host.cpu ||
+        !cfg->caps->host.cpu->model) {
+        if (failIncompatible) {
+            virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s",
+                           _("cannot get host CPU capabilities"));
+        } else {
+            VIR_WARN("cannot get host CPU capabilities");
+            ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+        }
+    } else {
+        ret = cpuCompareXML(cfg->caps->host.cpu, xmlDesc, failIncompatible);
+    }
+
+    virObjectUnref(cfg);
+    return ret;
+}
+
 static virHypervisorDriver libxlHypervisorDriver = {
     .name = LIBXL_DRIVER_NAME,
     .connectOpen = libxlConnectOpen, /* 0.9.0 */
@@ -6452,6 +6490,7 @@ static virHypervisorDriver libxlHypervisorDriver = {
     .nodeGetSecurityModel = libxlNodeGetSecurityModel, /* 1.2.16 */
     .domainInterfaceAddresses = libxlDomainInterfaceAddresses, /* 1.3.5 */
     .connectGetDomainCapabilities = libxlConnectGetDomainCapabilities, /* 2.0.0 */
+    .connectCompareCPU = libxlConnectCompareCPU, /* 2.3.0 */
 };
 
 static virConnectDriver libxlConnectDriver = {
