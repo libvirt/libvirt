@@ -41,6 +41,10 @@
 
 VIR_LOG_INIT("util.systemd");
 
+#ifndef MSG_NOSIGNAL
+# define MSG_NOSIGNAL 0
+#endif
+
 static void virSystemdEscapeName(virBufferPtr buf,
                                  const char *name)
 {
