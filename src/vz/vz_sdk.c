@@ -2067,6 +2067,9 @@ prlsdkHandleVmConfigEvent(vzDriverPtr driver,
         goto cleanup;
     job = true;
 
+    if (dom->removing)
+        goto cleanup;
+
     if (prlsdkUpdateDomain(driver, dom) < 0)
         goto cleanup;
 
@@ -2332,6 +2335,16 @@ prlsdkDomainChangeState(virDomainPtr domain,
     if (vzDomainObjBeginJob(dom) < 0)
         goto cleanup;
     job = true;
+
+    if (dom->removing) {
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+        virUUIDFormat(dom->def->uuid, uuidstr);
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching uuid '%s' (%s)"),
+                       uuidstr, dom->def->name);
+        goto cleanup;
+    }
 
     ret = prlsdkDomainChangeStateLocked(privconn->driver, dom, chstate);
 
