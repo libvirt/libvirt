@@ -6386,6 +6386,26 @@ libxlConnectCompareCPU(virConnectPtr conn,
     return ret;
 }
 
+static char *
+libxlConnectBaselineCPU(virConnectPtr conn,
+                        const char **xmlCPUs,
+                        unsigned int ncpus,
+                        unsigned int flags)
+{
+    char *cpu = NULL;
+
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
+                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
+
+    if (virConnectBaselineCPUEnsureACL(conn) < 0)
+        goto cleanup;
+
+    cpu = cpuBaselineXML(xmlCPUs, ncpus, NULL, 0, flags);
+
+ cleanup:
+    return cpu;
+}
+
 static virHypervisorDriver libxlHypervisorDriver = {
     .name = LIBXL_DRIVER_NAME,
     .connectOpen = libxlConnectOpen, /* 0.9.0 */
@@ -6491,6 +6511,7 @@ static virHypervisorDriver libxlHypervisorDriver = {
     .domainInterfaceAddresses = libxlDomainInterfaceAddresses, /* 1.3.5 */
     .connectGetDomainCapabilities = libxlConnectGetDomainCapabilities, /* 2.0.0 */
     .connectCompareCPU = libxlConnectCompareCPU, /* 2.3.0 */
+    .connectBaselineCPU = libxlConnectBaselineCPU, /* 2.3.0 */
 };
 
 static virConnectDriver libxlConnectDriver = {
