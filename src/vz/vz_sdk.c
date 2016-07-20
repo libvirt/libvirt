@@ -2036,7 +2036,6 @@ prlsdkHandleVmAddedEvent(vzDriverPtr driver,
                          unsigned char *uuid)
 {
     virDomainObjPtr dom = NULL;
-    PRL_HANDLE sdkdom = PRL_INVALID_HANDLE;
 
     if (!(dom = virDomainObjListFindByUUID(driver->domains, uuid)) &&
         !(dom = prlsdkAddDomainByUUID(driver, uuid)))
@@ -2048,7 +2047,6 @@ prlsdkHandleVmAddedEvent(vzDriverPtr driver,
  cleanup:
     if (dom)
         virObjectUnlock(dom);
-    PrlHandle_Free(sdkdom);
     return;
 }
 
