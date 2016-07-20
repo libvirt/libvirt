@@ -1071,6 +1071,8 @@ virNetServerSetClientLimits(virNetServerPtr srv,
     if (maxClientsUnauth >= 0)
         srv->nclients_unauth_max = maxClientsUnauth;
 
+    virNetServerCheckLimits(srv);
+
     ret = 0;
  cleanup:
     virObjectUnlock(srv);
