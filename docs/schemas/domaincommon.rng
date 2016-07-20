@@ -2107,6 +2107,28 @@
     </element>
   </define>
 
+  <define name="interface-network-attributes">
+    <attribute name="network">
+      <text/>
+    </attribute>
+    <optional>
+      <attribute name="portgroup">
+        <ref name="deviceName"/>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="interface-bridge-attributes">
+    <attribute name="bridge">
+      <ref name="deviceName"/>
+    </attribute>
+    <optional>
+      <attribute name="macTableManager">
+        <ref name="macTableManager"/>
+      </attribute>
+    </optional>
+  </define>
+
   <!--
       An interface description can either be of type bridge in which case
       it will use a bridging source, or of type ethernet which uses a device
@@ -2123,9 +2145,10 @@
           <interleave>
             <optional>
               <element name="source">
-                <attribute name="bridge">
-                  <ref name="deviceName"/>
-                </attribute>
+                <ref name="interface-bridge-attributes"/>
+                <optional>
+                  <ref name="interface-network-attributes"/>
+                </optional>
                 <empty/>
               </element>
             </optional>
@@ -2179,13 +2202,9 @@
           </attribute>
           <interleave>
             <element name="source">
-              <attribute name="network">
-                <text/>
-              </attribute>
+              <ref name='interface-network-attributes'/>
               <optional>
-                <attribute name="portgroup">
-                  <ref name="deviceName"/>
-                </attribute>
+                <ref name="interface-bridge-attributes"/>
               </optional>
               <empty/>
             </element>
@@ -2208,6 +2227,9 @@
                 <attribute name="mode">
                   <ref name="bridgeMode"/>
                 </attribute>
+              </optional>
+              <optional>
+                <ref name='interface-network-attributes'/>
               </optional>
               <empty/>
             </element>
