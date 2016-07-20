@@ -4681,6 +4681,9 @@
         <optional>
           <ref name="address"/>
         </optional>
+        <optional>
+          <ref name="alias"/>
+        </optional>
       </interleave>
     </element>
   </define>
