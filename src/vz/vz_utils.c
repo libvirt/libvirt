@@ -33,6 +33,7 @@
 #include "virstring.h"
 #include "datatypes.h"
 #include "virlog.h"
+#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_PARALLELS
 #define PRLSRVCTL "prlsrvctl"
@@ -587,9 +588,17 @@ vzDomObjAlloc(void)
     if (VIR_ALLOC(pdom) < 0)
         return NULL;
 
+    if (virCondInit(&pdom->jobCond) < 0)
+        goto error;
+
     pdom->stats = PRL_INVALID_HANDLE;
 
     return pdom;
+
+ error:
+    VIR_FREE(pdom);
+
+    return NULL;
 }
 
 void
@@ -602,5 +611,46 @@ vzDomObjFree(void* p)
 
     PrlHandle_Free(pdom->sdkdom);
     PrlHandle_Free(pdom->stats);
+    virCondDestroy(&pdom->jobCond);
     VIR_FREE(pdom);
 };
+
+#define VZ_JOB_WAIT_TIME (1000 * 30)
+
+int
+vzDomainObjBeginJob(virDomainObjPtr dom)
+{
+    vzDomObjPtr pdom = dom->privateData;
+    unsigned long long now;
+    unsigned long long then;
+
+    if (virTimeMillisNow(&now) < 0)
+        return -1;
+    then = now + VZ_JOB_WAIT_TIME;
+
+    while (pdom->job) {
+        if (virCondWaitUntil(&pdom->jobCond, &dom->parent.lock, then) < 0)
+            goto error;
+    }
+
+    pdom->job = true;
+    return 0;
+
+ error:
+    if (errno == ETIMEDOUT)
+        virReportError(VIR_ERR_OPERATION_TIMEOUT,
+                       "%s", _("cannot acquire state change lock"));
+    else
+        virReportSystemError(errno,
+                             "%s", _("cannot acquire job mutex"));
+    return -1;
+}
+
+void
+vzDomainObjEndJob(virDomainObjPtr dom)
+{
+    vzDomObjPtr pdom = dom->privateData;
+
+    pdom->job = false;
+    virCondSignal(&pdom->jobCond);
+}

@@ -98,6 +98,8 @@ struct vzDomObj {
     int id;
     PRL_HANDLE sdkdom;
     PRL_HANDLE stats;
+    bool job;
+    virCond jobCond;
 };
 
 typedef struct vzDomObj *vzDomObjPtr;
@@ -139,3 +141,8 @@ int vzCheckUnsupportedGraphics(virDomainGraphicsDefPtr gr);
     OP(wr_bytes, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES, "write_total")
 
 #endif
+
+int
+vzDomainObjBeginJob(virDomainObjPtr dom);
+void
+vzDomainObjEndJob(virDomainObjPtr dom);

@@ -723,6 +723,7 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     virDomainObjPtr dom = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
     vzDriverPtr driver = privconn->driver;
+    bool job = false;
 
     virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
 
@@ -733,7 +734,7 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
                                        parse_flags)) == NULL)
         goto cleanup;
 
-    dom = virDomainObjListFindByUUID(driver->domains, def->uuid);
+    dom = virDomainObjListFindByUUIDRef(driver->domains, def->uuid);
     if (dom == NULL) {
         virResetLastError();
         if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
@@ -775,6 +776,10 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
                 goto cleanup;
             }
         } else {
+            if (vzDomainObjBeginJob(dom) < 0)
+                goto cleanup;
+            job = true;
+
             if (prlsdkApplyConfig(driver, dom, def))
                 goto cleanup;
 
@@ -788,8 +793,9 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
         retdom->id = def->id;
 
  cleanup:
-    if (dom)
-        virObjectUnlock(dom);
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
     virDomainDefFree(def);
     return retdom;
 }
@@ -991,17 +997,26 @@ vzDomainUndefineFlags(virDomainPtr domain,
 {
     vzConnPtr privconn = domain->conn->privateData;
     virDomainObjPtr dom = NULL;
-    int ret;
+    int ret = -1;
+    bool job = false;
 
     virCheckFlags(VIR_DOMAIN_UNDEFINE_MANAGED_SAVE |
                   VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA, -1);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
     ret = prlsdkUnregisterDomain(privconn->driver, dom, flags);
-    if (ret)
-        virObjectUnlock(dom);
+
+ cleanup:
+
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
 
     return ret;
 }
@@ -1039,12 +1054,17 @@ vzDomainManagedSave(virDomainPtr domain, unsigned int flags)
     virDomainObjPtr dom = NULL;
     int state, reason;
     int ret = -1;
+    bool job = false;
 
     virCheckFlags(VIR_DOMAIN_SAVE_RUNNING |
                   VIR_DOMAIN_SAVE_PAUSED, -1);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
 
     state = virDomainObjGetState(dom, &reason);
 
@@ -1057,7 +1077,9 @@ vzDomainManagedSave(virDomainPtr domain, unsigned int flags)
     ret = prlsdkDomainChangeStateLocked(privconn->driver, dom, prlsdkSuspend);
 
  cleanup:
-    virObjectUnlock(dom);
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
     return ret;
 }
 
@@ -1070,7 +1092,7 @@ vzDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
     state = virDomainObjGetState(dom, &reason);
@@ -1081,7 +1103,7 @@ vzDomainManagedSaveRemove(virDomainPtr domain, unsigned int flags)
     ret = prlsdkDomainManagedSaveRemove(dom);
 
  cleanup:
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
     return ret;
 }
 
@@ -1115,11 +1137,12 @@ static int vzDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
     virDomainDeviceDefPtr dev = NULL;
     virDomainObjPtr dom = NULL;
     vzDriverPtr driver = privconn->driver;
+    bool job = false;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
     if (vzCheckConfigUpdateFlags(dom, &flags) < 0)
@@ -1130,13 +1153,19 @@ static int vzDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
     if (dev == NULL)
         goto cleanup;
 
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
     if (prlsdkAttachDevice(driver, dom, dev) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
     virDomainDeviceDefFree(dev);
-    virObjectUnlock(dom);
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
     return ret;
 }
 
@@ -1154,11 +1183,12 @@ static int vzDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
     virDomainDeviceDefPtr dev = NULL;
     virDomainObjPtr dom = NULL;
     vzDriverPtr driver = privconn->driver;
+    bool job = false;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    dom = vzDomObjFromDomain(domain);
+    dom = vzDomObjFromDomainRef(domain);
     if (dom == NULL)
         return -1;
 
@@ -1172,13 +1202,19 @@ static int vzDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
     if (dev == NULL)
         goto cleanup;
 
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
     if (prlsdkDetachDevice(driver, dom, dev) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
     virDomainDeviceDefFree(dev);
-    virObjectUnlock(dom);
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
 
     return ret;
 }
@@ -1197,14 +1233,22 @@ vzDomainSetUserPassword(virDomainPtr domain,
 {
     virDomainObjPtr dom = NULL;
     int ret = -1;
+    bool job = false;
 
     virCheckFlags(0, -1);
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
 
     ret = prlsdkDomainSetUserPassword(dom, user, password);
 
-    virObjectUnlock(dom);
+ cleanup:
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
     return ret;
 }
 
@@ -1217,11 +1261,12 @@ static int vzDomainUpdateDeviceFlags(virDomainPtr domain,
     virDomainObjPtr dom = NULL;
     virDomainDeviceDefPtr dev = NULL;
     vzDriverPtr driver = privconn->driver;
+    bool job = false;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
     if (vzCheckConfigUpdateFlags(dom, &flags) < 0)
@@ -1232,6 +1277,10 @@ static int vzDomainUpdateDeviceFlags(virDomainPtr domain,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
     if (prlsdkUpdateDevice(driver, dom, dev) < 0)
         goto cleanup;
 
@@ -1239,7 +1288,9 @@ static int vzDomainUpdateDeviceFlags(virDomainPtr domain,
  cleanup:
 
     virDomainDeviceDefFree(dev);
-    virObjectUnlock(dom);
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
     return ret;
 }
 
@@ -1553,21 +1604,28 @@ static int vzDomainSetMemoryFlagsImpl(virDomainPtr domain, unsigned long memory,
 {
     virDomainObjPtr dom = NULL;
     int ret = -1;
+    bool job = false;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
     if (useflags && vzCheckConfigUpdateFlags(dom, &flags) < 0)
         goto cleanup;
 
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
     ret = prlsdkSetMemsize(dom, memory >> 10);
 
  cleanup:
 
-    virObjectUnlock(dom);
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
     return ret;
 }
 
@@ -1634,7 +1692,7 @@ vzDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -1644,7 +1702,7 @@ vzDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 
     return n;
 }
@@ -1662,7 +1720,7 @@ vzDomainSnapshotListNames(virDomainPtr domain,
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -1672,7 +1730,7 @@ vzDomainSnapshotListNames(virDomainPtr domain,
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 
     return n;
 }
@@ -1689,7 +1747,7 @@ vzDomainListAllSnapshots(virDomainPtr domain,
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_ROOTS |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -1699,7 +1757,7 @@ vzDomainListAllSnapshots(virDomainPtr domain,
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 
     return n;
 }
@@ -1716,7 +1774,7 @@ vzDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot, unsigned int flags)
 
     virCheckFlags(VIR_DOMAIN_XML_SECURE, NULL);
 
-    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+    if (!(dom = vzDomObjFromDomainRef(snapshot->domain)))
         return NULL;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -1733,7 +1791,7 @@ vzDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot, unsigned int flags)
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 
     return xml;
 }
@@ -1749,7 +1807,7 @@ vzDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
-    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+    if (!(dom = vzDomObjFromDomainRef(snapshot->domain)))
         return -1;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -1762,7 +1820,7 @@ vzDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 
     return n;
 }
@@ -1781,7 +1839,7 @@ vzDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
-    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+    if (!(dom = vzDomObjFromDomainRef(snapshot->domain)))
         return -1;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -1794,7 +1852,7 @@ vzDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 
     return n;
 }
@@ -1812,7 +1870,7 @@ vzDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS |
                   VIR_DOMAIN_SNAPSHOT_FILTERS_ALL, -1);
 
-    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+    if (!(dom = vzDomObjFromDomainRef(snapshot->domain)))
         return -1;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -1825,7 +1883,7 @@ vzDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 
     return n;
 }
@@ -1842,7 +1900,7 @@ vzDomainSnapshotLookupByName(virDomainPtr domain,
 
     virCheckFlags(0, NULL);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return NULL;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -1854,7 +1912,7 @@ vzDomainSnapshotLookupByName(virDomainPtr domain,
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
 
  cleanup:
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
     virDomainSnapshotObjListFree(snapshots);
 
     return snapshot;
@@ -1869,7 +1927,7 @@ vzDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return -1;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -1879,7 +1937,7 @@ vzDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 
     return ret;
 }
@@ -1894,7 +1952,7 @@ vzDomainSnapshotGetParent(virDomainSnapshotPtr snapshot, unsigned int flags)
 
     virCheckFlags(0, NULL);
 
-    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+    if (!(dom = vzDomObjFromDomainRef(snapshot->domain)))
         return NULL;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -1914,7 +1972,7 @@ vzDomainSnapshotGetParent(virDomainSnapshotPtr snapshot, unsigned int flags)
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 
     return parent;
 }
@@ -1929,7 +1987,7 @@ vzDomainSnapshotCurrent(virDomainPtr domain, unsigned int flags)
 
     virCheckFlags(0, NULL);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return NULL;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -1945,7 +2003,7 @@ vzDomainSnapshotCurrent(virDomainPtr domain, unsigned int flags)
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 
     return snapshot;
 }
@@ -1960,7 +2018,7 @@ vzDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+    if (!(dom = vzDomObjFromDomainRef(snapshot->domain)))
         return -1;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -1971,7 +2029,7 @@ vzDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot, unsigned int flags)
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 
     return ret;
 }
@@ -1987,7 +2045,7 @@ vzDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
 
     virCheckFlags(0, -1);
 
-    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+    if (!(dom = vzDomObjFromDomainRef(snapshot->domain)))
         return -1;
 
     if (!(snapshots = prlsdkLoadSnapshots(dom)))
@@ -2000,7 +2058,8 @@ vzDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
+
     return ret;
 }
 
@@ -2017,10 +2076,11 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
     unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
     virDomainSnapshotObjListPtr snapshots = NULL;
     virDomainSnapshotObjPtr current;
+    bool job = false;
 
     virCheckFlags(0, NULL);
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         return NULL;
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, driver->caps,
@@ -2038,6 +2098,10 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
                        _("configuring memory location is not supported"));
         goto cleanup;
     }
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
 
     /* snaphot name is ignored, it will be set to auto generated by sdk uuid */
     if (prlsdkCreateSnapshot(dom, def->description) < 0)
@@ -2057,8 +2121,10 @@ vzDomainSnapshotCreateXML(virDomainPtr domain,
 
  cleanup:
     virDomainSnapshotObjListFree(snapshots);
-    virObjectUnlock(dom);
     virDomainSnapshotDefFree(def);
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
 
     return snapshot;
 }
@@ -2071,13 +2137,13 @@ vzDomainSnapshotDelete(virDomainSnapshotPtr snapshot, unsigned int flags)
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN, -1);
 
-    if (!(dom = vzDomObjFromDomain(snapshot->domain)))
+    if (!(dom = vzDomObjFromDomainRef(snapshot->domain)))
         return -1;
 
     ret = prlsdkDeleteSnapshot(dom, snapshot->name,
                                flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN);
 
-    virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
 
     return ret;
 }
@@ -2087,16 +2153,23 @@ vzDomainRevertToSnapshot(virDomainSnapshotPtr snapshot, unsigned int flags)
 {
     virDomainObjPtr dom;
     int ret = -1;
+    bool job = false;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED, -1);
 
     if (!(dom = vzDomObjFromDomain(snapshot->domain)))
         return -1;
 
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
     ret = prlsdkSwitchToSnapshot(dom, snapshot->name,
                                  flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED);
-
-    virObjectUnlock(dom);
+ cleanup:
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
 
     return ret;
 }
@@ -2431,6 +2504,7 @@ vzDomainMigratePerformStep(virDomainPtr domain,
     const char *miguri = NULL;
     const char *dname = NULL;
     vzMigrationCookiePtr mig = NULL;
+    bool job = false;
 
     virCheckFlags(VZ_MIGRATION_FLAGS, -1);
 
@@ -2453,8 +2527,12 @@ vzDomainMigratePerformStep(virDomainPtr domain,
                             VZ_MIGRATION_COOKIE_SESSION_UUID)))
         goto cleanup;
 
-    if (!(dom = vzDomObjFromDomain(domain)))
+    if (!(dom = vzDomObjFromDomainRef(domain)))
         goto cleanup;
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
 
     if (!(vzuri = vzParseVzURI(miguri)))
         goto cleanup;
@@ -2463,13 +2541,14 @@ vzDomainMigratePerformStep(virDomainPtr domain,
         goto cleanup;
 
     virDomainObjListRemove(privconn->driver->domains, dom);
-    dom = NULL;
+    virObjectLock(dom);
 
     ret = 0;
 
  cleanup:
-    if (dom)
-        virObjectUnlock(dom);
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
     virURIFree(vzuri);
     vzMigrationCookieFree(mig);
 
@@ -2635,8 +2714,7 @@ vzDomainMigrateFinish3Params(virConnectPtr dconn,
      * is already finished. */
     if (!domain)
         VIR_WARN("Can't provide domain '%s' after successfull migration.", name);
-    if (dom)
-        virObjectUnlock(dom);
+    virDomainObjEndAPI(&dom);
     return domain;
 }
 
