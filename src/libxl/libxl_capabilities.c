@@ -36,6 +36,8 @@
 #include "domain_capabilities.h"
 #include "vircommand.h"
 #include "libxl_capabilities.h"
+#include "cpu/cpu_x86.h"
+#include "cpu/cpu_x86_data.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
@@ -43,8 +45,13 @@
 VIR_LOG_INIT("libxl.libxl_capabilities");
 
 /* see xen-unstable.hg/xen/include/asm-x86/cpufeature.h */
-#define LIBXL_X86_FEATURE_PAE_MASK 0x40
+#define LIBXL_X86_FEATURE_PAE_MASK (1 << 6)
+#define LIBXL_X86_FEATURE_LM_MASK  (1 << 29)
 
+enum libxlHwcapVersion {
+    LIBXL_HWCAP_V0 = 0,    /* for Xen 4.4 .. 4.6 */
+    LIBXL_HWCAP_V1,        /* for Xen 4.7 and up */
+};
 
 struct guest_arch {
     virArch arch;
@@ -57,17 +64,107 @@ struct guest_arch {
 
 #define XEN_CAP_REGEX "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(aarch64|armv7l|x86_32|x86_64|ia64|powerpc64)(p|be)?"
 
+static int
+libxlCapsAddCPUID(virCPUx86Data *data, virCPUx86CPUID *cpuid, ssize_t ncaps)
+{
+    size_t i;
+
+    for (i = 0; i < ncaps; i++) {
+        virCPUx86CPUID *c = &cpuid[i];
+
+        if (virCPUx86DataAddCPUID(data, c) < 0) {
+            VIR_DEBUG("Failed to add CPUID(%x,%x)", c->eax_in, c->ecx_in);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+/*
+ * The words represented in physinfo.hw_cap are host CPUID (sub) leafs.
+ * Position of these hasn't changed much up until Xen 4.7 with a rework
+ * on how CPUID is handled internally. As a side-effect it got normalized
+ * and also added more feature words. Although cannot be relied upon as
+ * stable interface, and hence we version changes in position of the features
+ * across all supported versions of the libxl driver until libxl exposes a
+ * stable representation of these capabilities. Fortunately not a lot of
+ * variation happened so it's still trivial to keep track of these leafs
+ * to describe host CPU in libvirt capabilities. v0 stands for Xen 4.4
+ * up to 4.6, while v1 is meant for Xen 4.7, as depicted in the table below:
+ *
+ *              | v0 (Xen 4.4 - 4.6) |   v1 (Xen >= 4.7)    |
+ *              ---------------------------------------------
+ *       word 0 | CPUID.00000001.EDX | CPUID.00000001.EDX   |
+ *       word 1 | CPUID.80000001.EDX | CPUID.00000001.ECX   |
+ *       word 2 | CPUID.80860001     | CPUID.80000001.EDX   |
+ *       word 3 | -     Linux    -   | CPUID.80000001.ECX   |
+ *       word 4 | CPUID.00000001.ECX | CPUID.0000000D:1.EAX |
+ *       word 5 | CPUID.C0000001     | CPUID.00000007:0.EBX |
+ *       word 6 | CPUID.80000001.ECX | CPUID.00000007:0.ECX |
+ *       word 7 | CPUID.00000007.EBX | CPUID.80000007.EDX   |
+ *       word 8 | - Non existent -   | CPUID.80000008.EBX   |
+ *
+ */
+static virCPUDataPtr
+libxlCapsNodeData(virCPUDefPtr cpu, libxl_hwcap hwcap,
+                  enum libxlHwcapVersion version)
+{
+    ssize_t ncaps;
+    virCPUDataPtr cpudata = NULL;
+    virCPUx86Data data = VIR_CPU_X86_DATA_INIT;
+    virCPUx86CPUID cpuid[] = {
+        { .eax_in = 0x00000001,
+          .edx = hwcap[0] },
+        { .eax_in = 0x00000001,
+          .ecx = (version > LIBXL_HWCAP_V0 ? hwcap[1] : hwcap[4]) },
+        { .eax_in = 0x80000001,
+          .edx = (version > LIBXL_HWCAP_V0 ? hwcap[2] : hwcap[1]) },
+        { .eax_in = 0x80000001,
+          .ecx = (version > LIBXL_HWCAP_V0 ? hwcap[3] : hwcap[6]) },
+        { .eax_in = 0x00000007,
+          .ebx = (version > LIBXL_HWCAP_V0 ? hwcap[5] : hwcap[7]) },
+    };
+    virCPUx86CPUID cpuid_ver1[] = {
+        { .eax_in = 0x0000000D, .ecx_in = 1U, .eax = hwcap[4] },
+        { .eax_in = 0x00000007, .ecx_in = 0U, .ecx = hwcap[6] },
+        { .eax_in = 0x80000007, .ecx_in = 0U, .edx = hwcap[7] },
+    };
+
+    ncaps = ARRAY_CARDINALITY(cpuid);
+    if (libxlCapsAddCPUID(&data, cpuid, ncaps) < 0)
+        goto error;
+
+    ncaps = ARRAY_CARDINALITY(cpuid_ver1);
+    if (version > LIBXL_HWCAP_V0 &&
+        libxlCapsAddCPUID(&data, cpuid_ver1, ncaps) < 0)
+        goto error;
+
+    cpudata = virCPUx86MakeData(cpu->arch, &data);
+
+ error:
+    virCPUx86DataClear(&data);
+    return cpudata;
+}
+
 /* hw_caps is an array of 32-bit words whose meaning is listed in
  * xen-unstable.hg/xen/include/asm-x86/cpufeature.h.  Each feature
  * is defined in the form X*32+Y, corresponding to the Y'th bit in
  * the X'th 32-bit word of hw_cap.
  */
 static int
-libxlCapsInitCPU(virCapsPtr caps, libxl_physinfo *phy_info)
+libxlCapsInitCPU(virCapsPtr caps, libxl_physinfo *phy_info,
+                 enum libxlHwcapVersion version)
 {
+    virCPUDataPtr data = NULL;
     virCPUDefPtr cpu = NULL;
     int ret = -1;
     int host_pae;
+    int host_lm;
+
+    /* On ARM hw_cap vector is zeroed out but not on x86 */
+    if (!phy_info->hw_cap[0])
+        return 0;
 
     if (VIR_ALLOC(cpu) < 0)
         goto error;
@@ -77,6 +174,13 @@ libxlCapsInitCPU(virCapsPtr caps, libxl_physinfo *phy_info)
         virCapabilitiesAddHostFeature(caps, "pae") < 0)
         goto error;
 
+    host_lm = (phy_info->hw_cap[version > LIBXL_HWCAP_V0 ? 2 : 1]
+                & LIBXL_X86_FEATURE_LM_MASK);
+    if (host_lm)
+        cpu->arch = VIR_ARCH_X86_64;
+    else
+        cpu->arch = VIR_ARCH_I686;
+
     cpu->type = VIR_CPU_TYPE_HOST;
     cpu->cores = phy_info->cores_per_socket;
     cpu->threads = phy_info->threads_per_core;
@@ -85,7 +189,14 @@ libxlCapsInitCPU(virCapsPtr caps, libxl_physinfo *phy_info)
 
     ret = 0;
 
+    if (!(data = libxlCapsNodeData(cpu, phy_info->hw_cap, version)) ||
+        cpuDecode(cpu, data, NULL, 0, NULL) < 0) {
+        VIR_WARN("Failed to initialize host cpu features");
+        goto error;
+    }
+
  cleanup:
+    cpuDataFree(data);
 
     return ret;
 
@@ -97,6 +208,8 @@ libxlCapsInitCPU(virCapsPtr caps, libxl_physinfo *phy_info)
 static int
 libxlCapsInitHost(libxl_ctx *ctx, virCapsPtr caps)
 {
+    const libxl_version_info *ver_info;
+    enum libxlHwcapVersion version;
     libxl_physinfo phy_info;
 
     if (libxl_get_physinfo(ctx, &phy_info) != 0) {
@@ -105,7 +218,14 @@ libxlCapsInitHost(libxl_ctx *ctx, virCapsPtr caps)
         return -1;
     }
 
-    if (libxlCapsInitCPU(caps, &phy_info) < 0)
+    if ((ver_info = libxl_get_version_info(ctx)) == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to get version info from libxenlight"));
+        return -1;
+    }
+
+    version = (ver_info->xen_version_minor >= 7);
+    if (libxlCapsInitCPU(caps, &phy_info, version) < 0)
         return -1;
 
     if (virCapabilitiesSetNetPrefix(caps, LIBXL_GENERATED_PREFIX_XEN) < 0)
