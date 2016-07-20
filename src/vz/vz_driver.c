@@ -1208,38 +1208,38 @@ vzDomainSetUserPassword(virDomainPtr domain,
     return ret;
 }
 
-static int vzDomainUpdateDeviceFlags(virDomainPtr dom,
+static int vzDomainUpdateDeviceFlags(virDomainPtr domain,
                                      const char *xml,
                                      unsigned int flags)
 {
     int ret = -1;
-    vzConnPtr privconn = dom->conn->privateData;
-    virDomainObjPtr privdom = NULL;
+    vzConnPtr privconn = domain->conn->privateData;
+    virDomainObjPtr dom = NULL;
     virDomainDeviceDefPtr dev = NULL;
     vzDriverPtr driver = privconn->driver;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (!(privdom = vzDomObjFromDomain(dom)))
+    if (!(dom = vzDomObjFromDomain(domain)))
         return -1;
 
-    if (vzCheckConfigUpdateFlags(privdom, &flags) < 0)
+    if (vzCheckConfigUpdateFlags(dom, &flags) < 0)
         goto cleanup;
 
-    if (!(dev = virDomainDeviceDefParse(xml, privdom->def, driver->caps,
+    if (!(dev = virDomainDeviceDefParse(xml, dom->def, driver->caps,
                                         driver->xmlopt,
                                         VIR_DOMAIN_XML_INACTIVE)))
         goto cleanup;
 
-    if (prlsdkUpdateDevice(driver, privdom, dev) < 0)
+    if (prlsdkUpdateDevice(driver, dom, dev) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
 
     virDomainDeviceDefFree(dev);
-    virObjectUnlock(privdom);
+    virObjectUnlock(dom);
     return ret;
 }
 
