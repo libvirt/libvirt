@@ -7768,8 +7768,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
             return -1;
         }
 
-        if (vmdef->mem.cur_balloon == virDomainDefGetMemoryTotal(vmdef))
-            vmdef->mem.cur_balloon += dev->data.memory->size;
+        vmdef->mem.cur_balloon += dev->data.memory->size;
 
         if (virDomainMemoryInsert(vmdef, dev->data.memory) < 0)
             return -1;
@@ -7826,6 +7825,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
     virDomainControllerDefPtr cont, det_cont;
     virDomainChrDefPtr chr;
     virDomainFSDefPtr fs;
+    virDomainMemoryDefPtr mem;
     int idx;
 
     switch ((virDomainDeviceType) dev->type) {
@@ -7923,8 +7923,9 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
                            _("matching memory device was not found"));
             return -1;
         }
-
-        virDomainMemoryDefFree(virDomainMemoryRemove(vmdef, idx));
+        mem = virDomainMemoryRemove(vmdef, idx);
+        vmdef->mem.cur_balloon -= mem->size;
+        virDomainMemoryDefFree(mem);
         break;
 
     case VIR_DOMAIN_DEVICE_REDIRDEV:

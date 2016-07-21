@@ -14623,10 +14623,6 @@ virDomainMemoryRemove(virDomainDefPtr def,
 
     VIR_DELETE_ELEMENT(def->mems, idx, def->nmems);
 
-    /* fix up balloon size */
-    if (def->mem.cur_balloon > virDomainDefGetMemoryTotal(def))
-        def->mem.cur_balloon = virDomainDefGetMemoryTotal(def);
-
     /* fix total memory size of the domain */
     virDomainDefSetMemoryTotal(def, memory - ret->size);
 
