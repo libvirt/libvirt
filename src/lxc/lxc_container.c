@@ -2245,6 +2245,15 @@ static int lxcContainerChild(void *data)
                              argv->npassFDs, argv->passFDs) < 0)
         goto cleanup;
 
+    /* Make init process of the container the leader of the new session.
+     * That is needed when checkpointing container.
+     */
+    if (setsid() < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to become session leader"));
+        goto cleanup;
+    }
+
     ret = 0;
  cleanup:
     VIR_FREE(ttyPath);
