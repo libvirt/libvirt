@@ -2559,21 +2559,9 @@ x86UpdateHostModel(virCPUDefPtr guest,
     /* Remove non-migratable features by default */
     updated->type = VIR_CPU_TYPE_GUEST;
     updated->mode = VIR_CPU_MODE_CUSTOM;
-    if (virCPUDefCopyModel(updated, host, true) < 0)
+    if (virCPUDefCopyModelFilter(updated, host, true,
+                                 x86FeatureIsMigratable, map) < 0)
         goto cleanup;
-
-    i = 0;
-    while (i < updated->nfeatures) {
-        if (x86FeatureIsMigratable(updated->features[i].name, map) &&
-            STRNEQ(updated->features[i].name, "cmt") &&
-            STRNEQ(updated->features[i].name, "mbm_total") &&
-            STRNEQ(updated->features[i].name, "mbm_local")) {
-            i++;
-        } else {
-            VIR_FREE(updated->features[i].name);
-            VIR_DELETE_ELEMENT_INPLACE(updated->features, i, updated->nfeatures);
-        }
-    }
 
     if (guest->vendor_id) {
         VIR_FREE(updated->vendor_id);
