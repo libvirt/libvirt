@@ -107,7 +107,7 @@ vah_usage(void)
             "  Options:\n"
             "    -a | --add                     load profile\n"
             "    -c | --create                  create profile from template\n"
-            "    -d | --dry-run                 dry run\n"
+            "    -d | --dryrun                  dry run\n"
             "    -D | --delete                  unload and delete profile\n"
             "    -f | --add-file <file>         add file to profile\n"
             "    -F | --append-file <file>      append file to profile\n"
