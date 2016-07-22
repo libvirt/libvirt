@@ -117,6 +117,14 @@ mymain(void)
                                      "array=bleah,array=qwerty,array=1");
     DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"boolean\":true,\"hyphen-name\":1234,\"some_string\":\"bleah\"}",
                                      "boolean=yes,hyphen-name=1234,some_string=bleah");
+    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"nest\": {\"boolean\":true,"
+                                                 "\"hyphen-name\":1234,"
+                                                 "\"some_string\":\"bleah\","
+                                                 "\"bleah\":\"bl,eah\""
+                                                 "}"
+                                     "}",
+                                     "nest.boolean=yes,nest.hyphen-name=1234,"
+                                     "nest.some_string=bleah,nest.bleah=bl,,eah");
 
     return ret;
 

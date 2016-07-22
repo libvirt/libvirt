@@ -26,10 +26,48 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "virqemu.h"
+#include "virstring.h"
+#include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.qemu");
+
+struct virQEMUCommandLineJSONIteratorData {
+    const char *prefix;
+    virBufferPtr buf;
+};
+
+
+static int
+virQEMUBuildCommandLineJSONRecurse(const char *key,
+                                   const virJSONValue *value,
+                                   virBufferPtr buf,
+                                   bool nested);
+
+/* internal iterator to handle nested object formatting */
+static int
+virQEMUBuildCommandLineJSONIterate(const char *key,
+                                   const virJSONValue *value,
+                                   void *opaque)
+{
+    struct virQEMUCommandLineJSONIteratorData *data = opaque;
+    char *tmpkey = NULL;
+    int ret = -1;
+
+    if (data->prefix) {
+        if (virAsprintf(&tmpkey, "%s.%s", data->prefix, key) < 0)
+            return -1;
+
+        ret = virQEMUBuildCommandLineJSONRecurse(tmpkey, value, data->buf, false);
+
+        VIR_FREE(tmpkey);
+    } else {
+        ret = virQEMUBuildCommandLineJSONRecurse(key, value, data->buf, false);
+    }
+
+    return ret;
+}
 
 
 static int
@@ -38,11 +76,18 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
                                    virBufferPtr buf,
                                    bool nested)
 {
+    struct virQEMUCommandLineJSONIteratorData data = { key, buf };
     virJSONValuePtr elem;
     virBitmapPtr bitmap = NULL;
     ssize_t pos = -1;
     ssize_t end;
     size_t i;
+
+    if (!key && value->type != VIR_JSON_TYPE_OBJECT) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("only JSON objects can be top level"));
+        return -1;
+    }
 
     switch ((virJSONType) value->type) {
     case VIR_JSON_TYPE_STRING:
@@ -96,24 +141,20 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
         break;
 
     case VIR_JSON_TYPE_OBJECT:
+        if (virJSONValueObjectForeachKeyValue(value,
+                                              virQEMUBuildCommandLineJSONIterate,
+                                              &data) < 0)
+            return -1;
+        break;
+
     case VIR_JSON_TYPE_NULL:
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("NULL and OBJECT JSON types can't be converted to "
-                         "commandline string"));
+                       _("NULL JSON type can't be converted to commandline"));
         return -1;
     }
 
     virBitmapFree(bitmap);
     return 0;
-}
-
-
-static int
-virQEMUBuildCommandLineJSONIterate(const char *key,
-                                   const virJSONValue *value,
-                                   void *opaque)
-{
-    return virQEMUBuildCommandLineJSONRecurse(key, value, opaque, false);
 }
 
 
@@ -131,12 +172,7 @@ int
 virQEMUBuildCommandLineJSON(const virJSONValue *value,
                             virBufferPtr buf)
 {
-    if (virJSONValueObjectForeachKeyValue(value,
-                                          virQEMUBuildCommandLineJSONIterate,
-                                          buf) < 0)
-        return -1;
-
-    return 0;
+    return virQEMUBuildCommandLineJSONRecurse(NULL, value, buf, false);
 }
 
 
