@@ -690,13 +690,76 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
 
 #define QEMU_DEFAULT_NBD_PORT "10809"
 
+
+static char *
+qemuBuildNetworkDriveURI(virStorageSourcePtr src,
+                         qemuDomainSecretInfoPtr secinfo)
+{
+    virURIPtr uri = NULL;
+    char *ret = NULL;
+
+    if (src->nhosts != 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("protocol '%s' accepts only one host"),
+                       virStorageNetProtocolTypeToString(src->protocol));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(uri) < 0)
+        goto cleanup;
+
+    if (src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
+        if (VIR_STRDUP(uri->scheme,
+                       virStorageNetProtocolTypeToString(src->protocol)) < 0)
+            goto cleanup;
+    } else {
+        if (virAsprintf(&uri->scheme, "%s+%s",
+                        virStorageNetProtocolTypeToString(src->protocol),
+                        virStorageNetHostTransportTypeToString(src->hosts->transport)) < 0)
+            goto cleanup;
+    }
+
+    if ((uri->port = qemuNetworkDriveGetPort(src->protocol,
+                                             src->hosts->port)) < 0)
+        goto cleanup;
+
+    if (src->path) {
+        if (src->volume) {
+            if (virAsprintf(&uri->path, "/%s%s",
+                            src->volume, src->path) < 0)
+                goto cleanup;
+        } else {
+            if (virAsprintf(&uri->path, "%s%s",
+                            src->path[0] == '/' ? "" : "/",
+                            src->path) < 0)
+                goto cleanup;
+        }
+    }
+
+    if (src->hosts->socket &&
+        virAsprintf(&uri->query, "socket=%s", src->hosts->socket) < 0)
+        goto cleanup;
+
+    if (qemuBuildGeneralSecinfoURI(uri, secinfo) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(uri->server, src->hosts->name) < 0)
+        goto cleanup;
+
+    ret = virURIFormat(uri);
+
+ cleanup:
+    virURIFree(uri);
+    return ret;
+}
+
+
 static char *
 qemuBuildNetworkDriveStr(virStorageSourcePtr src,
                          qemuDomainSecretInfoPtr secinfo)
 {
     char *ret = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    virURIPtr uri = NULL;
     size_t i;
 
     switch ((virStorageNetProtocol) src->protocol) {
@@ -752,8 +815,9 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
                 ret = virBufferContentAndReset(&buf);
                 goto cleanup;
             }
-            /* fallthrough */
-            /* NBD code uses same formatting scheme as others in some cases */
+            /* NBD code uses URI formatting scheme as others in some cases */
+            ret = qemuBuildNetworkDriveURI(src, secinfo);
+            break;
 
         case VIR_STORAGE_NET_PROTOCOL_HTTP:
         case VIR_STORAGE_NET_PROTOCOL_HTTPS:
@@ -762,56 +826,7 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
         case VIR_STORAGE_NET_PROTOCOL_TFTP:
         case VIR_STORAGE_NET_PROTOCOL_ISCSI:
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-            if (src->nhosts != 1) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("protocol '%s' accepts only one host"),
-                               virStorageNetProtocolTypeToString(src->protocol));
-                goto cleanup;
-            }
-
-            if (VIR_ALLOC(uri) < 0)
-                goto cleanup;
-
-            if (src->hosts->transport == VIR_STORAGE_NET_HOST_TRANS_TCP) {
-                if (VIR_STRDUP(uri->scheme,
-                               virStorageNetProtocolTypeToString(src->protocol)) < 0)
-                    goto cleanup;
-            } else {
-                if (virAsprintf(&uri->scheme, "%s+%s",
-                                virStorageNetProtocolTypeToString(src->protocol),
-                                virStorageNetHostTransportTypeToString(src->hosts->transport)) < 0)
-                    goto cleanup;
-            }
-
-            if ((uri->port = qemuNetworkDriveGetPort(src->protocol,
-                                                     src->hosts->port)) < 0)
-                goto cleanup;
-
-            if (src->path) {
-                if (src->volume) {
-                    if (virAsprintf(&uri->path, "/%s%s",
-                                    src->volume, src->path) < 0)
-                        goto cleanup;
-                } else {
-                    if (virAsprintf(&uri->path, "%s%s",
-                                    src->path[0] == '/' ? "" : "/",
-                                    src->path) < 0)
-                        goto cleanup;
-                }
-            }
-
-            if (src->hosts->socket &&
-                virAsprintf(&uri->query, "socket=%s", src->hosts->socket) < 0)
-                goto cleanup;
-
-            if (qemuBuildGeneralSecinfoURI(uri, secinfo) < 0)
-                goto cleanup;
-
-            if (VIR_STRDUP(uri->server, src->hosts->name) < 0)
-                goto cleanup;
-
-            ret = virURIFormat(uri);
-
+            ret = qemuBuildNetworkDriveURI(src, secinfo);
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
@@ -896,7 +911,6 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
 
  cleanup:
     virBufferFreeAndReset(&buf);
-    virURIFree(uri);
 
     return ret;
 }
