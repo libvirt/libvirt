@@ -570,25 +570,55 @@ virStorageFileBackendGlusterDeinit(virStorageSourcePtr src)
 }
 
 static int
-virStorageFileBackendGlusterInit(virStorageSourcePtr src)
+virStorageFileBackendGlusterInitServer(virStorageFileBackendGlusterPrivPtr priv,
+                                       virStorageNetHostDefPtr host)
 {
-    virStorageFileBackendGlusterPrivPtr priv = NULL;
-    virStorageNetHostDefPtr host = &(src->hosts[0]);
-    const char *hostname;
+    const char *transport = virStorageNetHostTransportTypeToString(host->transport);
+    const char *hoststr = NULL;
     int port = 0;
 
-    if (src->nhosts != 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Expected exactly 1 host for the gluster volume"));
+    switch ((virStorageNetHostTransport) host->transport) {
+    case VIR_STORAGE_NET_HOST_TRANS_RDMA:
+    case VIR_STORAGE_NET_HOST_TRANS_TCP:
+        hoststr = host->name;
+
+        if (host->port &&
+            virStrToLong_i(host->port, NULL, 10, &port) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to parse port number '%s'"),
+                           host->port);
+            return -1;
+        }
+
+        break;
+
+    case VIR_STORAGE_NET_HOST_TRANS_UNIX:
+        hoststr = host->socket;
+        break;
+
+    case VIR_STORAGE_NET_HOST_TRANS_LAST:
+        break;
+    }
+
+    VIR_DEBUG("adding gluster host for %p: transport=%s host=%s port=%d",
+              priv, transport, hoststr, port);
+
+    if (glfs_set_volfile_server(priv->vol, transport, hoststr, port) < 0) {
+        virReportSystemError(errno,
+                             _("failed to set gluster volfile server '%s'"),
+                             hoststr);
         return -1;
     }
 
-    hostname = host->name;
+    return 0;
+}
 
-    VIR_DEBUG("initializing gluster storage file %p (gluster://%s:%s/%s%s)[%u:%u]",
-              src, hostname, host->port ? host->port : "0",
-              NULLSTR(src->volume), src->path,
-              (unsigned int)src->drv->uid, (unsigned int)src->drv->gid);
+
+static int
+virStorageFileBackendGlusterInit(virStorageSourcePtr src)
+{
+    virStorageFileBackendGlusterPrivPtr priv = NULL;
+    size_t i;
 
     if (!src->volume) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -600,35 +630,25 @@ virStorageFileBackendGlusterInit(virStorageSourcePtr src)
     if (VIR_ALLOC(priv) < 0)
         return -1;
 
-    if (host->port &&
-        virStrToLong_i(host->port, NULL, 10, &port) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to parse port number '%s'"),
-                       host->port);
-        goto error;
-    }
-
-    if (host->transport == VIR_STORAGE_NET_HOST_TRANS_UNIX)
-        hostname = host->socket;
+    VIR_DEBUG("initializing gluster storage file %p "
+              "(priv='%p' volume='%s' path='%s') as [%u:%u]",
+              src, priv, src->volume, src->path,
+              (unsigned int)src->drv->uid, (unsigned int)src->drv->gid);
 
     if (!(priv->vol = glfs_new(src->volume))) {
         virReportOOMError();
         goto error;
     }
 
-    if (glfs_set_volfile_server(priv->vol,
-                                virStorageNetHostTransportTypeToString(host->transport),
-                                hostname, port) < 0) {
-        virReportSystemError(errno,
-                             _("failed to set gluster volfile server '%s'"),
-                             hostname);
-        goto error;
+    for (i = 0; i < src->nhosts; i++) {
+        if (virStorageFileBackendGlusterInitServer(priv, src->hosts + i) < 0)
+            goto error;
     }
 
     if (glfs_init(priv->vol) < 0) {
         virReportSystemError(errno,
-                             _("failed to initialize gluster connection to "
-                               "server: '%s'"), hostname);
+                             _("failed to initialize gluster connection "
+                               "(src=%p priv=%p)"), src, priv);
         goto error;
     }
 
