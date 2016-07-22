@@ -1,0 +1,8 @@
+<disk type='file' device='disk'>
+  <driver name='qemu' type='raw' cache='none'/>
+  <source file='/dev/null'/>
+  <target dev='vde' bus='virtio'/>
+  <readonly/>
+  <shareable/>
+  <address type='ccw' cssid='0xfe' ssid='0x0' devno='0x0000'/>
+</disk>

@@ -73,6 +73,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
 
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VIRTIO_SCSI);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW);
     if (event)
         virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT);
 
@@ -522,6 +523,42 @@ mymain(void)
     DO_TEST_DETACH("base-live", "qemu-agent-detach", false, false,
                    "device_del", QMP_OK,
                    "chardev-remove", QMP_OK);
+
+    DO_TEST_ATTACH("base-ccw-live", "ccw-virtio", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
+    DO_TEST_DETACH("base-ccw-live", "ccw-virtio", false, false,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+
+    DO_TEST_ATTACH("base-ccw-live-with-ccw-virtio", "ccw-virtio-2", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
+
+    DO_TEST_DETACH("base-ccw-live-with-ccw-virtio", "ccw-virtio-2", false, false,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+
+    DO_TEST_ATTACH("base-ccw-live-with-ccw-virtio", "ccw-virtio-2-explicit", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
+
+    DO_TEST_DETACH("base-ccw-live-with-ccw-virtio", "ccw-virtio-2-explicit", false, false,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+
+    /* Attach a second device, then detach the first one. Then attach the first one again. */
+    DO_TEST_ATTACH("base-ccw-live-with-ccw-virtio", "ccw-virtio-2-explicit", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
+
+    DO_TEST_DETACH("base-ccw-live-with-2-ccw-virtio", "ccw-virtio-1-explicit", false, true,
+                   "device_del", QMP_OK,
+                   "human-monitor-command", HMP(""));
+
+    DO_TEST_ATTACH("base-ccw-live-with-2-ccw-virtio", "ccw-virtio-1-reverse", false, false,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
 
     qemuTestDriverFree(&driver);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
