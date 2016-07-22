@@ -33,11 +33,12 @@ typedef struct
 } testQemuCommandBuildObjectFromJSONData;
 
 static int
-testQemuCommandBuildObjectFromJSON(const void *opaque)
+testQemuCommandBuildFromJSON(const void *opaque)
 {
     const testQemuCommandBuildObjectFromJSONData *data = opaque;
     virJSONValuePtr val = NULL;
     char *expect = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *result = NULL;
     int ret = -1;
 
@@ -46,13 +47,18 @@ testQemuCommandBuildObjectFromJSON(const void *opaque)
         return -1;
     }
 
-    if (virAsprintf(&expect, "testobject,id=testalias%s%s",
-                    data->expectprops ? "," : "",
-                    data->expectprops ? data->expectprops : "") < 0)
+    if (data->expectprops &&
+        virAsprintf(&expect, ",%s", data->expectprops) < 0)
         return -1;
 
-    result = virQEMUBuildObjectCommandlineFromJSON("testobject",
-                                                   "testalias", val);
+    if (virQEMUBuildCommandLineJSON(val, &buf) < 0) {
+        fprintf(stderr,
+                "\nvirQEMUBuildCommandlineJSON failed process JSON:\n%s\n",
+                data->props);
+        goto cleanup;
+    }
+
+    result = virBufferContentAndReset(&buf);
 
     if (STRNEQ_NULLABLE(expect, result)) {
         fprintf(stderr, "\nFailed to create object string. "
@@ -80,14 +86,14 @@ mymain(void)
     return EXIT_AM_SKIP;
 #endif
 
-    virTestCounterReset("testQemuCommandBuildObjectFromJSON");
+    virTestCounterReset("testQemuCommandBuildFromJSON");
 
 #define DO_TEST_COMMAND_OBJECT_FROM_JSON(PROPS, EXPECT)             \
     do {                                                            \
         data1.props = PROPS;                                        \
         data1.expectprops = EXPECT;                                 \
         if (virTestRun(virTestCounterNext(),                        \
-                       testQemuCommandBuildObjectFromJSON,          \
+                       testQemuCommandBuildFromJSON,                \
                        &data1) < 0)                                 \
             ret = -1;                                               \
      } while (0)

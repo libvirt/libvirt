@@ -29,6 +29,9 @@
 # include "virjson.h"
 # include "virstorageencryption.h"
 
+int virQEMUBuildCommandLineJSON(const virJSONValue *value,
+                                virBufferPtr buf);
+
 char *virQEMUBuildObjectCommandlineFromJSON(const char *type,
                                             const char *alias,
                                             virJSONValuePtr props);

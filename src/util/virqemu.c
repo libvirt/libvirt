@@ -33,10 +33,10 @@ VIR_LOG_INIT("util.qemu");
 
 
 static int
-virQEMUBuildObjectCommandLinePropsInternal(const char *key,
-                                           const virJSONValue *value,
-                                           virBufferPtr buf,
-                                           bool nested)
+virQEMUBuildCommandLineJSONRecurse(const char *key,
+                                   const virJSONValue *value,
+                                   virBufferPtr buf,
+                                   bool nested)
 {
     virJSONValuePtr elem;
     virBitmapPtr bitmap = NULL;
@@ -64,7 +64,8 @@ virQEMUBuildObjectCommandLinePropsInternal(const char *key,
     case VIR_JSON_TYPE_ARRAY:
         if (nested) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("nested -object property arrays are not supported"));
+                           _("nested JSON array to commandline conversion is "
+                             "not supported"));
             return -1;
         }
 
@@ -87,8 +88,7 @@ virQEMUBuildObjectCommandLinePropsInternal(const char *key,
                 elem = virJSONValueArrayGet((virJSONValuePtr)value, i);
 
                 /* recurse to avoid duplicating code */
-                if (virQEMUBuildObjectCommandLinePropsInternal(key, elem, buf,
-                                                               true) < 0)
+                if (virQEMUBuildCommandLineJSONRecurse(key, elem, buf, true) < 0)
                     return -1;
             }
         }
@@ -108,11 +108,34 @@ virQEMUBuildObjectCommandLinePropsInternal(const char *key,
 
 
 static int
-virQEMUBuildObjectCommandLineProps(const char *key,
+virQEMUBuildCommandLineJSONIterate(const char *key,
                                    const virJSONValue *value,
                                    void *opaque)
 {
-    return virQEMUBuildObjectCommandLinePropsInternal(key, value, opaque, false);
+    return virQEMUBuildCommandLineJSONRecurse(key, value, opaque, false);
+}
+
+
+/**
+ * virQEMUBuildCommandLineJSON:
+ * @value: json object containing the value
+ * @buf: otuput buffer
+ *
+ * Formats JSON value object into command line parameters suitable for use with
+ * qemu.
+ *
+ * Returns 0 on success -1 on error.
+ */
+int
+virQEMUBuildCommandLineJSON(const virJSONValue *value,
+                            virBufferPtr buf)
+{
+    if (virJSONValueObjectForeachKeyValue(value,
+                                          virQEMUBuildCommandLineJSONIterate,
+                                          buf) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -126,9 +149,7 @@ virQEMUBuildObjectCommandlineFromJSON(const char *type,
 
     virBufferAsprintf(&buf, "%s,id=%s", type, alias);
 
-    if (virJSONValueObjectForeachKeyValue(props,
-                                          virQEMUBuildObjectCommandLineProps,
-                                          &buf) < 0)
+    if (virQEMUBuildCommandLineJSON(props, &buf) < 0)
         goto cleanup;
 
     if (virBufferCheckError(&buf) < 0)
