@@ -167,7 +167,7 @@ typedef int (*virJSONValueObjectIteratorFunc)(const char *key,
                                               const virJSONValue *value,
                                               void *opaque);
 
-int virJSONValueObjectForeachKeyValue(virJSONValuePtr object,
+int virJSONValueObjectForeachKeyValue(const virJSONValue *object,
                                       virJSONValueObjectIteratorFunc cb,
                                       void *opaque);
 
