@@ -51,7 +51,8 @@ testQemuCommandBuildFromJSON(const void *opaque)
         virAsprintf(&expect, ",%s", data->expectprops) < 0)
         return -1;
 
-    if (virQEMUBuildCommandLineJSON(val, &buf) < 0) {
+    if (virQEMUBuildCommandLineJSON(val, &buf,
+                                    virQEMUBuildCommandLineJSONArrayBitmap) < 0) {
         fprintf(stderr,
                 "\nvirQEMUBuildCommandlineJSON failed process JSON:\n%s\n",
                 data->props);

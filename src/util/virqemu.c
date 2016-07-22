@@ -36,6 +36,7 @@ VIR_LOG_INIT("util.qemu");
 struct virQEMUCommandLineJSONIteratorData {
     const char *prefix;
     virBufferPtr buf;
+    virQEMUBuildCommandLineJSONArrayFormatFunc arrayFunc;
 };
 
 
@@ -43,7 +44,40 @@ static int
 virQEMUBuildCommandLineJSONRecurse(const char *key,
                                    const virJSONValue *value,
                                    virBufferPtr buf,
+                                   virQEMUBuildCommandLineJSONArrayFormatFunc arrayFunc,
                                    bool nested);
+
+
+
+int
+virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
+                                       const virJSONValue *array,
+                                       virBufferPtr buf)
+{
+    ssize_t pos = -1;
+    ssize_t end;
+    virBitmapPtr bitmap = NULL;
+
+    if (virJSONValueGetArrayAsBitmap(array, &bitmap) < 0)
+        return -1;
+
+    while ((pos = virBitmapNextSetBit(bitmap, pos)) > -1) {
+        if ((end = virBitmapNextClearBit(bitmap, pos)) < 0)
+            end = virBitmapLastSetBit(bitmap) + 1;
+
+        if (end - 1 > pos) {
+            virBufferAsprintf(buf, ",%s=%zd-%zd", key, pos, end - 1);
+            pos = end;
+        } else {
+            virBufferAsprintf(buf, ",%s=%zd", key, pos);
+        }
+    }
+
+    virBitmapFree(bitmap);
+
+    return 0;
+}
+
 
 /* internal iterator to handle nested object formatting */
 static int
@@ -59,11 +93,13 @@ virQEMUBuildCommandLineJSONIterate(const char *key,
         if (virAsprintf(&tmpkey, "%s.%s", data->prefix, key) < 0)
             return -1;
 
-        ret = virQEMUBuildCommandLineJSONRecurse(tmpkey, value, data->buf, false);
+        ret = virQEMUBuildCommandLineJSONRecurse(tmpkey, value, data->buf,
+                                                 data->arrayFunc, false);
 
         VIR_FREE(tmpkey);
     } else {
-        ret = virQEMUBuildCommandLineJSONRecurse(key, value, data->buf, false);
+        ret = virQEMUBuildCommandLineJSONRecurse(key, value, data->buf,
+                                                 data->arrayFunc, false);
     }
 
     return ret;
@@ -74,13 +110,11 @@ static int
 virQEMUBuildCommandLineJSONRecurse(const char *key,
                                    const virJSONValue *value,
                                    virBufferPtr buf,
+                                   virQEMUBuildCommandLineJSONArrayFormatFunc arrayFunc,
                                    bool nested)
 {
-    struct virQEMUCommandLineJSONIteratorData data = { key, buf };
+    struct virQEMUCommandLineJSONIteratorData data = { key, buf, arrayFunc };
     virJSONValuePtr elem;
-    virBitmapPtr bitmap = NULL;
-    ssize_t pos = -1;
-    ssize_t end;
     size_t i;
 
     if (!key && value->type != VIR_JSON_TYPE_OBJECT) {
@@ -115,26 +149,15 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
             return -1;
         }
 
-        if (virJSONValueGetArrayAsBitmap(value, &bitmap) == 0) {
-            while ((pos = virBitmapNextSetBit(bitmap, pos)) > -1) {
-                if ((end = virBitmapNextClearBit(bitmap, pos)) < 0)
-                    end = virBitmapLastSetBit(bitmap) + 1;
-
-                if (end - 1 > pos) {
-                    virBufferAsprintf(buf, ",%s=%zd-%zd", key, pos, end - 1);
-                    pos = end;
-                } else {
-                    virBufferAsprintf(buf, ",%s=%zd", key, pos);
-                }
-            }
-        } else {
+        if (!arrayFunc || arrayFunc(key, value, buf) < 0) {
             /* fallback, treat the array as a non-bitmap, adding the key
              * for each member */
             for (i = 0; i < virJSONValueArraySize(value); i++) {
                 elem = virJSONValueArrayGet((virJSONValuePtr)value, i);
 
                 /* recurse to avoid duplicating code */
-                if (virQEMUBuildCommandLineJSONRecurse(key, elem, buf, true) < 0)
+                if (virQEMUBuildCommandLineJSONRecurse(key, elem, buf,
+                                                       arrayFunc, true) < 0)
                     return -1;
             }
         }
@@ -153,7 +176,6 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
         return -1;
     }
 
-    virBitmapFree(bitmap);
     return 0;
 }
 
@@ -162,6 +184,7 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
  * virQEMUBuildCommandLineJSON:
  * @value: json object containing the value
  * @buf: otuput buffer
+ * @arrayFunc: array formatter function to allow for different syntax
  *
  * Formats JSON value object into command line parameters suitable for use with
  * qemu.
@@ -170,9 +193,10 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
  */
 int
 virQEMUBuildCommandLineJSON(const virJSONValue *value,
-                            virBufferPtr buf)
+                            virBufferPtr buf,
+                            virQEMUBuildCommandLineJSONArrayFormatFunc array)
 {
-    return virQEMUBuildCommandLineJSONRecurse(NULL, value, buf, false);
+    return virQEMUBuildCommandLineJSONRecurse(NULL, value, buf, array, false);
 }
 
 
@@ -186,7 +210,8 @@ virQEMUBuildObjectCommandlineFromJSON(const char *type,
 
     virBufferAsprintf(&buf, "%s,id=%s", type, alias);
 
-    if (virQEMUBuildCommandLineJSON(props, &buf) < 0)
+    if (virQEMUBuildCommandLineJSON(props, &buf,
+                                    virQEMUBuildCommandLineJSONArrayBitmap) < 0)
         goto cleanup;
 
     if (virBufferCheckError(&buf) < 0)

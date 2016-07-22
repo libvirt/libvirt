@@ -29,8 +29,16 @@
 # include "virjson.h"
 # include "virstorageencryption.h"
 
+typedef int (*virQEMUBuildCommandLineJSONArrayFormatFunc)(const char *key,
+                                                          const virJSONValue *array,
+                                                          virBufferPtr buf);
+int virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
+                                           const virJSONValue *array,
+                                           virBufferPtr buf);
+
 int virQEMUBuildCommandLineJSON(const virJSONValue *value,
-                                virBufferPtr buf);
+                                virBufferPtr buf,
+                                virQEMUBuildCommandLineJSONArrayFormatFunc array);
 
 char *virQEMUBuildObjectCommandlineFromJSON(const char *type,
                                             const char *alias,
