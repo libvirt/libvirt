@@ -691,7 +691,7 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
 #define QEMU_DEFAULT_NBD_PORT "10809"
 
 static char *
-qemuBuildNetworkDriveURI(virStorageSourcePtr src,
+qemuBuildNetworkDriveStr(virStorageSourcePtr src,
                          qemuDomainSecretInfoPtr secinfo)
 {
     char *ret = NULL;
@@ -926,7 +926,7 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
         break;
 
     case VIR_STORAGE_TYPE_NETWORK:
-        if (!(*source = qemuBuildNetworkDriveURI(src, secinfo)))
+        if (!(*source = qemuBuildNetworkDriveStr(src, secinfo)))
             goto cleanup;
         break;
 
@@ -4534,7 +4534,7 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
     src.nhosts = iscsisrc->nhosts;
 
     /* Rather than pull what we think we want - use the network disk code */
-    source = qemuBuildNetworkDriveURI(&src, hostdevPriv->secinfo);
+    source = qemuBuildNetworkDriveStr(&src, hostdevPriv->secinfo);
 
     return source;
 }
