@@ -975,6 +975,37 @@ virDomainVirtioSerialAddrSetFree(virDomainVirtioSerialAddrSetPtr addrs)
     }
 }
 
+
+/* virDomainVirtioSerialAddrSetCreateFromDomain
++ *
++ * @def: Domain def to introspect
++ *
++ * Inspect the domain definition and return an address set containing
++ * every virtio serial address we find
++ */
+virDomainVirtioSerialAddrSetPtr
+virDomainVirtioSerialAddrSetCreateFromDomain(virDomainDefPtr def)
+{
+    virDomainVirtioSerialAddrSetPtr addrs = NULL;
+    virDomainVirtioSerialAddrSetPtr ret = NULL;
+
+    if (!(addrs = virDomainVirtioSerialAddrSetCreate()))
+        goto cleanup;
+
+    if (virDomainVirtioSerialAddrSetAddControllers(addrs, def) < 0)
+        goto cleanup;
+
+    if (virDomainDeviceInfoIterate(def, virDomainVirtioSerialAddrReserve,
+                                   addrs) < 0)
+        goto cleanup;
+
+    ret = addrs;
+    addrs = NULL;
+ cleanup:
+    virDomainVirtioSerialAddrSetFree(addrs);
+    return ret;
+}
+
 static int
 virDomainVirtioSerialAddrSetAutoaddController(virDomainDefPtr def,
                                               virDomainVirtioSerialAddrSetPtr addrs,

@@ -114,14 +114,7 @@ qemuDomainAssignVirtioSerialAddresses(virDomainDefPtr def,
     virDomainVirtioSerialAddrSetPtr addrs = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
 
-    if (!(addrs = virDomainVirtioSerialAddrSetCreate()))
-        goto cleanup;
-
-    if (virDomainVirtioSerialAddrSetAddControllers(addrs, def) < 0)
-        goto cleanup;
-
-    if (virDomainDeviceInfoIterate(def, virDomainVirtioSerialAddrReserve,
-                                   addrs) < 0)
+    if (!(addrs = virDomainVirtioSerialAddrSetCreateFromDomain(def)))
         goto cleanup;
 
     VIR_DEBUG("Finished reserving existing ports");

@@ -208,6 +208,9 @@ virDomainVirtioSerialAddrSetAddControllers(virDomainVirtioSerialAddrSetPtr addrs
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 void
 virDomainVirtioSerialAddrSetFree(virDomainVirtioSerialAddrSetPtr addrs);
+virDomainVirtioSerialAddrSetPtr
+virDomainVirtioSerialAddrSetCreateFromDomain(virDomainDefPtr def)
+    ATTRIBUTE_NONNULL(1);
 bool
 virDomainVirtioSerialAddrIsComplete(virDomainDeviceInfoPtr info);
 int

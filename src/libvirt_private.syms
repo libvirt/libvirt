@@ -126,6 +126,7 @@ virDomainVirtioSerialAddrRelease;
 virDomainVirtioSerialAddrReserve;
 virDomainVirtioSerialAddrSetAddControllers;
 virDomainVirtioSerialAddrSetCreate;
+virDomainVirtioSerialAddrSetCreateFromDomain;
 virDomainVirtioSerialAddrSetFree;
 
 
