@@ -185,7 +185,6 @@ struct _qemuDomainObjPrivate {
     char *pidfile;
 
     virDomainPCIAddressSetPtr pciaddrs;
-    virDomainCCWAddressSetPtr ccwaddrs;
     virDomainUSBAddressSetPtr usbaddrs;
 
     virQEMUCapsPtr qemuCaps;
