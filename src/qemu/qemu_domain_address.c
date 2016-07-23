@@ -320,6 +320,28 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
     }
 }
 
+virDomainCCWAddressSetPtr
+qemuDomainCCWAddrSetCreateFromDomain(virDomainDefPtr def)
+{
+    virDomainCCWAddressSetPtr addrs = NULL;
+
+    if (!(addrs = virDomainCCWAddressSetCreate()))
+        goto error;
+
+    if (virDomainDeviceInfoIterate(def, virDomainCCWAddressValidate,
+                                   addrs) < 0)
+        goto error;
+
+    if (virDomainDeviceInfoIterate(def, virDomainCCWAddressAllocate,
+                                   addrs) < 0)
+        goto error;
+
+    return addrs;
+
+ error:
+    virDomainCCWAddressSetFree(addrs);
+    return NULL;
+}
 
 /*
  * Three steps populating CCW devnos
@@ -341,16 +363,9 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
         qemuDomainPrimeVirtioDeviceAddresses(
             def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW);
 
-        if (!(addrs = virDomainCCWAddressSetCreate()))
+        if (!(addrs = qemuDomainCCWAddrSetCreateFromDomain(def)))
             goto cleanup;
 
-        if (virDomainDeviceInfoIterate(def, virDomainCCWAddressValidate,
-                                       addrs) < 0)
-            goto cleanup;
-
-        if (virDomainDeviceInfoIterate(def, virDomainCCWAddressAllocate,
-                                       addrs) < 0)
-            goto cleanup;
     } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_S390)) {
         /* deal with legacy virtio-s390 */
         qemuDomainPrimeVirtioDeviceAddresses(
