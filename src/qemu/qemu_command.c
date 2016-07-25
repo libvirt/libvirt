@@ -1107,69 +1107,64 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
     if (qemuGetDriveSourceString(disk->src, secinfo, &source) < 0)
         goto cleanup;
 
-    if (source &&
-        !((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
-           disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
-          disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
-
-        virBufferAddLit(buf, "file=");
-
-        switch (actualType) {
-        case VIR_STORAGE_TYPE_DIR:
-            /* QEMU only supports magic FAT format for now */
-            if (disk->src->format > 0 &&
-                disk->src->format != VIR_STORAGE_FILE_FAT) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unsupported disk driver type for '%s'"),
-                               virStorageFileFormatTypeToString(disk->src->format));
-                goto cleanup;
-            }
-
-            if (!disk->src->readonly) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("cannot create virtual FAT disks in read-write mode"));
-                goto cleanup;
-            }
-
-            virBufferAddLit(buf, "fat:");
-
-            if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
-                virBufferAddLit(buf, "floppy:");
-
-            break;
-
-        case VIR_STORAGE_TYPE_BLOCK:
-            if (disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               disk->src->type == VIR_STORAGE_TYPE_VOLUME ?
-                               _("tray status 'open' is invalid for block type volume") :
-                               _("tray status 'open' is invalid for block type disk"));
-                goto cleanup;
-            }
-
-            break;
-
-        default:
-            break;
-        }
-
-        virQEMUBuildBufferEscapeComma(buf, source);
-        virBufferAddLit(buf, ",");
-
-        if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
-            virBufferAsprintf(buf, "password-secret=%s,",
-                              secinfo->s.aes.alias);
-        }
-
-        if (encinfo)
-            virQEMUBuildLuksOpts(buf, &disk->src->encryption->encinfo,
-                                 encinfo->s.aes.alias);
-
-        if (disk->src->format > 0 &&
-            disk->src->type != VIR_STORAGE_TYPE_DIR)
-            virBufferAsprintf(buf, "format=%s,",
-                              virStorageFileFormatTypeToString(disk->src->format));
+    /* nothing to format if the drive is empty */
+    if (!source ||
+        ((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
+          disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
+         disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
+        ret = 0;
+        goto cleanup;
     }
+
+    if (actualType == VIR_STORAGE_TYPE_BLOCK &&
+        disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       disk->src->type == VIR_STORAGE_TYPE_VOLUME ?
+                       _("tray status 'open' is invalid for block type volume") :
+                       _("tray status 'open' is invalid for block type disk"));
+        goto cleanup;
+    }
+
+    virBufferAddLit(buf, "file=");
+
+    /* for now the DIR based storage is handled by the magic FAT format */
+    if (actualType == VIR_STORAGE_TYPE_DIR) {
+        if (disk->src->format > 0 &&
+            disk->src->format != VIR_STORAGE_FILE_FAT) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unsupported disk driver type for '%s'"),
+                           virStorageFileFormatTypeToString(disk->src->format));
+            goto cleanup;
+        }
+
+        if (!disk->src->readonly) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot create virtual FAT disks in read-write mode"));
+            goto cleanup;
+        }
+
+        virBufferAddLit(buf, "fat:");
+
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+            virBufferAddLit(buf, "floppy:");
+    }
+
+    virQEMUBuildBufferEscapeComma(buf, source);
+    virBufferAddLit(buf, ",");
+
+    if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
+        virBufferAsprintf(buf, "password-secret=%s,",
+                          secinfo->s.aes.alias);
+    }
+
+    if (encinfo)
+        virQEMUBuildLuksOpts(buf, &disk->src->encryption->encinfo,
+                             encinfo->s.aes.alias);
+
+    if (disk->src->format > 0 &&
+        disk->src->type != VIR_STORAGE_TYPE_DIR)
+        virBufferAsprintf(buf, "format=%s,",
+                          virStorageFileFormatTypeToString(disk->src->format));
 
     ret = 0;
 
