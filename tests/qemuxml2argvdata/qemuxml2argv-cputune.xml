@@ -10,6 +10,8 @@
     <quota>-1</quota>
     <global_period>1000000</global_period>
     <global_quota>-1</global_quota>
+    <iothread_period>1000000</iothread_period>
+    <iothread_quota>-1</iothread_quota>
     <vcpupin vcpu='0' cpuset='0'/>
     <vcpupin vcpu='1' cpuset='1'/>
     <emulatorpin cpuset='1'/>

@@ -1937,7 +1937,7 @@ available for each hypervisor are:
 LXC (posix scheduler) : cpu_shares, vcpu_period, vcpu_quota
 
 QEMU/KVM (posix scheduler): cpu_shares, vcpu_period, vcpu_quota,
-emulator_period, emulator_quota
+emulator_period, emulator_quota, iothread_quota, iothread_period
 
 Xen (credit scheduler): weight, cap
 
@@ -1955,9 +1955,10 @@ values 0 and 1 are automatically converted to a minimal value of 2.
 B<Note>: The weight and cap parameters are defined only for the
 XEN_CREDIT scheduler and are now I<DEPRECATED>.
 
-B<Note>: The vcpu_period/emulator_period parameters have a valid value range
-of 1000-1000000 or 0, and the vcpu_quota/emulator_quota parameters have a
-valid value range of 1000-18446744073709551 or less than 0. The value 0 for
+B<Note>: The vcpu_period, emulator_period, and iothread_period parameters
+have a valid value range of 1000-1000000 or 0, and the vcpu_quota,
+emulator_quota, and iothread_quota parameters have a valid value range of
+1000-18446744073709551 or less than 0. The value 0 for
 either parameter is the same as not specifying that parameter.
 
 =item B<screenshot> I<domain> [I<imagefilepath>] [I<--screen> B<screenID>]

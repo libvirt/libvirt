@@ -616,6 +616,8 @@
     &lt;quota&gt;-1&lt;/quota&gt;
     &lt;emulator_period&gt;1000000&lt;/emulator_period&gt;
     &lt;emulator_quota&gt;-1&lt;/emulator_quota&gt;
+    &lt;iothread_period&gt;1000000&lt;/iothread_period&gt;
+    &lt;iothread_quota&gt;-1&lt;/iothread_quota&gt;
     &lt;vcpusched vcpus='0-4,^3' scheduler='fifo' priority='1'/&gt;
     &lt;iothreadsched iothreads='2' scheduler='batch'/&gt;
   &lt;/cputune&gt;
@@ -718,6 +720,29 @@
         The value should be in range [1000, 18446744073709551] or less than 0. A
         quota with value 0 means no value.
         <span class="since">Only QEMU driver support since 0.10.0</span>
+      </dd>
+
+      <dt><code>iothread_period</code></dt>
+      <dd>
+        The optional <code>iothread_period</code> element specifies the
+        enforcement interval(unit: microseconds) for IOThreads. Within
+        <code>iothread_period</code>, each IOThread of the domain will
+        not be allowed to consume more than <code>iothread_quota</code>
+        worth of runtime. The value should be in range [1000, 1000000].
+        An iothread_period with value 0 means no value.
+        <span class="since">Only QEMU driver support since 2.1.0</span>
+      </dd>
+      <dt><code>iothread_quota</code></dt>
+      <dd>
+        The optional <code>iothread_quota</code> element specifies the maximum
+        allowed bandwidth(unit: microseconds) for IOThreads. A domain with
+        <code>iothread_quota</code> as any negative value indicates that the
+        domain IOThreads have infinite bandwidth, which means that it is
+        not bandwidth controlled. The value should be in range
+        [1000, 18446744073709551] or less than 0. An <code>iothread_quota</code>
+        with value 0 means no value. You can use this feature to ensure that
+        all IOThreads run at the same speed.
+        <span class="since">Only QEMU driver support since 2.1.0</span>
       </dd>
 
       <dt><code>vcpusched</code> and <code>iothreadsched</code></dt>

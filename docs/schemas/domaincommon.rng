@@ -731,6 +731,16 @@
             <ref name="cpuquota"/>
           </element>
         </optional>
+        <optional>
+          <element name="iothread_period">
+            <ref name="cpuperiod"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="iothread_quota">
+            <ref name="cpuquota"/>
+          </element>
+        </optional>
         <zeroOrMore>
           <element name="vcpupin">
             <attribute name="vcpu">

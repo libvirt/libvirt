@@ -16131,6 +16131,38 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
     }
 
+    if (virXPathULongLong("string(./cputune/iothread_period[1])", ctxt,
+                          &def->cputune.iothread_period) < -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("can't parse cputune iothread period value"));
+        goto error;
+    }
+
+    if (def->cputune.iothread_period > 0 &&
+        (def->cputune.iothread_period < 1000 ||
+         def->cputune.iothread_period > 1000000)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Value of cputune iothread_period must be in range "
+                         "[1000, 1000000]"));
+        goto error;
+    }
+
+    if (virXPathLongLong("string(./cputune/iothread_quota[1])", ctxt,
+                         &def->cputune.iothread_quota) < -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("can't parse cputune iothread quota value"));
+        goto error;
+    }
+
+    if (def->cputune.iothread_quota > 0 &&
+        (def->cputune.iothread_quota < 1000 ||
+         def->cputune.iothread_quota > 18446744073709551LL)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Value of cputune iothread_quota must be in range "
+                         "[1000, 18446744073709551]"));
+        goto error;
+    }
+
     if ((n = virXPathNodeSet("./cputune/vcpupin", ctxt, &nodes)) < 0)
         goto error;
 
@@ -22811,6 +22843,16 @@ virDomainCputuneDefFormat(virBufferPtr buf,
         virBufferAsprintf(&childrenBuf, "<emulator_quota>%lld"
                           "</emulator_quota>\n",
                           def->cputune.emulator_quota);
+
+    if (def->cputune.iothread_period)
+        virBufferAsprintf(&childrenBuf, "<iothread_period>%llu"
+                          "</iothread_period>\n",
+                          def->cputune.iothread_period);
+
+    if (def->cputune.iothread_quota)
+        virBufferAsprintf(&childrenBuf, "<iothread_quota>%lld"
+                          "</iothread_quota>\n",
+                          def->cputune.iothread_quota);
 
     for (i = 0; i < def->maxvcpus; i++) {
         char *cpumask;

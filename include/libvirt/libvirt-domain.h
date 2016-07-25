@@ -365,6 +365,22 @@ typedef enum {
 # define VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA "emulator_quota"
 
 /**
+ * VIR_DOMAIN_SCHEDULER_IOTHREAD_PERIOD:
+ *
+ * Macro represents the enforcement period for a quota, in microseconds,
+ * for IOThreads only, when using the posix scheduler, as a ullong.
+ */
+# define VIR_DOMAIN_SCHEDULER_IOTHREAD_PERIOD "iothread_period"
+
+/**
+ * VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA:
+ *
+ * Macro represents the maximum bandwidth to be used within a period for
+ * IOThreads only, when using the posix scheduler, as an llong.
+ */
+# define VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA "iothread_quota"
+
+/**
  * VIR_DOMAIN_SCHEDULER_WEIGHT:
  *
  * Macro represents the relative weight,  when using the credit
@@ -3611,6 +3627,22 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * as an VIR_TYPED_PARAM_LLONG.
  */
 # define VIR_DOMAIN_TUNABLE_CPU_EMULATOR_QUOTA "cputune.emulator_quota"
+
+/**
+ * VIR_DOMAIN_TUNABLE_CPU_IOTHREAD_PERIOD:
+ *
+ * Macro represents the enforcement period for a quota, in microseconds, for
+ * iothreads only, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_CPU_IOTHREAD_PERIOD "cputune.iothread_period"
+
+/**
+ * VIR_DOMAIN_TUNABLE_CPU_IOTHREAD_QUOTA:
+ *
+ * Macro represents the maximum bandwidth to be used within a period for
+ * iothreads only, when using the posix scheduler, as VIR_TYPED_PARAM_LLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_CPU_IOTHREAD_QUOTA "cputune.iothread_quota"
 
 /**
  * VIR_DOMAIN_TUNABLE_BLKDEV_DISK:
