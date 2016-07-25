@@ -2206,6 +2206,7 @@ virProcessWait;
 virQEMUBuildBufferEscapeComma;
 virQEMUBuildCommandLineJSON;
 virQEMUBuildCommandLineJSONArrayBitmap;
+virQEMUBuildCommandLineJSONArrayNumbered;
 virQEMUBuildLuksOpts;
 virQEMUBuildObjectCommandlineFromJSON;
 

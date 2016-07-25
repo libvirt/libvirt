@@ -79,6 +79,39 @@ virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
 }
 
 
+int
+virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
+                                         const virJSONValue *array,
+                                         virBufferPtr buf)
+{
+    const virJSONValue *member;
+    size_t nelems = virJSONValueArraySize(array);
+    char *prefix = NULL;
+    size_t i;
+    int ret = 0;
+
+    for (i = 0; i < nelems; i++) {
+        member = virJSONValueArrayGet((virJSONValuePtr) array, i);
+
+        if (virAsprintf(&prefix, "%s.%zu", key, i) < 0)
+            goto cleanup;
+
+        if (virQEMUBuildCommandLineJSONRecurse(prefix, member, buf,
+                                               virQEMUBuildCommandLineJSONArrayNumbered,
+                                               true) < 0)
+            goto cleanup;
+
+        VIR_FREE(prefix);
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(prefix);
+    return ret;
+}
+
+
 /* internal iterator to handle nested object formatting */
 static int
 virQEMUBuildCommandLineJSONIterate(const char *key,

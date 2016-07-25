@@ -30,6 +30,7 @@ typedef struct
 {
     const char *props;
     const char *expectprops;
+    virQEMUBuildCommandLineJSONArrayFormatFunc arrayfunc;
 } testQemuCommandBuildObjectFromJSONData;
 
 static int
@@ -46,8 +47,7 @@ testQemuCommandBuildFromJSON(const void *opaque)
         return -1;
     }
 
-    if (virQEMUBuildCommandLineJSON(val, &buf,
-                                    virQEMUBuildCommandLineJSONArrayBitmap) < 0) {
+    if (virQEMUBuildCommandLineJSON(val, &buf, data->arrayfunc) < 0) {
         fprintf(stderr,
                 "\nvirQEMUBuildCommandlineJSON failed process JSON:\n%s\n",
                 data->props);
@@ -83,15 +83,22 @@ mymain(void)
 
     virTestCounterReset("testQemuCommandBuildFromJSON");
 
-#define DO_TEST_COMMAND_OBJECT_FROM_JSON(PROPS, EXPECT)             \
+#define DO_TEST_COMMAND_FROM_JSON(PROPS, ARRAYFUNC, EXPECT)         \
     do {                                                            \
         data1.props = PROPS;                                        \
         data1.expectprops = EXPECT;                                 \
+        data1.arrayfunc = ARRAYFUNC;                                \
         if (virTestRun(virTestCounterNext(),                        \
                        testQemuCommandBuildFromJSON,                \
                        &data1) < 0)                                 \
             ret = -1;                                               \
      } while (0)
+
+#define DO_TEST_COMMAND_OBJECT_FROM_JSON(PROPS, EXPECT)             \
+    DO_TEST_COMMAND_FROM_JSON(PROPS, virQEMUBuildCommandLineJSONArrayBitmap, EXPECT)
+
+#define DO_TEST_COMMAND_DRIVE_FROM_JSON(PROPS, EXPECT)              \
+    DO_TEST_COMMAND_FROM_JSON(PROPS, virQEMUBuildCommandLineJSONArrayNumbered, EXPECT)
 
     DO_TEST_COMMAND_OBJECT_FROM_JSON("{}", NULL);
     DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"string\":\"qwer\"}", "string=qwer");
@@ -120,6 +127,29 @@ mymain(void)
                                      "}",
                                      "nest.boolean=yes,nest.hyphen-name=1234,"
                                      "nest.some_string=bleah,nest.bleah=bl,,eah");
+    DO_TEST_COMMAND_DRIVE_FROM_JSON("{\"driver\":\"gluster\","
+                                     "\"volume\":\"test\","
+                                     "\"path\":\"img\","
+                                     "\"server\":[ { \"type\":\"tcp\","
+                                                         "\"host\":\"example.com\","
+                                                         "\"port\":\"1234\""
+                                                        "},"
+                                                        "{ \"type\":\"unix\","
+                                                          "\"socket\":\"/path/socket\""
+                                                        "},"
+                                                        "{ \"type\":\"tcp\","
+                                                          "\"host\":\"example.com\""
+                                                        "}"
+                                                       "]"
+                                     "}",
+                                     "driver=gluster,volume=test,path=img,"
+                                     "server.0.type=tcp,"
+                                     "server.0.host=example.com,"
+                                     "server.0.port=1234,"
+                                     "server.1.type=unix,"
+                                     "server.1.socket=/path/socket,"
+                                     "server.2.type=tcp,"
+                                     "server.2.host=example.com");
 
     return ret;
 

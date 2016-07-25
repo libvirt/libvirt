@@ -35,6 +35,9 @@ typedef int (*virQEMUBuildCommandLineJSONArrayFormatFunc)(const char *key,
 int virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
                                            const virJSONValue *array,
                                            virBufferPtr buf);
+int virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
+                                             const virJSONValue *array,
+                                             virBufferPtr buf);
 
 int virQEMUBuildCommandLineJSON(const virJSONValue *value,
                                 virBufferPtr buf,
