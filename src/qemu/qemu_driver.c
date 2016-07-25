@@ -8590,7 +8590,7 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
     /* Domain not running, thus no cgroups - return defaults */
     if (!virDomainObjIsActive(vm)) {
         if (nparams)
-            *nparams = 7;
+            *nparams = 9;
         ignore_value(VIR_STRDUP(ret, "posix"));
         goto cleanup;
     }
@@ -8603,7 +8603,7 @@ static char *qemuDomainGetSchedulerType(virDomainPtr dom,
 
     if (nparams) {
         if (virCgroupSupportsCpuBW(priv->cgroup))
-            *nparams = 7;
+            *nparams = 9;
         else
             *nparams = 1;
     }
@@ -9826,6 +9826,40 @@ qemuSetEmulatorBandwidthLive(virCgroupPtr cgroup,
     return -1;
 }
 
+
+static int
+qemuSetIOThreadsBWLive(virDomainObjPtr vm, virCgroupPtr cgroup,
+                       unsigned long long period, long long quota)
+{
+    size_t i;
+    virCgroupPtr cgroup_iothread = NULL;
+
+    if (period == 0 && quota == 0)
+        return 0;
+
+    if (!vm->def->niothreadids)
+        return 0;
+
+    for (i = 0; i < vm->def->niothreadids; i++) {
+        if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_IOTHREAD,
+                               vm->def->iothreadids[i]->iothread_id,
+                               false, &cgroup_iothread) < 0)
+            goto cleanup;
+
+        if (qemuSetupCgroupVcpuBW(cgroup_iothread, period, quota) < 0)
+            goto cleanup;
+
+        virCgroupFree(&cgroup_iothread);
+    }
+
+    return 0;
+
+ cleanup:
+    virCgroupFree(&cgroup_iothread);
+    return -1;
+}
+
+
 #define SCHED_RANGE_CHECK(VAR, NAME, MIN, MAX)                              \
     if (((VAR) > 0 && (VAR) < (MIN)) || (VAR) > (MAX)) {                    \
         virReportError(VIR_ERR_INVALID_ARG,                                 \
@@ -9875,6 +9909,10 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
                                VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD,
                                VIR_TYPED_PARAM_ULLONG,
                                VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA,
+                               VIR_TYPED_PARAM_LLONG,
+                               VIR_DOMAIN_SCHEDULER_IOTHREAD_PERIOD,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA,
                                VIR_TYPED_PARAM_LLONG,
                                NULL) < 0)
         return -1;
@@ -10068,6 +10106,46 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
 
             if (persistentDef)
                 persistentDefCopy->cputune.emulator_quota = value_l;
+
+        } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_IOTHREAD_PERIOD)) {
+            SCHED_RANGE_CHECK(value_ul, VIR_DOMAIN_SCHEDULER_IOTHREAD_PERIOD,
+                              QEMU_SCHED_MIN_PERIOD, QEMU_SCHED_MAX_PERIOD);
+
+            if (def && value_ul) {
+                if ((rc = qemuSetIOThreadsBWLive(vm, priv->cgroup, value_ul, 0)))
+                    goto endjob;
+
+                def->cputune.iothread_period = value_ul;
+
+                if (virTypedParamsAddULLong(&eventParams, &eventNparams,
+                                            &eventMaxNparams,
+                                            VIR_DOMAIN_TUNABLE_CPU_IOTHREAD_PERIOD,
+                                            value_ul) < 0)
+                    goto endjob;
+            }
+
+            if (persistentDef)
+                persistentDefCopy->cputune.iothread_period = params[i].value.ul;
+
+        } else if (STREQ(param->field, VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA)) {
+            SCHED_RANGE_CHECK(value_l, VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA,
+                              QEMU_SCHED_MIN_QUOTA, QEMU_SCHED_MAX_QUOTA);
+
+            if (def && value_l) {
+                if ((rc = qemuSetIOThreadsBWLive(vm, priv->cgroup, 0, value_l)))
+                    goto endjob;
+
+                def->cputune.iothread_quota = value_l;
+
+                if (virTypedParamsAddLLong(&eventParams, &eventNparams,
+                                           &eventMaxNparams,
+                                           VIR_DOMAIN_TUNABLE_CPU_IOTHREAD_QUOTA,
+                                           value_l) < 0)
+                    goto endjob;
+            }
+
+            if (persistentDef)
+                persistentDefCopy->cputune.iothread_quota = value_l;
         }
     }
 
@@ -10191,6 +10269,43 @@ qemuGetEmulatorBandwidthLive(virCgroupPtr cgroup,
 }
 
 static int
+qemuGetIOThreadsBWLive(virDomainObjPtr vm,
+                       unsigned long long *period, long long *quota)
+{
+    virCgroupPtr cgroup_iothread = NULL;
+    qemuDomainObjPrivatePtr priv = NULL;
+    int rc;
+    int ret = -1;
+
+    priv = vm->privateData;
+    if (!vm->def->niothreadids) {
+        /* We do not create sub dir for each iothread */
+        if ((rc = qemuGetVcpuBWLive(priv->cgroup, period, quota)) < 0)
+            goto cleanup;
+
+        goto out;
+    }
+
+    /* get period and quota for the "first" IOThread */
+    if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD,
+                           vm->def->iothreadids[0]->iothread_id,
+                           false, &cgroup_iothread) < 0)
+        goto cleanup;
+
+    rc = qemuGetVcpuBWLive(cgroup_iothread, period, quota);
+    if (rc < 0)
+        goto cleanup;
+
+ out:
+    ret = 0;
+
+ cleanup:
+    virCgroupFree(&cgroup_iothread);
+    return ret;
+}
+
+
+static int
 qemuGetGlobalBWLive(virCgroupPtr cgroup, unsigned long long *period,
                     long long *quota)
 {
@@ -10265,6 +10380,11 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
                 qemuGetGlobalBWLive(priv->cgroup, &data.global_period,
                                     &data.global_quota) < 0)
                 goto cleanup;
+
+            if (maxparams > 7 &&
+                qemuGetIOThreadsBWLive(vm, &data.iothread_period,
+                                       &data.iothread_quota) < 0)
+                goto cleanup;
         } else {
             cpu_bw_status = false;
         }
@@ -10289,6 +10409,9 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
 
         QEMU_SCHED_ASSIGN(global_period, GLOBAL_PERIOD, ULLONG);
         QEMU_SCHED_ASSIGN(global_quota, GLOBAL_QUOTA, LLONG);
+
+        QEMU_SCHED_ASSIGN(iothread_period, IOTHREAD_PERIOD, ULLONG);
+        QEMU_SCHED_ASSIGN(iothread_quota, IOTHREAD_QUOTA, LLONG);
     }
 
 #undef QEMU_SCHED_ASSIGN

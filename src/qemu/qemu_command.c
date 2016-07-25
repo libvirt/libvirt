@@ -9247,7 +9247,8 @@ qemuBuildCommandLineValidate(virQEMUDriverPtr driver,
         if (def->cputune.sharesSpecified || def->cputune.period ||
             def->cputune.quota || def->cputune.global_period ||
             def->cputune.global_quota || def->cputune.emulator_period ||
-            def->cputune.emulator_quota) {
+            def->cputune.emulator_quota || def->cputune.iothread_period ||
+            def->cputune.iothread_quota) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("CPU tuning is not available in session mode"));
             return -1;

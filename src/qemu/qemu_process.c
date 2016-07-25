@@ -4691,8 +4691,8 @@ qemuProcessSetupIOThread(virDomainObjPtr vm,
                                VIR_CGROUP_THREAD_IOTHREAD,
                                iothread->iothread_id,
                                iothread->cpumask,
-                               vm->def->cputune.period,
-                               vm->def->cputune.quota,
+                               vm->def->cputune.iothread_period,
+                               vm->def->cputune.iothread_quota,
                                &iothread->sched);
 }
 
