@@ -30,6 +30,7 @@
 #include <math.h>
 #include <libxl.h>
 #include <libxl_utils.h>
+#include <xenstore.h>
 #include <fcntl.h>
 #include <regex.h>
 
@@ -72,6 +73,7 @@ VIR_LOG_INIT("libxl.libxl_driver");
 #define LIBXL_DOM_REQ_HALT     4
 
 #define LIBXL_NB_TOTAL_CPU_STAT_PARAM 1
+#define LIBXL_NB_TOTAL_BLK_STAT_PARAM 6
 
 #define HYPERVISOR_CAPABILITIES "/proc/xen/capabilities"
 #define HYPERVISOR_XENSTORED "/dev/xen/xenstored"
@@ -98,6 +100,25 @@ struct _libxlOSEventHookInfo {
     libxl_ctx *ctx;
     void *xl_priv;
     int id;
+};
+
+/* Object used to store disk statistics across multiple xen backends */
+typedef struct _libxlBlockStats libxlBlockStats;
+typedef libxlBlockStats *libxlBlockStatsPtr;
+struct _libxlBlockStats {
+    long long rd_req;
+    long long rd_bytes;
+    long long wr_req;
+    long long wr_bytes;
+    long long f_req;
+
+    char *backend;
+    union {
+        struct {
+            long long ds_req;
+            long long oo_req;
+        } vbd;
+    } u;
 };
 
 /* Function declarations */
@@ -5031,6 +5052,353 @@ libxlDomainGetJobStats(virDomainPtr dom,
 }
 
 static int
+libxlDiskPathToID(const char *virtpath)
+{
+    static char const* drive_prefix[] = {"xvd", "hd", "sd"};
+    int disk, partition, chrused;
+    int fmt, id;
+    size_t i;
+
+    fmt = id = -1;
+
+    /* Find any disk prefixes we know about */
+    for (i = 0; i < ARRAY_CARDINALITY(drive_prefix); i++) {
+        if (STRPREFIX(virtpath, drive_prefix[i]) &&
+            !virDiskNameParse(virtpath, &disk, &partition)) {
+            fmt = i;
+            break;
+        }
+    }
+
+    /* Handle it same way as xvd */
+    if (fmt < 0 &&
+        (sscanf(virtpath, "d%ip%i%n", &disk, &partition, &chrused) >= 2
+         && chrused == strlen(virtpath)))
+        fmt = 0;
+
+    /* Test indexes ranges and calculate the device id */
+    switch (fmt) {
+    case 0: /* xvd */
+        if (disk <= 15 && partition <= 15)
+            id = (202 << 8) | (disk << 4) | partition;
+        else if ((disk <= ((1<<20)-1)) || partition <= 255)
+            id = (1 << 28) | (disk << 8) | partition;
+        break;
+    case 1: /* hd */
+        if (disk <= 3 && partition <= 63)
+            id = ((disk < 2 ? 3 : 22) << 8) | ((disk & 1) << 6) | partition;
+        break;
+    case 2: /* sd */
+        if (disk <= 15 && (partition <= 15))
+            id = (8 << 8) | (disk << 4) | partition;
+        break;
+    default: /* invalid */
+        break;
+    }
+    return id;
+}
+
+#define LIBXL_VBD_SECTOR_SIZE 512
+
+static int
+libxlDiskSectorSize(int domid, int devno)
+{
+    char *path, *val;
+    struct xs_handle *handle;
+    int ret = LIBXL_VBD_SECTOR_SIZE;
+    unsigned int len;
+
+    handle = xs_daemon_open_readonly();
+    if (!handle) {
+        VIR_WARN("cannot read sector size");
+        return ret;
+    }
+
+    path = val = NULL;
+    if (virAsprintf(&path, "/local/domain/%d/device/vbd/%d/backend",
+                    domid, devno) < 0)
+        goto cleanup;
+
+    if ((val = xs_read(handle, XBT_NULL, path, &len)) == NULL)
+        goto cleanup;
+
+    VIR_FREE(path);
+    if (virAsprintf(&path, "%s/physical-sector-size", val) < 0)
+        goto cleanup;
+
+    VIR_FREE(val);
+    if ((val = xs_read(handle, XBT_NULL, path, &len)) == NULL)
+        goto cleanup;
+
+    if (sscanf(val, "%d", &ret) != 1)
+        ret = LIBXL_VBD_SECTOR_SIZE;
+
+ cleanup:
+    VIR_FREE(val);
+    VIR_FREE(path);
+    xs_daemon_close(handle);
+    return ret;
+}
+
+#ifdef __linux__
+static int
+libxlDomainBlockStatsVBD(virDomainObjPtr vm,
+                         const char *dev,
+                         libxlBlockStatsPtr stats)
+{
+    int ret = -1;
+    int devno = libxlDiskPathToID(dev);
+    int size;
+    char *path, *name, *val;
+    unsigned long long stat;
+
+    path = name = val = NULL;
+    if (devno < 0) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cannot find device number"));
+        return ret;
+    }
+
+    size = libxlDiskSectorSize(vm->def->id, devno);
+
+    if (VIR_STRDUP(stats->backend, "vbd") < 0)
+        return ret;
+
+    if (virAsprintf(&path, "/sys/bus/xen-backend/devices/vbd-%d-%d/statistics",
+                    vm->def->id, devno) < 0)
+        return ret;
+
+    if (!virFileExists(path)) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("cannot open bus path"));
+        goto cleanup;
+    }
+
+# define LIBXL_SET_VBDSTAT(FIELD, VAR, MUL)           \
+    if ((virAsprintf(&name, "%s/"FIELD, path) < 0) || \
+        (virFileReadAll(name, 256, &val) < 0) ||      \
+        (sscanf(val, "%llu", &stat) != 1)) {          \
+        virReportError(VIR_ERR_OPERATION_FAILED,      \
+                       _("cannot read %s"), name);    \
+        goto cleanup;                                 \
+    }                                                 \
+    VAR += (stat * MUL);                              \
+    VIR_FREE(name);                                   \
+    VIR_FREE(val);
+
+    LIBXL_SET_VBDSTAT("f_req",  stats->f_req,  1)
+    LIBXL_SET_VBDSTAT("wr_req", stats->wr_req, 1)
+    LIBXL_SET_VBDSTAT("rd_req", stats->rd_req, 1)
+    LIBXL_SET_VBDSTAT("wr_sect", stats->wr_bytes, size)
+    LIBXL_SET_VBDSTAT("rd_sect", stats->rd_bytes, size)
+
+    LIBXL_SET_VBDSTAT("ds_req", stats->u.vbd.ds_req, size)
+    LIBXL_SET_VBDSTAT("oo_req", stats->u.vbd.oo_req, 1)
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(name);
+    VIR_FREE(path);
+    VIR_FREE(val);
+
+# undef LIBXL_SET_VBDSTAT
+
+    return ret;
+}
+#else
+static int
+libxlDomainBlockStatsVBD(virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                         const char *dev ATTRIBUTE_UNUSED,
+                         libxlBlockStatsPtr stats ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                   "%s", _("platform unsupported"));
+    return -1;
+}
+#endif
+
+static int
+libxlDomainBlockStatsGatherSingle(virDomainObjPtr vm,
+                                  const char *path,
+                                  libxlBlockStatsPtr stats)
+{
+    virDomainDiskDefPtr disk;
+    const char *disk_drv;
+    int ret = -1, disk_fmt;
+
+    if (!(disk = virDomainDiskByName(vm->def, path, false))) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("invalid path: %s"), path);
+        return ret;
+    }
+
+    disk_fmt = virDomainDiskGetFormat(disk);
+    if (!(disk_drv = virDomainDiskGetDriver(disk)))
+        disk_drv = "qemu";
+
+    if (STREQ(disk_drv, "phy")) {
+        if (disk_fmt != VIR_STORAGE_FILE_RAW &&
+            disk_fmt != VIR_STORAGE_FILE_NONE) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                           _("unsupported format %s"),
+                           virStorageFileFormatTypeToString(disk_fmt));
+            return ret;
+        }
+
+        ret = libxlDomainBlockStatsVBD(vm, disk->dst, stats);
+    } else {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("unsupported disk driver %s"),
+                       disk_drv);
+    }
+    return ret;
+}
+
+static int
+libxlDomainBlockStatsGather(virDomainObjPtr vm,
+                            const char *path,
+                            libxlBlockStatsPtr stats)
+{
+    int ret = -1;
+
+    if (*path) {
+        if (libxlDomainBlockStatsGatherSingle(vm, path, stats) < 0)
+            return ret;
+    } else {
+        size_t i;
+
+        for (i = 0; i < vm->def->ndisks; ++i) {
+            if (libxlDomainBlockStatsGatherSingle(vm, vm->def->disks[i]->dst,
+                                                  stats) < 0)
+                return ret;
+        }
+    }
+    return 0;
+}
+
+static int
+libxlDomainBlockStats(virDomainPtr dom,
+                      const char *path,
+                      virDomainBlockStatsPtr stats)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    libxlBlockStats blkstats;
+    int ret = -1;
+
+    if (!(vm = libxlDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainBlockStatsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_QUERY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    memset(&blkstats, 0, sizeof(libxlBlockStats));
+    if ((ret = libxlDomainBlockStatsGather(vm, path, &blkstats)) < 0)
+        goto endjob;
+
+    stats->rd_req = blkstats.rd_req;
+    stats->rd_bytes = blkstats.rd_bytes;
+    stats->wr_req = blkstats.wr_req;
+    stats->wr_bytes = blkstats.wr_bytes;
+    if (STREQ_NULLABLE(blkstats.backend, "vbd"))
+        stats->errs = blkstats.u.vbd.oo_req;
+    else
+        stats->errs = -1;
+
+ endjob:
+    libxlDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
+libxlDomainBlockStatsFlags(virDomainPtr dom,
+                           const char *path,
+                           virTypedParameterPtr params,
+                           int *nparams,
+                           unsigned int flags)
+{
+    libxlDriverPrivatePtr driver = dom->conn->privateData;
+    virDomainObjPtr vm;
+    libxlBlockStats blkstats;
+    int nstats;
+    int ret = -1;
+
+    virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
+
+    flags &= ~VIR_TYPED_PARAM_STRING_OKAY;
+
+    if (!(vm = libxlDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainBlockStatsFlagsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_QUERY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto endjob;
+    }
+
+    /* return count of supported stats */
+    if (*nparams == 0) {
+        *nparams = LIBXL_NB_TOTAL_BLK_STAT_PARAM;
+        ret = 0;
+        goto endjob;
+    }
+
+    memset(&blkstats, 0, sizeof(libxlBlockStats));
+    if ((ret = libxlDomainBlockStatsGather(vm, path, &blkstats)) < 0)
+        goto endjob;
+
+    nstats = 0;
+
+#define LIBXL_BLKSTAT_ASSIGN_PARAM(VAR, NAME)                              \
+    if (nstats < *nparams && (blkstats.VAR) != -1) {                       \
+        if (virTypedParameterAssign(params + nstats, NAME,                 \
+                                    VIR_TYPED_PARAM_LLONG, (blkstats.VAR)) < 0) \
+            goto endjob;                                                   \
+        nstats++;                                                          \
+    }
+
+    LIBXL_BLKSTAT_ASSIGN_PARAM(wr_bytes, VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES);
+    LIBXL_BLKSTAT_ASSIGN_PARAM(wr_req, VIR_DOMAIN_BLOCK_STATS_WRITE_REQ);
+
+    LIBXL_BLKSTAT_ASSIGN_PARAM(rd_bytes, VIR_DOMAIN_BLOCK_STATS_READ_BYTES);
+    LIBXL_BLKSTAT_ASSIGN_PARAM(rd_req, VIR_DOMAIN_BLOCK_STATS_READ_REQ);
+
+    LIBXL_BLKSTAT_ASSIGN_PARAM(f_req, VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ);
+
+    if (STREQ_NULLABLE(blkstats.backend, "vbd"))
+        LIBXL_BLKSTAT_ASSIGN_PARAM(u.vbd.oo_req, VIR_DOMAIN_BLOCK_STATS_ERRS);
+
+    *nparams = nstats;
+
+#undef LIBXL_BLKSTAT_ASSIGN_PARAM
+
+ endjob:
+    libxlDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
 libxlConnectDomainEventRegisterAny(virConnectPtr conn, virDomainPtr dom, int eventID,
                                    virConnectDomainEventGenericCallback callback,
                                    void *opaque, virFreeCallback freecb)
@@ -5847,6 +6215,8 @@ static virHypervisorDriver libxlHypervisorDriver = {
     .domainMemoryStats = libxlDomainMemoryStats, /* 1.3.0 */
     .domainGetCPUStats = libxlDomainGetCPUStats, /* 1.3.0 */
     .domainInterfaceStats = libxlDomainInterfaceStats, /* 1.3.2 */
+    .domainBlockStats = libxlDomainBlockStats, /* 2.1.0 */
+    .domainBlockStatsFlags = libxlDomainBlockStatsFlags, /* 2.1.0 */
     .connectDomainEventRegister = libxlConnectDomainEventRegister, /* 0.9.0 */
     .connectDomainEventDeregister = libxlConnectDomainEventDeregister, /* 0.9.0 */
     .domainManagedSave = libxlDomainManagedSave, /* 0.9.2 */
