@@ -264,6 +264,27 @@ virQEMUBuildObjectCommandlineFromJSON(const char *type,
 }
 
 
+char *
+virQEMUBuildDriveCommandlineFromJSON(const virJSONValue *srcdef)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *ret = NULL;
+
+    if (virQEMUBuildCommandLineJSON(srcdef, &buf,
+                                    virQEMUBuildCommandLineJSONArrayNumbered) < 0)
+        goto cleanup;
+
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
+
+    ret = virBufferContentAndReset(&buf);
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
+}
+
+
 /**
  * virQEMUBuildBufferEscapeComma:
  * @buf: buffer to append the escaped string

@@ -47,6 +47,8 @@ char *virQEMUBuildObjectCommandlineFromJSON(const char *type,
                                             const char *alias,
                                             virJSONValuePtr props);
 
+char *virQEMUBuildDriveCommandlineFromJSON(const virJSONValue *src);
+
 void virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str);
 void virQEMUBuildLuksOpts(virBufferPtr buf,
                           virStorageEncryptionInfoDefPtr enc,

@@ -916,6 +916,34 @@ qemuBuildNetworkDriveStr(virStorageSourcePtr src,
 }
 
 
+static int
+qemuGetDriveSourceProps(virStorageSourcePtr src,
+                        virJSONValuePtr *props)
+{
+    int actualType = virStorageSourceGetActualType(src);
+    virJSONValuePtr fileprops = NULL;
+
+    *props = NULL;
+
+    switch ((virStorageType) actualType) {
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_FILE:
+    case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NONE:
+    case VIR_STORAGE_TYPE_LAST:
+    case VIR_STORAGE_TYPE_NETWORK:
+        break;
+    }
+
+    if (fileprops &&
+        virJSONValueObjectCreate(props, "a:file", fileprops, NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 qemuGetDriveSourceString(virStorageSourcePtr src,
                          qemuDomainSecretInfoPtr secinfo,
@@ -1101,14 +1129,19 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     qemuDomainSecretInfoPtr secinfo = diskPriv->secinfo;
     qemuDomainSecretInfoPtr encinfo = diskPriv->encinfo;
+    virJSONValuePtr srcprops = NULL;
     char *source = NULL;
     int ret = -1;
 
-    if (qemuGetDriveSourceString(disk->src, secinfo, &source) < 0)
+    if (qemuGetDriveSourceProps(disk->src, &srcprops) < 0)
+        goto cleanup;
+
+    if (!srcprops &&
+        qemuGetDriveSourceString(disk->src, secinfo, &source) < 0)
         goto cleanup;
 
     /* nothing to format if the drive is empty */
-    if (!source ||
+    if (!(source || srcprops) ||
         ((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
           disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
          disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
@@ -1125,31 +1158,38 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
         goto cleanup;
     }
 
-    virBufferAddLit(buf, "file=");
+    if (source) {
+        virBufferAddLit(buf, "file=");
 
-    /* for now the DIR based storage is handled by the magic FAT format */
-    if (actualType == VIR_STORAGE_TYPE_DIR) {
-        if (disk->src->format > 0 &&
-            disk->src->format != VIR_STORAGE_FILE_FAT) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unsupported disk driver type for '%s'"),
-                           virStorageFileFormatTypeToString(disk->src->format));
-            goto cleanup;
+        /* for now the DIR based storage is handled by the magic FAT format */
+        if (actualType == VIR_STORAGE_TYPE_DIR) {
+            if (disk->src->format > 0 &&
+                disk->src->format != VIR_STORAGE_FILE_FAT) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("unsupported disk driver type for '%s'"),
+                               virStorageFileFormatTypeToString(disk->src->format));
+                goto cleanup;
+            }
+
+            if (!disk->src->readonly) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("cannot create virtual FAT disks in read-write mode"));
+                goto cleanup;
+            }
+
+            virBufferAddLit(buf, "fat:");
+
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+                virBufferAddLit(buf, "floppy:");
         }
 
-        if (!disk->src->readonly) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cannot create virtual FAT disks in read-write mode"));
+        virQEMUBuildBufferEscapeComma(buf, source);
+    } else {
+        if (!(source = virQEMUBuildDriveCommandlineFromJSON(srcprops)))
             goto cleanup;
-        }
 
-        virBufferAddLit(buf, "fat:");
-
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)
-            virBufferAddLit(buf, "floppy:");
+        virBufferAdd(buf, source, -1);
     }
-
-    virQEMUBuildBufferEscapeComma(buf, source);
     virBufferAddLit(buf, ",");
 
     if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
@@ -1170,6 +1210,7 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
 
  cleanup:
     VIR_FREE(source);
+    virJSONValueFree(srcprops);
     return ret;
 }
 
