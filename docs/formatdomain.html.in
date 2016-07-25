@@ -2280,7 +2280,7 @@
               <tr>
                 <td> gluster </td>
                 <td> a server running glusterd daemon </td>
-                <td> only one </td>
+                <td> one or more (<span class="since">Since 2.1.0</span>), just one prior to that </td>
                 <td> 24007 </td>
               </tr>
             </table>
