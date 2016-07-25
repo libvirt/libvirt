@@ -100,6 +100,7 @@ mymain(void)
 
     DO_TEST_COMMAND_OBJECT_FROM_JSON("{}", NULL);
     DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"string\":\"qwer\"}", "string=qwer");
+    DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"string\":\"qw,e,r\"}", "string=qw,,e,,r");
     DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"number\":1234}", "number=1234");
     DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"boolean\":true}", "boolean=yes");
     DO_TEST_COMMAND_OBJECT_FROM_JSON("{\"boolean\":false}", "boolean=no");

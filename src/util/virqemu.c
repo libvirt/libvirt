@@ -46,7 +46,8 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
 
     switch ((virJSONType) value->type) {
     case VIR_JSON_TYPE_STRING:
-        virBufferAsprintf(buf, ",%s=%s", key, value->data.string);
+        virBufferAsprintf(buf, ",%s=", key);
+        virQEMUBuildBufferEscapeComma(buf, value->data.string);
         break;
 
     case VIR_JSON_TYPE_NUMBER:
