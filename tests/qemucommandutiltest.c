@@ -37,7 +37,6 @@ testQemuCommandBuildFromJSON(const void *opaque)
 {
     const testQemuCommandBuildObjectFromJSONData *data = opaque;
     virJSONValuePtr val = NULL;
-    char *expect = NULL;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *result = NULL;
     int ret = -1;
@@ -46,10 +45,6 @@ testQemuCommandBuildFromJSON(const void *opaque)
         fprintf(stderr, "Failed to parse JSON string '%s'", data->props);
         return -1;
     }
-
-    if (data->expectprops &&
-        virAsprintf(&expect, ",%s", data->expectprops) < 0)
-        return -1;
 
     if (virQEMUBuildCommandLineJSON(val, &buf,
                                     virQEMUBuildCommandLineJSONArrayBitmap) < 0) {
@@ -61,10 +56,10 @@ testQemuCommandBuildFromJSON(const void *opaque)
 
     result = virBufferContentAndReset(&buf);
 
-    if (STRNEQ_NULLABLE(expect, result)) {
+    if (STRNEQ_NULLABLE(data->expectprops, result)) {
         fprintf(stderr, "\nFailed to create object string. "
                 "\nExpected:\n'%s'\nGot:\n'%s'",
-                NULLSTR(expect), NULLSTR(result));
+                NULLSTR(data->expectprops), NULLSTR(result));
         goto cleanup;
     }
 
@@ -72,7 +67,6 @@ testQemuCommandBuildFromJSON(const void *opaque)
  cleanup:
     virJSONValueFree(val);
     VIR_FREE(result);
-    VIR_FREE(expect);
     return ret;
 }
 

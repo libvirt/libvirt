@@ -66,10 +66,10 @@ virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
             end = virBitmapLastSetBit(bitmap) + 1;
 
         if (end - 1 > pos) {
-            virBufferAsprintf(buf, ",%s=%zd-%zd", key, pos, end - 1);
+            virBufferAsprintf(buf, "%s=%zd-%zd,", key, pos, end - 1);
             pos = end;
         } else {
-            virBufferAsprintf(buf, ",%s=%zd", key, pos);
+            virBufferAsprintf(buf, "%s=%zd,", key, pos);
         }
     }
 
@@ -125,19 +125,20 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
 
     switch ((virJSONType) value->type) {
     case VIR_JSON_TYPE_STRING:
-        virBufferAsprintf(buf, ",%s=", key);
+        virBufferAsprintf(buf, "%s=", key);
         virQEMUBuildBufferEscapeComma(buf, value->data.string);
+        virBufferAddLit(buf, ",");
         break;
 
     case VIR_JSON_TYPE_NUMBER:
-        virBufferAsprintf(buf, ",%s=%s", key, value->data.number);
+        virBufferAsprintf(buf, "%s=%s,", key, value->data.number);
         break;
 
     case VIR_JSON_TYPE_BOOLEAN:
         if (value->data.boolean)
-            virBufferAsprintf(buf, ",%s=yes", key);
+            virBufferAsprintf(buf, "%s=yes,", key);
         else
-            virBufferAsprintf(buf, ",%s=no", key);
+            virBufferAsprintf(buf, "%s=no,", key);
 
         break;
 
@@ -196,7 +197,12 @@ virQEMUBuildCommandLineJSON(const virJSONValue *value,
                             virBufferPtr buf,
                             virQEMUBuildCommandLineJSONArrayFormatFunc array)
 {
-    return virQEMUBuildCommandLineJSONRecurse(NULL, value, buf, array, false);
+    if (virQEMUBuildCommandLineJSONRecurse(NULL, value, buf, array, false) < 0)
+        return -1;
+
+    virBufferTrim(buf, ",", -1);
+
+    return 0;
 }
 
 
@@ -208,7 +214,7 @@ virQEMUBuildObjectCommandlineFromJSON(const char *type,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *ret = NULL;
 
-    virBufferAsprintf(&buf, "%s,id=%s", type, alias);
+    virBufferAsprintf(&buf, "%s,id=%s,", type, alias);
 
     if (virQEMUBuildCommandLineJSON(props, &buf,
                                     virQEMUBuildCommandLineJSONArrayBitmap) < 0)
