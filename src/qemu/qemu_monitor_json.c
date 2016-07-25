@@ -6810,7 +6810,58 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitorPtr mon,
 
 
 /**
- * Recursively search for a QOM object link.
+ * Search for a QOM object link by alias and name.
+ *
+ * For @alias and @name, this function tries to find QOM object named @name
+ * with id @alias in /machine/peripheral.
+ *
+ * Returns:
+ *   0  - Found
+ *  -1  - Error - bail out
+ *  -2  - Not found
+ */
+static int
+qemuMonitorJSONFindObjectPathByAlias(qemuMonitorPtr mon,
+                                     const char *name,
+                                     const char *alias,
+                                     char **path)
+{
+    qemuMonitorJSONListPathPtr *paths = NULL;
+    char *child = NULL;
+    int npaths;
+    int ret = -1;
+    size_t i;
+
+    npaths = qemuMonitorJSONGetObjectListPaths(mon, "/machine/peripheral", &paths);
+    if (npaths < 0)
+        return -1;
+
+    if (virAsprintf(&child, "child<%s>", name) < 0)
+        goto cleanup;
+
+    for (i = 0; i < npaths; i++) {
+        if (STREQ(paths[i]->name, alias) && STREQ(paths[i]->type, child)) {
+            if (virAsprintf(path, "/machine/peripheral/%s", alias) < 0)
+                goto cleanup;
+
+            ret = 0;
+            goto cleanup;
+        }
+    }
+
+    ret = -2;
+
+ cleanup:
+    for (i = 0; i < npaths; i++)
+        qemuMonitorJSONListPathFree(paths[i]);
+    VIR_FREE(paths);
+    VIR_FREE(child);
+    return ret;
+}
+
+
+/**
+ * Recursively search for a QOM object link only by name.
  *
  * For @name, this function finds the first QOM object
  * named @name, recursively going through all the "child<>"
@@ -6822,10 +6873,10 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitorPtr mon,
  *  -2  - Not found
  */
 static int
-qemuMonitorJSONFindObjectPath(qemuMonitorPtr mon,
-                              const char *curpath,
-                              const char *name,
-                              char **path)
+qemuMonitorJSONFindObjectPathByName(qemuMonitorPtr mon,
+                                    const char *curpath,
+                                    const char *name,
+                                    char **path)
 {
     ssize_t i, npaths = 0;
     int ret = -2;
@@ -6859,7 +6910,7 @@ qemuMonitorJSONFindObjectPath(qemuMonitorPtr mon,
                 goto cleanup;
             }
 
-            ret = qemuMonitorJSONFindObjectPath(mon, nextpath, name, path);
+            ret = qemuMonitorJSONFindObjectPathByName(mon, nextpath, name, path);
             VIR_FREE(nextpath);
         }
     }
@@ -6876,8 +6927,9 @@ qemuMonitorJSONFindObjectPath(qemuMonitorPtr mon,
 /**
  * Recursively search for a QOM object link.
  *
- * For @name, this function finds the first QOM object
- * pointed to by a link in the form of 'link<@name>'
+ * For @name and @alias, this function finds the first QOM object.
+ * The search is done at first by @alias and @name and if nothing was found
+ * it continues recursively only with @name.
  *
  * Returns:
  *   0  - Found
@@ -6887,15 +6939,22 @@ qemuMonitorJSONFindObjectPath(qemuMonitorPtr mon,
 int
 qemuMonitorJSONFindLinkPath(qemuMonitorPtr mon,
                             const char *name,
+                            const char *alias,
                             char **path)
 {
     char *linkname = NULL;
     int ret = -1;
 
+    if (alias) {
+        ret = qemuMonitorJSONFindObjectPathByAlias(mon, name, alias, path);
+        if (ret == -1 || ret == 0)
+            return ret;
+    }
+
     if (virAsprintf(&linkname, "link<%s>", name) < 0)
         return -1;
 
-    ret = qemuMonitorJSONFindObjectPath(mon, "/", linkname, path);
+    ret = qemuMonitorJSONFindObjectPathByName(mon, "/", linkname, path);
     VIR_FREE(linkname);
     return ret;
 }

@@ -1084,10 +1084,11 @@ qemuMonitorInitBalloonObjectPath(qemuMonitorPtr mon)
     }
     mon->ballooninit = true;
 
-    flp_ret = qemuMonitorJSONFindLinkPath(mon, "virtio-balloon-pci", &path);
+    flp_ret = qemuMonitorJSONFindLinkPath(mon, "virtio-balloon-pci", NULL, &path);
     if (flp_ret == -2) {
         /* pci object was not found retry search for ccw object */
-        if (qemuMonitorJSONFindLinkPath(mon, "virtio-balloon-ccw", &path) < 0)
+        if (qemuMonitorJSONFindLinkPath(mon, "virtio-balloon-ccw",
+                                        NULL, &path) < 0)
             return;
     } else if (flp_ret < 0) {
         return;
@@ -1138,7 +1139,8 @@ qemuMonitorUpdateVideoMemorySize(qemuMonitorPtr mon,
     QEMU_CHECK_MONITOR(mon);
 
     if (mon->json) {
-        ret = qemuMonitorJSONFindLinkPath(mon, videoName, &path);
+        ret = qemuMonitorJSONFindLinkPath(mon, videoName,
+                                          video->info.alias, &path);
         if (ret < 0) {
             if (ret == -2)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1173,7 +1175,8 @@ qemuMonitorUpdateVideoVram64Size(qemuMonitorPtr mon,
     QEMU_CHECK_MONITOR(mon);
 
     if (mon->json) {
-        ret = qemuMonitorJSONFindLinkPath(mon, videoName, &path);
+        ret = qemuMonitorJSONFindLinkPath(mon, videoName,
+                                          video->info.alias, &path);
         if (ret < 0) {
             if (ret == -2)
                 virReportError(VIR_ERR_INTERNAL_ERROR,

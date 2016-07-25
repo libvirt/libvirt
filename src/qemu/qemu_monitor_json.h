@@ -477,8 +477,9 @@ int qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitorPtr mon,
 
 int qemuMonitorJSONFindLinkPath(qemuMonitorPtr mon,
                                 const char *name,
+                                const char *alias,
                                 char **path)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
 int qemuMonitorJSONMigrateIncoming(qemuMonitorPtr mon,
                                    const char *uri)
