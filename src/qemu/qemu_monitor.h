@@ -397,9 +397,11 @@ int qemuMonitorGetVirtType(qemuMonitorPtr mon,
 int qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
                               unsigned long long *currmem);
 int qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
+                              virDomainMemballoonDefPtr balloon,
                               virDomainMemoryStatPtr stats,
                               unsigned int nr_stats);
 int qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
+                                    virDomainMemballoonDefPtr balloon,
                                     int period);
 
 int qemuMonitorBlockIOStatusToError(const char *status);

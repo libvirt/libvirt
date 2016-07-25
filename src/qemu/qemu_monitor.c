@@ -1068,11 +1068,12 @@ qemuMonitorSetOptions(qemuMonitorPtr mon, virJSONValuePtr options)
  * This feature was added to QEMU 1.5.
  */
 static void
-qemuMonitorInitBalloonObjectPath(qemuMonitorPtr mon)
+qemuMonitorInitBalloonObjectPath(qemuMonitorPtr mon,
+                                 virDomainMemballoonDefPtr balloon)
 {
     ssize_t i, nprops = 0;
-    int flp_ret = 0;
     char *path = NULL;
+    const char *name;
     qemuMonitorJSONListPathPtr *bprops = NULL;
 
     if (mon->balloonpath) {
@@ -1084,15 +1085,19 @@ qemuMonitorInitBalloonObjectPath(qemuMonitorPtr mon)
     }
     mon->ballooninit = true;
 
-    flp_ret = qemuMonitorJSONFindLinkPath(mon, "virtio-balloon-pci", NULL, &path);
-    if (flp_ret == -2) {
-        /* pci object was not found retry search for ccw object */
-        if (qemuMonitorJSONFindLinkPath(mon, "virtio-balloon-ccw",
-                                        NULL, &path) < 0)
-            return;
-    } else if (flp_ret < 0) {
+    switch (balloon->info.type) {
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
+        name = "virtio-balloon-pci";
+        break;
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
+        name = "virtio-balloon-ccw";
+        break;
+    default:
         return;
     }
+
+    if (qemuMonitorJSONFindLinkPath(mon, name, balloon->info.alias, &path) < 0)
+        return;
 
     nprops = qemuMonitorJSONGetObjectListPaths(mon, path, &bprops);
     if (nprops < 0)
@@ -1718,6 +1723,7 @@ qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,
 
 int
 qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
+                          virDomainMemballoonDefPtr balloon,
                           virDomainMemoryStatPtr stats,
                           unsigned int nr_stats)
 {
@@ -1726,7 +1732,7 @@ qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
     QEMU_CHECK_MONITOR(mon);
 
     if (mon->json) {
-        qemuMonitorInitBalloonObjectPath(mon);
+        qemuMonitorInitBalloonObjectPath(mon, balloon);
         return qemuMonitorJSONGetMemoryStats(mon, mon->balloonpath,
                                              stats, nr_stats);
     } else {
@@ -1744,6 +1750,7 @@ qemuMonitorGetMemoryStats(qemuMonitorPtr mon,
  */
 int
 qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
+                                virDomainMemballoonDefPtr balloon,
                                 int period)
 {
     int ret = -1;
@@ -1758,7 +1765,7 @@ qemuMonitorSetMemoryStatsPeriod(qemuMonitorPtr mon,
     if (period < 0)
         return -1;
 
-    qemuMonitorInitBalloonObjectPath(mon);
+    qemuMonitorInitBalloonObjectPath(mon, balloon);
     if (mon->balloonpath) {
         ret = qemuMonitorJSONSetMemoryStatsPeriod(mon, mon->balloonpath,
                                                   period);

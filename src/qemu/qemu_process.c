@@ -4268,19 +4268,17 @@ qemuProcessSetupBalloon(virQEMUDriverPtr driver,
 {
     unsigned long long balloon = vm->def->mem.cur_balloon;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int period;
     int ret = -1;
 
     if (!virDomainDefHasMemballoon(vm->def))
         return 0;
 
-    period = vm->def->memballoon->period;
-
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
 
-    if (period)
-        qemuMonitorSetMemoryStatsPeriod(priv->mon, period);
+    if (vm->def->memballoon->period)
+        qemuMonitorSetMemoryStatsPeriod(priv->mon, vm->def->memballoon,
+                                        vm->def->memballoon->period);
     if (qemuMonitorSetBalloon(priv->mon, balloon) < 0)
         goto cleanup;
 
@@ -6022,7 +6020,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
             vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO &&
             vm->def->memballoon->period) {
             qemuDomainObjEnterMonitor(driver, vm);
-            qemuMonitorSetMemoryStatsPeriod(priv->mon,
+            qemuMonitorSetMemoryStatsPeriod(priv->mon, vm->def->memballoon,
                                             vm->def->memballoon->period);
             if (qemuDomainObjExitMonitor(driver, vm) < 0)
                 goto error;

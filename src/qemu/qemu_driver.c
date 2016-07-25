@@ -2455,7 +2455,7 @@ static int qemuDomainSetMemoryStatsPeriod(virDomainPtr dom, int period,
         }
 
         qemuDomainObjEnterMonitor(driver, vm);
-        r = qemuMonitorSetMemoryStatsPeriod(priv->mon, period);
+        r = qemuMonitorSetMemoryStatsPeriod(priv->mon, def->memballoon, period);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto endjob;
         if (r < 0) {
@@ -11003,7 +11003,8 @@ qemuDomainMemoryStats(virDomainPtr dom,
     if (vm->def->memballoon &&
         vm->def->memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO) {
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorGetMemoryStats(qemuDomainGetMonitor(vm), stats, nr_stats);
+        ret = qemuMonitorGetMemoryStats(qemuDomainGetMonitor(vm),
+                                        vm->def->memballoon, stats, nr_stats);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             ret = -1;
 
