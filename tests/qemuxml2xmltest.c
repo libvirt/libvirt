@@ -112,9 +112,12 @@ testGetStatuXMLPrefixVcpus(virBufferPtr buf,
     virBufferAddLit(buf, "<vcpus>\n");
     virBufferAdjustIndent(buf, 2);
 
-    while ((vcpuid = virBitmapNextSetBit(data->activeVcpus, vcpuid)) >= 0)
-        virBufferAsprintf(buf, "<vcpu id='%zd' pid='%zd'/>\n",
-                          vcpuid, vcpuid + 3803519);
+    /* Make sure we can format the fake vcpu list. The test will fail regardles. */
+    if (data->activeVcpus) {
+        while ((vcpuid = virBitmapNextSetBit(data->activeVcpus, vcpuid)) >= 0)
+            virBufferAsprintf(buf, "<vcpu id='%zd' pid='%zd'/>\n",
+                              vcpuid, vcpuid + 3803519);
+    }
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</vcpus>\n");
