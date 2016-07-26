@@ -1566,20 +1566,16 @@ virConfLoadConfigPath(const char *name)
 {
     char *path;
     if (geteuid() == 0) {
-        if (virAsprintf(&path, "%s/libvirt/libvirt%s%s.conf",
-                        SYSCONFDIR,
-                        name ? "-" : "",
-                        name ? name : "") < 0)
+        if (virAsprintf(&path, "%s/libvirt/%s",
+                        SYSCONFDIR, name) < 0)
             return NULL;
     } else {
         char *userdir = virGetUserConfigDirectory();
         if (!userdir)
             return NULL;
 
-        if (virAsprintf(&path, "%s/libvirt%s%s.conf",
-                        userdir,
-                        name ? "-" : "",
-                        name ? name : "") < 0) {
+        if (virAsprintf(&path, "%s/%s",
+                        userdir, name) < 0) {
             VIR_FREE(userdir);
             return NULL;
         }
