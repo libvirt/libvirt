@@ -520,13 +520,6 @@ sc_forbid_manual_xml_indent:
 	halt='use virBufferAdjustIndent instead of spaces when indenting xml' \
 	  $(_sc_search_regexp)
 
-# Not only do they fail to deal well with ipv6, but the gethostby*
-# functions are also not thread-safe.
-sc_prohibit_gethostby:
-	@prohibit='\<gethostby(addr|name2?) *\('			\
-	halt='use getaddrinfo, not gethostby*'				\
-	  $(_sc_search_regexp)
-
 # dirname and basename from <libgen.h> are not required to be thread-safe
 sc_prohibit_libgen:
 	@prohibit='( (base|dir)name *\(|include .libgen\.h)'		\
@@ -1191,8 +1184,6 @@ exclude_file_name_regexp--sc_prohibit_sprintf = \
 exclude_file_name_regexp--sc_prohibit_strncpy = ^src/util/virstring\.c$$
 
 exclude_file_name_regexp--sc_prohibit_strtol = ^examples/.*$$
-
-exclude_file_name_regexp--sc_prohibit_gethostby = ^docs/nss.html.in$$
 
 exclude_file_name_regexp--sc_prohibit_xmlGetProp = ^src/util/virxml\.c$$
 
