@@ -15,7 +15,7 @@
   <devices>
     <emulator>/usr/bin/qemu</emulator>
     <disk type='file' device='disk'>
-      <driver name='qemu' type='luks'/>
+      <driver name='qemu' type='raw'/>
       <source file='/storage/guest_disks/encryptdisk'/>
       <target dev='vda' bus='virtio'/>
       <encryption format='luks'>
@@ -24,7 +24,7 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </disk>
     <disk type='file' device='disk'>
-      <driver name='qemu' type='luks'/>
+      <driver name='qemu' type='raw'/>
       <source file='/storage/guest_disks/encryptdisk2'/>
       <target dev='vdb' bus='virtio'/>
       <encryption format='luks'>

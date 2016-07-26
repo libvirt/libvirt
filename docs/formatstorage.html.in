@@ -761,7 +761,7 @@
         &lt;capacity unit="G"&gt;5&lt;/capacity&gt;
         &lt;target&gt;
           &lt;path&gt;/var/lib/virt/images/MyLuks.img&lt;/path&gt;
-          &lt;format type='luks'/&gt;
+          &lt;format type='raw'/&gt;
           &lt;encryption format='luks'&gt;
             &lt;secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc572'/&gt;
           &lt;/encryption&gt;

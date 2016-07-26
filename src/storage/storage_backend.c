@@ -963,12 +963,7 @@ virStorageBackendCreateQemuImgOpts(virStorageEncryptionInfoDefPtr enc,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (info.format == VIR_STORAGE_FILE_LUKS) {
-        if (!enc) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("missing luks encryption information"));
-            goto error;
-        }
+    if (info.format == VIR_STORAGE_FILE_RAW && enc) {
         virQEMUBuildLuksOpts(&buf, enc, info.secretAlias);
     } else {
         if (info.backingPath)
@@ -1049,7 +1044,7 @@ virStorageBackendCreateQemuImgCheckEncryption(int format,
             if (virStorageGenerateQcowEncryption(conn, vol) < 0)
                 return -1;
         }
-    } else if (format == VIR_STORAGE_FILE_LUKS) {
+    } else if (format == VIR_STORAGE_FILE_RAW) {
         if (enc->format != VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported volume encryption format %d"),
@@ -1116,9 +1111,9 @@ virStorageBackendCreateQemuImgSetBacking(virStoragePoolObjPtr pool,
     int accessRetCode = -1;
     char *absolutePath = NULL;
 
-    if (info->format == VIR_STORAGE_FILE_LUKS) {
+    if (info->format == VIR_STORAGE_FILE_RAW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("cannot set backing store for luks volume"));
+                       _("cannot set backing store for raw volume"));
         return -1;
     }
 
@@ -1283,15 +1278,23 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
                        _("format features only available with qcow2"));
         return NULL;
     }
-    if (info.format == VIR_STORAGE_FILE_LUKS) {
+    if (info.format == VIR_STORAGE_FILE_RAW &&
+        vol->target.encryption != NULL) {
         if (inputvol) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("cannot use inputvol with luks volume"));
+                           _("cannot use inputvol with encrypted raw volume"));
             return NULL;
         }
         if (!info.encryption) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing encryption description"));
+            return NULL;
+        }
+        if (vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+            type = "luks";
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Only luks encryption is supported for raw files"));
             return NULL;
         }
     }
@@ -1329,7 +1332,9 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
     if (info.backingPath)
         virCommandAddArgList(cmd, "-b", info.backingPath, NULL);
 
-    if (info.format == VIR_STORAGE_FILE_LUKS) {
+    if (info.format == VIR_STORAGE_FILE_RAW &&
+        vol->target.encryption != NULL &&
+        vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
         if (virStorageBackendCreateQemuImgSecretObject(cmd, vol, &info) < 0) {
             VIR_FREE(info.secretAlias);
             virCommandFree(cmd);
@@ -1453,7 +1458,8 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
     if (imgformat < 0)
         goto cleanup;
 
-    if (vol->target.format == VIR_STORAGE_FILE_LUKS) {
+    if (vol->target.format == VIR_STORAGE_FILE_RAW &&
+        vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
         if (!(secretPath =
               virStorageBackendCreateQemuImgSecretPath(conn, pool, vol)))
             goto cleanup;
@@ -1484,13 +1490,15 @@ virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
     if (!inputvol)
         return NULL;
 
-    /* If either volume is a non-raw file vol, we need to use an external
-     * tool for converting
+    /* If either volume is a non-raw file vol, or uses encryption,
+     * we need to use an external tool for converting
      */
     if ((vol->type == VIR_STORAGE_VOL_FILE &&
-         vol->target.format != VIR_STORAGE_FILE_RAW) ||
+         (vol->target.format != VIR_STORAGE_FILE_RAW ||
+          vol->target.encryption != NULL)) ||
         (inputvol->type == VIR_STORAGE_VOL_FILE &&
-         inputvol->target.format != VIR_STORAGE_FILE_RAW)) {
+         (inputvol->target.format != VIR_STORAGE_FILE_RAW ||
+          inputvol->target.encryption != NULL))) {
         return virStorageBackendCreateQemuImg;
     }
 

@@ -1078,7 +1078,7 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
     }
 
     if (!virStorageSourceIsEmpty(src) && src->encryption &&
-        src->format == VIR_STORAGE_FILE_LUKS) {
+        src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
 
         if (VIR_ALLOC(secinfo) < 0)
             return -1;

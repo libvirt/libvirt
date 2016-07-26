@@ -1303,9 +1303,13 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
                              encinfo->s.aes.alias);
 
     if (disk->src->format > 0 &&
-        disk->src->type != VIR_STORAGE_TYPE_DIR)
-        virBufferAsprintf(buf, "format=%s,",
-                          virStorageFileFormatTypeToString(disk->src->format));
+        disk->src->type != VIR_STORAGE_TYPE_DIR) {
+        const char *qemuformat = virStorageFileFormatTypeToString(disk->src->format);
+        if (disk->src->encryption &&
+            disk->src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS)
+            qemuformat = "luks";
+        virBufferAsprintf(buf, "format=%s,", qemuformat);
+    }
 
     ret = 0;
 

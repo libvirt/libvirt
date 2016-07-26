@@ -7,7 +7,7 @@
   <allocation>294912</allocation>
   <target>
     <path>/var/lib/libvirt/images/LuksDemo.img</path>
-    <format type='luks'/>
+    <format type='raw'/>
     <permissions>
       <mode>0644</mode>
       <owner>0</owner>

@@ -152,20 +152,6 @@ virStorageBackendProbeTarget(virStorageSourcePtr target,
         *encryption = meta->encryption;
         meta->encryption = NULL;
 
-        switch (target->format) {
-        case VIR_STORAGE_FILE_QCOW:
-        case VIR_STORAGE_FILE_QCOW2:
-            (*encryption)->format = VIR_STORAGE_ENCRYPTION_FORMAT_QCOW;
-            break;
-
-        case VIR_STORAGE_FILE_LUKS:
-            (*encryption)->format = VIR_STORAGE_ENCRYPTION_FORMAT_LUKS;
-            break;
-
-        case VIR_STORAGE_ENCRYPTION_FORMAT_LAST:
-            break;
-        }
-
         /* XXX ideally we'd fill in secret UUID here
          * but we cannot guarantee 'conn' is non-NULL
          * at this point in time :-(  So we only fill
@@ -1182,7 +1168,8 @@ _virStorageBackendFileSystemVolBuild(virConnectPtr conn,
                                                                inputvol);
         if (!create_func)
             return -1;
-    } else if (vol->target.format == VIR_STORAGE_FILE_RAW) {
+    } else if (vol->target.format == VIR_STORAGE_FILE_RAW &&
+               vol->target.encryption == NULL) {
         create_func = virStorageBackendCreateRaw;
     } else if (vol->target.format == VIR_STORAGE_FILE_DIR) {
         create_func = createFileDir;
