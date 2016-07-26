@@ -600,13 +600,12 @@ qedGetBackingStore(char **res,
 
 
 static bool
-virStorageFileMatchesMagic(int format,
+virStorageFileMatchesMagic(int magicOffset,
+                           const char *magic,
                            char *buf,
                            size_t buflen)
 {
     int mlen;
-    int magicOffset = fileTypeInfo[format].magicOffset;
-    const char *magic = fileTypeInfo[format].magic;
 
     if (magic == NULL)
         return false;
@@ -624,13 +623,13 @@ virStorageFileMatchesMagic(int format,
 
 
 static bool
-virStorageFileMatchesExtension(int format,
+virStorageFileMatchesExtension(const char *extension,
                                const char *path)
 {
-    if (fileTypeInfo[format].extension == NULL)
+    if (extension == NULL)
         return false;
 
-    if (virFileHasSuffix(path, fileTypeInfo[format].extension))
+    if (virFileHasSuffix(path, extension))
         return true;
 
     return false;
@@ -638,7 +637,10 @@ virStorageFileMatchesExtension(int format,
 
 
 static bool
-virStorageFileMatchesVersion(int format,
+virStorageFileMatchesVersion(int versionOffset,
+                             int versionSize,
+                             const int *versionNumbers,
+                             int endian,
                              char *buf,
                              size_t buflen)
 {
@@ -646,44 +648,42 @@ virStorageFileMatchesVersion(int format,
     size_t i;
 
     /* Validate version number info */
-    if (fileTypeInfo[format].versionOffset == -1)
+    if (versionOffset == -1)
         return false;
 
     /* -2 == non-versioned file format, so trivially match */
-    if (fileTypeInfo[format].versionOffset == -2)
+    if (versionOffset == -2)
         return true;
 
     /* A positive versionOffset, requires using a valid versionSize */
-    if (fileTypeInfo[format].versionSize != 2 &&
-        fileTypeInfo[format].versionSize != 4)
+    if (versionSize != 2 && versionSize != 4)
         return false;
 
-    if ((fileTypeInfo[format].versionOffset +
-         fileTypeInfo[format].versionSize) > buflen)
+    if ((versionOffset + versionSize) > buflen)
         return false;
 
-    if (fileTypeInfo[format].endian == LV_LITTLE_ENDIAN) {
-        if (fileTypeInfo[format].versionSize == 4)
+    if (endian == LV_LITTLE_ENDIAN) {
+        if (versionSize == 4)
             version = virReadBufInt32LE(buf +
-                                        fileTypeInfo[format].versionOffset);
+                                        versionOffset);
         else
             version = virReadBufInt16LE(buf +
-                                        fileTypeInfo[format].versionOffset);
+                                        versionOffset);
     } else {
-        if (fileTypeInfo[format].versionSize == 4)
+        if (versionSize == 4)
             version = virReadBufInt32BE(buf +
-                                        fileTypeInfo[format].versionOffset);
+                                        versionOffset);
         else
             version = virReadBufInt16BE(buf +
-                                        fileTypeInfo[format].versionOffset);
+                                        versionOffset);
     }
 
     for (i = 0;
-         i < FILE_TYPE_VERSIONS_LAST && fileTypeInfo[format].versionNumbers[i];
+         i < FILE_TYPE_VERSIONS_LAST && versionNumbers[i];
          i++) {
         VIR_DEBUG("Compare detected version %d vs one of the expected versions %d",
-                  version, fileTypeInfo[format].versionNumbers[i]);
-        if (version == fileTypeInfo[format].versionNumbers[i])
+                  version, versionNumbers[i]);
+        if (version == versionNumbers[i])
             return true;
     }
 
@@ -736,8 +736,16 @@ virStorageFileProbeFormatFromBuf(const char *path,
 
     /* First check file magic */
     for (i = 0; i < VIR_STORAGE_FILE_LAST; i++) {
-        if (virStorageFileMatchesMagic(i, buf, buflen)) {
-            if (!virStorageFileMatchesVersion(i, buf, buflen)) {
+        if (virStorageFileMatchesMagic(
+                fileTypeInfo[i].magicOffset,
+                fileTypeInfo[i].magic,
+                buf, buflen)) {
+            if (!virStorageFileMatchesVersion(
+                    fileTypeInfo[i].versionOffset,
+                    fileTypeInfo[i].versionSize,
+                    fileTypeInfo[i].versionNumbers,
+                    fileTypeInfo[i].endian,
+                    buf, buflen)) {
                 possibleFormat = i;
                 continue;
             }
@@ -753,7 +761,8 @@ virStorageFileProbeFormatFromBuf(const char *path,
 
     /* No magic, so check file extension */
     for (i = 0; i < VIR_STORAGE_FILE_LAST; i++) {
-        if (virStorageFileMatchesExtension(i, path)) {
+        if (virStorageFileMatchesExtension(
+                fileTypeInfo[i].extension, path)) {
             format = i;
             goto cleanup;
         }
