@@ -39,8 +39,8 @@ if (@ARGV[0] eq "--in-place") {
     shift @ARGV;
 }
 
+$ret = 0;
 foreach my $file (@ARGV) {
-    $ret = 0;
     if (&rewrap($file) < 0) {
         $ret = 1;
     }
