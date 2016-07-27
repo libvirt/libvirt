@@ -1241,7 +1241,7 @@ virJSONValueObjectForeachKeyValue(const virJSONValue *object,
 
 
 virJSONValuePtr
-virJSONValueCopy(virJSONValuePtr in)
+virJSONValueCopy(const virJSONValue *in)
 {
     size_t i;
     virJSONValuePtr out = NULL;
