@@ -434,7 +434,7 @@ static vshCmdOptDef helpopt = {
 };
 static const vshCmdOptDef *
 vshCmddefGetOption(vshControl *ctl, const vshCmdDef *cmd, const char *name,
-                   uint64_t *opts_seen, int *opt_index, char **optstr,
+                   uint64_t *opts_seen, size_t *opt_index, char **optstr,
                    bool report)
 {
     size_t i;
@@ -1418,7 +1418,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
             } else if (tkdata[0] == '-' && tkdata[1] == '-' &&
                        c_isalnum(tkdata[2])) {
                 char *optstr = strchr(tkdata + 2, '=');
-                int opt_index = 0;
+                size_t opt_index = 0;
 
                 if (optstr) {
                     *optstr = '\0'; /* convert the '=' to '\0' */
@@ -2641,7 +2641,7 @@ vshReadlineParse(const char *text, int state)
     static char *ctext, *sanitized_text;
     static uint64_t const_opts_need_arg, const_opts_required, const_opts_seen;
     uint64_t opts_need_arg, opts_required, opts_seen;
-    unsigned int opt_index;
+    size_t opt_index;
     static bool cmd_exists, opts_filled, opt_exists;
     static bool non_bool_opt_exists, data_acomplete;
 
