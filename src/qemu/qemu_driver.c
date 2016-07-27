@@ -7100,6 +7100,7 @@ qemuDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
                            QEMU_ASYNC_JOB_START) < 0)
         goto endjob;
 
+    dom->id = vm->def->id;
     ret = 0;
 
  endjob:
