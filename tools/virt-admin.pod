@@ -134,9 +134,6 @@ connection at all or there is an inactive one.
 
 To find the currently used URI, check the I<uri> command documented below.
 
-For remote access see the documentation page at
-L<http://libvirt.org/uri.html> on how to make URIs.
-
 =item B<uri>
 
 Prints the administrating server canonical URI, can be useful in shell mode. If
