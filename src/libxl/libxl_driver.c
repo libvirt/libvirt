@@ -373,11 +373,13 @@ libxlReconnectDomain(virDomainObjPtr vm,
     uint8_t *data = NULL;
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
+    int ret = -1;
 
 #ifdef LIBXL_HAVE_PVUSB
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
 #endif
 
+    virObjectRef(vm);
     virObjectLock(vm);
 
     libxl_dominfo_init(&d_info);
@@ -385,18 +387,18 @@ libxlReconnectDomain(virDomainObjPtr vm,
     /* Does domain still exist? */
     rc = libxl_domain_info(cfg->ctx, &d_info, vm->def->id);
     if (rc == ERROR_INVAL) {
-        goto out;
+        goto error;
     } else if (rc != 0) {
         VIR_DEBUG("libxl_domain_info failed (code %d), ignoring domain %d",
                   rc, vm->def->id);
-        goto out;
+        goto error;
     }
 
     /* Is this a domain that was under libvirt control? */
     if (libxl_userdata_retrieve(cfg->ctx, vm->def->id,
                                 "libvirt-xml", &data, &len)) {
         VIR_DEBUG("libxl_userdata_retrieve failed, ignoring domain %d", vm->def->id);
-        goto out;
+        goto error;
     }
 
     /* Update domid in case it changed (e.g. reboot) while we were gone? */
@@ -405,7 +407,7 @@ libxlReconnectDomain(virDomainObjPtr vm,
     /* Update hostdev state */
     if (virHostdevUpdateActiveDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
                                             vm->def, hostdev_flags) < 0)
-        goto out;
+        goto error;
 
     if (virAtomicIntInc(&driver->nactive) == 1 && driver->inhibitCallback)
         driver->inhibitCallback(true, driver->inhibitOpaque);
@@ -413,21 +415,25 @@ libxlReconnectDomain(virDomainObjPtr vm,
     /* Enable domain death events */
     libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW);
 
+    ret = 0;
+
+ cleanup:
     libxl_dominfo_dispose(&d_info);
     virObjectUnlock(vm);
+    virObjectUnref(vm);
     virObjectUnref(cfg);
-    return 0;
+    return ret;
 
- out:
-    libxl_dominfo_dispose(&d_info);
+ error:
     libxlDomainCleanup(driver, vm);
-    if (!vm->persistent)
+    if (!vm->persistent) {
         virDomainObjListRemoveLocked(driver->domains, vm);
-    else
-        virObjectUnlock(vm);
-    virObjectUnref(cfg);
 
-    return -1;
+        /* virDomainObjListRemoveLocked leaves the object unlocked,
+         * lock it again to factorize more code. */
+        virObjectLock(vm);
+    }
+    goto cleanup;
 }
 
 static void
