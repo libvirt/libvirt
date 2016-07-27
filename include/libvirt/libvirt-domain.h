@@ -604,7 +604,7 @@ typedef enum {
     VIR_DOMAIN_MEMORY_STAT_RSS             = 7,
 
     /*
-     * How big the balloon can be inflated without pushing the guest system
+     * How much the balloon can be inflated without pushing the guest system
      * to swap, corresponds to 'Available' in /proc/meminfo
      */
     VIR_DOMAIN_MEMORY_STAT_USABLE          = 8,
