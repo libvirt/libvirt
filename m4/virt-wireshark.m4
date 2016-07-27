@@ -38,7 +38,7 @@ AC_DEFUN([LIBVIRT_CHECK_WIRESHARK],[
         if test "x$ws_prefix" = "x" ; then
           ws_prefix="/usr";
         fi
-        plugindir="${prefix}${plugindir#ws_prefix}"
+        plugindir="${prefix}${plugindir#$ws_prefix}"
       fi
     elif test "x$with_ws_plugindir" = "xno" || test "x$with_ws_plugindir" = "xyes"; then
       AC_MSG_ERROR([ws-plugindir must be used only with valid path])
