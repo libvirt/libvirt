@@ -406,7 +406,7 @@ BuildRequires: numad
 %endif
 
 %if %{with_wireshark}
-BuildRequires: wireshark-devel
+BuildRequires: wireshark-devel >= 2.1.0
 %endif
 
 Provides: bundled(gnulib)
@@ -1212,9 +1212,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/lock-driver/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.a
 %if %{with_wireshark}
-rm -f $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/*/libvirt.la
-mv $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/*/libvirt.so \
-   $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/libvirt.so
+rm -f $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/libvirt.la
 %endif
 
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
