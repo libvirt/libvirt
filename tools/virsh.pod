@@ -821,6 +821,7 @@ B<Explanation of fields>:
   rss               - Resident Set Size of the running domain's process (in kB)
   usable            - The amount of memory which can be reclaimed by balloon
 without causing host swapping (in KB)
+  last-update       - Timestamp of the last update of statistics (in seconds)
 
 For QEMU/KVM with a memory balloon, setting the optional I<--period> to a
 value larger than 0 in seconds will allow the balloon driver to return

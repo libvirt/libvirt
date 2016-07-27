@@ -609,7 +609,7 @@ typedef enum {
      */
     VIR_DOMAIN_MEMORY_STAT_USABLE          = 8,
 
-    /* Timestamp of the last update of statistics */
+    /* Timestamp of the last update of statistics, in seconds. */
     VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE     = 9,
 
     /*
