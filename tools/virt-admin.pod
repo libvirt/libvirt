@@ -127,7 +127,7 @@ Will print the current directory.
 
 (Re)-Connect to a daemon's administrating server. The I<URI> parameter
 specifies how to connect to the administrating server.
-If I<LIBVIRT_ADMIN_DEFAULT_URI> or I<admin_uri_default> (see below) were set,
+If I<LIBVIRT_ADMIN_DEFAULT_URI> or I<uri_default> (see below) were set,
 I<connect> is automatically issued every time a command that requires an
 active connection is executed. Note that this only applies if there is no
 connection at all or there is an inactive one.
@@ -137,8 +137,9 @@ To find the currently used URI, check the I<uri> command documented below.
 =item B<uri>
 
 Prints the administrating server canonical URI, can be useful in shell mode. If
-no I<uri> was specified, neither I<LIBVIRT_ADMIN_DEFAULT_URI> or
-I<admin_uri_default> were set, libvirtd:///system is used.
+no I<uri> was specified, neither I<LIBVIRT_ADMIN_DEFAULT_URI> environment
+variable nor I<uri_default> option (libvirt-admin.conf) were set,
+libvirtd:///system is used.
 
 =back
 
