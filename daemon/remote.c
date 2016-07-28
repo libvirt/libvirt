@@ -3116,6 +3116,7 @@ static int
 remoteSASLFinish(virNetServerPtr server,
                  virNetServerClientPtr client)
 {
+    virIdentityPtr clnt_identity = NULL;
     const char *identity;
     struct daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
     int ssf;
@@ -3138,9 +3139,13 @@ remoteSASLFinish(virNetServerPtr server,
     if (!virNetSASLContextCheckIdentity(saslCtxt, identity))
         return -2;
 
+    if (!(clnt_identity = virNetServerClientGetIdentity(client)))
+        goto error;
+
     virNetServerClientSetAuth(client, 0);
     virNetServerTrackCompletedAuth(server);
     virNetServerClientSetSASLSession(client, priv->sasl);
+    virIdentitySetSASLUserName(clnt_identity, identity);
 
     VIR_DEBUG("Authentication successful %d", virNetServerClientGetFD(client));
 
@@ -3148,6 +3153,7 @@ remoteSASLFinish(virNetServerPtr server,
           "client=%p auth=%d identity=%s",
           client, REMOTE_AUTH_SASL, identity);
 
+    virObjectUnref(clnt_identity);
     virObjectUnref(priv->sasl);
     priv->sasl = NULL;
 
