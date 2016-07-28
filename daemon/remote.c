@@ -91,6 +91,7 @@ static virStorageVolPtr get_nonnull_storage_vol(virConnectPtr conn, remote_nonnu
 static virSecretPtr get_nonnull_secret(virConnectPtr conn, remote_nonnull_secret secret);
 static virNWFilterPtr get_nonnull_nwfilter(virConnectPtr conn, remote_nonnull_nwfilter nwfilter);
 static virDomainSnapshotPtr get_nonnull_domain_snapshot(virDomainPtr dom, remote_nonnull_domain_snapshot snapshot);
+static virNodeDevicePtr get_nonnull_node_device(virConnectPtr conn, remote_nonnull_node_device dev);
 static void make_nonnull_domain(remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_network(remote_nonnull_network *net_dst, virNetworkPtr net_src);
 static void make_nonnull_interface(remote_nonnull_interface *interface_dst, virInterfacePtr interface_src);
@@ -201,6 +202,32 @@ remoteRelayStoragePoolEventCheckACL(virNetServerClientPtr client,
     if (virIdentitySetCurrent(identity) < 0)
         goto cleanup;
     ret = virConnectStoragePoolEventRegisterAnyCheckACL(conn, &def);
+
+ cleanup:
+    ignore_value(virIdentitySetCurrent(NULL));
+    virObjectUnref(identity);
+    return ret;
+}
+
+static bool
+remoteRelayNodeDeviceEventCheckACL(virNetServerClientPtr client,
+                                   virConnectPtr conn,
+                                   virNodeDevicePtr dev)
+{
+    virNodeDeviceDef def;
+    virIdentityPtr identity = NULL;
+    bool ret = false;
+
+    /* For now, we just create a virNodeDeviceDef with enough contents to
+     * satisfy what viraccessdriverpolkit.c references.  This is a bit
+     * fragile, but I don't know of anything better.  */
+    def.name = dev->name;
+
+    if (!(identity = virNetServerClientGetIdentity(client)))
+        goto cleanup;
+    if (virIdentitySetCurrent(identity) < 0)
+        goto cleanup;
+    ret = virConnectNodeDeviceEventRegisterAnyCheckACL(conn, &def);
 
  cleanup:
     ignore_value(virIdentitySetCurrent(NULL));
@@ -1329,6 +1356,44 @@ static virConnectStoragePoolEventGenericCallback storageEventCallbacks[] = {
 
 verify(ARRAY_CARDINALITY(storageEventCallbacks) == VIR_STORAGE_POOL_EVENT_ID_LAST);
 
+static int
+remoteRelayNodeDeviceEventLifecycle(virConnectPtr conn,
+                                    virNodeDevicePtr dev,
+                                    int event,
+                                    int detail,
+                                    void *opaque)
+{
+    daemonClientEventCallbackPtr callback = opaque;
+    remote_node_device_event_lifecycle_msg data;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayNodeDeviceEventCheckACL(callback->client, conn, dev))
+        return -1;
+
+    VIR_DEBUG("Relaying node device lifecycle event %d, detail %d, callback %d",
+              event, detail, callback->callbackID);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    make_nonnull_node_device(&data.dev, dev);
+    data.callbackID = callback->callbackID;
+    data.event = event;
+    data.detail = detail;
+
+    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+                                  REMOTE_PROC_NODE_DEVICE_EVENT_LIFECYCLE,
+                                  (xdrproc_t)xdr_remote_node_device_event_lifecycle_msg,
+                                  &data);
+
+    return 0;
+}
+
+static virConnectNodeDeviceEventGenericCallback nodeDeviceEventCallbacks[] = {
+    VIR_NODE_DEVICE_EVENT_CALLBACK(remoteRelayNodeDeviceEventLifecycle),
+};
+
+verify(ARRAY_CARDINALITY(nodeDeviceEventCallbacks) == VIR_NODE_DEVICE_EVENT_ID_LAST);
+
 static void
 remoteRelayDomainQemuMonitorEvent(virConnectPtr conn,
                                   virDomainPtr dom,
@@ -1450,6 +1515,21 @@ void remoteClientFreeFunc(void *data)
                 VIR_WARN("unexpected storage pool event deregister failure");
         }
         VIR_FREE(priv->storageEventCallbacks);
+
+        for (i = 0; i < priv->nnodeDeviceEventCallbacks; i++) {
+            int callbackID = priv->nodeDeviceEventCallbacks[i]->callbackID;
+            if (callbackID < 0) {
+                VIR_WARN("unexpected incomplete node device callback %zu", i);
+                continue;
+            }
+            VIR_DEBUG("Deregistering remote node device event relay %d",
+                      callbackID);
+            priv->nodeDeviceEventCallbacks[i]->callbackID = -1;
+            if (virConnectNodeDeviceEventDeregisterAny(priv->conn,
+                                                       callbackID) < 0)
+                VIR_WARN("unexpected node device event deregister failure");
+        }
+        VIR_FREE(priv->nodeDeviceEventCallbacks);
 
         for (i = 0; i < priv->nqemuEventCallbacks; i++) {
             int callbackID = priv->qemuEventCallbacks[i]->callbackID;
@@ -5662,6 +5742,126 @@ remoteDispatchConnectStoragePoolEventDeregisterAny(virNetServerPtr server ATTRIB
     return rv;
 }
 
+static int
+remoteDispatchConnectNodeDeviceEventRegisterAny(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                                virNetServerClientPtr client,
+                                                virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                                virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
+                                                remote_connect_node_device_event_register_any_args *args,
+                                                remote_connect_node_device_event_register_any_ret *ret)
+{
+    int callbackID;
+    int rv = -1;
+    daemonClientEventCallbackPtr callback = NULL;
+    daemonClientEventCallbackPtr ref;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+    virNodeDevicePtr  dev = NULL;
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    virMutexLock(&priv->lock);
+
+    if (args->dev &&
+        !(dev = get_nonnull_node_device(priv->conn, *args->dev)))
+        goto cleanup;
+
+    if (args->eventID >= VIR_NODE_DEVICE_EVENT_ID_LAST || args->eventID < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unsupported node device event ID %d"), args->eventID);
+        goto cleanup;
+    }
+
+    /* If we call register first, we could append a complete callback
+     * to our array, but on OOM append failure, we'd have to then hope
+     * deregister works to undo our register.  So instead we append an
+     * incomplete callback to our array, then register, then fix up
+     * our callback; but since VIR_APPEND_ELEMENT clears 'callback' on
+     * success, we use 'ref' to save a copy of the pointer.  */
+    if (VIR_ALLOC(callback) < 0)
+        goto cleanup;
+    callback->client = client;
+    callback->eventID = args->eventID;
+    callback->callbackID = -1;
+    ref = callback;
+    if (VIR_APPEND_ELEMENT(priv->nodeDeviceEventCallbacks,
+                           priv->nnodeDeviceEventCallbacks,
+                           callback) < 0)
+        goto cleanup;
+
+    if ((callbackID = virConnectNodeDeviceEventRegisterAny(priv->conn,
+                                                           dev,
+                                                           args->eventID,
+                                                           nodeDeviceEventCallbacks[args->eventID],
+                                                           ref,
+                                                           remoteEventCallbackFree)) < 0) {
+        VIR_SHRINK_N(priv->nodeDeviceEventCallbacks,
+                     priv->nnodeDeviceEventCallbacks, 1);
+        callback = ref;
+        goto cleanup;
+    }
+
+    ref->callbackID = callbackID;
+    ret->callbackID = callbackID;
+
+    rv = 0;
+
+ cleanup:
+    VIR_FREE(callback);
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virObjectUnref(dev);
+    virMutexUnlock(&priv->lock);
+    return rv;
+}
+
+static int
+remoteDispatchConnectNodeDeviceEventDeregisterAny(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                                  virNetServerClientPtr client,
+                                                  virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                                  virNetMessageErrorPtr rerr ATTRIBUTE_UNUSED,
+                                                  remote_connect_node_device_event_deregister_any_args *args)
+{
+    int rv = -1;
+    size_t i;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    virMutexLock(&priv->lock);
+
+    for (i = 0; i < priv->nnodeDeviceEventCallbacks; i++) {
+        if (priv->nodeDeviceEventCallbacks[i]->callbackID == args->callbackID)
+            break;
+    }
+    if (i == priv->nnodeDeviceEventCallbacks) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("node device event callback %d not registered"),
+                       args->callbackID);
+        goto cleanup;
+    }
+
+    if (virConnectNodeDeviceEventDeregisterAny(priv->conn, args->callbackID) < 0)
+        goto cleanup;
+
+    VIR_DELETE_ELEMENT(priv->nodeDeviceEventCallbacks, i,
+                       priv->nnodeDeviceEventCallbacks);
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virMutexUnlock(&priv->lock);
+    return rv;
+}
 
 static int
 qemuDispatchConnectDomainMonitorEventRegister(virNetServerPtr server ATTRIBUTE_UNUSED,
@@ -6429,6 +6629,12 @@ static virDomainSnapshotPtr
 get_nonnull_domain_snapshot(virDomainPtr dom, remote_nonnull_domain_snapshot snapshot)
 {
     return virGetDomainSnapshot(dom, snapshot.name);
+}
+
+static virNodeDevicePtr
+get_nonnull_node_device(virConnectPtr conn, remote_nonnull_node_device dev)
+{
+    return virGetNodeDevice(conn, dev.name);
 }
 
 /* Make remote_nonnull_domain and remote_nonnull_network. */

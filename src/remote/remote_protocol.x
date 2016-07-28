@@ -3131,6 +3131,26 @@ struct remote_storage_pool_event_refresh_msg {
     remote_nonnull_storage_pool pool;
 };
 
+struct remote_connect_node_device_event_register_any_args {
+    int eventID;
+    remote_node_device dev;
+};
+
+struct remote_connect_node_device_event_register_any_ret {
+    int callbackID;
+};
+
+struct remote_connect_node_device_event_deregister_any_args {
+    int callbackID;
+};
+
+struct remote_node_device_event_lifecycle_msg {
+    int callbackID;
+    remote_nonnull_node_device dev;
+    int event;
+    int detail;
+};
+
 struct remote_domain_fsfreeze_args {
     remote_nonnull_domain dom;
     remote_nonnull_string mountpoints<REMOTE_DOMAIN_FSFREEZE_MOUNTPOINTS_MAX>; /* (const char **) */
@@ -5882,5 +5902,26 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_STORAGE_POOL_EVENT_REFRESH = 373
+    REMOTE_PROC_STORAGE_POOL_EVENT_REFRESH = 373,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:search_node_devices
+     * @aclfilter: node_device:getattr
+     */
+    REMOTE_PROC_CONNECT_NODE_DEVICE_EVENT_REGISTER_ANY = 374,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:read
+     */
+    REMOTE_PROC_CONNECT_NODE_DEVICE_EVENT_DEREGISTER_ANY = 375,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_NODE_DEVICE_EVENT_LIFECYCLE = 376
 };

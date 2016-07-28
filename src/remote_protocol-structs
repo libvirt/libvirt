@@ -2571,6 +2571,22 @@ struct remote_storage_pool_event_refresh_msg {
         int                        callbackID;
         remote_nonnull_storage_pool pool;
 };
+struct remote_connect_node_device_event_register_any_args {
+         int                            eventID;
+         remote_node_device             dev;
+};
+struct remote_connect_node_device_event_register_any_ret {
+         int                        callbackID;
+};
+struct remote_connect_node_device_event_deregister_any_args {
+         int                        callbackID;
+};
+struct remote_node_device_event_lifecycle_msg {
+         int                             callbackID;
+         remote_nonnull_node_device      dev;
+         int                             event;
+         int                             detail;
+};
 struct remote_domain_fsfreeze_args {
         remote_nonnull_domain      dom;
         struct {
@@ -3145,4 +3161,7 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_GET_GUEST_VCPUS = 371,
         REMOTE_PROC_DOMAIN_SET_GUEST_VCPUS = 372,
         REMOTE_PROC_STORAGE_POOL_EVENT_REFRESH = 373,
+        REMOTE_PROC_CONNECT_NODE_DEVICE_EVENT_REGISTER_ANY = 374,
+        REMOTE_PROC_CONNECT_NODE_DEVICE_EVENT_DEREGISTER_ANY = 375,
+        REMOTE_PROC_NODE_DEVICE_EVENT_LIFECYCLE = 376,
 };

@@ -35,6 +35,7 @@
 #include "domain_event.h"
 #include "network_event.h"
 #include "storage_event.h"
+#include "node_device_event.h"
 #include "driver.h"
 #include "virbuffer.h"
 #include "remote_driver.h"
@@ -151,6 +152,8 @@ static void make_nonnull_network(remote_nonnull_network *net_dst, virNetworkPtr 
 static void make_nonnull_interface(remote_nonnull_interface *interface_dst, virInterfacePtr interface_src);
 static void make_nonnull_storage_pool(remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr vol_src);
 static void make_nonnull_storage_vol(remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src);
+static void
+make_nonnull_node_device(remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src);
 static void make_nonnull_secret(remote_nonnull_secret *secret_dst, virSecretPtr secret_src);
 static void make_nonnull_nwfilter(remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwfilter_src);
 static void make_nonnull_domain_snapshot(remote_nonnull_domain_snapshot *snapshot_dst, virDomainSnapshotPtr snapshot_src);
@@ -367,6 +370,11 @@ remoteStoragePoolBuildEventRefresh(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                    void *evdata, void *opaque);
 
 static void
+remoteNodeDeviceBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                    virNetClientPtr client ATTRIBUTE_UNUSED,
+                                    void *evdata, void *opaque);
+
+static void
 remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                          virNetClientPtr client ATTRIBUTE_UNUSED,
                                          void *evdata, void *opaque);
@@ -553,6 +561,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteStoragePoolBuildEventRefresh,
       sizeof(remote_storage_pool_event_refresh_msg),
       (xdrproc_t)xdr_remote_storage_pool_event_refresh_msg },
+    { REMOTE_PROC_NODE_DEVICE_EVENT_LIFECYCLE,
+      remoteNodeDeviceBuildEventLifecycle,
+      sizeof(remote_node_device_event_lifecycle_msg),
+      (xdrproc_t)xdr_remote_node_device_event_lifecycle_msg },
 };
 
 static void
@@ -3147,6 +3159,103 @@ remoteConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
 
 
 static int
+remoteConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
+                                        virNodeDevicePtr dev,
+                                        int eventID,
+                                        virConnectNodeDeviceEventGenericCallback callback,
+                                        void *opaque,
+                                        virFreeCallback freecb)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    remote_connect_node_device_event_register_any_args args;
+    remote_connect_node_device_event_register_any_ret ret;
+    int callbackID;
+    int count;
+    remote_nonnull_node_device node_device;
+
+    remoteDriverLock(priv);
+
+    if ((count = virNodeDeviceEventStateRegisterClient(conn, priv->eventState,
+                                                       dev, eventID, callback,
+                                                       opaque, freecb,
+                                                       &callbackID)) < 0)
+        goto done;
+
+    /* If this is the first callback for this eventID, we need to enable
+     * events on the server */
+    if (count == 1) {
+        args.eventID = eventID;
+        if (dev) {
+            make_nonnull_node_device(&node_device, dev);
+            args.dev = &node_device;
+        } else {
+            args.dev = NULL;
+        }
+
+        memset(&ret, 0, sizeof(ret));
+        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_NODE_DEVICE_EVENT_REGISTER_ANY,
+                 (xdrproc_t) xdr_remote_connect_node_device_event_register_any_args, (char *) &args,
+                 (xdrproc_t) xdr_remote_connect_node_device_event_register_any_ret, (char *) &ret) == -1) {
+            virObjectEventStateDeregisterID(conn, priv->eventState,
+                                            callbackID);
+            goto done;
+        }
+
+        virObjectEventStateSetRemote(conn, priv->eventState, callbackID,
+                                     ret.callbackID);
+    }
+
+    rv = callbackID;
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
+                                          int callbackID)
+{
+    struct private_data *priv = conn->privateData;
+    int rv = -1;
+    remote_connect_node_device_event_deregister_any_args args;
+    int eventID;
+    int remoteID;
+    int count;
+
+    remoteDriverLock(priv);
+
+    if ((eventID = virObjectEventStateEventID(conn, priv->eventState,
+                                              callbackID, &remoteID)) < 0)
+        goto done;
+
+    if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
+                                                 callbackID)) < 0)
+        goto done;
+
+    /* If that was the last callback for this eventID, we need to disable
+     * events on the server */
+    if (count == 0) {
+        args.callbackID = remoteID;
+
+        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_NODE_DEVICE_EVENT_DEREGISTER_ANY,
+                 (xdrproc_t) xdr_remote_connect_node_device_event_deregister_any_args, (char *) &args,
+                 (xdrproc_t) xdr_void, (char *) NULL) == -1)
+            goto done;
+
+    }
+
+    rv = 0;
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
 remoteConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
                                             virDomainPtr dom,
                                             const char *event,
@@ -5150,6 +5259,28 @@ remoteStoragePoolBuildEventRefresh(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 
     event = virStoragePoolEventRefreshNew(pool->name, pool->uuid);
     virObjectUnref(pool);
+
+    remoteEventQueue(priv, event, msg->callbackID);
+}
+
+static void
+remoteNodeDeviceBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                    virNetClientPtr client ATTRIBUTE_UNUSED,
+                                    void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_node_device_event_lifecycle_msg *msg = evdata;
+    virNodeDevicePtr dev;
+    virObjectEventPtr event = NULL;
+
+    dev = get_nonnull_node_device(conn, msg->dev);
+    if (!dev)
+        return;
+
+    event = virNodeDeviceEventLifecycleNew(dev->name, msg->event,
+                                           msg->detail);
+    virObjectUnref(dev);
 
     remoteEventQueue(priv, event, msg->callbackID);
 }
@@ -7753,6 +7884,12 @@ make_nonnull_secret(remote_nonnull_secret *secret_dst, virSecretPtr secret_src)
 }
 
 static void
+make_nonnull_node_device(remote_nonnull_node_device *dev_dst, virNodeDevicePtr dev_src)
+{
+    dev_dst->name = dev_src->name;
+}
+
+static void
 make_nonnull_nwfilter(remote_nonnull_nwfilter *nwfilter_dst, virNWFilterPtr nwfilter_src)
 {
     nwfilter_dst->name = nwfilter_src->name;
@@ -8103,6 +8240,8 @@ static virSecretDriver secret_driver = {
 };
 
 static virNodeDeviceDriver node_device_driver = {
+    .connectNodeDeviceEventDeregisterAny = remoteConnectNodeDeviceEventDeregisterAny, /* 2.2.0 */
+    .connectNodeDeviceEventRegisterAny = remoteConnectNodeDeviceEventRegisterAny, /* 2.2.0 */
     .nodeNumOfDevices = remoteNodeNumOfDevices, /* 0.5.0 */
     .nodeListDevices = remoteNodeListDevices, /* 0.5.0 */
     .connectListAllNodeDevices  = remoteConnectListAllNodeDevices, /* 0.10.2 */
