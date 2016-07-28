@@ -1319,8 +1319,16 @@ int qemuMonitorJSONSystemReset(qemuMonitorPtr mon)
 
 
 /*
- * [ { "CPU": 0, "current": true, "halted": false, "pc": 3227107138 },
- *   { "CPU": 1, "current": false, "halted": true, "pc": 7108165 } ]
+ *
+ * [{ "arch": "x86",
+ *    "current": true,
+ *    "CPU": 0,
+ *    "qom_path": "/machine/unattached/device[0]",
+ *    "pc": -2130415978,
+ *    "halted": true,
+ *    "thread_id": 2631237},
+ *    {...}
+ *  ]
  */
 static int
 qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
@@ -1341,6 +1349,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
     for (i = 0; i < ncpus; i++) {
         virJSONValuePtr entry = virJSONValueArrayGet(data, i);
         int thread = 0;
+        const char *qom_path;
         if (!entry) {
             ret = -2;
             goto cleanup;
@@ -1349,8 +1358,11 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
         /* Some older qemu versions don't report the thread_id so treat this as
          * non-fatal, simply returning no data */
         ignore_value(virJSONValueObjectGetNumberInt(entry, "thread_id", &thread));
+        qom_path = virJSONValueObjectGetString(entry, "qom_path");
 
         cpus[i].tid = thread;
+        if (VIR_STRDUP(cpus[i].qom_path, qom_path) < 0)
+            goto cleanup;
     }
 
     VIR_STEAL_PTR(*entries, cpus);

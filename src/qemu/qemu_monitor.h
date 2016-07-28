@@ -392,6 +392,7 @@ int qemuMonitorSystemPowerdown(qemuMonitorPtr mon);
 
 struct qemuMonitorQueryCpusEntry {
     pid_t tid;
+    char *qom_path;
 };
 void qemuMonitorQueryCpusFree(struct qemuMonitorQueryCpusEntry *entries,
                               size_t nentries);

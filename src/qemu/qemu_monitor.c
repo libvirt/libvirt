@@ -1668,10 +1668,15 @@ qemuMonitorCPUInfoFree(qemuMonitorCPUInfoPtr cpus,
 
 void
 qemuMonitorQueryCpusFree(struct qemuMonitorQueryCpusEntry *entries,
-                         size_t nentries ATTRIBUTE_UNUSED)
+                         size_t nentries)
 {
+    size_t i;
+
     if (!entries)
         return;
+
+    for (i = 0; i < nentries; i++)
+        VIR_FREE(entries[i].qom_path);
 
     VIR_FREE(entries);
 }

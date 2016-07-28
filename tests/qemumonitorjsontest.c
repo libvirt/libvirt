@@ -1205,7 +1205,8 @@ static bool
 testQemuMonitorJSONqemuMonitorJSONQueryCPUsEqual(struct qemuMonitorQueryCpusEntry *a,
                                                  struct qemuMonitorQueryCpusEntry *b)
 {
-    if (a->tid != b->tid)
+    if (a->tid != b->tid ||
+        STRNEQ_NULLABLE(a->qom_path, b->qom_path))
         return false;
 
     return true;
@@ -1220,10 +1221,10 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *data)
     int ret = -1;
     struct qemuMonitorQueryCpusEntry *cpudata = NULL;
     struct qemuMonitorQueryCpusEntry expect[] = {
-        {17622},
-        {17624},
-        {17626},
-        {17628},
+        {17622, (char *) "/machine/unattached/device[0]"},
+        {17624, (char *) "/machine/unattached/device[1]"},
+        {17626, (char *) "/machine/unattached/device[2]"},
+        {17628, NULL},
     };
     size_t ncpudata = 0;
     size_t i;
@@ -1237,6 +1238,7 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *data)
                                "        {"
                                "            \"current\": true,"
                                "            \"CPU\": 0,"
+                               "            \"qom_path\": \"/machine/unattached/device[0]\","
                                "            \"pc\": -2130530478,"
                                "            \"halted\": true,"
                                "            \"thread_id\": 17622"
@@ -1244,6 +1246,7 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *data)
                                "        {"
                                "            \"current\": false,"
                                "            \"CPU\": 1,"
+                               "            \"qom_path\": \"/machine/unattached/device[1]\","
                                "            \"pc\": -2130530478,"
                                "            \"halted\": true,"
                                "            \"thread_id\": 17624"
@@ -1251,6 +1254,7 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *data)
                                "        {"
                                "            \"current\": false,"
                                "            \"CPU\": 2,"
+                               "            \"qom_path\": \"/machine/unattached/device[2]\","
                                "            \"pc\": -2130530478,"
                                "            \"halted\": true,"
                                "            \"thread_id\": 17626"
