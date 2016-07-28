@@ -35,6 +35,7 @@
 #include "virfile.h"
 #include "virstring.h"
 #include "node_device_conf.h"
+#include "node_device_event.h"
 #include "node_device_driver.h"
 #include "node_device_hal.h"
 #include "node_device_linux_sysfs.h"
@@ -674,6 +675,47 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
     VIR_FREE(parent_name);
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
+    return ret;
+}
+
+int
+nodeConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
+                                      virNodeDevicePtr dev,
+                                      int eventID,
+                                      virConnectNodeDeviceEventGenericCallback callback,
+                                      void *opaque,
+                                      virFreeCallback freecb)
+{
+    int callbackID = -1;
+
+    if (virConnectNodeDeviceEventRegisterAnyEnsureACL(conn) < 0)
+        goto cleanup;
+
+    if (virNodeDeviceEventStateRegisterID(conn, driver->nodeDeviceEventState,
+                                          dev, eventID, callback,
+                                          opaque, freecb, &callbackID) < 0)
+        callbackID = -1;
+ cleanup:
+    return callbackID;
+}
+
+int
+nodeConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
+                                        int callbackID)
+{
+    int ret = -1;
+
+    if (virConnectNodeDeviceEventDeregisterAnyEnsureACL(conn) < 0)
+        goto cleanup;
+
+    if (virObjectEventStateDeregisterID(conn,
+                                        driver->nodeDeviceEventState,
+                                        callbackID) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
     return ret;
 }
 

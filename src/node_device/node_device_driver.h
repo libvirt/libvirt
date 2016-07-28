@@ -63,4 +63,14 @@ virNodeDevicePtr nodeDeviceCreateXML(virConnectPtr conn,
                                      const char *xmlDesc, unsigned int flags);
 int nodeDeviceDestroy(virNodeDevicePtr dev);
 
+int
+nodeConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
+                                      virNodeDevicePtr dev,
+                                      int eventID,
+                                      virConnectNodeDeviceEventGenericCallback callback,
+                                      void *opaque,
+                                      virFreeCallback freecb);
+int
+nodeConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
+                                        int callbackID);
 #endif /* __VIR_NODE_DEVICE_H__ */

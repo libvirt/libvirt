@@ -31,6 +31,7 @@
 # include "virthread.h"
 # include "virpci.h"
 # include "device_conf.h"
+# include "object_event.h"
 
 # include <libxml/tree.h>
 
@@ -229,6 +230,9 @@ struct _virNodeDeviceDriverState {
 
     virNodeDeviceObjList devs;		/* currently-known devices */
     void *privateData;			/* driver-specific private data */
+
+    /* Immutable pointer, self-locking APIs */
+    virObjectEventStatePtr nodeDeviceEventState;
 };
 
 
