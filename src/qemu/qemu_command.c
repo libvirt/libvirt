@@ -2385,8 +2385,7 @@ qemuControllerModelUSBToCaps(int model)
 
 
 static int
-qemuBuildUSBControllerDevStr(const virDomainDef *domainDef,
-                             virDomainControllerDefPtr def,
+qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
                              virQEMUCapsPtr qemuCaps,
                              virBuffer *buf)
 {
@@ -2396,10 +2395,9 @@ qemuBuildUSBControllerDevStr(const virDomainDef *domainDef,
     model = def->model;
 
     if (model == -1) {
-        if ARCH_IS_PPC64(domainDef->os.arch)
-            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
-        else
-            model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       "%s", _("no model provided for USB controller"));
+        return -1;
     }
 
     smodel = qemuControllerModelUSBTypeToString(model);
@@ -2628,7 +2626,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
-        if (qemuBuildUSBControllerDevStr(domainDef, def, qemuCaps, &buf) == -1)
+        if (qemuBuildUSBControllerDevStr(def, qemuCaps, &buf) == -1)
             goto error;
 
         if (nusbcontroller)
@@ -3008,30 +3006,29 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
 
             if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
                 cont->model == -1 &&
-                !qemuDomainMachineIsQ35(def)) {
-                bool need_legacy = false;
+                !qemuDomainMachineIsQ35(def) &&
+                !qemuDomainMachineIsVirt(def)) {
 
-                /* We're not using legacy usb controller for q35 */
-                if (ARCH_IS_PPC64(def->os.arch)) {
-                    /* For ppc64 the legacy was OHCI */
-                    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
-                        need_legacy = true;
-                } else {
-                    /* For anything else, we used PIIX3_USB_UHCI */
-                    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
-                        need_legacy = true;
+                /* An appropriate default USB controller model should already
+                 * have been selected in qemuDomainDeviceDefPostParse(); if
+                 * we still have no model by now, we have to fall back to the
+                 * legacy USB controller.
+                 *
+                 * Note that we *don't* want to end up with the legacy USB
+                 * controller for q35 and virt machines, so we go ahead and
+                 * fail in qemuBuildControllerDevStr(); on the other hand,
+                 * for s390 machines we want to ignore any USB controller
+                 * (see 548ba43028 for the full story), so we skip
+                 * qemuBuildControllerDevStr() but we don't ultimately end
+                 * up adding the legacy USB controller */
+                if (usblegacy) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Multiple legacy USB controllers are "
+                                     "not supported"));
+                    return -1;
                 }
-
-                if (need_legacy) {
-                    if (usblegacy) {
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("Multiple legacy USB controllers are "
-                                         "not supported"));
-                        return -1;
-                    }
-                    usblegacy = true;
-                    continue;
-                }
+                usblegacy = true;
+                continue;
             }
 
             virCommandAddArg(cmd, "-device");
@@ -3043,6 +3040,9 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
         }
     }
 
+    /* We haven't added any USB controller yet, but we haven't been asked
+     * not to add one either. Add a legacy USB controller, unless we're
+     * creating a kind of guest we want to keep legacy-free */
     if (usbcontroller == 0 &&
         !qemuDomainMachineIsQ35(def) &&
         !qemuDomainMachineIsVirt(def) &&
