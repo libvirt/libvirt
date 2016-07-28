@@ -1997,6 +1997,7 @@ struct _virDomainRNGDef {
 typedef enum {
     VIR_DOMAIN_MEMORY_MODEL_NONE,
     VIR_DOMAIN_MEMORY_MODEL_DIMM, /* dimm hotpluggable memory device */
+    VIR_DOMAIN_MEMORY_MODEL_NVDIMM, /* nvdimm memory device */
 
     VIR_DOMAIN_MEMORY_MODEL_LAST
 } virDomainMemoryModel;
@@ -2005,6 +2006,7 @@ struct _virDomainMemoryDef {
     /* source */
     virBitmapPtr sourceNodes;
     unsigned long long pagesize; /* kibibytes */
+    char *nvdimmPath;
 
     /* target */
     int model; /* virDomainMemoryModel */

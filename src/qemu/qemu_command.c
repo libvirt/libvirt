@@ -3515,6 +3515,12 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
 
         break;
 
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                       _("nvdimm not supported yet"));
+        return NULL;
+        break;
+
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
         break;

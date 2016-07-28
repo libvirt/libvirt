@@ -7092,7 +7092,6 @@ qemu-kvm -net nic,model=? /dev/null
         guests' memory resource needs.
 
         Some hypervisors may require NUMA configured for the guest.
-      <span class="since">Since 1.2.14</span>
     </p>
 
     <p>
@@ -7117,6 +7116,15 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;node&gt;1&lt;/node&gt;
     &lt;/target&gt;
   &lt;/memory&gt;
+  &lt;memory model='nvdimm'&gt;
+    &lt;source&gt;
+      &lt;path&gt;/tmp/nvdimm&lt;/path&gt;
+    &lt;/source&gt;
+    &lt;target&gt;
+      &lt;size unit='KiB'&gt;524288&lt;/size&gt;
+      &lt;node&gt;1&lt;/node&gt;
+    &lt;/target&gt;
+  &lt;/memory&gt;
 &lt;/devices&gt;
 ...
 </pre>
@@ -7124,28 +7132,48 @@ qemu-kvm -net nic,model=? /dev/null
       <dt><code>model</code></dt>
       <dd>
         <p>
-          Currently only the <code>dimm</code> model is supported in order to
-          add a virtual DIMM module to the guest.
+          Provide <code>dimm</code> to add a virtual DIMM module to the guest.
+          <span class="since">Since 1.2.14</span>
+          Provide <code>nvdimm</code> model adds a Non-Volatile DIMM
+          module. <span class="since">Since 3.2.0</span>
         </p>
       </dd>
 
       <dt><code>source</code></dt>
       <dd>
         <p>
-          The optional source element allows to fine tune the source of the
-          memory used for the given memory device. If the element is not
-          provided defaults configured via <code>numatune</code> are used.
+          For model <code>dimm</code> this element is optional and allows to
+          fine tune the source of the memory used for the given memory device.
+          If the element is not provided defaults configured via
+          <code>numatune</code> are used. If <code>dimm</code> is provided,
+          then the following optional elements can be provided as well:
         </p>
-        <p>
-          <code>pagesize</code> can optionally be used to override the default
-          host page size used for backing the memory device.
 
-          The configured value must correspond to a page size supported by the
-          host.
-        </p>
+        <dl>
+          <dt><code>pagesize</code></dt>
+          <dd>
+            <p>
+              This element can be used to override the default
+              host page size used for backing the memory device.
+              The configured value must correspond to a page size
+              supported by the host.
+            </p>
+          </dd>
+
+          <dt><code>nodemask</code></dt>
+          <dd>
+            <p>
+              This element can be used to override the default
+              set of NUMA nodes where the memory would be
+              allocated.
+            </p>
+          </dd>
+        </dl>
+
         <p>
-          <code>nodemask</code> can optionally be used to override the default
-          set of NUMA nodes where the memory would be allocated.
+          For model <code>nvdimm</code> this element is mandatory and has a
+          single child element <code>path</code> that represents a path
+          in the host that backs the nvdimm module in the guest.
         </p>
       </dd>
 

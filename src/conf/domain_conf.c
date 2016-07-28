@@ -859,8 +859,11 @@ VIR_ENUM_DECL(virDomainBlockJob)
 VIR_ENUM_IMPL(virDomainBlockJob, VIR_DOMAIN_BLOCK_JOB_TYPE_LAST,
               "", "", "copy", "", "active-commit")
 
-VIR_ENUM_IMPL(virDomainMemoryModel, VIR_DOMAIN_MEMORY_MODEL_LAST,
-              "", "dimm")
+VIR_ENUM_IMPL(virDomainMemoryModel,
+              VIR_DOMAIN_MEMORY_MODEL_LAST,
+              "",
+              "dimm",
+              "nvdimm")
 
 VIR_ENUM_IMPL(virDomainShmemModel, VIR_DOMAIN_SHMEM_MODEL_LAST,
               "ivshmem",
@@ -2419,6 +2422,7 @@ void virDomainMemoryDefFree(virDomainMemoryDefPtr def)
     if (!def)
         return;
 
+    VIR_FREE(def->nvdimmPath);
     virBitmapFree(def->sourceNodes);
     virDomainDeviceInfoClear(&def->info);
     VIR_FREE(def);
@@ -13716,20 +13720,36 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
     xmlNodePtr save = ctxt->node;
     ctxt->node = node;
 
-    if (virDomainParseMemory("./pagesize", "./pagesize/@unit", ctxt,
-                             &def->pagesize, false, false) < 0)
-        goto cleanup;
-
-    if ((nodemask = virXPathString("string(./nodemask)", ctxt))) {
-        if (virBitmapParse(nodemask, &def->sourceNodes,
-                           VIR_DOMAIN_CPUMASK_LEN) < 0)
+    switch ((virDomainMemoryModel) def->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        if (virDomainParseMemory("./pagesize", "./pagesize/@unit", ctxt,
+                                 &def->pagesize, false, false) < 0)
             goto cleanup;
 
-        if (virBitmapIsAllClear(def->sourceNodes)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid value of 'nodemask': %s"), nodemask);
+        if ((nodemask = virXPathString("string(./nodemask)", ctxt))) {
+            if (virBitmapParse(nodemask, &def->sourceNodes,
+                               VIR_DOMAIN_CPUMASK_LEN) < 0)
+                goto cleanup;
+
+            if (virBitmapIsAllClear(def->sourceNodes)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Invalid value of 'nodemask': %s"), nodemask);
+                goto cleanup;
+            }
+        }
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        if (!(def->nvdimmPath = virXPathString("string(./path)", ctxt))) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("path is required for model nvdimm'"));
             goto cleanup;
         }
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
     }
 
     ret = 0;
@@ -15134,12 +15154,25 @@ virDomainMemoryFindByDefInternal(virDomainDefPtr def,
             tmp->size != mem->size)
             continue;
 
-        /* source stuff -> match with device */
-        if (tmp->pagesize != mem->pagesize)
-            continue;
+        switch ((virDomainMemoryModel) mem->model) {
+        case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+            /* source stuff -> match with device */
+            if (tmp->pagesize != mem->pagesize)
+                continue;
 
-        if (!virBitmapEqual(tmp->sourceNodes, mem->sourceNodes))
-            continue;
+            if (!virBitmapEqual(tmp->sourceNodes, mem->sourceNodes))
+                continue;
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+            if (STRNEQ(tmp->nvdimmPath, mem->nvdimmPath))
+                continue;
+            break;
+
+        case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        case VIR_DOMAIN_MEMORY_MODEL_LAST:
+            break;
+        }
 
         break;
     }
@@ -22532,22 +22565,34 @@ virDomainMemorySourceDefFormat(virBufferPtr buf,
     char *bitmap = NULL;
     int ret = -1;
 
-    if (!def->pagesize && !def->sourceNodes)
+    if (!def->pagesize && !def->sourceNodes && !def->nvdimmPath)
         return 0;
 
     virBufferAddLit(buf, "<source>\n");
     virBufferAdjustIndent(buf, 2);
 
-    if (def->sourceNodes) {
-        if (!(bitmap = virBitmapFormat(def->sourceNodes)))
-            goto cleanup;
+    switch ((virDomainMemoryModel) def->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+        if (def->sourceNodes) {
+            if (!(bitmap = virBitmapFormat(def->sourceNodes)))
+                goto cleanup;
 
-        virBufferAsprintf(buf, "<nodemask>%s</nodemask>\n", bitmap);
+            virBufferAsprintf(buf, "<nodemask>%s</nodemask>\n", bitmap);
+        }
+
+        if (def->pagesize)
+            virBufferAsprintf(buf, "<pagesize unit='KiB'>%llu</pagesize>\n",
+                              def->pagesize);
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        virBufferEscapeString(buf, "<path>%s</path>\n", def->nvdimmPath);
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+        break;
     }
-
-    if (def->pagesize)
-        virBufferAsprintf(buf, "<pagesize unit='KiB'>%llu</pagesize>\n",
-                          def->pagesize);
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</source>\n");
