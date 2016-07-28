@@ -61,12 +61,25 @@ static const char storagePoolDef[] =
 "  </target>\n"
 "</pool>\n";
 
+static const char nodeDeviceDef[] =
+"<device>\n"
+"  <parent>test-scsi-host-vport</parent>\n"
+"  <capability type='scsi_host'>\n"
+"    <capability type='fc_host'>\n"
+"      <wwpn>1111222233334444</wwpn>\n"
+"      <wwnn>5555666677778888</wwnn>\n"
+"    </capability>\n"
+"  </capability>\n"
+"</device>\n";
+
 typedef struct {
     int startEvents;
     int stopEvents;
     int defineEvents;
     int undefineEvents;
     int unexpectedEvents;
+    int createdEvents;
+    int deletedEvents;
 } lifecycleEventCounter;
 
 static void
@@ -77,12 +90,15 @@ lifecycleEventCounter_reset(lifecycleEventCounter *counter)
     counter->defineEvents = 0;
     counter->undefineEvents = 0;
     counter->unexpectedEvents = 0;
+    counter->createdEvents = 0;
+    counter->deletedEvents = 0;
 }
 
 typedef struct {
     virConnectPtr conn;
     virNetworkPtr net;
     virStoragePoolPtr pool;
+    virNodeDevicePtr dev;
 } objecteventTest;
 
 
@@ -161,6 +177,21 @@ storagePoolRefreshCb(virConnectPtr conn ATTRIBUTE_UNUSED,
     int *counter = opaque;
 
     (*counter)++;
+}
+
+static void
+nodeDeviceLifecycleCb(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      virNodeDevicePtr dev ATTRIBUTE_UNUSED,
+                      int event,
+                      int detail ATTRIBUTE_UNUSED,
+                      void* opaque)
+{
+    lifecycleEventCounter *counter = opaque;
+
+    if (event == VIR_NODE_DEVICE_EVENT_CREATED)
+        counter->createdEvents++;
+    else if (event == VIR_NODE_DEVICE_EVENT_DELETED)
+        counter->deletedEvents++;
 }
 
 static int
@@ -691,6 +722,42 @@ testStoragePoolStartStopEvent(const void *data)
     return ret;
 }
 
+static int
+testNodeDeviceCreateXML(const void *data)
+{
+    const objecteventTest *test = data;
+    lifecycleEventCounter counter;
+    virNodeDevicePtr dev;
+    int id;
+    int ret = 0;
+
+    lifecycleEventCounter_reset(&counter);
+
+    id = virConnectNodeDeviceEventRegisterAny(test->conn, NULL,
+                        VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE,
+                        VIR_NODE_DEVICE_EVENT_CALLBACK(&nodeDeviceLifecycleCb),
+                        &counter, NULL);
+    dev = virNodeDeviceCreateXML(test->conn, nodeDeviceDef, 0);
+    virNodeDeviceDestroy(dev);
+
+    if (!dev || virEventRunDefaultImpl() < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+    if (counter.createdEvents != 1 || counter.deletedEvents != 1 ||
+        counter.unexpectedEvents > 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+ cleanup:
+    virConnectNodeDeviceEventDeregisterAny(test->conn, id);
+    if (dev)
+        virNodeDeviceFree(dev);
+    return ret;
+}
+
 static void
 timeout(int id ATTRIBUTE_UNUSED, void *opaque ATTRIBUTE_UNUSED)
 {
@@ -763,6 +830,11 @@ mymain(void)
         ret = EXIT_FAILURE;
     if (virTestRun("Storage pool start stop events ",
                    testStoragePoolStartStopEvent, &test) < 0)
+        ret = EXIT_FAILURE;
+
+    /* Node device event tests */
+    if (virTestRun("Node device createXML add event ",
+                   testNodeDeviceCreateXML, &test) < 0)
         ret = EXIT_FAILURE;
 
     /* Cleanup */
