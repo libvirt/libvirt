@@ -70,6 +70,7 @@ src/libvirt-domain.c
 src/libvirt-host.c
 src/libvirt-lxc.c
 src/libvirt-network.c
+src/libvirt-nodedev.c
 src/libvirt-nwfilter.c
 src/libvirt-qemu.c
 src/libvirt-secret.c

@@ -121,5 +121,95 @@ virNodeDevicePtr        virNodeDeviceCreateXML  (virConnectPtr conn,
 
 int                     virNodeDeviceDestroy    (virNodeDevicePtr dev);
 
+/**
+ * VIR_NODE_DEVICE_EVENT_CALLBACK:
+ *
+ * Used to cast the event specific callback into the generic one
+ * for use for virConnectNodeDeviceEventRegisterAny()
+ */
+# define VIR_NODE_DEVICE_EVENT_CALLBACK(cb)((virConnectNodeDeviceEventGenericCallback)(cb))
+
+/**
+ * virNodeDeviceEventID:
+ *
+ * An enumeration of supported eventId parameters for
+ * virConnectNodeDeviceEventRegisterAny(). Each event id determines which
+ * signature of callback function will be used.
+ */
+typedef enum {
+    VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE = 0, /* virConnectNodeDeviceEventLifecycleCallback */
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_NODE_DEVICE_EVENT_ID_LAST
+    /*
+     * NB: this enum value will increase over time as new events are
+     * added to the libvirt API. It reflects the last event ID supported
+     * by this version of the libvirt API.
+     */
+# endif
+} virNodeDeviceEventID;
+
+/**
+ * virConnectNodeDeviceEventGenericCallback:
+ * @conn: the connection pointer
+ * @dev: the node device pointer
+ * @opaque: application specified data
+ *
+ * A generic node device event callback handler, for use with
+ * virConnectNodeDeviceEventRegisterAny(). Specific events usually
+ * have a customization with extra parameters, often with @opaque being
+ * passed in a different parameter position; use
+ * VIR_NODE_DEVICE_EVENT_CALLBACK() when registering an appropriate handler.
+ */
+typedef void (*virConnectNodeDeviceEventGenericCallback)(virConnectPtr conn,
+                                                         virNodeDevicePtr dev,
+                                                         void *opaque);
+
+/* Use VIR_NODE_DEVICE_EVENT_CALLBACK() to cast the 'cb' parameter  */
+int virConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
+                                         virNodeDevicePtr dev, /* optional, to filter */
+                                         int eventID,
+                                         virConnectNodeDeviceEventGenericCallback cb,
+                                         void *opaque,
+                                         virFreeCallback freecb);
+
+int virConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
+                                           int callbackID);
+
+/**
+ * virNodeDeviceEventLifecycleType:
+ *
+ * a virNodeDeviceEventLifecycleType is emitted during node device
+ * lifecycle events
+ */
+typedef enum {
+    VIR_NODE_DEVICE_EVENT_CREATED = 0,
+    VIR_NODE_DEVICE_EVENT_DELETED = 1,
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_NODE_DEVICE_EVENT_LAST
+# endif
+} virNodeDeviceEventLifecycleType;
+
+/**
+ * virConnectNodeDeviceEventLifecycleCallback:
+ * @conn: connection object
+ * @dev: node device on which the event occurred
+ * @event: The specific virNodeDeviceEventLifeCycleType which occurred
+ * @detail: contains some details on the reason of the event.
+ * @opaque: application specified data
+ *
+ * This callback is called when a node device lifecycle action is performed,
+ * like added or removed.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE with
+ * virConnectNodeDeviceEventRegisterAny()
+ */
+typedef void (*virConnectNodeDeviceEventLifecycleCallback)(virConnectPtr conn,
+                                                           virNodeDevicePtr dev,
+                                                           int event,
+                                                           int detail,
+                                                           void *opaque);
 
 #endif /* __VIR_LIBVIRT_NODEDEV_H__ */

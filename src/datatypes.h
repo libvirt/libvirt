@@ -196,6 +196,19 @@ extern virClassPtr virAdmClientClass;
         }                                                               \
     } while (0)
 
+# define virCheckNodeDeviceGoto(obj, label)                             \
+    do {                                                                \
+        virNodeDevicePtr _dev= (obj);                                   \
+        if (!virObjectIsClass(_dev, virNodeDeviceClass) ||              \
+            !virObjectIsClass(_dev->conn, virConnectClass)) {           \
+            virReportErrorHelper(VIR_FROM_NODEDEV,                      \
+                                 VIR_ERR_INVALID_NODE_DEVICE,           \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            goto label;                                                 \
+        }                                                               \
+    } while (0)
+
 # define virCheckSecretReturn(obj, retval)                              \
     do {                                                                \
         virSecretPtr _secret = (obj);                                   \

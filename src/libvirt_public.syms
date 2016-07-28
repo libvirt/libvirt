@@ -740,4 +740,10 @@ LIBVIRT_2.0.0 {
         virDomainSetGuestVcpus;
 } LIBVIRT_1.3.3;
 
+LIBVIRT_2.2.0 {
+    global:
+        virConnectNodeDeviceEventRegisterAny;
+        virConnectNodeDeviceEventDeregisterAny;
+} LIBVIRT_2.0.0;
+
 # .... define new API here using predicted next version number ....

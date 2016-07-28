@@ -75,6 +75,18 @@ typedef virNodeDevicePtr
 typedef int
 (*virDrvNodeDeviceDestroy)(virNodeDevicePtr dev);
 
+typedef int
+(*virDrvConnectNodeDeviceEventRegisterAny)(virConnectPtr conn,
+                                           virNodeDevicePtr dev,
+                                           int eventID,
+                                           virConnectNodeDeviceEventGenericCallback cb,
+                                           void *opaque,
+                                           virFreeCallback freecb);
+
+typedef int
+(*virDrvConnectNodeDeviceEventDeregisterAny)(virConnectPtr conn,
+                                             int callbackID);
+
 
 
 typedef struct _virNodeDeviceDriver virNodeDeviceDriver;
@@ -92,6 +104,8 @@ struct _virNodeDeviceDriver {
     virDrvNodeNumOfDevices nodeNumOfDevices;
     virDrvNodeListDevices nodeListDevices;
     virDrvConnectListAllNodeDevices connectListAllNodeDevices;
+    virDrvConnectNodeDeviceEventRegisterAny connectNodeDeviceEventRegisterAny;
+    virDrvConnectNodeDeviceEventDeregisterAny connectNodeDeviceEventDeregisterAny;
     virDrvNodeDeviceLookupByName nodeDeviceLookupByName;
     virDrvNodeDeviceLookupSCSIHostByWWN nodeDeviceLookupSCSIHostByWWN;
     virDrvNodeDeviceGetXMLDesc nodeDeviceGetXMLDesc;
