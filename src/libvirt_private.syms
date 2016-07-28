@@ -684,6 +684,11 @@ virNodeDeviceObjRemove;
 virNodeDeviceObjUnlock;
 
 
+# conf/node_device_event.h
+virNodeDeviceEventLifecycleNew;
+virNodeDeviceEventStateRegisterID;
+
+
 # conf/numa_conf.h
 virDomainNumaCheckABIStability;
 virDomainNumaEquals;
