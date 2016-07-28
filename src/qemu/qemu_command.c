@@ -3397,8 +3397,6 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
     case VIR_DOMAIN_MEMORY_MODEL_LAST:
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("invalid memory device type"));
         break;
 
     }

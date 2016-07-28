@@ -13215,7 +13215,7 @@ virDomainMemoryDefParseXML(xmlNodePtr memdevNode,
         goto error;
     }
 
-    if ((def->model = virDomainMemoryModelTypeFromString(tmp)) < 0) {
+    if ((def->model = virDomainMemoryModelTypeFromString(tmp)) <= 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("invalid memory model '%s'"), tmp);
         goto error;
