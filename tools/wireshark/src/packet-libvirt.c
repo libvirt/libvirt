@@ -442,8 +442,14 @@ get_message_len(packet_info *pinfo ATTRIBUTE_UNUSED, tvbuff_t *tvb, int offset)
     return tvb_get_ntohl(tvb, offset);
 }
 
+#if WIRESHARK_VERSION >= 2000001
+static int
+dissect_libvirt(tvbuff_t *tvb, packet_info *pinfo,
+                proto_tree *tree, void *data ATTRIBUTE_UNUSED)
+#else
 static void
 dissect_libvirt(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree)
+#endif
 {
     /* Another magic const - 4; simply, how much bytes
      * is needed to tell the length of libvirt packet. */
@@ -453,6 +459,10 @@ dissect_libvirt(tvbuff_t *tvb, packet_info *pinfo, proto_tree *tree)
 #else
     tcp_dissect_pdus(tvb, pinfo, tree, TRUE, 4,
                      get_message_len, dissect_libvirt_message, NULL);
+#endif
+
+#if WIRESHARK_VERSION >= 2000001
+    return tvb_captured_length(tvb);
 #endif
 }
 
