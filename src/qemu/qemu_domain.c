@@ -2614,6 +2614,26 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                                virDomainNumaGetNodeCount(def->numa));
                 goto cleanup;
             }
+        } else if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+                   cont->model == -1) {
+            /* Pick a suitable default model for the USB controller if none
+             * has been selected by the user.
+             *
+             * We rely on device availability instead of setting the model
+             * unconditionally because, for some machine types, there's a
+             * chance we will get away with using the legacy USB controller
+             * when the relevant device is not available.
+             *
+             * See qemuBuildControllerDevCommandLine() */
+            if (ARCH_IS_PPC64(def->os.arch)) {
+                /* Default USB controller for ppc64 is pci-ohci */
+                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+                    cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+            } else {
+                /* Default USB controller for anything else is piix3-uhci */
+                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
+                    cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+            }
         }
     }
 
