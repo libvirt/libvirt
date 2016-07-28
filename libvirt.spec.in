@@ -406,11 +406,11 @@ BuildRequires: numad
 %endif
 
 %if %{with_wireshark}
-%if 0%{fedora} >= 24
+    %if 0%{fedora} >= 24
 BuildRequires: wireshark-devel >= 2.1.0
-%else
+    %else
 BuildRequires: wireshark-devel >= 1.12.1
-%endif
+    %endif
 %endif
 
 Provides: bundled(gnulib)
@@ -1216,13 +1216,13 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/lock-driver/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.a
 %if %{with_wireshark}
-%if 0%{fedora} >= 24
+    %if 0%{fedora} >= 24
 rm -f $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/libvirt.la
-%else
+    %else
 rm -f $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/*/libvirt.la
 mv $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/*/libvirt.so \
       $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/libvirt.so
-%endif
+    %endif
 %endif
 
 install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
