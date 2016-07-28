@@ -1038,8 +1038,10 @@ qemuGetDriveSourceProps(virStorageSourcePtr src,
     }
 
     if (fileprops &&
-        virJSONValueObjectCreate(props, "a:file", fileprops, NULL) < 0)
+        virJSONValueObjectCreate(props, "a:file", fileprops, NULL) < 0) {
+        virJSONValueFree(fileprops);
         return -1;
+    }
 
     return 0;
 }
