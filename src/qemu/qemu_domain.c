@@ -3308,6 +3308,15 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
             virDomainControllerDefFree(usb);
         }
 
+        /* Remove the panic device for selected models if present */
+        for (i = 0; i < def->npanics; i++) {
+            if (def->panics[i]->model == VIR_DOMAIN_PANIC_MODEL_S390 ||
+                def->panics[i]->model == VIR_DOMAIN_PANIC_MODEL_PSERIES) {
+                VIR_DELETE_ELEMENT(def->panics, i, def->npanics);
+                break;
+            }
+        }
+
         for (i = 0; i < def->nchannels; i++)
             qemuDomainChrDefDropDefaultPath(def->channels[i], driver);
     }
