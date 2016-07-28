@@ -1340,6 +1340,7 @@ main(int argc, char **argv)
     memset(ctl, 0, sizeof(vshControl));
     memset(&virtAdminCtl, 0, sizeof(vshAdmControl));
     ctl->name = "virt-admin";        /* hardcoded name of the binary */
+    ctl->env_prefix = "VIRT_ADMIN";
     ctl->log_fd = -1;                /* Initialize log file descriptor */
     ctl->debug = VSH_DEBUG_DEFAULT;
     ctl->hooks = &hooks;

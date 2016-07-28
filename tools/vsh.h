@@ -197,6 +197,7 @@ struct _vshControl {
     const char *name;           /* hardcoded name of the binary that cannot
                                  * be changed without recompilation compared
                                  * to program name */
+    const char *env_prefix;     /* hardcoded environment variable prefix */
     char *connname;             /* connection name */
     char *progname;             /* program name */
     vshCmd *cmd;                /* the current command */

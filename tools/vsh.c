@@ -2830,16 +2830,10 @@ static int
 vshReadlineInit(vshControl *ctl)
 {
     char *userdir = NULL;
-    char *name_capitalized = NULL;
     int max_history = 500;
     int ret = -1;
     char *histsize_env = NULL;
     const char *histsize_str = NULL;
-    const char *strings[] = {
-        name_capitalized,
-        "HISTSIZE",
-        NULL
-    };
 
     /* Allow conditional parsing of the ~/.inputrc file.
      * Work around ancient readline 4.1 (hello Mac OS X),
@@ -2852,8 +2846,7 @@ vshReadlineInit(vshControl *ctl)
 
     rl_basic_word_break_characters = " \t\n\\`@$><=;|&{(";
 
-    if (virStringToUpper(&name_capitalized, ctl->name) < 0 ||
-        !(histsize_env = virStringJoin(strings, "_")))
+    if (virAsprintf(&histsize_env, "%s_HISTSIZE", ctl->env_prefix) < 0)
         goto cleanup;
 
     /* Limit the total size of the history buffer */
@@ -2895,7 +2888,6 @@ vshReadlineInit(vshControl *ctl)
 
  cleanup:
     VIR_FREE(userdir);
-    VIR_FREE(name_capitalized);
     VIR_FREE(histsize_env);
     return ret;
 }
@@ -2967,10 +2959,14 @@ static int
 vshInitDebug(vshControl *ctl)
 {
     const char *debugEnv;
+    char *env = NULL;
 
     if (ctl->debug == VSH_DEBUG_DEFAULT) {
+        if (virAsprintf(&env, "%s_DEBUG", ctl->env_prefix) < 0)
+            return -1;
+
         /* log level not set from commandline, check env variable */
-        debugEnv = virGetEnvAllowSUID("VSH_DEBUG");
+        debugEnv = virGetEnvAllowSUID(env);
         if (debugEnv) {
             int debug;
             if (virStrToLong_i(debugEnv, NULL, 10, &debug) < 0 ||
@@ -2981,15 +2977,20 @@ vshInitDebug(vshControl *ctl)
                 ctl->debug = debug;
             }
         }
+        VIR_FREE(env);
     }
 
     if (ctl->logfile == NULL) {
+        if (virAsprintf(&env, "%s_LOG_FILE", ctl->env_prefix) < 0)
+            return -1;
+
         /* log file not set from cmdline */
-        debugEnv = virGetEnvBlockSUID("VSH_LOG_FILE");
+        debugEnv = virGetEnvBlockSUID(env);
         if (debugEnv && *debugEnv) {
             ctl->logfile = vshStrdup(ctl, debugEnv);
             vshOpenLogFile(ctl);
         }
+        VIR_FREE(env);
     }
 
     return 0;
