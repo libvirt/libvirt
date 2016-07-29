@@ -227,31 +227,31 @@
   <cpu name='core2duo'/>
   <cpu name='phenom'/>
   <cpu name='qemu64'/>
-  <machine name='pc-i440fx-2.7' alias='pc' maxCpus='255'/>
-  <machine name='pc-0.12' maxCpus='255'/>
-  <machine name='pc-i440fx-2.4' maxCpus='255'/>
-  <machine name='pc-1.3' maxCpus='255'/>
-  <machine name='pc-q35-2.7' alias='q35' maxCpus='255'/>
-  <machine name='pc-q35-2.6' maxCpus='255'/>
-  <machine name='pc-i440fx-1.7' maxCpus='255'/>
-  <machine name='pc-i440fx-1.6' maxCpus='255'/>
-  <machine name='pc-0.11' maxCpus='255'/>
-  <machine name='pc-i440fx-2.3' maxCpus='255'/>
-  <machine name='pc-0.10' maxCpus='255'/>
-  <machine name='pc-1.2' maxCpus='255'/>
-  <machine name='pc-i440fx-2.2' maxCpus='255'/>
-  <machine name='isapc' maxCpus='1'/>
-  <machine name='pc-q35-2.5' maxCpus='255'/>
-  <machine name='pc-0.15' maxCpus='255'/>
-  <machine name='pc-i440fx-1.5' maxCpus='255'/>
-  <machine name='pc-0.14' maxCpus='255'/>
-  <machine name='pc-i440fx-2.6' maxCpus='255'/>
-  <machine name='pc-i440fx-1.4' maxCpus='255'/>
-  <machine name='pc-i440fx-2.5' maxCpus='255'/>
-  <machine name='pc-1.1' maxCpus='255'/>
-  <machine name='pc-i440fx-2.1' maxCpus='255'/>
-  <machine name='pc-1.0' maxCpus='255'/>
-  <machine name='pc-i440fx-2.0' maxCpus='255'/>
-  <machine name='pc-q35-2.4' maxCpus='255'/>
-  <machine name='pc-0.13' maxCpus='255'/>
+  <machine name='pc-i440fx-2.7' alias='pc' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-0.12' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.4' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-1.3' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-2.7' alias='q35' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-2.6' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-1.7' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-1.6' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-0.11' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-0.10' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-1.2' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.2' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='isapc' hotplugCpus='yes' maxCpus='1'/>
+  <machine name='pc-q35-2.5' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-0.15' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-1.5' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-0.14' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.6' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-1.4' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-1.1' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.1' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-1.0' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255'/>
+  <machine name='pc-0.13' hotplugCpus='yes' maxCpus='255'/>
 </qemuCaps>

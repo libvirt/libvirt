@@ -349,6 +349,7 @@ struct virQEMUCapsMachineType {
     char *name;
     char *alias;
     unsigned int maxCpus;
+    bool hotplugCpus;
 };
 /*
  * Update the XML parser/formatter when adding more
@@ -550,6 +551,7 @@ virQEMUCapsParseMachineTypesStr(const char *output,
         }
         /* When parsing from command line we don't have information about maxCpus */
         qemuCaps->machineTypes[qemuCaps->nmachineTypes-1].maxCpus = 0;
+        qemuCaps->machineTypes[qemuCaps->nmachineTypes-1].hotplugCpus = false;
     } while ((p = next));
 
 
@@ -2105,6 +2107,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
             VIR_STRDUP(ret->machineTypes[i].alias, qemuCaps->machineTypes[i].alias) < 0)
             goto error;
         ret->machineTypes[i].maxCpus = qemuCaps->machineTypes[i].maxCpus;
+        ret->machineTypes[i].hotplugCpus = qemuCaps->machineTypes[i].hotplugCpus;
     }
 
     if (VIR_ALLOC_N(ret->gicCapabilities, qemuCaps->ngicCapabilities) < 0)
@@ -2414,6 +2417,20 @@ int virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
 }
 
 
+bool virQEMUCapsGetMachineHotplugCpus(virQEMUCapsPtr qemuCaps,
+                                      const char *name)
+{
+    size_t i;
+
+    for (i = 0; i < qemuCaps->nmachineTypes; i++) {
+        if (STREQ_NULLABLE(qemuCaps->machineTypes[i].name, name))
+            return qemuCaps->machineTypes[i].hotplugCpus;
+    }
+
+    return false;
+}
+
+
 /**
  * virQEMUCapsSetGICCapabilities:
  * @qemuCaps: QEMU capabilities
@@ -2572,6 +2589,7 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
             goto cleanup;
 
         mach->maxCpus = machines[i]->maxCpus;
+        mach->hotplugCpus = machines[i]->hotplugCpus;
 
         if (machines[i]->isDefault)
             defIdx = qemuCaps->nmachineTypes - 1;
@@ -2830,7 +2848,7 @@ int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
  *   ...
  *   <cpu name="pentium3"/>
  *   ...
- *   <machine name="pc-1.0" alias="pc" maxCpus="4"/>
+ *   <machine name="pc-1.0" alias="pc" hotplugCpus='yes' maxCpus="4"/>
  *   ...
  * </qemuCaps>
  */
@@ -2991,6 +3009,11 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
                 goto cleanup;
             }
             VIR_FREE(str);
+
+            str = virXMLPropString(nodes[i], "hotplugCpus");
+            if (STREQ_NULLABLE(str, "yes"))
+                qemuCaps->machineTypes[i].hotplugCpus = true;
+            VIR_FREE(str);
         }
     }
     VIR_FREE(nodes);
@@ -3124,6 +3147,8 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
         if (qemuCaps->machineTypes[i].alias)
             virBufferEscapeString(&buf, " alias='%s'",
                               qemuCaps->machineTypes[i].alias);
+        if (qemuCaps->machineTypes[i].hotplugCpus)
+            virBufferAddLit(&buf, " hotplugCpus='yes'");
         virBufferAsprintf(&buf, " maxCpus='%u'/>\n",
                           qemuCaps->machineTypes[i].maxCpus);
     }
@@ -3912,6 +3937,8 @@ virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
             virQEMUCapsClear(qemuCaps, filter->flags[j]);
     }
 
+    if (!virQEMUCapsGetMachineHotplugCpus(qemuCaps, machineType))
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
 }
 
 

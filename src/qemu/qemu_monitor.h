@@ -854,6 +854,7 @@ struct _qemuMonitorMachineInfo {
     bool isDefault;
     char *alias;
     unsigned int maxCpus;
+    bool hotplugCpus;
 };
 
 int qemuMonitorGetMachines(qemuMonitorPtr mon,

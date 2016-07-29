@@ -4840,6 +4840,9 @@ int qemuMonitorJSONGetMachines(qemuMonitorPtr mon,
                            _("query-machines reply has malformed 'cpu-max' data"));
             goto cleanup;
         }
+
+        ignore_value(virJSONValueObjectGetBoolean(child, "hotpluggable-cpus",
+                                                  &info->hotplugCpus));
     }
 
     ret = n;
