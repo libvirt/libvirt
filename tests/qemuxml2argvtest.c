@@ -2326,7 +2326,7 @@ mymain(void)
 
     DO_TEST_FAILURE("memory-align-fail", NONE);
     DO_TEST_FAILURE("memory-hotplug-nonuma", QEMU_CAPS_DEVICE_PC_DIMM);
-    DO_TEST_FAILURE("memory-hotplug", NONE);
+    DO_TEST("memory-hotplug", NONE);
     DO_TEST("memory-hotplug", QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA);
     DO_TEST("memory-hotplug-dimm", QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA,
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
@@ -2334,6 +2334,8 @@ mymain(void)
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
     DO_TEST("memory-hotplug-ppc64-nonuma", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA,
             QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST("memory-hotplug-nvdimm", QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_DEVICE_NVDIMM,
+            QEMU_CAPS_NUMA, QEMU_CAPS_OBJECT_MEMORY_RAM, QEMU_CAPS_OBJECT_MEMORY_FILE);
 
     DO_TEST("machine-aeskeywrap-on-caps",
             QEMU_CAPS_MACHINE_OPT, QEMU_CAPS_AES_KEY_WRAP,
