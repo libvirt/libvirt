@@ -475,6 +475,7 @@ void qemuTestDriverFree(virQEMUDriver *driver)
     virObjectUnref(driver->xmlopt);
     virObjectUnref(driver->caps);
     virObjectUnref(driver->config);
+    virObjectUnref(driver->securityManager);
 }
 
 int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache, const char *binary,
