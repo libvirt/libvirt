@@ -2240,14 +2240,6 @@ size_t virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
 }
 
 
-size_t virQEMUCapsGetMachineTypes(virQEMUCapsPtr qemuCaps,
-                                  char ***names)
-{
-    if (names)
-        *names = qemuCaps->machineTypes;
-    return qemuCaps->nmachineTypes;
-}
-
 int virQEMUCapsGetMachineTypesCaps(virQEMUCapsPtr qemuCaps,
                                    size_t *nmachines,
                                    virCapsGuestMachinePtr **machines)

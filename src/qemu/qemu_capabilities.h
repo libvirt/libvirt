@@ -419,8 +419,6 @@ int virQEMUCapsAddCPUDefinition(virQEMUCapsPtr qemuCaps,
                                 const char *name);
 size_t virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                     char ***names);
-size_t virQEMUCapsGetMachineTypes(virQEMUCapsPtr qemuCaps,
-                                  char ***names);
 const char *virQEMUCapsGetCanonicalMachine(virQEMUCapsPtr qemuCaps,
                                            const char *name);
 int virQEMUCapsGetMachineMaxCpus(virQEMUCapsPtr qemuCaps,
