@@ -353,8 +353,8 @@ mymain(void)
 
 # define NONE QEMU_CAPS_LAST
 
-# define DO_TEST(name) \
-    DO_TEST_FULL(name, WHEN_BOTH, GIC_NONE, NONE)
+# define DO_TEST(name, ...) \
+    DO_TEST_FULL(name, WHEN_BOTH, GIC_NONE, __VA_ARGS__)
 
 
 
@@ -363,97 +363,97 @@ mymain(void)
      * values for these envvars */
     setenv("PATH", "/bin", 1);
 
-    DO_TEST("minimal");
-    DO_TEST("machine-core-on");
-    DO_TEST("machine-core-off");
-    DO_TEST("default-kvm-host-arch");
-    DO_TEST("default-qemu-host-arch");
-    DO_TEST("boot-cdrom");
-    DO_TEST("boot-network");
-    DO_TEST("boot-floppy");
-    DO_TEST("boot-multi");
-    DO_TEST("boot-menu-enable-with-timeout");
-    DO_TEST("boot-menu-disable");
-    DO_TEST("boot-menu-disable-with-timeout");
-    DO_TEST("boot-order");
+    DO_TEST("minimal", NONE);
+    DO_TEST("machine-core-on", NONE);
+    DO_TEST("machine-core-off", NONE);
+    DO_TEST("default-kvm-host-arch", NONE);
+    DO_TEST("default-qemu-host-arch", NONE);
+    DO_TEST("boot-cdrom", NONE);
+    DO_TEST("boot-network", NONE);
+    DO_TEST("boot-floppy", NONE);
+    DO_TEST("boot-multi", NONE);
+    DO_TEST("boot-menu-enable-with-timeout", NONE);
+    DO_TEST("boot-menu-disable", NONE);
+    DO_TEST("boot-menu-disable-with-timeout", NONE);
+    DO_TEST("boot-order", NONE);
 
-    DO_TEST("reboot-timeout-enabled");
-    DO_TEST("reboot-timeout-disabled");
+    DO_TEST("reboot-timeout-enabled", NONE);
+    DO_TEST("reboot-timeout-disabled", NONE);
 
-    DO_TEST("clock-utc");
-    DO_TEST("clock-localtime");
-    DO_TEST("cpu-empty");
-    DO_TEST("cpu-kvmclock");
-    DO_TEST("cpu-host-kvmclock");
-    DO_TEST("cpu-host-passthrough-features");
-    DO_TEST("cpu-host-model-features");
-    DO_TEST("clock-catchup");
-    DO_TEST("kvmclock");
-    DO_TEST("clock-timer-hyperv-rtc");
+    DO_TEST("clock-utc", NONE);
+    DO_TEST("clock-localtime", NONE);
+    DO_TEST("cpu-empty", NONE);
+    DO_TEST("cpu-kvmclock", NONE);
+    DO_TEST("cpu-host-kvmclock", NONE);
+    DO_TEST("cpu-host-passthrough-features", NONE);
+    DO_TEST("cpu-host-model-features", NONE);
+    DO_TEST("clock-catchup", NONE);
+    DO_TEST("kvmclock", NONE);
+    DO_TEST("clock-timer-hyperv-rtc", NONE);
 
-    DO_TEST("cpu-eoi-disabled");
-    DO_TEST("cpu-eoi-enabled");
-    DO_TEST("eoi-disabled");
-    DO_TEST("eoi-enabled");
-    DO_TEST("pv-spinlock-disabled");
-    DO_TEST("pv-spinlock-enabled");
+    DO_TEST("cpu-eoi-disabled", NONE);
+    DO_TEST("cpu-eoi-enabled", NONE);
+    DO_TEST("eoi-disabled", NONE);
+    DO_TEST("eoi-enabled", NONE);
+    DO_TEST("pv-spinlock-disabled", NONE);
+    DO_TEST("pv-spinlock-enabled", NONE);
 
-    DO_TEST("hyperv");
-    DO_TEST("hyperv-off");
-    DO_TEST("hyperv-panic");
+    DO_TEST("hyperv", NONE);
+    DO_TEST("hyperv-off", NONE);
+    DO_TEST("hyperv-panic", NONE);
 
-    DO_TEST("kvm-features");
-    DO_TEST("kvm-features-off");
+    DO_TEST("kvm-features", NONE);
+    DO_TEST("kvm-features-off", NONE);
 
-    DO_TEST("pmu-feature");
-    DO_TEST("pmu-feature-off");
+    DO_TEST("pmu-feature", NONE);
+    DO_TEST("pmu-feature-off", NONE);
 
-    DO_TEST("hugepages");
-    DO_TEST("hugepages-pages");
-    DO_TEST("hugepages-pages2");
-    DO_TEST("hugepages-pages3");
-    DO_TEST("hugepages-shared");
-    DO_TEST("nosharepages");
-    DO_TEST("restore-v2");
-    DO_TEST("migrate");
-    DO_TEST("qemu-ns-no-env");
-    DO_TEST("disk-aio");
-    DO_TEST("disk-cdrom");
-    DO_TEST("disk-cdrom-empty");
-    DO_TEST("disk-floppy");
-    DO_TEST("disk-many");
-    DO_TEST("disk-usb-device");
-    DO_TEST("disk-virtio");
-    DO_TEST("floppy-drive-fat");
-    DO_TEST("disk-drive-boot-disk");
-    DO_TEST("disk-drive-boot-cdrom");
-    DO_TEST("disk-drive-error-policy-stop");
-    DO_TEST("disk-drive-error-policy-enospace");
-    DO_TEST("disk-drive-error-policy-wreport-rignore");
-    DO_TEST("disk-drive-fmt-qcow");
-    DO_TEST("disk-drive-copy-on-read");
-    DO_TEST("disk-drive-cache-v2-wt");
-    DO_TEST("disk-drive-cache-v2-wb");
-    DO_TEST("disk-drive-cache-v2-none");
-    DO_TEST("disk-drive-cache-directsync");
-    DO_TEST("disk-drive-cache-unsafe");
-    DO_TEST("disk-drive-network-nbd");
-    DO_TEST("disk-drive-network-nbd-export");
-    DO_TEST("disk-drive-network-nbd-ipv6");
-    DO_TEST("disk-drive-network-nbd-ipv6-export");
-    DO_TEST("disk-drive-network-nbd-unix");
-    DO_TEST("disk-drive-network-iscsi");
-    DO_TEST("disk-drive-network-iscsi-auth");
-    DO_TEST("disk-drive-network-gluster");
-    DO_TEST("disk-drive-network-rbd");
-    DO_TEST("disk-drive-network-rbd-auth");
-    DO_TEST("disk-drive-network-rbd-ipv6");
-    DO_TEST("disk-drive-network-rbd-ceph-env");
-    DO_TEST("disk-drive-network-sheepdog");
+    DO_TEST("hugepages", NONE);
+    DO_TEST("hugepages-pages", NONE);
+    DO_TEST("hugepages-pages2", NONE);
+    DO_TEST("hugepages-pages3", NONE);
+    DO_TEST("hugepages-shared", NONE);
+    DO_TEST("nosharepages", NONE);
+    DO_TEST("restore-v2", NONE);
+    DO_TEST("migrate", NONE);
+    DO_TEST("qemu-ns-no-env", NONE);
+    DO_TEST("disk-aio", NONE);
+    DO_TEST("disk-cdrom", NONE);
+    DO_TEST("disk-cdrom-empty", NONE);
+    DO_TEST("disk-floppy", NONE);
+    DO_TEST("disk-many", NONE);
+    DO_TEST("disk-usb-device", NONE);
+    DO_TEST("disk-virtio", NONE);
+    DO_TEST("floppy-drive-fat", NONE);
+    DO_TEST("disk-drive-boot-disk", NONE);
+    DO_TEST("disk-drive-boot-cdrom", NONE);
+    DO_TEST("disk-drive-error-policy-stop", NONE);
+    DO_TEST("disk-drive-error-policy-enospace", NONE);
+    DO_TEST("disk-drive-error-policy-wreport-rignore", NONE);
+    DO_TEST("disk-drive-fmt-qcow", NONE);
+    DO_TEST("disk-drive-copy-on-read", NONE);
+    DO_TEST("disk-drive-cache-v2-wt", NONE);
+    DO_TEST("disk-drive-cache-v2-wb", NONE);
+    DO_TEST("disk-drive-cache-v2-none", NONE);
+    DO_TEST("disk-drive-cache-directsync", NONE);
+    DO_TEST("disk-drive-cache-unsafe", NONE);
+    DO_TEST("disk-drive-network-nbd", NONE);
+    DO_TEST("disk-drive-network-nbd-export", NONE);
+    DO_TEST("disk-drive-network-nbd-ipv6", NONE);
+    DO_TEST("disk-drive-network-nbd-ipv6-export", NONE);
+    DO_TEST("disk-drive-network-nbd-unix", NONE);
+    DO_TEST("disk-drive-network-iscsi", NONE);
+    DO_TEST("disk-drive-network-iscsi-auth", NONE);
+    DO_TEST("disk-drive-network-gluster", NONE);
+    DO_TEST("disk-drive-network-rbd", NONE);
+    DO_TEST("disk-drive-network-rbd-auth", NONE);
+    DO_TEST("disk-drive-network-rbd-ipv6", NONE);
+    DO_TEST("disk-drive-network-rbd-ceph-env", NONE);
+    DO_TEST("disk-drive-network-sheepdog", NONE);
     DO_TEST_FULL("disk-scsi-device", WHEN_BOTH, GIC_NONE,
                  QEMU_CAPS_NODEFCONFIG,
                  QEMU_CAPS_SCSI_LSI);
-    DO_TEST("disk-scsi-vscsi");
+    DO_TEST("disk-scsi-vscsi", NONE);
     DO_TEST_FULL("disk-scsi-virtio-scsi", WHEN_BOTH, GIC_NONE,
                  QEMU_CAPS_NODEFCONFIG,
                  QEMU_CAPS_VIRTIO_SCSI);
@@ -476,107 +476,107 @@ mymain(void)
                  QEMU_CAPS_NODEFCONFIG,
                  QEMU_CAPS_SCSI_MPTSAS1068,
                  QEMU_CAPS_SCSI_DISK_WWN);
-    DO_TEST("disk-mirror-old");
+    DO_TEST("disk-mirror-old", NONE);
     DO_TEST_FULL("disk-mirror", WHEN_BOTH, GIC_NONE, NONE);
     DO_TEST_FULL("disk-active-commit", WHEN_ACTIVE, GIC_NONE, NONE);
-    DO_TEST("graphics-listen-network");
-    DO_TEST("graphics-vnc");
-    DO_TEST("graphics-vnc-websocket");
-    DO_TEST("graphics-vnc-sasl");
-    DO_TEST("graphics-vnc-tls");
-    DO_TEST("graphics-vnc-no-listen-attr");
-    DO_TEST("graphics-vnc-remove-generated-socket");
+    DO_TEST("graphics-listen-network", NONE);
+    DO_TEST("graphics-vnc", NONE);
+    DO_TEST("graphics-vnc-websocket", NONE);
+    DO_TEST("graphics-vnc-sasl", NONE);
+    DO_TEST("graphics-vnc-tls", NONE);
+    DO_TEST("graphics-vnc-no-listen-attr", NONE);
+    DO_TEST("graphics-vnc-remove-generated-socket", NONE);
     cfg->vncAutoUnixSocket = true;
-    DO_TEST("graphics-vnc-auto-socket-cfg");
+    DO_TEST("graphics-vnc-auto-socket-cfg", NONE);
     cfg->vncAutoUnixSocket = false;
-    DO_TEST("graphics-vnc-socket");
-    DO_TEST("graphics-vnc-auto-socket");
+    DO_TEST("graphics-vnc-socket", NONE);
+    DO_TEST("graphics-vnc-auto-socket", NONE);
 
-    DO_TEST("graphics-sdl");
-    DO_TEST("graphics-sdl-fullscreen");
-    DO_TEST("graphics-spice");
-    DO_TEST("graphics-spice-compression");
-    DO_TEST("graphics-spice-qxl-vga");
-    DO_TEST("graphics-spice-socket");
-    DO_TEST("graphics-spice-auto-socket");
+    DO_TEST("graphics-sdl", NONE);
+    DO_TEST("graphics-sdl-fullscreen", NONE);
+    DO_TEST("graphics-spice", NONE);
+    DO_TEST("graphics-spice-compression", NONE);
+    DO_TEST("graphics-spice-qxl-vga", NONE);
+    DO_TEST("graphics-spice-socket", NONE);
+    DO_TEST("graphics-spice-auto-socket", NONE);
     cfg->spiceAutoUnixSocket = true;
-    DO_TEST("graphics-spice-auto-socket-cfg");
+    DO_TEST("graphics-spice-auto-socket-cfg", NONE);
     cfg->spiceAutoUnixSocket = false;
 
     DO_TEST_FULL("nographics-vga", WHEN_BOTH, GIC_NONE, QEMU_CAPS_DISPLAY);
-    DO_TEST("input-usbmouse");
-    DO_TEST("input-usbtablet");
-    DO_TEST("misc-acpi");
-    DO_TEST("misc-disable-s3");
-    DO_TEST("misc-disable-suspends");
-    DO_TEST("misc-enable-s4");
-    DO_TEST("misc-no-reboot");
-    DO_TEST("misc-uuid");
-    DO_TEST("net-vhostuser");
-    DO_TEST("net-user");
-    DO_TEST("net-virtio");
-    DO_TEST("net-virtio-device");
-    DO_TEST("net-virtio-disable-offloads");
-    DO_TEST("net-eth");
-    DO_TEST("net-eth-ifname");
-    DO_TEST("net-eth-hostip");
-    DO_TEST("net-virtio-network-portgroup");
-    DO_TEST("net-hostdev");
-    DO_TEST("net-hostdev-vfio");
-    DO_TEST("net-midonet");
-    DO_TEST("net-openvswitch");
-    DO_TEST("sound");
-    DO_TEST("sound-device");
-    DO_TEST("watchdog");
-    DO_TEST("net-bandwidth");
-    DO_TEST("net-bandwidth2");
+    DO_TEST("input-usbmouse", NONE);
+    DO_TEST("input-usbtablet", NONE);
+    DO_TEST("misc-acpi", NONE);
+    DO_TEST("misc-disable-s3", NONE);
+    DO_TEST("misc-disable-suspends", NONE);
+    DO_TEST("misc-enable-s4", NONE);
+    DO_TEST("misc-no-reboot", NONE);
+    DO_TEST("misc-uuid", NONE);
+    DO_TEST("net-vhostuser", NONE);
+    DO_TEST("net-user", NONE);
+    DO_TEST("net-virtio", NONE);
+    DO_TEST("net-virtio-device", NONE);
+    DO_TEST("net-virtio-disable-offloads", NONE);
+    DO_TEST("net-eth", NONE);
+    DO_TEST("net-eth-ifname", NONE);
+    DO_TEST("net-eth-hostip", NONE);
+    DO_TEST("net-virtio-network-portgroup", NONE);
+    DO_TEST("net-hostdev", NONE);
+    DO_TEST("net-hostdev-vfio", NONE);
+    DO_TEST("net-midonet", NONE);
+    DO_TEST("net-openvswitch", NONE);
+    DO_TEST("sound", NONE);
+    DO_TEST("sound-device", NONE);
+    DO_TEST("watchdog", NONE);
+    DO_TEST("net-bandwidth", NONE);
+    DO_TEST("net-bandwidth2", NONE);
 
-    DO_TEST("serial-vc");
-    DO_TEST("serial-pty");
-    DO_TEST("serial-dev");
-    DO_TEST("serial-file");
-    DO_TEST("serial-unix");
-    DO_TEST("serial-tcp");
-    DO_TEST("serial-udp");
-    DO_TEST("serial-tcp-telnet");
-    DO_TEST("serial-many");
-    DO_TEST("serial-spiceport");
-    DO_TEST("serial-spiceport-nospice");
-    DO_TEST("parallel-tcp");
-    DO_TEST("console-compat");
-    DO_TEST("console-compat2");
-    DO_TEST("console-virtio-many");
-    DO_TEST("channel-guestfwd");
-    DO_TEST("channel-virtio");
-    DO_TEST("channel-virtio-state");
+    DO_TEST("serial-vc", NONE);
+    DO_TEST("serial-pty", NONE);
+    DO_TEST("serial-dev", NONE);
+    DO_TEST("serial-file", NONE);
+    DO_TEST("serial-unix", NONE);
+    DO_TEST("serial-tcp", NONE);
+    DO_TEST("serial-udp", NONE);
+    DO_TEST("serial-tcp-telnet", NONE);
+    DO_TEST("serial-many", NONE);
+    DO_TEST("serial-spiceport", NONE);
+    DO_TEST("serial-spiceport-nospice", NONE);
+    DO_TEST("parallel-tcp", NONE);
+    DO_TEST("console-compat", NONE);
+    DO_TEST("console-compat2", NONE);
+    DO_TEST("console-virtio-many", NONE);
+    DO_TEST("channel-guestfwd", NONE);
+    DO_TEST("channel-virtio", NONE);
+    DO_TEST("channel-virtio-state", NONE);
 
-    DO_TEST("hostdev-usb-address");
-    DO_TEST("hostdev-pci-address");
-    DO_TEST("hostdev-vfio");
-    DO_TEST("pci-rom");
-    DO_TEST("pci-serial-dev-chardev");
+    DO_TEST("hostdev-usb-address", NONE);
+    DO_TEST("hostdev-pci-address", NONE);
+    DO_TEST("hostdev-vfio", NONE);
+    DO_TEST("pci-rom", NONE);
+    DO_TEST("pci-serial-dev-chardev", NONE);
 
-    DO_TEST("encrypted-disk");
-    DO_TEST("encrypted-disk-usage");
-    DO_TEST("luks-disks");
-    DO_TEST("memtune");
-    DO_TEST("memtune-unlimited");
-    DO_TEST("blkiotune");
-    DO_TEST("blkiotune-device");
-    DO_TEST("cputune");
-    DO_TEST("cputune-zero-shares");
-    DO_TEST("cputune-iothreadsched");
-    DO_TEST("cputune-iothreadsched-zeropriority");
-    DO_TEST("cputune-numatune");
+    DO_TEST("encrypted-disk", NONE);
+    DO_TEST("encrypted-disk-usage", NONE);
+    DO_TEST("luks-disks", NONE);
+    DO_TEST("memtune", NONE);
+    DO_TEST("memtune-unlimited", NONE);
+    DO_TEST("blkiotune", NONE);
+    DO_TEST("blkiotune-device", NONE);
+    DO_TEST("cputune", NONE);
+    DO_TEST("cputune-zero-shares", NONE);
+    DO_TEST("cputune-iothreadsched", NONE);
+    DO_TEST("cputune-iothreadsched-zeropriority", NONE);
+    DO_TEST("cputune-numatune", NONE);
     DO_TEST_FULL("vcpu-placement-static", WHEN_BOTH, GIC_NONE,
                  QEMU_CAPS_DEVICE_PCI_BRIDGE);
 
-    DO_TEST("smp");
-    DO_TEST("iothreads");
-    DO_TEST("iothreads-ids");
-    DO_TEST("iothreads-ids-partial");
-    DO_TEST("cputune-iothreads");
-    DO_TEST("iothreads-disk");
+    DO_TEST("smp", NONE);
+    DO_TEST("iothreads", NONE);
+    DO_TEST("iothreads-ids", NONE);
+    DO_TEST("iothreads-ids-partial", NONE);
+    DO_TEST("cputune-iothreads", NONE);
+    DO_TEST("iothreads-disk", NONE);
     DO_TEST_FULL("iothreads-disk-virtio-ccw", WHEN_BOTH, GIC_NONE,
                  QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
     DO_TEST_FULL("iothreads-virtio-scsi-pci", WHEN_BOTH, GIC_NONE,
@@ -586,32 +586,32 @@ mymain(void)
                  QEMU_CAPS_VIRTIO_SCSI,
                  QEMU_CAPS_VIRTIO_CCW,
                  QEMU_CAPS_VIRTIO_S390);
-    DO_TEST("lease");
-    DO_TEST("event_idx");
-    DO_TEST("vhost_queues");
-    DO_TEST("interface-driver");
-    DO_TEST("interface-server");
-    DO_TEST("virtio-lun");
+    DO_TEST("lease", NONE);
+    DO_TEST("event_idx", NONE);
+    DO_TEST("vhost_queues", NONE);
+    DO_TEST("interface-driver", NONE);
+    DO_TEST("interface-server", NONE);
+    DO_TEST("virtio-lun", NONE);
 
-    DO_TEST("usb-port-missing");
-    DO_TEST("usb-redir");
-    DO_TEST("usb-redir-filter");
-    DO_TEST("usb-redir-filter-version");
-    DO_TEST("blkdeviotune");
-    DO_TEST("controller-usb-order");
+    DO_TEST("usb-port-missing", NONE);
+    DO_TEST("usb-redir", NONE);
+    DO_TEST("usb-redir-filter", NONE);
+    DO_TEST("usb-redir-filter-version", NONE);
+    DO_TEST("blkdeviotune", NONE);
+    DO_TEST("controller-usb-order", NONE);
 
     DO_TEST_FULL("seclabel-dynamic-baselabel", WHEN_INACTIVE, GIC_NONE, NONE);
     DO_TEST_FULL("seclabel-dynamic-override", WHEN_INACTIVE, GIC_NONE, NONE);
     DO_TEST_FULL("seclabel-dynamic-labelskip", WHEN_INACTIVE, GIC_NONE, NONE);
     DO_TEST_FULL("seclabel-dynamic-relabel", WHEN_INACTIVE, GIC_NONE, NONE);
-    DO_TEST("seclabel-static");
+    DO_TEST("seclabel-static", NONE);
     DO_TEST_FULL("seclabel-static-labelskip", WHEN_ACTIVE, GIC_NONE, NONE);
-    DO_TEST("seclabel-none");
-    DO_TEST("seclabel-dac-none");
-    DO_TEST("seclabel-dynamic-none");
-    DO_TEST("seclabel-device-multiple");
+    DO_TEST("seclabel-none", NONE);
+    DO_TEST("seclabel-dac-none", NONE);
+    DO_TEST("seclabel-dynamic-none", NONE);
+    DO_TEST("seclabel-device-multiple", NONE);
     DO_TEST_FULL("seclabel-dynamic-none-relabel", WHEN_INACTIVE, GIC_NONE, NONE);
-    DO_TEST("numad-static-vcpu-no-numatune");
+    DO_TEST("numad-static-vcpu-no-numatune", NONE);
 
     DO_TEST_FULL("disk-scsi-lun-passthrough-sgio", WHEN_BOTH, GIC_NONE,
                  QEMU_CAPS_NODEFCONFIG,
@@ -621,39 +621,39 @@ mymain(void)
                  QEMU_CAPS_NODEFCONFIG,
                  QEMU_CAPS_SCSI_CD, QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI,
                  QEMU_CAPS_SCSI_DISK_WWN);
-    DO_TEST("disk-source-pool");
-    DO_TEST("disk-source-pool-mode");
+    DO_TEST("disk-source-pool", NONE);
+    DO_TEST("disk-source-pool-mode", NONE);
 
-    DO_TEST("disk-drive-discard");
-    DO_TEST("disk-drive-detect-zeroes");
+    DO_TEST("disk-drive-discard", NONE);
+    DO_TEST("disk-drive-detect-zeroes", NONE);
 
-    DO_TEST("virtio-rng-random");
-    DO_TEST("virtio-rng-egd");
+    DO_TEST("virtio-rng-random", NONE);
+    DO_TEST("virtio-rng-egd", NONE);
 
-    DO_TEST("pseries-nvram");
-    DO_TEST("pseries-panic-missing");
-    DO_TEST("pseries-panic-no-address");
+    DO_TEST("pseries-nvram", NONE);
+    DO_TEST("pseries-panic-missing", NONE);
+    DO_TEST("pseries-panic-no-address", NONE);
 
-    DO_TEST("balloon-device-auto");
-    DO_TEST("balloon-device-period");
-    DO_TEST("channel-virtio-auto");
-    DO_TEST("console-compat-auto");
+    DO_TEST("balloon-device-auto", NONE);
+    DO_TEST("balloon-device-period", NONE);
+    DO_TEST("channel-virtio-auto", NONE);
+    DO_TEST("console-compat-auto", NONE);
     DO_TEST_FULL("disk-scsi-device-auto", WHEN_BOTH, GIC_NONE,
                  QEMU_CAPS_NODEFCONFIG,
                  QEMU_CAPS_SCSI_LSI);
-    DO_TEST("console-virtio");
-    DO_TEST("serial-target-port-auto");
-    DO_TEST("graphics-listen-network2");
-    DO_TEST("graphics-spice-timeout");
-    DO_TEST("numad-auto-vcpu-no-numatune");
-    DO_TEST("numad-auto-memory-vcpu-no-cpuset-and-placement");
-    DO_TEST("numad-auto-memory-vcpu-cpuset");
-    DO_TEST("usb-ich9-ehci-addr");
-    DO_TEST("disk-copy_on_read");
-    DO_TEST("tpm-passthrough");
+    DO_TEST("console-virtio", NONE);
+    DO_TEST("serial-target-port-auto", NONE);
+    DO_TEST("graphics-listen-network2", NONE);
+    DO_TEST("graphics-spice-timeout", NONE);
+    DO_TEST("numad-auto-vcpu-no-numatune", NONE);
+    DO_TEST("numad-auto-memory-vcpu-no-cpuset-and-placement", NONE);
+    DO_TEST("numad-auto-memory-vcpu-cpuset", NONE);
+    DO_TEST("usb-ich9-ehci-addr", NONE);
+    DO_TEST("disk-copy_on_read", NONE);
+    DO_TEST("tpm-passthrough", NONE);
 
-    DO_TEST("metadata");
-    DO_TEST("metadata-duplicate");
+    DO_TEST("metadata", NONE);
+    DO_TEST("metadata-duplicate", NONE);
 
     DO_TEST_FULL("pci-bridge", WHEN_BOTH, GIC_NONE,
                  QEMU_CAPS_DEVICE_PCI_BRIDGE);
@@ -663,7 +663,7 @@ mymain(void)
                  QEMU_CAPS_DEVICE_PCI_BRIDGE);
     DO_TEST_FULL("pci-autoadd-idx", WHEN_BOTH, GIC_NONE,
                  QEMU_CAPS_DEVICE_PCI_BRIDGE);
-    DO_TEST("pci-autofill-addr");
+    DO_TEST("pci-autofill-addr", NONE);
 
     DO_TEST_FULL("q35", WHEN_BOTH, GIC_NONE,
                  QEMU_CAPS_DEVICE_PCI_BRIDGE,
@@ -791,9 +791,9 @@ mymain(void)
     DO_TEST_FULL("s390-panic-no-address", WHEN_BOTH, GIC_NONE,
                  QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
 
-    DO_TEST("pcihole64");
-    DO_TEST("pcihole64-gib");
-    DO_TEST("pcihole64-none");
+    DO_TEST("pcihole64", NONE);
+    DO_TEST("pcihole64-gib", NONE);
+    DO_TEST("pcihole64-none", NONE);
     DO_TEST_FULL("pcihole64-q35", WHEN_BOTH, GIC_NONE,
                  QEMU_CAPS_DEVICE_PCI_BRIDGE,
                  QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
@@ -802,35 +802,35 @@ mymain(void)
                  QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL,
                  QEMU_CAPS_Q35_PCI_HOLE64_SIZE);
 
-    DO_TEST("panic");
-    DO_TEST("panic-isa");
-    DO_TEST("panic-pseries");
-    DO_TEST("panic-double");
-    DO_TEST("panic-no-address");
+    DO_TEST("panic", NONE);
+    DO_TEST("panic-isa", NONE);
+    DO_TEST("panic-pseries", NONE);
+    DO_TEST("panic-double", NONE);
+    DO_TEST("panic-no-address", NONE);
 
-    DO_TEST("disk-backing-chains");
+    DO_TEST("disk-backing-chains", NONE);
 
-    DO_TEST("chardev-label");
+    DO_TEST("chardev-label", NONE);
 
-    DO_TEST("cpu-numa1");
-    DO_TEST("cpu-numa2");
-    DO_TEST("cpu-numa-no-memory-element");
-    DO_TEST("cpu-numa-disordered");
-    DO_TEST("cpu-numa-disjoint");
-    DO_TEST("cpu-numa-memshared");
+    DO_TEST("cpu-numa1", NONE);
+    DO_TEST("cpu-numa2", NONE);
+    DO_TEST("cpu-numa-no-memory-element", NONE);
+    DO_TEST("cpu-numa-disordered", NONE);
+    DO_TEST("cpu-numa-disjoint", NONE);
+    DO_TEST("cpu-numa-memshared", NONE);
 
-    DO_TEST("numatune-auto-prefer");
-    DO_TEST("numatune-memnode");
-    DO_TEST("numatune-memnode-no-memory");
+    DO_TEST("numatune-auto-prefer", NONE);
+    DO_TEST("numatune-memnode", NONE);
+    DO_TEST("numatune-memnode-no-memory", NONE);
 
-    DO_TEST("bios-nvram");
-    DO_TEST("bios-nvram-os-interleave");
+    DO_TEST("bios-nvram", NONE);
+    DO_TEST("bios-nvram-os-interleave", NONE);
 
-    DO_TEST("tap-vhost");
-    DO_TEST("tap-vhost-incorrect");
-    DO_TEST("shmem");
-    DO_TEST("smbios");
-    DO_TEST("smbios-multiple-type2");
+    DO_TEST("tap-vhost", NONE);
+    DO_TEST("tap-vhost-incorrect", NONE);
+    DO_TEST("shmem", NONE);
+    DO_TEST("smbios", NONE);
+    DO_TEST("smbios-multiple-type2", NONE);
 
     DO_TEST_FULL("aarch64-aavmf-virtio-mmio", WHEN_BOTH, GIC_NONE,
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DTB,
@@ -870,23 +870,23 @@ mymain(void)
     DO_TEST_FULL("aarch64-gic-host", WHEN_BOTH, GIC_V3, NONE);
     DO_TEST_FULL("aarch64-gic-host", WHEN_BOTH, GIC_BOTH, NONE);
 
-    DO_TEST("memory-hotplug");
-    DO_TEST("memory-hotplug-nonuma");
-    DO_TEST("memory-hotplug-dimm");
-    DO_TEST("net-udp");
+    DO_TEST("memory-hotplug", NONE);
+    DO_TEST("memory-hotplug-nonuma", NONE);
+    DO_TEST("memory-hotplug-dimm", NONE);
+    DO_TEST("net-udp", NONE);
 
-    DO_TEST("video-virtio-gpu-device");
-    DO_TEST("video-virtio-gpu-virgl");
-    DO_TEST("video-virtio-gpu-spice-gl");
-    DO_TEST("virtio-input");
-    DO_TEST("virtio-input-passthrough");
+    DO_TEST("video-virtio-gpu-device", NONE);
+    DO_TEST("video-virtio-gpu-virgl", NONE);
+    DO_TEST("video-virtio-gpu-spice-gl", NONE);
+    DO_TEST("virtio-input", NONE);
+    DO_TEST("virtio-input-passthrough", NONE);
 
     virObjectUnref(cfg);
 
-    DO_TEST("acpi-table");
+    DO_TEST("acpi-table", NONE);
 
-    DO_TEST("video-qxl-heads");
-    DO_TEST("video-qxl-noheads");
+    DO_TEST("video-qxl-heads", NONE);
+    DO_TEST("video-qxl-noheads", NONE);
 
     DO_TEST_FULL("intel-iommu", WHEN_BOTH, GIC_NONE,
                  QEMU_CAPS_DEVICE_PCI_BRIDGE,
