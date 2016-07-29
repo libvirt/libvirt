@@ -1,0 +1,125 @@
+{
+  "return": [
+    {
+      "props": {
+        "core-id": 120
+      },
+      "vcpus-count": 1,
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 112
+      },
+      "vcpus-count": 1,
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 104
+      },
+      "vcpus-count": 1,
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 96
+      },
+      "vcpus-count": 1,
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 88
+      },
+      "vcpus-count": 1,
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 80
+      },
+      "vcpus-count": 1,
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 72
+      },
+      "vcpus-count": 1,
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 64
+      },
+      "vcpus-count": 1,
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 56
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[8]",
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 48
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[7]",
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 40
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[6]",
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 32
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[5]",
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 24
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[4]",
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 16
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[3]",
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 8
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[2]",
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[1]",
+      "type": "host-spapr-cpu-core"
+    }
+  ],
+  "id": "libvirt-12"
+}

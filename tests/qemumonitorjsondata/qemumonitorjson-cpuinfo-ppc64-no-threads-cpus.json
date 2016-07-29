@@ -1,0 +1,77 @@
+{
+  "return": [
+    {
+      "arch": "ppc",
+      "current": true,
+      "CPU": 0,
+      "nip": -4611686018426772876,
+      "qom_path": "/machine/unattached/device[1]/thread[0]",
+      "halted": false,
+      "thread_id": 35232
+    },
+    {
+      "arch": "ppc",
+      "current": false,
+      "CPU": 1,
+      "nip": -4611686018426772876,
+      "qom_path": "/machine/unattached/device[2]/thread[0]",
+      "halted": false,
+      "thread_id": 35233
+    },
+    {
+      "arch": "ppc",
+      "current": false,
+      "CPU": 2,
+      "nip": -4611686018426772876,
+      "qom_path": "/machine/unattached/device[3]/thread[0]",
+      "halted": false,
+      "thread_id": 35234
+    },
+    {
+      "arch": "ppc",
+      "current": false,
+      "CPU": 3,
+      "nip": -4611686018426772876,
+      "qom_path": "/machine/unattached/device[4]/thread[0]",
+      "halted": false,
+      "thread_id": 35235
+    },
+    {
+      "arch": "ppc",
+      "current": false,
+      "CPU": 4,
+      "nip": -4611686018426772876,
+      "qom_path": "/machine/unattached/device[5]/thread[0]",
+      "halted": false,
+      "thread_id": 35236
+    },
+    {
+      "arch": "ppc",
+      "current": false,
+      "CPU": 5,
+      "nip": -4611686018426772876,
+      "qom_path": "/machine/unattached/device[6]/thread[0]",
+      "halted": false,
+      "thread_id": 35237
+    },
+    {
+      "arch": "ppc",
+      "current": false,
+      "CPU": 6,
+      "nip": -4611686018426772876,
+      "qom_path": "/machine/unattached/device[7]/thread[0]",
+      "halted": false,
+      "thread_id": 35238
+    },
+    {
+      "arch": "ppc",
+      "current": false,
+      "CPU": 7,
+      "nip": -4611686018426772876,
+      "qom_path": "/machine/unattached/device[8]/thread[0]",
+      "halted": false,
+      "thread_id": 35239
+    }
+  ],
+  "id": "libvirt-11"
+}
