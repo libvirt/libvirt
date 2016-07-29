@@ -2064,9 +2064,9 @@ mymain(void)
     DO_TEST("master-key", QEMU_CAPS_OBJECT_SECRET);
     DO_TEST("usb-long-port-path", QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_USB_HUB);
-    DO_TEST_PARSE_FLAGS_ERROR("usb-too-long-port-path-invalid",
-                              QEMU_CAPS_CHARDEV,
-                              QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_USB_HUB);
+    DO_TEST_PARSE_ERROR("usb-too-long-port-path-invalid",
+                        QEMU_CAPS_CHARDEV,
+                        QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_USB_HUB);
 
     DO_TEST("acpi-table", NONE);
     DO_TEST("intel-iommu", QEMU_CAPS_DEVICE_PCI_BRIDGE,
