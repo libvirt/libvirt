@@ -1871,7 +1871,7 @@ mymain(void)
     DO_TEST_GIC("aarch64-gic-v2", GIC_BOTH,
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST_FAILURE("aarch64-gic-v3", GIC_NONE,
+    DO_TEST_FAILURE("aarch64-gic-v3",
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT);
     DO_TEST_GIC("aarch64-gic-v3", GIC_NONE,
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
@@ -1885,7 +1885,7 @@ mymain(void)
     DO_TEST_GIC("aarch64-gic-v3", GIC_BOTH,
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST_FAILURE("aarch64-gic-host", GIC_NONE,
+    DO_TEST_FAILURE("aarch64-gic-host",
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT);
     DO_TEST_GIC("aarch64-gic-host", GIC_NONE,
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
@@ -1899,13 +1899,13 @@ mymain(void)
     DO_TEST_GIC("aarch64-gic-host", GIC_BOTH,
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST_PARSE_ERROR("aarch64-gic-invalid", GIC_NONE,
+    DO_TEST_PARSE_ERROR("aarch64-gic-invalid",
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST_FAILURE("aarch64-gic-not-virt", GIC_NONE,
+    DO_TEST_FAILURE("aarch64-gic-not-virt",
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-    DO_TEST_FAILURE("aarch64-gic-not-arm", GIC_NONE,
+    DO_TEST_FAILURE("aarch64-gic-not-arm",
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
 
