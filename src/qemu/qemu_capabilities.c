@@ -2486,18 +2486,20 @@ virQEMUCapsProbeQMPMachineTypes(virQEMUCapsPtr qemuCaps,
         goto cleanup;
 
     for (i = 0; i < nmachines; i++) {
+        struct virQEMUCapsMachineType *mach;
         if (STREQ(machines[i]->name, "none"))
             continue;
-        qemuCaps->nmachineTypes++;
-        if (VIR_STRDUP(qemuCaps->machineTypes[qemuCaps->nmachineTypes -1].alias,
-                       machines[i]->alias) < 0 ||
-            VIR_STRDUP(qemuCaps->machineTypes[qemuCaps->nmachineTypes - 1].name,
-                       machines[i]->name) < 0)
+
+        mach = &(qemuCaps->machineTypes[qemuCaps->nmachineTypes++]);
+
+        if (VIR_STRDUP(mach->alias, machines[i]->alias) < 0 ||
+            VIR_STRDUP(mach->name, machines[i]->name) < 0)
             goto cleanup;
+
+        mach->maxCpus = machines[i]->maxCpus;
+
         if (machines[i]->isDefault)
             defIdx = qemuCaps->nmachineTypes - 1;
-        qemuCaps->machineTypes[qemuCaps->nmachineTypes - 1].maxCpus =
-            machines[i]->maxCpus;
     }
 
     if (defIdx)
