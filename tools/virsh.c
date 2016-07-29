@@ -210,7 +210,7 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
  * Reconnect after a disconnect from libvirtd
  *
  */
-static void
+static int
 virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
 {
     bool connected = false;
@@ -237,6 +237,7 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
             vshError(ctl, "%s", _("Failed to reconnect to the hypervisor"));
         else
             vshError(ctl, "%s", _("failed to connect to the hypervisor"));
+        return -1;
     } else {
         if (name) {
             VIR_FREE(ctl->connname);
@@ -253,6 +254,7 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
     priv->useGetInfo = false;
     priv->useSnapshotOld = false;
     priv->blockJobNoBytes = false;
+    return 0;
 }
 
 int virshStreamSink(virStreamPtr st ATTRIBUTE_UNUSED,
@@ -301,7 +303,8 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
         return false;
 
-    virshReconnect(ctl, name, ro, true);
+    if (virshReconnect(ctl, name, ro, true) < 0)
+        return false;
 
     return true;
 }
@@ -333,11 +336,13 @@ virshConnectionHandler(vshControl *ctl)
 {
     virshControlPtr priv = ctl->privData;
 
-    if (!priv->conn || disconnected)
-        virshReconnect(ctl, NULL, false, false);
+    if ((!priv->conn || disconnected) &&
+        virshReconnect(ctl, NULL, false, false) < 0)
+        return NULL;
 
     if (virshConnectionUsability(ctl, priv->conn))
         return priv->conn;
+
     return NULL;
 }
 
@@ -444,14 +449,13 @@ virshInit(vshControl *ctl)
         return false;
 
     if (ctl->connname) {
-        virshReconnect(ctl, NULL, false, false);
         /* Connecting to a named connection must succeed, but we delay
          * connecting to the default connection until we need it
          * (since the first command might be 'connect' which allows a
          * non-default connection, or might be 'help' which needs no
          * connection).
          */
-        if (!priv->conn) {
+        if (virshReconnect(ctl, NULL, false, false) < 0) {
             vshReportError(ctl);
             return false;
         }
