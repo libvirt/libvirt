@@ -112,17 +112,20 @@ struct _qemuMonitor {
  * monitor.
  */
 #define QEMU_CHECK_MONITOR_FULL(mon, force_json, exit)                         \
-    if (!mon) {                                                                \
-        virReportError(VIR_ERR_INVALID_ARG, "%s",                              \
-                       _("monitor must not be NULL"));                         \
-        exit;                                                                  \
-    }                                                                          \
-    VIR_DEBUG("mon:%p vm:%p json:%d fd:%d", mon, mon->vm, mon->json, mon->fd); \
-    if (force_json && !mon->json) {                                            \
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",                    \
-                       _("JSON monitor is required"));                         \
-        exit;                                                                  \
-    }
+    do {                                                                       \
+        if (!mon) {                                                            \
+            virReportError(VIR_ERR_INVALID_ARG, "%s",                          \
+                           _("monitor must not be NULL"));                     \
+            exit;                                                              \
+        }                                                                      \
+        VIR_DEBUG("mon:%p vm:%p json:%d fd:%d",                                \
+                  mon, mon->vm, mon->json, mon->fd);                           \
+        if (force_json && !mon->json) {                                        \
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",                \
+                           _("JSON monitor is required"));                     \
+            exit;                                                              \
+        }                                                                      \
+    } while (0)
 
 /* Check monitor and return NULL on error */
 #define QEMU_CHECK_MONITOR_NULL(mon) \
