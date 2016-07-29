@@ -477,8 +477,7 @@ mymain(void)
                  QEMU_CAPS_SCSI_MPTSAS1068,
                  QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-mirror-old");
-    DO_TEST_FULL("disk-mirror", WHEN_ACTIVE, GIC_NONE, NONE);
-    DO_TEST_FULL("disk-mirror", WHEN_INACTIVE, GIC_NONE, NONE);
+    DO_TEST_FULL("disk-mirror", WHEN_BOTH, GIC_NONE, NONE);
     DO_TEST_FULL("disk-active-commit", WHEN_ACTIVE, GIC_NONE, NONE);
     DO_TEST("graphics-listen-network");
     DO_TEST("graphics-vnc");
