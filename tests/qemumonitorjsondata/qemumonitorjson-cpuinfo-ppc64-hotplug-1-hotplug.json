@@ -1,0 +1,28 @@
+{
+  "return": [
+    {
+      "props": {
+        "core-id": 16
+      },
+      "vcpus-count": 8,
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 8
+      },
+      "vcpus-count": 8,
+      "qom-path": "/machine/peripheral/vcpu0",
+      "type": "host-spapr-cpu-core"
+    },
+    {
+      "props": {
+        "core-id": 0
+      },
+      "vcpus-count": 8,
+      "qom-path": "/machine/unattached/device[1]",
+      "type": "host-spapr-cpu-core"
+    }
+  ],
+  "id": "libvirt-15"
+}

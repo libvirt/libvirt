@@ -1,0 +1,40 @@
+[vcpu libvirt-id='0']
+    thread-id='21925'
+    qemu-id='1'
+    type='host-spapr-cpu-core'
+    qom_path='/machine/unattached/device[1]'
+    topology: core='0' vcpus='8'
+[vcpu libvirt-id='1']
+    thread-id='21926'
+[vcpu libvirt-id='2']
+    thread-id='21927'
+[vcpu libvirt-id='3']
+    thread-id='21928'
+[vcpu libvirt-id='4']
+    thread-id='21930'
+[vcpu libvirt-id='5']
+    thread-id='21931'
+[vcpu libvirt-id='6']
+    thread-id='21932'
+[vcpu libvirt-id='7']
+    thread-id='21933'
+[vcpu libvirt-id='8']
+    type='host-spapr-cpu-core'
+    topology: core='8' vcpus='8'
+[vcpu libvirt-id='9']
+[vcpu libvirt-id='10']
+[vcpu libvirt-id='11']
+[vcpu libvirt-id='12']
+[vcpu libvirt-id='13']
+[vcpu libvirt-id='14']
+[vcpu libvirt-id='15']
+[vcpu libvirt-id='16']
+    type='host-spapr-cpu-core'
+    topology: core='16' vcpus='8'
+[vcpu libvirt-id='17']
+[vcpu libvirt-id='18']
+[vcpu libvirt-id='19']
+[vcpu libvirt-id='20']
+[vcpu libvirt-id='21']
+[vcpu libvirt-id='22']
+[vcpu libvirt-id='23']
