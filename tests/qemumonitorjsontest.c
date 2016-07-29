@@ -2590,6 +2590,7 @@ mymain(void)
     DO_TEST_CPU_INFO("ppc64-basic", 24);
     DO_TEST_CPU_INFO("ppc64-hotplug-1", 24);
     DO_TEST_CPU_INFO("ppc64-hotplug-2", 24);
+    DO_TEST_CPU_INFO("ppc64-hotplug-4", 24);
 
     qemuTestDriverFree(&driver);
 
