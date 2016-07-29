@@ -584,6 +584,22 @@ mymain(void)
     DO_TEST("interface-server", NONE);
     DO_TEST("virtio-lun", NONE);
 
+    DO_TEST("usb-none", NONE);
+    DO_TEST("usb-controller", NONE);
+    DO_TEST("usb-piix3-controller",
+            QEMU_CAPS_PIIX3_USB_UHCI);
+    DO_TEST("usb-controller-default-q35",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE, QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_PCI_OHCI, QEMU_CAPS_PIIX3_USB_UHCI,
+            QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST("usb-controller-explicit-q35",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE, QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_PCI_OHCI, QEMU_CAPS_PIIX3_USB_UHCI,
+            QEMU_CAPS_NEC_USB_XHCI);
+    DO_TEST("ppc64-usb-controller",
+            QEMU_CAPS_PCI_OHCI);
+    DO_TEST("ppc64-usb-controller-legacy",
+            QEMU_CAPS_PIIX3_USB_UHCI);
     DO_TEST("usb-port-missing", NONE);
     DO_TEST("usb-redir", NONE);
     DO_TEST("usb-redir-filter", NONE);
