@@ -359,6 +359,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "query-cpu-model-expansion", /* 245 */
               "virtio-net.host_mtu",
               "spice-rendernode",
+              "nvdimm",
     );
 
 
@@ -1619,6 +1620,7 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "ivshmem-plain", QEMU_CAPS_DEVICE_IVSHMEM_PLAIN },
     { "ivshmem-doorbell", QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL },
     { "vhost-scsi", QEMU_CAPS_DEVICE_VHOST_SCSI },
+    { "nvdimm", QEMU_CAPS_DEVICE_NVDIMM },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioBalloon[] = {
@@ -4541,6 +4543,13 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
          qemuCaps->arch == VIR_ARCH_ARMV7L) &&
         virQEMUCapsProbeQMPGICCapabilities(qemuCaps, mon) < 0)
         goto cleanup;
+
+    /* Prealloc on NVDIMMs is broken on older QEMUs leading to
+     * user data corruption. If we are dealing with such version
+     * of QEMU pretend we don't know how to NVDIMM. */
+    if (qemuCaps->version < 2009000 &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM))
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM);
 
     ret = 0;
  cleanup:
