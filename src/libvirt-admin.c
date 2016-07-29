@@ -176,10 +176,14 @@ virAdmGetDefaultURI(virConfPtr conf, char **uristr)
             /* Since we can't probe connecting via any hypervisor driver as libvirt
              * does, if no explicit URI was given and neither the environment
              * variable, nor the configuration parameter had previously been set,
-             * we set the default admin server URI to 'libvirtd://system'.
+             * we set the default admin server URI to 'libvirtd:///system' or
+             * 'libvirtd:///session' depending on the process's EUID.
              */
-            if (VIR_STRDUP(*uristr, "libvirtd:///system") < 0)
-                return -1;
+            if (geteuid() == 0 &&
+                VIR_STRDUP(*uristr, "libvirtd:///system") < 0)
+                    return -1;
+            else if (VIR_STRDUP(*uristr, "libvirtd:///session") < 0)
+                    return -1;
         }
     }
 
