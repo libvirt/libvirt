@@ -19295,15 +19295,9 @@ qemuDomainGetStatsPerf(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
         if (!virPerfEventIsEnabled(priv->perf, i))
              continue;
 
-        switch (i) {
-        case VIR_PERF_EVENT_CMT:
-        case VIR_PERF_EVENT_MBMT:
-        case VIR_PERF_EVENT_MBML:
-            if (qemuDomainGetStatsPerfOneEvent(priv->perf, i, record,
-                                               maxparams) < 0)
-                goto cleanup;
-            break;
-        }
+        if (qemuDomainGetStatsPerfOneEvent(priv->perf, i,
+                                           record, maxparams) < 0)
+            goto cleanup;
     }
 
     ret = 0;
