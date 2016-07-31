@@ -854,8 +854,12 @@ qemuDomainVcpuPrivateNew(void)
 
 
 static void
-qemuDomainVcpuPrivateDispose(void *obj ATTRIBUTE_UNUSED)
+qemuDomainVcpuPrivateDispose(void *obj)
 {
+    qemuDomainVcpuPrivatePtr priv = obj;
+
+    VIR_FREE(priv->type);
+    VIR_FREE(priv->alias);
     return;
 }
 
@@ -5746,6 +5750,15 @@ qemuDomainValidateVcpuInfo(virDomainObjPtr vm)
 }
 
 
+bool
+qemuDomainSupportsNewVcpuHotplug(virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    return virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
+}
+
+
 /**
  * qemuDomainRefreshVcpuInfo:
  * @driver: qemu driver data
@@ -5767,44 +5780,16 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
     qemuMonitorCPUInfoPtr info = NULL;
     size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
     size_t i;
+    bool hotplug;
     int rc;
     int ret = -1;
 
-    /*
-     * Current QEMU *can* report info about host threads mapped
-     * to vCPUs, but it is not in a manner we can correctly
-     * deal with. The TCG CPU emulation does have a separate vCPU
-     * thread, but it runs every vCPU in that same thread. So it
-     * is impossible to setup different affinity per thread.
-     *
-     * What's more the 'query-cpus' command returns bizarre
-     * data for the threads. It gives the TCG thread for the
-     * vCPU 0, but for vCPUs 1-> N, it actually replies with
-     * the main process thread ID.
-     *
-     * The result is that when we try to set affinity for
-     * vCPU 1, it will actually change the affinity of the
-     * emulator thread :-( When you try to set affinity for
-     * vCPUs 2, 3.... it will fail if the affinity was
-     * different from vCPU 1.
-     *
-     * We *could* allow vcpu pinning with TCG, if we made the
-     * restriction that all vCPUs had the same mask. This would
-     * at least let us separate emulator from vCPUs threads, as
-     * we do for KVM. It would need some changes to our cgroups
-     * CPU layout though, and error reporting for the config
-     * restrictions.
-     *
-     * Just disable CPU pinning with TCG until someone wants
-     * to try to do this hard work.
-     */
-    if (vm->def->virtType == VIR_DOMAIN_VIRT_QEMU)
-        return 0;
+    hotplug = qemuDomainSupportsNewVcpuHotplug(vm);
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    rc = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &info, maxvcpus, false);
+    rc = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &info, maxvcpus, hotplug);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
@@ -5816,7 +5801,46 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
         vcpu = virDomainDefGetVcpu(vm->def, i);
         vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
 
-        vcpupriv->tid = info[i].tid;
+        /*
+         * Current QEMU *can* report info about host threads mapped
+         * to vCPUs, but it is not in a manner we can correctly
+         * deal with. The TCG CPU emulation does have a separate vCPU
+         * thread, but it runs every vCPU in that same thread. So it
+         * is impossible to setup different affinity per thread.
+         *
+         * What's more the 'query-cpus' command returns bizarre
+         * data for the threads. It gives the TCG thread for the
+         * vCPU 0, but for vCPUs 1-> N, it actually replies with
+         * the main process thread ID.
+         *
+         * The result is that when we try to set affinity for
+         * vCPU 1, it will actually change the affinity of the
+         * emulator thread :-( When you try to set affinity for
+         * vCPUs 2, 3.... it will fail if the affinity was
+         * different from vCPU 1.
+         *
+         * We *could* allow vcpu pinning with TCG, if we made the
+         * restriction that all vCPUs had the same mask. This would
+         * at least let us separate emulator from vCPUs threads, as
+         * we do for KVM. It would need some changes to our cgroups
+         * CPU layout though, and error reporting for the config
+         * restrictions.
+         *
+         * Just disable CPU pinning with TCG until someone wants
+         * to try to do this hard work.
+         */
+        if (vm->def->virtType != VIR_DOMAIN_VIRT_QEMU)
+            vcpupriv->tid = info[i].tid;
+
+        vcpupriv->socket_id = info[i].socket_id;
+        vcpupriv->core_id = info[i].core_id;
+        vcpupriv->thread_id = info[i].thread_id;
+        vcpupriv->vcpus = info[i].vcpus;
+        VIR_FREE(vcpupriv->type);
+        VIR_STEAL_PTR(vcpupriv->type, info[i].type);
+        VIR_FREE(vcpupriv->alias);
+        VIR_STEAL_PTR(vcpupriv->alias, info[i].alias);
+        vcpupriv->enable_id = info[i].id;
     }
 
     ret = 0;

@@ -315,6 +315,15 @@ struct _qemuDomainVcpuPrivate {
     virObject parent;
 
     pid_t tid; /* vcpu thread id */
+    int enable_id; /* order in which the vcpus were enabled in qemu */
+    char *alias;
+
+    /* information for hotpluggable cpus */
+    char *type;
+    int socket_id;
+    int core_id;
+    int thread_id;
+    int vcpus;
 };
 
 # define QEMU_DOMAIN_VCPU_PRIVATE(vcpu)    \
@@ -645,6 +654,7 @@ int qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
                                        virQEMUCapsPtr qemuCaps,
                                        const virDomainMemoryDef *mem);
 
+bool qemuDomainSupportsNewVcpuHotplug(virDomainObjPtr vm);
 bool qemuDomainHasVcpuPids(virDomainObjPtr vm);
 pid_t qemuDomainGetVcpuPid(virDomainObjPtr vm, unsigned int vcpuid);
 int qemuDomainValidateVcpuInfo(virDomainObjPtr vm);
