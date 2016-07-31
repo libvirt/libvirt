@@ -2771,6 +2771,24 @@ qemuMonitorAddDevice(qemuMonitorPtr mon,
 
 
 /**
+ * qemuMonitorAddDeviceArgs:
+ * @mon: monitor object
+ * @args: arguments for device add, consumed on success or failure
+ *
+ * Adds a device described by @args. Requires JSON monitor.
+ * Returns 0 on success -1 on error.
+ */
+int
+qemuMonitorAddDeviceArgs(qemuMonitorPtr mon,
+                         virJSONValuePtr args)
+{
+    QEMU_CHECK_MONITOR_JSON(mon);
+
+    return qemuMonitorJSONAddDeviceArgs(mon, args);
+}
+
+
+/**
  * qemuMonitorAddObject:
  * @mon: Pointer to monitor object
  * @type: Type name of object to add

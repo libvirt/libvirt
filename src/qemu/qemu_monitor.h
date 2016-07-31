@@ -685,6 +685,8 @@ int qemuMonitorAttachPCIDiskController(qemuMonitorPtr mon,
                                        const char *bus,
                                        virPCIDeviceAddress *guestAddr);
 
+int qemuMonitorAddDeviceArgs(qemuMonitorPtr mon,
+                             virJSONValuePtr args);
 int qemuMonitorAddDevice(qemuMonitorPtr mon,
                          const char *devicestr);
 
