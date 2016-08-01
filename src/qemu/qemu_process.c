@@ -4792,21 +4792,11 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     if (qemuProcessSetupGraphics(driver, vm, flags) < 0)
         goto cleanup;
 
-    /* "volume" type disk's source must be translated before
-     * cgroup and security setting.
-     */
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (virStorageTranslateDiskSourcePool(conn, vm->def->disks[i]) < 0)
-            goto cleanup;
-    }
-
-    /* drop possibly missing disks from the definition. This needs to happen
-     * after the def is copied, aliases are set and disk sources are translated */
-    if (!(flags & VIR_QEMU_PROCESS_START_PRETEND)) {
-        if (qemuDomainCheckDiskPresence(driver, vm,
-                                        flags & VIR_QEMU_PROCESS_START_COLD) < 0)
-            goto cleanup;
-    }
+    /* Drop possibly missing disks from the definition. This function
+     * also resolves source pool/volume into a path and it needs to
+     * happen after the def is copied and aliases are set. */
+    if (qemuDomainCheckDiskPresence(conn, driver, vm, flags) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Create domain masterKey");
     if (qemuDomainMasterKeyCreate(vm) < 0)

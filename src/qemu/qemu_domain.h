@@ -545,9 +545,10 @@ void qemuDomainSetFakeReboot(virQEMUDriverPtr driver,
 bool qemuDomainJobAllowed(qemuDomainObjPrivatePtr priv,
                           qemuDomainJob job);
 
-int qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
+int qemuDomainCheckDiskPresence(virConnectPtr conn,
+                                virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
-                                bool start_with_state);
+                                unsigned int flags);
 
 int qemuDomainDetermineDiskChain(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,

@@ -27,6 +27,7 @@
 #include "qemu_alias.h"
 #include "qemu_cgroup.h"
 #include "qemu_command.h"
+#include "qemu_process.h"
 #include "qemu_parse_command.h"
 #include "qemu_capabilities.h"
 #include "qemu_migration.h"
@@ -4213,17 +4214,30 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
 
 
 int
-qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
+qemuDomainCheckDiskPresence(virConnectPtr conn,
+                            virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
-                            bool cold_boot)
+                            unsigned int flags)
 {
     size_t i;
+    bool pretend = flags & VIR_QEMU_PROCESS_START_PRETEND;
+    bool cold_boot = flags & VIR_QEMU_PROCESS_START_COLD;
 
     VIR_DEBUG("Checking for disk presence");
     for (i = vm->def->ndisks; i > 0; i--) {
         size_t idx = i - 1;
         virDomainDiskDefPtr disk = vm->def->disks[idx];
         virStorageFileFormat format = virDomainDiskGetFormat(disk);
+
+        if (virStorageTranslateDiskSourcePool(conn, vm->def->disks[idx]) < 0) {
+            if (pretend ||
+                qemuDomainCheckDiskStartupPolicy(driver, vm, idx, cold_boot) < 0)
+                return -1;
+            continue;
+        }
+
+        if (pretend)
+            continue;
 
         if (virStorageSourceIsEmpty(disk->src))
             continue;
