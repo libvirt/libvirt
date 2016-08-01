@@ -8972,6 +8972,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
         if (pretty && (tmp = virJSONValueToString(pretty, true))) {
             VIR_FREE(result);
             result = tmp;
+            virTrimSpaces(result, NULL);
         } else {
             vshResetLibvirtError();
         }
