@@ -27,8 +27,6 @@
 #include <wireshark/epan/proto.h>
 #include <wireshark/epan/packet.h>
 #include <wireshark/epan/dissectors/packet-tcp.h>
-#include <glib.h>
-#include <glib/gprintf.h>
 #ifdef HAVE_RPC_TYPES_H
 # include <rpc/types.h>
 #endif
@@ -113,7 +111,7 @@ format_xdr_bytes(guint8 *bytes, guint32 length)
     for (i = 0; i < length; i++) {
         /* We know that buf has enough size to contain
            2 * length + '\0' characters. */
-        g_sprintf(buf, "%02x", bytes[i]);
+        snprintf(buf, 2*(length - i) + 1, "%02x", bytes[i]);
         buf += 2;
     }
     return buf - length*2;
