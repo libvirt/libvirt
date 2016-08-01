@@ -2476,7 +2476,7 @@ qemuProcessInitPasswords(virConnectPtr conn,
             goto cleanup;
 
         VIR_FREE(alias);
-        if (VIR_STRDUP(alias, vm->def->disks[i]->info.alias) < 0)
+        if (!(alias = qemuAliasFromDisk(vm->def->disks[i])))
             goto cleanup;
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
             goto cleanup;

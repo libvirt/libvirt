@@ -2008,8 +2008,7 @@ int qemuMonitorTextSetDrivePassphrase(qemuMonitorPtr mon,
     if (!safe_str)
         return -1;
 
-    if (virAsprintf(&cmd, "block_passwd %s%s \"%s\"",
-                    QEMU_DRIVE_HOST_PREFIX, alias, safe_str) < 0)
+    if (virAsprintf(&cmd, "block_passwd %s \"%s\"", alias, safe_str) < 0)
         goto cleanup;
 
     if (qemuMonitorHMPCommand(mon, cmd, &reply) < 0)
