@@ -2401,55 +2401,10 @@ virStorageBackendWipeLocal(virStorageVolDefPtr vol,
     return ret;
 }
 
-static int
-virStorageBackendVolWipePloop(virStorageVolDefPtr vol)
-{
-    virCommandPtr cmd = NULL;
-    char *target_path = NULL;
-    char *disk_desc = NULL;
-    char *create_tool = NULL;
 
-    int ret = -1;
+/* In here just for a clean patch series, will be removed in future patch */
+static int virStorageBackendVolWipePloop(virStorageVolDefPtr vol);
 
-    create_tool = virFindFileInPath("ploop");
-    if (!create_tool) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("unable to find ploop tools, please install them"));
-        return -1;
-    }
-
-    if (virAsprintf(&target_path, "%s/root.hds", vol->target.path) < 0)
-        goto cleanup;
-
-    if (virAsprintf(&disk_desc, "%s/DiskDescriptor.xml", vol->target.path) < 0)
-        goto cleanup;
-
-    if (virFileRemove(disk_desc, 0, 0) < 0) {
-        virReportError(errno, _("Failed to delete DiskDescriptor.xml of volume '%s'"),
-                       vol->target.path);
-        goto cleanup;
-    }
-    if (virFileRemove(target_path, 0, 0) < 0) {
-        virReportError(errno, _("failed to delete root.hds of volume '%s'"),
-                       vol->target.path);
-        goto cleanup;
-    }
-
-    cmd = virCommandNewArgList(create_tool, "init", "-s", NULL);
-
-    virCommandAddArgFormat(cmd, "%lluM", VIR_DIV_UP(vol->target.capacity,
-                                                        (1024 * 1024)));
-    virCommandAddArgList(cmd, "-t", "ext4", NULL);
-    virCommandAddArg(cmd, target_path);
-    ret = virCommandRun(cmd, NULL);
-
- cleanup:
-    VIR_FREE(disk_desc);
-    VIR_FREE(target_path);
-    VIR_FREE(create_tool);
-    virCommandFree(cmd);
-    return ret;
-}
 
 int
 virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -2559,6 +2514,57 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
     virCommandFree(cmd);
     VIR_FREE(path);
     VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+
+
+static int
+virStorageBackendVolWipePloop(virStorageVolDefPtr vol)
+{
+    virCommandPtr cmd = NULL;
+    char *target_path = NULL;
+    char *disk_desc = NULL;
+    char *create_tool = NULL;
+
+    int ret = -1;
+
+    create_tool = virFindFileInPath("ploop");
+    if (!create_tool) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unable to find ploop tools, please install them"));
+        return -1;
+    }
+
+    if (virAsprintf(&target_path, "%s/root.hds", vol->target.path) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&disk_desc, "%s/DiskDescriptor.xml", vol->target.path) < 0)
+        goto cleanup;
+
+    if (virFileRemove(disk_desc, 0, 0) < 0) {
+        virReportError(errno, _("Failed to delete DiskDescriptor.xml of volume '%s'"),
+                       vol->target.path);
+        goto cleanup;
+    }
+    if (virFileRemove(target_path, 0, 0) < 0) {
+        virReportError(errno, _("failed to delete root.hds of volume '%s'"),
+                       vol->target.path);
+        goto cleanup;
+    }
+
+    cmd = virCommandNewArgList(create_tool, "init", "-s", NULL);
+
+    virCommandAddArgFormat(cmd, "%lluM", VIR_DIV_UP(vol->target.capacity,
+                                                        (1024 * 1024)));
+    virCommandAddArgList(cmd, "-t", "ext4", NULL);
+    virCommandAddArg(cmd, target_path);
+    ret = virCommandRun(cmd, NULL);
+
+ cleanup:
+    VIR_FREE(disk_desc);
+    VIR_FREE(target_path);
+    VIR_FREE(create_tool);
+    virCommandFree(cmd);
     return ret;
 }
 
