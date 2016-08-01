@@ -8945,6 +8945,8 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     bool pad = false;
     virJSONValuePtr pretty = NULL;
 
+    VSH_EXCLUSIVE_OPTIONS("hmp", "pretty");
+
     dom = virshCommandOptDomain(ctl, cmd, NULL);
     if (dom == NULL)
         goto cleanup;
@@ -8961,13 +8963,8 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     }
     monitor_cmd = virBufferContentAndReset(&buf);
 
-    if (vshCommandOptBool(cmd, "hmp")) {
-        if (vshCommandOptBool(cmd, "pretty")) {
-            vshError(ctl, _("--hmp and --pretty are not compatible"));
-            goto cleanup;
-        }
+    if (vshCommandOptBool(cmd, "hmp"))
         flags |= VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP;
-    }
 
     if (virDomainQemuMonitorCommand(dom, monitor_cmd, &result, flags) < 0)
         goto cleanup;
