@@ -5671,10 +5671,10 @@ qemuDomainValidateVcpuInfo(virDomainObjPtr vm)
  * @vm: domain object
  * @asyncJob: current asynchronous job type
  *
- * Updates vCPU information private data of @vm.
+ * Updates vCPU information private data of @vm. Due to historical reasons this
+ * function returns success even if some data were not reported by qemu.
  *
- * Returns number of detected vCPU threads on success, -1 on error and reports
- * an appropriate error, -2 if the domain doesn't exist any more.
+ * Returns 0 on success and -1 on fatal error.
  */
 int
 qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
@@ -5722,10 +5722,8 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
     ncpupids = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &cpupids);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        ret = -2;
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
-    }
 
     /* failure to get the VCPU <-> PID mapping or to execute the query
      * command will not be treated fatal as some versions of qemu don't
@@ -5745,10 +5743,7 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
             QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->tid = 0;
     }
 
-    if (qemuDomainValidateVcpuInfo(vm) < 0)
-        goto cleanup;
-
-    ret = ncpupids;
+    ret = 0;
 
  cleanup:
     VIR_FREE(cpupids);

@@ -4615,6 +4615,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainVcpuDefPtr vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu);
+    qemuDomainVcpuPrivatePtr vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpuinfo);
     int ret = -1;
     int rc;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
@@ -4639,15 +4640,14 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
 
     vcpuinfo->online = true;
 
-    if ((rc = qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE)) <= 0) {
-        /* vcpu pids were not detected, skip setting of affinity */
-        if (rc == 0)
-            ret = 0;
-
+    if (qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
         goto cleanup;
-    }
 
-    if (qemuProcessSetupVcpu(vm, vcpu) < 0)
+    if (qemuDomainValidateVcpuInfo(vm) < 0)
+        goto cleanup;
+
+    if (vcpupriv->tid > 0 &&
+        qemuProcessSetupVcpu(vm, vcpu) < 0)
         goto cleanup;
 
     ret = 0;
@@ -4689,11 +4689,11 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if ((rc = qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE)) < 0) {
-        /* rollback only if domain didn't exit */
-        if (rc == -2)
-            goto cleanup;
+    if (qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
+        goto cleanup;
 
+    if (qemuDomainValidateVcpuInfo(vm) < 0) {
+        /* rollback vcpu count if the setting has failed */
         virDomainAuditVcpu(vm, oldvcpus, oldvcpus - 1, "update", false);
         vcpuinfo->online = true;
         goto cleanup;
