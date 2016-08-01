@@ -4750,6 +4750,14 @@
           <value>nvdimm</value>
         </choice>
       </attribute>
+      <optional>
+        <attribute name="access">
+          <choice>
+            <value>shared</value>
+            <value>private</value>
+          </choice>
+        </attribute>
+      </optional>
       <interleave>
         <optional>
           <ref name="memorydev-source"/>

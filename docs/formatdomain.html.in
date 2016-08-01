@@ -1417,7 +1417,7 @@
       <span class='since'>Since 1.2.9</span> the optional attribute
       <code>memAccess</code> can control whether the memory is to be
       mapped as "shared" or "private".  This is valid only for
-      hugepages-backed memory.
+      hugepages-backed memory and nvdimm modules.
     </p>
 
     <p>
@@ -7100,7 +7100,7 @@ qemu-kvm -net nic,model=? /dev/null
 <pre>
 ...
 &lt;devices&gt;
-  &lt;memory model='dimm'&gt;
+  &lt;memory model='dimm' access='private'&gt;
     &lt;target&gt;
       &lt;size unit='KiB'&gt;524287&lt;/size&gt;
       &lt;node&gt;0&lt;/node&gt;
@@ -7136,6 +7136,18 @@ qemu-kvm -net nic,model=? /dev/null
           <span class="since">Since 1.2.14</span>
           Provide <code>nvdimm</code> model adds a Non-Volatile DIMM
           module. <span class="since">Since 3.2.0</span>
+        </p>
+      </dd>
+
+      <dt><code>access</code></dt>
+      <dd>
+        <p>
+          An optional attribute <code>access</code>
+          (<span class="since">since 3.2.0</span>) that provides
+          capability to fine tune mapping of the memory on per
+          module basis. Values are the same as
+          <a href="#elementsMemoryBacking">Memory Backing</a>:
+          <code>shared</code> and <code>private</code>.
         </p>
       </dd>
 
