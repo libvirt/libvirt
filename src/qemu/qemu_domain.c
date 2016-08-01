@@ -5737,10 +5737,11 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
                           int asyncJob)
 {
     virDomainVcpuDefPtr vcpu;
+    qemuDomainVcpuPrivatePtr vcpupriv;
+    qemuMonitorCPUInfoPtr info = NULL;
     size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
-    pid_t *cpupids = NULL;
-    int ncpupids;
     size_t i;
+    int rc;
     int ret = -1;
 
     /*
@@ -5776,32 +5777,26 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
-    ncpupids = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &cpupids);
+
+    rc = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &info, maxvcpus);
+
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
-    /* failure to get the VCPU <-> PID mapping or to execute the query
-     * command will not be treated fatal as some versions of qemu don't
-     * support this command */
-    if (ncpupids <= 0) {
-        virResetLastError();
-        ret = 0;
+    if (rc < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < maxvcpus; i++) {
         vcpu = virDomainDefGetVcpu(vm->def, i);
+        vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
 
-        if (i < ncpupids)
-            QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->tid = cpupids[i];
-        else
-            QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->tid = 0;
+        vcpupriv->tid = info[i].tid;
     }
 
     ret = 0;
 
  cleanup:
-    VIR_FREE(cpupids);
+    qemuMonitorCPUInfoFree(info, maxvcpus);
     return ret;
 }
 

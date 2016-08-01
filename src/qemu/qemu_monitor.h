@@ -390,8 +390,19 @@ int qemuMonitorGetStatus(qemuMonitorPtr mon,
 int qemuMonitorSystemReset(qemuMonitorPtr mon);
 int qemuMonitorSystemPowerdown(qemuMonitorPtr mon);
 
+
+struct _qemuMonitorCPUInfo {
+    pid_t tid;
+};
+typedef struct _qemuMonitorCPUInfo qemuMonitorCPUInfo;
+typedef qemuMonitorCPUInfo *qemuMonitorCPUInfoPtr;
+
+void qemuMonitorCPUInfoFree(qemuMonitorCPUInfoPtr list,
+                            size_t nitems);
 int qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
-                          int **pids);
+                          qemuMonitorCPUInfoPtr *vcpus,
+                          size_t maxvcpus);
+
 int qemuMonitorGetVirtType(qemuMonitorPtr mon,
                            virDomainVirtType *virtType);
 int qemuMonitorGetBalloonInfo(qemuMonitorPtr mon,

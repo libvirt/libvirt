@@ -1656,25 +1656,68 @@ qemuMonitorSystemReset(qemuMonitorPtr mon)
 }
 
 
+void
+qemuMonitorCPUInfoFree(qemuMonitorCPUInfoPtr cpus,
+                       size_t ncpus ATTRIBUTE_UNUSED)
+{
+    if (!cpus)
+        return;
+
+    VIR_FREE(cpus);
+}
+
+
 /**
  * qemuMonitorGetCPUInfo:
  * @mon: monitor
- * @pids: returned array of thread ids corresponding to the vCPUs
+ * @vcpus: pointer filled by array of qemuMonitorCPUInfo structures
+ * @maxvcpus: total possible number of vcpus
  *
- * Detects the vCPU thread ids. Returns count of detected vCPUs on success,
- * 0 if qemu didn't report thread ids (does not report libvirt error),
- * -1 on error (reports libvirt error).
+ * Detects VCPU information. If qemu doesn't support or fails reporting
+ * information this function will return success as other parts of libvirt
+ * are able to cope with that.
+ *
+ * Returns 0 on success (including if qemu didn't report any data) and
+ *  -1 on error (reports libvirt error).
  */
 int
 qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
-                      int **pids)
+                      qemuMonitorCPUInfoPtr *vcpus,
+                      size_t maxvcpus)
 {
+    qemuMonitorCPUInfoPtr info = NULL;
+    int *pids = NULL;
+    size_t i;
+    int ret = -1;
+    int rc;
+
     QEMU_CHECK_MONITOR(mon);
 
+    if (VIR_ALLOC_N(info, maxvcpus) < 0)
+        return -1;
+
     if (mon->json)
-        return qemuMonitorJSONQueryCPUs(mon, pids);
+        rc = qemuMonitorJSONQueryCPUs(mon, &pids);
     else
-        return qemuMonitorTextQueryCPUs(mon, pids);
+        rc = qemuMonitorTextQueryCPUs(mon, &pids);
+
+    if (rc < 0) {
+        virResetLastError();
+        VIR_STEAL_PTR(*vcpus, info);
+        ret = 0;
+        goto cleanup;
+    }
+
+    for (i = 0; i < rc; i++)
+        info[i].tid = pids[i];
+
+    VIR_STEAL_PTR(*vcpus, info);
+    ret = 0;
+
+ cleanup:
+    qemuMonitorCPUInfoFree(info, maxvcpus);
+    VIR_FREE(pids);
+    return ret;
 }
 
 
