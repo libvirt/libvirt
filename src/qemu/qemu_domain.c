@@ -2314,12 +2314,21 @@ qemuDomainDefPostParse(virDomainDefPtr def,
 static int
 qemuDomainDefValidate(const virDomainDef *def,
                       virCapsPtr caps ATTRIBUTE_UNUSED,
-                      void *opaque ATTRIBUTE_UNUSED)
+                      void *opaque)
 {
+    virQEMUDriverPtr driver = opaque;
+    virQEMUCapsPtr qemuCaps = NULL;
+    size_t topologycpus;
+    int ret = -1;
+
+    if (!(qemuCaps = virQEMUCapsCacheLookup(driver->qemuCapsCache,
+                                            def->emulator)))
+        goto cleanup;
+
     if (def->mem.min_guarantee) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Parameter 'min_guarantee' not supported by QEMU."));
-        return -1;
+        goto cleanup;
     }
 
     if (def->os.loader &&
@@ -2330,7 +2339,7 @@ qemuDomainDefValidate(const virDomainDef *def,
         if (!qemuDomainMachineIsQ35(def)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Secure boot is supported with q35 machine types only"));
-            return -1;
+            goto cleanup;
         }
 
         /* Now, technically it is possible to have secure boot on
@@ -2339,17 +2348,34 @@ qemuDomainDefValidate(const virDomainDef *def,
         if (def->os.arch != VIR_ARCH_X86_64) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Secure boot is supported for x86_64 architecture only"));
-            return -1;
+            goto cleanup;
         }
 
         if (def->features[VIR_DOMAIN_FEATURE_SMM] != VIR_TRISTATE_SWITCH_ON) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Secure boot requires SMM feature enabled"));
-            return -1;
+            goto cleanup;
         }
     }
 
-    return 0;
+    /* qemu as of 2.5.0 rejects SMP topologies that don't match the cpu count */
+    if (def->cpu && def->cpu->sockets) {
+        topologycpus = def->cpu->sockets * def->cpu->cores * def->cpu->threads;
+        if (topologycpus != virDomainDefGetVcpusMax(def)) {
+            /* presence of query-hotpluggable-cpus should be a good enough witness */
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("CPU topology doesn't match maximum vcpu count"));
+                goto cleanup;
+            }
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(qemuCaps);
+    return ret;
 }
 
 
