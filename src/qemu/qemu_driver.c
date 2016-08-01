@@ -13806,7 +13806,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
         return -1;
     }
 
-    if (virAsprintf(&device, "drive-%s", disk->info.alias) < 0)
+    if (!(device = qemuAliasFromDisk(disk)))
         goto cleanup;
 
     if (!(newDiskSrc = virStorageSourceCopy(snap->src, false)))
