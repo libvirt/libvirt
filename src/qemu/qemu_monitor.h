@@ -409,6 +409,9 @@ struct qemuMonitorQueryHotpluggableCpusEntry {
     int socket_id;
     int core_id;
     int thread_id;
+
+    /* internal data */
+    int enable_id;
 };
 void qemuMonitorQueryHotpluggableCpusFree(struct qemuMonitorQueryHotpluggableCpusEntry *entries,
                                           size_t nentries);
@@ -416,6 +419,23 @@ void qemuMonitorQueryHotpluggableCpusFree(struct qemuMonitorQueryHotpluggableCpu
 
 struct _qemuMonitorCPUInfo {
     pid_t tid;
+    int id; /* order of enabling of the given cpu */
+
+    /* topology info for hotplug purposes. Hotplug of given vcpu impossible if
+     * all entries are -1 */
+    int socket_id;
+    int core_id;
+    int thread_id;
+    unsigned int vcpus; /* number of vcpus added if given entry is hotplugged */
+
+    /* name of the qemu type to add in case of hotplug */
+    char *type;
+
+    /* alias of an hotpluggable entry. Entries with alias can be hot-unplugged */
+    char *alias;
+
+    /* internal for use in the matching code */
+    char *qom_path;
 };
 typedef struct _qemuMonitorCPUInfo qemuMonitorCPUInfo;
 typedef qemuMonitorCPUInfo *qemuMonitorCPUInfoPtr;
@@ -424,7 +444,8 @@ void qemuMonitorCPUInfoFree(qemuMonitorCPUInfoPtr list,
                             size_t nitems);
 int qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
                           qemuMonitorCPUInfoPtr *vcpus,
-                          size_t maxvcpus);
+                          size_t maxvcpus,
+                          bool hotplug);
 
 int qemuMonitorGetVirtType(qemuMonitorPtr mon,
                            virDomainVirtType *virtType);

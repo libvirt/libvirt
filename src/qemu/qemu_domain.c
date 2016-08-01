@@ -5804,7 +5804,7 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    rc = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &info, maxvcpus);
+    rc = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &info, maxvcpus, false);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
