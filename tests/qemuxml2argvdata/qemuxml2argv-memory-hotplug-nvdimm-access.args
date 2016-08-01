@@ -1,0 +1,26 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu \
+-name QEMUGuest1 \
+-S \
+-machine pc,accel=tcg,nvdimm=on \
+-m size=219136k,slots=16,maxmem=1099511627776k \
+-smp 2,sockets=2,cores=1,threads=1 \
+-numa node,nodeid=0,cpus=0-1,mem=214 \
+-object memory-backend-file,id=memnvdimm0,prealloc=yes,mem-path=/tmp/nvdimm,\
+share=no,size=536870912 \
+-device nvdimm,node=0,memdev=memnvdimm0,id=nvdimm0,slot=0 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
+-no-acpi \
+-boot c \
+-usb \
+-drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
+-device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

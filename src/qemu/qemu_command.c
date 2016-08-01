@@ -3215,7 +3215,7 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
     virDomainHugePagePtr hugepage = NULL;
     virDomainNumatuneMemMode mode;
     const long system_page_size = virGetSystemPageSizeKB();
-    virDomainMemoryAccess memAccess = VIR_DOMAIN_MEMORY_ACCESS_DEFAULT;
+    virDomainMemoryAccess memAccess = mem->access;
     size_t i;
     char *memPath = NULL;
     bool prealloc = false;
@@ -3229,7 +3229,8 @@ qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
     *backendProps = NULL;
     *backendType = NULL;
 
-    if (mem->targetNode >= 0) {
+    if (memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT &&
+        mem->targetNode >= 0) {
         /* memory devices could provide a invalid guest node */
         if (mem->targetNode >= virDomainNumaGetNodeCount(def->numa)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
