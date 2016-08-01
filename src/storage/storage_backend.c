@@ -2319,7 +2319,7 @@ virStorageBackendVolDownloadLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
  * appear as if it were zero-filled.
  */
 static int
-virStorageBackendVolZeroSparseFileLocal(virStorageVolDefPtr vol,
+virStorageBackendVolZeroSparseFileLocal(const char *path,
                                         off_t size,
                                         int fd)
 {
@@ -2327,7 +2327,7 @@ virStorageBackendVolZeroSparseFileLocal(virStorageVolDefPtr vol,
         virReportSystemError(errno,
                              _("Failed to truncate volume with "
                                "path '%s' to 0 bytes"),
-                             vol->target.path);
+                             path);
         return -1;
     }
 
@@ -2335,7 +2335,7 @@ virStorageBackendVolZeroSparseFileLocal(virStorageVolDefPtr vol,
         virReportSystemError(errno,
                              _("Failed to truncate volume with "
                                "path '%s' to %ju bytes"),
-                             vol->target.path, (uintmax_t)size);
+                             path, (uintmax_t)size);
         return -1;
     }
 
@@ -2344,7 +2344,7 @@ virStorageBackendVolZeroSparseFileLocal(virStorageVolDefPtr vol,
 
 
 static int
-virStorageBackendWipeLocal(virStorageVolDefPtr vol,
+virStorageBackendWipeLocal(const char *path,
                            int fd,
                            unsigned long long wipe_len,
                            size_t writebuf_length)
@@ -2363,7 +2363,7 @@ virStorageBackendWipeLocal(virStorageVolDefPtr vol,
         virReportSystemError(errno,
                              _("Failed to seek to the start in volume "
                                "with path '%s'"),
-                             vol->target.path);
+                             path);
         goto cleanup;
     }
 
@@ -2376,7 +2376,7 @@ virStorageBackendWipeLocal(virStorageVolDefPtr vol,
             virReportSystemError(errno,
                                  _("Failed to write %zu bytes to "
                                    "storage volume with path '%s'"),
-                                 write_size, vol->target.path);
+                                 write_size, path);
 
             goto cleanup;
         }
@@ -2387,12 +2387,11 @@ virStorageBackendWipeLocal(virStorageVolDefPtr vol,
     if (fdatasync(fd) < 0) {
         virReportSystemError(errno,
                              _("cannot sync data to volume with path '%s'"),
-                             vol->target.path);
+                             path);
         goto cleanup;
     }
 
-    VIR_DEBUG("Wrote %llu bytes to volume with path '%s'",
-              wipe_len, vol->target.path);
+    VIR_DEBUG("Wrote %llu bytes to volume with path '%s'", wipe_len, path);
 
     ret = 0;
 
@@ -2496,9 +2495,9 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
         ret = 0;
     } else {
         if (S_ISREG(st.st_mode) && st.st_blocks < (st.st_size / DEV_BSIZE)) {
-            ret = virStorageBackendVolZeroSparseFileLocal(vol, st.st_size, fd);
+            ret = virStorageBackendVolZeroSparseFileLocal(path, st.st_size, fd);
         } else {
-            ret = virStorageBackendWipeLocal(vol,
+            ret = virStorageBackendWipeLocal(path,
                                              fd,
                                              vol->target.allocation,
                                              st.st_blksize);
