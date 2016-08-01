@@ -390,6 +390,12 @@ int qemuMonitorGetStatus(qemuMonitorPtr mon,
 int qemuMonitorSystemReset(qemuMonitorPtr mon);
 int qemuMonitorSystemPowerdown(qemuMonitorPtr mon);
 
+struct qemuMonitorQueryCpusEntry {
+    pid_t tid;
+};
+void qemuMonitorQueryCpusFree(struct qemuMonitorQueryCpusEntry *entries,
+                              size_t nentries);
+
 
 struct _qemuMonitorCPUInfo {
     pid_t tid;

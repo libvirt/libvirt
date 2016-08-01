@@ -1323,69 +1323,69 @@ int qemuMonitorJSONSystemReset(qemuMonitorPtr mon)
  *   { "CPU": 1, "current": false, "halted": true, "pc": 7108165 } ]
  */
 static int
-qemuMonitorJSONExtractCPUInfo(virJSONValuePtr reply,
-                              int **pids)
+qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
+                              struct qemuMonitorQueryCpusEntry **entries,
+                              size_t *nentries)
 {
-    virJSONValuePtr data;
+    struct qemuMonitorQueryCpusEntry *cpus = NULL;
     int ret = -1;
     size_t i;
-    int *threads = NULL;
     ssize_t ncpus;
 
-    if (!(data = virJSONValueObjectGetArray(reply, "return"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cpu reply was missing return data"));
-        goto cleanup;
-    }
+    if ((ncpus = virJSONValueArraySize(data)) <= 0)
+        return -2;
 
-    if ((ncpus = virJSONValueArraySize(data)) <= 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cpu information was empty"));
-        goto cleanup;
-    }
-
-    if (VIR_ALLOC_N(threads, ncpus) < 0)
+    if (VIR_ALLOC_N(cpus, ncpus) < 0)
         goto cleanup;
 
     for (i = 0; i < ncpus; i++) {
         virJSONValuePtr entry = virJSONValueArrayGet(data, i);
-        int thread;
+        int thread = 0;
         if (!entry) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("cpu information was missing an array element"));
+            ret = -2;
             goto cleanup;
         }
 
-        if (virJSONValueObjectGetNumberInt(entry, "thread_id", &thread) < 0) {
-            /* Some older qemu versions don't report the thread_id,
-             * so treat this as non-fatal, simply returning no data */
-            ret = 0;
-            goto cleanup;
-        }
+        /* Some older qemu versions don't report the thread_id so treat this as
+         * non-fatal, simply returning no data */
+        ignore_value(virJSONValueObjectGetNumberInt(entry, "thread_id", &thread));
 
-        threads[i] = thread;
+        cpus[i].tid = thread;
     }
 
-    *pids = threads;
-    threads = NULL;
-    ret = ncpus;
+    VIR_STEAL_PTR(*entries, cpus);
+    *nentries = ncpus;
+    ret = 0;
 
  cleanup:
-    VIR_FREE(threads);
+    qemuMonitorQueryCpusFree(cpus, ncpus);
     return ret;
 }
 
 
+/**
+ * qemuMonitorJSONQueryCPUs:
+ *
+ * @mon: monitor object
+ * @entries: filled with detected entries on success
+ * @nentries: number of entries returned
+ *
+ * Queries qemu for cpu-related information. Failure to execute the command or
+ * extract results does not produce an error as libvirt can continue without
+ * this information.
+ *
+ * Returns 0 on success success, -1 on a fatal error (oom ...) and -2 if the
+ * query failed gracefully.
+ */
 int
 qemuMonitorJSONQueryCPUs(qemuMonitorPtr mon,
-                         int **pids)
+                         struct qemuMonitorQueryCpusEntry **entries,
+                         size_t *nentries)
 {
     int ret = -1;
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-cpus",
-                                                     NULL);
+    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-cpus", NULL);
     virJSONValuePtr reply = NULL;
-
-    *pids = NULL;
+    virJSONValuePtr data;
 
     if (!cmd)
         return -1;
@@ -1393,10 +1393,13 @@ qemuMonitorJSONQueryCPUs(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+    if (!(data = virJSONValueObjectGetArray(reply, "return"))) {
+        ret = -2;
         goto cleanup;
+    }
 
-    ret = qemuMonitorJSONExtractCPUInfo(reply, pids);
+    ret = qemuMonitorJSONExtractCPUInfo(data, entries, nentries);
+
  cleanup:
     virJSONValueFree(cmd);
     virJSONValueFree(reply);

@@ -1666,6 +1666,16 @@ qemuMonitorCPUInfoFree(qemuMonitorCPUInfoPtr cpus,
     VIR_FREE(cpus);
 }
 
+void
+qemuMonitorQueryCpusFree(struct qemuMonitorQueryCpusEntry *entries,
+                         size_t nentries ATTRIBUTE_UNUSED)
+{
+    if (!entries)
+        return;
+
+    VIR_FREE(entries);
+}
+
 
 /**
  * qemuMonitorGetCPUInfo:
@@ -1686,7 +1696,8 @@ qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
                       size_t maxvcpus)
 {
     qemuMonitorCPUInfoPtr info = NULL;
-    int *pids = NULL;
+    struct qemuMonitorQueryCpusEntry *cpuentries = NULL;
+    size_t ncpuentries = 0;
     size_t i;
     int ret = -1;
     int rc;
@@ -1697,26 +1708,28 @@ qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
         return -1;
 
     if (mon->json)
-        rc = qemuMonitorJSONQueryCPUs(mon, &pids);
+        rc = qemuMonitorJSONQueryCPUs(mon, &cpuentries, &ncpuentries);
     else
-        rc = qemuMonitorTextQueryCPUs(mon, &pids);
+        rc = qemuMonitorTextQueryCPUs(mon, &cpuentries, &ncpuentries);
 
     if (rc < 0) {
-        virResetLastError();
-        VIR_STEAL_PTR(*vcpus, info);
-        ret = 0;
+        if (rc == -2) {
+            VIR_STEAL_PTR(*vcpus, info);
+            ret = 0;
+        }
+
         goto cleanup;
     }
 
-    for (i = 0; i < rc; i++)
-        info[i].tid = pids[i];
+    for (i = 0; i < ncpuentries; i++)
+        info[i].tid = cpuentries[i].tid;
 
     VIR_STEAL_PTR(*vcpus, info);
     ret = 0;
 
  cleanup:
     qemuMonitorCPUInfoFree(info, maxvcpus);
-    VIR_FREE(pids);
+    qemuMonitorQueryCpusFree(cpuentries, ncpuentries);
     return ret;
 }
 

@@ -502,12 +502,15 @@ int qemuMonitorTextSystemReset(qemuMonitorPtr mon)
 
 int
 qemuMonitorTextQueryCPUs(qemuMonitorPtr mon,
-                         int **pids)
+                         struct qemuMonitorQueryCpusEntry **entries,
+                         size_t *nentries)
 {
     char *qemucpus = NULL;
     char *line;
-    pid_t *cpupids = NULL;
-    size_t ncpupids = 0;
+    struct qemuMonitorQueryCpusEntry *cpus = NULL;
+    size_t ncpus = 0;
+    struct qemuMonitorQueryCpusEntry cpu = {0};
+    int ret = -2; /* -2 denotes a non-fatal error to get the data */
 
     if (qemuMonitorHMPCommand(mon, "info cpus", &qemucpus) < 0)
         return -1;
@@ -529,15 +532,19 @@ qemuMonitorTextQueryCPUs(qemuMonitorPtr mon,
 
         /* Extract host Thread ID */
         if ((offset = strstr(line, "thread_id=")) == NULL)
-            goto error;
+            goto cleanup;
 
         if (virStrToLong_i(offset + strlen("thread_id="), &end, 10, &tid) < 0)
-            goto error;
+            goto cleanup;
         if (end == NULL || !c_isspace(*end))
-            goto error;
+            goto cleanup;
 
-        if (VIR_APPEND_ELEMENT_COPY(cpupids, ncpupids, tid) < 0)
-            goto error;
+        cpu.tid = tid;
+
+        if (VIR_APPEND_ELEMENT_COPY(cpus, ncpus, cpu) < 0) {
+            ret = -1;
+            goto cleanup;
+        }
 
         VIR_DEBUG("tid=%d", tid);
 
@@ -547,20 +554,14 @@ qemuMonitorTextQueryCPUs(qemuMonitorPtr mon,
             line = strchr(offset, '\n');
     } while (line != NULL);
 
-    /* Validate we got data for all VCPUs we expected */
-    VIR_FREE(qemucpus);
-    *pids = cpupids;
-    return ncpupids;
+    VIR_STEAL_PTR(*entries, cpus);
+    *nentries = ncpus;
+    ret = 0;
 
- error:
+ cleanup:
+    qemuMonitorQueryCpusFree(cpus, ncpus);
     VIR_FREE(qemucpus);
-    VIR_FREE(cpupids);
-
-    /* Returning 0 to indicate non-fatal failure, since
-     * older QEMU does not have VCPU<->PID mapping and
-     * we don't want to fail on that
-     */
-    return 0;
+    return ret;
 }
 
 
