@@ -4192,6 +4192,7 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
                 return -1;
             break;
 
+        case VIR_DOMAIN_STARTUP_POLICY_DEFAULT:
         case VIR_DOMAIN_STARTUP_POLICY_MANDATORY:
             return -1;
 
@@ -4200,14 +4201,13 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriverPtr driver,
                 return -1;
             break;
 
-        case VIR_DOMAIN_STARTUP_POLICY_DEFAULT:
         case VIR_DOMAIN_STARTUP_POLICY_LAST:
             /* this should never happen */
             break;
     }
 
     qemuDomainCheckRemoveOptionalDisk(driver, vm, diskIndex);
-
+    virResetLastError();
     return 0;
 }
 
@@ -4241,12 +4241,8 @@ qemuDomainCheckDiskPresence(virQEMUDriverPtr driver,
         if (qemuDomainDetermineDiskChain(driver, vm, disk, true, true) >= 0)
             continue;
 
-        if (disk->startupPolicy &&
-            qemuDomainCheckDiskStartupPolicy(driver, vm, idx,
-                                             cold_boot) >= 0) {
-            virResetLastError();
+        if (qemuDomainCheckDiskStartupPolicy(driver, vm, idx, cold_boot) >= 0)
             continue;
-        }
 
         goto error;
     }
