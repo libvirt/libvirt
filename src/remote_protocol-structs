@@ -2572,20 +2572,20 @@ struct remote_storage_pool_event_refresh_msg {
         remote_nonnull_storage_pool pool;
 };
 struct remote_connect_node_device_event_register_any_args {
-         int                            eventID;
-         remote_node_device             dev;
+        int                        eventID;
+        remote_node_device         dev;
 };
 struct remote_connect_node_device_event_register_any_ret {
-         int                        callbackID;
+        int                        callbackID;
 };
 struct remote_connect_node_device_event_deregister_any_args {
-         int                        callbackID;
+        int                        callbackID;
 };
 struct remote_node_device_event_lifecycle_msg {
-         int                             callbackID;
-         remote_nonnull_node_device      dev;
-         int                             event;
-         int                             detail;
+        int                        callbackID;
+        remote_nonnull_node_device dev;
+        int                        event;
+        int                        detail;
 };
 struct remote_domain_fsfreeze_args {
         remote_nonnull_domain      dom;
