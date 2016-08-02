@@ -114,22 +114,14 @@ testSchemaDir(const char *schema,
 
 
 static int
-testSchemaDirs(const char *schema, ...)
+testSchemaDirs(const char *schema, virXMLValidatorPtr validator, ...)
 {
-    virXMLValidatorPtr validator = NULL;
     va_list args;
     int ret = 0;
-    char *schema_path = NULL;
     char *dir_path = NULL;
     const char *dir;
 
-    va_start(args, schema);
-
-    if (virAsprintf(&schema_path, "%s/docs/schemas/%s", abs_topsrcdir, schema) < 0)
-        goto cleanup;
-
-    if (!(validator = virXMLValidatorInit(schema_path)))
-        goto cleanup;
+    va_start(args, validator);
 
     while ((dir = va_arg(args, char *))) {
         if (virAsprintf(&dir_path, "%s/%s", abs_srcdir, dir) < 0) {
@@ -142,10 +134,35 @@ testSchemaDirs(const char *schema, ...)
     }
 
  cleanup:
-    virXMLValidatorFree(validator);
-    VIR_FREE(schema_path);
     VIR_FREE(dir_path);
     va_end(args);
+    return ret;
+}
+
+
+struct testSchemaFileData {
+    virXMLValidatorPtr validator;
+    const char *schema;
+};
+
+static int
+testSchemaGrammar(const void *opaque)
+{
+    struct testSchemaFileData *data = (struct testSchemaFileData *) opaque;
+    char *schema_path;
+    int ret = -1;
+
+    if (virAsprintf(&schema_path, "%s/docs/schemas/%s",
+                    abs_topsrcdir, data->schema) < 0)
+        return -1;
+
+    if (!(data->validator = virXMLValidatorInit(schema_path)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(schema_path);
     return ret;
 }
 
@@ -154,12 +171,22 @@ static int
 mymain(void)
 {
     int ret = 0;
+    struct testSchemaFileData data;
 
-#define DO_TEST(schema, ...)                                 \
-    do {                                                     \
-        if (testSchemaDirs(schema, __VA_ARGS__, NULL) < 0)   \
-            ret = -1;                                        \
-    } while (0)                                              \
+#define DO_TEST(sch, ...)                                                      \
+    do {                                                                       \
+        data.schema = sch;                                                     \
+        if (virTestRun("test schema grammar file: " sch,                       \
+                       testSchemaGrammar, &data) == 0) {                       \
+            if (testSchemaDirs(sch, data.validator, __VA_ARGS__, NULL) < 0)    \
+                ret = -1;                                                      \
+                                                                               \
+            virXMLValidatorFree(data.validator);                               \
+            data.validator = NULL;                                             \
+        } else {                                                               \
+            ret = -1;                                                          \
+        }                                                                      \
+    } while (0)
 
     DO_TEST("capability.rng", "capabilityschemadata", "xencapsdata");
     DO_TEST("domain.rng", "domainschemadata", "qemuargv2xmldata",
