@@ -2092,6 +2092,7 @@ qemuDomainReboot(virDomainPtr dom, unsigned int flags)
     }
 
     if (useAgent) {
+        qemuDomainSetFakeReboot(driver, vm, false);
         qemuDomainObjEnterAgent(vm);
         ret = qemuAgentShutdown(priv->agent, agentFlag);
         qemuDomainObjExitAgent(vm);
