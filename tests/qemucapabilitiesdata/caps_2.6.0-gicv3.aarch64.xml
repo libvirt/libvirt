@@ -159,6 +159,8 @@
   <flag name='smm'/>
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='drive-iotune-max-length'/>
+  <flag name='ivshmem-plain'/>
+  <flag name='ivshmem-doorbell'/>
   <version>2005094</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

@@ -194,6 +194,8 @@
   <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-vga'/>
   <flag name='drive-iotune-max-length'/>
+  <flag name='ivshmem-plain'/>
+  <flag name='ivshmem-doorbell'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.7.0)</package>
