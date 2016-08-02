@@ -528,12 +528,12 @@ qemuMonitorIOWrite(qemuMonitorPtr mon)
 
     PROBE(QEMU_MONITOR_IO_WRITE,
           "mon=%p buf=%s len=%zu ret=%d errno=%d",
-          mon, buf, len, done, errno);
+          mon, buf, len, done, done < 0 ? errno : 0);
 
     if (mon->msg->txFD != -1) {
         PROBE(QEMU_MONITOR_IO_SEND_FD,
               "mon=%p fd=%d ret=%d errno=%d",
-              mon, mon->msg->txFD, done, errno);
+              mon, mon->msg->txFD, done, done < 0 ? errno : 0);
     }
 
     if (done < 0) {
