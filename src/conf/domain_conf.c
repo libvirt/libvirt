@@ -8265,14 +8265,14 @@ virDomainControllerDefParseXML(xmlNodePtr node,
 
     if (max_sectors && virStrToLong_ui(max_sectors, NULL, 10, &def->max_sectors) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Malformed 'max_sectors' value %s"), max_sectors);
+                       _("Malformed 'max_sectors' value %s'"), max_sectors);
         goto error;
     }
 
     if (ioeventfd &&
         (def->ioeventfd = virTristateSwitchTypeFromString(ioeventfd)) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Malformed 'ioeventfd' value %s"), ioeventfd);
+                       _("Malformed 'ioeventfd' value %s'"), ioeventfd);
         goto error;
     }
 

@@ -1973,7 +1973,7 @@ vshEventGenericPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (virTimeStringNowRaw(timestamp) < 0)
             timestamp[0] = '\0';
 
-        vshPrint(data->ctl, _("%s: event '%s' for storage pool %s\n"),
+        vshPrint(data->ctl, _("%s: event '%s'' for storage pool %s\n"),
                  timestamp,
                  data->cb->name,
                  virStoragePoolGetName(pool));
