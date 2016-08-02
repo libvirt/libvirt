@@ -1089,8 +1089,54 @@ virPCIDeviceUnbind(virPCIDevicePtr dev)
     return ret;
 }
 
+/*
+ * Bind a PCI device to a driver using driver_override sysfs interface.
+ * E.g.
+ *
+ *  echo driver-name > /sys/bus/pci/devices/0000:03:00.0/driver_override
+ *  echo 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind
+ *  echo 0000:03:00.0 > /sys/bus/pci/drivers_probe
+ *
+ * An empty driverName will cause the device to be bound to its
+ * preferred driver.
+ */
 static int
-virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
+virPCIDeviceBindWithDriverOverride(virPCIDevicePtr dev,
+                                   const char *driverName)
+{
+    int ret = -1;
+    char *path;
+
+    if (!(path = virPCIFile(dev->name, "driver_override")))
+        return -1;
+
+    if (virFileWriteStr(path, driverName, 0) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to add driver '%s' to driver_override "
+                               " interface of PCI device '%s'"),
+                             driverName, dev->name);
+        goto cleanup;
+    }
+
+    if (virPCIDeviceUnbind(dev) < 0)
+        goto cleanup;
+
+    if (virFileWriteStr(PCI_SYSFS "drivers_probe", dev->name, 0) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to trigger a probe for PCI device '%s'"),
+                             dev->name);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(path);
+    return ret;
+}
+
+static int
+virPCIDeviceUnbindFromStubWithNewid(virPCIDevicePtr dev)
 {
     int result = -1;
     char *drvdir = NULL;
@@ -1191,9 +1237,41 @@ virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
     return result;
 }
 
+static int
+virPCIDeviceUnbindFromStubWithOverride(virPCIDevicePtr dev)
+{
+    if (!dev->unbind_from_stub) {
+        VIR_DEBUG("Unbind from stub skipped for PCI device %s", dev->name);
+        return 0;
+    }
+
+    return virPCIDeviceBindWithDriverOverride(dev, "\n");
+}
 
 static int
-virPCIDeviceBindToStub(virPCIDevicePtr dev)
+virPCIDeviceUnbindFromStub(virPCIDevicePtr dev)
+{
+    int ret;
+    char *path;
+
+    /*
+     * Prefer using the device's driver_override interface, falling back
+     * to the unpleasant new_id interface.
+     */
+    if (!(path = virPCIFile(dev->name, "driver_override")))
+        return -1;
+
+    if (virFileExists(path))
+        ret = virPCIDeviceUnbindFromStubWithOverride(dev);
+    else
+        ret = virPCIDeviceUnbindFromStubWithNewid(dev);
+
+    VIR_FREE(path);
+    return ret;
+}
+
+static int
+virPCIDeviceBindToStubWithNewid(virPCIDevicePtr dev)
 {
     int result = -1;
     bool reprobe = false;
@@ -1343,6 +1421,75 @@ virPCIDeviceBindToStub(virPCIDevicePtr dev)
     virFreeError(err);
 
     return result;
+}
+
+static int
+virPCIDeviceBindToStubWithOverride(virPCIDevicePtr dev)
+{
+    int ret = -1;
+    const char *stubDriverName;
+    char *stubDriverPath = NULL;
+    char *driverLink = NULL;
+
+    /* Check the device is configured to use one of the known stub drivers */
+    if (dev->stubDriver == VIR_PCI_STUB_DRIVER_NONE) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("No stub driver configured for PCI device %s"),
+                       dev->name);
+        return -1;
+    } else if (!(stubDriverName = virPCIStubDriverTypeToString(dev->stubDriver))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown stub driver configured for PCI device %s"),
+                       dev->name);
+        return -1;
+    }
+
+    if (!(stubDriverPath = virPCIDriverDir(stubDriverName))  ||
+        !(driverLink = virPCIFile(dev->name, "driver")))
+        goto cleanup;
+
+    if (virFileExists(driverLink)) {
+        if (virFileLinkPointsTo(driverLink, stubDriverPath)) {
+            /* The device is already bound to the correct driver */
+            VIR_DEBUG("Device %s is already bound to %s",
+                      dev->name, stubDriverName);
+            ret = 0;
+            goto cleanup;
+        }
+    }
+
+    if (virPCIDeviceBindWithDriverOverride(dev, stubDriverName) < 0)
+        goto cleanup;
+
+    dev->unbind_from_stub = true;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(stubDriverPath);
+    VIR_FREE(driverLink);
+    return ret;
+}
+
+static int
+virPCIDeviceBindToStub(virPCIDevicePtr dev)
+{
+    int ret;
+    char *path;
+
+    /*
+     * Prefer using the device's driver_override interface, falling back
+     * to the unpleasant new_id interface.
+     */
+    if (!(path = virPCIFile(dev->name, "driver_override")))
+        return -1;
+
+    if (virFileExists(path))
+        ret = virPCIDeviceBindToStubWithOverride(dev);
+    else
+        ret = virPCIDeviceBindToStubWithNewid(dev);
+
+    VIR_FREE(path);
+    return ret;
 }
 
 /* virPCIDeviceDetach:
