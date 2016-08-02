@@ -3405,11 +3405,13 @@ libxlDomainAttachDeviceLive(libxlDriverPrivatePtr driver,
                 dev->data.disk = NULL;
             break;
 
+#ifdef LIBXL_HAVE_PVUSB
         case VIR_DOMAIN_DEVICE_CONTROLLER:
             ret = libxlDomainAttachControllerDevice(driver, vm, dev->data.controller);
             if (!ret)
                 dev->data.controller = NULL;
             break;
+#endif
 
         case VIR_DOMAIN_DEVICE_NET:
             ret = libxlDomainAttachNetDevice(driver, vm,
@@ -3826,9 +3828,11 @@ libxlDomainDetachDeviceLive(libxlDriverPrivatePtr driver,
             ret = libxlDomainDetachDeviceDiskLive(vm, dev);
             break;
 
+#ifdef LIBXL_HAVE_PVUSB
         case VIR_DOMAIN_DEVICE_CONTROLLER:
             ret = libxlDomainDetachControllerDevice(driver, vm, dev);
             break;
+#endif
 
         case VIR_DOMAIN_DEVICE_NET:
             ret = libxlDomainDetachNetDevice(driver, vm,
