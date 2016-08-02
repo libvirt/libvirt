@@ -807,7 +807,7 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
         /* we can't stop the operation even if the script raised an error */
         ignore_value(virHookCall(VIR_HOOK_DRIVER_LIBXL, vm->def->name,
                                  VIR_HOOK_LIBXL_OP_RELEASE, VIR_HOOK_SUBOP_END,
-                                 NULL, xml, NULL);
+                                 NULL, xml, NULL));
         VIR_FREE(xml);
     }
 
