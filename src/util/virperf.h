@@ -24,10 +24,13 @@
 
 # include "virutil.h"
 
+/* Some Intel processor families introduced some RDT (Resource Director
+ * Technology) features to monitor or control shared resource based on
+ * the perf framework in the linux kernel. */
 typedef enum {
-    VIR_PERF_EVENT_CMT,
-    VIR_PERF_EVENT_MBMT,
-    VIR_PERF_EVENT_MBML,
+    VIR_PERF_EVENT_CMT,    /* Cache Monitoring Technology */
+    VIR_PERF_EVENT_MBMT,   /* Memory Bandwidth Monitoring Total */
+    VIR_PERF_EVENT_MBML,   /* Memory Bandwidth Monitor Limit for controller */
 
     VIR_PERF_EVENT_LAST
 } virPerfEventType;
