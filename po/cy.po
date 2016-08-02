@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2016-07-28 10:48+0100\n"
+"POT-Creation-Date: 2016-08-02 10:25+0200\n"
 "PO-Revision-Date: 2015-02-23 11:00-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Welsh (http://www.transifex.com/projects/p/fedora/language/"
@@ -63,23 +63,23 @@ msgstr ""
 #: daemon/remote.c:2454 daemon/remote.c:2505 daemon/remote.c:2567
 #: daemon/remote.c:2629 daemon/remote.c:2692 daemon/remote.c:2764
 #: daemon/remote.c:2834 daemon/remote.c:2880 daemon/remote.c:2921
-#: daemon/remote.c:3507 daemon/remote.c:3552 daemon/remote.c:3584
-#: daemon/remote.c:3620 daemon/remote.c:3684 daemon/remote.c:3771
-#: daemon/remote.c:3807 daemon/remote.c:3847 daemon/remote.c:3923
-#: daemon/remote.c:3997 daemon/remote.c:4054 daemon/remote.c:4101
-#: daemon/remote.c:4141 daemon/remote.c:4191 daemon/remote.c:4249
-#: daemon/remote.c:4302 daemon/remote.c:4350 daemon/remote.c:4396
-#: daemon/remote.c:4438 daemon/remote.c:4479 daemon/remote.c:4526
-#: daemon/remote.c:4587 daemon/remote.c:4658 daemon/remote.c:4719
-#: daemon/remote.c:4777 daemon/remote.c:4823 daemon/remote.c:4873
-#: daemon/remote.c:4926 daemon/remote.c:4982 daemon/remote.c:5043
-#: daemon/remote.c:5113 daemon/remote.c:5173 daemon/remote.c:5230
-#: daemon/remote.c:5280 daemon/remote.c:5335 daemon/remote.c:5382
-#: daemon/remote.c:5433 daemon/remote.c:5506 daemon/remote.c:5555
-#: daemon/remote.c:5627 daemon/remote.c:5678 daemon/remote.c:5745
-#: daemon/remote.c:5794 daemon/remote.c:5830 daemon/remote.c:5945
-#: daemon/remote.c:6013 daemon/remote.c:6097 daemon/remote.c:6138
-#: daemon/remote.c:6331 daemon/remote_dispatch.h:173
+#: daemon/remote.c:3513 daemon/remote.c:3558 daemon/remote.c:3590
+#: daemon/remote.c:3626 daemon/remote.c:3690 daemon/remote.c:3777
+#: daemon/remote.c:3813 daemon/remote.c:3853 daemon/remote.c:3929
+#: daemon/remote.c:4003 daemon/remote.c:4060 daemon/remote.c:4107
+#: daemon/remote.c:4147 daemon/remote.c:4197 daemon/remote.c:4255
+#: daemon/remote.c:4308 daemon/remote.c:4356 daemon/remote.c:4402
+#: daemon/remote.c:4444 daemon/remote.c:4485 daemon/remote.c:4532
+#: daemon/remote.c:4593 daemon/remote.c:4664 daemon/remote.c:4725
+#: daemon/remote.c:4783 daemon/remote.c:4829 daemon/remote.c:4879
+#: daemon/remote.c:4932 daemon/remote.c:4988 daemon/remote.c:5049
+#: daemon/remote.c:5119 daemon/remote.c:5179 daemon/remote.c:5236
+#: daemon/remote.c:5286 daemon/remote.c:5341 daemon/remote.c:5388
+#: daemon/remote.c:5439 daemon/remote.c:5512 daemon/remote.c:5561
+#: daemon/remote.c:5633 daemon/remote.c:5684 daemon/remote.c:5751
+#: daemon/remote.c:5800 daemon/remote.c:5836 daemon/remote.c:5951
+#: daemon/remote.c:6019 daemon/remote.c:6103 daemon/remote.c:6144
+#: daemon/remote.c:6337 daemon/remote_dispatch.h:173
 #: daemon/remote_dispatch.h:303 daemon/remote_dispatch.h:515
 #: daemon/remote_dispatch.h:570 daemon/remote_dispatch.h:626
 #: daemon/remote_dispatch.h:708 daemon/remote_dispatch.h:794
@@ -448,8 +448,8 @@ msgstr ""
 #: daemon/remote.c:1629 daemon/remote.c:1679 daemon/remote.c:1848
 #: daemon/remote.c:2512 daemon/remote.c:2574 daemon/remote.c:2636
 #: daemon/remote.c:2699 daemon/remote.c:2771 daemon/remote.c:2845
-#: daemon/remote.c:2926 daemon/remote.c:4533 daemon/remote.c:4592
-#: daemon/remote.c:4726
+#: daemon/remote.c:2926 daemon/remote.c:4539 daemon/remote.c:4598
+#: daemon/remote.c:4732
 msgid "nparams too large"
 msgstr ""
 
@@ -486,65 +486,65 @@ msgstr ""
 msgid "client tried invalid SASL init request"
 msgstr ""
 
-#: daemon/remote.c:3102 daemon/remote.c:3253 daemon/remote.c:3351
-#: daemon/remote.c:3367 daemon/remote.c:3381 daemon/remote.c:3395
+#: daemon/remote.c:3102 daemon/remote.c:3259 daemon/remote.c:3357
+#: daemon/remote.c:3373 daemon/remote.c:3387 daemon/remote.c:3401
 #: src/util/virerror.c:1090 src/util/virpolkit.c:303 src/util/virpolkit.c:326
 msgid "authentication failed"
 msgstr ""
 
-#: daemon/remote.c:3130
+#: daemon/remote.c:3131
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr ""
 
-#: daemon/remote.c:3184 daemon/remote.c:3282
+#: daemon/remote.c:3190 daemon/remote.c:3288
 msgid "client tried invalid SASL start request"
 msgstr ""
 
-#: daemon/remote.c:3202
+#: daemon/remote.c:3208
 #, c-format
 msgid "sasl start reply data too long %d"
 msgstr ""
 
-#: daemon/remote.c:3299
+#: daemon/remote.c:3305
 #, c-format
 msgid "sasl step reply data too long %d"
 msgstr ""
 
-#: daemon/remote.c:3427
+#: daemon/remote.c:3433
 msgid "client tried invalid PolicyKit init request"
 msgstr ""
 
-#: daemon/remote.c:3699 daemon/remote.c:4021
+#: daemon/remote.c:3705 daemon/remote.c:4027
 #, c-format
 msgid "domain event %d not registered"
 msgstr ""
 
-#: daemon/remote.c:3858 daemon/remote.c:3934 daemon/remote.c:4008
+#: daemon/remote.c:3864 daemon/remote.c:3940 daemon/remote.c:4014
 #, c-format
 msgid "unsupported event ID %d"
 msgstr ""
 
-#: daemon/remote.c:4066
+#: daemon/remote.c:4072
 #, c-format
 msgid "domain event callback %d not registered"
 msgstr ""
 
-#: daemon/remote.c:4596
+#: daemon/remote.c:4602
 msgid "ncpus too large"
 msgstr ""
 
-#: daemon/remote.c:4667
+#: daemon/remote.c:4673
 msgid "maxerrors too large"
 msgstr ""
 
-#: daemon/remote.c:4886
+#: daemon/remote.c:4892
 #, c-format
 msgid "Too many job stats '%d' for limit '%d'"
 msgstr ""
 
-#: daemon/remote.c:4932 daemon/remote.c:4988 daemon/remote.c:5049
-#: daemon/remote.c:5119 daemon/remote.c:5179 daemon/remote.c:5236
+#: daemon/remote.c:4938 daemon/remote.c:4994 daemon/remote.c:5055
+#: daemon/remote.c:5125 daemon/remote.c:5185 daemon/remote.c:5242
 #: src/remote/remote_driver.c:6518 src/remote/remote_driver.c:6586
 #: src/remote/remote_driver.c:6670 src/remote/remote_driver.c:6758
 #: src/remote/remote_driver.c:6832 src/remote/remote_driver.c:6906
@@ -552,61 +552,61 @@ msgstr ""
 msgid "Too many migration parameters '%d' for limit '%d'"
 msgstr ""
 
-#: daemon/remote.c:5292
+#: daemon/remote.c:5298
 #, c-format
 msgid "Too many CPU models '%d' for limit '%d'"
 msgstr ""
 
-#: daemon/remote.c:5445
+#: daemon/remote.c:5451
 #, c-format
 msgid "unsupported network event ID %d"
 msgstr ""
 
-#: daemon/remote.c:5518
+#: daemon/remote.c:5524
 #, c-format
 msgid "network event callback %d not registered"
 msgstr ""
 
-#: daemon/remote.c:5567
+#: daemon/remote.c:5573
 #, c-format
 msgid "unsupported storage pool event ID %d"
 msgstr ""
 
-#: daemon/remote.c:5639
+#: daemon/remote.c:5645
 #, c-format
 msgid "storage pool event callback %d not registered"
 msgstr ""
 
-#: daemon/remote.c:5757
+#: daemon/remote.c:5763
 #, c-format
 msgid "qemu monitor event callback %d not registered"
 msgstr ""
 
-#: daemon/remote.c:5836
+#: daemon/remote.c:5842
 msgid "the result won't fit into REMOTE_NODE_MAX_CELLS"
 msgstr ""
 
-#: daemon/remote.c:5960 src/remote/remote_driver.c:7170
+#: daemon/remote.c:5966 src/remote/remote_driver.c:7170
 #, c-format
 msgid "Number of leases is %d, which exceeds max limit: %d"
 msgstr ""
 
-#: daemon/remote.c:6041
+#: daemon/remote.c:6047
 #, c-format
 msgid "Number of domain stats records is %d, which exceeds max limit: %d"
 msgstr ""
 
-#: daemon/remote.c:6150 src/remote/remote_driver.c:7373
+#: daemon/remote.c:6156 src/remote/remote_driver.c:7373
 #, c-format
 msgid "Too many mountpoints in fsinfo: %d for limit %d"
 msgstr ""
 
-#: daemon/remote.c:6175
+#: daemon/remote.c:6181
 #, c-format
 msgid "Too many disks in fsinfo: %zd for limit %d"
 msgstr ""
 
-#: daemon/remote.c:6242 daemon/remote.c:6266 src/remote/remote_driver.c:7470
+#: daemon/remote.c:6248 daemon/remote.c:6272 src/remote/remote_driver.c:7470
 #: src/remote/remote_driver.c:7497
 #, c-format
 msgid "Number of interfaces, %d exceeds the max limit: %d"
@@ -1060,12 +1060,12 @@ msgid "Unknown release: %s"
 msgstr ""
 
 #: src/bhyve/bhyve_driver.c:382 src/libxl/libxl_driver.c:4202
-#: src/qemu/qemu_driver.c:8502 src/uml/uml_driver.c:2461
+#: src/qemu/qemu_driver.c:8503 src/uml/uml_driver.c:2461
 msgid "cannot set autostart for transient domain"
 msgstr ""
 
 #: src/bhyve/bhyve_driver.c:397 src/libxl/libxl_driver.c:4217
-#: src/qemu/qemu_driver.c:8522 src/storage/storage_driver.c:1341
+#: src/qemu/qemu_driver.c:8523 src/storage/storage_driver.c:1341
 #: src/uml/uml_driver.c:2476
 #, c-format
 msgid "cannot create autostart directory %s"
@@ -1079,7 +1079,7 @@ msgstr ""
 
 #: src/bhyve/bhyve_driver.c:411 src/libxl/libxl_driver.c:4231
 #: src/lxc/lxc_driver.c:2996 src/network/bridge_driver.c:3663
-#: src/qemu/qemu_driver.c:8538 src/storage/storage_driver.c:1356
+#: src/qemu/qemu_driver.c:8539 src/storage/storage_driver.c:1356
 #: src/uml/uml_driver.c:2490
 #, c-format
 msgid "Failed to delete symlink '%s'"
@@ -1101,8 +1101,8 @@ msgid "No domain with matching uuid '%s'"
 msgstr ""
 
 #: src/bhyve/bhyve_driver.c:819 src/qemu/qemu_driver.c:1585
-#: src/qemu/qemu_driver.c:11738 src/qemu/qemu_driver.c:12243
-#: src/qemu/qemu_driver.c:12291 src/vz/vz_driver.c:587 src/vz/vz_sdk.c:430
+#: src/qemu/qemu_driver.c:11739 src/qemu/qemu_driver.c:12244
+#: src/qemu/qemu_driver.c:12292 src/vz/vz_driver.c:587 src/vz/vz_sdk.c:430
 #, c-format
 msgid "no domain with matching name '%s'"
 msgstr ""
@@ -1143,7 +1143,7 @@ msgstr ""
 #: src/lxc/lxc_driver.c:2473 src/lxc/lxc_driver.c:3229
 #: src/lxc/lxc_driver.c:3307 src/lxc/lxc_driver.c:5426
 #: src/openvz/openvz_driver.c:2011 src/openvz/openvz_driver.c:2258
-#: src/qemu/qemu_domain.c:4830 src/qemu/qemu_domain.c:5337
+#: src/qemu/qemu_domain.c:4839 src/qemu/qemu_domain.c:5344
 #: src/qemu/qemu_driver.c:1842 src/qemu/qemu_driver.c:1911
 #: src/qemu/qemu_driver.c:1989 src/qemu/qemu_driver.c:2089
 #: src/qemu/qemu_driver.c:2156 src/qemu/qemu_driver.c:2218
@@ -1151,26 +1151,26 @@ msgstr ""
 #: src/qemu/qemu_driver.c:2697 src/qemu/qemu_driver.c:3299
 #: src/qemu/qemu_driver.c:3355 src/qemu/qemu_driver.c:3673
 #: src/qemu/qemu_driver.c:3788 src/qemu/qemu_driver.c:3898
-#: src/qemu/qemu_driver.c:10355 src/qemu/qemu_driver.c:10516
-#: src/qemu/qemu_driver.c:10573 src/qemu/qemu_driver.c:10643
-#: src/qemu/qemu_driver.c:10989 src/qemu/qemu_driver.c:11134
-#: src/qemu/qemu_driver.c:12647 src/qemu/qemu_driver.c:12780
-#: src/qemu/qemu_driver.c:12847 src/qemu/qemu_driver.c:12890
-#: src/qemu/qemu_driver.c:12944 src/qemu/qemu_driver.c:13009
-#: src/qemu/qemu_driver.c:13084 src/qemu/qemu_driver.c:13947
-#: src/qemu/qemu_driver.c:15439 src/qemu/qemu_driver.c:15579
-#: src/qemu/qemu_driver.c:15659 src/qemu/qemu_driver.c:15852
-#: src/qemu/qemu_driver.c:15980 src/qemu/qemu_driver.c:16101
-#: src/qemu/qemu_driver.c:16203 src/qemu/qemu_driver.c:16270
-#: src/qemu/qemu_driver.c:16642 src/qemu/qemu_driver.c:16860
-#: src/qemu/qemu_driver.c:16925 src/qemu/qemu_driver.c:17514
-#: src/qemu/qemu_driver.c:17653 src/qemu/qemu_driver.c:17720
-#: src/qemu/qemu_driver.c:17787 src/qemu/qemu_driver.c:17860
-#: src/qemu/qemu_driver.c:17966 src/qemu/qemu_driver.c:18141
-#: src/qemu/qemu_driver.c:18193 src/qemu/qemu_driver.c:18221
-#: src/qemu/qemu_driver.c:18270 src/qemu/qemu_driver.c:18314
-#: src/qemu/qemu_driver.c:19311 src/qemu/qemu_driver.c:19353
-#: src/qemu/qemu_driver.c:19515 src/qemu/qemu_migration.c:3278
+#: src/qemu/qemu_driver.c:10356 src/qemu/qemu_driver.c:10517
+#: src/qemu/qemu_driver.c:10574 src/qemu/qemu_driver.c:10644
+#: src/qemu/qemu_driver.c:10990 src/qemu/qemu_driver.c:11135
+#: src/qemu/qemu_driver.c:12648 src/qemu/qemu_driver.c:12781
+#: src/qemu/qemu_driver.c:12848 src/qemu/qemu_driver.c:12891
+#: src/qemu/qemu_driver.c:12945 src/qemu/qemu_driver.c:13010
+#: src/qemu/qemu_driver.c:13085 src/qemu/qemu_driver.c:13948
+#: src/qemu/qemu_driver.c:15440 src/qemu/qemu_driver.c:15580
+#: src/qemu/qemu_driver.c:15660 src/qemu/qemu_driver.c:15853
+#: src/qemu/qemu_driver.c:15981 src/qemu/qemu_driver.c:16102
+#: src/qemu/qemu_driver.c:16204 src/qemu/qemu_driver.c:16271
+#: src/qemu/qemu_driver.c:16643 src/qemu/qemu_driver.c:16861
+#: src/qemu/qemu_driver.c:16926 src/qemu/qemu_driver.c:17515
+#: src/qemu/qemu_driver.c:17654 src/qemu/qemu_driver.c:17721
+#: src/qemu/qemu_driver.c:17788 src/qemu/qemu_driver.c:17861
+#: src/qemu/qemu_driver.c:17967 src/qemu/qemu_driver.c:18142
+#: src/qemu/qemu_driver.c:18194 src/qemu/qemu_driver.c:18222
+#: src/qemu/qemu_driver.c:18271 src/qemu/qemu_driver.c:18315
+#: src/qemu/qemu_driver.c:19312 src/qemu/qemu_driver.c:19354
+#: src/qemu/qemu_driver.c:19516 src/qemu/qemu_migration.c:3278
 #: src/qemu/qemu_migration.c:5811 src/test/test_driver.c:5748
 #: src/uml/uml_driver.c:2609 src/xen/xen_driver.c:2516
 #: src/xen/xm_internal.c:672
@@ -1194,7 +1194,7 @@ msgid "unknown type '%s'"
 msgstr ""
 
 #: src/bhyve/bhyve_driver.c:1433 src/qemu/qemu_domain.c:3230
-#: src/qemu/qemu_driver.c:12579
+#: src/qemu/qemu_driver.c:12580
 msgid "cannot get host CPU capabilities"
 msgstr ""
 
@@ -1209,13 +1209,13 @@ msgstr ""
 
 #: src/bhyve/bhyve_driver.c:1597 src/bhyve/bhyve_driver.c:1604
 #: src/libxl/libxl_driver.c:6093 src/libxl/libxl_driver.c:6100
-#: src/qemu/qemu_driver.c:18379
+#: src/qemu/qemu_driver.c:18380
 #, fuzzy, c-format
 msgid "unknown virttype: %s"
 msgstr "unknown OS type %s"
 
 #: src/bhyve/bhyve_driver.c:1611 src/libxl/libxl_driver.c:6107
-#: src/qemu/qemu_driver.c:18386
+#: src/qemu/qemu_driver.c:18387
 #, fuzzy, c-format
 msgid "unknown architecture: %s"
 msgstr "Failed to start domain %s"
@@ -8740,7 +8740,7 @@ msgstr ""
 msgid "Could not create snapshot: %s"
 msgstr ""
 
-#: src/esx/esx_driver.c:4558 src/qemu/qemu_driver.c:14752
+#: src/esx/esx_driver.c:4558 src/qemu/qemu_driver.c:14753
 #: src/test/test_driver.c:6034 src/vbox/vbox_common.c:6363
 #: src/vz/vz_driver.c:2006
 #, c-format
@@ -9934,7 +9934,7 @@ msgstr ""
 
 #: src/hyperv/hyperv_wmi.c:375 tools/virsh-domain.c:5316
 #: tools/virsh-domain.c:7354 tools/virsh-pool.c:1502 tools/virsh-snapshot.c:440
-#: tools/vsh.c:1755 tools/vsh.c:2887 tools/vsh.c:2892
+#: tools/vsh.c:1755 tools/vsh.c:2877 tools/vsh.c:2882
 msgid "Out of memory"
 msgstr ""
 
@@ -10572,7 +10572,7 @@ msgstr ""
 msgid "network '%s' in %s must match connection"
 msgstr ""
 
-#: src/libvirt-network.c:1066 src/libvirt-storage.c:2191
+#: src/libvirt-network.c:1066 src/libvirt-storage.c:2196
 #, c-format
 msgid "eventID in %s must be less than %d"
 msgstr ""
@@ -10592,12 +10592,12 @@ msgstr ""
 msgid "stream in %s must match connection of volume '%s'"
 msgstr ""
 
-#: src/libvirt-storage.c:2042
+#: src/libvirt-storage.c:2047
 #, c-format
 msgid "capacity in %s cannot be zero without 'delta' or 'shrink' flags set"
 msgstr ""
 
-#: src/libvirt-storage.c:2181
+#: src/libvirt-storage.c:2186
 #, c-format
 msgid "storage pool '%s' in %s must match connection"
 msgstr ""
@@ -11173,21 +11173,21 @@ msgstr ""
 msgid "parsing sxpr config failed"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2825 src/qemu/qemu_driver.c:7240
+#: src/libxl/libxl_driver.c:2825 src/qemu/qemu_driver.c:7241
 #: src/uml/uml_driver.c:2142 src/vmware/vmware_driver.c:808
 msgid "cannot undefine transient domain"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2837 src/qemu/qemu_driver.c:7265
+#: src/libxl/libxl_driver.c:2837 src/qemu/qemu_driver.c:7266
 msgid "Failed to remove domain managed save image"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2842 src/qemu/qemu_driver.c:7271
+#: src/libxl/libxl_driver.c:2842 src/qemu/qemu_driver.c:7272
 #: src/test/test_driver.c:2751 src/vz/vz_sdk.c:4224 tools/virsh-domain.c:3891
 msgid "Refusing to undefine while domain managed save image exists"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:2898 src/qemu/qemu_driver.c:7554
+#: src/libxl/libxl_driver.c:2898 src/qemu/qemu_driver.c:7555
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
 msgstr ""
@@ -11203,7 +11203,7 @@ msgid "libxenlight failed to change media for disk '%s'"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:2949 src/lxc/lxc_driver.c:3874
-#: src/qemu/qemu_driver.c:7668 src/uml/uml_driver.c:2182
+#: src/qemu/qemu_driver.c:7669 src/uml/uml_driver.c:2182
 #, c-format
 msgid "target %s already exists"
 msgstr ""
@@ -11299,7 +11299,7 @@ msgid "target %s already exists."
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3368 src/lxc/lxc_driver.c:3576
-#: src/qemu/qemu_driver.c:7692
+#: src/qemu/qemu_driver.c:7693
 msgid "device is already in the domain configuration"
 msgstr ""
 
@@ -11348,13 +11348,13 @@ msgid "device type '%s' cannot be detached"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3684 src/lxc/lxc_driver.c:3644
-#: src/qemu/qemu_driver.c:7836
+#: src/qemu/qemu_driver.c:7837
 #, c-format
 msgid "no target device %s"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3703 src/lxc/lxc_driver.c:3665
-#: src/qemu/qemu_driver.c:7855 src/qemu/qemu_driver.c:7879
+#: src/qemu/qemu_driver.c:7856 src/qemu/qemu_driver.c:7880
 #: src/qemu/qemu_hotplug.c:1555 src/qemu/qemu_hotplug.c:4274
 #: src/qemu/qemu_hotplug.c:4321 src/qemu/qemu_hotplug.c:4364
 msgid "device not present in domain configuration"
@@ -11375,12 +11375,12 @@ msgid "device type '%s' cannot be updated"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3764 src/openvz/openvz_driver.c:2051
-#: src/qemu/qemu_driver.c:7987
+#: src/qemu/qemu_driver.c:7988
 #, c-format
 msgid "target %s doesn't exist."
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3769 src/qemu/qemu_driver.c:7993
+#: src/libxl/libxl_driver.c:3769 src/qemu/qemu_driver.c:7994
 msgid "this disk doesn't support update"
 msgstr ""
 
@@ -11396,7 +11396,7 @@ msgid "start cell %d out of range (0-%d)"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:4224 src/lxc/lxc_driver.c:2989
-#: src/qemu/qemu_driver.c:8529 src/uml/uml_driver.c:2483
+#: src/qemu/qemu_driver.c:8530 src/uml/uml_driver.c:2483
 #, c-format
 msgid "Failed to create symlink '%s to '%s'"
 msgstr ""
@@ -11424,19 +11424,19 @@ msgstr ""
 msgid "Named device aliases are not supported"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4505 src/qemu/qemu_driver.c:15608
+#: src/libxl/libxl_driver.c:4505 src/qemu/qemu_driver.c:15609
 #, c-format
 msgid "cannot find character device %s"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:4512 src/lxc/lxc_driver.c:3257
-#: src/qemu/qemu_driver.c:15615 src/uml/uml_driver.c:2637
+#: src/qemu/qemu_driver.c:15616 src/uml/uml_driver.c:2637
 #: src/xen/xen_driver.c:2544
 #, c-format
 msgid "character device %s is not using a PTY"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:4525 src/qemu/qemu_driver.c:15628
+#: src/libxl/libxl_driver.c:4525 src/qemu/qemu_driver.c:15629
 msgid "Active console session exists for this domain"
 msgstr ""
 
@@ -11473,8 +11473,8 @@ msgid "platform unsupported"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:5231 src/lxc/lxc_driver.c:2409
-#: src/lxc/lxc_driver.c:2497 src/qemu/qemu_driver.c:10361
-#: src/qemu/qemu_driver.c:10448 src/test/test_driver.c:2936
+#: src/lxc/lxc_driver.c:2497 src/qemu/qemu_driver.c:10362
+#: src/qemu/qemu_driver.c:10449 src/test/test_driver.c:2936
 #: src/vz/vz_driver.c:1366
 #, c-format
 msgid "invalid path: %s"
@@ -11490,7 +11490,7 @@ msgstr ""
 msgid "unsupported disk driver %s"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5505 src/qemu/qemu_driver.c:12385
+#: src/libxl/libxl_driver.c:5505 src/qemu/qemu_driver.c:12386
 #: src/xen/xen_driver.c:2341
 #, c-format
 msgid "device %s is not a PCI device"
@@ -11510,7 +11510,7 @@ msgstr ""
 msgid "Migration failed. No domain on destination host with matching name '%s'"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:5947 src/qemu/qemu_driver.c:19408
+#: src/libxl/libxl_driver.c:5947 src/qemu/qemu_driver.c:19409
 msgid "Network driver does not support DHCP lease query"
 msgstr ""
 
@@ -12865,11 +12865,11 @@ msgid "Failed to set memory for domain"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:853 src/lxc/lxc_driver.c:973
-#: src/qemu/qemu_driver.c:9158 src/qemu/qemu_driver.c:9298
+#: src/qemu/qemu_driver.c:9159 src/qemu/qemu_driver.c:9299
 msgid "cgroup memory controller is not mounted"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:883 src/qemu/qemu_driver.c:9188
+#: src/lxc/lxc_driver.c:883 src/qemu/qemu_driver.c:9189
 msgid ""
 "memory hard_limit tunable value must be lower than or equal to "
 "swap_hard_limit"
@@ -12906,39 +12906,39 @@ msgid "Failed to initialize security drivers"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:1868 src/lxc/lxc_driver.c:1996
-#: src/lxc/lxc_driver.c:2133 src/qemu/qemu_driver.c:8592
-#: src/qemu/qemu_driver.c:9908 src/qemu/qemu_driver.c:10239
+#: src/lxc/lxc_driver.c:2133 src/qemu/qemu_driver.c:8593
+#: src/qemu/qemu_driver.c:9909 src/qemu/qemu_driver.c:10240
 msgid "cgroup CPU controller is not mounted"
 msgstr ""
 
-#: src/lxc/lxc_driver.c:2254 src/qemu/qemu_driver.c:8681
+#: src/lxc/lxc_driver.c:2254 src/qemu/qemu_driver.c:8682
 #, fuzzy, c-format
 msgid "unknown parameter '%s'"
 msgstr "unknown OS type %s"
 
-#: src/lxc/lxc_driver.c:2277 src/qemu/qemu_driver.c:8704
+#: src/lxc/lxc_driver.c:2277 src/qemu/qemu_driver.c:8705
 #, fuzzy, c-format
 msgid "unable to parse blkio device '%s' '%s'"
 msgstr "Failed to create domain from %s"
 
-#: src/lxc/lxc_driver.c:2283 src/qemu/qemu_driver.c:8710
+#: src/lxc/lxc_driver.c:2283 src/qemu/qemu_driver.c:8711
 #, fuzzy, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
 msgstr "invalid connection pointer in %s"
 
-#: src/lxc/lxc_driver.c:2324 src/qemu/qemu_driver.c:8753
+#: src/lxc/lxc_driver.c:2324 src/qemu/qemu_driver.c:8754
 #, fuzzy, c-format
 msgid "Unknown parameter %s"
 msgstr "unknown OS type %s"
 
 #: src/lxc/lxc_driver.c:2393 src/lxc/lxc_driver.c:2479
 #: src/lxc/lxc_driver.c:2617 src/lxc/lxc_driver.c:2823
-#: src/qemu/qemu_driver.c:8847 src/qemu/qemu_driver.c:9062
+#: src/qemu/qemu_driver.c:8848 src/qemu/qemu_driver.c:9063
 msgid "blkio cgroup isn't mounted"
 msgstr ""
 
 #: src/lxc/lxc_driver.c:2415 src/lxc/lxc_driver.c:2503
-#: src/qemu/qemu_driver.c:10454 src/qemu/qemu_driver.c:11388
+#: src/qemu/qemu_driver.c:10455 src/qemu/qemu_driver.c:11389
 #: src/qemu/qemu_hotplug.c:217
 #, c-format
 msgid "missing disk device alias name for %s"
@@ -12949,7 +12949,7 @@ msgstr ""
 msgid "domain stats query failed"
 msgstr "domain state"
 
-#: src/lxc/lxc_driver.c:2708 src/qemu/qemu_driver.c:8939
+#: src/lxc/lxc_driver.c:2708 src/qemu/qemu_driver.c:8940
 #, fuzzy, c-format
 msgid "Unknown blkio parameter %s"
 msgstr "unknown OS type %s"
@@ -13097,7 +13097,7 @@ msgstr "failed to open file"
 msgid "domain is not active"
 msgstr "domain state"
 
-#: src/lxc/lxc_driver.c:5432 src/qemu/qemu_driver.c:17659
+#: src/lxc/lxc_driver.c:5432 src/qemu/qemu_driver.c:17660
 msgid "cgroup CPUACCT controller is not mounted"
 msgstr ""
 
@@ -14590,7 +14590,7 @@ msgstr ""
 msgid "no domain with matching uuid '%s'"
 msgstr ""
 
-#: src/openvz/openvz_driver.c:2028 src/qemu/qemu_driver.c:10660
+#: src/openvz/openvz_driver.c:2028 src/qemu/qemu_driver.c:10661
 #: src/test/test_driver.c:2983 src/vz/vz_sdk.c:4389
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
@@ -15412,508 +15412,504 @@ msgstr ""
 msgid "Unexpected network protocol '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1095 src/qemu/qemu_command.c:1338
+#: src/qemu/qemu_command.c:1097 src/qemu/qemu_command.c:1340
 #: src/uml/uml_conf.c:415
 #, c-format
 msgid "unsupported disk type '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1103
+#: src/qemu/qemu_command.c:1105
 msgid "Only ide and scsi disk support wwn"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1111
+#: src/qemu/qemu_command.c:1113
 msgid "Only scsi disk supports vendor and product"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1120
+#: src/qemu/qemu_command.c:1122
 #, c-format
 msgid "disk device='lun' is not supported for bus='%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1130
+#: src/qemu/qemu_command.c:1132
 msgid "Setting wwn is not supported for lun device"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1135
+#: src/qemu/qemu_command.c:1137
 msgid "Setting vendor or product is not supported for lun device"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1162
+#: src/qemu/qemu_command.c:1164
 #, c-format
 msgid "cannot use CCW address type for device '%s' using machine type '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1168
+#: src/qemu/qemu_command.c:1170
 msgid "CCW address type is not supported by this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1175
+#: src/qemu/qemu_command.c:1177
 msgid "virtio S390 address type is not supported by this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1257
+#: src/qemu/qemu_command.c:1259
 msgid "tray status 'open' is invalid for block type volume"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1258
+#: src/qemu/qemu_command.c:1260
 msgid "tray status 'open' is invalid for block type disk"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1270
+#: src/qemu/qemu_command.c:1272
 #, c-format
 msgid "unsupported disk driver type for '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1277
+#: src/qemu/qemu_command.c:1279
 msgid "cannot create virtual FAT disks in read-write mode"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1346
+#: src/qemu/qemu_command.c:1348
 msgid "unexpected address type for scsi disk"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1355
+#: src/qemu/qemu_command.c:1357
 msgid "SCSI controller only supports 1 bus"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1365
+#: src/qemu/qemu_command.c:1367
 msgid "unexpected address type for ide disk"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1371 src/qemu/qemu_command.c:1387
+#: src/qemu/qemu_command.c:1373 src/qemu/qemu_command.c:1389
 #, c-format
 msgid "Only 1 %s controller is supported"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1381
+#: src/qemu/qemu_command.c:1383
 msgid "unexpected address type for fdc disk"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1393
+#: src/qemu/qemu_command.c:1395
 #, c-format
 msgid "Only 1 %s bus is supported"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1398
+#: src/qemu/qemu_command.c:1400
 msgid "target must be 0 for controller fdc"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1459
+#: src/qemu/qemu_command.c:1461
 #, fuzzy
 msgid "readonly ide disks are not supported"
 msgstr "command '%s' doesn't support option --%s"
 
-#: src/qemu/qemu_command.c:1464
+#: src/qemu/qemu_command.c:1466
 #, fuzzy
 msgid "readonly sata disks are not supported"
 msgstr "command '%s' doesn't support option --%s"
 
-#: src/qemu/qemu_command.c:1472 src/xenconfig/xen_sxpr.c:1808
+#: src/qemu/qemu_command.c:1474 src/xenconfig/xen_sxpr.c:1808
 #: src/xenconfig/xen_xl.c:857 src/xenconfig/xen_xm.c:338
 msgid "transient disks not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1497
+#: src/qemu/qemu_command.c:1499
 msgid "scsi-block 'lun' devices do not support the serial property"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1513
+#: src/qemu/qemu_command.c:1515
 msgid "disk cache mode 'directsync' is not supported by this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1519
+#: src/qemu/qemu_command.c:1521
 msgid "disk cache mode 'unsafe' is not supported by this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1528
+#: src/qemu/qemu_command.c:1530
 msgid ""
 "native I/O needs either no disk cache or directsync cache mode, QEMU will "
 "fallback to aio=threads"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1545
+#: src/qemu/qemu_command.c:1547
 msgid "copy_on_read is not supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1556
+#: src/qemu/qemu_command.c:1558
 msgid "discard is not supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1580
+#: src/qemu/qemu_command.c:1582
 msgid "detect_zeroes is not supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1616
+#: src/qemu/qemu_command.c:1618
 msgid "disk aio mode not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1631 src/qemu/qemu_driver.c:17240
-#: src/qemu/qemu_driver.c:17402
+#: src/qemu/qemu_command.c:1633 src/qemu/qemu_driver.c:17241
+#: src/qemu/qemu_driver.c:17403
 msgid "block I/O throttling not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1646
+#: src/qemu/qemu_command.c:1648
 #, fuzzy
 msgid ""
 "there are some block I/O throttling parameters that are not supported with "
 "this QEMU binary"
 msgstr "command '%s' doesn't support option --%s"
 
-#: src/qemu/qemu_command.c:1665
+#: src/qemu/qemu_command.c:1667
 #, c-format
 msgid "block I/O throttle limit must be no more than %llu using QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1756
+#: src/qemu/qemu_command.c:1758
 msgid "IOThreads only available for virtio pci and virtio ccw disk"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1772
+#: src/qemu/qemu_command.c:1774
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1780
+#: src/qemu/qemu_command.c:1782
 #, c-format
 msgid "Disk iothread '%u' not defined in iothreadid"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1813 src/qemu/qemu_command.c:1942
+#: src/qemu/qemu_command.c:1815 src/qemu/qemu_command.c:1944
 msgid "target must be 0 for ide controller"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1820
+#: src/qemu/qemu_command.c:1822
 msgid "Setting wwn for ide disk is not supported by this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1847
+#: src/qemu/qemu_command.c:1849
 msgid "This QEMU doesn't support scsi-block for lun passthrough"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1856
+#: src/qemu/qemu_command.c:1858
 msgid "Setting wwn for scsi disk is not supported by this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1867
+#: src/qemu/qemu_command.c:1869
 msgid "Setting vendor or product for scsi disk is not supported by this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1899
+#: src/qemu/qemu_command.c:1901
 msgid "target must be 0 for controller model 'lsilogic'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1912
+#: src/qemu/qemu_command.c:1914
 msgid "This QEMU doesn't support target greater than 7"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1920
+#: src/qemu/qemu_command.c:1922
 msgid "This QEMU only supports both bus and unit equal to 0"
 msgstr ""
 
-#: src/qemu/qemu_command.c:1937
+#: src/qemu/qemu_command.c:1939
 msgid "bus must be 0 for ide controller"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2001
+#: src/qemu/qemu_command.c:2003
 msgid "unexpected address type for usb disk"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2006
+#: src/qemu/qemu_command.c:2008
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2019
+#: src/qemu/qemu_command.c:2021
 #, c-format
 msgid "unsupported disk bus '%s' with device setup"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2058
+#: src/qemu/qemu_command.c:2060
 msgid ""
 "This QEMU doesn't support setting the removable flag of USB storage devices"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2120
+#: src/qemu/qemu_command.c:2122
 msgid "PowerPC pseries machines do not support floppy device"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2224
+#: src/qemu/qemu_command.c:2226
 msgid "only supports mount filesystem type"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2230
+#: src/qemu/qemu_command.c:2232
 msgid "Filesystem driver type not supported"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2249
+#: src/qemu/qemu_command.c:2251
 msgid "only supports passthrough accessmode"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2259
+#: src/qemu/qemu_command.c:2261
 msgid "filesystem writeout not supported"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2272
+#: src/qemu/qemu_command.c:2274
 msgid "readonly filesystem is not supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2298
+#: src/qemu/qemu_command.c:2300
 msgid "can only passthrough directories"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2335
+#: src/qemu/qemu_command.c:2337
 msgid "filesystem passthrough not supported by this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2410 src/qemu/qemu_command.c:4128
+#: src/qemu/qemu_command.c:2412 src/qemu/qemu_command.c:4128
 #, c-format
 msgid "%s not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2420
+#: src/qemu/qemu_command.c:2422
 #, c-format
 msgid "usb controller type %s doesn't support 'ports' with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2464
+#: src/qemu/qemu_command.c:2466
 msgid "IOThreads for virtio-scsi not supported for this QEMU"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2471
+#: src/qemu/qemu_command.c:2473
 #, c-format
 msgid "IOThreads only supported for virtio-scsi controllers model is '%s'"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2480
+#: src/qemu/qemu_command.c:2482
 msgid "IOThreads only available for virtio pci and virtio ccw controllers"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2488
+#: src/qemu/qemu_command.c:2490
 #, c-format
 msgid "controller iothread '%u' not defined in iothreadid"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2520
+#: src/qemu/qemu_command.c:2522
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2525
+#: src/qemu/qemu_command.c:2527
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2530
+#: src/qemu/qemu_command.c:2532
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2535
+#: src/qemu/qemu_command.c:2537
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2584 src/qemu/qemu_domain_address.c:86
+#: src/qemu/qemu_command.c:2586 src/qemu/qemu_domain_address.c:86
 #, c-format
 msgid "Unsupported controller model: %s"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2623
+#: src/qemu/qemu_command.c:2625
 msgid "SATA is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2643
+#: src/qemu/qemu_command.c:2645
 msgid "wrong function called for pci-root/pcie-root"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2648
+#: src/qemu/qemu_command.c:2650
 #, c-format
 msgid "index for pci controllers of model '%s' must be > 0"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2658
+#: src/qemu/qemu_command.c:2660
 msgid "autogenerated pci-bridge options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2665
+#: src/qemu/qemu_command.c:2667
 #, c-format
 msgid "unknown pci-bridge model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2672
+#: src/qemu/qemu_command.c:2674
 #, c-format
 msgid "PCI controller model name '%s' is not valid for a pci-bridge"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2679
+#: src/qemu/qemu_command.c:2681
 msgid "the pci-bridge controller is not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2692
+#: src/qemu/qemu_command.c:2694
 msgid "autogenerated pci-expander-bus options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2699
+#: src/qemu/qemu_command.c:2701
 #, c-format
 msgid "unknown pci-expander-bus model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2706
+#: src/qemu/qemu_command.c:2708
 #, c-format
 msgid "PCI controller model name '%s' is not valid for a pci-expander-bus"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2713
+#: src/qemu/qemu_command.c:2715
 msgid "the pxb controller is not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2728
+#: src/qemu/qemu_command.c:2730
 msgid "autogenerated dmi-to-pci-bridge options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2735
+#: src/qemu/qemu_command.c:2737
 #, c-format
 msgid "unknown dmi-to-pci-bridge model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2742
+#: src/qemu/qemu_command.c:2744
 #, c-format
 msgid "PCI controller model name '%s' is not valid for a dmi-to-pci-bridge"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2749
+#: src/qemu/qemu_command.c:2751
 msgid ""
 "the dmi-to-pci-bridge (i82801b11-bridge) controller is not supported in this "
 "QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2759
+#: src/qemu/qemu_command.c:2761
 msgid "autogenerated pcie-root-port options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2765
+#: src/qemu/qemu_command.c:2767
 #, c-format
 msgid "unknown pcie-root-port model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2772
+#: src/qemu/qemu_command.c:2774
 #, c-format
 msgid "PCI controller model name '%s' is not valid for a pcie-root-port"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2779
+#: src/qemu/qemu_command.c:2781
 msgid ""
 "the pcie-root-port (ioh3420) controller is not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2792
+#: src/qemu/qemu_command.c:2794
 msgid "autogenerated pcie-switch-upstream-port options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2798
+#: src/qemu/qemu_command.c:2800
 #, c-format
 msgid "unknown pcie-switch-upstream-port model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2805
+#: src/qemu/qemu_command.c:2807
 #, c-format
 msgid ""
 "PCI controller model name '%s' is not valid for a pcie-switch-upstream-port"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2812
+#: src/qemu/qemu_command.c:2814
 msgid ""
 "the pcie-switch-upstream-port (x3130-upstream) controller is not supported "
 "in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2825
+#: src/qemu/qemu_command.c:2827
 msgid "autogenerated pcie-switch-downstream-port options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2833
+#: src/qemu/qemu_command.c:2835
 #, c-format
 msgid "unknown pcie-switch-downstream-port model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2840
+#: src/qemu/qemu_command.c:2842
 #, c-format
 msgid ""
 "PCI controller model name '%s' is not valid for a pcie-switch-downstream-port"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2847
+#: src/qemu/qemu_command.c:2849
 msgid ""
 "The pcie-switch-downstream-port (xio3130-downstream) controller is not "
 "supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2861
+#: src/qemu/qemu_command.c:2863
 msgid "autogenerated pcie-expander-bus options not set"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2868
+#: src/qemu/qemu_command.c:2870
 #, c-format
 msgid "unknown pcie-expander-bus model name value %d"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2875
+#: src/qemu/qemu_command.c:2877
 #, c-format
 msgid "PCI controller model name '%s' is not valid for a pcie-expander-bus"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2882
+#: src/qemu/qemu_command.c:2884
 msgid "the pxb-pcie controller is not supported in this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2905
+#: src/qemu/qemu_command.c:2907
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2909
+#: src/qemu/qemu_command.c:2911
 msgid "IDE controllers are unsupported for this QEMU binary or machine type"
 msgstr ""
 
-#: src/qemu/qemu_command.c:2915
+#: src/qemu/qemu_command.c:2917
 #, c-format
 msgid "Unsupported controller type: %s"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3028
+#: src/qemu/qemu_command.c:3030
 msgid "Multiple legacy USB controllers are not supported"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3111
+#: src/qemu/qemu_command.c:3113
 #, c-format
 msgid ""
 "can't add memory backend for guest node '%d' as the guest has only '%zu' "
 "NUMA nodes configured"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3187 src/qemu/qemu_command.c:7154
+#: src/qemu/qemu_command.c:3189 src/qemu/qemu_command.c:7154
 #, c-format
 msgid "Unable to find any usable hugetlbfs mount for %llu KiB"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3226
+#: src/qemu/qemu_command.c:3228
 msgid "Shared memory mapping is supported only with hugepages"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3265
+#: src/qemu/qemu_command.c:3267
 msgid "this qemu doesn't support the memory-backend-file object"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3271
+#: src/qemu/qemu_command.c:3273
 #, fuzzy
 msgid "this qemu doesn't support the memory-backend-ram object"
 msgstr "command '%s' doesn't support option --%s"
 
-#: src/qemu/qemu_command.c:3345
+#: src/qemu/qemu_command.c:3347
 msgid "memory device alias is not assigned"
 msgstr ""
 
-#: src/qemu/qemu_command.c:3375
+#: src/qemu/qemu_command.c:3377
 msgid "missing alias for memory device"
-msgstr ""
-
-#: src/qemu/qemu_command.c:3399 src/qemu/qemu_domain.c:5187
-msgid "invalid memory device type"
 msgstr ""
 
 #: src/qemu/qemu_command.c:3475
@@ -16629,18 +16625,18 @@ msgstr ""
 msgid "panic is supported only with ISA address type"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9235 src/qemu/qemu_driver.c:9144
-#: src/qemu/qemu_driver.c:9277
+#: src/qemu/qemu_command.c:9235 src/qemu/qemu_driver.c:9145
+#: src/qemu/qemu_driver.c:9278
 msgid "Memory tuning is not available in session mode"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9241 src/qemu/qemu_driver.c:8834
-#: src/qemu/qemu_driver.c:9041
+#: src/qemu/qemu_command.c:9241 src/qemu/qemu_driver.c:8835
+#: src/qemu/qemu_driver.c:9042
 msgid "Block I/O tuning is not available in session mode"
 msgstr ""
 
-#: src/qemu/qemu_command.c:9250 src/qemu/qemu_driver.c:8578
-#: src/qemu/qemu_driver.c:9885 src/qemu/qemu_driver.c:10227
+#: src/qemu/qemu_command.c:9250 src/qemu/qemu_driver.c:8579
+#: src/qemu/qemu_driver.c:9886 src/qemu/qemu_driver.c:10228
 msgid "CPU tuning is not available in session mode"
 msgstr ""
 
@@ -16959,167 +16955,167 @@ msgstr ""
 msgid "domain is no longer running"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3561 src/qemu/qemu_domain.c:3734
+#: src/qemu/qemu_domain.c:3570 src/qemu/qemu_domain.c:3743
 #: src/uml/uml_driver.c:1081
 #, c-format
 msgid "failed to create logfile %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3566 src/qemu/qemu_domain.c:3589
+#: src/qemu/qemu_domain.c:3575 src/qemu/qemu_domain.c:3598
 #, c-format
 msgid "failed to set close-on-exec flag on %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3577
+#: src/qemu/qemu_domain.c:3586
 #, c-format
 msgid "failed to truncate %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3584
+#: src/qemu/qemu_domain.c:3593
 #, fuzzy, c-format
 msgid "failed to open logfile %s"
 msgstr "failed to open file"
 
-#: src/qemu/qemu_domain.c:3596
+#: src/qemu/qemu_domain.c:3605
 #, c-format
 msgid "failed to seek in log file %s"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3627
+#: src/qemu/qemu_domain.c:3636
 msgid "Unable to seek to end of domain logfile"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3632
+#: src/qemu/qemu_domain.c:3641
 msgid "Unable to write to domain logfile"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3679
+#: src/qemu/qemu_domain.c:3688
 msgid "Unable to read from log file"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3815 src/storage/storage_backend_fs.c:1346
+#: src/qemu/qemu_domain.c:3824 src/storage/storage_backend_fs.c:1346
 msgid "unable to find qemu-img"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3843
+#: src/qemu/qemu_domain.c:3852
 #, c-format
 msgid "cannot create snapshot directory '%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:3904
+#: src/qemu/qemu_domain.c:3913
 #, c-format
 msgid "Disk device '%s' does not support snapshotting"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4538 src/qemu/qemu_domain.c:4548
-#: src/qemu/qemu_domain.c:4611 src/qemu/qemu_domain.c:4618
-#: src/qemu/qemu_domain.c:4625 src/qemu/qemu_domain.c:4632
-#: src/qemu/qemu_domain.c:4656
+#: src/qemu/qemu_domain.c:4547 src/qemu/qemu_domain.c:4557
+#: src/qemu/qemu_domain.c:4620 src/qemu/qemu_domain.c:4627
+#: src/qemu/qemu_domain.c:4634 src/qemu/qemu_domain.c:4641
+#: src/qemu/qemu_domain.c:4665
 #, c-format
 msgid "cannot modify field '%s' of the disk"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4679 src/qemu/qemu_domain.c:4687
+#: src/qemu/qemu_domain.c:4688 src/qemu/qemu_domain.c:4696
 #, fuzzy, c-format
 msgid "disk '%s' already in active block job"
 msgstr "Domain is already active"
 
-#: src/qemu/qemu_domain.c:4837
+#: src/qemu/qemu_domain.c:4846
 msgid "QEMU guest agent is not available due to an error"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4846
+#: src/qemu/qemu_domain.c:4855
 msgid "QEMU guest agent is not connected"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4852
+#: src/qemu/qemu_domain.c:4861
 msgid "QEMU guest agent is not configured"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4910
+#: src/qemu/qemu_domain.c:4919
 #, c-format
 msgid "memory size of NUMA node '%zu' overflowed after alignment"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4924
+#: src/qemu/qemu_domain.c:4933
 msgid "initial memory size overflowed after alignment"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4931
+#: src/qemu/qemu_domain.c:4940
 msgid "maximum memory size overflowed after alignment"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:4943
+#: src/qemu/qemu_domain.c:4952
 #, c-format
 msgid "size of memory module '%zu' overflowed after alignment"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5003
+#: src/qemu/qemu_domain.c:5012
 msgid "block jobs not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5128
+#: src/qemu/qemu_domain.c:5137
 #, c-format
 msgid "memory device slot '%u' is already being used by another memory device"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5137
+#: src/qemu/qemu_domain.c:5146
 #, c-format
 msgid ""
 "memory device base '0x%llx' is already being used by another memory device"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5155
+#: src/qemu/qemu_domain.c:5164
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5163
+#: src/qemu/qemu_domain.c:5172
 msgid "target NUMA node needs to be specified for memory device"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5172
+#: src/qemu/qemu_domain.c:5181
 #, c-format
 msgid "memory device slot '%u' exceeds slots count '%u'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5231
+#: src/qemu/qemu_domain.c:5238
 msgid ""
 "cannot use/hotplug a memory device when domain 'maxMemory' is not defined"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5241
+#: src/qemu/qemu_domain.c:5248
 msgid "memory hotplug isn't supported by this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5252
+#: src/qemu/qemu_domain.c:5259
 msgid ""
 "At least one numa node has to be configured when enabling memory hotplug"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5260
+#: src/qemu/qemu_domain.c:5267
 #, c-format
 msgid "memory device count '%u' exceeds slots count '%u'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5276
+#: src/qemu/qemu_domain.c:5283
 msgid "memory device total size exceeds hotplug space"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5683
+#: src/qemu/qemu_domain.c:5690
 #, c-format
 msgid "got wrong number of vCPU pids from QEMU monitor. got %d, wanted %d"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5737
+#: src/qemu/qemu_domain.c:5744
 msgid "No device found for specified path"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5760
+#: src/qemu/qemu_domain.c:5767
 #, c-format
 msgid "disk device='lun' is not supported for protocol='%s'"
 msgstr ""
 
-#: src/qemu/qemu_domain.c:5767
+#: src/qemu/qemu_domain.c:5774
 msgid "disk device='lun' is only valid for block type disk source"
 msgstr ""
 
@@ -17495,9 +17491,9 @@ msgid "unable to write %s"
 msgstr ""
 
 #: src/qemu/qemu_driver.c:3153 src/qemu/qemu_driver.c:3168
-#: src/qemu/qemu_driver.c:3691 src/qemu/qemu_driver.c:13321
-#: src/qemu/qemu_driver.c:14115 src/qemu/qemu_driver.c:15070
-#: src/qemu/qemu_driver.c:15126 src/qemu/qemu_hotplug.c:582
+#: src/qemu/qemu_driver.c:3691 src/qemu/qemu_driver.c:13322
+#: src/qemu/qemu_driver.c:14116 src/qemu/qemu_driver.c:15071
+#: src/qemu/qemu_driver.c:15127 src/qemu/qemu_hotplug.c:582
 #: src/qemu/qemu_migration.c:5172 src/qemu/qemu_migration.c:5735
 #: src/qemu/qemu_migration.c:6215 src/qemu/qemu_migration.c:6455
 #: src/qemu/qemu_process.c:536
@@ -17513,7 +17509,7 @@ msgid "Invalid save image format specified in configuration file"
 msgstr ""
 
 #: src/qemu/qemu_driver.c:3285 src/qemu/qemu_driver.c:3375
-#: src/qemu/qemu_driver.c:14144
+#: src/qemu/qemu_driver.c:14145
 msgid ""
 "Compression program for image format in configuration file isn't available"
 msgstr ""
@@ -17564,7 +17560,7 @@ msgstr ""
 msgid "currently is supported only taking screenshots of screen ID 0"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:3805 src/qemu/qemu_driver.c:11144
+#: src/qemu/qemu_driver.c:3805 src/qemu/qemu_driver.c:11145
 #: src/vbox/vbox_common.c:7288
 #, c-format
 msgid "mkostemp(\"%s\") failed"
@@ -17731,831 +17727,831 @@ msgstr ""
 msgid "domain is already running"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7162 src/qemu/qemu_driver.c:14949
+#: src/qemu/qemu_driver.c:7163 src/qemu/qemu_driver.c:14950
 #: src/qemu/qemu_migration.c:2310
 #, fuzzy
 msgid "domain has active block job"
 msgstr "domain state"
 
-#: src/qemu/qemu_driver.c:7248 src/test/test_driver.c:2764
+#: src/qemu/qemu_driver.c:7249 src/test/test_driver.c:2764
 #, c-format
 msgid "cannot delete inactive domain with %d snapshots"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7282
+#: src/qemu/qemu_driver.c:7283
 #, fuzzy
 msgid "cannot delete inactive domain with nvram"
 msgstr "name of the inactive domain"
 
-#: src/qemu/qemu_driver.c:7288
+#: src/qemu/qemu_driver.c:7289
 #, fuzzy, c-format
 msgid "failed to remove nvram: %s"
 msgstr "failed to get domain '%s'"
 
-#: src/qemu/qemu_driver.c:7432
+#: src/qemu/qemu_driver.c:7433
 #, c-format
 msgid "live attach of device '%s' is not supported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7466
+#: src/qemu/qemu_driver.c:7467
 #, c-format
 msgid "'%s' controller cannot be hot unplugged."
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7523
+#: src/qemu/qemu_driver.c:7524
 #, c-format
 msgid "live detach of device '%s' is not supported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7568
+#: src/qemu/qemu_driver.c:7569
 msgid "disk source can be changed only in removable drives"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7639
+#: src/qemu/qemu_driver.c:7640
 #, c-format
 msgid "live update of device '%s' is not supported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7704
+#: src/qemu/qemu_driver.c:7705
 #, c-format
 msgid "Lease %s in lockspace %s already exists"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7721 src/qemu/qemu_driver.c:7741
+#: src/qemu/qemu_driver.c:7722 src/qemu/qemu_driver.c:7742
 msgid "Target already exists"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7754
+#: src/qemu/qemu_driver.c:7755
 msgid "a device with the same address already exists "
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7767
+#: src/qemu/qemu_driver.c:7768
 msgid "no free memory device slot available"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7802
+#: src/qemu/qemu_driver.c:7803
 #, c-format
 msgid "persistent attach of device '%s' is not supported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7867 src/qemu/qemu_hotplug.c:4249
+#: src/qemu/qemu_driver.c:7868 src/qemu/qemu_hotplug.c:4249
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7901
+#: src/qemu/qemu_driver.c:7902
 msgid "no matching filesystem device was found"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7912
+#: src/qemu/qemu_driver.c:7913
 #, fuzzy
 msgid "no matching RNG device was found"
 msgstr "missing devices information"
 
-#: src/qemu/qemu_driver.c:7923
+#: src/qemu/qemu_driver.c:7924
 msgid "matching memory device was not found"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7935
+#: src/qemu/qemu_driver.c:7936
 msgid "no matching redirdev was not found"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:7959
+#: src/qemu/qemu_driver.c:7960
 #, c-format
 msgid "persistent detach of device '%s' is not supported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8013
+#: src/qemu/qemu_driver.c:8014
 #, c-format
 msgid "cannot find existing graphics type '%s' device to modify"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:8058
+#: src/qemu/qemu_driver.c:8059
 #, c-format
 msgid "persistent update of device '%s' is not supported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9344
+#: src/qemu/qemu_driver.c:9345
 msgid "change of nodeset for running domain requires strict numa mode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9438
+#: src/qemu/qemu_driver.c:9439
 #, fuzzy, c-format
 msgid "unsupported numatune mode: '%d'"
 msgstr "unexpected data '%s'"
 
-#: src/qemu/qemu_driver.c:9449
+#: src/qemu/qemu_driver.c:9450
 #, c-format
 msgid "Invalid nodeset of 'numatune': %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9465
+#: src/qemu/qemu_driver.c:9466
 msgid "NUMA tuning is not available in session mode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9471
+#: src/qemu/qemu_driver.c:9472
 msgid "cgroup cpuset controller is not mounted"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9479
+#: src/qemu/qemu_driver.c:9480
 msgid "can't change numatune mode for running domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:9824
+#: src/qemu/qemu_driver.c:9825
 #, c-format
 msgid "value of '%s' is out of range [%lld, %lld]"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10327
+#: src/qemu/qemu_driver.c:10328
 msgid "empty path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10335
+#: src/qemu/qemu_driver.c:10336
 #, c-format
 msgid "size must be less than %llu"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10473
+#: src/qemu/qemu_driver.c:10474
 #, c-format
 msgid "cannot find statistics for device '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:10722 src/qemu/qemu_driver.c:10729
-#: src/qemu/qemu_driver.c:10898
+#: src/qemu/qemu_driver.c:10723 src/qemu/qemu_driver.c:10730
+#: src/qemu/qemu_driver.c:10899
 #, c-format
 msgid "Can't find device %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11009
+#: src/qemu/qemu_driver.c:11010
 msgid "cannot get RSS for domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11072 src/uml/uml_driver.c:2546
+#: src/qemu/qemu_driver.c:11073 src/uml/uml_driver.c:2546
 #, c-format
 msgid "invalid path '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11088
+#: src/qemu/qemu_driver.c:11089
 #, c-format
 msgid "%s: failed to seek or read"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11125
+#: src/qemu/qemu_driver.c:11126
 msgid "flags parameter must be VIR_MEMORY_VIRTUAL or VIR_MEMORY_PHYSICAL"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11169
+#: src/qemu/qemu_driver.c:11170
 #, c-format
 msgid "failed to read temporary file created with template %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11235 src/storage/storage_backend.c:1695
+#: src/qemu/qemu_driver.c:11236 src/storage/storage_backend.c:1695
 #: src/storage/storage_backend.c:1757 src/util/virstoragefile.c:1041
 #: src/util/virstoragefile.c:1176
 #, c-format
 msgid "cannot stat file '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11240 src/storage/storage_backend.c:1924
+#: src/qemu/qemu_driver.c:11241 src/storage/storage_backend.c:1924
 #: src/storage/storage_backend_fs.c:1553 src/util/virstoragefile.c:1057
 #: src/util/virstoragefile.c:1199
 #, c-format
 msgid "cannot read header '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11253
+#: src/qemu/qemu_driver.c:11254
 #, fuzzy, c-format
 msgid "failed to stat remote file '%s'"
 msgstr "Failed to resume domain %s"
 
-#: src/qemu/qemu_driver.c:11281
+#: src/qemu/qemu_driver.c:11282
 #, c-format
 msgid "failed to seek to end of %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11294
+#: src/qemu/qemu_driver.c:11295
 #, c-format
 msgid "no disk format for %s and probing is disabled"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11361
+#: src/qemu/qemu_driver.c:11362
 #, c-format
 msgid "invalid path %s not assigned to domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11367
+#: src/qemu/qemu_driver.c:11368
 #, c-format
 msgid "disk '%s' does not currently have a source assigned"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11404
+#: src/qemu/qemu_driver.c:11405
 #, c-format
 msgid "failed to gather stats for disk '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11412
+#: src/qemu/qemu_driver.c:11413
 #, c-format
 msgid "failed to query the maximum written offset of block device '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11565 src/qemu/qemu_driver.c:12007
-#: src/qemu/qemu_driver.c:12060
+#: src/qemu/qemu_driver.c:11566 src/qemu/qemu_driver.c:12008
+#: src/qemu/qemu_driver.c:12061
 msgid "PrepareTunnel called but no TUNNELLED flag set"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11571 src/qemu/qemu_driver.c:11630
-#: src/qemu/qemu_driver.c:11680
+#: src/qemu/qemu_driver.c:11572 src/qemu/qemu_driver.c:11631
+#: src/qemu/qemu_driver.c:11681
 #, c-format
 msgid "Cannot use migrate v2 protocol with lock manager %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:11620 src/qemu/qemu_driver.c:11868
-#: src/qemu/qemu_driver.c:11957
+#: src/qemu/qemu_driver.c:11621 src/qemu/qemu_driver.c:11869
+#: src/qemu/qemu_driver.c:11958
 msgid "Tunnelled migration requested but invalid RPC method called"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12236 src/qemu/qemu_driver.c:12284
+#: src/qemu/qemu_driver.c:12237 src/qemu/qemu_driver.c:12285
 msgid "missing domain name"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12436
+#: src/qemu/qemu_driver.c:12437
 msgid ""
 "neither VFIO nor KVM device assignment is currently supported on this system"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12445
+#: src/qemu/qemu_driver.c:12446
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12453
+#: src/qemu/qemu_driver.c:12454
 msgid "KVM device assignment is currently not supported on this system"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12460 src/xen/xen_driver.c:2374
+#: src/qemu/qemu_driver.c:12461 src/xen/xen_driver.c:2374
 #, fuzzy, c-format
 msgid "unknown driver name '%s'"
 msgstr "unknown command: '%s'"
 
-#: src/qemu/qemu_driver.c:12636
+#: src/qemu/qemu_driver.c:12637
 msgid "migration statistics are available only on the source host"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12788
+#: src/qemu/qemu_driver.c:12789
 msgid "no job is active on the domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12794
+#: src/qemu/qemu_driver.c:12795
 msgid "cannot abort incoming migration; use virDomainDestroy instead"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12804
+#: src/qemu/qemu_driver.c:12805
 msgid "cannot abort migration in post-copy mode"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12903 src/qemu/qemu_driver.c:12957
+#: src/qemu/qemu_driver.c:12904 src/qemu/qemu_driver.c:12958
 msgid "Compressed migration is not supported by QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:12998 src/qemu/qemu_driver.c:15916
-#: src/qemu/qemu_driver.c:16185 src/qemu/qemu_driver.c:16471
-#: src/qemu/qemu_driver.c:16658 src/qemu/qemu_migration.c:2127
+#: src/qemu/qemu_driver.c:12999 src/qemu/qemu_driver.c:15917
+#: src/qemu/qemu_driver.c:16186 src/qemu/qemu_driver.c:16472
+#: src/qemu/qemu_driver.c:16659 src/qemu/qemu_migration.c:2127
 #: src/qemu/qemu_monitor.c:2121 tools/virsh-domain.c:2361
 #, c-format
 msgid "bandwidth must be less than %llu"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13092
+#: src/qemu/qemu_driver.c:13093
 msgid "post-copy can only be started while outgoing migration is in progress"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13099
+#: src/qemu/qemu_driver.c:13100
 msgid ""
 "switching to post-copy requires migration to be started with "
 "VIR_MIGRATE_POSTCOPY flag"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13229
+#: src/qemu/qemu_driver.c:13230
 #, c-format
 msgid "unknown image format of '%s' and format probing is disabled"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13357 src/qemu/qemu_driver.c:14210
+#: src/qemu/qemu_driver.c:13358 src/qemu/qemu_driver.c:14211
 msgid "resuming after snapshot failed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13393
+#: src/qemu/qemu_driver.c:13394
 #, c-format
 msgid ""
 "external inactive snapshots are not supported on 'network' disks using '%s' "
 "protocol"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13405 src/qemu/qemu_driver.c:13494
+#: src/qemu/qemu_driver.c:13406 src/qemu/qemu_driver.c:13495
 #, c-format
 msgid "external inactive snapshots are not supported on '%s' disks"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13419
+#: src/qemu/qemu_driver.c:13420
 msgid "external active snapshots are not supported on scsi passthrough devices"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13456
+#: src/qemu/qemu_driver.c:13457
 #, c-format
 msgid ""
 "external active snapshots are not supported on 'network' disks using '%s' "
 "protocol"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13469
+#: src/qemu/qemu_driver.c:13470
 #, c-format
 msgid "external active snapshots are not supported on '%s' disks"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13539 src/qemu/qemu_driver.c:16331
+#: src/qemu/qemu_driver.c:13540 src/qemu/qemu_driver.c:16332
 #, c-format
 msgid "unable to stat for disk %s: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13544
+#: src/qemu/qemu_driver.c:13545
 #, c-format
 msgid "missing existing file for disk %s: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13550
+#: src/qemu/qemu_driver.c:13551
 #, c-format
 msgid ""
 "external snapshot file for disk %s already exists and is not a block device: "
 "%s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13601
+#: src/qemu/qemu_driver.c:13602
 #, c-format
 msgid ""
 "internal inactive snapshots are not supported on 'network' disks using '%s' "
 "protocol"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13613
+#: src/qemu/qemu_driver.c:13614
 #, c-format
 msgid "internal inactive snapshots are not supported on '%s' disks"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13641
+#: src/qemu/qemu_driver.c:13642
 msgid "reuse is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13659
+#: src/qemu/qemu_driver.c:13660
 #, c-format
 msgid ""
 "active qemu domains require external disk snapshots; disk %s requested "
 "internal"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13672
+#: src/qemu/qemu_driver.c:13673
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13687
+#: src/qemu/qemu_driver.c:13688
 #, c-format
 msgid "external snapshot format for disk %s is unsupported: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13710 src/qemu/qemu_driver.c:13797
+#: src/qemu/qemu_driver.c:13711 src/qemu/qemu_driver.c:13798
 msgid "unexpected code path"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13718
+#: src/qemu/qemu_driver.c:13719
 msgid "nothing selected for snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13727
+#: src/qemu/qemu_driver.c:13728
 msgid ""
 "internal snapshots and checkpoints require all disks to be selected for "
 "snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13735
+#: src/qemu/qemu_driver.c:13736
 msgid ""
 "disk-only snapshots require at least one disk to be selected for snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13747
+#: src/qemu/qemu_driver.c:13748
 msgid ""
 "mixing internal and external targets for a snapshot is not yet supported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13762
+#: src/qemu/qemu_driver.c:13763
 msgid "atomic live snapshot of multiple disks is unsupported"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:13828
+#: src/qemu/qemu_driver.c:13829
 #, fuzzy, c-format
 msgid "failed to create image file '%s'"
 msgstr "failed to get domain '%s'"
 
-#: src/qemu/qemu_driver.c:13956
+#: src/qemu/qemu_driver.c:13957
 msgid "live disk snapshot not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14137
+#: src/qemu/qemu_driver.c:14138
 #, fuzzy
 msgid "Invalid snapshot image format specified in configuration file"
 msgstr "failed to parse configuration file"
 
-#: src/qemu/qemu_driver.c:14286 src/qemu/qemu_migration.c:2303
+#: src/qemu/qemu_driver.c:14287 src/qemu/qemu_migration.c:2303
 msgid "domain is marked for auto destroy"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14292 src/test/test_driver.c:6218
+#: src/qemu/qemu_driver.c:14293 src/test/test_driver.c:6218
 msgid "cannot halt after transient domain snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14308
+#: src/qemu/qemu_driver.c:14309
 #, c-format
 msgid "invalid snapshot name '%s': name can't contain '/'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14316
+#: src/qemu/qemu_driver.c:14317
 #, c-format
 msgid "invalid snapshot name '%s': name can't start with '.'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14329
+#: src/qemu/qemu_driver.c:14330
 msgid "live snapshot creation is supported only with external checkpoints"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14346
+#: src/qemu/qemu_driver.c:14347
 msgid "qemu doesn't support taking snapshots of PMSUSPENDED guests"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14354
+#: src/qemu/qemu_driver.c:14355
 #, fuzzy, c-format
 msgid "Invalid domain state %s"
 msgstr "invalid domain pointer in %s"
 
-#: src/qemu/qemu_driver.c:14399
+#: src/qemu/qemu_driver.c:14400
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14486
+#: src/qemu/qemu_driver.c:14487
 #, c-format
 msgid "unable to save metadata for snapshot %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14782 src/test/test_driver.c:6060
+#: src/qemu/qemu_driver.c:14783 src/test/test_driver.c:6060
 #: src/vz/vz_driver.c:2038
 msgid "the domain does not have a current snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14965 src/test/test_driver.c:6460
+#: src/qemu/qemu_driver.c:14966 src/test/test_driver.c:6460
 msgid ""
 "transient domain needs to request run or pause to revert to inactive snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14972
+#: src/qemu/qemu_driver.c:14973
 msgid "revert to external snapshot not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14979 src/test/test_driver.c:6468
+#: src/qemu/qemu_driver.c:14980 src/test/test_driver.c:6468
 #, c-format
 msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:14989
+#: src/qemu/qemu_driver.c:14990
 msgid "must respawn qemu to start inactive snapshot"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15214
+#: src/qemu/qemu_driver.c:15215
 msgid "qemu doesn't support reversion of snapshot taken in PMSUSPENDED state"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15222
+#: src/qemu/qemu_driver.c:15223
 #, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15349
+#: src/qemu/qemu_driver.c:15350
 #, c-format
 msgid "deletion of %d external disk snapshots not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15373
+#: src/qemu/qemu_driver.c:15374
 #, c-format
 msgid "failed to set snapshot '%s' as current"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15492
+#: src/qemu/qemu_driver.c:15493
 #, c-format
 msgid "No monitor connection for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15497
+#: src/qemu/qemu_driver.c:15498
 #, c-format
 msgid "Cannot connect to monitor connection of type '%s' for pid %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15682
+#: src/qemu/qemu_driver.c:15683
 #, c-format
 msgid "cannot find channel %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15689
+#: src/qemu/qemu_driver.c:15690
 #, c-format
 msgid "channel %s is not using a UNIX socket"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15702
+#: src/qemu/qemu_driver.c:15703
 msgid "Active channel stream exists for this domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15729
+#: src/qemu/qemu_driver.c:15730
 #, c-format
 msgid "pivot of disk '%s' requires an active copy job"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15753
+#: src/qemu/qemu_driver.c:15754
 #, c-format
 msgid "disk '%s' not ready for pivot yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15842
+#: src/qemu/qemu_driver.c:15843
 msgid "flag VIR_DOMAIN_BLOCK_REBASE_RELATIVE is valid only with non-null base"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15862
+#: src/qemu/qemu_driver.c:15863
 msgid "partial block pull not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15869
+#: src/qemu/qemu_driver.c:15870
 msgid ""
 "setting bandwidth at start of block pull not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15894
+#: src/qemu/qemu_driver.c:15895
 #, fuzzy
 msgid "this QEMU binary doesn't support relative block pull/rebase"
 msgstr "command '%s' doesn't support option --%s"
 
-#: src/qemu/qemu_driver.c:15906 src/qemu/qemu_driver.c:16771
+#: src/qemu/qemu_driver.c:15907 src/qemu/qemu_driver.c:16772
 msgid "can't keep relative backing relationship"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:15996
+#: src/qemu/qemu_driver.c:15997
 #, c-format
 msgid "another job on disk '%s' is still being ended"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16110
+#: src/qemu/qemu_driver.c:16111
 #, c-format
 msgid "disk %s not found in the domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16136
+#: src/qemu/qemu_driver.c:16137
 #, c-format
 msgid "bandwidth %llu cannot be represented in result"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16290
+#: src/qemu/qemu_driver.c:16291
 msgid "block copy is not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16299
+#: src/qemu/qemu_driver.c:16300
 msgid "domain is not transient"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16316
+#: src/qemu/qemu_driver.c:16317
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16326
+#: src/qemu/qemu_driver.c:16327
 msgid "non-file destination not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16337
+#: src/qemu/qemu_driver.c:16338
 #, c-format
 msgid "missing destination file for disk %s: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16344
+#: src/qemu/qemu_driver.c:16345
 #, c-format
 msgid ""
 "external destination file for disk %s already exists and is not a block "
 "device: %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16351
+#: src/qemu/qemu_driver.c:16352
 #, c-format
 msgid ""
 "blockdev flag requested for disk %s, but file '%s' is not a block device"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16483
+#: src/qemu/qemu_driver.c:16484
 msgid "Relative backing during copy not supported yet"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16548
+#: src/qemu/qemu_driver.c:16549
 #, c-format
 msgid "bandwidth must be less than %llu bytes"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16556
+#: src/qemu/qemu_driver.c:16557
 msgid "granularity must be power of 2"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16650
+#: src/qemu/qemu_driver.c:16651
 msgid "online commit not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16673
+#: src/qemu/qemu_driver.c:16674
 #, c-format
 msgid "disk %s has no source file to be committed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16694
+#: src/qemu/qemu_driver.c:16695
 msgid "active commit not supported with this QEMU binary"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16700
+#: src/qemu/qemu_driver.c:16701
 #, c-format
 msgid "commit of '%s' active layer requires active flag"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16706
+#: src/qemu/qemu_driver.c:16707
 #, fuzzy, c-format
 msgid "active commit requested but '%s' is not active"
 msgstr "domain state"
 
-#: src/qemu/qemu_driver.c:16713
+#: src/qemu/qemu_driver.c:16714
 #, c-format
 msgid "top '%s' in chain for '%s' has no backing file"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16728
+#: src/qemu/qemu_driver.c:16729
 #, c-format
 msgid "base '%s' is not immediately below '%s' in chain for '%s'"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16761
+#: src/qemu/qemu_driver.c:16762
 #, fuzzy
 msgid "this qemu doesn't support relative blockpull"
 msgstr "command '%s' doesn't support option --%s"
 
-#: src/qemu/qemu_driver.c:16868 src/qemu/qemu_driver.c:16933
+#: src/qemu/qemu_driver.c:16869 src/qemu/qemu_driver.c:16934
 #, c-format
 msgid "No graphics backend with index %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:16880 src/qemu/qemu_driver.c:16945
+#: src/qemu/qemu_driver.c:16881 src/qemu/qemu_driver.c:16946
 #, c-format
 msgid "Can only open VNC or SPICE graphics backends, not %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17070
+#: src/qemu/qemu_driver.c:17071
 #, c-format
 msgid "block I/O throttle limit value must be no more than %llu"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17197
+#: src/qemu/qemu_driver.c:17198
 msgid "total and read/write of bytes_sec cannot be set at the same time"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17205
+#: src/qemu/qemu_driver.c:17206
 msgid "total and read/write of iops_sec cannot be set at the same time"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17213
+#: src/qemu/qemu_driver.c:17214
 msgid "total and read/write of bytes_sec_max cannot be set at the same time"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17221
+#: src/qemu/qemu_driver.c:17222
 msgid "total and read/write of iops_sec_max cannot be set at the same time"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17229
+#: src/qemu/qemu_driver.c:17230
 #, fuzzy, c-format
 msgid "missing persistent configuration for disk '%s'"
 msgstr "missing target information for device %s"
 
-#: src/qemu/qemu_driver.c:17248
+#: src/qemu/qemu_driver.c:17249
 #, fuzzy
 msgid "a block I/O throttling parameter is not supported with this QEMU binary"
 msgstr "command '%s' doesn't support option --%s"
 
-#: src/qemu/qemu_driver.c:17290
+#: src/qemu/qemu_driver.c:17291
 #, c-format
 msgid "value '%s' cannot be set if '%s' is not set"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17438
+#: src/qemu/qemu_driver.c:17439
 #, c-format
 msgid "disk '%s' was not found in the domain config"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17694
+#: src/qemu/qemu_driver.c:17695
 msgid "Duration not supported. Use 0 for now"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17702
+#: src/qemu/qemu_driver.c:17703
 #, c-format
 msgid "Unknown suspend target: %u"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17728
+#: src/qemu/qemu_driver.c:17729
 msgid "Unable to suspend domain due to missing system_wakeup monitor command"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17738
+#: src/qemu/qemu_driver.c:17739
 msgid "S3 state is disabled for this domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17745
+#: src/qemu/qemu_driver.c:17746
 msgid "S4 state is disabled for this domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17795
+#: src/qemu/qemu_driver.c:17796
 msgid "Unable to wake up domain due to missing system_wakeup monitor command"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:17945
+#: src/qemu/qemu_driver.c:17946
 msgid "Specifying mount point is not supported for now"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:18204
+#: src/qemu/qemu_driver.c:18205
 msgid "cannot set time: qemu doesn't support rtc-reset-reinjection command"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:18299
+#: src/qemu/qemu_driver.c:18300
 #, fuzzy
 msgid "specifying mountpoints is not supported"
 msgstr "command '%s' doesn't support option --%s"
 
-#: src/qemu/qemu_driver.c:18406
+#: src/qemu/qemu_driver.c:18407
 #, fuzzy, c-format
 msgid "architecture from emulator '%s' doesn't match given architecture '%s'"
 msgstr "failed to get node information"
 
-#: src/qemu/qemu_driver.c:18416
+#: src/qemu/qemu_driver.c:18417
 #, c-format
 msgid "unable to find any emulator to serve '%s' architecture"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:18430
+#: src/qemu/qemu_driver.c:18431
 #, fuzzy, c-format
 msgid "the machine '%s' is not supported by emulator '%s'"
 msgstr "command '%s' doesn't support option --%s"
 
-#: src/qemu/qemu_driver.c:19104
+#: src/qemu/qemu_driver.c:19105
 #, fuzzy, c-format
 msgid "Stats types bits 0x%x are not supported by this daemon"
 msgstr "command '%s' doesn't support option --%s"
 
-#: src/qemu/qemu_driver.c:19380
+#: src/qemu/qemu_driver.c:19381
 #, c-format
 msgid "Unknown IP address data source %d"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:19583
+#: src/qemu/qemu_driver.c:19584
 #, c-format
 msgid "cannot remove old domain config file %s"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:19632
+#: src/qemu/qemu_driver.c:19633
 msgid "cannot rename active domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:19638
+#: src/qemu/qemu_driver.c:19639
 msgid "cannot rename a transient domain"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:19644
+#: src/qemu/qemu_driver.c:19645
 msgid "domain with a managed saved state can't be renamed"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:19650
+#: src/qemu/qemu_driver.c:19651
 msgid "domain has to be shutoff before renaming"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:19656
+#: src/qemu/qemu_driver.c:19657
 msgid "cannot rename domain with snapshots"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:19700
+#: src/qemu/qemu_driver.c:19701
 #, c-format
 msgid "vcpu id '%u' reported by guest agent is out of range"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:19805
+#: src/qemu/qemu_driver.c:19806
 msgid "unsupported state value"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:19837
+#: src/qemu/qemu_driver.c:19838
 #, c-format
 msgid "vCPU '%u' is not offlinable"
 msgstr ""
 
-#: src/qemu/qemu_driver.c:19850
+#: src/qemu/qemu_driver.c:19851
 #, c-format
 msgid "guest is missing vCPUs '%s'"
 msgstr ""
@@ -27541,7 +27537,17 @@ msgstr ""
 msgid "Failed to run command '%s' to update iscsi interface with IQN '%s'"
 msgstr ""
 
-#: src/util/viriscsi.c:470
+#: src/util/viriscsi.c:480
+#, fuzzy, c-format
+msgid "Failed new node mode for target '%s'"
+msgstr "failed to get node information"
+
+#: src/util/viriscsi.c:487
+#, c-format
+msgid "%s failed new mode for target '%s' with status '%d'"
+msgstr ""
+
+#: src/util/viriscsi.c:521
 #, fuzzy, c-format
 msgid "Failed to update '%s' of node mode for target '%s'"
 msgstr "failed to get node information"
@@ -34762,8 +34768,8 @@ msgid "expecting an ide:00.00.00 address."
 msgstr ""
 
 #: tools/virsh-domain.c:740 tools/virsh-domain.c:1051 tools/virsh-pool.c:379
-#: tools/virsh-volume.c:340 tools/virsh-volume.c:608 tools/vsh.c:3225
-#: tools/vsh.c:3242
+#: tools/virsh-volume.c:340 tools/virsh-volume.c:608 tools/vsh.c:3226
+#: tools/vsh.c:3243
 msgid "Failed to allocate XML buffer"
 msgstr ""
 
@@ -41758,15 +41764,15 @@ msgstr "unsupported option '-%c'. See --help."
 msgid "unknown option"
 msgstr "unknown host"
 
-#: tools/virsh.c:971 tools/virt-admin.c:1370
+#: tools/virsh.c:972 tools/virt-admin.c:1371
 msgid "Failed to initialize mutex"
 msgstr ""
 
-#: tools/virsh.c:976 tools/virt-admin.c:1375
+#: tools/virsh.c:977 tools/virt-admin.c:1376
 msgid "Failed to initialize libvirt"
 msgstr ""
 
-#: tools/virsh.c:1001
+#: tools/virsh.c:1002
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -41775,7 +41781,7 @@ msgstr ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
 
-#: tools/virsh.c:1004 tools/virt-admin.c:1400
+#: tools/virsh.c:1005 tools/virt-admin.c:1401
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -42068,7 +42074,7 @@ msgstr ""
 msgid "Compiled with support for:"
 msgstr ""
 
-#: tools/virt-admin.c:1396
+#: tools/virt-admin.c:1397
 #, c-format
 msgid ""
 "Welcome to %s, the administrating virtualization interactive terminal.\n"
@@ -42302,7 +42308,7 @@ msgstr "command '%s' requires --%s option"
 msgid "command group '%s' doesn't exist"
 msgstr ""
 
-#: tools/vsh.c:604 tools/vsh.c:3089
+#: tools/vsh.c:604 tools/vsh.c:3090
 #, c-format
 msgid " %s (help keyword '%s'):\n"
 msgstr ""
@@ -42583,26 +42589,26 @@ msgstr ""
 msgid "Failed to complete tree listing"
 msgstr ""
 
-#: tools/vsh.c:2865
+#: tools/vsh.c:2855
 #, c-format
 msgid "Bad $%s value."
 msgstr ""
 
-#: tools/vsh.c:2868
+#: tools/vsh.c:2858
 #, c-format
 msgid "$%s value should be between 0 and %d"
 msgstr ""
 
-#: tools/vsh.c:2882
+#: tools/vsh.c:2872
 msgid "Could not determine home directory"
 msgstr ""
 
-#: tools/vsh.c:2913
+#: tools/vsh.c:2902
 #, c-format
 msgid "Failed to create '%s': %s"
 msgstr ""
 
-#: tools/vsh.c:2982
+#: tools/vsh.c:2975
 msgid "VSH_DEBUG not set with a valid numeric value"
 msgstr ""
 
@@ -42618,102 +42624,102 @@ msgstr ""
 msgid "command groups and command are both NULL run vshInit before reloading"
 msgstr ""
 
-#: tools/vsh.c:3061
+#: tools/vsh.c:3062
 msgid ""
 "Prints global help, command specific help, or help for a group of related "
 "commands"
 msgstr ""
 
-#: tools/vsh.c:3068
+#: tools/vsh.c:3069
 msgid "print help"
 msgstr "print help"
 
-#: tools/vsh.c:3071
+#: tools/vsh.c:3072
 msgid ""
 "Prints global help, command specific help, or help for a\n"
 "    group of related commands"
 msgstr ""
 
-#: tools/vsh.c:3086
+#: tools/vsh.c:3087
 msgid ""
 "Grouped commands:\n"
 "\n"
 msgstr ""
 
-#: tools/vsh.c:3110
+#: tools/vsh.c:3111
 #, c-format
 msgid "command or command group '%s' doesn't exist"
 msgstr ""
 
-#: tools/vsh.c:3118
+#: tools/vsh.c:3119
 msgid "directory to switch to (default: home or else root)"
 msgstr ""
 
-#: tools/vsh.c:3125
+#: tools/vsh.c:3126
 msgid "change the current directory"
 msgstr ""
 
-#: tools/vsh.c:3128
+#: tools/vsh.c:3129
 msgid "Change the current directory."
 msgstr ""
 
-#: tools/vsh.c:3142
+#: tools/vsh.c:3143
 msgid "cd: command valid only in interactive mode"
 msgstr ""
 
-#: tools/vsh.c:3152
+#: tools/vsh.c:3153
 #, c-format
 msgid "cd: %s: %s"
 msgstr ""
 
-#: tools/vsh.c:3164
+#: tools/vsh.c:3165
 msgid "escape for shell use"
 msgstr ""
 
-#: tools/vsh.c:3168
+#: tools/vsh.c:3169
 msgid "escape for XML use"
 msgstr ""
 
-#: tools/vsh.c:3180
+#: tools/vsh.c:3181
 msgid "arguments to echo"
 msgstr ""
 
-#: tools/vsh.c:3187
+#: tools/vsh.c:3188
 msgid "echo arguments"
 msgstr ""
 
-#: tools/vsh.c:3190
+#: tools/vsh.c:3191
 msgid "Echo back arguments, possibly with quoting."
 msgstr ""
 
-#: tools/vsh.c:3254
+#: tools/vsh.c:3255
 msgid "print the current directory"
 msgstr ""
 
-#: tools/vsh.c:3257
+#: tools/vsh.c:3258
 msgid "Print the current directory."
 msgstr ""
 
-#: tools/vsh.c:3271
+#: tools/vsh.c:3272
 #, c-format
 msgid "pwd: cannot get current directory: %s"
 msgstr ""
 
-#: tools/vsh.c:3275
+#: tools/vsh.c:3276
 #, c-format
 msgid "%s\n"
 msgstr ""
 
-#: tools/vsh.c:3284
+#: tools/vsh.c:3285
 msgid "quit this interactive terminal"
 msgstr "quit this interactive terminal"
 
-#: tools/vsh.h:473
+#: tools/vsh.h:474
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr ""
 
-#: tools/vsh.h:525
+#: tools/vsh.h:526
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
