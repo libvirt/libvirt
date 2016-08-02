@@ -493,15 +493,10 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             }
         }
 
-        /*
-         * The following comment and calculation were taken directly from
-         * libxenlight's internal function libxl_get_required_shadow_memory():
-         *
-         * 256 pages (1MB) per vcpu, plus 1 page per MiB of RAM for the P2M map,
-         * plus 1 page per MiB of RAM to shadow the resident processes.
-         */
-        b_info->shadow_memkb = 4 * (256 * libxl_bitmap_count_set(&b_info->avail_vcpus) +
-                                    2 * (b_info->max_memkb / 1024));
+        /* Allow libxl to calculate shadow memory requirements */
+        b_info->shadow_memkb =
+            libxl_get_required_shadow_memory(b_info->max_memkb,
+                                             b_info->max_vcpus);
     } else {
         /*
          * For compatibility with the legacy xen toolstack, default to pygrub
