@@ -97,6 +97,8 @@ mymain(void)
 
     DO_TEST("perf");
 
+    DO_TEST("vcpus-individual");
+
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
 

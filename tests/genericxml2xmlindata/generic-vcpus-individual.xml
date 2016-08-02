@@ -1,0 +1,23 @@
+<domain type='qemu'>
+  <name>foobar</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static' current='2'>4</vcpu>
+  <vcpus>
+    <vcpu id='0' enabled='no' hotpluggable='yes' order='1'/>
+    <vcpu id='1' enabled='yes' hotpluggable='no'/>
+    <vcpu id='2' enabled='no' hotpluggable='yes' order='2'/>
+    <vcpu id='3' enabled='yes' hotpluggable='no'/>
+  </vcpus>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+  </devices>
+</domain>

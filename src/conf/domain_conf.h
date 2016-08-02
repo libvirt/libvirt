@@ -2046,6 +2046,9 @@ typedef virDomainVcpuDef *virDomainVcpuDefPtr;
 
 struct _virDomainVcpuDef {
     bool online;
+    virTristateBool hotpluggable;
+    unsigned int order;
+
     virBitmapPtr cpumask;
 
     virDomainThreadSchedParam sched;
@@ -2142,6 +2145,8 @@ struct _virDomainDef {
 
     virDomainVcpuDefPtr *vcpus;
     size_t maxvcpus;
+    /* set if the vcpu definition was specified individually */
+    bool individualvcpus;
     int placement_mode;
     virBitmapPtr cpumask;
 
@@ -2344,6 +2349,7 @@ typedef enum {
     VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG = (1 << 1),
     VIR_DOMAIN_DEF_FEATURE_OFFLINE_VCPUPIN = (1 << 2),
     VIR_DOMAIN_DEF_FEATURE_NAME_SLASH = (1 << 3),
+    VIR_DOMAIN_DEF_FEATURE_INDIVIDUAL_VCPUS = (1 << 4),
 } virDomainDefFeatures;
 
 

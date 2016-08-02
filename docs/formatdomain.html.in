@@ -489,6 +489,10 @@
 &lt;domain&gt;
   ...
   &lt;vcpu placement='static' cpuset="1-4,^3,6" current="1"&gt;2&lt;/vcpu&gt;
+  &lt;vcpus&gt;
+    &lt;vcpu id='0' enabled='yes' hotpluggable='no' order='1'/&gt;
+    &lt;vcpu id='1' enabled='no' hotpluggable='yes'/&gt;
+  &lt;/vcpus&gt;
   ...
 &lt;/domain&gt;
 </pre>
@@ -541,6 +545,42 @@
            <span class="since">Since 0.9.11 (QEMU and KVM only)</span>
          </dd>
         </dl>
+      </dd>
+      <dt><code>vcpus</code></dt>
+      <dd>
+        The vcpus element allows to control state of individual vcpus.
+
+        The <code>id</code> attribute specifies the vCPU id as used by libvirt
+        in other places such as vcpu pinning, scheduler information and NUMA
+        assignment. Note that the vcpu ID as seen in the guest may differ from
+        libvirt ID in certain cases. Valid IDs are from 0 to the maximum vcpu
+        count as set by the <code>vcpu</code> element minus 1.
+
+        The <code>enabled</code> attribute allows to control the state of the
+        vcpu. Valid values are <code>yes</code> and <code>no</code>.
+
+        <code>hotpluggable</code> controls whether given vcpu can be hotplugged
+        and hotunplugged in cases when the cpu is enabled at boot. Note that
+        all disabled vcpus must be hotpluggable. Valid values are
+        <code>yes</code> and <code>no</code>.
+
+        <code>order</code> allows to specify the order to add the vcpus. For
+        hypervisors/platforms that require to insert multiple vcpus at once
+        the order may be be duplicated accross all vcpus that need to be
+        enabled at once. Specifying order is not necessary, vcpus are then
+        added in an arbitrary order.
+
+        Note that hypervisors may create hotpluggable vcpus differently from
+        boot vcpus thus special initialization may be necessary.
+
+        Hypervisors may require that vcpus enabled on boot which are not
+        hotpluggable are clustered at the beginning starting with ID 0. It may
+        be also required that vcpu 0 is always present and non-hotpluggable.
+
+        Note that providing state for individual cpus may be necessary to enable
+        support of addressable vCPU hotplug and this feature may not be
+        supported by all hypervisors.
+        <span class="since">Since 2.2.0 (QEMU only)</span>
       </dd>
     </dl>
 

@@ -5846,8 +5846,17 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
         VIR_STEAL_PTR(vcpupriv->alias, info[i].alias);
         vcpupriv->enable_id = info[i].id;
 
-        if (hotplug && state)
+        if (hotplug && state) {
             vcpu->online = !!info[i].qom_path;
+
+            /* mark cpus that don't have an alias as non-hotpluggable */
+            if (vcpu->online) {
+                if (vcpupriv->alias)
+                    vcpu->hotpluggable = VIR_TRISTATE_BOOL_YES;
+                else
+                    vcpu->hotpluggable = VIR_TRISTATE_BOOL_NO;
+            }
+        }
     }
 
     ret = 0;

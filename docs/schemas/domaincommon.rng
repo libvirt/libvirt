@@ -583,6 +583,31 @@
       </optional>
 
       <optional>
+        <element name="vcpus">
+          <zeroOrMore>
+            <element name="vcpu">
+              <attribute name="id">
+                <ref name="unsignedInt"/>
+              </attribute>
+              <attribute name="enabled">
+                <ref name="virYesNo"/>
+              </attribute>
+              <optional>
+                <attribute name="hotpluggable">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="order">
+                  <ref name="unsignedInt"/>
+                </attribute>
+              </optional>
+            </element>
+          </zeroOrMore>
+        </element>
+      </optional>
+
+      <optional>
         <element name="iothreads">
           <ref name="unsignedInt"/>
         </element>
