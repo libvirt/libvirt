@@ -57,40 +57,6 @@ struct virPerf {
     struct virPerfEvent events[VIR_PERF_EVENT_LAST];
 };
 
-virPerfPtr
-virPerfNew(void)
-{
-    size_t i;
-    virPerfPtr perf;
-
-    if (VIR_ALLOC(perf) < 0)
-        return NULL;
-
-    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
-        perf->events[i].type = i;
-        perf->events[i].fd = -1;
-        perf->events[i].enabled = false;
-    }
-
-    return perf;
-}
-
-void
-virPerfFree(virPerfPtr perf)
-{
-    size_t i;
-
-    if (perf == NULL)
-        return;
-
-    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
-        if (perf->events[i].enabled)
-            virPerfEventDisable(perf, i);
-    }
-
-    VIR_FREE(perf);
-}
-
 #if defined(__linux__) && defined(HAVE_SYS_SYSCALL_H)
 
 # include <linux/perf_event.h>
@@ -303,3 +269,37 @@ virPerfReadEvent(virPerfPtr perf ATTRIBUTE_UNUSED,
 }
 
 #endif
+
+virPerfPtr
+virPerfNew(void)
+{
+    size_t i;
+    virPerfPtr perf;
+
+    if (VIR_ALLOC(perf) < 0)
+        return NULL;
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+        perf->events[i].type = i;
+        perf->events[i].fd = -1;
+        perf->events[i].enabled = false;
+    }
+
+    return perf;
+}
+
+void
+virPerfFree(virPerfPtr perf)
+{
+    size_t i;
+
+    if (perf == NULL)
+        return;
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+        if (perf->events[i].enabled)
+            virPerfEventDisable(perf, i);
+    }
+
+    VIR_FREE(perf);
+}
