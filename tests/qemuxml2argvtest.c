@@ -272,6 +272,7 @@ struct testInfo {
     int migrateFd;
     unsigned int flags;
     unsigned int parseFlags;
+    bool skipLegacyCPUs;
 };
 
 
@@ -305,20 +306,39 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
 
 
 static int
-testPrepareExtraFlags(struct testInfo *info,
-                      bool skipLegacyCPUs,
-                      int gic)
+testInitQEMUCaps(struct testInfo *info,
+                 int gic)
 {
     int ret = -1;
 
     if (!(info->qemuCaps = virQEMUCapsNew()))
         goto cleanup;
 
-    if (testAddCPUModels(info->qemuCaps, skipLegacyCPUs) < 0)
-        goto cleanup;
+    virQEMUCapsSet(info->qemuCaps, QEMU_CAPS_NO_ACPI);
 
     if (testQemuCapsSetGIC(info->qemuCaps, gic) < 0)
         goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
+static int
+testUpdateQEMUCaps(const struct testInfo *info,
+                   virDomainObjPtr vm)
+{
+    int ret = -1;
+
+    if (testAddCPUModels(info->qemuCaps, info->skipLegacyCPUs) < 0)
+        goto cleanup;
+
+    virQEMUCapsFilterByMachineType(info->qemuCaps, vm->def->os.machine);
+
+    if (ARCH_IS_X86(vm->def->os.arch))
+        virQEMUCapsSet(info->qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
 
     ret = 0;
 
@@ -400,10 +420,6 @@ testCompareXMLToArgv(const void *data)
     if (qemuProcessPrepareMonitorChr(&monitor_chr, priv->libDir) < 0)
         goto cleanup;
 
-    virQEMUCapsSetList(info->qemuCaps,
-                       QEMU_CAPS_NO_ACPI,
-                       QEMU_CAPS_LAST);
-
     if (STREQ(vm->def->os.machine, "pc") &&
         STREQ(vm->def->emulator, "/usr/bin/qemu-system-x86_64")) {
         VIR_FREE(vm->def->os.machine);
@@ -411,16 +427,12 @@ testCompareXMLToArgv(const void *data)
             goto cleanup;
     }
 
-    virQEMUCapsFilterByMachineType(info->qemuCaps, vm->def->os.machine);
+    if (testUpdateQEMUCaps(info, vm) < 0)
+        goto cleanup;
 
     log = virTestLogContentAndReset();
     VIR_FREE(log);
     virResetLastError();
-
-    if (vm->def->os.arch == VIR_ARCH_X86_64 ||
-        vm->def->os.arch == VIR_ARCH_I686) {
-        virQEMUCapsSet(info->qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
-    }
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
         virDomainHostdevDefPtr hostdev = vm->def->hostdevs[i];
@@ -536,9 +548,11 @@ mymain(void)
                       parseFlags, gic, ...)                              \
     do {                                                                 \
         static struct testInfo info = {                                  \
-            name, NULL, migrateFrom, migrateFd, (flags), parseFlags      \
+            name, NULL, migrateFrom, migrateFd, (flags), parseFlags,     \
+            false                                                        \
         };                                                               \
-        if (testPrepareExtraFlags(&info, skipLegacyCPUs, gic) < 0)       \
+        info.skipLegacyCPUs = skipLegacyCPUs;                            \
+        if (testInitQEMUCaps(&info, gic) < 0)                            \
             return EXIT_FAILURE;                                         \
         virQEMUCapsSetList(info.qemuCaps, __VA_ARGS__, QEMU_CAPS_LAST);  \
         if (virTestRun("QEMU XML-2-ARGV " name,                          \
