@@ -2225,16 +2225,21 @@ from different sources can be supported by perf.
 Currently only QEMU/KVM supports this command. The I<--enable> and I<--disable>
 option combined with B<eventSpec> can be used to enabled or disable specific
 performance event. B<eventSpec> is a string list of one or more events
-separated by commas. Valid event names are "cmt", "mbmt", "mbml".
-CMT is a PQos (Platform Qos) feature to monitor the usage of cache by
-applications running on the platform.
-MBM (Memory Bandwidth Monitoring) provides a way to monitor the Total
-system memory bandwidth between one level of cache and another (mbmt)
-and the amount of data (bytes/s) sent through the memory controller on
-the socket (mbml).
+separated by commas. Valid event names are as follows:
 
-The statistics can be retrieved using the B<domstats> command using the
-I<--perf> flag.
+B<Valid perf event names>
+  cmt              - A PQos (Platform Qos) feature to monitor the
+                     usage of cache by applications running on the
+                     platform.
+  mbmt             - Provides a way to monitor the total system
+                     memory bandwidth between one level of cache
+                     and another.
+  mbml             - Provides a way to limit the amount of data
+                     (bytes/s) send through the memory controller
+                     on the socket.
+
+B<Note>: The statistics can be retrieved using the B<domstats> command using
+the I<--perf> flag.
 
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.
