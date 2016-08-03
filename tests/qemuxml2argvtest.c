@@ -274,6 +274,59 @@ struct testInfo {
     unsigned int parseFlags;
 };
 
+
+static int
+testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
+{
+    const char *newModels[] = {
+        "Opteron_G3", "Opteron_G2", "Opteron_G1",
+        "Nehalem", "Penryn", "Conroe",
+        "Haswell-noTSX", "Haswell",
+    };
+    const char *legacyModels[] = {
+        "n270", "athlon", "pentium3", "pentium2", "pentium",
+        "486", "coreduo", "kvm32", "qemu32", "kvm64",
+        "core2duo", "phenom", "qemu64",
+    };
+
+    if (virQEMUCapsAddCPUDefinitions(caps, newModels,
+                                     ARRAY_CARDINALITY(newModels)) < 0)
+        return -1;
+
+    if (skipLegacy)
+        return 0;
+
+    if (virQEMUCapsAddCPUDefinitions(caps, legacyModels,
+                                     ARRAY_CARDINALITY(legacyModels)) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+testPrepareExtraFlags(struct testInfo *info,
+                      bool skipLegacyCPUs,
+                      int gic)
+{
+    int ret = -1;
+
+    if (!(info->qemuCaps = virQEMUCapsNew()))
+        goto cleanup;
+
+    if (testAddCPUModels(info->qemuCaps, skipLegacyCPUs) < 0)
+        goto cleanup;
+
+    if (testQemuCapsSetGIC(info->qemuCaps, gic) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
 static int
 testCompareXMLToArgv(const void *data)
 {
@@ -423,57 +476,6 @@ testCompareXMLToArgv(const void *data)
     return ret;
 }
 
-
-static int
-testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
-{
-    const char *newModels[] = {
-        "Opteron_G3", "Opteron_G2", "Opteron_G1",
-        "Nehalem", "Penryn", "Conroe",
-        "Haswell-noTSX", "Haswell",
-    };
-    const char *legacyModels[] = {
-        "n270", "athlon", "pentium3", "pentium2", "pentium",
-        "486", "coreduo", "kvm32", "qemu32", "kvm64",
-        "core2duo", "phenom", "qemu64",
-    };
-
-    if (virQEMUCapsAddCPUDefinitions(caps, newModels,
-                                     ARRAY_CARDINALITY(newModels)) < 0)
-        return -1;
-
-    if (skipLegacy)
-        return 0;
-
-    if (virQEMUCapsAddCPUDefinitions(caps, legacyModels,
-                                     ARRAY_CARDINALITY(legacyModels)) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-static int
-testPrepareExtraFlags(struct testInfo *info,
-                      bool skipLegacyCPUs,
-                      int gic)
-{
-    int ret = -1;
-
-    if (!(info->qemuCaps = virQEMUCapsNew()))
-        goto cleanup;
-
-    if (testAddCPUModels(info->qemuCaps, skipLegacyCPUs) < 0)
-        goto cleanup;
-
-    if (testQemuCapsSetGIC(info->qemuCaps, gic) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    return ret;
-}
 
 static int
 mymain(void)
