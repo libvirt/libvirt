@@ -76,6 +76,7 @@ module Libvirtd_qemu =
                  | int_entry "max_processes"
                  | int_entry "max_files"
                  | limits_entry "max_core"
+                 | bool_entry "dump_guest_core"
                  | str_entry "stdio_handler"
 
    let device_entry = bool_entry "mac_filter"

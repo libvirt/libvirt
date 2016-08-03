@@ -614,7 +614,11 @@ mymain(void)
     DO_TEST("machine-aliases2", QEMU_CAPS_KVM);
     DO_TEST("machine-core-on", QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_DUMP_GUEST_CORE);
+    driver.config->dumpGuestCore = true;
     DO_TEST("machine-core-off", QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_DUMP_GUEST_CORE);
+    driver.config->dumpGuestCore = false;
+    DO_TEST("machine-core-cfg-off", QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_DUMP_GUEST_CORE);
     DO_TEST_FAILURE("machine-core-on", NONE);
     DO_TEST_FAILURE("machine-core-on", QEMU_CAPS_MACHINE_OPT);

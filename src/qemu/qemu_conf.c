@@ -654,6 +654,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     }
 
+    if (virConfGetValueBool(conf, "dump_guest_core", &cfg->dumpGuestCore) < 0)
+        goto cleanup;
+
     if (virConfGetValueString(conf, "lock_manager", &cfg->lockManagerName) < 0)
         goto cleanup;
     if (virConfGetValueString(conf, "stdio_handler", &stdioHandler) < 0)
