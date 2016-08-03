@@ -285,34 +285,34 @@ static int testCompareXMLToArgvFiles(const char *xml,
     memset(&monitor_chr, 0, sizeof(monitor_chr));
 
     if (!(conn = virGetConnect()))
-        goto out;
+        goto cleanup;
     conn->secretDriver = &fakeSecretDriver;
     conn->storageDriver = &fakeStorageDriver;
 
     if (!(vm = virDomainObjNew(driver.xmlopt)))
-        goto out;
+        goto cleanup;
 
     if (!(vm->def = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
                                           (VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                            parseFlags)))) {
         if (flags & FLAG_EXPECT_PARSE_ERROR)
             goto ok;
-        goto out;
+        goto cleanup;
     }
     priv = vm->privateData;
 
     if (virBitmapParse("0-3", &priv->autoNodeset, 4) < 0)
-        goto out;
+        goto cleanup;
 
     if (!virDomainDefCheckABIStability(vm->def, vm->def)) {
         VIR_TEST_DEBUG("ABI stability check failed on %s", xml);
-        goto out;
+        goto cleanup;
     }
 
     vm->def->id = -1;
 
     if (qemuProcessPrepareMonitorChr(&monitor_chr, priv->libDir) < 0)
-        goto out;
+        goto cleanup;
 
     virQEMUCapsSetList(qemuCaps,
                        QEMU_CAPS_NO_ACPI,
@@ -322,7 +322,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         STREQ(vm->def->emulator, "/usr/bin/qemu-system-x86_64")) {
         VIR_FREE(vm->def->os.machine);
         if (VIR_STRDUP(vm->def->os.machine, "pc-0.11") < 0)
-            goto out;
+            goto cleanup;
     }
 
     virQEMUCapsFilterByMachineType(qemuCaps, vm->def->os.machine);
@@ -351,14 +351,14 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                             VIR_QEMU_PROCESS_START_COLD))) {
         if (flags & FLAG_EXPECT_FAILURE)
             goto ok;
-        goto out;
+        goto cleanup;
     }
 
     if (!(actualargv = virCommandToString(cmd)))
-        goto out;
+        goto cleanup;
 
     if (virTestCompareToFile(actualargv, cmdline) < 0)
-        goto out;
+        goto cleanup;
 
     ret = 0;
 
@@ -366,7 +366,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (ret == 0 && flags & FLAG_EXPECT_FAILURE) {
         ret = -1;
         VIR_TEST_DEBUG("Error expected but there wasn't any.\n");
-        goto out;
+        goto cleanup;
     }
     if (!virTestOOMActive()) {
         if (flags & FLAG_EXPECT_FAILURE) {
@@ -377,7 +377,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
         ret = 0;
     }
 
- out:
+ cleanup:
     VIR_FREE(log);
     VIR_FREE(actualargv);
     virDomainChrSourceDefClear(&monitor_chr);
@@ -476,17 +476,17 @@ testPrepareExtraFlags(struct testInfo *info,
     int ret = -1;
 
     if (!(info->qemuCaps = virQEMUCapsNew()))
-        goto out;
+        goto cleanup;
 
     if (testAddCPUModels(info->qemuCaps, skipLegacyCPUs) < 0)
-        goto out;
+        goto cleanup;
 
     if (testQemuCapsSetGIC(info->qemuCaps, gic) < 0)
-        goto out;
+        goto cleanup;
 
     ret = 0;
 
- out:
+ cleanup:
     return ret;
 }
 
