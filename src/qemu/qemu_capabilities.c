@@ -2250,6 +2250,15 @@ const char *virQEMUCapsGetBinary(virQEMUCapsPtr qemuCaps)
     return qemuCaps->binary;
 }
 
+
+void
+virQEMUCapsSetArch(virQEMUCapsPtr qemuCaps,
+                   virArch arch)
+{
+    qemuCaps->arch = arch;
+}
+
+
 virArch virQEMUCapsGetArch(virQEMUCapsPtr qemuCaps)
 {
     return qemuCaps->arch;

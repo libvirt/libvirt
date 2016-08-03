@@ -56,4 +56,7 @@ char *virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
                              time_t selfCTime,
                              unsigned long selfVersion);
 
+void
+virQEMUCapsSetArch(virQEMUCapsPtr qemuCaps,
+                   virArch arch);
 #endif

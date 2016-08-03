@@ -27,6 +27,10 @@
 # include "storage/storage_driver.h"
 # include "virmock.h"
 
+# define __QEMU_CAPSRIV_H_ALLOW__
+# include "qemu/qemu_capspriv.h"
+# undef __QEMU_CAPSRIV_H_ALLOW__
+
 # include "testutilsqemu.h"
 
 # define VIR_FROM_THIS VIR_FROM_QEMU
@@ -331,6 +335,8 @@ testUpdateQEMUCaps(const struct testInfo *info,
                    virDomainObjPtr vm)
 {
     int ret = -1;
+
+    virQEMUCapsSetArch(info->qemuCaps, vm->def->os.arch);
 
     if (testAddCPUModels(info->qemuCaps, info->skipLegacyCPUs) < 0)
         goto cleanup;
