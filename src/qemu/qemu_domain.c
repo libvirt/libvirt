@@ -2844,6 +2844,56 @@ qemuDomainChrDefDropDefaultPath(virDomainChrDefPtr chr,
 
 
 static int
+qemuDomainShmemDefPostParse(virDomainShmemDefPtr shm)
+{
+    /* This was the default since the introduction of this device. */
+    if (shm->model != VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL && !shm->size)
+        shm->size = 4 << 20;
+
+    /* Nothing more to check/change for IVSHMEM */
+    if (shm->model == VIR_DOMAIN_SHMEM_MODEL_IVSHMEM)
+        return 0;
+
+    if (!shm->server.enabled) {
+        if (shm->model == VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("shmem model '%s' is supported "
+                             "only with server option enabled"),
+                           virDomainShmemModelTypeToString(shm->model));
+            return -1;
+        }
+
+        if (shm->msi.enabled) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("shmem model '%s' doesn't support "
+                             "msi"),
+                           virDomainShmemModelTypeToString(shm->model));
+        }
+    } else {
+        if (shm->model == VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("shmem model '%s' is supported "
+                             "only with server option disabled"),
+                           virDomainShmemModelTypeToString(shm->model));
+            return -1;
+        }
+
+        if (shm->size) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("shmem model '%s' does not support size setting"),
+                           virDomainShmemModelTypeToString(shm->model));
+            return -1;
+        }
+        shm->msi.enabled = true;
+        if (!shm->msi.ioeventfd)
+            shm->msi.ioeventfd = VIR_TRISTATE_SWITCH_ON;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
                              virCapsPtr caps,
@@ -3046,6 +3096,10 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             }
         }
     }
+
+    if (dev->type == VIR_DOMAIN_DEVICE_SHMEM &&
+        qemuDomainShmemDefPostParse(dev->data.shmem) < 0)
+        goto cleanup;
 
     ret = 0;
 

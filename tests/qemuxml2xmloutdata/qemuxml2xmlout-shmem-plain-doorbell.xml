@@ -23,6 +23,7 @@
     <memballoon model='none'/>
     <shmem name='shmem0'>
       <model type='ivshmem-plain'/>
+      <size unit='M'>4</size>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </shmem>
     <shmem name='shmem1'>
@@ -38,11 +39,13 @@
     <shmem name='shmem3'>
       <model type='ivshmem-doorbell'/>
       <server/>
+      <msi ioeventfd='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </shmem>
     <shmem name='shmem4'>
       <model type='ivshmem-doorbell'/>
       <server path='/tmp/shmem4-sock'/>
+      <msi ioeventfd='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </shmem>
     <shmem name='shmem5'>
@@ -54,7 +57,7 @@
     <shmem name='shmem6'>
       <model type='ivshmem-doorbell'/>
       <server path='/tmp/shmem6-sock'/>
-      <msi vectors='16'/>
+      <msi vectors='16' ioeventfd='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
     </shmem>
     <shmem name='shmem7'>
