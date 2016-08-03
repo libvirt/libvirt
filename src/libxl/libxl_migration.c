@@ -296,7 +296,7 @@ libxlDoMigrateReceive(void *opaque)
     libxlDomainObjEndJob(driver, vm);
 
  cleanup:
-    if (remove_dom && vm) {
+    if (remove_dom) {
         virDomainObjListRemove(driver->domains, vm);
         vm = NULL;
     }
