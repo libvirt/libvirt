@@ -4764,7 +4764,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     virDomainDefPtr def;
     virDomainDefPtr persistentDef;
     int ret = -1;
-    unsigned int maxvcpus = 0;
     virQEMUDriverConfigPtr cfg = NULL;
     qemuDomainObjPrivatePtr priv;
     size_t i;
@@ -4800,6 +4799,34 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
+    if (def) {
+        if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("maximum vcpu count of a live domain can't be "
+                             "modified"));
+            goto endjob;
+        }
+
+        if (nvcpus > virDomainDefGetVcpusMax(def)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("requested vcpus is greater than max allowable"
+                             " vcpus for the live domain: %u > %u"),
+                           nvcpus, virDomainDefGetVcpusMax(def));
+            goto endjob;
+        }
+    }
+
+    if (persistentDef) {
+        if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM) &&
+            nvcpus > virDomainDefGetVcpusMax(persistentDef)) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("requested vcpus is greater than max allowable"
+                             " vcpus for the persistent domain: %u > %u"),
+                           nvcpus, virDomainDefGetVcpusMax(persistentDef));
+            goto endjob;
+        }
+    }
+
     if (def && virNumaIsAvailable() &&
         virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
         if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
@@ -4815,20 +4842,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         if (virCgroupGetCpusetMems(cgroup_temp, &mem_mask) < 0 ||
             virCgroupSetCpusetMems(cgroup_temp, all_nodes_str) < 0)
             goto endjob;
-    }
-
-    if (def)
-        maxvcpus = virDomainDefGetVcpusMax(def);
-    if (persistentDef) {
-        if (!maxvcpus || maxvcpus > virDomainDefGetVcpusMax(persistentDef))
-            maxvcpus = virDomainDefGetVcpusMax(persistentDef);
-    }
-    if (!(flags & VIR_DOMAIN_VCPU_MAXIMUM) && nvcpus > maxvcpus) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("requested vcpus is greater than max allowable"
-                         " vcpus for the domain: %d > %d"),
-                       nvcpus, maxvcpus);
-        goto endjob;
     }
 
     if (def) {
