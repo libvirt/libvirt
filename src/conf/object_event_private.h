@@ -106,6 +106,6 @@ virObjectEventNew(virClassPtr klass,
                   const unsigned char *uuid,
                   const char *key)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5)
-    ATTRIBUTE_NONNULL(6) ATTRIBUTE_NONNULL(7);
+    ATTRIBUTE_NONNULL(7);
 
 #endif
