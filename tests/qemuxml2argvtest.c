@@ -265,14 +265,25 @@ typedef enum {
     FLAG_FIPS               = 1 << 3,
 } virQemuXML2ArgvTestFlags;
 
-static int testCompareXMLToArgvFiles(const char *xml,
-                                     const char *cmdline,
-                                     virQEMUCapsPtr qemuCaps,
-                                     const char *migrateURI,
-                                     virQemuXML2ArgvTestFlags flags,
-                                     unsigned int parseFlags)
+struct testInfo {
+    const char *name;
+    virQEMUCapsPtr qemuCaps;
+    const char *migrateFrom;
+    int migrateFd;
+    unsigned int flags;
+    unsigned int parseFlags;
+};
+
+static int
+testCompareXMLToArgv(const void *data)
 {
+    const struct testInfo *info = data;
+    char *xml = NULL;
+    char *args = NULL;
+    char *migrateURI = NULL;
     char *actualargv = NULL;
+    unsigned int flags = info->flags;
+    unsigned int parseFlags = info->parseFlags;
     int ret = -1;
     virDomainObjPtr vm = NULL;
     virDomainChrSourceDef monitor_chr;
@@ -286,15 +297,37 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (!(conn = virGetConnect()))
         goto cleanup;
+
     conn->secretDriver = &fakeSecretDriver;
     conn->storageDriver = &fakeStorageDriver;
+
+    if (virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_MONITOR_JSON))
+        flags |= FLAG_JSON;
+
+    if (virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_ENABLE_FIPS))
+        flags |= FLAG_FIPS;
+
+    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->name,
+                                info->qemuCaps) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&xml, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
+                    abs_srcdir, info->name) < 0 ||
+        virAsprintf(&args, "%s/qemuxml2argvdata/qemuxml2argv-%s.args",
+                    abs_srcdir, info->name) < 0)
+        goto cleanup;
+
+    if (info->migrateFrom &&
+        !(migrateURI = qemuMigrationIncomingURI(info->migrateFrom,
+                                                info->migrateFd)))
+        goto cleanup;
 
     if (!(vm = virDomainObjNew(driver.xmlopt)))
         goto cleanup;
 
+    parseFlags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
     if (!(vm->def = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
-                                          (VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                           parseFlags)))) {
+                                          parseFlags))) {
         if (flags & FLAG_EXPECT_PARSE_ERROR)
             goto ok;
         goto cleanup;
@@ -314,7 +347,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (qemuProcessPrepareMonitorChr(&monitor_chr, priv->libDir) < 0)
         goto cleanup;
 
-    virQEMUCapsSetList(qemuCaps,
+    virQEMUCapsSetList(info->qemuCaps,
                        QEMU_CAPS_NO_ACPI,
                        QEMU_CAPS_LAST);
 
@@ -325,7 +358,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
             goto cleanup;
     }
 
-    virQEMUCapsFilterByMachineType(qemuCaps, vm->def->os.machine);
+    virQEMUCapsFilterByMachineType(info->qemuCaps, vm->def->os.machine);
 
     log = virTestLogContentAndReset();
     VIR_FREE(log);
@@ -333,7 +366,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (vm->def->os.arch == VIR_ARCH_X86_64 ||
         vm->def->os.arch == VIR_ARCH_I686) {
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
+        virQEMUCapsSet(info->qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
     }
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
@@ -357,7 +390,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     if (!(actualargv = virCommandToString(cmd)))
         goto cleanup;
 
-    if (virTestCompareToFile(actualargv, cmdline) < 0)
+    if (virTestCompareToFile(actualargv, args) < 0)
         goto cleanup;
 
     ret = 0;
@@ -384,58 +417,10 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virCommandFree(cmd);
     virObjectUnref(vm);
     virObjectUnref(conn);
-    return ret;
-}
-
-
-struct testInfo {
-    const char *name;
-    virQEMUCapsPtr qemuCaps;
-    const char *migrateFrom;
-    int migrateFd;
-    unsigned int flags;
-    unsigned int parseFlags;
-};
-
-static int
-testCompareXMLToArgvHelper(const void *data)
-{
-    int result = -1;
-    const struct testInfo *info = data;
-    char *xml = NULL;
-    char *args = NULL;
-    unsigned int flags = info->flags;
-    char *migrateURI = NULL;
-
-    if (info->migrateFrom &&
-        !(migrateURI = qemuMigrationIncomingURI(info->migrateFrom,
-                                                info->migrateFd)))
-        goto cleanup;
-
-    if (virAsprintf(&xml, "%s/qemuxml2argvdata/qemuxml2argv-%s.xml",
-                    abs_srcdir, info->name) < 0 ||
-        virAsprintf(&args, "%s/qemuxml2argvdata/qemuxml2argv-%s.args",
-                    abs_srcdir, info->name) < 0)
-        goto cleanup;
-
-    if (virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_MONITOR_JSON))
-        flags |= FLAG_JSON;
-
-    if (virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_ENABLE_FIPS))
-        flags |= FLAG_FIPS;
-
-    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->name,
-                                info->qemuCaps) < 0)
-        goto cleanup;
-
-    result = testCompareXMLToArgvFiles(xml, args, info->qemuCaps,
-                                       migrateURI, flags, info->parseFlags);
-
- cleanup:
     VIR_FREE(migrateURI);
     VIR_FREE(xml);
     VIR_FREE(args);
-    return result;
+    return ret;
 }
 
 
@@ -555,7 +540,7 @@ mymain(void)
             return EXIT_FAILURE;                                         \
         virQEMUCapsSetList(info.qemuCaps, __VA_ARGS__, QEMU_CAPS_LAST);  \
         if (virTestRun("QEMU XML-2-ARGV " name,                          \
-                       testCompareXMLToArgvHelper, &info) < 0)           \
+                       testCompareXMLToArgv, &info) < 0)                 \
             ret = -1;                                                    \
         virObjectUnref(info.qemuCaps);                                   \
     } while (0)
