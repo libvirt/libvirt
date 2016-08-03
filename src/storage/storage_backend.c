@@ -1459,6 +1459,7 @@ virStorageBackendCreateQemuImg(virConnectPtr conn,
         goto cleanup;
 
     if (vol->target.format == VIR_STORAGE_FILE_RAW &&
+        vol->target.encryption &&
         vol->target.encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
         if (!(secretPath =
               virStorageBackendCreateQemuImgSecretPath(conn, pool, vol)))
