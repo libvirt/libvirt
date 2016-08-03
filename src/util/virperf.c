@@ -61,6 +61,72 @@ struct virPerf {
 
 # include <linux/perf_event.h>
 
+struct virPerfEventAttr {
+    int type;
+    unsigned int attrType;
+    unsigned long long attrConfig;
+};
+
+static struct virPerfEventAttr attrs[] = {
+    {.type = VIR_PERF_EVENT_CMT, .attrType = 0, .attrConfig = 1},
+    {.type = VIR_PERF_EVENT_MBMT, .attrType = 0, .attrConfig = 2},
+    {.type = VIR_PERF_EVENT_MBML, .attrType = 0, .attrConfig = 3},
+};
+typedef struct virPerfEventAttr *virPerfEventAttrPtr;
+
+
+static virPerfEventAttrPtr
+virPerfGetEventAttr(virPerfEventType type)
+{
+    size_t i;
+    if (type >= VIR_PERF_EVENT_LAST) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Event '%d' is not supported"),
+                       type);
+        return NULL;
+    }
+
+    for (i = 0; i < VIR_PERF_EVENT_LAST; i++) {
+        if (i == type)
+            return attrs + i;
+    }
+
+    return NULL;
+}
+
+
+static int
+virPerfRdtAttrInit(void)
+{
+    char *buf = NULL;
+    char *tmp = NULL;
+    unsigned int attr_type = 0;
+
+    if (virFileReadAll("/sys/devices/intel_cqm/type", 10, &buf) < 0)
+        goto error;
+
+    if ((tmp = strchr(buf, '\n')))
+        *tmp = '\0';
+
+    if (virStrToLong_ui(buf, NULL, 10, &attr_type) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("failed to get rdt event type"));
+        goto error;
+    }
+    VIR_FREE(buf);
+
+    attrs[VIR_PERF_EVENT_CMT].attrType = attr_type;
+    attrs[VIR_PERF_EVENT_MBMT].attrType = attr_type;
+    attrs[VIR_PERF_EVENT_MBML].attrType = attr_type;
+
+    return 0;
+
+ error:
+    VIR_FREE(buf);
+    return -1;
+}
+
+
 static virPerfEventPtr
 virPerfGetEvent(virPerfPtr perf,
                 virPerfEventType type)
@@ -78,64 +144,55 @@ virPerfGetEvent(virPerfPtr perf,
     return perf->events + type;
 }
 
-static int
-virPerfRdtEnable(virPerfEventPtr event,
-                 pid_t pid)
+int
+virPerfEventEnable(virPerfPtr perf,
+                   virPerfEventType type,
+                   pid_t pid)
 {
-    struct perf_event_attr rdt_attr;
     char *buf = NULL;
-    char *tmp = NULL;
-    unsigned int event_type, scale;
+    struct perf_event_attr attr;
+    virPerfEventPtr event = virPerfGetEvent(perf, type);
+    virPerfEventAttrPtr event_attr = virPerfGetEventAttr(type);
 
-    if (virFileReadAll("/sys/devices/intel_cqm/type",
-                       10, &buf) < 0)
-        goto error;
+    if (!event || !event_attr)
+        return -1;
 
-    if ((tmp = strchr(buf, '\n')))
-        *tmp = '\0';
-
-    if (virStrToLong_ui(buf, NULL, 10, &event_type) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("failed to get rdt event type"));
-        goto error;
+    if (event_attr->attrType == 0 && (type == VIR_PERF_EVENT_CMT ||
+                                       type == VIR_PERF_EVENT_MBMT ||
+                                       type == VIR_PERF_EVENT_MBML)) {
+        virReportSystemError(errno,
+                             _("Unable to open perf event for %s"),
+                             virPerfEventTypeToString(event->type));
+        return -1;
     }
-    VIR_FREE(buf);
 
-    memset(&rdt_attr, 0, sizeof(rdt_attr));
-    rdt_attr.size = sizeof(rdt_attr);
-    rdt_attr.type = event_type;
-    rdt_attr.inherit = 1;
-    rdt_attr.disabled = 1;
-    rdt_attr.enable_on_exec = 0;
-
-    switch (event->type) {
-    case VIR_PERF_EVENT_CMT:
+    if (type == VIR_PERF_EVENT_CMT) {
         if (virFileReadAll("/sys/devices/intel_cqm/events/llc_occupancy.scale",
                            10, &buf) < 0)
             goto error;
 
-        if (virStrToLong_ui(buf, NULL, 10, &scale) < 0) {
+        if (virStrToLong_i(buf, NULL, 10, &event->efields.cmt.scale) < 0) {
             virReportSystemError(errno, "%s",
                                  _("failed to get cmt scaling factor"));
             goto error;
         }
-        event->efields.cmt.scale = scale;
 
-        rdt_attr.config = 1;
-        break;
-    case VIR_PERF_EVENT_MBMT:
-        rdt_attr.config = 2;
-        break;
-    case VIR_PERF_EVENT_MBML:
-        rdt_attr.config = 3;
-        break;
+        VIR_FREE(buf);
     }
 
-    event->fd = syscall(__NR_perf_event_open, &rdt_attr, pid, -1, -1, 0);
+    memset(&attr, 0, sizeof(attr));
+    attr.size = sizeof(attr);
+    attr.inherit = 1;
+    attr.disabled = 1;
+    attr.enable_on_exec = 0;
+    attr.type = event_attr->attrType;
+    attr.config = event_attr->attrConfig;
+
+    event->fd = syscall(__NR_perf_event_open, &attr, pid, -1, -1, 0);
     if (event->fd < 0) {
         virReportSystemError(errno,
-                             _("Unable to open perf type=%d for pid=%d"),
-                             event_type, pid);
+                             _("Unable to open perf event for %s"),
+                             virPerfEventTypeToString(event->type));
         goto error;
     }
 
@@ -153,31 +210,6 @@ virPerfRdtEnable(virPerfEventPtr event,
     VIR_FORCE_CLOSE(event->fd);
     VIR_FREE(buf);
     return -1;
-}
-
-int
-virPerfEventEnable(virPerfPtr perf,
-                   virPerfEventType type,
-                   pid_t pid)
-{
-    virPerfEventPtr event = virPerfGetEvent(perf, type);
-    if (event == NULL)
-        return -1;
-
-    switch (type) {
-    case VIR_PERF_EVENT_CMT:
-    case VIR_PERF_EVENT_MBMT:
-    case VIR_PERF_EVENT_MBML:
-        if (virPerfRdtEnable(event, pid) < 0)
-            return -1;
-        break;
-    case VIR_PERF_EVENT_LAST:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unexpected perf event type=%d"), type);
-        return -1;
-    }
-
-    return 0;
 }
 
 int
@@ -232,6 +264,13 @@ virPerfReadEvent(virPerfPtr perf,
 }
 
 #else
+static int
+virPerfRdtAttrInit(void)
+{
+    return 0;
+}
+
+
 int
 virPerfEventEnable(virPerfPtr perf ATTRIBUTE_UNUSED,
                    virPerfEventType type ATTRIBUTE_UNUSED,
@@ -284,6 +323,9 @@ virPerfNew(void)
         perf->events[i].fd = -1;
         perf->events[i].enabled = false;
     }
+
+    if (virPerfRdtAttrInit() < 0)
+        virResetLastError();
 
     return perf;
 }
