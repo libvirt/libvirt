@@ -168,7 +168,7 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
         err = virGetLastError();
         if (err && err->domain == VIR_FROM_POLKIT &&
             err->code == VIR_ERR_AUTH_UNAVAILABLE) {
-            if (!(pkagent = virPolkitAgentCreate()))
+            if (!pkagent && !(pkagent = virPolkitAgentCreate()))
                 goto cleanup;
         } else if (err && err->domain == VIR_FROM_POLKIT &&
                    err->code == VIR_ERR_AUTH_FAILED) {
