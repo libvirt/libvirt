@@ -935,6 +935,8 @@ I<--perf> returns the statistics of all enabled perf events:
 "perf.mbmt" - total system bandwidth from one level of cache
 "perf.mbml" - bandwidth of memory traffic for a memory controller
 
+See the B<perf> command for more details about each event.
+
 I<--block> returns information about disks associated with each
 domain.  Using the I<--backing> flag extends this information to
 cover all resources in the backing chain, rather than the default
