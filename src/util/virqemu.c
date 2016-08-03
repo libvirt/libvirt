@@ -85,7 +85,7 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
                                          virBufferPtr buf)
 {
     const virJSONValue *member;
-    size_t nelems = virJSONValueArraySize(array);
+    ssize_t nelems = virJSONValueArraySize(array);
     char *prefix = NULL;
     size_t i;
     int ret = 0;
