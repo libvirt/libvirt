@@ -3114,6 +3114,9 @@ static int prlsdkConfigureGateways(PRL_HANDLE sdknet, virDomainNetDefPtr net)
                                  ? VIR_SOCKET_ADDR_IPV4_ALL
                                  : VIR_SOCKET_ADDR_IPV6_ALL),
                                 VIR_SOCKET_ADDR_FAMILY(addrdst)));
+        /* virSocketAddrParse raises an error
+         * and we are not going to report it, reset it expicitly*/
+        virResetLastError();
 
         if (!virSocketAddrEqual(addrdst, &zero)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -3359,6 +3362,10 @@ prlsdkCleanupBridgedNet(vzDriverPtr driver,
 
     job = PrlSrv_DeleteVirtualNetwork(driver->server, vnet, 0);
     ignore_value(waitDomainJob(job, dom));
+
+    /* As far as waitDomainJob finally calls virReportErrorHelper
+     * and we are not going to report it, reset it expicitly*/
+    virResetLastError();
 
  cleanup:
     PrlHandle_Free(vnet);

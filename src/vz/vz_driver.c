@@ -331,6 +331,11 @@ vzDriverObjNew(void)
 
     driver->hostsysinfo = virSysinfoRead();
     ignore_value(prlsdkLoadDomains(driver));
+
+    /* As far as waitDomainJob finally calls virReportErrorHelper
+     * and we are not going to report it, reset it expicitly*/
+    virResetLastError();
+
     return driver;
 }
 
