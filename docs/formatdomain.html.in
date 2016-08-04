@@ -580,6 +580,11 @@
         Note that providing state for individual cpus may be necessary to enable
         support of addressable vCPU hotplug and this feature may not be
         supported by all hypervisors.
+
+        For QEMU the following conditions are required. Vcpu 0 needs to be
+        enabled and non-hotpluggable. On PPC64 along with it vcpus that are in
+        the same core need to be enabled as well. All non-hotpluggable cpus
+        present at boot need to be grouped after vcpu 0.
         <span class="since">Since 2.2.0 (QEMU only)</span>
       </dd>
     </dl>

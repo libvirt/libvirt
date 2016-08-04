@@ -2253,6 +2253,76 @@ qemuDomainRecheckInternalPaths(virDomainDefPtr def,
 
 
 static int
+qemuDomainDefVcpusPostParse(virDomainDefPtr def)
+{
+    unsigned int maxvcpus = virDomainDefGetVcpusMax(def);
+    virDomainVcpuDefPtr vcpu;
+    virDomainVcpuDefPtr prevvcpu;
+    size_t i;
+    bool has_order = false;
+
+    /* vcpu 0 needs to be present, first, and non-hotpluggable */
+    vcpu = virDomainDefGetVcpu(def, 0);
+    if (!vcpu->online) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vcpu 0 can't be offline"));
+        return -1;
+    }
+    if (vcpu->hotpluggable == VIR_TRISTATE_BOOL_YES) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vcpu0 can't be hotpluggable"));
+        return -1;
+    }
+    if (vcpu->order != 0 && vcpu->order != 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("vcpu0 must be enabled first"));
+        return -1;
+    }
+
+    if (vcpu->order != 0)
+        has_order = true;
+
+    prevvcpu = vcpu;
+
+    /* all online vcpus or non online vcpu need to have order set */
+    for (i = 1; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(def, i);
+
+        if (vcpu->online &&
+            (vcpu->order != 0) != has_order) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("all vcpus must have either set or unset order"));
+            return -1;
+        }
+
+        /* few conditions for non-hotpluggable (thus online) vcpus */
+        if (vcpu->hotpluggable == VIR_TRISTATE_BOOL_NO) {
+            /* they can be ordered only at the beginning */
+            if (prevvcpu->hotpluggable == VIR_TRISTATE_BOOL_YES) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("online non-hotpluggable vcpus need to be "
+                                 "ordered prior to hotplugable vcpus"));
+                return -1;
+            }
+
+            /* they need to be in order (qemu doesn't support any order yet).
+             * Also note that multiple vcpus may share order on some platforms */
+            if (prevvcpu->order > vcpu->order) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("online non-hotpluggable vcpus must be ordered "
+                                 "in ascending order"));
+                return -1;
+            }
+        }
+
+        prevvcpu = vcpu;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefPostParse(virDomainDefPtr def,
                        virCapsPtr caps,
                        unsigned int parseFlags,
@@ -2305,6 +2375,9 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         goto cleanup;
 
     if (virSecurityManagerVerify(driver->securityManager, def) < 0)
+        goto cleanup;
+
+    if (qemuDomainDefVcpusPostParse(def) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2709,7 +2782,8 @@ virDomainDefParserConfig virQEMUDriverDomainDefParserConfig = {
     .deviceValidateCallback = qemuDomainDeviceDefValidate,
 
     .features = VIR_DOMAIN_DEF_FEATURE_MEMORY_HOTPLUG |
-                VIR_DOMAIN_DEF_FEATURE_OFFLINE_VCPUPIN
+                VIR_DOMAIN_DEF_FEATURE_OFFLINE_VCPUPIN |
+                VIR_DOMAIN_DEF_FEATURE_INDIVIDUAL_VCPUS,
 };
 
 

@@ -4760,6 +4760,172 @@ qemuProcessSetupIOThreads(virDomainObjPtr vm)
 }
 
 
+static int
+qemuProcessValidateHotpluggableVcpus(virDomainDefPtr def)
+{
+    virDomainVcpuDefPtr vcpu;
+    virDomainVcpuDefPtr subvcpu;
+    qemuDomainVcpuPrivatePtr vcpupriv;
+    unsigned int maxvcpus = virDomainDefGetVcpusMax(def);
+    size_t i = 0;
+    size_t j;
+    virBitmapPtr ordermap = NULL;
+    int ret = -1;
+
+    if (!(ordermap = virBitmapNew(maxvcpus)))
+        goto cleanup;
+
+    /* validate:
+     * - all hotpluggable entities to be hotplugged have the correct data
+     * - vcpus belonging to a hotpluggable entity share configuration
+     * - order of the hotpluggable entities is unique
+     */
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(def, i);
+        vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
+
+        /* skip over hotpluggable entities  */
+        if (vcpupriv->vcpus == 0)
+            continue;
+
+        if (vcpu->order != 0) {
+            if (virBitmapIsBitSet(ordermap, vcpu->order - 1)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("duplicate vcpu order '%u'"), vcpu->order - 1);
+                goto cleanup;
+            }
+
+            ignore_value(virBitmapSetBit(ordermap, vcpu->order - 1));
+        }
+
+
+        for (j = i + 1; j < (i + vcpupriv->vcpus); j++) {
+            subvcpu = virDomainDefGetVcpu(def, j);
+            if (subvcpu->hotpluggable != vcpu->hotpluggable ||
+                subvcpu->online != vcpu->online ||
+                subvcpu->order != vcpu->order) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("vcpus '%zu' and '%zu' are in the same hotplug "
+                                 "group but differ in configuration"), i, j);
+                goto cleanup;
+            }
+        }
+
+        if (vcpu->online && vcpu->hotpluggable == VIR_TRISTATE_BOOL_YES) {
+            if ((vcpupriv->socket_id == -1 && vcpupriv->core_id == -1 &&
+                 vcpupriv->thread_id == -1) ||
+                !vcpupriv->type) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("vcpu '%zu' is missing hotplug data"), i);
+                goto cleanup;
+            }
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    virBitmapFree(ordermap);
+    return ret;
+}
+
+
+static int
+qemuDomainHasHotpluggableStartupVcpus(virDomainDefPtr def)
+{
+    size_t maxvcpus = virDomainDefGetVcpusMax(def);
+    virDomainVcpuDefPtr vcpu;
+    size_t i;
+
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(def, i);
+
+        if (vcpu->online && vcpu->hotpluggable == VIR_TRISTATE_BOOL_YES)
+            return true;
+    }
+
+    return false;
+}
+
+
+static int
+qemuProcessVcpusSortOrder(const void *a,
+                          const void *b)
+{
+    virDomainVcpuDefPtr vcpua = *((virDomainVcpuDefPtr *)a);
+    virDomainVcpuDefPtr vcpub = *((virDomainVcpuDefPtr *)b);
+
+    return vcpua->order - vcpub->order;
+}
+
+
+static int
+qemuProcessSetupHotpluggableVcpus(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm,
+                                  qemuDomainAsyncJob asyncJob)
+{
+    unsigned int maxvcpus = virDomainDefGetVcpusMax(vm->def);
+    virDomainVcpuDefPtr vcpu;
+    qemuDomainVcpuPrivatePtr vcpupriv;
+    virJSONValuePtr vcpuprops = NULL;
+    size_t i;
+    int ret = -1;
+    int rc;
+
+    virDomainVcpuDefPtr *bootHotplug = NULL;
+    size_t nbootHotplug = 0;
+
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(vm->def, i);
+        vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
+
+        if (vcpu->hotpluggable == VIR_TRISTATE_BOOL_YES && vcpu->online &&
+            vcpupriv->vcpus != 0) {
+            if (virAsprintf(&vcpupriv->alias, "vcpu%zu", i) < 0)
+                goto cleanup;
+
+            if (VIR_APPEND_ELEMENT(bootHotplug, nbootHotplug, vcpu) < 0)
+                goto cleanup;
+        }
+    }
+
+    if (nbootHotplug == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    qsort(bootHotplug, nbootHotplug, sizeof(*bootHotplug),
+          qemuProcessVcpusSortOrder);
+
+    for (i = 0; i < nbootHotplug; i++) {
+        vcpu = bootHotplug[i];
+
+        if (!(vcpuprops = qemuBuildHotpluggableCPUProps(vcpu)))
+            goto cleanup;
+
+        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+            goto cleanup;
+
+        rc = qemuMonitorAddDeviceArgs(qemuDomainGetMonitor(vm), vcpuprops);
+        vcpuprops = NULL;
+
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            goto cleanup;
+
+        if (rc < 0)
+            goto cleanup;
+
+        virJSONValueFree(vcpuprops);
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(bootHotplug);
+    virJSONValueFree(vcpuprops);
+    return ret;
+}
+
+
 /**
  * qemuProcessPrepareDomain
  *
@@ -5235,6 +5401,18 @@ qemuProcessLaunch(virConnectPtr conn,
     VIR_DEBUG("Setting up post-init cgroup restrictions");
     if (qemuSetupCpusetMems(vm) < 0)
         goto cleanup;
+
+    VIR_DEBUG("setting up hotpluggable cpus");
+    if (qemuDomainHasHotpluggableStartupVcpus(vm->def)) {
+        if (qemuDomainRefreshVcpuInfo(driver, vm, asyncJob, false) < 0)
+            goto cleanup;
+
+        if (qemuProcessValidateHotpluggableVcpus(vm->def) < 0)
+            goto cleanup;
+
+        if (qemuProcessSetupHotpluggableVcpus(driver, vm, asyncJob) < 0)
+            goto cleanup;
+    }
 
     VIR_DEBUG("Refreshing VCPU info");
     if (qemuDomainRefreshVcpuInfo(driver, vm, asyncJob, false) < 0)

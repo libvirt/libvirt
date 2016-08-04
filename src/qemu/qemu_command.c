@@ -7082,17 +7082,29 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
 
 static int
 qemuBuildSmpCommandLine(virCommandPtr cmd,
-                        const virDomainDef *def)
+                        virDomainDefPtr def)
 {
     char *smp;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
+    unsigned int maxvcpus = virDomainDefGetVcpusMax(def);
+    unsigned int nvcpus = 0;
+    virDomainVcpuDefPtr vcpu;
+    size_t i;
+
+    /* count non-hotpluggable enabled vcpus. Hotpluggable ones will be added
+     * in a different way */
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(def, i);
+        if (vcpu->online && vcpu->hotpluggable == VIR_TRISTATE_BOOL_NO)
+            nvcpus++;
+    }
 
     virCommandAddArg(cmd, "-smp");
 
-    virBufferAsprintf(&buf, "%u", virDomainDefGetVcpus(def));
+    virBufferAsprintf(&buf, "%u", nvcpus);
 
-    if (virDomainDefHasVcpusOffline(def))
-        virBufferAsprintf(&buf, ",maxcpus=%u", virDomainDefGetVcpusMax(def));
+    if (nvcpus != maxvcpus)
+        virBufferAsprintf(&buf, ",maxcpus=%u", maxvcpus);
     /* sockets, cores, and threads are either all zero
      * or all non-zero, thus checking one of them is enough */
     if (def->cpu && def->cpu->sockets) {
