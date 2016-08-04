@@ -725,4 +725,7 @@ int qemuDomainPrepareChannel(virDomainChrDefPtr chr,
 bool qemuDomainVcpuHotplugIsInOrder(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);
 
+void qemuDomainVcpuPersistOrder(virDomainDefPtr def)
+    ATTRIBUTE_NONNULL(1);
+
 #endif /* __QEMU_DOMAIN_H__ */

@@ -5999,3 +5999,37 @@ qemuDomainVcpuHotplugIsInOrder(virDomainDefPtr def)
 
     return seenonlinevcpus == virDomainDefGetVcpus(def);
 }
+
+
+/**
+ * qemuDomainVcpuPersistOrder:
+ * @def: domain definition
+ *
+ * Saves the order of vcpus detected from qemu to the domain definition.
+ * The private data note the order only for the entry describing the
+ * hotpluggable entity. This function copies the order into the definition part
+ * of all sub entities.
+ */
+void
+qemuDomainVcpuPersistOrder(virDomainDefPtr def)
+{
+    size_t maxvcpus = virDomainDefGetVcpusMax(def);
+    virDomainVcpuDefPtr vcpu;
+    qemuDomainVcpuPrivatePtr vcpupriv;
+    unsigned int prevorder = 0;
+    size_t i;
+
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(def, i);
+        vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
+
+        if (!vcpu->online) {
+            vcpu->order = 0;
+        } else {
+            if (vcpupriv->enable_id != 0)
+                prevorder = vcpupriv->enable_id;
+
+            vcpu->order = prevorder;
+        }
+    }
+}
