@@ -3529,8 +3529,8 @@ qemuDomainRemoveDevice(virQEMUDriverPtr driver,
 
 
 static void
-qemuDomainMarkDeviceForRemoval(virDomainObjPtr vm,
-                               virDomainDeviceInfoPtr info)
+qemuDomainMarkDeviceAliasForRemoval(virDomainObjPtr vm,
+                                    const char *alias)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
 
@@ -3539,8 +3539,18 @@ qemuDomainMarkDeviceForRemoval(virDomainObjPtr vm,
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT))
         return;
 
-    priv->unplug.alias = info->alias;
+    priv->unplug.alias = alias;
 }
+
+
+static void
+qemuDomainMarkDeviceForRemoval(virDomainObjPtr vm,
+                               virDomainDeviceInfoPtr info)
+
+{
+    qemuDomainMarkDeviceAliasForRemoval(vm, info->alias);
+}
+
 
 static void
 qemuDomainResetDeviceRemoval(virDomainObjPtr vm)
