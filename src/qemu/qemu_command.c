@@ -9799,3 +9799,33 @@ qemuBuildChrDeviceStr(char **deviceStr,
 
     return ret;
 }
+
+
+virJSONValuePtr
+qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
+{
+    qemuDomainVcpuPrivatePtr vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
+    virJSONValuePtr ret = NULL;
+
+    if (virJSONValueObjectCreate(&ret, "s:driver", vcpupriv->type,
+                                       "s:id", vcpupriv->alias, NULL) < 0)
+        goto error;
+
+    if (vcpupriv->socket_id != -1 &&
+        virJSONValueObjectAdd(ret, "i:socket-id", vcpupriv->socket_id, NULL) < 0)
+        goto error;
+
+    if (vcpupriv->core_id != -1 &&
+        virJSONValueObjectAdd(ret, "i:core-id", vcpupriv->core_id, NULL) < 0)
+        goto error;
+
+    if (vcpupriv->thread_id != -1 &&
+        virJSONValueObjectAdd(ret, "i:thread-id", vcpupriv->thread_id, NULL) < 0)
+        goto error;
+
+    return ret;
+
+ error:
+    virJSONValueFree(ret);
+    return NULL;
+}
