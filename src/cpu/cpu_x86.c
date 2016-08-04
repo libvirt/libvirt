@@ -1871,10 +1871,12 @@ x86Decode(virCPUDefPtr cpu,
     if (vendor && VIR_STRDUP(cpu->vendor, vendor->name) < 0)
         goto cleanup;
 
-    cpu->model = cpuModel->model;
+    VIR_STEAL_PTR(cpu->model, cpuModel->model);
+    VIR_STEAL_PTR(cpu->features, cpuModel->features);
     cpu->nfeatures = cpuModel->nfeatures;
-    cpu->features = cpuModel->features;
-    VIR_FREE(cpuModel);
+    cpuModel->nfeatures = 0;
+    cpu->nfeatures_max = cpuModel->nfeatures_max;
+    cpuModel->nfeatures_max = 0;
 
     ret = 0;
 
