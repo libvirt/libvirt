@@ -1387,6 +1387,30 @@ virSecurityDACRestoreInputLabel(virSecurityManagerPtr mgr,
 
 
 static int
+virSecurityDACRestoreMemoryLabel(virSecurityManagerPtr mgr,
+                                 virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                 virDomainMemoryDefPtr mem)
+{
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    int ret = -1;
+
+    switch ((virDomainMemoryModel) mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        ret = virSecurityDACRestoreFileLabel(priv, mem->nvdimmPath);
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        ret = 0;
+        break;
+    }
+
+    return ret;
+}
+
+
+static int
 virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def,
                               bool migrated)
@@ -1425,6 +1449,13 @@ virSecurityDACRestoreAllLabel(virSecurityManagerPtr mgr,
             rc = -1;
     }
 
+    for (i = 0; i < def->nmems; i++) {
+        if (virSecurityDACRestoreMemoryLabel(mgr,
+                                             def,
+                                             def->mems[i]) < 0)
+            rc = -1;
+    }
+
     if (virDomainChrDefForeach(def,
                                false,
                                virSecurityDACRestoreChardevCallback,
@@ -1454,6 +1485,41 @@ virSecurityDACSetChardevCallback(virDomainDefPtr def,
     virSecurityManagerPtr mgr = opaque;
 
     return virSecurityDACSetChardevLabel(mgr, def, dev, dev->source);
+}
+
+
+static int
+virSecurityDACSetMemoryLabel(virSecurityManagerPtr mgr,
+                             virDomainDefPtr def,
+                             virDomainMemoryDefPtr mem)
+
+{
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityLabelDefPtr seclabel;
+    int ret = -1;
+    uid_t user;
+    gid_t group;
+
+    switch ((virDomainMemoryModel) mem->model) {
+    case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
+        seclabel = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
+        if (seclabel && !seclabel->relabel)
+            return 0;
+
+        if (virSecurityDACGetIds(seclabel, priv, &user, &group, NULL, NULL) < 0)
+            return -1;
+
+        ret = virSecurityDACSetOwnership(priv, NULL, mem->nvdimmPath, user, group);
+        break;
+
+    case VIR_DOMAIN_MEMORY_MODEL_DIMM:
+    case VIR_DOMAIN_MEMORY_MODEL_LAST:
+    case VIR_DOMAIN_MEMORY_MODEL_NONE:
+        ret = 0;
+        break;
+    }
+
+    return ret;
 }
 
 
@@ -1493,6 +1559,13 @@ virSecurityDACSetAllLabel(virSecurityManagerPtr mgr,
                                           def,
                                           def->hostdevs[i],
                                           NULL) < 0)
+            return -1;
+    }
+
+    for (i = 0; i < def->nmems; i++) {
+        if (virSecurityDACSetMemoryLabel(mgr,
+                                         def,
+                                         def->mems[i]) < 0)
             return -1;
     }
 
