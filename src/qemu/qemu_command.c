@@ -6552,9 +6552,6 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
     size_t ncpus = 0;
     char **cpus = NULL;
     virCPUDataPtr data = NULL;
-    virCPUDataPtr hostData = NULL;
-    char *compare_msg = NULL;
-    virCPUCompareResult cmp;
     const char *preferred;
     virCapsPtr caps = NULL;
     bool compareAgainstHost = ((def->virtType == VIR_DOMAIN_VIRT_KVM ||
@@ -6566,15 +6563,6 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
 
     host = caps->host.cpu;
 
-    if (virQEMUCapsGetCPUDefinitions(qemuCaps, &cpus, &ncpus) < 0)
-        goto cleanup;
-
-    if (!host || !host->model || ncpus == 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("CPU specification not supported by hypervisor"));
-        goto cleanup;
-    }
-
     if (!(cpu = virCPUDefCopy(def->cpu)))
         goto cleanup;
 
@@ -6583,53 +6571,9 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         cpuUpdate(cpu, host) < 0)
         goto cleanup;
 
-    /* For non-KVM, CPU features are emulated, so host compat doesn't matter */
-    if (compareAgainstHost) {
-        bool noTSX = false;
-
-        cmp = cpuGuestData(host, cpu, &data, &compare_msg);
-        switch (cmp) {
-        case VIR_CPU_COMPARE_INCOMPATIBLE:
-            if (cpuEncode(host->arch, host, NULL, &hostData,
-                          NULL, NULL, NULL, NULL) == 0 &&
-                (!cpuHasFeature(hostData, "hle") ||
-                 !cpuHasFeature(hostData, "rtm")) &&
-                (STREQ_NULLABLE(cpu->model, "Haswell") ||
-                 STREQ_NULLABLE(cpu->model, "Broadwell")))
-                noTSX = true;
-
-            if (compare_msg) {
-                if (noTSX) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("guest and host CPU are not compatible: "
-                                     "%s; try using '%s-noTSX' CPU model"),
-                                   compare_msg, cpu->model);
-                } else {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("guest and host CPU are not compatible: "
-                                     "%s"),
-                                   compare_msg);
-                }
-            } else {
-                if (noTSX) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("guest CPU is not compatible with host "
-                                     "CPU; try using '%s-noTSX' CPU model"),
-                                   cpu->model);
-                } else {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("guest CPU is not compatible with host "
-                                     "CPU"));
-                }
-            }
-            /* fall through */
-        case VIR_CPU_COMPARE_ERROR:
-            goto cleanup;
-
-        default:
-            break;
-        }
-    }
+    if (compareAgainstHost &&
+        cpuGuestData(host, cpu, &data, NULL) == VIR_CPU_COMPARE_ERROR)
+        goto cleanup;
 
     /* Only 'svm' requires --enable-nesting. The nested
      * 'vmx' patches now simply hook off the CPU features
@@ -6654,7 +6598,7 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         virBufferAddLit(buf, "host");
 
         if (def->os.arch == VIR_ARCH_ARMV7L &&
-            host->arch == VIR_ARCH_AARCH64) {
+            caps->host.arch == VIR_ARCH_AARCH64) {
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_AARCH64_OFF)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("QEMU binary does not support CPU "
@@ -6673,7 +6617,6 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         } else {
             featCpu = cpu;
         }
-
     } else {
         if (VIR_ALLOC(guest) < 0)
             goto cleanup;
@@ -6689,6 +6632,10 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
 
             guest->type = VIR_CPU_TYPE_GUEST;
             guest->fallback = cpu->fallback;
+
+            if (virQEMUCapsGetCPUDefinitions(qemuCaps, &cpus, &ncpus) < 0)
+                goto cleanup;
+
             if (cpuDecode(guest, data,
                           (const char **)cpus, ncpus, preferred) < 0)
                 goto cleanup;
@@ -6718,9 +6665,7 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
     ret = 0;
  cleanup:
     virObjectUnref(caps);
-    VIR_FREE(compare_msg);
     cpuDataFree(data);
-    cpuDataFree(hostData);
     virCPUDefFree(guest);
     virCPUDefFree(cpu);
     virStringFreeListCount(cpus, ncpus);

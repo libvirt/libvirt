@@ -1416,13 +1416,13 @@ mymain(void)
     DO_TEST_FAILURE("cpu-host-passthrough", NONE);
     DO_TEST_FAILURE("cpu-qemu-host-passthrough", QEMU_CAPS_KVM);
 
-    driver.caps->host.cpu = cpuHaswell;
+    qemuTestSetHostCPU(driver.caps, cpuHaswell);
     DO_TEST("cpu-Haswell", QEMU_CAPS_KVM);
     DO_TEST("cpu-Haswell2", QEMU_CAPS_KVM);
     DO_TEST("cpu-Haswell3", QEMU_CAPS_KVM);
     DO_TEST("cpu-Haswell-noTSX", QEMU_CAPS_KVM);
     DO_TEST("cpu-host-model-cmt", NONE);
-    driver.caps->host.cpu = cpuDefault;
+    qemuTestSetHostCPU(driver.caps, NULL);
 
     DO_TEST("encrypted-disk", NONE);
     DO_TEST("encrypted-disk-usage", NONE);
@@ -1974,14 +1974,14 @@ mymain(void)
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
 
-    driver.caps->host.cpu->arch = VIR_ARCH_AARCH64;
+    qemuTestSetHostArch(driver.caps, VIR_ARCH_AARCH64);
     DO_TEST("aarch64-kvm-32-on-64",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_KVM, QEMU_CAPS_CPU_AARCH64_OFF);
     DO_TEST_FAILURE("aarch64-kvm-32-on-64",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_KVM);
-    driver.caps->host.cpu->arch = cpuDefault->arch;
+    qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE);
 
     DO_TEST("kvm-pit-device", QEMU_CAPS_KVM_PIT_TICK_POLICY);
     DO_TEST("kvm-pit-delay", QEMU_CAPS_NO_KVM_PIT);
