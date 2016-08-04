@@ -1975,6 +1975,9 @@ virSecurityDriver virSecurityDriverDAC = {
     .domainSetSecurityImageLabel        = virSecurityDACSetImageLabel,
     .domainRestoreSecurityImageLabel    = virSecurityDACRestoreImageLabel,
 
+    .domainSetSecurityMemoryLabel       = virSecurityDACSetMemoryLabel,
+    .domainRestoreSecurityMemoryLabel   = virSecurityDACRestoreMemoryLabel,
+
     .domainSetSecurityDaemonSocketLabel = virSecurityDACSetDaemonSocketLabel,
     .domainSetSecuritySocketLabel       = virSecurityDACSetSocketLabel,
     .domainClearSecuritySocketLabel     = virSecurityDACClearSocketLabel,

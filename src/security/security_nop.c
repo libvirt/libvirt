@@ -236,6 +236,22 @@ virSecurityDomainSetImageLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
     return 0;
 }
 
+static int
+virSecurityDomainSetMemoryLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                   virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                   virDomainMemoryDefPtr mem ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
+static int
+virSecurityDomainRestoreMemoryLabelNop(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                       virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                       virDomainMemoryDefPtr mem ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+
 
 virSecurityDriver virSecurityDriverNop = {
     .privateDataLen                     = 0,
@@ -254,6 +270,9 @@ virSecurityDriver virSecurityDriverNop = {
 
     .domainSetSecurityImageLabel        = virSecurityDomainSetImageLabelNop,
     .domainRestoreSecurityImageLabel    = virSecurityDomainRestoreImageLabelNop,
+
+    .domainSetSecurityMemoryLabel       = virSecurityDomainSetMemoryLabelNop,
+    .domainRestoreSecurityMemoryLabel   = virSecurityDomainRestoreMemoryLabelNop,
 
     .domainSetSecurityDaemonSocketLabel = virSecurityDomainSetDaemonSocketLabelNop,
     .domainSetSecuritySocketLabel       = virSecurityDomainSetSocketLabelNop,
