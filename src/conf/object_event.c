@@ -649,13 +649,9 @@ virObjectEventNew(virClassPtr klass,
     event->eventID = eventID;
     event->remoteID = -1;
 
-    if (VIR_STRDUP(event->meta.name, name) < 0) {
-        VIR_FREE(event);
-        return NULL;
-    }
-    if (VIR_STRDUP(event->meta.key, key) < 0) {
-        VIR_FREE(event->meta.name);
-        VIR_FREE(event);
+    if (VIR_STRDUP(event->meta.name, name) < 0 ||
+        VIR_STRDUP(event->meta.key, key) < 0) {
+        virObjectUnref(event);
         return NULL;
     }
     event->meta.id = id;
