@@ -354,6 +354,8 @@ struct virQEMUCapsMachineType {
  * correctly. It does not have to be ABI-stable, as
  * the cache will be discarded & repopulated if the
  * timestamp on the libvirtd binary changes.
+ *
+ * And don't forget to update virQEMUCapsNewCopy.
  */
 struct _virQEMUCaps {
     virObject object;
@@ -2016,6 +2018,11 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 
     ret->usedQMP = qemuCaps->usedQMP;
 
+    if (VIR_STRDUP(ret->binary, qemuCaps->binary) < 0)
+        goto error;
+
+    ret->ctime = qemuCaps->ctime;
+
     virBitmapCopy(ret->flags, qemuCaps->flags);
 
     ret->version = qemuCaps->version;
@@ -2043,6 +2050,12 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
             goto error;
         ret->machineTypes[i].maxCpus = qemuCaps->machineTypes[i].maxCpus;
     }
+
+    if (VIR_ALLOC_N(ret->gicCapabilities, qemuCaps->ngicCapabilities) < 0)
+        goto error;
+    ret->ngicCapabilities = qemuCaps->ngicCapabilities;
+    for (i = 0; i < qemuCaps->ngicCapabilities; i++)
+        ret->gicCapabilities[i] = qemuCaps->gicCapabilities[i];
 
     return ret;
 
