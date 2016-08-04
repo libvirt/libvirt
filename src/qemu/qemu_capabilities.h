@@ -367,9 +367,9 @@ typedef enum {
     QEMU_CAPS_QXL_VGA_MAX_OUTPUTS, /* -device qxl-vga,max-outputs= */
     QEMU_CAPS_SPICE_UNIX, /* -spice unix */
     QEMU_CAPS_DRIVE_DETECT_ZEROES, /* -drive detect-zeroes= */
+    QEMU_CAPS_OBJECT_TLS_CREDS_X509, /* -object tls-creds-x509 */
 
     /* 230 */
-    QEMU_CAPS_OBJECT_TLS_CREDS_X509, /* -object tls-creds-x509 */
     QEMU_CAPS_DISPLAY, /* -display */
     QEMU_CAPS_DEVICE_INTEL_IOMMU, /* -device intel-iommu */
     QEMU_CAPS_MACHINE_SMM_OPT, /* -machine xxx,smm=on/off/auto */

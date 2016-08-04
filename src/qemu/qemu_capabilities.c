@@ -335,9 +335,9 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "qxl-vga.max_outputs",
               "spice-unix",
               "drive-detect-zeroes",
+              "tls-creds-x509",
 
-              "tls-creds-x509", /* 230 */
-              "display",
+              "display", /* 230 */
               "intel-iommu",
               "smm",
     );
