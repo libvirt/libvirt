@@ -931,11 +931,8 @@ storagePoolCreate(virStoragePoolPtr obj,
 
         if (build_flags ||
             (flags & VIR_STORAGE_POOL_CREATE_WITH_BUILD)) {
-            if (backend->buildPool(obj->conn, pool, build_flags) < 0) {
-                virStoragePoolObjRemove(&driver->pools, pool);
-                pool = NULL;
+            if (backend->buildPool(obj->conn, pool, build_flags) < 0)
                 goto cleanup;
-            }
         }
     }
 
