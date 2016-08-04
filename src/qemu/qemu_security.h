@@ -62,6 +62,14 @@ int qemuSecurityRestoreHostdevLabel(virQEMUDriverPtr driver,
                                     virDomainObjPtr vm,
                                     virDomainHostdevDefPtr hostdev);
 
+int qemuSecuritySetMemoryLabel(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainMemoryDefPtr mem);
+
+int qemuSecurityRestoreMemoryLabel(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   virDomainMemoryDefPtr mem);
+
 /* Please note that for these APIs there is no wrapper yet. Do NOT blindly add
  * new APIs here. If an API can touch a /dev file add a proper wrapper instead.
  */

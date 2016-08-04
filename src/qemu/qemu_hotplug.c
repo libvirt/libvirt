@@ -2215,6 +2215,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     char *objalias = NULL;
     const char *backendType;
     bool objAdded = false;
+    bool teardownlabel = false;
     virJSONValuePtr props = NULL;
     virObjectEventPtr event;
     int id;
@@ -2244,15 +2245,15 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
                                   priv->qemuCaps, vm->def, mem, NULL, true) < 0)
         goto cleanup;
 
-    if (virDomainMemoryInsert(vm->def, mem) < 0) {
-        virJSONValueFree(props);
+    if (qemuSecuritySetMemoryLabel(driver, vm, mem) < 0)
         goto cleanup;
-    }
+    teardownlabel = true;
 
-    if (qemuDomainAdjustMaxMemLock(vm) < 0) {
-        virJSONValueFree(props);
+    if (virDomainMemoryInsert(vm->def, mem) < 0)
+        goto cleanup;
+
+    if (qemuDomainAdjustMaxMemLock(vm) < 0)
         goto removedef;
-    }
 
     qemuDomainObjEnterMonitor(driver, vm);
     rv = qemuMonitorAddObject(priv->mon, backendType, objalias, props);
@@ -2288,6 +2289,12 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
  audit:
     virDomainAuditMemory(vm, oldmem, newmem, "update", ret == 0);
  cleanup:
+    if (mem && ret < 0) {
+        if (teardownlabel && qemuSecurityRestoreMemoryLabel(driver, vm, mem) < 0)
+            VIR_WARN("Unable to restore security label on memdev");
+    }
+
+    virJSONValueFree(props);
     virObjectUnref(cfg);
     VIR_FREE(devstr);
     VIR_FREE(objalias);
@@ -3747,6 +3754,9 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
 
     if ((idx = virDomainMemoryFindByDef(vm->def, mem)) >= 0)
         virDomainMemoryRemove(vm->def, idx);
+
+    if (qemuSecurityRestoreMemoryLabel(driver, vm, mem) < 0)
+        VIR_WARN("Unable to restore security label on memdev");
 
     virDomainMemoryDefFree(mem);
 
