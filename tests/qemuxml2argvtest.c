@@ -283,27 +283,42 @@ struct testInfo {
 static int
 testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
 {
-    const char *newModels[] = {
+    virArch arch = virQEMUCapsGetArch(caps);
+    const char *x86Models[] = {
         "Opteron_G3", "Opteron_G2", "Opteron_G1",
         "Nehalem", "Penryn", "Conroe",
         "Haswell-noTSX", "Haswell",
     };
-    const char *legacyModels[] = {
+    const char *x86LegacyModels[] = {
         "n270", "athlon", "pentium3", "pentium2", "pentium",
         "486", "coreduo", "kvm32", "qemu32", "kvm64",
         "core2duo", "phenom", "qemu64",
     };
+    const char *armModels[] = {
+        "cortex-a9", "cortex-a8", "cortex-a57", "cortex-a53",
+    };
+    const char *ppc64Models[] = {
+        "POWER8", "POWER7",
+    };
 
-    if (virQEMUCapsAddCPUDefinitions(caps, newModels,
-                                     ARRAY_CARDINALITY(newModels)) < 0)
-        return -1;
+    if (ARCH_IS_X86(arch)) {
+        if (virQEMUCapsAddCPUDefinitions(caps, x86Models,
+                                         ARRAY_CARDINALITY(x86Models)) < 0)
+            return -1;
 
-    if (skipLegacy)
-        return 0;
-
-    if (virQEMUCapsAddCPUDefinitions(caps, legacyModels,
-                                     ARRAY_CARDINALITY(legacyModels)) < 0)
-        return -1;
+        if (!skipLegacy &&
+            virQEMUCapsAddCPUDefinitions(caps, x86LegacyModels,
+                                         ARRAY_CARDINALITY(x86LegacyModels)) < 0)
+            return -1;
+    } else if (ARCH_IS_ARM(arch)) {
+        if (virQEMUCapsAddCPUDefinitions(caps, armModels,
+                                         ARRAY_CARDINALITY(armModels)) < 0)
+            return -1;
+    } else if (ARCH_IS_PPC64(arch)) {
+        if (virQEMUCapsAddCPUDefinitions(caps, ppc64Models,
+                                         ARRAY_CARDINALITY(ppc64Models)) < 0)
+            return -1;
+    }
 
     return 0;
 }
