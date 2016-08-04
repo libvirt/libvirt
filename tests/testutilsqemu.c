@@ -334,7 +334,7 @@ virCapsPtr testQemuCapsInit(void)
         !(cpuHaswell = virCPUDefCopy(&cpuHaswellData)))
         goto cleanup;
 
-    caps->host.cpu = cpuDefault;
+    qemuTestSetHostCPU(caps, NULL);
 
     caps->host.nnumaCell_max = 4;
 
@@ -440,12 +440,39 @@ virCapsPtr testQemuCapsInit(void)
 
  cleanup:
     virCapabilitiesFreeMachines(machines, nmachines);
-    if (caps->host.cpu != cpuDefault)
-        virCPUDefFree(cpuDefault);
-    if (caps->host.cpu != cpuHaswell)
-        virCPUDefFree(cpuHaswell);
+    caps->host.cpu = NULL;
+    virCPUDefFree(cpuDefault);
+    virCPUDefFree(cpuHaswell);
     virObjectUnref(caps);
     return NULL;
+}
+
+
+void
+qemuTestSetHostArch(virCapsPtr caps,
+                    virArch arch)
+{
+    if (arch == VIR_ARCH_NONE)
+        arch = VIR_ARCH_X86_64;
+    caps->host.arch = arch;
+    qemuTestSetHostCPU(caps, NULL);
+}
+
+
+void
+qemuTestSetHostCPU(virCapsPtr caps,
+                   virCPUDefPtr cpu)
+{
+    virArch arch = caps->host.arch;
+
+    if (!cpu) {
+        if (ARCH_IS_X86(arch))
+            cpu = cpuDefault;
+    }
+
+    if (cpu)
+        caps->host.arch = cpu->arch;
+    caps->host.cpu = cpu;
 }
 
 
