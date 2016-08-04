@@ -77,6 +77,50 @@ testQemuCaps(const void *opaque)
     return ret;
 }
 
+
+static int
+testQemuCapsCopy(const void *opaque)
+{
+    int ret = -1;
+    const testQemuData *data = opaque;
+    char *capsFile = NULL;
+    virCapsPtr caps = NULL;
+    virQEMUCapsPtr orig = NULL;
+    virQEMUCapsPtr copy = NULL;
+    char *actual = NULL;
+
+    if (virAsprintf(&capsFile, "%s/qemucapabilitiesdata/%s.%s.xml",
+                    abs_srcdir, data->base, data->archName) < 0)
+        goto cleanup;
+
+    if (!(caps = virCapabilitiesNew(virArchFromString(data->archName),
+                                    false, false)))
+        goto cleanup;
+
+    if (!(orig = qemuTestParseCapabilities(capsFile)))
+        goto cleanup;
+
+    if (!(copy = virQEMUCapsNewCopy(orig)))
+        goto cleanup;
+
+    if (!(actual = virQEMUCapsFormatCache(copy, 0, 0)))
+        goto cleanup;
+
+    if (virTestCompareToFile(actual, capsFile) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(capsFile);
+    virObjectUnref(caps);
+    virObjectUnref(orig);
+    virObjectUnref(copy);
+    VIR_FREE(actual);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -102,6 +146,9 @@ mymain(void)
         data.archName = arch;                                           \
         data.base = name;                                               \
         if (virTestRun(name "(" arch ")", testQemuCaps, &data) < 0)     \
+            ret = -1;                                                   \
+        if (virTestRun("copy " name "(" arch ")",                       \
+                       testQemuCapsCopy, &data) < 0)                    \
             ret = -1;                                                   \
     } while (0)
 

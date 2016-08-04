@@ -37,6 +37,8 @@ struct _virQEMUCapsCache {
     gid_t runGid;
 };
 
+virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
+
 virQEMUCapsPtr
 virQEMUCapsNewForBinaryInternal(const char *binary,
                                 const char *libDir,

@@ -2864,8 +2864,12 @@ virQEMUCapsLoadCache(virQEMUCapsPtr qemuCaps, const char *filename,
         goto cleanup;
     }
 
-    /* Don't check for NULL, since it is optional and thus may be missing */
-    qemuCaps->package = virXPathString("string(./package)", ctxt);
+    if (virXPathBoolean("boolean(./package)", ctxt) > 0) {
+        qemuCaps->package = virXPathString("string(./package)", ctxt);
+        if (!qemuCaps->package &&
+            VIR_STRDUP(qemuCaps->package, "") < 0)
+            goto cleanup;
+    }
 
     if (!(str = virXPathString("string(./arch)", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

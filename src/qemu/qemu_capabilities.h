@@ -384,7 +384,6 @@ typedef struct _virQEMUCapsCache virQEMUCapsCache;
 typedef virQEMUCapsCache *virQEMUCapsCachePtr;
 
 virQEMUCapsPtr virQEMUCapsNew(void);
-virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps);
 
 int virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
                               qemuMonitorPtr mon);
