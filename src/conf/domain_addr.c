@@ -291,11 +291,8 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
-        /* single slot, no hotplug, only accepts pcie-root-port or
-         * pcie-switch-upstream-port.
-         */
-        bus->flags = (VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT
-                      | VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT);
+        /* single slot, no hotplug, only accepts pcie-root-port */
+        bus->flags = VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT;
         bus->minSlot = 0;
         bus->maxSlot = 0;
         break;

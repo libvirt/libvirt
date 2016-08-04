@@ -3360,15 +3360,17 @@
           2nd bus-number is just being reserved for the pcie-root-port
           that must necessarily be connected to the bus in order to
           actually plug in an endpoint device. If you intend to plug
-          multiple devices into a pcie-expander-bus, you must instead
-          connect a pcie-switch-upstream-port to the
-          pcie-expander-bus, and multiple pcie-switch-downstream-ports
-          to the pcie-switch-downstream-port, and of course for this
-          to work properly, you will need to decrease the
-          pcie-expander-bus' busNr accordingly so that there are
-          enough unused bus numbers above it to accomodate giving out
-          one bus number for the upstream-port and one for each
-          downstream-port).
+          multiple devices into a pcie-expander-bus, you must connect
+          a pcie-switch-upstream-port to the pcie-root-port that is
+          plugged into the pcie-expander-bus, and multiple
+          pcie-switch-downstream-ports to the
+          pcie-switch-upstream-port, and of course for this to work
+          properly, you will need to decrease the pcie-expander-bus'
+          busNr accordingly so that there are enough unused bus
+          numbers above it to accomodate giving out one bus number for
+          the upstream-port and one for each downstream-port (in
+          addition to the pcie-root-port and the pcie-expander-bus
+          itself).
         </p>
       </dd>
       <dt><code>node</code></dt>
