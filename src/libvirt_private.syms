@@ -1269,6 +1269,7 @@ virCgroupBindMount;
 virCgroupControllerAvailable;
 virCgroupControllerTypeFromString;
 virCgroupControllerTypeToString;
+virCgroupDelThread;
 virCgroupDenyAllDevices;
 virCgroupDenyDevice;
 virCgroupDenyDevicePath;

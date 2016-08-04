@@ -4821,3 +4821,23 @@ virCgroupControllerAvailable(int controller ATTRIBUTE_UNUSED)
     return false;
 }
 #endif /* !VIR_CGROUP_SUPPORTED */
+
+
+int
+virCgroupDelThread(virCgroupPtr cgroup,
+                   virCgroupThreadName nameval,
+                   int idx)
+{
+    virCgroupPtr new_cgroup = NULL;
+
+    if (cgroup) {
+        if (virCgroupNewThread(cgroup, nameval, idx, false, &new_cgroup) < 0)
+            return -1;
+
+        /* Remove the offlined cgroup */
+        virCgroupRemove(new_cgroup);
+        virCgroupFree(&new_cgroup);
+    }
+
+    return 0;
+}

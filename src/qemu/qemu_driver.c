@@ -4590,25 +4590,6 @@ static void qemuProcessEventHandler(void *data, void *opaque)
 
 
 static int
-qemuDomainDelCgroupForThread(virCgroupPtr cgroup,
-                             virCgroupThreadName nameval,
-                             int idx)
-{
-    virCgroupPtr new_cgroup = NULL;
-
-    if (cgroup) {
-        if (virCgroupNewThread(cgroup, nameval, idx, false, &new_cgroup) < 0)
-            return -1;
-
-        /* Remove the offlined cgroup */
-        virCgroupRemove(new_cgroup);
-        virCgroupFree(&new_cgroup);
-    }
-
-    return 0;
-}
-
-static int
 qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          unsigned int vcpu)
@@ -4701,8 +4682,7 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
 
     virDomainAuditVcpu(vm, oldvcpus, oldvcpus - 1, "update", true);
 
-    if (qemuDomainDelCgroupForThread(priv->cgroup,
-                                     VIR_CGROUP_THREAD_VCPU, vcpu) < 0)
+    if (virCgroupDelThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, vcpu) < 0)
         goto cleanup;
 
     ret = 0;
@@ -5904,9 +5884,8 @@ qemuDomainHotplugDelIOThread(virQEMUDriverPtr driver,
 
     virDomainIOThreadIDDel(vm->def, iothread_id);
 
-    if (qemuDomainDelCgroupForThread(priv->cgroup,
-                                     VIR_CGROUP_THREAD_IOTHREAD,
-                                     iothread_id) < 0)
+    if (virCgroupDelThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD,
+                           iothread_id) < 0)
         goto cleanup;
 
     ret = 0;

@@ -86,6 +86,10 @@ int virCgroupNewThread(virCgroupPtr domain,
                        virCgroupPtr *group)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(5);
 
+int virCgroupDelThread(virCgroupPtr cgroup,
+                       virCgroupThreadName nameval,
+                       int idx);
+
 int virCgroupNewDetect(pid_t pid,
                        int controllers,
                        virCgroupPtr *group);
