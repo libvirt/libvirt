@@ -92,6 +92,7 @@ enum qemuMigrationCookieFlags {
     QEMU_MIGRATION_COOKIE_FLAG_NBD,
     QEMU_MIGRATION_COOKIE_FLAG_STATS,
     QEMU_MIGRATION_COOKIE_FLAG_MEMORY_HOTPLUG,
+    QEMU_MIGRATION_COOKIE_FLAG_CPU_HOTPLUG,
 
     QEMU_MIGRATION_COOKIE_FLAG_LAST
 };
@@ -105,7 +106,8 @@ VIR_ENUM_IMPL(qemuMigrationCookieFlag,
               "network",
               "nbd",
               "statistics",
-              "memory-hotplug");
+              "memory-hotplug",
+              "cpu-hotplug");
 
 enum qemuMigrationCookieFeatures {
     QEMU_MIGRATION_COOKIE_GRAPHICS  = (1 << QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS),
@@ -115,6 +117,7 @@ enum qemuMigrationCookieFeatures {
     QEMU_MIGRATION_COOKIE_NBD = (1 << QEMU_MIGRATION_COOKIE_FLAG_NBD),
     QEMU_MIGRATION_COOKIE_STATS = (1 << QEMU_MIGRATION_COOKIE_FLAG_STATS),
     QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG = (1 << QEMU_MIGRATION_COOKIE_FLAG_MEMORY_HOTPLUG),
+    QEMU_MIGRATION_COOKIE_CPU_HOTPLUG = (1 << QEMU_MIGRATION_COOKIE_FLAG_CPU_HOTPLUG),
 };
 
 typedef struct _qemuMigrationCookieGraphics qemuMigrationCookieGraphics;
@@ -1407,6 +1410,9 @@ qemuMigrationBakeCookie(qemuMigrationCookiePtr mig,
 
     if (flags & QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG)
         mig->flagsMandatory |= QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG;
+
+    if (flags & QEMU_MIGRATION_COOKIE_CPU_HOTPLUG)
+        mig->flagsMandatory |= QEMU_MIGRATION_COOKIE_CPU_HOTPLUG;
 
     if (!(*cookieout = qemuMigrationCookieXMLFormatStr(driver, mig)))
         return -1;
@@ -3191,6 +3197,11 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
          vm->newDef && virDomainDefHasMemoryHotplug(vm->newDef)))
         cookieFlags |= QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG;
 
+    if (!qemuDomainVcpuHotplugIsInOrder(vm->def) ||
+        ((flags & VIR_MIGRATE_PERSIST_DEST) &&
+         vm->newDef && !qemuDomainVcpuHotplugIsInOrder(vm->newDef)))
+        cookieFlags |= QEMU_MIGRATION_COOKIE_CPU_HOTPLUG;
+
     if (!(mig = qemuMigrationEatCookie(driver, vm, NULL, 0, 0)))
         goto cleanup;
 
@@ -3686,7 +3697,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     if (!(mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
                                        QEMU_MIGRATION_COOKIE_LOCKSTATE |
                                        QEMU_MIGRATION_COOKIE_NBD |
-                                       QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG)))
+                                       QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG |
+                                       QEMU_MIGRATION_COOKIE_CPU_HOTPLUG)))
         goto cleanup;
 
     if (STREQ_NULLABLE(protocol, "rdma") &&

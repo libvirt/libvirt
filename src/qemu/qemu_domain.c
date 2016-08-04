@@ -5964,3 +5964,38 @@ qemuDomainPrepareChannel(virDomainChrDefPtr channel,
 
     return 0;
 }
+
+
+/**
+ * qemuDomainVcpuHotplugIsInOrder:
+ * @def: domain definition
+ *
+ * Returns true if online vcpus were added in order (clustered behind vcpu0
+ * with increasing order).
+ */
+bool
+qemuDomainVcpuHotplugIsInOrder(virDomainDefPtr def)
+{
+    size_t maxvcpus = virDomainDefGetVcpusMax(def);
+    virDomainVcpuDefPtr vcpu;
+    unsigned int prevorder = 0;
+    size_t seenonlinevcpus = 0;
+    size_t i;
+
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(def, i);
+
+        if (!vcpu->online)
+            break;
+
+        if (vcpu->order < prevorder)
+            break;
+
+        if (vcpu->order > prevorder)
+            prevorder = vcpu->order;
+
+        seenonlinevcpus++;
+    }
+
+    return seenonlinevcpus == virDomainDefGetVcpus(def);
+}
