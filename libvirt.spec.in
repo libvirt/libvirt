@@ -206,10 +206,14 @@
     %define enable_werror --disable-werror
 %endif
 
-%if 0%{?fedora} >= 21
-    %define tls_priority "@SYSTEM"
+%if 0%{?fedora} >= 25
+    %define tls_priority "@LIBVIRT,SYSTEM"
 %else
-    %define tls_priority "NORMAL"
+    %if 0%{?fedora} >= 21
+        %define tls_priority "@SYSTEM"
+    %else
+        %define tls_priority "NORMAL"
+    %endif
 %endif
 
 
