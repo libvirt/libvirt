@@ -2014,9 +2014,10 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
     if (!ret)
         return NULL;
 
+    ret->usedQMP = qemuCaps->usedQMP;
+
     virBitmapCopy(ret->flags, qemuCaps->flags);
 
-    ret->usedQMP = qemuCaps->usedQMP;
     ret->version = qemuCaps->version;
     ret->kvmVersion = qemuCaps->kvmVersion;
 
