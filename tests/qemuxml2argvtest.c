@@ -1535,10 +1535,14 @@ mymain(void)
             QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-cpu-exact", QEMU_CAPS_CHARDEV,
             QEMU_CAPS_NODEFCONFIG);
+
+    qemuTestSetHostArch(driver.caps, VIR_ARCH_PPC64);
     DO_TEST("pseries-cpu-compat", QEMU_CAPS_KVM,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-cpu-le", QEMU_CAPS_KVM,
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
+    qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE);
+
     DO_TEST("pseries-panic-missing",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG);
     DO_TEST("pseries-panic-no-address",
@@ -1906,6 +1910,7 @@ mymain(void)
     DO_TEST("aarch64-virt-default-nic",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO);
+    qemuTestSetHostArch(driver.caps, VIR_ARCH_AARCH64);
     DO_TEST("aarch64-cpu-passthrough",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_KVM);
@@ -1988,8 +1993,6 @@ mymain(void)
     DO_TEST_FAILURE("aarch64-gic-not-arm",
             QEMU_CAPS_KVM, QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACH_VIRT_GIC_VERSION);
-
-    qemuTestSetHostArch(driver.caps, VIR_ARCH_AARCH64);
     DO_TEST("aarch64-kvm-32-on-64",
             QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_KVM, QEMU_CAPS_CPU_AARCH64_OFF);
