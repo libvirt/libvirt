@@ -1263,11 +1263,12 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
                            (flags & VIR_DOMAIN_START_AUTODESTROY),
                            VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         virDomainAuditStart(vm, "booted", false);
+        virLXCDomainObjEndJob(driver, vm);
         if (!vm->persistent) {
             virDomainObjListRemove(driver->domains, vm);
             vm = NULL;
         }
-        goto endjob;
+        goto cleanup;
     }
 
     event = virDomainEventLifecycleNewFromObj(vm,
@@ -1279,7 +1280,6 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
     if (dom)
         dom->id = vm->def->id;
 
- endjob:
     virLXCDomainObjEndJob(driver, vm);
 
  cleanup:
