@@ -162,6 +162,13 @@ int virSecurityManagerRestoreImageLabel(virSecurityManagerPtr mgr,
                                         virDomainDefPtr vm,
                                         virStorageSourcePtr src);
 
+int virSecurityManagerSetMemoryLabel(virSecurityManagerPtr mgr,
+                                     virDomainDefPtr vm,
+                                     virDomainMemoryDefPtr mem);
+int virSecurityManagerRestoreMemoryLabel(virSecurityManagerPtr mgr,
+                                        virDomainDefPtr vm,
+                                        virDomainMemoryDefPtr mem);
+
 int virSecurityManagerDomainSetPathLabel(virSecurityManagerPtr mgr,
                                          virDomainDefPtr vm,
                                          const char *path);

@@ -1052,3 +1052,59 @@ virSecurityManagerDomainSetPathLabel(virSecurityManagerPtr mgr,
 
     return 0;
 }
+
+
+/**
+ * virSecurityManagerSetMemoryLabel:
+ * @mgr: security manager object
+ * @vm: domain definition object
+ * @mem: memory module to operate on
+ *
+ * Labels the host part of a memory module.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
+int
+virSecurityManagerSetMemoryLabel(virSecurityManagerPtr mgr,
+                                     virDomainDefPtr vm,
+                                     virDomainMemoryDefPtr mem)
+{
+    if (mgr->drv->domainSetSecurityMemoryLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainSetSecurityMemoryLabel(mgr, vm, mem);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+    return -1;
+}
+
+
+/**
+ * virSecurityManagerRestoreMemoryLabel:
+ * @mgr: security manager object
+ * @vm: domain definition object
+ * @mem: memory module to operate on
+ *
+ * Removes security label from the host part of a memory module.
+ *
+ * Returns: 0 on success, -1 on error.
+ */
+int
+virSecurityManagerRestoreMemoryLabel(virSecurityManagerPtr mgr,
+                                        virDomainDefPtr vm,
+                                        virDomainMemoryDefPtr mem)
+{
+    if (mgr->drv->domainRestoreSecurityMemoryLabel) {
+        int ret;
+        virObjectLock(mgr);
+        ret = mgr->drv->domainRestoreSecurityMemoryLabel(mgr, vm, mem);
+        virObjectUnlock(mgr);
+        return ret;
+    }
+
+    virReportUnsupportedError();
+    return -1;
+}
