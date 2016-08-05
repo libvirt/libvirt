@@ -148,22 +148,3 @@
   /etc/udev/udev.conf r,
   /sys/bus/ r,
   /sys/class/ r,
-
-  /usr/{lib,libexec}/qemu-bridge-helper Cx -> qemu_bridge_helper,
-  # child profile for bridge helper process
-  profile qemu_bridge_helper {
-   #include <abstractions/base>
-
-   capability setuid,
-   capability setgid,
-   capability setpcap,
-   capability net_admin,
-
-   network inet stream,
-
-   /dev/net/tun rw,
-   /etc/qemu/** r,
-   owner @{PROC}/*/status r,
-
-   /usr/{lib,libexec}/qemu-bridge-helper rmix,
-  }
