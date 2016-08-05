@@ -10,18 +10,18 @@
   </os>
   <cpu match='exact'>
     <model>core2duo</model>
-    <feature name='lahf_lm' policy='require'/>
+    <feature name='ds' policy='require'/>
+    <feature name='ht' policy='require'/>
+    <feature name='tm' policy='optional'/>
+    <feature name='ds_cpl' policy='require'/>
     <feature name='xtpr' policy='require'/>
+    <feature name='3dnowext' policy='force'/>
+    <feature name='lahf_lm' policy='require'/>
+    <feature name='nx' policy='disable'/>
     <feature name='cx16' policy='disable'/>
     <feature name='tm2' policy='disable'/>
-    <feature name='ds_cpl' policy='require'/>
     <feature name='pbe' policy='disable'/>
-    <feature name='tm' policy='optional'/>
-    <feature name='ht' policy='require'/>
     <feature name='ss' policy='disable'/>
-    <feature name='ds' policy='require'/>
-    <feature name='nx' policy='disable'/>
-    <feature name='3dnowext' policy='force'/>
     <feature name='sse4a' policy='optional'/>
     <feature name='wdt' policy='forbid'/>
   </cpu>

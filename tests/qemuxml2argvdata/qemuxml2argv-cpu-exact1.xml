@@ -10,13 +10,13 @@
   </os>
   <cpu match='exact'>
     <model fallback='allow'>qemu64</model>
-    <feature policy='disable' name='svm'/>
-    <feature policy='disable' name='lm'/>
-    <feature policy='disable' name='nx'/>
-    <feature policy='disable' name='syscall'/>
-    <feature policy='disable' name='clflush'/>
-    <feature policy='disable' name='pse36'/>
     <feature policy='disable' name='mca'/>
+    <feature policy='disable' name='pse36'/>
+    <feature policy='disable' name='clflush'/>
+    <feature policy='disable' name='syscall'/>
+    <feature policy='disable' name='nx'/>
+    <feature policy='disable' name='lm'/>
+    <feature policy='disable' name='svm'/>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
