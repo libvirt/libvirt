@@ -1592,7 +1592,7 @@ x86Compute(virCPUDefPtr host,
         if (!(guest_model = x86ModelCopy(host_model)))
             goto error;
 
-        if (cpu->vendor &&
+        if (cpu->vendor && host_model->vendor &&
             virCPUx86DataAddCPUID(&guest_model->data,
                                   &host_model->vendor->cpuid) < 0)
             goto error;
