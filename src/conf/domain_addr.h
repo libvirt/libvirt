@@ -40,6 +40,7 @@ typedef enum {
    VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT = 1 << 3,
    VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT = 1 << 4,
    VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT = 1 << 5,
+   VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE = 1 << 6,
 } virDomainPCIConnectFlags;
 
 /* a combination of all bits that describe the type of connections
@@ -49,7 +50,8 @@ typedef enum {
    (VIR_PCI_CONNECT_TYPE_PCI_DEVICE | VIR_PCI_CONNECT_TYPE_PCIE_DEVICE | \
     VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT | \
     VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT | \
-    VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT)
+    VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT | \
+    VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE)
 
 /* combination of all bits that could be used to connect a normal
  * endpoint device (i.e. excluding the connection possible between an

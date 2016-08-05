@@ -1632,6 +1632,14 @@ mymain(void)
             QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
+    DO_TEST_PARSE_ERROR("q35-dmi-bad-address1",
+                        QEMU_CAPS_DEVICE_PCI_BRIDGE,
+                        QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+                        QEMU_CAPS_DEVICE_IOH3420);
+    DO_TEST_PARSE_ERROR("q35-dmi-bad-address2",
+                        QEMU_CAPS_DEVICE_PCI_BRIDGE,
+                        QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+                        QEMU_CAPS_DEVICE_IOH3420);
     DO_TEST("q35-pm-disable",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_ICH9_AHCI,
