@@ -3354,6 +3354,9 @@ qemuProcessReconnect(void *opaque)
     ignore_value(virSecurityManagerCheckAllLabel(driver->securityManager,
                                                  obj->def));
 
+    if (qemuDomainRefreshVcpuInfo(driver, obj, QEMU_ASYNC_JOB_NONE, true) < 0)
+        goto error;
+
     if (virSecurityManagerReserveLabel(driver->securityManager, obj->def, obj->pid) < 0)
         goto error;
 
@@ -5234,7 +5237,7 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Refreshing VCPU info");
-    if (qemuDomainRefreshVcpuInfo(driver, vm, asyncJob) < 0)
+    if (qemuDomainRefreshVcpuInfo(driver, vm, asyncJob, false) < 0)
         goto cleanup;
 
     if (qemuDomainValidateVcpuInfo(vm) < 0)
@@ -6029,7 +6032,7 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     VIR_DEBUG("Detecting VCPU PIDs");
-    if (qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
+    if (qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE, false) < 0)
         goto error;
 
     if (qemuDomainValidateVcpuInfo(vm) < 0)

@@ -5764,16 +5764,20 @@ qemuDomainSupportsNewVcpuHotplug(virDomainObjPtr vm)
  * @driver: qemu driver data
  * @vm: domain object
  * @asyncJob: current asynchronous job type
+ * @state: refresh vcpu state
  *
  * Updates vCPU information private data of @vm. Due to historical reasons this
  * function returns success even if some data were not reported by qemu.
+ *
+ * If @state is true, the vcpu state is refreshed as reported by the monitor.
  *
  * Returns 0 on success and -1 on fatal error.
  */
 int
 qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
-                          int asyncJob)
+                          int asyncJob,
+                          bool state)
 {
     virDomainVcpuDefPtr vcpu;
     qemuDomainVcpuPrivatePtr vcpupriv;
@@ -5841,6 +5845,9 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
         VIR_FREE(vcpupriv->alias);
         VIR_STEAL_PTR(vcpupriv->alias, info[i].alias);
         vcpupriv->enable_id = info[i].id;
+
+        if (hotplug && state)
+            vcpu->online = !!info[i].qom_path;
     }
 
     ret = 0;

@@ -660,7 +660,8 @@ pid_t qemuDomainGetVcpuPid(virDomainObjPtr vm, unsigned int vcpuid);
 int qemuDomainValidateVcpuInfo(virDomainObjPtr vm);
 int qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
-                              int asyncJob);
+                              int asyncJob,
+                              bool state);
 
 bool qemuDomainSupportsNicdev(virDomainDefPtr def,
                               virDomainNetDefPtr net);
