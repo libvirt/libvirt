@@ -3915,8 +3915,9 @@ this.  If this flag is not specified, then some hypervisors may fail
 after partially performing the action, and B<dumpxml> must be used to
 see whether any partial changes occurred.
 
-If I<--live> is specified, libvirt takes the snapshot while the guest is
-running. This increases the size of the memory image of the external
+If I<--live> is specified, libvirt takes the snapshot (checkpoint) while
+the guest is running. Both disk snapshot and domain memory snapshot are
+taken. This increases the size of the memory image of the external
 checkpoint. This is currently supported only for external checkpoints.
 
 Existence of snapshot metadata will prevent attempts to B<undefine>
