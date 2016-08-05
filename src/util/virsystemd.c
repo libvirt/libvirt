@@ -468,7 +468,7 @@ int virSystemdTerminateMachine(const char *name)
                           name) < 0)
         goto cleanup;
 
-    if (error.code == VIR_ERR_ERROR &&
+    if (error.level == VIR_ERR_ERROR &&
         STRNEQ_NULLABLE("org.freedesktop.machine1.NoSuchMachine",
                         error.str1)) {
         virReportErrorObject(&error);
