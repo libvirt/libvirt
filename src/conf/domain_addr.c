@@ -118,38 +118,46 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
      * hot-plug and this bus doesn't have it, return false.
      */
     if (!(devFlags & busFlags & VIR_PCI_CONNECT_TYPES_MASK)) {
-        if (reportError) {
-            if (devFlags & VIR_PCI_CONNECT_TYPE_PCI_DEVICE) {
-                virReportError(errType,
-                               _("PCI bus is not compatible with the device "
-                                 "at %s. Device requires a standard PCI slot, "
-                                 "which is not provided by bus %.4x:%.2x"),
-                               addrStr, addr->domain, addr->bus);
-            } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_DEVICE) {
-                virReportError(errType,
-                               _("PCI bus is not compatible with the device "
-                                 "at %s. Device requires a PCI Express slot, "
-                                 "which is not provided by bus %.4x:%.2x"),
-                               addrStr, addr->domain, addr->bus);
-            } else {
-                /* this should never happen. If it does, there is a
-                 * bug in the code that sets the flag bits for devices.
-                 */
-                virReportError(errType,
-                           _("The device information for %s has no PCI "
-                             "connection types listed"), addrStr);
-            }
+        const char *connectStr;
+
+        if (!reportError)
+            return false;
+
+        if (devFlags & VIR_PCI_CONNECT_TYPE_PCI_DEVICE) {
+            connectStr = "standard PCI device";
+        } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_DEVICE) {
+            connectStr = "PCI Express device";
+        } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT) {
+            connectStr = "pcie-root-port";
+        } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT) {
+            connectStr = "pci-switch-upstream-port";
+        } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT) {
+            connectStr = "pci-switch-downstream-port";
+        } else {
+            /* this should never happen. If it does, there is a
+             * bug in the code that sets the flag bits for devices.
+             */
+            virReportError(errType,
+                           _("The device at PCI address %s has "
+                             "unrecognized connection type flags 0x%.2x"),
+                           addrStr, devFlags & VIR_PCI_CONNECT_TYPES_MASK);
+            return false;
         }
+        virReportError(errType,
+                       _("The device at PCI address %s cannot be "
+                         "plugged into the PCI controller with index='%d'. "
+                         "It requires a controller that accepts a %s."),
+                       addrStr, addr->bus, connectStr);
         return false;
     }
     if ((devFlags & VIR_PCI_CONNECT_HOTPLUGGABLE) &&
         !(busFlags & VIR_PCI_CONNECT_HOTPLUGGABLE)) {
         if (reportError) {
             virReportError(errType,
-                           _("PCI bus is not compatible with the device "
-                             "at %s. Device requires hot-plug capability, "
-                             "which is not provided by bus %.4x:%.2x"),
-                           addrStr, addr->domain, addr->bus);
+                           _("The device at PCI address %s requires "
+                             "hotplug capability, but the PCI controller "
+                             "with index='%d' doesn't support hotplug"),
+                           addrStr, addr->bus);
         }
         return false;
     }
