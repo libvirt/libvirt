@@ -51,20 +51,17 @@ virDomainPCIControllerModelToConnectType(virDomainControllerModelPCI model)
         return 0;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
-        /* pci-bridge and pci-expander-bus are treated like a standard
-         * PCI endpoint device, because they can plug into any
-         * standard PCI slot.
+        /* pci-bridge is treated like a standard
+         * PCI endpoint device, because it can plug into any
+         * standard PCI slot (it just can't be hotplugged).
          */
         return VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
 
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+        return VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS;
+
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
-        /* pcie-expander-bus is treated like a standard PCIe endpoint
-         * device (the part of pcie-expander-bus that is plugged in
-         * isn't the expander bus itself, but a companion device used
-         * for setting it up).
-         */
-        return VIR_PCI_CONNECT_TYPE_PCIE_DEVICE;
+        return VIR_PCI_CONNECT_TYPE_PCIE_EXPANDER_BUS;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
         return VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE;
@@ -137,6 +134,10 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
             connectStr = "pci-switch-downstream-port";
         } else if (devFlags & VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE) {
             connectStr = "dmi-to-pci-bridge";
+        } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS) {
+            connectStr = "pci-expander-bus";
+        } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_EXPANDER_BUS) {
+            connectStr = "pcie-expander-bus";
         } else {
             /* this should never happen. If it does, there is a
              * bug in the code that sets the flag bits for devices.
@@ -243,8 +244,14 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
      * bus.
      */
     switch (model) {
-    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+        bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+                      VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
+                      VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS);
+        bus->minSlot = 1;
+        bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
         bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE);
         bus->minSlot = 1;
@@ -265,7 +272,8 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
          */
         bus->flags = (VIR_PCI_CONNECT_TYPE_PCIE_DEVICE |
                       VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT |
-                      VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE);
+                      VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE |
+                      VIR_PCI_CONNECT_TYPE_PCIE_EXPANDER_BUS);
         bus->minSlot = 1;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
