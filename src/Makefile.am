@@ -46,6 +46,8 @@ AM_LDFLAGS =	$(DRIVER_MODULE_LDFLAGS)			\
 		$(COVERAGE_LDFLAGS)				\
 		$(RELRO_LDFLAGS)				\
 		$(NO_INDIRECT_LDFLAGS)				\
+		$(CYGWIN_EXTRA_LDFLAGS) 			\
+		$(MINGW_EXTRA_LDFLAGS)				\
 		$(NULL)
 
 EXTRA_DIST = $(conf_DATA) util/keymaps.csv
@@ -2180,9 +2182,7 @@ libvirt_admin_la_SOURCES = \
 libvirt_admin_la_LDFLAGS = \
 		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_ADMIN_SYMBOL_FILE)	\
 		-version-info $(LIBVIRT_VERSION_INFO)			\
-		$(AM_LDFLAGS) 						\
-		$(CYGWIN_EXTRA_LDFLAGS) 				\
-		$(MINGW_EXTRA_LDFLAGS)
+		$(AM_LDFLAGS)
 
 libvirt_admin_la_LIBADD = \
 		libvirt.la		\
@@ -2224,8 +2224,6 @@ libvirt_la_LDFLAGS = \
 		-version-info $(LIBVIRT_VERSION_INFO) \
 		$(LIBVIRT_NODELETE) \
 		$(AM_LDFLAGS) \
-		$(CYGWIN_EXTRA_LDFLAGS) \
-		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
 libvirt_la_BUILT_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_la_LIBADD += \
@@ -2309,8 +2307,6 @@ libvirt_qemu_la_LDFLAGS = \
 		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_QEMU_SYMBOL_FILE) \
 		-version-info $(LIBVIRT_VERSION_INFO) \
 		$(AM_LDFLAGS) \
-		$(CYGWIN_EXTRA_LDFLAGS) \
-		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
 libvirt_qemu_la_CFLAGS = $(AM_CFLAGS)
 libvirt_qemu_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
@@ -2320,8 +2316,6 @@ libvirt_lxc_la_LDFLAGS = \
 		$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_LXC_SYMBOL_FILE) \
 		-version-info $(LIBVIRT_VERSION_INFO) \
 		$(AM_LDFLAGS) \
-		$(CYGWIN_EXTRA_LDFLAGS) \
-		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
 libvirt_lxc_la_CFLAGS = $(AM_CFLAGS)
 libvirt_lxc_la_LIBADD = libvirt.la $(CYGWIN_EXTRA_LIBADD)
@@ -2431,7 +2425,7 @@ lockd_la_SOURCES = \
 lockd_la_CFLAGS = -I$(srcdir)/conf \
 		$(XDR_CFLAGS) \
 		$(AM_CFLAGS)
-lockd_la_LDFLAGS = -module -avoid-version
+lockd_la_LDFLAGS = -module -avoid-version $(AM_LDFLAGS)
 lockd_la_LIBADD = ../gnulib/lib/libgnu.la \
 	libvirt-net-rpc.la \
 	libvirt-net-rpc-client.la \
@@ -2474,8 +2468,6 @@ virtlockd_CFLAGS = \
 virtlockd_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
-		$(CYGWIN_EXTRA_LDFLAGS) \
-		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
 virtlockd_LDADD = \
 		libvirt-net-rpc-server.la \
@@ -2502,8 +2494,6 @@ virtlogd_CFLAGS = \
 virtlogd_LDFLAGS = \
 		$(AM_LDFLAGS) \
 		$(PIE_LDFLAGS) \
-		$(CYGWIN_EXTRA_LDFLAGS) \
-		$(MINGW_EXTRA_LDFLAGS) \
 		$(NULL)
 virtlogd_LDADD = \
 		libvirt-net-rpc-server.la \
@@ -2808,8 +2798,7 @@ libvirt_net_rpc_la_LDFLAGS = \
 			$(SSH2_LIBS)\
 			$(SECDRIVER_LIBS) \
 			$(AM_LDFLAGS) \
-			$(CYGWIN_EXTRA_LDFLAGS) \
-			$(MINGW_EXTRA_LDFLAGS)
+			$(NULL)
 libvirt_net_rpc_la_LIBADD = \
 			$(CYGWIN_EXTRA_LIBADD)
 
@@ -2829,8 +2818,7 @@ libvirt_net_rpc_server_la_LDFLAGS = \
 			$(AM_LDFLAGS) \
 			$(AVAHI_LIBS) \
 			$(DBUS_LIBS) \
-			$(CYGWIN_EXTRA_LDFLAGS) \
-			$(MINGW_EXTRA_LDFLAGS)
+			$(NULL)
 libvirt_net_rpc_server_la_LIBADD = \
 			$(CYGWIN_EXTRA_LIBADD)
 
@@ -2841,10 +2829,7 @@ libvirt_net_rpc_client_la_SOURCES = \
 libvirt_net_rpc_client_la_CFLAGS = \
 			$(AM_CFLAGS) \
 			$(XDR_CFLAGS)
-libvirt_net_rpc_client_la_LDFLAGS = \
-			$(AM_LDFLAGS) \
-			$(CYGWIN_EXTRA_LDFLAGS) \
-			$(MINGW_EXTRA_LDFLAGS)
+libvirt_net_rpc_client_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_net_rpc_client_la_LIBADD = \
 			$(CYGWIN_EXTRA_LIBADD)
 
