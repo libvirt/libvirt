@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-## Copyright (C) 2005-2015 Red Hat, Inc.
+## Copyright (C) 2005-2016 Red Hat, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -1172,7 +1172,7 @@ libvirt_la_BUILT_LIBADD += libvirt_driver.la
 libvirt_driver_la_SOURCES = $(DRIVER_SOURCES)
 
 libvirt_driver_la_CFLAGS = \
-		$(GNUTLS_CFLAGS) $(CURL_CFLAGS) \
+		$(GNUTLS_CFLAGS) $(CURL_CFLAGS) $(XDR_CFLAGS) \
 		-I$(srcdir)/conf $(AM_CFLAGS)
 libvirt_driver_la_LIBADD = \
 		$(GNUTLS_LIBS) $(CURL_LIBS) $(DLOPEN_LIBS)
@@ -1364,6 +1364,7 @@ endif ! WITH_DRIVER_MODULES
 libvirt_driver_qemu_impl_la_CFLAGS = \
 		$(GNUTLS_CFLAGS) \
 		$(LIBNL_CFLAGS) \
+		$(XDR_CFLAGS) \
 		-I$(srcdir)/access \
 		-I$(srcdir)/conf \
 		-I$(srcdir)/secret \
