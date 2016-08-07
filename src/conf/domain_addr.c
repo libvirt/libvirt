@@ -51,11 +51,7 @@ virDomainPCIControllerModelToConnectType(virDomainControllerModelPCI model)
         return 0;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-        /* pci-bridge is treated like a standard
-         * PCI endpoint device, because it can plug into any
-         * standard PCI slot (it just can't be hotplugged).
-         */
-        return VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
+        return VIR_PCI_CONNECT_TYPE_PCI_BRIDGE;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
         return VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS;
@@ -110,6 +106,12 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
          */
         if (devFlags & VIR_PCI_CONNECT_HOTPLUGGABLE)
             busFlags |= VIR_PCI_CONNECT_HOTPLUGGABLE;
+        /* if the device is a pci-bridge, allow manually
+         * assigning to any bus that would also accept a
+         * standard PCI device.
+         */
+        if (devFlags & VIR_PCI_CONNECT_TYPE_PCI_BRIDGE)
+            devFlags |= VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
     }
 
     /* If this bus doesn't allow the type of connection (PCI
@@ -138,6 +140,8 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
             connectStr = "pci-expander-bus";
         } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCIE_EXPANDER_BUS) {
             connectStr = "pcie-expander-bus";
+        } else if (devFlags & VIR_PCI_CONNECT_TYPE_PCI_BRIDGE) {
+            connectStr = "pci-bridge";
         } else {
             /* this should never happen. If it does, there is a
              * bug in the code that sets the flag bits for devices.
@@ -247,19 +251,22 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
         bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
                       VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
+                      VIR_PCI_CONNECT_TYPE_PCI_BRIDGE |
                       VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS);
         bus->minSlot = 1;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
         bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
-                      VIR_PCI_CONNECT_TYPE_PCI_DEVICE);
+                      VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
+                      VIR_PCI_CONNECT_TYPE_PCI_BRIDGE);
         bus->minSlot = 1;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
         bus->flags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
-                      VIR_PCI_CONNECT_TYPE_PCI_DEVICE);
+                      VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
+                      VIR_PCI_CONNECT_TYPE_PCI_BRIDGE);
         bus->minSlot = 0;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
@@ -280,7 +287,8 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
     case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
         /* slots 0 - 31, standard PCI slots,
          * but *not* hot-pluggable */
-        bus->flags = VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
+        bus->flags = (VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
+                      VIR_PCI_CONNECT_TYPE_PCI_BRIDGE);
         bus->minSlot = 0;
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
