@@ -17,7 +17,7 @@
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='vdb' bus='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
     </disk>
     <controller type='pci' index='0' model='pcie-root'/>
     <controller type='pci' index='1' model='dmi-to-pci-bridge'>
@@ -90,10 +90,10 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>
     </controller>
     <controller type='virtio-serial' index='0'>
-      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
     </controller>
     <controller type='scsi' index='0' model='virtio-scsi'>
-      <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
     </controller>
     <controller type='usb' index='0' model='ich9-ehci1'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1d' function='0x7'/>
@@ -123,18 +123,23 @@
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </interface>
+    <interface type='user'>
+      <mac address='00:11:22:33:44:66'/>
+      <model type='e1000e'/>
+      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
+    </interface>
     <input type='passthrough' bus='virtio'>
       <source evdev='/dev/input/event1234'/>
-      <address type='pci' domain='0x0000' bus='0x0a' slot='0x00' function='0x0'/>
-    </input>
-    <input type='mouse' bus='virtio'>
       <address type='pci' domain='0x0000' bus='0x0b' slot='0x00' function='0x0'/>
     </input>
-    <input type='keyboard' bus='virtio'>
+    <input type='mouse' bus='virtio'>
       <address type='pci' domain='0x0000' bus='0x0c' slot='0x00' function='0x0'/>
     </input>
-    <input type='tablet' bus='virtio'>
+    <input type='keyboard' bus='virtio'>
       <address type='pci' domain='0x0000' bus='0x0d' slot='0x00' function='0x0'/>
+    </input>
+    <input type='tablet' bus='virtio'>
+      <address type='pci' domain='0x0000' bus='0x0e' slot='0x00' function='0x0'/>
     </input>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
@@ -143,12 +148,12 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </video>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x09' slot='0x00' function='0x0'/>
     </memballoon>
     <rng model='virtio'>
       <rate bytes='123' period='1234'/>
       <backend model='random'>/dev/urandom</backend>
-      <address type='pci' domain='0x0000' bus='0x09' slot='0x00' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x0a' slot='0x00' function='0x0'/>
     </rng>
   </devices>
 </domain>

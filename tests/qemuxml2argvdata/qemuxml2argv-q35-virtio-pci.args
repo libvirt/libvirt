@@ -46,6 +46,9 @@ bus=pci.2,addr=0x1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.2,\
 addr=0x2 \
+-netdev user,id=hostnet1 \
+-device e1000e,netdev=hostnet1,id=net1,mac=00:11:22:33:44:66,bus=pci.3,\
+addr=0x0 \
 -device virtio-input-host-pci,id=input0,evdev=/dev/input/event1234,bus=pci.2,\
 addr=0x8 \
 -device virtio-mouse-pci,id=input1,bus=pci.2,addr=0x9 \
