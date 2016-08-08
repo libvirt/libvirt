@@ -3990,6 +3990,11 @@
 
   <define name="input">
     <element name="input">
+      <optional>
+        <element name="driver">
+          <ref name="virtioOptions"/>
+        </element>
+      </optional>
       <choice>
         <group>
           <attribute name="type">

@@ -5715,6 +5715,13 @@ qemu-kvm -net nic,model=? /dev/null
       event device passed through to guests. (KVM only)
     </p>
 
+    <p>
+        The subelement <code>driver</code> can be used to tune the virtio
+        options of the device:
+        <a href="#elementsVirtio">Virtio-specific options</a> can also be
+        set. (<span class="since">Since 3.5.0</span>)
+    </p>
+
     <h4><a name="elementsHub">Hub devices</a></h4>
 
     <p>

@@ -54,15 +54,19 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </interface>
     <input type='mouse' bus='virtio'>
+      <driver iommu='on' ats='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0e' function='0x0'/>
     </input>
     <input type='keyboard' bus='virtio'>
+      <driver iommu='on' ats='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x10' function='0x0'/>
     </input>
     <input type='tablet' bus='virtio'>
+      <driver iommu='on' ats='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x11' function='0x0'/>
     </input>
     <input type='passthrough' bus='virtio'>
+      <driver iommu='on' ats='on'/>
       <source evdev='/dev/input/event1234'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x12' function='0x0'/>
     </input>
