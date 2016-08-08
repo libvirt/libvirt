@@ -910,6 +910,5 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .guestData  = ppc64DriverGuestData,
     .baseline   = ppc64DriverBaseline,
     .update     = virCPUppc64Update,
-    .hasFeature = NULL,
     .getModels  = ppc64DriverGetModels,
 };

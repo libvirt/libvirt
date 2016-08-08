@@ -83,5 +83,4 @@ struct cpuArchDriver cpuDriverS390 = {
     .guestData  = NULL,
     .baseline   = NULL,
     .update     = NULL,
-    .hasFeature = NULL,
 };

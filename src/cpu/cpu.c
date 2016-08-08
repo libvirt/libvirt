@@ -648,7 +648,7 @@ virCPUUpdate(virArch arch,
 
 
 /**
- * cpuHasFeature:
+ * virCPUDataCheckFeature:
  *
  * @data: internal CPU representation
  * @feature: feature to be checked for
@@ -659,8 +659,8 @@ virCPUUpdate(virArch arch,
  * -1 on error.
  */
 int
-cpuHasFeature(const virCPUData *data,
-              const char *feature)
+virCPUDataCheckFeature(const virCPUData *data,
+                       const char *feature)
 {
     struct cpuArchDriver *driver;
 
@@ -669,14 +669,14 @@ cpuHasFeature(const virCPUData *data,
     if ((driver = cpuGetSubDriver(data->arch)) == NULL)
         return -1;
 
-    if (driver->hasFeature == NULL) {
+    if (!driver->dataCheckFeature) {
         virReportError(VIR_ERR_NO_SUPPORT,
                        _("cannot check guest CPU data for %s architecture"),
                        virArchToString(data->arch));
         return -1;
     }
 
-    return driver->hasFeature(data, feature);
+    return driver->dataCheckFeature(data, feature);
 }
 
 

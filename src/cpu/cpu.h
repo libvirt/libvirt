@@ -91,8 +91,8 @@ typedef int
                     const virCPUDef *host);
 
 typedef int
-(*cpuArchHasFeature) (const virCPUData *data,
-                      const char *feature);
+(*virCPUArchDataCheckFeature)(const virCPUData *data,
+                              const char *feature);
 
 typedef char *
 (*cpuArchDataFormat)(const virCPUData *data);
@@ -120,7 +120,7 @@ struct cpuArchDriver {
     cpuArchGuestData    guestData;
     cpuArchBaseline     baseline;
     virCPUArchUpdate    update;
-    cpuArchHasFeature    hasFeature;
+    virCPUArchDataCheckFeature dataCheckFeature;
     cpuArchDataFormat   dataFormat;
     cpuArchDataParse    dataParse;
     cpuArchGetModels    getModels;
@@ -194,8 +194,8 @@ virCPUUpdate(virArch arch,
     ATTRIBUTE_NONNULL(2);
 
 int
-cpuHasFeature(const virCPUData *data,
-              const char *feature)
+virCPUDataCheckFeature(const virCPUData *data,
+                       const char *feature)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 

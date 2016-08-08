@@ -131,5 +131,4 @@ struct cpuArchDriver cpuDriverArm = {
     .guestData = armGuestData,
     .baseline = armBaseline,
     .update = virCPUarmUpdate,
-    .hasFeature = NULL,
 };

@@ -3702,7 +3702,7 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
         }
 
         if (def->features[VIR_DOMAIN_FEATURE_PVSPINLOCK] == VIR_TRISTATE_SWITCH_ON) {
-            if (!cpuHasFeature(guestcpu, VIR_CPU_x86_KVM_PV_UNHALT)) {
+            if (!virCPUDataCheckFeature(guestcpu, VIR_CPU_x86_KVM_PV_UNHALT)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("host doesn't support paravirtual spinlocks"));
                 goto cleanup;
@@ -3715,7 +3715,7 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
                 if (virAsprintf(&cpuFeature, "__kvm_hv_%s",
                                 virDomainHypervTypeToString(i)) < 0)
                     goto cleanup;
-                if (!cpuHasFeature(guestcpu, cpuFeature)) {
+                if (!virCPUDataCheckFeature(guestcpu, cpuFeature)) {
                     switch ((virDomainHyperv) i) {
                     case VIR_DOMAIN_HYPERV_RELAXED:
                     case VIR_DOMAIN_HYPERV_VAPIC:
@@ -3751,7 +3751,7 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
                     continue;
 
                 if (STREQ(feature->name, "invtsc") &&
-                    !cpuHasFeature(guestcpu, feature->name)) {
+                    !virCPUDataCheckFeature(guestcpu, feature->name)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("host doesn't support invariant TSC"));
                     goto cleanup;
@@ -4530,8 +4530,8 @@ qemuProcessStartValidateGuestCPU(virDomainObjPtr vm,
     case VIR_CPU_COMPARE_INCOMPATIBLE:
         if (cpuEncode(host->arch, host, NULL, &hostData,
                       NULL, NULL, NULL, NULL) == 0 &&
-            (!cpuHasFeature(hostData, "hle") ||
-             !cpuHasFeature(hostData, "rtm")) &&
+            (!virCPUDataCheckFeature(hostData, "hle") ||
+             !virCPUDataCheckFeature(hostData, "rtm")) &&
             (STREQ_NULLABLE(cpu->model, "Haswell") ||
              STREQ_NULLABLE(cpu->model, "Broadwell")))
             noTSX = true;

@@ -6580,7 +6580,7 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
      */
     if ((def->os.arch == VIR_ARCH_X86_64 || def->os.arch == VIR_ARCH_I686) &&
          compareAgainstHost) {
-        int hasSVM = cpuHasFeature(data, "svm");
+        int hasSVM = virCPUDataCheckFeature(data, "svm");
         if (hasSVM < 0)
             goto cleanup;
         *hasHwVirt = hasSVM > 0 ? true : false;

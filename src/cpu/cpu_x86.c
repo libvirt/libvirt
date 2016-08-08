@@ -2602,8 +2602,8 @@ virCPUx86Update(virCPUDefPtr guest,
 
 
 static int
-x86HasFeature(const virCPUData *data,
-              const char *name)
+virCPUx86DataCheckFeature(const virCPUData *data,
+                          const char *name)
 {
     virCPUx86MapPtr map;
 
@@ -2709,7 +2709,7 @@ struct cpuArchDriver cpuDriverX86 = {
     .guestData  = x86GuestData,
     .baseline   = x86Baseline,
     .update     = virCPUx86Update,
-    .hasFeature = x86HasFeature,
+    .dataCheckFeature = virCPUx86DataCheckFeature,
     .dataFormat = x86CPUDataFormat,
     .dataParse  = x86CPUDataParse,
     .getModels  = x86GetModels,
