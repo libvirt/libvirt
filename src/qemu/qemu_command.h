@@ -150,10 +150,6 @@ int qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
                              const char **type,
                              virJSONValuePtr *props);
 
-char *qemuBuildShmemDevStr(virDomainDefPtr def,
-                           virDomainShmemDefPtr shmem,
-                           virQEMUCapsPtr qemuCaps);
-
 int qemuOpenPCIConfig(virDomainHostdevDefPtr dev);
 
 /* Current, best practice */
