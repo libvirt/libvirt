@@ -152,7 +152,7 @@ schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 
 EXTRA_DIST=					\
   apibuild.py genaclperms.pl \
-  site.xsl newapi.xsl news.xsl page.xsl \
+  site.xsl subsite.xsl newapi.xsl news.xsl page.xsl \
   hacking1.xsl hacking2.xsl wrapstring.xsl \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
