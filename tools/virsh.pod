@@ -2958,6 +2958,24 @@ a node device between guest passthrough or the host.  Libvirt will
 often do this action implicitly when required, but this command
 allows an explicit reset when needed.
 
+=item B<nodedev-event> {[I<nodedev>] I<event> [I<--loop>] [I<--timeout>
+I<seconds>] [I<--timestamp>] | I<--list>}
+
+Wait for a class of node device events to occur, and print appropriate
+details of events as they happen.  The events can optionally be filtered
+by I<nodedev>.  Using I<--list> as the only argument will provide a list
+of possible I<event> values known by this client, although the connection
+might not allow registering for all these events.
+
+By default, this command is one-shot, and returns success once an event
+occurs; you can send SIGINT (usually via C<Ctrl-C>) to quit immediately.
+If I<--timeout> is specified, the command gives up waiting for events
+after I<seconds> have elapsed.   With I<--loop>, the command prints all
+events until a timeout or interrupt key.
+
+When I<--timestamp> is used, a human-readable timestamp will be printed
+before the event.
+
 =back
 
 =head1 VIRTUAL NETWORK COMMANDS
