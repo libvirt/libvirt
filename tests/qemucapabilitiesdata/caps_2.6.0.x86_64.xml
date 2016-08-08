@@ -195,6 +195,7 @@
   <flag name='display'/>
   <flag name='intel-iommu'/>
   <flag name='smm'/>
+  <flag name='virtio-pci-disable-legacy'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

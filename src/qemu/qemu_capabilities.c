@@ -340,6 +340,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "display", /* 230 */
               "intel-iommu",
               "smm",
+              "virtio-pci-disable-legacy",
     );
 
 
@@ -1741,6 +1742,34 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsUSBNECXHCI) },
 };
 
+struct virQEMUCapsPropTypeObjects {
+    const char *prop;
+    int flag;
+    const char **objects;
+};
+
+static const char *virQEMUCapsVirtioPCIDisableLegacyObjects[] = {
+     "virtio-balloon-pci",
+     "virtio-blk-pci",
+     "virtio-scsi-pci",
+     "virtio-serial-pci",
+     "virtio-9p-pci",
+     "virtio-net-pci",
+     "virtio-rng-pci",
+     "virtio-gpu-pci",
+     "virtio-input-host-pci",
+     "virtio-keyboard-pci",
+     "virtio-mouse-pci",
+     "virtio-tablet-pci",
+     NULL
+};
+
+static struct virQEMUCapsPropTypeObjects virQEMUCapsPropObjects[] = {
+    { "disable-legacy",
+      QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
+      virQEMUCapsVirtioPCIDisableLegacyObjects }
+};
+
 
 static void
 virQEMUCapsProcessStringFlags(virQEMUCapsPtr qemuCaps,
@@ -1754,6 +1783,31 @@ virQEMUCapsProcessStringFlags(virQEMUCapsPtr qemuCaps,
         for (j = 0; j < nvalues; j++) {
             if (STREQ(values[j], flags[i].value)) {
                 virQEMUCapsSet(qemuCaps, flags[i].flag);
+                break;
+            }
+        }
+    }
+}
+
+
+static void
+virQEMUCapsProcessProps(virQEMUCapsPtr qemuCaps,
+                        size_t nprops,
+                        struct virQEMUCapsPropTypeObjects *props,
+                        const char *object,
+                        size_t nvalues,
+                        char *const*values)
+{
+    size_t i, j;
+
+    for (i = 0; i < nprops; i++) {
+        if (virQEMUCapsGet(qemuCaps, props[i].flag))
+            continue;
+
+        for (j = 0; j < nvalues; j++) {
+            if (STREQ(values[j], props[i].prop)) {
+                if (virStringArrayHasString(props[i].objects, object))
+                    virQEMUCapsSet(qemuCaps, props[i].flag);
                 break;
             }
         }
@@ -2470,6 +2524,10 @@ virQEMUCapsProbeQMPObjects(virQEMUCapsPtr qemuCaps,
                                       virQEMUCapsObjectProps[i].nprops,
                                       virQEMUCapsObjectProps[i].props,
                                       nvalues, values);
+        virQEMUCapsProcessProps(qemuCaps,
+                                ARRAY_CARDINALITY(virQEMUCapsPropObjects),
+                                virQEMUCapsPropObjects, type,
+                                nvalues, values);
         virQEMUCapsFreeStringList(nvalues, values);
     }
 
