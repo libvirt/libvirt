@@ -2997,6 +2997,8 @@ noinst_LTLIBRARIES += libvirt-nss.la
 libvirt_nss_la_SOURCES =		\
 		util/viralloc.c			\
 		util/viralloc.h			\
+		util/viratomic.c		\
+		util/viratomic.h		\
 		util/virbitmap.c		\
 		util/virbitmap.h		\
 		util/virbuffer.c		\
