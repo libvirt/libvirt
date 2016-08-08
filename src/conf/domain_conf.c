@@ -23036,6 +23036,7 @@ virDomainInputDefFormat(virBufferPtr buf,
 {
     const char *type = virDomainInputTypeToString(def->type);
     const char *bus = virDomainInputBusTypeToString(def->bus);
+    virBuffer childbuf = VIR_BUFFER_INITIALIZER;
 
     /* don't format keyboard into migratable XML for backward compatibility */
     if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE &&
@@ -23058,17 +23059,17 @@ virDomainInputDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<input type='%s' bus='%s'",
                       type, bus);
 
-    if (virDomainDeviceInfoNeedsFormat(&def->info, flags) ||
-        def->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
-        virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
-        virBufferEscapeString(buf, "<source evdev='%s'/>\n", def->source.evdev);
-        if (virDomainDeviceInfoFormat(buf, &def->info, flags) < 0)
-            return -1;
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</input>\n");
-    } else {
+    virBufferAdjustIndent(&childbuf, virBufferGetIndent(buf, false) + 2);
+    virBufferEscapeString(&childbuf, "<source evdev='%s'/>\n", def->source.evdev);
+    if (virDomainDeviceInfoFormat(&childbuf, &def->info, flags) < 0)
+        return -1;
+
+    if (!virBufferUse(&childbuf)) {
         virBufferAddLit(buf, "/>\n");
+    } else {
+        virBufferAddLit(buf, ">\n");
+        virBufferAddBuffer(buf, &childbuf);
+        virBufferAddLit(buf, "</input>\n");
     }
 
     return 0;
