@@ -989,7 +989,7 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
         MACVTAP_NAME_PREFIX : MACVLAN_NAME_PREFIX;
     const char *pattern = (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) ?
         MACVTAP_NAME_PATTERN : MACVLAN_NAME_PATTERN;
-    int rc, reservedID = -1;
+    int reservedID = -1;
     char ifname[IFNAMSIZ];
     int retries, do_retry = 0;
     uint32_t macvtapMode;
@@ -1079,9 +1079,8 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
             return -1;
         }
         snprintf(ifname, sizeof(ifname), pattern, reservedID);
-        rc = virNetDevMacVLanCreate(ifname, type, macaddress, linkdev,
-                                    macvtapMode, &do_retry);
-        if (rc < 0) {
+        if (virNetDevMacVLanCreate(ifname, type, macaddress, linkdev,
+                                   macvtapMode, &do_retry) < 0) {
             virNetDevMacVLanReleaseID(reservedID, flags);
             virMutexUnlock(&virNetDevMacVLanCreateMutex);
             if (!do_retry)
@@ -1107,36 +1106,26 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
                                        macaddress,
                                        linkdev,
                                        vf,
-                                       vmuuid, vmOp, false) < 0) {
-        rc = -1;
+                                       vmuuid, vmOp, false) < 0)
         goto link_del_exit;
-    }
 
     if (flags & VIR_NETDEV_MACVLAN_CREATE_IFUP) {
-        if (virNetDevSetOnline(ifnameCreated, true) < 0) {
-            rc = -1;
+        if (virNetDevSetOnline(ifnameCreated, true) < 0)
             goto disassociate_exit;
-        }
     }
 
     if (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) {
-        if (virNetDevMacVLanTapOpen(ifnameCreated, tapfd, tapfdSize, 10) < 0) {
-            rc = -1;
+        if (virNetDevMacVLanTapOpen(ifnameCreated, tapfd, tapfdSize, 10) < 0)
             goto disassociate_exit;
-        }
 
-        if (virNetDevMacVLanTapSetup(tapfd, tapfdSize, vnet_hdr) < 0) {
-            VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
+        if (virNetDevMacVLanTapSetup(tapfd, tapfdSize, vnet_hdr) < 0)
             goto disassociate_exit;
-        }
-        if (VIR_STRDUP(*ifnameResult, ifnameCreated) < 0) {
-            VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
+
+        if (VIR_STRDUP(*ifnameResult, ifnameCreated) < 0)
             goto disassociate_exit;
-        }
     } else {
         if (VIR_STRDUP(*ifnameResult, ifnameCreated) < 0)
             goto disassociate_exit;
-        rc = 0;
     }
 
     if (vmOp == VIR_NETDEV_VPORT_PROFILE_OP_CREATE ||
@@ -1149,10 +1138,10 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
                                                          linkdev, vmuuid,
                                                          virtPortProfile,
                                                          vmOp) < 0)
-        goto disassociate_exit;
+            goto disassociate_exit;
     }
 
-    return rc;
+    return 0;
 
  disassociate_exit:
     ignore_value(virNetDevVPortProfileDisassociate(ifnameCreated,
@@ -1168,7 +1157,7 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
     ignore_value(virNetDevMacVLanDelete(ifnameCreated));
     virNetDevMacVLanReleaseName(ifnameCreated);
 
-    return rc;
+    return -1;
 }
 
 
