@@ -1392,6 +1392,7 @@ mymain(void)
     DO_TEST("cpu-Haswell2", QEMU_CAPS_KVM);
     DO_TEST("cpu-Haswell3", QEMU_CAPS_KVM);
     DO_TEST("cpu-Haswell-noTSX", QEMU_CAPS_KVM);
+    DO_TEST("cpu-host-model-cmt", NONE);
     driver.caps->host.cpu = cpuDefault;
 
     DO_TEST("encrypted-disk", NONE);

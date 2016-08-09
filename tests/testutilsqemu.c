@@ -54,6 +54,7 @@ static virCPUFeatureDef cpuHaswellFeatures[] = {
     { (char *) "invtsc",    -1 },
     { (char *) "abm",       -1 },
     { (char *) "pdpe1gb",   -1 },
+    { (char *) "cmt",       -1 },
     { (char *) "rdrand",    -1 },
     { (char *) "f16c",      -1 },
     { (char *) "osxsave",   -1 },
