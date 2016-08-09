@@ -179,11 +179,13 @@ virAdmGetDefaultURI(virConfPtr conf, char **uristr)
              * we set the default admin server URI to 'libvirtd:///system' or
              * 'libvirtd:///session' depending on the process's EUID.
              */
-            if (geteuid() == 0 &&
-                VIR_STRDUP(*uristr, "libvirtd:///system") < 0)
+            if (geteuid() == 0) {
+                if (VIR_STRDUP(*uristr, "libvirtd:///system") < 0)
                     return -1;
-            else if (VIR_STRDUP(*uristr, "libvirtd:///session") < 0)
+            } else {
+                if (VIR_STRDUP(*uristr, "libvirtd:///session") < 0)
                     return -1;
+            }
         }
     }
 
