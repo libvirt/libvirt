@@ -2542,12 +2542,16 @@ x86UpdateHostModel(virCPUDefPtr guest,
             goto cleanup;
     }
 
-    /* Remove non-migratable features by default
+    /* Remove non-migratable features and CMT related features which QEMU
+     * knows nothing about.
      * Note: this only works as long as no CPU model contains non-migratable
      * features directly */
     i = 0;
     while (i < guest->nfeatures) {
-        if (x86FeatureIsMigratable(guest->features[i].name, map)) {
+        if (x86FeatureIsMigratable(guest->features[i].name, map) &&
+            STRNEQ(guest->features[i].name, "cmt") &&
+            STRNEQ(guest->features[i].name, "mbm_total") &&
+            STRNEQ(guest->features[i].name, "mbm_local")) {
             i++;
         } else {
             VIR_FREE(guest->features[i].name);
