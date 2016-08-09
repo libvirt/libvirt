@@ -1120,8 +1120,10 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
     }
 
     if (flags & VIR_NETDEV_MACVLAN_CREATE_WITH_TAP) {
-        if (virNetDevMacVLanTapOpen(ifnameCreated, tapfd, tapfdSize, 10) < 0)
+        if (virNetDevMacVLanTapOpen(ifnameCreated, tapfd, tapfdSize, 10) < 0) {
+            rc = -1;
             goto disassociate_exit;
+        }
 
         if (virNetDevMacVLanTapSetup(tapfd, tapfdSize, vnet_hdr) < 0) {
             VIR_FORCE_CLOSE(rc); /* sets rc to -1 */
