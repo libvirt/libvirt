@@ -634,12 +634,23 @@ ppc64Compute(virCPUDefPtr host,
 }
 
 static virCPUCompareResult
-ppc64DriverCompare(virCPUDefPtr host,
+virCPUppc64Compare(virCPUDefPtr host,
                    virCPUDefPtr cpu,
                    bool failIncompatible)
 {
     virCPUCompareResult ret;
     char *message = NULL;
+
+    if (!host || !host->model) {
+        if (failIncompatible) {
+            virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s",
+                           _("unknown host CPU"));
+        } else {
+            VIR_WARN("unknown host CPU");
+            ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+        }
+        return -1;
+    }
 
     ret = ppc64Compute(host, cpu, NULL, &message);
 
@@ -902,7 +913,7 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .name       = "ppc64",
     .arch       = archs,
     .narch      = ARRAY_CARDINALITY(archs),
-    .compare    = ppc64DriverCompare,
+    .compare    = virCPUppc64Compare,
     .decode     = ppc64DriverDecode,
     .encode     = NULL,
     .free       = ppc64DriverFree,

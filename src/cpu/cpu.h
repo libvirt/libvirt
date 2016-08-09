@@ -45,7 +45,7 @@ struct _virCPUData {
 
 
 typedef virCPUCompareResult
-(*cpuArchCompare)   (virCPUDefPtr host,
+(*virCPUArchCompare)(virCPUDefPtr host,
                      virCPUDefPtr cpu,
                      bool failIncompatible);
 
@@ -116,7 +116,7 @@ struct cpuArchDriver {
     const char *name;
     const virArch *arch;
     unsigned int narch;
-    cpuArchCompare      compare;
+    virCPUArchCompare   compare;
     cpuArchDecode       decode;
     cpuArchEncode       encode;
     cpuArchDataFree     free;
@@ -134,16 +134,17 @@ struct cpuArchDriver {
 
 
 virCPUCompareResult
-cpuCompareXML(virCPUDefPtr host,
-              const char *xml,
-              bool failIncompatible)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+virCPUCompareXML(virArch arch,
+                 virCPUDefPtr host,
+                 const char *xml,
+                 bool failIncompatible);
 
 virCPUCompareResult
-cpuCompare  (virCPUDefPtr host,
-             virCPUDefPtr cpu,
-             bool failIncompatible)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+virCPUCompare(virArch arch,
+              virCPUDefPtr host,
+              virCPUDefPtr cpu,
+              bool failIncompatible)
+    ATTRIBUTE_NONNULL(3);
 
 int
 cpuDecode   (virCPUDefPtr cpu,

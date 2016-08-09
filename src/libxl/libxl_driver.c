@@ -6369,18 +6369,8 @@ libxlConnectCompareCPU(virConnectPtr conn,
 
     cfg = libxlDriverConfigGet(driver);
 
-    if (!cfg->caps->host.cpu ||
-        !cfg->caps->host.cpu->model) {
-        if (failIncompatible) {
-            virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s",
-                           _("cannot get host CPU capabilities"));
-        } else {
-            VIR_WARN("cannot get host CPU capabilities");
-            ret = VIR_CPU_COMPARE_INCOMPATIBLE;
-        }
-    } else {
-        ret = cpuCompareXML(cfg->caps->host.cpu, xmlDesc, failIncompatible);
-    }
+    ret = virCPUCompareXML(cfg->caps->host.arch, cfg->caps->host.cpu,
+                           xmlDesc, failIncompatible);
 
     virObjectUnref(cfg);
     return ret;

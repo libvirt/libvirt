@@ -12812,18 +12812,8 @@ qemuConnectCompareCPU(virConnectPtr conn,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!caps->host.cpu ||
-        !caps->host.cpu->model) {
-        if (failIncompatible) {
-            virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s",
-                           _("cannot get host CPU capabilities"));
-        } else {
-            VIR_WARN("cannot get host CPU capabilities");
-            ret = VIR_CPU_COMPARE_INCOMPATIBLE;
-        }
-    } else {
-        ret = cpuCompareXML(caps->host.cpu, xmlDesc, failIncompatible);
-    }
+    ret = virCPUCompareXML(caps->host.arch, caps->host.cpu,
+                           xmlDesc, failIncompatible);
 
  cleanup:
     virObjectUnref(caps);

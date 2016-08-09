@@ -1057,7 +1057,8 @@ x86ModelFromCPU(const virCPUDef *cpu,
         policy != -1)
         return x86ModelNew();
 
-    if (policy == VIR_CPU_FEATURE_REQUIRE || policy == -1) {
+    if (cpu->model &&
+        (policy == VIR_CPU_FEATURE_REQUIRE || policy == -1)) {
         if (!(model = x86ModelFind(map, cpu->model))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unknown CPU model %s"), cpu->model);
@@ -1519,12 +1520,6 @@ x86Compute(virCPUDefPtr host,
     virArch arch;
     size_t i;
 
-    if (!cpu->model) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("no guest CPU model specified"));
-        return VIR_CPU_COMPARE_ERROR;
-    }
-
     if (cpu->arch != VIR_ARCH_NONE) {
         bool found = false;
 
@@ -1565,7 +1560,7 @@ x86Compute(virCPUDefPtr host,
     }
 
     if (!(map = virCPUx86GetMap()) ||
-        !(host_model = x86ModelFromCPU(host, map, VIR_CPU_FEATURE_REQUIRE)) ||
+        !(host_model = x86ModelFromCPU(host, map, -1)) ||
         !(cpu_force = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_FORCE)) ||
         !(cpu_require = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_REQUIRE)) ||
         !(cpu_optional = x86ModelFromCPU(cpu, map, VIR_CPU_FEATURE_OPTIONAL)) ||
@@ -1664,25 +1659,68 @@ x86Compute(virCPUDefPtr host,
 
 
 static virCPUCompareResult
-x86Compare(virCPUDefPtr host,
-           virCPUDefPtr cpu,
-           bool failIncompatible)
+virCPUx86Compare(virCPUDefPtr host,
+                 virCPUDefPtr cpu,
+                 bool failIncompatible)
 {
-    virCPUCompareResult ret;
+    virCPUCompareResult ret = VIR_CPU_COMPARE_ERROR;
+    virCPUx86MapPtr map;
+    virCPUx86ModelPtr model = NULL;
     char *message = NULL;
+
+    if (!host || !host->model) {
+        if (failIncompatible) {
+            virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s",
+                           _("unknown host CPU"));
+        } else {
+            VIR_WARN("unknown host CPU");
+            ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+        }
+        goto cleanup;
+    }
 
     ret = x86Compute(host, cpu, NULL, &message);
 
-    if (failIncompatible && ret == VIR_CPU_COMPARE_INCOMPATIBLE) {
-        ret = VIR_CPU_COMPARE_ERROR;
-        if (message) {
-            virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s", message);
-        } else {
-            virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
+    if (ret == VIR_CPU_COMPARE_INCOMPATIBLE) {
+        bool noTSX = false;
+
+        if (STREQ_NULLABLE(cpu->model, "Haswell") ||
+            STREQ_NULLABLE(cpu->model, "Broadwell")) {
+            if (!(map = virCPUx86GetMap()))
+                goto cleanup;
+
+            if (!(model = x86ModelFromCPU(cpu, map, -1)))
+                goto cleanup;
+
+            noTSX = !x86FeatureInData("hle", &model->data, map) ||
+                    !x86FeatureInData("rtm", &model->data, map);
+        }
+
+        if (failIncompatible) {
+            ret = VIR_CPU_COMPARE_ERROR;
+            if (message) {
+                if (noTSX) {
+                    virReportError(VIR_ERR_CPU_INCOMPATIBLE,
+                                   _("%s; try using '%s-noTSX' CPU model"),
+                                   message, cpu->model);
+                } else {
+                    virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s", message);
+                }
+            } else {
+                if (noTSX) {
+                    virReportError(VIR_ERR_CPU_INCOMPATIBLE,
+                                   _("try using '%s-noTSX' CPU model"),
+                                   cpu->model);
+                } else {
+                    virReportError(VIR_ERR_CPU_INCOMPATIBLE, NULL);
+                }
+            }
         }
     }
-    VIR_FREE(message);
 
+ cleanup:
+    VIR_FREE(message);
+    x86ModelFree(model);
     return ret;
 }
 
@@ -1693,6 +1731,12 @@ x86GuestData(virCPUDefPtr host,
              virCPUDataPtr *data,
              char **message)
 {
+    if (!guest->model) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("no guest CPU model specified"));
+        return VIR_CPU_COMPARE_ERROR;
+    }
+
     return x86Compute(host, guest, data, message);
 }
 
@@ -2719,7 +2763,7 @@ struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
     .arch = archs,
     .narch = ARRAY_CARDINALITY(archs),
-    .compare    = x86Compare,
+    .compare    = virCPUx86Compare,
     .decode     = x86DecodeCPUData,
     .encode     = x86Encode,
     .free       = x86FreeCPUData,
