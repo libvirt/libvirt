@@ -68,7 +68,7 @@ class Class:
         header += "\n"
         header += "#define %s_RESOURCE_URI \\\n" % name_upper
 
-        if self.name.startswith("Win32_"):
+        if self.name.startswith("Win32_") or self.name.startswith("CIM_"):
             header += "    \"http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/%s\"\n" % self.name
         else:
             header += "    \"http://schemas.microsoft.com/wbem/wsman/1/wmi/root/virtualization/%s\"\n" % self.name
@@ -113,7 +113,7 @@ class Class:
                   % (self.name.replace("_", ""), self.name)
         source += "{\n"
 
-        if self.name.startswith("Win32_"):
+        if self.name.startswith("Win32_") or self.name.startswith("CIM_"):
             source += "    return hypervEnumAndPull(priv, query, ROOT_CIMV2,\n"
         else:
             source += "    return hypervEnumAndPull(priv, query, ROOT_VIRTUALIZATION,\n"

@@ -296,3 +296,490 @@ class Win32_Processor
     string   Version
     uint32   VoltageCaps
 end
+
+
+class CIM_DataFile
+    uint32   AccessMask
+    boolean  Archive
+    string   Caption
+    boolean  Compressed
+    string   CompressionMethod
+    string   CreationClassName
+    datetime CreationDate
+    string   CSCreationClassName
+    string   CSName
+    string   Description
+    string   Drive
+    string   EightDotThreeFileName
+    boolean  Encrypted
+    string   EncryptionMethod
+    string   Extension
+    string   FileName
+    uint64   FileSize
+    string   FileType
+    string   FSCreationClassName
+    string   FSName
+    boolean  Hidden
+    datetime InstallDate
+    uint64   InUseCount
+    datetime LastAccessed
+    datetime LastModified
+    string   Manufacturer
+    string   Name
+    string   Path
+    boolean  Readable
+    string   Status
+    boolean  System
+    string   Version
+    boolean  Writeable
+end
+
+
+class Win32_ComputerSystemProduct
+    string   Caption
+    string   Description
+    string   IdentifyingNumber
+    string   Name
+    string   SKUNumber
+    string   UUID
+    string   Vendor
+    string   Version
+end
+
+
+class Win32_PerfRawData_HvStats_HyperVHypervisorVirtualProcessor
+    uint64   AddressDomainFlushesPersec
+    uint64   AddressSpaceEvictionsPersec
+    uint64   AddressSpaceFlushesPersec
+    uint64   AddressSpaceSwitchesPersec
+    uint64   APICEOIAccessesPersec
+    uint64   APICIPIsSentPersec
+    uint64   APICMMIOAccessesPersec
+    uint64   APICSelfIPIsSentPersec
+    uint64   APICTPRAccessesPersec
+    string   Caption
+    uint64   ControlRegisterAccessesCost
+    uint64   ControlRegisterAccessesCost_Base
+    uint64   ControlRegisterAccessesPersec
+    uint64   CPUIDInstructionsCost
+    uint64   CPUIDInstructionsCost_Base
+    uint64   CPUIDInstructionsPersec
+    uint64   CPUWaitTimePerDispatch
+    uint64   CPUWaitTimePerDispatch_Base
+    uint64   DebugRegisterAccessesCost
+    uint64   DebugRegisterAccessesCost_Base
+    uint64   DebugRegisterAccessesPersec
+    string   Description
+    uint64   EmulatedInstructionsCost
+    uint64   EmulatedInstructionsCost_Base
+    uint64   EmulatedInstructionsPersec
+    uint64   ExternalInterruptsCost
+    uint64   ExternalInterruptsCost_Base
+    uint64   ExternalInterruptsPersec
+    uint64   Frequency_Object
+    uint64   Frequency_PerfTime
+    uint64   Frequency_Sys100NS
+    uint64   GlobalGVARangeFlushesPersec
+    uint64   GPASpaceHypercallsPersec
+    uint64   GuestPageTableMapsPersec
+    uint64   HardwareInterruptsPersec
+    uint64   HLTInstructionsCost
+    uint64   HLTInstructionsCost_Base
+    uint64   HLTInstructionsPersec
+    uint64   HypercallsCost
+    uint64   HypercallsCost_Base
+    uint64   HypercallsPersec
+    uint64   IOInstructionsCost
+    uint64   IOInstructionsCost_Base
+    uint64   IOInstructionsPersec
+    uint64   IOInterceptMessagesPersec
+    uint64   LargePageTLBFillsPersec
+    uint64   LocalFlushedGVARangesPersec
+    uint64   LogicalProcessorDispatchesPersec
+    uint64   LogicalProcessorHypercallsPersec
+    uint64   LogicalProcessorMigrationsPersec
+    uint64   LongSpinWaitHypercallsPersec
+    uint64   MemoryInterceptMessagesPersec
+    uint64   MSRAccessesCost
+    uint64   MSRAccessesCost_Base
+    uint64   MSRAccessesPersec
+    uint64   MWAITInstructionsCost
+    uint64   MWAITInstructionsCost_Base
+    uint64   MWAITInstructionsPersec
+    string   Name
+    uint64   NestedPageFaultInterceptsCost
+    uint64   NestedPageFaultInterceptsCost_Base
+    uint64   NestedPageFaultInterceptsPersec
+    uint64   OtherHypercallsPersec
+    uint64   OtherInterceptsCost
+    uint64   OtherInterceptsCost_Base
+    uint64   OtherInterceptsPersec
+    uint64   OtherMessagesPersec
+    uint64   PageFaultInterceptsCost
+    uint64   PageFaultInterceptsCost_Base
+    uint64   PageFaultInterceptsPersec
+    uint64   PageInvalidationsCost
+    uint64   PageInvalidationsCost_Base
+    uint64   PageInvalidationsPersec
+    uint64   PageTableAllocationsPersec
+    uint64   PageTableEvictionsPersec
+    uint64   PageTableReclamationsPersec
+    uint64   PageTableResetsPersec
+    uint64   PageTableValidationsPersec
+    uint64   PageTableWriteInterceptsPersec
+    uint64   PendingInterruptsCost
+    uint64   PendingInterruptsCost_Base
+    uint64   PendingInterruptsPersec
+    uint64   PercentGuestRunTime
+    uint64   PercentGuestRunTime_Base
+    uint64   PercentHypervisorRunTime
+    uint64   PercentHypervisorRunTime_Base
+    uint64   PercentRemoteRunTime
+    uint64   PercentRemoteRunTime_Base
+    uint64   PercentTotalRunTime
+    uint64   PercentTotalRunTime_Base
+    uint64   ReflectedGuestPageFaultsPersec
+    uint64   SmallPageTLBFillsPersec
+    uint64   SyntheticInterruptHypercallsPersec
+    uint64   SyntheticInterruptsPersec
+    uint64   Timestamp_Object
+    uint64   Timestamp_PerfTime
+    uint64   Timestamp_Sys100NS
+    uint64   TotalInterceptsCost
+    uint64   TotalInterceptsCost_Base
+    uint64   TotalInterceptsPersec
+    uint64   TotalMessagesPersec
+    uint64   VirtualInterruptHypercallsPersec
+    uint64   VirtualInterruptsPersec
+    uint64   VirtualMMUHypercallsPersec
+    uint64   VirtualProcessorHypercallsPersec
+end
+
+
+class Win32_OperatingSystem
+    string   BootDevice
+    string   BuildNumber
+    string   BuildType
+    string   Caption
+    string   CodeSet
+    string   CountryCode
+    string   CreationClassName
+    string   CSCreationClassName
+    string   CSDVersion
+    string   CSName
+    uint16   CurrentTimeZone
+    boolean  DataExecutionPrevention_Available
+    boolean  DataExecutionPrevention_32BitApplications
+    boolean  DataExecutionPrevention_Drivers
+    uint8    DataExecutionPrevention_SupportPolicy
+    boolean  Debug
+    string   Description
+    boolean  Distributed
+    uint32   EncryptionLevel
+    uint8    ForegroundApplicationBoost
+    uint64   FreePhysicalMemory
+    uint64   FreeSpaceInPagingFiles
+    uint64   FreeVirtualMemory
+    datetime InstallDate
+    uint32   LargeSystemCache
+    datetime LastBootUpTime
+    datetime LocalDateTime
+    string   Locale
+    string   Manufacturer
+    uint32   MaxNumberOfProcesses
+    uint64   MaxProcessMemorySize
+    string   MUILanguages[]
+    string   Name
+    uint32   NumberOfLicensedUsers
+    uint32   NumberOfProcesses
+    uint32   NumberOfUsers
+    uint32   OperatingSystemSKU
+    string   Organization
+    string   OSArchitecture
+    uint32   OSLanguage
+    uint32   OSProductSuite
+    uint16   OSType
+    string   OtherTypeDescription
+    boolean  PAEEnabled
+    string   PlusProductID
+    string   PlusVersionNumber
+#    boolean  PortableOperatingSystem # Available only on Windows 8 and Windows Server 2012
+    boolean  Primary
+    uint32   ProductType
+    string   RegisteredUser
+    string   SerialNumber
+    uint16   ServicePackMajorVersion
+    uint16   ServicePackMinorVersion
+    uint64   SizeStoredInPagingFiles
+    string   Status
+    uint32   SuiteMask
+    string   SystemDevice
+    string   SystemDirectory
+    string   SystemDrive
+    uint64   TotalSwapSpaceSize
+    uint64   TotalVirtualMemorySize
+    uint64   TotalVisibleMemorySize
+    string   Version
+    string   WindowsDirectory
+end
+
+
+class Msvm_VirtualSwitch
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    uint16   EnabledState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    datetime TimeOfLastStateChange
+    string   CreationClassName
+    string   Name
+    string   PrimaryOwnerContact
+    string   PrimaryOwnerName
+    string   Roles[]
+    string   NameFormat
+    string   OtherIdentifyingInfo[]
+    string   IdentifyingDescriptions[]
+    uint16   Dedicated[]
+    string   OtherDedicatedDescriptions[]
+    uint16   ResetCapability
+    uint16   PowerManagementCapabilities[]
+    string   ScopeOfResidence
+    uint32   NumLearnableAddresses
+    uint32   MaxVMQOffloads
+    uint32   MaxChimneyOffloads
+end
+
+
+class Msvm_VirtualSystemManagementService
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    uint16   OperationalStatus
+    string   StatusDescriptions
+    string   Status
+    uint16   HealthState
+    uint16   EnabledState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    datetime TimeOfLastStateChange
+    string   SystemCreationClassName
+    string   SystemName
+    string   CreationClassName
+    string   Name
+    string   PrimaryOwnerName
+    string   PrimaryOwnerContact
+    string   StartMode
+    boolean  Started
+end
+
+
+class Msvm_VirtualSystemGlobalSettingData
+    string   Caption
+    string   Description
+    string   ElementName
+    string   InstanceID
+    string   SystemName
+    uint16   SettingType
+    uint16   VirtualSystemType
+    string   OtherVirtualSystemType
+    boolean  AutoActivate
+    datetime CreationTime
+    string   ExternalDataRoot
+    string   SnapshotDataRoot
+    uint16   AutomaticStartupAction
+    datetime AutomaticStartupActionDelay
+    uint16   AutomaticShutdownAction
+    uint16   AutomaticRecoveryAction
+    string   AdditionalRecoveryInformation
+    string   ScopeOfResidence
+    uint32   DebugChannelId
+    boolean  AllowFullSCSICommandSet
+    string   Version
+end
+
+
+class Msvm_VirtualSwitch
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    uint16   EnabledState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    datetime TimeOfLastStateChange
+    string   CreationClassName
+    string   Name
+    string   PrimaryOwnerContact
+    string   PrimaryOwnerName
+    string   Roles[]
+    string   NameFormat
+    string   OtherIdentifyingInfo[]
+    string   IdentifyingDescriptions[]
+    uint16   Dedicated[]
+    string   OtherDedicatedDescriptions[]
+    uint16   ResetCapability
+    uint16   PowerManagementCapabilities[]
+    string   ScopeOfResidence
+    uint32   NumLearnableAddresses
+    uint32   MaxVMQOffloads
+    uint32   MaxChimneyOffloads
+end
+
+
+class Msvm_ResourceAllocationSettingData
+    string   Caption
+    string   Description
+    string   InstanceID
+    string   ElementName
+    uint16   ResourceType
+    string   OtherResourceType
+    string   ResourceSubType
+    string   PoolID
+    uint16   ConsumerVisibility
+    string   HostResource[]
+    string   AllocationUnits
+    uint64   VirtualQuantity
+    uint64   Reservation
+    uint64   Limit
+    uint32   Weight
+    boolean  AutomaticAllocation
+    boolean  AutomaticDeallocation
+    string   Parent
+    string   Connection[]
+    string   Address
+    uint16   MappingBehavior
+    string   VirtualSystemIdentifiers[]
+end
+
+
+class Msvm_AllocationCapabilities
+    string   Caption
+    string   Description
+    string   ElementName
+    string   InstanceID
+    string   OtherResourceType
+    uint16   RequestTypesSupported
+    string   ResourceSubType
+    uint16   ResourceType
+    uint16   SharingMode
+    uint16   SupportedAddStates[]
+    uint16   SupportedRemoveStates[]
+end
+
+
+class Msvm_SwitchPort
+    string   Caption
+    string   ElementName
+    datetime InstallDate
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    string   SystemCreationClassName
+    string   SystemName
+    string   CreationClassName
+    string   Description
+    uint16   OperationalStatus[]
+    uint16   EnabledState
+    datetime TimeOfLastStateChange
+    string   Name
+    string   NameFormat
+    uint16   ProtocolType
+    uint16   ProtocolIFType
+    string   OtherTypeDescription
+    boolean  BroadcastResetSupported
+    uint16   PortNumber
+    string   ScopeOfResidence
+    uint32   VMQOffloadWeight
+    uint32   ChimneyOffloadWeight
+    uint32   VMQOffloadUsage
+    uint32   ChimneyOffloadUsage
+    uint32   VMQOffloadLimit
+    uint32   ChimneyOffloadLimit
+    boolean  AllowMacSpoofing
+end
+
+
+class Msvm_SyntheticEthernetPortSettingData
+    string   Caption
+    string   Description
+    string   InstanceID
+    string   ElementName
+    uint16   ResourceType
+    string   OtherResourceType
+    string   ResourceSubType
+    string   PoolID
+    uint16   ConsumerVisibility
+    string   HostResource[]
+    string   AllocationUnits
+    uint64   VirtualQuantity
+    uint64   Reservation
+    uint64   Limit
+    uint32   Weight
+    boolean  AutomaticAllocation
+    boolean  AutomaticDeallocation
+    string   Parent
+    string   Connection[]
+    string   Address
+    uint16   MappingBehavior
+    string   VirtualSystemIdentifiers[]
+    boolean  StaticMacAddress
+end
+
+
+class Msvm_VirtualSwitchManagementService
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    uint16   EnabledState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    datetime TimeOfLastStateChange
+    string   SystemCreationClassName
+    string   SystemName
+    string   CreationClassName
+    string   Name
+    string   PrimaryOwnerName
+    string   PrimaryOwnerContact
+    string   StartMode
+    boolean  Started
+end
+
+
+class Msvm_VirtualHardDiskSettingData
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    uint16   Type
+    uint16   Format
+    string   Path
+    string   ParentPath
+    uint64   MaxInternalSize
+    uint32   BlockSize
+    uint32   LogicalSectorSize
+    uint32   PhysicalSectorSize
+    string   VirtualDiskId
+end
