@@ -351,7 +351,7 @@ cmdConnect(vshControl *ctl, const vshCmd *cmd)
     }
 
     vshAdmReconnect(ctl);
-    if (!connected)
+    if (!connected && priv->conn)
         vshPrint(ctl, "%s\n", _("Connected to the admin server"));
 
     return !!priv->conn;
