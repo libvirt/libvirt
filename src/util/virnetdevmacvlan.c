@@ -994,7 +994,6 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
     int retries, do_retry = 0;
     uint32_t macvtapMode;
     const char *ifnameCreated = NULL;
-    int ret;
     int vf = -1;
     bool vnet_hdr = flags & VIR_NETDEV_MACVLAN_VNET_HDR;
 
@@ -1028,6 +1027,7 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
     }
 
     if (ifnameRequested) {
+        int rc;
         bool isAutoName
             = (STRPREFIX(ifnameRequested, MACVTAP_NAME_PREFIX) ||
                STRPREFIX(ifnameRequested, MACVLAN_NAME_PREFIX));
@@ -1035,11 +1035,11 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
         VIR_INFO("Requested macvtap device name: %s", ifnameRequested);
         virMutexLock(&virNetDevMacVLanCreateMutex);
 
-        if ((ret = virNetDevExists(ifnameRequested)) < 0) {
+        if ((rc = virNetDevExists(ifnameRequested)) < 0) {
             virMutexUnlock(&virNetDevMacVLanCreateMutex);
             return -1;
         }
-        if (ret) {
+        if (rc) {
             if (isAutoName)
                 goto create_name;
             virReportSystemError(EEXIST,
