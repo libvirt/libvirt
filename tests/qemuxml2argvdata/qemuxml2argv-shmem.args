@@ -17,19 +17,19 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--device ivshmem,shm=shmem0,id=shmem0,bus=pci.0,addr=0x3 \
--device ivshmem,size=128m,shm=shmem1,id=shmem1,bus=pci.0,addr=0x5 \
--device ivshmem,size=256m,shm=shmem2,id=shmem2,bus=pci.0,addr=0x4 \
--device ivshmem,size=512m,chardev=charshmem3,id=shmem3,bus=pci.0,addr=0x6 \
+-device ivshmem,id=shmem0,shm=shmem0,bus=pci.0,addr=0x3 \
+-device ivshmem,id=shmem1,size=128m,shm=shmem1,bus=pci.0,addr=0x5 \
+-device ivshmem,id=shmem2,size=256m,shm=shmem2,bus=pci.0,addr=0x4 \
+-device ivshmem,id=shmem3,size=512m,chardev=charshmem3,bus=pci.0,addr=0x6 \
 -chardev socket,id=charshmem3,path=/var/lib/libvirt/shmem-shmem3-sock \
--device ivshmem,size=1024m,chardev=charshmem4,id=shmem4,bus=pci.0,addr=0x7 \
+-device ivshmem,id=shmem4,size=1024m,chardev=charshmem4,bus=pci.0,addr=0x7 \
 -chardev socket,id=charshmem4,path=/tmp/shmem4-sock \
--device ivshmem,size=2048m,chardev=charshmem5,id=shmem5,msi=on,ioeventfd=off,\
+-device ivshmem,id=shmem5,size=2048m,chardev=charshmem5,msi=on,ioeventfd=off,\
 bus=pci.0,addr=0x8 \
 -chardev socket,id=charshmem5,path=/tmp/shmem5-sock \
--device ivshmem,size=4096m,chardev=charshmem6,id=shmem6,msi=on,vectors=16,\
+-device ivshmem,id=shmem6,size=4096m,chardev=charshmem6,msi=on,vectors=16,\
 bus=pci.0,addr=0x9 \
 -chardev socket,id=charshmem6,path=/tmp/shmem6-sock \
--device ivshmem,size=8192m,chardev=charshmem7,id=shmem7,msi=on,vectors=32,\
+-device ivshmem,id=shmem7,size=8192m,chardev=charshmem7,msi=on,vectors=32,\
 ioeventfd=on,bus=pci.0,addr=0xa \
 -chardev socket,id=charshmem7,path=/tmp/shmem7-sock
