@@ -2075,6 +2075,9 @@ mymain(void)
     DO_TEST("fips-enabled", QEMU_CAPS_ENABLE_FIPS);
 
     DO_TEST("shmem", QEMU_CAPS_DEVICE_IVSHMEM);
+    DO_TEST("shmem-plain-doorbell", QEMU_CAPS_DEVICE_IVSHMEM,
+            QEMU_CAPS_DEVICE_IVSHMEM_PLAIN,
+            QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL);
     DO_TEST_FAILURE("shmem", NONE);
     DO_TEST_FAILURE("shmem-invalid-size",
                     QEMU_CAPS_DEVICE_IVSHMEM);
