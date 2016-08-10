@@ -103,6 +103,7 @@
                 <choice>
                   <value>nat</value>
                   <value>route</value>
+                  <value>open</value>
                   <value>bridge</value>
                   <value>passthrough</value>
                   <value>private</value>

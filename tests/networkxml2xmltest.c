@@ -127,6 +127,8 @@ mymain(void)
     DO_TEST("empty-allow-ipv6");
     DO_TEST("isolated-network");
     DO_TEST("routed-network");
+    DO_TEST("open-network");
+    DO_TEST_PARSE_ERROR("open-network-with-forward-dev");
     DO_TEST("nat-network");
     DO_TEST("netboot-network");
     DO_TEST("netboot-proxy-network");

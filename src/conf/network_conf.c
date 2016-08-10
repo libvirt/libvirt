@@ -57,7 +57,9 @@ struct _virNetworkObjList {
 
 VIR_ENUM_IMPL(virNetworkForward,
               VIR_NETWORK_FORWARD_LAST,
-              "none", "nat", "route", "bridge", "private", "vepa", "passthrough", "hostdev")
+              "none", "nat", "route", "open",
+              "bridge", "private", "vepa", "passthrough",
+              "hostdev")
 
 VIR_ENUM_IMPL(virNetworkBridgeMACTableManager,
               VIR_NETWORK_BRIDGE_MAC_TABLE_MANAGER_LAST,
@@ -2333,6 +2335,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
 
     case VIR_NETWORK_FORWARD_ROUTE:
     case VIR_NETWORK_FORWARD_NAT:
+    case VIR_NETWORK_FORWARD_OPEN:
         /* It's pointless to specify L3 forwarding without specifying
          * the network we're on.
          */
@@ -2349,6 +2352,19 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
                            _("multiple forwarding interfaces specified "
                              "for network '%s', only one is supported"),
                            def->name);
+            goto error;
+        }
+
+        if (def->forward.type == VIR_NETWORK_FORWARD_OPEN && def->forward.nifs) {
+            /* an open network by definition can't place any restrictions
+             * on what traffic is allowed or where it goes, so specifying
+             * a forwarding device is nonsensical.
+             */
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("forward dev not allowed for "
+                             "network '%s' with forward mode='%s'"),
+                           def->name,
+                           virNetworkForwardTypeToString(def->forward.type));
             goto error;
         }
         break;
@@ -2856,13 +2872,15 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     if (def->forward.type == VIR_NETWORK_FORWARD_NONE ||
         def->forward.type == VIR_NETWORK_FORWARD_NAT ||
         def->forward.type == VIR_NETWORK_FORWARD_ROUTE ||
+        def->forward.type == VIR_NETWORK_FORWARD_OPEN ||
         def->bridge || def->macTableManager) {
 
         virBufferAddLit(buf, "<bridge");
         virBufferEscapeString(buf, " name='%s'", def->bridge);
         if (def->forward.type == VIR_NETWORK_FORWARD_NONE ||
             def->forward.type == VIR_NETWORK_FORWARD_NAT ||
-            def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
+            def->forward.type == VIR_NETWORK_FORWARD_ROUTE ||
+            def->forward.type == VIR_NETWORK_FORWARD_OPEN) {
             virBufferAsprintf(buf, " stp='%s' delay='%ld'",
                               def->stp ? "on" : "off", def->delay);
         }
@@ -3235,7 +3253,8 @@ virNetworkObjPtr virNetworkLoadConfig(virNetworkObjListPtr nets,
 
     if (def->forward.type == VIR_NETWORK_FORWARD_NONE ||
         def->forward.type == VIR_NETWORK_FORWARD_NAT ||
-        def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
+        def->forward.type == VIR_NETWORK_FORWARD_ROUTE ||
+        def->forward.type == VIR_NETWORK_FORWARD_OPEN) {
 
         if (!def->mac_specified) {
             virNetworkSetBridgeMacAddr(def);

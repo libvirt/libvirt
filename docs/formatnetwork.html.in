@@ -260,6 +260,28 @@
             <span class="since">Since 0.4.2</span>
           </dd>
 
+          <dt><code>open</code></dt>
+          <dd>
+            As with mode='route', guest network traffic will be
+            forwarded to the physical network via the host's IP
+            routing stack, but there will be no firewall rules added
+            to either enable or prevent any of this traffic. When
+            forward='open' is set, the <code>dev</code> attribute
+            cannot be set (because the forward dev is enforced with
+            firewall rules, and the purpose of forward='open' is to
+            have a forwarding mode where libvirt doesn't add any
+            firewall rules).  This mode presumes that the local LAN
+            router has suitable routing table entries to return
+            traffic to this host, and that some other management
+            system has been used to put in place any necessary
+            firewall rules. Although no firewall rules will be added
+            for the network, it is of course still possible to add
+            restrictions for specific guests using
+            <a href="formatnwfilter.html">nwfilter rules</a> on the
+            guests' interfaces.)
+            <span class="since">Since 2.2.0</span>
+          </dd>
+
           <dt><code>bridge</code></dt>
           <dd>
             This network describes either 1) an existing host bridge

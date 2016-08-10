@@ -400,6 +400,7 @@ networkUpdateState(virNetworkObjPtr obj,
     case VIR_NETWORK_FORWARD_NONE:
     case VIR_NETWORK_FORWARD_NAT:
     case VIR_NETWORK_FORWARD_ROUTE:
+    case VIR_NETWORK_FORWARD_OPEN:
         /* If bridge doesn't exist, then mark it inactive */
         if (!(obj->def->bridge && virNetDevExists(obj->def->bridge) == 1))
             obj->active = 0;
@@ -1822,7 +1823,8 @@ networkRefreshDaemonsHelper(virNetworkObjPtr net,
     if (virNetworkObjIsActive(net) &&
         ((net->def->forward.type == VIR_NETWORK_FORWARD_NONE) ||
          (net->def->forward.type == VIR_NETWORK_FORWARD_NAT) ||
-         (net->def->forward.type == VIR_NETWORK_FORWARD_ROUTE))) {
+         (net->def->forward.type == VIR_NETWORK_FORWARD_ROUTE) ||
+         (net->def->forward.type == VIR_NETWORK_FORWARD_OPEN))) {
         /* Only the three L3 network types that are configured by
          * libvirt will have a dnsmasq or radvd daemon associated
          * with them.  Here we send a SIGHUP to an existing
@@ -1858,8 +1860,10 @@ networkReloadFirewallRulesHelper(virNetworkObjPtr net,
         ((net->def->forward.type == VIR_NETWORK_FORWARD_NONE) ||
          (net->def->forward.type == VIR_NETWORK_FORWARD_NAT) ||
          (net->def->forward.type == VIR_NETWORK_FORWARD_ROUTE))) {
-        /* Only the three L3 network types that are configured by libvirt
-         * need to have iptables rules reloaded.
+        /* Only three of the L3 network types that are configured by
+         * libvirt need to have iptables rules reloaded. The 4th L3
+         * network type, forward='open', doesn't need this because it
+         * has no iptables rules.
          */
         networkRemoveFirewallRules(net->def);
         if (networkAddFirewallRules(net->def) < 0) {
@@ -2142,7 +2146,8 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
         goto err1;
 
     /* Add "once per network" rules */
-    if (networkAddFirewallRules(network->def) < 0)
+    if (network->def->forward.type != VIR_NETWORK_FORWARD_OPEN &&
+        networkAddFirewallRules(network->def) < 0)
         goto err1;
 
     for (i = 0;
@@ -2244,7 +2249,8 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
  err2:
     if (!save_err)
         save_err = virSaveLastError();
-    networkRemoveFirewallRules(network->def);
+    if (network->def->forward.type != VIR_NETWORK_FORWARD_OPEN)
+        networkRemoveFirewallRules(network->def);
 
  err1:
     if (!save_err)
@@ -2300,7 +2306,8 @@ networkShutdownNetworkVirtual(virNetworkDriverStatePtr driver,
 
     ignore_value(virNetDevSetOnline(network->def->bridge, 0));
 
-    networkRemoveFirewallRules(network->def);
+    if (network->def->forward.type != VIR_NETWORK_FORWARD_OPEN)
+        networkRemoveFirewallRules(network->def);
 
     ignore_value(virNetDevBridgeDelete(network->def->bridge));
 
@@ -2407,6 +2414,7 @@ networkCreateInterfacePool(virNetworkDefPtr netdef)
         case VIR_NETWORK_FORWARD_NONE:
         case VIR_NETWORK_FORWARD_NAT:
         case VIR_NETWORK_FORWARD_ROUTE:
+        case VIR_NETWORK_FORWARD_OPEN:
         case VIR_NETWORK_FORWARD_LAST:
             /* by definition these will never be encountered here */
             break;
@@ -2500,6 +2508,7 @@ networkStartNetwork(virNetworkDriverStatePtr driver,
     case VIR_NETWORK_FORWARD_NONE:
     case VIR_NETWORK_FORWARD_NAT:
     case VIR_NETWORK_FORWARD_ROUTE:
+    case VIR_NETWORK_FORWARD_OPEN:
         if (networkStartNetworkVirtual(driver, network) < 0)
             goto cleanup;
         break;
@@ -2578,6 +2587,7 @@ networkShutdownNetwork(virNetworkDriverStatePtr driver,
     case VIR_NETWORK_FORWARD_NONE:
     case VIR_NETWORK_FORWARD_NAT:
     case VIR_NETWORK_FORWARD_ROUTE:
+    case VIR_NETWORK_FORWARD_OPEN:
         ret = networkShutdownNetworkVirtual(driver, network);
         break;
 
@@ -2926,7 +2936,8 @@ networkValidate(virNetworkDriverStatePtr driver,
      */
     if (def->forward.type == VIR_NETWORK_FORWARD_NONE ||
         def->forward.type == VIR_NETWORK_FORWARD_NAT ||
-        def->forward.type == VIR_NETWORK_FORWARD_ROUTE) {
+        def->forward.type == VIR_NETWORK_FORWARD_ROUTE ||
+        def->forward.type == VIR_NETWORK_FORWARD_OPEN) {
 
         /* if no bridge name was given in the config, find a name
          * unused by any other libvirt networks and assign it.
@@ -3367,8 +3378,10 @@ networkUpdate(virNetworkPtr net,
                  * old rules (and remember to load new ones after the
                  * update).
                  */
-                networkRemoveFirewallRules(network->def);
-                needFirewallRefresh = true;
+                if (network->def->forward.type != VIR_NETWORK_FORWARD_OPEN) {
+                    networkRemoveFirewallRules(network->def);
+                    needFirewallRefresh = true;
+                }
                 break;
             default:
                 break;
@@ -4050,7 +4063,8 @@ networkAllocateActualDevice(virDomainDefPtr dom,
 
     if ((netdef->forward.type == VIR_NETWORK_FORWARD_NONE) ||
         (netdef->forward.type == VIR_NETWORK_FORWARD_NAT) ||
-        (netdef->forward.type == VIR_NETWORK_FORWARD_ROUTE)) {
+        (netdef->forward.type == VIR_NETWORK_FORWARD_ROUTE) ||
+        (netdef->forward.type == VIR_NETWORK_FORWARD_OPEN)) {
         /* for these forward types, the actual net type really *is*
          * NETWORK; we just keep the info from the portgroup in
          * iface->data.network.actual
@@ -4594,7 +4608,8 @@ networkReleaseActualDevice(virDomainDefPtr dom,
     if (iface->data.network.actual &&
         (netdef->forward.type == VIR_NETWORK_FORWARD_NONE ||
          netdef->forward.type == VIR_NETWORK_FORWARD_NAT ||
-         netdef->forward.type == VIR_NETWORK_FORWARD_ROUTE) &&
+         netdef->forward.type == VIR_NETWORK_FORWARD_ROUTE ||
+         netdef->forward.type == VIR_NETWORK_FORWARD_OPEN) &&
         networkUnplugBandwidth(network, iface) < 0)
         goto error;
 
@@ -4741,6 +4756,7 @@ networkGetNetworkAddress(const char *netname, char **netaddr)
     case VIR_NETWORK_FORWARD_NONE:
     case VIR_NETWORK_FORWARD_NAT:
     case VIR_NETWORK_FORWARD_ROUTE:
+    case VIR_NETWORK_FORWARD_OPEN:
         ipdef = virNetworkDefGetIPByIndex(netdef, AF_UNSPEC, 0);
         if (!ipdef) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4824,7 +4840,8 @@ networkGetActualType(virDomainNetDefPtr iface)
 
     if ((netdef->forward.type == VIR_NETWORK_FORWARD_NONE) ||
         (netdef->forward.type == VIR_NETWORK_FORWARD_NAT) ||
-        (netdef->forward.type == VIR_NETWORK_FORWARD_ROUTE)) {
+        (netdef->forward.type == VIR_NETWORK_FORWARD_ROUTE) ||
+        (netdef->forward.type == VIR_NETWORK_FORWARD_OPEN)) {
         /* for these forward types, the actual net type really *is*
          * NETWORK; we just keep the info from the portgroup in
          * iface->data.network.actual
