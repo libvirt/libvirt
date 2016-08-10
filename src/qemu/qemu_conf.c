@@ -436,7 +436,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     for (i = 0; cfg->securityDriverNames && cfg->securityDriverNames[i] != NULL; i++) {
-        for (j = i; cfg->securityDriverNames[j] != NULL; j++) {
+        for (j = i + 1; cfg->securityDriverNames[j] != NULL; j++) {
             if (STREQ(cfg->securityDriverNames[i],
                       cfg->securityDriverNames[j])) {
                 virReportError(VIR_ERR_CONF_SYNTAX,
