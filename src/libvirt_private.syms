@@ -1648,6 +1648,7 @@ virHookPresent;
 
 
 # util/virhostdev.h
+virHostdevFindUSBDevice;
 virHostdevManagerGetDefault;
 virHostdevPCINodeDeviceDetach;
 virHostdevPCINodeDeviceReAttach;

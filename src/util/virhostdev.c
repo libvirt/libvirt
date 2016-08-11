@@ -1178,7 +1178,7 @@ virHostdevMarkUSBDevices(virHostdevManagerPtr mgr,
 }
 
 
-static int
+int
 virHostdevFindUSBDevice(virDomainHostdevDefPtr hostdev,
                         bool mandatory,
                         virUSBDevicePtr *usb)

@@ -66,6 +66,12 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr hostdev_mgr,
                             unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4);
+
+int
+virHostdevFindUSBDevice(virDomainHostdevDefPtr hostdev,
+                        bool mandatory,
+                        virUSBDevicePtr *usb)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 int
 virHostdevPrepareUSBDevices(virHostdevManagerPtr hostdev_mgr,
                             const char *drv_name,
