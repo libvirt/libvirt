@@ -146,6 +146,7 @@ virDomainAuditNetDevice;
 virDomainAuditRedirdev;
 virDomainAuditRNG;
 virDomainAuditSecurityLabel;
+virDomainAuditShmem;
 virDomainAuditStart;
 virDomainAuditStop;
 virDomainAuditVcpu;

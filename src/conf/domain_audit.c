@@ -890,6 +890,9 @@ virDomainAuditStart(virDomainObjPtr vm, const char *reason, bool success)
     if (vm->def->tpm)
         virDomainAuditTPM(vm, vm->def->tpm, "start", true);
 
+    for (i = 0; i < vm->def->nshmems; i++)
+        virDomainAuditShmem(vm, vm->def->shmems[i], "start", true);
+
     virDomainAuditMemory(vm, 0, virDomainDefGetMemoryTotal(vm->def),
                          "start", true);
     virDomainAuditVcpu(vm, 0, virDomainDefGetVcpus(vm->def), "start", true);
@@ -963,4 +966,43 @@ virDomainAuditSecurityLabel(virDomainObjPtr vm, bool success)
     }
 
     VIR_FREE(vmname);
+}
+
+void
+virDomainAuditShmem(virDomainObjPtr vm,
+                    virDomainShmemDefPtr def,
+                    const char *reason, bool success)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    char *vmname = virAuditEncode("vm", vm->def->name);
+    const char *srcpath = virDomainAuditChardevPath(&def->server.chr);
+    char *src = virAuditEncode("server", VIR_AUDIT_STR(srcpath));
+    char *shmem = virAuditEncode("shmem", VIR_AUDIT_STR(def->name));
+    const char *virt = virDomainVirtTypeToString(vm->def->virtType);
+    char *size = NULL;
+
+    virUUIDFormat(vm->def->uuid, uuidstr);
+
+    if (!vmname || !src || !size || !shmem ||
+        virAsprintfQuiet(&size, "%llu", def->size) < 0) {
+        VIR_WARN("OOM while encoding audit message");
+        goto cleanup;
+    }
+
+    if (!virt) {
+        VIR_WARN("Unexpected virt type %d while encoding audit message",
+                 vm->def->virtType);
+        virt = "?";
+    }
+
+    VIR_AUDIT(VIR_AUDIT_RECORD_RESOURCE, success,
+              "virt=%s resrc=shmem reason=%s %s uuid=%s size=%s %s %s",
+              virt, reason, vmname, uuidstr, size ?: "?", shmem, src);
+
+ cleanup:
+    VIR_FREE(vmname);
+    VIR_FREE(src);
+    VIR_FREE(size);
+    VIR_FREE(shmem);
+    return;
 }
