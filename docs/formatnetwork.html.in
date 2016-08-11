@@ -886,6 +886,18 @@
         server <span class="since">Since 0.9.3</span>.
 
         <p>
+          The dns element can have an optional <code>enable</code>
+          attribute <span class="since">Since 2.2.0</span>.
+          If <code>enable</code> is "no", then no DNS server will be
+          setup by libvirt for this network (and any other
+          configuration in <code>&lt;dns&gt;</code> will be ignored).
+          If <code>enable</code> is "yes" or unspecified (including
+          the complete absence of any <code>&lt;dns&gt;</code>
+          element) then a DNS server will be setup by libvirt to
+          listen on all IP addresses specified in the network's
+          configuration.
+        </p>
+        <p>
           The dns element
           can have an optional <code>forwardPlainNames</code>
           attribute <span class="since">Since 1.1.2</span>.

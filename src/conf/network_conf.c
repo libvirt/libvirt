@@ -1335,12 +1335,25 @@ virNetworkDNSDefParseXML(const char *networkName,
     xmlNodePtr *txtNodes = NULL;
     xmlNodePtr *fwdNodes = NULL;
     char *forwardPlainNames = NULL;
+    char *enable = NULL;
     int nhosts, nsrvs, ntxts, nfwds;
     size_t i;
     int ret = -1;
     xmlNodePtr save = ctxt->node;
 
     ctxt->node = node;
+
+    enable = virXPathString("string(./@enable)", ctxt);
+    if (enable) {
+        def->enable = virTristateBoolTypeFromString(enable);
+        if (def->enable <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid dns enable setting '%s' "
+                             "in network '%s'"),
+                           enable, networkName);
+            goto cleanup;
+        }
+    }
 
     forwardPlainNames = virXPathString("string(./@forwardPlainNames)", ctxt);
     if (forwardPlainNames) {
@@ -1438,8 +1451,17 @@ virNetworkDNSDefParseXML(const char *networkName,
         }
     }
 
+    if (def->enable == VIR_TRISTATE_BOOL_NO &&
+        (nfwds || nhosts || nsrvs || ntxts)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Extra data in disabled network '%s'"),
+                       networkName);
+        goto cleanup;
+    }
+
     ret = 0;
  cleanup:
+    VIR_FREE(enable);
     VIR_FREE(forwardPlainNames);
     VIR_FREE(fwdNodes);
     VIR_FREE(hostNodes);
@@ -2496,12 +2518,22 @@ virNetworkDNSDefFormat(virBufferPtr buf,
 {
     size_t i, j;
 
-    if (!(def->forwardPlainNames || def->nfwds || def->nhosts ||
+    if (!(def->enable || def->forwardPlainNames || def->nfwds || def->nhosts ||
           def->nsrvs || def->ntxts))
         return 0;
 
     virBufferAddLit(buf, "<dns");
-    /* default to "yes", but don't format it in the XML */
+    if (def->enable) {
+        const char *fwd = virTristateBoolTypeToString(def->enable);
+
+        if (!fwd) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown enable type %d in network"),
+                           def->enable);
+            return -1;
+        }
+        virBufferAsprintf(buf, " enable='%s'", fwd);
+    }
     if (def->forwardPlainNames) {
         const char *fwd = virTristateBoolTypeToString(def->forwardPlainNames);
 
@@ -2512,10 +2544,10 @@ virNetworkDNSDefFormat(virBufferPtr buf,
             return -1;
         }
         virBufferAsprintf(buf, " forwardPlainNames='%s'", fwd);
-        if (!(def->nfwds || def->nhosts || def->nsrvs || def->ntxts)) {
-            virBufferAddLit(buf, "/>\n");
-            return 0;
-        }
+    }
+    if (!(def->nfwds || def->nhosts || def->nsrvs || def->ntxts)) {
+        virBufferAddLit(buf, "/>\n");
+        return 0;
     }
 
     virBufferAddLit(buf, ">\n");

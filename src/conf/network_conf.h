@@ -128,6 +128,7 @@ struct _virNetworkDNSHostDef {
 typedef struct _virNetworkDNSDef virNetworkDNSDef;
 typedef virNetworkDNSDef *virNetworkDNSDefPtr;
 struct _virNetworkDNSDef {
+    int enable;            /* enum virTristateBool */
     int forwardPlainNames; /* enum virTristateBool */
     size_t ntxts;
     virNetworkDNSTxtDefPtr txts;

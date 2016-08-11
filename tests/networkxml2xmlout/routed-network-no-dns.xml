@@ -1,0 +1,12 @@
+<network>
+  <name>local</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9b</uuid>
+  <forward dev='eth1' mode='route'>
+    <interface dev='eth1'/>
+  </forward>
+  <bridge name='virbr1' stp='on' delay='0'/>
+  <mac address='12:34:56:78:9a:bc'/>
+  <dns enable='no'/>
+  <ip address='192.168.122.1' netmask='255.255.255.0'>
+  </ip>
+</network>

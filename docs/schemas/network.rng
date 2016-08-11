@@ -248,6 +248,11 @@
         <optional>
           <element name="dns">
             <optional>
+              <attribute name="enable">
+                <ref name="virYesNo"/>
+              </attribute>
+            </optional>
+            <optional>
               <attribute name="forwardPlainNames">
                 <ref name="virYesNo"/>
               </attribute>
