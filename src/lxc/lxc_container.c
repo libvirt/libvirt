@@ -1627,8 +1627,7 @@ static int lxcContainerMountAllFS(virDomainDefPtr vmDef,
         if (lxcContainerResolveSymlinks(vmDef->fss[i], false) < 0)
             return -1;
 
-
-        if (!(vmDef->fss[i]->src &&
+        if (!(vmDef->fss[i]->src && vmDef->fss[i]->src->path &&
               STRPREFIX(vmDef->fss[i]->src->path, vmDef->fss[i]->dst)) &&
             lxcContainerUnmountSubtree(vmDef->fss[i]->dst, false) < 0)
             return -1;
