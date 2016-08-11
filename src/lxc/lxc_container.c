@@ -616,7 +616,7 @@ static int lxcContainerResolveSymlinks(virDomainFSDefPtr fs, bool gentle)
 {
     char *newroot;
 
-    if (!fs->src || fs->symlinksResolved)
+    if (!fs->src || !fs->src->path || fs->symlinksResolved)
         return 0;
 
     if (access(fs->src->path, F_OK)) {
