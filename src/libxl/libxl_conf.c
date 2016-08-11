@@ -1559,23 +1559,36 @@ int
 libxlMakeUSB(virDomainHostdevDefPtr hostdev, libxl_device_usbdev *usbdev)
 {
     virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
+    virUSBDevicePtr usb = NULL;
+    int ret = -1;
 
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
-        return -1;
+        return ret;
     if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
-        return -1;
+        return ret;
 
-    if (usbsrc->bus <= 0 || usbsrc->device <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("libxenlight supports only USB device "
-                         "specified by busnum:devnum"));
-        return -1;
+    if (usbsrc->bus > 0 && usbsrc->device > 0) {
+        usbdev->u.hostdev.hostbus = usbsrc->bus;
+        usbdev->u.hostdev.hostaddr = usbsrc->device;
+    } else {
+        if (virHostdevFindUSBDevice(hostdev, true, &usb) < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("failed to find USB device busnum:devnum "
+                             "for %x:%x"),
+                           usbsrc->vendor, usbsrc->product);
+            goto cleanup;
+        }
+
+        usbdev->u.hostdev.hostbus = virUSBDeviceGetBus(usb);
+        usbdev->u.hostdev.hostaddr = virUSBDeviceGetDevno(usb);
     }
 
-    usbdev->u.hostdev.hostbus = usbsrc->bus;
-    usbdev->u.hostdev.hostaddr = usbsrc->device;
+    ret = 0;
 
-    return 0;
+ cleanup:
+    virUSBDeviceFree(usb);
+
+    return ret;
 }
 
 static int
