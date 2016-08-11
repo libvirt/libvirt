@@ -3151,6 +3151,11 @@ struct remote_node_device_event_lifecycle_msg {
     int detail;
 };
 
+struct remote_node_device_event_update_msg {
+    int callbackID;
+    remote_nonnull_node_device dev;
+};
+
 struct remote_domain_fsfreeze_args {
     remote_nonnull_domain dom;
     remote_nonnull_string mountpoints<REMOTE_DOMAIN_FSFREEZE_MOUNTPOINTS_MAX>; /* (const char **) */
@@ -5923,5 +5928,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_NODE_DEVICE_EVENT_LIFECYCLE = 376
+    REMOTE_PROC_NODE_DEVICE_EVENT_LIFECYCLE = 376,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_NODE_DEVICE_EVENT_UPDATE = 377
 };

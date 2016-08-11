@@ -717,6 +717,17 @@ myNodeDeviceEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int
+myNodeDeviceEventUpdateCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                virNodeDevicePtr dev,
+                                void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Node device %s update\n", __func__,
+           virNodeDeviceGetName(dev));
+    return 0;
+}
+
+
 static void
 eventTypedParamsPrint(virTypedParameterPtr params,
                       int nparams)
@@ -989,6 +1000,7 @@ struct nodeDeviceEventData {
 
 struct nodeDeviceEventData nodeDeviceEvents[] = {
     NODE_DEVICE_EVENT(VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE, myNodeDeviceEventCallback),
+    NODE_DEVICE_EVENT(VIR_NODE_DEVICE_EVENT_ID_UPDATE, myNodeDeviceEventUpdateCallback),
 };
 
 /* make sure that the events are kept in sync */

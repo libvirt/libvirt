@@ -1388,8 +1388,37 @@ remoteRelayNodeDeviceEventLifecycle(virConnectPtr conn,
     return 0;
 }
 
+static int
+remoteRelayNodeDeviceEventUpdate(virConnectPtr conn,
+                                 virNodeDevicePtr dev,
+                                 void *opaque)
+{
+    daemonClientEventCallbackPtr callback = opaque;
+    remote_node_device_event_update_msg data;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayNodeDeviceEventCheckACL(callback->client, conn, dev))
+        return -1;
+
+    VIR_DEBUG("Relaying node device update event callback %d",
+              callback->callbackID);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    make_nonnull_node_device(&data.dev, dev);
+    data.callbackID = callback->callbackID;
+
+    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+                                  REMOTE_PROC_NODE_DEVICE_EVENT_UPDATE,
+                                  (xdrproc_t)xdr_remote_node_device_event_update_msg,
+                                  &data);
+
+    return 0;
+}
+
 static virConnectNodeDeviceEventGenericCallback nodeDeviceEventCallbacks[] = {
     VIR_NODE_DEVICE_EVENT_CALLBACK(remoteRelayNodeDeviceEventLifecycle),
+    VIR_NODE_DEVICE_EVENT_CALLBACK(remoteRelayNodeDeviceEventUpdate),
 };
 
 verify(ARRAY_CARDINALITY(nodeDeviceEventCallbacks) == VIR_NODE_DEVICE_EVENT_ID_LAST);

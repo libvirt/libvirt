@@ -1147,6 +1147,8 @@ static int udevAddOneDevice(struct udev_device *device)
         event = virNodeDeviceEventLifecycleNew(dev->def->name,
                                                VIR_NODE_DEVICE_EVENT_CREATED,
                                                0);
+    else
+        event = virNodeDeviceEventUpdateNew(dev->def->name);
 
     virNodeDeviceObjUnlock(dev);
 

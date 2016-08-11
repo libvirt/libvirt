@@ -56,4 +56,7 @@ virNodeDeviceEventLifecycleNew(const char *name,
                                int type,
                                int detail);
 
+virObjectEventPtr
+virNodeDeviceEventUpdateNew(const char *name);
+
 #endif

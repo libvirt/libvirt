@@ -2587,6 +2587,10 @@ struct remote_node_device_event_lifecycle_msg {
         int                        event;
         int                        detail;
 };
+struct remote_node_device_event_update_msg {
+        int                        callbackID;
+        remote_nonnull_node_device dev;
+};
 struct remote_domain_fsfreeze_args {
         remote_nonnull_domain      dom;
         struct {
@@ -3164,4 +3168,5 @@ enum remote_procedure {
         REMOTE_PROC_CONNECT_NODE_DEVICE_EVENT_REGISTER_ANY = 374,
         REMOTE_PROC_CONNECT_NODE_DEVICE_EVENT_DEREGISTER_ANY = 375,
         REMOTE_PROC_NODE_DEVICE_EVENT_LIFECYCLE = 376,
+        REMOTE_PROC_NODE_DEVICE_EVENT_UPDATE = 377,
 };

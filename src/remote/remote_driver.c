@@ -375,6 +375,11 @@ remoteNodeDeviceBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
                                     void *evdata, void *opaque);
 
 static void
+remoteNodeDeviceBuildEventUpdate(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+                                 void *evdata, void *opaque);
+
+static void
 remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                          virNetClientPtr client ATTRIBUTE_UNUSED,
                                          void *evdata, void *opaque);
@@ -565,6 +570,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteNodeDeviceBuildEventLifecycle,
       sizeof(remote_node_device_event_lifecycle_msg),
       (xdrproc_t)xdr_remote_node_device_event_lifecycle_msg },
+    { REMOTE_PROC_NODE_DEVICE_EVENT_UPDATE,
+      remoteNodeDeviceBuildEventUpdate,
+      sizeof(remote_node_device_event_update_msg),
+      (xdrproc_t)xdr_remote_node_device_event_update_msg },
 };
 
 static void
@@ -5280,6 +5289,27 @@ remoteNodeDeviceBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED
 
     event = virNodeDeviceEventLifecycleNew(dev->name, msg->event,
                                            msg->detail);
+    virObjectUnref(dev);
+
+    remoteEventQueue(priv, event, msg->callbackID);
+}
+
+static void
+remoteNodeDeviceBuildEventUpdate(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                 virNetClientPtr client ATTRIBUTE_UNUSED,
+                                 void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_node_device_event_update_msg *msg = evdata;
+    virNodeDevicePtr dev;
+    virObjectEventPtr event = NULL;
+
+    dev = get_nonnull_node_device(conn, msg->dev);
+    if (!dev)
+        return;
+
+    event = virNodeDeviceEventUpdateNew(dev->name);
     virObjectUnref(dev);
 
     remoteEventQueue(priv, event, msg->callbackID);
