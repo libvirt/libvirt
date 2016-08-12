@@ -3177,7 +3177,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
         }
     }
 
-   /* libvirt.c already guaranteed these two flags are exclusive.  */
+   /* libvirt-domain.c already guaranteed these two flags are exclusive.  */
     if (flags & VIR_DOMAIN_SAVE_RUNNING)
         was_running = true;
     else if (flags & VIR_DOMAIN_SAVE_PAUSED)
