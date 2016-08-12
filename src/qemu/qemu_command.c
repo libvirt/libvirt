@@ -4298,8 +4298,6 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
              virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_MAX_OUTPUTS))) {
             if (video->heads)
                 virBufferAsprintf(&buf, ",max_outputs=%u", video->heads);
-        } else {
-            video->heads = 0;
         }
     } else if (video->vram &&
         ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
