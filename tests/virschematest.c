@@ -173,6 +173,8 @@ mymain(void)
     int ret = 0;
     struct testSchemaFileData data;
 
+    memset(&data, 0, sizeof(data));
+
 #define DO_TEST(sch, ...)                                                      \
     do {                                                                       \
         data.schema = sch;                                                     \
