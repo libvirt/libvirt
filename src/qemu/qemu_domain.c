@@ -3315,12 +3315,20 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
                 usb = def->controllers[i];
             }
         }
-        /*  The original purpose of the check was the migration compatibility
-         *  with libvirt <= 0.9.4. Limitation doesn't apply to other archs
-         *  and can cause problems on PPC64.
+
+        /* In order to maintain compatibility with version of libvirt that
+         * didn't support <controller type='usb'/> (<= 0.9.4), we need to
+         * drop the default USB controller, ie. a USB controller at index
+         * zero with no model or with the default piix3-ohci model.
+         *
+         * However, we only need to do so for x86 i440fx machine types,
+         * because other architectures and machine types were introduced
+         * when libvirt already supported <controller type='usb'/>.
          */
         if (ARCH_IS_X86(def->os.arch) && qemuDomainMachineIsI440FX(def) &&
-            usb && usb->idx == 0 && usb->model == -1) {
+            usb && usb->idx == 0 &&
+            (usb->model == -1 ||
+             usb->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI)) {
             VIR_DEBUG("Removing default USB controller from domain '%s'"
                       " for migration compatibility", def->name);
             toremove++;
