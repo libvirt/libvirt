@@ -349,12 +349,20 @@ virNetworkDNSSrvDefClear(virNetworkDNSSrvDefPtr def)
     VIR_FREE(def->target);
 }
 
+
+static void
+virNetworkDNSForwarderClear(virNetworkDNSForwarderPtr def)
+{
+    VIR_FREE(def->domain);
+}
+
+
 static void
 virNetworkDNSDefClear(virNetworkDNSDefPtr def)
 {
     if (def->forwarders) {
         while (def->nfwds)
-            VIR_FREE(def->forwarders[--def->nfwds]);
+            virNetworkDNSForwarderClear(&def->forwarders[--def->nfwds]);
         VIR_FREE(def->forwarders);
     }
     if (def->txts) {
@@ -1379,14 +1387,25 @@ virNetworkDNSDefParseXML(const char *networkName,
             goto cleanup;
 
         for (i = 0; i < nfwds; i++) {
-            def->forwarders[i] = virXMLPropString(fwdNodes[i], "addr");
-            if (virSocketAddrParse(NULL, def->forwarders[i], AF_UNSPEC) < 0) {
+            char *addr = virXMLPropString(fwdNodes[i], "addr");
+
+            if (addr && virSocketAddrParse(&def->forwarders[i].addr,
+                                           addr, AF_UNSPEC) < 0) {
                 virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid forwarder IP address '%s' "
-                             "in network '%s'"),
-                           def->forwarders[i], networkName);
+                               _("Invalid forwarder IP address '%s' "
+                                 "in network '%s'"),
+                               addr, networkName);
+                VIR_FREE(addr);
                 goto cleanup;
             }
+            def->forwarders[i].domain = virXMLPropString(fwdNodes[i], "domain");
+            if (!(addr || def->forwarders[i].domain)) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Invalid forwarder element, must contain "
+                                 "at least one of addr or domain"));
+                goto cleanup;
+            }
+            VIR_FREE(addr);
             def->nfwds++;
         }
     }
@@ -2554,8 +2573,22 @@ virNetworkDNSDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
 
     for (i = 0; i < def->nfwds; i++) {
-        virBufferAsprintf(buf, "<forwarder addr='%s'/>\n",
-                          def->forwarders[i]);
+
+        virBufferAddLit(buf, "<forwarder");
+        if (def->forwarders[i].domain) {
+            virBufferEscapeString(buf, " domain='%s'",
+                                  def->forwarders[i].domain);
+        }
+        if (VIR_SOCKET_ADDR_VALID(&def->forwarders[i].addr)) {
+        char *addr = virSocketAddrFormat(&def->forwarders[i].addr);
+
+        if (!addr)
+            return -1;
+
+        virBufferAsprintf(buf, " addr='%s'", addr);
+        VIR_FREE(addr);
+        }
+        virBufferAddLit(buf, "/>\n");
     }
 
     for (i = 0; i < def->ntxts; i++) {

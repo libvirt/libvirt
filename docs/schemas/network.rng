@@ -260,7 +260,13 @@
             <interleave>
               <zeroOrMore>
                 <element name="forwarder">
-                  <attribute name="addr"><ref name="ipAddr"/></attribute>
+                  <optional>
+                    <attribute name="addr"><ref name="ipAddr"/></attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="domain"><ref name="dnsName"/></attribute>
+                  </optional>
+                  <empty/>
                 </element>
               </zeroOrMore>
               <zeroOrMore>

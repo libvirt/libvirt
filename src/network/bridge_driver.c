@@ -958,8 +958,21 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
     if (wantDNS && network->def->dns.forwarders) {
         virBufferAddLit(&configbuf, "no-resolv\n");
         for (i = 0; i < network->def->dns.nfwds; i++) {
-            virBufferAsprintf(&configbuf, "server=%s\n",
-                              network->def->dns.forwarders[i]);
+            virNetworkDNSForwarderPtr fwd = &network->def->dns.forwarders[i];
+
+            virBufferAddLit(&configbuf, "server=");
+            if (fwd->domain)
+                virBufferAsprintf(&configbuf, "/%s/", fwd->domain);
+            if (VIR_SOCKET_ADDR_VALID(&fwd->addr)) {
+                char *addr = virSocketAddrFormat(&fwd->addr);
+
+                if (!addr)
+                    goto cleanup;
+                virBufferAsprintf(&configbuf, "%s\n", addr);
+            } else {
+                /* "don't forward requests for this domain" */
+                virBufferAddLit(&configbuf, "#\n");
+            }
         }
     }
 

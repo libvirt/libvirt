@@ -847,7 +847,8 @@
         &lt;dns&gt;
           &lt;txt name="example" value="example value" /&gt;
           &lt;forwarder addr="8.8.8.8"/&gt;
-          &lt;forwarder addr="8.8.4.4"/&gt;
+          &lt;forwarder domain='example.com' addr="8.8.4.4"/&gt;
+          &lt;forwarder domain='www.example.com'/&gt;
           &lt;srv service='name' protocol='tcp' domain='test-domain-name' target='.' port='1024' priority='10' weight='10'/&gt;
           &lt;host ip='192.168.122.2'&gt;
             &lt;hostname&gt;myhost&lt;/hostname&gt;
@@ -915,12 +916,25 @@
         Currently supported sub-elements of <code>&lt;dns&gt;</code> are:
         <dl>
           <dt><code>forwarder</code></dt>
-          <dd>A <code>dns</code> element can have 0 or
-            more <code>forwarder</code> elements.  Each forwarder
-            element defines an IP address to be used as forwarder in
-            DNS server configuration. The addr attribute is required
-            and defines the IP address of every
-            forwarder. <span class="since">Since 1.1.3</span>
+          <dd>The dns element can have 0 or
+            more <code>&lt;forwarder&gt;</code> elements.  Each
+            forwarder element defines an alternate DNS server to use
+            for some, or all, DNS requests sent to this network's DNS
+            server. There are two attributes - <code>domain</code>,
+            and <code>addr</code>; at least one of these must be
+            specified in any <code>&lt;forwarder&gt;</code>
+            element. If both <code>domain</code> and <code>addr</code>
+            are specified, then all requests that match the given
+            domain will be forwarded to the DNS server at addr. If
+            only <code>domain</code> is specified, then all matching
+            domains will be resolved locally (or via the host's
+            standard DNS forwarding if they can't be resolved
+            locally). If an <code>addr</code> is specified by itself,
+            then all DNS requests to the network's DNS server will be
+            forwarded to the DNS server at that address with no
+            exceptions. <code>addr</code> <span class="since">Since
+            1.1.3</span>, <code>domain</code> <span class="since">Since
+            2.2.0</span>.
           </dd>
           <dt><code>txt</code></dt>
           <dd>A <code>dns</code> element can have 0 or more <code>txt</code> elements.

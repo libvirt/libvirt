@@ -8,6 +8,8 @@
   <dns>
     <forwarder addr='8.8.8.8'/>
     <forwarder addr='8.8.4.4'/>
+    <forwarder domain='example.com' addr='192.168.1.1'/>
+    <forwarder domain='www.example.com'/>
   </dns>
   <ip address='192.168.122.1' netmask='255.255.255.0'>
   </ip>
