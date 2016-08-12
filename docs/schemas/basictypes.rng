@@ -247,25 +247,25 @@
 
   <define name="filePath">
     <data type="string">
-      <param name="pattern">[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]+</param>
+      <param name="pattern">.+</param>
     </data>
   </define>
 
   <define name="dirPath">
     <data type="string">
-      <param name="pattern">[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]+</param>
+      <param name="pattern">.+</param>
     </data>
   </define>
 
   <define name="absFilePath">
     <data type="string">
-      <param name="pattern">/[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%,:]+</param>
+      <param name="pattern">/.+</param>
     </data>
   </define>
 
   <define name="absDirPath">
     <data type="string">
-      <param name="pattern">/[a-zA-Z0-9_\.\+\-\\&amp;&quot;&apos;&lt;&gt;/%]*</param>
+      <param name="pattern">/.*</param>
     </data>
   </define>
 
