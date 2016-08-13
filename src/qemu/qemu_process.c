@@ -4009,37 +4009,32 @@ qemuProcessStartHook(virQEMUDriverPtr driver,
 
 static int
 qemuProcessGraphicsReservePorts(virQEMUDriverPtr driver,
-                                virDomainObjPtr vm)
+                                virDomainGraphicsDefPtr graphics)
 {
-    size_t i;
+    if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
+        !graphics->data.vnc.autoport) {
+        if (virPortAllocatorSetUsed(driver->remotePorts,
+                                    graphics->data.vnc.port,
+                                    true) < 0)
+            return -1;
+        graphics->data.vnc.portReserved = true;
 
-    for (i = 0; i < vm->def->ngraphics; ++i) {
-        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
-        if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-            !graphics->data.vnc.autoport) {
+    } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
+               !graphics->data.spice.autoport) {
+        if (graphics->data.spice.port > 0) {
             if (virPortAllocatorSetUsed(driver->remotePorts,
-                                        graphics->data.vnc.port,
+                                        graphics->data.spice.port,
                                         true) < 0)
                 return -1;
-            graphics->data.vnc.portReserved = true;
+            graphics->data.spice.portReserved = true;
+        }
 
-        } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
-                   !graphics->data.spice.autoport) {
-            if (graphics->data.spice.port > 0) {
-                if (virPortAllocatorSetUsed(driver->remotePorts,
-                                            graphics->data.spice.port,
-                                            true) < 0)
-                    return -1;
-                graphics->data.spice.portReserved = true;
-            }
-
-            if (graphics->data.spice.tlsPort > 0) {
-                if (virPortAllocatorSetUsed(driver->remotePorts,
-                                            graphics->data.spice.tlsPort,
-                                            true) < 0)
-                    return -1;
-                graphics->data.spice.tlsPortReserved = true;
-            }
+        if (graphics->data.spice.tlsPort > 0) {
+            if (virPortAllocatorSetUsed(driver->remotePorts,
+                                        graphics->data.spice.tlsPort,
+                                        true) < 0)
+                return -1;
+            graphics->data.spice.tlsPortReserved = true;
         }
     }
 
@@ -4204,15 +4199,22 @@ qemuProcessSetupGraphics(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          unsigned int flags)
 {
+    virDomainGraphicsDefPtr graphics;
     bool allocate = !(flags & VIR_QEMU_PROCESS_START_PRETEND);
     size_t i;
     int ret = -1;
 
-    if (allocate && qemuProcessGraphicsReservePorts(driver, vm) < 0)
-        goto cleanup;
+    if (allocate) {
+        for (i = 0; i < vm->def->ngraphics; i++) {
+            graphics = vm->def->graphics[i];
+
+            if (qemuProcessGraphicsReservePorts(driver, graphics) < 0)
+                goto cleanup;
+        }
+    }
 
     for (i = 0; i < vm->def->ngraphics; ++i) {
-        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
+        graphics = vm->def->graphics[i];
 
         if (qemuProcessGraphicsAllocatePorts(driver, graphics, allocate) < 0)
             goto cleanup;
