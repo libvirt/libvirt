@@ -430,8 +430,7 @@ static virDomainPCIConnectFlags
 qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
                                          virDomainPCIConnectFlags pcieFlags
                                          ATTRIBUTE_UNUSED,
-                                         virDomainPCIConnectFlags virtioFlags
-                                         ATTRIBUTE_UNUSED)
+                                         virDomainPCIConnectFlags virtioFlags)
 {
     virDomainPCIConnectFlags pciFlags = (VIR_PCI_CONNECT_TYPE_PCI_DEVICE |
                                          VIR_PCI_CONNECT_HOTPLUGGABLE);
@@ -471,9 +470,28 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             }
 
         case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
-        case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
             return pciFlags;
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
+            switch ((virDomainControllerModelSCSI) cont->model) {
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
+                return virtioFlags;
+
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
+                return pciFlags;
+
+            case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
+                return 0;
+            }
+
+        case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
+            return virtioFlags;
 
         case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
         case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
@@ -485,7 +503,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
 
     case VIR_DOMAIN_DEVICE_FS:
         /* the only type of filesystem so far is virtio-9p-pci */
-        return pciFlags;
+        return virtioFlags;
 
     case VIR_DOMAIN_DEVICE_NET: {
         virDomainNetDefPtr net = dev->data.net;
@@ -498,6 +516,10 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             STREQ(net->model, "usb-net")) {
             return 0;
         }
+
+        if (STREQ(net->model, "virtio"))
+            return  virtioFlags;
+
         return pciFlags;
     }
 
@@ -519,7 +541,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
     case VIR_DOMAIN_DEVICE_DISK:
         switch ((virDomainDiskBus) dev->data.disk->bus) {
         case VIR_DOMAIN_DISK_BUS_VIRTIO:
-            return pciFlags; /* only virtio disks use PCI */
+            return virtioFlags; /* only virtio disks use PCI */
 
         case VIR_DOMAIN_DISK_BUS_IDE:
         case VIR_DOMAIN_DISK_BUS_FDC:
@@ -539,7 +561,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
         switch ((virDomainMemballoonModel) dev->data.memballoon->model) {
         case VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO:
-            return pciFlags;
+            return virtioFlags;
 
         case VIR_DOMAIN_MEMBALLOON_MODEL_XEN:
         case VIR_DOMAIN_MEMBALLOON_MODEL_NONE:
@@ -550,7 +572,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
     case VIR_DOMAIN_DEVICE_RNG:
         switch ((virDomainRNGModel) dev->data.rng->model) {
         case VIR_DOMAIN_RNG_MODEL_VIRTIO:
-            return pciFlags;
+            return virtioFlags;
 
         case VIR_DOMAIN_RNG_MODEL_LAST:
             return 0;
@@ -571,6 +593,8 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
     case VIR_DOMAIN_DEVICE_VIDEO:
         switch ((virDomainVideoType) dev->data.video->type) {
         case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
+            return virtioFlags;
+
         case VIR_DOMAIN_VIDEO_TYPE_VGA:
         case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
         case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
@@ -590,7 +614,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
     case VIR_DOMAIN_DEVICE_INPUT:
         switch ((virDomainInputBus) dev->data.input->bus) {
         case VIR_DOMAIN_INPUT_BUS_VIRTIO:
-            return pciFlags;
+            return virtioFlags;
 
         case VIR_DOMAIN_INPUT_BUS_PS2:
         case VIR_DOMAIN_INPUT_BUS_USB:
