@@ -4011,6 +4011,17 @@ static int
 qemuProcessGraphicsReservePorts(virQEMUDriverPtr driver,
                                 virDomainGraphicsDefPtr graphics)
 {
+    virDomainGraphicsListenDefPtr glisten;
+
+    if (graphics->nListens <= 0)
+        return 0;
+
+    glisten = &graphics->listens[0];
+
+    if (glisten->type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS &&
+        glisten->type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK)
+        return 0;
+
     if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
         !graphics->data.vnc.autoport) {
         if (virPortAllocatorSetUsed(driver->remotePorts,
