@@ -953,7 +953,7 @@ endif WITH_QEMU
 
 if WITH_LIBXL
 domaincapstest_SOURCES += testutilsxen.c testutilsxen.h
-domaincapstest_LDADD += ../src/libvirt_driver_libxl_impl.la
+domaincapstest_LDADD += ../src/libvirt_driver_libxl_impl.la $(GNULIB_LIBS)
 endif WITH_LIBXL
 
 virnetmessagetest_SOURCES = \
