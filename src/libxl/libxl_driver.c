@@ -5259,6 +5259,7 @@ libxlDomainGetJobStats(virDomainPtr dom,
     return ret;
 }
 
+#ifdef __linux__
 static int
 libxlDiskPathToID(const char *virtpath)
 {
@@ -5348,7 +5349,6 @@ libxlDiskSectorSize(int domid, int devno)
     return ret;
 }
 
-#ifdef __linux__
 static int
 libxlDomainBlockStatsVBD(virDomainObjPtr vm,
                          const char *dev,
