@@ -30,15 +30,12 @@ QEMU_AUDIO_DRV=none \
 -device ioh3420,port=0x58,chassis=12,id=pci.12,bus=pcie.0,addr=0xb \
 -device ioh3420,port=0x60,chassis=13,id=pci.13,bus=pcie.0,addr=0xc \
 -device ioh3420,port=0x68,chassis=14,id=pci.14,bus=pcie.0,addr=0xd \
--device ich9-usb-ehci1,id=usb,bus=pcie.0,addr=0x1d.0x7 \
--device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pcie.0,multifunction=on,\
-addr=0x1d \
--device ich9-usb-uhci2,masterbus=usb.0,firstport=2,bus=pcie.0,addr=0x1d.0x1 \
--device ich9-usb-uhci3,masterbus=usb.0,firstport=4,bus=pcie.0,addr=0x1d.0x2 \
+-device ioh3420,port=0x70,chassis=15,id=pci.15,bus=pcie.0,addr=0xe \
+-device nec-usb-xhci,id=usb,bus=pci.8,addr=0x0 \
 -device virtio-scsi-pci,id=scsi0,bus=pci.7,addr=0x0 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.6,addr=0x0 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk1 \
--device virtio-blk-pci,bus=pci.8,addr=0x0,drive=drive-virtio-disk1,\
+-device virtio-blk-pci,bus=pci.9,addr=0x0,drive=drive-virtio-disk1,\
 id=virtio-disk1 \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/to/guest \
 -device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=/import/from/host,\
@@ -49,13 +46,13 @@ addr=0x0 \
 -netdev user,id=hostnet1 \
 -device e1000e,netdev=hostnet1,id=net1,mac=00:11:22:33:44:66,bus=pci.5,\
 addr=0x0 \
--device virtio-input-host-pci,id=input0,evdev=/dev/input/event1234,bus=pci.11,\
+-device virtio-input-host-pci,id=input0,evdev=/dev/input/event1234,bus=pci.12,\
 addr=0x0 \
--device virtio-mouse-pci,id=input1,bus=pci.12,addr=0x0 \
--device virtio-keyboard-pci,id=input2,bus=pci.13,addr=0x0 \
--device virtio-tablet-pci,id=input3,bus=pci.14,addr=0x0 \
+-device virtio-mouse-pci,id=input1,bus=pci.13,addr=0x0 \
+-device virtio-keyboard-pci,id=input2,bus=pci.14,addr=0x0 \
+-device virtio-tablet-pci,id=input3,bus=pci.15,addr=0x0 \
 -device virtio-gpu-pci,id=video0,bus=pcie.0,addr=0x1 \
--device virtio-balloon-pci,id=balloon0,bus=pci.9,addr=0x0 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.10,addr=0x0 \
 -object rng-random,id=objrng0,filename=/dev/urandom \
 -device virtio-rng-pci,rng=objrng0,id=rng0,max-bytes=123,period=1234,\
-bus=pci.10,addr=0x0
+bus=pci.11,addr=0x0

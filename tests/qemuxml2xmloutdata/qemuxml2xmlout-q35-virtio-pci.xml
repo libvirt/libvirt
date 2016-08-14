@@ -89,26 +89,19 @@
       <target chassis='14' port='0x68'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>
     </controller>
+    <controller type='pci' index='15' model='pcie-root-port'>
+      <model name='ioh3420'/>
+      <target chassis='15' port='0x70'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0e' function='0x0'/>
+    </controller>
     <controller type='virtio-serial' index='0'>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x03' function='0x0'/>
     </controller>
     <controller type='scsi' index='0' model='virtio-scsi'>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x04' function='0x0'/>
     </controller>
-    <controller type='usb' index='0' model='ich9-ehci1'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1d' function='0x7'/>
-    </controller>
-    <controller type='usb' index='0' model='ich9-uhci1'>
-      <master startport='0'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1d' function='0x0' multifunction='on'/>
-    </controller>
-    <controller type='usb' index='0' model='ich9-uhci2'>
-      <master startport='2'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1d' function='0x1'/>
-    </controller>
-    <controller type='usb' index='0' model='ich9-uhci3'>
-      <master startport='4'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1d' function='0x2'/>
+    <controller type='usb' index='0' model='nec-xhci'>
+      <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </controller>
     <controller type='sata' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>

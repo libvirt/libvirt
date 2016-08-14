@@ -30,11 +30,8 @@ QEMU_AUDIO_DRV=none \
 -device ioh3420,port=0x58,chassis=12,id=pci.12,bus=pcie.0,addr=0xb \
 -device ioh3420,port=0x60,chassis=13,id=pci.13,bus=pcie.0,addr=0xc \
 -device ioh3420,port=0x68,chassis=14,id=pci.14,bus=pcie.0,addr=0xd \
--device ich9-usb-ehci1,id=usb,bus=pcie.0,addr=0x1d.0x7 \
--device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pcie.0,multifunction=on,\
-addr=0x1d \
--device ich9-usb-uhci2,masterbus=usb.0,firstport=2,bus=pcie.0,addr=0x1d.0x1 \
--device ich9-usb-uhci3,masterbus=usb.0,firstport=4,bus=pcie.0,addr=0x1d.0x2 \
+-device ioh3420,port=0x70,chassis=15,id=pci.15,bus=pcie.0,addr=0xe \
+-device nec-usb-xhci,id=usb,bus=pci.4,addr=0x0 \
 -device virtio-scsi-pci,id=scsi0,bus=pci.2,addr=0x4 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.2,addr=0x3 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk1 \

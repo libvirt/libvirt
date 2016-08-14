@@ -29,8 +29,10 @@
     <controller type='pci' model='pcie-root-port'/>
     <controller type='pci' model='pcie-root-port'/>
     <controller type='pci' model='pcie-root-port'/>
+    <controller type='pci' model='pcie-root-port'/>
     <controller type='virtio-serial'/>
     <controller type='scsi' model='virtio-scsi'/>
+    <controller type='usb' model='nec-xhci'/>
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
       <target dev='vdb' bus='virtio'/>

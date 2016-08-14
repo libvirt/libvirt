@@ -43,11 +43,11 @@ addr=0x1 \
 -device ich9-usb-uhci2,masterbus=usb2.0,firstport=2,bus=pci.2,addr=0x1.0x1 \
 -device ich9-usb-uhci3,masterbus=usb2.0,firstport=4,bus=pci.2,addr=0x1.0x2 \
 -device ich9-usb-ehci1,id=usb2,bus=pci.2,addr=0x1.0x7 \
--device nec-usb-xhci,id=usb3,bus=pci.2,addr=0x2 \
+-device nec-usb-xhci,id=usb3,bus=pci.5,addr=0x0 \
 -device ich9-usb-uhci1,masterbus=usb4.0,firstport=0,bus=pci.2,multifunction=on,\
-addr=0x3 \
--device ich9-usb-uhci2,masterbus=usb4.0,firstport=2,bus=pci.2,addr=0x3.0x1 \
--device ich9-usb-uhci3,masterbus=usb4.0,firstport=4,bus=pci.2,addr=0x3.0x2 \
--device ich9-usb-ehci1,id=usb4,bus=pci.2,addr=0x3.0x7 \
+addr=0x2 \
+-device ich9-usb-uhci2,masterbus=usb4.0,firstport=2,bus=pci.2,addr=0x2.0x1 \
+-device ich9-usb-uhci3,masterbus=usb4.0,firstport=4,bus=pci.2,addr=0x2.0x2 \
+-device ich9-usb-ehci1,id=usb4,bus=pci.2,addr=0x2.0x7 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-sata0-0-0 \
 -device ide-drive,bus=ide.0,drive=drive-sata0-0-0,id=sata0-0-0

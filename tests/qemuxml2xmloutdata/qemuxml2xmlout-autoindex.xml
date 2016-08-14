@@ -126,22 +126,22 @@
       <address type='pci' domain='0x0000' bus='0x02' slot='0x01' function='0x7'/>
     </controller>
     <controller type='usb' index='3' model='nec-xhci'>
-      <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x05' slot='0x00' function='0x0'/>
     </controller>
     <controller type='usb' index='4' model='ich9-uhci1'>
       <master startport='0'/>
-      <address type='pci' domain='0x0000' bus='0x02' slot='0x03' function='0x0' multifunction='on'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x0' multifunction='on'/>
     </controller>
     <controller type='usb' index='4' model='ich9-uhci2'>
       <master startport='2'/>
-      <address type='pci' domain='0x0000' bus='0x02' slot='0x03' function='0x1'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x1'/>
     </controller>
     <controller type='usb' index='4' model='ich9-uhci3'>
       <master startport='4'/>
-      <address type='pci' domain='0x0000' bus='0x02' slot='0x03' function='0x2'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x2'/>
     </controller>
     <controller type='usb' index='4' model='ich9-ehci1'>
-      <address type='pci' domain='0x0000' bus='0x02' slot='0x03' function='0x7'/>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x7'/>
     </controller>
     <controller type='sata' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>

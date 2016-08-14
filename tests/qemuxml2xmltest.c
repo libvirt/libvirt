@@ -716,6 +716,7 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_PCI_MULTIFUNCTION,
             QEMU_CAPS_ICH9_USB_EHCI1,
+            QEMU_CAPS_NEC_USB_XHCI,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     /* same XML as q35-pcie, but don't set
        QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY */
@@ -738,6 +739,7 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_PCI_MULTIFUNCTION,
             QEMU_CAPS_ICH9_USB_EHCI1,
+            QEMU_CAPS_NEC_USB_XHCI,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
 
     DO_TEST("pcie-root",
