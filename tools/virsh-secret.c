@@ -253,7 +253,7 @@ static bool
 cmdSecretGetValue(vshControl *ctl, const vshCmd *cmd)
 {
     virSecretPtr secret;
-    char *base64;
+    char *base64 = NULL;
     unsigned char *value;
     size_t value_size;
     bool ret = false;
