@@ -15490,8 +15490,12 @@ virDomainDefGetIOThreadSched(virDomainDefPtr def,
 {
     virDomainIOThreadIDDefPtr iothrinfo;
 
-    if (!(iothrinfo = virDomainIOThreadIDFind(def, iothread)))
+    if (!(iothrinfo = virDomainIOThreadIDFind(def, iothread))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Cannot find 'iothread' : %u"),
+                       iothread);
         return NULL;
+    }
 
     return &iothrinfo->sched;
 }
