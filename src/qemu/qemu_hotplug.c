@@ -932,6 +932,10 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virDomainCCWAddressSetPtr ccwaddrs = NULL;
     size_t i;
+    char *charDevAlias = NULL;
+    bool charDevPlugged = false;
+    bool netdevPlugged = false;
+    bool hostPlugged = false;
 
     /* preallocate new slot for device */
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1) < 0)
@@ -969,6 +973,9 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
                        virDomainNetTypeToString(actualType));
         return -1;
     }
+
+    if (qemuAssignDeviceNetAlias(vm->def, net, -1) < 0)
+        goto cleanup;
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
@@ -1044,8 +1051,18 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         goto cleanup;
         break;
 
-    case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        if (!qemuDomainSupportsNetdev(vm->def, priv->qemuCaps, net)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("Netdev support unavailable"));
+            goto cleanup;
+        }
+
+        if (virAsprintf(&charDevAlias, "char%s", net->info.alias) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_MCAST:
@@ -1080,9 +1097,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
                                             vm->def, tapfd[i]) < 0)
             goto cleanup;
     }
-
-    if (qemuAssignDeviceNetAlias(vm->def, net, -1) < 0)
-        goto cleanup;
 
     if (qemuDomainMachineIsS390CCW(vm->def) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW)) {
@@ -1143,23 +1157,36 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
+
+    if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+        if (qemuMonitorAttachCharDev(priv->mon, charDevAlias, net->data.vhostuser) < 0) {
+            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            virDomainAuditNet(vm, NULL, net, "attach", false);
+            goto cleanup;
+        }
+        charDevPlugged = true;
+    }
+
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV)) {
         if (qemuMonitorAddNetdev(priv->mon, netstr,
                                  tapfd, tapfdName, tapfdSize,
                                  vhostfd, vhostfdName, vhostfdSize) < 0) {
             ignore_value(qemuDomainObjExitMonitor(driver, vm));
             virDomainAuditNet(vm, NULL, net, "attach", false);
-            goto cleanup;
+            goto try_remove;
         }
+        netdevPlugged = true;
     } else {
         if (qemuMonitorAddHostNetwork(priv->mon, netstr,
                                       tapfd, tapfdName, tapfdSize,
                                       vhostfd, vhostfdName, vhostfdSize) < 0) {
             ignore_value(qemuDomainObjExitMonitor(driver, vm));
             virDomainAuditNet(vm, NULL, net, "attach", false);
-            goto cleanup;
+            goto try_remove;
         }
+        hostPlugged = true;
     }
+
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
@@ -1262,6 +1289,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     }
     VIR_FREE(vhostfd);
     VIR_FREE(vhostfdName);
+    VIR_FREE(charDevAlias);
     virObjectUnref(cfg);
     virDomainCCWAddressSetFree(ccwaddrs);
 
@@ -1277,7 +1305,11 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
             if (virAsprintf(&netdev_name, "host%s", net->info.alias) < 0)
                 goto cleanup;
             qemuDomainObjEnterMonitor(driver, vm);
-            if (qemuMonitorRemoveNetdev(priv->mon, netdev_name) < 0)
+            if (charDevPlugged &&
+                qemuMonitorDetachCharDev(priv->mon, charDevAlias) < 0)
+                VIR_WARN("Failed to remove associated chardev %s", charDevAlias);
+            if (netdevPlugged &&
+                qemuMonitorRemoveNetdev(priv->mon, netdev_name) < 0)
                 VIR_WARN("Failed to remove network backend for netdev %s",
                          netdev_name);
             ignore_value(qemuDomainObjExitMonitor(driver, vm));
@@ -1290,7 +1322,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         if (virAsprintf(&hostnet_name, "host%s", net->info.alias) < 0)
             goto cleanup;
         qemuDomainObjEnterMonitor(driver, vm);
-        if (qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0)
+        if (hostPlugged &&
+            qemuMonitorRemoveHostNetwork(priv->mon, vlan, hostnet_name) < 0)
             VIR_WARN("Failed to remove network backend for vlan %d, net %s",
                      vlan, hostnet_name);
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
@@ -3320,10 +3353,12 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
     virNetDevVPortProfilePtr vport;
     virObjectEventPtr event;
     char *hostnet_name = NULL;
+    char *charDevAlias = NULL;
     size_t i;
     int ret = -1;
+    int actualType = virDomainNetGetActualType(net);
 
-    if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+    if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* this function handles all hostdev and netdev cleanup */
         ret = qemuDomainRemoveHostDevice(driver, vm,
                                          virDomainNetGetActualHostdev(net));
@@ -3333,8 +3368,10 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
     VIR_DEBUG("Removing network interface %s from domain %p %s",
               net->info.alias, vm, vm->def->name);
 
-    if (virAsprintf(&hostnet_name, "host%s", net->info.alias) < 0)
+    if (virAsprintf(&hostnet_name, "host%s", net->info.alias) < 0 ||
+        virAsprintf(&charDevAlias, "char%s", net->info.alias) < 0)
         goto cleanup;
+
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NETDEV)) {
@@ -3358,6 +3395,17 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
             goto cleanup;
         }
     }
+
+    if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+        /* vhostuser has a chardev too */
+        if (qemuMonitorDetachCharDev(priv->mon, charDevAlias) < 0) {
+            /* well, this is a messy situation. Guest visible PCI device has
+             * been removed, netdev too but chardev not. The best seems to be
+             * to just ignore the error and carry on.
+             */
+        }
+    }
+
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto cleanup;
 
@@ -3382,7 +3430,7 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
                                                   &net->mac));
     }
 
-    if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT) {
+    if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
         ignore_value(virNetDevMacVLanDeleteWithVPortProfile(
                          net->ifname, &net->mac,
                          virDomainNetGetActualDirectDev(net),
@@ -3408,6 +3456,7 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
 
  cleanup:
     virObjectUnref(cfg);
+    VIR_FREE(charDevAlias);
     VIR_FREE(hostnet_name);
     return ret;
 }
