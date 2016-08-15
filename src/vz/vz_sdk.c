@@ -49,7 +49,7 @@ VIR_LOG_INIT("parallels.sdk");
 static PRL_HANDLE
 prlsdkFindNetByMAC(PRL_HANDLE sdkdom, virMacAddrPtr mac);
 static PRL_HANDLE
-prlsdkGetDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool isCt);
+prlsdkGetDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk);
 
 /*
  * Log error description
@@ -546,7 +546,7 @@ prlsdkAddDomainVideoInfoVm(PRL_HANDLE sdkdom, virDomainDefPtr def)
 }
 
 static int
-prlsdkGetDiskId(PRL_HANDLE disk, bool isCt, int *bus, char **dst)
+prlsdkGetDiskId(PRL_HANDLE disk, int *bus, char **dst)
 {
     PRL_RESULT pret;
     PRL_UINT32 pos, ifType;
@@ -554,13 +554,8 @@ prlsdkGetDiskId(PRL_HANDLE disk, bool isCt, int *bus, char **dst)
     pret = PrlVmDev_GetStackIndex(disk, &pos);
     prlsdkCheckRetExit(pret, -1);
 
-    /* Let physical devices added to CT look like SATA disks */
-    if (isCt) {
-        ifType = PMS_SATA_DEVICE;
-    } else {
-        pret = PrlVmDev_GetIfaceType(disk, &ifType);
-        prlsdkCheckRetExit(pret, -1);
-    }
+    pret = PrlVmDev_GetIfaceType(disk, &ifType);
+    prlsdkCheckRetExit(pret, -1);
 
     switch (ifType) {
     case PMS_IDE_DEVICE:
@@ -631,7 +626,7 @@ prlsdkGetDiskInfo(vzDriverPtr driver,
     if (*buf != '\0' && virDomainDiskSetSource(disk, buf) < 0)
         goto cleanup;
 
-    if (prlsdkGetDiskId(prldisk, isCt, &disk->bus, &disk->dst) < 0)
+    if (prlsdkGetDiskId(prldisk, &disk->bus, &disk->dst) < 0)
         goto cleanup;
 
     if (virDiskNameToBusDeviceIndex(disk, &busIdx, &devIdx) < 0)
@@ -1599,7 +1594,7 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
             goto cleanup;
         }
 
-        if (prlsdkGetDiskId(dev, false, &bus, &dst) < 0)
+        if (prlsdkGetDiskId(dev, &bus, &dst) < 0)
             goto cleanup;
 
         if (!(bus == disk->bus && STREQ(disk->dst, dst)))
@@ -3415,7 +3410,6 @@ prlsdkFindNetByMAC(PRL_HANDLE sdkdom, virMacAddrPtr mac)
 static int prlsdkConfigureDisk(vzDriverPtr driver,
                                PRL_HANDLE sdkdom,
                                virDomainDiskDefPtr disk,
-                               bool isCt,
                                bool create)
 {
     PRL_RESULT pret;
@@ -3438,7 +3432,7 @@ static int prlsdkConfigureDisk(vzDriverPtr driver,
         pret = PrlVmCfg_CreateVmDev(sdkdom, devType, &sdkdisk);
         prlsdkCheckRetGoto(pret, cleanup);
     } else {
-        sdkdisk = prlsdkGetDisk(sdkdom, disk, isCt);
+        sdkdisk = prlsdkGetDisk(sdkdom, disk);
         if (sdkdisk == PRL_INVALID_HANDLE)
             return -1;
     }
@@ -3505,7 +3499,7 @@ static int prlsdkConfigureDisk(vzDriverPtr driver,
 }
 
 static PRL_HANDLE
-prlsdkGetDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool isCt)
+prlsdkGetDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk)
 {
     PRL_RESULT pret;
     PRL_UINT32 num;
@@ -3527,7 +3521,7 @@ prlsdkGetDisk(PRL_HANDLE sdkdom, virDomainDiskDefPtr disk, bool isCt)
         pret = PrlVmCfg_GetDevByType(sdkdom, devType, i, &sdkdisk);
         prlsdkCheckRetGoto(pret, error);
 
-        if (prlsdkGetDiskId(sdkdisk, isCt, &bus, &dst) < 0)
+        if (prlsdkGetDiskId(sdkdisk, &bus, &dst) < 0)
             goto error;
 
         if (disk->bus == bus && STREQ(disk->dst, dst)) {
@@ -3566,7 +3560,7 @@ prlsdkAttachDevice(vzDriverPtr driver,
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         if (prlsdkConfigureDisk(driver, privdom->sdkdom,
-                                dev->data.disk, IS_CT(dom->def), true) < 0)
+                                dev->data.disk, true) < 0)
             return -1;
 
         break;
@@ -3630,7 +3624,7 @@ prlsdkDetachDevice(vzDriverPtr driver,
 
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        sdkdev = prlsdkGetDisk(privdom->sdkdom, dev->data.disk, IS_CT(dom->def));
+        sdkdev = prlsdkGetDisk(privdom->sdkdom, dev->data.disk);
         if (sdkdev == PRL_INVALID_HANDLE)
             goto cleanup;
 
@@ -3706,7 +3700,7 @@ prlsdkUpdateDevice(vzDriverPtr driver,
     switch (dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         if (prlsdkConfigureDisk(driver, privdom->sdkdom, dev->data.disk,
-                                IS_CT(dom->def), false) < 0)
+                                false) < 0)
             return -1;
 
         break;
@@ -3999,7 +3993,7 @@ prlsdkDoApplyConfig(vzDriverPtr driver,
 
     for (i = 0; i < def->ndisks; i++) {
         if (prlsdkConfigureDisk(driver, sdkdom, def->disks[i],
-                                IS_CT(def), true) < 0)
+                                true) < 0)
             goto error;
     }
 
