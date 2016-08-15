@@ -180,6 +180,12 @@ mymain(void)
         data.schema = sch;                                                     \
         if (virTestRun("test schema grammar file: " sch,                       \
                        testSchemaGrammar, &data) == 0) {                       \
+            /* initialize the validator even if the schema test                \
+             * was skipped because of VIR_TEST_RANGE */                        \
+            if (!data.validator && testSchemaGrammar(&data) < 0) {             \
+                ret = -1;                                                      \
+                break;                                                         \
+            }                                                                  \
             if (testSchemaDirs(sch, data.validator, __VA_ARGS__, NULL) < 0)    \
                 ret = -1;                                                      \
                                                                                \
