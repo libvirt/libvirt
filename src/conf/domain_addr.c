@@ -590,7 +590,7 @@ virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
     /* default to starting the search for a free slot from
      * the first slot of domain 0 bus 0...
      */
-    virPCIDeviceAddress a = { 0, 0, 0, 0, false };
+    virPCIDeviceAddress a = {0};
     char *addrStr = NULL;
 
     if (addrs->nbuses == 0) {

@@ -1096,7 +1096,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
 
         /* USB2 needs special handling to put all companions in the same slot */
         if (IS_USB2_CONTROLLER(def->controllers[i])) {
-            virPCIDeviceAddress addr = { 0, 0, 0, 0, false };
+            virPCIDeviceAddress addr = {0};
             bool foundAddr = false;
 
             memset(&tmp_addr, 0, sizeof(tmp_addr));
