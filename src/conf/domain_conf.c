@@ -1480,8 +1480,12 @@ virDomainDefGetVcpuSched(virDomainDefPtr def,
 {
     virDomainVcpuDefPtr vcpuinfo;
 
-    if (!(vcpuinfo = virDomainDefGetVcpu(def, vcpu)))
+    if (!(vcpuinfo = virDomainDefGetVcpu(def, vcpu))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("vCPU '%u' is not present in domain definition"),
+                       vcpu);
         return NULL;
+    }
 
     return &vcpuinfo->sched;
 }
