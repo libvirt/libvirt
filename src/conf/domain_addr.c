@@ -1539,6 +1539,14 @@ virDomainUSBAddressFindPort(virDomainUSBAddressSetPtr addrs,
             return NULL;
         }
         hub = hub->ports[portIdx];
+        if (!hub) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("there is no hub at port %u in USB address bus: %u port: %s"),
+                           info->addr.usb.port[i],
+                           info->addr.usb.bus,
+                           portStr);
+            return NULL;
+        }
     }
 
     *targetIdx = info->addr.usb.port[lastIdx] - 1;
