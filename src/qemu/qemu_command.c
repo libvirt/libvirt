@@ -3688,11 +3688,11 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     }
 
     switch (netType) {
-    /*
-     * If type='bridge', and we're running as privileged user
-     * or -netdev bridge is not supported then it will fall
-     * through, -net tap,fd
-     */
+        /*
+         * If type='bridge', and we're running as privileged user
+         * or -netdev bridge is not supported then it will fall
+         * through, -net tap,fd
+         */
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
@@ -3715,39 +3715,39 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
-       virBufferAsprintf(&buf, "socket%cconnect=%s:%d",
-                         type_sep,
-                         net->data.socket.address,
-                         net->data.socket.port);
-       type_sep = ',';
-       break;
+        virBufferAsprintf(&buf, "socket%cconnect=%s:%d",
+                          type_sep,
+                          net->data.socket.address,
+                          net->data.socket.port);
+        type_sep = ',';
+        break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
-       virBufferAsprintf(&buf, "socket%clisten=%s:%d",
-                         type_sep,
-                         net->data.socket.address ? net->data.socket.address
-                                                  : "",
-                         net->data.socket.port);
-       type_sep = ',';
-       break;
+        virBufferAsprintf(&buf, "socket%clisten=%s:%d",
+                          type_sep,
+                          net->data.socket.address ? net->data.socket.address
+                          : "",
+                          net->data.socket.port);
+        type_sep = ',';
+        break;
 
     case VIR_DOMAIN_NET_TYPE_MCAST:
-       virBufferAsprintf(&buf, "socket%cmcast=%s:%d",
-                         type_sep,
-                         net->data.socket.address,
-                         net->data.socket.port);
-       type_sep = ',';
-       break;
+        virBufferAsprintf(&buf, "socket%cmcast=%s:%d",
+                          type_sep,
+                          net->data.socket.address,
+                          net->data.socket.port);
+        type_sep = ',';
+        break;
 
     case VIR_DOMAIN_NET_TYPE_UDP:
-       virBufferAsprintf(&buf, "socket%cudp=%s:%d,localaddr=%s:%d",
-                         type_sep,
-                         net->data.socket.address,
-                         net->data.socket.port,
-                         net->data.socket.localaddr,
-                         net->data.socket.localport);
-       type_sep = ',';
-       break;
+        virBufferAsprintf(&buf, "socket%cudp=%s:%d,localaddr=%s:%d",
+                          type_sep,
+                          net->data.socket.address,
+                          net->data.socket.port,
+                          net->data.socket.localaddr,
+                          net->data.socket.localport);
+        type_sep = ',';
+        break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
     default:
