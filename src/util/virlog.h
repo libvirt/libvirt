@@ -183,16 +183,6 @@ char *virLogGetOutputs(void);
 virLogPriority virLogGetDefaultPriority(void);
 int virLogSetDefaultPriority(virLogPriority priority);
 void virLogSetFromEnv(void);
-int virLogDefineFilter(const char *match,
-                       virLogPriority priority,
-                       unsigned int flags);
-int virLogDefineOutput(virLogOutputFunc f,
-                       virLogCloseFunc c,
-                       void *data,
-                       virLogPriority priority,
-                       virLogDestination dest,
-                       const char *name,
-                       unsigned int flags);
 void virLogOutputFree(virLogOutputPtr output);
 void virLogOutputListFree(virLogOutputPtr *list, int count);
 void virLogFilterFree(virLogFilterPtr filter);
@@ -208,8 +198,6 @@ void virLogLock(void);
 void virLogUnlock(void);
 int virLogReset(void);
 int virLogParseDefaultPriority(const char *priority);
-int virLogParseAndDefineFilters(const char *filters);
-int virLogParseAndDefineOutputs(const char *output);
 int virLogPriorityFromSyslog(int priority);
 void virLogMessage(virLogSourcePtr source,
                    virLogPriority priority,
