@@ -1377,19 +1377,19 @@ mymain(void)
                              "\"file.filename\":\"/path/to/cdrom\"}",
                        "<source dev='/path/to/cdrom'/>\n");
     TEST_BACKING_PARSE("json:{\"file.driver\":\"http\", "
-                             "\"file.uri\":\"http://example.com/file\"}",
+                             "\"file.url\":\"http://example.com/file\"}",
                        "<source protocol='http' name='file'>\n"
                        "  <host name='example.com'/>\n"
                        "</source>\n");
     TEST_BACKING_PARSE("json:{\"file\":{ \"driver\":\"http\","
-                                        "\"uri\":\"http://example.com/file\""
+                                        "\"url\":\"http://example.com/file\""
                                       "}"
                             "}",
                        "<source protocol='http' name='file'>\n"
                        "  <host name='example.com'/>\n"
                        "</source>\n");
     TEST_BACKING_PARSE("json:{\"file.driver\":\"ftp\", "
-                             "\"file.uri\":\"http://example.com/file\"}",
+                             "\"file.url\":\"http://example.com/file\"}",
                        NULL);
     TEST_BACKING_PARSE("json:{\"file.driver\":\"gluster\", "
                              "\"file.filename\":\"gluster://example.com/vol/file\"}",
