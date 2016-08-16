@@ -44,7 +44,7 @@ char *virStringJoin(const char **strings,
 void virStringFreeList(char **strings);
 void virStringFreeListCount(char **strings, size_t count);
 
-bool virStringArrayHasString(char **strings, const char *needle);
+bool virStringArrayHasString(const char **strings, const char *needle);
 char *virStringGetFirstWithPrefix(char **strings, const char *prefix)
     ATTRIBUTE_NONNULL(2);
 

@@ -2580,7 +2580,7 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
         for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsTPMModelsToCaps); i++) {
             const char *needle = virDomainTPMModelTypeToString(
                 virQEMUCapsTPMModelsToCaps[i].type);
-            if (virStringArrayHasString(entries, needle))
+            if (virStringArrayHasString((const char **) entries, needle))
                 virQEMUCapsSet(qemuCaps,
                                virQEMUCapsTPMModelsToCaps[i].caps);
         }
@@ -2594,7 +2594,7 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
         for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsTPMTypesToCaps); i++) {
             const char *needle = virDomainTPMBackendTypeToString(
                 virQEMUCapsTPMTypesToCaps[i].type);
-            if (virStringArrayHasString(entries, needle))
+            if (virStringArrayHasString((const char **) entries, needle))
                 virQEMUCapsSet(qemuCaps, virQEMUCapsTPMTypesToCaps[i].caps);
         }
     }

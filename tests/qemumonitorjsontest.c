@@ -999,7 +999,7 @@ testQemuMonitorJSONGetDeviceAliases(const void *data)
     qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
     int ret = -1;
     char **aliases = NULL;
-    char **alias;
+    const char **alias;
     const char *expected[] = {
         "virtio-disk25", "video0", "serial0", "ide0-0-0", "usb", NULL };
 
@@ -1033,14 +1033,14 @@ testQemuMonitorJSONGetDeviceAliases(const void *data)
     }
 
     ret = 0;
-    for (alias = aliases; *alias; alias++) {
-        if (!virStringArrayHasString((char **) expected, *alias)) {
+    for (alias = (const char **) aliases; *alias; alias++) {
+        if (!virStringArrayHasString(expected, *alias)) {
             fprintf(stderr, "got unexpected device alias '%s'\n", *alias);
             ret = -1;
         }
     }
-    for (alias = (char **) expected; *alias; alias++) {
-        if (!virStringArrayHasString(aliases, *alias)) {
+    for (alias = expected; *alias; alias++) {
+        if (!virStringArrayHasString((const char **) aliases, *alias)) {
             fprintf(stderr, "missing expected alias '%s'\n", *alias);
             ret = -1;
         }

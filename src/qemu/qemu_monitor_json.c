@@ -5728,7 +5728,7 @@ qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
     if (qemuMonitorJSONGetMigrationCapabilities(mon, &capsList) < 0)
         return -1;
 
-    ret = virStringArrayHasString(capsList, cap);
+    ret = virStringArrayHasString((const char **) capsList, cap);
 
     virStringFreeList(capsList);
     return ret;

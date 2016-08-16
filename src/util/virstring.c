@@ -210,7 +210,8 @@ virStringFreeListCount(char **strings,
 
 
 bool
-virStringArrayHasString(char **strings, const char *needle)
+virStringArrayHasString(const char **strings,
+                        const char *needle)
 {
     size_t i = 0;
 

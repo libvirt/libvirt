@@ -3151,6 +3151,7 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDeviceDef dev;
+    const char **qemuDevices;
     char **old;
     char **tmp;
     int ret = -1;
@@ -3163,9 +3164,10 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
     if (qemuDomainUpdateDeviceList(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
         goto cleanup;
 
+    qemuDevices = (const char **) priv->qemuDevices;
     if ((tmp = old)) {
         while (*tmp) {
-            if (!virStringArrayHasString(priv->qemuDevices, *tmp) &&
+            if (!virStringArrayHasString(qemuDevices, *tmp) &&
                 virDomainDefFindDevice(vm->def, *tmp, &dev, false) == 0 &&
                 qemuDomainRemoveDevice(driver, vm, &dev) < 0) {
                 goto cleanup;
