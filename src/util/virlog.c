@@ -782,7 +782,7 @@ virLogAddOutputToStderr(virLogPriority priority)
 }
 
 
-static virLogOutputPtr ATTRIBUTE_UNUSED
+static virLogOutputPtr
 virLogNewOutputToStderr(virLogPriority priority)
 {
     return virLogOutputNew(virLogOutputToFd, NULL, (void *)STDERR_FILENO,
@@ -809,7 +809,7 @@ virLogAddOutputToFile(virLogPriority priority,
 }
 
 
-static virLogOutputPtr ATTRIBUTE_UNUSED
+static virLogOutputPtr
 virLogNewOutputToFile(virLogPriority priority,
                       const char *file)
 {
@@ -917,7 +917,7 @@ virLogAddOutputToSyslog(virLogPriority priority,
 }
 
 
-static virLogOutputPtr ATTRIBUTE_UNUSED
+static virLogOutputPtr
 virLogNewOutputToSyslog(virLogPriority priority,
                         const char *ident)
 {
@@ -1178,7 +1178,7 @@ static int virLogAddOutputToJournald(int priority)
 }
 
 
-static virLogOutputPtr ATTRIBUTE_UNUSED
+static virLogOutputPtr
 virLogNewOutputToJournald(int priority)
 {
     int journalfd;
@@ -1852,4 +1852,113 @@ virLogDefineFilters(virLogFilterPtr *filters, size_t nfilters)
     virLogUnlock();
 
     return 0;
+}
+
+
+/**
+ * virLogParseOutput:
+ * @src: string defining a single output
+ *
+ * The format of @src should be one of the following:
+ *    x:stderr - output is sent to stderr
+ *    x:journald - output is sent to journald
+ *    x:syslog:name - output is sent to syslog using 'name' as the message tag
+ *    x:file:abs_file_path - output is sent to file specified by 'abs_file_path'
+ *
+ *      'x' - minimal priority level which acts as a filter meaning that only
+ *            messages with priority level greater than or equal to 'x' will be
+ *            sent to output @src; supported values for 'x' are as follows:
+ *              1: DEBUG
+ *              2: INFO
+ *              3: WARNING
+ *              4: ERROR
+ *
+ * Parses @src string into a logging object type. If running in setuid mode,
+ * then only destination of type 'stderr' is permitted.
+ *
+ * Returns a newly created logging object from @src on success or NULL in case
+ * of an error.
+ */
+virLogOutputPtr
+virLogParseOutput(const char *src)
+{
+    virLogOutputPtr ret = NULL;
+    char **tokens = NULL;
+    char *abspath = NULL;
+    size_t count = 0;
+    virLogPriority prio;
+    int dest;
+    bool isSUID = virIsSUID();
+
+    VIR_DEBUG("output=%s", src);
+
+    /* split our format prio:destination:additional_data to tokens and parse
+     * them individually
+     */
+    if (!(tokens = virStringSplitCount(src, ":", 0, &count)) || count < 2) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Malformed format for output '%s'"), src);
+        return NULL;
+    }
+
+    if (virStrToLong_uip(tokens[0], NULL, 10, &prio) < 0 ||
+        (prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Invalid priority '%s' for output '%s'"),
+                       tokens[0], src);
+        goto cleanup;
+    }
+
+    if ((dest = virLogDestinationTypeFromString(tokens[1])) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Invalid destination '%s' for output '%s'"),
+                       tokens[1], src);
+        goto cleanup;
+    }
+
+    if (((dest == VIR_LOG_TO_STDERR ||
+          dest == VIR_LOG_TO_JOURNALD) && count != 2) ||
+        ((dest == VIR_LOG_TO_FILE ||
+          dest == VIR_LOG_TO_SYSLOG) && count != 3)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Output '%s' does not meet the format requirements "
+                         "for destination type '%s'"), src, tokens[1]);
+        goto cleanup;
+    }
+
+    /* if running with setuid, only 'stderr' is allowed */
+    if (isSUID && dest != VIR_LOG_TO_STDERR) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Running with SUID permits only destination of type "
+                         "'stderr'"));
+        goto cleanup;
+    }
+
+    switch ((virLogDestination) dest) {
+    case VIR_LOG_TO_STDERR:
+        ret = virLogNewOutputToStderr(prio);
+        break;
+    case VIR_LOG_TO_SYSLOG:
+#if HAVE_SYSLOG_H
+        ret = virLogNewOutputToSyslog(prio, tokens[2]);
+#endif
+        break;
+    case VIR_LOG_TO_FILE:
+        if (virFileAbsPath(tokens[2], &abspath) < 0)
+            goto cleanup;
+        ret = virLogNewOutputToFile(prio, abspath);
+        VIR_FREE(abspath);
+        break;
+    case VIR_LOG_TO_JOURNALD:
+#if USE_JOURNALD
+        ret = virLogNewOutputToJournald(prio);
+#endif
+        break;
+    case VIR_LOG_TO_OUTPUT_LAST:
+        break;
+    }
+
+ cleanup:
+    virStringFreeList(tokens);
+    return ret;
 }

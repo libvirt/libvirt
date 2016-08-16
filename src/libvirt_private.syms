@@ -1890,6 +1890,7 @@ virLogOutputNew;
 virLogParseAndDefineFilters;
 virLogParseAndDefineOutputs;
 virLogParseDefaultPriority;
+virLogParseOutput;
 virLogPriorityFromSyslog;
 virLogProbablyLogMessage;
 virLogReset;
