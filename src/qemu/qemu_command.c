@@ -7828,7 +7828,7 @@ qemuBuildVhostuserCommandLine(virQEMUDriverPtr driver,
         goto error;
     }
 
-    virBufferAsprintf(&netdev_buf, "type=vhost-user,id=host%s,chardev=char%s",
+    virBufferAsprintf(&netdev_buf, "vhost-user,id=host%s,chardev=char%s",
                       net->info.alias, net->info.alias);
 
     if (queues > 1) {
