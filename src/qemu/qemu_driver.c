@@ -4792,6 +4792,72 @@ qemuDomainSetVcpusMax(virQEMUDriverPtr driver,
 
 
 static int
+qemuDomainSetVcpusLive(virQEMUDriverPtr driver,
+                       virQEMUDriverConfigPtr cfg,
+                       virDomainObjPtr vm,
+                       unsigned int nvcpus)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    size_t i;
+    virCgroupPtr cgroup_temp = NULL;
+    char *mem_mask = NULL;
+    char *all_nodes_str = NULL;
+    virBitmapPtr all_nodes = NULL;
+    virErrorPtr err = NULL;
+    int ret = -1;
+
+    if (virNumaIsAvailable() &&
+        virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
+        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
+                               false, &cgroup_temp) < 0)
+            goto cleanup;
+
+        if (!(all_nodes = virNumaGetHostNodeset()))
+            goto cleanup;
+
+        if (!(all_nodes_str = virBitmapFormat(all_nodes)))
+            goto cleanup;
+
+        if (virCgroupGetCpusetMems(cgroup_temp, &mem_mask) < 0 ||
+            virCgroupSetCpusetMems(cgroup_temp, all_nodes_str) < 0)
+            goto cleanup;
+    }
+
+    if (nvcpus > virDomainDefGetVcpus(vm->def)) {
+        for (i = virDomainDefGetVcpus(vm->def); i < nvcpus; i++) {
+            if (qemuDomainHotplugAddVcpu(driver, vm, i) < 0)
+                goto cleanup;
+        }
+    } else {
+        for (i = virDomainDefGetVcpus(vm->def) - 1; i >= nvcpus; i--) {
+            if (qemuDomainHotplugDelVcpu(driver, vm, i) < 0)
+                goto cleanup;
+        }
+    }
+
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (mem_mask) {
+        err = virSaveLastError();
+        virCgroupSetCpusetMems(cgroup_temp, mem_mask);
+        virSetError(err);
+        virFreeError(err);
+        VIR_FREE(mem_mask);
+    }
+
+    VIR_FREE(all_nodes_str);
+    virBitmapFree(all_nodes);
+    virCgroupFree(&cgroup_temp);
+
+    return ret;
+}
+
+
+static int
 qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
                         unsigned int flags)
 {
@@ -4801,13 +4867,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     virDomainDefPtr persistentDef;
     int ret = -1;
     virQEMUDriverConfigPtr cfg = NULL;
-    qemuDomainObjPrivatePtr priv;
-    size_t i;
-    virCgroupPtr cgroup_temp = NULL;
-    char *mem_mask = NULL;
-    char *all_nodes_str = NULL;
-    virBitmapPtr all_nodes = NULL;
-    virErrorPtr err = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -4821,8 +4880,6 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 
     if (virDomainSetVcpusFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
-
-    priv = vm->privateData;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
@@ -4860,39 +4917,8 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
         }
     }
 
-    if (def && virNumaIsAvailable() &&
-        virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
-                               false, &cgroup_temp) < 0)
-            goto endjob;
-
-        if (!(all_nodes = virNumaGetHostNodeset()))
-            goto endjob;
-
-        if (!(all_nodes_str = virBitmapFormat(all_nodes)))
-            goto endjob;
-
-        if (virCgroupGetCpusetMems(cgroup_temp, &mem_mask) < 0 ||
-            virCgroupSetCpusetMems(cgroup_temp, all_nodes_str) < 0)
-            goto endjob;
-    }
-
-    if (def) {
-        if (nvcpus > virDomainDefGetVcpus(def)) {
-            for (i = virDomainDefGetVcpus(def); i < nvcpus; i++) {
-                if (qemuDomainHotplugAddVcpu(driver, vm, i) < 0)
-                    goto endjob;
-            }
-        } else {
-            for (i = virDomainDefGetVcpus(def) - 1; i >= nvcpus; i--) {
-                if (qemuDomainHotplugDelVcpu(driver, vm, i) < 0)
-                    goto endjob;
-            }
-        }
-
-        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-            goto endjob;
-    }
+    if (def && qemuDomainSetVcpusLive(driver, cfg, vm, nvcpus) < 0)
+        goto endjob;
 
     if (persistentDef) {
         if (virDomainDefSetVcpus(persistentDef, nvcpus) < 0)
@@ -4906,21 +4932,10 @@ qemuDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
     ret = 0;
 
  endjob:
-    if (mem_mask) {
-        err = virSaveLastError();
-        virCgroupSetCpusetMems(cgroup_temp, mem_mask);
-        virSetError(err);
-        virFreeError(err);
-    }
-
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    VIR_FREE(mem_mask);
-    VIR_FREE(all_nodes_str);
-    virBitmapFree(all_nodes);
-    virCgroupFree(&cgroup_temp);
     virObjectUnref(cfg);
     return ret;
 }
