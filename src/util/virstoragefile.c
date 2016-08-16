@@ -1338,12 +1338,12 @@ virStorageFileResize(const char *path,
             }
             goto cleanup;
         }
-    } else {
-        if (ftruncate(fd, capacity) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to truncate file '%s'"), path);
-            goto cleanup;
-        }
+    }
+
+    if (ftruncate(fd, capacity) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to truncate file '%s'"), path);
+        goto cleanup;
     }
 
     if (VIR_CLOSE(fd) < 0) {
