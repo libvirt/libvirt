@@ -4061,11 +4061,15 @@ processDeviceDeletedEvent(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) < 0)
-        goto endjob;
+    if (STRPREFIX(devAlias, "vcpu")) {
+        qemuDomainRemoveVcpuAlias(driver, vm, devAlias);
+    } else {
+        if (virDomainDefFindDevice(vm->def, devAlias, &dev, true) < 0)
+            goto endjob;
 
-    if (qemuDomainRemoveDevice(driver, vm, &dev) < 0)
-        goto endjob;
+        if (qemuDomainRemoveDevice(driver, vm, &dev) < 0)
+            goto endjob;
+    }
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         VIR_WARN("unable to save domain status after removing device %s",
@@ -4660,60 +4664,6 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm,
-                         unsigned int vcpu)
-{
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainVcpuDefPtr vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu);
-    int ret = -1;
-    int rc;
-    int oldvcpus = virDomainDefGetVcpus(vm->def);
-
-    if (!vcpuinfo->online) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("vCPU '%u' is already offline"), vcpu);
-        return -1;
-    }
-
-    vcpuinfo->online = false;
-
-    qemuDomainObjEnterMonitor(driver, vm);
-
-    rc = qemuMonitorSetCPU(priv->mon, vcpu, false);
-
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
-
-    if (rc < 0) {
-        virDomainAuditVcpu(vm, oldvcpus, oldvcpus - 1, "update", false);
-        vcpuinfo->online = true;
-        goto cleanup;
-    }
-
-    if (qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE, false) < 0)
-        goto cleanup;
-
-    if (qemuDomainValidateVcpuInfo(vm) < 0) {
-        /* rollback vcpu count if the setting has failed */
-        virDomainAuditVcpu(vm, oldvcpus, oldvcpus - 1, "update", false);
-        vcpuinfo->online = true;
-        goto cleanup;
-    }
-
-    virDomainAuditVcpu(vm, oldvcpus, oldvcpus - 1, "update", true);
-
-    if (virCgroupDelThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, vcpu) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    return ret;
-}
-
-
-static int
 qemuDomainSetVcpusAgent(virDomainObjPtr vm,
                         unsigned int nvcpus)
 {
@@ -4889,7 +4839,6 @@ qemuDomainSetVcpusLive(virQEMUDriverPtr driver,
                        unsigned int nvcpus)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    size_t i;
     virCgroupPtr cgroup_temp = NULL;
     char *mem_mask = NULL;
     char *all_nodes_str = NULL;
@@ -4926,8 +4875,11 @@ qemuDomainSetVcpusLive(virQEMUDriverPtr driver,
                 break;
         }
     } else {
-        for (i = virDomainDefGetVcpus(vm->def) - 1; i >= nvcpus; i--) {
-            if ((rc = qemuDomainHotplugDelVcpu(driver, vm, i)) < 0)
+        for (nextvcpu = virDomainDefGetVcpusMax(vm->def) - 1; nextvcpu >= 0; nextvcpu--) {
+            if (!virBitmapIsBitSet(vcpumap, nextvcpu))
+                continue;
+
+            if ((rc = qemuDomainHotplugDelVcpu(driver, vm, nextvcpu)) < 0)
                 break;
         }
     }

@@ -4419,3 +4419,111 @@ qemuDomainDetachMemoryDevice(virQEMUDriverPtr driver,
     qemuDomainResetDeviceRemoval(vm);
     return ret;
 }
+
+
+static int
+qemuDomainRemoveVcpu(virQEMUDriverPtr driver,
+                     virDomainObjPtr vm,
+                     unsigned int vcpu)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainVcpuDefPtr vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu);
+    qemuDomainVcpuPrivatePtr vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpuinfo);
+    int oldvcpus = virDomainDefGetVcpus(vm->def);
+    unsigned int nvcpus = vcpupriv->vcpus;
+    size_t i;
+
+    if (qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE, false) < 0)
+        return -1;
+
+    /* validation requires us to set the expected state prior to calling it */
+    for (i = vcpu; i < vcpu + nvcpus; i++) {
+        vcpuinfo = virDomainDefGetVcpu(vm->def, i);
+        vcpuinfo->online = false;
+    }
+
+    if (qemuDomainValidateVcpuInfo(vm) < 0) {
+        /* rollback vcpu count if the setting has failed */
+        virDomainAuditVcpu(vm, oldvcpus, oldvcpus - nvcpus, "update", false);
+
+        for (i = vcpu; i < vcpu + nvcpus; i++) {
+            vcpuinfo = virDomainDefGetVcpu(vm->def, i);
+            vcpuinfo->online = true;
+        }
+        return -1;
+    }
+
+    virDomainAuditVcpu(vm, oldvcpus, oldvcpus - nvcpus, "update", true);
+
+    for (i = vcpu; i < vcpu + nvcpus; i++) {
+        vcpuinfo = virDomainDefGetVcpu(vm->def, i);
+        if (virCgroupDelThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, i) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+void
+qemuDomainRemoveVcpuAlias(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm,
+                          const char *alias)
+{
+    virDomainVcpuDefPtr vcpu;
+    qemuDomainVcpuPrivatePtr vcpupriv;
+    size_t i;
+
+    for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
+        vcpu = virDomainDefGetVcpu(vm->def, i);
+        vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
+
+        if (STREQ_NULLABLE(alias, vcpupriv->alias)) {
+            qemuDomainRemoveVcpu(driver, vm, i);
+            return;
+        }
+    }
+}
+
+
+int
+qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         unsigned int vcpu)
+{
+    virDomainVcpuDefPtr vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu);
+    qemuDomainVcpuPrivatePtr vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpuinfo);
+    int oldvcpus = virDomainDefGetVcpus(vm->def);
+    unsigned int nvcpus = vcpupriv->vcpus;
+    int rc;
+
+    if (!vcpupriv->alias) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("vcpu '%u' can't be unplugged"), vcpu);
+        return -1;
+    }
+
+    qemuDomainMarkDeviceAliasForRemoval(vm, vcpupriv->alias);
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    rc = qemuMonitorDelDevice(qemuDomainGetMonitor(vm), vcpupriv->alias);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -1;
+
+    if (rc < 0) {
+        virDomainAuditVcpu(vm, oldvcpus, oldvcpus - nvcpus, "update", false);
+        return -1;
+    }
+
+    if ((rc = qemuDomainWaitForDeviceRemoval(vm)) <= 0) {
+        if (rc == 0)
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("vcpu unplug request timed out"));
+
+        return -1;
+    }
+
+    return qemuDomainRemoveVcpu(driver, vm, vcpu);
+}
