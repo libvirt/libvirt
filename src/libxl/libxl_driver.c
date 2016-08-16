@@ -5307,7 +5307,7 @@ libxlDiskPathToID(const char *virtpath)
     return id;
 }
 
-#define LIBXL_VBD_SECTOR_SIZE 512
+# define LIBXL_VBD_SECTOR_SIZE 512
 
 static int
 libxlDiskSectorSize(int domid, int devno)
