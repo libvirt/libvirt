@@ -1346,7 +1346,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         virBufferAddLit(&opt, ",");
 
         if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
-            virBufferAsprintf(&opt, "password-secret=%s,",
+            virBufferAsprintf(&opt, "file.password-secret=%s,",
                               secinfo->s.aes.alias);
         }
 
