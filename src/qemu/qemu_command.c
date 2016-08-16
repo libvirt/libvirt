@@ -1287,7 +1287,12 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
     virBufferAddLit(buf, ",");
 
     if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
-        virBufferAsprintf(buf, "password-secret=%s,",
+        /* NB: If libvirt starts using the more modern option based
+         *     syntax to build the command line (e.g., "-drive driver=rbd,
+         *     filename=%s,...") instead of the legacy model (e.g."-drive
+         *     file=%s,..."), then the "file." prefix can be removed
+         */
+        virBufferAsprintf(buf, "file.password-secret=%s,",
                           secinfo->s.aes.alias);
     }
 
