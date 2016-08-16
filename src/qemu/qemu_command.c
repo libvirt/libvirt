@@ -3723,8 +3723,20 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
-    default:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
         virBufferAddLit(&buf, "user");
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+        /* Should have been handled earlier via PCI/USB hotplug code. */
+        virObjectUnref(cfg);
+        return NULL;
+
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        /* Unsupported yet. */
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_LAST:
         break;
     }
 
