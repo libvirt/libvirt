@@ -962,8 +962,6 @@ journalAddInt(struct journalState *state, const char *field, int value)
     state->iov += 4;
 }
 
-static int journalfd = -1;
-
 static void
 virLogOutputToJournald(virLogSourcePtr source,
                        virLogPriority priority,
@@ -975,10 +973,11 @@ virLogOutputToJournald(virLogSourcePtr source,
                        unsigned int flags,
                        const char *rawstr,
                        const char *str ATTRIBUTE_UNUSED,
-                       void *data ATTRIBUTE_UNUSED)
+                       void *data)
 {
     virCheckFlags(VIR_LOG_STACK_TRACE,);
     int buffd = -1;
+    int journalfd = (intptr_t) data;
     struct msghdr mh;
     struct sockaddr_un sa;
     union {
@@ -1084,24 +1083,23 @@ virLogOutputToJournald(virLogSourcePtr source,
 }
 
 
-static void virLogCloseJournald(void *data ATTRIBUTE_UNUSED)
-{
-    VIR_LOG_CLOSE(journalfd);
-}
-
-
 static int virLogAddOutputToJournald(int priority)
 {
+    int journalfd;
+
     if ((journalfd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
         return -1;
     if (virSetInherit(journalfd, false) < 0) {
         VIR_LOG_CLOSE(journalfd);
         return -1;
     }
-    if (virLogDefineOutput(virLogOutputToJournald, virLogCloseJournald, NULL,
-                           priority, VIR_LOG_TO_JOURNALD, NULL, 0) < 0) {
+    if (virLogDefineOutput(virLogOutputToJournald, virLogCloseFd,
+                           (void *)(intptr_t) journalfd, priority,
+                           VIR_LOG_TO_JOURNALD, NULL, 0) < 0) {
+        VIR_LOG_CLOSE(journalfd);
         return -1;
     }
+
     return 0;
 }
 # endif /* USE_JOURNALD */
