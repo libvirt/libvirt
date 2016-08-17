@@ -950,10 +950,21 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
         for (i = 0; fileTypeInfo[meta->format].cryptInfo[i].format != 0; i++) {
             if (virStorageFileHasEncryptionFormat(&fileTypeInfo[meta->format].cryptInfo[i],
                                                   buf, len)) {
-                if (VIR_ALLOC(meta->encryption) < 0)
-                    goto cleanup;
+                int expt_fmt = fileTypeInfo[meta->format].cryptInfo[i].format;
+                if (!meta->encryption) {
+                    if (VIR_ALLOC(meta->encryption) < 0)
+                        goto cleanup;
 
-                meta->encryption->format = fileTypeInfo[meta->format].cryptInfo[i].format;
+                    meta->encryption->format = expt_fmt;
+                } else {
+                    if (meta->encryption->format != expt_fmt) {
+                        virReportError(VIR_ERR_XML_ERROR,
+                                       _("encryption format %d doesn't match "
+                                         "expected format %d"),
+                                       meta->encryption->format, expt_fmt);
+                        goto cleanup;
+                    }
+                }
             }
         }
     }
