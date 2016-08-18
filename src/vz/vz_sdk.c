@@ -3600,6 +3600,12 @@ prlsdkAttachDevice(vzDriverPtr driver,
         return -1;
     }
 
+    if (prlsdkUpdateDomain(driver, dom) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Failed to save new config"));
+        return -1;
+    }
+
     job = PrlVm_CommitEx(privdom->sdkdom, PVCF_DETACH_HDD_BUNDLE);
     if (PRL_FAILED(waitDomainJob(job, dom)))
         return -1;
@@ -3664,6 +3670,12 @@ prlsdkDetachDevice(vzDriverPtr driver,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("detaching device type '%s' is unsupported"),
                        virDomainDeviceTypeToString(dev->type));
+        goto cleanup;
+    }
+
+    if (prlsdkUpdateDomain(driver, dom) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                        _("Failed to save new config"));
         goto cleanup;
     }
 
