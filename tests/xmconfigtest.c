@@ -222,8 +222,6 @@ mymain(void)
     DO_TEST("fullvirt-usbtablet");
     DO_TEST("fullvirt-usbmouse");
     DO_TEST("fullvirt-serial-file");
-    DO_TEST("fullvirt-serial-dev-2-ports");
-    DO_TEST("fullvirt-serial-dev-2nd-port");
     DO_TEST("fullvirt-serial-null");
     DO_TEST("fullvirt-serial-pipe");
     DO_TEST("fullvirt-serial-pty");
