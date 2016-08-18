@@ -4674,7 +4674,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;source network='default'/&gt;
       &lt;target dev='vnet1'/&gt;
       &lt;model type='virtio'/&gt;
-      <b>&lt;driver name='vhost' txmode='iothread' ioeventfd='on' event_idx='off' queues='5'&gt;
+      <b>&lt;driver name='vhost' txmode='iothread' ioeventfd='on' event_idx='off' queues='5' rx_queue_size='256'&gt;
         &lt;host csum='off' gso='off' tso4='off' tso6='off' ecn='off' ufo='off' mrg_rxbuf='off'/&gt;
         &lt;guest csum='off' tso4='off' tso6='off' ecn='off' ufo='off'/&gt;
       &lt;/driver&gt;
@@ -4789,6 +4789,20 @@ qemu-kvm -net nic,model=? /dev/null
         processor, resulting in much higher throughput.
         <span class="since">virtio-net since 1.0.6 (QEMU and KVM only)</span>
         <span class="since">vhost-user since 1.2.17 (QEMU and KVM only)</span>
+      </dd>
+      <dt><code>rx_queue_size</code></dt>
+      <dd>
+        The optional <code>rx_queue_size</code> attribute controls
+        the size of virtio ring for each queue as described above.
+        The default value is hypervisor dependent and may change
+        across its releases. Moreover, some hypervisors may pose
+        some restrictions on actual value. For instance, latest
+        QEMU (as of 2016-09-01) requires value to be a power of two
+        from [256, 1024] range.
+        <span class="since">Since 2.3.0 (QEMU and KVM only)</span><br/><br/>
+
+        <b>In general you should leave this option alone, unless you
+        are very certain you know what you are doing.</b>
       </dd>
     </dl>
     <p>

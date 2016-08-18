@@ -1047,6 +1047,7 @@ mymain(void)
             QEMU_CAPS_VIRTIO_S390);
     DO_TEST("net-virtio-ccw",
             QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST_PARSE_ERROR("net-virtio-rxqueuesize-invalid-size", NONE);
     DO_TEST("net-eth", NONE);
     DO_TEST("net-eth-ifname", NONE);
     DO_TEST("net-eth-names", NONE);

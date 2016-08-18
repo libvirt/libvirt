@@ -2475,6 +2475,13 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                              "not supported by QEMU"));
             goto cleanup;
         }
+
+        if (STREQ_NULLABLE(net->model, "virtio") &&
+            net->driver.virtio.rx_queue_size & (net->driver.virtio.rx_queue_size - 1)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("rx_queue_size has to be a power of two"));
+            goto cleanup;
+        }
     }
 
     ret = 0;

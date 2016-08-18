@@ -8981,6 +8981,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     char *ioeventfd = NULL;
     char *event_idx = NULL;
     char *queues = NULL;
+    char *rx_queue_size = NULL;
     char *str = NULL;
     char *filter = NULL;
     char *internal = NULL;
@@ -9153,6 +9154,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 ioeventfd = virXMLPropString(cur, "ioeventfd");
                 event_idx = virXMLPropString(cur, "event_idx");
                 queues = virXMLPropString(cur, "queues");
+                rx_queue_size = virXMLPropString(cur, "rx_queue_size");
             } else if (xmlStrEqual(cur->name, BAD_CAST "filterref")) {
                 if (filter) {
                     virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -9536,6 +9538,16 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
             if (q > 1)
                 def->driver.virtio.queues = q;
         }
+        if (rx_queue_size) {
+            unsigned int q;
+            if (virStrToLong_uip(rx_queue_size, NULL, 10, &q) < 0) {
+                virReportError(VIR_ERR_XML_DETAIL,
+                               _("'rx_queue_size' attribute must be positive number: %s"),
+                               rx_queue_size);
+                goto error;
+            }
+            def->driver.virtio.rx_queue_size = q;
+        }
         if ((str = virXPathString("string(./driver/host/@csum)", ctxt))) {
             if ((val = virTristateSwitchTypeFromString(str)) <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -9716,6 +9728,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     VIR_FREE(ioeventfd);
     VIR_FREE(event_idx);
     VIR_FREE(queues);
+    VIR_FREE(rx_queue_size);
     VIR_FREE(str);
     VIR_FREE(filter);
     VIR_FREE(type);
@@ -20919,6 +20932,9 @@ virDomainVirtioNetDriverFormat(char **outstr,
     }
     if (def->driver.virtio.queues)
         virBufferAsprintf(&buf, "queues='%u' ", def->driver.virtio.queues);
+    if (def->driver.virtio.rx_queue_size)
+        virBufferAsprintf(&buf, "rx_queue_size='%u' ",
+                          def->driver.virtio.rx_queue_size);
 
     virBufferTrim(&buf, " ", -1);
 
