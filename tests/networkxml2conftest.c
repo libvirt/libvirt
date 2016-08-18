@@ -128,6 +128,10 @@ mymain(void)
     DO_TEST("dhcp6-nat-network", dhcpv6);
     DO_TEST("dhcp6host-routed-network", dhcpv6);
 
+    virObjectUnref(dhcpv6);
+    virObjectUnref(full);
+    virObjectUnref(restricted);
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
