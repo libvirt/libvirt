@@ -232,6 +232,7 @@ vzConnectGetCapabilities(virConnectPtr conn)
     xml = virCapabilitiesFormatXML(privconn->driver->caps);
     return xml;
 }
+
 static int
 vzDomainDefAddDefaultInputDevices(virDomainDefPtr def)
 {
@@ -258,11 +259,19 @@ static int
 vzDomainDefPostParse(virDomainDefPtr def,
                      virCapsPtr caps ATTRIBUTE_UNUSED,
                      unsigned int parseFlags ATTRIBUTE_UNUSED,
-                     void *opaque)
+                     void *opaque ATTRIBUTE_UNUSED)
 {
     if (vzDomainDefAddDefaultInputDevices(def) < 0)
         return -1;
 
+    return 0;
+}
+
+static int
+vzDomainDefValidate(const virDomainDef *def,
+                    virCapsPtr caps ATTRIBUTE_UNUSED,
+                    void *opaque)
+{
     if (vzCheckUnsupportedControllers(def, opaque) < 0)
         return -1;
 
@@ -284,6 +293,14 @@ vzDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         VIR_STRDUP(dev->data.net->model, "e1000") < 0)
         return -1;
 
+    return 0;
+}
+
+static int
+vzDomainDeviceDefValidate(const virDomainDeviceDef *dev,
+                          const virDomainDef *def,
+                          void *opaque ATTRIBUTE_UNUSED)
+{
     if (dev->type == VIR_DOMAIN_DEVICE_DISK)
         return vzCheckUnsupportedDisk(def, dev->data.disk, opaque);
     else if (dev->type == VIR_DOMAIN_DEVICE_GRAPHICS)
@@ -299,8 +316,10 @@ static virDomainXMLPrivateDataCallbacks vzDomainXMLPrivateDataCallbacksPtr = {
 
 static virDomainDefParserConfig vzDomainDefParserConfig = {
     .macPrefix = {0x42, 0x1C, 0x00},
-    .devicesPostParseCallback = vzDomainDeviceDefPostParse,
     .domainPostParseCallback = vzDomainDefPostParse,
+    .devicesPostParseCallback = vzDomainDeviceDefPostParse,
+    .domainValidateCallback = vzDomainDefValidate,
+    .deviceValidateCallback = vzDomainDeviceDefValidate,
 };
 
 static vzDriverPtr

@@ -463,7 +463,7 @@ vzCheckUnsupportedDisk(const virDomainDef *def,
 }
 
 int
-vzCheckUnsupportedControllers(virDomainDefPtr def, vzCapabilitiesPtr vzCaps)
+vzCheckUnsupportedControllers(const virDomainDef *def, vzCapabilitiesPtr vzCaps)
 {
     size_t i, j;
     virDomainControllerDefPtr controller;

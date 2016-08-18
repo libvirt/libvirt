@@ -137,7 +137,7 @@ vzCheckUnsupportedDisk(const virDomainDef *def,
                        virDomainDiskDefPtr disk,
                        vzCapabilitiesPtr vzCaps);
 int
-vzCheckUnsupportedControllers(virDomainDefPtr def,
+vzCheckUnsupportedControllers(const virDomainDef *def,
                               vzCapabilitiesPtr vzCaps);
 int
 vzGetDefaultSCSIModel(vzDriverPtr driver,
