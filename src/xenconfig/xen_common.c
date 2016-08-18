@@ -723,7 +723,7 @@ xenParseVfb(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenParseCharDev(virConfPtr conf, virDomainDefPtr def)
+xenParseCharDev(virConfPtr conf, virDomainDefPtr def, const char *nativeFormat)
 {
     const char *str;
     virConfValuePtr value = NULL;
@@ -750,6 +750,12 @@ xenParseCharDev(virConfPtr conf, virDomainDefPtr def)
         value = virConfGetValue(conf, "serial");
         if (value && value->type == VIR_CONF_LIST) {
             int portnum = -1;
+
+            if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XM)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Multiple serial devices are not supported by xen-xm"));
+                goto cleanup;
+            }
 
             value = value->list;
             while (value) {
@@ -1095,7 +1101,7 @@ xenParseConfigCommon(virConfPtr conf,
     if (xenParseVfb(conf, def) < 0)
         return -1;
 
-    if (xenParseCharDev(conf, def) < 0)
+    if (xenParseCharDev(conf, def, nativeFormat) < 0)
         return -1;
 
     return 0;
@@ -1453,7 +1459,8 @@ xenFormatEventActions(virConfPtr conf, virDomainDefPtr def)
 
 
 static int
-xenFormatCharDev(virConfPtr conf, virDomainDefPtr def)
+xenFormatCharDev(virConfPtr conf, virDomainDefPtr def,
+                 const char *nativeFormat)
 {
     size_t i;
 
@@ -1492,6 +1499,12 @@ xenFormatCharDev(virConfPtr conf, virDomainDefPtr def)
                 size_t j = 0;
                 int maxport = -1, port;
                 virConfValuePtr serialVal = NULL;
+
+                if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XM)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("Multiple serial devices are not supported by xen-xm"));
+                    return -1;
+                }
 
                 if (VIR_ALLOC(serialVal) < 0)
                     return -1;
@@ -1849,7 +1862,7 @@ xenFormatConfigCommon(virConfPtr conf,
     if (xenFormatPCI(conf, def) < 0)
         return -1;
 
-    if (xenFormatCharDev(conf, def) < 0)
+    if (xenFormatCharDev(conf, def, nativeFormat) < 0)
         return -1;
 
     if (xenFormatSound(conf, def) < 0)
