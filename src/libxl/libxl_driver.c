@@ -4679,13 +4679,6 @@ libxlDomainOpenConsole(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_CONSOLE_FORCE, -1);
 
-    if (dev_name) {
-        /* XXX support device aliases in future */
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Named device aliases are not supported"));
-        goto cleanup;
-    }
-
     if (!(vm = libxlDomObjFromDomain(dom)))
         goto cleanup;
 
@@ -4701,8 +4694,16 @@ libxlDomainOpenConsole(virDomainPtr dom,
     }
 
     priv = vm->privateData;
+    if (dev_name) {
+        size_t i;
 
-    if (vm->def->nconsoles) {
+        for (i = 0; !chr && i < vm->def->nserials; i++) {
+            if (STREQ(dev_name, vm->def->serials[i]->info.alias)) {
+                chr = vm->def->serials[i];
+                break;
+            }
+        }
+    } else if (vm->def->nconsoles) {
         chr = vm->def->consoles[0];
         if (chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
             chr = vm->def->serials[0];
