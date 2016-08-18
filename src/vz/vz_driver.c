@@ -1193,6 +1193,9 @@ static int vzDomainAttachDeviceFlags(virDomainPtr domain, const char *xml,
     if (prlsdkAttachDevice(driver, dom, dev) < 0)
         goto cleanup;
 
+    if (prlsdkUpdateDomain(driver, dom) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     virDomainDeviceDefFree(dev);
@@ -1243,6 +1246,9 @@ static int vzDomainDetachDeviceFlags(virDomainPtr domain, const char *xml,
         goto cleanup;
 
     if (prlsdkDetachDevice(driver, dom, dev) < 0)
+        goto cleanup;
+
+    if (prlsdkUpdateDomain(driver, dom) < 0)
         goto cleanup;
 
     ret = 0;
