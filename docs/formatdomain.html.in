@@ -6826,10 +6826,11 @@ qemu-kvm -net nic,model=? /dev/null
   ...
   &lt;devices&gt;
     &lt;shmem name='my_shmem0'&gt;
+      &lt;model type='ivshmem-plain'/&gt;
       &lt;size unit='M'&gt;4&lt;/size&gt;
     &lt;/shmem&gt;
     &lt;shmem name='shmem_server'&gt;
-      &lt;model type='ivshmem'/&gt;
+      &lt;model type='ivshmem-doorbell'/&gt;
       &lt;size unit='M'&gt;2&lt;/size&gt;
       &lt;server path='/tmp/socket-shmem'/&gt;
       &lt;msi vectors='32' ioeventfd='on'/&gt;
@@ -6848,8 +6849,11 @@ qemu-kvm -net nic,model=? /dev/null
     <dd>
       Attribute <code>type</code> of the optional element <code>model</code>
       specifies the model of the underlying device providing the
-      <code>shmem</code> device.  Currently the only supported model is
-      <code>ivshmem</code>.
+      <code>shmem</code> device.  The models currently supported are
+      <code>ivshmem</code> (supports both server and server-less shmem, but is
+      deprecated by newer QEMU in favour of the -plain and -doorbell variants),
+      <code>ivshmem-plain</code> (only for server-less shmem) and
+      <code>ivshmem-doorbell</code> (only for shmem with the server).
     </dd>
     <dt><code>size</code></dt>
     <dd>

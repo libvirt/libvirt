@@ -845,7 +845,9 @@ VIR_ENUM_IMPL(virDomainMemoryModel, VIR_DOMAIN_MEMORY_MODEL_LAST,
               "", "dimm")
 
 VIR_ENUM_IMPL(virDomainShmemModel, VIR_DOMAIN_SHMEM_MODEL_LAST,
-              "ivshmem")
+              "ivshmem",
+              "ivshmem-plain",
+              "ivshmem-doorbell")
 
 static virClassPtr virDomainObjClass;
 static virClassPtr virDomainXMLOptionClass;

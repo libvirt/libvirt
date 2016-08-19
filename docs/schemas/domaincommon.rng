@@ -3596,6 +3596,8 @@
             <attribute name="type">
               <choice>
                 <value>ivshmem</value>
+                <value>ivshmem-plain</value>
+                <value>ivshmem-doorbell</value>
               </choice>
             </attribute>
           </element>

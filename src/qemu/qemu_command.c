@@ -8530,6 +8530,13 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
         devstr = qemuBuildShmemDevLegacyStr(def, shmem, qemuCaps);
         break;
 
+    case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN:
+    case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("%s device is not supported with this QEMU binary"),
+                       virDomainShmemModelTypeToString(shmem->model));
+        break;
+
     case VIR_DOMAIN_SHMEM_MODEL_LAST:
         break;
     }
