@@ -3592,6 +3592,15 @@
       <attribute name="name"/>
       <interleave>
         <optional>
+          <element name="model">
+            <attribute name="type">
+              <choice>
+                <value>ivshmem</value>
+              </choice>
+            </attribute>
+          </element>
+        </optional>
+        <optional>
           <element name="size">
             <ref name="scaledInteger"/>
           </element>

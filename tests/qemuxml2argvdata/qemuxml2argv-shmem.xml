@@ -28,6 +28,7 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </shmem>
     <shmem name='shmem3'>
+      <model type='ivshmem'/>
       <size unit='M'>512</size>
       <server/>
     </shmem>
@@ -41,6 +42,7 @@
       <msi ioeventfd='off'/>
     </shmem>
     <shmem name='shmem6'>
+      <model type='ivshmem'/>
       <size unit='M'>4096</size>
       <server path='/tmp/shmem6-sock'/>
       <msi vectors='16'/>

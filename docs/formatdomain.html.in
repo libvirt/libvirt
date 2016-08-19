@@ -6829,6 +6829,7 @@ qemu-kvm -net nic,model=? /dev/null
       &lt;size unit='M'&gt;4&lt;/size&gt;
     &lt;/shmem&gt;
     &lt;shmem name='shmem_server'&gt;
+      &lt;model type='ivshmem'/&gt;
       &lt;size unit='M'&gt;2&lt;/size&gt;
       &lt;server path='/tmp/socket-shmem'/&gt;
       &lt;msi vectors='32' ioeventfd='on'/&gt;
@@ -6842,6 +6843,13 @@ qemu-kvm -net nic,model=? /dev/null
     <dd>
       The <code>shmem</code> element has one mandatory attribute,
       <code>name</code> to identify the shared memory.
+    </dd>
+    <dt><code>model</code></dt>
+    <dd>
+      Attribute <code>type</code> of the optional element <code>model</code>
+      specifies the model of the underlying device providing the
+      <code>shmem</code> device.  Currently the only supported model is
+      <code>ivshmem</code>.
     </dd>
     <dt><code>size</code></dt>
     <dd>

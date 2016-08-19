@@ -8525,7 +8525,16 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
         return -1;
     }
 
-    if (!(devstr = qemuBuildShmemDevLegacyStr(def, shmem, qemuCaps)))
+    switch ((virDomainShmemModel)shmem->model) {
+    case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
+        devstr = qemuBuildShmemDevLegacyStr(def, shmem, qemuCaps);
+        break;
+
+    case VIR_DOMAIN_SHMEM_MODEL_LAST:
+        break;
+    }
+
+    if (!devstr)
         return -1;
     virCommandAddArgList(cmd, "-device", devstr, NULL);
     VIR_FREE(devstr);

@@ -844,6 +844,9 @@ VIR_ENUM_IMPL(virDomainBlockJob, VIR_DOMAIN_BLOCK_JOB_TYPE_LAST,
 VIR_ENUM_IMPL(virDomainMemoryModel, VIR_DOMAIN_MEMORY_MODEL_LAST,
               "", "dimm")
 
+VIR_ENUM_IMPL(virDomainShmemModel, VIR_DOMAIN_SHMEM_MODEL_LAST,
+              "ivshmem")
+
 static virClassPtr virDomainObjClass;
 static virClassPtr virDomainXMLOptionClass;
 static void virDomainObjDispose(void *obj);
@@ -12351,6 +12354,20 @@ virDomainShmemDefParseXML(xmlNodePtr node,
 
     ctxt->node = node;
 
+    tmp = virXPathString("string(./model/@type)", ctxt);
+    if (tmp) {
+        /* If there's none, we will automatically have the first one
+         * (as default).  Unfortunately this has to be done for
+         * compatibility reasons. */
+        if ((def->model = virDomainShmemModelTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Unknown shmem model type '%s'"), tmp);
+            goto cleanup;
+        }
+
+        VIR_FREE(tmp);
+    }
+
     if (!(def->name = virXMLPropString(node, "name"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("shmem element must contain 'name' attribute"));
@@ -14937,6 +14954,9 @@ virDomainShmemDefEquals(virDomainShmemDefPtr src,
         return false;
 
     if (src->size != dst->size)
+        return false;
+
+    if (src->model != dst->model)
         return false;
 
     if (src->server.enabled != dst->server.enabled)
@@ -18927,6 +18947,15 @@ virDomainShmemDefCheckABIStability(virDomainShmemDefPtr src,
         return false;
     }
 
+    if (src->model != dst->model) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target shared memory model '%s' does not match "
+                         "source model '%s'"),
+                       virDomainShmemModelTypeToString(dst->model),
+                       virDomainShmemModelTypeToString(src->model));
+        return false;
+    }
+
     if (src->size != dst->size) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target shared memory size '%llu' does not match "
@@ -21980,19 +22009,12 @@ virDomainShmemDefFormat(virBufferPtr buf,
                         virDomainShmemDefPtr def,
                         unsigned int flags)
 {
-    virBufferEscapeString(buf, "<shmem name='%s'", def->name);
-
-    if (!def->size &&
-        !def->server.enabled &&
-        !def->msi.enabled &&
-        !virDomainDeviceInfoNeedsFormat(&def->info, flags)) {
-        virBufferAddLit(buf, "/>\n");
-        return 0;
-    } else {
-        virBufferAddLit(buf, ">\n");
-    }
+    virBufferEscapeString(buf, "<shmem name='%s'>\n", def->name);
 
     virBufferAdjustIndent(buf, 2);
+
+    virBufferAsprintf(buf, "<model type='%s'/>\n",
+                      virDomainShmemModelTypeToString(def->model));
 
     if (def->size)
         virBufferAsprintf(buf, "<size unit='M'>%llu</size>\n", def->size >> 20);

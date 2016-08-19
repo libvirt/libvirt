@@ -1562,9 +1562,16 @@ struct _virDomainNVRAMDef {
     virDomainDeviceInfo info;
 };
 
+typedef enum {
+    VIR_DOMAIN_SHMEM_MODEL_IVSHMEM,
+
+    VIR_DOMAIN_SHMEM_MODEL_LAST
+} virDomainShmemModel;
+
 struct _virDomainShmemDef {
     char *name;
     unsigned long long size;
+    int model; /* enum virDomainShmemModel */
     struct {
         bool enabled;
         virDomainChrSourceDef chr;
@@ -3084,6 +3091,7 @@ VIR_ENUM_DECL(virDomainTPMBackend)
 VIR_ENUM_DECL(virDomainMemoryModel)
 VIR_ENUM_DECL(virDomainMemoryBackingModel)
 VIR_ENUM_DECL(virDomainIOMMUModel)
+VIR_ENUM_DECL(virDomainShmemModel)
 /* from libvirt.h */
 VIR_ENUM_DECL(virDomainState)
 VIR_ENUM_DECL(virDomainNostateReason)
