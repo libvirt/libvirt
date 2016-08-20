@@ -969,6 +969,7 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                 if (!addr)
                     goto cleanup;
                 virBufferAsprintf(&configbuf, "%s\n", addr);
+                VIR_FREE(addr);
             } else {
                 /* "don't forward requests for this domain" */
                 virBufferAddLit(&configbuf, "#\n");
