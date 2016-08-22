@@ -21216,6 +21216,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
     const char *model = NULL;
     const char *modelName = NULL;
     bool pcihole64 = false, pciModel = false, pciTarget = false;
+    virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -21320,26 +21321,26 @@ virDomainControllerDefFormat(virBufferPtr buf,
             }
         }
 
-        if (def->queues || def->cmd_per_lun ||
-            def->max_sectors || def->ioeventfd || def->iothread) {
+        if (def->queues)
+            virBufferAsprintf(&driverBuf, " queues='%u'", def->queues);
+
+        if (def->cmd_per_lun)
+            virBufferAsprintf(&driverBuf, " cmd_per_lun='%u'", def->cmd_per_lun);
+
+        if (def->max_sectors)
+            virBufferAsprintf(&driverBuf, " max_sectors='%u'", def->max_sectors);
+
+        if (def->ioeventfd) {
+            virBufferAsprintf(&driverBuf, " ioeventfd='%s'",
+                              virTristateSwitchTypeToString(def->ioeventfd));
+        }
+
+        if (def->iothread)
+            virBufferAsprintf(&driverBuf, " iothread='%u'", def->iothread);
+
+        if (virBufferUse(&driverBuf)) {
             virBufferAddLit(buf, "<driver");
-            if (def->queues)
-                virBufferAsprintf(buf, " queues='%u'", def->queues);
-
-            if (def->cmd_per_lun)
-                virBufferAsprintf(buf, " cmd_per_lun='%u'", def->cmd_per_lun);
-
-            if (def->max_sectors)
-                virBufferAsprintf(buf, " max_sectors='%u'", def->max_sectors);
-
-            if (def->ioeventfd) {
-                virBufferAsprintf(buf, " ioeventfd='%s'",
-                                  virTristateSwitchTypeToString(def->ioeventfd));
-            }
-
-            if (def->iothread)
-                virBufferAsprintf(buf, " iothread='%u'", def->iothread);
-
+            virBufferAddBuffer(buf, &driverBuf);
             virBufferAddLit(buf, "/>\n");
         }
 
