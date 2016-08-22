@@ -1602,7 +1602,6 @@ qemuMigrationPrecreateDisk(virConnectPtr conn,
                        _("cannot precreate storage for disk type '%s'"),
                        virStorageTypeToString(disk->src->type));
         goto cleanup;
-        break;
     }
 
     if ((vol = virStorageVolLookupByName(pool, volName))) {
