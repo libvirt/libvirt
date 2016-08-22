@@ -21388,6 +21388,7 @@ virDomainFSDefFormat(virBufferPtr buf,
     const char *fsdriver = virDomainFSDriverTypeToString(def->fsdriver);
     const char *wrpolicy = virDomainFSWrpolicyTypeToString(def->wrpolicy);
     const char *src = def->src->path;
+    virBuffer driverBuf = VIR_BUFFER_INITIALIZER;
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -21407,16 +21408,21 @@ virDomainFSDefFormat(virBufferPtr buf,
                       type, accessmode);
     virBufferAdjustIndent(buf, 2);
     if (def->fsdriver) {
-        virBufferAsprintf(buf, "<driver type='%s'", fsdriver);
+        virBufferAsprintf(&driverBuf, " type='%s'", fsdriver);
 
         if (def->format)
-            virBufferAsprintf(buf, " format='%s'",
+            virBufferAsprintf(&driverBuf, " format='%s'",
                               virStorageFileFormatTypeToString(def->format));
 
         /* Don't generate anything if wrpolicy is set to default */
         if (def->wrpolicy)
-            virBufferAsprintf(buf, " wrpolicy='%s'", wrpolicy);
+            virBufferAsprintf(&driverBuf, " wrpolicy='%s'", wrpolicy);
 
+    }
+
+    if (virBufferUse(&driverBuf)) {
+        virBufferAddLit(buf, "<driver");
+        virBufferAddBuffer(buf, &driverBuf);
         virBufferAddLit(buf, "/>\n");
     }
 
