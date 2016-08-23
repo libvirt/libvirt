@@ -1,0 +1,104 @@
+{
+  "return": [
+    {
+      "arch": "x86",
+      "current": true,
+      "CPU": 0,
+      "qom_path": "/machine/unattached/device[0]",
+      "pc": 1042686,
+      "halted": false,
+      "thread_id": 895040
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 1,
+      "qom_path": "/machine/peripheral/vcpu1",
+      "pc": 4294967280,
+      "halted": false,
+      "thread_id": 895056
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 2,
+      "qom_path": "/machine/peripheral/vcpu2",
+      "pc": 4294967280,
+      "halted": false,
+      "thread_id": 895057
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 3,
+      "qom_path": "/machine/peripheral/vcpu3",
+      "pc": 4294967280,
+      "halted": false,
+      "thread_id": 895058
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 4,
+      "qom_path": "/machine/peripheral/vcpu4",
+      "pc": 4294967280,
+      "halted": false,
+      "thread_id": 895059
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 5,
+      "qom_path": "/machine/peripheral/vcpu5",
+      "pc": 4294967280,
+      "halted": false,
+      "thread_id": 895060
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 6,
+      "qom_path": "/machine/peripheral/vcpu6",
+      "pc": 4294967280,
+      "halted": false,
+      "thread_id": 895061
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 7,
+      "qom_path": "/machine/peripheral/vcpu7",
+      "pc": 4294967280,
+      "halted": false,
+      "thread_id": 895062
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 8,
+      "qom_path": "/machine/peripheral/vcpu8",
+      "pc": 4294967280,
+      "halted": false,
+      "thread_id": 895063
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 9,
+      "qom_path": "/machine/peripheral/vcpu9",
+      "pc": 4294967280,
+      "halted": false,
+      "thread_id": 895064
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 10,
+      "qom_path": "/machine/peripheral/vcpu10",
+      "pc": 4294967280,
+      "halted": false,
+      "thread_id": 895065
+    }
+  ],
+  "id": "libvirt-52"
+}

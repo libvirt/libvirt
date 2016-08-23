@@ -2585,6 +2585,7 @@ mymain(void)
     DO_TEST_CPU_DATA("ecx");
 
     DO_TEST_CPU_INFO("x86-basic-pluggable", 8);
+    DO_TEST_CPU_INFO("x86-full", 11);
 
     qemuTestDriverFree(&driver);
 
