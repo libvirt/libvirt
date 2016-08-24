@@ -75,8 +75,8 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(buffer);
 
     if (dev != NULL) {
-        vshPrint(ctl, _("Node device %s created from %s\n"),
-                 virNodeDeviceGetName(dev), from);
+        vshPrintExtra(ctl, _("Node device %s created from %s\n"),
+                      virNodeDeviceGetName(dev), from);
         virNodeDeviceFree(dev);
     } else {
         vshError(ctl, _("Failed to create node device from %s"), from);
@@ -148,7 +148,7 @@ cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virNodeDeviceDestroy(dev) == 0) {
-        vshPrint(ctl, _("Destroyed node device '%s'\n"), device_value);
+        vshPrintExtra(ctl, _("Destroyed node device '%s'\n"), device_value);
     } else {
         vshError(ctl, _("Failed to destroy node device '%s'"), device_value);
         goto cleanup;
@@ -632,7 +632,7 @@ cmdNodeDeviceDetach(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (ret)
-        vshPrint(ctl, _("Device %s detached\n"), name);
+        vshPrintExtra(ctl, _("Device %s detached\n"), name);
     else
         vshError(ctl, _("Failed to detach device %s"), name);
 
@@ -680,7 +680,7 @@ cmdNodeDeviceReAttach(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virNodeDeviceReAttach(device) == 0) {
-        vshPrint(ctl, _("Device %s re-attached\n"), name);
+        vshPrintExtra(ctl, _("Device %s re-attached\n"), name);
     } else {
         vshError(ctl, _("Failed to re-attach device %s"), name);
         ret = false;
@@ -730,7 +730,7 @@ cmdNodeDeviceReset(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virNodeDeviceReset(device) == 0) {
-        vshPrint(ctl, _("Device %s reset\n"), name);
+        vshPrintExtra(ctl, _("Device %s reset\n"), name);
     } else {
         vshError(ctl, _("Failed to reset device %s"), name);
         ret = false;

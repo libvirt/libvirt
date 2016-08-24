@@ -36,7 +36,6 @@ test $? = 0 || fail=1
 sed '/^Persistent/n; /:/d' < out1 > out
 cat <<\EOF > exp || fail=1
 Persistent:     yes
-Domain test has been undefined
 Persistent:     no
 EOF
 compare exp out || fail=1
@@ -48,7 +47,6 @@ test $? = 0 || fail=1
 sed '/^Persistent/n; /:/d' < out1 > out
 cat <<\EOF > exp || fail=1
 Persistent:     yes
-Domain 1 has been undefined
 Persistent:     no
 EOF
 compare exp out || fail=1
@@ -58,8 +56,6 @@ $abs_top_builddir/tools/virsh -q -c test:///default \
     'shutdown test; undefine test; dominfo test' > out 2>&1
 test $? = 1 || fail=1
 cat <<\EOF > expout || fail=1
-Domain test is being shutdown
-Domain test has been undefined
 error: failed to get domain 'test'
 error: Domain not found
 EOF

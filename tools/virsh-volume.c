@@ -349,7 +349,7 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("Failed to create vol %s"), name);
             goto cleanup;
         }
-        vshPrint(ctl, _("Vol %s created\n"), name);
+        vshPrintExtra(ctl, _("Vol %s created\n"), name);
     }
 
     ret = true;
@@ -411,8 +411,8 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
     }
 
     if ((vol = virStorageVolCreateXML(pool, buffer, flags))) {
-        vshPrint(ctl, _("Vol %s created from %s\n"),
-                 virStorageVolGetName(vol), from);
+        vshPrintExtra(ctl, _("Vol %s created from %s\n"),
+                      virStorageVolGetName(vol), from);
         virStorageVolFree(vol);
         ret = true;
     } else {
@@ -490,8 +490,8 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
     newvol = virStorageVolCreateXMLFrom(pool, buffer, inputvol, flags);
 
     if (newvol != NULL) {
-        vshPrint(ctl, _("Vol %s created from input vol %s\n"),
-                 virStorageVolGetName(newvol), virStorageVolGetName(inputvol));
+        vshPrintExtra(ctl, _("Vol %s created from input vol %s\n"),
+                      virStorageVolGetName(newvol), virStorageVolGetName(inputvol));
     } else {
         vshError(ctl, _("Failed to create vol from %s"), from);
         goto cleanup;
@@ -612,8 +612,8 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
     newvol = virStorageVolCreateXMLFrom(origpool, (char *) newxml, origvol, flags);
 
     if (newvol != NULL) {
-        vshPrint(ctl, _("Vol %s cloned from %s\n"),
-                 virStorageVolGetName(newvol), virStorageVolGetName(origvol));
+        vshPrintExtra(ctl, _("Vol %s cloned from %s\n"),
+                      virStorageVolGetName(newvol), virStorageVolGetName(origvol));
     } else {
         vshError(ctl, _("Failed to clone vol from %s"),
                  virStorageVolGetName(origvol));
@@ -879,7 +879,7 @@ cmdVolDelete(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_STORAGE_VOL_DELETE_WITH_SNAPSHOTS;
 
     if (virStorageVolDelete(vol, flags) == 0) {
-        vshPrint(ctl, _("Vol %s deleted\n"), name);
+        vshPrintExtra(ctl, _("Vol %s deleted\n"), name);
     } else {
         vshError(ctl, _("Failed to delete vol %s"), name);
         ret = false;
@@ -950,7 +950,7 @@ cmdVolWipe(vshControl *ctl, const vshCmd *cmd)
         goto out;
     }
 
-    vshPrint(ctl, _("Vol %s wiped\n"), name);
+    vshPrintExtra(ctl, _("Vol %s wiped\n"), name);
     ret = true;
  out:
     virStorageVolFree(vol);

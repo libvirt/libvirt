@@ -97,9 +97,9 @@ virshSnapshotCreate(vshControl *ctl, virDomainPtr dom, const char *buffer,
     }
 
     if (from)
-        vshPrint(ctl, _("Domain snapshot %s created from '%s'"), name, from);
+        vshPrintExtra(ctl, _("Domain snapshot %s created from '%s'"), name, from);
     else
-        vshPrint(ctl, _("Domain snapshot %s created"), name);
+        vshPrintExtra(ctl, _("Domain snapshot %s created"), name);
 
     ret = true;
 
@@ -575,10 +575,10 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
 
     edited_name = virDomainSnapshotGetName(edited);
     if (STREQ(name, edited_name)) {
-        vshPrint(ctl, _("Snapshot %s edited.\n"), name);
+        vshPrintExtra(ctl, _("Snapshot %s edited.\n"), name);
     } else if (clone_okay) {
-        vshPrint(ctl, _("Snapshot %s cloned to %s.\n"), name,
-                 edited_name);
+        vshPrintExtra(ctl, _("Snapshot %s cloned to %s.\n"), name,
+                      edited_name);
     } else {
         unsigned int delete_flags;
 
@@ -683,7 +683,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
 
         virDomainSnapshotFree(snapshot2);
-        vshPrint(ctl, _("Snapshot %s set as current"), snapshotname);
+        vshPrintExtra(ctl, _("Snapshot %s set as current"), snapshotname);
         ret = true;
         goto cleanup;
     }
@@ -1927,9 +1927,9 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
      * list of descendants.  But that's a lot of code to maintain.  */
     if (virDomainSnapshotDelete(snapshot, flags) == 0) {
         if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)
-            vshPrint(ctl, _("Domain snapshot %s children deleted\n"), name);
+            vshPrintExtra(ctl, _("Domain snapshot %s children deleted\n"), name);
         else
-            vshPrint(ctl, _("Domain snapshot %s deleted\n"), name);
+            vshPrintExtra(ctl, _("Domain snapshot %s deleted\n"), name);
     } else {
         vshError(ctl, _("Failed to delete snapshot %s"), name);
         goto cleanup;

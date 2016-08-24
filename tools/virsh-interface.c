@@ -540,8 +540,8 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(buffer);
 
     if (iface != NULL) {
-        vshPrint(ctl, _("Interface %s defined from %s\n"),
-                 virInterfaceGetName(iface), from);
+        vshPrintExtra(ctl, _("Interface %s defined from %s\n"),
+                      virInterfaceGetName(iface), from);
         virInterfaceFree(iface);
     } else {
         vshError(ctl, _("Failed to define interface from %s"), from);
@@ -579,7 +579,7 @@ cmdInterfaceUndefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virInterfaceUndefine(iface) == 0) {
-        vshPrint(ctl, _("Interface %s undefined\n"), name);
+        vshPrintExtra(ctl, _("Interface %s undefined\n"), name);
     } else {
         vshError(ctl, _("Failed to undefine interface %s"), name);
         ret = false;
@@ -618,7 +618,7 @@ cmdInterfaceStart(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virInterfaceCreate(iface, 0) == 0) {
-        vshPrint(ctl, _("Interface %s started\n"), name);
+        vshPrintExtra(ctl, _("Interface %s started\n"), name);
     } else {
         vshError(ctl, _("Failed to start interface %s"), name);
         ret = false;
@@ -657,7 +657,7 @@ cmdInterfaceDestroy(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virInterfaceDestroy(iface, 0) == 0) {
-        vshPrint(ctl, _("Interface %s destroyed\n"), name);
+        vshPrintExtra(ctl, _("Interface %s destroyed\n"), name);
     } else {
         vshError(ctl, _("Failed to destroy interface %s"), name);
         ret = false;
@@ -696,7 +696,7 @@ cmdInterfaceBegin(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         return false;
     }
 
-    vshPrint(ctl, "%s", _("Network config change transaction started\n"));
+    vshPrintExtra(ctl, "%s", _("Network config change transaction started\n"));
     return true;
 }
 
@@ -727,7 +727,7 @@ cmdInterfaceCommit(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         return false;
     }
 
-    vshPrint(ctl, "%s", _("Network config change transaction committed\n"));
+    vshPrintExtra(ctl, "%s", _("Network config change transaction committed\n"));
     return true;
 }
 
@@ -758,7 +758,7 @@ cmdInterfaceRollback(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         return false;
     }
 
-    vshPrint(ctl, "%s", _("Network config change transaction rolled back\n"));
+    vshPrintExtra(ctl, "%s", _("Network config change transaction rolled back\n"));
     return true;
 }
 

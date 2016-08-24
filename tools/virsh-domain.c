@@ -284,7 +284,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, "%s", _("Device attached successfully\n"));
+    vshPrintExtra(ctl, "%s", _("Device attached successfully\n"));
     ret = true;
 
  cleanup:
@@ -764,7 +764,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to attach disk"));
     } else {
-        vshPrint(ctl, "%s", _("Disk attached successfully\n"));
+        vshPrintExtra(ctl, "%s", _("Disk attached successfully\n"));
         functionReturn = true;
     }
 
@@ -1075,7 +1075,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     if (ret != 0) {
         vshError(ctl, "%s", _("Failed to attach interface"));
     } else {
-        vshPrint(ctl, "%s", _("Interface attached successfully\n"));
+        vshPrintExtra(ctl, "%s", _("Interface attached successfully\n"));
         functionReturn = true;
     }
 
@@ -1131,9 +1131,9 @@ cmdAutostart(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (autostart)
-        vshPrint(ctl, _("Domain %s marked as autostarted\n"), name);
+        vshPrintExtra(ctl, _("Domain %s marked as autostarted\n"), name);
     else
-        vshPrint(ctl, _("Domain %s unmarked as autostarted\n"), name);
+        vshPrintExtra(ctl, _("Domain %s unmarked as autostarted\n"), name);
 
     virDomainFree(dom);
     return true;
@@ -2915,7 +2915,7 @@ cmdBlockResize(vshControl *ctl, const vshCmd *cmd)
     if (virDomainBlockResize(dom, path, size, flags) < 0) {
         vshError(ctl, _("Failed to resize block device '%s'"), path);
     } else {
-        vshPrint(ctl, _("Block device '%s' is resized"), path);
+        vshPrintExtra(ctl, _("Block device '%s' is resized"), path);
         ret = true;
     }
 
@@ -3185,7 +3185,7 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, _("Failed to update interface link state"));
         goto cleanup;
     } else {
-        vshPrint(ctl, "%s", _("Device updated successfully\n"));
+        vshPrintExtra(ctl, "%s", _("Device updated successfully\n"));
         ret = true;
     }
 
@@ -3424,7 +3424,7 @@ cmdSuspend(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainSuspend(dom) == 0) {
-        vshPrint(ctl, _("Domain %s suspended\n"), name);
+        vshPrintExtra(ctl, _("Domain %s suspended\n"), name);
     } else {
         vshError(ctl, _("Failed to suspend domain %s"), name);
         ret = false;
@@ -3503,7 +3503,7 @@ cmdDomPMSuspend(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, _("Domain %s successfully suspended"),
+    vshPrintExtra(ctl, _("Domain %s successfully suspended"),
              virDomainGetName(dom));
 
     ret = true;
@@ -3550,8 +3550,8 @@ cmdDomPMWakeup(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, _("Domain %s successfully woken up"),
-             virDomainGetName(dom));
+    vshPrintExtra(ctl, _("Domain %s successfully woken up"),
+                  virDomainGetName(dom));
 
     ret = true;
 
@@ -3913,7 +3913,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
  out:
     if (rc == 0) {
-        vshPrint(ctl, _("Domain %s has been undefined\n"), name);
+        vshPrintExtra(ctl, _("Domain %s has been undefined\n"), name);
         ret = true;
     } else {
         vshError(ctl, _("Failed to undefine domain %s"), name);
@@ -3924,15 +3924,15 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     if (nvols) {
         for (i = 0; i < nvols; i++) {
             if (wipe_storage) {
-                vshPrint(ctl, _("Wiping volume '%s'(%s) ... "),
-                         vols[i].target, vols[i].source);
+                vshPrintExtra(ctl, _("Wiping volume '%s'(%s) ... "),
+                              vols[i].target, vols[i].source);
                 fflush(stdout);
                 if (virStorageVolWipe(vols[i].vol, 0) < 0) {
                     vshError(ctl, _("Failed! Volume not removed."));
                     ret = false;
                     continue;
                 } else {
-                    vshPrint(ctl, _("Done.\n"));
+                    vshPrintExtra(ctl, _("Done.\n"));
                 }
             }
 
@@ -3942,8 +3942,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
                          vols[i].target, vols[i].source);
                 ret = false;
             } else {
-                vshPrint(ctl, _("Volume '%s'(%s) removed.\n"),
-                         vols[i].target, vols[i].source);
+                vshPrintExtra(ctl, _("Volume '%s'(%s) removed.\n"),
+                              vols[i].target, vols[i].source);
             }
         }
     }
@@ -4138,8 +4138,8 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     }
 
  started:
-    vshPrint(ctl, _("Domain %s started\n"),
-             virDomainGetName(dom));
+    vshPrintExtra(ctl, _("Domain %s started\n"),
+                  virDomainGetName(dom));
 #ifndef WIN32
     if (console && !cmdRunConsole(ctl, dom, NULL, 0))
         goto cleanup;
@@ -4404,7 +4404,7 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
     virThreadJoin(&workerThread);
 
     if (ret)
-        vshPrint(ctl, _("\nDomain %s saved to %s\n"), name, to);
+        vshPrintExtra(ctl, _("\nDomain %s saved to %s\n"), name, to);
 
  cleanup:
     virDomainFree(dom);
@@ -4520,7 +4520,7 @@ cmdSaveImageDefine(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, _("State file %s updated.\n"), file);
+    vshPrintExtra(ctl, _("State file %s updated.\n"), file);
     ret = true;
 
  cleanup:
@@ -4711,7 +4711,7 @@ cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
     virThreadJoin(&workerThread);
 
     if (ret)
-        vshPrint(ctl, _("\nDomain %s state saved by libvirt\n"), name);
+        vshPrintExtra(ctl, _("\nDomain %s state saved by libvirt\n"), name);
 
  cleanup:
     virDomainFree(dom);
@@ -4762,11 +4762,11 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
         else
-            vshPrint(ctl, _("Removed managedsave image for domain %s"), name);
+            vshPrintExtra(ctl, _("Removed managedsave image for domain %s"), name);
     }
     else
-        vshPrint(ctl, _("Domain %s has no manage save image; removal skipped"),
-                 name);
+        vshPrintExtra(ctl, _("Domain %s has no manage save image; removal skipped"),
+                      name);
 
     ret = true;
 
@@ -5078,7 +5078,7 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, _("Domain restored from %s\n"), from);
+    vshPrintExtra(ctl, _("Domain restored from %s\n"), from);
     ret = true;
 
  cleanup:
@@ -5251,7 +5251,7 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
     virThreadJoin(&workerThread);
 
     if (ret)
-        vshPrint(ctl, _("\nDomain %s dumped to %s\n"), name, to);
+        vshPrintExtra(ctl, _("\nDomain %s dumped to %s\n"), name, to);
 
  cleanup:
     virDomainFree(dom);
@@ -5385,7 +5385,7 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, _("Screenshot saved to %s, with type of %s"), file, mime);
+    vshPrintExtra(ctl, _("Screenshot saved to %s, with type of %s"), file, mime);
     ret = true;
 
  cleanup:
@@ -5458,7 +5458,7 @@ cmdSetUserPassword(vshControl *ctl, const vshCmd *cmd)
     if (virDomainSetUserPassword(dom, user, password, flags) < 0)
         goto cleanup;
 
-    vshPrint(ctl, _("Password set successfully for %s in %s"), user, name);
+    vshPrintExtra(ctl, _("Password set successfully for %s in %s"), user, name);
     ret = true;
 
  cleanup:
@@ -5494,7 +5494,7 @@ cmdResume(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainResume(dom) == 0) {
-        vshPrint(ctl, _("Domain %s resumed\n"), name);
+        vshPrintExtra(ctl, _("Domain %s resumed\n"), name);
     } else {
         vshError(ctl, _("Failed to resume domain %s"), name);
         ret = false;
@@ -5575,7 +5575,7 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
     else
         rv = virDomainShutdown(dom);
     if (rv == 0) {
-        vshPrint(ctl, _("Domain %s is being shutdown\n"), name);
+        vshPrintExtra(ctl, _("Domain %s is being shutdown\n"), name);
     } else {
         vshError(ctl, _("Failed to shutdown domain %s"), name);
         goto cleanup;
@@ -5655,7 +5655,7 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     if (virDomainReboot(dom, flags) == 0) {
-        vshPrint(ctl, _("Domain %s is being rebooted\n"), name);
+        vshPrintExtra(ctl, _("Domain %s is being rebooted\n"), name);
     } else {
         vshError(ctl, _("Failed to reboot domain %s"), name);
         goto cleanup;
@@ -5698,7 +5698,7 @@ cmdReset(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virDomainReset(dom, 0) == 0) {
-        vshPrint(ctl, _("Domain %s was reset\n"), name);
+        vshPrintExtra(ctl, _("Domain %s was reset\n"), name);
     } else {
         vshError(ctl, _("Failed to reset domain %s"), name);
         ret = false;
@@ -7622,8 +7622,8 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, _("Domain %s created from %s\n"),
-             virDomainGetName(dom), from);
+    vshPrintExtra(ctl, _("Domain %s created from %s\n"),
+                  virDomainGetName(dom), from);
 #ifndef WIN32
     if (console)
         cmdRunConsole(ctl, dom, NULL, 0);
@@ -7685,8 +7685,8 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(buffer);
 
     if (dom != NULL) {
-        vshPrint(ctl, _("Domain %s defined from %s\n"),
-                 virDomainGetName(dom), from);
+        vshPrintExtra(ctl, _("Domain %s defined from %s\n"),
+                      virDomainGetName(dom), from);
         virDomainFree(dom);
     } else {
         vshError(ctl, _("Failed to define domain from %s"), from);
@@ -7738,7 +7738,7 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
        result = virDomainDestroy(dom);
 
     if (result == 0) {
-        vshPrint(ctl, _("Domain %s destroyed\n"), name);
+        vshPrintExtra(ctl, _("Domain %s destroyed\n"), name);
     } else {
         vshError(ctl, _("Failed to destroy domain %s"), name);
         ret = false;
@@ -7867,9 +7867,9 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
 
             /* Compare original XML with edited.  Has it changed at all? */
             if (STREQ(desc, desc_edited)) {
-                vshPrint(ctl, "%s",
-                         title ? _("Domain title not changed\n") :
-                                 _("Domain description not changed\n"));
+                vshPrintExtra(ctl, "%s",
+                              title ? _("Domain title not changed\n") :
+                                      _("Domain description not changed\n"));
                 ret = true;
                 goto cleanup;
             }
@@ -7885,9 +7885,9 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
                              _("Failed to set new domain description"));
             goto cleanup;
         }
-        vshPrint(ctl, "%s",
-                 title ? _("Domain title updated successfully") :
-                         _("Domain description updated successfully"));
+        vshPrintExtra(ctl, "%s",
+                      title ? _("Domain title updated successfully") :
+                              _("Domain description updated successfully"));
     } else {
         desc = virshGetDomainDescription(ctl, dom, title,
                                        config?VIR_DOMAIN_XML_INACTIVE:0);
@@ -7897,10 +7897,10 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
         if (strlen(desc) > 0)
             vshPrint(ctl, "%s", desc);
         else
-            vshPrint(ctl,
-                     title ? _("No title for domain: %s") :
-                             _("No description for domain: %s"),
-                     virDomainGetName(dom));
+            vshPrintExtra(ctl,
+                          title ? _("No title for domain: %s") :
+                                  _("No description for domain: %s"),
+                          virDomainGetName(dom));
     }
 
     ret = true;
@@ -8022,15 +8022,15 @@ cmdMetadata(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
 
         if (rem)
-            vshPrint(ctl, "%s\n", _("Metadata removed"));
+            vshPrintExtra(ctl, "%s\n", _("Metadata removed"));
         else
-            vshPrint(ctl, "%s\n", _("Metadata modified"));
+            vshPrintExtra(ctl, "%s\n", _("Metadata modified"));
     } else if (edit) {
 #define EDIT_GET_XML \
         virshDomainGetEditMetadata(ctl, dom, uri, flags)
 #define EDIT_NOT_CHANGED                                        \
         do {                                                    \
-            vshPrint(ctl, "%s", _("Metadata not changed"));     \
+            vshPrintExtra(ctl, "%s", _("Metadata not changed")); \
             ret = true;                                         \
             goto edit_cleanup;                                  \
         } while (0)
@@ -8040,7 +8040,7 @@ cmdMetadata(vshControl *ctl, const vshCmd *cmd)
                               key, uri, flags) == 0)
 #include "virsh-edit.c"
 
-        vshPrint(ctl, "%s\n", _("Metadata modified"));
+        vshPrintExtra(ctl, "%s\n", _("Metadata modified"));
     } else {
         char *data;
         /* get */
@@ -9194,8 +9194,8 @@ cmdQemuAttach(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, _("Domain %s attached to pid %u\n"),
-                virDomainGetName(dom), pid_value);
+    vshPrintExtra(ctl, _("Domain %s attached to pid %u\n"),
+                  virDomainGetName(dom), pid_value);
     virDomainFree(dom);
     ret = true;
 
@@ -9723,7 +9723,7 @@ cmdDomrename(vshControl *ctl, const vshCmd *cmd)
     if (virDomainRename(dom, new_name, 0) < 0)
         goto cleanup;
 
-    vshPrint(ctl, "Domain successfully renamed\n");
+    vshPrintExtra(ctl, "Domain successfully renamed\n");
     ret = true;
 
  cleanup:
@@ -11220,7 +11220,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, "%s", _("Device detached successfully\n"));
+    vshPrintExtra(ctl, "%s", _("Device detached successfully\n"));
     funcRet = true;
 
  cleanup:
@@ -11302,7 +11302,7 @@ cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, "%s", _("Device updated successfully\n"));
+    vshPrintExtra(ctl, "%s", _("Device updated successfully\n"));
     ret = true;
 
  cleanup:
@@ -11489,7 +11489,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     if (!ret) {
         vshError(ctl, "%s", _("Failed to detach interface"));
     } else {
-        vshPrint(ctl, "%s", _("Interface detached successfully\n"));
+        vshPrintExtra(ctl, "%s", _("Interface detached successfully\n"));
     }
     VIR_FREE(doc_live);
     VIR_FREE(doc_config);
@@ -11843,7 +11843,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, "%s", _("Disk detached successfully\n"));
+    vshPrintExtra(ctl, "%s", _("Disk detached successfully\n"));
     functionReturn = true;
 
  cleanup:

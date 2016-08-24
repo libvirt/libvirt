@@ -209,9 +209,9 @@ cmdPoolAutostart(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (autostart)
-        vshPrint(ctl, _("Pool %s marked as autostarted\n"), name);
+        vshPrintExtra(ctl, _("Pool %s marked as autostarted\n"), name);
     else
-        vshPrint(ctl, _("Pool %s unmarked as autostarted\n"), name);
+        vshPrintExtra(ctl, _("Pool %s unmarked as autostarted\n"), name);
 
     virStoragePoolFree(pool);
     return true;
@@ -276,8 +276,8 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(buffer);
 
     if (pool != NULL) {
-        vshPrint(ctl, _("Pool %s created from %s\n"),
-                 virStoragePoolGetName(pool), from);
+        vshPrintExtra(ctl, _("Pool %s created from %s\n"),
+                      virStoragePoolGetName(pool), from);
         virStoragePoolFree(pool);
     } else {
         vshError(ctl, _("Failed to create pool from %s"), from);
@@ -449,7 +449,7 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
         VIR_FREE(xml);
 
         if (pool != NULL) {
-            vshPrint(ctl, _("Pool %s created\n"), name);
+            vshPrintExtra(ctl, _("Pool %s created\n"), name);
             virStoragePoolFree(pool);
         } else {
             vshError(ctl, _("Failed to create pool %s"), name);
@@ -498,8 +498,8 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(buffer);
 
     if (pool != NULL) {
-        vshPrint(ctl, _("Pool %s defined from %s\n"),
-                 virStoragePoolGetName(pool), from);
+        vshPrintExtra(ctl, _("Pool %s defined from %s\n"),
+                      virStoragePoolGetName(pool), from);
         virStoragePoolFree(pool);
     } else {
         vshError(ctl, _("Failed to define pool from %s"), from);
@@ -541,7 +541,7 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
         VIR_FREE(xml);
 
         if (pool != NULL) {
-            vshPrint(ctl, _("Pool %s defined\n"), name);
+            vshPrintExtra(ctl, _("Pool %s defined\n"), name);
             virStoragePoolFree(pool);
         } else {
             vshError(ctl, _("Failed to define pool %s"), name);
@@ -590,7 +590,7 @@ cmdPoolBuild(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_STORAGE_POOL_BUILD_OVERWRITE;
 
     if (virStoragePoolBuild(pool, flags) == 0) {
-        vshPrint(ctl, _("Pool %s built\n"), name);
+        vshPrintExtra(ctl, _("Pool %s built\n"), name);
     } else {
         vshError(ctl, _("Failed to build pool %s"), name);
         ret = false;
@@ -631,7 +631,7 @@ cmdPoolDestroy(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virStoragePoolDestroy(pool) == 0) {
-        vshPrint(ctl, _("Pool %s destroyed\n"), name);
+        vshPrintExtra(ctl, _("Pool %s destroyed\n"), name);
     } else {
         vshError(ctl, _("Failed to destroy pool %s"), name);
         ret = false;
@@ -671,7 +671,7 @@ cmdPoolDelete(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virStoragePoolDelete(pool, 0) == 0) {
-        vshPrint(ctl, _("Pool %s deleted\n"), name);
+        vshPrintExtra(ctl, _("Pool %s deleted\n"), name);
     } else {
         vshError(ctl, _("Failed to delete pool %s"), name);
         ret = false;
@@ -711,7 +711,7 @@ cmdPoolRefresh(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virStoragePoolRefresh(pool, 0) == 0) {
-        vshPrint(ctl, _("Pool %s refreshed\n"), name);
+        vshPrintExtra(ctl, _("Pool %s refreshed\n"), name);
     } else {
         vshError(ctl, _("Failed to refresh pool %s"), name);
         ret = false;
@@ -1732,7 +1732,7 @@ cmdPoolStart(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE;
 
     if (virStoragePoolCreate(pool, flags) == 0) {
-        vshPrint(ctl, _("Pool %s started\n"), name);
+        vshPrintExtra(ctl, _("Pool %s started\n"), name);
     } else {
         vshError(ctl, _("Failed to start pool %s"), name);
         ret = false;
@@ -1772,7 +1772,7 @@ cmdPoolUndefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virStoragePoolUndefine(pool) == 0) {
-        vshPrint(ctl, _("Pool %s has been undefined\n"), name);
+        vshPrintExtra(ctl, _("Pool %s has been undefined\n"), name);
     } else {
         vshError(ctl, _("Failed to undefine pool %s"), name);
         ret = false;

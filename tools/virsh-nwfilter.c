@@ -109,8 +109,8 @@ cmdNWFilterDefine(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(buffer);
 
     if (nwfilter != NULL) {
-        vshPrint(ctl, _("Network filter %s defined from %s\n"),
-                 virNWFilterGetName(nwfilter), from);
+        vshPrintExtra(ctl, _("Network filter %s defined from %s\n"),
+                      virNWFilterGetName(nwfilter), from);
         virNWFilterFree(nwfilter);
     } else {
         vshError(ctl, _("Failed to define network filter from %s"), from);
@@ -152,7 +152,7 @@ cmdNWFilterUndefine(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (virNWFilterUndefine(nwfilter) == 0) {
-        vshPrint(ctl, _("Network filter %s undefined\n"), name);
+        vshPrintExtra(ctl, _("Network filter %s undefined\n"), name);
     } else {
         vshError(ctl, _("Failed to undefine network filter %s"), name);
         ret = false;
