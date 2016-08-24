@@ -376,7 +376,7 @@ virshBuildPoolXML(vshControl *ctl,
     virBufferAddLit(&buf, "</pool>\n");
 
     if (virBufferError(&buf)) {
-        vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+        vshError(ctl, "%s", _("Failed to allocate XML buffer"));
         return false;
     }
 

@@ -737,7 +737,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
     virBufferAddLit(&buf, "</disk>\n");
 
     if (virBufferError(&buf)) {
-        vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+        vshError(ctl, "%s", _("Failed to allocate XML buffer"));
         goto cleanup;
     }
 
@@ -1048,7 +1048,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
     virBufferAddLit(&buf, "</interface>\n");
 
     if (virBufferError(&buf)) {
-        vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+        vshError(ctl, "%s", _("Failed to allocate XML buffer"));
         goto cleanup;
     }
 
@@ -7831,7 +7831,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
         type = VIR_DOMAIN_METADATA_DESCRIPTION;
 
     if (virBufferError(&buf)) {
-        vshPrint(ctl, "%s", _("Failed to collect new description/title"));
+        vshError(ctl, "%s", _("Failed to collect new description/title"));
         goto cleanup;
     }
     desc = virBufferContentAndReset(&buf);
@@ -8955,7 +8955,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     virBufferTrim(&buf, " ", -1);
 
     if (virBufferError(&buf)) {
-        vshPrint(ctl, "%s", _("Failed to collect command"));
+        vshError(ctl, "%s", _("Failed to collect command"));
         goto cleanup;
     }
     monitor_cmd = virBufferContentAndReset(&buf);
@@ -9269,7 +9269,7 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
         virBufferAdd(&buf, opt->data, -1);
     }
     if (virBufferError(&buf)) {
-        vshPrint(ctl, "%s", _("Failed to collect command"));
+        vshError(ctl, "%s", _("Failed to collect command"));
         goto cleanup;
     }
     guest_agent_cmd = virBufferContentAndReset(&buf);
@@ -10820,7 +10820,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 
         /* Ensure we can print our URI */
         if (virBufferError(&buf)) {
-            vshPrint(ctl, "%s", _("Failed to create display URI"));
+            vshError(ctl, "%s", _("Failed to create display URI"));
             goto cleanup;
         }
 
