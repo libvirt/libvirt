@@ -740,6 +740,7 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
     bool readonly = true;
     bool explicit_deny_rule = true;
     char *sub = NULL;
+    char *perms_new = NULL;
 
     if (path == NULL)
         return rc;
@@ -764,12 +765,15 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
         return rc;
     }
 
-    if (strchr(perms, 'w') != NULL) {
+    if (VIR_STRDUP_QUIET(perms_new, perms) < 0)
+        goto clean;
+
+    if (strchr(perms_new, 'w') != NULL) {
         readonly = false;
         explicit_deny_rule = false;
     }
 
-    if ((sub = strchr(perms, 'R')) != NULL) {
+    if ((sub = strchr(perms_new, 'R')) != NULL) {
         /* Don't write the invalid R permission, replace it with 'r' */
         sub[0] = 'r';
         explicit_deny_rule = false;
@@ -787,7 +791,8 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
     if (tmp[strlen(tmp) - 1] == '/')
         tmp[strlen(tmp) - 1] = '\0';
 
-    virBufferAsprintf(buf, "  \"%s%s\" %s,\n", tmp, recursive ? "/**" : "", perms);
+    virBufferAsprintf(buf, "  \"%s%s\" %s,\n", tmp, recursive ? "/**" : "",
+                      perms_new);
     if (explicit_deny_rule) {
         virBufferAddLit(buf, "  # don't audit writes to readonly files\n");
         virBufferAsprintf(buf, "  deny \"%s%s\" w,\n", tmp, recursive ? "/**" : "");
@@ -798,6 +803,7 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
     }
 
  cleanup:
+    VIR_FREE(perms_new);
     VIR_FREE(tmp);
 
     return rc;
