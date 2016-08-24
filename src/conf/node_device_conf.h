@@ -249,7 +249,7 @@ virNodeDeviceObjPtr virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
                                            virNodeDeviceDefPtr def);
 
 void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
-                            virNodeDeviceObjPtr dev);
+                            virNodeDeviceObjPtr *dev);
 
 char *virNodeDeviceDefFormat(const virNodeDeviceDef *def);
 

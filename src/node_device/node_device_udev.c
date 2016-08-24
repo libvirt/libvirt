@@ -1044,7 +1044,7 @@ static int udevRemoveOneDevice(struct udev_device *device)
 
     VIR_DEBUG("Removing device '%s' with sysfs path '%s'",
               dev->def->name, name);
-    virNodeDeviceObjRemove(&driver->devs, dev);
+    virNodeDeviceObjRemove(&driver->devs, &dev);
 
     ret = 0;
  cleanup:

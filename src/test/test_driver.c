@@ -5534,7 +5534,7 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
                                            0);
 
     virNodeDeviceObjLock(obj);
-    virNodeDeviceObjRemove(&driver->devs, obj);
+    virNodeDeviceObjRemove(&driver->devs, &obj);
 
  out:
     if (obj)
