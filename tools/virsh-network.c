@@ -907,7 +907,6 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     unsigned int flags = VIR_NETWORK_UPDATE_AFFECT_CURRENT;
-    const char *affected;
 
     VSH_EXCLUSIVE_OPTIONS("current", "live");
     VSH_EXCLUSIVE_OPTIONS("current", "config");
@@ -978,19 +977,22 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
 
     if (config) {
         if (live)
-            affected = _("persistent config and live state");
+            vshPrint(ctl, _("Updated network %s persistent config and live state"),
+                     virNetworkGetName(network));
         else
-            affected = _("persistent config");
+            vshPrint(ctl, _("Updated network %s persistent config"),
+                     virNetworkGetName(network));
     } else if (live) {
-            affected = _("live state");
+        vshPrint(ctl, _("Updated network %s live state"),
+                 virNetworkGetName(network));
     } else if (virNetworkIsActive(network)) {
-        affected = _("live state");
+        vshPrint(ctl, _("Updated network %s live state"),
+                 virNetworkGetName(network));
     } else {
-        affected = _("persistent config");
+        vshPrint(ctl, _("Updated network %s persistent config"),
+                 virNetworkGetName(network));
     }
 
-    vshPrint(ctl, _("Updated network %s %s"),
-             virNetworkGetName(network), affected);
     ret = true;
  cleanup:
     vshReportError(ctl);
