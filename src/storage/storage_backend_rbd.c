@@ -894,7 +894,7 @@ virStorageBackendRBDSnapshotProtect(rbd_image_t image,
     VIR_DEBUG("Querying if RBD snapshot %s@%s is protected", imgname, snapname);
 
     if ((r = rbd_snap_is_protected(image, snapname, &protected)) < 0) {
-        virReportSystemError(-r, _("failed verify if RBD snapshot %s@%s "
+        virReportSystemError(-r, _("failed to verify if RBD snapshot %s@%s "
                                    "is protected"), imgname, snapname);
         goto cleanup;
     }
@@ -904,7 +904,7 @@ virStorageBackendRBDSnapshotProtect(rbd_image_t image,
                   imgname, snapname);
 
         if ((r = rbd_snap_protect(image, snapname)) < 0) {
-            virReportSystemError(-r, _("failed protect RBD snapshot %s@%s"),
+            virReportSystemError(-r, _("failed to protect RBD snapshot %s@%s"),
                                        imgname, snapname);
             goto cleanup;
         }
