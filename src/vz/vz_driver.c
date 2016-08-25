@@ -2887,8 +2887,11 @@ vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
     goto cleanup;
 }
 
-#define VZ_MIGRATION_FLAGS         (VIR_MIGRATE_PAUSED |        \
-                                    VIR_MIGRATE_PEER2PEER)
+#define VZ_MIGRATION_FLAGS         (VIR_MIGRATE_PAUSED |          \
+                                    VIR_MIGRATE_PEER2PEER |       \
+                                    VIR_MIGRATE_LIVE |            \
+                                    VIR_MIGRATE_UNDEFINE_SOURCE | \
+                                    VIR_MIGRATE_PERSIST_DEST)
 
 #define VZ_MIGRATION_PARAMETERS                                 \
     VIR_MIGRATE_PARAM_DEST_XML,         VIR_TYPED_PARAM_STRING, \
