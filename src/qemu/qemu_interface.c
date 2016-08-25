@@ -453,6 +453,9 @@ qemuInterfaceEthernetConnect(virDomainDefPtr def,
     if (virNetDevSetMAC(net->ifname, &tapmac) < 0)
         goto cleanup;
 
+    if (virNetDevSetOnline(net->ifname, true) < 0)
+        goto cleanup;
+
     if (net->script &&
         virNetDevRunEthernetScript(net->ifname, net->script) < 0)
         goto cleanup;
