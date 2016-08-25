@@ -564,11 +564,12 @@
         all disabled vcpus must be hotpluggable. Valid values are
         <code>yes</code> and <code>no</code>.
 
-        <code>order</code> allows to specify the order to add the vcpus. For
-        hypervisors/platforms that require to insert multiple vcpus at once
+        <code>order</code> allows to specify the order to add the online vcpus.
+        For hypervisors/platforms that require to insert multiple vcpus at once
         the order may be be duplicated accross all vcpus that need to be
         enabled at once. Specifying order is not necessary, vcpus are then
-        added in an arbitrary order.
+        added in an arbitrary order. If order info is used, it must be used for
+        all online vcpus.
 
         Note that hypervisors may create hotpluggable vcpus differently from
         boot vcpus thus special initialization may be necessary.
