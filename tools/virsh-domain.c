@@ -6315,8 +6315,8 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
     }
 
     for (n = 0; n < ncpus; n++) {
-        vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
         if (cpuinfo) {
+            vshPrint(ctl, "%-15s %d\n", _("VCPU:"), cpuinfo[n].number);
             vshPrint(ctl, "%-15s %d\n", _("CPU:"), cpuinfo[n].cpu);
             vshPrint(ctl, "%-15s %s\n", _("State:"),
                      virshDomainVcpuStateToString(cpuinfo[n].state));
@@ -6328,6 +6328,7 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
                 vshPrint(ctl, "%-15s %.1lfs\n", _("CPU time:"), cpuUsed);
             }
         } else {
+            vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
             vshPrint(ctl, "%-15s %s\n", _("CPU:"), _("N/A"));
             vshPrint(ctl, "%-15s %s\n", _("State:"), _("N/A"));
             vshPrint(ctl, "%-15s %s\n", _("CPU time"), _("N/A"));
