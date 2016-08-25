@@ -4422,6 +4422,10 @@ virDomainVcpuDefPostParse(virDomainDefPtr def)
     for (i = 0; i < maxvcpus; i++) {
         vcpu = virDomainDefGetVcpu(def, i);
 
+        /* impossible but some compilers don't like it */
+        if (!vcpu)
+            continue;
+
         switch (vcpu->hotpluggable) {
         case VIR_TRISTATE_BOOL_ABSENT:
             if (vcpu->online)
