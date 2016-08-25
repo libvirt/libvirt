@@ -16376,15 +16376,6 @@ virDomainDefParseXML(xmlDocPtr xml,
 
         if (def->cpu == NULL)
             goto error;
-
-        if (def->cpu->sockets &&
-            virDomainDefGetVcpusMax(def) >
-            def->cpu->sockets * def->cpu->cores * def->cpu->threads) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("Maximum CPUs greater than topology limit"));
-            goto error;
-        }
-
     }
 
     if (virDomainNumaDefCPUParseXML(def->numa, ctxt) < 0)
