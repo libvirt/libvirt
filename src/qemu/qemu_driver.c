@@ -1477,15 +1477,17 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm,
     for (i = 0; i < virDomainDefGetVcpusMax(vm->def) && ncpuinfo < maxinfo; i++) {
         virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, i);
         pid_t vcpupid = qemuDomainGetVcpuPid(vm, i);
+        virVcpuInfoPtr vcpuinfo = info + ncpuinfo;
 
         if (!vcpu->online)
             continue;
 
         if (info) {
-            info[i].number = i;
-            info[i].state = VIR_VCPU_RUNNING;
+            vcpuinfo->number = i;
+            vcpuinfo->state = VIR_VCPU_RUNNING;
 
-            if (qemuGetProcessInfo(&(info[i].cpuTime), &(info[i].cpu), NULL,
+            if (qemuGetProcessInfo(&vcpuinfo->cpuTime,
+                                   &vcpuinfo->cpu, NULL,
                                    vm->pid, vcpupid) < 0) {
                 virReportSystemError(errno, "%s",
                                      _("cannot get vCPU placement & pCPU time"));
@@ -1494,7 +1496,7 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm,
         }
 
         if (cpumaps) {
-            unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, i);
+            unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, ncpuinfo);
             virBitmapPtr map = NULL;
 
             if (!(map = virProcessGetAffinity(vcpupid)))
@@ -1505,7 +1507,7 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm,
         }
 
         if (cpuwait) {
-            if (qemuGetSchedInfo(&(cpuwait[i]), vm->pid, vcpupid) < 0)
+            if (qemuGetSchedInfo(&(cpuwait[ncpuinfo]), vm->pid, vcpupid) < 0)
                 return -1;
         }
 
