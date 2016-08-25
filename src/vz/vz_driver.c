@@ -2897,6 +2897,7 @@ vzEatCookie(const char *cookiein, int cookieinlen, unsigned int flags)
     VIR_MIGRATE_PARAM_DEST_XML,         VIR_TYPED_PARAM_STRING, \
     VIR_MIGRATE_PARAM_URI,              VIR_TYPED_PARAM_STRING, \
     VIR_MIGRATE_PARAM_DEST_NAME,        VIR_TYPED_PARAM_STRING, \
+    VIR_MIGRATE_PARAM_BANDWIDTH,        VIR_TYPED_PARAM_ULLONG, \
     NULL
 
 static char *
@@ -2938,11 +2939,22 @@ vzDomainMigrateBegin3Params(virDomainPtr domain,
     char *xml = NULL;
     virDomainObjPtr dom = NULL;
     vzConnPtr privconn = domain->conn->privateData;
+    unsigned long long bandwidth = 0;
 
     virCheckFlags(VZ_MIGRATION_FLAGS, NULL);
 
     if (virTypedParamsValidate(params, nparams, VZ_MIGRATION_PARAMETERS) < 0)
         goto cleanup;
+
+    if (virTypedParamsGetULLong(params, nparams, VIR_MIGRATE_PARAM_BANDWIDTH,
+                                &bandwidth) < 0)
+        goto cleanup;
+
+    if (bandwidth > 0) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("Bandwidth rate limiting is not supported"));
+        goto cleanup;
+    }
 
     if (!(dom = vzDomObjFromDomain(domain)))
         goto cleanup;
