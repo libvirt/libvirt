@@ -1128,8 +1128,8 @@ cmdVolResize(vshControl *ctl, const vshCmd *cmd)
         ret = true;
     } else {
         vshError(ctl,
-                 delta ? _("Failed to change size of volume '%s' by %s\n")
-                 : _("Failed to change size of volume '%s' to %s\n"),
+                 delta ? _("Failed to change size of volume '%s' by %s")
+                 : _("Failed to change size of volume '%s' to %s"),
                  virStorageVolGetName(vol), capacityStr);
         ret = false;
     }
