@@ -1694,6 +1694,9 @@ static int vzDomainUpdateDeviceFlags(virDomainPtr domain,
     if (prlsdkUpdateDevice(driver, dom, dev) < 0)
         goto cleanup;
 
+    if (prlsdkUpdateDomain(driver, dom) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
 
