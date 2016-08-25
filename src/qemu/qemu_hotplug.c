@@ -2324,21 +2324,6 @@ int qemuDomainChangeNetLinkState(virQEMUDriverPtr driver,
     if (ret < 0)
         goto cleanup;
 
-    if (virDomainNetGetActualType(dev) == VIR_DOMAIN_NET_TYPE_ETHERNET) {
-        switch (linkstate) {
-            case VIR_DOMAIN_NET_INTERFACE_LINK_STATE_UP:
-            case VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DEFAULT:
-                if ((ret = virNetDevSetOnline(dev->ifname, true)) < 0)
-                    goto cleanup;
-                break;
-
-            case VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN:
-                if ((ret = virNetDevSetOnline(dev->ifname, false)) < 0)
-                    goto cleanup;
-                break;
-            }
-    }
-
     /* modify the device configuration */
     dev->linkstate = linkstate;
 
