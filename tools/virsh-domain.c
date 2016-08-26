@@ -10318,6 +10318,12 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (vshCommandOptBool(cmd, "postcopy-after-precopy")) {
+        if (!live_flag) {
+            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                          _("post-copy migration is not supported with "
+                            "non-live or paused migration"));
+            goto cleanup;
+        }
         iterEvent = virConnectDomainEventRegisterAny(
                             priv->conn, dom,
                             VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION,
