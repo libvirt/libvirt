@@ -216,6 +216,28 @@ bhyveProbeCapsAHCI32Slot(unsigned int *caps, char *binary)
     return ret;
 }
 
+static int
+bhyveProbeCapsNetE1000(unsigned int *caps, char *binary)
+{
+    char *error;
+    virCommandPtr cmd = NULL;
+    int ret = -1, exit;
+
+    cmd = virCommandNew(binary);
+    virCommandAddArgList(cmd, "-s", "0,e1000", NULL);
+    virCommandSetErrorBuffer(cmd, &error);
+    if (virCommandRun(cmd, &exit) < 0)
+        goto cleanup;
+
+    if (strstr(error, "pci slot 0:0: unknown device \"e1000\"") == NULL)
+        *caps |= BHYVE_CAP_NET_E1000;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(error);
+    virCommandFree(cmd);
+    return ret;
+}
 
 int
 virBhyveProbeCaps(unsigned int *caps)
@@ -233,6 +255,9 @@ virBhyveProbeCaps(unsigned int *caps)
         goto out;
 
     if ((ret = bhyveProbeCapsAHCI32Slot(caps, binary)))
+        goto out;
+
+    if ((ret = bhyveProbeCapsNetE1000(caps, binary)))
         goto out;
 
  out:

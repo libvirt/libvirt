@@ -162,7 +162,7 @@ mymain(void)
     DO_TEST_FULL(name, FLAG_EXPECT_PARSE_ERROR)
 
     driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;
-    driver.bhyvecaps = BHYVE_CAP_RTC_UTC | BHYVE_CAP_AHCI32SLOT;
+    driver.bhyvecaps = BHYVE_CAP_RTC_UTC | BHYVE_CAP_AHCI32SLOT | BHYVE_CAP_NET_E1000;
 
     DO_TEST("base");
     DO_TEST("acpiapic");
@@ -185,6 +185,7 @@ mymain(void)
     DO_TEST("disk-cdrom-grub");
     DO_TEST("serial-grub");
     DO_TEST("localtime");
+    DO_TEST("net-e1000");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");
@@ -202,6 +203,10 @@ mymain(void)
     driver.grubcaps = 0;
 
     DO_TEST("serial-grub-nocons");
+
+    driver.bhyvecaps &= ~BHYVE_CAP_NET_E1000;
+
+    DO_TEST_FAILURE("net-e1000");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

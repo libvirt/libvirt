@@ -175,6 +175,7 @@ mymain(void)
     DO_TEST("ahci-hd");
     DO_TEST("virtio-blk");
     DO_TEST("virtio-net");
+    DO_TEST("e1000");
     DO_TEST_WARN("virtio-net2");
     DO_TEST_WARN("virtio-net3");
     DO_TEST_WARN("virtio-net4");
