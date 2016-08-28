@@ -107,7 +107,8 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
     }
 
     for (i = 0; i < def->ndisks; i++) {
-        if (!virDeviceInfoPCIAddressWanted(&def->disks[i]->info))
+        if (def->disks[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+            !virPCIDeviceAddressIsEmpty(&def->disks[i]->info.addr.pci))
             continue;
         if (virDomainPCIAddressReserveNextSlot(addrs,
                                                &def->disks[i]->info,
