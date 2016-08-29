@@ -5677,6 +5677,7 @@ libxlConnectSupportsFeature(virConnectPtr conn, int feature)
         return -1;
 
     switch (feature) {
+    case VIR_DRV_FEATURE_MIGRATION_V3:
     case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
     case VIR_DRV_FEATURE_MIGRATION_PARAMS:
     case VIR_DRV_FEATURE_MIGRATION_P2P:
