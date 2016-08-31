@@ -64,13 +64,6 @@ EXTRA_DIST = \
 	libvirt-guests.sysconf				\
 	virt-login-shell.conf				\
 	virsh-edit.c					\
-	virsh-domain.c					\
-	virsh-domain-monitor.c				\
-	virsh-host.c virsh-interface.c			\
-	virsh-network.c virsh-nodedev.c			\
-	virsh-nwfilter.c virsh-pool.c			\
-	virsh-secret.c virsh-snapshot.c			\
-	virsh-volume.c					\
 	$(PODFILES)					\
 	$(MANINFILES)					\
 	$(NULL)
