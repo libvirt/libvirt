@@ -8090,35 +8090,23 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
                              unsigned int parse_flags,
                              virDomainXMLOptionPtr xmlopt)
 {
-    virDomainDiskDefPtr orig, disk;
+    virDomainDiskDefPtr newDisk;
     virDomainGraphicsDefPtr newGraphics;
     virDomainNetDefPtr net;
     int pos;
 
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        disk = dev->data.disk;
-        if (!(orig = virDomainDiskByName(vmdef, disk->dst, false))) {
+        newDisk = dev->data.disk;
+        if ((pos = virDomainDiskIndexByName(vmdef, newDisk->dst, false)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("target %s doesn't exist."), disk->dst);
+                           _("target %s doesn't exist."), newDisk->dst);
             return -1;
         }
-        if (!(orig->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
-            !(orig->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY)) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("this disk doesn't support update"));
-            return -1;
-        }
-        /*
-         * Update 'orig'
-         * We allow updating src/type//driverType/cachemode/
-         */
-        orig->cachemode = disk->cachemode;
-        orig->startupPolicy = disk->startupPolicy;
 
-        virStorageSourceFree(orig->src);
-        orig->src = disk->src;
-        disk->src = NULL;
+        virDomainDiskDefFree(vmdef->disks[pos]);
+        vmdef->disks[pos] = newDisk;
+        dev->data.disk = NULL;
         break;
 
     case VIR_DOMAIN_DEVICE_GRAPHICS:
