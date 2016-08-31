@@ -994,9 +994,16 @@ virHostCPUGetInfo(virArch hostarch ATTRIBUTE_UNUSED,
     *threads = 1;
 
 # ifdef __FreeBSD__
+    /* dev.cpu.%d.freq reports current active CPU frequency. It is provided by
+     * the cpufreq(4) framework. However, it might be disabled or no driver
+     * available. In this case fallback to "hw.clockrate" which reports boot time
+     * CPU frequency. */
+
     if (sysctlbyname("dev.cpu.0.freq", &cpu_freq, &cpu_freq_len, NULL, 0) < 0) {
-        virReportSystemError(errno, "%s", _("cannot obtain CPU freq"));
-        return -1;
+        if (sysctlbyname("hw.clockrate", &cpu_freq, &cpu_freq_len, NULL, 0) < 0) {
+            virReportSystemError(errno, "%s", _("cannot obtain CPU freq"));
+            return -1;
+        }
     }
 
     *mhz = cpu_freq;
