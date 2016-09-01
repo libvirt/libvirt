@@ -102,6 +102,7 @@ virDomainPCIAddressFlagsCompatible;
 virDomainPCIAddressGetNextSlot;
 virDomainPCIAddressReleaseSlot;
 virDomainPCIAddressReserveAddr;
+virDomainPCIAddressReserveNextAddr;
 virDomainPCIAddressReserveNextSlot;
 virDomainPCIAddressReserveSlot;
 virDomainPCIAddressSetAlloc;

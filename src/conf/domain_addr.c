@@ -693,26 +693,60 @@ virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
     return 0;
 }
 
+
+/**
+ * virDomainPCIAddressReserveNextAddr:
+ *
+ * @addrs: a set of PCI addresses.
+ * @dev: virDomainDeviceInfo that should get the new address.
+ * @flags: CONNECT_TYPE flags for the device that needs an address.
+ * @function: which function on the slot to mark as reserved
+ *            (if @reserveEntireSlot is false)
+ * @reserveEntireSlot: true to reserve all functions on the new slot,
+ *                     false to reserve just @function
+ *
+ * Find the next *completely unreserved* slot with compatible
+ * connection @flags, mark either one function or the entire
+ * slot as in-use (according to @function and @reserveEntireSlot),
+ * and set @dev->addr.pci with this newly reserved address.
+ *
+ * returns 0 on success, or -1 on failure.
+ */
 int
-virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
+virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
                                    virDomainDeviceInfoPtr dev,
-                                   virDomainPCIConnectFlags flags)
+                                   virDomainPCIConnectFlags flags,
+                                   unsigned int function,
+                                   bool reserveEntireSlot)
 {
     virPCIDeviceAddress addr;
+
     if (virDomainPCIAddressGetNextSlot(addrs, &addr, flags) < 0)
         return -1;
 
-    if (virDomainPCIAddressReserveSlot(addrs, &addr, flags) < 0)
+    addr.function = reserveEntireSlot ? 0 : function;
+
+    if (virDomainPCIAddressReserveAddr(addrs, &addr, flags, reserveEntireSlot, false) < 0)
         return -1;
+
+    addrs->lastaddr = addr;
+    addrs->lastFlags = flags;
 
     if (!addrs->dryRun) {
         dev->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
         dev->addr.pci = addr;
     }
 
-    addrs->lastaddr = addr;
-    addrs->lastFlags = flags;
     return 0;
+}
+
+
+int
+virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
+                                   virDomainDeviceInfoPtr dev,
+                                   virDomainPCIConnectFlags flags)
+{
+    return virDomainPCIAddressReserveNextAddr(addrs, dev, flags, 0, true);
 }
 
 

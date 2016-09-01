@@ -160,6 +160,13 @@ int virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
                                    virDomainPCIConnectFlags flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
+                                       virDomainDeviceInfoPtr dev,
+                                       virDomainPCIConnectFlags flags,
+                                       unsigned int function,
+                                       bool reserveEntireSlot)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 int virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
                                        virDomainDeviceInfoPtr dev,
                                        virDomainPCIConnectFlags flags)
