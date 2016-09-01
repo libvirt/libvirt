@@ -1005,7 +1005,6 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
 {
     size_t i, j;
     virDomainPCIConnectFlags flags = 0; /* initialize to quiet gcc warning */
-    virPCIDeviceAddress tmp_addr;
 
     /* PCI controllers */
     for (i = 0; i < def->ncontrollers; i++) {
@@ -1115,7 +1114,6 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             virPCIDeviceAddress addr = {0};
             bool foundAddr = false;
 
-            memset(&tmp_addr, 0, sizeof(tmp_addr));
             for (j = 0; j < def->ncontrollers; j++) {
                 if (IS_USB2_CONTROLLER(def->controllers[j]) &&
                     def->controllers[j]->idx == cont->idx &&
@@ -1145,26 +1143,25 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
                 break;
             }
 
-            if (!foundAddr) {
-                /* This is the first part of the controller, so need
-                 * to find a free slot & then reserve a function */
-                if (virDomainPCIAddressGetNextSlot(addrs, &tmp_addr, flags) < 0)
+            if (foundAddr) {
+                /* Reserve this function on the slot we found */
+                if (virDomainPCIAddressReserveAddr(addrs, &addr, flags,
+                                                   false, true) < 0)
                     goto error;
 
-                addr.bus = tmp_addr.bus;
-                addr.slot = tmp_addr.slot;
+                cont->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+                cont->info.addr.pci = addr;
+            } else {
+                /* This is the first part of the controller, so need
+                 * to find a free slot & then reserve this function */
+                if (virDomainPCIAddressReserveNextAddr(addrs, &cont->info,
+                                                       flags, addr.function,
+                                                       false) < 0) {
+                    goto error;
+                }
 
-                addrs->lastaddr = addr;
-                addrs->lastaddr.function = 0;
-                addrs->lastaddr.multi = VIR_TRISTATE_SWITCH_ABSENT;
+                cont->info.addr.pci.multi = addr.multi;
             }
-            /* Finally we can reserve the slot+function */
-            if (virDomainPCIAddressReserveAddr(addrs, &addr, flags,
-                                               false, foundAddr) < 0)
-                goto error;
-
-            cont->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
-            cont->info.addr.pci = addr;
         } else {
             if (virDomainPCIAddressReserveNextSlot(addrs,
                                                    &cont->info, flags) < 0) {
