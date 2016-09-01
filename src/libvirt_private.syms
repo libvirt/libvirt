@@ -99,7 +99,6 @@ virDomainPCIAddressAsString;
 virDomainPCIAddressBusSetModel;
 virDomainPCIAddressEnsureAddr;
 virDomainPCIAddressFlagsCompatible;
-virDomainPCIAddressGetNextSlot;
 virDomainPCIAddressReleaseSlot;
 virDomainPCIAddressReserveAddr;
 virDomainPCIAddressReserveNextAddr;

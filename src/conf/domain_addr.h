@@ -155,11 +155,6 @@ int virDomainPCIAddressReleaseSlot(virDomainPCIAddressSetPtr addrs,
                                    virPCIDeviceAddressPtr addr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
-                                   virPCIDeviceAddressPtr next_addr,
-                                   virDomainPCIConnectFlags flags)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
 int virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
                                        virDomainDeviceInfoPtr dev,
                                        virDomainPCIConnectFlags flags,
