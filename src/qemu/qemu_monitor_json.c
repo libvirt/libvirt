@@ -941,7 +941,7 @@ qemuMonitorJSONHandleDeviceDeleted(qemuMonitorPtr mon, virJSONValuePtr data)
     const char *device;
 
     if (!(device = virJSONValueObjectGetString(data, "device"))) {
-        VIR_WARN("missing device in device deleted event");
+        VIR_DEBUG("missing device in device deleted event");
         return;
     }
 
