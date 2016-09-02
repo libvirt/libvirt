@@ -1617,8 +1617,8 @@ migration. I<--postcopy> enables post-copy logic in migration, but does not
 actually start post-copy, i.e., migration is started in pre-copy mode.
 Once migration is running, the user may switch to post-copy using the
 B<migrate-postcopy> command sent from another virsh instance or use
-I<--postcopy-after-precopy> to let libvirt automatically switch to
-post-copy after the first pass of pre-copy is finished.
+I<--postcopy-after-precopy> along with I<--postcopy> to let libvirt
+automatically switch to post-copy after the first pass of pre-copy is finished.
 
 I<--auto-converge> forces convergence during live migration. The initial
 guest CPU throttling rate can be set with I<auto-converge-initial>. If the

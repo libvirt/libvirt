@@ -10318,10 +10318,10 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (vshCommandOptBool(cmd, "postcopy-after-precopy")) {
-        if (!live_flag) {
+        if (!vshCommandOptBool(cmd, "postcopy")) {
             virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                          _("post-copy migration is not supported with "
-                            "non-live or paused migration"));
+                          _("--postcopy-after-precopy can only be used with "
+                            "--postcopy"));
             goto cleanup;
         }
         iterEvent = virConnectDomainEventRegisterAny(
