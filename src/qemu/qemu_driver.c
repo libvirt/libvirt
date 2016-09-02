@@ -16310,6 +16310,34 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
 
 
 static int
+qemuBlockJobInfoTranslate(qemuMonitorBlockJobInfoPtr rawInfo,
+                          virDomainBlockJobInfoPtr info,
+                          virDomainDiskDefPtr disk,
+                          bool reportBytes)
+{
+    info->cur = rawInfo->cur;
+    info->end = rawInfo->end;
+
+    info->type = rawInfo->type;
+    if (info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
+        disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
+        info->type = disk->mirrorJob;
+
+    if (rawInfo->bandwidth && !reportBytes)
+        rawInfo->bandwidth = VIR_DIV_UP(rawInfo->bandwidth, 1024 * 1024);
+    info->bandwidth = rawInfo->bandwidth;
+    if (info->bandwidth != rawInfo->bandwidth) {
+        virReportError(VIR_ERR_OVERFLOW,
+                       _("bandwidth %llu cannot be represented in result"),
+                       rawInfo->bandwidth);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainGetBlockJobInfo(virDomainPtr dom,
                           const char *path,
                           virDomainBlockJobInfoPtr info,
@@ -16356,22 +16384,8 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
     if (ret <= 0)
         goto endjob;
 
-    info->cur = rawInfo.cur;
-    info->end = rawInfo.end;
-
-    info->type = rawInfo.type;
-    if (info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
-        disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
-        info->type = disk->mirrorJob;
-
-    if (rawInfo.bandwidth &&
-        !(flags & VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES))
-        rawInfo.bandwidth = VIR_DIV_UP(rawInfo.bandwidth, 1024 * 1024);
-    info->bandwidth = rawInfo.bandwidth;
-    if (info->bandwidth != rawInfo.bandwidth) {
-        virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth %llu cannot be represented in result"),
-                       rawInfo.bandwidth);
+    if (qemuBlockJobInfoTranslate(&rawInfo, info, disk,
+                                  flags & VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES) < 0) {
         ret = -1;
         goto endjob;
     }
