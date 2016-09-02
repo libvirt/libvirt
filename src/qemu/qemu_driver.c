@@ -16318,6 +16318,18 @@ qemuBlockJobInfoTranslate(qemuMonitorBlockJobInfoPtr rawInfo,
     info->cur = rawInfo->cur;
     info->end = rawInfo->end;
 
+    /* Fix job completeness reporting. If cur == end mgmt
+     * applications think job is completed. Except when both cur
+     * and end are zero, in which case qemu hasn't started the
+     * job yet. */
+    if (!info->cur && !info->end) {
+        if (rawInfo->ready > 0) {
+            info->cur = info->end = 1;
+        } else if (!rawInfo->ready) {
+            info->end = 1;
+        }
+    }
+
     info->type = rawInfo->type;
     if (info->type == VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT &&
         disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)

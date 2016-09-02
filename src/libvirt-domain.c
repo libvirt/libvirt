@@ -9896,6 +9896,13 @@ virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
  * can be found by calling virDomainGetXMLDesc() and inspecting
  * elements within //domain/devices/disk.
  *
+ * As a corner case underlying hypervisor may report cur == 0 and
+ * end == 0 when the block job hasn't been started yet. In this
+ * case libvirt reports cur = 0 and end = 1. However, hypervisor
+ * may return cur == 0 and end == 0 if the block job has finished
+ * and was no-op. In this case libvirt reports cur = 1 and end = 1.
+ * Since 2.3.0.
+ *
  * Returns -1 in case of failure, 0 when nothing found, 1 when info was found.
  */
 int
