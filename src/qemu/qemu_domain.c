@@ -5620,6 +5620,36 @@ qemuDomainMachineIsI440FX(const virDomainDef *def)
 
 
 bool
+qemuDomainMachineHasPCIRoot(const virDomainDef *def)
+{
+    int root = virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0);
+
+    if (root < 0)
+        return false;
+
+    if (def->controllers[root]->model != VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT)
+        return false;
+
+    return true;
+}
+
+
+bool
+qemuDomainMachineHasPCIeRoot(const virDomainDef *def)
+{
+    int root = virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0);
+
+    if (root < 0)
+        return false;
+
+    if (def->controllers[root]->model != VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)
+        return false;
+
+    return true;
+}
+
+
+bool
 qemuDomainMachineNeedsFDC(const virDomainDef *def)
 {
     char *p = STRSKIP(def->os.machine, "pc-q35-");
