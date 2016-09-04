@@ -142,6 +142,11 @@ typedef struct _virDomainDeviceInfo {
     /* bootIndex is only used for disk, network interface, hostdev
      * and redirdev devices */
     unsigned int bootIndex;
+
+    /* pciConnectFlags is only used internally during address
+     * assignment, never saved and never reported.
+     */
+    int pciConnectFlags; /* enum virDomainPCIConnectFlags */
 } virDomainDeviceInfo, *virDomainDeviceInfoPtr;
 
 
