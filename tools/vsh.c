@@ -2731,6 +2731,7 @@ vshReadlineParse(const char *text, int state)
                     goto error;
                 }
 
+                opts_seen = const_opts_seen;
                 opt_exists = true;
                 VIR_FREE(const_tkdata);
                 if (opt->type != VSH_OT_BOOL) {
@@ -2748,14 +2749,14 @@ vshReadlineParse(const char *text, int state)
                             goto error;
 
                         tkdata = const_tkdata;
+                        virSkipSpaces((const char **)&tkdata);
                     }
                     if (STREQ(tkdata, sanitized_text)) {
                         /* auto-complete non-bool option arg */
                         data_complete = true;
                         break;
                     }
-                    if (opt->type != VSH_OT_ARGV)
-                        opts_need_arg &= ~(1ULL << opt_index);
+                    non_bool_opt_exists = false;
                 } else {
                     tkdata = NULL;
                     /* opt type is BOOL */
