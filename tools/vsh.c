@@ -2607,10 +2607,6 @@ vshReadlineOptionsGenerator(const char *text, int state, const vshCmdDef *cmd_pa
 
         list_index++;
 
-        if (opt->type == VSH_OT_DATA || opt->type == VSH_OT_ARGV)
-            /* ignore non --option */
-            continue;
-
         if (len > 2) {
             /* provide auto-complete only when the text starts with -- */
             if (STRNEQLEN(text, "--", 2))
