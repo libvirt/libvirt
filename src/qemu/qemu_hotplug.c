@@ -149,8 +149,7 @@ static int
 qemuHotplugWaitForTrayEject(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             virDomainDiskDefPtr disk,
-                            const char *driveAlias,
-                            bool force)
+                            const char *driveAlias)
 {
     unsigned long long now;
     int rc;
@@ -175,7 +174,7 @@ qemuHotplugWaitForTrayEject(virQEMUDriverPtr driver,
 
     /* re-issue ejection command to pop out the media */
     qemuDomainObjEnterMonitor(driver, vm);
-    rc = qemuMonitorEjectMedia(qemuDomainGetMonitor(vm), driveAlias, force);
+    rc = qemuMonitorEjectMedia(qemuDomainGetMonitor(vm), driveAlias, false);
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         return -1;
 
@@ -238,9 +237,9 @@ qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
         goto cleanup;
 
     /* If the tray is present and tray change event is supported wait for it to open. */
-    if (diskPriv->tray &&
+    if (!force && diskPriv->tray &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_TRAY_MOVED)) {
-        rc = qemuHotplugWaitForTrayEject(driver, vm, disk, driveAlias, force);
+        rc = qemuHotplugWaitForTrayEject(driver, vm, disk, driveAlias);
         if (rc < 0)
             goto error;
     } else  {
