@@ -1015,27 +1015,19 @@ prlsdkGetNetInfo(PRL_HANDLE netAdapter, virDomainNetDefPtr net, bool isCt)
                        PARALLELS_DOMAIN_ROUTED_NETWORK_NAME) < 0)
             goto cleanup;
     } else {
-        char *netid = NULL;
-
-        if (!(netid =
+        char *netid =
               prlsdkGetStringParamVar(PrlVmDevNet_GetVirtualNetworkId,
-                                      netAdapter)))
-            goto cleanup;
+                                      netAdapter);
 
-        /*
-         * We use VIR_DOMAIN_NET_TYPE_NETWORK for all network adapters
-         * except those whose Virtual Network Id differ from Parallels
-         * predefined ones such as PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME
-         * and PARALLELS_DONAIN_ROUTED_NETWORK_NAME
-         */
-        if (STRNEQ(netid, PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME)) {
+        if (emulatedType == PNA_BRIDGE) {
             net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
-            net->data.network.name = netid;
+            if (netid)
+                net->data.bridge.brname = netid;
         } else {
             net->type = VIR_DOMAIN_NET_TYPE_NETWORK;
-            net->data.bridge.brname = netid;
+            if (netid)
+                net->data.network.name = netid;
         }
-
     }
 
     if (!isCt) {
@@ -3186,16 +3178,14 @@ static int prlsdkConfigureGateways(PRL_HANDLE sdknet, virDomainNetDefPtr net)
     return ret;
 }
 
-static int prlsdkConfigureNet(vzDriverPtr driver,
-                              virDomainObjPtr dom,
+static int prlsdkConfigureNet(vzDriverPtr driver ATTRIBUTE_UNUSED,
+                              virDomainObjPtr dom ATTRIBUTE_UNUSED,
                               PRL_HANDLE sdkdom,
                               virDomainNetDefPtr net,
                               bool isCt, bool create)
 {
     PRL_RESULT pret;
     PRL_HANDLE sdknet = PRL_INVALID_HANDLE;
-    PRL_HANDLE vnet = PRL_INVALID_HANDLE;
-    PRL_HANDLE job = PRL_INVALID_HANDLE;
     PRL_HANDLE addrlist = PRL_INVALID_HANDLE;
     size_t i;
     int ret = -1;
@@ -3302,35 +3292,17 @@ static int prlsdkConfigureNet(vzDriverPtr driver,
         if (STREQ(net->data.network.name, PARALLELS_DOMAIN_ROUTED_NETWORK_NAME)) {
             pret = PrlVmDev_SetEmulatedType(sdknet, PNA_ROUTED);
             prlsdkCheckRetGoto(pret, cleanup);
-        } else if (STREQ(net->data.network.name, PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME)) {
-            pret = PrlVmDev_SetEmulatedType(sdknet, PNA_BRIDGED_ETHERNET);
+        } else {
+            pret = PrlVmDev_SetEmulatedType(sdknet, PNA_BRIDGED_NETWORK);
             prlsdkCheckRetGoto(pret, cleanup);
 
             pret = PrlVmDevNet_SetVirtualNetworkId(sdknet, net->data.network.name);
             prlsdkCheckRetGoto(pret, cleanup);
         }
+
     } else if (net->type == VIR_DOMAIN_NET_TYPE_BRIDGE) {
-        /*
-         * For this type of adapter we create a new
-         * Virtual Network assuming that bridge with given name exists
-         * Failing creating this means domain creation failure
-         */
-        pret = PrlVirtNet_Create(&vnet);
-        prlsdkCheckRetGoto(pret, cleanup);
 
-        pret = PrlVirtNet_SetNetworkId(vnet, net->data.bridge.brname);
-        prlsdkCheckRetGoto(pret, cleanup);
-
-        pret = PrlVirtNet_SetNetworkType(vnet, PVN_BRIDGED_ETHERNET);
-        prlsdkCheckRetGoto(pret, cleanup);
-
-        job = PrlSrv_AddVirtualNetwork(driver->server,
-                                       vnet,
-                                       PRL_USE_VNET_NAME_FOR_BRIDGE_NAME);
-        if (PRL_FAILED(pret = waitDomainJob(job, dom)))
-            goto cleanup;
-
-        pret = PrlVmDev_SetEmulatedType(sdknet, PNA_BRIDGED_ETHERNET);
+        pret = PrlVmDev_SetEmulatedType(sdknet, PNA_BRIDGE);
         prlsdkCheckRetGoto(pret, cleanup);
 
         pret = PrlVmDevNet_SetVirtualNetworkId(sdknet, net->data.bridge.brname);
@@ -3345,38 +3317,8 @@ static int prlsdkConfigureNet(vzDriverPtr driver,
  cleanup:
     VIR_FREE(addrstr);
     PrlHandle_Free(addrlist);
-    PrlHandle_Free(vnet);
     PrlHandle_Free(sdknet);
     return ret;
-}
-
-static void
-prlsdkCleanupBridgedNet(vzDriverPtr driver,
-                        virDomainObjPtr dom,
-                        virDomainNetDefPtr net)
-{
-    PRL_RESULT pret;
-    PRL_HANDLE vnet = PRL_INVALID_HANDLE;
-    PRL_HANDLE job = PRL_INVALID_HANDLE;
-
-    if (net->type != VIR_DOMAIN_NET_TYPE_BRIDGE)
-        return;
-
-    pret = PrlVirtNet_Create(&vnet);
-    prlsdkCheckRetGoto(pret, cleanup);
-
-    pret = PrlVirtNet_SetNetworkId(vnet, net->data.network.name);
-    prlsdkCheckRetGoto(pret, cleanup);
-
-    job = PrlSrv_DeleteVirtualNetwork(driver->server, vnet, 0);
-    ignore_value(waitDomainJob(job, dom));
-
-    /* As far as waitDomainJob finally calls virReportErrorHelper
-     * and we are not going to report it, reset it expicitly*/
-    virResetLastError();
-
- cleanup:
-    PrlHandle_Free(vnet);
 }
 
 static PRL_HANDLE
@@ -3624,7 +3566,7 @@ prlsdkAttachDevice(vzDriverPtr driver,
 }
 
 int
-prlsdkDetachDevice(vzDriverPtr driver,
+prlsdkDetachDevice(vzDriverPtr driver ATTRIBUTE_UNUSED,
                    virDomainObjPtr dom,
                    virDomainDeviceDefPtr dev)
 {
@@ -3658,8 +3600,6 @@ prlsdkDetachDevice(vzDriverPtr driver,
         sdkdev = prlsdkFindNetByMAC(privdom->sdkdom, &dev->data.net->mac);
         if (sdkdev == PRL_INVALID_HANDLE)
             goto cleanup;
-
-        prlsdkCleanupBridgedNet(driver, dom, dev->data.net);
 
         pret = PrlVmDev_Remove(sdkdev);
         prlsdkCheckRetGoto(pret, cleanup);
@@ -3973,11 +3913,6 @@ prlsdkDoApplyConfig(vzDriverPtr driver,
     if (prlsdkRemoveBootDevices(sdkdom) < 0)
         goto error;
 
-    if (dom) {
-        for (i = 0; i < dom->def->nnets; i++)
-            prlsdkCleanupBridgedNet(driver, dom, dom->def->nets[i]);
-    }
-
     for (i = 0; i < def->nnets; i++) {
         if (prlsdkConfigureNet(driver, dom, sdkdom, def->nets[i],
                                IS_CT(def), true) < 0)
@@ -4025,9 +3960,6 @@ prlsdkDoApplyConfig(vzDriverPtr driver,
 
  error:
     VIR_FREE(mask);
-
-    for (i = 0; i < def->nnets; i++)
-        prlsdkCleanupBridgedNet(driver, dom, def->nets[i]);
 
     return -1;
 }
@@ -4267,7 +4199,6 @@ prlsdkUnregisterDomain(vzDriverPtr driver, virDomainObjPtr dom, unsigned int fla
 {
     vzDomObjPtr privdom = dom->privateData;
     PRL_HANDLE job;
-    size_t i;
     virDomainSnapshotObjListPtr snapshots = NULL;
     VIRTUAL_MACHINE_STATE domainState;
     int ret = -1;
@@ -4303,9 +4234,6 @@ prlsdkUnregisterDomain(vzDriverPtr driver, virDomainObjPtr dom, unsigned int fla
     job = PrlVm_Delete(privdom->sdkdom, PRL_INVALID_HANDLE);
     if (PRL_FAILED(waitDomainJob(job, dom)))
         goto cleanup;
-
-    for (i = 0; i < dom->def->nnets; i++)
-        prlsdkCleanupBridgedNet(driver, dom, dom->def->nets[i]);
 
     prlsdkSendEvent(driver, dom, VIR_DOMAIN_EVENT_UNDEFINED,
                     VIR_DOMAIN_EVENT_UNDEFINED_REMOVED);
