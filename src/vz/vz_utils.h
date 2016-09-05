@@ -47,8 +47,7 @@
                        _("no domain with matching uuid '%s'"), uuidstr); \
     } while (0)
 
-# define PARALLELS_DOMAIN_ROUTED_NETWORK_NAME   "Routed"
-# define PARALLELS_DOMAIN_BRIDGED_NETWORK_NAME  "Bridged"
+# define PARALLELS_DOMAIN_ROUTED_NETWORK_NAME   "host-routed"
 # define VIRTUOZZO_VER_7 ((unsigned long) 7000000)
 
 struct _vzCapabilities {
