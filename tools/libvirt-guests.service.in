@@ -1,6 +1,8 @@
 [Unit]
 Description=Suspend/Resume Running libvirt Guests
-After=network.target libvirtd.service time-sync.target
+After=network.target
+After=time-sync.target
+After=libvirtd.service
 Documentation=man:libvirtd(8)
 Documentation=http://libvirt.org
 
