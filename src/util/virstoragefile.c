@@ -2940,6 +2940,28 @@ virStorageSourceParseBackingJSONSSH(virStorageSourcePtr src,
 }
 
 
+static int
+virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
+                                    virJSONValuePtr json,
+                                    int opaque ATTRIBUTE_UNUSED)
+{
+    const char *filename;
+
+    src->type = VIR_STORAGE_TYPE_NETWORK;
+    src->protocol = VIR_STORAGE_NET_PROTOCOL_RBD;
+
+    /* legacy syntax passed via 'filename' option */
+    if ((filename = virJSONValueObjectGetString(json, "filename")))
+        return virStorageSourceParseRBDColonString(filename, src);
+
+    /* RBD currently supports only URI syntax passed in as filename */
+    virReportError(VIR_ERR_INVALID_ARG, "%s",
+                   _("missing RBD filename in JSON backing volume definition"));
+
+    return -1;
+}
+
+
 struct virStorageSourceJSONDriverParser {
     const char *drvname;
     int (*func)(virStorageSourcePtr src, virJSONValuePtr json, int opaque);
@@ -2960,6 +2982,7 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
     {"nbd", virStorageSourceParseBackingJSONNbd, 0},
     {"sheepdog", virStorageSourceParseBackingJSONSheepdog, 0},
     {"ssh", virStorageSourceParseBackingJSONSSH, 0},
+    {"rbd", virStorageSourceParseBackingJSONRBD, 0},
 };
 
 

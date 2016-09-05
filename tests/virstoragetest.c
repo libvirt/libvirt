@@ -1486,6 +1486,12 @@ mymain(void)
                        "<source protocol='ssh' name='blah'>\n"
                        "  <host name='example.org' port='6000'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE("json:{\"file.driver\":\"rbd\","
+                             "\"file.filename\":\"rbd:testshare:id=asdf:mon_host=example.com\""
+                            "}",
+                       "<source protocol='rbd' name='testshare'>\n"
+                       "  <host name='example.com'/>\n"
+                       "</source>\n");
 
  cleanup:
     /* Final cleanup */
