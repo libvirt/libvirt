@@ -2786,6 +2786,9 @@ virStorageSourceParseBackingJSONGluster(virStorageSourcePtr src,
         return -1;
     }
 
+    src->type = VIR_STORAGE_TYPE_NETWORK;
+    src->protocol = VIR_STORAGE_NET_PROTOCOL_GLUSTER;
+
     if (VIR_STRDUP(src->volume, volume) < 0 ||
         virAsprintf(&src->path, "/%s", path) < 0)
         return -1;

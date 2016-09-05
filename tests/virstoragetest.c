@@ -1412,7 +1412,7 @@ mymain(void)
                                                   "]"
                                       "}"
                              "}",
-                        "<source protocol='none' name='testvol/img.qcow2'>\n"
+                        "<source protocol='gluster' name='testvol/img.qcow2'>\n"
                         "  <host name='example.com' port='1234'/>\n"
                         "  <host transport='unix' socket='/path/socket'/>\n"
                         "  <host name='example.com'/>\n"
@@ -1432,7 +1432,7 @@ mymain(void)
                                                "}"
                                              "]"
                             "}",
-                        "<source protocol='none' name='testvol/img.qcow2'>\n"
+                        "<source protocol='gluster' name='testvol/img.qcow2'>\n"
                         "  <host name='example.com' port='1234'/>\n"
                         "  <host transport='unix' socket='/path/socket'/>\n"
                         "  <host name='example.com'/>\n"
