@@ -857,7 +857,7 @@ cmdSrvClientsInfo(vshControl *ctl, const vshCmd *cmd)
     }
 
     for (i = 0; i < nparams; i++)
-        vshPrint(ctl, "%-20s: %d\n", params[i].field, params[i].value.ui);
+        vshPrint(ctl, "%-20s: %u\n", params[i].field, params[i].value.ui);
 
     ret = true;
 
