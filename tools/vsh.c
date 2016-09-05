@@ -2636,14 +2636,16 @@ vshReadlineParse(const char *text, int state)
     vshCommandToken tk;
     static const vshCmdDef *cmd;
     const vshCmdOptDef *opt;
-    char *tkdata, *optstr, *const_tkdata;
+    char *tkdata, *optstr, *const_tkdata, *completed_name;
     char *res = NULL;
     static char *ctext, *sanitized_text;
+    static char **completed_list;
+    static unsigned int completed_list_index;
     static uint64_t const_opts_need_arg, const_opts_required, const_opts_seen;
     uint64_t opts_need_arg, opts_seen;
     size_t opt_index;
     static bool cmd_exists, opts_filled, opt_exists;
-    static bool non_bool_opt_exists;
+    static bool non_bool_opt_exists, data_complete;
 
     if (!state) {
         parser.pos = rl_line_buffer;
@@ -2657,6 +2659,9 @@ vshReadlineParse(const char *text, int state)
         tkdata = NULL;
         sanitized_text = NULL;
         optstr = NULL;
+
+        completed_list = NULL;
+        completed_list_index = 0;
 
         /* Sanitize/de-quote the autocomplete text */
         tk = sanitizer.getNextArg(NULL, &sanitizer, &sanitized_text, false);
@@ -2687,6 +2692,7 @@ vshReadlineParse(const char *text, int state)
         cmd_exists = false;
         opts_filled = false;
         non_bool_opt_exists = false;
+        data_complete = false;
 
         const_opts_need_arg = 0;
         const_opts_required = 0;
@@ -2707,12 +2713,12 @@ vshReadlineParse(const char *text, int state)
                 if (vshCmddefOptFill(cmd, &const_opts_need_arg,
                                      &const_opts_required) < 0)
                     goto error;
+                opts_need_arg = const_opts_need_arg;
+                opts_seen = const_opts_seen;
                 opts_filled = true;
             } else if (tkdata[0] == '-' && tkdata[1] == '-' &&
                        c_isalnum(tkdata[2])) {
                 /* Command retrieved successfully, move to options */
-                opts_need_arg = const_opts_need_arg;
-                opts_seen = const_opts_seen;
                 optstr = strchr(tkdata + 2, '=');
                 opt_index = 0;
 
@@ -2728,6 +2734,7 @@ vshReadlineParse(const char *text, int state)
                     VIR_FREE(optstr);
                     goto error;
                 }
+
                 opt_exists = true;
                 VIR_FREE(const_tkdata);
                 if (opt->type != VSH_OT_BOOL) {
@@ -2745,10 +2752,11 @@ vshReadlineParse(const char *text, int state)
                             goto error;
 
                         tkdata = const_tkdata;
-                        if (STREQ(tkdata, sanitized_text)) {
-                            /* auto-complete non-bool option */
-                            break;
-                        }
+                    }
+                    if (STREQ(tkdata, sanitized_text)) {
+                        /* auto-complete non-bool option arg */
+                        data_complete = true;
+                        break;
                     }
                     if (opt->type != VSH_OT_ARGV)
                         opts_need_arg &= ~(1ULL << opt_index);
@@ -2760,17 +2768,19 @@ vshReadlineParse(const char *text, int state)
                         goto error;
                     }
                 }
-            } else {
-                /* No -- option provided and some other token given */
-                if (!opt_exists) {
+            } else if (!opt_exists) {
+                /* No -- option provided and some other token given
+                 * Try to find the default option.
+                 */
+                if (!(opt = vshCmddefGetData(cmd, &opts_need_arg, &opts_seen))
+                    && opt->type == VSH_OT_BOOL)
                     goto error;
-                } else if (non_bool_opt_exists) {
-                    /* TODO
-                     * -- non bool option present, so parse the next arg
-                     * or call completer on it if it is to be completed
-                     */
-                    return NULL;
-                }
+                opt_exists = true;
+                opts_need_arg = const_opts_need_arg;
+                opts_seen = const_opts_seen;
+            } else {
+                /* In every other case, return NULL */
+                goto error;
             }
 
             VIR_FREE(const_tkdata);
@@ -2795,10 +2805,26 @@ vshReadlineParse(const char *text, int state)
         VIR_FREE(const_tkdata);
     }
 
-    if (!cmd_exists)
+    if (!cmd_exists) {
         res = vshReadlineCommandGenerator(sanitized_text, state);
-    else if (opts_filled && !non_bool_opt_exists)
+    } else if (opts_filled && !non_bool_opt_exists) {
         res = vshReadlineOptionsGenerator(sanitized_text, state, cmd);
+    } else if (non_bool_opt_exists && data_complete && opt->completer) {
+        if (!completed_list)
+            completed_list = opt->completer(opt->completer_flags);
+        if (completed_list) {
+            while ((completed_name = completed_list[completed_list_index])) {
+                completed_list_index++;
+                if (!STRPREFIX(completed_name, sanitized_text))
+                    continue;
+                res = vshStrdup(NULL, completed_name);
+                return res;
+            }
+            res = NULL;
+            virStringFreeList(completed_list);
+            completed_list_index = 0;
+        }
+    }
 
     if (!res) {
         VIR_FREE(sanitized_text);
