@@ -116,7 +116,7 @@ virPerfRdtAttrInit(void)
     char *tmp = NULL;
     unsigned int attr_type = 0;
 
-    if (virFileReadAll("/sys/devices/intel_cqm/type", 10, &buf) < 0)
+    if (virFileReadAllQuiet("/sys/devices/intel_cqm/type", 10, &buf) < 0)
         goto error;
 
     if ((tmp = strchr(buf, '\n')))
@@ -174,9 +174,9 @@ virPerfEventEnable(virPerfPtr perf,
     if (event_attr->attrType == 0 && (type == VIR_PERF_EVENT_CMT ||
                                        type == VIR_PERF_EVENT_MBMT ||
                                        type == VIR_PERF_EVENT_MBML)) {
-        virReportSystemError(errno,
-                             _("Unable to open perf event for %s"),
-                             virPerfEventTypeToString(event->type));
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("unable to enable perf event for %s"),
+                       virPerfEventTypeToString(event->type));
         return -1;
     }
 
