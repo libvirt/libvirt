@@ -2057,7 +2057,7 @@ cmdPoolEvent(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "event", &eventName) < 0)
         return false;
     if (!eventName) {
-        vshError(ctl, "%s", _("either --list or event type is required"));
+        vshError(ctl, "%s", _("either --list or --event <type> is required"));
         return false;
     }
 

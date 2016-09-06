@@ -12694,7 +12694,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         }
     } else if (!all) {
         vshError(ctl, "%s",
-                 _("one of --list, --all, or event type is required"));
+                 _("one of --list, --all, or --event <type> is required"));
         return false;
     }
 
