@@ -14,6 +14,10 @@
         <strong>C#</strong>: Arnaud Champion develops
         <a href="csharp.html">C# bindings</a>.
       </li>
+     <li>
+        <strong>Go</strong>: Kyle Kelley et al. are developing
+        <a href="https://github.com/rgbkrk/libvirt-go">Go bindings</a>.
+      </li>
       <li>
         <strong>Java</strong>: Daniel Veillard develops
         <a href="java.html">Java bindings</a>.
