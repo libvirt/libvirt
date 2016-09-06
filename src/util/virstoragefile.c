@@ -888,7 +888,7 @@ virStorageFileHasEncryptionFormat(const struct FileEncryptionInfo *info,
                                   size_t len)
 {
     if (!info->magic && info->modeOffset == -1)
-        return 0; /* Shouldn't happen - expect at least one */
+        return false; /* Shouldn't happen - expect at least one */
 
     if (info->magic) {
         if (!virStorageFileMatchesMagic(info->magicOffset,
@@ -906,10 +906,13 @@ virStorageFileHasEncryptionFormat(const struct FileEncryptionInfo *info,
 
         return true;
     } else if (info->modeOffset != -1) {
+        int crypt_format;
+
         if (info->modeOffset >= len)
             return false;
 
-        if (buf[info->modeOffset] != info->modeValue)
+        crypt_format = virReadBufInt32BE(buf + info->modeOffset);
+        if (crypt_format != info->modeValue)
             return false;
 
         return true;
