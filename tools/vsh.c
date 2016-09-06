@@ -64,6 +64,11 @@
 # define SA_SIGINFO 0
 #endif
 
+#ifdef WITH_READLINE
+/* For autocompletion */
+void *autoCompleteOpaque;
+#endif
+
 /* NOTE: It would be much nicer to have these two as part of vshControl
  * structure, unfortunately readline doesn't support passing opaque data
  * and only relies on static data accessible from the user-side callback
@@ -2808,7 +2813,8 @@ vshReadlineParse(const char *text, int state)
         res = vshReadlineOptionsGenerator(sanitized_text, state, cmd);
     } else if (non_bool_opt_exists && data_complete && opt->completer) {
         if (!completed_list)
-            completed_list = opt->completer(opt->completer_flags);
+            completed_list = opt->completer(autoCompleteOpaque,
+                                            opt->completer_flags);
         if (completed_list) {
             while ((completed_name = completed_list[completed_list_index])) {
                 completed_list_index++;
@@ -2857,6 +2863,9 @@ vshReadlineInit(vshControl *ctl)
     int ret = -1;
     char *histsize_env = NULL;
     const char *histsize_str = NULL;
+
+    /* Opaque data for autocomplete callbacks. */
+    autoCompleteOpaque = ctl;
 
     /* Allow conditional parsing of the ~/.inputrc file.
      * Work around ancient readline 4.1 (hello Mac OS X),

@@ -123,7 +123,7 @@ typedef struct _vshCmdOpt vshCmdOpt;
 typedef struct _vshCmdOptDef vshCmdOptDef;
 typedef struct _vshControl vshControl;
 
-typedef char **(*vshCompleter)(unsigned int flags);
+typedef char **(*vshCompleter)(void *opaque, unsigned int flags);
 
 /*
  * vshCmdInfo -- name/value pair for information about command
