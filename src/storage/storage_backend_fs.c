@@ -1270,8 +1270,8 @@ virStorageBackendFileSystemVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
  * @conn: Connection pointer to fetch secret
  * @vol: volume being refreshed
  *
- * If the volume had a QCOW secret generated, we need to regenerate the
- * secret
+ * If the volume had a secret generated, we need to regenerate the
+ * encryption secret information
  *
  * Returns 0 if no secret or secret setup was successful,
  * -1 on failures w/ error message set
@@ -1283,12 +1283,16 @@ virStorageBackendFileSystemLoadDefaultSecrets(virConnectPtr conn,
     virSecretPtr sec;
     virStorageEncryptionSecretPtr encsec = NULL;
 
-    /* Only necessary for qcow format */
-    if (!vol->target.encryption ||
-        vol->target.encryption->format != VIR_STORAGE_ENCRYPTION_FORMAT_QCOW ||
-        vol->target.encryption->nsecrets != 0)
+    if (!vol->target.encryption || vol->target.encryption->nsecrets != 0)
         return 0;
 
+    /* The encryption secret for qcow2 and luks volumes use the path
+     * to the volume, so look for a secret with the path. If not found,
+     * then we cannot generate the secret after a refresh (or restart).
+     * This may be the case if someone didn't follow instructions and created
+     * a usage string that although matched with the secret usage string,
+     * didn't contain the path to the volume. We won't error in that case,
+     * but we also cannot find the secret. */
     if (!(sec = virSecretLookupByUsage(conn, VIR_SECRET_USAGE_TYPE_VOLUME,
                                        vol->target.path)))
         return 0;
