@@ -27,7 +27,6 @@
 #include <sys/epoll.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 
 #ifdef MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
@@ -35,6 +34,7 @@
 # include <sys/sysmacros.h>
 #endif
 
+#include <sys/types.h>
 #include <sys/un.h>
 #include <sys/personality.h>
 #include <unistd.h>

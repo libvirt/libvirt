@@ -35,7 +35,6 @@
 #include <errno.h>
 #include <poll.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 
 #ifdef MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
@@ -43,6 +42,7 @@
 # include <sys/sysmacros.h>
 #endif
 
+#include <sys/types.h>
 #include <sys/ioctl.h>
 #include <string.h>
 #include <termios.h>

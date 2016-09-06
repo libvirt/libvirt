@@ -28,7 +28,6 @@
 #include <sched.h>
 #include <sys/utsname.h>
 #include <string.h>
-#include <sys/types.h>
 
 #ifdef MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
@@ -36,6 +35,7 @@
 # include <sys/sysmacros.h>
 #endif
 
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/un.h>

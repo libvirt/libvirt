@@ -34,7 +34,6 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 
 #ifdef MAJOR_IN_MKDEV
 # include <sys/mkdev.h>
@@ -42,6 +41,7 @@
 # include <sys/sysmacros.h>
 #endif
 
+#include <sys/types.h>
 #include <signal.h>
 #include <dirent.h>
 #include <unistd.h>
