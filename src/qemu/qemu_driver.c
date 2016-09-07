@@ -4730,7 +4730,7 @@ qemuDomainSetVcpusMax(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (persistentDef && persistentDef->cpu && persistentDef->cpu->sockets) {
+    if (persistentDef->cpu && persistentDef->cpu->sockets) {
         /* allow setting a valid vcpu count for the topology so an invalid
          * setting may be corrected via this API */
         if (nvcpus != persistentDef->cpu->sockets *
