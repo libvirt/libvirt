@@ -143,6 +143,20 @@ libvirtd:///system is used.
 
 =back
 
+=head1 DAEMON COMMANDS
+
+The following commands allow to monitor the daemon's state as well as directly
+change its internal configuration.
+
+=over 4
+
+=item B<srv-list>
+
+Lists all manageable servers contained within the daemon the client is
+currently connected to.
+
+=back
+
 =head1 SERVER COMMANDS
 
 Following commands manipulate daemon's server internal configuration.
