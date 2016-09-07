@@ -144,7 +144,8 @@ int virDomainPCIAddressReserveSlot(virDomainPCIAddressSetPtr addrs,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
-                                  virDomainDeviceInfoPtr dev)
+                                  virDomainDeviceInfoPtr dev,
+                                  virDomainPCIConnectFlags flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,

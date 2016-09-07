@@ -2230,6 +2230,36 @@ qemuDomainAssignAddresses(virDomainDefPtr def,
     return 0;
 }
 
+/**
+ * qemuDomainEnsurePCIAddress:
+ *
+ * @obj: the virDomainObjPtr for the domain. This will include
+ *       qemuCaps and address cache (if there is one)
+ *
+ * @dev: the device that we need to ensure has a PCI address
+ *
+ * if @dev should have a PCI address but doesn't, assign an address on
+ * a compatible PCI bus, and set it in @dev->...info. If there is an
+ * address already, validate that it is on a compatible bus, based on
+ * @dev->...info.pciConnectFlags.
+ *
+ * returns 0 on success -1 on failure.
+ */
+int
+qemuDomainEnsurePCIAddress(virDomainObjPtr obj,
+                           virDomainDeviceDefPtr dev)
+{
+    qemuDomainObjPrivatePtr priv = obj->privateData;
+    virDomainDeviceInfoPtr info = virDomainDeviceGetInfo(dev);
+
+    if (!info)
+        return 0;
+
+    qemuDomainFillDevicePCIConnectFlags(obj->def, dev, priv->qemuCaps);
+
+    return virDomainPCIAddressEnsureAddr(priv->pciaddrs, info,
+                                         info->pciConnectFlags);
+}
 
 void
 qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
