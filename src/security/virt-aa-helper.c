@@ -766,7 +766,7 @@ vah_add_path(virBufferPtr buf, const char *path, const char *perms, bool recursi
     }
 
     if (VIR_STRDUP_QUIET(perms_new, perms) < 0)
-        goto clean;
+        goto cleanup;
 
     if (strchr(perms_new, 'w') != NULL) {
         readonly = false;
