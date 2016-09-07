@@ -986,10 +986,8 @@ const vshCmdDef nodedevCmds[] = {
      .flags = 0
     },
     {.name = "nodedev-dettach",
-     .handler = cmdNodeDeviceDetach,
-     .opts = opts_node_device_detach,
-     .info = info_node_device_detach,
-     .flags = VSH_CMD_FLAG_ALIAS
+     .flags = VSH_CMD_FLAG_ALIAS,
+     .alias = "nodedev-detach"
     },
     {.name = "nodedev-dumpxml",
      .handler = cmdNodeDeviceDumpXML,

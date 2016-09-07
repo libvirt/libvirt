@@ -179,6 +179,7 @@ struct _vshCmdDef {
     const vshCmdOptDef *opts;   /* definition of command options */
     const vshCmdInfo *info;     /* details about command */
     unsigned int flags;         /* bitwise OR of VSH_CMD_FLAG */
+    const char *alias;          /* name of the aliased command */
 };
 
 /*
@@ -445,7 +446,8 @@ bool cmdSelfTest(vshControl *ctl, const vshCmd *cmd);
         .handler = cmdSelfTest,                         \
         .opts = NULL,                                   \
         .info = info_selftest,                          \
-        .flags = VSH_CMD_FLAG_NOCONNECT | VSH_CMD_FLAG_ALIAS    \
+        .flags = VSH_CMD_FLAG_NOCONNECT | VSH_CMD_FLAG_ALIAS,    \
+        .alias = "self-test"                            \
     }
 
 

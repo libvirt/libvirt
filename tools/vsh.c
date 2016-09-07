@@ -330,6 +330,13 @@ vshCmddefCheckInternals(const vshCmdDef *cmd)
     size_t i;
     const char *help = NULL;
 
+    /* in order to perform the validation resolve the alias first */
+    if (cmd->flags & VSH_CMD_FLAG_ALIAS) {
+        if (!cmd->alias)
+            return -1;
+        cmd = vshCmddefSearch(cmd->alias);
+    }
+
     /* Each command has to provide a non-empty help string. */
     if (!(help = vshCmddefGetInfo(cmd, "help")) || !*help)
         return -1;
@@ -1406,6 +1413,13 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
                 if (!(cmd = vshCmddefSearch(tkdata))) {
                     vshError(ctl, _("unknown command: '%s'"), tkdata);
                     goto syntaxError;   /* ... or ignore this command only? */
+                }
+
+                /* aliases need to be resolved to the actual commands */
+                if (cmd->flags & VSH_CMD_FLAG_ALIAS) {
+                    VIR_FREE(tkdata);
+                    tkdata = vshStrdup(ctl, cmd->alias);
+                    cmd = vshCmddefSearch(tkdata);
                 }
                 if (vshCmddefOptParse(cmd, &opts_need_arg,
                                       &opts_required) < 0) {
@@ -2568,7 +2582,8 @@ vshReadlineCommandGenerator(const char *text, int state)
 
         if (cmds[cmd_list_index].name) {
             while ((name = cmds[cmd_list_index].name)) {
-                cmd_list_index++;
+                if (cmds[cmd_list_index++].flags & VSH_CMD_FLAG_ALIAS)
+                    continue;
 
                 if (STREQLEN(name, text, len))
                     return vshStrdup(NULL, name);
@@ -2706,8 +2721,10 @@ vshReadlineParse(const char *text, int state)
             if (!cmd) {
                 if (!(cmd = vshCmddefSearch(tkdata)))
                     goto error;
-                cmd_exists = true;
+                if (cmd->flags & VSH_CMD_FLAG_ALIAS)
+                    cmd = vshCmddefSearch(cmd->alias);
 
+                cmd_exists = true;
                 if (vshCmddefOptParse(cmd, &const_opts_need_arg,
                                       &const_opts_required) < 0)
                     goto error;
@@ -3351,9 +3368,6 @@ cmdSelfTest(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     for (grp = cmdGroups; grp->name; grp++) {
         for (def = grp->commands; def->name; def++) {
-            if (def->flags & VSH_CMD_FLAG_ALIAS)
-                continue;
-
             if (vshCmddefCheckInternals(def) < 0)
                 return false;
         }
