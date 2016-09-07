@@ -4853,11 +4853,7 @@ qemuDomainSetVcpusLive(virQEMUDriverPtr driver,
                        unsigned int nvcpus)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virCgroupPtr cgroup_temp = NULL;
-    char *mem_mask = NULL;
-    char *all_nodes_str = NULL;
-    virBitmapPtr all_nodes = NULL;
-    virErrorPtr err = NULL;
+    qemuCgroupEmulatorAllNodesDataPtr emulatorCgroup = NULL;
     virBitmapPtr vcpumap = NULL;
     ssize_t nextvcpu = -1;
     int rc = 0;
@@ -4866,22 +4862,8 @@ qemuDomainSetVcpusLive(virQEMUDriverPtr driver,
     if (!(vcpumap = qemuDomainSelectHotplugVcpuEntities(vm->def, nvcpus)))
         goto cleanup;
 
-    if (virNumaIsAvailable() &&
-        virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
-        if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
-                               false, &cgroup_temp) < 0)
-            goto cleanup;
-
-        if (!(all_nodes = virNumaGetHostNodeset()))
-            goto cleanup;
-
-        if (!(all_nodes_str = virBitmapFormat(all_nodes)))
-            goto cleanup;
-
-        if (virCgroupGetCpusetMems(cgroup_temp, &mem_mask) < 0 ||
-            virCgroupSetCpusetMems(cgroup_temp, all_nodes_str) < 0)
-            goto cleanup;
-    }
+    if (qemuCgroupEmulatorAllNodesAllow(priv->cgroup, &emulatorCgroup) < 0)
+        goto cleanup;
 
     if (nvcpus > virDomainDefGetVcpus(vm->def)) {
         while ((nextvcpu = virBitmapNextSetBit(vcpumap, nextvcpu)) != -1) {
@@ -4909,17 +4891,7 @@ qemuDomainSetVcpusLive(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    if (mem_mask) {
-        err = virSaveLastError();
-        virCgroupSetCpusetMems(cgroup_temp, mem_mask);
-        virSetError(err);
-        virFreeError(err);
-        VIR_FREE(mem_mask);
-    }
-
-    VIR_FREE(all_nodes_str);
-    virBitmapFree(all_nodes);
-    virCgroupFree(&cgroup_temp);
+    qemuCgrouEmulatorAllNodesRestore(emulatorCgroup);
     virBitmapFree(vcpumap);
 
     return ret;

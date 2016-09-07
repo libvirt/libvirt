@@ -1127,3 +1127,93 @@ qemuRemoveCgroup(virDomainObjPtr vm)
 
     return virCgroupRemove(priv->cgroup);
 }
+
+
+static void
+qemuCgroupEmulatorAllNodesDataFree(qemuCgroupEmulatorAllNodesDataPtr data)
+{
+    if (!data)
+        return;
+
+    virCgroupFree(&data->emulatorCgroup);
+    VIR_FREE(data->emulatorMemMask);
+    VIR_FREE(data);
+}
+
+
+/**
+ * qemuCgroupEmulatorAllNodesAllow:
+ * @cgroup: domain cgroup pointer
+ * @retData: filled with structure used to roll back the operation
+ *
+ * Allows all NUMA nodes for the qemu emulator thread temporarily. This is
+ * necessary when hotplugging cpus since it requires memory allocated in the
+ * DMA region. Afterwards the operation can be reverted by
+ * qemuCgrouEmulatorAllNodesRestore.
+ *
+ * Returns 0 on success -1 on error
+ */
+int
+qemuCgroupEmulatorAllNodesAllow(virCgroupPtr cgroup,
+                                qemuCgroupEmulatorAllNodesDataPtr *retData)
+{
+    qemuCgroupEmulatorAllNodesDataPtr data = NULL;
+    char *all_nodes_str = NULL;
+    virBitmapPtr all_nodes = NULL;
+    int ret = -1;
+
+    if (!virNumaIsAvailable() ||
+        !virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return 0;
+
+    if (!(all_nodes = virNumaGetHostNodeset()))
+        goto cleanup;
+
+    if (!(all_nodes_str = virBitmapFormat(all_nodes)))
+        goto cleanup;
+
+    if (VIR_ALLOC(data) < 0)
+        goto cleanup;
+
+    if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
+                           false, &data->emulatorCgroup) < 0)
+        goto cleanup;
+
+    if (virCgroupGetCpusetMems(data->emulatorCgroup, &data->emulatorMemMask) < 0 ||
+        virCgroupSetCpusetMems(data->emulatorCgroup, all_nodes_str) < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(*retData, data);
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(all_nodes_str);
+    virBitmapFree(all_nodes);
+    qemuCgroupEmulatorAllNodesDataFree(data);
+
+    return ret;
+}
+
+
+/**
+ * qemuCgrouEmulatorAllNodesRestore:
+ * @data: data structure created by qemuCgroupEmulatorAllNodesAllow
+ *
+ * Rolls back the setting done by qemuCgroupEmulatorAllNodesAllow and frees the
+ * associated data.
+ */
+void
+qemuCgrouEmulatorAllNodesRestore(qemuCgroupEmulatorAllNodesDataPtr data)
+{
+    virErrorPtr err;
+
+    if (!data)
+        return;
+
+    err = virSaveLastError();
+    virCgroupSetCpusetMems(data->emulatorCgroup, data->emulatorMemMask);
+    virSetError(err);
+    virFreeError(err);
+
+    qemuCgroupEmulatorAllNodesDataFree(data);
+}
