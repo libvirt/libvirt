@@ -4864,6 +4864,8 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriverPtr driver,
                                   qemuDomainAsyncJob asyncJob)
 {
     unsigned int maxvcpus = virDomainDefGetVcpusMax(vm->def);
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuCgroupEmulatorAllNodesDataPtr emulatorCgroup = NULL;
     virDomainVcpuDefPtr vcpu;
     qemuDomainVcpuPrivatePtr vcpupriv;
     virJSONValuePtr vcpuprops = NULL;
@@ -4896,6 +4898,9 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriverPtr driver,
     qsort(bootHotplug, nbootHotplug, sizeof(*bootHotplug),
           qemuProcessVcpusSortOrder);
 
+    if (qemuCgroupEmulatorAllNodesAllow(priv->cgroup, &emulatorCgroup) < 0)
+        goto cleanup;
+
     for (i = 0; i < nbootHotplug; i++) {
         vcpu = bootHotplug[i];
 
@@ -4920,6 +4925,7 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
+    qemuCgrouEmulatorAllNodesRestore(emulatorCgroup);
     VIR_FREE(bootHotplug);
     virJSONValueFree(vcpuprops);
     return ret;
