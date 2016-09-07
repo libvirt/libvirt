@@ -1266,18 +1266,30 @@ static const vshCmdDef vshAdmCmds[] = {
 
 static const vshCmdDef monitoringCmds[] = {
     {.name = "srv-list",
+     .flags = VSH_CMD_FLAG_ALIAS,
+     .alias = "server-list"
+    },
+    {.name = "server-list",
      .handler = cmdSrvList,
      .opts = NULL,
      .info = info_srv_list,
      .flags = 0
     },
     {.name = "srv-threadpool-info",
+     .flags = VSH_CMD_FLAG_ALIAS,
+     .alias = "server-threadpool-info"
+    },
+    {.name = "server-threadpool-info",
      .handler = cmdSrvThreadpoolInfo,
      .opts = opts_srv_threadpool_info,
      .info = info_srv_threadpool_info,
      .flags = 0
     },
     {.name = "srv-clients-list",
+     .flags = VSH_CMD_FLAG_ALIAS,
+     .alias = "client-list"
+    },
+    {.name = "client-list",
      .handler = cmdSrvClientsList,
      .opts = opts_srv_clients_list,
      .info = info_srv_clients_list,
@@ -1290,6 +1302,10 @@ static const vshCmdDef monitoringCmds[] = {
      .flags = 0
     },
     {.name = "srv-clients-info",
+     .flags = VSH_CMD_FLAG_ALIAS,
+     .alias = "server-clients-info"
+    },
+    {.name = "server-clients-info",
      .handler = cmdSrvClientsInfo,
      .opts = opts_srv_clients_info,
      .info = info_srv_clients_info,
@@ -1300,6 +1316,10 @@ static const vshCmdDef monitoringCmds[] = {
 
 static const vshCmdDef managementCmds[] = {
     {.name = "srv-threadpool-set",
+     .flags = VSH_CMD_FLAG_ALIAS,
+     .alias = "server-threadpool-set"
+    },
+    {.name = "server-threadpool-set",
      .handler = cmdSrvThreadpoolSet,
      .opts = opts_srv_threadpool_set,
      .info = info_srv_threadpool_set,
@@ -1312,6 +1332,10 @@ static const vshCmdDef managementCmds[] = {
      .flags = 0
     },
     {.name = "srv-clients-set",
+     .flags = VSH_CMD_FLAG_ALIAS,
+     .alias = "server-clients-set"
+    },
+    {.name = "server-clients-set",
      .handler = cmdSrvClientsSet,
      .opts = opts_srv_clients_set,
      .info = info_srv_clients_set,

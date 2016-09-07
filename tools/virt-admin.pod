@@ -150,7 +150,7 @@ change its internal configuration.
 
 =over 4
 
-=item B<srv-list>
+=item B<server-list>
 
 Lists all manageable servers contained within the daemon the client is
 currently connected to.
@@ -164,7 +164,7 @@ The I<server> is specified by its name.
 
 =over 4
 
-=item B<srv-threadpool-info> I<server>
+=item B<server-threadpool-info> I<server>
 
 Retrieve server's threadpool attributes. These attributes include:
 
@@ -207,11 +207,11 @@ control and libvirt guarantees that such a task cannot hang, thus will always
 finish. An example of such a task this would be destroying a domain:
     $ virsh destroy <domain>.
 
-=item B<srv-threadpool-set> I<server> [I<--min-workers> B<count>]
+=item B<server-threadpool-set> I<server> [I<--min-workers> B<count>]
 [I<--max-workers> B<count>] [I<--priority-workers> B<count>]
 
 Change threadpool attributes on a server. Only a fraction of all attributes as
-described in I<srv-threadpool-info> is supported for the setter.
+described in I<server-threadpool-info> is supported for the setter.
 
 =over 4
 
@@ -232,14 +232,7 @@ The current number of active priority workers in a threadpool.
 
 =back
 
-=item B<srv-clients-list> I<server>
-
-Print a table showing the list of clients connected to <server>, also providing
-information about transport type used on client's connection (supported
-transports include B<unix>, B<tcp>, and B<tls>), as well as providing
-information about client's connection time (system local time is used).
-
-=item B<srv-clients-info> I<server>
+=item B<server-clients-info> I<server>
 
 Get information about the current setting of limits regarding connections of new
 clients. This information comprises of the limits to the maximum number of
@@ -249,13 +242,13 @@ runtime values, more specifically, the current number of clients connected to
 I<server> and the current number of clients waiting for authentication.
 
 B<Example>
-    # virt-admin srv-clients-info libvirtd
+    # virt-admin server-clients-info libvirtd
     nclients_max        : 120
     nclients            : 3
     nclients_unauth_max : 20
     nclients_unauth     : 0
 
-=item B<srv-clients-set> I<server> [I<--max-clients> B<count>]
+=item B<server-clients-set> I<server> [I<--max-clients> B<count>]
 [I<--max-unauth-clients> B<count>]
 
 Set new client-related limits on I<server>.
@@ -284,9 +277,16 @@ I<--max-clients>.
 The following commands provide management and monitoring of clients connected to
 one of daemon's available servers. Clients are specified by their numeric ID
 which is obtained by listing all clients connected to a specified server
-(see command B<srv-clients-list>).
+(see command B<client-list>).
 
 =over 4
+
+=item B<client-list> I<server>
+
+Print a table showing the list of clients connected to <server>, also providing
+information about transport type used on client's connection (supported
+transports include B<unix>, B<tcp>, and B<tls>), as well as providing
+information about client's connection time (system local time is used).
 
 =item B<client-info> I<server> I<client>
 
