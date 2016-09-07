@@ -606,18 +606,40 @@ static bool
 cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
 {
     const char *type = NULL;
-    int vcpus;
+    int vcpus = -1;
+    char *caps = NULL;
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
     virshControlPtr priv = ctl->privData;
+    bool ret = false;
 
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
         return false;
 
-    if ((vcpus = virConnectGetMaxVcpus(priv->conn, type)) < 0)
-        return false;
+    if ((caps = virConnectGetDomainCapabilities(priv->conn, NULL, NULL, NULL,
+                                                type, 0))) {
+        if (!(xml = virXMLParseStringCtxt(caps, _("(domainCapabilities)"), &ctxt)))
+            goto cleanup;
+
+        ignore_value(virXPathInt("string(./vcpu[1]/@max)", ctxt, &vcpus));
+    } else {
+        if (last_error && last_error->code != VIR_ERR_NO_SUPPORT)
+            goto cleanup;
+
+       vshResetLibvirtError();
+    }
+
+    if (vcpus < 0 && (vcpus = virConnectGetMaxVcpus(priv->conn, type)) < 0)
+        goto cleanup;
 
     vshPrint(ctl, "%d\n", vcpus);
+    ret = true;
 
-    return true;
+ cleanup:
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
+    VIR_FREE(caps);
+    return ret;
 }
 
 /*
