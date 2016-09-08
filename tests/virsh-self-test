@@ -28,7 +28,7 @@ $abs_top_builddir/tools/virsh -c $test_url self-test > /dev/null
 status=$?
 test_result 1 "virsh-self-test" $status
 
-if test "$status" = "1" ; then
+if test "$status" != "0" ; then
    fail=1
 fi
 
