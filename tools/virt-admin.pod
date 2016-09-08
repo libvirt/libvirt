@@ -159,7 +159,7 @@ currently connected to.
 
 =head1 SERVER COMMANDS
 
-Following commands manipulate daemon's server internal configuration.
+The following commands manipulate daemon's server internal configuration.
 The I<server> is specified by its name.
 
 =over 4
@@ -281,7 +281,7 @@ I<--max-clients>.
 
 =head1 CLIENT COMMANDS
 
-Following commands provide management and monitoring of clients connected to
+The following commands provide management and monitoring of clients connected to
 one of daemon's available servers. Clients are specified by their numeric ID
 which is obtained by listing all clients connected to a specified server
 (see command B<srv-clients-list>).
