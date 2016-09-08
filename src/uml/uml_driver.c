@@ -1135,12 +1135,7 @@ static int umlStartVMDaemon(virConnectPtr conn,
     if (ret < 0) {
         virDomainConfVMNWFilterTeardown(vm);
         umlCleanupTapDevices(vm);
-        if (vm->newDef) {
-            virDomainDefFree(vm->def);
-            vm->def = vm->newDef;
-            vm->def->id = -1;
-            vm->newDef = NULL;
-        }
+        virDomainObjRemoveTransientDef(vm);
     }
 
     /* NB we don't mark it running here - we do that async
@@ -1182,12 +1177,7 @@ static void umlShutdownVMDaemon(struct uml_driver *driver,
     /* Stop autodestroy in case guest is restarted */
     umlProcessAutoDestroyRemove(driver, vm);
 
-    if (vm->newDef) {
-        virDomainDefFree(vm->def);
-        vm->def = vm->newDef;
-        vm->def->id = -1;
-        vm->newDef = NULL;
-    }
+    virDomainObjRemoveTransientDef(vm);
 
     driver->nactive--;
     if (!driver->nactive && driver->inhibitCallback)

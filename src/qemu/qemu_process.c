@@ -6039,12 +6039,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         VIR_FREE(xml);
     }
 
-    if (vm->newDef) {
-        virDomainDefFree(vm->def);
-        vm->def = vm->newDef;
-        vm->def->id = -1;
-        vm->newDef = NULL;
-    }
+    virDomainObjRemoveTransientDef(vm);
 
  endjob:
     if (asyncJob != QEMU_ASYNC_JOB_NONE)

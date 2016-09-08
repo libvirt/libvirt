@@ -421,6 +421,7 @@ virDomainObjGetShortName;
 virDomainObjGetState;
 virDomainObjNew;
 virDomainObjParseNode;
+virDomainObjRemoveTransientDef;
 virDomainObjSetDefTransient;
 virDomainObjSetMetadata;
 virDomainObjSetState;

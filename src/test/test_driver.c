@@ -588,14 +588,9 @@ testDomainShutdownState(virDomainPtr domain,
                         virDomainObjPtr privdom,
                         virDomainShutoffReason reason)
 {
-    if (privdom->newDef) {
-        virDomainDefFree(privdom->def);
-        privdom->def = privdom->newDef;
-        privdom->newDef = NULL;
-    }
-
+    virDomainObjRemoveTransientDef(privdom);
     virDomainObjSetState(privdom, VIR_DOMAIN_SHUTOFF, reason);
-    privdom->def->id = -1;
+
     if (domain)
         domain->id = -1;
 }
