@@ -365,6 +365,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->nvramDir);
 
     VIR_FREE(cfg->defaultTLSx509certdir);
+    VIR_FREE(cfg->defaultTLSx509secretUUID);
 
     VIR_FREE(cfg->vncTLSx509certdir);
     VIR_FREE(cfg->vncListen);
@@ -377,6 +378,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->spiceSASLdir);
 
     VIR_FREE(cfg->chardevTLSx509certdir);
+    VIR_FREE(cfg->chardevTLSx509secretUUID);
 
     while (cfg->nhugetlbfs) {
         cfg->nhugetlbfs--;
@@ -446,6 +448,10 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     if (virConfGetValueBool(conf, "default_tls_x509_verify", &cfg->defaultTLSx509verify) < 0)
         goto cleanup;
+    if (virConfGetValueString(conf, "default_tls_x509_secret_uuid",
+                              &cfg->defaultTLSx509secretUUID) < 0)
+        goto cleanup;
+
     if (virConfGetValueBool(conf, "vnc_auto_unix_socket", &cfg->vncAutoUnixSocket) < 0)
         goto cleanup;
     if (virConfGetValueBool(conf, "vnc_tls", &cfg->vncTLS) < 0)
@@ -513,6 +519,14 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
         goto cleanup;
     if (rv == 0)
         cfg->chardevTLSx509verify = cfg->defaultTLSx509verify;
+    if (virConfGetValueString(conf, "chardev_tls_x509_secret_uuid",
+                              &cfg->chardevTLSx509secretUUID) < 0)
+        goto cleanup;
+    if (!cfg->chardevTLSx509secretUUID && cfg->defaultTLSx509secretUUID) {
+        if (VIR_STRDUP(cfg->chardevTLSx509secretUUID,
+                       cfg->defaultTLSx509secretUUID) < 0)
+            goto cleanup;
+    }
 
     if (virConfGetValueUInt(conf, "remote_websocket_port_min", &cfg->webSocketPortMin) < 0)
         goto cleanup;

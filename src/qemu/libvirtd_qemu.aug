@@ -29,6 +29,7 @@ module Libvirtd_qemu =
    (* Config entry grouped by function - same order as example config *)
    let default_tls_entry = str_entry "default_tls_x509_cert_dir"
                  | bool_entry "default_tls_x509_verify"
+                 | str_entry "default_tls_x509_secret_uuid"
 
    let vnc_entry = str_entry "vnc_listen"
                  | bool_entry "vnc_auto_unix_socket"
@@ -51,6 +52,7 @@ module Libvirtd_qemu =
    let chardev_entry = bool_entry "chardev_tls"
                  | str_entry "chardev_tls_x509_cert_dir"
                  | bool_entry "chardev_tls_x509_verify"
+                 | str_entry "chardev_tls_x509_secret_uuid"
 
    let nogfx_entry = bool_entry "nographics_allow_host_audio"
 

@@ -111,6 +111,7 @@ struct _virQEMUDriverConfig {
 
     char *defaultTLSx509certdir;
     bool defaultTLSx509verify;
+    char *defaultTLSx509secretUUID;
 
     bool vncAutoUnixSocket;
     bool vncTLS;
@@ -132,6 +133,7 @@ struct _virQEMUDriverConfig {
     bool chardevTLS;
     char *chardevTLSx509certdir;
     bool chardevTLSx509verify;
+    char *chardevTLSx509secretUUID;
 
     unsigned int remotePortMin;
     unsigned int remotePortMax;
