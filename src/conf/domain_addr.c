@@ -507,7 +507,8 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
                                          addrStr, flags, true))
             goto cleanup;
 
-        ret = virDomainPCIAddressReserveSlot(addrs, &dev->addr.pci, flags);
+        ret = virDomainPCIAddressReserveAddr(addrs, &dev->addr.pci, flags,
+                                             true, true);
     } else {
         ret = virDomainPCIAddressReserveNextSlot(addrs, dev, flags);
     }
