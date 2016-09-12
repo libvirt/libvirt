@@ -335,11 +335,12 @@ virLogDefineFilter(const char *match,
         goto cleanup;
 
     virLogFiltersSerial++;
+    ret = virLogNbFilters - 1;
  cleanup:
     virLogUnlock();
     if (ret < 0)
         virReportOOMError();
-    return virLogNbFilters;
+    return ret;
 }
 
 /**
