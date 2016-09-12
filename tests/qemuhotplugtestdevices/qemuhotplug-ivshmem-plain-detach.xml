@@ -1,0 +1,6 @@
+<shmem name='shmem0'>
+  <model type='ivshmem-plain'/>
+  <size unit='M'>4</size>
+  <alias name='shmem0'/>
+  <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+</shmem>

@@ -1,0 +1,7 @@
+<shmem name='shmem1'>
+  <model type='ivshmem-doorbell'/>
+  <server path='/var/lib/libvirt/shmem-shmem1-sock'/>
+  <msi ioeventfd='on'/>
+  <alias name='shmem1'/>
+  <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+</shmem>

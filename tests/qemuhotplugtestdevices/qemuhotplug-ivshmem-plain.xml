@@ -1,0 +1,3 @@
+<shmem name='shmem0'>
+  <model type='ivshmem-plain'/>
+</shmem>

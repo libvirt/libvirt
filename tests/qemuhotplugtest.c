@@ -74,6 +74,8 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VIRTIO_SCSI);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM_PLAIN);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL);
     if (event)
         virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT);
 
@@ -120,6 +122,9 @@ testQemuHotplugAttach(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_CHR:
         ret = qemuDomainAttachChrDevice(NULL, &driver, vm, dev->data.chr);
         break;
+    case VIR_DOMAIN_DEVICE_SHMEM:
+        ret = qemuDomainAttachShmemDevice(&driver, vm, dev->data.shmem);
+        break;
     default:
         VIR_TEST_VERBOSE("device type '%s' cannot be attached\n",
                 virDomainDeviceTypeToString(dev->type));
@@ -141,6 +146,9 @@ testQemuHotplugDetach(virDomainObjPtr vm,
         break;
     case VIR_DOMAIN_DEVICE_CHR:
         ret = qemuDomainDetachChrDevice(&driver, vm, dev->data.chr);
+        break;
+    case VIR_DOMAIN_DEVICE_SHMEM:
+        ret = qemuDomainDetachShmemDevice(&driver, vm, dev->data.shmem);
         break;
     default:
         VIR_TEST_VERBOSE("device type '%s' cannot be detached\n",
@@ -560,6 +568,19 @@ mymain(void)
     DO_TEST_ATTACH("base-ccw-live-with-2-ccw-virtio", "ccw-virtio-1-reverse", false, false,
                    "human-monitor-command", HMP("OK\\r\\n"),
                    "device_add", QMP_OK);
+
+    DO_TEST_ATTACH("base-live", "ivshmem-plain", false, true,
+                   "object-add", QMP_OK,
+                   "device_add", QMP_OK);
+    DO_TEST_ATTACH("base-live", "ivshmem-doorbell", false, true,
+                   "chardev-add", QMP_OK,
+                   "device_add", QMP_OK);
+    DO_TEST_DETACH("base-live+ivshmem-plain", "ivshmem-doorbell-detach", false, true,
+                   "device_del", QMP_OK,
+                   "chardev-remove", QMP_OK);
+    DO_TEST_DETACH("base-live", "ivshmem-plain-detach", false, false,
+                   "device_del", QMP_OK,
+                   "object-del", QMP_OK);
 
     qemuTestDriverFree(&driver);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
