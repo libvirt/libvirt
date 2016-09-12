@@ -6208,14 +6208,10 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     }
 
     if (retcode != 0) {
-        qemuDomainJobInfo info;
-
         /* Check for a possible error on the monitor in case Finish was called
          * earlier than monitor EOF handler got a chance to process the error
          */
-        qemuMigrationFetchJobStatus(driver, vm,
-                                    QEMU_ASYNC_JOB_MIGRATION_IN,
-                                    &info);
+        qemuDomainCheckMonitor(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN);
         goto endjob;
     }
 

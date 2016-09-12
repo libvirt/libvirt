@@ -728,4 +728,8 @@ bool qemuDomainVcpuHotplugIsInOrder(virDomainDefPtr def)
 void qemuDomainVcpuPersistOrder(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);
 
+int qemuDomainCheckMonitor(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           qemuDomainAsyncJob asyncJob);
+
 #endif /* __QEMU_DOMAIN_H__ */
