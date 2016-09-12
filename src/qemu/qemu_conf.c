@@ -613,15 +613,18 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                                   &controllers) < 0)
         goto cleanup;
 
-    for (i = 0; controllers != NULL && controllers[i] != NULL; i++) {
-        int ctl;
-        if ((ctl = virCgroupControllerTypeFromString(controllers[i])) < 0) {
-            virReportError(VIR_ERR_CONF_SYNTAX,
-                           _("Unknown cgroup controller '%s'"),
-                           controllers[i]);
-            goto cleanup;
+    if (controllers) {
+        cfg-> cgroupControllers = 0;
+        for (i = 0; controllers[i] != NULL; i++) {
+            int ctl;
+            if ((ctl = virCgroupControllerTypeFromString(controllers[i])) < 0) {
+                virReportError(VIR_ERR_CONF_SYNTAX,
+                               _("Unknown cgroup controller '%s'"),
+                               controllers[i]);
+                goto cleanup;
+            }
+            cfg->cgroupControllers |= (1 << ctl);
         }
-        cfg->cgroupControllers |= (1 << ctl);
     }
 
     if (virConfGetValueStringList(conf,  "cgroup_device_acl", false,
