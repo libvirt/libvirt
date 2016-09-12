@@ -14762,6 +14762,81 @@ virDomainRedirdevDefRemove(virDomainDefPtr def, size_t idx)
 }
 
 
+int
+virDomainShmemDefInsert(virDomainDefPtr def,
+                        virDomainShmemDefPtr shmem)
+{
+    return VIR_APPEND_ELEMENT(def->shmems, def->nshmems, shmem);
+}
+
+
+bool
+virDomainShmemDefEquals(virDomainShmemDefPtr src,
+                        virDomainShmemDefPtr dst)
+{
+    if (STRNEQ_NULLABLE(src->name, dst->name))
+        return false;
+
+    if (src->size != dst->size)
+        return false;
+
+    if (src->server.enabled != dst->server.enabled)
+        return false;
+
+    if (src->server.enabled) {
+        if (STRNEQ_NULLABLE(src->server.chr.data.nix.path,
+                            dst->server.chr.data.nix.path))
+            return false;
+    }
+
+    if (src->msi.enabled != dst->msi.enabled)
+        return false;
+
+    if (src->msi.enabled) {
+        if (src->msi.vectors != dst->msi.vectors)
+            return false;
+        if (src->msi.ioeventfd != dst->msi.ioeventfd)
+            return false;
+    }
+
+    if (src->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        !virDomainDeviceInfoAddressIsEqual(&src->info, &dst->info))
+        return false;
+
+    return true;
+}
+
+
+ssize_t
+virDomainShmemDefFind(virDomainDefPtr def,
+                      virDomainShmemDefPtr shmem)
+{
+    size_t i;
+
+    for (i = 0; i < def->nshmems; i++) {
+         if (virDomainShmemDefEquals(def->shmems[i], shmem))
+             break;
+    }
+
+    if (i < def->nshmems)
+        return i;
+
+    return -1;
+}
+
+
+virDomainShmemDefPtr
+virDomainShmemDefRemove(virDomainDefPtr def,
+                        size_t idx)
+{
+    virDomainShmemDefPtr ret = def->shmems[idx];
+
+    VIR_DELETE_ELEMENT(def->shmems, idx, def->nshmems);
+
+    return ret;
+}
+
+
 char *
 virDomainDefGetDefaultEmulator(virDomainDefPtr def,
                                virCapsPtr caps)
