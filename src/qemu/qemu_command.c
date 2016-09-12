@@ -692,7 +692,7 @@ qemuBuildRBDSecinfoURI(virBufferPtr buf,
  */
 int
 qemuBuildTLSx509BackendProps(const char *tlspath,
-                             bool listen,
+                             bool isListen,
                              bool verifypeer,
                              virQEMUCapsPtr qemuCaps,
                              virJSONValuePtr *propsret)
@@ -714,7 +714,7 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
 
     if (virJSONValueObjectCreate(propsret,
                                  "s:dir", path,
-                                 "s:endpoint", (listen ? "server": "client"),
+                                 "s:endpoint", (isListen ? "server": "client"),
                                  "b:verify-peer", verifypeer,
                                  NULL) < 0)
         goto cleanup;
@@ -743,7 +743,7 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
 static int
 qemuBuildTLSx509CommandLine(virCommandPtr cmd,
                             const char *tlspath,
-                            bool listen,
+                            bool isListen,
                             bool verifypeer,
                             const char *inalias,
                             virQEMUCapsPtr qemuCaps)
@@ -753,7 +753,7 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
     virJSONValuePtr props = NULL;
     char *tmp = NULL;
 
-    if (qemuBuildTLSx509BackendProps(tlspath, listen, verifypeer,
+    if (qemuBuildTLSx509BackendProps(tlspath, isListen, verifypeer,
                                      qemuCaps, &props) < 0)
         return -1;
 

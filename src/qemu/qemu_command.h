@@ -67,7 +67,7 @@ int qemuBuildSecretInfoProps(qemuDomainSecretInfoPtr secinfo,
 
 /* Generate the object properties for a tls-creds-x509 */
 int qemuBuildTLSx509BackendProps(const char *tlspath,
-                                 bool listen,
+                                 bool isListen,
                                  bool verifypeer,
                                  virQEMUCapsPtr qemuCaps,
                                  virJSONValuePtr *propsret);
