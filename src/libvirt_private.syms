@@ -2059,7 +2059,7 @@ virNodeSuspendGetTargetMask;
 # util/virnuma.h
 virNumaGetAutoPlacementAdvice;
 virNumaGetDistances;
-virNumaGetHostNodeset;
+virNumaGetHostMemoryNodeset;
 virNumaGetMaxNode;
 virNumaGetNodeMemory;
 virNumaGetPageInfo;

@@ -860,7 +860,7 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
     virBitmapPtr all_nodes;
     virCgroupPtr cgroup_temp = NULL;
 
-    if (!(all_nodes = virNumaGetHostNodeset()))
+    if (!(all_nodes = virNumaGetHostMemoryNodeset()))
         goto error;
 
     if (!(mem_mask = virBitmapFormat(all_nodes)))
@@ -1166,7 +1166,7 @@ qemuCgroupEmulatorAllNodesAllow(virCgroupPtr cgroup,
         !virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
         return 0;
 
-    if (!(all_nodes = virNumaGetHostNodeset()))
+    if (!(all_nodes = virNumaGetHostMemoryNodeset()))
         goto cleanup;
 
     if (!(all_nodes_str = virBitmapFormat(all_nodes)))

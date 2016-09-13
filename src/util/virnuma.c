@@ -987,10 +987,17 @@ virNumaNodesetIsAvailable(virBitmapPtr nodeset)
     return true;
 }
 
+
+/**
+ * virNumaGetHostMemoryNodeset:
+ *
+ * Returns a bitmap of guest numa node ids that contain memory.
+ */
 virBitmapPtr
-virNumaGetHostNodeset(void)
+virNumaGetHostMemoryNodeset(void)
 {
     int maxnode = virNumaGetMaxNode();
+    unsigned long long nodesize;
     size_t i = 0;
     virBitmapPtr nodeset = NULL;
 
@@ -1004,7 +1011,9 @@ virNumaGetHostNodeset(void)
         if (!virNumaNodeIsAvailable(i))
             continue;
 
-        ignore_value(virBitmapSetBit(nodeset, i));
+        /* if we can't detect NUMA node size assume that it's present */
+        if (virNumaGetNodeMemory(i, &nodesize, NULL) < 0 || nodesize > 0)
+            ignore_value(virBitmapSetBit(nodeset, i));
     }
 
     return nodeset;
