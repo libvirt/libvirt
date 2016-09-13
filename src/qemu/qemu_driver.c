@@ -3310,23 +3310,6 @@ qemuGetCompressionProgram(const char *imageFormat)
 }
 
 
-static virQEMUSaveFormat
-getCompressionType(virQEMUDriverPtr driver)
-{
-    int ret;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-
-    /*
-     * We reuse "save" flag for "dump" here. Then, we can support the same
-     * format in "save" and "dump".
-     */
-    ret = qemuGetCompressionProgram(cfg->dumpImageFormat);
-
-    virObjectUnref(cfg);
-    return ret;
-}
-
-
 static int
 qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
                     unsigned int flags)
@@ -3602,7 +3585,12 @@ doCoreDump(virQEMUDriverPtr driver,
     int directFlag = 0;
     unsigned int flags = VIR_FILE_WRAPPER_NON_BLOCKING;
     const char *memory_dump_format = NULL;
-    virQEMUSaveFormat compress = getCompressionType(driver);
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virQEMUSaveFormat compress;
+
+    /* We reuse "save" flag for "dump" here. Then, we can support the same
+     * format in "save" and "dump". */
+    compress = qemuGetCompressionProgram(cfg->dumpImageFormat);
 
     /* Create an empty file with appropriate ownership.  */
     if (dump_flags & VIR_DUMP_BYPASS_CACHE) {
@@ -3673,6 +3661,7 @@ doCoreDump(virQEMUDriverPtr driver,
     if (ret != 0)
         unlink(path);
     virFileWrapperFdFree(wrapperFd);
+    virObjectUnref(cfg);
     return ret;
 }
 
