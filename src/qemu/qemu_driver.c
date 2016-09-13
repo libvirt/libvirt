@@ -3568,7 +3568,6 @@ static int
 doCoreDump(virQEMUDriverPtr driver,
            virDomainObjPtr vm,
            const char *path,
-           virQEMUSaveFormat compress,
            unsigned int dump_flags,
            unsigned int dumpformat)
 {
@@ -3578,6 +3577,7 @@ doCoreDump(virQEMUDriverPtr driver,
     int directFlag = 0;
     unsigned int flags = VIR_FILE_WRAPPER_NON_BLOCKING;
     const char *memory_dump_format = NULL;
+    virQEMUSaveFormat compress = getCompressionType(driver);
 
     /* Create an empty file with appropriate ownership.  */
     if (dump_flags & VIR_DUMP_BYPASS_CACHE) {
@@ -3704,9 +3704,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
         }
     }
 
-    ret = doCoreDump(driver, vm, path, getCompressionType(driver), flags,
-                     dumpformat);
-    if (ret < 0)
+    if ((ret = doCoreDump(driver, vm, path, flags, dumpformat)) < 0)
         goto endjob;
 
     paused = true;
@@ -3911,10 +3909,8 @@ processWatchdogEvent(virQEMUDriverPtr driver,
         }
 
         flags |= cfg->autoDumpBypassCache ? VIR_DUMP_BYPASS_CACHE: 0;
-        ret = doCoreDump(driver, vm, dumpfile,
-                         getCompressionType(driver), flags,
-                         VIR_DOMAIN_CORE_DUMP_FORMAT_RAW);
-        if (ret < 0)
+        if ((ret = doCoreDump(driver, vm, dumpfile, flags,
+                              VIR_DOMAIN_CORE_DUMP_FORMAT_RAW)) < 0)
             virReportError(VIR_ERR_OPERATION_FAILED,
                            "%s", _("Dump failed"));
 
@@ -3951,10 +3947,8 @@ doCoreDumpToAutoDumpPath(virQEMUDriverPtr driver,
         goto cleanup;
 
     flags |= cfg->autoDumpBypassCache ? VIR_DUMP_BYPASS_CACHE: 0;
-    ret = doCoreDump(driver, vm, dumpfile,
-                     getCompressionType(driver), flags,
-                     VIR_DOMAIN_CORE_DUMP_FORMAT_RAW);
-    if (ret < 0)
+    if ((ret = doCoreDump(driver, vm, dumpfile, flags,
+                          VIR_DOMAIN_CORE_DUMP_FORMAT_RAW)) < 0)
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("Dump failed"));
  cleanup:
