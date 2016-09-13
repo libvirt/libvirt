@@ -1772,6 +1772,7 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
     char *tmp;
     int order = 1;
     size_t totalvcpus = 0;
+    size_t mastervcpu; /* this iterator is used for iterating hotpluggable entities */
     size_t i;
     size_t j;
 
@@ -1812,19 +1813,19 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
     /* transfer appropriate data from the hotpluggable list to corresponding
      * entries. the entries returned by qemu may in fact describe multiple
      * logical vcpus in the guest */
-    j = 0;
+    mastervcpu = 0;
     for (i = 0; i < nhotplugvcpus; i++) {
-        vcpus[j].socket_id = hotplugvcpus[i].socket_id;
-        vcpus[j].core_id = hotplugvcpus[i].core_id;
-        vcpus[j].thread_id = hotplugvcpus[i].thread_id;
-        vcpus[j].vcpus = hotplugvcpus[i].vcpus;
-        VIR_STEAL_PTR(vcpus[j].qom_path, hotplugvcpus[i].qom_path);
-        VIR_STEAL_PTR(vcpus[j].alias, hotplugvcpus[i].alias);
-        VIR_STEAL_PTR(vcpus[j].type, hotplugvcpus[i].type);
-        vcpus[j].id = hotplugvcpus[i].enable_id;
+        vcpus[mastervcpu].socket_id = hotplugvcpus[i].socket_id;
+        vcpus[mastervcpu].core_id = hotplugvcpus[i].core_id;
+        vcpus[mastervcpu].thread_id = hotplugvcpus[i].thread_id;
+        vcpus[mastervcpu].vcpus = hotplugvcpus[i].vcpus;
+        VIR_STEAL_PTR(vcpus[mastervcpu].qom_path, hotplugvcpus[i].qom_path);
+        VIR_STEAL_PTR(vcpus[mastervcpu].alias, hotplugvcpus[i].alias);
+        VIR_STEAL_PTR(vcpus[mastervcpu].type, hotplugvcpus[i].type);
+        vcpus[mastervcpu].id = hotplugvcpus[i].enable_id;
 
-        /* skip over vcpu entries covered by this hotpluggable entry */
-        j += hotplugvcpus[i].vcpus;
+        /* calculate next master vcpu (hotpluggable unit) entry */
+        mastervcpu += hotplugvcpus[i].vcpus;
     }
 
     /* match entries from query cpus to the output array taking into account
