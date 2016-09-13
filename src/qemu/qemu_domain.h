@@ -722,6 +722,9 @@ int qemuDomainPrepareChannel(virDomainChrDefPtr chr,
                              const char *domainChannelTargetDir)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+int qemuDomainPrepareShmemChardev(virDomainShmemDefPtr shmem)
+    ATTRIBUTE_NONNULL(1);
+
 bool qemuDomainVcpuHotplugIsInOrder(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);
 

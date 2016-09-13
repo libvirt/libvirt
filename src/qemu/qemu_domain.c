@@ -6056,6 +6056,19 @@ qemuDomainPrepareChannel(virDomainChrDefPtr channel,
 }
 
 
+int
+qemuDomainPrepareShmemChardev(virDomainShmemDefPtr shmem)
+{
+    if (!shmem->server.enabled ||
+        shmem->server.chr.data.nix.path)
+        return 0;
+
+    return virAsprintf(&shmem->server.chr.data.nix.path,
+                       "/var/lib/libvirt/shmem-%s-sock",
+                       shmem->name);
+}
+
+
 /**
  * qemuDomainVcpuHotplugIsInOrder:
  * @def: domain definition

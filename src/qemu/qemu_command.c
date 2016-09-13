@@ -8560,10 +8560,7 @@ qemuBuildShmemBackendStr(virLogManagerPtr logManager,
 {
     char *devstr = NULL;
 
-    if (!shmem->server.chr.data.nix.path &&
-        virAsprintf(&shmem->server.chr.data.nix.path,
-                    "/var/lib/libvirt/shmem-%s-sock",
-                    shmem->name) < 0)
+    if (qemuDomainPrepareShmemChardev(shmem) < 0)
         return NULL;
 
     devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
