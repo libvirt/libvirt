@@ -3266,6 +3266,42 @@ qemuCompressProgramAvailable(virQEMUSaveFormat compress)
     return true;
 }
 
+
+static virQEMUSaveFormat
+getCompressionType(virQEMUDriverPtr driver)
+{
+    int ret = QEMU_SAVE_FORMAT_RAW;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    /*
+     * We reuse "save" flag for "dump" here. Then, we can support the same
+     * format in "save" and "dump".
+     */
+    if (cfg->dumpImageFormat) {
+        ret = qemuSaveCompressionTypeFromString(cfg->dumpImageFormat);
+        /* Use "raw" as the format if the specified format is not valid,
+         * or the compress program is not available.
+         */
+        if (ret < 0) {
+            VIR_WARN("%s", _("Invalid dump image format specified in "
+                             "configuration file, using raw"));
+            ret = QEMU_SAVE_FORMAT_RAW;
+            goto cleanup;
+        }
+        if (!qemuCompressProgramAvailable(ret)) {
+            VIR_WARN("%s", _("Compression program for dump image format "
+                             "in configuration file isn't available, "
+                             "using raw"));
+            ret = QEMU_SAVE_FORMAT_RAW;
+            goto cleanup;
+        }
+    }
+ cleanup:
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
 static int
 qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
                     unsigned int flags)
@@ -3612,40 +3648,6 @@ doCoreDump(virQEMUDriverPtr driver,
     if (ret != 0)
         unlink(path);
     virFileWrapperFdFree(wrapperFd);
-    return ret;
-}
-
-static virQEMUSaveFormat
-getCompressionType(virQEMUDriverPtr driver)
-{
-    int ret = QEMU_SAVE_FORMAT_RAW;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-
-    /*
-     * We reuse "save" flag for "dump" here. Then, we can support the same
-     * format in "save" and "dump".
-     */
-    if (cfg->dumpImageFormat) {
-        ret = qemuSaveCompressionTypeFromString(cfg->dumpImageFormat);
-        /* Use "raw" as the format if the specified format is not valid,
-         * or the compress program is not available.
-         */
-        if (ret < 0) {
-            VIR_WARN("%s", _("Invalid dump image format specified in "
-                             "configuration file, using raw"));
-            ret = QEMU_SAVE_FORMAT_RAW;
-            goto cleanup;
-        }
-        if (!qemuCompressProgramAvailable(ret)) {
-            VIR_WARN("%s", _("Compression program for dump image format "
-                             "in configuration file isn't available, "
-                             "using raw"));
-            ret = QEMU_SAVE_FORMAT_RAW;
-            goto cleanup;
-        }
-    }
- cleanup:
-    virObjectUnref(cfg);
     return ret;
 }
 
