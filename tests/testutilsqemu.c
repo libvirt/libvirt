@@ -16,6 +16,7 @@
 
 virCPUDefPtr cpuDefault;
 virCPUDefPtr cpuHaswell;
+virCPUDefPtr cpuPower8;
 
 static virCPUFeatureDef cpuDefaultFeatures[] = {
     { (char *) "lahf_lm",   -1 },
@@ -90,6 +91,15 @@ static virCPUDef cpuHaswellData = {
     ARRAY_CARDINALITY(cpuHaswellFeatures), /* nfeatures */
     ARRAY_CARDINALITY(cpuHaswellFeatures), /* nfeatures_max */
     cpuHaswellFeatures,     /* features */
+};
+
+static virCPUDef cpuPower8Data = {
+    .type = VIR_CPU_TYPE_HOST,
+    .arch = VIR_ARCH_PPC64,
+    .model = (char *) "POWER8",
+    .sockets = 1,
+    .cores = 8,
+    .threads = 8,
 };
 
 static virCapsGuestMachinePtr *testQemuAllocMachines(int *nmachines)
@@ -331,7 +341,8 @@ virCapsPtr testQemuCapsInit(void)
         goto cleanup;
 
     if (!(cpuDefault = virCPUDefCopy(&cpuDefaultData)) ||
-        !(cpuHaswell = virCPUDefCopy(&cpuHaswellData)))
+        !(cpuHaswell = virCPUDefCopy(&cpuHaswellData)) ||
+        !(cpuPower8 = virCPUDefCopy(&cpuPower8Data)))
         goto cleanup;
 
     qemuTestSetHostCPU(caps, NULL);
@@ -443,6 +454,7 @@ virCapsPtr testQemuCapsInit(void)
     caps->host.cpu = NULL;
     virCPUDefFree(cpuDefault);
     virCPUDefFree(cpuHaswell);
+    virCPUDefFree(cpuPower8);
     virObjectUnref(caps);
     return NULL;
 }
@@ -468,6 +480,8 @@ qemuTestSetHostCPU(virCapsPtr caps,
     if (!cpu) {
         if (ARCH_IS_X86(arch))
             cpu = cpuDefault;
+        else if (ARCH_IS_PPC64(arch))
+            cpu = cpuPower8;
     }
 
     if (cpu)

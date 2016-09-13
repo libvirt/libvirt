@@ -19,6 +19,7 @@ virQEMUCapsPtr qemuTestParseCapabilities(const char *capsFile);
 
 extern virCPUDefPtr cpuDefault;
 extern virCPUDefPtr cpuHaswell;
+extern virCPUDefPtr cpuPower8;
 
 void qemuTestSetHostArch(virCapsPtr caps,
                         virArch arch);
