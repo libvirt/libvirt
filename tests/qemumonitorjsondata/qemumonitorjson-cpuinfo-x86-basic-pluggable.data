@@ -1,39 +1,55 @@
 [vcpu libvirt-id='0']
+    online=yes
+    hotpluggable=no
     thread-id='518291'
     qemu-id='1'
     type='qemu64-x86_64-cpu'
     qom_path='/machine/unattached/device[0]'
     topology: socket='0' core='0' thread='0' vcpus='1'
 [vcpu libvirt-id='1']
+    online=yes
+    hotpluggable=no
     thread-id='518292'
     qemu-id='2'
     type='qemu64-x86_64-cpu'
     qom_path='/machine/unattached/device[2]'
     topology: socket='0' core='0' thread='1' vcpus='1'
 [vcpu libvirt-id='2']
+    online=yes
+    hotpluggable=no
     thread-id='518294'
     qemu-id='3'
     type='qemu64-x86_64-cpu'
     qom_path='/machine/unattached/device[3]'
     topology: socket='0' core='1' thread='0' vcpus='1'
 [vcpu libvirt-id='3']
+    online=yes
+    hotpluggable=no
     thread-id='518295'
     qemu-id='4'
     type='qemu64-x86_64-cpu'
     qom_path='/machine/unattached/device[4]'
     topology: socket='0' core='1' thread='1' vcpus='1'
 [vcpu libvirt-id='4']
+    online=yes
+    hotpluggable=no
     thread-id='518296'
     qemu-id='5'
     type='qemu64-x86_64-cpu'
     qom_path='/machine/unattached/device[5]'
     topology: socket='1' core='0' thread='0' vcpus='1'
 [vcpu libvirt-id='5']
+    online=no
+    hotpluggable=yes
     type='qemu64-x86_64-cpu'
     topology: socket='1' core='0' thread='1' vcpus='1'
 [vcpu libvirt-id='6']
+    online=no
+    hotpluggable=yes
     type='qemu64-x86_64-cpu'
     topology: socket='1' core='1' thread='0' vcpus='1'
 [vcpu libvirt-id='7']
+    online=no
+    hotpluggable=yes
     type='qemu64-x86_64-cpu'
     topology: socket='1' core='1' thread='1' vcpus='1'

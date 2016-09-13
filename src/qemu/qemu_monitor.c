@@ -1773,6 +1773,7 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
     int order = 1;
     size_t totalvcpus = 0;
     size_t mastervcpu; /* this iterator is used for iterating hotpluggable entities */
+    size_t slavevcpu; /* this corresponds to subentries of a hotpluggable entry */
     size_t anyvcpu; /* this iterator is used for any vcpu entry in the result */
     size_t i;
     size_t j;
@@ -1816,6 +1817,9 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
      * logical vcpus in the guest */
     mastervcpu = 0;
     for (i = 0; i < nhotplugvcpus; i++) {
+        vcpus[mastervcpu].online = !!hotplugvcpus[i].qom_path;
+        vcpus[mastervcpu].hotpluggable = !!hotplugvcpus[i].alias ||
+                                         !vcpus[mastervcpu].online;
         vcpus[mastervcpu].socket_id = hotplugvcpus[i].socket_id;
         vcpus[mastervcpu].core_id = hotplugvcpus[i].core_id;
         vcpus[mastervcpu].thread_id = hotplugvcpus[i].thread_id;
@@ -1824,6 +1828,12 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
         VIR_STEAL_PTR(vcpus[mastervcpu].alias, hotplugvcpus[i].alias);
         VIR_STEAL_PTR(vcpus[mastervcpu].type, hotplugvcpus[i].type);
         vcpus[mastervcpu].id = hotplugvcpus[i].enable_id;
+
+        /* copy state information to slave vcpus */
+        for (slavevcpu = mastervcpu + 1; slavevcpu < mastervcpu + hotplugvcpus[i].vcpus; slavevcpu++) {
+            vcpus[slavevcpu].online = vcpus[mastervcpu].online;
+            vcpus[slavevcpu].hotpluggable = vcpus[mastervcpu].hotpluggable;
+        }
 
         /* calculate next master vcpu (hotpluggable unit) entry */
         mastervcpu += hotplugvcpus[i].vcpus;

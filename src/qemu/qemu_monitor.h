@@ -422,6 +422,10 @@ struct _qemuMonitorCPUInfo {
     pid_t tid;
     int id; /* order of enabling of the given cpu */
 
+    /* state data */
+    bool online;
+    bool hotpluggable;
+
     /* topology info for hotplug purposes. Hotplug of given vcpu impossible if
      * all entries are -1 */
     int socket_id;

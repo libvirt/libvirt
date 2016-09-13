@@ -1,72 +1,104 @@
 [vcpu libvirt-id='0']
+    online=yes
+    hotpluggable=no
     thread-id='35232'
     qemu-id='1'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[1]'
     topology: core='0' vcpus='1'
 [vcpu libvirt-id='1']
+    online=yes
+    hotpluggable=no
     thread-id='35233'
     qemu-id='2'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[2]'
     topology: core='8' vcpus='1'
 [vcpu libvirt-id='2']
+    online=yes
+    hotpluggable=no
     thread-id='35234'
     qemu-id='3'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[3]'
     topology: core='16' vcpus='1'
 [vcpu libvirt-id='3']
+    online=yes
+    hotpluggable=no
     thread-id='35235'
     qemu-id='4'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[4]'
     topology: core='24' vcpus='1'
 [vcpu libvirt-id='4']
+    online=yes
+    hotpluggable=no
     thread-id='35236'
     qemu-id='5'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[5]'
     topology: core='32' vcpus='1'
 [vcpu libvirt-id='5']
+    online=yes
+    hotpluggable=no
     thread-id='35237'
     qemu-id='6'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[6]'
     topology: core='40' vcpus='1'
 [vcpu libvirt-id='6']
+    online=yes
+    hotpluggable=no
     thread-id='35238'
     qemu-id='7'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[7]'
     topology: core='48' vcpus='1'
 [vcpu libvirt-id='7']
+    online=yes
+    hotpluggable=no
     thread-id='35239'
     qemu-id='8'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[8]'
     topology: core='56' vcpus='1'
 [vcpu libvirt-id='8']
+    online=no
+    hotpluggable=yes
     type='host-spapr-cpu-core'
     topology: core='64' vcpus='1'
 [vcpu libvirt-id='9']
+    online=no
+    hotpluggable=yes
     type='host-spapr-cpu-core'
     topology: core='72' vcpus='1'
 [vcpu libvirt-id='10']
+    online=no
+    hotpluggable=yes
     type='host-spapr-cpu-core'
     topology: core='80' vcpus='1'
 [vcpu libvirt-id='11']
+    online=no
+    hotpluggable=yes
     type='host-spapr-cpu-core'
     topology: core='88' vcpus='1'
 [vcpu libvirt-id='12']
+    online=no
+    hotpluggable=yes
     type='host-spapr-cpu-core'
     topology: core='96' vcpus='1'
 [vcpu libvirt-id='13']
+    online=no
+    hotpluggable=yes
     type='host-spapr-cpu-core'
     topology: core='104' vcpus='1'
 [vcpu libvirt-id='14']
+    online=no
+    hotpluggable=yes
     type='host-spapr-cpu-core'
     topology: core='112' vcpus='1'
 [vcpu libvirt-id='15']
+    online=no
+    hotpluggable=yes
     type='host-spapr-cpu-core'
     topology: core='120' vcpus='1'

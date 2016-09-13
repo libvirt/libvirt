@@ -2357,6 +2357,9 @@ testQemuMonitorCPUInfoFormat(qemuMonitorCPUInfoPtr vcpus,
         virBufferAsprintf(&buf, "[vcpu libvirt-id='%zu']\n", i);
         virBufferAdjustIndent(&buf, 4);
 
+        virBufferAsprintf(&buf, "online=%s\n", vcpu->online ? "yes" : "no");
+        virBufferAsprintf(&buf, "hotpluggable=%s\n", vcpu->hotpluggable ? "yes" : "no");
+
         if (vcpu->tid)
             virBufferAsprintf(&buf, "thread-id='%llu'\n",
                               (unsigned long long) vcpu->tid);

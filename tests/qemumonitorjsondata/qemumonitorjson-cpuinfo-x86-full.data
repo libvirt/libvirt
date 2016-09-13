@@ -1,10 +1,14 @@
 [vcpu libvirt-id='0']
+    online=yes
+    hotpluggable=no
     thread-id='895040'
     qemu-id='1'
     type='Broadwell-x86_64-cpu'
     qom_path='/machine/unattached/device[0]'
     topology: socket='0' core='0' thread='0' vcpus='1'
 [vcpu libvirt-id='1']
+    online=yes
+    hotpluggable=yes
     thread-id='895056'
     qemu-id='2'
     type='Broadwell-x86_64-cpu'
@@ -12,6 +16,8 @@
     qom_path='/machine/peripheral/vcpu1'
     topology: socket='1' core='0' thread='0' vcpus='1'
 [vcpu libvirt-id='2']
+    online=yes
+    hotpluggable=yes
     thread-id='895057'
     qemu-id='3'
     type='Broadwell-x86_64-cpu'
@@ -19,6 +25,8 @@
     qom_path='/machine/peripheral/vcpu2'
     topology: socket='2' core='0' thread='0' vcpus='1'
 [vcpu libvirt-id='3']
+    online=yes
+    hotpluggable=yes
     thread-id='895058'
     qemu-id='4'
     type='Broadwell-x86_64-cpu'
@@ -26,6 +34,8 @@
     qom_path='/machine/peripheral/vcpu3'
     topology: socket='3' core='0' thread='0' vcpus='1'
 [vcpu libvirt-id='4']
+    online=yes
+    hotpluggable=yes
     thread-id='895059'
     qemu-id='5'
     type='Broadwell-x86_64-cpu'
@@ -33,6 +43,8 @@
     qom_path='/machine/peripheral/vcpu4'
     topology: socket='4' core='0' thread='0' vcpus='1'
 [vcpu libvirt-id='5']
+    online=yes
+    hotpluggable=yes
     thread-id='895060'
     qemu-id='6'
     type='Broadwell-x86_64-cpu'
@@ -40,6 +52,8 @@
     qom_path='/machine/peripheral/vcpu5'
     topology: socket='5' core='0' thread='0' vcpus='1'
 [vcpu libvirt-id='6']
+    online=yes
+    hotpluggable=yes
     thread-id='895061'
     qemu-id='7'
     type='Broadwell-x86_64-cpu'
@@ -47,6 +61,8 @@
     qom_path='/machine/peripheral/vcpu6'
     topology: socket='6' core='0' thread='0' vcpus='1'
 [vcpu libvirt-id='7']
+    online=yes
+    hotpluggable=yes
     thread-id='895062'
     qemu-id='8'
     type='Broadwell-x86_64-cpu'
@@ -54,6 +70,8 @@
     qom_path='/machine/peripheral/vcpu7'
     topology: socket='7' core='0' thread='0' vcpus='1'
 [vcpu libvirt-id='8']
+    online=yes
+    hotpluggable=yes
     thread-id='895063'
     qemu-id='9'
     type='Broadwell-x86_64-cpu'
@@ -61,6 +79,8 @@
     qom_path='/machine/peripheral/vcpu8'
     topology: socket='8' core='0' thread='0' vcpus='1'
 [vcpu libvirt-id='9']
+    online=yes
+    hotpluggable=yes
     thread-id='895064'
     qemu-id='10'
     type='Broadwell-x86_64-cpu'
@@ -68,6 +88,8 @@
     qom_path='/machine/peripheral/vcpu9'
     topology: socket='9' core='0' thread='0' vcpus='1'
 [vcpu libvirt-id='10']
+    online=yes
+    hotpluggable=yes
     thread-id='895065'
     qemu-id='11'
     type='Broadwell-x86_64-cpu'
