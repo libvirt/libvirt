@@ -3250,22 +3250,6 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     return ret;
 }
 
-/* Returns true if a compression program is available in PATH */
-static bool
-qemuCompressProgramAvailable(virQEMUSaveFormat compress)
-{
-    char *path;
-
-    if (compress == QEMU_SAVE_FORMAT_RAW)
-        return true;
-
-    if (!(path = virFindFileInPath(qemuSaveCompressionTypeToString(compress))))
-        return false;
-
-    VIR_FREE(path);
-    return true;
-}
-
 
 /* qemuGetCompressionProgram:
  * @imageFormat: String representation from qemu.conf for the compression
@@ -3289,6 +3273,7 @@ qemuGetCompressionProgram(const char *imageFormat,
                           bool use_raw_on_fail)
 {
     virQEMUSaveFormat ret;
+    char *path = NULL;
 
     if (!imageFormat)
         return QEMU_SAVE_FORMAT_RAW;
@@ -3296,8 +3281,10 @@ qemuGetCompressionProgram(const char *imageFormat,
     if ((ret = qemuSaveCompressionTypeFromString(imageFormat)) < 0)
         goto error;
 
-    if (!qemuCompressProgramAvailable(ret))
+    if (!(path = virFindFileInPath(imageFormat)))
         goto error;
+
+    VIR_FREE(path);
 
     return ret;
 
