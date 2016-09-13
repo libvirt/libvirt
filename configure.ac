@@ -144,7 +144,10 @@ AC_TYPE_UID_T
 dnl Support building Win32 DLLs (must appear *before* AM_PROG_LIBTOOL)
 AC_LIBTOOL_WIN32_DLL
 
+old_CFLAGS=$CFLAGS
+CFLAGS="$CFLAGS -Werror"
 AC_HEADER_MAJOR
+CFLAGS=$old_CFLAGS
 
 m4_ifndef([LT_INIT], [
   AM_PROG_LIBTOOL
