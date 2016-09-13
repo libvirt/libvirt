@@ -8551,12 +8551,12 @@ qemuBuildShmemDevLegacyStr(virDomainDefPtr def,
 }
 
 static char *
-qemuBuildShmemBackendStr(virLogManagerPtr logManager,
-                         virCommandPtr cmd,
-                         virQEMUDriverConfigPtr cfg,
-                         virDomainDefPtr def,
-                         virDomainShmemDefPtr shmem,
-                         virQEMUCapsPtr qemuCaps)
+qemuBuildShmemBackendChrStr(virLogManagerPtr logManager,
+                            virCommandPtr cmd,
+                            virQEMUDriverConfigPtr cfg,
+                            virDomainDefPtr def,
+                            virDomainShmemDefPtr shmem,
+                            virQEMUCapsPtr qemuCaps)
 {
     char *devstr = NULL;
 
@@ -8612,8 +8612,8 @@ qemuBuildShmemCommandLine(virLogManagerPtr logManager,
     VIR_FREE(devstr);
 
     if (shmem->server.enabled) {
-        if (!(devstr = qemuBuildShmemBackendStr(logManager, cmd, cfg, def,
-                                                shmem, qemuCaps)))
+        if (!(devstr = qemuBuildShmemBackendChrStr(logManager, cmd, cfg, def,
+                                                   shmem, qemuCaps)))
             return -1;
 
         virCommandAddArgList(cmd, "-chardev", devstr, NULL);
