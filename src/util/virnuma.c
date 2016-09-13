@@ -1004,12 +1004,7 @@ virNumaGetHostNodeset(void)
         if (!virNumaNodeIsAvailable(i))
             continue;
 
-        if (virBitmapSetBit(nodeset, i) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Problem setting bit in bitmap"));
-            virBitmapFree(nodeset);
-            return NULL;
-        }
+        ignore_value(virBitmapSetBit(nodeset, i));
     }
 
     return nodeset;
