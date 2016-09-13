@@ -4891,7 +4891,7 @@ qemuDomainSetVcpusLive(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    qemuCgrouEmulatorAllNodesRestore(emulatorCgroup);
+    qemuCgroupEmulatorAllNodesRestore(emulatorCgroup);
     virBitmapFree(vcpumap);
 
     return ret;

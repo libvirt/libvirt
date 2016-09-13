@@ -4925,7 +4925,7 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    qemuCgrouEmulatorAllNodesRestore(emulatorCgroup);
+    qemuCgroupEmulatorAllNodesRestore(emulatorCgroup);
     VIR_FREE(bootHotplug);
     virJSONValueFree(vcpuprops);
     return ret;

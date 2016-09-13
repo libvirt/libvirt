@@ -66,6 +66,6 @@ struct _qemuCgroupEmulatorAllNodesData {
 
 int qemuCgroupEmulatorAllNodesAllow(virCgroupPtr cgroup,
                                     qemuCgroupEmulatorAllNodesDataPtr *data);
-void qemuCgrouEmulatorAllNodesRestore(qemuCgroupEmulatorAllNodesDataPtr data);
+void qemuCgroupEmulatorAllNodesRestore(qemuCgroupEmulatorAllNodesDataPtr data);
 
 #endif /* __QEMU_CGROUP_H__ */

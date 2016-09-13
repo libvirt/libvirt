@@ -1149,7 +1149,7 @@ qemuCgroupEmulatorAllNodesDataFree(qemuCgroupEmulatorAllNodesDataPtr data)
  * Allows all NUMA nodes for the qemu emulator thread temporarily. This is
  * necessary when hotplugging cpus since it requires memory allocated in the
  * DMA region. Afterwards the operation can be reverted by
- * qemuCgrouEmulatorAllNodesRestore.
+ * qemuCgroupEmulatorAllNodesRestore.
  *
  * Returns 0 on success -1 on error
  */
@@ -1196,14 +1196,14 @@ qemuCgroupEmulatorAllNodesAllow(virCgroupPtr cgroup,
 
 
 /**
- * qemuCgrouEmulatorAllNodesRestore:
+ * qemuCgroupEmulatorAllNodesRestore:
  * @data: data structure created by qemuCgroupEmulatorAllNodesAllow
  *
  * Rolls back the setting done by qemuCgroupEmulatorAllNodesAllow and frees the
  * associated data.
  */
 void
-qemuCgrouEmulatorAllNodesRestore(qemuCgroupEmulatorAllNodesDataPtr data)
+qemuCgroupEmulatorAllNodesRestore(qemuCgroupEmulatorAllNodesDataPtr data)
 {
     virErrorPtr err;
 
