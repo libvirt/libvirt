@@ -1773,6 +1773,7 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
     int order = 1;
     size_t totalvcpus = 0;
     size_t mastervcpu; /* this iterator is used for iterating hotpluggable entities */
+    size_t anyvcpu; /* this iterator is used for any vcpu entry in the result */
     size_t i;
     size_t j;
 
@@ -1832,27 +1833,27 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
      * multi-vcpu objects */
     for (j = 0; j < ncpuentries; j++) {
         /* find the correct entry or beginning of group of entries */
-        for (i = 0; i < maxvcpus; i++) {
-            if (cpuentries[j].qom_path && vcpus[i].qom_path &&
-                STREQ(cpuentries[j].qom_path, vcpus[i].qom_path))
+        for (anyvcpu = 0; anyvcpu < maxvcpus; anyvcpu++) {
+            if (cpuentries[j].qom_path && vcpus[anyvcpu].qom_path &&
+                STREQ(cpuentries[j].qom_path, vcpus[anyvcpu].qom_path))
                 break;
         }
 
-        if (i == maxvcpus) {
+        if (anyvcpu == maxvcpus) {
             VIR_DEBUG("too many query-cpus entries for a given "
                       "query-hotpluggable-cpus entry");
             return -1;
         }
 
-        if (vcpus[i].vcpus != 1) {
+        if (vcpus[anyvcpu].vcpus != 1) {
             /* find a possibly empty vcpu thread for core granularity systems */
-            for (; i < maxvcpus; i++) {
-                if (vcpus[i].tid == 0)
+            for (; anyvcpu < maxvcpus; anyvcpu++) {
+                if (vcpus[anyvcpu].tid == 0)
                     break;
             }
         }
 
-        vcpus[i].tid = cpuentries[j].tid;
+        vcpus[anyvcpu].tid = cpuentries[j].tid;
     }
 
     return 0;
