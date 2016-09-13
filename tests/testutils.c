@@ -709,7 +709,7 @@ virTestCompareToFile(const char *strcontent,
                         filecontent)) {
         virTestDifferenceFull(stderr,
                               filecontent, filename,
-                              strcontent, NULL);
+                              fixedcontent, NULL);
         goto failure;
     }
 
