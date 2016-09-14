@@ -4807,7 +4807,7 @@ qemuProcessValidateHotpluggableVcpus(virDomainDefPtr def)
         if (vcpu->order != 0) {
             if (virBitmapIsBitSet(ordermap, vcpu->order - 1)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("duplicate vcpu order '%u'"), vcpu->order - 1);
+                               _("duplicate vcpu order '%u'"), vcpu->order);
                 goto cleanup;
             }
 
