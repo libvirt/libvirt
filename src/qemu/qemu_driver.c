@@ -5317,11 +5317,12 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
 {
     virDomainObjPtr vm = NULL;
     virDomainDefPtr def;
+    bool live;
     int ret = -1;
     int hostcpus;
     virBitmapPtr cpumask = NULL;
     virBitmapPtr bitmap = NULL;
-    qemuDomainObjPrivatePtr priv = NULL;
+    virBitmapPtr autoCpuset = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -5332,21 +5333,22 @@ qemuDomainGetEmulatorPinInfo(virDomainPtr dom,
     if (virDomainGetEmulatorPinInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(def = virDomainObjGetOneDef(vm, flags)))
+    if (!(def = virDomainObjGetOneDefState(vm, flags, &live)))
         goto cleanup;
 
     if ((hostcpus = virHostCPUGetCount()) < 0)
         goto cleanup;
 
-    priv = vm->privateData;
+    if (live)
+        autoCpuset = QEMU_DOMAIN_PRIVATE(vm)->autoCpuset;
 
     if (def->cputune.emulatorpin) {
         cpumask = def->cputune.emulatorpin;
     } else if (def->cpumask) {
         cpumask = def->cpumask;
     } else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO &&
-               priv->autoCpuset) {
-        cpumask = priv->autoCpuset;
+               autoCpuset) {
+        cpumask = autoCpuset;
     } else {
         if (!(bitmap = virBitmapNew(hostcpus)))
             goto cleanup;
