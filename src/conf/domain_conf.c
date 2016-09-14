@@ -3118,6 +3118,52 @@ virDomainObjGetDefs(virDomainObjPtr vm,
 
 
 /**
+ * virDomainObjGetOneDefState:
+ *
+ * @vm: Domain object
+ * @flags: for virDomainModificationImpact
+ * @live: set to true if live config was returned (may be omitted)
+ *
+ * Helper function to resolve @flags and return the correct domain pointer
+ * object. This function returns one of @vm->def or @vm->persistentDef
+ * according to @flags. @live is set to true if the live vm config will be
+ * returned. This helper should be used only in APIs that guarantee
+ * that @flags contains exactly one of VIR_DOMAIN_AFFECT_LIVE or
+ * VIR_DOMAIN_AFFECT_CONFIG and not both.
+ *
+ * Returns the correct definition pointer or NULL on error.
+ */
+virDomainDefPtr
+virDomainObjGetOneDefState(virDomainObjPtr vm,
+                           unsigned int flags,
+                           bool *live)
+{
+    if (flags & VIR_DOMAIN_AFFECT_LIVE && flags & VIR_DOMAIN_AFFECT_CONFIG) {
+            virReportInvalidArg(ctl, "%s",
+                                _("Flags 'VIR_DOMAIN_AFFECT_LIVE' and "
+                                  "'VIR_DOMAIN_AFFECT_CONFIG' are mutually "
+                                  "exclusive"));
+            return NULL;
+    }
+
+    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
+        return NULL;
+
+    if (live) {
+        if (flags & VIR_DOMAIN_AFFECT_LIVE)
+            *live = true;
+        else
+            *live = false;
+    }
+
+    if (virDomainObjIsActive(vm) && flags & VIR_DOMAIN_AFFECT_CONFIG)
+        return vm->newDef;
+    else
+        return vm->def;
+}
+
+
+/**
  * virDomainObjGetOneDef:
  *
  * @vm: Domain object
@@ -3135,21 +3181,7 @@ virDomainDefPtr
 virDomainObjGetOneDef(virDomainObjPtr vm,
                       unsigned int flags)
 {
-    if (flags & VIR_DOMAIN_AFFECT_LIVE && flags & VIR_DOMAIN_AFFECT_CONFIG) {
-            virReportInvalidArg(ctl, "%s",
-                                _("Flags 'VIR_DOMAIN_AFFECT_LIVE' and "
-                                  "'VIR_DOMAIN_AFFECT_CONFIG' are mutually "
-                                  "exclusive"));
-            return NULL;
-    }
-
-    if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
-        return NULL;
-
-    if (virDomainObjIsActive(vm) && flags & VIR_DOMAIN_AFFECT_CONFIG)
-        return vm->newDef;
-    else
-        return vm->def;
+    return virDomainObjGetOneDefState(vm, flags, NULL);
 }
 
 

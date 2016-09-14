@@ -417,6 +417,7 @@ virDomainObjFormat;
 virDomainObjGetDefs;
 virDomainObjGetMetadata;
 virDomainObjGetOneDef;
+virDomainObjGetOneDefState;
 virDomainObjGetPersistentDef;
 virDomainObjGetShortName;
 virDomainObjGetState;

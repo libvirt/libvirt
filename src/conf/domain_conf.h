@@ -2592,6 +2592,9 @@ int virDomainObjGetDefs(virDomainObjPtr vm,
                         unsigned int flags,
                         virDomainDefPtr *liveDef,
                         virDomainDefPtr *persDef);
+virDomainDefPtr virDomainObjGetOneDefState(virDomainObjPtr vm,
+                                           unsigned int flags,
+                                           bool *state);
 virDomainDefPtr virDomainObjGetOneDef(virDomainObjPtr vm, unsigned int flags);
 
 virDomainDefPtr virDomainDefCopy(virDomainDefPtr src,
