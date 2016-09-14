@@ -515,11 +515,17 @@ mymain(void)
 
     driver.privileged = true;
 
+    VIR_FREE(driver.config->defaultTLSx509certdir);
+    if (VIR_STRDUP_QUIET(driver.config->defaultTLSx509certdir, "/etc/pki/qemu") < 0)
+        return EXIT_FAILURE;
     VIR_FREE(driver.config->vncTLSx509certdir);
     if (VIR_STRDUP_QUIET(driver.config->vncTLSx509certdir, "/etc/pki/libvirt-vnc") < 0)
         return EXIT_FAILURE;
     VIR_FREE(driver.config->spiceTLSx509certdir);
     if (VIR_STRDUP_QUIET(driver.config->spiceTLSx509certdir, "/etc/pki/libvirt-spice") < 0)
+        return EXIT_FAILURE;
+    VIR_FREE(driver.config->chardevTLSx509certdir);
+    if (VIR_STRDUP_QUIET(driver.config->chardevTLSx509certdir, "/etc/pki/libvirt-chardev") < 0)
         return EXIT_FAILURE;
 
     VIR_FREE(driver.config->stateDir);
