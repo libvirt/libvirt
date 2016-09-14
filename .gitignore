@@ -169,6 +169,7 @@
 /tests/qemucapsprobe
 !/tests/virsh-self-test
 !/tests/virt-aa-helper-test
+!/tests/virt-admin-self-test
 /tests/objectlocking
 /tests/objectlocking-files.txt
 /tests/objectlocking.cm[ix]

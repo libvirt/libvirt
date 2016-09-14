@@ -369,6 +369,7 @@ libvirtd_test_scripts =		\
 	virsh-read-non-seekable		\
 	virsh-schedinfo			\
 	virsh-self-test			\
+	virt-admin-self-test			\
 	virsh-start			\
 	virsh-undefine			\
 	virsh-uriprecedence		\

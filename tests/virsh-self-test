@@ -21,14 +21,25 @@
 
 fail=0
 
-test_url=test:///default
+basename=$(basename $0)
 
-test_intro "virsh-self-test"
-$abs_top_builddir/tools/virsh -c $test_url self-test > /dev/null
+if test "x$basename" = "xvirsh-self-test" ; then
+    binary=virsh
+    extra_args="-c test:///default"
+elif test "x$basename" = "xvirt-admin-self-test" ; then
+    binary=virt-admin
+    extra_args=""
+else
+    echo "Unknown binary: $basename";
+    exit 1
+fi
+
+test_intro "$0"
+$abs_top_builddir/tools/${binary} ${extra_args} self-test > /dev/null
 status=$?
-test_result 1 "virsh-self-test" $status
+test_result 1 "$0" ${status}
 
-if test "$status" != "0" ; then
+if test "${status}" != "0" ; then
    fail=1
 fi
 
