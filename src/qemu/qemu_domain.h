@@ -234,6 +234,9 @@ struct _qemuDomainObjPrivate {
     size_t masterKeyLen;
 };
 
+# define QEMU_DOMAIN_PRIVATE(vm)	\
+    ((qemuDomainObjPrivatePtr) (vm)->privateData)
+
 /* Type of domain secret */
 typedef enum {
     VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN = 0,
