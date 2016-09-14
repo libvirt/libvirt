@@ -4788,7 +4788,7 @@ qemuProcessValidateHotpluggableVcpus(virDomainDefPtr def)
     virBitmapPtr ordermap = NULL;
     int ret = -1;
 
-    if (!(ordermap = virBitmapNew(maxvcpus)))
+    if (!(ordermap = virBitmapNew(maxvcpus + 1)))
         goto cleanup;
 
     /* validate:
@@ -4805,13 +4805,13 @@ qemuProcessValidateHotpluggableVcpus(virDomainDefPtr def)
             continue;
 
         if (vcpu->order != 0) {
-            if (virBitmapIsBitSet(ordermap, vcpu->order - 1)) {
+            if (virBitmapIsBitSet(ordermap, vcpu->order)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("duplicate vcpu order '%u'"), vcpu->order);
                 goto cleanup;
             }
 
-            ignore_value(virBitmapSetBit(ordermap, vcpu->order - 1));
+            ignore_value(virBitmapSetBit(ordermap, vcpu->order));
         }
 
 
