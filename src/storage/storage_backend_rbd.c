@@ -205,29 +205,23 @@ virStorageBackendRBDOpenIoCTX(virStorageBackendRBDStatePtr ptr,
     return r;
 }
 
-static int
+static void
 virStorageBackendRBDCloseRADOSConn(virStorageBackendRBDStatePtr ptr)
 {
-    int ret = 0;
-
     if (ptr->ioctx != NULL) {
         VIR_DEBUG("Closing RADOS IoCTX");
         rados_ioctx_destroy(ptr->ioctx);
-        ret = -1;
     }
     ptr->ioctx = NULL;
 
     if (ptr->cluster != NULL) {
         VIR_DEBUG("Closing RADOS connection");
         rados_shutdown(ptr->cluster);
-        ret = -2;
     }
     ptr->cluster = NULL;
 
-    time_t runtime = time(0) - ptr->starttime;
-    VIR_DEBUG("RADOS connection existed for %ld seconds", runtime);
-
-    return ret;
+    VIR_DEBUG("RADOS connection existed for %ld seconds",
+              time(0) - ptr->starttime);
 }
 
 static int
