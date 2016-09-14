@@ -346,44 +346,6 @@ virshConnectionHandler(vshControl *ctl)
     return NULL;
 }
 
-/* -----------------
- * Command self-test
- * ----------------- */
-
-static const vshCmdInfo info_selftest[] = {
-    {.name = "help",
-     .data = N_("internal command for testing virsh")
-    },
-    {.name = "desc",
-     .data = N_("internal use only")
-    },
-    {.name = NULL}
-};
-
-/* Prints help for every command.
- * That runs vshCmddefOptParse which validates
- * the per-command options structure. */
-static bool
-cmdSelfTest(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
-{
-    const vshCmdGrp *grp;
-    const vshCmdDef *def;
-
-    vshPrint(ctl, "Do not use the following output:\n\n");
-
-    for (grp = cmdGroups; grp->name; grp++) {
-        for (def = grp->commands; def->name; def++) {
-            if (def->flags & VSH_CMD_FLAG_ALIAS)
-                continue;
-
-            if (!vshCmddefHelp(ctl, def->name))
-                return false;
-        }
-    }
-
-    return true;
-}
-
 
 /* ---------------
  * Misc utils
@@ -894,17 +856,12 @@ static const vshCmdDef virshCmds[] = {
     VSH_CMD_HELP,
     VSH_CMD_PWD,
     VSH_CMD_QUIT,
+    VSH_CMD_SELF_TEST,
     {.name = "connect",
      .handler = cmdConnect,
      .opts = opts_connect,
      .info = info_connect,
      .flags = VSH_CMD_FLAG_NOCONNECT
-    },
-    {.name = "self-test",
-     .handler = cmdSelfTest,
-     .opts = NULL,
-     .info = info_selftest,
-     .flags = VSH_CMD_FLAG_NOCONNECT | VSH_CMD_FLAG_ALIAS
     },
     {.name = NULL}
 };

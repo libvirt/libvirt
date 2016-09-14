@@ -3328,3 +3328,41 @@ cmdQuit(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     ctl->imode = false;
     return true;
 }
+
+/* -----------------
+ * Command self-test
+ * ----------------- */
+
+const vshCmdInfo info_selftest[] = {
+    {.name = "help",
+     .data = N_("internal command for testing virt shells")
+    },
+    {.name = "desc",
+     .data = N_("internal use only")
+    },
+    {.name = NULL}
+};
+
+/* Prints help for every command.
+ * That runs vshCmddefOptParse which validates
+ * the per-command options structure. */
+bool
+cmdSelfTest(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    const vshCmdGrp *grp;
+    const vshCmdDef *def;
+
+    vshPrint(ctl, "Do not use the following output:\n\n");
+
+    for (grp = cmdGroups; grp->name; grp++) {
+        for (def = grp->commands; def->name; def++) {
+            if (def->flags & VSH_CMD_FLAG_ALIAS)
+                continue;
+
+            if (!vshCmddefHelp(ctl, def->name))
+                return false;
+        }
+    }
+
+    return true;
+}
