@@ -2710,7 +2710,7 @@ static int testNodeGetCellsFreeMemory(virConnectPtr conn,
     int ret = -1;
 
     testDriverLock(privconn);
-    if (startCell > privconn->numCells) {
+    if (startCell >= privconn->numCells) {
         virReportError(VIR_ERR_INVALID_ARG,
                        "%s", _("Range exceeds available cells"));
         goto cleanup;
