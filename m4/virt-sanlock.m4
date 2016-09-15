@@ -46,11 +46,15 @@ AC_DEFUN([LIBVIRT_CHECK_SANLOCK],[
         [whether sanlock supports sanlock_inq_lockspace])
     fi
 
-    AC_CHECK_LIB([sanlock_client], [sanlock_add_lockspace_timeout],
-                 [sanlock_add_lockspace_timeout=yes], [sanlock_add_lockspace_timeout=no])
-    if test "x$sanlock_add_lockspace_timeout" = "xyes" ; then
-      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_ADD_LOCKSPACE_TIMEOUT], 1,
-        [whether Sanlock supports sanlock_add_lockspace_timeout])
+    dnl Ideally, we would check for sanlock_add_lockspace_timeout here too, but
+    dnl sanlock_write_lockspace has been introduced 2 releases after
+    dnl sanlock_add_lockspace_timeout therefore if sanlock_write_lockspace is found
+    dnl it is safe to assume sanlock_add_lockspace_timeout is present too.
+    AC_CHECK_LIB([sanlock_client], [sanlock_write_lockspace],
+                 [sanlock_write_lockspace=yes], [sanlock_write_lockspace=no])
+    if test "x$sanlock_write_lockspace" = "xyes" ; then
+      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_IO_TIMEOUT], 1,
+        [whether sanlock supports sanlock_write_lockspace])
     fi
 
     CPPFLAGS="$old_cppflags"

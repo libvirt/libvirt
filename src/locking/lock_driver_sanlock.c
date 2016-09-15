@@ -311,7 +311,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriverPtr driver)
      * or we can fallback to polling.
      */
  retry:
-#ifdef HAVE_SANLOCK_ADD_LOCKSPACE_TIMEOUT
+#ifdef HAVE_SANLOCK_IO_TIMEOUT
     rv = sanlock_add_lockspace_timeout(&ls, 0, driver->io_timeout);
 #else
     if (driver->io_timeout) {
