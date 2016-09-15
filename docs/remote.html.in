@@ -419,13 +419,21 @@ next section.
         <td>
           <code>/etc/pki/CA/cacert.pem</code>
         </td>
-        <td> Installed on all clients and servers </td>
+        <td> Installed on the client and server </td>
         <td> CA's certificate (<a href="#Remote_TLS_CA">more info</a>)</td>
         <td> n/a </td>
       </tr>
       <tr>
         <td>
-          <code>/etc/pki/libvirt/ private/serverkey.pem</code>
+          <code>$HOME/.pki/cacert.pem</code>
+        </td>
+        <td> Installed on the client </td>
+        <td> CA's certificate (<a href="#Remote_TLS_CA">more info</a>)</td>
+        <td> n/a </td>
+      </tr>
+      <tr>
+        <td>
+          <code>/etc/pki/libvirt/private/serverkey.pem</code>
         </td>
         <td> Installed on the server </td>
         <td> Server's private key (<a href="#Remote_TLS_server_certificates">more info</a>)</td>
@@ -433,7 +441,7 @@ next section.
       </tr>
       <tr>
         <td>
-          <code>/etc/pki/libvirt/ servercert.pem</code>
+          <code>/etc/pki/libvirt/servercert.pem</code>
         </td>
         <td> Installed on the server </td>
         <td> Server's certificate signed by the CA.
@@ -443,7 +451,7 @@ next section.
       </tr>
       <tr>
         <td>
-          <code>/etc/pki/libvirt/ private/clientkey.pem</code>
+          <code>/etc/pki/libvirt/private/clientkey.pem</code>
         </td>
         <td> Installed on the client </td>
         <td> Client's private key. (<a href="#Remote_TLS_client_certificates">more info</a>) </td>
@@ -451,7 +459,26 @@ next section.
       </tr>
       <tr>
         <td>
-          <code>/etc/pki/libvirt/ clientcert.pem</code>
+          <code>/etc/pki/libvirt/clientcert.pem</code>
+        </td>
+        <td> Installed on the client </td>
+        <td> Client's certificate signed by the CA
+  (<a href="#Remote_TLS_client_certificates">more info</a>) </td>
+        <td> Distinguished Name (DN) can be checked against an access
+  control list (<code>tls_allowed_dn_list</code>).
+  </td>
+      </tr>
+      <tr>
+        <td>
+          <code>$HOME/.pki/libvirt/clientkey.pem</code>
+        </td>
+        <td> Installed on the client </td>
+        <td> Client's private key. (<a href="#Remote_TLS_client_certificates">more info</a>) </td>
+        <td> n/a </td>
+      </tr>
+      <tr>
+        <td>
+          <code>$HOME/.pki/libvirt/clientcert.pem</code>
         </td>
         <td> Installed on the client </td>
         <td> Client's certificate signed by the CA
@@ -469,7 +496,7 @@ next section.
     </p>
     <ul>
       <li> For a non-root user, libvirt tries to find the certificates
-        in $HOME/.pki/libvirt. If the required CA certificate cannot
+        in $HOME/.pki/libvirt first. If the required CA certificate cannot
         be found, then the global default location
         (/etc/pki/CA/cacert.pem) will be used.
         Likewise, if either the client certificate
@@ -477,7 +504,7 @@ next section.
         locations (/etc/pki/libvirt/clientcert.pem,
         /etc/pki/libvirt/private/clientkey.pem) will be used.
       </li>
-      <li> For the root user, the global default locations will be used.</li>
+      <li> For the root user, the global default locations will always be used.</li>
     </ul>
     <h4>
       <a name="Remote_TLS_background">Background to TLS certificates</a>
