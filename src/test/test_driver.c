@@ -1262,10 +1262,10 @@ testOpenFromFile(virConnectPtr conn, const char *file)
 static int
 testOpenDefault(virConnectPtr conn)
 {
-    int u;
     testDriverPtr privconn = NULL;
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
+    size_t i;
 
     virMutexLock(&defaultLock);
     if (defaultConnections++) {
@@ -1283,20 +1283,20 @@ testOpenDefault(virConnectPtr conn)
 
     /* Numa setup */
     privconn->numCells = 2;
-    for (u = 0; u < privconn->numCells; ++u) {
-        privconn->cells[u].numCpus = 8;
-        privconn->cells[u].mem = (u + 1) * 2048 * 1024;
-        privconn->cells[u].freeMem = (u + 1) * 1024 * 1024;
+    for (i = 0; i < privconn->numCells; i++) {
+        privconn->cells[i].numCpus = 8;
+        privconn->cells[i].mem = (i + 1) * 2048 * 1024;
+        privconn->cells[i].freeMem = (i + 1) * 1024 * 1024;
     }
-    for (u = 0; u < 16; u++) {
+    for (i = 0; i < 16; i++) {
         virBitmapPtr siblings = virBitmapNew(16);
         if (!siblings)
             goto error;
-        ignore_value(virBitmapSetBit(siblings, u));
-        privconn->cells[u / 8].cpus[(u % 8)].id = u;
-        privconn->cells[u / 8].cpus[(u % 8)].socket_id = u / 8;
-        privconn->cells[u / 8].cpus[(u % 8)].core_id = u % 8;
-        privconn->cells[u / 8].cpus[(u % 8)].siblings = siblings;
+        ignore_value(virBitmapSetBit(siblings, i));
+        privconn->cells[i / 8].cpus[(i % 8)].id = i;
+        privconn->cells[i / 8].cpus[(i % 8)].socket_id = i / 8;
+        privconn->cells[i / 8].cpus[(i % 8)].core_id = i % 8;
+        privconn->cells[i / 8].cpus[(i % 8)].siblings = siblings;
     }
 
     if (!(privconn->caps = testBuildCapabilities(conn)))
