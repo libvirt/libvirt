@@ -1501,6 +1501,26 @@ static char *testConnectGetCapabilities(virConnectPtr conn)
     return xml;
 }
 
+static char *
+testConnectGetSysinfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      unsigned int flags)
+{
+    char *ret;
+    const char *sysinfo = "<sysinfo type='smbios'>\n"
+           "  <bios>\n"
+           "    <entry name='vendor'>LENOVO</entry>\n"
+           "    <entry name='version'>G4ETA1WW (2.61 )</entry>\n"
+           "    <entry name='date'>05/07/2014</entry>\n"
+           "    <entry name='release'>2.61</entry>\n"
+           "  </bios>\n"
+           "</sysinfo>\n";
+
+    virCheckFlags(0, NULL);
+
+    ignore_value(VIR_STRDUP(ret, sysinfo));
+    return ret;
+}
+
 static int testConnectNumOfDomains(virConnectPtr conn)
 {
     testDriverPtr privconn = conn->privateData;
@@ -6675,6 +6695,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .connectGetMaxVcpus = testConnectGetMaxVcpus, /* 0.3.2 */
     .nodeGetInfo = testNodeGetInfo, /* 0.1.1 */
     .connectGetCapabilities = testConnectGetCapabilities, /* 0.2.1 */
+    .connectGetSysinfo = testConnectGetSysinfo, /* 2.3.0 */
     .connectListDomains = testConnectListDomains, /* 0.1.1 */
     .connectNumOfDomains = testConnectNumOfDomains, /* 0.1.1 */
     .connectListAllDomains = testConnectListAllDomains, /* 0.9.13 */
