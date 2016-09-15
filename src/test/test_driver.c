@@ -1264,7 +1264,7 @@ testOpenDefault(virConnectPtr conn)
 
     /* Numa setup */
     privconn->numCells = 2;
-    for (u = 0; u < 2; ++u) {
+    for (u = 0; u < privconn->numCells; ++u) {
         privconn->cells[u].numCpus = 8;
         privconn->cells[u].mem = (u + 1) * 2048 * 1024;
     }
