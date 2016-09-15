@@ -63,6 +63,7 @@
 #include "virauth.h"
 #include "viratomic.h"
 #include "virdomainobjlist.h"
+#include "virhostcpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST
 
@@ -2708,6 +2709,52 @@ static int testNodeGetCellsFreeMemory(virConnectPtr conn,
     return ret;
 }
 
+#define TEST_NB_CPU_STATS 4
+
+static int
+testNodeGetCPUStats(virConnectPtr conn ATTRIBUTE_UNUSED,
+                    int cpuNum ATTRIBUTE_UNUSED,
+                    virNodeCPUStatsPtr params,
+                    int *nparams,
+                    unsigned int flags)
+{
+    size_t i = 0;
+
+    virCheckFlags(0, -1);
+
+    if (params == NULL) {
+        *nparams = TEST_NB_CPU_STATS;
+        return 0;
+    }
+
+    for (i = 0; i < *nparams && i < 4; i++) {
+        switch (i) {
+        case 0:
+            if (virHostCPUStatsAssign(&params[i],
+                                      VIR_NODE_CPU_STATS_USER, 9797400000) < 0)
+                return -1;
+            break;
+        case 1:
+            if (virHostCPUStatsAssign(&params[i],
+                                      VIR_NODE_CPU_STATS_KERNEL, 34678723400000) < 0)
+                return -1;
+            break;
+        case 2:
+            if (virHostCPUStatsAssign(&params[i],
+                                      VIR_NODE_CPU_STATS_IDLE, 87264900000) < 0)
+                return -1;
+            break;
+        case 3:
+            if (virHostCPUStatsAssign(&params[i],
+                                      VIR_NODE_CPU_STATS_IOWAIT, 763600000) < 0)
+                return -1;
+            break;
+        }
+    }
+
+    *nparams = i;
+    return 0;
+}
 
 static int testDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
 {
@@ -6700,6 +6747,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .connectGetHostname = testConnectGetHostname, /* 0.6.3 */
     .connectGetMaxVcpus = testConnectGetMaxVcpus, /* 0.3.2 */
     .nodeGetInfo = testNodeGetInfo, /* 0.1.1 */
+    .nodeGetCPUStats = testNodeGetCPUStats, /* 2.3.0 */
     .connectGetCapabilities = testConnectGetCapabilities, /* 0.2.1 */
     .connectGetSysinfo = testConnectGetSysinfo, /* 2.3.0 */
     .connectGetType = testConnectGetType, /* 2.3.0 */
