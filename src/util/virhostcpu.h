@@ -53,4 +53,8 @@ int virHostCPUGetInfo(virArch hostarch,
 
 int virHostCPUGetKVMMaxVCPUs(void);
 
+int virHostCPUStatsAssign(virNodeCPUStatsPtr param,
+                          const char *name,
+                          unsigned long long value);
+
 #endif /* __VIR_HOSTCPU_H__*/

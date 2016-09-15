@@ -781,7 +781,7 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
     return ret;
 }
 
-static int
+int
 virHostCPUStatsAssign(virNodeCPUStatsPtr param,
                       const char *name,
                       unsigned long long value)
