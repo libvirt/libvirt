@@ -309,7 +309,7 @@ testBuildCapabilities(virConnectPtr conn)
     virCapsGuestPtr guest;
     int guest_types[] = { VIR_DOMAIN_OSTYPE_HVM,
                           VIR_DOMAIN_OSTYPE_XEN };
-    size_t i;
+    size_t i, j;
 
     if ((caps = virCapabilitiesNew(VIR_ARCH_I686, false, false)) == NULL)
         goto error;
@@ -319,19 +319,36 @@ testBuildCapabilities(virConnectPtr conn)
     if (virCapabilitiesAddHostFeature(caps, "nonpae") < 0)
         goto error;
 
+    if (VIR_ALLOC_N(caps->host.pagesSize, 2) < 0)
+        goto error;
+
+    caps->host.pagesSize[caps->host.nPagesSize++] = 4;
+    caps->host.pagesSize[caps->host.nPagesSize++] = 2048;
+
     for (i = 0; i < privconn->numCells; i++) {
         virCapsHostNUMACellCPUPtr cpu_cells;
+        virCapsHostNUMACellPageInfoPtr pages;
+        size_t nPages;
 
-        if (VIR_ALLOC_N(cpu_cells, privconn->cells[i].numCpus) < 0)
-            goto error;
+        if (VIR_ALLOC_N(cpu_cells, privconn->cells[i].numCpus) < 0 ||
+            VIR_ALLOC_N(pages, caps->host.nPagesSize) < 0) {
+                VIR_FREE(cpu_cells);
+                goto error;
+            }
+
+        nPages = caps->host.nPagesSize;
 
         memcpy(cpu_cells, privconn->cells[i].cpus,
                sizeof(*cpu_cells) * privconn->cells[i].numCpus);
 
+        for (j = 0; j < nPages; j++)
+            pages[j].size = caps->host.pagesSize[j];
 
-        if (virCapabilitiesAddHostNUMACell(caps, i, 0,
+        pages[0].avail = privconn->cells[i].mem / pages[0].size;
+
+        if (virCapabilitiesAddHostNUMACell(caps, i, privconn->cells[i].mem,
                                            privconn->cells[i].numCpus,
-                                           cpu_cells, 0, NULL, 0, NULL) < 0)
+                                           cpu_cells, 0, NULL, nPages, pages) < 0)
             goto error;
     }
 
