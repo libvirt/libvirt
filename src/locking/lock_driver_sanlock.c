@@ -158,6 +158,29 @@ virLockManagerSanlockLoadConfig(virLockManagerSanlockDriverPtr driver,
     return ret;
 }
 
+static int
+virLockManagerSanlockInitLockspace(virLockManagerSanlockDriverPtr driver,
+                                   struct sanlk_lockspace *ls)
+{
+    int ret;
+
+#ifdef HAVE_SANLOCK_IO_TIMEOUT
+    const int max_hosts = 0; /* defaults used in sanlock_init() implementation */
+    const unsigned int lockspaceFlags = 0;
+
+    ret = sanlock_write_lockspace(ls, max_hosts, lockspaceFlags, driver->io_timeout);
+#else
+    if (driver->io_timeout) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unable to use io_timeout with this version of sanlock"));
+        return -ENOTSUP;
+    }
+
+    ret = sanlock_init(ls, NULL, 0, 0);
+#endif
+    return ret;
+}
+
 /* How much ms sleep before retrying to add a lockspace? */
 #define LOCKSPACE_SLEEP 100
 /* How many times try adding a lockspace? */
@@ -268,7 +291,7 @@ virLockManagerSanlockSetupLockspace(virLockManagerSanlockDriverPtr driver)
                 goto error_unlink;
             }
 
-            if ((rv = sanlock_init(&ls, NULL, 0, 0)) < 0) {
+            if ((rv = virLockManagerSanlockInitLockspace(driver, &ls) < 0)) {
                 if (rv <= -200)
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("Unable to initialize lockspace %s: error %d"),
