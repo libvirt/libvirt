@@ -1521,6 +1521,12 @@ testConnectGetSysinfo(virConnectPtr conn ATTRIBUTE_UNUSED,
     return ret;
 }
 
+static const char *
+testConnectGetType(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return "TEST";
+}
+
 static int testConnectNumOfDomains(virConnectPtr conn)
 {
     testDriverPtr privconn = conn->privateData;
@@ -6696,6 +6702,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .nodeGetInfo = testNodeGetInfo, /* 0.1.1 */
     .connectGetCapabilities = testConnectGetCapabilities, /* 0.2.1 */
     .connectGetSysinfo = testConnectGetSysinfo, /* 2.3.0 */
+    .connectGetType = testConnectGetType, /* 2.3.0 */
     .connectListDomains = testConnectListDomains, /* 0.1.1 */
     .connectNumOfDomains = testConnectNumOfDomains, /* 0.1.1 */
     .connectListAllDomains = testConnectListAllDomains, /* 0.9.13 */
