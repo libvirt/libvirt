@@ -308,7 +308,6 @@ qemuAgentIOProcessLine(qemuAgentPtr mon,
 {
     virJSONValuePtr obj = NULL;
     int ret = -1;
-    unsigned long long id;
 
     VIR_DEBUG("Line [%s]", line);
 
@@ -331,25 +330,11 @@ qemuAgentIOProcessLine(qemuAgentPtr mon,
             msg->rxObject = obj;
             msg->finished = 1;
             obj = NULL;
-            ret = 0;
         } else {
-            /* If we've received something like:
-             *  {"return": 1234}
-             * it is likely that somebody started GA
-             * which is now processing our previous
-             * guest-sync commands. Check if this is
-             * the case and don't report an error but
-             * return silently.
-             */
-            if (virJSONValueObjectGetNumberUlong(obj, "return", &id) == 0) {
-                VIR_DEBUG("Ignoring delayed reply to guest-sync: %llu", id);
-                ret = 0;
-                goto cleanup;
-            }
-
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unexpected JSON reply '%s'"), line);
+            /* we are out of sync */
+            VIR_DEBUG("Ignoring delayed reply");
         }
+        ret = 0;
     } else {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown JSON reply '%s'"), line);
