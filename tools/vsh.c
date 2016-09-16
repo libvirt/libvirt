@@ -636,7 +636,6 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
     } else {
         /* Don't translate desc if it is "".  */
         const char *desc = vshCmddefGetInfo(def, "desc");
-        const char *help = _(vshCmddefGetInfo(def, "help"));
         char buf[256];
         uint64_t opts_need_arg;
         uint64_t opts_required;
@@ -649,7 +648,8 @@ vshCmddefHelp(vshControl *ctl, const char *cmdname)
         }
 
         fputs(_("  NAME\n"), stdout);
-        fprintf(stdout, "    %s - %s\n", def->name, help);
+        fprintf(stdout, "    %s - %s\n", def->name,
+                _(vshCmddefGetInfo(def, "help")));
 
         fputs(_("\n  SYNOPSIS\n"), stdout);
         fprintf(stdout, "    %s", def->name);
@@ -3356,8 +3356,6 @@ cmdSelfTest(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     const vshCmdGrp *grp;
     const vshCmdDef *def;
-
-    vshPrint(ctl, "Do not use the following output:\n\n");
 
     for (grp = cmdGroups; grp->name; grp++) {
         for (def = grp->commands; def->name; def++) {
