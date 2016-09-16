@@ -992,8 +992,12 @@ qemuAgentGuestSync(qemuAgentPtr mon)
             memset(&sync_msg, 0, sizeof(sync_msg));
             goto retry;
         } else {
-            virReportError(VIR_ERR_AGENT_UNSYNCED, "%s",
-                           _("Missing monitor reply object"));
+            if (mon->running)
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Missing monitor reply object"));
+            else
+                virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                               _("Guest agent disappeared while executing command"));
             goto cleanup;
         }
     }
