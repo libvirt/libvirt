@@ -83,6 +83,8 @@ struct _qemuAgentMessage {
     bool finished;
     /* true for sync command */
     bool sync;
+    /* id of the issued sync comand */
+    unsigned long long id;
 };
 
 
@@ -337,6 +339,24 @@ qemuAgentIOProcessLine(qemuAgentPtr mon,
     } else if (virJSONValueObjectHasKey(obj, "error") == 1 ||
                virJSONValueObjectHasKey(obj, "return") == 1) {
         if (msg) {
+            if (msg->sync) {
+                unsigned long long id;
+
+                if (virJSONValueObjectGetNumberUlong(obj, "return", &id) < 0) {
+                    VIR_DEBUG("Ignoring delayed reply on sync");
+                    ret = 0;
+                    goto cleanup;
+                }
+
+                VIR_DEBUG("Guest returned ID: %llu", id);
+
+                if (msg->id != id) {
+                    VIR_DEBUG("Guest agent returned ID: %llu instead of %llu",
+                              id, msg->id);
+                    ret = 0;
+                    goto cleanup;
+                }
+            }
             msg->rxObject = obj;
             msg->finished = 1;
             obj = NULL;
@@ -935,7 +955,7 @@ qemuAgentGuestSync(qemuAgentPtr mon)
 {
     int ret = -1;
     int send_ret;
-    unsigned long long id, id_ret;
+    unsigned long long id;
     qemuAgentMessage sync_msg;
 
     memset(&sync_msg, 0, sizeof(sync_msg));
@@ -950,6 +970,7 @@ qemuAgentGuestSync(qemuAgentPtr mon)
 
     sync_msg.txLength = strlen(sync_msg.txBuffer);
     sync_msg.sync = true;
+    sync_msg.id = id;
 
     VIR_DEBUG("Sending guest-sync command with ID: %llu", id);
 
@@ -967,20 +988,6 @@ qemuAgentGuestSync(qemuAgentPtr mon)
         goto cleanup;
     }
 
-    if (virJSONValueObjectGetNumberUlong(sync_msg.rxObject,
-                                         "return", &id_ret) < 0) {
-        virReportError(VIR_ERR_AGENT_UNSYNCED, "%s",
-                       _("Malformed return value"));
-        goto cleanup;
-    }
-
-    VIR_DEBUG("Guest returned ID: %llu", id_ret);
-    if (id_ret != id) {
-        virReportError(VIR_ERR_AGENT_UNSYNCED,
-                       _("Guest agent returned ID: %llu instead of %llu"),
-                       id_ret, id);
-        goto cleanup;
-    }
     ret = 0;
 
  cleanup:
