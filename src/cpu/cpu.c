@@ -95,13 +95,16 @@ cpuGetSubDriverByName(const char *name)
  *
  * @host: host CPU definition
  * @xml: XML description of either guest or host CPU to be compared with @host
+ * @failIncompatible: return an error instead of VIR_CPU_COMPARE_INCOMPATIBLE
  *
  * Compares the CPU described by @xml with @host CPU.
  *
  * Returns VIR_CPU_COMPARE_ERROR on error, VIR_CPU_COMPARE_INCOMPATIBLE when
  * the two CPUs are incompatible, VIR_CPU_COMPARE_IDENTICAL when the two CPUs
  * are identical, VIR_CPU_COMPARE_SUPERSET when the @xml CPU is a superset of
- * the @host CPU.
+ * the @host CPU. If @failIncompatible is true, the function will return
+ * VIR_CPU_COMPARE_ERROR (and set VIR_ERR_CPU_INCOMPATIBLE error) when the
+ * two CPUs are incompatible.
  */
 virCPUCompareResult
 cpuCompareXML(virCPUDefPtr host,
@@ -138,13 +141,16 @@ cpuCompareXML(virCPUDefPtr host,
  *
  * @host: host CPU definition
  * @cpu: either guest or host CPU to be compared with @host
+ * @failIncompatible: return an error instead of VIR_CPU_COMPARE_INCOMPATIBLE
  *
  * Compares the CPU described by @cpu with @host CPU.
  *
  * Returns VIR_CPU_COMPARE_ERROR on error, VIR_CPU_COMPARE_INCOMPATIBLE when
  * the two CPUs are incompatible, VIR_CPU_COMPARE_IDENTICAL when the two CPUs
  * are identical, VIR_CPU_COMPARE_SUPERSET when the @cpu CPU is a superset of
- * the @host CPU.
+ * the @host CPU. If @failIncompatible is true, the function will return
+ * VIR_CPU_COMPARE_ERROR (and set VIR_ERR_CPU_INCOMPATIBLE error) when the
+ * two CPUs are incompatible.
  */
 virCPUCompareResult
 cpuCompare(virCPUDefPtr host,
