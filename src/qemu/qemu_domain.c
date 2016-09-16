@@ -2327,11 +2327,11 @@ qemuDomainDefPostParse(virDomainDefPtr def,
                        virCapsPtr caps,
                        unsigned int parseFlags,
                        void *opaque,
-                       void *parseOpaque ATTRIBUTE_UNUSED)
+                       void *parseOpaque)
 {
     virQEMUDriverPtr driver = opaque;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    virQEMUCapsPtr qemuCaps = NULL;
+    virQEMUCapsPtr qemuCaps = parseOpaque;
     int ret = -1;
 
     if (def->os.bootloader || def->os.bootloaderArgs) {
@@ -2360,10 +2360,14 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         !(def->emulator = virDomainDefGetDefaultEmulator(def, caps)))
         goto cleanup;
 
-    if (!(qemuCaps = virQEMUCapsCacheLookup(caps,
-                                            driver->qemuCapsCache,
-                                            def->emulator)))
-        goto cleanup;
+    if (qemuCaps) {
+        virObjectRef(qemuCaps);
+    } else {
+        if (!(qemuCaps = virQEMUCapsCacheLookup(caps,
+                                                driver->qemuCapsCache,
+                                                def->emulator)))
+            goto cleanup;
+    }
 
     if (qemuDomainDefAddDefaultDevices(def, qemuCaps) < 0)
         goto cleanup;
