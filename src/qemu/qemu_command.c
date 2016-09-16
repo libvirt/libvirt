@@ -4325,6 +4325,10 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
                            virDomainVideoTypeToString(video->type));
             goto error;
         }
+        if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
+            qemuDomainMachineIsVirt(def)) {
+            model = "virtio-gpu-pci";
+        }
     } else {
         if (video->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
