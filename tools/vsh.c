@@ -428,9 +428,6 @@ static int
 vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
                   uint64_t *opts_required)
 {
-    if (vshCmddefCheckInternals(cmd) < 0)
-        return -1;
-
     if (vshCmddefOptFill(cmd, opts_need_arg, opts_required) < 0)
         return -1;
 
@@ -3362,7 +3359,7 @@ cmdSelfTest(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             if (def->flags & VSH_CMD_FLAG_ALIAS)
                 continue;
 
-            if (!vshCmddefHelp(ctl, def->name))
+            if (vshCmddefCheckInternals(def) < 0)
                 return false;
         }
     }
