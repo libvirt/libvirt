@@ -4811,9 +4811,13 @@ qemuProcessValidateHotpluggableVcpus(virDomainDefPtr def)
                 goto cleanup;
             }
 
-            ignore_value(virBitmapSetBit(ordermap, vcpu->order));
+            if (virBitmapSetBit(ordermap, vcpu->order)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("vcpu order '%u' exceeds vcpu count"),
+                               vcpu->order);
+                goto cleanup;
+            }
         }
-
 
         for (j = i + 1; j < (i + vcpupriv->vcpus); j++) {
             subvcpu = virDomainDefGetVcpu(def, j);
