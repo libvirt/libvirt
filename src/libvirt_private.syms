@@ -980,6 +980,7 @@ cpuEncode;
 cpuGetModels;
 cpuGuestData;
 cpuNodeData;
+virCPUCheckFeature;
 virCPUDataCheckFeature;
 virCPUTranslate;
 virCPUUpdate;

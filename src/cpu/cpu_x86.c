@@ -2602,6 +2602,28 @@ virCPUx86Update(virCPUDefPtr guest,
 
 
 static int
+virCPUx86CheckFeature(const virCPUDef *cpu,
+                      const char *name)
+{
+    int ret = -1;
+    virCPUx86MapPtr map;
+    virCPUx86ModelPtr model = NULL;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    if (!(model = x86ModelFromCPU(cpu, map, -1)))
+        goto cleanup;
+
+    ret = x86FeatureInData(name, &model->data, map);
+
+ cleanup:
+    x86ModelFree(model);
+    return ret;
+}
+
+
+static int
 virCPUx86DataCheckFeature(const virCPUData *data,
                           const char *name)
 {
@@ -2709,6 +2731,7 @@ struct cpuArchDriver cpuDriverX86 = {
     .guestData  = x86GuestData,
     .baseline   = x86Baseline,
     .update     = virCPUx86Update,
+    .checkFeature = virCPUx86CheckFeature,
     .dataCheckFeature = virCPUx86DataCheckFeature,
     .dataFormat = x86CPUDataFormat,
     .dataParse  = x86CPUDataParse,

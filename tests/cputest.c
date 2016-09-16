@@ -430,7 +430,11 @@ cpuTestHasFeature(const void *arg)
                   NULL, NULL, NULL, NULL) < 0)
         goto cleanup;
 
-    result = virCPUDataCheckFeature(hostData, data->name);
+    result = virCPUCheckFeature(host->arch, host, data->name);
+
+    if (data->result == result)
+        result = virCPUDataCheckFeature(hostData, data->name);
+
     if (data->result == -1)
         virResetLastError();
 
