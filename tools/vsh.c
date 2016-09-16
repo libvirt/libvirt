@@ -378,10 +378,15 @@ vshCmddefCheckInternals(const vshCmdDef *cmd)
     return 0;
 }
 
-/* Keeps track of options that are required or need and argument */
+/* Parse the options associated with @cmd, i.e. test whether options are
+ * required or need an argument.
+ *
+ * Returns -1 on error or 0 on success, filling the caller-provided bitmaps
+ * which keep track of required options and options needing an argument.
+ */
 static int
-vshCmddefOptFill(const vshCmdDef *cmd, uint64_t *opts_need_arg,
-                 uint64_t *opts_required)
+vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
+                  uint64_t *opts_required)
 {
     size_t i;
     bool optional = false;
@@ -420,16 +425,6 @@ vshCmddefOptFill(const vshCmdDef *cmd, uint64_t *opts_need_arg,
             optional = true;
         }
     }
-    return 0;
-}
-
-/* Validate that the options associated with cmd can be parsed.  */
-static int
-vshCmddefOptParse(const vshCmdDef *cmd, uint64_t *opts_need_arg,
-                  uint64_t *opts_required)
-{
-    if (vshCmddefOptFill(cmd, opts_need_arg, opts_required) < 0)
-        return -1;
 
     return 0;
 }
@@ -2713,8 +2708,8 @@ vshReadlineParse(const char *text, int state)
                     goto error;
                 cmd_exists = true;
 
-                if (vshCmddefOptFill(cmd, &const_opts_need_arg,
-                                     &const_opts_required) < 0)
+                if (vshCmddefOptParse(cmd, &const_opts_need_arg,
+                                      &const_opts_required) < 0)
                     goto error;
                 opts_need_arg = const_opts_need_arg;
                 opts_seen = const_opts_seen;
