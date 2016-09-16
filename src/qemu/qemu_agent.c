@@ -85,6 +85,7 @@ struct _qemuAgentMessage {
     bool sync;
     /* id of the issued sync comand */
     unsigned long long id;
+    bool first;
 };
 
 
@@ -316,8 +317,8 @@ qemuAgentIOProcessLine(qemuAgentPtr mon,
     VIR_DEBUG("Line [%s]", line);
 
     if (!(obj = virJSONValueFromString(line))) {
-        /* receiving garbage on sync is regular situation */
-        if (msg && msg->sync) {
+        /* receiving garbage on first sync is regular situation */
+        if (msg && msg->sync && msg->first) {
             VIR_DEBUG("Received garbage on sync");
             msg->finished = 1;
             return 0;
@@ -959,7 +960,10 @@ qemuAgentGuestSync(qemuAgentPtr mon)
     qemuAgentMessage sync_msg;
 
     memset(&sync_msg, 0, sizeof(sync_msg));
+    /* set only on first sync */
+    sync_msg.first = true;
 
+ retry:
     if (virTimeMillisNow(&id) < 0)
         return -1;
 
@@ -983,9 +987,15 @@ qemuAgentGuestSync(qemuAgentPtr mon)
         goto cleanup;
 
     if (!sync_msg.rxObject) {
-        virReportError(VIR_ERR_AGENT_UNSYNCED, "%s",
-                       _("Missing monitor reply object"));
-        goto cleanup;
+        if (sync_msg.first) {
+            VIR_FREE(sync_msg.txBuffer);
+            memset(&sync_msg, 0, sizeof(sync_msg));
+            goto retry;
+        } else {
+            virReportError(VIR_ERR_AGENT_UNSYNCED, "%s",
+                           _("Missing monitor reply object"));
+            goto cleanup;
+        }
     }
 
     ret = 0;
