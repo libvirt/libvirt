@@ -81,6 +81,8 @@ struct _qemuAgentMessage {
      * fatal error occurred on the monitor channel
      */
     bool finished;
+    /* true for sync command */
+    bool sync;
 };
 
 
@@ -311,8 +313,16 @@ qemuAgentIOProcessLine(qemuAgentPtr mon,
 
     VIR_DEBUG("Line [%s]", line);
 
-    if (!(obj = virJSONValueFromString(line)))
+    if (!(obj = virJSONValueFromString(line))) {
+        /* receiving garbage on sync is regular situation */
+        if (msg && msg->sync) {
+            VIR_DEBUG("Received garbage on sync");
+            msg->finished = 1;
+            return 0;
+        }
+
         goto cleanup;
+    }
 
     if (obj->type != VIR_JSON_TYPE_OBJECT) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -939,6 +949,7 @@ qemuAgentGuestSync(qemuAgentPtr mon)
         return -1;
 
     sync_msg.txLength = strlen(sync_msg.txBuffer);
+    sync_msg.sync = true;
 
     VIR_DEBUG("Sending guest-sync command with ID: %llu", id);
 
