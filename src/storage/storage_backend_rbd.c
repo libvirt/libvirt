@@ -696,14 +696,14 @@ virStorageBackendRBDBuildVol(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!(ptr = virStorageBackendRBDNewState(conn, pool)))
-        goto cleanup;
-
     if (vol->target.encryption != NULL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("storage pool does not support encrypted volumes"));
         goto cleanup;
     }
+
+    if (!(ptr = virStorageBackendRBDNewState(conn, pool)))
+        goto cleanup;
 
     if ((r = virStorageBackendRBDCreateImage(ptr->ioctx, vol->name,
                                              vol->target.capacity)) < 0) {
