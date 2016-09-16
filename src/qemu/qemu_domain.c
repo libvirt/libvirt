@@ -2562,15 +2562,19 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              virCapsPtr caps,
                              unsigned int parseFlags,
                              void *opaque,
-                             void *parseOpaque ATTRIBUTE_UNUSED)
+                             void *parseOpaque)
 {
     virQEMUDriverPtr driver = opaque;
-    virQEMUCapsPtr qemuCaps = NULL;
+    virQEMUCapsPtr qemuCaps = parseOpaque;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
 
-    qemuCaps = virQEMUCapsCacheLookup(caps, driver->qemuCapsCache,
-                                      def->emulator);
+    if (qemuCaps) {
+        virObjectRef(qemuCaps);
+    } else {
+        qemuCaps = virQEMUCapsCacheLookup(caps, driver->qemuCapsCache,
+                                          def->emulator);
+    }
 
     if (dev->type == VIR_DOMAIN_DEVICE_NET &&
         dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
