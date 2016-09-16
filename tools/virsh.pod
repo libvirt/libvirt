@@ -2936,8 +2936,6 @@ make that device unusable by the rest of the physical host until a reboot.
 Detach I<nodedev> from the host, so that it can safely be used by
 guests via <hostdev> passthrough.  This is reversed with
 B<nodedev-reattach>, and is done automatically for managed devices.
-For compatibility purposes, this command can also be spelled
-B<nodedev-dettach>.
 
 Different backend drivers expect the device to be bound to different
 dummy devices. For example, QEMU's "kvm" backend driver (the default)
