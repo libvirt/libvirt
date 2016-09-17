@@ -3294,6 +3294,12 @@ qemuBuildMemoryBackendStr(unsigned long long size,
             if (!(mem_path = qemuGetHugepagePath(&cfg->hugetlbfs[i])))
                 goto cleanup;
         } else {
+            if (!cfg->nhugetlbfs) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("hugetlbfs filesystem is not mounted "
+                                       "or disabled by administrator config"));
+                goto cleanup;
+            }
             if (!(mem_path = qemuGetDefaultHugepath(cfg->hugetlbfs,
                                                     cfg->nhugetlbfs)))
                 goto cleanup;
