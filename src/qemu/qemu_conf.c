@@ -1382,6 +1382,16 @@ qemuGetHugepagePath(virHugeTLBFSPtr hugepage)
     return ret;
 }
 
+
+/**
+ * qemuGetDefaultHugepath:
+ * @hugetlbfs: array of configured hugepages
+ * @nhugetlbfs: number of item in the array
+ *
+ * Callers must ensure that @hugetlbfs contains at least one entry.
+ *
+ * Returns 0 on success, -1 otherwise.
+ * */
 char *
 qemuGetDefaultHugepath(virHugeTLBFSPtr hugetlbfs,
                        size_t nhugetlbfs)
