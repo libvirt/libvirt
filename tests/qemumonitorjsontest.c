@@ -67,6 +67,12 @@ const char *queryBlockReply =
 "                \"iops_rd_max\": 11,"
 "                \"iops_wr_max\": 12,"
 "                \"iops_size\": 13,"
+"                \"bps_max_length\": 14,"
+"                \"bps_rd_max_length\": 15,"
+"                \"bps_wr_max_length\": 16,"
+"                \"iops_max_length\": 17,"
+"                \"iops_rd_max_length\": 18,"
+"                \"iops_wr_max_length\": 19,"
 "                \"file\": \"/home/zippy/work/tmp/gentoo.qcow2\","
 "                \"encryption_key_missing\": false"
 "            },"
@@ -1996,7 +2002,7 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *data)
     if (!test)
         return -1;
 
-    expectedInfo = (virDomainBlockIoTuneInfo) {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+    expectedInfo = (virDomainBlockIoTuneInfo) {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
 
     if (qemuMonitorTestAddItem(test, "query-block", queryBlockReply) < 0 ||
         qemuMonitorTestAddItemParams(test, "block_set_io_throttle",
@@ -2008,6 +2014,12 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *data)
                                      "bps_wr_max", "9",
                                      "iops_max", "10", "iops_rd_max", "11",
                                      "iops_wr_max", "12", "iops_size", "13",
+                                     "bps_max_length", "14",
+                                     "bps_rd_max_length", "15",
+                                     "bps_wr_max_length", "16",
+                                     "iops_max_length", "17",
+                                     "iops_rd_max_length", "18",
+                                     "iops_wr_max_length", "19",
                                      NULL, NULL) < 0)
         goto cleanup;
 
@@ -2022,7 +2034,8 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *data)
     }
 
     if (qemuMonitorJSONSetBlockIoThrottle(qemuMonitorTestGetMonitor(test),
-                                          "drive-virtio-disk1", &info, true) < 0)
+                                          "drive-virtio-disk1", &info, true,
+                                          true) < 0)
         goto cleanup;
 
     ret = 0;

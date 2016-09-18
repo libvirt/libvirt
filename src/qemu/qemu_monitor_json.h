@@ -327,7 +327,8 @@ int qemuMonitorJSONOpenGraphics(qemuMonitorPtr mon,
 int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
                                       const char *device,
                                       virDomainBlockIoTuneInfoPtr info,
-                                      bool supportMaxOptions);
+                                      bool supportMaxOptions,
+                                      bool supportMaxLengthOptions);
 
 int qemuMonitorJSONGetBlockIoThrottle(qemuMonitorPtr mon,
                                       const char *device,

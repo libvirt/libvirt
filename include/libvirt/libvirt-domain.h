@@ -3847,6 +3847,60 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
 # define VIR_DOMAIN_TUNABLE_BLKDEV_SIZE_IOPS_SEC "blkdeviotune.size_iops_sec"
 
 /**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX_LENGTH:
+ *
+ * Macro represents the length in seconds allowed for a burst period
+ * for the blkdeviotune.total_bytes_sec_max,
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX_LENGTH "blkdeviotune.total_bytes_sec_max_length"
+
+/**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX_LENGTH:
+ *
+ * Macro represents the length in seconds allowed for a burst period
+ * for the blkdeviotune.read_bytes_sec_max
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX_LENGTH "blkdeviotune.read_bytes_sec_max_length"
+
+/**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC_MAX_LENGTH:
+ *
+ * Macro represents the length in seconds allowed for a burst period
+ * for the blkdeviotune.write_bytes_sec_max
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC_MAX_LENGTH "blkdeviotune.write_bytes_sec_max_length"
+
+/**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC_MAX_LENGTH:
+ *
+ * Macro represents the length in seconds allowed for a burst period
+ * for the blkdeviotune.total_iops_sec_max
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC_MAX_LENGTH "blkdeviotune.total_iops_sec_max_length"
+
+/**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC_MAX_LENGTH:
+ *
+ * Macro represents the length in seconds allowed for a burst period
+ * for the blkdeviotune.read_iops_sec_max
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC_MAX_LENGTH "blkdeviotune.read_iops_sec_max_length"
+
+/**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC_MAX_LENGTH:
+ *
+ * Macro represents the length in seconds allowed for a burst period
+ * for the blkdeviotune.write_iops_sec_max
+ * as VIR_TYPED_PARAM_ULLONG.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC_MAX_LENGTH "blkdeviotune.write_iops_sec_max_length"
+
+/**
  * virConnectDomainEventTunableCallback:
  * @conn: connection object
  * @dom: domain on which the event occurred

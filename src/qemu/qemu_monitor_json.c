@@ -4563,6 +4563,12 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
         GET_THROTTLE_STATS_OPTIONAL("iops_rd_max", read_iops_sec_max);
         GET_THROTTLE_STATS_OPTIONAL("iops_wr_max", write_iops_sec_max);
         GET_THROTTLE_STATS_OPTIONAL("iops_size", size_iops_sec);
+        GET_THROTTLE_STATS_OPTIONAL("bps_max_length", total_bytes_sec_max_length);
+        GET_THROTTLE_STATS_OPTIONAL("bps_rd_max_length", read_bytes_sec_max_length);
+        GET_THROTTLE_STATS_OPTIONAL("bps_wr_max_length", write_bytes_sec_max_length);
+        GET_THROTTLE_STATS_OPTIONAL("iops_max_length", total_iops_sec_max_length);
+        GET_THROTTLE_STATS_OPTIONAL("iops_rd_max_length", read_iops_sec_max_length);
+        GET_THROTTLE_STATS_OPTIONAL("iops_wr_max_length", write_iops_sec_max_length);
 
         break;
     }
@@ -4584,7 +4590,8 @@ qemuMonitorJSONBlockIoThrottleInfo(virJSONValuePtr result,
 int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
                                       const char *device,
                                       virDomainBlockIoTuneInfoPtr info,
-                                      bool supportMaxOptions)
+                                      bool supportMaxOptions,
+                                      bool supportMaxLengthOptions)
 {
     int ret = -1;
     virJSONValuePtr cmd = NULL;
@@ -4593,7 +4600,8 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
     /* The qemu capability check has already been made in
      * qemuDomainSetBlockIoTune. NB, once a NULL is found in
      * the sequence, qemuMonitorJSONMakeCommand will stop. So
-     * let's make use of that when !supportMaxOptions */
+     * let's make use of that when !supportMaxOptions and
+     * similarly when !supportMaxLengthOptions */
    cmd = qemuMonitorJSONMakeCommand("block_set_io_throttle",
                                     "s:device", device,
                                     "U:bps", info->total_bytes_sec,
@@ -4610,6 +4618,19 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
                                     "U:iops_rd_max", info->read_iops_sec_max,
                                     "U:iops_wr_max", info->write_iops_sec_max,
                                     "U:iops_size", info->size_iops_sec,
+                                    !supportMaxLengthOptions ? NULL :
+                                    "P:bps_max_length",
+                                    info->total_bytes_sec_max_length,
+                                    "P:bps_rd_max_length",
+                                    info->read_bytes_sec_max_length,
+                                    "P:bps_wr_max_length",
+                                    info->write_bytes_sec_max_length,
+                                    "P:iops_max_length",
+                                    info->total_iops_sec_max_length,
+                                    "P:iops_rd_max_length",
+                                    info->read_iops_sec_max_length,
+                                    "P:iops_wr_max_length",
+                                    info->write_iops_sec_max_length,
                                     NULL);
     if (!cmd)
         return -1;

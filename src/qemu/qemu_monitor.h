@@ -876,7 +876,8 @@ int qemuMonitorOpenGraphics(qemuMonitorPtr mon,
 int qemuMonitorSetBlockIoThrottle(qemuMonitorPtr mon,
                                   const char *device,
                                   virDomainBlockIoTuneInfoPtr info,
-                                  bool supportMaxOptions);
+                                  bool supportMaxOptions,
+                                  bool supportMaxLengthOptions);
 
 int qemuMonitorGetBlockIoThrottle(qemuMonitorPtr mon,
                                   const char *device,
