@@ -607,6 +607,7 @@ mymain(void)
     DO_TEST("usb-redir-filter", NONE);
     DO_TEST("usb-redir-filter-version", NONE);
     DO_TEST("blkdeviotune", NONE);
+    DO_TEST("blkdeviotune-max", NONE);
     DO_TEST("controller-usb-order", NONE);
 
     DO_TEST_FULL("seclabel-dynamic-baselabel", WHEN_INACTIVE, GIC_NONE, NONE);
