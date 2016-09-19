@@ -3696,7 +3696,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
 /**
  * VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC:
  *
- * Marco represents the total throughput limit in bytes per second,
+ * Macro represents the total throughput limit in bytes per second,
  * as VIR_TYPED_PARAM_ULLONG.
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC "blkdeviotune.total_bytes_sec"
@@ -3704,7 +3704,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
 /**
  * VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC:
  *
- * Marco represents the read throughput limit in bytes per second,
+ * Macro represents the read throughput limit in bytes per second,
  * as VIR_TYPED_PARAM_ULLONG.
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC "blkdeviotune.read_bytes_sec"
@@ -3744,7 +3744,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
 /**
  * VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX:
  *
- * Marco represents the total throughput limit in maximum bytes per second,
+ * Macro represents the total throughput limit in maximum bytes per second,
  * as VIR_TYPED_PARAM_ULLONG.
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX "blkdeviotune.total_bytes_sec_max"
@@ -3752,7 +3752,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
 /**
  * VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX:
  *
- * Marco represents the read throughput limit in maximum bytes per second,
+ * Macro represents the read throughput limit in maximum bytes per second,
  * as VIR_TYPED_PARAM_ULLONG.
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX "blkdeviotune.read_bytes_sec_max"
