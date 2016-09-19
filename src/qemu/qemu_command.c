@@ -1759,6 +1759,20 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         goto error;
     }
 
+    /* block I/O throttling length 2.6 */
+    if ((disk->blkdeviotune.total_bytes_sec_max_length ||
+         disk->blkdeviotune.read_bytes_sec_max_length ||
+         disk->blkdeviotune.write_bytes_sec_max_length ||
+         disk->blkdeviotune.total_iops_sec_max_length ||
+         disk->blkdeviotune.read_iops_sec_max_length ||
+         disk->blkdeviotune.write_iops_sec_max_length) &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("there are some block I/O throttling length parameters "
+                         "that are not supported with this QEMU binary"));
+        goto error;
+    }
+
     if (disk->blkdeviotune.total_bytes_sec > QEMU_BLOCK_IOTUNE_MAX ||
         disk->blkdeviotune.read_bytes_sec > QEMU_BLOCK_IOTUNE_MAX ||
         disk->blkdeviotune.write_bytes_sec > QEMU_BLOCK_IOTUNE_MAX ||
@@ -1799,6 +1813,13 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     IOTUNE_ADD(write_iops_sec_max, "iops-write-max");
 
     IOTUNE_ADD(size_iops_sec, "iops-size");
+
+    IOTUNE_ADD(total_bytes_sec_max_length, "bps-total-max-length");
+    IOTUNE_ADD(read_bytes_sec_max_length, "bps-read-max-length");
+    IOTUNE_ADD(write_bytes_sec_max_length, "bps-write-max-length");
+    IOTUNE_ADD(total_iops_sec_max_length, "iops-total-max-length");
+    IOTUNE_ADD(read_iops_sec_max_length, "iops-read-max-length");
+    IOTUNE_ADD(write_iops_sec_max_length, "iops-write-max-length");
 
 #undef IOTUNE_ADD
 
