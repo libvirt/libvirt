@@ -1780,7 +1780,6 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
     int nbuses = 0;
     size_t i;
     int rv;
-    bool buses_reserved = true;
 
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
@@ -1802,13 +1801,6 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
 
     if (nbuses > 0 &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCI_BRIDGE)) {
-        /* This is a dummy info used to reserve a slot for a legacy
-         * PCI device that doesn't exist, but may in the future, e.g.
-         * if another device is hotplugged into the domain.
-         */
-        virDomainDeviceInfo info;
-
-        info.pciConnectFlags = VIR_PCI_CONNECT_TYPE_PCI_DEVICE;
 
         /* 1st pass to figure out how many PCI bridges we need */
         if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, true)))
@@ -1818,23 +1810,43 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
                                                      addrs) < 0)
             goto cleanup;
 
-        for (i = 0; i < addrs->nbuses; i++) {
-            if (!qemuDomainPCIBusFullyReserved(&addrs->buses[i]))
-                buses_reserved = false;
-        }
-
-        /* Reserve 1 extra slot for a (potential) bridge only if buses
-         * are not fully reserved yet.
+        /* For domains that have pci-root, reserve 1 extra slot for a
+         * (potential) bridge (for future expansion) only if buses are
+         * not fully reserved yet (if all buses are fully reserved
+         * with manually/previously assigned addresses, any attempt to
+         * reserve an extra slot would fail anyway. But if all buses
+         * are *not* fully reserved, this extra reservation might push
+         * the config to add a new pci-bridge to plug into the final
+         * available slot, thus preserving the ability to expand)
          *
-         * We don't reserve the extra slot for aarch64 mach-virt guests
-         * either because we want to be able to have pure virtio-mmio
-         * guests, and reserving this slot would force us to add at least
-         * a dmi-to-pci-bridge to an otherwise PCI-free topology
+         * We only do this for those domains that have pci-root, since
+         * those with pcie-root will usually want to expand using PCIe
+         * controllers, which we will do after assigning addresses for
+         * all *actual* devices.
          */
-        if (!buses_reserved &&
-            !qemuDomainMachineIsVirt(def) &&
-            qemuDomainPCIAddressReserveNextSlot(addrs, &info) < 0)
-            goto cleanup;
+
+        if (qemuDomainMachineHasPCIRoot(def)) {
+            /* This is a dummy info used to reserve a slot for a
+             * legacy PCI device that doesn't exist, but may in the
+             * future, e.g.  if another device is hotplugged into the
+             * domain.
+             */
+            virDomainDeviceInfo info = {
+                .pciConnectFlags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+                                    VIR_PCI_CONNECT_TYPE_PCI_DEVICE)
+            };
+            bool buses_reserved = true;
+
+            for (i = 0; i < addrs->nbuses; i++) {
+                if (!qemuDomainPCIBusFullyReserved(&addrs->buses[i])) {
+                    buses_reserved = false;
+                    break;
+                }
+            }
+            if (!buses_reserved &&
+                qemuDomainPCIAddressReserveNextSlot(addrs, &info) < 0)
+                goto cleanup;
+        }
 
         if (qemuDomainAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
             goto cleanup;
