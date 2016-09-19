@@ -4588,35 +4588,26 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
     virJSONValuePtr result = NULL;
 
     /* The qemu capability check has already been made in
-     * qemuDomainSetBlockIoTune */
-    if (supportMaxOptions) {
-        cmd = qemuMonitorJSONMakeCommand("block_set_io_throttle",
-                                         "s:device", device,
-                                         "U:bps", info->total_bytes_sec,
-                                         "U:bps_rd", info->read_bytes_sec,
-                                         "U:bps_wr", info->write_bytes_sec,
-                                         "U:iops", info->total_iops_sec,
-                                         "U:iops_rd", info->read_iops_sec,
-                                         "U:iops_wr", info->write_iops_sec,
-                                         "U:bps_max", info->total_bytes_sec_max,
-                                         "U:bps_rd_max", info->read_bytes_sec_max,
-                                         "U:bps_wr_max", info->write_bytes_sec_max,
-                                         "U:iops_max", info->total_iops_sec_max,
-                                         "U:iops_rd_max", info->read_iops_sec_max,
-                                         "U:iops_wr_max", info->write_iops_sec_max,
-                                         "U:iops_size", info->size_iops_sec,
-                                         NULL);
-    } else {
-        cmd = qemuMonitorJSONMakeCommand("block_set_io_throttle",
-                                         "s:device", device,
-                                         "U:bps", info->total_bytes_sec,
-                                         "U:bps_rd", info->read_bytes_sec,
-                                         "U:bps_wr", info->write_bytes_sec,
-                                         "U:iops", info->total_iops_sec,
-                                         "U:iops_rd", info->read_iops_sec,
-                                         "U:iops_wr", info->write_iops_sec,
-                                         NULL);
-    }
+     * qemuDomainSetBlockIoTune. NB, once a NULL is found in
+     * the sequence, qemuMonitorJSONMakeCommand will stop. So
+     * let's make use of that when !supportMaxOptions */
+   cmd = qemuMonitorJSONMakeCommand("block_set_io_throttle",
+                                    "s:device", device,
+                                    "U:bps", info->total_bytes_sec,
+                                    "U:bps_rd", info->read_bytes_sec,
+                                    "U:bps_wr", info->write_bytes_sec,
+                                    "U:iops", info->total_iops_sec,
+                                    "U:iops_rd", info->read_iops_sec,
+                                    "U:iops_wr", info->write_iops_sec,
+                                    !supportMaxOptions ? NULL :
+                                    "U:bps_max", info->total_bytes_sec_max,
+                                    "U:bps_rd_max", info->read_bytes_sec_max,
+                                    "U:bps_wr_max", info->write_bytes_sec_max,
+                                    "U:iops_max", info->total_iops_sec_max,
+                                    "U:iops_rd_max", info->read_iops_sec_max,
+                                    "U:iops_wr_max", info->write_iops_sec_max,
+                                    "U:iops_size", info->size_iops_sec,
+                                    NULL);
     if (!cmd)
         return -1;
 
