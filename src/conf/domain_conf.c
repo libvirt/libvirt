@@ -20082,6 +20082,12 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
 }
 
 
+#define FORMAT_IOTUNE(val)                                                     \
+        if (def->blkdeviotune.val) {                                           \
+            virBufferAsprintf(buf, "<" #val ">%llu</" #val ">\n",              \
+                              def->blkdeviotune.val);                          \
+        }
+
 static int
 virDomainDiskDefFormat(virBufferPtr buf,
                        virDomainDiskDefPtr def,
@@ -20269,66 +20275,20 @@ virDomainDiskDefFormat(virBufferPtr buf,
         def->blkdeviotune.size_iops_sec) {
         virBufferAddLit(buf, "<iotune>\n");
         virBufferAdjustIndent(buf, 2);
-        if (def->blkdeviotune.total_bytes_sec) {
-            virBufferAsprintf(buf, "<total_bytes_sec>%llu</total_bytes_sec>\n",
-                              def->blkdeviotune.total_bytes_sec);
-        }
 
-        if (def->blkdeviotune.read_bytes_sec) {
-            virBufferAsprintf(buf, "<read_bytes_sec>%llu</read_bytes_sec>\n",
-                              def->blkdeviotune.read_bytes_sec);
+        FORMAT_IOTUNE(total_bytes_sec);
+        FORMAT_IOTUNE(read_bytes_sec);
+        FORMAT_IOTUNE(write_bytes_sec);
+        FORMAT_IOTUNE(total_iops_sec);
+        FORMAT_IOTUNE(read_iops_sec);
+        FORMAT_IOTUNE(write_iops_sec);
 
-        }
-
-        if (def->blkdeviotune.write_bytes_sec) {
-            virBufferAsprintf(buf, "<write_bytes_sec>%llu</write_bytes_sec>\n",
-                              def->blkdeviotune.write_bytes_sec);
-        }
-
-        if (def->blkdeviotune.total_iops_sec) {
-            virBufferAsprintf(buf, "<total_iops_sec>%llu</total_iops_sec>\n",
-                              def->blkdeviotune.total_iops_sec);
-        }
-
-        if (def->blkdeviotune.read_iops_sec) {
-            virBufferAsprintf(buf, "<read_iops_sec>%llu</read_iops_sec>\n",
-                              def->blkdeviotune.read_iops_sec);
-        }
-
-        if (def->blkdeviotune.write_iops_sec) {
-            virBufferAsprintf(buf, "<write_iops_sec>%llu</write_iops_sec>\n",
-                              def->blkdeviotune.write_iops_sec);
-        }
-
-        if (def->blkdeviotune.total_bytes_sec_max) {
-            virBufferAsprintf(buf, "<total_bytes_sec_max>%llu</total_bytes_sec_max>\n",
-                              def->blkdeviotune.total_bytes_sec_max);
-        }
-
-        if (def->blkdeviotune.read_bytes_sec_max) {
-            virBufferAsprintf(buf, "<read_bytes_sec_max>%llu</read_bytes_sec_max>\n",
-                              def->blkdeviotune.read_bytes_sec_max);
-        }
-
-        if (def->blkdeviotune.write_bytes_sec_max) {
-            virBufferAsprintf(buf, "<write_bytes_sec_max>%llu</write_bytes_sec_max>\n",
-                              def->blkdeviotune.write_bytes_sec_max);
-        }
-
-        if (def->blkdeviotune.total_iops_sec_max) {
-            virBufferAsprintf(buf, "<total_iops_sec_max>%llu</total_iops_sec_max>\n",
-                              def->blkdeviotune.total_iops_sec_max);
-        }
-
-        if (def->blkdeviotune.read_iops_sec_max) {
-            virBufferAsprintf(buf, "<read_iops_sec_max>%llu</read_iops_sec_max>\n",
-                              def->blkdeviotune.read_iops_sec_max);
-        }
-
-        if (def->blkdeviotune.write_iops_sec_max) {
-            virBufferAsprintf(buf, "<write_iops_sec_max>%llu</write_iops_sec_max>\n",
-                              def->blkdeviotune.write_iops_sec_max);
-        }
+        FORMAT_IOTUNE(total_bytes_sec_max);
+        FORMAT_IOTUNE(read_bytes_sec_max);
+        FORMAT_IOTUNE(write_bytes_sec_max);
+        FORMAT_IOTUNE(total_iops_sec_max);
+        FORMAT_IOTUNE(read_iops_sec_max);
+        FORMAT_IOTUNE(write_iops_sec_max);
 
         if (def->blkdeviotune.size_iops_sec) {
             virBufferAsprintf(buf, "<size_iops_sec>%llu</size_iops_sec>\n",
@@ -20360,6 +20320,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "</disk>\n");
     return 0;
 }
+#undef FORMAT_IOTUNE
 
 
 static int
