@@ -633,7 +633,7 @@ qemuAgentIO(int watch, int fd, int events, void *opaque)
         if (!error &&
             events & VIR_EVENT_HANDLE_HANGUP) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("End of file from monitor"));
+                           _("End of file from agent monitor"));
             eof = true;
             events &= ~VIR_EVENT_HANDLE_HANGUP;
         }
