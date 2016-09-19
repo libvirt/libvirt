@@ -2298,18 +2298,6 @@ qemuDomainDefAddDefaultDevices(virDomainDefPtr def,
                                              VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)) {
             goto cleanup;
         }
-        /* Add a dmi-to-pci-bridge bridge if there are no PCI controllers
-         * other than the pcie-root. This is so that there will be hot-pluggable
-         * PCI slots available.
-         *
-         * We skip this step for aarch64 mach-virt guests, where we want to
-         * be able to have a pure virtio-mmio topology
-         */
-        if (virDomainControllerFind(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 1) < 0 &&
-            !qemuDomainMachineIsVirt(def) &&
-            !virDomainDefAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 1,
-                                       VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE))
-            goto cleanup;
     }
 
     if (addDefaultMemballoon && !def->memballoon) {

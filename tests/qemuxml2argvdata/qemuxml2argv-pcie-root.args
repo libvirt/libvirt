@@ -15,5 +15,4 @@ QEMU_AUDIO_DRV=none \
 -nodefaults \
 -monitor unix:/tmp/lib/domain--1-q35-test/monitor.sock,server,nowait \
 -no-acpi \
--boot c \
--device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1e
+-boot c
