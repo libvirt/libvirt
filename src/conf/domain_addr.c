@@ -82,6 +82,36 @@ virDomainPCIControllerModelToConnectType(virDomainControllerModelPCI model)
     return 0;
 }
 
+
+static int
+virDomainPCIControllerConnectTypeToModel(virDomainPCIConnectFlags flags)
+{
+    if (flags & VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT)
+        return VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT;
+
+    if (flags & VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT)
+        return VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT;
+
+    if (flags & VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT)
+        return VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT;
+
+    if (flags & VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE)
+        return VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE;
+
+    if (flags & VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS)
+        return VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS;
+
+    if (flags & VIR_PCI_CONNECT_TYPE_PCIE_EXPANDER_BUS)
+        return VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS;
+
+    if (flags & VIR_PCI_CONNECT_TYPE_PCI_BRIDGE)
+        return VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE;
+
+    /* some connect types don't correspond to a controller model */
+    return -1;
+}
+
+
 bool
 virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
                                    const char *addrStr,
@@ -334,10 +364,7 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
 }
 
 
-/* Ensure addr fits in the address set, by expanding it if needed.
- * This will only grow if the flags say that we need a normal
- * hot-pluggable PCI slot. If we need a different type of slot, it
- * will fail.
+/* Ensure addr fits in the address set, by expanding it if needed
  *
  * Return value:
  * -1 = OOM
@@ -351,32 +378,125 @@ virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
 {
     int add;
     size_t i;
+    int model;
+    bool needDMIToPCIBridge = false;
 
     add = addr->bus - addrs->nbuses + 1;
-    i = addrs->nbuses;
     if (add <= 0)
         return 0;
 
-    /* auto-grow only works when we're adding plain PCI devices */
-    if (!(flags & VIR_PCI_CONNECT_TYPE_PCI_DEVICE)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot automatically add a new PCI bus for a "
-                         "device requiring a slot other than standard PCI."));
+    /* remember that the flags aren't for the type of controller that
+     * we want to add, they are the type of *device* that we want to
+     * plug in, and this function must decide on the appropriate
+     * controller to add in order to give us a slot for that device.
+     */
+
+    if (flags & VIR_PCI_CONNECT_TYPE_PCI_DEVICE) {
+        model = VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE;
+
+        /* if there aren't yet any buses that will accept a
+         * pci-bridge, and the caller is asking for one, we'll need to
+         * add a dmi-to-pci-bridge first.
+         */
+        needDMIToPCIBridge = true;
+        for (i = 0; i < addrs->nbuses; i++) {
+            if (addrs->buses[i].flags & VIR_PCI_CONNECT_TYPE_PCI_BRIDGE) {
+                needDMIToPCIBridge = false;
+                break;
+            }
+        }
+        if (needDMIToPCIBridge && add == 1) {
+            /* We need to add a single pci-bridge to provide the bus
+             * our legacy PCI device will be plugged into; however, we
+             * have also determined that there isn't yet any proper
+             * place to connect that pci-bridge we're about to add (on
+             * a system with pcie-root, that "proper place" would be a
+             * dmi-to-pci-bridge". So, to give the pci-bridge a place
+             * to connect, we increase the count of buses to add,
+             * while also incrementing the bus number in the address
+             * for the device (since the pci-bridge will now be at an
+             * index 1 higher than the caller had anticipated).
+             */
+            add++;
+            addr->bus++;
+        }
+    } else if (flags & VIR_PCI_CONNECT_TYPE_PCI_BRIDGE &&
+               addrs->buses[0].model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
+        /* NB: if the root bus is pci-root, and we couldn't find an
+         * open place to connect a pci-bridge, then there is nothing
+         * we can do (since the only way to gain a new slot that
+         * accepts a pci-bridge is to add *a pci-bridge* (which is the
+         * reason we're here in the first place!)
+         */
+        model = VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE;
+    } else if (flags & (VIR_PCI_CONNECT_TYPE_PCIE_DEVICE |
+                        VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT)) {
+        model = VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT;
+    } else {
+        /* The types of devices that we can't auto-add a controller for:
+         *
+         * VIR_CONNECT_TYPE_DMI_TO_PCI_BRIDGE &
+         * VIR_PCI_CONNECT_TYPE_ROOT_PORT - these can only plug into
+         *  pcie-root or pcie-expander-bus. By definition there is
+         *  only 1 pcie-root, and we don't support auto-adding
+         *  pcie-expander-bus (because it is intended for NUMA usage,
+         *  and we can't automatically decide which numa node to
+         *  associate it with)
+         *
+         * VIR_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT - we ndon't
+         *  support this, because it can only plug into an
+         *  upstream-port, and the upstream port might need a
+         *  root-port; supporting this extra layer needlessly
+         *  complicates the code, and upstream/downstream ports are
+         *  outside the scope of our "automatic-bus-expansion" model
+         *  anyway.
+         *
+         * VIR_CONNECT_TYPE_PCI[E]_EXPANDER_BUS - these were created
+         *  to support guest awareness of the NUMA node placement of
+         *  devices on the host, and are also outside the scope of our
+         *  "automatic-bus-expansion".
+         *
+         * VIR_PCI_CONNECT_TYPE_PCI_BRIDGE (when the root bus is
+         *  pci-root) - see the comment above in the case that handles
+         *  adding a slot for pci-bridge to a guest with pcie-root.
+         *
+         */
+        int existingContModel = virDomainPCIControllerConnectTypeToModel(flags);
+
+        if (existingContModel >= 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("a PCI slot is needed to connect a PCI controller "
+                             "model='%s', but none is available, and it "
+                             "cannot be automatically added"),
+                           virDomainControllerModelPCITypeToString(existingContModel));
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Cannot automatically add a new PCI bus for a "
+                             "device with connect flags %.2x"), flags);
+        }
         return -1;
     }
+
+    i = addrs->nbuses;
 
     if (VIR_EXPAND_N(addrs->buses, addrs->nbuses, add) < 0)
         return -1;
 
-    for (; i < addrs->nbuses; i++) {
-        /* Any time we auto-add a bus, we will want a multi-slot
-         * bus. Currently the only type of bus we will auto-add is a
-         * pci-bridge, which is hot-pluggable and provides standard
-         * PCI slots.
+    if (needDMIToPCIBridge) {
+        /* first of the new buses is dmi-to-pci-bridge, the
+         * rest are of the requested type
          */
-        virDomainPCIAddressBusSetModel(&addrs->buses[i],
-                                       VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE);
+        if (virDomainPCIAddressBusSetModel(&addrs->buses[i++],
+                                           VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE) < 0) {
+            return -1;
+        }
     }
+
+    for (; i < addrs->nbuses; i++) {
+        if (virDomainPCIAddressBusSetModel(&addrs->buses[i], model) < 0)
+            return -1;
+    }
+
     return add;
 }
 

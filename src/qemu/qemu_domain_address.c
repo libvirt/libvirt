@@ -911,26 +911,13 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
 {
     virDomainPCIAddressSetPtr addrs;
     size_t i;
+    bool hasPCIeRoot = false;
+    virDomainControllerModelPCI defaultModel;
 
     if ((addrs = virDomainPCIAddressSetAlloc(nbuses)) == NULL)
         return NULL;
 
     addrs->dryRun = dryRun;
-
-    /* As a safety measure, set default model='pci-root' for first pci
-     * controller and 'pci-bridge' for all subsequent. After setting
-     * those defaults, then scan the config and set the actual model
-     * for all addrs[idx]->bus that already have a corresponding
-     * controller in the config.
-     *
-     */
-    if (nbuses > 0)
-        virDomainPCIAddressBusSetModel(&addrs->buses[0],
-                                       VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT);
-    for (i = 1; i < nbuses; i++) {
-        virDomainPCIAddressBusSetModel(&addrs->buses[i],
-                                       VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE);
-    }
 
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDefPtr cont = def->controllers[i];
@@ -948,7 +935,42 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
 
         if (virDomainPCIAddressBusSetModel(&addrs->buses[idx], cont->model) < 0)
             goto error;
-        }
+
+        if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT)
+            hasPCIeRoot = true;
+    }
+
+    if (nbuses > 0 && !addrs->buses[0].model) {
+        /* This is just here to replicate a safety measure already in
+         * an older version of this code. In practice, the root bus
+         * should have already been added at index 0 prior to
+         * assigning addresses to devices.
+         */
+        if (virDomainPCIAddressBusSetModel(&addrs->buses[0],
+                                           VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) < 0)
+            goto error;
+    }
+
+    /* Now fill in a reasonable model for all the buses in the set
+     * that don't yet have a corresponding controller in the domain
+     * config.
+     */
+    if (hasPCIeRoot)
+        defaultModel = VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT;
+    else
+        defaultModel = VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE;
+
+    for (i = 1; i < addrs->nbuses; i++) {
+
+        if (addrs->buses[i].model)
+            continue;
+
+        if (virDomainPCIAddressBusSetModel(&addrs->buses[i], defaultModel) < 0)
+            goto error;
+
+        VIR_DEBUG("Auto-adding <controller type='pci' model='%s' index='%zu'/>",
+                  virDomainControllerModelPCITypeToString(defaultModel), i);
+    }
 
     if (virDomainDeviceInfoIterate(def, qemuDomainCollectPCIAddress, addrs) < 0)
         goto error;
