@@ -5810,7 +5810,9 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     virDomainObjBroadcast(vm);
 
     if ((timestamp = virTimeStringNow()) != NULL) {
-        qemuDomainLogAppendMessage(driver, vm, "%s: shutting down\n", timestamp);
+        qemuDomainLogAppendMessage(driver, vm, "%s: shutting down, reason=%s\n",
+                                   timestamp,
+                                   virDomainShutoffReasonTypeToString(reason));
         VIR_FREE(timestamp);
     }
 
