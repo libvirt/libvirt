@@ -328,6 +328,11 @@ static int
 vshCmddefCheckInternals(const vshCmdDef *cmd)
 {
     size_t i;
+    const char *help = NULL;
+
+    /* Each command has to provide a non-empty help string. */
+    if (!(help = vshCmddefGetInfo(cmd, "help")) || !*help)
+        return -1;
 
     if (!cmd->opts)
         return 0;
