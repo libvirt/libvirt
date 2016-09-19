@@ -694,6 +694,7 @@ virTestCompareToFile(const char *strcontent,
     int ret = -1;
     char *filecontent = NULL;
     char *fixedcontent = NULL;
+    const char *cmpcontent = strcontent;
 
     if (virTestLoadFile(filename, &filecontent) < 0 && !virTestGetRegenerate())
         goto failure;
@@ -703,13 +704,13 @@ virTestCompareToFile(const char *strcontent,
         strcontent[strlen(strcontent) - 1] != '\n') {
         if (virAsprintf(&fixedcontent, "%s\n", strcontent) < 0)
             goto failure;
+        cmpcontent = fixedcontent;
     }
 
-    if (STRNEQ_NULLABLE(fixedcontent ? fixedcontent : strcontent,
-                        filecontent)) {
+    if (STRNEQ_NULLABLE(cmpcontent, filecontent)) {
         virTestDifferenceFull(stderr,
                               filecontent, filename,
-                              fixedcontent, NULL);
+                              cmpcontent, NULL);
         goto failure;
     }
 
