@@ -2617,7 +2617,45 @@
             maximum write I/O operations per second.</dd>
           <dt><code>size_iops_sec</code></dt>
           <dd>The optional <code>size_iops_sec</code> element is the
-            size of I/O operations per second.</dd>
+            size of I/O operations per second.
+          <p>
+            <span class="since">Throughput limits since 1.2.11 and QEMU 1.7</span>
+          </p>
+          </dd>
+          <dt><code>total_bytes_sec_max_length</code></dt>
+          <dd>The optional <code>total_bytes_sec_max_length</code>
+            element is the maximum duration in seconds for the
+            <code>total_bytes_sec_max</code> burst period. Only valid
+            when the <code>total_bytes_sec_max</code> is set.</dd>
+          <dt><code>read_bytes_sec_max_length</code></dt>
+          <dd>The optional <code>read_bytes_sec_max_length</code>
+            element is the maximum duration in seconds for the
+            <code>read_bytes_sec_max</code> burst period. Only valid
+            when the <code>read_bytes_sec_max</code> is set.</dd>
+          <dt><code>write_bytes_sec_max</code></dt>
+          <dd>The optional <code>write_bytes_sec_max_length</code>
+            element is the maximum duration in seconds for the
+            <code>write_bytes_sec_max</code> burst period. Only valid
+            when the <code>write_bytes_sec_max</code> is set.</dd>
+          <dt><code>total_iops_sec_max_length</code></dt>
+          <dd>The optional <code>total_iops_sec_max_length</code>
+            element is the maximum duration in seconds for the
+            <code>total_iops_sec_max</code> burst period. Only valid
+            when the <code>total_iops_sec_max</code> is set.</dd>
+          <dt><code>read_iops_sec_max_length</code></dt>
+          <dd>The optional <code>read_iops_sec_max_length</code>
+            element is the maximum duration in seconds for the
+            <code>read_iops_sec_max</code> burst period. Only valid
+            when the <code>read_iops_sec_max</code> is set.</dd>
+          <dt><code>write_iops_sec_max</code></dt>
+          <dd>The optional <code>write_iops_sec_max_length</code>
+            element is the maximum duration in seconds for the
+            <code>write_iops_sec_max</code> burst period. Only valid
+            when the <code>write_iops_sec_max</code> is set.
+          <p>
+            <span class="since">Throughput length since 2.4.0 and QEMU 2.6</span>
+          </p>
+          </dd>
         </dl>
       </dd>
       <dt><code>driver</code></dt>
