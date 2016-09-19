@@ -1021,6 +1021,29 @@ libxlDomainMigrationFinish(virConnectPtr dconn,
         event = NULL;
     }
 
+    if (flags & VIR_MIGRATE_PERSIST_DEST) {
+        unsigned int oldPersist = vm->persistent;
+        virDomainDefPtr vmdef;
+
+        vm->persistent = 1;
+        if (!(vmdef = virDomainObjGetPersistentDef(cfg->caps,
+                                                   driver->xmlopt, vm)))
+            goto cleanup;
+
+        if (virDomainSaveConfig(cfg->configDir, cfg->caps, vmdef) < 0)
+            goto cleanup;
+
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_DEFINED,
+                                         oldPersist ?
+                                         VIR_DOMAIN_EVENT_DEFINED_UPDATED :
+                                         VIR_DOMAIN_EVENT_DEFINED_ADDED);
+        if (event) {
+            libxlDomainEventQueue(driver, event);
+            event = NULL;
+        }
+    }
+
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, cfg->caps) < 0)
         goto cleanup;
 
