@@ -1475,3 +1475,53 @@ qemuGetDefaultHugepath(virHugeTLBFSPtr hugetlbfs,
 
     return qemuGetHugepagePath(&hugetlbfs[i]);
 }
+
+
+/**
+ * qemuGetHupageMemPath: Construct HP enabled memory backend path
+ *
+ * If no specific hugepage size is requested (@pagesize is zero)
+ * the default hugepage size is used).
+ * The resulting path is stored at @memPath.
+ *
+ * Returns 0 on success,
+ *        -1 otherwise.
+ */
+int
+qemuGetHupageMemPath(virQEMUDriverConfigPtr cfg,
+                     unsigned long long pagesize,
+                     char **memPath)
+{
+    size_t i = 0;
+
+    if (!cfg->nhugetlbfs) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("hugetlbfs filesystem is not mounted "
+                               "or disabled by administrator config"));
+        return -1;
+    }
+
+    if (!pagesize) {
+        if (!(*memPath = qemuGetDefaultHugepath(cfg->hugetlbfs,
+                                                cfg->nhugetlbfs)))
+            return -1;
+    } else {
+        for (i = 0; i < cfg->nhugetlbfs; i++) {
+            if (cfg->hugetlbfs[i].size == pagesize)
+                break;
+        }
+
+        if (i == cfg->nhugetlbfs) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to find any usable hugetlbfs "
+                             "mount for %llu KiB"),
+                           pagesize);
+            return -1;
+        }
+
+        if (!(*memPath = qemuGetHugepagePath(&cfg->hugetlbfs[i])))
+            return -1;
+    }
+
+    return 0;
+}

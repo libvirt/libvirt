@@ -335,4 +335,8 @@ int qemuTranslateSnapshotDiskSourcePool(virConnectPtr conn,
 char * qemuGetHugepagePath(virHugeTLBFSPtr hugepage);
 char * qemuGetDefaultHugepath(virHugeTLBFSPtr hugetlbfs,
                               size_t nhugetlbfs);
+
+int qemuGetHupageMemPath(virQEMUDriverConfigPtr cfg,
+                         unsigned long long pagesize,
+                         char **memPath);
 #endif /* __QEMUD_CONF_H */
