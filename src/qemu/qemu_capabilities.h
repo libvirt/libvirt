@@ -380,6 +380,7 @@ typedef enum {
     QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE, /* virtio-net-*.rx_queue_size */
     QEMU_CAPS_MACHINE_IOMMU, /* -machine iommu=on */
     QEMU_CAPS_DEVICE_VIRTIO_VGA, /* -device virtio-vga */
+    QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH, /* -drive bps_max_length = and friends */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
