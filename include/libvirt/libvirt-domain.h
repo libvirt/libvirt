@@ -2323,6 +2323,54 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX "write_iops_sec_max"
 
 /**
+ * VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX_LENGTH:
+ *
+ * Macro for the BlockIoTune tunable weight: it represents the duration in
+ * seconds for the burst allowed by total_bytes_sec_max, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX_LENGTH "total_bytes_sec_max_length"
+
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX_LENGTH:
+ *
+ * Macro for the BlockIoTune tunable weight: it represents the duration in
+ * seconds for the burst allowed by read_bytes_sec_max, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX_LENGTH "read_bytes_sec_max_length"
+
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX_LENGTH:
+ *
+ * Macro for the BlockIoTune tunable weight: it represents the duration in
+ * seconds for the burst allowed by write_bytes_sec_max, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX_LENGTH "write_bytes_sec_max_length"
+
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX_LENGTH:
+ *
+ * Macro for the BlockIoTune tunable weight: it represents the duration in
+ * seconds for the burst allowed by total_iops_sec_max, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX_LENGTH "total_iops_sec_max_length"
+
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX_LENGTH:
+ *
+ * Macro for the BlockIoTune tunable weight: it represents the duration in
+ * seconds for the burst allowed by read_iops_sec_max, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX_LENGTH "read_iops_sec_max_length"
+
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX_LENGTH:
+ *
+ * Macro for the BlockIoTune tunable weight: it represents the duration in
+ * seconds for the burst allowed by write_iops_sec_max, as a ullong.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX_LENGTH "write_iops_sec_max_length"
+
+/**
  * VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC:
  * Macro for the BlockIoTune tunable weight: it represents the size
  * I/O operations per second permitted through a block device, as a ullong.
