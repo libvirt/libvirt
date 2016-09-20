@@ -2,7 +2,6 @@
 Description=Virtual machine log manager
 Requires=virtlogd.socket
 Before=libvirtd.service
-PartOf=libvirtd.service
 Documentation=man:virtlogd(8)
 Documentation=http://libvirt.org
 
