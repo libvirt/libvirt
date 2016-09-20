@@ -4409,6 +4409,38 @@ qemuProcessStartWarnShmem(virDomainObjPtr vm)
     }
 }
 
+
+static int
+qemuProcessStartValidateGraphics(virDomainObjPtr vm)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->ngraphics; i++) {
+        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
+
+        switch (graphics->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+            if (graphics->nListens > 1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("QEMU does not support multiple listens for "
+                                 "one graphics device."));
+                return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
 static int
 qemuProcessStartValidateXML(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
@@ -4456,8 +4488,6 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
                          virCapsPtr caps,
                          unsigned int flags)
 {
-    size_t i;
-
     if (!(flags & VIR_QEMU_PROCESS_START_PRETEND)) {
         if (vm->def->virtType == VIR_DOMAIN_VIRT_KVM) {
             VIR_DEBUG("Checking for KVM availability");
@@ -4484,29 +4514,7 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
 
     qemuProcessStartWarnShmem(vm);
 
-    for (i = 0; i < vm->def->ngraphics; i++) {
-        virDomainGraphicsDefPtr graphics = vm->def->graphics[i];
-
-        switch (graphics->type) {
-        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
-        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
-            if (graphics->nListens > 1) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("QEMU does not support multiple listens for "
-                                 "one graphics device."));
-                return -1;
-            }
-            break;
-
-        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
-        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
-        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
-            break;
-        }
-    }
-
-    return 0;
+    return qemuProcessStartValidateGraphics(vm);
 }
 
 
