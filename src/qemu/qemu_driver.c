@@ -17118,10 +17118,13 @@ qemuDomainOpenGraphics(virDomainPtr dom,
     if (virDomainOpenGraphicsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is not running"));
-        goto cleanup;
+        goto endjob;
     }
 
     priv = vm->privateData;
@@ -17129,7 +17132,7 @@ qemuDomainOpenGraphics(virDomainPtr dom,
     if (idx >= vm->def->ngraphics) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("No graphics backend with index %d"), idx);
-        goto cleanup;
+        goto endjob;
     }
     switch (vm->def->graphics[idx]->type) {
     case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
@@ -17142,20 +17145,20 @@ qemuDomainOpenGraphics(virDomainPtr dom,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Can only open VNC or SPICE graphics backends, not %s"),
                        virDomainGraphicsTypeToString(vm->def->graphics[idx]->type));
-        goto cleanup;
+        goto endjob;
     }
 
     if (virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def,
                                           fd) < 0)
-        goto cleanup;
+        goto endjob;
 
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
-        goto cleanup;
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorOpenGraphics(priv->mon, protocol, fd, "graphicsfd",
                                   (flags & VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH) != 0);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         ret = -1;
+
+ endjob:
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
