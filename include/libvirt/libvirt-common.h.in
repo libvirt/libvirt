@@ -49,7 +49,7 @@ extern "C" {
 #   define VIR_EXPORT_VAR extern
 #  else
 #   ifdef IN_LIBVIRT
-#    define VIR_EXPORT_VAR __declspec(dllexport)
+#    define VIR_EXPORT_VAR __declspec(dllexport) extern
 #   else
 #    define VIR_EXPORT_VAR __declspec(dllimport) extern
 #   endif
