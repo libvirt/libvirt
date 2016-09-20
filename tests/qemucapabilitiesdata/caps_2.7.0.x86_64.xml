@@ -28,6 +28,8 @@
   <flag name='drive-aio'/>
   <flag name='pci-multibus'/>
   <flag name='pci-bootindex'/>
+  <flag name='ccid-emulated'/>
+  <flag name='ccid-passthru'/>
   <flag name='chardev-spicevmc'/>
   <flag name='virtio-tx-alg'/>
   <flag name='device-qxl-vga'/>
@@ -162,6 +164,7 @@
   <flag name='gic-version'/>
   <flag name='incoming-defer'/>
   <flag name='virtio-gpu'/>
+  <flag name='virtio-gpu.virgl'/>
   <flag name='virtio-keyboard'/>
   <flag name='virtio-mouse'/>
   <flag name='virtio-tablet'/>
@@ -194,9 +197,9 @@
   <flag name='smm'/>
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='query-hotpluggable-cpus'/>
-  <version>2006091</version>
+  <version>2007000</version>
   <kvmVersion>0</kvmVersion>
-  <package> (v2.7.0-rc1-52-g42e0d60)</package>
+  <package> (v2.7.0)</package>
   <arch>x86_64</arch>
   <cpu name='Opteron_G5'/>
   <cpu name='Opteron_G4'/>

@@ -2,11 +2,11 @@
   "QMP": {
     "version": {
       "qemu": {
-        "micro": 91,
-        "minor": 6,
+        "micro": 0,
+        "minor": 7,
         "major": 2
       },
-      "package": " (v2.7.0-rc1-52-g42e0d60)"
+      "package": " (v2.7.0)"
     },
     "capabilities": [
     ]
@@ -22,11 +22,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 91,
-      "minor": 6,
+      "micro": 0,
+      "minor": 7,
       "major": 2
     },
-    "package": " (v2.7.0-rc1-52-g42e0d60)"
+    "package": " (v2.7.0)"
   },
   "id": "libvirt-2"
 }
@@ -466,7 +466,7 @@
 
 {
   "return": {
-    "fd": 14,
+    "fd": 13,
     "fdset-id": 0
   },
   "id": "libvirt-5"
@@ -694,6 +694,9 @@
     },
     {
       "name": "container"
+    },
+    {
+      "name": "qio-channel-rdma"
     },
     {
       "name": "host-x86_64-cpu"
@@ -1245,6 +1248,9 @@
       "name": "nvdimm"
     },
     {
+      "name": "virtio-balloon-pci"
+    },
+    {
       "name": "SandyBridge-x86_64-cpu"
     },
     {
@@ -1252,6 +1258,9 @@
     },
     {
       "name": "virtio-balloon-device"
+    },
+    {
+      "name": "ccid-card-passthru"
     },
     {
       "name": "qxl"
@@ -1335,7 +1344,7 @@
       "name": "tls-creds-x509"
     },
     {
-      "name": "virtio-balloon-pci"
+      "name": "ccid-card-emulated"
     },
     {
       "name": "ISA"
@@ -3176,7 +3185,7 @@
       "type": "bool"
     },
     {
-      "name": "any_layout",
+      "name": "event_idx",
       "description": "on/off",
       "type": "bool"
     },
@@ -3187,6 +3196,11 @@
     },
     {
       "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "stats",
       "description": "on/off",
       "type": "bool"
     },
@@ -3206,7 +3220,7 @@
       "type": "bool"
     },
     {
-      "name": "event_idx",
+      "name": "virgl",
       "description": "on/off",
       "type": "bool"
     },
@@ -3246,6 +3260,11 @@
       "name": "addr",
       "description": "Slot and optional function number, example: 06.0 or 06",
       "type": "int32"
+    },
+    {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
     },
     {
       "name": "max_outputs",
