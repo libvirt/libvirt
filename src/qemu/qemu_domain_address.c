@@ -1302,6 +1302,32 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
             goto cleanup;
         }
     }
+
+    memset(&tmp_addr, 0, sizeof(tmp_addr));
+    tmp_addr.slot = 0x1B;
+    if (!virDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
+        /* Since real Q35 hardware has an ICH9 chip that has an
+         * integrated HD audio device at 0000:00:1B.0 put any
+         * unaddressed ICH9 audio device at that address if it's not
+         * already taken. If there's something already there, let the
+         * normal device addressing assign something later.
+         */
+        for (i = 0; i < def->nsounds; i++) {
+            virDomainSoundDefPtr sound = def->sounds[i];
+
+            if (sound->model != VIR_DOMAIN_SOUND_MODEL_ICH9 ||
+                !virDeviceInfoPCIAddressWanted(&sound->info)) {
+                continue;
+            }
+            if (virDomainPCIAddressReserveSlot(addrs, &tmp_addr, flags) < 0)
+                goto cleanup;
+
+            sound->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
+            sound->info.addr.pci = tmp_addr;
+            break;
+        }
+    }
+
     ret = 0;
  cleanup:
     VIR_FREE(addrStr);
