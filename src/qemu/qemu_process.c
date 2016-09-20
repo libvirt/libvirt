@@ -1678,7 +1678,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
     }
 
     /* Hold an extra reference because we can't allow 'vm' to be
-     * deleted unitl the monitor gets its own reference. */
+     * deleted until the monitor gets its own reference. */
     virObjectRef(vm);
 
     ignore_value(virTimeMillisNow(&priv->monStart));
