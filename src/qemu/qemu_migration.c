@@ -2903,6 +2903,15 @@ qemuDomainMigrateGraphicsRelocate(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
+    /* Older libvirt sends port == 0 for listen type='none' graphics. It's
+     * safe to ignore such requests since relocation to unknown port does
+     * not make sense in general.
+     */
+    if (port <= 0 && tlsPort <= 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
     if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                        QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
         ret = qemuMonitorGraphicsRelocate(priv->mon, type, listenAddress,
