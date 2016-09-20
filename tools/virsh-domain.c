@@ -6722,6 +6722,10 @@ static const vshCmdOptDef opts_setvcpus[] = {
      .type = VSH_OT_BOOL,
      .help = N_("modify cpu state in the guest")
     },
+    {.name = "hotpluggable",
+     .type = VSH_OT_BOOL,
+     .help = N_("make added vcpus hot(un)pluggable")
+    },
     {.name = NULL}
 };
 
@@ -6736,6 +6740,7 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
     bool guest = vshCommandOptBool(cmd, "guest");
+    bool hotpluggable = vshCommandOptBool(cmd, "hotpluggable");
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
@@ -6752,6 +6757,8 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_VCPU_GUEST;
     if (maximum)
         flags |= VIR_DOMAIN_VCPU_MAXIMUM;
+    if (hotpluggable)
+        flags |= VIR_DOMAIN_VCPU_HOTPLUGGABLE;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;

@@ -2316,7 +2316,7 @@ exclusive. If no flag is specified, behavior is different depending
 on hypervisor.
 
 =item B<setvcpus> I<domain> I<count> [I<--maximum>] [[I<--config>]
-[I<--live>] | [I<--current>]] [I<--guest>]
+[I<--live>] | [I<--current>]] [I<--guest>] [I<--hotpluggable>]
 
 Change the number of virtual CPUs active in a guest domain.  By default,
 this command works on active guest domains.  To change the settings for an
@@ -2347,6 +2347,11 @@ persistent.
 If I<--guest> is specified, then the count of cpus is modified in the guest
 instead of the hypervisor. This flag is usable only for live domains
 and may require guest agent to be configured in the guest.
+
+To allow adding vcpus to persistent definitions that can be later hotunplugged
+after the domain is booted it is necessary to specify the I<--hotpluggable>
+flag. Vcpus added to live domains supporting vcpu unplug are automatically
+marked as hotpluggable.
 
 The I<--maximum> flag controls the maximum number of virtual cpus that can
 be hot-plugged the next time the domain is booted.  As such, it must only be

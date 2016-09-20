@@ -1707,6 +1707,7 @@ typedef enum {
     /* Additionally, these flags may be bitwise-OR'd in.  */
     VIR_DOMAIN_VCPU_MAXIMUM = (1 << 2), /* Max rather than current count */
     VIR_DOMAIN_VCPU_GUEST   = (1 << 3), /* Modify state of the cpu in the guest */
+    VIR_DOMAIN_VCPU_HOTPLUGGABLE = (1 << 4), /* Make vcpus added hot(un)pluggable */
 } virDomainVcpuFlags;
 
 int                     virDomainSetVcpus       (virDomainPtr domain,
