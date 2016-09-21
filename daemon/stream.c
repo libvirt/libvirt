@@ -444,7 +444,7 @@ int daemonAddClientStream(virNetServerClientPtr client,
  *
  * Removes a stream from the list of active streams for the client
  *
- * Returns 0 if the stream was removd, -1 if it doesn't exist
+ * Returns 0 if the stream was removed, -1 if it doesn't exist
  */
 int
 daemonRemoveClientStream(virNetServerClientPtr client,
