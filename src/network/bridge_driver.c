@@ -1258,8 +1258,10 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
 
         /* Note: the following is IPv4 only */
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
-            if (ipdef->nranges || ipdef->nhosts)
+            if (ipdef->nranges || ipdef->nhosts) {
                 virBufferAddLit(&configbuf, "dhcp-no-override\n");
+                virBufferAddLit(&configbuf, "dhcp-authoritative\n");
+            }
 
             if (ipdef->tftproot) {
                 virBufferAddLit(&configbuf, "enable-tftp\n");
