@@ -423,7 +423,6 @@ virDomainDefParserConfig libxlDomainDefParserConfig = {
 struct libxlShutdownThreadInfo
 {
     libxlDriverPrivatePtr driver;
-    virDomainObjPtr vm;
     libxl_event *event;
 };
 
@@ -432,7 +431,7 @@ static void
 libxlDomainShutdownThread(void *opaque)
 {
     struct libxlShutdownThreadInfo *shutdown_info = opaque;
-    virDomainObjPtr vm = shutdown_info->vm;
+    virDomainObjPtr vm = NULL;
     libxl_event *ev = shutdown_info->event;
     libxlDriverPrivatePtr driver = shutdown_info->driver;
     virObjectEventPtr dom_event = NULL;
@@ -440,6 +439,12 @@ libxlDomainShutdownThread(void *opaque)
     libxlDriverConfigPtr cfg;
 
     cfg = libxlDriverConfigGet(driver);
+
+    vm = virDomainObjListFindByIDRef(driver->domains, ev->domid);
+    if (!vm) {
+        VIR_INFO("Received event for unknown domain ID %d", ev->domid);
+        goto cleanup;
+    }
 
     if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
         goto cleanup;
@@ -549,7 +554,6 @@ void
 libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
 {
     libxlDriverPrivatePtr driver = data;
-    virDomainObjPtr vm = NULL;
     libxl_shutdown_reason xl_reason = event->u.domain_shutdown.shutdown_reason;
     struct libxlShutdownThreadInfo *shutdown_info = NULL;
     virThread thread;
@@ -567,12 +571,6 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     if (xl_reason == LIBXL_SHUTDOWN_REASON_SUSPEND)
         goto error;
 
-    vm = virDomainObjListFindByIDRef(driver->domains, event->domid);
-    if (!vm) {
-        VIR_INFO("Received event for unknown domain ID %d", event->domid);
-        goto error;
-    }
-
     /*
      * Start a thread to handle shutdown.  We don't want to be tying up
      * libxl's event machinery by doing a potentially lengthy shutdown.
@@ -581,7 +579,6 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
         goto error;
 
     shutdown_info->driver = driver;
-    shutdown_info->vm = vm;
     shutdown_info->event = (libxl_event *)event;
     if (virThreadCreate(&thread, false, libxlDomainShutdownThread,
                         shutdown_info) < 0) {
@@ -593,7 +590,7 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     }
 
     /*
-     * VM is unlocked and libxl_event freed in shutdown thread
+     * libxlShutdownThreadInfo and libxl_event are freed in shutdown thread
      */
     return;
 
@@ -602,7 +599,6 @@ libxlDomainEventHandler(void *data, VIR_LIBXL_EVENT_CONST libxl_event *event)
     /* Cast away any const */
     libxl_event_free(cfg->ctx, (libxl_event *)event);
     virObjectUnref(cfg);
-    virDomainObjEndAPI(&vm);
     VIR_FREE(shutdown_info);
 }
 
