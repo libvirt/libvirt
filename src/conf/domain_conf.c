@@ -14123,10 +14123,8 @@ void
 virDomainNetRemoveHostdev(virDomainDefPtr def,
                           virDomainNetDefPtr net)
 {
-    /* hostdev net devices are normally also be in the hostdevs
-     * array, but might have already been removed by the time we
-     * get here.
-     */
+    /* hostdev net devices are normally in the hostdevs array, but
+     * might have already been removed by the time we get here */
     virDomainHostdevDefPtr hostdev = virDomainNetGetActualHostdev(net);
     size_t i;
 
