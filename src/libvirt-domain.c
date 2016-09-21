@@ -3574,6 +3574,10 @@ virDomainMigrateUnmanaged(virDomainPtr domain,
  * not support this feature and will return an error if bandwidth
  * is not 0.
  *
+ * Users should note that implementation of VIR_MIGRATE_OFFLINE
+ * flag in some drivers does not copy storage or any other file
+ * based storage (e.g. UEFI variable storage).
+ *
  * Enabling the VIR_MIGRATE_POSTCOPY flag tells libvirt to enable post-copy
  * migration.  Use virDomainMigrateStartPostCopy to switch migration into
  * the post-copy mode.  See virDomainMigrateStartPostCopy for more details
@@ -3791,6 +3795,10 @@ virDomainMigrate(virDomainPtr domain,
  * not support this feature and will return an error if bandwidth
  * is not 0.
  *
+ * Users should note that implementation of VIR_MIGRATE_OFFLINE
+ * flag in some drivers does not copy storage or any other file
+ * based storage (e.g. UEFI variable storage).
+ *
  * Enabling the VIR_MIGRATE_POSTCOPY flag tells libvirt to enable post-copy
  * migration.  Use virDomainMigrateStartPostCopy to switch migration into
  * the post-copy mode.  See virDomainMigrateStartPostCopy for more details
@@ -3979,6 +3987,10 @@ virDomainMigrate2(virDomainPtr domain,
  * If you want to copy non-shared storage within migration you
  * can use either VIR_MIGRATE_NON_SHARED_DISK or
  * VIR_MIGRATE_NON_SHARED_INC as they are mutually exclusive.
+ *
+ * Users should note that implementation of VIR_MIGRATE_OFFLINE
+ * flag in some drivers does not copy storage or any other file
+ * based storage (e.g. UEFI variable storage).
  *
  * Enabling the VIR_MIGRATE_POSTCOPY flag tells libvirt to enable post-copy
  * migration.  Use virDomainMigrateStartPostCopy to switch migration into
