@@ -4901,6 +4901,58 @@ qemuDomainSetVcpusLive(virQEMUDriverPtr driver,
 }
 
 
+/**
+ * qemuDomainSetVcpusConfig:
+ * @def: config/offline definition of a domain
+ * @nvcpus: target vcpu count
+ *
+ * Properly handle cold(un)plug of vcpus:
+ * - plug in inactive vcpus/uplug active rather than rewriting state
+ * - fix hotpluggable state
+ */
+static void
+qemuDomainSetVcpusConfig(virDomainDefPtr def,
+                         unsigned int nvcpus)
+{
+    virDomainVcpuDefPtr vcpu;
+    size_t curvcpus = virDomainDefGetVcpus(def);
+    size_t maxvcpus = virDomainDefGetVcpusMax(def);
+    size_t i;
+
+
+    if (curvcpus == nvcpus)
+        return;
+
+    if (curvcpus < nvcpus) {
+        for (i = 0; i < maxvcpus; i++) {
+            vcpu = virDomainDefGetVcpu(def, i);
+
+            if (!vcpu || vcpu->online)
+                continue;
+
+            vcpu->online = true;
+            vcpu->hotpluggable = VIR_TRISTATE_BOOL_NO;
+
+            if (++curvcpus == nvcpus)
+                break;
+        }
+    } else {
+        for (i = maxvcpus; i != 0; i--) {
+            vcpu = virDomainDefGetVcpu(def, i - 1);
+
+            if (!vcpu || !vcpu->online)
+                continue;
+
+            vcpu->online = false;
+            vcpu->hotpluggable = VIR_TRISTATE_BOOL_YES;
+
+            if (--curvcpus == nvcpus)
+                break;
+        }
+    }
+}
+
+
 static int
 qemuDomainSetVcpusInternal(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
@@ -4931,8 +4983,7 @@ qemuDomainSetVcpusInternal(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (persistentDef) {
-        if (virDomainDefSetVcpus(persistentDef, nvcpus) < 0)
-            goto cleanup;
+        qemuDomainSetVcpusConfig(persistentDef, nvcpus);
 
         if (virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef) < 0)
             goto cleanup;
