@@ -38,7 +38,7 @@ VIR_LOG_INIT("driver");
 
 #ifdef WITH_DRIVER_MODULES
 
-/* XXX re-implment this for other OS, or use libtools helper lib ? */
+/* XXX re-implement this for other OS, or use libtools helper lib ? */
 
 # include <dlfcn.h>
 # define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"
