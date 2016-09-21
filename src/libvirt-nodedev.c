@@ -595,7 +595,7 @@ virNodeDeviceDetachFlags(virNodeDevicePtr dev,
  * virNodeDeviceReAttach:
  * @dev: pointer to the node device
  *
- * Re-attach a previously dettached node device to the node so that it
+ * Re-attach a previously detached node device to the node so that it
  * may be used by the node again.
  *
  * Depending on the hypervisor, this may involve operations such
