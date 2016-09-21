@@ -14897,8 +14897,8 @@ virDomainShmemDefFind(virDomainDefPtr def,
     size_t i;
 
     for (i = 0; i < def->nshmems; i++) {
-         if (virDomainShmemDefEquals(def->shmems[i], shmem))
-             break;
+        if (virDomainShmemDefEquals(shmem, def->shmems[i]))
+            break;
     }
 
     if (i < def->nshmems)
