@@ -344,7 +344,7 @@ virAdmConnectRef(virAdmConnectPtr conn)
  * @libVer: where to store the library version
  *
  * Provides version information. @libVer is the version of the library and will
- * allways be set unless an error occurs in which case an error code and a
+ * always be set unless an error occurs in which case an error code and a
  * generic message will be returned. @libVer format is as follows:
  * major * 1,000,000 + minor * 1,000 + release.
  *
