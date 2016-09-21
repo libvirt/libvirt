@@ -311,6 +311,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     cfg->seccompSandbox = -1;
 
     cfg->logTimestamp = true;
+    cfg->glusterDebugLevel = 4;
     cfg->stdioLogD = true;
 
 #ifdef DEFAULT_LOADER_NVRAM
@@ -794,6 +795,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                 goto cleanup;
         }
     }
+    if (virConfGetValueUInt(conf, "gluster_debug_level", &cfg->glusterDebugLevel) < 0)
+        goto cleanup;
 
     ret = 0;
 
