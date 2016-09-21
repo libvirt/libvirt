@@ -569,7 +569,8 @@
         the order may be be duplicated accross all vcpus that need to be
         enabled at once. Specifying order is not necessary, vcpus are then
         added in an arbitrary order. If order info is used, it must be used for
-        all online vcpus.
+        all online vcpus. Hypervisors may clear or update ordering information
+        during certain operations to assure valid configuration.
 
         Note that hypervisors may create hotpluggable vcpus differently from
         boot vcpus thus special initialization may be necessary.

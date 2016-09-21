@@ -25566,3 +25566,13 @@ virDomainGetBlkioParametersAssignFromDef(virDomainDefPtr def,
     virBufferFreeAndReset(&buf);
     return -1;
 }
+
+
+void
+virDomainDefVcpuOrderClear(virDomainDefPtr def)
+{
+    size_t i;
+
+    for (i = 0; i < def->maxvcpus; i++)
+        def->vcpus[i]->order = 0;
+}
