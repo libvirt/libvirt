@@ -997,6 +997,7 @@ mymain(void)
     DO_TEST("graphics-spice",
             QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_QXL_VGA,
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_SPICE_FILE_XFER_DISABLE);
     DO_TEST("graphics-spice-no-args",
@@ -1006,6 +1007,7 @@ mymain(void)
     DO_TEST("graphics-spice-sasl",
             QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_QXL_VGA,
             QEMU_CAPS_DEVICE_QXL);
     VIR_FREE(driver.config->spiceSASLdir);
     driver.config->spiceSASL = 0;
@@ -1017,12 +1019,14 @@ mymain(void)
     DO_TEST("graphics-spice-compression",
             QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_QXL_VGA,
             QEMU_CAPS_DEVICE_QXL);
     DO_TEST("graphics-spice-timeout",
             QEMU_CAPS_KVM,
             QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL_VGA);
+            QEMU_CAPS_DEVICE_QXL_VGA,
+            QEMU_CAPS_DEVICE_QXL);
     DO_TEST("graphics-spice-qxl-vga",
             QEMU_CAPS_VGA_QXL,
             QEMU_CAPS_SPICE,
@@ -1576,10 +1580,12 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY, QEMU_CAPS_VGA_VGAMEM);
     DO_TEST("video-qxl-nodevice", QEMU_CAPS_VGA_QXL);
     DO_TEST("video-qxl-device", QEMU_CAPS_DEVICE_QXL_VGA,
+            QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     DO_TEST("video-qxl-device-vgamem",
-            QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_QXL_VGA_VGAMEM);
+            QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_QXL,
+            QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
+            QEMU_CAPS_QXL_VGA_VGAMEM, QEMU_CAPS_QXL_VGAMEM);
     DO_TEST_FAILURE("video-qxl-sec-nodevice", QEMU_CAPS_VGA_QXL);
     DO_TEST("video-qxl-sec-device", QEMU_CAPS_DEVICE_QXL_VGA,
             QEMU_CAPS_DEVICE_QXL, QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
@@ -1682,7 +1688,8 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
+            QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_QXL);
     DO_TEST_PARSE_ERROR("q35-dmi-bad-address1",
                         QEMU_CAPS_DEVICE_PCI_BRIDGE,
                         QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
@@ -1706,28 +1713,32 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
+            QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_QXL);
     DO_TEST("q35-usb2-multi",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
+            QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_QXL);
     DO_TEST("q35-usb2-reorder",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
+            QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_QXL);
     DO_TEST("pcie-root-port",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
+            QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_QXL);
     DO_TEST("autoindex",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
@@ -1744,7 +1755,8 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
+            QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_QXL);
     DO_TEST_PARSE_ERROR("440fx-wrong-root", NONE);
 
     DO_TEST_PARSE_ERROR("pcie-root-port-too-many",
@@ -1753,7 +1765,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
+            QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_QXL);
 
     DO_TEST("pcie-switch-upstream-port",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
@@ -1762,7 +1775,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_X3130_UPSTREAM,
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
+            QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_QXL);
     DO_TEST("pcie-switch-downstream-port",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
@@ -1771,7 +1785,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM,
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL);
+            QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_QXL);
 
     DO_TEST("pci-expander-bus",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
@@ -1856,7 +1871,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
-            QEMU_CAPS_VGA_QXL, QEMU_CAPS_DEVICE_QXL,
+            QEMU_CAPS_VGA_QXL,
+            QEMU_CAPS_DEVICE_QXL_VGA, QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_Q35_PCI_HOLE64_SIZE);
 
     DO_TEST("arm-vexpressa9-nodevs",
