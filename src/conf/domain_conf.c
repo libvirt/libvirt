@@ -25447,7 +25447,7 @@ virDomainDiskDefCheckDuplicateInfo(const virDomainDiskDef *a,
     }
 
     /* Duplicate WWN/serial isn't usually problematic for the OS and
-     * forbiding it would possibly inhibit using multipath configurations */
+     * forbidding it would possibly inhibit using multipath configurations */
 
     return 0;
 }
