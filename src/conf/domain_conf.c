@@ -13968,7 +13968,7 @@ void virDomainDiskInsertPreAlloced(virDomainDefPtr def,
                                    virDomainDiskDefPtr disk)
 {
     int idx;
-    /* Tenatively plan to insert disk at the end. */
+    /* Tentatively plan to insert disk at the end. */
     int insertAt = -1;
 
     /* Then work backwards looking for disks on
