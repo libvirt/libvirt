@@ -647,6 +647,9 @@ prlsdkGetDiskInfo(vzDriverPtr driver,
             VIR_FREE(disk->serial);
     }
 
+    if (virDomainDiskSetDriver(disk, "vz") < 0)
+        goto cleanup;
+
     ret = 0;
 
  cleanup:
