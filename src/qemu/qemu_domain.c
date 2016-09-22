@@ -3391,7 +3391,7 @@ qemuDomainDefFormatBuf(virQEMUDriverPtr driver,
     if (!(flags & (VIR_DOMAIN_XML_UPDATE_CPU | VIR_DOMAIN_XML_MIGRATABLE)))
         goto format;
 
-    if (!(copy = virDomainDefCopy(def, caps, driver->xmlopt,
+    if (!(copy = virDomainDefCopy(def, caps, driver->xmlopt, NULL,
                                   flags & VIR_DOMAIN_XML_MIGRATABLE)))
         goto cleanup;
 

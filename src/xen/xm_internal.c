@@ -517,6 +517,7 @@ xenXMDomainGetXMLDesc(virConnectPtr conn,
     ret = virDomainDefCopy(entry->def,
                            priv->caps,
                            priv->xmlopt,
+                           NULL,
                            false);
 
  cleanup:

@@ -2604,6 +2604,7 @@ virDomainDefPtr virDomainObjGetOneDef(virDomainObjPtr vm, unsigned int flags);
 virDomainDefPtr virDomainDefCopy(virDomainDefPtr src,
                                  virCapsPtr caps,
                                  virDomainXMLOptionPtr xmlopt,
+                                 void *parseOpaque,
                                  bool migratable);
 virDomainDefPtr virDomainObjCopyPersistentDef(virDomainObjPtr dom,
                                               virCapsPtr caps,

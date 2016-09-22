@@ -6416,6 +6416,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
         if (!(def->dom = virDomainDefCopy(vm->def,
                                           privconn->caps,
                                           privconn->xmlopt,
+                                          NULL,
                                           true)))
             goto cleanup;
 
@@ -6670,8 +6671,8 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     }
 
     snap->def->current = true;
-    config = virDomainDefCopy(snap->def->dom,
-                              privconn->caps, privconn->xmlopt, true);
+    config = virDomainDefCopy(snap->def->dom, privconn->caps,
+                              privconn->xmlopt, NULL, true);
     if (!config)
         goto cleanup;
 

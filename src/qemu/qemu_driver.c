@@ -15232,7 +15232,8 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
      * than inactive xml?  */
     snap->def->current = true;
     if (snap->def->dom) {
-        config = virDomainDefCopy(snap->def->dom, caps, driver->xmlopt, true);
+        config = virDomainDefCopy(snap->def->dom, caps,
+                                  driver->xmlopt, NULL, true);
         if (!config)
             goto endjob;
     }
