@@ -75,7 +75,8 @@ static int
 xenapiDomainDefPostParse(virDomainDefPtr def,
                          virCapsPtr caps ATTRIBUTE_UNUSED,
                          unsigned int parseFlags ATTRIBUTE_UNUSED,
-                         void *opaque ATTRIBUTE_UNUSED)
+                         void *opaque ATTRIBUTE_UNUSED,
+                         void *parseOpaque ATTRIBUTE_UNUSED)
 {
     /* add implicit input device */
     if (xenDomainDefAddImplicitInputDevice(def) < 0)

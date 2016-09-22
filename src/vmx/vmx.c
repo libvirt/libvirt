@@ -528,7 +528,8 @@ static int
 virVMXDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
                          virCapsPtr caps ATTRIBUTE_UNUSED,
                          unsigned int parseFlags ATTRIBUTE_UNUSED,
-                         void *opaque ATTRIBUTE_UNUSED)
+                         void *opaque ATTRIBUTE_UNUSED,
+                         void *parseOpaque ATTRIBUTE_UNUSED)
 {
     return 0;
 }
@@ -1817,7 +1818,7 @@ virVMXParseConfig(virVMXContext *ctx,
     }
 
     if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                              xmlopt) < 0)
+                              xmlopt, NULL) < 0)
         goto cleanup;
 
     success = true;

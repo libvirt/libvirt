@@ -92,7 +92,8 @@ static int
 openvzDomainDefPostParse(virDomainDefPtr def,
                          virCapsPtr caps ATTRIBUTE_UNUSED,
                          unsigned int parseFlags ATTRIBUTE_UNUSED,
-                         void *opaque ATTRIBUTE_UNUSED)
+                         void *opaque ATTRIBUTE_UNUSED,
+                         void *parseOpaque ATTRIBUTE_UNUSED)
 {
     /* fill the init path */
     if (def->os.type == VIR_DOMAIN_OSTYPE_EXE && !def->os.init) {

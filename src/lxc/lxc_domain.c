@@ -364,7 +364,8 @@ static int
 virLXCDomainDefPostParse(virDomainDefPtr def,
                          virCapsPtr caps,
                          unsigned int parseFlags ATTRIBUTE_UNUSED,
-                         void *opaque ATTRIBUTE_UNUSED)
+                         void *opaque ATTRIBUTE_UNUSED,
+                         void *parseOpaque ATTRIBUTE_UNUSED)
 {
     /* check for emulator and create a default one if needed */
     if (!def->emulator &&

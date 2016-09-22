@@ -7920,7 +7920,7 @@ qemuDomainAttachDeviceConfig(virDomainDefPtr vmdef,
          return -1;
     }
 
-    if (virDomainDefPostParse(vmdef, caps, parse_flags, xmlopt) < 0)
+    if (virDomainDefPostParse(vmdef, caps, parse_flags, xmlopt, NULL) < 0)
         return -1;
 
     return 0;
@@ -8077,7 +8077,7 @@ qemuDomainDetachDeviceConfig(virDomainDefPtr vmdef,
         return -1;
     }
 
-    if (virDomainDefPostParse(vmdef, caps, parse_flags, xmlopt) < 0)
+    if (virDomainDefPostParse(vmdef, caps, parse_flags, xmlopt, NULL) < 0)
         return -1;
 
     return 0;
@@ -8176,7 +8176,7 @@ qemuDomainUpdateDeviceConfig(virDomainDefPtr vmdef,
         return -1;
     }
 
-    if (virDomainDefPostParse(vmdef, caps, parse_flags, xmlopt) < 0)
+    if (virDomainDefPostParse(vmdef, caps, parse_flags, xmlopt, NULL) < 0)
         return -1;
 
     return 0;

@@ -61,7 +61,8 @@ static int
 bhyveDomainDefPostParse(virDomainDefPtr def,
                         virCapsPtr caps ATTRIBUTE_UNUSED,
                         unsigned int parseFlags ATTRIBUTE_UNUSED,
-                        void *opaque ATTRIBUTE_UNUSED)
+                        void *opaque ATTRIBUTE_UNUSED,
+                        void *parseOpaque ATTRIBUTE_UNUSED)
 {
     /* Add an implicit PCI root controller */
     if (virDomainDefMaybeAddController(def, VIR_DOMAIN_CONTROLLER_TYPE_PCI, 0,

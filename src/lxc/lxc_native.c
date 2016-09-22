@@ -1095,7 +1095,7 @@ lxcParseConfigString(const char *config,
     lxcSetCapDrop(vmdef, properties);
 
     if (virDomainDefPostParse(vmdef, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                              xmlopt) < 0)
+                              xmlopt, NULL) < 0)
         goto cleanup;
 
     goto cleanup;

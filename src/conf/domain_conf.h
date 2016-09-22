@@ -2361,11 +2361,15 @@ typedef struct _virDomainXMLOption virDomainXMLOption;
 typedef virDomainXMLOption *virDomainXMLOptionPtr;
 
 /* Called once after everything else has been parsed, for adjusting
- * overall domain defaults.  */
+ * overall domain defaults.
+ * @parseOpaque is opaque data passed by virDomainDefParse* caller,
+ * @opaque is opaque data set by driver (usually pointer to driver
+ * private data). */
 typedef int (*virDomainDefPostParseCallback)(virDomainDefPtr def,
                                              virCapsPtr caps,
                                              unsigned int parseFlags,
-                                             void *opaque);
+                                             void *opaque,
+                                             void *parseOpaque);
 /* Called once per device, for adjusting per-device settings while
  * leaving the overall domain otherwise unchanged.  */
 typedef int (*virDomainDeviceDefPostParseCallback)(virDomainDeviceDefPtr dev,
@@ -2447,11 +2451,11 @@ virDomainXMLNamespacePtr
 virDomainXMLOptionGetNamespace(virDomainXMLOptionPtr xmlopt)
     ATTRIBUTE_NONNULL(1);
 
-int
-virDomainDefPostParse(virDomainDefPtr def,
-                      virCapsPtr caps,
-                      unsigned int parseFlags,
-                      virDomainXMLOptionPtr xmlopt);
+int virDomainDefPostParse(virDomainDefPtr def,
+                          virCapsPtr caps,
+                          unsigned int parseFlags,
+                          virDomainXMLOptionPtr xmlopt,
+                          void *parseOpaque);
 
 int virDomainDefValidate(virDomainDefPtr def,
                          virCapsPtr caps,

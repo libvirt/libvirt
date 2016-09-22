@@ -4562,7 +4562,8 @@ int
 virDomainDefPostParse(virDomainDefPtr def,
                       virCapsPtr caps,
                       unsigned int parseFlags,
-                      virDomainXMLOptionPtr xmlopt)
+                      virDomainXMLOptionPtr xmlopt,
+                      void *parseOpaque)
 {
     int ret;
     struct virDomainDefPostParseDeviceIteratorData data = {
@@ -4579,7 +4580,8 @@ virDomainDefPostParse(virDomainDefPtr def,
     /* call the domain config callback */
     if (xmlopt->config.domainPostParseCallback) {
         ret = xmlopt->config.domainPostParseCallback(def, caps, parseFlags,
-                                                     xmlopt->config.priv);
+                                                     xmlopt->config.priv,
+                                                     parseOpaque);
         if (ret < 0)
             return ret;
     }
@@ -17626,7 +17628,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     /* callback to fill driver specific domain aspects */
-    if (virDomainDefPostParse(def, caps, flags, xmlopt) < 0)
+    if (virDomainDefPostParse(def, caps, flags, xmlopt, NULL) < 0)
         goto error;
 
     /* valdiate configuration */

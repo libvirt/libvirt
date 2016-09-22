@@ -2326,7 +2326,8 @@ static int
 qemuDomainDefPostParse(virDomainDefPtr def,
                        virCapsPtr caps,
                        unsigned int parseFlags,
-                       void *opaque)
+                       void *opaque,
+                       void *parseOpaque ATTRIBUTE_UNUSED)
 {
     virQEMUDriverPtr driver = opaque;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);

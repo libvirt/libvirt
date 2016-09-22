@@ -1458,7 +1458,7 @@ xenParseSxpr(const struct sexpr *root,
     }
 
     if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
-                              xmlopt) < 0)
+                              xmlopt, NULL) < 0)
         goto error;
 
     return def;
