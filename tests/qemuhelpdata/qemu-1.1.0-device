@@ -19,19 +19,19 @@ name "scsi-block", bus SCSI, desc "SCSI block device passthrough"
 name "usb-serial", bus USB
 name "pc-sysfw", bus System, desc "PC System Firmware"
 name "usb-mouse", bus USB
-name "usb-net", bus USB
 name "usb-hub", bus USB
+name "usb-net", bus USB
 name "ccid-card-emulated", bus ccid-bus, desc "emulated smartcard"
 name "ne2k_isa", bus ISA
 name "scsi-generic", bus SCSI, desc "pass through generic scsi device (/dev/sg*)"
 name "pcnet", bus PCI
 name "lsi53c895a", bus PCI, alias "lsi"
 name "scsi-disk", bus SCSI, desc "virtual SCSI disk or CD-ROM (legacy)"
-name "nec-usb-xhci", bus PCI
-name "xio3130-downstream", bus PCI, desc "TI X3130 Downstream Port of PCI Express Switch"
-name "pci-ohci", bus PCI, desc "Apple USB Controller"
-name "virtserialport", bus virtio-serial-bus
 name "hda-micro", bus HDA, desc "HDA Audio Codec, duplex (speaker, microphone)"
+name "xio3130-downstream", bus PCI, desc "TI X3130 Downstream Port of PCI Express Switch"
+name "virtserialport", bus virtio-serial-bus
+name "nec-usb-xhci", bus PCI
+name "pci-ohci", bus PCI, desc "Apple USB Controller"
 name "usb-braille", bus USB
 name "scsi-cd", bus SCSI, desc "virtual SCSI CD-ROM"
 name "usb-wacom-tablet", bus USB, desc "QEMU PenPartner Tablet"
@@ -64,7 +64,6 @@ name "usb-tablet", bus USB
 name "isa-vga", bus ISA
 name "usb-kbd", bus USB
 name "isa-applesmc", bus ISA
-name "ib700", bus ISA
 name "rtl8139", bus PCI
 name "qxl", bus PCI, desc "Spice QXL GPU (secondary)"
 name "i82557a", bus PCI, desc "Intel i82557A Ethernet"
@@ -72,25 +71,26 @@ name "i82557b", bus PCI, desc "Intel i82557B Ethernet"
 name "i82557c", bus PCI, desc "Intel i82557C Ethernet"
 name "usb-audio", bus USB
 name "piix3-usb-uhci", bus PCI
-name "piix4-usb-uhci", bus PCI
 name "ccid-card-passthru", bus ccid-bus, desc "passthrough smartcard"
+name "ib700", bus ISA
 name "i82801", bus PCI, desc "Intel i82801 Ethernet"
 name "smbus-eeprom", bus I2C
 name "vmware-svga", bus PCI
 name "isa-cirrus-vga", bus ISA
+name "piix4-usb-uhci", bus PCI
 name "sb16", bus ISA, desc "Creative Sound Blaster 16"
 name "pci-bridge", bus PCI, desc "Standard PCI Bridge"
 name "usb-ehci", bus PCI
-name "vt82c686b-usb-uhci", bus PCI
 name "i82558a", bus PCI, desc "Intel i82558A Ethernet"
+name "i82558b", bus PCI, desc "Intel i82558B Ethernet"
 name "virtio-net-pci", bus PCI, alias "virtio-net"
 name "virtio-balloon-pci", bus PCI, alias "virtio-balloon"
 name "ich9-usb-ehci1", bus PCI
 name "isa-ide", bus ISA
-name "usb-host", bus USB
-name "ich9-ahci", bus PCI, alias "ahci"
 name "i6300esb", bus PCI
-name "i82558b", bus PCI, desc "Intel i82558B Ethernet"
+name "ich9-ahci", bus PCI, alias "ahci"
+name "usb-host", bus USB
+name "vt82c686b-usb-uhci", bus PCI
 name "virtio-scsi-pci", bus PCI
 virtio-blk-pci.class=hex32
 virtio-blk-pci.drive=drive
