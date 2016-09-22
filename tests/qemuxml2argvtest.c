@@ -424,7 +424,7 @@ testCompareXMLToArgv(const void *data)
 
     parseFlags |= VIR_DOMAIN_DEF_PARSE_INACTIVE;
     if (!(vm->def = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
-                                          parseFlags))) {
+                                          NULL, parseFlags))) {
         if (flags & FLAG_EXPECT_PARSE_ERROR)
             goto ok;
         goto cleanup;

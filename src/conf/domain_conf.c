@@ -17751,6 +17751,7 @@ virDomainDefParse(const char *xmlStr,
                   const char *filename,
                   virCapsPtr caps,
                   virDomainXMLOptionPtr xmlopt,
+                  void *parseOpaque,
                   unsigned int flags)
 {
     xmlDocPtr xml;
@@ -17759,7 +17760,7 @@ virDomainDefParse(const char *xmlStr,
 
     if ((xml = virXMLParse(filename, xmlStr, _("(domain_definition)")))) {
         def = virDomainDefParseNode(xml, xmlDocGetRootElement(xml), caps,
-                                    xmlopt, NULL, flags);
+                                    xmlopt, parseOpaque, flags);
         xmlFreeDoc(xml);
     }
 
@@ -17771,18 +17772,20 @@ virDomainDefPtr
 virDomainDefParseString(const char *xmlStr,
                         virCapsPtr caps,
                         virDomainXMLOptionPtr xmlopt,
+                        void *parseOpaque,
                         unsigned int flags)
 {
-    return virDomainDefParse(xmlStr, NULL, caps, xmlopt, flags);
+    return virDomainDefParse(xmlStr, NULL, caps, xmlopt, parseOpaque, flags);
 }
 
 virDomainDefPtr
 virDomainDefParseFile(const char *filename,
                       virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,
+                      void *parseOpaque,
                       unsigned int flags)
 {
-    return virDomainDefParse(NULL, filename, caps, xmlopt, flags);
+    return virDomainDefParse(NULL, filename, caps, xmlopt, parseOpaque, flags);
 }
 
 
@@ -24673,7 +24676,7 @@ virDomainDefCopy(virDomainDefPtr src,
     if (!(xml = virDomainDefFormat(src, caps, format_flags)))
         return NULL;
 
-    ret = virDomainDefParseString(xml, caps, xmlopt, parse_flags);
+    ret = virDomainDefParseString(xml, caps, xmlopt, NULL, parse_flags);
 
     VIR_FREE(xml);
     return ret;

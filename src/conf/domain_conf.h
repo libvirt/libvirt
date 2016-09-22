@@ -2675,10 +2675,12 @@ virStorageSourcePtr virDomainDiskDefSourceParse(const char *xmlStr,
 virDomainDefPtr virDomainDefParseString(const char *xmlStr,
                                         virCapsPtr caps,
                                         virDomainXMLOptionPtr xmlopt,
+                                        void *parseOpaque,
                                         unsigned int flags);
 virDomainDefPtr virDomainDefParseFile(const char *filename,
                                       virCapsPtr caps,
                                       virDomainXMLOptionPtr xmlopt,
+                                      void *parseOpaque,
                                       unsigned int flags);
 virDomainDefPtr virDomainDefParseNode(xmlDocPtr doc,
                                       xmlNodePtr root,

@@ -1874,7 +1874,7 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
 
     VBOX_IID_INITIALIZE(&mchiid);
     if (!(def = virDomainDefParseString(xml, data->caps, data->xmlopt,
-                                        parse_flags))) {
+                                        NULL, parse_flags))) {
         goto cleanup;
     }
 

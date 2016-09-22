@@ -1751,7 +1751,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
         goto cleanup;
 
     if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                        parse_flags)))
+                                        NULL, parse_flags)))
         goto cleanup;
 
     if (virDomainCreateXMLEnsureACL(conn, def) < 0)
@@ -3185,7 +3185,7 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
     if (xmlin) {
         virDomainDefPtr def = NULL;
 
-        if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt,
+        if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt, NULL,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                             VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE))) {
             goto endjob;
@@ -6306,7 +6306,7 @@ qemuDomainSaveImageUpdateDef(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         goto cleanup;
 
-    if (!(newdef = virDomainDefParseString(newxml, caps, driver->xmlopt,
+    if (!(newdef = virDomainDefParseString(newxml, caps, driver->xmlopt, NULL,
                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
@@ -6462,7 +6462,7 @@ qemuDomainSaveImageOpen(virQEMUDriverPtr driver,
     }
 
     /* Create a domain from this XML */
-    if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
+    if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
@@ -7014,7 +7014,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     if (!(vm = virDomainObjNew(driver->xmlopt)))
         goto cleanup;
 
-    if (!(vm->def = virDomainDefParseString(xmlData, caps, driver->xmlopt,
+    if (!(vm->def = virDomainDefParseString(xmlData, caps, driver->xmlopt, NULL,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                             VIR_DOMAIN_DEF_PARSE_ABI_UPDATE)))
         goto cleanup;
@@ -7252,7 +7252,7 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
         goto cleanup;
 
     if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                        parse_flags)))
+                                        NULL, parse_flags)))
         goto cleanup;
 
     if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
@@ -14596,7 +14596,7 @@ qemuDomainSnapshotCreateXML(virDomainPtr domain,
         /* Easiest way to clone inactive portion of vm->def is via
          * conversion in and back out of xml.  */
         if (!(xml = qemuDomainDefFormatLive(driver, vm->def, true, true)) ||
-            !(def->dom = virDomainDefParseString(xml, caps, driver->xmlopt,
+            !(def->dom = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
                                                  VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                  VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto endjob;

@@ -472,7 +472,7 @@ lxcDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
         goto cleanup;
 
     if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                        parse_flags)))
+                                        NULL, parse_flags)))
         goto cleanup;
 
     if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
@@ -1225,7 +1225,7 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
         goto cleanup;
 
     if (!(def = virDomainDefParseString(xml, caps, driver->xmlopt,
-                                        parse_flags)))
+                                        NULL, parse_flags)))
         goto cleanup;
 
     if (virDomainCreateXMLWithFilesEnsureACL(conn, def) < 0)

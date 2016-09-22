@@ -182,7 +182,7 @@ testQemuAgentGetFSInfo(const void *data)
         goto cleanup;
 
     if (!(def = virDomainDefParseFile(domain_filename, caps, xmlopt,
-                                      VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                      NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)

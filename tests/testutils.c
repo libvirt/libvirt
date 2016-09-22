@@ -1127,7 +1127,7 @@ testCompareDomXML2XMLFiles(virCapsPtr caps, virDomainXMLOptionPtr xmlopt,
     if (!live)
         format_flags |= VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
-    if (!(def = virDomainDefParseFile(infile, caps, xmlopt, parse_flags))) {
+    if (!(def = virDomainDefParseFile(infile, caps, xmlopt, NULL, parse_flags))) {
         result = TEST_COMPARE_DOM_XML2XML_RESULT_FAIL_PARSE;
         goto out;
     }

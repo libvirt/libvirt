@@ -388,7 +388,7 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
 
     vmwareDriverLock(driver);
     if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
-                                         parse_flags)) == NULL)
+                                         NULL, parse_flags)) == NULL)
         goto cleanup;
 
     /* generate vmx file */
@@ -682,7 +682,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     vmwareDriverLock(driver);
 
     if ((vmdef = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
-                                         parse_flags)) == NULL)
+                                         NULL, parse_flags)) == NULL)
         goto cleanup;
 
     /* generate vmx file */

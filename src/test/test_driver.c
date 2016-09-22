@@ -1609,7 +1609,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
 
     testDriverLock(privconn);
     if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
-                                       parse_flags)) == NULL)
+                                       NULL, parse_flags)) == NULL)
         goto cleanup;
 
     if (testDomainGenerateIfnames(def) < 0)
@@ -2118,7 +2118,7 @@ testDomainRestoreFlags(virConnectPtr conn,
     xml[len] = '\0';
 
     def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
-                                  VIR_DOMAIN_DEF_PARSE_INACTIVE);
+                                  NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE);
     if (!def)
         goto cleanup;
 
@@ -2615,7 +2615,7 @@ static virDomainPtr testDomainDefineXMLFlags(virConnectPtr conn,
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
     if ((def = virDomainDefParseString(xml, privconn->caps, privconn->xmlopt,
-                                       parse_flags)) == NULL)
+                                       NULL, parse_flags)) == NULL)
         goto cleanup;
 
     if (testDomainGenerateIfnames(def) < 0)

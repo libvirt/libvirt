@@ -3576,6 +3576,7 @@ phypDomainCreateXML(virConnectPtr conn,
 
     if (!(def = virDomainDefParseString(xml, phyp_driver->caps,
                                         phyp_driver->xmlopt,
+                                        NULL,
                                         parse_flags)))
         goto err;
 

@@ -419,6 +419,7 @@ libxlDomainMigrationBegin(virConnectPtr conn,
     if (xmlin) {
         if (!(tmpdef = virDomainDefParseString(xmlin, cfg->caps,
                                                driver->xmlopt,
+                                               NULL,
                                                VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto endjob;
@@ -463,6 +464,7 @@ libxlDomainMigrationPrepareDef(libxlDriverPrivatePtr driver,
     }
 
     if (!(def = virDomainDefParseString(dom_xml, cfg->caps, driver->xmlopt,
+                                        NULL,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto cleanup;
@@ -544,6 +546,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
 
                 VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
                 newdef = virDomainDefParseString(xmlout, cfg->caps, driver->xmlopt,
+                                                 NULL,
                                                  VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                  VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
                 if (!newdef)

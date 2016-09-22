@@ -538,7 +538,7 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
         return NULL;
 
     if ((def = virDomainDefParseString(xml, caps, privconn->xmlopt,
-                                       parse_flags)) == NULL)
+                                       NULL, parse_flags)) == NULL)
         goto cleanup;
 
     if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
@@ -725,7 +725,7 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
 
     if (!(def = virDomainDefParseString(xmlData, caps, privconn->xmlopt,
-                                  VIR_DOMAIN_DEF_PARSE_INACTIVE)))
+                                        NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
     if (bhyveDomainAssignAddresses(def, NULL) < 0)
@@ -938,7 +938,7 @@ bhyveDomainCreateXML(virConnectPtr conn,
         return NULL;
 
     if ((def = virDomainDefParseString(xml, caps, privconn->xmlopt,
-                                       parse_flags)) == NULL)
+                                       NULL, parse_flags)) == NULL)
         goto cleanup;
 
     if (virDomainCreateXMLEnsureACL(conn, def) < 0)

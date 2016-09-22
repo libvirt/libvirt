@@ -84,6 +84,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     if (!((*vm)->def = virDomainDefParseString(domxml,
                                                driver.caps,
                                                driver.xmlopt,
+                                               NULL,
                                                VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 

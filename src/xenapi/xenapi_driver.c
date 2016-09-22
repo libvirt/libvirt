@@ -568,6 +568,7 @@ xenapiDomainCreateXML(virConnectPtr conn,
 
     virDomainDefPtr defPtr = virDomainDefParseString(xmlDesc,
                                                      priv->caps, priv->xmlopt,
+                                                     NULL,
                                                      parse_flags);
     if (!defPtr)
         return NULL;
@@ -1752,6 +1753,7 @@ xenapiDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
         return NULL;
     virDomainDefPtr defPtr = virDomainDefParseString(xml,
                                                      priv->caps, priv->xmlopt,
+                                                     NULL,
                                                      parse_flags);
     if (!defPtr)
         return NULL;

@@ -462,7 +462,7 @@ virDomainObjListLoadConfig(virDomainObjListPtr doms,
 
     if ((configFile = virDomainConfigFile(configDir, name)) == NULL)
         goto error;
-    if (!(def = virDomainDefParseFile(configFile, caps, xmlopt,
+    if (!(def = virDomainDefParseFile(configFile, caps, xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                       VIR_DOMAIN_DEF_PARSE_SKIP_OSTYPE_CHECKS |
                                       VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))

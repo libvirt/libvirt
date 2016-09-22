@@ -189,7 +189,7 @@ testSELinuxLoadDef(const char *testname)
                     abs_srcdir, testname) < 0)
         goto cleanup;
 
-    if (!(def = virDomainDefParseFile(xmlfile, caps, driver.xmlopt, 0)))
+    if (!(def = virDomainDefParseFile(xmlfile, caps, driver.xmlopt, NULL, 0)))
         goto cleanup;
 
     for (i = 0; i < def->ndisks; i++) {

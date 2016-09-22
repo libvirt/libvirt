@@ -27,7 +27,7 @@ testCompareFiles(const char *xml, const char *sexpr)
   int ret = -1;
   virDomainDefPtr def = NULL;
 
-  if (!(def = virDomainDefParseFile(xml, caps, xmlopt,
+  if (!(def = virDomainDefParseFile(xml, caps, xmlopt, NULL,
                                     VIR_DOMAIN_DEF_PARSE_INACTIVE)))
       goto fail;
 

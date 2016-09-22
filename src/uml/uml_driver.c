@@ -1589,7 +1589,7 @@ static virDomainPtr umlDomainCreateXML(virConnectPtr conn, const char *xml,
     virNWFilterReadLockFilterUpdates();
     umlDriverLock(driver);
     if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
-                                        parse_flags)))
+                                        NULL, parse_flags)))
         goto cleanup;
 
     if (virDomainCreateXMLEnsureACL(conn, def) < 0)
@@ -2070,7 +2070,7 @@ umlDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 
     umlDriverLock(driver);
     if (!(def = virDomainDefParseString(xml, driver->caps, driver->xmlopt,
-                                        parse_flags)))
+                                        NULL, parse_flags)))
         goto cleanup;
 
     if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)

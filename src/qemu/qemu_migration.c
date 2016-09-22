@@ -3242,7 +3242,7 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
     }
 
     if (xmlin) {
-        if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt,
+        if (!(def = virDomainDefParseString(xmlin, caps, driver->xmlopt, NULL,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                             VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
             goto cleanup;
@@ -3664,7 +3664,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                 virDomainDefPtr newdef;
 
                 VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
-                newdef = virDomainDefParseString(xmlout, caps, driver->xmlopt,
+                newdef = virDomainDefParseString(xmlout, caps, driver->xmlopt, NULL,
                                                  VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                                  VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
                 if (!newdef)
@@ -4144,7 +4144,7 @@ qemuMigrationPrepareDef(virQEMUDriverPtr driver,
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
         return NULL;
 
-    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt,
+    if (!(def = virDomainDefParseString(dom_xml, caps, driver->xmlopt, NULL,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto cleanup;

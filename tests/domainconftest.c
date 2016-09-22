@@ -52,7 +52,7 @@ static int testGetFilesystem(const void *opaque)
                     abs_srcdir, data->filename) < 0)
         goto cleanup;
 
-    if (!(def = virDomainDefParseFile(filename, caps, xmlopt, 0)))
+    if (!(def = virDomainDefParseFile(filename, caps, xmlopt, NULL, 0)))
         goto cleanup;
 
     fsdef = virDomainGetFilesystemForTarget(def,
