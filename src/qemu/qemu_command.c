@@ -5041,20 +5041,20 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                           telnet ? ",telnet" : "",
                           dev->data.tcp.listen ? ",server,nowait" : "");
 
-            if (cfg->chardevTLS) {
-                char *objalias = NULL;
+        if (cfg->chardevTLS) {
+            char *objalias = NULL;
 
-                if (qemuBuildTLSx509CommandLine(cmd, cfg->chardevTLSx509certdir,
-                                                dev->data.tcp.listen,
-                                                cfg->chardevTLSx509verify,
-                                                alias, qemuCaps) < 0)
-                    goto error;
+            if (qemuBuildTLSx509CommandLine(cmd, cfg->chardevTLSx509certdir,
+                                            dev->data.tcp.listen,
+                                            cfg->chardevTLSx509verify,
+                                            alias, qemuCaps) < 0)
+                goto error;
 
-                if (!(objalias = qemuAliasTLSObjFromChardevAlias(alias)))
-                    goto error;
-                virBufferAsprintf(&buf, ",tls-creds=%s", objalias);
-                VIR_FREE(objalias);
-            }
+            if (!(objalias = qemuAliasTLSObjFromChardevAlias(alias)))
+                goto error;
+            virBufferAsprintf(&buf, ",tls-creds=%s", objalias);
+            VIR_FREE(objalias);
+        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
