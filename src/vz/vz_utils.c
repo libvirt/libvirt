@@ -323,9 +323,9 @@ vzCheckDiskUnsupportedParams(virDomainDiskDefPtr disk)
         return -1;
     }
 
-    if (disk->serial) {
-        VIR_INFO("%s", _("Setting disk serial number is not "
-                         "supported by vz driver."));
+    if (disk->serial && disk->device != VIR_DOMAIN_DISK_DEVICE_DISK) {
+        VIR_INFO("%s", _("Setting disk serial number is "
+                         "supported only for disk devices."));
     }
 
     if (disk->wwn) {
