@@ -15977,6 +15977,7 @@ virDomainDefParseXML(xmlDocPtr xml,
                      xmlXPathContextPtr ctxt,
                      virCapsPtr caps,
                      virDomainXMLOptionPtr xmlopt,
+                     void *parseOpaque,
                      unsigned int flags)
 {
     xmlNodePtr *nodes = NULL, node = NULL;
@@ -17628,7 +17629,7 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     /* callback to fill driver specific domain aspects */
-    if (virDomainDefPostParse(def, caps, flags, xmlopt, NULL) < 0)
+    if (virDomainDefPostParse(def, caps, flags, xmlopt, parseOpaque) < 0)
         goto error;
 
     /* valdiate configuration */
@@ -17677,7 +17678,7 @@ virDomainObjParseXML(xmlDocPtr xml,
 
     oldnode = ctxt->node;
     ctxt->node = config;
-    obj->def = virDomainDefParseXML(xml, config, ctxt, caps, xmlopt, flags);
+    obj->def = virDomainDefParseXML(xml, config, ctxt, caps, xmlopt, NULL, flags);
     ctxt->node = oldnode;
     if (!obj->def)
         goto error;
@@ -17758,7 +17759,7 @@ virDomainDefParse(const char *xmlStr,
 
     if ((xml = virXMLParse(filename, xmlStr, _("(domain_definition)")))) {
         def = virDomainDefParseNode(xml, xmlDocGetRootElement(xml), caps,
-                                    xmlopt, flags);
+                                    xmlopt, NULL, flags);
         xmlFreeDoc(xml);
     }
 
@@ -17790,6 +17791,7 @@ virDomainDefParseNode(xmlDocPtr xml,
                       xmlNodePtr root,
                       virCapsPtr caps,
                       virDomainXMLOptionPtr xmlopt,
+                      void *parseOpaque,
                       unsigned int flags)
 {
     xmlXPathContextPtr ctxt = NULL;
@@ -17810,7 +17812,7 @@ virDomainDefParseNode(xmlDocPtr xml,
     }
 
     ctxt->node = root;
-    def = virDomainDefParseXML(xml, root, ctxt, caps, xmlopt, flags);
+    def = virDomainDefParseXML(xml, root, ctxt, caps, xmlopt, parseOpaque, flags);
 
  cleanup:
     xmlXPathFreeContext(ctxt);

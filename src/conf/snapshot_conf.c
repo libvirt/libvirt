@@ -282,7 +282,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                 goto cleanup;
             }
             def->dom = virDomainDefParseNode(ctxt->node->doc, domainNode,
-                                             caps, xmlopt, domainflags);
+                                             caps, xmlopt, NULL, domainflags);
             if (!def->dom)
                 goto cleanup;
         } else {
