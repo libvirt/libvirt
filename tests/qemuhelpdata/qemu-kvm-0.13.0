@@ -72,7 +72,6 @@ Display options:
 -ctrl-grab      use Right-Ctrl to grab mouse (instead of Ctrl-Alt)
 -no-quit        disable SDL window close capability
 -sdl            enable SDL
--spice <args>   use spice
 -portrait       rotate graphical output 90 deg left (only PXA LCD)
 -vga [std|cirrus|vmware|xenfb|none]
                 select video card type

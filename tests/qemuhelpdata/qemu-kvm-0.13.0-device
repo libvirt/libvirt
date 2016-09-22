@@ -22,8 +22,8 @@ name "usb-braille", bus USB
 name "usb-serial", bus USB
 name "usb-net", bus USB
 name "usb-bt-dongle", bus USB
-name "virtconsole", bus virtio-serial-bus
 name "virtserialport", bus virtio-serial-bus
+name "virtconsole", bus virtio-serial-bus
 name "isa-serial", bus ISA
 name "isa-parallel", bus ISA
 name "vt82c686b-usb-uhci", bus PCI
@@ -62,8 +62,6 @@ name "ib700", bus ISA
 name "isa-debugcon", bus ISA
 name "testdev", bus ISA
 name "PIIX4_PM", bus PCI, desc "PM"
-name "qxl", bus PCI, desc "Spice QXL GPU"
-name "spicevmc", bus virtio-serial-bus
 name "pci-assign", bus PCI, desc "pass through host pci devices to the guest"
 pci-assign.host=pci-hostaddr
 pci-assign.iommu=uint32
