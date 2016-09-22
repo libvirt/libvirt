@@ -1,8 +1,71 @@
-name "AC97", bus PCI, desc "Intel 82801AA AC97 Audio"
-name "isa-applesmc", bus ISA
-name "ccid-card-emulated", bus ccid-bus, desc "emulated smartcard"
-name "ccid-card-passthru", bus ccid-bus, desc "passthrough smartcard"
-name "e1000", bus PCI, desc "Intel Gigabit Ethernet"
+name "ib700", bus ISA
+name "sga", bus ISA, desc "Serial Graphics Adapter"
+name "qxl", bus PCI, desc "Spice QXL GPU (secondary)"
+name "qxl-vga", bus PCI, desc "Spice QXL GPU (primary, vga compatible)"
+name "ivshmem", bus PCI
+name "isa-debugcon", bus ISA
+name "cirrus-vga", bus PCI, desc "Cirrus CLGD 54xx VGA"
+name "virtio-9p-pci", bus PCI
+name "usb-wacom-tablet", bus USB, desc "QEMU PenPartner Tablet"
+name "usb-braille", bus USB
+name "usb-serial", bus USB
+name "usb-net", bus USB
+name "usb-storage", bus USB
+name "usb-host", bus USB
+name "usb-hub", bus USB
+name "usb-kbd", bus USB
+name "usb-mouse", bus USB
+name "usb-tablet", bus USB
+name "usb-bt-dongle", bus USB
+name "smbus-eeprom", bus I2C
+name "scsi-generic", bus SCSI, desc "pass through generic scsi device (/dev/sg*)"
+name "scsi-disk", bus SCSI, desc "virtual SCSI disk or CD-ROM (legacy)"
+name "scsi-block", bus SCSI, desc "SCSI block device passthrough"
+name "scsi-cd", bus SCSI, desc "virtual SCSI CD-ROM"
+name "scsi-hd", bus SCSI, desc "virtual SCSI disk"
+name "x3130-upstream", bus PCI, desc "TI X3130 Upstream Port of PCI Express Switch"
+name "xio3130-downstream", bus PCI, desc "TI X3130 Downstream Port of PCI Express Switch"
+name "i6300esb", bus PCI
+name "vmware-svga", bus PCI
+name "virtio-balloon-pci", bus PCI, alias "virtio-balloon"
+name "virtio-serial-pci", bus PCI, alias "virtio-serial"
+name "virtio-net-pci", bus PCI, alias "virtio-net"
+name "virtio-blk-pci", bus PCI, alias "virtio-blk"
+name "virtserialport", bus virtio-serial-bus
+name "virtconsole", bus virtio-serial-bus
+name "VGA", bus PCI
+name "isa-vga", bus ISA
+name "ich9-usb-uhci3", bus PCI
+name "ich9-usb-uhci2", bus PCI
+name "ich9-usb-uhci1", bus PCI
+name "vt82c686b-usb-uhci", bus PCI
+name "piix4-usb-uhci", bus PCI
+name "piix3-usb-uhci", bus PCI
+name "sysbus-ohci", bus System, desc "OHCI USB Controller"
+name "pci-ohci", bus PCI, desc "Apple USB Controller"
+name "ich9-usb-ehci1", bus PCI
+name "usb-ehci", bus PCI
+name "usb-ccid", bus USB, desc "CCID Rev 1.1 smartcard reader"
+name "isa-serial", bus ISA
+name "sb16", bus ISA, desc "Creative Sound Blaster 16"
+name "rtl8139", bus PCI
+name "pcnet", bus PCI
+name "isa-parallel", bus ISA
+name "ne2k_pci", bus PCI
+name "ne2k_isa", bus ISA
+name "lsi53c895a", bus PCI, alias "lsi"
+name "ioh3420", bus PCI, desc "Intel IOH device id 3420 PCIE Root Port"
+name "intel-hda", bus PCI, desc "Intel HD Audio Controller"
+name "ide-drive", bus IDE, desc "virtual IDE disk or CD-ROM (legacy)"
+name "ide-cd", bus IDE, desc "virtual IDE CD-ROM"
+name "ide-hd", bus IDE, desc "virtual IDE disk"
+name "isa-ide", bus ISA
+name "ich9-ahci", bus PCI, alias "ahci"
+name "hda-duplex", bus HDA, desc "HDA Audio Codec, duplex"
+name "hda-output", bus HDA, desc "HDA Audio Codec, output-only"
+name "SUNW,fdtwo", bus System
+name "sysbus-fdc", bus System
+name "ES1370", bus PCI, desc "ENSONIQ AudioPCI ES1370"
 name "i82801", bus PCI, desc "Intel i82801 Ethernet"
 name "i82562", bus PCI, desc "Intel i82562 Ethernet"
 name "i82559er", bus PCI, desc "Intel i82559ER Ethernet"
@@ -16,74 +79,11 @@ name "i82557b", bus PCI, desc "Intel i82557B Ethernet"
 name "i82557a", bus PCI, desc "Intel i82557A Ethernet"
 name "i82551", bus PCI, desc "Intel i82551 Ethernet"
 name "i82550", bus PCI, desc "Intel i82550 Ethernet"
-name "ES1370", bus PCI, desc "ENSONIQ AudioPCI ES1370"
-name "SUNW,fdtwo", bus System
-name "sysbus-fdc", bus System
-name "hda-duplex", bus HDA, desc "HDA Audio Codec, duplex"
-name "hda-output", bus HDA, desc "HDA Audio Codec, output-only"
-name "ich9-ahci", bus PCI, alias "ahci"
-name "isa-ide", bus ISA
-name "ide-drive", bus IDE, desc "virtual IDE disk or CD-ROM (legacy)"
-name "ide-cd", bus IDE, desc "virtual IDE CD-ROM"
-name "ide-hd", bus IDE, desc "virtual IDE disk"
-name "intel-hda", bus PCI, desc "Intel HD Audio Controller"
-name "ioh3420", bus PCI, desc "Intel IOH device id 3420 PCIE Root Port"
-name "lsi53c895a", bus PCI, alias "lsi"
-name "ne2k_isa", bus ISA
-name "ne2k_pci", bus PCI
-name "isa-parallel", bus ISA
-name "pcnet", bus PCI
-name "rtl8139", bus PCI
-name "sb16", bus ISA, desc "Creative Sound Blaster 16"
-name "isa-serial", bus ISA
-name "usb-ccid", bus USB, desc "CCID Rev 1.1 smartcard reader"
-name "ich9-usb-ehci1", bus PCI
-name "usb-ehci", bus PCI
-name "sysbus-ohci", bus System, desc "OHCI USB Controller"
-name "pci-ohci", bus PCI, desc "Apple USB Controller"
-name "ich9-usb-uhci3", bus PCI
-name "ich9-usb-uhci2", bus PCI
-name "ich9-usb-uhci1", bus PCI
-name "vt82c686b-usb-uhci", bus PCI
-name "piix4-usb-uhci", bus PCI
-name "piix3-usb-uhci", bus PCI
-name "isa-vga", bus ISA
-name "VGA", bus PCI
-name "virtconsole", bus virtio-serial-bus
-name "virtserialport", bus virtio-serial-bus
-name "virtio-balloon-pci", bus PCI, alias "virtio-balloon"
-name "virtio-serial-pci", bus PCI, alias "virtio-serial"
-name "virtio-net-pci", bus PCI, alias "virtio-net"
-name "virtio-blk-pci", bus PCI, alias "virtio-blk"
-name "vmware-svga", bus PCI
-name "i6300esb", bus PCI
-name "xio3130-downstream", bus PCI, desc "TI X3130 Downstream Port of PCI Express Switch"
-name "x3130-upstream", bus PCI, desc "TI X3130 Upstream Port of PCI Express Switch"
-name "scsi-disk", bus SCSI, desc "virtual SCSI disk or CD-ROM (legacy)"
-name "scsi-block", bus SCSI, desc "SCSI block device passthrough"
-name "scsi-cd", bus SCSI, desc "virtual SCSI CD-ROM"
-name "scsi-hd", bus SCSI, desc "virtual SCSI disk"
-name "scsi-generic", bus SCSI, desc "pass through generic scsi device (/dev/sg*)"
-name "smbus-eeprom", bus I2C
-name "usb-bt-dongle", bus USB
-name "usb-kbd", bus USB
-name "usb-mouse", bus USB
-name "usb-tablet", bus USB
-name "usb-hub", bus USB
-name "usb-host", bus USB
-name "usb-storage", bus USB
-name "usb-net", bus USB
-name "usb-braille", bus USB
-name "usb-serial", bus USB
-name "usb-wacom-tablet", bus USB, desc "QEMU PenPartner Tablet"
-name "virtio-9p-pci", bus PCI
-name "cirrus-vga", bus PCI, desc "Cirrus CLGD 54xx VGA"
-name "isa-debugcon", bus ISA
-name "ivshmem", bus PCI
-name "qxl", bus PCI, desc "Spice QXL GPU (secondary)"
-name "qxl-vga", bus PCI, desc "Spice QXL GPU (primary, vga compatible)"
-name "sga", bus ISA, desc "Serial Graphics Adapter"
-name "ib700", bus ISA
+name "e1000", bus PCI, desc "Intel Gigabit Ethernet"
+name "ccid-card-passthru", bus ccid-bus, desc "passthrough smartcard"
+name "ccid-card-emulated", bus ccid-bus, desc "emulated smartcard"
+name "isa-applesmc", bus ISA
+name "AC97", bus PCI, desc "Intel 82801AA AC97 Audio"
 virtio-blk-pci.class=hex32
 virtio-blk-pci.drive=drive
 virtio-blk-pci.logical_block_size=uint16
