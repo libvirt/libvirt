@@ -1,0 +1,63 @@
+name "pci-bridge", bus PCI
+name "virtio-balloon-pci", bus PCI
+name "virtio-console-pci", bus PCI
+name "virtio-net-pci", bus PCI
+name "virtio-blk-pci", bus PCI
+name "i82562", bus PCI
+name "i82559er", bus PCI
+name "i82559c", bus PCI
+name "i82559b", bus PCI
+name "i82559a", bus PCI
+name "i82558b", bus PCI
+name "i82558a", bus PCI
+name "i82557c", bus PCI
+name "i82557b", bus PCI
+name "i82557a", bus PCI
+name "i82551", bus PCI
+name "i82550", bus PCI
+name "pcnet", bus PCI
+name "rtl8139", bus PCI
+name "e1000", bus PCI, desc "Intel Gigabit Ethernet"
+name "ide-drive", bus IDE
+name "isa-ide", bus ISA
+name "piix4-ide", bus PCI, no-user
+name "piix3-ide", bus PCI, no-user
+name "i8042", bus ISA, no-user
+name "sb16", bus ISA, desc "Creative Sound Blaster 16"
+name "ES1370", bus PCI, desc "ENSONIQ AudioPCI ES1370"
+name "AC97", bus PCI, desc "Intel 82801AA AC97 Audio"
+name "VGA", bus PCI
+name "SUNW,fdtwo", bus System
+name "sysbus-fdc", bus System
+name "isa-fdc", bus ISA, no-user
+name "mc146818rtc", bus ISA, no-user
+name "isa-serial", bus ISA
+name "cirrus-vga", bus PCI, desc "Cirrus CLGD 54xx VGA"
+name "isa-parallel", bus ISA
+name "PIIX3", bus PCI, desc "ISA bridge", no-user
+name "i440FX", bus PCI, desc "Host bridge", no-user
+name "i440FX-pcihost", bus System, no-user
+name "piix4-usb-uhci", bus PCI
+name "piix3-usb-uhci", bus PCI
+name "vmware-svga", bus PCI
+name "ib700", bus ISA
+name "ne2k_isa", bus ISA
+name "testdev", bus ISA
+name "smbus-eeprom", bus I2C
+name "scsi-disk", bus SCSI, desc "virtual scsi disk or cdrom"
+name "scsi-generic", bus SCSI, desc "pass through generic scsi device (/dev/sg*)"
+name "usb-hub", bus USB
+name "usb-host", bus USB
+name "usb-kbd", bus USB
+name "usb-mouse", bus USB
+name "usb-tablet", bus USB
+name "usb-storage", bus USB
+name "usb-wacom-tablet", bus USB, desc "QEMU PenPartner Tablet"
+name "usb-braille", bus USB
+name "usb-serial", bus USB
+name "usb-net", bus USB
+name "usb-bt-dongle", bus USB
+name "i6300esb", bus PCI
+name "ne2k_pci", bus PCI
+name "lsi53c895a", bus PCI, alias "lsi"
+name "isabus-bridge", bus System, no-user

@@ -66,7 +66,7 @@ Display options:
 -full-screen    start in full screen
 -vnc display    start a VNC server on display
 
-1 target only:
+i386 target only:
 -win2k-hack     use it when installing Windows 2000 to avoid a disk full bug
 -no-fd-bootchk  disable boot signature checking for floppy disks
 -no-acpi        disable ACPI
@@ -92,7 +92,7 @@ Network options:
          [,hostfwd=rule][,guestfwd=rule][,smb=dir[,smbserver=addr]]
                 connect the user mode network stack to VLAN 'n', configure its
                 DHCP server and enabled optional services
--net tap[,vlan=n][,name=str][,fd=h][,ifname=name][,script=file][,downscript=dfile][,sndbuf=nbytes][,vnet_hdr=on|off][,vhost=on|off][,vhostfd=h]
+-net tap[,vlan=n][,name=str][,fd=h][,ifname=name][,script=file][,downscript=dfile][,sndbuf=nbytes][,vnet_hdr=on|off]
                 connect the host TAP network interface to VLAN 'n' and use the
                 network scripts 'file' (default=/etc/qemu-ifup)
                 and 'dfile' (default=/etc/qemu-ifdown);
@@ -102,8 +102,6 @@ Network options:
                 default of 'sndbuf=1048576' can be disabled using 'sndbuf=0'
                 use vnet_hdr=off to avoid enabling the IFF_VNET_HDR tap flag; use
                 vnet_hdr=on to make the lack of IFF_VNET_HDR support an error condition
-                use vhost=on to enable experimental in kernel accelerator
-                use 'vhostfd=h' to connect to an already opened vhost net device
 -net socket[,vlan=n][,name=str][,fd=h][,listen=[host]:port][,connect=host:port]
                 connect the vlan 'n' to another VLAN using a socket connection
 -net socket[,vlan=n][,name=str][,fd=h][,mcast=maddr:port]
@@ -163,6 +161,7 @@ Debug/Expert options:
                 translation (t=none or lba) (usually qemu can guess them)
 -L path         set the directory for the BIOS, VGA BIOS and keymaps
 -bios file      set the filename for the BIOS
+-enable-kvm     enable KVM full virtualization support
 -no-reboot      exit instead of rebooting
 -no-shutdown    stop before shutdown
 -loadvm [tag|id]
