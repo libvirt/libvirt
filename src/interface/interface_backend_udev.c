@@ -884,7 +884,7 @@ udevGetIfaceDefBridge(struct udev *udev,
         goto error;
     ifacedef->data.bridge.nbItf = member_count;
 
-    /* Get the interface defintions for each member of the bridge */
+    /* Get the interface definitions for each member of the bridge */
     for (i = 0; i < member_count; i++) {
         ifacedef->data.bridge.itf[i] =
             udevGetIfaceDef(udev, member_list[i]->d_name);

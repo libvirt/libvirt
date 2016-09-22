@@ -300,7 +300,7 @@ typedef enum {
 
 /* the backend driver used for PCI hostdev devices */
 typedef enum {
-    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT, /* detect automaticaly, prefer VFIO */
+    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT, /* detect automatically, prefer VFIO */
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM,    /* force legacy kvm style */
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO,   /* force vfio */
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN,    /* force legacy xen style, use pciback */

@@ -2476,7 +2476,7 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
         if (def->type != pool->def->type)
             continue;
 
-        /* Don't mach against ourself if re-defining existing pool ! */
+        /* Don't match against ourself if re-defining existing pool ! */
         if (STREQ(pool->def->name, def->name))
             continue;
 

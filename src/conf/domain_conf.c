@@ -14165,7 +14165,7 @@ void virDomainControllerInsertPreAlloced(virDomainDefPtr def,
                                          virDomainControllerDefPtr controller)
 {
     int idx;
-    /* Tenatively plan to insert controller at the end. */
+    /* Tentatively plan to insert controller at the end. */
     int insertAt = -1;
     virDomainControllerDefPtr current = NULL;
 
@@ -19847,7 +19847,7 @@ virDomainDiskBlockIoDefFormat(virBufferPtr buf,
 
 /* virDomainSourceDefFormatSeclabel:
  *
- * This function automaticaly closes the <source> element and formats any
+ * This function automatically closes the <source> element and formats any
  * possible seclabels.
  */
 static void
