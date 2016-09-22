@@ -65,7 +65,7 @@ Display options:
 -full-screen    start in full screen
 -vnc display    start a VNC server on display
 
-1 target only:
+i386 target only:
 -win2k-hack     use it when installing Windows 2000 to avoid a disk full bug
 -no-fd-bootchk  disable boot signature checking for floppy disks
 -no-acpi        disable ACPI
@@ -161,11 +161,6 @@ Debug/Expert options:
 -L path         set the directory for the BIOS, VGA BIOS and keymaps
 -bios file      set the filename for the BIOS
 -enable-kvm     enable KVM full virtualization support
--xen-domid id   specify xen guest domain id
--xen-create     create domain using xen hypercalls, bypassing xend
-                warning: should not be used when xend is in use
--xen-attach     attach to existing xen domain
-                xend will use this when starting qemu
 -no-reboot      exit instead of rebooting
 -no-shutdown    stop before shutdown
 -loadvm [tag|id]
