@@ -173,6 +173,7 @@ Character device options:
 -chardev pipe,id=id,path=path[,mux=on|off]
 -chardev pty,id=id[,mux=on|off]
 -chardev stdio,id=id[,mux=on|off][,signal=on|off]
+-chardev braille,id=id[,mux=on|off]
 -chardev tty,id=id,path=path[,mux=on|off]
 -chardev parport,id=id,path=path[,mux=on|off]
 -chardev spicevmc,id=id,name=name[,debug=debug]
