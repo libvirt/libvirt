@@ -52,7 +52,7 @@ bhyveBuildNetArgStr(const virDomainDef *def,
     char macaddr[VIR_MAC_STRING_BUFLEN];
     char *realifname = NULL;
     char *brname = NULL;
-    int actualType = virDomainNetGetActualType(net);
+    virDomainNetType actualType = virDomainNetGetActualType(net);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
         if (VIR_STRDUP(brname, virDomainNetGetActualBridgeName(net)) < 0)

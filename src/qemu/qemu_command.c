@@ -7869,7 +7869,7 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     size_t vhostfdSize = 0;
     char **tapfdName = NULL;
     char **vhostfdName = NULL;
-    int actualType = virDomainNetGetActualType(net);
+    virDomainNetType actualType = virDomainNetGetActualType(net);
     virQEMUDriverConfigPtr cfg = NULL;
     virNetDevBandwidthPtr actualBandwidth;
     size_t i;

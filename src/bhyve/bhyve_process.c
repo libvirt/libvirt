@@ -77,7 +77,7 @@ bhyveNetCleanup(virDomainObjPtr vm)
 
     for (i = 0; i < vm->def->nnets; i++) {
         virDomainNetDefPtr net = vm->def->nets[i];
-        int actualType = virDomainNetGetActualType(net);
+        virDomainNetType actualType = virDomainNetGetActualType(net);
 
         if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
             if (net->ifname) {

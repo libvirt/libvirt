@@ -3328,7 +3328,7 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
                            virDomainNetDefPtr net)
 {
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
-    int actualType;
+    virDomainNetType actualType;
     libxl_device_nic nic;
     int ret = -1;
     char mac[VIR_MAC_STRING_BUFLEN];

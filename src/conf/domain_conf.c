@@ -20840,7 +20840,7 @@ virDomainActualNetDefContentsFormat(virBufferPtr buf,
                                     bool inSubelement,
                                     unsigned int flags)
 {
-    int actualType = virDomainNetGetActualType(def);
+    virDomainNetType actualType = virDomainNetGetActualType(def);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         if (virDomainHostdevDefFormatSubsys(buf, virDomainNetGetActualHostdev(def),
@@ -20920,7 +20920,7 @@ virDomainActualNetDefFormat(virBufferPtr buf,
                             virDomainNetDefPtr def,
                             unsigned int flags)
 {
-    unsigned int type;
+    virDomainNetType type;
     const char *typeStr;
 
     if (!def)
@@ -21075,7 +21075,7 @@ virDomainNetDefFormat(virBufferPtr buf,
                       char *prefix,
                       unsigned int flags)
 {
-    unsigned int actualType = virDomainNetGetActualType(def);
+    virDomainNetType actualType = virDomainNetGetActualType(def);
     bool publicActual = false;
     int sourceLines = 0;
     const char *typeStr;
@@ -24817,7 +24817,7 @@ virDomainStateReasonFromString(virDomainState state, const char *reason)
  * otherwise return the value from the NetDef.
  */
 
-int
+virDomainNetType
 virDomainNetGetActualType(virDomainNetDefPtr iface)
 {
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
