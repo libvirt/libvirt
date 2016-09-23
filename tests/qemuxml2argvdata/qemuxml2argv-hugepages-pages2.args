@@ -1,10 +1,8 @@
 LC_ALL=C PATH=/bin HOME=/home/test USER=test LOGNAME=test QEMU_AUDIO_DRV=none \
 /usr/bin/qemu -S -M pc -m 1024 -smp 2 \
--object memory-backend-file,id=ram-node0,prealloc=yes,\
-mem-path=/dev/hugepages2M/libvirt/qemu,size=268435456 \
--numa node,nodeid=0,cpus=0,memdev=ram-node0 \
--object memory-backend-file,id=ram-node1,prealloc=yes,\
-mem-path=/dev/hugepages2M/libvirt/qemu,size=805306368 \
--numa node,nodeid=1,cpus=1,memdev=ram-node1 \
+-mem-prealloc \
+-mem-path /dev/hugepages2M/libvirt/qemu \
+-numa node,nodeid=0,cpus=0,mem=256 \
+-numa node,nodeid=1,cpus=1,mem=768 \
 -nographic -monitor unix:/tmp/test-monitor,server,nowait -no-acpi -boot c \
 -usb -hda /dev/HostVG/QEMUGuest1 -net none -serial none -parallel none
