@@ -4423,13 +4423,15 @@ virDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                             const virDomainDef *def,
                             virCapsPtr caps,
                             unsigned int flags,
-                            virDomainXMLOptionPtr xmlopt)
+                            virDomainXMLOptionPtr xmlopt,
+                            void *parseOpaque)
 {
     int ret;
 
     if (xmlopt->config.devicesPostParseCallback) {
         ret = xmlopt->config.devicesPostParseCallback(dev, def, caps, flags,
-                                                      xmlopt->config.priv);
+                                                      xmlopt->config.priv,
+                                                      parseOpaque);
         if (ret < 0)
             return ret;
     }
@@ -4447,6 +4449,7 @@ virDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 struct virDomainDefPostParseDeviceIteratorData {
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;
+    void *parseOpaque;
     unsigned int parseFlags;
 };
 
@@ -4459,7 +4462,8 @@ virDomainDefPostParseDeviceIterator(virDomainDefPtr def,
 {
     struct virDomainDefPostParseDeviceIteratorData *data = opaque;
     return virDomainDeviceDefPostParse(dev, def, data->caps,
-                                       data->parseFlags, data->xmlopt);
+                                       data->parseFlags, data->xmlopt,
+                                       data->parseOpaque);
 }
 
 
@@ -4570,6 +4574,7 @@ virDomainDefPostParse(virDomainDefPtr def,
         .caps = caps,
         .xmlopt = xmlopt,
         .parseFlags = parseFlags,
+        .parseOpaque = parseOpaque,
     };
 
     /* this must be done before the hypervisor-specific callback,
@@ -13559,7 +13564,7 @@ virDomainDeviceDefParse(const char *xmlStr,
     }
 
     /* callback to fill driver specific device aspects */
-    if (virDomainDeviceDefPostParse(dev, def, caps, flags, xmlopt) < 0)
+    if (virDomainDeviceDefPostParse(dev, def, caps, flags, xmlopt, NULL) < 0)
         goto error;
 
     /* validate the configuration */
