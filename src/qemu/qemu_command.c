@@ -3202,6 +3202,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     int ret = -1;
     virJSONValuePtr props = NULL;
     bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numa, guestNode);
+    bool needHugepage = !!pagesize;
 
     *backendProps = NULL;
     *backendType = NULL;
@@ -3224,10 +3225,10 @@ qemuBuildMemoryBackendStr(unsigned long long size,
         mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
 
     if (pagesize == 0) {
+        bool thisHugepage = false;
+
         /* Find the huge page size we want to use */
         for (i = 0; i < def->mem.nhugepages; i++) {
-            bool thisHugepage = false;
-
             hugepage = &def->mem.hugepages[i];
 
             if (!hugepage->nodemask) {
@@ -3249,6 +3250,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
 
             if (thisHugepage) {
                 /* Hooray, we've found the page size */
+                needHugepage = true;
                 break;
             }
         }
@@ -3335,7 +3337,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     }
 
     /* If none of the following is requested... */
-    if (!pagesize && !userNodeset && !memAccess && !nodeSpecified && !force) {
+    if (!needHugepage && !userNodeset && !memAccess && !nodeSpecified && !force) {
         /* report back that using the new backend is not necessary
          * to achieve the desired configuration */
         ret = 1;
