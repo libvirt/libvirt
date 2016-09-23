@@ -1766,70 +1766,29 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         goto error;
     }
 
-    if (disk->blkdeviotune.total_bytes_sec) {
-        virBufferAsprintf(&opt, ",bps=%llu",
-                          disk->blkdeviotune.total_bytes_sec);
+#define IOTUNE_ADD(_field, _label)                                             \
+    if (disk->blkdeviotune._field) {                                           \
+        virBufferAsprintf(&opt, ",throttling." _label "=%llu",                 \
+                           disk->blkdeviotune._field);                         \
     }
 
-    if (disk->blkdeviotune.read_bytes_sec) {
-        virBufferAsprintf(&opt, ",bps_rd=%llu",
-                          disk->blkdeviotune.read_bytes_sec);
-    }
+    IOTUNE_ADD(total_bytes_sec, "bps-total");
+    IOTUNE_ADD(read_bytes_sec, "bps-read");
+    IOTUNE_ADD(write_bytes_sec, "bps-write");
+    IOTUNE_ADD(total_iops_sec, "iops-total");
+    IOTUNE_ADD(read_iops_sec, "iops-read");
+    IOTUNE_ADD(write_iops_sec, "iops-write");
 
-    if (disk->blkdeviotune.write_bytes_sec) {
-        virBufferAsprintf(&opt, ",bps_wr=%llu",
-                          disk->blkdeviotune.write_bytes_sec);
-    }
+    IOTUNE_ADD(total_bytes_sec_max, "bps-total-max");
+    IOTUNE_ADD(read_bytes_sec_max, "bps-read-max");
+    IOTUNE_ADD(write_bytes_sec_max, "bps-write-max");
+    IOTUNE_ADD(total_iops_sec_max, "iops-total-max");
+    IOTUNE_ADD(read_iops_sec_max, "iops-read-max");
+    IOTUNE_ADD(write_iops_sec_max, "iops-write-max");
 
-    if (disk->blkdeviotune.total_iops_sec) {
-        virBufferAsprintf(&opt, ",iops=%llu",
-                          disk->blkdeviotune.total_iops_sec);
-    }
+    IOTUNE_ADD(size_iops_sec, "iops-size");
 
-    if (disk->blkdeviotune.read_iops_sec) {
-        virBufferAsprintf(&opt, ",iops_rd=%llu",
-                          disk->blkdeviotune.read_iops_sec);
-    }
-
-    if (disk->blkdeviotune.write_iops_sec) {
-        virBufferAsprintf(&opt, ",iops_wr=%llu",
-                          disk->blkdeviotune.write_iops_sec);
-    }
-
-    if (disk->blkdeviotune.total_bytes_sec_max) {
-        virBufferAsprintf(&opt, ",bps_max=%llu",
-                          disk->blkdeviotune.total_bytes_sec_max);
-    }
-
-    if (disk->blkdeviotune.read_bytes_sec_max) {
-        virBufferAsprintf(&opt, ",bps_rd_max=%llu",
-                          disk->blkdeviotune.read_bytes_sec_max);
-    }
-
-    if (disk->blkdeviotune.write_bytes_sec_max) {
-        virBufferAsprintf(&opt, ",bps_wr_max=%llu",
-                          disk->blkdeviotune.write_bytes_sec_max);
-    }
-
-    if (disk->blkdeviotune.total_iops_sec_max) {
-        virBufferAsprintf(&opt, ",iops_max=%llu",
-                          disk->blkdeviotune.total_iops_sec_max);
-    }
-
-    if (disk->blkdeviotune.read_iops_sec_max) {
-        virBufferAsprintf(&opt, ",iops_rd_max=%llu",
-                          disk->blkdeviotune.read_iops_sec_max);
-    }
-
-    if (disk->blkdeviotune.write_iops_sec_max) {
-        virBufferAsprintf(&opt, ",iops_wr_max=%llu",
-                          disk->blkdeviotune.write_iops_sec_max);
-    }
-
-    if (disk->blkdeviotune.size_iops_sec) {
-        virBufferAsprintf(&opt, ",iops_size=%llu",
-                          disk->blkdeviotune.size_iops_sec);
-    }
+#undef IOTUNE_ADD
 
     if (virBufferCheckError(&opt) < 0)
         goto error;

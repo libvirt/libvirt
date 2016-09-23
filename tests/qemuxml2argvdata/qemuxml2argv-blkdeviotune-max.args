@@ -18,10 +18,14 @@ QEMU_AUDIO_DRV=none \
 -boot c \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,\
-cache=none,bps=5000,iops=6000,bps_max=10000,iops_max=11000 \
+cache=none,throttling.bps-total=5000,throttling.iops-total=6000,\
+throttling.bps-total-max=10000,throttling.iops-total-max=11000 \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
 -drive file=/dev/HostVG/QEMUGuest2,format=qcow2,if=none,id=drive-ide0-0-1,\
-cache=none,bps_rd=5000,bps_wr=5500,iops_rd=3500,iops_wr=4000,bps_rd_max=6000,\
-bps_wr_max=6500,iops_rd_max=7000,iops_wr_max=7500,iops_size=2000 \
+cache=none,throttling.bps-read=5000,throttling.bps-write=5500,\
+throttling.iops-read=3500,throttling.iops-write=4000,\
+throttling.bps-read-max=6000,throttling.bps-write-max=6500,\
+throttling.iops-read-max=7000,throttling.iops-write-max=7500,\
+throttling.iops-size=2000 \
 -device ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
