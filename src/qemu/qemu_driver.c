@@ -3270,6 +3270,7 @@ qemuCompressProgramAvailable(virQEMUSaveFormat compress)
 /* qemuGetCompressionProgram:
  * @imageFormat: String representation from qemu.conf for the compression
  *               image format being used (dump, save, or snapshot).
+ * @styleFormat: String representing the style of format (dump, save, snapshot)
  *
  * Returns:
  *    virQEMUSaveFormat    - Integer representation of the compression
@@ -3280,7 +3281,8 @@ qemuCompressProgramAvailable(virQEMUSaveFormat compress)
  *                           indicating none.
  */
 static virQEMUSaveFormat
-qemuGetCompressionProgram(const char *imageFormat)
+qemuGetCompressionProgram(const char *imageFormat,
+                          const char *styleFormat)
 {
     virQEMUSaveFormat ret;
 
@@ -3297,12 +3299,13 @@ qemuGetCompressionProgram(const char *imageFormat)
 
  error:
     if (ret < 0)
-        VIR_WARN("%s", _("Invalid dump image format specified in "
-                         "configuration file, using raw"));
+        VIR_WARN("Invalid %s image format specified in "
+                 "configuration file, using raw",
+                 styleFormat);
     else
-        VIR_WARN("%s", _("Compression program for dump image format "
-                         "in configuration file isn't available, "
-                         "using raw"));
+        VIR_WARN("Compression program for %s image format in "
+                 "configuration file isn't available, using raw",
+                 styleFormat);
 
     /* Use "raw" as the format if the specified format is not valid,
      * or the compress program is not available. */
@@ -3590,7 +3593,7 @@ doCoreDump(virQEMUDriverPtr driver,
 
     /* We reuse "save" flag for "dump" here. Then, we can support the same
      * format in "save" and "dump". */
-    compress = qemuGetCompressionProgram(cfg->dumpImageFormat);
+    compress = qemuGetCompressionProgram(cfg->dumpImageFormat, "dump");
 
     /* Create an empty file with appropriate ownership.  */
     if (dump_flags & VIR_DUMP_BYPASS_CACHE) {
