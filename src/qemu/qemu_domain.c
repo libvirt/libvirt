@@ -2765,7 +2765,8 @@ static int
 qemuDomainDefAssignAddresses(virDomainDef *def,
                              virCapsPtr caps,
                              unsigned int parseFlags ATTRIBUTE_UNUSED,
-                             void *opaque)
+                             void *opaque,
+                             void *parseOpaque ATTRIBUTE_UNUSED)
 {
     virQEMUDriverPtr driver = opaque;
     virQEMUCapsPtr qemuCaps = NULL;
