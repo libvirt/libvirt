@@ -298,6 +298,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
     libxl_domain_build_info *b_info = &d_config->b_info;
     int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
     size_t i;
+    size_t nusbdevice = 0;
 
     libxl_domain_build_info_init(b_info);
 
@@ -469,46 +470,54 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         libxl_defbool_set(&b_info->u.hvm.vnc.enable, 0);
         libxl_defbool_set(&b_info->u.hvm.sdl.enable, 0);
 
-        if (def->ninputs) {
+        for (i = 0; i < def->ninputs; i++) {
+            char **usbdevice;
+
+            if (def->inputs[i]->bus != VIR_DOMAIN_INPUT_BUS_USB)
+                continue;
+
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
-            if (VIR_ALLOC_N(b_info->u.hvm.usbdevice_list, def->ninputs+1) < 0)
+            if (VIR_EXPAND_N(b_info->u.hvm.usbdevice_list, nusbdevice, 1) < 0)
                 return -1;
 #else
-            if (def->ninputs > 1) {
+            if (i > 1) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("libxenlight supports only one input device"));
                 return -1;
             }
 #endif
-            for (i = 0; i < def->ninputs; i++) {
-                char **usbdevice;
-
-                if (def->inputs[i]->bus != VIR_DOMAIN_INPUT_BUS_USB)
-                    continue;
 
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
-                usbdevice = &b_info->u.hvm.usbdevice_list[i];
+            usbdevice = &b_info->u.hvm.usbdevice_list[i];
 #else
-                usbdevice = &b_info->u.hvm.usbdevice;
+            usbdevice = &b_info->u.hvm.usbdevice;
 #endif
-                switch (def->inputs[i]->type) {
-                    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
-                        VIR_FREE(*usbdevice);
-                        if (VIR_STRDUP(*usbdevice, "mouse") < 0)
-                            return -1;
-                        break;
-                    case VIR_DOMAIN_INPUT_TYPE_TABLET:
-                        VIR_FREE(*usbdevice);
-                        if (VIR_STRDUP(*usbdevice, "tablet") < 0)
-                            return -1;
-                        break;
-                    default:
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                _("Unknown input device type"));
+            switch (def->inputs[i]->type) {
+                case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+                    VIR_FREE(*usbdevice);
+                    if (VIR_STRDUP(*usbdevice, "mouse") < 0)
                         return -1;
-                }
+                    break;
+                case VIR_DOMAIN_INPUT_TYPE_TABLET:
+                    VIR_FREE(*usbdevice);
+                    if (VIR_STRDUP(*usbdevice, "tablet") < 0)
+                        return -1;
+                    break;
+                default:
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                            _("Unknown input device type"));
+                    return -1;
             }
         }
+
+#ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
+        /* NULL-terminate usbdevice_list */
+        if (nusbdevice > 0 &&
+            VIR_EXPAND_N(b_info->u.hvm.usbdevice_list, nusbdevice, 1) < 0) {
+            VIR_DISPOSE_N(b_info->u.hvm.usbdevice_list, nusbdevice);
+            return -1;
+        }
+#endif
 
         /* Allow libxl to calculate shadow memory requirements */
         b_info->shadow_memkb =
