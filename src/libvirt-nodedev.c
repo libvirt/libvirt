@@ -636,7 +636,7 @@ virNodeDeviceReAttach(virNodeDevicePtr dev)
  * virNodeDeviceReset:
  * @dev: pointer to the node device
  *
- * Reset a previously dettached node device to the node before or
+ * Reset a previously detached node device to the node before or
  * after assigning it to a guest.
  *
  * The exact reset semantics depends on the hypervisor and device

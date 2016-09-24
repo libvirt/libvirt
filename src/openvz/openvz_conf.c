@@ -762,7 +762,7 @@ openvzReadConfigParam(const char *conf_file, const char *param, char **value)
 /*
  * Read parameter from container config
  *
- * value will be freed before a new value is assined to it, the caller is
+ * value will be freed before a new value is assigned to it, the caller is
  * responsible for freeing it afterwards.
  *
  * sample: 133, "OSTEMPLATE", &value

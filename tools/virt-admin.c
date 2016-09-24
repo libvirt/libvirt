@@ -109,7 +109,7 @@ vshAdmGetTimeStr(vshControl *ctl, time_t then, char **result)
  * vshAdmCatchDisconnect:
  *
  * We get here when the connection was closed. Unlike virsh, we do not save
- * the fact that the event was raised, sice there is virAdmConnectIsAlive to
+ * the fact that the event was raised, since there is virAdmConnectIsAlive to
  * check if the communication channel has not been closed by remote party.
  */
 static void

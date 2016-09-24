@@ -1110,7 +1110,7 @@ esxVI_Context_Connect(esxVI_Context *ctx, const char *url,
          * FIXME: Actually this should be detected by really calling
          * QueryVirtualDiskUuid and checking if a NotImplemented fault is
          * returned. But currently we don't deserialized the details of a
-         * possbile fault and therefore we don't know if the fault was a
+         * possible fault and therefore we don't know if the fault was a
          * NotImplemented fault or not.
          */
         ctx->hasQueryVirtualDiskUuid = true;
