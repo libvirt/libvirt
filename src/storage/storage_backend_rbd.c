@@ -427,7 +427,7 @@ virStorageBackendRBDRefreshPool(virConnectPtr conn,
         if (len >= 0)
             break;
         if (len != -ERANGE) {
-            VIR_WARN("%s", _("A problem occurred while listing RBD images"));
+            VIR_WARN("%s", "A problem occurred while listing RBD images");
             goto cleanup;
         }
         VIR_FREE(names);
@@ -582,7 +582,7 @@ virStorageBackendRBDDeleteVol(virConnectPtr conn,
     VIR_DEBUG("Removing RBD image %s/%s", pool->def->source.name, vol->name);
 
     if (flags & VIR_STORAGE_VOL_DELETE_ZEROED)
-        VIR_WARN("%s", _("This storage backend does not support zeroed removal of volumes"));
+        VIR_WARN("%s", "This storage backend does not support zeroed removal of volumes");
 
     if (virStorageBackendRBDOpenRADOSConn(&ptr, conn, &pool->def->source) < 0)
         goto cleanup;
