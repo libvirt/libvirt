@@ -718,6 +718,13 @@ libxlStateInitialize(bool privileged,
                        virStrerror(errno, ebuf, sizeof(ebuf)));
         goto error;
     }
+    if (virFileMakePath(cfg->channelDir) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to create channel dir '%s': %s"),
+                       cfg->channelDir,
+                       virStrerror(errno, ebuf, sizeof(ebuf)));
+        goto error;
+    }
 
     if (!(libxl_driver->lockManager =
           virLockManagerPluginNew(cfg->lockManagerName ?

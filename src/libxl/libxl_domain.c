@@ -1057,6 +1057,42 @@ libxlDomainCreateIfaceNames(virDomainDefPtr def, libxl_domain_config *d_config)
     }
 }
 
+#ifdef LIBXL_HAVE_DEVICE_CHANNEL
+static void
+libxlDomainCreateChannelPTY(virDomainDefPtr def, libxl_ctx *ctx)
+{
+    libxl_device_channel *x_channels;
+    virDomainChrDefPtr chr;
+    size_t i;
+    int nchannels;
+
+    x_channels = libxl_device_channel_list(ctx, def->id, &nchannels);
+    if (!x_channels)
+        return;
+
+    for (i = 0; i < def->nchannels; i++) {
+        libxl_channelinfo channelinfo;
+        int ret;
+
+        chr = def->channels[i];
+        if (chr->source.type != VIR_DOMAIN_CHR_TYPE_PTY)
+            continue;
+
+        ret = libxl_device_channel_getinfo(ctx, def->id, &x_channels[i],
+                                           &channelinfo);
+
+        if (!ret && channelinfo.u.pty.path &&
+            channelinfo.u.pty.path != '\0') {
+                VIR_FREE(chr->source.data.file.path);
+                ignore_value(VIR_STRDUP(chr->source.data.file.path,
+                                        channelinfo.u.pty.path));
+            }
+    }
+
+    for (i = 0; i < nchannels; i++)
+        libxl_device_channel_dispose(&x_channels[i]);
+}
+#endif
 
 #ifdef LIBXL_HAVE_SRM_V2
 # define LIBXL_DOMSTART_RESTORE_VER_ATTR /* empty */
@@ -1180,7 +1216,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
         goto cleanup_dom;
 
     if (libxlBuildDomainConfig(driver->reservedGraphicsPorts, vm->def,
-                               cfg->ctx, &d_config) < 0)
+                               cfg->channelDir, cfg->ctx, &d_config) < 0)
         goto cleanup_dom;
 
     if (cfg->autoballoon && libxlDomainFreeMem(cfg->ctx, &d_config) < 0)
@@ -1260,6 +1296,11 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
         goto destroy_dom;
 
     libxlDomainCreateIfaceNames(vm->def, &d_config);
+
+#ifdef LIBXL_HAVE_DEVICE_CHANNEL
+    if (vm->def->nchannels > 0)
+        libxlDomainCreateChannelPTY(vm->def, cfg->ctx);
+#endif
 
     if ((dom_xml = virDomainDefFormat(vm->def, cfg->caps, 0)) == NULL)
         goto destroy_dom;
