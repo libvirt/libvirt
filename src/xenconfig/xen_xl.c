@@ -685,6 +685,93 @@ xenParseXLUSB(virConfPtr conf, virDomainDefPtr def)
     return 0;
 }
 
+static int
+xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
+{
+    virConfValuePtr list = virConfGetValue(conf, "channel");
+    virDomainChrDefPtr channel = NULL;
+    char *name = NULL;
+    char *path = NULL;
+
+    if (list && list->type == VIR_CONF_LIST) {
+        list = list->list;
+        while (list) {
+            char type[10];
+            char *key;
+
+            if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
+                goto skipchannel;
+
+            key = list->str;
+            while (key) {
+                char *data;
+                char *nextkey = strchr(key, ',');
+
+                if (!(data = strchr(key, '=')))
+                    goto skipchannel;
+                data++;
+
+                if (STRPREFIX(key, "connection=")) {
+                    int len = nextkey ? (nextkey - data) : sizeof(type) - 1;
+                    if (virStrncpy(type, data, len, sizeof(type)) == NULL) {
+                        virReportError(VIR_ERR_INTERNAL_ERROR,
+                                       _("connection %s too big"), data);
+                        goto skipchannel;
+                    }
+                } else if (STRPREFIX(key, "name=")) {
+                    int len = nextkey ? (nextkey - data) : strlen(data);
+                    VIR_FREE(name);
+                    if (VIR_STRNDUP(name, data, len) < 0)
+                        goto cleanup;
+                } else if (STRPREFIX(key, "path=")) {
+                    int len = nextkey ? (nextkey - data) : strlen(data);
+                    VIR_FREE(path);
+                    if (VIR_STRNDUP(path, data, len) < 0)
+                        goto cleanup;
+                }
+
+                while (nextkey && (nextkey[0] == ',' ||
+                                   nextkey[0] == ' ' ||
+                                   nextkey[0] == '\t'))
+                    nextkey++;
+                key = nextkey;
+            }
+
+            if (!(channel = virDomainChrDefNew()))
+                goto cleanup;
+
+            if (STRPREFIX(type, "socket")) {
+                channel->source.type = VIR_DOMAIN_CHR_TYPE_UNIX;
+                channel->source.data.nix.path = path;
+                channel->source.data.nix.listen = 1;
+            } else if (STRPREFIX(type, "pty")) {
+                channel->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
+                VIR_FREE(path);
+            } else {
+                goto cleanup;
+            }
+
+            channel->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL;
+            channel->targetType = VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN;
+            channel->target.name = name;
+
+            if (VIR_APPEND_ELEMENT(def->channels, def->nchannels, channel) < 0)
+                goto cleanup;
+
+        skipchannel:
+            list = list->next;
+        }
+    }
+
+    return 0;
+
+ cleanup:
+    virDomainChrDefFree(channel);
+    VIR_FREE(path);
+    VIR_FREE(name);
+    return -1;
+}
+
 virDomainDefPtr
 xenParseXL(virConfPtr conf,
            virCapsPtr caps,
@@ -718,6 +805,9 @@ xenParseXL(virConfPtr conf,
         goto cleanup;
 
     if (xenParseXLUSBController(conf, def) < 0)
+        goto cleanup;
+
+    if (xenParseXLChannel(conf, def) < 0)
         goto cleanup;
 
     if (virDomainDefPostParse(def, caps, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
@@ -1347,6 +1437,89 @@ xenFormatXLUSB(virConfPtr conf,
     return -1;
 }
 
+static int
+xenFormatXLChannel(virConfValuePtr list, virDomainChrDefPtr channel)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int sourceType = channel->source.type;
+    virConfValuePtr val, tmp;
+
+    /* connection */
+    virBufferAddLit(&buf, "connection=");
+    switch (sourceType) {
+        case VIR_DOMAIN_CHR_TYPE_PTY:
+            virBufferAddLit(&buf, "pty,");
+            break;
+        case VIR_DOMAIN_CHR_TYPE_UNIX:
+            virBufferAddLit(&buf, "socket,");
+            /* path */
+            if (channel->source.data.nix.path)
+                virBufferAsprintf(&buf, "path=%s,",
+                                  channel->source.data.nix.path);
+            break;
+        default:
+            goto cleanup;
+    }
+
+    /* name */
+    virBufferAsprintf(&buf, "name=%s", channel->target.name);
+
+    if (VIR_ALLOC(val) < 0)
+        goto cleanup;
+
+    val->type = VIR_CONF_STRING;
+    val->str = virBufferContentAndReset(&buf);
+    tmp = list->list;
+    while (tmp && tmp->next)
+        tmp = tmp->next;
+    if (tmp)
+        tmp->next = val;
+    else
+        list->list = val;
+    return 0;
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return -1;
+}
+
+static int
+xenFormatXLDomainChannels(virConfPtr conf, virDomainDefPtr def)
+{
+    virConfValuePtr channelVal = NULL;
+    size_t i;
+
+    if (VIR_ALLOC(channelVal) < 0)
+        goto cleanup;
+
+    channelVal->type = VIR_CONF_LIST;
+    channelVal->list = NULL;
+
+    for (i = 0; i < def->nchannels; i++) {
+        virDomainChrDefPtr chr = def->channels[i];
+
+        if (chr->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN)
+            continue;
+
+        if (xenFormatXLChannel(channelVal, def->channels[i]) < 0)
+            goto cleanup;
+    }
+
+    if (channelVal->list != NULL) {
+        int ret = virConfSetValue(conf, "channel", channelVal);
+        channelVal = NULL;
+        if (ret < 0)
+            goto cleanup;
+    }
+
+    VIR_FREE(channelVal);
+    return 0;
+
+ cleanup:
+    virConfFreeValue(channelVal);
+    return -1;
+}
+
 virConfPtr
 xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
 {
@@ -1374,6 +1547,9 @@ xenFormatXL(virDomainDefPtr def, virConnectPtr conn)
         goto cleanup;
 
     if (xenFormatXLUSBController(conf, def) < 0)
+        goto cleanup;
+
+    if (xenFormatXLDomainChannels(conf, def) < 0)
         goto cleanup;
 
     return conf;
