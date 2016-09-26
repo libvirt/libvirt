@@ -5929,22 +5929,17 @@ qemuMonitorJSONBuildInetSocketAddress(const char *host,
     virJSONValuePtr addr = NULL;
     virJSONValuePtr data = NULL;
 
-    if (!(data = virJSONValueNewObject()) ||
-        !(addr = virJSONValueNewObject()))
-        goto error;
+    if (virJSONValueObjectCreate(&data, "s:host", host,
+                                        "s:port", port, NULL) < 0)
+        return NULL;
 
-    /* port is really expected as a string here by qemu */
-    if (virJSONValueObjectAppendString(data, "host", host) < 0 ||
-        virJSONValueObjectAppendString(data, "port", port) < 0 ||
-        virJSONValueObjectAppendString(addr, "type", "inet") < 0 ||
-        virJSONValueObjectAppend(addr, "data", data) < 0)
-        goto error;
+    if (virJSONValueObjectCreate(&addr, "s:type", "inet",
+                                        "a:data", data, NULL) < 0) {
+        virJSONValueFree(data);
+        return NULL;
+    }
 
     return addr;
- error:
-    virJSONValueFree(data);
-    virJSONValueFree(addr);
-    return NULL;
 }
 
 static virJSONValuePtr
@@ -5953,20 +5948,16 @@ qemuMonitorJSONBuildUnixSocketAddress(const char *path)
     virJSONValuePtr addr = NULL;
     virJSONValuePtr data = NULL;
 
-    if (!(data = virJSONValueNewObject()) ||
-        !(addr = virJSONValueNewObject()))
-        goto error;
+    if (virJSONValueObjectCreate(&data, "s:path", path, NULL) < 0)
+        return NULL;
 
-    if (virJSONValueObjectAppendString(data, "path", path) < 0 ||
-        virJSONValueObjectAppendString(addr, "type", "unix") < 0 ||
-        virJSONValueObjectAppend(addr, "data", data) < 0)
-        goto error;
+    if (virJSONValueObjectCreate(&addr, "s:type", "unix",
+                                        "a:data", data, NULL) < 0) {
+        virJSONValueFree(data);
+        return NULL;
+    }
 
     return addr;
- error:
-    virJSONValueFree(data);
-    virJSONValueFree(addr);
-    return NULL;
 }
 
 int
