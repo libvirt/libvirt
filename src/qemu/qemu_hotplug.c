@@ -946,20 +946,6 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
 
     actualType = virDomainNetGetActualType(net);
 
-    if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-        /* This is really a "smart hostdev", so it should be attached
-         * as a hostdev (the hostdev code will reach over into the
-         * netdev-specific code as appropriate), then also added to
-         * the nets list (see cleanup:) if successful.
-         *
-         * qemuDomainAttachHostDevice uses a connection to resolve
-         * a SCSI hostdev secret, which is not this case, so pass NULL.
-         */
-        ret = qemuDomainAttachHostDevice(NULL, driver, vm,
-                                         virDomainNetGetActualHostdev(net));
-        goto cleanup;
-    }
-
     /* Currently only TAP/macvtap devices supports multiqueue. */
     if (net->driver.virtio.queues > 0 &&
         !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
@@ -1037,6 +1023,18 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         if (qemuInterfaceOpenVhostNet(vm->def, net, priv->qemuCaps,
                                       vhostfd, &vhostfdSize) < 0)
             goto cleanup;
+    } else if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        /* This is really a "smart hostdev", so it should be attached
+         * as a hostdev (the hostdev code will reach over into the
+         * netdev-specific code as appropriate), then also added to
+         * the nets list (see cleanup:) if successful.
+         *
+         * qemuDomainAttachHostDevice uses a connection to resolve
+         * a SCSI hostdev secret, which is not this case, so pass NULL.
+         */
+        ret = qemuDomainAttachHostDevice(NULL, driver, vm,
+                                         virDomainNetGetActualHostdev(net));
+        goto cleanup;
     }
 
     /* Set device online immediately */
