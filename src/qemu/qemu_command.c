@@ -9719,6 +9719,7 @@ qemuBuildChannelChrDeviceStr(char **deviceStr,
             goto cleanup;
         break;
 
+    case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN:
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_NONE:
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST:
         return ret;

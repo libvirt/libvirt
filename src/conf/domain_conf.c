@@ -434,7 +434,8 @@ VIR_ENUM_IMPL(virDomainChrChannelTarget,
               VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST,
               "none",
               "guestfwd",
-              "virtio")
+              "virtio",
+              "xen")
 
 VIR_ENUM_IMPL(virDomainChrConsoleTarget,
               VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LAST,
@@ -2068,6 +2069,7 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
             VIR_FREE(def->target.addr);
             break;
 
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN:
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
             VIR_FREE(def->target.name);
             break;
@@ -9923,10 +9925,12 @@ virDomainChrDefParseTargetXML(virDomainChrDefPtr def,
             virSocketAddrSetPort(def->target.addr, port);
             break;
 
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN:
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
             def->target.name = virXMLPropString(cur, "name");
 
-            if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
+            if (def->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
+                !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
                 (stateStr = virXMLPropString(cur, "state"))) {
                 int tmp;
 
@@ -10217,7 +10221,8 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
         /* path can be auto generated */
         if (!path &&
             (!chr_def ||
-             chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO)) {
+             (chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN &&
+              chr_def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing source path attribute for char device"));
             goto error;
@@ -14417,6 +14422,7 @@ virDomainChrEquals(virDomainChrDefPtr src,
         if (src->targetType != tgt->targetType)
             return false;
         switch ((virDomainChrChannelTargetType) src->targetType) {
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN:
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
             return STREQ_NULLABLE(src->target.name, tgt->target.name);
             break;
@@ -18434,6 +18440,8 @@ virDomainChannelDefCheckABIStability(virDomainChrDefPtr src,
     }
 
     switch (src->targetType) {
+
+    case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN:
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
         if (STRNEQ_NULLABLE(src->target.name, dst->target.name)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -21556,11 +21564,13 @@ virDomainChrDefFormat(virBufferPtr buf,
             break;
         }
 
+        case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN:
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
             if (def->target.name)
                 virBufferEscapeString(buf, " name='%s'", def->target.name);
 
-            if (def->state != VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT &&
+            if (def->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
+                def->state != VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT &&
                 !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
                 virBufferAsprintf(buf, " state='%s'",
                                   virDomainChrDeviceStateTypeToString(def->state));

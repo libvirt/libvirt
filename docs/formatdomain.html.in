@@ -5980,6 +5980,16 @@ qemu-kvm -net nic,model=? /dev/null
         Possible values for the <code>state</code> attribute are
         <code>connected</code> and <code>disconnected</code>.
       </dd>
+      <dt><code>xen</code></dt>
+      <dd> Paravirtualized Xen channel. Channel is exposed in the guest as a
+        Xen console but identified with a name. Setup and consumption of a Xen
+        channel depends on software and configuration in the guest
+        (for more info, please see <a href="http://xenbits.xen.org/docs/unstable/misc/channel.txt">http://xenbits.xen.org/docs/unstable/misc/channel.txt</a>).
+        Channel source path semantics are the same as the virtio target type.
+        The <code>state</code> attribute is not supported since Xen channels
+        lack the necessary probing mechanism.
+        <span class="since">Since 2.3.0</span>
+      </dd>
       <dt><code>spicevmc</code></dt>
       <dd>Paravirtualized SPICE channel. The domain must also have a
         SPICE server as a <a href="#elementsGraphics">graphics

@@ -3690,6 +3690,16 @@
       </optional>
     </element>
   </define>
+  <define name="xenTarget">
+    <element name="target">
+      <attribute name="type">
+        <value>xen</value>
+      </attribute>
+      <optional>
+        <attribute name="name"/>
+      </optional>
+    </element>
+  </define>
   <define name="channel">
     <element name="channel">
       <ref name="qemucdevSrcType"/>
@@ -3698,6 +3708,7 @@
         <choice>
           <ref name="guestfwdTarget"/>
           <ref name="virtioTarget"/>
+          <ref name="xenTarget"/>
         </choice>
         <optional>
           <ref name="alias"/>
