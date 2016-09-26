@@ -268,6 +268,10 @@ mymain(void)
     DO_TEST_FORMAT("paravirt-cmdline-bogus-extra-root", false);
     DO_TEST("rbd-multihost-noauth");
 
+#ifdef LIBXL_HAVE_DEVICE_CHANNEL
+    DO_TEST("channel-pty");
+    DO_TEST("channel-unix");
+#endif
 #ifdef LIBXL_HAVE_BUILDINFO_SERIAL_LIST
     DO_TEST("fullvirt-multiserial");
 #endif
