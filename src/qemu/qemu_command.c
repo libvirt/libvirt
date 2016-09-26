@@ -7915,8 +7915,9 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
 
     cfg = virQEMUDriverGetConfig(driver);
 
-    if (actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-        actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
+    switch (actualType) {
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
         tapfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
             tapfdSize = 1;
@@ -7930,7 +7931,9 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         if (qemuInterfaceBridgeConnect(def, driver, net,
                                        tapfd, &tapfdSize) < 0)
             goto cleanup;
-    } else if (actualType == VIR_DOMAIN_NET_TYPE_DIRECT) {
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
         tapfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
             tapfdSize = 1;
@@ -7944,7 +7947,9 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         if (qemuInterfaceDirectConnect(def, driver, net,
                                        tapfd, tapfdSize, vmop) < 0)
             goto cleanup;
-    } else if (actualType == VIR_DOMAIN_NET_TYPE_ETHERNET) {
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
         tapfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
             tapfdSize = 1;
@@ -7956,17 +7961,32 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
 
         if (qemuInterfaceEthernetConnect(def, driver, net,
-                                       tapfd, tapfdSize) < 0)
+                                         tapfd, tapfdSize) < 0)
             goto cleanup;
-    } else if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
         /* NET_TYPE_HOSTDEV devices are really hostdev devices, so
          * their commandlines are constructed with other hostdevs.
          */
         ret = 0;
         goto cleanup;
-    } else if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
         ret = qemuBuildVhostuserCommandLine(cmd, def, net, qemuCaps, bootindex);
         goto cleanup;
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_LAST:
+        /* nada */
+        break;
     }
 
     /* For types whose implementations use a netdev on the host, add
