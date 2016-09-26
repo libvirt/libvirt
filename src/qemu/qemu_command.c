@@ -7881,13 +7881,6 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
     if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER)
         return qemuBuildVhostuserCommandLine(cmd, def, net, qemuCaps, bootindex);
 
-    if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
-        /* NET_TYPE_HOSTDEV devices are really hostdev devices, so
-         * their commandlines are constructed with other hostdevs.
-         */
-        return 0;
-    }
-
     /* Currently nothing besides TAP devices supports multiqueue. */
     if (net->driver.virtio.queues > 0 &&
         !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
@@ -7967,6 +7960,12 @@ qemuBuildInterfaceCommandLine(virCommandPtr cmd,
         if (qemuInterfaceEthernetConnect(def, driver, net,
                                        tapfd, tapfdSize) < 0)
             goto cleanup;
+    } else if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+        /* NET_TYPE_HOSTDEV devices are really hostdev devices, so
+         * their commandlines are constructed with other hostdevs.
+         */
+        ret = 0;
+        goto cleanup;
     }
 
     /* For types whose implementations use a netdev on the host, add
