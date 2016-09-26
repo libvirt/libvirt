@@ -1071,6 +1071,9 @@ mymain(void)
     DO_TEST("net-vhostuser-multiq",
             QEMU_CAPS_NETDEV, QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
     DO_TEST_FAILURE("net-vhostuser-multiq", QEMU_CAPS_NETDEV);
+    DO_TEST_FAILURE("net-vhostuser-fail",
+                    QEMU_CAPS_NETDEV,
+                    QEMU_CAPS_VHOSTUSER_MULTIQUEUE);
     DO_TEST("net-user", NONE);
     DO_TEST("net-virtio", NONE);
     DO_TEST("net-virtio-device",
