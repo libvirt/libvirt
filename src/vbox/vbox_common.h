@@ -435,6 +435,6 @@ typedef nsISupports IKeyboard;
         } else {                                                        \
             result = -1;                                                \
         }                                                               \
-    } while(0)
+    } while (0)
 
 #endif /* VBOX_COMMON_H */

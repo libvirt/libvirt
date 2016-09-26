@@ -35,7 +35,7 @@
 # include "vircommand.h"
 # include "virhash.h"
 
-# define umlDebug(fmt, ...) do {} while(0)
+# define umlDebug(fmt, ...) do {} while (0)
 
 # define UML_CPUMASK_LEN CPU_SETSIZE
 

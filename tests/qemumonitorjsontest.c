@@ -721,7 +721,7 @@ testQemuMonitorJSONAttachChardev(const void *data)
         goto cleanup;                                               \
     if (qemuMonitorAttachCharDev(qemuMonitorTestGetMonitor(test),   \
                                      chrID, &chr) < 0)              \
-        ret = fail ? ret  : -1;                                     \
+        ret = fail ? ret : -1;                                      \
     else                                                            \
         ret = fail ? -1 : ret;                                      \
 
