@@ -292,6 +292,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %dir %{mingw64_datadir}/libvirt/schemas/
 %{mingw64_datadir}/libvirt/schemas/basictypes.rng
 %{mingw64_datadir}/libvirt/schemas/capability.rng
+%{mingw64_datadir}/libvirt/schemas/cputypes.rng
 %{mingw64_datadir}/libvirt/schemas/domain.rng
 %{mingw64_datadir}/libvirt/schemas/domaincaps.rng
 %{mingw64_datadir}/libvirt/schemas/domaincommon.rng
