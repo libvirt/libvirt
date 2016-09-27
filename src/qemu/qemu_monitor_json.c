@@ -1772,31 +1772,51 @@ qemuMonitorJSONSetMemoryStatsPeriod(qemuMonitorPtr mon,
 }
 
 
+/* qemuMonitorJSONQueryBlock:
+ * @mon: Monitor pointer
+ *
+ * This helper will attempt to make a "query-block" call and check for
+ * errors before returning with the reply.
+ *
+ * Returns: NULL on error, reply on success
+ */
+static virJSONValuePtr
+qemuMonitorJSONQueryBlock(qemuMonitorPtr mon)
+{
+    virJSONValuePtr cmd;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr devices = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-block", NULL)))
+        return NULL;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0 ||
+        qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    if (!(devices = virJSONValueObjectStealArray(reply, "return"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-block reply was missing device list"));
+        goto cleanup;
+    }
+
+ cleanup:
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    return devices;
+}
+
+
 int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
                                 virHashTablePtr table)
 {
     int ret = -1;
     size_t i;
 
-    virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-block",
-                                                     NULL);
-    virJSONValuePtr reply = NULL;
     virJSONValuePtr devices;
 
-    if (!cmd)
+    if (!(devices = qemuMonitorJSONQueryBlock(mon)))
         return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        goto cleanup;
-
-    if (!(devices = virJSONValueObjectGetArray(reply, "return"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("block info reply was missing device list"));
-        goto cleanup;
-    }
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
@@ -1858,8 +1878,7 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
 
     ret = 0;
  cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
+    virJSONValueFree(devices);
     return ret;
 }
 
@@ -2056,26 +2075,11 @@ qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
                                         bool backingChain)
 {
     int ret = -1;
-    int rc;
     size_t i;
-    virJSONValuePtr cmd;
-    virJSONValuePtr reply = NULL;
     virJSONValuePtr devices;
 
-    if (!(cmd = qemuMonitorJSONMakeCommand("query-block", NULL)))
+    if (!(devices = qemuMonitorJSONQueryBlock(mon)))
         return -1;
-
-    if ((rc = qemuMonitorJSONCommand(mon, cmd, &reply)) < 0)
-        goto cleanup;
-
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        goto cleanup;
-
-    if (!(devices = virJSONValueObjectGetArray(reply, "return"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-block reply was missing device list"));
-        goto cleanup;
-    }
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
@@ -2111,8 +2115,7 @@ qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
     ret = 0;
 
  cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
+    virJSONValueFree(devices);
     return ret;
 }
 
@@ -3987,22 +3990,11 @@ qemuMonitorJSONDiskNameLookup(qemuMonitorPtr mon,
                               virStorageSourcePtr target)
 {
     char *ret = NULL;
-    virJSONValuePtr cmd = NULL;
-    virJSONValuePtr reply = NULL;
     virJSONValuePtr devices;
     size_t i;
 
-    cmd = qemuMonitorJSONMakeCommand("query-block", NULL);
-    if (!cmd)
+    if (!(devices = qemuMonitorJSONQueryBlock(mon)))
         return NULL;
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
-
-    if (!(devices = virJSONValueObjectGetArray(reply, "return"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("block info reply was missing device list"));
-        goto cleanup;
-    }
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
@@ -4038,8 +4030,7 @@ qemuMonitorJSONDiskNameLookup(qemuMonitorPtr mon,
                        device);
 
  cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
+    virJSONValueFree(devices);
 
     return ret;
 }
