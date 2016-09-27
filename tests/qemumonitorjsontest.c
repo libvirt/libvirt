@@ -705,86 +705,142 @@ testQemuMonitorJSONGetCommandLineOptionParameters(const void *data)
     return ret;
 }
 
+
+struct qemuMonitorJSONTestAttachChardevData {
+    qemuMonitorTestPtr test;
+    virDomainChrSourceDefPtr chr;
+    const char *expectPty;
+    bool fail;
+};
+
 static int
-testQemuMonitorJSONAttachChardev(const void *data)
+testQemuMonitorJSONAttachChardev(const void *opaque)
 {
-    virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    qemuMonitorTestPtr test = qemuMonitorTestNewSimple(true, xmlopt);
+    const struct qemuMonitorJSONTestAttachChardevData *data = opaque;
+    int rc;
+
+    if ((rc = qemuMonitorAttachCharDev(qemuMonitorTestGetMonitor(data->test),
+                                       "alias", data->chr)) < 0)
+        goto cleanup;
+
+    if (data->chr->type == VIR_DOMAIN_CHR_TYPE_PTY) {
+        if (STRNEQ_NULLABLE(data->expectPty, data->chr->data.file.path)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "expected PTY path: %s got: %s",
+                           NULLSTR(data->expectPty),
+                           NULLSTR(data->chr->data.file.path));
+            rc = -1;
+        }
+
+        VIR_FREE(data->chr->data.file.path);
+    }
+
+ cleanup:
+    if ((rc != 0) != data->fail)
+        return -1;
+    else
+        return 0;
+}
+
+
+static int
+qemuMonitorJSONTestAttachOneChardev(virDomainXMLOptionPtr xmlopt,
+                                    const char *label,
+                                    virDomainChrSourceDefPtr chr,
+                                    const char *reply,
+                                    const char *expectPty,
+                                    bool fail)
+
+{
+    struct qemuMonitorJSONTestAttachChardevData data;
+    char *jsonreply = NULL;
+    char *fulllabel = NULL;
+    int ret = -1;
+
+    if (!reply)
+        reply = "";
+
+    if (virAsprintf(&jsonreply, "{\"return\": {%s}}", reply) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&fulllabel, "qemuMonitorJSONTestAttachChardev(%s)", label) < 0)
+        goto cleanup;
+
+    data.chr = chr;
+    data.fail = fail;
+    data.expectPty = expectPty;
+    if (!(data.test = qemuMonitorTestNewSimple(true, xmlopt)))
+        goto cleanup;
+
+    if (qemuMonitorTestAddItem(data.test, "chardev-add", jsonreply) < 0)
+        goto cleanup;
+
+    if (virTestRun(fulllabel, &testQemuMonitorJSONAttachChardev, &data) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    qemuMonitorTestFree(data.test);
+    VIR_FREE(jsonreply);
+    VIR_FREE(fulllabel);
+    return ret;
+}
+
+static int
+qemuMonitorJSONTestAttachChardev(virDomainXMLOptionPtr xmlopt)
+{
     virDomainChrSourceDef chr;
     int ret = 0;
 
-    if (!test)
-        return -1;
-
-#define DO_CHECK(chrID, reply, fail)                                \
-    if (qemuMonitorTestAddItem(test, "chardev-add", reply) < 0)     \
-        goto cleanup;                                               \
-    if (qemuMonitorAttachCharDev(qemuMonitorTestGetMonitor(test),   \
-                                     chrID, &chr) < 0)              \
-        ret = fail ? ret : -1;                                      \
-    else                                                            \
-        ret = fail ? -1 : ret;                                      \
-
-#define CHECK(chrID, reply) \
-    DO_CHECK(chrID, reply, false)
-
-#define CHECK_FAIL(chrID, reply) \
-    DO_CHECK(chrID, reply, true)
+#define CHECK(label, fail) \
+    if (qemuMonitorJSONTestAttachOneChardev(xmlopt, label, &chr, NULL, NULL, \
+                                            fail) < 0) \
+        ret = -1
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_NULL };
-    CHECK("chr_null", "{\"return\": {}}");
+    CHECK("null", false);
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_VC };
-    CHECK("chr_vc", "{\"return\": {}}");
+    CHECK("vc", false);
 
-#define PTY_PATH "/dev/ttyS0"
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PTY };
-    CHECK("chr_pty", "{\"return\": {\"pty\" : \"" PTY_PATH "\"}}");
-    if (STRNEQ_NULLABLE(PTY_PATH, chr.data.file.path)) {
-        VIR_FREE(chr.data.file.path);
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "expected PTY path: %s got: %s",
-                       PTY_PATH, NULLSTR(chr.data.file.path));
+    if (qemuMonitorJSONTestAttachOneChardev(xmlopt, "pty", &chr,
+                                            "\"pty\" : \"/dev/pts/0\"",
+                                            "/dev/pts/0", false) < 0)
         ret = -1;
-    }
-    VIR_FREE(chr.data.file.path);
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PTY };
-    CHECK_FAIL("chr_pty_fail", "{\"return\": {}}");
-#undef PTY_PATH
+    CHECK("pty missing path", true);
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_FILE };
-    CHECK("chr_file", "{\"return\": {}}");
+    CHECK("file", false);
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_DEV };
-    CHECK("chr_dev", "{\"return\": {}}");
+    CHECK("device", false);
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_TCP };
-    CHECK("chr_tcp", "{\"return\": {}}");
+    CHECK("tcp", false);
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_UDP };
-    CHECK("chr_udp", "{\"return\": {}}");
+    CHECK("udp", false);
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_UNIX };
-    CHECK("chr_unix", "{\"return\": {}}");
+    CHECK("unix", false);
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_SPICEVMC };
-    CHECK("chr_spicevmc", "{\"return\": {}}");
+    CHECK("spicevmc", false);
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PIPE };
-    CHECK_FAIL("chr_pipe", "{\"return\": {}}");
+    CHECK("pipe", true);
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_STDIO };
-    CHECK_FAIL("chr_stdio", "{\"return\": {}}");
-
+    CHECK("stdio", true);
 #undef CHECK
-#undef CHECK_FAIL
-#undef DO_CHECK
 
- cleanup:
-    qemuMonitorTestFree(test);
     return ret;
 }
+
 
 static int
 testQemuMonitorJSONDetachChardev(const void *data)
@@ -2520,7 +2576,8 @@ mymain(void)
     DO_TEST(GetCommands);
     DO_TEST(GetTPMModels);
     DO_TEST(GetCommandLineOptionParameters);
-    DO_TEST(AttachChardev);
+    if (qemuMonitorJSONTestAttachChardev(driver.xmlopt) < 0)
+        ret = -1;
     DO_TEST(DetachChardev);
     DO_TEST(GetListPaths);
     DO_TEST(GetObjectProperty);
