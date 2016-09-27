@@ -6204,12 +6204,20 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
-        backend_type = "socket";
+        backend_type = "udp";
         addr = qemuMonitorJSONBuildInetSocketAddress(chr->data.udp.connectHost,
                                                      chr->data.udp.connectService);
         if (!addr ||
-            virJSONValueObjectAppend(data, "addr", addr) < 0)
+            virJSONValueObjectAppend(data, "remote", addr) < 0)
             goto error;
+
+        if (chr->data.udp.bindHost) {
+            addr = qemuMonitorJSONBuildInetSocketAddress(chr->data.udp.bindHost,
+                                                         chr->data.udp.bindService);
+            if (!addr ||
+                virJSONValueObjectAppend(data, "local", addr) < 0)
+                goto error;
+        }
         addr = NULL;
         break;
 

@@ -853,10 +853,22 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOptionPtr xmlopt)
     chr.data.udp.connectService = (char *) "1234";
     CHECK("udp", false,
           "{'id':'alias',"
-           "'backend':{'type':'socket',"
-                      "'data':{'addr':{'type':'inet',"
-                                      "'data':{'host':'example.com',"
-                                              "'port':'1234'}}}}}");
+           "'backend':{'type':'udp',"
+                      "'data':{'remote':{'type':'inet',"
+                                        "'data':{'host':'example.com',"
+                                                "'port':'1234'}}}}}");
+
+    chr.data.udp.bindHost = (char *) "localhost";
+    chr.data.udp.bindService = (char *) "4321";
+    CHECK("udp", false,
+          "{'id':'alias',"
+           "'backend':{'type':'udp',"
+                      "'data':{'remote':{'type':'inet',"
+                                        "'data':{'host':'example.com',"
+                                                "'port':'1234'}},"
+                              "'local':{'type':'inet',"
+                                       "'data':{'host':'localhost',"
+                                               "'port':'4321'}}}}}");
 
     memset(&chr, 0, sizeof(chr));
     chr.type = VIR_DOMAIN_CHR_TYPE_UNIX;
