@@ -3264,13 +3264,13 @@ qemuDomainSaveInternal(virQEMUDriverPtr driver, virDomainPtr dom,
  *                           no there was an error, then just return RAW
  *                           indicating none.
  */
-static virQEMUSaveFormat ATTRIBUTE_NONNULL(2)
+static int ATTRIBUTE_NONNULL(2)
 qemuGetCompressionProgram(const char *imageFormat,
                           char **compresspath,
                           const char *styleFormat,
                           bool use_raw_on_fail)
 {
-    virQEMUSaveFormat ret;
+    int ret;
 
     *compresspath = NULL;
 
