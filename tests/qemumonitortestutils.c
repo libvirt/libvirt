@@ -439,6 +439,7 @@ struct qemuMonitorTestHandlerData {
     char *response;
     size_t nargs;
     qemuMonitorTestCommandArgsPtr args;
+    char *expectArgs;
 };
 
 static void
@@ -458,6 +459,7 @@ qemuMonitorTestHandlerDataFree(void *opaque)
     VIR_FREE(data->command_name);
     VIR_FREE(data->response);
     VIR_FREE(data->args);
+    VIR_FREE(data->expectArgs);
     VIR_FREE(data);
 }
 
@@ -668,6 +670,7 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
 }
 
 
+
 /* this allows to add a responder that is able to check
  * a (shallow) structure of arguments for a command */
 int
@@ -716,6 +719,112 @@ qemuMonitorTestAddItemParams(qemuMonitorTestPtr test,
 
  error:
     va_end(args);
+    qemuMonitorTestHandlerDataFree(data);
+    return -1;
+}
+
+
+static int
+qemuMonitorTestProcessCommandWithArgStr(qemuMonitorTestPtr test,
+                                        qemuMonitorTestItemPtr item,
+                                        const char *cmdstr)
+{
+    struct qemuMonitorTestHandlerData *data = item->opaque;
+    virJSONValuePtr val = NULL;
+    virJSONValuePtr args;
+    char *argstr = NULL;
+    const char *cmdname;
+    int ret = -1;
+
+    if (!(val = virJSONValueFromString(cmdstr)))
+        return -1;
+
+    if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
+        ret = qemuMonitorReportError(test, "Missing command name in %s", cmdstr);
+        goto cleanup;
+    }
+
+    if (STRNEQ(data->command_name, cmdname)) {
+        ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
+        goto cleanup;
+    }
+
+    if (!(args = virJSONValueObjectGet(val, "arguments"))) {
+        ret = qemuMonitorReportError(test,
+                                     "Missing arguments section for command '%s'",
+                                     data->command_name);
+        goto cleanup;
+    }
+
+    /* convert the arguments to string */
+    if (!(argstr = virJSONValueToString(args, false)))
+        goto cleanup;
+
+    /* verify that the argument value is expected */
+    if (STRNEQ(argstr, data->expectArgs)) {
+        ret = qemuMonitorReportError(test,
+                                     "%s: expected arguments: '%s', got: '%s'",
+                                     data->command_name,
+                                     data->expectArgs, argstr);
+        goto cleanup;
+    }
+
+    /* arguments checked out, return the response */
+    ret = qemuMonitorTestAddResponse(test, data->response);
+
+ cleanup:
+    VIR_FREE(argstr);
+    virJSONValueFree(val);
+    return ret;
+}
+
+
+/**
+ * qemuMonitorTestAddItemExpect:
+ *
+ * @test: test monitor object
+ * @cmdname: command name
+ * @cmdargs: expected arguments of the command
+ * @apostrophe: convert apostrophes (') in @cmdargs to quotes (")
+ * @response: simulated response of the command
+ *
+ * Simulates a qemu monitor command. Checks that the 'arguments' of the qmp
+ * command are expected. If @apostrophe is true apostrophes are converted to
+ * quotes for simplification of writing the strings into code.
+ */
+int
+qemuMonitorTestAddItemExpect(qemuMonitorTestPtr test,
+                             const char *cmdname,
+                             const char *cmdargs,
+                             bool apostrophe,
+                             const char *response)
+{
+    struct qemuMonitorTestHandlerData *data;
+
+    if (VIR_ALLOC(data) < 0)
+        goto error;
+
+    if (VIR_STRDUP(data->command_name, cmdname) < 0 ||
+        VIR_STRDUP(data->response, response) < 0 ||
+        VIR_STRDUP(data->expectArgs, cmdargs) < 0)
+        goto error;
+
+    if (apostrophe) {
+        char *tmp = data->expectArgs;
+
+        while (*tmp != '\0') {
+            if (*tmp == '\'')
+                *tmp = '"';
+
+            tmp++;
+        }
+    }
+
+    return qemuMonitorTestAddHandler(test,
+                                     qemuMonitorTestProcessCommandWithArgStr,
+                                     data, qemuMonitorTestHandlerDataFree);
+
+ error:
     qemuMonitorTestHandlerDataFree(data);
     return -1;
 }

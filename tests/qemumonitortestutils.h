@@ -60,6 +60,12 @@ int qemuMonitorTestAddItemParams(qemuMonitorTestPtr test,
                                  ...)
     ATTRIBUTE_SENTINEL;
 
+int qemuMonitorTestAddItemExpect(qemuMonitorTestPtr test,
+                                 const char *cmdname,
+                                 const char *cmdargs,
+                                 bool apostrophe,
+                                 const char *response);
+
 # define qemuMonitorTestNewSimple(json, xmlopt) \
     qemuMonitorTestNew(json, xmlopt, NULL, NULL, NULL)
 
