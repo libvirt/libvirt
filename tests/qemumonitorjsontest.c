@@ -747,6 +747,7 @@ static int
 qemuMonitorJSONTestAttachOneChardev(virDomainXMLOptionPtr xmlopt,
                                     const char *label,
                                     virDomainChrSourceDefPtr chr,
+                                    const char *expectargs,
                                     const char *reply,
                                     const char *expectPty,
                                     bool fail)
@@ -772,7 +773,8 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOptionPtr xmlopt,
     if (!(data.test = qemuMonitorTestNewSimple(true, xmlopt)))
         goto cleanup;
 
-    if (qemuMonitorTestAddItem(data.test, "chardev-add", jsonreply) < 0)
+    if (qemuMonitorTestAddItemExpect(data.test, "chardev-add",
+                                     expectargs, true, jsonreply) < 0)
         goto cleanup;
 
     if (virTestRun(fulllabel, &testQemuMonitorJSONAttachChardev, &data) < 0)
@@ -793,49 +795,90 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOptionPtr xmlopt)
     virDomainChrSourceDef chr;
     int ret = 0;
 
-#define CHECK(label, fail) \
-    if (qemuMonitorJSONTestAttachOneChardev(xmlopt, label, &chr, NULL, NULL, \
-                                            fail) < 0) \
+#define CHECK(label, fail, expectargs)                                         \
+    if (qemuMonitorJSONTestAttachOneChardev(xmlopt, label, &chr, expectargs,   \
+                                            NULL, NULL, fail) < 0)             \
         ret = -1
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_NULL };
-    CHECK("null", false);
+    CHECK("null", false,
+          "{'id':'alias','backend':{'type':'null','data':{}}}");
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_VC };
-    CHECK("vc", false);
+    CHECK("vc", false,
+          "{'id':'alias','backend':{'type':'null','data':{}}}");
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PTY };
     if (qemuMonitorJSONTestAttachOneChardev(xmlopt, "pty", &chr,
+                                            "{'id':'alias',"
+                                             "'backend':{'type':'pty',"
+                                                        "'data':{}}}",
                                             "\"pty\" : \"/dev/pts/0\"",
                                             "/dev/pts/0", false) < 0)
         ret = -1;
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PTY };
-    CHECK("pty missing path", true);
+    CHECK("pty missing path", true,
+          "{'id':'alias','backend':{'type':'pty','data':{}}}");
 
-    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_FILE };
-    CHECK("file", false);
+    memset(&chr, 0, sizeof(chr));
+    chr.type = VIR_DOMAIN_CHR_TYPE_FILE;
+    chr.data.file.path = (char *) "/test/path";
+    CHECK("file", false,
+          "{'id':'alias','backend':{'type':'file','data':{'out':'/test/path'}}}");
 
-    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_DEV };
-    CHECK("device", false);
+    memset(&chr, 0, sizeof(chr));
+    chr.type = VIR_DOMAIN_CHR_TYPE_DEV;
+    chr.data.file.path = (char *) "/test/path";
+    CHECK("device", false,
+          "{'id':'alias','backend':{'type':'serial','data':{'device':'/test/path'}}}");
 
-    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_TCP };
-    CHECK("tcp", false);
+    memset(&chr, 0, sizeof(chr));
+    chr.type = VIR_DOMAIN_CHR_TYPE_TCP;
+    chr.data.tcp.host = (char *) "example.com";
+    chr.data.tcp.service = (char *) "1234";
+    CHECK("tcp", false,
+          "{'id':'alias',"
+           "'backend':{'type':'socket',"
+                      "'data':{'addr':{'type':'inet',"
+                                      "'data':{'host':'example.com',"
+                                              "'port':'1234'}},"
+                              "'wait':false,"
+                              "'telnet':false,"
+                              "'server':false}}}");
 
-    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_UDP };
-    CHECK("udp", false);
+    memset(&chr, 0, sizeof(chr));
+    chr.type = VIR_DOMAIN_CHR_TYPE_UDP;
+    chr.data.udp.connectHost = (char *) "example.com";
+    chr.data.udp.connectService = (char *) "1234";
+    CHECK("udp", false,
+          "{'id':'alias',"
+           "'backend':{'type':'socket',"
+                      "'data':{'addr':{'type':'inet',"
+                                      "'data':{'host':'example.com',"
+                                              "'port':'1234'}}}}}");
 
-    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_UNIX };
-    CHECK("unix", false);
+    memset(&chr, 0, sizeof(chr));
+    chr.type = VIR_DOMAIN_CHR_TYPE_UNIX;
+    chr.data.nix.path = (char *) "/path/to/socket";
+    CHECK("unix", false,
+          "{'id':'alias',"
+           "'backend':{'type':'socket',"
+                      "'data':{'addr':{'type':'unix',"
+                                      "'data':{'path':'/path/to/socket'}},"
+                              "'wait':false,"
+                              "'server':false}}}");
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_SPICEVMC };
-    CHECK("spicevmc", false);
+    CHECK("spicevmc", false,
+          "{'id':'alias','backend':{'type':'spicevmc','"
+                                    "data':{'type':'vdagent'}}}");
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PIPE };
-    CHECK("pipe", true);
+    CHECK("pipe", true, "");
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_STDIO };
-    CHECK("stdio", true);
+    CHECK("stdio", true, "");
 #undef CHECK
 
     return ret;
