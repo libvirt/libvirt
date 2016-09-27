@@ -2962,14 +2962,17 @@ virQEMUCapsCPUFilterFeatures(const char *name,
 
 void
 virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
-                            virCapsHostPtr host)
+                            virCapsPtr caps)
 {
     virCPUDefPtr cpu = NULL;
 
-    if (!virQEMUCapsGuestIsNative(host->arch, qemuCaps->arch))
+    if (!caps)
+        return;
+
+    if (!virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch))
         goto error;
 
-    if (host->cpu && host->cpu->model) {
+    if (caps->host.cpu && caps->host.cpu->model) {
         if (VIR_ALLOC(cpu) < 0)
             goto error;
 
@@ -2978,7 +2981,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
         cpu->mode = VIR_CPU_MODE_CUSTOM;
         cpu->match = VIR_CPU_MATCH_EXACT;
 
-        if (virCPUDefCopyModelFilter(cpu, host->cpu, true,
+        if (virCPUDefCopyModelFilter(cpu, caps->host.cpu, true,
                                      virQEMUCapsCPUFilterFeatures, NULL) < 0)
             goto error;
     }
@@ -3248,7 +3251,7 @@ virQEMUCapsLoadCache(virCapsPtr caps,
     }
     VIR_FREE(nodes);
 
-    virQEMUCapsInitHostCPUModel(qemuCaps, &caps->host);
+    virQEMUCapsInitHostCPUModel(qemuCaps, caps);
 
     ret = 0;
  cleanup:
@@ -4036,7 +4039,7 @@ virQEMUCapsNewForBinaryInternal(virCapsPtr caps,
             virQEMUCapsRememberCached(qemuCaps, cacheDir) < 0)
             goto error;
 
-        virQEMUCapsInitHostCPUModel(qemuCaps, &caps->host);
+        virQEMUCapsInitHostCPUModel(qemuCaps, caps);
     }
 
  cleanup:

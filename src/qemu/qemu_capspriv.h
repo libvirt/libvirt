@@ -64,5 +64,5 @@ virQEMUCapsSetArch(virQEMUCapsPtr qemuCaps,
 
 void
 virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
-                            virCapsHostPtr host);
+                            virCapsPtr caps);
 #endif
