@@ -1959,7 +1959,7 @@ Therefore, -1 is a useful shorthand for 262144. On the Linux kernel, the
 values 0 and 1 are automatically converted to a minimal value of 2.
 
 B<Note>: The weight and cap parameters are defined only for the
-XEN_CREDIT scheduler and are now I<DEPRECATED>.
+XEN_CREDIT scheduler.
 
 B<Note>: The vcpu_period, emulator_period, and iothread_period parameters
 have a valid value range of 1000-1000000 or 0, and the vcpu_quota,
