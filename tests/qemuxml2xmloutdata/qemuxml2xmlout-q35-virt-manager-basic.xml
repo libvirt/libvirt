@@ -68,6 +68,11 @@
       <target chassis='5' port='0x30'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </controller>
+    <controller type='pci' index='6' model='pcie-root-port'>
+      <model name='ioh3420'/>
+      <target chassis='6' port='0x38'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+    </controller>
     <interface type='user'>
       <mac address='52:54:00:9a:e6:c6'/>
       <model type='virtio'/>

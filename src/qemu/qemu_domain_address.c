@@ -1899,6 +1899,38 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
         if (qemuDomainAssignDevicePCISlots(def, qemuCaps, addrs) < 0)
             goto cleanup;
 
+        /* Only for *new* domains with pcie-root (and no other
+         * manually specified PCI controllers in the definition): If,
+         * after assigning addresses/reserving slots for all devices,
+         * we see that any extra buses have been auto-added, we
+         * understand that the application has left management of PCI
+         * addresses and controllers up to libvirt. In order to allow
+         * such applications to easily support hotplug, we will do a
+         * "one time" reservation of one extra PCIE|HOTPLUGGABLE
+         * slots, which should cause us to auto-add 1 extra
+         * pcie-root-port. The single slot in this root-port will be
+         * available for hotplug, or may also be used when a device is
+         * added to the config offline.
+         */
+
+        if (max_idx <= 0 &&
+            addrs->nbuses > max_idx + 1 &&
+            qemuDomainMachineHasPCIeRoot(def)) {
+            virDomainDeviceInfo info = {
+                .pciConnectFlags = (VIR_PCI_CONNECT_HOTPLUGGABLE |
+                                    VIR_PCI_CONNECT_TYPE_PCIE_DEVICE)
+            };
+
+            /* if there isn't an empty pcie-root-port, this will
+             * cause one to be added
+             */
+            if (qemuDomainPCIAddressReserveNextSlot(addrs, &info) < 0)
+               goto cleanup;
+        }
+
+        /* now reflect any controllers auto-added to addrs into the
+         * domain controllers list
+         */
         for (i = 1; i < addrs->nbuses; i++) {
             virDomainDeviceDef dev;
             int contIndex;
