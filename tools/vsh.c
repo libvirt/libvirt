@@ -3093,8 +3093,9 @@ vshInitReload(vshControl *ctl)
 void
 vshDeinit(vshControl *ctl)
 {
-    if (ctl->imode)
-        vshReadlineDeinit(ctl);
+    /* NB: Don't make calling of vshReadlineDeinit conditional on active
+     * interactive mode. */
+    vshReadlineDeinit(ctl);
     vshCloseLogFile(ctl);
 }
 
