@@ -4571,7 +4571,7 @@ libxlDomainGetSchedulerParametersFlags(virDomainPtr dom,
         goto cleanup;
 
     if (*nparams > 1) {
-        if (virTypedParameterAssign(&params[0], VIR_DOMAIN_SCHEDULER_CAP,
+        if (virTypedParameterAssign(&params[1], VIR_DOMAIN_SCHEDULER_CAP,
                                     VIR_TYPED_PARAM_UINT, sc_info.cap) < 0)
             goto cleanup;
     }
