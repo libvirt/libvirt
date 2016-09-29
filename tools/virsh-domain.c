@@ -6280,6 +6280,36 @@ static const vshCmdOptDef opts_vcpuinfo[] = {
     {.name = NULL}
 };
 
+
+static int
+virshVcpuinfoPrintAffinity(vshControl *ctl,
+                           const unsigned char *cpumap,
+                           int maxcpu,
+                           bool pretty)
+{
+    char *str = NULL;
+    size_t i;
+    int ret = -1;
+
+    vshPrint(ctl, "%-15s ", _("CPU Affinity:"));
+    if (pretty) {
+        if (!(str = virBitmapDataToString(cpumap, VIR_CPU_MAPLEN(maxcpu))))
+            goto cleanup;
+        vshPrint(ctl, _("%s (out of %d)"), str, maxcpu);
+    } else {
+        for (i = 0; i < maxcpu; i++)
+            vshPrint(ctl, "%c", VIR_CPU_USED(cpumap, i) ? 'y' : '-');
+    }
+    vshPrint(ctl, "\n");
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(str);
+    return ret;
+}
+
+
 static bool
 cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
 {
@@ -6291,7 +6321,7 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
     size_t cpumaplen;
     bool ret = false;
     bool pretty = vshCommandOptBool(cmd, "pretty");
-    int n, m;
+    int n;
     virshControlPtr priv = ctl->privData;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
@@ -6340,23 +6370,11 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
             vshPrint(ctl, "%-15s %s\n", _("State:"), _("N/A"));
             vshPrint(ctl, "%-15s %s\n", _("CPU time"), _("N/A"));
         }
-        vshPrint(ctl, "%-15s ", _("CPU Affinity:"));
-        if (pretty) {
-            char *str;
 
-            str = virBitmapDataToString(VIR_GET_CPUMAP(cpumaps, cpumaplen, n),
-                                        cpumaplen);
-            if (!str)
-                goto cleanup;
-            vshPrint(ctl, _("%s (out of %d)"), str, maxcpu);
-            VIR_FREE(str);
-        } else {
-            for (m = 0; m < maxcpu; m++) {
-                vshPrint(ctl, "%c",
-                         VIR_CPU_USABLE(cpumaps, cpumaplen, n, m) ? 'y' : '-');
-            }
-        }
-        vshPrint(ctl, "\n");
+        if (virshVcpuinfoPrintAffinity(ctl, VIR_GET_CPUMAP(cpumaps, cpumaplen, n),
+                                       maxcpu, pretty) < 0)
+            goto cleanup;
+
         if (n < (ncpus - 1))
             vshPrint(ctl, "\n");
     }
