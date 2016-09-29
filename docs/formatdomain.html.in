@@ -1703,7 +1703,7 @@
           <td>hidden</td>
           <td>Hide the KVM hypervisor from standard MSR based discovery</td>
           <td>on, off</td>
-          <td><span class="since">2.1.0 (QEMU only)</span></td>
+          <td><span class="since">1.2.8 (QEMU 2.1.0)</span></td>
         </tr>
       </table>
       </dd>
