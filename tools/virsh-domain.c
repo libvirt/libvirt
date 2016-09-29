@@ -6311,6 +6311,49 @@ virshVcpuinfoPrintAffinity(vshControl *ctl,
 
 
 static bool
+virshVcpuinfoInactive(vshControl *ctl,
+                      virDomainPtr dom,
+                      int nvcpus,
+                      int maxcpu,
+                      bool pretty)
+{
+    unsigned char *cpumaps = NULL;
+    size_t cpumaplen;
+    int ncpus;
+    size_t i;
+    bool ret = false;
+
+    cpumaplen = VIR_CPU_MAPLEN(maxcpu);
+    cpumaps = vshMalloc(ctl, nvcpus * cpumaplen);
+
+    if ((ncpus = virDomainGetVcpuPinInfo(dom, nvcpus,
+                                         cpumaps, cpumaplen,
+                                         VIR_DOMAIN_AFFECT_CONFIG)) < 0)
+        goto cleanup;
+
+    for (i = 0; i < ncpus; i++) {
+        if (i != 0)
+            vshPrint(ctl, "\n");
+
+        vshPrint(ctl, "%-15s %zu\n", _("VCPU:"), i);
+        vshPrint(ctl, "%-15s %s\n", _("CPU:"), _("N/A"));
+        vshPrint(ctl, "%-15s %s\n", _("State:"), _("N/A"));
+        vshPrint(ctl, "%-15s %s\n", _("CPU time"), _("N/A"));
+
+        if (virshVcpuinfoPrintAffinity(ctl, VIR_GET_CPUMAP(cpumaps, cpumaplen, i),
+                                       maxcpu, pretty) < 0)
+            goto cleanup;
+    }
+
+    ret = true;
+
+ cleanup:
+    VIR_FREE(cpumaps);
+    return ret;
+}
+
+
+static bool
 cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainInfo info;
@@ -6343,32 +6386,22 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
         if (info.state != VIR_DOMAIN_SHUTOFF)
             goto cleanup;
 
-        /* fall back to virDomainGetVcpuPinInfo and free cpuinfo to mark this */
-        VIR_FREE(cpuinfo);
-        if ((ncpus = virDomainGetVcpuPinInfo(dom, info.nrVirtCpu,
-                                             cpumaps, cpumaplen,
-                                             VIR_DOMAIN_AFFECT_CONFIG)) < 0)
-            goto cleanup;
+        /* for offline VMs we can return pinning information */
+        ret = virshVcpuinfoInactive(ctl, dom, info.nrVirtCpu, maxcpu, pretty);
+        goto cleanup;
     }
 
     for (n = 0; n < ncpus; n++) {
-        if (cpuinfo) {
-            vshPrint(ctl, "%-15s %d\n", _("VCPU:"), cpuinfo[n].number);
-            vshPrint(ctl, "%-15s %d\n", _("CPU:"), cpuinfo[n].cpu);
-            vshPrint(ctl, "%-15s %s\n", _("State:"),
-                     virshDomainVcpuStateToString(cpuinfo[n].state));
-            if (cpuinfo[n].cpuTime != 0) {
-                double cpuUsed = cpuinfo[n].cpuTime;
+        vshPrint(ctl, "%-15s %d\n", _("VCPU:"), cpuinfo[n].number);
+        vshPrint(ctl, "%-15s %d\n", _("CPU:"), cpuinfo[n].cpu);
+        vshPrint(ctl, "%-15s %s\n", _("State:"),
+                 virshDomainVcpuStateToString(cpuinfo[n].state));
+        if (cpuinfo[n].cpuTime != 0) {
+            double cpuUsed = cpuinfo[n].cpuTime;
 
-                cpuUsed /= 1000000000.0;
+            cpuUsed /= 1000000000.0;
 
-                vshPrint(ctl, "%-15s %.1lfs\n", _("CPU time:"), cpuUsed);
-            }
-        } else {
-            vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
-            vshPrint(ctl, "%-15s %s\n", _("CPU:"), _("N/A"));
-            vshPrint(ctl, "%-15s %s\n", _("State:"), _("N/A"));
-            vshPrint(ctl, "%-15s %s\n", _("CPU time"), _("N/A"));
+            vshPrint(ctl, "%-15s %.1lfs\n", _("CPU time:"), cpuUsed);
         }
 
         if (virshVcpuinfoPrintAffinity(ctl, VIR_GET_CPUMAP(cpumaps, cpumaplen, n),
