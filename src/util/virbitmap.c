@@ -689,12 +689,12 @@ virBitmapPtr virBitmapNewCopy(virBitmapPtr src)
  * Returns a pointer to the allocated bitmap or NULL if
  * memory cannot be allocated.
  */
-virBitmapPtr virBitmapNewData(void *data, int len)
+virBitmapPtr virBitmapNewData(const void *data, int len)
 {
     virBitmapPtr bitmap;
     size_t i, j;
     unsigned long *p;
-    unsigned char *bytes = data;
+    const unsigned char *bytes = data;
 
     bitmap = virBitmapNew(len * CHAR_BIT);
     if (!bitmap)
@@ -1058,7 +1058,7 @@ virBitmapCountBits(virBitmapPtr bitmap)
  * Returns: a string representation of the data, or NULL on error
  */
 char *
-virBitmapDataToString(void *data,
+virBitmapDataToString(const void *data,
                       int len)
 {
     virBitmapPtr map = NULL;
