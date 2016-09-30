@@ -42,6 +42,7 @@
 #include "virlease.h"
 #include "viralloc.h"
 #include "virfile.h"
+#include "virtime.h"
 #include "virerror.h"
 #include "virstring.h"
 #include "virsocketaddr.h"
@@ -114,6 +115,8 @@ findLease(const char *name,
     ssize_t i, nleases;
     leaseAddress *tmpAddress = NULL;
     size_t ntmpAddress = 0;
+    time_t currtime;
+    long long expirytime;
 
     *address = NULL;
     *naddress = 0;
@@ -161,6 +164,11 @@ findLease(const char *name,
     nleases = virJSONValueArraySize(leases_array);
     DEBUG("Read %zd leases", nleases);
 
+    if ((currtime = time(NULL)) == (time_t) - 1) {
+        ERROR("Failed to get current system time");
+        goto cleanup;
+    }
+
     for (i = 0; i < nleases; i++) {
         virJSONValuePtr lease;
         const char *lease_name;
@@ -180,6 +188,18 @@ findLease(const char *name,
 
         if (STRNEQ_NULLABLE(name, lease_name))
             continue;
+
+        if (virJSONValueObjectGetNumberLong(lease, "expiry-time", &expirytime) < 0) {
+            /* A lease cannot be present without expiry-time */
+            ERROR("expiry-time field missing for %s", name);
+            goto cleanup;
+        }
+
+        /* Do not report expired lease */
+        if (expirytime < (long long) currtime) {
+            DEBUG("Skipping expired lease for %s", name);
+            continue;
+        }
 
         DEBUG("Found record for %s", lease_name);
         *found = true;
