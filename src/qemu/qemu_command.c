@@ -4266,10 +4266,8 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
                            virDomainVideoTypeToString(video->type));
             goto error;
         }
-        if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
-            qemuDomainMachineIsVirt(def)) {
+        if (!qemuDomainSupportsVideoVga(video, qemuCaps))
             model = "virtio-gpu-pci";
-        }
     } else {
         model = "qxl";
     }

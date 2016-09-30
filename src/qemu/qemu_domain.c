@@ -6244,3 +6244,15 @@ qemuDomainCheckMonitor(virQEMUDriverPtr driver,
 
     return ret;
 }
+
+
+bool
+qemuDomainSupportsVideoVga(virDomainVideoDefPtr video,
+                           virQEMUCapsPtr qemuCaps)
+{
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_VGA))
+        return false;
+
+    return true;
+}

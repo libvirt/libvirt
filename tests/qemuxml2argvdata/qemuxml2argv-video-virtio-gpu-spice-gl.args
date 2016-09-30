@@ -20,5 +20,5 @@ QEMU_AUDIO_DRV=spice \
 id=drive-ide0-0-0,cache=none \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
 -spice port=0,gl=on \
--device virtio-vga,id=video0,virgl=on,bus=pci.0,addr=0x2 \
+-device virtio-gpu-pci,id=video0,virgl=on,bus=pci.0,addr=0x2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
