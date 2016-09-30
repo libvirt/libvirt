@@ -1898,13 +1898,13 @@ qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
     int rc;
     qemuMonitorCPUInfoPtr info = NULL;
 
-    if (hotplug)
-        QEMU_CHECK_MONITOR_JSON(mon);
-    else
-        QEMU_CHECK_MONITOR(mon);
+    QEMU_CHECK_MONITOR(mon);
 
     if (VIR_ALLOC_N(info, maxvcpus) < 0)
         return -1;
+
+    if (!mon->json)
+        hotplug = false;
 
     /* initialize a few non-zero defaults */
     qemuMonitorCPUInfoClear(info, maxvcpus);
