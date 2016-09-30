@@ -57,7 +57,6 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
 {
     char *lease_entries = NULL;
     virJSONValuePtr leases_array = NULL;
-    long long currtime = 0;
     long long expirytime;
     int custom_lease_file_len = 0;
     virJSONValuePtr lease_tmp = NULL;
@@ -65,8 +64,6 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
     const char *server_duid_tmp = NULL;
     size_t i;
     int ret = -1;
-
-    currtime = (long long) time(NULL);
 
     /* Read entire contents */
     if ((custom_lease_file_len = virFileReadAll(custom_lease_file,
@@ -108,11 +105,6 @@ virLeaseReadCustomLeaseFile(virJSONValuePtr leases_array_new,
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to parse json"));
             goto cleanup;
-        }
-        /* Check whether lease has expired or not */
-        if (expirytime < currtime) {
-            i++;
-            continue;
         }
 
         /* Check whether lease has to be included or not */
