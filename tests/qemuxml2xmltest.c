@@ -611,6 +611,7 @@ mymain(void)
     DO_TEST("usb-redir-filter-version", NONE);
     DO_TEST("blkdeviotune", NONE);
     DO_TEST("blkdeviotune-max", NONE);
+    DO_TEST("blkdeviotune-group-num", NONE);
     DO_TEST("blkdeviotune-max-length", NONE);
     DO_TEST("controller-usb-order", NONE);
 

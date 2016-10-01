@@ -7401,6 +7401,9 @@ virDomainDiskDefIotuneParse(virDomainDiskDefPtr def,
     PARSE_IOTUNE(read_iops_sec_max_length);
     PARSE_IOTUNE(write_iops_sec_max_length);
 
+    def->blkdeviotune.group_name =
+        virXPathString("string(./iotune/group_name)", ctxt);
+
     if ((def->blkdeviotune.total_bytes_sec &&
          def->blkdeviotune.read_bytes_sec) ||
         (def->blkdeviotune.total_bytes_sec &&
@@ -20630,6 +20633,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
         def->blkdeviotune.read_iops_sec_max ||
         def->blkdeviotune.write_iops_sec_max ||
         def->blkdeviotune.size_iops_sec ||
+        def->blkdeviotune.group_name ||
         def->blkdeviotune.total_bytes_sec_max_length ||
         def->blkdeviotune.read_bytes_sec_max_length ||
         def->blkdeviotune.write_bytes_sec_max_length ||
@@ -20656,6 +20660,11 @@ virDomainDiskDefFormat(virBufferPtr buf,
         if (def->blkdeviotune.size_iops_sec) {
             virBufferAsprintf(buf, "<size_iops_sec>%llu</size_iops_sec>\n",
                               def->blkdeviotune.size_iops_sec);
+        }
+
+        if (def->blkdeviotune.group_name) {
+            virBufferEscapeString(buf, "<group_name>%s</group_name>\n",
+                                  def->blkdeviotune.group_name);
         }
 
         FORMAT_IOTUNE(total_bytes_sec_max_length);

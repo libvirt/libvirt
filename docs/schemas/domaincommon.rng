@@ -4997,6 +4997,11 @@
             <data type="unsignedLong"/>
           </element>
         </optional>
+        <optional>
+          <element name="group_name">
+            <text/>
+          </element>
+        </optional>
         <choice>
           <element name="total_bytes_sec_max_length">
             <data type="unsignedLong"/>

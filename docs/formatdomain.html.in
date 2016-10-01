@@ -2622,6 +2622,17 @@
             <span class="since">Throughput limits since 1.2.11 and QEMU 1.7</span>
           </p>
           </dd>
+          <dt><code>group_name</code></dt>
+          <dd>The optional <code>group_name</code> provides the cability
+            to share I/O throttling quota between multiple drives. This
+            prevents end-users from circumventing a hosting provider's
+            throttling policy by splitting 1 large drive in N small drives
+            and getting N times the normal throttling quota. Any name may
+            be used.
+          <p>
+            <span class="since">group_name since 3.0.0 and QEMU 2.4</span>
+          </p>
+          </dd>
           <dt><code>total_bytes_sec_max_length</code></dt>
           <dd>The optional <code>total_bytes_sec_max_length</code>
             element is the maximum duration in seconds for the
