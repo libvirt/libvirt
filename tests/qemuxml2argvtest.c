@@ -1570,6 +1570,10 @@ mymain(void)
     DO_TEST("blkdeviotune-max",
             QEMU_CAPS_DRIVE_IOTUNE,
             QEMU_CAPS_DRIVE_IOTUNE_MAX);
+    DO_TEST("blkdeviotune-group-num",
+            QEMU_CAPS_DRIVE_IOTUNE,
+            QEMU_CAPS_DRIVE_IOTUNE_MAX,
+            QEMU_CAPS_DRIVE_IOTUNE_GROUP);
     DO_TEST("blkdeviotune-max-length",
             QEMU_CAPS_DRIVE_IOTUNE,
             QEMU_CAPS_DRIVE_IOTUNE_MAX,

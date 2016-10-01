@@ -1790,6 +1790,15 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         goto error;
     }
 
+    /* block I/O group 2.4 */
+    if (disk->blkdeviotune.group_name &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_GROUP)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("the block I/O throttling group parameter is "
+                         "not supported with this QEMU binary"));
+        goto error;
+    }
+
     /* block I/O throttling length 2.6 */
     if ((disk->blkdeviotune.total_bytes_sec_max_length ||
          disk->blkdeviotune.read_bytes_sec_max_length ||
@@ -1844,6 +1853,10 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
     IOTUNE_ADD(write_iops_sec_max, "iops-write-max");
 
     IOTUNE_ADD(size_iops_sec, "iops-size");
+    if (disk->blkdeviotune.group_name) {
+        virBufferEscapeString(&opt, ",throttling.group=%s",
+                              disk->blkdeviotune.group_name);
+    }
 
     IOTUNE_ADD(total_bytes_sec_max_length, "bps-total-max-length");
     IOTUNE_ADD(read_bytes_sec_max_length, "bps-read-max-length");
