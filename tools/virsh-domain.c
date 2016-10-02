@@ -1263,6 +1263,10 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
      .type = VSH_OT_INT,
      .help = N_("I/O size in bytes")
     },
+    {.name = "group_name",
+     .type = VSH_OT_STRING,
+     .help = N_("group name to share I/O quota between multiple drives")
+    },
     {.name = "total_bytes_sec_max_length",
      .type = VSH_OT_ALIAS,
      .help = "total-bytes-sec-max-length"
@@ -1322,6 +1326,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom = NULL;
     const char *name, *disk;
+    const char *group_name = NULL;
     unsigned long long value;
     int nparams = 0;
     int maxparams = 0;
@@ -1392,6 +1397,18 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     VSH_ADD_IOTUNE(read-iops-sec-max-length, READ_IOPS_SEC_MAX_LENGTH);
     VSH_ADD_IOTUNE(write-iops-sec-max-length, WRITE_IOPS_SEC_MAX_LENGTH);
 #undef VSH_ADD_IOTUNE
+
+    rv = vshCommandOptStringReq(ctl, cmd, "group_name", &group_name);
+    if (rv < 0) {
+        vshError(ctl, "%s", _("Unable to parse group parameter"));
+        goto cleanup;
+    } else if (rv > 0) {
+        if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME,
+                                    group_name) < 0)
+            goto save_error;
+    }
+
 
     if (nparams == 0) {
         if (virDomainGetBlockIoTune(dom, NULL, NULL, &nparams, flags) != 0) {
