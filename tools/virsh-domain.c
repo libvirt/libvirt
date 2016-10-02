@@ -1300,122 +1300,43 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "device", &disk) < 0)
         goto cleanup;
 
-    if ((rv = vshCommandOptScaledInt(ctl, cmd, "total-bytes-sec", &value, 1, ULLONG_MAX)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC,
-                                    value) < 0)
-            goto save_error;
-    }
+#define VSH_ADD_IOTUNE_SCALED(PARAM, CONST)                                    \
+    if ((rv = vshCommandOptScaledInt(ctl, cmd, #PARAM, &value,                 \
+                                     1, ULLONG_MAX)) < 0) {                    \
+        goto interror;                                                         \
+    } else if (rv > 0) {                                                       \
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,             \
+                                    VIR_DOMAIN_BLOCK_IOTUNE_##CONST,           \
+                                    value) < 0)                                \
+            goto save_error;                                                   \
+    }                                                                          \
 
-    if ((rv = vshCommandOptScaledInt(ctl, cmd, "read-bytes-sec", &value, 1, ULLONG_MAX)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC,
-                                    value) < 0)
-            goto save_error;
-    }
+    VSH_ADD_IOTUNE_SCALED(total-bytes-sec, TOTAL_BYTES_SEC);
+    VSH_ADD_IOTUNE_SCALED(read-bytes-sec, READ_BYTES_SEC);
+    VSH_ADD_IOTUNE_SCALED(write-bytes-sec, WRITE_BYTES_SEC);
+    VSH_ADD_IOTUNE_SCALED(total-bytes-sec-max, TOTAL_BYTES_SEC_MAX);
+    VSH_ADD_IOTUNE_SCALED(read-bytes-sec-max, READ_BYTES_SEC_MAX);
+    VSH_ADD_IOTUNE_SCALED(write-bytes-sec-max, WRITE_BYTES_SEC_MAX);
+#undef VSH_ADD_IOTUNE_SCALED
 
-    if ((rv = vshCommandOptScaledInt(ctl, cmd, "write-bytes-sec", &value, 1, ULLONG_MAX)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC,
-                                    value) < 0)
-            goto save_error;
-    }
+#define VSH_ADD_IOTUNE(PARAM, CONST)                                           \
+    if ((rv = vshCommandOptULongLong(ctl, cmd, #PARAM, &value)) < 0) {         \
+        goto interror;                                                         \
+    } else if (rv > 0) {                                                       \
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,             \
+                                    VIR_DOMAIN_BLOCK_IOTUNE_##CONST,           \
+                                    value) < 0)                                \
+            goto save_error;                                                   \
+    }                                                                          \
 
-    if ((rv = vshCommandOptScaledInt(ctl, cmd, "total-bytes-sec-max", &value, 1, ULLONG_MAX)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX,
-                                    value) < 0)
-            goto save_error;
-    }
-
-    if ((rv = vshCommandOptScaledInt(ctl, cmd, "read-bytes-sec-max", &value, 1, ULLONG_MAX)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX,
-                                    value) < 0)
-            goto save_error;
-    }
-
-    if ((rv = vshCommandOptScaledInt(ctl, cmd, "write-bytes-sec-max", &value, 1, ULLONG_MAX)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX,
-                                    value) < 0)
-            goto save_error;
-    }
-
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "total-iops-sec", &value)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC,
-                                    value) < 0)
-            goto save_error;
-    }
-
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "read-iops-sec", &value)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC,
-                                    value) < 0)
-            goto save_error;
-    }
-
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "write-iops-sec", &value)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC,
-                                    value) < 0)
-            goto save_error;
-    }
-
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "write-iops-sec-max", &value)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX,
-                                    value) < 0)
-            goto save_error;
-    }
-
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "read-iops-sec-max", &value)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX,
-                                    value) < 0)
-            goto save_error;
-    }
-
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "total-iops-sec-max", &value)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX,
-                                    value) < 0)
-            goto save_error;
-    }
-
-    if ((rv = vshCommandOptULongLong(ctl, cmd, "size-iops-sec", &value)) < 0) {
-        goto interror;
-    } else if (rv > 0) {
-        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
-                                    VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC,
-                                    value) < 0)
-            goto save_error;
-    }
+    VSH_ADD_IOTUNE(total-iops-sec, TOTAL_IOPS_SEC);
+    VSH_ADD_IOTUNE(read-iops-sec, READ_IOPS_SEC);
+    VSH_ADD_IOTUNE(write-iops-sec, WRITE_IOPS_SEC);
+    VSH_ADD_IOTUNE(total-iops-sec-max, TOTAL_IOPS_SEC_MAX);
+    VSH_ADD_IOTUNE(read-iops-sec-max, READ_IOPS_SEC_MAX);
+    VSH_ADD_IOTUNE(write-iops-sec-max, WRITE_IOPS_SEC_MAX);
+    VSH_ADD_IOTUNE(size-iops-sec, SIZE_IOPS_SEC);
+#undef VSH_ADD_IOTUNE
 
     if (nparams == 0) {
         if (virDomainGetBlockIoTune(dom, NULL, NULL, &nparams, flags) != 0) {
