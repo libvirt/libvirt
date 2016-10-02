@@ -1135,6 +1135,10 @@ command.
 [[I<total-iops-sec>] | [I<read-iops-sec>] [I<write-iops-sec>]]
 [[I<total-bytes-sec-max>] | [I<read-bytes-sec-max>] [I<write-bytes-sec-max>]]
 [[I<total-iops-sec-max>] | [I<read-iops-sec-max>] [I<write-iops-sec-max>]]
+[[I<total-bytes-sec-max-length>] |
+[I<read-bytes-sec-max-length>] [I<write-bytes-sec-max-length>]]
+[[I<total-iops-sec-max-length>] |
+[I<read-iops-sec-max-length>] [I<write-iops-sec-max-length>]]
 [I<size-iops-sec>]
 
 Set or query the block disk io parameters for a block device of I<domain>.
@@ -1162,6 +1166,18 @@ integer, the default being bytes per second if no suffix is specified.
 I<--total-iops-sec-max> specifies maximum total I/O operations limit per second.
 I<--read-iops-sec-max> specifies maximum read I/O operations limit per second.
 I<--write-iops-sec-max> specifies maximum write I/O operations limit per second.
+I<--total-bytes-sec-max-length> specifies duration in seconds to allow maximum
+total throughput limit.
+I<--read-bytes-sec-max-length> specifies duration in seconds to allow maximum
+read throughput limit.
+I<--write-bytes-sec-max-length> specifies duration in seconds to allow maximum
+write throughput limit.
+I<--total-iops-sec-max-length> specifies duration in seconds to allow maximum
+total I/O operations limit.
+I<--read-iops-sec-max-length> specifies duration in seconds to allow maximum
+read I/O operations limit.
+I<--write-iops-sec-max-length> specifies duration in seconds to allow maximum
+write I/O operations limit.
 I<--size-iops-sec> specifies size I/O operations limit per second.
 
 Older versions of virsh only accepted these options with underscore
@@ -1171,6 +1187,11 @@ Bytes and iops values are independent, but setting only one value (such
 as --read-bytes-sec) resets the other two in that category to unlimited.
 An explicit 0 also clears any limit.  A non-zero value for a given total
 cannot be mixed with non-zero values for read or write.
+
+It is up to the hypervisor to determine how to handle the length values.
+For the qemu hypervisor, if an I/O limit value or maximum value is set,
+then the default value of 1 second will be displayed. Supplying a 0 will
+reset the value back to the default.
 
 If I<--live> is specified, affect a running guest.
 If I<--config> is specified, affect the next boot of a persistent guest.

@@ -1263,6 +1263,54 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
      .type = VSH_OT_INT,
      .help = N_("I/O size in bytes")
     },
+    {.name = "total_bytes_sec_max_length",
+     .type = VSH_OT_ALIAS,
+     .help = "total-bytes-sec-max-length"
+    },
+    {.name = "total-bytes-sec-max-length",
+     .type = VSH_OT_INT,
+     .help = N_("duration in seconds to allow total max bytes")
+    },
+    {.name = "read_bytes_sec_max_length",
+     .type = VSH_OT_ALIAS,
+     .help = "read-bytes-sec-max-length"
+    },
+    {.name = "read-bytes-sec-max-length",
+     .type = VSH_OT_INT,
+     .help = N_("duration in seconds to allow read max bytes")
+    },
+    {.name = "write_bytes_sec_max_length",
+     .type = VSH_OT_ALIAS,
+     .help = "write-bytes-sec-max-length"
+    },
+    {.name = "write-bytes-sec-max-length",
+     .type = VSH_OT_INT,
+     .help = N_("duration in seconds to allow write max bytes")
+    },
+    {.name = "total_iops_sec_max_length",
+     .type = VSH_OT_ALIAS,
+     .help = "total-iops-sec-max-length"
+    },
+    {.name = "total-iops-sec-max-length",
+     .type = VSH_OT_INT,
+     .help = N_("duration in seconds to allow total I/O operations max")
+    },
+    {.name = "read_iops_sec_max_length",
+     .type = VSH_OT_ALIAS,
+     .help = "read-iops-sec-max-length"
+    },
+    {.name = "read-iops-sec-max-length",
+     .type = VSH_OT_INT,
+     .help = N_("duration in seconds to allow read I/O operations max")
+    },
+    {.name = "write_iops_sec_max_length",
+     .type = VSH_OT_ALIAS,
+     .help = "write-iops-sec-max-length"
+    },
+    {.name = "write-iops-sec-max-length",
+     .type = VSH_OT_INT,
+     .help = N_("duration in seconds to allow write I/O operations max")
+    },
     VIRSH_COMMON_OPT_DOMAIN_CONFIG,
     VIRSH_COMMON_OPT_DOMAIN_LIVE,
     VIRSH_COMMON_OPT_DOMAIN_CURRENT,
@@ -1336,6 +1384,13 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     VSH_ADD_IOTUNE(read-iops-sec-max, READ_IOPS_SEC_MAX);
     VSH_ADD_IOTUNE(write-iops-sec-max, WRITE_IOPS_SEC_MAX);
     VSH_ADD_IOTUNE(size-iops-sec, SIZE_IOPS_SEC);
+
+    VSH_ADD_IOTUNE(total-bytes-sec-max-length, TOTAL_BYTES_SEC_MAX_LENGTH);
+    VSH_ADD_IOTUNE(read-bytes-sec-max-length, READ_BYTES_SEC_MAX_LENGTH);
+    VSH_ADD_IOTUNE(write-bytes-sec-max-length, WRITE_BYTES_SEC_MAX_LENGTH);
+    VSH_ADD_IOTUNE(total-iops-sec-max-length, TOTAL_IOPS_SEC_MAX_LENGTH);
+    VSH_ADD_IOTUNE(read-iops-sec-max-length, READ_IOPS_SEC_MAX_LENGTH);
+    VSH_ADD_IOTUNE(write-iops-sec-max-length, WRITE_IOPS_SEC_MAX_LENGTH);
 #undef VSH_ADD_IOTUNE
 
     if (nparams == 0) {
