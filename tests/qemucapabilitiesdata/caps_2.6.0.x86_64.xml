@@ -193,9 +193,9 @@
   <flag name='drive-detect-zeroes'/>
   <flag name='tls-creds-x509'/>
   <flag name='display'/>
-  <flag name='intel-iommu'/>
   <flag name='smm'/>
   <flag name='virtio-pci-disable-legacy'/>
+  <flag name='machine-iommu'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

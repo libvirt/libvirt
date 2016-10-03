@@ -344,6 +344,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "query-hotpluggable-cpus",
 
               "virtio-net.rx_queue_size", /* 235 */
+              "machine-iommu",
     );
 
 
@@ -3803,6 +3804,17 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
         goto cleanup;
     if (virQEMUCapsProbeQMPMigrationCapabilities(qemuCaps, mon) < 0)
         goto cleanup;
+
+    /* 'intel-iommu' shows up as a device since 2.2.0, but can
+     * not be used with -device until 2.7.0. Before that it
+     * requires -machine iommu=on. So we must clear the device
+     * capability we detected on older QEMUs
+     */
+    if (qemuCaps->version < 2007000 &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU)) {
+        virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU);
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU);
+    }
 
     /* GIC capabilities, eg. available GIC versions */
     if ((qemuCaps->arch == VIR_ARCH_AARCH64 ||

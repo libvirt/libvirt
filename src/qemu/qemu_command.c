@@ -6414,6 +6414,9 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
     if (!def->iommu)
         return 0;
 
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU))
+        return 0; /* Already handled via -machine */
+
     switch (def->iommu->model) {
     case VIR_DOMAIN_IOMMU_MODEL_INTEL:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU)) {
@@ -7041,6 +7044,25 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
                     virBufferAsprintf(&buf, ",gic-version=%s",
                                       virGICVersionTypeToString(def->gic_version));
                 }
+            }
+        }
+
+        /* We don't report errors on missing cap here - -device code will do that */
+        if (def->iommu &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU)) {
+            switch (def->iommu->model) {
+            case VIR_DOMAIN_IOMMU_MODEL_INTEL:
+                if (!qemuDomainMachineIsQ35(def)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("IOMMU device: '%s' is only supported with "
+                                     "Q35 machines"),
+                                   virDomainIOMMUModelTypeToString(def->iommu->model));
+                    return -1;
+                }
+                virBufferAddLit(&buf, ",iommu=on");
+                break;
+            case VIR_DOMAIN_IOMMU_MODEL_LAST:
+                break;
             }
         }
 
