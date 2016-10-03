@@ -1822,6 +1822,21 @@ qemuMonitorJSONGetBlockDev(virJSONValuePtr devices,
 }
 
 
+static const char *
+qemuMonitorJSONGetBlockDevDevice(virJSONValuePtr dev)
+{
+    const char *thisdev;
+
+    if (!(thisdev = virJSONValueObjectGetString(dev, "device"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-block device entry was not in expected format"));
+        return NULL;
+    }
+
+    return thisdev;
+}
+
+
 int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
                                 virHashTablePtr table)
 {
@@ -1842,11 +1857,8 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
         if (!(dev = qemuMonitorJSONGetBlockDev(devices, i)))
             goto cleanup;
 
-        if ((thisdev = virJSONValueObjectGetString(dev, "device")) == NULL) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("block info device entry was not in expected format"));
+        if (!(thisdev = qemuMonitorJSONGetBlockDevDevice(dev)))
             goto cleanup;
-        }
 
         thisdev = qemuAliasDiskDriveSkipPrefix(thisdev);
 
@@ -2102,12 +2114,8 @@ qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
         if (!(dev = qemuMonitorJSONGetBlockDev(devices, i)))
             goto cleanup;
 
-        if (!(dev_name = virJSONValueObjectGetString(dev, "device"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("query-block device entry was not "
-                             "in expected format"));
+        if (!(dev_name = qemuMonitorJSONGetBlockDevDevice(dev)))
             goto cleanup;
-        }
 
         /* drive may be empty */
         if (!(inserted = virJSONValueObjectGetObject(dev, "inserted")) ||
@@ -4013,11 +4021,8 @@ qemuMonitorJSONDiskNameLookup(qemuMonitorPtr mon,
         if (!(dev = qemuMonitorJSONGetBlockDev(devices, i)))
             goto cleanup;
 
-        if (!(thisdev = virJSONValueObjectGetString(dev, "device"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("block info device entry was not in expected format"));
+        if (!(thisdev = qemuMonitorJSONGetBlockDevDevice(dev)))
             goto cleanup;
-        }
 
         if (STREQ(thisdev, device)) {
             if ((inserted = virJSONValueObjectGetObject(dev, "inserted")) &&
