@@ -1807,6 +1807,21 @@ qemuMonitorJSONQueryBlock(qemuMonitorPtr mon)
 }
 
 
+static virJSONValuePtr
+qemuMonitorJSONGetBlockDev(virJSONValuePtr devices,
+                           size_t idx)
+{
+    virJSONValuePtr dev = virJSONValueArrayGet(devices, idx);
+
+    if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-block device entry was not in expected format"));
+        return NULL;
+    }
+    return dev;
+}
+
+
 int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
                                 virHashTablePtr table)
 {
@@ -1819,16 +1834,13 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
         return -1;
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
-        virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
+        virJSONValuePtr dev;
         struct qemuDomainDiskInfo *info;
         const char *thisdev;
         const char *status;
 
-        if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("block info device entry was not in expected format"));
+        if (!(dev = qemuMonitorJSONGetBlockDev(devices, i)))
             goto cleanup;
-        }
 
         if ((thisdev = virJSONValueObjectGetString(dev, "device")) == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -2082,17 +2094,13 @@ qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitorPtr mon,
         return -1;
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
-        virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
+        virJSONValuePtr dev;
         virJSONValuePtr inserted;
         virJSONValuePtr image;
         const char *dev_name;
 
-        if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("query-block device entry was not "
-                             "in expected format"));
+        if (!(dev = qemuMonitorJSONGetBlockDev(devices, i)))
             goto cleanup;
-        }
 
         if (!(dev_name = virJSONValueObjectGetString(dev, "device"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -3997,16 +4005,13 @@ qemuMonitorJSONDiskNameLookup(qemuMonitorPtr mon,
         return NULL;
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
-        virJSONValuePtr dev = virJSONValueArrayGet(devices, i);
+        virJSONValuePtr dev;
         virJSONValuePtr inserted;
         virJSONValuePtr image;
         const char *thisdev;
 
-        if (!dev || dev->type != VIR_JSON_TYPE_OBJECT) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("block info device entry was not in expected format"));
+        if (!(dev = qemuMonitorJSONGetBlockDev(devices, i)))
             goto cleanup;
-        }
 
         if (!(thisdev = virJSONValueObjectGetString(dev, "device"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
