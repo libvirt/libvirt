@@ -6386,6 +6386,9 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (active && virAtomicIntDecAndTest(&driver->nactive) &&
         driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
+
+    qemuMonitorClose(priv->mon);
+    priv->mon = NULL;
     qemuDomainLogContextFree(logCtxt);
     VIR_FREE(seclabel);
     VIR_FREE(sec_managers);
