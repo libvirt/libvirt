@@ -104,7 +104,7 @@ const REMOTE_DOMAIN_BLKIO_PARAMETERS_MAX = 16;
 const REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX = 16;
 
 /* Upper limit on list of blockio tuning parameters. */
-const REMOTE_DOMAIN_BLOCK_IO_TUNE_PARAMETERS_MAX = 16;
+const REMOTE_DOMAIN_BLOCK_IO_TUNE_PARAMETERS_MAX = 32;
 
 /* Upper limit on list of numa parameters. */
 const REMOTE_DOMAIN_NUMA_PARAMETERS_MAX = 16;
