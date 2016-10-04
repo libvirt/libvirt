@@ -3380,8 +3380,7 @@ qemuDomainDefCopy(virQEMUDriverPtr driver,
 
     if (!(ret = virDomainDefParseString(xml, caps, driver->xmlopt, NULL,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
-                                        VIR_DOMAIN_DEF_PARSE_SKIP_POST_PARSE)))
+                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto cleanup;
 
  cleanup:
