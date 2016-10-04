@@ -1628,7 +1628,6 @@ int main(int argc, char **argv) {
     virObjectUnref(qemuProgram);
     virObjectUnref(adminProgram);
     virNetDaemonClose(dmn);
-    virObjectUnref(dmn);
     virObjectUnref(srv);
     virObjectUnref(srvAdm);
     virNetlinkShutdown();
@@ -1658,6 +1657,9 @@ int main(int argc, char **argv) {
         driversInitialized = false;
         virStateCleanup();
     }
+    /* Now that the hypervisor shutdown inhibition functions that use
+     * 'dmn' as a parameter are done, we can finally unref 'dmn' */
+    virObjectUnref(dmn);
 
     return ret;
 }
