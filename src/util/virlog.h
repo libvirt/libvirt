@@ -244,5 +244,7 @@ virLogOutputPtr virLogParseOutput(const char *src) ATTRIBUTE_NONNULL(1);
 virLogFilterPtr virLogParseFilter(const char *src) ATTRIBUTE_NONNULL(1);
 int virLogParseOutputs(const char *src,
                        virLogOutputPtr **outputs) ATTRIBUTE_NONNULL(1);
+int virLogParseFilters(const char *src,
+                       virLogFilterPtr **filters) ATTRIBUTE_NONNULL(1);
 
 #endif

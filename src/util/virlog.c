@@ -2099,3 +2099,53 @@ virLogParseOutputs(const char *src, virLogOutputPtr **outputs)
     virStringFreeList(strings);
     return ret;
 }
+
+/**
+ * virLogParseFilters:
+ * @src: string defining a (set of) filter(s)
+ * @filters: pointer to a list where the individual filters shall be parsed
+ *
+ * This method parses @src and produces a list of individual filters which then
+ * needs to be passed to virLogDefineFilters in order to be set and taken into
+ * effect.
+ * Multiple filters can be defined in a single @src, they just need to be
+ * separated by spaces.
+ *
+ * Returns the number of filter parsed or -1 in case of error.
+ */
+int
+virLogParseFilters(const char *src, virLogFilterPtr **filters)
+{
+    int ret = -1;
+    size_t nfilters = 0;
+    size_t i, count;
+    char **strings = NULL;
+    virLogFilterPtr filter = NULL;
+    virLogFilterPtr *list = NULL;
+
+    VIR_DEBUG("filters=%s", src);
+
+    if (!(strings = virStringSplitCount(src, " ", 0, &count)))
+        goto cleanup;
+
+    for (i = 0; i < count; i++) {
+        /* virStringSplit may return empty strings */
+        if (STREQ(strings[i], ""))
+            continue;
+
+        if (!(filter = virLogParseFilter(strings[i])))
+            goto cleanup;
+
+        if (VIR_APPEND_ELEMENT(list, nfilters, filter)) {
+            virLogFilterFree(filter);
+            goto cleanup;
+        }
+    }
+
+    ret = nfilters;
+    *filters = list;
+    list = NULL;
+ cleanup:
+    virStringFreeList(strings);
+    return ret;
+}
