@@ -2619,7 +2619,6 @@ vshReadlineOptionsGenerator(const char *text, int state, const vshCmdDef *cmd_pa
         return NULL;
 
     while ((name = cmd->opts[list_index].name)) {
-        const vshCmdOptDef *opt = &cmd->opts[list_index];
         char *res;
 
         list_index++;
@@ -2648,7 +2647,7 @@ vshReadlineParse(const char *text, int state)
     static vshCommandParser parser, sanitizer;
     vshCommandToken tk;
     static const vshCmdDef *cmd;
-    const vshCmdOptDef *opt;
+    const vshCmdOptDef *opt = NULL;
     char *tkdata, *optstr, *const_tkdata, *completed_name;
     char *res = NULL;
     static char *ctext, *sanitized_text;
