@@ -2039,3 +2039,63 @@ virLogParseFilter(const char *src)
     virStringFreeList(tokens);
     return ret;
 }
+
+/**
+ * virLogParseOutputs:
+ * @src: string defining a (set of) output(s)
+ * @outputs: user-supplied list where parsed outputs from @src shall be stored
+ *
+ * Parses a (set of) output(s) into a list of logging objects. Multiple outputs
+ * can be defined within @src string, they just need to be separated by spaces.
+ * If running in setuid mode, then only the 'stderr' output will be allowed.
+ *
+ * Returns the number of outputs parsed or -1 in case of error.
+ */
+int
+virLogParseOutputs(const char *src, virLogOutputPtr **outputs)
+{
+    int ret = -1;
+    int at = -1;
+    size_t noutputs = 0;
+    size_t i, count;
+    char **strings = NULL;
+    virLogOutputPtr output = NULL;
+    virLogOutputPtr *list = NULL;
+
+    VIR_DEBUG("outputs=%s", src);
+
+    if (!(strings = virStringSplitCount(src, " ", 0, &count)))
+        goto cleanup;
+
+    for (i = 0; i < count; i++) {
+        /* virStringSplit may return empty strings */
+        if (STREQ(strings[i], ""))
+            continue;
+
+        if (!(output = virLogParseOutput(strings[i])))
+            goto cleanup;
+
+        /* let's check if a duplicate output does not already exist in which
+         * case we need to replace it with its last occurrence, however, rather
+         * than first deleting the duplicate and then adding the new one, the
+         * new output object is added first so in case of an error we don't
+         * lose the old entry
+         */
+        at = virLogFindOutput(list, noutputs, output->dest, output->name);
+        if (VIR_APPEND_ELEMENT(list, noutputs, output) < 0) {
+            virLogOutputFree(output);
+            goto cleanup;
+        }
+        if (at >= 0) {
+            virLogOutputFree(list[at]);
+            VIR_DELETE_ELEMENT(list, at, noutputs);
+        }
+    }
+
+    ret = noutputs;
+    *outputs = list;
+    list = NULL;
+ cleanup:
+    virStringFreeList(strings);
+    return ret;
+}
