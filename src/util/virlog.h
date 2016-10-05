@@ -241,5 +241,6 @@ int virLogDefineOutputs(virLogOutputPtr *outputs,
                         size_t noutputs) ATTRIBUTE_NONNULL(1);
 int virLogDefineFilters(virLogFilterPtr *filters, size_t nfilters);
 virLogOutputPtr virLogParseOutput(const char *src) ATTRIBUTE_NONNULL(1);
+virLogFilterPtr virLogParseFilter(const char *src) ATTRIBUTE_NONNULL(1);
 
 #endif

@@ -1962,3 +1962,80 @@ virLogParseOutput(const char *src)
     virStringFreeList(tokens);
     return ret;
 }
+
+
+/**
+ * virLogParseFilter:
+ * @src: string defining a single filter
+ *
+ * The format of @src should be one of the following:
+ *    x:name - filter affecting all modules which match 'name'
+ *    x:+name
+ *
+ *      '+' - hints the logger to also include a stack trace for every message
+ *      'name' - match string which either matches a name of a directory in
+ *               libvirt's source tree which in turn affects all modules in
+ *               that directory or it can matches a specific module within a
+ *               directory, e.g. 'util.file' will only affect messages from
+ *               module virfile.c inside src/util/ directory
+ *      'x' - minimal priority level which acts as a filter meaning that only
+ *            messages with priority level greater than or equal to 'x' will be
+ *            sent to output; supported values for 'x' are as follows:
+ *              1: DEBUG
+ *              2: INFO
+ *              3: WARNING
+ *              4: ERROR
+ *
+ * Parses @src string into a logging object type.
+ *
+ * Returns a newly created logging object from @src on success or NULL in case
+ * of an error.
+ */
+virLogFilterPtr
+virLogParseFilter(const char *src)
+{
+    virLogFilterPtr ret = NULL;
+    size_t count = 0;
+    virLogPriority prio;
+    char **tokens = NULL;
+    unsigned int flags = 0;
+    char *match = NULL;
+
+    VIR_DEBUG("filter=%s", src);
+
+    /* split our format prio:match_str to tokens and parse them individually */
+    if (!(tokens = virStringSplitCount(src, ":", 0, &count)) || count != 2) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Malformed format for filter '%s'"), src);
+        return NULL;
+    }
+
+    if (virStrToLong_uip(tokens[0], NULL, 10, &prio) < 0 ||
+        (prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Invalid priority '%s' for output '%s'"),
+                       tokens[0], src);
+        goto cleanup;
+    }
+
+    match = tokens[1];
+    if (match[0] == '+') {
+        flags |= VIR_LOG_STACK_TRACE;
+        match++;
+    }
+
+    /* match string cannot comprise just from a single '+' */
+    if (!*match) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Invalid match string '%s'"), tokens[1]);
+
+        goto cleanup;
+    }
+
+    if (!(ret = virLogFilterNew(match, prio, flags)))
+        goto cleanup;
+
+ cleanup:
+    virStringFreeList(tokens);
+    return ret;
+}
