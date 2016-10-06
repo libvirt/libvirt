@@ -505,7 +505,7 @@ int virIdentitySetUNIXProcessID(virIdentityPtr ident,
 {
     char *val;
     int ret;
-    if (virAsprintf(&val, "%llu", (unsigned long long)pid) < 0)
+    if (virAsprintf(&val, "%lld", (long long) pid) < 0)
         return -1;
     ret = virIdentitySetAttr(ident,
                              VIR_IDENTITY_ATTR_UNIX_PROCESS_ID,

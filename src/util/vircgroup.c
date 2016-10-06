@@ -548,13 +548,13 @@ virCgroupDetectPlacement(virCgroupPtr group,
     char *procfile;
 
     VIR_DEBUG("Detecting placement for pid %lld path %s",
-              (unsigned long long)pid, path);
+              (long long) pid, path);
     if (pid == -1) {
         if (VIR_STRDUP(procfile, "/proc/self/cgroup") < 0)
             goto cleanup;
     } else {
-        if (virAsprintf(&procfile, "/proc/%llu/cgroup",
-                        (unsigned long long)pid) < 0)
+        if (virAsprintf(&procfile, "/proc/%lld/cgroup",
+                        (long long) pid) < 0)
             goto cleanup;
     }
 
@@ -732,11 +732,12 @@ virCgroupDetect(virCgroupPtr group,
             return -1;
         }
 
-        VIR_DEBUG("Detected mount/mapping %zu:%s at %s in %s for pid %llu", i,
+        VIR_DEBUG("Detected mount/mapping %zu:%s at %s in %s for pid %lld",
+                  i,
                   virCgroupControllerTypeToString(i),
                   group->controllers[i].mountPoint,
                   group->controllers[i].placement,
-                  (unsigned long long)pid);
+                  (long long) pid);
     }
 
     return 0;
@@ -1235,8 +1236,7 @@ virCgroupAddTaskController(virCgroupPtr group, pid_t pid, int controller)
         return -1;
     }
 
-    return virCgroupSetValueU64(group, controller, "tasks",
-                                (unsigned long long)pid);
+    return virCgroupSetValueI64(group, controller, "tasks", pid);
 }
 
 
@@ -3506,8 +3506,8 @@ virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr pids)
             goto cleanup;
         } else {
             while (!feof(fp)) {
-                unsigned long pid_value;
-                if (fscanf(fp, "%lu", &pid_value) != 1) {
+                long pid_value;
+                if (fscanf(fp, "%ld", &pid_value) != 1) {
                     if (feof(fp))
                         break;
                     virReportSystemError(errno,
@@ -3518,12 +3518,12 @@ virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr pids)
                 if (virHashLookup(pids, (void*)pid_value))
                     continue;
 
-                VIR_DEBUG("pid=%lu", pid_value);
+                VIR_DEBUG("pid=%ld", pid_value);
                 /* Cgroups is a Linux concept, so this cast is safe.  */
                 if (kill((pid_t)pid_value, signum) < 0) {
                     if (errno != ESRCH) {
                         virReportSystemError(errno,
-                                             _("Failed to kill process %lu"),
+                                             _("Failed to kill process %ld"),
                                              pid_value);
                         goto cleanup;
                     }
@@ -3553,7 +3553,7 @@ virCgroupKillInternal(virCgroupPtr group, int signum, virHashTablePtr pids)
 static uint32_t
 virCgroupPidCode(const void *name, uint32_t seed)
 {
-    unsigned long pid_value = (unsigned long)(intptr_t)name;
+    long pid_value = (long)(intptr_t)name;
     return virHashCodeGen(&pid_value, sizeof(pid_value), seed);
 }
 

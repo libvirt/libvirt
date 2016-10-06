@@ -87,7 +87,7 @@ struct _virLockManagerSanlockPrivate {
     char *vm_name;
     unsigned char vm_uuid[VIR_UUID_BUFLEN];
     unsigned int vm_id;
-    unsigned int vm_pid;
+    int vm_pid;
     unsigned int flags;
     bool hasRWDisks;
     int res_count;
@@ -494,7 +494,7 @@ static int virLockManagerSanlockNew(virLockManagerPtr lock,
             if (VIR_STRDUP(priv->vm_name, param->value.str) < 0)
                 goto error;
         } else if (STREQ(param->key, "pid")) {
-            priv->vm_pid = param->value.ui;
+            priv->vm_pid = param->value.iv;
         } else if (STREQ(param->key, "id")) {
             priv->vm_id = param->value.ui;
         } else if (STREQ(param->key, "uri")) {

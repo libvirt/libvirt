@@ -608,8 +608,7 @@ int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)
     *npids = 0;
     *pids = NULL;
 
-    if (virAsprintf(&taskPath, "/proc/%llu/task",
-                    (unsigned long long)pid) < 0)
+    if (virAsprintf(&taskPath, "/proc/%llu/task", (long long) pid) < 0)
         goto cleanup;
 
     if (virDirOpen(&dir, taskPath) < 0)
@@ -657,7 +656,7 @@ int virProcessGetNamespaces(pid_t pid,
         int fd;
 
         if (virAsprintf(&nsfile, "/proc/%llu/ns/%s",
-                        (unsigned long long)pid,
+                        (long long) pid,
                         ns[i]) < 0)
             goto cleanup;
 
@@ -968,8 +967,7 @@ int virProcessGetStartTime(pid_t pid,
     int len;
     char **tokens = NULL;
 
-    if (virAsprintf(&filename, "/proc/%llu/stat",
-                    (unsigned long long)pid) < 0)
+    if (virAsprintf(&filename, "/proc/%llu/stat", (long long) pid) < 0)
         return -1;
 
     if ((len = virFileReadAll(filename, 1024, &buf)) < 0)
@@ -1051,8 +1049,8 @@ int virProcessGetStartTime(pid_t pid,
 {
     static int warned;
     if (virAtomicIntInc(&warned) == 1) {
-        VIR_WARN("Process start time of pid %llu not available on this platform",
-                 (unsigned long long)pid);
+        VIR_WARN("Process start time of pid %lld not available on this platform",
+                 (long long) pid);
     }
     *timestamp = 0;
     return 0;
@@ -1069,7 +1067,7 @@ static int virProcessNamespaceHelper(int errfd,
     int fd = -1;
     int ret = -1;
 
-    if (virAsprintf(&path, "/proc/%llu/ns/mnt", (unsigned long long)pid) < 0)
+    if (virAsprintf(&path, "/proc/%lld/ns/mnt", (long long) pid) < 0)
         goto cleanup;
 
     if ((fd = open(path, O_RDONLY)) < 0) {

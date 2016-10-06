@@ -328,8 +328,8 @@ virLXCDomainObjPrivateXMLFormat(virBufferPtr buf,
 {
     virLXCDomainObjPrivatePtr priv = vm->privateData;
 
-    virBufferAsprintf(buf, "<init pid='%llu'/>\n",
-                      (unsigned long long)priv->initpid);
+    virBufferAsprintf(buf, "<init pid='%lld'/>\n",
+                      (long long) priv->initpid);
 
     return 0;
 }
@@ -340,9 +340,9 @@ virLXCDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                                virDomainDefParserConfigPtr config ATTRIBUTE_UNUSED)
 {
     virLXCDomainObjPrivatePtr priv = vm->privateData;
-    unsigned long long thepid;
+    long long thepid;
 
-    if (virXPathULongLong("string(./init[1]/@pid)", ctxt, &thepid) < 0) {
+    if (virXPathLongLong("string(./init[1]/@pid)", ctxt, &thepid) < 0) {
         VIR_WARN("Failed to load init pid from state %s",
                  virGetLastErrorMessage());
         priv->initpid = 0;

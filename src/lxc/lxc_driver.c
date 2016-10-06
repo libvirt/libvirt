@@ -3438,7 +3438,7 @@ lxcDomainShutdownFlags(virDomainPtr dom,
             errno != ESRCH) {
             virReportSystemError(errno,
                                  _("Unable to send SIGTERM to init pid %llu"),
-                                 (unsigned long long)priv->initpid);
+                                 (long long) priv->initpid);
             goto endjob;
         }
     }
@@ -3521,7 +3521,7 @@ lxcDomainReboot(virDomainPtr dom,
             errno != ESRCH) {
             virReportSystemError(errno,
                                  _("Unable to send SIGTERM to init pid %llu"),
-                                 (unsigned long long)priv->initpid);
+                                 (long long) priv->initpid);
             goto endjob;
         }
     }

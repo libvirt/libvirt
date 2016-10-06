@@ -2582,8 +2582,8 @@ virGetListenFDs(void)
     }
 
     if ((pid_t)procid != getpid()) {
-        VIR_DEBUG("LISTEN_PID %s is not for us %llu",
-                  pidstr, (unsigned long long)getpid());
+        VIR_DEBUG("LISTEN_PID %s is not for us %lld",
+                  pidstr, (long long) getpid());
         return 0;
     }
 

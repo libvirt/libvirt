@@ -5444,8 +5444,8 @@ qemuProcessLaunch(virConnectPtr conn,
                            _("Domain %s didn't show up"), vm->def->name);
             rv = -1;
         }
-        VIR_DEBUG("QEMU vm=%p name=%s running with pid=%llu",
-                  vm, vm->def->name, (unsigned long long)vm->pid);
+        VIR_DEBUG("QEMU vm=%p name=%s running with pid=%lld",
+                  vm, vm->def->name, (long long) vm->pid);
     } else {
         VIR_DEBUG("QEMU vm=%p name=%s failed to spawn",
                   vm, vm->def->name);
@@ -5836,9 +5836,9 @@ qemuProcessKill(virDomainObjPtr vm, unsigned int flags)
 {
     int ret;
 
-    VIR_DEBUG("vm=%p name=%s pid=%llu flags=%x",
+    VIR_DEBUG("vm=%p name=%s pid=%lld flags=%x",
               vm, vm->def->name,
-              (unsigned long long)vm->pid, flags);
+              (long long) vm->pid, flags);
 
     if (!(flags & VIR_QEMU_PROCESS_KILL_NOCHECK)) {
         if (!virDomainObjIsActive(vm)) {
@@ -5916,10 +5916,10 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     char *timestamp;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
 
-    VIR_DEBUG("Shutting down vm=%p name=%s id=%d pid=%llu, "
+    VIR_DEBUG("Shutting down vm=%p name=%s id=%d pid=%lld, "
               "reason=%s, asyncJob=%s, flags=%x",
               vm, vm->def->name, vm->def->id,
-              (unsigned long long)vm->pid,
+              (long long) vm->pid,
               virDomainShutoffReasonTypeToString(reason),
               qemuDomainAsyncJobTypeToString(asyncJob),
               flags);
