@@ -17292,6 +17292,36 @@ qemuDomainOpenGraphicsFD(virDomainPtr dom,
     return ret;
 }
 
+
+/* If the user didn't specify bytes limits, inherit previous values;
+ * likewise if the user didn't specify iops limits.  */
+static void
+qemuDomainSetBlockIoTuneDefaults(virDomainBlockIoTuneInfoPtr newinfo,
+                                 virDomainBlockIoTuneInfoPtr oldinfo,
+                                 bool set_bytes,
+                                 bool set_iops,
+                                 bool set_bytes_max,
+                                 bool set_iops_max,
+                                 bool set_size_iops)
+{
+#define SET_IOTUNE_DEFAULTS(BOOL, FIELD)                                       \
+    if (!BOOL) {                                                               \
+        newinfo->total_##FIELD = oldinfo->total_##FIELD;                       \
+        newinfo->read_##FIELD = oldinfo->read_##FIELD;                         \
+        newinfo->write_##FIELD = oldinfo->write_##FIELD;                       \
+    }
+
+    SET_IOTUNE_DEFAULTS(set_bytes, bytes_sec);
+    SET_IOTUNE_DEFAULTS(set_bytes_max, bytes_sec_max);
+    SET_IOTUNE_DEFAULTS(set_iops, iops_sec);
+    SET_IOTUNE_DEFAULTS(set_iops_max, iops_sec_max);
+#undef SET_IOTUNE_DEFAULTS
+
+    if (!set_size_iops)
+        newinfo->size_iops_sec = oldinfo->size_iops_sec;
+}
+
+
 static int
 qemuDomainSetBlockIoTune(virDomainPtr dom,
                          const char *path,
@@ -17305,7 +17335,6 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     virDomainDefPtr def = NULL;
     virDomainDefPtr persistentDef = NULL;
     virDomainBlockIoTuneInfo info;
-    virDomainBlockIoTuneInfo *oldinfo;
     char *device = NULL;
     int ret = -1;
     size_t i;
@@ -17479,32 +17508,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         if (!(device = qemuAliasFromDisk(disk)))
             goto endjob;
 
-        /* If the user didn't specify bytes limits, inherit previous
-         * values; likewise if the user didn't specify iops
-         * limits.  */
-        oldinfo = &disk->blkdeviotune;
-        if (!set_bytes) {
-            info.total_bytes_sec = oldinfo->total_bytes_sec;
-            info.read_bytes_sec = oldinfo->read_bytes_sec;
-            info.write_bytes_sec = oldinfo->write_bytes_sec;
-        }
-        if (!set_bytes_max) {
-            info.total_bytes_sec_max = oldinfo->total_bytes_sec_max;
-            info.read_bytes_sec_max = oldinfo->read_bytes_sec_max;
-            info.write_bytes_sec_max = oldinfo->write_bytes_sec_max;
-        }
-        if (!set_iops) {
-            info.total_iops_sec = oldinfo->total_iops_sec;
-            info.read_iops_sec = oldinfo->read_iops_sec;
-            info.write_iops_sec = oldinfo->write_iops_sec;
-        }
-        if (!set_iops_max) {
-            info.total_iops_sec_max = oldinfo->total_iops_sec_max;
-            info.read_iops_sec_max = oldinfo->read_iops_sec_max;
-            info.write_iops_sec_max = oldinfo->write_iops_sec_max;
-        }
-        if (!set_size_iops)
-            info.size_iops_sec = oldinfo->size_iops_sec;
+        qemuDomainSetBlockIoTuneDefaults(&info, &disk->blkdeviotune,
+                                         set_bytes, set_iops, set_bytes_max,
+                                         set_iops_max, set_size_iops);
 
 #define CHECK_MAX(val)                                                  \
         do {                                                            \
@@ -17553,17 +17559,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                            path);
             goto endjob;
         }
-        oldinfo = &conf_disk->blkdeviotune;
-        if (!set_bytes) {
-            info.total_bytes_sec = oldinfo->total_bytes_sec;
-            info.read_bytes_sec = oldinfo->read_bytes_sec;
-            info.write_bytes_sec = oldinfo->write_bytes_sec;
-        }
-        if (!set_iops) {
-            info.total_iops_sec = oldinfo->total_iops_sec;
-            info.read_iops_sec = oldinfo->read_iops_sec;
-            info.write_iops_sec = oldinfo->write_iops_sec;
-        }
+        qemuDomainSetBlockIoTuneDefaults(&info, &conf_disk->blkdeviotune,
+                                         set_bytes, set_iops, set_bytes_max,
+                                         set_iops_max, set_size_iops);
         conf_disk->blkdeviotune = info;
         ret = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef);
         if (ret < 0)
