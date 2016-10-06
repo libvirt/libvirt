@@ -1132,10 +1132,6 @@ int virLogPriorityFromSyslog(int priority ATTRIBUTE_UNUSED)
 }
 #endif /* HAVE_SYSLOG_H */
 
-#define IS_SPACE(cur)                                                   \
-    ((*cur == ' ') || (*cur == '\t') || (*cur == '\n') ||               \
-     (*cur == '\r') || (*cur == '\\'))
-
 
 static int
 virLogParseOutput(const char *src)
