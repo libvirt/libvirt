@@ -4618,15 +4618,19 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
         goto cleanup;
 
     if (virJSONValueObjectHasKey(result, "error")) {
-        if (qemuMonitorJSONHasError(result, "DeviceNotActive"))
+        if (qemuMonitorJSONHasError(result, "DeviceNotActive")) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("No active operation on device: %s"), device);
-        else if (qemuMonitorJSONHasError(result, "NotSupported"))
+        } else if (qemuMonitorJSONHasError(result, "NotSupported")) {
             virReportError(VIR_ERR_OPERATION_INVALID,
                            _("Operation is not supported for device: %s"), device);
-        else
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unexpected error"));
+        } else {
+            virJSONValuePtr error = virJSONValueObjectGet(result, "error");
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to execute '%s', unexpected error: '%s'"),
+                           qemuMonitorJSONCommandName(cmd),
+                           qemuMonitorJSONStringifyError(error));
+        }
         goto cleanup;
     }
 
