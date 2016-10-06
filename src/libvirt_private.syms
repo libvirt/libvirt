@@ -1872,6 +1872,7 @@ virLockSpaceReleaseResourcesForOwner;
 virLogDefineFilter;
 virLogDefineOutput;
 virLogFilterFree;
+virLogFilterListFree;
 virLogGetDefaultPriority;
 virLogGetFilters;
 virLogGetNbFilters;
