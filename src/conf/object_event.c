@@ -818,7 +818,8 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
     tempQueue.events = state->queue->events;
     state->queue->count = 0;
     state->queue->events = NULL;
-    virEventUpdateTimeout(state->timer, -1);
+    if (state->timer != -1)
+        virEventUpdateTimeout(state->timer, -1);
 
     virObjectEventStateQueueDispatch(state,
                                      &tempQueue,
