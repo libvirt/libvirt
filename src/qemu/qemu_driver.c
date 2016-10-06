@@ -17377,6 +17377,18 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                                 VIR_DOMAIN_TUNABLE_BLKDEV_DISK, path) < 0)
         goto endjob;
 
+#define SET_IOTUNE_FIELD(FIELD, BOOL, CONST)                                   \
+    if (STREQ(param->field, VIR_DOMAIN_BLOCK_IOTUNE_##CONST)) {                \
+        info.FIELD = param->value.ul;                                          \
+        BOOL = true;                                                           \
+        if (virTypedParamsAddULLong(&eventParams, &eventNparams,               \
+                                    &eventMaxparams,                           \
+                                    VIR_DOMAIN_TUNABLE_BLKDEV_##CONST,         \
+                                    param->value.ul) < 0)                      \
+            goto endjob;                                                       \
+        continue;                                                              \
+    }
+
     for (i = 0; i < nparams; i++) {
         virTypedParameterPtr param = &params[i];
 
@@ -17387,124 +17399,29 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             goto endjob;
         }
 
-        if (STREQ(param->field, VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC)) {
-            info.total_bytes_sec = param->value.ul;
-            set_bytes = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC,
-                                        param->value.ul) < 0)
-                goto endjob;
-        } else if (STREQ(param->field,
-                         VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC)) {
-            info.read_bytes_sec = param->value.ul;
-            set_bytes = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC,
-                                        param->value.ul) < 0)
-                goto endjob;
-        } else if (STREQ(param->field,
-                         VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC)) {
-            info.write_bytes_sec = param->value.ul;
-            set_bytes = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC,
-                                        param->value.ul) < 0)
-                goto endjob;
-        } else if (STREQ(param->field,
-                         VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC)) {
-            info.total_iops_sec = param->value.ul;
-            set_iops = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC,
-                                        param->value.ul) < 0)
-                goto endjob;
-        } else if (STREQ(param->field,
-                         VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC)) {
-            info.read_iops_sec = param->value.ul;
-            set_iops = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC,
-                                        param->value.ul) < 0)
-                goto endjob;
-        } else if (STREQ(param->field,
-                         VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC)) {
-            info.write_iops_sec = param->value.ul;
-            set_iops = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC,
-                                        param->value.ul) < 0)
-                goto endjob;
-        } else if (STREQ(param->field,
-                         VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX)) {
-            info.total_bytes_sec_max = param->value.ul;
-            set_bytes_max = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX,
-                                        param->value.ul) < 0)
-                goto endjob;
-        } else if (STREQ(param->field,
-                         VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX)) {
-            info.read_bytes_sec_max = param->value.ul;
-            set_bytes_max = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX,
-                                        param->value.ul) < 0)
-                goto endjob;
-        } else if (STREQ(param->field,
-                         VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX)) {
-            info.write_bytes_sec_max = param->value.ul;
-            set_bytes_max = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC_MAX,
-                                        param->value.ul) < 0)
-                goto endjob;
-        } else if (STREQ(param->field,
-                         VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX)) {
-            info.total_iops_sec_max = param->value.ul;
-            set_iops_max = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC_MAX,
-                                        param->value.ul) < 0)
-                goto endjob;
-        } else if (STREQ(param->field,
-                         VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX)) {
-            info.read_iops_sec_max = param->value.ul;
-            set_iops_max = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC_MAX,
-                                        param->value.ul) < 0)
-                goto endjob;
-        } else if (STREQ(param->field,
-                         VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX)) {
-            info.write_iops_sec_max = param->value.ul;
-            set_iops_max = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC_MAX,
-                                        param->value.ul) < 0)
-                goto endjob;
-        } else if (STREQ(param->field,
-                         VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC)) {
-            info.size_iops_sec = param->value.ul;
-            set_size_iops = true;
-            if (virTypedParamsAddULLong(&eventParams, &eventNparams,
-                                        &eventMaxparams,
-                                        VIR_DOMAIN_TUNABLE_BLKDEV_SIZE_IOPS_SEC,
-                                        param->value.ul) < 0)
-                goto endjob;
-        }
+        SET_IOTUNE_FIELD(total_bytes_sec, set_bytes, TOTAL_BYTES_SEC);
+        SET_IOTUNE_FIELD(read_bytes_sec, set_bytes, READ_BYTES_SEC);
+        SET_IOTUNE_FIELD(write_bytes_sec, set_bytes, WRITE_BYTES_SEC);
+        SET_IOTUNE_FIELD(total_iops_sec, set_iops, TOTAL_IOPS_SEC);
+        SET_IOTUNE_FIELD(read_iops_sec, set_iops, READ_IOPS_SEC);
+        SET_IOTUNE_FIELD(write_iops_sec, set_iops, WRITE_IOPS_SEC);
+
+        SET_IOTUNE_FIELD(total_bytes_sec_max, set_bytes_max,
+                         TOTAL_BYTES_SEC_MAX);
+        SET_IOTUNE_FIELD(read_bytes_sec_max, set_bytes_max,
+                         READ_BYTES_SEC_MAX);
+        SET_IOTUNE_FIELD(write_bytes_sec_max, set_bytes_max,
+                         WRITE_BYTES_SEC_MAX);
+        SET_IOTUNE_FIELD(total_iops_sec_max, set_iops_max,
+                         TOTAL_IOPS_SEC_MAX);
+        SET_IOTUNE_FIELD(read_iops_sec_max, set_iops_max,
+                         READ_IOPS_SEC_MAX);
+        SET_IOTUNE_FIELD(write_iops_sec_max, set_iops_max,
+                         WRITE_IOPS_SEC_MAX);
+        SET_IOTUNE_FIELD(size_iops_sec, set_size_iops, SIZE_IOPS_SEC);
     }
+
+#undef SET_IOTUNE_FIELD
 
     if ((info.total_bytes_sec && info.read_bytes_sec) ||
         (info.total_bytes_sec && info.write_bytes_sec)) {
