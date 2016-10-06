@@ -17455,15 +17455,6 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         goto endjob;
     }
 
-    if (persistentDef) {
-        if (!(conf_disk = virDomainDiskByName(persistentDef, path, true))) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("missing persistent configuration for disk '%s'"),
-                           path);
-            goto endjob;
-        }
-    }
-
     if (def) {
         supportMaxOptions = virQEMUCapsGet(priv->qemuCaps,
                                            QEMU_CAPS_DRIVE_IOTUNE_MAX);
@@ -17556,6 +17547,12 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     }
 
     if (persistentDef) {
+        if (!(conf_disk = virDomainDiskByName(persistentDef, path, true))) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("missing persistent configuration for disk '%s'"),
+                           path);
+            goto endjob;
+        }
         oldinfo = &conf_disk->blkdeviotune;
         if (!set_bytes) {
             info.total_bytes_sec = oldinfo->total_bytes_sec;
