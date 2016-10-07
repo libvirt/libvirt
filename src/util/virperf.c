@@ -175,7 +175,7 @@ virPerfEventEnable(virPerfPtr perf,
                                        type == VIR_PERF_EVENT_MBMT ||
                                        type == VIR_PERF_EVENT_MBML)) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                       _("unable to enable perf event for %s"),
+                       _("unable to enable host cpu perf event for %s"),
                        virPerfEventTypeToString(event->type));
         return -1;
     }
@@ -205,14 +205,14 @@ virPerfEventEnable(virPerfPtr perf,
     event->fd = syscall(__NR_perf_event_open, &attr, pid, -1, -1, 0);
     if (event->fd < 0) {
         virReportSystemError(errno,
-                             _("Unable to open perf event for %s"),
+                             _("unable to open host cpu perf event for %s"),
                              virPerfEventTypeToString(event->type));
         goto error;
     }
 
     if (ioctl(event->fd, PERF_EVENT_IOC_ENABLE) < 0) {
         virReportSystemError(errno,
-                             _("Unable to enable perf event for %s"),
+                             _("unable to enable host cpu perf event for %s"),
                              virPerfEventTypeToString(event->type));
         goto error;
     }
@@ -236,8 +236,8 @@ virPerfEventDisable(virPerfPtr perf,
 
     if (ioctl(event->fd, PERF_EVENT_IOC_DISABLE) < 0) {
         virReportSystemError(errno,
-                             _("Unable to disable perf event type=%d"),
-                             event->type);
+                             _("unable to disable host cpu perf event for %s"),
+                             virPerfEventTypeToString(event->type));
         return -1;
     }
 
