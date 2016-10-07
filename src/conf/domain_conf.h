@@ -1537,13 +1537,13 @@ struct _virDomainRedirFilterDef {
     virDomainRedirFilterUSBDevDefPtr *usbdevs;
 };
 
-enum {
+typedef enum {
     VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO,
     VIR_DOMAIN_MEMBALLOON_MODEL_XEN,
     VIR_DOMAIN_MEMBALLOON_MODEL_NONE,
 
     VIR_DOMAIN_MEMBALLOON_MODEL_LAST
-};
+} virDomainMemballoonModel;
 
 struct _virDomainMemballoonDef {
     int model;
