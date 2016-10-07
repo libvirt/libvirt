@@ -14898,11 +14898,8 @@ virDomainShmemDefFind(virDomainDefPtr def,
 
     for (i = 0; i < def->nshmems; i++) {
         if (virDomainShmemDefEquals(shmem, def->shmems[i]))
-            break;
+            return i;
     }
-
-    if (i < def->nshmems)
-        return i;
 
     return -1;
 }
