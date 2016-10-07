@@ -499,7 +499,7 @@ stop() {
         fi
 
         if [ -n "$list" ]; then
-            echo "$uri" "$list" >>"$LISTFILE"
+            echo "$uri" $list >>"$LISTFILE"
         fi
     done
     set +f
