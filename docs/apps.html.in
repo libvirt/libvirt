@@ -351,6 +351,14 @@
         your Xen or QEMU/KVM guests, or to integrate with your existing Nagios
         installation.
       </dd>
+      <dt><a href="http://www.pcp.io/man/man1/pmdalibvirt.1.html" shape="rect">PCP</a></dt>
+      <dd>
+        The PCP libvirt PMDA (plugin) is part of the
+        <a href="http://pcp.io/" shape="rect">PCP</a> toolkit and provides
+        hypervisor and guest information and complete set of guest performance
+        metrics. It supports pCPU, vCPU, memory, block device, network interface,
+        and performance event metrics for each virtual guest.
+      </dd>
       <dt><a href="http://community.zenoss.org/docs/DOC-4687">Zenoss</a></dt>
       <dd>
         The Zenoss libvirt Zenpack adds support for monitoring virtualization
