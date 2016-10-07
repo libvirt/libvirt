@@ -493,6 +493,12 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
     int ret = -1;
     char *addrStr = NULL;
 
+    /* if flags is 0, the particular model of this device on this
+     * machinetype doesn't need a PCI address, so we're done.
+     */
+    if (!flags)
+       return 0;
+
     if (!(addrStr = virDomainPCIAddressAsString(&dev->addr.pci)))
         goto cleanup;
 
