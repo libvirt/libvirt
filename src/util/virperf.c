@@ -234,6 +234,9 @@ virPerfEventDisable(virPerfPtr perf,
     if (event == NULL)
         return -1;
 
+    if (!event->enabled)
+        return 0;
+
     if (ioctl(event->fd, PERF_EVENT_IOC_DISABLE) < 0) {
         virReportSystemError(errno,
                              _("unable to disable host cpu perf event for %s"),
