@@ -121,7 +121,7 @@ list_guests() {
         return 1
     fi
 
-    echo $list
+    echo "$list" | grep -v 00000000-0000-0000-0000-000000000000
 }
 
 # guest_name URI UUID
@@ -539,7 +539,7 @@ gueststatus() {
     for uri in $URIS; do
         set +f
         echo "* $uri URI:"
-        retval run_virsh "$uri" list || echo
+        retval run_virsh "$uri" list | grep -v "Domain-0" || echo
     done
     set +f
 }
