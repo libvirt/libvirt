@@ -11482,7 +11482,7 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                           It is produced by cache_references perf event.
  * "perf.instructions"     - The count of instructions as unsigned long long.
  *                           It is produced by instructions perf event.
- * "perf.cpu_cycles"       - The number of cpu cycles one instruction needs as
+ * "perf.cpu_cycles"       - The count of cpu cycles (total/elapsed) as an
  *                           unsigned long long. It is produced by cpu_cycles
  *                           perf event.
  *

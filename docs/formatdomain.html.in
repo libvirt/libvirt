@@ -1954,7 +1954,7 @@
     </tr>
     <tr>
       <td><code>cpu_cycles</code></td>
-      <td>the number of cpu cycles one instruction needs</td>
+      <td>the count of cpu cycles (total/elapsed)</td>
       <td><code>perf.cpu_cycles</code></td>
     </tr>
     <tr>

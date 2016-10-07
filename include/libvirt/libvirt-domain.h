@@ -2008,7 +2008,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * VIR_PERF_PARAM_CPU_CYCLES:
  *
  * Macro for typed parameter name that represents cpu_cycles perf event
- * which can be used to measure how many cpu cycles one instruction needs.
+ * describing the total/elapsed cpu cycles. This can be used to measure
+ * how many cpu cycles one instruction needs.
  * It corresponds to the "perf.cpu_cycles" field in the *Stats APIs.
  */
 # define VIR_PERF_PARAM_CPU_CYCLES "cpu_cycles"
