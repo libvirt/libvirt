@@ -1223,13 +1223,15 @@ I<size> is a scaled integer (see B<NOTES> above) which defaults to KiB
 "B" to get bytes (note that for historical reasons, this differs from
 B<vol-resize> which defaults to bytes without a suffix).
 
-=item B<domdisplay> I<domain> [I<--include-password>] [[I<--type>] B<type>]
+=item B<domdisplay> I<domain> [I<--include-password>]
+[[I<--type>] B<type>] [I<--all>]
 
 Output a URI which can be used to connect to the graphical display of the
 domain via VNC, SPICE or RDP.  The particular graphical display type can
 be selected using the B<type> parameter (e.g. "vnc", "spice", "rdp").  If
 I<--include-password> is specified, the SPICE channel password will be
-included in the URI.
+included in the URI. If I<--all> is specified, then all show all possible
+graphical displays, for a VM could have more than one graphical displays.
 
 =item B<domfsinfo> I<domain>
 

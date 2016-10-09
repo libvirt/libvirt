@@ -10655,6 +10655,10 @@ static const vshCmdOptDef opts_domdisplay[] = {
      .help = N_("select particular graphical display "
                 "(e.g. \"vnc\", \"spice\", \"rdp\")")
     },
+    {.name = "all",
+     .type = VSH_OT_BOOL,
+     .help = N_("show all possible graphical displays")
+    },
     {.name = NULL}
 };
 
@@ -10678,6 +10682,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     int tmp;
     int flags = 0;
     bool params = false;
+    bool all = vshCommandOptBool(cmd, "all");
     const char *xpath_fmt = "string(/domain/devices/graphics[@type='%s']/%s)";
     virSocketAddr addr;
 
@@ -10704,10 +10709,11 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     /* Attempt to grab our display info */
     for (iter = 0; scheme[iter] != NULL; iter++) {
         /* Particular scheme requested */
-        if (type && STRNEQ(type, scheme[iter]))
+        if (!all && type && STRNEQ(type, scheme[iter]))
             continue;
 
         /* Create our XPATH lookup for the current display's port */
+        VIR_FREE(xpath);
         if (virAsprintf(&xpath, xpath_fmt, scheme[iter], "@port") < 0)
             goto cleanup;
 
@@ -10740,6 +10746,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 
         /* Attempt to get the listening addr if set for the current
          * graphics scheme */
+        VIR_FREE(listen_addr);
         listen_addr = virXPathString(xpath, ctxt);
         VIR_FREE(xpath);
 
@@ -10795,6 +10802,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
 
         /* Attempt to get the password */
+        VIR_FREE(passwd);
         passwd = virXPathString(xpath, ctxt);
         VIR_FREE(xpath);
 
@@ -10847,12 +10855,17 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
         }
 
         /* Print out our full URI */
+        VIR_FREE(output);
         output = virBufferContentAndReset(&buf);
         vshPrint(ctl, "%s", output);
 
         /* We got what we came for so return successfully */
         ret = true;
-        break;
+        if (!all) {
+            break;
+        } else {
+            vshPrint(ctl, "\n");
+        }
     }
 
     if (!ret) {
