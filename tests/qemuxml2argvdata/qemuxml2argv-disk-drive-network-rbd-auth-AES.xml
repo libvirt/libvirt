@@ -32,7 +32,20 @@
       </source>
       <target dev='vda' bus='virtio'/>
     </disk>
+    <disk type='network' device='disk'>
+      <driver name='qemu' type='raw' cache='none'/>
+      <auth username='myname'>
+        <secret type='ceph' usage='mycluster_myname'/>
+      </auth>
+      <source protocol='rbd' name='pool/image'>
+        <host name='mon1.example.org' port='6321'/>
+        <host name='mon2.example.org' port='6322'/>
+        <host name='mon3.example.org' port='6322'/>
+      </source>
+      <target bus='scsi' dev='sda'/>
+    </disk>
     <controller type='usb' index='0'/>
+    <controller type='scsi' index='0' model='virtio-scsi'/>
     <controller type='ide' index='0'/>
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>

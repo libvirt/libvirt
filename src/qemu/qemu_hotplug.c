@@ -601,13 +601,16 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     char *devstr = NULL;
     bool driveAdded = false;
     bool encobjAdded = false;
+    bool secobjAdded = false;
     char *drivealias = NULL;
     int ret = -1;
     int rv;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virJSONValuePtr encobjProps = NULL;
+    virJSONValuePtr secobjProps = NULL;
     qemuDomainDiskPrivatePtr diskPriv;
     qemuDomainSecretInfoPtr encinfo;
+    qemuDomainSecretInfoPtr secinfo;
 
     if (qemuDomainPrepareDisk(driver, vm, disk, NULL, false) < 0)
         goto cleanup;
@@ -639,6 +642,12 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
         goto error;
 
     diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+    secinfo = diskPriv->secinfo;
+    if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES) {
+        if (qemuBuildSecretInfoProps(secinfo, &secobjProps) < 0)
+            goto error;
+    }
+
     encinfo = diskPriv->encinfo;
     if (encinfo && qemuBuildSecretInfoProps(encinfo, &encobjProps) < 0)
         goto error;
@@ -656,6 +665,15 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
         goto error;
 
     qemuDomainObjEnterMonitor(driver, vm);
+
+    if (secobjProps) {
+        rv = qemuMonitorAddObject(priv->mon, "secret", secinfo->s.aes.alias,
+                                  secobjProps);
+        secobjProps = NULL; /* qemuMonitorAddObject consumes */
+        if (rv < 0)
+            goto exit_monitor;
+        secobjAdded = true;
+    }
 
     if (encobjProps) {
         rv = qemuMonitorAddObject(priv->mon, "secret", encinfo->s.aes.alias,
@@ -682,6 +700,7 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
     ret = 0;
 
  cleanup:
+    virJSONValueFree(secobjProps);
     virJSONValueFree(encobjProps);
     qemuDomainSecretDiskDestroy(disk);
     VIR_FREE(devstr);
@@ -696,6 +715,8 @@ qemuDomainAttachSCSIDisk(virConnectPtr conn,
         VIR_WARN("Unable to remove drive %s (%s) after failed "
                  "qemuMonitorAddDevice", drivealias, drivestr);
     }
+    if (secobjAdded)
+        ignore_value(qemuMonitorDelObject(priv->mon, secinfo->s.aes.alias));
     if (encobjAdded)
         ignore_value(qemuMonitorDelObject(priv->mon, encinfo->s.aes.alias));
     if (orig_err) {

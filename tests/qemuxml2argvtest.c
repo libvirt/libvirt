@@ -864,7 +864,7 @@ mymain(void)
     DO_TEST("disk-drive-network-rbd-auth", NONE);
 # ifdef HAVE_GNUTLS_CIPHER_ENCRYPT
     DO_TEST("disk-drive-network-rbd-auth-AES",
-            QEMU_CAPS_OBJECT_SECRET);
+            QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_VIRTIO_SCSI);
 # endif
     DO_TEST("disk-drive-network-rbd-ipv6", NONE);
     DO_TEST_FAILURE("disk-drive-network-rbd-no-colon", NONE);
