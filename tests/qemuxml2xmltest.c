@@ -876,6 +876,7 @@ mymain(void)
 
     DO_TEST("video-qxl-heads", NONE);
     DO_TEST("video-qxl-noheads", NONE);
+    DO_TEST("video-virtio-gpu-secondary", NONE);
 
     DO_TEST("intel-iommu",
             QEMU_CAPS_DEVICE_PCI_BRIDGE, QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE);

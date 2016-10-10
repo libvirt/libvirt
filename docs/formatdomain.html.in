@@ -5641,7 +5641,8 @@ qemu-kvm -net nic,model=? /dev/null
           video device in domain xml is the primary one, but the optional
           attribute <code>primary</code> (<span class="since">since 1.0.2</span>)
           with value 'yes' can be used to mark the primary in cases of multiple
-          video device. The non-primary must be type of "qxl".
+          video device. The non-primary must be type of "qxl" or
+          (<span class="since">since 2.4.0</span>) "virtio".
         </p>
       </dd>
 
