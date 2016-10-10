@@ -4457,18 +4457,16 @@ qemuProcessStartValidateVideo(virDomainObjPtr vm,
     for (i = 0; i < vm->def->nvideos; i++) {
         video = vm->def->videos[i];
 
-        if (video->primary &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY) &&
-            ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
-              !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA)) ||
-             (video->type == VIR_DOMAIN_VIDEO_TYPE_CIRRUS &&
-              !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA)) ||
-             (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
-              !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMWARE_SVGA)) ||
-             (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
-              !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL)) ||
-             (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
-              !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU)))) {
+        if ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
+             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA)) ||
+            (video->type == VIR_DOMAIN_VIDEO_TYPE_CIRRUS &&
+             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA)) ||
+            (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
+             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMWARE_SVGA)) ||
+            (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
+             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL)) ||
+            (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
+             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("this QEMU does not support '%s' video device"),
                            virDomainVideoTypeToString(video->type));
