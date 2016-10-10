@@ -4517,11 +4517,14 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
     if (qemuProcessStartValidateXML(driver, vm, qemuCaps, caps, flags) < 0)
         return -1;
 
+    if (qemuProcessStartValidateGraphics(vm) < 0)
+        return -1;
+
     VIR_DEBUG("Checking for any possible (non-fatal) issues");
 
     qemuProcessStartWarnShmem(vm);
 
-    return qemuProcessStartValidateGraphics(vm);
+    return 0;
 }
 
 
