@@ -85,12 +85,11 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
                                          virBufferPtr buf)
 {
     const virJSONValue *member;
-    ssize_t nelems = virJSONValueArraySize(array);
     char *prefix = NULL;
     size_t i;
     int ret = 0;
 
-    for (i = 0; i < nelems; i++) {
+    for (i = 0; i < virJSONValueArraySize(array); i++) {
         member = virJSONValueArrayGet((virJSONValuePtr) array, i);
 
         if (virAsprintf(&prefix, "%s.%zu", key, i) < 0)
