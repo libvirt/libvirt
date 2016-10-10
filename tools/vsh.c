@@ -1523,10 +1523,11 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser)
             /* if we encountered --help, replace parsed command with
              * 'help <cmdname>' */
             for (tmpopt = first; tmpopt; tmpopt = tmpopt->next) {
+                const vshCmdDef *help;
                 if (STRNEQ(tmpopt->def->name, "help"))
                     continue;
 
-                const vshCmdDef *help = vshCmddefSearch("help");
+                help = vshCmddefSearch("help");
                 vshCommandOptFree(first);
                 first = vshMalloc(ctl, sizeof(vshCmdOpt));
                 first->def = help->opts;
@@ -2788,7 +2789,7 @@ vshReadlineParse(const char *text, int state)
                  * Try to find the default option.
                  */
                 if (!(opt = vshCmddefGetData(cmd, &opts_need_arg, &opts_seen))
-                    && opt->type == VSH_OT_BOOL)
+                    || opt->type == VSH_OT_BOOL)
                     goto error;
                 opt_exists = true;
                 opts_need_arg = const_opts_need_arg;
@@ -2824,7 +2825,7 @@ vshReadlineParse(const char *text, int state)
         res = vshReadlineCommandGenerator(sanitized_text, state);
     } else if (opts_filled && !non_bool_opt_exists) {
         res = vshReadlineOptionsGenerator(sanitized_text, state, cmd);
-    } else if (non_bool_opt_exists && data_complete && opt->completer) {
+    } else if (non_bool_opt_exists && data_complete && opt && opt->completer) {
         if (!completed_list)
             completed_list = opt->completer(autoCompleteOpaque,
                                             opt->completer_flags);
