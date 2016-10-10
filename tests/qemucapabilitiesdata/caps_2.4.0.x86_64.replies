@@ -2806,6 +2806,36 @@
 {
   "return": [
     {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "max_outputs",
+      "type": "uint32"
+    }
+  ],
+  "id": "libvirt-34"
+}
+
+{
+  "return": [
+    {
       "name": "enable_tco",
       "type": "bool"
     },
@@ -2877,7 +2907,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -2962,11 +2992,11 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
-  "id": "libvirt-36",
+  "id": "libvirt-37",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-ccw' not found"
@@ -3009,7 +3039,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -3079,7 +3109,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -3208,7 +3238,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -3298,7 +3328,7 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -3306,21 +3336,21 @@
     "enabled": false,
     "present": true
   },
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -4328,7 +4358,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -4358,5 +4388,5 @@
       "capability": "events"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }

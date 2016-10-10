@@ -1746,6 +1746,8 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsQxl) },
     { "virtio-gpu-pci", virQEMUCapsObjectPropsVirtioGpu,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioGpu) },
+    { "virtio-gpu-device", virQEMUCapsObjectPropsVirtioGpu,
+      ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioGpu) },
     { "ICH9-LPC", virQEMUCapsObjectPropsICH9,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsICH9) },
     { "virtio-balloon-pci", virQEMUCapsObjectPropsVirtioBalloon,

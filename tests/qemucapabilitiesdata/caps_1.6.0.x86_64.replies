@@ -1999,6 +1999,14 @@
   "id": "libvirt-34",
   "error": {
     "class": "DeviceNotFound",
+    "desc": "Device 'virtio-gpu-device' not found"
+  }
+}
+
+{
+  "id": "libvirt-35",
+  "error": {
+    "class": "DeviceNotFound",
     "desc": "Device 'ICH9-LPC' not found"
   }
 }
@@ -2038,11 +2046,11 @@
       "type": "on/off"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
-  "id": "libvirt-36",
+  "id": "libvirt-37",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-ccw' not found"
@@ -2052,7 +2060,7 @@
 {
   "return": [
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -2102,7 +2110,7 @@
       "type": "on/off"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -2183,7 +2191,7 @@
       "cpu-max": 1
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -2261,7 +2269,7 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -2269,12 +2277,6 @@
     "enabled": false,
     "present": true
   },
-  "id": "libvirt-41"
-}
-
-{
-  "return": [
-  ],
   "id": "libvirt-42"
 }
 
@@ -2282,6 +2284,12 @@
   "return": [
   ],
   "id": "libvirt-43"
+}
+
+{
+  "return": [
+  ],
+  "id": "libvirt-44"
 }
 
 {
@@ -2884,7 +2892,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -2906,5 +2914,5 @@
       "capability": "zero-blocks"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }

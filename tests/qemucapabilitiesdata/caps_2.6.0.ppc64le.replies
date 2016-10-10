@@ -3537,6 +3537,41 @@
       "type": "uint32"
     }
   ],
+  "id": "libvirt-33"
+}
+
+{
+  "return": [
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "stats",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "max_outputs",
+      "type": "uint32"
+    }
+  ],
   "id": "libvirt-34"
 }
 
