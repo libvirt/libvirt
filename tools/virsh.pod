@@ -2286,28 +2286,28 @@ any existing per-device weights for other devices remain unchanged.
 B<device-read-iops-sec> is a single string listing one or more device/read_iops_sec
 pairs, int the format of /path/to/device,read_iops_sec,/path/to/device,read_iops_sec.
 Each read_iops_sec is a number which type is unsigned int, value 0 to remove that
-device from per-decice listing.
+device from per-device listing.
 Only the devices listed in the string are modified;
 any existing per-device read_iops_sec for other devices remain unchanged.
 
 B<device-write-iops-sec> is a single string listing one or more device/write_iops_sec
 pairs, int the format of /path/to/device,write_iops_sec,/path/to/device,write_iops_sec.
 Each write_iops_sec is a number which type is unsigned int, value 0 to remove that
-device from per-decice listing.
+device from per-device listing.
 Only the devices listed in the string are modified;
 any existing per-device write_iops_sec for other devices remain unchanged.
 
 B<device-read-bytes-sec> is a single string listing one or more device/read_bytes_sec
 pairs, int the format of /path/to/device,read_bytes_sec,/path/to/device,read_bytes_sec.
 Each read_bytes_sec is a number which type is unsigned long long, value 0 to remove
-that device from per-decice listing.
+that device from per-device listing.
 Only the devices listed in the string are modified;
 any existing per-device read_bytes_sec for other devices remain unchanged.
 
 B<device-write-bytes-sec> is a single string listing one or more device/write_bytes_sec
 pairs, int the format of /path/to/device,write_bytes_sec,/path/to/device,write_bytes_sec.
 Each write_bytes_sec is a number which type is unsigned long long, value 0 to remove
-that device from per-decice listing.
+that device from per-device listing.
 Only the devices listed in the string are modified;
 any existing per-device write_bytes_sec for other devices remain unchanged.
 
@@ -2401,7 +2401,7 @@ managedsave state is discarded and a fresh boot occurs.
 
 If I<--pass-fds> is specified, the argument is a comma separated list
 of open file descriptors which should be pass on into the guest. The
-file descriptors will be re-numered in the guest, starting from 3. This
+file descriptors will be re-numbered in the guest, starting from 3. This
 is only supported with container based virtualization.
 
 =item B<suspend> I<domain>
