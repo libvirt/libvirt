@@ -753,7 +753,7 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOptionPtr xmlopt,
                                     bool fail)
 
 {
-    struct qemuMonitorJSONTestAttachChardevData data;
+    struct qemuMonitorJSONTestAttachChardevData data = {0};
     char *jsonreply = NULL;
     char *fulllabel = NULL;
     int ret = -1;
