@@ -331,10 +331,8 @@ testSELinuxLabeling(const void *opaque)
         VIR_FREE(files[i].context);
     }
     VIR_FREE(files);
-    if (ret < 0) {
-        virErrorPtr err = virGetLastError();
-        VIR_TEST_VERBOSE("%s\n", err ? err->message : "<unknown>");
-    }
+    if (ret < 0)
+        VIR_TEST_VERBOSE("%s\n", virGetLastErrorMessage());
     return ret;
 }
 
