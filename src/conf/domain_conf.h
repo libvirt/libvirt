@@ -2488,6 +2488,8 @@ virBitmapPtr virDomainDefGetOnlineVcpumap(const virDomainDef *def);
 virDomainVcpuDefPtr virDomainDefGetVcpu(virDomainDefPtr def, unsigned int vcpu)
     ATTRIBUTE_RETURN_CHECK;
 void virDomainDefVcpuOrderClear(virDomainDefPtr def);
+int  virDomainDefGetVcpusTopology(const virDomainDef *def,
+                                  unsigned int *maxvcpus);
 
 virDomainObjPtr virDomainObjNew(virDomainXMLOptionPtr caps)
     ATTRIBUTE_NONNULL(1);

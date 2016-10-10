@@ -1570,6 +1570,42 @@ virDomainDefGetVcpuPinInfoHelper(virDomainDefPtr def,
 }
 
 
+/**
+ * virDomainDeGetVcpusTopology:
+ * @def: domain definition
+ * @maxvcpus: optionally filled with number of vcpus the domain topology describes
+ *
+ * Calculates and validates that the vcpu topology is in sane bounds and
+ * optionally returns the total number of vcpus described by given topology.
+ *
+ * Returns 0 on success, 1 if topology is not configured and -1 on error.
+ */
+int
+virDomainDefGetVcpusTopology(const virDomainDef *def,
+                             unsigned int *maxvcpus)
+{
+    unsigned long long tmp;
+
+    if (!def->cpu || def->cpu->sockets == 0)
+        return 1;
+
+    tmp = def->cpu->sockets;
+
+    /* multiplication of 32bit numbers fits into a 64bit variable */
+    if ((tmp *= def->cpu->cores) > UINT_MAX ||
+        (tmp *= def->cpu->threads) > UINT_MAX) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("cpu topology results in more than %u cpus"), UINT_MAX);
+        return -1;
+    }
+
+    if (maxvcpus)
+        *maxvcpus = tmp;
+
+    return 0;
+}
+
+
 virDomainDiskDefPtr
 virDomainDiskDefNew(virDomainXMLOptionPtr xmlopt)
 {
@@ -4784,6 +4820,9 @@ static int
 virDomainDefValidateInternal(const virDomainDef *def)
 {
     if (virDomainDefCheckDuplicateDiskInfo(def) < 0)
+        return -1;
+
+    if (virDomainDefGetVcpusTopology(def, NULL) < 0)
         return -1;
 
     return 0;

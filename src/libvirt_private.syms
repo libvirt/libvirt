@@ -247,6 +247,7 @@ virDomainDefGetVcpu;
 virDomainDefGetVcpuPinInfoHelper;
 virDomainDefGetVcpus;
 virDomainDefGetVcpusMax;
+virDomainDefGetVcpusTopology;
 virDomainDefHasDeviceAddress;
 virDomainDefHasMemballoon;
 virDomainDefHasMemoryHotplug;
