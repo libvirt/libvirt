@@ -1466,7 +1466,7 @@ virLogParseOutput(const char *src)
     if (!(tokens = virStringSplitCount(src, ":", 0, &count)) || count < 2) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Malformed format for output '%s'"), src);
-        return NULL;
+        goto cleanup;
     }
 
     if (virStrToLong_uip(tokens[0], NULL, 10, &prio) < 0 ||
@@ -1575,7 +1575,7 @@ virLogParseFilter(const char *src)
     if (!(tokens = virStringSplitCount(src, ":", 0, &count)) || count != 2) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Malformed format for filter '%s'"), src);
-        return NULL;
+        goto cleanup;
     }
 
     if (virStrToLong_uip(tokens[0], NULL, 10, &prio) < 0 ||
