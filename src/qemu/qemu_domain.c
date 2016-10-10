@@ -2401,7 +2401,7 @@ qemuDomainDefValidate(const virDomainDef *def,
 {
     virQEMUDriverPtr driver = opaque;
     virQEMUCapsPtr qemuCaps = NULL;
-    size_t topologycpus;
+    unsigned int topologycpus;
     int ret = -1;
 
     if (!(qemuCaps = virQEMUCapsCacheLookup(caps,
@@ -2443,15 +2443,13 @@ qemuDomainDefValidate(const virDomainDef *def,
     }
 
     /* qemu as of 2.5.0 rejects SMP topologies that don't match the cpu count */
-    if (def->cpu && def->cpu->sockets) {
-        topologycpus = def->cpu->sockets * def->cpu->cores * def->cpu->threads;
-        if (topologycpus != virDomainDefGetVcpusMax(def)) {
-            /* presence of query-hotpluggable-cpus should be a good enough witness */
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("CPU topology doesn't match maximum vcpu count"));
-                goto cleanup;
-            }
+    if (virDomainDefGetVcpusTopology(def, &topologycpus) == 0 &&
+        topologycpus != virDomainDefGetVcpusMax(def)) {
+        /* presence of query-hotpluggable-cpus should be a good enough witness */
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("CPU topology doesn't match maximum vcpu count"));
+            goto cleanup;
         }
     }
 

@@ -4718,6 +4718,7 @@ qemuDomainSetVcpusMax(virQEMUDriverPtr driver,
                       unsigned int nvcpus)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    unsigned int topologycpus;
     int ret = -1;
 
     if (def) {
@@ -4733,16 +4734,13 @@ qemuDomainSetVcpusMax(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (persistentDef->cpu && persistentDef->cpu->sockets) {
+    if (virDomainDefGetVcpusTopology(persistentDef, &topologycpus) == 0 &&
+        nvcpus != topologycpus) {
         /* allow setting a valid vcpu count for the topology so an invalid
          * setting may be corrected via this API */
-        if (nvcpus != persistentDef->cpu->sockets *
-                      persistentDef->cpu->cores *
-                      persistentDef->cpu->threads) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("CPU topology doesn't match the desired vcpu count"));
-            goto cleanup;
-        }
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("CPU topology doesn't match the desired vcpu count"));
+        goto cleanup;
     }
 
     /* ordering information may become invalid, thus clear it */
