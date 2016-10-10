@@ -27,8 +27,7 @@ EXTRA_DIST = \
 	apparmor/usr.sbin.libvirtd \
 	lxcconvert/virt-lxc-convert \
 	polkit/libvirt-acl.rules \
-	systemtap/events.stp \
-	systemtap/rpc-monitor.stp \
+	$(wildcard $(srcdir)/systemtap/*.stp) \
 	$(FILTERS) \
 	$(wildcard $(srcdir)/xml/storage/*.xml) \
 	$(wildcard $(srcdir)/xml/test/*.xml)
