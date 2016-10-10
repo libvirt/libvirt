@@ -909,7 +909,7 @@ I<--balloon> returns:
 "balloon.rss" - Resident Set Size of running domain's process (in kB),
 "balloon.usable" - the amount of memory which can be reclaimed by balloon
 without causing host swapping (in KB),
-"balloon.last-update" - timestamp of the last update of statistics (in seconds),
+"balloon.last-update" - timestamp of the last update of statistics (in seconds)
 
 I<--vcpu> returns:
 "vcpu.current" - current number of online virtual CPUs,
@@ -931,12 +931,12 @@ I<--interface> returns:
 "net.<num>.tx.drop" - number of transmit packets dropped
 
 I<--perf> returns the statistics of all enabled perf events:
-"perf.cmt" - the cache usage in Byte currently used
-"perf.mbmt" - total system bandwidth from one level of cache
-"perf.mbml" - bandwidth of memory traffic for a memory controller
-"perf.cpu_cycles" - the count of cpu cycles (total/elapsed)
-"perf.instructions" - the count of instructions
-"perf.cache_references" - the count of cache hits
+"perf.cmt" - the cache usage in Byte currently used,
+"perf.mbmt" - total system bandwidth from one level of cache,
+"perf.mbml" - bandwidth of memory traffic for a memory controller,
+"perf.cpu_cycles" - the count of cpu cycles (total/elapsed),
+"perf.instructions" - the count of instructions,
+"perf.cache_references" - the count of cache hits,
 "perf.cache_misses" - the count of caches misses
 
 See the B<perf> command for more details about each event.
