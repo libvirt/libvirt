@@ -5621,17 +5621,25 @@ qemuBuildSmbiosBiosStr(virSysinfoBIOSDefPtr def)
     virBufferAddLit(&buf, "type=0");
 
     /* 0:Vendor */
-    if (def->vendor)
-        virBufferAsprintf(&buf, ",vendor=%s", def->vendor);
+    if (def->vendor) {
+        virBufferAddLit(&buf, ",vendor=");
+        virQEMUBuildBufferEscapeComma(&buf, def->vendor);
+    }
     /* 0:BIOS Version */
-    if (def->version)
-        virBufferAsprintf(&buf, ",version=%s", def->version);
+    if (def->version) {
+        virBufferAddLit(&buf, ",version=");
+        virQEMUBuildBufferEscapeComma(&buf, def->version);
+    }
     /* 0:BIOS Release Date */
-    if (def->date)
-        virBufferAsprintf(&buf, ",date=%s", def->date);
+    if (def->date) {
+        virBufferAddLit(&buf, ",date=");
+        virQEMUBuildBufferEscapeComma(&buf, def->date);
+    }
     /* 0:System BIOS Major Release and 0:System BIOS Minor Release */
-    if (def->release)
-        virBufferAsprintf(&buf, ",release=%s", def->release);
+    if (def->release) {
+        virBufferAddLit(&buf, ",release=");
+        virQEMUBuildBufferEscapeComma(&buf, def->release);
+    }
 
     return virBufferContentAndReset(&buf);
 }
@@ -5652,27 +5660,40 @@ qemuBuildSmbiosSystemStr(virSysinfoSystemDefPtr def,
     virBufferAddLit(&buf, "type=1");
 
     /* 1:Manufacturer */
-    if (def->manufacturer)
-        virBufferAsprintf(&buf, ",manufacturer=%s",
-                          def->manufacturer);
+    if (def->manufacturer) {
+        virBufferAddLit(&buf, ",manufacturer=");
+        virQEMUBuildBufferEscapeComma(&buf, def->manufacturer);
+    }
      /* 1:Product Name */
-    if (def->product)
-        virBufferAsprintf(&buf, ",product=%s", def->product);
+    if (def->product) {
+        virBufferAddLit(&buf, ",product=");
+        virQEMUBuildBufferEscapeComma(&buf, def->product);
+    }
     /* 1:Version */
-    if (def->version)
-        virBufferAsprintf(&buf, ",version=%s", def->version);
+    if (def->version) {
+        virBufferAddLit(&buf, ",version=");
+        virQEMUBuildBufferEscapeComma(&buf, def->version);
+    }
     /* 1:Serial Number */
-    if (def->serial)
-        virBufferAsprintf(&buf, ",serial=%s", def->serial);
+    if (def->serial) {
+        virBufferAddLit(&buf, ",serial=");
+        virQEMUBuildBufferEscapeComma(&buf, def->serial);
+    }
     /* 1:UUID */
-    if (def->uuid && !skip_uuid)
-        virBufferAsprintf(&buf, ",uuid=%s", def->uuid);
+    if (def->uuid && !skip_uuid) {
+        virBufferAddLit(&buf, ",uuid=");
+        virQEMUBuildBufferEscapeComma(&buf, def->uuid);
+    }
     /* 1:SKU Number */
-    if (def->sku)
-        virBufferAsprintf(&buf, ",sku=%s", def->sku);
+    if (def->sku) {
+        virBufferAddLit(&buf, ",sku=");
+        virQEMUBuildBufferEscapeComma(&buf, def->sku);
+    }
     /* 1:Family */
-    if (def->family)
-        virBufferAsprintf(&buf, ",family=%s", def->family);
+    if (def->family) {
+        virBufferAddLit(&buf, ",family=");
+        virQEMUBuildBufferEscapeComma(&buf, def->family);
+    }
 
     return virBufferContentAndReset(&buf);
 }
@@ -5689,24 +5710,33 @@ qemuBuildSmbiosBaseBoardStr(virSysinfoBaseBoardDefPtr def)
     virBufferAddLit(&buf, "type=2");
 
     /* 2:Manufacturer */
-    if (def->manufacturer)
-        virBufferAsprintf(&buf, ",manufacturer=%s",
-                          def->manufacturer);
+    virBufferAddLit(&buf, ",manufacturer=");
+    virQEMUBuildBufferEscapeComma(&buf, def->manufacturer);
     /* 2:Product Name */
-    if (def->product)
-        virBufferAsprintf(&buf, ",product=%s", def->product);
+    if (def->product) {
+        virBufferAddLit(&buf, ",product=");
+        virQEMUBuildBufferEscapeComma(&buf, def->product);
+    }
     /* 2:Version */
-    if (def->version)
-        virBufferAsprintf(&buf, ",version=%s", def->version);
+    if (def->version) {
+        virBufferAddLit(&buf, ",version=");
+        virQEMUBuildBufferEscapeComma(&buf, def->version);
+    }
     /* 2:Serial Number */
-    if (def->serial)
-        virBufferAsprintf(&buf, ",serial=%s", def->serial);
+    if (def->serial) {
+        virBufferAddLit(&buf, ",serial=");
+        virQEMUBuildBufferEscapeComma(&buf, def->serial);
+    }
     /* 2:Asset Tag */
-    if (def->asset)
-        virBufferAsprintf(&buf, ",asset=%s", def->asset);
+    if (def->asset) {
+        virBufferAddLit(&buf, ",asset=");
+        virQEMUBuildBufferEscapeComma(&buf, def->asset);
+    }
     /* 2:Location */
-    if (def->location)
-        virBufferAsprintf(&buf, ",location=%s", def->location);
+    if (def->location) {
+        virBufferAddLit(&buf, ",location=");
+        virQEMUBuildBufferEscapeComma(&buf, def->location);
+    }
 
     if (virBufferCheckError(&buf) < 0)
         goto error;
