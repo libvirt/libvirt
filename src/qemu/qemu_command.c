@@ -5633,14 +5633,7 @@ qemuBuildSmbiosBiosStr(virSysinfoBIOSDefPtr def)
     if (def->release)
         virBufferAsprintf(&buf, ",release=%s", def->release);
 
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
     return virBufferContentAndReset(&buf);
-
- error:
-    virBufferFreeAndReset(&buf);
-    return NULL;
 }
 
 
@@ -5681,14 +5674,7 @@ qemuBuildSmbiosSystemStr(virSysinfoSystemDefPtr def,
     if (def->family)
         virBufferAsprintf(&buf, ",family=%s", def->family);
 
-    if (virBufferCheckError(&buf) < 0)
-        goto error;
-
     return virBufferContentAndReset(&buf);
-
- error:
-    virBufferFreeAndReset(&buf);
-    return NULL;
 }
 
 
