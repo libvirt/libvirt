@@ -6310,37 +6310,125 @@ virshVcpuinfoPrintAffinity(vshControl *ctl,
 }
 
 
+static virBitmapPtr
+virshDomainGetVcpuBitmap(vshControl *ctl,
+                         virDomainPtr dom,
+                         bool inactive)
+{
+    unsigned int flags = 0;
+    char *def = NULL;
+    virBitmapPtr ret = NULL;
+    xmlDocPtr xml = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr *nodes = NULL;
+    xmlNodePtr old;
+    int nnodes;
+    size_t i;
+    unsigned int curvcpus = 0;
+    unsigned int maxvcpus = 0;
+    unsigned int vcpuid;
+    char *online = NULL;
+
+    if (inactive)
+        flags |= VIR_DOMAIN_XML_INACTIVE;
+
+    if (!(def = virDomainGetXMLDesc(dom, flags)))
+        goto cleanup;
+
+    if (!(xml = virXMLParseStringCtxt(def, _("(domain_definition)"), &ctxt)))
+        goto cleanup;
+
+    if (virXPathUInt("string(/domain/vcpu)", ctxt, &maxvcpus) < 0) {
+        vshError(ctl, "%s", _("Failed to retrieve maximum vcpu count"));
+        goto cleanup;
+    }
+
+    ignore_value(virXPathUInt("string(/domain/vcpu/@current)", ctxt, &curvcpus));
+
+    if (curvcpus == 0)
+        curvcpus = maxvcpus;
+
+    if (!(ret = virBitmapNew(maxvcpus)))
+        goto cleanup;
+
+    if ((nnodes = virXPathNodeSet("/domain/vcpus/vcpu", ctxt, &nodes)) <= 0) {
+        /* if the specific vcpu state is missing provide a fallback */
+        for (i = 0; i < curvcpus; i++)
+            ignore_value(virBitmapSetBit(ret, i));
+
+        goto cleanup;
+    }
+
+    old = ctxt->node;
+
+    for (i = 0; i < nnodes; i++) {
+        ctxt->node = nodes[i];
+
+        if (virXPathUInt("string(@id)", ctxt, &vcpuid) < 0 ||
+            !(online = virXPathString("string(@enabled)", ctxt)))
+            continue;
+
+        if (STREQ(online, "yes"))
+            ignore_value(virBitmapSetBit(ret, vcpuid));
+
+        VIR_FREE(online);
+    }
+
+    ctxt->node = old;
+
+    if (virBitmapCountBits(ret) != curvcpus) {
+        vshError(ctl, "%s", _("Failed to retrieve vcpu state bitmap"));
+        virBitmapFree(ret);
+        ret = NULL;
+    }
+
+ cleanup:
+    VIR_FREE(online);
+    VIR_FREE(nodes);
+    xmlXPathFreeContext(ctxt);
+    xmlFreeDoc(xml);
+    VIR_FREE(def);
+    return ret;
+}
+
+
 static bool
 virshVcpuinfoInactive(vshControl *ctl,
                       virDomainPtr dom,
-                      int nvcpus,
                       int maxcpu,
                       bool pretty)
 {
     unsigned char *cpumaps = NULL;
     size_t cpumaplen;
     int ncpus;
-    size_t i;
+    virBitmapPtr vcpus = NULL;
+    ssize_t nextvcpu = -1;
     bool ret = false;
+    bool first = true;
+
+    if (!(vcpus = virshDomainGetVcpuBitmap(ctl, dom, true)))
+        goto cleanup;
 
     cpumaplen = VIR_CPU_MAPLEN(maxcpu);
-    cpumaps = vshMalloc(ctl, nvcpus * cpumaplen);
+    cpumaps = vshMalloc(ctl, virBitmapSize(vcpus) * cpumaplen);
 
-    if ((ncpus = virDomainGetVcpuPinInfo(dom, nvcpus,
+    if ((ncpus = virDomainGetVcpuPinInfo(dom, virBitmapSize(vcpus),
                                          cpumaps, cpumaplen,
                                          VIR_DOMAIN_AFFECT_CONFIG)) < 0)
         goto cleanup;
 
-    for (i = 0; i < ncpus; i++) {
-        if (i != 0)
+    while ((nextvcpu = virBitmapNextSetBit(vcpus, nextvcpu)) >= 0) {
+        if (!first)
             vshPrint(ctl, "\n");
+        first = false;
 
-        vshPrint(ctl, "%-15s %zu\n", _("VCPU:"), i);
+        vshPrint(ctl, "%-15s %zd\n", _("VCPU:"), nextvcpu);
         vshPrint(ctl, "%-15s %s\n", _("CPU:"), _("N/A"));
         vshPrint(ctl, "%-15s %s\n", _("State:"), _("N/A"));
         vshPrint(ctl, "%-15s %s\n", _("CPU time"), _("N/A"));
 
-        if (virshVcpuinfoPrintAffinity(ctl, VIR_GET_CPUMAP(cpumaps, cpumaplen, i),
+        if (virshVcpuinfoPrintAffinity(ctl,
+                                       VIR_GET_CPUMAP(cpumaps, cpumaplen, nextvcpu),
                                        maxcpu, pretty) < 0)
             goto cleanup;
     }
@@ -6348,6 +6436,7 @@ virshVcpuinfoInactive(vshControl *ctl,
     ret = true;
 
  cleanup:
+    virBitmapFree(vcpus);
     VIR_FREE(cpumaps);
     return ret;
 }
@@ -6386,8 +6475,10 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
         if (info.state != VIR_DOMAIN_SHUTOFF)
             goto cleanup;
 
+        vshResetLibvirtError();
+
         /* for offline VMs we can return pinning information */
-        ret = virshVcpuinfoInactive(ctl, dom, info.nrVirtCpu, maxcpu, pretty);
+        ret = virshVcpuinfoInactive(ctl, dom, maxcpu, pretty);
         goto cleanup;
     }
 
