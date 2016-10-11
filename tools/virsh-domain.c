@@ -6157,13 +6157,12 @@ virshCPUCountCollect(vshControl *ctl,
             goto cleanup;
 
         if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
-            if (virXPathInt("string(/domain/vcpus)", ctxt, &count) < 0) {
+            if (virXPathInt("string(/domain/vcpu)", ctxt, &count) < 0) {
                 vshError(ctl, "%s", _("Failed to retrieve maximum vcpu count"));
                 goto cleanup;
             }
         } else {
-            if (virXPathInt("string(/domain/vcpus/@current)",
-                            ctxt, &count) < 0) {
+            if (virXPathInt("string(/domain/vcpu/@current)", ctxt, &count) < 0) {
                 vshError(ctl, "%s", _("Failed to retrieve current vcpu count"));
                 goto cleanup;
             }
