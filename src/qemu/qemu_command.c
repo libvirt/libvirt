@@ -4261,8 +4261,8 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
     if (video->primary) {
         model = qemuDeviceVideoTypeToString(video->type);
         if (!model || STREQ(model, "")) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("video type %s is not supported with QEMU"),
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid model for video type '%s'"),
                            virDomainVideoTypeToString(video->type));
             goto error;
         }
@@ -4271,12 +4271,6 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
             model = "virtio-gpu-pci";
         }
     } else {
-        if (video->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("non-primary video device must be type of 'qxl'"));
-            goto error;
-        }
-
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            "%s", _("only one video card is currently supported"));
@@ -4287,12 +4281,6 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
     }
 
     virBufferAsprintf(&buf, "%s,id=%s", model, video->info.alias);
-
-    if (video->accel && video->accel->accel2d == VIR_TRISTATE_SWITCH_ON) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("qemu does not support the accel2d setting"));
-        goto error;
-    }
 
     if (video->accel && video->accel->accel3d == VIR_TRISTATE_SWITCH_ON) {
         if (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO ||
@@ -4308,19 +4296,6 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
     }
 
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
-        if (video->vram > (UINT_MAX / 1024)) {
-            virReportError(VIR_ERR_OVERFLOW,
-                           _("value for 'vram' must be less than '%u'"),
-                           UINT_MAX / 1024);
-            goto error;
-        }
-        if (video->ram > (UINT_MAX / 1024)) {
-            virReportError(VIR_ERR_OVERFLOW,
-                           _("value for 'ram' must be less than '%u'"),
-                           UINT_MAX / 1024);
-            goto error;
-        }
-
         if (video->ram) {
             /* QEMU accepts bytes for ram_size. */
             virBufferAsprintf(&buf, ",ram_size=%u", video->ram * 1024);
@@ -4350,13 +4325,6 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
           virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
          (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
           virQEMUCapsGet(qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM)))) {
-
-        if (video->vram < 1024) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("value for 'vram' must be at least 1 MiB "
-                                   "(1024 KiB)"));
-            goto error;
-        }
 
         virBufferAsprintf(&buf, ",vgamem_mb=%u", video->vram / 1024);
     }
@@ -4419,8 +4387,8 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
 
         const char *vgastr = qemuVideoTypeToString(primaryVideoType);
         if (!vgastr || STREQ(vgastr, "")) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("video type %s is not supported with QEMU"),
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid model for video type '%s'"),
                            virDomainVideoTypeToString(primaryVideoType));
             return -1;
         }
@@ -4446,19 +4414,6 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
             unsigned int vram = def->videos[0]->vram;
             unsigned int vram64 = def->videos[0]->vram64;
             unsigned int vgamem = def->videos[0]->vgamem;
-
-            if (vram > (UINT_MAX / 1024)) {
-                virReportError(VIR_ERR_OVERFLOW,
-                       _("value for 'vram' must be less than '%u'"),
-                               UINT_MAX / 1024);
-                return -1;
-            }
-            if (ram > (UINT_MAX / 1024)) {
-                virReportError(VIR_ERR_OVERFLOW,
-                   _("value for 'ram' must be less than '%u'"),
-                               UINT_MAX / 1024);
-                return -1;
-            }
 
             if (ram) {
                 virCommandAddArg(cmd, "-global");
@@ -4491,13 +4446,6 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
               virQEMUCapsGet(qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM)))) {
             unsigned int vram = def->videos[0]->vram;
 
-            if (vram < 1024) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("value for 'vgamem' must be at "
-                                       "least 1 MiB (1024 KiB)"));
-                return -1;
-            }
-
             virCommandAddArg(cmd, "-global");
             virCommandAddArgFormat(cmd, "%s.vgamem_mb=%u",
                                    dev, vram / 1024);
@@ -4505,12 +4453,6 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
 
         for (i = 1; i < def->nvideos; i++) {
             char *str;
-            if (def->videos[i]->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("video type %s is only valid as primary video card"),
-                               virDomainVideoTypeToString(def->videos[0]->type));
-                return -1;
-            }
 
             virCommandAddArg(cmd, "-device");
 

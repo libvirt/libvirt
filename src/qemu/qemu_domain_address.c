@@ -1242,13 +1242,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             goto error;
     }
 
-    /* Further non-primary video cards which have to be qxl type */
     for (i = 1; i < def->nvideos; i++) {
-        if (def->videos[i]->type != VIR_DOMAIN_VIDEO_TYPE_QXL) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("non-primary video device must be type of 'qxl'"));
-            goto error;
-        }
         if (!virDeviceInfoPCIAddressWanted(&def->videos[i]->info))
             continue;
         if (virDomainPCIAddressReserveNextSlot(addrs, &def->videos[i]->info,
