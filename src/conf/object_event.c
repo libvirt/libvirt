@@ -807,6 +807,9 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
 {
     virObjectEventQueue tempQueue;
 
+    /* We need to lock as well as ref due to the fact that we might
+     * unref the state we're working on in this very function */
+    virObjectRef(state);
     virObjectLock(state);
     state->isDispatching = true;
 
@@ -826,8 +829,13 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
     /* Purge any deleted callbacks */
     virObjectEventCallbackListPurgeMarked(state->callbacks);
 
+    /* If we purged all callbacks, we need to remove the timeout as
+     * well like virObjectEventStateDeregisterID() would do. */
+    virObjectEventStateCleanupTimer(state, true);
+
     state->isDispatching = false;
     virObjectUnlock(state);
+    virObjectUnref(state);
 }
 
 
