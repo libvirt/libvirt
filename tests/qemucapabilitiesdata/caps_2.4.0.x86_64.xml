@@ -180,6 +180,7 @@
   <flag name='smm'/>
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='machine-iommu'/>
+  <flag name='virtio-vga'/>
   <version>2004000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

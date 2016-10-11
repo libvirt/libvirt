@@ -328,7 +328,7 @@ typedef enum {
 
     /* 200 */
     QEMU_CAPS_INCOMING_DEFER, /* -incoming defer and migrate_incoming */
-    QEMU_CAPS_DEVICE_VIRTIO_GPU, /* -device virtio-gpu-* & virtio-vga */
+    QEMU_CAPS_DEVICE_VIRTIO_GPU, /* -device virtio-gpu-* */
     QEMU_CAPS_VIRTIO_GPU_VIRGL, /* -device virtio-gpu-*.virgl */
     QEMU_CAPS_VIRTIO_KEYBOARD, /* -device virtio-keyboard-{device,pci} */
     QEMU_CAPS_VIRTIO_MOUSE, /* -device virtio-mouse-{device,pci} */
@@ -379,6 +379,7 @@ typedef enum {
     /* 235 */
     QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE, /* virtio-net-*.rx_queue_size */
     QEMU_CAPS_MACHINE_IOMMU, /* -machine iommu=on */
+    QEMU_CAPS_DEVICE_VIRTIO_VGA, /* -device virtio-vga */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

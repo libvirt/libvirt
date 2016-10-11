@@ -192,6 +192,7 @@
   <flag name='smm'/>
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='query-hotpluggable-cpus'/>
+  <flag name='virtio-vga'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.7.0)</package>
