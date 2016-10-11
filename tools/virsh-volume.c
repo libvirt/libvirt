@@ -1050,7 +1050,9 @@ static const vshCmdInfo info_vol_resize[] = {
      .data = N_("resize a vol")
     },
     {.name = "desc",
-     .data = N_("Resizes a storage volume.")
+     .data = N_("Resizes a storage volume. This is safe only for storage "
+                "volumes not in use by an active guest.\n"
+                "See blockresize for live resizing.")
     },
     {.name = NULL}
 };
