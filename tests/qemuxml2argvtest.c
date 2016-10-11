@@ -1593,11 +1593,11 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     DO_TEST("video-virtio-gpu-virgl",
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU_VIRGL,
+            QEMU_CAPS_VIRTIO_GPU_VIRGL,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY);
     DO_TEST("video-virtio-gpu-spice-gl",
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU_VIRGL,
+            QEMU_CAPS_VIRTIO_GPU_VIRGL,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_SPICE_GL,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY);

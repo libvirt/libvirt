@@ -1677,7 +1677,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxl[] = {
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioGpu[] = {
-    { "virgl", QEMU_CAPS_DEVICE_VIRTIO_GPU_VIRGL },
+    { "virgl", QEMU_CAPS_VIRTIO_GPU_VIRGL },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsICH9[] = {
