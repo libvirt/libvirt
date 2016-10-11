@@ -4448,6 +4448,50 @@ qemuProcessStartValidateGraphics(virDomainObjPtr vm)
 
 
 static int
+qemuProcessStartValidateVideo(virDomainObjPtr vm,
+                              virQEMUCapsPtr qemuCaps)
+{
+    size_t i;
+    virDomainVideoDefPtr video;
+
+    for (i = 0; i < vm->def->nvideos; i++) {
+        video = vm->def->videos[i];
+
+        if (video->primary &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY) &&
+            ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
+              !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA)) ||
+             (video->type == VIR_DOMAIN_VIDEO_TYPE_CIRRUS &&
+              !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA)) ||
+             (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
+              !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMWARE_SVGA)) ||
+             (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
+              !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL)) ||
+             (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
+              !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU)))) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("this QEMU does not support '%s' video device"),
+                           virDomainVideoTypeToString(video->type));
+            return -1;
+        }
+
+        if (video->accel) {
+            if (video->accel->accel3d == VIR_TRISTATE_SWITCH_ON &&
+                (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO ||
+                 !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_VIRGL))) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("%s 3d acceleration is not supported"),
+                               virDomainVideoTypeToString(video->type));
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuProcessStartValidateXML(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             virQEMUCapsPtr qemuCaps,
@@ -4518,6 +4562,9 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
         return -1;
 
     if (qemuProcessStartValidateGraphics(vm) < 0)
+        return -1;
+
+    if (qemuProcessStartValidateVideo(vm, qemuCaps) < 0)
         return -1;
 
     VIR_DEBUG("Checking for any possible (non-fatal) issues");

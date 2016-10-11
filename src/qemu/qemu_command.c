@@ -4271,26 +4271,12 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
             model = "virtio-gpu-pci";
         }
     } else {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("only one video card is currently supported"));
-            goto error;
-        }
-
         model = "qxl";
     }
 
     virBufferAsprintf(&buf, "%s,id=%s", model, video->info.alias);
 
     if (video->accel && video->accel->accel3d == VIR_TRISTATE_SWITCH_ON) {
-        if (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO ||
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_VIRGL)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("%s 3d acceleration is not supported"),
-                           virDomainVideoTypeToString(video->type));
-            goto error;
-        }
-
         virBufferAsprintf(&buf, ",virgl=%s",
                           virTristateSwitchTypeToString(video->accel->accel3d));
     }
@@ -4356,17 +4342,7 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
 
     primaryVideoType = def->videos[0]->type;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY) &&
-         ((primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VGA &&
-             virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VGA)) ||
-         (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_CIRRUS &&
-             virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_CIRRUS_VGA)) ||
-         (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
-             virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMWARE_SVGA)) ||
-         (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_QXL &&
-             virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL)) ||
-         (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
-             virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU)))) {
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY)) {
         for (i = 0; i < def->nvideos; i++) {
             char *str;
             virCommandAddArg(cmd, "-device");
@@ -4378,13 +4354,6 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
             VIR_FREE(str);
         }
     } else {
-        if ((primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_QXL) &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("This QEMU does not support QXL graphics adapters"));
-            return -1;
-        }
-
         const char *vgastr = qemuVideoTypeToString(primaryVideoType);
         if (!vgastr || STREQ(vgastr, "")) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
