@@ -784,6 +784,25 @@ virObjectEventStateQueue(virObjectEventStatePtr state,
 
 
 static void
+virObjectEventStateCleanupTimer(virObjectEventStatePtr state, bool clear_queue)
+{
+    /* There are still some callbacks, keep the timer. */
+    if (state->callbacks->count)
+        return;
+
+    /* The timer is not registered, nothing to do. */
+    if (state->timer == -1)
+        return;
+
+    virEventRemoveTimeout(state->timer);
+    state->timer = -1;
+
+    if (clear_queue)
+        virObjectEventQueueClear(state->queue);
+}
+
+
+static void
 virObjectEventStateFlush(virObjectEventStatePtr state)
 {
     virObjectEventQueue tempQueue;
@@ -886,12 +905,8 @@ virObjectEventStateRegisterID(virConnectPtr conn,
                                           cb, opaque, freecb,
                                           legacy, callbackID, serverFilter);
 
-    if (ret == -1 &&
-        state->callbacks->count == 0 &&
-        state->timer != -1) {
-        virEventRemoveTimeout(state->timer);
-        state->timer = -1;
-    }
+    if (ret < 0)
+        virObjectEventStateCleanupTimer(state, false);
 
  cleanup:
     virObjectUnlock(state);
@@ -926,12 +941,7 @@ virObjectEventStateDeregisterID(virConnectPtr conn,
         ret = virObjectEventCallbackListRemoveID(conn,
                                                  state->callbacks, callbackID);
 
-    if (state->callbacks->count == 0 &&
-        state->timer != -1) {
-        virEventRemoveTimeout(state->timer);
-        state->timer = -1;
-        virObjectEventQueueClear(state->queue);
-    }
+    virObjectEventStateCleanupTimer(state, true);
 
     virObjectUnlock(state);
     return ret;
