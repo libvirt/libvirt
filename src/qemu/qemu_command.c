@@ -4409,31 +4409,28 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
 {
     size_t i;
 
-    if (!def->videos)
-        return 0;
+    for (i = 0; i < def->nvideos; i++) {
+        char *str = NULL;
+        virDomainVideoDefPtr video = def->videos[i];
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY)) {
-        for (i = 0; i < def->nvideos; i++) {
-            char *str;
-            virCommandAddArg(cmd, "-device");
-            if (!(str = qemuBuildDeviceVideoStr(def, def->videos[i],
-                                                qemuCaps)))
-                return -1;
+        if (video->primary) {
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIDEO_PRIMARY)) {
 
-            virCommandAddArg(cmd, str);
-            VIR_FREE(str);
-        }
-    } else {
-        if (qemuBuildVgaVideoCommand(cmd, def->videos[0], qemuCaps) < 0)
-            return -1;
+                virCommandAddArg(cmd, "-device");
 
-        for (i = 1; i < def->nvideos; i++) {
-            char *str;
+                if (!(str = qemuBuildDeviceVideoStr(def, video, qemuCaps)))
+                    return -1;
 
+                virCommandAddArg(cmd, str);
+                VIR_FREE(str);
+            } else {
+                if (qemuBuildVgaVideoCommand(cmd, video, qemuCaps) < 0)
+                    return -1;
+            }
+        } else {
             virCommandAddArg(cmd, "-device");
 
-            if (!(str = qemuBuildDeviceVideoStr(def, def->videos[i],
-                                                qemuCaps)))
+            if (!(str = qemuBuildDeviceVideoStr(def, video, qemuCaps)))
                 return -1;
 
             virCommandAddArg(cmd, str);
