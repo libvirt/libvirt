@@ -19,7 +19,6 @@
   <flag name='fsdev'/>
   <flag name='name-process'/>
   <flag name='smbios-type'/>
-  <flag name='vga-qxl'/>
   <flag name='spice'/>
   <flag name='vga-none'/>
   <flag name='boot-index'/>

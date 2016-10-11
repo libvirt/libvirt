@@ -110,7 +110,7 @@ typedef enum {
     QEMU_CAPS_SMBIOS_TYPE, /* Is -smbios type= available */
 
     /* 45 */
-    QEMU_CAPS_VGA_QXL, /* The 'qxl' arg for '-vga' */
+    X_QEMU_CAPS_VGA_QXL, /* The 'qxl' arg for '-vga' */
     QEMU_CAPS_SPICE, /* Is -spice avail */
     QEMU_CAPS_VGA_NONE, /* The 'none' arg for '-vga' */
     X_QEMU_CAPS_MIGRATE_QEMU_FD, /* -incoming fd:n */

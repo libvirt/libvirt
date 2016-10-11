@@ -1176,8 +1176,6 @@ virQEMUCapsComputeCmdFlags(const char *help,
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_DISPLAY);
     if ((p = strstr(help, "-vga")) && !strstr(help, "-std-vga")) {
         const char *nl = strstr(p, "\n");
-        if (strstr(p, "|qxl"))
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_VGA_QXL);
         if ((p = strstr(p, "|none")) && p < nl)
             virQEMUCapsSet(qemuCaps, QEMU_CAPS_VGA_NONE);
     }
@@ -2642,9 +2640,6 @@ virQEMUCapsProbeQMPObjects(virQEMUCapsPtr qemuCaps,
     /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEVMC))
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC);
-    /* If qemu supports newer -device qxl it supports -vga qxl as well */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_VGA_QXL);
 
     return 0;
 }
