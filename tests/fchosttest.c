@@ -68,35 +68,25 @@ test3(const void *data ATTRIBUTE_UNUSED)
     char *vports = NULL;
     int ret = -1;
 
-    if (virReadFCHost(TEST_FC_HOST_PREFIX,
-                      TEST_FC_HOST_NUM,
-                      "node_name",
-                      &wwnn) < 0)
+    if (!(wwnn = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
+                               "node_name")))
         return -1;
 
-    if (virReadFCHost(TEST_FC_HOST_PREFIX,
-                      TEST_FC_HOST_NUM,
-                      "port_name",
-                      &wwpn) < 0)
+    if (!(wwpn = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
+                               "port_name")))
         goto cleanup;
 
-    if (virReadFCHost(TEST_FC_HOST_PREFIX,
-                      TEST_FC_HOST_NUM,
-                      "fabric_name",
-                      &fabric_wwn) < 0)
+    if (!(fabric_wwn = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
+                                     "fabric_name")))
         goto cleanup;
 
-    if (virReadFCHost(TEST_FC_HOST_PREFIX,
-                      TEST_FC_HOST_NUM,
-                      "max_npiv_vports",
-                      &max_vports) < 0)
+    if (!(max_vports = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
+                                     "max_npiv_vports")))
         goto cleanup;
 
 
-    if (virReadFCHost(TEST_FC_HOST_PREFIX,
-                      TEST_FC_HOST_NUM,
-                      "npiv_vports_inuse",
-                      &vports) < 0)
+    if (!(vports = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
+                                 "npiv_vports_inuse")))
         goto cleanup;
 
     if (STRNEQ(expect_wwnn, wwnn) ||

@@ -44,8 +44,7 @@ VIR_LOG_INIT("node_device.node_device_linux_sysfs");
 int
 nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapDataPtr d)
 {
-    char *max_vports = NULL;
-    char *vports = NULL;
+    char *tmp = NULL;
     int ret = -1;
 
     if (virReadSCSIUniqueId(NULL, d->scsi_host.host,
@@ -59,64 +58,53 @@ nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapDataPtr d)
     if (virIsCapableFCHost(NULL, d->scsi_host.host)) {
         d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST;
 
-        if (virReadFCHost(NULL,
-                          d->scsi_host.host,
-                          "port_name",
-                          &d->scsi_host.wwpn) < 0) {
+        if (!(tmp = virReadFCHost(NULL, d->scsi_host.host, "port_name"))) {
             VIR_WARN("Failed to read WWPN for host%d", d->scsi_host.host);
             goto cleanup;
         }
+        VIR_FREE(d->scsi_host.wwpn);
+        VIR_STEAL_PTR(d->scsi_host.wwpn, tmp);
 
-        if (virReadFCHost(NULL,
-                          d->scsi_host.host,
-                          "node_name",
-                          &d->scsi_host.wwnn) < 0) {
+        if (!(tmp = virReadFCHost(NULL, d->scsi_host.host, "node_name"))) {
             VIR_WARN("Failed to read WWNN for host%d", d->scsi_host.host);
             goto cleanup;
         }
+        VIR_FREE(d->scsi_host.wwnn);
+        VIR_STEAL_PTR(d->scsi_host.wwnn, tmp);
 
-        if (virReadFCHost(NULL,
-                          d->scsi_host.host,
-                          "fabric_name",
-                          &d->scsi_host.fabric_wwn) < 0) {
+        if (!(tmp = virReadFCHost(NULL, d->scsi_host.host, "fabric_name"))) {
             VIR_WARN("Failed to read fabric WWN for host%d",
                      d->scsi_host.host);
             goto cleanup;
         }
+        VIR_FREE(d->scsi_host.fabric_wwn);
+        VIR_STEAL_PTR(d->scsi_host.fabric_wwn, tmp);
     }
 
     if (virIsCapableVport(NULL, d->scsi_host.host)) {
         d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
 
-        if (virReadFCHost(NULL,
-                          d->scsi_host.host,
-                          "max_npiv_vports",
-                          &max_vports) < 0) {
+        if (!(tmp = virReadFCHost(NULL, d->scsi_host.host,
+                                  "max_npiv_vports"))) {
             VIR_WARN("Failed to read max_npiv_vports for host%d",
                      d->scsi_host.host);
             goto cleanup;
         }
 
-         if (virReadFCHost(NULL,
-                          d->scsi_host.host,
-                          "npiv_vports_inuse",
-                          &vports) < 0) {
+        if (virStrToLong_i(tmp, NULL, 10, &d->scsi_host.max_vports) < 0) {
+            VIR_WARN("Failed to parse value of max_npiv_vports '%s'", tmp);
+            goto cleanup;
+        }
+
+         if (!(tmp = virReadFCHost(NULL, d->scsi_host.host,
+                                   "npiv_vports_inuse"))) {
             VIR_WARN("Failed to read npiv_vports_inuse for host%d",
                      d->scsi_host.host);
             goto cleanup;
         }
 
-        if (virStrToLong_i(max_vports, NULL, 10,
-                           &d->scsi_host.max_vports) < 0) {
-            VIR_WARN("Failed to parse value of max_npiv_vports '%s'",
-                      max_vports);
-            goto cleanup;
-        }
-
-        if (virStrToLong_i(vports, NULL, 10,
-                           &d->scsi_host.vports) < 0) {
-            VIR_WARN("Failed to parse value of npiv_vports_inuse '%s'",
-                     vports);
+        if (virStrToLong_i(tmp, NULL, 10, &d->scsi_host.vports) < 0) {
+            VIR_WARN("Failed to parse value of npiv_vports_inuse '%s'", tmp);
             goto cleanup;
         }
     }
@@ -132,8 +120,7 @@ nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapDataPtr d)
         VIR_FREE(d->scsi_host.wwpn);
         VIR_FREE(d->scsi_host.fabric_wwn);
     }
-    VIR_FREE(max_vports);
-    VIR_FREE(vports);
+    VIR_FREE(tmp);
     return ret;
 }
 

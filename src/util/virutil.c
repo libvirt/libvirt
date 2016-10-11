@@ -2008,24 +2008,21 @@ virGetSCSIHostNameByParentaddr(unsigned int domain,
  * @sysfs_prefix: "fc_host" sysfs path, defaults to SYSFS_FC_HOST_PATH
  * @host: Host number, E.g. 5 of "fc_host/host5"
  * @entry: Name of the sysfs entry to read
- * @result: Return the entry value as string
  *
  * Read the value of sysfs "fc_host" entry.
  *
- * Returns 0 on success, and @result is filled with the entry value.
- * as string, Otherwise returns -1. Caller must free @result after
- * use.
+ * Returns result as a stringon success, caller must free @result after
+ * Otherwise returns NULL.
  */
-int
+char *
 virReadFCHost(const char *sysfs_prefix,
               int host,
-              const char *entry,
-              char **result)
+              const char *entry)
 {
     char *sysfs_path = NULL;
     char *p = NULL;
-    int ret = -1;
     char *buf = NULL;
+    char *result = NULL;
 
     if (virAsprintf(&sysfs_path, "%s/host%d/%s",
                     sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
@@ -2043,14 +2040,12 @@ virReadFCHost(const char *sysfs_prefix,
     else
         p = buf;
 
-    if (VIR_STRDUP(*result, p) < 0)
-        goto cleanup;
+    ignore_value(VIR_STRDUP(result, p));
 
-    ret = 0;
  cleanup:
     VIR_FREE(sysfs_path);
     VIR_FREE(buf);
-    return ret;
+    return result;
 }
 
 bool
@@ -2171,7 +2166,7 @@ virManageVport(const int parent_host,
     return ret;
 }
 
-/* virGetHostNameByWWN:
+/* virGetFCHostNameByWWN:
  *
  * Iterate over the sysfs tree to get FC host name (e.g. host5)
  * by the provided "wwnn,wwpn" pair.
@@ -2298,7 +2293,7 @@ virFindFCHostCapableVport(const char *sysfs_prefix)
         if (!virIsCapableVport(prefix, host))
             continue;
 
-        if (virReadFCHost(prefix, host, "port_state", &state) < 0) {
+        if (!(state = virReadFCHost(prefix, host, "port_state"))) {
              VIR_DEBUG("Failed to read port_state for host%d", host);
              continue;
         }
@@ -2310,12 +2305,12 @@ virFindFCHostCapableVport(const char *sysfs_prefix)
         }
         VIR_FREE(state);
 
-        if (virReadFCHost(prefix, host, "max_npiv_vports", &max_vports) < 0) {
+        if (!(max_vports = virReadFCHost(prefix, host, "max_npiv_vports"))) {
              VIR_DEBUG("Failed to read max_npiv_vports for host%d", host);
              continue;
         }
 
-        if (virReadFCHost(prefix, host, "npiv_vports_inuse", &vports) < 0) {
+        if (!(vports = virReadFCHost(prefix, host, "npiv_vports_inuse"))) {
              VIR_DEBUG("Failed to read npiv_vports_inuse for host%d", host);
              VIR_FREE(max_vports);
              continue;
@@ -2379,14 +2374,13 @@ virGetSCSIHostNameByParentaddr(unsigned int domain ATTRIBUTE_UNUSED,
     return NULL;
 }
 
-int
+char *
 virReadFCHost(const char *sysfs_prefix ATTRIBUTE_UNUSED,
               int host ATTRIBUTE_UNUSED,
-              const char *entry ATTRIBUTE_UNUSED,
-              char **result ATTRIBUTE_UNUSED)
+              const char *entry ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
-    return -1;
+    return NULL;
 }
 
 bool

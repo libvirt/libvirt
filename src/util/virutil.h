@@ -182,11 +182,10 @@ virGetSCSIHostNameByParentaddr(unsigned int domain,
                                unsigned int slot,
                                unsigned int function,
                                unsigned int unique_id);
-int virReadFCHost(const char *sysfs_prefix,
-                  int host,
-                  const char *entry,
-                  char **result)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+char *virReadFCHost(const char *sysfs_prefix,
+                    int host,
+                    const char *entry)
+    ATTRIBUTE_NONNULL(3);
 
 bool virIsCapableFCHost(const char *sysfs_prefix, int host);
 bool virIsCapableVport(const char *sysfs_prefix, int host);
