@@ -4331,14 +4331,14 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
 
 static int
 qemuBuildVgaVideoCommand(virCommandPtr cmd,
-                         const virDomainDef *def,
+                         virDomainVideoDefPtr video,
                          virQEMUCapsPtr qemuCaps)
 {
-    const char *vgastr = qemuVideoTypeToString(def->videos[0]->type);
+    const char *vgastr = qemuVideoTypeToString(video->type);
     if (!vgastr || STREQ(vgastr, "")) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid model for video type '%s'"),
-                       virDomainVideoTypeToString(def->videos[0]->type));
+                       virDomainVideoTypeToString(video->type));
         return -1;
     }
 
@@ -4355,14 +4355,14 @@ qemuBuildVgaVideoCommand(virCommandPtr cmd,
      * See 'Graphics Devices' section in docs/qdev-device-use.txt in
      * QEMU repository.
      */
-    const char *dev = qemuDeviceVideoTypeToString(def->videos[0]->type);
+    const char *dev = qemuDeviceVideoTypeToString(video->type);
 
-    if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
-        (def->videos[0]->vram || def->videos[0]->ram)) {
-        unsigned int ram = def->videos[0]->ram;
-        unsigned int vram = def->videos[0]->vram;
-        unsigned int vram64 = def->videos[0]->vram64;
-        unsigned int vgamem = def->videos[0]->vgamem;
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
+        (video->vram || video->ram)) {
+        unsigned int ram = video->ram;
+        unsigned int vram = video->vram;
+        unsigned int vram64 = video->vram64;
+        unsigned int vgamem = video->vgamem;
 
         if (ram) {
             virCommandAddArg(cmd, "-global");
@@ -4388,12 +4388,12 @@ qemuBuildVgaVideoCommand(virCommandPtr cmd,
         }
     }
 
-    if (def->videos[0]->vram &&
-        ((def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
+    if (video->vram &&
+        ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
           virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
-         (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
+         (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
           virQEMUCapsGet(qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM)))) {
-        unsigned int vram = def->videos[0]->vram;
+        unsigned int vram = video->vram;
 
         virCommandAddArg(cmd, "-global");
         virCommandAddArgFormat(cmd, "%s.vgamem_mb=%u",
@@ -4426,7 +4426,7 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
             VIR_FREE(str);
         }
     } else {
-        if (qemuBuildVgaVideoCommand(cmd, def, qemuCaps) < 0)
+        if (qemuBuildVgaVideoCommand(cmd, def->videos[0], qemuCaps) < 0)
             return -1;
 
         for (i = 1; i < def->nvideos; i++) {
