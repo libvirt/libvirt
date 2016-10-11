@@ -1781,7 +1781,7 @@ static int lxcStateCleanup(void)
 
     virNWFilterUnRegisterCallbackDriver(&lxcCallbackDriver);
     virObjectUnref(lxc_driver->domains);
-    virObjectEventStateFree(lxc_driver->domainEventState);
+    virObjectUnref(lxc_driver->domainEventState);
 
     virObjectUnref(lxc_driver->closeCallbacks);
 

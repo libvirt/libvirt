@@ -32,6 +32,7 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virerror.h"
+#include "virobject.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -71,6 +72,7 @@ typedef struct _virObjectEventQueue virObjectEventQueue;
 typedef virObjectEventQueue *virObjectEventQueuePtr;
 
 struct _virObjectEventState {
+    virObjectLockable parent;
     /* The list of domain event callbacks */
     virObjectEventCallbackListPtr callbacks;
     /* The queue of object events */
@@ -79,22 +81,31 @@ struct _virObjectEventState {
     int timer;
     /* Flag if we're in process of dispatching */
     bool isDispatching;
-    virMutex lock;
 };
 
 static virClassPtr virObjectEventClass;
+static virClassPtr virObjectEventStateClass;
 
 static void virObjectEventDispose(void *obj);
+static void virObjectEventStateDispose(void *obj);
 
 static int
 virObjectEventOnceInit(void)
 {
+    if (!(virObjectEventStateClass =
+          virClassNew(virClassForObjectLockable(),
+                      "virObjectEventState",
+                      sizeof(virObjectEventState),
+                      virObjectEventStateDispose)))
+        return -1;
+
     if (!(virObjectEventClass =
           virClassNew(virClassForObject(),
                       "virObjectEvent",
                       sizeof(virObjectEvent),
                       virObjectEventDispose)))
         return -1;
+
     return 0;
 }
 
@@ -504,51 +515,23 @@ virObjectEventQueueNew(void)
 
 
 /**
- * virObjectEventStateLock:
- * @state: the event state object
- *
- * Lock event state before calling functions from object_event_private.h.
- */
-static void
-virObjectEventStateLock(virObjectEventStatePtr state)
-{
-    virMutexLock(&state->lock);
-}
-
-
-/**
- * virObjectEventStateUnlock:
- * @state: the event state object
- *
- * Unlock event state after calling functions from object_event_private.h.
- */
-static void
-virObjectEventStateUnlock(virObjectEventStatePtr state)
-{
-    virMutexUnlock(&state->lock);
-}
-
-
-/**
- * virObjectEventStateFree:
+ * virObjectEventStateDispose:
  * @list: virObjectEventStatePtr to free
  *
  * Free a virObjectEventStatePtr and its members, and unregister the timer.
  */
-void
-virObjectEventStateFree(virObjectEventStatePtr state)
+static void
+virObjectEventStateDispose(void *obj)
 {
-    if (!state)
-        return;
+    virObjectEventStatePtr state = obj;
+
+    VIR_DEBUG("obj=%p", state);
 
     virObjectEventCallbackListFree(state->callbacks);
     virObjectEventQueueFree(state->queue);
 
     if (state->timer != -1)
         virEventRemoveTimeout(state->timer);
-
-    virMutexDestroy(&state->lock);
-    VIR_FREE(state);
 }
 
 
@@ -583,15 +566,11 @@ virObjectEventStateNew(void)
 {
     virObjectEventStatePtr state = NULL;
 
-    if (VIR_ALLOC(state) < 0)
-        goto error;
+    if (virObjectEventInitialize() < 0)
+        return NULL;
 
-    if (virMutexInit(&state->lock) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("unable to initialize state mutex"));
-        VIR_FREE(state);
-        goto error;
-    }
+    if (!(state = virObjectLockableNew(virObjectEventStateClass)))
+        return NULL;
 
     if (VIR_ALLOC(state->callbacks) < 0)
         goto error;
@@ -604,7 +583,7 @@ virObjectEventStateNew(void)
     return state;
 
  error:
-    virObjectEventStateFree(state);
+    virObjectUnref(state);
     return NULL;
 }
 
@@ -727,9 +706,9 @@ virObjectEventStateDispatchCallbacks(virObjectEventStatePtr state,
             continue;
 
         /* Drop the lock whle dispatching, for sake of re-entrancy */
-        virObjectEventStateUnlock(state);
+        virObjectUnlock(state);
         event->dispatch(cb->conn, event, cb->cb, cb->opaque);
-        virObjectEventStateLock(state);
+        virObjectLock(state);
     }
 }
 
@@ -773,7 +752,7 @@ virObjectEventStateQueueRemote(virObjectEventStatePtr state,
         return;
     }
 
-    virObjectEventStateLock(state);
+    virObjectLock(state);
 
     event->remoteID = remoteID;
     if (virObjectEventQueuePush(state->queue, event) < 0) {
@@ -783,7 +762,7 @@ virObjectEventStateQueueRemote(virObjectEventStatePtr state,
 
     if (state->queue->count == 1)
         virEventUpdateTimeout(state->timer, 0);
-    virObjectEventStateUnlock(state);
+    virObjectUnlock(state);
 }
 
 
@@ -809,7 +788,7 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
 {
     virObjectEventQueue tempQueue;
 
-    virObjectEventStateLock(state);
+    virObjectLock(state);
     state->isDispatching = true;
 
     /* Copy the queue, so we're reentrant safe when dispatchFunc drops the
@@ -829,7 +808,7 @@ virObjectEventStateFlush(virObjectEventStatePtr state)
     virObjectEventCallbackListPurgeMarked(state->callbacks);
 
     state->isDispatching = false;
-    virObjectEventStateUnlock(state);
+    virObjectUnlock(state);
 }
 
 
@@ -884,7 +863,7 @@ virObjectEventStateRegisterID(virConnectPtr conn,
 {
     int ret = -1;
 
-    virObjectEventStateLock(state);
+    virObjectLock(state);
 
     if ((state->callbacks->count == 0) &&
         (state->timer == -1) &&
@@ -911,7 +890,7 @@ virObjectEventStateRegisterID(virConnectPtr conn,
     }
 
  cleanup:
-    virObjectEventStateUnlock(state);
+    virObjectUnlock(state);
     return ret;
 }
 
@@ -934,7 +913,7 @@ virObjectEventStateDeregisterID(virConnectPtr conn,
 {
     int ret;
 
-    virObjectEventStateLock(state);
+    virObjectLock(state);
     if (state->isDispatching)
         ret = virObjectEventCallbackListMarkDeleteID(conn,
                                                      state->callbacks,
@@ -950,7 +929,7 @@ virObjectEventStateDeregisterID(virConnectPtr conn,
         virObjectEventQueueClear(state->queue);
     }
 
-    virObjectEventStateUnlock(state);
+    virObjectUnlock(state);
     return ret;
 }
 
@@ -978,11 +957,11 @@ virObjectEventStateCallbackID(virConnectPtr conn,
 {
     int ret = -1;
 
-    virObjectEventStateLock(state);
+    virObjectLock(state);
     ret = virObjectEventCallbackLookup(conn, state->callbacks, NULL,
                                        klass, eventID, callback, true,
                                        remoteID);
-    virObjectEventStateUnlock(state);
+    virObjectUnlock(state);
 
     if (ret < 0)
         virReportError(VIR_ERR_INVALID_ARG,
@@ -1016,7 +995,7 @@ virObjectEventStateEventID(virConnectPtr conn,
     size_t i;
     virObjectEventCallbackListPtr cbList = state->callbacks;
 
-    virObjectEventStateLock(state);
+    virObjectLock(state);
     for (i = 0; i < cbList->count; i++) {
         virObjectEventCallbackPtr cb = cbList->callbacks[i];
 
@@ -1030,7 +1009,7 @@ virObjectEventStateEventID(virConnectPtr conn,
             break;
         }
     }
-    virObjectEventStateUnlock(state);
+    virObjectUnlock(state);
 
     if (ret < 0)
         virReportError(VIR_ERR_INVALID_ARG,
@@ -1060,7 +1039,7 @@ virObjectEventStateSetRemote(virConnectPtr conn,
 {
     size_t i;
 
-    virObjectEventStateLock(state);
+    virObjectLock(state);
     for (i = 0; i < state->callbacks->count; i++) {
         virObjectEventCallbackPtr cb = state->callbacks->callbacks[i];
 
@@ -1072,5 +1051,5 @@ virObjectEventStateSetRemote(virConnectPtr conn,
             break;
         }
     }
-    virObjectEventStateUnlock(state);
+    virObjectUnlock(state);
 }

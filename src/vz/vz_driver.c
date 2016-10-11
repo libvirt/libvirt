@@ -171,7 +171,7 @@ static void vzDriverDispose(void * obj)
     virObjectUnref(driver->domains);
     virObjectUnref(driver->caps);
     virObjectUnref(driver->xmlopt);
-    virObjectEventStateFree(driver->domainEventState);
+    virObjectUnref(driver->domainEventState);
     virSysinfoDefFree(driver->hostsysinfo);
 }
 

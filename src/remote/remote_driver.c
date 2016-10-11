@@ -1343,7 +1343,7 @@ doRemoteClose(virConnectPtr conn, struct private_data *priv)
     /* See comment for remoteType. */
     VIR_FREE(priv->type);
 
-    virObjectEventStateFree(priv->eventState);
+    virObjectUnref(priv->eventState);
     priv->eventState = NULL;
 
     return ret;

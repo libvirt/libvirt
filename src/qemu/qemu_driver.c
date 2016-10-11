@@ -1094,7 +1094,7 @@ qemuStateCleanup(void)
     ebtablesContextFree(qemu_driver->ebtables);
 
     /* Free domain callback list */
-    virObjectEventStateFree(qemu_driver->domainEventState);
+    virObjectUnref(qemu_driver->domainEventState);
 
     virLockManagerPluginUnref(qemu_driver->lockManager);
 

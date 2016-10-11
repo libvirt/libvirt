@@ -387,7 +387,7 @@ static void vboxUninitialize(vboxGlobalData *data)
     virObjectUnref(data->caps);
     virObjectUnref(data->xmlopt);
     if (gVBoxAPI.domainEventCallbacks)
-        virObjectEventStateFree(data->domainEvents);
+        virObjectUnref(data->domainEvents);
     VIR_FREE(data);
 }
 

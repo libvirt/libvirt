@@ -153,7 +153,7 @@ testDriverFree(testDriverPtr driver)
     virObjectUnref(driver->networks);
     virInterfaceObjListFree(&driver->ifaces);
     virStoragePoolObjListFree(&driver->pools);
-    virObjectEventStateFree(driver->eventState);
+    virObjectUnref(driver->eventState);
     virMutexUnlock(&driver->lock);
     virMutexDestroy(&driver->lock);
 

@@ -777,7 +777,7 @@ networkStateCleanup(void)
     if (!network_driver)
         return -1;
 
-    virObjectEventStateFree(network_driver->networkEventState);
+    virObjectUnref(network_driver->networkEventState);
 
     /* free inactive networks */
     virObjectUnref(network_driver->networks);

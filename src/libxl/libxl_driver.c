@@ -479,7 +479,7 @@ libxlStateCleanup(void)
     virObjectUnref(libxl_driver->migrationPorts);
     virLockManagerPluginUnref(libxl_driver->lockManager);
 
-    virObjectEventStateFree(libxl_driver->domainEventState);
+    virObjectUnref(libxl_driver->domainEventState);
     virSysinfoDefFree(libxl_driver->hostsysinfo);
 
     virMutexDestroy(&libxl_driver->lock);

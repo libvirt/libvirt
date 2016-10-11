@@ -40,7 +40,6 @@ typedef struct _virObjectEventState virObjectEventState;
 typedef virObjectEventState *virObjectEventStatePtr;
 
 
-void virObjectEventStateFree(virObjectEventStatePtr state);
 virObjectEventStatePtr
 virObjectEventStateNew(void);
 

@@ -685,7 +685,7 @@ umlStateCleanup(void)
 
     virObjectUnref(uml_driver->domains);
 
-    virObjectEventStateFree(uml_driver->domainEventState);
+    virObjectUnref(uml_driver->domainEventState);
 
     VIR_FREE(uml_driver->logDir);
     VIR_FREE(uml_driver->configDir);

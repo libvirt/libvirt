@@ -347,7 +347,7 @@ storageStateCleanup(void)
 
     storageDriverLock();
 
-    virObjectEventStateFree(driver->storageEventState);
+    virObjectUnref(driver->storageEventState);
 
     /* free inactive pools */
     virStoragePoolObjListFree(&driver->pools);

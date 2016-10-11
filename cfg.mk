@@ -127,7 +127,6 @@ useless_free_options =				\
   --name=virDomainDiskDefFree			\
   --name=virDomainEventCallbackListFree		\
   --name=virObjectEventQueueFree		\
-  --name=virObjectEventStateFree		\
   --name=virDomainFSDefFree			\
   --name=virDomainGraphicsDefFree		\
   --name=virDomainHostdevDefFree		\

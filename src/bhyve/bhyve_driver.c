@@ -1198,7 +1198,7 @@ bhyveStateCleanup(void)
     virObjectUnref(bhyve_driver->xmlopt);
     virSysinfoDefFree(bhyve_driver->hostsysinfo);
     virObjectUnref(bhyve_driver->closeCallbacks);
-    virObjectEventStateFree(bhyve_driver->domainEventState);
+    virObjectUnref(bhyve_driver->domainEventState);
 
     virMutexDestroy(&bhyve_driver->lock);
     VIR_FREE(bhyve_driver);

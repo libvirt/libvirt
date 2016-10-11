@@ -819,7 +819,6 @@ virNWFilterVarValueGetSimple;
 # conf/object_event.h
 virObjectEventStateDeregisterID;
 virObjectEventStateEventID;
-virObjectEventStateFree;
 virObjectEventStateNew;
 virObjectEventStateQueue;
 

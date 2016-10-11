@@ -571,7 +571,7 @@ xenUnifiedConnectClose(virConnectPtr conn)
 
     virObjectUnref(priv->caps);
     virObjectUnref(priv->xmlopt);
-    virObjectEventStateFree(priv->domainEvents);
+    virObjectUnref(priv->domainEvents);
 
 #if WITH_XEN_INOTIFY
     if (priv->opened[XEN_UNIFIED_INOTIFY_OFFSET])

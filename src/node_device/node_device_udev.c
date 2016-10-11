@@ -1269,7 +1269,7 @@ static int nodeStateCleanup(void)
 
     nodeDeviceLock();
 
-    virObjectEventStateFree(driver->nodeDeviceEventState);
+    virObjectUnref(driver->nodeDeviceEventState);
 
     priv = driver->privateData;
 
