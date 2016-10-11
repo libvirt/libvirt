@@ -96,7 +96,7 @@ VIR_ENUM_IMPL(qemuVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "std",
               "cirrus",
               "vmware",
-              "", /* no arg needed for xen */
+              "", /* don't support xen */
               "", /* don't support vbox */
               "qxl",
               "", /* don't support parallels */
@@ -108,7 +108,7 @@ VIR_ENUM_IMPL(qemuDeviceVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "VGA",
               "cirrus-vga",
               "vmware-svga",
-              "", /* no device for xen */
+              "", /* don't support xen */
               "", /* don't support vbox */
               "qxl-vga",
               "", /* don't support parallels */
@@ -4419,101 +4419,97 @@ qemuBuildVideoCommandLine(virCommandPtr cmd,
             VIR_FREE(str);
         }
     } else {
-        if (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_XEN) {
-            /* nothing - vga has no effect on Xen pvfb */
-        } else {
-            if ((primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_QXL) &&
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_QXL)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("This QEMU does not support QXL graphics adapters"));
+        if ((primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_QXL) &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_QXL)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("This QEMU does not support QXL graphics adapters"));
+            return -1;
+        }
+
+        const char *vgastr = qemuVideoTypeToString(primaryVideoType);
+        if (!vgastr || STREQ(vgastr, "")) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("video type %s is not supported with QEMU"),
+                           virDomainVideoTypeToString(primaryVideoType));
+            return -1;
+        }
+
+        virCommandAddArgList(cmd, "-vga", vgastr, NULL);
+
+        /* If we cannot use --device option to specify the video device
+         * in QEMU we will fallback to the old --vga option. To get the
+         * correct device name for the --vga option the 'qemuVideo' is
+         * used, but to set some device attributes we need to use the
+         * --global option and for that we need to specify the device
+         * name the same as for --device option and for that we need to
+         * use 'qemuDeviceVideo'.
+         *
+         * See 'Graphics Devices' section in docs/qdev-device-use.txt in
+         * QEMU repository.
+         */
+        const char *dev = qemuDeviceVideoTypeToString(primaryVideoType);
+
+        if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
+            (def->videos[0]->vram || def->videos[0]->ram)) {
+            unsigned int ram = def->videos[0]->ram;
+            unsigned int vram = def->videos[0]->vram;
+            unsigned int vram64 = def->videos[0]->vram64;
+            unsigned int vgamem = def->videos[0]->vgamem;
+
+            if (vram > (UINT_MAX / 1024)) {
+                virReportError(VIR_ERR_OVERFLOW,
+                       _("value for 'vram' must be less than '%u'"),
+                               UINT_MAX / 1024);
+                return -1;
+            }
+            if (ram > (UINT_MAX / 1024)) {
+                virReportError(VIR_ERR_OVERFLOW,
+                   _("value for 'ram' must be less than '%u'"),
+                               UINT_MAX / 1024);
                 return -1;
             }
 
-            const char *vgastr = qemuVideoTypeToString(primaryVideoType);
-            if (!vgastr || STREQ(vgastr, "")) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("video type %s is not supported with QEMU"),
-                               virDomainVideoTypeToString(primaryVideoType));
-                return -1;
+            if (ram) {
+                virCommandAddArg(cmd, "-global");
+                virCommandAddArgFormat(cmd, "%s.ram_size=%u",
+                                       dev, ram * 1024);
             }
-
-            virCommandAddArgList(cmd, "-vga", vgastr, NULL);
-
-            /* If we cannot use --device option to specify the video device
-             * in QEMU we will fallback to the old --vga option. To get the
-             * correct device name for the --vga option the 'qemuVideo' is
-             * used, but to set some device attributes we need to use the
-             * --global option and for that we need to specify the device
-             * name the same as for --device option and for that we need to
-             * use 'qemuDeviceVideo'.
-             *
-             * See 'Graphics Devices' section in docs/qdev-device-use.txt in
-             * QEMU repository.
-             */
-            const char *dev = qemuDeviceVideoTypeToString(primaryVideoType);
-
-            if (def->videos[0]->type == VIR_DOMAIN_VIDEO_TYPE_QXL &&
-                (def->videos[0]->vram || def->videos[0]->ram)) {
-                unsigned int ram = def->videos[0]->ram;
-                unsigned int vram = def->videos[0]->vram;
-                unsigned int vram64 = def->videos[0]->vram64;
-                unsigned int vgamem = def->videos[0]->vgamem;
-
-                if (vram > (UINT_MAX / 1024)) {
-                    virReportError(VIR_ERR_OVERFLOW,
-                           _("value for 'vram' must be less than '%u'"),
-                                   UINT_MAX / 1024);
-                    return -1;
-                }
-                if (ram > (UINT_MAX / 1024)) {
-                    virReportError(VIR_ERR_OVERFLOW,
-                       _("value for 'ram' must be less than '%u'"),
-                                   UINT_MAX / 1024);
-                    return -1;
-                }
-
-                if (ram) {
-                    virCommandAddArg(cmd, "-global");
-                    virCommandAddArgFormat(cmd, "%s.ram_size=%u",
-                                           dev, ram * 1024);
-                }
-                if (vram) {
-                    virCommandAddArg(cmd, "-global");
-                    virCommandAddArgFormat(cmd, "%s.vram_size=%u",
-                                           dev, vram * 1024);
-                }
-                if (vram64 &&
-                    virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_VRAM64)) {
-                    virCommandAddArg(cmd, "-global");
-                    virCommandAddArgFormat(cmd, "%s.vram64_size_mb=%u",
-                                           dev, vram64 / 1024);
-                }
-                if (vgamem &&
-                    virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_VGAMEM)) {
-                    virCommandAddArg(cmd, "-global");
-                    virCommandAddArgFormat(cmd, "%s.vgamem_mb=%u",
-                                           dev, vgamem / 1024);
-                }
+            if (vram) {
+                virCommandAddArg(cmd, "-global");
+                virCommandAddArgFormat(cmd, "%s.vram_size=%u",
+                                       dev, vram * 1024);
             }
-
-            if (def->videos[0]->vram &&
-                ((primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VGA &&
-                  virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
-                 (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
-                  virQEMUCapsGet(qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM)))) {
-                unsigned int vram = def->videos[0]->vram;
-
-                if (vram < 1024) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   "%s", _("value for 'vgamem' must be at "
-                                           "least 1 MiB (1024 KiB)"));
-                    return -1;
-                }
-
+            if (vram64 &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_VRAM64)) {
+                virCommandAddArg(cmd, "-global");
+                virCommandAddArgFormat(cmd, "%s.vram64_size_mb=%u",
+                                       dev, vram64 / 1024);
+            }
+            if (vgamem &&
+                virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGA_VGAMEM)) {
                 virCommandAddArg(cmd, "-global");
                 virCommandAddArgFormat(cmd, "%s.vgamem_mb=%u",
-                                       dev, vram / 1024);
+                                       dev, vgamem / 1024);
             }
+        }
+
+        if (def->videos[0]->vram &&
+            ((primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VGA &&
+              virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
+             (primaryVideoType == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
+              virQEMUCapsGet(qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM)))) {
+            unsigned int vram = def->videos[0]->vram;
+
+            if (vram < 1024) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               "%s", _("value for 'vgamem' must be at "
+                                       "least 1 MiB (1024 KiB)"));
+                return -1;
+            }
+
+            virCommandAddArg(cmd, "-global");
+            virCommandAddArgFormat(cmd, "%s.vgamem_mb=%u",
+                                   dev, vram / 1024);
         }
 
         for (i = 1; i < def->nvideos; i++) {
