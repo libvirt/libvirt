@@ -3298,14 +3298,6 @@
 }
 
 {
-  "id": "libvirt-33",
-  "error": {
-    "class": "DeviceNotFound",
-    "desc": "Device 'qxl-vga' not found"
-  }
-}
-
-{
   "return": [
     {
       "name": "disable-modern",

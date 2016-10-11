@@ -23,7 +23,6 @@
   <flag name='drive-aio'/>
   <flag name='chardev-spicevmc'/>
   <flag name='virtio-tx-alg'/>
-  <flag name='device-qxl-vga'/>
   <flag name='pci-multifunction'/>
   <flag name='virtio-blk-pci.ioeventfd'/>
   <flag name='virtio-blk-pci.event_idx'/>

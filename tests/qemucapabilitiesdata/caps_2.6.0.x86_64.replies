@@ -2920,83 +2920,6 @@
 {
   "return": [
     {
-      "name": "rombar",
-      "type": "uint32"
-    },
-    {
-      "name": "ram_size_mb",
-      "type": "uint32"
-    },
-    {
-      "name": "command_serr_enable",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "multifunction",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "vgamem_mb",
-      "type": "uint32"
-    },
-    {
-      "name": "romfile",
-      "type": "str"
-    },
-    {
-      "name": "addr",
-      "description": "Slot and optional function number, example: 06.0 or 06",
-      "type": "int32"
-    },
-    {
-      "name": "debug",
-      "type": "uint32"
-    },
-    {
-      "name": "vram_size_mb",
-      "type": "uint32"
-    },
-    {
-      "name": "revision",
-      "type": "uint32"
-    },
-    {
-      "name": "ram_size",
-      "type": "uint32"
-    },
-    {
-      "name": "vram64_size_mb",
-      "type": "uint32"
-    },
-    {
-      "name": "guestdebug",
-      "type": "uint32"
-    },
-    {
-      "name": "vram_size",
-      "type": "uint32"
-    },
-    {
-      "name": "surfaces",
-      "type": "int32"
-    },
-    {
-      "name": "max_outputs",
-      "type": "uint16"
-    },
-    {
-      "name": "cmdlog",
-      "type": "uint32"
-    }
-  ],
-  "id": "libvirt-33"
-}
-
-{
-  "return": [
-    {
       "name": "disable-modern",
       "description": "on/off",
       "type": "bool"
@@ -3097,7 +3020,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-33"
 }
 
 {
@@ -3174,7 +3097,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-34"
 }
 
 {
@@ -3274,11 +3197,11 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-35"
 }
 
 {
-  "id": "libvirt-37",
+  "id": "libvirt-36",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-ccw' not found"
@@ -3321,7 +3244,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-37"
 }
 
 {
@@ -3391,7 +3314,7 @@
       "type": "uint32"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-38"
 }
 
 {
@@ -3504,7 +3427,7 @@
       "cpu-max": 255
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-39"
 }
 
 {
@@ -3594,7 +3517,7 @@
       "name": "qemu64"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-40"
 }
 
 {
@@ -3602,21 +3525,21 @@
     "enabled": false,
     "present": true
   },
-  "id": "libvirt-42"
+  "id": "libvirt-41"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-42"
 }
 
 {
   "return": [
     "passthrough"
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-43"
 }
 
 {
@@ -4710,7 +4633,7 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-44"
 }
 
 {
@@ -4744,5 +4667,5 @@
       "capability": "postcopy-ram"
     }
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-45"
 }

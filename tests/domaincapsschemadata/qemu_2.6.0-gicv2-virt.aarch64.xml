@@ -79,7 +79,6 @@
     <video supported='yes'>
       <enum name='modelType'>
         <value>vga</value>
-        <value>qxl</value>
         <value>virtio</value>
       </enum>
     </video>

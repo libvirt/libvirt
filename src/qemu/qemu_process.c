@@ -2567,12 +2567,12 @@ qemuProcessUpdateVideoRamSize(virQEMUDriverPtr driver,
             break;
         case VIR_DOMAIN_VIDEO_TYPE_QXL:
             if (i == 0) {
-                if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QXL_VGA_VGAMEM) &&
+                if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QXL_VGAMEM) &&
                     qemuMonitorUpdateVideoMemorySize(priv->mon, video,
                                                      "qxl-vga") < 0)
                         goto error;
 
-                if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QXL_VGA_VRAM64) &&
+                if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QXL_VRAM64) &&
                     qemuMonitorUpdateVideoVram64Size(priv->mon, video,
                                                      "qxl-vga") < 0)
                     goto error;

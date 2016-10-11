@@ -32,7 +32,6 @@
   <flag name='ccid-passthru'/>
   <flag name='chardev-spicevmc'/>
   <flag name='virtio-tx-alg'/>
-  <flag name='device-qxl-vga'/>
   <flag name='pci-multifunction'/>
   <flag name='virtio-blk-pci.ioeventfd'/>
   <flag name='sga'/>
@@ -137,7 +136,6 @@
   <flag name='VGA.vgamem_mb'/>
   <flag name='vmware-svga.vgamem_mb'/>
   <flag name='qxl.vgamem_mb'/>
-  <flag name='qxl-vga.vgamem_mb'/>
   <flag name='pci-serial'/>
   <flag name='ioh3420'/>
   <flag name='x3130-upstream'/>
@@ -146,7 +144,6 @@
   <flag name='e1000'/>
   <flag name='virtio-net'/>
   <flag name='qxl.vram64_size_mb'/>
-  <flag name='qxl-vga.vram64_size_mb'/>
   <flag name='device-tray-moved-event'/>
   <flag name='nec-usb-xhci-ports'/>
   <flag name='display'/>

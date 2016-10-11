@@ -1793,77 +1793,7 @@
 }
 
 {
-  "return": [
-    {
-      "name": "command_serr_enable",
-      "type": "on/off"
-    },
-    {
-      "name": "multifunction",
-      "type": "on/off"
-    },
-    {
-      "name": "rombar",
-      "type": "uint32"
-    },
-    {
-      "name": "romfile",
-      "type": "string"
-    },
-    {
-      "name": "addr",
-      "type": "pci-devfn"
-    },
-    {
-      "name": "surfaces",
-      "type": "int32"
-    },
-    {
-      "name": "vgamem_mb",
-      "type": "uint32"
-    },
-    {
-      "name": "vram64_size_mb",
-      "type": "uint32"
-    },
-    {
-      "name": "vram_size_mb",
-      "type": "uint32"
-    },
-    {
-      "name": "ram_size_mb",
-      "type": "uint32"
-    },
-    {
-      "name": "cmdlog",
-      "type": "uint32"
-    },
-    {
-      "name": "guestdebug",
-      "type": "uint32"
-    },
-    {
-      "name": "debug",
-      "type": "uint32"
-    },
-    {
-      "name": "revision",
-      "type": "uint32"
-    },
-    {
-      "name": "vram_size",
-      "type": "uint32"
-    },
-    {
-      "name": "ram_size",
-      "type": "uint32"
-    }
-  ],
-  "id": "libvirt-33"
-}
-
-{
-  "id": "libvirt-34",
+  "id": "libvirt-33",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-gpu-pci' not found"
@@ -1871,7 +1801,7 @@
 }
 
 {
-  "id": "libvirt-35",
+  "id": "libvirt-34",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'ICH9-LPC' not found"
@@ -1913,11 +1843,11 @@
       "type": "on/off"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-35"
 }
 
 {
-  "id": "libvirt-37",
+  "id": "libvirt-36",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-ccw' not found"
@@ -1925,7 +1855,7 @@
 }
 
 {
-  "id": "libvirt-38",
+  "id": "libvirt-37",
   "error": {
     "class": "DeviceNotFound",
     "desc": "Device 'virtio-balloon-device' not found"
@@ -1979,7 +1909,7 @@
       "type": "on/off"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-38"
 }
 
 {
@@ -2027,7 +1957,7 @@
       "name": "none"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-39"
 }
 
 {
@@ -2105,7 +2035,7 @@
       "name": "Opteron_G5"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-40"
 }
 
 {
@@ -2113,11 +2043,11 @@
     "enabled": false,
     "present": true
   },
-  "id": "libvirt-42"
+  "id": "libvirt-41"
 }
 
 {
-  "id": "libvirt-43",
+  "id": "libvirt-42",
   "error": {
     "class": "CommandNotFound",
     "desc": "The command query-tpm-models has not been found"
@@ -2125,7 +2055,7 @@
 }
 
 {
-  "id": "libvirt-44",
+  "id": "libvirt-43",
   "error": {
     "class": "CommandNotFound",
     "desc": "The command query-tpm-types has not been found"
@@ -2133,7 +2063,7 @@
 }
 
 {
-  "id": "libvirt-45",
+  "id": "libvirt-44",
   "error": {
     "class": "CommandNotFound",
     "desc": "The command query-command-line-options has not been found"
@@ -2147,5 +2077,5 @@
       "capability": "xbzrle"
     }
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-45"
 }

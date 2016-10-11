@@ -128,7 +128,7 @@ typedef enum {
     QEMU_CAPS_CHARDEV_SPICEVMC, /* newer -chardev spicevmc */
     QEMU_CAPS_DEVICE_SPICEVMC, /* older -device spicevmc*/
     QEMU_CAPS_VIRTIO_TX_ALG, /* -device virtio-net-pci,tx=string */
-    QEMU_CAPS_DEVICE_QXL_VGA, /* primary qxl device named qxl-vga? */
+    X_QEMU_CAPS_DEVICE_QXL_VGA, /* primary qxl device named qxl-vga? */
 
     /* 60 */
     QEMU_CAPS_PCI_MULTIFUNCTION, /* -device multifunction=on|off */
@@ -302,7 +302,7 @@ typedef enum {
     QEMU_CAPS_VGA_VGAMEM, /* -device VGA.vgamem_mb */
     QEMU_CAPS_VMWARE_SVGA_VGAMEM, /* -device vmware-svga.vgamem_mb */
     QEMU_CAPS_QXL_VGAMEM, /* -device qxl.vgamem_mb */
-    QEMU_CAPS_QXL_VGA_VGAMEM, /* -device qxl-vga.vgamem_mb */
+    X_QEMU_CAPS_QXL_VGA_VGAMEM, /* -device qxl-vga.vgamem_mb */
     QEMU_CAPS_DEVICE_PC_DIMM, /* pc-dimm device */
 
     /* 185 */
@@ -349,7 +349,7 @@ typedef enum {
     QEMU_CAPS_QXL_VRAM64, /* -device qxl.vram64_size_mb */
 
     /* 215 */
-    QEMU_CAPS_QXL_VGA_VRAM64, /* -device qxl-vga.vram64_size_mb */
+    X_QEMU_CAPS_QXL_VGA_VRAM64, /* -device qxl-vga.vram64_size_mb */
     QEMU_CAPS_CHARDEV_LOGFILE, /* -chardev logfile=xxxx */
     QEMU_CAPS_NAME_DEBUG_THREADS, /* Is -name debug-threads= available */
     QEMU_CAPS_OBJECT_SECRET, /* -object secret */
@@ -364,7 +364,7 @@ typedef enum {
 
     /* 225 */
     QEMU_CAPS_QXL_MAX_OUTPUTS, /* -device qxl,max-outputs= */
-    QEMU_CAPS_QXL_VGA_MAX_OUTPUTS, /* -device qxl-vga,max-outputs= */
+    X_QEMU_CAPS_QXL_VGA_MAX_OUTPUTS, /* -device qxl-vga,max-outputs= */
     QEMU_CAPS_SPICE_UNIX, /* -spice unix */
     QEMU_CAPS_DRIVE_DETECT_ZEROES, /* -drive detect-zeroes= */
     QEMU_CAPS_OBJECT_TLS_CREDS_X509, /* -object tls-creds-x509 */

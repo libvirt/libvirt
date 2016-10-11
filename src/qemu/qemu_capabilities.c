@@ -1528,7 +1528,6 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "virtio-scsi-device", QEMU_CAPS_VIRTIO_SCSI },
     { "megasas", QEMU_CAPS_SCSI_MEGASAS },
     { "spicevmc", QEMU_CAPS_DEVICE_SPICEVMC },
-    { "qxl-vga", QEMU_CAPS_DEVICE_QXL_VGA },
     { "qxl", QEMU_CAPS_DEVICE_QXL },
     { "sga", QEMU_CAPS_SGA },
     { "scsi-block", QEMU_CAPS_SCSI_BLOCK },
@@ -1679,12 +1678,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxl[] = {
     { "max_outputs", QEMU_CAPS_QXL_MAX_OUTPUTS },
 };
 
-static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsQxlVga[] = {
-    { "vgamem_mb", QEMU_CAPS_QXL_VGA_VGAMEM },
-    { "vram64_size_mb", QEMU_CAPS_QXL_VGA_VRAM64 },
-    { "max_outputs", QEMU_CAPS_QXL_VGA_MAX_OUTPUTS },
-};
-
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsVirtioGpu[] = {
     { "virgl", QEMU_CAPS_DEVICE_VIRTIO_GPU_VIRGL },
 };
@@ -1753,8 +1746,6 @@ static struct virQEMUCapsObjectTypeProps virQEMUCapsObjectProps[] = {
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVmwareSvga) },
     { "qxl", virQEMUCapsObjectPropsQxl,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsQxl) },
-    { "qxl-vga", virQEMUCapsObjectPropsQxlVga,
-      ARRAY_CARDINALITY(virQEMUCapsObjectPropsQxlVga) },
     { "virtio-gpu-pci", virQEMUCapsObjectPropsVirtioGpu,
       ARRAY_CARDINALITY(virQEMUCapsObjectPropsVirtioGpu) },
     { "ICH9-LPC", virQEMUCapsObjectPropsICH9,
@@ -3638,7 +3629,6 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_VGA_NONE);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_AIO);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEVMC);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_DEVICE_QXL_VGA);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_SHUTDOWN);
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DRIVE_CACHE_UNSAFE);
@@ -4501,7 +4491,7 @@ virQEMUCapsFillDomainDeviceVideoCaps(virQEMUCapsPtr qemuCaps,
         VIR_DOMAIN_CAPS_ENUM_SET(dev->modelType, VIR_DOMAIN_VIDEO_TYPE_CIRRUS);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VMWARE_SVGA))
         VIR_DOMAIN_CAPS_ENUM_SET(dev->modelType, VIR_DOMAIN_VIDEO_TYPE_VMVGA);
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL_VGA))
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_QXL))
         VIR_DOMAIN_CAPS_ENUM_SET(dev->modelType, VIR_DOMAIN_VIDEO_TYPE_QXL);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_GPU))
         VIR_DOMAIN_CAPS_ENUM_SET(dev->modelType, VIR_DOMAIN_VIDEO_TYPE_VIRTIO);
