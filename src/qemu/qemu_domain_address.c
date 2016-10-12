@@ -211,11 +211,14 @@ qemuDomainAssignSpaprVIOAddresses(virDomainDefPtr def,
     /* Default values match QEMU. See spapr_(llan|vscsi|vty).c */
 
     for (i = 0; i < def->nnets; i++) {
-        if (def->nets[i]->model &&
-            STREQ(def->nets[i]->model, "spapr-vlan"))
-            def->nets[i]->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
-        if (qemuDomainAssignSpaprVIOAddress(def, &def->nets[i]->info,
-                                            VIO_ADDR_NET) < 0)
+        virDomainNetDefPtr net = def->nets[i];
+
+        if (net->model &&
+            STREQ(net->model, "spapr-vlan")) {
+            net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO;
+        }
+
+        if (qemuDomainAssignSpaprVIOAddress(def, &net->info, VIO_ADDR_NET) < 0)
             goto cleanup;
     }
 
@@ -283,9 +286,11 @@ qemuDomainPrimeVirtioDeviceAddresses(virDomainDefPtr def,
     }
 
     for (i = 0; i < def->nnets; i++) {
-        if (STREQ(def->nets[i]->model, "virtio") &&
-            def->nets[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
-            def->nets[i]->info.type = type;
+        virDomainNetDefPtr net = def->nets[i];
+
+        if (STREQ(net->model, "virtio") &&
+            net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            net->info.type = type;
         }
     }
 
@@ -1047,31 +1052,35 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
 
     /* Network interfaces */
     for (i = 0; i < def->nnets; i++) {
+        virDomainNetDefPtr net = def->nets[i];
+
         /* type='hostdev' network devices might be USB, and are also
          * in hostdevs list anyway, so handle them with other hostdevs
          * instead of here.
          */
-        if ((def->nets[i]->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) ||
-            !virDeviceInfoPCIAddressWanted(&def->nets[i]->info)) {
+        if ((net->type == VIR_DOMAIN_NET_TYPE_HOSTDEV) ||
+            !virDeviceInfoPCIAddressWanted(&net->info)) {
             continue;
         }
-        if (virDomainPCIAddressReserveNextSlot(addrs, &def->nets[i]->info,
-                                               flags) < 0)
+        if (virDomainPCIAddressReserveNextSlot(addrs, &net->info, flags) < 0)
             goto error;
     }
 
     /* Sound cards */
     for (i = 0; i < def->nsounds; i++) {
-        if (!virDeviceInfoPCIAddressWanted(&def->sounds[i]->info))
-            continue;
-        /* Skip ISA sound card, PCSPK and usb-audio */
-        if (def->sounds[i]->model == VIR_DOMAIN_SOUND_MODEL_SB16 ||
-            def->sounds[i]->model == VIR_DOMAIN_SOUND_MODEL_PCSPK ||
-            def->sounds[i]->model == VIR_DOMAIN_SOUND_MODEL_USB)
+        virDomainSoundDefPtr sound = def->sounds[i];
+
+        if (!virDeviceInfoPCIAddressWanted(&sound->info))
             continue;
 
-        if (virDomainPCIAddressReserveNextSlot(addrs, &def->sounds[i]->info,
-                                               flags) < 0)
+        /* Skip ISA sound card, PCSPK and usb-audio */
+        if (sound->model == VIR_DOMAIN_SOUND_MODEL_SB16 ||
+            sound->model == VIR_DOMAIN_SOUND_MODEL_PCSPK ||
+            sound->model == VIR_DOMAIN_SOUND_MODEL_USB) {
+            continue;
+        }
+
+        if (virDomainPCIAddressReserveNextSlot(addrs, &sound->info, flags) < 0)
             goto error;
     }
 
