@@ -114,6 +114,18 @@ VIR_ENUM_IMPL(qemuDeviceVideo, VIR_DOMAIN_VIDEO_TYPE_LAST,
               "", /* don't support parallels */
               "virtio-vga");
 
+VIR_ENUM_DECL(qemuDeviceVideoSecondary)
+
+VIR_ENUM_IMPL(qemuDeviceVideoSecondary, VIR_DOMAIN_VIDEO_TYPE_LAST,
+              "", /* no secondary device for VGA */
+              "", /* no secondary device for cirrus-vga */
+              "", /* no secondary device for vmware-svga */
+              "", /* don't support xen */
+              "", /* don't support vbox */
+              "qxl",
+              "", /* don't support parallels */
+              "virtio-gpu-pci");
+
 VIR_ENUM_DECL(qemuSoundCodec)
 
 VIR_ENUM_IMPL(qemuSoundCodec, VIR_DOMAIN_SOUND_CODEC_TYPE_LAST,
@@ -4258,18 +4270,20 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     const char *model;
 
-    if (video->primary) {
+    /* We try to chose the best model for primary video device by preferring
+     * model with VGA compatibility mode.  For some video devices on some
+     * architectures there might not be such model so fallback to one
+     * without VGA compatibility mode. */
+    if (video->primary && qemuDomainSupportsVideoVga(video, qemuCaps))
         model = qemuDeviceVideoTypeToString(video->type);
-        if (!model || STREQ(model, "")) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid model for video type '%s'"),
-                           virDomainVideoTypeToString(video->type));
-            goto error;
-        }
-        if (!qemuDomainSupportsVideoVga(video, qemuCaps))
-            model = "virtio-gpu-pci";
-    } else {
-        model = "qxl";
+    else
+        model = qemuDeviceVideoSecondaryTypeToString(video->type);
+
+    if (!model || STREQ(model, "")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid model for video type '%s'"),
+                       virDomainVideoTypeToString(video->type));
+        goto error;
     }
 
     virBufferAsprintf(&buf, "%s,id=%s", model, video->info.alias);
