@@ -727,6 +727,13 @@ mymain(void)
             QEMU_CAPS_DEVICE_XIO3130_DOWNSTREAM, QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_PCI_MULTIFUNCTION, QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_NEC_USB_XHCI);
+    /* Make sure the user can always override libvirt's default device
+     * placement policy by providing an explicit PCI address */
+    DO_TEST("q35-pci-force-address",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_HDA_DUPLEX);
 
     DO_TEST("hostdev-scsi-lsi",
             QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_LSI,

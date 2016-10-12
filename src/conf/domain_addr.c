@@ -96,7 +96,9 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddressPtr addr,
     if (fromConfig) {
         /* If the requested connection was manually specified in
          * config, allow a PCI device to connect to a PCIe slot, or
-         * vice versa.
+         * vice versa. In order to do so, we add *both* the PCI_DEVICE
+         * and the PCIE_DEVICE flags to the bus if it already has either
+         * of them, using the ENDPOINT mask.
          */
         if (busFlags & VIR_PCI_CONNECT_TYPES_ENDPOINT)
             busFlags |= VIR_PCI_CONNECT_TYPES_ENDPOINT;
