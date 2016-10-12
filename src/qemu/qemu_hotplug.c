@@ -1636,10 +1636,11 @@ qemuDomainChrRemove(virDomainDefPtr vmdef,
 }
 
 static int
-qemuDomainAttachChrDeviceAssignAddr(virDomainDefPtr def,
-                                    qemuDomainObjPrivatePtr priv,
+qemuDomainAttachChrDeviceAssignAddr(virDomainObjPtr vm,
                                     virDomainChrDefPtr chr)
 {
+    virDomainDefPtr def = vm->def;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
     virDomainVirtioSerialAddrSetPtr vioaddrs = NULL;
 
@@ -1715,7 +1716,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     if (qemuAssignDeviceChrAlias(vmdef, chr, -1) < 0)
         goto cleanup;
 
-    if ((rc = qemuDomainAttachChrDeviceAssignAddr(vm->def, priv, chr)) < 0)
+    if ((rc = qemuDomainAttachChrDeviceAssignAddr(vm, chr)) < 0)
         goto cleanup;
     if (rc == 1)
         need_release = true;
