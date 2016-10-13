@@ -558,7 +558,6 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
     if ((addrs = virDomainPCIAddressSetAlloc(nbuses)) == NULL)
         return NULL;
 
-    addrs->nbuses = nbuses;
     addrs->dryRun = dryRun;
 
     /* As a safety measure, set default model='pci-root' for first pci
