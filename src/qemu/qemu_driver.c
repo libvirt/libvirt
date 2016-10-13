@@ -1454,7 +1454,8 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm,
                          unsigned long long *cpuwait,
                          int maxinfo,
                          unsigned char *cpumaps,
-                         int maplen)
+                         int maplen,
+                         bool *cpuhalted)
 {
     size_t ncpuinfo = 0;
     size_t i;
@@ -1473,6 +1474,9 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm,
 
     if (cpumaps)
         memset(cpumaps, 0, sizeof(*cpumaps) * maxinfo);
+
+    if (cpuhalted)
+        memset(cpuhalted, 0, sizeof(*cpuhalted) * maxinfo);
 
     for (i = 0; i < virDomainDefGetVcpusMax(vm->def) && ncpuinfo < maxinfo; i++) {
         virDomainVcpuDefPtr vcpu = virDomainDefGetVcpu(vm->def, i);
@@ -1510,6 +1514,9 @@ qemuDomainHelperGetVcpus(virDomainObjPtr vm,
             if (qemuGetSchedInfo(&(cpuwait[ncpuinfo]), vm->pid, vcpupid) < 0)
                 return -1;
         }
+
+        if (cpuhalted)
+            cpuhalted[ncpuinfo] = qemuDomainGetVcpuHalted(vm, ncpuinfo);
 
         ncpuinfo++;
     }
@@ -5455,7 +5462,8 @@ qemuDomainGetVcpus(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = qemuDomainHelperGetVcpus(vm, info, NULL, maxinfo, cpumaps, maplen);
+    ret = qemuDomainHelperGetVcpus(vm, info, NULL, maxinfo, cpumaps, maplen,
+                                   NULL);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -18922,7 +18930,7 @@ qemuDomainGetStatsBalloon(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainGetStatsVcpu(virQEMUDriverPtr driver,
                        virDomainObjPtr dom,
                        virDomainStatsRecordPtr record,
                        int *maxparams,
@@ -18933,6 +18941,7 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
     virVcpuInfoPtr cpuinfo = NULL;
     unsigned long long *cpuwait = NULL;
+    bool *cpuhalted = NULL;
 
     if (virTypedParamsAddUInt(&record->params,
                               &record->nparams,
@@ -18952,9 +18961,14 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
         VIR_ALLOC_N(cpuwait, virDomainDefGetVcpus(dom->def)) < 0)
         goto cleanup;
 
+    if (qemuDomainRefreshVcpuHalted(driver, dom,
+                                    QEMU_ASYNC_JOB_NONE) == 0 &&
+        VIR_ALLOC_N(cpuhalted, virDomainDefGetVcpus(dom->def)) < 0)
+        goto cleanup;
+
     if (qemuDomainHelperGetVcpus(dom, cpuinfo, cpuwait,
                                  virDomainDefGetVcpus(dom->def),
-                                 NULL, 0) < 0) {
+                                 NULL, 0, cpuhalted) < 0) {
         virResetLastError();
         ret = 0; /* it's ok to be silent and go ahead */
         goto cleanup;
@@ -18990,6 +19004,17 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                                     param_name,
                                     cpuwait[i]) < 0)
             goto cleanup;
+
+        if (cpuhalted) {
+            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                     "vcpu.%u.halted", cpuinfo[i].number);
+            if (virTypedParamsAddBoolean(&record->params,
+                                         &record->nparams,
+                                         maxparams,
+                                         param_name,
+                                         cpuhalted[i]) < 0)
+                goto cleanup;
+        }
     }
 
     ret = 0;
@@ -18997,6 +19022,7 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
  cleanup:
     VIR_FREE(cpuinfo);
     VIR_FREE(cpuwait);
+    VIR_FREE(cpuhalted);
     return ret;
 }
 
