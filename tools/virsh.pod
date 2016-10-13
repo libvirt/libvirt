@@ -887,6 +887,9 @@ default all supported statistics groups are returned. Supported
 statistics groups flags are: I<--state>, I<--cpu-total>, I<--balloon>,
 I<--vcpu>, I<--interface>, I<--block>, I<--perf>.
 
+Note that - depending on the hypervisor type and version or the domain state
+- not all of the following statistics may be returned.
+
 When selecting the I<--state> group the following fields are returned:
 "state.state" - state of the VM, returned as number from virDomainState enum,
 "state.reason" - reason for entering given state, returned as int from
@@ -917,6 +920,11 @@ I<--vcpu> returns:
 "vcpu.<num>.state" - state of the virtual CPU <num>, as number
 from virVcpuState enum,
 "vcpu.<num>.time" - virtual cpu time spent by virtual CPU <num>
+ (in microseconds),
+"vcpu.<num>.wait" - virtual cpu time spent by virtual CPU <num>
+waiting on I/O (in microseconds),
+"vcpu.<num>.halted" - virtual CPU <num> is halted: yes or no (may indicate
+the processor is idle or even disabled, depending on the architecture)
 
 I<--interface> returns:
 "net.count" - number of network interfaces on this domain,
