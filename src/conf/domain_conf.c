@@ -5007,7 +5007,8 @@ virDomainDeviceInfoFormat(virBufferPtr buf,
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
         virBufferAsprintf(buf, " slot='%u'", info->addr.dimm.slot);
-        virBufferAsprintf(buf, " base='0x%llx'", info->addr.dimm.base);
+        if (info->addr.dimm.base)
+            virBufferAsprintf(buf, " base='0x%llx'", info->addr.dimm.base);
 
         break;
 
@@ -5408,14 +5409,15 @@ virDomainDeviceDimmAddressParseXML(xmlNodePtr node,
     }
     VIR_FREE(tmp);
 
-    if (!(tmp = virXMLPropString(node, "base")) ||
-        virStrToLong_ullp(tmp, NULL, 16, &addr->base) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid or missing dimm base address '%s'"),
-                       NULLSTR(tmp));
-        goto cleanup;
+    if ((tmp = virXMLPropString(node, "base"))) {
+        if (virStrToLong_ullp(tmp, NULL, 16, &addr->base) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("invalid dimm base address '%s'"), tmp);
+            goto cleanup;
+        }
+
+        VIR_FREE(tmp);
     }
-    VIR_FREE(tmp);
 
     ret = 0;
 

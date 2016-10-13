@@ -3497,7 +3497,8 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
 
         if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM) {
             virBufferAsprintf(&buf, ",slot=%d", mem->info.addr.dimm.slot);
-            virBufferAsprintf(&buf, ",addr=%llu", mem->info.addr.dimm.base);
+            if (mem->info.addr.dimm.base)
+                virBufferAsprintf(&buf, ",addr=%llu", mem->info.addr.dimm.base);
         }
 
         break;
