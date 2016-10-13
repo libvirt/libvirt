@@ -585,7 +585,7 @@ qemuDomainPCIAddressSetCreate(virDomainDefPtr def,
         if (idx >= addrs->nbuses) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Inappropriate new pci controller index %zu "
-                             "not found in addrs"), idx);
+                             "exceeds addrs array length"), idx);
             goto error;
         }
 
