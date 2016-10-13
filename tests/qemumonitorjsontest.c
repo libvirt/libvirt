@@ -1332,10 +1332,10 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *data)
     int ret = -1;
     struct qemuMonitorQueryCpusEntry *cpudata = NULL;
     struct qemuMonitorQueryCpusEntry expect[] = {
-        {17622, (char *) "/machine/unattached/device[0]"},
-        {17624, (char *) "/machine/unattached/device[1]"},
-        {17626, (char *) "/machine/unattached/device[2]"},
-        {17628, NULL},
+        {17622, (char *) "/machine/unattached/device[0]", true},
+        {17624, (char *) "/machine/unattached/device[1]", true},
+        {17626, (char *) "/machine/unattached/device[2]", true},
+        {17628, NULL, true},
     };
     size_t ncpudata = 0;
     size_t i;

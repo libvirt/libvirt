@@ -1349,6 +1349,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
     for (i = 0; i < ncpus; i++) {
         virJSONValuePtr entry = virJSONValueArrayGet(data, i);
         int thread = 0;
+        bool halted = false;
         const char *qom_path;
         if (!entry) {
             ret = -2;
@@ -1358,9 +1359,11 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
         /* Some older qemu versions don't report the thread_id so treat this as
          * non-fatal, simply returning no data */
         ignore_value(virJSONValueObjectGetNumberInt(entry, "thread_id", &thread));
+        ignore_value(virJSONValueObjectGetBoolean(entry, "halted", &halted));
         qom_path = virJSONValueObjectGetString(entry, "qom_path");
 
         cpus[i].tid = thread;
+        cpus[i].halted = halted;
         if (VIR_STRDUP(cpus[i].qom_path, qom_path) < 0)
             goto cleanup;
     }

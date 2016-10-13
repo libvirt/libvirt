@@ -521,7 +521,7 @@ qemuMonitorTextQueryCPUs(qemuMonitorPtr mon,
      * (qemu) info cpus
      * * CPU #0: pc=0x00000000000f0c4a thread_id=30019
      *   CPU #1: pc=0x00000000fffffff0 thread_id=30020
-     *   CPU #2: pc=0x00000000fffffff0 thread_id=30021
+     *   CPU #2: pc=0x00000000fffffff0 (halted) thread_id=30021
      *
      */
     line = qemucpus;
@@ -540,6 +540,12 @@ qemuMonitorTextQueryCPUs(qemuMonitorPtr mon,
             goto cleanup;
 
         cpu.tid = tid;
+
+        /* Extract halted indicator */
+        if ((offset = strstr(line, "(halted)")) != NULL)
+            cpu.halted = true;
+        else
+            cpu.halted = false;
 
         if (VIR_APPEND_ELEMENT_COPY(cpus, ncpus, cpu) < 0) {
             ret = -1;

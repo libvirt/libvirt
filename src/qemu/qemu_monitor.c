@@ -1677,6 +1677,7 @@ qemuMonitorCPUInfoClear(qemuMonitorCPUInfoPtr cpus,
         cpus[i].thread_id = -1;
         cpus[i].vcpus = 0;
         cpus[i].tid = 0;
+        cpus[i].halted = false;
 
         VIR_FREE(cpus[i].qom_path);
         VIR_FREE(cpus[i].alias);
@@ -1725,8 +1726,10 @@ qemuMonitorGetCPUInfoLegacy(struct qemuMonitorQueryCpusEntry *cpuentries,
     size_t i;
 
     for (i = 0; i < maxvcpus; i++) {
-        if (i < ncpuentries)
+        if (i < ncpuentries) {
             vcpus[i].tid = cpuentries[i].tid;
+            vcpus[i].halted = cpuentries[i].halted;
+        }
 
         /* for legacy hotplug to work we need to fake the vcpu count added by
          * enabling a given vcpu */
@@ -1864,6 +1867,7 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
         }
 
         vcpus[anyvcpu].tid = cpuentries[j].tid;
+        vcpus[anyvcpu].halted = cpuentries[j].halted;
     }
 
     return 0;
