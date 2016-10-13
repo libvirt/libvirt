@@ -10692,7 +10692,8 @@ virDomainTPMDefParseXML(xmlNodePtr node,
 }
 
 static virDomainPanicDefPtr
-virDomainPanicDefParseXML(xmlNodePtr node)
+virDomainPanicDefParseXML(xmlNodePtr node,
+                          unsigned int flags)
 {
     virDomainPanicDefPtr panic;
     char *model = NULL;
@@ -10700,7 +10701,7 @@ virDomainPanicDefParseXML(xmlNodePtr node)
     if (VIR_ALLOC(panic) < 0)
         return NULL;
 
-    if (virDomainDeviceInfoParseXML(node, NULL, &panic->info, 0) < 0)
+    if (virDomainDeviceInfoParseXML(node, NULL, &panic->info, flags) < 0)
         goto error;
 
     model = virXMLPropString(node, "model");
@@ -13592,7 +13593,7 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_PANIC:
-        if (!(dev->data.panic = virDomainPanicDefParseXML(node)))
+        if (!(dev->data.panic = virDomainPanicDefParseXML(node, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_MEMORY:
@@ -17545,8 +17546,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->panics, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
-        virDomainPanicDefPtr panic =
-            virDomainPanicDefParseXML(nodes[i]);
+        virDomainPanicDefPtr panic = virDomainPanicDefParseXML(nodes[i], flags);
         if (!panic)
             goto error;
 
