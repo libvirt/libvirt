@@ -2529,6 +2529,55 @@ vCPUs, the running time, the affinity to physical processors.
 
 With I<--pretty>, cpu affinities are shown as ranges.
 
+An example output is
+
+ $ virsh vcpuinfo fedora
+ VCPU:           0
+ CPU:            0
+ State:          running
+ CPU time:       7,0s
+ CPU Affinity:   yyyy
+
+ VCPU:           1
+ CPU:            1
+ State:          running
+ CPU time:       0,7s
+ CPU Affinity:   yyyy
+
+B<STATES>
+
+The State field displays the current operating state of a virtual CPU
+
+=over 4
+
+=item B<offline>
+
+The virtual CPU is offline and not usable by the domain.
+This state is not supported by all hypervisors.
+
+=item B<running>
+
+The virtual CPU is available to the domain and is operating.
+
+=item B<blocked>
+
+The virtual CPU is available to the domain but is waiting for a resource.
+This state is not supported by all hypervisors, in which case I<running>
+may be reported instead.
+
+=item B<no state>
+
+The virtual CPU state could not be determined. This could happen if
+the hypervisor is newer than virsh.
+
+=item B<N/A>
+
+There's no information about the virtual CPU state available. This can
+be the case if the domain is not running or the hypervisor does
+not report the virtual CPU state.
+
+=back
+
 =item B<vcpupin> I<domain> [I<vcpu>] [I<cpulist>] [[I<--live>]
 [I<--config>] | [I<--current>]]
 
