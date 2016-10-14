@@ -3742,19 +3742,18 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     }
 
     if (vlan >= 0) {
-        virBufferAsprintf(&buf, "vlan=%d", vlan);
+        virBufferAsprintf(&buf, "vlan=%d,", vlan);
         if (net->info.alias)
-            virBufferAsprintf(&buf, ",name=host%s",
-                              net->info.alias);
+            virBufferAsprintf(&buf, "name=host%s,", net->info.alias);
     } else {
-        virBufferAsprintf(&buf, "id=host%s", net->info.alias);
+        virBufferAsprintf(&buf, "id=host%s,", net->info.alias);
     }
 
     if (is_tap) {
         if (vhostfdSize) {
-            virBufferAddLit(&buf, ",vhost=on,");
+            virBufferAddLit(&buf, "vhost=on,");
             if (vhostfdSize == 1) {
-                virBufferAsprintf(&buf, "vhostfd=%s", vhostfd[0]);
+                virBufferAsprintf(&buf, "vhostfd=%s,", vhostfd[0]);
             } else {
                 virBufferAddLit(&buf, "vhostfds=");
                 for (i = 0; i < vhostfdSize; i++) {
@@ -3762,14 +3761,16 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
                         virBufferAddChar(&buf, ':');
                     virBufferAdd(&buf, vhostfd[i], -1);
                 }
+                virBufferAddChar(&buf, ',');
             }
         }
         if (net->tune.sndbuf_specified)
-            virBufferAsprintf(&buf, ",sndbuf=%lu", net->tune.sndbuf);
+            virBufferAsprintf(&buf, "sndbuf=%lu,", net->tune.sndbuf);
     }
 
     virObjectUnref(cfg);
 
+    virBufferTrim(&buf, ",", -1);
     if (virBufferCheckError(&buf) < 0)
         return NULL;
 
