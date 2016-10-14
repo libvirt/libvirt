@@ -3674,7 +3674,7 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         /* for one tapfd 'fd=' shall be used,
          * for more than one 'fds=' is the right choice */
         if (tapfdSize == 1) {
-            virBufferAsprintf(&buf, "fd=%s", tapfd[0]);
+            virBufferAsprintf(&buf, "fd=%s,", tapfd[0]);
         } else {
             virBufferAddLit(&buf, "fds=");
             for (i = 0; i < tapfdSize; i++) {
@@ -3682,49 +3682,45 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
                     virBufferAddChar(&buf, ':');
                 virBufferAdd(&buf, tapfd[i], -1);
             }
+            virBufferAddChar(&buf, ',');
         }
-        type_sep = ',';
         is_tap = true;
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
-        virBufferAsprintf(&buf, "socket%cconnect=%s:%d",
+        virBufferAsprintf(&buf, "socket%cconnect=%s:%d,",
                           type_sep,
                           net->data.socket.address,
                           net->data.socket.port);
-        type_sep = ',';
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
-        virBufferAsprintf(&buf, "socket%clisten=%s:%d",
+        virBufferAsprintf(&buf, "socket%clisten=%s:%d,",
                           type_sep,
                           net->data.socket.address ? net->data.socket.address
                           : "",
                           net->data.socket.port);
-        type_sep = ',';
         break;
 
     case VIR_DOMAIN_NET_TYPE_MCAST:
-        virBufferAsprintf(&buf, "socket%cmcast=%s:%d",
+        virBufferAsprintf(&buf, "socket%cmcast=%s:%d,",
                           type_sep,
                           net->data.socket.address,
                           net->data.socket.port);
-        type_sep = ',';
         break;
 
     case VIR_DOMAIN_NET_TYPE_UDP:
-        virBufferAsprintf(&buf, "socket%cudp=%s:%d,localaddr=%s:%d",
+        virBufferAsprintf(&buf, "socket%cudp=%s:%d,localaddr=%s:%d,",
                           type_sep,
                           net->data.socket.address,
                           net->data.socket.port,
                           net->data.socket.localaddr,
                           net->data.socket.localport);
-        type_sep = ',';
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
     case VIR_DOMAIN_NET_TYPE_INTERNAL:
-        virBufferAddLit(&buf, "user");
+        virBufferAsprintf(&buf, "user%c", type_sep);
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
@@ -3733,12 +3729,11 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
         return NULL;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        virBufferAsprintf(&buf, "vhost-user%cchardev=char%s",
+        virBufferAsprintf(&buf, "vhost-user%cchardev=char%s,",
                           type_sep,
                           net->info.alias);
-        type_sep = ',';
         if (net->driver.virtio.queues > 1)
-            virBufferAsprintf(&buf, ",queues=%u",
+            virBufferAsprintf(&buf, "queues=%u,",
                               net->driver.virtio.queues);
         break;
 
@@ -3747,13 +3742,12 @@ qemuBuildHostNetStr(virDomainNetDefPtr net,
     }
 
     if (vlan >= 0) {
-        virBufferAsprintf(&buf, "%cvlan=%d", type_sep, vlan);
+        virBufferAsprintf(&buf, "vlan=%d", vlan);
         if (net->info.alias)
             virBufferAsprintf(&buf, ",name=host%s",
                               net->info.alias);
     } else {
-        virBufferAsprintf(&buf, "%cid=host%s",
-                          type_sep, net->info.alias);
+        virBufferAsprintf(&buf, "id=host%s", net->info.alias);
     }
 
     if (is_tap) {
