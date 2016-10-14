@@ -594,6 +594,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
         if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
             goto error;
 
+        priv->migrationPort = port;
         if (virAsprintf(uri_out, "tcp://%s:%d", hostname, port) < 0)
             goto error;
     } else {
@@ -628,6 +629,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
             if (virPortAllocatorAcquire(driver->migrationPorts, &port) < 0)
                 goto error;
 
+            priv->migrationPort = port;
         } else {
             port = uri->port;
         }
@@ -690,6 +692,8 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     }
     VIR_FREE(socks);
     virObjectUnref(args);
+    virPortAllocatorRelease(driver->migrationPorts, priv->migrationPort);
+    priv->migrationPort = 0;
 
     /* Remove virDomainObj from domain list */
     if (vm) {
