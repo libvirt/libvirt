@@ -17,18 +17,18 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot c \
 -usb \
--drive file=gluster://example.org:6000/Volume1/Image,format=raw,if=none,\
-id=drive-virtio-disk0 \
+-drive file=gluster://example.org:6000/Volume1/Image,file.debug=4,format=raw,\
+if=none,id=drive-virtio-disk0 \
 -device virtio-blk-pci,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,\
 id=virtio-disk0 \
--drive 'file=gluster+unix:///Volume2/Image?socket=/path/to/sock,format=raw,\
-if=none,id=drive-virtio-disk1' \
+-drive 'file=gluster+unix:///Volume2/Image?socket=/path/to/sock,file.debug=4,\
+format=raw,if=none,id=drive-virtio-disk1' \
 -device virtio-blk-pci,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,\
 id=virtio-disk1 \
 -drive file.driver=gluster,file.volume=Volume3,file.path=/Image.qcow2,\
 file.server.0.type=tcp,file.server.0.host=example.org,file.server.0.port=6000,\
 file.server.1.type=tcp,file.server.1.host=example.org,file.server.1.port=24007,\
-file.server.2.type=unix,file.server.2.socket=/path/to/sock,format=qcow2,\
-if=none,id=drive-virtio-disk2 \
+file.server.2.type=unix,file.server.2.socket=/path/to/sock,file.debug=4,\
+format=qcow2,if=none,id=drive-virtio-disk2 \
 -device virtio-blk-pci,bus=pci.0,addr=0x5,drive=drive-virtio-disk2,\
 id=virtio-disk2
