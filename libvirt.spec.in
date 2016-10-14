@@ -1589,6 +1589,7 @@ exit 0
 
 %if %{with_systemd}
 %{_unitdir}/libvirtd.service
+%{_unitdir}/virt-guest-shutdown.target
 %{_unitdir}/virtlogd.service
 %{_unitdir}/virtlogd.socket
 %{_unitdir}/virtlockd.service

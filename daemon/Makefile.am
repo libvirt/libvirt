@@ -67,6 +67,7 @@ EXTRA_DIST =						\
 	libvirt.rules					\
 	libvirtd.sasl					\
 	libvirtd.service.in				\
+	virt-guest-shutdown.target		\
 	libvirtd.sysconf				\
 	libvirtd.sysctl					\
 	libvirtd.aug                                    \
@@ -456,8 +457,11 @@ install-init-systemd: install-sysconfig libvirtd.service
 	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 	$(INSTALL_DATA) libvirtd.service \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.service
+	$(INSTALL_DATA) virt-guest-shutdown.target \
+	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virt-guest-shutdown.target
 
 uninstall-init-systemd: uninstall-sysconfig
+	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virt-guest-shutdown.target
 	rm -f $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.service
 	rmdir $(DESTDIR)$(SYSTEMD_UNIT_DIR) || :
 else ! LIBVIRT_INIT_SCRIPT_SYSTEMD
