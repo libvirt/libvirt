@@ -1504,7 +1504,7 @@ qemuDomainPCIBusFullyReserved(virDomainPCIAddressBusPtr bus)
     size_t i;
 
     for (i = bus->minSlot; i <= bus->maxSlot; i++)
-        if (!bus->slots[i])
+        if (!bus->slot[i].functions)
             return false;
 
     return true;

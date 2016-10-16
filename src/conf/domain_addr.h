@@ -71,6 +71,13 @@ virDomainPCIConnectFlags
 virDomainPCIControllerModelToConnectType(virDomainControllerModelPCI model);
 
 typedef struct {
+    /* each function is represented by one bit, set if that function is
+     * in use by a device, or clear if it isn't.
+     */
+    uint8_t functions;
+} virDomainPCIAddressSlot;
+
+typedef struct {
     virDomainControllerModelPCI model;
     /* flags and min/max can be computed from model, but
      * having them ready makes life easier.
@@ -80,7 +87,7 @@ typedef struct {
     /* Each bit in a slot represents one function on that slot. If the
      * bit is set, that function is in use by a device.
      */
-    uint8_t slots[VIR_PCI_ADDRESS_SLOT_LAST + 1];
+    virDomainPCIAddressSlot slot[VIR_PCI_ADDRESS_SLOT_LAST + 1];
 } virDomainPCIAddressBus;
 typedef virDomainPCIAddressBus *virDomainPCIAddressBusPtr;
 

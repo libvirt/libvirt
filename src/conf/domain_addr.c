@@ -522,7 +522,7 @@ bool
 virDomainPCIAddressSlotInUse(virDomainPCIAddressSetPtr addrs,
                              virPCIDeviceAddressPtr addr)
 {
-    return !!addrs->buses[addr->bus].slots[addr->slot];
+    return !!addrs->buses[addr->bus].slot[addr->slot].functions;
 }
 
 
@@ -563,17 +563,17 @@ virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
     bus = &addrs->buses[addr->bus];
 
     if (reserveEntireSlot) {
-        if (bus->slots[addr->slot]) {
+        if (bus->slot[addr->slot].functions) {
             virReportError(errType,
                            _("Attempted double use of PCI slot %s "
                              "(may need \"multifunction='on'\" for "
                              "device on function 0)"), addrStr);
             goto cleanup;
         }
-        bus->slots[addr->slot] = 0xFF; /* reserve all functions of slot */
+        bus->slot[addr->slot].functions = 0xFF; /* reserve all functions of slot */
         VIR_DEBUG("Reserving PCI slot %s (multifunction='off')", addrStr);
     } else {
-        if (bus->slots[addr->slot] & (1 << addr->function)) {
+        if (bus->slot[addr->slot].functions & (1 << addr->function)) {
             if (addr->function == 0) {
                 virReportError(errType,
                                _("Attempted double use of PCI Address %s"),
@@ -586,7 +586,7 @@ virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
             }
             goto cleanup;
         }
-        bus->slots[addr->slot] |= (1 << addr->function);
+        bus->slot[addr->slot].functions |= (1 << addr->function);
         VIR_DEBUG("Reserving PCI address %s", addrStr);
     }
 
@@ -653,7 +653,7 @@ int
 virDomainPCIAddressReleaseAddr(virDomainPCIAddressSetPtr addrs,
                                virPCIDeviceAddressPtr addr)
 {
-    addrs->buses[addr->bus].slots[addr->slot] &= ~(1 << addr->function);
+    addrs->buses[addr->bus].slot[addr->slot].functions &= ~(1 << addr->function);
     return 0;
 }
 
@@ -674,7 +674,7 @@ virDomainPCIAddressReleaseSlot(virDomainPCIAddressSetPtr addrs,
     if (!virDomainPCIAddressValidate(addrs, addr, addrStr, flags, false))
         goto cleanup;
 
-    addrs->buses[addr->bus].slots[addr->slot] = 0;
+    addrs->buses[addr->bus].slot[addr->slot].functions = 0;
     ret = 0;
  cleanup:
     VIR_FREE(addrStr);
