@@ -1062,9 +1062,6 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     qemuDomainSecretInfoPtr secinfo = NULL;
 
-    if (!conn)
-        return 0;
-
     if (qemuDomainSecretDiskCapable(src)) {
         virSecretUsageType secretUsageType = VIR_SECRET_USAGE_TYPE_ISCSI;
 
@@ -1147,7 +1144,7 @@ qemuDomainSecretHostdevPrepare(virConnectPtr conn,
     virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
     qemuDomainSecretInfoPtr secinfo = NULL;
 
-    if (conn && hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+    if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
         subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
 
         virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
