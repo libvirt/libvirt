@@ -5092,7 +5092,6 @@ qemuProcessPrepareDomain(virConnectPtr conn,
     size_t i;
     char *nodeset = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virCapsPtr caps;
 
     if (!(caps = virQEMUDriverGetCapabilities(driver, false)))
@@ -5188,7 +5187,6 @@ qemuProcessPrepareDomain(virConnectPtr conn,
  cleanup:
     VIR_FREE(nodeset);
     virObjectUnref(caps);
-    virObjectUnref(cfg);
     return ret;
 }
 
