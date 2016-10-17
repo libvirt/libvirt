@@ -500,4 +500,7 @@ int qemuMonitorJSONGetHotpluggableCPUs(qemuMonitorPtr mon,
                                        struct qemuMonitorQueryHotpluggableCpusEntry **entries,
                                        size_t *nentries)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+
+virHashTablePtr qemuMonitorJSONQueryQMPSchema(qemuMonitorPtr mon)
+    ATTRIBUTE_NONNULL(1);
 #endif /* QEMU_MONITOR_JSON_H */

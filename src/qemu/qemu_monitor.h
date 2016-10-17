@@ -1008,4 +1008,6 @@ int qemuMonitorMigrateStartPostCopy(qemuMonitorPtr mon);
 int qemuMonitorGetRTCTime(qemuMonitorPtr mon,
                           struct tm *tm);
 
+virHashTablePtr qemuMonitorQueryQMPSchema(qemuMonitorPtr mon);
+
 #endif /* QEMU_MONITOR_H */
