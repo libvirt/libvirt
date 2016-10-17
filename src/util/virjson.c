@@ -949,6 +949,61 @@ virJSONValueArraySteal(virJSONValuePtr array,
 }
 
 
+/**
+ * virJSONValueArrayForeachSteal:
+ * @array: array to iterate
+ * @cb: callback called on every member of the array
+ * @opaque: custom data for the callback
+ *
+ * Iterates members of the array and calls the callback on every single member.
+ * The return codes of the callback are interpreted as follows:
+ *  0: callback claims ownership of the array element and is responsible for
+ *     freeing it
+ *  1: callback doesn't claim ownership of the element
+ * -1: callback doesn't claim ownership of the element and iteration does not
+ *     continue
+ *
+ * Returns 0 if all members were iterated and/or stolen by the callback; -1
+ * on callback failure or if the JSON value object is not an array.
+ * The rest of the members stay in possession of the array and it's condensed.
+ */
+int
+virJSONValueArrayForeachSteal(virJSONValuePtr array,
+                              virJSONArrayIteratorFunc cb,
+                              void *opaque)
+{
+    size_t i;
+    size_t j = 0;
+    int ret = 0;
+    int rc;
+
+    if (array->type != VIR_JSON_TYPE_ARRAY)
+        return -1;
+
+    for (i = 0; i < array->data.array.nvalues; i++) {
+        if ((rc = cb(i, array->data.array.values[i], opaque)) < 0) {
+            ret = -1;
+            break;
+        }
+
+        if (rc == 0)
+            array->data.array.values[i] = NULL;
+    }
+
+    /* condense the remaining entries at the beginning */
+    for (i = 0; i < array->data.array.nvalues; i++) {
+        if (!array->data.array.values[i])
+            continue;
+
+        array->data.array.values[j++] = array->data.array.values[i];
+    }
+
+    array->data.array.nvalues = j;
+
+    return ret;
+}
+
+
 const char *
 virJSONValueGetString(virJSONValuePtr string)
 {

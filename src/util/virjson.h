@@ -117,6 +117,12 @@ bool virJSONValueIsArray(virJSONValuePtr array);
 ssize_t virJSONValueArraySize(const virJSONValue *array);
 virJSONValuePtr virJSONValueArrayGet(virJSONValuePtr object, unsigned int element);
 virJSONValuePtr virJSONValueArraySteal(virJSONValuePtr object, unsigned int element);
+typedef int (*virJSONArrayIteratorFunc)(size_t pos,
+                                        virJSONValuePtr item,
+                                        void *opaque);
+int virJSONValueArrayForeachSteal(virJSONValuePtr array,
+                                  virJSONArrayIteratorFunc cb,
+                                  void *opaque);
 
 int virJSONValueObjectKeysNumber(virJSONValuePtr object);
 const char *virJSONValueObjectGetKey(virJSONValuePtr object, unsigned int n);
