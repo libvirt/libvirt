@@ -5484,7 +5484,7 @@ qemuBuildRNGBackendProps(virDomainRNGDefPtr rng,
 
         *type = "rng-egd";
 
-        if (virAsprintf(&charBackendAlias, "char%s", rng->info.alias) < 0)
+        if (!(charBackendAlias = qemuAliasChardevFromDevAlias(rng->info.alias)))
             goto cleanup;
 
         if (virJSONValueObjectCreate(props, "s:chardev", charBackendAlias,

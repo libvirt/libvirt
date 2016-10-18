@@ -1058,7 +1058,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (virAsprintf(&charDevAlias, "char%s", net->info.alias) < 0)
+        if (!(charDevAlias = qemuAliasChardevFromDevAlias(net->info.alias)))
             goto cleanup;
         break;
 
@@ -1487,7 +1487,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     if (qemuAssignDeviceRedirdevAlias(def, redirdev, -1) < 0)
         goto cleanup;
 
-    if (virAsprintf(&charAlias, "char%s", redirdev->info.alias) < 0)
+    if (!(charAlias = qemuAliasChardevFromDevAlias(redirdev->info.alias)))
         goto cleanup;
 
     if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, priv->qemuCaps)))
@@ -1723,7 +1723,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     if (qemuBuildChrDeviceStr(&devstr, vmdef, chr, priv->qemuCaps) < 0)
         goto cleanup;
 
-    if (virAsprintf(&charAlias, "char%s", chr->info.alias) < 0)
+    if (!(charAlias = qemuAliasChardevFromDevAlias(chr->info.alias)))
         goto cleanup;
 
     if (qemuDomainChrPreInsert(vmdef, chr) < 0)
@@ -1858,7 +1858,7 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
     if (virAsprintf(&objAlias, "obj%s", rng->info.alias) < 0)
         goto cleanup;
 
-    if (virAsprintf(&charAlias, "char%s", rng->info.alias) < 0)
+    if (!(charAlias = qemuAliasChardevFromDevAlias(rng->info.alias)))
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -3370,7 +3370,7 @@ qemuDomainRemoveNetDevice(virQEMUDriverPtr driver,
               net->info.alias, vm, vm->def->name);
 
     if (virAsprintf(&hostnet_name, "host%s", net->info.alias) < 0 ||
-        virAsprintf(&charDevAlias, "char%s", net->info.alias) < 0)
+        !(charDevAlias = qemuAliasChardevFromDevAlias(net->info.alias)))
         goto cleanup;
 
 
@@ -3477,7 +3477,7 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
     VIR_DEBUG("Removing character device %s from domain %p %s",
               chr->info.alias, vm, vm->def->name);
 
-    if (virAsprintf(&charAlias, "char%s", chr->info.alias) < 0)
+    if (!(charAlias = qemuAliasChardevFromDevAlias(chr->info.alias)))
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -3522,7 +3522,7 @@ qemuDomainRemoveRNGDevice(virQEMUDriverPtr driver,
     if (virAsprintf(&objAlias, "obj%s", rng->info.alias) < 0)
         goto cleanup;
 
-    if (virAsprintf(&charAlias, "char%s", rng->info.alias) < 0)
+    if (!(charAlias = qemuAliasChardevFromDevAlias(rng->info.alias)))
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);

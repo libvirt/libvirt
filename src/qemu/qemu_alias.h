@@ -83,4 +83,7 @@ char *qemuDomainGetSecretAESAlias(const char *srcalias,
 char *qemuAliasTLSObjFromChardevAlias(const char *chardev_alias)
     ATTRIBUTE_NONNULL(1);
 
+char *qemuAliasChardevFromDevAlias(const char *devAlias)
+    ATTRIBUTE_NONNULL(1);
+
 #endif /* __QEMU_ALIAS_H__*/

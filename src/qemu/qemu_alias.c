@@ -606,3 +606,19 @@ qemuAliasTLSObjFromChardevAlias(const char *chardev_alias)
 
     return ret;
 }
+
+
+/* qemuAliasChardevFromDevAlias:
+ * @devAlias: pointer do device alias
+ *
+ * Generate and return a string to be used as chardev alias.
+ */
+char *
+qemuAliasChardevFromDevAlias(const char *devAlias)
+{
+    char *ret;
+
+    ignore_value(virAsprintf(&ret, "char%s", devAlias));
+
+    return ret;
+}
