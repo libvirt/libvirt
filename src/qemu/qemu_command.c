@@ -4949,10 +4949,10 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
             if (qemuBuildTLSx509CommandLine(cmd, cfg->chardevTLSx509certdir,
                                             dev->data.tcp.listen,
                                             cfg->chardevTLSx509verify,
-                                            alias, qemuCaps) < 0)
+                                            charAlias, qemuCaps) < 0)
                 goto error;
 
-            if (!(objalias = qemuAliasTLSObjFromChardevAlias(alias)))
+            if (!(objalias = qemuAliasTLSObjFromChardevAlias(charAlias)))
                 goto error;
             virBufferAsprintf(&buf, ",tls-creds=%s", objalias);
             VIR_FREE(objalias);
