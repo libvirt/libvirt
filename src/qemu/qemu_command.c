@@ -4861,28 +4861,32 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool telnet;
+    char *charAlias = NULL;
+
+    if (!(charAlias = qemuAliasChardevFromDevAlias(alias)))
+        goto error;
 
     switch (dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
-        virBufferAsprintf(&buf, "null,id=char%s", alias);
+        virBufferAsprintf(&buf, "null,id=%s", charAlias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_VC:
-        virBufferAsprintf(&buf, "vc,id=char%s", alias);
+        virBufferAsprintf(&buf, "vc,id=%s", charAlias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        virBufferAsprintf(&buf, "pty,id=char%s", alias);
+        virBufferAsprintf(&buf, "pty,id=%s", charAlias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferAsprintf(&buf, "%s,id=char%s,path=%s",
+        virBufferAsprintf(&buf, "%s,id=%s,path=%s",
                           STRPREFIX(alias, "parallel") ? "parport" : "tty",
-                          alias, dev->data.file.path);
+                          charAlias, dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        virBufferAsprintf(&buf, "file,id=char%s", alias);
+        virBufferAsprintf(&buf, "file,id=%s", charAlias);
 
         if (dev->data.file.append != VIR_TRISTATE_SWITCH_ABSENT &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FILE_APPEND)) {
@@ -4898,12 +4902,12 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        virBufferAsprintf(&buf, "pipe,id=char%s,path=%s", alias,
+        virBufferAsprintf(&buf, "pipe,id=%s,path=%s", charAlias,
                           dev->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_STDIO:
-        virBufferAsprintf(&buf, "stdio,id=char%s", alias);
+        virBufferAsprintf(&buf, "stdio,id=%s", charAlias);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP: {
@@ -4919,9 +4923,9 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
             bindService = "0";
 
         virBufferAsprintf(&buf,
-                          "udp,id=char%s,host=%s,port=%s,localaddr=%s,"
+                          "udp,id=%s,host=%s,port=%s,localaddr=%s,"
                           "localport=%s",
-                          alias,
+                          charAlias,
                           connectHost,
                           dev->data.udp.connectService,
                           bindHost, bindService);
@@ -4930,8 +4934,8 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
     case VIR_DOMAIN_CHR_TYPE_TCP:
         telnet = dev->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
         virBufferAsprintf(&buf,
-                          "socket,id=char%s,host=%s,port=%s%s",
-                          alias,
+                          "socket,id=%s,host=%s,port=%s%s",
+                          charAlias,
                           dev->data.tcp.host,
                           dev->data.tcp.service,
                           telnet ? ",telnet" : "");
@@ -4956,7 +4960,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        virBufferAsprintf(&buf, "socket,id=char%s,path=", alias);
+        virBufferAsprintf(&buf, "socket,id=%s,path=", charAlias);
         virQEMUBuildBufferEscapeComma(&buf, dev->data.nix.path);
         if (dev->data.nix.listen)
             virBufferAdd(&buf, nowait ? ",server,nowait" : ",server", -1);
@@ -4968,7 +4972,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                            _("spicevmc not supported in this QEMU binary"));
             goto error;
         }
-        virBufferAsprintf(&buf, "spicevmc,id=char%s,name=%s", alias,
+        virBufferAsprintf(&buf, "spicevmc,id=%s,name=%s", charAlias,
                           virDomainChrSpicevmcTypeToString(dev->data.spicevmc));
         break;
 
@@ -4978,7 +4982,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                            _("spiceport not supported in this QEMU binary"));
             goto error;
         }
-        virBufferAsprintf(&buf, "spiceport,id=char%s,name=%s", alias,
+        virBufferAsprintf(&buf, "spiceport,id=%s,name=%s", charAlias,
                           dev->data.spiceport.channel);
         break;
 
@@ -5007,6 +5011,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
     return virBufferContentAndReset(&buf);
 
  error:
+    VIR_FREE(charAlias);
     virBufferFreeAndReset(&buf);
     return NULL;
 }
