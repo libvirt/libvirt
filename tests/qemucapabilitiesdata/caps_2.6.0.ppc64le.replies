@@ -2,8 +2,8 @@
   "QMP": {
     "version": {
       "qemu": {
-        "micro": 94,
-        "minor": 5,
+        "micro": 0,
+        "minor": 6,
         "major": 2
       },
       "package": ""
@@ -22,8 +22,8 @@
 {
   "return": {
     "qemu": {
-      "micro": 94,
-      "minor": 5,
+      "micro": 0,
+      "minor": 6,
       "major": 2
     },
     "package": ""
@@ -451,7 +451,7 @@
 
 {
   "return": {
-    "fd": 13,
+    "fd": 14,
     "fdset-id": 0
   },
   "id": "libvirt-5"
@@ -784,6 +784,9 @@
     },
     {
       "name": "401F2-powerpc64-cpu"
+    },
+    {
+      "name": "ccid-card-emulated"
     },
     {
       "name": "pseries-2.1-machine"
@@ -1381,6 +1384,9 @@
     },
     {
       "name": "PCIE"
+    },
+    {
+      "name": "ccid-card-passthru"
     },
     {
       "name": "750cx_v2.1-powerpc64-cpu"
@@ -3559,11 +3565,6 @@
     },
     {
       "name": "event_idx",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "stats",
       "description": "on/off",
       "type": "bool"
     },

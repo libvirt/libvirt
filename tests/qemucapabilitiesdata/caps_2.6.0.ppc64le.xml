@@ -21,6 +21,8 @@
   <flag name='boot-index'/>
   <flag name='hda-duplex'/>
   <flag name='drive-aio'/>
+  <flag name='ccid-emulated'/>
+  <flag name='ccid-passthru'/>
   <flag name='chardev-spicevmc'/>
   <flag name='virtio-tx-alg'/>
   <flag name='pci-multifunction'/>
@@ -156,7 +158,7 @@
   <flag name='drive-iotune-max-length'/>
   <flag name='ivshmem-plain'/>
   <flag name='ivshmem-doorbell'/>
-  <version>2005094</version>
+  <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
   <arch>ppc64</arch>
