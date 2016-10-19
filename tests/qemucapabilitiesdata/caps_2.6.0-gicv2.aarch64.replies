@@ -2,8 +2,8 @@
   "QMP": {
     "version": {
       "qemu": {
-        "micro": 94,
-        "minor": 5,
+        "micro": 0,
+        "minor": 6,
         "major": 2
       },
       "package": ""
@@ -22,8 +22,8 @@
 {
   "return": {
     "qemu": {
-      "micro": 94,
-      "minor": 5,
+      "micro": 0,
+      "minor": 6,
       "major": 2
     },
     "package": ""
@@ -3412,11 +3412,6 @@
     },
     {
       "name": "event_idx",
-      "description": "on/off",
-      "type": "bool"
-    },
-    {
-      "name": "stats",
       "description": "on/off",
       "type": "bool"
     },
