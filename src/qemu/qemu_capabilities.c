@@ -4827,9 +4827,12 @@ virQEMUCapsSupportsChardev(const virDomainDef *def,
         return false;
 
     if ((def->os.arch == VIR_ARCH_PPC) || ARCH_IS_PPC64(def->os.arch)) {
+        if (!qemuDomainMachineIsPSeries(def))
+            return false;
         /* only pseries need -device spapr-vty with -chardev */
-        return (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
-                chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO);
+        if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+            chr->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO)
+            return false;
     }
 
     if ((def->os.arch != VIR_ARCH_ARMV7L) && (def->os.arch != VIR_ARCH_AARCH64))
