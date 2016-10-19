@@ -690,6 +690,46 @@ virDomainPCIAddressSetFree(virDomainPCIAddressSetPtr addrs)
 }
 
 
+static int
+virDomainPCIAddressFindUnusedFunctionOnBus(virDomainPCIAddressBusPtr bus,
+                                           virPCIDeviceAddressPtr searchAddr,
+                                           int function ATTRIBUTE_UNUSED,
+                                           virDomainPCIConnectFlags flags,
+                                           bool *found)
+{
+    int ret = -1;
+    char *addrStr = NULL;
+
+    *found = false;
+
+    if (!(addrStr = virDomainPCIAddressAsString(searchAddr)))
+        goto cleanup;
+
+    if (!virDomainPCIAddressFlagsCompatible(searchAddr, addrStr, bus->flags,
+                                            flags, false, false)) {
+        VIR_DEBUG("PCI bus %.4x:%.2x is not compatible with the device",
+                  searchAddr->domain, searchAddr->bus);
+    } else {
+        while (searchAddr->slot <= bus->maxSlot) {
+            if (bus->slot[searchAddr->slot].functions == 0) {
+                *found = true;
+                break;
+            }
+
+            VIR_DEBUG("PCI slot %.4x:%.2x:%.2x already in use",
+                      searchAddr->domain, searchAddr->bus, searchAddr->slot);
+            searchAddr->slot++;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(addrStr);
+    return ret;
+}
+
+
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
                                virPCIDeviceAddressPtr next_addr,
@@ -699,8 +739,8 @@ virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
     /* default to starting the search for a free slot from
      * the first slot of domain 0 bus 0...
      */
-    virPCIDeviceAddress a = {0};
-    char *addrStr = NULL;
+    virPCIDeviceAddress a = { 0 };
+    bool found = false;
 
     if (addrs->nbuses == 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("No PCI buses available"));
@@ -728,24 +768,16 @@ virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
         a.function = function;
 
     while (a.bus < addrs->nbuses) {
-        VIR_FREE(addrStr);
-        if (!(addrStr = virDomainPCIAddressAsString(&a)))
+        if (virDomainPCIAddressFindUnusedFunctionOnBus(&addrs->buses[a.bus],
+                                                       &a, function,
+                                                       flags, &found) < 0) {
             goto error;
-        if (!virDomainPCIAddressFlagsCompatible(&a, addrStr,
-                                                addrs->buses[a.bus].flags,
-                                                flags, false, false)) {
-            VIR_DEBUG("PCI bus %.4x:%.2x is not compatible with the device",
-                      a.domain, a.bus);
-        } else {
-            while (a.slot <= addrs->buses[a.bus].maxSlot) {
-                if (!virDomainPCIAddressSlotInUse(addrs, &a))
-                    goto success;
-
-                VIR_DEBUG("PCI slot %.4x:%.2x:%.2x already in use",
-                          a.domain, a.bus, a.slot);
-                a.slot++;
-            }
         }
+
+        if (found)
+            goto success;
+
+        /* nothing on this bus, go to the next bus */
         if (++a.bus < addrs->nbuses)
             a.slot = addrs->buses[a.bus].minSlot;
     }
@@ -762,38 +794,27 @@ virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
         /* Check the buses from 0 up to the last used one */
         for (a.bus = 0; a.bus <= addrs->lastaddr.bus; a.bus++) {
             a.slot = addrs->buses[a.bus].minSlot;
-            VIR_FREE(addrStr);
-            if (!(addrStr = virDomainPCIAddressAsString(&a)))
-                goto error;
-            if (!virDomainPCIAddressFlagsCompatible(&a, addrStr,
-                                                    addrs->buses[a.bus].flags,
-                                                    flags, false, false)) {
-                VIR_DEBUG("PCI bus %.4x:%.2x is not compatible with the device",
-                          a.domain, a.bus);
-            } else {
-                while (a.slot <= addrs->buses[a.bus].maxSlot) {
-                    if (!virDomainPCIAddressSlotInUse(addrs, &a))
-                        goto success;
 
-                    VIR_DEBUG("PCI slot %.4x:%.2x:%.2x already in use",
-                              a.domain, a.bus, a.slot);
-                    a.slot++;
-                }
+            if (virDomainPCIAddressFindUnusedFunctionOnBus(&addrs->buses[a.bus],
+                                                           &a, function,
+                                                           flags, &found) < 0) {
+                goto error;
             }
+
+            if (found)
+                goto success;
         }
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    "%s", _("No more available PCI slots"));
  error:
-    VIR_FREE(addrStr);
     return -1;
 
  success:
     VIR_DEBUG("Found free PCI slot %.4x:%.2x:%.2x",
               a.domain, a.bus, a.slot);
     *next_addr = a;
-    VIR_FREE(addrStr);
     return 0;
 }
 
