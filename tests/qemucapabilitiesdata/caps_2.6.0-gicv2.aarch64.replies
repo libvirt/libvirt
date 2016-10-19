@@ -221,6 +221,9 @@
       "name": "query-chardev"
     },
     {
+      "name": "query-qmp-schema"
+    },
+    {
       "name": "query-events"
     },
     {
@@ -4945,6 +4948,8011 @@
 {
   "return": [
     {
+      "name": "ACPI_DEVICE_OST",
+      "meta-type": "event",
+      "arg-type": "0"
+    },
+    {
+      "name": "BALLOON_CHANGE",
+      "meta-type": "event",
+      "arg-type": "1"
+    },
+    {
+      "name": "BLOCK_IMAGE_CORRUPTED",
+      "meta-type": "event",
+      "arg-type": "2"
+    },
+    {
+      "name": "BLOCK_IO_ERROR",
+      "meta-type": "event",
+      "arg-type": "3"
+    },
+    {
+      "name": "BLOCK_JOB_CANCELLED",
+      "meta-type": "event",
+      "arg-type": "4"
+    },
+    {
+      "name": "BLOCK_JOB_COMPLETED",
+      "meta-type": "event",
+      "arg-type": "5"
+    },
+    {
+      "name": "BLOCK_JOB_ERROR",
+      "meta-type": "event",
+      "arg-type": "6"
+    },
+    {
+      "name": "BLOCK_JOB_READY",
+      "meta-type": "event",
+      "arg-type": "7"
+    },
+    {
+      "name": "BLOCK_WRITE_THRESHOLD",
+      "meta-type": "event",
+      "arg-type": "8"
+    },
+    {
+      "name": "DEVICE_DELETED",
+      "meta-type": "event",
+      "arg-type": "9"
+    },
+    {
+      "name": "DEVICE_TRAY_MOVED",
+      "meta-type": "event",
+      "arg-type": "10"
+    },
+    {
+      "name": "DUMP_COMPLETED",
+      "meta-type": "event",
+      "arg-type": "11"
+    },
+    {
+      "name": "GUEST_PANICKED",
+      "meta-type": "event",
+      "arg-type": "12"
+    },
+    {
+      "name": "MEM_UNPLUG_ERROR",
+      "meta-type": "event",
+      "arg-type": "13"
+    },
+    {
+      "name": "MIGRATION",
+      "meta-type": "event",
+      "arg-type": "14"
+    },
+    {
+      "name": "MIGRATION_PASS",
+      "meta-type": "event",
+      "arg-type": "15"
+    },
+    {
+      "name": "NIC_RX_FILTER_CHANGED",
+      "meta-type": "event",
+      "arg-type": "16"
+    },
+    {
+      "name": "POWERDOWN",
+      "meta-type": "event",
+      "arg-type": "17"
+    },
+    {
+      "name": "QUORUM_FAILURE",
+      "meta-type": "event",
+      "arg-type": "18"
+    },
+    {
+      "name": "QUORUM_REPORT_BAD",
+      "meta-type": "event",
+      "arg-type": "19"
+    },
+    {
+      "name": "RESET",
+      "meta-type": "event",
+      "arg-type": "17"
+    },
+    {
+      "name": "RESUME",
+      "meta-type": "event",
+      "arg-type": "17"
+    },
+    {
+      "name": "RTC_CHANGE",
+      "meta-type": "event",
+      "arg-type": "20"
+    },
+    {
+      "name": "SHUTDOWN",
+      "meta-type": "event",
+      "arg-type": "17"
+    },
+    {
+      "name": "SPICE_CONNECTED",
+      "meta-type": "event",
+      "arg-type": "21"
+    },
+    {
+      "name": "SPICE_DISCONNECTED",
+      "meta-type": "event",
+      "arg-type": "22"
+    },
+    {
+      "name": "SPICE_INITIALIZED",
+      "meta-type": "event",
+      "arg-type": "23"
+    },
+    {
+      "name": "SPICE_MIGRATE_COMPLETED",
+      "meta-type": "event",
+      "arg-type": "17"
+    },
+    {
+      "name": "STOP",
+      "meta-type": "event",
+      "arg-type": "17"
+    },
+    {
+      "name": "SUSPEND",
+      "meta-type": "event",
+      "arg-type": "17"
+    },
+    {
+      "name": "SUSPEND_DISK",
+      "meta-type": "event",
+      "arg-type": "17"
+    },
+    {
+      "name": "VNC_CONNECTED",
+      "meta-type": "event",
+      "arg-type": "24"
+    },
+    {
+      "name": "VNC_DISCONNECTED",
+      "meta-type": "event",
+      "arg-type": "25"
+    },
+    {
+      "name": "VNC_INITIALIZED",
+      "meta-type": "event",
+      "arg-type": "26"
+    },
+    {
+      "name": "VSERPORT_CHANGE",
+      "meta-type": "event",
+      "arg-type": "27"
+    },
+    {
+      "name": "WAKEUP",
+      "meta-type": "event",
+      "arg-type": "17"
+    },
+    {
+      "name": "WATCHDOG",
+      "meta-type": "event",
+      "arg-type": "28"
+    },
+    {
+      "name": "add-fd",
+      "ret-type": "30",
+      "meta-type": "command",
+      "arg-type": "29"
+    },
+    {
+      "name": "add_client",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "31"
+    },
+    {
+      "name": "balloon",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "32"
+    },
+    {
+      "name": "block-commit",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "33"
+    },
+    {
+      "name": "block-dirty-bitmap-add",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "34"
+    },
+    {
+      "name": "block-dirty-bitmap-clear",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "35"
+    },
+    {
+      "name": "block-dirty-bitmap-remove",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "35"
+    },
+    {
+      "name": "block-job-cancel",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "36"
+    },
+    {
+      "name": "block-job-complete",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "37"
+    },
+    {
+      "name": "block-job-pause",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "38"
+    },
+    {
+      "name": "block-job-resume",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "39"
+    },
+    {
+      "name": "block-job-set-speed",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "40"
+    },
+    {
+      "name": "block-set-write-threshold",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "41"
+    },
+    {
+      "name": "block-stream",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "42"
+    },
+    {
+      "name": "block_passwd",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "43"
+    },
+    {
+      "name": "block_resize",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "44"
+    },
+    {
+      "name": "block_set_io_throttle",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "45"
+    },
+    {
+      "name": "blockdev-add",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "46"
+    },
+    {
+      "name": "blockdev-backup",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "47"
+    },
+    {
+      "name": "blockdev-change-medium",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "48"
+    },
+    {
+      "name": "blockdev-close-tray",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "49"
+    },
+    {
+      "name": "blockdev-mirror",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "50"
+    },
+    {
+      "name": "blockdev-open-tray",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "51"
+    },
+    {
+      "name": "blockdev-snapshot",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "52"
+    },
+    {
+      "name": "blockdev-snapshot-delete-internal-sync",
+      "ret-type": "54",
+      "meta-type": "command",
+      "arg-type": "53"
+    },
+    {
+      "name": "blockdev-snapshot-internal-sync",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "55"
+    },
+    {
+      "name": "blockdev-snapshot-sync",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "56"
+    },
+    {
+      "name": "change",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "57"
+    },
+    {
+      "name": "change-backing-file",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "58"
+    },
+    {
+      "name": "change-vnc-password",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "59"
+    },
+    {
+      "name": "chardev-add",
+      "ret-type": "61",
+      "meta-type": "command",
+      "arg-type": "60"
+    },
+    {
+      "name": "chardev-remove",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "62"
+    },
+    {
+      "name": "client_migrate_info",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "63"
+    },
+    {
+      "name": "closefd",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "64"
+    },
+    {
+      "name": "cont",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "cpu",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "65"
+    },
+    {
+      "name": "cpu-add",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "66"
+    },
+    {
+      "name": "device-list-properties",
+      "ret-type": "[68]",
+      "meta-type": "command",
+      "arg-type": "67"
+    },
+    {
+      "name": "device_del",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "69"
+    },
+    {
+      "name": "drive-backup",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "70"
+    },
+    {
+      "name": "drive-mirror",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "71"
+    },
+    {
+      "name": "dump-guest-memory",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "72"
+    },
+    {
+      "name": "dump-skeys",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "73"
+    },
+    {
+      "name": "eject",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "74"
+    },
+    {
+      "name": "expire_password",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "75"
+    },
+    {
+      "name": "getfd",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "76"
+    },
+    {
+      "name": "human-monitor-command",
+      "ret-type": "str",
+      "meta-type": "command",
+      "arg-type": "77"
+    },
+    {
+      "name": "inject-nmi",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "input-send-event",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "78"
+    },
+    {
+      "name": "memsave",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "79"
+    },
+    {
+      "name": "migrate",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "80"
+    },
+    {
+      "name": "migrate-incoming",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "81"
+    },
+    {
+      "name": "migrate-set-cache-size",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "82"
+    },
+    {
+      "name": "migrate-set-capabilities",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "83"
+    },
+    {
+      "name": "migrate-set-parameters",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "84"
+    },
+    {
+      "name": "migrate-start-postcopy",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "migrate_cancel",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "migrate_set_downtime",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "85"
+    },
+    {
+      "name": "migrate_set_speed",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "86"
+    },
+    {
+      "name": "nbd-server-add",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "87"
+    },
+    {
+      "name": "nbd-server-start",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "88"
+    },
+    {
+      "name": "nbd-server-stop",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "netdev_add",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "89"
+    },
+    {
+      "name": "netdev_del",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "90"
+    },
+    {
+      "name": "object-add",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "91"
+    },
+    {
+      "name": "object-del",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "92"
+    },
+    {
+      "name": "pmemsave",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "93"
+    },
+    {
+      "name": "qom-get",
+      "ret-type": "any",
+      "meta-type": "command",
+      "arg-type": "94"
+    },
+    {
+      "name": "qom-list",
+      "ret-type": "[96]",
+      "meta-type": "command",
+      "arg-type": "95"
+    },
+    {
+      "name": "qom-list-types",
+      "ret-type": "[98]",
+      "meta-type": "command",
+      "arg-type": "97"
+    },
+    {
+      "name": "qom-set",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "99"
+    },
+    {
+      "name": "query-acpi-ospm-status",
+      "ret-type": "[100]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-balloon",
+      "ret-type": "101",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-block",
+      "ret-type": "[102]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-block-jobs",
+      "ret-type": "[103]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-blockstats",
+      "ret-type": "[105]",
+      "meta-type": "command",
+      "arg-type": "104"
+    },
+    {
+      "name": "query-chardev",
+      "ret-type": "[106]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-chardev-backends",
+      "ret-type": "[107]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-command-line-options",
+      "ret-type": "[109]",
+      "meta-type": "command",
+      "arg-type": "108"
+    },
+    {
+      "name": "query-commands",
+      "ret-type": "[110]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-cpu-definitions",
+      "ret-type": "[111]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-cpus",
+      "ret-type": "[112]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-dump",
+      "ret-type": "113",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-dump-guest-memory-capability",
+      "ret-type": "114",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-events",
+      "ret-type": "[115]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-fdsets",
+      "ret-type": "[116]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-gic-capabilities",
+      "ret-type": "[117]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-iothreads",
+      "ret-type": "[118]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-kvm",
+      "ret-type": "119",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-machines",
+      "ret-type": "[120]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-memdev",
+      "ret-type": "[121]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-memory-devices",
+      "ret-type": "[122]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-mice",
+      "ret-type": "[123]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-migrate",
+      "ret-type": "124",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-migrate-cache-size",
+      "ret-type": "int",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-migrate-capabilities",
+      "ret-type": "[125]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-migrate-parameters",
+      "ret-type": "126",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-name",
+      "ret-type": "127",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-named-block-nodes",
+      "ret-type": "[128]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-pci",
+      "ret-type": "[129]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-qmp-schema",
+      "ret-type": "[130]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-rocker",
+      "ret-type": "132",
+      "meta-type": "command",
+      "arg-type": "131"
+    },
+    {
+      "name": "query-rocker-of-dpa-flows",
+      "ret-type": "[134]",
+      "meta-type": "command",
+      "arg-type": "133"
+    },
+    {
+      "name": "query-rocker-of-dpa-groups",
+      "ret-type": "[136]",
+      "meta-type": "command",
+      "arg-type": "135"
+    },
+    {
+      "name": "query-rocker-ports",
+      "ret-type": "[138]",
+      "meta-type": "command",
+      "arg-type": "137"
+    },
+    {
+      "name": "query-rx-filter",
+      "ret-type": "[140]",
+      "meta-type": "command",
+      "arg-type": "139"
+    },
+    {
+      "name": "query-spice",
+      "ret-type": "141",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-status",
+      "ret-type": "142",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-target",
+      "ret-type": "143",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-tpm",
+      "ret-type": "[144]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-tpm-models",
+      "ret-type": "[145]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-tpm-types",
+      "ret-type": "[146]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-uuid",
+      "ret-type": "147",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-version",
+      "ret-type": "148",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-vnc",
+      "ret-type": "149",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "query-vnc-servers",
+      "ret-type": "[150]",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "quit",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "remove-fd",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "151"
+    },
+    {
+      "name": "ringbuf-read",
+      "ret-type": "str",
+      "meta-type": "command",
+      "arg-type": "152"
+    },
+    {
+      "name": "ringbuf-write",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "153"
+    },
+    {
+      "name": "rtc-reset-reinjection",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "screendump",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "154"
+    },
+    {
+      "name": "send-key",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "155"
+    },
+    {
+      "name": "set_link",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "156"
+    },
+    {
+      "name": "set_password",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "157"
+    },
+    {
+      "name": "stop",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "system_powerdown",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "system_reset",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "system_wakeup",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "17"
+    },
+    {
+      "name": "trace-event-get-state",
+      "ret-type": "[159]",
+      "meta-type": "command",
+      "arg-type": "158"
+    },
+    {
+      "name": "trace-event-set-state",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "160"
+    },
+    {
+      "name": "transaction",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "161"
+    },
+    {
+      "name": "x-blockdev-del",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "162"
+    },
+    {
+      "name": "x-blockdev-insert-medium",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "163"
+    },
+    {
+      "name": "x-blockdev-remove-medium",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "164"
+    },
+    {
+      "name": "xen-save-devices-state",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "165"
+    },
+    {
+      "name": "xen-set-global-dirty-log",
+      "ret-type": "17",
+      "meta-type": "command",
+      "arg-type": "166"
+    },
+    {
+      "name": "0",
+      "members": [
+        {
+          "name": "info",
+          "type": "100"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "1",
+      "members": [
+        {
+          "name": "actual",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "2",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "node-name",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "msg",
+          "type": "str"
+        },
+        {
+          "name": "offset",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "size",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "fatal",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "3",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "operation",
+          "type": "167"
+        },
+        {
+          "name": "action",
+          "type": "168"
+        },
+        {
+          "name": "nospace",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "reason",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "4",
+      "members": [
+        {
+          "name": "type",
+          "type": "169"
+        },
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "len",
+          "type": "int"
+        },
+        {
+          "name": "offset",
+          "type": "int"
+        },
+        {
+          "name": "speed",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "5",
+      "members": [
+        {
+          "name": "type",
+          "type": "169"
+        },
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "len",
+          "type": "int"
+        },
+        {
+          "name": "offset",
+          "type": "int"
+        },
+        {
+          "name": "speed",
+          "type": "int"
+        },
+        {
+          "name": "error",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "6",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "operation",
+          "type": "167"
+        },
+        {
+          "name": "action",
+          "type": "168"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "7",
+      "members": [
+        {
+          "name": "type",
+          "type": "169"
+        },
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "len",
+          "type": "int"
+        },
+        {
+          "name": "offset",
+          "type": "int"
+        },
+        {
+          "name": "speed",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "8",
+      "members": [
+        {
+          "name": "node-name",
+          "type": "str"
+        },
+        {
+          "name": "amount-exceeded",
+          "type": "int"
+        },
+        {
+          "name": "write-threshold",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "9",
+      "members": [
+        {
+          "name": "device",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "path",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "10",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "tray-open",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "11",
+      "members": [
+        {
+          "name": "result",
+          "type": "113"
+        },
+        {
+          "name": "error",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "12",
+      "members": [
+        {
+          "name": "action",
+          "type": "170"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "13",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "msg",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "14",
+      "members": [
+        {
+          "name": "status",
+          "type": "171"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "15",
+      "members": [
+        {
+          "name": "pass",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "16",
+      "members": [
+        {
+          "name": "name",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "path",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "17",
+      "members": [
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "18",
+      "members": [
+        {
+          "name": "reference",
+          "type": "str"
+        },
+        {
+          "name": "sector-num",
+          "type": "int"
+        },
+        {
+          "name": "sectors-count",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "19",
+      "members": [
+        {
+          "name": "type",
+          "type": "172"
+        },
+        {
+          "name": "error",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "node-name",
+          "type": "str"
+        },
+        {
+          "name": "sector-num",
+          "type": "int"
+        },
+        {
+          "name": "sectors-count",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "20",
+      "members": [
+        {
+          "name": "offset",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "21",
+      "members": [
+        {
+          "name": "server",
+          "type": "173"
+        },
+        {
+          "name": "client",
+          "type": "173"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "22",
+      "members": [
+        {
+          "name": "server",
+          "type": "173"
+        },
+        {
+          "name": "client",
+          "type": "173"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "23",
+      "members": [
+        {
+          "name": "server",
+          "type": "174"
+        },
+        {
+          "name": "client",
+          "type": "175"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "24",
+      "members": [
+        {
+          "name": "server",
+          "type": "176"
+        },
+        {
+          "name": "client",
+          "type": "177"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "25",
+      "members": [
+        {
+          "name": "server",
+          "type": "176"
+        },
+        {
+          "name": "client",
+          "type": "178"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "26",
+      "members": [
+        {
+          "name": "server",
+          "type": "176"
+        },
+        {
+          "name": "client",
+          "type": "178"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "27",
+      "members": [
+        {
+          "name": "id",
+          "type": "str"
+        },
+        {
+          "name": "open",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "28",
+      "members": [
+        {
+          "name": "action",
+          "type": "179"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "29",
+      "members": [
+        {
+          "name": "fdset-id",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "opaque",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "30",
+      "members": [
+        {
+          "name": "fdset-id",
+          "type": "int"
+        },
+        {
+          "name": "fd",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "31",
+      "members": [
+        {
+          "name": "protocol",
+          "type": "str"
+        },
+        {
+          "name": "fdname",
+          "type": "str"
+        },
+        {
+          "name": "skipauth",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "tls",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "32",
+      "members": [
+        {
+          "name": "value",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "33",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "base",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "top",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "backing-file",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "speed",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "34",
+      "members": [
+        {
+          "name": "node",
+          "type": "str"
+        },
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "granularity",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "35",
+      "members": [
+        {
+          "name": "node",
+          "type": "str"
+        },
+        {
+          "name": "name",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "36",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "force",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "37",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "38",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "39",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "40",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "speed",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "41",
+      "members": [
+        {
+          "name": "node-name",
+          "type": "str"
+        },
+        {
+          "name": "write-threshold",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "42",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "base",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "backing-file",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "speed",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "on-error",
+          "default": null,
+          "type": "180"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "43",
+      "members": [
+        {
+          "name": "device",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "node-name",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "password",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "44",
+      "members": [
+        {
+          "name": "device",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "node-name",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "size",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "45",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "bps",
+          "type": "int"
+        },
+        {
+          "name": "bps_rd",
+          "type": "int"
+        },
+        {
+          "name": "bps_wr",
+          "type": "int"
+        },
+        {
+          "name": "iops",
+          "type": "int"
+        },
+        {
+          "name": "iops_rd",
+          "type": "int"
+        },
+        {
+          "name": "iops_wr",
+          "type": "int"
+        },
+        {
+          "name": "bps_max",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "bps_rd_max",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "bps_wr_max",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_max",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_rd_max",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_wr_max",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "bps_max_length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "bps_rd_max_length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "bps_wr_max_length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_max_length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_rd_max_length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_wr_max_length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_size",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "group",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "46",
+      "members": [
+        {
+          "name": "options",
+          "type": "181"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "47",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "target",
+          "type": "str"
+        },
+        {
+          "name": "sync",
+          "type": "182"
+        },
+        {
+          "name": "speed",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "on-source-error",
+          "default": null,
+          "type": "180"
+        },
+        {
+          "name": "on-target-error",
+          "default": null,
+          "type": "180"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "48",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "filename",
+          "type": "str"
+        },
+        {
+          "name": "format",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "read-only-mode",
+          "default": null,
+          "type": "183"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "49",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "50",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "target",
+          "type": "str"
+        },
+        {
+          "name": "replaces",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "sync",
+          "type": "182"
+        },
+        {
+          "name": "speed",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "granularity",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "buf-size",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "on-source-error",
+          "default": null,
+          "type": "180"
+        },
+        {
+          "name": "on-target-error",
+          "default": null,
+          "type": "180"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "51",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "force",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "52",
+      "members": [
+        {
+          "name": "node",
+          "type": "str"
+        },
+        {
+          "name": "overlay",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "53",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "id",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "name",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "54",
+      "members": [
+        {
+          "name": "id",
+          "type": "str"
+        },
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "vm-state-size",
+          "type": "int"
+        },
+        {
+          "name": "date-sec",
+          "type": "int"
+        },
+        {
+          "name": "date-nsec",
+          "type": "int"
+        },
+        {
+          "name": "vm-clock-sec",
+          "type": "int"
+        },
+        {
+          "name": "vm-clock-nsec",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "55",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "name",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "56",
+      "members": [
+        {
+          "name": "device",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "node-name",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "snapshot-file",
+          "type": "str"
+        },
+        {
+          "name": "snapshot-node-name",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "format",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "mode",
+          "default": null,
+          "type": "184"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "57",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "target",
+          "type": "str"
+        },
+        {
+          "name": "arg",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "58",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "image-node-name",
+          "type": "str"
+        },
+        {
+          "name": "backing-file",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "59",
+      "members": [
+        {
+          "name": "password",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "60",
+      "members": [
+        {
+          "name": "id",
+          "type": "str"
+        },
+        {
+          "name": "backend",
+          "type": "185"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "61",
+      "members": [
+        {
+          "name": "pty",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "62",
+      "members": [
+        {
+          "name": "id",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "63",
+      "members": [
+        {
+          "name": "protocol",
+          "type": "str"
+        },
+        {
+          "name": "hostname",
+          "type": "str"
+        },
+        {
+          "name": "port",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "tls-port",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "cert-subject",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "64",
+      "members": [
+        {
+          "name": "fdname",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "65",
+      "members": [
+        {
+          "name": "index",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "66",
+      "members": [
+        {
+          "name": "id",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "67",
+      "members": [
+        {
+          "name": "typename",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[68]",
+      "element-type": "68",
+      "meta-type": "array"
+    },
+    {
+      "name": "68",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "type",
+          "type": "str"
+        },
+        {
+          "name": "description",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "69",
+      "members": [
+        {
+          "name": "id",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "70",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "target",
+          "type": "str"
+        },
+        {
+          "name": "format",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "sync",
+          "type": "182"
+        },
+        {
+          "name": "mode",
+          "default": null,
+          "type": "184"
+        },
+        {
+          "name": "speed",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "bitmap",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "on-source-error",
+          "default": null,
+          "type": "180"
+        },
+        {
+          "name": "on-target-error",
+          "default": null,
+          "type": "180"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "71",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "target",
+          "type": "str"
+        },
+        {
+          "name": "format",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "node-name",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "replaces",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "sync",
+          "type": "182"
+        },
+        {
+          "name": "mode",
+          "default": null,
+          "type": "184"
+        },
+        {
+          "name": "speed",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "granularity",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "buf-size",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "on-source-error",
+          "default": null,
+          "type": "180"
+        },
+        {
+          "name": "on-target-error",
+          "default": null,
+          "type": "180"
+        },
+        {
+          "name": "unmap",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "72",
+      "members": [
+        {
+          "name": "paging",
+          "type": "bool"
+        },
+        {
+          "name": "protocol",
+          "type": "str"
+        },
+        {
+          "name": "detach",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "begin",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "format",
+          "default": null,
+          "type": "186"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "73",
+      "members": [
+        {
+          "name": "filename",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "74",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "force",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "75",
+      "members": [
+        {
+          "name": "protocol",
+          "type": "str"
+        },
+        {
+          "name": "time",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "76",
+      "members": [
+        {
+          "name": "fdname",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "77",
+      "members": [
+        {
+          "name": "command-line",
+          "type": "str"
+        },
+        {
+          "name": "cpu-index",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "str",
+      "json-type": "string",
+      "meta-type": "builtin"
+    },
+    {
+      "name": "78",
+      "members": [
+        {
+          "name": "device",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "head",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "events",
+          "type": "[187]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "79",
+      "members": [
+        {
+          "name": "val",
+          "type": "int"
+        },
+        {
+          "name": "size",
+          "type": "int"
+        },
+        {
+          "name": "filename",
+          "type": "str"
+        },
+        {
+          "name": "cpu-index",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "80",
+      "members": [
+        {
+          "name": "uri",
+          "type": "str"
+        },
+        {
+          "name": "blk",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "inc",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "detach",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "81",
+      "members": [
+        {
+          "name": "uri",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "82",
+      "members": [
+        {
+          "name": "value",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "83",
+      "members": [
+        {
+          "name": "capabilities",
+          "type": "[125]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "84",
+      "members": [
+        {
+          "name": "compress-level",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "compress-threads",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "decompress-threads",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "x-cpu-throttle-initial",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "x-cpu-throttle-increment",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "85",
+      "members": [
+        {
+          "name": "value",
+          "type": "number"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "86",
+      "members": [
+        {
+          "name": "value",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "87",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "writable",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "88",
+      "members": [
+        {
+          "name": "addr",
+          "type": "188"
+        },
+        {
+          "name": "tls-creds",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "89",
+      "members": [
+        {
+          "name": "type",
+          "type": "str"
+        },
+        {
+          "name": "id",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "90",
+      "members": [
+        {
+          "name": "id",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "91",
+      "members": [
+        {
+          "name": "qom-type",
+          "type": "str"
+        },
+        {
+          "name": "id",
+          "type": "str"
+        },
+        {
+          "name": "props",
+          "default": null,
+          "type": "any"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "92",
+      "members": [
+        {
+          "name": "id",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "93",
+      "members": [
+        {
+          "name": "val",
+          "type": "int"
+        },
+        {
+          "name": "size",
+          "type": "int"
+        },
+        {
+          "name": "filename",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "94",
+      "members": [
+        {
+          "name": "path",
+          "type": "str"
+        },
+        {
+          "name": "property",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "any",
+      "json-type": "value",
+      "meta-type": "builtin"
+    },
+    {
+      "name": "95",
+      "members": [
+        {
+          "name": "path",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[96]",
+      "element-type": "96",
+      "meta-type": "array"
+    },
+    {
+      "name": "96",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "type",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "97",
+      "members": [
+        {
+          "name": "implements",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "abstract",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[98]",
+      "element-type": "98",
+      "meta-type": "array"
+    },
+    {
+      "name": "98",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "99",
+      "members": [
+        {
+          "name": "path",
+          "type": "str"
+        },
+        {
+          "name": "property",
+          "type": "str"
+        },
+        {
+          "name": "value",
+          "type": "any"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[100]",
+      "element-type": "100",
+      "meta-type": "array"
+    },
+    {
+      "name": "100",
+      "members": [
+        {
+          "name": "device",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "slot",
+          "type": "str"
+        },
+        {
+          "name": "slot-type",
+          "type": "189"
+        },
+        {
+          "name": "source",
+          "type": "int"
+        },
+        {
+          "name": "status",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "101",
+      "members": [
+        {
+          "name": "actual",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[102]",
+      "element-type": "102",
+      "meta-type": "array"
+    },
+    {
+      "name": "102",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "type",
+          "type": "str"
+        },
+        {
+          "name": "removable",
+          "type": "bool"
+        },
+        {
+          "name": "locked",
+          "type": "bool"
+        },
+        {
+          "name": "inserted",
+          "default": null,
+          "type": "128"
+        },
+        {
+          "name": "tray_open",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "io-status",
+          "default": null,
+          "type": "190"
+        },
+        {
+          "name": "dirty-bitmaps",
+          "default": null,
+          "type": "[191]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[103]",
+      "element-type": "103",
+      "meta-type": "array"
+    },
+    {
+      "name": "103",
+      "members": [
+        {
+          "name": "type",
+          "type": "str"
+        },
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "len",
+          "type": "int"
+        },
+        {
+          "name": "offset",
+          "type": "int"
+        },
+        {
+          "name": "busy",
+          "type": "bool"
+        },
+        {
+          "name": "paused",
+          "type": "bool"
+        },
+        {
+          "name": "speed",
+          "type": "int"
+        },
+        {
+          "name": "io-status",
+          "type": "190"
+        },
+        {
+          "name": "ready",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "104",
+      "members": [
+        {
+          "name": "query-nodes",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[105]",
+      "element-type": "105",
+      "meta-type": "array"
+    },
+    {
+      "name": "105",
+      "members": [
+        {
+          "name": "device",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "node-name",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "stats",
+          "type": "192"
+        },
+        {
+          "name": "parent",
+          "default": null,
+          "type": "105"
+        },
+        {
+          "name": "backing",
+          "default": null,
+          "type": "105"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[106]",
+      "element-type": "106",
+      "meta-type": "array"
+    },
+    {
+      "name": "106",
+      "members": [
+        {
+          "name": "label",
+          "type": "str"
+        },
+        {
+          "name": "filename",
+          "type": "str"
+        },
+        {
+          "name": "frontend-open",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[107]",
+      "element-type": "107",
+      "meta-type": "array"
+    },
+    {
+      "name": "107",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "108",
+      "members": [
+        {
+          "name": "option",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[109]",
+      "element-type": "109",
+      "meta-type": "array"
+    },
+    {
+      "name": "109",
+      "members": [
+        {
+          "name": "option",
+          "type": "str"
+        },
+        {
+          "name": "parameters",
+          "type": "[193]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[110]",
+      "element-type": "110",
+      "meta-type": "array"
+    },
+    {
+      "name": "110",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[111]",
+      "element-type": "111",
+      "meta-type": "array"
+    },
+    {
+      "name": "111",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[112]",
+      "element-type": "112",
+      "meta-type": "array"
+    },
+    {
+      "name": "112",
+      "tag": "arch",
+      "variants": [
+        {
+          "case": "x86",
+          "type": "195"
+        },
+        {
+          "case": "sparc",
+          "type": "196"
+        },
+        {
+          "case": "ppc",
+          "type": "197"
+        },
+        {
+          "case": "mips",
+          "type": "198"
+        },
+        {
+          "case": "tricore",
+          "type": "199"
+        },
+        {
+          "case": "other",
+          "type": "200"
+        }
+      ],
+      "members": [
+        {
+          "name": "CPU",
+          "type": "int"
+        },
+        {
+          "name": "current",
+          "type": "bool"
+        },
+        {
+          "name": "halted",
+          "type": "bool"
+        },
+        {
+          "name": "qom_path",
+          "type": "str"
+        },
+        {
+          "name": "thread_id",
+          "type": "int"
+        },
+        {
+          "name": "arch",
+          "type": "194"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "113",
+      "members": [
+        {
+          "name": "status",
+          "type": "201"
+        },
+        {
+          "name": "completed",
+          "type": "int"
+        },
+        {
+          "name": "total",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "114",
+      "members": [
+        {
+          "name": "formats",
+          "type": "[186]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[115]",
+      "element-type": "115",
+      "meta-type": "array"
+    },
+    {
+      "name": "115",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[116]",
+      "element-type": "116",
+      "meta-type": "array"
+    },
+    {
+      "name": "116",
+      "members": [
+        {
+          "name": "fdset-id",
+          "type": "int"
+        },
+        {
+          "name": "fds",
+          "type": "[202]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[117]",
+      "element-type": "117",
+      "meta-type": "array"
+    },
+    {
+      "name": "117",
+      "members": [
+        {
+          "name": "version",
+          "type": "int"
+        },
+        {
+          "name": "emulated",
+          "type": "bool"
+        },
+        {
+          "name": "kernel",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[118]",
+      "element-type": "118",
+      "meta-type": "array"
+    },
+    {
+      "name": "118",
+      "members": [
+        {
+          "name": "id",
+          "type": "str"
+        },
+        {
+          "name": "thread-id",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "119",
+      "members": [
+        {
+          "name": "enabled",
+          "type": "bool"
+        },
+        {
+          "name": "present",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[120]",
+      "element-type": "120",
+      "meta-type": "array"
+    },
+    {
+      "name": "120",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "alias",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "is-default",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "cpu-max",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[121]",
+      "element-type": "121",
+      "meta-type": "array"
+    },
+    {
+      "name": "121",
+      "members": [
+        {
+          "name": "size",
+          "type": "int"
+        },
+        {
+          "name": "merge",
+          "type": "bool"
+        },
+        {
+          "name": "dump",
+          "type": "bool"
+        },
+        {
+          "name": "prealloc",
+          "type": "bool"
+        },
+        {
+          "name": "host-nodes",
+          "type": "[int]"
+        },
+        {
+          "name": "policy",
+          "type": "203"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[122]",
+      "element-type": "122",
+      "meta-type": "array"
+    },
+    {
+      "name": "122",
+      "tag": "type",
+      "variants": [
+        {
+          "case": "dimm",
+          "type": "205"
+        }
+      ],
+      "members": [
+        {
+          "name": "type",
+          "type": "204"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[123]",
+      "element-type": "123",
+      "meta-type": "array"
+    },
+    {
+      "name": "123",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "index",
+          "type": "int"
+        },
+        {
+          "name": "current",
+          "type": "bool"
+        },
+        {
+          "name": "absolute",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "124",
+      "members": [
+        {
+          "name": "status",
+          "default": null,
+          "type": "171"
+        },
+        {
+          "name": "ram",
+          "default": null,
+          "type": "206"
+        },
+        {
+          "name": "disk",
+          "default": null,
+          "type": "206"
+        },
+        {
+          "name": "xbzrle-cache",
+          "default": null,
+          "type": "207"
+        },
+        {
+          "name": "total-time",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "expected-downtime",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "downtime",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "setup-time",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "x-cpu-throttle-percentage",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "int",
+      "json-type": "int",
+      "meta-type": "builtin"
+    },
+    {
+      "name": "[125]",
+      "element-type": "125",
+      "meta-type": "array"
+    },
+    {
+      "name": "125",
+      "members": [
+        {
+          "name": "capability",
+          "type": "208"
+        },
+        {
+          "name": "state",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "126",
+      "members": [
+        {
+          "name": "compress-level",
+          "type": "int"
+        },
+        {
+          "name": "compress-threads",
+          "type": "int"
+        },
+        {
+          "name": "decompress-threads",
+          "type": "int"
+        },
+        {
+          "name": "x-cpu-throttle-initial",
+          "type": "int"
+        },
+        {
+          "name": "x-cpu-throttle-increment",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "127",
+      "members": [
+        {
+          "name": "name",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[128]",
+      "element-type": "128",
+      "meta-type": "array"
+    },
+    {
+      "name": "128",
+      "members": [
+        {
+          "name": "file",
+          "type": "str"
+        },
+        {
+          "name": "node-name",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "ro",
+          "type": "bool"
+        },
+        {
+          "name": "drv",
+          "type": "str"
+        },
+        {
+          "name": "backing_file",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "backing_file_depth",
+          "type": "int"
+        },
+        {
+          "name": "encrypted",
+          "type": "bool"
+        },
+        {
+          "name": "encryption_key_missing",
+          "type": "bool"
+        },
+        {
+          "name": "detect_zeroes",
+          "type": "209"
+        },
+        {
+          "name": "bps",
+          "type": "int"
+        },
+        {
+          "name": "bps_rd",
+          "type": "int"
+        },
+        {
+          "name": "bps_wr",
+          "type": "int"
+        },
+        {
+          "name": "iops",
+          "type": "int"
+        },
+        {
+          "name": "iops_rd",
+          "type": "int"
+        },
+        {
+          "name": "iops_wr",
+          "type": "int"
+        },
+        {
+          "name": "image",
+          "type": "210"
+        },
+        {
+          "name": "bps_max",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "bps_rd_max",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "bps_wr_max",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_max",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_rd_max",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_wr_max",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "bps_max_length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "bps_rd_max_length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "bps_wr_max_length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_max_length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_rd_max_length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_wr_max_length",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "iops_size",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "group",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "cache",
+          "type": "211"
+        },
+        {
+          "name": "write_threshold",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[129]",
+      "element-type": "129",
+      "meta-type": "array"
+    },
+    {
+      "name": "129",
+      "members": [
+        {
+          "name": "bus",
+          "type": "int"
+        },
+        {
+          "name": "devices",
+          "type": "[212]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[130]",
+      "element-type": "130",
+      "meta-type": "array"
+    },
+    {
+      "name": "130",
+      "tag": "meta-type",
+      "variants": [
+        {
+          "case": "builtin",
+          "type": "214"
+        },
+        {
+          "case": "enum",
+          "type": "215"
+        },
+        {
+          "case": "array",
+          "type": "216"
+        },
+        {
+          "case": "object",
+          "type": "217"
+        },
+        {
+          "case": "alternate",
+          "type": "218"
+        },
+        {
+          "case": "command",
+          "type": "219"
+        },
+        {
+          "case": "event",
+          "type": "220"
+        }
+      ],
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "meta-type",
+          "type": "213"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "131",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "132",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "ports",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "133",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "tbl-id",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[134]",
+      "element-type": "134",
+      "meta-type": "array"
+    },
+    {
+      "name": "134",
+      "members": [
+        {
+          "name": "cookie",
+          "type": "int"
+        },
+        {
+          "name": "hits",
+          "type": "int"
+        },
+        {
+          "name": "key",
+          "type": "221"
+        },
+        {
+          "name": "mask",
+          "type": "222"
+        },
+        {
+          "name": "action",
+          "type": "223"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "135",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "type",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[136]",
+      "element-type": "136",
+      "meta-type": "array"
+    },
+    {
+      "name": "136",
+      "members": [
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "type",
+          "type": "int"
+        },
+        {
+          "name": "vlan-id",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "pport",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "index",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "out-pport",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "group-id",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "set-vlan-id",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "pop-vlan",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "group-ids",
+          "default": null,
+          "type": "[int]"
+        },
+        {
+          "name": "set-eth-src",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "set-eth-dst",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "ttl-check",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "137",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[138]",
+      "element-type": "138",
+      "meta-type": "array"
+    },
+    {
+      "name": "138",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "enabled",
+          "type": "bool"
+        },
+        {
+          "name": "link-up",
+          "type": "bool"
+        },
+        {
+          "name": "speed",
+          "type": "int"
+        },
+        {
+          "name": "duplex",
+          "type": "224"
+        },
+        {
+          "name": "autoneg",
+          "type": "225"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "139",
+      "members": [
+        {
+          "name": "name",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[140]",
+      "element-type": "140",
+      "meta-type": "array"
+    },
+    {
+      "name": "140",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "promiscuous",
+          "type": "bool"
+        },
+        {
+          "name": "multicast",
+          "type": "226"
+        },
+        {
+          "name": "unicast",
+          "type": "226"
+        },
+        {
+          "name": "vlan",
+          "type": "226"
+        },
+        {
+          "name": "broadcast-allowed",
+          "type": "bool"
+        },
+        {
+          "name": "multicast-overflow",
+          "type": "bool"
+        },
+        {
+          "name": "unicast-overflow",
+          "type": "bool"
+        },
+        {
+          "name": "main-mac",
+          "type": "str"
+        },
+        {
+          "name": "vlan-table",
+          "type": "[int]"
+        },
+        {
+          "name": "unicast-table",
+          "type": "[str]"
+        },
+        {
+          "name": "multicast-table",
+          "type": "[str]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "141",
+      "members": [
+        {
+          "name": "enabled",
+          "type": "bool"
+        },
+        {
+          "name": "migrated",
+          "type": "bool"
+        },
+        {
+          "name": "host",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "port",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "tls-port",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "auth",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "compiled-version",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "mouse-mode",
+          "type": "227"
+        },
+        {
+          "name": "channels",
+          "default": null,
+          "type": "[175]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "142",
+      "members": [
+        {
+          "name": "running",
+          "type": "bool"
+        },
+        {
+          "name": "singlestep",
+          "type": "bool"
+        },
+        {
+          "name": "status",
+          "type": "228"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "143",
+      "members": [
+        {
+          "name": "arch",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[144]",
+      "element-type": "144",
+      "meta-type": "array"
+    },
+    {
+      "name": "144",
+      "members": [
+        {
+          "name": "id",
+          "type": "str"
+        },
+        {
+          "name": "model",
+          "type": "145"
+        },
+        {
+          "name": "options",
+          "type": "229"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[145]",
+      "element-type": "145",
+      "meta-type": "array"
+    },
+    {
+      "name": "145",
+      "meta-type": "enum",
+      "values": [
+        "tpm-tis"
+      ]
+    },
+    {
+      "name": "[146]",
+      "element-type": "146",
+      "meta-type": "array"
+    },
+    {
+      "name": "146",
+      "meta-type": "enum",
+      "values": [
+        "passthrough"
+      ]
+    },
+    {
+      "name": "147",
+      "members": [
+        {
+          "name": "UUID",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "148",
+      "members": [
+        {
+          "name": "qemu",
+          "type": "230"
+        },
+        {
+          "name": "package",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "149",
+      "members": [
+        {
+          "name": "enabled",
+          "type": "bool"
+        },
+        {
+          "name": "host",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "family",
+          "default": null,
+          "type": "231"
+        },
+        {
+          "name": "service",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "auth",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "clients",
+          "default": null,
+          "type": "[178]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[150]",
+      "element-type": "150",
+      "meta-type": "array"
+    },
+    {
+      "name": "150",
+      "members": [
+        {
+          "name": "id",
+          "type": "str"
+        },
+        {
+          "name": "server",
+          "type": "[177]"
+        },
+        {
+          "name": "clients",
+          "type": "[178]"
+        },
+        {
+          "name": "auth",
+          "type": "232"
+        },
+        {
+          "name": "vencrypt",
+          "default": null,
+          "type": "233"
+        },
+        {
+          "name": "display",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "151",
+      "members": [
+        {
+          "name": "fdset-id",
+          "type": "int"
+        },
+        {
+          "name": "fd",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "152",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "size",
+          "type": "int"
+        },
+        {
+          "name": "format",
+          "default": null,
+          "type": "234"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "153",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "data",
+          "type": "str"
+        },
+        {
+          "name": "format",
+          "default": null,
+          "type": "234"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "154",
+      "members": [
+        {
+          "name": "filename",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "155",
+      "members": [
+        {
+          "name": "keys",
+          "type": "[235]"
+        },
+        {
+          "name": "hold-time",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "156",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "up",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "157",
+      "members": [
+        {
+          "name": "protocol",
+          "type": "str"
+        },
+        {
+          "name": "password",
+          "type": "str"
+        },
+        {
+          "name": "connected",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "158",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[159]",
+      "element-type": "159",
+      "meta-type": "array"
+    },
+    {
+      "name": "159",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "state",
+          "type": "236"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "160",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "enable",
+          "type": "bool"
+        },
+        {
+          "name": "ignore-unavailable",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "161",
+      "members": [
+        {
+          "name": "actions",
+          "type": "[237]"
+        },
+        {
+          "name": "properties",
+          "default": null,
+          "type": "238"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "162",
+      "members": [
+        {
+          "name": "id",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "node-name",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "163",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        },
+        {
+          "name": "node-name",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "164",
+      "members": [
+        {
+          "name": "device",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "165",
+      "members": [
+        {
+          "name": "filename",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "166",
+      "members": [
+        {
+          "name": "enable",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "bool",
+      "json-type": "boolean",
+      "meta-type": "builtin"
+    },
+    {
+      "name": "167",
+      "meta-type": "enum",
+      "values": [
+        "read",
+        "write"
+      ]
+    },
+    {
+      "name": "168",
+      "meta-type": "enum",
+      "values": [
+        "ignore",
+        "report",
+        "stop"
+      ]
+    },
+    {
+      "name": "169",
+      "meta-type": "enum",
+      "values": [
+        "commit",
+        "stream",
+        "mirror",
+        "backup"
+      ]
+    },
+    {
+      "name": "170",
+      "meta-type": "enum",
+      "values": [
+        "pause"
+      ]
+    },
+    {
+      "name": "171",
+      "meta-type": "enum",
+      "values": [
+        "none",
+        "setup",
+        "cancelling",
+        "cancelled",
+        "active",
+        "postcopy-active",
+        "completed",
+        "failed"
+      ]
+    },
+    {
+      "name": "172",
+      "meta-type": "enum",
+      "values": [
+        "read",
+        "write",
+        "flush"
+      ]
+    },
+    {
+      "name": "173",
+      "members": [
+        {
+          "name": "host",
+          "type": "str"
+        },
+        {
+          "name": "port",
+          "type": "str"
+        },
+        {
+          "name": "family",
+          "type": "231"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "174",
+      "members": [
+        {
+          "name": "host",
+          "type": "str"
+        },
+        {
+          "name": "port",
+          "type": "str"
+        },
+        {
+          "name": "family",
+          "type": "231"
+        },
+        {
+          "name": "auth",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "175",
+      "members": [
+        {
+          "name": "host",
+          "type": "str"
+        },
+        {
+          "name": "port",
+          "type": "str"
+        },
+        {
+          "name": "family",
+          "type": "231"
+        },
+        {
+          "name": "connection-id",
+          "type": "int"
+        },
+        {
+          "name": "channel-type",
+          "type": "int"
+        },
+        {
+          "name": "channel-id",
+          "type": "int"
+        },
+        {
+          "name": "tls",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "176",
+      "members": [
+        {
+          "name": "host",
+          "type": "str"
+        },
+        {
+          "name": "service",
+          "type": "str"
+        },
+        {
+          "name": "family",
+          "type": "231"
+        },
+        {
+          "name": "websocket",
+          "type": "bool"
+        },
+        {
+          "name": "auth",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "177",
+      "members": [
+        {
+          "name": "host",
+          "type": "str"
+        },
+        {
+          "name": "service",
+          "type": "str"
+        },
+        {
+          "name": "family",
+          "type": "231"
+        },
+        {
+          "name": "websocket",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "178",
+      "members": [
+        {
+          "name": "host",
+          "type": "str"
+        },
+        {
+          "name": "service",
+          "type": "str"
+        },
+        {
+          "name": "family",
+          "type": "231"
+        },
+        {
+          "name": "websocket",
+          "type": "bool"
+        },
+        {
+          "name": "x509_dname",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "sasl_username",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "179",
+      "meta-type": "enum",
+      "values": [
+        "reset",
+        "shutdown",
+        "poweroff",
+        "pause",
+        "debug",
+        "none",
+        "inject-nmi"
+      ]
+    },
+    {
+      "name": "180",
+      "meta-type": "enum",
+      "values": [
+        "report",
+        "ignore",
+        "enospc",
+        "stop"
+      ]
+    },
+    {
+      "name": "181",
+      "tag": "driver",
+      "variants": [
+        {
+          "case": "archipelago",
+          "type": "243"
+        },
+        {
+          "case": "blkdebug",
+          "type": "244"
+        },
+        {
+          "case": "blkverify",
+          "type": "245"
+        },
+        {
+          "case": "bochs",
+          "type": "246"
+        },
+        {
+          "case": "cloop",
+          "type": "246"
+        },
+        {
+          "case": "dmg",
+          "type": "246"
+        },
+        {
+          "case": "file",
+          "type": "247"
+        },
+        {
+          "case": "ftp",
+          "type": "247"
+        },
+        {
+          "case": "ftps",
+          "type": "247"
+        },
+        {
+          "case": "host_cdrom",
+          "type": "247"
+        },
+        {
+          "case": "host_device",
+          "type": "247"
+        },
+        {
+          "case": "http",
+          "type": "247"
+        },
+        {
+          "case": "https",
+          "type": "247"
+        },
+        {
+          "case": "luks",
+          "type": "248"
+        },
+        {
+          "case": "null-aio",
+          "type": "249"
+        },
+        {
+          "case": "null-co",
+          "type": "249"
+        },
+        {
+          "case": "parallels",
+          "type": "246"
+        },
+        {
+          "case": "qcow2",
+          "type": "250"
+        },
+        {
+          "case": "qcow",
+          "type": "251"
+        },
+        {
+          "case": "qed",
+          "type": "251"
+        },
+        {
+          "case": "quorum",
+          "type": "252"
+        },
+        {
+          "case": "raw",
+          "type": "246"
+        },
+        {
+          "case": "tftp",
+          "type": "247"
+        },
+        {
+          "case": "vdi",
+          "type": "246"
+        },
+        {
+          "case": "vhdx",
+          "type": "246"
+        },
+        {
+          "case": "vmdk",
+          "type": "251"
+        },
+        {
+          "case": "vpc",
+          "type": "246"
+        },
+        {
+          "case": "vvfat",
+          "type": "253"
+        }
+      ],
+      "members": [
+        {
+          "name": "driver",
+          "type": "239"
+        },
+        {
+          "name": "id",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "node-name",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "discard",
+          "default": null,
+          "type": "240"
+        },
+        {
+          "name": "cache",
+          "default": null,
+          "type": "241"
+        },
+        {
+          "name": "aio",
+          "default": null,
+          "type": "242"
+        },
+        {
+          "name": "rerror",
+          "default": null,
+          "type": "180"
+        },
+        {
+          "name": "werror",
+          "default": null,
+          "type": "180"
+        },
+        {
+          "name": "read-only",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "stats-account-invalid",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "stats-account-failed",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "stats-intervals",
+          "default": null,
+          "type": "[int]"
+        },
+        {
+          "name": "detect-zeroes",
+          "default": null,
+          "type": "209"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "182",
+      "meta-type": "enum",
+      "values": [
+        "top",
+        "full",
+        "none",
+        "incremental"
+      ]
+    },
+    {
+      "name": "183",
+      "meta-type": "enum",
+      "values": [
+        "retain",
+        "read-only",
+        "read-write"
+      ]
+    },
+    {
+      "name": "184",
+      "meta-type": "enum",
+      "values": [
+        "existing",
+        "absolute-paths"
+      ]
+    },
+    {
+      "name": "185",
+      "tag": "type",
+      "variants": [
+        {
+          "case": "file",
+          "type": "255"
+        },
+        {
+          "case": "serial",
+          "type": "256"
+        },
+        {
+          "case": "parallel",
+          "type": "256"
+        },
+        {
+          "case": "pipe",
+          "type": "256"
+        },
+        {
+          "case": "socket",
+          "type": "257"
+        },
+        {
+          "case": "udp",
+          "type": "258"
+        },
+        {
+          "case": "pty",
+          "type": "259"
+        },
+        {
+          "case": "null",
+          "type": "259"
+        },
+        {
+          "case": "mux",
+          "type": "260"
+        },
+        {
+          "case": "msmouse",
+          "type": "259"
+        },
+        {
+          "case": "braille",
+          "type": "259"
+        },
+        {
+          "case": "testdev",
+          "type": "259"
+        },
+        {
+          "case": "stdio",
+          "type": "261"
+        },
+        {
+          "case": "console",
+          "type": "259"
+        },
+        {
+          "case": "spicevmc",
+          "type": "262"
+        },
+        {
+          "case": "spiceport",
+          "type": "263"
+        },
+        {
+          "case": "vc",
+          "type": "264"
+        },
+        {
+          "case": "ringbuf",
+          "type": "265"
+        },
+        {
+          "case": "memory",
+          "type": "265"
+        }
+      ],
+      "members": [
+        {
+          "name": "type",
+          "type": "254"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "186",
+      "meta-type": "enum",
+      "values": [
+        "elf",
+        "kdump-zlib",
+        "kdump-lzo",
+        "kdump-snappy"
+      ]
+    },
+    {
+      "name": "[187]",
+      "element-type": "187",
+      "meta-type": "array"
+    },
+    {
+      "name": "187",
+      "tag": "type",
+      "variants": [
+        {
+          "case": "key",
+          "type": "267"
+        },
+        {
+          "case": "btn",
+          "type": "268"
+        },
+        {
+          "case": "rel",
+          "type": "269"
+        },
+        {
+          "case": "abs",
+          "type": "269"
+        }
+      ],
+      "members": [
+        {
+          "name": "type",
+          "type": "266"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "number",
+      "json-type": "number",
+      "meta-type": "builtin"
+    },
+    {
+      "name": "188",
+      "tag": "type",
+      "variants": [
+        {
+          "case": "inet",
+          "type": "271"
+        },
+        {
+          "case": "unix",
+          "type": "272"
+        },
+        {
+          "case": "fd",
+          "type": "273"
+        }
+      ],
+      "members": [
+        {
+          "name": "type",
+          "type": "270"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "189",
+      "meta-type": "enum",
+      "values": [
+        "DIMM"
+      ]
+    },
+    {
+      "name": "190",
+      "meta-type": "enum",
+      "values": [
+        "ok",
+        "failed",
+        "nospace"
+      ]
+    },
+    {
+      "name": "[191]",
+      "element-type": "191",
+      "meta-type": "array"
+    },
+    {
+      "name": "191",
+      "members": [
+        {
+          "name": "name",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "count",
+          "type": "int"
+        },
+        {
+          "name": "granularity",
+          "type": "int"
+        },
+        {
+          "name": "status",
+          "type": "274"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "192",
+      "members": [
+        {
+          "name": "rd_bytes",
+          "type": "int"
+        },
+        {
+          "name": "wr_bytes",
+          "type": "int"
+        },
+        {
+          "name": "rd_operations",
+          "type": "int"
+        },
+        {
+          "name": "wr_operations",
+          "type": "int"
+        },
+        {
+          "name": "flush_operations",
+          "type": "int"
+        },
+        {
+          "name": "flush_total_time_ns",
+          "type": "int"
+        },
+        {
+          "name": "wr_total_time_ns",
+          "type": "int"
+        },
+        {
+          "name": "rd_total_time_ns",
+          "type": "int"
+        },
+        {
+          "name": "wr_highest_offset",
+          "type": "int"
+        },
+        {
+          "name": "rd_merged",
+          "type": "int"
+        },
+        {
+          "name": "wr_merged",
+          "type": "int"
+        },
+        {
+          "name": "idle_time_ns",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "failed_rd_operations",
+          "type": "int"
+        },
+        {
+          "name": "failed_wr_operations",
+          "type": "int"
+        },
+        {
+          "name": "failed_flush_operations",
+          "type": "int"
+        },
+        {
+          "name": "invalid_rd_operations",
+          "type": "int"
+        },
+        {
+          "name": "invalid_wr_operations",
+          "type": "int"
+        },
+        {
+          "name": "invalid_flush_operations",
+          "type": "int"
+        },
+        {
+          "name": "account_invalid",
+          "type": "bool"
+        },
+        {
+          "name": "account_failed",
+          "type": "bool"
+        },
+        {
+          "name": "timed_stats",
+          "type": "[275]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[193]",
+      "element-type": "193",
+      "meta-type": "array"
+    },
+    {
+      "name": "193",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "type",
+          "type": "276"
+        },
+        {
+          "name": "help",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "default",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "194",
+      "meta-type": "enum",
+      "values": [
+        "x86",
+        "sparc",
+        "ppc",
+        "mips",
+        "tricore",
+        "other"
+      ]
+    },
+    {
+      "name": "195",
+      "members": [
+        {
+          "name": "pc",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "196",
+      "members": [
+        {
+          "name": "pc",
+          "type": "int"
+        },
+        {
+          "name": "npc",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "197",
+      "members": [
+        {
+          "name": "nip",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "198",
+      "members": [
+        {
+          "name": "PC",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "199",
+      "members": [
+        {
+          "name": "PC",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "200",
+      "members": [
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "201",
+      "meta-type": "enum",
+      "values": [
+        "none",
+        "active",
+        "completed",
+        "failed"
+      ]
+    },
+    {
+      "name": "[186]",
+      "element-type": "186",
+      "meta-type": "array"
+    },
+    {
+      "name": "[202]",
+      "element-type": "202",
+      "meta-type": "array"
+    },
+    {
+      "name": "202",
+      "members": [
+        {
+          "name": "fd",
+          "type": "int"
+        },
+        {
+          "name": "opaque",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[int]",
+      "element-type": "int",
+      "meta-type": "array"
+    },
+    {
+      "name": "203",
+      "meta-type": "enum",
+      "values": [
+        "default",
+        "preferred",
+        "bind",
+        "interleave"
+      ]
+    },
+    {
+      "name": "204",
+      "meta-type": "enum",
+      "values": [
+        "dimm"
+      ]
+    },
+    {
+      "name": "205",
+      "members": [
+        {
+          "name": "data",
+          "type": "277"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "206",
+      "members": [
+        {
+          "name": "transferred",
+          "type": "int"
+        },
+        {
+          "name": "remaining",
+          "type": "int"
+        },
+        {
+          "name": "total",
+          "type": "int"
+        },
+        {
+          "name": "duplicate",
+          "type": "int"
+        },
+        {
+          "name": "skipped",
+          "type": "int"
+        },
+        {
+          "name": "normal",
+          "type": "int"
+        },
+        {
+          "name": "normal-bytes",
+          "type": "int"
+        },
+        {
+          "name": "dirty-pages-rate",
+          "type": "int"
+        },
+        {
+          "name": "mbps",
+          "type": "number"
+        },
+        {
+          "name": "dirty-sync-count",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "207",
+      "members": [
+        {
+          "name": "cache-size",
+          "type": "int"
+        },
+        {
+          "name": "bytes",
+          "type": "int"
+        },
+        {
+          "name": "pages",
+          "type": "int"
+        },
+        {
+          "name": "cache-miss",
+          "type": "int"
+        },
+        {
+          "name": "cache-miss-rate",
+          "type": "number"
+        },
+        {
+          "name": "overflow",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "208",
+      "meta-type": "enum",
+      "values": [
+        "xbzrle",
+        "rdma-pin-all",
+        "auto-converge",
+        "zero-blocks",
+        "compress",
+        "events",
+        "postcopy-ram"
+      ]
+    },
+    {
+      "name": "209",
+      "meta-type": "enum",
+      "values": [
+        "off",
+        "on",
+        "unmap"
+      ]
+    },
+    {
+      "name": "210",
+      "members": [
+        {
+          "name": "filename",
+          "type": "str"
+        },
+        {
+          "name": "format",
+          "type": "str"
+        },
+        {
+          "name": "dirty-flag",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "actual-size",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "virtual-size",
+          "type": "int"
+        },
+        {
+          "name": "cluster-size",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "encrypted",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "compressed",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "backing-filename",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "full-backing-filename",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "backing-filename-format",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "snapshots",
+          "default": null,
+          "type": "[54]"
+        },
+        {
+          "name": "backing-image",
+          "default": null,
+          "type": "210"
+        },
+        {
+          "name": "format-specific",
+          "default": null,
+          "type": "278"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "211",
+      "members": [
+        {
+          "name": "writeback",
+          "type": "bool"
+        },
+        {
+          "name": "direct",
+          "type": "bool"
+        },
+        {
+          "name": "no-flush",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[212]",
+      "element-type": "212",
+      "meta-type": "array"
+    },
+    {
+      "name": "212",
+      "members": [
+        {
+          "name": "bus",
+          "type": "int"
+        },
+        {
+          "name": "slot",
+          "type": "int"
+        },
+        {
+          "name": "function",
+          "type": "int"
+        },
+        {
+          "name": "class_info",
+          "type": "279"
+        },
+        {
+          "name": "id",
+          "type": "280"
+        },
+        {
+          "name": "irq",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "qdev_id",
+          "type": "str"
+        },
+        {
+          "name": "pci_bridge",
+          "default": null,
+          "type": "281"
+        },
+        {
+          "name": "regions",
+          "type": "[282]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "213",
+      "meta-type": "enum",
+      "values": [
+        "builtin",
+        "enum",
+        "array",
+        "object",
+        "alternate",
+        "command",
+        "event"
+      ]
+    },
+    {
+      "name": "214",
+      "members": [
+        {
+          "name": "json-type",
+          "type": "283"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "215",
+      "members": [
+        {
+          "name": "values",
+          "type": "[str]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "216",
+      "members": [
+        {
+          "name": "element-type",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "217",
+      "members": [
+        {
+          "name": "members",
+          "type": "[284]"
+        },
+        {
+          "name": "tag",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "variants",
+          "default": null,
+          "type": "[285]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "218",
+      "members": [
+        {
+          "name": "members",
+          "type": "[286]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "219",
+      "members": [
+        {
+          "name": "arg-type",
+          "type": "str"
+        },
+        {
+          "name": "ret-type",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "220",
+      "members": [
+        {
+          "name": "arg-type",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "221",
+      "members": [
+        {
+          "name": "priority",
+          "type": "int"
+        },
+        {
+          "name": "tbl-id",
+          "type": "int"
+        },
+        {
+          "name": "in-pport",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "tunnel-id",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "vlan-id",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "eth-type",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "eth-src",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "eth-dst",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "ip-proto",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "ip-tos",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "ip-dst",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "222",
+      "members": [
+        {
+          "name": "in-pport",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "tunnel-id",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "vlan-id",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "eth-src",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "eth-dst",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "ip-proto",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "ip-tos",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "223",
+      "members": [
+        {
+          "name": "goto-tbl",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "group-id",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "tunnel-lport",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "vlan-id",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "new-vlan-id",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "out-pport",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "224",
+      "meta-type": "enum",
+      "values": [
+        "half",
+        "full"
+      ]
+    },
+    {
+      "name": "225",
+      "meta-type": "enum",
+      "values": [
+        "off",
+        "on"
+      ]
+    },
+    {
+      "name": "226",
+      "meta-type": "enum",
+      "values": [
+        "normal",
+        "none",
+        "all"
+      ]
+    },
+    {
+      "name": "[str]",
+      "element-type": "str",
+      "meta-type": "array"
+    },
+    {
+      "name": "227",
+      "meta-type": "enum",
+      "values": [
+        "client",
+        "server",
+        "unknown"
+      ]
+    },
+    {
+      "name": "[175]",
+      "element-type": "175",
+      "meta-type": "array"
+    },
+    {
+      "name": "228",
+      "meta-type": "enum",
+      "values": [
+        "debug",
+        "inmigrate",
+        "internal-error",
+        "io-error",
+        "paused",
+        "postmigrate",
+        "prelaunch",
+        "finish-migrate",
+        "restore-vm",
+        "running",
+        "save-vm",
+        "shutdown",
+        "suspended",
+        "watchdog",
+        "guest-panicked"
+      ]
+    },
+    {
+      "name": "229",
+      "tag": "type",
+      "variants": [
+        {
+          "case": "passthrough",
+          "type": "288"
+        }
+      ],
+      "members": [
+        {
+          "name": "type",
+          "type": "287"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "230",
+      "members": [
+        {
+          "name": "major",
+          "type": "int"
+        },
+        {
+          "name": "minor",
+          "type": "int"
+        },
+        {
+          "name": "micro",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "231",
+      "meta-type": "enum",
+      "values": [
+        "ipv4",
+        "ipv6",
+        "unix",
+        "unknown"
+      ]
+    },
+    {
+      "name": "[178]",
+      "element-type": "178",
+      "meta-type": "array"
+    },
+    {
+      "name": "[177]",
+      "element-type": "177",
+      "meta-type": "array"
+    },
+    {
+      "name": "232",
+      "meta-type": "enum",
+      "values": [
+        "none",
+        "vnc",
+        "ra2",
+        "ra2ne",
+        "tight",
+        "ultra",
+        "tls",
+        "vencrypt",
+        "sasl"
+      ]
+    },
+    {
+      "name": "233",
+      "meta-type": "enum",
+      "values": [
+        "plain",
+        "tls-none",
+        "x509-none",
+        "tls-vnc",
+        "x509-vnc",
+        "tls-plain",
+        "x509-plain",
+        "tls-sasl",
+        "x509-sasl"
+      ]
+    },
+    {
+      "name": "234",
+      "meta-type": "enum",
+      "values": [
+        "utf8",
+        "base64"
+      ]
+    },
+    {
+      "name": "[235]",
+      "element-type": "235",
+      "meta-type": "array"
+    },
+    {
+      "name": "235",
+      "tag": "type",
+      "variants": [
+        {
+          "case": "number",
+          "type": "290"
+        },
+        {
+          "case": "qcode",
+          "type": "291"
+        }
+      ],
+      "members": [
+        {
+          "name": "type",
+          "type": "289"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "236",
+      "meta-type": "enum",
+      "values": [
+        "unavailable",
+        "disabled",
+        "enabled"
+      ]
+    },
+    {
+      "name": "[237]",
+      "element-type": "237",
+      "meta-type": "array"
+    },
+    {
+      "name": "237",
+      "tag": "type",
+      "variants": [
+        {
+          "case": "blockdev-snapshot",
+          "type": "293"
+        },
+        {
+          "case": "blockdev-snapshot-sync",
+          "type": "294"
+        },
+        {
+          "case": "drive-backup",
+          "type": "295"
+        },
+        {
+          "case": "blockdev-backup",
+          "type": "296"
+        },
+        {
+          "case": "abort",
+          "type": "297"
+        },
+        {
+          "case": "blockdev-snapshot-internal-sync",
+          "type": "298"
+        },
+        {
+          "case": "block-dirty-bitmap-add",
+          "type": "299"
+        },
+        {
+          "case": "block-dirty-bitmap-clear",
+          "type": "300"
+        }
+      ],
+      "members": [
+        {
+          "name": "type",
+          "type": "292"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "238",
+      "members": [
+        {
+          "name": "completion-mode",
+          "default": null,
+          "type": "301"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "239",
+      "meta-type": "enum",
+      "values": [
+        "archipelago",
+        "blkdebug",
+        "blkverify",
+        "bochs",
+        "cloop",
+        "dmg",
+        "file",
+        "ftp",
+        "ftps",
+        "host_cdrom",
+        "host_device",
+        "http",
+        "https",
+        "luks",
+        "null-aio",
+        "null-co",
+        "parallels",
+        "qcow",
+        "qcow2",
+        "qed",
+        "quorum",
+        "raw",
+        "tftp",
+        "vdi",
+        "vhdx",
+        "vmdk",
+        "vpc",
+        "vvfat"
+      ]
+    },
+    {
+      "name": "240",
+      "meta-type": "enum",
+      "values": [
+        "ignore",
+        "unmap"
+      ]
+    },
+    {
+      "name": "241",
+      "members": [
+        {
+          "name": "direct",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "no-flush",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "242",
+      "meta-type": "enum",
+      "values": [
+        "threads",
+        "native"
+      ]
+    },
+    {
+      "name": "243",
+      "members": [
+        {
+          "name": "volume",
+          "type": "str"
+        },
+        {
+          "name": "mport",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "vport",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "segment",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "244",
+      "members": [
+        {
+          "name": "image",
+          "type": "302"
+        },
+        {
+          "name": "config",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "align",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "inject-error",
+          "default": null,
+          "type": "[303]"
+        },
+        {
+          "name": "set-state",
+          "default": null,
+          "type": "[304]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "245",
+      "members": [
+        {
+          "name": "test",
+          "type": "302"
+        },
+        {
+          "name": "raw",
+          "type": "302"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "246",
+      "members": [
+        {
+          "name": "file",
+          "type": "302"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "247",
+      "members": [
+        {
+          "name": "filename",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "248",
+      "members": [
+        {
+          "name": "file",
+          "type": "302"
+        },
+        {
+          "name": "key-secret",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "249",
+      "members": [
+        {
+          "name": "size",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "latency-ns",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "250",
+      "members": [
+        {
+          "name": "file",
+          "type": "302"
+        },
+        {
+          "name": "backing",
+          "default": null,
+          "type": "302"
+        },
+        {
+          "name": "lazy-refcounts",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "pass-discard-request",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "pass-discard-snapshot",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "pass-discard-other",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "overlap-check",
+          "default": null,
+          "type": "305"
+        },
+        {
+          "name": "cache-size",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "l2-cache-size",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "refcount-cache-size",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "cache-clean-interval",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "251",
+      "members": [
+        {
+          "name": "file",
+          "type": "302"
+        },
+        {
+          "name": "backing",
+          "default": null,
+          "type": "302"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "252",
+      "members": [
+        {
+          "name": "blkverify",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "children",
+          "type": "[302]"
+        },
+        {
+          "name": "vote-threshold",
+          "type": "int"
+        },
+        {
+          "name": "rewrite-corrupted",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "read-pattern",
+          "default": null,
+          "type": "306"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "253",
+      "members": [
+        {
+          "name": "dir",
+          "type": "str"
+        },
+        {
+          "name": "fat-type",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "floppy",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "label",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "rw",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "254",
+      "meta-type": "enum",
+      "values": [
+        "file",
+        "serial",
+        "parallel",
+        "pipe",
+        "socket",
+        "udp",
+        "pty",
+        "null",
+        "mux",
+        "msmouse",
+        "braille",
+        "testdev",
+        "stdio",
+        "console",
+        "spicevmc",
+        "spiceport",
+        "vc",
+        "ringbuf",
+        "memory"
+      ]
+    },
+    {
+      "name": "255",
+      "members": [
+        {
+          "name": "data",
+          "type": "307"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "256",
+      "members": [
+        {
+          "name": "data",
+          "type": "308"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "257",
+      "members": [
+        {
+          "name": "data",
+          "type": "309"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "258",
+      "members": [
+        {
+          "name": "data",
+          "type": "310"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "259",
+      "members": [
+        {
+          "name": "data",
+          "type": "311"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "260",
+      "members": [
+        {
+          "name": "data",
+          "type": "312"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "261",
+      "members": [
+        {
+          "name": "data",
+          "type": "313"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "262",
+      "members": [
+        {
+          "name": "data",
+          "type": "314"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "263",
+      "members": [
+        {
+          "name": "data",
+          "type": "315"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "264",
+      "members": [
+        {
+          "name": "data",
+          "type": "316"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "265",
+      "members": [
+        {
+          "name": "data",
+          "type": "317"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "266",
+      "meta-type": "enum",
+      "values": [
+        "key",
+        "btn",
+        "rel",
+        "abs"
+      ]
+    },
+    {
+      "name": "267",
+      "members": [
+        {
+          "name": "data",
+          "type": "318"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "268",
+      "members": [
+        {
+          "name": "data",
+          "type": "319"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "269",
+      "members": [
+        {
+          "name": "data",
+          "type": "320"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "270",
+      "meta-type": "enum",
+      "values": [
+        "inet",
+        "unix",
+        "fd"
+      ]
+    },
+    {
+      "name": "271",
+      "members": [
+        {
+          "name": "data",
+          "type": "321"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "272",
+      "members": [
+        {
+          "name": "data",
+          "type": "322"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "273",
+      "members": [
+        {
+          "name": "data",
+          "type": "323"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "274",
+      "meta-type": "enum",
+      "values": [
+        "active",
+        "disabled",
+        "frozen"
+      ]
+    },
+    {
+      "name": "[275]",
+      "element-type": "275",
+      "meta-type": "array"
+    },
+    {
+      "name": "275",
+      "members": [
+        {
+          "name": "interval_length",
+          "type": "int"
+        },
+        {
+          "name": "min_rd_latency_ns",
+          "type": "int"
+        },
+        {
+          "name": "max_rd_latency_ns",
+          "type": "int"
+        },
+        {
+          "name": "avg_rd_latency_ns",
+          "type": "int"
+        },
+        {
+          "name": "min_wr_latency_ns",
+          "type": "int"
+        },
+        {
+          "name": "max_wr_latency_ns",
+          "type": "int"
+        },
+        {
+          "name": "avg_wr_latency_ns",
+          "type": "int"
+        },
+        {
+          "name": "min_flush_latency_ns",
+          "type": "int"
+        },
+        {
+          "name": "max_flush_latency_ns",
+          "type": "int"
+        },
+        {
+          "name": "avg_flush_latency_ns",
+          "type": "int"
+        },
+        {
+          "name": "avg_rd_queue_depth",
+          "type": "number"
+        },
+        {
+          "name": "avg_wr_queue_depth",
+          "type": "number"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "276",
+      "meta-type": "enum",
+      "values": [
+        "string",
+        "boolean",
+        "number",
+        "size"
+      ]
+    },
+    {
+      "name": "277",
+      "members": [
+        {
+          "name": "id",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "addr",
+          "type": "int"
+        },
+        {
+          "name": "size",
+          "type": "int"
+        },
+        {
+          "name": "slot",
+          "type": "int"
+        },
+        {
+          "name": "node",
+          "type": "int"
+        },
+        {
+          "name": "memdev",
+          "type": "str"
+        },
+        {
+          "name": "hotplugged",
+          "type": "bool"
+        },
+        {
+          "name": "hotpluggable",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[54]",
+      "element-type": "54",
+      "meta-type": "array"
+    },
+    {
+      "name": "278",
+      "tag": "type",
+      "variants": [
+        {
+          "case": "qcow2",
+          "type": "325"
+        },
+        {
+          "case": "vmdk",
+          "type": "326"
+        }
+      ],
+      "members": [
+        {
+          "name": "type",
+          "type": "324"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "279",
+      "members": [
+        {
+          "name": "desc",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "class",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "280",
+      "members": [
+        {
+          "name": "device",
+          "type": "int"
+        },
+        {
+          "name": "vendor",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "281",
+      "members": [
+        {
+          "name": "bus",
+          "type": "327"
+        },
+        {
+          "name": "devices",
+          "default": null,
+          "type": "[212]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[282]",
+      "element-type": "282",
+      "meta-type": "array"
+    },
+    {
+      "name": "282",
+      "members": [
+        {
+          "name": "bar",
+          "type": "int"
+        },
+        {
+          "name": "type",
+          "type": "str"
+        },
+        {
+          "name": "address",
+          "type": "int"
+        },
+        {
+          "name": "size",
+          "type": "int"
+        },
+        {
+          "name": "prefetch",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "mem_type_64",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "283",
+      "meta-type": "enum",
+      "values": [
+        "string",
+        "number",
+        "int",
+        "boolean",
+        "null",
+        "object",
+        "array",
+        "value"
+      ]
+    },
+    {
+      "name": "[284]",
+      "element-type": "284",
+      "meta-type": "array"
+    },
+    {
+      "name": "284",
+      "members": [
+        {
+          "name": "name",
+          "type": "str"
+        },
+        {
+          "name": "type",
+          "type": "str"
+        },
+        {
+          "name": "default",
+          "default": null,
+          "type": "any"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[285]",
+      "element-type": "285",
+      "meta-type": "array"
+    },
+    {
+      "name": "285",
+      "members": [
+        {
+          "name": "case",
+          "type": "str"
+        },
+        {
+          "name": "type",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[286]",
+      "element-type": "286",
+      "meta-type": "array"
+    },
+    {
+      "name": "286",
+      "members": [
+        {
+          "name": "type",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "287",
+      "meta-type": "enum",
+      "values": [
+        "passthrough"
+      ]
+    },
+    {
+      "name": "288",
+      "members": [
+        {
+          "name": "data",
+          "type": "328"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "289",
+      "meta-type": "enum",
+      "values": [
+        "number",
+        "qcode"
+      ]
+    },
+    {
+      "name": "290",
+      "members": [
+        {
+          "name": "data",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "291",
+      "members": [
+        {
+          "name": "data",
+          "type": "329"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "292",
+      "meta-type": "enum",
+      "values": [
+        "blockdev-snapshot",
+        "blockdev-snapshot-sync",
+        "drive-backup",
+        "blockdev-backup",
+        "abort",
+        "blockdev-snapshot-internal-sync",
+        "block-dirty-bitmap-add",
+        "block-dirty-bitmap-clear"
+      ]
+    },
+    {
+      "name": "293",
+      "members": [
+        {
+          "name": "data",
+          "type": "52"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "294",
+      "members": [
+        {
+          "name": "data",
+          "type": "56"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "295",
+      "members": [
+        {
+          "name": "data",
+          "type": "70"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "296",
+      "members": [
+        {
+          "name": "data",
+          "type": "47"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "297",
+      "members": [
+        {
+          "name": "data",
+          "type": "330"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "298",
+      "members": [
+        {
+          "name": "data",
+          "type": "55"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "299",
+      "members": [
+        {
+          "name": "data",
+          "type": "34"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "300",
+      "members": [
+        {
+          "name": "data",
+          "type": "35"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "301",
+      "meta-type": "enum",
+      "values": [
+        "individual",
+        "grouped"
+      ]
+    },
+    {
+      "name": "302",
+      "members": [
+        {
+          "type": "181"
+        },
+        {
+          "type": "str"
+        }
+      ],
+      "meta-type": "alternate"
+    },
+    {
+      "name": "[303]",
+      "element-type": "303",
+      "meta-type": "array"
+    },
+    {
+      "name": "303",
+      "members": [
+        {
+          "name": "event",
+          "type": "331"
+        },
+        {
+          "name": "state",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "errno",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "sector",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "once",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "immediately",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[304]",
+      "element-type": "304",
+      "meta-type": "array"
+    },
+    {
+      "name": "304",
+      "members": [
+        {
+          "name": "event",
+          "type": "331"
+        },
+        {
+          "name": "state",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "new_state",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "305",
+      "members": [
+        {
+          "type": "332"
+        },
+        {
+          "type": "333"
+        }
+      ],
+      "meta-type": "alternate"
+    },
+    {
+      "name": "[302]",
+      "element-type": "302",
+      "meta-type": "array"
+    },
+    {
+      "name": "306",
+      "meta-type": "enum",
+      "values": [
+        "quorum",
+        "fifo"
+      ]
+    },
+    {
+      "name": "307",
+      "members": [
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "logappend",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "in",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "out",
+          "type": "str"
+        },
+        {
+          "name": "append",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "308",
+      "members": [
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "logappend",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "device",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "309",
+      "members": [
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "logappend",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "addr",
+          "type": "188"
+        },
+        {
+          "name": "tls-creds",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "server",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "wait",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "nodelay",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "telnet",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "reconnect",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "310",
+      "members": [
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "logappend",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "remote",
+          "type": "188"
+        },
+        {
+          "name": "local",
+          "default": null,
+          "type": "188"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "311",
+      "members": [
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "logappend",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "312",
+      "members": [
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "logappend",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "chardev",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "313",
+      "members": [
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "logappend",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "signal",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "314",
+      "members": [
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "logappend",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "type",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "315",
+      "members": [
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "logappend",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "fqdn",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "316",
+      "members": [
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "logappend",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "width",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "height",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "cols",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "rows",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "317",
+      "members": [
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "logappend",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "size",
+          "default": null,
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "318",
+      "members": [
+        {
+          "name": "key",
+          "type": "235"
+        },
+        {
+          "name": "down",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "319",
+      "members": [
+        {
+          "name": "button",
+          "type": "334"
+        },
+        {
+          "name": "down",
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "320",
+      "members": [
+        {
+          "name": "axis",
+          "type": "335"
+        },
+        {
+          "name": "value",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "321",
+      "members": [
+        {
+          "name": "host",
+          "type": "str"
+        },
+        {
+          "name": "port",
+          "type": "str"
+        },
+        {
+          "name": "to",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "ipv4",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "ipv6",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "322",
+      "members": [
+        {
+          "name": "path",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "323",
+      "members": [
+        {
+          "name": "str",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "324",
+      "meta-type": "enum",
+      "values": [
+        "qcow2",
+        "vmdk"
+      ]
+    },
+    {
+      "name": "325",
+      "members": [
+        {
+          "name": "data",
+          "type": "336"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "326",
+      "members": [
+        {
+          "name": "data",
+          "type": "337"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "327",
+      "members": [
+        {
+          "name": "number",
+          "type": "int"
+        },
+        {
+          "name": "secondary",
+          "type": "int"
+        },
+        {
+          "name": "subordinate",
+          "type": "int"
+        },
+        {
+          "name": "io_range",
+          "type": "338"
+        },
+        {
+          "name": "memory_range",
+          "type": "338"
+        },
+        {
+          "name": "prefetchable_range",
+          "type": "338"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "328",
+      "members": [
+        {
+          "name": "path",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "cancel-path",
+          "default": null,
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "329",
+      "meta-type": "enum",
+      "values": [
+        "unmapped",
+        "shift",
+        "shift_r",
+        "alt",
+        "alt_r",
+        "altgr",
+        "altgr_r",
+        "ctrl",
+        "ctrl_r",
+        "menu",
+        "esc",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "0",
+        "minus",
+        "equal",
+        "backspace",
+        "tab",
+        "q",
+        "w",
+        "e",
+        "r",
+        "t",
+        "y",
+        "u",
+        "i",
+        "o",
+        "p",
+        "bracket_left",
+        "bracket_right",
+        "ret",
+        "a",
+        "s",
+        "d",
+        "f",
+        "g",
+        "h",
+        "j",
+        "k",
+        "l",
+        "semicolon",
+        "apostrophe",
+        "grave_accent",
+        "backslash",
+        "z",
+        "x",
+        "c",
+        "v",
+        "b",
+        "n",
+        "m",
+        "comma",
+        "dot",
+        "slash",
+        "asterisk",
+        "spc",
+        "caps_lock",
+        "f1",
+        "f2",
+        "f3",
+        "f4",
+        "f5",
+        "f6",
+        "f7",
+        "f8",
+        "f9",
+        "f10",
+        "num_lock",
+        "scroll_lock",
+        "kp_divide",
+        "kp_multiply",
+        "kp_subtract",
+        "kp_add",
+        "kp_enter",
+        "kp_decimal",
+        "sysrq",
+        "kp_0",
+        "kp_1",
+        "kp_2",
+        "kp_3",
+        "kp_4",
+        "kp_5",
+        "kp_6",
+        "kp_7",
+        "kp_8",
+        "kp_9",
+        "less",
+        "f11",
+        "f12",
+        "print",
+        "home",
+        "pgup",
+        "pgdn",
+        "end",
+        "left",
+        "up",
+        "down",
+        "right",
+        "insert",
+        "delete",
+        "stop",
+        "again",
+        "props",
+        "undo",
+        "front",
+        "copy",
+        "open",
+        "paste",
+        "find",
+        "cut",
+        "lf",
+        "help",
+        "meta_l",
+        "meta_r",
+        "compose",
+        "pause",
+        "ro",
+        "kp_comma",
+        "kp_equals",
+        "power"
+      ]
+    },
+    {
+      "name": "330",
+      "members": [
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "331",
+      "meta-type": "enum",
+      "values": [
+        "l1_update",
+        "l1_grow_alloc_table",
+        "l1_grow_write_table",
+        "l1_grow_activate_table",
+        "l2_load",
+        "l2_update",
+        "l2_update_compressed",
+        "l2_alloc_cow_read",
+        "l2_alloc_write",
+        "read_aio",
+        "read_backing_aio",
+        "read_compressed",
+        "write_aio",
+        "write_compressed",
+        "vmstate_load",
+        "vmstate_save",
+        "cow_read",
+        "cow_write",
+        "reftable_load",
+        "reftable_grow",
+        "reftable_update",
+        "refblock_load",
+        "refblock_update",
+        "refblock_update_part",
+        "refblock_alloc",
+        "refblock_alloc_hookup",
+        "refblock_alloc_write",
+        "refblock_alloc_write_blocks",
+        "refblock_alloc_write_table",
+        "refblock_alloc_switch_table",
+        "cluster_alloc",
+        "cluster_alloc_bytes",
+        "cluster_free",
+        "flush_to_os",
+        "flush_to_disk",
+        "pwritev_rmw_head",
+        "pwritev_rmw_after_head",
+        "pwritev_rmw_tail",
+        "pwritev_rmw_after_tail",
+        "pwritev",
+        "pwritev_zero",
+        "pwritev_done",
+        "empty_image_prepare"
+      ]
+    },
+    {
+      "name": "332",
+      "members": [
+        {
+          "name": "template",
+          "default": null,
+          "type": "333"
+        },
+        {
+          "name": "main-header",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "active-l1",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "active-l2",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "refcount-table",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "refcount-block",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "snapshot-table",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "inactive-l1",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "inactive-l2",
+          "default": null,
+          "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "333",
+      "meta-type": "enum",
+      "values": [
+        "none",
+        "constant",
+        "cached",
+        "all"
+      ]
+    },
+    {
+      "name": "334",
+      "meta-type": "enum",
+      "values": [
+        "left",
+        "middle",
+        "right",
+        "wheel-up",
+        "wheel-down"
+      ]
+    },
+    {
+      "name": "335",
+      "meta-type": "enum",
+      "values": [
+        "x",
+        "y"
+      ]
+    },
+    {
+      "name": "336",
+      "members": [
+        {
+          "name": "compat",
+          "type": "str"
+        },
+        {
+          "name": "lazy-refcounts",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "corrupt",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "refcount-bits",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "337",
+      "members": [
+        {
+          "name": "create-type",
+          "type": "str"
+        },
+        {
+          "name": "cid",
+          "type": "int"
+        },
+        {
+          "name": "parent-cid",
+          "type": "int"
+        },
+        {
+          "name": "extents",
+          "type": "[210]"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "338",
+      "members": [
+        {
+          "name": "base",
+          "type": "int"
+        },
+        {
+          "name": "limit",
+          "type": "int"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "[210]",
+      "element-type": "210",
+      "meta-type": "array"
+    }
+  ],
+  "id": "libvirt-47"
+}
+
+{
+  "return": [
+    {
       "emulated": false,
       "version": 3,
       "kernel": false
@@ -4955,5 +12963,5 @@
       "kernel": true
     }
   ],
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
