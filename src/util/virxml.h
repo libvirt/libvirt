@@ -181,6 +181,10 @@ int virXMLInjectNamespace(xmlNodePtr node,
 
 void virXMLNodeSanitizeNamespaces(xmlNodePtr node);
 
+int virXMLCheckIllegalChars(const char *nodeName,
+                            const char *str,
+                            const char *illegal);
+
 struct _virXMLValidator {
     xmlRelaxNGParserCtxtPtr rngParser;
     xmlRelaxNGPtr rng;

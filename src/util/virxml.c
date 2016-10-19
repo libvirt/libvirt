@@ -462,6 +462,33 @@ virXPathLongLong(const char *xpath,
     return ret;
 }
 
+
+/**
+ * virXMLCheckIllegalChars:
+ * @nodeName: Name of checked node
+ * @str: string to check
+ * @illegal: illegal chars to check
+ *
+ * If string contains any of illegal chars VIR_ERR_XML_DETAIL error will be
+ * reported.
+ *
+ * Returns: 0 if string don't contains any of given characters, -1 otherwise
+ */
+int
+virXMLCheckIllegalChars(const char *nodeName,
+                        const char *str,
+                        const char *illegal)
+{
+    char *c;
+    if ((c = strpbrk(str, illegal))) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("invalid char in %s: %c"), nodeName, *c);
+        return -1;
+    }
+    return 0;
+}
+
+
 /**
  * virXMLPropString:
  * @node: XML dom node pointer
