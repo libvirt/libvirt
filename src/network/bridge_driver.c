@@ -2973,6 +2973,9 @@ networkValidate(virNetworkDriverStatePtr driver,
     bool bandwidthAllowed = true;
     bool usesInterface = false, usesAddress = false;
 
+    if (virXMLCheckIllegalChars("name", def->name, "\n") < 0)
+        return -1;
+
     /* Only the three L3 network types that are configured by libvirt
      * need to have a bridge device name / mac address provided
      */
