@@ -937,12 +937,11 @@ qemuDomainFillDevicePCIConnectFlags(virDomainDefPtr def,
 static int
 qemuDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev,
-                                    unsigned int function,
-                                    bool reserveEntireSlot)
+                                    unsigned int function)
 {
     return virDomainPCIAddressReserveNextAddr(addrs, dev,
                                               dev->pciConnectFlags,
-                                              function, reserveEntireSlot);
+                                              function);
 }
 
 
@@ -950,7 +949,7 @@ static int
 qemuDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev)
 {
-    return qemuDomainPCIAddressReserveNextAddr(addrs, dev, 0, true);
+    return qemuDomainPCIAddressReserveNextAddr(addrs, dev, 0);
 }
 
 
@@ -963,7 +962,6 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
     virDomainPCIAddressSetPtr addrs = opaque;
     int ret = -1;
     virPCIDeviceAddressPtr addr = &info->addr.pci;
-    bool entireSlot;
 
     if (!virDeviceInfoPCIAddressPresent(info) ||
         ((device->type == VIR_DOMAIN_DEVICE_HOSTDEV) &&
@@ -1036,12 +1034,10 @@ qemuDomainCollectPCIAddress(virDomainDefPtr def ATTRIBUTE_UNUSED,
         }
     }
 
-    entireSlot = (addr->function == 0 &&
-                  addr->multi != VIR_TRISTATE_SWITCH_ON);
-
-    if (virDomainPCIAddressReserveAddr(addrs, addr, info->pciConnectFlags,
-                                       entireSlot, true) < 0)
+    if (virDomainPCIAddressReserveAddr(addrs, addr,
+                                       info->pciConnectFlags, true) < 0) {
         goto cleanup;
+    }
 
     ret = 0;
  cleanup:
@@ -1329,7 +1325,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
                 }
                 if (assign) {
                     if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr,
-                                                       flags, false, true) < 0)
+                                                       flags, true) < 0)
                         goto cleanup;
                     cont->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
                     cont->info.addr.pci.domain = 0;
@@ -1352,7 +1348,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
                 tmp_addr.slot = 0x1E;
                 if (!virDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
                     if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr,
-                                                       flags, true, false) < 0)
+                                                       flags, false) < 0)
                         goto cleanup;
                     cont->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
                     cont->info.addr.pci.domain = 0;
@@ -1375,13 +1371,13 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
         tmp_addr.slot = 0x1F;
         tmp_addr.function = 0;
         tmp_addr.multi = VIR_TRISTATE_SWITCH_ON;
-        if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr, flags,
-                                           false, false) < 0)
+        if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr,
+                                           flags, false) < 0)
            goto cleanup;
         tmp_addr.function = 3;
         tmp_addr.multi = VIR_TRISTATE_SWITCH_ABSENT;
-        if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr, flags,
-                                           false, false) < 0)
+        if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr,
+                                           flags, false) < 0)
            goto cleanup;
     }
 
@@ -1681,7 +1677,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
                 /* Reserve this function on the slot we found */
                 if (virDomainPCIAddressReserveAddr(addrs, &addr,
                                                    cont->info.pciConnectFlags,
-                                                   false, true) < 0)
+                                                   true) < 0)
                     goto error;
 
                 cont->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
@@ -1690,8 +1686,7 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
                 /* This is the first part of the controller, so need
                  * to find a free slot & then reserve this function */
                 if (qemuDomainPCIAddressReserveNextAddr(addrs, &cont->info,
-                                                        addr.function,
-                                                        false) < 0) {
+                                                        addr.function) < 0) {
                     goto error;
                 }
 

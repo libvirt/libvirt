@@ -527,11 +527,9 @@ virDomainPCIAddressSlotInUse(virDomainPCIAddressSetPtr addrs,
 
 
 /*
- * Reserve a slot (or just one function) for a device. If
- * reserveEntireSlot is true, all functions for the slot are reserved,
- * otherwise only one. If fromConfig is true, the address being
- * requested came directly from the config and errors should be worded
- * appropriately. If fromConfig is false, the address was
+ * Reserve a function in a slot. If fromConfig is true, the address
+ * being requested came directly from the config and errors should be
+ * worded appropriately. If fromConfig is false, the address was
  * automatically created by libvirt, so it is an internal error (not
  * XML).
  */
@@ -539,7 +537,6 @@ int
 virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
                                virPCIDeviceAddressPtr addr,
                                virDomainPCIConnectFlags flags,
-                               bool reserveEntireSlot,
                                bool fromConfig)
 {
     int ret = -1;
@@ -562,33 +559,13 @@ virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
 
     bus = &addrs->buses[addr->bus];
 
-    if (reserveEntireSlot) {
-        if (bus->slot[addr->slot].functions) {
-            virReportError(errType,
-                           _("Attempted double use of PCI slot %s "
-                             "(may need \"multifunction='on'\" for "
-                             "device on function 0)"), addrStr);
-            goto cleanup;
-        }
-        bus->slot[addr->slot].functions = 0xFF; /* reserve all functions of slot */
-        VIR_DEBUG("Reserving PCI slot %s (multifunction='off')", addrStr);
-    } else {
-        if (bus->slot[addr->slot].functions & (1 << addr->function)) {
-            if (addr->function == 0) {
-                virReportError(errType,
-                               _("Attempted double use of PCI Address %s"),
-                               addrStr);
-            } else {
-                virReportError(errType,
-                               _("Attempted double use of PCI Address %s "
-                                 "(may need \"multifunction='on'\" "
-                                 "for device on function 0)"), addrStr);
-            }
-            goto cleanup;
-        }
-        bus->slot[addr->slot].functions |= (1 << addr->function);
-        VIR_DEBUG("Reserving PCI address %s", addrStr);
+    if (bus->slot[addr->slot].functions & (1 << addr->function)) {
+        virReportError(errType,
+                       _("Attempted double use of PCI Address %s"), addrStr);
+        goto cleanup;
     }
+    bus->slot[addr->slot].functions |= (1 << addr->function);
+    VIR_DEBUG("Reserving PCI address %s", addrStr);
 
     ret = 0;
  cleanup:
@@ -602,7 +579,7 @@ virDomainPCIAddressReserveSlot(virDomainPCIAddressSetPtr addrs,
                                virPCIDeviceAddressPtr addr,
                                virDomainPCIConnectFlags flags)
 {
-    return virDomainPCIAddressReserveAddr(addrs, addr, flags, true, false);
+    return virDomainPCIAddressReserveAddr(addrs, addr, flags, false);
 }
 
 int
@@ -637,8 +614,8 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
                                          addrStr, flags, true))
             goto cleanup;
 
-        ret = virDomainPCIAddressReserveAddr(addrs, &dev->addr.pci, flags,
-                                             true, true);
+        ret = virDomainPCIAddressReserveAddr(addrs, &dev->addr.pci,
+                                             flags, true);
     } else {
         ret = virDomainPCIAddressReserveNextSlot(addrs, dev, flags);
     }
@@ -716,6 +693,7 @@ virDomainPCIAddressSetFree(virDomainPCIAddressSetPtr addrs)
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
 virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
                                virPCIDeviceAddressPtr next_addr,
+                               int function,
                                virDomainPCIConnectFlags flags)
 {
     /* default to starting the search for a free slot from
@@ -742,6 +720,12 @@ virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
     } else {
         a.slot = addrs->buses[0].minSlot;
     }
+
+    /* if the caller asks for "any function", give them function 0 */
+    if (function == -1)
+        a.function = 0;
+    else
+        a.function = function;
 
     while (a.bus < addrs->nbuses) {
         VIR_FREE(addrStr);
@@ -821,14 +805,13 @@ virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
  * @dev: virDomainDeviceInfo that should get the new address.
  * @flags: CONNECT_TYPE flags for the device that needs an address.
  * @function: which function on the slot to mark as reserved
- *            (if @reserveEntireSlot is false)
- * @reserveEntireSlot: true to reserve all functions on the new slot,
- *                     false to reserve just @function
  *
  * Find the next *completely unreserved* slot with compatible
- * connection @flags, mark either one function or the entire
- * slot as in-use (according to @function and @reserveEntireSlot),
- * and set @dev->addr.pci with this newly reserved address.
+ * connection @flags, mark one function of the slot as in-use
+ * (according to @function), then set @dev->addr.pci with this newly
+ * reserved address. If @function is -1, then the lowest unused
+ * function of the slot will be reserved (and since we only look for
+ * completely unused slots, that means "0").
  *
  * returns 0 on success, or -1 on failure.
  */
@@ -836,17 +819,14 @@ int
 virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
                                    virDomainDeviceInfoPtr dev,
                                    virDomainPCIConnectFlags flags,
-                                   unsigned int function,
-                                   bool reserveEntireSlot)
+                                   int function)
 {
     virPCIDeviceAddress addr;
 
-    if (virDomainPCIAddressGetNextSlot(addrs, &addr, flags) < 0)
+    if (virDomainPCIAddressGetNextSlot(addrs, &addr, function, flags) < 0)
         return -1;
 
-    addr.function = reserveEntireSlot ? 0 : function;
-
-    if (virDomainPCIAddressReserveAddr(addrs, &addr, flags, reserveEntireSlot, false) < 0)
+    if (virDomainPCIAddressReserveAddr(addrs, &addr, flags, false) < 0)
         return -1;
 
     addrs->lastaddr = addr;
@@ -866,7 +846,7 @@ virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
                                    virDomainDeviceInfoPtr dev,
                                    virDomainPCIConnectFlags flags)
 {
-    return virDomainPCIAddressReserveNextAddr(addrs, dev, flags, 0, true);
+    return virDomainPCIAddressReserveNextAddr(addrs, dev, flags, 0);
 }
 
 

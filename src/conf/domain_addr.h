@@ -141,7 +141,6 @@ int virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
 int virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
                                    virPCIDeviceAddressPtr addr,
                                    virDomainPCIConnectFlags flags,
-                                   bool reserveEntireSlot,
                                    bool fromConfig)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
@@ -166,8 +165,7 @@ int virDomainPCIAddressReleaseSlot(virDomainPCIAddressSetPtr addrs,
 int virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
                                        virDomainDeviceInfoPtr dev,
                                        virDomainPCIConnectFlags flags,
-                                       unsigned int function,
-                                       bool reserveEntireSlot)
+                                       int function)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
