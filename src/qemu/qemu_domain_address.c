@@ -949,7 +949,7 @@ static int
 qemuDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev)
 {
-    return qemuDomainPCIAddressReserveNextAddr(addrs, dev, 0);
+    return qemuDomainPCIAddressReserveNextAddr(addrs, dev, -1);
 }
 
 

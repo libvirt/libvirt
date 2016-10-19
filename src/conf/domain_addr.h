@@ -32,18 +32,23 @@
 typedef enum {
    VIR_PCI_CONNECT_HOTPLUGGABLE = 1 << 0, /* is hotplug needed/supported */
 
+   /* set for devices that can share a single slot in auto-assignment
+    * (by assigning one device to each of the 8 functions on the slot)
+    */
+   VIR_PCI_CONNECT_AGGREGATE_SLOT = 1 << 1,
+
    /* kinds of devices as a bitmap so they can be combined (some PCI
     * controllers permit connecting multiple types of devices)
     */
-   VIR_PCI_CONNECT_TYPE_PCI_DEVICE = 1 << 1,
-   VIR_PCI_CONNECT_TYPE_PCIE_DEVICE = 1 << 2,
-   VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT = 1 << 3,
-   VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT = 1 << 4,
-   VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT = 1 << 5,
-   VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE = 1 << 6,
-   VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS = 1 << 7,
-   VIR_PCI_CONNECT_TYPE_PCIE_EXPANDER_BUS = 1 << 8,
-   VIR_PCI_CONNECT_TYPE_PCI_BRIDGE = 1 << 9,
+   VIR_PCI_CONNECT_TYPE_PCI_DEVICE = 1 << 2,
+   VIR_PCI_CONNECT_TYPE_PCIE_DEVICE = 1 << 3,
+   VIR_PCI_CONNECT_TYPE_PCIE_ROOT_PORT = 1 << 4,
+   VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_UPSTREAM_PORT = 1 << 5,
+   VIR_PCI_CONNECT_TYPE_PCIE_SWITCH_DOWNSTREAM_PORT = 1 << 6,
+   VIR_PCI_CONNECT_TYPE_DMI_TO_PCI_BRIDGE = 1 << 7,
+   VIR_PCI_CONNECT_TYPE_PCI_EXPANDER_BUS = 1 << 8,
+   VIR_PCI_CONNECT_TYPE_PCIE_EXPANDER_BUS = 1 << 9,
+   VIR_PCI_CONNECT_TYPE_PCI_BRIDGE = 1 << 10,
 } virDomainPCIConnectFlags;
 
 /* a combination of all bits that describe the type of connections
@@ -75,6 +80,13 @@ typedef struct {
      * in use by a device, or clear if it isn't.
      */
     uint8_t functions;
+
+    /* aggregate is true if this slot has only devices with
+     * VIR_PCI_CONNECT_AGGREGATE assigned to its functions (meaning
+     * that other devices with the same flags could also be
+     * auto-assigned to the other functions)
+     */
+    bool aggregate;
 } virDomainPCIAddressSlot;
 
 typedef struct {

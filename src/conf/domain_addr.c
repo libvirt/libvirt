@@ -564,8 +564,20 @@ virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
                        _("Attempted double use of PCI Address %s"), addrStr);
         goto cleanup;
     }
+
+    /* if this is the first function to be reserved on this slot, and
+     * the device it's being reserved for can aggregate multiples on a
+     * slot, set the slot's aggregate flag.
+    */
+    if (!bus->slot[addr->slot].functions &&
+        flags & VIR_PCI_CONNECT_AGGREGATE_SLOT) {
+        bus->slot[addr->slot].aggregate = true;
+    }
+
+    /* mark the requested function as reserved */
     bus->slot[addr->slot].functions |= (1 << addr->function);
-    VIR_DEBUG("Reserving PCI address %s", addrStr);
+    VIR_DEBUG("Reserving PCI address %s (aggregate='%s')", addrStr,
+              bus->slot[addr->slot].aggregate ? "true" : "false");
 
     ret = 0;
  cleanup:
@@ -693,7 +705,7 @@ virDomainPCIAddressSetFree(virDomainPCIAddressSetPtr addrs)
 static int
 virDomainPCIAddressFindUnusedFunctionOnBus(virDomainPCIAddressBusPtr bus,
                                            virPCIDeviceAddressPtr searchAddr,
-                                           int function ATTRIBUTE_UNUSED,
+                                           int function,
                                            virDomainPCIConnectFlags flags,
                                            bool *found)
 {
@@ -714,6 +726,33 @@ virDomainPCIAddressFindUnusedFunctionOnBus(virDomainPCIAddressBusPtr bus,
             if (bus->slot[searchAddr->slot].functions == 0) {
                 *found = true;
                 break;
+            }
+
+            if (flags & VIR_PCI_CONNECT_AGGREGATE_SLOT &&
+                bus->slot[searchAddr->slot].aggregate) {
+                /* slot and device are okay with aggregating devices */
+                if ((bus->slot[searchAddr->slot].functions &
+                     (1 << searchAddr->function)) == 0) {
+                    *found = true;
+                    break;
+                }
+
+                /* also check for *any* unused function if caller
+                 * sent function = -1
+                 */
+                if (function == -1) {
+                    while (searchAddr->function < 8) {
+                        if ((bus->slot[searchAddr->slot].functions &
+                             (1 << searchAddr->function)) == 0) {
+                            *found = true;
+                            break; /* out of inner while */
+                        }
+                        searchAddr->function++;
+                    }
+                    if (*found)
+                       break; /* out of outer while */
+                    searchAddr->function = 0; /* reset for next try */
+                }
             }
 
             VIR_DEBUG("PCI slot %.4x:%.2x:%.2x already in use",
@@ -863,7 +902,7 @@ virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
                                    virDomainDeviceInfoPtr dev,
                                    virDomainPCIConnectFlags flags)
 {
-    return virDomainPCIAddressReserveNextAddr(addrs, dev, flags, 0);
+    return virDomainPCIAddressReserveNextAddr(addrs, dev, flags, -1);
 }
 
 
