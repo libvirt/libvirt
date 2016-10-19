@@ -385,6 +385,7 @@ typedef enum {
 
     /* 240 */
     QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL, /* -device ivshmem-doorbell */
+    QEMU_CAPS_QUERY_QMP_SCHEMA, /* query-qmp-schema command */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

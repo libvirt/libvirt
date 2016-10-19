@@ -350,6 +350,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "ivshmem-plain",
 
               "ivshmem-doorbell", /* 240 */
+              "query-qmp-schema",
     );
 
 
@@ -1491,6 +1492,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
     { "migrate-incoming", QEMU_CAPS_INCOMING_DEFER },
     { "query-hotpluggable-cpus", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS },
+    { "query-qmp-schema", QEMU_CAPS_QUERY_QMP_SCHEMA }
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
@@ -1695,6 +1697,11 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsICH9[] = {
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUSBNECXHCI[] = {
     { "p3", QEMU_CAPS_NEC_USB_XHCI_PORTS },
+};
+
+/* see documentation for virQEMUCapsQMPSchemaGetByPath for the query format */
+static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
+    { "bogus/path/to/satisfy/compiler", 0 },
 };
 
 struct virQEMUCapsObjectTypeProps {
@@ -3705,6 +3712,187 @@ virQEMUCapsInitArchQMPBasic(virQEMUCapsPtr qemuCaps,
     return ret;
 }
 
+
+/**
+ * virQEMUCapsQMPSchemaObjectGetType:
+ * @field: name of the object containing the requested type
+ * @name: name of the requested type
+ * @namefield: name of the object property holding @name
+ *
+ * Helper that selects the type of a QMP schema object member or it's variant
+ * member. Returns the type string on success or NULL on error.
+ */
+static const char *
+virQEMUCapsQMPSchemaObjectGetType(const char *field,
+                                  const char *name,
+                                  const char *namefield,
+                                  virJSONValuePtr elem)
+{
+    virJSONValuePtr arr;
+    virJSONValuePtr cur;
+    const char *curname;
+    const char *type;
+    size_t i;
+
+    if (!(arr = virJSONValueObjectGetArray(elem, field)))
+        return NULL;
+
+    for (i = 0; i < virJSONValueArraySize(arr); i++) {
+        if (!(cur = virJSONValueArrayGet(arr, i)) ||
+            !(curname = virJSONValueObjectGetString(cur, namefield)) ||
+            !(type = virJSONValueObjectGetString(cur, "type")))
+            continue;
+
+        if (STREQ(name, curname))
+            return type;
+    }
+
+    return NULL;
+}
+
+
+static virJSONValuePtr
+virQEMUCapsQMPSchemaTraverse(const char *basename,
+                             char **query,
+                             virHashTablePtr schema)
+{
+    virJSONValuePtr base;
+    const char *metatype;
+
+    do {
+        if (!(base = virHashLookup(schema, basename)))
+            return NULL;
+
+        if (!*query)
+            return base;
+
+        if (!(metatype = virJSONValueObjectGetString(base, "meta-type")))
+            return NULL;
+
+        /* flatten arrays by default */
+        if (STREQ(metatype, "array")) {
+            if (!(basename = virJSONValueObjectGetString(base, "element-type")))
+                return NULL;
+
+            continue;
+        } else if (STREQ(metatype, "object")) {
+            if (**query == '+')
+                basename = virQEMUCapsQMPSchemaObjectGetType("variants",
+                                                             *query + 1,
+                                                             "case", base);
+            else
+                basename = virQEMUCapsQMPSchemaObjectGetType("members",
+                                                             *query,
+                                                             "name", base);
+
+            if (!basename)
+                return NULL;
+        } else if (STREQ(metatype, "command") ||
+                   STREQ(metatype, "event")) {
+            if (!(basename = virJSONValueObjectGetString(base, *query)))
+                return NULL;
+        } else {
+            /* alternates, basic types and enums can't be entered */
+            return NULL;
+        }
+
+        query++;
+    } while (*query);
+
+    return base;
+}
+
+
+/**
+ * virQEMUCapsQMPSchemaGetByPath:
+ * @query: string specifying the required data type (see below)
+ * @schema: hash table containing the schema data
+ * @entry: filled with the located schema object requested by @query
+ *
+ * Retrieves the requested schema entry specified by @query to @entry. The
+ * @query parameter has the following syntax which is very closely tied to the
+ * qemu schema syntax entries separated by slashes with a few special characters:
+ *
+ * "command_or_event/attribute/subattribute/+variant_discriminator/subattribute"
+ *
+ * command_or_event: name of the event or attribute to introspect
+ * attribute: selects whether arguments or return type should be introspected
+ *            ("arg-type" or "ret-type" for commands, "arg-type" for events)
+ * subattribute: specifies member name of object types
+ * +variant_discriminator: In the case of unionized objects, select a
+ *                         specific case to introspect.
+ *
+ * Array types are automatically flattened to the singular type. Alternate
+ * types are currently not supported.
+ *
+ * The above types can be chained arbitrarily using slashes to construct any
+ * path into the schema tree.
+ *
+ * Returns 0 on success (including if the requested schema was not found) and
+ * fills @entry appropriately. On failure returns -1 and sets an appropriate
+ * error message.
+ */
+static int
+virQEMUCapsQMPSchemaGetByPath(const char *query,
+                              virHashTablePtr schema,
+                              virJSONValuePtr *entry)
+{
+    char **elems = NULL;
+
+    *entry = NULL;
+
+    if (!(elems = virStringSplit(query, "/", 0)))
+        return -1;
+
+    if (!*elems) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("malformed query string"));
+        virStringFreeList(elems);
+        return -1;
+    }
+
+    *entry = virQEMUCapsQMPSchemaTraverse(*elems, elems + 1, schema);
+
+    virStringFreeList(elems);
+    return 0;
+}
+
+
+static bool
+virQEMUCapsQMPSchemaQueryPath(const char *query,
+                              virHashTablePtr schema)
+{
+    virJSONValuePtr entry;
+
+    if (virQEMUCapsQMPSchemaGetByPath(query, schema, &entry))
+        return false;
+
+    return !!entry;
+}
+
+
+static int
+virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCapsPtr qemuCaps,
+                                      qemuMonitorPtr mon)
+{
+    struct virQEMUCapsStringFlags *entry;
+    virHashTablePtr schema;
+    size_t i;
+
+    if (!(schema = qemuMonitorQueryQMPSchema(mon)))
+        return -1;
+
+    for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsQMPSchemaQueries); i++) {
+        entry = virQEMUCapsQMPSchemaQueries + i;
+
+        if (virQEMUCapsQMPSchemaQueryPath(entry->value, schema))
+            virQEMUCapsSet(qemuCaps, entry->flag);
+    }
+
+    virHashFree(schema);
+    return 0;
+}
+
+
 int
 virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
                           qemuMonitorPtr mon)
@@ -3806,6 +3994,9 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     if (virQEMUCapsProbeQMPCommandLine(qemuCaps, mon) < 0)
         goto cleanup;
     if (virQEMUCapsProbeQMPMigrationCapabilities(qemuCaps, mon) < 0)
+        goto cleanup;
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_QMP_SCHEMA) &&
+        virQEMUCapsProbeQMPSchemaCapabilities(qemuCaps, mon) < 0)
         goto cleanup;
 
     /* 'intel-iommu' shows up as a device since 2.2.0, but can

@@ -186,6 +186,7 @@
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='machine-iommu'/>
   <flag name='virtio-vga'/>
+  <flag name='query-qmp-schema'/>
   <version>2005000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
