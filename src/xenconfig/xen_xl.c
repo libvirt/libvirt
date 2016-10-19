@@ -1068,7 +1068,7 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
 
     /* devtype */
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-        virBufferAddLit(&buf, "devtype=cdrom");
+        virBufferAddLit(&buf, "devtype=cdrom,");
 
     /*
      * target
@@ -1082,7 +1082,7 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
         goto cleanup;
 
     if (target)
-        virBufferAsprintf(&buf, ",target=%s", target);
+        virBufferAsprintf(&buf, "target=%s", target);
 
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
