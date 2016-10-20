@@ -1022,33 +1022,33 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
     virBufferAddLit(&buf, "format=");
     switch (format) {
         case VIR_STORAGE_FILE_RAW:
-            virBufferAddLit(&buf, "raw,");
+            virBufferAddLit(&buf, "raw");
             break;
         case VIR_STORAGE_FILE_VHD:
-            virBufferAddLit(&buf, "xvhd,");
+            virBufferAddLit(&buf, "xvhd");
             break;
         case VIR_STORAGE_FILE_QCOW:
-            virBufferAddLit(&buf, "qcow,");
+            virBufferAddLit(&buf, "qcow");
             break;
         case VIR_STORAGE_FILE_QCOW2:
-            virBufferAddLit(&buf, "qcow2,");
+            virBufferAddLit(&buf, "qcow2");
             break;
       /* set default */
         default:
-            virBufferAddLit(&buf, "raw,");
+            virBufferAddLit(&buf, "raw");
     }
 
     /* device */
-    virBufferAsprintf(&buf, "vdev=%s,", disk->dst);
+    virBufferAsprintf(&buf, ",vdev=%s", disk->dst);
 
     /* access */
-    virBufferAddLit(&buf, "access=");
+    virBufferAddLit(&buf, ",access=");
     if (disk->src->readonly)
-        virBufferAddLit(&buf, "ro,");
+        virBufferAddLit(&buf, "ro");
     else if (disk->src->shared)
-        virBufferAddLit(&buf, "!,");
+        virBufferAddLit(&buf, "!");
     else
-        virBufferAddLit(&buf, "rw,");
+        virBufferAddLit(&buf, "rw");
     if (disk->transient) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("transient disks not supported yet"));
@@ -1057,18 +1057,18 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
 
     /* backendtype */
     if (driver) {
-        virBufferAddLit(&buf, "backendtype=");
+        virBufferAddLit(&buf, ",backendtype=");
         if (STREQ(driver, "qemu") || STREQ(driver, "file"))
-            virBufferAddLit(&buf, "qdisk,");
+            virBufferAddLit(&buf, "qdisk");
         else if (STREQ(driver, "tap"))
-            virBufferAddLit(&buf, "tap,");
+            virBufferAddLit(&buf, "tap");
         else if (STREQ(driver, "phy"))
-            virBufferAddLit(&buf, "phy,");
+            virBufferAddLit(&buf, "phy");
     }
 
     /* devtype */
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-        virBufferAddLit(&buf, "devtype=cdrom,");
+        virBufferAddLit(&buf, ",devtype=cdrom");
 
     /*
      * target
@@ -1082,7 +1082,7 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
         goto cleanup;
 
     if (target)
-        virBufferAsprintf(&buf, "target=%s", target);
+        virBufferAsprintf(&buf, ",target=%s", target);
 
     if (virBufferCheckError(&buf) < 0)
         goto cleanup;
