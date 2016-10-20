@@ -32,12 +32,12 @@
     <controller type='pci' index='3' model='pcie-root-port'>
       <model name='ioh3420'/>
       <target chassis='3' port='0x10'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0' multifunction='on'/>
     </controller>
     <controller type='pci' index='4' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='4' port='0x18'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      <target chassis='4' port='0x11'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x1'/>
     </controller>
     <controller type='pci' index='5' model='pcie-switch-upstream-port'>
       <model name='x3130-upstream'/>

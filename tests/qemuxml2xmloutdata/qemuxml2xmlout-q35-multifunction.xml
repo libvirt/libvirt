@@ -53,57 +53,57 @@
     <controller type='pci' index='8' model='pcie-root-port'>
       <model name='ioh3420'/>
       <target chassis='8' port='0x8'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0' multifunction='on'/>
     </controller>
     <controller type='pci' index='9' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='9' port='0x28'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      <target chassis='9' port='0x9'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
     </controller>
     <controller type='pci' index='10' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='10' port='0x30'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+      <target chassis='10' port='0xa'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
     <controller type='pci' index='11' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='11' port='0x38'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
+      <target chassis='11' port='0xb'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x3'/>
     </controller>
     <controller type='pci' index='12' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='12' port='0x40'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
+      <target chassis='12' port='0xc'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x4'/>
     </controller>
     <controller type='pci' index='13' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='13' port='0x48'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
+      <target chassis='13' port='0xd'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x5'/>
     </controller>
     <controller type='pci' index='14' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='14' port='0x50'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
+      <target chassis='14' port='0xe'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x6'/>
     </controller>
     <controller type='pci' index='15' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='15' port='0x58'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
+      <target chassis='15' port='0xf'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x7'/>
     </controller>
     <controller type='pci' index='16' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='16' port='0x60'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0c' function='0x0'/>
+      <target chassis='16' port='0x13'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x3'/>
     </controller>
     <controller type='pci' index='17' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='17' port='0x68'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>
+      <target chassis='17' port='0x14'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x4'/>
     </controller>
     <controller type='pci' index='18' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='18' port='0x70'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0e' function='0x0'/>
+      <target chassis='18' port='0x15'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x5'/>
     </controller>
     <controller type='usb' index='0' model='nec-xhci'>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
