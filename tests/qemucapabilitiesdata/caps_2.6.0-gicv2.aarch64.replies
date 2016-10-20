@@ -221,9 +221,6 @@
       "name": "query-chardev"
     },
     {
-      "name": "query-qmp-schema"
-    },
-    {
       "name": "query-events"
     },
     {
