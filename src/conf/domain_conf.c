@@ -12099,7 +12099,8 @@ virDomainWatchdogDefParseXML(xmlNodePtr node,
 
 
 static virDomainRNGDefPtr
-virDomainRNGDefParseXML(xmlNodePtr node,
+virDomainRNGDefParseXML(virDomainXMLOptionPtr xmlopt,
+                        xmlNodePtr node,
                         xmlXPathContextPtr ctxt,
                         unsigned int flags)
 {
@@ -12172,7 +12173,7 @@ virDomainRNGDefParseXML(xmlNodePtr node,
             goto error;
         }
 
-        if (VIR_ALLOC(def->source.chardev) < 0)
+        if (!(def->source.chardev = virDomainChrSourceDefNew(xmlopt)))
             goto error;
 
         def->source.chardev->type = virDomainChrTypeFromString(type);
@@ -13592,7 +13593,8 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_RNG:
-        if (!(dev->data.rng = virDomainRNGDefParseXML(node, ctxt, flags)))
+        if (!(dev->data.rng = virDomainRNGDefParseXML(xmlopt, node,
+                                                      ctxt, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_CHR:
@@ -17481,9 +17483,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->rngs, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
-        virDomainRNGDefPtr rng = virDomainRNGDefParseXML(nodes[i],
-                                                         ctxt,
-                                                         flags);
+        virDomainRNGDefPtr rng = virDomainRNGDefParseXML(xmlopt, nodes[i],
+                                                         ctxt, flags);
         if (!rng)
             goto error;
 
