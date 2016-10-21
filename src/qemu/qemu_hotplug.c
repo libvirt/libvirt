@@ -1756,6 +1756,10 @@ qemuDomainChrRemove(virDomainDefPtr vmdef,
     return ret;
 }
 
+/* Returns  1 if the address will need to be released later,
+ *         -1 on error
+ *          0 otherwise
+ */
 static int
 qemuDomainAttachChrDeviceAssignAddr(virDomainObjPtr vm,
                                     virDomainChrDefPtr chr)
@@ -1767,7 +1771,7 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObjPtr vm,
         chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
         if (virDomainVirtioSerialAddrAutoAssign(def, &chr->info, true) < 0)
             return -1;
-        return 1;
+        return 0;
 
     } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
                chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI) {
@@ -1786,7 +1790,7 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObjPtr vm,
                chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
         if (virDomainVirtioSerialAddrAutoAssign(def, &chr->info, false) < 0)
             return -1;
-        return 1;
+        return 0;
     }
 
     if (chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL ||
