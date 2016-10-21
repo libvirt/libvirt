@@ -8833,7 +8833,7 @@ qemuBuildRedirdevCommandLine(virLogManagerPtr logManager,
         char *devstr;
 
         if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                              &redirdev->source.chr,
+                                              redirdev->source.chr,
                                               redirdev->info.alias,
                                               qemuCaps, true))) {
             return -1;

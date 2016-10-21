@@ -1499,7 +1499,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorAttachCharDev(priv->mon,
                                  charAlias,
-                                 &(redirdev->source.chr)) < 0) {
+                                 redirdev->source.chr) < 0) {
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
         goto audit;
     }

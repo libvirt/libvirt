@@ -2363,7 +2363,7 @@ void virDomainRedirdevDefFree(virDomainRedirdevDefPtr def)
     if (!def)
         return;
 
-    virDomainChrSourceDefClear(&def->source.chr);
+    virDomainChrSourceDefFree(def->source.chr);
     virDomainDeviceInfoClear(&def->info);
 
     VIR_FREE(def);
@@ -12972,7 +12972,8 @@ virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
 
 
 static virDomainRedirdevDefPtr
-virDomainRedirdevDefParseXML(xmlNodePtr node,
+virDomainRedirdevDefParseXML(virDomainXMLOptionPtr xmlopt,
+                             xmlNodePtr node,
                              virHashTablePtr bootHash,
                              unsigned int flags)
 {
@@ -12983,6 +12984,9 @@ virDomainRedirdevDefParseXML(xmlNodePtr node,
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
+
+    if (!(def->source.chr = virDomainChrSourceDefNew(xmlopt)))
+        goto error;
 
     bus = virXMLPropString(node, "bus");
     if (bus) {
@@ -12997,7 +13001,7 @@ virDomainRedirdevDefParseXML(xmlNodePtr node,
 
     type = virXMLPropString(node, "type");
     if (type) {
-        if ((def->source.chr.type = virDomainChrTypeFromString(type)) < 0) {
+        if ((def->source.chr->type = virDomainChrTypeFromString(type)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown redirdev character device type '%s'"), type);
             goto error;
@@ -13012,13 +13016,13 @@ virDomainRedirdevDefParseXML(xmlNodePtr node,
     /* boot gets parsed in virDomainDeviceInfoParseXML
      * source gets parsed in virDomainChrSourceDefParseXML
      * we don't know any of the elements that might remain */
-    remaining = virDomainChrSourceDefParseXML(&def->source.chr, cur, flags,
+    remaining = virDomainChrSourceDefParseXML(def->source.chr, cur, flags,
                                               NULL, NULL, NULL, 0);
     if (remaining < 0)
         goto error;
 
-    if (def->source.chr.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC)
-        def->source.chr.data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_USBREDIR;
+    if (def->source.chr->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC)
+        def->source.chr->data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_USBREDIR;
 
     if (virDomainDeviceInfoParseXML(node, bootHash, &def->info,
                                     flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) < 0)
@@ -13583,7 +13587,8 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_REDIRDEV:
-        if (!(dev->data.redirdev = virDomainRedirdevDefParseXML(node, NULL, flags)))
+        if (!(dev->data.redirdev = virDomainRedirdevDefParseXML(xmlopt, node,
+                                                                NULL, flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_RNG:
@@ -14846,8 +14851,8 @@ virDomainRedirdevDefFind(virDomainDefPtr def,
         if (redirdev->bus != tmp->bus)
             continue;
 
-        if (!virDomainChrSourceDefIsEqual(&redirdev->source.chr,
-                                          &tmp->source.chr))
+        if (!virDomainChrSourceDefIsEqual(redirdev->source.chr,
+                                          tmp->source.chr))
             continue;
 
         if (redirdev->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
@@ -17546,9 +17551,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (n && VIR_ALLOC_N(def->redirdevs, n) < 0)
         goto error;
     for (i = 0; i < n; i++) {
-        virDomainRedirdevDefPtr redirdev = virDomainRedirdevDefParseXML(nodes[i],
-                                                                        bootHash,
-                                                                        flags);
+        virDomainRedirdevDefPtr redirdev =
+            virDomainRedirdevDefParseXML(xmlopt, nodes[i], bootHash, flags);
         if (!redirdev)
             goto error;
 
@@ -18665,12 +18669,12 @@ virDomainRedirdevDefCheckABIStability(virDomainRedirdevDefPtr src,
 
     switch ((virDomainRedirdevBus) src->bus) {
     case VIR_DOMAIN_REDIRDEV_BUS_USB:
-        if (src->source.chr.type != dst->source.chr.type) {
+        if (src->source.chr->type != dst->source.chr->type) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Target redirected device source type %s does "
                              "not match source device source type %s"),
-                           virDomainChrTypeToString(dst->source.chr.type),
-                           virDomainChrTypeToString(src->source.chr.type));
+                           virDomainChrTypeToString(dst->source.chr->type),
+                           virDomainChrTypeToString(src->source.chr->type));
             return false;
         }
         break;
@@ -22743,7 +22747,7 @@ virDomainRedirdevDefFormat(virBufferPtr buf,
 
     virBufferAsprintf(buf, "<redirdev bus='%s'", bus);
     virBufferAdjustIndent(buf, 2);
-    if (virDomainChrSourceDefFormat(buf, NULL, &def->source.chr, false, flags) < 0)
+    if (virDomainChrSourceDefFormat(buf, NULL, def->source.chr, false, flags) < 0)
         return -1;
     if (virDomainDeviceInfoFormat(buf, &def->info,
                                   flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT) < 0)

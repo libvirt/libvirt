@@ -1518,7 +1518,7 @@ struct _virDomainRedirdevDef {
     int bus; /* enum virDomainRedirdevBus */
 
     union {
-        virDomainChrSourceDef chr;
+        virDomainChrSourceDefPtr chr;
     } source;
 
     virDomainDeviceInfo info; /* Guest address */
