@@ -1474,6 +1474,32 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuDomainGetChardevTLSObjects(virQEMUDriverConfigPtr cfg,
+                               qemuDomainObjPrivatePtr priv,
+                               virDomainChrSourceDefPtr dev,
+                               char *charAlias,
+                               virJSONValuePtr *tlsProps,
+                               char **tlsAlias)
+{
+    if (dev->type != VIR_DOMAIN_CHR_TYPE_TCP || !cfg->chardevTLS)
+        return 0;
+
+    if (qemuBuildTLSx509BackendProps(cfg->chardevTLSx509certdir,
+                                     dev->data.tcp.listen,
+                                     cfg->chardevTLSx509verify,
+                                     priv->qemuCaps,
+                                     tlsProps) < 0)
+        return -1;
+
+    if (!(*tlsAlias = qemuAliasTLSObjFromChardevAlias(charAlias)))
+        return -1;
+    dev->data.tcp.tlscreds = true;
+
+    return 0;
+}
+
+
 int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainRedirdevDefPtr redirdev)
@@ -1730,19 +1756,9 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     if (qemuDomainChrPreInsert(vmdef, chr) < 0)
         goto cleanup;
 
-    if (dev->type == VIR_DOMAIN_CHR_TYPE_TCP &&
-        cfg->chardevTLS) {
-        if (qemuBuildTLSx509BackendProps(cfg->chardevTLSx509certdir,
-                                         dev->data.tcp.listen,
-                                         cfg->chardevTLSx509verify,
-                                         priv->qemuCaps,
-                                         &tlsProps) < 0)
-            goto cleanup;
-
-        if (!(tlsAlias = qemuAliasTLSObjFromChardevAlias(charAlias)))
-            goto cleanup;
-        dev->data.tcp.tlscreds = true;
-    }
+    if (qemuDomainGetChardevTLSObjects(cfg, priv, dev, charAlias,
+                                       &tlsProps, &tlsAlias) < 0)
+        goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (tlsAlias) {
