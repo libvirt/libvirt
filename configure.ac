@@ -117,7 +117,6 @@ fi
 
 dnl Required minimum versions of all libs we depend on
 LIBXML_REQUIRED="2.6.0"
-GNUTLS_REQUIRED="2.2.0"
 POLKIT_REQUIRED="0.6"
 PARTED_REQUIRED="1.8.0"
 DEVMAPPER_REQUIRED=1.0.0
@@ -260,6 +259,7 @@ LIBVIRT_CHECK_UDEV
 LIBVIRT_CHECK_WIRESHARK
 LIBVIRT_CHECK_NSS
 LIBVIRT_CHECK_YAJL
+LIBVIRT_CHECK_GNUTLS
 
 AC_MSG_CHECKING([for CPUID instruction])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
@@ -1169,107 +1169,6 @@ AC_CHECK_MEMBER([struct _xmlURI.query_raw],
 		[#include <libxml/uri.h>])
 CFLAGS="$old_CFLAGS"
 LIBS="$old_LIBS"
-
-dnl GnuTLS library
-AC_ARG_WITH([gnutls],
-  [AS_HELP_STRING([--with-gnutls],
-    [use GNUTLS for encryption @<:@default=check@:>@])],
-  [],
-  [with_gnutls=check])
-
-
-if test "x$with_gnutls" != "xno"; then
-  if test "x$with_gnutls" != "xyes" && test "x$with_gnutls" != "xcheck"; then
-    GNUTLS_CFLAGS="-I$with_gnutls/include"
-    GNUTLS_LIBS="-L$with_gnutls/lib"
-  fi
-  fail=0
-  old_CFLAGS="$CFLAGS"
-  old_LIBS="$LIBS"
-  CFLAGS="$CFLAGS $GNUTLS_CFLAGS"
-  LIBS="$LIBS $GNUTLS_LIBS"
-
-  GNUTLS_FOUND=no
-  GNUTLS_GCRYPT=unknown
-  if test -x "$PKG_CONFIG" ; then
-    dnl Triple probe: gnutls < 2.12 only used gcrypt, gnutls >= 3.0 uses
-    dnl only nettle, and versions in between had a configure option.
-    dnl Our goal is to avoid gcrypt if we can prove gnutls uses nettle,
-    dnl but it is a safe fallback to use gcrypt if we can't prove anything.
-    if $PKG_CONFIG --exists 'gnutls >= 3.0'; then
-      GNUTLS_GCRYPT=no
-    elif $PKG_CONFIG --exists 'gnutls >= 2.12'; then
-      GNUTLS_GCRYPT=probe
-    else
-      GNUTLS_GCRYPT=yes
-    fi
-    PKG_CHECK_MODULES(GNUTLS, gnutls >= $GNUTLS_REQUIRED,
-      [GNUTLS_FOUND=yes], [GNUTLS_FOUND=no])
-  fi
-  if test "$GNUTLS_FOUND" = "no"; then
-    dnl pkg-config couldn't help us, assume gcrypt is necessary
-    fail=0
-    GNUTLS_GCRYPT=yes
-    AC_CHECK_HEADER([gnutls/gnutls.h], [], [fail=1])
-    AC_CHECK_LIB([gnutls], [gnutls_handshake],[], [fail=1], [-lgcrypt])
-
-    test $fail = 0 && GNUTLS_FOUND=yes
-
-    GNUTLS_LIBS="$GNUTLS_LIBS -lgnutls"
-  fi
-  if test "$GNUTLS_FOUND" = "no"; then
-    if test "$with_gnutls" = "check"; then
-      with_gnutls=no
-      GNUTLS_LIBS=
-      GNUTLS_CFLAGS=
-    else
-      AC_MSG_ERROR([You must install the GnuTLS library in order to compile and run libvirt])
-    fi
-  else
-    dnl See comments above about when to use gcrypt.
-    if test "$GNUTLS_GCRYPT" = probe; then
-      case `$PKG_CONFIG --libs --static gnutls` in
-        *gcrypt*) GNUTLS_GCRYPT=yes     ;;
-        *nettle*) GNUTLS_GCRYPT=no      ;;
-        *)        GNUTLS_GCRYPT=unknown ;;
-      esac
-    fi
-    if test "$GNUTLS_GCRYPT" = yes || test "$GNUTLS_GCRYPT" = unknown; then
-      GNUTLS_LIBS="$GNUTLS_LIBS -lgcrypt"
-      dnl We're not using gcrypt deprecated features so define
-      dnl GCRYPT_NO_DEPRECATED to avoid deprecated warnings
-      GNUTLS_CFLAGS="$GNUTLS_CFLAGS -DGCRYPT_NO_DEPRECATED"
-      AC_DEFINE_UNQUOTED([WITH_GNUTLS_GCRYPT], 1,
-        [set to 1 if it is known or assumed that GNUTLS uses gcrypt])
-    fi
-
-    with_gnutls=yes
-  fi
-
-  dnl GNUTLS_CFLAGS and GNUTLS_LIBS have probably been updated above,
-  dnl and we need the final values for function probing to work
-  CFLAGS="$old_CFLAGS $GNUTLS_CFLAGS"
-  LIBS="$old_LIBS $GNUTLS_LIBS"
-
-  dnl gnutls 3.x moved some declarations to a new header
-  AC_CHECK_HEADERS([gnutls/crypto.h], [], [], [[
-    #include <gnutls/gnutls.h>
-  ]])
-
-  AC_CHECK_FUNCS([gnutls_rnd])
-  AC_CHECK_FUNCS([gnutls_cipher_encrypt])
-
-  CFLAGS="$old_CFLAGS"
-  LIBS="$old_LIBS"
-fi
-
-if test "x$with_gnutls" = "xyes" ; then
-  AC_DEFINE_UNQUOTED([WITH_GNUTLS], 1,
-      [whether GNUTLS is available for encryption])
-fi
-AM_CONDITIONAL([WITH_GNUTLS], [test "x$with_gnutls" = "xyes"])
-AC_SUBST([GNUTLS_CFLAGS])
-AC_SUBST([GNUTLS_LIBS])
 
 
 AC_ARG_WITH([tls-priority],
@@ -2799,17 +2698,13 @@ LIBVIRT_RESULT_UDEV
 LIBVIRT_RESULT_WIRESHARK
 LIBVIRT_RESULT_NSS
 LIBVIRT_RESULT_YAJL
+LIBVIRT_RESULT_GNUTLS
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 AC_MSG_NOTICE([  dlopen: $DLOPEN_LIBS])
 if test "$with_hyperv" = "yes" ; then
 AC_MSG_NOTICE([openwsman: $OPENWSMAN_CFLAGS $OPENWSMAN_LIBS])
 else
 AC_MSG_NOTICE([openwsman: no])
-fi
-if test "$with_gnutls" != "no" ; then
-AC_MSG_NOTICE([  gnutls: $GNUTLS_CFLAGS $GNUTLS_LIBS])
-else
-AC_MSG_NOTICE([  gnutls: no])
 fi
 AC_MSG_NOTICE([firewalld: $with_firewalld])
 if test "$with_polkit" = "yes" ; then
