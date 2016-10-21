@@ -3895,7 +3895,7 @@ virDomainDefAddConsoleCompat(virDomainDefPtr def)
                                0,
                                def->nconsoles,
                                chr) < 0) {
-            VIR_FREE(chr);
+            virDomainChrDefFree(chr);
             return -1;
         }
 
