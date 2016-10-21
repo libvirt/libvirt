@@ -1078,6 +1078,7 @@ typedef enum {
 /* The host side information for a character device.  */
 struct _virDomainChrSourceDef {
     int type; /* virDomainChrType */
+    virObjectPtr privateData;
     union {
         /* no <source> for null, vc, stdio */
         struct {
@@ -1117,7 +1118,6 @@ struct _virDomainChrSourceDef {
 /* A complete character device, both host and domain views.  */
 struct _virDomainChrDef {
     int deviceType; /* enum virDomainChrDeviceType */
-    virObjectPtr privateData;
 
     bool targetTypeAttr;
     int targetType; /* enum virDomainChrConsoleTargetType ||
@@ -2447,7 +2447,7 @@ struct _virDomainXMLPrivateDataCallbacks {
     virDomainXMLPrivateDataNewFunc    diskNew;
     virDomainXMLPrivateDataNewFunc    hostdevNew;
     virDomainXMLPrivateDataNewFunc    vcpuNew;
-    virDomainXMLPrivateDataNewFunc    chardevNew;
+    virDomainXMLPrivateDataNewFunc    chrSourceNew;
     virDomainXMLPrivateDataFormatFunc format;
     virDomainXMLPrivateDataParseFunc  parse;
 };

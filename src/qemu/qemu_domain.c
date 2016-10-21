@@ -864,34 +864,34 @@ qemuDomainVcpuPrivateDispose(void *obj)
 }
 
 
-static virClassPtr qemuDomainChardevPrivateClass;
-static void qemuDomainChardevPrivateDispose(void *obj);
+static virClassPtr qemuDomainChrSourcePrivateClass;
+static void qemuDomainChrSourcePrivateDispose(void *obj);
 
 static int
-qemuDomainChardevPrivateOnceInit(void)
+qemuDomainChrSourcePrivateOnceInit(void)
 {
-    qemuDomainChardevPrivateClass =
+    qemuDomainChrSourcePrivateClass =
         virClassNew(virClassForObject(),
-                    "qemuDomainChardevPrivate",
-                    sizeof(qemuDomainChardevPrivate),
-                    qemuDomainChardevPrivateDispose);
-    if (!qemuDomainChardevPrivateClass)
+                    "qemuDomainChrSourcePrivate",
+                    sizeof(qemuDomainChrSourcePrivate),
+                    qemuDomainChrSourcePrivateDispose);
+    if (!qemuDomainChrSourcePrivateClass)
         return -1;
     else
         return 0;
 }
 
-VIR_ONCE_GLOBAL_INIT(qemuDomainChardevPrivate)
+VIR_ONCE_GLOBAL_INIT(qemuDomainChrSourcePrivate)
 
 static virObjectPtr
-qemuDomainChardevPrivateNew(void)
+qemuDomainChrSourcePrivateNew(void)
 {
-    qemuDomainChardevPrivatePtr priv;
+    qemuDomainChrSourcePrivatePtr priv;
 
-    if (qemuDomainChardevPrivateInitialize() < 0)
+    if (qemuDomainChrSourcePrivateInitialize() < 0)
         return NULL;
 
-    if (!(priv = virObjectNew(qemuDomainChardevPrivateClass)))
+    if (!(priv = virObjectNew(qemuDomainChrSourcePrivateClass)))
         return NULL;
 
     return (virObjectPtr) priv;
@@ -899,9 +899,9 @@ qemuDomainChardevPrivateNew(void)
 
 
 static void
-qemuDomainChardevPrivateDispose(void *obj)
+qemuDomainChrSourcePrivateDispose(void *obj)
 {
-    qemuDomainChardevPrivatePtr priv = obj;
+    qemuDomainChrSourcePrivatePtr priv = obj;
 
     qemuDomainSecretInfoFree(&priv->secinfo);
 }
@@ -1807,7 +1807,7 @@ virDomainXMLPrivateDataCallbacks virQEMUDriverPrivateDataCallbacks = {
     .diskNew = qemuDomainDiskPrivateNew,
     .vcpuNew = qemuDomainVcpuPrivateNew,
     .hostdevNew = qemuDomainHostdevPrivateNew,
-    .chardevNew = qemuDomainChardevPrivateNew,
+    .chrSourceNew = qemuDomainChrSourcePrivateNew,
     .parse = qemuDomainObjPrivateXMLParse,
     .format = qemuDomainObjPrivateXMLFormat,
 };

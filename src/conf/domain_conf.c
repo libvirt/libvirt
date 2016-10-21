@@ -2024,6 +2024,7 @@ void virDomainChrSourceDefFree(virDomainChrSourceDefPtr def)
         return;
 
     virDomainChrSourceDefClear(def);
+    virObjectUnref(def->privateData);
 
     VIR_FREE(def);
 }
@@ -2124,8 +2125,6 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
             virSecurityDeviceLabelDefFree(def->seclabels[i]);
         VIR_FREE(def->seclabels);
     }
-
-    virObjectUnref(def->privateData);
 
     VIR_FREE(def);
 }
@@ -10318,12 +10317,16 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
 
 
 static virDomainChrSourceDefPtr
-virDomainChrSourceDefNew(void)
+virDomainChrSourceDefNew(virDomainXMLOptionPtr xmlopt)
 {
     virDomainChrSourceDefPtr def = NULL;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
+
+    if (xmlopt && xmlopt->privateData.chrSourceNew &&
+        !(def->privateData = xmlopt->privateData.chrSourceNew()))
+        VIR_FREE(def);
 
     return def;
 }
@@ -10342,14 +10345,8 @@ virDomainChrDefNew(virDomainXMLOptionPtr xmlopt)
 
     def->target.port = -1;
 
-    if (!(def->source = virDomainChrSourceDefNew()))
+    if (!(def->source = virDomainChrSourceDefNew(xmlopt)))
         VIR_FREE(def);
-
-    if (xmlopt && xmlopt->privateData.chardevNew &&
-        !(def->privateData = xmlopt->privateData.chardevNew())) {
-        virDomainChrSourceDefFree(def->source);
-        VIR_FREE(def);
-    }
 
     return def;
 }

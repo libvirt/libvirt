@@ -352,12 +352,12 @@ struct _qemuDomainHostdevPrivate {
     qemuDomainSecretInfoPtr secinfo;
 };
 
-# define QEMU_DOMAIN_CHARDEV_PRIVATE(chardev)	\
-    ((qemuDomainChardevPrivatePtr) (chardev)->privateData)
+# define QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev)	\
+    ((qemuDomainChrSourcePrivatePtr) (dev)->privateData)
 
-typedef struct _qemuDomainChardevPrivate qemuDomainChardevPrivate;
-typedef qemuDomainChardevPrivate *qemuDomainChardevPrivatePtr;
-struct _qemuDomainChardevPrivate {
+typedef struct _qemuDomainChrSourcePrivate qemuDomainChrSourcePrivate;
+typedef qemuDomainChrSourcePrivate *qemuDomainChrSourcePrivatePtr;
+struct _qemuDomainChrSourcePrivate {
     virObject parent;
 
     /* for char devices using secret
