@@ -6204,6 +6204,7 @@ qemuDomainPrepareChardevSourceTLS(virDomainChrSourceDefPtr source,
                 source->data.tcp.haveTLS = VIR_TRISTATE_BOOL_YES;
             else
                 source->data.tcp.haveTLS = VIR_TRISTATE_BOOL_NO;
+            source->data.tcp.tlsFromConfig = true;
         }
     }
 }
