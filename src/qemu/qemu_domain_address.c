@@ -398,6 +398,44 @@ qemuDomainAssignS390Addresses(virDomainDefPtr def,
 }
 
 
+static int
+qemuDomainHasVirtioMMIODevicesCallback(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                       virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                                       virDomainDeviceInfoPtr info,
+                                       void *opaque)
+{
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO) {
+        /* We can stop iterating as soon as we find the first
+         * virtio-mmio device */
+        *((bool *) opaque) = true;
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuDomainHasVirtioMMIODevices:
+ * @def: domain definition
+ *
+ * Scan @def looking for devices with a virtio-mmio address.
+ *
+ * Returns: true if there are any, false otherwise
+ */
+static bool
+qemuDomainHasVirtioMMIODevices(virDomainDefPtr def)
+{
+    bool result = false;
+
+    virDomainDeviceInfoIterate(def,
+                               qemuDomainHasVirtioMMIODevicesCallback,
+                               &result);
+
+    return result;
+}
+
+
 static void
 qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
                                        virQEMUCapsPtr qemuCaps)
@@ -410,9 +448,16 @@ qemuDomainAssignARMVirtioMMIOAddresses(virDomainDefPtr def,
           qemuDomainMachineIsVirt(def)))
         return;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MMIO)) {
-        qemuDomainPrimeVirtioDeviceAddresses(
-            def, VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO);
+    /* We use virtio-mmio by default on mach-virt guests only if they already
+     * have at least one virtio-mmio device: in all other cases, we prefer
+     * virtio-pci */
+    if (qemuDomainMachineHasPCIeRoot(def) &&
+        !qemuDomainHasVirtioMMIODevices(def)) {
+        qemuDomainPrimeVirtioDeviceAddresses(def,
+                                             VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI);
+    } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MMIO)) {
+        qemuDomainPrimeVirtioDeviceAddresses(def,
+                                             VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO);
     }
 }
 

@@ -21,14 +21,21 @@ QEMU_AUDIO_DRV=none \
 -initrd /aarch64.initrd \
 -append 'earlyprintk console=ttyAMA0,115200n8 rw root=/dev/vda rootwait' \
 -dtb /aarch64.dtb \
--device virtio-serial-device,id=virtio-serial0 \
+-device ioh3420,port=0x8,chassis=1,id=pci.1,bus=pcie.0,addr=0x1 \
+-device ioh3420,port=0x10,chassis=2,id=pci.2,bus=pcie.0,addr=0x2 \
+-device ioh3420,port=0x18,chassis=3,id=pci.3,bus=pcie.0,addr=0x3 \
+-device ioh3420,port=0x20,chassis=4,id=pci.4,bus=pcie.0,addr=0x4 \
+-device ioh3420,port=0x28,chassis=5,id=pci.5,bus=pcie.0,addr=0x5 \
+-device ioh3420,port=0x30,chassis=6,id=pci.6,bus=pcie.0,addr=0x6 \
+-device virtio-serial-pci,id=virtio-serial0,bus=pci.2,addr=0x0 \
 -drive file=/aarch64.raw,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0 \
--device virtio-net-device,vlan=0,id=net0,mac=52:54:00:09:a4:37 \
+-device virtio-blk-pci,bus=pci.3,addr=0x0,drive=drive-virtio-disk0,\
+id=virtio-disk0 \
+-device virtio-net-pci,vlan=0,id=net0,mac=52:54:00:09:a4:37,bus=pci.1,addr=0x0 \
 -net user,vlan=0,name=hostnet0 \
 -serial pty \
 -chardev pty,id=charconsole1 \
 -device virtconsole,chardev=charconsole1,id=console1 \
--device virtio-balloon-device,id=balloon0 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.4,addr=0x0 \
 -object rng-random,id=objrng0,filename=/dev/random \
--device virtio-rng-device,rng=objrng0,id=rng0
+-device virtio-rng-pci,rng=objrng0,id=rng0,bus=pci.5,addr=0x0
