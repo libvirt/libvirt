@@ -748,18 +748,14 @@ virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
     }
 
     /* ...unless this search is for the exact same type of device as
-     * last time, then continue the search from the next slot after
-     * the previous match (the "next slot" may possibly be the first
-     * slot of the next bus).
+     * last time, then continue the search from the slot where we
+     * found the previous match (it's possible there will still be a
+     * function available on that slot).
      */
-    if (flags == addrs->lastFlags) {
+    if (flags == addrs->lastFlags)
         a = addrs->lastaddr;
-        if (++a.slot > addrs->buses[a.bus].maxSlot &&
-            ++a.bus < addrs->nbuses)
-            a.slot = addrs->buses[a.bus].minSlot;
-    } else {
+    else
         a.slot = addrs->buses[0].minSlot;
-    }
 
     /* if the caller asks for "any function", give them function 0 */
     if (function == -1)
