@@ -1775,7 +1775,8 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObjPtr vm,
             return -1;
         return 1;
 
-    } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+    } else if (priv->usbaddrs &&
+               chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
                chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB) {
         if (virDomainUSBAddressEnsure(priv->usbaddrs, &chr->info) < 0)
             return -1;
