@@ -1762,47 +1762,40 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObjPtr vm,
 {
     virDomainDefPtr def = vm->def;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret = -1;
 
     if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
         chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
         if (virDomainVirtioSerialAddrAutoAssign(def, &chr->info, true) < 0)
-            goto cleanup;
-        ret = 1;
+            return -1;
+        return 1;
 
     } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
                chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI) {
         if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, &chr->info) < 0)
-            goto cleanup;
-        ret = 1;
+            return -1;
+        return 1;
 
     } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
                chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB) {
         if (virDomainUSBAddressEnsure(priv->usbaddrs, &chr->info) < 0)
-            goto cleanup;
-        ret = 1;
+            return -1;
+        return 1;
 
     } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
                chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
         if (virDomainVirtioSerialAddrAutoAssign(def, &chr->info, false) < 0)
-            goto cleanup;
-        ret = 1;
+            return -1;
+        return 1;
     }
-
-    if (ret == 1)
-        goto cleanup;
 
     if (chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL ||
         chr->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Unsupported address type for character device"));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 int qemuDomainAttachChrDevice(virConnectPtr conn,
