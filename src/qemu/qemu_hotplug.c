@@ -1509,6 +1509,8 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     virDomainDefPtr def = vm->def;
     char *charAlias = NULL;
     char *devstr = NULL;
+    bool chardevAdded = false;
+    virErrorPtr orig_err;
 
     if (qemuAssignDeviceRedirdevAlias(def, redirdev, -1) < 0)
         goto cleanup;
@@ -1525,17 +1527,12 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorAttachCharDev(priv->mon,
                                  charAlias,
-                                 redirdev->source.chr) < 0) {
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
-        goto audit;
-    }
+                                 redirdev->source.chr) < 0)
+        goto exit_monitor;
+    chardevAdded = true;
 
-    if (qemuMonitorAddDevice(priv->mon, devstr) < 0) {
-        /* detach associated chardev on error */
-        qemuMonitorDetachCharDev(priv->mon, charAlias);
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
-        goto audit;
-    }
+    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+        goto exit_monitor;
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         goto audit;
@@ -1548,6 +1545,18 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     VIR_FREE(charAlias);
     VIR_FREE(devstr);
     return ret;
+
+ exit_monitor:
+    orig_err = virSaveLastError();
+    /* detach associated chardev on error */
+    if (chardevAdded)
+        ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
+    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    goto audit;
 }
 
 static int
