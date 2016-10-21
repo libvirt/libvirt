@@ -1831,6 +1831,18 @@ virDomainUSBAddressAssign(virDomainUSBAddressSetPtr addrs,
 
 
 int
+virDomainUSBAddressPresent(virDomainDeviceInfoPtr info,
+                           void *data ATTRIBUTE_UNUSED)
+{
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB &&
+        virDomainUSBAddressPortIsValid(info->addr.usb.port))
+        return 0;
+
+    return -1;
+}
+
+
+int
 virDomainUSBAddressReserve(virDomainDeviceInfoPtr info,
                            void *data)
 {

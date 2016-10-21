@@ -301,6 +301,10 @@ virDomainUSBAddressCountAllPorts(virDomainDefPtr def);
 void virDomainUSBAddressSetFree(virDomainUSBAddressSetPtr addrs);
 
 int
+virDomainUSBAddressPresent(virDomainDeviceInfoPtr info,
+                           void *data)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int
 virDomainUSBAddressReserve(virDomainDeviceInfoPtr info,
                            void *data)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);

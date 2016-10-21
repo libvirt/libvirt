@@ -1750,11 +1750,23 @@ qemuDomainUSBAddressAddHubs(virDomainDefPtr def)
 
 static int
 qemuDomainAssignUSBAddresses(virDomainDefPtr def,
-                             virDomainObjPtr obj)
+                             virDomainObjPtr obj,
+                             bool newDomain)
 {
     int ret = -1;
     virDomainUSBAddressSetPtr addrs = NULL;
     qemuDomainObjPrivatePtr priv = NULL;
+
+    if (!newDomain) {
+        /* only create the address cache for:
+         *  new domains
+         *  domains that already have all the addresses specified
+         * otherwise libvirt's attempt to recreate the USB topology via
+         * QEMU command line might fail */
+        if (virDomainUSBDeviceDefForeach(def, virDomainUSBAddressPresent, NULL,
+                                         false) < 0)
+            return 0;
+    }
 
     if (!(addrs = virDomainUSBAddressSetCreate()))
         goto cleanup;
@@ -1812,7 +1824,7 @@ qemuDomainAssignAddresses(virDomainDefPtr def,
     if (qemuDomainAssignPCIAddresses(def, qemuCaps, obj) < 0)
         return -1;
 
-    if (newDomain && qemuDomainAssignUSBAddresses(def, obj) < 0)
+    if (qemuDomainAssignUSBAddresses(def, obj, newDomain) < 0)
         return -1;
 
     return 0;

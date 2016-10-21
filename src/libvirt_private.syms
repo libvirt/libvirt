@@ -116,6 +116,7 @@ virDomainUSBAddressEnsure;
 virDomainUSBAddressPortFormat;
 virDomainUSBAddressPortFormatBuf;
 virDomainUSBAddressPortIsValid;
+virDomainUSBAddressPresent;
 virDomainUSBAddressRelease;
 virDomainUSBAddressReserve;
 virDomainUSBAddressSetAddControllers;
