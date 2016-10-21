@@ -968,7 +968,7 @@ virSecurityDACRestoreChardevCallback(virDomainDefPtr def,
 {
     virSecurityManagerPtr mgr = opaque;
 
-    return virSecurityDACRestoreChardevLabel(mgr, def, dev, &dev->source);
+    return virSecurityDACRestoreChardevLabel(mgr, def, dev, dev->source);
 }
 
 
@@ -1139,7 +1139,7 @@ virSecurityDACSetChardevCallback(virDomainDefPtr def,
 {
     virSecurityManagerPtr mgr = opaque;
 
-    return virSecurityDACSetChardevLabel(mgr, def, dev, &dev->source);
+    return virSecurityDACSetChardevLabel(mgr, def, dev, dev->source);
 }
 
 

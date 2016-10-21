@@ -196,7 +196,7 @@ qemuSetupChardevCgroup(virDomainDefPtr def ATTRIBUTE_UNUSED,
 {
     virDomainObjPtr vm = opaque;
 
-    return qemuSetupChrSourceCgroup(vm, &dev->source);
+    return qemuSetupChrSourceCgroup(vm, dev->source);
 }
 
 

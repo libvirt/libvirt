@@ -1080,7 +1080,7 @@ bhyveDomainOpenConsole(virDomainPtr dom,
 
     chr = vm->def->serials[0];
 
-    if (virFDStreamOpenPTY(st, chr->source.data.nmdm.slave,
+    if (virFDStreamOpenPTY(st, chr->source->data.nmdm.slave,
                            0, 0, O_RDWR) < 0)
         goto cleanup;
 

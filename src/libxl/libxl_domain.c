@@ -392,7 +392,7 @@ libxlDomainDefPostParse(virDomainDefPtr def,
         if (!(chrdef = virDomainChrDefNew(NULL)))
             return -1;
 
-        chrdef->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
+        chrdef->source->type = VIR_DOMAIN_CHR_TYPE_PTY;
         chrdef->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
         chrdef->target.port = 0;
         chrdef->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN;
@@ -987,7 +987,7 @@ libxlConsoleCallback(libxl_ctx *ctx, libxl_event *ev, void *for_callback)
             chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
             chr = vm->def->serials[0];
 
-        if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
+        if (chr->source->type == VIR_DOMAIN_CHR_TYPE_PTY) {
             libxl_console_type console_type;
 
             console_type =
@@ -997,9 +997,9 @@ libxlConsoleCallback(libxl_ctx *ctx, libxl_event *ev, void *for_callback)
                                         chr->target.port, console_type,
                                         &console);
             if (!ret) {
-                VIR_FREE(chr->source.data.file.path);
+                VIR_FREE(chr->source->data.file.path);
                 if (console && console[0] != '\0') {
-                    ignore_value(VIR_STRDUP(chr->source.data.file.path,
+                    ignore_value(VIR_STRDUP(chr->source->data.file.path,
                                             console));
                 }
             }
@@ -1010,17 +1010,17 @@ libxlConsoleCallback(libxl_ctx *ctx, libxl_event *ev, void *for_callback)
         chr = vm->def->serials[i];
 
         ignore_value(virAsprintf(&chr->info.alias, "serial%zd", i));
-        if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
-            if (chr->source.data.file.path)
+        if (chr->source->type == VIR_DOMAIN_CHR_TYPE_PTY) {
+            if (chr->source->data.file.path)
                 continue;
             ret = libxl_console_get_tty(ctx, ev->domid,
                                         chr->target.port,
                                         LIBXL_CONSOLE_TYPE_SERIAL,
                                         &console);
             if (!ret) {
-                VIR_FREE(chr->source.data.file.path);
+                VIR_FREE(chr->source->data.file.path);
                 if (console && console[0] != '\0') {
-                    ignore_value(VIR_STRDUP(chr->source.data.file.path,
+                    ignore_value(VIR_STRDUP(chr->source->data.file.path,
                                             console));
                 }
             }
@@ -1075,7 +1075,7 @@ libxlDomainCreateChannelPTY(virDomainDefPtr def, libxl_ctx *ctx)
         int ret;
 
         chr = def->channels[i];
-        if (chr->source.type != VIR_DOMAIN_CHR_TYPE_PTY)
+        if (chr->source->type != VIR_DOMAIN_CHR_TYPE_PTY)
             continue;
 
         ret = libxl_device_channel_getinfo(ctx, def->id, &x_channels[i],
@@ -1083,8 +1083,8 @@ libxlDomainCreateChannelPTY(virDomainDefPtr def, libxl_ctx *ctx)
 
         if (!ret && channelinfo.u.pty.path &&
             channelinfo.u.pty.path != '\0') {
-                VIR_FREE(chr->source.data.file.path);
-                ignore_value(VIR_STRDUP(chr->source.data.file.path,
+                VIR_FREE(chr->source->data.file.path);
+                ignore_value(VIR_STRDUP(chr->source->data.file.path,
                                         channelinfo.u.pty.path));
             }
     }

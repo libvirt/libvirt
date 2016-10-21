@@ -202,17 +202,17 @@ testSELinuxLoadDef(const char *testname)
     }
 
     for (i = 0; i < def->nserials; i++) {
-        if (def->serials[i]->source.type != VIR_DOMAIN_CHR_TYPE_FILE &&
-            def->serials[i]->source.type != VIR_DOMAIN_CHR_TYPE_PIPE &&
-            def->serials[i]->source.type != VIR_DOMAIN_CHR_TYPE_DEV &&
-            def->serials[i]->source.type != VIR_DOMAIN_CHR_TYPE_UNIX)
+        if (def->serials[i]->source->type != VIR_DOMAIN_CHR_TYPE_FILE &&
+            def->serials[i]->source->type != VIR_DOMAIN_CHR_TYPE_PIPE &&
+            def->serials[i]->source->type != VIR_DOMAIN_CHR_TYPE_DEV &&
+            def->serials[i]->source->type != VIR_DOMAIN_CHR_TYPE_UNIX)
             continue;
 
-        if (def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_UNIX) {
-            if (testSELinuxMungePath(&def->serials[i]->source.data.nix.path) < 0)
+        if (def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_UNIX) {
+            if (testSELinuxMungePath(&def->serials[i]->source->data.nix.path) < 0)
                 goto cleanup;
         } else {
-            if (testSELinuxMungePath(&def->serials[i]->source.data.file.path) < 0)
+            if (testSELinuxMungePath(&def->serials[i]->source->data.file.path) < 0)
                 goto cleanup;
         }
     }

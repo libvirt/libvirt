@@ -709,7 +709,7 @@ lxcCreateConsoles(virDomainDefPtr def, virConfPtr properties)
         console->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE;
         console->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LXC;
         console->target.port = i;
-        console->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
+        console->source->type = VIR_DOMAIN_CHR_TYPE_PTY;
 
         def->consoles[i] = console;
     }

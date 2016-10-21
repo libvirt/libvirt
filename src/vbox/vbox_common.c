@@ -1430,7 +1430,7 @@ vboxAttachSerial(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         ISerialPort *serialPort = NULL;
         PRUnichar *pathUtf16 = NULL;
 
-        VIR_DEBUG("SerialPort(%zu): Type: %d", i, def->serials[i]->source.type);
+        VIR_DEBUG("SerialPort(%zu): Type: %d", i, def->serials[i]->source->type);
         VIR_DEBUG("SerialPort(%zu): target.port: %d", i,
               def->serials[i]->target.port);
 
@@ -1440,8 +1440,8 @@ vboxAttachSerial(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
 
         gVBoxAPI.UISerialPort.SetEnabled(serialPort, 1);
 
-        if (def->serials[i]->source.data.file.path) {
-            VBOX_UTF8_TO_UTF16(def->serials[i]->source.data.file.path,
+        if (def->serials[i]->source->data.file.path) {
+            VBOX_UTF8_TO_UTF16(def->serials[i]->source->data.file.path,
                                &pathUtf16);
             gVBoxAPI.UISerialPort.SetPath(serialPort, pathUtf16);
         }
@@ -1459,20 +1459,20 @@ vboxAttachSerial(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
             gVBoxAPI.UISerialPort.SetIRQ(serialPort, 4);
             gVBoxAPI.UISerialPort.SetIOBase(serialPort, 1016);
             VIR_DEBUG(" serialPort-%zu irq: %d, iobase 0x%x, path: %s",
-                  i, 4, 1016, def->serials[i]->source.data.file.path);
+                  i, 4, 1016, def->serials[i]->source->data.file.path);
         } else if (def->serials[i]->target.port == 1) {
             gVBoxAPI.UISerialPort.SetIRQ(serialPort, 3);
             gVBoxAPI.UISerialPort.SetIOBase(serialPort, 760);
             VIR_DEBUG(" serialPort-%zu irq: %d, iobase 0x%x, path: %s",
-                  i, 3, 760, def->serials[i]->source.data.file.path);
+                  i, 3, 760, def->serials[i]->source->data.file.path);
         }
 
-        if (def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV) {
+        if (def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_DEV) {
             gVBoxAPI.UISerialPort.SetHostMode(serialPort, PortMode_HostDevice);
-        } else if (def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_PIPE) {
+        } else if (def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) {
             gVBoxAPI.UISerialPort.SetHostMode(serialPort, PortMode_HostPipe);
         } else if (gVBoxAPI.APIVersion >= 2002051 &&
-                   def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_FILE) {
+                   def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_FILE) {
             /* PortMode RawFile is used for vbox 3.0 or later */
             gVBoxAPI.UISerialPort.SetHostMode(serialPort, PortMode_RawFile);
         } else {
@@ -1505,7 +1505,7 @@ vboxAttachParallel(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         IParallelPort *parallelPort = NULL;
         PRUnichar *pathUtf16 = NULL;
 
-        VIR_DEBUG("ParallelPort(%zu): Type: %d", i, def->parallels[i]->source.type);
+        VIR_DEBUG("ParallelPort(%zu): Type: %d", i, def->parallels[i]->source->type);
         VIR_DEBUG("ParallelPort(%zu): target.port: %d", i,
               def->parallels[i]->target.port);
 
@@ -1513,28 +1513,28 @@ vboxAttachParallel(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine)
         if (!parallelPort)
             continue;
 
-        VBOX_UTF8_TO_UTF16(def->parallels[i]->source.data.file.path, &pathUtf16);
+        VBOX_UTF8_TO_UTF16(def->parallels[i]->source->data.file.path, &pathUtf16);
 
         /* For now hard code the parallel ports to
          * LPT1 (Base Addr: 0x378 (decimal: 888), IRQ: 7)
          * LPT2 (Base Addr: 0x278 (decimal: 632), IRQ: 5)
          * TODO: make this more flexible
          */
-        if ((def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV) ||
-            (def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY) ||
-            (def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_FILE) ||
-            (def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PIPE)) {
+        if ((def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_DEV) ||
+            (def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_PTY) ||
+            (def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_FILE) ||
+            (def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_PIPE)) {
             gVBoxAPI.UIParallelPort.SetPath(parallelPort, pathUtf16);
             if (i == 0) {
                 gVBoxAPI.UIParallelPort.SetIRQ(parallelPort, 7);
                 gVBoxAPI.UIParallelPort.SetIOBase(parallelPort, 888);
                 VIR_DEBUG(" parallePort-%zu irq: %d, iobase 0x%x, path: %s",
-                      i, 7, 888, def->parallels[i]->source.data.file.path);
+                      i, 7, 888, def->parallels[i]->source->data.file.path);
             } else if (i == 1) {
                 gVBoxAPI.UIParallelPort.SetIRQ(parallelPort, 5);
                 gVBoxAPI.UIParallelPort.SetIOBase(parallelPort, 632);
                 VIR_DEBUG(" parallePort-%zu irq: %d, iobase 0x%x, path: %s",
-                      i, 5, 632, def->parallels[i]->source.data.file.path);
+                      i, 5, 632, def->parallels[i]->source->data.file.path);
             }
         }
 
@@ -3706,15 +3706,15 @@ vboxDumpSerial(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine, PRU
 
                 gVBoxAPI.UISerialPort.GetHostMode(serialPort, &hostMode);
                 if (hostMode == PortMode_HostPipe) {
-                    def->serials[serialPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_PIPE;
+                    def->serials[serialPortIncCount]->source->type = VIR_DOMAIN_CHR_TYPE_PIPE;
                 } else if (hostMode == PortMode_HostDevice) {
-                    def->serials[serialPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
+                    def->serials[serialPortIncCount]->source->type = VIR_DOMAIN_CHR_TYPE_DEV;
                 } else if (gVBoxAPI.APIVersion >= 2002051 &&
                            hostMode == PortMode_RawFile) {
                     /* PortMode RawFile is used for vbox 3.0 or later */
-                    def->serials[serialPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_FILE;
+                    def->serials[serialPortIncCount]->source->type = VIR_DOMAIN_CHR_TYPE_FILE;
                 } else {
-                    def->serials[serialPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_NULL;
+                    def->serials[serialPortIncCount]->source->type = VIR_DOMAIN_CHR_TYPE_NULL;
                 }
 
                 def->serials[serialPortIncCount]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
@@ -3731,7 +3731,7 @@ vboxDumpSerial(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine, PRU
 
                 if (pathUtf16) {
                     VBOX_UTF16_TO_UTF8(pathUtf16, &path);
-                    ignore_value(VIR_STRDUP(def->serials[serialPortIncCount]->source.data.file.path, path));
+                    ignore_value(VIR_STRDUP(def->serials[serialPortIncCount]->source->data.file.path, path));
                 }
 
                 serialPortIncCount++;
@@ -3800,13 +3800,13 @@ vboxDumpParallel(virDomainDefPtr def, vboxGlobalData *data, IMachine *machine, P
                     def->parallels[parallelPortIncCount]->target.port = 1;
                 }
 
-                def->parallels[parallelPortIncCount]->source.type = VIR_DOMAIN_CHR_TYPE_FILE;
+                def->parallels[parallelPortIncCount]->source->type = VIR_DOMAIN_CHR_TYPE_FILE;
                 def->parallels[parallelPortIncCount]->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
 
                 gVBoxAPI.UIParallelPort.GetPath(parallelPort, &pathUtf16);
 
                 VBOX_UTF16_TO_UTF8(pathUtf16, &path);
-                ignore_value(VIR_STRDUP(def->parallels[parallelPortIncCount]->source.data.file.path, path));
+                ignore_value(VIR_STRDUP(def->parallels[parallelPortIncCount]->source->data.file.path, path));
 
                 parallelPortIncCount++;
 

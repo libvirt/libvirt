@@ -1246,7 +1246,7 @@ int virLXCProcessStart(virConnectPtr conn,
     }
 
     for (i = 0; i < vm->def->nconsoles; i++) {
-        if (vm->def->consoles[i]->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
+        if (vm->def->consoles[i]->source->type != VIR_DOMAIN_CHR_TYPE_PTY) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Only PTY console types are supported"));
             return -1;
@@ -1362,8 +1362,8 @@ int virLXCProcessStart(virConnectPtr conn,
             goto cleanup;
         }
 
-        VIR_FREE(vm->def->consoles[i]->source.data.file.path);
-        vm->def->consoles[i]->source.data.file.path = ttyPath;
+        VIR_FREE(vm->def->consoles[i]->source->data.file.path);
+        vm->def->consoles[i]->source->data.file.path = ttyPath;
 
         VIR_FREE(vm->def->consoles[i]->info.alias);
         if (virAsprintf(&vm->def->consoles[i]->info.alias, "console%zu", i) < 0)

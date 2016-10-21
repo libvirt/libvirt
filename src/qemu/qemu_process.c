@@ -235,7 +235,7 @@ qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
     virObjectUnlock(vm);
 
     agent = qemuAgentOpen(vm,
-                          &config->source,
+                          config->source,
                           &agentCallbacks);
 
     virObjectLock(vm);
@@ -1836,7 +1836,7 @@ qemuProcessLookupPTYs(virDomainDefPtr def,
         virDomainChrDefPtr chr = devices[i];
         bool chardevfmt = virQEMUCapsSupportsChardev(def, qemuCaps, chr);
 
-        if (chr->source.type == VIR_DOMAIN_CHR_TYPE_PTY) {
+        if (chr->source->type == VIR_DOMAIN_CHR_TYPE_PTY) {
             char id[32];
             qemuMonitorChardevInfoPtr entry;
 
@@ -1851,7 +1851,7 @@ qemuProcessLookupPTYs(virDomainDefPtr def,
 
             entry = virHashLookup(info, id);
             if (!entry || !entry->ptyPath) {
-                if (chr->source.data.file.path == NULL) {
+                if (chr->source->data.file.path == NULL) {
                     /* neither the log output nor 'info chardev' had a
                      * pty path for this chardev, report an error
                      */
@@ -1866,8 +1866,8 @@ qemuProcessLookupPTYs(virDomainDefPtr def,
                 }
             }
 
-            VIR_FREE(chr->source.data.file.path);
-            if (VIR_STRDUP(chr->source.data.file.path, entry->ptyPath) < 0)
+            VIR_FREE(chr->source->data.file.path);
+            if (VIR_STRDUP(chr->source->data.file.path, entry->ptyPath) < 0)
                 return -1;
         }
     }
@@ -1906,8 +1906,8 @@ qemuProcessFindCharDevicePTYsMonitor(virDomainObjPtr vm,
             chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL) {
             /* yes, the first console is just an alias for serials[0] */
             i = 1;
-            if (virDomainChrSourceDefCopy(&chr->source,
-                                          &((vm->def->serials[0])->source)) < 0)
+            if (virDomainChrSourceDefCopy(chr->source,
+                                          ((vm->def->serials[0])->source)) < 0)
                 return -1;
         }
     }
@@ -2500,14 +2500,14 @@ qemuProcessPrepareChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
                                 void *opaque ATTRIBUTE_UNUSED)
 {
     int fd;
-    if (dev->source.type != VIR_DOMAIN_CHR_TYPE_FILE)
+    if (dev->source->type != VIR_DOMAIN_CHR_TYPE_FILE)
         return 0;
 
-    if ((fd = open(dev->source.data.file.path,
+    if ((fd = open(dev->source->data.file.path,
                    O_CREAT | O_APPEND, S_IRUSR|S_IWUSR)) < 0) {
         virReportSystemError(errno,
                              _("Unable to pre-create chardev file '%s'"),
-                             dev->source.data.file.path);
+                             dev->source->data.file.path);
         return -1;
     }
 
@@ -2522,10 +2522,10 @@ qemuProcessCleanupChardevDevice(virDomainDefPtr def ATTRIBUTE_UNUSED,
                                 virDomainChrDefPtr dev,
                                 void *opaque ATTRIBUTE_UNUSED)
 {
-    if (dev->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
-        dev->source.data.nix.listen &&
-        dev->source.data.nix.path)
-        unlink(dev->source.data.nix.path);
+    if (dev->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+        dev->source->data.nix.listen &&
+        dev->source->data.nix.path)
+        unlink(dev->source->data.nix.path);
 
     return 0;
 }

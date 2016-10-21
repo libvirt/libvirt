@@ -208,8 +208,8 @@ libxlMakeDomCreateInfo(libxl_ctx *ctx,
 static int
 libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
 {
-    virDomainChrSourceDef srcdef = def->source;
-    const char *type = virDomainChrTypeToString(srcdef.type);
+    virDomainChrSourceDefPtr srcdef = def->source;
+    const char *type = virDomainChrTypeToString(srcdef->type);
 
     if (!type) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -217,7 +217,7 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
         return -1;
     }
 
-    switch (srcdef.type) {
+    switch (srcdef->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_VC:
@@ -228,19 +228,19 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (virAsprintf(buf, "%s:%s", type, srcdef.data.file.path) < 0)
+        if (virAsprintf(buf, "%s:%s", type, srcdef->data.file.path) < 0)
             return -1;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        if (VIR_STRDUP(*buf, srcdef.data.file.path) < 0)
+        if (VIR_STRDUP(*buf, srcdef->data.file.path) < 0)
             return -1;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP: {
-        const char *connectHost = srcdef.data.udp.connectHost;
-        const char *bindHost = srcdef.data.udp.bindHost;
-        const char *bindService  = srcdef.data.udp.bindService;
+        const char *connectHost = srcdef->data.udp.connectHost;
+        const char *bindHost = srcdef->data.udp.bindHost;
+        const char *bindService  = srcdef->data.udp.bindService;
 
         if (connectHost == NULL)
             connectHost = "";
@@ -251,7 +251,7 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
 
         if (virAsprintf(buf, "udp:%s:%s@%s:%s",
                         connectHost,
-                        srcdef.data.udp.connectService,
+                        srcdef->data.udp.connectService,
                         bindHost,
                         bindService) < 0)
             return -1;
@@ -261,24 +261,24 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
     case VIR_DOMAIN_CHR_TYPE_TCP: {
         const char *prefix;
 
-        if (srcdef.data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET)
+        if (srcdef->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET)
             prefix = "telnet";
         else
             prefix = "tcp";
 
         if (virAsprintf(buf, "%s:%s:%s%s",
                         prefix,
-                        srcdef.data.tcp.host,
-                        srcdef.data.tcp.service,
-                        srcdef.data.tcp.listen ? ",server,nowait" : "") < 0)
+                        srcdef->data.tcp.host,
+                        srcdef->data.tcp.service,
+                        srcdef->data.tcp.listen ? ",server,nowait" : "") < 0)
             return -1;
         break;
     }
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (virAsprintf(buf, "unix:%s%s",
-                        srcdef.data.nix.path,
-                        srcdef.data.nix.listen ? ",server,nowait" : "") < 0)
+                        srcdef->data.nix.path,
+                        srcdef->data.nix.listen ? ",server,nowait" : "") < 0)
             return -1;
         break;
 
@@ -1509,15 +1509,15 @@ libxlPrepareChannel(virDomainChrDefPtr channel,
                     const char *domainName)
 {
     if (channel->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN &&
-        channel->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
-        !channel->source.data.nix.path) {
-        if (virAsprintf(&channel->source.data.nix.path,
+        channel->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+        !channel->source->data.nix.path) {
+        if (virAsprintf(&channel->source->data.nix.path,
                         "%s/%s-%s", channelDir, domainName,
                         channel->target.name ? channel->target.name
                         : "unknown.sock") < 0)
             return -1;
 
-        channel->source.data.nix.listen = true;
+        channel->source->data.nix.listen = true;
     }
 
     return 0;
@@ -1535,14 +1535,14 @@ libxlMakeChannel(virDomainChrDefPtr l_channel,
         return -1;
     }
 
-    switch (l_channel->source.type) {
+    switch (l_channel->source->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
         x_channel->connection = LIBXL_CHANNEL_CONNECTION_PTY;
         break;
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         x_channel->connection = LIBXL_CHANNEL_CONNECTION_SOCKET;
         if (VIR_STRDUP(x_channel->u.socket.path,
-                       l_channel->source.data.nix.path) < 0)
+                       l_channel->source->data.nix.path) < 0)
             return -1;
         break;
     default:

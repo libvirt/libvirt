@@ -2660,10 +2660,10 @@ qemuDomainChrDefDropDefaultPath(virDomainChrDefPtr chr,
 
     if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
         chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
-        chr->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
-        chr->source.data.nix.path &&
-        STRPREFIX(chr->source.data.nix.path, cfg->channelTargetDir)) {
-        VIR_FREE(chr->source.data.nix.path);
+        chr->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+        chr->source->data.nix.path &&
+        STRPREFIX(chr->source->data.nix.path, cfg->channelTargetDir)) {
+        VIR_FREE(chr->source->data.nix.path);
     }
 
     virObjectUnref(cfg);
@@ -6171,15 +6171,15 @@ qemuDomainPrepareChannel(virDomainChrDefPtr channel,
                          const char *domainChannelTargetDir)
 {
     if (channel->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO &&
-        channel->source.type == VIR_DOMAIN_CHR_TYPE_UNIX &&
-        !channel->source.data.nix.path) {
-        if (virAsprintf(&channel->source.data.nix.path,
+        channel->source->type == VIR_DOMAIN_CHR_TYPE_UNIX &&
+        !channel->source->data.nix.path) {
+        if (virAsprintf(&channel->source->data.nix.path,
                         "%s/%s", domainChannelTargetDir,
                         channel->target.name ? channel->target.name
                         : "unknown.sock") < 0)
             return -1;
 
-        channel->source.data.nix.listen = true;
+        channel->source->data.nix.listen = true;
     }
 
     return 0;

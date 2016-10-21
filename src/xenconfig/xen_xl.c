@@ -741,11 +741,11 @@ xenParseXLChannel(virConfPtr conf, virDomainDefPtr def)
                 goto cleanup;
 
             if (STRPREFIX(type, "socket")) {
-                channel->source.type = VIR_DOMAIN_CHR_TYPE_UNIX;
-                channel->source.data.nix.path = path;
-                channel->source.data.nix.listen = 1;
+                channel->source->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+                channel->source->data.nix.path = path;
+                channel->source->data.nix.listen = 1;
             } else if (STRPREFIX(type, "pty")) {
-                channel->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
+                channel->source->type = VIR_DOMAIN_CHR_TYPE_PTY;
                 VIR_FREE(path);
             } else {
                 goto cleanup;
@@ -1442,7 +1442,7 @@ static int
 xenFormatXLChannel(virConfValuePtr list, virDomainChrDefPtr channel)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    int sourceType = channel->source.type;
+    int sourceType = channel->source->type;
     virConfValuePtr val, tmp;
 
     /* connection */
@@ -1454,9 +1454,9 @@ xenFormatXLChannel(virConfValuePtr list, virDomainChrDefPtr channel)
         case VIR_DOMAIN_CHR_TYPE_UNIX:
             virBufferAddLit(&buf, "socket,");
             /* path */
-            if (channel->source.data.nix.path)
+            if (channel->source->data.nix.path)
                 virBufferAsprintf(&buf, "path=%s,",
-                                  channel->source.data.nix.path);
+                                  channel->source->data.nix.path);
             break;
         default:
             goto cleanup;

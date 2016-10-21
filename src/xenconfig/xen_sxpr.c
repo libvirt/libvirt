@@ -196,8 +196,8 @@ xenParseSxprChar(const char *value,
     prefix = value;
 
     if (value[0] == '/') {
-        def->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
-        if (VIR_STRDUP(def->source.data.file.path, value) < 0)
+        def->source->type = VIR_DOMAIN_CHR_TYPE_DEV;
+        if (VIR_STRDUP(def->source->data.file.path, value) < 0)
             goto error;
     } else {
         if ((tmp = strchr(value, ':')) != NULL) {
@@ -206,10 +206,10 @@ xenParseSxprChar(const char *value,
         }
 
         if (STRPREFIX(prefix, "telnet")) {
-            def->source.type = VIR_DOMAIN_CHR_TYPE_TCP;
-            def->source.data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
+            def->source->type = VIR_DOMAIN_CHR_TYPE_TCP;
+            def->source->data.tcp.protocol = VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
         } else {
-            if ((def->source.type = virDomainChrTypeFromString(prefix)) < 0) {
+            if ((def->source->type = virDomainChrTypeFromString(prefix)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("unknown chr device type '%s'"), prefix);
                 goto error;
@@ -217,15 +217,15 @@ xenParseSxprChar(const char *value,
         }
     }
 
-    switch (def->source.type) {
+    switch (def->source->type) {
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        if (VIR_STRDUP(def->source.data.file.path, tty) < 0)
+        if (VIR_STRDUP(def->source->data.file.path, tty) < 0)
             goto error;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
-        if (VIR_STRDUP(def->source.data.file.path, value) < 0)
+        if (VIR_STRDUP(def->source->data.file.path, value) < 0)
             goto error;
         break;
 
@@ -241,17 +241,17 @@ xenParseSxprChar(const char *value,
         }
 
         if (offset != value &&
-            VIR_STRNDUP(def->source.data.tcp.host, value, offset - value) < 0)
+            VIR_STRNDUP(def->source->data.tcp.host, value, offset - value) < 0)
             goto error;
 
         offset2 = strchr(offset, ',');
         offset++;
-        if (VIR_STRNDUP(def->source.data.tcp.service, offset,
+        if (VIR_STRNDUP(def->source->data.tcp.service, offset,
                         offset2 ? offset2 - offset : -1) < 0)
             goto error;
 
         if (offset2 && strstr(offset2, ",server"))
-            def->source.data.tcp.listen = true;
+            def->source->data.tcp.listen = true;
     }
     break;
 
@@ -267,12 +267,12 @@ xenParseSxprChar(const char *value,
         }
 
         if (offset != value &&
-            VIR_STRNDUP(def->source.data.udp.connectHost, value, offset - value) < 0)
+            VIR_STRNDUP(def->source->data.udp.connectHost, value, offset - value) < 0)
             goto error;
 
         offset2 = strchr(offset, '@');
         if (offset2 != NULL) {
-            if (VIR_STRNDUP(def->source.data.udp.connectService,
+            if (VIR_STRNDUP(def->source->data.udp.connectService,
                             offset + 1, offset2 - offset - 1) < 0)
                 goto error;
 
@@ -284,14 +284,14 @@ xenParseSxprChar(const char *value,
             }
 
             if (offset3 > (offset2 + 1) &&
-                VIR_STRNDUP(def->source.data.udp.bindHost,
+                VIR_STRNDUP(def->source->data.udp.bindHost,
                             offset2 + 1, offset3 - offset2 - 1) < 0)
                 goto error;
 
-            if (VIR_STRDUP(def->source.data.udp.bindService, offset3 + 1) < 0)
+            if (VIR_STRDUP(def->source->data.udp.bindService, offset3 + 1) < 0)
                 goto error;
         } else {
-            if (VIR_STRDUP(def->source.data.udp.connectService, offset + 1) < 0)
+            if (VIR_STRDUP(def->source->data.udp.connectService, offset + 1) < 0)
                 goto error;
         }
     }
@@ -300,13 +300,13 @@ xenParseSxprChar(const char *value,
     case VIR_DOMAIN_CHR_TYPE_UNIX:
     {
         const char *offset = strchr(value, ',');
-        if (VIR_STRNDUP(def->source.data.nix.path, value,
+        if (VIR_STRNDUP(def->source->data.nix.path, value,
                         offset ? offset - value : -1) < 0)
             goto error;
 
         if (offset != NULL &&
             strstr(offset, ",server") != NULL)
-            def->source.data.nix.listen = true;
+            def->source->data.nix.listen = true;
     }
     break;
     }
@@ -1630,7 +1630,7 @@ int
 xenFormatSxprChr(virDomainChrDefPtr def,
                  virBufferPtr buf)
 {
-    const char *type = virDomainChrTypeToString(def->source.type);
+    const char *type = virDomainChrTypeToString(def->source->type);
 
     if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1638,7 +1638,7 @@ xenFormatSxprChr(virDomainChrDefPtr def,
         return -1;
     }
 
-    switch (def->source.type) {
+    switch (def->source->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_VC:
@@ -1649,42 +1649,42 @@ xenFormatSxprChr(virDomainChrDefPtr def,
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         virBufferAsprintf(buf, "%s:", type);
-        virBufferEscapeSexpr(buf, "%s", def->source.data.file.path);
+        virBufferEscapeSexpr(buf, "%s", def->source->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        virBufferEscapeSexpr(buf, "%s", def->source.data.file.path);
+        virBufferEscapeSexpr(buf, "%s", def->source->data.file.path);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
         virBufferAsprintf(buf, "%s:%s:%s%s",
-                          (def->source.data.tcp.protocol
+                          (def->source->data.tcp.protocol
                            == VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW ?
                            "tcp" : "telnet"),
-                          (def->source.data.tcp.host ?
-                           def->source.data.tcp.host : ""),
-                          (def->source.data.tcp.service ?
-                           def->source.data.tcp.service : ""),
-                          (def->source.data.tcp.listen ?
+                          (def->source->data.tcp.host ?
+                           def->source->data.tcp.host : ""),
+                          (def->source->data.tcp.service ?
+                           def->source->data.tcp.service : ""),
+                          (def->source->data.tcp.listen ?
                            ",server,nowait" : ""));
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
         virBufferAsprintf(buf, "%s:%s:%s@%s:%s", type,
-                          (def->source.data.udp.connectHost ?
-                           def->source.data.udp.connectHost : ""),
-                          (def->source.data.udp.connectService ?
-                           def->source.data.udp.connectService : ""),
-                          (def->source.data.udp.bindHost ?
-                           def->source.data.udp.bindHost : ""),
-                          (def->source.data.udp.bindService ?
-                           def->source.data.udp.bindService : ""));
+                          (def->source->data.udp.connectHost ?
+                           def->source->data.udp.connectHost : ""),
+                          (def->source->data.udp.connectService ?
+                           def->source->data.udp.connectService : ""),
+                          (def->source->data.udp.bindHost ?
+                           def->source->data.udp.bindHost : ""),
+                          (def->source->data.udp.bindService ?
+                           def->source->data.udp.bindService : ""));
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         virBufferAsprintf(buf, "%s:", type);
-        virBufferEscapeSexpr(buf, "%s", def->source.data.nix.path);
-        if (def->source.data.nix.listen)
+        virBufferEscapeSexpr(buf, "%s", def->source->data.nix.path);
+        if (def->source->data.nix.listen)
             virBufferAddLit(buf, ",server,nowait");
         break;
 

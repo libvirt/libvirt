@@ -290,9 +290,9 @@ bhyveParseBhyveLPCArg(virDomainDefPtr def,
         if (!(chr = virDomainChrDefNew(NULL)))
             goto error;
 
-        chr->source.type = VIR_DOMAIN_CHR_TYPE_NMDM;
-        chr->source.data.nmdm.master = NULL;
-        chr->source.data.nmdm.slave = NULL;
+        chr->source->type = VIR_DOMAIN_CHR_TYPE_NMDM;
+        chr->source->data.nmdm.master = NULL;
+        chr->source->data.nmdm.slave = NULL;
         chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
 
         if (!STRPREFIX(param, "/dev/nmdm")) {
@@ -302,12 +302,12 @@ bhyveParseBhyveLPCArg(virDomainDefPtr def,
                 goto error;
         }
 
-        if (VIR_STRDUP(chr->source.data.nmdm.master, param) < 0) {
+        if (VIR_STRDUP(chr->source->data.nmdm.master, param) < 0) {
             virDomainChrDefFree(chr);
             goto error;
         }
 
-        if (VIR_STRDUP(chr->source.data.nmdm.slave, chr->source.data.file.path)
+        if (VIR_STRDUP(chr->source->data.nmdm.slave, chr->source->data.file.path)
             < 0) {
             virDomainChrDefFree(chr);
             goto error;
@@ -315,19 +315,19 @@ bhyveParseBhyveLPCArg(virDomainDefPtr def,
 
         /* If the last character of the master is 'A', the slave will be 'B'
          * and vice versa */
-        last = strlen(chr->source.data.nmdm.master) - 1;
-        switch (chr->source.data.file.path[last]) {
+        last = strlen(chr->source->data.nmdm.master) - 1;
+        switch (chr->source->data.file.path[last]) {
             case 'A':
-                chr->source.data.nmdm.slave[last] = 'B';
+                chr->source->data.nmdm.slave[last] = 'B';
                 break;
             case 'B':
-                chr->source.data.nmdm.slave[last] = 'A';
+                chr->source->data.nmdm.slave[last] = 'A';
                 break;
             default:
                 virReportError(VIR_ERR_OPERATION_FAILED,
                                _("Failed to set slave for %s: last letter not "
                                  "'A' or 'B'"),
-                               NULLSTR(chr->source.data.nmdm.master));
+                               NULLSTR(chr->source->data.nmdm.master));
                 goto error;
         }
 

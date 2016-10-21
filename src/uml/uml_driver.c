@@ -244,8 +244,8 @@ umlIdentifyOneChrPTY(struct uml_driver *driver,
         return -1;
 
     if (res && STRPREFIX(res, "pts:")) {
-        VIR_FREE(def->source.data.file.path);
-        if (VIR_STRDUP(def->source.data.file.path, res + 4) < 0) {
+        VIR_FREE(def->source->data.file.path);
+        if (VIR_STRDUP(def->source->data.file.path, res + 4) < 0) {
             VIR_FREE(res);
             VIR_FREE(cmd);
             return -1;
@@ -274,13 +274,13 @@ umlIdentifyChrPTY(struct uml_driver *driver,
     size_t i;
 
     for (i = 0; i < dom->def->nconsoles; i++)
-        if (dom->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY)
+        if (dom->def->consoles[i]->source->type == VIR_DOMAIN_CHR_TYPE_PTY)
         if (umlIdentifyOneChrPTY(driver, dom,
                                  dom->def->consoles[i], "con") < 0)
             return -1;
 
     for (i = 0; i < dom->def->nserials; i++)
-        if (dom->def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
+        if (dom->def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_PTY &&
             umlIdentifyOneChrPTY(driver, dom,
                                  dom->def->serials[i], "ssl") < 0)
             return -1;
@@ -2624,14 +2624,14 @@ umlDomainOpenConsole(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (chr->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
+    if (chr->source->type != VIR_DOMAIN_CHR_TYPE_PTY) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                         _("character device %s is not using a PTY"),
                        dev_name ? dev_name : NULLSTR(chr->info.alias));
         goto cleanup;
     }
 
-    if (virFDStreamOpenFile(st, chr->source.data.file.path,
+    if (virFDStreamOpenFile(st, chr->source->data.file.path,
                             0, 0, O_RDWR) < 0)
         goto cleanup;
 

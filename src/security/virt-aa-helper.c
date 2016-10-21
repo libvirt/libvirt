@@ -946,60 +946,60 @@ get_files(vahControl * ctl)
 
     for (i = 0; i < ctl->def->nserials; i++)
         if (ctl->def->serials[i] &&
-            (ctl->def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY ||
-             ctl->def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV ||
-             ctl->def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_FILE ||
-             ctl->def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_UNIX ||
-             ctl->def->serials[i]->source.type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
-            ctl->def->serials[i]->source.data.file.path &&
-            ctl->def->serials[i]->source.data.file.path[0] != '\0')
+            (ctl->def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_PTY ||
+             ctl->def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_DEV ||
+             ctl->def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_FILE ||
+             ctl->def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_UNIX ||
+             ctl->def->serials[i]->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
+            ctl->def->serials[i]->source->data.file.path &&
+            ctl->def->serials[i]->source->data.file.path[0] != '\0')
             if (vah_add_file_chardev(&buf,
-                                     ctl->def->serials[i]->source.data.file.path,
+                                     ctl->def->serials[i]->source->data.file.path,
                                      "rw",
-                                     ctl->def->serials[i]->source.type) != 0)
+                                     ctl->def->serials[i]->source->type) != 0)
                 goto cleanup;
 
     for (i = 0; i < ctl->def->nconsoles; i++)
         if (ctl->def->consoles[i] &&
-            (ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY ||
-             ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV ||
-             ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_FILE ||
-             ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_UNIX ||
-             ctl->def->consoles[i]->source.type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
-            ctl->def->consoles[i]->source.data.file.path &&
-            ctl->def->consoles[i]->source.data.file.path[0] != '\0')
+            (ctl->def->consoles[i]->source->type == VIR_DOMAIN_CHR_TYPE_PTY ||
+             ctl->def->consoles[i]->source->type == VIR_DOMAIN_CHR_TYPE_DEV ||
+             ctl->def->consoles[i]->source->type == VIR_DOMAIN_CHR_TYPE_FILE ||
+             ctl->def->consoles[i]->source->type == VIR_DOMAIN_CHR_TYPE_UNIX ||
+             ctl->def->consoles[i]->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
+            ctl->def->consoles[i]->source->data.file.path &&
+            ctl->def->consoles[i]->source->data.file.path[0] != '\0')
             if (vah_add_file(&buf,
-                             ctl->def->consoles[i]->source.data.file.path, "rw") != 0)
+                             ctl->def->consoles[i]->source->data.file.path, "rw") != 0)
                 goto cleanup;
 
     for (i = 0; i < ctl->def->nparallels; i++)
         if (ctl->def->parallels[i] &&
-            (ctl->def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY ||
-             ctl->def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV ||
-             ctl->def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_FILE ||
-             ctl->def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_UNIX ||
-             ctl->def->parallels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
-            ctl->def->parallels[i]->source.data.file.path &&
-            ctl->def->parallels[i]->source.data.file.path[0] != '\0')
+            (ctl->def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_PTY ||
+             ctl->def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_DEV ||
+             ctl->def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_FILE ||
+             ctl->def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_UNIX ||
+             ctl->def->parallels[i]->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
+            ctl->def->parallels[i]->source->data.file.path &&
+            ctl->def->parallels[i]->source->data.file.path[0] != '\0')
             if (vah_add_file_chardev(&buf,
-                                     ctl->def->parallels[i]->source.data.file.path,
+                                     ctl->def->parallels[i]->source->data.file.path,
                                      "rw",
-                                     ctl->def->parallels[i]->source.type) != 0)
+                                     ctl->def->parallels[i]->source->type) != 0)
                 goto cleanup;
 
     for (i = 0; i < ctl->def->nchannels; i++)
         if (ctl->def->channels[i] &&
-            (ctl->def->channels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PTY ||
-             ctl->def->channels[i]->source.type == VIR_DOMAIN_CHR_TYPE_DEV ||
-             ctl->def->channels[i]->source.type == VIR_DOMAIN_CHR_TYPE_FILE ||
-             ctl->def->channels[i]->source.type == VIR_DOMAIN_CHR_TYPE_UNIX ||
-             ctl->def->channels[i]->source.type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
-            ctl->def->channels[i]->source.data.file.path &&
-            ctl->def->channels[i]->source.data.file.path[0] != '\0')
+            (ctl->def->channels[i]->source->type == VIR_DOMAIN_CHR_TYPE_PTY ||
+             ctl->def->channels[i]->source->type == VIR_DOMAIN_CHR_TYPE_DEV ||
+             ctl->def->channels[i]->source->type == VIR_DOMAIN_CHR_TYPE_FILE ||
+             ctl->def->channels[i]->source->type == VIR_DOMAIN_CHR_TYPE_UNIX ||
+             ctl->def->channels[i]->source->type == VIR_DOMAIN_CHR_TYPE_PIPE) &&
+            ctl->def->channels[i]->source->data.file.path &&
+            ctl->def->channels[i]->source->data.file.path[0] != '\0')
             if (vah_add_file_chardev(&buf,
-                                     ctl->def->channels[i]->source.data.file.path,
+                                     ctl->def->channels[i]->source->data.file.path,
                                      "rw",
-                                     ctl->def->channels[i]->source.type) != 0)
+                                     ctl->def->channels[i]->source->type) != 0)
                 goto cleanup;
 
     if (ctl->def->os.kernel)

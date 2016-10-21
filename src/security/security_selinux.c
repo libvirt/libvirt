@@ -1934,7 +1934,7 @@ virSecuritySELinuxRestoreSecurityChardevCallback(virDomainDefPtr def,
         dev->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
         return 0;
 
-    return virSecuritySELinuxRestoreChardevLabel(mgr, def, dev, &dev->source);
+    return virSecuritySELinuxRestoreChardevLabel(mgr, def, dev, dev->source);
 }
 
 
@@ -2323,7 +2323,7 @@ virSecuritySELinuxSetSecurityChardevCallback(virDomainDefPtr def,
         dev->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL)
         return 0;
 
-    return virSecuritySELinuxSetChardevLabel(mgr, def, dev, &dev->source);
+    return virSecuritySELinuxSetChardevLabel(mgr, def, dev, dev->source);
 }
 
 

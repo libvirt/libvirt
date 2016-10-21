@@ -1700,7 +1700,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
     virErrorPtr orig_err;
     virDomainDefPtr vmdef = vm->def;
     char *devstr = NULL;
-    virDomainChrSourceDefPtr dev = &chr->source;
+    virDomainChrSourceDefPtr dev = chr->source;
     char *charAlias = NULL;
     bool chardevAttached = false;
     bool tlsobjAdded = false;
@@ -1753,7 +1753,7 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
         tlsobjAdded = true;
     }
 
-    if (qemuMonitorAttachCharDev(priv->mon, charAlias, &chr->source) < 0)
+    if (qemuMonitorAttachCharDev(priv->mon, charAlias, chr->source) < 0)
         goto exit_monitor;
     chardevAttached = true;
 
@@ -4403,7 +4403,7 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
     if (!(charAlias = qemuAliasChardevFromDevAlias(tmpChr->info.alias)))
         goto cleanup;
 
-    if (tmpChr->source.type == VIR_DOMAIN_CHR_TYPE_TCP &&
+    if (tmpChr->source->type == VIR_DOMAIN_CHR_TYPE_TCP &&
         cfg->chardevTLS &&
         !(objAlias = qemuAliasTLSObjFromChardevAlias(charAlias)))
         goto cleanup;

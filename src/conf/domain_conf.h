@@ -1132,7 +1132,7 @@ struct _virDomainChrDef {
 
     virDomainChrDeviceState state;
 
-    virDomainChrSourceDef source;
+    virDomainChrSourceDefPtr source;
 
     virDomainDeviceInfo info;
 

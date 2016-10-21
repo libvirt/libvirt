@@ -4724,7 +4724,7 @@ libxlDomainOpenConsole(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (chr->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
+    if (chr->source->type != VIR_DOMAIN_CHR_TYPE_PTY) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("character device %s is not using a PTY"),
                        dev_name ? dev_name : NULLSTR(chr->info.alias));
@@ -4733,7 +4733,7 @@ libxlDomainOpenConsole(virDomainPtr dom,
 
     /* handle mutually exclusive access to console devices */
     ret = virChrdevOpen(priv->devs,
-                        &chr->source,
+                        chr->source,
                         st,
                         (flags & VIR_DOMAIN_CONSOLE_FORCE) != 0);
 

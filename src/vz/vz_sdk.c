@@ -1148,46 +1148,46 @@ prlsdkGetSerialInfo(PRL_HANDLE serialPort, virDomainChrDefPtr chr)
 
     switch (emulatedType) {
     case PDT_USE_OUTPUT_FILE:
-        chr->source.type = VIR_DOMAIN_CHR_TYPE_FILE;
-        chr->source.data.file.path = friendlyName;
+        chr->source->type = VIR_DOMAIN_CHR_TYPE_FILE;
+        chr->source->data.file.path = friendlyName;
         friendlyName = NULL;
         break;
     case PDT_USE_SERIAL_PORT_SOCKET_MODE:
-        chr->source.type = VIR_DOMAIN_CHR_TYPE_UNIX;
-        chr->source.data.nix.path = friendlyName;
-        chr->source.data.nix.listen = socket_mode == PSP_SERIAL_SOCKET_SERVER;
+        chr->source->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+        chr->source->data.nix.path = friendlyName;
+        chr->source->data.nix.listen = socket_mode == PSP_SERIAL_SOCKET_SERVER;
         friendlyName = NULL;
         break;
     case PDT_USE_REAL_DEVICE:
-        chr->source.type = VIR_DOMAIN_CHR_TYPE_DEV;
-        chr->source.data.file.path = friendlyName;
+        chr->source->type = VIR_DOMAIN_CHR_TYPE_DEV;
+        chr->source->data.file.path = friendlyName;
         friendlyName = NULL;
         break;
     case PDT_USE_TCP:
-        chr->source.type = VIR_DOMAIN_CHR_TYPE_TCP;
+        chr->source->type = VIR_DOMAIN_CHR_TYPE_TCP;
         if (virAsprintf(&uristr, "tcp://%s", friendlyName) < 0)
             goto cleanup;
         if (!(uri = virURIParse(uristr)))
             goto cleanup;
-        if (VIR_STRDUP(chr->source.data.tcp.host, uri->server) < 0)
+        if (VIR_STRDUP(chr->source->data.tcp.host, uri->server) < 0)
             goto cleanup;
-        if (virAsprintf(&chr->source.data.tcp.service, "%d", uri->port) < 0)
+        if (virAsprintf(&chr->source->data.tcp.service, "%d", uri->port) < 0)
             goto cleanup;
-        chr->source.data.tcp.listen = socket_mode == PSP_SERIAL_SOCKET_SERVER;
+        chr->source->data.tcp.listen = socket_mode == PSP_SERIAL_SOCKET_SERVER;
         break;
     case PDT_USE_UDP:
-        chr->source.type = VIR_DOMAIN_CHR_TYPE_UDP;
+        chr->source->type = VIR_DOMAIN_CHR_TYPE_UDP;
         if (virAsprintf(&uristr, "udp://%s", friendlyName) < 0)
             goto cleanup;
         if (!(uri = virURIParse(uristr)))
             goto cleanup;
-        if (VIR_STRDUP(chr->source.data.udp.bindHost, uri->server) < 0)
+        if (VIR_STRDUP(chr->source->data.udp.bindHost, uri->server) < 0)
             goto cleanup;
-        if (virAsprintf(&chr->source.data.udp.bindService, "%d", uri->port) < 0)
+        if (virAsprintf(&chr->source->data.udp.bindService, "%d", uri->port) < 0)
             goto cleanup;
-        if (VIR_STRDUP(chr->source.data.udp.connectHost, uri->server) < 0)
+        if (VIR_STRDUP(chr->source->data.udp.connectHost, uri->server) < 0)
             goto cleanup;
-        if (virAsprintf(&chr->source.data.udp.connectService, "%d", uri->port) < 0)
+        if (virAsprintf(&chr->source->data.udp.connectService, "%d", uri->port) < 0)
             goto cleanup;
         break;
     default:
@@ -2768,11 +2768,11 @@ static int prlsdkCheckSerialUnsupportedParams(virDomainChrDefPtr chr)
         return -1;
     }
 
-    if (chr->source.type != VIR_DOMAIN_CHR_TYPE_DEV &&
-        chr->source.type != VIR_DOMAIN_CHR_TYPE_FILE &&
-        chr->source.type != VIR_DOMAIN_CHR_TYPE_UNIX &&
-        chr->source.type != VIR_DOMAIN_CHR_TYPE_TCP &&
-        chr->source.type != VIR_DOMAIN_CHR_TYPE_UDP) {
+    if (chr->source->type != VIR_DOMAIN_CHR_TYPE_DEV &&
+        chr->source->type != VIR_DOMAIN_CHR_TYPE_FILE &&
+        chr->source->type != VIR_DOMAIN_CHR_TYPE_UNIX &&
+        chr->source->type != VIR_DOMAIN_CHR_TYPE_TCP &&
+        chr->source->type != VIR_DOMAIN_CHR_TYPE_UDP) {
 
 
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -2795,20 +2795,20 @@ static int prlsdkCheckSerialUnsupportedParams(virDomainChrDefPtr chr)
         return -1;
     }
 
-   if (chr->source.type == VIR_DOMAIN_CHR_TYPE_TCP &&
-        chr->source.data.tcp.protocol != VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW) {
+   if (chr->source->type == VIR_DOMAIN_CHR_TYPE_TCP &&
+        chr->source->data.tcp.protocol != VIR_DOMAIN_CHR_TCP_PROTOCOL_RAW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Protocol '%s' is not supported for "
                          "tcp character device."),
-                       virDomainChrTcpProtocolTypeToString(chr->source.data.tcp.protocol));
+                       virDomainChrTcpProtocolTypeToString(chr->source->data.tcp.protocol));
         return -1;
     }
 
-    if (chr->source.type == VIR_DOMAIN_CHR_TYPE_UDP &&
-        (STRNEQ(chr->source.data.udp.bindHost,
-                chr->source.data.udp.connectHost) ||
-         STRNEQ(chr->source.data.udp.bindService,
-                chr->source.data.udp.connectService))) {
+    if (chr->source->type == VIR_DOMAIN_CHR_TYPE_UDP &&
+        (STRNEQ(chr->source->data.udp.bindHost,
+                chr->source->data.udp.connectHost) ||
+         STRNEQ(chr->source->data.udp.bindService,
+                chr->source->data.udp.connectService))) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Different bind and connect parameters for "
                          "udp character device is not supported."));
@@ -3025,36 +3025,36 @@ static int prlsdkAddSerial(PRL_HANDLE sdkdom, virDomainChrDefPtr chr)
     pret = PrlVmCfg_CreateVmDev(sdkdom, PDE_SERIAL_PORT, &sdkchr);
     prlsdkCheckRetGoto(pret, cleanup);
 
-    switch (chr->source.type) {
+    switch (chr->source->type) {
     case VIR_DOMAIN_CHR_TYPE_DEV:
         emutype = PDT_USE_REAL_DEVICE;
-        path = chr->source.data.file.path;
+        path = chr->source->data.file.path;
         break;
     case VIR_DOMAIN_CHR_TYPE_FILE:
         emutype = PDT_USE_OUTPUT_FILE;
-        path = chr->source.data.file.path;
+        path = chr->source->data.file.path;
         break;
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         emutype = PDT_USE_SERIAL_PORT_SOCKET_MODE;
-        path = chr->source.data.nix.path;
-        if (!chr->source.data.nix.listen)
+        path = chr->source->data.nix.path;
+        if (!chr->source->data.nix.listen)
             socket_mode = PSP_SERIAL_SOCKET_CLIENT;
         break;
     case VIR_DOMAIN_CHR_TYPE_TCP:
         emutype = PDT_USE_TCP;
         if (virAsprintf(&url, "%s:%s",
-                        chr->source.data.tcp.host,
-                        chr->source.data.tcp.service) < 0)
+                        chr->source->data.tcp.host,
+                        chr->source->data.tcp.service) < 0)
             goto cleanup;
-        if (!chr->source.data.tcp.listen)
+        if (!chr->source->data.tcp.listen)
             socket_mode = PSP_SERIAL_SOCKET_CLIENT;
         path = url;
         break;
     case VIR_DOMAIN_CHR_TYPE_UDP:
         emutype = PDT_USE_UDP;
         if (virAsprintf(&url, "%s:%s",
-                        chr->source.data.udp.bindHost,
-                        chr->source.data.udp.bindService) < 0)
+                        chr->source->data.udp.bindHost,
+                        chr->source->data.udp.bindService) < 0)
             goto cleanup;
         path = url;
         break;

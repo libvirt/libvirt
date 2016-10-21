@@ -130,7 +130,7 @@ bhyveBuildConsoleArgStr(const virDomainDef *def, virCommandPtr cmd)
 
     chr = def->serials[0];
 
-    if (chr->source.type != VIR_DOMAIN_CHR_TYPE_NMDM) {
+    if (chr->source->type != VIR_DOMAIN_CHR_TYPE_NMDM) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("only nmdm console types are supported"));
         return -1;
@@ -146,7 +146,7 @@ bhyveBuildConsoleArgStr(const virDomainDef *def, virCommandPtr cmd)
     virCommandAddArgList(cmd, "-s", "1,lpc", NULL);
     virCommandAddArg(cmd, "-l");
     virCommandAddArgFormat(cmd, "com%d,%s",
-                           chr->target.port + 1, chr->source.data.file.path);
+                           chr->target.port + 1, chr->source->data.file.path);
 
     return 0;
 }
@@ -505,14 +505,14 @@ virBhyveProcessBuildGrubbhyveCmd(virDomainDefPtr def,
 
         chr = def->serials[0];
 
-        if (chr->source.type != VIR_DOMAIN_CHR_TYPE_NMDM) {
+        if (chr->source->type != VIR_DOMAIN_CHR_TYPE_NMDM) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("only nmdm console types are supported"));
             return NULL;
         }
 
         virCommandAddArg(cmd, "--cons-dev");
-        virCommandAddArg(cmd, chr->source.data.file.path);
+        virCommandAddArg(cmd, chr->source->data.file.path);
     }
 
     /* VM name */

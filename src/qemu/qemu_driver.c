@@ -15888,7 +15888,7 @@ qemuDomainOpenConsole(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (chr->source.type != VIR_DOMAIN_CHR_TYPE_PTY) {
+    if (chr->source->type != VIR_DOMAIN_CHR_TYPE_PTY) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("character device %s is not using a PTY"),
                        dev_name ? dev_name : NULLSTR(chr->info.alias));
@@ -15897,7 +15897,7 @@ qemuDomainOpenConsole(virDomainPtr dom,
 
     /* handle mutually exclusive access to console devices */
     ret = virChrdevOpen(priv->devs,
-                        &chr->source,
+                        chr->source,
                         st,
                         (flags & VIR_DOMAIN_CONSOLE_FORCE) != 0);
 
@@ -15962,7 +15962,7 @@ qemuDomainOpenChannel(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (chr->source.type != VIR_DOMAIN_CHR_TYPE_UNIX) {
+    if (chr->source->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("channel %s is not using a UNIX socket"),
                        name ? name : NULLSTR(chr->info.alias));
@@ -15971,7 +15971,7 @@ qemuDomainOpenChannel(virDomainPtr dom,
 
     /* handle mutually exclusive access to channel devices */
     ret = virChrdevOpen(priv->devs,
-                        &chr->source,
+                        chr->source,
                         st,
                         (flags & VIR_DOMAIN_CHANNEL_FORCE) != 0);
 

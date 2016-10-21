@@ -172,10 +172,10 @@ virDomainAuditChardev(virDomainObjPtr vm,
     virDomainChrSourceDefPtr newsrc = NULL;
 
     if (oldDef)
-        oldsrc = &oldDef->source;
+        oldsrc = oldDef->source;
 
     if (newDef)
-        newsrc = &newDef->source;
+        newsrc = newDef->source;
 
     virDomainAuditGenericDev(vm, "chardev",
                              virDomainAuditChardevPath(oldsrc),

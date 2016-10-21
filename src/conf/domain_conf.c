@@ -2116,7 +2116,7 @@ void virDomainChrDefFree(virDomainChrDefPtr def)
         break;
     }
 
-    virDomainChrSourceDefClear(&def->source);
+    virDomainChrSourceDefFree(def->source);
     virDomainDeviceInfoClear(&def->info);
 
     if (def->seclabels) {
@@ -3865,8 +3865,8 @@ virDomainDefAddConsoleCompat(virDomainDefPtr def)
             def->serials[0]->target.port = 0;
         } else {
             /* if the console source doesn't match */
-            if (!virDomainChrSourceDefIsEqual(&def->serials[0]->source,
-                                              &def->consoles[0]->source)) {
+            if (!virDomainChrSourceDefIsEqual(def->serials[0]->source,
+                                              def->consoles[0]->source)) {
                 virDomainChrDefFree(def->consoles[0]);
                 def->consoles[0] = NULL;
             }
@@ -10316,6 +10316,19 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDefPtr def,
     goto cleanup;
 }
 
+
+static virDomainChrSourceDefPtr
+virDomainChrSourceDefNew(void)
+{
+    virDomainChrSourceDefPtr def = NULL;
+
+    if (VIR_ALLOC(def) < 0)
+        return NULL;
+
+    return def;
+}
+
+
 /* Create a new character device definition and set
  * default port.
  */
@@ -10329,9 +10342,14 @@ virDomainChrDefNew(virDomainXMLOptionPtr xmlopt)
 
     def->target.port = -1;
 
-    if (xmlopt && xmlopt->privateData.chardevNew &&
-        !(def->privateData = xmlopt->privateData.chardevNew()))
+    if (!(def->source = virDomainChrSourceDefNew()))
         VIR_FREE(def);
+
+    if (xmlopt && xmlopt->privateData.chardevNew &&
+        !(def->privateData = xmlopt->privateData.chardevNew())) {
+        virDomainChrSourceDefFree(def->source);
+        VIR_FREE(def);
+    }
 
     return def;
 }
@@ -10398,8 +10416,8 @@ virDomainChrDefParseXML(virDomainXMLOptionPtr xmlopt,
 
     type = virXMLPropString(node, "type");
     if (type == NULL) {
-        def->source.type = VIR_DOMAIN_CHR_TYPE_PTY;
-    } else if ((def->source.type = virDomainChrTypeFromString(type)) < 0) {
+        def->source->type = VIR_DOMAIN_CHR_TYPE_PTY;
+    } else if ((def->source->type = virDomainChrTypeFromString(type)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown type presented to host for character device: %s"),
                        type);
@@ -10430,18 +10448,18 @@ virDomainChrDefParseXML(virDomainXMLOptionPtr xmlopt,
         ((def->targetType = virDomainChrDefaultTargetType(def->deviceType)) < 0))
         goto error;
 
-    if (virDomainChrSourceDefParseXML(&def->source, node->children, flags, def,
+    if (virDomainChrSourceDefParseXML(def->source, node->children, flags, def,
                                       ctxt, vmSeclabels, nvmSeclabels) < 0)
         goto error;
 
-    if (def->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
+    if (def->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
         if (def->targetType != VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("spicevmc device type only supports "
                              "virtio"));
             goto error;
         } else {
-            def->source.data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_VDAGENT;
+            def->source->data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_VDAGENT;
         }
     }
 
@@ -14457,7 +14475,7 @@ virDomainChrEquals(virDomainChrDefPtr src,
         return src == tgt;
 
     if (src->deviceType != tgt->deviceType ||
-        !virDomainChrSourceDefIsEqual(&src->source, &tgt->source))
+        !virDomainChrSourceDefIsEqual(src->source, tgt->source))
         return false;
 
     switch ((virDomainChrDeviceType) src->deviceType) {
@@ -18492,9 +18510,9 @@ virDomainChannelDefCheckABIStability(virDomainChrDefPtr src,
                            NULLSTR(dst->target.name), NULLSTR(src->target.name));
             return false;
         }
-        if (src->source.type != dst->source.type &&
-            (src->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC ||
-             dst->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) &&
+        if (src->source->type != dst->source->type &&
+            (src->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC ||
+             dst->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) &&
             !src->target.name) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Changing device type to/from spicevmc would"
@@ -21523,10 +21541,10 @@ virDomainChrDefFormat(virBufferPtr buf,
     virBufferAdjustIndent(buf, 2);
     tty_compat = (def->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
                   def->target.port == 0 &&
-                  def->source.type == VIR_DOMAIN_CHR_TYPE_PTY &&
+                  def->source->type == VIR_DOMAIN_CHR_TYPE_PTY &&
                   !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
-                  def->source.data.file.path);
-    if (virDomainChrSourceDefFormat(buf, def, &def->source, tty_compat, flags) < 0)
+                  def->source->data.file.path);
+    if (virDomainChrSourceDefFormat(buf, def, def->source, tty_compat, flags) < 0)
         return -1;
 
     /* Format <target> block */

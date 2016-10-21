@@ -5320,7 +5320,7 @@ qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
         break;
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
         /* Legacy syntax  '-device spicevmc' */
-        if (dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
+        if (dev->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
             virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC)) {
             virBufferAddLit(&buf, "spicevmc");
         } else {
@@ -5354,7 +5354,7 @@ qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
     }
 
     if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
-        dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
+        dev->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
         dev->target.name &&
         STRNEQ(dev->target.name, "com.redhat.spice.0")) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -5364,12 +5364,12 @@ qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
     }
 
     if (!(dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
-          dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
+          dev->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC &&
           virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC))) {
         virBufferAsprintf(&buf, ",chardev=char%s,id=%s",
                           dev->info.alias, dev->info.alias);
         if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
-            (dev->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC ||
+            (dev->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC ||
              dev->target.name)) {
             virBufferAsprintf(&buf, ",name=%s", dev->target.name
                               ? dev->target.name : "com.redhat.spice.0");
@@ -8533,13 +8533,13 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
         virDomainChrDefPtr serial = def->serials[i];
         char *devstr;
 
-        if (serial->source.type == VIR_DOMAIN_CHR_TYPE_SPICEPORT && !havespice)
+        if (serial->source->type == VIR_DOMAIN_CHR_TYPE_SPICEPORT && !havespice)
             continue;
 
         /* Use -chardev with -device if they are available */
         if (virQEMUCapsSupportsChardev(def, qemuCaps, serial)) {
             if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                                  &serial->source,
+                                                  serial->source,
                                                   serial->info.alias,
                                                   qemuCaps, true)))
                 return -1;
@@ -8551,7 +8551,7 @@ qemuBuildSerialCommandLine(virLogManagerPtr logManager,
                 return -1;
         } else {
             virCommandAddArg(cmd, "-serial");
-            if (!(devstr = qemuBuildChrArgStr(&serial->source, NULL)))
+            if (!(devstr = qemuBuildChrArgStr(serial->source, NULL)))
                 return -1;
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
@@ -8578,7 +8578,7 @@ qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
         /* Use -chardev with -device if they are available */
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV)) {
             if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                                  &parallel->source,
+                                                  parallel->source,
                                                   parallel->info.alias,
                                                   qemuCaps, true)))
                 return -1;
@@ -8591,7 +8591,7 @@ qemuBuildParallelsCommandLine(virLogManagerPtr logManager,
                 return -1;
         } else {
             virCommandAddArg(cmd, "-parallel");
-            if (!(devstr = qemuBuildChrArgStr(&parallel->source, NULL)))
+            if (!(devstr = qemuBuildChrArgStr(parallel->source, NULL)))
                 return -1;
             virCommandAddArg(cmd, devstr);
             VIR_FREE(devstr);
@@ -8624,7 +8624,7 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
             }
 
             if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                                  &channel->source,
+                                                  channel->source,
                                                   channel->info.alias,
                                                   qemuCaps, true)))
                 return -1;
@@ -8640,14 +8640,14 @@ qemuBuildChannelsCommandLine(virLogManagerPtr logManager,
 
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPICEVMC) &&
-                channel->source.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
+                channel->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
                 /* spicevmc was originally introduced via a -device
                  * with a backend internal to qemu; although we prefer
                  * the newer -chardev interface.  */
                 ;
             } else {
                 if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                                      &channel->source,
+                                                      channel->source,
                                                       channel->info.alias,
                                                       qemuCaps, true)))
                     return -1;
@@ -8690,7 +8690,7 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
             }
 
             if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                                  &console->source,
+                                                  console->source,
                                                   console->info.alias,
                                                   qemuCaps, true)))
                 return -1;
@@ -8704,7 +8704,7 @@ qemuBuildConsoleCommandLine(virLogManagerPtr logManager,
 
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
             if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                                  &console->source,
+                                                  console->source,
                                                   console->info.alias,
                                                   qemuCaps, true)))
                 return -1;
