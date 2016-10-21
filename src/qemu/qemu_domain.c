@@ -1042,7 +1042,8 @@ qemuDomainSecretSetup(virConnectPtr conn,
     if (virCryptoHaveCipher(VIR_CRYPTO_CIPHER_AES256CBC) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
         (secretUsageType == VIR_SECRET_USAGE_TYPE_CEPH ||
-         secretUsageType == VIR_SECRET_USAGE_TYPE_VOLUME)) {
+         secretUsageType == VIR_SECRET_USAGE_TYPE_VOLUME ||
+         secretUsageType == VIR_SECRET_USAGE_TYPE_TLS)) {
         if (qemuDomainSecretAESSetup(conn, priv, secinfo, srcalias,
                                      secretUsageType, username,
                                      seclookupdef, isLuks) < 0)
@@ -1220,6 +1221,93 @@ qemuDomainSecretHostdevPrepare(virConnectPtr conn,
 }
 
 
+/* qemuDomainSecretChardevDestroy:
+ * @disk: Pointer to a chardev definition
+ *
+ * Clear and destroy memory associated with the secret
+ */
+void
+qemuDomainSecretChardevDestroy(virDomainChrSourceDefPtr dev)
+{
+    qemuDomainChrSourcePrivatePtr chrSourcePriv =
+        QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
+
+    if (!chrSourcePriv || !chrSourcePriv->secinfo)
+        return;
+
+    qemuDomainSecretInfoFree(&chrSourcePriv->secinfo);
+}
+
+
+/* qemuDomainSecretChardevPrepare:
+ * @conn: Pointer to connection
+ * @cfg: Pointer to driver config object
+ * @priv: pointer to domain private object
+ * @chrAlias: Alias of the chr device
+ * @dev: Pointer to a char source definition
+ *
+ * For a TCP character device, generate a qemuDomainSecretInfo to be used
+ * by the command line code to generate the secret for the tls-creds to use.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+qemuDomainSecretChardevPrepare(virConnectPtr conn,
+                               virQEMUDriverConfigPtr cfg,
+                               qemuDomainObjPrivatePtr priv,
+                               const char *chrAlias,
+                               virDomainChrSourceDefPtr dev)
+{
+    virSecretLookupTypeDef seclookupdef = {0};
+    qemuDomainSecretInfoPtr secinfo = NULL;
+    char *charAlias = NULL;
+
+    if (dev->type != VIR_DOMAIN_CHR_TYPE_TCP)
+        return 0;
+
+    if (dev->data.tcp.haveTLS == VIR_TRISTATE_BOOL_YES &&
+        cfg->chardevTLSx509secretUUID) {
+        qemuDomainChrSourcePrivatePtr chrSourcePriv =
+            QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
+
+        if (virUUIDParse(cfg->chardevTLSx509secretUUID,
+                         seclookupdef.u.uuid) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("malformed chardev TLS secret uuid in qemu.conf"));
+            goto error;
+        }
+        seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
+
+        if (VIR_ALLOC(secinfo) < 0)
+            goto error;
+
+        if (!(charAlias = qemuAliasChardevFromDevAlias(chrAlias)))
+            goto error;
+
+        if (qemuDomainSecretSetup(conn, priv, secinfo, charAlias,
+                                  VIR_SECRET_USAGE_TYPE_TLS, NULL,
+                                  &seclookupdef, false) < 0)
+            goto error;
+
+        if (secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("TLS X.509 requires encrypted secrets "
+                             "to be supported"));
+            goto error;
+        }
+
+        chrSourcePriv->secinfo = secinfo;
+    }
+
+    VIR_FREE(charAlias);
+    return 0;
+
+ error:
+    qemuDomainSecretInfoFree(&secinfo);
+    return -1;
+}
+
+
 /* qemuDomainSecretDestroy:
  * @vm: Domain object
  *
@@ -1236,11 +1324,38 @@ qemuDomainSecretDestroy(virDomainObjPtr vm)
 
     for (i = 0; i < vm->def->nhostdevs; i++)
         qemuDomainSecretHostdevDestroy(vm->def->hostdevs[i]);
+
+    for (i = 0; i < vm->def->nserials; i++)
+        qemuDomainSecretChardevDestroy(vm->def->serials[i]->source);
+
+    for (i = 0; i < vm->def->nparallels; i++)
+        qemuDomainSecretChardevDestroy(vm->def->parallels[i]->source);
+
+    for (i = 0; i < vm->def->nchannels; i++)
+        qemuDomainSecretChardevDestroy(vm->def->channels[i]->source);
+
+    for (i = 0; i < vm->def->nconsoles; i++)
+        qemuDomainSecretChardevDestroy(vm->def->consoles[i]->source);
+
+    for (i = 0; i < vm->def->nsmartcards; i++) {
+        if (vm->def->smartcards[i]->type ==
+            VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH)
+            qemuDomainSecretChardevDestroy(vm->def->smartcards[i]->data.passthru);
+    }
+
+    for (i = 0; i < vm->def->nrngs; i++) {
+        if (vm->def->rngs[i]->backend == VIR_DOMAIN_RNG_BACKEND_EGD)
+            qemuDomainSecretChardevDestroy(vm->def->rngs[i]->source.chardev);
+    }
+
+    for (i = 0; i < vm->def->nredirdevs; i++)
+        qemuDomainSecretChardevDestroy(vm->def->redirdevs[i]->source);
 }
 
 
 /* qemuDomainSecretPrepare:
  * @conn: Pointer to connection
+ * @driver: Pointer to driver object
  * @vm: Domain object
  *
  * For any objects that may require an auth/secret setup, create a
@@ -1253,23 +1368,81 @@ qemuDomainSecretDestroy(virDomainObjPtr vm)
  */
 int
 qemuDomainSecretPrepare(virConnectPtr conn,
+                        virQEMUDriverPtr driver,
                         virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     size_t i;
+    int ret = -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         if (qemuDomainSecretDiskPrepare(conn, priv, vm->def->disks[i]) < 0)
-            return -1;
+            goto cleanup;
     }
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
         if (qemuDomainSecretHostdevPrepare(conn, priv,
                                            vm->def->hostdevs[i]) < 0)
-            return -1;
+            goto cleanup;
     }
 
-    return 0;
+    for (i = 0; i < vm->def->nserials; i++) {
+        if (qemuDomainSecretChardevPrepare(conn, cfg, priv,
+                                           vm->def->serials[i]->info.alias,
+                                           vm->def->serials[i]->source) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->nparallels; i++) {
+        if (qemuDomainSecretChardevPrepare(conn, cfg, priv,
+                                           vm->def->parallels[i]->info.alias,
+                                           vm->def->parallels[i]->source) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->nchannels; i++) {
+        if (qemuDomainSecretChardevPrepare(conn, cfg, priv,
+                                           vm->def->channels[i]->info.alias,
+                                           vm->def->channels[i]->source) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->nconsoles; i++) {
+        if (qemuDomainSecretChardevPrepare(conn, cfg, priv,
+                                           vm->def->consoles[i]->info.alias,
+                                           vm->def->consoles[i]->source) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->nsmartcards; i++)
+        if (vm->def->smartcards[i]->type ==
+            VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH &&
+            qemuDomainSecretChardevPrepare(conn, cfg, priv,
+                                           vm->def->smartcards[i]->info.alias,
+                                           vm->def->smartcards[i]->data.passthru) < 0)
+            goto cleanup;
+
+    for (i = 0; i < vm->def->nrngs; i++) {
+        if (vm->def->rngs[i]->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
+            qemuDomainSecretChardevPrepare(conn, cfg, priv,
+                                           vm->def->rngs[i]->info.alias,
+                                           vm->def->rngs[i]->source.chardev) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->nredirdevs; i++) {
+        if (qemuDomainSecretChardevPrepare(conn, cfg, priv,
+                                           vm->def->redirdevs[i]->info.alias,
+                                           vm->def->redirdevs[i]->source) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virObjectUnref(cfg);
+    return ret;
 }
 
 

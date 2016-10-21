@@ -731,11 +731,24 @@ int qemuDomainSecretHostdevPrepare(virConnectPtr conn,
                                    virDomainHostdevDefPtr hostdev)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
+void qemuDomainSecretChardevDestroy(virDomainChrSourceDefPtr dev)
+    ATTRIBUTE_NONNULL(1);
+
+int qemuDomainSecretChardevPrepare(virConnectPtr conn,
+                                   virQEMUDriverConfigPtr cfg,
+                                   qemuDomainObjPrivatePtr priv,
+                                   const char *chrAlias,
+                                   virDomainChrSourceDefPtr dev)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
+
 void qemuDomainSecretDestroy(virDomainObjPtr vm)
     ATTRIBUTE_NONNULL(1);
 
-int qemuDomainSecretPrepare(virConnectPtr conn, virDomainObjPtr vm)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int qemuDomainSecretPrepare(virConnectPtr conn,
+                            virQEMUDriverPtr driver,
+                            virDomainObjPtr vm)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int qemuDomainDefValidateDiskLunSource(const virStorageSource *src)
     ATTRIBUTE_NONNULL(1);
