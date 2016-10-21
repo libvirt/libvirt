@@ -1505,11 +1505,16 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
                                    virDomainRedirdevDefPtr redirdev)
 {
     int ret = -1;
+    int rc;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainDefPtr def = vm->def;
     char *charAlias = NULL;
     char *devstr = NULL;
     bool chardevAdded = false;
+    bool tlsobjAdded = false;
+    virJSONValuePtr tlsProps = NULL;
+    char *tlsAlias = NULL;
     virErrorPtr orig_err;
 
     if (qemuAssignDeviceRedirdevAlias(def, redirdev, -1) < 0)
@@ -1524,7 +1529,20 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     if (VIR_REALLOC_N(def->redirdevs, def->nredirdevs+1) < 0)
         goto cleanup;
 
+    if (qemuDomainGetChardevTLSObjects(cfg, priv, redirdev->source.chr,
+                                       charAlias, &tlsProps, &tlsAlias) < 0)
+        goto cleanup;
+
     qemuDomainObjEnterMonitor(driver, vm);
+    if (tlsAlias) {
+        rc = qemuMonitorAddObject(priv->mon, "tls-creds-x509",
+                                  tlsAlias, tlsProps);
+        tlsProps = NULL; /* qemuMonitorAddObject consumes */
+        if (rc < 0)
+            goto exit_monitor;
+        tlsobjAdded = true;
+    }
+
     if (qemuMonitorAttachCharDev(priv->mon,
                                  charAlias,
                                  redirdev->source.chr) < 0)
@@ -1542,12 +1560,17 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
  audit:
     virDomainAuditRedirdev(vm, redirdev, "attach", ret == 0);
  cleanup:
+    VIR_FREE(tlsAlias);
+    virJSONValueFree(tlsProps);
     VIR_FREE(charAlias);
     VIR_FREE(devstr);
+    virObjectUnref(cfg);
     return ret;
 
  exit_monitor:
     orig_err = virSaveLastError();
+    if (tlsobjAdded)
+        ignore_value(qemuMonitorDelObject(priv->mon, tlsAlias));
     /* detach associated chardev on error */
     if (chardevAdded)
         ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
