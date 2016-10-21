@@ -287,7 +287,7 @@ bhyveParseBhyveLPCArg(virDomainDefPtr def,
 
     /* Only support com%d */
     if (STRPREFIX(type, "com") && type[4] == 0) {
-        if (!(chr = virDomainChrDefNew()))
+        if (!(chr = virDomainChrDefNew(NULL)))
             goto error;
 
         chr->source.type = VIR_DOMAIN_CHR_TYPE_NMDM;
