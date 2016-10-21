@@ -1850,26 +1850,30 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
                           virDomainRNGDefPtr rng)
 {
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virErrorPtr orig_err;
     char *devstr = NULL;
     char *charAlias = NULL;
     char *objAlias = NULL;
+    char *tlsAlias = NULL;
     bool releaseaddr = false;
     bool chardevAdded = false;
     bool objAdded = false;
+    bool tlsobjAdded = false;
     virJSONValuePtr props = NULL;
+    virJSONValuePtr tlsProps = NULL;
     virDomainCCWAddressSetPtr ccwaddrs = NULL;
     const char *type;
     int ret = -1;
     int rv;
 
     if (qemuAssignDeviceRNGAlias(vm->def, rng) < 0)
-        return -1;
+        goto cleanup;
 
     /* preallocate space for the device definition */
     if (VIR_REALLOC_N(vm->def->rngs, vm->def->nrngs + 1) < 0)
-        return -1;
+        goto cleanup;
 
     if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         if (qemuDomainMachineIsS390CCW(vm->def) &&
@@ -1881,14 +1885,14 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
     } else {
         if (!qemuCheckCCWS390AddressSupport(vm->def, rng->info, priv->qemuCaps,
                                             rng->source.file))
-            return -1;
+            goto cleanup;
     }
     releaseaddr = true;
 
     if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
         rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
         if (virDomainPCIAddressEnsureAddr(priv->pciaddrs, &rng->info) < 0)
-            return -1;
+            goto cleanup;
     } else if (rng->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
         if (!(ccwaddrs = qemuDomainCCWAddrSetCreateFromDomain(vm->def)))
             goto cleanup;
@@ -1910,7 +1914,21 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
     if (!(charAlias = qemuAliasChardevFromDevAlias(rng->info.alias)))
         goto cleanup;
 
+    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
+        qemuDomainGetChardevTLSObjects(cfg, priv, rng->source.chardev,
+                                       charAlias, &tlsProps, &tlsAlias) < 0)
+        goto cleanup;
+
     qemuDomainObjEnterMonitor(driver, vm);
+
+    if (tlsAlias) {
+        rv = qemuMonitorAddObject(priv->mon, "tls-creds-x509",
+                                  tlsAlias, tlsProps);
+        tlsProps = NULL; /* qemuMonitorAddObject consumes */
+        if (rv < 0)
+            goto exit_monitor;
+        tlsobjAdded = true;
+    }
 
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
         qemuMonitorAttachCharDev(priv->mon, charAlias,
@@ -1939,17 +1957,22 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
  audit:
     virDomainAuditRNG(vm, NULL, rng, "attach", ret == 0);
  cleanup:
+    virJSONValueFree(tlsProps);
     virJSONValueFree(props);
     if (ret < 0 && releaseaddr)
         qemuDomainReleaseDeviceAddress(vm, &rng->info, NULL);
+    VIR_FREE(tlsAlias);
     VIR_FREE(charAlias);
     VIR_FREE(objAlias);
     VIR_FREE(devstr);
     virDomainCCWAddressSetFree(ccwaddrs);
+    virObjectUnref(cfg);
     return ret;
 
  exit_monitor:
     orig_err = virSaveLastError();
+    if (tlsobjAdded)
+        ignore_value(qemuMonitorDelObject(priv->mon, tlsAlias));
     if (objAdded)
         ignore_value(qemuMonitorDelObject(priv->mon, objAlias));
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD && chardevAdded)
