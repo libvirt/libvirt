@@ -8346,7 +8346,7 @@ qemuBuildSmartcardCommandLine(virLogManagerPtr logManager,
         }
 
         if (!(devstr = qemuBuildChrChardevStr(logManager, cmd, cfg, def,
-                                              &smartcard->data.passthru,
+                                              smartcard->data.passthru,
                                               smartcard->info.alias,
                                               qemuCaps, true))) {
             virBufferFreeAndReset(&opt);

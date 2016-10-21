@@ -218,7 +218,7 @@ virDomainAuditSmartcard(virDomainObjPtr vm,
 
         case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
             virDomainAuditGenericDev(vm, "smartcard", NULL,
-                                     virDomainAuditChardevPath(&def->data.passthru),
+                                     virDomainAuditChardevPath(def->data.passthru),
                                      reason, success);
             break;
 

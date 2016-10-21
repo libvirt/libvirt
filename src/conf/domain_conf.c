@@ -2146,7 +2146,7 @@ void virDomainSmartcardDefFree(virDomainSmartcardDefPtr def)
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        virDomainChrSourceDefClear(&def->data.passthru);
+        virDomainChrSourceDefFree(def->data.passthru);
         break;
 
     default:
@@ -10489,7 +10489,8 @@ virDomainChrDefParseXML(virDomainXMLOptionPtr xmlopt,
 }
 
 static virDomainSmartcardDefPtr
-virDomainSmartcardDefParseXML(xmlNodePtr node,
+virDomainSmartcardDefParseXML(virDomainXMLOptionPtr xmlopt,
+                              xmlNodePtr node,
                               unsigned int flags)
 {
     xmlNodePtr cur;
@@ -10569,7 +10570,11 @@ virDomainSmartcardDefParseXML(xmlNodePtr node,
                              "device type attribute"));
             goto error;
         }
-        if ((def->data.passthru.type = virDomainChrTypeFromString(type)) < 0) {
+
+        if (!(def->data.passthru = virDomainChrSourceDefNew(xmlopt)))
+            goto error;
+
+        if ((def->data.passthru->type = virDomainChrTypeFromString(type)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown type presented to host for "
                              "character device: %s"), type);
@@ -10577,12 +10582,12 @@ virDomainSmartcardDefParseXML(xmlNodePtr node,
         }
 
         cur = node->children;
-        if (virDomainChrSourceDefParseXML(&def->data.passthru, cur, flags,
+        if (virDomainChrSourceDefParseXML(def->data.passthru, cur, flags,
                                           NULL, NULL, NULL, 0) < 0)
             goto error;
 
-        if (def->data.passthru.type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
-            def->data.passthru.data.spicevmc
+        if (def->data.passthru->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC) {
+            def->data.passthru->data.spicevmc
                 = VIR_DOMAIN_CHR_SPICEVMC_SMARTCARD;
         }
 
@@ -13595,7 +13600,8 @@ virDomainDeviceDefParse(const char *xmlStr,
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_SMARTCARD:
-        if (!(dev->data.smartcard = virDomainSmartcardDefParseXML(node, flags)))
+        if (!(dev->data.smartcard = virDomainSmartcardDefParseXML(xmlopt, node,
+                                                                  flags)))
             goto error;
         break;
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
@@ -17189,7 +17195,8 @@ virDomainDefParseXML(xmlDocPtr xml,
         goto error;
 
     for (i = 0; i < n; i++) {
-        virDomainSmartcardDefPtr card = virDomainSmartcardDefParseXML(nodes[i],
+        virDomainSmartcardDefPtr card = virDomainSmartcardDefParseXML(xmlopt,
+                                                                      nodes[i],
                                                                       flags);
         if (!card)
             goto error;
@@ -21661,7 +21668,7 @@ virDomainSmartcardDefFormat(virBufferPtr buf,
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        if (virDomainChrSourceDefFormat(buf, NULL, &def->data.passthru, false,
+        if (virDomainChrSourceDefFormat(buf, NULL, def->data.passthru, false,
                                         flags) < 0)
             return -1;
         break;

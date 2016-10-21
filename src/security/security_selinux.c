@@ -1957,7 +1957,7 @@ virSecuritySELinuxRestoreSecuritySmartcardCallback(virDomainDefPtr def,
         return virSecuritySELinuxRestoreFileLabel(mgr, database);
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        return virSecuritySELinuxRestoreChardevLabel(mgr, def, NULL, &dev->data.passthru);
+        return virSecuritySELinuxRestoreChardevLabel(mgr, def, NULL, dev->data.passthru);
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -2348,7 +2348,7 @@ virSecuritySELinuxSetSecuritySmartcardCallback(virDomainDefPtr def,
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
         return virSecuritySELinuxSetChardevLabel(mgr, def, NULL,
-                                                 &dev->data.passthru);
+                                                 dev->data.passthru);
 
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,

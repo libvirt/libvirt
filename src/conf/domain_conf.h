@@ -1159,7 +1159,7 @@ struct _virDomainSmartcardDef {
             char *file[VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES];
             char *database;
         } cert; /* 'host-certificates' */
-        virDomainChrSourceDef passthru; /* 'passthrough' */
+        virDomainChrSourceDefPtr passthru; /* 'passthrough' */
     } data;
 
     virDomainDeviceInfo info;
