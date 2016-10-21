@@ -1188,10 +1188,10 @@ virDomainVirtioSerialAddrNextFromController(virDomainVirtioSerialAddrSetPtr addr
  * or assign a virtio serial address to the device
  */
 int
-virDomainVirtioSerialAddrAutoAssign(virDomainDefPtr def,
-                                    virDomainVirtioSerialAddrSetPtr addrs,
-                                    virDomainDeviceInfoPtr info,
-                                    bool allowZero)
+virDomainVirtioSerialAddrAutoAssignFromCache(virDomainDefPtr def,
+                                             virDomainVirtioSerialAddrSetPtr addrs,
+                                             virDomainDeviceInfoPtr info,
+                                             bool allowZero)
 {
     bool portOnly = info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL;
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL &&

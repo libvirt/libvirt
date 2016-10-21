@@ -224,10 +224,10 @@ virDomainVirtioSerialAddrSetCreateFromDomain(virDomainDefPtr def)
 bool
 virDomainVirtioSerialAddrIsComplete(virDomainDeviceInfoPtr info);
 int
-virDomainVirtioSerialAddrAutoAssign(virDomainDefPtr def,
-                                    virDomainVirtioSerialAddrSetPtr addrs,
-                                    virDomainDeviceInfoPtr info,
-                                    bool allowZero)
+virDomainVirtioSerialAddrAutoAssignFromCache(virDomainDefPtr def,
+                                             virDomainVirtioSerialAddrSetPtr addrs,
+                                             virDomainDeviceInfoPtr info,
+                                             bool allowZero)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int
