@@ -2758,7 +2758,7 @@ virVMXParseSerial(virVMXContext *ctx, virConfPtr conf, int port,
         return -1;
     }
 
-    if (VIR_ALLOC(*def) < 0)
+    if (!(*def = virDomainChrDefNew(NULL)))
         return -1;
 
     (*def)->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
@@ -2946,7 +2946,7 @@ virVMXParseParallel(virVMXContext *ctx, virConfPtr conf, int port,
         return -1;
     }
 
-    if (VIR_ALLOC(*def) < 0)
+    if (!(*def = virDomainChrDefNew(NULL)))
         return -1;
 
     (*def)->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;

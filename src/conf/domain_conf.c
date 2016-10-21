@@ -3874,7 +3874,7 @@ virDomainDefAddConsoleCompat(virDomainDefPtr def)
 
         if (!def->consoles[0]) {
             /* allocate a new console type for the stolen one */
-            if (VIR_ALLOC(def->consoles[0]) < 0)
+            if (!(def->consoles[0] = virDomainChrDefNew(NULL)))
                 return -1;
 
             /* Create an console alias for the serial port */
@@ -3889,7 +3889,7 @@ virDomainDefAddConsoleCompat(virDomainDefPtr def)
          *                or has a different type than SERIAL or NONE.
          */
         virDomainChrDefPtr chr;
-        if (VIR_ALLOC(chr) < 0)
+        if (!(chr = virDomainChrDefNew(NULL)))
             return -1;
 
         if (VIR_INSERT_ELEMENT(def->consoles,
