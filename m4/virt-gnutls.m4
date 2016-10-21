@@ -20,18 +20,16 @@ dnl
 AC_DEFUN([LIBVIRT_CHECK_GNUTLS],[
   LIBVIRT_CHECK_PKG([GNUTLS], [gnutls], [2.2.0])
 
-  dnl Triple probe: gnutls < 2.12 only used gcrypt, gnutls >= 3.0 uses
-  dnl only nettle, and versions in between had a configure option.
-  dnl Our goal is to avoid gcrypt if we can prove gnutls uses nettle,
-  dnl but it is a safe fallback to use gcrypt if we can't prove anything.A
+  dnl Double probe: gnutls >= 2.12 had a configure option for gcrypt and
+  dnl gnutls >= 3.0 uses only nettle.  Our goal is to avoid gcrypt if we
+  dnl can prove gnutls uses nettle, but it is a safe fallback to use gcrypt
+  dnl if we can't prove anything.
 
   GNUTLS_GCRYPT=
   if $PKG_CONFIG --exists 'gnutls >= 3.0'; then
     GNUTLS_GCRYPT="no"
-  elif $PKG_CONFIG --exists 'gnutls >= 2.12'; then
-    GNUTLS_GCRYPT="probe"
   else
-    GNUTLS_GCRYPT="yes"
+    GNUTLS_GCRYPT="probe"
   fi
 
   if test "$GNUTLS_GCRYPT" = "probe"; then
