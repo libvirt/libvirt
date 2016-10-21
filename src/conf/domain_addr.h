@@ -231,6 +231,12 @@ virDomainVirtioSerialAddrAutoAssignFromCache(virDomainDefPtr def,
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int
+virDomainVirtioSerialAddrAutoAssign(virDomainDefPtr def,
+                                    virDomainDeviceInfoPtr info,
+                                    bool allowZero)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
+int
 virDomainVirtioSerialAddrAssign(virDomainDefPtr def,
                                 virDomainVirtioSerialAddrSetPtr addrs,
                                 virDomainDeviceInfoPtr info,

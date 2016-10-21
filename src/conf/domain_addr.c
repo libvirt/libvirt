@@ -1201,6 +1201,27 @@ virDomainVirtioSerialAddrAutoAssignFromCache(virDomainDefPtr def,
         return virDomainVirtioSerialAddrAssign(def, addrs, info, allowZero, portOnly);
 }
 
+int
+virDomainVirtioSerialAddrAutoAssign(virDomainDefPtr def,
+                                    virDomainDeviceInfoPtr info,
+                                    bool allowZero)
+{
+    virDomainVirtioSerialAddrSetPtr addrs = NULL;
+    int ret = -1;
+
+    if (!(addrs = virDomainVirtioSerialAddrSetCreateFromDomain(def)))
+        goto cleanup;
+
+    if (virDomainVirtioSerialAddrAutoAssignFromCache(def, addrs, info, allowZero) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virDomainVirtioSerialAddrSetFree(addrs);
+    return ret;
+}
+
 
 int
 virDomainVirtioSerialAddrAssign(virDomainDefPtr def,

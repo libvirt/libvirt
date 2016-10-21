@@ -1763,15 +1763,10 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObjPtr vm,
     virDomainDefPtr def = vm->def;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = -1;
-    virDomainVirtioSerialAddrSetPtr vioaddrs = NULL;
-
-    if (!(vioaddrs = virDomainVirtioSerialAddrSetCreateFromDomain(def)))
-        goto cleanup;
 
     if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
         chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO) {
-        if (virDomainVirtioSerialAddrAutoAssignFromCache(NULL, vioaddrs,
-                                                         &chr->info, true) < 0)
+        if (virDomainVirtioSerialAddrAutoAssign(def, &chr->info, true) < 0)
             goto cleanup;
         ret = 1;
 
@@ -1789,8 +1784,7 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObjPtr vm,
 
     } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
                chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
-        if (virDomainVirtioSerialAddrAutoAssignFromCache(NULL, vioaddrs,
-                                                         &chr->info, false) < 0)
+        if (virDomainVirtioSerialAddrAutoAssign(def, &chr->info, false) < 0)
             goto cleanup;
         ret = 1;
     }
@@ -1808,7 +1802,6 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObjPtr vm,
     ret = 0;
 
  cleanup:
-    virDomainVirtioSerialAddrSetFree(vioaddrs);
     return ret;
 }
 

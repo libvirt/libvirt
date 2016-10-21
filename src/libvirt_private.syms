@@ -123,6 +123,7 @@ virDomainUSBAddressSetAddHub;
 virDomainUSBAddressSetCreate;
 virDomainUSBAddressSetFree;
 virDomainVirtioSerialAddrAssign;
+virDomainVirtioSerialAddrAutoAssign;
 virDomainVirtioSerialAddrAutoAssignFromCache;
 virDomainVirtioSerialAddrIsComplete;
 virDomainVirtioSerialAddrRelease;
