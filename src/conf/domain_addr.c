@@ -660,7 +660,7 @@ virDomainPCIAddressReleaseSlot(virDomainPCIAddressSetPtr addrs,
     if (!(addrStr = virDomainPCIAddressAsString(addr)))
         goto cleanup;
 
-    if (!virDomainPCIAddressValidate(addrs, addr, addrStr, flags, false))
+    if (!virDomainPCIAddressValidate(addrs, addr, addrStr, flags, true))
         goto cleanup;
 
     addrs->buses[addr->bus].slot[addr->slot].functions = 0;

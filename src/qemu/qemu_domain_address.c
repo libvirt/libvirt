@@ -1207,7 +1207,7 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDefPtr def,
             if (!(addrStr = virDomainPCIAddressAsString(&tmp_addr)))
                 goto cleanup;
             if (!virDomainPCIAddressValidate(addrs, &tmp_addr,
-                                             addrStr, flags, false))
+                                             addrStr, flags, true))
                 goto cleanup;
 
             if (virDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
@@ -1396,7 +1396,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
             if (!(addrStr = virDomainPCIAddressAsString(&tmp_addr)))
                 goto cleanup;
             if (!virDomainPCIAddressValidate(addrs, &tmp_addr,
-                                             addrStr, flags, false))
+                                             addrStr, flags, true))
                 goto cleanup;
 
             if (virDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
