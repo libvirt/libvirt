@@ -1348,7 +1348,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
                 tmp_addr.slot = 0x1E;
                 if (!virDomainPCIAddressSlotInUse(addrs, &tmp_addr)) {
                     if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr,
-                                                       flags, false) < 0)
+                                                       flags, true) < 0)
                         goto cleanup;
                     cont->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
                     cont->info.addr.pci.domain = 0;
@@ -1372,12 +1372,12 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDefPtr def,
         tmp_addr.function = 0;
         tmp_addr.multi = VIR_TRISTATE_SWITCH_ON;
         if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr,
-                                           flags, false) < 0)
+                                           flags, true) < 0)
            goto cleanup;
         tmp_addr.function = 3;
         tmp_addr.multi = VIR_TRISTATE_SWITCH_ABSENT;
         if (virDomainPCIAddressReserveAddr(addrs, &tmp_addr,
-                                           flags, false) < 0)
+                                           flags, true) < 0)
            goto cleanup;
     }
 

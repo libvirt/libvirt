@@ -591,7 +591,7 @@ virDomainPCIAddressReserveSlot(virDomainPCIAddressSetPtr addrs,
                                virPCIDeviceAddressPtr addr,
                                virDomainPCIConnectFlags flags)
 {
-    return virDomainPCIAddressReserveAddr(addrs, addr, flags, false);
+    return virDomainPCIAddressReserveAddr(addrs, addr, flags, true);
 }
 
 int
