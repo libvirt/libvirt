@@ -180,11 +180,6 @@ int virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
                                        int function)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
-                                       virDomainDeviceInfoPtr dev,
-                                       virDomainPCIConnectFlags flags)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
 void virDomainPCIAddressSetAllMulti(virDomainDefPtr def)
     ATTRIBUTE_NONNULL(1);
 

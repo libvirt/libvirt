@@ -100,19 +100,20 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
     for (i = 0; i < def->nnets; i++) {
         if (!virDeviceInfoPCIAddressWanted(&def->nets[i]->info))
             continue;
-        if (virDomainPCIAddressReserveNextSlot(addrs,
-                                               &def->nets[i]->info,
-                                               VIR_PCI_CONNECT_TYPE_PCI_DEVICE) < 0)
+        if (virDomainPCIAddressReserveNextAddr(addrs, &def->nets[i]->info,
+                                               VIR_PCI_CONNECT_TYPE_PCI_DEVICE,
+                                               -1) < 0) {
             goto error;
+        }
     }
 
     for (i = 0; i < def->ndisks; i++) {
         if (def->disks[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
             !virPCIDeviceAddressIsEmpty(&def->disks[i]->info.addr.pci))
             continue;
-        if (virDomainPCIAddressReserveNextSlot(addrs,
-                                               &def->disks[i]->info,
-                                               VIR_PCI_CONNECT_TYPE_PCI_DEVICE) < 0)
+        if (virDomainPCIAddressReserveNextAddr(addrs, &def->disks[i]->info,
+                                               VIR_PCI_CONNECT_TYPE_PCI_DEVICE,
+                                               -1) < 0)
             goto error;
     }
 
@@ -122,9 +123,10 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
                 !virDeviceInfoPCIAddressWanted(&def->controllers[i]->info))
                 continue;
 
-            if (virDomainPCIAddressReserveNextSlot(addrs,
+            if (virDomainPCIAddressReserveNextAddr(addrs,
                                                    &def->controllers[i]->info,
-                                                   VIR_PCI_CONNECT_TYPE_PCI_DEVICE) < 0)
+                                                   VIR_PCI_CONNECT_TYPE_PCI_DEVICE,
+                                                   -1) < 0)
                 goto error;
         }
 

@@ -629,7 +629,7 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
         ret = virDomainPCIAddressReserveAddr(addrs, &dev->addr.pci,
                                              flags, true);
     } else {
-        ret = virDomainPCIAddressReserveNextSlot(addrs, dev, flags);
+        ret = virDomainPCIAddressReserveNextAddr(addrs, dev, flags, -1);
     }
 
  cleanup:
@@ -894,15 +894,6 @@ virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
     }
 
     return 0;
-}
-
-
-int
-virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
-                                   virDomainDeviceInfoPtr dev,
-                                   virDomainPCIConnectFlags flags)
-{
-    return virDomainPCIAddressReserveNextAddr(addrs, dev, flags, -1);
 }
 
 
