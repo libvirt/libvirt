@@ -3156,6 +3156,7 @@ static int lxcDomainResume(virDomainPtr dom)
     virDomainObjPtr vm;
     virObjectEventPtr event = NULL;
     int ret = -1;
+    int state;
     virLXCDomainObjPrivatePtr priv;
     virLXCDriverConfigPtr cfg = virLXCDriverGetConfig(driver);
 
@@ -3176,7 +3177,12 @@ static int lxcDomainResume(virDomainPtr dom)
         goto endjob;
     }
 
-    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
+    state = virDomainObjGetState(vm, NULL);
+    if (state == VIR_DOMAIN_RUNNING) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is already running"));
+        goto endjob;
+    } else if (state == VIR_DOMAIN_PAUSED) {
         if (virCgroupSetFreezerState(priv->cgroup, "THAWED") < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            "%s", _("Resume operation failed"));
