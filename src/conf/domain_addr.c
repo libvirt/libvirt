@@ -770,7 +770,7 @@ virDomainPCIAddressFindUnusedFunctionOnBus(virDomainPCIAddressBusPtr bus,
 
 
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-virDomainPCIAddressGetNextSlot(virDomainPCIAddressSetPtr addrs,
+virDomainPCIAddressGetNextAddr(virDomainPCIAddressSetPtr addrs,
                                virPCIDeviceAddressPtr next_addr,
                                int function,
                                virDomainPCIConnectFlags flags)
@@ -879,7 +879,7 @@ virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
 {
     virPCIDeviceAddress addr;
 
-    if (virDomainPCIAddressGetNextSlot(addrs, &addr, function, flags) < 0)
+    if (virDomainPCIAddressGetNextAddr(addrs, &addr, function, flags) < 0)
         return -1;
 
     if (virDomainPCIAddressReserveAddr(addrs, &addr, flags, false) < 0)
