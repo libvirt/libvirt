@@ -5189,6 +5189,13 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
 
+    if ((def && def->virtType == VIR_DOMAIN_VIRT_QEMU) ||
+        (persistentDef && persistentDef->virtType == VIR_DOMAIN_VIRT_QEMU)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Virt type 'qemu' does not support vCPU pinning"));
+        goto endjob;
+    }
+
     if (persistentDef &&
         !(vcpuinfo = virDomainDefGetVcpu(persistentDef, vcpu))) {
         virReportError(VIR_ERR_INVALID_ARG,
