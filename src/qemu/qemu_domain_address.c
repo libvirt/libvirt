@@ -935,21 +935,11 @@ qemuDomainFillDevicePCIConnectFlags(virDomainDefPtr def,
 
 
 static int
-qemuDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
-                                    virDomainDeviceInfoPtr dev,
-                                    unsigned int function)
-{
-    return virDomainPCIAddressReserveNextAddr(addrs, dev,
-                                              dev->pciConnectFlags,
-                                              function);
-}
-
-
-static int
 qemuDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
                                     virDomainDeviceInfoPtr dev)
 {
-    return qemuDomainPCIAddressReserveNextAddr(addrs, dev, -1);
+    return virDomainPCIAddressReserveNextAddr(addrs, dev,
+                                              dev->pciConnectFlags, -1);
 }
 
 
@@ -1688,8 +1678,9 @@ qemuDomainAssignDevicePCISlots(virDomainDefPtr def,
             } else {
                 /* This is the first part of the controller, so need
                  * to find a free slot & then reserve this function */
-                if (qemuDomainPCIAddressReserveNextAddr(addrs, &cont->info,
-                                                        addr.function) < 0) {
+                if (virDomainPCIAddressReserveNextAddr(addrs, &cont->info,
+                                                       cont->info.pciConnectFlags,
+                                                       addr.function) < 0) {
                     goto error;
                 }
 
