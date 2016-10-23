@@ -534,10 +534,10 @@ virDomainPCIAddressSlotInUse(virDomainPCIAddressSetPtr addrs,
  * XML).
  */
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
-                               virPCIDeviceAddressPtr addr,
-                               virDomainPCIConnectFlags flags,
-                               bool fromConfig)
+virDomainPCIAddressReserveAddrInternal(virDomainPCIAddressSetPtr addrs,
+                                       virPCIDeviceAddressPtr addr,
+                                       virDomainPCIConnectFlags flags,
+                                       bool fromConfig)
 {
     int ret = -1;
     char *addrStr = NULL;
@@ -591,7 +591,7 @@ virDomainPCIAddressReserveSlot(virDomainPCIAddressSetPtr addrs,
                                virPCIDeviceAddressPtr addr,
                                virDomainPCIConnectFlags flags)
 {
-    return virDomainPCIAddressReserveAddr(addrs, addr, flags, true);
+    return virDomainPCIAddressReserveAddrInternal(addrs, addr, flags, true);
 }
 
 int
@@ -626,8 +626,8 @@ virDomainPCIAddressEnsureAddr(virDomainPCIAddressSetPtr addrs,
                                          addrStr, flags, true))
             goto cleanup;
 
-        ret = virDomainPCIAddressReserveAddr(addrs, &dev->addr.pci,
-                                             flags, true);
+        ret = virDomainPCIAddressReserveAddrInternal(addrs, &dev->addr.pci,
+                                                     flags, true);
     } else {
         ret = virDomainPCIAddressReserveNextAddr(addrs, dev, flags, -1);
     }
@@ -882,7 +882,7 @@ virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSetPtr addrs,
     if (virDomainPCIAddressGetNextAddr(addrs, &addr, function, flags) < 0)
         return -1;
 
-    if (virDomainPCIAddressReserveAddr(addrs, &addr, flags, false) < 0)
+    if (virDomainPCIAddressReserveAddrInternal(addrs, &addr, flags, false) < 0)
         return -1;
 
     addrs->lastaddr = addr;
