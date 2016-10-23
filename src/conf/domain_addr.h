@@ -150,12 +150,6 @@ int virDomainPCIAddressSetGrow(virDomainPCIAddressSetPtr addrs,
                                virDomainPCIConnectFlags flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
-                                   virPCIDeviceAddressPtr addr,
-                                   virDomainPCIConnectFlags flags,
-                                   bool fromConfig)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
 int virDomainPCIAddressReserveSlot(virDomainPCIAddressSetPtr addrs,
                                    virPCIDeviceAddressPtr addr,
                                    virDomainPCIConnectFlags flags)

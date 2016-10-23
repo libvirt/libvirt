@@ -100,7 +100,6 @@ virDomainPCIAddressBusSetModel;
 virDomainPCIAddressEnsureAddr;
 virDomainPCIAddressFlagsCompatible;
 virDomainPCIAddressReleaseSlot;
-virDomainPCIAddressReserveAddr;
 virDomainPCIAddressReserveNextAddr;
 virDomainPCIAddressReserveSlot;
 virDomainPCIAddressSetAllMulti;
