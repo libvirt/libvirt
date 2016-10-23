@@ -587,7 +587,7 @@ virDomainPCIAddressReserveAddrInternal(virDomainPCIAddressSetPtr addrs,
 
 
 int
-virDomainPCIAddressReserveSlot(virDomainPCIAddressSetPtr addrs,
+virDomainPCIAddressReserveAddr(virDomainPCIAddressSetPtr addrs,
                                virPCIDeviceAddressPtr addr,
                                virDomainPCIConnectFlags flags)
 {
