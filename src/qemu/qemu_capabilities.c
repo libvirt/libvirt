@@ -3430,6 +3430,9 @@ virQEMUCapsReset(virQEMUCapsPtr qemuCaps)
 
     VIR_FREE(qemuCaps->gicCapabilities);
     qemuCaps->ngicCapabilities = 0;
+
+    virCPUDefFree(qemuCaps->hostCPUModel);
+    qemuCaps->hostCPUModel = NULL;
 }
 
 
