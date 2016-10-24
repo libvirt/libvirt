@@ -1517,9 +1517,7 @@ typedef enum {
 struct _virDomainRedirdevDef {
     int bus; /* enum virDomainRedirdevBus */
 
-    union {
-        virDomainChrSourceDefPtr chr;
-    } source;
+    virDomainChrSourceDefPtr source;
 
     virDomainDeviceInfo info; /* Guest address */
 };

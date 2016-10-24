@@ -1529,7 +1529,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     if (VIR_REALLOC_N(def->redirdevs, def->nredirdevs+1) < 0)
         goto cleanup;
 
-    if (qemuDomainGetChardevTLSObjects(cfg, priv, redirdev->source.chr,
+    if (qemuDomainGetChardevTLSObjects(cfg, priv, redirdev->source,
                                        charAlias, &tlsProps, &tlsAlias) < 0)
         goto cleanup;
 
@@ -1545,7 +1545,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
 
     if (qemuMonitorAttachCharDev(priv->mon,
                                  charAlias,
-                                 redirdev->source.chr) < 0)
+                                 redirdev->source) < 0)
         goto exit_monitor;
     chardevAdded = true;
 
