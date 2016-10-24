@@ -6186,6 +6186,72 @@ qemuDomainPrepareChannel(virDomainChrDefPtr channel,
 }
 
 
+/* qemuProcessPrepareDomainChardevSourceTLS:
+ * @source: pointer to host interface data for char devices
+ * @cfg: driver configuration
+ *
+ * Updates host interface TLS encryption setting based on qemu.conf
+ * for char devices.  This will be presented as "tls='yes|no'" in
+ * live XML of a guest.
+ */
+void
+qemuDomainPrepareChardevSourceTLS(virDomainChrSourceDefPtr source,
+                                  virQEMUDriverConfigPtr cfg)
+{
+    if (source->type == VIR_DOMAIN_CHR_TYPE_TCP) {
+        if (source->data.tcp.haveTLS == VIR_TRISTATE_BOOL_ABSENT) {
+            if (cfg->chardevTLS)
+                source->data.tcp.haveTLS = VIR_TRISTATE_BOOL_YES;
+            else
+                source->data.tcp.haveTLS = VIR_TRISTATE_BOOL_NO;
+        }
+    }
+}
+
+
+/* qemuProcessPrepareDomainChardevSource:
+ * @def: live domain definition
+ * @driver: qemu driver
+ *
+ * Iterate through all devices that use virDomainChrSourceDefPtr as host
+ * interface part.
+ */
+void
+qemuDomainPrepareChardevSource(virDomainDefPtr def,
+                               virQEMUDriverPtr driver)
+{
+    size_t i;
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+
+    for (i = 0; i < def->nserials; i++)
+        qemuDomainPrepareChardevSourceTLS(def->serials[i]->source, cfg);
+
+    for (i = 0; i < def->nparallels; i++)
+        qemuDomainPrepareChardevSourceTLS(def->parallels[i]->source, cfg);
+
+    for (i = 0; i < def->nchannels; i++)
+        qemuDomainPrepareChardevSourceTLS(def->channels[i]->source, cfg);
+
+    for (i = 0; i < def->nconsoles; i++)
+        qemuDomainPrepareChardevSourceTLS(def->consoles[i]->source, cfg);
+
+    for (i = 0; i < def->nrngs; i++)
+        if (def->rngs[i]->backend == VIR_DOMAIN_RNG_BACKEND_EGD)
+            qemuDomainPrepareChardevSourceTLS(def->rngs[i]->source.chardev, cfg);
+
+    for (i = 0; i < def->nsmartcards; i++)
+        if (def->smartcards[i]->type == VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH)
+            qemuDomainPrepareChardevSourceTLS(def->smartcards[i]->data.passthru,
+                                              cfg);
+
+    for (i = 0; i < def->nredirdevs; i++)
+        qemuDomainPrepareChardevSourceTLS(def->redirdevs[i]->source, cfg);
+
+    virObjectUnref(cfg);
+}
+
+
+
 int
 qemuDomainPrepareShmemChardev(virDomainShmemDefPtr shmem)
 {

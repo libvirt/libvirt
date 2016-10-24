@@ -534,6 +534,7 @@ mymain(void)
     DO_TEST("serial-udp", NONE);
     DO_TEST("serial-tcp-telnet", NONE);
     DO_TEST("serial-tcp-tlsx509-chardev", NONE);
+    DO_TEST("serial-tcp-tlsx509-chardev-notls", NONE);
     DO_TEST("serial-many", NONE);
     DO_TEST("serial-spiceport", NONE);
     DO_TEST("serial-spiceport-nospice", NONE);

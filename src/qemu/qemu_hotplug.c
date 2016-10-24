@@ -1482,7 +1482,8 @@ qemuDomainGetChardevTLSObjects(virQEMUDriverConfigPtr cfg,
                                virJSONValuePtr *tlsProps,
                                char **tlsAlias)
 {
-    if (dev->type != VIR_DOMAIN_CHR_TYPE_TCP || !cfg->chardevTLS)
+    if (dev->type != VIR_DOMAIN_CHR_TYPE_TCP ||
+        dev->data.tcp.haveTLS != VIR_TRISTATE_BOOL_YES)
         return 0;
 
     if (qemuBuildTLSx509BackendProps(cfg->chardevTLSx509certdir,
@@ -1516,6 +1517,8 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriverPtr driver,
     virJSONValuePtr tlsProps = NULL;
     char *tlsAlias = NULL;
     virErrorPtr orig_err;
+
+    qemuDomainPrepareChardevSourceTLS(redirdev->source, cfg);
 
     if (qemuAssignDeviceRedirdevAlias(def, redirdev, -1) < 0)
         goto cleanup;
@@ -1771,6 +1774,8 @@ int qemuDomainAttachChrDevice(virQEMUDriverPtr driver,
         qemuDomainPrepareChannel(chr, priv->channelTargetDir) < 0)
         goto cleanup;
 
+    qemuDomainPrepareChardevSourceTLS(dev, cfg);
+
     if (qemuAssignDeviceChrAlias(vmdef, chr, -1) < 0)
         goto cleanup;
 
@@ -1900,6 +1905,9 @@ qemuDomainAttachRNGDevice(virQEMUDriverPtr driver,
                                       !rng->info.addr.ccw.assigned) < 0)
             goto cleanup;
     }
+
+    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD)
+        qemuDomainPrepareChardevSourceTLS(rng->source.chardev, cfg);
 
     /* build required metadata */
     if (!(devstr = qemuBuildRNGDevStr(vm->def, rng, priv->qemuCaps)))
@@ -4476,7 +4484,7 @@ int qemuDomainDetachChrDevice(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (tmpChr->source->type == VIR_DOMAIN_CHR_TYPE_TCP &&
-        cfg->chardevTLS &&
+        tmpChr->source->data.tcp.haveTLS == VIR_TRISTATE_BOOL_YES &&
         !(objAlias = qemuAliasTLSObjFromChardevAlias(charAlias)))
         goto cleanup;
 

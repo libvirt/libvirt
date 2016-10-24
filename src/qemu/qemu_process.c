@@ -5167,6 +5167,8 @@ qemuProcessPrepareDomain(virConnectPtr conn,
             goto cleanup;
     }
 
+    qemuDomainPrepareChardevSource(vm->def, driver);
+
     if (VIR_ALLOC(priv->monConfig) < 0)
         goto cleanup;
 
