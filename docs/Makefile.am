@@ -105,16 +105,12 @@ internals_html_in = \
   $(patsubst $(srcdir)/%,%,$(wildcard $(srcdir)/internals/*.html.in))
 internals_html = $(internals_html_in:%.html.in=%.html)
 
-# todo.html is special - it is shipped in the tarball, but we
-# have a dedicated 'todo' target to rebuild it from a proper
-# config file, all other users are able to build it locally.
-# For all other files, since we ship pre-built html in the
-# tarball, we must also ship the sources, even when those
-# sources are themselves generated.
+# Since we ship pre-built html in the tarball, we must also
+# ship the sources, even when those sources are themselves
+# generated.
 # Generate hvsupport.html first, since it takes one extra step.
 dot_html_in = \
   hvsupport.html.in \
-  todo.html.in \
   $(notdir $(wildcard $(srcdir)/*.html.in))
 dot_html = $(dot_html_in:%.html.in=%.html)
 
@@ -172,7 +168,7 @@ EXTRA_DIST=					\
   $(logofiles) $(patches) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
   $(internals_html_in) $(internals_html) \
   sitemap.html.in aclperms.htmlinc \
-  todo.pl hvsupport.pl todo.cfg-example \
+  hvsupport.pl \
   $(schema_DATA)
 
 acl_generated = aclperms.htmlinc
@@ -199,24 +195,6 @@ admin_api: $(srcdir)/libvirt-admin-api.xml $(srcdir)/libvirt-admin-refs.xml
 web: $(dot_html) $(internals_html) html/index.html devhelp/index.html \
   $(dot_php)
 
-todo.html.in: todo.pl
-	if [ -f  todo.cfg ]; then \
-		echo "Generating $@"; \
-		$(PERL) $< > $@ \
-		|| { rm $@ && exit 1; }; \
-	else \
-		echo "Stubbing $@"; \
-		printf "%s\n" \
-		  "<html xmlns=\"http://www.w3.org/1999/xhtml\">" \
-		  "<body>" \
-		  "<h1>Todo list unavailable: no config file</h1>" \
-		  "</body></html>" > $@ ; \
-	fi
-
-todo:
-	rm -f todo.html.in
-	$(MAKE) todo.html
-
 hvsupport.html: $(srcdir)/hvsupport.html.in
 
 $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
@@ -225,8 +203,6 @@ $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
 	$(top_srcdir)/src/driver.h
 	$(AM_V_GEN)$(PERL) $(srcdir)/hvsupport.pl $(top_srcdir)/src > $@ \
 		|| { rm $@ && exit 1; }
-
-.PHONY: todo
 
 %.png: %.fig
 	convert -rotate 90 $< $@
@@ -349,8 +325,7 @@ clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt *.html
 
 maintainer-clean-local: clean-local
-	rm -rf $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml \
-		todo.html.in
+	rm -rf $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml
 	rm -rf $(srcdir)/libvirt-qemu-api.xml $(srcdir)/libvirt-qemu-refs.xml
 	rm -rf $(srcdir)/libvirt-lxc-api.xml $(srcdir)/libvirt-lxc-refs.xml
 	rm -rf $(srcdir)/libvirt-admin-api.xml $(srcdir)/libvirt-admin-refs.xml
