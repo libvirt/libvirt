@@ -85,7 +85,6 @@ logofiles = \
 
 png = \
   32favicon.png \
-  libvirtLogo.png \
   libvirt-net-logical.png \
   libvirt-net-physical.png \
   libvirt-daemon-arch.png \
@@ -379,7 +378,6 @@ install-data-local:
 	for file in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
 	    $(INSTALL) -m 0644 $(srcdir)/$${file} $(DESTDIR)$(DEVHELP_DIR) ; \
 	done
-	$(INSTALL_DATA) $(srcdir)/libvirtLogo.png $(DESTDIR)$(pkgdatadir)
 
 uninstall-local:
 	for f in $(css) $(dot_html) $(gif) $(png); do \
@@ -396,4 +394,3 @@ uninstall-local:
 	for f in $(devhelphtml) $(devhelppng) $(devhelpcss); do \
 	  rm -f $(DESTDIR)$(DEVHELP_DIR)/$$(basename $$f); \
 	done
-	rm -f $(DESTDIR)$(pkgdatadir)/libvirtLogo.png

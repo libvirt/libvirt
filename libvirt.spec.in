@@ -1830,7 +1830,6 @@ exit 0
 %{_datadir}/libvirt/schemas/storagevol.rng
 
 %{_datadir}/libvirt/cpu_map.xml
-%{_datadir}/libvirt/libvirtLogo.png
 
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
 

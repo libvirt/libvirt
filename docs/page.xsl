@@ -141,6 +141,11 @@
         <meta name="description" content="libvirt, virtualization, virtualization API"/>
       </head>
       <body>
+        <xsl:if test="html:html/html:body/@class">
+          <xsl:attribute name="class">
+            <xsl:value-of select="html:html/html:body/@class"/>
+          </xsl:attribute>
+        </xsl:if>
         <div id="body">
           <div id="menu">
             <xsl:apply-templates select="exsl:node-set($sitemap)/html:ul" mode="menu">

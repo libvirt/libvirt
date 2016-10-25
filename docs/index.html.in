@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <body>
+  <body class="index">
     <h1>The virtualization API</h1>
 
-    <h2>libvirt is:</h2>
+    <div class="panel">
+    <h2>libvirt is</h2>
 
     <ul>
       <li>
@@ -36,8 +37,10 @@
         of their contributions.
       </li>
     </ul>
+    </div>
 
-    <h2>libvirt supports:</h2>
+    <div class="panel">
+    <h2>libvirt supports</h2>
 
     <ul>
       <li>
@@ -85,7 +88,10 @@
       </li>
     </ul>
 
-    <h2>libvirt provides:</h2>
+    </div>
+
+    <div class="panel">
+    <h2>libvirt provides</h2>
 
     <ul>
       <li>Remote management using TLS encryption and x509 certificates</li>
@@ -95,9 +101,9 @@
       <li>Management of virtual machines, virtual networks and storage</li>
       <li>Portable client API for Linux, Solaris and Windows</li>
     </ul>
+    </div>
 
-    <p class="image">
-      <img src="libvirtLogo.png" alt="libvirt Logo"/>
-    </p>
+    <br class="clear"/>
+
   </body>
 </html>
