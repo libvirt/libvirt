@@ -977,7 +977,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         !(actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
           actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
           actualType == VIR_DOMAIN_NET_TYPE_DIRECT ||
-          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET)) {
+          actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
+          actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Multiqueue network is not supported for: %s"),
                        virDomainNetTypeToString(actualType));
