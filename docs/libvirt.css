@@ -26,10 +26,36 @@
     display: block;
 }
 
+#jumplinks {
+    display: table-cell;
+    vertical-align: middle;
+    font-size: 16pt;
+    text-align: right;
+}
+
+#jumplinks ul {
+    list-style: none;
+}
+
+#jumplinks li {
+    display: inline;
+    padding-left: 2em;
+    font-weight: bold;
+}
+
+#jumplinks a {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+}
+
+#jumplinks a:hover {
+    color: rgb(255, 230, 0);
+}
+
 #search {
     display: table-cell;
     vertical-align: middle;
-    width: 20em;
+    width: 13em;
     text-align: right;
     padding: 1em;
 }

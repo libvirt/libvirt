@@ -161,6 +161,13 @@
           <div id="home">
             <a href="{$href_base}index.html">Home</a>
           </div>
+          <div id="jumplinks">
+            <ul>
+              <li><a href="downloads.html">Download</a></li>
+              <li><a href="contribute.html">Contribute</a></li>
+              <li><a href="docs.html">Learn</a></li>
+            </ul>
+          </div>
           <div id="search">
             <form action="{$href_base}search.php" enctype="application/x-www-form-urlencoded" method="get">
               <div>
