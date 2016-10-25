@@ -3176,6 +3176,9 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
+    qemuMonitorDriveDel(priv->mon, drivestr);
+    VIR_FREE(drivestr);
+
     /* If it fails, then so be it - it was a best shot */
     if (objAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, objAlias));
@@ -3186,8 +3189,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
         ignore_value(qemuMonitorDelObject(priv->mon, encAlias));
     VIR_FREE(encAlias);
 
-    qemuMonitorDriveDel(priv->mon, drivestr);
-    VIR_FREE(drivestr);
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         return -1;
 
