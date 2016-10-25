@@ -1,7 +1,3 @@
-h1, h2, h3, h4, h5, h6 {
-    color: #3c857c;
-}
-
 #nav {
     position: absolute;
     top: 0px;
@@ -541,6 +537,7 @@ br.clear {
 #footer h3 {
     margin:0px;
     font-size: 1em;
+    color: rgb(60, 133, 124);
 }
 
 #footer ul {
