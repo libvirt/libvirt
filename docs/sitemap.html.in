@@ -7,10 +7,6 @@
     <div id="sitemap">
     <ul>
       <li>
-        <a href="index.html">Home</a>
-        <span>Front page of the libvirt website</span>
-      </li>
-      <li>
         <a href="news.html">News</a>
         <span>Details of new features and bugs fixed in each release</span>
         <ul>

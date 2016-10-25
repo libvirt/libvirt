@@ -141,17 +141,6 @@
         <meta name="description" content="libvirt, virtualization, virtualization API"/>
       </head>
       <body>
-        <div id="header">
-          <div id="headerLogo"/>
-          <div id="headerSearch">
-            <form action="{$href_base}search.php" enctype="application/x-www-form-urlencoded" method="get">
-              <div>
-                <input id="query" name="query" type="text" size="12" value=""/>
-                <input id="submit" name="submit" type="submit" value="Search"/>
-              </div>
-            </form>
-          </div>
-        </div>
         <div id="body">
           <div id="menu">
             <xsl:apply-templates select="exsl:node-set($sitemap)/html:ul" mode="menu">
@@ -161,6 +150,19 @@
           </div>
           <div id="content">
             <xsl:apply-templates select="/html:html/html:body/*" mode="content"/>
+          </div>
+        </div>
+        <div id="nav">
+          <div id="home">
+            <a href="{$href_base}index.html">Home</a>
+          </div>
+          <div id="search">
+            <form action="{$href_base}search.php" enctype="application/x-www-form-urlencoded" method="get">
+              <div>
+                <input name="query" type="text" size="12" value=""/>
+                <input name="submit" type="submit" value="Go"/>
+              </div>
+            </form>
           </div>
         </div>
       </body>

@@ -85,8 +85,6 @@ logofiles = \
 
 png = \
   32favicon.png \
-  libvirt-header-bg.png \
-  libvirt-header-logo.png \
   libvirtLogo.png \
   libvirt-net-logical.png \
   libvirt-net-physical.png \

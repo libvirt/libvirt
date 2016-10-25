@@ -2,12 +2,66 @@ h1, h2, h3, h4, h5, h6 {
     color: #3c857c;
 }
 
-#header {
-    margin: 0px;
-    height: 104px;
+#nav {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100px;
+    background: rgb(0, 95, 97);
+    border-bottom: 3px solid rgb(60, 133, 124);
     width: 100%;
-    background: url(libvirt-header-bg.png);
+    display: table;
+}
+
+#home {
+    background-image: url(logos/logo-banner-light-256.png);
+    background-repeat: no-repeat;
+    background-position: left center;
+    height: 100px;
+    width: 269px;
+    margin-left: 1em;
+    text-indent: 100%; white-space: nowrap; overflow: hidden;
+}
+
+#home a {
+    color:  rgb(0, 95, 97);
+    height: 100px;
+    width: 269px;
+    display: block;
+}
+
+#search {
+    display: table-cell;
+    vertical-align: middle;
+    width: 20em;
+    text-align: right;
+    padding: 1em;
+}
+
+#search input {
     border: 0px;
+    height: 2em;
+}
+
+#search input[type=text] {
+    background: rgb(230, 230, 230);
+    color: rgb(0, 0, 0);
+    width: 10em;
+    padding: 0px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+#search input[type=submit] {
+    background: rgb(60, 133, 124);
+    color: rgb(255, 255, 255);
+    width: 3em;
+    font-weight: bold;
+}
+
+#search input[type=submit]:active,
+#search input[type=submit]:hover {
+    color: rgb(255, 230, 0);
 }
 
 #body {
@@ -16,6 +70,7 @@ h1, h2, h3, h4, h5, h6 {
     border: 0px;
     left: 0px;
     margin: 0px;
+    margin-top: 120px;
 }
 
 #content {
@@ -94,39 +149,6 @@ h1, h2, h3, h4, h5, h6 {
 #menu ul.l3 li .inactive,
 #menu ul.l3 li .active {
     padding-left: 3em;
-}
-
-#headerLogo {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    height: 104px;
-    width: 400px;
-    background: url(libvirt-header-logo.png);
-}
-
-#headerSearch {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    padding: 2em;
-    z-index: 10;
-}
-
-#headerSearch input {
-    border: 1px solid #999999;
-    color: #999999;
-    background: white;
-    padding: 3px;
-    font-size: 1em;
-}
-
-#headerSearch #submit {
-    border: 1px solid #999999;
-    background: #eeeeee;
-    color: black;
-    padding: 3px;
-    font-size: 1em;
 }
 
 #sitemap ul li {
