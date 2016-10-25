@@ -502,3 +502,49 @@ br.clear {
     clear: both;
     border: 0px;
 }
+
+#footer {
+    clear: both;
+    border-top: 3px solid rgb(60, 133, 124);
+    margin-top: 2em;
+    padding: 1em;
+    background: rgb(0, 95, 97);
+    color: rgb(255, 255, 255);
+}
+
+#footer a {
+    color: inherit;
+    text-decoration: none;
+}
+
+#footer a:hover {
+    color: rgb(255, 230, 0);
+}
+
+#conduct {
+    float: right;
+    text-align: right;
+    font-size: smaller;
+    margin-right: 3em;
+}
+
+#conduct a {
+    text-decoration: underline;
+}
+
+#contact, #community {
+    float: left;
+    padding: 0px;
+    margin-left: 3em;
+}
+
+#footer h3 {
+    margin:0px;
+    font-size: 1em;
+}
+
+#footer ul {
+    list-style: none;
+    margin: 0px;
+    font-size: smaller;
+}

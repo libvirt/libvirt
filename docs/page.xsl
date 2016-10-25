@@ -170,6 +170,28 @@
             </form>
           </div>
         </div>
+        <div id="footer">
+          <div id="contact">
+            <h3>Contact</h3>
+            <ul>
+              <li><a href="contact.html#email">email</a></li>
+              <li><a href="contact.html#irc">irc</a></li>
+            </ul>
+          </div>
+          <div id="community">
+            <h3>Community</h3>
+            <ul>
+              <li><a href="https://twitter.com/hashtag/libvirt">twitter</a></li>
+              <li><a href="https://plus.google.com/communities/109522598353007505282">google+</a></li>
+              <li><a href="http://stackoverflow.com/questions/tagged/libvirt">stackoverflow</a></li>
+              <li><a href="http://serverfault.com/questions/tagged/libvirt">serverfault</a></li>
+            </ul>
+          </div>
+          <div id="conduct">
+            Participants in the libvirt project agree to abide by <a href="governance.html#codeofconduct">the project code of conduct</a>
+          </div>
+          <br class="clear"/>
+        </div>
       </body>
     </html>
   </xsl:template>
