@@ -2,9 +2,8 @@ body {
   margin: 0em;
   padding: 0px;
   color: rgb(0,0,0);
-  font-family: sans-serif;
-  font-size: 90%;
   background: #ffffff;
+  font-family: LibvirtOverpass;
 }
 
 p, ul, ol, dl {
