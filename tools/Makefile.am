@@ -398,7 +398,7 @@ EXTRA_DIST += \
 
 if WITH_WIRESHARK_DISSECTOR
 
-ws_plugindir = $(prefix)$(plugindir)
+ws_plugindir = @plugindir@
 ws_plugin_LTLIBRARIES = wireshark/src/libvirt.la
 wireshark_src_libvirt_la_CPPFLAGS = \
 	-I wireshark/src $(WIRESHARK_DISSECTOR_CFLAGS)
