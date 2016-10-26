@@ -29,23 +29,24 @@ AC_DEFUN([LIBVIRT_CHECK_WIRESHARK],[
   if test "x$with_wireshark_dissector" != "xno" ; then
     if test "x$with_ws_plugindir" = "xcheck" ; then
       ws_plugindir="$($PKG_CONFIG --variable plugindir wireshark)"
-      ws_prefix="$($PKG_CONFIG --variable prefix wireshark)"
+      ws_exec_prefix="$($PKG_CONFIG --variable exec_prefix wireshark)"
       ws_modversion="$($PKG_CONFIG --modversion wireshark)"
       if test "x$ws_plugindir" = "x" ; then
         dnl On some systems the plugindir variable may not be stored within pkg config.
         dnl Fall back to older style of constructing the plugin dir path.
         ws_plugindir="$libdir/wireshark/plugins/$ws_modversion"
       else
-        if test "x$ws_prefix" = "x" ; then
-          dnl If the wireshark prefix cannot be retrieved from pkg-config,
-          dnl /usr is our best bet
-          ws_prefix="/usr"
+        if test "x$ws_exec_prefix" = "x" ; then
+          dnl If wireshark's exec_prefix cannot be retrieved from pkg-config,
+          dnl this is our best bet
+          ws_exec_prefix="/usr"
         fi
-        dnl Replace the wireshark prefix with our own.
-        dnl Note that $(prefix) is kept verbatim at this point in time, and will
-        dnl only be expanded later, when make is called: this makes it possible
-        dnl to override the prefix at compilation or installation time
-        ws_plugindir='$(prefix)'"${ws_plugindir#$ws_prefix}"
+        dnl Replace wireshark's exec_prefix with our own.
+        dnl Note that ${exec_prefix} is kept verbatim at this point in time,
+        dnl and will only be expanded later, when make is called: this makes
+        dnl it possible to override such prefix at compilation or installation
+        dnl time
+        ws_plugindir='${exec_prefix}'"${ws_plugindir#$ws_exec_prefix}"
       fi
     elif test "x$with_ws_plugindir" = "xno" || test "x$with_ws_plugindir" = "xyes"; then
       AC_MSG_ERROR([ws-plugindir must be used only with valid path])
