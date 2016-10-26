@@ -35,12 +35,14 @@ AC_DEFUN([LIBVIRT_CHECK_WIRESHARK],[
         dnl On some systems the plugindir variable may not be stored within pkg config.
         dnl Fall back to older style of constructing the plugin dir path.
         plugindir="$libdir/wireshark/plugins/$ws_modversion"
-      else
-        if test "x$ws_prefix" = "x" ; then
-          ws_prefix="/usr";
-        fi
-        plugindir="${plugindir#$ws_prefix}"
+        ws_prefix="$prefix"
       fi
+      if test "x$ws_prefix" = "x" ; then
+        dnl If the wireshark prefix cannot be retrieved from pkg-config,
+        dnl /usr is our best bet
+        ws_prefix="/usr"
+      fi
+      plugindir="${plugindir#$ws_prefix}"
     elif test "x$with_ws_plugindir" = "xno" || test "x$with_ws_plugindir" = "xyes"; then
       AC_MSG_ERROR([ws-plugindir must be used only with valid path])
     else
