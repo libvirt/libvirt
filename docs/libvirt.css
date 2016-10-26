@@ -204,7 +204,7 @@ pre {
 }
 
 a {
-    color: #566866;
+    color: rgb(0, 95, 97);
 }
 
 div.api {
@@ -570,4 +570,27 @@ br.clear {
     list-style: none;
     margin: 0px;
     font-size: smaller;
+}
+
+div.panel dd {
+    font-size: smaller;
+}
+
+div.panel a {
+    text-decoration: none;
+}
+
+div.panel ul,
+div.panel p,
+div.panel dl {
+    padding: 0.5em;
+    margin: 0px;
+}
+
+div.panel dt {
+    margin: 0px;
+}
+div.panel dd {
+    margin: 0px;
+    margin-bottom: 1em;
 }

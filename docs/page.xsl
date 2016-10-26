@@ -139,6 +139,7 @@
         <link rel="SHORTCUT ICON" href="{$href_base}32favicon.png"/>
         <title>libvirt: <xsl:value-of select="html:html/html:body/html:h1"/></title>
         <meta name="description" content="libvirt, virtualization, virtualization API"/>
+        <xsl:apply-templates select="/html:html/html:head/*" mode="content"/>
       </head>
       <body>
         <xsl:if test="html:html/html:body/@class">

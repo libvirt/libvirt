@@ -1,106 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="js/moment.min.js"></script>
+    <script type="text/javascript" src="js/jquery.rss.min.js"></script>
+
+    <script type="text/javascript">
+      <!--
+      jQuery(function($) {
+        $("#planet").rss("http://planet.virt-tools.org/atom.xml", {
+          ssl: true,
+          layoutTemplate: '<dl>{entries}</dl>',
+          entryTemplate: '<dt><a href="{url}">{title}</a></dt><dd>by {author} on {date}</li>',
+          dateFormat: 'DD MMM YYYY'
+        })
+      })
+      // -->
+    </script>
+  </head>
   <body class="index">
     <h1>The virtualization API</h1>
 
     <div class="panel">
-    <h2>libvirt is</h2>
-
-    <ul>
-      <li>
-        A toolkit to interact with the virtualization capabilities
-        of recent versions of Linux (and other OSes), see our
-        <a href="goals.html">project goals</a> for details.
-      </li>
-      <li>
-        Free software available under the
-        <a href="http://www.opensource.org/licenses/lgpl-license.html">GNU
-          Lesser General Public License</a>.
-      </li>
-
-      <li>
-        A long term stable C API
-      </li>
-      <li>
-        A set of bindings for common languages
-      </li>
-      <li>
-        A <a href="CIM/">CIM provider</a> for the DMTF virtualization schema
-      </li>
-      <li>
-        A <a href="/qpid/">QMF agent</a> for the AMQP/QPid messaging system
-      </li>
-      <li>
-        A <a href="governance.html">technical meritocracy</a>, in which
-        participants gain influence over a project through recognition
-        of their contributions.
-      </li>
-    </ul>
+      <h2>Introduction</h2>
+      <p>
+        The libvirt project:
+      </p>
+      <ul>
+        <li>is a toolkit to manage virtualization hosts</li>
+        <li>is accessible from C, Python, Perl, Java and more</li>
+        <li>is licensed under open source licenses</li>
+        <li>supports <a href="drvqemu.html">KVM</a>,
+          <a href="drvqemu.html">QEMU</a>, <a href="drvxen.html">Xen</a>,
+          <a href="drvvirtuozzo.html">Virtuozzo</a>,
+          <a href="drvesx.html">VMWare ESX</a>,
+          <a href="drvlxc.html">LXC</a>,
+          <a href="drvbhyve.html">BHyve</a> and
+          <a href="drivers.html">more</a></li>
+        <li>targets Linux, FreeBSD, <a href="windows.html">Windows</a> and OS-X</li>
+      </ul>
     </div>
 
     <div class="panel">
-    <h2>libvirt supports</h2>
+      <h2>Quick Links</h2>
 
-    <ul>
-      <li>
-        The <a href="http://libvirt.org/drvqemu.html">KVM/QEMU</a> Linux hypervisor
-      </li>
-      <li>
-        The <a href="http://libvirt.org/drvxen.html">Xen</a> hypervisor
-        on Linux and Solaris hosts.
-      </li>
-      <li>
-        The <a href="http://libvirt.org/drvlxc.html">LXC</a> Linux container system
-      </li>
-      <li>
-        The <a href="http://libvirt.org/drvopenvz.html">OpenVZ</a> Linux container system
-      </li>
-      <li>
-        The <a href="http://libvirt.org/drvuml.html">User Mode Linux</a> paravirtualized kernel
-      </li>
-      <li>
-        The <a href="http://libvirt.org/drvvbox.html">VirtualBox</a> hypervisor
-      </li>
-      <li>
-        The <a href="http://libvirt.org/drvesx.html">VMware ESX and GSX</a> hypervisors
-      </li>
-      <li>
-        The <a href="http://libvirt.org/drvvmware.html">VMware Workstation and Player</a> hypervisors
-      </li>
-      <li>
-        The <a href="http://libvirt.org/drvhyperv.html">Microsoft Hyper-V</a> hypervisor
-      </li>
-      <li>
-        The <a href="http://libvirt.org/drvphyp.html">IBM PowerVM</a> hypervisor
-      </li>
-      <li>
-        The <a href="http://libvirt.org/drvvirtuozzo.html">Virtuozzo</a> hypervisor
-      </li>
-      <li>
-        The <a href="http://libvirt.org/drvbhyve.html">Bhyve</a> hypervisor
-      </li>
-      <li>
-        Virtual networks using bridging, NAT, VEPA and VN-LINK.
-      </li>
-      <li>
-        Storage on IDE/SCSI/USB disks, FibreChannel, LVM, iSCSI, NFS and filesystems
-      </li>
-    </ul>
+      <dl>
+        <dt><a href="contribute.html">New contributors</a></dt>
+        <dd>Get involved in the libvirt community &amp; student outreach programs</dd>
 
+        <dt><a href="securityprocess.html">Security vulnerabilities</a></dt>
+        <dd>Report vulnerabilities to the libvirt security response team</dd>
+
+        <dt><a href="bugs.html">Bug reporting</a></dt>
+        <dd>View and report bugs in libvirt packages</dd>
+
+        <dt><a href="format.html">XML configuration</a></dt>
+        <dd>Description of the XML schemas for
+          <a href="formatdomain.html" shape="rect">domains</a>,
+          <a href="formatnetwork.html" shape="rect">networks</a>,
+          <a href="formatnwfilter.html" shape="rect">network filtering</a>,
+          <a href="formatstorage.html" shape="rect">storage</a>,
+          <a href="formatstorageencryption.html" shape="rect">storage encryption</a>,
+          <a href="formatcaps.html" shape="rect">capabilities</a>,
+          <a href="formatdomaincaps.html" shape="rect">domain capabilities</a>,
+          <a href="formatnode.html" shape="rect">node devices</a>,
+          <a href="formatsecret.html" shape="rect">secrets</a>,
+          <a href="formatsnapshot.html" shape="rect">snapshots</a></dd>
+        <dt><a href="http://wiki.libvirt.org">Wiki</a></dt>
+        <dd>Read further community contributed content</dd>
+      </dl>
     </div>
 
     <div class="panel">
-    <h2>libvirt provides</h2>
+      <h2>Blog Planet</h2>
+      <div id="planet">
+      </div>
 
-    <ul>
-      <li>Remote management using TLS encryption and x509 certificates</li>
-      <li>Remote management authenticating with Kerberos and SASL</li>
-      <li>Local access control using PolicyKit</li>
-      <li>Zero-conf discovery using Avahi multicast-DNS</li>
-      <li>Management of virtual machines, virtual networks and storage</li>
-      <li>Portable client API for Linux, Solaris and Windows</li>
-    </ul>
+      <p>
+        Read more on the <a href="http://planet.virt-tools.org/">Virt Tools blog planet</a>
+      </p>
     </div>
 
     <br class="clear"/>
