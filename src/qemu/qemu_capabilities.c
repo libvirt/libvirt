@@ -3015,7 +3015,6 @@ int
 virQEMUCapsLoadCache(virCapsPtr caps,
                      virQEMUCapsPtr qemuCaps,
                      const char *filename,
-                     time_t *qemuctime,
                      time_t *selfctime,
                      unsigned long *selfvers)
 {
@@ -3052,7 +3051,7 @@ virQEMUCapsLoadCache(virCapsPtr caps,
                        _("missing qemuctime in QEMU capabilities XML"));
         goto cleanup;
     }
-    *qemuctime = (time_t)l;
+    qemuCaps->ctime = (time_t)l;
 
     if (virXPathLongLong("string(./selfctime)", ctxt, &l) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -3453,7 +3452,7 @@ virQEMUCapsInitCached(virCapsPtr caps,
     int ret = -1;
     char *binaryhash = NULL;
     struct stat sb;
-    time_t qemuctime;
+    time_t qemuctime = qemuCaps->ctime;
     time_t selfctime;
     unsigned long selfvers;
 
@@ -3489,7 +3488,7 @@ virQEMUCapsInitCached(virCapsPtr caps,
     }
 
     if (virQEMUCapsLoadCache(caps, qemuCaps, capsfile,
-                             &qemuctime, &selfctime, &selfvers) < 0) {
+                             &selfctime, &selfvers) < 0) {
         VIR_WARN("Failed to load cached caps from '%s' for '%s': %s",
                  capsfile, qemuCaps->binary, virGetLastErrorMessage());
         virResetLastError();
@@ -3505,7 +3504,7 @@ virQEMUCapsInitCached(virCapsPtr caps,
         VIR_DEBUG("Outdated cached capabilities '%s' for '%s' "
                   "(%lld vs %lld, %lld vs %lld, %lu vs %lu)",
                   capsfile, qemuCaps->binary,
-                  (long long)qemuctime, (long long)qemuCaps->ctime,
+                  (long long)qemuCaps->ctime, (long long)qemuctime,
                   (long long)selfctime, (long long)virGetSelfLastChanged(),
                   selfvers, (unsigned long)LIBVIR_VERSION_NUMBER);
         ignore_value(unlink(capsfile));
@@ -3520,6 +3519,7 @@ virQEMUCapsInitCached(virCapsPtr caps,
 
     ret = 1;
  cleanup:
+    qemuCaps->ctime = qemuctime;
     VIR_FREE(binaryhash);
     VIR_FREE(capsfile);
     VIR_FREE(capsdir);
