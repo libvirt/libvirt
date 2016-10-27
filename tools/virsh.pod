@@ -2398,7 +2398,7 @@ succeed, and may take a variable length of time depending on what
 services must be shutdown in the domain.
 
 The exact behavior of a domain when it shuts down is set by the
-I<on_shutdown> parameter in the domain's XML definition.
+I<on_poweroff> parameter in the domain's XML definition.
 
 If I<domain> is transient, then the metadata of any snapshots will
 be lost once the guest stops running, but the snapshot contents still
