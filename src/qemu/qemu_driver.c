@@ -19907,6 +19907,7 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
     int ret = -1;
     char *new_dom_name = NULL;
     char *old_dom_name = NULL;
+    char *new_dom_cfg_file = NULL;
     char *old_dom_cfg_file = NULL;
 
     virCheckFlags(0, ret);
@@ -19916,10 +19917,11 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
     if (VIR_STRDUP(new_dom_name, new_name) < 0)
         goto cleanup;
 
-    if (!(old_dom_cfg_file = virDomainConfigFile(cfg->configDir,
-                                                 vm->def->name))) {
+    if (!(new_dom_cfg_file = virDomainConfigFile(cfg->configDir,
+                                                 new_dom_name)) ||
+        !(old_dom_cfg_file = virDomainConfigFile(cfg->configDir,
+                                                 vm->def->name)))
         goto cleanup;
-    }
 
     event_old = virDomainEventLifecycleNewFromObj(vm,
                                             VIR_DOMAIN_EVENT_UNDEFINED,
@@ -19948,6 +19950,7 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
 
  cleanup:
     VIR_FREE(old_dom_cfg_file);
+    VIR_FREE(new_dom_cfg_file);
     VIR_FREE(old_dom_name);
     VIR_FREE(new_dom_name);
     qemuDomainEventQueue(driver, event_old);
@@ -19961,6 +19964,10 @@ qemuDomainRenameCallback(virDomainObjPtr vm,
         vm->def->name = old_dom_name;
         old_dom_name = NULL;
     }
+
+    if (virFileExists(new_dom_cfg_file))
+        unlink(new_dom_cfg_file);
+
     goto cleanup;
 }
 
