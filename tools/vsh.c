@@ -2788,7 +2788,8 @@ vshReadlineParse(const char *text, int state)
                 /* No -- option provided and some other token given
                  * Try to find the default option.
                  */
-                if (!(opt = vshCmddefGetData(cmd, &opts_need_arg, &opts_seen))
+                if (!(opt = vshCmddefGetData(cmd, &const_opts_need_arg,
+                                             &const_opts_seen))
                     || opt->type == VSH_OT_BOOL)
                     goto error;
                 opt_exists = true;
