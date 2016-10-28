@@ -1410,20 +1410,22 @@ networkStartDhcpDaemon(virNetworkDriverStatePtr driver,
     int ret = -1;
     dnsmasqContext *dctx = NULL;
 
-    if (!(ipdef = virNetworkDefGetIPByIndex(network->def, AF_UNSPEC, 0))) {
-        /* no IP addresses, so we don't need to run */
-        ret = 0;
-        goto cleanup;
-    }
-
     /* see if there are any IP addresses that need a dhcp server */
-    for (i = 0; ipdef && !needDnsmasq;
-         ipdef = virNetworkDefGetIPByIndex(network->def, AF_UNSPEC, i + 1)) {
+    i = 0;
+    while ((ipdef = virNetworkDefGetIPByIndex(network->def, AF_UNSPEC, i))) {
+        i++;
         if (ipdef->nranges || ipdef->nhosts)
             needDnsmasq = true;
     }
 
+    if (i == 0) {
+        /* no IP addresses at all, so we don't need to run */
+        ret = 0;
+        goto cleanup;
+    }
+
     if (!needDnsmasq && network->def->dns.enable == VIR_TRISTATE_BOOL_NO) {
+        /* no DHCP services needed, and user disabled DNS service */
         ret = 0;
         goto cleanup;
     }
