@@ -7,9 +7,6 @@
   exclude-result-prefixes="xsl exsl html"
   version="1.0">
 
-  <!-- The sitemap.html.in page contains the master navigation structure -->
-  <xsl:variable name="sitemap" select="document('sitemap.html.in')/html:html/html:body/html:div[@id='sitemap']"/>
-
   <xsl:template match="node() | @*" mode="content">
     <xsl:copy>
       <xsl:apply-templates select="node() | @*" mode="content"/>
@@ -23,57 +20,6 @@
 
   <xsl:template match="html:div[@id='include']" mode="content">
     <xsl:call-template name="include"/>
-  </xsl:template>
-
-  <!-- This processes the sitemap to form a context sensitive
-       navigation menu for the current page -->
-  <xsl:template match="html:ul" mode="menu">
-    <xsl:param name="pagename"/>
-    <xsl:param name="level"/>
-    <ul class="{concat('l', $level)}">
-      <xsl:for-each select="html:li">
-        <!-- The extra div tag here works around an IE6 whitespace collapsing problem -->
-        <li><div>
-          <!-- A menu is active if there is an 'a' tag with
-               a href matching this pagename at this level
-               or a child menu -->
-          <xsl:variable name="class">
-            <xsl:choose>
-              <xsl:when test="count(.//html:a[@href = $pagename]) > 0">
-                <xsl:text>active</xsl:text>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:text>inactive</xsl:text>
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:variable>
-
-          <!-- A menu should use a 'span' instead of 'a' if
-               the immediate 'a' tag has href matching the
-               current pagename -->
-          <xsl:choose>
-            <xsl:when test="$pagename = html:a/@href">
-              <span class="{$class}"><xsl:value-of select="html:a"/></span>
-            </xsl:when>
-            <xsl:when test="starts-with(html:a/@href, 'http://wiki.libvirt.org')">
-              <a title="{./html:span}" class="{$class}" href="{html:a/@href}"><xsl:value-of select="html:a"/></a>
-            </xsl:when>
-            <xsl:otherwise>
-              <a title="{./html:span}" class="{$class}" href="{concat($href_base, html:a/@href)}"><xsl:value-of select="html:a"/></a>
-            </xsl:otherwise>
-          </xsl:choose>
-
-          <!-- A sub-menu should only be expanded it contains
-               an 'a' tag with href matching this pagename -->
-          <xsl:if test="count(.//html:a[@href = $pagename]) > 0">
-            <xsl:apply-templates select="html:ul" mode="menu">
-              <xsl:with-param name="pagename" select="$pagename"/>
-              <xsl:with-param name="level" select="$level + 1"/>
-            </xsl:apply-templates>
-          </xsl:if>
-        </div></li>
-      </xsl:for-each>
-    </ul>
   </xsl:template>
 
   <xsl:template name="toc">
@@ -148,12 +94,6 @@
           </xsl:attribute>
         </xsl:if>
         <div id="body">
-          <div id="menu">
-            <xsl:apply-templates select="exsl:node-set($sitemap)/html:ul" mode="menu">
-              <xsl:with-param name="pagename" select="$pagename"/>
-              <xsl:with-param name="level" select="0"/>
-            </xsl:apply-templates>
-          </div>
           <div id="content">
             <xsl:apply-templates select="/html:html/html:body/*" mode="content"/>
           </div>

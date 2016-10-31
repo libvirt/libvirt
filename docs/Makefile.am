@@ -167,7 +167,7 @@ EXTRA_DIST=					\
   $(xml) $(qemu_xml) $(lxc_xml) $(admin_xml) $(fig) $(png) $(css) \
   $(logofiles) $(patches) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
   $(internals_html_in) $(internals_html) \
-  sitemap.html.in aclperms.htmlinc \
+  aclperms.htmlinc \
   hvsupport.pl \
   $(schema_DATA)
 
@@ -208,7 +208,7 @@ $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
 	convert -rotate 90 $< $@
 
 %.html.tmp: %.html.in site.xsl subsite.xsl page.xsl \
-		sitemap.html.in $(acl_generated)
+		$(acl_generated)
 	@if [ -x $(XSLTPROC) ] ; then \
 	  echo "Generating $@"; \
 	  name=`echo $@ | sed -e 's/.tmp//'`; \
@@ -234,7 +234,7 @@ $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
 	  || { rm $(srcdir)/$@ && exit 1; }; \
 	  else echo "missing XHTML1 DTD"; cat $< > $(srcdir)/$@ ; fi ; fi
 
-%.php.tmp: %.php.in site.xsl page.xsl sitemap.html.in
+%.php.tmp: %.php.in site.xsl page.xsl
 	@if [ -x $(XSLTPROC) ] ; then \
 	  echo "Generating $@"; \
 	  $(XSLTPROC) --stringparam pagename $(@:.tmp=) --nonet \
@@ -250,7 +250,7 @@ $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
 
 $(apihtml_generated): html/index.html
 
-html/index.html: libvirt-api.xml newapi.xsl page.xsl sitemap.html.in
+html/index.html: libvirt-api.xml newapi.xsl page.xsl
 	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
 	  $(XSLTPROC) --nonet -o $(srcdir)/ \
 	  --stringparam builddir '$(abs_top_builddir)' \

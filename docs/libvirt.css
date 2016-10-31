@@ -87,113 +87,27 @@
 }
 
 #body {
-    float: left;
-    width: 100%;
     border: 0px;
     left: 0px;
     margin: 0px;
     margin-top: 120px;
+    margin-left: 1em;
+    margin-right: 1em;
 }
 
 #content {
-    margin-left: 230px;
-    margin-right: 1em;
+    margin-left: auto;
+    margin-right: auto;
     padding: 0px;
     padding-bottom: 1em;
+    max-width: 60em;
 }
 
-#menu {
-    float: left;
-    width: 220px;
-    margin-bottom: 1em;
-}
-
-#menu ul {
-    margin: 0px;
-    padding: 0px;
-    margin-left: 40px;
-}
-
-#menu li ul {
-    margin-left: 0px;
-}
-
-#menu ul li {
-    list-style: none;
-    color: black;
-    padding: 0px;
-    margin: 0px;
-    border: 0px;
-}
-
-#menu ul li a, #menu ul li span {
-    text-decoration: inherit;
-    color: inherit;
-    display: block;
-    padding: 6px;
-    margin: 2px;
-}
-
-#menu ul li .active {
-    background: #a4c6c2;
-}
-
-#menu ul.l0 li .inactive {
-    background: #c5dbd8;
-}
-
-
-#menu ul.l1 li .inactive,
-#menu ul.l2 li .inactive {
-    background: #dfebea;
-    border-left: 8px solid #dfebea;
-}
-
-#menu ul.l1 li .inactive,
-#menu ul.l1 li .active {
-    padding-left: 1em;
-}
-
-#menu ul.l1 li .inactive {
-    border-left: 6px solid #dfebea;
-}
-
-#menu ul.l1 li .active {
-    border-left: 6px solid #a5c6c2;
-}
-
-#menu ul.l2 li .inactive,
-#menu ul.l2 li .active {
-    padding-left: 2em;
-    border-left: 8px solid #c5dbd8;
-}
-
-#menu ul.l3 li .inactive,
-#menu ul.l3 li .active {
-    padding-left: 3em;
-}
-
-#sitemap ul li {
-    list-style: none;
-}
-
-#sitemap ul {
-    margin: 1em;
-    padding: 0em;
-}
-
-#sitemap ul ul {
-    padding-left: 2em;
-}
-
-#sitemap li {
-    margin: 0.5em;
-}
-
-#sitemap a {
-    color: inherit;
-    text-decoration: underline;
-    font-weight: bold;
+body.index #content,
+body.docs #content,
+body.hvsupport #content
+{
+    max-width: inherit;
 }
 
 pre {
