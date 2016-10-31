@@ -232,6 +232,9 @@ struct _qemuDomainObjPrivate {
     /* private XML) - need to restore at process reconnect */
     uint8_t *masterKey;
     size_t masterKeyLen;
+
+    /* note whether memory device alias does not correspond to slot number */
+    bool memAliasOrderMismatch;
 };
 
 # define QEMU_DOMAIN_PRIVATE(vm)	\
