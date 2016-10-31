@@ -2,6 +2,165 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
-    <h1>Documentation</h1>
+    <div class="panel">
+      <h2>Deployment / operation</h2>
+
+      <dl>
+        <dt><a href="apps.html">Applications</a></dt>
+        <dd>Applications known to use libvirt</dd>
+
+        <dt><a href="windows.html">Windows</a></dt>
+        <dd>Downloads for Windows</dd>
+
+        <dt><a href="migration.html">Migration</a></dt>
+        <dd>Migrating guests between machines</dd>
+
+        <dt><a href="remote.html">Remote access</a></dt>
+        <dd>Enable remote access over TCP</dd>
+
+        <dt><a href="auth.html">Authentication</a></dt>
+        <dd>Configure authentication for the libvirt daemon</dd>
+
+        <dt><a href="acl.html">Access control</a></dt>
+        <dd>Configure access control libvirt APIs with <a href="aclpolkit.html">polkit</a></dd>
+
+        <dt><a href="logging.html">Logging</a></dt>
+        <dd>The library and the daemon logging support</dd>
+
+        <dt><a href="auditlog.html">Audit log</a></dt>
+        <dd>Audit trail logs for host operations</dd>
+
+        <dt><a href="firewall.html">Firewall</a></dt>
+        <dd>Firewall and network filter configuration</dd>
+
+        <dt><a href="hooks.html">Hooks</a></dt>
+        <dd>Hooks for system specific management</dd>
+
+        <dt><a href="nss.html">NSS module</a></dt>
+        <dd>Enable domain host name translation to IP addresses</dd>
+
+        <dt><a href="http://wiki.libvirt.org/page/FAQ">FAQ</a></dt>
+        <dd>Frequently asked questions</dd>
+      </dl>
+
+    </div>
+
+    <div class="panel">
+      <h2>Application development</h2>
+      <dl>
+        <dt><a href="devguide.html">Development Guide</a></dt>
+        <dd>A guide and reference for developing with libvirt</dd>
+
+        <dt><a href="virshcmdref.html">Virsh Commands</a></dt>
+        <dd>Command reference for virsh</dd>
+
+        <dt><a href="bindings.html">Language bindings</a></dt>
+        <dd>Bindings of the libvirt API for
+          <a href="csharp.html">c#</a>,
+          <a href="https://github.com/rgbkrk/libvirt-go">go</a>,
+          <a href="java.html">java</a>,
+          <a href="http://libvirt.org/ocaml/">ocaml</a>.
+          <a href="http://search.cpan.org/dist/Sys-Virt/">perl</a>,
+          <a href="python.html">python</a>,
+          <a href="php.html">php</a>,
+          <a href="http://libvirt.org/ruby/">ruby</a></dd>
+
+
+        <dt><a href="format.html">XML schemas</a></dt>
+        <dd>Description of the XML schemas for
+          <a href="formatdomain.html">domains</a>,
+          <a href="formatnetwork.html">networks</a>,
+          <a href="formatnwfilter.html">network filtering</a>,
+          <a href="formatstorage.html">storage</a>,
+          <a href="formatstorageencryption.html">storage encryption</a>,
+          <a href="formatcaps.html">capabilities</a>,
+          <a href="formatdomaincaps.html">domain capabilities</a>,
+          <a href="formatnode.html">node devices</a>,
+          <a href="formatsecret.html">secrets</a>,
+          <a href="formatsnapshot.html">snapshots</a></dd>
+
+        <dt><a href="uri.html">URI format</a></dt>
+        <dd>The URI formats used for connecting to libvirt</dd>
+
+        <dt><a href="locking.html">Disk locking</a></dt>
+        <dd>Ensuring exclusive guest access to disks with
+          <a href="locking-lockd.html">virtlockd</a> or
+          <a href="locking-sanlock.html">Sanlock</a></dd>
+
+        <dt><a href="cgroups.html">CGroups</a></dt>
+        <dd>Control groups integration</dd>
+
+        <dt><a href="html/index.html">API reference</a></dt>
+        <dd>Reference manual for the C public API, split in
+          <a href="html/libvirt-libvirt-common.html">common</a>,
+          <a href="html/libvirt-libvirt-domain.html">domain</a>,
+          <a href="html/libvirt-libvirt-domain-snapshot.html">domain snapshot</a>,
+          <a href="html/libvirt-virterror.html">error</a>,
+          <a href="html/libvirt-libvirt-event.html">event</a>,
+          <a href="html/libvirt-libvirt-host.html">host</a>,
+          <a href="html/libvirt-libvirt-interface.html">interface</a>,
+          <a href="html/libvirt-libvirt-network.html">network</a>,
+          <a href="html/libvirt-libvirt-nodedev.html">node device</a>,
+          <a href="html/libvirt-libvirt-nwfilter.html">network filter</a>,
+          <a href="html/libvirt-libvirt-secret.html">secret</a>,
+          <a href="html/libvirt-libvirt-storage.html">storage</a>,
+          <a href="html/libvirt-libvirt-stream.html">stream</a>
+        </dd>
+
+        <dt><a href="drivers.html">Drivers</a></dt>
+        <dd>Hypervisor specific driver information</dd>
+
+        <dt><a href="hvsupport.html">Driver support</a></dt>
+        <dd>matrix of API support per hypervisor per release</dd>
+
+        <dt><a href="secureusage.html">Secure usage</a></dt>
+        <dd>Secure usage of the libvirt APIs</dd>
+      </dl>
+    </div>
+
+    <div class="panel">
+      <h2>Project development</h2>
+      <dl>
+        <dt><a href="hacking.html">Contributor guidelines</a></dt>
+        <dd>General hacking guidelines for contributors</dd>
+
+        <dt><a href="bugs.html">Bug reports</a></dt>
+        <dd>How and where to report bugs and request features</dd>
+
+        <dt><a href="compiling.html">Compiling</a></dt>
+        <dd>How to compile libvirt</dd>
+
+        <dt><a href="goals.html">Goals</a></dt>
+        <dd>Terminology and goals of libvirt API</dd>
+
+        <dt><a href="api.html">API concepts</a></dt>
+        <dd>The libvirt API concepts</dd>
+
+        <dt><a href="api_extension.html">API extensions</a></dt>
+        <dd>Adding new public libvirt APIs</dd>
+
+        <dt><a href="internals/eventloop.html">Event loop and worker pool</a></dt>
+        <dd>Libvirt's event loop and worker pool mode</dd>
+
+        <dt><a href="internals/command.html">Spawning commands</a></dt>
+        <dd>Spawning commands from libvirt driver code</dd>
+
+        <dt><a href="internals/rpc.html">RPC protocol &amp; APIs</a></dt>
+        <dd>RPC protocol information and API / dispatch guide</dd>
+
+        <dt><a href="internals/locking.html">Lock managers</a></dt>
+        <dd>Use lock managers to protect disk content</dd>
+
+        <dt><a href="internals/oomtesting.html">Out of memory testing</a></dt>
+        <dd>Simulating OOM conditions in the test suite</dd>
+
+        <dt><a href="testsuites.html">Functional testing</a></dt>
+        <dd>Testing libvirt with <a href="testtck.html">TCK test suite</a> and
+         <a href="testapi.html">Libvirt-test-API</a></dd>
+      </dl>
+    </div>
+
+    <br class="clear"/>
+
   </body>
 </html>

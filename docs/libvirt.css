@@ -596,6 +596,10 @@ div.panel dl {
     margin: 0px;
 }
 
+
+div.panel ul {
+    margin-left: 1em;
+}
 div.panel dt {
     margin: 0px;
 }
