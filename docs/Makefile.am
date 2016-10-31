@@ -85,8 +85,6 @@ logofiles = \
 
 png = \
   32favicon.png \
-  libvirt-net-logical.png \
-  libvirt-net-physical.png \
   libvirt-daemon-arch.png \
   libvirt-driver-arch.png \
   libvirt-object-model.png \
@@ -144,8 +142,6 @@ api_DATA = \
        libvirt-admin-api.xml
 
 fig = \
-  libvirt-net-logical.fig \
-  libvirt-net-physical.fig \
   libvirt-daemon-arch.fig \
   libvirt-driver-arch.fig \
   libvirt-object-model.fig \
