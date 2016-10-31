@@ -1231,7 +1231,7 @@ exclude_file_name_regexp--sc_prohibit_mixed_case_abbreviations = \
   ^src/(vbox/vbox_CAPI.*.h|esx/esx_vi.(c|h)|esx/esx_storage_backend_iscsi.c)$$
 
 exclude_file_name_regexp--sc_prohibit_empty_first_line = \
-  ^(README|daemon/THREADS\.txt|src/esx/README|docs/library.xen|tests/(vmwarever|virhostcpu)data/.*)$$
+  ^(README|daemon/THREADS\.txt|src/esx/README|tests/(vmwarever|virhostcpu)data/.*)$$
 
 exclude_file_name_regexp--sc_prohibit_useless_translation = \
   ^tests/virpolkittest.c
