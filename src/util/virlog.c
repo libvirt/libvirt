@@ -50,6 +50,7 @@
 #include "virtime.h"
 #include "intprops.h"
 #include "virstring.h"
+#include "configmake.h"
 
 /* Journald output is only supported on Linux new enough to expose
  * htole64.  */
@@ -105,6 +106,7 @@ struct _virLogOutput {
     char *name;
 };
 
+static char *virLogDefaultOutput;
 static virLogOutputPtr *virLogOutputs;
 static size_t virLogNbOutputs;
 
@@ -144,6 +146,96 @@ void
 virLogUnlock(void)
 {
     virMutexUnlock(&virLogMutex);
+}
+
+
+static int
+virLogSetDefaultOutputToStderr(void)
+{
+    return virAsprintf(&virLogDefaultOutput, "%d:stderr",
+                       virLogDefaultPriority);
+}
+
+
+static int
+virLogSetDefaultOutputToJournald(void)
+{
+    virLogPriority priority = virLogDefaultPriority;
+
+    /* By default we don't want to log too much stuff into journald as
+     * it may employ rate limiting and thus block libvirt execution. */
+    if (priority == VIR_LOG_DEBUG)
+        priority = VIR_LOG_INFO;
+
+    return virAsprintf(&virLogDefaultOutput, "%d:journald", priority);
+}
+
+
+static int
+virLogSetDefaultOutputToFile(const char *filename, bool privileged)
+{
+    int ret = -1;
+    char *logdir = NULL;
+    mode_t old_umask;
+
+    if (privileged) {
+        if (virAsprintf(&virLogDefaultOutput,
+                        "%d:file:%s/log/libvirt/%s", virLogDefaultPriority,
+                        LOCALSTATEDIR, filename) < 0)
+            goto cleanup;
+    } else {
+        if (!(logdir = virGetUserCacheDirectory()))
+            goto cleanup;
+
+        old_umask = umask(077);
+        if (virFileMakePath(logdir) < 0) {
+            umask(old_umask);
+            goto cleanup;
+        }
+        umask(old_umask);
+
+        if (virAsprintf(&virLogDefaultOutput, "%d:file:%s/%s",
+                        virLogDefaultPriority, logdir, filename) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(logdir);
+    return ret;
+}
+
+
+/*
+ * virLogSetDefaultOutput:
+ * @filename: the file that the output should be redirected to (only needed
+ *            when @godaemon equals true
+ * @godaemon: whether we're running daemonized
+ * @privileged: whether we're running with root privileges or not (session)
+ *
+ * Decides on what the default output (journald, file, stderr) should be
+ * according to @filename, @godaemon, @privileged. This function should be run
+ * exactly once at daemon startup, so no locks are used.
+ *
+ * Returns 0 on success, -1 in case of a failure.
+ */
+int
+virLogSetDefaultOutput(const char *filename, bool godaemon, bool privileged)
+{
+    if (!godaemon)
+        return virLogSetDefaultOutputToStderr();
+
+    if (access("/run/systemd/journal/socket", W_OK) >= 0)
+        return virLogSetDefaultOutputToJournald();
+
+    return virLogSetDefaultOutputToFile(filename, privileged);
+}
+
+
+char *
+virLogGetDefaultOutput(void)
+{
+    return virLogDefaultOutput;
 }
 
 
