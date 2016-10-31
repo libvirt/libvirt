@@ -248,10 +248,15 @@ p.image {
 
 .top_table {
     border-collapse: collapse;
+    min-width: 60%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .top_table th {
-    background: #a4c6c2;
+    background: rgb(0, 95, 97);
+    color: rgb(255, 255, 255);
+    padding: 0.5em;
 }
 
 .top_table th a {
@@ -260,7 +265,11 @@ p.image {
 }
 
 .top_table td, .top_table th {
-    border: 1px solid #999999;
+    border: 1px solid rgb(60, 133, 124);
+}
+
+.top_table td {
+    padding: 4px;
 }
 
 .top_table tr:hover td, .top_table col:hover td {

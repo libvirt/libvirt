@@ -6,15 +6,337 @@
 
     <ul id="toc"></ul>
 
-    <h2><a name="releases">Official Releases</a></h2>
+    <h2><a name="releases">Project modules</a></h2>
 
     <p>
-      The latest versions of the libvirt C library can be downloaded from:
+      The libvirt project maintains a number of inter-related modules beyond
+      the core C library/daemon.
+    </p>
+
+    <table class="top_table downloads">
+      <thead>
+        <tr>
+          <th>Module</th>
+          <th>Releases</th>
+          <th>GIT Repo</th>
+          <th>GIT Mirrors</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>libvirt</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/">ftp</a>
+            <a href="http://libvirt.org/sources/">http</a>
+            <a href="https://libvirt.org/sources/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt">github</a>
+          </td>
+        </tr>
+        <tr>
+          <th colspan="7">Language bindings</th>
+        </tr>
+        <tr>
+          <td>C#</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/csharp/">ftp</a>
+            <a href="http://libvirt.org/sources/csharp/">http</a>
+            <a href="https://libvirt.org/sources/csharp/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-csharp.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-csharp">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-csharp">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>Java</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/java/">ftp</a>
+            <a href="http://libvirt.org/sources/java/">http</a>
+            <a href="https://libvirt.org/sources/java/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-java.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-java">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-java">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>OCaml</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/ocaml/">ftp</a>
+            <a href="http://libvirt.org/sources/ocaml/">http</a>
+            <a href="https://libvirt.org/sources/ocaml/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-ocaml.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-ocaml">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-ocaml">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>Perl (Sys::Virt)</td>
+          <td>
+            <a href="http://search.cpan.org/dist/Sys-Virt/">cpan</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-perl.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-perl">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-perl">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>PHP</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/php/">ftp</a>
+            <a href="http://libvirt.org/sources/php/">http</a>
+            <a href="https://libvirt.org/sources/php/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-php.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-php">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-php">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>Python</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/python/">ftp</a>
+            <a href="http://libvirt.org/sources/python/">http</a>
+            <a href="https://libvirt.org/sources/python/">https</a>
+            <a href="https://pypi.python.org/pypi/libvirt-python">pypi</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-python.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-python">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-python">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>Ruby</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/ruby/">ftp</a>
+            <a href="http://libvirt.org/sources/ruby/">http</a>
+            <a href="https://libvirt.org/sources/ruby/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=ruby-libvirt.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/ruby-libvirt">gitlab</a>
+            <a href="https://github.com/libvirt/ruby-libvirt">github</a>
+          </td>
+        </tr>
+        <tr>
+          <th colspan="7">Integration modules</th>
+        </tr>
+        <tr>
+          <td>GLib / GConfig / GObject</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/glib/">ftp</a>
+            <a href="http://libvirt.org/sources/glib/">http</a>
+            <a href="https://libvirt.org/sources/glib/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-glib.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-glib">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-glib">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>CIM provider</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/CIM/">ftp</a>
+            <a href="http://libvirt.org/sources/CIM/">http</a>
+            <a href="https://libvirt.org/sources/CIM/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-cim.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-cim">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-cim">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>CIM utils</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/CIM/">ftp</a>
+            <a href="http://libvirt.org/sources/CIM/">http</a>
+            <a href="https://libvirt.org/sources/CIM/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libcmpiutil.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libcmpiutil">gitlab</a>
+            <a href="https://github.com/libvirt/libcmpiutil">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>SNMP</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/snmp/">ftp</a>
+            <a href="http://libvirt.org/sources/snmp/">http</a>
+            <a href="https://libvirt.org/sources/snmp/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-snmp.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-snmp">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-snmp">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>Application Sandbox</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/sandbox/">ftp</a>
+            <a href="http://libvirt.org/sources/sandbox/">http</a>
+            <a href="https://libvirt.org/sources/sandbox/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-sandbox.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-sandbox">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-sandbox">github</a>
+          </td>
+        </tr>
+        <tr>
+          <th colspan="7">Testing</th>
+        </tr>
+        <tr>
+          <td>TCK</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/tck/">ftp</a>
+            <a href="http://libvirt.org/sources/tck/">http</a>
+            <a href="https://libvirt.org/sources/tck/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-tck.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-tck">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-tck">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>Test API</td>
+          <td></td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-test-API.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-test-API">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-test-API">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>Jenkins Config</td>
+          <td></td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-jenkins-ci.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-jenkins-ci">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-jenkins-ci">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>CIM Test</td>
+          <td></td>
+          <td>
+            <a href="http://libvirt.org/git/?p=cimtest.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/cimtest">gitlab</a>
+            <a href="https://github.com/libvirt/cimtest">github</a>
+          </td>
+        </tr>
+        <tr>
+          <th colspan="7">Documentation</th>
+        </tr>
+        <tr>
+          <td>Publican Brand</td>
+          <td></td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-publican.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-publican">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-publican">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>App Development Guide</td>
+          <td></td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-appdev-guide.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-appdev-guide">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-appdev-guide">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>App Development Guide Python</td>
+          <td></td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-appdev-guide-python.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-appdev-guide-python">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-appdev-guide-python">github</a>
+          </td>
+        </tr>
+        <tr>
+          <td>virsh Command Reference</td>
+          <td></td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-virshcmdref.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-virshcmdref">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-virshcmdref">github</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Primary download site</h2>
+
+    <p>
+      Most modules have releases made available for download on the project
+      site, via FTP, HTTP or HTTPS. Some modules are instead made available
+      at alternative locations, for example, the Perl binding is made
+      available only on CPAN.
     </p>
 
     <ul>
       <li><a href="ftp://libvirt.org/libvirt/">libvirt.org FTP server</a></li>
       <li><a href="http://libvirt.org/sources/">libvirt.org HTTP server</a></li>
+      <li><a href="https://libvirt.org/sources/">libvirt.org HTTPS server</a></li>
     </ul>
 
     <h2><a name="hourly">Hourly development snapshots</a></h2>
@@ -35,23 +357,25 @@
     <h2><a name="schedule">Primary release schedule</a></h2>
 
     <p>
-      Libvirt follows a time based plan, with releases made once a month
-      on the 1st of each month give or take a few days. The only exception
-      is at the start of the year where there are two 6 weeks gaps (first
-      release in the middle of Jan, then skip the Feb release), giving
-      a total of 11 releases a year.
+      The core libvirt module follows a time based plan, with releases made
+      once a month on the 1st of each month give or take a few days. The only
+      exception is at the start of the year where there are two 6 weeks gaps
+      (first release in the middle of Jan, then skip the Feb release), giving
+      a total of 11 releases a year. The Python and Perl modules will aim to
+      release at the same time as the core libvirt module. Other modules have
+      independant ad-hoc releases with no fixed time schedle.
     </p>
 
     <h2><a name="numbering">Release numbering</a></h2>
 
     <p>
       Since libvirt 2.0.0, a time based version numbering rule
-      is applied. As such, the changes in version number have
-      do not have any implications with respect to the scope of
-      features or bugfixes included, the stability of the code,
-      or the API / ABI compatibility (libvirt API / ABI is guaranteed
-      stable forever). The rules applied for changing the libvirt
-      version number are:
+      is applied to the core library releases. As such, the changes
+      in version number have do not have any implications with respect
+      to the scope of features or bugfixes included, the stability of
+      the code, or the API / ABI compatibility (libvirt API / ABI is
+      guaranteed stable forever). The rules applied for changing the
+      libvirt version number are:
     </p>
 
     <dl>
@@ -68,13 +392,18 @@
     <p>
       Prior to 2.0.0, the major/minor numbers were incremented
       fairly arbitrarily, and maintenance releases appended a
-      fourth digit.
+      fourth digit. The language bindings will aim to use the
+      same version number as the most recent core library API
+      they support. The other modules have their own distinct
+      release numbering sequence, though they generally aim
+      to follow the above rules for incrementing major/minor/micro
+      digits.
     </p>
 
     <h2><a name="maintenance">Maintenance releases</a></h2>
     <p>
-      In the git repository are several stable maintenance branches,
-      matching the
+      In the git repository are several stable maintenance branches
+      for the core library, matching the
       pattern <code>v<i>major</i>.<i>minor</i>-maint</code>;
       these branches are forked off the corresponding
       <code>v<i>major</i>.<i>minor</i>.0</code> formal
@@ -88,7 +417,9 @@
       to the primary releases which are made once a month, there
       is no formal schedule for the maintenance releases, which
       are made whenever there is a need to make available key
-      bugfixes to downstream consumers.
+      bugfixes to downstream consumers. The language bindings
+      and other modules generally do not provide stable branch
+      releases.
     </p>
 
     <p>
@@ -100,22 +431,16 @@
     <h2><a name="git">GIT source repository</a></h2>
 
     <p>
-      Libvirt code source is now maintained in a <a href="http://git-scm.com/">git</a>
-      repository available on <a href="http://libvirt.org/git/">libvirt.org</a>:
+      All modules maintained by the libvirt project have their primary
+      source available in the <a href="http://libvirt.org/git/">project GIT server</a>.
+      Each module can be cloned anonymously using:
     </p>
 
     <pre>
-      git clone git://libvirt.org/libvirt.git</pre>
+      git clone git://libvirt.org/[module name].git</pre>
 
     <p>
-      It can also be browsed at:
-    </p>
-
-    <pre>
-      <a href="http://libvirt.org/git/?p=libvirt.git;a=summary">http://libvirt.org/git/?p=libvirt.git;a=summary</a></pre>
-
-    <p>
-      In addition to this repository, there are the following read-only git
+      In addition to this primary repository, there are the following read-only git
       repositories which mirror the master one. Note that we currently do not
       use the full set of features on these mirrors (e.g. pull requests on
       GitHub, so please don't use them). All patch review and discussion only
@@ -124,58 +449,8 @@
     </p>
 
     <pre>
-      <a href="https://github.com/libvirt/libvirt">https://github.com/libvirt/libvirt</a>
-      <a href="http://repo.or.cz/w/libvirt.git">http://repo.or.cz/w/libvirt.git</a>
-      <a href="https://gitlab.com/libvirt/libvirt">https://gitlab.com/libvirt/libvirt</a></pre>
+      <a href="https://github.com/libvirt/">https://github.com/libvirt/</a>
+      <a href="https://gitlab.com/libvirt/libvirt">https://gitlab.com/libvirt/</a></pre>
 
-    <br />
-
-    <h1>libvirt Application Development Guide</h1>
-
-    <p>
-      The guide is both a learning tool for developing with libvirt and an
-      API reference document. It is a work in progress, composed by a
-      professional author from contributions written by members of the
-      libvirt team.
-    </p>
-
-    <p>
-      Contributions to the guide are <b>VERY</b> welcome. If you'd like to get
-      your name on this and demonstrate your virtualisation prowess, a solid
-      contribution to the content here will do it. :)
-    </p>
-
-    <h2><a name="appdevpdf">Application Development Guide PDF</a></h2>
-
-    <p>
-      PDF download is available here:
-    </p>
-
-    <ul>
-      <li><a href="http://libvirt.org/guide/pdf/Application_Development_Guide.pdf">libvirt App Dev Guide</a> (PDF)</li>
-    </ul>
-
-    <h2><a name="appdevgit">Application Development Guide source GIT repository</a></h2>
-
-    <p>
-      The source is also in a git repository:
-    </p>
-
-    <pre>
-      git clone git://libvirt.org/libvirt-appdev-guide.git</pre>
-
-    <p>
-      Browsable at:
-    </p>
-
-    <pre>
-      <a href="http://libvirt.org/git/?p=libvirt-appdev-guide.git;a=summary">http://libvirt.org/git/?p=libvirt-appdev-guide.git;a=summary</a></pre>
-
-    <br />
-
-    <p>
-      Once you've have obtained the libvirt source code, you can compile it
-      using the <a href="compiling.html">instructions here</a>.
-    </p>
   </body>
 </html>
