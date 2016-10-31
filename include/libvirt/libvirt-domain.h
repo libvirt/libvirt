@@ -2488,6 +2488,13 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC "size_iops_sec"
 
+/**
+ * VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME:
+ * Macro for the BlockIoTune tunable weight: it represents a group name to
+ * allow sharing of I/O throttling quota between multiple drives, as a string.
+ */
+# define VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME "group_name"
+
 int
 virDomainSetBlockIoTune(virDomainPtr dom,
                         const char *disk,
