@@ -675,26 +675,25 @@ daemonSetupLogging(struct daemonConfig *config,
      * Libvirtd's order of precedence is:
      * cmdline > environment > config
      *
-     * In order to achieve this, we must process configuration in
-     * different order for the log level versus the filters and
-     * outputs. Because filters and outputs append, we have to look at
-     * the environment first and then only check the config file if
-     * there was no result from the environment. The default output is
-     * then applied only if there was no setting from either of the
-     * first two. Because we don't have a way to determine if the log
-     * level has been set, we must process variables in the opposite
+     * The default output is applied only if there was no setting from either
+     * the config or the environment. Because we don't have a way to determine
+     * if the log level has been set, we must process variables in the opposite
      * order, each one overriding the previous.
      */
     if (config->log_level != 0)
         virLogSetDefaultPriority(config->log_level);
 
+    if (virLogSetDefaultOutput("libvirtd.log", godaemon, privileged) < 0)
+        return -1;
+
+    /* In case the config is empty, the filters become empty and outputs will
+     * be set to default
+     */
+    ignore_value(virLogSetFilters(config->log_filters));
+    ignore_value(virLogSetOutputs(config->log_outputs));
+
+    /* If there are some environment variables defined, use those instead */
     virLogSetFromEnv();
-
-    if (virLogGetNbFilters() == 0)
-        virLogSetFilters(config->log_filters);
-
-    if (virLogGetNbOutputs() == 0)
-        virLogSetOutputs(config->log_outputs);
 
     /*
      * Command line override for --verbose
@@ -702,76 +701,7 @@ daemonSetupLogging(struct daemonConfig *config,
     if ((verbose) && (virLogGetDefaultPriority() > VIR_LOG_INFO))
         virLogSetDefaultPriority(VIR_LOG_INFO);
 
-    /*
-     * If no defined outputs, and either running
-     * as daemon or not on a tty, then first try
-     * to direct it to the systemd journal
-     * (if it exists)....
-     */
-    if (virLogGetNbOutputs() == 0 &&
-        (godaemon || !isatty(STDIN_FILENO))) {
-        char *tmp;
-        if (access("/run/systemd/journal/socket", W_OK) >= 0) {
-            virLogPriority priority = virLogGetDefaultPriority();
-
-            /* By default we don't want to log too much stuff into journald as
-             * it may employ rate limiting and thus block libvirt execution. */
-            if (priority == VIR_LOG_DEBUG)
-                priority = VIR_LOG_INFO;
-
-            if (virAsprintf(&tmp, "%d:journald", priority) < 0)
-                goto error;
-            virLogSetOutputs(tmp);
-            VIR_FREE(tmp);
-        }
-    }
-
-    /*
-     * otherwise direct to libvirtd.log when running
-     * as daemon. Otherwise the default output is stderr.
-     */
-    if (virLogGetNbOutputs() == 0) {
-        char *tmp = NULL;
-
-        if (godaemon) {
-            if (privileged) {
-                if (virAsprintf(&tmp, "%d:file:%s/log/libvirt/libvirtd.log",
-                                virLogGetDefaultPriority(),
-                                LOCALSTATEDIR) == -1)
-                    goto error;
-            } else {
-                char *logdir = virGetUserCacheDirectory();
-                mode_t old_umask;
-
-                if (!logdir)
-                    goto error;
-
-                old_umask = umask(077);
-                if (virFileMakePath(logdir) < 0) {
-                    umask(old_umask);
-                    goto error;
-                }
-                umask(old_umask);
-
-                if (virAsprintf(&tmp, "%d:file:%s/libvirtd.log",
-                                virLogGetDefaultPriority(), logdir) == -1) {
-                    VIR_FREE(logdir);
-                    goto error;
-                }
-                VIR_FREE(logdir);
-            }
-        } else {
-            if (virAsprintf(&tmp, "%d:stderr", virLogGetDefaultPriority()) < 0)
-                goto error;
-        }
-        virLogSetOutputs(tmp);
-        VIR_FREE(tmp);
-    }
-
     return 0;
-
- error:
-    return -1;
 }
 
 
