@@ -603,3 +603,18 @@ div.panel dd {
     margin: 0px;
     margin-bottom: 1em;
 }
+
+dl.mail dt {
+    background: rgb(0, 97, 95);
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    padding: 0.5em;
+}
+dl.mail dt a {
+    color: inherit;
+    text-decoration: none;
+}
+dl.mail dt a:hover {
+    color:  rgb(255, 230, 0);
+    text-decoration: none;
+}
