@@ -1656,6 +1656,7 @@ virDomainDiskDefFree(virDomainDiskDefPtr def)
     VIR_FREE(def->vendor);
     VIR_FREE(def->product);
     VIR_FREE(def->domain_name);
+    VIR_FREE(def->blkdeviotune.group_name);
     virDomainDeviceInfoClear(&def->info);
     virObjectUnref(def->privateData);
 

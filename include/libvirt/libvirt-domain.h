@@ -3965,6 +3965,14 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
 # define VIR_DOMAIN_TUNABLE_BLKDEV_SIZE_IOPS_SEC "blkdeviotune.size_iops_sec"
 
 /**
+ * VIR_DOMAIN_TUNABLE_BLKDEV_GROUP_NAME:
+ *
+ * Macro represents the group name to be used,
+ * as VIR_TYPED_PARAM_STRING.
+ */
+# define VIR_DOMAIN_TUNABLE_BLKDEV_GROUP_NAME "blkdeviotune.group_name"
+
+/**
  * VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX_LENGTH:
  *
  * Macro represents the length in seconds allowed for a burst period

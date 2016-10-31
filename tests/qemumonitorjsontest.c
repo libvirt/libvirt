@@ -67,12 +67,13 @@ const char *queryBlockReply =
 "                \"iops_rd_max\": 11,"
 "                \"iops_wr_max\": 12,"
 "                \"iops_size\": 13,"
-"                \"bps_max_length\": 14,"
-"                \"bps_rd_max_length\": 15,"
-"                \"bps_wr_max_length\": 16,"
-"                \"iops_max_length\": 17,"
-"                \"iops_rd_max_length\": 18,"
-"                \"iops_wr_max_length\": 19,"
+"                \"group\": \"group14\","
+"                \"bps_max_length\": 15,"
+"                \"bps_rd_max_length\": 16,"
+"                \"bps_wr_max_length\": 17,"
+"                \"iops_max_length\": 18,"
+"                \"iops_rd_max_length\": 19,"
+"                \"iops_wr_max_length\": 20,"
 "                \"file\": \"/home/zippy/work/tmp/gentoo.qcow2\","
 "                \"encryption_key_missing\": false"
 "            },"
@@ -2008,6 +2009,55 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *data)
     return ret;
 }
 
+
+static int
+testValidateGetBlockIoThrottle(virDomainBlockIoTuneInfo info,
+                               virDomainBlockIoTuneInfo expectedInfo)
+{
+#define VALIDATE_IOTUNE(field) \
+    if (info.field != expectedInfo.field) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
+                       "info.%s=%llu != expected=%llu",  \
+                       #field, info.field, expectedInfo.field); \
+        return -1; \
+    } \
+    if (info.field##_max != expectedInfo.field##_max) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
+                       "info.%s_max=%llu != expected=%llu",  \
+                       #field, info.field##_max, expectedInfo.field##_max); \
+        return -1; \
+    } \
+    if (info.field##_max_length != expectedInfo.field##_max_length) { \
+        virReportError(VIR_ERR_INTERNAL_ERROR, \
+                       "info.%s_max_length=%llu != expected=%llu",  \
+                       #field, info.field##_max_length, \
+                       expectedInfo.field##_max_length); \
+        return -1; \
+    }
+    VALIDATE_IOTUNE(total_bytes_sec);
+    VALIDATE_IOTUNE(read_bytes_sec);
+    VALIDATE_IOTUNE(write_bytes_sec);
+    VALIDATE_IOTUNE(total_iops_sec);
+    VALIDATE_IOTUNE(read_iops_sec);
+    VALIDATE_IOTUNE(write_iops_sec);
+    if (info.size_iops_sec != expectedInfo.size_iops_sec) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "info.size_iops_sec=%llu != expected=%llu",
+                       info.size_iops_sec, expectedInfo.size_iops_sec);
+        return -1;
+    }
+    if (STRNEQ(info.group_name, expectedInfo.group_name)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "info.group_name=%s != expected=%s",
+                       info.group_name, expectedInfo.group_name);
+        return -1;
+    }
+#undef VALIDATE_IOTUNE
+
+    return 0;
+}
+
+
 static int
 testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *data)
 {
@@ -2019,7 +2069,9 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *data)
     if (!test)
         return -1;
 
-    expectedInfo = (virDomainBlockIoTuneInfo) {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+    expectedInfo = (virDomainBlockIoTuneInfo) {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, NULL, 15, 16, 17, 18, 19, 20};
+    if (VIR_STRDUP(expectedInfo.group_name, "group14") < 0)
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "query-block", queryBlockReply) < 0 ||
         qemuMonitorTestAddItemParams(test, "block_set_io_throttle",
@@ -2031,12 +2083,13 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *data)
                                      "bps_wr_max", "9",
                                      "iops_max", "10", "iops_rd_max", "11",
                                      "iops_wr_max", "12", "iops_size", "13",
-                                     "bps_max_length", "14",
-                                     "bps_rd_max_length", "15",
-                                     "bps_wr_max_length", "16",
-                                     "iops_max_length", "17",
-                                     "iops_rd_max_length", "18",
-                                     "iops_wr_max_length", "19",
+                                     "group", "\"group14\"",
+                                     "bps_max_length", "15",
+                                     "bps_rd_max_length", "16",
+                                     "bps_wr_max_length", "17",
+                                     "iops_max_length", "18",
+                                     "iops_rd_max_length", "19",
+                                     "iops_wr_max_length", "20",
                                      NULL, NULL) < 0)
         goto cleanup;
 
@@ -2044,19 +2097,18 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *data)
                                           "drive-virtio-disk0", &info) < 0)
         goto cleanup;
 
-    if (memcmp(&info, &expectedInfo, sizeof(info)) != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       "Invalid @info");
+    if (testValidateGetBlockIoThrottle(info, expectedInfo) < 0)
         goto cleanup;
-    }
 
     if (qemuMonitorJSONSetBlockIoThrottle(qemuMonitorTestGetMonitor(test),
                                           "drive-virtio-disk1", &info, true,
-                                          true) < 0)
+                                          true, true) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
+    VIR_FREE(info.group_name);
+    VIR_FREE(expectedInfo.group_name);
     qemuMonitorTestFree(test);
     return ret;
 }
