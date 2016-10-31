@@ -64,6 +64,25 @@ devhelpcss = devhelp/style.css
 
 devhelpxsl = devhelp/devhelp.xsl devhelp/html.xsl
 
+logofiles = \
+  logos/logo-base.svg \
+  logos/logo-square.svg \
+  logos/logo-square-powered.svg \
+  logos/logo-banner-dark.svg \
+  logos/logo-banner-light.svg \
+  logos/logo-square-96.png \
+  logos/logo-square-128.png \
+  logos/logo-square-192.png \
+  logos/logo-square-256.png \
+  logos/logo-square-powered-96.png \
+  logos/logo-square-powered-128.png \
+  logos/logo-square-powered-192.png \
+  logos/logo-square-powered-256.png \
+  logos/logo-banner-dark-256.png \
+  logos/logo-banner-dark-800.png \
+  logos/logo-banner-light-256.png \
+  logos/logo-banner-light-800.png
+
 png = \
   32favicon.png \
   libvirt-header-bg.png \
@@ -154,7 +173,7 @@ EXTRA_DIST=					\
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
   $(xml) $(qemu_xml) $(lxc_xml) $(admin_xml) $(fig) $(png) $(css) \
-  $(patches) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
+  $(logofiles) $(patches) $(dot_php_in) $(dot_php_code_in) $(dot_php)\
   $(internals_html_in) $(internals_html) \
   sitemap.html.in aclperms.htmlinc \
   todo.pl hvsupport.pl todo.cfg-example \
@@ -347,6 +366,9 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)
 	for f in $(css) $(dot_html) $(gif) $(png); do \
 	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR); done
+	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/logos
+	for f in $(logofiles); do \
+	  $(INSTALL) -m 0644 $(srcdir)/$$f $(DESTDIR)$(HTML_DIR)/logos; done
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/html
 	for h in $(apihtml); do \
 	  $(INSTALL) -m 0644 $(srcdir)/$$h $(DESTDIR)$(HTML_DIR)/html; done
@@ -363,6 +385,9 @@ install-data-local:
 
 uninstall-local:
 	for f in $(css) $(dot_html) $(gif) $(png); do \
+	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
+	done
+	for f in $(logofiles); do \
 	  rm -f $(DESTDIR)$(HTML_DIR)/$$f; \
 	done
 	for h in $(apihtml); do rm -f $(DESTDIR)$(HTML_DIR)/$$h; done
