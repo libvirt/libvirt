@@ -1748,6 +1748,94 @@ qemuDomainUSBAddressAddHubs(virDomainDefPtr def)
 }
 
 
+static virBitmapPtr
+qemuDomainGetMemorySlotMap(const virDomainDef *def)
+{
+    virBitmapPtr ret;
+    virDomainMemoryDefPtr mem;
+    size_t i;
+
+    if (!(ret = virBitmapNew(def->mem.memory_slots)))
+        return NULL;
+
+    for (i = 0; i < def->nmems; i++) {
+        mem = def->mems[i];
+
+        if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM)
+            ignore_value(virBitmapSetBit(ret, mem->info.addr.dimm.slot));
+    }
+
+    return ret;
+}
+
+
+static int
+qemuAssignMemoryDeviceSlot(virDomainMemoryDefPtr mem,
+                           virBitmapPtr slotmap)
+{
+    ssize_t nextslot = -1;
+
+    if (mem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM)
+        return 0;
+
+    if ((nextslot = virBitmapNextClearBit(slotmap, -1)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to find a emtpy memory slot"));
+        return -1;
+    }
+
+    ignore_value(virBitmapSetBit(slotmap, nextslot));
+    mem->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM;
+    mem->info.addr.dimm.slot = nextslot;
+
+    return 0;
+}
+
+
+int
+qemuDomainAssignMemoryDeviceSlot(virDomainDefPtr def,
+                                 virDomainMemoryDefPtr mem)
+{
+    virBitmapPtr slotmap = NULL;
+    int ret;
+
+    if (!(slotmap = qemuDomainGetMemorySlotMap(def)))
+        return -1;
+
+    ret = qemuAssignMemoryDeviceSlot(mem, slotmap);
+
+    virBitmapFree(slotmap);
+    return ret;
+}
+
+
+static int
+qemuDomainAssignMemorySlots(virDomainDefPtr def)
+{
+    virBitmapPtr slotmap = NULL;
+    int ret = -1;
+    size_t i;
+
+    if (!virDomainDefHasMemoryHotplug(def))
+        return 0;
+
+    if (!(slotmap = qemuDomainGetMemorySlotMap(def)))
+        return -1;
+
+    for (i = 0; i < def->nmems; i++) {
+        if (qemuAssignMemoryDeviceSlot(def->mems[i], slotmap) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virBitmapFree(slotmap);
+    return ret;
+
+}
+
+
 static int
 qemuDomainAssignUSBAddresses(virDomainDefPtr def,
                              virDomainObjPtr obj,
@@ -1825,6 +1913,9 @@ qemuDomainAssignAddresses(virDomainDefPtr def,
         return -1;
 
     if (qemuDomainAssignUSBAddresses(def, obj, newDomain) < 0)
+        return -1;
+
+    if (qemuDomainAssignMemorySlots(def) < 0)
         return -1;
 
     return 0;
