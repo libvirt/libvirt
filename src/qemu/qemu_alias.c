@@ -332,17 +332,34 @@ qemuAssignDeviceRNGAlias(virDomainDefPtr def,
 }
 
 
+/**
+ * qemuAssignDeviceMemoryAlias:
+ * @def: domain definition. Necessary only if @oldAlias is true.
+ * @mem: memory device definition
+ * @oldAlias: Generate the alias according to the order of the device in @def
+ *            rather than according to the slot number for legacy reasons.
+ *
+ * Generates alias for a memory device according to slot number if @oldAlias is
+ * false or according to order in @def->mems otherwise.
+ *
+ * Returns 0 on success, -1 on error.
+ */
 int
 qemuAssignDeviceMemoryAlias(virDomainDefPtr def,
-                            virDomainMemoryDefPtr mem)
+                            virDomainMemoryDefPtr mem,
+                            bool oldAlias)
 {
     size_t i;
     int maxidx = 0;
     int idx;
 
-    for (i = 0; i < def->nmems; i++) {
-        if ((idx = qemuDomainDeviceAliasIndex(&def->mems[i]->info, "dimm")) >= maxidx)
-            maxidx = idx + 1;
+    if (oldAlias) {
+        for (i = 0; i < def->nmems; i++) {
+            if ((idx = qemuDomainDeviceAliasIndex(&def->mems[i]->info, "dimm")) >= maxidx)
+                maxidx = idx + 1;
+        }
+    } else {
+        maxidx = mem->info.addr.dimm.slot;
     }
 
     if (virAsprintf(&mem->info.alias, "dimm%d", maxidx) < 0)
@@ -475,7 +492,7 @@ qemuAssignDeviceAliases(virDomainDefPtr def, virQEMUCapsPtr qemuCaps)
             return -1;
     }
     for (i = 0; i < def->nmems; i++) {
-        if (virAsprintf(&def->mems[i]->info.alias, "dimm%zu", i) < 0)
+        if (qemuAssignDeviceMemoryAlias(NULL, def->mems[i], false) < 0)
             return -1;
     }
 
