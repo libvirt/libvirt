@@ -16,6 +16,251 @@
     to gauge progress.
     </p>
 
+   <h3>v2.4.0: Nov 1 2016</h3>
+    <ul>
+      <li>Documentation:<br/>
+      docs: remove obsolete library.xen file (Daniel P. Berrange),<br/>
+      doc: update virsh domstats documentation for vcpu statistics (Viktor Mihajlovski),<br/>
+      doc: Describe the VCPU states returned by virsh vcpuinfo (Viktor Mihajlovski),<br/>
+      virsh: Fix typos in manpage (Nitesh Konkar),<br/>
+      virsh: Fix commas in manpage to enhance readability. (Nitesh Konkar),<br/>
+      docs: Alter descriptions of perf cpu_cycles (John Ferlan),<br/>
+      docs: Add PCP as monitoring application (Marko Myllynen),<br/>
+      docs: Fix typo in libvirt-domain.h parameter description (John Ferlan)<br/>
+      </li>
+
+      <li>Portability:<br/>
+      virLogDefineOutputs: Fix build without syslog.h (Michal Privoznik),<br/>
+      virt-yajl: Fix detection of yajl requirements (Martin Kletzander)<br/>
+      </li>
+
+      <li>Bug Fixes:<br/>
+      vsh: Pass correct values for command line completion (John Ferlan),<br/>
+      vsh: Using VSH_REQUIRE_OPTION rather than virReportError (Kothapally Madhu Pavan),<br/>
+      network: fix endless loop when starting network with multiple IPs and no dhcp (Laine Stump),<br/>
+      qemu_driver: unlink new domain cfg file when rollback (Chen Hanxiao),<br/>
+      qemu: Fix crash during qemuStateCleanup (Nikolay Shirokovskiy),<br/>
+      daemon: Fix crash during daemon cleanup (Nikolay Shirokovskiy),<br/>
+      qemu: Forbid pinning vCPUs for TCG domain (Chen Hanxiao),<br/>
+      Recreate the USB address cache at reconnect (Ján Tomko),<br/>
+      Fix crash on usb-serial hotplug (Ján Tomko),<br/>
+      virsh: Fix on_shutdown to on_poweroff (Martin Kletzander),<br/>
+      qemu, lxc: Raise error message when resuming running domain (Sławek Kapłoński),<br/>
+      qemu: Fix depedency order in qemuRemoveDiskDevice (John Ferlan),<br/>
+      qemu: Move TLS object remove from DetachChr to RemoveChr (John Ferlan),<br/>
+      libxl: fix leaking of allocated migration ports (Jim Fehlig),<br/>
+      domain: fix migration to older libvirt (Pavel Hrdina),<br/>
+      domain_conf: fix memory leak in virDomainDefAddConsoleCompat (Pavel Hrdina),<br/>
+      bhyve: Need to add parameter to virDomainChrDefNew (John Ferlan),<br/>
+      networkValidate: Forbid new-line char in network name (Sławek Kapłoński),<br/>
+      qemu: always generate the same alias for tls-creds-x509 object (Pavel Hrdina),<br/>
+      qemu_hotplug: fix crash in hot(un)plugging chardev devices (Pavel Hrdina),<br/>
+      util: Alter return value of virReadFCHost and fix mem leak (John Ferlan),<br/>
+      schema: smbios: allow any strings (Peter Krempa),<br/>
+      qemu: command: escape smbios entry strings (Peter Krempa),<br/>
+      testNodeGetCellsFreeMemory: Fix off by one error (Michal Privoznik),<br/>
+      virsh: vcpuinfo: Report proper vcpu numbers and data for offline VMs (Peter Krempa),<br/>
+      virsh: Fix xpath queries for retrieving vcpu count (Peter Krempa),<br/>
+      conf: Fix virDomainShmemDefFind (Martin Kletzander),<br/>
+      qemu: migration: Disallow migration of read only disk (Corey S. McQuay),<br/>
+      tests: Need to initialize data (John Ferlan),<br/>
+      vsh: Fix some issues in auto completion code (John Ferlan),<br/>
+      util: Resolve memory leaks in virLogParse{Output|Filter} (John Ferlan),<br/>
+      tools: Exclude Xen dom0 from libvirt-guests.sh list (Stefan Bader),<br/>
+      tools: Ignore newlines in libvirt-guests.sh guest list (Stefan Bader),<br/>
+      qemu: fix command line building for iommu devices (Daniel P. Berrange),<br/>
+      qemu: monitor: Properly configure backend for UDP chardevs (Peter Krempa),<br/>
+      qemu: attach: Close monitor socket on connection failure (Peter Krempa),<br/>
+      qemu: Don't strictly require JSON monitor for vCPU detection (Peter Krempa)<br/>
+      </li>
+
+      <li>Improvements:<br/>
+      qemu: Minimalize global driver accesses (Michal Privoznik),<br/>
+      vz: remove Bridged network name and rename Routed (Maxim Nestratov),<br/>
+      vz: support type=bridge network interface type correctly (Maxim Nestratov),<br/>
+      Do not try to release virtio serial addresses (Ján Tomko),<br/>
+      Return directly from qemuDomainAttachChrDeviceAssignAddr (Ján Tomko),<br/>
+      Introduce virDomainVirtioSerialAddrAutoAssign again (Ján Tomko),<br/>
+      Add 'FromCache' to  virDomainVirtioSerialAddrAutoAssign (Ján Tomko),<br/>
+      wireshark: Rename plugindir to ws_plugindir (Andrea Bolognani),<br/>
+      wireshark: Inject $(prefix) at the right time (Andrea Bolognani),<br/>
+      wireshark: Strip prefix correctly (Andrea Bolognani),<br/>
+      wireshark: Hoist $ws_prefix declaration (Andrea Bolognani),<br/>
+      wireshark: Introduce $ws_modversion (Andrea Bolognani),<br/>
+      qemu: Add support for using AES secret for SCSI hotplug (Gema Gomez),<br/>
+      qemu: Add secret object hotplug for TCP chardev TLS (John Ferlan),<br/>
+      qemu: Add a secret object to/for a char source dev (John Ferlan),<br/>
+      qemu: Need to remove TLS object in RemoveRNGDevice (John Ferlan),<br/>
+      virsh: Add _length parameters to virsh output (John Ferlan),<br/>
+      virsh: Create macros to add IOTUNE values (John Ferlan),<br/>
+      qemu: Add the length options to the iotune command line (John Ferlan),<br/>
+      conf: Add support for blkiotune "_length" options (John Ferlan),<br/>
+      qemu: Add length for bps/iops throttling parameters to driver (John Ferlan),<br/>
+      caps: Add new capability for the bps/iops throttling length (John Ferlan),<br/>
+      include: Add new definitions for duration for bps/iops throttling (John Ferlan),<br/>
+      qemu: Introduce qemuDomainSetBlockIoTuneDefaults (John Ferlan),<br/>
+      qemu: Move setting of conf_disk in qemuDomainSetBlockIoTune (John Ferlan),<br/>
+      qemu: Return real error message for block_set_io_throttle (John Ferlan),<br/>
+      qemu: Create a macro to handle setting bytes/iops iotune values (John Ferlan),<br/>
+      virQEMUCapsReset: also clear out hostCPUModel (Ján Tomko),<br/>
+      qemu: add vcpu.n.halted to vcpu domain stats (Viktor Mihajlovski),<br/>
+      qemu: Add domain support for VCPU halted state (Viktor Mihajlovski),<br/>
+      qemu: Add monitor support for CPU halted state (Viktor Mihajlovski),<br/>
+      qemu: replace calls to virDomainPCIAddressReserveNext*() with static function (Laine Stump),<br/>
+      conf: make virDomainPCIAddressGetNextSlot() a local static function (Laine Stump),<br/>
+      qemu: use virDomainPCIAddressReserveNextAddr in qemuDomainAssignDevicePCISlots (Laine Stump),<br/>
+      conf: new function virDomainPCIAddressReserveNextAddr() (Laine Stump),<br/>
+      domain: Add optional 'tls' attribute for TCP chardev (Pavel Hrdina),<br/>
+      domain_conf: remove union for one member from redirdev struct (Pavel Hrdina),<br/>
+      qemu: Add TLS hotplug for qemuDomainAttachRNGDevice (John Ferlan),<br/>
+      qemu: Add TLS hotplug for qemuDomainAttachRedirdevDevice (John Ferlan),<br/>
+      qemu: Clean up error path in qemuDomainAttachRedirdevDevice (John Ferlan),<br/>
+      qemu: Introduce qemuDomainGetChardevTLSObjects for hotplug (John Ferlan),<br/>
+      conf: Use virDomainChrSourceDefNew for virDomainRNGDef allocation (John Ferlan),<br/>
+      conf: Use virDomainChrSourceDefPtr for _virDomainRedirdevDef 'source.chr' (John Ferlan),<br/>
+      conf: Use virDomainChrSourceDefPtr for _virDomainSmartcardDef 'passthru' (John Ferlan),<br/>
+      xenFormatXLDisk: Unify commas pattern for arguments (Michal Privoznik),<br/>
+      qemu: change first arg of qemuDomainAttachChrDeviceAssignAddr() (Laine Stump),<br/>
+      qemu: make error message in qemuDomainPCIAddressSetCreate more clear. (Laine Stump),<br/>
+      qemu: remove superfluous setting of addrs-&gt;nbuses (Laine Stump),<br/>
+      conf: add typedef for anonymous enum used for memballoon device model (Laine Stump),<br/>
+      qemu: replace "def-&gt;nets[i]" with "net" and "def-&gt;sounds[i]" with "sound" (Laine Stump),<br/>
+      qemu: replace a lot of "def-&gt;controllers[i]" with equivalent "cont" (Laine Stump),<br/>
+      conf: Move the privateData from virDomainChrDef to virDomainChrSourceDef (John Ferlan),<br/>
+      Introduce virDomainChrSourceDefNew for virDomainChrDefPtr (John Ferlan),<br/>
+      vmx: Use the allocator virDomainChrDefNew (John Ferlan),<br/>
+      qemuBuildHostNetStr: remove dead code (Ján Tomko),<br/>
+      qemuBuildHostNetStr: do not start options with a comma (Ján Tomko),<br/>
+      qemuBuildHostNetStr: use type_sep earlier (Ján Tomko),<br/>
+      vz: set something in disk driver name (Nikolay Shirokovskiy),<br/>
+      vz: add serial number to disk devices (Nikolay Shirokovskiy),<br/>
+      vz: set localhost as vnc address (Mikhail Feoktistov),<br/>
+      virt-wireshark.m4: Defer $(prefix) substitution (Michal Privoznik),<br/>
+      network: Use new util function to check name (Sławek Kapłoński),<br/>
+      virxml: Add function to check if string contains some illegal chars (Sławek Kapłoński),<br/>
+      qemu: Introduce qemuDomainChardevPrivatePtr (John Ferlan),<br/>
+      conf: Introduce {default|chardev}_tls_x509_secret_uuid (John Ferlan),<br/>
+      xl: fix 8126d870 broken test (Cédric Bosdonnat),<br/>
+      spec: Drop support for Fedora &lt; 23 (Andrea Bolognani),<br/>
+      xl: don't output (null) target in domxml-to-native (Cédric Bosdonnat),<br/>
+      qemu_command: create prefixed alias to separate variable (Pavel Hrdina),<br/>
+      qemu_alias: introduce qemuAliasChardevFromDevAlias helper (Pavel Hrdina),<br/>
+      qemu: Remove unnecessary NULL arg check (John Ferlan),<br/>
+      qemu: Add 'verify-peer=yes' test for chardev TCP TLS (John Ferlan),<br/>
+      qemu: Remove unnecessary cfg fetch/unref (John Ferlan),<br/>
+      conf: Explain some code in more detail (Andrea Bolognani),<br/>
+      conf: restrict what type of buses will accept a pci-bridge (Laine Stump),<br/>
+      conf: Honour flags in virDomainPanicDefParseXML (Martin Kletzander),<br/>
+      schema: Allow alias for panic device (Martin Kletzander),<br/>
+      qemu_hotplug: Support interface type of vhost-user hotplug (Michal Privoznik),<br/>
+      qemuBuildHostNetStr: Support VIR_DOMAIN_NET_TYPE_VHOSTUSER (Michal Privoznik),<br/>
+      qemuBuildVhostuserCommandLine: Unify -netdev creation (Michal Privoznik),<br/>
+      qemuBuildVhostuserCommandLine: Reuse qemuBuildChrChardevStr (Michal Privoznik),<br/>
+      qemuBuildChrChardevStr: Introduce @nowait argument (Michal Privoznik),<br/>
+      qemuBuildHostNetStr: Explicitly enumerate net types (Michal Privoznik),<br/>
+      qemuDomainAttachNetDevice: Explicitly list allowed types for hotplug (Michal Privoznik),<br/>
+      qemuDomainAttachNetDevice: Move hostdev handling a bit further (Michal Privoznik),<br/>
+      qemuBuildInterfaceCommandLine: Move from if-else forest to switch (Michal Privoznik),<br/>
+      qemuBuildInterfaceCommandLine: Move vhostuser handling a bit further (Michal Privoznik),<br/>
+      qemuBuildInterfaceCommandLine: Move hostdev handling a bit further (Michal Privoznik),<br/>
+      virDomainNetGetActualType: Return type is virDomainNetType (Michal Privoznik),<br/>
+      virDomainNetDefParseXML: Realign (Michal Privoznik),<br/>
+      qemu: command: Don't bother reporting errors in smbios formatters (Peter Krempa),<br/>
+      qemu: command: Fix up coding style of smbios commandine formatters (Peter Krempa),<br/>
+      src: Treat PID as signed (Michal Privoznik),<br/>
+      virsh: Be explicit that vol-resize is an offline operation. (Ivan Baldo),<br/>
+      testOpenDefault: Rename loop variable (Michal Privoznik),<br/>
+      qemu_command: add support to use virtio as secondary video device (Pavel Hrdina),<br/>
+      qemu_command: introduce enum of secondary models for video device (Pavel Hrdina),<br/>
+      qemu_command: cleanup qemuBuildVideoCommandLine (Pavel Hrdina),<br/>
+      qemu_command: properly detect which model to use for video device (Pavel Hrdina),<br/>
+      qemu_capabilities: check for existence of virtio-vga (Pavel Hrdina),<br/>
+      qemu_command: pass only video device to qemuBuildVgaVideoCommand (Pavel Hrdina),<br/>
+      qemu_command: separate code for video device via -vga attribute (Pavel Hrdina),<br/>
+      qemu_process: always check capabilities for video devices (Pavel Hrdina),<br/>
+      qemu_process: move video validation out of qemu_command (Pavel Hrdina),<br/>
+      qemu_domain: move video validation out of qemu_command (Pavel Hrdina),<br/>
+      qemu_capabilities: detect properties for virtio-gpu-device (Pavel Hrdina),<br/>
+      qemu_capabilities: rename QEMU_CAPS_VIRTIO_GPU_VIRGL (Pavel Hrdina),<br/>
+      qemu_capabilities: mark QEMU_CAPS_VGA_QXL capability as deprecated (Pavel Hrdina),<br/>
+      qemu_capabilities: join capabilities for qxl and qxl-vga devices (Pavel Hrdina),<br/>
+      tests: fix some QXL capability combinations that don't make sense (Pavel Hrdina),<br/>
+      qemu_command: remove xenner leftover from video device code (Pavel Hrdina),<br/>
+      qemu_process: move qemuProcessStartValidateGraphics to correct place (Pavel Hrdina),<br/>
+      virsh: Extract fallback handling in cmdVcpuinfo (Peter Krempa),<br/>
+      virsh: Extract cpumap formatting in cmdVcpuinfo (Peter Krempa),<br/>
+      virsh: domain: Fix broken indentation in virshCPUCountCollect (Peter Krempa),<br/>
+      util: bitmap: Make bitmaps const in virBitmapNewData and virBitmapDataToString (Peter Krempa),<br/>
+      libvirt-guests: Weaken dependency on libvirtd (Andrea Bolognani),<br/>
+      qemu: Disable migration with ivshmem (Martin Kletzander),<br/>
+      conf: Don't complicate find loop (Martin Kletzander),<br/>
+      Clean timer in virObjectEventStateFlush (Martin Kletzander),<br/>
+      De-duplicate code into virObjectEventStateCleanupTimer() (Martin Kletzander),<br/>
+      Reference state when using it as opaque (Martin Kletzander),<br/>
+      Change virDomainEventState to virObjectLockable (Martin Kletzander),<br/>
+      qemu: Reuse virDomainDeGetVcpusTopology to calculate total vcpu count (Peter Krempa),<br/>
+      conf: Sanitize cpu topology numbers (Peter Krempa),<br/>
+      util: Remove need for local 'nelems' (John Ferlan),<br/>
+      tests: Prefer virGetLastErrorMessage in testSELinuxLabeling (John Ferlan),<br/>
+      conf: Remove incorrect check when encoding shmem audit message (John Ferlan),<br/>
+      network: add dnsmasq option 'dhcp-authoritative' (Martin Wilck),<br/>
+      Don't update timer if there's none. (Martin Kletzander),<br/>
+      examples: Distribute all systemtap scripts. (Luyao Huang),<br/>
+      virlog: Split parsing and setting priority (Erik Skultety),<br/>
+      virlog: Remove functions that aren't used anywhere anymore (Erik Skultety),<br/>
+      daemon: Split filter parsing and filter defining (Erik Skultety),<br/>
+      daemon: Split output parsing and output defining (Erik Skultety),<br/>
+      virlog: Introduce virLogSetFilters (Erik Skultety),<br/>
+      virlog: Introduce virLogSetOutputs (Erik Skultety),<br/>
+      virlog: Introduce virLogParseFilters (Erik Skultety),<br/>
+      virlog: Introduce virLogParseOutputs (Erik Skultety),<br/>
+      virlog: Introduce virLogParseFilter (Erik Skultety),<br/>
+      virlog: Introduce virLogParseOutput (Erik Skultety),<br/>
+      virlog: Take a special care of syslog when setting new set of log outputs (Erik Skultety),<br/>
+      virlog: Introduce virLogNewOutputTo* as a replacement for virLogAddOutputTo* (Erik Skultety),<br/>
+      virlog: Introduce virLogDefineFilters (Erik Skultety),<br/>
+      virlog: Introduce virLogDefineOutputs (Erik Skultety),<br/>
+      virlog: Introduce virLogFindOutput (Erik Skultety),<br/>
+      virlog: Introduce virLogFilterNew (Erik Skultety),<br/>
+      virlog: Introduce virLogOutputNew (Erik Skultety),<br/>
+      virlog: Store the journald fd within the output object (Erik Skultety),<br/>
+      virlog: Rename virLogParse* to virLogParseAndDefine* (Erik Skultety),<br/>
+      virlog: Remove unused macro IS_SPACE (Erik Skultety),<br/>
+      virsh domdisplay: introduce '--all' for showing all possible graphical displays (Chen Hanxiao),<br/>
+      util: Check/ignore already disabled event (John Ferlan),<br/>
+      util: Clear up some perf error messages (John Ferlan),<br/>
+      private_syms: add virLogFilterListFree to libvirt_private.syms (Erik Skultety),<br/>
+      m4: Drop PKG_PROG_PKG_CONFIG compatibility code (Andrea Bolognani),<br/>
+      docs/Makefile.am: build hvsupport.html earlier (Ján Tomko),<br/>
+      docs/Makefile.am: remove redundant variables (Ján Tomko),<br/>
+      qemu: monitor: Simplify construction of chardev backends (Peter Krempa),<br/>
+      tests: qemumonitorjsontest: Do some actual testing in qemuMonitorJSONTestAttachChardev (Peter Krempa),<br/>
+      tests: qemumonitorjson: Don't do multiple tests in one virTestRun (Peter Krempa),<br/>
+      tests: qemu: Add support for testing aguments on monitor verbatim (Peter Krempa),<br/>
+      conf: Sanitize formatting of UDP chardev source (Peter Krempa),<br/>
+      conf: Add a formatting macro for all the blkiotune values (John Ferlan),<br/>
+      qemu: Adjust how supportMaxOptions is used. (John Ferlan),<br/>
+      qemu: Convert from shorthand to longer throttling names (John Ferlan),<br/>
+      tests: Add blkdeviotune-max xml2xmltest (John Ferlan),<br/>
+      include: Update description for &lt;iotune&gt; max params (John Ferlan),<br/>
+      qemu: allow 32 slots on pcie-expander-bus, not just 1 (Laine Stump),<br/>
+      vsh: Fix warnings in command line completer (Jiri Denemark),<br/>
+      qemu: Create helper qemuMonitorJSONGetBlockDevDevice (John Ferlan),<br/>
+      qemu: Create helper qemuMonitorJSONGetBlockDev (John Ferlan),<br/>
+      qemu: Create common code for JSON "query-block" call (John Ferlan),<br/>
+      util: Introduce virJSONValueObjectStealArray (John Ferlan),<br/>
+      rbd: Move the encryption check in build (John Ferlan),<br/>
+      rbd: Change to using heap allocated state contexts (John Ferlan),<br/>
+      rbd: Change virStorageBackendRBDCloseRADOSConn to be static void (John Ferlan),<br/>
+      qemu: Allow making vcpus hotpluggable with virDomainSetVcpusFlags (Peter Krempa),<br/>
+      lib: Introduce VIR_DOMAIN_VCPU_HOTPLUGGABLE for virDomainSetVcpusFlags (Peter Krempa),<br/>
+      Don't drop expired lease while reading custom leases file (Nehal J Wani),<br/>
+      NSS: Add explicit check to not report expired lease (Nehal J Wani),<br/>
+      remote: Increase bound limit for virDomainGetBlockIoTune (John Ferlan),<br/>
+      remote: Fix erroneous usage of constant (John Ferlan),<br/>
+      </li>
+
+    </ul>
    <h3>v2.3.0: Oct 04 2016</h3>
     <ul>
       <li>Features:<br/>
