@@ -6418,6 +6418,9 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
          */
         if (inPostCopy)
             VIR_FREE(priv->job.completed);
+
+        qemuMigrationSetPostCopy(driver, vm, false,
+                                 QEMU_ASYNC_JOB_MIGRATION_IN);
     }
 
     qemuMigrationJobFinish(driver, vm);
