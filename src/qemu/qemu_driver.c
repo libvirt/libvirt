@@ -18978,7 +18978,7 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver,
                        virDomainObjPtr dom,
                        virDomainStatsRecordPtr record,
                        int *maxparams,
-                       unsigned int privflags ATTRIBUTE_UNUSED)
+                       unsigned int privflags)
 {
     size_t i;
     int ret = -1;
@@ -19005,10 +19005,16 @@ qemuDomainGetStatsVcpu(virQEMUDriverPtr driver,
         VIR_ALLOC_N(cpuwait, virDomainDefGetVcpus(dom->def)) < 0)
         goto cleanup;
 
-    if (qemuDomainRefreshVcpuHalted(driver, dom,
-                                    QEMU_ASYNC_JOB_NONE) == 0 &&
-        VIR_ALLOC_N(cpuhalted, virDomainDefGetVcpus(dom->def)) < 0)
-        goto cleanup;
+    if (HAVE_JOB(privflags) && virDomainObjIsActive(dom)) {
+        if (qemuDomainRefreshVcpuHalted(driver, dom,
+                                        QEMU_ASYNC_JOB_NONE) < 0) {
+            /* it's ok to be silent and go ahead, because halted vcpu info
+             * wasn't here from the beginning */
+            virResetLastError();
+        } else if (VIR_ALLOC_N(cpuhalted, virDomainDefGetVcpus(dom->def)) < 0) {
+            goto cleanup;
+        }
+    }
 
     if (qemuDomainHelperGetVcpus(dom, cpuinfo, cpuwait,
                                  virDomainDefGetVcpus(dom->def),
@@ -19462,7 +19468,7 @@ static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsState, VIR_DOMAIN_STATS_STATE, false },
     { qemuDomainGetStatsCpu, VIR_DOMAIN_STATS_CPU_TOTAL, false },
     { qemuDomainGetStatsBalloon, VIR_DOMAIN_STATS_BALLOON, true },
-    { qemuDomainGetStatsVcpu, VIR_DOMAIN_STATS_VCPU, false },
+    { qemuDomainGetStatsVcpu, VIR_DOMAIN_STATS_VCPU, true },
     { qemuDomainGetStatsInterface, VIR_DOMAIN_STATS_INTERFACE, false },
     { qemuDomainGetStatsBlock, VIR_DOMAIN_STATS_BLOCK, true },
     { qemuDomainGetStatsPerf, VIR_DOMAIN_STATS_PERF, false },
