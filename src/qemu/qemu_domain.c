@@ -3120,7 +3120,7 @@ qemuDomainDefAssignAddresses(virDomainDef *def,
             goto cleanup;
     }
 
-    if (qemuDomainAssignAddresses(def, qemuCaps, NULL, newDomain) < 0)
+    if (qemuDomainAssignAddresses(def, qemuCaps, driver, NULL, newDomain) < 0)
         goto cleanup;
 
     ret = 0;

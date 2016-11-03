@@ -25,6 +25,7 @@
 
 # include "domain_addr.h"
 # include "domain_conf.h"
+# include "qemu_conf.h"
 # include "qemu_capabilities.h"
 
 int qemuDomainSetSCSIControllerModel(const virDomainDef *def,
@@ -33,13 +34,15 @@ int qemuDomainSetSCSIControllerModel(const virDomainDef *def,
 
 int qemuDomainAssignAddresses(virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
+                              virQEMUDriverPtr driver,
                               virDomainObjPtr obj,
                               bool newDomain)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int qemuDomainEnsurePCIAddress(virDomainObjPtr obj,
-                               virDomainDeviceDefPtr dev)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+                               virDomainDeviceDefPtr dev,
+                               virQEMUDriverPtr driver)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 void qemuDomainReleaseDeviceAddress(virDomainObjPtr vm,
                                     virDomainDeviceInfoPtr info,

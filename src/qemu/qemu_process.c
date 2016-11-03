@@ -3368,8 +3368,10 @@ qemuProcessReconnect(void *opaque)
         goto cleanup;
     }
 
-    if ((qemuDomainAssignAddresses(obj->def, priv->qemuCaps, obj, false)) < 0)
+    if ((qemuDomainAssignAddresses(obj->def, priv->qemuCaps,
+                                   driver, obj, false)) < 0) {
         goto error;
+    }
 
     /* if domain requests security driver we haven't loaded, report error, but
      * do not kill the domain
@@ -5156,9 +5158,10 @@ qemuProcessPrepareDomain(virConnectPtr conn,
      * use in hotplug
      */
     VIR_DEBUG("Assigning domain PCI addresses");
-    if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm,
-                                   !!(flags & VIR_QEMU_PROCESS_START_NEW))) < 0)
+    if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, driver, vm,
+                                   !!(flags & VIR_QEMU_PROCESS_START_NEW))) < 0) {
         goto cleanup;
+    }
 
     if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
         goto cleanup;
@@ -6355,8 +6358,10 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
      * use in hotplug
      */
     VIR_DEBUG("Assigning domain PCI addresses");
-    if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps, vm, false)) < 0)
+    if ((qemuDomainAssignAddresses(vm->def, priv->qemuCaps,
+                                   driver, vm, false)) < 0) {
         goto error;
+    }
 
     if ((timestamp = virTimeStringNow()) == NULL)
         goto error;
