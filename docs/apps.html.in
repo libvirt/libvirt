@@ -208,6 +208,17 @@
         to remote consoles supporting the VNC protocol. Also provides
         an optional mozilla browser plugin.
       </dd>
+      <dt><a href="http://f1ash.github.io/qt-virt-manager">qt-virt-manager</a></dt>
+      <dd>
+        The Qt GUI for create and control VMs and another virtual entities
+        (aka networks, storages, interfaces, secrets, network filters).
+        Contains integrated LXC/SPICE/VNC viewer for accessing the graphical or
+        text console associated with a virtual machine or container.
+      </dd>
+      <dt><a href="http://f1ash.github.io/qt-virt-manager/#virtual-machines-viewer">qt-remote-viewer</a></dt>
+      <dd>
+        The Qt VNC/SPICE viewer for access to remote desktops or VMs.
+      </dd>
     </dl>
 
     <h2><a name="iaas">Infrastructure as a Service (IaaS)</a></h2>
