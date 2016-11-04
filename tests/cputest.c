@@ -472,7 +472,7 @@ cpuTestCPUID(bool guest, const void *arg)
         goto cleanup;
 
     if (virTestLoadFile(hostFile, &host) < 0 ||
-        !(hostData = cpuDataParse(host)))
+        !(hostData = virCPUDataParse(host)))
         goto cleanup;
 
     if (VIR_ALLOC(cpu) < 0)

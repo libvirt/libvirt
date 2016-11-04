@@ -764,7 +764,7 @@ cpuDataFormat(const virCPUData *data)
 
 
 /**
- * cpuDataParse:
+ * virCPUDataParse:
  *
  * @xmlStr: XML string produced by cpuDataFormat
  *
@@ -773,7 +773,7 @@ cpuDataFormat(const virCPUData *data)
  * Returns internal CPU data structure parsed from the XML or NULL on error.
  */
 virCPUDataPtr
-cpuDataParse(const char *xmlStr)
+virCPUDataParse(const char *xmlStr)
 {
     struct cpuArchDriver *driver;
     xmlDocPtr xml = NULL;

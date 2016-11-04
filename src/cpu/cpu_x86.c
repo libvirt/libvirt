@@ -1437,7 +1437,7 @@ x86CPUDataFormat(const virCPUData *data)
 
 
 static virCPUDataPtr
-x86CPUDataParse(xmlXPathContextPtr ctxt)
+virCPUx86DataParse(xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *nodes = NULL;
     virCPUDataPtr cpuData = NULL;
@@ -2766,7 +2766,7 @@ struct cpuArchDriver cpuDriverX86 = {
     .checkFeature = virCPUx86CheckFeature,
     .dataCheckFeature = virCPUx86DataCheckFeature,
     .dataFormat = x86CPUDataFormat,
-    .dataParse  = x86CPUDataParse,
+    .dataParse  = virCPUx86DataParse,
     .getModels  = virCPUx86GetModels,
     .translate  = virCPUx86Translate,
 };
