@@ -4082,12 +4082,12 @@ virQEMUCapsNewForBinary(virCapsPtr caps,
 
 bool
 virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
-                   time_t ctime)
+                   time_t qemuctime)
 {
     if (!qemuCaps->binary)
         return true;
 
-    if (!ctime) {
+    if (!qemuctime) {
         struct stat sb;
 
         if (stat(qemuCaps->binary, &sb) < 0) {
@@ -4097,14 +4097,14 @@ virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
                       virStrerror(errno, ebuf, sizeof(ebuf)));
             return false;
         }
-        ctime = sb.st_ctime;
+        qemuctime = sb.st_ctime;
     }
 
-    if (ctime != qemuCaps->ctime) {
+    if (qemuctime != qemuCaps->ctime) {
         VIR_DEBUG("Outdated capabilities for '%s': QEMU binary changed "
                   "(%lld vs %lld)",
                   qemuCaps->binary,
-                  (long long) ctime, (long long) qemuCaps->ctime);
+                  (long long) qemuctime, (long long) qemuCaps->ctime);
         return false;
     }
 
