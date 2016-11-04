@@ -1833,7 +1833,7 @@ x86Decode(virCPUDefPtr cpu,
      */
     for (i = map->nmodels - 1; i >= 0; i--) {
         candidate = map->models[i];
-        if (!cpuModelIsAllowed(candidate->name, models, nmodels)) {
+        if (!virCPUModelIsAllowed(candidate->name, models, nmodels)) {
             if (preferred && STREQ(candidate->name, preferred)) {
                 if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,

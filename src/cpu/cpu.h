@@ -214,9 +214,9 @@ virCPUDataCheckFeature(const virCPUData *data,
 
 
 bool
-cpuModelIsAllowed(const char *model,
-                  const char **models,
-                  unsigned int nmodels)
+virCPUModelIsAllowed(const char *model,
+                     const char **models,
+                     unsigned int nmodels)
     ATTRIBUTE_NONNULL(1);
 
 int
