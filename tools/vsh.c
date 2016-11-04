@@ -2655,7 +2655,7 @@ vshReadlineParse(const char *text, int state)
     static char **completed_list;
     static unsigned int completed_list_index;
     static uint64_t const_opts_need_arg, const_opts_required, const_opts_seen;
-    uint64_t opts_need_arg, opts_seen;
+    uint64_t opts_seen;
     size_t opt_index;
     static bool cmd_exists, opts_filled, opt_exists;
     static bool non_bool_opt_exists, data_complete;
@@ -2728,7 +2728,6 @@ vshReadlineParse(const char *text, int state)
                 if (vshCmddefOptParse(cmd, &const_opts_need_arg,
                                       &const_opts_required) < 0)
                     goto error;
-                opts_need_arg = const_opts_need_arg;
                 opts_seen = const_opts_seen;
                 opts_filled = true;
             } else if (tkdata[0] == '-' && tkdata[1] == '-' &&
@@ -2793,7 +2792,6 @@ vshReadlineParse(const char *text, int state)
                     || opt->type == VSH_OT_BOOL)
                     goto error;
                 opt_exists = true;
-                opts_need_arg = const_opts_need_arg;
                 opts_seen = const_opts_seen;
             } else {
                 /* In every other case, return NULL */
