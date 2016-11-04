@@ -391,8 +391,8 @@ cmdSrvList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         goto cleanup;
     }
 
-    printf(" %-5s %-15s\n", "Id", "Name");
-    printf("---------------\n");
+    vshPrintExtra(ctl, " %-5s %-15s\n", "Id", "Name");
+    vshPrintExtra(ctl, "---------------\n");
     for (i = 0; i < nsrvs; i++)
         vshPrint(ctl, " %-5zu %-15s\n", i, virAdmServerGetName(srvs[i]));
 

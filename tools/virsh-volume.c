@@ -1123,10 +1123,10 @@ cmdVolResize(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virStorageVolResize(vol, capacity, flags) == 0) {
-        vshPrint(ctl,
-                 delta ? _("Size of volume '%s' successfully changed by %s\n")
-                 : _("Size of volume '%s' successfully changed to %s\n"),
-                 virStorageVolGetName(vol), capacityStr);
+        vshPrintExtra(ctl,
+                      delta ? _("Size of volume '%s' successfully changed by %s\n")
+                      : _("Size of volume '%s' successfully changed to %s\n"),
+                      virStorageVolGetName(vol), capacityStr);
         ret = true;
     } else {
         vshError(ctl,
@@ -1502,8 +1502,8 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         goto cleanup;
 
     /* Display the header */
-    vshPrint(ctl, outputStr, _("Name"), _("Path"), _("Type"),
-             ("Capacity"), _("Allocation"));
+    vshPrintExtra(ctl, outputStr, _("Name"), _("Path"), _("Type"),
+                  _("Capacity"), _("Allocation"));
     for (i = nameStrLength + pathStrLength + typeStrLength
                            + capStrLength + allocStrLength
                            + 10; i > 0; i--)

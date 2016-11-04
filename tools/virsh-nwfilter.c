@@ -416,7 +416,7 @@ cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
 #define EDIT_GET_XML virNWFilterGetXMLDesc(nwfilter, 0)
 #define EDIT_NOT_CHANGED                                        \
     do {                                                        \
-        vshPrint(ctl, _("Network filter %s XML "                \
+        vshPrintExtra(ctl, _("Network filter %s XML "           \
                         "configuration not changed.\n"),        \
                  virNWFilterGetName(nwfilter));                 \
         ret = true;                                             \
@@ -426,8 +426,8 @@ cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
     (nwfilter_edited = virNWFilterDefineXML(priv->conn, doc_edited))
 #include "virsh-edit.c"
 
-    vshPrint(ctl, _("Network filter %s XML configuration edited.\n"),
-             virNWFilterGetName(nwfilter_edited));
+    vshPrintExtra(ctl, _("Network filter %s XML configuration edited.\n"),
+                  virNWFilterGetName(nwfilter_edited));
 
     ret = true;
 

@@ -977,20 +977,21 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
 
     if (config) {
         if (live)
-            vshPrint(ctl, _("Updated network %s persistent config and live state"),
-                     virNetworkGetName(network));
+            vshPrintExtra(ctl, _("Updated network %s persistent config and "
+                                 "live state"),
+                          virNetworkGetName(network));
         else
-            vshPrint(ctl, _("Updated network %s persistent config"),
-                     virNetworkGetName(network));
+            vshPrintExtra(ctl, _("Updated network %s persistent config"),
+                          virNetworkGetName(network));
     } else if (live) {
-        vshPrint(ctl, _("Updated network %s live state"),
-                 virNetworkGetName(network));
+        vshPrintExtra(ctl, _("Updated network %s live state"),
+                      virNetworkGetName(network));
     } else if (virNetworkIsActive(network)) {
-        vshPrint(ctl, _("Updated network %s live state"),
-                 virNetworkGetName(network));
+        vshPrintExtra(ctl, _("Updated network %s live state"),
+                      virNetworkGetName(network));
     } else {
-        vshPrint(ctl, _("Updated network %s persistent config"),
-                 virNetworkGetName(network));
+        vshPrintExtra(ctl, _("Updated network %s persistent config"),
+                      virNetworkGetName(network));
     }
 
     ret = true;
@@ -1089,19 +1090,19 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
 #define EDIT_GET_XML virshNetworkGetXMLDesc(network)
-#define EDIT_NOT_CHANGED                                                \
-    do {                                                                \
-        vshPrint(ctl, _("Network %s XML configuration not changed.\n"), \
-                 virNetworkGetName(network));                           \
-        ret = true;                                                     \
-        goto edit_cleanup;                                              \
+#define EDIT_NOT_CHANGED                                                     \
+    do {                                                                     \
+        vshPrintExtra(ctl, _("Network %s XML configuration not changed.\n"), \
+                      virNetworkGetName(network));                           \
+        ret = true;                                                          \
+        goto edit_cleanup;                                                   \
     } while (0)
 #define EDIT_DEFINE \
     (network_edited = virNetworkDefineXML(priv->conn, doc_edited))
 #include "virsh-edit.c"
 
-    vshPrint(ctl, _("Network %s XML configuration edited.\n"),
-             virNetworkGetName(network_edited));
+    vshPrintExtra(ctl, _("Network %s XML configuration edited.\n"),
+                  virNetworkGetName(network_edited));
 
     ret = true;
 

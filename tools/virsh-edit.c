@@ -25,8 +25,8 @@
  * EDIT_NOT_CHANGED - this action is taken if the XML wasn't changed.
  *      Note, that you don't want to jump to cleanup but edit_cleanup label
  *      where temporary variables are free()-d and temporary file is deleted:
- *      #define EDIT_NOT_CHANGED vshPrint(ctl, _("Domain %s XML not changed"), \
- *                                        virDomainGetName(dom)); \
+ *      #define EDIT_NOT_CHANGED vshPrintExtra (ctl, _("Domain %s XML not changed"), \
+ *                                              virDomainGetName(dom)); \
  *                               ret = true; goto edit_cleanup;
  *      Note that this is a statement.
  *

@@ -125,19 +125,19 @@ cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
 #define EDIT_GET_XML virInterfaceGetXMLDesc(iface, flags)
-#define EDIT_NOT_CHANGED                                                \
-    do {                                                                \
-        vshPrint(ctl, _("Interface %s XML configuration not changed.\n"), \
-                 virInterfaceGetName(iface));                           \
-        ret = true;                                                     \
-        goto edit_cleanup;                                              \
+#define EDIT_NOT_CHANGED                                                       \
+    do {                                                                       \
+        vshPrintExtra(ctl, _("Interface %s XML configuration not changed.\n"), \
+                 virInterfaceGetName(iface));                                  \
+        ret = true;                                                            \
+        goto edit_cleanup;                                                     \
     } while (0)
 #define EDIT_DEFINE \
     (iface_edited = virInterfaceDefineXML(priv->conn, doc_edited, 0))
 #include "virsh-edit.c"
 
-    vshPrint(ctl, _("Interface %s XML configuration edited.\n"),
-             virInterfaceGetName(iface_edited));
+    vshPrintExtra(ctl, _("Interface %s XML configuration edited.\n"),
+                  virInterfaceGetName(iface_edited));
 
     ret = true;
 
@@ -969,8 +969,8 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, _("Created bridge %s with attached device %s\n"),
-             br_name, if_name);
+    vshPrintExtra(ctl, _("Created bridge %s with attached device %s\n"),
+                  br_name, if_name);
 
     /* start it up unless requested not to */
     if (!nostart) {
@@ -978,7 +978,7 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("Failed to start bridge interface %s"), br_name);
             goto cleanup;
         }
-        vshPrint(ctl, _("Bridge interface %s started\n"), br_name);
+        vshPrintExtra(ctl, _("Bridge interface %s started\n"), br_name);
     }
 
     ret = true;
@@ -1170,8 +1170,8 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    vshPrint(ctl, _("Device %s un-attached from bridge %s\n"),
-             if_name, br_name);
+    vshPrintExtra(ctl, _("Device %s un-attached from bridge %s\n"),
+                  if_name, br_name);
 
     /* unless requested otherwise, undefine the bridge device */
     if (!nostart) {
@@ -1179,7 +1179,7 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("Failed to start interface %s"), if_name);
             goto cleanup;
         }
-        vshPrint(ctl, _("Interface %s started\n"), if_name);
+        vshPrintExtra(ctl, _("Interface %s started\n"), if_name);
     }
 
     ret = true;

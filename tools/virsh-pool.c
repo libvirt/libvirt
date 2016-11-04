@@ -1384,8 +1384,9 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         goto cleanup;
 
     /* Display the header */
-    vshPrint(ctl, outputStr, _("Name"), _("State"), _("Autostart"),
-             _("Persistent"), _("Capacity"), _("Allocation"), _("Available"));
+    vshPrintExtra(ctl, outputStr, _("Name"), _("State"), _("Autostart"),
+                  _("Persistent"), _("Capacity"), _("Allocation"),
+                  _("Available"));
     for (i = nameStrLength + stateStrLength + autostartStrLength
                            + persistStrLength + capStrLength
                            + allocStrLength + availStrLength
@@ -1865,19 +1866,19 @@ cmdPoolEdit(vshControl *ctl, const vshCmd *cmd)
     }
 
 #define EDIT_GET_XML virStoragePoolGetXMLDesc(pool, flags)
-#define EDIT_NOT_CHANGED                                                \
-    do {                                                                \
-        vshPrint(ctl, _("Pool %s XML configuration not changed.\n"),    \
-                 virStoragePoolGetName(pool));                          \
-        ret = true;                                                     \
-        goto edit_cleanup;                                              \
+#define EDIT_NOT_CHANGED                                                     \
+    do {                                                                     \
+        vshPrintExtra(ctl, _("Pool %s XML configuration not changed.\n"),    \
+                 virStoragePoolGetName(pool));                               \
+        ret = true;                                                          \
+        goto edit_cleanup;                                                   \
     } while (0)
 #define EDIT_DEFINE \
     (pool_edited = virStoragePoolDefineXML(priv->conn, doc_edited, 0))
 #include "virsh-edit.c"
 
-    vshPrint(ctl, _("Pool %s XML configuration edited.\n"),
-             virStoragePoolGetName(pool_edited));
+    vshPrintExtra(ctl, _("Pool %s XML configuration edited.\n"),
+                  virStoragePoolGetName(pool_edited));
 
     ret = true;
 
