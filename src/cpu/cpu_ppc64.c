@@ -876,7 +876,7 @@ ppc64DriverBaseline(virCPUDefPtr *cpus,
 }
 
 static int
-ppc64DriverGetModels(char ***models)
+virCPUppc64DriverGetModels(char ***models)
 {
     struct ppc64_map *map;
     size_t i;
@@ -921,5 +921,5 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .guestData  = ppc64DriverGuestData,
     .baseline   = ppc64DriverBaseline,
     .update     = virCPUppc64Update,
-    .getModels  = ppc64DriverGetModels,
+    .getModels  = virCPUppc64DriverGetModels,
 };

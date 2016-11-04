@@ -18476,7 +18476,7 @@ qemuConnectGetCPUModelNames(virConnectPtr conn,
         return -1;
     }
 
-    return cpuGetModels(arch, models);
+    return virCPUGetModels(arch, models);
 }
 
 static int

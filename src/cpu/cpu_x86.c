@@ -2668,7 +2668,7 @@ virCPUx86DataCheckFeature(const virCPUData *data,
 }
 
 static int
-x86GetModels(char ***models)
+virCPUx86GetModels(char ***models)
 {
     virCPUx86MapPtr map;
     size_t i;
@@ -2767,6 +2767,6 @@ struct cpuArchDriver cpuDriverX86 = {
     .dataCheckFeature = virCPUx86DataCheckFeature,
     .dataFormat = x86CPUDataFormat,
     .dataParse  = x86CPUDataParse,
-    .getModels  = x86GetModels,
+    .getModels  = virCPUx86GetModels,
     .translate  = virCPUx86Translate,
 };

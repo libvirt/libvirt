@@ -831,7 +831,7 @@ cpuModelIsAllowed(const char *model,
 }
 
 /**
- * cpuGetModels:
+ * virCPUGetModels:
  *
  * @arch: CPU architecture
  * @models: where to store the NULL-terminated list of supported models
@@ -845,7 +845,7 @@ cpuModelIsAllowed(const char *model,
  * or -1 on error.
  */
 int
-cpuGetModels(virArch arch, char ***models)
+virCPUGetModels(virArch arch, char ***models)
 {
     struct cpuArchDriver *driver;
 

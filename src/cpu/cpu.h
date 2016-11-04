@@ -105,7 +105,7 @@ typedef virCPUDataPtr
 (*cpuArchDataParse) (xmlXPathContextPtr ctxt);
 
 typedef int
-(*cpuArchGetModels) (char ***models);
+(*virCPUArchGetModels)(char ***models);
 
 typedef int
 (*virCPUArchTranslate)(virCPUDefPtr cpu,
@@ -128,7 +128,7 @@ struct cpuArchDriver {
     virCPUArchDataCheckFeature dataCheckFeature;
     cpuArchDataFormat   dataFormat;
     cpuArchDataParse    dataParse;
-    cpuArchGetModels    getModels;
+    virCPUArchGetModels getModels;
     virCPUArchTranslate translate;
 };
 
@@ -220,7 +220,7 @@ cpuModelIsAllowed(const char *model,
     ATTRIBUTE_NONNULL(1);
 
 int
-cpuGetModels(virArch arch, char ***models);
+virCPUGetModels(virArch arch, char ***models);
 
 int
 virCPUTranslate(virArch arch,

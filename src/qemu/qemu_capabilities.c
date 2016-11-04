@@ -4639,7 +4639,7 @@ virQEMUCapsFillDomainCPUCaps(virCapsPtr caps,
         virDomainCapsCPUModelsPtr filtered = NULL;
         char **models = NULL;
 
-        if (cpuGetModels(domCaps->arch, &models) >= 0) {
+        if (virCPUGetModels(domCaps->arch, &models) >= 0) {
             filtered = virDomainCapsCPUModelsFilter(qemuCaps->cpuDefinitions,
                                                     (const char **) models);
             virStringFreeList(models);

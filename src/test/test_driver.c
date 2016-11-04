@@ -5943,7 +5943,7 @@ testConnectGetCPUModelNames(virConnectPtr conn ATTRIBUTE_UNUSED,
         return -1;
     }
 
-    return cpuGetModels(arch, models);
+    return virCPUGetModels(arch, models);
 }
 
 static int

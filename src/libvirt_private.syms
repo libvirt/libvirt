@@ -980,13 +980,13 @@ cpuDataFree;
 cpuDataParse;
 cpuDecode;
 cpuEncode;
-cpuGetModels;
 cpuGuestData;
 cpuNodeData;
 virCPUCheckFeature;
 virCPUCompare;
 virCPUCompareXML;
 virCPUDataCheckFeature;
+virCPUGetModels;
 virCPUTranslate;
 virCPUUpdate;
 
