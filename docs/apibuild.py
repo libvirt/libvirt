@@ -2607,10 +2607,9 @@ class app:
             dirs = [srcdir + "/../src",
                     srcdir + "/../src/util",
                     srcdir + "/../include/libvirt"]
-            if builddir:
+            if (builddir and
+                not os.path.exists(srcdir + "/../include/libvirt/libvirt-common.h")):
                 dirs.append(builddir + "/../include/libvirt")
-            if glob.glob(srcdir + "/../include/libvirt/libvirt.h") == [] :
-                dirs.append("../include/libvirt")
             builder = docBuilder(name, srcdir, dirs, [])
         elif glob.glob("src/libvirt.c") != [] :
             if not quiet:
