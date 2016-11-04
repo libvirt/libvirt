@@ -99,7 +99,7 @@ typedef int
                               const char *feature);
 
 typedef char *
-(*cpuArchDataFormat)(const virCPUData *data);
+(*virCPUArchDataFormat)(const virCPUData *data);
 
 typedef virCPUDataPtr
 (*virCPUArchDataParse)(xmlXPathContextPtr ctxt);
@@ -126,7 +126,7 @@ struct cpuArchDriver {
     virCPUArchUpdate    update;
     virCPUArchCheckFeature checkFeature;
     virCPUArchDataCheckFeature dataCheckFeature;
-    cpuArchDataFormat   dataFormat;
+    virCPUArchDataFormat dataFormat;
     virCPUArchDataParse dataParse;
     virCPUArchGetModels getModels;
     virCPUArchTranslate translate;
@@ -230,10 +230,10 @@ virCPUTranslate(virArch arch,
     ATTRIBUTE_NONNULL(2);
 
 
-/* cpuDataFormat and virCPUDataParse are implemented for unit tests only and
+/* virCPUDataFormat and virCPUDataParse are implemented for unit tests only and
  * have no real-life usage
  */
-char *cpuDataFormat(const virCPUData *data)
+char *virCPUDataFormat(const virCPUData *data)
     ATTRIBUTE_NONNULL(1);
 virCPUDataPtr virCPUDataParse(const char *xmlStr)
     ATTRIBUTE_NONNULL(1);

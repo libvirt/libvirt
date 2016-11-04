@@ -734,7 +734,7 @@ virCPUDataCheckFeature(const virCPUData *data,
 
 
 /**
- * cpuDataFormat:
+ * virCPUDataFormat:
  *
  * @data: internal CPU representation
  *
@@ -743,7 +743,7 @@ virCPUDataCheckFeature(const virCPUData *data,
  * Returns string representation of the XML describing @data or NULL on error.
  */
 char *
-cpuDataFormat(const virCPUData *data)
+virCPUDataFormat(const virCPUData *data)
 {
     struct cpuArchDriver *driver;
 
@@ -766,7 +766,7 @@ cpuDataFormat(const virCPUData *data)
 /**
  * virCPUDataParse:
  *
- * @xmlStr: XML string produced by cpuDataFormat
+ * @xmlStr: XML string produced by virCPUDataFormat
  *
  * Parses XML representation of virCPUData structure for test purposes.
  *

@@ -1412,7 +1412,7 @@ virCPUx86GetMap(void)
 
 
 static char *
-x86CPUDataFormat(const virCPUData *data)
+virCPUx86DataFormat(const virCPUData *data)
 {
     virCPUx86DataIterator iter = virCPUx86DataIteratorInit(&data->data.x86);
     virCPUx86CPUID *cpuid;
@@ -2765,7 +2765,7 @@ struct cpuArchDriver cpuDriverX86 = {
     .update     = virCPUx86Update,
     .checkFeature = virCPUx86CheckFeature,
     .dataCheckFeature = virCPUx86DataCheckFeature,
-    .dataFormat = x86CPUDataFormat,
+    .dataFormat = virCPUx86DataFormat,
     .dataParse  = virCPUx86DataParse,
     .getModels  = virCPUx86GetModels,
     .translate  = virCPUx86Translate,

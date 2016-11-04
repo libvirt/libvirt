@@ -2329,7 +2329,7 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
                                    &cpuData) < 0)
         goto cleanup;
 
-    if (!(actual = cpuDataFormat(cpuData)))
+    if (!(actual = virCPUDataFormat(cpuData)))
         goto cleanup;
 
     if (virTestCompareToFile(actual, dataFile) < 0)
