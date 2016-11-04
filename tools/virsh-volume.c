@@ -605,7 +605,7 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
 
     newxml = virshMakeCloneXML(origxml, name);
     if (!newxml) {
-        vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+        vshError(ctl, "%s", _("Failed to allocate XML buffer"));
         goto cleanup;
     }
 

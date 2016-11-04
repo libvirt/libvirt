@@ -2099,7 +2099,7 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
             break;
 
         case VIR_DOMAIN_BLOCK_JOB_FAILED:
-            vshPrint(ctl, "\n%s", _("Commit failed"));
+            vshError(ctl, "\n%s", _("Commit failed"));
             goto cleanup;
             break;
 
@@ -2408,7 +2408,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
             break;
 
         case VIR_DOMAIN_BLOCK_JOB_FAILED:
-            vshPrint(ctl, "\n%s", _("Copy failed"));
+            vshError(ctl, "\n%s", _("Copy failed"));
             goto cleanup;
             break;
 
@@ -2818,7 +2818,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
             break;
 
         case VIR_DOMAIN_BLOCK_JOB_FAILED:
-            vshPrint(ctl, "\n%s", _("Pull failed"));
+            vshError(ctl, "\n%s", _("Pull failed"));
             goto cleanup;
             break;
 
@@ -3794,7 +3794,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
                 virStoragePoolPtr storagepool = NULL;
 
                 if (!source) {
-                    vshPrint(ctl,
+                    vshError(ctl,
                              _("Missing storage volume name for disk '%s'"),
                              target);
                     continue;
@@ -3802,7 +3802,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
 
                 if (!(storagepool = virStoragePoolLookupByName(priv->conn,
                                                                pool))) {
-                    vshPrint(ctl,
+                    vshError(ctl,
                              _("Storage pool '%s' for volume '%s' not found."),
                              pool, target);
                     vshResetLibvirtError();
@@ -3817,7 +3817,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
             }
 
             if (!vol.vol) {
-                vshPrint(ctl,
+                vshError(ctl,
                          _("Storage volume '%s'(%s) is not managed by libvirt. "
                            "Remove it manually.\n"), target, source);
                 vshResetLibvirtError();

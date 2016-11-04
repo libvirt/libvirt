@@ -3267,7 +3267,7 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
         if (xml) {
             virBufferEscapeString(&xmlbuf, "%s", arg);
             if (virBufferError(&xmlbuf)) {
-                vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+                vshError(ctl, "%s", _("Failed to allocate XML buffer"));
                 return false;
             }
             str = virBufferContentAndReset(&xmlbuf);
@@ -3284,7 +3284,7 @@ cmdEcho(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (virBufferError(&buf)) {
-        vshPrint(ctl, "%s", _("Failed to allocate XML buffer"));
+        vshError(ctl, "%s", _("Failed to allocate XML buffer"));
         return false;
     }
     arg = virBufferContentAndReset(&buf);
