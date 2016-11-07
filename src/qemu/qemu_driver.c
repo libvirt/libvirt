@@ -17337,34 +17337,38 @@ qemuDomainOpenGraphicsFD(virDomainPtr dom,
     return ret;
 }
 
+typedef enum {
+    QEMU_BLOCK_IOTUNE_SET_BYTES            = 1 << 0,
+    QEMU_BLOCK_IOTUNE_SET_IOPS             = 1 << 1,
+    QEMU_BLOCK_IOTUNE_SET_BYTES_MAX        = 1 << 2,
+    QEMU_BLOCK_IOTUNE_SET_IOPS_MAX         = 1 << 3,
+    QEMU_BLOCK_IOTUNE_SET_SIZE_IOPS        = 1 << 4,
+    QEMU_BLOCK_IOTUNE_SET_BYTES_MAX_LENGTH = 1 << 5,
+    QEMU_BLOCK_IOTUNE_SET_IOPS_MAX_LENGTH  = 1 << 6,
+} qemuBlockIoTuneSetFlags;
+
 
 /* If the user didn't specify bytes limits, inherit previous values;
  * likewise if the user didn't specify iops limits.  */
 static void
 qemuDomainSetBlockIoTuneDefaults(virDomainBlockIoTuneInfoPtr newinfo,
                                  virDomainBlockIoTuneInfoPtr oldinfo,
-                                 bool set_bytes,
-                                 bool set_iops,
-                                 bool set_bytes_max,
-                                 bool set_iops_max,
-                                 bool set_size_iops,
-                                 bool set_bytes_max_length,
-                                 bool set_iops_max_length)
+                                 qemuBlockIoTuneSetFlags set_fields)
 {
 #define SET_IOTUNE_DEFAULTS(BOOL, FIELD)                                       \
-    if (!BOOL) {                                                               \
+    if (!(set_fields & QEMU_BLOCK_IOTUNE_SET_##BOOL)) {                        \
         newinfo->total_##FIELD = oldinfo->total_##FIELD;                       \
         newinfo->read_##FIELD = oldinfo->read_##FIELD;                         \
         newinfo->write_##FIELD = oldinfo->write_##FIELD;                       \
     }
 
-    SET_IOTUNE_DEFAULTS(set_bytes, bytes_sec);
-    SET_IOTUNE_DEFAULTS(set_bytes_max, bytes_sec_max);
-    SET_IOTUNE_DEFAULTS(set_iops, iops_sec);
-    SET_IOTUNE_DEFAULTS(set_iops_max, iops_sec_max);
+    SET_IOTUNE_DEFAULTS(BYTES, bytes_sec);
+    SET_IOTUNE_DEFAULTS(BYTES_MAX, bytes_sec_max);
+    SET_IOTUNE_DEFAULTS(IOPS, iops_sec);
+    SET_IOTUNE_DEFAULTS(IOPS_MAX, iops_sec_max);
 #undef SET_IOTUNE_DEFAULTS
 
-    if (!set_size_iops)
+    if (!(set_fields & QEMU_BLOCK_IOTUNE_SET_SIZE_IOPS))
         newinfo->size_iops_sec = oldinfo->size_iops_sec;
 
     /* The length field is handled a bit differently. If not defined/set,
@@ -17380,19 +17384,20 @@ qemuDomainSetBlockIoTuneDefaults(virDomainBlockIoTuneInfoPtr newinfo,
      * our newinfo is clearing, then set max_length based on whether we
      * have a value in the family set/defined. */
 #define SET_MAX_LENGTH(BOOL, FIELD)                                            \
-    if (!BOOL)                                                                 \
+    if (!(set_fields & QEMU_BLOCK_IOTUNE_SET_##BOOL))                          \
         newinfo->FIELD##_max_length = oldinfo->FIELD##_max_length;             \
-    else if (BOOL && oldinfo->FIELD##_max_length &&                            \
+    else if ((set_fields & QEMU_BLOCK_IOTUNE_SET_##BOOL) &&                    \
+             oldinfo->FIELD##_max_length &&                                    \
              !newinfo->FIELD##_max_length)                                     \
         newinfo->FIELD##_max_length = (newinfo->FIELD ||                       \
                                        newinfo->FIELD##_max) ? 1 : 0;
 
-        SET_MAX_LENGTH(set_bytes_max_length, total_bytes_sec);
-        SET_MAX_LENGTH(set_bytes_max_length, read_bytes_sec);
-        SET_MAX_LENGTH(set_bytes_max_length, write_bytes_sec);
-        SET_MAX_LENGTH(set_iops_max_length, total_iops_sec);
-        SET_MAX_LENGTH(set_iops_max_length, read_iops_sec);
-        SET_MAX_LENGTH(set_iops_max_length, write_iops_sec);
+        SET_MAX_LENGTH(BYTES_MAX_LENGTH, total_bytes_sec);
+        SET_MAX_LENGTH(BYTES_MAX_LENGTH, read_bytes_sec);
+        SET_MAX_LENGTH(BYTES_MAX_LENGTH, write_bytes_sec);
+        SET_MAX_LENGTH(IOPS_MAX_LENGTH, total_iops_sec);
+        SET_MAX_LENGTH(IOPS_MAX_LENGTH, read_iops_sec);
+        SET_MAX_LENGTH(IOPS_MAX_LENGTH, write_iops_sec);
 
 #undef SET_MAX_LENGTH
 
@@ -17417,13 +17422,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
     size_t i;
     virDomainDiskDefPtr conf_disk = NULL;
     virDomainDiskDefPtr disk;
-    bool set_bytes = false;
-    bool set_iops = false;
-    bool set_bytes_max = false;
-    bool set_iops_max = false;
-    bool set_size_iops = false;
-    bool set_bytes_max_length = false;
-    bool set_iops_max_length = false;
+    qemuBlockIoTuneSetFlags set_fields = 0;
     bool supportMaxOptions = true;
     bool supportMaxLengthOptions = true;
     virQEMUDriverConfigPtr cfg = NULL;
@@ -17501,7 +17500,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
 #define SET_IOTUNE_FIELD(FIELD, BOOL, CONST)                                   \
     if (STREQ(param->field, VIR_DOMAIN_BLOCK_IOTUNE_##CONST)) {                \
         info.FIELD = param->value.ul;                                          \
-        BOOL = true;                                                           \
+        set_fields |= QEMU_BLOCK_IOTUNE_SET_##BOOL;                            \
         if (virTypedParamsAddULLong(&eventParams, &eventNparams,               \
                                     &eventMaxparams,                           \
                                     VIR_DOMAIN_TUNABLE_BLKDEV_##CONST,         \
@@ -17520,38 +17519,38 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             goto endjob;
         }
 
-        SET_IOTUNE_FIELD(total_bytes_sec, set_bytes, TOTAL_BYTES_SEC);
-        SET_IOTUNE_FIELD(read_bytes_sec, set_bytes, READ_BYTES_SEC);
-        SET_IOTUNE_FIELD(write_bytes_sec, set_bytes, WRITE_BYTES_SEC);
-        SET_IOTUNE_FIELD(total_iops_sec, set_iops, TOTAL_IOPS_SEC);
-        SET_IOTUNE_FIELD(read_iops_sec, set_iops, READ_IOPS_SEC);
-        SET_IOTUNE_FIELD(write_iops_sec, set_iops, WRITE_IOPS_SEC);
+        SET_IOTUNE_FIELD(total_bytes_sec, BYTES, TOTAL_BYTES_SEC);
+        SET_IOTUNE_FIELD(read_bytes_sec, BYTES, READ_BYTES_SEC);
+        SET_IOTUNE_FIELD(write_bytes_sec, BYTES, WRITE_BYTES_SEC);
+        SET_IOTUNE_FIELD(total_iops_sec, IOPS, TOTAL_IOPS_SEC);
+        SET_IOTUNE_FIELD(read_iops_sec, IOPS, READ_IOPS_SEC);
+        SET_IOTUNE_FIELD(write_iops_sec, IOPS, WRITE_IOPS_SEC);
 
-        SET_IOTUNE_FIELD(total_bytes_sec_max, set_bytes_max,
+        SET_IOTUNE_FIELD(total_bytes_sec_max, BYTES_MAX,
                          TOTAL_BYTES_SEC_MAX);
-        SET_IOTUNE_FIELD(read_bytes_sec_max, set_bytes_max,
+        SET_IOTUNE_FIELD(read_bytes_sec_max, BYTES_MAX,
                          READ_BYTES_SEC_MAX);
-        SET_IOTUNE_FIELD(write_bytes_sec_max, set_bytes_max,
+        SET_IOTUNE_FIELD(write_bytes_sec_max, BYTES_MAX,
                          WRITE_BYTES_SEC_MAX);
-        SET_IOTUNE_FIELD(total_iops_sec_max, set_iops_max,
+        SET_IOTUNE_FIELD(total_iops_sec_max, IOPS_MAX,
                          TOTAL_IOPS_SEC_MAX);
-        SET_IOTUNE_FIELD(read_iops_sec_max, set_iops_max,
+        SET_IOTUNE_FIELD(read_iops_sec_max, IOPS_MAX,
                          READ_IOPS_SEC_MAX);
-        SET_IOTUNE_FIELD(write_iops_sec_max, set_iops_max,
+        SET_IOTUNE_FIELD(write_iops_sec_max, IOPS_MAX,
                          WRITE_IOPS_SEC_MAX);
-        SET_IOTUNE_FIELD(size_iops_sec, set_size_iops, SIZE_IOPS_SEC);
+        SET_IOTUNE_FIELD(size_iops_sec, SIZE_IOPS, SIZE_IOPS_SEC);
 
-        SET_IOTUNE_FIELD(total_bytes_sec_max_length, set_bytes_max_length,
+        SET_IOTUNE_FIELD(total_bytes_sec_max_length, BYTES_MAX_LENGTH,
                          TOTAL_BYTES_SEC_MAX_LENGTH);
-        SET_IOTUNE_FIELD(read_bytes_sec_max_length, set_bytes_max_length,
+        SET_IOTUNE_FIELD(read_bytes_sec_max_length, BYTES_MAX_LENGTH,
                          READ_BYTES_SEC_MAX_LENGTH);
-        SET_IOTUNE_FIELD(write_bytes_sec_max_length, set_bytes_max_length,
+        SET_IOTUNE_FIELD(write_bytes_sec_max_length, BYTES_MAX_LENGTH,
                          WRITE_BYTES_SEC_MAX_LENGTH);
-        SET_IOTUNE_FIELD(total_iops_sec_max_length, set_iops_max_length,
+        SET_IOTUNE_FIELD(total_iops_sec_max_length, IOPS_MAX_LENGTH,
                          TOTAL_IOPS_SEC_MAX_LENGTH);
-        SET_IOTUNE_FIELD(read_iops_sec_max_length, set_iops_max_length,
+        SET_IOTUNE_FIELD(read_iops_sec_max_length, IOPS_MAX_LENGTH,
                          READ_IOPS_SEC_MAX_LENGTH);
-        SET_IOTUNE_FIELD(write_iops_sec_max_length, set_iops_max_length,
+        SET_IOTUNE_FIELD(write_iops_sec_max_length, IOPS_MAX_LENGTH,
                          WRITE_IOPS_SEC_MAX_LENGTH);
     }
 
@@ -17603,7 +17602,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         }
 
         if (!supportMaxOptions &&
-            (set_iops_max || set_bytes_max || set_size_iops)) {
+            (set_fields & (QEMU_BLOCK_IOTUNE_SET_BYTES_MAX |
+                           QEMU_BLOCK_IOTUNE_SET_IOPS_MAX |
+                           QEMU_BLOCK_IOTUNE_SET_SIZE_IOPS))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("a block I/O throttling parameter is not "
                              "supported with this QEMU binary"));
@@ -17611,7 +17612,8 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         }
 
         if (!supportMaxLengthOptions &&
-            (set_iops_max_length || set_bytes_max_length)) {
+            (set_fields & (QEMU_BLOCK_IOTUNE_SET_BYTES_MAX_LENGTH |
+                           QEMU_BLOCK_IOTUNE_SET_IOPS_MAX_LENGTH))) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("a block I/O throttling length parameter is not "
                              "supported with this QEMU binary"));
@@ -17625,10 +17627,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             goto endjob;
 
         qemuDomainSetBlockIoTuneDefaults(&info, &disk->blkdeviotune,
-                                         set_bytes, set_iops, set_bytes_max,
-                                         set_iops_max, set_size_iops,
-                                         set_bytes_max_length,
-                                         set_iops_max_length);
+                                         set_fields);
 
 #define CHECK_MAX(val)                                                  \
         do {                                                            \
@@ -17682,10 +17681,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             goto endjob;
         }
         qemuDomainSetBlockIoTuneDefaults(&info, &conf_disk->blkdeviotune,
-                                         set_bytes, set_iops, set_bytes_max,
-                                         set_iops_max, set_size_iops,
-                                         set_bytes_max_length,
-                                         set_iops_max_length);
+                                         set_fields);
         conf_disk->blkdeviotune = info;
         ret = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef);
         if (ret < 0)
