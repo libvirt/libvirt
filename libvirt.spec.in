@@ -1210,9 +1210,9 @@ rm -fr %{buildroot}
 # Avoid using makeinstall macro as it changes prefixes rather than setting
 # DESTDIR. Newer make_install macro would be better but it's not available
 # on RHEL 5, thus we need to expand it here.
-make install DESTDIR=%{?buildroot} SYSTEMD_UNIT_DIR=%{_unitdir}
+make %{?_smp_mflags} install DESTDIR=%{?buildroot} SYSTEMD_UNIT_DIR=%{_unitdir}
 
-make -C examples distclean
+make %{?_smp_mflags} -C examples distclean
 
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
