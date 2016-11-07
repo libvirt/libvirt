@@ -112,9 +112,12 @@ VIR_LOG_INIT("qemu.qemu_driver");
 
 #define QEMU_NB_MEM_PARAM  3
 
-#define QEMU_NB_BLOCK_IO_TUNE_PARAM  6
-#define QEMU_NB_BLOCK_IO_TUNE_PARAM_MAX  13
-#define QEMU_NB_BLOCK_IO_TUNE_PARAM_MAX_LENGTH 19
+#define QEMU_NB_BLOCK_IO_TUNE_BASE_PARAMS 6
+#define QEMU_NB_BLOCK_IO_TUNE_MAX_PARAMS 7
+#define QEMU_NB_BLOCK_IO_TUNE_LENGTH_PARAMS 6
+#define QEMU_NB_BLOCK_IO_TUNE_ALL_PARAMS (QEMU_NB_BLOCK_IO_TUNE_BASE_PARAMS + \
+                                          QEMU_NB_BLOCK_IO_TUNE_MAX_PARAMS + \
+                                          QEMU_NB_BLOCK_IO_TUNE_LENGTH_PARAMS)
 
 #define QEMU_NB_NUMA_PARAM 2
 
@@ -17718,7 +17721,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     virDomainBlockIoTuneInfo reply;
     char *device = NULL;
     int ret = -1;
-    int maxparams = QEMU_NB_BLOCK_IO_TUNE_PARAM_MAX_LENGTH;
+    int maxparams;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
@@ -17752,11 +17755,13 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
             goto endjob;
         }
 
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX))
-            maxparams = QEMU_NB_BLOCK_IO_TUNE_PARAM;
-        else if (!virQEMUCapsGet(priv->qemuCaps,
-                                 QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH))
-            maxparams = QEMU_NB_BLOCK_IO_TUNE_PARAM_MAX;
+        maxparams = QEMU_NB_BLOCK_IO_TUNE_BASE_PARAMS;
+        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX))
+            maxparams += QEMU_NB_BLOCK_IO_TUNE_MAX_PARAMS;
+        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH))
+            maxparams += QEMU_NB_BLOCK_IO_TUNE_LENGTH_PARAMS;
+    } else {
+        maxparams = QEMU_NB_BLOCK_IO_TUNE_ALL_PARAMS;
     }
 
     if (*nparams == 0) {
