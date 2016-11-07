@@ -196,6 +196,7 @@
   <flag name='ivshmem-doorbell'/>
   <flag name='query-qmp-schema'/>
   <flag name='vhost-scsi'/>
+  <flag name='drive-iotune-group'/>
   <version>2007091</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.8.0-rc1-dirty)</package>
