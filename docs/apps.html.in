@@ -19,12 +19,15 @@
       be added here, or simply send a patch against the documentation
       in the libvirt.git docs subdirectory.
       If your application uses libvirt as its API,
-      the following graphic is available for your website to advertise
+      the following graphics are available for your website to advertise
       support for libvirt:
     </p>
 
     <p class="image">
-      <img src="madeWith.png" alt="Made with libvirt"/>
+      <img src="logos/logo-square-powered-96.png" alt="libvirt powered"/>
+      <img src="logos/logo-square-powered-128.png" alt="libvirt powered"/>
+      <img src="logos/logo-square-powered-192.png" alt="libvirt powered"/>
+      <img src="logos/logo-square-powered-256.png" alt="libvirt powered"/>
     </p>
 
     <h2><a name="clientserver">Client/Server applications</a></h2>

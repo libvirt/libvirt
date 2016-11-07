@@ -90,7 +90,6 @@ png = \
   libvirt-daemon-arch.png \
   libvirt-driver-arch.png \
   libvirt-object-model.png \
-  madeWith.png \
   migration-managed-direct.png \
   migration-managed-p2p.png \
   migration-native.png \
