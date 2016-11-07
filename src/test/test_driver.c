@@ -1731,9 +1731,14 @@ static int testDomainDestroy(virDomainPtr domain)
     virObjectEventPtr event = NULL;
     int ret = -1;
 
-
     if (!(privdom = testDomObjFromDomain(domain)))
         goto cleanup;
+
+    if (!virDomainObjIsActive(privdom)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
 
     testDomainShutdownState(domain, privdom, VIR_DOMAIN_SHUTOFF_DESTROYED);
     event = virDomainEventLifecycleNewFromObj(privdom,
