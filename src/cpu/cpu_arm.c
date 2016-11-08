@@ -78,15 +78,6 @@ virCPUarmUpdate(virCPUDefPtr guest,
 }
 
 
-static virCPUCompareResult
-armGuestData(virCPUDefPtr host ATTRIBUTE_UNUSED,
-             virCPUDefPtr guest ATTRIBUTE_UNUSED,
-             virCPUDataPtr *data ATTRIBUTE_UNUSED,
-             char **message ATTRIBUTE_UNUSED)
-{
-    return VIR_CPU_COMPARE_IDENTICAL;
-}
-
 static virCPUDefPtr
 armBaseline(virCPUDefPtr *cpus,
             unsigned int ncpus ATTRIBUTE_UNUSED,
@@ -128,7 +119,6 @@ struct cpuArchDriver cpuDriverArm = {
     .encode = NULL,
     .free = armDataFree,
     .nodeData = NULL,
-    .guestData = armGuestData,
     .baseline = armBaseline,
     .update = virCPUarmUpdate,
 };

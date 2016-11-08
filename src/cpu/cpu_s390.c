@@ -80,7 +80,6 @@ struct cpuArchDriver cpuDriverS390 = {
     .encode     = NULL,
     .free       = s390DataFree,
     .nodeData   = s390NodeData,
-    .guestData  = NULL,
     .baseline   = NULL,
     .update     = NULL,
 };

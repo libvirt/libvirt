@@ -745,14 +745,6 @@ ppc64DriverNodeData(virArch arch)
     return NULL;
 }
 
-static virCPUCompareResult
-ppc64DriverGuestData(virCPUDefPtr host,
-                     virCPUDefPtr guest,
-                     virCPUDataPtr *data,
-                     char **message)
-{
-    return ppc64Compute(host, guest, data, message);
-}
 
 static int
 virCPUppc64Update(virCPUDefPtr guest,
@@ -911,7 +903,6 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .encode     = NULL,
     .free       = ppc64DriverFree,
     .nodeData   = ppc64DriverNodeData,
-    .guestData  = ppc64DriverGuestData,
     .baseline   = ppc64DriverBaseline,
     .update     = virCPUppc64Update,
     .getModels  = virCPUppc64DriverGetModels,

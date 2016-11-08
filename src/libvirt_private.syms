@@ -978,7 +978,6 @@ cpuBaselineXML;
 cpuDataFree;
 cpuDecode;
 cpuEncode;
-cpuGuestData;
 cpuNodeData;
 virCPUCheckFeature;
 virCPUCompare;

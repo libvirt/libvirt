@@ -73,12 +73,6 @@ typedef void
 typedef virCPUDataPtr
 (*cpuArchNodeData)  (virArch arch);
 
-typedef virCPUCompareResult
-(*cpuArchGuestData) (virCPUDefPtr host,
-                     virCPUDefPtr guest,
-                     virCPUDataPtr *data,
-                     char **message);
-
 typedef virCPUDefPtr
 (*cpuArchBaseline)  (virCPUDefPtr *cpus,
                      unsigned int ncpus,
@@ -124,7 +118,6 @@ struct cpuArchDriver {
     cpuArchEncode       encode;
     cpuArchDataFree     free;
     cpuArchNodeData     nodeData;
-    cpuArchGuestData    guestData;
     cpuArchBaseline     baseline;
     virCPUArchUpdate    update;
     virCPUArchCheckFeature checkFeature;
@@ -174,13 +167,6 @@ cpuDataFree (virCPUDataPtr data);
 
 virCPUDataPtr
 cpuNodeData (virArch arch);
-
-virCPUCompareResult
-cpuGuestData(virCPUDefPtr host,
-             virCPUDefPtr guest,
-             virCPUDataPtr *data,
-             char **msg)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 char *
 cpuBaselineXML(const char **xmlCPUs,

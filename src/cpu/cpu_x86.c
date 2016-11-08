@@ -1725,22 +1725,6 @@ virCPUx86Compare(virCPUDefPtr host,
 }
 
 
-static virCPUCompareResult
-x86GuestData(virCPUDefPtr host,
-             virCPUDefPtr guest,
-             virCPUDataPtr *data,
-             char **message)
-{
-    if (!guest->model) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("no guest CPU model specified"));
-        return VIR_CPU_COMPARE_ERROR;
-    }
-
-    return x86Compute(host, guest, data, message);
-}
-
-
 /*
  * Checks whether a candidate model is a better fit for the CPU data than the
  * current model.
@@ -2761,7 +2745,6 @@ struct cpuArchDriver cpuDriverX86 = {
 #else
     .nodeData   = NULL,
 #endif
-    .guestData  = x86GuestData,
     .baseline   = x86Baseline,
     .update     = virCPUx86Update,
     .checkFeature = virCPUx86CheckFeature,

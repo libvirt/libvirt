@@ -373,47 +373,6 @@ cpuNodeData(virArch arch)
 
 
 /**
- * cpuGuestData:
- *
- * @host: host CPU definition
- * @guest: guest CPU definition
- * @data: computed guest CPU data
- * @msg: error message describing why the @guest and @host CPUs are considered
- *       incompatible
- *
- * Computes guest CPU data for the @guest CPU definition when run on the @host
- * CPU.
- *
- * Returns VIR_CPU_COMPARE_ERROR on error, VIR_CPU_COMPARE_INCOMPATIBLE when
- * the two CPUs are incompatible (@msg will describe the incompatibility),
- * VIR_CPU_COMPARE_IDENTICAL when the two CPUs are identical,
- * VIR_CPU_COMPARE_SUPERSET when the @guest CPU is a superset of the @host CPU.
- */
-virCPUCompareResult
-cpuGuestData(virCPUDefPtr host,
-             virCPUDefPtr guest,
-             virCPUDataPtr *data,
-             char **msg)
-{
-    struct cpuArchDriver *driver;
-
-    VIR_DEBUG("host=%p, guest=%p, data=%p, msg=%p", host, guest, data, msg);
-
-    if ((driver = cpuGetSubDriver(host->arch)) == NULL)
-        return VIR_CPU_COMPARE_ERROR;
-
-    if (driver->guestData == NULL) {
-        virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot compute guest CPU data for %s architecture"),
-                       virArchToString(host->arch));
-        return VIR_CPU_COMPARE_ERROR;
-    }
-
-    return driver->guestData(host, guest, data, msg);
-}
-
-
-/**
  * cpuBaselineXML:
  *
  * @xmlCPUs: list of host CPU XML descriptions
