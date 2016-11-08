@@ -792,8 +792,6 @@ mymain(void)
     /* computing guest data and decoding the data into a guest CPU XML */
     DO_TEST_GUESTDATA("x86", "host", "guest", NULL, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host-better", "pentium3", NULL, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host-better", "pentium3", NULL, "pentium3", 0);
-    DO_TEST_GUESTDATA("x86", "host-better", "pentium3", NULL, "core2duo", 0);
     DO_TEST_GUESTDATA("x86", "host-worse", "guest", NULL, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host", "strict-force-extra", NULL, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host", "penryn-force", NULL, NULL, 0);
