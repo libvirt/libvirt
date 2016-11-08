@@ -800,6 +800,7 @@ VBOX_DRIVER_SOURCES =						\
 	vbox/vbox_V4_3.c vbox/vbox_CAPI_v4_3.h			\
 	vbox/vbox_V4_3_4.c vbox/vbox_CAPI_v4_3_4.h              \
 	vbox/vbox_V5_0.c vbox/vbox_CAPI_v5_0.h			\
+	vbox/vbox_V5_1.c vbox/vbox_CAPI_v5_1.h			\
 	vbox/vbox_common.c vbox/vbox_common.h                   \
 	vbox/vbox_uniformed_api.h                               \
 	vbox/vbox_get_driver.h					\

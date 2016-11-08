@@ -910,6 +910,8 @@ virStorageDriverPtr vboxGetStorageDriver(uint32_t uVersion)
         vbox43_4InstallUniformedAPI(&gVBoxAPI);
     } else if (uVersion >= 4003051 && uVersion < 5000051) {
         vbox50InstallUniformedAPI(&gVBoxAPI);
+    } else if (uVersion >= 5000051 && uVersion < 5001051) {
+        vbox51InstallUniformedAPI(&gVBoxAPI);
     } else {
         return NULL;
     }

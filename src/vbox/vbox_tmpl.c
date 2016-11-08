@@ -71,6 +71,8 @@
 # include "vbox_CAPI_v4_3_4.h"
 #elif VBOX_API_VERSION == 5000000
 # include "vbox_CAPI_v5_0.h"
+#elif VBOX_API_VERSION == 5001000
+# include "vbox_CAPI_v5_1.h"
 #else
 # error "Unsupport VBOX_API_VERSION"
 #endif

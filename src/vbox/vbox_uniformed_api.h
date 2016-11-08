@@ -629,5 +629,6 @@ void vbox42_20InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 void vbox43InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 void vbox43_4InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 void vbox50InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
+void vbox51InstallUniformedAPI(vboxUniformedAPI *pVBoxAPI);
 
 #endif /* VBOX_UNIFORMED_API_H */
