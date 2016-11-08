@@ -62,7 +62,6 @@ struct data {
     const char **models;
     const char *modelsName;
     unsigned int nmodels;
-    const char *preferred;
     unsigned int flags;
     int result;
 };
@@ -269,7 +268,7 @@ cpuTestGuestData(const void *arg)
     guest->match = VIR_CPU_MATCH_EXACT;
     guest->fallback = cpu->fallback;
     if (cpuDecode(guest, guestData, data->models,
-                  data->nmodels, data->preferred) < 0) {
+                  data->nmodels, NULL) < 0) {
         ret = -1;
         goto cleanup;
     }
@@ -277,8 +276,6 @@ cpuTestGuestData(const void *arg)
     virBufferAsprintf(&buf, "%s+%s", data->host, data->name);
     if (data->nmodels)
         virBufferAsprintf(&buf, ",%s", data->modelsName);
-    if (data->preferred)
-        virBufferAsprintf(&buf, ",%s", data->preferred);
     virBufferAddLit(&buf, "-result");
 
     if (virBufferError(&buf)) {
@@ -588,12 +585,12 @@ mymain(void)
 #endif
 
 #define DO_TEST(arch, api, name, host, cpu,                             \
-                models, nmodels, preferred, flags, result)              \
+                models, nmodels, flags, result)                         \
     do {                                                                \
         struct data data = {                                            \
             arch, host, cpu, models,                                    \
             models == NULL ? NULL : #models,                            \
-            nmodels, preferred, flags, result                           \
+            nmodels, flags, result                                      \
         };                                                              \
         char *testLabel;                                                \
         char *tmp;                                                      \
@@ -624,12 +621,12 @@ mymain(void)
 #define DO_TEST_COMPARE(arch, host, cpu, result)                        \
     DO_TEST(arch, cpuTestCompare,                                       \
             host "/" cpu " (" #result ")",                              \
-            host, cpu, NULL, 0, NULL, 0, result)
+            host, cpu, NULL, 0, 0, result)
 
 #define DO_TEST_UPDATE_ONLY(arch, host, cpu)                            \
     DO_TEST(arch, cpuTestUpdate,                                        \
             cpu " on " host,                                            \
-            host, cpu, NULL, 0, NULL, 0, 0)                             \
+            host, cpu, NULL, 0, 0, 0)
 
 #define DO_TEST_UPDATE(arch, host, cpu, result)                         \
     do {                                                                \
@@ -649,7 +646,7 @@ mymain(void)
             ret = -1;                                                   \
         } else {                                                        \
             DO_TEST(arch, cpuTestBaseline, label, NULL,                 \
-                    "baseline-" name, NULL, 0, NULL, flags, result);    \
+                    "baseline-" name, NULL, 0, flags, result);          \
         }                                                               \
         VIR_FREE(label);                                                \
     } while (0)
@@ -657,21 +654,21 @@ mymain(void)
 #define DO_TEST_HASFEATURE(arch, host, feature, result)                 \
     DO_TEST(arch, cpuTestHasFeature,                                    \
             host "/" feature " (" #result ")",                          \
-            host, feature, NULL, 0, NULL, 0, result)
+            host, feature, NULL, 0, 0, result)
 
-#define DO_TEST_GUESTDATA(arch, host, cpu, models, preferred, result)   \
+#define DO_TEST_GUESTDATA(arch, host, cpu, models, result)              \
     DO_TEST(arch, cpuTestGuestData,                                     \
-            host "/" cpu " (" #models ", pref=" #preferred ")",         \
+            host "/" cpu " (" #models ")",                              \
             host, cpu, models,                                          \
             models == NULL ? 0 : sizeof(models) / sizeof(char *),       \
-            preferred, 0, result)
+            0, result)
 
 #if WITH_QEMU && WITH_YAJL
 # define DO_TEST_CPUID_JSON(arch, host, json)                           \
     do {                                                                \
         if (json) {                                                     \
             DO_TEST(arch, cpuTestJSONCPUID, host, host,                 \
-                    NULL, NULL, 0, NULL, 0, 0);                         \
+                    NULL, NULL, 0, 0, 0);                               \
         }                                                               \
     } while (0)
 #else
@@ -681,9 +678,9 @@ mymain(void)
 #define DO_TEST_CPUID(arch, host, json)                                 \
     do {                                                                \
         DO_TEST(arch, cpuTestHostCPUID, host, host,                     \
-                NULL, NULL, 0, NULL, 0, 0);                             \
+                NULL, NULL, 0, 0, 0);                                   \
         DO_TEST(arch, cpuTestGuestCPUID, host, host,                    \
-                NULL, NULL, 0, NULL, 0, 0);                             \
+                NULL, NULL, 0, 0, 0);                                   \
         DO_TEST_CPUID_JSON(arch, host, json);                           \
     } while (0)
 
@@ -790,27 +787,27 @@ mymain(void)
     DO_TEST_HASFEATURE("x86", "host", "foo", FAIL);
 
     /* computing guest data and decoding the data into a guest CPU XML */
-    DO_TEST_GUESTDATA("x86", "host", "guest", NULL, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host-better", "pentium3", NULL, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host-worse", "guest", NULL, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host", "strict-force-extra", NULL, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host", "penryn-force", NULL, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host", "guest", model486, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host", "guest", models, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host", "guest", nomodel, NULL, -1);
-    DO_TEST_GUESTDATA("x86", "host", "guest-nofallback", models, NULL, /*-1*/ -2);
-    DO_TEST_GUESTDATA("x86", "host", "host+host-model", models, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host", "host+host-model-nofallback", models, NULL, /*-1*/ -2);
-    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell", haswell, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX", haswell, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX-nofallback", haswell, NULL, /*-1*/ -2);
-    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX", NULL, NULL, 0);
+    DO_TEST_GUESTDATA("x86", "host", "guest", NULL, 0);
+    DO_TEST_GUESTDATA("x86", "host-better", "pentium3", NULL, 0);
+    DO_TEST_GUESTDATA("x86", "host-worse", "guest", NULL, 0);
+    DO_TEST_GUESTDATA("x86", "host", "strict-force-extra", NULL, 0);
+    DO_TEST_GUESTDATA("x86", "host", "penryn-force", NULL, 0);
+    DO_TEST_GUESTDATA("x86", "host", "guest", model486, 0);
+    DO_TEST_GUESTDATA("x86", "host", "guest", models, 0);
+    DO_TEST_GUESTDATA("x86", "host", "guest", nomodel, -1);
+    DO_TEST_GUESTDATA("x86", "host", "guest-nofallback", models, /*-1*/ -2);
+    DO_TEST_GUESTDATA("x86", "host", "host+host-model", models, 0);
+    DO_TEST_GUESTDATA("x86", "host", "host+host-model-nofallback", models, /*-1*/ -2);
+    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell", haswell, 0);
+    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX", haswell, 0);
+    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX-nofallback", haswell, /*-1*/ -2);
+    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX", NULL, 0);
 
-    DO_TEST_GUESTDATA("ppc64", "host", "guest", ppc_models, NULL, 0);
-    DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, NULL, -1);
-    DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy", ppc_models, NULL, 0);
-    DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-incompatible", ppc_models, NULL, -1);
-    DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-invalid", ppc_models, NULL, -1);
+    DO_TEST_GUESTDATA("ppc64", "host", "guest", ppc_models, 0);
+    DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, -1);
+    DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy", ppc_models, 0);
+    DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-incompatible", ppc_models, -1);
+    DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-invalid", ppc_models, -1);
 
     DO_TEST_CPUID("x86", "A10-5800K", true);
     DO_TEST_CPUID("x86", "Atom-D510", false);
