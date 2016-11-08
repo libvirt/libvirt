@@ -798,16 +798,14 @@ mymain(void)
     DO_TEST_GUESTDATA("x86", "host", "guest", model486, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host", "guest", models, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host", "guest", nomodel, NULL, -1);
-    DO_TEST_GUESTDATA("x86", "host", "guest-nofallback", models, "Penryn", -1);
+    DO_TEST_GUESTDATA("x86", "host", "guest-nofallback", models, NULL, /*-1*/ -2);
     DO_TEST_GUESTDATA("x86", "host", "host+host-model", models, "Penryn", 0);
-    DO_TEST_GUESTDATA("x86", "host", "host+host-model-nofallback",
-                      models, "Penryn", -1);
+    DO_TEST_GUESTDATA("x86", "host", "host+host-model-nofallback", models, NULL, /*-1*/ -2);
     DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell",
                       haswell, "Haswell", 0);
     DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX",
                       haswell, "Haswell-noTSX", 0);
-    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX-nofallback",
-                      haswell, "Haswell-noTSX", -1);
+    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX-nofallback", haswell, NULL, /*-1*/ -2);
     DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX",
                       NULL, "Haswell-noTSX", 0);
 
