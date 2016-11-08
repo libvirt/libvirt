@@ -611,6 +611,10 @@ ignored.
 &lt;/domain&gt;
 </pre>
 
+<p>
+The use of namespace passthrough requires libvirt >= 1.2.19
+</p>
+
 <h2><a name="usage">Container usage / management</a></h2>
 
 <p>
