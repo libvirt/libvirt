@@ -799,18 +799,15 @@ mymain(void)
     DO_TEST_GUESTDATA("x86", "host", "guest", models, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host", "guest", nomodel, NULL, -1);
     DO_TEST_GUESTDATA("x86", "host", "guest-nofallback", models, NULL, /*-1*/ -2);
-    DO_TEST_GUESTDATA("x86", "host", "host+host-model", models, "Penryn", 0);
+    DO_TEST_GUESTDATA("x86", "host", "host+host-model", models, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host", "host+host-model-nofallback", models, NULL, /*-1*/ -2);
-    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell",
-                      haswell, "Haswell", 0);
-    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX",
-                      haswell, "Haswell-noTSX", 0);
+    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell", haswell, NULL, 0);
+    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX", haswell, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX-nofallback", haswell, NULL, /*-1*/ -2);
-    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX",
-                      NULL, "Haswell-noTSX", 0);
+    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX", NULL, NULL, 0);
 
     DO_TEST_GUESTDATA("ppc64", "host", "guest", ppc_models, NULL, 0);
-    DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, "POWER8", -1);
+    DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, NULL, -1);
     DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy", ppc_models, NULL, 0);
     DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-incompatible", ppc_models, NULL, -1);
     DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-invalid", ppc_models, NULL, -1);
