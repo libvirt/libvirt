@@ -1867,6 +1867,12 @@ static int testDomainReboot(virDomainPtr domain,
     if (!(privdom = testDomObjFromDomain(domain)))
         goto cleanup;
 
+    if (!virDomainObjIsActive(privdom)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
     virDomainObjSetState(privdom, VIR_DOMAIN_SHUTDOWN,
                          VIR_DOMAIN_SHUTDOWN_USER);
 
@@ -1986,6 +1992,12 @@ testDomainSaveFlags(virDomainPtr domain, const char *path,
 
     if (!(privdom = testDomObjFromDomain(domain)))
         goto cleanup;
+
+    if (!virDomainObjIsActive(privdom)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
 
     xml = virDomainDefFormat(privdom->def, privconn->caps,
                              VIR_DOMAIN_DEF_FORMAT_SECURE);
@@ -2184,6 +2196,12 @@ static int testDomainCoreDumpWithFormat(virDomainPtr domain,
 
     if (!(privdom = testDomObjFromDomain(domain)))
         goto cleanup;
+
+    if (!virDomainObjIsActive(privdom)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
 
     if ((fd = open(to, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
         virReportSystemError(errno,
@@ -3064,6 +3082,12 @@ static int testDomainBlockStats(virDomainPtr domain,
     if (!(privdom = testDomObjFromDomain(domain)))
         return ret;
 
+    if (!virDomainObjIsActive(privdom)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto error;
+    }
+
     if (virDomainDiskIndexByName(privdom->def, path, false) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid path: %s"), path);
@@ -3102,6 +3126,12 @@ static int testDomainInterfaceStats(virDomainPtr domain,
 
     if (!(privdom = testDomObjFromDomain(domain)))
         return -1;
+
+    if (!virDomainObjIsActive(privdom)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto error;
+    }
 
     for (i = 0; i < privdom->def->nnets; i++) {
         if (privdom->def->nets[i]->ifname &&
