@@ -797,8 +797,6 @@ mymain(void)
     DO_TEST_GUESTDATA("x86", "host", "penryn-force", NULL, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host", "guest", model486, NULL, 0);
     DO_TEST_GUESTDATA("x86", "host", "guest", models, NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host", "guest", models, "Penryn", 0);
-    DO_TEST_GUESTDATA("x86", "host", "guest", models, "qemu64", 0);
     DO_TEST_GUESTDATA("x86", "host", "guest", nomodel, NULL, -1);
     DO_TEST_GUESTDATA("x86", "host", "guest-nofallback", models, "Penryn", -1);
     DO_TEST_GUESTDATA("x86", "host", "host+host-model", models, "Penryn", 0);
