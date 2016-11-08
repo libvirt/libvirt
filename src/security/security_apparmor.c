@@ -856,7 +856,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     ptr->mgr = mgr;
     ptr->def = def;
 
-    switch (dev->source.subsys.type) {
+    switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB: {
         virUSBDevicePtr usb =
             virUSBDeviceNew(usbsrc->bus, usbsrc->device, vroot);
@@ -909,7 +909,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-    default:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         ret = 0;
         break;
     }

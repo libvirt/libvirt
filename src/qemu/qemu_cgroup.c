@@ -301,7 +301,7 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
 
     if (dev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
 
-        switch (dev->source.subsys.type) {
+        switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
                 int rv;
@@ -376,7 +376,7 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
             break;
         }
 
-        default:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
             break;
         }
     }
@@ -410,7 +410,7 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
 
     if (dev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
 
-        switch (dev->source.subsys.type) {
+        switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
                 int rv;
@@ -437,7 +437,10 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
             /* nothing to tear down for USB */
             break;
-        default:
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+            /* nothing to tear down for SCSI */
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
             break;
         }
     }
