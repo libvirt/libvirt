@@ -246,8 +246,6 @@ vshErrorHandler(void *opaque ATTRIBUTE_UNUSED, virErrorPtr error)
 {
     virFreeError(last_error);
     last_error = virSaveLastError();
-    if (virGetEnvAllowSUID("VSH_DEBUG") != NULL)
-        virDefaultErrorFunc(error);
 }
 
 /* Store a libvirt error that is from a helper API that doesn't raise errors
