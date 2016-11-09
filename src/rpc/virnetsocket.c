@@ -65,6 +65,10 @@
 # include "virnetsshsession.h"
 #endif
 
+#if WITH_LIBSSH
+# include "virnetlibsshsession.h"
+#endif
+
 #define VIR_FROM_THIS VIR_FROM_RPC
 
 VIR_LOG_INIT("rpc.netsocket");
@@ -106,6 +110,9 @@ struct _virNetSocket {
 #endif
 #if WITH_SSH2
     virNetSSHSessionPtr sshSession;
+#endif
+#if WITH_LIBSSH
+    virNetLibsshSessionPtr libsshSession;
 #endif
 };
 
@@ -1027,6 +1034,143 @@ virNetSocketNewConnectLibSSH2(const char *host ATTRIBUTE_UNUSED,
 }
 #endif /* WITH_SSH2 */
 
+#if WITH_LIBSSH
+int
+virNetSocketNewConnectLibssh(const char *host,
+                             const char *port,
+                             int family,
+                             const char *username,
+                             const char *privkey,
+                             const char *knownHosts,
+                             const char *knownHostsVerify,
+                             const char *authMethods,
+                             const char *command,
+                             virConnectAuthPtr auth,
+                             virURIPtr uri,
+                             virNetSocketPtr *retsock)
+{
+    virNetSocketPtr sock = NULL;
+    virNetLibsshSessionPtr sess = NULL;
+    unsigned int verify;
+    int ret = -1;
+    int portN;
+
+    char *authMethodNext = NULL;
+    char *authMethodsCopy = NULL;
+    char *authMethod;
+
+    /* port number will be verified while opening the socket */
+    if (virStrToLong_i(port, NULL, 10, &portN) < 0) {
+        virReportError(VIR_ERR_LIBSSH, "%s",
+                       _("Failed to parse port number"));
+        goto error;
+    }
+
+    /* create ssh session context */
+    if (!(sess = virNetLibsshSessionNew(username)))
+        goto error;
+
+    /* set ssh session parameters */
+    if (virNetLibsshSessionAuthSetCallback(sess, auth) != 0)
+        goto error;
+
+    if (STRCASEEQ("auto", knownHostsVerify)) {
+        verify = VIR_NET_LIBSSH_HOSTKEY_VERIFY_AUTO_ADD;
+    } else if (STRCASEEQ("ignore", knownHostsVerify)) {
+        verify = VIR_NET_LIBSSH_HOSTKEY_VERIFY_IGNORE;
+    } else if (STRCASEEQ("normal", knownHostsVerify)) {
+        verify = VIR_NET_LIBSSH_HOSTKEY_VERIFY_NORMAL;
+    } else {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("Invalid host key verification method: '%s'"),
+                       knownHostsVerify);
+        goto error;
+    }
+
+    if (virNetLibsshSessionSetHostKeyVerification(sess,
+                                                  host,
+                                                  portN,
+                                                  knownHosts,
+                                                  verify) != 0)
+        goto error;
+
+    if (virNetLibsshSessionSetChannelCommand(sess, command) != 0)
+        goto error;
+
+    if (VIR_STRDUP(authMethodsCopy, authMethods) < 0)
+        goto error;
+
+    authMethodNext = authMethodsCopy;
+
+    while ((authMethod = strsep(&authMethodNext, ","))) {
+        if (STRCASEEQ(authMethod, "keyboard-interactive")) {
+            ret = virNetLibsshSessionAuthAddKeyboardAuth(sess, -1);
+        } else if (STRCASEEQ(authMethod, "password")) {
+            ret = virNetLibsshSessionAuthAddPasswordAuth(sess, uri);
+        } else if (STRCASEEQ(authMethod, "privkey")) {
+            ret = virNetLibsshSessionAuthAddPrivKeyAuth(sess,
+                                                        privkey,
+                                                        NULL);
+        } else if (STRCASEEQ(authMethod, "agent")) {
+            ret = virNetLibsshSessionAuthAddAgentAuth(sess);
+        } else {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Invalid authentication method: '%s'"),
+                           authMethod);
+            ret = -1;
+            goto error;
+        }
+
+        if (ret != 0)
+            goto error;
+    }
+
+    /* connect to remote server */
+    if ((ret = virNetSocketNewConnectTCP(host, port, family, &sock)) < 0)
+        goto error;
+
+    /* connect to the host using ssh */
+    if ((ret = virNetLibsshSessionConnect(sess, virNetSocketGetFD(sock))) != 0)
+        goto error;
+
+    sock->libsshSession = sess;
+    /* libssh owns the FD and closes it on its own, and thus
+     * we must not close it (otherwise there are warnings about
+     * trying to close an invalid FD).
+     */
+    sock->ownsFd = false;
+    *retsock = sock;
+
+    VIR_FREE(authMethodsCopy);
+    return 0;
+
+ error:
+    virObjectUnref(sock);
+    virObjectUnref(sess);
+    VIR_FREE(authMethodsCopy);
+    return ret;
+}
+#else
+int
+virNetSocketNewConnectLibssh(const char *host ATTRIBUTE_UNUSED,
+                             const char *port ATTRIBUTE_UNUSED,
+                             int family ATTRIBUTE_UNUSED,
+                             const char *username ATTRIBUTE_UNUSED,
+                             const char *privkey ATTRIBUTE_UNUSED,
+                             const char *knownHosts ATTRIBUTE_UNUSED,
+                             const char *knownHostsVerify ATTRIBUTE_UNUSED,
+                             const char *authMethods ATTRIBUTE_UNUSED,
+                             const char *command ATTRIBUTE_UNUSED,
+                             virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                             virURIPtr uri ATTRIBUTE_UNUSED,
+                             virNetSocketPtr *retsock ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("libssh transport support was not enabled"));
+    return -1;
+}
+#endif /* WITH_LIBSSH */
+
 int virNetSocketNewConnectExternal(const char **cmdargv,
                                    virNetSocketPtr *retsock)
 {
@@ -1202,6 +1346,10 @@ void virNetSocketDispose(void *obj)
 
 #if WITH_SSH2
     virObjectUnref(sock->sshSession);
+#endif
+
+#if WITH_LIBSSH
+    virObjectUnref(sock->libsshSession);
 #endif
 
     if (sock->ownsFd)
@@ -1534,6 +1682,11 @@ bool virNetSocketHasCachedData(virNetSocketPtr sock ATTRIBUTE_UNUSED)
         hasCached = true;
 #endif
 
+#if WITH_LIBSSH
+    if (virNetLibsshSessionHasCachedData(sock->libsshSession))
+        hasCached = true;
+#endif
+
 #if WITH_SASL
     if (sock->saslDecoded)
         hasCached = true;
@@ -1558,6 +1711,22 @@ static ssize_t virNetSocketLibSSH2Write(virNetSocketPtr sock,
 }
 #endif
 
+#if WITH_LIBSSH
+static ssize_t virNetSocketLibsshRead(virNetSocketPtr sock,
+                                      char *buf,
+                                      size_t len)
+{
+    return virNetLibsshChannelRead(sock->libsshSession, buf, len);
+}
+
+static ssize_t virNetSocketLibsshWrite(virNetSocketPtr sock,
+                                       const char *buf,
+                                       size_t len)
+{
+    return virNetLibsshChannelWrite(sock->libsshSession, buf, len);
+}
+#endif
+
 bool virNetSocketHasPendingData(virNetSocketPtr sock ATTRIBUTE_UNUSED)
 {
     bool hasPending = false;
@@ -1579,6 +1748,11 @@ static ssize_t virNetSocketReadWire(virNetSocketPtr sock, char *buf, size_t len)
 #if WITH_SSH2
     if (sock->sshSession)
         return virNetSocketLibSSH2Read(sock, buf, len);
+#endif
+
+#if WITH_LIBSSH
+    if (sock->libsshSession)
+        return virNetSocketLibsshRead(sock, buf, len);
 #endif
 
  reread:
@@ -1638,6 +1812,11 @@ static ssize_t virNetSocketWriteWire(virNetSocketPtr sock, const char *buf, size
 #if WITH_SSH2
     if (sock->sshSession)
         return virNetSocketLibSSH2Write(sock, buf, len);
+#endif
+
+#if WITH_LIBSSH
+    if (sock->libsshSession)
+        return virNetSocketLibsshWrite(sock, buf, len);
 #endif
 
  rewrite:

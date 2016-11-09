@@ -145,6 +145,13 @@ of the OpenSSH binary. This transport uses the libvirt authentication callback f
 all ssh authentication calls and therefore supports keyboard-interactive authentication
 even with graphical management applications. As with the classic ssh transport
 netcat is required on the remote side.</dd>
+      <dt><code>libssh</code></dt>
+      <dd> Transport over the SSH protocol using
+      <a href="http://libssh.org/" title="libssh homepage">libssh</a> instead
+of the OpenSSH binary. This transport uses the libvirt authentication callback for
+all ssh authentication calls and therefore supports keyboard-interactive authentication
+even with graphical management applications. As with the classic ssh transport
+netcat is required on the remote side.</dd>
     </dl>
     <p>
 The default transport, if no other is specified, is <code>tls</code>.
@@ -191,6 +198,9 @@ settings.
 </li>
 <li><code>qemu+libssh2://user@host/system?known_hosts=/home/user/.ssh/known_hosts</code><br/> &#x2014;
 Connect to a remote host using a ssh connection with the libssh2 driver
+and use a different known_hosts file.</li>
+<li><code>qemu+libssh://user@host/system?known_hosts=/home/user/.ssh/known_hosts</code><br/> &#x2014;
+Connect to a remote host using a ssh connection with the libssh driver
 and use a different known_hosts file.</li>
     </ul>
     <h4>
@@ -260,7 +270,7 @@ Note that parameter values must be
         <td>
           <code>socket</code>
         </td>
-        <td> unix, ssh, libssh2 </td>
+        <td> unix, ssh, libssh2, libssh </td>
         <td>
   The path to the Unix domain socket, which overrides the
   compiled-in default.  For ssh transport, this is passed to
@@ -275,7 +285,7 @@ Note that parameter values must be
         <td>
           <code>netcat</code>
         </td>
-        <td> ssh, libssh2 </td>
+        <td> ssh, libssh2, libssh </td>
         <td>
   The name of the netcat command on the remote machine.
   The default is <code>nc</code>.  For ssh transport, libvirt
@@ -300,7 +310,7 @@ Note that parameter values must be
         <td>
           <code>keyfile</code>
         </td>
-        <td> ssh, libssh2 </td>
+        <td> ssh, libssh2, libssh </td>
         <td>
   The name of the private key file to use to authentication to the remote
   machine.  If this option is not used the default keys are used.
@@ -368,14 +378,15 @@ Note that parameter values must be
         <td>
           <code>known_hosts</code>
         </td>
-        <td> libssh2 </td>
+        <td> libssh2, libssh </td>
         <td>
-  Path to the known_hosts file to verify the host key against. LibSSH2
-  supports OpenSSH-style known_hosts files, although it does not support
-  all key types, so using files created by the OpenSSH binary may result
-  into truncating the known_hosts file. It's recommended to use the default
-  known_hosts file is located in libvirt's client local configuration
-  directory e.g.: ~/.config/libvirt/known_hosts. Note: Use absolute paths.
+  Path to the known_hosts file to verify the host key against. LibSSH2 and
+  libssh support OpenSSH-style known_hosts files, although LibSSH2 does not
+  support all key types, so using files created by the OpenSSH binary may
+  result into truncating the known_hosts file. Thus, with LibSSH2 it's
+  recommended to use the default known_hosts file is located in libvirt's
+  client local configuration directory e.g.: ~/.config/libvirt/known_hosts.
+  Note: Use absolute paths.
 </td>
       </tr>
       <tr>
@@ -386,7 +397,7 @@ Note that parameter values must be
         <td>
           <code>sshauth</code>
         </td>
-        <td> libssh2 </td>
+        <td> libssh2, libssh </td>
         <td>
   A comma separated list of authentication methods to use. Default (is
   "agent,privkey,keyboard-interactive". The order of the methods is preserved.

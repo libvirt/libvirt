@@ -673,6 +673,7 @@ remoteConnectSupportsFeatureUnlocked(virConnectPtr conn,
  *   - xxx:///                -> UNIX domain socket
  *   - xxx+ssh:///            -> SSH connection (legacy)
  *   - xxx+libssh2:///        -> SSH connection (using libssh2)
+ *   - xxx+libssh:///         -> SSH connection (using libssh)
  */
 static int
 doRemoteOpen(virConnectPtr conn,
@@ -689,6 +690,7 @@ doRemoteOpen(virConnectPtr conn,
         trans_libssh2,
         trans_ext,
         trans_tcp,
+        trans_libssh,
     } transport;
 #ifndef WIN32
     char *daemonPath = NULL;
@@ -736,6 +738,8 @@ doRemoteOpen(virConnectPtr conn,
                     transport = trans_ext;
                 } else if (STRCASEEQ(transport_str, "tcp")) {
                     transport = trans_tcp;
+                } else if (STRCASEEQ(transport_str, "libssh")) {
+                    transport = trans_libssh;
                 } else {
                     virReportError(VIR_ERR_INVALID_ARG, "%s",
                                    _("remote_open: transport in URL not recognised "
@@ -953,6 +957,43 @@ doRemoteOpen(virConnectPtr conn,
                                               sockname,
                                               auth,
                                               conn->uri);
+        if (!priv->client)
+            goto failed;
+
+        priv->is_secure = 1;
+        break;
+
+    case trans_libssh:
+        if (!sockname) {
+            /* Right now we don't support default session connections */
+            if (STREQ_NULLABLE(conn->uri->path, "/session")) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("Connecting to session instance without "
+                                 "socket path is not supported by the libssh "
+                                 "connection driver"));
+                goto failed;
+            }
+
+            if (VIR_STRDUP(sockname,
+                           flags & VIR_DRV_OPEN_REMOTE_RO ?
+                           LIBVIRTD_PRIV_UNIX_SOCKET_RO : LIBVIRTD_PRIV_UNIX_SOCKET) < 0)
+                goto failed;
+        }
+
+        VIR_DEBUG("Starting libssh session");
+
+        priv->client = virNetClientNewLibssh(priv->hostname,
+                                             port,
+                                             AF_UNSPEC,
+                                             username,
+                                             keyfile,
+                                             knownHosts,
+                                             knownHostsVerify,
+                                             sshauth,
+                                             netcat,
+                                             sockname,
+                                             auth,
+                                             conn->uri);
         if (!priv->client)
             goto failed;
 

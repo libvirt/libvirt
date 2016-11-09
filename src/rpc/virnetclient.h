@@ -67,6 +67,19 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
                                        virConnectAuthPtr authPtr,
                                        virURIPtr uri);
 
+virNetClientPtr virNetClientNewLibssh(const char *host,
+                                      const char *port,
+                                      int family,
+                                      const char *username,
+                                      const char *privkeyPath,
+                                      const char *knownHostsPath,
+                                      const char *knownHostsVerify,
+                                      const char *authMethods,
+                                      const char *netcatPath,
+                                      const char *socketPath,
+                                      virConnectAuthPtr authPtr,
+                                      virURIPtr uri);
+
 virNetClientPtr virNetClientNewExternal(const char **cmdargv);
 
 int virNetClientRegisterAsyncIO(virNetClientPtr client);
