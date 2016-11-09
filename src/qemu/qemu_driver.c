@@ -7615,7 +7615,7 @@ qemuDomainAttachDeviceLive(virDomainObjPtr vm,
     case VIR_DOMAIN_DEVICE_SHMEM:
         ret = qemuDomainAttachShmemDevice(driver, vm,
                                           dev->data.shmem);
-        if (ret < 0) {
+        if (!ret) {
             alias = dev->data.shmem->info.alias;
             dev->data.shmem = NULL;
         }
