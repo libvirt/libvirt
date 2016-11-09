@@ -934,3 +934,38 @@ virCPUTranslate(virArch arch,
     VIR_DEBUG("model=%s", NULLSTR(cpu->model));
     return 0;
 }
+
+
+/**
+ * virCPUConvertLegacy:
+ *
+ * @arch: CPU architecture
+ * @cpu: CPU definition to be converted
+ *
+ * Convert legacy CPU definition into one that the corresponding cpu driver
+ * will be able to work with. Currently this is only implemented by the PPC
+ * driver, which needs to convert legacy POWERx_v* names into POWERx.
+ *
+ * Returns -1 on error, 0 on success.
+ */
+int
+virCPUConvertLegacy(virArch arch,
+                    virCPUDefPtr cpu)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s, cpu=%p, model=%s",
+              virArchToString(arch), cpu, NULLSTR(cpu->model));
+
+    if (!(driver = cpuGetSubDriver(arch)))
+        return -1;
+
+    if (!driver->convertLegacy)
+        return 0;
+
+    if (driver->convertLegacy(cpu) < 0)
+        return -1;
+
+    VIR_DEBUG("model=%s", NULLSTR(cpu->model));
+    return 0;
+}

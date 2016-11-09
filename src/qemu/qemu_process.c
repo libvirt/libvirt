@@ -5066,6 +5066,9 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
         return -1;
     }
 
+    if (virCPUConvertLegacy(caps->host.arch, def->cpu) < 0)
+        return -1;
+
     /* nothing to update for host-passthrough */
     if (def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
         return 0;

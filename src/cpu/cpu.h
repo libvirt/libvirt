@@ -112,6 +112,9 @@ typedef int
                        const char **models,
                        unsigned int nmodels);
 
+typedef int
+(*virCPUArchConvertLegacy)(virCPUDefPtr cpu);
+
 struct cpuArchDriver {
     const char *name;
     const virArch *arch;
@@ -130,6 +133,7 @@ struct cpuArchDriver {
     virCPUArchDataParse dataParse;
     virCPUArchGetModels getModels;
     virCPUArchTranslate translate;
+    virCPUArchConvertLegacy convertLegacy;
 };
 
 
@@ -229,6 +233,10 @@ virCPUTranslate(virArch arch,
                 unsigned int nmodels)
     ATTRIBUTE_NONNULL(2);
 
+int
+virCPUConvertLegacy(virArch arch,
+                    virCPUDefPtr cpu)
+    ATTRIBUTE_NONNULL(2);
 
 /* virCPUDataFormat and virCPUDataParse are implemented for unit tests only and
  * have no real-life usage

@@ -983,6 +983,7 @@ cpuNodeData;
 virCPUCheckFeature;
 virCPUCompare;
 virCPUCompareXML;
+virCPUConvertLegacy;
 virCPUDataCheckFeature;
 virCPUDataFormat;
 virCPUDataParse;

@@ -63,26 +63,18 @@ struct ppc64_map {
  *   POWER7_v2.3  => POWER7
  *   POWER7+_v2.1 => POWER7
  *   POWER8_v1.0  => POWER8 */
-static virCPUDefPtr
-ppc64ConvertLegacyCPUDef(const virCPUDef *legacy)
+static int
+virCPUppc64ConvertLegacy(virCPUDefPtr cpu)
 {
-    virCPUDefPtr cpu;
-
-    if (!(cpu = virCPUDefCopy(legacy)))
-        goto out;
-
-    if (!cpu->model ||
-        !(STREQ(cpu->model, "POWER7_v2.1") ||
-          STREQ(cpu->model, "POWER7_v2.3") ||
-          STREQ(cpu->model, "POWER7+_v2.1") ||
-          STREQ(cpu->model, "POWER8_v1.0"))) {
-        goto out;
+    if (cpu->model &&
+        (STREQ(cpu->model, "POWER7_v2.1") ||
+         STREQ(cpu->model, "POWER7_v2.3") ||
+         STREQ(cpu->model, "POWER7+_v2.1") ||
+         STREQ(cpu->model, "POWER8_v1.0"))) {
+        cpu->model[strlen("POWERx")] = 0;
     }
 
-    cpu->model[strlen("POWERx")] = 0;
-
- out:
-    return cpu;
+    return 0;
 }
 
 /* Some hosts can run guests in compatibility mode, but not all
@@ -519,7 +511,8 @@ ppc64Compute(virCPUDefPtr host,
     size_t i;
 
     /* Ensure existing configurations are handled correctly */
-    if (!(cpu = ppc64ConvertLegacyCPUDef(other)))
+    if (!(cpu = virCPUDefCopy(other)) ||
+        virCPUppc64ConvertLegacy(cpu) < 0)
         goto cleanup;
 
     if (cpu->arch != VIR_ARCH_NONE) {
@@ -922,4 +915,5 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .baseline   = ppc64DriverBaseline,
     .update     = virCPUppc64Update,
     .getModels  = virCPUppc64DriverGetModels,
+    .convertLegacy = virCPUppc64ConvertLegacy,
 };

@@ -251,6 +251,9 @@ cpuTestGuestCPU(const void *arg)
         !(cpu = cpuTestLoadXML(data->arch, data->name)))
         goto cleanup;
 
+    if (virCPUConvertLegacy(host->arch, cpu) < 0)
+        goto cleanup;
+
     cmpResult = virCPUCompare(host->arch, host, cpu, false);
     if (cmpResult == VIR_CPU_COMPARE_ERROR ||
         cmpResult == VIR_CPU_COMPARE_INCOMPATIBLE) {
@@ -794,7 +797,7 @@ mymain(void)
 
     DO_TEST_GUESTCPU("ppc64", "host", "guest", ppc_models, 0);
     DO_TEST_GUESTCPU("ppc64", "host", "guest-nofallback", ppc_models, -1);
-    DO_TEST_GUESTCPU("ppc64", "host", "guest-legacy", ppc_models, /*0*/ -1);
+    DO_TEST_GUESTCPU("ppc64", "host", "guest-legacy", ppc_models, 0);
     DO_TEST_GUESTCPU("ppc64", "host", "guest-legacy-incompatible", ppc_models, -1);
     DO_TEST_GUESTCPU("ppc64", "host", "guest-legacy-invalid", ppc_models, -1);
 
