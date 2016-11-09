@@ -120,11 +120,7 @@ typedef privcmd_hypercall_t hypercall_t;
 # define __HYPERVISOR_domctl 36
 #endif
 
-#ifdef WITH_RHEL5_API
-# define SYS_IFACE_MIN_VERS_NUMA 3
-#else
-# define SYS_IFACE_MIN_VERS_NUMA 4
-#endif
+#define SYS_IFACE_MIN_VERS_NUMA 4
 
 static int xen_ioctl_hypercall_cmd;
 static struct xenHypervisorVersions hv_versions = {

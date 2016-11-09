@@ -55,13 +55,8 @@
 
 VIR_LOG_INIT("xen.xm_internal");
 
-#ifdef WITH_RHEL5_API
-# define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 0
-# define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 2
-#else
-# define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 3
-# define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 3
-#endif
+#define XEND_CONFIG_MAX_VERS_NET_TYPE_IOEMU 3
+#define XEND_CONFIG_MIN_VERS_PVFB_NEWCONF 3
 
 /* The true Xen limit varies but so far is always way
    less than 1024, which is the Linux kernel limit according

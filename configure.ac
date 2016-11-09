@@ -634,14 +634,6 @@ fi
 AM_CONDITIONAL([WITH_SYSCTL], test "$with_sysctl" = "yes")
 AC_MSG_RESULT($with_sysctl)
 
-dnl RHEL-5 has a peculiar version of Xen, which requires some special casing
-AC_ARG_WITH([rhel5-api],
-	[AS_HELP_STRING([--with-rhel5-api=@<:@ARG@:>@],
-		[build for the RHEL-5 API @<:@default=no@:>@])])
-if test x"$with_rhel5_api" = x"yes"; then
-   AC_DEFINE([WITH_RHEL5_API], [1], [whether building for the RHEL-5 API])
-fi
-
 AC_PATH_PROG([IP_PATH], [ip], /sbin/ip, [/usr/sbin:$PATH])
 AC_DEFINE_UNQUOTED([IP_PATH], "$IP_PATH", [path to ip binary])
 
