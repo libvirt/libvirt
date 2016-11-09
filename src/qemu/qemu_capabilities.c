@@ -3754,7 +3754,7 @@ virQEMUCapsQMPSchemaObjectGetType(const char *field,
 
 
 static virJSONValuePtr
-virQEMUCapsQMPSchemaTraverse(const char *basename,
+virQEMUCapsQMPSchemaTraverse(const char *baseName,
                              char **query,
                              virHashTablePtr schema)
 {
@@ -3762,7 +3762,7 @@ virQEMUCapsQMPSchemaTraverse(const char *basename,
     const char *metatype;
 
     do {
-        if (!(base = virHashLookup(schema, basename)))
+        if (!(base = virHashLookup(schema, baseName)))
             return NULL;
 
         if (!*query)
@@ -3773,25 +3773,25 @@ virQEMUCapsQMPSchemaTraverse(const char *basename,
 
         /* flatten arrays by default */
         if (STREQ(metatype, "array")) {
-            if (!(basename = virJSONValueObjectGetString(base, "element-type")))
+            if (!(baseName = virJSONValueObjectGetString(base, "element-type")))
                 return NULL;
 
             continue;
         } else if (STREQ(metatype, "object")) {
             if (**query == '+')
-                basename = virQEMUCapsQMPSchemaObjectGetType("variants",
+                baseName = virQEMUCapsQMPSchemaObjectGetType("variants",
                                                              *query + 1,
                                                              "case", base);
             else
-                basename = virQEMUCapsQMPSchemaObjectGetType("members",
+                baseName = virQEMUCapsQMPSchemaObjectGetType("members",
                                                              *query,
                                                              "name", base);
 
-            if (!basename)
+            if (!baseName)
                 return NULL;
         } else if (STREQ(metatype, "command") ||
                    STREQ(metatype, "event")) {
-            if (!(basename = virJSONValueObjectGetString(base, *query)))
+            if (!(baseName = virJSONValueObjectGetString(base, *query)))
                 return NULL;
         } else {
             /* alternates, basic types and enums can't be entered */
