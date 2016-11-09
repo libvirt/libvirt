@@ -77,6 +77,7 @@ struct _virNetSocket {
     pid_t pid;
     int errfd;
     bool client;
+    bool ownsFd;
 
     /* Event callback fields */
     virNetSocketIOFunc func;
@@ -248,6 +249,7 @@ static virNetSocketPtr virNetSocketNew(virSocketAddrPtr localAddr,
     sock->errfd = errfd;
     sock->pid = pid;
     sock->watch = -1;
+    sock->ownsFd = true;
 
     /* Disable nagle for TCP sockets */
     if (sock->localAddr.data.sa.sa_family == AF_INET ||
@@ -1202,7 +1204,8 @@ void virNetSocketDispose(void *obj)
     virObjectUnref(sock->sshSession);
 #endif
 
-    VIR_FORCE_CLOSE(sock->fd);
+    if (sock->ownsFd)
+        VIR_FORCE_CLOSE(sock->fd);
     VIR_FORCE_CLOSE(sock->errfd);
 
     virProcessAbort(sock->pid);
