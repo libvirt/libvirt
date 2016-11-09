@@ -137,7 +137,8 @@ VIR_ENUM_IMPL(virErrorDomain, VIR_ERR_DOMAIN_LAST,
               "Log Manager",
               "Xen XL Config",
 
-              "Perf",
+              "Perf", /* 65 */
+              "Libssh transport layer",
     )
 
 
@@ -1399,6 +1400,12 @@ virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = _("guest agent replied with wrong id to guest-sync command");
             else
                 errmsg = _("guest agent replied with wrong id to guest-sync command: %s");
+            break;
+        case VIR_ERR_LIBSSH:
+            if (info == NULL)
+                errmsg = _("libssh transport error");
+            else
+                errmsg = _("libssh transport error: %s");
             break;
     }
     return errmsg;
