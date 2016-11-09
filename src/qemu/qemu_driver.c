@@ -4784,6 +4784,7 @@ qemuDomainSetVcpusMax(virQEMUDriverPtr driver,
  *
  * @def: domain definition
  * @nvcpus: target vcpu count
+ * @enable: set to true if vcpus should be enabled
  *
  * Tries to find which vcpu entities need to be enabled or disabled to reach
  * @nvcpus. This function works in order of the legacy hotplug but is able to
@@ -4793,7 +4794,8 @@ qemuDomainSetVcpusMax(virQEMUDriverPtr driver,
  */
 static virBitmapPtr
 qemuDomainSelectHotplugVcpuEntities(virDomainDefPtr def,
-                                    unsigned int nvcpus)
+                                    unsigned int nvcpus,
+                                    bool *enable)
 {
     virBitmapPtr ret = NULL;
     virDomainVcpuDefPtr vcpu;
@@ -4806,6 +4808,8 @@ qemuDomainSelectHotplugVcpuEntities(virDomainDefPtr def,
         return NULL;
 
     if (nvcpus > curvcpus) {
+        *enable = true;
+
         for (i = 0; i < maxvcpus && curvcpus < nvcpus; i++) {
             vcpu = virDomainDefGetVcpu(def, i);
             vcpupriv =  QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
@@ -4828,6 +4832,8 @@ qemuDomainSelectHotplugVcpuEntities(virDomainDefPtr def,
             ignore_value(virBitmapSetBit(ret, i));
         }
     } else {
+        *enable = false;
+
         for (i = maxvcpus - 1; i >= 0 && curvcpus > nvcpus; i--) {
             vcpu = virDomainDefGetVcpu(def, i);
             vcpupriv =  QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
@@ -4873,22 +4879,19 @@ static int
 qemuDomainSetVcpusLive(virQEMUDriverPtr driver,
                        virQEMUDriverConfigPtr cfg,
                        virDomainObjPtr vm,
-                       unsigned int nvcpus)
+                       virBitmapPtr vcpumap,
+                       bool enable)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuCgroupEmulatorAllNodesDataPtr emulatorCgroup = NULL;
-    virBitmapPtr vcpumap = NULL;
     ssize_t nextvcpu = -1;
     int rc = 0;
     int ret = -1;
 
-    if (!(vcpumap = qemuDomainSelectHotplugVcpuEntities(vm->def, nvcpus)))
-        goto cleanup;
-
     if (qemuCgroupEmulatorAllNodesAllow(priv->cgroup, &emulatorCgroup) < 0)
         goto cleanup;
 
-    if (nvcpus > virDomainDefGetVcpus(vm->def)) {
+    if (enable) {
         while ((nextvcpu = virBitmapNextSetBit(vcpumap, nextvcpu)) != -1) {
             if ((rc = qemuDomainHotplugAddVcpu(driver, vm, nextvcpu)) < 0)
                 break;
@@ -4915,7 +4918,6 @@ qemuDomainSetVcpusLive(virQEMUDriverPtr driver,
 
  cleanup:
     qemuCgroupEmulatorAllNodesRestore(emulatorCgroup);
-    virBitmapFree(vcpumap);
 
     return ret;
 }
@@ -5001,6 +5003,8 @@ qemuDomainSetVcpusInternal(virQEMUDriverPtr driver,
                            bool hotpluggable)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    virBitmapPtr vcpumap = NULL;
+    bool enable;
     int ret = -1;
 
     if (def && nvcpus > virDomainDefGetVcpusMax(def)) {
@@ -5019,8 +5023,14 @@ qemuDomainSetVcpusInternal(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (def && qemuDomainSetVcpusLive(driver, cfg, vm, nvcpus) < 0)
-        goto cleanup;
+    if (def) {
+        if (!(vcpumap = qemuDomainSelectHotplugVcpuEntities(vm->def, nvcpus,
+                                                            &enable)))
+            goto cleanup;
+
+        if (qemuDomainSetVcpusLive(driver, cfg, vm, vcpumap, enable) < 0)
+            goto cleanup;
+    }
 
     if (persistentDef) {
         qemuDomainSetVcpusConfig(persistentDef, nvcpus, hotpluggable);
@@ -5032,6 +5042,7 @@ qemuDomainSetVcpusInternal(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
+    virBitmapFree(vcpumap);
     virObjectUnref(cfg);
     return ret;
 }
