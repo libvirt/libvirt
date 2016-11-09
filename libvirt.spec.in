@@ -80,6 +80,7 @@
 %define with_firewalld     0%{!?_without_firewalld:0}
 %define with_libssh2       0%{!?_without_libssh2:0}
 %define with_wireshark     0%{!?_without_wireshark:0}
+%define with_libssh        0%{!?_without_libssh:0}
 %define with_pm_utils      1
 
 # Finally set the OS / architecture specific special cases
@@ -170,6 +171,11 @@
 # Enable wireshark plugins for all distros shipping libvirt 1.2.2 or newer
 %if 0%{?fedora}
     %define with_wireshark 0%{!?_without_wireshark:1}
+%endif
+
+# Enable libssh transport for new enough distros
+%if 0%{?fedora}
+    %define with_libssh 0%{!?_without_libssh:1}
 %endif
 
 
@@ -416,6 +422,10 @@ BuildRequires: wireshark-devel >= 2.1.0
     %else
 BuildRequires: wireshark-devel >= 1.12.1
     %endif
+%endif
+
+%if %{with_libssh}
+BuildRequires: libssh-devel >= 0.7.0
 %endif
 
 Provides: bundled(gnulib)
