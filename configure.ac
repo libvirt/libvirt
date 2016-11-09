@@ -1869,18 +1869,6 @@ if test "$with_storage_disk" = "yes" ||
     PKG_CHECK_MODULES([LIBPARTED], [libparted >= $PARTED_REQUIRED], [],
       [PARTED_FOUND=no])
   fi
-  if test "$PARTED_FOUND" = "no"; then
-    # RHEL-5 vintage parted is missing pkg-config files
-    save_LIBS="$LIBS"
-    save_CFLAGS="$CFLAGS"
-    PARTED_FOUND=yes
-    AC_CHECK_HEADER([parted/parted.h],,[PARTED_FOUND=no])
-    AC_CHECK_LIB([uuid], [uuid_generate],,[PARTED_FOUND=no])
-    AC_CHECK_LIB([parted], [ped_device_read],,[PARTED_FOUND=no])
-    LIBPARTED_LIBS="-luuid -lparted"
-    LIBS="$save_LIBS"
-    CFLAGS="$save_CFLAGS"
-  fi
 
   if test "$with_storage_disk" = "yes" &&
      test "$PARTED_FOUND" != "yes"; then
