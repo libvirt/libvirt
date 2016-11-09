@@ -335,6 +335,51 @@ static virNetClientPtr virNetClientNew(virNetSocketPtr sock,
     return NULL;
 }
 
+/*
+ * Check whether the specified SSH key exists.
+ *
+ * Return -1 on error, 0 if it does not exist, and 1 if it does exist.
+ */
+static int
+virNetClientCheckKeyExists(const char *homedir,
+                           const char *name,
+                           char **retPath)
+{
+    char *path;
+
+    if (virAsprintf(&path, "%s/.ssh/%s", homedir, name) < 0)
+        return -1;
+
+    if (!(virFileExists(path))) {
+        VIR_FREE(path);
+        return 0;
+    }
+
+    *retPath = path;
+    return 1;
+}
+
+/*
+ * Detect the default SSH key, if existing.
+ *
+ * Return -1 on error, 0 if it does not exist, and 1 if it does exist.
+ */
+static int
+virNetClientFindDefaultSshKey(const char *homedir, char **retPath)
+{
+    size_t i;
+
+    const char *keys[] = { "identity", "id_dsa", "id_ecdsa", "id_ed25519", "id_rsa" };
+
+    for (i = 0; i < ARRAY_CARDINALITY(keys); ++i) {
+        int ret = virNetClientCheckKeyExists(homedir, keys[i], retPath);
+        if (ret != 0)
+            return ret;
+    }
+
+    return 0;
+}
+
 
 virNetClientPtr virNetClientNewUNIX(const char *path,
                                     bool spawnDaemon,
@@ -426,22 +471,8 @@ virNetClientPtr virNetClientNewLibSSH2(const char *host,
 
     if (homedir) {
         if (!privkeyPath) {
-            /* RSA */
-            virBufferAsprintf(&buf, "%s/.ssh/id_rsa", homedir);
-            if (!(privkey = virBufferContentAndReset(&buf)))
+            if (virNetClientFindDefaultSshKey(homedir, &privkey) < 0)
                 goto no_memory;
-
-            if (!(virFileExists(privkey)))
-                VIR_FREE(privkey);
-            /* DSA */
-            if (!privkey) {
-                virBufferAsprintf(&buf, "%s/.ssh/id_dsa", homedir);
-                if (!(privkey = virBufferContentAndReset(&buf)))
-                    goto no_memory;
-
-                if (!(virFileExists(privkey)))
-                    VIR_FREE(privkey);
-            }
         } else {
             if (VIR_STRDUP(privkey, privkeyPath) < 0)
                 goto cleanup;
