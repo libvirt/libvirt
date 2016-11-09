@@ -2127,6 +2127,12 @@ else ! WITH_ATOMIC_OPS_PTHREAD
 SYM_FILES += $(srcdir)/libvirt_atomic.syms
 endif ! WITH_ATOMIC_OPS_PTHREAD
 
+if WITH_LIBSSH
+USED_SYM_FILES += $(srcdir)/libvirt_libssh.syms
+else ! WITH_LIBSSH
+SYM_FILES += $(srcdir)/libvirt_libssh.syms
+endif ! WITH_LIBSSH
+
 EXTRA_DIST += \
 	libvirt_public.syms		\
 	libvirt_lxc.syms		\
@@ -2204,7 +2210,8 @@ libvirt_admin_la_CFLAGS += \
 		$(YAJL_CFLAGS)			\
 		$(SSH2_CFLAGS)			\
 		$(SASL_CFLAGS)			\
-		$(GNUTLS_CFLAGS)
+		$(GNUTLS_CFLAGS)		\
+		$(LIBSSH_CFLAGS)
 
 libvirt_admin_la_LIBADD += \
 		$(CAPNG_LIBS)			\
@@ -2213,7 +2220,8 @@ libvirt_admin_la_LIBADD += \
 		$(LIBXML_LIBS)			\
 		$(SSH2_LIBS)			\
 		$(SASL_LIBS)			\
-		$(GNUTLS_LIBS)
+		$(GNUTLS_LIBS)			\
+		$(LIBSSH_LIBS)
 
 ADMIN_SYM_FILES = $(srcdir)/libvirt_admin_private.syms
 
@@ -2790,16 +2798,25 @@ else ! WITH_SASL
 EXTRA_DIST += \
 	rpc/virnetsaslcontext.h rpc/virnetsaslcontext.c
 endif ! WITH_SASL
+if WITH_LIBSSH
+libvirt_net_rpc_la_SOURCES += \
+	rpc/virnetlibsshsession.h rpc/virnetlibsshsession.c
+else ! WITH_LIBSSH
+EXTRA_DIST += \
+	rpc/virnetlibsshsession.h rpc/virnetlibsshsession.c
+endif ! WITH_LIBSSH
 libvirt_net_rpc_la_CFLAGS = \
 			$(GNUTLS_CFLAGS) \
 			$(SASL_CFLAGS) \
 			$(SSH2_CFLAGS) \
+			$(LIBSSH_CFLAGS) \
 			$(XDR_CFLAGS) \
 			$(AM_CFLAGS)
 libvirt_net_rpc_la_LDFLAGS = \
 			$(GNUTLS_LIBS) \
 			$(SASL_LIBS) \
 			$(SSH2_LIBS)\
+			$(LIBSSH_LIBS) \
 			$(SECDRIVER_LIBS) \
 			$(AM_LDFLAGS) \
 			$(NULL)

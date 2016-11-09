@@ -145,6 +145,7 @@ src/rpc/virnetclient.c
 src/rpc/virnetclientprogram.c
 src/rpc/virnetclientstream.c
 src/rpc/virnetdaemon.c
+src/rpc/virnetlibsshsession.c
 src/rpc/virnetmessage.c
 src/rpc/virnetsaslcontext.c
 src/rpc/virnetserver.c
