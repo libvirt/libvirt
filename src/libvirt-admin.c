@@ -465,7 +465,6 @@ int virAdmConnectRegisterCloseCallback(virAdmConnectPtr conn,
 
     virObjectRef(conn);
 
-    virObjectLock(conn);
     virObjectLock(conn->closeCallback);
 
     virCheckNonNullArgGoto(cb, error);
@@ -482,13 +481,11 @@ int virAdmConnectRegisterCloseCallback(virAdmConnectPtr conn,
     conn->closeCallback->freeCallback = freecb;
 
     virObjectUnlock(conn->closeCallback);
-    virObjectUnlock(conn);
 
     return 0;
 
  error:
     virObjectUnlock(conn->closeCallback);
-    virObjectUnlock(conn);
     virDispatchError(NULL);
     virObjectUnref(conn);
     return -1;
@@ -517,7 +514,6 @@ int virAdmConnectUnregisterCloseCallback(virAdmConnectPtr conn,
 
     virCheckAdmConnectReturn(conn, -1);
 
-    virObjectLock(conn);
     virObjectLock(conn->closeCallback);
 
     virCheckNonNullArgGoto(cb, error);
@@ -534,14 +530,12 @@ int virAdmConnectUnregisterCloseCallback(virAdmConnectPtr conn,
     conn->closeCallback->freeCallback = NULL;
 
     virObjectUnlock(conn->closeCallback);
-    virObjectUnlock(conn);
     virObjectUnref(conn);
 
     return 0;
 
  error:
     virObjectUnlock(conn->closeCallback);
-    virObjectUnlock(conn);
     virDispatchError(NULL);
     return -1;
 }
