@@ -90,6 +90,8 @@ int virProcessRunInMountNamespace(pid_t pid,
                                   virProcessNamespaceCallback cb,
                                   void *opaque);
 
+int virProcessSetupPrivateMountNS(void);
+
 int virProcessSetScheduler(pid_t pid,
                            virProcessSchedPolicy policy,
                            int priority);

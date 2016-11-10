@@ -272,7 +272,7 @@ dnl and various less common threadsafe functions
 AC_CHECK_FUNCS_ONCE([cfmakeraw fallocate geteuid getgid getgrnam_r \
   getmntent_r getpwuid_r getrlimit getuid kill mmap newlocale posix_fallocate \
   posix_memalign prlimit regexec sched_getaffinity setgroups setns \
-  setrlimit symlink sysctlbyname getifaddrs sched_setscheduler])
+  setrlimit symlink sysctlbyname getifaddrs sched_setscheduler unshare])
 
 dnl Availability of pthread functions. Because of $LIB_PTHREAD, we
 dnl cannot use AC_CHECK_FUNCS_ONCE. LIB_PTHREAD and LIBMULTITHREAD

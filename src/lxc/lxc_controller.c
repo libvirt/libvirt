@@ -2092,8 +2092,6 @@ lxcCreateTty(virLXCControllerPtr ctrl, int *ttymaster,
 static int
 virLXCControllerSetupPrivateNS(void)
 {
-    int ret = -1;
-
     /*
      * If doing a chroot style setup, we need to prepare
      * a private /dev/pts for the child now, which they
@@ -2115,21 +2113,7 @@ virLXCControllerSetupPrivateNS(void)
      * marked as shared
      */
 
-    if (unshare(CLONE_NEWNS) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Cannot unshare mount namespace"));
-        goto cleanup;
-    }
-
-    if (mount("", "/", NULL, MS_SLAVE|MS_REC, NULL) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("Failed to switch root mount into slave mode"));
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    return ret;
+    return virProcessSetupPrivateMountNS();
 }
 
 
