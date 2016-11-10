@@ -1112,20 +1112,6 @@ static int lxcContainerMountFSDevPTS(virDomainDefPtr def,
     return ret;
 }
 
-static int lxcContainerBindMountDevice(const char *src, const char *dst)
-{
-    if (virFileTouch(dst, 0666) < 0)
-        return -1;
-
-    if (mount(src, dst, "none", MS_BIND, NULL) < 0) {
-        virReportSystemError(errno, _("Failed to bind %s on to %s"), src,
-                             dst);
-        return -1;
-    }
-
-    return 0;
-}
-
 static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
 {
     size_t i;
@@ -1149,7 +1135,7 @@ static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
     }
 
     /* We have private devpts capability, so bind that */
-    if (lxcContainerBindMountDevice("/dev/pts/ptmx", "/dev/ptmx") < 0)
+    if (virFileBindMountDevice("/dev/pts/ptmx", "/dev/ptmx") < 0)
         return -1;
 
     for (i = 0; i < nttyPaths; i++) {
@@ -1157,7 +1143,7 @@ static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
         if (virAsprintf(&tty, "/dev/tty%zu", i+1) < 0)
             return -1;
 
-        if (lxcContainerBindMountDevice(ttyPaths[i], tty) < 0) {
+        if (virFileBindMountDevice(ttyPaths[i], tty) < 0) {
             return -1;
             VIR_FREE(tty);
         }
@@ -1165,7 +1151,7 @@ static int lxcContainerSetupDevices(char **ttyPaths, size_t nttyPaths)
         VIR_FREE(tty);
 
         if (i == 0 &&
-            lxcContainerBindMountDevice(ttyPaths[i], "/dev/console") < 0)
+            virFileBindMountDevice(ttyPaths[i], "/dev/console") < 0)
             return -1;
     }
     return 0;

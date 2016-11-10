@@ -32,6 +32,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#if defined(HAVE_SYS_MOUNT_H)
+# include <sys/mount.h>
+#endif
 #include <unistd.h>
 #include <dirent.h>
 #include <dirname.h>
@@ -3557,3 +3560,72 @@ int virFileIsSharedFS(const char *path)
                                  VIR_FILE_SHFS_SMB |
                                  VIR_FILE_SHFS_CIFS);
 }
+
+
+#if defined(HAVE_SYS_MOUNT_H)
+int
+virFileSetupDev(const char *path,
+                const char *mount_options)
+{
+    const unsigned long mount_flags = MS_NOSUID;
+    const char *mount_fs = "tmpfs";
+    int ret = -1;
+
+    if (virFileMakePath(path) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to make path %s"), path);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Mount devfs on %s type=tmpfs flags=%lx, opts=%s",
+              path, mount_flags, mount_options);
+    if (mount("devfs", path, mount_fs, mount_flags, mount_options) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mount devfs on %s type %s (%s)"),
+                             path, mount_fs, mount_options);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+int
+virFileBindMountDevice(const char *src,
+                       const char *dst)
+{
+    if (virFileTouch(dst, 0666) < 0)
+        return -1;
+
+    if (mount(src, dst, "none", MS_BIND, NULL) < 0) {
+        virReportSystemError(errno, _("Failed to bind %s on to %s"), src,
+                             dst);
+        return -1;
+    }
+
+    return 0;
+}
+
+#else /* !defined(HAVE_SYS_MOUNT_H) */
+
+int
+virFileSetupDev(const char *path ATTRIBUTE_UNUSED,
+                const char *mount_options ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("mount is not supported on this platform."));
+    return -1;
+}
+
+
+int
+virFileBindMountDevice(const char *src ATTRIBUTE_UNUSED,
+                       const char *dst ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("mount is not supported on this platform."));
+    return -1;
+}
+#endif /* !defined(HAVE_SYS_MOUNT_H) */

@@ -1457,12 +1457,6 @@ static int virLXCControllerSetupDev(virLXCControllerPtr ctrl)
                     LXC_STATE_DIR, ctrl->def->name) < 0)
         goto cleanup;
 
-    if (virFileMakePath(dev) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to make path %s"), dev);
-        goto cleanup;
-    }
-
     /*
      * tmpfs is limited to 64kb, since we only have device nodes in there
      * and don't want to DOS the entire OS RAM usage
@@ -1472,14 +1466,8 @@ static int virLXCControllerSetupDev(virLXCControllerPtr ctrl)
                     "mode=755,size=65536%s", mount_options) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Mount devfs on %s type=tmpfs flags=%x, opts=%s",
-              dev, MS_NOSUID, opts);
-    if (mount("devfs", dev, "tmpfs", MS_NOSUID, opts) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to mount devfs on %s type %s (%s)"),
-                             dev, "tmpfs", opts);
+    if (virFileSetupDev(dev, opts) < 0)
         goto cleanup;
-    }
 
     if (lxcContainerChown(ctrl->def, dev) < 0)
         goto cleanup;

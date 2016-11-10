@@ -311,4 +311,10 @@ int virFileGetHugepageSize(const char *path,
                            unsigned long long *size);
 int virFileFindHugeTLBFS(virHugeTLBFSPtr *ret_fs,
                          size_t *ret_nfs);
+
+int virFileSetupDev(const char *path,
+                    const char *mount_options);
+
+int virFileBindMountDevice(const char *src,
+                           const char *dst);
 #endif /* __VIR_FILE_H */
