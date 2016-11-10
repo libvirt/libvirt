@@ -1,5 +1,4 @@
 <cpu mode='custom' match='exact'>
-  <arch>x86_64</arch>
   <model fallback='allow'>core2duo</model>
   <vendor>Intel</vendor>
   <feature policy='require' name='ds'/>
@@ -17,4 +16,6 @@
   <feature policy='require' name='dca'/>
   <feature policy='require' name='sse4.1'/>
   <feature policy='require' name='lahf_lm'/>
+  <feature policy='require' name='monitor'/>
+  <feature policy='require' name='vme'/>
 </cpu>

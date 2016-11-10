@@ -1,6 +1,7 @@
 <cpu mode='custom' match='exact'>
-  <arch>x86_64</arch>
   <model fallback='allow'>Haswell</model>
+  <vendor>Intel</vendor>
+  <topology sockets='1' cores='2' threads='2'/>
   <feature policy='disable' name='hle'/>
   <feature policy='disable' name='rtm'/>
 </cpu>

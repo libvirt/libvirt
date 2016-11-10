@@ -237,14 +237,12 @@ cpuTestCompare(const void *arg)
 
 
 static int
-cpuTestGuestData(const void *arg)
+cpuTestGuestCPU(const void *arg)
 {
     const struct data *data = arg;
     int ret = -2;
     virCPUDefPtr host = NULL;
     virCPUDefPtr cpu = NULL;
-    virCPUDefPtr guest = NULL;
-    virCPUDataPtr guestData = NULL;
     virCPUCompareResult cmpResult;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *result = NULL;
@@ -253,22 +251,15 @@ cpuTestGuestData(const void *arg)
         !(cpu = cpuTestLoadXML(data->arch, data->name)))
         goto cleanup;
 
-    cmpResult = cpuGuestData(host, cpu, &guestData, NULL);
+    cmpResult = virCPUCompare(host->arch, host, cpu, false);
     if (cmpResult == VIR_CPU_COMPARE_ERROR ||
         cmpResult == VIR_CPU_COMPARE_INCOMPATIBLE) {
         ret = -1;
         goto cleanup;
     }
 
-    if (VIR_ALLOC(guest) < 0)
-        goto cleanup;
-
-    guest->arch = host->arch;
-    guest->type = VIR_CPU_TYPE_GUEST;
-    guest->match = VIR_CPU_MATCH_EXACT;
-    guest->fallback = cpu->fallback;
-    if (cpuDecode(guest, guestData, data->models,
-                  data->nmodels, NULL) < 0) {
+    if (virCPUUpdate(host->arch, cpu, host) < 0 ||
+        virCPUTranslate(host->arch, cpu, data->models, data->nmodels) < 0) {
         ret = -1;
         goto cleanup;
     }
@@ -284,17 +275,15 @@ cpuTestGuestData(const void *arg)
     }
     result = virBufferContentAndReset(&buf);
 
-    if (cpuTestCompareXML(data->arch, guest, result, false) < 0)
+    if (cpuTestCompareXML(data->arch, cpu, result, false) < 0)
         goto cleanup;
 
     ret = 0;
 
  cleanup:
     VIR_FREE(result);
-    cpuDataFree(guestData);
     virCPUDefFree(host);
     virCPUDefFree(cpu);
-    virCPUDefFree(guest);
 
     if (ret == data->result) {
         /* We got the result we expected, whether it was
@@ -656,8 +645,8 @@ mymain(void)
             host "/" feature " (" #result ")",                          \
             host, feature, NULL, 0, 0, result)
 
-#define DO_TEST_GUESTDATA(arch, host, cpu, models, result)              \
-    DO_TEST(arch, cpuTestGuestData,                                     \
+#define DO_TEST_GUESTCPU(arch, host, cpu, models, result)               \
+    DO_TEST(arch, cpuTestGuestCPU,                                      \
             host "/" cpu " (" #models ")",                              \
             host, cpu, models,                                          \
             models == NULL ? 0 : sizeof(models) / sizeof(char *),       \
@@ -787,27 +776,27 @@ mymain(void)
     DO_TEST_HASFEATURE("x86", "host", "foo", FAIL);
 
     /* computing guest data and decoding the data into a guest CPU XML */
-    DO_TEST_GUESTDATA("x86", "host", "guest", NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host-better", "pentium3", NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host-worse", "guest", NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host", "strict-force-extra", NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host", "penryn-force", NULL, 0);
-    DO_TEST_GUESTDATA("x86", "host", "guest", model486, 0);
-    DO_TEST_GUESTDATA("x86", "host", "guest", models, 0);
-    DO_TEST_GUESTDATA("x86", "host", "guest", nomodel, -1);
-    DO_TEST_GUESTDATA("x86", "host", "guest-nofallback", models, /*-1*/ -2);
-    DO_TEST_GUESTDATA("x86", "host", "host+host-model", models, 0);
-    DO_TEST_GUESTDATA("x86", "host", "host+host-model-nofallback", models, /*-1*/ -2);
-    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell", haswell, 0);
-    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX", haswell, 0);
-    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX-nofallback", haswell, /*-1*/ -2);
-    DO_TEST_GUESTDATA("x86", "host-Haswell-noTSX", "Haswell-noTSX", NULL, 0);
+    DO_TEST_GUESTCPU("x86", "host", "guest", NULL, 0);
+    DO_TEST_GUESTCPU("x86", "host-better", "pentium3", NULL, 0);
+    DO_TEST_GUESTCPU("x86", "host-worse", "guest", NULL, 0);
+    DO_TEST_GUESTCPU("x86", "host", "strict-force-extra", NULL, 0);
+    DO_TEST_GUESTCPU("x86", "host", "penryn-force", NULL, 0);
+    DO_TEST_GUESTCPU("x86", "host", "guest", model486, 0);
+    DO_TEST_GUESTCPU("x86", "host", "guest", models, 0);
+    DO_TEST_GUESTCPU("x86", "host", "guest", nomodel, -1);
+    DO_TEST_GUESTCPU("x86", "host", "guest-nofallback", models, -1);
+    DO_TEST_GUESTCPU("x86", "host", "host+host-model", models, 0);
+    DO_TEST_GUESTCPU("x86", "host", "host+host-model-nofallback", models, -1);
+    DO_TEST_GUESTCPU("x86", "host-Haswell-noTSX", "Haswell", haswell, 0);
+    DO_TEST_GUESTCPU("x86", "host-Haswell-noTSX", "Haswell-noTSX", haswell, 0);
+    DO_TEST_GUESTCPU("x86", "host-Haswell-noTSX", "Haswell-noTSX-nofallback", haswell, -1);
+    DO_TEST_GUESTCPU("x86", "host-Haswell-noTSX", "Haswell-noTSX", NULL, 0);
 
-    DO_TEST_GUESTDATA("ppc64", "host", "guest", ppc_models, 0);
-    DO_TEST_GUESTDATA("ppc64", "host", "guest-nofallback", ppc_models, -1);
-    DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy", ppc_models, 0);
-    DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-incompatible", ppc_models, -1);
-    DO_TEST_GUESTDATA("ppc64", "host", "guest-legacy-invalid", ppc_models, -1);
+    DO_TEST_GUESTCPU("ppc64", "host", "guest", ppc_models, 0);
+    DO_TEST_GUESTCPU("ppc64", "host", "guest-nofallback", ppc_models, -1);
+    DO_TEST_GUESTCPU("ppc64", "host", "guest-legacy", ppc_models, /*0*/ -1);
+    DO_TEST_GUESTCPU("ppc64", "host", "guest-legacy-incompatible", ppc_models, -1);
+    DO_TEST_GUESTCPU("ppc64", "host", "guest-legacy-invalid", ppc_models, -1);
 
     DO_TEST_CPUID("x86", "A10-5800K", true);
     DO_TEST_CPUID("x86", "Atom-D510", false);

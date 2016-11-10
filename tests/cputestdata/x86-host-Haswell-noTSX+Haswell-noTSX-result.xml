@@ -1,4 +1,4 @@
 <cpu mode='custom' match='exact'>
-  <arch>x86_64</arch>
   <model fallback='allow'>Haswell-noTSX</model>
+  <topology sockets='1' cores='2' threads='2'/>
 </cpu>
