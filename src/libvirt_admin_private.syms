@@ -29,6 +29,9 @@ xdr_admin_server_set_threadpool_parameters_args;
 # datatypes.h
 virAdmClientClass;
 virAdmConnectClass;
+virAdmConnectCloseCallbackDataRegister;
+virAdmConnectCloseCallbackDataReset;
+virAdmConnectCloseCallbackDataUnregister;
 virAdmGetServer;
 virAdmServerClass;
 

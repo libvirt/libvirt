@@ -47,6 +47,7 @@ src/cpu/cpu_arm.c
 src/cpu/cpu_map.c
 src/cpu/cpu_ppc64.c
 src/cpu/cpu_x86.c
+src/datatypes.c
 src/driver.c
 src/esx/esx_driver.c
 src/esx/esx_network_driver.c

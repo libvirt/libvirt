@@ -722,5 +722,13 @@ void virConnectCloseCallbackDataCall(virConnectCloseCallbackDataPtr close,
                                      int reason);
 virConnectCloseFunc
 virConnectCloseCallbackDataGetCallback(virConnectCloseCallbackDataPtr close);
+void virAdmConnectCloseCallbackDataReset(virAdmConnectCloseCallbackDataPtr cbdata);
+int virAdmConnectCloseCallbackDataRegister(virAdmConnectCloseCallbackDataPtr cbdata,
+                                           virAdmConnectPtr conn,
+                                           virAdmConnectCloseFunc cb,
+                                           void *opaque,
+                                           virFreeCallback freecb);
+int virAdmConnectCloseCallbackDataUnregister(virAdmConnectCloseCallbackDataPtr cbdata,
+                                             virAdmConnectCloseFunc cb);
 
 #endif /* __VIR_DATATYPES_H__ */
