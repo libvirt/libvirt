@@ -351,8 +351,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "ivshmem-doorbell", /* 240 */
               "query-qmp-schema",
-
-              "gluster.debug_level", /* 240 */
+              "gluster.debug_level",
     );
 
 
