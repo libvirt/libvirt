@@ -896,7 +896,7 @@ virCPUGetModels(virArch arch, char ***models)
 int
 virCPUTranslate(virArch arch,
                 virCPUDefPtr cpu,
-                char **models,
+                const char **models,
                 unsigned int nmodels)
 {
     struct cpuArchDriver *driver;
@@ -911,7 +911,7 @@ virCPUTranslate(virArch arch,
         cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
         return 0;
 
-    if (virCPUModelIsAllowed(cpu->model, (const char **) models, nmodels))
+    if (virCPUModelIsAllowed(cpu->model, models, nmodels))
         return 0;
 
     if (cpu->fallback != VIR_CPU_FALLBACK_ALLOW) {
@@ -928,7 +928,7 @@ virCPUTranslate(virArch arch,
         return -1;
     }
 
-    if (driver->translate(cpu, (const char **) models, nmodels) < 0)
+    if (driver->translate(cpu, models, nmodels) < 0)
         return -1;
 
     VIR_DEBUG("model=%s", NULLSTR(cpu->model));

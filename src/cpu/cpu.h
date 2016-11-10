@@ -225,7 +225,7 @@ virCPUGetModels(virArch arch, char ***models);
 int
 virCPUTranslate(virArch arch,
                 virCPUDefPtr cpu,
-                char **models,
+                const char **models,
                 unsigned int nmodels)
     ATTRIBUTE_NONNULL(2);
 

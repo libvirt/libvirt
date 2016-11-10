@@ -5083,7 +5083,8 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
         goto cleanup;
 
     if (virQEMUCapsGetCPUDefinitions(qemuCaps, &models, &nmodels) < 0 ||
-        virCPUTranslate(def->os.arch, def->cpu, models, nmodels) < 0)
+        virCPUTranslate(def->os.arch, def->cpu,
+                        (const char **) models, nmodels) < 0)
         goto cleanup;
 
     def->cpu->fallback = VIR_CPU_FALLBACK_FORBID;
