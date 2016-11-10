@@ -8565,6 +8565,7 @@ qemuBuildShmemBackendMemProps(virDomainShmemDefPtr shmem)
     virJSONValueObjectCreate(&ret,
                              "s:mem-path", mem_path,
                              "U:size", shmem->size,
+                             "b:share", true,
                              NULL);
 
     VIR_FREE(mem_path);
