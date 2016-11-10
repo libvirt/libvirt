@@ -132,20 +132,42 @@ virCPUDefCopyModelFilter(virCPUDefPtr dst,
 }
 
 
+/**
+ * virCPUDefStealModel:
+ *
+ * Move CPU model related parts virCPUDef from @src to @dst. If @keepVendor
+ * is true, the function keeps the original vendor/vendor_id in @dst rather
+ * than overwriting it with the values from @src.
+ */
 void
 virCPUDefStealModel(virCPUDefPtr dst,
-                    virCPUDefPtr src)
+                    virCPUDefPtr src,
+                    bool keepVendor)
 {
+    char *vendor;
+    char *vendor_id;
+
+    if (keepVendor) {
+        VIR_STEAL_PTR(vendor, dst->vendor);
+        VIR_STEAL_PTR(vendor_id, dst->vendor_id);
+    }
+
     virCPUDefFreeModel(dst);
 
     VIR_STEAL_PTR(dst->model, src->model);
-    VIR_STEAL_PTR(dst->vendor, src->vendor);
-    VIR_STEAL_PTR(dst->vendor_id, src->vendor_id);
     VIR_STEAL_PTR(dst->features, src->features);
     dst->nfeatures_max = src->nfeatures_max;
     src->nfeatures_max = 0;
     dst->nfeatures = src->nfeatures;
     src->nfeatures = 0;
+
+    if (keepVendor) {
+        dst->vendor = vendor;
+        dst->vendor_id = vendor_id;
+    } else {
+        VIR_STEAL_PTR(dst->vendor, src->vendor);
+        VIR_STEAL_PTR(dst->vendor_id, src->vendor_id);
+    }
 }
 
 

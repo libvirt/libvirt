@@ -67,7 +67,7 @@ virCPUarmUpdate(virCPUDefPtr guest,
     if (virCPUDefCopyModel(updated, host, true) < 0)
         goto cleanup;
 
-    virCPUDefStealModel(guest, updated);
+    virCPUDefStealModel(guest, updated, false);
     guest->mode = VIR_CPU_MODE_CUSTOM;
     guest->match = VIR_CPU_MATCH_EXACT;
     ret = 0;

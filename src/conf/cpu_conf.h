@@ -139,7 +139,8 @@ virCPUDefCopyModelFilter(virCPUDefPtr dst,
 
 void
 virCPUDefStealModel(virCPUDefPtr dst,
-                    virCPUDefPtr src);
+                    virCPUDefPtr src,
+                    bool keepVendor);
 
 virCPUDefPtr
 virCPUDefCopy(const virCPUDef *cpu);

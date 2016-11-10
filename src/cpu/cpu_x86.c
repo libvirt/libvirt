@@ -2576,7 +2576,8 @@ x86UpdateHostModel(virCPUDefPtr guest,
             goto cleanup;
     }
 
-    virCPUDefStealModel(guest, updated);
+    virCPUDefStealModel(guest, updated,
+                        guest->mode == VIR_CPU_MODE_CUSTOM);
     guest->mode = VIR_CPU_MODE_CUSTOM;
     guest->match = VIR_CPU_MATCH_EXACT;
     ret = 0;
@@ -2737,7 +2738,7 @@ virCPUx86Translate(virCPUDefPtr cpu,
             goto cleanup;
     }
 
-    virCPUDefStealModel(cpu, translated);
+    virCPUDefStealModel(cpu, translated, true);
     ret = 0;
 
  cleanup:
