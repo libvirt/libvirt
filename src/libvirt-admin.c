@@ -513,29 +513,13 @@ int virAdmConnectUnregisterCloseCallback(virAdmConnectPtr conn,
     virResetLastError();
 
     virCheckAdmConnectReturn(conn, -1);
-
-    virObjectLock(conn->closeCallback);
-
     virCheckNonNullArgGoto(cb, error);
 
-    if (conn->closeCallback->callback != cb) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("A different callback was requested"));
+    if (virAdmConnectCloseCallbackDataUnregister(conn->closeCallback, cb) < 0)
         goto error;
-    }
-
-    conn->closeCallback->callback = NULL;
-    if (conn->closeCallback->freeCallback)
-        conn->closeCallback->freeCallback(conn->closeCallback->opaque);
-    conn->closeCallback->freeCallback = NULL;
-
-    virObjectUnlock(conn->closeCallback);
-    virObjectUnref(conn);
 
     return 0;
-
  error:
-    virObjectUnlock(conn->closeCallback);
     virDispatchError(NULL);
     return -1;
 }

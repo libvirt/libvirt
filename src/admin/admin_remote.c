@@ -144,11 +144,7 @@ remoteAdminClientCloseFunc(virNetClientPtr client ATTRIBUTE_UNUSED,
         VIR_DEBUG("Triggering connection close callback %p reason=%d, opaque=%p",
                   cbdata->callback, reason, cbdata->opaque);
         cbdata->callback(cbdata->conn, reason, cbdata->opaque);
-
-        if (cbdata->freeCallback)
-            cbdata->freeCallback(cbdata->opaque);
-        cbdata->callback = NULL;
-        cbdata->freeCallback = NULL;
+        virAdmConnectCloseCallbackDataReset(cbdata);
     }
     virObjectUnlock(cbdata);
 }

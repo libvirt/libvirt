@@ -928,10 +928,7 @@ virAdmConnectCloseCallbackDataDispose(void *obj)
     virAdmConnectCloseCallbackDataPtr cb_data = obj;
 
     virObjectLock(cb_data);
-
-    if (cb_data->freeCallback)
-        cb_data->freeCallback(cb_data->opaque);
-
+    virAdmConnectCloseCallbackDataReset(cb_data);
     virObjectUnlock(cb_data);
 }
 
