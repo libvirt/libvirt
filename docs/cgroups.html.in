@@ -221,11 +221,11 @@ $ROOT
     </p>
 
     <pre>
-  ...
-  &lt;resource&gt;
-    &lt;partition&gt;/machine/production&lt;/partition&gt;
-  &lt;/resource&gt;
-  ...
+...
+&lt;resource&gt;
+  &lt;partition&gt;/machine/production&lt;/partition&gt;
+&lt;/resource&gt;
+...
     </pre>
 
     <p>
