@@ -780,6 +780,9 @@ storagePoolDefineXML(virConnectPtr conn,
     if (!(def = virStoragePoolDefParseString(xml)))
         goto cleanup;
 
+    if (virXMLCheckIllegalChars("name", def->name, "\n") < 0)
+        goto cleanup;
+
     if (virStoragePoolDefineXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
