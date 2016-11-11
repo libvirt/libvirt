@@ -467,14 +467,14 @@ ethernet0.checkMACAddress = "false"
         Here a domain XML snippet:
     </p>
 <pre>
-    ...
-    &lt;disk type='file' device='disk'&gt;
-      &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
-      &lt;target dev='sda' bus='scsi'/&gt;
-      &lt;address type='drive' controller='0' bus='0' unit='0'/&gt;
-    &lt;/disk&gt;
-    &lt;controller type='scsi' index='0' model='<strong>lsilogic</strong>'/&gt;
-    ...
+...
+&lt;disk type='file' device='disk'&gt;
+  &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
+  &lt;target dev='sda' bus='scsi'/&gt;
+  &lt;address type='drive' controller='0' bus='0' unit='0'/&gt;
+&lt;/disk&gt;
+&lt;controller type='scsi' index='0' model='<strong>lsilogic</strong>'/&gt;
+...
 </pre>
     <p>
         The controller element is supported <span class="since">since 0.8.2</span>.
@@ -482,13 +482,13 @@ ethernet0.checkMACAddress = "false"
         specify the SCSI controller model. This attribute usage is deprecated now.
     </p>
 <pre>
-    ...
-    &lt;disk type='file' device='disk'&gt;
-      &lt;driver name='<strong>lsilogic</strong>'/&gt;
-      &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
-      &lt;target dev='sda' bus='scsi'/&gt;
-    &lt;/disk&gt;
-    ...
+...
+&lt;disk type='file' device='disk'&gt;
+  &lt;driver name='<strong>lsilogic</strong>'/&gt;
+  &lt;source file='[local-storage] Fedora11/Fedora11.vmdk'/&gt;
+  &lt;target dev='sda' bus='scsi'/&gt;
+&lt;/disk&gt;
+...
 </pre>
 
 
@@ -513,13 +513,13 @@ ethernet0.checkMACAddress = "false"
         Here a domain XML snippet:
     </p>
 <pre>
-    ...
-    &lt;interface type='bridge'&gt;
-      &lt;mac address='00:50:56:25:48:c7'/&gt;
-      &lt;source bridge='VM Network'/&gt;
-      &lt;model type='<strong>e1000</strong>'/&gt;
-    &lt;/interface&gt;
-    ...
+...
+&lt;interface type='bridge'&gt;
+  &lt;mac address='00:50:56:25:48:c7'/&gt;
+  &lt;source bridge='VM Network'/&gt;
+  &lt;model type='<strong>e1000</strong>'/&gt;
+&lt;/interface&gt;
+...
 </pre>
 
 
