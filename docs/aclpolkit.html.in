@@ -334,9 +334,9 @@
     </p>
 
     <pre>
-      polkit.addRule(function(action, subject) {
-        ....logic to check 'action' and 'subject'...
-      });
+polkit.addRule(function(action, subject) {
+  ....logic to check 'action' and 'subject'...
+});
     </pre>
 
     <p>
