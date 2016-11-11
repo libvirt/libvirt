@@ -154,13 +154,13 @@ the following to the domain XML (<span class="since">Since 1.2.4</span>):
 </p>
 
 <pre>
-  ...
-  &lt;devices&gt;
-    &lt;serial type="nmdm"&gt;
-      &lt;source master="/dev/nmdm0A" slave="/dev/nmdm0B"/&gt;
-    &lt;/serial&gt;
-  &lt;/devices&gt;
-  ...</pre>
+...
+&lt;devices&gt;
+  &lt;serial type="nmdm"&gt;
+    &lt;source master="/dev/nmdm0A" slave="/dev/nmdm0B"/&gt;
+  &lt;/serial&gt;
+&lt;/devices&gt;
+...</pre>
 
 
 <p>Make sure to load the <code>nmdm</code> kernel module if you plan to use that.</p>
@@ -219,12 +219,12 @@ tweak them.</p>
 An example of domain XML device entry for that will look like:</p>
 
 <pre>
-  ...
-  &lt;disk type='volume' device='disk'&gt;
-    &lt;source pool='zfspool' volume='vol1'/&gt;
-    &lt;target dev='vdb' bus='virtio'/&gt;
-  &lt;/disk&gt;
-  ...</pre>
+...
+&lt;disk type='volume' device='disk'&gt;
+  &lt;source pool='zfspool' volume='vol1'/&gt;
+  &lt;target dev='vdb' bus='virtio'/&gt;
+&lt;/disk&gt;
+...</pre>
 
 <p>Please refer to the <a href="storage.html">Storage documentation</a> for more details on storage
 management.</p>
@@ -241,10 +241,10 @@ the first disk in the domain (either <code>cdrom</code>- or
 attempt to boot from the first partition in the disk image.</p>
 
 <pre>
-  ...
-    &lt;bootloader&gt;/usr/local/sbin/grub-bhyve&lt;/bootloader&gt;
-    &lt;bootloader_args&gt;...&lt;/bootloader_args&gt;
-  ...
+...
+&lt;bootloader&gt;/usr/local/sbin/grub-bhyve&lt;/bootloader&gt;
+&lt;bootloader_args&gt;...&lt;/bootloader_args&gt;
+...
 </pre>
 
 <p>Caveat: <code>bootloader_args</code> does not support any quoting.
