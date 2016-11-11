@@ -31,13 +31,13 @@
     <h3><a name="StoragePoolFirst">General metadata</a></h3>
 
     <pre>
-      &lt;pool type="iscsi"&gt;
-        &lt;name&gt;virtimages&lt;/name&gt;
-        &lt;uuid&gt;3e3fce45-4f53-4fa7-bb32-11f34168b82b&lt;/uuid&gt;
-        &lt;allocation&gt;10000000&lt;/allocation&gt;
-        &lt;capacity&gt;50000000&lt;/capacity&gt;
-        &lt;available&gt;40000000&lt;/available&gt;
-        ...</pre>
+&lt;pool type="iscsi"&gt;
+  &lt;name&gt;virtimages&lt;/name&gt;
+  &lt;uuid&gt;3e3fce45-4f53-4fa7-bb32-11f34168b82b&lt;/uuid&gt;
+  &lt;allocation&gt;10000000&lt;/allocation&gt;
+  &lt;capacity&gt;50000000&lt;/capacity&gt;
+  &lt;available&gt;40000000&lt;/available&gt;
+  ...</pre>
 
     <dl>
       <dt><code>name</code></dt>
@@ -75,50 +75,50 @@
     </p>
 
     <pre>
-        ...
-        &lt;source&gt;
-          &lt;host name="iscsi.example.com"/&gt;
-          &lt;device path="iqn.2013-06.com.example:iscsi-pool"/&gt;
-          &lt;auth type='chap' username='myname'&gt;
-            &lt;secret usage='mycluster_myname'/&gt;
-          &lt;/auth&gt;
-          &lt;vendor name="Acme"/&gt;
-          &lt;product name="model"/&gt;
-        &lt;/source&gt;
-        ...</pre>
+...
+&lt;source&gt;
+  &lt;host name="iscsi.example.com"/&gt;
+  &lt;device path="iqn.2013-06.com.example:iscsi-pool"/&gt;
+  &lt;auth type='chap' username='myname'&gt;
+    &lt;secret usage='mycluster_myname'/&gt;
+  &lt;/auth&gt;
+  &lt;vendor name="Acme"/&gt;
+  &lt;product name="model"/&gt;
+&lt;/source&gt;
+...</pre>
 
     <pre>
-        ...
-        &lt;source&gt;
-          &lt;device path='/dev/mapper/mpatha' part_separator='no'/&gt;
-          &lt;format type='gpt'/&gt;
-        &lt;/source&gt;
-        ...</pre>
+...
+&lt;source&gt;
+  &lt;device path='/dev/mapper/mpatha' part_separator='no'/&gt;
+  &lt;format type='gpt'/&gt;
+&lt;/source&gt;
+...</pre>
 
     <pre>
-        ...
-        &lt;source&gt;
-          &lt;adapter type='scsi_host' name='scsi_host1'/&gt;
-        &lt;/source&gt;
-        ...</pre>
+...
+&lt;source&gt;
+  &lt;adapter type='scsi_host' name='scsi_host1'/&gt;
+&lt;/source&gt;
+...</pre>
 
     <pre>
-        ...
-        &lt;source&gt;
-          &lt;adapter type='scsi_host'&gt;
-            &lt;parentaddr unique_id='1'&gt;
-              &lt;address domain='0x0000' bus='0x00' slot='0x1f' addr='0x2'/&gt;
-            &lt;/parentaddr&gt;
-          &lt;/adapter&gt;
-        &lt;/source&gt;
-        ...</pre>
+...
+&lt;source&gt;
+  &lt;adapter type='scsi_host'&gt;
+    &lt;parentaddr unique_id='1'&gt;
+      &lt;address domain='0x0000' bus='0x00' slot='0x1f' addr='0x2'/&gt;
+    &lt;/parentaddr&gt;
+  &lt;/adapter&gt;
+&lt;/source&gt;
+...</pre>
 
     <pre>
-        ...
-        &lt;source&gt;
-          &lt;adapter type='fc_host' parent='scsi_host5' wwnn='20000000c9831b4b' wwpn='10000000c9831b4b'/&gt;
-        &lt;/source&gt;
-        ...</pre>
+...
+&lt;source&gt;
+  &lt;adapter type='fc_host' parent='scsi_host5' wwnn='20000000c9831b4b' wwpn='10000000c9831b4b'/&gt;
+&lt;/source&gt;
+...</pre>
 
     <dl>
       <dt><code>device</code></dt>
@@ -387,25 +387,25 @@
     </p>
 
     <pre>
-        ...
-        &lt;target&gt;
-          &lt;path&gt;/dev/disk/by-path&lt;/path&gt;
-          &lt;permissions&gt;
-            &lt;owner&gt;107&lt;/owner&gt;
-            &lt;group&gt;107&lt;/group&gt;
-            &lt;mode&gt;0744&lt;/mode&gt;
-            &lt;label&gt;virt_image_t&lt;/label&gt;
-          &lt;/permissions&gt;
-          &lt;timestamps&gt;
-            &lt;atime&gt;1341933637.273190990&lt;/atime&gt;
-            &lt;mtime&gt;1341930622.047245868&lt;/mtime&gt;
-            &lt;ctime&gt;1341930622.047245868&lt;/ctime&gt;
-          &lt;/timestamps&gt;
-          &lt;encryption type='...'&gt;
-            ...
-          &lt;/encryption&gt;
-        &lt;/target&gt;
-      &lt;/pool&gt;</pre>
+  ...
+  &lt;target&gt;
+    &lt;path&gt;/dev/disk/by-path&lt;/path&gt;
+    &lt;permissions&gt;
+      &lt;owner&gt;107&lt;/owner&gt;
+      &lt;group&gt;107&lt;/group&gt;
+      &lt;mode&gt;0744&lt;/mode&gt;
+      &lt;label&gt;virt_image_t&lt;/label&gt;
+    &lt;/permissions&gt;
+    &lt;timestamps&gt;
+      &lt;atime&gt;1341933637.273190990&lt;/atime&gt;
+      &lt;mtime&gt;1341930622.047245868&lt;/mtime&gt;
+      &lt;ctime&gt;1341930622.047245868&lt;/ctime&gt;
+    &lt;/timestamps&gt;
+    &lt;encryption type='...'&gt;
+      ...
+    &lt;/encryption&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
 
     <dl>
       <dt><code>path</code></dt>
@@ -494,12 +494,12 @@
     <h3><a name="StorageVolFirst">General metadata</a></h3>
 
     <pre>
-      &lt;volume type='file'&gt;
-        &lt;name&gt;sparse.img&lt;/name&gt;
-        &lt;key&gt;/var/lib/xen/images/sparse.img&lt;/key&gt;
-        &lt;allocation&gt;0&lt;/allocation&gt;
-        &lt;capacity unit="T"&gt;1&lt;/capacity&gt;
-        ...</pre>
+&lt;volume type='file'&gt;
+  &lt;name&gt;sparse.img&lt;/name&gt;
+  &lt;key&gt;/var/lib/xen/images/sparse.img&lt;/key&gt;
+  &lt;allocation&gt;0&lt;/allocation&gt;
+  &lt;capacity unit="T"&gt;1&lt;/capacity&gt;
+  ...</pre>
 
     <dl>
       <dt><code>name</code></dt>
@@ -575,22 +575,22 @@
     </p>
 
     <pre>
-        ...
-        &lt;target&gt;
-          &lt;path&gt;/var/lib/virt/images/sparse.img&lt;/path&gt;
-          &lt;format type='qcow2'/&gt;
-          &lt;permissions&gt;
-            &lt;owner&gt;107&lt;/owner&gt;
-            &lt;group&gt;107&lt;/group&gt;
-            &lt;mode&gt;0744&lt;/mode&gt;
-            &lt;label&gt;virt_image_t&lt;/label&gt;
-          &lt;/permissions&gt;
-          &lt;compat&gt;1.1&lt;/compat&gt;
-          &lt;nocow/&gt;
-          &lt;features&gt;
-            &lt;lazy_refcounts/&gt;
-          &lt;/features&gt;
-        &lt;/target&gt;</pre>
+...
+&lt;target&gt;
+  &lt;path&gt;/var/lib/virt/images/sparse.img&lt;/path&gt;
+  &lt;format type='qcow2'/&gt;
+  &lt;permissions&gt;
+    &lt;owner&gt;107&lt;/owner&gt;
+    &lt;group&gt;107&lt;/group&gt;
+    &lt;mode&gt;0744&lt;/mode&gt;
+    &lt;label&gt;virt_image_t&lt;/label&gt;
+  &lt;/permissions&gt;
+  &lt;compat&gt;1.1&lt;/compat&gt;
+  &lt;nocow/&gt;
+  &lt;features&gt;
+    &lt;lazy_refcounts/&gt;
+  &lt;/features&gt;
+&lt;/target&gt;</pre>
 
     <dl>
       <dt><code>path</code></dt>
@@ -665,18 +665,18 @@
     </p>
 
     <pre>
-        ...
-        &lt;backingStore&gt;
-          &lt;path&gt;/var/lib/virt/images/master.img&lt;/path&gt;
-          &lt;format type='raw'/&gt;
-          &lt;permissions&gt;
-            &lt;owner&gt;107&lt;/owner&gt;
-            &lt;group&gt;107&lt;/group&gt;
-            &lt;mode&gt;0744&lt;/mode&gt;
-            &lt;label&gt;virt_image_t&lt;/label&gt;
-          &lt;/permissions&gt;
-        &lt;/backingStore&gt;
-      &lt;/volume&gt;</pre>
+  ...
+  &lt;backingStore&gt;
+    &lt;path&gt;/var/lib/virt/images/master.img&lt;/path&gt;
+    &lt;format type='raw'/&gt;
+    &lt;permissions&gt;
+      &lt;owner&gt;107&lt;/owner&gt;
+      &lt;group&gt;107&lt;/group&gt;
+      &lt;mode&gt;0744&lt;/mode&gt;
+      &lt;label&gt;virt_image_t&lt;/label&gt;
+    &lt;/permissions&gt;
+  &lt;/backingStore&gt;
+&lt;/volume&gt;</pre>
 
     <dl>
       <dt><code>path</code></dt>
@@ -711,62 +711,62 @@
     <h3><a name="exampleFile">File based storage pool</a></h3>
 
     <pre>
-      &lt;pool type="dir"&gt;
-        &lt;name&gt;virtimages&lt;/name&gt;
-        &lt;target&gt;
-          &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
-        &lt;/target&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="dir"&gt;
+  &lt;name&gt;virtimages&lt;/name&gt;
+  &lt;target&gt;
+    &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
 
     <h3><a name="exampleISCSI">iSCSI based storage pool</a></h3>
 
     <pre>
-      &lt;pool type="iscsi"&gt;
-        &lt;name&gt;virtimages&lt;/name&gt;
-        &lt;source&gt;
-          &lt;host name="iscsi.example.com"/&gt;
-          &lt;device path="iqn.2013-06.com.example:iscsi-pool"/&gt;
-          &lt;auth type='chap' username='myuser'&gt;
-            &lt;secret usage='libvirtiscsi'/&gt;
-          &lt;/auth&gt;
-        &lt;/source&gt;
-        &lt;target&gt;
-          &lt;path&gt;/dev/disk/by-path&lt;/path&gt;
-        &lt;/target&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="iscsi"&gt;
+  &lt;name&gt;virtimages&lt;/name&gt;
+  &lt;source&gt;
+    &lt;host name="iscsi.example.com"/&gt;
+    &lt;device path="iqn.2013-06.com.example:iscsi-pool"/&gt;
+    &lt;auth type='chap' username='myuser'&gt;
+      &lt;secret usage='libvirtiscsi'/&gt;
+    &lt;/auth&gt;
+  &lt;/source&gt;
+  &lt;target&gt;
+    &lt;path&gt;/dev/disk/by-path&lt;/path&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
 
     <h3><a name="exampleVol">Storage volume</a></h3>
 
     <pre>
-      &lt;volume&gt;
-        &lt;name&gt;sparse.img&lt;/name&gt;
-        &lt;allocation&gt;0&lt;/allocation&gt;
-        &lt;capacity unit="T"&gt;1&lt;/capacity&gt;
-        &lt;target&gt;
-          &lt;path&gt;/var/lib/virt/images/sparse.img&lt;/path&gt;
-          &lt;permissions&gt;
-            &lt;owner&gt;107&lt;/owner&gt;
-            &lt;group&gt;107&lt;/group&gt;
-            &lt;mode&gt;0744&lt;/mode&gt;
-            &lt;label&gt;virt_image_t&lt;/label&gt;
-          &lt;/permissions&gt;
-        &lt;/target&gt;
-      &lt;/volume&gt;</pre>
+&lt;volume&gt;
+  &lt;name&gt;sparse.img&lt;/name&gt;
+  &lt;allocation&gt;0&lt;/allocation&gt;
+  &lt;capacity unit="T"&gt;1&lt;/capacity&gt;
+  &lt;target&gt;
+    &lt;path&gt;/var/lib/virt/images/sparse.img&lt;/path&gt;
+    &lt;permissions&gt;
+      &lt;owner&gt;107&lt;/owner&gt;
+      &lt;group&gt;107&lt;/group&gt;
+      &lt;mode&gt;0744&lt;/mode&gt;
+      &lt;label&gt;virt_image_t&lt;/label&gt;
+    &lt;/permissions&gt;
+  &lt;/target&gt;
+&lt;/volume&gt;</pre>
 
     <h3><a name="exampleLuks">Storage volume using LUKS</a></h3>
 
     <pre>
-      &lt;volume&gt;
-        &lt;name&gt;MyLuks.img&lt;/name&gt;
-        &lt;capacity unit="G"&gt;5&lt;/capacity&gt;
-        &lt;target&gt;
-          &lt;path&gt;/var/lib/virt/images/MyLuks.img&lt;/path&gt;
-          &lt;format type='raw'/&gt;
-          &lt;encryption format='luks'&gt;
-            &lt;secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc572'/&gt;
-          &lt;/encryption&gt;
-        &lt;/target&gt;
-      &lt;/volume&gt;
+&lt;volume&gt;
+  &lt;name&gt;MyLuks.img&lt;/name&gt;
+  &lt;capacity unit="G"&gt;5&lt;/capacity&gt;
+  &lt;target&gt;
+    &lt;path&gt;/var/lib/virt/images/MyLuks.img&lt;/path&gt;
+    &lt;format type='raw'/&gt;
+    &lt;encryption format='luks'&gt;
+      &lt;secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc572'/&gt;
+    &lt;/encryption&gt;
+  &lt;/target&gt;
+&lt;/volume&gt;
     </pre>
   </body>
 </html>
