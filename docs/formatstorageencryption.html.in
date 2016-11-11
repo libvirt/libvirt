@@ -126,9 +126,9 @@
     </p>
 
     <pre>
-      &lt;encryption format='qcow'&gt;
-         &lt;secret type='passphrase' uuid='c1f11a6d-8c5d-4a3e-ac7a-4e171c5e0d4a' /&gt;
-      &lt;/encryption&gt;</pre>
+&lt;encryption format='qcow'&gt;
+   &lt;secret type='passphrase' uuid='c1f11a6d-8c5d-4a3e-ac7a-4e171c5e0d4a' /&gt;
+&lt;/encryption&gt;</pre>
 
     <p>
       Assuming a <a href="formatsecret.html#VolumeUsageType">
@@ -138,9 +138,9 @@
       as part of a domain volume definition:
     </p>
     <pre>
-      &lt;encryption format='luks'&gt;
-        &lt;secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc572'/&gt;
-      &lt;/encryption&gt;
+&lt;encryption format='luks'&gt;
+  &lt;secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc572'/&gt;
+&lt;/encryption&gt;
     </pre>
 
     <p>
@@ -148,19 +148,19 @@
       a specific cipher algorithm for volume creation:
     </p>
     <pre>
-      &lt;volume&gt;
-        &lt;name&gt;twofish.luks&lt;/name&gt;
-        &lt;capacity unit='G'&gt;5&lt;/capacity&gt;
-        &lt;target&gt;
-          &lt;path&gt;/var/lib/libvirt/images/demo.luks&lt;/path&gt;
-          &lt;format type='raw'/&gt;
-          &lt;encryption format='luks'&gt;
-             &lt;secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc572'/&gt;
-             &lt;cipher name='twofish' size='256' mode='cbc' hash='sha256'/&gt;
-             &lt;ivgen name='plain64' hash='sha256'/&gt;
-          &lt;/encryption&gt;
-        &lt;/target&gt;
-      &lt;/volume&gt;
+&lt;volume&gt;
+  &lt;name&gt;twofish.luks&lt;/name&gt;
+  &lt;capacity unit='G'&gt;5&lt;/capacity&gt;
+  &lt;target&gt;
+    &lt;path&gt;/var/lib/libvirt/images/demo.luks&lt;/path&gt;
+    &lt;format type='raw'/&gt;
+    &lt;encryption format='luks'&gt;
+       &lt;secret type='passphrase' uuid='f52a81b2-424e-490c-823d-6bd4235bc572'/&gt;
+       &lt;cipher name='twofish' size='256' mode='cbc' hash='sha256'/&gt;
+       &lt;ivgen name='plain64' hash='sha256'/&gt;
+    &lt;/encryption&gt;
+  &lt;/target&gt;
+&lt;/volume&gt;
     </pre>
 
   </body>
