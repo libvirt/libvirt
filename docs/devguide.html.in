@@ -28,14 +28,14 @@
     </p>
 
     <pre>
-      # C language
-      $ git clone <a href="http://libvirt.org/git/?p=libvirt-appdev-guide.git">git://libvirt.org/libvirt-appdev-guide.git</a>
+# C language
+$ git clone <a href="http://libvirt.org/git/?p=libvirt-appdev-guide.git">git://libvirt.org/libvirt-appdev-guide.git</a>
 
-      # Python language
-      $ git clone <a href="http://libvirt.org/git/?p=libvirt-appdev-guide-python.git">git://libvirt.org/libvirt-appdev-guide-python.git</a>
+# Python language
+$ git clone <a href="http://libvirt.org/git/?p=libvirt-appdev-guide-python.git">git://libvirt.org/libvirt-appdev-guide-python.git</a>
 
-      # Publican Style/Theme
-      $ git clone <a href="http://libvirt.org/git/?p=libvirt-publican.git">git://libvirt.org/libvirt-publican.git</a>
+# Publican Style/Theme
+$ git clone <a href="http://libvirt.org/git/?p=libvirt-publican.git">git://libvirt.org/libvirt-publican.git</a>
     </pre>
 
   </body>
