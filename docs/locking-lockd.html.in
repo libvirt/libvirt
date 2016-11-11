@@ -40,8 +40,8 @@
     </p>
 
     <pre>
-      # chkconfig virtlockd on
-      # service virtlockd start
+# chkconfig virtlockd on
+# service virtlockd start
     </pre>
 
     <p>
@@ -92,10 +92,10 @@
     </p>
 
     <pre>
-      $ su - root
-      # augtool -s set \
-        /files/etc/libvirt/qemu-lockd.conf/file_lockspace_dir \
-        "/var/lib/libvirt/lockd/files"
+$ su - root
+# augtool -s set \
+  /files/etc/libvirt/qemu-lockd.conf/file_lockspace_dir \
+  "/var/lib/libvirt/lockd/files"
     </pre>
 
     <p>
@@ -110,13 +110,13 @@
     </p>
 
     <pre>
-      $ su - root
-      # augtool -s set \
-        /files/etc/libvirt/qemu-lockd.conf/scsi_lockspace_dir \
-        "/var/lib/libvirt/lockd/scsi"
-      # augtool -s set \
-        /files/etc/libvirt/qemu-lockd.conf/lvm_lockspace_dir \
-        "/var/lib/libvirt/lockd/lvm"
+$ su - root
+# augtool -s set \
+  /files/etc/libvirt/qemu-lockd.conf/scsi_lockspace_dir \
+  "/var/lib/libvirt/lockd/scsi"
+# augtool -s set \
+  /files/etc/libvirt/qemu-lockd.conf/lvm_lockspace_dir \
+  "/var/lib/libvirt/lockd/lvm"
     </pre>
 
     <p>
@@ -143,9 +143,9 @@
     </p>
 
     <pre>
-      $ su - root
-      # augtool -s  set /files/etc/libvirt/qemu.conf/lock_manager lockd
-      # service libvirtd restart
+$ su - root
+# augtool -s  set /files/etc/libvirt/qemu.conf/lock_manager lockd
+# service libvirtd restart
     </pre>
 
     <p>
