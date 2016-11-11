@@ -38,7 +38,7 @@
     </p>
 
     <pre>
-      $ virt-xml-validate /path/to/XML/file</pre>
+$ virt-xml-validate /path/to/XML/file</pre>
 
   </body>
 </html>
