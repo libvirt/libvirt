@@ -23,8 +23,8 @@
     </p>
 
     <pre>
-      $ su - root
-      # yum install libvirt-lock-sanlock
+$ su - root
+# yum install libvirt-lock-sanlock
     </pre>
 
     <p>
@@ -37,9 +37,9 @@
     </p>
 
     <pre>
-      $ su - root
-      # chkconfig wdmd on
-      # service wdmd start
+$ su - root
+# chkconfig wdmd on
+# service wdmd start
     </pre>
 
     <p>
@@ -48,8 +48,8 @@
     </p>
 
     <pre>
-      # chkconfig sanlock on
-      # service sanlock start
+# chkconfig sanlock on
+# service sanlock start
     </pre>
 
     <p>
@@ -59,7 +59,7 @@
     </p>
 
     <pre>
-      SANLOCKOPTS="-w 0"
+SANLOCKOPTS="-w 0"
     </pre>
 
     <p>
@@ -82,8 +82,8 @@
     </p>
 
     <pre>
-      $ su - root
-      # augtool -s set /files/etc/libvirt/qemu-sanlock.conf/host_id 1
+$ su - root
+# augtool -s set /files/etc/libvirt/qemu-sanlock.conf/host_id 1
     </pre>
 
     <p>
@@ -104,9 +104,9 @@
     </p>
 
     <pre>
-      $ su - root
-      # echo "some.nfs.server:/export/sanlock /var/lib/libvirt/sanlock nfs hard,nointr 0 0" >> /etc/fstab
-      # mount /var/lib/libvirt/sanlock
+$ su - root
+# echo "some.nfs.server:/export/sanlock /var/lib/libvirt/sanlock nfs hard,nointr 0 0" >> /etc/fstab
+# mount /var/lib/libvirt/sanlock
     </pre>
 
     <p>
@@ -121,8 +121,8 @@
     </p>
 
     <pre>
-      augtool -s set /files/etc/libvirt/qemu-sanlock.conf/user sanlock
-      augtool -s set /files/etc/libvirt/qemu-sanlock.conf/group sanlock
+augtool -s set /files/etc/libvirt/qemu-sanlock.conf/user sanlock
+augtool -s set /files/etc/libvirt/qemu-sanlock.conf/group sanlock
     </pre>
 
     <p>
@@ -168,9 +168,9 @@
     </p>
 
     <pre>
-      $ su - root
-      # augtool -s  set /files/etc/libvirt/qemu.conf/lock_manager sanlock
-      # service libvirtd restart
+$ su - root
+# augtool -s  set /files/etc/libvirt/qemu.conf/lock_manager sanlock
+# service libvirtd restart
     </pre>
 
     <p>
@@ -180,8 +180,8 @@
     </p>
 
     <pre>
-      # ls /var/lib/libvirt/sanlock/
-      __LIBVIRT__DISKS__
+# ls /var/lib/libvirt/sanlock/
+__LIBVIRT__DISKS__
     </pre>
 
     <p>
