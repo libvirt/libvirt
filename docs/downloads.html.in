@@ -437,7 +437,7 @@
     </p>
 
     <pre>
-      git clone git://libvirt.org/[module name].git</pre>
+git clone git://libvirt.org/[module name].git</pre>
 
     <p>
       In addition to this primary repository, there are the following read-only git
@@ -449,8 +449,8 @@
     </p>
 
     <pre>
-      <a href="https://github.com/libvirt/">https://github.com/libvirt/</a>
-      <a href="https://gitlab.com/libvirt/libvirt">https://gitlab.com/libvirt/</a></pre>
+<a href="https://github.com/libvirt/">https://github.com/libvirt/</a>
+<a href="https://gitlab.com/libvirt/libvirt">https://gitlab.com/libvirt/</a></pre>
 
   </body>
 </html>
