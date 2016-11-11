@@ -4168,7 +4168,7 @@ virQEMUCapsInitQMPCommandRun(virQEMUCapsInitQMPCommandPtr cmd)
                                     "-no-user-config",
                                     "-nodefaults",
                                     "-nographic",
-                                    "-M", "none",
+                                    "-machine", "none",
                                     "-qmp", cmd->monarg,
                                     "-pidfile", cmd->pidfile,
                                     "-daemonize",
