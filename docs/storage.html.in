@@ -135,12 +135,12 @@
 
     <h3>Example pool input definition</h3>
     <pre>
-      &lt;pool type="dir"&gt;
-        &lt;name&gt;virtimages&lt;/name&gt;
-        &lt;target&gt;
-          &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
-        &lt;/target&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="dir"&gt;
+  &lt;name&gt;virtimages&lt;/name&gt;
+  &lt;target&gt;
+    &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -188,15 +188,15 @@
 
     <h3>Example pool input</h3>
     <pre>
-      &lt;pool type="fs"&gt;
-        &lt;name&gt;virtimages&lt;/name&gt;
-        &lt;source&gt;
-          &lt;device path="/dev/VolGroup00/VirtImages"/&gt;
-        &lt;/source&gt;
-        &lt;target&gt;
-          &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
-        &lt;/target&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="fs"&gt;
+  &lt;name&gt;virtimages&lt;/name&gt;
+  &lt;source&gt;
+    &lt;device path="/dev/VolGroup00/VirtImages"/&gt;
+  &lt;/source&gt;
+  &lt;target&gt;
+    &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -261,17 +261,17 @@
 
     <h3>Example pool input</h3>
     <pre>
-      &lt;pool type="netfs"&gt;
-        &lt;name&gt;virtimages&lt;/name&gt;
-        &lt;source&gt;
-          &lt;host name="nfs.example.com"/&gt;
-          &lt;dir path="/var/lib/virt/images"/&gt;
-          &lt;format type='nfs'/&gt;
-        &lt;/source&gt;
-        &lt;target&gt;
-          &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
-        &lt;/target&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="netfs"&gt;
+  &lt;name&gt;virtimages&lt;/name&gt;
+  &lt;source&gt;
+    &lt;host name="nfs.example.com"/&gt;
+    &lt;dir path="/var/lib/virt/images"/&gt;
+    &lt;format type='nfs'/&gt;
+  &lt;/source&gt;
+  &lt;target&gt;
+    &lt;path&gt;/var/lib/virt/images&lt;/path&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -315,17 +315,17 @@
 
     <h3>Example pool input</h3>
     <pre>
-      &lt;pool type="logical"&gt;
-        &lt;name&gt;HostVG&lt;/name&gt;
-        &lt;source&gt;
-          &lt;device path="/dev/sda1"/&gt;
-          &lt;device path="/dev/sdb1"/&gt;
-          &lt;device path="/dev/sdc1"/&gt;
-        &lt;/source&gt;
-        &lt;target&gt;
-          &lt;path&gt;/dev/HostVG&lt;/path&gt;
-        &lt;/target&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="logical"&gt;
+  &lt;name&gt;HostVG&lt;/name&gt;
+  &lt;source&gt;
+    &lt;device path="/dev/sda1"/&gt;
+    &lt;device path="/dev/sdb1"/&gt;
+    &lt;device path="/dev/sdc1"/&gt;
+  &lt;/source&gt;
+  &lt;target&gt;
+    &lt;path&gt;/dev/HostVG&lt;/path&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -352,15 +352,15 @@
 
     <h3>Example pool input</h3>
     <pre>
-      &lt;pool type="disk"&gt;
-        &lt;name&gt;sda&lt;/name&gt;
-        &lt;source&gt;
-          &lt;device path='/dev/sda'/&gt;
-        &lt;/source&gt;
-        &lt;target&gt;
-          &lt;path&gt;/dev&lt;/path&gt;
-        &lt;/target&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="disk"&gt;
+  &lt;name&gt;sda&lt;/name&gt;
+  &lt;source&gt;
+    &lt;device path='/dev/sda'/&gt;
+  &lt;/source&gt;
+  &lt;target&gt;
+    &lt;path&gt;/dev&lt;/path&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -449,16 +449,16 @@
 
     <h3>Example pool input</h3>
     <pre>
-      &lt;pool type="iscsi"&gt;
-        &lt;name&gt;virtimages&lt;/name&gt;
-        &lt;source&gt;
-          &lt;host name="iscsi.example.com"/&gt;
-          &lt;device path="iqn.2013-06.com.example:iscsi-pool"/&gt;
-        &lt;/source&gt;
-        &lt;target&gt;
-          &lt;path&gt;/dev/disk/by-path&lt;/path&gt;
-        &lt;/target&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="iscsi"&gt;
+  &lt;name&gt;virtimages&lt;/name&gt;
+  &lt;source&gt;
+    &lt;host name="iscsi.example.com"/&gt;
+    &lt;device path="iqn.2013-06.com.example:iscsi-pool"/&gt;
+  &lt;/source&gt;
+  &lt;target&gt;
+    &lt;path&gt;/dev/disk/by-path&lt;/path&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -482,15 +482,15 @@
 
     <h3>Example pool input</h3>
     <pre>
-      &lt;pool type="scsi"&gt;
-        &lt;name&gt;virtimages&lt;/name&gt;
-        &lt;source&gt;
-          &lt;adapter name="host0"/&gt;
-        &lt;/source&gt;
-        &lt;target&gt;
-          &lt;path&gt;/dev/disk/by-path&lt;/path&gt;
-        &lt;/target&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="scsi"&gt;
+  &lt;name&gt;virtimages&lt;/name&gt;
+  &lt;source&gt;
+    &lt;adapter name="host0"/&gt;
+  &lt;/source&gt;
+  &lt;target&gt;
+    &lt;path&gt;/dev/disk/by-path&lt;/path&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -518,12 +518,12 @@
 
     <h3>Example pool input</h3>
     <pre>
-      &lt;pool type="mpath"&gt;
-        &lt;name&gt;virtimages&lt;/name&gt;
-        &lt;target&gt;
-          &lt;path&gt;/dev/mapper&lt;/path&gt;
-        &lt;/target&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="mpath"&gt;
+  &lt;name&gt;virtimages&lt;/name&gt;
+  &lt;target&gt;
+    &lt;path&gt;/dev/mapper&lt;/path&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
@@ -558,38 +558,38 @@
 
     <h3>Example pool input</h3>
     <pre>
-      &lt;pool type="rbd"&gt;
-        &lt;name&gt;myrbdpool&lt;/name&gt;
-        &lt;source&gt;
-          &lt;name&gt;rbdpool&lt;/name&gt;
-          &lt;host name='1.2.3.4'/&gt;
-          &lt;host name='my.ceph.monitor'/&gt;
-          &lt;host name='third.ceph.monitor' port='6789'/&gt;
-          &lt;auth username='admin' type='ceph'&gt;
-            &lt;secret uuid='2ec115d7-3a88-3ceb-bc12-0ac909a6fd87'/&gt;
-          &lt;/auth&gt;
-        &lt;/source&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="rbd"&gt;
+  &lt;name&gt;myrbdpool&lt;/name&gt;
+  &lt;source&gt;
+    &lt;name&gt;rbdpool&lt;/name&gt;
+    &lt;host name='1.2.3.4'/&gt;
+    &lt;host name='my.ceph.monitor'/&gt;
+    &lt;host name='third.ceph.monitor' port='6789'/&gt;
+    &lt;auth username='admin' type='ceph'&gt;
+      &lt;secret uuid='2ec115d7-3a88-3ceb-bc12-0ac909a6fd87'/&gt;
+    &lt;/auth&gt;
+  &lt;/source&gt;
+&lt;/pool&gt;</pre>
 
     <h3>Example volume output</h3>
     <pre>
-       &lt;volume&gt;
-         &lt;name&gt;myvol&lt;/name&gt;
-         &lt;key&gt;rbd/myvol&lt;/key&gt;
-         &lt;source&gt;
-         &lt;/source&gt;
-         &lt;capacity unit='bytes'&gt;53687091200&lt;/capacity&gt;
-         &lt;allocation unit='bytes'&gt;53687091200&lt;/allocation&gt;
-         &lt;target&gt;
-           &lt;path&gt;rbd:rbd/myvol&lt;/path&gt;
-           &lt;format type='unknown'/&gt;
-           &lt;permissions&gt;
-             &lt;mode&gt;00&lt;/mode&gt;
-             &lt;owner&gt;0&lt;/owner&gt;
-             &lt;group&gt;0&lt;/group&gt;
-           &lt;/permissions&gt;
-         &lt;/target&gt;
-       &lt;/volume&gt;</pre>
+&lt;volume&gt;
+  &lt;name&gt;myvol&lt;/name&gt;
+  &lt;key&gt;rbd/myvol&lt;/key&gt;
+  &lt;source&gt;
+  &lt;/source&gt;
+  &lt;capacity unit='bytes'&gt;53687091200&lt;/capacity&gt;
+  &lt;allocation unit='bytes'&gt;53687091200&lt;/allocation&gt;
+  &lt;target&gt;
+    &lt;path&gt;rbd:rbd/myvol&lt;/path&gt;
+    &lt;format type='unknown'/&gt;
+    &lt;permissions&gt;
+      &lt;mode&gt;00&lt;/mode&gt;
+      &lt;owner&gt;0&lt;/owner&gt;
+      &lt;group&gt;0&lt;/group&gt;
+    &lt;/permissions&gt;
+  &lt;/target&gt;
+&lt;/volume&gt;</pre>
 
     <h3>Example disk attachment</h3>
     <p>RBD images can be attached to Qemu guests when Qemu is built
@@ -622,33 +622,33 @@
 
     <h3>Example pool input</h3>
     <pre>
-      &lt;pool type="sheepdog"&gt;
-        &lt;name&gt;mysheeppool&lt;/name&gt;
-        &lt;source&gt;
-          &lt;name&gt;mysheeppool&lt;/name&gt;
-          &lt;host name='localhost' port='7000'/&gt;
-        &lt;/source&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="sheepdog"&gt;
+  &lt;name&gt;mysheeppool&lt;/name&gt;
+  &lt;source&gt;
+    &lt;name&gt;mysheeppool&lt;/name&gt;
+    &lt;host name='localhost' port='7000'/&gt;
+  &lt;/source&gt;
+&lt;/pool&gt;</pre>
 
     <h3>Example volume output</h3>
     <pre>
-       &lt;volume&gt;
-         &lt;name&gt;myvol&lt;/name&gt;
-         &lt;key&gt;sheep/myvol&lt;/key&gt;
-         &lt;source&gt;
-         &lt;/source&gt;
-         &lt;capacity unit='bytes'&gt;53687091200&lt;/capacity&gt;
-         &lt;allocation unit='bytes'&gt;53687091200&lt;/allocation&gt;
-         &lt;target&gt;
-           &lt;path&gt;sheepdog:myvol&lt;/path&gt;
-           &lt;format type='unknown'/&gt;
-           &lt;permissions&gt;
-             &lt;mode&gt;00&lt;/mode&gt;
-             &lt;owner&gt;0&lt;/owner&gt;
-             &lt;group&gt;0&lt;/group&gt;
-           &lt;/permissions&gt;
-         &lt;/target&gt;
-       &lt;/volume&gt;</pre>
+&lt;volume&gt;
+  &lt;name&gt;myvol&lt;/name&gt;
+  &lt;key&gt;sheep/myvol&lt;/key&gt;
+  &lt;source&gt;
+  &lt;/source&gt;
+  &lt;capacity unit='bytes'&gt;53687091200&lt;/capacity&gt;
+  &lt;allocation unit='bytes'&gt;53687091200&lt;/allocation&gt;
+  &lt;target&gt;
+    &lt;path&gt;sheepdog:myvol&lt;/path&gt;
+    &lt;format type='unknown'/&gt;
+    &lt;permissions&gt;
+      &lt;mode&gt;00&lt;/mode&gt;
+      &lt;owner&gt;0&lt;/owner&gt;
+      &lt;group&gt;0&lt;/group&gt;
+    &lt;/permissions&gt;
+  &lt;/target&gt;
+&lt;/volume&gt;</pre>
 
     <h3>Example disk attachment</h3>
     <p>Sheepdog images can be attached to Qemu guests.
@@ -707,14 +707,14 @@
       subdirectory relative to the gluster volume to use instead of
       the top-level directory of the volume.</p>
     <pre>
-      &lt;pool type="gluster"&gt;
-        &lt;name&gt;myglusterpool&lt;/name&gt;
-        &lt;source&gt;
-          &lt;name&gt;volname&lt;/name&gt;
-          &lt;host name='localhost'/&gt;
-          &lt;dir path='/'/&gt;
-        &lt;/source&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="gluster"&gt;
+  &lt;name&gt;myglusterpool&lt;/name&gt;
+  &lt;source&gt;
+    &lt;name&gt;volname&lt;/name&gt;
+    &lt;host name='localhost'/&gt;
+    &lt;dir path='/'/&gt;
+  &lt;/source&gt;
+&lt;/pool&gt;</pre>
 
     <h3>Example volume output</h3>
     <p>Libvirt storage volumes associated with a gluster pool
@@ -726,14 +726,14 @@
       URI of the volume but it may be changed to a UUID of the volume
       in the future.</p>
     <pre>
-       &lt;volume&gt;
-         &lt;name&gt;myfile&lt;/name&gt;
-         &lt;key&gt;gluster://localhost/volname/myfile&lt;/key&gt;
-         &lt;source&gt;
-         &lt;/source&gt;
-         &lt;capacity unit='bytes'&gt;53687091200&lt;/capacity&gt;
-         &lt;allocation unit='bytes'&gt;53687091200&lt;/allocation&gt;
-       &lt;/volume&gt;</pre>
+&lt;volume&gt;
+  &lt;name&gt;myfile&lt;/name&gt;
+  &lt;key&gt;gluster://localhost/volname/myfile&lt;/key&gt;
+  &lt;source&gt;
+  &lt;/source&gt;
+  &lt;capacity unit='bytes'&gt;53687091200&lt;/capacity&gt;
+  &lt;allocation unit='bytes'&gt;53687091200&lt;/allocation&gt;
+&lt;/volume&gt;</pre>
 
     <h3>Example disk attachment</h3>
     <p>Files within a gluster volume can be attached to Qemu guests.
@@ -773,14 +773,14 @@
 
     <h3>Example pool input</h3>
     <pre>
-      &lt;pool type="zfs"&gt;
-        &lt;name&gt;myzfspool&lt;/name&gt;
-        &lt;source&gt;
-          &lt;name&gt;zpoolname&lt;/name&gt;
-          &lt;device path="/dev/ada1"/&gt;
-          &lt;device path="/dev/ada2"/&gt;
-        &lt;/source&gt;
-      &lt;/pool&gt;</pre>
+&lt;pool type="zfs"&gt;
+  &lt;name&gt;myzfspool&lt;/name&gt;
+  &lt;source&gt;
+    &lt;name&gt;zpoolname&lt;/name&gt;
+    &lt;device path="/dev/ada1"/&gt;
+    &lt;device path="/dev/ada2"/&gt;
+  &lt;/source&gt;
+&lt;/pool&gt;</pre>
 
     <h3>Valid pool format types</h3>
     <p>
