@@ -2695,11 +2695,6 @@ LIBVIRT_RESULT_YAJL
 LIBVIRT_RESULT_GNUTLS
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 AC_MSG_NOTICE([  dlopen: $DLOPEN_LIBS])
-if test "$with_hyperv" = "yes" ; then
-AC_MSG_NOTICE([openwsman: $OPENWSMAN_CFLAGS $OPENWSMAN_LIBS])
-else
-AC_MSG_NOTICE([openwsman: no])
-fi
 AC_MSG_NOTICE([firewalld: $with_firewalld])
 if test "$with_polkit" = "yes" ; then
 if test "$with_polkit0" = "yes" ; then
