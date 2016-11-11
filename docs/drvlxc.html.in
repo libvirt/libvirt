@@ -62,12 +62,12 @@ would use the following XML
 </p>
 
 <pre>
-  &lt;os&gt;
-    &lt;type arch='x86_64'&gt;exe&lt;/type&gt;
-    &lt;init&gt;/bin/systemd&lt;/init&gt;
-    &lt;initarg&gt;--unit&lt;/initarg&gt;
-    &lt;initarg&gt;emergency.service&lt;/initarg&gt;
-  &lt;/os&gt;
+&lt;os&gt;
+  &lt;type arch='x86_64'&gt;exe&lt;/type&gt;
+  &lt;init&gt;/bin/systemd&lt;/init&gt;
+  &lt;initarg&gt;--unit&lt;/initarg&gt;
+  &lt;initarg&gt;emergency.service&lt;/initarg&gt;
+&lt;/os&gt;
 </pre>
 
 <h3><a name="envvars">Environment variables</a></h3>
