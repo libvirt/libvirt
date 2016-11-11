@@ -13,7 +13,7 @@
     interface has been added in 0.2.1 allowing to list the set of supported
     virtualization capabilities on the host:</p>
 
-    <pre>    char * virConnectGetCapabilities (virConnectPtr conn);</pre>
+    <pre>char * virConnectGetCapabilities (virConnectPtr conn);</pre>
 
     <p>The value returned is an XML document listing the virtualization
     capabilities of the host and virtualization engine to which
