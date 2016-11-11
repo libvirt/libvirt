@@ -1759,6 +1759,11 @@ xenapiDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     if (!defPtr)
         return NULL;
 
+    if (virXMLCheckIllegalChars("name", defPtr->name, "\n") < 0) {
+        virDomainDefFree(defPtr);
+        return NULL;
+    }
+
     if (createVMRecordFromXml(conn, defPtr, &record, &vm) != 0) {
         if (!priv->session->ok)
             xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR, NULL);

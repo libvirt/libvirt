@@ -3051,6 +3051,9 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     if (!def)
         return NULL;
 
+    if (virXMLCheckIllegalChars("name", def->name, "\n") < 0)
+        goto cleanup;
+
     /* Check if an existing domain should be edited */
     if (esxVI_LookupVirtualMachineByUuid(priv->primary, def->uuid, NULL,
                                          &virtualMachine,

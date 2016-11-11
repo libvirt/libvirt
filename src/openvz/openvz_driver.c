@@ -1000,6 +1000,9 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
                                          NULL, parse_flags)) == NULL)
         goto cleanup;
 
+    if (virXMLCheckIllegalChars("name", vmdef->name, "\n") < 0)
+        goto cleanup;
+
     if (!(vm = virDomainObjListAdd(driver->domains, vmdef,
                                    driver->xmlopt,
                                    0, NULL)))

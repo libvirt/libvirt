@@ -2641,6 +2641,9 @@ static virDomainPtr testDomainDefineXMLFlags(virConnectPtr conn,
                                        NULL, parse_flags)) == NULL)
         goto cleanup;
 
+    if (virXMLCheckIllegalChars("name", def->name, "\n") < 0)
+        goto cleanup;
+
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,

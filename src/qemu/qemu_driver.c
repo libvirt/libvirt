@@ -7339,6 +7339,9 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
                                         NULL, parse_flags)))
         goto cleanup;
 
+    if (virXMLCheckIllegalChars("name", def->name, "\n") < 0)
+        goto cleanup;
+
     if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
