@@ -35,14 +35,14 @@
     </p>
 
     <pre>
-      &lt;network ipv6='yes' trustGuestRxFilters='no'&gt;
-        &lt;name&gt;default&lt;/name&gt;
-        &lt;uuid&gt;3e3fce45-4f53-4fa7-bb32-11f34168b82b&lt;/uuid&gt;
-        &lt;metadata&gt;
-          &lt;app1:foo xmlns:app1="http://app1.org/app1/"&gt;..&lt;/app1:foo&gt;
-          &lt;app2:bar xmlns:app2="http://app1.org/app2/"&gt;..&lt;/app2:bar&gt;
-        &lt;/metadata&gt;
-        ...</pre>
+&lt;network ipv6='yes' trustGuestRxFilters='no'&gt;
+  &lt;name&gt;default&lt;/name&gt;
+  &lt;uuid&gt;3e3fce45-4f53-4fa7-bb32-11f34168b82b&lt;/uuid&gt;
+  &lt;metadata&gt;
+    &lt;app1:foo xmlns:app1="http://app1.org/app1/"&gt;..&lt;/app1:foo&gt;
+    &lt;app2:bar xmlns:app2="http://app1.org/app2/"&gt;..&lt;/app2:bar&gt;
+  &lt;/metadata&gt;
+  ...</pre>
 
     <dl>
       <dt><code>name</code></dt>
@@ -91,11 +91,11 @@
     </p>
 
     <pre>
-        ...
-        &lt;bridge name="virbr0" stp="on" delay="5" macTableManager="libvirt"/&gt;
-        &lt;domain name="example.com" localOnly="no"/&gt;
-        &lt;forward mode="nat" dev="eth0"/&gt;
-        ...</pre>
+...
+&lt;bridge name="virbr0" stp="on" delay="5" macTableManager="libvirt"/&gt;
+&lt;domain name="example.com" localOnly="no"/&gt;
+&lt;forward mode="nat" dev="eth0"/&gt;
+...</pre>
 
     <dl>
       <dt><code>bridge</code></dt>
@@ -815,18 +815,18 @@
     </p>
 
     <pre>
-      ...
-        &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
-          &lt;dhcp&gt;
-            &lt;range start="192.168.122.128" end="192.168.122.254" /&gt;
-          &lt;/dhcp&gt;
-        &lt;/ip&gt;
-        &lt;route address="192.168.222.0" prefix="24" gateway="192.168.122.2" /&gt;
-        &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" /&gt;
-        &lt;route family="ipv6" address="2001:db8:ca2:3::" prefix="64" gateway="2001:db8:ca2:2::2"/&gt;
-        &lt;route family="ipv6" address="2001:db9:4:1::" prefix="64" gateway="2001:db8:ca2:2::3" metric='2'&gt;
-        &lt;/route&gt;
-      ...
+...
+  &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
+    &lt;dhcp&gt;
+      &lt;range start="192.168.122.128" end="192.168.122.254" /&gt;
+    &lt;/dhcp&gt;
+  &lt;/ip&gt;
+  &lt;route address="192.168.222.0" prefix="24" gateway="192.168.122.2" /&gt;
+  &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" /&gt;
+  &lt;route family="ipv6" address="2001:db8:ca2:3::" prefix="64" gateway="2001:db8:ca2:2::2"/&gt;
+  &lt;route family="ipv6" address="2001:db9:4:1::" prefix="64" gateway="2001:db8:ca2:2::3" metric='2'&gt;
+  &lt;/route&gt;
+...
     </pre>
 
     <h3><a name="elementsAddress">Addressing</a></h3>
@@ -841,30 +841,30 @@
     </p>
 
     <pre>
-        ...
-        &lt;mac address='00:16:3E:5D:C7:9E'/&gt;
-        &lt;domain name="example.com"/&gt;
-        &lt;dns&gt;
-          &lt;txt name="example" value="example value" /&gt;
-          &lt;forwarder addr="8.8.8.8"/&gt;
-          &lt;forwarder domain='example.com' addr="8.8.4.4"/&gt;
-          &lt;forwarder domain='www.example.com'/&gt;
-          &lt;srv service='name' protocol='tcp' domain='test-domain-name' target='.' port='1024' priority='10' weight='10'/&gt;
-          &lt;host ip='192.168.122.2'&gt;
-            &lt;hostname&gt;myhost&lt;/hostname&gt;
-            &lt;hostname&gt;myhostalias&lt;/hostname&gt;
-          &lt;/host&gt;
-        &lt;/dns&gt;
-        &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
-          &lt;dhcp&gt;
-            &lt;range start="192.168.122.100" end="192.168.122.254" /&gt;
-            &lt;host mac="00:16:3e:77:e2:ed" name="foo.example.com" ip="192.168.122.10" /&gt;
-            &lt;host mac="00:16:3e:3e:a9:1a" name="bar.example.com" ip="192.168.122.11" /&gt;
-          &lt;/dhcp&gt;
-        &lt;/ip&gt;
-        &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" /&gt;
-        &lt;route family="ipv6" address="2001:db9:ca1:1::" prefix="64" gateway="2001:db8:ca2:2::2" /&gt;
-      &lt;/network&gt;</pre>
+...
+&lt;mac address='00:16:3E:5D:C7:9E'/&gt;
+&lt;domain name="example.com"/&gt;
+&lt;dns&gt;
+  &lt;txt name="example" value="example value" /&gt;
+  &lt;forwarder addr="8.8.8.8"/&gt;
+  &lt;forwarder domain='example.com' addr="8.8.4.4"/&gt;
+  &lt;forwarder domain='www.example.com'/&gt;
+  &lt;srv service='name' protocol='tcp' domain='test-domain-name' target='.' port='1024' priority='10' weight='10'/&gt;
+  &lt;host ip='192.168.122.2'&gt;
+    &lt;hostname&gt;myhost&lt;/hostname&gt;
+    &lt;hostname&gt;myhostalias&lt;/hostname&gt;
+  &lt;/host&gt;
+&lt;/dns&gt;
+&lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
+  &lt;dhcp&gt;
+    &lt;range start="192.168.122.100" end="192.168.122.254" /&gt;
+    &lt;host mac="00:16:3e:77:e2:ed" name="foo.example.com" ip="192.168.122.10" /&gt;
+    &lt;host mac="00:16:3e:3e:a9:1a" name="bar.example.com" ip="192.168.122.11" /&gt;
+  &lt;/dhcp&gt;
+&lt;/ip&gt;
+&lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" /&gt;
+&lt;route family="ipv6" address="2001:db9:ca1:1::" prefix="64" gateway="2001:db8:ca2:2::2" /&gt;
+</pre>
 
     <dl>
       <dt><code>mac</code></dt>
@@ -1074,17 +1074,17 @@
     </p>
 
     <pre>
-      &lt;network&gt;
-        &lt;name&gt;default&lt;/name&gt;
-        &lt;bridge name="virbr0" /&gt;
-        &lt;forward mode="nat"/&gt;
-        &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
-          &lt;dhcp&gt;
-            &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
-          &lt;/dhcp&gt;
-        &lt;/ip&gt;
-        &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" /&gt;
-      &lt;/network&gt;</pre>
+&lt;network&gt;
+  &lt;name&gt;default&lt;/name&gt;
+  &lt;bridge name="virbr0" /&gt;
+  &lt;forward mode="nat"/&gt;
+  &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
+    &lt;dhcp&gt;
+      &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
+    &lt;/dhcp&gt;
+  &lt;/ip&gt;
+  &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" /&gt;
+&lt;/network&gt;</pre>
 
 
     <p>
@@ -1093,21 +1093,21 @@
     </p>
 
     <pre>
-      &lt;network&gt;
-        &lt;name&gt;default6&lt;/name&gt;
-        &lt;bridge name="virbr0" /&gt;
-        &lt;forward mode="nat"/&gt;
-        &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
-          &lt;dhcp&gt;
-            &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
-          &lt;/dhcp&gt;
-        &lt;/ip&gt;
-        &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" &gt;
-          &lt;dhcp&gt;
-            &lt;range start="2001:db8:ca2:2:1::10" end="2001:db8:ca2:2:1::ff" /&gt;
-          &lt;/dhcp&gt;
-        &lt;/ip&gt;
-      &lt;/network&gt;</pre>
+&lt;network&gt;
+  &lt;name&gt;default6&lt;/name&gt;
+  &lt;bridge name="virbr0" /&gt;
+  &lt;forward mode="nat"/&gt;
+  &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
+    &lt;dhcp&gt;
+      &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
+    &lt;/dhcp&gt;
+  &lt;/ip&gt;
+  &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" &gt;
+    &lt;dhcp&gt;
+      &lt;range start="2001:db8:ca2:2:1::10" end="2001:db8:ca2:2:1::ff" /&gt;
+    &lt;/dhcp&gt;
+  &lt;/ip&gt;
+&lt;/network&gt;</pre>
 
     <h3><a name="examplesRoute">Routed network config</a></h3>
 
@@ -1121,17 +1121,17 @@
     </p>
 
     <pre>
-      &lt;network&gt;
-        &lt;name&gt;local&lt;/name&gt;
-        &lt;bridge name="virbr1" /&gt;
-        &lt;forward mode="route" dev="eth1"/&gt;
-        &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
-          &lt;dhcp&gt;
-            &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
-          &lt;/dhcp&gt;
-        &lt;/ip&gt;
-        &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" /&gt;
-      &lt;/network&gt;</pre>
+&lt;network&gt;
+  &lt;name&gt;local&lt;/name&gt;
+  &lt;bridge name="virbr1" /&gt;
+  &lt;forward mode="route" dev="eth1"/&gt;
+  &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
+    &lt;dhcp&gt;
+      &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
+    &lt;/dhcp&gt;
+  &lt;/ip&gt;
+  &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" /&gt;
+&lt;/network&gt;</pre>
 
     <p>
       Below is another IPv6 variation.  Instead of a dhcp range being
@@ -1144,24 +1144,24 @@
     </p>
 
     <pre>
-      &lt;network&gt;
-        &lt;name&gt;local6&lt;/name&gt;
-        &lt;bridge name="virbr1" /&gt;
-        &lt;forward mode="route" dev="eth1"/&gt;
-        &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
-          &lt;dhcp&gt;
-            &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
-          &lt;/dhcp&gt;
-        &lt;/ip&gt;
-        &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" &gt;
-          &lt;dhcp&gt;
-            &lt;host name="paul"   ip="2001:db8:ca2:2:3::1" /&gt;
-            &lt;host id="0:1:0:1:18:aa:62:fe:0:16:3e:44:55:66"    ip="2001:db8:ca2:2:3::2" /&gt;
-            &lt;host id="0:3:0:1:0:16:3e:11:22:33" name="ralph"  ip="2001:db8:ca2:2:3::3" /&gt;
-            &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63" name="badbob" ip="2001:db8:ca2:2:3::4" /&gt;
-          &lt;/dhcp&gt;
-        &lt;/ip&gt;
-      &lt;/network&gt;</pre>
+&lt;network&gt;
+  &lt;name&gt;local6&lt;/name&gt;
+  &lt;bridge name="virbr1" /&gt;
+  &lt;forward mode="route" dev="eth1"/&gt;
+  &lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
+    &lt;dhcp&gt;
+      &lt;range start="192.168.122.2" end="192.168.122.254" /&gt;
+    &lt;/dhcp&gt;
+  &lt;/ip&gt;
+  &lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" &gt;
+    &lt;dhcp&gt;
+      &lt;host name="paul"   ip="2001:db8:ca2:2:3::1" /&gt;
+      &lt;host id="0:1:0:1:18:aa:62:fe:0:16:3e:44:55:66"    ip="2001:db8:ca2:2:3::2" /&gt;
+      &lt;host id="0:3:0:1:0:16:3e:11:22:33" name="ralph"  ip="2001:db8:ca2:2:3::3" /&gt;
+      &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63" name="badbob" ip="2001:db8:ca2:2:3::4" /&gt;
+    &lt;/dhcp&gt;
+  &lt;/ip&gt;
+&lt;/network&gt;</pre>
 
     <p>
       Below is yet another IPv6 variation.  This variation has only
@@ -1176,19 +1176,19 @@
     </p>
 
     <pre>
-      &lt;network&gt;
-        &lt;name&gt;net7&lt;/name&gt;
-        &lt;bridge name="virbr7" /&gt;
-        &lt;forward mode="route"/&gt;
-        &lt;ip family="ipv6" address="2001:db8:ca2:7::1" prefix="64" &gt;
-          &lt;dhcp&gt;
-            &lt;range start="2001:db8:ca2:7::100" end="2001:db8:ca2::1ff" /&gt;
-            &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63" name="lucas" ip="2001:db8:ca2:2:3::4" /&gt;
-          &lt;/dhcp&gt;
-        &lt;/ip&gt;
-        &lt;route family="ipv6" address="2001:db8:ca2:8::" prefix="64" gateway="2001:db8:ca2:7::4" &gt;
-        &lt;/route&gt;
-      &lt;/network&gt;</pre>
+&lt;network&gt;
+  &lt;name&gt;net7&lt;/name&gt;
+  &lt;bridge name="virbr7" /&gt;
+  &lt;forward mode="route"/&gt;
+  &lt;ip family="ipv6" address="2001:db8:ca2:7::1" prefix="64" &gt;
+    &lt;dhcp&gt;
+      &lt;range start="2001:db8:ca2:7::100" end="2001:db8:ca2::1ff" /&gt;
+      &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63" name="lucas" ip="2001:db8:ca2:2:3::4" /&gt;
+    &lt;/dhcp&gt;
+  &lt;/ip&gt;
+  &lt;route family="ipv6" address="2001:db8:ca2:8::" prefix="64" gateway="2001:db8:ca2:7::4" &gt;
+  &lt;/route&gt;
+&lt;/network&gt;</pre>
 
     <h3><a name="examplesPrivate">Isolated network config</a></h3>
 
@@ -1201,16 +1201,16 @@
     </p>
 
     <pre>
-      &lt;network&gt;
-        &lt;name&gt;private&lt;/name&gt;
-        &lt;bridge name="virbr2" /&gt;
-        &lt;ip address="192.168.152.1" netmask="255.255.255.0"&gt;
-          &lt;dhcp&gt;
-            &lt;range start="192.168.152.2" end="192.168.152.254" /&gt;
-          &lt;/dhcp&gt;
-        &lt;/ip&gt;
-        &lt;ip family="ipv6" address="2001:db8:ca2:3::1" prefix="64" /&gt;
-      &lt;/network&gt;</pre>
+&lt;network&gt;
+  &lt;name&gt;private&lt;/name&gt;
+  &lt;bridge name="virbr2" /&gt;
+  &lt;ip address="192.168.152.1" netmask="255.255.255.0"&gt;
+    &lt;dhcp&gt;
+      &lt;range start="192.168.152.2" end="192.168.152.254" /&gt;
+    &lt;/dhcp&gt;
+  &lt;/ip&gt;
+  &lt;ip family="ipv6" address="2001:db8:ca2:3::1" prefix="64" /&gt;
+&lt;/network&gt;</pre>
 
     <h3><a name="examplesPrivate6">Isolated IPv6 network config</a></h3>
 
@@ -1224,18 +1224,18 @@
     </p>
 
     <pre>
-      &lt;network&gt;
-        &lt;name&gt;sixnet&lt;/name&gt;
-        &lt;bridge name="virbr6" /&gt;
-        &lt;ip family="ipv6" address="2001:db8:ca2:6::1" prefix="64" &gt;
-          &lt;dhcp&gt;
-            &lt;host name="peter"   ip="2001:db8:ca2:6:6::1" /&gt;
-            &lt;host id="0:1:0:1:18:aa:62:fe:0:16:3e:44:55:66" ip="2001:db8:ca2:6:6::2" /&gt;
-            &lt;host id="0:3:0:1:0:16:3e:11:22:33" name="dariusz" ip="2001:db8:ca2:6:6::3" /&gt;
-            &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63" name="anita" ip="2001:db8:ca2:6:6::4" /&gt;
-          &lt;/dhcp&gt;
-        &lt;/ip&gt;
-      &lt;/network&gt;</pre>
+&lt;network&gt;
+  &lt;name&gt;sixnet&lt;/name&gt;
+  &lt;bridge name="virbr6" /&gt;
+  &lt;ip family="ipv6" address="2001:db8:ca2:6::1" prefix="64" &gt;
+    &lt;dhcp&gt;
+      &lt;host name="peter"   ip="2001:db8:ca2:6:6::1" /&gt;
+      &lt;host id="0:1:0:1:18:aa:62:fe:0:16:3e:44:55:66" ip="2001:db8:ca2:6:6::2" /&gt;
+      &lt;host id="0:3:0:1:0:16:3e:11:22:33" name="dariusz" ip="2001:db8:ca2:6:6::3" /&gt;
+      &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63" name="anita" ip="2001:db8:ca2:6:6::4" /&gt;
+    &lt;/dhcp&gt;
+  &lt;/ip&gt;
+&lt;/network&gt;</pre>
 
     <h3><a name="examplesBridge">Using an existing host bridge</a></h3>
 
@@ -1249,11 +1249,11 @@
     </p>
 
     <pre>
-      &lt;network&gt;
-        &lt;name&gt;host-bridge&lt;/name&gt;
-        &lt;forward mode="bridge"/&gt;
-        &lt;bridge name="br0"/&gt;
-      &lt;/network&gt;</pre>
+&lt;network&gt;
+  &lt;name&gt;host-bridge&lt;/name&gt;
+  &lt;forward mode="bridge"/&gt;
+  &lt;bridge name="br0"/&gt;
+&lt;/network&gt;</pre>
 
     <h3><a name="examplesDirect">Using a macvtap "direct" connection</a></h3>
 
@@ -1279,16 +1279,16 @@
     </p>
 
     <pre>
-      &lt;network&gt;
-        &lt;name&gt;direct-macvtap&lt;/name&gt;
-        &lt;forward mode="bridge"&gt;
-          &lt;interface dev="eth20"/&gt;
-          &lt;interface dev="eth21"/&gt;
-          &lt;interface dev="eth22"/&gt;
-          &lt;interface dev="eth23"/&gt;
-          &lt;interface dev="eth24"/&gt;
-        &lt;/forward&gt;
-      &lt;/network&gt;</pre>
+&lt;network&gt;
+  &lt;name&gt;direct-macvtap&lt;/name&gt;
+  &lt;forward mode="bridge"&gt;
+    &lt;interface dev="eth20"/&gt;
+    &lt;interface dev="eth21"/&gt;
+    &lt;interface dev="eth22"/&gt;
+    &lt;interface dev="eth23"/&gt;
+    &lt;interface dev="eth24"/&gt;
+  &lt;/forward&gt;
+&lt;/network&gt;</pre>
 
     <h3><a name="examplesNoGateway">Network config with no gateway addresses</a></h3>
 
@@ -1303,12 +1303,12 @@
     </p>
 
     <pre>
-      &lt;network ipv6='yes'&gt;
-        &lt;name&gt;nogw&lt;/name&gt;
-        &lt;uuid&gt;7a3b7497-1ec7-8aef-6d5c-38dff9109e93&lt;/uuid&gt;
-        &lt;bridge name="virbr2" stp="on" delay="0" /&gt;
-        &lt;mac address='00:16:3E:5D:C7:9E'/&gt;
-      &lt;/network&gt;</pre>
+&lt;network ipv6='yes'&gt;
+  &lt;name&gt;nogw&lt;/name&gt;
+  &lt;uuid&gt;7a3b7497-1ec7-8aef-6d5c-38dff9109e93&lt;/uuid&gt;
+  &lt;bridge name="virbr2" stp="on" delay="0" /&gt;
+  &lt;mac address='00:16:3E:5D:C7:9E'/&gt;
+&lt;/network&gt;</pre>
 
   </body>
 </html>
