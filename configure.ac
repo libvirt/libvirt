@@ -597,22 +597,7 @@ dnl
 dnl check for libdl
 dnl
 
-dlfcn_found=yes
-dlopen_found=yes
-
-AC_CHECK_HEADER([dlfcn.h],, [dlfcn_found=no])
-AC_SEARCH_LIBS([dlopen], [dl],, [dlopen_found=no])
-
-case $ac_cv_search_dlopen:$host_os in
-  'none required'* | *:mingw* | *:msvc*) DLOPEN_LIBS= ;;
-  no*) AC_MSG_ERROR([Unable to find dlopen()]) ;;
-  *) if test "x$dlfcn_found" != "xyes"; then
-       AC_MSG_ERROR([Unable to find dlfcn.h])
-     fi
-     DLOPEN_LIBS=$ac_cv_search_dlopen ;;
-esac
-
-AC_SUBST([DLOPEN_LIBS])
+LIBVIRT_CHECK_DLOPEN
 
 
 dnl
@@ -1968,7 +1953,7 @@ fi
 DRIVER_MODULE_CFLAGS=
 DRIVER_MODULE_LIBS=
 if test "$with_driver_modules" = "yes" || test "$with_driver_modules" = "check"; then
-  if test "$dlfcn_found" != "yes" || test "$dlopen_found" != "yes"; then
+  if test "$with_dlfcn" != "yes" || test "$with_dlopen" != "yes"; then
     if test "$with_driver_modules" = "yes" ; then
       AC_MSG_ERROR([You must have dlfcn.h / dlopen() support to build driver modules])
     else
@@ -1981,10 +1966,7 @@ fi
 
 if test "$with_driver_modules" = "yes" ; then
   DRIVER_MODULE_LDFLAGS="-export-dynamic"
-  case $ac_cv_search_dlopen in
-    no*) DRIVER_MODULE_LIBS= ;;
-    *) DRIVER_MODULE_LIBS=$ac_cv_search_dlopen ;;
-  esac
+  DRIVER_MODULE_LIBS="$DLOPEN_LIBS"
   AC_DEFINE_UNQUOTED([WITH_DRIVER_MODULES], 1, [whether to build drivers as modules])
 fi
 AM_CONDITIONAL([WITH_DRIVER_MODULES], [test "$with_driver_modules" != "no"])
@@ -2402,6 +2384,7 @@ LIBVIRT_RESULT_BLKID
 LIBVIRT_RESULT_CAPNG
 LIBVIRT_RESULT_CURL
 LIBVIRT_RESULT_DBUS
+LIBVIRT_RESULT_DLOPEN
 LIBVIRT_RESULT_FUSE
 LIBVIRT_RESULT_GLUSTER
 LIBVIRT_RESULT_GNUTLS
@@ -2420,7 +2403,6 @@ LIBVIRT_RESULT_SELINUX
 LIBVIRT_RESULT_SSH2
 LIBVIRT_RESULT_UDEV
 LIBVIRT_RESULT_YAJL
-AC_MSG_NOTICE([  dlopen: $DLOPEN_LIBS])
 AC_MSG_NOTICE([firewalld: $with_firewalld])
 if test "$with_polkit" = "yes" ; then
 if test "$with_polkit0" = "yes" ; then
