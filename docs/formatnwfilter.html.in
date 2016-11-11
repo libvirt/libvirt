@@ -61,14 +61,14 @@
     the filter <code>clean-traffic</code>.
     </p>
 <pre>
-  ...
-  &lt;devices&gt;
-    &lt;interface type='bridge'&gt;
-      &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
-      &lt;filterref filter='clean-traffic'/&gt;
-    &lt;/interface&gt;
-  &lt;/devices&gt;
-  ...</pre>
+...
+&lt;devices&gt;
+  &lt;interface type='bridge'&gt;
+    &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
+    &lt;filterref filter='clean-traffic'/&gt;
+  &lt;/interface&gt;
+&lt;/devices&gt;
+...</pre>
 
     <p>
     Network filters are written in XML and may either contain references
@@ -91,16 +91,16 @@
     the parameter <code>IP</code> and a dotted IP address as value.
     </p>
 <pre>
-  ...
-  &lt;devices&gt;
-    &lt;interface type='bridge'&gt;
-      &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
-      &lt;filterref filter='clean-traffic'&gt;
-        &lt;parameter name='IP' value='10.0.0.1'/&gt;
-      &lt;/filterref&gt;
-    &lt;/interface&gt;
-  &lt;/devices&gt;
-  ...</pre>
+...
+&lt;devices&gt;
+  &lt;interface type='bridge'&gt;
+    &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
+    &lt;filterref filter='clean-traffic'&gt;
+      &lt;parameter name='IP' value='10.0.0.1'/&gt;
+    &lt;/filterref&gt;
+  &lt;/interface&gt;
+&lt;/devices&gt;
+...</pre>
 
     <p>
       In this particular example, the <code>clean-traffic</code> network
@@ -285,18 +285,18 @@
       providing multiple elements for the IP variable is:
     </p>
 <pre>
-  ...
-  &lt;devices&gt;
-    &lt;interface type='bridge'&gt;
-      &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
-      &lt;filterref filter='clean-traffic'&gt;
-        &lt;parameter name='IP' value='10.0.0.1'/&gt;
-        &lt;parameter name='IP' value='10.0.0.2'/&gt;
-        &lt;parameter name='IP' value='10.0.0.3'/&gt;
-      &lt;/filterref&gt;
-    &lt;/interface&gt;
-  &lt;/devices&gt;
-  ...</pre>
+...
+&lt;devices&gt;
+  &lt;interface type='bridge'&gt;
+    &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
+    &lt;filterref filter='clean-traffic'&gt;
+      &lt;parameter name='IP' value='10.0.0.1'/&gt;
+      &lt;parameter name='IP' value='10.0.0.2'/&gt;
+      &lt;parameter name='IP' value='10.0.0.3'/&gt;
+    &lt;/filterref&gt;
+  &lt;/interface&gt;
+&lt;/devices&gt;
+...</pre>
     <p>
       This then allows filters to enable multiple IP addresses
       per interface. Therefore, with the list
@@ -304,11 +304,11 @@
       individual filtering rules, one for each IP address.
     </p>
 <pre>
-  ...
-  &lt;rule action='accept' direction='in' priority='500'&gt;
-    &lt;tcp srpipaddr='$IP'/&gt;
-  &lt;/rule&gt;
-  ...
+...
+&lt;rule action='accept' direction='in' priority='500'&gt;
+  &lt;tcp srpipaddr='$IP'/&gt;
+&lt;/rule&gt;
+...
 </pre>
     <p>
       <span class="since">Since 0.9.10</span> it is possible to access
@@ -317,11 +317,11 @@
       of the variable DSTPORTS.
     </p>
 <pre>
-  ...
-  &lt;rule action='accept' direction='in' priority='500'&gt;
-    &lt;udp dstportstart='$DSTPORTS[1]'/&gt;
-  &lt;/rule&gt;
-  ...
+...
+&lt;rule action='accept' direction='in' priority='500'&gt;
+  &lt;udp dstportstart='$DSTPORTS[1]'/&gt;
+&lt;/rule&gt;
+...
 </pre>
     <p>
       <span class="since">Since 0.9.10</span> it is possible to create
@@ -336,29 +336,29 @@
       iterators to access their elements.
     </p>
 <pre>
-  ...
-  &lt;rule action='accept' direction='in' priority='500'&gt;
-    &lt;ip srcipaddr='$SRCIPADDRESSES[@1]' dstportstart='$DSTPORTS[@2]'/&gt;
-  &lt;/rule&gt;
-  ...
+...
+&lt;rule action='accept' direction='in' priority='500'&gt;
+  &lt;ip srcipaddr='$SRCIPADDRESSES[@1]' dstportstart='$DSTPORTS[@2]'/&gt;
+&lt;/rule&gt;
+...
 </pre>
 
     <p>
       In an example we assign concrete values to SRCIPADDRESSES and DSTPORTS
     </p>
 <pre>
-  SRCIPADDRESSES = [ 10.0.0.1, 11.1.2.3 ]
-  DSTPORTS = [ 80, 8080 ]
+SRCIPADDRESSES = [ 10.0.0.1, 11.1.2.3 ]
+DSTPORTS = [ 80, 8080 ]
 </pre>
     <p>
       Accessing the variables using $SRCIPADDRESSES[@1] and $DSTPORTS[@2] would
       then result in all combinations of addresses and ports being created:
     </p>
 <pre>
-  10.0.0.1, 80
-  10.0.0.1, 8080
-  11.1.2.3, 80
-  11.1.2.3, 8080
+10.0.0.1, 80
+10.0.0.1, 8080
+11.1.2.3, 80
+11.1.2.3, 8080
 </pre>
     <p>
       Accessing the same variables using a single iterator, for example by using
@@ -366,8 +366,8 @@
       parallel access to both lists and result in the following combinations:
     </p>
 <pre>
-  10.0.0.1, 80
-  11.1.2.3, 8080
+10.0.0.1, 80
+11.1.2.3, 8080
 </pre>
     <p>
       Further, the notation of $VARIABLE is short-hand for $VARIABLE[@0]. The
@@ -440,12 +440,12 @@
        using the DHCP snooping method:
     </p>
 <pre>
-    &lt;interface type='bridge'&gt;
-      &lt;source bridge='virbr0'/&gt;
-      &lt;filterref filter='clean-traffic'&gt;
-        &lt;parameter name='CTRL_IP_LEARNING' value='dhcp'/&gt;
-      &lt;/filterref&gt;
-    &lt;/interface&gt;
+&lt;interface type='bridge'&gt;
+  &lt;source bridge='virbr0'/&gt;
+  &lt;filterref filter='clean-traffic'&gt;
+    &lt;parameter name='CTRL_IP_LEARNING' value='dhcp'/&gt;
+  &lt;/filterref&gt;
+&lt;/interface&gt;
 </pre>
 
     <h3><a name="nwfelemsReservedVars">Reserved Variables</a></h3>
@@ -658,10 +658,10 @@
     </p>
 <pre>
 [...]
-  &lt;rule action='drop' direction='in'&gt;
-    &lt;protocol match='no' attribute1='value1' attribute2='value2'/&gt;
-    &lt;protocol attribute3='value3'/&gt;
-  &lt;/rule&gt;
+&lt;rule action='drop' direction='in'&gt;
+  &lt;protocol match='no' attribute1='value1' attribute2='value2'/&gt;
+  &lt;protocol attribute3='value3'/&gt;
+&lt;/rule&gt;
 [...]
 </pre>
     <p>
@@ -1896,11 +1896,11 @@
      turned off for incoming connections to TCP port 12345.
     </p>
 <pre>
-   [...]
-    &lt;rule direction='in' action='accept' statematch='false'&gt;
-      &lt;tcp dstportstart='12345'/&gt;
-    &lt;/rule&gt;
-   [...]
+[...]
+&lt;rule direction='in' action='accept' statematch='false'&gt;
+  &lt;tcp dstportstart='12345'/&gt;
+&lt;/rule&gt;
+[...]
 </pre>
     <p>
      This now allows incoming traffic to TCP port 12345, but would also
@@ -1918,26 +1918,26 @@
      time, the following XML fragment can be used to achieve this.
     </p>
 <pre>
-  [...]
-  &lt;rule action='drop' direction='in' priority='400'&gt;
-    &lt;tcp connlimit-above='1'/&gt;
-  &lt;/rule&gt;
-  &lt;rule action='accept' direction='in' priority='500'&gt;
-    &lt;tcp dstportstart='22'/&gt;
-  &lt;/rule&gt;
-  &lt;rule action='drop' direction='out' priority='400'&gt;
-    &lt;icmp connlimit-above='1'/&gt;
-  &lt;/rule&gt;
-  &lt;rule action='accept' direction='out' priority='500'&gt;
-    &lt;icmp/&gt;
-  &lt;/rule&gt;
-  &lt;rule action='accept' direction='out' priority='500'&gt;
-    &lt;udp dstportstart='53'/&gt;
-  &lt;/rule&gt;
-  &lt;rule action='drop' direction='inout' priority='1000'&gt;
-    &lt;all/&gt;
-  &lt;/rule&gt;
-  [...]
+[...]
+&lt;rule action='drop' direction='in' priority='400'&gt;
+  &lt;tcp connlimit-above='1'/&gt;
+&lt;/rule&gt;
+&lt;rule action='accept' direction='in' priority='500'&gt;
+  &lt;tcp dstportstart='22'/&gt;
+&lt;/rule&gt;
+&lt;rule action='drop' direction='out' priority='400'&gt;
+  &lt;icmp connlimit-above='1'/&gt;
+&lt;/rule&gt;
+&lt;rule action='accept' direction='out' priority='500'&gt;
+  &lt;icmp/&gt;
+&lt;/rule&gt;
+&lt;rule action='accept' direction='out' priority='500'&gt;
+  &lt;udp dstportstart='53'/&gt;
+&lt;/rule&gt;
+&lt;rule action='drop' direction='inout' priority='1000'&gt;
+  &lt;all/&gt;
+&lt;/rule&gt;
+[...]
 </pre>
     <p>
      Note that the rule for the limit has to logically appear
@@ -1958,7 +1958,7 @@
     </p>
 
 <pre>
-  echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
+echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
 </pre>
     <p>
       sets the ICMP connection tracking timeout to 3 seconds. The
@@ -2201,12 +2201,12 @@
      the domain XML of the <code>test</code> VM could then look like this:
     </p>
 <pre>
-   [...]
-    &lt;interface type='bridge'&gt;
-      &lt;source bridge='mybridge'/&gt;
-      &lt;filterref filter='test-eth0'/&gt;
-    &lt;/interface&gt;
-   [...]
+[...]
+&lt;interface type='bridge'&gt;
+  &lt;source bridge='mybridge'/&gt;
+  &lt;filterref filter='test-eth0'/&gt;
+&lt;/interface&gt;
+[...]
 </pre>
 
     <p>
@@ -2216,15 +2216,15 @@
      <code>ICMP</code> rule can be replaced with the following two rules:
     </p>
 <pre>
-  &lt;!-- enable outgoing ICMP echo requests--&gt;
-  &lt;rule action='accept' direction='out'&gt;
-    &lt;icmp type='8'/&gt;
-  &lt;/rule&gt;
+&lt;!-- enable outgoing ICMP echo requests--&gt;
+&lt;rule action='accept' direction='out'&gt;
+  &lt;icmp type='8'/&gt;
+&lt;/rule&gt;
 
-  &lt;!-- enable incoming ICMP echo replies--&gt;
-  &lt;rule action='accept' direction='in'&gt;
-    &lt;icmp type='0'/&gt;
-  &lt;/rule&gt;
+&lt;!-- enable incoming ICMP echo replies--&gt;
+&lt;rule action='accept' direction='in'&gt;
+  &lt;icmp type='0'/&gt;
+&lt;/rule&gt;
 </pre>
 
     <h3><a name="nwfwriteexample2nd">Second example custom filter</a></h3>
@@ -2326,9 +2326,9 @@
      the ftp connection with the VM is established.
     </p>
 <pre>
-    modprobe nf_conntrack_ftp   # where available  or
+modprobe nf_conntrack_ftp   # where available  or
 
-    modprobe ip_conntrack_ftp   # if above is not available
+modprobe ip_conntrack_ftp   # if above is not available
 </pre>
     <p>
      If other protocols than ftp are to be used in conjunction with the
