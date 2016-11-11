@@ -3016,8 +3016,8 @@ vshInitDebug(vshControl *ctl)
             int debug;
             if (virStrToLong_i(debugEnv, NULL, 10, &debug) < 0 ||
                 debug < VSH_ERR_DEBUG || debug > VSH_ERR_ERROR) {
-                vshError(ctl, "%s",
-                         _("VSH_DEBUG not set with a valid numeric value"));
+                vshError(ctl, _("%s_DEBUG not set with a valid numeric value"),
+                         ctl->env_prefix);
             } else {
                 ctl->debug = debug;
             }
