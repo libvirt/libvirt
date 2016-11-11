@@ -83,7 +83,7 @@
     </p>
 
 <pre>
-  virCommandPtr cmd = virCommandNew("/usr/bin/dnsmasq");
+virCommandPtr cmd = virCommandNew("/usr/bin/dnsmasq");
 </pre>
 
     <p>
@@ -100,7 +100,7 @@
     </p>
 
 <pre>
-  virCommandAddArg(cmd, "-strict-order");
+virCommandAddArg(cmd, "-strict-order");
 </pre>
 
     <p>
@@ -109,7 +109,7 @@
     </p>
 
 <pre>
-  virCommandAddArgPair(cmd, "--conf-file", "/etc/dnsmasq.conf");
+virCommandAddArgPair(cmd, "--conf-file", "/etc/dnsmasq.conf");
 </pre>
 
     <p>
@@ -118,7 +118,7 @@
     </p>
 
 <pre>
-  virCommandAddArgFormat(cmd, "%d", count);
+virCommandAddArgFormat(cmd, "%d", count);
 </pre>
 
     <p>
@@ -127,11 +127,11 @@
     </p>
 
 <pre>
-  const char *const args[] = {
-      "--strict-order", "--except-interface", "lo", NULL
-  };
-  virCommandAddArgSet(cmd, args);
-  virCommandAddArgList(cmd, "--domain", "localdomain", NULL);
+const char *const args[] = {
+    "--strict-order", "--except-interface", "lo", NULL
+};
+virCommandAddArgSet(cmd, args);
+virCommandAddArgList(cmd, "--domain", "localdomain", NULL);
 </pre>
 
     <p>
@@ -140,14 +140,14 @@
     </p>
 
 <pre>
-  const char *const args[] = {
-      "/usr/bin/dnsmasq",
-      "--strict-order", "--except-interface",
-      "lo", "--domain", "localdomain", NULL
-  };
-  virCommandPtr cmd1 = virCommandNewArgs(cmd, args);
-  virCommandPtr cmd2 = virCommandNewArgList("/usr/bin/dnsmasq",
-                                            "--domain", "localdomain", NULL);
+const char *const args[] = {
+    "/usr/bin/dnsmasq",
+    "--strict-order", "--except-interface",
+    "lo", "--domain", "localdomain", NULL
+};
+virCommandPtr cmd1 = virCommandNewArgs(cmd, args);
+virCommandPtr cmd2 = virCommandNewArgList("/usr/bin/dnsmasq",
+                                          "--domain", "localdomain", NULL);
 </pre>
 
     <h3><a name="env">Setting up the environment</a></h3>
@@ -163,7 +163,7 @@
     </p>
 
 <pre>
-  virCommandAddEnvPassCommon(cmd);
+virCommandAddEnvPassCommon(cmd);
 </pre>
 
     <p>
@@ -177,8 +177,8 @@
     </p>
 
 <pre>
-  virCommandAddEnvPass(cmd, "DISPLAY");
-  virCommandAddEnvPass(cmd, "XAUTHORITY");
+virCommandAddEnvPass(cmd, "DISPLAY");
+virCommandAddEnvPass(cmd, "XAUTHORITY");
 </pre>
 
     <p>
@@ -187,7 +187,7 @@
     </p>
 
 <pre>
-  virCommandAddEnvPair(cmd, "TERM", "xterm");
+virCommandAddEnvPair(cmd, "TERM", "xterm");
 </pre>
 
     <p>
@@ -196,7 +196,7 @@
     </p>
 
 <pre>
-  virCommandAddEnvString(cmd, "TERM=xterm");
+virCommandAddEnvString(cmd, "TERM=xterm");
 </pre>
 
     <h3><a name="misc">Miscellaneous other options</a></h3>
@@ -210,7 +210,7 @@
     </p>
 
 <pre>
-  virCommandDaemonize(cmd);
+virCommandDaemonize(cmd);
 </pre>
 
     <p>
@@ -221,7 +221,7 @@
     </p>
 
 <pre>
-  virCommandSetPidFile(cmd, "/var/run/dnsmasq.pid");
+virCommandSetPidFile(cmd, "/var/run/dnsmasq.pid");
 </pre>
 
     <p>
@@ -240,7 +240,7 @@
     </p>
 
 <pre>
-  virCommandClearCaps(cmd);
+virCommandClearCaps(cmd);
 </pre>
 
     <h3><a name="fds">Managing file handles</a></h3>
@@ -256,13 +256,13 @@
     </p>
 
 <pre>
-  int sharedfd = open("cmd.log", "w+");
-  int childfd = open("conf.txt", "r");
-  virCommandPassFD(cmd, sharedfd, 0);
-  virCommandPassFD(cmd, childfd,
-                   VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-  if (VIR_CLOSE(sharedfd) &lt; 0)
-      goto cleanup;
+int sharedfd = open("cmd.log", "w+");
+int childfd = open("conf.txt", "r");
+virCommandPassFD(cmd, sharedfd, 0);
+virCommandPassFD(cmd, childfd,
+                 VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+if (VIR_CLOSE(sharedfd) &lt; 0)
+    goto cleanup;
 </pre>
 
     <p>
@@ -282,7 +282,7 @@
     </p>
 
 <pre>
-  virCommandSetInputFD(cmd, 7);
+virCommandSetInputFD(cmd, 7);
 </pre>
 
     <p>
@@ -291,10 +291,10 @@
     </p>
 
 <pre>
-  int outfd = open("out.log", "w+");
-  int errfd = open("err.log", "w+");
-  virCommandSetOutputFD(cmd, &amp;outfd);
-  virCommandSetErrorFD(cmd, &amp;errfd);
+int outfd = open("out.log", "w+");
+int errfd = open("err.log", "w+");
+virCommandSetOutputFD(cmd, &amp;outfd);
+virCommandSetErrorFD(cmd, &amp;errfd);
 </pre>
 
     <p>
@@ -304,10 +304,10 @@
     </p>
 
 <pre>
-  int outfd = -1;
-  int errfd = -1
-  virCommandSetOutputFD(cmd, &amp;outfd);
-  virCommandSetErrorFD(cmd, &amp;errfd);
+int outfd = -1;
+int errfd = -1
+virCommandSetOutputFD(cmd, &amp;outfd);
+virCommandSetErrorFD(cmd, &amp;errfd);
 </pre>
 
     <p>
@@ -326,7 +326,7 @@
     </p>
 
 <pre>
-  virCommandNonblockingFDs(cmd);
+virCommandNonblockingFDs(cmd);
 </pre>
 
     <h3><a name="buffers">Feeding &amp; capturing strings to/from the child</a></h3>
@@ -350,8 +350,8 @@
     </p>
 
 <pre>
-  const char *input = "Hello World\n";
-  virCommandSetInputBuffer(cmd, input);
+const char *input = "Hello World\n";
+virCommandSetInputBuffer(cmd, input);
 </pre>
 
     <p>
@@ -362,9 +362,9 @@
     </p>
 
 <pre>
-  char *output = NULL, *errors = NULL;
-  virCommandSetOutputBuffer(cmd, &amp;output);
-  virCommandSetErrorBuffer(cmd, &amp;errors);
+char *output = NULL, *errors = NULL;
+virCommandSetOutputBuffer(cmd, &amp;output);
+virCommandSetErrorBuffer(cmd, &amp;errors);
 </pre>
 
     <p>
@@ -392,7 +392,7 @@
     </p>
 
 <pre>
-  virCommandSetWorkingDirectory(cmd, LOCALSTATEDIR);
+virCommandSetWorkingDirectory(cmd, LOCALSTATEDIR);
 </pre>
 
     <h3><a name="hooks">Any additional hooks</a></h3>
@@ -406,7 +406,7 @@
     </p>
 
 <pre>
-  virCommandSetPreExecHook(cmd, hook, opaque);
+virCommandSetPreExecHook(cmd, hook, opaque);
 </pre>
 
     <h3><a name="logging">Logging commands</a></h3>
@@ -418,20 +418,20 @@
     </p>
 
 <pre>
-  int logfd = ...;
-  char *timestamp = virTimestamp();
-  char *string = NULL;
+int logfd = ...;
+char *timestamp = virTimestamp();
+char *string = NULL;
 
-  dprintf(logfd, "%s: ", timestamp);
-  VIR_FREE(timestamp);
-  virCommandWriteArgLog(cmd, logfd);
+dprintf(logfd, "%s: ", timestamp);
+VIR_FREE(timestamp);
+virCommandWriteArgLog(cmd, logfd);
 
-  string = virCommandToString(cmd);
-  if (string)
-      VIR_DEBUG("about to run %s", string);
-  VIR_FREE(string);
-  if (virCommandRun(cmd, NULL) &lt; 0)
-      return -1;
+string = virCommandToString(cmd);
+if (string)
+    VIR_DEBUG("about to run %s", string);
+VIR_FREE(string);
+if (virCommandRun(cmd, NULL) &lt; 0)
+    return -1;
 </pre>
 
     <h3><a name="sync">Running commands synchronously</a></h3>
@@ -443,8 +443,8 @@
     </p>
 
 <pre>
-  if (virCommandRun(cmd, NULL) &lt; 0)
-     return -1;
+if (virCommandRun(cmd, NULL) &lt; 0)
+   return -1;
 </pre>
 
     <p>
@@ -465,19 +465,19 @@
     </p>
 
 <pre>
-  int status;
-  if (virCommandRun(cmd, &amp;status) &lt; 0)
-      return -1;
-  if (status == 1) {
-    ...do stuff...
-  }
+int status;
+if (virCommandRun(cmd, &amp;status) &lt; 0)
+    return -1;
+if (status == 1) {
+  ...do stuff...
+}
 
-  virCommandRawStatus(cmd2);
-  if (virCommandRun(cmd2, &amp;status) &lt; 0)
-      return -1;
-  if (WIFEXITED(status) &amp;&amp; WEXITSTATUS(status) == 1) {
-    ...do stuff...
-  }
+virCommandRawStatus(cmd2);
+if (virCommandRun(cmd2, &amp;status) &lt; 0)
+    return -1;
+if (WIFEXITED(status) &amp;&amp; WEXITSTATUS(status) == 1) {
+  ...do stuff...
+}
 </pre>
 
     <h3><a name="async">Running commands asynchronously</a></h3>
@@ -490,19 +490,19 @@
     </p>
 
 <pre>
-  pid_t pid;
-  if (virCommandRunAsync(cmd, &amp;pid) &lt; 0)
-     return -1;
+pid_t pid;
+if (virCommandRunAsync(cmd, &amp;pid) &lt; 0)
+   return -1;
 
-  ... do something while pid is running ...
+... do something while pid is running ...
 
-  int status;
-  if (virCommandWait(cmd, &amp;status) &lt; 0)
-     return -1;
+int status;
+if (virCommandWait(cmd, &amp;status) &lt; 0)
+   return -1;
 
-  if (WEXITSTATUS(status)...) {
-     ..do stuff..
-  }
+if (WEXITSTATUS(status)...) {
+   ..do stuff..
+}
 </pre>
 
     <p>
@@ -540,7 +540,7 @@
     </p>
 
 <pre>
-  virCommandFree(cmd);
+virCommandFree(cmd);
 </pre>
 
     <p>
