@@ -460,19 +460,19 @@
     </p>
 
     <pre>
-      syntax: virsh migrate GUESTNAME DEST-LIBVIRT-URI [HV-URI]
+syntax: virsh migrate GUESTNAME DEST-LIBVIRT-URI [HV-URI]
 
 
-      eg using default network interface
+eg using default network interface
 
-      virsh migrate web1 qemu+ssh://desthost/system
-      virsh migrate web1 xen+tls://desthost/system
+virsh migrate web1 qemu+ssh://desthost/system
+virsh migrate web1 xen+tls://desthost/system
 
 
-      eg using secondary network interface
+eg using secondary network interface
 
-      virsh migrate web1 qemu://desthost/system tcp://10.0.0.1/
-      virsh migrate web1 xen+tcp://desthost/system  xenmigr:10.0.0.1/
+virsh migrate web1 qemu://desthost/system tcp://10.0.0.1/
+virsh migrate web1 xen+tcp://desthost/system  xenmigr:10.0.0.1/
     </pre>
 
     <p>
@@ -538,12 +538,12 @@
     </p>
 
     <pre>
-      syntax: virsh migrate GUESTNAME HV-URI
+syntax: virsh migrate GUESTNAME HV-URI
 
 
-      eg using same libvirt URI for all connections
+eg using same libvirt URI for all connections
 
-      virsh migrate --direct web1 xenmigr://desthost/
+virsh migrate --direct web1 xenmigr://desthost/
     </pre>
 
     <p>
@@ -565,22 +565,22 @@
     </p>
 
     <pre>
-      syntax: virsh migrate GUESTNAME DEST-LIBVIRT-URI [ALT-DEST-LIBVIRT-URI]
+syntax: virsh migrate GUESTNAME DEST-LIBVIRT-URI [ALT-DEST-LIBVIRT-URI]
 
 
-      eg using same libvirt URI for all connections
+eg using same libvirt URI for all connections
 
-      virsh migrate --p2p web1 qemu+ssh://desthost/system
-
-
-      eg using different libvirt URI auth scheme for peer2peer connections
-
-      virsh migrate --p2p web1 qemu+ssh://desthost/system qemu+tls:/desthost/system
+virsh migrate --p2p web1 qemu+ssh://desthost/system
 
 
-      eg using different libvirt URI hostname for peer2peer connections
+eg using different libvirt URI auth scheme for peer2peer connections
 
-      virsh migrate --p2p web1 qemu+ssh://desthost/system qemu+ssh://10.0.0.1/system
+virsh migrate --p2p web1 qemu+ssh://desthost/system qemu+tls:/desthost/system
+
+
+eg using different libvirt URI hostname for peer2peer connections
+
+virsh migrate --p2p web1 qemu+ssh://desthost/system qemu+ssh://10.0.0.1/system
     </pre>
 
     <p>
@@ -606,22 +606,22 @@
     </p>
 
     <pre>
-      syntax: virsh migrate GUESTNAME DEST-LIBVIRT-URI [ALT-DEST-LIBVIRT-URI]
+syntax: virsh migrate GUESTNAME DEST-LIBVIRT-URI [ALT-DEST-LIBVIRT-URI]
 
 
-      eg using same libvirt URI for all connections
+eg using same libvirt URI for all connections
 
-      virsh migrate --p2p --tunnelled web1 qemu+ssh://desthost/system
-
-
-      eg using different libvirt URI auth scheme for peer2peer connections
-
-      virsh migrate --p2p --tunnelled web1 qemu+ssh://desthost/system qemu+tls:/desthost/system
+virsh migrate --p2p --tunnelled web1 qemu+ssh://desthost/system
 
 
-      eg using different libvirt URI hostname for peer2peer connections
+eg using different libvirt URI auth scheme for peer2peer connections
 
-      virsh migrate --p2p --tunnelled web1 qemu+ssh://desthost/system qemu+ssh://10.0.0.1/system
+virsh migrate --p2p --tunnelled web1 qemu+ssh://desthost/system qemu+tls:/desthost/system
+
+
+eg using different libvirt URI hostname for peer2peer connections
+
+virsh migrate --p2p --tunnelled web1 qemu+ssh://desthost/system qemu+ssh://10.0.0.1/system
     </pre>
 
     <p>
