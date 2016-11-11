@@ -88,7 +88,7 @@ AC_DEFUN([LIBVIRT_CHECK_LIB],[
       with_var=no
     ])
     if test "$fail" = "0" && test "x$with_var" != "xno" ; then
-      AC_CHECK_HEADER([header_name], [
+      AC_CHECK_HEADER(header_name, [
         with_var=yes
       ],[
         if test "x$with_var" != "xcheck"; then
@@ -225,10 +225,10 @@ AC_DEFUN([LIBVIRT_CHECK_LIB_ALT],[
       ])
     ])
     if test "$fail" = "0" && test "x$with_var" != "xno" ; then
-      AC_CHECK_HEADER([header_name], [
+      AC_CHECK_HEADER(header_name, [
         with_var=yes
       ],[
-        AC_CHECK_HEADER([header_name_alt], [
+        AC_CHECK_HEADER(header_name_alt, [
           with_var=yes
         ],[
           if test "x$with_var" != "xcheck"; then
