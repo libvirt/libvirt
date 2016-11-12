@@ -123,6 +123,8 @@ DEVMAPPER_REQUIRED=1.0.0
 LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
 PARALLELS_SDK_REQUIRED="7.0.22"
+dnl Where we look for daemons and admin binaries during configure
+LIBVIRT_SBIN_PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
 
 dnl Checks for C compiler.
 AC_PROG_CC
@@ -433,29 +435,29 @@ dnl We will hard-code paths to these programs unless we cannot
 dnl detect them, in which case we'll search for the program
 dnl along the $PATH at runtime and fail if it's not there.
 AC_PATH_PROG([DMIDECODE], [dmidecode], [dmidecode],
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+	[$LIBVIRT_SBIN_PATH])
 AC_PATH_PROG([DNSMASQ], [dnsmasq], [dnsmasq],
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+	[$LIBVIRT_SBIN_PATH])
 AC_PATH_PROG([RADVD], [radvd], [radvd],
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+	[$LIBVIRT_SBIN_PATH])
 AC_PATH_PROG([TC], [tc], [tc],
-    [/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+	[$LIBVIRT_SBIN_PATH])
 AC_PATH_PROG([UDEVADM], [udevadm], [],
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+	[$LIBVIRT_SBIN_PATH])
 AC_PATH_PROG([UDEVSETTLE], [udevsettle], [],
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+	[$LIBVIRT_SBIN_PATH])
 AC_PATH_PROG([MODPROBE], [modprobe], [modprobe],
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+	[$LIBVIRT_SBIN_PATH])
 AC_PATH_PROG([RMMOD], [rmmod], [rmmod],
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+	[$LIBVIRT_SBIN_PATH])
 AC_PATH_PROG([MMCTL], [mm-ctl], [mm-ctl],
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+	[$LIBVIRT_SBIN_PATH])
 AC_PATH_PROG([OVSVSCTL], [ovs-vsctl], [ovs-vsctl],
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+	[$LIBVIRT_SBIN_PATH])
 AC_PATH_PROG([SCRUB], [scrub], [scrub],
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+	[$LIBVIRT_SBIN_PATH])
 AC_PATH_PROG([ADDR2LINE], [addr2line], [addr2line],
-        [/sbin:/usr/bin:/usr/sbin:/usr/local/sbin:$PATH])
+	[$LIBVIRT_SBIN_PATH])
 
 AC_DEFINE_UNQUOTED([DMIDECODE],["$DMIDECODE"],
         [Location or name of the dmidecode program])
@@ -636,16 +638,16 @@ fi
 AM_CONDITIONAL([WITH_SYSCTL], test "$with_sysctl" = "yes")
 AC_MSG_RESULT($with_sysctl)
 
-AC_PATH_PROG([IP_PATH], [ip], /sbin/ip, [/usr/sbin:$PATH])
+AC_PATH_PROG([IP_PATH], [ip], /sbin/ip, [$LIBVIRT_SBIN_PATH])
 AC_DEFINE_UNQUOTED([IP_PATH], "$IP_PATH", [path to ip binary])
 
-AC_PATH_PROG([IPTABLES_PATH], [iptables], /sbin/iptables, [/usr/sbin:$PATH])
+AC_PATH_PROG([IPTABLES_PATH], [iptables], /sbin/iptables, [$LIBVIRT_SBIN_PATH])
 AC_DEFINE_UNQUOTED([IPTABLES_PATH], "$IPTABLES_PATH", [path to iptables binary])
 
-AC_PATH_PROG([IP6TABLES_PATH], [ip6tables], /sbin/ip6tables, [/usr/sbin:$PATH])
+AC_PATH_PROG([IP6TABLES_PATH], [ip6tables], /sbin/ip6tables, [$LIBVIRT_SBIN_PATH])
 AC_DEFINE_UNQUOTED([IP6TABLES_PATH], "$IP6TABLES_PATH", [path to ip6tables binary])
 
-AC_PATH_PROG([EBTABLES_PATH], [ebtables], /sbin/ebtables, [/usr/sbin:$PATH])
+AC_PATH_PROG([EBTABLES_PATH], [ebtables], /sbin/ebtables, [$LIBVIRT_SBIN_PATH])
 AC_DEFINE_UNQUOTED([EBTABLES_PATH], "$EBTABLES_PATH", [path to ebtables binary])
 
 
@@ -1192,7 +1194,7 @@ if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
   dnl but we use existence of pkcheck binary as a sign that
   dnl we should prefer polkit-1 over polkit-0, so we check
   dnl for it even though we don't ultimately use it
-  AC_PATH_PROG([PKCHECK_PATH],[pkcheck], [], [/usr/sbin:$PATH])
+  AC_PATH_PROG([PKCHECK_PATH],[pkcheck], [], [$LIBVIRT_SBIN_PATH])
   if test "x$PKCHECK_PATH" != "x" ; then
     dnl Found pkcheck, so ensure dbus-devel is present
     if test "x$with_dbus" = "xyes" ; then
@@ -1367,7 +1369,7 @@ AC_ARG_WITH([dtrace],
   [with_dtrace=check])
 
 if test "$with_dtrace" != "no" ; then
-  AC_PATH_PROG([DTRACE], [dtrace], [], [/bin:/usr/bin])
+  AC_PATH_PROG([DTRACE], [dtrace], [], [$LIBVIRT_SBIN_PATH])
   if test -z "$DTRACE" ; then
     if test "$with_dtrace" = "check"; then
       with_dtrace=no
@@ -1394,7 +1396,7 @@ AC_ARG_WITH([numad],
 if test "$with_numad" != "no" ; then
   fail=0
 
-  AC_PATH_PROG([NUMAD], [numad], [], [/bin:/usr/bin:/usr/sbin])
+  AC_PATH_PROG([NUMAD], [numad], [], [$LIBVIRT_SBIN_PATH])
 
   if test "$with_numad" = "check"; then
     test "$with_numactl" = "yes" || fail=1
@@ -1623,9 +1625,9 @@ if test "$with_storage_fs" = "yes" || test "$with_storage_fs" = "check"; then
 fi
 
 if test "$with_storage_fs" = "yes" || test "$with_storage_fs" = "check"; then
-  AC_PATH_PROG([MOUNT], [mount], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([UMOUNT], [umount], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([MKFS], [mkfs], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROG([MOUNT], [mount], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([UMOUNT], [umount], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([MKFS], [mkfs], [], [$LIBVIRT_SBIN_PATH])
   if test "$with_storage_fs" = "yes" ; then
     if test -z "$MOUNT" ; then AC_MSG_ERROR([We need mount for FS storage driver]) ; fi
     if test -z "$UMOUNT" ; then AC_MSG_ERROR([We need umount for FS storage driver]) ; fi
@@ -1650,24 +1652,24 @@ if test "$with_storage_fs" = "yes" || test "$with_storage_fs" = "check"; then
 fi
 AM_CONDITIONAL([WITH_STORAGE_FS], [test "$with_storage_fs" = "yes"])
 if test "$with_storage_fs" = "yes"; then
-  AC_PATH_PROG([SHOWMOUNT], [showmount], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROG([SHOWMOUNT], [showmount], [], [$LIBVIRT_SBIN_PATH])
   AC_DEFINE_UNQUOTED([SHOWMOUNT], ["$SHOWMOUNT"],
     [Location or name of the showmount program])
 fi
 
 if test "$with_storage_lvm" = "yes" || test "$with_storage_lvm" = "check"; then
-  AC_PATH_PROG([PVCREATE], [pvcreate], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([VGCREATE], [vgcreate], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([LVCREATE], [lvcreate], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([PVREMOVE], [pvremove], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([VGREMOVE], [vgremove], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([LVREMOVE], [lvremove], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([LVCHANGE], [lvchange], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([VGCHANGE], [vgchange], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([VGSCAN], [vgscan], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([PVS], [pvs], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([VGS], [vgs], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([LVS], [lvs], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROG([PVCREATE], [pvcreate], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([VGCREATE], [vgcreate], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([LVCREATE], [lvcreate], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([PVREMOVE], [pvremove], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([VGREMOVE], [vgremove], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([LVREMOVE], [lvremove], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([LVCHANGE], [lvchange], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([VGCHANGE], [vgchange], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([VGSCAN], [vgscan], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([PVS], [pvs], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([VGS], [vgs], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([LVS], [lvs], [], [$LIBVIRT_SBIN_PATH])
 
   if test "$with_storage_lvm" = "yes" ; then
     if test -z "$PVCREATE" ; then AC_MSG_ERROR([We need pvcreate for LVM storage driver]) ; fi
@@ -1720,7 +1722,7 @@ AM_CONDITIONAL([WITH_STORAGE_LVM], [test "$with_storage_lvm" = "yes"])
 
 
 if test "$with_storage_iscsi" = "yes" || test "$with_storage_iscsi" = "check"; then
-  AC_PATH_PROG([ISCSIADM], [iscsiadm], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROG([ISCSIADM], [iscsiadm], [], [$LIBVIRT_SBIN_PATH])
   if test "$with_storage_iscsi" = "yes" ; then
     if test -z "$ISCSIADM" ; then AC_MSG_ERROR([We need iscsiadm for iSCSI storage driver]) ; fi
   else
@@ -1781,7 +1783,7 @@ AC_SUBST([LIBRBD_LIBS])
 
 if test "$with_storage_sheepdog" = "yes" ||
    test "$with_storage_sheepdog" = "check"; then
-  AC_PATH_PROGS([SHEEPDOGCLI], [collie dog], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROGS([SHEEPDOGCLI], [collie dog], [], [$LIBVIRT_SBIN_PATH])
 
   if test "$with_storage_sheepdog" = "yes"; then
     if test -z "$SHEEPDOGCLI"; then
@@ -1820,8 +1822,8 @@ AM_CONDITIONAL([WITH_STORAGE_GLUSTER], [test "$with_storage_gluster" = "yes"])
 
 if test "$with_storage_zfs" = "yes" ||
    test "$with_storage_zfs" = "check"; then
-  AC_PATH_PROG([ZFS], [zfs], [], [$PATH:/sbin:/usr/sbin])
-  AC_PATH_PROG([ZPOOL], [zpool], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROG([ZFS], [zfs], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([ZPOOL], [zpool], [], [$LIBVIRT_SBIN_PATH])
 
   if test "$with_storage_zfs" = "yes"; then
     if test -z "$ZFS" || test -z "$ZPOOL"; then
@@ -1849,7 +1851,7 @@ AM_CONDITIONAL([WITH_STORAGE_ZFS],
 
 if test "$with_storage_fs" = "yes" ||
    test "$with_storage_gluster" = "yes"; then
-  AC_PATH_PROG([GLUSTER_CLI], [gluster], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROG([GLUSTER_CLI], [gluster], [], [$LIBVIRT_SBIN_PATH])
   if test "x$GLUSTER_CLI" != "x"; then
       AC_DEFINE_UNQUOTED([GLUSTER_CLI], ["$GLUSTER_CLI"],
         [Location or name of the gluster command line tool])
@@ -1860,7 +1862,7 @@ LIBPARTED_CFLAGS=
 LIBPARTED_LIBS=
 if test "$with_storage_disk" = "yes" ||
    test "$with_storage_disk" = "check"; then
-  AC_PATH_PROG([PARTED], [parted], [], [$PATH:/sbin:/usr/sbin])
+  AC_PATH_PROG([PARTED], [parted], [], [$LIBVIRT_SBIN_PATH])
   if test -z "$PARTED" ; then
     PARTED_FOUND=no
   else
