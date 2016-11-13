@@ -86,6 +86,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
     virCommandFree(cmd);
     virCommandFree(ldcmd);
     virDomainDefFree(vmdef);
+    virObjectUnref(conn);
     return ret;
 }
 
@@ -117,6 +118,8 @@ testCompareXMLToArgvHelper(const void *data)
  cleanup:
     VIR_FREE(xml);
     VIR_FREE(args);
+    VIR_FREE(ldargs);
+    VIR_FREE(dmargs);
     return ret;
 }
 
