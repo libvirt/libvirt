@@ -3615,19 +3615,6 @@ qemuDomainObjEnterMonitorAsync(virQEMUDriverPtr driver,
 }
 
 
-/**
- * qemuDomainGetAgent:
- * @vm: domain object
- *
- * Returns the agent pointer of @vm;
- */
-qemuAgentPtr
-qemuDomainGetAgent(virDomainObjPtr vm)
-{
-    return (((qemuDomainObjPrivatePtr)(vm->privateData))->agent);
-}
-
-
 /*
  * obj must be locked before calling
  *
@@ -3637,16 +3624,20 @@ qemuDomainGetAgent(virDomainObjPtr vm)
  *
  * To be followed with qemuDomainObjExitAgent() once complete
  */
-void
+qemuAgentPtr
 qemuDomainObjEnterAgent(virDomainObjPtr obj)
 {
     qemuDomainObjPrivatePtr priv = obj->privateData;
+    qemuAgentPtr agent = priv->agent;
 
     VIR_DEBUG("Entering agent (agent=%p vm=%p name=%s)",
               priv->agent, obj, obj->def->name);
-    virObjectLock(priv->agent);
-    virObjectRef(priv->agent);
+
+    virObjectLock(agent);
+    virObjectRef(agent);
     virObjectUnlock(obj);
+
+    return agent;
 }
 
 
@@ -3655,22 +3646,14 @@ qemuDomainObjEnterAgent(virDomainObjPtr obj)
  * Should be paired with an earlier qemuDomainObjEnterAgent() call
  */
 void
-qemuDomainObjExitAgent(virDomainObjPtr obj)
+qemuDomainObjExitAgent(virDomainObjPtr obj, qemuAgentPtr agent)
 {
-    qemuDomainObjPrivatePtr priv = obj->privateData;
-    bool hasRefs;
-
-    hasRefs = virObjectUnref(priv->agent);
-
-    if (hasRefs)
-        virObjectUnlock(priv->agent);
-
+    virObjectUnlock(agent);
+    virObjectUnref(agent);
     virObjectLock(obj);
-    VIR_DEBUG("Exited agent (agent=%p vm=%p name=%s)",
-              priv->agent, obj, obj->def->name);
 
-    if (!hasRefs)
-        priv->agent = NULL;
+    VIR_DEBUG("Exited agent (agent=%p vm=%p name=%s)",
+              agent, obj, obj->def->name);
 }
 
 void qemuDomainObjEnterRemote(virDomainObjPtr obj)

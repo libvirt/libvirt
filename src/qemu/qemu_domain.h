@@ -449,11 +449,10 @@ int qemuDomainObjEnterMonitorAsync(virQEMUDriverPtr driver,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 
-qemuAgentPtr qemuDomainGetAgent(virDomainObjPtr vm);
-void qemuDomainObjEnterAgent(virDomainObjPtr obj)
+qemuAgentPtr qemuDomainObjEnterAgent(virDomainObjPtr obj)
     ATTRIBUTE_NONNULL(1);
-void qemuDomainObjExitAgent(virDomainObjPtr obj)
-    ATTRIBUTE_NONNULL(1);
+void qemuDomainObjExitAgent(virDomainObjPtr obj, qemuAgentPtr agent)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 
 void qemuDomainObjEnterRemote(virDomainObjPtr obj)
