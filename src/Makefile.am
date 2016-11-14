@@ -42,7 +42,7 @@ AM_CFLAGS =	$(LIBXML_CFLAGS)				\
 		$(LOCK_CHECKING_CFLAGS)				\
 		$(WIN32_EXTRA_CFLAGS)				\
 		$(COVERAGE_CFLAGS)
-AM_LDFLAGS =	$(DRIVER_MODULE_LDFLAGS)			\
+AM_LDFLAGS =	$(DRIVER_MODULES_LDFLAGS)			\
 		$(COVERAGE_LDFLAGS)				\
 		$(RELRO_LDFLAGS)				\
 		$(NO_INDIRECT_LDFLAGS)				\
@@ -2248,7 +2248,7 @@ libvirt_la_LDFLAGS = \
 		$(NULL)
 libvirt_la_BUILT_LIBADD += ../gnulib/lib/libgnu.la
 libvirt_la_LIBADD += \
-		    $(DRIVER_MODULE_LIBS) \
+		    $(DRIVER_MODULES_LIBS) \
 		    $(CYGWIN_EXTRA_LIBADD)
 libvirt_la_CFLAGS = -DIN_LIBVIRT $(AM_CFLAGS)
 # Because we specify libvirt_la_DEPENDENCIES for $(LIBVIRT_SYMBOL_FILE), we

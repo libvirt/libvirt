@@ -1942,36 +1942,9 @@ esac
 AM_CONDITIONAL([WITH_WIN_ICON], [test "$WINDRES" != ""])
 
 
-dnl Driver-Modules library
-LIBVIRT_ARG_WITH_ALT([DRIVER_MODULES], [build drivers as loadable modules],
-                     [check])
-
-if test "$with_libvirtd" = "no" ; then
-  with_driver_modules=no
-fi
-
-DRIVER_MODULE_CFLAGS=
-DRIVER_MODULE_LIBS=
-if test "$with_driver_modules" = "yes" || test "$with_driver_modules" = "check"; then
-  if test "$with_dlfcn" != "yes" || test "$with_dlopen" != "yes"; then
-    if test "$with_driver_modules" = "yes" ; then
-      AC_MSG_ERROR([You must have dlfcn.h / dlopen() support to build driver modules])
-    else
-      with_driver_modules=no
-    fi
-  else
-    with_driver_modules=yes
-  fi
-fi
-
-if test "$with_driver_modules" = "yes" ; then
-  DRIVER_MODULE_LDFLAGS="-export-dynamic"
-  DRIVER_MODULE_LIBS="$DLOPEN_LIBS"
-  AC_DEFINE_UNQUOTED([WITH_DRIVER_MODULES], 1, [whether to build drivers as modules])
-fi
-AM_CONDITIONAL([WITH_DRIVER_MODULES], [test "$with_driver_modules" != "no"])
-AC_SUBST([DRIVER_MODULE_LDFLAGS])
-AC_SUBST([DRIVER_MODULE_LIBS])
+dnl Driver-Modules library support
+LIBVIRT_ARG_DRIVER_MODULES
+LIBVIRT_CHECK_DRIVER_MODULES
 
 
 # Set LV_LIBTOOL_OBJDIR to "." or $lt_cv_objdir, depending on whether
@@ -2368,11 +2341,7 @@ AC_MSG_NOTICE([AppArmor: $with_secdriver_apparmor (install profiles: $with_appar
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Driver Loadable Modules])
 AC_MSG_NOTICE([])
-if test "$with_driver_modules" != "no" ; then
-AC_MSG_NOTICE([  dlopen: $DRIVER_MODULE_CFLAGS $DRIVER_MODULE_LIBS])
-else
-AC_MSG_NOTICE([  dlopen: no])
-fi
+LIBVIRT_RESULT_DRIVER_MODULES
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
