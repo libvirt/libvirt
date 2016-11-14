@@ -1702,6 +1702,9 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
     if (maxcpus == 0)
         maxcpus = vcpus;
 
+    if (maxcpus == 0)
+        goto syntax;
+
     if (virDomainDefSetVcpusMax(dom, maxcpus, xmlopt) < 0)
         goto error;
 
