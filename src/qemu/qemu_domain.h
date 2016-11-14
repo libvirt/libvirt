@@ -178,7 +178,6 @@ struct _qemuDomainObjPrivate {
 
     qemuAgentPtr agent;
     bool agentError;
-    unsigned long long agentStart;
 
     bool gotShutdown;
     bool beingDestroyed;
