@@ -28,11 +28,12 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
   LIBXL_CFLAGS=""
   LIBXL_FIRMWARE_DIR=""
   LIBXL_EXECBIN_DIR=""
+  LIBXL_API_VERSION="-DLIBXL_API_VERSION=0x040400"
 
   dnl search for libxl, aka libxenlight
   dnl Xen > 4.5 introduced a pkgconfig file, check for it first
   old_with_libxl="$with_libxl"
-  LIBVIRT_CHECK_PKG([LIBXL], [xenlight], [4.2.0], [true])
+  LIBVIRT_CHECK_PKG([LIBXL], [xenlight], [4.4.0], [true])
   if test "x$with_libxl" = "xyes" ; then
     LIBXL_FIRMWARE_DIR=$($PKG_CONFIG --variable xenfirmwaredir xenlight)
     LIBXL_EXECBIN_DIR=$($PKG_CONFIG --variable libexec_bin xenlight)
@@ -41,17 +42,22 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
   dnl pkgconfig file not found, fallback to lib probe
   if test "x$with_libxl" = "xno" ; then
     with_libxl="$old_with_libxl"
+
+    dnl LIBXL_API_VERSION 4.4.0 introduced a new parameter to
+    dnl libxl_domain_create_restore for specifying restore parameters.
+    dnl The libxl driver will make use of this new parameter for specifying
+    dnl the Xen migration stream version. Specify LIBXL_API_VERSION to trigger
+    dnl an error if there is too old xenlight
+    CFLAGS="$CFLAGS $LIBXL_API_VERSION"
     LIBVIRT_CHECK_LIB([LIBXL], [xenlight], [libxl_ctx_alloc], [libxl.h], [fail="1"])
+    CFLAGS="$old_CFLAGS"
+
     if test $fail = 1; then
-      AC_MSG_ERROR([You must install the libxl Library from Xen >= 4.2 to compile libxenlight driver with -lxl])
+      AC_MSG_ERROR([You must install the libxl Library from Xen >= 4.4 to compile libxenlight driver with -lxl])
     fi
   fi
 
-  dnl LIBXL_API_VERSION 4.4.0 introduced a new parameter to
-  dnl libxl_domain_create_restore for specifying restore parameters.
-  dnl The libxl driver will make use of this new parameter for specifying
-  dnl the Xen migration stream version.
-  LIBXL_CFLAGS="$LIBXL_CFLAGS -DLIBXL_API_VERSION=0x040400"
+  LIBXL_CFLAGS="$LIBXL_CFLAGS $LIBXL_API_VERSION"
   LIBS="$old_LIBS"
   CFLAGS="$old_CFLAGS"
 
