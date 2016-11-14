@@ -21,11 +21,7 @@ AC_DEFUN([LIBVIRT_CHECK_APPARMOR],[
   LIBVIRT_CHECK_LIB([APPARMOR], [apparmor],
                     [aa_change_profile], [sys/apparmor.h])
 
-  AC_ARG_WITH([apparmor_mount],
-    [AS_HELP_STRING([--with-apparmor-mount],
-                   [set AppArmor mount point @<:@default=check@:>@])],
-    [],
-    [with_apparmor_mount=check])
+  LIBVIRT_ARG_WITH_ALT([APPARMOR_MOUNT], [set AppArmor mount point], [check])
 
   if test "$with_apparmor" = "yes"; then
     AC_DEFINE_UNQUOTED([APPARMOR_DIR],

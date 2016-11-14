@@ -18,10 +18,9 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_NSS],[
-  AC_ARG_WITH([nss-plugin],
-    [AS_HELP_STRING([--with-nss-plugin],
-      [enable Name Service Switch plugin for resolving guest IP addresses])],
-      [], [with_nss_plugin=check])
+  LIBVIRT_ARG_WITH_ALT([NSS_PLUGIN],
+                       [enable Name Service Switch plugin for resolving guest
+                        IP addresses], [check])
 
   bsd_nss=no
   fail=0

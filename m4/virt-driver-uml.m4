@@ -18,10 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_UML],[
-    AC_ARG_WITH([uml],
-      [AS_HELP_STRING([--with-uml],
-        [add UML support @<:@default=check@:>@])])
-    m4_divert_text([DEFAULTS], [with_uml=check])
+    LIBVIRT_ARG_WITH([UML], [UML], [check])
 
     if test "$with_libvirtd" = "no" || test "$with_linux" = "no"; then
         if test "$with_uml" = "yes"; then

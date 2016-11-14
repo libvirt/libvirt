@@ -96,14 +96,8 @@ AC_SUBST([LIBVIRT_VERSION])
 AC_SUBST([LIBVIRT_VERSION_INFO])
 AC_SUBST([LIBVIRT_VERSION_NUMBER])
 
-AC_ARG_WITH([packager],
-            [AS_HELP_STRING([--with-packager],
-                            [Extra packager name])],
-            [],[with_packager=no])
-AC_ARG_WITH([packager-version],
-            [AS_HELP_STRING([--with-packager-version],
-                            [Extra packager version])],
-            [],[with_packager_version=no])
+LIBVIRT_ARG_WITH_ALT([PACKAGER], [Extra packager name], [no])
+LIBVIRT_ARG_WITH_ALT([PACKAGER_VERSION], [Extra packager version], [no])
 if test "x$with_packager" != "xno"
 then
   AC_DEFINE_UNQUOTED([PACKAGER], ["$with_packager"],
@@ -416,24 +410,22 @@ LIBVIRT_CHECK_EXTERNAL_PROGRAMS
 
 
 dnl Specific dir for HTML output ?
-AC_ARG_WITH([html-dir], [AS_HELP_STRING([--with-html-dir=path],
-            [path to base html directory, default $datadir/doc/html])],
-            [HTML_DIR=$withval], [HTML_DIR='$(datadir)/doc'])
-
-AC_ARG_WITH([html-subdir], [AS_HELP_STRING([--with-html-subdir=path],
-            [directory used under html-dir, default $PACKAGE-$VERSION/html])],
-            [test "x$withval" != "x" && HTML_DIR="$HTML_DIR/$withval"],
-            [HTML_DIR="$HTML_DIR/\$(PACKAGE)-\$(VERSION)/html"])
+LIBVIRT_ARG_WITH_ALT([HTML_DIR], [path to base html directory],
+                     ['$(datadir)/doc'])
+LIBVIRT_ARG_WITH_ALT([HTML_SUBDIR], [directory used under html-dir],
+                     ['$(PACKAGE)-$(VERSION)/html'])
+if test "x$with_html_subdir" != "x" ; then
+  HTML_DIR="$with_html_dir/$with_html_subdir"
+else
+  HTML_DIR="$with_html_dir"
+fi
 AC_SUBST([HTML_DIR])
 
 dnl Specific XML catalog file for validation of generated html
-AC_ARG_WITH([xml-catalog-file],
-            [AS_HELP_STRING([--with-xml-catalog-file=path],
-                [path to XML catalog file for validating
-                 generated html, default /etc/xml/catalog])],
-            [XML_CATALOG_FILE=$withval],
-            [XML_CATALOG_FILE='/etc/xml/catalog'])
-AC_SUBST([XML_CATALOG_FILE])
+LIBVIRT_ARG_WITH_ALT([XML_CATALOG_FILE],
+                     [path to XML catalog file for validating generated html],
+                     ['/etc/xml/catalog'])
+AC_SUBST([XML_CATALOG_FILE], [$with_xml_catalog_file])
 
 dnl if --prefix is /usr, don't use /usr/var for localstatedir
 dnl or /usr/etc for sysconfdir
@@ -447,75 +439,27 @@ if test "$prefix" = "/usr" && test "$sysconfdir" = '${prefix}/etc' ; then
 fi
 
 dnl Allow to build without Xen, QEMU/KVM, test or remote driver
-AC_ARG_WITH([xen],
-  [AS_HELP_STRING([--with-xen],
-    [add XEN support @<:@default=check@:>@])])
-m4_divert_text([DEFAULTS], [with_xen=check])
-AC_ARG_WITH([xen-inotify],
-  [AS_HELP_STRING([--with-xen-inotify],
-    [add XEN inotify support @<:@default=check@:>@])])
-m4_divert_text([DEFAULTS], [with_xen_inotify=check])
-AC_ARG_WITH([qemu],
-  [AS_HELP_STRING([--with-qemu],
-    [add QEMU/KVM support @<:@default=yes@:>@])])
-m4_divert_text([DEFAULTS], [with_qemu=yes])
-AC_ARG_WITH([openvz],
-  [AS_HELP_STRING([--with-openvz],
-    [add OpenVZ support @<:@default=check@:>@])])
-m4_divert_text([DEFAULTS], [with_openvz=check])
-AC_ARG_WITH([vmware],
-  [AS_HELP_STRING([--with-vmware],
-    [add VMware support @<:@default=yes@:>@])])
-m4_divert_text([DEFAULTS], [with_vmware=yes])
-AC_ARG_WITH([phyp],
-  [AS_HELP_STRING([--with-phyp],
-    [add PHYP support @<:@default=check@:>@])])
-m4_divert_text([DEFAULTS], [with_phyp=check])
-AC_ARG_WITH([xenapi],
-  [AS_HELP_STRING([--with-xenapi],
-    [add XenAPI support @<:@default=check@:>@])])
-m4_divert_text([DEFAULTS], [with_xenapi=check])
-AC_ARG_WITH([libxl],
-  [AS_HELP_STRING([--with-libxl],
-    [add libxenlight support @<:@default=check@:>@])])
-m4_divert_text([DEFAULTS], [with_libxl=check])
-AC_ARG_WITH([vbox],
-  [AS_HELP_STRING([--with-vbox=@<:@PFX@:>@],
-    [VirtualBox XPCOMC location @<:@default=yes@:>@])])
-m4_divert_text([DEFAULTS], [with_vbox=yes])
-AC_ARG_WITH([lxc],
-  [AS_HELP_STRING([--with-lxc],
-    [add Linux Container support @<:@default=check@:>@])])
-m4_divert_text([DEFAULTS], [with_lxc=check])
-AC_ARG_WITH([esx],
-  [AS_HELP_STRING([--with-esx],
-    [add ESX support @<:@default=check@:>@])])
-m4_divert_text([DEFAULTS], [with_esx=check])
-AC_ARG_WITH([hyperv],
-  [AS_HELP_STRING([--with-hyperv],
-    [add Hyper-V support @<:@default=check@:>@])])
-m4_divert_text([DEFAULTS], [with_hyperv=check])
-AC_ARG_WITH([test],
-  [AS_HELP_STRING([--with-test],
-    [add test driver support @<:@default=yes@:>@])])
-m4_divert_text([DEFAULTS], [with_test=yes])
-AC_ARG_WITH([remote],
-  [AS_HELP_STRING([--with-remote],
-    [add remote driver support @<:@default=yes@:>@])])
-m4_divert_text([DEFAULTS], [with_remote=yes])
-AC_ARG_WITH([libvirtd],
-  [AS_HELP_STRING([--with-libvirtd],
-    [add libvirtd support @<:@default=yes@:>@])])
-m4_divert_text([DEFAULTS], [with_libvirtd=yes])
-AC_ARG_WITH([chrdev-lock-files],
-  [AS_HELP_STRING([--with-chrdev-lock-files],
-    [location for UUCP style lock files for character devices
-     (use auto for default paths on some platforms) @<:@default=auto@:>@])])
-m4_divert_text([DEFAULTS], [with_chrdev_lock_files=auto])
-AC_ARG_WITH([pm-utils],
-  [AS_HELP_STRING([--with-pm-utils],
-    [use pm-utils for power management @<:@default=yes@:>@])])
-m4_divert_text([DEFAULTS], [with_pm_utils=check])
+LIBVIRT_ARG_WITH([XEN], [XEN], [check])
+LIBVIRT_ARG_WITH([XEN_INOTIFY], [XEN inotify], [check])
+LIBVIRT_ARG_WITH([QEMU], [QEMU/KVM], [yes])
+LIBVIRT_ARG_WITH([OPENVZ], [OpenVZ], [check])
+LIBVIRT_ARG_WITH([VMWARE], [VMware], [yes])
+LIBVIRT_ARG_WITH([PHYP], [PHYP], [check])
+LIBVIRT_ARG_WITH([XENAPI], [XenAPI], [check])
+LIBVIRT_ARG_WITH([LIBXL], [libxenlight], [check])
+LIBVIRT_ARG_WITH([VBOX], [VirtualBox XPCOMC], [yes])
+LIBVIRT_ARG_WITH([LXC], [Linux Container], [check])
+LIBVIRT_ARG_WITH([ESX], [ESX], [check])
+LIBVIRT_ARG_WITH([HYPERV], [Hyper-V], [check])
+LIBVIRT_ARG_WITH([TEST], [test driver], [yes])
+LIBVIRT_ARG_WITH([REMOTE], [remote driver], [yes])
+LIBVIRT_ARG_WITH([LIBVIRTD], [libvirtd], [yes])
+
+LIBVIRT_ARG_WITH_ALT([CHRDEV_LOCK_FILES],
+                     [location for UUCP style lock files for character devices ]
+                       [(use auto for default paths on some platforms)],
+                     [auto])
+LIBVIRT_ARG_WITH_ALT([PM_UTILS], [use pm-utils for power management], [check])
 
 dnl
 dnl in case someone want to build static binaries
@@ -537,10 +481,7 @@ fi
 LIBVIRT_CHECK_INIT_SCRIPT
 
 AC_MSG_CHECKING([for whether to install sysctl config])
-AC_ARG_WITH([sysctl],
-            [AS_HELP_STRING([--with-sysctl@<:@=yes/no@:>@],
-               [Whether to install sysctl configs @<:@default=check@:>@])],
-            [],[with_sysctl=check])
+LIBVIRT_ARG_WITH_ALT([SYSCTL], [Whether to install sysctl configs], [check])
 
 if test "$with_sysctl" = "yes" || test "$with_sysctl" = "check"
 then
@@ -1033,16 +974,16 @@ LIBXML_CFLAGS=""
 LIBXML_LIBS=""
 LIBXML_FOUND="no"
 
-AC_ARG_WITH([libxml], [AS_HELP_STRING([--with-libxml=@<:@PFX@:>@],
-   [libxml2 location])])
+LIBVIRT_ARG_WITH_ALT([LIBXML], [libxml2 (>= 2.6.0) location], [check])
+
 if test "x$with_libxml" = "xno" ; then
     AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_REQUIRED)
     AC_MSG_ERROR([libxml2 >= $LIBXML_REQUIRED is required for libvirt])
-elif test "x$with_libxml" = "x" && test "x$PKG_CONFIG" != "x" ; then
+elif test "x$with_libxml" = "xcheck" && test "x$PKG_CONFIG" != "x" ; then
     PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_REQUIRED, [LIBXML_FOUND=yes], [LIBXML_FOUND=no])
 fi
 if test "$LIBXML_FOUND" = "no" ; then
-    if test "x$with_libxml" != "x" ; then
+    if test "x$with_libxml" != "xcheck" ; then
 	LIBXML_CONFIG=$with_libxml/bin/$LIBXML_CONFIG
     fi
     AC_MSG_CHECKING(libxml2 $LIBXML_CONFIG >= $LIBXML_REQUIRED )
@@ -1077,11 +1018,9 @@ CFLAGS="$old_CFLAGS"
 LIBS="$old_LIBS"
 
 
-AC_ARG_WITH([tls-priority],
-  [AS_HELP_STRING([--with-tls-priority],
-    [set the default TLS session priority string @<:@default=NORMAL@:>@])],
-  [],
-  [with_tls_priority=NORMAL])
+LIBVIRT_ARG_WITH_ALT([TLS_PRIORITY],
+                     [set the default TLS session priority string],
+                     [NORMAL])
 
 AC_DEFINE_UNQUOTED([TLS_PRIORITY], ["$with_tls_priority"],
 		   [TLS default priority string])
@@ -1091,11 +1030,8 @@ dnl PolicyKit library
 POLKIT_CFLAGS=
 POLKIT_LIBS=
 PKCHECK_PATH=
-AC_ARG_WITH([polkit],
-  [AS_HELP_STRING([--with-polkit],
-     [use PolicyKit for UNIX socket access checks @<:@default=check@:>@])],
-  [],
-  [with_polkit=check])
+LIBVIRT_ARG_WITH_ALT([POLKIT], [use PolicyKit for UNIX socket access checks],
+                     [check])
 
 with_polkit0=no
 with_polkit1=no
@@ -1162,11 +1098,8 @@ AC_SUBST([POLKIT_CFLAGS])
 AC_SUBST([POLKIT_LIBS])
 
 dnl firewalld
-AC_ARG_WITH([firewalld],
-  [AS_HELP_STRING([--with-firewalld],
-    [enable firewalld support @<:@default=check@:>@])],
-  [],
-  [with_firewalld=check])
+LIBVIRT_ARG_WITH([FIREWALLD], [firewalld], [check])
+
 if test "x$with_firewalld" = "xcheck" ; then
    with_firewalld=$with_dbus
 fi
@@ -1202,11 +1135,7 @@ fi
 AM_CONDITIONAL([VIR_CHRDEV_LOCK_FILE_PATH], [test "$with_chrdev_lock_files" != "no"])
 
 
-AC_ARG_WITH([secdriver-selinux],
-  [AS_HELP_STRING([--with-secdriver-selinux],
-    [use SELinux security driver @<:@default=check@:>@])],
-  [],
-  [with_secdriver_selinux=check])
+LIBVIRT_ARG_WITH_ALT([SECDRIVER_SELINUX], [use SELinux security driver], [check])
 
 if test "$with_selinux" != "yes" ; then
   if test "$with_secdriver_selinux" = "check" ; then
@@ -1242,11 +1171,7 @@ fi
 AM_CONDITIONAL([WITH_SECDRIVER_SELINUX], [test "$with_secdriver_selinux" != "no"])
 
 
-AC_ARG_WITH([secdriver-apparmor],
-  [AS_HELP_STRING([--with-secdriver-apparmor],
-    [use AppArmor security driver @<:@default=check@:>@])],
-  [],
-  [with_secdriver_apparmor=check])
+LIBVIRT_ARG_WITH_ALT([SECDRIVER_APPARMOR], [use AppArmor security driver], [check])
 
 if test "$with_apparmor" != "yes" ; then
   if test "$with_secdriver_apparmor" = "check" ; then
@@ -1261,22 +1186,14 @@ elif test "with_secdriver_apparmor" != "no" ; then
 fi
 AM_CONDITIONAL([WITH_SECDRIVER_APPARMOR], [test "$with_secdriver_apparmor" != "no"])
 
-AC_ARG_WITH([apparmor-profiles],
-  [AS_HELP_STRING([--with-apparmor-profiles],
-    [install apparmor profiles @<:@default=no@:>@])],
-  [with_apparmor_profiles=yes],
-  [with_apparmor_profiles=no])
+LIBVIRT_ARG_WITH_ALT([APPARMOR_PROFILES], [install apparmor profiles], [no])
 if test "$with_apparmor" = "no"; then
   with_apparmor_profiles="no"
 fi
 AM_CONDITIONAL([WITH_APPARMOR_PROFILES], [test "$with_apparmor_profiles" != "no"])
 
 dnl DTrace static probes
-AC_ARG_WITH([dtrace],
-  [AS_HELP_STRING([--with-dtrace],
-    [use dtrace for static probing @<:@default=check@:>@])],
-  [],
-  [with_dtrace=check])
+LIBVIRT_ARG_WITH_ALT([DTRACE], [use dtrace for static probing], [check])
 
 if test "$with_dtrace" != "no" ; then
   AC_PATH_PROG([DTRACE], [dtrace], [], [$LIBVIRT_SBIN_PATH])
@@ -1297,11 +1214,7 @@ AM_CONDITIONAL([WITH_DTRACE_PROBES], [test "$with_dtrace" != "no"])
 
 
 dnl numad
-AC_ARG_WITH([numad],
-  [AS_HELP_STRING([--with-numad],
-    [use numad to manage CPU placement dynamically @<:@default=check@:>@])],
-  [],
-  [with_numad=check])
+LIBVIRT_ARG_WITH_ALT([NUMAD], [use numad to manage CPU placement dynamically], [check])
 
 if test "$with_numad" != "no" ; then
   fail=0
@@ -1336,12 +1249,11 @@ LIBPCAP_CFLAGS=""
 LIBPCAP_LIBS=""
 LIBPCAP_FOUND="no"
 
-AC_ARG_WITH([libpcap], [AS_HELP_STRING([--with-libpcap=@<:@PFX@:>@],
-  [libpcap location])])
+LIBVIRT_ARG_WITH_ALT([LIBPCAP], [libpcap location], [check])
 if test "$with_qemu" = "yes"; then
   case $with_libpcap in
     no)     LIBPCAP_CONFIG= ;;
-    ''|yes) LIBPCAP_CONFIG="pcap-config" ;;
+    ''|yes|check) LIBPCAP_CONFIG="pcap-config" ;;
     *)      LIBPCAP_CONFIG="$with_libpcap/bin/pcap-config" ;;
   esac
   AS_IF([test "x$LIBPCAP_CONFIG" != "x"], [
@@ -1413,10 +1325,7 @@ AM_CONDITIONAL([WITH_PM_UTILS], [test "$with_pm_utils" = "yes"])
 
 dnl check if the network driver should be compiled
 
-AC_ARG_WITH([network],
-  [AS_HELP_STRING([--with-network],
-    [with virtual network driver @<:@default=yes@:>@])],
-  [],[with_network=yes])
+LIBVIRT_ARG_WITH_ALT([NETWORK], [with virtual network driver], [yes])
 
 dnl there's no use compiling the network driver without the libvirt
 dnl daemon, nor compiling it for MacOS X, where it breaks the compile
@@ -1438,10 +1347,7 @@ fi
 AM_CONDITIONAL([WITH_BRIDGE], [test "$with_bridge" = "yes"])
 
 
-AC_ARG_WITH([secrets],
-  [AS_HELP_STRING([--with-secrets],
-    [with local secrets management driver @<:@default=yes@:>@])],
-  [],[with_secrets=yes])
+LIBVIRT_ARG_WITH([SECRETS], [local secrets management driver], [yes])
 
 if test "$with_libvirtd" = "no"; then
   with_secrets=no
@@ -1452,51 +1358,17 @@ fi
 AM_CONDITIONAL([WITH_SECRETS], [test "$with_secrets" = "yes"])
 
 
-AC_ARG_WITH([storage-dir],
-  [AS_HELP_STRING([--with-storage-dir],
-    [with directory backend for the storage driver @<:@default=yes@:>@])],
-  [],[with_storage_dir=yes])
-AC_ARG_WITH([storage-fs],
-  [AS_HELP_STRING([--with-storage-fs],
-    [with FileSystem backend for the storage driver @<:@default=check@:>@])],
-  [],[with_storage_fs=check])
-AC_ARG_WITH([storage-lvm],
-  [AS_HELP_STRING([--with-storage-lvm],
-    [with LVM backend for the storage driver @<:@default=check@:>@])],
-  [],[with_storage_lvm=check])
-AC_ARG_WITH([storage-iscsi],
-  [AS_HELP_STRING([--with-storage-iscsi],
-    [with iSCSI backend for the storage driver @<:@default=check@:>@])],
-  [],[with_storage_iscsi=check])
-AC_ARG_WITH([storage-scsi],
-  [AS_HELP_STRING([--with-storage-scsi],
-    [with SCSI backend for the storage driver @<:@default=check@:>@])],
-  [],[with_storage_scsi=check])
-AC_ARG_WITH([storage-mpath],
-  [AS_HELP_STRING([--with-storage-mpath],
-    [with mpath backend for the storage driver @<:@default=check@:>@])],
-  [],[with_storage_mpath=check])
-AC_ARG_WITH([storage-disk],
-  [AS_HELP_STRING([--with-storage-disk],
-    [with GPartd Disk backend for the storage driver @<:@default=check@:>@])],
-  [],[with_storage_disk=check])
-AC_ARG_WITH([storage-rbd],
-  [AS_HELP_STRING([--with-storage-rbd],
-    [with RADOS Block Device backend for the storage driver
-     @<:@default=check@:>@])],
-  [],[with_storage_rbd=check])
-AC_ARG_WITH([storage-sheepdog],
-  [AS_HELP_STRING([--with-storage-sheepdog],
-    [with Sheepdog backend for the storage driver @<:@default=check@:>@])],
-  [],[with_storage_sheepdog=check])
-AC_ARG_WITH([storage-gluster],
-  [AS_HELP_STRING([--with-storage-gluster],
-    [with Gluster backend for the storage driver @<:@default=check@:>@])],
-  [],[with_storage_gluster=check])
-AC_ARG_WITH([storage-zfs],
-  [AS_HELP_STRING([--with-storage-zfs],
-    [with ZFS backend for the storage driver @<:@default=check@:>@])],
-  [],[with_storage_zfs=check])
+LIBVIRT_ARG_WITH([STORAGE_DIR], [directory backend for the storage driver], [yes])
+LIBVIRT_ARG_WITH([STORAGE_FS], [FileSystem backend for the storage driver], [check])
+LIBVIRT_ARG_WITH([STORAGE_LVM], [LVM backend for storage driver], [check])
+LIBVIRT_ARG_WITH([STORAGE_ISCSI], [iSCSI backend for the storage driver], [check])
+LIBVIRT_ARG_WITH([STORAGE_SCSI], [SCSI backend for the storage driver], [check])
+LIBVIRT_ARG_WITH([STORAGE_MPATH], [mpath backend for the storage driver], [check])
+LIBVIRT_ARG_WITH([STORAGE_DISK], [GPartd Disk backend for the storage driver], [check])
+LIBVIRT_ARG_WITH([STORAGE_RBD], [RADOS Block Device backend for the storage driver], [check])
+LIBVIRT_ARG_WITH([STORAGE_SHEEPDOG], [with Sheepdog backend for the storage driver], [check])
+LIBVIRT_ARG_WITH([STORAGE_GLUSTER], [Gluster backend for the storage driver], [check])
+LIBVIRT_ARG_WITH([STORAGE_ZFS], [ZFS backend for the storage driver], [check])
 
 if test "$with_libvirtd" = "no"; then
   with_storage_dir=no
@@ -1917,25 +1789,22 @@ if test -z "$PERL"; then
          AC_MSG_ERROR([Failed to find perl.])
 fi
 
-AC_ARG_WITH([test-suite],
-            [AS_HELP_STRING([--with-test-suite],
-               [build test suite by default @<:@default=check@:>@])],
-            [case "${withval}" in
-               yes|no|check) ;;
-               *)      AC_MSG_ERROR([bad value ${withval} for tests option]) ;;
-            esac],
-            [withval=check])
+LIBVIRT_ARG_WITH_ALT([TEST_SUITE], [build test suite by default], [check])
+case "$with_test_suite" in
+    yes|no|check) ;;
+    *) AC_MSG_ERROR([bad value ${withval} for tests option]) ;;
+esac
 
 AC_MSG_CHECKING([Whether to build test suite by default])
-if test "$withval" = "check" ; then
+if test "$with_test_suite" = "check" ; then
   if test -d $srcdir/.git ; then
-    withval=yes
+    with_test_suite=yes
   else
-    withval=no
+    with_test_suite=no
   fi
 fi
-AC_MSG_RESULT([$withval])
-AM_CONDITIONAL([WITH_TESTS], [test "$withval" = "yes"])
+AC_MSG_RESULT([$with_test_suite])
+AM_CONDITIONAL([WITH_TESTS], [test "$with_test_suite" = "yes"])
 
 AC_ARG_ENABLE([expensive-tests],
   [AS_HELP_STRING([--enable-expensive-tests],
@@ -2121,11 +1990,8 @@ AM_CONDITIONAL([WITH_WIN_ICON], [test "$WINDRES" != ""])
 
 
 dnl Driver-Modules library
-AC_ARG_WITH([driver-modules],
-  [AS_HELP_STRING([--with-driver-modules],
-    [build drivers as loadable modules @<:@default=check@:>@])],
-  [],
-  [with_driver_modules=check])
+LIBVIRT_ARG_WITH_ALT([DRIVER_MODULES], [build drivers as loadable modules],
+                     [check])
 
 if test "$with_libvirtd" = "no" ; then
   with_driver_modules=no
@@ -2187,10 +2053,7 @@ fi
 AM_CONDITIONAL([WITH_NWFILTER], [test "$with_nwfilter" = "yes"])
 
 dnl check if the interface driver should be compiled
-AC_ARG_WITH([interface],
-  [AS_HELP_STRING([--with-interface],
-    [with host interface driver @<:@default=check@:>@])],
-  [],[with_interface=check])
+LIBVIRT_ARG_WITH([INTERFACE], [host interface driver], [check])
 
 dnl Don't compile the interface driver without libvirtd
 if test "$with_libvirtd" = "no" ; then
@@ -2219,18 +2082,20 @@ else
   default_qemu_group=root
 fi
 
-AC_ARG_WITH([qemu-user],
-  [AS_HELP_STRING([--with-qemu-user],
-    [username to run QEMU system instance as
-     @<:@default=platform dependent@:>@])],
-  [QEMU_USER=${withval}],
-  [QEMU_USER=${default_qemu_user}])
-AC_ARG_WITH([qemu-group],
-  [AS_HELP_STRING([--with-qemu-group],
-    [groupname to run QEMU system instance as
-     @<:@default=platform dependent@:>@])],
-  [QEMU_GROUP=${withval}],
-  [QEMU_GROUP=${default_qemu_group}])
+LIBVIRT_ARG_WITH_ALT([QEMU_USER], [username to run QEMU system instance as],
+                     ['platform dependent'])
+LIBVIRT_ARG_WITH_ALT([QEMU_GROUP], [groupname to run QEMU system instance as],
+                     ['platform dependent'])
+if test "x$with_qemu_user" = "xplatform dependent" ; then
+    QEMU_USER="$default_qemu_user"
+else
+    QEMU_USER="$with_qemu_user"
+fi
+if test "x$with_qemu_group" = "xplatform dependent" ; then
+    QEMU_GROUP="$default_qemu_group"
+else
+    QEMU_GROUP="$with_qemu_group"
+fi
 AC_DEFINE_UNQUOTED([QEMU_USER], ["$QEMU_USER"], [QEMU user account])
 AC_DEFINE_UNQUOTED([QEMU_GROUP], ["$QEMU_GROUP"], [QEMU group account])
 
@@ -2238,11 +2103,7 @@ AC_PATH_PROG([QEMU_BRIDGE_HELPER], [qemu-bridge-helper], [/usr/libexec/qemu-brid
                   [/usr/libexec:/usr/lib/qemu:/usr/lib])
 AC_DEFINE_UNQUOTED([QEMU_BRIDGE_HELPER], ["$QEMU_BRIDGE_HELPER"], [QEMU bridge helper])
 
-AC_ARG_WITH([macvtap],
-  [AS_HELP_STRING([--with-macvtap],
-    [enable macvtap device @<:@default=check@:>@])],
-  [with_macvtap=${withval}],
-  [with_macvtap=check])
+LIBVIRT_ARG_WITH_ALT([MACVTAP], [enable macvtap device], [check])
 
 AC_MSG_CHECKING([whether to compile with macvtap support])
 if test "$with_macvtap" != "no" ; then
@@ -2272,11 +2133,7 @@ if test "$with_macvtap" = yes; then
 fi
 
 
-AC_ARG_WITH([virtualport],
-  [AS_HELP_STRING([--with-virtualport],
-    [enable virtual port support @<:@default=check@:>@])],
-  [with_virtualport=${withval}],
-  [with_virtualport=check])
+LIBVIRT_ARG_WITH_ALT([VIRTUALPORT], [enable virtual port support], [check])
 
 dnl Warn the user and error out if they requested virtualport support with configure
 dnl options, but the required macvtap support isn't available
@@ -2467,30 +2324,22 @@ test "x$lv_cv_static_analysis" = xyes && t=1
 AC_DEFINE_UNQUOTED([STATIC_ANALYSIS], [$t],
   [Define to 1 when performing static analysis.])
 
-AC_ARG_WITH([default-editor],
-  [AS_HELP_STRING([--with-default-editor],
-    [Editor to use for interactive commands
-     @<:@default=vi@:>@])],
-  [DEFAULT_EDITOR=${withval}],
-  [DEFAULT_EDITOR=vi])
-AC_DEFINE_UNQUOTED([DEFAULT_EDITOR], ["$DEFAULT_EDITOR"], [Default editor to use])
+LIBVIRT_ARG_WITH_ALT([DEFAULT_EDITOR], [Editor to use for interactive commands], [vi])
+AC_DEFINE_UNQUOTED([DEFAULT_EDITOR], ["$with_default_editor"], [Default editor to use])
 
-AC_ARG_WITH([loader-nvram],
-  [AS_HELP_STRING([--with-loader-nvram],
-    [Pass list of pairs of <loader>:<nvram> paths. Both
-     pairs and list items are separated by a colon.
-     @<:default=paths to OVMF and its clones@:>@])],
-     [if test "$withval" = "no"; then
-        withval=""
-      else
-        l=`echo $withval | tr ':' '\n' | wc -l`
-        if test "`expr $l % 2`" -ne 0; then
-            AC_MSG_ERROR([Malformed --with-loader-nvram argument])
-        fi
-      fi
-      AC_DEFINE_UNQUOTED([DEFAULT_LOADER_NVRAM],
-                          ["$withval"],
-                          [List of loader:nvram pairs])])
+LIBVIRT_ARG_WITH_ALT([LOADER_NVRAM],
+                     [Pass list of pairs of <loader>:<nvram> paths.
+                      Both pairs and list items are separated by a colon.],
+                     [''])
+if test "x$with_loader_nvram" != "xno" && \
+   test "x$with_loader_nvram" != "x" ; then
+    l=$(echo $with_loader_nvram | tr ':' '\n' | wc -l)
+    if test $(expr $l % 2) -ne 0 ; then
+        AC_MSG_ERROR([Malformed --with-loader-nvram argument])
+    fi
+    AC_DEFINE_UNQUOTED([DEFAULT_LOADER_NVRAM], [$with_loader_nvram],
+                       [List of loader:nvram pairs])
+fi
 
 # Some GNULIB base64 symbols clash with a kerberos library
 AC_DEFINE_UNQUOTED([isbase64],[libvirt_gl_isbase64],[Hack to avoid symbol clash])
@@ -2669,10 +2518,10 @@ AC_MSG_NOTICE([       Use -Werror: $set_werror])
 AC_MSG_NOTICE([     Warning Flags: $WARN_CFLAGS])
 AC_MSG_NOTICE([            DTrace: $with_dtrace])
 AC_MSG_NOTICE([             numad: $with_numad])
-AC_MSG_NOTICE([       XML Catalog: $XML_CATALOG_FILE])
+AC_MSG_NOTICE([       XML Catalog: $with_xml_catalog_file])
 LIBVIRT_RESULT_INIT_SCRIPT
 AC_MSG_NOTICE([ Char device locks: $with_chrdev_lock_files])
-AC_MSG_NOTICE([    Default Editor: $DEFAULT_EDITOR])
+AC_MSG_NOTICE([    Default Editor: $with_default_editor])
 AC_MSG_NOTICE([      Loader/NVRAM: $with_loader_nvram])
 LIBVIRT_RESULT_LOGIN_SHELL
 LIBVIRT_RESULT_HOST_VALIDATE

@@ -16,10 +16,7 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
 AC_DEFUN([LIBVIRT_CHECK_HOST_VALIDATE], [
-  AC_ARG_WITH([host_validate],
-    [AS_HELP_STRING([--with-host-validate],
-      [build virt-host-validate @<:@default=check@:>@])])
-  m4_divert_text([DEFAULTS], [with_host_validate=check])
+  LIBVIRT_ARG_WITH_ALT([HOST_VALIDATE], [build virt-host-validate], [check])
 
   if test "x$with_host_validate" != "xno"; then
     if test "x$with_win" = "xyes"; then

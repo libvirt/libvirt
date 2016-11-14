@@ -18,10 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_VZ],[
-    AC_ARG_WITH([vz],
-      [AS_HELP_STRING([--with-vz],
-        [add Virtuozzo support @<:@default=check@:>@])])
-    m4_divert_text([DEFAULTS], [with_vz=check])
+    LIBVIRT_ARG_WITH([VZ], [Virtuozzo], [check])
 
     if test "$with_vz" = "yes" ||
        test "$with_vz" = "check"; then

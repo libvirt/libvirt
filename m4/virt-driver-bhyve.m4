@@ -18,10 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_BHYVE],[
-    AC_ARG_WITH([bhyve],
-      [AS_HELP_STRING([--with-bhyve],
-        [add BHyVe support @<:@default=check@:>@])])
-    m4_divert_text([DEFAULTS], [with_bhyve=check])
+    LIBVIRT_ARG_WITH([BHYVE], [BHyVe], [check])
 
     if test "$with_bhyve" != "no"; then
         AC_PATH_PROG([BHYVE], [bhyve], [], [$PATH:/usr/sbin])

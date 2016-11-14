@@ -16,10 +16,7 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
 AC_DEFUN([LIBVIRT_CHECK_LOGIN_SHELL], [
-  AC_ARG_WITH([login_shell],
-    [AS_HELP_STRING([--with-login-shell],
-      [build virt-login-shell @<:@default=check@:>@])])
-  m4_divert_text([DEFAULTS], [with_login_shell=check])
+  LIBVIRT_ARG_WITH_ALT([LOGIN_SHELL], [build virt-login-shell], [check])
 
   if test "x$with_login_shell" != "xno"; then
     if test "x$with_linux" != "xyes"; then

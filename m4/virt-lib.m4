@@ -54,19 +54,14 @@ AC_DEFUN([LIBVIRT_CHECK_LIB],[
   m4_pushdef([header_name], [$4])
 
   m4_pushdef([check_name_lc], m4_tolower(check_name))
-  m4_pushdef([check_name_dash], m4_translit(check_name_lc, [_], [-]))
 
   m4_pushdef([config_var], [WITH_]check_name)
   m4_pushdef([make_var], [WITH_]check_name)
   m4_pushdef([cflags_var], check_name[_CFLAGS])
   m4_pushdef([libs_var], check_name[_LIBS])
-  m4_pushdef([arg_var], [with-]check_name_dash)
   m4_pushdef([with_var], [with_]check_name_lc)
 
-  m4_divert_text([DEFAULTS], [with_var][=check])
-  AC_ARG_WITH(check_name_dash,
-    [AS_HELP_STRING([--arg_var],
-                    [with lib]]m4_dquote(library_name)[[ support @<:@default=check@:>@])])
+  LIBVIRT_ARG_WITH(check_name, library_name, [check])
 
   old_LIBS=$LIBS
   old_CFLAGS=$CFLAGS
@@ -121,13 +116,11 @@ AC_DEFUN([LIBVIRT_CHECK_LIB],[
   fi
 
   m4_popdef([with_var])
-  m4_popdef([arg_var])
   m4_popdef([libs_var])
   m4_popdef([cflags_var])
   m4_popdef([make_var])
   m4_popdef([config_var])
 
-  m4_popdef([check_name_dash])
   m4_popdef([check_name_lc])
 
   m4_popdef([header_name])
@@ -184,21 +177,16 @@ AC_DEFUN([LIBVIRT_CHECK_LIB_ALT],[
   m4_pushdef([header_name_alt], [$8])
 
   m4_pushdef([check_name_lc], m4_tolower(check_name))
-  m4_pushdef([check_name_dash], m4_translit(check_name_lc, [_], [-]))
 
   m4_pushdef([config_var], [WITH_]check_name)
   m4_pushdef([make_var], [WITH_]check_name)
   m4_pushdef([cflags_var], check_name[_CFLAGS])
   m4_pushdef([libs_var], check_name[_LIBS])
-  m4_pushdef([arg_var], [with-]check_name_dash)
   m4_pushdef([with_var], [with_]check_name_lc)
   m4_pushdef([config_var_alt], [WITH_]check_name_alt)
   m4_pushdef([make_var_alt], [WITH_]check_name_alt)
 
-  m4_divert_text([DEFAULTS], [with_var][=check])
-  AC_ARG_WITH(check_name_dash,
-    [AS_HELP_STRING([--arg_var],
-                    [with lib]]m4_dquote(library_name)[[ support @<:@default=check@:>@])])
+  LIBVIRT_ARG_WITH(check_name, library_name, [check])
 
   old_LIBS=$LIBS
   old_CFLAGS=$CFLAGS
@@ -269,14 +257,12 @@ AC_DEFUN([LIBVIRT_CHECK_LIB_ALT],[
   m4_popdef([make_var_alt])
   m4_popdef([config_var_alt])
   m4_popdef([with_var])
-  m4_popdef([arg_var])
   m4_popdef([libs_var])
   m4_popdef([cflags_var])
   m4_popdef([make_var])
   m4_popdef([config_var])
 
   m4_popdef([check_name_lc])
-  m4_popdef([check_name_dash])
 
   m4_popdef([header_name_alt])
   m4_popdef([function_name_alt])
@@ -314,19 +300,14 @@ AC_DEFUN([LIBVIRT_CHECK_PKG],[
   m4_pushdef([pc_version], [$3])
 
   m4_pushdef([check_name_lc], m4_tolower(check_name))
-  m4_pushdef([check_name_dash], m4_translit(check_name_lc, [_], [-]))
 
   m4_pushdef([config_var], [WITH_]check_name)
   m4_pushdef([make_var], [WITH_]check_name)
   m4_pushdef([cflags_var], check_name[_CFLAGS])
   m4_pushdef([libs_var], check_name[_LIBS])
-  m4_pushdef([arg_var], [with-]check_name_dash)
   m4_pushdef([with_var], [with_]check_name_lc)
 
-  m4_divert_text([DEFAULTS], [with_var][=check])
-  AC_ARG_WITH(check_name_dash,
-    [AS_HELP_STRING([--arg_var],
-                   [with ]]m4_dquote(pc_name)[[ (>= ]]m4_dquote(pc_version)[[) support @<:@default=check@:>@])])
+  LIBVIRT_ARG_WITH(check_name, pc_name, [check], pc_version)
 
   fail=0
   if test "x$with_var" != "xno" ; then
@@ -351,14 +332,12 @@ AC_DEFUN([LIBVIRT_CHECK_PKG],[
   AM_CONDITIONAL(make_var, [test "x$with_var" = "xyes"])
 
   m4_popdef([with_var])
-  m4_popdef([arg_var])
   m4_popdef([libs_var])
   m4_popdef([cflags_var])
   m4_popdef([make_var])
   m4_popdef([config_var])
 
   m4_popdef([check_name_lc])
-  m4_popdef([check_name_dash])
 
   m4_popdef([pc_version])
   m4_popdef([pc_name])

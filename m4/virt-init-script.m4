@@ -18,11 +18,9 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
-    AC_ARG_WITH([init-script],
-        [AS_HELP_STRING([--with-init-script@<:@=STYLE@:>@],
-        [Style of init script to install: redhat, systemd, systemd+redhat,
-         upstart, check, none @<:@default=check@:>@])],
-        [],[with_init_script=check])
+    LIBVIRT_ARG_WITH_ALT([INIT_SCRIPT],
+                         [Style of init script to install: redhat, systemd,
+                          systemd+redhat, upstart, check, none], [check])
 
     AC_MSG_CHECKING([for init script type])
 
