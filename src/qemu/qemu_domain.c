@@ -6909,6 +6909,53 @@ qemuDomainSetupDev(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuDomainSetupDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                    virDomainDiskDefPtr disk,
+                    const char *devPath)
+{
+    virStorageSourcePtr next;
+    char *dst = NULL;
+    int ret = -1;
+
+    for (next = disk->src; next; next = next->backingStore) {
+        if (!next->path || !virStorageSourceIsLocalStorage(next) ||
+            !STRPREFIX(next->path, "/dev")) {
+            /* Not creating device. Just continue. */
+            continue;
+        }
+
+        if (qemuDomainCreateDevice(next->path, devPath, false) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(dst);
+    return ret;
+}
+
+
+static int
+qemuDomainSetupAllDisks(virQEMUDriverPtr driver,
+                        virDomainObjPtr vm,
+                        const char *devPath)
+{
+    size_t i;
+    VIR_DEBUG("Setting up disks");
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        if (qemuDomainSetupDisk(driver,
+                                vm->def->disks[i],
+                                devPath) < 0)
+            return -1;
+    }
+
+    VIR_DEBUG("Setup all disks");
+    return 0;
+}
+
+
 int
 qemuDomainBuildNamespace(virQEMUDriverPtr driver,
                          virDomainObjPtr vm)
@@ -6946,6 +6993,9 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
             goto cleanup;
         }
     }
+
+    if (qemuDomainSetupAllDisks(driver, vm, devPath) < 0)
+        goto cleanup;
 
     if (mount(devPath, "/dev", NULL, mount_flags, NULL) < 0) {
         virReportSystemError(errno,
