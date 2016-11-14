@@ -3004,6 +3004,52 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
 }
 
 
+static int
+virQEMUCapsLoadCPUModels(virQEMUCapsPtr qemuCaps,
+                         xmlXPathContextPtr ctxt)
+{
+    xmlNodePtr *nodes = NULL;
+    char *str = NULL;
+    size_t i;
+    int n;
+    int ret = -1;
+
+    if ((n = virXPathNodeSet("./cpu", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to parse qemu capabilities cpus"));
+        goto cleanup;
+    }
+
+    if (n == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (!(qemuCaps->cpuDefinitions = virDomainCapsCPUModelsNew(n)))
+        goto cleanup;
+
+    for (i = 0; i < n; i++) {
+        if (!(str = virXMLPropString(nodes[i], "name"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing cpu name in QEMU capabilities cache"));
+            goto cleanup;
+        }
+
+        if (virDomainCapsCPUModelsAddSteal(qemuCaps->cpuDefinitions,
+                                           &str,
+                                           VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(nodes);
+    VIR_FREE(str);
+    return ret;
+}
+
+
 /*
  * Parsing a doc that looks like
  *
@@ -3132,30 +3178,8 @@ virQEMUCapsLoadCache(virCapsPtr caps,
     }
     VIR_FREE(str);
 
-    if ((n = virXPathNodeSet("./cpu", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to parse qemu capabilities cpus"));
+    if (virQEMUCapsLoadCPUModels(qemuCaps, ctxt) < 0)
         goto cleanup;
-    }
-    if (n > 0) {
-        if (!(qemuCaps->cpuDefinitions = virDomainCapsCPUModelsNew(n)))
-            goto cleanup;
-
-        for (i = 0; i < n; i++) {
-            if (!(str = virXMLPropString(nodes[i], "name"))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing cpu name in QEMU capabilities cache"));
-                goto cleanup;
-            }
-
-            if (virDomainCapsCPUModelsAddSteal(qemuCaps->cpuDefinitions,
-                                               &str,
-                                               VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
-                goto cleanup;
-        }
-    }
-    VIR_FREE(nodes);
-
 
     if ((n = virXPathNodeSet("./machine", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
