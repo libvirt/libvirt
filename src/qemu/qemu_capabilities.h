@@ -431,9 +431,11 @@ unsigned int virQEMUCapsGetVersion(virQEMUCapsPtr qemuCaps);
 const char *virQEMUCapsGetPackage(virQEMUCapsPtr qemuCaps);
 unsigned int virQEMUCapsGetKVMVersion(virQEMUCapsPtr qemuCaps);
 int virQEMUCapsAddCPUDefinitions(virQEMUCapsPtr qemuCaps,
+                                 virDomainVirtType type,
                                  const char **name,
                                  size_t count);
 int virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
+                                 virDomainVirtType type,
                                  char ***names,
                                  size_t *count);
 virCPUDefPtr virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps);

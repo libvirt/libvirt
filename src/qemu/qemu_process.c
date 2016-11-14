@@ -5076,7 +5076,8 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
                      virQEMUCapsGetHostModel(qemuCaps)) < 0)
         goto cleanup;
 
-    if (virQEMUCapsGetCPUDefinitions(qemuCaps, &models, &nmodels) < 0 ||
+    if (virQEMUCapsGetCPUDefinitions(qemuCaps, def->virtType,
+                                     &models, &nmodels) < 0 ||
         virCPUTranslate(def->os.arch, def->cpu,
                         (const char **) models, nmodels) < 0)
         goto cleanup;

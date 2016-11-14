@@ -167,36 +167,36 @@
   <kvmVersion>0</kvmVersion>
   <package></package>
   <arch>aarch64</arch>
-  <cpu name='pxa262'/>
-  <cpu name='pxa270-a0'/>
-  <cpu name='arm1136'/>
-  <cpu name='cortex-a15'/>
-  <cpu name='pxa260'/>
-  <cpu name='arm1136-r2'/>
-  <cpu name='pxa261'/>
-  <cpu name='pxa255'/>
-  <cpu name='arm926'/>
-  <cpu name='arm11mpcore'/>
-  <cpu name='pxa250'/>
-  <cpu name='ti925t'/>
-  <cpu name='cortex-a57'/>
-  <cpu name='sa1110'/>
-  <cpu name='arm1176'/>
-  <cpu name='cortex-a53'/>
-  <cpu name='sa1100'/>
-  <cpu name='pxa270-c5'/>
-  <cpu name='cortex-a9'/>
-  <cpu name='cortex-a8'/>
-  <cpu name='pxa270-c0'/>
-  <cpu name='arm1026'/>
-  <cpu name='pxa270-b1'/>
-  <cpu name='cortex-m3'/>
-  <cpu name='cortex-m4'/>
-  <cpu name='pxa270-b0'/>
-  <cpu name='arm946'/>
-  <cpu name='cortex-r5'/>
-  <cpu name='pxa270-a1'/>
-  <cpu name='pxa270'/>
+  <cpu type='tcg' name='pxa262'/>
+  <cpu type='tcg' name='pxa270-a0'/>
+  <cpu type='tcg' name='arm1136'/>
+  <cpu type='tcg' name='cortex-a15'/>
+  <cpu type='tcg' name='pxa260'/>
+  <cpu type='tcg' name='arm1136-r2'/>
+  <cpu type='tcg' name='pxa261'/>
+  <cpu type='tcg' name='pxa255'/>
+  <cpu type='tcg' name='arm926'/>
+  <cpu type='tcg' name='arm11mpcore'/>
+  <cpu type='tcg' name='pxa250'/>
+  <cpu type='tcg' name='ti925t'/>
+  <cpu type='tcg' name='cortex-a57'/>
+  <cpu type='tcg' name='sa1110'/>
+  <cpu type='tcg' name='arm1176'/>
+  <cpu type='tcg' name='cortex-a53'/>
+  <cpu type='tcg' name='sa1100'/>
+  <cpu type='tcg' name='pxa270-c5'/>
+  <cpu type='tcg' name='cortex-a9'/>
+  <cpu type='tcg' name='cortex-a8'/>
+  <cpu type='tcg' name='pxa270-c0'/>
+  <cpu type='tcg' name='arm1026'/>
+  <cpu type='tcg' name='pxa270-b1'/>
+  <cpu type='tcg' name='cortex-m3'/>
+  <cpu type='tcg' name='cortex-m4'/>
+  <cpu type='tcg' name='pxa270-b0'/>
+  <cpu type='tcg' name='arm946'/>
+  <cpu type='tcg' name='cortex-r5'/>
+  <cpu type='tcg' name='pxa270-a1'/>
+  <cpu type='tcg' name='pxa270'/>
   <machine name='integratorcp' maxCpus='1'/>
   <machine name='nuri' maxCpus='2'/>
   <machine name='verdex' maxCpus='1'/>

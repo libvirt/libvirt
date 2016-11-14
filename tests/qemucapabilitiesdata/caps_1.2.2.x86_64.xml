@@ -114,28 +114,28 @@
   <kvmVersion>0</kvmVersion>
   <package></package>
   <arch>x86_64</arch>
-  <cpu name='qemu64'/>
-  <cpu name='phenom'/>
-  <cpu name='core2duo'/>
-  <cpu name='kvm64'/>
-  <cpu name='qemu32'/>
-  <cpu name='kvm32'/>
-  <cpu name='coreduo'/>
-  <cpu name='486'/>
-  <cpu name='pentium'/>
-  <cpu name='pentium2'/>
-  <cpu name='pentium3'/>
-  <cpu name='athlon'/>
-  <cpu name='n270'/>
-  <cpu name='Conroe'/>
-  <cpu name='Penryn'/>
-  <cpu name='Nehalem'/>
-  <cpu name='Westmere'/>
-  <cpu name='SandyBridge'/>
-  <cpu name='Opteron_G1'/>
-  <cpu name='Opteron_G2'/>
-  <cpu name='Opteron_G3'/>
-  <cpu name='Opteron_G4'/>
+  <cpu type='tcg' name='qemu64'/>
+  <cpu type='tcg' name='phenom'/>
+  <cpu type='tcg' name='core2duo'/>
+  <cpu type='tcg' name='kvm64'/>
+  <cpu type='tcg' name='qemu32'/>
+  <cpu type='tcg' name='kvm32'/>
+  <cpu type='tcg' name='coreduo'/>
+  <cpu type='tcg' name='486'/>
+  <cpu type='tcg' name='pentium'/>
+  <cpu type='tcg' name='pentium2'/>
+  <cpu type='tcg' name='pentium3'/>
+  <cpu type='tcg' name='athlon'/>
+  <cpu type='tcg' name='n270'/>
+  <cpu type='tcg' name='Conroe'/>
+  <cpu type='tcg' name='Penryn'/>
+  <cpu type='tcg' name='Nehalem'/>
+  <cpu type='tcg' name='Westmere'/>
+  <cpu type='tcg' name='SandyBridge'/>
+  <cpu type='tcg' name='Opteron_G1'/>
+  <cpu type='tcg' name='Opteron_G2'/>
+  <cpu type='tcg' name='Opteron_G3'/>
+  <cpu type='tcg' name='Opteron_G4'/>
   <machine name='pc-1.2' alias='pc' maxCpus='0'/>
   <machine name='isapc' maxCpus='0'/>
   <machine name='pc-0.10' maxCpus='0'/>

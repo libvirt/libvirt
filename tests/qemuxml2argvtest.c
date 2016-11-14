@@ -302,20 +302,31 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
     };
 
     if (ARCH_IS_X86(arch)) {
-        if (virQEMUCapsAddCPUDefinitions(caps, x86Models,
+        if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, x86Models,
+                                         ARRAY_CARDINALITY(x86Models)) < 0 ||
+            virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU, x86Models,
                                          ARRAY_CARDINALITY(x86Models)) < 0)
             return -1;
 
-        if (!skipLegacy &&
-            virQEMUCapsAddCPUDefinitions(caps, x86LegacyModels,
-                                         ARRAY_CARDINALITY(x86LegacyModels)) < 0)
-            return -1;
+        if (!skipLegacy) {
+            if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM,
+                                             x86LegacyModels,
+                                             ARRAY_CARDINALITY(x86LegacyModels)) < 0 ||
+                virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU,
+                                             x86LegacyModels,
+                                             ARRAY_CARDINALITY(x86LegacyModels)) < 0)
+                return -1;
+        }
     } else if (ARCH_IS_ARM(arch)) {
-        if (virQEMUCapsAddCPUDefinitions(caps, armModels,
+        if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, armModels,
+                                         ARRAY_CARDINALITY(armModels)) < 0 ||
+            virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU, armModels,
                                          ARRAY_CARDINALITY(armModels)) < 0)
             return -1;
     } else if (ARCH_IS_PPC64(arch)) {
-        if (virQEMUCapsAddCPUDefinitions(caps, ppc64Models,
+        if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, ppc64Models,
+                                         ARRAY_CARDINALITY(ppc64Models)) < 0 ||
+            virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU, ppc64Models,
                                          ARRAY_CARDINALITY(ppc64Models)) < 0)
             return -1;
     }
