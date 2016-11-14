@@ -3294,6 +3294,21 @@ virQEMUCapsLoadCache(virCapsPtr caps,
 }
 
 
+static void
+virQEMUCapsFormatCPUModels(virQEMUCapsPtr qemuCaps,
+                           virBufferPtr buf)
+{
+    size_t i;
+
+    if (qemuCaps->cpuDefinitions) {
+        for (i = 0; i < qemuCaps->cpuDefinitions->nmodels; i++) {
+            virDomainCapsCPUModelPtr cpu = qemuCaps->cpuDefinitions->models + i;
+            virBufferEscapeString(buf, "<cpu name='%s'/>\n", cpu->name);
+        }
+    }
+}
+
+
 char *
 virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
                        time_t selfCTime,
@@ -3336,12 +3351,7 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
     virBufferAsprintf(&buf, "<arch>%s</arch>\n",
                       virArchToString(qemuCaps->arch));
 
-    if (qemuCaps->cpuDefinitions) {
-        for (i = 0; i < qemuCaps->cpuDefinitions->nmodels; i++) {
-            virDomainCapsCPUModelPtr cpu = qemuCaps->cpuDefinitions->models + i;
-            virBufferEscapeString(&buf, "<cpu name='%s'/>\n", cpu->name);
-        }
-    }
+    virQEMUCapsFormatCPUModels(qemuCaps, &buf);
 
     for (i = 0; i < qemuCaps->nmachineTypes; i++) {
         virBufferEscapeString(&buf, "<machine name='%s'",
