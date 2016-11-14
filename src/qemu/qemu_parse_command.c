@@ -1694,6 +1694,8 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
                 threads = n;
             else if (STREQ(kws[i], "maxcpus"))
                 maxcpus = n;
+            else if (STREQ(kws[i], "cpus"))
+                vcpus = n;
             else
                 goto syntax;
         }
