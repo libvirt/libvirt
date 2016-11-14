@@ -3199,6 +3199,7 @@ vzDomainMigratePerformP2P(virDomainObjPtr dom,
     virConnectPtr dconn = NULL;
     virTypedParameterPtr params = NULL;
     int ret = -1;
+    int maxparams = nparams;
 
     if (virTypedParamsCopy(&params, orig_params, nparams) < 0)
         return -1;
@@ -3208,6 +3209,10 @@ vzDomainMigratePerformP2P(virDomainObjPtr dom,
 
     if (!(dom_xml = vzDomainMigrateBeginStep(dom, driver, params, nparams,
                                              &cookieout, &cookieoutlen)))
+        goto done;
+
+    if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_MIGRATE_PARAM_DEST_XML, dom_xml) < 0)
         goto done;
 
     cookiein = cookieout;
