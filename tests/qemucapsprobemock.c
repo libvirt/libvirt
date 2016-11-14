@@ -77,10 +77,14 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
         char *p;
         bool skip = false;
 
-        if (first)
+        if (first) {
             first = false;
-        else
+        } else {
+            /* Ignore QMP greeting if it's not the first one */
+            if (virJSONValueObjectHasKey(value, "QMP"))
+                goto cleanup;
             putchar('\n');
+        }
 
         for (p = json; *p; p++) {
             if (skip && *p == '\n') {
@@ -92,6 +96,7 @@ qemuMonitorJSONIOProcessLine(qemuMonitorPtr mon,
         }
     }
 
+ cleanup:
     VIR_FREE(json);
     virJSONValueFree(value);
     return ret;
