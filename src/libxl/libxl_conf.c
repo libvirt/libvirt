@@ -747,6 +747,12 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
                 x_disk->format = LIBXL_DISK_FORMAT_RAW;
                 x_disk->backend = LIBXL_DISK_BACKEND_TAP;
                 break;
+#ifdef LIBXL_HAVE_QED
+            case VIR_STORAGE_FILE_QED:
+                x_disk->format = LIBXL_DISK_FORMAT_QED;
+                x_disk->backend = LIBXL_DISK_BACKEND_QDISK;
+                break;
+#endif
             default:
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("libxenlight does not support disk format %s "
@@ -764,6 +770,11 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
             case VIR_STORAGE_FILE_QCOW2:
                 x_disk->format = LIBXL_DISK_FORMAT_QCOW2;
                 break;
+#ifdef LIBXL_HAVE_QED
+            case VIR_STORAGE_FILE_QED:
+                x_disk->format = LIBXL_DISK_FORMAT_QED;
+                break;
+#endif
             case VIR_STORAGE_FILE_VHD:
                 x_disk->format = LIBXL_DISK_FORMAT_VHD;
                 break;

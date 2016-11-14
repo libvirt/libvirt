@@ -394,6 +394,12 @@ xenParseXLDisk(virConfPtr conf, virDomainDefPtr def)
                 case LIBXL_DISK_FORMAT_EMPTY:
                     break;
 
+#ifdef LIBXL_HAVE_QED
+                case LIBXL_DISK_FORMAT_QED:
+                    disk->src->format = VIR_STORAGE_FILE_QED;
+                    break;
+#endif
+
                 default:
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("disk image format not supported: %s"),
