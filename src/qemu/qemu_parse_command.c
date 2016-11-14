@@ -1701,18 +1701,6 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
         }
     }
 
-    if (maxcpus == 0)
-        maxcpus = vcpus;
-
-    if (maxcpus == 0)
-        goto syntax;
-
-    if (virDomainDefSetVcpusMax(dom, maxcpus, xmlopt) < 0)
-        goto error;
-
-    if (virDomainDefSetVcpus(dom, vcpus) < 0)
-        goto error;
-
     if (sockets && cores && threads) {
         virCPUDefPtr cpu;
 
@@ -1724,6 +1712,18 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
     } else if (sockets || cores || threads) {
         goto syntax;
     }
+
+    if (maxcpus == 0)
+        maxcpus = vcpus;
+
+    if (maxcpus == 0)
+        goto syntax;
+
+    if (virDomainDefSetVcpusMax(dom, maxcpus, xmlopt) < 0)
+        goto error;
+
+    if (virDomainDefSetVcpus(dom, vcpus) < 0)
+        goto error;
 
     ret = 0;
 
