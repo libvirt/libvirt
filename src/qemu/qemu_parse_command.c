@@ -1713,8 +1713,14 @@ qemuParseCommandLineSmp(virDomainDefPtr dom,
         goto syntax;
     }
 
-    if (maxcpus == 0)
-        maxcpus = vcpus;
+    if (maxcpus == 0) {
+        if (cores) {
+            if (virDomainDefGetVcpusTopology(dom, &maxcpus) < 0)
+                goto error;
+        } else {
+            maxcpus = vcpus;
+        }
+    }
 
     if (maxcpus == 0)
         goto syntax;
