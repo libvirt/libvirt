@@ -31,30 +31,19 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
 
   dnl search for libxl, aka libxenlight
   dnl Xen > 4.5 introduced a pkgconfig file, check for it first
-  fail=0
-  if test "$with_libxl" != "no" ; then
-    PKG_CHECK_MODULES([LIBXL], [xenlight], [
-      LIBXL_FIRMWARE_DIR=`$PKG_CONFIG --variable xenfirmwaredir xenlight`
-      LIBXL_EXECBIN_DIR=`$PKG_CONFIG --variable libexec_bin xenlight`
-      with_libxl=yes
-    ], [LIBXL_FOUND=no])
-    if test "$LIBXL_FOUND" = "no"; then
-      dnl No xenlight pkg-config file
-      if test "$with_libxl" != "yes" && test "$with_libxl" != "check" ; then
-        LIBXL_CFLAGS="-I$with_libxl/include"
-        LIBXL_LIBS="-L$with_libxl"
-      fi
-      CFLAGS="$CFLAGS $LIBXL_CFLAGS"
-      LIBS="$LIBS $LIBXL_LIBS"
-      AC_CHECK_LIB([xenlight], [libxl_ctx_alloc], [
-        with_libxl=yes
-        LIBXL_LIBS="$LIBXL_LIBS -lxenlight"
-      ],[
-        if test "$with_libxl" = "yes"; then
-          fail=1
-        fi
-        with_libxl=no
-      ])
+  old_with_libxl="$with_libxl"
+  LIBVIRT_CHECK_PKG([LIBXL], [xenlight], [4.2.0], [true])
+  if test "x$with_libxl" = "xyes" ; then
+    LIBXL_FIRMWARE_DIR=$($PKG_CONFIG --variable xenfirmwaredir xenlight)
+    LIBXL_EXECBIN_DIR=$($PKG_CONFIG --variable libexec_bin xenlight)
+  fi
+
+  dnl pkgconfig file not found, fallback to lib probe
+  if test "x$with_libxl" = "xno" ; then
+    with_libxl="$old_with_libxl"
+    LIBVIRT_CHECK_LIB([LIBXL], [xenlight], [libxl_ctx_alloc], [libxl.h], [fail="1"])
+    if test $fail = 1; then
+      AC_MSG_ERROR([You must install the libxl Library from Xen >= 4.2 to compile libxenlight driver with -lxl])
     fi
   fi
 
@@ -66,15 +55,10 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
   LIBS="$old_LIBS"
   CFLAGS="$old_CFLAGS"
 
-  if test $fail = 1; then
-    AC_MSG_ERROR([You must install the libxl Library from Xen >= 4.2 to compile libxenlight driver with -lxl])
-  fi
-
   if test "$with_libxl" = "yes"; then
     dnl If building with libxl, use the libxl utility header and lib too
     AC_CHECK_HEADERS([libxlutil.h])
     LIBXL_LIBS="$LIBXL_LIBS -lxlutil"
-    AC_DEFINE_UNQUOTED([WITH_LIBXL], 1, [whether libxenlight driver is enabled])
     if test "x$LIBXL_FIRMWARE_DIR" != "x"; then
       AC_DEFINE_UNQUOTED([LIBXL_FIRMWARE_DIR], ["$LIBXL_FIRMWARE_DIR"], [directory containing Xen firmware blobs])
     fi
@@ -90,7 +74,6 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
       LIBXL_LIBS="$LIBXL_LIBS -lxenctrl"
     ])
   fi
-  AM_CONDITIONAL([WITH_LIBXL], [test "$with_libxl" = "yes"])
 
   AC_SUBST([LIBXL_CFLAGS])
   AC_SUBST([LIBXL_LIBS])
