@@ -1062,19 +1062,8 @@ AM_CONDITIONAL([WITH_POLKIT1], [test "x$with_polkit1" = "xyes"])
 AC_SUBST([POLKIT_CFLAGS])
 AC_SUBST([POLKIT_LIBS])
 
-dnl firewalld
-LIBVIRT_ARG_WITH([FIREWALLD], [firewalld], [check])
-
-if test "x$with_firewalld" = "xcheck" ; then
-   with_firewalld=$with_dbus
-fi
-if test "x$with_firewalld" = "xyes" ; then
-  if test "x$with_dbus" != "xyes" ; then
-     AC_MSG_ERROR([You must have dbus enabled for firewalld support])
-  fi
-  AC_DEFINE_UNQUOTED([HAVE_FIREWALLD], [1], [whether firewalld support is enabled])
-fi
-AM_CONDITIONAL([HAVE_FIREWALLD], [test "x$with_firewalld" != "xno"])
+LIBVIRT_ARG_FIREWALLD
+LIBVIRT_CHECK_FIREWALLD
 
 
 dnl UUCP style file locks for character devices
@@ -2354,6 +2343,7 @@ LIBVIRT_RESULT_CAPNG
 LIBVIRT_RESULT_CURL
 LIBVIRT_RESULT_DBUS
 LIBVIRT_RESULT_DLOPEN
+LIBVIRT_RESULT_FIREWALLD
 LIBVIRT_RESULT_FUSE
 LIBVIRT_RESULT_GLUSTER
 LIBVIRT_RESULT_GNUTLS
@@ -2372,7 +2362,6 @@ LIBVIRT_RESULT_SELINUX
 LIBVIRT_RESULT_SSH2
 LIBVIRT_RESULT_UDEV
 LIBVIRT_RESULT_YAJL
-AC_MSG_NOTICE([firewalld: $with_firewalld])
 if test "$with_polkit" = "yes" ; then
 if test "$with_polkit0" = "yes" ; then
 AC_MSG_NOTICE([  polkit: $POLKIT_CFLAGS $POLKIT_LIBS (version 0)])
