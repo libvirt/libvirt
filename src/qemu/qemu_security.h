@@ -36,4 +36,12 @@ int qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
 void qemuSecurityRestoreAllLabel(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  bool migrated);
+
+int qemuSecuritySetDiskLabel(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             virDomainDiskDefPtr disk);
+
+int qemuSecurityRestoreDiskLabel(virQEMUDriverPtr driver,
+                                 virDomainObjPtr vm,
+                                 virDomainDiskDefPtr disk);
 #endif /* __QEMU_SECURITY_H__ */

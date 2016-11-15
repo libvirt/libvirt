@@ -34,6 +34,7 @@
 #include "qemu_hostdev.h"
 #include "qemu_interface.h"
 #include "qemu_process.h"
+#include "qemu_security.h"
 #include "domain_audit.h"
 #include "netdev_bandwidth_conf.h"
 #include "domain_nwfilter.h"
@@ -109,12 +110,14 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
                                 vm, disk) < 0)
         goto cleanup;
 
-    if (virSecurityManagerSetDiskLabel(driver->securityManager,
-                                       vm->def, disk) < 0)
+    if (qemuSecuritySetDiskLabel(driver, vm, disk) < 0)
         goto rollback_lock;
 
-    if (qemuSetupDiskCgroup(vm, disk) < 0)
+    if (qemuDomainNamespaceSetupDisk(driver, vm, disk) < 0)
         goto rollback_label;
+
+    if (qemuSetupDiskCgroup(vm, disk) < 0)
+        goto rollback_namespace;
 
     ret = 0;
     goto cleanup;
@@ -123,10 +126,13 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
     if (qemuTeardownDiskCgroup(vm, disk) < 0)
         VIR_WARN("Unable to tear down cgroup access on %s",
                  virDomainDiskGetSource(disk));
+ rollback_namespace:
+    if (qemuDomainNamespaceTeardownDisk(driver, vm, disk) < 0)
+        VIR_WARN("Unable to remove /dev entry for %s",
+                 virDomainDiskGetSource(disk));
 
  rollback_label:
-    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
-                                           vm->def, disk) < 0)
+    if (qemuSecurityRestoreDiskLabel(driver, vm, disk) < 0)
         VIR_WARN("Unable to restore security label on %s",
                  virDomainDiskGetSource(disk));
 
@@ -3588,8 +3594,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 
     qemuDomainReleaseDeviceAddress(vm, &disk->info, src);
 
-    if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
-                                           vm->def, disk) < 0)
+    if (qemuSecurityRestoreDiskLabel(driver, vm, disk) < 0)
         VIR_WARN("Unable to restore security label on %s", src);
 
     if (qemuTeardownDiskCgroup(vm, disk) < 0)
@@ -3597,6 +3602,9 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
 
     if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
         VIR_WARN("Unable to release lock on %s", src);
+
+    if (qemuDomainNamespaceTeardownDisk(driver, vm, disk) < 0)
+        VIR_WARN("Unable to remove /dev entry for %s", src);
 
     dev.type = VIR_DOMAIN_DEVICE_DISK;
     dev.data.disk = disk;

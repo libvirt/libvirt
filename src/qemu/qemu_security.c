@@ -130,3 +130,35 @@ qemuSecurityRestoreAllLabel(virQEMUDriverPtr driver,
                                           migrated);
     }
 }
+
+
+int
+qemuSecuritySetDiskLabel(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         virDomainDiskDefPtr disk)
+{
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT)) {
+        /* Already handled by namespace code. */
+        return 0;
+    }
+
+    return virSecurityManagerSetDiskLabel(driver->securityManager,
+                                          vm->def,
+                                          disk);
+}
+
+
+int
+qemuSecurityRestoreDiskLabel(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             virDomainDiskDefPtr disk)
+{
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT)) {
+        /* Already handled by namespace code. */
+        return 0;
+    }
+
+    return virSecurityManagerRestoreDiskLabel(driver->securityManager,
+                                              vm->def,
+                                              disk);
+}

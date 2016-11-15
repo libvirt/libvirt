@@ -57,6 +57,7 @@
 #include "qemu_process.h"
 #include "qemu_migration.h"
 #include "qemu_blockjob.h"
+#include "qemu_security.h"
 
 #include "virerror.h"
 #include "virlog.h"
@@ -16146,9 +16147,9 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
             disk->mirror->format != VIR_STORAGE_FILE_RAW &&
             (virDomainLockDiskAttach(driver->lockManager, cfg->uri, vm,
                                      disk) < 0 ||
+             qemuDomainNamespaceSetupDisk(driver, vm, disk) < 0 ||
              qemuSetupDiskCgroup(vm, disk) < 0 ||
-             virSecurityManagerSetDiskLabel(driver->securityManager, vm->def,
-                                            disk) < 0))
+             qemuSecuritySetDiskLabel(driver, vm, disk) < 0))
             goto cleanup;
 
         disk->src = oldsrc;

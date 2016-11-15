@@ -53,6 +53,11 @@
 
 #include "storage/storage_driver.h"
 
+#ifdef MAJOR_IN_MKDEV
+# include <sys/mkdev.h>
+#elif MAJOR_IN_SYSMACROS
+# include <sys/sysmacros.h>
+#endif
 #include <sys/time.h>
 #include <fcntl.h>
 #if defined(HAVE_SYS_MOUNT_H)
@@ -7459,4 +7464,213 @@ qemuDomainDeleteNamespace(virQEMUDriverPtr driver,
     virObjectUnref(cfg);
     virStringListFreeCount(devMountsPath, ndevMountsPath);
     VIR_FREE(devPath);
+}
+
+
+struct qemuDomainAttachDeviceMknodData {
+    virQEMUDriverPtr driver;
+    virDomainObjPtr vm;
+    virDomainDeviceDefPtr devDef;
+    const char *file;
+    struct stat sb;
+    void *acl;
+};
+
+
+static int
+qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
+                                  void *opaque)
+{
+    struct qemuDomainAttachDeviceMknodData *data = opaque;
+    int ret = -1;
+
+    virSecurityManagerPostFork(data->driver->securityManager);
+
+    if (virFileMakeParentPath(data->file) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create %s"), data->file);
+        goto cleanup;
+    }
+
+    VIR_DEBUG("Creating dev %s (%d,%d)",
+              data->file, major(data->sb.st_rdev), minor(data->sb.st_rdev));
+    if (mknod(data->file, data->sb.st_mode, data->sb.st_rdev) < 0) {
+        /* Because we are not removing devices on hotunplug, or
+         * we might be creating part of backing chain that
+         * already exist due to a different disk plugged to
+         * domain, accept EEXIST. */
+        if (errno != EEXIST) {
+            virReportSystemError(errno,
+                                 _("Unable to create device %s"),
+                                 data->file);
+            goto cleanup;
+        }
+    }
+
+    if (virFileSetACLs(data->file, data->acl) < 0 &&
+        errno != ENOTSUP) {
+        virReportSystemError(errno,
+                             _("Unable to set ACLs on %s"), data->file);
+        goto cleanup;
+    }
+
+    switch ((virDomainDeviceType) data->devDef->type) {
+    case VIR_DOMAIN_DEVICE_DISK: {
+        virDomainDiskDefPtr def = data->devDef->data.disk;
+        char *tmpsrc = def->src->path;
+        def->src->path = (char *) data->file;
+        if (virSecurityManagerSetDiskLabel(data->driver->securityManager,
+                                           data->vm->def, def) < 0) {
+            def->src->path = tmpsrc;
+            goto cleanup;
+        }
+        def->src->path = tmpsrc;
+    }   break;
+
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_NET:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected device type %d"),
+                       data->devDef->type);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    if (ret < 0)
+        unlink(data->file);
+    virFileFreeACLs(&data->acl);
+    return ret;
+}
+
+
+static int
+qemuDomainAttachDeviceMknod(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virDomainDeviceDefPtr devDef,
+                            const char *file)
+{
+    struct qemuDomainAttachDeviceMknodData data;
+    int ret = -1;
+
+    memset(&data, 0, sizeof(data));
+
+    data.driver = driver;
+    data.vm = vm;
+    data.devDef = devDef;
+    data.file = file;
+
+    if (stat(file, &data.sb) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to access %s"), file);
+        return ret;
+    }
+
+    if (virFileGetACLs(file, &data.acl) < 0 &&
+        errno != ENOTSUP) {
+        virReportSystemError(errno,
+                             _("Unable to get ACLs on %s"), file);
+        return ret;
+    }
+
+    if (virSecurityManagerPreFork(driver->securityManager) < 0)
+        goto cleanup;
+
+    if (virProcessRunInMountNamespace(vm->pid,
+                                      qemuDomainAttachDeviceMknodHelper,
+                                      &data) < 0) {
+        virSecurityManagerPostFork(driver->securityManager);
+        goto cleanup;
+    }
+
+    virSecurityManagerPostFork(driver->securityManager);
+
+    ret = 0;
+ cleanup:
+    virFileFreeACLs(&data.acl);
+    return 0;
+}
+
+
+int
+qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             virDomainDiskDefPtr disk)
+{
+    virDomainDeviceDef dev = {.type = VIR_DOMAIN_DEVICE_DISK, .data.disk = disk};
+    virStorageSourcePtr next;
+    const char *src = NULL;
+    struct stat sb;
+    int ret = -1;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
+    for (next = disk->src; next; next = next->backingStore) {
+        if (!next->path || !virStorageSourceIsBlockLocal(disk->src) ||
+            !STRPREFIX(next->path, "/dev")) {
+            /* Not creating device. Just continue. */
+            continue;
+        }
+
+        if (stat(next->path, &sb) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to access %s"), src);
+            goto cleanup;
+        }
+
+        if (!S_ISBLK(sb.st_mode)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Disk source %s must be a block device"),
+                           src);
+            goto cleanup;
+        }
+
+        if (qemuDomainAttachDeviceMknod(driver,
+                                        vm,
+                                        &dev,
+                                        next->path) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+int
+qemuDomainNamespaceTeardownDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                                virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                                virDomainDiskDefPtr disk ATTRIBUTE_UNUSED)
+{
+    /* While in hotplug case we create the whole backing chain,
+     * here we must limit ourselves. The disk we want to remove
+     * might be a part of backing chain of another disk.
+     * If you are reading these lines and have some spare time
+     * you can come up with and algorithm that checks for that.
+     * I don't, therefore: */
+    return 0;
 }
