@@ -337,6 +337,20 @@ virHostdevIsPCINetDevice(virDomainHostdevDefPtr hostdev)
 }
 
 
+/**
+ * virHostdevIsSCSIDevice:
+ * @hostdev: host device to check
+ *
+ * Returns true if @hostdev is a SCSI device, false otherwise.
+ */
+bool
+virHostdevIsSCSIDevice(virDomainHostdevDefPtr hostdev)
+{
+    return hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+        hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI;
+}
+
+
 static int
 virHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
                                    virNetDevVPortProfilePtr virtPort,

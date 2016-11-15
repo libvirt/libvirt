@@ -1677,6 +1677,7 @@ virHookPresent;
 
 # util/virhostdev.h
 virHostdevFindUSBDevice;
+virHostdevIsSCSIDevice;
 virHostdevManagerGetDefault;
 virHostdevPCINodeDeviceDetach;
 virHostdevPCINodeDeviceReAttach;
