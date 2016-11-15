@@ -7146,6 +7146,35 @@ qemuDomainSetupAllChardevs(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 }
 
 
+static int
+qemuDomainSetupTPM(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                   virDomainObjPtr vm,
+                   const char *devPath)
+{
+    virDomainTPMDefPtr dev = vm->def->tpm;
+
+    if (!dev)
+        return 0;
+
+    VIR_DEBUG("Setting up TPM");
+
+    switch (dev->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        if (qemuDomainCreateDevice(dev->data.passthrough.source.data.file.path,
+                                   devPath, false) < 0)
+            return -1;
+        break;
+
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        /* nada */
+        break;
+    }
+
+    VIR_DEBUG("Setup TPM");
+    return 0;
+}
+
+
 int
 qemuDomainBuildNamespace(virQEMUDriverPtr driver,
                          virDomainObjPtr vm)
@@ -7191,6 +7220,9 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (qemuDomainSetupAllChardevs(driver, vm, devPath) < 0)
+        goto cleanup;
+
+    if (qemuDomainSetupTPM(driver, vm, devPath) < 0)
         goto cleanup;
 
     if (mount(devPath, "/dev", NULL, mount_flags, NULL) < 0) {
