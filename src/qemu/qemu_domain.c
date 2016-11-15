@@ -4037,12 +4037,12 @@ void qemuDomainObjCheckHostdevTaint(virQEMUDriverPtr driver,
                                     virDomainHostdevDefPtr hostdev,
                                     qemuDomainLogContextPtr logCtxt)
 {
-    virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+    if (!(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+          hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
+        return;
 
-    if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
-        scsisrc->rawio == VIR_TRISTATE_BOOL_YES)
-            qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES,
-                               logCtxt);
+    if (hostdev->source.subsys.u.scsi.rawio == VIR_TRISTATE_BOOL_YES)
+        qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_HIGH_PRIVILEGES, logCtxt);
 }
 
 
