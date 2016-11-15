@@ -7221,6 +7221,46 @@ qemuDomainSetupAllInputs(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuDomainSetupRNG(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                   virDomainRNGDefPtr rng,
+                   const char *devPath)
+{
+    switch ((virDomainRNGBackend) rng->backend) {
+    case VIR_DOMAIN_RNG_BACKEND_RANDOM:
+        if (qemuDomainCreateDevice(rng->source.file, devPath, false) < 0)
+            return -1;
+
+    case VIR_DOMAIN_RNG_BACKEND_EGD:
+    case VIR_DOMAIN_RNG_BACKEND_LAST:
+        /* nada */
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainSetupAllRNGs(virQEMUDriverPtr driver,
+                       virDomainObjPtr vm,
+                       const char *devPath)
+{
+    size_t i;
+
+    VIR_DEBUG("Setting up RNGs");
+    for (i = 0; i < vm->def->nrngs; i++) {
+        if (qemuDomainSetupRNG(driver,
+                               vm->def->rngs[i],
+                               devPath) < 0)
+            return -1;
+    }
+
+    VIR_DEBUG("Setup all RNGs");
+    return 0;
+}
+
+
 int
 qemuDomainBuildNamespace(virQEMUDriverPtr driver,
                          virDomainObjPtr vm)
@@ -7272,6 +7312,9 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (qemuDomainSetupAllInputs(driver, vm, devPath) < 0)
+        goto cleanup;
+
+    if (qemuDomainSetupAllRNGs(driver, vm, devPath) < 0)
         goto cleanup;
 
     if (mount(devPath, "/dev", NULL, mount_flags, NULL) < 0) {
