@@ -76,4 +76,5 @@ int qemuCgroupEmulatorAllNodesAllow(virCgroupPtr cgroup,
                                     qemuCgroupEmulatorAllNodesDataPtr *data);
 void qemuCgroupEmulatorAllNodesRestore(qemuCgroupEmulatorAllNodesDataPtr data);
 
+extern const char *const defaultDeviceACL[];
 #endif /* __QEMU_CGROUP_H__ */
