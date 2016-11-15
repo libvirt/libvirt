@@ -7175,6 +7175,52 @@ qemuDomainSetupTPM(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 }
 
 
+static int
+qemuDomainSetupInput(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                     virDomainInputDefPtr input,
+                     const char *devPath)
+{
+    int ret = -1;
+
+    switch ((virDomainInputType) input->type) {
+    case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+        if (qemuDomainCreateDevice(input->source.evdev, devPath, false) < 0)
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+    case VIR_DOMAIN_INPUT_TYPE_TABLET:
+    case VIR_DOMAIN_INPUT_TYPE_KBD:
+    case VIR_DOMAIN_INPUT_TYPE_LAST:
+        /* nada */
+        break;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+static int
+qemuDomainSetupAllInputs(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm,
+                         const char *devPath)
+{
+    size_t i;
+
+    VIR_DEBUG("Setting up disks");
+    for (i = 0; i < vm->def->ninputs; i++) {
+        if (qemuDomainSetupInput(driver,
+                                 vm->def->inputs[i],
+                                 devPath) < 0)
+            return -1;
+    }
+    VIR_DEBUG("Setup all disks");
+    return 0;
+}
+
+
 int
 qemuDomainBuildNamespace(virQEMUDriverPtr driver,
                          virDomainObjPtr vm)
@@ -7223,6 +7269,9 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (qemuDomainSetupTPM(driver, vm, devPath) < 0)
+        goto cleanup;
+
+    if (qemuDomainSetupAllInputs(driver, vm, devPath) < 0)
         goto cleanup;
 
     if (mount(devPath, "/dev", NULL, mount_flags, NULL) < 0) {
