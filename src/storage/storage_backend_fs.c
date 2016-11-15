@@ -712,9 +712,17 @@ virStorageBackendExecuteMKFS(const char *device,
 
     cmd = virCommandNewArgList(MKFS, "-t", format, NULL);
 
-    /* use the force, otherwise mkfs.xfs won't overwrite existing fs */
+    /* use the force, otherwise mkfs.xfs won't overwrite existing fs.
+     * Similarly mkfs.ext2, mkfs.ext3, and mkfs.ext4 require supplying -F
+     * and mkfs.vfat uses -I */
     if (STREQ(format, "xfs"))
         virCommandAddArg(cmd, "-f");
+    else if (STREQ(format, "ext2") ||
+             STREQ(format, "ext3") ||
+             STREQ(format, "ext4"))
+        virCommandAddArg(cmd, "-F");
+    else if (STREQ(format, "vfat"))
+        virCommandAddArg(cmd, "-I");
 
     virCommandAddArg(cmd, device);
 
