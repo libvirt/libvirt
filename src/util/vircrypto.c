@@ -124,7 +124,7 @@ virCryptoHaveCipher(virCryptoCipher algorithm)
  *
  * Performs the AES gnutls encryption
  *
- * Same input as virCryptoEncryptData, except the algoritm is replaced
+ * Same input as virCryptoEncryptData, except the algorithm is replaced
  * by the specific gnutls algorithm.
  *
  * Encrypts the @data buffer using the @enckey and if available the @iv

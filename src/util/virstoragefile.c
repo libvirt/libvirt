@@ -2022,7 +2022,7 @@ virStorageSourceCopy(const virStorageSource *src,
  * virStorageSourceInitChainElement:
  * @newelem: New backing chain element disk source
  * @old: Existing top level disk source
- * @transferLabels: Transfer security lables.
+ * @transferLabels: Transfer security labels.
  *
  * Transfers relevant information from the existing disk source to the new
  * backing chain element if they weren't supplied so that labelling info

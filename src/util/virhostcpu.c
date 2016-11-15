@@ -655,7 +655,7 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
      * subcores alone will be online on the host for a subcore in the
      * host. Even though the actual threads per core for P8 processor is 8,
      * depending on the subcores_per_core = 1, 2 or 4, the threads per
-     * subcore will vary accordingly to 8, 4 and 2 repectively.
+     * subcore will vary accordingly to 8, 4 and 2 respectively.
      * So, On host threads_per_core what is arrived at from sysfs in the
      * current logic is actually the subcores_per_core. Threads per subcore
      * can only be obtained from the kvm device. For example, on P8 wih 1

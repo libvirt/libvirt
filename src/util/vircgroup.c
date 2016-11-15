@@ -2778,7 +2778,7 @@ virCgroupGetCpusetMemoryMigrate(virCgroupPtr group, bool *migrate)
  * @group: The cgroup to set cpuset.cpus for
  * @cpus: the cpus to set
  *
- * Retuens: 0 on success
+ * Returns: 0 on success
  */
 int
 virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus)
@@ -2796,7 +2796,7 @@ virCgroupSetCpusetCpus(virCgroupPtr group, const char *cpus)
  * @group: The cgroup to get cpuset.cpus for
  * @cpus: the cpus to get
  *
- * Retuens: 0 on success
+ * Returns: 0 on success
  */
 int
 virCgroupGetCpusetCpus(virCgroupPtr group, char **cpus)

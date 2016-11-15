@@ -512,7 +512,7 @@ virRotatingFileWriterAppend(virRotatingFileWriterPtr file,
  * If no file with a inode matching @inode currently
  * exists, then seeks to the start of the oldest
  * file, on the basis that the requested file has
- * probably been rotated out of existance
+ * probably been rotated out of existence
  */
 int
 virRotatingFileReaderSeek(virRotatingFileReaderPtr file,

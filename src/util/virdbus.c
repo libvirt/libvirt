@@ -1749,7 +1749,7 @@ int virDBusIsServiceEnabled(const char *name)
  * virDBusIsServiceRegistered
  * @name: service name
  *
- * Retruns 0 if service is registered, -1 on fatal error, or -2 if service is not registered
+ * Returns 0 if service is registered, -1 on fatal error, or -2 if service is not registered
  */
 int virDBusIsServiceRegistered(const char *name)
 {

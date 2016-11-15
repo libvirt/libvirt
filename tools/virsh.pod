@@ -1305,7 +1305,7 @@ a hint and the guest may not respect it). By increasing this value,
 the fstrim operation will complete more quickly for filesystems
 with badly fragmented free space, although not all blocks will
 be discarded.  The default value is zero, meaning "discard
-every free block". Moreover, a if user wants to trim only one mount
+every free block". Moreover, if a user wants to trim only one mount
 point, it can be specified via optional I<--mountpoint> parameter.
 
 =item B<domhostname> I<domain>

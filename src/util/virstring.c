@@ -1027,7 +1027,7 @@ virStringStripControlChars(char *str)
  * Capitalize the string with replacement of all '-' characters for '_'
  * characters. Caller frees the result.
  *
- * Returns 0 if src is NULL, 1 if capitalization was successfull, -1 on failure.
+ * Returns 0 if src is NULL, 1 if capitalization was successful, -1 on failure.
  */
 int
 virStringToUpper(char **dst, const char *src)

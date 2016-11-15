@@ -1364,7 +1364,7 @@ virTypedParamsRemoteFree(virTypedParameterRemotePtr remote_params_val,
  *    parameters for @params to hold, followed by an allocation of @params and
  *    a second call to the deserializer to actually retrieve the data.
  * 2) Newer APIs rely completely on the deserializer to allocate the right
- *    ammount of memory for @params to hold all the data obtained in
+ *    amount of memory for @params to hold all the data obtained in
  *    @remote_params.
  *
  * If used with model 1, two checks are performed, first one comparing the user

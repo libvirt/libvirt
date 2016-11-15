@@ -95,7 +95,7 @@ virXPathString(const char *xpath,
 /**
  * virXPathStringLimit:
  * @xpath: the XPath string to evaluate
- * @maxlen: maximum length permittred string
+ * @maxlen: maximum length permitted string
  * @ctxt: an XPath context
  *
  * Wrapper for virXPathString, which validates the length of the returned
