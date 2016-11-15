@@ -95,6 +95,29 @@ virStorageBackendDiskMakeDataVol(virStoragePoolObjPtr pool,
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid partition name '%s', expected '%s'"),
                        vol->name, partname);
+
+        /* Let's see if by chance parthelper created a name that won't be
+         * found later when we try to delete. We tell parthelper to add a 'p'
+         * to the output via the part_separator flag, but if devmapper has
+         * user_friendly_names set, the creation won't happen that way, thus
+         * our deletion will fail because the name we generated is wrong.
+         * Check for our conditions and see if the generated name is the
+         * same as StablePath returns and has the 'p' in it */
+        if (pool->def->source.devices[0].part_separator ==
+            VIR_TRISTATE_BOOL_YES &&
+            !virIsDevMapperDevice(vol->target.path) &&
+            STREQ(groups[0], vol->target.path) &&
+            (tmp = strrchr(groups[0], 'p'))) {
+
+            /* If we remove the 'p' from groups[0] and the resulting
+             * device is a devmapper device, then we know parthelper
+             * was told to create the wrong name based on the results.
+             * So just remove the 'p' from the vol->target.path too. */
+            memmove(tmp, tmp + 1, strlen(tmp));
+            if (virIsDevMapperDevice(groups[0]) &&
+                (tmp = strrchr(vol->target.path, 'p')))
+                memmove(tmp, tmp + 1, strlen(tmp));
+        }
         return -1;
     }
 
