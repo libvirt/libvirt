@@ -7114,6 +7114,38 @@ qemuDomainSetupAllHostdevs(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuDomainSetupChardev(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                       virDomainChrDefPtr dev,
+                       void *opaque)
+{
+    const char *devPath = opaque;
+
+    if (dev->source->type != VIR_DOMAIN_CHR_TYPE_DEV)
+        return 0;
+
+    return qemuDomainCreateDevice(dev->source->data.file.path, devPath, false);
+}
+
+
+static int
+qemuDomainSetupAllChardevs(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                           virDomainObjPtr vm,
+                           const char *devPath)
+{
+    VIR_DEBUG("Setting up chardevs");
+
+    if (virDomainChrDefForeach(vm->def,
+                               true,
+                               qemuDomainSetupChardev,
+                               (void *) devPath) < 0)
+        return -1;
+
+    VIR_DEBUG("Setup all chardevs");
+    return 0;
+}
+
+
 int
 qemuDomainBuildNamespace(virQEMUDriverPtr driver,
                          virDomainObjPtr vm)
@@ -7156,6 +7188,9 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (qemuDomainSetupAllHostdevs(driver, vm, devPath) < 0)
+        goto cleanup;
+
+    if (qemuDomainSetupAllChardevs(driver, vm, devPath) < 0)
         goto cleanup;
 
     if (mount(devPath, "/dev", NULL, mount_flags, NULL) < 0) {
