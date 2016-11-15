@@ -55,6 +55,9 @@
 
 #include <sys/time.h>
 #include <fcntl.h>
+#if defined(HAVE_SYS_MOUNT_H)
+# include <sys/mount.h>
+#endif
 
 #include <libxml/xpathInternals.h>
 
@@ -85,6 +88,20 @@ VIR_ENUM_IMPL(qemuDomainAsyncJob, QEMU_ASYNC_JOB_LAST,
               "snapshot",
               "start",
 );
+
+VIR_ENUM_IMPL(qemuDomainNamespace, QEMU_DOMAIN_NS_LAST,
+              "mount",
+);
+
+
+static struct {
+    const char *path;
+    const char *suffix;
+} devPreserveMounts[] = {
+    {"/dev/pts", "devpts"},
+    {"/dev/shm", "devshm"},
+    {"/dev/mqueue", "mqueue"},
+};
 
 
 struct _qemuDomainLogContext {
@@ -143,6 +160,70 @@ qemuDomainAsyncJobPhaseFromString(qemuDomainAsyncJob job,
         return 0;
     else
         return -1;
+}
+
+
+bool
+qemuDomainNamespaceEnabled(virDomainObjPtr vm,
+                           qemuDomainNamespace ns)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    return priv->namespaces &&
+        virBitmapIsBitSet(priv->namespaces, ns);
+}
+
+
+static int
+qemuDomainEnableNamespace(virDomainObjPtr vm,
+                          qemuDomainNamespace ns)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (!priv->namespaces &&
+        !(priv->namespaces = virBitmapNew(QEMU_DOMAIN_NS_LAST)))
+        return -1;
+
+    if (virBitmapSetBit(priv->namespaces, ns) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to enable namespace: %s"),
+                       qemuDomainNamespaceTypeToString(ns));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainGetPreservedMounts(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             char ***devMountsPath,
+                             size_t *ndevMountsPath)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    char **paths;
+    size_t i;
+
+    if (VIR_ALLOC_N(paths, ARRAY_CARDINALITY(devPreserveMounts)) < 0)
+        goto error;
+
+    for (i = 0; i < ARRAY_CARDINALITY(devPreserveMounts); i++) {
+        if (virAsprintf(&paths[i], "%s/%s.%s",
+                        cfg->stateDir, vm->def->name,
+                        devPreserveMounts[i].suffix) < 0)
+            goto error;
+    }
+
+    *devMountsPath = paths;
+    *ndevMountsPath = ARRAY_CARDINALITY(devPreserveMounts);
+    virObjectUnref(cfg);
+    return 0;
+
+ error:
+    virStringListFreeCount(paths, ARRAY_CARDINALITY(devPreserveMounts));
+    virObjectUnref(cfg);
+    return -1;
 }
 
 
@@ -1541,6 +1622,8 @@ qemuDomainObjPrivateFree(void *data)
 
     virObjectUnref(priv->qemuCaps);
 
+    virBitmapFree(priv->namespaces);
+
     virCgroupFree(&priv->cgroup);
     virDomainPCIAddressSetFree(priv->pciaddrs);
     virDomainUSBAddressSetFree(priv->usbaddrs);
@@ -1625,6 +1708,17 @@ qemuDomainObjPrivateXMLFormat(virBufferPtr buf,
             virBufferAddLit(buf, " json='1'");
         virBufferAsprintf(buf, " type='%s'/>\n",
                           virDomainChrTypeToString(priv->monConfig->type));
+    }
+
+    if (priv->namespaces) {
+        ssize_t ns = -1;
+
+        virBufferAddLit(buf, "<namespaces>\n");
+        virBufferAdjustIndent(buf, 2);
+        while ((ns = virBitmapNextSetBit(priv->namespaces, ns)) >= 0)
+            virBufferAsprintf(buf, "<%s/>\n", qemuDomainNamespaceTypeToString(ns));
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</namespaces>\n");
     }
 
     qemuDomainObjPrivateXMLFormatVcpus(buf, vm->def);
@@ -1771,6 +1865,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     int n;
     size_t i;
     xmlNodePtr *nodes = NULL;
+    xmlNodePtr node = NULL;
     virQEMUCapsPtr qemuCaps = NULL;
     virCapsPtr caps = NULL;
 
@@ -1807,6 +1902,30 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                        _("unsupported monitor type '%s'"),
                        virDomainChrTypeToString(priv->monConfig->type));
         goto error;
+    }
+
+    if ((node = virXPathNode("./namespaces", ctxt))) {
+        xmlNodePtr next;
+
+        for (next = node->children; next; next = next->next) {
+            int ns = qemuDomainNamespaceTypeFromString((const char *) next->name);
+
+            if (ns < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("malformed namespace name: %s"),
+                               next->name);
+                goto error;
+            }
+
+            if (qemuDomainEnableNamespace(vm, ns) < 0)
+                goto error;
+        }
+    }
+
+    if (priv->namespaces &&
+        virBitmapIsAllClear(priv->namespaces)) {
+        virBitmapFree(priv->namespaces);
+        priv->namespaces = NULL;
     }
 
     if ((n = virXPathNodeSet("./vcpus/vcpu", ctxt, &nodes)) < 0)
@@ -1959,10 +2078,12 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     return 0;
 
  error:
-    virDomainChrSourceDefFree(priv->monConfig);
-    priv->monConfig = NULL;
     VIR_FREE(nodes);
     VIR_FREE(tmp);
+    virBitmapFree(priv->namespaces);
+    priv->namespaces = NULL;
+    virDomainChrSourceDefFree(priv->monConfig);
+    priv->monConfig = NULL;
     virStringListFree(priv->qemuDevices);
     priv->qemuDevices = NULL;
     virObjectUnref(qemuCaps);
@@ -6652,4 +6773,320 @@ qemuDomainSupportsVideoVga(virDomainVideoDefPtr video,
         return false;
 
     return true;
+}
+
+
+static int
+qemuDomainCreateDevice(const char *device,
+                       const char *path,
+                       bool allow_noent)
+{
+    char *devicePath = NULL;
+    struct stat sb;
+    int ret = -1;
+
+    if (!STRPREFIX(device, "/dev")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid device: %s"),
+                       device);
+        goto cleanup;
+    }
+
+    if (virAsprintf(&devicePath, "%s/%s",
+                    path, device + 4) < 0)
+        goto cleanup;
+
+    if (stat(device, &sb) < 0) {
+        if (errno == ENOENT && allow_noent) {
+            /* Ignore non-existent device. */
+            ret = 0;
+            goto cleanup;
+        }
+
+        virReportSystemError(errno, _("Unable to stat %s"), device);
+        goto cleanup;
+    }
+
+    if (virFileMakeParentPath(devicePath) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to create %s"),
+                             devicePath);
+        goto cleanup;
+    }
+
+    if (mknod(devicePath, sb.st_mode, sb.st_rdev) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to make device %s"),
+                             devicePath);
+        goto cleanup;
+    }
+
+    if (chown(devicePath, sb.st_uid, sb.st_gid) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to chown device %s"),
+                             devicePath);
+        goto cleanup;
+    }
+
+    if (virFileCopyACLs(device, devicePath) < 0 &&
+        errno != ENOTSUP) {
+        virReportSystemError(errno,
+                             _("Failed to copy ACLs on device %s"),
+                             devicePath);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(devicePath);
+    return ret;
+}
+
+
+
+static int
+qemuDomainPopulateDevices(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm ATTRIBUTE_UNUSED,
+                          const char *path)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    const char *const *devices = (const char *const *) cfg->cgroupDeviceACL;
+    size_t i;
+    int ret = -1;
+
+    if (!devices)
+        devices = defaultDeviceACL;
+
+    for (i = 0; devices[i]; i++) {
+        if (qemuDomainCreateDevice(devices[i], path, true) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virObjectUnref(cfg);
+    return ret;
+}
+
+
+static int
+qemuDomainSetupDev(virQEMUDriverPtr driver,
+                   virDomainObjPtr vm,
+                   const char *path)
+{
+    char *mount_options = NULL;
+    char *opts = NULL;
+    int ret = -1;
+
+    VIR_DEBUG("Setting up /dev/ for domain %s", vm->def->name);
+
+    mount_options = virSecurityManagerGetMountOptions(driver->securityManager,
+                                                      vm->def);
+
+    if (!mount_options &&
+        VIR_STRDUP(mount_options, "") < 0)
+        goto cleanup;
+
+    /*
+     * tmpfs is limited to 64kb, since we only have device nodes in there
+     * and don't want to DOS the entire OS RAM usage
+     */
+    if (virAsprintf(&opts,
+                    "mode=755,size=65536%s", mount_options) < 0)
+        goto cleanup;
+
+    if (virFileSetupDev(path, opts) < 0)
+        goto cleanup;
+
+    if (qemuDomainPopulateDevices(driver, vm, path) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(opts);
+    VIR_FREE(mount_options);
+    return ret;
+}
+
+
+int
+qemuDomainBuildNamespace(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    const unsigned long mount_flags = MS_MOVE;
+    char *devPath = NULL;
+    char **devMountsPath = NULL;
+    size_t ndevMountsPath = 0, i;
+    int ret = -1;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (virAsprintf(&devPath, "%s/%s.dev",
+                    cfg->stateDir, vm->def->name) < 0)
+        goto cleanup;
+
+    if (qemuDomainGetPreservedMounts(driver, vm,
+                                     &devMountsPath, &ndevMountsPath) < 0)
+        goto cleanup;
+
+    if (qemuDomainSetupDev(driver, vm, devPath) < 0)
+        goto cleanup;
+
+    /* Save some mount points because we want to share them with the host */
+    for (i = 0; i < ndevMountsPath; i++) {
+        if (mount(devPreserveMounts[i].path, devMountsPath[i],
+                  NULL, mount_flags, NULL) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to move %s mount"),
+                                 devPreserveMounts[i].path);
+            goto cleanup;
+        }
+    }
+
+    if (mount(devPath, "/dev", NULL, mount_flags, NULL) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to mount %s on /dev"),
+                             devPath);
+        goto cleanup;
+    }
+
+    for (i = 0; i < ndevMountsPath; i++) {
+        if (virFileMakePath(devPreserveMounts[i].path) < 0) {
+            virReportSystemError(errno, _("Cannot create %s"),
+                                 devPreserveMounts[i].path);
+            goto cleanup;
+        }
+
+        if (mount(devMountsPath[i], devPreserveMounts[i].path,
+                  NULL, mount_flags, NULL) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to mount %s on %s"),
+                                 devMountsPath[i],
+                                 devPreserveMounts[i].path);
+            goto cleanup;
+        }
+    }
+
+    ret = 0;
+ cleanup:
+    virObjectUnref(cfg);
+    VIR_FREE(devPath);
+    virStringListFreeCount(devMountsPath, ndevMountsPath);
+    return ret;
+}
+
+
+#if defined(__linux__)
+int
+qemuDomainCreateNamespace(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int ret = -1;
+    char *devPath = NULL;
+    char **devMountsPath = NULL;
+    size_t ndevMountsPath = 0, i;
+
+    if (!virQEMUDriverIsPrivileged(driver)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (virAsprintf(&devPath, "%s/%s.dev",
+                    cfg->stateDir, vm->def->name) < 0)
+        goto cleanup;
+
+    if (qemuDomainGetPreservedMounts(driver, vm,
+                                     &devMountsPath, &ndevMountsPath) < 0)
+        goto cleanup;
+
+    if (virFileMakePath(devPath) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to create %s"),
+                             devPath);
+        goto cleanup;
+    }
+
+    for (i = 0; i < ndevMountsPath; i++) {
+        if (virFileMakePath(devMountsPath[i]) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to create %s"),
+                                 devMountsPath[i]);
+            goto cleanup;
+        }
+    }
+
+    /* Enabling of the mount namespace goes here. */
+
+    ret = 0;
+ cleanup:
+    if (ret < 0) {
+        if (devPath)
+            unlink(devPath);
+        for (i = 0; i < ndevMountsPath; i++)
+            unlink(devMountsPath[i]);
+    }
+    virStringListFreeCount(devMountsPath, ndevMountsPath);
+    VIR_FREE(devPath);
+    virObjectUnref(cfg);
+    return ret;
+}
+
+#else /* !defined(__linux__) */
+
+int
+qemuDomainCreateNamespace(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                          virDomainObjPtr vm ATTRIBUTE_UNUSED)
+{
+    /* Namespaces are Linux specific. On other platforms just
+     * carry on with the old behaviour. */
+    return 0;
+}
+#endif /* !defined(__linux__) */
+
+
+void
+qemuDomainDeleteNamespace(virQEMUDriverPtr driver,
+                          virDomainObjPtr vm)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    char *devPath = NULL;
+    char **devMountsPath = NULL;
+    size_t ndevMountsPath = 0, i;
+
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return;
+
+    if (virAsprintf(&devPath, "%s/%s.dev",
+                    cfg->stateDir, vm->def->name) < 0)
+        goto cleanup;
+
+    if (qemuDomainGetPreservedMounts(driver, vm,
+                                     &devMountsPath, &ndevMountsPath) < 0)
+        goto cleanup;
+
+    if (rmdir(devPath) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to remove %s"),
+                             devPath);
+        /* Bet effort. Fall through. */
+    }
+
+    for (i = 0; i < ndevMountsPath; i++) {
+        if (rmdir(devMountsPath[i]) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to remove %s"),
+                                 devMountsPath[i]);
+            /* Bet effort. Fall through. */
+        }
+    }
+ cleanup:
+    virObjectUnref(cfg);
+    virStringListFreeCount(devMountsPath, ndevMountsPath);
+    VIR_FREE(devPath);
 }

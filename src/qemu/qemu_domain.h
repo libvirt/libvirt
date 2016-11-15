@@ -165,10 +165,22 @@ struct _qemuDomainUnpluggingDevice {
     qemuDomainUnpluggingDeviceStatus status;
 };
 
+
+typedef enum {
+    QEMU_DOMAIN_NS_MOUNT = 0,
+    QEMU_DOMAIN_NS_LAST
+} qemuDomainNamespace;
+VIR_ENUM_DECL(qemuDomainNamespace)
+
+bool qemuDomainNamespaceEnabled(virDomainObjPtr vm,
+                                qemuDomainNamespace ns);
+
 typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
 struct _qemuDomainObjPrivate {
     struct qemuDomainJobObj job;
+
+    virBitmapPtr namespaces;
 
     qemuMonitorPtr mon;
     virDomainChrSourceDefPtr monConfig;
@@ -785,4 +797,12 @@ int qemuDomainCheckMonitor(virQEMUDriverPtr driver,
 bool qemuDomainSupportsVideoVga(virDomainVideoDefPtr video,
                                 virQEMUCapsPtr qemuCaps);
 
+int qemuDomainBuildNamespace(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm);
+
+int qemuDomainCreateNamespace(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm);
+
+void qemuDomainDeleteNamespace(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm);
 #endif /* __QEMU_DOMAIN_H__ */

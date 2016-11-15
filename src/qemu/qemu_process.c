@@ -2673,6 +2673,12 @@ static int qemuProcessHook(void *data)
     if (virSecurityManagerClearSocketLabel(h->driver->securityManager, h->vm->def) < 0)
         goto cleanup;
 
+    if (virProcessSetupPrivateMountNS() < 0)
+        goto cleanup;
+
+    if (qemuDomainBuildNamespace(h->driver, h->vm) < 0)
+        goto cleanup;
+
     if (virDomainNumatuneGetMode(h->vm->def->numa, -1, &mode) == 0) {
         if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
             h->cfg->cgroupControllers & (1 << VIR_CGROUP_CONTROLLER_CPUSET) &&
@@ -5498,6 +5504,11 @@ qemuProcessLaunch(virConnectPtr conn,
 
     qemuDomainLogContextMarkPosition(logCtxt);
 
+    VIR_DEBUG("Building mount namespace");
+
+    if (qemuDomainCreateNamespace(driver, vm) < 0)
+        goto cleanup;
+
     VIR_DEBUG("Clear emulator capabilities: %d",
               cfg->clearEmulatorCapabilities);
     if (cfg->clearEmulatorCapabilities)
@@ -6268,6 +6279,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
             }
         }
     }
+
+    qemuDomainDeleteNamespace(driver, vm);
 
     vm->taint = 0;
     vm->pid = -1;
