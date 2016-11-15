@@ -1185,12 +1185,9 @@ qemuDomainSecretHostdevPrepare(virConnectPtr conn,
                                qemuDomainObjPrivatePtr priv,
                                virDomainHostdevDefPtr hostdev)
 {
-    virDomainHostdevSubsysPtr subsys = &hostdev->source.subsys;
     qemuDomainSecretInfoPtr secinfo = NULL;
 
-    if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-        subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
-
+    if (virHostdevIsSCSIDevice(hostdev)) {
         virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
         virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
 
@@ -4037,8 +4034,7 @@ void qemuDomainObjCheckHostdevTaint(virQEMUDriverPtr driver,
                                     virDomainHostdevDefPtr hostdev,
                                     qemuDomainLogContextPtr logCtxt)
 {
-    if (!(hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-          hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI))
+    if (!virHostdevIsSCSIDevice(hostdev))
         return;
 
     if (hostdev->source.subsys.u.scsi.rawio == VIR_TRISTATE_BOOL_YES)

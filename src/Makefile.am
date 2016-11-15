@@ -1137,7 +1137,8 @@ libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
 noinst_LTLIBRARIES += libvirt_conf.la
 libvirt_la_BUILT_LIBADD += libvirt_conf.la
 libvirt_conf_la_SOURCES = $(CONF_SOURCES)
-libvirt_conf_la_CFLAGS = $(AM_CFLAGS)
+libvirt_conf_la_CFLAGS = \
+		-I$(srcdir)/conf $(AM_CFLAGS)
 libvirt_conf_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_conf_la_LIBADD = $(LIBXML_LIBS)
 

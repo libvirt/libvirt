@@ -55,6 +55,7 @@
 #include "virtpm.h"
 #include "virstring.h"
 #include "virnetdev.h"
+#include "virhostdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 
@@ -4247,9 +4248,7 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
     if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
         virDomainHostdevDefPtr hdev = dev->data.hostdev;
 
-        if (hdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            hdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
-
+        if (virHostdevIsSCSIDevice(hdev)) {
             if (hdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
                 virDomainHostdevAssignAddress(xmlopt, def, hdev) < 0) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -15648,8 +15647,7 @@ virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDefPtr def)
 
     for (i = 0; i < def->nhostdevs; i++) {
         hostdev = def->hostdevs[i];
-        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI &&
+        if (virHostdevIsSCSIDevice(hostdev) &&
             (int)hostdev->info->addr.drive.controller > maxController) {
             maxController = hostdev->info->addr.drive.controller;
         }

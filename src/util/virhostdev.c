@@ -1114,8 +1114,7 @@ virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
         hostdev = hostdevs[i];
         scsisrc = &hostdev->source.subsys.u.scsi;
 
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
+        if (!virHostdevIsSCSIDevice(hostdev))
             continue;
 
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
@@ -1413,8 +1412,7 @@ virHostdevPrepareSCSIDevices(virHostdevManagerPtr mgr,
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
 
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
+        if (!virHostdevIsSCSIDevice(hostdev))
             continue;
 
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
@@ -1605,8 +1603,7 @@ virHostdevReAttachSCSIDevices(virHostdevManagerPtr mgr,
         virDomainHostdevDefPtr hostdev = hostdevs[i];
         virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
 
-        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI)
+        if (!virHostdevIsSCSIDevice(hostdev))
             continue;
 
         if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)

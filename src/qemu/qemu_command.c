@@ -5199,8 +5199,7 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
         }
 
         /* SCSI */
-        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-            subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
+        if (virHostdevIsSCSIDevice(hostdev)) {
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
                 char *drvstr;
 
