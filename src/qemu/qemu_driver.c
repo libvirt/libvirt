@@ -4461,7 +4461,7 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
 
     if (STREQ_NULLABLE(dev.data.chr->target.name, "org.qemu.guest_agent.0")) {
         if (newstate == VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED) {
-            if (!priv->agent && qemuConnectAgent(driver, vm) < 0)
+            if (qemuConnectAgent(driver, vm) < 0)
                 goto endjob;
         } else {
             if (priv->agent) {
