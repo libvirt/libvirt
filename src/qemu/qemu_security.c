@@ -162,3 +162,37 @@ qemuSecurityRestoreDiskLabel(virQEMUDriverPtr driver,
                                               vm->def,
                                               disk);
 }
+
+
+int
+qemuSecuritySetHostdevLabel(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            virDomainHostdevDefPtr hostdev)
+{
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT)) {
+        /* Already handled by namespace code. */
+        return 0;
+    }
+
+    return virSecurityManagerSetHostdevLabel(driver->securityManager,
+                                             vm->def,
+                                             hostdev,
+                                             NULL);
+}
+
+
+int
+qemuSecurityRestoreHostdevLabel(virQEMUDriverPtr driver,
+                                virDomainObjPtr vm,
+                                virDomainHostdevDefPtr hostdev)
+{
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT)) {
+        /* Already handled by namespace code. */
+        return 0;
+    }
+
+    return virSecurityManagerRestoreHostdevLabel(driver->securityManager,
+                                                 vm->def,
+                                                 hostdev,
+                                                 NULL);
+}

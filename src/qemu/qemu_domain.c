@@ -7527,6 +7527,13 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
         def->src->path = tmpsrc;
     }   break;
 
+    case VIR_DOMAIN_DEVICE_HOSTDEV: {
+        virDomainHostdevDefPtr def = data->devDef->data.hostdev;
+        if (virSecurityManagerSetHostdevLabel(data->driver->securityManager,
+                                              data->vm->def, def, NULL) < 0)
+            goto cleanup;
+    }   break;
+
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
@@ -7534,7 +7541,6 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
-    case VIR_DOMAIN_DEVICE_HOSTDEV:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_CONTROLLER:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
@@ -7614,6 +7620,91 @@ qemuDomainAttachDeviceMknod(virQEMUDriverPtr driver,
 }
 
 
+static int
+qemuDomainDetachDeviceUnlinkHelper(pid_t pid ATTRIBUTE_UNUSED,
+                                   void *opaque)
+{
+    const char *path = opaque;
+
+    VIR_DEBUG("Unlinking %s", path);
+    if (unlink(path) < 0 && errno != ENOENT) {
+        virReportSystemError(errno,
+                             _("Unable to remove device %s"), path);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainDetachDeviceUnlink(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             virDomainDeviceDefPtr dev,
+                             const char *file)
+{
+    /* Technically, this is not needed. Yet. But in the future
+     * security managers might do some reference counting over
+     * Set/Restore label and thus for every SetLabel() there
+     * should be corresponding RestoreLabel(). */
+    switch ((virDomainDeviceType) dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK: {
+        virDomainDiskDefPtr def = dev->data.disk;
+        char *tmpsrc = def->src->path;
+        def->src->path = (char *) file;
+        if (virSecurityManagerRestoreDiskLabel(driver->securityManager,
+                                               vm->def, def) < 0) {
+            def->src->path = tmpsrc;
+            return -1;
+        }
+        def->src->path = tmpsrc;
+    }   break;
+
+    case VIR_DOMAIN_DEVICE_HOSTDEV: {
+        virDomainHostdevDefPtr def = dev->data.hostdev;
+        if (virSecurityManagerRestoreHostdevLabel(driver->securityManager,
+                                                  vm->def, def, NULL) < 0)
+            return -1;
+    }   break;
+
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_NET:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected device type %d"),
+                       dev->type);
+        return -1;
+    }
+
+    if (virProcessRunInMountNamespace(vm->pid,
+                                      qemuDomainDetachDeviceUnlinkHelper,
+                                      (void *)file) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
@@ -7673,4 +7764,68 @@ qemuDomainNamespaceTeardownDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
      * you can come up with and algorithm that checks for that.
      * I don't, therefore: */
     return 0;
+}
+
+
+int
+qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver,
+                                virDomainObjPtr vm,
+                                virDomainHostdevDefPtr hostdev)
+{
+    virDomainDeviceDef dev = {.type = VIR_DOMAIN_DEVICE_HOSTDEV, .data.hostdev = hostdev};
+    int ret = -1;
+    char *path = NULL;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
+    if (qemuDomainGetHostdevPath(hostdev, &path) < 0)
+        goto cleanup;
+
+    if (!path) {
+        /* There's no /dev device that we need to create. Claim success. */
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (qemuDomainAttachDeviceMknod(driver,
+                                    vm,
+                                    &dev,
+                                    path) < 0)
+        goto cleanup;
+    ret = 0;
+ cleanup:
+    VIR_FREE(path);
+    return ret;
+}
+
+
+int
+qemuDomainNamespaceTeardownHostdev(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   virDomainHostdevDefPtr hostdev)
+{
+    virDomainDeviceDef dev = {.type = VIR_DOMAIN_DEVICE_HOSTDEV, .data.hostdev = hostdev};
+    int ret = -1;
+    char *path = NULL;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
+    if (qemuDomainGetHostdevPath(hostdev, &path) < 0)
+        goto cleanup;
+
+    if (!path) {
+        /* There's no /dev device that we need to create. Claim success. */
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (qemuDomainDetachDeviceUnlink(driver, vm, &dev, path) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(path);
+    return ret;
 }
