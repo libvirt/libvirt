@@ -315,6 +315,12 @@ virSCSIDeviceGetName(virSCSIDevicePtr dev)
     return dev->name;
 }
 
+const char *
+virSCSIDeviceGetPath(virSCSIDevicePtr dev)
+{
+    return dev->sg_path;
+}
+
 unsigned int
 virSCSIDeviceGetAdapter(virSCSIDevicePtr dev)
 {

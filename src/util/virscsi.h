@@ -58,6 +58,7 @@ int virSCSIDeviceSetUsedBy(virSCSIDevicePtr dev,
                            const char *domname);
 bool virSCSIDeviceIsAvailable(virSCSIDevicePtr dev);
 const char *virSCSIDeviceGetName(virSCSIDevicePtr dev);
+const char *virSCSIDeviceGetPath(virSCSIDevicePtr dev);
 unsigned int virSCSIDeviceGetAdapter(virSCSIDevicePtr dev);
 unsigned int virSCSIDeviceGetBus(virSCSIDevicePtr dev);
 unsigned int virSCSIDeviceGetTarget(virSCSIDevicePtr dev);
