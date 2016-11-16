@@ -435,6 +435,14 @@ mymain(void)
                  "/usr/bin/qemu-system-ppc64", NULL,
                  "ppc64le", VIR_DOMAIN_VIRT_KVM);
 
+    DO_TEST_QEMU("2.8.0", "caps_2.8.0",
+                 "/usr/bin/qemu-system-x86_64", NULL,
+                 "x86_64", VIR_DOMAIN_VIRT_KVM);
+
+    DO_TEST_QEMU("2.8.0-tcg", "caps_2.8.0",
+                 "/usr/bin/qemu-system-x86_64", NULL,
+                 "x86_64", VIR_DOMAIN_VIRT_QEMU);
+
 #endif /* WITH_QEMU */
 
 #if WITH_LIBXL
