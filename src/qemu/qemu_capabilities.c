@@ -4542,6 +4542,37 @@ virQEMUCapsCacheNew(const char *libDir,
     return NULL;
 }
 
+
+static void ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+virQEMUCapsCacheValidate(virQEMUCapsCachePtr cache,
+                         const char *binary,
+                         virCapsPtr caps,
+                         virQEMUCapsPtr *qemuCaps)
+{
+    if (*qemuCaps &&
+        !virQEMUCapsIsValid(*qemuCaps, 0, cache->runUid, cache->runGid)) {
+        VIR_DEBUG("Cached capabilities %p no longer valid for %s",
+                  *qemuCaps, binary);
+        virHashRemoveEntry(cache->binaries, binary);
+        *qemuCaps = NULL;
+    }
+
+    if (!*qemuCaps) {
+        VIR_DEBUG("Creating capabilities for %s", binary);
+        *qemuCaps = virQEMUCapsNewForBinary(caps, binary,
+                                            cache->libDir, cache->cacheDir,
+                                            cache->runUid, cache->runGid);
+        if (*qemuCaps) {
+            VIR_DEBUG("Caching capabilities %p for %s", *qemuCaps, binary);
+            if (virHashAddEntry(cache->binaries, binary, *qemuCaps) < 0) {
+                virObjectUnref(*qemuCaps);
+                *qemuCaps = NULL;
+            }
+        }
+    }
+}
+
+
 const char *qemuTestCapsName;
 
 virQEMUCapsPtr
@@ -4556,32 +4587,14 @@ virQEMUCapsCacheLookup(virCapsPtr caps,
         binary = qemuTestCapsName;
 
     virMutexLock(&cache->lock);
+
     ret = virHashLookup(cache->binaries, binary);
-    if (ret &&
-        !virQEMUCapsIsValid(ret, 0, cache->runUid, cache->runGid)) {
-        VIR_DEBUG("Cached capabilities %p no longer valid for %s",
-                  ret, binary);
-        virHashRemoveEntry(cache->binaries, binary);
-        ret = NULL;
-    }
-    if (!ret) {
-        VIR_DEBUG("Creating capabilities for %s",
-                  binary);
-        ret = virQEMUCapsNewForBinary(caps, binary, cache->libDir,
-                                      cache->cacheDir,
-                                      cache->runUid, cache->runGid);
-        if (ret) {
-            VIR_DEBUG("Caching capabilities %p for %s",
-                      ret, binary);
-            if (virHashAddEntry(cache->binaries, binary, ret) < 0) {
-                virObjectUnref(ret);
-                ret = NULL;
-            }
-        }
-    }
-    VIR_DEBUG("Returning caps %p for %s", ret, binary);
+    virQEMUCapsCacheValidate(cache, binary, caps, &ret);
     virObjectRef(ret);
+
     virMutexUnlock(&cache->lock);
+
+    VIR_DEBUG("Returning caps %p for %s", ret, binary);
     return ret;
 }
 
