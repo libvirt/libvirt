@@ -151,6 +151,7 @@ qemuProcessHandleAgentEOF(qemuAgentPtr agent,
 
     qemuAgentClose(agent);
     priv->agent = NULL;
+    priv->agentError = false;
 
     virObjectUnlock(vm);
     return;
@@ -5995,8 +5996,8 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     if (priv->agent) {
         qemuAgentClose(priv->agent);
         priv->agent = NULL;
-        priv->agentError = false;
     }
+    priv->agentError = false;
 
     if (priv->mon) {
         qemuMonitorClose(priv->mon);
