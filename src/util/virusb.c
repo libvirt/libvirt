@@ -406,6 +406,11 @@ const char *virUSBDeviceGetName(virUSBDevicePtr dev)
     return dev->name;
 }
 
+const char *virUSBDeviceGetPath(virUSBDevicePtr dev)
+{
+    return dev->path;
+}
+
 unsigned int virUSBDeviceGetBus(virUSBDevicePtr dev)
 {
     return dev->bus;

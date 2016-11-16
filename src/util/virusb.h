@@ -67,6 +67,7 @@ void virUSBDeviceGetUsedBy(virUSBDevicePtr dev,
                            const char **drv_name,
                            const char **dom_name);
 const char *virUSBDeviceGetName(virUSBDevicePtr dev);
+const char *virUSBDeviceGetPath(virUSBDevicePtr usb);
 
 unsigned int virUSBDeviceGetBus(virUSBDevicePtr dev);
 unsigned int virUSBDeviceGetDevno(virUSBDevicePtr dev);
