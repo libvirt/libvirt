@@ -584,11 +584,16 @@ nodeDeviceCreateXML(virConnectPtr conn,
     if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
         goto cleanup;
 
-    if (virNodeDeviceGetParentHost(&driver->devs,
-                                   def->name,
-                                   def->parent,
-                                   &parent_host) == -1) {
-        goto cleanup;
+    if (def->parent) {
+        if (virNodeDeviceGetParentHost(&driver->devs,
+                                       def->name,
+                                       def->parent,
+                                       &parent_host) < 0)
+            goto cleanup;
+    } else {
+        /* Try to find a vport capable scsi_host when no parent supplied */
+        if (virNodeDeviceFindVportParentHost(&driver->devs, &parent_host) < 0)
+            goto cleanup;
     }
 
     if (virManageVport(parent_host,

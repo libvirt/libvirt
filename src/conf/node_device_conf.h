@@ -273,6 +273,9 @@ int virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
                                const char *parent_name,
                                int *parent_host);
 
+int virNodeDeviceFindVportParentHost(virNodeDeviceObjListPtr devs,
+                                     int *parent_host);
+
 void virNodeDeviceDefFree(virNodeDeviceDefPtr def);
 
 void virNodeDeviceObjFree(virNodeDeviceObjPtr dev);

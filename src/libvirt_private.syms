@@ -700,6 +700,7 @@ virNodeDeviceDefParseNode;
 virNodeDeviceDefParseString;
 virNodeDeviceFindByName;
 virNodeDeviceFindBySysfsPath;
+virNodeDeviceFindVportParentHost;
 virNodeDeviceGetParentHost;
 virNodeDeviceGetWWNs;
 virNodeDeviceHasCap;

@@ -75,14 +75,19 @@ virNodeDevCapsDefParseString(const char *xpath,
 int virNodeDeviceHasCap(const virNodeDeviceObj *dev, const char *cap)
 {
     virNodeDevCapsDefPtr caps = dev->def->caps;
+    const char *fc_host_cap =
+        virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_FC_HOST);
+    const char *vports_cap =
+        virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_VPORTS);
+
     while (caps) {
         if (STREQ(cap, virNodeDevCapTypeToString(caps->data.type)))
             return 1;
         else if (caps->data.type == VIR_NODE_DEV_CAP_SCSI_HOST)
-            if ((STREQ(cap, "fc_host") &&
+            if ((STREQ(cap, fc_host_cap) &&
                 (caps->data.scsi_host.flags &
                  VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST)) ||
-                (STREQ(cap, "vports") &&
+                (STREQ(cap, vports_cap) &&
                 (caps->data.scsi_host.flags &
                  VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)))
                 return 1;
@@ -143,6 +148,23 @@ virNodeDeviceObjPtr virNodeDeviceFindByName(virNodeDeviceObjListPtr devs,
     for (i = 0; i < devs->count; i++) {
         virNodeDeviceObjLock(devs->objs[i]);
         if (STREQ(devs->objs[i]->def->name, name))
+            return devs->objs[i];
+        virNodeDeviceObjUnlock(devs->objs[i]);
+    }
+
+    return NULL;
+}
+
+
+static virNodeDeviceObjPtr
+virNodeDeviceFindByCap(virNodeDeviceObjListPtr devs,
+                       const char *cap)
+{
+    size_t i;
+
+    for (i = 0; i < devs->count; i++) {
+        virNodeDeviceObjLock(devs->objs[i]);
+        if (virNodeDeviceHasCap(devs->objs[i], cap))
             return devs->objs[i];
         virNodeDeviceObjUnlock(devs->objs[i]);
     }
@@ -1827,6 +1849,29 @@ virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
 
     return ret;
 }
+
+
+int
+virNodeDeviceFindVportParentHost(virNodeDeviceObjListPtr devs,
+                                 int *parent_host)
+{
+    virNodeDeviceObjPtr parent = NULL;
+    const char *cap = virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_VPORTS);
+    int ret;
+
+    if (!(parent = virNodeDeviceFindByCap(devs, cap))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not find any vport capable device"));
+        return -1;
+    }
+
+    ret = virNodeDeviceFindFCParentHost(parent, parent_host);
+
+    virNodeDeviceObjUnlock(parent);
+
+    return ret;
+}
+
 
 void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
 {
