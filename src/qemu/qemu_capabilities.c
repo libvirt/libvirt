@@ -4631,7 +4631,8 @@ virQEMUCapsCompareArch(const void *payload,
 
 
 virQEMUCapsPtr
-virQEMUCapsCacheLookupByArch(virQEMUCapsCachePtr cache,
+virQEMUCapsCacheLookupByArch(virCapsPtr caps,
+                             virQEMUCapsCachePtr cache,
                              virArch arch)
 {
     virQEMUCapsPtr ret = NULL;
@@ -4649,6 +4650,22 @@ virQEMUCapsCacheLookupByArch(virQEMUCapsCachePtr cache,
             ret = virHashSearch(cache->binaries, virQEMUCapsCompareArch, &data);
         }
     }
+
+    if (ret) {
+        char *binary;
+
+        if (VIR_STRDUP(binary, ret->binary) < 0) {
+            ret = NULL;
+        } else {
+            virQEMUCapsCacheValidate(cache, binary, caps, &ret);
+            VIR_FREE(binary);
+        }
+    } else {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unable to find any emulator to serve '%s' "
+                         "architecture"), virArchToString(arch));
+    }
+
     virObjectRef(ret);
     virMutexUnlock(&cache->lock);
 
