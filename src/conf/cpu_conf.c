@@ -144,8 +144,8 @@ virCPUDefStealModel(virCPUDefPtr dst,
                     virCPUDefPtr src,
                     bool keepVendor)
 {
-    char *vendor;
-    char *vendor_id;
+    char *vendor = NULL;
+    char *vendor_id = NULL;
 
     if (keepVendor) {
         VIR_STEAL_PTR(vendor, dst->vendor);
