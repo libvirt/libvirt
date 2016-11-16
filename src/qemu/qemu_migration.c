@@ -6183,7 +6183,6 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     unsigned short port;
     unsigned long long timeReceived = 0;
     virObjectEventPtr event;
-    int rc;
     qemuDomainJobInfoPtr jobInfo = NULL;
     bool inPostCopy = false;
     bool doKill = true;
@@ -6256,16 +6255,8 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                                       QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
         goto endjob;
 
-    if ((rc = qemuConnectAgent(driver, vm)) < 0) {
-        if (rc == -2)
-            goto endjob;
-
-        VIR_WARN("Cannot connect to QEMU guest agent for %s",
-                 vm->def->name);
-        virResetLastError();
-        priv->agentError = true;
-    }
-
+    if (qemuConnectAgent(driver, vm) < 0)
+        goto endjob;
 
     if (flags & VIR_MIGRATE_PERSIST_DEST) {
         if (qemuMigrationPersist(driver, vm, mig, !v3proto) < 0) {

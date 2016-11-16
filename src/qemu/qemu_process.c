@@ -204,7 +204,6 @@ int
 qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret = -1;
     qemuAgentPtr agent = NULL;
     virDomainChrDefPtr config = qemuFindAgentConfig(vm->def);
 
@@ -248,8 +247,7 @@ qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
         qemuAgentClose(agent);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("guest crashed while connecting to the guest agent"));
-        ret = -2;
-        goto cleanup;
+        return -1;
     }
 
     if (virSecurityManagerClearSocketLabel(driver->securityManager,
@@ -260,18 +258,18 @@ qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
         goto cleanup;
     }
 
-
     priv->agent = agent;
-
-    if (priv->agent == NULL) {
+    if (!priv->agent)
         VIR_INFO("Failed to connect agent for %s", vm->def->name);
-        goto cleanup;
-    }
-
-    ret = 0;
 
  cleanup:
-    return ret;
+    if (!priv->agent) {
+        VIR_WARN("Cannot connect to QEMU guest agent for %s", vm->def->name);
+        priv->agentError = true;
+        virResetLastError();
+    }
+
+    return 0;
 }
 
 
@@ -3268,7 +3266,6 @@ qemuProcessReconnect(void *opaque)
     int reason;
     virQEMUDriverConfigPtr cfg;
     size_t i;
-    int ret;
     unsigned int stopFlags = 0;
     bool jobStarted = false;
     virCapsPtr caps = NULL;
@@ -3414,16 +3411,8 @@ qemuProcessReconnect(void *opaque)
 
     qemuProcessReconnectCheckMemAliasOrderMismatch(obj);
 
-    /* Failure to connect to agent shouldn't be fatal */
-    if ((ret = qemuConnectAgent(driver, obj)) < 0) {
-        if (ret == -2)
-            goto error;
-
-        VIR_WARN("Cannot connect to QEMU guest agent for %s",
-                 obj->def->name);
-        virResetLastError();
-        priv->agentError = true;
-    }
+    if (qemuConnectAgent(driver, obj) < 0)
+        goto error;
 
     /* update domain state XML with possibly updated state in virDomainObj */
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, obj, driver->caps) < 0)
@@ -5565,16 +5554,8 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessWaitForMonitor(driver, vm, asyncJob, priv->qemuCaps, logCtxt) < 0)
         goto cleanup;
 
-    /* Failure to connect to agent shouldn't be fatal */
-    if ((rv = qemuConnectAgent(driver, vm)) < 0) {
-        if (rv == -2)
-            goto cleanup;
-
-        VIR_WARN("Cannot connect to QEMU guest agent for %s",
-                 vm->def->name);
-        virResetLastError();
-        priv->agentError = true;
-    }
+    if (qemuConnectAgent(driver, vm) < 0)
+        goto cleanup;
 
     VIR_DEBUG("Detecting if required emulator features are present");
     if (!qemuProcessVerifyGuestCPU(driver, vm, asyncJob))
@@ -6264,7 +6245,6 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     virCapsPtr caps = NULL;
     bool active = false;
-    int ret;
 
     VIR_DEBUG("Beginning VM attach process");
 
@@ -6391,16 +6371,8 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (qemuProcessWaitForMonitor(driver, vm, QEMU_ASYNC_JOB_NONE, priv->qemuCaps, NULL) < 0)
         goto error;
 
-    /* Failure to connect to agent shouldn't be fatal */
-    if ((ret = qemuConnectAgent(driver, vm)) < 0) {
-        if (ret == -2)
-            goto error;
-
-        VIR_WARN("Cannot connect to QEMU guest agent for %s",
-                 vm->def->name);
-        virResetLastError();
-        priv->agentError = true;
-    }
+    if (qemuConnectAgent(driver, vm) < 0)
+        goto error;
 
     VIR_DEBUG("Detecting VCPU PIDs");
     if (qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE, false) < 0)

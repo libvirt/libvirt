@@ -4409,7 +4409,6 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
     virObjectEventPtr event = NULL;
     virDomainDeviceDef dev;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    int rc;
 
     if (connected)
         newstate = VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED;
@@ -4462,13 +4461,8 @@ processSerialChangedEvent(virQEMUDriverPtr driver,
 
     if (STREQ_NULLABLE(dev.data.chr->target.name, "org.qemu.guest_agent.0")) {
         if (newstate == VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED) {
-            if (!priv->agent) {
-                if ((rc = qemuConnectAgent(driver, vm)) == -2)
-                    goto endjob;
-
-                if (rc < 0)
-                    priv->agentError = true;
-            }
+            if (!priv->agent && qemuConnectAgent(driver, vm) < 0)
+                goto endjob;
         } else {
             if (priv->agent) {
                 qemuAgentClose(priv->agent);
