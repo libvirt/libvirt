@@ -16,7 +16,7 @@
         <element name="path"><text/></element>
       </optional>
       <optional>
-        <element name="parent"><text/></element>
+        <ref name="parent"/>
       </optional>
 
       <optional>
@@ -28,6 +28,29 @@
       <zeroOrMore>
         <ref name="capability"/>
       </zeroOrMore>
+    </element>
+  </define>
+
+  <define name='parent'>
+    <element name='parent'>
+      <choice>
+        <group>
+          <attribute name='wwnn'>
+            <ref name='wwn'/>
+          </attribute>
+          <attribute name='wwpn'>
+            <ref name='wwn'/>
+          </attribute>
+          <empty/>
+        </group>
+        <group>
+          <attribute name='fabric_wwn'>
+            <ref name='wwn'/>
+          </attribute>
+          <empty/>
+        </group>
+        <text/>
+      </choice>
     </element>
   </define>
 

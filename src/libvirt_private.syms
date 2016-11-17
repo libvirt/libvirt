@@ -702,6 +702,8 @@ virNodeDeviceFindByName;
 virNodeDeviceFindBySysfsPath;
 virNodeDeviceFindVportParentHost;
 virNodeDeviceGetParentHost;
+virNodeDeviceGetParentHostByFabricWWN;
+virNodeDeviceGetParentHostByWWNs;
 virNodeDeviceGetWWNs;
 virNodeDeviceHasCap;
 virNodeDeviceObjListExport;

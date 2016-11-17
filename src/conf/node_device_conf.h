@@ -200,6 +200,9 @@ struct _virNodeDeviceDef {
     char *sysfs_path;                   /* udev name/sysfs path */
     char *parent;			/* optional parent device name */
     char *parent_sysfs_path;            /* udev parent name/sysfs path */
+    char *parent_wwnn;			/* optional parent wwnn */
+    char *parent_wwpn;			/* optional parent wwpn */
+    char *parent_fabric_wwn;		/* optional parent fabric_wwn */
     char *driver;                       /* optional driver name */
     virNodeDevCapsDefPtr caps;		/* optional device capabilities */
 };
@@ -272,6 +275,17 @@ int virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
                                const char *dev_name,
                                const char *parent_name,
                                int *parent_host);
+
+int virNodeDeviceGetParentHostByWWNs(virNodeDeviceObjListPtr devs,
+                                     const char *dev_name,
+                                     const char *parent_wwnn,
+                                     const char *parent_wwpn,
+                                     int *parent_host);
+
+int virNodeDeviceGetParentHostByFabricWWN(virNodeDeviceObjListPtr devs,
+                                          const char *dev_name,
+                                          const char *parent_fabric_wwn,
+                                          int *parent_host);
 
 int virNodeDeviceFindVportParentHost(virNodeDeviceObjListPtr devs,
                                      int *parent_host);

@@ -97,6 +97,30 @@ int virNodeDeviceHasCap(const virNodeDeviceObj *dev, const char *cap)
 }
 
 
+/* virNodeDeviceFindFCCapDef:
+ * @dev: Pointer to current device
+ *
+ * Search the device object 'caps' array for fc_host capability.
+ *
+ * Returns:
+ * Pointer to the caps or NULL if not found
+ */
+static virNodeDevCapsDefPtr
+virNodeDeviceFindFCCapDef(const virNodeDeviceObj *dev)
+{
+    virNodeDevCapsDefPtr caps = dev->def->caps;
+
+    while (caps) {
+        if (caps->data.type == VIR_NODE_DEV_CAP_SCSI_HOST &&
+            (caps->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST))
+            break;
+
+        caps = caps->next;
+    }
+    return caps;
+}
+
+
 /* virNodeDeviceFindVPORTCapDef:
  * @dev: Pointer to current device
  *
@@ -157,6 +181,46 @@ virNodeDeviceObjPtr virNodeDeviceFindByName(virNodeDeviceObjListPtr devs,
 
 
 static virNodeDeviceObjPtr
+virNodeDeviceFindByWWNs(virNodeDeviceObjListPtr devs,
+                        const char *parent_wwnn,
+                        const char *parent_wwpn)
+{
+    size_t i;
+
+    for (i = 0; i < devs->count; i++) {
+        virNodeDevCapsDefPtr cap;
+        virNodeDeviceObjLock(devs->objs[i]);
+        if ((cap = virNodeDeviceFindFCCapDef(devs->objs[i])) &&
+            STREQ_NULLABLE(cap->data.scsi_host.wwnn, parent_wwnn) &&
+            STREQ_NULLABLE(cap->data.scsi_host.wwpn, parent_wwpn))
+            return devs->objs[i];
+        virNodeDeviceObjUnlock(devs->objs[i]);
+    }
+
+    return NULL;
+}
+
+
+static virNodeDeviceObjPtr
+virNodeDeviceFindByFabricWWN(virNodeDeviceObjListPtr devs,
+                             const char *parent_fabric_wwn)
+{
+    size_t i;
+
+    for (i = 0; i < devs->count; i++) {
+        virNodeDevCapsDefPtr cap;
+        virNodeDeviceObjLock(devs->objs[i]);
+        if ((cap = virNodeDeviceFindFCCapDef(devs->objs[i])) &&
+            STREQ_NULLABLE(cap->data.scsi_host.fabric_wwn, parent_fabric_wwn))
+            return devs->objs[i];
+        virNodeDeviceObjUnlock(devs->objs[i]);
+    }
+
+    return NULL;
+}
+
+
+static virNodeDeviceObjPtr
 virNodeDeviceFindByCap(virNodeDeviceObjListPtr devs,
                        const char *cap)
 {
@@ -182,6 +246,9 @@ void virNodeDeviceDefFree(virNodeDeviceDefPtr def)
 
     VIR_FREE(def->name);
     VIR_FREE(def->parent);
+    VIR_FREE(def->parent_wwnn);
+    VIR_FREE(def->parent_wwpn);
+    VIR_FREE(def->parent_fabric_wwn);
     VIR_FREE(def->driver);
     VIR_FREE(def->sysfs_path);
     VIR_FREE(def->parent_sysfs_path);
@@ -1657,6 +1724,16 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
 
     /* Extract device parent, if any */
     def->parent = virXPathString("string(./parent[1])", ctxt);
+    def->parent_wwnn = virXPathString("string(./parent[1]/@wwnn)", ctxt);
+    def->parent_wwpn = virXPathString("string(./parent[1]/@wwpn)", ctxt);
+    if ((def->parent_wwnn && !def->parent_wwpn) ||
+        (!def->parent_wwnn && def->parent_wwpn)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("must supply both wwnn and wwpn for parent"));
+        goto error;
+    }
+    def->parent_fabric_wwn = virXPathString("string(./parent[1]/@fabric_wwn)",
+                                            ctxt);
 
     /* Parse device capabilities */
     nodes = NULL;
@@ -1837,6 +1914,55 @@ virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
     int ret;
 
     if (!(parent = virNodeDeviceFindByName(devs, parent_name))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not find parent device for '%s'"),
+                       dev_name);
+        return -1;
+    }
+
+    ret = virNodeDeviceFindFCParentHost(parent, parent_host);
+
+    virNodeDeviceObjUnlock(parent);
+
+    return ret;
+}
+
+
+int
+virNodeDeviceGetParentHostByWWNs(virNodeDeviceObjListPtr devs,
+                                 const char *dev_name,
+                                 const char *parent_wwnn,
+                                 const char *parent_wwpn,
+                                 int *parent_host)
+{
+    virNodeDeviceObjPtr parent = NULL;
+    int ret;
+
+    if (!(parent = virNodeDeviceFindByWWNs(devs, parent_wwnn, parent_wwpn))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not find parent device for '%s'"),
+                       dev_name);
+        return -1;
+    }
+
+    ret = virNodeDeviceFindFCParentHost(parent, parent_host);
+
+    virNodeDeviceObjUnlock(parent);
+
+    return ret;
+}
+
+
+int
+virNodeDeviceGetParentHostByFabricWWN(virNodeDeviceObjListPtr devs,
+                                      const char *dev_name,
+                                      const char *parent_fabric_wwn,
+                                      int *parent_host)
+{
+    virNodeDeviceObjPtr parent = NULL;
+    int ret;
+
+    if (!(parent = virNodeDeviceFindByFabricWWN(devs, parent_fabric_wwn))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not find parent device for '%s'"),
                        dev_name);
