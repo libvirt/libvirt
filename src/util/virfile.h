@@ -179,6 +179,7 @@ char *virFileFindResourceFull(const char *filename,
 void virFileActivateDirOverride(const char *argv0)
     ATTRIBUTE_NONNULL(1);
 
+off_t virFileLength(const char *path, int fd) ATTRIBUTE_NONNULL(1);
 bool virFileIsDir (const char *file) ATTRIBUTE_NONNULL(1);
 bool virFileExists(const char *file) ATTRIBUTE_NONNULL(1);
 bool virFileIsExecutable(const char *file) ATTRIBUTE_NONNULL(1);

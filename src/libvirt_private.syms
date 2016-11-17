@@ -1578,6 +1578,7 @@ virFileIsLink;
 virFileIsMountPoint;
 virFileIsSharedFS;
 virFileIsSharedFSType;
+virFileLength;
 virFileLinkPointsTo;
 virFileLock;
 virFileLoopDeviceAssociate;

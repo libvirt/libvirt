@@ -1735,6 +1735,40 @@ virFileActivateDirOverride(const char *argv0)
     }
 }
 
+
+/**
+ * virFileLength:
+ * @path: full path of the file
+ * @fd: open file descriptor for file (or -1 to use @path)
+ *
+ * If fd >= 0, return the length of the open file indicated by @fd.
+ * If fd < 0 (i.e. -1) return the length of the file indicated by
+ * @path.
+ *
+ * Returns the length, or -1 if the file doesn't
+ * exist or its info was inaccessible. No error is logged.
+ */
+off_t
+virFileLength(const char *path, int fd)
+{
+    struct stat s;
+
+    if (fd >= 0) {
+        if (fstat(fd, &s) < 0)
+            return -1;
+    } else {
+        if (stat(path, &s) < 0)
+            return -1;
+    }
+
+    if (!S_ISREG(s.st_mode))
+       return -1;
+
+    return s.st_size;
+
+}
+
+
 bool
 virFileIsDir(const char *path)
 {
