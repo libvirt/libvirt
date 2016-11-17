@@ -92,6 +92,30 @@ int virNodeDeviceHasCap(const virNodeDeviceObj *dev, const char *cap)
 }
 
 
+/* virNodeDeviceFindVPORTCapDef:
+ * @dev: Pointer to current device
+ *
+ * Search the device object 'caps' array for vport_ops capability.
+ *
+ * Returns:
+ * Pointer to the caps or NULL if not found
+ */
+static virNodeDevCapsDefPtr
+virNodeDeviceFindVPORTCapDef(const virNodeDeviceObj *dev)
+{
+    virNodeDevCapsDefPtr caps = dev->def->caps;
+
+    while (caps) {
+        if (caps->data.type == VIR_NODE_DEV_CAP_SCSI_HOST &&
+            (caps->data.scsi_host.flags & VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS))
+            break;
+
+        caps = caps->next;
+    }
+    return caps;
+}
+
+
 virNodeDeviceObjPtr
 virNodeDeviceFindBySysfsPath(virNodeDeviceObjListPtr devs,
                              const char *sysfs_path)
@@ -1752,6 +1776,35 @@ virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
 /*
  * Return the NPIV dev's parent device name
  */
+/* virNodeDeviceFindFCParentHost:
+ * @parent: Pointer to node device object
+ * @parent_host: Pointer to return parent host number
+ *
+ * Search the capabilities for the device to find the FC capabilities
+ * in order to set the parent_host value.
+ *
+ * Returns:
+ *   0 on success with parent_host set, -1 otherwise;
+ */
+static int
+virNodeDeviceFindFCParentHost(virNodeDeviceObjPtr parent,
+                              int *parent_host)
+{
+    virNodeDevCapsDefPtr cap = virNodeDeviceFindVPORTCapDef(parent);
+
+    if (!cap) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Parent device %s is not capable "
+                         "of vport operations"),
+                       parent->def->name);
+        return -1;
+    }
+
+    *parent_host = cap->data.scsi_host.host;
+    return 0;
+}
+
+
 int
 virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
                            const char *dev_name,
@@ -1759,41 +1812,19 @@ virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
                            int *parent_host)
 {
     virNodeDeviceObjPtr parent = NULL;
-    virNodeDevCapsDefPtr cap = NULL;
-    int ret = 0;
+    int ret;
 
-    parent = virNodeDeviceFindByName(devs, parent_name);
-    if (parent == NULL) {
+    if (!(parent = virNodeDeviceFindByName(devs, parent_name))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not find parent device for '%s'"),
                        dev_name);
-        ret = -1;
-        goto out;
+        return -1;
     }
 
-    cap = parent->def->caps;
-    while (cap != NULL) {
-        if (cap->data.type == VIR_NODE_DEV_CAP_SCSI_HOST &&
-            (cap->data.scsi_host.flags &
-             VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)) {
-                *parent_host = cap->data.scsi_host.host;
-                break;
-        }
-
-        cap = cap->next;
-    }
-
-    if (cap == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Parent device %s is not capable "
-                         "of vport operations"),
-                       parent->def->name);
-        ret = -1;
-    }
+    ret = virNodeDeviceFindFCParentHost(parent, parent_host);
 
     virNodeDeviceObjUnlock(parent);
 
- out:
     return ret;
 }
 
