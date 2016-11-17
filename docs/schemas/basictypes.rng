@@ -427,6 +427,21 @@
               <ref name="virYesNo"/>
             </attribute>
           </optional>
+          <optional>
+            <attribute name='parent_wwnn'>
+              <ref name='wwn'/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name='parent_wwpn'>
+              <ref name='wwn'/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name='parent_fabric_wwn'>
+              <ref name='wwn'/>
+            </attribute>
+          </optional>
           <attribute name='wwnn'>
             <ref name='wwn'/>
           </attribute>

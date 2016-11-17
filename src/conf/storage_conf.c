@@ -335,6 +335,9 @@ virStoragePoolSourceAdapterClear(virStoragePoolSourceAdapterPtr adapter)
         VIR_FREE(adapter->data.fchost.wwnn);
         VIR_FREE(adapter->data.fchost.wwpn);
         VIR_FREE(adapter->data.fchost.parent);
+        VIR_FREE(adapter->data.fchost.parent_wwnn);
+        VIR_FREE(adapter->data.fchost.parent_wwpn);
+        VIR_FREE(adapter->data.fchost.parent_fabric_wwn);
     } else if (adapter->type ==
                VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
         VIR_FREE(adapter->data.scsi_host.name);
@@ -591,10 +594,17 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                 }
             }
 
-            source->adapter.data.fchost.wwnn =
-                virXPathString("string(./adapter/@wwnn)", ctxt);
+            source->adapter.data.fchost.parent_wwnn =
+                virXPathString("string(./adapter/@parent_wwnn)", ctxt);
+            source->adapter.data.fchost.parent_wwpn =
+                virXPathString("string(./adapter/@parent_wwpn)", ctxt);
+            source->adapter.data.fchost.parent_fabric_wwn =
+                virXPathString("string(./adapter/@parent_fabric_wwn)", ctxt);
+
             source->adapter.data.fchost.wwpn =
                 virXPathString("string(./adapter/@wwpn)", ctxt);
+            source->adapter.data.fchost.wwnn =
+                virXPathString("string(./adapter/@wwnn)", ctxt);
         } else if (source->adapter.type ==
                    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
 
@@ -1100,6 +1110,13 @@ virStoragePoolSourceFormat(virBufferPtr buf,
             if (src->adapter.data.fchost.managed)
                 virBufferAsprintf(buf, " managed='%s'",
                                   virTristateBoolTypeToString(src->adapter.data.fchost.managed));
+            virBufferEscapeString(buf, " parent_wwnn='%s'",
+                                  src->adapter.data.fchost.parent_wwnn);
+            virBufferEscapeString(buf, " parent_wwpn='%s'",
+                                  src->adapter.data.fchost.parent_wwpn);
+            virBufferEscapeString(buf, " parent_fabric_wwn='%s'",
+                                  src->adapter.data.fchost.parent_fabric_wwn);
+
             virBufferAsprintf(buf, " wwnn='%s' wwpn='%s'/>\n",
                               src->adapter.data.fchost.wwnn,
                               src->adapter.data.fchost.wwpn);

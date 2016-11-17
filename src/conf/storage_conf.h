@@ -193,6 +193,9 @@ struct _virStoragePoolSourceAdapter {
         } scsi_host;
         struct {
             char *parent;
+            char *parent_wwnn;
+            char *parent_wwpn;
+            char *parent_fabric_wwn;
             char *wwnn;
             char *wwpn;
             int managed;        /* enum virTristateSwitch */
