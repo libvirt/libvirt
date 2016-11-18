@@ -90,6 +90,8 @@ struct _virQEMUDriverConfig {
     gid_t group;
     bool dynamicOwnership;
 
+    virBitmapPtr namespaces;
+
     int cgroupControllers;
     char **cgroupDeviceACL;
 

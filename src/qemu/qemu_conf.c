@@ -314,6 +314,12 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     cfg->glusterDebugLevel = 4;
     cfg->stdioLogD = true;
 
+    if (!(cfg->namespaces = virBitmapNew(QEMU_DOMAIN_NS_LAST)))
+        goto error;
+
+    if (virBitmapSetBit(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT) < 0)
+        goto error;
+
 #ifdef DEFAULT_LOADER_NVRAM
     if (virFirmwareParseList(DEFAULT_LOADER_NVRAM,
                              &cfg->firmwares,
@@ -349,6 +355,7 @@ static void virQEMUDriverConfigDispose(void *obj)
 {
     virQEMUDriverConfigPtr cfg = obj;
 
+    virBitmapFree(cfg->namespaces);
 
     virStringListFree(cfg->cgroupDeviceACL);
 
@@ -433,6 +440,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     char **hugetlbfs = NULL;
     char **nvram = NULL;
     char *corestr = NULL;
+    char **namespaces = NULL;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
@@ -797,6 +805,31 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     }
     if (virConfGetValueUInt(conf, "gluster_debug_level", &cfg->glusterDebugLevel) < 0)
         goto cleanup;
+
+    if (virConfGetValueStringList(conf, "namespaces", false, &namespaces) < 0)
+        goto cleanup;
+
+    if (namespaces) {
+        virBitmapClearAll(cfg->namespaces);
+
+        for (i = 0; namespaces[i]; i++) {
+            int ns = qemuDomainNamespaceTypeFromString(namespaces[i]);
+
+            if (ns < 0) {
+                virReportError(VIR_ERR_CONF_SYNTAX,
+                               _("Unknown namespace: %s"),
+                               namespaces[i]);
+                goto cleanup;
+            }
+
+            if (virBitmapSetBit(cfg->namespaces, ns) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Unable to enable namespace: %s"),
+                               namespaces[i]);
+                goto cleanup;
+            }
+        }
+    }
 
     ret = 0;
 
