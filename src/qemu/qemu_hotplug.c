@@ -1830,6 +1830,7 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
     char *charAlias = NULL;
     bool chardevAttached = false;
     bool tlsobjAdded = false;
+    bool teardowncgroup = false;
     bool secobjAdded = false;
     virJSONValuePtr tlsProps = NULL;
     char *tlsAlias = NULL;
@@ -1850,6 +1851,10 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
         goto cleanup;
     if (rc == 1)
         need_release = true;
+
+    if (qemuSetupChardevCgroup(vm, chr) < 0)
+        goto cleanup;
+    teardowncgroup = true;
 
     if (qemuBuildChrDeviceStr(&devstr, vmdef, chr, priv->qemuCaps) < 0)
         goto cleanup;
@@ -1903,10 +1908,14 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
  audit:
     virDomainAuditChardev(vm, NULL, chr, "attach", ret == 0);
  cleanup:
-    if (ret < 0 && virDomainObjIsActive(vm))
-        qemuDomainChrInsertPreAllocCleanup(vmdef, chr);
-    if (ret < 0 && need_release)
-        qemuDomainReleaseDeviceAddress(vm, &chr->info, NULL);
+    if (ret < 0) {
+        if (virDomainObjIsActive(vm))
+            qemuDomainChrInsertPreAllocCleanup(vmdef, chr);
+        if (need_release)
+            qemuDomainReleaseDeviceAddress(vm, &chr->info, NULL);
+        if (teardowncgroup && qemuTeardownChardevCgroup(vm, chr) < 0)
+            VIR_WARN("Unable to remove chr device cgroup ACL on hotplug fail");
+    }
     VIR_FREE(tlsAlias);
     virJSONValueFree(tlsProps);
     VIR_FREE(secAlias);
@@ -3846,6 +3855,9 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
 
     if (rc < 0)
         goto cleanup;
+
+    if (qemuTeardownChardevCgroup(vm, chr) < 0)
+        VIR_WARN("Failed to remove chr device cgroup ACL");
 
     event = virDomainEventDeviceRemovedNewFromObj(vm, chr->info.alias);
     qemuDomainEventQueue(driver, event);

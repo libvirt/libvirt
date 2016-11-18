@@ -189,10 +189,32 @@ qemuSetupChrSourceCgroup(virDomainObjPtr vm,
     return ret;
 }
 
+
 static int
-qemuSetupChardevCgroup(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                       virDomainChrDefPtr dev,
-                       void *opaque)
+qemuTeardownChrSourceCgroup(virDomainObjPtr vm,
+                            virDomainChrSourceDefPtr source)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret;
+
+    if (source->type != VIR_DOMAIN_CHR_TYPE_DEV)
+        return 0;
+
+    VIR_DEBUG("Process path '%s' for device", source->data.file.path);
+
+    ret = virCgroupDenyDevicePath(priv->cgroup, source->data.file.path,
+                                  VIR_CGROUP_DEVICE_RW, false);
+    virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
+                             source->data.file.path, "rw", ret == 0);
+
+    return ret;
+}
+
+
+static int
+qemuSetupChardevCgroupCB(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                         virDomainChrDefPtr dev,
+                         void *opaque)
 {
     virDomainObjPtr vm = opaque;
 
@@ -617,6 +639,22 @@ qemuTeardownRNGCgroup(virDomainObjPtr vm,
 }
 
 
+int
+qemuSetupChardevCgroup(virDomainObjPtr vm,
+                       virDomainChrDefPtr dev)
+{
+    return qemuSetupChrSourceCgroup(vm, dev->source);
+}
+
+
+int
+qemuTeardownChardevCgroup(virDomainObjPtr vm,
+                          virDomainChrDefPtr dev)
+{
+    return qemuTeardownChrSourceCgroup(vm, dev->source);
+}
+
+
 static int
 qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
                        virDomainObjPtr vm)
@@ -693,7 +731,7 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
 
     if (virDomainChrDefForeach(vm->def,
                                true,
-                               qemuSetupChardevCgroup,
+                               qemuSetupChardevCgroupCB,
                                vm) < 0)
         goto cleanup;
 

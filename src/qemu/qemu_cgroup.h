@@ -47,6 +47,10 @@ int qemuSetupRNGCgroup(virDomainObjPtr vm,
                        virDomainRNGDefPtr rng);
 int qemuTeardownRNGCgroup(virDomainObjPtr vm,
                           virDomainRNGDefPtr rng);
+int qemuSetupChardevCgroup(virDomainObjPtr vm,
+                           virDomainChrDefPtr dev);
+int qemuTeardownChardevCgroup(virDomainObjPtr vm,
+                              virDomainChrDefPtr dev);
 int qemuConnectCgroup(virQEMUDriverPtr driver,
                       virDomainObjPtr vm);
 int qemuSetupCgroup(virQEMUDriverPtr driver,
