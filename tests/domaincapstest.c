@@ -417,7 +417,7 @@ mymain(void)
 
     DO_TEST_QEMU("2.6.0", "caps_2.6.0",
                  "/usr/bin/qemu-system-x86_64", NULL,
-                 "x86_64", VIR_DOMAIN_VIRT_QEMU);
+                 "x86_64", VIR_DOMAIN_VIRT_KVM);
 
     DO_TEST_QEMU("2.6.0", "caps_2.6.0-gicv2",
                  "/usr/bin/qemu-system-aarch64", NULL,
