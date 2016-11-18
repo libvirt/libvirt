@@ -16,6 +16,15 @@
     to gauge progress.
     </p>
 
+   <h3>v2.5.0: <i>unreleased</i></h3>
+   <ul>
+     <li>Switch to an improved NEWS file format<br/>
+     List user-visible changes instead of single commits for a better
+     high-level overview of differences between libvirt releases
+     </li>
+     <li>Various bug fixes and improvements</li>
+   </ul>
+
    <h3>v2.4.0: Nov 1 2016</h3>
     <ul>
       <li>Documentation:<br/>
