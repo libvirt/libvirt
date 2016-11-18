@@ -279,7 +279,7 @@
 
 {
   "return": {
-    "enabled": false,
+    "enabled": true,
     "present": true
   },
   "id": "libvirt-6"
@@ -1853,4 +1853,82 @@
     }
   ],
   "id": "libvirt-45"
+}
+
+{
+  "return": {
+  },
+  "id": "libvirt-1"
+}
+
+{
+  "return": [
+    {
+      "name": "qemu64"
+    },
+    {
+      "name": "phenom"
+    },
+    {
+      "name": "core2duo"
+    },
+    {
+      "name": "kvm64"
+    },
+    {
+      "name": "qemu32"
+    },
+    {
+      "name": "kvm32"
+    },
+    {
+      "name": "coreduo"
+    },
+    {
+      "name": "486"
+    },
+    {
+      "name": "pentium"
+    },
+    {
+      "name": "pentium2"
+    },
+    {
+      "name": "pentium3"
+    },
+    {
+      "name": "athlon"
+    },
+    {
+      "name": "n270"
+    },
+    {
+      "name": "Conroe"
+    },
+    {
+      "name": "Penryn"
+    },
+    {
+      "name": "Nehalem"
+    },
+    {
+      "name": "Westmere"
+    },
+    {
+      "name": "SandyBridge"
+    },
+    {
+      "name": "Opteron_G1"
+    },
+    {
+      "name": "Opteron_G2"
+    },
+    {
+      "name": "Opteron_G3"
+    },
+    {
+      "name": "Opteron_G4"
+    }
+  ],
+  "id": "libvirt-2"
 }
