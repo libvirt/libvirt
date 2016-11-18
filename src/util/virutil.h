@@ -206,6 +206,10 @@ char *virGetFCHostNameByWWN(const char *sysfs_prefix,
                             const char *wwpn)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
+char *virGetFCHostNameByFabricWWN(const char *sysfs_prefix,
+                                  const char *fabric_wwn)
+    ATTRIBUTE_NONNULL(2);
+
 char *virFindFCHostCapableVport(const char *sysfs_prefix);
 
 int virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr);

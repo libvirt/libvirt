@@ -2166,6 +2166,60 @@ virManageVport(const int parent_host,
     return ret;
 }
 
+
+/* virReadCompareWWN
+ * @prefix: path to the wwn file
+ * @d_name: name of the current directory
+ * @f_name: file name to read
+ *
+ * Read/compare the on-disk file with the passed wwn value.
+ *
+ * Returns:
+ *   -1 : Error
+ *    0 : No match
+ *    1 : Match
+ */
+static int
+virReadCompareWWN(const char *prefix,
+                  const char *d_name,
+                  const char *f_name,
+                  const char *wwn)
+{
+    char *path;
+    char *buf = NULL;
+    char *p;
+    int ret = -1;
+
+    if (virAsprintf(&path, "%s/%s/%s", prefix, d_name, f_name) < 0)
+        return -1;
+
+    if (!virFileExists(path)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (virFileReadAll(path, 1024, &buf) < 0)
+        goto cleanup;
+
+    if ((p = strchr(buf, '\n')))
+        *p = '\0';
+    if (STRPREFIX(buf, "0x"))
+        p = buf + strlen("0x");
+    else
+        p = buf;
+
+    if (STRNEQ(wwn, p))
+        ret = 0;
+    else
+        ret = 1;
+
+ cleanup:
+    VIR_FREE(path);
+    VIR_FREE(buf);
+
+    return ret;
+}
+
 /* virGetFCHostNameByWWN:
  *
  * Iterate over the sysfs tree to get FC host name (e.g. host5)
@@ -2182,56 +2236,26 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
     const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH;
     struct dirent *entry = NULL;
     DIR *dir = NULL;
-    char *wwnn_path = NULL;
-    char *wwpn_path = NULL;
-    char *wwnn_buf = NULL;
-    char *wwpn_buf = NULL;
-    char *p;
     char *ret = NULL;
 
     if (virDirOpen(&dir, prefix) < 0)
         return NULL;
 
-# define READ_WWN(wwn_path, buf)                      \
-    do {                                              \
-        if (virFileReadAll(wwn_path, 1024, &buf) < 0) \
-            goto cleanup;                             \
-        if ((p = strchr(buf, '\n')))                  \
-            *p = '\0';                                \
-        if (STRPREFIX(buf, "0x"))                     \
-            p = buf + strlen("0x");                   \
-        else                                          \
-            p = buf;                                  \
-    } while (0)
-
     while (virDirRead(dir, &entry, prefix) > 0) {
-        VIR_FREE(wwnn_buf);
-        VIR_FREE(wwnn_path);
-        VIR_FREE(wwpn_buf);
-        VIR_FREE(wwpn_path);
+        int rc;
 
-        if (virAsprintf(&wwnn_path, "%s/%s/node_name", prefix,
-                        entry->d_name) < 0)
+        if ((rc = virReadCompareWWN(prefix, entry->d_name,
+                                    "node_name", wwnn)) < 0)
             goto cleanup;
 
-        if (!virFileExists(wwnn_path))
+        if (rc == 0)
             continue;
 
-        READ_WWN(wwnn_path, wwnn_buf);
-
-        if (STRNEQ(wwnn, p))
-            continue;
-
-        if (virAsprintf(&wwpn_path, "%s/%s/port_name", prefix,
-                        entry->d_name) < 0)
+        if ((rc = virReadCompareWWN(prefix, entry->d_name,
+                                    "port_name", wwpn)) < 0)
             goto cleanup;
 
-        if (!virFileExists(wwpn_path))
-            continue;
-
-        READ_WWN(wwpn_path, wwpn_buf);
-
-        if (STRNEQ(wwpn, p))
+        if (rc == 0)
             continue;
 
         ignore_value(VIR_STRDUP(ret, entry->d_name));
@@ -2239,12 +2263,59 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
     }
 
  cleanup:
-# undef READ_WWN
     VIR_DIR_CLOSE(dir);
-    VIR_FREE(wwnn_path);
-    VIR_FREE(wwpn_path);
-    VIR_FREE(wwnn_buf);
-    VIR_FREE(wwpn_buf);
+    return ret;
+}
+
+/* virGetFCHostNameByFabricWWN:
+ *
+ * Iterate over the sysfs tree to get FC host name (e.g. host5)
+ * by the provided "fabric_wwn". This would find a host on a SAN.
+ *
+ * Returns the FC host name which must be freed by the caller,
+ * or NULL on failure.
+ */
+char *
+virGetFCHostNameByFabricWWN(const char *sysfs_prefix,
+                            const char *fabric_wwn)
+{
+    const char *prefix = sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH;
+    struct dirent *entry = NULL;
+    DIR *dir = NULL;
+    char *vport_create_path = NULL;
+    char *ret = NULL;
+
+    if (virDirOpen(&dir, prefix) < 0)
+        return NULL;
+
+    while (virDirRead(dir, &entry, prefix) > 0) {
+        int rc;
+
+        VIR_FREE(vport_create_path);
+
+        /* Existing vHBA's will have the same fabric_name, but won't
+         * have the vport_create file - so we check for both */
+        if (virAsprintf(&vport_create_path, "%s/%s/vport_create", prefix,
+                        entry->d_name) < 0)
+            goto cleanup;
+
+        if (!virFileExists(vport_create_path))
+            continue;
+
+        if ((rc = virReadCompareWWN(prefix, entry->d_name,
+                                    "fabric_name", fabric_wwn)) < 0)
+            goto cleanup;
+
+        if (rc == 0)
+            continue;
+
+        ignore_value(VIR_STRDUP(ret, entry->d_name));
+        break;
+    }
+
+ cleanup:
+    VIR_DIR_CLOSE(dir);
+    VIR_FREE(vport_create_path);
     return ret;
 }
 
