@@ -695,6 +695,7 @@ createVport(virConnectPtr conn,
     unsigned int parent_host;
     char *name = NULL;
     char *parent_hoststr = NULL;
+    bool skip_capable_check = false;
     virStoragePoolFCRefreshInfoPtr cbdata = NULL;
     virThread thread;
     int ret = -1;
@@ -725,6 +726,23 @@ createVport(virConnectPtr conn,
     if (adapter->data.fchost.parent) {
         if (VIR_STRDUP(parent_hoststr, adapter->data.fchost.parent) < 0)
             goto cleanup;
+    } else if (adapter->data.fchost.parent_wwnn &&
+               adapter->data.fchost.parent_wwpn) {
+        if (!(parent_hoststr =
+              virGetFCHostNameByWWN(NULL, adapter->data.fchost.parent_wwnn,
+                                    adapter->data.fchost.parent_wwpn))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("cannot find parent using provided wwnn/wwpn"));
+            goto cleanup;
+        }
+    } else if (adapter->data.fchost.parent_fabric_wwn) {
+        if (!(parent_hoststr =
+              virGetFCHostNameByFabricWWN(NULL,
+                                          adapter->data.fchost.parent_fabric_wwn))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("cannot find parent using provided fabric_wwn"));
+            goto cleanup;
+        }
     } else {
         if (!(parent_hoststr = virFindFCHostCapableVport(NULL))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -732,6 +750,7 @@ createVport(virConnectPtr conn,
                              "cannot find one on this host"));
             goto cleanup;
         }
+        skip_capable_check = true;
     }
 
     if (virGetSCSIHostNumber(parent_hoststr, &parent_host) < 0)
@@ -745,7 +764,7 @@ createVport(virConnectPtr conn,
      * parent. Besides we have a way to determine the parent based on
      * the 'name' field.
      */
-    if (adapter->data.fchost.parent && !virIsCapableFCHost(NULL, parent_host)) {
+    if (!skip_capable_check && !virIsCapableFCHost(NULL, parent_host)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("parent '%s' specified for vHBA is not vport capable"),
                        parent_hoststr);
