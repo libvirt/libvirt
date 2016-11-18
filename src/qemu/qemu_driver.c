@@ -11009,7 +11009,7 @@ qemuDomainInterfaceStats(virDomainPtr dom,
         if (virNetDevOpenvswitchInterfaceStats(path, stats) < 0)
             goto cleanup;
     } else {
-        if (virNetInterfaceStats(path, stats) < 0)
+        if (virNetDevTapInterfaceStats(path, stats) < 0)
             goto cleanup;
     }
 
@@ -19204,7 +19204,7 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                 continue;
             }
         } else {
-            if (virNetInterfaceStats(dom->def->nets[i]->ifname, &tmp) < 0) {
+            if (virNetDevTapInterfaceStats(dom->def->nets[i]->ifname, &tmp) < 0) {
                 virResetLastError();
                 continue;
             }

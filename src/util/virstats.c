@@ -50,10 +50,10 @@
  */
 #ifdef __linux__
 int
-virNetInterfaceStats(const char *path,
-                     virDomainInterfaceStatsPtr stats)
+virNetDevTapInterfaceStats(const char *ifname,
+                           virDomainInterfaceStatsPtr stats)
 {
-    int path_len;
+    int ifname_len;
     FILE *fp;
     char line[256], *colon;
 
@@ -64,7 +64,7 @@ virNetInterfaceStats(const char *path,
         return -1;
     }
 
-    path_len = strlen(path);
+    ifname_len = strlen(ifname);
 
     while (fgets(line, sizeof(line), fp)) {
         long long dummy;
@@ -84,15 +84,15 @@ virNetInterfaceStats(const char *path,
         colon = strchr(line, ':');
         if (!colon) continue;
         *colon = '\0';
-        if (colon-path_len >= line &&
-            STREQ(colon-path_len, path)) {
+        if (colon - ifname_len >= line &&
+            STREQ(colon - ifname_len, ifname)) {
             /* IMPORTANT NOTE!
              * /proc/net/dev vif<domid>.nn sees the network from the point
              * of view of dom0 / hypervisor.  So bytes TRANSMITTED by dom0
              * are bytes RECEIVED by the domain.  That's why the TX/RX fields
              * appear to be swapped here.
              */
-            if (sscanf(colon+1,
+            if (sscanf(colon + 1,
                        "%lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld",
                        &tx_bytes, &tx_packets, &tx_errs, &tx_drop,
                        &dummy, &dummy, &dummy, &dummy,
@@ -121,8 +121,8 @@ virNetInterfaceStats(const char *path,
 }
 #elif defined(HAVE_GETIFADDRS) && defined(AF_LINK)
 int
-virNetInterfaceStats(const char *path,
-                     virDomainInterfaceStatsPtr stats)
+virNetDevTapInterfaceStats(const char *ifname,
+                           virDomainInterfaceStatsPtr stats)
 {
     struct ifaddrs *ifap, *ifa;
     struct if_data *ifd;
@@ -138,7 +138,7 @@ virNetInterfaceStats(const char *path,
         if (ifa->ifa_addr->sa_family != AF_LINK)
             continue;
 
-        if (STREQ(ifa->ifa_name, path)) {
+        if (STREQ(ifa->ifa_name, ifname)) {
             ifd = (struct if_data *)ifa->ifa_data;
             stats->tx_bytes = ifd->ifi_ibytes;
             stats->tx_packets = ifd->ifi_ipackets;
@@ -167,8 +167,8 @@ virNetInterfaceStats(const char *path,
 }
 #else
 int
-virNetInterfaceStats(const char *path ATTRIBUTE_UNUSED,
-                     virDomainInterfaceStatsPtr stats ATTRIBUTE_UNUSED)
+virNetDevTapInterfaceStats(const char *ifname ATTRIBUTE_UNUSED,
+                           virDomainInterfaceStatsPtr stats ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("interface stats not implemented on this platform"));

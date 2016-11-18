@@ -25,7 +25,8 @@
 
 # include "internal.h"
 
-int virNetInterfaceStats(const char *path,
-                         virDomainInterfaceStatsPtr stats);
+int virNetDevTapInterfaceStats(const char *ifname,
+                               virDomainInterfaceStatsPtr stats)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 #endif /* __STATS_LINUX_H__ */
