@@ -697,6 +697,7 @@ createVport(virConnectPtr conn,
     char *parent_hoststr = NULL;
     virStoragePoolFCRefreshInfoPtr cbdata = NULL;
     virThread thread;
+    int ret = -1;
 
     if (adapter->type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
         return 0;
@@ -725,17 +726,14 @@ createVport(virConnectPtr conn,
      */
     if ((name = virGetFCHostNameByWWN(NULL, adapter->data.fchost.wwnn,
                                       adapter->data.fchost.wwpn))) {
-        int retval = 0;
-
         /* If a parent was provided, let's make sure the 'name' we've
          * retrieved has the same parent
          */
         if (adapter->data.fchost.parent &&
-            !checkVhbaSCSIHostParent(conn, name, adapter->data.fchost.parent))
-            retval = -1;
+            checkVhbaSCSIHostParent(conn, name, adapter->data.fchost.parent))
+            ret = 0;
 
-        VIR_FREE(name);
-        return retval;
+        goto cleanup;
     }
 
     if (!adapter->data.fchost.parent) {
@@ -743,13 +741,11 @@ createVport(virConnectPtr conn,
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("'parent' for vHBA not specified, and "
                              "cannot find one on this host"));
-            return -1;
+            goto cleanup;
         }
 
-        if (virGetSCSIHostNumber(parent_hoststr, &parent_host) < 0) {
-            VIR_FREE(parent_hoststr);
-            return -1;
-        }
+        if (virGetSCSIHostNumber(parent_hoststr, &parent_host) < 0)
+            goto cleanup;
 
         /* NOTE:
          * We do not save the parent_hoststr in adapter->data.fchost.parent
@@ -759,7 +755,6 @@ createVport(virConnectPtr conn,
          * parent. Besides we have a way to determine the parent based on
          * the 'name' field.
          */
-        VIR_FREE(parent_hoststr);
     }
 
     /* Since we're creating the vHBA, then we need to manage removing it
@@ -771,13 +766,13 @@ createVport(virConnectPtr conn,
         adapter->data.fchost.managed = VIR_TRISTATE_BOOL_YES;
         if (configFile) {
             if (virStoragePoolSaveConfig(configFile, pool->def) < 0)
-                return -1;
+                goto cleanup;
         }
     }
 
     if (virManageVport(parent_host, adapter->data.fchost.wwpn,
                        adapter->data.fchost.wwnn, VPORT_CREATE) < 0)
-        return -1;
+        goto cleanup;
 
     virFileWaitForDevices();
 
@@ -790,8 +785,7 @@ createVport(virConnectPtr conn,
                                       adapter->data.fchost.wwpn))) {
         if (VIR_ALLOC(cbdata) == 0) {
             memcpy(cbdata->pool_uuid, pool->def->uuid, VIR_UUID_BUFLEN);
-            cbdata->fchost_name = name;
-            name = NULL;
+            VIR_STEAL_PTR(cbdata->fchost_name, name);
 
             if (virThreadCreate(&thread, false, virStoragePoolFCRefreshThread,
                                 cbdata) < 0) {
@@ -800,10 +794,14 @@ createVport(virConnectPtr conn,
                 virStoragePoolFCRefreshDataFree(cbdata);
             }
         }
-        VIR_FREE(name);
     }
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(name);
+    VIR_FREE(parent_hoststr);
+    return ret;
 }
 
 static int
