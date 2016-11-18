@@ -2205,43 +2205,34 @@ virGetFCHostNameByWWN(const char *sysfs_prefix,
     } while (0)
 
     while (virDirRead(dir, &entry, prefix) > 0) {
+        VIR_FREE(wwnn_buf);
+        VIR_FREE(wwnn_path);
+        VIR_FREE(wwpn_buf);
+        VIR_FREE(wwpn_path);
+
         if (virAsprintf(&wwnn_path, "%s/%s/node_name", prefix,
                         entry->d_name) < 0)
             goto cleanup;
 
-        if (!virFileExists(wwnn_path)) {
-            VIR_FREE(wwnn_path);
+        if (!virFileExists(wwnn_path))
             continue;
-        }
 
         READ_WWN(wwnn_path, wwnn_buf);
 
-        if (STRNEQ(wwnn, p)) {
-            VIR_FREE(wwnn_buf);
-            VIR_FREE(wwnn_path);
+        if (STRNEQ(wwnn, p))
             continue;
-        }
 
         if (virAsprintf(&wwpn_path, "%s/%s/port_name", prefix,
                         entry->d_name) < 0)
             goto cleanup;
 
-        if (!virFileExists(wwpn_path)) {
-            VIR_FREE(wwnn_buf);
-            VIR_FREE(wwnn_path);
-            VIR_FREE(wwpn_path);
+        if (!virFileExists(wwpn_path))
             continue;
-        }
 
         READ_WWN(wwpn_path, wwpn_buf);
 
-        if (STRNEQ(wwpn, p)) {
-            VIR_FREE(wwnn_path);
-            VIR_FREE(wwpn_path);
-            VIR_FREE(wwnn_buf);
-            VIR_FREE(wwpn_buf);
+        if (STRNEQ(wwpn, p))
             continue;
-        }
 
         ignore_value(VIR_STRDUP(ret, entry->d_name));
         break;
