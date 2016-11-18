@@ -71,3 +71,15 @@ h6 {
   margin-top: 0.75em;
   font-size: 0.8em;
 }
+
+code, pre {
+  font-family: LibvirtOverpassMono;
+}
+
+dd code, p code {
+  background-color: #eeeeee;
+}
+
+pre {
+  font-size: 90%;
+}
