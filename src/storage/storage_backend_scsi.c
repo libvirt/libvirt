@@ -706,20 +706,6 @@ createVport(virConnectPtr conn,
               conn, NULLSTR(configFile), NULLSTR(adapter->data.fchost.parent),
               adapter->data.fchost.wwnn, adapter->data.fchost.wwpn);
 
-    /* If a parent was provided, then let's make sure it's vhost capable */
-    if (adapter->data.fchost.parent) {
-        if (virGetSCSIHostNumber(adapter->data.fchost.parent, &parent_host) < 0)
-            return -1;
-
-        if (!virIsCapableFCHost(NULL, parent_host)) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("parent '%s' specified for vHBA "
-                             "is not vport capable"),
-                           adapter->data.fchost.parent);
-            return -1;
-        }
-    }
-
     /* If we find an existing HBA/vHBA within the fc_host sysfs
      * using the wwnn/wwpn, then a nodedev is already created for
      * this pool and we don't have to create the vHBA
@@ -734,6 +720,20 @@ createVport(virConnectPtr conn,
             ret = 0;
 
         goto cleanup;
+    }
+
+    /* If a parent was provided, then let's make sure it's vhost capable */
+    if (adapter->data.fchost.parent) {
+        if (virGetSCSIHostNumber(adapter->data.fchost.parent, &parent_host) < 0)
+            goto cleanup;
+
+        if (!virIsCapableFCHost(NULL, parent_host)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("parent '%s' specified for vHBA "
+                             "is not vport capable"),
+                           adapter->data.fchost.parent);
+            goto cleanup;
+        }
     }
 
     if (!adapter->data.fchost.parent) {
