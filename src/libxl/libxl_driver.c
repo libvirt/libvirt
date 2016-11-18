@@ -61,7 +61,7 @@
 #include "virhostdev.h"
 #include "network/bridge_driver.h"
 #include "locking/domain_lock.h"
-#include "virstats.h"
+#include "virnetdevtap.h"
 #include "cpu/cpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL

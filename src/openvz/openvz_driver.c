@@ -57,7 +57,7 @@
 #include "virlog.h"
 #include "vircommand.h"
 #include "viruri.h"
-#include "virstats.h"
+#include "virnetdevtap.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ

@@ -242,7 +242,6 @@ src/util/virscsivhost.c
 src/util/virsecret.c
 src/util/virsexpr.c
 src/util/virsocketaddr.c
-src/util/virstats.c
 src/util/virstorageencryption.c
 src/util/virstoragefile.c
 src/util/virstring.c

@@ -65,7 +65,7 @@
 #include "nodeinfo.h"
 #include "virhostcpu.h"
 #include "virhostmem.h"
-#include "virstats.h"
+#include "virnetdevtap.h"
 #include "virnetdevopenvswitch.h"
 #include "capabilities.h"
 #include "viralloc.h"

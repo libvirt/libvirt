@@ -68,7 +68,7 @@
 #include "xen_driver.h"
 #include "xen_hypervisor.h"
 #include "xs_internal.h"
-#include "virstats.h"
+#include "virnetdevtap.h"
 #include "block_stats.h"
 #include "xend_internal.h"
 #include "virbuffer.h"
