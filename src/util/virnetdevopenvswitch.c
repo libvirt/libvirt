@@ -24,6 +24,8 @@
 
 #include <config.h>
 
+#include <stdio.h>
+
 #include "virnetdevopenvswitch.h"
 #include "vircommand.h"
 #include "viralloc.h"
@@ -267,6 +269,111 @@ int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
 
     ret = 0;
  cleanup:
+    virCommandFree(cmd);
+    return ret;
+}
+
+/**
+ * virNetDevOpenvswitchInterfaceStats:
+ * @ifname: the name of the interface
+ * @stats: the retreived domain interface stat
+ *
+ * Retrieves the OVS interfaces stats
+ *
+ * Returns 0 in case of success or -1 in case of failure
+ */
+int
+virNetDevOpenvswitchInterfaceStats(const char *ifname,
+                                   virDomainInterfaceStatsPtr stats)
+{
+    virCommandPtr cmd = NULL;
+    char *output;
+    long long rx_bytes;
+    long long rx_packets;
+    long long tx_bytes;
+    long long tx_packets;
+    long long rx_errs;
+    long long rx_drop;
+    long long tx_errs;
+    long long tx_drop;
+    int ret = -1;
+
+    /* Just ensure the interface exists in ovs */
+    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5",
+                               "get", "Interface", ifname,
+                               "name", NULL);
+    virCommandSetOutputBuffer(cmd, &output);
+
+    if (virCommandRun(cmd, NULL) < 0) {
+        /* no ovs-vsctl or interface 'ifname' doesn't exists in ovs */
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Interface not found"));
+        goto cleanup;
+    }
+
+    VIR_FREE(output);
+    virCommandFree(cmd);
+
+    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5",
+                               "get", "Interface", ifname,
+                               "statistics:rx_bytes",
+                               "statistics:rx_packets",
+                               "statistics:tx_bytes",
+                               "statistics:tx_packets", NULL);
+    virCommandSetOutputBuffer(cmd, &output);
+
+    if (virCommandRun(cmd, NULL) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Interface doesn't have statistics"));
+        goto cleanup;
+    }
+
+    /* The TX/RX fields appear to be swapped here
+     * because this is the host view. */
+    if (sscanf(output, "%lld\n%lld\n%lld\n%lld\n",
+               &tx_bytes, &tx_packets, &rx_bytes, &rx_packets) != 4) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Fail to parse ovs-vsctl output"));
+        goto cleanup;
+    }
+
+    stats->rx_bytes = rx_bytes;
+    stats->rx_packets = rx_packets;
+    stats->tx_bytes = tx_bytes;
+    stats->tx_packets = tx_packets;
+
+    VIR_FREE(output);
+    virCommandFree(cmd);
+
+    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5",
+                               "get", "Interface", ifname,
+                               "statistics:rx_errors",
+                               "statistics:rx_dropped",
+                               "statistics:tx_errors",
+                               "statistics:tx_dropped", NULL);
+    virCommandSetOutputBuffer(cmd, &output);
+    if (virCommandRun(cmd, NULL) < 0) {
+        /* This interface don't have errors or dropped, so set them to 0 */
+        stats->rx_errs = 0;
+        stats->rx_drop = 0;
+        stats->tx_errs = 0;
+        stats->tx_drop = 0;
+    } else if (sscanf(output, "%lld\n%lld\n%lld\n%lld\n",
+                      &tx_errs, &tx_drop, &rx_errs, &rx_drop) == 4) {
+        stats->rx_errs = rx_errs;
+        stats->rx_drop = rx_drop;
+        stats->tx_errs = tx_errs;
+        stats->tx_drop = tx_drop;
+        ret = 0;
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Fail to parse ovs-vsctl output"));
+        goto cleanup;
+    }
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(output);
     virCommandFree(cmd);
     return ret;
 }

@@ -2047,6 +2047,7 @@ virNetDevMidonetUnbindPort;
 # util/virnetdevopenvswitch.h
 virNetDevOpenvswitchAddPort;
 virNetDevOpenvswitchGetMigrateData;
+virNetDevOpenvswitchInterfaceStats;
 virNetDevOpenvswitchRemovePort;
 virNetDevOpenvswitchSetMigrateData;
 

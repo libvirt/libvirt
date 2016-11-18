@@ -66,6 +66,7 @@
 #include "virhostcpu.h"
 #include "virhostmem.h"
 #include "virstats.h"
+#include "virnetdevopenvswitch.h"
 #include "capabilities.h"
 #include "viralloc.h"
 #include "viruuid.h"
@@ -10974,6 +10975,7 @@ qemuDomainInterfaceStats(virDomainPtr dom,
                          virDomainInterfaceStatsPtr stats)
 {
     virDomainObjPtr vm;
+    virDomainNetDefPtr net = NULL;
     size_t i;
     int ret = -1;
 
@@ -10991,19 +10993,27 @@ qemuDomainInterfaceStats(virDomainPtr dom,
 
     /* Check the path is one of the domain's network interfaces. */
     for (i = 0; i < vm->def->nnets; i++) {
-        if (vm->def->nets[i]->ifname &&
-            STREQ(vm->def->nets[i]->ifname, path)) {
-            ret = 0;
+        if (STREQ_NULLABLE(vm->def->nets[i]->ifname, path)) {
+            net = vm->def->nets[i];
             break;
         }
     }
 
-    if (ret == 0)
-        ret = virNetInterfaceStats(path, stats);
-    else
+    if (!net) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("invalid path, '%s' is not a known interface"), path);
+        goto cleanup;
+    }
 
+    if (net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+        if (virNetDevOpenvswitchInterfaceStats(path, stats) < 0)
+            goto cleanup;
+    } else {
+        if (virNetInterfaceStats(path, stats) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
  cleanup:
     virDomainObjEndAPI(&vm);
     return ret;
@@ -19187,9 +19197,17 @@ qemuDomainGetStatsInterface(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
         QEMU_ADD_NAME_PARAM(record, maxparams,
                             "net", "name", i, dom->def->nets[i]->ifname);
 
-        if (virNetInterfaceStats(dom->def->nets[i]->ifname, &tmp) < 0) {
-            virResetLastError();
-            continue;
+        if (dom->def->nets[i]->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
+            if (virNetDevOpenvswitchInterfaceStats(dom->def->nets[i]->ifname,
+                                                   &tmp) < 0) {
+                virResetLastError();
+                continue;
+            }
+        } else {
+            if (virNetInterfaceStats(dom->def->nets[i]->ifname, &tmp) < 0) {
+                virResetLastError();
+                continue;
+            }
         }
 
         QEMU_ADD_NET_PARAM(record, maxparams, i,
