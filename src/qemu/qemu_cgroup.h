@@ -43,6 +43,10 @@ int qemuSetupHostdevCgroup(virDomainObjPtr vm,
 int qemuTeardownHostdevCgroup(virDomainObjPtr vm,
                               virDomainHostdevDefPtr dev)
    ATTRIBUTE_RETURN_CHECK;
+int qemuSetupRNGCgroup(virDomainObjPtr vm,
+                       virDomainRNGDefPtr rng);
+int qemuTeardownRNGCgroup(virDomainObjPtr vm,
+                          virDomainRNGDefPtr rng);
 int qemuConnectCgroup(virQEMUDriverPtr driver,
                       virDomainObjPtr vm);
 int qemuSetupCgroup(virQEMUDriverPtr driver,

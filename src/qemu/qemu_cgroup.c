@@ -569,6 +569,54 @@ qemuSetupFirmwareCgroup(virDomainObjPtr vm)
 }
 
 
+int
+qemuSetupRNGCgroup(virDomainObjPtr vm,
+                   virDomainRNGDefPtr rng)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int rv;
+
+    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM) {
+        VIR_DEBUG("Setting Cgroup ACL for RNG device");
+        rv = virCgroupAllowDevicePath(priv->cgroup,
+                                      rng->source.file,
+                                      VIR_CGROUP_DEVICE_RW, false);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
+                                 rng->source.file,
+                                 "rw", rv == 0);
+        if (rv < 0 &&
+            !virLastErrorIsSystemErrno(ENOENT))
+            return -1;
+    }
+
+    return 0;
+}
+
+
+int
+qemuTeardownRNGCgroup(virDomainObjPtr vm,
+                      virDomainRNGDefPtr rng)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int rv;
+
+    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM) {
+        VIR_DEBUG("Tearing down Cgroup ACL for RNG device");
+        rv = virCgroupDenyDevicePath(priv->cgroup,
+                                     rng->source.file,
+                                     VIR_CGROUP_DEVICE_RW, false);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
+                                 rng->source.file,
+                                 "rw", rv == 0);
+        if (rv < 0 &&
+            !virLastErrorIsSystemErrno(ENOENT))
+            return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
                        virDomainObjPtr vm)
@@ -663,18 +711,8 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
     }
 
     for (i = 0; i < vm->def->nrngs; i++) {
-        if (vm->def->rngs[i]->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM) {
-            VIR_DEBUG("Setting Cgroup ACL for RNG device");
-            rv = virCgroupAllowDevicePath(priv->cgroup,
-                                          vm->def->rngs[i]->source.file,
-                                          VIR_CGROUP_DEVICE_RW, false);
-            virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
-                                     vm->def->rngs[i]->source.file,
-                                     "rw", rv == 0);
-            if (rv < 0 &&
-                !virLastErrorIsSystemErrno(ENOENT))
-                goto cleanup;
-        }
+        if (qemuSetupRNGCgroup(vm, vm->def->rngs[i]) < 0)
+            goto cleanup;
     }
 
     ret = 0;
