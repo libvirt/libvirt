@@ -1,6 +1,6 @@
 <domainCapabilities>
   <path>/usr/bin/qemu-system-x86_64</path>
-  <domain>qemu</domain>
+  <domain>kvm</domain>
   <machine>pc-i440fx-1.7</machine>
   <arch>x86_64</arch>
   <vcpu max='255'/>
@@ -19,7 +19,7 @@
     </loader>
   </os>
   <cpu>
-    <mode name='host-passthrough' supported='no'/>
+    <mode name='host-passthrough' supported='yes'/>
     <mode name='host-model' supported='yes'>
       <model fallback='allow'>Broadwell</model>
     </mode>
