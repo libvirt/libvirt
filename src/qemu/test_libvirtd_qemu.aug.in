@@ -90,3 +90,4 @@ module Test_libvirtd_qemu =
     { "3" = "/usr/share/AAVMF/AAVMF_CODE.fd:/usr/share/AAVMF/AAVMF_VARS.fd" }
 }
 { "stdio_handler" = "logd" }
+{ "gluster_debug_level" = "9" }
