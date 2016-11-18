@@ -6606,7 +6606,6 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
         }
     }
 
-    /* Set the migration source and start it up. */
     if (qemuProcessStart(conn, driver, vm, asyncJob,
                          "stdio", *fd, path, NULL,
                          VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
