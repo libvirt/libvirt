@@ -1777,8 +1777,8 @@ virGetDeviceUnprivSGIO(const char *path,
 }
 
 #ifdef __linux__
-# define SYSFS_FC_HOST_PATH "/sys/class/fc_host/"
-# define SYSFS_SCSI_HOST_PATH "/sys/class/scsi_host/"
+# define SYSFS_FC_HOST_PATH "/sys/class/fc_host"
+# define SYSFS_SCSI_HOST_PATH "/sys/class/scsi_host"
 
 /* virReadSCSIUniqueId:
  * @sysfs_prefix: "scsi_host" sysfs path, defaults to SYSFS_SCSI_HOST_PATH
