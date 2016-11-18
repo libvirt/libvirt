@@ -829,4 +829,12 @@ int qemuDomainNamespaceSetupChardev(virQEMUDriverPtr driver,
 int qemuDomainNamespaceTeardownChardev(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
                                        virDomainChrDefPtr chr);
+
+int qemuDomainNamespaceSetupRNG(virQEMUDriverPtr driver,
+                                    virDomainObjPtr vm,
+                                    virDomainRNGDefPtr rng);
+
+int qemuDomainNamespaceTeardownRNG(virQEMUDriverPtr driver,
+                                       virDomainObjPtr vm,
+                                       virDomainRNGDefPtr rng);
 #endif /* __QEMU_DOMAIN_H__ */
