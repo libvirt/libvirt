@@ -39,3 +39,24 @@
 	font-weight: 300;
 	font-style: italic;
 }
+
+@font-face {
+	font-family: 'LibvirtOverpassMono';
+	src: url('overpass-mono-regular.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'LibvirtOverpassMono';
+	src: url('overpass-mono-bold.woff') format('woff');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'LibvirtOverpassMonoLight';
+	src: url('overpass-mono-light.woff') format('woff');
+	font-weight: 300;
+	font-style: normal;
+}
