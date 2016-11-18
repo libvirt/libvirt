@@ -1183,7 +1183,7 @@ virProcessExitWithStatus(int status)
     exit(value);
 }
 
-#if HAVE_SCHED_SETSCHEDULER && defined(SCHED_BATCH) && defined(SCHED_IDLE)
+#if HAVE_SCHED_SETSCHEDULER
 
 static int
 virProcessSchedTranslatePolicy(virProcessSchedPolicy policy)
@@ -1193,10 +1193,18 @@ virProcessSchedTranslatePolicy(virProcessSchedPolicy policy)
         return SCHED_OTHER;
 
     case VIR_PROC_POLICY_BATCH:
+# ifdef SCHED_BATCH
         return SCHED_BATCH;
+# else
+        return -1;
+# endif
 
     case VIR_PROC_POLICY_IDLE:
+# ifdef SCHED_IDLE
         return SCHED_IDLE;
+# else
+        return -1;
+# endif
 
     case VIR_PROC_POLICY_FIFO:
         return SCHED_FIFO;
@@ -1224,6 +1232,13 @@ virProcessSetScheduler(pid_t pid,
 
     if (!policy)
         return 0;
+
+    if (pol < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Scheduler '%s' is not supported on this platform"),
+                       virProcessSchedPolicyTypeToString(policy));
+        return -1;
+    }
 
     if (pol == SCHED_FIFO || pol == SCHED_RR) {
         int min = 0;
