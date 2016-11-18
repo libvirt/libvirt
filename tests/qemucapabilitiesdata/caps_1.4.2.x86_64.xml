@@ -3,10 +3,10 @@
   <selfctime>0</selfctime>
   <selfvers>0</selfvers>
   <usedQMP/>
+  <flag name='kvm'/>
   <flag name='mem-path'/>
   <flag name='drive-serial'/>
   <flag name='chardev'/>
-  <flag name='enable-kvm'/>
   <flag name='monitor-json'/>
   <flag name='sdl'/>
   <flag name='netdev'/>
@@ -133,6 +133,30 @@
   <kvmVersion>0</kvmVersion>
   <package></package>
   <arch>x86_64</arch>
+  <cpu type='kvm' name='Opteron_G5'/>
+  <cpu type='kvm' name='Opteron_G4'/>
+  <cpu type='kvm' name='Opteron_G3'/>
+  <cpu type='kvm' name='Opteron_G2'/>
+  <cpu type='kvm' name='Opteron_G1'/>
+  <cpu type='kvm' name='Haswell'/>
+  <cpu type='kvm' name='SandyBridge'/>
+  <cpu type='kvm' name='Westmere'/>
+  <cpu type='kvm' name='Nehalem'/>
+  <cpu type='kvm' name='Penryn'/>
+  <cpu type='kvm' name='Conroe'/>
+  <cpu type='kvm' name='n270'/>
+  <cpu type='kvm' name='athlon'/>
+  <cpu type='kvm' name='pentium3'/>
+  <cpu type='kvm' name='pentium2'/>
+  <cpu type='kvm' name='pentium'/>
+  <cpu type='kvm' name='486'/>
+  <cpu type='kvm' name='coreduo'/>
+  <cpu type='kvm' name='kvm32'/>
+  <cpu type='kvm' name='qemu32'/>
+  <cpu type='kvm' name='kvm64'/>
+  <cpu type='kvm' name='core2duo'/>
+  <cpu type='kvm' name='phenom'/>
+  <cpu type='kvm' name='qemu64'/>
   <cpu type='tcg' name='Opteron_G5'/>
   <cpu type='tcg' name='Opteron_G4'/>
   <cpu type='tcg' name='Opteron_G3'/>

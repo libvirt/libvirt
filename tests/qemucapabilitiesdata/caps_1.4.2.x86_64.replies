@@ -313,7 +313,7 @@
 
 {
   "return": {
-    "fd": 12,
+    "fd": 14,
     "fdset-id": 0
   },
   "id": "libvirt-5"
@@ -329,7 +329,7 @@
 
 {
   "return": {
-    "enabled": false,
+    "enabled": true,
     "present": true
   },
   "id": "libvirt-7"
@@ -2136,4 +2136,88 @@
     }
   ],
   "id": "libvirt-46"
+}
+
+{
+  "return": {
+  },
+  "id": "libvirt-1"
+}
+
+{
+  "return": [
+    {
+      "name": "Opteron_G5"
+    },
+    {
+      "name": "Opteron_G4"
+    },
+    {
+      "name": "Opteron_G3"
+    },
+    {
+      "name": "Opteron_G2"
+    },
+    {
+      "name": "Opteron_G1"
+    },
+    {
+      "name": "Haswell"
+    },
+    {
+      "name": "SandyBridge"
+    },
+    {
+      "name": "Westmere"
+    },
+    {
+      "name": "Nehalem"
+    },
+    {
+      "name": "Penryn"
+    },
+    {
+      "name": "Conroe"
+    },
+    {
+      "name": "n270"
+    },
+    {
+      "name": "athlon"
+    },
+    {
+      "name": "pentium3"
+    },
+    {
+      "name": "pentium2"
+    },
+    {
+      "name": "pentium"
+    },
+    {
+      "name": "486"
+    },
+    {
+      "name": "coreduo"
+    },
+    {
+      "name": "kvm32"
+    },
+    {
+      "name": "qemu32"
+    },
+    {
+      "name": "kvm64"
+    },
+    {
+      "name": "core2duo"
+    },
+    {
+      "name": "phenom"
+    },
+    {
+      "name": "qemu64"
+    }
+  ],
+  "id": "libvirt-2"
 }
