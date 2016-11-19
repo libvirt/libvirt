@@ -1848,6 +1848,18 @@ virPCIDeviceGetName(virPCIDevicePtr dev)
     return dev->name;
 }
 
+/**
+ * virPCIDeviceGetConfigPath:
+ *
+ * Returns a pointer to a string containing the path of @dev's PCI
+ * config file.
+ */
+const char *
+virPCIDeviceGetConfigPath(virPCIDevicePtr dev)
+{
+    return dev->path;
+}
+
 void virPCIDeviceSetManaged(virPCIDevicePtr dev, bool managed)
 {
     dev->managed = managed;

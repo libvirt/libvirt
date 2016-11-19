@@ -97,6 +97,7 @@ virPCIDevicePtr virPCIDeviceNew(unsigned int domain,
 virPCIDevicePtr virPCIDeviceCopy(virPCIDevicePtr dev);
 void virPCIDeviceFree(virPCIDevicePtr dev);
 const char *virPCIDeviceGetName(virPCIDevicePtr dev);
+const char *virPCIDeviceGetConfigPath(virPCIDevicePtr dev);
 
 int virPCIDeviceDetach(virPCIDevicePtr dev,
                        virPCIDeviceListPtr activeDevs,

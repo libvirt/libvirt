@@ -2138,6 +2138,7 @@ virPCIDeviceCopy;
 virPCIDeviceDetach;
 virPCIDeviceFileIterate;
 virPCIDeviceFree;
+virPCIDeviceGetConfigPath;
 virPCIDeviceGetDriverPathAndName;
 virPCIDeviceGetIOMMUGroupDev;
 virPCIDeviceGetIOMMUGroupList;
