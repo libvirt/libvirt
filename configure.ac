@@ -2524,6 +2524,15 @@ AC_CHECK_MEMBERS([struct if_data.ifi_oqdrops],
 		 [#include <net/if.h>
 		 ])
 
+AC_CHECK_DECLS([clock_serv_t, host_get_clock_service, clock_get_time],
+               [AC_DEFINE([HAVE_MACH_CLOCK_ROUTINES],
+                          [1],
+                          [whether Mach clock routines are available])],
+               [],
+               [#include <mach/clock.h>
+                #include <mach/mach.h>
+               ])
+
 # Check if we need to look for ifconfig
 if test "$want_ifconfig" = "yes"; then
      AC_PATH_PROG([IFCONFIG_PATH], [ifconfig])

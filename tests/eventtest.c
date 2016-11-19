@@ -26,6 +26,11 @@
 #include <signal.h>
 #include <time.h>
 
+#if HAVE_MACH_CLOCK_ROUTINES
+# include <mach/clock.h>
+# include <mach/mach.h>
+#endif
+
 #include "testutils.h"
 #include "internal.h"
 #include "virfile.h"
@@ -262,7 +267,18 @@ finishJob(const char *name, int handle, int timer)
 {
     struct timespec waitTime;
     int rc;
+#if HAVE_MACH_CLOCK_ROUTINES
+    clock_serv_t cclock;
+    mach_timespec_t mts;
+
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+    clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+    waitTime.tv_sec = mts.tv_sec;
+    waitTime.tv_nsec = mts.tv_nsec;
+#else
     clock_gettime(CLOCK_REALTIME, &waitTime);
+#endif
     waitTime.tv_sec += 5;
     rc = 0;
     while (!eventThreadJobDone && rc == 0)
