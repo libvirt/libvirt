@@ -1,6 +1,6 @@
 <domainCapabilities>
   <path>/usr/bin/qemu-system-aarch64</path>
-  <domain>qemu</domain>
+  <domain>kvm</domain>
   <machine>integratorcp</machine>
   <arch>aarch64</arch>
   <vcpu max='1'/>
@@ -19,7 +19,7 @@
     </loader>
   </os>
   <cpu>
-    <mode name='host-passthrough' supported='no'/>
+    <mode name='host-passthrough' supported='yes'/>
     <mode name='host-model' supported='no'/>
     <mode name='custom' supported='yes'>
       <model usable='unknown'>pxa262</model>
@@ -38,6 +38,7 @@
       <model usable='unknown'>sa1110</model>
       <model usable='unknown'>arm1176</model>
       <model usable='unknown'>cortex-a53</model>
+      <model usable='unknown'>host</model>
       <model usable='unknown'>sa1100</model>
       <model usable='unknown'>pxa270-c5</model>
       <model usable='unknown'>cortex-a9</model>

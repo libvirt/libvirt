@@ -421,11 +421,11 @@ mymain(void)
 
     DO_TEST_QEMU("2.6.0", "caps_2.6.0-gicv2",
                  "/usr/bin/qemu-system-aarch64", NULL,
-                 "aarch64", VIR_DOMAIN_VIRT_QEMU);
+                 "aarch64", VIR_DOMAIN_VIRT_KVM);
 
     DO_TEST_QEMU("2.6.0-gicv2", "caps_2.6.0-gicv2",
                  "/usr/bin/qemu-system-aarch64", "virt",
-                 "aarch64", VIR_DOMAIN_VIRT_QEMU);
+                 "aarch64", VIR_DOMAIN_VIRT_KVM);
 
     DO_TEST_QEMU("2.6.0-gicv3", "caps_2.6.0-gicv3",
                  "/usr/bin/qemu-system-aarch64", "virt",

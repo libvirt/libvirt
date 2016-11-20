@@ -3,10 +3,10 @@
   <selfctime>0</selfctime>
   <selfvers>0</selfvers>
   <usedQMP/>
+  <flag name='kvm'/>
   <flag name='mem-path'/>
   <flag name='drive-serial'/>
   <flag name='chardev'/>
-  <flag name='enable-kvm'/>
   <flag name='monitor-json'/>
   <flag name='sdl'/>
   <flag name='netdev'/>
@@ -167,6 +167,37 @@
   <kvmVersion>0</kvmVersion>
   <package></package>
   <arch>aarch64</arch>
+  <cpu type='kvm' name='pxa262'/>
+  <cpu type='kvm' name='pxa270-a0'/>
+  <cpu type='kvm' name='arm1136'/>
+  <cpu type='kvm' name='cortex-a15'/>
+  <cpu type='kvm' name='pxa260'/>
+  <cpu type='kvm' name='arm1136-r2'/>
+  <cpu type='kvm' name='pxa261'/>
+  <cpu type='kvm' name='pxa255'/>
+  <cpu type='kvm' name='arm926'/>
+  <cpu type='kvm' name='arm11mpcore'/>
+  <cpu type='kvm' name='pxa250'/>
+  <cpu type='kvm' name='ti925t'/>
+  <cpu type='kvm' name='cortex-a57'/>
+  <cpu type='kvm' name='sa1110'/>
+  <cpu type='kvm' name='arm1176'/>
+  <cpu type='kvm' name='cortex-a53'/>
+  <cpu type='kvm' name='host'/>
+  <cpu type='kvm' name='sa1100'/>
+  <cpu type='kvm' name='pxa270-c5'/>
+  <cpu type='kvm' name='cortex-a9'/>
+  <cpu type='kvm' name='cortex-a8'/>
+  <cpu type='kvm' name='pxa270-c0'/>
+  <cpu type='kvm' name='arm1026'/>
+  <cpu type='kvm' name='pxa270-b1'/>
+  <cpu type='kvm' name='cortex-m3'/>
+  <cpu type='kvm' name='cortex-m4'/>
+  <cpu type='kvm' name='pxa270-b0'/>
+  <cpu type='kvm' name='arm946'/>
+  <cpu type='kvm' name='cortex-r5'/>
+  <cpu type='kvm' name='pxa270-a1'/>
+  <cpu type='kvm' name='pxa270'/>
   <cpu type='tcg' name='pxa262'/>
   <cpu type='tcg' name='pxa270-a0'/>
   <cpu type='tcg' name='arm1136'/>

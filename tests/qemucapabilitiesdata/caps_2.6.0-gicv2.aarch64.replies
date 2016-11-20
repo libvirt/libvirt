@@ -454,7 +454,7 @@
 
 {
   "return": {
-    "fd": 15,
+    "fd": 17,
     "fdset-id": 0
   },
   "id": "libvirt-5"
@@ -470,7 +470,7 @@
 
 {
   "return": {
-    "enabled": false,
+    "enabled": true,
     "present": true
   },
   "id": "libvirt-7"
@@ -1524,6 +1524,9 @@
     },
     {
       "name": "digic-uart"
+    },
+    {
+      "name": "host-arm-cpu"
     },
     {
       "name": "i82557c"
@@ -3880,6 +3883,9 @@
     },
     {
       "name": "cortex-a53"
+    },
+    {
+      "name": "host"
     },
     {
       "name": "sa1100"
@@ -12964,4 +12970,106 @@
     }
   ],
   "id": "libvirt-48"
+}
+
+{
+  "return": {
+  },
+  "id": "libvirt-1"
+}
+
+{
+  "return": [
+    {
+      "name": "pxa262"
+    },
+    {
+      "name": "pxa270-a0"
+    },
+    {
+      "name": "arm1136"
+    },
+    {
+      "name": "cortex-a15"
+    },
+    {
+      "name": "pxa260"
+    },
+    {
+      "name": "arm1136-r2"
+    },
+    {
+      "name": "pxa261"
+    },
+    {
+      "name": "pxa255"
+    },
+    {
+      "name": "arm926"
+    },
+    {
+      "name": "arm11mpcore"
+    },
+    {
+      "name": "pxa250"
+    },
+    {
+      "name": "ti925t"
+    },
+    {
+      "name": "cortex-a57"
+    },
+    {
+      "name": "sa1110"
+    },
+    {
+      "name": "arm1176"
+    },
+    {
+      "name": "cortex-a53"
+    },
+    {
+      "name": "sa1100"
+    },
+    {
+      "name": "pxa270-c5"
+    },
+    {
+      "name": "cortex-a9"
+    },
+    {
+      "name": "cortex-a8"
+    },
+    {
+      "name": "pxa270-c0"
+    },
+    {
+      "name": "arm1026"
+    },
+    {
+      "name": "pxa270-b1"
+    },
+    {
+      "name": "cortex-m3"
+    },
+    {
+      "name": "cortex-m4"
+    },
+    {
+      "name": "pxa270-b0"
+    },
+    {
+      "name": "arm946"
+    },
+    {
+      "name": "cortex-r5"
+    },
+    {
+      "name": "pxa270-a1"
+    },
+    {
+      "name": "pxa270"
+    }
+  ],
+  "id": "libvirt-2"
 }
