@@ -1228,7 +1228,8 @@ virProcessSetScheduler(pid_t pid,
     struct sched_param param = {0};
     int pol = virProcessSchedTranslatePolicy(policy);
 
-    VIR_DEBUG("pid=%d, policy=%d, priority=%u", pid, policy, priority);
+    VIR_DEBUG("pid=%lld, policy=%d, priority=%u",
+              (long long) pid, policy, priority);
 
     if (!policy)
         return 0;
@@ -1270,8 +1271,8 @@ virProcessSetScheduler(pid_t pid,
 
     if (sched_setscheduler(pid, pol, &param) < 0) {
         virReportSystemError(errno,
-                             _("Cannot set scheduler parameters for pid %d"),
-                             pid);
+                             _("Cannot set scheduler parameters for pid %lld"),
+                             (long long) pid);
         return -1;
     }
 
