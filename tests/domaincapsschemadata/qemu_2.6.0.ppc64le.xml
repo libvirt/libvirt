@@ -1,6 +1,6 @@
 <domainCapabilities>
   <path>/usr/bin/qemu-system-ppc64</path>
-  <domain>qemu</domain>
+  <domain>kvm</domain>
   <machine>pseries-2.6</machine>
   <arch>ppc64le</arch>
   <vcpu max='255'/>
@@ -19,13 +19,14 @@
     </loader>
   </os>
   <cpu>
-    <mode name='host-passthrough' supported='no'/>
+    <mode name='host-passthrough' supported='yes'/>
     <mode name='host-model' supported='yes'>
       <model fallback='allow'>POWER8</model>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='unknown'>POWER8</model>
       <model usable='unknown'>POWER7</model>
+      <model usable='unknown'>POWER8</model>
     </mode>
   </cpu>
   <devices>

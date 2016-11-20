@@ -451,7 +451,7 @@
 
 {
   "return": {
-    "fd": 14,
+    "fd": 15,
     "fdset-id": 0
   },
   "id": "libvirt-5"
@@ -467,7 +467,7 @@
 
 {
   "return": {
-    "enabled": false,
+    "enabled": true,
     "present": true
   },
   "id": "libvirt-7"
@@ -792,9 +792,6 @@
     },
     {
       "name": "401F2-powerpc64-cpu"
-    },
-    {
-      "name": "ccid-card-emulated"
     },
     {
       "name": "pseries-2.1-machine"
@@ -1220,6 +1217,9 @@
       "name": "VGA"
     },
     {
+      "name": "POWER8-powerpc64-cpu"
+    },
+    {
       "name": "i8257"
     },
     {
@@ -1392,9 +1392,6 @@
     },
     {
       "name": "PCIE"
-    },
-    {
-      "name": "ccid-card-passthru"
     },
     {
       "name": "750cx_v2.1-powerpc64-cpu"
@@ -1581,6 +1578,9 @@
     },
     {
       "name": "smbus-eeprom"
+    },
+    {
+      "name": "host-powerpc64-cpu"
     },
     {
       "name": "i82801"
@@ -4679,6 +4679,9 @@
       "name": "MPC8560_v10"
     },
     {
+      "name": "host"
+    },
+    {
       "name": "MPC8560_v21"
     },
     {
@@ -4872,6 +4875,9 @@
     },
     {
       "name": "MPC8347P"
+    },
+    {
+      "name": "POWER8"
     },
     {
       "name": "440EPb"
@@ -14193,4 +14199,1306 @@
     }
   ],
   "id": "libvirt-47"
+}
+
+{
+  "return": {
+  },
+  "id": "libvirt-1"
+}
+
+{
+  "return": [
+    {
+      "name": "default"
+    },
+    {
+      "name": "ppc"
+    },
+    {
+      "name": "ppc32"
+    },
+    {
+      "name": "ppc64"
+    },
+    {
+      "name": "970mp"
+    },
+    {
+      "name": "970fx"
+    },
+    {
+      "name": "970"
+    },
+    {
+      "name": "POWER8NVL"
+    },
+    {
+      "name": "POWER8"
+    },
+    {
+      "name": "POWER8E"
+    },
+    {
+      "name": "POWER7+"
+    },
+    {
+      "name": "POWER7"
+    },
+    {
+      "name": "POWER5gs"
+    },
+    {
+      "name": "POWER5+"
+    },
+    {
+      "name": "Apollo7PM"
+    },
+    {
+      "name": "7457A"
+    },
+    {
+      "name": "7447A"
+    },
+    {
+      "name": "Apollo7"
+    },
+    {
+      "name": "7457"
+    },
+    {
+      "name": "Apollo6"
+    },
+    {
+      "name": "7455"
+    },
+    {
+      "name": "7445"
+    },
+    {
+      "name": "7451"
+    },
+    {
+      "name": "7441"
+    },
+    {
+      "name": "Vger"
+    },
+    {
+      "name": "7450"
+    },
+    {
+      "name": "7448"
+    },
+    {
+      "name": "Nitro"
+    },
+    {
+      "name": "7410"
+    },
+    {
+      "name": "G4"
+    },
+    {
+      "name": "Max"
+    },
+    {
+      "name": "7400"
+    },
+    {
+      "name": "Goldfinger"
+    },
+    {
+      "name": "755"
+    },
+    {
+      "name": "745"
+    },
+    {
+      "name": "LoneStar"
+    },
+    {
+      "name": "750l"
+    },
+    {
+      "name": "750gx"
+    },
+    {
+      "name": "750fx"
+    },
+    {
+      "name": "750cxe"
+    },
+    {
+      "name": "750cx"
+    },
+    {
+      "name": "750cl"
+    },
+    {
+      "name": "Conan/Doyle"
+    },
+    {
+      "name": "G3"
+    },
+    {
+      "name": "Typhoon"
+    },
+    {
+      "name": "750"
+    },
+    {
+      "name": "Arthur"
+    },
+    {
+      "name": "740"
+    },
+    {
+      "name": "Mach5"
+    },
+    {
+      "name": "Sirocco"
+    },
+    {
+      "name": "604e"
+    },
+    {
+      "name": "Goldeneye"
+    },
+    {
+      "name": "603r"
+    },
+    {
+      "name": "Vaillant"
+    },
+    {
+      "name": "Stretch"
+    },
+    {
+      "name": "603e"
+    },
+    {
+      "name": "Vanilla"
+    },
+    {
+      "name": "601v"
+    },
+    {
+      "name": "601"
+    },
+    {
+      "name": "MPC8560"
+    },
+    {
+      "name": "MPC8555E"
+    },
+    {
+      "name": "MPC8555"
+    },
+    {
+      "name": "MPC8548E"
+    },
+    {
+      "name": "MPC8548"
+    },
+    {
+      "name": "MPC8547E"
+    },
+    {
+      "name": "MPC8545E"
+    },
+    {
+      "name": "MPC8545"
+    },
+    {
+      "name": "MPC8544E"
+    },
+    {
+      "name": "MPC8544"
+    },
+    {
+      "name": "MPC8543E"
+    },
+    {
+      "name": "MPC8543"
+    },
+    {
+      "name": "MPC8541E"
+    },
+    {
+      "name": "MPC8541"
+    },
+    {
+      "name": "MPC8540"
+    },
+    {
+      "name": "MPC8533E"
+    },
+    {
+      "name": "MPC8533"
+    },
+    {
+      "name": "e500v2"
+    },
+    {
+      "name": "e500v1"
+    },
+    {
+      "name": "e500"
+    },
+    {
+      "name": "MPC8347EA"
+    },
+    {
+      "name": "MPC8347E"
+    },
+    {
+      "name": "MPC8347A"
+    },
+    {
+      "name": "MPC8347"
+    },
+    {
+      "name": "e300"
+    },
+    {
+      "name": "e200"
+    },
+    {
+      "name": "MPC8280"
+    },
+    {
+      "name": "MPC8275"
+    },
+    {
+      "name": "MPC8272"
+    },
+    {
+      "name": "MPC8271"
+    },
+    {
+      "name": "MPC8270"
+    },
+    {
+      "name": "MPC8266_HiP4"
+    },
+    {
+      "name": "MPC8266_HiP3"
+    },
+    {
+      "name": "MPC8266"
+    },
+    {
+      "name": "MPC8265_HiP4"
+    },
+    {
+      "name": "MPC8265_HiP3"
+    },
+    {
+      "name": "MPC8265"
+    },
+    {
+      "name": "MPC8264_HiP4"
+    },
+    {
+      "name": "MPC8264_HiP3"
+    },
+    {
+      "name": "MPC8264"
+    },
+    {
+      "name": "MPC8260_HiP4"
+    },
+    {
+      "name": "MPC8260_HiP3"
+    },
+    {
+      "name": "MPC8260"
+    },
+    {
+      "name": "MPC8255_HiP4"
+    },
+    {
+      "name": "MPC8255_HiP3"
+    },
+    {
+      "name": "MPC8255"
+    },
+    {
+      "name": "MPC8250_HiP4"
+    },
+    {
+      "name": "MPC8250_HiP3"
+    },
+    {
+      "name": "MPC8250"
+    },
+    {
+      "name": "MPC8248"
+    },
+    {
+      "name": "MPC8247"
+    },
+    {
+      "name": "MPC8245"
+    },
+    {
+      "name": "MPC8241"
+    },
+    {
+      "name": "PowerQUICC-II"
+    },
+    {
+      "name": "MPC82xx"
+    },
+    {
+      "name": "MPC5200B"
+    },
+    {
+      "name": "MPC5200"
+    },
+    {
+      "name": "MPC52xx"
+    },
+    {
+      "name": "MPC8240"
+    },
+    {
+      "name": "440EP"
+    },
+    {
+      "name": "x2vp50"
+    },
+    {
+      "name": "x2vp7"
+    },
+    {
+      "name": "405GPe"
+    },
+    {
+      "name": "405GP"
+    },
+    {
+      "name": "405CR"
+    },
+    {
+      "name": "405"
+    },
+    {
+      "name": "403"
+    },
+    {
+      "name": "750cl_v1.0"
+    },
+    {
+      "name": "750cxe_v2.1"
+    },
+    {
+      "name": "7457A_v1.2"
+    },
+    {
+      "name": "755_v2.7"
+    },
+    {
+      "name": "MPC8347ET"
+    },
+    {
+      "name": "MPC8545E_v20"
+    },
+    {
+      "name": "750_v2.1"
+    },
+    {
+      "name": "755_v2.2"
+    },
+    {
+      "name": "745_v2.0"
+    },
+    {
+      "name": "7455_v1.0"
+    },
+    {
+      "name": "MPC8547E_v21"
+    },
+    {
+      "name": "STB25"
+    },
+    {
+      "name": "POWER8_v2.0"
+    },
+    {
+      "name": "401G2"
+    },
+    {
+      "name": "MPC8349A"
+    },
+    {
+      "name": "750e"
+    },
+    {
+      "name": "MPC8545_v21"
+    },
+    {
+      "name": "MPC8548_v11"
+    },
+    {
+      "name": "970fx_v2.0"
+    },
+    {
+      "name": "750fx_v2.0"
+    },
+    {
+      "name": "POWER8E_v2.1"
+    },
+    {
+      "name": "Cobra"
+    },
+    {
+      "name": "603p"
+    },
+    {
+      "name": "7400_v2.7"
+    },
+    {
+      "name": "MPC8378E"
+    },
+    {
+      "name": "e500v2_v10"
+    },
+    {
+      "name": "e500mc"
+    },
+    {
+      "name": "603e7v1"
+    },
+    {
+      "name": "970mp_v1.0"
+    },
+    {
+      "name": "MPC8555E_v11"
+    },
+    {
+      "name": "440-Xilinx-w-dfpu"
+    },
+    {
+      "name": "740e"
+    },
+    {
+      "name": "405CRc"
+    },
+    {
+      "name": "7447A_v1.1"
+    },
+    {
+      "name": "MPC8543_v11"
+    },
+    {
+      "name": "MPC8533E_v10"
+    },
+    {
+      "name": "MPC8540_v21"
+    },
+    {
+      "name": "e500v2_v21"
+    },
+    {
+      "name": "e300c1"
+    },
+    {
+      "name": "7400_v2.2"
+    },
+    {
+      "name": "970fx_v1.0"
+    },
+    {
+      "name": "750gx_v1.2"
+    },
+    {
+      "name": "750fx_v1.0"
+    },
+    {
+      "name": "MPC8641"
+    },
+    {
+      "name": "MPC8544E_v10"
+    },
+    {
+      "name": "405D4"
+    },
+    {
+      "name": "7457_v1.1"
+    },
+    {
+      "name": "970fx_v3.0"
+    },
+    {
+      "name": "604e_v2.2"
+    },
+    {
+      "name": "755_v2.6"
+    },
+    {
+      "name": "7410_v1.4"
+    },
+    {
+      "name": "Npe4GS3"
+    },
+    {
+      "name": "745_v2.4"
+    },
+    {
+      "name": "750_v2.0"
+    },
+    {
+      "name": "7445_v3.2"
+    },
+    {
+      "name": "750l_v3.2"
+    },
+    {
+      "name": "MPC8540_v10"
+    },
+    {
+      "name": "750_v1.0"
+    },
+    {
+      "name": "MPC8343A"
+    },
+    {
+      "name": "MPC8378"
+    },
+    {
+      "name": "G2HiP3"
+    },
+    {
+      "name": "750cxe_v3.0"
+    },
+    {
+      "name": "e500_v10"
+    },
+    {
+      "name": "STB03"
+    },
+    {
+      "name": "MPC8567"
+    },
+    {
+      "name": "MPC8545_v20"
+    },
+    {
+      "name": "MPC8548_v10"
+    },
+    {
+      "name": "755_v1.1"
+    },
+    {
+      "name": "603e7v"
+    },
+    {
+      "name": "Npe405H2"
+    },
+    {
+      "name": "750_v3.0"
+    },
+    {
+      "name": "Npe405H"
+    },
+    {
+      "name": "7400_v2.6"
+    },
+    {
+      "name": "405GPa"
+    },
+    {
+      "name": "MPC8548_v21"
+    },
+    {
+      "name": "MPC8541E_v10"
+    },
+    {
+      "name": "750l_v2.2"
+    },
+    {
+      "name": "MPC8555E_v10"
+    },
+    {
+      "name": "7457A_v1.1"
+    },
+    {
+      "name": "e200z6"
+    },
+    {
+      "name": "MPC8379E"
+    },
+    {
+      "name": "e500v2_v20"
+    },
+    {
+      "name": "MPC8347AP"
+    },
+    {
+      "name": "401B2"
+    },
+    {
+      "name": "MPC8349E"
+    },
+    {
+      "name": "755_v2.1"
+    },
+    {
+      "name": "MPC8543_v21"
+    },
+    {
+      "name": "MPC8547E_v20"
+    },
+    {
+      "name": "745_v2.8"
+    },
+    {
+      "name": "7455_v3.4"
+    },
+    {
+      "name": "7448_v1.1"
+    },
+    {
+      "name": "740_v2.2"
+    },
+    {
+      "name": "7400_v1.1"
+    },
+    {
+      "name": "MPC8567E"
+    },
+    {
+      "name": "7441_v2.10"
+    },
+    {
+      "name": "603e_v1.4"
+    },
+    {
+      "name": "G2leGP1"
+    },
+    {
+      "name": "7451_v2.10"
+    },
+    {
+      "name": "MPC8343E"
+    },
+    {
+      "name": "750cx_v2.2"
+    },
+    {
+      "name": "Npe405L"
+    },
+    {
+      "name": "603e7"
+    },
+    {
+      "name": "401A1"
+    },
+    {
+      "name": "MPC8377"
+    },
+    {
+      "name": "7448_v2.1"
+    },
+    {
+      "name": "7441_v2.3"
+    },
+    {
+      "name": "7400_v2.1"
+    },
+    {
+      "name": "405CRb"
+    },
+    {
+      "name": "604"
+    },
+    {
+      "name": "MPC8540_v20"
+    },
+    {
+      "name": "MPC8543_v10"
+    },
+    {
+      "name": "7447A_v1.0"
+    },
+    {
+      "name": "7445_v2.1"
+    },
+    {
+      "name": "e500_v20"
+    },
+    {
+      "name": "750gx_v1.1"
+    },
+    {
+      "name": "MPC8543E_v11"
+    },
+    {
+      "name": "750cxe_v2.4"
+    },
+    {
+      "name": "MPC8548_v20"
+    },
+    {
+      "name": "MPC8347AT"
+    },
+    {
+      "name": "POWER8NVL_v1.0"
+    },
+    {
+      "name": "7457A_v1.0"
+    },
+    {
+      "name": "7457_v1.0"
+    },
+    {
+      "name": "7450_v1.2"
+    },
+    {
+      "name": "MPC8572"
+    },
+    {
+      "name": "755_v2.5"
+    },
+    {
+      "name": "7410_v1.3"
+    },
+    {
+      "name": "745_v2.3"
+    },
+    {
+      "name": "750l_v2.1"
+    },
+    {
+      "name": "405GPR"
+    },
+    {
+      "name": "755_v2.0"
+    },
+    {
+      "name": "MPC8541_v11"
+    },
+    {
+      "name": "401C2"
+    },
+    {
+      "name": "e500v2_v30"
+    },
+    {
+      "name": "7455_v3.3"
+    },
+    {
+      "name": "405EZ"
+    },
+    {
+      "name": "MPC8568E"
+    },
+    {
+      "name": "755_v1.0"
+    },
+    {
+      "name": "603e_v1.3"
+    },
+    {
+      "name": "MPC8560_v10"
+    },
+    {
+      "name": "MPC8560_v21"
+    },
+    {
+      "name": "G2H4"
+    },
+    {
+      "name": "MPC8533_v11"
+    },
+    {
+      "name": "740_v3.1"
+    },
+    {
+      "name": "e200z5"
+    },
+    {
+      "name": "MPC8349"
+    },
+    {
+      "name": "7400_v2.0"
+    },
+    {
+      "name": "405CRa"
+    },
+    {
+      "name": "MPC8543E_v10"
+    },
+    {
+      "name": "MPC8543E_v21"
+    },
+    {
+      "name": "750cxe_v2.3"
+    },
+    {
+      "name": "MPC8543_v20"
+    },
+    {
+      "name": "745_v2.7"
+    },
+    {
+      "name": "403GC"
+    },
+    {
+      "name": "e5500"
+    },
+    {
+      "name": "7448_v1.0"
+    },
+    {
+      "name": "MPC5200_v12"
+    },
+    {
+      "name": "740_v2.1"
+    },
+    {
+      "name": "745_v2.2"
+    },
+    {
+      "name": "7400_v1.0"
+    },
+    {
+      "name": "7410_v1.2"
+    },
+    {
+      "name": "x2vp4"
+    },
+    {
+      "name": "MPC8555_v11"
+    },
+    {
+      "name": "MPC8541_v10"
+    },
+    {
+      "name": "405LP"
+    },
+    {
+      "name": "750fx_v2.3"
+    },
+    {
+      "name": "405EP"
+    },
+    {
+      "name": "601_v2"
+    },
+    {
+      "name": "MPC8544_v11"
+    },
+    {
+      "name": "401D2"
+    },
+    {
+      "name": "MPC8572E"
+    },
+    {
+      "name": "604e_v1.0"
+    },
+    {
+      "name": "750cx_v2.1"
+    },
+    {
+      "name": "MPC5200B_v21"
+    },
+    {
+      "name": "750l_v3.0"
+    },
+    {
+      "name": "e300c4"
+    },
+    {
+      "name": "7448_v2.0"
+    },
+    {
+      "name": "7450_v2.1"
+    },
+    {
+      "name": "G2leGP"
+    },
+    {
+      "name": "750cxe_v3.1b"
+    },
+    {
+      "name": "7400_v2.9"
+    },
+    {
+      "name": "G2GP"
+    },
+    {
+      "name": "603"
+    },
+    {
+      "name": "405GPd"
+    },
+    {
+      "name": "MPC8548E_v11"
+    },
+    {
+      "name": "603e7t"
+    },
+    {
+      "name": "IOP480"
+    },
+    {
+      "name": "750gx_v1.0"
+    },
+    {
+      "name": "MPC8560_v20"
+    },
+    {
+      "name": "405D2"
+    },
+    {
+      "name": "750fl"
+    },
+    {
+      "name": "750l_v2.0"
+    },
+    {
+      "name": "x2vp20"
+    },
+    {
+      "name": "e600"
+    },
+    {
+      "name": "7450_v1.1"
+    },
+    {
+      "name": "755_v2.4"
+    },
+    {
+      "name": "7445_v1.0"
+    },
+    {
+      "name": "G2LS"
+    },
+    {
+      "name": "MPC8543E_v20"
+    },
+    {
+      "name": "7447_v1.1"
+    },
+    {
+      "name": "603e_v2.2"
+    },
+    {
+      "name": "603e_v4"
+    },
+    {
+      "name": "7455_v3.2"
+    },
+    {
+      "name": "740_v2.0"
+    },
+    {
+      "name": "MPC8347P"
+    },
+    {
+      "name": "440EPb"
+    },
+    {
+      "name": "MPC603"
+    },
+    {
+      "name": "603e_v1.2"
+    },
+    {
+      "name": "750fx_v2.2"
+    },
+    {
+      "name": "740_v1.0"
+    },
+    {
+      "name": "MPC8544_v10"
+    },
+    {
+      "name": "601_v1"
+    },
+    {
+      "name": "745_v1.1"
+    },
+    {
+      "name": "POWER7+_v2.1"
+    },
+    {
+      "name": "750cx_v2.0"
+    },
+    {
+      "name": "MPC8347EAP"
+    },
+    {
+      "name": "401E2"
+    },
+    {
+      "name": "MPC8641D"
+    },
+    {
+      "name": "e300c3"
+    },
+    {
+      "name": "MPC8533_v10"
+    },
+    {
+      "name": "7441_v2.1"
+    },
+    {
+      "name": "740_v3.0"
+    },
+    {
+      "name": "POWER5+_v2.1"
+    },
+    {
+      "name": "602"
+    },
+    {
+      "name": "MPC8548E_v10"
+    },
+    {
+      "name": "G2leLS"
+    },
+    {
+      "name": "MPC8343"
+    },
+    {
+      "name": "750cx_v1.0"
+    },
+    {
+      "name": "750cxe_v2.2"
+    },
+    {
+      "name": "604e_v2.4"
+    },
+    {
+      "name": "755_v2.8"
+    },
+    {
+      "name": "MPC8548E_v21"
+    },
+    {
+      "name": "745_v2.6"
+    },
+    {
+      "name": "G2le"
+    },
+    {
+      "name": "403GB"
+    },
+    {
+      "name": "MPC8545E_v21"
+    },
+    {
+      "name": "POWER7_v2.3"
+    },
+    {
+      "name": "750_v2.2"
+    },
+    {
+      "name": "7450_v1.0"
+    },
+    {
+      "name": "MPC5200_v11"
+    },
+    {
+      "name": "755_v2.3"
+    },
+    {
+      "name": "MPC8347EP"
+    },
+    {
+      "name": "7410_v1.1"
+    },
+    {
+      "name": "750gl"
+    },
+    {
+      "name": "403GCX"
+    },
+    {
+      "name": "750p"
+    },
+    {
+      "name": "745_v2.1"
+    },
+    {
+      "name": "7445_v3.4"
+    },
+    {
+      "name": "G2"
+    },
+    {
+      "name": "MPC8555_v10"
+    },
+    {
+      "name": "MPC8347T"
+    },
+    {
+      "name": "603e_v3"
+    },
+    {
+      "name": "970_v2.2"
+    },
+    {
+      "name": "440-Xilinx"
+    },
+    {
+      "name": "740p"
+    },
+    {
+      "name": "MPC5200B_v20"
+    },
+    {
+      "name": "440EPX"
+    },
+    {
+      "name": "603e_v1.1"
+    },
+    {
+      "name": "7451_v2.3"
+    },
+    {
+      "name": "7450_v2.0"
+    },
+    {
+      "name": "7400_v2.8"
+    },
+    {
+      "name": "7455_v2.1"
+    },
+    {
+      "name": "405GPc"
+    },
+    {
+      "name": "MPC8347EAT"
+    },
+    {
+      "name": "970mp_v1.1"
+    },
+    {
+      "name": "603e7v2"
+    },
+    {
+      "name": "604r"
+    },
+    {
+      "name": "7447A_v1.2"
+    },
+    {
+      "name": "MPC8533E_v11"
+    },
+    {
+      "name": "e500v2_v22"
+    },
+    {
+      "name": "401F2"
+    },
+    {
+      "name": "MPC8343EA"
+    },
+    {
+      "name": "7457_v1.2"
+    },
+    {
+      "name": "970fx_v3.1"
+    },
+    {
+      "name": "7447_v1.0"
+    },
+    {
+      "name": "745_v2.5"
+    },
+    {
+      "name": "MPC8548E_v20"
+    },
+    {
+      "name": "MPC8610"
+    },
+    {
+      "name": "403GA"
+    },
+    {
+      "name": "750cxe_v2.4b"
+    },
+    {
+      "name": "MPC5200_v10"
+    },
+    {
+      "name": "7410_v1.0"
+    },
+    {
+      "name": "G2leGP3"
+    },
+    {
+      "name": "603e_v4.1"
+    },
+    {
+      "name": "7445_v3.3"
+    },
+    {
+      "name": "440EPa"
+    },
+    {
+      "name": "970fx_v2.1"
+    },
+    {
+      "name": "MPC8377E"
+    },
+    {
+      "name": "750fx_v2.1"
+    },
+    {
+      "name": "601_v0"
+    },
+    {
+      "name": "STB04"
+    },
+    {
+      "name": "745_v1.0"
+    },
+    {
+      "name": "G2HiP4"
+    },
+    {
+      "name": "750cl_v2.0"
+    },
+    {
+      "name": "750cxr"
+    },
+    {
+      "name": "MPC8349EA"
+    },
+    {
+      "name": "750cxe_v3.1"
+    },
+    {
+      "name": "401"
+    },
+    {
+      "name": "MPC8379"
+    },
+    {
+      "name": "MPC8568"
+    },
+    {
+      "name": "e300c2"
+    },
+    {
+      "name": "750_v3.1"
+    },
+    {
+      "name": "MPC8544E_v11"
+    },
+    {
+      "name": "405GPb"
+    },
+    {
+      "name": "MPC8541E_v11"
+    }
+  ],
+  "id": "libvirt-2"
 }
