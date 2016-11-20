@@ -167,7 +167,8 @@ virDomainCapsPtr virDomainCapsNew(const char *path,
 virDomainCapsCPUModelsPtr virDomainCapsCPUModelsNew(size_t nmodels);
 virDomainCapsCPUModelsPtr virDomainCapsCPUModelsCopy(virDomainCapsCPUModelsPtr old);
 virDomainCapsCPUModelsPtr virDomainCapsCPUModelsFilter(virDomainCapsCPUModelsPtr old,
-                                                       const char **models);
+                                                       const char **models,
+                                                       const char **blacklist);
 int virDomainCapsCPUModelsAddSteal(virDomainCapsCPUModelsPtr cpuModels,
                                    char **name,
                                    virDomainCapsCPUUsable usable);

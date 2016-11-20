@@ -38,7 +38,6 @@
       <model usable='unknown'>sa1110</model>
       <model usable='unknown'>arm1176</model>
       <model usable='unknown'>cortex-a53</model>
-      <model usable='unknown'>host</model>
       <model usable='unknown'>sa1100</model>
       <model usable='unknown'>pxa270-c5</model>
       <model usable='unknown'>cortex-a9</model>

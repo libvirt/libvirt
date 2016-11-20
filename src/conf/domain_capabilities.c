@@ -176,7 +176,8 @@ virDomainCapsCPUModelsCopy(virDomainCapsCPUModelsPtr old)
 
 virDomainCapsCPUModelsPtr
 virDomainCapsCPUModelsFilter(virDomainCapsCPUModelsPtr old,
-                             const char **models)
+                             const char **models,
+                             const char **blacklist)
 {
     virDomainCapsCPUModelsPtr cpuModels;
     size_t i;
@@ -186,6 +187,9 @@ virDomainCapsCPUModelsFilter(virDomainCapsCPUModelsPtr old,
 
     for (i = 0; i < old->nmodels; i++) {
         if (models && !virStringListHasString(models, old->models[i].name))
+            continue;
+
+        if (blacklist && virStringListHasString(blacklist, old->models[i].name))
             continue;
 
         if (virDomainCapsCPUModelsAdd(cpuModels,
