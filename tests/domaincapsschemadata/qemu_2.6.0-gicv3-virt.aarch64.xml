@@ -1,6 +1,6 @@
 <domainCapabilities>
   <path>/usr/bin/qemu-system-aarch64</path>
-  <domain>qemu</domain>
+  <domain>kvm</domain>
   <machine>virt-2.6</machine>
   <arch>aarch64</arch>
   <vcpu max='255'/>
@@ -19,7 +19,7 @@
     </loader>
   </os>
   <cpu>
-    <mode name='host-passthrough' supported='no'/>
+    <mode name='host-passthrough' supported='yes'/>
     <mode name='host-model' supported='no'/>
     <mode name='custom' supported='yes'>
       <model usable='unknown'>pxa262</model>
@@ -108,7 +108,7 @@
   <features>
     <gic supported='yes'>
       <enum name='version'>
-        <value>2</value>
+        <value>3</value>
       </enum>
     </gic>
   </features>
