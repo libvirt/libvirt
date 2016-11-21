@@ -6367,39 +6367,34 @@ qemuDomainRefreshVcpuHalted(virQEMUDriverPtr driver,
                             int asyncJob)
 {
     virDomainVcpuDefPtr vcpu;
-    qemuMonitorCPUInfoPtr info = NULL;
+    qemuDomainVcpuPrivatePtr vcpupriv;
     size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
+    virBitmapPtr haltedmap = NULL;
     size_t i;
-    bool hotplug;
-    int rc;
     int ret = -1;
 
     /* Not supported currently for TCG, see qemuDomainRefreshVcpuInfo */
     if (vm->def->virtType == VIR_DOMAIN_VIRT_QEMU)
         return 0;
 
-    hotplug = qemuDomainSupportsNewVcpuHotplug(vm);
-
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    rc = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &info, maxvcpus, hotplug);
+    haltedmap = qemuMonitorGetCpuHalted(qemuDomainGetMonitor(vm), maxvcpus);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
-
-    if (rc < 0)
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || !haltedmap)
         goto cleanup;
 
     for (i = 0; i < maxvcpus; i++) {
         vcpu = virDomainDefGetVcpu(vm->def, i);
-        QEMU_DOMAIN_VCPU_PRIVATE(vcpu)->halted = info[i].halted;
+        vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu);
+        vcpupriv->halted = virBitmapIsBitSet(haltedmap, vcpupriv->qemu_id);
     }
 
     ret = 0;
 
  cleanup:
-    qemuMonitorCPUInfoFree(info, maxvcpus);
+    virBitmapFree(haltedmap);
     return ret;
 }
 
