@@ -52,26 +52,25 @@ bhyveBuildNetArgStr(const virDomainDef *def,
     char macaddr[VIR_MAC_STRING_BUFLEN];
     char *realifname = NULL;
     char *brname = NULL;
+    int ret = -1;
     virDomainNetType actualType = virDomainNetGetActualType(net);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_BRIDGE) {
         if (VIR_STRDUP(brname, virDomainNetGetActualBridgeName(net)) < 0)
-            return -1;
+            goto cleanup;
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Network type %d is not supported"),
                        virDomainNetGetActualType(net));
-        return -1;
+        goto cleanup;
     }
 
     if (!net->ifname ||
         STRPREFIX(net->ifname, VIR_NET_GENERATED_PREFIX) ||
         strchr(net->ifname, '%')) {
         VIR_FREE(net->ifname);
-        if (VIR_STRDUP(net->ifname, VIR_NET_GENERATED_PREFIX "%d") < 0) {
-            VIR_FREE(brname);
-            return -1;
-        }
+        if (VIR_STRDUP(net->ifname, VIR_NET_GENERATED_PREFIX "%d") < 0)
+            goto cleanup;
     }
 
     if (!dryRun) {
@@ -80,33 +79,24 @@ bhyveBuildNetArgStr(const virDomainDef *def,
                                            virDomainNetGetActualVirtPortProfile(net),
                                            virDomainNetGetActualVlan(net),
                                            VIR_NETDEV_TAP_CREATE_IFUP | VIR_NETDEV_TAP_CREATE_PERSIST) < 0) {
-            VIR_FREE(net->ifname);
-            VIR_FREE(brname);
-            return -1;
+            goto cleanup;
         }
 
         realifname = virNetDevTapGetRealDeviceName(net->ifname);
 
-        if (realifname == NULL) {
-            VIR_FREE(net->ifname);
-            VIR_FREE(brname);
-            return -1;
-        }
+        if (realifname == NULL)
+            goto cleanup;
 
         VIR_DEBUG("%s -> %s", net->ifname, realifname);
         /* hack on top of other hack: we need to set
          * interface to 'UP' again after re-opening to find its
          * name
          */
-        if (virNetDevSetOnline(net->ifname, true) != 0) {
-            VIR_FREE(realifname);
-            VIR_FREE(net->ifname);
-            VIR_FREE(brname);
-            return -1;
-        }
+        if (virNetDevSetOnline(net->ifname, true) != 0)
+            goto cleanup;
     } else {
         if (VIR_STRDUP(realifname, "tap0") < 0)
-            return -1;
+            goto cleanup;
     }
 
 
@@ -114,9 +104,15 @@ bhyveBuildNetArgStr(const virDomainDef *def,
     virCommandAddArgFormat(cmd, "%d:0,virtio-net,%s,mac=%s",
                            net->info.addr.pci.slot,
                            realifname, virMacAddrFormat(&net->mac, macaddr));
+
+    ret = 0;
+ cleanup:
+    if (ret < 0)
+        VIR_FREE(net->ifname);
+    VIR_FREE(brname);
     VIR_FREE(realifname);
 
-    return 0;
+    return ret;
 }
 
 static int
