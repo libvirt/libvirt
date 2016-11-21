@@ -6318,6 +6318,7 @@ qemuDomainRefreshVcpuInfo(virQEMUDriverPtr driver,
         VIR_FREE(vcpupriv->alias);
         VIR_STEAL_PTR(vcpupriv->alias, info[i].alias);
         vcpupriv->enable_id = info[i].id;
+        vcpupriv->qemu_id = info[i].qemu_id;
 
         if (hotplug && state) {
             vcpu->online = info[i].online;

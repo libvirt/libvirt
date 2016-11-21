@@ -392,6 +392,7 @@ int qemuMonitorSystemReset(qemuMonitorPtr mon);
 int qemuMonitorSystemPowerdown(qemuMonitorPtr mon);
 
 struct qemuMonitorQueryCpusEntry {
+    int qemu_id; /* id of the cpu as reported by qemu */
     pid_t tid;
     char *qom_path;
     bool halted;
@@ -422,6 +423,7 @@ void qemuMonitorQueryHotpluggableCpusFree(struct qemuMonitorQueryHotpluggableCpu
 struct _qemuMonitorCPUInfo {
     pid_t tid;
     int id; /* order of enabling of the given cpu */
+    int qemu_id; /* identifier of the cpu as reported by query-cpus */
 
     /* state data */
     bool online;

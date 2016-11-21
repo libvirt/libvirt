@@ -322,6 +322,7 @@ struct _qemuDomainVcpuPrivate {
 
     pid_t tid; /* vcpu thread id */
     int enable_id; /* order in which the vcpus were enabled in qemu */
+    int qemu_id; /* ID reported by qemu as 'CPU' in query-cpus */
     char *alias;
     bool halted;
 

@@ -528,7 +528,17 @@ qemuMonitorTextQueryCPUs(qemuMonitorPtr mon,
     do {
         char *offset = NULL;
         char *end = NULL;
+        int cpuid = -1;
         int tid = 0;
+
+        /* extract cpu number */
+        if ((offset = strstr(line, "#")) == NULL)
+            goto cleanup;
+
+        if (virStrToLong_i(offset + strlen("#"), &end, 10, &cpuid) < 0)
+            goto cleanup;
+        if (end == NULL || *end != ':')
+            goto cleanup;
 
         /* Extract host Thread ID */
         if ((offset = strstr(line, "thread_id=")) == NULL)
@@ -539,6 +549,7 @@ qemuMonitorTextQueryCPUs(qemuMonitorPtr mon,
         if (end == NULL || !c_isspace(*end))
             goto cleanup;
 
+        cpu.qemu_id = cpuid;
         cpu.tid = tid;
 
         /* Extract halted indicator */
