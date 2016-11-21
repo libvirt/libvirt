@@ -5,13 +5,8 @@
   <xsl:output method="text" encoding="UTF-8"/>
 
   <xsl:template match="/">
-    <xsl:text>
-        NEWS file for libvirt
-
-  Note that this file contains only the most recent releases; for the full
-  list, please visit:
-       http://libvirt.org/news.html
-
+    <xsl:text>libvirt releases
+================
 </xsl:text>
     <xsl:apply-templates select="html:html/html:body/*"/>
   </xsl:template>
@@ -22,30 +17,33 @@
   <xsl:template match="html:h3">
     <xsl:text>
 </xsl:text>
+    <xsl:text># </xsl:text>
     <xsl:apply-templates/>
-    <xsl:text>:
+    <xsl:text>
+
 </xsl:text>
   </xsl:template>
 
   <xsl:template match="html:ul">
-      <xsl:apply-templates select="html:li"/>
-    <xsl:text>
-</xsl:text>
+    <xsl:apply-templates select="html:li"/>
   </xsl:template>
 
   <xsl:template match="html:li">
-    <xsl:text>   - </xsl:text>
-    <xsl:value-of select="."/>
+    <xsl:text>   * </xsl:text>
+    <xsl:apply-templates select="html:strong|*/html:li"/>
+  </xsl:template>
+
+  <xsl:template match="html:li/*/html:li">
+    <xsl:text>      - </xsl:text>
+    <xsl:apply-templates/>
     <xsl:text>
 </xsl:text>
   </xsl:template>
 
-  <xsl:template match="html:a">
-    <xsl:value-of select="."/>
-    <xsl:text> at
-</xsl:text>
-    <xsl:value-of select="@href"/>
+  <xsl:template match="html:strong">
+    <xsl:apply-templates/>
     <xsl:text>
+
 </xsl:text>
   </xsl:template>
 
