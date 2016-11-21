@@ -14,11 +14,29 @@
 
     <h3>v2.5.0 (<i>unreleased</i>)</h3>
     <ul>
+      <li><strong>New features</strong>
+        <ul>
+          <li>shmem: Add support for additional models<br/>
+          The shmem device can now utilize QEMU's ivshmem-plain and
+          ivshmem-doorbell, more modern versions of ivshmem
+          </li>
+          <li>vbox: Add VirtualBox 5.1 support
+          </li>
+        </ul>
+      </li>
       <li><strong>Improvements</strong>
         <ul>
+          <li>vhostuser: Allow hotplug of multiqueue devices
+          </li>
           <li>NEWS: Switch to an improved format<br/>
           List user-visible changes instead of single commits for a better
           high-level overview of differences between libvirt releases
+          </li>
+        </ul>
+      </li>
+      <li><strong>Bug fixes</strong>
+        <ul>
+          <li>vz: Fix migration in P2P mode
           </li>
         </ul>
       </li>
