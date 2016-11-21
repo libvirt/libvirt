@@ -705,6 +705,7 @@ get_definition(vahControl * ctl, const char *xmlStr)
 
     ctl->def = virDomainDefParseString(xmlStr,
                                        ctl->caps, ctl->xmlopt, NULL,
+                                       VIR_DOMAIN_DEF_PARSE_SKIP_SECLABEL |
                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
 
     if (ctl->def == NULL) {

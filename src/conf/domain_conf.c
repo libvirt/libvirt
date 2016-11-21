@@ -16372,8 +16372,10 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     /* analysis of security label, done early even though we format it
      * late, so devices can refer to this for defaults */
-    if (virSecurityLabelDefsParseXML(def, ctxt, caps, flags) == -1)
-        goto error;
+    if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_SECLABEL)) {
+        if (virSecurityLabelDefsParseXML(def, ctxt, caps, flags) == -1)
+            goto error;
+    }
 
     /* Extract domain memory */
     if (virDomainParseMemory("./memory[1]", NULL, ctxt,

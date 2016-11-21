@@ -2684,6 +2684,8 @@ typedef enum {
     VIR_DOMAIN_DEF_PARSE_ABI_UPDATE = 1 << 9,
     /* skip definition validation checks meant to be executed on define time only */
     VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE = 1 << 10,
+    /* skip parsing of security labels */
+    VIR_DOMAIN_DEF_PARSE_SKIP_SECLABEL        = 1 << 11,
 } virDomainDefParseFlags;
 
 typedef enum {
