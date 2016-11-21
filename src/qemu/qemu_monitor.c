@@ -1952,6 +1952,46 @@ qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
 }
 
 
+/**
+ * qemuMonitorGetCpuHalted:
+ *
+ * Returns a bitmap of vcpu id's that are halted. The id's correspond to the
+ * 'CPU' field as reported by query-cpus'.
+ */
+virBitmapPtr
+qemuMonitorGetCpuHalted(qemuMonitorPtr mon,
+                        size_t maxvcpus)
+{
+    struct qemuMonitorQueryCpusEntry *cpuentries = NULL;
+    size_t ncpuentries = 0;
+    size_t i;
+    int rc;
+    virBitmapPtr ret = NULL;
+
+    QEMU_CHECK_MONITOR_NULL(mon);
+
+    if (mon->json)
+        rc = qemuMonitorJSONQueryCPUs(mon, &cpuentries, &ncpuentries);
+    else
+        rc = qemuMonitorTextQueryCPUs(mon, &cpuentries, &ncpuentries);
+
+    if (rc < 0)
+        goto cleanup;
+
+    if (!(ret = virBitmapNew(maxvcpus)))
+        goto cleanup;
+
+    for (i = 0; i < ncpuentries; i++) {
+        if (cpuentries[i].halted)
+            ignore_value(virBitmapSetBit(ret, cpuentries[i].qemu_id));
+    }
+
+ cleanup:
+    qemuMonitorQueryCpusFree(cpuentries, ncpuentries);
+    return ret;
+}
+
+
 int
 qemuMonitorSetLink(qemuMonitorPtr mon,
                    const char *name,

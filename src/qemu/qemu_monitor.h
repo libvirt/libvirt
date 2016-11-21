@@ -456,6 +456,7 @@ int qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
                           qemuMonitorCPUInfoPtr *vcpus,
                           size_t maxvcpus,
                           bool hotplug);
+virBitmapPtr qemuMonitorGetCpuHalted(qemuMonitorPtr mon, size_t maxvcpus);
 
 int qemuMonitorGetVirtType(qemuMonitorPtr mon,
                            virDomainVirtType *virtType);
