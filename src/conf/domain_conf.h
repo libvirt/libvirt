@@ -1487,6 +1487,7 @@ struct _virDomainGraphicsDef {
             int port;
             bool portReserved;
             int websocket;
+            bool websocketGenerated;
             bool autoport;
             char *keymap;
             virDomainGraphicsAuthDef auth;

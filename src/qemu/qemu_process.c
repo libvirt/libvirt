@@ -3614,6 +3614,7 @@ qemuProcessVNCAllocatePorts(virQEMUDriverPtr driver,
         if (virPortAllocatorAcquire(driver->webSocketPorts, &port) < 0)
             return -1;
         graphics->data.vnc.websocket = port;
+        graphics->data.vnc.websocketGenerated = true;
     }
 
     return 0;
@@ -4105,6 +4106,11 @@ qemuProcessGraphicsReservePorts(virQEMUDriverPtr driver,
                 return -1;
             graphics->data.vnc.portReserved = true;
         }
+        if (graphics->data.vnc.websocket > 0 &&
+            virPortAllocatorSetUsed(driver->remotePorts,
+                                    graphics->data.vnc.websocket,
+                                    true) < 0)
+            return -1;
         break;
 
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
@@ -6212,8 +6218,16 @@ void qemuProcessStop(virQEMUDriverPtr driver,
                                         false);
                 graphics->data.vnc.portReserved = false;
             }
-            virPortAllocatorRelease(driver->webSocketPorts,
-                                    graphics->data.vnc.websocket);
+            if (graphics->data.vnc.websocketGenerated) {
+                virPortAllocatorRelease(driver->webSocketPorts,
+                                        graphics->data.vnc.websocket);
+                graphics->data.vnc.websocketGenerated = false;
+                graphics->data.vnc.websocket = -1;
+            } else if (graphics->data.vnc.websocket) {
+                virPortAllocatorSetUsed(driver->remotePorts,
+                                        graphics->data.vnc.websocket,
+                                        false);
+            }
         }
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
             if (graphics->data.spice.autoport) {
