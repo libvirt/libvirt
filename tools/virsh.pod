@@ -1618,7 +1618,7 @@ to the I<uri> namespace is displayed instead of being modified.
 =item B<migrate> [I<--live>] [I<--offline>] [I<--direct>] [I<--p2p> [I<--tunnelled>]]
 [I<--persistent>] [I<--undefinesource>] [I<--suspend>] [I<--copy-storage-all>]
 [I<--copy-storage-inc>] [I<--change-protection>] [I<--unsafe>] [I<--verbose>]
-[I<--abort-on-error>] [I<--postcopy>] [I<--postcopy-after-precopy>]
+[I<--rdma-pin-all>] [I<--abort-on-error>] [I<--postcopy>] [I<--postcopy-after-precopy>]
 I<domain> I<desturi> [I<migrateuri>] [I<graphicsuri>] [I<listen-address>] [I<dname>]
 [I<--timeout> B<seconds> [I<--timeout-suspend> | I<--timeout-postcopy>]]
 [I<--xml> B<file>] [I<--migrate-disks> B<disk-list>] [I<--disks-port> B<port>]
@@ -1661,6 +1661,10 @@ I<--auto-converge> forces convergence during live migration. The initial
 guest CPU throttling rate can be set with I<auto-converge-initial>. If the
 initial throttling rate is not enough to ensure convergence, the rate is
 periodically increased by I<auto-converge-increment>.
+
+I<--rdma-pin-all> can be used with RDMA migration (i.e., when I<migrateuri>
+starts with rdma://) to tell the hypervisor to pin all domain's memory at once
+before migration starts rather then letting it pin memory pages as needed.
 
 B<Note>: Individual hypervisors usually do not support all possible types of
 migration. For example, QEMU does not support direct migration.

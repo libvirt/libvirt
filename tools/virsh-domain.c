@@ -10022,7 +10022,7 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "rdma-pin-all",
      .type = VSH_OT_BOOL,
-     .help = N_("support memory pinning during RDMA live migration")
+     .help = N_("pin all memory before starting RDMA live migration")
     },
     {.name = "abort-on-error",
      .type = VSH_OT_BOOL,
