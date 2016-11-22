@@ -149,9 +149,6 @@ int virSecurityManagerSetTapFDLabel(virSecurityManagerPtr mgr,
 char *virSecurityManagerGetMountOptions(virSecurityManagerPtr mgr,
                                         virDomainDefPtr vm);
 virSecurityManagerPtr* virSecurityManagerGetNested(virSecurityManagerPtr mgr);
-int virSecurityManagerSetHugepages(virSecurityManagerPtr mgr,
-                                   virDomainDefPtr sec,
-                                   const char *hugepages_path);
 
 int virSecurityManagerSetImageLabel(virSecurityManagerPtr mgr,
                                     virDomainDefPtr vm,

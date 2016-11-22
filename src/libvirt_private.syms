@@ -1164,7 +1164,6 @@ virSecurityManagerSetChildProcessLabel;
 virSecurityManagerSetDaemonSocketLabel;
 virSecurityManagerSetDiskLabel;
 virSecurityManagerSetHostdevLabel;
-virSecurityManagerSetHugepages;
 virSecurityManagerSetImageFDLabel;
 virSecurityManagerSetImageLabel;
 virSecurityManagerSetProcessLabel;

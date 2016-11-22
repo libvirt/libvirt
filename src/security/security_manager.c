@@ -970,23 +970,6 @@ virSecurityManagerGetNested(virSecurityManagerPtr mgr)
 
 
 int
-virSecurityManagerSetHugepages(virSecurityManagerPtr mgr,
-                               virDomainDefPtr vm,
-                               const char *path)
-{
-    if (mgr->drv->domainSetSecurityHugepages) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityHugepages(mgr, vm, path);
-        virObjectUnlock(mgr);
-        return ret;
-    }
-
-    return 0;
-}
-
-
-int
 virSecurityManagerDomainSetPathLabel(virSecurityManagerPtr mgr,
                                      virDomainDefPtr vm,
                                      const char *path)

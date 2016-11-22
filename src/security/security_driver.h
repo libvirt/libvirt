@@ -168,7 +168,6 @@ struct _virSecurityDriver {
     virSecurityDomainSetTapFDLabel domainSetSecurityTapFDLabel;
 
     virSecurityDomainGetMountOptions domainGetSecurityMountOptions;
-    virSecurityDomainSetHugepages domainSetSecurityHugepages;
 
     virSecurityDriverGetBaseLabel getBaseLabel;
 
