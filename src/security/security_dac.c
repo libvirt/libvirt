@@ -36,6 +36,7 @@
 #include "virpci.h"
 #include "virusb.h"
 #include "virscsi.h"
+#include "virscsivhost.h"
 #include "virstoragefile.h"
 #include "virstring.h"
 #include "virutil.h"
@@ -582,6 +583,15 @@ virSecurityDACSetSCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 static int
+virSecurityDACSetHostLabel(virSCSIVHostDevicePtr dev ATTRIBUTE_UNUSED,
+                           const char *file,
+                           void *opaque)
+{
+    return virSecurityDACSetHostdevLabelHelper(file, opaque);
+}
+
+
+static int
 virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
                               virDomainDefPtr def,
                               virDomainHostdevDefPtr dev,
@@ -592,6 +602,7 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
     virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
     int ret = -1;
 
     if (!priv->dynamicOwnership)
@@ -677,7 +688,16 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST: {
-        /* Fall through for now */
+        virSCSIVHostDevicePtr host = virSCSIVHostDeviceNew(hostsrc->wwpn);
+
+        if (!host)
+            goto done;
+
+        ret = virSCSIVHostDeviceFileIterate(host,
+                                            virSecurityDACSetHostLabel,
+                                            &cbdata);
+        virSCSIVHostDeviceFree(host);
+        break;
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
@@ -724,6 +744,17 @@ virSecurityDACRestoreSCSILabel(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
 
 
 static int
+virSecurityDACRestoreHostLabel(virSCSIVHostDevicePtr dev ATTRIBUTE_UNUSED,
+                               const char *file,
+                               void *opaque)
+{
+    virSecurityManagerPtr mgr = opaque;
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    return virSecurityDACRestoreFileLabel(priv, file);
+}
+
+
+static int
 virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
                                   virDomainDefPtr def,
                                   virDomainHostdevDefPtr dev,
@@ -735,6 +766,7 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
     virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
     int ret = -1;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
@@ -810,7 +842,17 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST: {
-        /* Fall through for now */
+        virSCSIVHostDevicePtr host = virSCSIVHostDeviceNew(hostsrc->wwpn);
+
+        if (!host)
+            goto done;
+
+        ret = virSCSIVHostDeviceFileIterate(host,
+                                            virSecurityDACRestoreHostLabel,
+                                            mgr);
+        virSCSIVHostDeviceFree(host);
+
+        break;
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
