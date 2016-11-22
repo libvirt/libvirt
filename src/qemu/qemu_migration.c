@@ -3167,6 +3167,12 @@ qemuMigrationBeginPhase(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
+    if (flags & VIR_MIGRATE_POSTCOPY && flags & VIR_MIGRATE_TUNNELLED) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("post-copy is not supported with tunnelled migration"));
+        goto cleanup;
+    }
+
     if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) {
         bool has_drive_mirror =  virQEMUCapsGet(priv->qemuCaps,
                                                 QEMU_CAPS_DRIVE_MIRROR);
@@ -3642,6 +3648,12 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("post-copy migration is not supported with non-live "
                          "or paused migration"));
+        goto cleanup;
+    }
+
+    if (flags & VIR_MIGRATE_POSTCOPY && flags & VIR_MIGRATE_TUNNELLED) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("post-copy is not supported with tunnelled migration"));
         goto cleanup;
     }
 
