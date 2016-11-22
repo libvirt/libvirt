@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=none \
 -m 1024 \
 -smp 2,sockets=2,cores=1,threads=1 \
 -mem-prealloc \
--mem-path /dev/hugepages2M/libvirt/qemu \
+-mem-path /dev/hugepages2M/libvirt/qemu/-1-SomeDummyHugepagesGu \
 -numa node,nodeid=0,cpus=0,mem=256 \
 -numa node,nodeid=1,cpus=1,mem=768 \
 -uuid ef1bdff4-27f3-4e85-a807-5fb4d58463cc \

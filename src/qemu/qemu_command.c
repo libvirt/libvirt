@@ -3316,7 +3316,7 @@ qemuBuildMemoryBackendStr(unsigned long long size,
         return -1;
 
     if (pagesize) {
-        if (qemuGetHupageMemPath(cfg, pagesize, &mem_path) < 0)
+        if (qemuGetDomainHupageMemPath(def, cfg, pagesize, &mem_path) < 0)
             goto cleanup;
 
         *backendType = "memory-backend-file";
@@ -7270,7 +7270,7 @@ qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
         return -1;
     }
 
-    if (qemuGetHupageMemPath(cfg, def->mem.hugepages[0].size, &mem_path) < 0)
+    if (qemuGetDomainHupageMemPath(def, cfg, def->mem.hugepages[0].size, &mem_path) < 0)
         return -1;
 
     virCommandAddArgList(cmd, "-mem-prealloc", "-mem-path", mem_path, NULL);

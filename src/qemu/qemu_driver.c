@@ -857,7 +857,7 @@ qemuStateInitialize(bool privileged,
      * it, since we can't assume the root mount point has permissions that
      * will let our spawned QEMU instances use it. */
     for (i = 0; i < cfg->nhugetlbfs; i++) {
-        hugepagePath = qemuGetHugepagePath(&cfg->hugetlbfs[i]);
+        hugepagePath = qemuGetBaseHugepagePath(&cfg->hugetlbfs[i]);
 
         if (!hugepagePath)
             goto error;
@@ -868,19 +868,10 @@ qemuStateInitialize(bool privileged,
                                  hugepagePath);
             goto error;
         }
-        if (privileged) {
-            if (virFileUpdatePerm(cfg->hugetlbfs[i].mnt_dir,
-                                  0, S_IXGRP | S_IXOTH) < 0)
-                goto error;
-            if (chown(hugepagePath, cfg->user, cfg->group) < 0) {
-                virReportSystemError(errno,
-                                     _("unable to set ownership on %s to %d:%d"),
-                                     hugepagePath,
-                                     (int) cfg->user,
-                                     (int) cfg->group);
-                goto error;
-            }
-        }
+        if (privileged &&
+            virFileUpdatePerm(cfg->hugetlbfs[i].mnt_dir,
+                              0, S_IXGRP | S_IXOTH) < 0)
+            goto error;
         VIR_FREE(hugepagePath);
     }
 
