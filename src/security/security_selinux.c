@@ -1498,6 +1498,10 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
         break;
     }
 
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST: {
+        /* Fall through for now */
+    }
+
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         ret = 0;
         break;
@@ -1698,6 +1702,10 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
         virSCSIDeviceFree(scsi);
 
         break;
+    }
+
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST: {
+        /* Fall through for now */
     }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:

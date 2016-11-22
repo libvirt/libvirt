@@ -294,6 +294,7 @@ typedef enum {
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB,
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI,
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI,
+    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST,
 
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST
 } virDomainHostdevSubsysType;
@@ -368,6 +369,22 @@ struct _virDomainHostdevSubsysSCSI {
     } u;
 };
 
+typedef enum {
+    VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_NONE,
+    VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST,
+
+    VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_LAST,
+} virDomainHostdevSubsysSCSIHostProtocolType;
+
+VIR_ENUM_DECL(virDomainHostdevSubsysSCSIHostProtocol)
+
+typedef struct _virDomainHostdevSubsysSCSIVHost virDomainHostdevSubsysSCSIVHost;
+typedef virDomainHostdevSubsysSCSIVHost *virDomainHostdevSubsysSCSIVHostPtr;
+struct _virDomainHostdevSubsysSCSIVHost {
+    int protocol; /* enum virDomainHostdevSubsysSCSIHostProtocolType */
+    char *wwpn;
+};
+
 typedef struct _virDomainHostdevSubsys virDomainHostdevSubsys;
 typedef virDomainHostdevSubsys *virDomainHostdevSubsysPtr;
 struct _virDomainHostdevSubsys {
@@ -376,6 +393,7 @@ struct _virDomainHostdevSubsys {
         virDomainHostdevSubsysUSB usb;
         virDomainHostdevSubsysPCI pci;
         virDomainHostdevSubsysSCSI scsi;
+        virDomainHostdevSubsysSCSIVHost scsi_host;
     } u;
 };
 

@@ -87,6 +87,7 @@
         <value>usb</value>
         <value>pci</value>
         <value>scsi</value>
+        <value>scsi_host</value>
       </enum>
       <enum name='capsType'>
         <value>storage</value>

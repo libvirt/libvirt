@@ -398,6 +398,10 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
             break;
         }
 
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST: {
+            break;
+        }
+
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
             break;
         }
@@ -461,6 +465,9 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
             /* nothing to tear down for SCSI */
+            break;
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+            /* nothing to tear down for scsi_host */
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
             break;
