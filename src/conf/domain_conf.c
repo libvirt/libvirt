@@ -23294,183 +23294,35 @@ virDomainDefHasCapabilitiesFeatures(virDomainDefPtr def)
 }
 
 
-/**
- * virDomainFormatSchedDef:
- * @def: domain definiton
- * @buf: target XML buffer
- * @name: name of the target XML element
- * @func: function that returns the thread scheduler parameter struct for an object
- * @resourceMap: bitmap of indexes of objects that shall be formatted (used with @func)
- *
- * Formats one of the two scheduler tuning elements to the XML. This function
- * transforms the internal representation where the scheduler info is stored
- * per-object to the XML representation where the info is stored per group of
- * objects. This function autogroups all the relevant scheduler configs.
- *
- * Returns 0 on success -1 on error.
- */
-static int
-virDomainFormatSchedDef(virDomainDefPtr def,
-                        virBufferPtr buf,
-                        const char *name,
-                        virDomainThreadSchedParamPtr (*func)(virDomainDefPtr, unsigned int),
-                        virBitmapPtr resourceMap)
+static void
+virDomainSchedulerFormat(virBufferPtr buf,
+                         const char *name,
+                         virDomainThreadSchedParamPtr sched,
+                         size_t id)
 {
-    virBitmapPtr schedMap = NULL;
-    virBitmapPtr prioMap = NULL;
-    virDomainThreadSchedParamPtr sched;
-    char *tmp = NULL;
-    ssize_t next;
-    size_t i;
-    int ret = -1;
+    switch (sched->policy) {
+        case VIR_PROC_POLICY_BATCH:
+        case VIR_PROC_POLICY_IDLE:
+            virBufferAsprintf(buf, "<%ssched "
+                              "%ss='%zu' scheduler='%s'/>\n",
+                              name, name, id,
+                              virProcessSchedPolicyTypeToString(sched->policy));
+            break;
 
-    /* Okay, @func should never return NULL here because it does
-     * so iff corresponding resource does not exists. But if it
-     * doesn't we should not have been called in the first place.
-     * But some compilers fails to see this complex reasoning and
-     * deduct that this code is buggy. Shut them up by checking
-     * for return value of sched. Even though we don't need to.
-     */
+        case VIR_PROC_POLICY_RR:
+        case VIR_PROC_POLICY_FIFO:
+            virBufferAsprintf(buf, "<%ssched "
+                              "%ss='%zu' scheduler='%s' priority='%d'/>\n",
+                              name, name, id,
+                              virProcessSchedPolicyTypeToString(sched->policy),
+                              sched->priority);
+            break;
 
-    if (!(schedMap = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN)) ||
-        !(prioMap = virBitmapNew(VIR_DOMAIN_CPUMASK_LEN)))
-        goto cleanup;
-
-    for (i = VIR_PROC_POLICY_NONE + 1; i < VIR_PROC_POLICY_LAST; i++) {
-        virBitmapClearAll(schedMap);
-
-        /* find vcpus using a particular scheduler */
-        next = -1;
-        while ((next = virBitmapNextSetBit(resourceMap, next)) > -1) {
-            sched = func(def, next);
-
-            if (sched && sched->policy == i)
-                ignore_value(virBitmapSetBit(schedMap, next));
+        case VIR_PROC_POLICY_NONE:
+        case VIR_PROC_POLICY_LAST:
+            break;
         }
 
-        /* it's necessary to discriminate priority levels for schedulers that
-         * have them */
-        while (!virBitmapIsAllClear(schedMap)) {
-            virBitmapPtr currentMap = NULL;
-            ssize_t nextprio;
-            bool hasPriority = false;
-            int priority = 0;
-
-            switch ((virProcessSchedPolicy) i) {
-            case VIR_PROC_POLICY_NONE:
-            case VIR_PROC_POLICY_BATCH:
-            case VIR_PROC_POLICY_IDLE:
-            case VIR_PROC_POLICY_LAST:
-                currentMap = schedMap;
-                break;
-
-            case VIR_PROC_POLICY_FIFO:
-            case VIR_PROC_POLICY_RR:
-                virBitmapClearAll(prioMap);
-                hasPriority = true;
-
-                /* we need to find a subset of vCPUs with the given scheduler
-                 * that share the priority */
-                nextprio = virBitmapNextSetBit(schedMap, -1);
-                if (!(sched = func(def, nextprio)))
-                    goto cleanup;
-
-                priority = sched->priority;
-                ignore_value(virBitmapSetBit(prioMap, nextprio));
-
-                while ((nextprio = virBitmapNextSetBit(schedMap, nextprio)) > -1) {
-                    sched = func(def, nextprio);
-                    if (sched && sched->priority == priority)
-                        ignore_value(virBitmapSetBit(prioMap, nextprio));
-                }
-
-                currentMap = prioMap;
-                break;
-            }
-
-            /* now we have the complete group */
-            if (!(tmp = virBitmapFormat(currentMap)))
-                goto cleanup;
-
-            virBufferAsprintf(buf,
-                              "<%sched %s='%s' scheduler='%s'",
-                              name, name, tmp,
-                              virProcessSchedPolicyTypeToString(i));
-            VIR_FREE(tmp);
-
-            if (hasPriority)
-                virBufferAsprintf(buf, " priority='%d'", priority);
-
-            virBufferAddLit(buf, "/>\n");
-
-            /* subtract all vCPUs that were already found */
-            virBitmapSubtract(schedMap, currentMap);
-        }
-    }
-
-    ret = 0;
-
- cleanup:
-    virBitmapFree(schedMap);
-    virBitmapFree(prioMap);
-    return ret;
-}
-
-
-static int
-virDomainFormatVcpuSchedDef(virDomainDefPtr def,
-                            virBufferPtr buf)
-{
-    virBitmapPtr allcpumap;
-    int ret;
-
-    if (virDomainDefGetVcpusMax(def) == 0)
-        return 0;
-
-    if (!(allcpumap = virBitmapNew(virDomainDefGetVcpusMax(def))))
-        return -1;
-
-    virBitmapSetAll(allcpumap);
-
-    ret = virDomainFormatSchedDef(def, buf, "vcpus", virDomainDefGetVcpuSched,
-                                  allcpumap);
-
-    virBitmapFree(allcpumap);
-    return ret;
-}
-
-
-static int
-virDomainFormatIOThreadSchedDef(virDomainDefPtr def,
-                                virBufferPtr buf)
-{
-    virBitmapPtr threadmap;
-    size_t i;
-    int ret = -1;
-
-    if (def->niothreadids == 0)
-        return 0;
-
-    if (!(threadmap = virBitmapNewEmpty()))
-        return -1;
-
-    for (i = 0; i < def->niothreadids; i++) {
-        if (def->iothreadids[i]->sched.policy != VIR_PROC_POLICY_NONE &&
-            virBitmapSetBitExpand(threadmap, def->iothreadids[i]->iothread_id) < 0)
-            goto cleanup;
-    }
-
-    if (virBitmapIsAllClear(threadmap)) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    ret = virDomainFormatSchedDef(def, buf, "iothreads",
-                                  virDomainDefGetIOThreadSched, threadmap);
-
- cleanup:
-    virBitmapFree(threadmap);
-    return ret;
 }
 
 
@@ -23564,11 +23416,16 @@ virDomainCputuneDefFormat(virBufferPtr buf,
         VIR_FREE(cpumask);
     }
 
-    if (virDomainFormatVcpuSchedDef(def, &childrenBuf) < 0)
-        goto cleanup;
+    for (i = 0; i < def->maxvcpus; i++) {
+        virDomainSchedulerFormat(&childrenBuf, "vcpu",
+                                 &def->vcpus[i]->sched, i);
+    }
 
-    if (virDomainFormatIOThreadSchedDef(def, &childrenBuf) < 0)
-        goto cleanup;
+    for (i = 0; i < def->niothreadids; i++) {
+        virDomainSchedulerFormat(&childrenBuf, "iothread",
+                                 &def->iothreadids[i]->sched,
+                                 def->iothreadids[i]->iothread_id);
+    }
 
     if (virBufferUse(&childrenBuf)) {
         virBufferAddLit(buf, "<cputune>\n");

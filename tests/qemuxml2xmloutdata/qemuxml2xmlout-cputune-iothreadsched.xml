@@ -12,8 +12,11 @@
     <vcpupin vcpu='0' cpuset='0'/>
     <vcpupin vcpu='1' cpuset='1'/>
     <emulatorpin cpuset='1'/>
-    <vcpusched vcpus='0-1' scheduler='fifo' priority='1'/>
-    <iothreadsched iothreads='1-3' scheduler='batch'/>
+    <vcpusched vcpus='0' scheduler='fifo' priority='1'/>
+    <vcpusched vcpus='1' scheduler='fifo' priority='1'/>
+    <iothreadsched iothreads='1' scheduler='batch'/>
+    <iothreadsched iothreads='2' scheduler='batch'/>
+    <iothreadsched iothreads='3' scheduler='batch'/>
   </cputune>
   <os>
     <type arch='i686' machine='pc'>hvm</type>
