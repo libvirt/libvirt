@@ -187,6 +187,7 @@
   <flag name='machine-iommu'/>
   <flag name='virtio-vga'/>
   <flag name='query-qmp-schema'/>
+  <flag name='vhost-scsi'/>
   <version>2005000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

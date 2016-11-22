@@ -198,6 +198,7 @@
   <flag name='ivshmem-doorbell'/>
   <flag name='query-qmp-schema'/>
   <flag name='gluster.debug_level'/>
+  <flag name='vhost-scsi'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.7.0)</package>

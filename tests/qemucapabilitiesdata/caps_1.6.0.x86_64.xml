@@ -144,6 +144,7 @@
   <flag name='device-tray-moved-event'/>
   <flag name='nec-usb-xhci-ports'/>
   <flag name='display'/>
+  <flag name='vhost-scsi'/>
   <version>1006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
