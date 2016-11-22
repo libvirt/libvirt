@@ -2324,6 +2324,9 @@ void virDomainHostdevDefClear(virDomainHostdevDefPtr def)
             } else {
                 VIR_FREE(scsisrc->u.host.adapter);
             }
+        } else if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
+            virDomainHostdevSubsysSCSIVHostPtr hostsrc = &def->source.subsys.u.scsi_host;
+            VIR_FREE(hostsrc->wwpn);
         }
         break;
     }
@@ -6093,6 +6096,58 @@ virDomainHostdevSubsysSCSIDefParseXML(xmlNodePtr sourcenode,
     return ret;
 }
 
+static int
+virDomainHostdevSubsysSCSIVHostDefParseXML(xmlNodePtr sourcenode,
+                                           virDomainHostdevDefPtr def)
+{
+    char *protocol = NULL;
+    virDomainHostdevSubsysSCSIVHostPtr hostsrc = &def->source.subsys.u.scsi_host;
+
+    if (!(protocol = virXMLPropString(sourcenode, "protocol"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing scsi_host subsystem protocol"));
+        return -1;
+    }
+
+    if ((hostsrc->protocol =
+         virDomainHostdevSubsysSCSIHostProtocolTypeFromString(protocol)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unknown scsi_host subsystem protocol '%s'"),
+                       protocol);
+        goto cleanup;
+    }
+
+    switch ((virDomainHostdevSubsysSCSIHostProtocolType) hostsrc->protocol) {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST:
+        if (!(hostsrc->wwpn = virXMLPropString(sourcenode, "wwpn"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing vhost-scsi hostdev source wwpn"));
+            goto cleanup;
+        }
+
+        if (!STRPREFIX(hostsrc->wwpn, "naa.") ||
+            !virValidateWWN(hostsrc->wwpn + 4)) {
+            virReportError(VIR_ERR_XML_ERROR, "%s", _("malformed 'wwpn' value"));
+            goto cleanup;
+        }
+        break;
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_NONE:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_LAST:
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid hostdev protocol '%s'"),
+                       virDomainHostdevSubsysSCSIHostProtocolTypeToString(hostsrc->protocol));
+        goto cleanup;
+        break;
+    }
+
+    return 0;
+
+ cleanup:
+    VIR_FREE(hostsrc->wwpn);
+    VIR_FREE(protocol);
+    return -1;
+}
+
 
 static int
 virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
@@ -6214,6 +6269,11 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         if (virDomainHostdevSubsysSCSIDefParseXML(sourcenode, scsisrc) < 0)
+            goto error;
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+        if (virDomainHostdevSubsysSCSIVHostDefParseXML(sourcenode, def) < 0)
             goto error;
         break;
 
@@ -13022,6 +13082,15 @@ virDomainHostdevDefParseXML(virDomainXMLOptionPtr xmlopt,
                 def->shareable = true;
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+            if (def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+                def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+                def->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("SCSI_host host device must use 'pci' "
+                                 "or 'ccw' address type"));
+                goto error;
+            }
+            break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
             break;
@@ -13906,7 +13975,14 @@ virDomainHostdevMatchSubsys(virDomainHostdevDefPtr a,
         else
             return virDomainHostdevMatchSubsysSCSIHost(a, b);
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
-        /* Fall through for now */
+        if (a->source.subsys.u.scsi_host.protocol !=
+            b->source.subsys.u.scsi_host.protocol)
+            return 0;
+        if (STREQ(a->source.subsys.u.scsi_host.wwpn,
+                  b->source.subsys.u.scsi_host.wwpn))
+            return 1;
+        else
+            return 0;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         return 0;
     }
@@ -20812,9 +20888,11 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                                 unsigned int flags,
                                 bool includeTypeInAddr)
 {
+    bool closedSource = false;
     virDomainHostdevSubsysUSBPtr usbsrc = &def->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &def->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &def->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIVHostPtr hostsrc = &def->source.subsys.u.scsi_host;
     virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
     virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
 
@@ -20853,6 +20931,15 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
 
         virBufferAsprintf(buf, " protocol='%s' name='%s'",
                           protocol, iscsisrc->path);
+    }
+
+    if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
+        const char *protocol =
+            virDomainHostdevSubsysSCSIHostProtocolTypeToString(hostsrc->protocol);
+        closedSource = true;
+
+        virBufferAsprintf(buf, " protocol='%s' wwpn='%s'/",
+                          protocol, hostsrc->wwpn);
     }
 
     virBufferAddLit(buf, ">\n");
@@ -20908,6 +20995,8 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
                               scsihostsrc->unit);
         }
         break;
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+        break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected hostdev type %d"),
@@ -20923,7 +21012,8 @@ virDomainHostdevDefFormatSubsys(virBufferPtr buf,
     }
 
     virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</source>\n");
+    if (!closedSource)
+        virBufferAddLit(buf, "</source>\n");
 
     return 0;
 }

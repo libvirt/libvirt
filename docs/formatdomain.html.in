@@ -3694,6 +3694,17 @@
 &lt;/devices&gt;
 ...</pre>
 
+    <p>or:</p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;hostdev mode='subsystem' type='scsi_host'&gt;
+      &lt;source protocol='vhost' wwpn='naa.50014057667280d8'/&gt;
+    &lt;/hostdev&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
     <dl>
       <dt><code>hostdev</code></dt>
       <dd>The <code>hostdev</code> element is the main container for describing
@@ -3731,6 +3742,12 @@
             <a href="#elementsDisks">disk</a> section.
             If a disk lun in the domain already has the rawio capability,
             then this setting not required.
+          </dd>
+          <dt><code>scsi_host</code></dt>
+          <dd><span class="since">since 2.5.0</span>For SCSI devices, user
+            is responsible to make sure the device is not used by host. This
+            <code>type</code> passes all LUNs presented by a single HBA to
+            the guest.
           </dd>
         </dl>
         <p>
@@ -3794,6 +3811,13 @@
             using the <code>auth</code> element to provide the authentication
             credentials to the iSCSI server.
             </p>
+          </dd>
+          <dt><code>scsi_host</code></dt>
+          <dd><span class="since">Since 2.5.0</span>, multiple LUNs behind a
+            single SCSI HBA are described by a <code>protocol</code>
+            attribute set to "vhost" and a <code>wwpn</code> attribute that
+            is the vhost_scsi wwpn (16 hexadecimal digits with a prefix of
+            "naa.") established in the host configfs.
           </dd>
         </dl>
       </dd>

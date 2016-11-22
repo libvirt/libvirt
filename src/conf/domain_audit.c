@@ -392,6 +392,7 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
     virDomainHostdevSubsysUSBPtr usbsrc = &hostdev->source.subsys.u.usb;
     virDomainHostdevSubsysPCIPtr pcisrc = &hostdev->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIVHostPtr hostsrc = &hostdev->source.subsys.u.scsi_host;
 
     virUUIDFormat(vm->def->uuid, uuidstr);
     if (!(vmname = virAuditEncode("vm", vm->def->name))) {
@@ -444,6 +445,12 @@ virDomainAuditHostdev(virDomainObjPtr vm, virDomainHostdevDefPtr hostdev,
             }
             break;
         }
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+            if (VIR_STRDUP_QUIET(address, hostsrc->wwpn) < 0) {
+                VIR_WARN("OOM while encoding audit message");
+                goto cleanup;
+            }
+            break;
         default:
             VIR_WARN("Unexpected hostdev type while encoding audit message: %d",
                      hostdev->source.subsys.type);

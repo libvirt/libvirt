@@ -3974,6 +3974,7 @@
       <ref name="hostdevsubsyspci"/>
       <ref name="hostdevsubsysusb"/>
       <ref name="hostdevsubsysscsi"/>
+      <ref name="hostdevsubsyshost"/>
     </choice>
   </define>
 
@@ -4097,6 +4098,28 @@
               <ref name='diskAuth'/>
             </optional>
           </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+
+  <define name="hostdevsubsyshost">
+    <attribute name="type">
+      <value>scsi_host</value>
+    </attribute>
+    <element name="source">
+      <choice>
+        <group>
+          <attribute name="protocol">
+            <choice>
+              <value>vhost</value>     <!-- vhost, required -->
+            </choice>
+          </attribute>
+          <attribute name="wwpn">
+            <data type="string">
+              <param name="pattern">(naa\.)[0-9a-fA-F]{16}</param>
+            </data>
+          </attribute>
         </group>
       </choice>
     </element>

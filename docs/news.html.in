@@ -27,6 +27,10 @@
           libvirtd via SSH, using the libssh library; for example:
           <tt>qemu+libssh://<i>server</i>/system</tt>
           </li>
+          <li>vhost-scsi: Add support scsi_host hostdev passthrough<br/>
+          Add the capability to pass through a scsi_host HBA and the
+          associated LUNs to the guest.
+          </li>
         </ul>
       </li>
       <li><strong>Improvements</strong>
