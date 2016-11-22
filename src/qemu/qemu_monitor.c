@@ -1672,6 +1672,7 @@ qemuMonitorCPUInfoClear(qemuMonitorCPUInfoPtr cpus,
 
     for (i = 0; i < ncpus; i++) {
         cpus[i].id = 0;
+        cpus[i].qemu_id = -1;
         cpus[i].socket_id = -1;
         cpus[i].core_id = -1;
         cpus[i].thread_id = -1;
@@ -1729,6 +1730,7 @@ qemuMonitorGetCPUInfoLegacy(struct qemuMonitorQueryCpusEntry *cpuentries,
         if (i < ncpuentries) {
             vcpus[i].tid = cpuentries[i].tid;
             vcpus[i].halted = cpuentries[i].halted;
+            vcpus[i].qemu_id = cpuentries[i].qemu_id;
         }
 
         /* for legacy hotplug to work we need to fake the vcpu count added by
@@ -1866,6 +1868,7 @@ qemuMonitorGetCPUInfoHotplug(struct qemuMonitorQueryHotpluggableCpusEntry *hotpl
             }
         }
 
+        vcpus[anyvcpu].qemu_id = cpuentries[j].qemu_id;
         vcpus[anyvcpu].tid = cpuentries[j].tid;
         vcpus[anyvcpu].halted = cpuentries[j].halted;
     }

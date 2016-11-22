@@ -3,6 +3,7 @@
     hotpluggable=no
     thread-id='895040'
     enable-id='1'
+    query-cpus-id='0'
     type='Broadwell-x86_64-cpu'
     qom_path='/machine/unattached/device[0]'
     topology: socket='0' core='0' thread='0' vcpus='1'
@@ -11,6 +12,7 @@
     hotpluggable=yes
     thread-id='895056'
     enable-id='2'
+    query-cpus-id='1'
     type='Broadwell-x86_64-cpu'
     alias='vcpu1'
     qom_path='/machine/peripheral/vcpu1'
@@ -20,6 +22,7 @@
     hotpluggable=yes
     thread-id='895057'
     enable-id='3'
+    query-cpus-id='2'
     type='Broadwell-x86_64-cpu'
     alias='vcpu2'
     qom_path='/machine/peripheral/vcpu2'
@@ -29,6 +32,7 @@
     hotpluggable=yes
     thread-id='895058'
     enable-id='4'
+    query-cpus-id='3'
     type='Broadwell-x86_64-cpu'
     alias='vcpu3'
     qom_path='/machine/peripheral/vcpu3'
@@ -38,6 +42,7 @@
     hotpluggable=yes
     thread-id='895059'
     enable-id='5'
+    query-cpus-id='4'
     type='Broadwell-x86_64-cpu'
     alias='vcpu4'
     qom_path='/machine/peripheral/vcpu4'
@@ -47,6 +52,7 @@
     hotpluggable=yes
     thread-id='895060'
     enable-id='6'
+    query-cpus-id='5'
     type='Broadwell-x86_64-cpu'
     alias='vcpu5'
     qom_path='/machine/peripheral/vcpu5'
@@ -56,6 +62,7 @@
     hotpluggable=yes
     thread-id='895061'
     enable-id='7'
+    query-cpus-id='6'
     type='Broadwell-x86_64-cpu'
     alias='vcpu6'
     qom_path='/machine/peripheral/vcpu6'
@@ -65,6 +72,7 @@
     hotpluggable=yes
     thread-id='895062'
     enable-id='8'
+    query-cpus-id='7'
     type='Broadwell-x86_64-cpu'
     alias='vcpu7'
     qom_path='/machine/peripheral/vcpu7'
@@ -74,6 +82,7 @@
     hotpluggable=yes
     thread-id='895063'
     enable-id='9'
+    query-cpus-id='8'
     type='Broadwell-x86_64-cpu'
     alias='vcpu8'
     qom_path='/machine/peripheral/vcpu8'
@@ -83,6 +92,7 @@
     hotpluggable=yes
     thread-id='895064'
     enable-id='10'
+    query-cpus-id='9'
     type='Broadwell-x86_64-cpu'
     alias='vcpu9'
     qom_path='/machine/peripheral/vcpu9'
@@ -92,6 +102,7 @@
     hotpluggable=yes
     thread-id='895065'
     enable-id='11'
+    query-cpus-id='10'
     type='Broadwell-x86_64-cpu'
     alias='vcpu10'
     qom_path='/machine/peripheral/vcpu10'

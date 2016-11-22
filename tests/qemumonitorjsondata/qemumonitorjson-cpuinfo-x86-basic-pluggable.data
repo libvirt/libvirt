@@ -3,6 +3,7 @@
     hotpluggable=no
     thread-id='518291'
     enable-id='1'
+    query-cpus-id='0'
     type='qemu64-x86_64-cpu'
     qom_path='/machine/unattached/device[0]'
     topology: socket='0' core='0' thread='0' vcpus='1'
@@ -11,6 +12,7 @@
     hotpluggable=no
     thread-id='518292'
     enable-id='2'
+    query-cpus-id='1'
     type='qemu64-x86_64-cpu'
     qom_path='/machine/unattached/device[2]'
     topology: socket='0' core='0' thread='1' vcpus='1'
@@ -19,6 +21,7 @@
     hotpluggable=no
     thread-id='518294'
     enable-id='3'
+    query-cpus-id='2'
     type='qemu64-x86_64-cpu'
     qom_path='/machine/unattached/device[3]'
     topology: socket='0' core='1' thread='0' vcpus='1'
@@ -27,6 +30,7 @@
     hotpluggable=no
     thread-id='518295'
     enable-id='4'
+    query-cpus-id='3'
     type='qemu64-x86_64-cpu'
     qom_path='/machine/unattached/device[4]'
     topology: socket='0' core='1' thread='1' vcpus='1'
@@ -35,6 +39,7 @@
     hotpluggable=no
     thread-id='518296'
     enable-id='5'
+    query-cpus-id='4'
     type='qemu64-x86_64-cpu'
     qom_path='/machine/unattached/device[5]'
     topology: socket='1' core='0' thread='0' vcpus='1'

@@ -3,6 +3,7 @@
     hotpluggable=no
     thread-id='35232'
     enable-id='1'
+    query-cpus-id='0'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[1]'
     topology: core='0' vcpus='1'
@@ -11,6 +12,7 @@
     hotpluggable=no
     thread-id='35233'
     enable-id='2'
+    query-cpus-id='1'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[2]'
     topology: core='8' vcpus='1'
@@ -19,6 +21,7 @@
     hotpluggable=no
     thread-id='35234'
     enable-id='3'
+    query-cpus-id='2'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[3]'
     topology: core='16' vcpus='1'
@@ -27,6 +30,7 @@
     hotpluggable=no
     thread-id='35235'
     enable-id='4'
+    query-cpus-id='3'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[4]'
     topology: core='24' vcpus='1'
@@ -35,6 +39,7 @@
     hotpluggable=no
     thread-id='35236'
     enable-id='5'
+    query-cpus-id='4'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[5]'
     topology: core='32' vcpus='1'
@@ -43,6 +48,7 @@
     hotpluggable=no
     thread-id='35237'
     enable-id='6'
+    query-cpus-id='5'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[6]'
     topology: core='40' vcpus='1'
@@ -51,6 +57,7 @@
     hotpluggable=no
     thread-id='35238'
     enable-id='7'
+    query-cpus-id='6'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[7]'
     topology: core='48' vcpus='1'
@@ -59,6 +66,7 @@
     hotpluggable=no
     thread-id='35239'
     enable-id='8'
+    query-cpus-id='7'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[8]'
     topology: core='56' vcpus='1'
