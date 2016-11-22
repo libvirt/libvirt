@@ -22,6 +22,11 @@
           </li>
           <li>vbox: Add VirtualBox 5.1 support
           </li>
+          <li>libssh: New transport<br/>
+          The new libssh transport allows one to connect to a running
+          libvirtd via SSH, using the libssh library; for example:
+          <tt>qemu+libssh://<i>server</i>/system</tt>
+          </li>
         </ul>
       </li>
       <li><strong>Improvements</strong>
