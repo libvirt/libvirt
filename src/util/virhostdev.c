@@ -146,6 +146,7 @@ virHostdevManagerDispose(void *obj)
     virObjectUnref(hostdevMgr->inactivePCIHostdevs);
     virObjectUnref(hostdevMgr->activeUSBHostdevs);
     virObjectUnref(hostdevMgr->activeSCSIHostdevs);
+    virObjectUnref(hostdevMgr->activeSCSIVHostHostdevs);
     VIR_FREE(hostdevMgr->stateDir);
 }
 
@@ -168,6 +169,9 @@ virHostdevManagerNew(void)
         goto error;
 
     if (!(hostdevMgr->activeSCSIHostdevs = virSCSIDeviceListNew()))
+        goto error;
+
+    if (!(hostdevMgr->activeSCSIVHostHostdevs = virSCSIVHostDeviceListNew()))
         goto error;
 
     if (privileged) {
@@ -1484,6 +1488,102 @@ virHostdevPrepareSCSIDevices(virHostdevManagerPtr mgr,
     return -1;
 }
 
+int
+virHostdevPrepareSCSIVHostDevices(virHostdevManagerPtr mgr,
+                                  const char *drv_name,
+                                  const char *dom_name,
+                                  virDomainHostdevDefPtr *hostdevs,
+                                  int nhostdevs)
+{
+    size_t i, j;
+    int count;
+    virSCSIVHostDeviceListPtr list;
+    virSCSIVHostDevicePtr host, tmp;
+
+    if (!nhostdevs)
+        return 0;
+
+    /* To prevent situation where scsi_host device is assigned to two domains
+     * we need to keep a list of currently assigned scsi_host devices.
+     * This is done in several loops which cannot be joined into one big
+     * loop. See virHostdevPreparePCIDevices()
+     */
+    if (!(list = virSCSIVHostDeviceListNew()))
+        goto cleanup;
+
+    /* Loop 1: build temporary list */
+    for (i = 0; i < nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevSubsysSCSIVHostPtr hostsrc = &hostdev->source.subsys.u.scsi_host;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST)
+            continue;
+
+        if (hostsrc->protocol != VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST)
+            continue;  /* Not supported */
+
+        if (!(host = virSCSIVHostDeviceNew(hostsrc->wwpn)))
+            goto cleanup;
+
+        if (virSCSIVHostDeviceListAdd(list, host) < 0) {
+            virSCSIVHostDeviceFree(host);
+            goto cleanup;
+        }
+    }
+
+    /* Loop 2: Mark devices in temporary list as used by @name
+     * and add them to driver list. However, if something goes
+     * wrong, perform rollback.
+     */
+    virObjectLock(mgr->activeSCSIVHostHostdevs);
+    count = virSCSIVHostDeviceListCount(list);
+
+    for (i = 0; i < count; i++) {
+        host = virSCSIVHostDeviceListGet(list, i);
+        if ((tmp = virSCSIVHostDeviceListFind(mgr->activeSCSIVHostHostdevs,
+                                              host))) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("SCSI_host device %s is already in use by "
+                             "another domain"),
+                           virSCSIVHostDeviceGetName(tmp));
+            goto error;
+        } else {
+            if (virSCSIVHostDeviceSetUsedBy(host, drv_name, dom_name) < 0)
+                goto error;
+
+            VIR_DEBUG("Adding %s to activeSCSIVHostHostdevs",
+                      virSCSIVHostDeviceGetName(host));
+
+            if (virSCSIVHostDeviceListAdd(mgr->activeSCSIVHostHostdevs, host) < 0)
+                goto error;
+        }
+    }
+
+    virObjectUnlock(mgr->activeSCSIVHostHostdevs);
+
+    /* Loop 3: Temporary list was successfully merged with
+     * driver list, so steal all items to avoid freeing them
+     * when freeing temporary list.
+     */
+    while (virSCSIVHostDeviceListCount(list) > 0) {
+        tmp = virSCSIVHostDeviceListGet(list, 0);
+        virSCSIVHostDeviceListSteal(list, tmp);
+    }
+
+    virObjectUnref(list);
+    return 0;
+ error:
+    for (j = 0; j < i; j++) {
+        tmp = virSCSIVHostDeviceListGet(list, i);
+        virSCSIVHostDeviceListSteal(mgr->activeSCSIVHostHostdevs, tmp);
+    }
+    virObjectUnlock(mgr->activeSCSIVHostHostdevs);
+ cleanup:
+    virObjectUnref(list);
+    return -1;
+}
+
 void
 virHostdevReAttachUSBDevices(virHostdevManagerPtr mgr,
                              const char *drv_name,
@@ -1613,6 +1713,69 @@ virHostdevReAttachSCSIDevices(virHostdevManagerPtr mgr,
                                               drv_name, dom_name);
     }
     virObjectUnlock(mgr->activeSCSIHostdevs);
+}
+
+void
+virHostdevReAttachSCSIVHostDevices(virHostdevManagerPtr mgr,
+                                   const char *drv_name,
+                                   const char *dom_name,
+                                   virDomainHostdevDefPtr *hostdevs,
+                                   int nhostdevs)
+{
+    size_t i;
+    virSCSIVHostDevicePtr host, tmp;
+
+
+    if (!nhostdevs)
+        return;
+
+    virObjectLock(mgr->activeSCSIVHostHostdevs);
+    for (i = 0; i < nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevSubsysSCSIVHostPtr hostsrc = &hostdev->source.subsys.u.scsi_host;
+        const char *usedby_drvname;
+        const char *usedby_domname;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST)
+            continue;
+
+        if (hostsrc->protocol != VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST)
+            continue; /* Not supported */
+
+        if (!(host = virSCSIVHostDeviceNew(hostsrc->wwpn))) {
+            VIR_WARN("Unable to reattach SCSI_host device %s on domain %s",
+                     hostsrc->wwpn, dom_name);
+            virObjectUnlock(mgr->activeSCSIVHostHostdevs);
+            return;
+        }
+
+        /* Only delete the devices which are marked as being used by @name,
+         * because qemuProcessStart could fail half way through. */
+
+        if (!(tmp = virSCSIVHostDeviceListFind(mgr->activeSCSIVHostHostdevs,
+                                               host))) {
+            VIR_WARN("Unable to find device %s "
+                     "in list of active SCSI_host devices",
+                     hostsrc->wwpn);
+            virSCSIVHostDeviceFree(host);
+            virObjectUnlock(mgr->activeSCSIVHostHostdevs);
+            return;
+        }
+
+        virSCSIVHostDeviceGetUsedBy(tmp, &usedby_drvname, &usedby_domname);
+
+        if (STREQ_NULLABLE(drv_name, usedby_drvname) &&
+            STREQ_NULLABLE(dom_name, usedby_domname)) {
+            VIR_DEBUG("Removing %s dom=%s from activeSCSIVHostHostdevs",
+                       hostsrc->wwpn, dom_name);
+
+            virSCSIVHostDeviceListDel(mgr->activeSCSIVHostHostdevs, tmp);
+        }
+
+        virSCSIVHostDeviceFree(host);
+    }
+    virObjectUnlock(mgr->activeSCSIVHostHostdevs);
 }
 
 int

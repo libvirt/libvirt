@@ -31,6 +31,7 @@
 #include "virnuma.h"
 #include "virrandom.h"
 #include "virscsi.h"
+#include "virscsivhost.h"
 #include "virstring.h"
 #include "virtpm.h"
 #include "virutil.h"
@@ -104,6 +105,14 @@ virSCSIDeviceGetSgName(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 
     ignore_value(VIR_STRDUP(ret, "sg0"));
     return ret;
+}
+
+int
+virSCSIVHostOpenVhostSCSI(int *vhostfd)
+{
+    *vhostfd = STDERR_FILENO + 1;
+
+    return 0;
 }
 
 int

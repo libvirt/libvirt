@@ -1685,10 +1685,12 @@ virHostdevPCINodeDeviceReset;
 virHostdevPrepareDomainDevices;
 virHostdevPreparePCIDevices;
 virHostdevPrepareSCSIDevices;
+virHostdevPrepareSCSIVHostDevices;
 virHostdevPrepareUSBDevices;
 virHostdevReAttachDomainDevices;
 virHostdevReAttachPCIDevices;
 virHostdevReAttachSCSIDevices;
+virHostdevReAttachSCSIVHostDevices;
 virHostdevReAttachUSBDevices;
 virHostdevUpdateActiveDomainDevices;
 virHostdevUpdateActivePCIDevices;
@@ -2304,6 +2306,22 @@ virSCSIDeviceListNew;
 virSCSIDeviceListSteal;
 virSCSIDeviceNew;
 virSCSIDeviceSetUsedBy;
+
+
+# util/virscsivhost.h
+virSCSIVHostDeviceFileIterate;
+virSCSIVHostDeviceFree;
+virSCSIVHostDeviceGetName;
+virSCSIVHostDeviceListAdd;
+virSCSIVHostDeviceListCount;
+virSCSIVHostDeviceListDel;
+virSCSIVHostDeviceListFind;
+virSCSIVHostDeviceListGet;
+virSCSIVHostDeviceListNew;
+virSCSIVHostDeviceListSteal;
+virSCSIVHostDeviceNew;
+virSCSIVHostDeviceSetUsedBy;
+virSCSIVHostOpenVhostSCSI;
 
 
 # util/virseclabel.h

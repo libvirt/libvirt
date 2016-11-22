@@ -237,6 +237,7 @@ src/util/virqemu.c
 src/util/virrandom.c
 src/util/virrotatingfile.c
 src/util/virscsi.c
+src/util/virscsivhost.c
 src/util/virsecret.c
 src/util/virsexpr.c
 src/util/virsocketaddr.c
