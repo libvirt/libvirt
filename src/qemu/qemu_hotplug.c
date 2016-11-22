@@ -2462,6 +2462,116 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
     goto cleanup;
 }
 
+static int
+qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
+                                virDomainObjPtr vm,
+                                virDomainHostdevDefPtr hostdev)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_HOSTDEV,
+                               { .hostdev = hostdev } };
+    virDomainCCWAddressSetPtr ccwaddrs = NULL;
+    char *vhostfdName = NULL;
+    int vhostfd = -1;
+    char *devstr = NULL;
+    bool teardowncgroup = false;
+    bool teardownlabel = false;
+    bool releaseaddr = false;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("SCSI passthrough is not supported by this version of qemu"));
+        return -1;
+    }
+
+    if (qemuHostdevPrepareSCSIVHostDevices(driver, vm->def->name, &hostdev, 1) < 0) {
+        virDomainHostdevSubsysSCSIVHostPtr hostsrc = &hostdev->source.subsys.u.scsi_host;
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to prepare scsi_host hostdev: %s"),
+                       hostsrc->wwpn);
+        return -1;
+    }
+
+    if (qemuSetupHostdevCgroup(vm, hostdev) < 0)
+        goto cleanup;
+    teardowncgroup = true;
+
+    if (virSecurityManagerSetHostdevLabel(driver->securityManager,
+                                          vm->def, hostdev, NULL) < 0)
+        goto cleanup;
+    teardownlabel = true;
+
+    if (virSCSIVHostOpenVhostSCSI(&vhostfd) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&vhostfdName, "vhostfd-%d", vhostfd) < 0)
+        goto cleanup;
+
+    if (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+        if (qemuDomainMachineIsS390CCW(vm->def) &&
+            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VIRTIO_CCW))
+            hostdev->info->type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW;
+    }
+
+    if (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
+        hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        if (qemuDomainEnsurePCIAddress(vm, &dev) < 0)
+            goto cleanup;
+    } else if (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
+        if (!(ccwaddrs = qemuDomainCCWAddrSetCreateFromDomain(vm->def)))
+            goto cleanup;
+        if (virDomainCCWAddressAssign(hostdev->info, ccwaddrs,
+                                      !hostdev->info->addr.ccw.assigned) < 0)
+            goto cleanup;
+    }
+    releaseaddr = true;
+
+    if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
+        goto cleanup;
+
+    if (!(devstr = qemuBuildSCSIVHostHostdevDevStr(vm->def,
+                                                   hostdev,
+                                                   priv->qemuCaps,
+                                                   vhostfdName)))
+        goto cleanup;
+
+    if (VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1) < 0)
+        goto cleanup;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    ret = qemuMonitorAddDeviceWithFd(priv->mon, devstr, vhostfd, vhostfdName);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || ret < 0)
+        goto audit;
+
+    vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;
+    ret = 0;
+
+ audit:
+    virDomainAuditHostdev(vm, hostdev, "attach", (ret == 0));
+
+ cleanup:
+    if (ret < 0) {
+        if (teardowncgroup && qemuTeardownHostdevCgroup(vm, hostdev) < 0)
+            VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
+        if (teardownlabel &&
+            virSecurityManagerRestoreHostdevLabel(driver->securityManager,
+                                                  vm->def, hostdev, NULL) < 0)
+            VIR_WARN("Unable to restore host device labelling on hotplug fail");
+        if (releaseaddr)
+            qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
+    }
+
+    virDomainCCWAddressSetFree(ccwaddrs);
+
+    VIR_FORCE_CLOSE(vhostfd);
+    VIR_FREE(vhostfdName);
+    VIR_FREE(devstr);
+    return ret;
+}
+
 
 int
 qemuDomainAttachHostDevice(virConnectPtr conn,
@@ -2492,6 +2602,11 @@ qemuDomainAttachHostDevice(virConnectPtr conn,
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         if (qemuDomainAttachHostSCSIDevice(conn, driver, vm,
                                            hostdev) < 0)
+            goto error;
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+        if (qemuDomainAttachSCSIVHostDevice(driver, vm, hostdev) < 0)
             goto error;
         break;
 
@@ -3587,6 +3702,14 @@ qemuDomainRemoveSCSIHostDevice(virQEMUDriverPtr driver,
     qemuHostdevReAttachSCSIDevices(driver, vm->def->name, &hostdev, 1);
 }
 
+static void
+qemuDomainRemoveSCSIVHostDevice(virQEMUDriverPtr driver,
+                                virDomainObjPtr vm,
+                                virDomainHostdevDefPtr hostdev)
+{
+    qemuHostdevReAttachSCSIVHostDevices(driver, vm->def->name, &hostdev, 1);
+}
+
 static int
 qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
                            virDomainObjPtr vm,
@@ -3665,6 +3788,7 @@ qemuDomainRemoveHostDevice(virQEMUDriverPtr driver,
         qemuDomainRemoveSCSIHostDevice(driver, vm, hostdev);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+        qemuDomainRemoveSCSIVHostDevice(driver, vm, hostdev);
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         break;
@@ -4521,6 +4645,31 @@ qemuDomainDetachHostSCSIDevice(virQEMUDriverPtr driver,
 }
 
 static int
+qemuDomainDetachSCSIVHostDevice(virQEMUDriverPtr driver,
+                                virDomainObjPtr vm,
+                                virDomainHostdevDefPtr detach)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int ret = -1;
+
+    if (!detach->info->alias) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       "%s", _("device cannot be detached without a device alias"));
+        return -1;
+    }
+
+    qemuDomainMarkDeviceForRemoval(vm, detach->info);
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    ret = qemuMonitorDelDevice(priv->mon, detach->info->alias);
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        return -1;
+
+    return ret;
+}
+
+static int
 qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainHostdevDefPtr detach)
@@ -4541,6 +4690,9 @@ qemuDomainDetachThisHostDevice(virQEMUDriverPtr driver,
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
         ret = qemuDomainDetachHostSCSIDevice(driver, vm, detach);
+        break;
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+        ret = qemuDomainDetachSCSIVHostDevice(driver, vm, detach);
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -4619,6 +4771,8 @@ int qemuDomainDetachHostDevice(virQEMUDriverPtr driver,
             }
             break;
         }
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+            break;
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected hostdev type %d"), subsys->type);
