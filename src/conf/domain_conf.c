@@ -22762,7 +22762,10 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
             virBufferAsprintf(buf, " autoport='%s'",
                               def->data.vnc.autoport ? "yes" : "no");
 
-            if (def->data.vnc.websocket)
+            if (def->data.vnc.websocketGenerated &&
+                (flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
+                virBufferAddLit(buf, " websocket='-1'");
+            else if (def->data.vnc.websocket)
                 virBufferAsprintf(buf, " websocket='%d'", def->data.vnc.websocket);
 
             virDomainGraphicsListenDefFormatAddr(buf, glisten, flags);
