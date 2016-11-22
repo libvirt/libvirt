@@ -26,6 +26,8 @@
       </li>
       <li><strong>Improvements</strong>
         <ul>
+          <li>virsh: Add support for passing an alternative persistent XML
+          to migrate command</li>
           <li>vhostuser: Allow hotplug of multiqueue devices
           </li>
           <li>NEWS: Switch to an improved format<br/>

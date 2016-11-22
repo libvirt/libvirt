@@ -1625,7 +1625,7 @@ I<domain> I<desturi> [I<migrateuri>] [I<graphicsuri>] [I<listen-address>] [I<dna
 [I<--compressed>] [I<--comp-methods> B<method-list>]
 [I<--comp-mt-level>] [I<--comp-mt-threads>] [I<--comp-mt-dthreads>]
 [I<--comp-xbzrle-cache>] [I<--auto-converge>] [I<auto-converge-initial>]
-[I<auto-converge-increment>]
+[I<auto-converge-increment>] [I<--persistent-xml> B<file>]
 
 Migrate domain to another host.  Add I<--live> for live migration; <--p2p>
 for peer-2-peer migration; I<--direct> for direct migration; or I<--tunnelled>
@@ -1679,6 +1679,9 @@ omitted, but can be used to supply an alternative XML file for use on
 the destination to supply a larger set of changes to any host-specific
 portions of the domain XML, such as accounting for naming differences
 between source and destination in accessing underlying storage.
+If I<--persistent> is enabled, I<--persistent-xml> B<file> can be used to
+supply an alternative XML file which will be used as the persistent domain
+definition on the destination host.
 
 I<--timeout> B<seconds> tells virsh to run a specified action when live
 migration exceeds that many seconds.  It can only be used with I<--live>.

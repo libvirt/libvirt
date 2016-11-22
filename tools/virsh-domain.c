@@ -10105,6 +10105,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_INT,
      .help = N_("CPU throttling rate increment for auto-convergence")
     },
+    {.name = "persistent-xml",
+     .type = VSH_OT_STRING,
+     .help = N_("filename containing updated persistent XML for the target")
+    },
     {.name = NULL}
 };
 
@@ -10259,6 +10263,24 @@ doMigrate(void *opaque)
 
         if (virTypedParamsAddString(&params, &nparams, &maxparams,
                                     VIR_MIGRATE_PARAM_DEST_XML, xml) < 0) {
+            VIR_FREE(xml);
+            goto save_error;
+        }
+        VIR_FREE(xml);
+    }
+
+    if (vshCommandOptStringReq(ctl, cmd, "persistent-xml", &opt) < 0)
+        goto out;
+    if (opt) {
+        char *xml;
+
+        if (virFileReadAll(opt, VSH_MAX_XML_FILE, &xml) < 0) {
+            vshError(ctl, _("cannot read file '%s'"), opt);
+            goto save_error;
+        }
+
+        if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                    VIR_MIGRATE_PARAM_PERSIST_XML, xml) < 0) {
             VIR_FREE(xml);
             goto save_error;
         }
@@ -10421,6 +10443,7 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS("live", "offline");
     VSH_EXCLUSIVE_OPTIONS("timeout-suspend", "timeout-postcopy");
     VSH_REQUIRE_OPTION("postcopy-after-precopy", "postcopy");
+    VSH_REQUIRE_OPTION("persistent-xml", "persistent");
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
