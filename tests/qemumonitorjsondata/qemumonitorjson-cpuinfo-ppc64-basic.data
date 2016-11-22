@@ -2,7 +2,7 @@
     online=yes
     hotpluggable=no
     thread-id='21925'
-    qemu-id='1'
+    enable-id='1'
     type='host-spapr-cpu-core'
     qom_path='/machine/unattached/device[1]'
     topology: core='0' vcpus='8'

@@ -2489,7 +2489,7 @@ testQemuMonitorCPUInfoFormat(qemuMonitorCPUInfoPtr vcpus,
                               (unsigned long long) vcpu->tid);
 
         if (vcpu->id != 0)
-            virBufferAsprintf(&buf, "qemu-id='%d'\n", vcpu->id);
+            virBufferAsprintf(&buf, "enable-id='%d'\n", vcpu->id);
 
         if (vcpu->type)
             virBufferAsprintf(&buf, "type='%s'\n", vcpu->type);

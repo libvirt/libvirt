@@ -2,7 +2,7 @@
     online=yes
     hotpluggable=no
     thread-id='895040'
-    qemu-id='1'
+    enable-id='1'
     type='Broadwell-x86_64-cpu'
     qom_path='/machine/unattached/device[0]'
     topology: socket='0' core='0' thread='0' vcpus='1'
@@ -10,7 +10,7 @@
     online=yes
     hotpluggable=yes
     thread-id='895056'
-    qemu-id='2'
+    enable-id='2'
     type='Broadwell-x86_64-cpu'
     alias='vcpu1'
     qom_path='/machine/peripheral/vcpu1'
@@ -19,7 +19,7 @@
     online=yes
     hotpluggable=yes
     thread-id='895057'
-    qemu-id='3'
+    enable-id='3'
     type='Broadwell-x86_64-cpu'
     alias='vcpu2'
     qom_path='/machine/peripheral/vcpu2'
@@ -28,7 +28,7 @@
     online=yes
     hotpluggable=yes
     thread-id='895058'
-    qemu-id='4'
+    enable-id='4'
     type='Broadwell-x86_64-cpu'
     alias='vcpu3'
     qom_path='/machine/peripheral/vcpu3'
@@ -37,7 +37,7 @@
     online=yes
     hotpluggable=yes
     thread-id='895059'
-    qemu-id='5'
+    enable-id='5'
     type='Broadwell-x86_64-cpu'
     alias='vcpu4'
     qom_path='/machine/peripheral/vcpu4'
@@ -46,7 +46,7 @@
     online=yes
     hotpluggable=yes
     thread-id='895060'
-    qemu-id='6'
+    enable-id='6'
     type='Broadwell-x86_64-cpu'
     alias='vcpu5'
     qom_path='/machine/peripheral/vcpu5'
@@ -55,7 +55,7 @@
     online=yes
     hotpluggable=yes
     thread-id='895061'
-    qemu-id='7'
+    enable-id='7'
     type='Broadwell-x86_64-cpu'
     alias='vcpu6'
     qom_path='/machine/peripheral/vcpu6'
@@ -64,7 +64,7 @@
     online=yes
     hotpluggable=yes
     thread-id='895062'
-    qemu-id='8'
+    enable-id='8'
     type='Broadwell-x86_64-cpu'
     alias='vcpu7'
     qom_path='/machine/peripheral/vcpu7'
@@ -73,7 +73,7 @@
     online=yes
     hotpluggable=yes
     thread-id='895063'
-    qemu-id='9'
+    enable-id='9'
     type='Broadwell-x86_64-cpu'
     alias='vcpu8'
     qom_path='/machine/peripheral/vcpu8'
@@ -82,7 +82,7 @@
     online=yes
     hotpluggable=yes
     thread-id='895064'
-    qemu-id='10'
+    enable-id='10'
     type='Broadwell-x86_64-cpu'
     alias='vcpu9'
     qom_path='/machine/peripheral/vcpu9'
@@ -91,7 +91,7 @@
     online=yes
     hotpluggable=yes
     thread-id='895065'
-    qemu-id='11'
+    enable-id='11'
     type='Broadwell-x86_64-cpu'
     alias='vcpu10'
     qom_path='/machine/peripheral/vcpu10'
