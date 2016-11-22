@@ -4742,6 +4742,44 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
 }
 
 char *
+qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
+                           virDomainHostdevDefPtr dev,
+                           virQEMUCapsPtr qemuCaps,
+                           char *vhostfdName)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
+
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VHOST_SCSI)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("This QEMU doesn't support vhost-scsi devices"));
+        goto cleanup;
+    }
+
+    if (ARCH_IS_S390(def->os.arch))
+        virBufferAddLit(&buf, "vhost-scsi-ccw");
+    else
+        virBufferAddLit(&buf, "vhost-scsi-pci");
+
+    virBufferAsprintf(&buf, ",wwpn=%s,vhostfd=%s,id=%s",
+                      hostsrc->wwpn,
+                      vhostfdName,
+                      dev->info->alias);
+
+    if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
+        goto cleanup;
+
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
+
+    return virBufferContentAndReset(&buf);
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return NULL;
+}
+
+char *
 qemuBuildSCSIHostdevDrvStr(virDomainHostdevDefPtr dev)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
@@ -5219,6 +5257,48 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("SCSI passthrough is not supported by this version of qemu"));
                 return -1;
+            }
+        }
+
+        /* SCSI_host */
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("SCSI passthrough is not supported by this "
+                                 "version of qemu"));
+                return -1;
+            }
+
+            if (hostdev->source.subsys.u.scsi_host.protocol ==
+                VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST) {
+                char *vhostfdName = NULL;
+                int vhostfd = -1;
+
+                if (virSCSIVHostOpenVhostSCSI(&vhostfd) < 0)
+                    return -1;
+
+                if (virAsprintf(&vhostfdName, "%d", vhostfd) < 0) {
+                    VIR_FORCE_CLOSE(vhostfd);
+                    return -1;
+                }
+
+                virCommandPassFD(cmd, vhostfd,
+                                 VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+
+                virCommandAddArg(cmd, "-device");
+                if (!(devstr = qemuBuildSCSIVHostHostdevDevStr(def,
+                                                               hostdev,
+                                                               qemuCaps,
+                                                               vhostfdName))) {
+                    VIR_FREE(vhostfdName);
+                    VIR_FORCE_CLOSE(vhostfd);
+                    return -1;
+                }
+                virCommandAddArg(cmd, devstr);
+
+                VIR_FREE(vhostfdName);
+                VIR_FREE(devstr);
             }
         }
     }

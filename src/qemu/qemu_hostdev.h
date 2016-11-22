@@ -55,6 +55,10 @@ int qemuHostdevPrepareSCSIDevices(virQEMUDriverPtr driver,
                                   const char *name,
                                   virDomainHostdevDefPtr *hostdevs,
                                   int nhostdevs);
+int qemuHostdevPrepareSCSIVHostDevices(virQEMUDriverPtr driver,
+                                       const char *name,
+                                       virDomainHostdevDefPtr *hostdevs,
+                                       int nhostdevs);
 int qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
                                     virDomainDefPtr def,
                                     virQEMUCapsPtr qemuCaps,
@@ -72,6 +76,10 @@ void qemuHostdevReAttachSCSIDevices(virQEMUDriverPtr driver,
                                     const char *name,
                                     virDomainHostdevDefPtr *hostdevs,
                                     int nhostdevs);
+void qemuHostdevReAttachSCSIVHostDevices(virQEMUDriverPtr driver,
+                                         const char *name,
+                                         virDomainHostdevDefPtr *hostdevs,
+                                         int nhostdevs);
 void qemuHostdevReAttachDomainDevices(virQEMUDriverPtr driver,
                                       virDomainDefPtr def);
 

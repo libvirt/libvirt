@@ -292,6 +292,17 @@ qemuHostdevPrepareSCSIDevices(virQEMUDriverPtr driver,
                                         name, hostdevs, nhostdevs);
 }
 
+int
+qemuHostdevPrepareSCSIVHostDevices(virQEMUDriverPtr driver,
+                                   const char *name,
+                                   virDomainHostdevDefPtr *hostdevs,
+                                   int nhostdevs)
+{
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    return virHostdevPrepareSCSIVHostDevices(hostdev_mgr, QEMU_DRIVER_NAME,
+                                             name, hostdevs, nhostdevs);
+}
 
 int
 qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
@@ -313,6 +324,10 @@ qemuHostdevPrepareDomainDevices(virQEMUDriverPtr driver,
 
     if (qemuHostdevPrepareSCSIDevices(driver, def->name,
                                       def->hostdevs, def->nhostdevs) < 0)
+        return -1;
+
+    if (qemuHostdevPrepareSCSIVHostDevices(driver, def->name,
+                                           def->hostdevs, def->nhostdevs) < 0)
         return -1;
 
     return 0;
@@ -370,6 +385,18 @@ qemuHostdevReAttachSCSIDevices(virQEMUDriverPtr driver,
 }
 
 void
+qemuHostdevReAttachSCSIVHostDevices(virQEMUDriverPtr driver,
+                                    const char *name,
+                                    virDomainHostdevDefPtr *hostdevs,
+                                    int nhostdevs)
+{
+    virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+
+    virHostdevReAttachSCSIVHostDevices(hostdev_mgr, QEMU_DRIVER_NAME,
+                                       name, hostdevs, nhostdevs);
+}
+
+void
 qemuHostdevReAttachDomainDevices(virQEMUDriverPtr driver,
                                  virDomainDefPtr def)
 {
@@ -384,4 +411,7 @@ qemuHostdevReAttachDomainDevices(virQEMUDriverPtr driver,
 
     qemuHostdevReAttachSCSIDevices(driver, def->name, def->hostdevs,
                                    def->nhostdevs);
+
+    qemuHostdevReAttachSCSIVHostDevices(driver, def->name, def->hostdevs,
+                                        def->nhostdevs);
 }
