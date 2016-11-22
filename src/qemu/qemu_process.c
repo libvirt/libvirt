@@ -4096,16 +4096,21 @@ qemuProcessGraphicsReservePorts(virQEMUDriverPtr driver,
         glisten->type != VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK)
         return 0;
 
-    if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        !graphics->data.vnc.autoport) {
-        if (virPortAllocatorSetUsed(driver->remotePorts,
-                                    graphics->data.vnc.port,
-                                    true) < 0)
-            return -1;
-        graphics->data.vnc.portReserved = true;
+    switch (graphics->type) {
+    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+        if (!graphics->data.vnc.autoport) {
+            if (virPortAllocatorSetUsed(driver->remotePorts,
+                                        graphics->data.vnc.port,
+                                        true) < 0)
+                return -1;
+            graphics->data.vnc.portReserved = true;
+        }
+        break;
 
-    } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE &&
-               !graphics->data.spice.autoport) {
+    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+        if (graphics->data.spice.autoport)
+            return 0;
+
         if (graphics->data.spice.port > 0) {
             if (virPortAllocatorSetUsed(driver->remotePorts,
                                         graphics->data.spice.port,
@@ -4121,6 +4126,13 @@ qemuProcessGraphicsReservePorts(virQEMUDriverPtr driver,
                 return -1;
             graphics->data.spice.tlsPortReserved = true;
         }
+        break;
+
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+        break;
     }
 
     return 0;
