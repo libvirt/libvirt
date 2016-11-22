@@ -317,4 +317,15 @@ int virFileSetupDev(const char *path,
 
 int virFileBindMountDevice(const char *src,
                            const char *dst);
+
+int virFileGetACLs(const char *file,
+                   void **acl);
+
+int virFileSetACLs(const char *file,
+                   void *acl);
+
+void virFileFreeACLs(void **acl);
+
+int virFileCopyACLs(const char *src,
+                    const char *dst);
 #endif /* __VIR_FILE_H */

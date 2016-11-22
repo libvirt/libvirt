@@ -30,6 +30,7 @@
 # undef HAVE_LIBNL
 # undef HAVE_LIBNL3
 # undef HAVE_LIBSASL2
+# undef HAVE_SYS_ACL_H
 # undef WITH_CAPNG
 # undef WITH_CURL
 # undef WITH_DBUS
@@ -56,6 +57,7 @@
 # undef HAVE_LIBNL
 # undef HAVE_LIBNL3
 # undef HAVE_LIBSASL2
+# undef HAVE_SYS_ACL_H
 # undef WITH_CAPNG
 # undef WITH_CURL
 # undef WITH_DTRACE_PROBES

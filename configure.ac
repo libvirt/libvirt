@@ -313,10 +313,18 @@ dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h regex.h sys/un.h \
   sys/poll.h syslog.h mntent.h net/ethernet.h linux/magic.h \
   sys/un.h sys/syscall.h sys/sysctl.h netinet/tcp.h ifaddrs.h \
-  libtasn1.h sys/ucred.h sys/mount.h])
+  libtasn1.h sys/ucred.h sys/mount.h sys/acl.h])
 dnl Check whether endian provides handy macros.
 AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
 AC_CHECK_FUNCS([stat stat64 __xstat __xstat64 lstat lstat64 __lxstat __lxstat64])
+
+ACL_CFLAGS=""
+ACL_LIBS=""
+if test "x$ac_cv_header_sys_acl_h" = "xyes" ; then
+    ACL_LIBS="-lacl"
+fi
+AC_SUBST([ACL_CFLAGS])
+AC_SUBST([ACL_LIBS])
 
 dnl We need to decide at configure time if libvirt will use real atomic
 dnl operations ("lock free") or emulated ones with a mutex.

@@ -48,6 +48,9 @@
 #if HAVE_SYS_SYSCALL_H
 # include <sys/syscall.h>
 #endif
+#if HAVE_SYS_ACL_H
+# include <sys/acl.h>
+#endif
 
 #ifdef __linux__
 # if HAVE_LINUX_MAGIC_H
@@ -3629,3 +3632,81 @@ virFileBindMountDevice(const char *src ATTRIBUTE_UNUSED,
     return -1;
 }
 #endif /* !defined(HAVE_SYS_MOUNT_H) */
+
+
+#if defined(HAVE_SYS_ACL_H)
+int
+virFileGetACLs(const char *file,
+               void **acl)
+{
+    if (!(*acl = acl_get_file(file, ACL_TYPE_ACCESS)))
+        return -1;
+
+    return 0;
+}
+
+
+int
+virFileSetACLs(const char *file,
+               void *acl)
+{
+    if (acl_set_file(file, ACL_TYPE_ACCESS, acl) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+void
+virFileFreeACLs(void **acl)
+{
+    acl_free(*acl);
+    *acl = NULL;
+}
+
+#else /* !defined(HAVE_SYS_ACL_H) */
+
+int
+virFileGetACLs(const char *file ATTRIBUTE_UNUSED,
+               void **acl ATTRIBUTE_UNUSED)
+{
+    errno = ENOTSUP;
+    return -1;
+}
+
+
+int
+virFileSetACLs(const char *file ATTRIBUTE_UNUSED,
+               void *acl ATTRIBUTE_UNUSED)
+{
+    errno = ENOTSUP;
+    return -1;
+}
+
+
+void
+virFileFreeACLs(void **acl)
+{
+    *acl = NULL;
+}
+
+#endif /* !defined(HAVE_SYS_ACL_H) */
+
+int
+virFileCopyACLs(const char *src,
+                const char *dst)
+{
+    void *acl = NULL;
+    int ret = -1;
+
+    if (virFileGetACLs(src, &acl) < 0)
+        return ret;
+
+    if (virFileSetACLs(dst, acl) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virFileFreeACLs(&acl);
+    return ret;
+}
