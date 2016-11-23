@@ -2951,7 +2951,8 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
                                virConnectPtr conn,
                                qemuMigrationJobPhase phase,
                                virDomainState state,
-                               int reason)
+                               int reason,
+                               unsigned int *stopFlags)
 {
     bool postcopy = state == VIR_DOMAIN_PAUSED &&
                     (reason == VIR_DOMAIN_PAUSED_POSTCOPY ||
@@ -3015,6 +3016,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
 
     case QEMU_MIGRATION_PHASE_CONFIRM3:
         /* migration completed, we need to kill the domain here */
+        *stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
         return -1;
     }
 
@@ -3040,7 +3042,8 @@ static int
 qemuProcessRecoverJob(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
                       virConnectPtr conn,
-                      const struct qemuDomainJobObj *job)
+                      const struct qemuDomainJobObj *job,
+                      unsigned int *stopFlags)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virDomainState state;
@@ -3051,7 +3054,7 @@ qemuProcessRecoverJob(virQEMUDriverPtr driver,
     switch (job->asyncJob) {
     case QEMU_ASYNC_JOB_MIGRATION_OUT:
         if (qemuProcessRecoverMigrationOut(driver, vm, conn, job->phase,
-                                           state, reason) < 0)
+                                           state, reason, stopFlags) < 0)
             return -1;
         break;
 
@@ -3398,7 +3401,7 @@ qemuProcessReconnect(void *opaque)
     if (qemuProcessRefreshBalloonState(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
         goto error;
 
-    if (qemuProcessRecoverJob(driver, obj, conn, &oldjob) < 0)
+    if (qemuProcessRecoverJob(driver, obj, conn, &oldjob, &stopFlags) < 0)
         goto error;
 
     if (qemuProcessUpdateDevices(driver, obj) < 0)
