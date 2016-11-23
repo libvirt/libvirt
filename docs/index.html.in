@@ -39,6 +39,7 @@
           <a href="drvbhyve.html">BHyve</a> and
           <a href="drivers.html">more</a></li>
         <li>targets Linux, FreeBSD, <a href="windows.html">Windows</a> and OS-X</li>
+        <li>is used by many <a href="apps.html">applications</a></li>
       </ul>
     </div>
 
