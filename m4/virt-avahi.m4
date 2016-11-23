@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_AVAHI],[
+  LIBVIRT_ARG_WITH([AVAHI], [avahi-client], [check], [0.6.0])
   LIBVIRT_CHECK_PKG([AVAHI], [avahi-client], [0.6.0])
 ])
 

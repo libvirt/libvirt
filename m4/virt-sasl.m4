@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_SASL],[
+  LIBVIRT_ARG_WITH([SASL], [sasl], [check])
   LIBVIRT_CHECK_LIB_ALT([SASL], [sasl2],
                         [sasl_client_init], [sasl/sasl.h],
                         [SASL1], [sasl],

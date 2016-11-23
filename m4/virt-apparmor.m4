@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_APPARMOR],[
+  LIBVIRT_ARG_WITH([APPARMOR], [AppArmor], [check])
   LIBVIRT_CHECK_LIB([APPARMOR], [apparmor],
                     [aa_change_profile], [sys/apparmor.h])
 

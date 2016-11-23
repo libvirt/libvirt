@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_SANLOCK],[
+  LIBVIRT_ARG_WITH([SANLOCK], [sanlock-client], [check])
   LIBVIRT_CHECK_LIB([SANLOCK], [sanlock_client], [sanlock_init], [sanlock.h])
 
   if test "x$with_sanlock" = "xyes" ; then

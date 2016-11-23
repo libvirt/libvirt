@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_LIBSSH],[
+  LIBVIRT_ARG_WITH([LIBSSH], [libssh], [check], [0.7])
   LIBVIRT_CHECK_PKG([LIBSSH], [libssh], [0.7])
 ])
 

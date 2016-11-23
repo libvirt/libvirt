@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_GNUTLS],[
+  LIBVIRT_ARG_WITH([GNUTLS], [gnutls], [check], [2.2.0])
   LIBVIRT_CHECK_PKG([GNUTLS], [gnutls], [2.2.0])
 
   if test "$with_gnutls" = "yes" ; then

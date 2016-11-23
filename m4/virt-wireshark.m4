@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_WIRESHARK],[
+  LIBVIRT_ARG_WITH([WIRESHARK_DISSECTOR], [wireshark], [check], [1.11.3])
   LIBVIRT_CHECK_PKG([WIRESHARK_DISSECTOR], [wireshark], [1.11.3])
 
   LIBVIRT_ARG_WITH_ALT([WS_PLUGINDIR],

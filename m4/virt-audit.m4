@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_AUDIT],[
+  LIBVIRT_ARG_WITH([AUDIT], [audit], [check])
   LIBVIRT_CHECK_LIB([AUDIT], [audit],
                     [audit_encode_nv_string], [libaudit.h])
 ])

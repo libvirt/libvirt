@@ -18,6 +18,8 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_READLINE],[
+  LIBVIRT_ARG_WITH([READLINE], [readline], [check])
+
   extra_LIBS=
   lv_saved_libs=$LIBS
   if test "x$with_readline" != xno; then

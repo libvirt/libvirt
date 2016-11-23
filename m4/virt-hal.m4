@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_HAL],[
+  LIBVIRT_ARG_WITH([HAL], [hal], [check], [0.5.0])
   LIBVIRT_CHECK_PKG([HAL], [hal], [0.5.0])
 ])
 

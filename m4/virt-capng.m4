@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_CAPNG],[
+  LIBVIRT_ARG_WITH([CAPNG], [cap-ng], [check])
   LIBVIRT_CHECK_LIB([CAPNG], [cap-ng], [capng_updatev], [cap-ng.h])
 ])
 

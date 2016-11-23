@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_BLKID],[
+  LIBVIRT_ARG_WITH([BLKID], [blkid], [check], [2.17])
   LIBVIRT_CHECK_PKG([BLKID], [blkid], [2.17])
 ])
 

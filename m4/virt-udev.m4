@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_UDEV],[
+  LIBVIRT_ARG_WITH([UDEV], [libudev], [check], [145])
   AC_REQUIRE([LIBVIRT_CHECK_PCIACCESS])
   LIBVIRT_CHECK_PKG([UDEV], [libudev], [145])
 

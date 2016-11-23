@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_NETCF],[
+  LIBVIRT_ARG_WITH([NETCF], [netcf], [check], [0.1.4])
   LIBVIRT_CHECK_PKG([NETCF], [netcf], [0.1.4])
 
   if test "$with_netcf" = "yes" ; then

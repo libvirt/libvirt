@@ -18,6 +18,8 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_YAJL],[
+  LIBVIRT_ARG_WITH([YAJL], [yajl], [check])
+
   dnl YAJL JSON library http://lloyd.github.com/yajl/
   if test "$with_qemu:$with_yajl" = yes:check; then
     dnl Some versions of qemu require the use of yajl; try to detect them

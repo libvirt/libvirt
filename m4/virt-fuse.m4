@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_FUSE],[
+  LIBVIRT_ARG_WITH([FUSE], [fuse], [check], [2.8.6])
   LIBVIRT_CHECK_PKG([FUSE], [fuse], [2.8.6])
 ])
 

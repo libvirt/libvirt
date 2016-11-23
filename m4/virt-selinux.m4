@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_SELINUX],[
+  LIBVIRT_ARG_WITH([SELINUX], [SELinux], [check])
   LIBVIRT_CHECK_LIB([SELINUX], [selinux],
                     [fgetfilecon_raw], [selinux/selinux.h])
 

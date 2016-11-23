@@ -18,6 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_CHECK_CURL],[
+  LIBVIRT_ARG_WITH([CURL], [libcurl], [check], [7.18.0])
   LIBVIRT_CHECK_PKG([CURL], [libcurl], [7.18.0])
 
   # XXX as of libcurl-devel-7.20.1-3.fc13.x86_64, curl ships a version
