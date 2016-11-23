@@ -45,6 +45,7 @@
 #include "qemu_hotplug.h"
 #include "qemu_migration.h"
 #include "qemu_interface.h"
+#include "qemu_security.h"
 
 #include "cpu/cpu.h"
 #include "datatypes.h"
@@ -5591,10 +5592,10 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting domain security labels");
-    if (virSecurityManagerSetAllLabel(driver->securityManager,
-                                      vm->def,
-                                      incoming ? incoming->path : NULL) < 0)
-        goto cleanup;
+        if (qemuSecuritySetAllLabel(driver,
+                                    vm,
+                                    incoming ? incoming->path : NULL) < 0)
+            goto cleanup;
 
     /* Security manager labeled all devices, therefore
      * if any operation from now on fails, we need to ask the caller to
@@ -6131,9 +6132,9 @@ void qemuProcessStop(virQEMUDriverPtr driver,
 
     /* Reset Security Labels unless caller don't want us to */
     if (!(flags & VIR_QEMU_PROCESS_STOP_NO_RELABEL))
-        virSecurityManagerRestoreAllLabel(driver->securityManager,
-                                          vm->def,
-                                          !!(flags & VIR_QEMU_PROCESS_STOP_MIGRATED));
+        qemuSecurityRestoreAllLabel(driver, vm,
+                                    !!(flags & VIR_QEMU_PROCESS_STOP_MIGRATED));
+
     virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
 
     for (i = 0; i < vm->def->ndisks; i++) {
