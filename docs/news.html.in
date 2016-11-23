@@ -31,6 +31,8 @@
       </li>
       <li><strong>Improvements</strong>
         <ul>
+          <li>vbox: Address thread safety issues
+          </li>
           <li>virsh: Add support for passing an alternative persistent XML
           to migrate command
           </li>

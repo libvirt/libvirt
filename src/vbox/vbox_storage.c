@@ -86,7 +86,7 @@ vboxStoragePoolLookupByName(virConnectPtr conn, const char *name)
 
 static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 {
-    vboxGlobalData *data = pool->conn->privateData;
+    vboxDriverPtr data = pool->conn->privateData;
     vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
     PRUint32 hardDiskAccessible = 0;
     nsresult rc;
@@ -127,7 +127,7 @@ static int vboxStoragePoolNumOfVolumes(virStoragePoolPtr pool)
 static int
 vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nnames)
 {
-    vboxGlobalData *data = pool->conn->privateData;
+    vboxDriverPtr data = pool->conn->privateData;
     vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
     PRUint32 numActive = 0;
     nsresult rc;
@@ -183,7 +183,7 @@ vboxStoragePoolListVolumes(virStoragePoolPtr pool, char **const names, int nname
 static virStorageVolPtr
 vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
 {
-    vboxGlobalData *data = pool->conn->privateData;
+    vboxDriverPtr data = pool->conn->privateData;
     vboxArray hardDisks = VBOX_ARRAY_INITIALIZER;
     nsresult rc;
     size_t i;
@@ -256,7 +256,7 @@ vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
 static virStorageVolPtr
 vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 {
-    vboxGlobalData *data = conn->privateData;
+    vboxDriverPtr data = conn->privateData;
     vboxIIDUnion hddIID;
     unsigned char uuid[VIR_UUID_BUFLEN];
     IHardDisk *hardDisk = NULL;
@@ -323,7 +323,7 @@ vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 static virStorageVolPtr
 vboxStorageVolLookupByPath(virConnectPtr conn, const char *path)
 {
-    vboxGlobalData *data = conn->privateData;
+    vboxDriverPtr data = conn->privateData;
     PRUnichar *hddPathUtf16 = NULL;
     IHardDisk *hardDisk = NULL;
     PRUnichar *hddNameUtf16 = NULL;
@@ -401,7 +401,7 @@ static virStorageVolPtr
 vboxStorageVolCreateXML(virStoragePoolPtr pool,
                         const char *xml, unsigned int flags)
 {
-    vboxGlobalData *data = pool->conn->privateData;
+    vboxDriverPtr data = pool->conn->privateData;
     virStorageVolDefPtr def = NULL;
     PRUnichar *hddFormatUtf16 = NULL;
     PRUnichar *hddNameUtf16 = NULL;
@@ -508,7 +508,7 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
 
 static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 {
-    vboxGlobalData *data = vol->conn->privateData;
+    vboxDriverPtr data = vol->conn->privateData;
     unsigned char uuid[VIR_UUID_BUFLEN];
     IHardDisk *hardDisk = NULL;
     int deregister = 0;
@@ -663,7 +663,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 
 static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info)
 {
-    vboxGlobalData *data = vol->conn->privateData;
+    vboxDriverPtr data = vol->conn->privateData;
     IHardDisk *hardDisk = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     PRUint32 hddstate;
@@ -718,7 +718,7 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
 
 static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 {
-    vboxGlobalData *data = vol->conn->privateData;
+    vboxDriverPtr data = vol->conn->privateData;
     IHardDisk *hardDisk = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     PRUnichar *hddFormatUtf16 = NULL;
@@ -810,7 +810,7 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
 
 static char *vboxStorageVolGetPath(virStorageVolPtr vol)
 {
-    vboxGlobalData *data = vol->conn->privateData;
+    vboxDriverPtr data = vol->conn->privateData;
     IHardDisk *hardDisk = NULL;
     PRUnichar *hddLocationUtf16 = NULL;
     char *hddLocationUtf8 = NULL;

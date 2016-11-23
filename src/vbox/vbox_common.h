@@ -397,7 +397,7 @@ typedef nsISupports IKeyboard;
 # define vboxIIDToUUID(iid, uuid)                gVBoxAPI.UIID.vboxIIDToUUID(data, iid, uuid)
 # define vboxIIDFromUUID(iid, uuid)              gVBoxAPI.UIID.vboxIIDFromUUID(data, iid, uuid)
 # define vboxIIDIsEqual(iid1, iid2)              gVBoxAPI.UIID.vboxIIDIsEqual(data, iid1, iid2)
-# define DEBUGIID(msg, iid)                      gVBoxAPI.UIID.DEBUGIID(msg, iid)
+# define DEBUGIID(msg, iid)                      gVBoxAPI.UIID.DEBUGIID(data, msg, iid)
 # define vboxIIDFromArrayItem(iid, array, idx) \
     gVBoxAPI.UIID.vboxIIDFromArrayItem(data, iid, array, idx)
 
