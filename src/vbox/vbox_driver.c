@@ -114,6 +114,7 @@ int vboxRegister(void)
     if (virRegisterConnectDriver(&vboxConnectDriver,
                                  false) < 0)
         return -1;
+
     return 0;
 }
 #endif

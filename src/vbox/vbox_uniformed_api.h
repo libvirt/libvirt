@@ -136,14 +136,46 @@ typedef struct {
 
 } vboxGlobalData;
 
+struct _vboxDriver {
+    virObjectLockable parent;
+
+    virCapsPtr caps;
+    virDomainXMLOptionPtr xmlopt;
+    virObjectEventStatePtr domainEventState;
+
+    /* vbox API initialization members */
+    PCVBOXXPCOM pFuncs;
+    IVirtualBox *vboxObj;
+    ISession *vboxSession;
+# if VBOX_API_VERSION == 4002020 || VBOX_API_VERSION >= 4003004
+    IVirtualBoxClient *vboxClient;
+# endif
+
+    int fdWatch;
+# if VBOX_API_VERSION > 2002000 && VBOX_API_VERSION < 4000000
+    IVirtualBoxCallback *vboxCallback;
+    nsIEventQueue *vboxQueue;
+# else
+    void *vboxCallback;
+    void *vboxQueue;
+# endif
+    unsigned long version;
+
+    /* reference counting of vbox connections */
+    int volatile connectionCount;
+};
+
+typedef struct _vboxDriver vboxDriver;
+typedef struct _vboxDriver *vboxDriverPtr;
+
 /* vboxUniformedAPI gives vbox_common.c a uniformed layer to see
  * vbox API.
  */
 
 /* Functions for pFuncs */
 typedef struct {
-    int (*Initialize)(vboxGlobalData *data);
-    void (*Uninitialize)(vboxGlobalData *data);
+    int (*Initialize)(vboxDriverPtr driver);
+    void (*Uninitialize)(vboxDriverPtr driver);
     void (*ComUnallocMem)(PCVBOXXPCOM pFuncs, void *pv);
     void (*Utf16Free)(PCVBOXXPCOM pFuncs, PRUnichar *pwszString);
     void (*Utf8Free)(PCVBOXXPCOM pFuncs, char *pszString);
@@ -554,7 +586,7 @@ typedef struct {
     uint32_t APIVersion;
     uint32_t XPCOMCVersion;
     /* vbox APIs */
-    int (*initializeDomainEvent)(vboxGlobalData *data);
+    int (*initializeDomainEvent)(vboxDriverPtr driver);
     void (*registerGlobalData)(vboxGlobalData *data);
     void (*detachDevices)(vboxGlobalData *data, IMachine *machine, PRUnichar *hddcnameUtf16);
     nsresult (*unregisterMachine)(vboxGlobalData *data, vboxIIDUnion *iidu, IMachine **machine);

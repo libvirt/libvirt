@@ -57,6 +57,231 @@ VIR_LOG_INIT("vbox.vbox_common");
 /* global vbox API, used for all common codes. */
 static vboxUniformedAPI gVBoxAPI;
 
+static virClassPtr vboxDriverClass;
+static virMutex vbox_driver_lock = VIR_MUTEX_INITIALIZER;
+static vboxDriverPtr vbox_driver;
+static vboxDriverPtr vboxDriverObjNew(void);
+
+static virDomainDefParserConfig vboxDomainDefParserConfig = {
+    .macPrefix = { 0x08, 0x00, 0x27 },
+    .features = VIR_DOMAIN_DEF_FEATURE_NAME_SLASH,
+};
+
+static virCapsPtr
+vboxCapsInit(void)
+{
+    virCapsPtr caps;
+    virCapsGuestPtr guest;
+
+    if ((caps = virCapabilitiesNew(virArchFromHost(),
+                                   false, false)) == NULL)
+        goto no_memory;
+
+    if (nodeCapsInitNUMA(caps) < 0)
+        goto no_memory;
+
+    if ((guest = virCapabilitiesAddGuest(caps,
+                                         VIR_DOMAIN_OSTYPE_HVM,
+                                         caps->host.arch,
+                                         NULL,
+                                         NULL,
+                                         0,
+                                         NULL)) == NULL)
+        goto no_memory;
+
+    if (virCapabilitiesAddGuestDomain(guest,
+                                      VIR_DOMAIN_VIRT_VBOX,
+                                      NULL,
+                                      NULL,
+                                      0,
+                                      NULL) == NULL)
+        goto no_memory;
+
+    return caps;
+
+ no_memory:
+    virObjectUnref(caps);
+    return NULL;
+}
+
+static void
+vboxDriverDispose(void *obj)
+{
+    vboxDriverPtr driver = obj;
+
+    virObjectUnref(driver->caps);
+    virObjectUnref(driver->xmlopt);
+    if (gVBoxAPI.domainEventCallbacks)
+        virObjectUnref(driver->domainEventState);
+}
+
+static int
+vboxDriverOnceInit(void)
+{
+    if (!(vboxDriverClass = virClassNew(virClassForObjectLockable(),
+                                        "vboxDriver",
+                                        sizeof(vboxDriver),
+                                        vboxDriverDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(vboxDriver);
+
+static vboxDriverPtr
+vboxDriverObjNew(void)
+{
+    vboxDriverPtr driver;
+
+    if (vboxDriverInitialize() < 0)
+        return NULL;
+
+    if (!(driver = virObjectLockableNew(vboxDriverClass)))
+        return NULL;
+
+    if (!(driver->caps = vboxCapsInit()) ||
+        !(driver->xmlopt = virDomainXMLOptionNew(&vboxDomainDefParserConfig,
+                                                 NULL, NULL)))
+        goto cleanup;
+
+    if (gVBoxAPI.domainEventCallbacks &&
+        !(driver->domainEventState = virObjectEventStateNew()))
+        goto cleanup;
+
+    return driver;
+
+ cleanup:
+    virObjectUnref(driver);
+    return NULL;
+}
+
+static int
+vboxExtractVersion(void)
+{
+    int ret = -1;
+    PRUnichar *versionUtf16 = NULL;
+    char *vboxVersion = NULL;
+    nsresult rc;
+
+    if (vbox_driver->version > 0)
+        return 0;
+
+    rc = gVBoxAPI.UIVirtualBox.GetVersion(vbox_driver->vboxObj, &versionUtf16);
+    if (NS_FAILED(rc))
+        goto failed;
+
+    gVBoxAPI.UPFN.Utf16ToUtf8(vbox_driver->pFuncs, versionUtf16, &vboxVersion);
+
+    if (virParseVersionString(vboxVersion, &vbox_driver->version, false) >= 0)
+        ret = 0;
+
+    gVBoxAPI.UPFN.Utf8Free(vbox_driver->pFuncs, vboxVersion);
+    gVBoxAPI.UPFN.ComUnallocMem(vbox_driver->pFuncs, versionUtf16);
+    vboxVersion = NULL;
+    versionUtf16 = NULL;
+
+ failed:
+    if (ret != 0)
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not extract VirtualBox version"));
+
+    return ret;
+}
+
+static int
+vboxSdkInitialize(void)
+{
+    /* vbox API was already initialized by first connection */
+    if (vbox_driver->connectionCount > 0)
+        return 0;
+
+    if (gVBoxAPI.UPFN.Initialize(vbox_driver) != 0)
+        return -1;
+
+    if (gVBoxAPI.domainEventCallbacks &&
+        gVBoxAPI.initializeDomainEvent(vbox_driver) != 0)
+        return -1;
+
+    if (vbox_driver->vboxObj == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("IVirtualBox object is null"));
+        return -1;
+    }
+
+    if (vbox_driver->vboxSession == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("ISession object is null"));
+        return -1;
+    }
+
+    return 0;
+}
+
+static void
+vboxSdkUninitialize(void)
+{
+    /* do not uninitialize, when there are still connection using it */
+    if (vbox_driver->connectionCount > 0)
+        return;
+
+    gVBoxAPI.UPFN.Uninitialize(vbox_driver);
+}
+
+static vboxDriverPtr
+vboxGetDriverConnection(void)
+{
+    virMutexLock(&vbox_driver_lock);
+
+    if (vbox_driver) {
+        virObjectRef(vbox_driver);
+    } else {
+        vbox_driver = vboxDriverObjNew();
+
+        if (!vbox_driver) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Failed to create vbox driver object."));
+            return NULL;
+        }
+    }
+
+    if (vboxSdkInitialize() < 0 || vboxExtractVersion() < 0) {
+        gVBoxAPI.UPFN.Uninitialize(vbox_driver);
+        /* make sure to clear the pointer when last reference was released */
+        if (!virObjectUnref(vbox_driver))
+            vbox_driver = NULL;
+
+        virMutexUnlock(&vbox_driver_lock);
+
+        return NULL;
+    }
+
+    vbox_driver->connectionCount++;
+
+    virMutexUnlock(&vbox_driver_lock);
+
+    return vbox_driver;
+}
+
+static void
+vboxDestroyDriverConnection(void)
+{
+    virMutexLock(&vbox_driver_lock);
+
+    if (!vbox_driver)
+        goto cleanup;
+
+    vbox_driver->connectionCount--;
+
+    vboxSdkUninitialize();
+
+    if (!virObjectUnref(vbox_driver))
+        vbox_driver = NULL;
+
+ cleanup:
+    virMutexUnlock(&vbox_driver_lock);
+}
+
 static int openSessionForMachine(vboxGlobalData *data, const unsigned char *dom_uuid, vboxIIDUnion *iid,
                                  IMachine **machine, bool checkflag)
 {
@@ -251,153 +476,13 @@ static char *vboxGenerateMediumName(PRUint32 storageBus,
     return name;
 }
 
-static int
-vboxDomainDefPostParse(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                       virCapsPtr caps ATTRIBUTE_UNUSED,
-                       unsigned int parseFlags ATTRIBUTE_UNUSED,
-                       void *opaque ATTRIBUTE_UNUSED,
-                       void *parseOpaque ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-static int
-vboxDomainDeviceDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
-                             const virDomainDef *def ATTRIBUTE_UNUSED,
-                             virCapsPtr caps ATTRIBUTE_UNUSED,
-                             unsigned int parseFlags ATTRIBUTE_UNUSED,
-                             void *opaque ATTRIBUTE_UNUSED,
-                             void *parseOpaque ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
-
-static virDomainDefParserConfig vboxDomainDefParserConfig = {
-    .macPrefix = { 0x08, 0x00, 0x27 },
-    .devicesPostParseCallback = vboxDomainDeviceDefPostParse,
-    .domainPostParseCallback = vboxDomainDefPostParse,
-    .features = VIR_DOMAIN_DEF_FEATURE_NAME_SLASH,
-};
-
-static virDomainXMLOptionPtr
-vboxXMLConfInit(void)
-{
-    return virDomainXMLOptionNew(&vboxDomainDefParserConfig,
-                                 NULL, NULL);
-}
-
-static int vboxInitialize(vboxGlobalData *data)
-{
-    if (gVBoxAPI.UPFN.Initialize(data) != 0)
-        goto cleanup;
-
-    if (gVBoxAPI.domainEventCallbacks && gVBoxAPI.initializeDomainEvent(data) != 0)
-        goto cleanup;
-
-    if (data->vboxObj == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("IVirtualBox object is null"));
-        goto cleanup;
-    }
-
-    if (data->vboxSession == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("ISession object is null"));
-        goto cleanup;
-    }
-
-    return 0;
-
- cleanup:
-    return -1;
-}
-
-static virCapsPtr vboxCapsInit(void)
-{
-    virCapsPtr caps;
-    virCapsGuestPtr guest;
-
-    if ((caps = virCapabilitiesNew(virArchFromHost(),
-                                   false, false)) == NULL)
-        goto no_memory;
-
-    if (nodeCapsInitNUMA(caps) < 0)
-        goto no_memory;
-
-    if ((guest = virCapabilitiesAddGuest(caps,
-                                         VIR_DOMAIN_OSTYPE_HVM,
-                                         caps->host.arch,
-                                         NULL,
-                                         NULL,
-                                         0,
-                                         NULL)) == NULL)
-        goto no_memory;
-
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      VIR_DOMAIN_VIRT_VBOX,
-                                      NULL,
-                                      NULL,
-                                      0,
-                                      NULL) == NULL)
-        goto no_memory;
-
-    return caps;
-
- no_memory:
-    virObjectUnref(caps);
-    return NULL;
-}
-
-static int vboxExtractVersion(vboxGlobalData *data)
-{
-    int ret = -1;
-    PRUnichar *versionUtf16 = NULL;
-    char *vboxVersion = NULL;
-    nsresult rc;
-
-    if (data->version > 0)
-        return 0;
-
-    rc = gVBoxAPI.UIVirtualBox.GetVersion(data->vboxObj, &versionUtf16);
-    if (NS_FAILED(rc))
-        goto failed;
-
-    VBOX_UTF16_TO_UTF8(versionUtf16, &vboxVersion);
-
-    if (virParseVersionString(vboxVersion, &data->version, false) >= 0)
-        ret = 0;
-
-    VBOX_UTF8_FREE(vboxVersion);
-    VBOX_COM_UNALLOC_MEM(versionUtf16);
- failed:
-    if (ret != 0)
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Could not extract VirtualBox version"));
-
-    return ret;
-}
-
-static void vboxUninitialize(vboxGlobalData *data)
-{
-    if (!data)
-        return;
-
-    gVBoxAPI.UPFN.Uninitialize(data);
-
-    virObjectUnref(data->caps);
-    virObjectUnref(data->xmlopt);
-    if (gVBoxAPI.domainEventCallbacks)
-        virObjectUnref(data->domainEvents);
-    VIR_FREE(data);
-}
-
 static virDrvOpenStatus
 vboxConnectOpen(virConnectPtr conn,
                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                 virConfPtr conf ATTRIBUTE_UNUSED,
                 unsigned int flags)
 {
-    vboxGlobalData *data = NULL;
+    vboxDriverPtr driver = NULL;
     uid_t uid = geteuid();
 
     virCheckFlags(VIR_CONNECT_RO, VIR_DRV_OPEN_ERROR);
@@ -435,30 +520,11 @@ vboxConnectOpen(virConnectPtr conn,
         }
     }
 
-    if (VIR_ALLOC(data) < 0)
+    if (!(driver = vboxGetDriverConnection()))
         return VIR_DRV_OPEN_ERROR;
 
-    if (!(data->caps = vboxCapsInit()) ||
-        vboxInitialize(data) < 0 ||
-        vboxExtractVersion(data) < 0 ||
-        !(data->xmlopt = vboxXMLConfInit())) {
-        vboxUninitialize(data);
-        return VIR_DRV_OPEN_ERROR;
-    }
+    conn->privateData = virObjectRef(driver);
 
-    if (gVBoxAPI.domainEventCallbacks) {
-        if (!(data->domainEvents = virObjectEventStateNew())) {
-            vboxUninitialize(data);
-            return VIR_DRV_OPEN_ERROR;
-        }
-
-        data->conn = conn;
-    }
-
-    if (gVBoxAPI.hasStaticGlobalData)
-        gVBoxAPI.registerGlobalData(data);
-
-    conn->privateData = data;
     VIR_DEBUG("in vboxOpen");
 
     return VIR_DRV_OPEN_SUCCESS;
@@ -466,11 +532,10 @@ vboxConnectOpen(virConnectPtr conn,
 
 static int vboxConnectClose(virConnectPtr conn)
 {
-    vboxGlobalData *data = conn->privateData;
     VIR_DEBUG("%s: in vboxClose", conn->driver->name);
 
-    vboxUninitialize(data);
-    conn->privateData = NULL;
+    virObjectUnref(conn->privateData);
+    vboxDestroyDriverConnection();
 
     return 0;
 }
@@ -7869,6 +7934,8 @@ virHypervisorDriverPtr vboxGetHypervisorDriver(uint32_t uVersion)
                  uVersion);
         return NULL;
     }
+
     updateDriver();
+
     return &vboxCommonDriver;
 }

@@ -1978,21 +1978,8 @@ _registerDomainEvent(virHypervisorDriverPtr driver)
 
 #endif /* !(VBOX_API_VERSION == 2002000 || VBOX_API_VERSION >= 4000000) */
 
-static int _pfnInitialize(vboxGlobalData *data)
-{
-    data->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION);
-    if (data->pFuncs == NULL)
-        return -1;
-#if VBOX_XPCOMC_VERSION == 0x00010000U
-    data->pFuncs->pfnComInitialize(&data->vboxObj, &data->vboxSession);
-#else  /* !(VBOX_XPCOMC_VERSION == 0x00010000U) */
-    data->pFuncs->pfnComInitialize(IVIRTUALBOX_IID_STR, &data->vboxObj, ISESSION_IID_STR, &data->vboxSession);
-#endif /* !(VBOX_XPCOMC_VERSION == 0x00010000U) */
-    return 0;
-}
-
 static int
-_initializeDomainEvent(vboxGlobalData *data ATTRIBUTE_UNUSED)
+_initializeDomainEvent(vboxDriverPtr data ATTRIBUTE_UNUSED)
 {
 #if VBOX_API_VERSION <= 2002000 || VBOX_API_VERSION >= 4000000
     /* No event queue functionality in 2.2.* and 4.* as of now */
@@ -2631,10 +2618,50 @@ _detachFloppy(IMachine *machine ATTRIBUTE_UNUSED)
 
 #endif  /* VBOX_API_VERSION >= 3001000 */
 
-static void _pfnUninitialize(vboxGlobalData *data)
+static int _pfnInitialize(vboxDriverPtr driver)
 {
-    if (data->pFuncs)
+    if (!(driver->pFuncs = g_pfnGetFunctions(VBOX_XPCOMC_VERSION)))
+        return -1;
+#if VBOX_API_VERSION == 4002020 || VBOX_API_VERSION >= 4004004
+    nsresult rc;
+
+    rc = driver->pFuncs->pfnClientInitialize(IVIRTUALBOXCLIENT_IID_STR,
+                                             &driver->vboxClient);
+
+    if (NS_FAILED(rc)) {
+        return -1;
+    } else {
+        driver->vboxClient->vtbl->GetVirtualBox(driver->vboxClient, &driver->vboxObj);
+        driver->vboxClient->vtbl->GetSession(driver->vboxClient, &driver->vboxSession);
+    }
+
+#else
+
+# if VBOX_XPCOMC_VERSION == 0x00010000U
+    driver->pFuncs->pfnComInitialize(&driver->vboxObj, &driver->vboxSession);
+# else  /* !(VBOX_XPCOMC_VERSION == 0x00010000U) */
+    driver->pFuncs->pfnComInitialize(IVIRTUALBOX_IID_STR, &driver->vboxObj,
+                                     ISESSION_IID_STR, &driver->vboxSession);
+# endif /* !(VBOX_XPCOMC_VERSION == 0x00010000U) */
+
+#endif
+
+    return 0;
+}
+
+static void _pfnUninitialize(vboxDriverPtr data)
+{
+    if (data->pFuncs) {
+#if VBOX_API_VERSION == 4002020 || VBOX_API_VERSION >= 4003004
+        VBOX_RELEASE(data->vboxObj);
+        VBOX_RELEASE(data->vboxSession);
+        VBOX_RELEASE(data->vboxClient);
+
+        data->pFuncs->pfnClientUninitialize();
+#else
         data->pFuncs->pfnComUninitialize();
+#endif
+    }
 }
 
 static void _pfnComUnallocMem(PCVBOXXPCOM pFuncs, void *pv)
