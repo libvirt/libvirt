@@ -683,27 +683,138 @@ typedef enum {
 
 /* Domain migration flags. */
 typedef enum {
-    VIR_MIGRATE_LIVE              = (1 << 0), /* live migration */
-    VIR_MIGRATE_PEER2PEER         = (1 << 1), /* direct source -> dest host control channel */
-    /* Note the less-common spelling that we're stuck with:
-       VIR_MIGRATE_TUNNELLED should be VIR_MIGRATE_TUNNELED */
-    VIR_MIGRATE_TUNNELLED         = (1 << 2), /* tunnel migration data over libvirtd connection */
-    VIR_MIGRATE_PERSIST_DEST      = (1 << 3), /* persist the VM on the destination */
-    VIR_MIGRATE_UNDEFINE_SOURCE   = (1 << 4), /* undefine the VM on the source */
-    VIR_MIGRATE_PAUSED            = (1 << 5), /* pause on remote side */
-    VIR_MIGRATE_NON_SHARED_DISK   = (1 << 6), /* migration with non-shared storage with full disk copy */
-    VIR_MIGRATE_NON_SHARED_INC    = (1 << 7), /* migration with non-shared storage with incremental copy */
-                                              /* (same base image shared between source and destination) */
-    VIR_MIGRATE_CHANGE_PROTECTION = (1 << 8), /* protect for changing domain configuration through the
-                                               * whole migration process; this will be used automatically
-                                               * when supported */
-    VIR_MIGRATE_UNSAFE            = (1 << 9), /* force migration even if it is considered unsafe */
-    VIR_MIGRATE_OFFLINE           = (1 << 10), /* offline migrate */
-    VIR_MIGRATE_COMPRESSED        = (1 << 11), /* compress data during migration */
-    VIR_MIGRATE_ABORT_ON_ERROR    = (1 << 12), /* abort migration on I/O errors happened during migration */
-    VIR_MIGRATE_AUTO_CONVERGE     = (1 << 13), /* force convergence */
-    VIR_MIGRATE_RDMA_PIN_ALL      = (1 << 14), /* RDMA memory pinning */
-    VIR_MIGRATE_POSTCOPY          = (1 << 15), /* enable (but do not start) post-copy migration */
+    /* Do not pause the domain during migration. The domain's memory will
+     * be transferred to the destination host while the domain is running.
+     * The migration may never converge if the domain is changing its memory
+     * faster then it can be transferred. The domain can be manually paused
+     * anytime during migration using virDomainSuspend.
+     */
+    VIR_MIGRATE_LIVE              = (1 << 0),
+
+    /* Tell the source libvirtd to connect directly to the destination host.
+     * Without this flag the client (e.g., virsh) connects to both hosts and
+     * controls the migration process. In peer-to-peer mode, the source
+     * libvirtd controls the migration by calling the destination daemon
+     * directly.
+     */
+    VIR_MIGRATE_PEER2PEER         = (1 << 1),
+
+    /* Tunnel migration data over libvirtd connection. Without this flag the
+     * source hypervisor sends migration data directly to the destination
+     * hypervisor. This flag can only be used when VIR_MIGRATE_PEER2PEER is
+     * set as well.
+     *
+     * Note the less-common spelling that we're stuck with:
+     * VIR_MIGRATE_TUNNELLED should be VIR_MIGRATE_TUNNELED.
+     */
+    VIR_MIGRATE_TUNNELLED         = (1 << 2),
+
+    /* Define the domain as persistent on the destination host after successful
+     * migration. If the domain was persistent on the source host and
+     * VIR_MIGRATE_UNDEFINE_SOURCE is not used, it will end up persistent on
+     * both hosts.
+     */
+    VIR_MIGRATE_PERSIST_DEST      = (1 << 3),
+
+    /* Undefine the domain on the source host once migration successfully
+     * finishes.
+     */
+    VIR_MIGRATE_UNDEFINE_SOURCE   = (1 << 4),
+
+    /* Leave the domain suspended on the destination host. virDomainResume (on
+     * the virDomainPtr returned by the migration API) has to be called
+     * explicitly to resume domain's virtual CPUs.
+     */
+    VIR_MIGRATE_PAUSED            = (1 << 5),
+
+    /* Migrate full disk images in addition to domain's memory. By default
+     * only non-shared non-readonly disk images are transferred. The
+     * VIR_MIGRATE_PARAM_MIGRATE_DISKS parameter can be used to specify which
+     * disks should be migrated.
+     *
+     * This flag and VIR_MIGRATE_NON_SHARED_INC are mutually exclusive.
+     */
+    VIR_MIGRATE_NON_SHARED_DISK   = (1 << 6),
+
+    /* Migrate disk images in addition to domain's memory. This is similar to
+     * VIR_MIGRATE_NON_SHARED_DISK, but only the top level of each disk's
+     * backing chain is copied. That is, the rest of the backing chain is
+     * expected to be present on the destination and to be exactly the same as
+     * on the source host.
+     *
+     * This flag and VIR_MIGRATE_NON_SHARED_DISK are mutually exclusive.
+     */
+    VIR_MIGRATE_NON_SHARED_INC    = (1 << 7),
+
+    /* Protect against domain configuration changes during the migration
+     * process. This flag is used automatically when both sides support it.
+     * Explicitly setting this flag will cause migration to fail if either the
+     * source or the destination does not support it.
+     */
+    VIR_MIGRATE_CHANGE_PROTECTION = (1 << 8),
+
+    /* Force migration even if it is considered unsafe. In some cases libvirt
+     * may refuse to migrate the domain because doing so may lead to potential
+     * problems such as data corruption, and thus the migration is considered
+     * unsafe. For a QEMU domain this may happen if the domain uses disks
+     * without explicitly setting cache mode to "none". Migrating such domains
+     * is unsafe unless the disk images are stored on coherent clustered
+     * filesystem, such as GFS2 or GPFS.
+     */
+    VIR_MIGRATE_UNSAFE            = (1 << 9),
+
+    /* Migrate a domain definition without starting the domain on the
+     * destination and without stopping it on the source host. Offline
+     * migration requires VIR_MIGRATE_PERSIST_DEST to be set.
+     *
+     * Offline migration may not copy disk storage or any other file based
+     * storage (such as UEFI variables).
+     */
+    VIR_MIGRATE_OFFLINE           = (1 << 10),
+
+    /* Compress migration data. The compression methods can be specified using
+     * VIR_MIGRATE_PARAM_COMPRESSION. A hypervisor default method will be used
+     * if this parameter is omitted. Individual compression methods can be
+     * tuned via their specific VIR_MIGRATE_PARAM_COMPRESSION_* parameters.
+     */
+    VIR_MIGRATE_COMPRESSED        = (1 << 11),
+
+    /* Cancel migration if a soft error (such as I/O error) happens during
+     * migration.
+     */
+    VIR_MIGRATE_ABORT_ON_ERROR    = (1 << 12),
+
+    /* Enable algorithms that ensure a live migration will eventually converge.
+     * This usually means the domain will be slowed down to make sure it does
+     * not change its memory faster than a hypervisor can transfer the changed
+     * memory to the destination host. VIR_MIGRATE_PARAM_AUTO_CONVERGE_*
+     * parameters can be used to tune the algorithm.
+     */
+    VIR_MIGRATE_AUTO_CONVERGE     = (1 << 13),
+
+    /* This flag can be used with RDMA migration (i.e., when
+     * VIR_MIGRATE_PARAM_URI starts with "rdma://") to tell the hypervisor
+     * to pin all domain's memory at once before migration starts rather then
+     * letting it pin memory pages as needed. This means that all memory pages
+     * belonging to the domain will be locked in host's memory and the host
+     * will not be allowed to swap them out.
+     *
+     * For QEMU/KVM this requires hard_limit memory tuning element (in the
+     * domain XML) to be used and set to the maximum memory configured for the
+     * domain plus any memory consumed by the QEMU process itself. Beware of
+     * setting the memory limit too high (and thus allowing the domain to lock
+     * most of the host's memory). Doing so may be dangerous to both the
+     * domain and the host itself since the host's kernel may run out of
+     * memory.
+     */
+    VIR_MIGRATE_RDMA_PIN_ALL      = (1 << 14),
+
+    /* Setting the VIR_MIGRATE_POSTCOPY flag tells libvirt to enable post-copy
+     * migration. However, the migration will start normally and
+     * virDomainMigrateStartPostCopy needs to be called to switch it into the
+     * post-copy mode. See virDomainMigrateStartPostCopy for more details.
+     */
+    VIR_MIGRATE_POSTCOPY          = (1 << 15),
 } virDomainMigrateFlags;
 
 
