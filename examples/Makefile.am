@@ -43,7 +43,7 @@ noinst_PROGRAMS=dominfo/info1 dommigrate/dommigrate domsuspend/suspend \
 	domtop/domtop hellolibvirt/hellolibvirt object-events/event-test \
 	openauth/openauth rename/rename admin/list_servers admin/list_clients \
 	admin/threadpool_params admin/client_limits admin/client_info \
-	admin/client_close
+	admin/client_close admin/logging
 
 dominfo_info1_SOURCES = dominfo/info1.c
 dommigrate_dommigrate_SOURCES = dommigrate/dommigrate.c
@@ -65,6 +65,7 @@ admin_threadpool_params_SOURCES = admin/threadpool_params.c
 admin_client_limits_SOURCES = admin/client_limits.c
 admin_client_info_SOURCES = admin/client_info.c
 admin_client_close_SOURCES = admin/client_close.c
+admin_logging_SOURCES = admin/logging.c
 
 if WITH_APPARMOR_PROFILES
 apparmordir = $(sysconfdir)/apparmor.d/

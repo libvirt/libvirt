@@ -79,6 +79,7 @@
 /examples/admin/client_limits
 /examples/admin/list_clients
 /examples/admin/list_servers
+/examples/admin/logging
 /examples/admin/threadpool_params
 /examples/object-events/event-test
 /examples/dominfo/info1
