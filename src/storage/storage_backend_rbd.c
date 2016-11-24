@@ -52,6 +52,23 @@ typedef struct _virStorageBackendRBDState virStorageBackendRBDState;
 typedef virStorageBackendRBDState *virStorageBackendRBDStatePtr;
 
 static int
+virStorageBackendRBDRADOSConfSet(rados_t cluster,
+                                 const char *option,
+                                 const char *value)
+{
+    VIR_DEBUG("Setting RADOS option '%s' to '%s'",
+              option, value);
+    if (rados_conf_set(cluster, option, value) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("failed to set RADOS option: %s"),
+                       option);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
 virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
                                   virConnectPtr conn,
                                   virStoragePoolSourcePtr source)
@@ -93,20 +110,13 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
         if (!(rados_key = virStringEncodeBase64(secret_value, secret_value_size)))
             goto cleanup;
 
-        VIR_DEBUG("Found cephx key: %s", rados_key);
-        if (rados_conf_set(ptr->cluster, "key", rados_key) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to set RADOS option: %s"),
-                           "rados_key");
+        if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
+                                             "key", rados_key) < 0)
             goto cleanup;
-        }
 
-        if (rados_conf_set(ptr->cluster, "auth_supported", "cephx") < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to set RADOS option: %s"),
-                           "auth_supported");
+        if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
+                                             "auth_supported", "cephx") < 0)
             goto cleanup;
-        }
     } else {
         VIR_DEBUG("Not using cephx authorization");
         if (rados_create(&ptr->cluster, NULL) < 0) {
@@ -114,12 +124,9 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
                            _("failed to create the RADOS cluster"));
             goto cleanup;
         }
-        if (rados_conf_set(ptr->cluster, "auth_supported", "none") < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("failed to set RADOS option: %s"),
-                           "auth_supported");
+        if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
+                                             "auth_supported", "none") < 0)
             goto cleanup;
-        }
     }
 
     VIR_DEBUG("Found %zu RADOS cluster monitors in the pool configuration",
@@ -145,35 +152,40 @@ virStorageBackendRBDOpenRADOSConn(virStorageBackendRBDStatePtr ptr,
         goto cleanup;
 
     mon_buff = virBufferContentAndReset(&mon_host);
-    VIR_DEBUG("RADOS mon_host has been set to: %s", mon_buff);
-    if (rados_conf_set(ptr->cluster, "mon_host", mon_buff) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to set RADOS option: %s"),
-                       "mon_host");
+    if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
+                                         "mon_host",
+                                         mon_buff) < 0)
         goto cleanup;
-    }
 
     /*
      * Set timeout options for librados.
      * In case the Ceph cluster is down libvirt won't block forever.
      * Operations in librados will return -ETIMEDOUT when the timeout is reached.
      */
-    VIR_DEBUG("Setting RADOS option client_mount_timeout to %s", client_mount_timeout);
-    rados_conf_set(ptr->cluster, "client_mount_timeout", client_mount_timeout);
+    if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
+                                         "client_mount_timeout",
+                                         client_mount_timeout) < 0)
+        goto cleanup;
 
-    VIR_DEBUG("Setting RADOS option rados_mon_op_timeout to %s", mon_op_timeout);
-    rados_conf_set(ptr->cluster, "rados_mon_op_timeout", mon_op_timeout);
+    if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
+                                         "rados_mon_op_timeout",
+                                         mon_op_timeout) < 0)
+        goto cleanup;
 
-    VIR_DEBUG("Setting RADOS option rados_osd_op_timeout to %s", osd_op_timeout);
-    rados_conf_set(ptr->cluster, "rados_osd_op_timeout", osd_op_timeout);
+    if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
+                                         "rados_osd_op_timeout",
+                                         osd_op_timeout) < 0)
+        goto cleanup;
 
     /*
      * Librbd supports creating RBD format 2 images. We no longer have to invoke
      * rbd_create3(), we can tell librbd to default to format 2.
      * This leaves us to simply use rbd_create() and use the default behavior of librbd
      */
-    VIR_DEBUG("Setting RADOS option rbd_default_format to %s", rbd_default_format);
-    rados_conf_set(ptr->cluster, "rbd_default_format", rbd_default_format);
+    if (virStorageBackendRBDRADOSConfSet(ptr->cluster,
+                                         "rbd_default_format",
+                                         rbd_default_format) < 0)
+        goto cleanup;
 
     ptr->starttime = time(0);
     if ((r = rados_connect(ptr->cluster)) < 0) {
