@@ -136,4 +136,11 @@ bool qemuDomainSignalDeviceRemoval(virDomainObjPtr vm,
                                    const char *devAlias,
                                    qemuDomainUnpluggingDeviceStatus status);
 
+int qemuDomainSetVcpusInternal(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainDefPtr def,
+                               virDomainDefPtr persistentDef,
+                               unsigned int nvcpus,
+                               bool hotpluggable);
+
 #endif /* __QEMU_HOTPLUG_H__ */
