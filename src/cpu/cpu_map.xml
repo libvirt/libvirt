@@ -233,6 +233,9 @@
     <feature name='avx512f'>
       <cpuid eax_in='0x07' ebx='0x00010000'/>
     </feature>
+    <feature name='avx512dq'>
+      <cpuid eax_in='0x07' ebx='0x00020000'/>
+    </feature>
     <feature name='rdseed'>
       <cpuid eax_in='0x07' ebx='0x00040000'/>
     </feature>
@@ -241,6 +244,9 @@
     </feature>
     <feature name='smap'>
       <cpuid eax_in='0x07' ebx='0x00100000'/>
+    </feature>
+    <feature name='avx512ifma'>
+      <cpuid eax_in='0x07' ebx='0x00200000'/>
     </feature>
     <feature name='clflushopt'>
       <cpuid eax_in='0x07' ebx='0x00800000'/>
@@ -253,6 +259,23 @@
     </feature>
     <feature name='avx512cd'>
       <cpuid eax_in='0x07' ebx='0x10000000'/>
+    </feature>
+    <feature name='avx512bw'>
+      <cpuid eax_in='0x07' ebx='0x40000000'/>
+    </feature>
+    <feature name='avx512vl'>
+      <cpuid eax_in='0x07' ebx='0x80000000'/>
+    </feature>
+
+    <feature name='avx512vbmi'>
+      <cpuid eax_in='0x07' ecx='0x00000002'/>
+    </feature>
+
+    <feature name='avx512-4vnniw'>
+      <cpuid eax_in='0x07' edx='0x00000004'/>
+    </feature>
+    <feature name='avx512-4fmaps'>
+      <cpuid eax_in='0x07' edx='0x00000008'/>
     </feature>
 
     <!-- Processor Extended State Enumeration sub leaf 1 -->
