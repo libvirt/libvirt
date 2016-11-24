@@ -978,6 +978,10 @@ qemuRestoreCgroupState(virDomainObjPtr vm)
     virBitmapPtr all_nodes;
     virCgroupPtr cgroup_temp = NULL;
 
+    if (!virNumaIsAvailable() ||
+        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return;
+
     if (!(all_nodes = virNumaGetHostMemoryNodeset()))
         goto error;
 
