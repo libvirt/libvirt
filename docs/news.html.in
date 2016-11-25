@@ -31,6 +31,9 @@
           Add the capability to pass through a scsi_host HBA and the
           associated LUNs to the guest.
           </li>
+          <li>qemu: Users can now enable debug logging for native gluster
+          volumes in qemu using the "gluster_debug_level" option in qemu.conf
+          </li>
         </ul>
       </li>
       <li><strong>Improvements</strong>
