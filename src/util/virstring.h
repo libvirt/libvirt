@@ -41,6 +41,9 @@ char *virStringListJoin(const char **strings,
                         const char *delim)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+char **virStringListAdd(const char **strings,
+                        const char *item);
+
 void virStringListFree(char **strings);
 void virStringListFreeCount(char **strings,
                             size_t count);

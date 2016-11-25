@@ -122,6 +122,46 @@ static int testJoin(const void *args)
     return ret;
 }
 
+
+static int testAdd(const void *args)
+{
+    const struct testJoinData *data = args;
+    char **list = NULL;
+    char *got = NULL;
+    int ret = -1;
+    size_t i;
+
+    for (i = 0; data->tokens[i]; i++) {
+        char **tmp = virStringListAdd((const char **)list, data->tokens[i]);
+        if (!tmp)
+            goto cleanup;
+        virStringListFree(list);
+        list = tmp;
+        tmp = NULL;
+    }
+
+    if (!list &&
+        VIR_ALLOC(list) < 0)
+        goto cleanup;
+
+    if (!(got = virStringListJoin((const char **)list, data->delim))) {
+        VIR_DEBUG("Got no result");
+        goto cleanup;
+    }
+
+    if (STRNEQ(got, data->string)) {
+        virFilePrintf(stderr, "Mismatch '%s' vs '%s'\n", got, data->string);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virStringListFree(list);
+    VIR_FREE(got);
+    return ret;
+}
+
+
 static bool fail;
 
 static const char *
@@ -593,6 +633,8 @@ mymain(void)
         if (virTestRun("Split " #str, testSplit, &splitData) < 0)       \
             ret = -1;                                                   \
         if (virTestRun("Join " #str, testJoin, &joinData) < 0)          \
+            ret = -1;                                                   \
+        if (virTestRun("Add " #str, testAdd, &joinData) < 0)            \
             ret = -1;                                                   \
     } while (0)
 
