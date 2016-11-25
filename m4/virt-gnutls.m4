@@ -54,8 +54,11 @@ AC_DEFUN([LIBVIRT_CHECK_GNUTLS],[
       #include <gnutls/gnutls.h>
     ]])
 
+    OLD_LIBS="$LIBS"
+    LIBS="$LIBS $GNUTLS_LIBS"
     AC_CHECK_FUNC([gnutls_rnd])
     AC_CHECK_FUNC([gnutls_cipher_encrypt])
+    LIBS=$OLD_LIBS
   fi
 ])
 
