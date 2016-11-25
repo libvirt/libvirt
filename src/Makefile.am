@@ -137,6 +137,7 @@ UTIL_SOURCES =							\
 		util/virlockspace.c util/virlockspace.h		\
 		util/virlog.c util/virlog.h			\
 		util/virmacaddr.h util/virmacaddr.c		\
+		util/virmacmap.h util/virmacmap.c		\
 		util/virnetdev.h util/virnetdev.c		\
 		util/virnetdevbandwidth.h util/virnetdevbandwidth.c \
 		util/virnetdevbridge.h util/virnetdevbridge.c	\

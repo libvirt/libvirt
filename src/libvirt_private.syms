@@ -1927,6 +1927,15 @@ virMacAddrSet;
 virMacAddrSetRaw;
 
 
+# util/virmacmap.h
+virMacMapAdd;
+virMacMapDumpStr;
+virMacMapLookup;
+virMacMapNew;
+virMacMapRemove;
+virMacMapWriteFile;
+
+
 # util/virnetdev.h
 virNetDevAddMulti;
 virNetDevDelMulti;
