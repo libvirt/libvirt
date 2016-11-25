@@ -46,6 +46,11 @@
           List user-visible changes instead of single commits for a better
           high-level overview of differences between libvirt releases
           </li>
+          <li>website: Modernize layout and branding<br/>
+          The libvirt website looked very cluttered and outdated; it has now
+          been completely overhauled, resulting in a design that's better
+          organized and more pleasant to look at
+          </li>
         </ul>
       </li>
       <li><strong>Bug fixes</strong>
@@ -53,6 +58,8 @@
           <li>vz: Fix migration in P2P mode
           </li>
           <li>Forbid newline character in names of some libvirt objects.
+          </li>
+          <li>Fix compilation on macOS
           </li>
         </ul>
       </li>
