@@ -34,6 +34,11 @@
           <li>qemu: Users can now enable debug logging for native gluster
           volumes in qemu using the "gluster_debug_level" option in qemu.conf
           </li>
+          <li>memory hotplug: Slot numbers for memory devices are now
+          automatically allocated and thus persistent. In addition slot numbers
+          can be specified without providing a base address, which simplifies
+          user configuration
+          </li>
         </ul>
       </li>
       <li><strong>Improvements</strong>
