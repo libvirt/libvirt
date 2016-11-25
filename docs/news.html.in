@@ -25,6 +25,11 @@
           New <code>libvirt-guest</code> nss module that translates libvirt
           guest names into IP addresses
           </li>
+          <li>daemon: Add support for runtime logging settings adjustment<br/>
+          Logging-related settings like log outputs and filters can now be
+          adjusted during runtime using the admin interface without the
+          necessity of the daemon's restart
+          </li>
         </ul>
       </li>
       <li><strong>Improvements</strong>
