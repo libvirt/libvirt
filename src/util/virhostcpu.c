@@ -1112,6 +1112,16 @@ virHostCPUGetCount(void)
 #endif
 }
 
+bool
+virHostCPUHasBitmap(void)
+{
+#ifdef __linux__
+    return true;
+#else
+    return false;
+#endif
+}
+
 virBitmapPtr
 virHostCPUGetPresentBitmap(void)
 {

@@ -1118,6 +1118,7 @@ virHostCPUGetOnlineBitmap;
 virHostCPUGetPresentBitmap;
 virHostCPUGetStats;
 virHostCPUGetThreadsPerSubcore;
+virHostCPUHasBitmap;
 virHostCPUStatsAssign;
 virHostMemAllocPages;
 virHostMemGetCellsFree;

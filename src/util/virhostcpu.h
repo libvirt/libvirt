@@ -35,6 +35,7 @@ int virHostCPUGetStats(int cpuNum,
                        int *nparams,
                        unsigned int flags);
 
+bool virHostCPUHasBitmap(void);
 virBitmapPtr virHostCPUGetPresentBitmap(void);
 virBitmapPtr virHostCPUGetOnlineBitmap(void);
 int virHostCPUGetCount(void);
