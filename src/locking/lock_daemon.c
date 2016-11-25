@@ -478,7 +478,7 @@ virLockDaemonSetupLogging(virLockDaemonConfigPtr config,
     if (virLogGetNbFilters() == 0)
         virLogSetFilters(config->log_filters);
 
-    if (config->log_outputs && virLogGetNbOutputs() == 0)
+    if (virLogGetNbOutputs() == 0)
         virLogSetOutputs(config->log_outputs);
 
     /*

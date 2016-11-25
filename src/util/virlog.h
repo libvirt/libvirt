@@ -187,7 +187,7 @@ void virLogOutputFree(virLogOutputPtr output);
 void virLogOutputListFree(virLogOutputPtr *list, int count);
 void virLogFilterFree(virLogFilterPtr filter);
 void virLogFilterListFree(virLogFilterPtr *list, int count);
-int virLogSetOutputs(const char *outputs) ATTRIBUTE_NONNULL(1);
+int virLogSetOutputs(const char *outputs);
 int virLogSetFilters(const char *filters);
 char *virLogGetDefaultOutput(void);
 int virLogSetDefaultOutput(const char *fname, bool godaemon, bool privileged);
