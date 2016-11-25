@@ -43,6 +43,8 @@
       </li>
       <li><strong>Improvements</strong>
         <ul>
+          <li>docs: Better documentation for migration APIs and flags
+          </li>
           <li>vbox: Address thread safety issues
           </li>
           <li>virsh: Add support for passing an alternative persistent XML
