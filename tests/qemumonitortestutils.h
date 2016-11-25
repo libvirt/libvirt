@@ -54,6 +54,11 @@ int qemuMonitorTestAddItem(qemuMonitorTestPtr test,
                            const char *command_name,
                            const char *response);
 
+int qemuMonitorTestAddItemVerbatim(qemuMonitorTestPtr test,
+                                   const char *command,
+                                   const char *cmderr,
+                                   const char *response);
+
 int qemuMonitorTestAddAgentSyncResponse(qemuMonitorTestPtr test);
 
 int qemuMonitorTestAddItemParams(qemuMonitorTestPtr test,

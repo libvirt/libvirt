@@ -508,6 +508,7 @@ struct _qemuMonitorTestCommandArgs {
 
 struct qemuMonitorTestHandlerData {
     char *command_name;
+    char *cmderr;
     char *response;
     size_t nargs;
     qemuMonitorTestCommandArgsPtr args;
@@ -529,6 +530,7 @@ qemuMonitorTestHandlerDataFree(void *opaque)
     }
 
     VIR_FREE(data->command_name);
+    VIR_FREE(data->cmderr);
     VIR_FREE(data->response);
     VIR_FREE(data->args);
     VIR_FREE(data->expectArgs);
@@ -602,6 +604,93 @@ qemuMonitorTestAddItem(qemuMonitorTestPtr test,
     return qemuMonitorTestAddHandler(test,
                                      qemuMonitorTestProcessCommandDefault,
                                      data, qemuMonitorTestHandlerDataFree);
+}
+
+
+static int
+qemuMonitorTestProcessCommandVerbatim(qemuMonitorTestPtr test,
+                                      qemuMonitorTestItemPtr item,
+                                      const char *cmdstr)
+{
+    struct qemuMonitorTestHandlerData *data = item->opaque;
+    char *reformatted = NULL;
+    char *errmsg = NULL;
+    int ret = -1;
+
+    /* JSON strings will be reformatted to simplify checking */
+    if (test->json || test->agent) {
+        if (!(reformatted = virJSONStringReformat(cmdstr, false)))
+            return -1;
+
+        cmdstr = reformatted;
+    }
+
+    if (STREQ(data->command_name, cmdstr)) {
+        ret = qemuMonitorTestAddResponse(test, data->response);
+    } else {
+        if (data->cmderr) {
+            if (virAsprintf(&errmsg, "%s: %s", data->cmderr, cmdstr) < 0)
+                goto cleanup;
+
+            ret = qemuMonitorTestAddErrorResponse(test, errmsg);
+        } else {
+            ret = qemuMonitorTestAddInvalidCommandResponse(test,
+                                                           data->command_name,
+                                                           cmdstr);
+        }
+    }
+
+ cleanup:
+    VIR_FREE(errmsg);
+    VIR_FREE(reformatted);
+    return ret;
+}
+
+
+/**
+ * qemuMonitorTestAddItemVerbatim:
+ * @test: monitor test object
+ * @command: full expected command syntax
+ * @cmderr: possible explanation of expected command (may be NULL)
+ * @response: full reply of @command
+ *
+ * Adds a test command for the simulated monitor. The full syntax is checked
+ * as specified in @command. For JSON monitor tests formatting/whitespace is
+ * ignored. If the command on the monitor is not as expected an error containing
+ * @cmderr is returned. Otherwise @response is put as-is on the monitor.
+ *
+ * Returns 0 when command was successfully added, -1 on error.
+ */
+int
+qemuMonitorTestAddItemVerbatim(qemuMonitorTestPtr test,
+                               const char *command,
+                               const char *cmderr,
+                               const char *response)
+{
+    struct qemuMonitorTestHandlerData *data;
+
+    if (VIR_ALLOC(data) < 0)
+        return -1;
+
+    if (VIR_STRDUP(data->response, response) < 0 ||
+        VIR_STRDUP(data->cmderr, cmderr) < 0)
+        goto error;
+
+    if (test->json || test->agent)
+        data->command_name = virJSONStringReformat(command, false);
+    else
+        ignore_value(VIR_STRDUP(data->command_name, command));
+
+    if (!data->command_name)
+        goto error;
+
+    return qemuMonitorTestAddHandler(test,
+                                     qemuMonitorTestProcessCommandVerbatim,
+                                     data, qemuMonitorTestHandlerDataFree);
+
+ error:
+    qemuMonitorTestHandlerDataFree(data);
+    return -1;
 }
 
 
