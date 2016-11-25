@@ -18719,6 +18719,7 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
     virQEMUDriverPtr driver = conn->privateData;
     virQEMUCapsPtr qemuCaps = NULL;
     int virttype = VIR_DOMAIN_VIRT_NONE;
+    virDomainVirtType capsType;
     virDomainCapsPtr domCaps = NULL;
     int arch = virArchFromHost(); /* virArch */
     virQEMUDriverConfigPtr cfg = NULL;
@@ -18797,11 +18798,19 @@ qemuConnectGetDomainCapabilities(virConnectPtr conn,
         machine = virQEMUCapsGetDefaultMachine(qemuCaps);
     }
 
-    if (virttype == VIR_DOMAIN_VIRT_NONE) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
-            virttype = VIR_DOMAIN_VIRT_KVM;
-        else
-            virttype = VIR_DOMAIN_VIRT_QEMU;
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
+        capsType = VIR_DOMAIN_VIRT_KVM;
+    else
+        capsType = VIR_DOMAIN_VIRT_QEMU;
+
+    if (virttype == VIR_DOMAIN_VIRT_NONE)
+        virttype = capsType;
+
+    if (virttype == VIR_DOMAIN_VIRT_KVM && capsType == VIR_DOMAIN_VIRT_QEMU) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("KVM is not supported by '%s' on this host"),
+                       emulatorbin);
+        goto cleanup;
     }
 
     if (!(domCaps = virDomainCapsNew(emulatorbin, machine, arch, virttype)))
