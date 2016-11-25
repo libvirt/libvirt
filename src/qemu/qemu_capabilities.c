@@ -2817,23 +2817,6 @@ virQEMUCapsProbeQMPGICCapabilities(virQEMUCapsPtr qemuCaps,
     return 0;
 }
 
-int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
-                        qemuMonitorPtr mon)
-{
-    VIR_DEBUG("qemuCaps=%p mon=%p", qemuCaps, mon);
-
-    if (qemuCaps->usedQMP)
-        return 0;
-
-    if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
-        return -1;
-
-    if (virQEMUCapsProbeQMPEvents(qemuCaps, mon) < 0)
-        return -1;
-
-    return 0;
-}
-
 
 /*
  * Parsing a doc that looks like

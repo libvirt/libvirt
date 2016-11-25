@@ -390,9 +390,6 @@ virQEMUCapsPtr virQEMUCapsNew(void);
 int virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
                               qemuMonitorPtr mon);
 
-int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
-                        qemuMonitorPtr mon);
-
 void virQEMUCapsSet(virQEMUCapsPtr qemuCaps,
                     virQEMUCapsFlags flag) ATTRIBUTE_NONNULL(1);
 

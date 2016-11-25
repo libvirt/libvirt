@@ -1726,10 +1726,6 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
     if (qemuMonitorSetCapabilities(priv->mon) < 0)
         goto cleanup;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MONITOR_JSON) &&
-        virQEMUCapsProbeQMP(priv->qemuCaps, priv->mon) < 0)
-        goto cleanup;
-
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT) &&
         qemuMonitorSetMigrationCapability(priv->mon,
                                           QEMU_MONITOR_MIGRATION_CAPS_EVENTS,
