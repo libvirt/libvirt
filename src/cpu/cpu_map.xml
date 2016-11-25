@@ -270,6 +270,12 @@
     <feature name='avx512vbmi'>
       <cpuid eax_in='0x07' ecx='0x00000002'/>
     </feature>
+    <feature name='pku'>
+      <cpuid eax_in='0x07' ecx='0x00000008'/>
+    </feature>
+    <feature name='ospke'>
+      <cpuid eax_in='0x07' ecx='0x00000010'/>
+    </feature>
 
     <feature name='avx512-4vnniw'>
       <cpuid eax_in='0x07' edx='0x00000004'/>
