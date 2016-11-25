@@ -400,9 +400,6 @@ typedef virQEMUCapsCache *virQEMUCapsCachePtr;
 
 virQEMUCapsPtr virQEMUCapsNew(void);
 
-int virQEMUCapsProbeQMP(virQEMUCapsPtr qemuCaps,
-                        qemuMonitorPtr mon);
-
 void virQEMUCapsSet(virQEMUCapsPtr qemuCaps,
                     virQEMUCapsFlags flag) ATTRIBUTE_NONNULL(1);
 
