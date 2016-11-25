@@ -863,14 +863,14 @@ virCgroupGetValueForBlkDev(virCgroupPtr group,
     if (!(lines = virStringSplit(str, "\n", -1)))
         goto error;
 
-    if (VIR_STRDUP(*value, virStringGetFirstWithPrefix(lines, prefix)) < 0)
+    if (VIR_STRDUP(*value, virStringListGetFirstWithPrefix(lines, prefix)) < 0)
         goto error;
 
     ret = 0;
  error:
     VIR_FREE(str);
     VIR_FREE(prefix);
-    virStringFreeList(lines);
+    virStringListFree(lines);
     return ret;
 }
 
@@ -1275,13 +1275,13 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
             goto cleanup;
     }
 
-    if (!(*res = virStringJoin((const char **)tokens, "/")))
+    if (!(*res = virStringListJoin((const char **)tokens, "/")))
         goto cleanup;
 
     ret = 0;
 
  cleanup:
-    virStringFreeList(tokens);
+    virStringListFree(tokens);
     return ret;
 }
 

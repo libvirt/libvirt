@@ -386,7 +386,7 @@ virURIResolveAlias(virConfPtr conf, const char *alias, char **uri)
 
     if (aliases && *aliases) {
         ret = virURIFindAliasMatch(aliases, alias, uri);
-        virStringFreeList(aliases);
+        virStringListFree(aliases);
     } else {
         ret = 0;
     }

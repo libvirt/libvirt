@@ -3164,7 +3164,7 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
     qemuDevices = (const char **) priv->qemuDevices;
     if ((tmp = old)) {
         while (*tmp) {
-            if (!virStringArrayHasString(qemuDevices, *tmp) &&
+            if (!virStringListHasString(qemuDevices, *tmp) &&
                 virDomainDefFindDevice(vm->def, *tmp, &dev, false) == 0 &&
                 qemuDomainRemoveDevice(driver, vm, &dev) < 0) {
                 goto cleanup;
@@ -3175,7 +3175,7 @@ qemuProcessUpdateDevices(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    virStringFreeList(old);
+    virStringListFree(old);
     return ret;
 }
 
@@ -5085,7 +5085,7 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
     ret = 0;
 
  cleanup:
-    virStringFreeListCount(models, nmodels);
+    virStringListFreeCount(models, nmodels);
     return ret;
 }
 
@@ -6067,7 +6067,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         VIR_FREE(vm->def->seclabels[i]->imagelabel);
     }
 
-    virStringFreeList(priv->qemuDevices);
+    virStringListFree(priv->qemuDevices);
     priv->qemuDevices = NULL;
 
     qemuHostdevReAttachDomainDevices(driver, vm->def);

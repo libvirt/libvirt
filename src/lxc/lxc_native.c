@@ -129,13 +129,13 @@ static char ** lxcStringSplit(const char *string)
     }
 
     VIR_FREE(tmp);
-    virStringFreeList(parts);
+    virStringListFree(parts);
     return result;
 
  error:
     VIR_FREE(tmp);
-    virStringFreeList(parts);
-    virStringFreeList(result);
+    virStringListFree(parts);
+    virStringListFree(result);
     return NULL;
 }
 
@@ -160,13 +160,13 @@ lxcParseFstabLine(char *fstabLine)
             VIR_STRDUP(fstab->options, parts[3]) < 0)
         goto error;
 
-    virStringFreeList(parts);
+    virStringListFree(parts);
 
     return fstab;
 
  error:
     lxcFstabFree(fstab);
-    virStringFreeList(parts);
+    virStringListFree(parts);
     return NULL;
 }
 
@@ -299,7 +299,7 @@ lxcAddFstabLine(virDomainDefPtr def, lxcFstabPtr fstab)
         type = VIR_DOMAIN_FS_TYPE_BLOCK;
 
     /* Do we have ro in options? */
-    readonly = virStringArrayHasString((const char **) options, "ro");
+    readonly = virStringListHasString((const char **) options, "ro");
 
     if (lxcAddFSDef(def, type, src, dst, readonly, usage) < 0)
         goto cleanup;
@@ -308,7 +308,7 @@ lxcAddFstabLine(virDomainDefPtr def, lxcFstabPtr fstab)
 
  cleanup:
     VIR_FREE(dst);
-    virStringFreeList(options);
+    virStringListFree(options);
     return ret;
 }
 
@@ -618,12 +618,12 @@ lxcNetworkWalkCallback(const char *name, virConfValuePtr value, void *data)
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Invalid CIDR address: '%s'"), value->str);
 
-            virStringFreeList(ipparts);
+            virStringListFree(ipparts);
             VIR_FREE(ip);
             return -1;
         }
 
-        virStringFreeList(ipparts);
+        virStringListFree(ipparts);
 
         if (VIR_APPEND_ELEMENT(parseData->ips, parseData->nips, ip) < 0) {
             VIR_FREE(ip);
@@ -943,7 +943,7 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValuePtr value, void *data)
     ret = 0;
 
  cleanup:
-    virStringFreeList(parts);
+    virStringListFree(parts);
     VIR_FREE(path);
 
     return ret;
@@ -982,13 +982,13 @@ lxcSetCapDrop(virDomainDefPtr def, virConfPtr properties)
     for (i = 0; i < VIR_DOMAIN_CAPS_FEATURE_LAST; i++) {
         capString = virDomainCapsFeatureTypeToString(i);
         if (toDrop != NULL &&
-            virStringArrayHasString((const char **) toDrop, capString))
+            virStringListHasString((const char **) toDrop, capString))
             def->caps_features[i] = VIR_TRISTATE_SWITCH_OFF;
     }
 
     def->features[VIR_DOMAIN_FEATURE_CAPABILITIES] = VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW;
 
-    virStringFreeList(toDrop);
+    virStringListFree(toDrop);
 }
 
 virDomainDefPtr

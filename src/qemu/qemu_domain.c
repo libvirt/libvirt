@@ -1549,7 +1549,7 @@ qemuDomainObjPrivateFree(void *data)
     VIR_FREE(priv->lockState);
     VIR_FREE(priv->origname);
 
-    virStringFreeList(priv->qemuDevices);
+    virStringListFree(priv->qemuDevices);
     virChrdevFree(priv->devs);
 
     /* This should never be non-NULL if we get here, but just in case... */
@@ -1963,7 +1963,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     priv->monConfig = NULL;
     VIR_FREE(nodes);
     VIR_FREE(tmp);
-    virStringFreeList(priv->qemuDevices);
+    virStringListFree(priv->qemuDevices);
     priv->qemuDevices = NULL;
     virObjectUnref(qemuCaps);
     virObjectUnref(caps);
@@ -5263,7 +5263,7 @@ qemuDomainUpdateDeviceList(virQEMUDriverPtr driver,
     if (rc < 0)
         return -1;
 
-    virStringFreeList(priv->qemuDevices);
+    virStringListFree(priv->qemuDevices);
     priv->qemuDevices = aliases;
     return 0;
 }

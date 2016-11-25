@@ -137,7 +137,7 @@ int virPolkitCheckAuth(const char *actionid,
     }
 
  cleanup:
-    virStringFreeListCount(retdetails, nretdetails);
+    virStringListFreeCount(retdetails, nretdetails);
     return ret;
 }
 

@@ -4987,7 +4987,7 @@ int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
 
 
  cleanup:
-    virStringFreeList(commandlist);
+    virStringListFree(commandlist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5051,7 +5051,7 @@ int qemuMonitorJSONGetEvents(qemuMonitorPtr mon,
     eventlist = NULL;
 
  cleanup:
-    virStringFreeList(eventlist);
+    virStringListFree(eventlist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5173,7 +5173,7 @@ qemuMonitorJSONGetCommandLineOptionParameters(qemuMonitorPtr mon,
     if (!qemuMonitorGetOptions(mon))
         qemuMonitorSetOptions(mon, virJSONValueNewArray());
 
-    virStringFreeList(paramlist);
+    virStringListFree(paramlist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5276,7 +5276,7 @@ int qemuMonitorJSONGetObjectTypes(qemuMonitorPtr mon,
     typelist = NULL;
 
  cleanup:
-    virStringFreeList(typelist);
+    virStringListFree(typelist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5577,7 +5577,7 @@ int qemuMonitorJSONGetObjectProps(qemuMonitorPtr mon,
     proplist = NULL;
 
  cleanup:
-    virStringFreeList(proplist);
+    virStringListFree(proplist);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5683,7 +5683,7 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitorPtr mon,
     list = NULL;
 
  cleanup:
-    virStringFreeList(list);
+    virStringListFree(list);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
@@ -5701,9 +5701,9 @@ qemuMonitorJSONGetMigrationCapability(qemuMonitorPtr mon,
     if (qemuMonitorJSONGetMigrationCapabilities(mon, &capsList) < 0)
         return -1;
 
-    ret = virStringArrayHasString((const char **) capsList, cap);
+    ret = virStringListHasString((const char **) capsList, cap);
 
-    virStringFreeList(capsList);
+    virStringListFree(capsList);
     return ret;
 }
 
@@ -6067,7 +6067,7 @@ qemuMonitorJSONGetStringArray(qemuMonitorPtr mon, const char *qmpCmd,
     list = NULL;
 
  cleanup:
-    virStringFreeList(list);
+    virStringListFree(list);
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;

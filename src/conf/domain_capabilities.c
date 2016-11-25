@@ -185,7 +185,7 @@ virDomainCapsCPUModelsFilter(virDomainCapsCPUModelsPtr old,
         return NULL;
 
     for (i = 0; i < old->nmodels; i++) {
-        if (models && !virStringArrayHasString(models, old->models[i].name))
+        if (models && !virStringListHasString(models, old->models[i].name))
             continue;
 
         if (virDomainCapsCPUModelsAdd(cpuModels,

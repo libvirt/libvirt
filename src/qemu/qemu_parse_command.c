@@ -360,7 +360,7 @@ static int qemuStringToArgvEnv(const char *args,
  error:
     VIR_FREE(progenv);
     VIR_FREE(progargv);
-    virStringFreeList(arglist);
+    virStringListFree(arglist);
     return -1;
 }
 
@@ -1588,7 +1588,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             case VIR_DOMAIN_HYPERV_LAST:
                 break;
             }
-            virStringFreeList(hv_tokens);
+            virStringListFree(hv_tokens);
             hv_tokens = NULL;
         } else if (STREQ(tokens[i], "kvm=off")) {
              dom->features[VIR_DOMAIN_FEATURE_KVM] = VIR_TRISTATE_SWITCH_ON;
@@ -1619,8 +1619,8 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
 
  cleanup:
     VIR_FREE(model);
-    virStringFreeList(tokens);
-    virStringFreeList(hv_tokens);
+    virStringListFree(tokens);
+    virStringListFree(hv_tokens);
     return ret;
 
  syntax:
@@ -2196,7 +2196,7 @@ qemuParseCommandLine(virCapsPtr caps,
                         def->keywrap->dea = VIR_TRISTATE_SWITCH_ABSENT;
                 }
             }
-            virStringFreeList(list);
+            virStringListFree(list);
             list = NULL;
         } else if (STREQ(arg, "-serial")) {
             WANT_VALUE();
@@ -2658,7 +2658,7 @@ qemuParseCommandLine(virCapsPtr caps,
     virDomainDiskDefFree(disk);
     qemuDomainCmdlineDefFree(cmd);
     virDomainDefFree(def);
-    virStringFreeList(list);
+    virStringListFree(list);
     VIR_FREE(nics);
     if (monConfig) {
         virDomainChrSourceDefFree(*monConfig);
@@ -2688,8 +2688,8 @@ virDomainDefPtr qemuParseCommandLineString(virCapsPtr caps,
                                pidfile, monConfig, monJSON);
 
  cleanup:
-    virStringFreeList(progargv);
-    virStringFreeList(progenv);
+    virStringListFree(progargv);
+    virStringListFree(progenv);
 
     return def;
 }
@@ -2736,7 +2736,7 @@ static int qemuParseProcFileStrings(int pid_value,
 
  cleanup:
     if (ret < 0)
-        virStringFreeList(str);
+        virStringListFree(str);
     VIR_FREE(data);
     VIR_FREE(path);
     return ret;
@@ -2780,7 +2780,7 @@ virDomainDefPtr qemuParseCommandLinePid(virCapsPtr caps,
 
  cleanup:
     VIR_FREE(exepath);
-    virStringFreeList(progargv);
-    virStringFreeList(progenv);
+    virStringListFree(progargv);
+    virStringListFree(progenv);
     return def;
 }

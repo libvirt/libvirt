@@ -168,8 +168,8 @@ virStorageBackendZFSParseVol(virStoragePoolObjPtr pool,
 
     ret = 0;
  cleanup:
-    virStringFreeList(tokens);
-    virStringFreeList(name_tokens);
+    virStringListFree(tokens);
+    virStringListFree(name_tokens);
     if (is_new_vol)
         virStorageVolDefFree(volume);
     return ret;
@@ -219,7 +219,7 @@ virStorageBackendZFSFindVols(virStoragePoolObjPtr pool,
 
  cleanup:
     virCommandFree(cmd);
-    virStringFreeList(lines);
+    virStringListFree(lines);
     VIR_FREE(volumes_list);
 
     return 0;
@@ -264,7 +264,7 @@ virStorageBackendZFSRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (STREQ(lines[i], ""))
             continue;
 
-        virStringFreeList(tokens);
+        virStringListFree(tokens);
         if (!(tokens = virStringSplitCount(lines[i], "\t", 0, &count)))
             goto cleanup;
 
@@ -294,8 +294,8 @@ virStorageBackendZFSRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
  cleanup:
     virCommandFree(cmd);
-    virStringFreeList(lines);
-    virStringFreeList(tokens);
+    virStringListFree(lines);
+    virStringListFree(tokens);
     VIR_FREE(zpool_props);
 
     return 0;

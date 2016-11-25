@@ -971,15 +971,15 @@ qemuMonitorTextGetAllBlockStatsInfo(qemuMonitorPtr mon,
             goto cleanup;
         stats = NULL;
 
-        virStringFreeList(values);
+        virStringListFree(values);
         values = NULL;
     }
 
     ret = maxstats;
 
  cleanup:
-    virStringFreeList(lines);
-    virStringFreeList(values);
+    virStringListFree(lines);
+    virStringListFree(values);
     VIR_FREE(stats);
     VIR_FREE(info);
     return ret;

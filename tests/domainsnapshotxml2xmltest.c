@@ -65,7 +65,7 @@ testFilterXML(char *xml)
 
  cleanup:
     virBufferFreeAndReset(&buf);
-    virStringFreeList(xmlLines);
+    virStringListFree(xmlLines);
     return ret;
 }
 

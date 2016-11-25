@@ -878,7 +878,7 @@ virFirewallApplyRule(virFirewallPtr firewall,
 
     ret = 0;
  cleanup:
-    virStringFreeList(lines);
+    virStringListFree(lines);
     VIR_FREE(output);
     return ret;
 }

@@ -107,7 +107,7 @@ virVBoxSnapshotConfCreateVBoxSnapshotConfHardDiskPtr(xmlNodePtr diskNode,
     VIR_FREE(nodes);
     VIR_FREE(location);
     VIR_FREE(tmp);
-    virStringFreeList(searchTabResult);
+    virStringListFree(searchTabResult);
     if (result < 0) {
         virVboxSnapshotConfHardDiskFree(hardDisk);
         hardDisk = NULL;
@@ -276,7 +276,7 @@ virVBoxSnapshotConfRetrieveSnapshot(xmlNodePtr snapshotNode,
     }
     VIR_FREE(nodes);
     VIR_FREE(uuid);
-    virStringFreeList(searchTabResult);
+    virStringListFree(searchTabResult);
     return snapshot;
 }
 
@@ -458,8 +458,8 @@ virVBoxSnapshotConfSerializeSnapshot(xmlNodePtr node,
         xmlUnlinkNode(snapshotsNode);
         xmlFreeNode(snapshotsNode);
     }
-    virStringFreeList(firstRegex);
-    virStringFreeList(secondRegex);
+    virStringListFree(firstRegex);
+    virStringListFree(secondRegex);
     VIR_FREE(uuid);
     VIR_FREE(timeStamp);
     return result;
@@ -739,7 +739,7 @@ virVBoxSnapshotConfLoadVboxFile(const char *filePath,
 
     VIR_FREE(currentStateModifiedString);
     VIR_FREE(currentSnapshotAttribute);
-    virStringFreeList(searchResultTab);
+    virStringListFree(searchResultTab);
     if (ret < 0) {
         virVBoxSnapshotConfMachineFree(machineDescription);
         machineDescription = NULL;
@@ -1235,8 +1235,8 @@ virVBoxSnapshotConfSaveVboxFile(virVBoxSnapshotConfMachinePtr machine,
 
     xmlFreeDoc(xml);
 
-    virStringFreeList(firstRegex);
-    virStringFreeList(secondRegex);
+    virStringListFree(firstRegex);
+    virStringListFree(secondRegex);
     return ret;
 }
 
@@ -1324,7 +1324,7 @@ virVBoxSnapshotConfGetRWDisksPathsFromLibvirtXML(const char *filePath,
     xmlFreeDoc(xml);
     xmlXPathFreeContext(xPathContext);
     if (result < 0) {
-        virStringFreeList(ret);
+        virStringListFree(ret);
         nodeSize = -1;
     } else {
         *rwDisksPath = ret;
@@ -1385,7 +1385,7 @@ virVBoxSnapshotConfGetRODisksPathsFromLibvirtXML(const char *filePath,
     xmlFreeDoc(xml);
     xmlXPathFreeContext(xPathContext);
     if (result < 0) {
-        virStringFreeList(ret);
+        virStringListFree(ret);
         nodeSize = -1;
     } else {
         *roDisksPath = ret;

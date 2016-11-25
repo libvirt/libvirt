@@ -888,7 +888,7 @@ virCPUppc64DriverGetModels(char ***models)
 
  error:
     if (models) {
-        virStringFreeList(*models);
+        virStringListFree(*models);
         *models = NULL;
     }
     goto cleanup;

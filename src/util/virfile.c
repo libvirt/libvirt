@@ -1877,7 +1877,7 @@ virFileGetMountSubtreeImpl(const char *mtabpath,
 
  cleanup:
     if (ret < 0)
-        virStringFreeList(mounts);
+        virStringListFree(mounts);
     endmntent(procmnt);
     return ret;
 }
@@ -1906,7 +1906,7 @@ virFileGetMountSubtreeImpl(const char *mtabpath ATTRIBUTE_UNUSED,
  * the path @prefix, sorted from shortest to longest path.
  *
  * The @mountsret array will be NULL terminated and should
- * be freed with virStringFreeList
+ * be freed with virStringListFree
  *
  * Returns 0 on success, -1 on error
  */
@@ -1930,7 +1930,7 @@ int virFileGetMountSubtree(const char *mtabpath,
  * ie opposite order to which they appear in @mtabpath
  *
  * The @mountsret array will be NULL terminated and should
- * be freed with virStringFreeList
+ * be freed with virStringListFree
  *
  * Returns 0 on success, -1 on error
  */

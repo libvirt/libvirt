@@ -246,7 +246,7 @@ bhyveCommandLineToArgv(const char *nativeConfig,
         } else {
             /* To prevent a use-after-free here, only free the argument list
              * when it is definitely not going to be used */
-            virStringFreeList(arglist);
+            virStringListFree(arglist);
         }
     }
 
@@ -254,13 +254,13 @@ bhyveCommandLineToArgv(const char *nativeConfig,
     if (!(*bhyve_argv = _bhyve_argv))
         goto error;
 
-    virStringFreeList(lines);
+    virStringListFree(lines);
     return 0;
 
  error:
     VIR_FREE(_loader_argv);
     VIR_FREE(_bhyve_argv);
-    virStringFreeList(lines);
+    virStringListFree(lines);
     return -1;
 }
 
@@ -804,7 +804,7 @@ bhyveParseBhyveLoadCommandLine(virDomainDefPtr def,
         if (VIR_STRDUP(def->os.bootloader, argv[0]) < 0)
            goto error;
 
-        def->os.bootloaderArgs = virStringJoin((const char**) &argv[1], " ");
+        def->os.bootloaderArgs = virStringListJoin((const char**) &argv[1], " ");
     }
 
     if (argc != parser->optind) {
@@ -841,7 +841,7 @@ bhyveParseCustomLoaderCommandLine(virDomainDefPtr def,
     if (VIR_STRDUP(def->os.bootloader, argv[0]) < 0)
        goto error;
 
-    def->os.bootloaderArgs = virStringJoin((const char**) &argv[1], " ");
+    def->os.bootloaderArgs = virStringListJoin((const char**) &argv[1], " ");
 
     return 0;
  error:
@@ -893,8 +893,8 @@ bhyveParseCommandLineString(const char* nativeConfig,
     }
 
  cleanup:
-    virStringFreeList(loader_argv);
-    virStringFreeList(bhyve_argv);
+    virStringListFree(loader_argv);
+    virStringListFree(bhyve_argv);
     return def;
  error:
     virDomainDefFree(def);

@@ -3026,7 +3026,7 @@ virCommandRunRegex(virCommandPtr cmd,
 
     ret = 0;
  cleanup:
-    virStringFreeList(lines);
+    virStringListFree(lines);
     VIR_FREE(outbuf);
     if (groups) {
         for (j = 0; j < totgroups; j++)

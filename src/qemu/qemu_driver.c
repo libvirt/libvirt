@@ -1383,7 +1383,7 @@ qemuGetSchedInfo(unsigned long long *cpuWait,
  cleanup:
     VIR_FREE(data);
     VIR_FREE(proc);
-    virStringFreeList(lines);
+    virStringListFree(lines);
     return ret;
 }
 

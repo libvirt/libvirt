@@ -878,7 +878,7 @@ virshParseRateStr(vshControl *ctl,
 
     ret = 0;
  cleanup:
-    virStringFreeList(tok);
+    virStringListFree(tok);
     return ret;
 }
 
@@ -4043,14 +4043,14 @@ cmdStartGetFDs(vshControl *ctl,
         fds[nfds - 1] = fd;
     }
 
-    virStringFreeList(fdlist);
+    virStringListFree(fdlist);
 
     *fdsret = fds;
     *nfdsret = nfds;
     return 0;
 
  error:
-    virStringFreeList(fdlist);
+    virStringListFree(fdlist);
     VIR_FREE(fds);
     return -1;
 }
@@ -5570,7 +5570,7 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (dom)
         virDomainFree(dom);
-    virStringFreeList(modes);
+    virStringListFree(modes);
     return ret;
 }
 
@@ -5650,7 +5650,7 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (dom)
         virDomainFree(dom);
-    virStringFreeList(modes);
+    virStringListFree(modes);
     return ret;
 }
 
@@ -8827,7 +8827,7 @@ virshParseEventStr(const char *event,
 
     ret = 0;
  cleanup:
-    virStringFreeList(tok);
+    virStringListFree(tok);
     return ret;
 }
 

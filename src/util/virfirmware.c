@@ -87,7 +87,7 @@ virFirmwareParse(const char *str, virFirmwarePtr firmware)
 
     ret = 0;
  cleanup:
-    virStringFreeList(token);
+    virStringListFree(token);
     return ret;
 }
 
@@ -132,6 +132,6 @@ virFirmwareParseList(const char *list,
 
     ret = 0;
  cleanup:
-    virStringFreeList(token);
+    virStringListFree(token);
     return ret;
 }

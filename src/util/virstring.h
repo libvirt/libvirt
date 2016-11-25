@@ -37,15 +37,18 @@ char **virStringSplit(const char *string,
                       size_t max_tokens)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-char *virStringJoin(const char **strings,
-                    const char *delim)
+char *virStringListJoin(const char **strings,
+                        const char *delim)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-void virStringFreeList(char **strings);
-void virStringFreeListCount(char **strings, size_t count);
+void virStringListFree(char **strings);
+void virStringListFreeCount(char **strings,
+                            size_t count);
 
-bool virStringArrayHasString(const char **strings, const char *needle);
-char *virStringGetFirstWithPrefix(char **strings, const char *prefix)
+bool virStringListHasString(const char **strings,
+                            const char *needle);
+char *virStringListGetFirstWithPrefix(char **strings,
+                                      const char *prefix)
     ATTRIBUTE_NONNULL(2);
 
 char *virArgvToString(const char *const *argv);

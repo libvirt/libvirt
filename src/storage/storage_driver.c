@@ -3392,7 +3392,7 @@ virStorageAddISCSIPoolSourceHost(virDomainDiskDefPtr def,
     ret = 0;
 
  cleanup:
-    virStringFreeList(tokens);
+    virStringListFree(tokens);
     return ret;
 }
 

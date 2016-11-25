@@ -124,7 +124,7 @@ VIR_MOCK_WRAP_RET_ARGS(dbus_connection_send_with_reply_and_block,
         VIR_FREE(uidkey);
         VIR_FREE(actionid);
         VIR_FREE(cancellationId);
-        virStringFreeListCount(details, detailslen);
+        virStringListFreeCount(details, detailslen);
 
         if (virDBusCreateReply(&reply,
                                "(bba&{ss})",

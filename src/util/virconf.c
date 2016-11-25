@@ -983,7 +983,7 @@ int virConfGetValueStringList(virConfPtr conf,
     if (!cval)
         return 0;
 
-    virStringFreeList(*values);
+    virStringListFree(*values);
     *values = NULL;
 
     switch (cval->type) {
@@ -1003,7 +1003,7 @@ int virConfGetValueStringList(virConfPtr conf,
 
         for (len = 0, eval = cval->list; eval; len++, eval = eval->next) {
             if (VIR_STRDUP((*values)[len], eval->str) < 0) {
-                virStringFreeList(*values);
+                virStringListFree(*values);
                 *values = NULL;
                 return -1;
             }

@@ -94,7 +94,7 @@ static int testSplit(const void *args)
 
     ret = 0;
  cleanup:
-    virStringFreeList(got);
+    virStringListFree(got);
 
     return ret;
 }
@@ -106,7 +106,7 @@ static int testJoin(const void *args)
     char *got;
     int ret = -1;
 
-    if (!(got = virStringJoin(data->tokens, data->delim))) {
+    if (!(got = virStringListJoin(data->tokens, data->delim))) {
         VIR_DEBUG("Got no result");
         return -1;
     }
@@ -354,7 +354,7 @@ testStringSearch(const void *opaque)
     ret = 0;
 
  cleanup:
-    virStringFreeList(matches);
+    virStringListFree(matches);
     return ret;
 }
 
@@ -502,7 +502,7 @@ testStringToLong(const void *opaque)
 /* The point of this test is to check whether all members of the array are
  * freed. The test has to be checked using valgrind. */
 static int
-testVirStringFreeListCount(const void *opaque ATTRIBUTE_UNUSED)
+testVirStringListFreeCount(const void *opaque ATTRIBUTE_UNUSED)
 {
     char **list;
 
@@ -513,7 +513,7 @@ testVirStringFreeListCount(const void *opaque ATTRIBUTE_UNUSED)
     ignore_value(VIR_STRDUP(list[2], "test2"));
     ignore_value(VIR_STRDUP(list[3], "test3"));
 
-    virStringFreeListCount(list, 4);
+    virStringListFreeCount(list, 4);
 
     return 0;
 }
@@ -779,8 +779,8 @@ mymain(void)
     TEST_STRTOL("-18446744073709551616", NULL, 0, -1, 0U, -1,
                 0LL, -1, 0ULL, -1);
 
-    /* test virStringFreeListCount */
-    if (virTestRun("virStringFreeListCount", testVirStringFreeListCount,
+    /* test virStringListFreeCount */
+    if (virTestRun("virStringListFreeCount", testVirStringListFreeCount,
                    NULL) < 0)
         ret = -1;
 

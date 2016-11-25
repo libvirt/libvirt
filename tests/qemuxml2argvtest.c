@@ -160,7 +160,7 @@ fakeStorageVolLookupByName(virStoragePoolPtr pool,
                            NULL, NULL);
 
  cleanup:
-    virStringFreeList(volinfo);
+    virStringListFree(volinfo);
     return ret;
 
  fallback:

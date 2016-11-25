@@ -1476,7 +1476,7 @@ virStorageFileParseChainIndex(const char *diskTarget,
     *chainIndex = idx;
 
  cleanup:
-    virStringFreeList(strings);
+    virStringListFree(strings);
     return ret;
 }
 
@@ -2350,7 +2350,7 @@ virStorageSourceParseBackingURI(virStorageSourcePtr src,
 
  cleanup:
     virURIFree(uri);
-    virStringFreeList(scheme);
+    virStringListFree(scheme);
     return ret;
 }
 
@@ -2385,8 +2385,8 @@ virStorageSourceRBDAddHost(virStorageSourcePtr src,
     parts = virStringSplit(hostport, "\\:", 0);
     if (!parts)
         goto error;
-    src->hosts[src->nhosts-1].name = virStringJoin((const char **)parts, ":");
-    virStringFreeList(parts);
+    src->hosts[src->nhosts-1].name = virStringListJoin((const char **)parts, ":");
+    virStringListFree(parts);
     if (!src->hosts[src->nhosts-1].name)
         goto error;
 
@@ -2576,7 +2576,7 @@ virStorageSourceParseNBDColonString(const char *nbdstr,
     ret = 0;
 
  cleanup:
-    virStringFreeList(backing);
+    virStringListFree(backing);
 
     return ret;
 }
@@ -3272,7 +3272,7 @@ virStorageFileCanonicalizeInjectSymlink(const char *path,
     ret = 0;
 
  cleanup:
-    virStringFreeListCount(tmp, ntmp);
+    virStringListFreeCount(tmp, ntmp);
     return ret;
 }
 
@@ -3420,7 +3420,7 @@ virStorageFileCanonicalizePath(const char *path,
 
  cleanup:
     virHashFree(cycle);
-    virStringFreeListCount(components, ncomponents);
+    virStringListFreeCount(components, ncomponents);
     VIR_FREE(linkpath);
     VIR_FREE(currentpath);
 
@@ -3534,6 +3534,6 @@ virStorageFileCheckCompat(const char *compat)
     ret = 0;
 
  cleanup:
-    virStringFreeList(version);
+    virStringListFree(version);
     return ret;
 }

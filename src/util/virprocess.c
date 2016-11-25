@@ -1014,7 +1014,7 @@ int virProcessGetStartTime(pid_t pid,
     ret = 0;
 
  cleanup:
-    virStringFreeList(tokens);
+    virStringListFree(tokens);
     VIR_FREE(filename);
     VIR_FREE(buf);
     return ret;

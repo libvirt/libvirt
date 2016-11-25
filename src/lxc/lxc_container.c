@@ -607,7 +607,7 @@ static int lxcContainerUnmountSubtree(const char *prefix,
     ret = 0;
 
  cleanup:
-    virStringFreeList(mounts);
+    virStringListFree(mounts);
 
     return ret;
 }

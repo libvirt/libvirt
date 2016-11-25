@@ -245,7 +245,7 @@ virBitmapPtr virHostValidateGetCPUFlags(void)
                 ignore_value(virBitmapSetBit(flags, value));
         }
 
-        virStringFreeListCount(tokens, ntokens);
+        virStringListFreeCount(tokens, ntokens);
     } while (1);
 
  cleanup:
@@ -345,7 +345,7 @@ static int virHostValidateCGroupSupport(const char *hvname,
                 matched = true;
         }
 
-        virStringFreeListCount(cgroups, ncgroups);
+        virStringListFreeCount(cgroups, ncgroups);
     }
 
     VIR_FREE(line);
@@ -394,7 +394,7 @@ static int virHostValidateCGroupMount(const char *hvname,
                 matched = true;
         }
 
-        virStringFreeListCount(opts, nopts);
+        virStringListFreeCount(opts, nopts);
     }
     endmntent(fp);
     if (!matched)

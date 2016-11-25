@@ -2115,7 +2115,7 @@ qemuAgentGetInterfaces(qemuAgentPtr mon,
         }
 
         /* Has to be freed for each interface. */
-        virStringFreeList(ifname);
+        virStringListFree(ifname);
 
         /* as well as IP address which - moreover -
          * can be presented multiple times */
@@ -2201,7 +2201,7 @@ qemuAgentGetInterfaces(qemuAgentPtr mon,
             virDomainInterfaceFree(ifaces_ret[i]);
     }
     VIR_FREE(ifaces_ret);
-    virStringFreeList(ifname);
+    virStringListFree(ifname);
 
     goto cleanup;
 }

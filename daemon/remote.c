@@ -5425,7 +5425,7 @@ remoteDispatchConnectGetCPUModelNames(virNetServerPtr server ATTRIBUTE_UNUSED,
  cleanup:
     if (rv < 0)
         virNetMessageSaveError(rerr);
-    virStringFreeList(models);
+    virStringListFree(models);
     return rv;
 }
 

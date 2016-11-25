@@ -2675,7 +2675,7 @@ virCPUx86GetModels(char ***models)
 
  error:
     if (models) {
-        virStringFreeList(*models);
+        virStringListFree(*models);
         *models = NULL;
     }
     return -1;

@@ -173,7 +173,7 @@ virStorageBackendSheepdogRefreshAllVol(virConnectPtr conn ATTRIBUTE_UNUSED,
                 goto cleanup;
         }
 
-        virStringFreeList(cells);
+        virStringListFree(cells);
         cells = NULL;
     }
 
@@ -181,8 +181,8 @@ virStorageBackendSheepdogRefreshAllVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
  cleanup:
     virCommandFree(cmd);
-    virStringFreeList(lines);
-    virStringFreeList(cells);
+    virStringListFree(lines);
+    virStringListFree(cells);
     VIR_FREE(output);
     return ret;
 }

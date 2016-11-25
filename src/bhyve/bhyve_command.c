@@ -323,7 +323,7 @@ virAppendBootloaderArgs(virCommandPtr cmd, virDomainDefPtr def)
     /* XXX: Handle quoted? */
     blargs = virStringSplit(def->os.bootloaderArgs, " ", 0);
     virCommandAddArgSet(cmd, (const char * const *)blargs);
-    virStringFreeList(blargs);
+    virStringListFree(blargs);
 }
 
 static virCommandPtr

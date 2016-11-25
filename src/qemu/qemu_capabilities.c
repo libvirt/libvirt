@@ -1842,7 +1842,7 @@ virQEMUCapsProcessProps(virQEMUCapsPtr qemuCaps,
 
         for (j = 0; j < nvalues; j++) {
             if (STREQ(values[j], props[i].prop)) {
-                if (virStringArrayHasString(props[i].objects, object))
+                if (virStringListHasString(props[i].objects, object))
                     virQEMUCapsSet(qemuCaps, props[i].flag);
                 break;
             }
@@ -2369,7 +2369,7 @@ virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
     return 0;
 
  error:
-    virStringFreeListCount(models, i);
+    virStringListFreeCount(models, i);
     return -1;
 }
 
@@ -2777,12 +2777,12 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
         for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsTPMModelsToCaps); i++) {
             const char *needle = virDomainTPMModelTypeToString(
                 virQEMUCapsTPMModelsToCaps[i].type);
-            if (virStringArrayHasString((const char **) entries, needle))
+            if (virStringListHasString((const char **) entries, needle))
                 virQEMUCapsSet(qemuCaps,
                                virQEMUCapsTPMModelsToCaps[i].caps);
         }
     }
-    virStringFreeList(entries);
+    virStringListFree(entries);
 
     if ((nentries = qemuMonitorGetTPMTypes(mon, &entries)) < 0)
         return -1;
@@ -2791,11 +2791,11 @@ virQEMUCapsProbeQMPTPM(virQEMUCapsPtr qemuCaps,
         for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsTPMTypesToCaps); i++) {
             const char *needle = virDomainTPMBackendTypeToString(
                 virQEMUCapsTPMTypesToCaps[i].type);
-            if (virStringArrayHasString((const char **) entries, needle))
+            if (virStringListHasString((const char **) entries, needle))
                 virQEMUCapsSet(qemuCaps, virQEMUCapsTPMTypesToCaps[i].caps);
         }
     }
-    virStringFreeList(entries);
+    virStringListFree(entries);
 
     return 0;
 }
@@ -2887,7 +2887,7 @@ virQEMUCapsProbeQMPCommandLine(virQEMUCapsPtr qemuCaps,
                 break;
             }
         }
-        virStringFreeList(values);
+        virStringListFree(values);
     }
 
     return 0;
@@ -3849,13 +3849,13 @@ virQEMUCapsQMPSchemaGetByPath(const char *query,
 
     if (!*elems) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("malformed query string"));
-        virStringFreeList(elems);
+        virStringListFree(elems);
         return -1;
     }
 
     *entry = virQEMUCapsQMPSchemaTraverse(*elems, elems + 1, schema);
 
-    virStringFreeList(elems);
+    virStringListFree(elems);
     return 0;
 }
 
@@ -4644,7 +4644,7 @@ virQEMUCapsFillDomainCPUCaps(virCapsPtr caps,
         if (virCPUGetModels(domCaps->arch, &models) >= 0) {
             filtered = virDomainCapsCPUModelsFilter(qemuCaps->cpuDefinitions,
                                                     (const char **) models);
-            virStringFreeList(models);
+            virStringListFree(models);
         }
         domCaps->cpu.custom = filtered;
     }

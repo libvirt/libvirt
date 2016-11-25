@@ -6221,7 +6221,7 @@ remoteConnectGetCPUModelNames(virConnectPtr conn,
     rv = ret.ret;
 
  cleanup:
-    virStringFreeList(retmodels);
+    virStringListFree(retmodels);
 
     xdr_free((xdrproc_t) xdr_remote_connect_get_cpu_model_names_ret, (char *) &ret);
 

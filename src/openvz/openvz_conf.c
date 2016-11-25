@@ -151,7 +151,7 @@ openvzParseBarrierLimit(const char* value,
 
     ret = 0;
  error:
-    virStringFreeListCount(tmp, ntmp);
+    virStringListFreeCount(tmp, ntmp);
     return ret;
 }
 

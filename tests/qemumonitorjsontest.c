@@ -591,7 +591,7 @@ testQemuMonitorJSONGetTPMModels(const void *data)
 
  cleanup:
     qemuMonitorTestFree(test);
-    virStringFreeList(tpmmodels);
+    virStringListFree(tpmmodels);
     return ret;
 }
 
@@ -651,7 +651,7 @@ testQemuMonitorJSONGetCommandLineOptionParameters(const void *data)
 
 #undef CHECK
 
-    virStringFreeList(params);
+    virStringListFree(params);
     params = NULL;
 
     /* present but empty */
@@ -677,7 +677,7 @@ testQemuMonitorJSONGetCommandLineOptionParameters(const void *data)
         goto cleanup;
     }
 
-    virStringFreeList(params);
+    virStringListFree(params);
     params = NULL;
 
     /* no such option */
@@ -707,7 +707,7 @@ testQemuMonitorJSONGetCommandLineOptionParameters(const void *data)
 
  cleanup:
     qemuMonitorTestFree(test);
-    virStringFreeList(params);
+    virStringListFree(params);
     return ret;
 }
 
@@ -1151,20 +1151,20 @@ testQemuMonitorJSONGetDeviceAliases(const void *data)
 
     ret = 0;
     for (alias = (const char **) aliases; *alias; alias++) {
-        if (!virStringArrayHasString(expected, *alias)) {
+        if (!virStringListHasString(expected, *alias)) {
             fprintf(stderr, "got unexpected device alias '%s'\n", *alias);
             ret = -1;
         }
     }
     for (alias = expected; *alias; alias++) {
-        if (!virStringArrayHasString((const char **) aliases, *alias)) {
+        if (!virStringListHasString((const char **) aliases, *alias)) {
             fprintf(stderr, "missing expected alias '%s'\n", *alias);
             ret = -1;
         }
     }
 
  cleanup:
-    virStringFreeList(aliases);
+    virStringListFree(aliases);
     qemuMonitorTestFree(test);
     return ret;
 }

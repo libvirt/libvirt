@@ -350,7 +350,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     virQEMUDriverConfigPtr cfg = obj;
 
 
-    virStringFreeList(cfg->cgroupDeviceACL);
+    virStringListFree(cfg->cgroupDeviceACL);
 
     VIR_FREE(cfg->configBaseDir);
     VIR_FREE(cfg->configDir);
@@ -392,7 +392,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->dumpImageFormat);
     VIR_FREE(cfg->autoDumpPath);
 
-    virStringFreeList(cfg->securityDriverNames);
+    virStringListFree(cfg->securityDriverNames);
 
     VIR_FREE(cfg->lockManagerName);
 
@@ -801,9 +801,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     ret = 0;
 
  cleanup:
-    virStringFreeList(controllers);
-    virStringFreeList(hugetlbfs);
-    virStringFreeList(nvram);
+    virStringListFree(controllers);
+    virStringListFree(hugetlbfs);
+    virStringListFree(nvram);
     VIR_FREE(corestr);
     VIR_FREE(user);
     VIR_FREE(group);
