@@ -871,9 +871,9 @@ struct virXMLRewriteFileData {
 };
 
 static int
-virXMLRewriteFile(int fd, void *opaque)
+virXMLRewriteFile(int fd, const void *opaque)
 {
-    struct virXMLRewriteFileData *data = opaque;
+    const struct virXMLRewriteFileData *data = opaque;
 
     if (data->warnCommand) {
         if (virXMLEmitWarning(fd, data->warnName, data->warnCommand) < 0)

@@ -101,11 +101,14 @@ void virFileWrapperFdFree(virFileWrapperFdPtr dfd);
 int virFileLock(int fd, bool shared, off_t start, off_t len, bool waitForLock);
 int virFileUnlock(int fd, off_t start, off_t len);
 
-typedef int (*virFileRewriteFunc)(int fd, void *opaque);
+typedef int (*virFileRewriteFunc)(int fd, const void *opaque);
 int virFileRewrite(const char *path,
                    mode_t mode,
                    virFileRewriteFunc rewrite,
-                   void *opaque);
+                   const void *opaque);
+int virFileRewriteStr(const char *path,
+                      mode_t mode,
+                      const char *str);
 
 int virFileTouch(const char *path, mode_t mode);
 

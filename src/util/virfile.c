@@ -443,7 +443,7 @@ int
 virFileRewrite(const char *path,
                mode_t mode,
                virFileRewriteFunc rewrite,
-               void *opaque)
+               const void *opaque)
 {
     char *newfile = NULL;
     int fd = -1;
@@ -491,6 +491,28 @@ virFileRewrite(const char *path,
         VIR_FREE(newfile);
     }
     return ret;
+}
+
+
+static int
+virFileRewriteStrHelper(int fd, const void *opaque)
+{
+    const char *data = opaque;
+
+    if (safewrite(fd, data, strlen(data)) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
+virFileRewriteStr(const char *path,
+                  mode_t mode,
+                  const char *str)
+{
+    return virFileRewrite(path, mode,
+                          virFileRewriteStrHelper, str);
 }
 
 

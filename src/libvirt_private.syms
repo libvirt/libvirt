@@ -1601,6 +1601,7 @@ virFileRemoveLastComponent;
 virFileResolveAllLinks;
 virFileResolveLink;
 virFileRewrite;
+virFileRewriteStr;
 virFileSanitizePath;
 virFileSkipRoot;
 virFileStripSuffix;
