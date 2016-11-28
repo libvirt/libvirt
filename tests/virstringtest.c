@@ -162,6 +162,40 @@ static int testAdd(const void *args)
 }
 
 
+static int testRemove(const void *args)
+{
+    const struct testSplitData *data = args;
+    char **list = NULL;
+    size_t ntokens;
+    size_t i;
+    int ret = -1;
+
+    if (!(list = virStringSplitCount(data->string, data->delim,
+                                     data->max_tokens, &ntokens))) {
+        VIR_DEBUG("Got no tokens at all");
+        return -1;
+    }
+
+    for (i = 0; data->tokens[i]; i++) {
+        virStringListRemove(&list, data->tokens[i]);
+        if (virStringListHasString((const char **) list, data->tokens[i])) {
+            virFilePrintf(stderr, "Not removed %s", data->tokens[i]);
+            goto cleanup;
+        }
+    }
+
+    if (list && list[0]) {
+        virFilePrintf(stderr, "Not removed all tokens: %s", list[0]);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virStringListFree(list);
+    return ret;
+}
+
+
 static bool fail;
 
 static const char *
@@ -635,6 +669,8 @@ mymain(void)
         if (virTestRun("Join " #str, testJoin, &joinData) < 0)          \
             ret = -1;                                                   \
         if (virTestRun("Add " #str, testAdd, &joinData) < 0)            \
+            ret = -1;                                                   \
+        if (virTestRun("Remove " #str, testRemove, &splitData) < 0)     \
             ret = -1;                                                   \
     } while (0)
 

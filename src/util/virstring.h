@@ -43,6 +43,8 @@ char *virStringListJoin(const char **strings,
 
 char **virStringListAdd(const char **strings,
                         const char *item);
+void virStringListRemove(char ***strings,
+                         const char *item);
 
 void virStringListFree(char **strings);
 void virStringListFreeCount(char **strings,

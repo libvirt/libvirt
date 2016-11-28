@@ -203,6 +203,41 @@ virStringListAdd(const char **strings,
 
 
 /**
+ * virStringListRemove:
+ * @strings: a NULL-terminated array of strings
+ * @item: string to remove
+ *
+ * Remove every occurrence of @item in list of @strings.
+ */
+void
+virStringListRemove(char ***strings,
+                    const char *item)
+{
+    size_t r, w = 0;
+
+    if (!strings || !*strings)
+        return;
+
+    for (r = 0; (*strings)[r]; r++) {
+        if (STREQ((*strings)[r], item)) {
+            VIR_FREE((*strings)[r]);
+            continue;
+        }
+        if (r != w)
+            (*strings)[w] = (*strings)[r];
+        w++;
+    }
+
+    if (w == 0) {
+        VIR_FREE(*strings);
+    } else {
+        (*strings)[w] = NULL;
+        ignore_value(VIR_REALLOC_N(*strings, w + 1));
+    }
+}
+
+
+/**
  * virStringListFree:
  * @str_array: a NULL-terminated array of strings to free
  *
