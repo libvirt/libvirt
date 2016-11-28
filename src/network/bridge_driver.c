@@ -718,8 +718,6 @@ networkStateInitialize(bool privileged,
     return ret;
 
  error:
-    if (network_driver)
-        networkDriverUnlock(network_driver);
     networkStateCleanup();
     goto cleanup;
 }
