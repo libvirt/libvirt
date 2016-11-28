@@ -2058,7 +2058,7 @@ x86Encode(virArch arch,
 }
 
 
-#if HAVE_CPUID
+#if defined(__i386__) || defined(__x86_64__)
 static inline void
 cpuidCall(virCPUx86CPUID *cpuid)
 {
@@ -2740,7 +2740,7 @@ struct cpuArchDriver cpuDriverX86 = {
     .decode     = x86DecodeCPUData,
     .encode     = x86Encode,
     .free       = x86FreeCPUData,
-#if HAVE_CPUID
+#if defined(__i386__) || defined(__x86_64__)
     .nodeData   = x86NodeData,
 #else
     .nodeData   = NULL,

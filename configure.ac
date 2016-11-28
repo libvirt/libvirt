@@ -265,25 +265,6 @@ LIBVIRT_CHECK_NSS
 LIBVIRT_CHECK_YAJL
 LIBVIRT_CHECK_GNUTLS
 
-AC_MSG_CHECKING([for CPUID instruction])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-  [[
-    #include <stdint.h>
-  ]],
-  [[
-    uint32_t eax, ebx, ecx, edx;
-    asm volatile (
-        "cpuid"
-        : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
-        : "a" (eax));
-  ]])],
-  [have_cpuid=yes],
-  [have_cpuid=no])
-if test "x$have_cpuid" = xyes; then
-  AC_DEFINE_UNQUOTED([HAVE_CPUID], 1, [whether CPUID instruction is supported])
-fi
-AC_MSG_RESULT([$have_cpuid])
-
 AC_CHECK_SIZEOF([long])
 
 dnl Availability of various common functions (non-fatal if missing),
