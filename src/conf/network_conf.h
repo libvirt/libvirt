@@ -41,6 +41,7 @@
 # include "virbitmap.h"
 # include "networkcommon_conf.h"
 # include "virobject.h"
+# include "virmacmap.h"
 
 typedef enum {
     VIR_NETWORK_FORWARD_NONE   = 0,
@@ -284,6 +285,9 @@ struct _virNetworkObj {
     unsigned long long floor_sum; /* sum of all 'floor'-s of attached NICs */
 
     unsigned int taint;
+
+    /* Immutable pointer, self locking APIs */
+    virMacMapPtr macmap;
 };
 
 virNetworkObjPtr virNetworkObjNew(void);
