@@ -3005,6 +3005,9 @@ qemuDomainShmemDefPostParse(virDomainShmemDefPtr shm)
 }
 
 
+#define QEMU_USB_NEC_XHCI_MAXPORTS 15
+
+
 static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
@@ -3158,6 +3161,15 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
     if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
         virDomainControllerDefPtr cont = dev->data.controller;
+
+        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+            cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI &&
+            cont->opts.usbopts.ports > QEMU_USB_NEC_XHCI_MAXPORTS) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("nec-xhci controller only supports up to %u ports"),
+                           QEMU_USB_NEC_XHCI_MAXPORTS);
+            goto cleanup;
+        }
 
         if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
             if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS &&
