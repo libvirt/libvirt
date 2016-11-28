@@ -22,7 +22,7 @@
 
 #include "testutils.h"
 
-#if defined(WITH_DBUS) && defined(__linux__)
+#if defined(__ELF__)
 
 # include <stdlib.h>
 # include <dbus/dbus.h>
@@ -352,10 +352,10 @@ mymain(void)
 
 VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virdbusmock.so")
 
-#else /* ! (WITH_DBUS && __linux__) */
+#else /* ! __ELF__ */
 int
 main(void)
 {
     return EXIT_AM_SKIP;
 }
-#endif /* ! WITH_DBUS */
+#endif /* ! __ELF__ */
