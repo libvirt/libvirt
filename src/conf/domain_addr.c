@@ -1987,6 +1987,13 @@ virDomainUSBAddressReserve(virDomainDeviceInfoPtr info,
                                                   portStr)))
         goto cleanup;
 
+    if (targetPort >= virBitmapSize(targetHub->portmap)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("requested USB port %s not present on USB bus %u"),
+                       portStr, info->addr.usb.bus);
+        goto cleanup;
+    }
+
     if (virBitmapIsBitSet(targetHub->portmap, targetPort)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Duplicate USB address bus %u port %s"),

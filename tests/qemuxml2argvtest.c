@@ -1320,6 +1320,9 @@ mymain(void)
     DO_TEST("usb-ports",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
             QEMU_CAPS_NODEFCONFIG);
+    DO_TEST_PARSE_ERROR("usb-ports-out-of-range",
+            QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
+            QEMU_CAPS_NODEFCONFIG);
     DO_TEST("usb-port-autoassign",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_USB_HUB,
             QEMU_CAPS_NODEFCONFIG);
