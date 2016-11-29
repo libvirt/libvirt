@@ -457,7 +457,7 @@ install-init-systemd: install-sysconfig libvirtd.service
 	$(MKDIR_P) $(DESTDIR)$(SYSTEMD_UNIT_DIR)
 	$(INSTALL_DATA) libvirtd.service \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/libvirtd.service
-	$(INSTALL_DATA) virt-guest-shutdown.target \
+	$(INSTALL_DATA) $(srcdir)/virt-guest-shutdown.target \
 	  $(DESTDIR)$(SYSTEMD_UNIT_DIR)/virt-guest-shutdown.target
 
 uninstall-init-systemd: uninstall-sysconfig
