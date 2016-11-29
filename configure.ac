@@ -402,7 +402,7 @@ LIBVIRT_ARG_WITH([XEN], [XEN], [check])
 LIBVIRT_ARG_WITH([XEN_INOTIFY], [XEN inotify], [check])
 LIBVIRT_ARG_WITH([QEMU], [QEMU/KVM], [yes])
 LIBVIRT_DRIVER_ARG_OPENVZ
-LIBVIRT_ARG_WITH([VMWARE], [VMware], [yes])
+LIBVIRT_DRIVER_ARG_VMWARE
 LIBVIRT_ARG_WITH([PHYP], [PHYP], [check])
 LIBVIRT_ARG_WITH([XENAPI], [XenAPI], [check])
 LIBVIRT_ARG_WITH([LIBXL], [libxenlight], [check])
@@ -454,16 +454,7 @@ LIBVIRT_CHECK_SYSCTL_CONFIG
 
 
 LIBVIRT_DRIVER_CHECK_OPENVZ
-
-dnl
-dnl Checks for the VMware Workstation/Player driver
-dnl
-
-if test "$with_vmware" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_VMWARE], 1, [whether VMware driver is enabled])
-fi
-AM_CONDITIONAL([WITH_VMWARE], [test "$with_vmware" = "yes"])
-
+LIBVIRT_DRIVER_CHECK_VMWARE
 
 dnl
 dnl check for VirtualBox XPCOMC location
@@ -1677,7 +1668,7 @@ AC_MSG_NOTICE([      Xen: $with_xen])
 AC_MSG_NOTICE([     QEMU: $with_qemu])
 LIBVIRT_DRIVER_RESULT_UML
 LIBVIRT_DRIVER_RESULT_OPENVZ
-AC_MSG_NOTICE([   VMware: $with_vmware])
+LIBVIRT_DRIVER_RESULT_VMWARE
 AC_MSG_NOTICE([     VBox: $with_vbox])
 AC_MSG_NOTICE([   XenAPI: $with_xenapi])
 AC_MSG_NOTICE([ xenlight: $with_libxl])
