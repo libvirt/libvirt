@@ -995,6 +995,14 @@ mymain(void)
     DO_TEST("disk-serial",
             QEMU_CAPS_KVM,
             QEMU_CAPS_DRIVE_SERIAL);
+    DO_TEST_PARSE_ERROR("disk-fdc-incompatible-address",
+                        NONE);
+    DO_TEST_PARSE_ERROR("disk-ide-incompatible-address",
+                        NONE);
+    DO_TEST_PARSE_ERROR("disk-sata-incompatible-address",
+                        QEMU_CAPS_ICH9_AHCI);
+    DO_TEST_PARSE_ERROR("disk-scsi-incompatible-address",
+                        QEMU_CAPS_VIRTIO_SCSI);
 
     DO_TEST("graphics-vnc", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-vnc-socket", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
