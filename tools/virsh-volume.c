@@ -996,6 +996,10 @@ static const vshCmdOptDef opts_vol_info[] = {
      .type = VSH_OT_BOOL,
      .help = N_("sizes are represented in bytes rather than pretty units")
     },
+    {.name = "physical",
+     .type = VSH_OT_BOOL,
+     .help = N_("return the physical size of the volume in allocation field")
+    },
     {.name = NULL}
 };
 
@@ -1005,14 +1009,25 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
     virStorageVolInfo info;
     virStorageVolPtr vol;
     bool bytes = vshCommandOptBool(cmd, "bytes");
+    bool physical = vshCommandOptBool(cmd, "physical");
     bool ret = true;
+    int rc;
+    unsigned int flags = 0;
 
     if (!(vol = virshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         return false;
 
     vshPrint(ctl, "%-15s %s\n", _("Name:"), virStorageVolGetName(vol));
 
-    if (virStorageVolGetInfo(vol, &info) == 0) {
+    if (physical)
+        flags |= VIR_STORAGE_VOL_GET_PHYSICAL;
+
+    if (flags)
+        rc = virStorageVolGetInfoFlags(vol, &info, flags);
+    else
+        rc = virStorageVolGetInfo(vol, &info);
+
+    if (rc == 0) {
         double val;
         const char *unit;
 
@@ -1028,11 +1043,18 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
         }
 
         if (bytes) {
-            vshPrint(ctl, "%-15s %llu %s\n", _("Allocation:"),
-                     info.allocation, _("bytes"));
+            if (physical)
+                vshPrint(ctl, "%-15s %llu %s\n", _("Physical:"),
+                         info.allocation, _("bytes"));
+            else
+                vshPrint(ctl, "%-15s %llu %s\n", _("Allocation:"),
+                         info.allocation, _("bytes"));
          } else {
             val = vshPrettyCapacity(info.allocation, &unit);
-            vshPrint(ctl, "%-15s %2.2lf %s\n", _("Allocation:"), val, unit);
+            if (physical)
+                vshPrint(ctl, "%-15s %2.2lf %s\n", _("Physical:"), val, unit);
+            else
+                vshPrint(ctl, "%-15s %2.2lf %s\n", _("Allocation:"), val, unit);
          }
     } else {
         ret = false;

@@ -3879,13 +3879,17 @@ is in. I<vol-name-or-key-or-path> is the name or key or path of the volume
 to output the XML of.
 
 =item B<vol-info> [I<--pool> I<pool-or-uuid>] I<vol-name-or-key-or-path>
-[I<--bytes>]
+[I<--bytes>] [I<--physical>]
 
 Returns basic information about the given storage volume.
 I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
 is in. I<vol-name-or-key-or-path> is the name or key or path of the volume
 to return information for. If I<--bytes> is specified the sizes are not
-converted to human friendly units.
+converted to human friendly units. If I<--physical> is specified, then the host
+physical size is returned and displayed instead of the allocation value. The
+physical value for some file types, such as qcow2 may have a different (larger)
+physical value than is shown for allocation. Additionally sparse files will
+have different physical and allocation values.
 
 =item B<vol-list> [I<--pool> I<pool-or-uuid>] [I<--details>]
 
