@@ -4517,7 +4517,7 @@ prlsdkGetNetStats(PRL_HANDLE sdkstats, PRL_HANDLE sdkdom, const char *path,
     prlsdkCheckRetGoto(pret, cleanup);
 
 #define PRLSDK_GET_NET_COUNTER(VAL, NAME)                           \
-    if (virAsprintf(&name, "net.nic%d.%s", net_index, NAME) < 0)    \
+    if (virAsprintf(&name, "net.nic%u.%s", net_index, NAME) < 0)    \
         goto cleanup;                                               \
     if (prlsdkExtractStatsParam(sdkstats, name, &stats->VAL) < 0)   \
         goto cleanup;                                               \
