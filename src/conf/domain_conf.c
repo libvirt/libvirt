@@ -4682,6 +4682,48 @@ virDomainDefPostParse(virDomainDefPtr def,
 }
 
 
+/**
+ * virDomainDiskAddressDiskBusCompatibility:
+ * @bus: disk bus type
+ * @addressType: disk address type
+ *
+ * Check if the specified disk address type @addressType is compatible
+ * with the specified disk bus type @bus. This function checks
+ * compatibility with the bus types SATA, SCSI, FDC, and IDE only,
+ * because only these are handled in common code.
+ *
+ * Returns true if compatible or can't be decided in common code,
+ *         false if known to be not compatible.
+ */
+static bool
+virDomainDiskAddressDiskBusCompatibility(virDomainDiskBus bus,
+                                         virDomainDeviceAddressType addressType)
+{
+    if (addressType == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+        return true;
+
+    switch (bus) {
+    case VIR_DOMAIN_DISK_BUS_IDE:
+    case VIR_DOMAIN_DISK_BUS_FDC:
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+    case VIR_DOMAIN_DISK_BUS_SATA:
+        return addressType == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE;
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+    case VIR_DOMAIN_DISK_BUS_XEN:
+    case VIR_DOMAIN_DISK_BUS_USB:
+    case VIR_DOMAIN_DISK_BUS_UML:
+    case VIR_DOMAIN_DISK_BUS_SD:
+    case VIR_DOMAIN_DISK_BUS_LAST:
+        return true;
+    }
+
+    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                   _("unexpected bus type '%d'"),
+                   bus);
+    return true;
+}
+
+
 static int
 virDomainDiskDefValidate(const virDomainDiskDef *disk)
 {
@@ -4697,6 +4739,20 @@ virDomainDiskDefValidate(const virDomainDiskDef *disk)
                              "device='lun'"), disk->dst);
             return -1;
         }
+    }
+
+    /* Reject disks with a bus type that is not compatible with the
+     * given address type. The function considers only buses that are
+     * handled in common code. For other bus types it's not possible
+     * to decide compatibility in common code.
+     */
+    if (!virDomainDiskAddressDiskBusCompatibility(disk->bus, disk->info.type)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Invalid address type '%s' for the disk '%s' with the bus type '%s'"),
+                       virDomainDeviceAddressTypeToString(disk->info.type),
+                       disk->dst,
+                       virDomainDiskBusTypeToString(disk->bus));
+        return -1;
     }
 
     return 0;
