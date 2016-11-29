@@ -167,6 +167,14 @@ typedef enum {
 # endif
 } virStorageVolWipeAlgorithm;
 
+typedef enum {
+    VIR_STORAGE_VOL_USE_ALLOCATION = 0,
+
+    /* Return the physical size in allocation */
+    VIR_STORAGE_VOL_GET_PHYSICAL = 1 << 0,
+
+} virStorageVolInfoFlags;
+
 typedef struct _virStorageVolInfo virStorageVolInfo;
 
 struct _virStorageVolInfo {
@@ -359,6 +367,9 @@ int                     virStorageVolFree               (virStorageVolPtr vol);
 
 int                     virStorageVolGetInfo            (virStorageVolPtr vol,
                                                          virStorageVolInfoPtr info);
+int                     virStorageVolGetInfoFlags       (virStorageVolPtr vol,
+                                                         virStorageVolInfoPtr info,
+                                                         unsigned int flags);
 char *                  virStorageVolGetXMLDesc         (virStorageVolPtr pool,
                                                          unsigned int flags);
 

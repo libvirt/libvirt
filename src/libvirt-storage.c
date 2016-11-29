@@ -1914,6 +1914,57 @@ virStorageVolGetInfo(virStorageVolPtr vol,
 
 
 /**
+ * virStorageVolGetInfoFlags:
+ * @vol: pointer to storage volume
+ * @info: pointer at which to store info
+ * @flags: bitwise-OR of virStorageVolInfoFlags
+ *
+ * Fetches volatile information about the storage
+ * volume such as its current allocation.
+ *
+ * If the @flags argument is VIR_STORAGE_VOL_GET_PHYSICAL, then the physical
+ * bytes used for the volume will be returned in the @info allocation field.
+ * This is useful for sparse files and certain volume file types where the
+ * physical on disk usage can be different than the calculated allocation value
+ * as is the case with qcow2 files.
+ *
+ * Returns 0 on success, or -1 on failure
+ */
+int
+virStorageVolGetInfoFlags(virStorageVolPtr vol,
+                          virStorageVolInfoPtr info,
+                          unsigned int flags)
+{
+    virConnectPtr conn;
+    VIR_DEBUG("vol=%p, info=%p, flags=%x", vol, info, flags);
+
+    virResetLastError();
+
+    if (info)
+        memset(info, 0, sizeof(*info));
+
+    virCheckStorageVolReturn(vol, -1);
+    virCheckNonNullArgGoto(info, error);
+
+    conn = vol->conn;
+
+    if (conn->storageDriver->storageVolGetInfoFlags) {
+        int ret;
+        ret = conn->storageDriver->storageVolGetInfoFlags(vol, info, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(vol->conn);
+    return -1;
+}
+
+
+/**
  * virStorageVolGetXMLDesc:
  * @vol: pointer to storage volume
  * @flags: extra flags; not used yet, so callers should always pass 0

@@ -7842,6 +7842,42 @@ remoteDomainRename(virDomainPtr dom, const char *new_name, unsigned int flags)
 }
 
 
+static int
+remoteStorageVolGetInfoFlags(virStorageVolPtr vol,
+                             virStorageVolInfoPtr result,
+                             unsigned int flags)
+{
+    int rv = -1;
+    struct private_data *priv = vol->conn->privateData;
+    remote_storage_vol_get_info_flags_args args;
+    remote_storage_vol_get_info_flags_ret ret;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_storage_vol(&args.vol, vol);
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+
+    if (call(vol->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_GET_INFO_FLAGS,
+             (xdrproc_t)xdr_remote_storage_vol_get_info_flags_args,
+             (char *)&args,
+             (xdrproc_t)xdr_remote_storage_vol_get_info_flags_ret,
+             (char *)&ret) == -1) {
+        goto done;
+    }
+
+    result->type = ret.type;
+    result->capacity = ret.capacity;
+    result->allocation = ret.allocation;
+    rv = 0;
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
  * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
  * These can return NULL if underlying memory allocations fail,
@@ -8290,6 +8326,7 @@ static virStorageDriver storage_driver = {
     .storageVolWipe = remoteStorageVolWipe, /* 0.8.0 */
     .storageVolWipePattern = remoteStorageVolWipePattern, /* 0.9.10 */
     .storageVolGetInfo = remoteStorageVolGetInfo, /* 0.4.1 */
+    .storageVolGetInfoFlags = remoteStorageVolGetInfoFlags, /* 3.0.0 */
     .storageVolGetXMLDesc = remoteStorageVolGetXMLDesc, /* 0.4.1 */
     .storageVolGetPath = remoteStorageVolGetPath, /* 0.4.1 */
     .storageVolResize = remoteStorageVolResize, /* 0.9.10 */

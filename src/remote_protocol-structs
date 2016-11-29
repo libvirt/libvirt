@@ -1472,6 +1472,15 @@ struct remote_storage_vol_get_info_ret {
         uint64_t                   capacity;
         uint64_t                   allocation;
 };
+struct remote_storage_vol_get_info_flags_args {
+        remote_nonnull_storage_vol vol;
+        u_int                      flags;
+};
+struct remote_storage_vol_get_info_flags_ret {
+        char                       type;
+        uint64_t                   capacity;
+        uint64_t                   allocation;
+};
 struct remote_storage_vol_get_path_args {
         remote_nonnull_storage_vol vol;
 };
@@ -3169,4 +3178,5 @@ enum remote_procedure {
         REMOTE_PROC_CONNECT_NODE_DEVICE_EVENT_DEREGISTER_ANY = 375,
         REMOTE_PROC_NODE_DEVICE_EVENT_LIFECYCLE = 376,
         REMOTE_PROC_NODE_DEVICE_EVENT_UPDATE = 377,
+        REMOTE_PROC_STORAGE_VOL_GET_INFO_FLAGS = 378,
 };

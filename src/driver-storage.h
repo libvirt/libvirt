@@ -158,6 +158,11 @@ typedef int
 (*virDrvStorageVolGetInfo)(virStorageVolPtr vol,
                            virStorageVolInfoPtr info);
 
+typedef int
+(*virDrvStorageVolGetInfoFlags)(virStorageVolPtr vol,
+                                virStorageVolInfoPtr info,
+                                unsigned int flags);
+
 typedef char *
 (*virDrvStorageVolGetXMLDesc)(virStorageVolPtr pool,
                               unsigned int flags);
@@ -257,6 +262,7 @@ struct _virStorageDriver {
     virDrvStorageVolWipe storageVolWipe;
     virDrvStorageVolWipePattern storageVolWipePattern;
     virDrvStorageVolGetInfo storageVolGetInfo;
+    virDrvStorageVolGetInfoFlags storageVolGetInfoFlags;
     virDrvStorageVolGetXMLDesc storageVolGetXMLDesc;
     virDrvStorageVolGetPath storageVolGetPath;
     virDrvStorageVolResize storageVolResize;

@@ -6594,6 +6594,44 @@ remoteDispatchDomainInterfaceAddresses(virNetServerPtr server ATTRIBUTE_UNUSED,
 }
 
 
+static int
+remoteDispatchStorageVolGetInfoFlags(virNetServerPtr server ATTRIBUTE_UNUSED,
+                                     virNetServerClientPtr client,
+                                     virNetMessagePtr msg ATTRIBUTE_UNUSED,
+                                     virNetMessageErrorPtr rerr,
+                                     remote_storage_vol_get_info_flags_args *args,
+                                     remote_storage_vol_get_info_flags_ret *ret)
+{
+    int rv = -1;
+    virStorageVolPtr vol = NULL;
+    virStorageVolInfo tmp;
+    struct daemonClientPrivate *priv =
+        virNetServerClientGetPrivateData(client);
+
+    if (!priv->conn) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("connection not open"));
+        goto cleanup;
+    }
+
+    if (!(vol = get_nonnull_storage_vol(priv->conn, args->vol)))
+        goto cleanup;
+
+    if (virStorageVolGetInfoFlags(vol, &tmp, args->flags) < 0)
+        goto cleanup;
+
+    ret->type = tmp.type;
+    ret->capacity = tmp.capacity;
+    ret->allocation = tmp.allocation;
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virObjectUnref(vol);
+    return rv;
+}
+
+
 /*----- Helpers. -----*/
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire

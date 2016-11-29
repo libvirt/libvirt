@@ -1941,6 +1941,17 @@ struct remote_storage_vol_get_info_ret { /* insert@1 */
     unsigned hyper allocation;
 };
 
+struct remote_storage_vol_get_info_flags_args {
+    remote_nonnull_storage_vol vol;
+    unsigned int flags;
+};
+
+struct remote_storage_vol_get_info_flags_ret { /* insert@1 */
+    char type;
+    unsigned hyper capacity;
+    unsigned hyper allocation;
+};
+
 struct remote_storage_vol_get_path_args {
     remote_nonnull_storage_vol vol;
 };
@@ -5934,5 +5945,12 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_NODE_DEVICE_EVENT_UPDATE = 377
+    REMOTE_PROC_NODE_DEVICE_EVENT_UPDATE = 377,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: storage_vol:read
+     */
+    REMOTE_PROC_STORAGE_VOL_GET_INFO_FLAGS = 378
 };
