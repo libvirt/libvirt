@@ -401,7 +401,7 @@ dnl Allow to build without Xen, QEMU/KVM, test or remote driver
 LIBVIRT_ARG_WITH([XEN], [XEN], [check])
 LIBVIRT_ARG_WITH([XEN_INOTIFY], [XEN inotify], [check])
 LIBVIRT_ARG_WITH([QEMU], [QEMU/KVM], [yes])
-LIBVIRT_ARG_WITH([OPENVZ], [OpenVZ], [check])
+LIBVIRT_DRIVER_ARG_OPENVZ
 LIBVIRT_ARG_WITH([VMWARE], [VMware], [yes])
 LIBVIRT_ARG_WITH([PHYP], [PHYP], [check])
 LIBVIRT_ARG_WITH([XENAPI], [XenAPI], [check])
@@ -453,23 +453,7 @@ LIBVIRT_CHECK_TLS_PRIORITY
 LIBVIRT_CHECK_SYSCTL_CONFIG
 
 
-dnl
-dnl Checks for the OpenVZ driver
-dnl
-
-if test "$with_openvz" = "check"; then
-    with_openvz=$with_linux
-fi
-
-if test "$with_openvz" = "yes" && test "$with_linux" = "no"; then
-    AC_MSG_ERROR([The OpenVZ driver can be enabled on Linux only.])
-fi
-
-if test "$with_openvz" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_OPENVZ], 1, [whether OpenVZ driver is enabled])
-fi
-AM_CONDITIONAL([WITH_OPENVZ], [test "$with_openvz" = "yes"])
-
+LIBVIRT_DRIVER_CHECK_OPENVZ
 
 dnl
 dnl Checks for the VMware Workstation/Player driver
@@ -1692,7 +1676,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([      Xen: $with_xen])
 AC_MSG_NOTICE([     QEMU: $with_qemu])
 LIBVIRT_DRIVER_RESULT_UML
-AC_MSG_NOTICE([   OpenVZ: $with_openvz])
+LIBVIRT_DRIVER_RESULT_OPENVZ
 AC_MSG_NOTICE([   VMware: $with_vmware])
 AC_MSG_NOTICE([     VBox: $with_vbox])
 AC_MSG_NOTICE([   XenAPI: $with_xenapi])
