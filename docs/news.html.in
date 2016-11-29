@@ -21,6 +21,10 @@
           domain &lt;disk&gt; &lt;iotune&gt; subelement "group_name"
           to allow sharing I/O throttling quota between multiple drives
           </li>
+          <li>nss: Introduce <code>libvirt-guest</code><br/>
+          New <code>libvirt-guest</code> nss module that translates libvirt
+          guest names into IP addresses
+          </li>
         </ul>
       </li>
       <li><strong>Improvements</strong>

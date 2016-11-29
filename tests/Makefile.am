@@ -335,8 +335,8 @@ test_programs += virscsitest
 endif WITH_LINUX
 
 if WITH_NSS
-test_helpers += nsslinktest
-test_programs += nsstest
+test_helpers += nsslinktest nssguestlinktest
+test_programs += nsstest nssguesttest
 endif WITH_NSS
 
 test_programs += storagevolxml2xmltest storagepoolxml2xmltest
@@ -1125,6 +1125,16 @@ nsstest_LDADD = \
 	$(LDADDS)	\
 	../tools/nss/libnss_libvirt_impl.la
 
+nssguesttest_SOURCES = \
+	nsstest.c testutils.h testutils.c
+nssguesttest_CFLAGS = \
+	-DLIBVIRT_NSS_GUEST	\
+	$(AM_CFLAGS)	\
+	-I$(top_srcdir)/tools/nss
+nssguesttest_LDADD = \
+	$(LDADDS)	\
+	../tools/nss/libnss_libvirt_guest_impl.la
+
 nssmock_la_SOURCES = \
 	nssmock.c
 nssmock_la_CFLAGS = $(AM_CFLAGS)
@@ -1139,6 +1149,14 @@ nsslinktest_CFLAGS = 	\
 	-I$(top_srcdir)/tools/nss
 nsslinktest_LDADD = ../tools/nss/libnss_libvirt_impl.la
 nsslinktest_LDFLAGS = $(NULL)
+
+nssguestlinktest_SOURCES = nsslinktest.c
+nssguestlinktest_CFLAGS = 	\
+	-DLIBVIRT_NSS_GUEST	\
+	$(AM_CFLAGS)		\
+	-I$(top_srcdir)/tools/nss
+nssguestlinktest_LDADD = ../tools/nss/libnss_libvirt_guest_impl.la
+nssguestlinktest_LDFLAGS = $(NULL)
 
 virmacmapmock_la_SOURCES = \
 	virmacmapmock.c

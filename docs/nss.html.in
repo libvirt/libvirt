@@ -62,6 +62,48 @@ hosts:       files libvirt dns
     lookup given host name.
     </p>
 
+    <h2><a name="Sources">Sources of information</a></h2>
+
+    <p>
+    As of <code>v3.0.0</code> release, libvirt offers two NSS modules
+    implementing two different methods of hostname translation. The first and
+    older method is implemented by <code>libvirt</code> plugin and
+    basically looks up the hostname to IP address translation in DHCP server
+    records. Therefore this is dependent on hostname provided by guests. Thing
+    is, not all the guests out there provide one in DHCP transactions, or not
+    every sysadmin out there believes all the guests. Hence libvirt implements
+    second method in <code>libvirt-guest</code> module which does libvirt guest
+    name to IP address translation (regardless of hostname set in the guest).
+    </p>
+
+    <p>
+    To enable either of the modules put their name into the
+    <code>nsswitch.conf</code> file. For instance, to enable
+    <code>libvirt-guest</code> module:
+    </p>
+
+<pre>
+$ cat /etc/nsswitch.conf
+# /etc/nsswitch.conf:
+hosts:       files libvirt-guest dns
+# ...
+</pre>
+    <p>Or users can enable both at the same time:</p>
+<pre>
+$ cat /etc/nsswitch.conf
+# /etc/nsswitch.conf:
+hosts:       files libvirt libvirt-guest dns
+# ...
+</pre>
+
+    <p>
+    This configuration will mean that if hostname is not found by the
+    <code>libvirt</code> module (e.g. because a guest did not sent hostname
+    during DHCP transaction), the <code>libvirt-guest</code> module is
+    consulted (and if the hostname matches libvirt guest name it will be
+    resolved).
+    </p>
+
     <h2><a name="Internals">How does it work?</a></h2>
 
     <p>
@@ -100,15 +142,18 @@ hosts:       files libvirt dns
     <h2><a name="Limitations">Limitations</a></h2>
 
     <ol>
-      <li>The libvirt NSS module matches only hostnames provided by guest. If
-        the libvirt name and one advertised by guest differs, the latter is
-        matched.</li>
+      <li>The <code>libvirt</code> NSS module matches only hostnames provided by guest.
+        If the libvirt name and one advertised by guest differs, the latter is
+        matched. However, as of <code>v3.0.0</code> there are two libvirt NSS modules
+        translating both hostnames provided by guest and libvirt guest names.</li>
       <li>The module works only in that cases where IP addresses are assigned by
         dnsmasq spawned by libvirt. Libvirt NATed networks are typical
         example.</li>
     </ol>
 
     <p>
+    <i>The following paragraph describes implementation limitation of the
+    <code>libvirt</code> NSS module.</i>
     These limitation are result of libvirt's internal implementation. While
     libvirt can report IP addresses regardless of their origin, a public API
     must be used to obtain those. However, for the API a connection object is
@@ -134,8 +179,11 @@ virsh domifaddr --source lease $domain
 </pre>
 
     <p>
-    If there's no record for either of the aforementioned commands, it's very
-    likely that NSS module won't find anything and vice versa.
+    If there's no record for either of the aforementioned commands, it's
+    very likely that NSS module won't find anything and vice versa.
+    As of <code>v3.0.0</code> libvirt provides <code>libvirt-guest</code> NSS
+    module that doesn't have this limitation. However, the statement is still
+    true for the <code>libvirt</code> NSS module.
     </p>
   </body>
 </html>

@@ -16,5 +16,10 @@
         "mac-address": "52:54:00:a4:6f:94",
         "hostname": "fedora",
         "expiry-time": 1
+    },
+    {
+        "ip-address": "192.168.122.3",
+        "mac-address": "52:54:00:aa:bb:cc",
+        "expiry-time": 2000000000
     }
 ]

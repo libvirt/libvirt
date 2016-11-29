@@ -26,6 +26,7 @@
 # include <dirent.h>
 # include <sys/stat.h>
 # include <fcntl.h>
+# include <unistd.h>
 
 # include "configmake.h"
 # include "virstring.h"
@@ -33,6 +34,7 @@
 
 static int (*real_open)(const char *path, int flags, ...);
 static DIR * (*real_opendir)(const char *name);
+static int (*real_access)(const char *path, int mode);
 
 # define LEASEDIR LOCALSTATEDIR "/lib/libvirt/dnsmasq/"
 
@@ -47,6 +49,7 @@ init_syms(void)
 
     VIR_MOCK_REAL_INIT(open);
     VIR_MOCK_REAL_INIT(opendir);
+    VIR_MOCK_REAL_INIT(access);
 }
 
 static int
@@ -108,6 +111,24 @@ opendir(const char *path)
         return NULL;
 
     ret = real_opendir(newpath ? newpath : path);
+
+    free(newpath);
+    return ret;
+}
+
+int
+access(const char *path, int mode)
+{
+    int ret;
+    char *newpath = NULL;
+
+    init_syms();
+
+    if (STRPREFIX(path, LEASEDIR) &&
+        getrealpath(&newpath, path) < 0)
+        return -1;
+
+    ret = real_access(newpath ? newpath : path, mode);
 
     free(newpath);
     return ret;

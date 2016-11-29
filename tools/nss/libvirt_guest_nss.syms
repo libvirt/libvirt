@@ -1,0 +1,12 @@
+#
+# Officially exported symbols.
+#
+
+{
+global:
+    _nss_libvirt_guest_gethostbyname_r;
+    _nss_libvirt_guest_gethostbyname2_r;
+    _nss_libvirt_guest_gethostbyname3_r;
+    _nss_libvirt_guest_gethostbyname4_r;
+local: *;
+};

@@ -436,18 +436,26 @@ endif WITH_WIRESHARK_DISSECTOR
 if WITH_BSD_NSS
 LIBVIRT_NSS_SYMBOL_FILE = \
 	$(srcdir)/nss/libvirt_nss_bsd.syms
+LIBVIRT_GUEST_NSS_SYMBOL_FILE = \
+	$(LIBVIRT_NSS_SYMBOL_FILE)
 NSS_SO_VER = 1
 
 install-nss:
 	( cd $(DESTDIR)$(libdir) && \
 	  rm -f nss_libvirt.so.$(NSS_SO_VER) && \
-	  $(LN_S) libnss_libvirt.so.$(NSS_SO_VER) nss_libvirt.so.$(NSS_SO_VER) )
+	  $(LN_S) libnss_libvirt.so.$(NSS_SO_VER) nss_libvirt.so.$(NSS_SO_VER) && \
+	  rm -f nss_libvirt_guest.so.$(NSS_SO_VER) && \
+	  $(LN_S) libnss_libvirt_guest.so.$(NSS_SO_VER) \
+	  nss_libvirt_guest.so.$(NSS_SO_VER))
 
 uninstall-nss:
 	-rm -f $(DESTDIR)$(libdir)/nss_libvirt.so.$(NSS_SO_VER)
+	-rm -f $(DESTDIR)$(libdir)/nss_libvirt_guest.so.$(NSS_SO_VER)
 else ! WITH_BSD_NSS
 LIBVIRT_NSS_SYMBOL_FILE = \
 	$(srcdir)/nss/libvirt_nss.syms
+LIBVIRT_GUEST_NSS_SYMBOL_FILE = \
+	$(srcdir)/nss/libvirt_guest_nss.syms
 NSS_SO_VER = 2
 
 install-nss:
@@ -488,14 +496,46 @@ nss_libnss_libvirt_la_LDFLAGS = \
 nss_libnss_libvirt_la_LIBADD =  \
 	nss/libnss_libvirt_impl.la
 
+noinst_LTLIBRARIES += nss/libnss_libvirt_guest_impl.la
+nss_libnss_libvirt_guest_impl_la_SOURCES = \
+	$(LIBVIRT_NSS_SOURCES)
+
+nss_libnss_libvirt_guest_impl_la_CFLAGS = \
+	-DLIBVIRT_NSS		\
+	-DLIBVIRT_NSS_GUEST	\
+	$(AM_CFLAGS)		\
+	$(WARN_CFLAGS)		\
+	$(PIE_CFLAGS)		\
+	$(COVERAGE_CFLAGS)	\
+	$(LIBXML_CFLAGS)
+
+nss_libnss_libvirt_guest_impl_la_LIBADD = \
+	../gnulib/lib/libgnu.la		\
+	../src/libvirt-nss.la
+
+nss_libnss_libvirt_guest_la_SOURCES =
+nss_libnss_libvirt_guest_la_LDFLAGS = \
+	$(VERSION_SCRIPT_FLAGS)$(LIBVIRT_GUEST_NSS_SYMBOL_FILE)	\
+	$(AM_LDFLAGS) \
+	-module \
+	-export-dynamic \
+	-avoid-version \
+	-shared \
+	-shrext .so.$(NSS_SO_VER)
+
+nss_libnss_libvirt_guest_la_LIBADD =  \
+	nss/libnss_libvirt_guest_impl.la
+
 lib_LTLIBRARIES = \
-	nss/libnss_libvirt.la
+	nss/libnss_libvirt.la \
+	nss/libnss_libvirt_guest.la
 
 endif WITH_NSS
 
 EXTRA_DIST += $(LIBVIRT_NSS_SOURCES) \
 	$(srcdir)/nss/libvirt_nss.syms \
-	$(srcdir)/nss/libvirt_nss_bsd.syms
+	$(srcdir)/nss/libvirt_nss_bsd.syms	\
+	$(srcdir)/nss/libvirt_guest_nss.syms
 
 clean-local:
 	-rm -rf wireshark/src/libvirt

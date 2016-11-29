@@ -3033,6 +3033,10 @@ libvirt_nss_la_SOURCES =		\
 		util/virerror.h			\
 		util/virfile.c			\
 		util/virfile.h			\
+		util/virhash.c			\
+		util/virhash.h			\
+		util/virhashcode.c		\
+		util/virhashcode.h		\
 		util/virjson.c			\
 		util/virjson.h			\
 		util/virkmod.c			\
@@ -3041,12 +3045,16 @@ libvirt_nss_la_SOURCES =		\
 		util/virlease.h			\
 		util/virlog.c			\
 		util/virlog.h			\
+		util/virmacmap.c		\
+		util/virmacmap.h		\
 		util/virobject.c		\
 		util/virobject.h		\
 		util/virpidfile.c		\
 		util/virpidfile.h		\
 		util/virprocess.c		\
 		util/virprocess.h		\
+		util/virrandom.c		\
+		util/virrandom.h		\
 		util/virsocketaddr.c	\
 		util/virsocketaddr.h	\
 		util/virstring.c		\

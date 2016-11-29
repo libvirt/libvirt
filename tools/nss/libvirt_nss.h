@@ -32,7 +32,11 @@
 # include <nss.h>
 # include <netdb.h>
 
-# define NSS_NAME(s) _nss_libvirt_##s##_r
+# if !defined(LIBVIRT_NSS_GUEST)
+#  define NSS_NAME(s) _nss_libvirt_##s##_r
+# else
+#  define NSS_NAME(s) _nss_libvirt_guest_##s##_r
+# endif
 
 enum nss_status
 NSS_NAME(gethostbyname)(const char *name, struct hostent *result,

@@ -47,6 +47,8 @@
 #include "virstring.h"
 #include "virsocketaddr.h"
 #include "configmake.h"
+#include "virmacmap.h"
+#include "virobject.h"
 
 #if 0
 # define ERROR(...)                                             \
@@ -147,6 +149,7 @@ findLeaseInJSON(leaseAddress **tmpAddress,
                 virJSONValuePtr leases_array,
                 size_t nleases,
                 const char *name,
+                const char **macs,
                 int af,
                 bool *found)
 {
@@ -162,7 +165,6 @@ findLeaseInJSON(leaseAddress **tmpAddress,
 
     for (i = 0; i < nleases; i++) {
         virJSONValuePtr lease = virJSONValueArrayGet(leases_array, i);
-        const char *lease_name;
 
         if (!lease) {
             /* This should never happen (TM) */
@@ -170,10 +172,23 @@ findLeaseInJSON(leaseAddress **tmpAddress,
             goto cleanup;
         }
 
-        lease_name = virJSONValueObjectGetString(lease, "hostname");
+        if (macs) {
+            const char *macAddr;
 
-        if (STRNEQ_NULLABLE(name, lease_name))
-            continue;
+            macAddr = virJSONValueObjectGetString(lease, "mac-address");
+            if (!macAddr)
+                continue;
+
+            if (!virStringListHasString(macs, macAddr))
+                continue;
+        } else {
+            const char *lease_name;
+
+            lease_name = virJSONValueObjectGetString(lease, "hostname");
+
+            if (STRNEQ_NULLABLE(name, lease_name))
+                continue;
+        }
 
         if (virJSONValueObjectGetNumberLong(lease, "expiry-time", &expirytime) < 0) {
             /* A lease cannot be present without expiry-time */
@@ -236,6 +251,8 @@ findLease(const char *name,
     ssize_t nleases;
     leaseAddress *tmpAddress = NULL;
     size_t ntmpAddress = 0;
+    virMacMapPtr *macmaps = NULL;
+    size_t nMacmaps = 0;
 
     *address = NULL;
     *naddress = 0;
@@ -245,7 +262,6 @@ findLease(const char *name,
         errno = EAFNOSUPPORT;
         goto cleanup;
     }
-
 
     if (virDirOpenQuiet(&dir, leaseDir) < 0) {
         ERROR("Failed to open dir '%s'", leaseDir);
@@ -261,32 +277,63 @@ findLease(const char *name,
     while ((ret = virDirRead(dir, &entry, leaseDir)) > 0) {
         char *path;
 
-        if (!virFileHasSuffix(entry->d_name, ".status"))
-            continue;
+        if (virFileHasSuffix(entry->d_name, ".status")) {
+            if (!(path = virFileBuildPath(leaseDir, entry->d_name, NULL)))
+                goto cleanup;
 
-        if (!(path = virFileBuildPath(leaseDir, entry->d_name, NULL)))
-            goto cleanup;
-
-        DEBUG("Processing %s", path);
-
-        if (virLeaseReadCustomLeaseFile(leases_array, path, NULL, NULL) < 0) {
-            ERROR("Unable to parse %s", path);
+            DEBUG("Processing %s", path);
+            if (virLeaseReadCustomLeaseFile(leases_array, path, NULL, NULL) < 0) {
+                ERROR("Unable to parse %s", path);
+                VIR_FREE(path);
+                goto cleanup;
+            }
             VIR_FREE(path);
-            goto cleanup;
+        } else if (virFileHasSuffix(entry->d_name, ".macs")) {
+            if (!(path = virFileBuildPath(leaseDir, entry->d_name, NULL)))
+                goto cleanup;
+
+            if (VIR_REALLOC_N_QUIET(macmaps, nMacmaps + 1) < 0) {
+                VIR_FREE(path);
+                goto cleanup;
+            }
+
+            DEBUG("Processing %s", path);
+            if (!(macmaps[nMacmaps] = virMacMapNew(path))) {
+                ERROR("Unable to parse %s", path);
+                VIR_FREE(path);
+                goto cleanup;
+            }
+            nMacmaps++;
+            VIR_FREE(path);
         }
-
-        VIR_FREE(path);
     }
-
     VIR_DIR_CLOSE(dir);
 
     nleases = virJSONValueArraySize(leases_array);
     DEBUG("Read %zd leases", nleases);
 
+#if !defined(LIBVIRT_NSS_GUEST)
     if (findLeaseInJSON(&tmpAddress, &ntmpAddress,
                         leases_array, nleases,
-                        name, af, found) < 0)
+                        name, NULL, af, found) < 0)
         goto cleanup;
+
+#else /* defined(LIBVIRT_NSS_GUEST) */
+
+    size_t i;
+    for (i = 0; i < nMacmaps; i++) {
+        const char **macs = (const char **) virMacMapLookup(macmaps[i], name);
+
+        if (!macs)
+            continue;
+
+        if (findLeaseInJSON(&tmpAddress, &ntmpAddress,
+                            leases_array, nleases,
+                            name, macs, af, found) < 0)
+            goto cleanup;
+    }
+
+#endif /* defined(LIBVIRT_NSS_GUEST) */
 
     *address = tmpAddress;
     *naddress = ntmpAddress;
@@ -300,6 +347,9 @@ findLease(const char *name,
     VIR_FREE(tmpAddress);
     virJSONValueFree(leases_array);
     VIR_DIR_CLOSE(dir);
+    while (nMacmaps)
+        virObjectUnref(macmaps[--nMacmaps]);
+    VIR_FREE(macmaps);
     return ret;
 }
 
