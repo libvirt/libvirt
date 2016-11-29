@@ -91,7 +91,7 @@ open(const char *path, int flags, ...)
         ret = real_open(newpath ? newpath : path, flags);
     }
 
-    VIR_FREE(newpath);
+    free(newpath);
     return ret;
 }
 
@@ -109,7 +109,7 @@ opendir(const char *path)
 
     ret = real_opendir(newpath ? newpath : path);
 
-    VIR_FREE(newpath);
+    free(newpath);
     return ret;
 }
 #else
