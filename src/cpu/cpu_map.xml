@@ -97,10 +97,10 @@
     </feature>
 
     <!-- standard features, ECX -->
-    <feature name='pni'>
+    <feature name='pni'> <!-- sse3 -->
       <cpuid eax_in='0x01' ecx='0x00000001'/>
     </feature>
-    <feature name='pclmuldq'>
+    <feature name='pclmuldq'> <!-- pclmulqdq -->
       <cpuid eax_in='0x01' ecx='0x00000002'/>
     </feature>
     <feature name='dtes64'>
@@ -109,7 +109,7 @@
     <feature name='monitor'>
       <cpuid eax_in='0x01' ecx='0x00000008'/>
     </feature>
-    <feature name='ds_cpl'>
+    <feature name='ds_cpl'> <!-- ds-cpl -->
       <cpuid eax_in='0x01' ecx='0x00000010'/>
     </feature>
     <feature name='vmx'>
@@ -148,10 +148,10 @@
     <feature name='dca'>
       <cpuid eax_in='0x01' ecx='0x00040000'/>
     </feature>
-    <feature name='sse4.1'>
+    <feature name='sse4.1'> <!-- sse4-1, sse4_1 -->
       <cpuid eax_in='0x01' ecx='0x00080000'/>
     </feature>
-    <feature name='sse4.2'>
+    <feature name='sse4.2'> <!-- sse4-2, sse4_2 -->
       <cpuid eax_in='0x01' ecx='0x00100000'/>
     </feature>
     <feature name='x2apic'>
@@ -197,7 +197,7 @@
     <feature name='fsgsbase'>
       <cpuid eax_in='0x07' ebx='0x00000001'/>
     </feature>
-    <feature name='tsc_adjust'>
+    <feature name='tsc_adjust'> <!-- tsc-adjust -->
       <cpuid eax_in='0x07' ebx='0x00000002'/>
     </feature>
     <feature name='bmi1'>
@@ -281,13 +281,13 @@
     <feature name='syscall'>
       <cpuid eax_in='0x80000001' edx='0x00000800'/>
     </feature>
-    <feature name='nx'>
+    <feature name='nx'> <!-- xd -->
       <cpuid eax_in='0x80000001' edx='0x00100000'/>
     </feature>
     <feature name='mmxext'>
       <cpuid eax_in='0x80000001' edx='0x00400000'/>
     </feature>
-    <feature name='fxsr_opt'>
+    <feature name='fxsr_opt'> <!-- ffxsr, fxsr-opt -->
       <cpuid eax_in='0x80000001' edx='0x02000000'/>
     </feature>
     <feature name='pdpe1gb'>
@@ -296,7 +296,7 @@
     <feature name='rdtscp'>
       <cpuid eax_in='0x80000001' edx='0x08000000'/>
     </feature>
-    <feature name='lm'>
+    <feature name='lm'> <!-- i64 -->
       <cpuid eax_in='0x80000001' edx='0x20000000'/>
     </feature>
     <feature name='3dnowext'>
@@ -307,10 +307,10 @@
     </feature>
 
     <!-- extended features, ECX -->
-    <feature name='lahf_lm'>
+    <feature name='lahf_lm'> <!-- lahf-lm -->
       <cpuid eax_in='0x80000001' ecx='0x00000001'/>
     </feature>
-    <feature name='cmp_legacy'>
+    <feature name='cmp_legacy'> <!-- cmp-legacy -->
       <cpuid eax_in='0x80000001' ecx='0x00000002'/>
     </feature>
     <feature name='svm'>
@@ -361,7 +361,7 @@
     <feature name='cvt16'>
       <cpuid eax_in='0x80000001' ecx='0x00040000'/>
     </feature>
-    <feature name='nodeid_msr'>
+    <feature name='nodeid_msr'> <!-- nodeid-msr -->
       <cpuid eax_in='0x80000001' ecx='0x00080000'/>
     </feature>
     <feature name='tbm'>
@@ -370,10 +370,10 @@
     <feature name='topoext'>
       <cpuid eax_in='0x80000001' ecx='0x00400000'/>
     </feature>
-    <feature name='perfctr_core'>
+    <feature name='perfctr_core'> <!-- perfctr-core -->
       <cpuid eax_in='0x80000001' ecx='0x00800000'/>
     </feature>
-    <feature name='perfctr_nb'>
+    <feature name='perfctr_nb'> <!-- perfctr-nb -->
       <cpuid eax_in='0x80000001' ecx='0x01000000'/>
     </feature>
 
