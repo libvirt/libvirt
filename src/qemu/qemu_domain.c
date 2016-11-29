@@ -1475,7 +1475,7 @@ qemuDomainSetPrivatePaths(virQEMUDriverPtr driver,
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *domname = virDomainObjGetShortName(vm);
+    char *domname = virDomainObjGetShortName(vm->def);
     int ret = -1;
 
     if (!domname)

@@ -25701,13 +25701,13 @@ virDomainDefHasMemballoon(const virDomainDef *def)
  * Shorten domain name to avoid possible path length limitations.
  */
 char *
-virDomainObjGetShortName(virDomainObjPtr vm)
+virDomainObjGetShortName(const virDomainDef *def)
 {
     const int dommaxlen = 20;
     char *ret = NULL;
 
     ignore_value(virAsprintf(&ret, "%d-%.*s",
-                             vm->def->id, dommaxlen, vm->def->name));
+                             def->id, dommaxlen, def->name));
 
     return ret;
 }
