@@ -49,15 +49,7 @@
 #include "virutil.h"
 
 /* This one changes from version to version. */
-#if VBOX_API_VERSION == 2002000
-# include "vbox_CAPI_v2_2.h"
-#elif VBOX_API_VERSION == 3000000
-# include "vbox_CAPI_v3_0.h"
-#elif VBOX_API_VERSION == 3001000
-# include "vbox_CAPI_v3_1.h"
-#elif VBOX_API_VERSION == 3002000
-# include "vbox_CAPI_v3_2.h"
-#elif VBOX_API_VERSION == 4000000
+#if VBOX_API_VERSION == 4000000
 # include "vbox_CAPI_v4_0.h"
 #elif VBOX_API_VERSION == 4001000
 # include "vbox_CAPI_v4_1.h"
