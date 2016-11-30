@@ -1037,6 +1037,19 @@ qemuMonitorTestNew(bool json,
 }
 
 
+/**
+ * qemuMonitorTestNewFromFile:
+ * @fileName: File name to load monitor replies from
+ * @xmlopt: XML parser configuration object
+ * @simple: see below
+ *
+ * Create a JSON test monitor simulator object and fill it with replies
+ * specified in @fileName. The file contains JSON reply objects separated by
+ * empty lines. If @simple is true a generic QMP greeting is automatically
+ * added as the first reply, otherwise the first entry in the file is used.
+ *
+ * Returns the monitor object on success; NULL on error.
+ */
 qemuMonitorTestPtr
 qemuMonitorTestNewFromFile(const char *fileName,
                            virDomainXMLOptionPtr xmlopt,
