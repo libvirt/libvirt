@@ -975,6 +975,14 @@ mymain(void)
     DO_TEST_PARSE_ERROR("disk-same-targets",
                         QEMU_CAPS_SCSI_LSI,
                         QEMU_CAPS_DEVICE_USB_STORAGE, QEMU_CAPS_NODEFCONFIG);
+    DO_TEST_PARSE_ERROR("disk-drive-address-conflict",
+                        QEMU_CAPS_ICH9_AHCI);
+    DO_TEST_PARSE_ERROR("disk-hostdev-scsi-address-conflict",
+                        QEMU_CAPS_VIRTIO_SCSI,
+                        QEMU_CAPS_DEVICE_SCSI_GENERIC);
+    DO_TEST_PARSE_ERROR("hostdevs-drive-address-conflict",
+                        QEMU_CAPS_VIRTIO_SCSI,
+                        QEMU_CAPS_DEVICE_SCSI_GENERIC);
     DO_TEST("event_idx",
             QEMU_CAPS_VIRTIO_BLK_EVENT_IDX,
             QEMU_CAPS_VIRTIO_NET_EVENT_IDX,
