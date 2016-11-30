@@ -85,6 +85,9 @@ qemuMonitorTestPtr qemuMonitorTestNew(bool json,
 qemuMonitorTestPtr qemuMonitorTestNewFromFile(const char *fileName,
                                               virDomainXMLOptionPtr xmlopt,
                                               bool simple);
+qemuMonitorTestPtr qemuMonitorTestNewFromFileFull(const char *fileName,
+                                                  virQEMUDriverPtr driver,
+                                                  virDomainObjPtr vm);
 
 qemuMonitorTestPtr qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt);
 

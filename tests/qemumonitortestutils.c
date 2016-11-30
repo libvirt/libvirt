@@ -1278,6 +1278,123 @@ qemuMonitorTestNewFromFile(const char *fileName,
 }
 
 
+static int
+qemuMonitorTestFullAddItem(qemuMonitorTestPtr test,
+                           const char *filename,
+                           const char *command,
+                           const char *response,
+                           size_t line)
+{
+    char *cmderr;
+    int ret;
+
+    if (virAsprintf(&cmderr, "wrong expected command in %s:%zu: ",
+                    filename, line) < 0)
+        return -1;
+
+    ret = qemuMonitorTestAddItemVerbatim(test, command, cmderr, response);
+
+    VIR_FREE(cmderr);
+    return ret;
+}
+
+
+/**
+ * qemuMonitorTestNewFromFileFull:
+ * @fileName: File name to load monitor replies from
+ * @driver: qemu driver object
+ * @vm: domain object (may be null if it's not needed by the test)
+ *
+ * Create a JSON test monitor simulator object and fill it with expected command
+ * sequence and replies specified in @fileName.
+ *
+ * The file contains a sequence of JSON commands and reply objects separated by
+ * empty lines. A command is followed by a reply. The QMP greeting is added
+ * automatically.
+ *
+ * Returns the monitor object on success; NULL on error.
+ */
+qemuMonitorTestPtr
+qemuMonitorTestNewFromFileFull(const char *fileName,
+                               virQEMUDriverPtr driver,
+                               virDomainObjPtr vm)
+{
+    qemuMonitorTestPtr ret = NULL;
+    char *jsonstr = NULL;
+    char *tmp;
+    size_t line = 0;
+
+    char *command = NULL;
+    char *response = NULL;
+    size_t commandln = 0;
+
+    if (virTestLoadFile(fileName, &jsonstr) < 0)
+        return NULL;
+
+    if (!(ret = qemuMonitorTestNew(true, driver->xmlopt, vm, driver, NULL)))
+        goto cleanup;
+
+    tmp = jsonstr;
+    command = tmp;
+    while ((tmp = strchr(tmp, '\n'))) {
+        bool eof = !tmp[1];
+        line++;
+
+        if (*(tmp + 1) != '\n') {
+            *tmp = ' ';
+            tmp++;
+        } else {
+            /* Cut off a single reply. */
+            *(tmp + 1) = '\0';
+
+            if (response) {
+                if (qemuMonitorTestFullAddItem(ret, fileName, command,
+                                               response, commandln) < 0)
+                    goto error;
+                command = NULL;
+                response = NULL;
+            }
+
+            if (!eof) {
+                /* Move the @tmp and @singleReply. */
+                tmp += 2;
+
+                if (!command) {
+                    commandln = line;
+                    command = tmp;
+                } else {
+                    response = tmp;
+                }
+            }
+        }
+
+        if (eof)
+            break;
+    }
+
+    if (command) {
+        if (!response) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "missing response for command "
+                           "on line '%zu' in '%s'", commandln, fileName);
+            goto error;
+        }
+
+        if (qemuMonitorTestFullAddItem(ret, fileName, command,
+                                       response, commandln) < 0)
+            goto error;
+    }
+
+ cleanup:
+    VIR_FREE(jsonstr);
+    return ret;
+
+ error:
+    qemuMonitorTestFree(ret);
+    ret = NULL;
+    goto cleanup;
+}
+
+
 qemuMonitorTestPtr
 qemuMonitorTestNewAgent(virDomainXMLOptionPtr xmlopt)
 {
