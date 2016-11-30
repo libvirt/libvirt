@@ -402,7 +402,7 @@ LIBVIRT_DRIVER_ARG_XEN
 LIBVIRT_DRIVER_ARG_QEMU
 LIBVIRT_DRIVER_ARG_OPENVZ
 LIBVIRT_DRIVER_ARG_VMWARE
-LIBVIRT_ARG_WITH([PHYP], [PHYP], [check])
+LIBVIRT_DRIVER_ARG_PHYP
 LIBVIRT_DRIVER_ARG_XENAPI
 LIBVIRT_DRIVER_ARG_LIBXL
 LIBVIRT_ARG_WITH([VBOX], [VirtualBox XPCOMC], [yes])
@@ -634,23 +634,7 @@ dnl
 dnl check for PHYP
 dnl
 
-if test "$with_phyp" != "no"; then
-  if test "$with_ssh2" = "no" ; then
-    if test "$with_phyp" = "check"; then
-      with_phyp=no
-    else
-      AC_MSG_ERROR([libssh2 is required for Phyp driver])
-    fi
-  else
-    with_phyp=yes
-  fi
-fi
-
-if test "$with_phyp" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_PHYP], 1, [whether IBM HMC / IVM driver is enabled])
-fi
-
-AM_CONDITIONAL([WITH_PHYP],[test "$with_phyp" = "yes"])
+LIBVIRT_DRIVER_CHECK_PHYP
 
 dnl check if the network driver should be compiled
 
@@ -1384,7 +1368,7 @@ AC_MSG_NOTICE([     VBox: $with_vbox])
 LIBVIRT_DRIVER_RESULT_XENAPI
 LIBVIRT_DRIVER_RESULT_LIBXL
 LIBVIRT_DRIVER_RESULT_LXC
-AC_MSG_NOTICE([     PHYP: $with_phyp])
+LIBVIRT_DRIVER_RESULT_PHYP
 AC_MSG_NOTICE([      ESX: $with_esx])
 AC_MSG_NOTICE([  Hyper-V: $with_hyperv])
 LIBVIRT_DRIVER_RESULT_VZ
