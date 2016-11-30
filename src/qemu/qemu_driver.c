@@ -11800,7 +11800,11 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
 
         info->allocation = entry->physical;
     } else {
-        info->allocation = entry->wr_highest_offset;
+        if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_FILE &&
+            disk->src->format == VIR_STORAGE_FILE_QCOW2)
+            info->allocation = entry->physical;
+        else
+            info->allocation = entry->wr_highest_offset;
     }
 
     if (entry->physical) {
