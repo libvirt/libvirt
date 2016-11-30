@@ -959,25 +959,8 @@ if test "$with_apparmor" = "no"; then
 fi
 AM_CONDITIONAL([WITH_APPARMOR_PROFILES], [test "$with_apparmor_profiles" != "no"])
 
-dnl DTrace static probes
-LIBVIRT_ARG_WITH_ALT([DTRACE], [use dtrace for static probing], [check])
-
-if test "$with_dtrace" != "no" ; then
-  AC_PATH_PROG([DTRACE], [dtrace], [], [$LIBVIRT_SBIN_PATH])
-  if test -z "$DTRACE" ; then
-    if test "$with_dtrace" = "check"; then
-      with_dtrace=no
-    else
-      AC_MSG_ERROR([You must install the 'dtrace' binary to enable libvirt static probes])
-    fi
-  else
-    with_dtrace=yes
-  fi
-  if test "$with_dtrace" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_DTRACE_PROBES], 1, [whether DTrace static probes are available])
-  fi
-fi
-AM_CONDITIONAL([WITH_DTRACE_PROBES], [test "$with_dtrace" != "no"])
+LIBVIRT_ARG_DTRACE
+LIBVIRT_CHECK_DTRACE
 
 
 dnl numad
@@ -1932,7 +1915,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([             Debug: $enable_debug])
 AC_MSG_NOTICE([       Use -Werror: $enable_werror])
 AC_MSG_NOTICE([     Warning Flags: $WARN_CFLAGS])
-AC_MSG_NOTICE([            DTrace: $with_dtrace])
+LIBVIRT_RESULT_DTRACE
 AC_MSG_NOTICE([             numad: $with_numad])
 AC_MSG_NOTICE([       XML Catalog: $with_xml_catalog_file])
 LIBVIRT_RESULT_INIT_SCRIPT
