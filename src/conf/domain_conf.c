@@ -4019,7 +4019,7 @@ virDomainDefPostParseGraphics(virDomainDef *def)
 /**
  * virDomainDriveAddressIsUsedByDisk:
  * @def: domain definition containing the disks to check
- * @type: bus type
+ * @bus_type: bus type
  * @addr: address to check for duplicates
  *
  * Return true if any disk is already using the given address on the
@@ -4027,7 +4027,7 @@ virDomainDefPostParseGraphics(virDomainDef *def)
  */
 static bool
 virDomainDriveAddressIsUsedByDisk(const virDomainDef *def,
-                                  virDomainDiskBus type,
+                                  virDomainDiskBus bus_type,
                                   const virDomainDeviceDriveAddress *addr)
 {
     virDomainDiskDefPtr disk;
@@ -4036,7 +4036,7 @@ virDomainDriveAddressIsUsedByDisk(const virDomainDef *def,
     for (i = 0; i < def->ndisks; i++) {
         disk = def->disks[i];
 
-        if (disk->bus != type ||
+        if (disk->bus != bus_type ||
             disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
             continue;
 
