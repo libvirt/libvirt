@@ -181,4 +181,6 @@ int virJSONValueObjectForeachKeyValue(virJSONValuePtr object,
 
 virJSONValuePtr virJSONValueCopy(const virJSONValue *in);
 
+char *virJSONStringReformat(const char *jsonstr, bool pretty);
+
 #endif /* __VIR_JSON_H_ */
