@@ -607,26 +607,8 @@ LIBVIRT_DRIVER_CHECK_PHYP
 
 dnl check if the network driver should be compiled
 
-LIBVIRT_ARG_WITH_ALT([NETWORK], [with virtual network driver], [yes])
-
-dnl there's no use compiling the network driver without the libvirt
-dnl daemon, nor compiling it for MacOS X, where it breaks the compile
-
-if test "$with_libvirtd" = "no" || test "$with_osx" = "yes"; then
-  with_network=no
-fi
-
-if test "$with_network" = "yes" ; then
-  AC_DEFINE_UNQUOTED([WITH_NETWORK], 1, [whether network driver is enabled])
-fi
-AM_CONDITIONAL([WITH_NETWORK], [test "$with_network" = "yes"])
-
-with_bridge=no
-if test "$with_qemu:$with_lxc:$with_network" != "no:no:no"; then
-    with_bridge=yes
-    AC_DEFINE_UNQUOTED([WITH_BRIDGE], 1, [whether bridge code is needed])
-fi
-AM_CONDITIONAL([WITH_BRIDGE], [test "$with_bridge" = "yes"])
+LIBVIRT_DRIVER_ARG_NETWORK
+LIBVIRT_DRIVER_CHECK_NETWORK
 
 
 LIBVIRT_ARG_WITH([SECRETS], [local secrets management driver], [yes])
@@ -1300,7 +1282,7 @@ LIBVIRT_DRIVER_RESULT_VZ
 LIBVIRT_DRIVER_RESULT_BHYVE
 LIBVIRT_DRIVER_RESULT_TEST
 LIBVIRT_DRIVER_RESULT_REMOTE
-AC_MSG_NOTICE([  Network: $with_network])
+LIBVIRT_DRIVER_RESULT_NETWORK
 LIBVIRT_DRIVER_RESULT_LIBVIRTD
 AC_MSG_NOTICE([Interface: $with_interface])
 AC_MSG_NOTICE([])
