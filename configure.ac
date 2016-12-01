@@ -407,7 +407,7 @@ LIBVIRT_DRIVER_ARG_XENAPI
 LIBVIRT_DRIVER_ARG_LIBXL
 LIBVIRT_DRIVER_ARG_VBOX
 LIBVIRT_DRIVER_ARG_LXC
-LIBVIRT_ARG_WITH([ESX], [ESX], [check])
+LIBVIRT_DRIVER_ARG_ESX
 LIBVIRT_ARG_WITH([HYPERV], [Hyper-V], [check])
 LIBVIRT_DRIVER_ARG_TEST
 LIBVIRT_DRIVER_ARG_REMOTE
@@ -973,32 +973,7 @@ dnl
 dnl check for (ESX)
 dnl
 
-if test "$with_curl" != "yes" ; then
-  if test "$with_esx" != "yes"; then
-    with_esx=no
-  else
-    AC_MSG_ERROR([Curl is required for the ESX driver])
-  fi
-else
-  if test "$with_esx" = "check"; then
-    with_esx=yes
-  fi
-fi
-
-if test "$with_esx" = "yes" ; then
-    AC_DEFINE_UNQUOTED([WITH_ESX], 1, [whether ESX driver is enabled])
-fi
-AM_CONDITIONAL([WITH_ESX], [test "$with_esx" = "yes"])
-
-with_vmx=yes
-if test "$with_esx" != "yes" && test "$with_vmware" != "yes"; then
-  with_vmx=no
-fi
-if test "$with_vmx" = "yes" ; then
-  AC_DEFINE_UNQUOTED([WITH_VMX], 1, [whether VMware VMX config handling is enabled])
-fi
-AM_CONDITIONAL([WITH_VMX], [test "$with_vmx" = "yes"])
-
+LIBVIRT_DRIVER_CHECK_ESX
 
 dnl
 dnl check for Hyper-V
@@ -1343,7 +1318,7 @@ LIBVIRT_DRIVER_RESULT_XENAPI
 LIBVIRT_DRIVER_RESULT_LIBXL
 LIBVIRT_DRIVER_RESULT_LXC
 LIBVIRT_DRIVER_RESULT_PHYP
-AC_MSG_NOTICE([      ESX: $with_esx])
+LIBVIRT_DRIVER_RESULT_ESX
 AC_MSG_NOTICE([  Hyper-V: $with_hyperv])
 LIBVIRT_DRIVER_RESULT_VZ
 LIBVIRT_DRIVER_RESULT_BHYVE
