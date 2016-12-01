@@ -538,29 +538,10 @@ PKG_PROG_PKG_CONFIG
 
 dnl Security driver checks
 LIBVIRT_SECDRIVER_ARG_SELINUX
+LIBVIRT_SECDRIVER_ARG_APPARMOR
+
 LIBVIRT_SECDRIVER_CHECK_SELINUX
-
-
-LIBVIRT_ARG_WITH_ALT([SECDRIVER_APPARMOR], [use AppArmor security driver], [check])
-
-if test "$with_apparmor" != "yes" ; then
-  if test "$with_secdriver_apparmor" = "check" ; then
-    with_secdriver_apparmor=no
-  fi
-  if test "$with_secdriver_apparmor" != "no" ; then
-    AC_MSG_ERROR([You must install the AppArmor development package in order to compile libvirt])
-  fi
-elif test "with_secdriver_apparmor" != "no" ; then
-  with_secdriver_apparmor=yes
-  AC_DEFINE_UNQUOTED([WITH_SECDRIVER_APPARMOR], 1, [whether AppArmor security driver is available])
-fi
-AM_CONDITIONAL([WITH_SECDRIVER_APPARMOR], [test "$with_secdriver_apparmor" != "no"])
-
-LIBVIRT_ARG_WITH_ALT([APPARMOR_PROFILES], [install apparmor profiles], [no])
-if test "$with_apparmor" = "no"; then
-  with_apparmor_profiles="no"
-fi
-AM_CONDITIONAL([WITH_APPARMOR_PROFILES], [test "$with_apparmor_profiles" != "no"])
+LIBVIRT_SECDRIVER_CHECK_APPARMOR
 
 
 LIBVIRT_ARG_WITH([SECRETS], [local secrets management driver], [yes])
@@ -1222,7 +1203,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
 AC_MSG_NOTICE([])
 LIBVIRT_SECDRIVER_RESULT_SELINUX
-AC_MSG_NOTICE([AppArmor: $with_secdriver_apparmor (install profiles: $with_apparmor_profiles)])
+LIBVIRT_SECDRIVER_RESULT_APPARMOR
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Driver Loadable Modules])
 AC_MSG_NOTICE([])
