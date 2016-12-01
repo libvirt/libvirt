@@ -409,7 +409,7 @@ LIBVIRT_ARG_WITH([VBOX], [VirtualBox XPCOMC], [yes])
 LIBVIRT_DRIVER_ARG_LXC
 LIBVIRT_ARG_WITH([ESX], [ESX], [check])
 LIBVIRT_ARG_WITH([HYPERV], [Hyper-V], [check])
-LIBVIRT_ARG_WITH([TEST], [test driver], [yes])
+LIBVIRT_DRIVER_ARG_TEST
 LIBVIRT_ARG_WITH([REMOTE], [remote driver], [yes])
 LIBVIRT_ARG_WITH([LIBVIRTD], [libvirtd], [yes])
 
@@ -476,11 +476,7 @@ fi
 AM_CONDITIONAL([WITH_VBOX], [test "$with_vbox" = "yes"])
 
 LIBVIRT_DRIVER_CHECK_QEMU
-
-if test "$with_test" = "yes" ; then
-    AC_DEFINE_UNQUOTED([WITH_TEST], 1, [whether Test driver is enabled])
-fi
-AM_CONDITIONAL([WITH_TEST], [test "$with_test" = "yes"])
+LIBVIRT_DRIVER_CHECK_TEST
 
 if test "$with_remote" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_REMOTE], 1, [whether Remote driver is enabled])
@@ -1373,7 +1369,7 @@ AC_MSG_NOTICE([      ESX: $with_esx])
 AC_MSG_NOTICE([  Hyper-V: $with_hyperv])
 LIBVIRT_DRIVER_RESULT_VZ
 LIBVIRT_DRIVER_RESULT_BHYVE
-AC_MSG_NOTICE([     Test: $with_test])
+LIBVIRT_DRIVER_RESULT_TEST
 AC_MSG_NOTICE([   Remote: $with_remote])
 AC_MSG_NOTICE([  Network: $with_network])
 AC_MSG_NOTICE([ Libvirtd: $with_libvirtd])
