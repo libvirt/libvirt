@@ -11610,6 +11610,14 @@ qemuDomainStorageCloseStat(virStorageSourcePtr src,
 }
 
 
+static int
+qemuDomainStorageUpdatePhysical(virStorageSourcePtr src,
+                                bool report)
+{
+    return virStorageSourceUpdateBlockPhysicalSize(src, report);
+}
+
+
 /**
  * @driver: qemu driver data
  * @cfg: driver configuration data
@@ -11833,7 +11841,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     if (entry->physical) {
         info->physical = entry->physical;
     } else {
-        if (virStorageSourceUpdateBlockPhysicalSize(disk->src, true) < 0)
+        if (qemuDomainStorageUpdatePhysical(disk->src, true) < 0)
             goto endjob;
 
         info->physical = disk->src->physical;
@@ -19437,7 +19445,7 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
         QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
                                  "physical", entry->physical);
     } else {
-        if (virStorageSourceUpdateBlockPhysicalSize(src, false) == 0) {
+        if (qemuDomainStorageUpdatePhysical(src, false) == 0) {
             QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
                                      "physical", src->physical);
         }
