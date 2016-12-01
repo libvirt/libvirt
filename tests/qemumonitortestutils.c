@@ -118,17 +118,89 @@ qemuMonitorTestAddResponse(qemuMonitorTestPtr test,
 }
 
 
-int
-qemuMonitorTestAddUnexpectedErrorResponse(qemuMonitorTestPtr test)
+static int
+qemuMonitorTestAddErrorResponse(qemuMonitorTestPtr test,
+                                const char *usermsg)
 {
-    if (test->agent || test->json) {
-        return qemuMonitorTestAddResponse(test,
-                                          "{ \"error\": "
-                                          " { \"desc\": \"Unexpected command\", "
-                                          "   \"class\": \"UnexpectedCommand\" } }");
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *escapemsg = NULL;
+    char *jsonmsg = NULL;
+    const char *monmsg = NULL;
+    char *tmp;
+    int ret = -1;
+
+    if (!usermsg)
+        usermsg = "unexpected command";
+
+    if (test->json || test->agent) {
+        virBufferEscape(&buf, '\\', "\"", "%s", usermsg);
+        if (virBufferCheckError(&buf) < 0)
+            goto error;
+        escapemsg = virBufferContentAndReset(&buf);
+
+        /* replace newline/carriage return with space */
+        tmp = escapemsg;
+        while (*tmp) {
+            if (*tmp == '\r' || *tmp == '\n')
+                *tmp = ' ';
+
+            tmp++;
+        }
+
+        /* format the JSON error message */
+        if (virAsprintf(&jsonmsg, "{ \"error\": "
+                                  " { \"desc\": \"%s\", "
+                                  "   \"class\": \"UnexpectedCommand\" } }",
+                                  escapemsg) < 0)
+            goto error;
+
+        monmsg = jsonmsg;
     } else {
-        return qemuMonitorTestAddResponse(test, "unexpected command");
+        monmsg = usermsg;
     }
+
+    ret = qemuMonitorTestAddResponse(test, monmsg);
+
+ error:
+    VIR_FREE(escapemsg);
+    VIR_FREE(jsonmsg);
+    return ret;
+}
+
+
+static int
+qemuMonitorTestAddUnexpectedErrorResponse(qemuMonitorTestPtr test,
+                                          const char *command)
+{
+    char *msg;
+    int ret;
+
+    if (virAsprintf(&msg, "unexpected command: '%s'", command) < 0)
+        return -1;
+
+    ret = qemuMonitorTestAddErrorResponse(test, msg);
+
+    VIR_FREE(msg);
+    return ret;
+}
+
+
+int
+qemuMonitorTestAddInvalidCommandResponse(qemuMonitorTestPtr test,
+                                         const char *expectedcommand,
+                                         const char *actualcommand)
+{
+    char *msg;
+    int ret;
+
+    if (virAsprintf(&msg, "expected command '%s' got '%s'",
+                    expectedcommand, actualcommand) < 0)
+        return -1;
+
+    ret = qemuMonitorTestAddErrorResponse(test, msg);
+
+    VIR_FREE(msg);
+    return ret;
 }
 
 
@@ -181,7 +253,7 @@ qemuMonitorTestProcessCommand(qemuMonitorTestPtr test,
     VIR_DEBUG("Processing string from monitor handler: '%s", cmdstr);
 
     if (test->nitems == 0) {
-        return qemuMonitorTestAddUnexpectedErrorResponse(test);
+        return qemuMonitorTestAddUnexpectedErrorResponse(test, cmdstr);
     } else {
         qemuMonitorTestItemPtr item = test->items[0];
         ret = (item->cb)(test, item, cmdstr);
@@ -499,7 +571,8 @@ qemuMonitorTestProcessCommandDefault(qemuMonitorTestPtr test,
     }
 
     if (data->command_name && STRNEQ(data->command_name, cmdname))
-        ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
+        ret = qemuMonitorTestAddInvalidCommandResponse(test, data->command_name,
+                                                       cmdname);
     else
         ret = qemuMonitorTestAddResponse(test, data->response);
 
@@ -553,7 +626,7 @@ qemuMonitorTestProcessGuestAgentSync(qemuMonitorTestPtr test,
     }
 
     if (STRNEQ(cmdname, "guest-sync")) {
-        ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
+        ret = qemuMonitorTestAddInvalidCommandResponse(test, "guest-sync", cmdname);
         goto cleanup;
     }
 
@@ -619,7 +692,8 @@ qemuMonitorTestProcessCommandWithArgs(qemuMonitorTestPtr test,
 
     if (data->command_name &&
         STRNEQ(data->command_name, cmdname)) {
-        ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
+        ret = qemuMonitorTestAddInvalidCommandResponse(test, data->command_name,
+                                                       cmdname);
         goto cleanup;
     }
 
@@ -745,7 +819,8 @@ qemuMonitorTestProcessCommandWithArgStr(qemuMonitorTestPtr test,
     }
 
     if (STRNEQ(data->command_name, cmdname)) {
-        ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
+        ret = qemuMonitorTestAddInvalidCommandResponse(test, data->command_name,
+                                                       cmdname);
         goto cleanup;
     }
 

@@ -375,7 +375,8 @@ qemuAgentShutdownTestMonitorHandler(qemuMonitorTestPtr test,
     }
 
     if (STRNEQ(cmdname, "guest-shutdown")) {
-        ret = qemuMonitorTestAddUnexpectedErrorResponse(test);
+        ret = qemuMonitorTestAddInvalidCommandResponse(test, "guest-shutdown",
+                                                       cmdname);
         goto cleanup;
     }
 
