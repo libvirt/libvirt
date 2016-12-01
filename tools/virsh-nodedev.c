@@ -818,7 +818,7 @@ vshEventGenericPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
         if (virTimeStringNowRaw(timestamp) < 0)
             timestamp[0] = '\0';
 
-        vshPrint(data->ctl, _("%s: event '%s'' for node device %s\n"),
+        vshPrint(data->ctl, _("%s: event '%s' for node device %s\n"),
                  timestamp,
                  data->cb->name,
                  virNodeDeviceGetName(dev));

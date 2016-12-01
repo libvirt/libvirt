@@ -2320,7 +2320,7 @@ qemuAssignMemoryDeviceSlot(virDomainMemoryDefPtr mem,
 
     if ((nextslot = virBitmapNextClearBit(slotmap, -1)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to find a emtpy memory slot"));
+                       _("failed to find an empty memory slot"));
         return -1;
     }
 

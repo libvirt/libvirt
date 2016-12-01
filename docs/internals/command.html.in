@@ -122,7 +122,7 @@ virCommandAddArgFormat(cmd, "%d", count);
 </pre>
 
     <p>
-      To add a entire NULL terminated array of arguments in one go,
+      To add an entire NULL terminated array of arguments in one go,
       there are two options.
     </p>
 

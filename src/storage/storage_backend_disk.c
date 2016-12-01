@@ -653,7 +653,7 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
             return -1;
         }
         if (vol->target.format == VIR_STORAGE_VOL_DISK_EXTENDED) {
-            /* make sure we don't have a extended partition already */
+            /* make sure we don't have an extended partition already */
             for (i = 0; i < pool->volumes.count; i++) {
                 if (pool->volumes.objs[i]->source.partType ==
                     VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {
@@ -675,7 +675,7 @@ virStorageBackendDiskPartFormat(virStoragePoolObjPtr pool,
                     return -1;
                 break;
             case VIR_STORAGE_VOL_DISK_TYPE_LOGICAL:
-                /* make sure we have a extended partition */
+                /* make sure we have an extended partition */
                 for (i = 0; i < pool->volumes.count; i++) {
                     if (pool->volumes.objs[i]->source.partType ==
                         VIR_STORAGE_VOL_DISK_TYPE_EXTENDED) {

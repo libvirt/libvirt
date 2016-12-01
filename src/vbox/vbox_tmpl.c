@@ -1793,7 +1793,7 @@ vboxConnectDomainEventRegister(virConnectPtr conn,
         vboxRet = 0;
     }
 
-    /* Get the vbox file handle and add a event handle to it
+    /* Get the vbox file handle and add an event handle to it
      * so that the events can be passed down to the user
      */
     if (vboxRet == 0) {
@@ -1900,7 +1900,7 @@ static int vboxConnectDomainEventRegisterAny(virConnectPtr conn,
         vboxRet = 0;
     }
 
-    /* Get the vbox file handle and add a event handle to it
+    /* Get the vbox file handle and add an event handle to it
      * so that the events can be passed down to the user
      */
     if (vboxRet == 0) {

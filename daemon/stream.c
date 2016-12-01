@@ -719,7 +719,7 @@ daemonStreamHandleWrite(virNetServerClientPtr client,
  * worth of data, and then queues that for transmission
  * to the client.
  *
- * Returns 0 if data was queued for TX, or a error RPC
+ * Returns 0 if data was queued for TX, or an error RPC
  * was sent, or -1 on fatal error, indicating client should
  * be killed
  */

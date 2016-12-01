@@ -2057,7 +2057,7 @@ testDomainSaveFlags(virDomainPtr domain, const char *path,
 
     /* Don't report failure in close or unlink, because
      * in either case we're already in a failure scenario
-     * and have reported a earlier error */
+     * and have reported an earlier error */
     if (ret != 0) {
         VIR_FORCE_CLOSE(fd);
         unlink(path);
