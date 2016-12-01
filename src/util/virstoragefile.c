@@ -24,7 +24,6 @@
 #include <config.h>
 #include "virstoragefile.h"
 
-#include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -3175,41 +3174,57 @@ virStorageSourceNewFromBacking(virStorageSourcePtr parent)
 
 
 /**
- * @src: disk source definiton structure
- * @report: report libvirt errors if set to true
+ * @src: disk source definition structure
+ * @fd: file descriptor
+ * @sb: stat buffer
  *
- * Updates src->physical for block devices since qemu doesn't report the current
- * size correctly for them. Returns 0 on success, -1 on error.
+ * Updates src->physical depending on the actual type of storage being used.
+ * To be called for domain storage source reporting as the volume code does
+ * not set/use the 'type' field for the voldef->source.target
+ *
+ * Returns 0 on success, -1 on error.
  */
 int
-virStorageSourceUpdateBlockPhysicalSize(virStorageSourcePtr src,
-                                        bool report)
+virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
+                                   int fd,
+                                   struct stat const *sb)
 {
-    int fd = -1;
     off_t end;
-    int ret = -1;
+    virStorageType actual_type = virStorageSourceGetActualType(src);
 
-    if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_BLOCK)
-        return 0;
+    switch (actual_type) {
+    case VIR_STORAGE_TYPE_FILE:
+    case VIR_STORAGE_TYPE_NETWORK:
+        src->physical = sb->st_size;
+        break;
 
-    if ((fd = open(src->path, O_RDONLY)) < 0) {
-        if (report)
-            virReportSystemError(errno, _("failed to open block device '%s'"),
+    case VIR_STORAGE_TYPE_BLOCK:
+        if ((end = lseek(fd, 0, SEEK_END)) == (off_t) -1) {
+            virReportSystemError(errno, _("failed to seek to end of '%s'"),
                                  src->path);
-        return -1;
-    }
+            return -1;
+        }
 
-    if ((end = lseek(fd, 0, SEEK_END)) == (off_t) -1) {
-        if (report)
-            virReportSystemError(errno,
-                                 _("failed to seek to end of '%s'"), src->path);
-    } else {
         src->physical = end;
-        ret = 0;
+        break;
+
+    case VIR_STORAGE_TYPE_DIR:
+        src->physical = 0;
+        break;
+
+    /* We shouldn't get VOLUME, but the switch requires all cases */
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NONE:
+    case VIR_STORAGE_TYPE_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                      _("cannot retrieve physical for path '%s' type '%s'"),
+                      NULLSTR(src->path),
+                      virStorageTypeToString(actual_type));
+        return -1;
+        break;
     }
 
-    VIR_FORCE_CLOSE(fd);
-    return ret;
+    return 0;
 }
 
 

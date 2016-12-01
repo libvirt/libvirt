@@ -11611,10 +11611,23 @@ qemuDomainStorageCloseStat(virStorageSourcePtr src,
 
 
 static int
-qemuDomainStorageUpdatePhysical(virStorageSourcePtr src,
-                                bool report)
+qemuDomainStorageUpdatePhysical(virQEMUDriverPtr driver,
+                                virQEMUDriverConfigPtr cfg,
+                                virDomainObjPtr vm,
+                                virStorageSourcePtr src)
 {
-    return virStorageSourceUpdateBlockPhysicalSize(src, report);
+    int ret;
+    int fd = -1;
+    struct stat sb;
+
+    if (qemuDomainStorageOpenStat(driver, cfg, vm, src, &fd, &sb) < 0)
+        return -1;
+
+    ret = virStorageSourceUpdatePhysicalSize(src, fd, &sb);
+
+    qemuDomainStorageCloseStat(src, &fd);
+
+    return ret;
 }
 
 
@@ -11841,7 +11854,7 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
     if (entry->physical) {
         info->physical = entry->physical;
     } else {
-        if (qemuDomainStorageUpdatePhysical(disk->src, true) < 0)
+        if (qemuDomainStorageUpdatePhysical(driver, cfg, vm, disk->src) < 0)
             goto endjob;
 
         info->physical = disk->src->physical;
@@ -19445,9 +19458,11 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
         QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
                                  "physical", entry->physical);
     } else {
-        if (qemuDomainStorageUpdatePhysical(src, false) == 0) {
+        if (qemuDomainStorageUpdatePhysical(driver, cfg, dom, src) == 0) {
             QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
                                      "physical", src->physical);
+        } else {
+            virResetLastError();
         }
     }
 

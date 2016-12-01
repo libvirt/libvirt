@@ -24,6 +24,8 @@
 #ifndef __VIR_STORAGE_FILE_H__
 # define __VIR_STORAGE_FILE_H__
 
+# include <sys/stat.h>
+
 # include "virbitmap.h"
 # include "virseclabel.h"
 # include "virstorageencryption.h"
@@ -355,8 +357,8 @@ bool virStorageSourceIsEmpty(virStorageSourcePtr src);
 bool virStorageSourceIsBlockLocal(const virStorageSource *src);
 void virStorageSourceFree(virStorageSourcePtr def);
 void virStorageSourceBackingStoreClear(virStorageSourcePtr def);
-int virStorageSourceUpdateBlockPhysicalSize(virStorageSourcePtr src,
-                                            bool report);
+int virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
+                                       int fd, struct stat const *sb);
 virStorageSourcePtr virStorageSourceNewFromBacking(virStorageSourcePtr parent);
 virStorageSourcePtr virStorageSourceCopy(const virStorageSource *src,
                                          bool backingChain)
