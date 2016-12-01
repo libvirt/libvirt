@@ -2004,37 +2004,8 @@ virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
     security_context_t filecon = NULL;
 #endif
 
-    if (S_ISREG(sb->st_mode)) {
-#ifndef WIN32
-        target->allocation = (unsigned long long)sb->st_blocks *
-            (unsigned long long)DEV_BSIZE;
-#else
-        target->allocation = sb->st_size;
-#endif
-        /* Regular files may be sparse, so logical size (capacity) is not same
-         * as actual allocation above
-         */
-        target->capacity = sb->st_size;
-    } else if (S_ISDIR(sb->st_mode)) {
-        target->allocation = 0;
-        target->capacity = 0;
-    } else if (fd >= 0) {
-        off_t end;
-        /* XXX this is POSIX compliant, but doesn't work for CHAR files,
-         * only BLOCK. There is a Linux specific ioctl() for getting
-         * size of both CHAR / BLOCK devices we should check for in
-         * configure
-         */
-        end = lseek(fd, 0, SEEK_END);
-        if (end == (off_t)-1) {
-            virReportSystemError(errno,
-                                 _("cannot seek to end of file '%s'"),
-                                 target->path);
-            return -1;
-        }
-        target->allocation = end;
-        target->capacity = end;
-    }
+    if (virStorageSourceUpdateBackingSizes(target, fd, sb) < 0)
+        return -1;
 
     if (!target->perms && VIR_ALLOC(target->perms) < 0)
         return -1;

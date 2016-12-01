@@ -3228,6 +3228,71 @@ virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
 }
 
 
+/**
+ * @src: disk source definition structure
+ * @fd: file descriptor
+ * @sb: stat buffer
+ *
+ * Update the capacity, allocation, physical values for the storage @src
+ * Shared between the domain storage source for an inactive domain and the
+ * voldef source target as the result is not affected by the 'type' field.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virStorageSourceUpdateBackingSizes(virStorageSourcePtr src,
+                                   int fd,
+                                   struct stat const *sb)
+{
+    /* Get info for normal formats */
+    if (S_ISREG(sb->st_mode) || fd == -1) {
+#ifndef WIN32
+        src->allocation = (unsigned long long)sb->st_blocks *
+            (unsigned long long)DEV_BSIZE;
+#else
+        src->allocation = sb->st_size;
+#endif
+        /* Regular files may be sparse, so logical size (capacity) is not same
+         * as actual allocation above
+         */
+        src->capacity = sb->st_size;
+
+        /* Allocation tracks when the file is sparse, physical is the
+         * last offset of the file. */
+        src->physical = sb->st_size;
+    } else if (S_ISDIR(sb->st_mode)) {
+        src->allocation = 0;
+        src->capacity = 0;
+        src->physical = 0;
+    } else if (fd >= 0) {
+        off_t end;
+
+        /* XXX this is POSIX compliant, but doesn't work for CHAR files,
+         * only BLOCK. There is a Linux specific ioctl() for getting
+         * size of both CHAR / BLOCK devices we should check for in
+         * configure
+         *
+         * NB. Because we configure with AC_SYS_LARGEFILE, off_t
+         * should be 64 bits on all platforms.  For block devices, we
+         * have to seek (safe even if someone else is writing) to
+         * determine physical size, and assume that allocation is the
+         * same as physical (but can refine that assumption later if
+         * qemu is still running).
+         */
+        if ((end = lseek(fd, 0, SEEK_END)) == (off_t)-1) {
+            virReportSystemError(errno,
+                                 _("failed to seek to end of %s"), src->path);
+            return -1;
+        }
+        src->physical = end;
+        src->allocation = end;
+        src->capacity = end;
+    }
+
+    return 0;
+}
+
+
 static char *
 virStorageFileCanonicalizeFormatPath(char **components,
                                      size_t ncomponents,

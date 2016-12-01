@@ -11667,7 +11667,6 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
 {
     int ret = -1;
     int fd = -1;
-    off_t end;
     virStorageSourcePtr meta = NULL;
     struct stat sb;
     int format;
@@ -11689,34 +11688,8 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    /* Get info for normal formats */
-    if (S_ISREG(sb.st_mode) || fd == -1) {
-#ifndef WIN32
-        src->allocation = (unsigned long long)sb.st_blocks *
-            (unsigned long long)DEV_BSIZE;
-#else
-        src->allocation = sb.st_size;
-#endif
-        /* Allocation tracks when the file is sparse, physical is the
-         * last offset of the file. */
-        src->physical = sb.st_size;
-    } else {
-        /* NB. Because we configure with AC_SYS_LARGEFILE, off_t
-         * should be 64 bits on all platforms.  For block devices, we
-         * have to seek (safe even if someone else is writing) to
-         * determine physical size, and assume that allocation is the
-         * same as physical (but can refine that assumption later if
-         * qemu is still running).
-         */
-        end = lseek(fd, 0, SEEK_END);
-        if (end == (off_t)-1) {
-            virReportSystemError(errno,
-                                 _("failed to seek to end of %s"), src->path);
-            goto cleanup;
-        }
-        src->physical = end;
-        src->allocation = end;
-    }
+    if (virStorageSourceUpdateBackingSizes(src, fd, &sb) < 0)
+        goto cleanup;
 
     /* Raw files: capacity is physical size.  For all other files: if
      * the metadata has a capacity, use that, otherwise fall back to

@@ -359,6 +359,9 @@ void virStorageSourceFree(virStorageSourcePtr def);
 void virStorageSourceBackingStoreClear(virStorageSourcePtr def);
 int virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
                                        int fd, struct stat const *sb);
+int virStorageSourceUpdateBackingSizes(virStorageSourcePtr src,
+                                       int fd, struct stat const *sb);
+
 virStorageSourcePtr virStorageSourceNewFromBacking(virStorageSourcePtr parent);
 virStorageSourcePtr virStorageSourceCopy(const virStorageSource *src,
                                          bool backingChain)
