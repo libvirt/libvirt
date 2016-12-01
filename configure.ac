@@ -411,7 +411,7 @@ LIBVIRT_DRIVER_ARG_ESX
 LIBVIRT_DRIVER_ARG_HYPERV
 LIBVIRT_DRIVER_ARG_TEST
 LIBVIRT_DRIVER_ARG_REMOTE
-LIBVIRT_ARG_WITH([LIBVIRTD], [libvirtd], [yes])
+LIBVIRT_DRIVER_ARG_LIBVIRTD
 
 dnl
 dnl in case someone want to build static binaries
@@ -460,12 +460,7 @@ LIBVIRT_DRIVER_CHECK_VBOX
 LIBVIRT_DRIVER_CHECK_QEMU
 LIBVIRT_DRIVER_CHECK_TEST
 LIBVIRT_DRIVER_CHECK_REMOTE
-
-if test "$with_libvirtd" = "yes" ; then
-    AC_DEFINE_UNQUOTED([WITH_LIBVIRTD], 1, [whether libvirtd daemon is enabled])
-fi
-AM_CONDITIONAL([WITH_LIBVIRTD], [test "$with_libvirtd" = "yes"])
-
+LIBVIRT_DRIVER_CHECK_LIBVIRTD
 LIBVIRT_DRIVER_CHECK_XENAPI
 LIBVIRT_DRIVER_CHECK_LIBXL
 LIBVIRT_DRIVER_CHECK_XEN
@@ -1078,9 +1073,6 @@ if test "$enable_test_locking" = "yes"; then
 fi
 AM_CONDITIONAL([WITH_CIL],[test "$enable_test_locking" = "yes"])
 
-dnl Enable building libvirtd?
-AM_CONDITIONAL([WITH_LIBVIRTD],[test "x$with_libvirtd" = "xyes"])
-
 dnl Check for gettext - don't go any newer than what RHEL 5 supports
 dnl
 dnl save and restore CPPFLAGS around gettext check as the internal iconv
@@ -1309,7 +1301,7 @@ LIBVIRT_DRIVER_RESULT_BHYVE
 LIBVIRT_DRIVER_RESULT_TEST
 LIBVIRT_DRIVER_RESULT_REMOTE
 AC_MSG_NOTICE([  Network: $with_network])
-AC_MSG_NOTICE([ Libvirtd: $with_libvirtd])
+LIBVIRT_DRIVER_RESULT_LIBVIRTD
 AC_MSG_NOTICE([Interface: $with_interface])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
