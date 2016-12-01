@@ -284,9 +284,6 @@ struct _virStorageSource {
 # endif
 
 int virStorageFileProbeFormat(const char *path, uid_t uid, gid_t gid);
-int virStorageFileProbeFormatFromBuf(const char *path,
-                                     char *buf,
-                                     size_t buflen);
 
 int virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                                       char *buf,
@@ -361,6 +358,9 @@ int virStorageSourceUpdatePhysicalSize(virStorageSourcePtr src,
                                        int fd, struct stat const *sb);
 int virStorageSourceUpdateBackingSizes(virStorageSourcePtr src,
                                        int fd, struct stat const *sb);
+int virStorageSourceUpdateCapacity(virStorageSourcePtr src,
+                                   char *buf, ssize_t len,
+                                   bool probe);
 
 virStorageSourcePtr virStorageSourceNewFromBacking(virStorageSourcePtr parent);
 virStorageSourcePtr virStorageSourceCopy(const virStorageSource *src,

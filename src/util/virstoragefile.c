@@ -797,7 +797,7 @@ virStorageIsRelative(const char *backing)
 }
 
 
-int
+static int
 virStorageFileProbeFormatFromBuf(const char *path,
                                  char *buf,
                                  size_t buflen)
@@ -3290,6 +3290,61 @@ virStorageSourceUpdateBackingSizes(virStorageSourcePtr src,
     }
 
     return 0;
+}
+
+
+/**
+ * @src: disk source definition structure
+ * @buf: buffer to the storage file header
+ * @len: length of the storage file header
+ * @probe: allow probe
+ *
+ * Update the storage @src capacity. This may involve probing the storage
+ * @src in order to "see" if we can recognize what exists.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virStorageSourceUpdateCapacity(virStorageSourcePtr src,
+                               char *buf,
+                               ssize_t len,
+                               bool probe)
+{
+    int ret = -1;
+    virStorageSourcePtr meta = NULL;
+    int format = src->format;
+
+    /* Raw files: capacity is physical size.  For all other files: if
+     * the metadata has a capacity, use that, otherwise fall back to
+     * physical size.  */
+    if (format == VIR_STORAGE_FILE_NONE) {
+        if (!probe) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("no disk format for %s and probing is disabled"),
+                           src->path);
+            goto cleanup;
+        }
+
+        if ((format = virStorageFileProbeFormatFromBuf(src->path,
+                                                       buf, len)) < 0)
+            goto cleanup;
+
+        src->format = format;
+    }
+
+    if (format == VIR_STORAGE_FILE_RAW)
+        src->capacity = src->physical;
+    else if ((meta = virStorageFileGetMetadataFromBuf(src->path, buf,
+                                                      len, format, NULL)))
+        src->capacity = meta->capacity ? meta->capacity : src->physical;
+    else
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virStorageSourceFree(meta);
+    return ret;
 }
 
 

@@ -1884,7 +1884,6 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
 {
     int ret, fd = -1;
     struct stat sb;
-    virStorageSourcePtr meta = NULL;
     char *buf = NULL;
     ssize_t len = VIR_STORAGE_MAX_HEADER;
 
@@ -1929,14 +1928,10 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
             goto cleanup;
         }
 
-        if (!(meta = virStorageFileGetMetadataFromBuf(target->path, buf, len, target->format,
-                                                      NULL))) {
+        if (virStorageSourceUpdateCapacity(target, buf, len, false) < 0) {
             ret = -1;
             goto cleanup;
         }
-
-        if (meta->capacity)
-            target->capacity = meta->capacity;
     }
 
     if (withBlockVolFormat) {
@@ -1946,7 +1941,6 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
     }
 
  cleanup:
-    virStorageSourceFree(meta);
     VIR_FORCE_CLOSE(fd);
     VIR_FREE(buf);
     return ret;

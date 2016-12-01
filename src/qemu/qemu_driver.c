@@ -11667,9 +11667,7 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
 {
     int ret = -1;
     int fd = -1;
-    virStorageSourcePtr meta = NULL;
     struct stat sb;
-    int format;
     char *buf = NULL;
     ssize_t len;
 
@@ -11691,27 +11689,8 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
     if (virStorageSourceUpdateBackingSizes(src, fd, &sb) < 0)
         goto cleanup;
 
-    /* Raw files: capacity is physical size.  For all other files: if
-     * the metadata has a capacity, use that, otherwise fall back to
-     * physical size.  */
-    if (!(format = src->format)) {
-        if (!cfg->allowDiskFormatProbing) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("no disk format for %s and probing is disabled"),
-                           src->path);
-            goto cleanup;
-        }
-
-        if ((format = virStorageFileProbeFormatFromBuf(src->path,
-                                                       buf, len)) < 0)
-            goto cleanup;
-    }
-    if (format == VIR_STORAGE_FILE_RAW)
-        src->capacity = src->physical;
-    else if ((meta = virStorageFileGetMetadataFromBuf(src->path, buf,
-                                                      len, format, NULL)))
-        src->capacity = meta->capacity ? meta->capacity : src->physical;
-    else
+    if (virStorageSourceUpdateCapacity(src, buf, len,
+                                       cfg->allowDiskFormatProbing) < 0)
         goto cleanup;
 
     /* If guest is not using raw disk format and is on a host block
@@ -11719,14 +11698,14 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
      * query the highest allocated extent from QEMU
      */
     if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_BLOCK &&
-        format != VIR_STORAGE_FILE_RAW &&
+        src->format != VIR_STORAGE_FILE_RAW &&
         S_ISBLK(sb.st_mode))
         src->allocation = 0;
 
     ret = 0;
+
  cleanup:
     VIR_FREE(buf);
-    virStorageSourceFree(meta);
     qemuDomainStorageCloseStat(src, &fd);
     return ret;
 }
