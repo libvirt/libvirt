@@ -11542,9 +11542,34 @@ qemuDomainMemoryPeek(virDomainPtr dom,
 }
 
 
-/* Refresh the capacity and allocation limits of a given storage
- * source.  Assumes that the caller has already obtained a domain
- * job. */
+/**
+ * @driver: qemu driver data
+ * @cfg: driver configuration data
+ * @vm: domain object
+ * @src: storage source data
+ *
+ * Refresh the capacity and allocation limits of a given storage source.
+ *
+ * Assumes that the caller has already obtained a domain job and only
+ * called for an offline domain. Being offline is particularly important
+ * since reading a file while qemu is writing it risks the reader seeing
+ * bogus data or avoiding opening a file in order to get stat data.
+ *
+ * We always want to check current on-disk statistics (as users have been
+ * known to change offline images behind our backs).
+ *
+ * For read-only disks, nothing should be changing unless the user has
+ * requested a block-commit action.  For read-write disks, we know some
+ * special cases: capacity should not change without a block-resize (where
+ * capacity is the only stat that requires reading a file, and even then,
+ * only for non-raw files); and physical size of a raw image or of a
+ * block device should likewise not be changing without block-resize.
+ * On the other hand, allocation of a raw file can change (if the file
+ * is sparse, but the amount of sparseness changes due to writes or
+ * punching holes), and physical size of a non-raw file can change.
+ *
+ * Returns 0 on success, -1 on failure
+ */
 static int
 qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
                          virQEMUDriverConfigPtr cfg,
@@ -11560,26 +11585,6 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
     char *buf = NULL;
     ssize_t len;
 
-    /* FIXME: For an offline domain, we always want to check current
-     * on-disk statistics (as users have been known to change offline
-     * images behind our backs).  For a running domain, however, it
-     * would be nice to avoid opening a file (particularly since
-     * reading a file while qemu is writing it risks the reader seeing
-     * bogus data), or even avoid a stat, if the information
-     * remembered from the previous run is still viable.
-     *
-     * For read-only disks, nothing should be changing unless the user
-     * has requested a block-commit action.  For read-write disks, we
-     * know some special cases: capacity should not change without a
-     * block-resize (where capacity is the only stat that requires
-     * reading a file, and even then, only for non-raw files); and
-     * physical size of a raw image or of a block device should
-     * likewise not be changing without block-resize.  On the other
-     * hand, allocation of a raw file can change (if the file is
-     * sparse, but the amount of sparseness changes due to writes or
-     * punching holes), and physical size of a non-raw file can
-     * change.
-     */
     if (virStorageSourceIsLocalStorage(src)) {
         if ((fd = qemuOpenFile(driver, vm, src->path, O_RDONLY,
                                NULL, NULL)) == -1)
