@@ -11547,6 +11547,74 @@ qemuDomainMemoryPeek(virDomainPtr dom,
  * @cfg: driver configuration data
  * @vm: domain object
  * @src: storage source data
+ * @ret_fd: pointer to return open'd file descriptor
+ * @ret_sb: pointer to return stat buffer (local or remote)
+ *
+ * For local storage, open the file using qemuOpenFile and then use
+ * fstat() to grab the stat struct data for the caller.
+ *
+ * For remote storage, attempt to access the file and grab the stat
+ * struct data if the remote connection supports it.
+ *
+ * Returns 0 on success with @ret_fd and @ret_sb populated, -1 on failure
+ */
+static int
+qemuDomainStorageOpenStat(virQEMUDriverPtr driver,
+                          virQEMUDriverConfigPtr cfg,
+                          virDomainObjPtr vm,
+                          virStorageSourcePtr src,
+                          int *ret_fd,
+                          struct stat *ret_sb)
+{
+    if (virStorageSourceIsLocalStorage(src)) {
+        if ((*ret_fd = qemuOpenFile(driver, vm, src->path, O_RDONLY,
+                                    NULL, NULL)) == -1)
+            return -1;
+
+        if (fstat(*ret_fd, ret_sb) < 0) {
+            virReportSystemError(errno, _("cannot stat file '%s'"), src->path);
+            VIR_FORCE_CLOSE(*ret_fd);
+            return -1;
+        }
+    } else {
+        if (virStorageFileInitAs(src, cfg->user, cfg->group) < 0)
+            return -1;
+
+        if (virStorageFileStat(src, ret_sb) < 0) {
+            virStorageFileDeinit(src);
+            virReportSystemError(errno, _("failed to stat remote file '%s'"),
+                                 NULLSTR(src->path));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+/**
+ * @src: storage source data
+ * @fd: file descriptor to close for local
+ *
+ * If local, then just close the file descriptor.
+ * else remote, then tear down the storage driver backend connection.
+ */
+static void
+qemuDomainStorageCloseStat(virStorageSourcePtr src,
+                           int *fd)
+{
+    if (virStorageSourceIsLocalStorage(src))
+        VIR_FORCE_CLOSE(*fd);
+    else
+        virStorageFileDeinit(src);
+}
+
+
+/**
+ * @driver: qemu driver data
+ * @cfg: driver configuration data
+ * @vm: domain object
+ * @src: storage source data
  *
  * Refresh the capacity and allocation limits of a given storage source.
  *
@@ -11585,35 +11653,19 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
     char *buf = NULL;
     ssize_t len;
 
+    if (qemuDomainStorageOpenStat(driver, cfg, vm, src, &fd, &sb) < 0)
+        goto cleanup;
+
     if (virStorageSourceIsLocalStorage(src)) {
-        if ((fd = qemuOpenFile(driver, vm, src->path, O_RDONLY,
-                               NULL, NULL)) == -1)
-            goto cleanup;
-
-        if (fstat(fd, &sb) < 0) {
-            virReportSystemError(errno,
-                                 _("cannot stat file '%s'"), src->path);
-            goto cleanup;
-        }
-
         if ((len = virFileReadHeaderFD(fd, VIR_STORAGE_MAX_HEADER, &buf)) < 0) {
             virReportSystemError(errno, _("cannot read header '%s'"),
                                  src->path);
             goto cleanup;
         }
     } else {
-        if (virStorageFileInitAs(src, cfg->user, cfg->group) < 0)
-            goto cleanup;
-
         if ((len = virStorageFileReadHeader(src, VIR_STORAGE_MAX_HEADER,
                                             &buf)) < 0)
             goto cleanup;
-
-        if (virStorageFileStat(src, &sb) < 0) {
-            virReportSystemError(errno, _("failed to stat remote file '%s'"),
-                                 NULLSTR(src->path));
-            goto cleanup;
-        }
     }
 
     /* Get info for normal formats */
@@ -11681,8 +11733,7 @@ qemuStorageLimitsRefresh(virQEMUDriverPtr driver,
  cleanup:
     VIR_FREE(buf);
     virStorageSourceFree(meta);
-    VIR_FORCE_CLOSE(fd);
-    virStorageFileDeinit(src);
+    qemuDomainStorageCloseStat(src, &fd);
     return ret;
 }
 
