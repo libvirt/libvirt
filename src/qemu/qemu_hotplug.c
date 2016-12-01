@@ -946,6 +946,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     char **vhostfdName = NULL;
     int *vhostfd = NULL;
     size_t vhostfdSize = 0;
+    size_t queueSize = 0;
     char *nicstr = NULL;
     char *netstr = NULL;
     virNetDevVPortProfilePtr vport = NULL;
@@ -1010,6 +1011,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         tapfdSize = vhostfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
             tapfdSize = vhostfdSize = 1;
+        queueSize = tapfdSize;
         if (VIR_ALLOC_N(tapfd, tapfdSize) < 0)
             goto cleanup;
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
@@ -1029,6 +1031,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         tapfdSize = vhostfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
             tapfdSize = vhostfdSize = 1;
+        queueSize = tapfdSize;
         if (VIR_ALLOC_N(tapfd, tapfdSize) < 0)
             goto cleanup;
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
@@ -1049,6 +1052,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         tapfdSize = vhostfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
             tapfdSize = vhostfdSize = 1;
+        queueSize = tapfdSize;
         if (VIR_ALLOC_N(tapfd, tapfdSize) < 0)
             goto cleanup;
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
@@ -1079,6 +1083,9 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        queueSize = net->driver.virtio.queues;
+        if (!queueSize)
+            queueSize = 1;
         if (!qemuDomainSupportsNetdev(vm->def, priv->qemuCaps, net)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Netdev support unavailable"));
@@ -1223,7 +1230,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         VIR_FORCE_CLOSE(vhostfd[i]);
 
     if (!(nicstr = qemuBuildNicDevStr(vm->def, net, vlan, 0,
-                                      vhostfdSize, priv->qemuCaps)))
+                                      queueSize, priv->qemuCaps)))
         goto try_remove;
 
     qemuDomainObjEnterMonitor(driver, vm);
