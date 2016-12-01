@@ -408,7 +408,7 @@ LIBVIRT_DRIVER_ARG_LIBXL
 LIBVIRT_DRIVER_ARG_VBOX
 LIBVIRT_DRIVER_ARG_LXC
 LIBVIRT_DRIVER_ARG_ESX
-LIBVIRT_ARG_WITH([HYPERV], [Hyper-V], [check])
+LIBVIRT_DRIVER_ARG_HYPERV
 LIBVIRT_DRIVER_ARG_TEST
 LIBVIRT_DRIVER_ARG_REMOTE
 LIBVIRT_ARG_WITH([LIBVIRTD], [libvirtd], [yes])
@@ -979,23 +979,7 @@ dnl
 dnl check for Hyper-V
 dnl
 
-if test "$with_hyperv" != "no"; then
-  if test "$with_openwsman" != "yes"; then
-    if test "$with_hyperv" = "check"; then
-      with_hyperv=no
-    else
-      AC_MSG_ERROR([openwsman is required for the Hyper-V driver])
-    fi
-  else
-    with_hyperv=yes
-  fi
-fi
-
-if test "$with_hyperv" = "yes" ; then
-    AC_DEFINE_UNQUOTED([WITH_HYPERV], 1, [whether Hyper-V driver is enabled])
-fi
-AM_CONDITIONAL([WITH_HYPERV], [test "$with_hyperv" = "yes"])
-
+LIBVIRT_DRIVER_CHECK_HYPERV
 
 dnl
 dnl check for kernel headers required by btrfs ioctl
@@ -1319,7 +1303,7 @@ LIBVIRT_DRIVER_RESULT_LIBXL
 LIBVIRT_DRIVER_RESULT_LXC
 LIBVIRT_DRIVER_RESULT_PHYP
 LIBVIRT_DRIVER_RESULT_ESX
-AC_MSG_NOTICE([  Hyper-V: $with_hyperv])
+LIBVIRT_DRIVER_RESULT_HYPERV
 LIBVIRT_DRIVER_RESULT_VZ
 LIBVIRT_DRIVER_RESULT_BHYVE
 LIBVIRT_DRIVER_RESULT_TEST
