@@ -67,7 +67,7 @@
         <ul>
           <li>vz: Fix migration in P2P mode
           </li>
-          <li>Forbid newline character in names of some libvirt objects.
+          <li>Forbid newline character in names of some libvirt objects
           </li>
           <li>Fix compilation on macOS
           </li>
