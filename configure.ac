@@ -1113,25 +1113,8 @@ fi
 AM_CONDITIONAL([WITH_NODE_DEVICES], [test "$with_nodedev" = "yes"])
 
 dnl check if the interface driver should be compiled
-LIBVIRT_ARG_WITH([INTERFACE], [host interface driver], [check])
-
-dnl Don't compile the interface driver without libvirtd
-if test "$with_libvirtd" = "no" ; then
-  with_interface=no
-fi
-
-dnl The interface driver depends on the netcf library or udev library
-case $with_interface:$with_netcf:$with_udev in
-    check:*yes*) with_interface=yes ;;
-    check:no:no) with_interface=no ;;
-    yes:no:no) AC_MSG_ERROR([Requested the Interface driver without netcf or udev support]) ;;
-esac
-
-if test "$with_interface" = "yes" ; then
-  AC_DEFINE_UNQUOTED([WITH_INTERFACE], [1],
-    [whether the interface driver is enabled])
-fi
-AM_CONDITIONAL([WITH_INTERFACE], [test "$with_interface" = "yes"])
+LIBVIRT_DRIVER_ARG_INTERFACE
+LIBVIRT_DRIVER_CHECK_INTERFACE
 
 
 dnl GET_VLAN_VID_CMD is required for virNetDevGetVLanID
@@ -1284,7 +1267,7 @@ LIBVIRT_DRIVER_RESULT_TEST
 LIBVIRT_DRIVER_RESULT_REMOTE
 LIBVIRT_DRIVER_RESULT_NETWORK
 LIBVIRT_DRIVER_RESULT_LIBVIRTD
-AC_MSG_NOTICE([Interface: $with_interface])
+LIBVIRT_DRIVER_RESULT_INTERFACE
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
 AC_MSG_NOTICE([])
