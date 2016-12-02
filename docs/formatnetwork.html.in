@@ -848,7 +848,8 @@
   &lt;forwarder addr="8.8.8.8"/&gt;
   &lt;forwarder domain='example.com' addr="8.8.4.4"/&gt;
   &lt;forwarder domain='www.example.com'/&gt;
-  &lt;srv service='name' protocol='tcp' domain='test-domain-name' target='.' port='1024' priority='10' weight='10'/&gt;
+  &lt;srv service='name' protocol='tcp' domain='test-domain-name' target='.'
+    port='1024' priority='10' weight='10'/&gt;
   &lt;host ip='192.168.122.2'&gt;
     &lt;hostname&gt;myhost&lt;/hostname&gt;
     &lt;hostname&gt;myhostalias&lt;/hostname&gt;
@@ -1157,7 +1158,8 @@
       &lt;host name="paul"   ip="2001:db8:ca2:2:3::1" /&gt;
       &lt;host id="0:1:0:1:18:aa:62:fe:0:16:3e:44:55:66"    ip="2001:db8:ca2:2:3::2" /&gt;
       &lt;host id="0:3:0:1:0:16:3e:11:22:33" name="ralph"  ip="2001:db8:ca2:2:3::3" /&gt;
-      &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63" name="badbob" ip="2001:db8:ca2:2:3::4" /&gt;
+      &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63"
+        name="badbob" ip="2001:db8:ca2:2:3::4"/&gt;
     &lt;/dhcp&gt;
   &lt;/ip&gt;
 &lt;/network&gt;</pre>
@@ -1182,7 +1184,8 @@
   &lt;ip family="ipv6" address="2001:db8:ca2:7::1" prefix="64" &gt;
     &lt;dhcp&gt;
       &lt;range start="2001:db8:ca2:7::100" end="2001:db8:ca2::1ff" /&gt;
-      &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63" name="lucas" ip="2001:db8:ca2:2:3::4" /&gt;
+      &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63"
+        name="lucas" ip="2001:db8:ca2:2:3::4"/&gt;
     &lt;/dhcp&gt;
   &lt;/ip&gt;
   &lt;route family="ipv6" address="2001:db8:ca2:8::" prefix="64" gateway="2001:db8:ca2:7::4"/&gt;
@@ -1230,7 +1233,8 @@
       &lt;host name="peter"   ip="2001:db8:ca2:6:6::1" /&gt;
       &lt;host id="0:1:0:1:18:aa:62:fe:0:16:3e:44:55:66" ip="2001:db8:ca2:6:6::2" /&gt;
       &lt;host id="0:3:0:1:0:16:3e:11:22:33" name="dariusz" ip="2001:db8:ca2:6:6::3" /&gt;
-      &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63" name="anita" ip="2001:db8:ca2:6:6::4" /&gt;
+      &lt;host id="0:4:7e:7d:f0:7d:a8:bc:c5:d2:13:32:11:ed:16:ea:84:63"
+        name="anita" ip="2001:db8:ca2:6:6::4"/&gt;
     &lt;/dhcp&gt;
   &lt;/ip&gt;
 &lt;/network&gt;</pre>
