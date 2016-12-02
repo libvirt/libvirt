@@ -958,9 +958,10 @@
           <dd>The <code>dns</code> element can have also 0 or more <code>srv</code>
             record elements. Each <code>srv</code> record element defines a DNS SRV record
             and has 2 mandatory and 5 optional attributes. The mandatory attributes
-            are service name and protocol (tcp, udp) and the optional attributes are
-            target, port, priority, weight and domain as defined in DNS server SRV
-            RFC (RFC 2782).
+            are service <code>name</code> and <code>protocol</code> (tcp, udp)
+            and the optional attributes are <code>target</code>,
+            <code>port</code>, <code>priority</code>, <code>weight</code> and
+            <code>domain</code> as defined in DNS server SRV RFC (RFC 2782).
             <span class="since">Since 0.9.9</span>
           </dd>
         </dl>
