@@ -2427,7 +2427,7 @@ storageVolUpload(virStorageVolPtr obj,
     if (VIR_ALLOC(cbdata) < 0 ||
         VIR_STRDUP(cbdata->pool_name, pool->def->name) < 0)
         goto cleanup;
-    if (vol->target.type == VIR_STORAGE_VOL_PLOOP &&
+    if (vol->type == VIR_STORAGE_VOL_PLOOP &&
         VIR_STRDUP(cbdata->vol_path, vol->target.path) < 0)
         goto cleanup;
 
