@@ -380,8 +380,8 @@
       <code>pool</code> element for some types of pools (pool
       types <code>dir</code>, <code>fs</code>, <code>netfs</code>,
       <code>logical</code>, <code>disk</code>, <code>iscsi</code>,
-      <code>scsi</code>, <code>mpath</code>). This tag is used to
-      describe the mapping of
+      <code>scsi</code>, <code>mpath</code>, <code>zfs</code>).
+      This tag is used to describe the mapping of
       the storage pool into the host filesystem. It can contain the following
       child elements:
     </p>
@@ -411,6 +411,8 @@
         guaranteed stable across reboots, since they are allocated on
         demand. It is preferable to use a stable location such as one
         of the <code>/dev/disk/by-{path|id|uuid|label}</code> locations.
+        For <code>logical</code> and <code>zfs</code> pool types, a
+        provided value is ignored and a default path generated.
         For a Multipath pool (type <code>mpath</code>), the provided
         value is ignored and the default value of "/dev/mapper" is used.
         <span class="since">Since 0.4.1</span>
