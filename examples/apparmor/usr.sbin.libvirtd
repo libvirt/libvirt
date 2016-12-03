@@ -47,12 +47,12 @@
   /usr/bin/* PUx,
   /usr/sbin/virtlogd pix,
   /usr/sbin/* PUx,
-  /lib/udev/scsi_id PUx,
+  /{usr/,}lib/udev/scsi_id PUx,
   /usr/{lib,lib64}/xen-common/bin/xen-toolstack PUx,
   /usr/{lib,lib64}/xen/bin/* Ux,
 
   # force the use of virt-aa-helper
-  audit deny /sbin/apparmor_parser rwxl,
+  audit deny /{usr/,}sbin/apparmor_parser rwxl,
   audit deny /etc/apparmor.d/libvirt/** wxl,
   audit deny /sys/kernel/security/apparmor/features rwxl,
   audit deny /sys/kernel/security/apparmor/matching rwxl,

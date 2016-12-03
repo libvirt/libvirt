@@ -136,12 +136,12 @@
   /usr/{lib,lib64}/qemu/block-rbd.so mr,
 
   # for save and resume
-  /bin/dash rmix,
-  /bin/dd rmix,
-  /bin/cat rmix,
+  /{usr/,}bin/dash rmix,
+  /{usr/,}bin/dd rmix,
+  /{usr/,}bin/cat rmix,
 
   # for restore
-  /bin/bash rmix,
+  /{usr/,}bin/bash rmix,
 
   # for usb access
   /dev/bus/usb/ r,

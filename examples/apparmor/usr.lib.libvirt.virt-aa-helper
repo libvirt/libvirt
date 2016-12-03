@@ -21,7 +21,7 @@ profile virt-aa-helper /usr/{lib,lib64}/libvirt/virt-aa-helper {
   /sys/devices/** r,
 
   /usr/{lib,lib64}/libvirt/virt-aa-helper mr,
-  /sbin/apparmor_parser Ux,
+  /{usr/,}sbin/apparmor_parser Ux,
 
   /etc/apparmor.d/libvirt/* r,
   /etc/apparmor.d/libvirt/libvirt-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]* rw,
