@@ -1394,7 +1394,8 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
 int
 qemuMonitorJSONQueryCPUs(qemuMonitorPtr mon,
                          struct qemuMonitorQueryCpusEntry **entries,
-                         size_t *nentries)
+                         size_t *nentries,
+                         bool force)
 {
     int ret = -1;
     virJSONValuePtr cmd = qemuMonitorJSONMakeCommand("query-cpus", NULL);
@@ -1405,6 +1406,9 @@ qemuMonitorJSONQueryCPUs(qemuMonitorPtr mon,
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (force && qemuMonitorJSONCheckError(cmd, reply) < 0)
         goto cleanup;
 
     if (!(data = virJSONValueObjectGetArray(reply, "return"))) {

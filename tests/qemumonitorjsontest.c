@@ -1407,7 +1407,7 @@ testQemuMonitorJSONqemuMonitorJSONQueryCPUs(const void *data)
         goto cleanup;
 
     if (qemuMonitorJSONQueryCPUs(qemuMonitorTestGetMonitor(test),
-                                 &cpudata, &ncpudata) < 0)
+                                 &cpudata, &ncpudata, true) < 0)
         goto cleanup;
 
     if (ncpudata != 4) {

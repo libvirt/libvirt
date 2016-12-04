@@ -1921,12 +1921,12 @@ qemuMonitorGetCPUInfo(qemuMonitorPtr mon,
         goto cleanup;
 
     if (mon->json)
-        rc = qemuMonitorJSONQueryCPUs(mon, &cpuentries, &ncpuentries);
+        rc = qemuMonitorJSONQueryCPUs(mon, &cpuentries, &ncpuentries, hotplug);
     else
         rc = qemuMonitorTextQueryCPUs(mon, &cpuentries, &ncpuentries);
 
     if (rc < 0) {
-        if (rc == -2) {
+        if (!hotplug && rc == -2) {
             VIR_STEAL_PTR(*vcpus, info);
             ret = 0;
         }
@@ -1974,7 +1974,7 @@ qemuMonitorGetCpuHalted(qemuMonitorPtr mon,
     QEMU_CHECK_MONITOR_NULL(mon);
 
     if (mon->json)
-        rc = qemuMonitorJSONQueryCPUs(mon, &cpuentries, &ncpuentries);
+        rc = qemuMonitorJSONQueryCPUs(mon, &cpuentries, &ncpuentries, false);
     else
         rc = qemuMonitorTextQueryCPUs(mon, &cpuentries, &ncpuentries);
 
