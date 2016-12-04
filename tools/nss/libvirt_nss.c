@@ -79,6 +79,68 @@ typedef struct {
     int af;
 } leaseAddress;
 
+
+static int
+appendAddr(leaseAddress **tmpAddress,
+           size_t *ntmpAddress,
+           virJSONValuePtr lease,
+           int af)
+{
+    int ret = -1;
+    const char *ipAddr;
+    virSocketAddr sa;
+    int family;
+    size_t i;
+
+    if (!(ipAddr = virJSONValueObjectGetString(lease, "ip-address"))) {
+        ERROR("ip-address field missing for %s", name);
+        goto cleanup;
+    }
+
+    DEBUG("IP address: %s", ipAddr);
+
+    if (virSocketAddrParse(&sa, ipAddr, AF_UNSPEC) < 0) {
+        ERROR("Unable to parse %s", ipAddr);
+        goto cleanup;
+    }
+
+    family = VIR_SOCKET_ADDR_FAMILY(&sa);
+    if (af != AF_UNSPEC && af != family) {
+        DEBUG("Skipping address which family is %d, %d requested", family, af);
+        ret = 0;
+        goto cleanup;
+    }
+
+    for (i = 0; i < *ntmpAddress; i++) {
+        if (memcmp((*tmpAddress)[i].addr,
+                   (family == AF_INET ?
+                    (void *) &sa.data.inet4.sin_addr.s_addr :
+                    (void *) &sa.data.inet6.sin6_addr.s6_addr),
+                   FAMILY_ADDRESS_SIZE(family)) == 0) {
+            DEBUG("IP address already in the list");
+            ret = 0;
+            goto cleanup;
+        }
+    }
+
+    if (VIR_REALLOC_N_QUIET(*tmpAddress, *ntmpAddress + 1) < 0) {
+        ERROR("Out of memory");
+        goto cleanup;
+    }
+
+    (*tmpAddress)[*ntmpAddress].af = family;
+    memcpy((*tmpAddress)[*ntmpAddress].addr,
+           (family == AF_INET ?
+            (void *) &sa.data.inet4.sin_addr.s_addr :
+            (void *) &sa.data.inet6.sin6_addr.s6_addr),
+           FAMILY_ADDRESS_SIZE(family));
+    (*ntmpAddress)++;
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
 /**
  * findLease:
  * @name: domain name to lookup
@@ -172,9 +234,6 @@ findLease(const char *name,
     for (i = 0; i < nleases; i++) {
         virJSONValuePtr lease;
         const char *lease_name;
-        virSocketAddr sa;
-        const char *ipAddr;
-        int family;
 
         lease = virJSONValueArrayGet(leases_array, i);
 
@@ -204,36 +263,8 @@ findLease(const char *name,
         DEBUG("Found record for %s", lease_name);
         *found = true;
 
-        if (!(ipAddr = virJSONValueObjectGetString(lease, "ip-address"))) {
-            ERROR("ip-address field missing for %s", name);
+        if (appendAddr(&tmpAddress, &ntmpAddress, lease, af) < 0)
             goto cleanup;
-        }
-
-        DEBUG("IP address: %s", ipAddr);
-
-        if (virSocketAddrParse(&sa, ipAddr, AF_UNSPEC) < 0) {
-            ERROR("Unable to parse %s", ipAddr);
-            goto cleanup;
-        }
-
-        family = VIR_SOCKET_ADDR_FAMILY(&sa);
-        if (af != AF_UNSPEC && af != family) {
-            DEBUG("Skipping address which family is %d, %d requested", family, af);
-            continue;
-        }
-
-        if (VIR_REALLOC_N_QUIET(tmpAddress, ntmpAddress + 1) < 0) {
-            ERROR("Out of memory");
-            goto cleanup;
-        }
-
-        tmpAddress[ntmpAddress].af = family;
-        memcpy(tmpAddress[ntmpAddress].addr,
-               (family == AF_INET ?
-                (void *) &sa.data.inet4.sin_addr.s_addr :
-                (void *) &sa.data.inet6.sin6_addr.s6_addr),
-               FAMILY_ADDRESS_SIZE(family));
-        ntmpAddress++;
     }
 
     *address = tmpAddress;
