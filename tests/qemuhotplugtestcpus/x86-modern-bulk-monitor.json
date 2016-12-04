@@ -1,0 +1,471 @@
+{"execute":"query-hotpluggable-cpus","id":"libvirt-1"}
+
+{
+  "return": [
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[5]",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[4]",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[3]",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[2]",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[0]",
+      "type": "qemu64-x86_64-cpu"
+    }
+  ],
+  "id": "libvirt-23"
+}
+
+{"execute":"query-cpus","id":"libvirt-2"}
+
+{
+  "return": [
+    {
+      "arch": "x86",
+      "current": true,
+      "CPU": 0,
+      "qom_path": "/machine/unattached/device[0]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518291
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 1,
+      "qom_path": "/machine/unattached/device[2]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518292
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 2,
+      "qom_path": "/machine/unattached/device[3]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518294
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 3,
+      "qom_path": "/machine/unattached/device[4]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518295
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 4,
+      "qom_path": "/machine/unattached/device[5]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518296
+    }
+  ],
+  "id": "libvirt-22"
+}
+
+{
+    "execute": "device_add",
+    "arguments": {
+        "driver": "qemu64-x86_64-cpu",
+        "id": "vcpu5",
+        "socket-id": 1,
+        "core-id": 0,
+        "thread-id": 1
+    },
+    "id": "libvirt-3"
+}
+
+{"return": {}}
+
+{"execute":"query-hotpluggable-cpus","id":"libvirt-4"}
+
+{
+  "return": [
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu5",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[5]",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[4]",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[3]",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[2]",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[0]",
+      "type": "qemu64-x86_64-cpu"
+    }
+  ],
+  "id": "libvirt-23"
+}
+
+{"execute":"query-cpus","id":"libvirt-5"}
+
+{
+  "return": [
+    {
+      "arch": "x86",
+      "current": true,
+      "CPU": 0,
+      "qom_path": "/machine/unattached/device[0]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518291
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 1,
+      "qom_path": "/machine/unattached/device[2]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518292
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 2,
+      "qom_path": "/machine/unattached/device[3]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518294
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 3,
+      "qom_path": "/machine/unattached/device[4]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518295
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 4,
+      "qom_path": "/machine/unattached/device[5]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518296
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 5,
+      "qom_path": "/machine/peripheral/vcpu5",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518297
+    }
+  ],
+  "id": "libvirt-22"
+}
+
+{
+    "execute": "device_add",
+    "arguments": {
+        "driver": "qemu64-x86_64-cpu",
+        "id": "vcpu6",
+        "socket-id": 1,
+        "core-id": 1,
+        "thread-id": 0
+    },
+    "id": "libvirt-6"
+}
+
+{"return": {}}
+
+{"execute":"query-hotpluggable-cpus","id":"libvirt-7"}
+
+{
+  "return": [
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu6",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/peripheral/vcpu5",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 1
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[5]",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 1,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[4]",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 1,
+        "thread-id": 0,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[3]",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 1,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[2]",
+      "type": "qemu64-x86_64-cpu"
+    },
+    {
+      "props": {
+        "core-id": 0,
+        "thread-id": 0,
+        "socket-id": 0
+      },
+      "vcpus-count": 1,
+      "qom-path": "/machine/unattached/device[0]",
+      "type": "qemu64-x86_64-cpu"
+    }
+  ],
+  "id": "libvirt-23"
+}
+
+{"execute":"query-cpus","id":"libvirt-8"}
+
+{
+  "return": [
+    {
+      "arch": "x86",
+      "current": true,
+      "CPU": 0,
+      "qom_path": "/machine/unattached/device[0]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518291
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 1,
+      "qom_path": "/machine/unattached/device[2]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518292
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 2,
+      "qom_path": "/machine/unattached/device[3]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518294
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 3,
+      "qom_path": "/machine/unattached/device[4]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518295
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 4,
+      "qom_path": "/machine/unattached/device[5]",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518296
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 5,
+      "qom_path": "/machine/peripheral/vcpu5",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518297
+    },
+    {
+      "arch": "x86",
+      "current": false,
+      "CPU": 6,
+      "qom_path": "/machine/peripheral/vcpu6",
+      "pc": -2130415978,
+      "halted": true,
+      "thread_id": 518298
+    }
+  ],
+  "id": "libvirt-22"
+}

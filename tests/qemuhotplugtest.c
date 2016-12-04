@@ -347,11 +347,187 @@ testQemuHotplug(const void *data)
     return ((ret < 0 && fail) || (!ret && !fail)) ? 0 : -1;
 }
 
+
+struct testQemuHotplugCpuData {
+    char *file_xml_dom;
+    char *file_xml_res_live;
+    char *file_xml_res_conf;
+    char *file_json_monitor;
+
+    char *xml_dom;
+
+    virDomainObjPtr vm;
+    qemuMonitorTestPtr mon;
+    bool modern;
+};
+
+
+static void
+testQemuHotplugCpuDataFree(struct testQemuHotplugCpuData *data)
+{
+    if (!data)
+        return;
+
+    VIR_FREE(data->file_xml_dom);
+    VIR_FREE(data->file_xml_res_live);
+    VIR_FREE(data->file_xml_res_conf);
+    VIR_FREE(data->file_json_monitor);
+
+    VIR_FREE(data->xml_dom);
+
+    virObjectUnref(data->vm);
+    qemuMonitorTestFree(data->mon);
+}
+
+
+static struct testQemuHotplugCpuData *
+testQemuHotplugCpuPrepare(const char *test,
+                          bool modern)
+{
+    qemuDomainObjPrivatePtr priv = NULL;
+    virCapsPtr caps = NULL;
+    char *prefix = NULL;
+    struct testQemuHotplugCpuData *data = NULL;
+
+    if (virAsprintf(&prefix, "%s/qemuhotplugtestcpus/%s", abs_srcdir, test) < 0)
+        return NULL;
+
+    if (VIR_ALLOC(data) < 0)
+        goto error;
+
+    data->modern = modern;
+
+    if (virAsprintf(&data->file_xml_dom, "%s-domain.xml", prefix) < 0 ||
+        virAsprintf(&data->file_xml_res_live, "%s-result-live.xml", prefix) < 0 ||
+        virAsprintf(&data->file_xml_res_conf, "%s-result-conf.xml", prefix) < 0 ||
+        virAsprintf(&data->file_json_monitor, "%s-monitor.json", prefix) < 0)
+        goto error;
+
+    if (virTestLoadFile(data->file_xml_dom, &data->xml_dom) < 0)
+        goto error;
+
+    if (qemuHotplugCreateObjects(driver.xmlopt, &data->vm, data->xml_dom, true,
+                                 "cpu-hotplug-test-domain") < 0)
+        goto error;
+
+    if (!(caps = virQEMUDriverGetCapabilities(&driver, false)))
+        goto error;
+
+    /* create vm->newDef */
+    data->vm->persistent = true;
+    if (virDomainObjSetDefTransient(caps, driver.xmlopt, data->vm) < 0)
+        goto error;
+
+    priv = data->vm->privateData;
+
+    if (data->modern)
+        virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
+
+    if (!(data->mon = qemuMonitorTestNewFromFileFull(data->file_json_monitor,
+                                                     &driver, data->vm)))
+        goto error;
+
+    priv->mon = qemuMonitorTestGetMonitor(data->mon);
+    priv->monJSON = true;
+    virObjectUnlock(priv->mon);
+
+    if (qemuDomainRefreshVcpuInfo(&driver, data->vm, 0, false) < 0)
+        goto error;
+
+    return data;
+
+ error:
+    virObjectUnref(caps);
+    testQemuHotplugCpuDataFree(data);
+    VIR_FREE(prefix);
+    return NULL;
+}
+
+
+static int
+testQemuHotplugCpuFinalize(struct testQemuHotplugCpuData *data)
+{
+    int ret = -1;
+    char *activeXML = NULL;
+    char *configXML = NULL;
+
+    if (data->file_xml_res_live) {
+        if (!(activeXML = virDomainDefFormat(data->vm->def, driver.caps,
+                                             VIR_DOMAIN_DEF_FORMAT_SECURE)))
+            goto cleanup;
+
+        if (virTestCompareToFile(activeXML, data->file_xml_res_live) < 0)
+            goto cleanup;
+    }
+
+    if (data->file_xml_res_conf) {
+        if (!(configXML = virDomainDefFormat(data->vm->newDef, driver.caps,
+                                             VIR_DOMAIN_DEF_FORMAT_SECURE |
+                                             VIR_DOMAIN_DEF_FORMAT_INACTIVE)))
+            goto cleanup;
+
+        if (virTestCompareToFile(configXML, data->file_xml_res_conf) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+     VIR_FREE(activeXML);
+     VIR_FREE(configXML);
+     return ret;
+}
+
+
+struct testQemuHotplugCpuParams {
+    const char *test;
+    int newcpus;
+    bool modern;
+    bool fail;
+};
+
+
+static int
+testQemuHotplugCpuGroup(const void *opaque)
+{
+    const struct testQemuHotplugCpuParams *params = opaque;
+    struct testQemuHotplugCpuData *data = NULL;
+    int ret = -1;
+    int rc;
+
+    if (!(data = testQemuHotplugCpuPrepare(params->test, params->modern)))
+        return -1;
+
+    rc = qemuDomainSetVcpusInternal(&driver, data->vm, data->vm->def,
+                                    data->vm->newDef, params->newcpus,
+                                    params->modern);
+
+    if (params->fail) {
+        if (rc == 0)
+            fprintf(stderr, "cpu test '%s' should have failed\n", params->test);
+        else
+            ret = 0;
+
+        goto cleanup;
+    } else {
+        if (rc < 0)
+            goto cleanup;
+    }
+
+    ret = testQemuHotplugCpuFinalize(data);
+
+ cleanup:
+    testQemuHotplugCpuDataFree(data);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
     int ret = 0;
     struct qemuHotplugTestData data = {0};
+    struct testQemuHotplugCpuParams cpudata;
 
 #if !WITH_YAJL
     fputs("libvirt not compiled with yajl, skipping this test\n", stderr);
@@ -583,6 +759,19 @@ mymain(void)
     DO_TEST_DETACH("base-live", "ivshmem-plain-detach", false, false,
                    "device_del", QMP_OK,
                    "object-del", QMP_OK);
+
+#define DO_TEST_CPU_GROUP(prefix, vcpus, modernhp, expectfail)                 \
+    do {                                                                       \
+        cpudata.test = prefix;                                                 \
+        cpudata.newcpus = vcpus;                                               \
+        cpudata.modern = modernhp;                                             \
+        cpudata.fail = expectfail;                                             \
+        if (virTestRun("hotplug vcpus group " prefix,                          \
+                       testQemuHotplugCpuGroup, &cpudata) < 0)                 \
+            ret = -1;                                                          \
+    } while (0)
+
+    DO_TEST_CPU_GROUP("x86-modern-bulk", 7, true, false);
 
     qemuTestDriverFree(&driver);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;

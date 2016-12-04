@@ -1,0 +1,48 @@
+<domain type='qemu' id='7'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219100</memory>
+  <currentMemory unit='KiB'>219100</currentMemory>
+  <vcpu placement='static' current='7'>8</vcpu>
+  <vcpus>
+    <vcpu id='0' enabled='yes' hotpluggable='no' order='1'/>
+    <vcpu id='1' enabled='yes' hotpluggable='no' order='2'/>
+    <vcpu id='2' enabled='yes' hotpluggable='no' order='3'/>
+    <vcpu id='3' enabled='yes' hotpluggable='no' order='4'/>
+    <vcpu id='4' enabled='yes' hotpluggable='no' order='5'/>
+    <vcpu id='5' enabled='yes' hotpluggable='yes' order='6'/>
+    <vcpu id='6' enabled='yes' hotpluggable='yes' order='7'/>
+    <vcpu id='7' enabled='no' hotpluggable='yes'/>
+  </vcpus>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='network'/>
+  </os>
+  <cpu>
+    <topology sockets='4' cores='2' threads='1'/>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <controller type='usb' index='0'>
+      <alias name='usb'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'>
+      <alias name='pci'/>
+    </controller>
+    <input type='mouse' bus='ps2'>
+      <alias name='input0'/>
+    </input>
+    <input type='keyboard' bus='ps2'>
+      <alias name='input1'/>
+    </input>
+    <memballoon model='virtio'>
+      <alias name='balloon0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </memballoon>
+  </devices>
+</domain>
