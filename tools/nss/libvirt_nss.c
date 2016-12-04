@@ -253,23 +253,23 @@ findLease(const char *name,
 
 
 enum nss_status
-_nss_libvirt_gethostbyname_r(const char *name, struct hostent *result,
-                             char *buffer, size_t buflen, int *errnop,
-                             int *herrnop)
+NSS_NAME(gethostbyname)(const char *name, struct hostent *result,
+                        char *buffer, size_t buflen, int *errnop,
+                        int *herrnop)
 {
     int af = ((_res.options & RES_USE_INET6) ? AF_INET6 : AF_INET);
 
-    return _nss_libvirt_gethostbyname3_r(name, af, result, buffer, buflen,
-                                         errnop, herrnop, NULL, NULL);
+    return NSS_NAME(gethostbyname3)(name, af, result, buffer, buflen,
+                                    errnop, herrnop, NULL, NULL);
 }
 
 enum nss_status
-_nss_libvirt_gethostbyname2_r(const char *name, int af, struct hostent *result,
-                              char *buffer, size_t buflen, int *errnop,
-                              int *herrnop)
+NSS_NAME(gethostbyname2)(const char *name, int af, struct hostent *result,
+                         char *buffer, size_t buflen, int *errnop,
+                         int *herrnop)
 {
-    return _nss_libvirt_gethostbyname3_r(name, af, result, buffer, buflen,
-                                         errnop, herrnop, NULL, NULL);
+    return NSS_NAME(gethostbyname3)(name, af, result, buffer, buflen,
+                                    errnop, herrnop, NULL, NULL);
 }
 
 static inline void *
@@ -287,9 +287,9 @@ move_and_align(void *buf, size_t len, size_t *idx)
 }
 
 enum nss_status
-_nss_libvirt_gethostbyname3_r(const char *name, int af, struct hostent *result,
-                              char *buffer, size_t buflen, int *errnop,
-                              int *herrnop, int32_t *ttlp, char **canonp)
+NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
+                         char *buffer, size_t buflen, int *errnop,
+                         int *herrnop, int32_t *ttlp, char **canonp)
 {
     enum nss_status ret = NSS_STATUS_UNAVAIL;
     char *r_name, **r_aliases, *r_addr, *r_addr_next, **r_addr_list;
@@ -405,9 +405,9 @@ _nss_libvirt_gethostbyname3_r(const char *name, int af, struct hostent *result,
 
 #ifdef HAVE_STRUCT_GAIH_ADDRTUPLE
 enum nss_status
-_nss_libvirt_gethostbyname4_r(const char *name, struct gaih_addrtuple **pat,
-                              char *buffer, size_t buflen, int *errnop,
-                              int *herrnop, int32_t *ttlp)
+NSS_NAME(gethostbyname4)(const char *name, struct gaih_addrtuple **pat,
+                         char *buffer, size_t buflen, int *errnop,
+                         int *herrnop, int32_t *ttlp)
 {
     enum nss_status ret = NSS_STATUS_UNAVAIL;
     leaseAddress *addr = NULL;
@@ -517,9 +517,9 @@ aiforaf(const char *name, int af, struct addrinfo *pai, struct addrinfo **aip)
     struct addrinfo hints, *res0, *res;
     char **addrList;
 
-    if ((ret = _nss_libvirt_gethostbyname2_r(name, af, &resolved,
-                                             buf, sizeof(buf),
-                                             &err, &herr)) != NS_SUCCESS)
+    if ((ret = NSS_NAME(gethostbyname2)(name, af, &resolved,
+                                        buf, sizeof(buf),
+                                        &err, &herr)) != NS_SUCCESS)
         return;
 
     addrList = resolved.h_addr_list;
@@ -604,8 +604,7 @@ _nss_compat_gethostbyname2_r(void *retval, void *mdata ATTRIBUTE_UNUSED, va_list
     errnop = va_arg(ap, int *);
     herrnop = va_arg(ap, int *);
 
-    ret = _nss_libvirt_gethostbyname2_r(
-              name, af, result, buffer, buflen, errnop, herrnop);
+    ret = NSS_NAME(gethostbyname2)(name, af, result, buffer, buflen, errnop, herrnop);
     *(struct hostent **)retval = (ret == NS_SUCCESS) ? result : NULL;
 
     return ret;

@@ -53,12 +53,12 @@ testGetHostByName(const void *opaque)
 
     memset(&resolved, 0, sizeof(resolved));
 
-    rv = _nss_libvirt_gethostbyname2_r(data->hostname,
-                                       data->af,
-                                       &resolved,
-                                       buf, sizeof(buf),
-                                       &tmp_errno,
-                                       &tmp_herrno);
+    rv = NSS_NAME(gethostbyname2)(data->hostname,
+                                  data->af,
+                                  &resolved,
+                                  buf, sizeof(buf),
+                                  &tmp_errno,
+                                  &tmp_herrno);
 
     if (rv == NSS_STATUS_TRYAGAIN ||
         rv == NSS_STATUS_UNAVAIL ||

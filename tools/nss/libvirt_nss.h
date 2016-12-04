@@ -32,24 +32,26 @@
 # include <nss.h>
 # include <netdb.h>
 
-enum nss_status
-_nss_libvirt_gethostbyname_r(const char *name, struct hostent *result,
-                             char *buffer, size_t buflen, int *errnop,
-                             int *herrnop);
+# define NSS_NAME(s) _nss_libvirt_##s##_r
 
 enum nss_status
-_nss_libvirt_gethostbyname2_r(const char *name, int af, struct hostent *result,
-                              char *buffer, size_t buflen, int *errnop,
-                              int *herrnop);
+NSS_NAME(gethostbyname)(const char *name, struct hostent *result,
+                        char *buffer, size_t buflen, int *errnop,
+                        int *herrnop);
+
 enum nss_status
-_nss_libvirt_gethostbyname3_r(const char *name, int af, struct hostent *result,
-                              char *buffer, size_t buflen, int *errnop,
-                              int *herrnop, int32_t *ttlp, char **canonp);
+NSS_NAME(gethostbyname2)(const char *name, int af, struct hostent *result,
+                         char *buffer, size_t buflen, int *errnop,
+                         int *herrnop);
+enum nss_status
+NSS_NAME(gethostbyname3)(const char *name, int af, struct hostent *result,
+                         char *buffer, size_t buflen, int *errnop,
+                         int *herrnop, int32_t *ttlp, char **canonp);
 # ifdef HAVE_STRUCT_GAIH_ADDRTUPLE
 enum nss_status
-_nss_libvirt_gethostbyname4_r(const char *name, struct gaih_addrtuple **pat,
-                              char *buffer, size_t buflen, int *errnop,
-                              int *herrnop, int32_t *ttlp);
+NSS_NAME(gethostbyname4)(const char *name, struct gaih_addrtuple **pat,
+                         char *buffer, size_t buflen, int *errnop,
+                         int *herrnop, int32_t *ttlp);
 # endif /* HAVE_STRUCT_GAIH_ADDRTUPLE */
 
 # if defined(HAVE_BSD_NSS)

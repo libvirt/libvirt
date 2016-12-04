@@ -33,7 +33,7 @@ int main(int argc ATTRIBUTE_UNUSED,
      * the fact this test has been built successfully means
      * there's no linkage problem and therefore success is
      * returned. */
-    _nss_libvirt_gethostbyname_r(NULL, NULL, NULL, 0, &err, &herrno);
+    NSS_NAME(gethostbyname)(NULL, NULL, NULL, 0, &err, &herrno);
 
     return EXIT_SUCCESS;
 }
