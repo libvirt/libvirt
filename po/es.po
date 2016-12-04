@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2016-12-01 11:38+0000\n"
+"POT-Creation-Date: 2016-12-04 21:11+0100\n"
 "PO-Revision-Date: 2016-05-16 11:36-0400\n"
 "Last-Translator: Brian Curtich <bcurtich@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/libvirt/language/"
@@ -5568,7 +5568,7 @@ msgstr "Falló el formateo de dirección PCI"
 
 #: src/conf/domain_conf.c:21004 src/conf/domain_conf.c:21045
 #: src/conf/domain_conf.c:22864 src/conf/domain_conf.c:22873
-#: src/libxl/libxl_driver.c:3772 src/qemu/qemu_hotplug.c:4789
+#: src/libxl/libxl_driver.c:3772 src/qemu/qemu_hotplug.c:4796
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "tipo de dispositivo de host %d no esperado"
@@ -11879,19 +11879,19 @@ msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3240 src/libxl/libxl_driver.c:3756
-#: src/qemu/qemu_hotplug.c:2585 src/qemu/qemu_hotplug.c:4742
+#: src/qemu/qemu_hotplug.c:2592 src/qemu/qemu_hotplug.c:4749
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr "el modo '%s' de dispositivo de host no está soportado"
 
-#: src/libxl/libxl_driver.c:3260 src/qemu/qemu_hotplug.c:2616
-#: src/qemu/qemu_hotplug.c:4710
+#: src/libxl/libxl_driver.c:3260 src/qemu/qemu_hotplug.c:2623
+#: src/qemu/qemu_hotplug.c:4717
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "el tipo '%s' de subsistema de dispositivo de host no está soportado"
 
 #: src/libxl/libxl_driver.c:3285 src/lxc/lxc_driver.c:4404
-#: src/qemu/qemu_hotplug.c:4414 src/uml/uml_driver.c:2308
+#: src/qemu/qemu_hotplug.c:4421 src/uml/uml_driver.c:2308
 #, c-format
 msgid "disk %s not found"
 msgstr "no se encuentra el disco %s"
@@ -11945,12 +11945,12 @@ msgstr "Dispositivo ya está listo en configuración de dominio"
 msgid "persistent attach of device is not supported"
 msgstr "Conexión persistente al dispositivo no está soportada"
 
-#: src/libxl/libxl_driver.c:3582 src/qemu/qemu_hotplug.c:4753
+#: src/libxl/libxl_driver.c:3582 src/qemu/qemu_hotplug.c:4760
 #, c-format
 msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
 msgstr "dispositivo de host pci %.4x:%.2x:%.2x.%.1x no se encontró"
 
-#: src/libxl/libxl_driver.c:3590 src/qemu/qemu_hotplug.c:4586
+#: src/libxl/libxl_driver.c:3590 src/qemu/qemu_hotplug.c:4593
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr ""
@@ -11964,7 +11964,7 @@ msgid ""
 "%.2x.%.1x"
 msgstr ""
 
-#: src/libxl/libxl_driver.c:3652 src/qemu/qemu_hotplug.c:4514
+#: src/libxl/libxl_driver.c:3652 src/qemu/qemu_hotplug.c:4521
 #, fuzzy, c-format
 msgid "controller %s:%d not found"
 msgstr "controlador %s:%d no se encontró"
@@ -12003,9 +12003,9 @@ msgstr "No hay dispositivo de destino %s"
 
 #: src/libxl/libxl_driver.c:3902 src/libxl/libxl_driver.c:3922
 #: src/lxc/lxc_driver.c:3674 src/qemu/qemu_driver.c:8076
-#: src/qemu/qemu_driver.c:8100 src/qemu/qemu_hotplug.c:1760
-#: src/qemu/qemu_hotplug.c:4817 src/qemu/qemu_hotplug.c:5071
-#: src/qemu/qemu_hotplug.c:5118 src/qemu/qemu_hotplug.c:5161
+#: src/qemu/qemu_driver.c:8100 src/qemu/qemu_hotplug.c:1767
+#: src/qemu/qemu_hotplug.c:4824 src/qemu/qemu_hotplug.c:5078
+#: src/qemu/qemu_hotplug.c:5125 src/qemu/qemu_hotplug.c:5168
 msgid "device not present in domain configuration"
 msgstr "Dispositivo no está presente  en configuración de dominio"
 
@@ -16893,12 +16893,12 @@ msgstr ""
 "Arranque desde dispositivos asignados SCSI solo tiene soporte con esta "
 "versión de QEMU"
 
-#: src/qemu/qemu_command.c:5198 src/qemu/qemu_hotplug.c:1401
+#: src/qemu/qemu_command.c:5198 src/qemu/qemu_hotplug.c:1408
 msgid "VFIO PCI device assignment is not supported by this version of qemu"
 msgstr "Esta versión de QEMU no admite la asignación del dispositivo VFIO PCI"
 
 #: src/qemu/qemu_command.c:5258 src/qemu/qemu_command.c:5268
-#: src/qemu/qemu_hotplug.c:2353 src/qemu/qemu_hotplug.c:2485
+#: src/qemu/qemu_hotplug.c:2360 src/qemu/qemu_hotplug.c:2492
 msgid "SCSI passthrough is not supported by this version of qemu"
 msgstr "Paso SCSI no tiene soporte para esta versión de QEMU"
 
@@ -17206,7 +17206,7 @@ msgstr "sdl no está soportado por '%s'"
 msgid "unsupported graphics type '%s'"
 msgstr "tipo de gráficos '%s' no soportado "
 
-#: src/qemu/qemu_command.c:7949 src/qemu/qemu_hotplug.c:1084
+#: src/qemu/qemu_command.c:7949 src/qemu/qemu_hotplug.c:1091
 msgid "Netdev support unavailable"
 msgstr ""
 
@@ -17223,12 +17223,12 @@ msgstr ""
 msgid "Error generating NIC -device string"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8062 src/qemu/qemu_hotplug.c:987
+#: src/qemu/qemu_command.c:8062 src/qemu/qemu_hotplug.c:988
 #, fuzzy, c-format
 msgid "Multiqueue network is not supported for: %s"
 msgstr "Red Multiqueue no tiene soporte para: %s"
 
-#: src/qemu/qemu_command.c:8073 src/qemu/qemu_hotplug.c:998
+#: src/qemu/qemu_command.c:8073 src/qemu/qemu_hotplug.c:999
 #, c-format
 msgid "filterref is not supported for network interfaces of type %s"
 msgstr ""
@@ -18101,8 +18101,9 @@ msgid ""
 msgstr ""
 
 #: src/qemu/qemu_domain_address.c:2323
-msgid "failed to find a emtpy memory slot"
-msgstr ""
+#, fuzzy
+msgid "failed to find an empty memory slot"
+msgstr "Falló al encontrar un dispositivo principal para %s"
 
 #: src/qemu/qemu_driver.c:247 src/test/test_driver.c:6040
 #: src/vz/vz_driver.c:2174
@@ -18719,7 +18720,7 @@ msgstr ""
 msgid "persistent attach of device '%s' is not supported"
 msgstr "La anexión persistente del dispositivo '%s'  no tiene soporte"
 
-#: src/qemu/qemu_driver.c:8088 src/qemu/qemu_hotplug.c:5046
+#: src/qemu/qemu_driver.c:8088 src/qemu/qemu_hotplug.c:5053
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr "Arriendo %s en lockspace %s no existe"
@@ -19560,96 +19561,96 @@ msgstr ""
 msgid "disk device='lun' is not supported for usb bus"
 msgstr "dispositivo de disco='lun' no tiene soporte para bus usb"
 
-#: src/qemu/qemu_hotplug.c:1100
+#: src/qemu/qemu_hotplug.c:1107
 #, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1138
+#: src/qemu/qemu_hotplug.c:1145
 msgid "virtio-s390 net device cannot be hotplugged."
 msgstr "El dispositivo de red virtio-s390 no puede ser conectado en caliente."
 
-#: src/qemu/qemu_hotplug.c:1153
+#: src/qemu/qemu_hotplug.c:1160
 msgid "Unable to attach network devices without vlan"
 msgstr "No es posible asociar dispositivos de red sin vlan"
 
-#: src/qemu/qemu_hotplug.c:1242
+#: src/qemu/qemu_hotplug.c:1249
 msgid "device alias not found: cannot set link state to down"
 msgstr ""
 "No se encontró  alias de dispositivo: no se puede establecer estado de "
 "enlace a caído"
 
-#: src/qemu/qemu_hotplug.c:1254
+#: src/qemu/qemu_hotplug.c:1261
 msgid "setting of link state not supported: Link is up"
 msgstr ""
 "La configuración de estado de enlace no tiene soporte: El enlace está activo"
 
-#: src/qemu/qemu_hotplug.c:1414
+#: src/qemu/qemu_hotplug.c:1421
 #, c-format
 msgid "QEMU does not support device assignment mode '%s'"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1459
+#: src/qemu/qemu_hotplug.c:1466
 msgid "guest unexpectedly quit during hotplug"
 msgstr "el intiado ha salido inesperadamente durante la conexión"
 
-#: src/qemu/qemu_hotplug.c:1666
+#: src/qemu/qemu_hotplug.c:1673
 msgid "attaching serial console is not supported"
 msgstr "La anexión de la consola serial no tiene soporte"
 
-#: src/qemu/qemu_hotplug.c:1672
+#: src/qemu/qemu_hotplug.c:1679
 msgid "chardev already exists"
 msgstr "chardev ya existe"
 
-#: src/qemu/qemu_hotplug.c:1746
+#: src/qemu/qemu_hotplug.c:1753
 msgid "detaching serial console is not supported"
 msgstr "La desconexión de la consola serial no tiene soporte"
 
-#: src/qemu/qemu_hotplug.c:1812
+#: src/qemu/qemu_hotplug.c:1819
 msgid "Unsupported address type for character device"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2375
+#: src/qemu/qemu_hotplug.c:2382
 #, c-format
 msgid "Unable to prepare scsi hostdev for iSCSI: %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2380
+#: src/qemu/qemu_hotplug.c:2387
 #, c-format
 msgid "Unable to prepare scsi hostdev: %s:%u:%u:%llu"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2492
+#: src/qemu/qemu_hotplug.c:2499
 #, c-format
 msgid "Unable to prepare scsi_host hostdev: %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2651
+#: src/qemu/qemu_hotplug.c:2658
 #, c-format
 msgid "live attach of shmem model '%s' is not supported"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2763 src/qemu/qemu_interface.c:525
+#: src/qemu/qemu_hotplug.c:2770 src/qemu/qemu_interface.c:525
 #, fuzzy
 msgid "Missing bridge name"
 msgstr "No se encuentra el nombre del temporizador"
 
-#: src/qemu/qemu_hotplug.c:2772
+#: src/qemu/qemu_hotplug.c:2779
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "puente %s no existe"
 
-#: src/qemu/qemu_hotplug.c:2796
+#: src/qemu/qemu_hotplug.c:2803
 #, c-format
 msgid "unable to recover former state by adding port to bridge %s"
 msgstr "No se  puede recuperar estado anterior al añadir puerto al puente %s"
 
-#: src/qemu/qemu_hotplug.c:2820
+#: src/qemu/qemu_hotplug.c:2827
 #, c-format
 msgid "filters not supported on interfaces of type %s"
 msgstr "Los filtros no tienen soporte en interfaces de tipo %s"
 
-#: src/qemu/qemu_hotplug.c:2832
+#: src/qemu/qemu_hotplug.c:2839
 #, c-format
 msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
@@ -19657,235 +19658,235 @@ msgstr ""
 "Falló al añadir nuevas reglas de filtro a '%s' - intentando restaurar reglas "
 "anteriores"
 
-#: src/qemu/qemu_hotplug.c:2854
+#: src/qemu/qemu_hotplug.c:2861
 msgid "can't change link state: device alias not found"
 msgstr ""
 "No se puede cambiar estado de enlace: no se encuentra alias de dispositivo"
 
-#: src/qemu/qemu_hotplug.c:2900
+#: src/qemu/qemu_hotplug.c:2907
 msgid "cannot find existing network device to modify"
 msgstr "No se  encuentra el dispositivo de red existente a modificar"
 
-#: src/qemu/qemu_hotplug.c:2908
+#: src/qemu/qemu_hotplug.c:2915
 #, c-format
 msgid "cannot change config of '%s' network type"
 msgstr "No se puede cambiar config de '%s' tipo de red"
 
-#: src/qemu/qemu_hotplug.c:2931
+#: src/qemu/qemu_hotplug.c:2938
 #, c-format
 msgid "cannot change network interface mac address from %s to %s"
 msgstr "No se puede cambiar dirección MAC de interfaz 'network' de '%s' a %s"
 
-#: src/qemu/qemu_hotplug.c:2940
+#: src/qemu/qemu_hotplug.c:2947
 #, c-format
 msgid "cannot modify network device model from %s to %s"
 msgstr "No se puede modificar modelo de dispositivo de red  %s a %s"
 
-#: src/qemu/qemu_hotplug.c:2965
+#: src/qemu/qemu_hotplug.c:2972
 msgid "cannot modify virtio network device driver attributes"
 msgstr "No se pueden modificar atributos de controlador de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:2979
+#: src/qemu/qemu_hotplug.c:2986
 msgid "cannot modify network device script attribute"
 msgstr "No se puede modificar atributo de script de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:2988
+#: src/qemu/qemu_hotplug.c:2995
 msgid "cannot modify network device tap name"
 msgstr "No se puede modificar nombre de dispositivo de red tap"
 
-#: src/qemu/qemu_hotplug.c:3006
+#: src/qemu/qemu_hotplug.c:3013
 msgid "cannot modify network device guest PCI address"
 msgstr "No se puede modificar dirección PCI de huésped de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:3015
+#: src/qemu/qemu_hotplug.c:3022
 msgid "cannot modify network device alias"
 msgstr "No se puede modificar alias de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:3020
+#: src/qemu/qemu_hotplug.c:3027
 msgid "cannot modify network device rom bar setting"
 msgstr "No se puede modificar parámetro de barra ROM de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:3025
+#: src/qemu/qemu_hotplug.c:3032
 msgid "cannot modify network rom file"
 msgstr "No se puede modificar archivo ROM de red"
 
-#: src/qemu/qemu_hotplug.c:3030
+#: src/qemu/qemu_hotplug.c:3037
 msgid "cannot modify network device boot index setting"
 msgstr ""
 "No se puede modificar parámetro de índice de arranque de dispositivo de red"
 
-#: src/qemu/qemu_hotplug.c:3057
+#: src/qemu/qemu_hotplug.c:3064
 #, c-format
 msgid "cannot change network interface type to '%s'"
 msgstr "No se puede cambiar tipo de interfaz de red a '%s'"
 
-#: src/qemu/qemu_hotplug.c:3110 src/qemu/qemu_hotplug.c:3183
+#: src/qemu/qemu_hotplug.c:3117 src/qemu/qemu_hotplug.c:3190
 #, c-format
 msgid "unable to change config on '%s' network type"
 msgstr "No es posible cambiar configuración en tipo de red '%s'"
 
-#: src/qemu/qemu_hotplug.c:3304
+#: src/qemu/qemu_hotplug.c:3311
 msgid "cannot find existing graphics device to modify"
 msgstr "no es posible encontrar dispositivos gráficos existentes que modificar"
 
-#: src/qemu/qemu_hotplug.c:3310
+#: src/qemu/qemu_hotplug.c:3317
 #, c-format
 msgid "cannot change the number of listen addresses on '%s' graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3321
+#: src/qemu/qemu_hotplug.c:3328
 #, c-format
 msgid "cannot change the type of listen address on '%s' graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3330 src/qemu/qemu_hotplug.c:3340
+#: src/qemu/qemu_hotplug.c:3337 src/qemu/qemu_hotplug.c:3347
 #, c-format
 msgid "cannot change listen address setting on '%s' graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3350
+#: src/qemu/qemu_hotplug.c:3357
 #, c-format
 msgid "cannot change listen socket setting on '%s' graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3369
+#: src/qemu/qemu_hotplug.c:3376
 msgid "cannot change port settings on vnc graphics"
 msgstr ""
 "no es posible modificar la configuración de los puertos sobre los gráficos "
 "vnc"
 
-#: src/qemu/qemu_hotplug.c:3374
+#: src/qemu/qemu_hotplug.c:3381
 msgid "cannot change keymap setting on vnc graphics"
 msgstr "no es posible modificar la configuración de keymap sobre gráficos vnc"
 
-#: src/qemu/qemu_hotplug.c:3415
+#: src/qemu/qemu_hotplug.c:3422
 msgid "cannot change port settings on spice graphics"
 msgstr "No se puede cambiar configuración de puerto en gráficas SPICE"
 
-#: src/qemu/qemu_hotplug.c:3421
+#: src/qemu/qemu_hotplug.c:3428
 msgid "cannot change keymap setting on spice graphics"
 msgstr "No se puede cambiar configuración de keymap en gráficas SPICE"
 
-#: src/qemu/qemu_hotplug.c:3463
+#: src/qemu/qemu_hotplug.c:3470
 #, c-format
 msgid "unable to change config on '%s' graphics type"
 msgstr "no es posible modificar la configuración del tipo de gráficos '%s'"
 
-#: src/qemu/qemu_hotplug.c:3858
+#: src/qemu/qemu_hotplug.c:3865
 msgid "unable to determine original VLAN"
 msgstr "no es posible determinar VLAN original"
 
-#: src/qemu/qemu_hotplug.c:4195
+#: src/qemu/qemu_hotplug.c:4202
 #, fuzzy, c-format
 msgid "don't know how to remove a %s device"
 msgstr "No se conoce cómo retirar un dispositivo %s"
 
-#: src/qemu/qemu_hotplug.c:4272
+#: src/qemu/qemu_hotplug.c:4279
 msgid "unplug of device was rejected by the guest"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4312 src/qemu/qemu_hotplug.c:4541
+#: src/qemu/qemu_hotplug.c:4319 src/qemu/qemu_hotplug.c:4548
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %s"
 msgstr "No se  puede desconectar dispositivo PCI de multifunciones: %s"
 
-#: src/qemu/qemu_hotplug.c:4322
+#: src/qemu/qemu_hotplug.c:4329
 msgid "device cannot be detached without a valid CCW address"
 msgstr "El dispositivo no puede desconectarse sin una dirección CCW válida"
 
-#: src/qemu/qemu_hotplug.c:4329
+#: src/qemu/qemu_hotplug.c:4336
 msgid "device cannot be detached without a valid PCI address"
 msgstr "El dispositivo no puede desconectarse sin una dirección PCI válida"
 
-#: src/qemu/qemu_hotplug.c:4429 src/uml/uml_driver.c:2373
+#: src/qemu/qemu_hotplug.c:4436 src/uml/uml_driver.c:2373
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Este tipo de disco no puede ser desconectado automáticamente"
 
-#: src/qemu/qemu_hotplug.c:4433
+#: src/qemu/qemu_hotplug.c:4440
 #, c-format
 msgid "disk device type '%s' cannot be detached"
 msgstr "No  desconectar el dispositivo de disco '%s'"
 
-#: src/qemu/qemu_hotplug.c:4526
+#: src/qemu/qemu_hotplug.c:4533
 #, c-format
 msgid "device with '%s' address cannot be detached"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4533
+#: src/qemu/qemu_hotplug.c:4540
 #, c-format
 msgid "device with invalid '%s' address cannot be detached"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4548
+#: src/qemu/qemu_hotplug.c:4555
 msgid "device cannot be detached: device is busy"
 msgstr "Dispositivo  no puede ser desconectado: el dispositivo está ocupado"
 
-#: src/qemu/qemu_hotplug.c:4595 src/qemu/qemu_hotplug.c:4889
+#: src/qemu/qemu_hotplug.c:4602 src/qemu/qemu_hotplug.c:4896
 msgid "device cannot be detached without a PCI address"
 msgstr "el dispositivo no puede ser desasociado sin una dirección PCI"
 
-#: src/qemu/qemu_hotplug.c:4619 src/qemu/qemu_hotplug.c:4643
-#: src/qemu/qemu_hotplug.c:4668
+#: src/qemu/qemu_hotplug.c:4626 src/qemu/qemu_hotplug.c:4650
+#: src/qemu/qemu_hotplug.c:4675
 msgid "device cannot be detached without a device alias"
 msgstr "el dispositivo no puede ser desasociado sin un alias"
 
-#: src/qemu/qemu_hotplug.c:4760
+#: src/qemu/qemu_hotplug.c:4767
 #, c-format
 msgid "host usb device %03d.%03d not found"
 msgstr "no se ha encoentrado el dispositivo de host usb %03d.%03d"
 
-#: src/qemu/qemu_hotplug.c:4764
+#: src/qemu/qemu_hotplug.c:4771
 #, c-format
 msgid "host usb device vendor=0x%.4x product=0x%.4x not found"
 msgstr ""
 "No se encontró proveedor de dispositivo usb host=0x%.4x producto=0x%.4x "
 
-#: src/qemu/qemu_hotplug.c:4773
+#: src/qemu/qemu_hotplug.c:4780
 #, c-format
 msgid "host scsi iSCSI path %s not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4779
+#: src/qemu/qemu_hotplug.c:4786
 #, c-format
 msgid "host scsi device %s:%u:%u.%llu not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4830
+#: src/qemu/qemu_hotplug.c:4837
 #, c-format
 msgid "live detach of shmem model '%s' is not supported"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4882
+#: src/qemu/qemu_hotplug.c:4889
 msgid "device cannot be detached without a CCW address"
 msgstr "No se pudo desconectar dispositivo sin una dirección CCW"
 
-#: src/qemu/qemu_hotplug.c:4895
+#: src/qemu/qemu_hotplug.c:4902
 #, c-format
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr "No se  puede desconectar dispositivo PCI de multifunciones: %s"
 
-#: src/qemu/qemu_hotplug.c:4971
+#: src/qemu/qemu_hotplug.c:4978
 msgid "Graphics password only supported for VNC"
 msgstr "La contraseña de gráficas solo está soportada para VNC"
 
-#: src/qemu/qemu_hotplug.c:4997
+#: src/qemu/qemu_hotplug.c:5004
 msgid "Expiry of passwords is not supported"
 msgstr "Expiración de contraseñas no tiene soporte"
 
-#: src/qemu/qemu_hotplug.c:5126
+#: src/qemu/qemu_hotplug.c:5133
 msgid "alias not set for RNG device"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5169
+#: src/qemu/qemu_hotplug.c:5176
 msgid "alias for the memory device was not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5267
+#: src/qemu/qemu_hotplug.c:5274
 #, c-format
 msgid "vcpu '%u' can't be unplugged"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5288
+#: src/qemu/qemu_hotplug.c:5295
 msgid "vcpu unplug request timed out"
 msgstr ""
 
@@ -41559,9 +41560,9 @@ msgid "event 'lifecycle' for node device %s: %s\n"
 msgstr ""
 
 #: tools/virsh-nodedev.c:821
-#, c-format
-msgid "%s: event '%s'' for node device %s\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "%s: event '%s' for node device %s\n"
+msgstr "Se ha destruido el dispositivo de nodo '%s'\n"
 
 #: tools/virsh-nodedev.c:826
 #, c-format

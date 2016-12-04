@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 2.5.0\n"
 "Report-Msgid-Bugs-To: libvir-list@redhat.com\n"
-"POT-Creation-Date: 2016-12-01 11:38+0000\n"
+"POT-Creation-Date: 2016-12-04 21:11+0100\n"
 "PO-Revision-Date: 2015-02-27 04:59-0500\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -5470,7 +5470,7 @@ msgstr "PCI ଠିକଣା ସଜ୍ଜିକରଣ ଶୈଳୀ ବିଫଳ �
 
 #: src/conf/domain_conf.c:21004 src/conf/domain_conf.c:21045
 #: src/conf/domain_conf.c:22864 src/conf/domain_conf.c:22873
-#: src/libxl/libxl_driver.c:3772 src/qemu/qemu_hotplug.c:4789
+#: src/libxl/libxl_driver.c:3772 src/qemu/qemu_hotplug.c:4796
 #, c-format
 msgid "unexpected hostdev type %d"
 msgstr "ଅପ୍ରତ୍ୟାଶିତ hostdev ପ୍ରକାର %d"
@@ -11521,19 +11521,19 @@ msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
 msgstr ""
 
 #: src/libxl/libxl_driver.c:3240 src/libxl/libxl_driver.c:3756
-#: src/qemu/qemu_hotplug.c:2585 src/qemu/qemu_hotplug.c:4742
+#: src/qemu/qemu_hotplug.c:2592 src/qemu/qemu_hotplug.c:4749
 #, c-format
 msgid "hostdev mode '%s' not supported"
 msgstr "hostdev ଧାରା '%s' ସମର୍ଥିତ ନୁହଁ"
 
-#: src/libxl/libxl_driver.c:3260 src/qemu/qemu_hotplug.c:2616
-#: src/qemu/qemu_hotplug.c:4710
+#: src/libxl/libxl_driver.c:3260 src/qemu/qemu_hotplug.c:2623
+#: src/qemu/qemu_hotplug.c:4717
 #, c-format
 msgid "hostdev subsys type '%s' not supported"
 msgstr "hostdev subsys ପ୍ରକାର '%s' ସମର୍ଥିତ ନୁହଁ"
 
 #: src/libxl/libxl_driver.c:3285 src/lxc/lxc_driver.c:4404
-#: src/qemu/qemu_hotplug.c:4414 src/uml/uml_driver.c:2308
+#: src/qemu/qemu_hotplug.c:4421 src/uml/uml_driver.c:2308
 #, c-format
 msgid "disk %s not found"
 msgstr "ଡିସ୍କ %s ମିଳିଲା ନାହିଁ"
@@ -11587,12 +11587,12 @@ msgstr "ଉପକରଣଟି ପୂର୍ବରୁ ଡମେନ ସଂରଚନ
 msgid "persistent attach of device is not supported"
 msgstr "ଉପକରଣର ସ୍ଥାୟୀ ସଂଲଗ୍ନ ସମର୍ଥିତ ନୁହଁ"
 
-#: src/libxl/libxl_driver.c:3582 src/qemu/qemu_hotplug.c:4753
+#: src/libxl/libxl_driver.c:3582 src/qemu/qemu_hotplug.c:4760
 #, c-format
 msgid "host pci device %.4x:%.2x:%.2x.%.1x not found"
 msgstr "ଆଧାର pci ଉପକରଣ %.4x:%.2x:%.2x.%.1x ମିଳିଲା ନାହିଁ"
 
-#: src/libxl/libxl_driver.c:3590 src/qemu/qemu_hotplug.c:4586
+#: src/libxl/libxl_driver.c:3590 src/qemu/qemu_hotplug.c:4593
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %.4x:%.2x:%.2x.%.1x"
 msgstr "ଏକାଧିକ କାର୍ଯ୍ୟ ବିଶିଷ୍ଟ PCI ଉପକରଣକୁ ହଟ ଅନପ୍ଲଗ କରିପାରିବେ ନାହିଁ: %.4x:%.2x:%.2x.%.1x"
@@ -11604,7 +11604,7 @@ msgid ""
 "%.2x.%.1x"
 msgstr "libxenlight  pci ଉପକରଣ %.4x:%.2x:%.2x.%.1x କୁ ପୃଥକ କରିବାରେ ବିଫଳ"
 
-#: src/libxl/libxl_driver.c:3652 src/qemu/qemu_hotplug.c:4514
+#: src/libxl/libxl_driver.c:3652 src/qemu/qemu_hotplug.c:4521
 #, fuzzy, c-format
 msgid "controller %s:%d not found"
 msgstr "ନିୟନ୍ତ୍ରକ %s:%d ମିଳିଲା ନାହିଁ"
@@ -11643,9 +11643,9 @@ msgstr "କୌଣସି ଲକ୍ଷ୍ଯସ୍ଥଳ ଉପକରଣ %s ନା
 
 #: src/libxl/libxl_driver.c:3902 src/libxl/libxl_driver.c:3922
 #: src/lxc/lxc_driver.c:3674 src/qemu/qemu_driver.c:8076
-#: src/qemu/qemu_driver.c:8100 src/qemu/qemu_hotplug.c:1760
-#: src/qemu/qemu_hotplug.c:4817 src/qemu/qemu_hotplug.c:5071
-#: src/qemu/qemu_hotplug.c:5118 src/qemu/qemu_hotplug.c:5161
+#: src/qemu/qemu_driver.c:8100 src/qemu/qemu_hotplug.c:1767
+#: src/qemu/qemu_hotplug.c:4824 src/qemu/qemu_hotplug.c:5078
+#: src/qemu/qemu_hotplug.c:5125 src/qemu/qemu_hotplug.c:5168
 msgid "device not present in domain configuration"
 msgstr "ଡମେନ ସଂରଚନାରେ ଉପକରଣ ନାହିଁ"
 
@@ -16426,12 +16426,12 @@ msgid ""
 "booting from assigned SCSI devices is not supported with this version of qemu"
 msgstr ""
 
-#: src/qemu/qemu_command.c:5198 src/qemu/qemu_hotplug.c:1401
+#: src/qemu/qemu_command.c:5198 src/qemu/qemu_hotplug.c:1408
 msgid "VFIO PCI device assignment is not supported by this version of qemu"
 msgstr "VFIO PCI ଉପକରଣ କାର୍ଯ୍ୟଭାର qemu ସଂସ୍କରଣ ଦ୍ୱାରା ସମର୍ଥିତ ନୁହଁ"
 
 #: src/qemu/qemu_command.c:5258 src/qemu/qemu_command.c:5268
-#: src/qemu/qemu_hotplug.c:2353 src/qemu/qemu_hotplug.c:2485
+#: src/qemu/qemu_hotplug.c:2360 src/qemu/qemu_hotplug.c:2492
 msgid "SCSI passthrough is not supported by this version of qemu"
 msgstr "SCSI ଯାତାୟାତ ଏହି ସଂସ୍କରଣ qemu ଦ୍ୱାରା ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
@@ -16737,7 +16737,7 @@ msgstr "sdl '%s' ଦ୍ୱାରା ସମର୍ଥିତ ନୁହଁ"
 msgid "unsupported graphics type '%s'"
 msgstr "ଅସମର୍ଥିତ ଆଲେଖୀ ପ୍ରକାର '%s'"
 
-#: src/qemu/qemu_command.c:7949 src/qemu/qemu_hotplug.c:1084
+#: src/qemu/qemu_command.c:7949 src/qemu/qemu_hotplug.c:1091
 msgid "Netdev support unavailable"
 msgstr "Netdev ସମର୍ଥନ ଉପଲବ୍ଧ ନାହିଁ"
 
@@ -16754,12 +16754,12 @@ msgstr ""
 msgid "Error generating NIC -device string"
 msgstr ""
 
-#: src/qemu/qemu_command.c:8062 src/qemu/qemu_hotplug.c:987
+#: src/qemu/qemu_command.c:8062 src/qemu/qemu_hotplug.c:988
 #, fuzzy, c-format
 msgid "Multiqueue network is not supported for: %s"
 msgstr "ଏହା ପାଇଁ ମଲଟିକ୍ୟୁ ନେଟୱର୍କ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ: %s"
 
-#: src/qemu/qemu_command.c:8073 src/qemu/qemu_hotplug.c:998
+#: src/qemu/qemu_command.c:8073 src/qemu/qemu_hotplug.c:999
 #, c-format
 msgid "filterref is not supported for network interfaces of type %s"
 msgstr ""
@@ -17620,8 +17620,9 @@ msgid ""
 msgstr ""
 
 #: src/qemu/qemu_domain_address.c:2323
-msgid "failed to find a emtpy memory slot"
-msgstr ""
+#, fuzzy
+msgid "failed to find an empty memory slot"
+msgstr "%s ପାଇଁ ମୂଖ୍ୟ ଉପକରଣକୁ ଖୋଜିବାରେ ବିଫଳ"
 
 #: src/qemu/qemu_driver.c:247 src/test/test_driver.c:6040
 #: src/vz/vz_driver.c:2174
@@ -18224,7 +18225,7 @@ msgstr ""
 msgid "persistent attach of device '%s' is not supported"
 msgstr "ଉପକରଣ '%s' ର ସ୍ଥାୟୀ ସଂଲଗ୍ନ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
-#: src/qemu/qemu_driver.c:8088 src/qemu/qemu_hotplug.c:5046
+#: src/qemu/qemu_driver.c:8088 src/qemu/qemu_hotplug.c:5053
 #, c-format
 msgid "Lease %s in lockspace %s does not exist"
 msgstr "ଲିଜ %s ଲକସ୍ପେସ %s ରେ ଅବସ୍ଥିତ ନାହିଁ"
@@ -19029,93 +19030,93 @@ msgstr ""
 msgid "disk device='lun' is not supported for usb bus"
 msgstr "ଡିସ୍କ ଉପକରଣ='lun' ଟି usb ପରିପଥ ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
-#: src/qemu/qemu_hotplug.c:1100
+#: src/qemu/qemu_hotplug.c:1107
 #, c-format
 msgid "hotplug of interface type of %s is not implemented yet"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1138
+#: src/qemu/qemu_hotplug.c:1145
 msgid "virtio-s390 net device cannot be hotplugged."
 msgstr "virtio-s390 ନେଟ ଉପକରଣକୁ ହଟପ୍ଲଗ କରାଯାଇପାରିବ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:1153
+#: src/qemu/qemu_hotplug.c:1160
 msgid "Unable to attach network devices without vlan"
 msgstr "vlan ବିନା ନେଟୱର୍କ ଉପକରଣଗୁଡ଼ିକୁ ସଂଲଗ୍ନ କରିବାରେ ଅସମର୍ଥ"
 
-#: src/qemu/qemu_hotplug.c:1242
+#: src/qemu/qemu_hotplug.c:1249
 msgid "device alias not found: cannot set link state to down"
 msgstr "ଉପକରଣ ଉପନାମ ମିଳୁ ନାହିଁ: ଲିଙ୍କ ସ୍ଥିତିକୁ ତଳେ ସେଟ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:1254
+#: src/qemu/qemu_hotplug.c:1261
 msgid "setting of link state not supported: Link is up"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1414
+#: src/qemu/qemu_hotplug.c:1421
 #, c-format
 msgid "QEMU does not support device assignment mode '%s'"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:1459
+#: src/qemu/qemu_hotplug.c:1466
 msgid "guest unexpectedly quit during hotplug"
 msgstr "ହଟପ୍ଲଗ ସମୟରେ ଅତିଥି ଅପ୍ରତ୍ୟାଶିତ ଭାବରେ ବିଦାୟ ନେଇଛି"
 
-#: src/qemu/qemu_hotplug.c:1666
+#: src/qemu/qemu_hotplug.c:1673
 msgid "attaching serial console is not supported"
 msgstr "କ୍ରମିକ କୋନସୋଲକୁ ସଂଲଗ୍ନ କରିବା ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
-#: src/qemu/qemu_hotplug.c:1672
+#: src/qemu/qemu_hotplug.c:1679
 msgid "chardev already exists"
 msgstr "chardev ପୂର୍ବରୁ ଅବସ୍ଥିତ"
 
-#: src/qemu/qemu_hotplug.c:1746
+#: src/qemu/qemu_hotplug.c:1753
 msgid "detaching serial console is not supported"
 msgstr "କ୍ରମିକ କୋନସୋଲକୁ ପୃଥକ କରିବା ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
-#: src/qemu/qemu_hotplug.c:1812
+#: src/qemu/qemu_hotplug.c:1819
 msgid "Unsupported address type for character device"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2375
+#: src/qemu/qemu_hotplug.c:2382
 #, c-format
 msgid "Unable to prepare scsi hostdev for iSCSI: %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2380
+#: src/qemu/qemu_hotplug.c:2387
 #, c-format
 msgid "Unable to prepare scsi hostdev: %s:%u:%u:%llu"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2492
+#: src/qemu/qemu_hotplug.c:2499
 #, c-format
 msgid "Unable to prepare scsi_host hostdev: %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2651
+#: src/qemu/qemu_hotplug.c:2658
 #, c-format
 msgid "live attach of shmem model '%s' is not supported"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2763 src/qemu/qemu_interface.c:525
+#: src/qemu/qemu_hotplug.c:2770 src/qemu/qemu_interface.c:525
 #, fuzzy
 msgid "Missing bridge name"
 msgstr "ଅନୁପସ୍ଥିତ ସମୟ ମାପକ ନାମ"
 
-#: src/qemu/qemu_hotplug.c:2772
+#: src/qemu/qemu_hotplug.c:2779
 #, c-format
 msgid "bridge %s doesn't exist"
 msgstr "ବ୍ରିଜ %s ଅବସ୍ଥିତ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:2796
+#: src/qemu/qemu_hotplug.c:2803
 #, c-format
 msgid "unable to recover former state by adding port to bridge %s"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:2820
+#: src/qemu/qemu_hotplug.c:2827
 #, c-format
 msgid "filters not supported on interfaces of type %s"
 msgstr "ଫିଲଟରଗୁଡ଼ିକ %s ପ୍ରକାରର ଅନ୍ତରାପୃଷ୍ଠଗୁଡ଼ିକ ଉପରେ ସହାୟତା ପ୍ରାପ୍ତ ନୁହଁ"
 
-#: src/qemu/qemu_hotplug.c:2832
+#: src/qemu/qemu_hotplug.c:2839
 #, c-format
 msgid ""
 "failed to add new filter rules to '%s' - attempting to restore old rules"
@@ -19123,230 +19124,230 @@ msgstr ""
 "'%s' ସହିତ ନୂତନ ଫିଲଟର ନିୟମ ଯୋଗ କରିବାରେ ବିଫଳ - ପୁରୁଣା ନିୟମଗୁଡ଼ିକୁ ପୁନଃସ୍ଥାପନ କରିବା ପାଇଁ ଚେଷ୍ଟା "
 "କରୁଅଛି"
 
-#: src/qemu/qemu_hotplug.c:2854
+#: src/qemu/qemu_hotplug.c:2861
 msgid "can't change link state: device alias not found"
 msgstr "ସଂଯୋଗିକୀ ସ୍ଥିତିକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ: ଉପକରଣ ଉପନାମ ମିଳୁ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:2900
+#: src/qemu/qemu_hotplug.c:2907
 msgid "cannot find existing network device to modify"
 msgstr "ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ  ସ୍ଥିତବାନ ନେଟୱର୍କ ଉପକରଣଗୁଡ଼ିକୁ ଖୋଜି ପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:2908
+#: src/qemu/qemu_hotplug.c:2915
 #, c-format
 msgid "cannot change config of '%s' network type"
 msgstr "'%s' ନେଟୱର୍କ ପ୍ରକାରର ବିନ୍ୟାସକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:2931
+#: src/qemu/qemu_hotplug.c:2938
 #, c-format
 msgid "cannot change network interface mac address from %s to %s"
 msgstr "ନେଟୱର୍କ ଅନ୍ତରାପୃଷ୍ଠ mac ଠିକଣାକୁ %s ରୁ %s କୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:2940
+#: src/qemu/qemu_hotplug.c:2947
 #, c-format
 msgid "cannot modify network device model from %s to %s"
 msgstr "ନେଟୱର୍କ ଉପକରଣ ମଡେଲକୁ %s ରୁ %s କୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:2965
+#: src/qemu/qemu_hotplug.c:2972
 msgid "cannot modify virtio network device driver attributes"
 msgstr "virtio ନେଟୱର୍କ ଉପକରଣ ଡ୍ରାଇଭର ଗୁଣଧର୍ମଗୁଡ଼ିକୁ ପରିବର୍ତ୍ତନ କରିପାରବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:2979
+#: src/qemu/qemu_hotplug.c:2986
 msgid "cannot modify network device script attribute"
 msgstr "ନେଟୱର୍କ ଉପକରଣ ସ୍କ୍ରିପ୍ଟ ଗୁଣଧର୍ମକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:2988
+#: src/qemu/qemu_hotplug.c:2995
 msgid "cannot modify network device tap name"
 msgstr "ନେଟୱର୍କ ଉପକରଣ ଟ୍ୟାପ ନାମକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:3006
+#: src/qemu/qemu_hotplug.c:3013
 msgid "cannot modify network device guest PCI address"
 msgstr "ନେଟୱର୍କ ଉପକରଣ ଅତିଥି PCI ଠିକଣାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:3015
+#: src/qemu/qemu_hotplug.c:3022
 msgid "cannot modify network device alias"
 msgstr "ନେଟୱର୍କ ଉପକରଣ ଉପନାମକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:3020
+#: src/qemu/qemu_hotplug.c:3027
 msgid "cannot modify network device rom bar setting"
 msgstr "ନେଟୱର୍କ ଉପକରଣ rom ପଟି ବିନ୍ୟାସକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:3025
+#: src/qemu/qemu_hotplug.c:3032
 msgid "cannot modify network rom file"
 msgstr "ନେଟୱର୍କ rom ଫାଇଲକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:3030
+#: src/qemu/qemu_hotplug.c:3037
 msgid "cannot modify network device boot index setting"
 msgstr "ନେଟୱର୍କ ଉପକରଣ ବୁଟ ଅନୁକ୍ରମଣିକା ବିନ୍ୟାସକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ "
 
-#: src/qemu/qemu_hotplug.c:3057
+#: src/qemu/qemu_hotplug.c:3064
 #, c-format
 msgid "cannot change network interface type to '%s'"
 msgstr "ନେଟୱର୍କ ଅନ୍ତରାପୃଷ୍ଠ ପ୍ରକାରକୁ '%s' କୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:3110 src/qemu/qemu_hotplug.c:3183
+#: src/qemu/qemu_hotplug.c:3117 src/qemu/qemu_hotplug.c:3190
 #, c-format
 msgid "unable to change config on '%s' network type"
 msgstr "'%s' ନେଟୱର୍କ ପ୍ରକାର ଉପରେ ବିନ୍ୟାସକୁ ପରିବର୍ତ୍ତନ କରିବାରେ ଅସମର୍ଥ"
 
-#: src/qemu/qemu_hotplug.c:3304
+#: src/qemu/qemu_hotplug.c:3311
 msgid "cannot find existing graphics device to modify"
 msgstr "ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସ୍ଥିତବାନ ଆଲେଖୀ ଉପକରଣକୁ ଖୋଜି ପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:3310
+#: src/qemu/qemu_hotplug.c:3317
 #, c-format
 msgid "cannot change the number of listen addresses on '%s' graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3321
+#: src/qemu/qemu_hotplug.c:3328
 #, c-format
 msgid "cannot change the type of listen address on '%s' graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3330 src/qemu/qemu_hotplug.c:3340
+#: src/qemu/qemu_hotplug.c:3337 src/qemu/qemu_hotplug.c:3347
 #, c-format
 msgid "cannot change listen address setting on '%s' graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3350
+#: src/qemu/qemu_hotplug.c:3357
 #, c-format
 msgid "cannot change listen socket setting on '%s' graphics"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:3369
+#: src/qemu/qemu_hotplug.c:3376
 msgid "cannot change port settings on vnc graphics"
 msgstr "vnc ଆଲେଖୀଗୁଡ଼ିକ ଉପରେ ପୋର୍ଟ ସଂରଚନାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:3374
+#: src/qemu/qemu_hotplug.c:3381
 msgid "cannot change keymap setting on vnc graphics"
 msgstr "vnc ଆଲେଖୀ ଉପରେ କିମ୍ୟାପ ସଂରଚନାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:3415
+#: src/qemu/qemu_hotplug.c:3422
 msgid "cannot change port settings on spice graphics"
 msgstr "spice ଆଲେଖୀ ଉପରେ ପୋର୍ଟ ସଂରଚନାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:3421
+#: src/qemu/qemu_hotplug.c:3428
 msgid "cannot change keymap setting on spice graphics"
 msgstr "spice ଆଲେଖୀ ଉପରେ କିମ୍ୟାପ ସଂରଚନାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:3463
+#: src/qemu/qemu_hotplug.c:3470
 #, c-format
 msgid "unable to change config on '%s' graphics type"
 msgstr "'%s' ଆଲେଖିକ ପ୍ରକାର ଉପରେ ସଂରଚନାକୁ ପରିବର୍ତ୍ତନ କରିବାରେ ଅସମର୍ଥ"
 
-#: src/qemu/qemu_hotplug.c:3858
+#: src/qemu/qemu_hotplug.c:3865
 msgid "unable to determine original VLAN"
 msgstr "ପ୍ରକୃତ VLAN କୁ ନିର୍ଦ୍ଧାରଣ କରିବାରେ ଅସମର୍ଥ"
 
-#: src/qemu/qemu_hotplug.c:4195
+#: src/qemu/qemu_hotplug.c:4202
 #, fuzzy, c-format
 msgid "don't know how to remove a %s device"
 msgstr "%s ଉପକରଣକୁ କିପରି ବାହାର କରିବେ ତାହା ଜଣା ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:4272
+#: src/qemu/qemu_hotplug.c:4279
 msgid "unplug of device was rejected by the guest"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4312 src/qemu/qemu_hotplug.c:4541
+#: src/qemu/qemu_hotplug.c:4319 src/qemu/qemu_hotplug.c:4548
 #, c-format
 msgid "cannot hot unplug multifunction PCI device: %s"
 msgstr "ଏକାଧିକ କାର୍ୟ୍ୟ ବିଶିଷ୍ଟ PCI ଉପକରଣକୁ ହଟ ଅନପ୍ଲଗ କରିପାରିବେ ନାହିଁ: %s"
 
-#: src/qemu/qemu_hotplug.c:4322
+#: src/qemu/qemu_hotplug.c:4329
 msgid "device cannot be detached without a valid CCW address"
 msgstr "ବୈଧ CCW ଠିକଣା ବିନା ଉପକରଣକୁ ପୃଥକ କରିହେବ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:4329
+#: src/qemu/qemu_hotplug.c:4336
 msgid "device cannot be detached without a valid PCI address"
 msgstr "ବୈଧ PCI ଠିକଣା ବିନା ଉପକରଣକୁ ପୃଥକ କରିହେବ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:4429 src/uml/uml_driver.c:2373
+#: src/qemu/qemu_hotplug.c:4436 src/uml/uml_driver.c:2373
 msgid "This type of disk cannot be hot unplugged"
 msgstr "ଏହି ପ୍ରକାରର ଡିସ୍କକୁ ହଟ ଅନପ୍ଲଗ କରିହେବ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:4433
+#: src/qemu/qemu_hotplug.c:4440
 #, c-format
 msgid "disk device type '%s' cannot be detached"
 msgstr "ଡିସ୍କ ଉପକରଣ ପ୍ରକାର '%s' କୁ ପୃଥକ କରିହେବ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:4526
+#: src/qemu/qemu_hotplug.c:4533
 #, c-format
 msgid "device with '%s' address cannot be detached"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4533
+#: src/qemu/qemu_hotplug.c:4540
 #, c-format
 msgid "device with invalid '%s' address cannot be detached"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4548
+#: src/qemu/qemu_hotplug.c:4555
 msgid "device cannot be detached: device is busy"
 msgstr "ଉପକରଣକୁ ପୃଥକ କରିପାରିବେ ନାହିଁ: ଉପକରଣଟି ବ୍ୟସ୍ତ ଅଛି"
 
-#: src/qemu/qemu_hotplug.c:4595 src/qemu/qemu_hotplug.c:4889
+#: src/qemu/qemu_hotplug.c:4602 src/qemu/qemu_hotplug.c:4896
 msgid "device cannot be detached without a PCI address"
 msgstr "PCI ଠିକଣା ବିନା ଉପକରଣକୁ ପୃଥକ କରିହେବ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:4619 src/qemu/qemu_hotplug.c:4643
-#: src/qemu/qemu_hotplug.c:4668
+#: src/qemu/qemu_hotplug.c:4626 src/qemu/qemu_hotplug.c:4650
+#: src/qemu/qemu_hotplug.c:4675
 msgid "device cannot be detached without a device alias"
 msgstr "ଉପକରଣ ଉପନାମ ବିନା ଉପକରଣକୁ ପୃଥକ କରିହେବ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:4760
+#: src/qemu/qemu_hotplug.c:4767
 #, c-format
 msgid "host usb device %03d.%03d not found"
 msgstr "ହୋଷ୍ଟ usb ଉପକରଣ %03d.%03d ମିଳିଲା ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:4764
+#: src/qemu/qemu_hotplug.c:4771
 #, c-format
 msgid "host usb device vendor=0x%.4x product=0x%.4x not found"
 msgstr "ହୋଷ୍ଟ usb ଉପକରଣ ବିକ୍ରେତା=0x%.4x ଉତ୍ପାଦନ=0x%.4x ମିଳୁ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:4773
+#: src/qemu/qemu_hotplug.c:4780
 #, c-format
 msgid "host scsi iSCSI path %s not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4779
+#: src/qemu/qemu_hotplug.c:4786
 #, c-format
 msgid "host scsi device %s:%u:%u.%llu not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4830
+#: src/qemu/qemu_hotplug.c:4837
 #, c-format
 msgid "live detach of shmem model '%s' is not supported"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:4882
+#: src/qemu/qemu_hotplug.c:4889
 msgid "device cannot be detached without a CCW address"
 msgstr "CCW ଠିକଣା ବିନା ଉପକରଣକୁ ପୃଥକ କରିହେବ ନାହିଁ"
 
-#: src/qemu/qemu_hotplug.c:4895
+#: src/qemu/qemu_hotplug.c:4902
 #, c-format
 msgid "cannot hot unplug multifunction PCI device :%s"
 msgstr "ଏକାଧିକ କାର୍ଯ୍ୟ ବିଶିଷ୍ଟ PCI ଉପକରଣକୁ ହଟ ଅନପ୍ଲଗ କରିପାରିବେ ନାହିଁ :%s"
 
-#: src/qemu/qemu_hotplug.c:4971
+#: src/qemu/qemu_hotplug.c:4978
 msgid "Graphics password only supported for VNC"
 msgstr "ଆଲେଖିକ ପ୍ରବେଶ ସଂକେତ କେବଳ VNC ପାଇଁ ସହାୟତା ପ୍ରାପ୍ତ"
 
-#: src/qemu/qemu_hotplug.c:4997
+#: src/qemu/qemu_hotplug.c:5004
 msgid "Expiry of passwords is not supported"
 msgstr "ପ୍ରବେଶ ସଂକେତଗୁଡ଼ିକର ସମୟ ସମାପ୍ତି ସମର୍ଥିତ ନୁହଁ"
 
-#: src/qemu/qemu_hotplug.c:5126
+#: src/qemu/qemu_hotplug.c:5133
 msgid "alias not set for RNG device"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5169
+#: src/qemu/qemu_hotplug.c:5176
 msgid "alias for the memory device was not found"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5267
+#: src/qemu/qemu_hotplug.c:5274
 #, c-format
 msgid "vcpu '%u' can't be unplugged"
 msgstr ""
 
-#: src/qemu/qemu_hotplug.c:5288
+#: src/qemu/qemu_hotplug.c:5295
 msgid "vcpu unplug request timed out"
 msgstr ""
 
@@ -40560,9 +40561,9 @@ msgid "event 'lifecycle' for node device %s: %s\n"
 msgstr ""
 
 #: tools/virsh-nodedev.c:821
-#, c-format
-msgid "%s: event '%s'' for node device %s\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "%s: event '%s' for node device %s\n"
+msgstr "ନଷ୍ଟ ହୋଇଥିବା ନୋଡ ଉପକରଣ '%s'\n"
 
 #: tools/virsh-nodedev.c:826
 #, c-format
