@@ -12,6 +12,16 @@
     <a href="http://libvirt.org/git/?p=libvirt.git;a=log">git log</a>.
     </p>
 
+    <h3>v2.6.0 (<i>unreleased</i>)</h3>
+    <ul>
+      <li><strong>New features</strong>
+      </li>
+      <li><strong>Improvements</strong>
+      </li>
+      <li><strong>Bug fixes</strong>
+      </li>
+    </ul>
+
     <h3>v2.5.0 (2016-12-04)</h3>
     <ul>
       <li><strong>New features</strong>
