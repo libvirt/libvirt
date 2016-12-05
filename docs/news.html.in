@@ -15,6 +15,13 @@
     <h3>v3.0.0 (<i>unreleased</i>)</h3>
     <ul>
       <li><strong>New features</strong>
+        <ul>
+          <li>qemu: Support QEMU group I/O throttling<br/>
+          Add the capability to allow group I/O throttling via a new
+          domain &lt;disk&gt; &lt;iotune&gt; subelement "group_name"
+          to allow sharing I/O throttling quota between multiple drives
+          </li>
+        </ul>
       </li>
       <li><strong>Improvements</strong>
       </li>
