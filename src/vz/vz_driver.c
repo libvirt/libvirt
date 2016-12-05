@@ -1746,7 +1746,10 @@ vzDomainBlockStatsImpl(virDomainObjPtr dom,
             virReportError(VIR_ERR_INVALID_ARG, _("invalid path: %s"), path);
             return -1;
         }
-        if (prlsdkGetBlockStats(privdom->stats, dom->def->disks[idx], stats) < 0)
+        if (prlsdkGetBlockStats(privdom->stats,
+                                dom->def->disks[idx],
+                                stats,
+                                IS_CT(dom->def)) < 0)
             return -1;
     } else {
         virDomainBlockStatsStruct s;
@@ -1759,7 +1762,10 @@ vzDomainBlockStatsImpl(virDomainObjPtr dom,
 #undef PARALLELS_ZERO_STATS
 
         for (i = 0; i < dom->def->ndisks; i++) {
-            if (prlsdkGetBlockStats(privdom->stats, dom->def->disks[i], &s) < 0)
+            if (prlsdkGetBlockStats(privdom->stats,
+                                    dom->def->disks[i],
+                                    &s,
+                                    IS_CT(dom->def)) < 0)
                 return -1;
 
 #define PARALLELS_SUM_STATS(VAR, TYPE, NAME)        \

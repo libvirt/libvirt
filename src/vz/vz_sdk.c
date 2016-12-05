@@ -4367,7 +4367,8 @@ prlsdkExtractStatsParam(PRL_HANDLE sdkstats, const char *name, long long *val)
 int
 prlsdkGetBlockStats(PRL_HANDLE sdkstats,
                     virDomainDiskDefPtr disk,
-                    virDomainBlockStatsPtr stats)
+                    virDomainBlockStatsPtr stats,
+                    bool isCt)
 {
     virDomainDeviceDriveAddressPtr address;
     int idx;
@@ -4376,23 +4377,29 @@ prlsdkGetBlockStats(PRL_HANDLE sdkstats,
     char *name = NULL;
 
     address = &disk->info.addr.drive;
-    switch (disk->bus) {
-    case VIR_DOMAIN_DISK_BUS_IDE:
-        prefix = "ide";
-        idx = address->bus * 2 + address->unit;
-        break;
-    case VIR_DOMAIN_DISK_BUS_SATA:
-        prefix = "sata";
+
+    if (isCt) {
+        prefix = "hdd";
         idx = address->unit;
-        break;
-    case VIR_DOMAIN_DISK_BUS_SCSI:
-        prefix = "scsi";
-        idx = address->unit;
-        break;
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown disk bus: %X"), disk->bus);
-        goto cleanup;
+    } else {
+        switch (disk->bus) {
+        case VIR_DOMAIN_DISK_BUS_IDE:
+            prefix = "ide";
+            idx = address->bus * 2 + address->unit;
+            break;
+        case VIR_DOMAIN_DISK_BUS_SATA:
+            prefix = "sata";
+            idx = address->unit;
+            break;
+        case VIR_DOMAIN_DISK_BUS_SCSI:
+            prefix = "scsi";
+            idx = address->unit;
+            break;
+        default:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unknown disk bus: %X"), disk->bus);
+            goto cleanup;
+        }
     }
 
 

@@ -63,7 +63,7 @@ prlsdkDetachDevice(vzDriverPtr driver, virDomainObjPtr dom, virDomainDeviceDefPt
 int
 prlsdkUpdateDevice(vzDriverPtr driver, virDomainObjPtr dom, virDomainDeviceDefPtr dev);
 int
-prlsdkGetBlockStats(PRL_HANDLE sdkstats, virDomainDiskDefPtr disk, virDomainBlockStatsPtr stats);
+prlsdkGetBlockStats(PRL_HANDLE sdkstats, virDomainDiskDefPtr disk, virDomainBlockStatsPtr stats, bool isCt);
 int
 prlsdkGetNetStats(PRL_HANDLE sdkstas, PRL_HANDLE sdkdom, const char *path, virDomainInterfaceStatsPtr stats);
 int
