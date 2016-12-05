@@ -1695,8 +1695,23 @@ prlsdkBootOrderCheck(PRL_HANDLE sdkdom, PRL_DEVICE_TYPE sdkType, int sdkIndex,
     return ret;
 }
 
+static void
+prlsdkConvertBootOrderCt(virDomainDefPtr def)
+{
+    size_t i;
+    for (i = 0; i < def->nfss; i++) {
+
+        if (STREQ(def->fss[i]->dst, "/")) {
+            def->os.nBootDevs = 0;
+            return;
+        }
+    }
+    def->os.nBootDevs = 1;
+    def->os.bootDevs[0] = VIR_DOMAIN_BOOT_DISK;
+}
+
 static int
-prlsdkConvertBootOrder(PRL_HANDLE sdkdom, virDomainDefPtr def)
+prlsdkConvertBootOrderVm(PRL_HANDLE sdkdom, virDomainDefPtr def)
 {
     int ret = -1;
     PRL_RESULT pret;
@@ -1855,8 +1870,12 @@ prlsdkLoadDomain(vzDriverPtr driver,
         goto error;
 
     /* depends on prlsdkAddDomainHardware */
-    if (prlsdkConvertBootOrder(sdkdom, def) < 0)
-        goto error;
+    if (IS_CT(def)) {
+        prlsdkConvertBootOrderCt(def);
+    } else {
+        if (prlsdkConvertBootOrderVm(sdkdom, def) < 0)
+            goto error;
+    }
 
     pret = PrlVmCfg_GetEnvId(sdkdom, &envId);
     prlsdkCheckRetGoto(pret, error);
