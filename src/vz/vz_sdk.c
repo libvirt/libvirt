@@ -563,6 +563,7 @@ prlsdkGetDiskId(PRL_HANDLE disk, int *bus, char **dst)
         *dst = virIndexToDiskName(pos, "hd");
         break;
     case PMS_SCSI_DEVICE:
+    case PMS_UNKNOWN_DEVICE:
         *bus = VIR_DOMAIN_DISK_BUS_SCSI;
         *dst = virIndexToDiskName(pos, "sd");
         break;
