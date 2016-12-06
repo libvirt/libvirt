@@ -226,7 +226,8 @@ int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                    bool withBlockVolFormat,
                                    unsigned int openflags,
                                    unsigned int readflags);
-int virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
+int virStorageBackendUpdateVolTargetInfo(virStorageVolType voltype,
+                                         virStorageSourcePtr target,
                                          bool withBlockVolFormat,
                                          unsigned int openflags,
                                          unsigned int readflags);

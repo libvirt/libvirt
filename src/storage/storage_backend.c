@@ -1869,6 +1869,7 @@ virStorageBackendRedoPloopUpdate(virStorageSourcePtr target, struct stat *sb,
 
 /*
  * virStorageBackendUpdateVolTargetInfo
+ * @voltype: Volume type
  * @target: target definition ptr of volume to update
  * @withBlockVolFormat: true if caller determined a block file
  * @openflags: various VolOpenCheckMode flags to handle errors on open
@@ -1881,7 +1882,8 @@ virStorageBackendRedoPloopUpdate(virStorageSourcePtr target, struct stat *sb,
  * be returned if the caller passed a readflagsflag.
  */
 int
-virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
+virStorageBackendUpdateVolTargetInfo(virStorageVolType voltype,
+                                     virStorageSourcePtr target,
                                      bool withBlockVolFormat,
                                      unsigned int openflags,
                                      unsigned int readflags)
@@ -1898,7 +1900,7 @@ virStorageBackendUpdateVolTargetInfo(virStorageSourcePtr target,
     if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb)) < 0)
         goto cleanup;
 
-    if (target->type == VIR_STORAGE_VOL_FILE &&
+    if (voltype == VIR_STORAGE_VOL_FILE &&
         target->format != VIR_STORAGE_FILE_NONE) {
         if (S_ISDIR(sb.st_mode)) {
             if (virStorageBackendIsPloopDir(target->path)) {
@@ -1969,13 +1971,15 @@ virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
 {
     int ret;
 
-    if ((ret = virStorageBackendUpdateVolTargetInfo(&vol->target,
+    if ((ret = virStorageBackendUpdateVolTargetInfo(vol->type,
+                                                    &vol->target,
                                                     withBlockVolFormat,
                                                     openflags, readflags)) < 0)
         return ret;
 
     if (vol->target.backingStore &&
-        (ret = virStorageBackendUpdateVolTargetInfo(vol->target.backingStore,
+        (ret = virStorageBackendUpdateVolTargetInfo(VIR_STORAGE_VOL_FILE,
+                                                    vol->target.backingStore,
                                                     withBlockVolFormat,
                                                     VIR_STORAGE_VOL_OPEN_DEFAULT |
                                                     VIR_STORAGE_VOL_OPEN_NOERROR,
