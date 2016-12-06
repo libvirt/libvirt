@@ -11108,111 +11108,127 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  * binary-OR of enum virDomainStatsTypes. The following groups are available
  * (although not necessarily implemented for each hypervisor):
  *
- * VIR_DOMAIN_STATS_STATE: Return domain state and reason for entering that
- * state. The typed parameter keys are in this format:
- * "state.state" - state of the VM, returned as int from virDomainState enum
- * "state.reason" - reason for entering given state, returned as int from
- *                  virDomain*Reason enum corresponding to given state.
+ * VIR_DOMAIN_STATS_STATE:
+ *     Return domain state and reason for entering that state. The typed
+ *     parameter keys are in this format:
  *
- * VIR_DOMAIN_STATS_CPU_TOTAL: Return CPU statistics and usage information.
- * The typed parameter keys are in this format:
- * "cpu.time" - total cpu time spent for this domain in nanoseconds
- *              as unsigned long long.
- * "cpu.user" - user cpu time spent in nanoseconds as unsigned long long.
- * "cpu.system" - system cpu time spent in nanoseconds as unsigned long long.
+ *     "state.state" - state of the VM, returned as int from virDomainState enum
+ *     "state.reason" - reason for entering given state, returned as int from
+ *                      virDomain*Reason enum corresponding to given state.
  *
- * VIR_DOMAIN_STATS_BALLOON: Return memory balloon device information.
- * The typed parameter keys are in this format:
- * "balloon.current" - the memory in kiB currently used
- *                     as unsigned long long.
- * "balloon.maximum" - the maximum memory in kiB allowed
- *                     as unsigned long long.
+ * VIR_DOMAIN_STATS_CPU_TOTAL:
+ *     Return CPU statistics and usage information. The typed parameter keys
+ *     are in this format:
  *
- * VIR_DOMAIN_STATS_VCPU: Return virtual CPU statistics.
- * Due to VCPU hotplug, the vcpu.<num>.* array could be sparse.
- * The actual size of the array corresponds to "vcpu.current".
- * The array size will never exceed "vcpu.maximum".
- * The typed parameter keys are in this format:
- * "vcpu.current" - current number of online virtual CPUs as unsigned int.
- * "vcpu.maximum" - maximum number of online virtual CPUs as unsigned int.
- * "vcpu.<num>.state" - state of the virtual CPU <num>, as int
- *                      from virVcpuState enum.
- * "vcpu.<num>.time" - virtual cpu time spent by virtual CPU <num>
- *                     as unsigned long long.
+ *     "cpu.time" - total cpu time spent for this domain in nanoseconds
+ *                  as unsigned long long.
+ *     "cpu.user" - user cpu time spent in nanoseconds as unsigned long long.
+ *     "cpu.system" - system cpu time spent in nanoseconds as unsigned long
+ *                    long.
  *
- * VIR_DOMAIN_STATS_INTERFACE: Return network interface statistics.
- * The typed parameter keys are in this format:
- * "net.count" - number of network interfaces on this domain
- *               as unsigned int.
- * "net.<num>.name" - name of the interface <num> as string.
- * "net.<num>.rx.bytes" - bytes received as unsigned long long.
- * "net.<num>.rx.pkts" - packets received as unsigned long long.
- * "net.<num>.rx.errs" - receive errors as unsigned long long.
- * "net.<num>.rx.drop" - receive packets dropped as unsigned long long.
- * "net.<num>.tx.bytes" - bytes transmitted as unsigned long long.
- * "net.<num>.tx.pkts" - packets transmitted as unsigned long long.
- * "net.<num>.tx.errs" - transmission errors as unsigned long long.
- * "net.<num>.tx.drop" - transmit packets dropped as unsigned long long.
+ * VIR_DOMAIN_STATS_BALLOON:
+ *     Return memory balloon device information.
+ *     The typed parameter keys are in this format:
  *
- * VIR_DOMAIN_STATS_BLOCK: Return block devices statistics.  By default,
- * this information is limited to the active layer of each <disk> of the
- * domain (where block.count is equal to the number of disks), but adding
- * VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING to @flags will expand the
- * array to cover backing chains (block.count corresponds to the number
- * of host resources used together to provide the guest disks).
- * The typed parameter keys are in this format:
- * "block.count" - number of block devices in the subsequent list,
- *                 as unsigned int.
- * "block.<num>.name" - name of the block device <num> as string.
- *                      matches the target name (vda/sda/hda) of the
- *                      block device.  If the backing chain is listed,
- *                      this name is the same for all host resources tied
- *                      to the same guest device.
- * "block.<num>.backingIndex" - unsigned int giving the <backingStore> index,
- *                              only used when backing images are listed.
- * "block.<num>.path" - string describing the source of block device <num>,
- *                      if it is a file or block device (omitted for network
- *                      sources and drives with no media inserted).
- * "block.<num>.rd.reqs" - number of read requests as unsigned long long.
- * "block.<num>.rd.bytes" - number of read bytes as unsigned long long.
- * "block.<num>.rd.times" - total time (ns) spent on reads as
- *                          unsigned long long.
- * "block.<num>.wr.reqs" - number of write requests as unsigned long long.
- * "block.<num>.wr.bytes" - number of written bytes as unsigned long long.
- * "block.<num>.wr.times" - total time (ns) spent on writes as
- *                          unsigned long long.
- * "block.<num>.fl.reqs" - total flush requests as unsigned long long.
- * "block.<num>.fl.times" - total time (ns) spent on cache flushing as
- *                          unsigned long long.
- * "block.<num>.errors" - Xen only: the 'oo_req' value as
- *                        unsigned long long.
- * "block.<num>.allocation" - offset of the highest written sector
- *                            as unsigned long long.
- * "block.<num>.capacity" - logical size in bytes of the block device backing
- *                          image as unsigned long long.
- * "block.<num>.physical" - physical size in bytes of the container of the
- *                          backing image as unsigned long long.
+ *     "balloon.current" - the memory in kiB currently used
+ *                         as unsigned long long.
+ *     "balloon.maximum" - the maximum memory in kiB allowed
+ *                         as unsigned long long.
  *
- * VIR_DOMAIN_STATS_PERF: Return perf event statistics.
- * The typed parameter keys are in this format:
- * "perf.cmt" - the usage of l3 cache (bytes) by applications running on the
- *              platform as unsigned long long. It is produced by cmt perf
- *              event.
- * "perf.mbmt" - the total system bandwidth (bytes/s) from one level of cache
- *               to another as unsigned long long. It is produced by mbmt perf
- *               event.
- * "perf.mbml" - the amount of data (bytes/s) sent through the memory controller
- *               on the socket as unsigned long long. It is produced by mbml
- *               perf event.
- * "perf.cache_misses"     - the count of cache misses as unsigned long long.
+ * VIR_DOMAIN_STATS_VCPU:
+ *     Return virtual CPU statistics.
+ *     Due to VCPU hotplug, the vcpu.<num>.* array could be sparse.
+ *     The actual size of the array corresponds to "vcpu.current".
+ *     The array size will never exceed "vcpu.maximum".
+ *     The typed parameter keys are in this format:
+ *
+ *     "vcpu.current" - current number of online virtual CPUs as unsigned int.
+ *     "vcpu.maximum" - maximum number of online virtual CPUs as unsigned int.
+ *     "vcpu.<num>.state" - state of the virtual CPU <num>, as int
+ *                          from virVcpuState enum.
+ *     "vcpu.<num>.time" - virtual cpu time spent by virtual CPU <num>
+ *                         as unsigned long long.
+ *
+ * VIR_DOMAIN_STATS_INTERFACE:
+ *     Return network interface statistics.
+ *     The typed parameter keys are in this format:
+ *
+ *     "net.count" - number of network interfaces on this domain
+ *                   as unsigned int.
+ *     "net.<num>.name" - name of the interface <num> as string.
+ *     "net.<num>.rx.bytes" - bytes received as unsigned long long.
+ *     "net.<num>.rx.pkts" - packets received as unsigned long long.
+ *     "net.<num>.rx.errs" - receive errors as unsigned long long.
+ *     "net.<num>.rx.drop" - receive packets dropped as unsigned long long.
+ *     "net.<num>.tx.bytes" - bytes transmitted as unsigned long long.
+ *     "net.<num>.tx.pkts" - packets transmitted as unsigned long long.
+ *     "net.<num>.tx.errs" - transmission errors as unsigned long long.
+ *     "net.<num>.tx.drop" - transmit packets dropped as unsigned long long.
+ *
+ * VIR_DOMAIN_STATS_BLOCK:
+ *     Return block devices statistics.  By default,
+ *     this information is limited to the active layer of each <disk> of the
+ *     domain (where block.count is equal to the number of disks), but adding
+ *     VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING to @flags will expand the
+ *     array to cover backing chains (block.count corresponds to the number
+ *     of host resources used together to provide the guest disks).
+ *     The typed parameter keys are in this format:
+ *
+ *     "block.count" - number of block devices in the subsequent list,
+ *                     as unsigned int.
+ *     "block.<num>.name" - name of the block device <num> as string.
+ *                          matches the target name (vda/sda/hda) of the
+ *                          block device.  If the backing chain is listed,
+ *                          this name is the same for all host resources tied
+ *                          to the same guest device.
+ *     "block.<num>.backingIndex" - unsigned int giving the <backingStore>
+ *                                   index, only used when backing images
+ *                                   are listed.
+ *     "block.<num>.path" - string describing the source of block device <num>,
+ *                          if it is a file or block device (omitted for network
+ *                          sources and drives with no media inserted).
+ *     "block.<num>.rd.reqs" - number of read requests as unsigned long long.
+ *     "block.<num>.rd.bytes" - number of read bytes as unsigned long long.
+ *     "block.<num>.rd.times" - total time (ns) spent on reads as
+ *                              unsigned long long.
+ *     "block.<num>.wr.reqs" - number of write requests as unsigned long long.
+ *     "block.<num>.wr.bytes" - number of written bytes as unsigned long long.
+ *     "block.<num>.wr.times" - total time (ns) spent on writes as
+ *                              unsigned long long.
+ *     "block.<num>.fl.reqs" - total flush requests as unsigned long long.
+ *     "block.<num>.fl.times" - total time (ns) spent on cache flushing as
+ *                              unsigned long long.
+ *     "block.<num>.errors" - Xen only: the 'oo_req' value as
+ *                            unsigned long long.
+ *     "block.<num>.allocation" - offset of the highest written sector
+ *                                as unsigned long long.
+ *     "block.<num>.capacity" - logical size in bytes of the block device
+ *                              backing image as unsigned long long.
+ *     "block.<num>.physical" - physical size in bytes of the container of the
+ *                              backing image as unsigned long long.
+ *
+ * VIR_DOMAIN_STATS_PERF:
+ *     Return perf event statistics.
+ *     The typed parameter keys are in this format:
+ *
+ *     "perf.cmt" - the usage of l3 cache (bytes) by applications running on
+ *                  the platform as unsigned long long. It is produced by cmt
+ *                  perf event.
+ *     "perf.mbmt" - the total system bandwidth (bytes/s) from one level of
+ *                   cache to another as unsigned long long. It is produced
+ *                   by mbmt perf event.
+ *     "perf.mbml" - the amount of data (bytes/s) sent through the memory
+ *                   controller on the socket as unsigned long long. It is
+ *                   produced by mbml perf event.
+ *     "perf.cache_misses" - the count of cache misses as unsigned long long.
  *                           It is produced by cache_misses perf event.
- * "perf.cache_references" - the count of cache hits as unsigned long long.
- *                           It is produced by cache_references perf event.
- * "perf.instructions"     - The count of instructions as unsigned long long.
+ *     "perf.cache_references" - the count of cache hits as unsigned long long.
+ *                               It is produced by cache_references perf event.
+ *     "perf.instructions" - The count of instructions as unsigned long long.
  *                           It is produced by instructions perf event.
- * "perf.cpu_cycles"       - The count of cpu cycles (total/elapsed) as an
- *                           unsigned long long. It is produced by cpu_cycles
- *                           perf event.
+ *     "perf.cpu_cycles" - The count of cpu cycles (total/elapsed) as an
+ *                         unsigned long long. It is produced by cpu_cycles
+ *                         perf event.
  *
  * Note that entire stats groups or individual stat fields may be missing from
  * the output in case they are not supported by the given hypervisor, are not
