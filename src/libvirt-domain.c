@@ -11523,34 +11523,35 @@ virDomainFSInfoFree(virDomainFSInfoPtr info)
  * The caller *must* free @ifaces when no longer needed. Usual use case
  * looks like this:
  *
- *  virDomainInterfacePtr *ifaces = NULL;
- *  int ifaces_count = 0;
- *  size_t i, j;
- *  virDomainPtr dom = ... obtain a domain here ...;
+ *   virDomainInterfacePtr *ifaces = NULL;
+ *   int ifaces_count = 0;
+ *   size_t i, j;
+ *   virDomainPtr dom = ... obtain a domain here ...;
  *
- *  if ((ifaces_count = virDomainInterfaceAddresses(dom, &ifaces,
- *           VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)) < 0)
- *      goto cleanup;
+ *   if ((ifaces_count = virDomainInterfaceAddresses(dom, &ifaces,
+ *            VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE)) < 0)
+ *       goto cleanup;
  *
  *  ... do something with returned values, for example:
- *  for (i = 0; i < ifaces_count; i++) {
- *      printf("name: %s", ifaces[i]->name);
- *      if (ifaces[i]->hwaddr)
- *          printf(" hwaddr: %s", ifaces[i]->hwaddr);
  *
- *      for (j = 0; j < ifaces[i]->naddrs; j++) {
- *          virDomainIPAddressPtr ip_addr = ifaces[i]->addrs + j;
- *          printf("[addr: %s prefix: %d type: %d]",
- *                 ip_addr->addr, ip_addr->prefix, ip_addr->type);
- *      }
- *      printf("\n");
- *  }
+ *   for (i = 0; i < ifaces_count; i++) {
+ *       printf("name: %s", ifaces[i]->name);
+ *       if (ifaces[i]->hwaddr)
+ *           printf(" hwaddr: %s", ifaces[i]->hwaddr);
  *
- *  cleanup:
- *      if (ifaces && ifaces_count > 0)
- *          for (i = 0; i < ifaces_count; i++)
- *              virDomainInterfaceFree(ifaces[i]);
- *      free(ifaces);
+ *       for (j = 0; j < ifaces[i]->naddrs; j++) {
+ *           virDomainIPAddressPtr ip_addr = ifaces[i]->addrs + j;
+ *           printf("[addr: %s prefix: %d type: %d]",
+ *                  ip_addr->addr, ip_addr->prefix, ip_addr->type);
+ *       }
+ *       printf("\n");
+ *   }
+ *
+ *   cleanup:
+ *       if (ifaces && ifaces_count > 0)
+ *           for (i = 0; i < ifaces_count; i++)
+ *               virDomainInterfaceFree(ifaces[i]);
+ *       free(ifaces);
  *
  * Returns the number of interfaces on success, -1 in case of error.
  */
