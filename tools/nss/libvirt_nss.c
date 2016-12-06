@@ -141,6 +141,65 @@ appendAddr(leaseAddress **tmpAddress,
 }
 
 
+static int
+findLeaseInJSON(leaseAddress **tmpAddress,
+                size_t *ntmpAddress,
+                virJSONValuePtr leases_array,
+                size_t nleases,
+                const char *name,
+                int af,
+                bool *found)
+{
+    size_t i;
+    long long expirytime;
+    time_t currtime;
+    int ret = -1;
+
+    if ((currtime = time(NULL)) == (time_t) - 1) {
+        ERROR("Failed to get current system time");
+        goto cleanup;
+    }
+
+    for (i = 0; i < nleases; i++) {
+        virJSONValuePtr lease = virJSONValueArrayGet(leases_array, i);
+        const char *lease_name;
+
+        if (!lease) {
+            /* This should never happen (TM) */
+            ERROR("Unable to get element %zu of %zu", i, nleases);
+            goto cleanup;
+        }
+
+        lease_name = virJSONValueObjectGetString(lease, "hostname");
+
+        if (STRNEQ_NULLABLE(name, lease_name))
+            continue;
+
+        if (virJSONValueObjectGetNumberLong(lease, "expiry-time", &expirytime) < 0) {
+            /* A lease cannot be present without expiry-time */
+            ERROR("expiry-time field missing for %s", name);
+            goto cleanup;
+        }
+
+        /* Do not report expired lease */
+        if (expirytime < (long long) currtime) {
+            DEBUG("Skipping expired lease for %s", name);
+            continue;
+        }
+
+        DEBUG("Found record for %s", name);
+        *found = true;
+
+        if (appendAddr(tmpAddress, ntmpAddress, lease, af) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
 /**
  * findLease:
  * @name: domain name to lookup
@@ -174,11 +233,9 @@ findLease(const char *name,
     const char *leaseDir = LEASEDIR;
     struct dirent *entry;
     virJSONValuePtr leases_array = NULL;
-    ssize_t i, nleases;
+    ssize_t nleases;
     leaseAddress *tmpAddress = NULL;
     size_t ntmpAddress = 0;
-    time_t currtime;
-    long long expirytime;
 
     *address = NULL;
     *naddress = 0;
@@ -226,46 +283,10 @@ findLease(const char *name,
     nleases = virJSONValueArraySize(leases_array);
     DEBUG("Read %zd leases", nleases);
 
-    if ((currtime = time(NULL)) == (time_t) - 1) {
-        ERROR("Failed to get current system time");
+    if (findLeaseInJSON(&tmpAddress, &ntmpAddress,
+                        leases_array, nleases,
+                        name, af, found) < 0)
         goto cleanup;
-    }
-
-    for (i = 0; i < nleases; i++) {
-        virJSONValuePtr lease;
-        const char *lease_name;
-
-        lease = virJSONValueArrayGet(leases_array, i);
-
-        if (!lease) {
-            /* This should never happen (TM) */
-            ERROR("Unable to get element %zd of %zd", i, nleases);
-            goto cleanup;
-        }
-
-        lease_name = virJSONValueObjectGetString(lease, "hostname");
-
-        if (STRNEQ_NULLABLE(name, lease_name))
-            continue;
-
-        if (virJSONValueObjectGetNumberLong(lease, "expiry-time", &expirytime) < 0) {
-            /* A lease cannot be present without expiry-time */
-            ERROR("expiry-time field missing for %s", name);
-            goto cleanup;
-        }
-
-        /* Do not report expired lease */
-        if (expirytime < (long long) currtime) {
-            DEBUG("Skipping expired lease for %s", name);
-            continue;
-        }
-
-        DEBUG("Found record for %s", lease_name);
-        *found = true;
-
-        if (appendAddr(&tmpAddress, &ntmpAddress, lease, af) < 0)
-            goto cleanup;
-    }
 
     *address = tmpAddress;
     *naddress = ntmpAddress;
