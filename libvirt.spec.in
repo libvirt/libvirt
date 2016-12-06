@@ -1842,6 +1842,8 @@ exit 0
 
 %{_datadir}/libvirt/cpu_map.xml
 
+%{_datadir}/libvirt/test-screenshot.png
+
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
 
 %files admin

@@ -692,6 +692,7 @@ check-local: check-protocol check-symfile check-symsorting \
 # Mock driver, covering domains, storage, networks, etc
 TEST_DRIVER_SOURCES =						\
 		test/test_driver.c test/test_driver.h
+TEST_DRIVER_ASSETS = test/test-screenshot.png
 
 # Now the Hypervisor specific drivers
 XEN_DRIVER_SOURCES =						\
@@ -1195,6 +1196,10 @@ GENERATED_SYM_FILES = \
 	$(NULL)
 
 if WITH_TEST
+
+driver_test_asset_DATA = $(TEST_DRIVER_ASSETS)
+driver_test_assetdir = $(pkgdatadir)
+
 noinst_LTLIBRARIES += libvirt_driver_test.la
 libvirt_la_BUILT_LIBADD += libvirt_driver_test.la
 libvirt_driver_test_la_CFLAGS = \
@@ -1887,6 +1892,7 @@ access/viraccessapichecklxc.c: $(srcdir)/rpc/gendispatch.pl \
 # Add all conditional sources just in case...
 EXTRA_DIST +=							\
 		$(TEST_DRIVER_SOURCES)				\
+		$(TEST_DRIVER_ASSETS)				\
 		$(REMOTE_DRIVER_SOURCES)			\
 		$(XEN_DRIVER_SOURCES)				\
 		$(QEMU_DRIVER_SOURCES)				\

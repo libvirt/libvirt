@@ -5923,7 +5923,7 @@ testDomainScreenshot(virDomainPtr dom ATTRIBUTE_UNUSED,
     if (VIR_STRDUP(ret, "image/png") < 0)
         return NULL;
 
-    if (virFDStreamOpenFile(st, PKGDATADIR "/libvirtLogo.png", 0, 0, O_RDONLY) < 0)
+    if (virFDStreamOpenFile(st, PKGDATADIR "/test-screenshot.png", 0, 0, O_RDONLY) < 0)
         VIR_FREE(ret);
 
     return ret;
