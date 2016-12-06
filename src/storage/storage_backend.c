@@ -1900,7 +1900,7 @@ virStorageBackendUpdateVolTargetInfo(virStorageVolType voltype,
     if ((ret = virStorageBackendUpdateVolTargetInfoFD(target, fd, &sb)) < 0)
         goto cleanup;
 
-    if (voltype == VIR_STORAGE_VOL_FILE &&
+    if ((voltype == VIR_STORAGE_VOL_FILE || voltype == VIR_STORAGE_VOL_BLOCK) &&
         target->format != VIR_STORAGE_FILE_NONE) {
         if (S_ISDIR(sb.st_mode)) {
             if (virStorageBackendIsPloopDir(target->path)) {
