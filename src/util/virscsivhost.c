@@ -243,6 +243,13 @@ virSCSIVHostDeviceGetName(virSCSIVHostDevicePtr dev)
 }
 
 
+const char *
+virSCSIVHostDeviceGetPath(virSCSIVHostDevicePtr dev)
+{
+    return dev->path;
+}
+
+
 virSCSIVHostDevicePtr
 virSCSIVHostDeviceNew(const char *name)
 {

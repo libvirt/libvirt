@@ -40,6 +40,7 @@ int virSCSIVHostDeviceFileIterate(virSCSIVHostDevicePtr dev,
                                   virSCSIVHostDeviceFileActor actor,
                                   void *opaque);
 const char *virSCSIVHostDeviceGetName(virSCSIVHostDevicePtr dev);
+const char *virSCSIVHostDeviceGetPath(virSCSIVHostDevicePtr dev);
 virSCSIVHostDevicePtr virSCSIVHostDeviceListGet(virSCSIVHostDeviceListPtr list,
                                                 int idx);
 size_t virSCSIVHostDeviceListCount(virSCSIVHostDeviceListPtr list);

@@ -2334,6 +2334,7 @@ virSCSIDeviceSetUsedBy;
 virSCSIVHostDeviceFileIterate;
 virSCSIVHostDeviceFree;
 virSCSIVHostDeviceGetName;
+virSCSIVHostDeviceGetPath;
 virSCSIVHostDeviceListAdd;
 virSCSIVHostDeviceListCount;
 virSCSIVHostDeviceListDel;
