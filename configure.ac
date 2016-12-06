@@ -1641,20 +1641,15 @@ ALL_LINGUAS=`cd "$srcdir/po" > /dev/null && ls *.po | sed 's+\.po$++'`
 dnl Cygwin, MinGW and MSVC checks
 LIBVIRT_WIN_CHECK_COMMON
 LIBVIRT_WIN_CHECK_CYGWIN
+LIBVIRT_WIN_CHECK_MINGW
 
 
-MINGW_EXTRA_LDFLAGS=
 dnl libvirt.syms is generated in builddir, but libvirt_qemu.syms is in git;
 dnl hence the asymmetric naming of these two symbol files.
 LIBVIRT_SYMBOL_FILE=libvirt.syms
 LIBVIRT_ADMIN_SYMBOL_FILE=libvirt_admin.syms
 LIBVIRT_LXC_SYMBOL_FILE='$(srcdir)/libvirt_lxc.syms'
 LIBVIRT_QEMU_SYMBOL_FILE='$(srcdir)/libvirt_qemu.syms'
-case "$host" in
-  *-*-mingw*)
-    MINGW_EXTRA_LDFLAGS="-no-undefined"
-    ;;
-esac
 case "$host" in
   *-*-mingw* | *-*-msvc* )
     # Also set the symbol file to .def, so src/Makefile generates libvirt.def
@@ -1671,7 +1666,6 @@ case "$host" in
     VERSION_SCRIPT_FLAGS="-Wl,"
     ;;
 esac
-AC_SUBST([MINGW_EXTRA_LDFLAGS])
 AC_SUBST([LIBVIRT_SYMBOL_FILE])
 AC_SUBST([LIBVIRT_ADMIN_SYMBOL_FILE])
 AC_SUBST([LIBVIRT_LXC_SYMBOL_FILE])
