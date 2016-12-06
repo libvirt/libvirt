@@ -1642,22 +1642,11 @@ dnl Cygwin, MinGW and MSVC checks
 LIBVIRT_WIN_CHECK_COMMON
 LIBVIRT_WIN_CHECK_CYGWIN
 LIBVIRT_WIN_CHECK_MINGW
+LIBVIRT_WIN_CHECK_SYMBOLS
 
 
-dnl libvirt.syms is generated in builddir, but libvirt_qemu.syms is in git;
-dnl hence the asymmetric naming of these two symbol files.
-LIBVIRT_SYMBOL_FILE=libvirt.syms
-LIBVIRT_ADMIN_SYMBOL_FILE=libvirt_admin.syms
-LIBVIRT_LXC_SYMBOL_FILE='$(srcdir)/libvirt_lxc.syms'
-LIBVIRT_QEMU_SYMBOL_FILE='$(srcdir)/libvirt_qemu.syms'
 case "$host" in
   *-*-mingw* | *-*-msvc* )
-    # Also set the symbol file to .def, so src/Makefile generates libvirt.def
-    # from libvirt.syms and passes libvirt.def instead of libvirt.syms to the linker
-    LIBVIRT_SYMBOL_FILE=libvirt.def
-    LIBVIRT_ADMIN_SYMBOL_FILE=libvirt_admin.def
-    LIBVIRT_LXC_SYMBOL_FILE=libvirt_lxc.def
-    LIBVIRT_QEMU_SYMBOL_FILE=libvirt_qemu.def
     # mingw's ld has the --version-script parameter, but it requires a .def file
     # instead to work properly, therefore clear --version-script here and use
     # -Wl, to pass the .def file to the linker
@@ -1666,10 +1655,6 @@ case "$host" in
     VERSION_SCRIPT_FLAGS="-Wl,"
     ;;
 esac
-AC_SUBST([LIBVIRT_SYMBOL_FILE])
-AC_SUBST([LIBVIRT_ADMIN_SYMBOL_FILE])
-AC_SUBST([LIBVIRT_LXC_SYMBOL_FILE])
-AC_SUBST([LIBVIRT_QEMU_SYMBOL_FILE])
 AC_SUBST([VERSION_SCRIPT_FLAGS])
 
 
