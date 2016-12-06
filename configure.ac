@@ -284,6 +284,7 @@ LIBVIRT_CHECK_LIBSSH
 LIBVIRT_CHECK_NETCF
 LIBVIRT_CHECK_NSS
 LIBVIRT_CHECK_NUMACTL
+LIBVIRT_CHECK_NWFILTER
 LIBVIRT_CHECK_OPENWSMAN
 LIBVIRT_CHECK_PCIACCESS
 LIBVIRT_CHECK_READLINE
@@ -1679,18 +1680,6 @@ then
   AC_DEFINE_UNQUOTED([WITH_NODE_DEVICES], 1, [with node device driver])
 fi
 AM_CONDITIONAL([WITH_NODE_DEVICES], [test "$with_nodedev" = "yes"])
-
-dnl nwfilter should only be compiled for linux, and only if the
-dnl libvirt daemon is also being compiled
-
-with_nwfilter=yes
-if test "$with_libvirtd" = "no" || test "$with_linux" != "yes"; then
-  with_nwfilter=no
-fi
-if test "$with_nwfilter" = "yes" ; then
-  AC_DEFINE([WITH_NWFILTER], 1, [whether local network filter management driver is available])
-fi
-AM_CONDITIONAL([WITH_NWFILTER], [test "$with_nwfilter" = "yes"])
 
 dnl check if the interface driver should be compiled
 LIBVIRT_ARG_WITH([INTERFACE], [host interface driver], [check])
