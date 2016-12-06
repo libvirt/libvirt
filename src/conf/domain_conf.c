@@ -3351,11 +3351,10 @@ virDomainDeviceInfoNeedsFormat(virDomainDeviceInfoPtr info, unsigned int flags)
     return false;
 }
 
-static bool
+bool
 virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
                                   const virDomainDeviceInfo *b)
 {
-
     if (a->type != b->type)
         return false;
 

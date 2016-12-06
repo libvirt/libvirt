@@ -276,6 +276,7 @@ virDomainDeviceDefFree;
 virDomainDeviceDefParse;
 virDomainDeviceFindControllerModel;
 virDomainDeviceGetInfo;
+virDomainDeviceInfoAddressIsEqual;
 virDomainDeviceInfoCopy;
 virDomainDeviceInfoIterate;
 virDomainDeviceTypeToString;
