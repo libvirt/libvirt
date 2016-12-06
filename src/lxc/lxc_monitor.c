@@ -175,7 +175,7 @@ virLXCMonitorPtr virLXCMonitorNew(virDomainObjPtr vm,
                                mon->program) < 0)
         goto error;
 
-    mon->vm = vm;
+    mon->vm = virObjectRef(vm);
     memcpy(&mon->cb, cb, sizeof(mon->cb));
 
     virObjectRef(mon);
@@ -201,6 +201,7 @@ static void virLXCMonitorDispose(void *opaque)
     if (mon->cb.destroy)
         (mon->cb.destroy)(mon, mon->vm);
     virObjectUnref(mon->program);
+    virObjectUnref(mon->vm);
 }
 
 
