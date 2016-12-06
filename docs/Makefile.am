@@ -246,7 +246,7 @@ $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
 
 $(apihtml_generated): html/index.html
 
-html/index.html: libvirt-api.xml newapi.xsl page.xsl
+html/index.html: libvirt-api.xml newapi.xsl page.xsl $(APIBUILD_STAMP)
 	$(AM_V_GEN)if [ -x $(XSLTPROC) ] ; then \
 	  $(XSLTPROC) --nonet -o $(srcdir)/ \
 	  --stringparam builddir '$(abs_top_builddir)' \
@@ -304,6 +304,16 @@ $(APIBUILD_STAMP): $(srcdir)/apibuild.py \
 		$(top_srcdir)/include/libvirt/libvirt-admin.h \
 		$(top_srcdir)/include/libvirt/virterror.h \
 		$(top_srcdir)/src/libvirt.c \
+		$(top_srcdir)/src/libvirt-domain-snapshot.c \
+		$(top_srcdir)/src/libvirt-domain.c \
+		$(top_srcdir)/src/libvirt-host.c \
+		$(top_srcdir)/src/libvirt-interface.c \
+		$(top_srcdir)/src/libvirt-network.c \
+		$(top_srcdir)/src/libvirt-nodedev.c \
+		$(top_srcdir)/src/libvirt-nwfilter.c \
+		$(top_srcdir)/src/libvirt-secret.c \
+		$(top_srcdir)/src/libvirt-storage.c \
+		$(top_srcdir)/src/libvirt-stream.c \
 		$(top_srcdir)/src/libvirt-lxc.c \
 		$(top_srcdir)/src/libvirt-qemu.c \
 		$(top_srcdir)/src/libvirt-admin.c \
@@ -318,7 +328,7 @@ check-local: all
 dist-local: all
 
 clean-local:
-	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt *.html
+	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt *.html html/*.html
 
 maintainer-clean-local: clean-local
 	rm -rf $(srcdir)/libvirt-api.xml $(srcdir)/libvirt-refs.xml
