@@ -1640,13 +1640,9 @@ ALL_LINGUAS=`cd "$srcdir/po" > /dev/null && ls *.po | sed 's+\.po$++'`
 
 dnl Cygwin, MinGW and MSVC checks
 LIBVIRT_WIN_CHECK_COMMON
+LIBVIRT_WIN_CHECK_CYGWIN
 
 
-dnl Extra link-time flags for Cygwin.
-dnl Copied from libxml2 configure.in, but I removed mingw changes
-dnl for now since I'm not supporting mingw at present.  - RWMJ
-CYGWIN_EXTRA_LDFLAGS=
-CYGWIN_EXTRA_LIBADD=
 MINGW_EXTRA_LDFLAGS=
 dnl libvirt.syms is generated in builddir, but libvirt_qemu.syms is in git;
 dnl hence the asymmetric naming of these two symbol files.
@@ -1655,10 +1651,6 @@ LIBVIRT_ADMIN_SYMBOL_FILE=libvirt_admin.syms
 LIBVIRT_LXC_SYMBOL_FILE='$(srcdir)/libvirt_lxc.syms'
 LIBVIRT_QEMU_SYMBOL_FILE='$(srcdir)/libvirt_qemu.syms'
 case "$host" in
-  *-*-cygwin*)
-    CYGWIN_EXTRA_LDFLAGS="-no-undefined"
-    CYGWIN_EXTRA_LIBADD="${INTLLIBS}"
-    ;;
   *-*-mingw*)
     MINGW_EXTRA_LDFLAGS="-no-undefined"
     ;;
@@ -1679,8 +1671,6 @@ case "$host" in
     VERSION_SCRIPT_FLAGS="-Wl,"
     ;;
 esac
-AC_SUBST([CYGWIN_EXTRA_LDFLAGS])
-AC_SUBST([CYGWIN_EXTRA_LIBADD])
 AC_SUBST([MINGW_EXTRA_LDFLAGS])
 AC_SUBST([LIBVIRT_SYMBOL_FILE])
 AC_SUBST([LIBVIRT_ADMIN_SYMBOL_FILE])
