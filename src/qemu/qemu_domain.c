@@ -5291,6 +5291,19 @@ qemuDomainDiskChangeSupported(virDomainDiskDefPtr disk,
     /* "snapshot" is a libvirt internal field and thus can be changed */
     /* startupPolicy is allowed to be updated. Therefore not checked here. */
     CHECK_EQ(transient, "transient", true);
+
+    /* Note: For some address types the address auto generation for
+     * @disk has still not happened at this point (e.g. driver
+     * specific addresses) therefore we can't catch these possible
+     * address modifications here. */
+    if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        !virDomainDeviceInfoAddressIsEqual(&disk->info, &orig_disk->info)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("cannot modify field '%s' of the disk"),
+                       "address");
+        return false;
+    }
+
     CHECK_EQ(info.bootIndex, "boot order", true);
     CHECK_EQ(rawio, "rawio", true);
     CHECK_EQ(sgio, "sgio", true);
