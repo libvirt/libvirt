@@ -1643,6 +1643,7 @@ LIBVIRT_WIN_CHECK_COMMON
 LIBVIRT_WIN_CHECK_CYGWIN
 LIBVIRT_WIN_CHECK_MINGW
 LIBVIRT_WIN_CHECK_SYMBOLS
+LIBVIRT_WIN_CHECK_WINDRES
 
 
 case "$host" in
@@ -1656,15 +1657,6 @@ case "$host" in
     ;;
 esac
 AC_SUBST([VERSION_SCRIPT_FLAGS])
-
-
-dnl Look for windres to build a Windows icon resource.
-case "$host" in
-  *-*-mingw* | *-*-cygwin* | *-*-msvc* )
-    AC_CHECK_TOOL([WINDRES], [windres], [])
-    ;;
-esac
-AM_CONDITIONAL([WITH_WIN_ICON], [test "$WINDRES" != ""])
 
 
 dnl Driver-Modules library support
@@ -2017,6 +2009,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Windows])
 AC_MSG_NOTICE([])
 LIBVIRT_WIN_RESULT_COMMON
+LIBVIRT_WIN_RESULT_WINDRES
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])
 AC_MSG_NOTICE([])
