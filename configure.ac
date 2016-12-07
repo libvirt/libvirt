@@ -565,7 +565,7 @@ LIBVIRT_STORAGE_ARG_DISK
 LIBVIRT_STORAGE_ARG_RBD
 LIBVIRT_STORAGE_ARG_SHEEPDOG
 LIBVIRT_STORAGE_ARG_GLUSTER
-LIBVIRT_ARG_WITH([STORAGE_ZFS], [ZFS backend for the storage driver], [check])
+LIBVIRT_STORAGE_ARG_ZFS
 
 if test "$with_libvirtd" = "no"; then
   with_storage_dir=no
@@ -597,36 +597,8 @@ LIBVIRT_STORAGE_CHECK_MPATH
 LIBVIRT_STORAGE_CHECK_RBD
 LIBVIRT_STORAGE_CHECK_SHEEPDOG
 LIBVIRT_STORAGE_CHECK_GLUSTER
+LIBVIRT_STORAGE_CHECK_ZFS
 
-
-if test "$with_storage_zfs" = "yes" ||
-   test "$with_storage_zfs" = "check"; then
-  AC_PATH_PROG([ZFS], [zfs], [], [$LIBVIRT_SBIN_PATH])
-  AC_PATH_PROG([ZPOOL], [zpool], [], [$LIBVIRT_SBIN_PATH])
-
-  if test "$with_storage_zfs" = "yes"; then
-    if test -z "$ZFS" || test -z "$ZPOOL"; then
-      AC_MSG_ERROR([We need zfs and zpool for ZFS storage driver])
-    fi
-  else
-    if test -z "$ZFS" || test -z "$ZPOOL"; then
-      with_storage_zfs=no
-    fi
-
-    if test "$with_storage_zfs" = "check"; then
-      with_storage_zfs=yes
-    fi
-  fi
-
-  if test "$with_storage_zfs" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_STORAGE_ZFS], 1,
-      [whether ZFS backend for storage driver is enabled])
-    AC_DEFINE_UNQUOTED([ZFS], ["$ZFS"], [Location of zfs program])
-    AC_DEFINE_UNQUOTED([ZPOOL], ["$ZPOOL"], [Location of zpool program])
-  fi
-fi
-AM_CONDITIONAL([WITH_STORAGE_ZFS],
-  [test "$with_storage_zfs" = "yes"])
 
 if test "$with_storage_fs" = "yes" ||
    test "$with_storage_gluster" = "yes"; then
@@ -970,7 +942,7 @@ LIBVIRT_STORAGE_RESULT_DISK
 LIBVIRT_STORAGE_RESULT_RBD
 LIBVIRT_STORAGE_RESULT_SHEEPDOG
 LIBVIRT_STORAGE_RESULT_GLUSTER
-AC_MSG_NOTICE([     ZFS: $with_storage_zfs])
+LIBVIRT_STORAGE_RESULT_ZFS
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
 AC_MSG_NOTICE([])
