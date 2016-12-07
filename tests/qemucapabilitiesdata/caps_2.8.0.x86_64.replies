@@ -2,11 +2,11 @@
   "QMP": {
     "version": {
       "qemu": {
-        "micro": 91,
+        "micro": 93,
         "minor": 7,
         "major": 2
       },
-      "package": " (v2.8.0-rc1-dirty)"
+      "package": " (v2.8.0-rc3-dirty)"
     },
     "capabilities": [
     ]
@@ -22,11 +22,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 91,
+      "micro": 93,
       "minor": 7,
       "major": 2
     },
-    "package": " (v2.8.0-rc1-dirty)"
+    "package": " (v2.8.0-rc3-dirty)"
   },
   "id": "libvirt-2"
 }
@@ -10626,7 +10626,7 @@
           "type": "[276]"
         },
         {
-          "name": "debug-level",
+          "name": "debug",
           "default": null,
           "type": "int"
         },
@@ -10710,7 +10710,7 @@
           "type": "int"
         },
         {
-          "name": "debug-level",
+          "name": "debug",
           "default": null,
           "type": "int"
         }

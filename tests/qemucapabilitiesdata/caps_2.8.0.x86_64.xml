@@ -197,9 +197,9 @@
   <flag name='query-qmp-schema'/>
   <flag name='vhost-scsi'/>
   <flag name='drive-iotune-group'/>
-  <version>2007091</version>
+  <version>2007093</version>
   <kvmVersion>0</kvmVersion>
-  <package> (v2.8.0-rc1-dirty)</package>
+  <package> (v2.8.0-rc3-dirty)</package>
   <arch>x86_64</arch>
   <cpu type='kvm' name='host' usable='yes'/>
   <cpu type='kvm' name='qemu64' usable='yes'/>
