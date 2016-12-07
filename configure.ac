@@ -559,7 +559,7 @@ LIBVIRT_STORAGE_ARG_DIR
 LIBVIRT_STORAGE_ARG_FS
 LIBVIRT_STORAGE_ARG_LVM
 LIBVIRT_STORAGE_ARG_ISCSI
-LIBVIRT_ARG_WITH([STORAGE_SCSI], [SCSI backend for the storage driver], [check])
+LIBVIRT_STORAGE_ARG_SCSI
 LIBVIRT_ARG_WITH([STORAGE_MPATH], [mpath backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_DISK], [GPartd Disk backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_RBD], [RADOS Block Device backend for the storage driver], [check])
@@ -592,15 +592,8 @@ fi
 LIBVIRT_STORAGE_CHECK_FS
 LIBVIRT_STORAGE_CHECK_LVM
 LIBVIRT_STORAGE_CHECK_ISCSI
+LIBVIRT_STORAGE_CHECK_SCSI
 
-
-if test "$with_storage_scsi" = "check" || test "$with_storage_scsi" = "yes"; then
-   with_storage_scsi=yes
-
-   AC_DEFINE_UNQUOTED([WITH_STORAGE_SCSI], 1,
-     [whether SCSI backend for storage driver is enabled])
-fi
-AM_CONDITIONAL([WITH_STORAGE_SCSI], [test "$with_storage_scsi" = "yes"])
 
 if test "$with_storage_mpath" = "check" || test "$with_storage_mpath" = "yes"; then
    if test "$with_linux" = "yes"; then
@@ -1064,7 +1057,7 @@ LIBVIRT_STORAGE_RESULT_DIR
 LIBVIRT_STORAGE_RESULT_FS
 LIBVIRT_STORAGE_RESULT_LVM
 LIBVIRT_STORAGE_RESULT_ISCSI
-AC_MSG_NOTICE([    SCSI: $with_storage_scsi])
+LIBVIRT_STORAGE_RESULT_SCSI
 AC_MSG_NOTICE([   mpath: $with_storage_mpath])
 AC_MSG_NOTICE([    Disk: $with_storage_disk])
 AC_MSG_NOTICE([     RBD: $with_storage_rbd])
