@@ -555,7 +555,7 @@ fi
 AM_CONDITIONAL([WITH_SECRETS], [test "$with_secrets" = "yes"])
 
 
-LIBVIRT_ARG_WITH([STORAGE_DIR], [directory backend for the storage driver], [yes])
+LIBVIRT_STORAGE_ARG_DIR
 LIBVIRT_ARG_WITH([STORAGE_FS], [FileSystem backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_LVM], [LVM backend for storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_ISCSI], [iSCSI backend for the storage driver], [check])
@@ -580,10 +580,8 @@ if test "$with_libvirtd" = "no"; then
   with_storage_gluster=no
   with_storage_zfs=no
 fi
-if test "$with_storage_dir" = "yes" ; then
-  AC_DEFINE_UNQUOTED([WITH_STORAGE_DIR], 1, [whether directory backend for storage driver is enabled])
-fi
-AM_CONDITIONAL([WITH_STORAGE_DIR], [test "$with_storage_dir" = "yes"])
+
+LIBVIRT_STORAGE_CHECK_DIR
 
 dnl storage-fs does not work on MacOS X
 
@@ -1187,7 +1185,7 @@ LIBVIRT_DRIVER_RESULT_INTERFACE
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([     Dir: $with_storage_dir])
+LIBVIRT_STORAGE_RESULT_DIR
 AC_MSG_NOTICE([      FS: $with_storage_fs])
 AC_MSG_NOTICE([   NetFS: $with_storage_fs])
 AC_MSG_NOTICE([     LVM: $with_storage_lvm])
