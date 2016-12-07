@@ -563,7 +563,7 @@ LIBVIRT_STORAGE_ARG_SCSI
 LIBVIRT_STORAGE_ARG_MPATH
 LIBVIRT_STORAGE_ARG_DISK
 LIBVIRT_STORAGE_ARG_RBD
-LIBVIRT_ARG_WITH([STORAGE_SHEEPDOG], [with Sheepdog backend for the storage driver], [check])
+LIBVIRT_STORAGE_ARG_SHEEPDOG
 LIBVIRT_ARG_WITH([STORAGE_GLUSTER], [Gluster backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_ZFS], [ZFS backend for the storage driver], [check])
 
@@ -595,34 +595,8 @@ LIBVIRT_STORAGE_CHECK_ISCSI
 LIBVIRT_STORAGE_CHECK_SCSI
 LIBVIRT_STORAGE_CHECK_MPATH
 LIBVIRT_STORAGE_CHECK_RBD
+LIBVIRT_STORAGE_CHECK_SHEEPDOG
 
-
-if test "$with_storage_sheepdog" = "yes" ||
-   test "$with_storage_sheepdog" = "check"; then
-  AC_PATH_PROGS([SHEEPDOGCLI], [collie dog], [], [$LIBVIRT_SBIN_PATH])
-
-  if test "$with_storage_sheepdog" = "yes"; then
-    if test -z "$SHEEPDOGCLI"; then
-      AC_MSG_ERROR([We need sheepdog client for Sheepdog storage driver])
-    fi
-  else
-    if test -z "$SHEEPDOGCLI"; then
-      with_storage_sheepdog=no
-    fi
-
-    if test "$with_storage_sheepdog" = "check"; then
-      with_storage_sheepdog=yes
-    fi
-  fi
-
-  if test "$with_storage_sheepdog" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_STORAGE_SHEEPDOG], 1,
-      [whether Sheepdog backend for storage driver is enabled])
-    AC_DEFINE_UNQUOTED([SHEEPDOGCLI],["$SHEEPDOGCLI"],[Location of sheepdog client program])
-  fi
-fi
-AM_CONDITIONAL([WITH_STORAGE_SHEEPDOG],
-  [test "$with_storage_sheepdog" = "yes"])
 
 if test "$with_storage_gluster" = "check"; then
   with_storage_gluster=$with_glusterfs
@@ -1005,7 +979,7 @@ LIBVIRT_STORAGE_RESULT_SCSI
 LIBVIRT_STORAGE_RESULT_MPATH
 LIBVIRT_STORAGE_RESULT_DISK
 LIBVIRT_STORAGE_RESULT_RBD
-AC_MSG_NOTICE([Sheepdog: $with_storage_sheepdog])
+LIBVIRT_STORAGE_RESULT_SHEEPDOG
 AC_MSG_NOTICE([ Gluster: $with_storage_gluster])
 AC_MSG_NOTICE([     ZFS: $with_storage_zfs])
 AC_MSG_NOTICE([])
