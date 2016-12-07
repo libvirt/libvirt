@@ -564,7 +564,7 @@ LIBVIRT_STORAGE_ARG_MPATH
 LIBVIRT_STORAGE_ARG_DISK
 LIBVIRT_STORAGE_ARG_RBD
 LIBVIRT_STORAGE_ARG_SHEEPDOG
-LIBVIRT_ARG_WITH([STORAGE_GLUSTER], [Gluster backend for the storage driver], [check])
+LIBVIRT_STORAGE_ARG_GLUSTER
 LIBVIRT_ARG_WITH([STORAGE_ZFS], [ZFS backend for the storage driver], [check])
 
 if test "$with_libvirtd" = "no"; then
@@ -596,19 +596,8 @@ LIBVIRT_STORAGE_CHECK_SCSI
 LIBVIRT_STORAGE_CHECK_MPATH
 LIBVIRT_STORAGE_CHECK_RBD
 LIBVIRT_STORAGE_CHECK_SHEEPDOG
+LIBVIRT_STORAGE_CHECK_GLUSTER
 
-
-if test "$with_storage_gluster" = "check"; then
-  with_storage_gluster=$with_glusterfs
-fi
-if test "$with_storage_gluster" = "yes"; then
-  if test "$with_glusterfs" = no; then
-    AC_MSG_ERROR([Need glusterfs (libgfapi) for gluster storage driver])
-  fi
-  AC_DEFINE_UNQUOTED([WITH_STORAGE_GLUSTER], [1],
-    [whether Gluster backend for storage driver is enabled])
-fi
-AM_CONDITIONAL([WITH_STORAGE_GLUSTER], [test "$with_storage_gluster" = "yes"])
 
 if test "$with_storage_zfs" = "yes" ||
    test "$with_storage_zfs" = "check"; then
@@ -980,7 +969,7 @@ LIBVIRT_STORAGE_RESULT_MPATH
 LIBVIRT_STORAGE_RESULT_DISK
 LIBVIRT_STORAGE_RESULT_RBD
 LIBVIRT_STORAGE_RESULT_SHEEPDOG
-AC_MSG_NOTICE([ Gluster: $with_storage_gluster])
+LIBVIRT_STORAGE_RESULT_GLUSTER
 AC_MSG_NOTICE([     ZFS: $with_storage_zfs])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
