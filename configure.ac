@@ -558,7 +558,7 @@ AM_CONDITIONAL([WITH_SECRETS], [test "$with_secrets" = "yes"])
 LIBVIRT_STORAGE_ARG_DIR
 LIBVIRT_STORAGE_ARG_FS
 LIBVIRT_STORAGE_ARG_LVM
-LIBVIRT_ARG_WITH([STORAGE_ISCSI], [iSCSI backend for the storage driver], [check])
+LIBVIRT_STORAGE_ARG_ISCSI
 LIBVIRT_ARG_WITH([STORAGE_SCSI], [SCSI backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_MPATH], [mpath backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_DISK], [GPartd Disk backend for the storage driver], [check])
@@ -591,28 +591,8 @@ fi
 
 LIBVIRT_STORAGE_CHECK_FS
 LIBVIRT_STORAGE_CHECK_LVM
+LIBVIRT_STORAGE_CHECK_ISCSI
 
-
-if test "$with_storage_iscsi" = "yes" || test "$with_storage_iscsi" = "check"; then
-  AC_PATH_PROG([ISCSIADM], [iscsiadm], [], [$LIBVIRT_SBIN_PATH])
-  if test "$with_storage_iscsi" = "yes" ; then
-    if test -z "$ISCSIADM" ; then AC_MSG_ERROR([We need iscsiadm for iSCSI storage driver]) ; fi
-  else
-    if test -z "$ISCSIADM" ; then with_storage_iscsi=no ; fi
-
-    if test "$with_storage_iscsi" = "check" ; then with_storage_iscsi=yes ; fi
-  fi
-
-  if test "$with_storage_iscsi" = "yes" ; then
-    AC_DEFINE_UNQUOTED([WITH_STORAGE_ISCSI], 1, [whether iSCSI backend for storage driver is enabled])
-  fi
-fi
-if test -z "$ISCIADM" ; then
-    AC_DEFINE_UNQUOTED([ISCSIADM],["iscsiadm"],[Name of iscsiadm program])
-else
-    AC_DEFINE_UNQUOTED([ISCSIADM],["$ISCSIADM"],[Location of iscsiadm program])
-fi
-AM_CONDITIONAL([WITH_STORAGE_ISCSI], [test "$with_storage_iscsi" = "yes"])
 
 if test "$with_storage_scsi" = "check" || test "$with_storage_scsi" = "yes"; then
    with_storage_scsi=yes
@@ -1083,7 +1063,7 @@ AC_MSG_NOTICE([])
 LIBVIRT_STORAGE_RESULT_DIR
 LIBVIRT_STORAGE_RESULT_FS
 LIBVIRT_STORAGE_RESULT_LVM
-AC_MSG_NOTICE([   iSCSI: $with_storage_iscsi])
+LIBVIRT_STORAGE_RESULT_ISCSI
 AC_MSG_NOTICE([    SCSI: $with_storage_scsi])
 AC_MSG_NOTICE([   mpath: $with_storage_mpath])
 AC_MSG_NOTICE([    Disk: $with_storage_disk])
