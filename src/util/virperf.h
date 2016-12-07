@@ -36,6 +36,8 @@ typedef enum {
     VIR_PERF_EVENT_INSTRUCTIONS,     /* Count of instructions for application */
     VIR_PERF_EVENT_CACHE_REFERENCES, /* Cache hits by applications */
     VIR_PERF_EVENT_CACHE_MISSES,     /* Cache misses by applications */
+    VIR_PERF_EVENT_BRANCH_INSTRUCTIONS, /* Count of branch instructions
+                                           for applications */
 
     VIR_PERF_EVENT_LAST
 } virPerfEventType;

@@ -945,7 +945,8 @@ I<--perf> returns the statistics of all enabled perf events:
 "perf.cpu_cycles" - the count of cpu cycles (total/elapsed),
 "perf.instructions" - the count of instructions,
 "perf.cache_references" - the count of cache hits,
-"perf.cache_misses" - the count of caches misses
+"perf.cache_misses" - the count of caches misses,
+"perf.branch_instructions" - the count of application branch instructions
 
 See the B<perf> command for more details about each event.
 
@@ -2292,6 +2293,9 @@ B<Valid perf event names>
                      (total/elapsed). May be used with
                      instructions in order to get a cycles
                      per instruction.
+  branch_instructions - Provides the count of branch instructions
+                        executed by applications running on the
+                        platform.
 
 B<Note>: The statistics can be retrieved using the B<domstats> command using
 the I<--perf> flag.

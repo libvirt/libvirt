@@ -2125,6 +2125,16 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_CPU_CYCLES "cpu_cycles"
 
+/**
+ * VIR_PERF_PARAM_BRANCH_INSTRUCTIONS:
+ *
+ * Macro for typed parameter name that represents branch_instructions
+ * perf event which can be used to measure the count of branch instructions
+ * by applications running on the platform. It corresponds to the
+ * "perf.branch_instructions" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_BRANCH_INSTRUCTIONS "branch_instructions"
+
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
                            int *nparams,
