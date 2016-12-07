@@ -556,7 +556,7 @@ AM_CONDITIONAL([WITH_SECRETS], [test "$with_secrets" = "yes"])
 
 
 LIBVIRT_STORAGE_ARG_DIR
-LIBVIRT_ARG_WITH([STORAGE_FS], [FileSystem backend for the storage driver], [check])
+LIBVIRT_STORAGE_ARG_FS
 LIBVIRT_ARG_WITH([STORAGE_LVM], [LVM backend for storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_ISCSI], [iSCSI backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_SCSI], [SCSI backend for the storage driver], [check])
@@ -589,50 +589,7 @@ if test "$with_osx" = "yes"; then
   with_storage_fs=no
 fi
 
-if test "$with_storage_fs" = "yes" || test "$with_storage_fs" = "check"; then
-    AC_CHECK_HEADER([mntent.h],,
-    [
-        if test "$with_storage_fs" = "check"; then
-            with_storage_fs=no
-            AC_MSG_NOTICE([<mntent.h> is required for the FS storage driver, disabling it])
-        else
-            AC_MSG_ERROR([<mntent.h> is required for the FS storage driver])
-        fi
-    ])
-fi
-
-if test "$with_storage_fs" = "yes" || test "$with_storage_fs" = "check"; then
-  AC_PATH_PROG([MOUNT], [mount], [], [$LIBVIRT_SBIN_PATH])
-  AC_PATH_PROG([UMOUNT], [umount], [], [$LIBVIRT_SBIN_PATH])
-  AC_PATH_PROG([MKFS], [mkfs], [], [$LIBVIRT_SBIN_PATH])
-  if test "$with_storage_fs" = "yes" ; then
-    if test -z "$MOUNT" ; then AC_MSG_ERROR([We need mount for FS storage driver]) ; fi
-    if test -z "$UMOUNT" ; then AC_MSG_ERROR([We need umount for FS storage driver]) ; fi
-    if test -z "$MKFS" ; then AC_MSG_ERROR([We need mkfs for FS storage driver]) ; fi
-  else
-    if test -z "$MOUNT" ; then with_storage_fs=no ; fi
-    if test -z "$UMOUNT" ; then with_storage_fs=no ; fi
-    if test -z "$MKFS" ; then with_storage_fs=no ; fi
-
-    if test "$with_storage_fs" = "check" ; then with_storage_fs=yes ; fi
-  fi
-
-  if test "$with_storage_fs" = "yes" ; then
-    AC_DEFINE_UNQUOTED([WITH_STORAGE_FS], 1, [whether FS backend for storage driver is enabled])
-    AC_DEFINE_UNQUOTED([MOUNT],["$MOUNT"],
-        [Location or name of the mount program])
-    AC_DEFINE_UNQUOTED([UMOUNT],["$UMOUNT"],
-        [Location or name of the mount program])
-    AC_DEFINE_UNQUOTED([MKFS],["$MKFS"],
-        [Location or name of the mkfs program])
-  fi
-fi
-AM_CONDITIONAL([WITH_STORAGE_FS], [test "$with_storage_fs" = "yes"])
-if test "$with_storage_fs" = "yes"; then
-  AC_PATH_PROG([SHOWMOUNT], [showmount], [], [$LIBVIRT_SBIN_PATH])
-  AC_DEFINE_UNQUOTED([SHOWMOUNT], ["$SHOWMOUNT"],
-    [Location or name of the showmount program])
-fi
+LIBVIRT_STORAGE_CHECK_FS
 
 if test "$with_storage_lvm" = "yes" || test "$with_storage_lvm" = "check"; then
   AC_PATH_PROG([PVCREATE], [pvcreate], [], [$LIBVIRT_SBIN_PATH])
@@ -1186,8 +1143,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
 AC_MSG_NOTICE([])
 LIBVIRT_STORAGE_RESULT_DIR
-AC_MSG_NOTICE([      FS: $with_storage_fs])
-AC_MSG_NOTICE([   NetFS: $with_storage_fs])
+LIBVIRT_STORAGE_RESULT_FS
 AC_MSG_NOTICE([     LVM: $with_storage_lvm])
 AC_MSG_NOTICE([   iSCSI: $with_storage_iscsi])
 AC_MSG_NOTICE([    SCSI: $with_storage_scsi])
