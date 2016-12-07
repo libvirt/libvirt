@@ -562,7 +562,7 @@ LIBVIRT_STORAGE_ARG_ISCSI
 LIBVIRT_STORAGE_ARG_SCSI
 LIBVIRT_STORAGE_ARG_MPATH
 LIBVIRT_STORAGE_ARG_DISK
-LIBVIRT_ARG_WITH([STORAGE_RBD], [RADOS Block Device backend for the storage driver], [check])
+LIBVIRT_STORAGE_ARG_RBD
 LIBVIRT_ARG_WITH([STORAGE_SHEEPDOG], [with Sheepdog backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_GLUSTER], [Gluster backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_ZFS], [ZFS backend for the storage driver], [check])
@@ -594,23 +594,8 @@ LIBVIRT_STORAGE_CHECK_LVM
 LIBVIRT_STORAGE_CHECK_ISCSI
 LIBVIRT_STORAGE_CHECK_SCSI
 LIBVIRT_STORAGE_CHECK_MPATH
+LIBVIRT_STORAGE_CHECK_RBD
 
-
-LIBRBD_LIBS=
-if test "$with_storage_rbd" = "yes" || test "$with_storage_rbd" = "check"; then
-    AC_CHECK_HEADER([rbd/librbd.h], [LIBRBD_FOUND=yes; break;])
-
-    if test "$LIBRBD_FOUND" = "yes"; then
-        with_storage_rbd=yes
-        LIBRBD_LIBS="-lrbd -lrados"
-        AC_DEFINE_UNQUOTED([WITH_STORAGE_RBD], [1],
-         [whether RBD backend for storage driver is enabled])
-    else
-        with_storage_rbd=no
-    fi
-fi
-AM_CONDITIONAL([WITH_STORAGE_RBD], [test "$with_storage_rbd" = "yes"])
-AC_SUBST([LIBRBD_LIBS])
 
 if test "$with_storage_sheepdog" = "yes" ||
    test "$with_storage_sheepdog" = "check"; then
@@ -1019,7 +1004,7 @@ LIBVIRT_STORAGE_RESULT_ISCSI
 LIBVIRT_STORAGE_RESULT_SCSI
 LIBVIRT_STORAGE_RESULT_MPATH
 LIBVIRT_STORAGE_RESULT_DISK
-AC_MSG_NOTICE([     RBD: $with_storage_rbd])
+LIBVIRT_STORAGE_RESULT_RBD
 AC_MSG_NOTICE([Sheepdog: $with_storage_sheepdog])
 AC_MSG_NOTICE([ Gluster: $with_storage_gluster])
 AC_MSG_NOTICE([     ZFS: $with_storage_zfs])
@@ -1062,6 +1047,7 @@ LIBVIRT_RESULT_OPENWSMAN
 LIBVIRT_RESULT_PCIACCESS
 LIBVIRT_RESULT_PM_UTILS
 LIBVIRT_RESULT_POLKIT
+LIBVIRT_RESULT_RBD
 LIBVIRT_RESULT_READLINE
 LIBVIRT_RESULT_SANLOCK
 LIBVIRT_RESULT_SASL
@@ -1073,12 +1059,6 @@ LIBVIRT_RESULT_XDR
 LIBVIRT_RESULT_XEN
 LIBVIRT_RESULT_XENAPI
 LIBVIRT_RESULT_YAJL
-if test "$with_storage_rbd" = "yes" ; then
-AC_MSG_NOTICE([     rbd: $LIBRBD_LIBS])
-else
-AC_MSG_NOTICE([     rbd: no])
-fi
-
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Windows])
 AC_MSG_NOTICE([])
