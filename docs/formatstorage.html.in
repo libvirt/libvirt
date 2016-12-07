@@ -396,14 +396,6 @@
       &lt;mode&gt;0744&lt;/mode&gt;
       &lt;label&gt;virt_image_t&lt;/label&gt;
     &lt;/permissions&gt;
-    &lt;timestamps&gt;
-      &lt;atime&gt;1341933637.273190990&lt;/atime&gt;
-      &lt;mtime&gt;1341930622.047245868&lt;/mtime&gt;
-      &lt;ctime&gt;1341930622.047245868&lt;/ctime&gt;
-    &lt;/timestamps&gt;
-    &lt;encryption type='...'&gt;
-      ...
-    &lt;/encryption&gt;
   &lt;/target&gt;
 &lt;/pool&gt;</pre>
 
@@ -585,6 +577,14 @@
     &lt;mode&gt;0744&lt;/mode&gt;
     &lt;label&gt;virt_image_t&lt;/label&gt;
   &lt;/permissions&gt;
+  &lt;timestamps&gt;
+    &lt;atime&gt;1341933637.273190990&lt;/atime&gt;
+    &lt;mtime&gt;1341930622.047245868&lt;/mtime&gt;
+    &lt;ctime&gt;1341930622.047245868&lt;/ctime&gt;
+  &lt;/timestamps&gt;
+  &lt;encryption type='...'&gt;
+    ...
+  &lt;/encryption&gt;
   &lt;compat&gt;1.1&lt;/compat&gt;
   &lt;nocow/&gt;
   &lt;features&gt;
