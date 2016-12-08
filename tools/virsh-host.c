@@ -623,9 +623,6 @@ cmdMaxvcpus(vshControl *ctl, const vshCmd *cmd)
 
         ignore_value(virXPathInt("string(./vcpu[1]/@max)", ctxt, &vcpus));
     } else {
-        if (last_error && last_error->code != VIR_ERR_NO_SUPPORT)
-            goto cleanup;
-
        vshResetLibvirtError();
     }
 
