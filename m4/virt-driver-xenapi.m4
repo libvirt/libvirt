@@ -24,53 +24,19 @@ AC_DEFUN([LIBVIRT_DRIVER_ARG_XENAPI], [
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_XENAPI], [
   AC_REQUIRE([LIBVIRT_CHECK_CURL])
 
-  old_LIBS="$LIBS"
-  old_CFLAGS="$CFLAGS"
-  XENAPI_LIBS=""
-  XENAPI_CFLAGS=""
+  old_with_xenapi="$with_xenapi"
+
   dnl search for the XenServer library
-  fail=0
-  if test "$with_xenapi" != "no" ; then
-    if test "$with_xenapi" != "yes" && test "$with_xenapi" != "check" ; then
-      XENAPI_CFLAGS="-I$with_xenapi/include"
-      XENAPI_LIBS="-L$with_xenapi"
-    fi
-    CFLAGS="$CFLAGS $XENAPI_CFLAGS"
-    LIBS="$LIBS $XENAPI_LIBS"
-    AC_CHECK_LIB([xenserver], [xen_vm_start], [
-      XENAPI_LIBS="$XENAPI_LIBS -lxenserver"
-    ],[
-      if test "$with_xenapi" = "yes"; then
-        fail=1
+  LIBVIRT_CHECK_LIB([XENAPI], [xenserver], [xen_vm_start], [xen/api/xen_vm.h])
+
+  if test "x$with_xenapi" = "xyes" ; then
+    if test "x$with_curl" = "xno"; then
+      if test "$old_with_xenapi" != "check"; then
+        AC_MSG_ERROR([You must install libcurl to compile the XenAPI driver])
       fi
       with_xenapi=no
-    ])
-    if test "$with_xenapi" != "no" ; then
-      if test "$with_curl" = "no"; then
-        if test "$with_xenapi" = "yes"; then
-          fail=1
-        fi
-        with_xenapi=no
-      else
-        with_xenapi=yes
-      fi
     fi
   fi
-
-  LIBS="$old_LIBS"
-  CFLAGS="$old_CFLAGS"
-
-  if test $fail = 1; then
-    AC_MSG_ERROR([You must install libxenserver and libcurl to compile the XenAPI driver])
-  fi
-
-  if test "$with_xenapi" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_XENAPI], 1, [whether XenAPI driver is enabled])
-  fi
-  AM_CONDITIONAL([WITH_XENAPI], [test "$with_xenapi" = "yes"])
-
-  AC_SUBST([XENAPI_CFLAGS])
-  AC_SUBST([XENAPI_LIBS])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_RESULT_XENAPI], [
