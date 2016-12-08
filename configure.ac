@@ -400,7 +400,7 @@ fi
 dnl Allow to build without Xen, QEMU/KVM, test or remote driver
 LIBVIRT_ARG_WITH([XEN], [XEN], [check])
 LIBVIRT_ARG_WITH([XEN_INOTIFY], [XEN inotify], [check])
-LIBVIRT_ARG_WITH([QEMU], [QEMU/KVM], [yes])
+LIBVIRT_DRIVER_ARG_QEMU
 LIBVIRT_DRIVER_ARG_OPENVZ
 LIBVIRT_DRIVER_ARG_VMWARE
 LIBVIRT_ARG_WITH([PHYP], [PHYP], [check])
@@ -476,10 +476,7 @@ if test "x$with_vbox" = "xyes"; then
 fi
 AM_CONDITIONAL([WITH_VBOX], [test "$with_vbox" = "yes"])
 
-if test "$with_qemu" = "yes" ; then
-    AC_DEFINE_UNQUOTED([WITH_QEMU], 1, [whether QEMU driver is enabled])
-fi
-AM_CONDITIONAL([WITH_QEMU], [test "$with_qemu" = "yes"])
+LIBVIRT_DRIVER_CHECK_QEMU
 
 if test "$with_test" = "yes" ; then
     AC_DEFINE_UNQUOTED([WITH_TEST], 1, [whether Test driver is enabled])
@@ -1665,7 +1662,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Drivers])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([      Xen: $with_xen])
-AC_MSG_NOTICE([     QEMU: $with_qemu])
+LIBVIRT_DRIVER_RESULT_QEMU
 LIBVIRT_DRIVER_RESULT_UML
 LIBVIRT_DRIVER_RESULT_OPENVZ
 LIBVIRT_DRIVER_RESULT_VMWARE
