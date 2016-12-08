@@ -3291,6 +3291,9 @@ qemuGetCompressionProgram(const char *imageFormat,
     if ((ret = qemuSaveCompressionTypeFromString(imageFormat)) < 0)
         goto error;
 
+    if (ret == QEMU_SAVE_FORMAT_RAW)
+        return QEMU_SAVE_FORMAT_RAW;
+
     if (!(*compresspath = virFindFileInPath(imageFormat)))
         goto error;
 
