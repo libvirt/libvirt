@@ -398,8 +398,7 @@ if test "$prefix" = "/usr" && test "$sysconfdir" = '${prefix}/etc' ; then
 fi
 
 dnl Allow to build without Xen, QEMU/KVM, test or remote driver
-LIBVIRT_ARG_WITH([XEN], [XEN], [check])
-LIBVIRT_ARG_WITH([XEN_INOTIFY], [XEN inotify], [check])
+LIBVIRT_DRIVER_ARG_XEN
 LIBVIRT_DRIVER_ARG_QEMU
 LIBVIRT_DRIVER_ARG_OPENVZ
 LIBVIRT_DRIVER_ARG_VMWARE
@@ -613,99 +612,9 @@ AM_CONDITIONAL([WITH_LIBXL], [test "$with_libxl" = "yes"])
 AC_SUBST([LIBXL_CFLAGS])
 AC_SUBST([LIBXL_LIBS])
 
-old_LIBS="$LIBS"
-old_CFLAGS="$CFLAGS"
-XEN_LIBS=""
-XEN_CFLAGS=""
-dnl search for the Xen store library
-if test "$with_xen" != "no" ; then
-    if test "$with_xen" != "yes" && test "$with_xen" != "check" ; then
-        XEN_CFLAGS="-I$with_xen/include"
-        XEN_LIBS="-L$with_xen/lib64 -L$with_xen/lib"
-    fi
-    fail=0
-    CFLAGS="$CFLAGS $XEN_CFLAGS"
-    LIBS="$LIBS $XEN_LIBS"
-    AC_CHECK_LIB([xenstore], [xs_read], [
-           with_xen=yes
-           XEN_LIBS="$XEN_LIBS -lxenstore"
-       ],[
-           if test "$with_xen" = "yes"; then
-               fail=1
-           fi
-           with_xen=no
-       ])
-fi
-
-if test "$with_xen" != "no" ; then
-    dnl In Xen 4.2, xs.h is deprecated in favor of xenstore.h.
-    AC_CHECK_HEADERS([xenstore.h])
-    AC_CHECK_HEADERS([xen/xen.h xen/version.h xen/dom0_ops.h],,[
-       if test "$with_xen" = "yes"; then
-           fail=1
-       fi
-       with_xen=no
-    ],
-[#include <stdio.h>
-#include <stdint.h>
-])
-fi
-
-if test "$with_xen" != "no" ; then
-    dnl Search for the location of <xen/{linux,sys}/privcmd.h>.
-    found=
-    AC_CHECK_HEADERS([xen/sys/privcmd.h xen/linux/privcmd.h], [found=yes; break;], [],
-       [#include <stdio.h>
-        #include <stdint.h>
-        #include <xen/xen.h>
-       ])
-    if test "x$found" != "xyes"; then
-        if test "$with_xen" = "yes"; then
-            fail=1
-        fi
-        with_xen=no
-    fi
-fi
-
-LIBS="$old_LIBS"
-CFLAGS="$old_CFLAGS"
-
-if test $fail = 1; then
-    AC_MSG_ERROR([You must install the Xen development package to compile Xen driver with -lxenstore])
-fi
-
-if test "$with_xen" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_XEN], 1, [whether Xen driver is enabled])
-fi
-
-AM_CONDITIONAL([WITH_XEN], [test "$with_xen" = "yes"])
-AC_SUBST([XEN_CFLAGS])
-AC_SUBST([XEN_LIBS])
+LIBVIRT_DRIVER_CHECK_XEN
 
 AM_CONDITIONAL([WITH_XENCONFIG], [test "$with_libxl" = "yes" || test "$with_xen" = "yes"])
-
-dnl
-dnl check for kernel headers required by xen_inotify
-dnl
-if test "$with_xen" != "yes"; then
-    with_xen_inotify=no
-fi
-if test "$with_xen_inotify" != "no"; then
-    AC_CHECK_HEADER([sys/inotify.h], [
-        with_xen_inotify=yes
-    ], [
-        if test "$with_xen_inotify" = "check"; then
-            with_xen_inotify=no
-            AC_MSG_NOTICE([Header file <sys/inotify.h> is required for Xen Inotify support, disabling it])
-        else
-            AC_MSG_ERROR([Header file <sys/inotify.h> is required for Xen Inotify support!])
-        fi
-    0])
-fi
-if test "$with_xen_inotify" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_XEN_INOTIFY], 1,[whether Xen inotify sub-driver is enabled])
-fi
-AM_CONDITIONAL([WITH_XEN_INOTIFY], [test "$with_xen_inotify" = "yes"])
 
 dnl
 dnl check for kvm headers
@@ -1589,7 +1498,7 @@ AC_MSG_NOTICE([=====================])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Drivers])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([      Xen: $with_xen])
+LIBVIRT_DRIVER_RESULT_XEN
 LIBVIRT_DRIVER_RESULT_QEMU
 LIBVIRT_DRIVER_RESULT_UML
 LIBVIRT_DRIVER_RESULT_OPENVZ
@@ -1669,12 +1578,8 @@ LIBVIRT_RESULT_SSH2
 LIBVIRT_RESULT_UDEV
 LIBVIRT_RESULT_VIRTUALPORT
 LIBVIRT_RESULT_XDR
+LIBVIRT_RESULT_XEN
 LIBVIRT_RESULT_YAJL
-if test "$with_xen" = "yes" ; then
-AC_MSG_NOTICE([     xen: $XEN_CFLAGS $XEN_LIBS])
-else
-AC_MSG_NOTICE([     xen: no])
-fi
 if test "$with_xenapi" = "yes" ; then
 AC_MSG_NOTICE([  xenapi: $LIBXENSERVER_CFLAGS $LIBXENSERVER_LIBS])
 else
