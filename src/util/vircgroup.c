@@ -656,11 +656,8 @@ virCgroupDetect(virCgroupPtr group,
 
     if (controllers >= 0) {
         VIR_DEBUG("Filtering controllers %d", controllers);
+        /* First mark requested but non-existing controllers to be ignored */
         for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
-            VIR_DEBUG("Controller '%s' wanted=%s, mount='%s'",
-                      virCgroupControllerTypeToString(i),
-                      (1 << i) & controllers ? "yes" : "no",
-                      NULLSTR(group->controllers[i].mountPoint));
             if (((1 << i) & controllers)) {
                 /* Remove non-existent controllers  */
                 if (!group->controllers[i].mountPoint) {
@@ -668,12 +665,15 @@ virCgroupDetect(virCgroupPtr group,
                               virCgroupControllerTypeToString(i));
                     controllers &= ~(1 << i);
                 }
-            } else {
-                if (!group->controllers[i].mountPoint) {
-                    /* without controller co-mounting is impossible */
-                    continue;
-                }
-
+            }
+        }
+        for (i = 0; i < VIR_CGROUP_CONTROLLER_LAST; i++) {
+            VIR_DEBUG("Controller '%s' wanted=%s, mount='%s'",
+                      virCgroupControllerTypeToString(i),
+                      (1 << i) & controllers ? "yes" : "no",
+                      NULLSTR(group->controllers[i].mountPoint));
+            if (!((1 << i) & controllers) &&
+                group->controllers[i].mountPoint) {
                 /* Check whether a request to disable a controller
                  * clashes with co-mounting of controllers */
                 for (j = 0; j < VIR_CGROUP_CONTROLLER_LAST; j++) {
