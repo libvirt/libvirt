@@ -153,10 +153,23 @@ AC_MSG_RESULT([$LIBVIRT_NODELETE])
 AC_SUBST([LIBVIRT_NODELETE])
 
 AC_MSG_CHECKING([for how to set DSO symbol versions])
-VERSION_SCRIPT_FLAGS=-Wl,--version-script=
-`$LD --help 2>&1 | grep -- --version-script >/dev/null` || \
-    VERSION_SCRIPT_FLAGS="-Wl,-M -Wl,"
+case "$host" in
+  *-*-mingw* | *-*-msvc* )
+    # mingw's ld has the --version-script parameter, but it requires a .def file
+    # instead to work properly, therefore clear --version-script here and use
+    # -Wl, to pass the .def file to the linker
+    # cygwin's ld has the --version-script parameter too, but for some reason
+    # it's working there as expected
+    VERSION_SCRIPT_FLAGS="-Wl,"
+    ;;
+  * )
+    VERSION_SCRIPT_FLAGS=-Wl,--version-script=
+      `$LD --help 2>&1 | grep -- --version-script >/dev/null` || \
+        VERSION_SCRIPT_FLAGS="-Wl,-M -Wl,"
+    ;;
+esac
 AC_MSG_RESULT([$VERSION_SCRIPT_FLAGS])
+AC_SUBST([VERSION_SCRIPT_FLAGS])
 
 dnl Specify if we rely on ifconfig instead of iproute2 (e.g. in case
 dnl we're working on BSD)
@@ -1644,19 +1657,6 @@ LIBVIRT_WIN_CHECK_CYGWIN
 LIBVIRT_WIN_CHECK_MINGW
 LIBVIRT_WIN_CHECK_SYMBOLS
 LIBVIRT_WIN_CHECK_WINDRES
-
-
-case "$host" in
-  *-*-mingw* | *-*-msvc* )
-    # mingw's ld has the --version-script parameter, but it requires a .def file
-    # instead to work properly, therefore clear --version-script here and use
-    # -Wl, to pass the .def file to the linker
-    # cygwin's ld has the --version-script parameter too, but for some reason
-    # it's working there as expected
-    VERSION_SCRIPT_FLAGS="-Wl,"
-    ;;
-esac
-AC_SUBST([VERSION_SCRIPT_FLAGS])
 
 
 dnl Driver-Modules library support
