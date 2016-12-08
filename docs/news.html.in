@@ -28,6 +28,12 @@
         </ul>
       </li>
       <li><strong>Improvements</strong>
+        <ul>
+          <li>perf: Add perf.branch_instructions<br/>
+          Add support to get the count of branch instructions executed
+          by applications running on the platform
+          </li>
+        </ul>
       </li>
       <li><strong>Bug fixes</strong>
       </li>
