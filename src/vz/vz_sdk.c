@@ -4740,7 +4740,7 @@ int prlsdkSwitchToSnapshot(virDomainObjPtr dom, const char *uuid, bool paused)
  * connection to dispatcher
  */
 
-#define PRLSDK_MIGRATION_FLAGS (PSL_HIGH_SECURITY)
+#define PRLSDK_MIGRATION_FLAGS (PSL_HIGH_SECURITY | PVMT_DONT_CREATE_DISK)
 
 int prlsdkMigrate(virDomainObjPtr dom, virURIPtr uri,
                   const unsigned char *session_uuid,
