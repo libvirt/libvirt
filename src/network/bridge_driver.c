@@ -994,6 +994,43 @@ networkBuildDnsmasqHostsList(dnsmasqContext *dctx,
 }
 
 
+static int
+networkDnsmasqConfLocalPTRs(virBufferPtr buf,
+                            virNetworkDefPtr def)
+{
+    virNetworkIPDefPtr ip;
+    size_t i;
+    char *ptr = NULL;
+    int rc;
+
+    for (i = 0; i < def->nips; i++) {
+        ip = def->ips + i;
+
+        if (ip->localPTR != VIR_TRISTATE_BOOL_YES)
+            continue;
+
+        if ((rc = virSocketAddrPTRDomain(&ip->address,
+                                         virNetworkIPDefPrefix(ip),
+                                         &ptr)) < 0) {
+            if (rc == -2) {
+                int family = VIR_SOCKET_ADDR_FAMILY(&ip->address);
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("PTR domain for %s network with prefix %u "
+                                 "cannot be automatically created"),
+                               (family == AF_INET) ? "IPv4" : "IPv6",
+                               virNetworkIPDefPrefix(ip));
+            }
+            return -1;
+        }
+
+        virBufferAsprintf(buf, "local=/%s/\n", ptr);
+        VIR_FREE(ptr);
+    }
+
+    return 0;
+}
+
+
 int
 networkDnsmasqConfContents(virNetworkObjPtr network,
                            const char *pidfile,
@@ -1078,6 +1115,10 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                           "expand-hosts\n",
                           network->def->domain);
     }
+
+    if (wantDNS &&
+        networkDnsmasqConfLocalPTRs(&configbuf, network->def) < 0)
+        goto cleanup;
 
     if (wantDNS && network->def->dns.forwardPlainNames == VIR_TRISTATE_BOOL_NO) {
         virBufferAddLit(&configbuf, "domain-needed\n");

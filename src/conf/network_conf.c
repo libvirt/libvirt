@@ -1507,6 +1507,7 @@ virNetworkIPDefParseXML(const char *networkName,
     unsigned long prefix = 0;
     int prefixRc;
     int result = -1;
+    char *localPtr = NULL;
 
     save = ctxt->node;
     ctxt->node = node;
@@ -1548,6 +1549,17 @@ virNetworkIPDefParseXML(const char *networkName,
         def->prefix = 0;
     else
         def->prefix = prefix;
+
+    localPtr = virXPathString("string(./@localPtr)", ctxt);
+    if (localPtr) {
+        def->localPTR = virTristateBoolTypeFromString(localPtr);
+        if (def->localPTR <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid localPtr value '%s' in network '%s'"),
+                           localPtr, networkName);
+            goto cleanup;
+        }
+    }
 
     /* validate address, etc. for each family */
     if ((def->family == NULL) || (STREQ(def->family, "ipv4"))) {
@@ -1627,6 +1639,7 @@ virNetworkIPDefParseXML(const char *networkName,
         virNetworkIPDefClear(def);
     VIR_FREE(address);
     VIR_FREE(netmask);
+    VIR_FREE(localPtr);
 
     ctxt->node = save;
     return result;
@@ -2652,6 +2665,12 @@ virNetworkIPDefFormat(virBufferPtr buf,
     }
     if (def->prefix > 0)
         virBufferAsprintf(buf, " prefix='%u'", def->prefix);
+
+    if (def->localPTR) {
+        virBufferAsprintf(buf, " localPtr='%s'",
+                          virTristateBoolTypeToString(def->localPTR));
+    }
+
     virBufferAddLit(buf, ">\n");
     virBufferAdjustIndent(buf, 2);
 

@@ -855,14 +855,14 @@
     &lt;hostname&gt;myhostalias&lt;/hostname&gt;
   &lt;/host&gt;
 &lt;/dns&gt;
-&lt;ip address="192.168.122.1" netmask="255.255.255.0"&gt;
+&lt;ip address="192.168.122.1" netmask="255.255.255.0" localPtr="yes"&gt;
   &lt;dhcp&gt;
     &lt;range start="192.168.122.100" end="192.168.122.254"/&gt;
     &lt;host mac="00:16:3e:77:e2:ed" name="foo.example.com" ip="192.168.122.10"/&gt;
     &lt;host mac="00:16:3e:3e:a9:1a" name="bar.example.com" ip="192.168.122.11"/&gt;
   &lt;/dhcp&gt;
 &lt;/ip&gt;
-&lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64"/&gt;
+&lt;ip family="ipv6" address="2001:db8:ca2:2::1" prefix="64" localPtr="yes"/&gt;
 &lt;route family="ipv6" address="2001:db9:ca1:1::" prefix="64" gateway="2001:db8:ca2:2::2"/&gt;
 </pre>
 
@@ -983,11 +983,18 @@
         to specify the type of address &mdash; <code>ipv4</code> or
         <code>ipv6</code>; if no <code>family</code> is given,
         <code>ipv4</code> is assumed. More than one address of each family can
-        be defined for a network. The <code>ip</code> element is supported
-        <span class="since">since 0.3.0</span>. IPv6, multiple addresses on a
-        single network, <code>family</code>, and <code>prefix</code> are
-        supported <span class="since">since 0.8.7</span>. The <code>ip</code>
-        element may contain the following elements:
+        be defined for a network. The optional <code>localPtr</code> attribute
+        (<span class="since">since 3.0.0</span>) configures the DNS server to
+        not forward any reverse DNS requests for IP addresses from the network
+        configured by the <code>address</code> and
+        <code>netmask</code>/<code>prefix</code> attributes. For some unusual
+        network prefixes (not divisible by 8 for IPv4 or not divisible by 4 for
+        IPv6) libvirt may be unable to compute the PTR domain automatically.
+        The <code>ip</code> element is supported <span class="since">since
+        0.3.0</span>. IPv6, multiple addresses on a single network,
+        <code>family</code>, and <code>prefix</code> are supported
+        <span class="since">since 0.8.7</span>. The <code>ip</code> element may
+        contain the following elements:
 
         <dl>
           <dt><code>tftp</code></dt>

@@ -162,6 +162,8 @@ struct _virNetworkIPDef {
     unsigned int prefix;        /* ipv6 - only prefix allowed */
     virSocketAddr netmask;      /* ipv4 - either netmask or prefix specified */
 
+    int localPTR; /* virTristateBool */
+
     size_t nranges;             /* Zero or more dhcp ranges */
     virSocketAddrRangePtr ranges;
 

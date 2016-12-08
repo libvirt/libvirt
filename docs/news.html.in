@@ -16,6 +16,8 @@
     <ul>
       <li><strong>New features</strong>
         <ul>
+          <li>New localPtr attribute for "ip" element in network XML
+          </li>
           <li>qemu: Support QEMU group I/O throttling<br/>
           Add the capability to allow group I/O throttling via a new
           domain &lt;disk&gt; &lt;iotune&gt; subelement "group_name"

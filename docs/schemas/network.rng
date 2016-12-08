@@ -339,6 +339,9 @@
             <optional>
               <attribute name="family"><ref name="addr-family"/></attribute>
             </optional>
+            <optional>
+              <attribute name="localPtr"><ref name="virYesNo"/></attribute>
+            </optional>
             <interleave>
               <optional>
                 <element name="tftp">
