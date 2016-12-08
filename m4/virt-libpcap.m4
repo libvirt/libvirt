@@ -26,7 +26,6 @@ AC_DEFUN([LIBVIRT_CHECK_LIBPCAP], [
   LIBPCAP_CONFIG="pcap-config"
   LIBPCAP_CFLAGS=""
   LIBPCAP_LIBS=""
-  LIBPCAP_FOUND="no"
 
   if test "x$with_libpcap" != "xno"; then
     case $with_libpcap in
@@ -36,21 +35,22 @@ AC_DEFUN([LIBVIRT_CHECK_LIBPCAP], [
     AS_IF([test "x$LIBPCAP_CONFIG" != "x"], [
       AC_MSG_CHECKING(libpcap $LIBPCAP_CONFIG >= $LIBPCAP_REQUIRED )
       if ! $LIBPCAP_CONFIG --libs > /dev/null 2>&1 ; then
+        if test "x$with_libpcap" != "xcheck"; then
+          AC_MSG_ERROR([You must install libpcap >= $LIBPCAP_REQUIRED to compile libvirt])
+        fi
         AC_MSG_RESULT(no)
+        with_libpcap="no"
       else
         LIBPCAP_LIBS="`$LIBPCAP_CONFIG --libs`"
         LIBPCAP_CFLAGS="`$LIBPCAP_CONFIG --cflags`"
-        LIBPCAP_FOUND="yes"
+        with_libpcap="yes"
         AC_MSG_RESULT(yes)
       fi
     ])
   fi
 
-  if test "x$LIBPCAP_FOUND" = "xyes"; then
+  if test "x$with_libpcap" = "xyes"; then
     AC_DEFINE_UNQUOTED([HAVE_LIBPCAP], 1, [whether libpcap can be used])
-    with_libpcap="yes"
-  else
-    with_libpcap="no"
   fi
 
   AC_SUBST([LIBPCAP_CFLAGS])
