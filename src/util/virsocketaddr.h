@@ -57,6 +57,9 @@ typedef struct {
 # define VIR_SOCKET_ADDR_IPV4_ALL "0.0.0.0"
 # define VIR_SOCKET_ADDR_IPV6_ALL "::"
 
+# define VIR_SOCKET_ADDR_IPV4_ARPA "in-addr.arpa"
+# define VIR_SOCKET_ADDR_IPV6_ARPA "ip6.arpa"
+
 typedef virSocketAddr *virSocketAddrPtr;
 
 typedef struct _virSocketAddrRange virSocketAddrRange;
@@ -136,4 +139,10 @@ bool virSocketAddrIsWildcard(const virSocketAddr *addr);
 int virSocketAddrNumericFamily(const char *address);
 
 bool virSocketAddrIsNumericLocalhost(const char *addr);
+
+int virSocketAddrPTRDomain(const virSocketAddr *addr,
+                           unsigned int prefix,
+                           char **ptr)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+
 #endif /* __VIR_SOCKETADDR_H__ */

@@ -27,6 +27,7 @@
 #include "virerror.h"
 #include "virstring.h"
 #include "viralloc.h"
+#include "virbuffer.h"
 
 #include <netdb.h>
 
@@ -40,6 +41,8 @@ typedef unsigned char virSocketAddrIPv4[4];
 typedef virSocketAddrIPv4 *virSocketAddrIPv4Ptr;
 typedef unsigned short virSocketAddrIPv6[8];
 typedef virSocketAddrIPv6 *virSocketAddrIPv6Ptr;
+typedef unsigned char virSocketAddrIPv6Nibbles[32];
+typedef virSocketAddrIPv6Nibbles *virSocketAddrIPv6NibblesPtr;
 
 static int
 virSocketAddrGetIPv4Addr(const virSocketAddr *addr,
@@ -72,6 +75,23 @@ virSocketAddrGetIPv6Addr(const virSocketAddr *addr, virSocketAddrIPv6Ptr tab)
     for (i = 0; i < 8; i++) {
         (*tab)[i] = ((addr->data.inet6.sin6_addr.s6_addr[2 * i] << 8) |
                      addr->data.inet6.sin6_addr.s6_addr[2 * i + 1]);
+    }
+
+    return 0;
+}
+
+static int
+virSocketAddrGetIPv6Nibbles(const virSocketAddr *addr,
+                            virSocketAddrIPv6NibblesPtr tab)
+{
+    size_t i;
+
+    if (!addr || !tab || addr->data.stor.ss_family != AF_INET6)
+        return -1;
+
+    for (i = 0; i < 16; i++) {
+        (*tab)[2 * i] = addr->data.inet6.sin6_addr.s6_addr[i] >> 4;
+        (*tab)[2 * i + 1] = addr->data.inet6.sin6_addr.s6_addr[i] & 0xF;
     }
 
     return 0;
@@ -1117,4 +1137,69 @@ virSocketAddrIsNumericLocalhost(const char *addr)
     }
 
     return false;
+}
+
+
+/**
+ * virSocketAddrPTRDomain:
+ *
+ * Create PTR domain which corresponds to @addr/@prefix. Both IPv4 and IPv6
+ * addresses are supported, but @prefix must be divisible by 8 for IPv4 and
+ * divisible by 4 for IPv6, otherwise -2 will be returned.
+ *
+ * Returns -2 if the PTR record cannot be automatically created,
+ *         -1 on error,
+  *         0 on success.
+ */
+int
+virSocketAddrPTRDomain(const virSocketAddr *addr,
+                       unsigned int prefix,
+                       char **ptr)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    size_t i;
+    int ret = -1;
+
+    if (VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET)) {
+        virSocketAddrIPv4 ip;
+
+        if (prefix == 0 || prefix >= 32 || prefix % 8 != 0)
+            goto unsupported;
+
+        if (virSocketAddrGetIPv4Addr(addr, &ip) < 0)
+            goto cleanup;
+
+        for (i = prefix / 8; i > 0; i--)
+            virBufferAsprintf(&buf, "%u.", ip[i - 1]);
+
+        virBufferAddLit(&buf, VIR_SOCKET_ADDR_IPV4_ARPA);
+    } else if (VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET6)) {
+        virSocketAddrIPv6Nibbles ip;
+
+        if (prefix == 0 || prefix >= 128 || prefix % 4 != 0)
+            goto unsupported;
+
+        if (virSocketAddrGetIPv6Nibbles(addr, &ip) < 0)
+            goto cleanup;
+
+        for (i = prefix / 4; i > 0; i--)
+            virBufferAsprintf(&buf, "%x.", ip[i - 1]);
+
+        virBufferAddLit(&buf, VIR_SOCKET_ADDR_IPV6_ARPA);
+    } else {
+        goto unsupported;
+    }
+
+    if (!(*ptr = virBufferContentAndReset(&buf)))
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
+
+ unsupported:
+    ret = -2;
+    goto cleanup;
 }
