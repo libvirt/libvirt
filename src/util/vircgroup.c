@@ -669,6 +669,11 @@ virCgroupDetect(virCgroupPtr group,
                     controllers &= ~(1 << i);
                 }
             } else {
+                if (!group->controllers[i].mountPoint) {
+                    /* without controller co-mounting is impossible */
+                    continue;
+                }
+
                 /* Check whether a request to disable a controller
                  * clashes with co-mounting of controllers */
                 for (j = 0; j < VIR_CGROUP_CONTROLLER_LAST; j++) {
