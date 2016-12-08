@@ -1501,7 +1501,8 @@ virNetworkIPDefParseXML(const char *networkName,
      * On failure clear it out, but don't free it.
      */
 
-    xmlNodePtr cur, save;
+    xmlNodePtr save;
+    xmlNodePtr dhcp;
     char *address = NULL, *netmask = NULL;
     unsigned long prefix = 0;
     int prefixRc;
@@ -1603,29 +1604,20 @@ virNetworkIPDefParseXML(const char *networkName,
         goto cleanup;
     }
 
-    cur = node->children;
-    while (cur != NULL) {
-        if (cur->type == XML_ELEMENT_NODE &&
-            xmlStrEqual(cur->name, BAD_CAST "dhcp")) {
-            if (virNetworkDHCPDefParseXML(networkName, cur, def) < 0)
-                goto cleanup;
-        } else if (cur->type == XML_ELEMENT_NODE &&
-                   xmlStrEqual(cur->name, BAD_CAST "tftp")) {
-            char *root;
+    if ((dhcp = virXPathNode("./dhcp[1]", ctxt)) &&
+        virNetworkDHCPDefParseXML(networkName, dhcp, def) < 0)
+        goto cleanup;
 
-            if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Unsupported <tftp> element in an IPv6 element in network '%s'"),
-                               networkName);
-                goto cleanup;
-            }
-            if (!(root = virXMLPropString(cur, "root"))) {
-                cur = cur->next;
-                continue;
-            }
-            def->tftproot = (char *)root;
+    if (virXPathNode("./tftp[1]", ctxt)) {
+        if (!VIR_SOCKET_ADDR_IS_FAMILY(&def->address, AF_INET)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported <tftp> element in an IPv6 element "
+                             "in network '%s'"),
+                           networkName);
+            goto cleanup;
         }
-        cur = cur->next;
+
+        def->tftproot = virXPathString("string(./tftp[1]/@root)", ctxt);
     }
 
     result = 0;
