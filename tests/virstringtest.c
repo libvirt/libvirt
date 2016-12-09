@@ -34,6 +34,53 @@
 
 VIR_LOG_INIT("tests.stringtest");
 
+struct testStreqData {
+    const char *a;
+    const char *b;
+};
+
+static int testStreq(const void *args)
+{
+    const struct testStreqData *data = args;
+    int ret = -1;
+    bool equal = true;
+    bool streq_rv, strneq_rv;
+    size_t i;
+
+    if ((size_t) data->a ^ (size_t) data->b)
+        equal = false;
+    if (data->a && data->b) {
+        for (i = 0; data->a[i] != '\0'; i++) {
+            if (data->b[i] == '\0' ||
+                data->a[i] != data->b[i]) {
+                equal = false;
+                break;
+            }
+        }
+    }
+
+    streq_rv = STREQ_NULLABLE(data->a, data->b);
+    strneq_rv = STRNEQ_NULLABLE(data->a, data->b);
+
+    if (streq_rv != equal) {
+        virFilePrintf(stderr,
+                      "STREQ not working correctly. Expected %d got %d",
+                      (int) equal, (int) streq_rv);
+        goto cleanup;
+    }
+
+    if (strneq_rv == equal) {
+        virFilePrintf(stderr,
+                      "STRNEQ not working correctly. Expected %d got %d",
+                      (int) equal, (int) strneq_rv);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
 struct testSplitData {
     const char *string;
     const char *delim;
@@ -650,6 +697,20 @@ static int
 mymain(void)
 {
     int ret = 0;
+
+#define TEST_STREQ(aa, bb)                                              \
+    do {                                                                \
+        struct testStreqData streqData = {.a = aa, .b = bb};            \
+        if (virTestRun("Streq", testStreq, &streqData) < 0)             \
+            ret = -1;                                                   \
+    } while (0)
+
+    TEST_STREQ("hello", "world");
+    TEST_STREQ(NULL, NULL);
+    TEST_STREQ(NULL, "");
+    TEST_STREQ("", NULL);
+    TEST_STREQ("", "");
+    TEST_STREQ("hello", "hello");
 
 #define TEST_SPLIT(str, del, max, toks)                                 \
     do {                                                                \
