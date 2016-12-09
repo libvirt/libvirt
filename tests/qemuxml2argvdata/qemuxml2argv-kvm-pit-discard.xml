@@ -9,7 +9,7 @@
     <boot dev='hd'/>
   </os>
   <clock offset='utc'>
-    <timer name='pit' tickpolicy='delay'/>
+    <timer name='pit' tickpolicy='discard'/>
   </clock>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
