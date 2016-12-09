@@ -112,7 +112,6 @@ fi
 dnl Required minimum versions of all libs we depend on
 PARTED_REQUIRED="1.8.0"
 DEVMAPPER_REQUIRED=1.0.0
-LIBPCAP_REQUIRED="1.0.0"
 LIBNL_REQUIRED="1.1"
 PARALLELS_SDK_REQUIRED="7.0.22"
 dnl Where we look for daemons and admin binaries during configure
@@ -1010,39 +1009,8 @@ if test "$with_numad" = "yes"; then
 fi
 AM_CONDITIONAL([HAVE_NUMAD], [test "$with_numad" != "no"])
 
-dnl pcap lib
-LIBPCAP_CONFIG="pcap-config"
-LIBPCAP_CFLAGS=""
-LIBPCAP_LIBS=""
-LIBPCAP_FOUND="no"
-
-LIBVIRT_ARG_WITH_ALT([LIBPCAP], [libpcap location], [check])
-if test "$with_qemu" = "yes"; then
-  case $with_libpcap in
-    no)     LIBPCAP_CONFIG= ;;
-    ''|yes|check) LIBPCAP_CONFIG="pcap-config" ;;
-    *)      LIBPCAP_CONFIG="$with_libpcap/bin/pcap-config" ;;
-  esac
-  AS_IF([test "x$LIBPCAP_CONFIG" != "x"], [
-    AC_MSG_CHECKING(libpcap $LIBPCAP_CONFIG >= $LIBPCAP_REQUIRED )
-    if ! $LIBPCAP_CONFIG --libs > /dev/null 2>&1 ; then
-      AC_MSG_RESULT(no)
-    else
-      LIBPCAP_LIBS="`$LIBPCAP_CONFIG --libs`"
-      LIBPCAP_CFLAGS="`$LIBPCAP_CONFIG --cflags`"
-      LIBPCAP_FOUND="yes"
-      AC_MSG_RESULT(yes)
-    fi
-  ])
-fi
-
-if test "x$LIBPCAP_FOUND" = "xyes"; then
-  AC_DEFINE_UNQUOTED([HAVE_LIBPCAP], 1, [whether libpcap can be used])
-fi
-
-AC_SUBST([LIBPCAP_CFLAGS])
-AC_SUBST([LIBPCAP_LIBS])
-
+LIBVIRT_ARG_LIBPCAP
+LIBVIRT_CHECK_LIBPCAP
 
 
 dnl
@@ -2161,6 +2129,7 @@ LIBVIRT_RESULT_FUSE
 LIBVIRT_RESULT_GLUSTER
 LIBVIRT_RESULT_GNUTLS
 LIBVIRT_RESULT_HAL
+LIBVIRT_RESULT_LIBPCAP
 LIBVIRT_RESULT_LIBSSH
 LIBVIRT_RESULT_LIBXML
 LIBVIRT_RESULT_NETCF
@@ -2191,11 +2160,6 @@ if test "$with_libxl" = "yes" ; then
 AC_MSG_NOTICE([xenlight: $LIBXL_CFLAGS $LIBXL_LIBS])
 else
 AC_MSG_NOTICE([xenlight: no])
-fi
-if test "$with_qemu" = "yes" && test "$LIBPCAP_FOUND" != "no"; then
-AC_MSG_NOTICE([    pcap: $LIBPCAP_CFLAGS $LIBPCAP_LIBS])
-else
-AC_MSG_NOTICE([    pcap: no])
 fi
 if test "$have_libnl" = "yes" ; then
 AC_MSG_NOTICE([      nl: $LIBNL_CFLAGS $LIBNL_LIBS])
