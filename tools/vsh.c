@@ -242,7 +242,8 @@ virErrorPtr last_error;
  * Quieten libvirt until we're done with the command.
  */
 void
-vshErrorHandler(void *opaque ATTRIBUTE_UNUSED, virErrorPtr error)
+vshErrorHandler(void *opaque ATTRIBUTE_UNUSED,
+                virErrorPtr error ATTRIBUTE_UNUSED)
 {
     virFreeError(last_error);
     last_error = virSaveLastError();
@@ -2856,7 +2857,9 @@ vshReadlineParse(const char *text, int state)
 }
 
 static char **
-vshReadlineCompletion(const char *text, int start, int end ATTRIBUTE_UNUSED)
+vshReadlineCompletion(const char *text,
+                      int start ATTRIBUTE_UNUSED,
+                      int end ATTRIBUTE_UNUSED)
 {
     char **matches = (char **) NULL;
 
@@ -3359,7 +3362,8 @@ const vshCmdInfo info_selftest[] = {
  * That runs vshCmddefOptParse which validates
  * the per-command options structure. */
 bool
-cmdSelfTest(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
+cmdSelfTest(vshControl *ctl ATTRIBUTE_UNUSED,
+            const vshCmd *cmd ATTRIBUTE_UNUSED)
 {
     const vshCmdGrp *grp;
     const vshCmdDef *def;
