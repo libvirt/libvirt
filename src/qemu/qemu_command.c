@@ -6242,7 +6242,7 @@ qemuBuildClockCommandLine(virCommandPtr cmd,
                    (-no-kvm-pit), otherwise, the default is catchup. */
                 if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM_PIT_TICK_POLICY))
                     virCommandAddArgList(cmd, "-global",
-                                         "kvm-pit.lost_tick_policy=discard", NULL);
+                                         "kvm-pit.lost_tick_policy=delay", NULL);
                 else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_KVM_PIT))
                     virCommandAddArg(cmd, "-no-kvm-pit-reinjection");
                 break;
