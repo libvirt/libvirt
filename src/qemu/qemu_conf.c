@@ -1473,7 +1473,7 @@ qemuGetDomainHugepagePath(const virDomainDef *def,
 {
     char *base = qemuGetBaseHugepagePath(hugepage);
     char *domPath = virDomainObjGetShortName(def);
-    char *ret;
+    char *ret = NULL;
 
     if (base && domPath)
         ignore_value(virAsprintf(&ret, "%s/%s", base, domPath));
