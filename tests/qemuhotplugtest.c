@@ -773,6 +773,10 @@ mymain(void)
 
     DO_TEST_CPU_GROUP("x86-modern-bulk", 7, true, false);
     DO_TEST_CPU_GROUP("x86-old-bulk", 7, false, false);
+    DO_TEST_CPU_GROUP("ppc64-modern-bulk", 24, true, false);
+    DO_TEST_CPU_GROUP("ppc64-modern-bulk", 15, true, true);
+    DO_TEST_CPU_GROUP("ppc64-modern-bulk", 23, true, true);
+    DO_TEST_CPU_GROUP("ppc64-modern-bulk", 25, true, true);
 
     qemuTestDriverFree(&driver);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
