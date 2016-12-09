@@ -968,49 +968,44 @@
       </dd>
       <dt><code>ip</code></dt>
       <dd>The <code>address</code> attribute defines an IPv4 address in
-        dotted-decimal format, or an IPv6 address in standard
-        colon-separated hexadecimal format, that will be configured on
-        the bridge
-        device associated with the virtual network. To the guests this IPv4
-        address will be their IPv4 default route.  For IPv6, the default route is
-        established via Router Advertisement.
-        For IPv4 addresses, the <code>netmask</code>
-        attribute defines the significant bits of the network address,
-        again specified in dotted-decimal format.  For IPv6 addresses,
-        and as an alternate method for IPv4 addresses, you can specify
-        the significant bits of the network address with the <code>prefix</code>
-        attribute, which is an integer (for example, <code>netmask='255.255.255.0'</code>
-        could also be given as <code>prefix='24'</code>. The <code>family</code>
-        attribute is used to specify the type of address - 'ipv4' or 'ipv6'; if no
-        <code>family</code> is given, 'ipv4' is assumed. A network can have more than
-        one of each family of address defined, but only a single IPv4 address can have a
-        <code>dhcp</code> or <code>tftp</code> element. <span class="since">Since 0.3.0 </span>
-        IPv6, multiple addresses on a single network, <code>family</code>, and
-        <code>prefix</code> are support <span class="since">Since 0.8.7</span>.
-        Similar to IPv4, one IPv6 address per network can also have
-        a <code>dhcp</code> definition.  <span class="since">Since 1.0.1</span>
+        dotted-decimal format, or an IPv6 address in standard colon-separated
+        hexadecimal format, that will be configured on the bridge device
+        associated with the virtual network. To the guests this IPv4 address
+        will be their IPv4 default route. For IPv6, the default route is
+        established via Router Advertisement. For IPv4 addresses, the
+        <code>netmask</code> attribute defines the significant bits of the
+        network address, again specified in dotted-decimal format. For IPv6
+        addresses, and as an alternate method for IPv4 addresses, the
+        significant bits of the network address can be specified with the
+        <code>prefix</code> attribute, which is an integer (for example,
+        <code>netmask='255.255.255.0'</code> could also be given as
+        <code>prefix='24'</code>). The <code>family</code> attribute is used
+        to specify the type of address &mdash; <code>ipv4</code> or
+        <code>ipv6</code>; if no <code>family</code> is given,
+        <code>ipv4</code> is assumed. More than one address of each family can
+        be defined for a network. The <code>ip</code> element is supported
+        <span class="since">since 0.3.0</span>. IPv6, multiple addresses on a
+        single network, <code>family</code>, and <code>prefix</code> are
+        supported <span class="since">since 0.8.7</span>. The <code>ip</code>
+        element may contain the following elements:
 
         <dl>
           <dt><code>tftp</code></dt>
-          <dd>Immediately within
-            the <code>ip</code> element there is an optional <code>tftp</code>
-            element. The presence of this element and of its attribute
-            <code>root</code> enables TFTP services.  The attribute specifies
-            the path to the root directory served via TFTP. <code>tftp</code> is not
-            supported for IPv6 addresses, and can only be specified on a single IPv4 address
-            per network.
+          <dd>The optional <code>tftp</code> element and its mandatory
+            <code>root</code> attribute enable TFTP services. The attribute
+            specifies the path to the root directory served via TFTP. The
+            <code>tftp</code> element is not supported for IPv6 addresses,
+            and can only be specified on a single IPv4 address per network.
             <span class="since">Since 0.7.1</span>
           </dd>
 
           <dt><code>dhcp</code></dt>
-          <dd>Also within the <code>ip</code> element there is an
-            optional <code>dhcp</code> element. The presence of this element
-            enables DHCP services on the virtual network. It will further
-            contain one or more <code>range</code> elements. The
-            <code>dhcp</code> element supported for both
-            IPv4 <span class="since">Since 0.3.0</span>
-            and IPv6 <span class="since">Since 1.0.1</span>, but
-            only for one IP address of each type per network.
+          <dd>The presence of this element enables DHCP services on the
+            virtual network. The <code>dhcp</code> element is supported for
+            both IPv4 (<span class="since">since 0.3.0</span>) and IPv6
+            (<span class="since">since 1.0.1</span>), but only for one IP
+            address of each type per network. The following sub-elements are
+            supported:
             <dl>
               <dt><code>range</code></dt>
               <dd>The <code>start</code> and <code>end</code> attributes on the
@@ -1020,39 +1015,39 @@
                 <code>ip</code> element.  There may be zero or more
                 <code>range</code> elements specified.
                 <span class="since">Since 0.3.0</span>
-                <code>range</code> can be specified for one IPv4 address,
-                one IPv6 address, or both. <span class="since">Since 1.0.1</span>
               </dd>
               <dt><code>host</code></dt>
-              <dd>Within the <code>dhcp</code> element there may be zero or more
-                <code>host</code> elements.  These specify hosts which will be given
-                names and predefined IP addresses by the built-in DHCP server. Any
-                IPv4 <code>host</code> element must specify the MAC address of the host to be assigned
-                a given name (via the <code>mac</code> attribute), the IP to be
-                assigned to that host (via the <code>ip</code> attribute), and the
-                name to be given that host by the DHCP server (via the
-                <code>name</code> attribute).  <span class="since">Since 0.4.5</span>
-                An IPv6 <code>host</code> element differs slightly from that for IPv4:
-                there is no <code>mac</code> attribute since a MAC address has no
-                defined meaning in IPv6.  Instead, the <code>name</code> attribute is
-                used to identify the host to be assigned the IPv6 address.  For DHCPv6,
-                the name is the plain name of the client host sent by the
-                client to the server.  Note that this method of assigning a
-                specific IP address can also be used instead of the <code>mac</code>
-                attribute for IPv4.  <span class="since">Since 1.0.1</span>
+              <dd>Within the <code>dhcp</code> element there may be zero or
+                more <code>host</code> elements. These specify hosts which will
+                be given names and predefined IP addresses by the built-in DHCP
+                server. Any IPv4 <code>host</code> element must specify the MAC
+                address of the host to be assigned a given name (via the
+                <code>mac</code> attribute), the IP to be assigned to that host
+                (via the <code>ip</code> attribute), and the name itself (the
+                <code>name</code> attribute). The IPv6 <code>host</code>
+                element differs slightly from that for IPv4: there is no
+                <code>mac</code> attribute since a MAC address has no defined
+                meaning in IPv6. Instead, the <code>name</code> attribute is
+                used to identify the host to be assigned the IPv6 address. For
+                DHCPv6, the name is the plain name of the client host sent by the
+                client to the server. Note that this method of assigning a
+                specific IP address can also be used for IPv4 instead of the
+                <code>mac</code> attribute.
+                <span class="since">Since 0.4.5</span>
               </dd>
               <dt><code>bootp</code></dt>
-              <dd>The optional <code>bootp</code>
-                element specifies BOOTP options to be provided by the DHCP
-                server for IPv4 only.
-                Two attributes are supported: <code>file</code> is mandatory and
-                gives the file to be used for the boot image; <code>server</code> is
-                optional and gives the address of the TFTP server from which the boot
-                image will be fetched.  <code>server</code> defaults to the same host
-                that runs the DHCP server, as is the case when the <code>tftp</code>
-                element is used.  The BOOTP options currently have to be the same
-                for all address ranges and statically assigned addresses.<span
-                class="since">Since 0.7.1 (<code>server</code> since 0.7.3).</span>
+              <dd>The optional <code>bootp</code> element specifies BOOTP
+                options to be provided by the DHCP server for IPv4 only. Two
+                attributes are supported: <code>file</code> is mandatory and
+                gives the file to be used for the boot image;
+                <code>server</code> is optional and gives the address of the
+                TFTP server from which the boot image will be fetched.
+                <code>server</code> defaults to the same host that runs the
+                DHCP server, as is the case when the <code>tftp</code> element
+                is used. The BOOTP options currently have to be the same for
+                all address ranges and statically assigned addresses. <span
+                class="since">Since 0.7.1</span> (<code>server</code>
+                <span class="since">since 0.7.3</span>)
               </dd>
             </dl>
           </dd>
