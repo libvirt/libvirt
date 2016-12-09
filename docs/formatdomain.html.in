@@ -1292,7 +1292,11 @@
           understand. Though the downside of this mode is that the guest
           environment cannot be reproduced on different hardware. Thus, if you
           hit any bugs, you are on your own. Further details of that CPU can
-          be changed using <code>feature</code> elements.</dd>
+          be changed using <code>feature</code> elements. Migration of a guest
+          using host-passthrough is dangerous if the source and destination
+          hosts are not identical in both hardware and configuration. If such
+          a migration is attempted then the guest may hang or crash upon
+          resuming execution on the destination host.</dd>
         </dl>
 
         In both <code>host-model</code> and <code>host-passthrough</code>
