@@ -772,6 +772,7 @@ mymain(void)
     } while (0)
 
     DO_TEST_CPU_GROUP("x86-modern-bulk", 7, true, false);
+    DO_TEST_CPU_GROUP("x86-old-bulk", 7, false, false);
 
     qemuTestDriverFree(&driver);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
