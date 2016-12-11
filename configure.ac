@@ -386,11 +386,8 @@ else
 fi
 AC_SUBST([HTML_DIR])
 
-dnl Specific XML catalog file for validation of generated html
-LIBVIRT_ARG_WITH_ALT([XML_CATALOG_FILE],
-                     [path to XML catalog file for validating generated html],
-                     ['/etc/xml/catalog'])
-AC_SUBST([XML_CATALOG_FILE], [$with_xml_catalog_file])
+LIBVIRT_ARG_XML_CATALOG
+LIBVIRT_CHECK_XML_CATALOG
 
 dnl if --prefix is /usr, don't use /usr/var for localstatedir
 dnl or /usr/etc for sysconfdir
@@ -1835,7 +1832,7 @@ AC_MSG_NOTICE([       Use -Werror: $enable_werror])
 AC_MSG_NOTICE([     Warning Flags: $WARN_CFLAGS])
 LIBVIRT_RESULT_DTRACE
 LIBVIRT_RESULT_NUMAD
-AC_MSG_NOTICE([       XML Catalog: $with_xml_catalog_file])
+LIBVIRT_RESULT_XML_CATALOG
 LIBVIRT_RESULT_INIT_SCRIPT
 LIBVIRT_RESULT_CHRDEV_LOCK_FILES
 LIBVIRT_RESULT_DEFAULT_EDITOR
