@@ -111,7 +111,6 @@ fi
 
 dnl Required minimum versions of all libs we depend on
 PARTED_REQUIRED="1.8.0"
-DEVMAPPER_REQUIRED=1.0.0
 PARALLELS_SDK_REQUIRED="7.0.22"
 dnl Where we look for daemons and admin binaries during configure
 LIBVIRT_SBIN_PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
@@ -1417,29 +1416,14 @@ AM_CONDITIONAL([WITH_STORAGE_DISK], [test "$with_storage_disk" = "yes"])
 AC_SUBST([LIBPARTED_CFLAGS])
 AC_SUBST([LIBPARTED_LIBS])
 
+LIBVIRT_CHECK_DEVMAPPER
+
 if test "$with_storage_mpath" = "yes" ||
    test "$with_storage_disk" = "yes"; then
-   DEVMAPPER_CFLAGS=
-   DEVMAPPER_LIBS=
-   PKG_CHECK_MODULES([DEVMAPPER], [devmapper >= $DEVMAPPER_REQUIRED], [], [DEVMAPPER_FOUND=no])
-   if test "$DEVMAPPER_FOUND" = "no"; then
-     # devmapper is missing pkg-config files in ubuntu, suse, etc
-     save_LIBS="$LIBS"
-     save_CFLAGS="$CFLAGS"
-     DEVMAPPER_FOUND=yes
-     AC_CHECK_LIB([devmapper], [dm_task_run],,[DEVMAPPER_FOUND=no])
-     DEVMAPPER_LIBS="-ldevmapper"
-     LIBS="$save_LIBS"
-     CFLAGS="$save_CFLAGS"
-   fi
-   AC_CHECK_HEADERS([libdevmapper.h],,[DEVMAPPER_FOUND=no])
    if test "$DEVMAPPER_FOUND" = "no" ; then
      AC_MSG_ERROR([You must install device-mapper-devel/libdevmapper >= $DEVMAPPER_REQUIRED to compile libvirt])
    fi
-
 fi
-AC_SUBST([DEVMAPPER_CFLAGS])
-AC_SUBST([DEVMAPPER_LIBS])
 
 with_storage=no
 for backend in dir fs lvm iscsi scsi mpath rbd disk; do
