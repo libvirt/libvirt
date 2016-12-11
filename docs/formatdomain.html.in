@@ -1928,6 +1928,7 @@
   &lt;event name='cache_references' enabled='no'/&gt;
   &lt;event name='cache_misses' enabled='no'/&gt;
   &lt;event name='branch_instructions' enabled='no'/&gt;
+  &lt;event name='branch_misses' enabled='no'/&gt;
 &lt;/perf&gt;
 ...
 </pre>
@@ -1977,6 +1978,11 @@
       <td><code>branch_instructions</code></td>
       <td>the count of branch instructions by applications running on the platform</td>
       <td><code>perf.branch_instructions</code></td>
+    </tr>
+    <tr>
+      <td><code>branch_misses</code></td>
+      <td>the count of branch misses by applications running on the platform</td>
+      <td><code>perf.branch_misses</code></td>
     </tr>
   </table>
 

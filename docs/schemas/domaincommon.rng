@@ -428,6 +428,7 @@
               <value>cache_references</value>
               <value>cache_misses</value>
               <value>branch_instructions</value>
+              <value>branch_misses</value>
             </choice>
           </attribute>
           <attribute name="enabled">

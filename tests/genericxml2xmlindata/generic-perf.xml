@@ -21,6 +21,7 @@
     <event name='cache_references' enabled='no'/>
     <event name='cache_misses' enabled='no'/>
     <event name='branch_instructions' enabled='yes'/>
+    <event name='branch_misses' enabled='yes'/>
   </perf>
   <devices>
   </devices>

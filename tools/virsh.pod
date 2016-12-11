@@ -946,7 +946,8 @@ I<--perf> returns the statistics of all enabled perf events:
 "perf.instructions" - the count of instructions,
 "perf.cache_references" - the count of cache hits,
 "perf.cache_misses" - the count of caches misses,
-"perf.branch_instructions" - the count of application branch instructions
+"perf.branch_instructions" - the count of branch instructions,
+"perf.branch_misses" - the count of branch misses
 
 See the B<perf> command for more details about each event.
 
@@ -2296,6 +2297,8 @@ B<Valid perf event names>
   branch_instructions - Provides the count of branch instructions
                         executed by applications running on the
                         platform.
+  branch_misses    - Provides the count of branch misses executed
+                     by applications running on the platform.
 
 B<Note>: The statistics can be retrieved using the B<domstats> command using
 the I<--perf> flag.

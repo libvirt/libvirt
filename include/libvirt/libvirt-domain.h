@@ -2135,6 +2135,16 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_BRANCH_INSTRUCTIONS "branch_instructions"
 
+/**
+ * VIR_PERF_PARAM_BRANCH_MISSES:
+ *
+ * Macro for typed parameter name that represents branch_misses
+ * perf event which can be used to measure the count of branch misses
+ * by applications running on the platform. It corresponds to the
+ * "perf.branch_misses" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_BRANCH_MISSES "branch_misses"
+
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
                            int *nparams,

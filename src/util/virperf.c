@@ -41,7 +41,7 @@ VIR_ENUM_IMPL(virPerfEvent, VIR_PERF_EVENT_LAST,
               "cmt", "mbmt", "mbml",
               "cpu_cycles", "instructions",
               "cache_references", "cache_misses",
-              "branch_instructions");
+              "branch_instructions", "branch_misses");
 
 struct virPerfEvent {
     int type;
@@ -89,6 +89,9 @@ static struct virPerfEventAttr attrs[] = {
     {.type = VIR_PERF_EVENT_BRANCH_INSTRUCTIONS,
      .attrType = PERF_TYPE_HARDWARE,
      .attrConfig = PERF_COUNT_HW_BRANCH_INSTRUCTIONS},
+    {.type = VIR_PERF_EVENT_BRANCH_MISSES,
+     .attrType = PERF_TYPE_HARDWARE,
+     .attrConfig = PERF_COUNT_HW_BRANCH_MISSES},
 };
 typedef struct virPerfEventAttr *virPerfEventAttrPtr;
 

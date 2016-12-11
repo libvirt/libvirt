@@ -11232,6 +11232,8 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *     "perf.branch_instructions" - The count of branch instructions as
  *                                  unsigned long long. It is produced by
  *                                  branch_instructions perf event.
+ *     "perf.branch_misses" - The count of branch misses as unsigned long
+ *                            long. It is produced by branch_misses perf event.
  *
  * Note that entire stats groups or individual stat fields may be missing from
  * the output in case they are not supported by the given hypervisor, are not

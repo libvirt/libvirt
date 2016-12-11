@@ -29,9 +29,9 @@
       </li>
       <li><strong>Improvements</strong>
         <ul>
-          <li>perf: Add perf.branch_instructions<br/>
+          <li>perf: Add more perf statistics<br/>
           Add support to get the count of branch instructions executed
-          by applications running on the platform
+          and branch misses by applications running on the platform
           </li>
         </ul>
       </li>
