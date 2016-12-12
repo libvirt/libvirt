@@ -410,7 +410,7 @@ LIBVIRT_ARG_WITH_ALT([CHRDEV_LOCK_FILES],
                      [location for UUCP style lock files for character devices ]
                        [(use auto for default paths on some platforms)],
                      [auto])
-LIBVIRT_ARG_WITH_ALT([PM_UTILS], [use pm-utils for power management], [check])
+LIBVIRT_ARG_PM_UTILS
 
 dnl
 dnl in case someone want to build static binaries
@@ -1058,19 +1058,7 @@ AM_CONDITIONAL([WITH_PHYP],[test "$with_phyp" = "yes"])
 dnl
 dnl Should we build with pm-utils support?
 dnl
-if test "$with_pm_utils" = "check"; then
-    with_pm_utils=yes
-    if test "$with_dbus" = "yes"; then
-        if test "$init_systemd" = "yes"; then
-            with_pm_utils=no
-        fi
-    fi
-fi
-
-if test "$with_pm_utils" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_PM_UTILS], 1, [whether to use pm-utils])
-fi
-AM_CONDITIONAL([WITH_PM_UTILS], [test "$with_pm_utils" = "yes"])
+LIBVIRT_CHECK_PM_UTILS
 
 dnl check if the network driver should be compiled
 
@@ -1962,6 +1950,7 @@ LIBVIRT_RESULT_NSS
 LIBVIRT_RESULT_NUMACTL
 LIBVIRT_RESULT_OPENWSMAN
 LIBVIRT_RESULT_PCIACCESS
+LIBVIRT_RESULT_PM_UTILS
 LIBVIRT_RESULT_POLKIT
 LIBVIRT_RESULT_READLINE
 LIBVIRT_RESULT_SANLOCK
@@ -1992,7 +1981,6 @@ AC_MSG_NOTICE([     rbd: $LIBRBD_LIBS])
 else
 AC_MSG_NOTICE([     rbd: no])
 fi
-AC_MSG_NOTICE([pm-utils: $with_pm_utils])
 
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Windows])
