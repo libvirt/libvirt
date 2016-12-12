@@ -110,7 +110,6 @@ then
 fi
 
 dnl Required minimum versions of all libs we depend on
-POLKIT_REQUIRED="0.6"
 PARTED_REQUIRED="1.8.0"
 DEVMAPPER_REQUIRED=1.0.0
 LIBPCAP_REQUIRED="1.0.0"
@@ -991,76 +990,8 @@ AC_DEFINE_UNQUOTED([TLS_PRIORITY], ["$with_tls_priority"],
 		   [TLS default priority string])
 
 
-dnl PolicyKit library
-POLKIT_CFLAGS=
-POLKIT_LIBS=
-PKCHECK_PATH=
-LIBVIRT_ARG_WITH_ALT([POLKIT], [use PolicyKit for UNIX socket access checks],
-                     [check])
-
-with_polkit0=no
-with_polkit1=no
-if test "x$with_polkit" = "xyes" || test "x$with_polkit" = "xcheck"; then
-  dnl Check for new polkit first. We directly talk over DBus
-  dnl but we use existence of pkcheck binary as a sign that
-  dnl we should prefer polkit-1 over polkit-0, so we check
-  dnl for it even though we don't ultimately use it
-  AC_PATH_PROG([PKCHECK_PATH],[pkcheck], [], [$LIBVIRT_SBIN_PATH])
-  if test "x$PKCHECK_PATH" != "x" ; then
-    dnl Found pkcheck, so ensure dbus-devel is present
-    if test "x$with_dbus" = "xyes" ; then
-      AC_DEFINE_UNQUOTED([WITH_POLKIT], 1,
-          [use PolicyKit for UNIX socket access checks])
-      AC_DEFINE_UNQUOTED([WITH_POLKIT1], 1,
-          [use PolicyKit for UNIX socket access checks])
-      with_polkit="yes"
-      with_polkit1="yes"
-    else
-      if test "x$with_polkit" = "xcheck" ; then
-        with_polkit=no
-      else
-         AC_MSG_ERROR(
-           [You must install dbus to compile libvirt with polkit-1])
-      fi
-    fi
-  else
-    dnl Check for old polkit second - library + binary
-    PKG_CHECK_MODULES(POLKIT, polkit-dbus >= $POLKIT_REQUIRED,
-      [with_polkit=yes], [
-      if test "x$with_polkit" = "xcheck" ; then
-         with_polkit=no
-      else
-         AC_MSG_ERROR(
-           [You must install PolicyKit >= $POLKIT_REQUIRED to compile libvirt])
-      fi
-    ])
-    if test "x$with_polkit" = "xyes" ; then
-      AC_DEFINE_UNQUOTED([WITH_POLKIT], 1,
-        [use PolicyKit for UNIX socket access checks])
-      AC_DEFINE_UNQUOTED([WITH_POLKIT0], 1,
-        [use PolicyKit for UNIX socket access checks])
-
-      old_CFLAGS=$CFLAGS
-      old_LIBS=$LIBS
-      CFLAGS="$CFLAGS $POLKIT_CFLAGS"
-      LIBS="$LIBS $POLKIT_LIBS"
-      AC_CHECK_FUNCS([polkit_context_is_caller_authorized])
-      CFLAGS="$old_CFLAGS"
-      LIBS="$old_LIBS"
-
-      AC_PATH_PROG([POLKIT_AUTH], [polkit-auth])
-      if test "x$POLKIT_AUTH" != "x"; then
-        AC_DEFINE_UNQUOTED([POLKIT_AUTH],["$POLKIT_AUTH"],[Location of polkit-auth program])
-      fi
-      with_polkit0="yes"
-    fi
-  fi
-fi
-AM_CONDITIONAL([WITH_POLKIT], [test "x$with_polkit" = "xyes"])
-AM_CONDITIONAL([WITH_POLKIT0], [test "x$with_polkit0" = "xyes"])
-AM_CONDITIONAL([WITH_POLKIT1], [test "x$with_polkit1" = "xyes"])
-AC_SUBST([POLKIT_CFLAGS])
-AC_SUBST([POLKIT_LIBS])
+LIBVIRT_ARG_POLKIT
+LIBVIRT_CHECK_POLKIT
 
 LIBVIRT_ARG_FIREWALLD
 LIBVIRT_CHECK_FIREWALLD
@@ -2355,6 +2286,7 @@ LIBVIRT_RESULT_NSS
 LIBVIRT_RESULT_NUMACTL
 LIBVIRT_RESULT_OPENWSMAN
 LIBVIRT_RESULT_PCIACCESS
+LIBVIRT_RESULT_POLKIT
 LIBVIRT_RESULT_READLINE
 LIBVIRT_RESULT_SANLOCK
 LIBVIRT_RESULT_SASL
@@ -2362,15 +2294,6 @@ LIBVIRT_RESULT_SELINUX
 LIBVIRT_RESULT_SSH2
 LIBVIRT_RESULT_UDEV
 LIBVIRT_RESULT_YAJL
-if test "$with_polkit" = "yes" ; then
-if test "$with_polkit0" = "yes" ; then
-AC_MSG_NOTICE([  polkit: $POLKIT_CFLAGS $POLKIT_LIBS (version 0)])
-else
-AC_MSG_NOTICE([  polkit: $PKCHECK_PATH (version 1)])
-fi
-else
-AC_MSG_NOTICE([  polkit: no])
-fi
 if test "$with_xen" = "yes" ; then
 AC_MSG_NOTICE([     xen: $XEN_CFLAGS $XEN_LIBS])
 else
