@@ -28,9 +28,8 @@ AC_DEFUN([LIBVIRT_CHECK_LIBPCAP], [
   LIBPCAP_LIBS=""
   LIBPCAP_FOUND="no"
 
-  if test "$with_qemu" = "yes"; then
+  if test "x$with_libpcap" != "xno"; then
     case $with_libpcap in
-      no)     LIBPCAP_CONFIG= ;;
       ''|yes|check) LIBPCAP_CONFIG="pcap-config" ;;
       *)      LIBPCAP_CONFIG="$with_libpcap/bin/pcap-config" ;;
     esac
