@@ -536,40 +536,9 @@ dnl Need to test if pkg-config exists
 PKG_PROG_PKG_CONFIG
 
 
-LIBVIRT_ARG_WITH_ALT([SECDRIVER_SELINUX], [use SELinux security driver], [check])
-
-if test "$with_selinux" != "yes" ; then
-  if test "$with_secdriver_selinux" = "check" ; then
-    with_secdriver_selinux=no
-  fi
-  if test "$with_secdriver_selinux" != "no"; then
-        AC_MSG_ERROR([You must install the libselinux development package and enable SELinux with the --with-selinux=yes in order to compile libvirt --with-secdriver-selinux=yes])
-  fi
-elif test "$with_secdriver_selinux" != "no"; then
-  old_CFLAGS="$CFLAGS"
-  old_LIBS="$LIBS"
-  CFLAGS="$CFLAGS $SELINUX_CFLAGS"
-  LIBS="$CFLAGS $SELINUX_LIBS"
-
-  fail=0
-  AC_CHECK_FUNC([selinux_virtual_domain_context_path], [], [fail=1])
-  AC_CHECK_FUNC([selinux_virtual_image_context_path], [], [fail=1])
-  AC_CHECK_FUNCS([selinux_lxc_contexts_path])
-  CFLAGS="$old_CFLAGS"
-  LIBS="$old_LIBS"
-
-  if test "$fail" = "1" ; then
-    if test "$with_secdriver_selinux" = "check" ; then
-      with_secdriver_selinux=no
-    else
-      AC_MSG_ERROR([You must install libselinux development package >= 2.0.82 in order to compile libvirt --with-secdriver-selinux=yes])
-    fi
-  else
-    with_secdriver_selinux=yes
-    AC_DEFINE_UNQUOTED([WITH_SECDRIVER_SELINUX], 1, [whether SELinux security driver is available])
-  fi
-fi
-AM_CONDITIONAL([WITH_SECDRIVER_SELINUX], [test "$with_secdriver_selinux" != "no"])
+dnl Security driver checks
+LIBVIRT_SECDRIVER_ARG_SELINUX
+LIBVIRT_SECDRIVER_CHECK_SELINUX
 
 
 LIBVIRT_ARG_WITH_ALT([SECDRIVER_APPARMOR], [use AppArmor security driver], [check])
@@ -1252,7 +1221,7 @@ AC_MSG_NOTICE([     ZFS: $with_storage_zfs])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Security Drivers])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([ SELinux: $with_secdriver_selinux ($SELINUX_MOUNT)])
+LIBVIRT_SECDRIVER_RESULT_SELINUX
 AC_MSG_NOTICE([AppArmor: $with_secdriver_apparmor (install profiles: $with_apparmor_profiles)])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Driver Loadable Modules])
