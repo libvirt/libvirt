@@ -110,7 +110,6 @@ then
 fi
 
 dnl Required minimum versions of all libs we depend on
-PARTED_REQUIRED="1.8.0"
 PARALLELS_SDK_REQUIRED="7.0.22"
 dnl Where we look for daemons and admin binaries during configure
 LIBVIRT_SBIN_PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
@@ -1376,22 +1375,10 @@ if test "$with_storage_fs" = "yes" ||
   fi
 fi
 
-LIBPARTED_CFLAGS=
-LIBPARTED_LIBS=
+LIBVIRT_CHECK_LIBPARTED
+
 if test "$with_storage_disk" = "yes" ||
    test "$with_storage_disk" = "check"; then
-  AC_PATH_PROG([PARTED], [parted], [], [$LIBVIRT_SBIN_PATH])
-  if test -z "$PARTED" ; then
-    PARTED_FOUND=no
-  else
-    PARTED_FOUND=yes
-  fi
-
-  if test "$PARTED_FOUND" = "yes" && test "x$PKG_CONFIG" != "x" ; then
-    PKG_CHECK_MODULES([LIBPARTED], [libparted >= $PARTED_REQUIRED], [],
-      [PARTED_FOUND=no])
-  fi
-
   if test "$with_storage_disk" = "yes" &&
      test "$PARTED_FOUND" != "yes"; then
     AC_MSG_ERROR([Need parted for disk storage driver])
@@ -1408,13 +1395,9 @@ if test "$with_storage_disk" = "yes" ||
   if test "$with_storage_disk" = "yes"; then
     AC_DEFINE_UNQUOTED([WITH_STORAGE_DISK], 1,
       [whether Disk backend for storage driver is enabled])
-    AC_DEFINE_UNQUOTED([PARTED],["$PARTED"],
-      [Location or name of the parted program])
   fi
 fi
 AM_CONDITIONAL([WITH_STORAGE_DISK], [test "$with_storage_disk" = "yes"])
-AC_SUBST([LIBPARTED_CFLAGS])
-AC_SUBST([LIBPARTED_LIBS])
 
 LIBVIRT_CHECK_DEVMAPPER
 
