@@ -560,7 +560,7 @@ LIBVIRT_STORAGE_ARG_FS
 LIBVIRT_STORAGE_ARG_LVM
 LIBVIRT_STORAGE_ARG_ISCSI
 LIBVIRT_STORAGE_ARG_SCSI
-LIBVIRT_ARG_WITH([STORAGE_MPATH], [mpath backend for the storage driver], [check])
+LIBVIRT_STORAGE_ARG_MPATH
 LIBVIRT_ARG_WITH([STORAGE_DISK], [GPartd Disk backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_RBD], [RADOS Block Device backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_SHEEPDOG], [with Sheepdog backend for the storage driver], [check])
@@ -593,22 +593,8 @@ LIBVIRT_STORAGE_CHECK_FS
 LIBVIRT_STORAGE_CHECK_LVM
 LIBVIRT_STORAGE_CHECK_ISCSI
 LIBVIRT_STORAGE_CHECK_SCSI
+LIBVIRT_STORAGE_CHECK_MPATH
 
-
-if test "$with_storage_mpath" = "check" || test "$with_storage_mpath" = "yes"; then
-   if test "$with_linux" = "yes"; then
-      with_storage_mpath=yes
-
-      AC_DEFINE_UNQUOTED([WITH_STORAGE_MPATH], 1,
-        [whether mpath backend for storage driver is enabled])
-   else
-      if test "$with_storage_mpath" = "yes"; then
-        AC_MSG_ERROR([mpath storage is only supported on Linux])
-      fi
-      with_storage_mpath=no
-   fi
-fi
-AM_CONDITIONAL([WITH_STORAGE_MPATH], [test "$with_storage_mpath" = "yes"])
 
 LIBRBD_LIBS=
 if test "$with_storage_rbd" = "yes" || test "$with_storage_rbd" = "check"; then
@@ -725,8 +711,7 @@ if test "$with_storage_disk" = "yes" ||
 fi
 AM_CONDITIONAL([WITH_STORAGE_DISK], [test "$with_storage_disk" = "yes"])
 
-if test "$with_storage_mpath" = "yes" ||
-   test "$with_storage_disk" = "yes"; then
+if test "$with_storage_disk" = "yes"; then
    if test "$with_devmapper" = "no" ; then
      AC_MSG_ERROR([You must install device-mapper-devel/libdevmapper >= $DEVMAPPER_REQUIRED to compile libvirt])
    fi
@@ -1058,7 +1043,7 @@ LIBVIRT_STORAGE_RESULT_FS
 LIBVIRT_STORAGE_RESULT_LVM
 LIBVIRT_STORAGE_RESULT_ISCSI
 LIBVIRT_STORAGE_RESULT_SCSI
-AC_MSG_NOTICE([   mpath: $with_storage_mpath])
+LIBVIRT_STORAGE_RESULT_MPATH
 AC_MSG_NOTICE([    Disk: $with_storage_disk])
 AC_MSG_NOTICE([     RBD: $with_storage_rbd])
 AC_MSG_NOTICE([Sheepdog: $with_storage_sheepdog])
