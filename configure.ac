@@ -403,7 +403,7 @@ LIBVIRT_DRIVER_ARG_QEMU
 LIBVIRT_DRIVER_ARG_OPENVZ
 LIBVIRT_DRIVER_ARG_VMWARE
 LIBVIRT_ARG_WITH([PHYP], [PHYP], [check])
-LIBVIRT_ARG_WITH([XENAPI], [XenAPI], [check])
+LIBVIRT_DRIVER_ARG_XENAPI
 LIBVIRT_DRIVER_ARG_LIBXL
 LIBVIRT_ARG_WITH([VBOX], [VirtualBox XPCOMC], [yes])
 LIBVIRT_DRIVER_ARG_LXC
@@ -492,53 +492,7 @@ if test "$with_libvirtd" = "yes" ; then
 fi
 AM_CONDITIONAL([WITH_LIBVIRTD], [test "$with_libvirtd" = "yes"])
 
-old_LIBS="$LIBS"
-old_CFLAGS="$CFLAGS"
-LIBXENSERVER_LIBS=""
-LIBXENSERVER_CFLAGS=""
-dnl search for the XenServer library
-fail=0
-if test "$with_xenapi" != "no" ; then
-    if test "$with_xenapi" != "yes" && test "$with_xenapi" != "check" ; then
-        LIBXENSERVER_CFLAGS="-I$with_xenapi/include"
-        LIBXENSERVER_LIBS="-L$with_xenapi"
-    fi
-    CFLAGS="$CFLAGS $LIBXENSERVER_CFLAGS"
-    LIBS="$LIBS $LIBXENSERVER_LIBS"
-    AC_CHECK_LIB([xenserver], [xen_vm_start], [
-        LIBXENSERVER_LIBS="$LIBXENSERVER_LIBS -lxenserver"
-    ],[
-        if test "$with_xenapi" = "yes"; then
-            fail=1
-        fi
-        with_xenapi=no
-    ])
-    if test "$with_xenapi" != "no" ; then
-        if test "$with_curl" = "no"; then
-            if test "$with_xenapi" = "yes"; then
-                fail=1
-            fi
-            with_xenapi=no
-        else
-            with_xenapi=yes
-        fi
-    fi
-fi
-
-LIBS="$old_LIBS"
-CFLAGS="$old_CFLAGS"
-
-if test $fail = 1; then
-    AC_MSG_ERROR([You must install libxenserver and libcurl to compile the XenAPI driver])
-fi
-
-if test "$with_xenapi" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_XENAPI], 1, [whether XenAPI driver is enabled])
-fi
-
-AC_SUBST([LIBXENSERVER_CFLAGS])
-AC_SUBST([LIBXENSERVER_LIBS])
-
+LIBVIRT_DRIVER_CHECK_XENAPI
 LIBVIRT_DRIVER_CHECK_LIBXL
 LIBVIRT_DRIVER_CHECK_XEN
 
@@ -1087,11 +1041,6 @@ if test "$with_vmx" = "yes" ; then
 fi
 AM_CONDITIONAL([WITH_VMX], [test "$with_vmx" = "yes"])
 
-if test "$with_xenapi" = "yes" ; then
-    AC_DEFINE_UNQUOTED([WITH_XENAPI], 1, [whether XenAPI driver is enabled])
-fi
-AM_CONDITIONAL([WITH_XENAPI], [test "$with_xenapi" = "yes"])
-
 
 dnl
 dnl check for Hyper-V
@@ -1432,7 +1381,7 @@ LIBVIRT_DRIVER_RESULT_UML
 LIBVIRT_DRIVER_RESULT_OPENVZ
 LIBVIRT_DRIVER_RESULT_VMWARE
 AC_MSG_NOTICE([     VBox: $with_vbox])
-AC_MSG_NOTICE([   XenAPI: $with_xenapi])
+LIBVIRT_DRIVER_RESULT_XENAPI
 LIBVIRT_DRIVER_RESULT_LIBXL
 LIBVIRT_DRIVER_RESULT_LXC
 AC_MSG_NOTICE([     PHYP: $with_phyp])
@@ -1508,12 +1457,8 @@ LIBVIRT_RESULT_UDEV
 LIBVIRT_RESULT_VIRTUALPORT
 LIBVIRT_RESULT_XDR
 LIBVIRT_RESULT_XEN
+LIBVIRT_RESULT_XENAPI
 LIBVIRT_RESULT_YAJL
-if test "$with_xenapi" = "yes" ; then
-AC_MSG_NOTICE([  xenapi: $LIBXENSERVER_CFLAGS $LIBXENSERVER_LIBS])
-else
-AC_MSG_NOTICE([  xenapi: no])
-fi
 if test "$with_storage_rbd" = "yes" ; then
 AC_MSG_NOTICE([     rbd: $LIBRBD_LIBS])
 else
