@@ -964,34 +964,8 @@ LIBVIRT_CHECK_DTRACE
 
 
 dnl numad
-LIBVIRT_ARG_WITH_ALT([NUMAD], [use numad to manage CPU placement dynamically], [check])
-
-if test "$with_numad" != "no" ; then
-  fail=0
-
-  AC_PATH_PROG([NUMAD], [numad], [], [$LIBVIRT_SBIN_PATH])
-
-  if test "$with_numad" = "check"; then
-    test "$with_numactl" = "yes" || fail=1
-    if test -z "$NUMAD" || test $fail = 1; then
-      with_numad="no"
-    else
-      with_numad="yes"
-    fi
-  else
-    test -z  "$NUMAD" &&
-      AC_MSG_ERROR([You must install numad package to manage CPU and memory placement dynamically])
-
-    test "$with_numactl" = "yes" || fail=1
-    test $fail = 1 &&
-      AC_MSG_ERROR([You must install the numactl development package in order to compile and run libvirt])
-  fi
-fi
-if test "$with_numad" = "yes"; then
-  AC_DEFINE_UNQUOTED([HAVE_NUMAD], 1, [whether numad is available])
-  AC_DEFINE_UNQUOTED([NUMAD],["$NUMAD"], [Location or name of the numad program])
-fi
-AM_CONDITIONAL([HAVE_NUMAD], [test "$with_numad" != "no"])
+LIBVIRT_ARG_NUMAD
+LIBVIRT_CHECK_NUMAD
 
 
 dnl
@@ -1916,7 +1890,7 @@ AC_MSG_NOTICE([             Debug: $enable_debug])
 AC_MSG_NOTICE([       Use -Werror: $enable_werror])
 AC_MSG_NOTICE([     Warning Flags: $WARN_CFLAGS])
 LIBVIRT_RESULT_DTRACE
-AC_MSG_NOTICE([             numad: $with_numad])
+LIBVIRT_RESULT_NUMAD
 AC_MSG_NOTICE([       XML Catalog: $with_xml_catalog_file])
 LIBVIRT_RESULT_INIT_SCRIPT
 AC_MSG_NOTICE([ Char device locks: $with_chrdev_lock_files])
