@@ -1500,10 +1500,6 @@ fi
 AM_CONDITIONAL([WITH_INTERFACE], [test "$with_interface" = "yes"])
 
 
-AC_PATH_PROG([QEMU_BRIDGE_HELPER], [qemu-bridge-helper], [/usr/libexec/qemu-bridge-helper],
-                  [/usr/libexec:/usr/lib/qemu:/usr/lib])
-AC_DEFINE_UNQUOTED([QEMU_BRIDGE_HELPER], ["$QEMU_BRIDGE_HELPER"], [QEMU bridge helper])
-
 dnl GET_VLAN_VID_CMD is required for virNetDevGetVLanID
 AC_CHECK_DECLS([GET_VLAN_VID_CMD], [], [], [[#include <linux/if_vlan.h>]])
 
