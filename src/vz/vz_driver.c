@@ -3596,6 +3596,47 @@ vzDomainGetBlockStats(virDomainObjPtr dom,
     return 0;
 }
 
+static int
+vzDomainGetNetStats(virDomainObjPtr dom,
+                    virDomainStatsRecordPtr record,
+                    int *maxparams)
+{
+    vzDomObjPtr privdom = dom->privateData;
+    size_t i;
+    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
+
+    if (virTypedParamsAddUInt(&record->params,
+                              &record->nparams,
+                              maxparams,
+                              "net.count",
+                              dom->def->nnets) < 0)
+        return -1;
+
+    for (i = 0; i < dom->def->nnets; i++) {
+        virDomainInterfaceStatsStruct stat;
+        virDomainNetDefPtr net = dom->def->nets[i];
+
+        if (prlsdkGetNetStats(privdom->stats, privdom->sdkdom, net->ifname,
+                              &stat) < 0)
+            return -1;
+
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "net.%zu.name", i);
+        if (virTypedParamsAddString(&record->params,
+                                    &record->nparams,
+                                    maxparams,
+                                    param_name,
+                                    net->ifname) < 0)
+            return -1;
+
+        VZ_ADD_STAT_PARAM_UUL("net", rx_bytes, "rx.bytes");
+        VZ_ADD_STAT_PARAM_UUL("net", rx_packets, "rx.pkts");
+        VZ_ADD_STAT_PARAM_UUL("net", tx_bytes, "tx.bytes");
+        VZ_ADD_STAT_PARAM_UUL("net", tx_packets, "tx.pkts");
+    }
+
+    return 0;
+}
+
 static virDomainStatsRecordPtr
 vzDomainGetAllStats(virConnectPtr conn,
                     virDomainObjPtr dom)
@@ -3607,6 +3648,9 @@ vzDomainGetAllStats(virConnectPtr conn,
         return NULL;
 
     if (vzDomainGetBlockStats(dom, stat, &maxparams) < 0)
+        goto error;
+
+    if (vzDomainGetNetStats(dom, stat, &maxparams) < 0)
         goto error;
 
     if (!(stat->dom = virGetDomain(conn, dom->def->name, dom->def->uuid)))
