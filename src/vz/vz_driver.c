@@ -3688,6 +3688,57 @@ vzDomainGetVCPUStats(virDomainObjPtr dom,
     return 0;
 }
 
+static int
+vzDomainGetBalloonStats(virDomainObjPtr dom,
+                        virDomainStatsRecordPtr record,
+                        int *maxparams)
+{
+    vzDomObjPtr privdom = dom->privateData;
+    virDomainMemoryStatStruct stats[VIR_DOMAIN_MEMORY_STAT_NR];
+    size_t i;
+    int n;
+
+    if (virTypedParamsAddULLong(&record->params,
+                                &record->nparams,
+                                maxparams,
+                                "balloon.maximum",
+                                virDomainDefGetMemoryTotal(dom->def)) < 0)
+        return -1;
+
+    if (virTypedParamsAddULLong(&record->params,
+                                &record->nparams,
+                                maxparams,
+                                "balloon.current",
+                                virDomainDefGetMemoryTotal(dom->def)) < 0)
+        return -1;
+
+    n = prlsdkGetMemoryStats(privdom->stats, stats, VIR_DOMAIN_MEMORY_STAT_NR);
+    if (n < 0)
+        return -1;
+
+#define STORE_MEM_RECORD(TAG, NAME)                         \
+    if (stats[i].tag == VIR_DOMAIN_MEMORY_STAT_ ##TAG)      \
+        if (virTypedParamsAddULLong(&record->params,        \
+                                    &record->nparams,       \
+                                    maxparams,              \
+                                    "balloon." NAME,        \
+                                    stats[i].val) < 0)      \
+            return -1;
+
+    for (i = 0; i < n; i++) {
+        STORE_MEM_RECORD(SWAP_IN, "swap_in")
+        STORE_MEM_RECORD(SWAP_OUT, "swap_out")
+        STORE_MEM_RECORD(MAJOR_FAULT, "major_fault")
+        STORE_MEM_RECORD(MINOR_FAULT, "minor_fault")
+        STORE_MEM_RECORD(AVAILABLE, "available")
+        STORE_MEM_RECORD(UNUSED, "unused")
+    }
+
+#undef STORE_MEM_RECORD
+
+    return 0;
+}
+
 static virDomainStatsRecordPtr
 vzDomainGetAllStats(virConnectPtr conn,
                     virDomainObjPtr dom)
@@ -3705,6 +3756,9 @@ vzDomainGetAllStats(virConnectPtr conn,
         goto error;
 
     if (vzDomainGetVCPUStats(dom, stat, &maxparams) < 0)
+        goto error;
+
+    if (vzDomainGetBalloonStats(dom, stat, &maxparams) < 0)
         goto error;
 
     if (!(stat->dom = virGetDomain(conn, dom->def->name, dom->def->uuid)))
