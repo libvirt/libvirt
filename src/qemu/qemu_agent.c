@@ -1872,6 +1872,7 @@ qemuAgentGetFSInfo(qemuAgentPtr mon, virDomainFSInfoPtr **info,
     ndata = virJSONValueArraySize(data);
     if (!ndata) {
         ret = 0;
+        *info = NULL;
         goto cleanup;
     }
     if (VIR_ALLOC_N(info_ret, ndata) < 0)
