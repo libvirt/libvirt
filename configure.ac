@@ -405,7 +405,7 @@ LIBVIRT_DRIVER_ARG_VMWARE
 LIBVIRT_DRIVER_ARG_PHYP
 LIBVIRT_DRIVER_ARG_XENAPI
 LIBVIRT_DRIVER_ARG_LIBXL
-LIBVIRT_ARG_WITH([VBOX], [VirtualBox XPCOMC], [yes])
+LIBVIRT_DRIVER_ARG_VBOX
 LIBVIRT_DRIVER_ARG_LXC
 LIBVIRT_ARG_WITH([ESX], [ESX], [check])
 LIBVIRT_ARG_WITH([HYPERV], [Hyper-V], [check])
@@ -455,26 +455,8 @@ LIBVIRT_CHECK_SYSCTL_CONFIG
 LIBVIRT_DRIVER_CHECK_OPENVZ
 LIBVIRT_DRIVER_CHECK_VMWARE
 
-dnl
-dnl check for VirtualBox XPCOMC location
-dnl
 
-vbox_xpcomc_dir=
-
-if test "x$with_vbox" != "xyes" && test "x$with_vbox" != "xno"; then
-    # intentionally don't do any further checks here on the provided path
-    vbox_xpcomc_dir=$with_vbox
-    with_vbox=yes
-fi
-
-AC_DEFINE_UNQUOTED([VBOX_XPCOMC_DIR], ["$vbox_xpcomc_dir"],
-                   [Location of directory containing VirtualBox XPCOMC library])
-
-if test "x$with_vbox" = "xyes"; then
-    AC_DEFINE_UNQUOTED([WITH_VBOX], 1, [whether VirtualBox driver is enabled])
-fi
-AM_CONDITIONAL([WITH_VBOX], [test "$with_vbox" = "yes"])
-
+LIBVIRT_DRIVER_CHECK_VBOX
 LIBVIRT_DRIVER_CHECK_QEMU
 LIBVIRT_DRIVER_CHECK_TEST
 LIBVIRT_DRIVER_CHECK_REMOTE
@@ -1356,7 +1338,7 @@ LIBVIRT_DRIVER_RESULT_QEMU
 LIBVIRT_DRIVER_RESULT_UML
 LIBVIRT_DRIVER_RESULT_OPENVZ
 LIBVIRT_DRIVER_RESULT_VMWARE
-AC_MSG_NOTICE([     VBox: $with_vbox])
+LIBVIRT_DRIVER_RESULT_VBOX
 LIBVIRT_DRIVER_RESULT_XENAPI
 LIBVIRT_DRIVER_RESULT_LIBXL
 LIBVIRT_DRIVER_RESULT_LXC
