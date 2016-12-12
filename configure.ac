@@ -1500,31 +1500,6 @@ fi
 AM_CONDITIONAL([WITH_INTERFACE], [test "$with_interface" = "yes"])
 
 
-if test $with_freebsd = yes || test $with_osx = yes; then
-  default_qemu_user=root
-  default_qemu_group=wheel
-else
-  default_qemu_user=root
-  default_qemu_group=root
-fi
-
-LIBVIRT_ARG_WITH_ALT([QEMU_USER], [username to run QEMU system instance as],
-                     ['platform dependent'])
-LIBVIRT_ARG_WITH_ALT([QEMU_GROUP], [groupname to run QEMU system instance as],
-                     ['platform dependent'])
-if test "x$with_qemu_user" = "xplatform dependent" ; then
-    QEMU_USER="$default_qemu_user"
-else
-    QEMU_USER="$with_qemu_user"
-fi
-if test "x$with_qemu_group" = "xplatform dependent" ; then
-    QEMU_GROUP="$default_qemu_group"
-else
-    QEMU_GROUP="$with_qemu_group"
-fi
-AC_DEFINE_UNQUOTED([QEMU_USER], ["$QEMU_USER"], [QEMU user account])
-AC_DEFINE_UNQUOTED([QEMU_GROUP], ["$QEMU_GROUP"], [QEMU group account])
-
 AC_PATH_PROG([QEMU_BRIDGE_HELPER], [qemu-bridge-helper], [/usr/libexec/qemu-bridge-helper],
                   [/usr/libexec:/usr/lib/qemu:/usr/lib])
 AC_DEFINE_UNQUOTED([QEMU_BRIDGE_HELPER], ["$QEMU_BRIDGE_HELPER"], [QEMU bridge helper])
@@ -1796,5 +1771,5 @@ LIBVIRT_RESULT_WIRESHARK
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Privileges])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([      QEMU: $QEMU_USER:$QEMU_GROUP])
+LIBVIRT_RESULT_QEMU_PRIVILEGES
 AC_MSG_NOTICE([])

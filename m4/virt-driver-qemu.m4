@@ -19,6 +19,10 @@ dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_QEMU], [
   LIBVIRT_ARG_WITH([QEMU], [QEMU/KVM], [yes])
+  LIBVIRT_ARG_WITH_ALT([QEMU_USER], [username to run QEMU system instance as],
+                       ['platform dependent'])
+  LIBVIRT_ARG_WITH_ALT([QEMU_GROUP], [groupname to run QEMU system instance as],
+                       ['platform dependent'])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_QEMU], [
@@ -26,8 +30,33 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_QEMU], [
     AC_DEFINE_UNQUOTED([WITH_QEMU], 1, [whether QEMU driver is enabled])
   fi
   AM_CONDITIONAL([WITH_QEMU], [test "$with_qemu" = "yes"])
+
+  if test $with_freebsd = yes || test $with_osx = yes; then
+    default_qemu_user=root
+    default_qemu_group=wheel
+  else
+    default_qemu_user=root
+    default_qemu_group=root
+  fi
+
+  if test "x$with_qemu_user" = "xplatform dependent" ; then
+    QEMU_USER="$default_qemu_user"
+  else
+    QEMU_USER="$with_qemu_user"
+  fi
+  if test "x$with_qemu_group" = "xplatform dependent" ; then
+    QEMU_GROUP="$default_qemu_group"
+  else
+    QEMU_GROUP="$with_qemu_group"
+  fi
+  AC_DEFINE_UNQUOTED([QEMU_USER], ["$QEMU_USER"], [QEMU user account])
+  AC_DEFINE_UNQUOTED([QEMU_GROUP], ["$QEMU_GROUP"], [QEMU group account])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_RESULT_QEMU], [
   LIBVIRT_RESULT([QEMU], [$with_qemu])
+])
+
+AC_DEFUN([LIBVIRT_RESULT_QEMU_PRIVILEGES], [
+  LIBVIRT_RESULT([QEMU], [$QEMU_USER:$QEMU_GROUP])
 ])
