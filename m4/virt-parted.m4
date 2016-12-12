@@ -19,25 +19,20 @@ dnl
 
 AC_DEFUN([LIBVIRT_CHECK_LIBPARTED], [
   PARTED_REQUIRED="1.8.0"
-  LIBPARTED_CFLAGS=
-  LIBPARTED_LIBS=
 
-  AC_PATH_PROG([PARTED], [parted], [], [$LIBVIRT_SBIN_PATH])
-  if test -z "$PARTED" ; then
-    PARTED_FOUND=no
-  else
-    PARTED_FOUND=yes
+  with_libparted=check
+
+  LIBVIRT_CHECK_PKG([LIBPARTED], [libparted], [$PARTED_REQUIRED])
+
+  if test "x$with_libparted" = "xyes"; then
+    AC_PATH_PROG([PARTED], [parted], [], [$LIBVIRT_SBIN_PATH])
+    if test -z "$PARTED" ; then
+      with_libparted=no
+    fi
   fi
 
-  if test "$PARTED_FOUND" = "yes" && test "x$PKG_CONFIG" != "x" ; then
-    PKG_CHECK_MODULES([LIBPARTED], [libparted >= $PARTED_REQUIRED], [],
-                      [PARTED_FOUND=no])
-  fi
-
-  if test "$PARTED_FOUND" = "yes"; then
+  if test "x$with_libparted" = "xyes"; then
     AC_DEFINE_UNQUOTED([PARTED], ["$PARTED"],
                        [Location or name of the parted program])
   fi
-  AC_SUBST([LIBPARTED_CFLAGS])
-  AC_SUBST([LIBPARTED_LIBS])
 ])

@@ -1380,12 +1380,12 @@ LIBVIRT_CHECK_LIBPARTED
 if test "$with_storage_disk" = "yes" ||
    test "$with_storage_disk" = "check"; then
   if test "$with_storage_disk" = "yes" &&
-     test "$PARTED_FOUND" != "yes"; then
+     test "$with_libparted" != "yes"; then
     AC_MSG_ERROR([Need parted for disk storage driver])
   fi
 
   if test "$with_storage_disk" = "check"; then
-    if test "$PARTED_FOUND" != "yes"; then
+    if test "$with_libparted" != "yes"; then
       with_storage_disk=no
     else
       with_storage_disk=yes
