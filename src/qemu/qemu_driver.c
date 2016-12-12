@@ -11813,13 +11813,29 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
             info->allocation = entry->wr_highest_offset;
     }
 
-    if (entry->physical) {
-        info->physical = entry->physical;
-    } else {
+    /* Unlike GetStatsBlock, this API has defined the expected return values
+     * for allocation and physical slightly differently.
+     *
+     * Having a zero for either or if they're the same is an indication that
+     * there's a sparse file backing this device. In this case, we'll force
+     * the setting of physical based on the on disk file size.
+     *
+     * Additionally, if qemu hasn't written to the file yet, then set the
+     * allocation to whatever qemu returned for physical (e.g. the "actual-
+     * size" from the json query) as that will match the expected allocation
+     * value for this API. */
+    if (entry->physical == 0 || info->allocation == 0 ||
+        info->allocation == entry->physical) {
+        info->allocation = entry->physical;
+        if (info->allocation == 0)
+            info->allocation = entry->physical;
+
         if (qemuDomainStorageUpdatePhysical(driver, cfg, vm, disk->src) < 0)
             goto endjob;
 
         info->physical = disk->src->physical;
+    } else {
+        info->physical = entry->physical;
     }
 
     info->capacity = entry->capacity;
