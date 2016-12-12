@@ -3637,6 +3637,57 @@ vzDomainGetNetStats(virDomainObjPtr dom,
     return 0;
 }
 
+static int
+vzDomainGetVCPUStats(virDomainObjPtr dom,
+                     virDomainStatsRecordPtr record,
+                     int *maxparams)
+{
+    vzDomObjPtr privdom = dom->privateData;
+    size_t i;
+    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
+
+    if (virTypedParamsAddUInt(&record->params,
+                              &record->nparams,
+                              maxparams,
+                              "vcpu.current",
+                              virDomainDefGetVcpus(dom->def)) < 0)
+        return -1;
+
+    if (virTypedParamsAddUInt(&record->params,
+                              &record->nparams,
+                              maxparams,
+                              "vcpu.maximum",
+                              virDomainDefGetVcpusMax(dom->def)) < 0)
+        return -1;
+
+    for (i = 0; i < virDomainDefGetVcpusMax(dom->def); i++) {
+        int state = dom->def->vcpus[i]->online ? VIR_VCPU_RUNNING :
+                                                 VIR_VCPU_OFFLINE;
+        unsigned long long time;
+
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "vcpu.%zu.state", i);
+        if (virTypedParamsAddInt(&record->params,
+                                 &record->nparams,
+                                 maxparams,
+                                 param_name,
+                                 state) < 0)
+            return -1;
+
+        if (prlsdkGetVcpuStats(privdom->stats, i, &time) < 0)
+            return -1;
+
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH, "vcpu.%zu.time", i);
+        if (virTypedParamsAddULLong(&record->params,
+                                    &record->nparams,
+                                    maxparams,
+                                    param_name,
+                                    time) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
 static virDomainStatsRecordPtr
 vzDomainGetAllStats(virConnectPtr conn,
                     virDomainObjPtr dom)
@@ -3651,6 +3702,9 @@ vzDomainGetAllStats(virConnectPtr conn,
         goto error;
 
     if (vzDomainGetNetStats(dom, stat, &maxparams) < 0)
+        goto error;
+
+    if (vzDomainGetVCPUStats(dom, stat, &maxparams) < 0)
         goto error;
 
     if (!(stat->dom = virGetDomain(conn, dom->def->name, dom->def->uuid)))
