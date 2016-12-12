@@ -3515,6 +3515,197 @@ vzDomainGetJobStats(virDomainPtr domain,
     return ret;
 }
 
+#define VZ_ADD_STAT_PARAM_UUL(group, field, counter)            \
+do {                                                            \
+    if (stat.field != -1) {                                     \
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,      \
+                 group ".%zu." counter, i);                     \
+        if (virTypedParamsAddULLong(&record->params,            \
+                                    &record->nparams,           \
+                                    maxparams,                  \
+                                    param_name,                 \
+                                    stat.field) < 0)            \
+            return -1;                                          \
+    }                                                           \
+} while (0)
+
+static int
+vzDomainGetBlockStats(virDomainObjPtr dom,
+                      virDomainStatsRecordPtr record,
+                      int *maxparams)
+{
+    vzDomObjPtr privdom = dom->privateData;
+    size_t i;
+    char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
+
+    if (virTypedParamsAddUInt(&record->params,
+                              &record->nparams,
+                              maxparams,
+                              "block.count",
+                              dom->def->ndisks) < 0)
+        return -1;
+
+    for (i = 0; i < dom->def->ndisks; i++) {
+        virDomainBlockStatsStruct stat;
+        virDomainDiskDefPtr disk = dom->def->disks[i];
+
+        if (prlsdkGetBlockStats(privdom->stats,
+                                disk,
+                                &stat,
+                                IS_CT(dom->def)) < 0)
+            return -1;
+
+        snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                 "block.%zu.name", i);
+        if (virTypedParamsAddString(&record->params,
+                                    &record->nparams,
+                                    maxparams,
+                                    param_name,
+                                    disk->dst) < 0)
+            return -1;
+
+        if (virStorageSourceIsLocalStorage(disk->src) && disk->src->path) {
+            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                     "block.%zu.path", i);
+            if (virTypedParamsAddString(&record->params,
+                                        &record->nparams,
+                                        maxparams,
+                                        param_name,
+                                        disk->src->path) < 0)
+                return -1;
+        }
+
+        VZ_ADD_STAT_PARAM_UUL("block", rd_req, "rd.reqs");
+        VZ_ADD_STAT_PARAM_UUL("block", rd_bytes, "rd.bytes");
+        VZ_ADD_STAT_PARAM_UUL("block", wr_req, "wr.reqs");
+        VZ_ADD_STAT_PARAM_UUL("block", wr_bytes, "wr.bytes");
+
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+            snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                     "block.%zu.capacity", i);
+            if (virTypedParamsAddULLong(&record->params,
+                                        &record->nparams,
+                                        maxparams,
+                                        param_name,
+                                        disk->src->capacity) < 0)
+                return -1;
+        }
+
+    }
+
+    return 0;
+}
+
+static virDomainStatsRecordPtr
+vzDomainGetAllStats(virConnectPtr conn,
+                    virDomainObjPtr dom)
+{
+    virDomainStatsRecordPtr stat;
+    int maxparams = 0;
+
+    if (VIR_ALLOC(stat) < 0)
+        return NULL;
+
+    if (vzDomainGetBlockStats(dom, stat, &maxparams) < 0)
+        goto error;
+
+    if (!(stat->dom = virGetDomain(conn, dom->def->name, dom->def->uuid)))
+        goto error;
+
+    return stat;
+
+ error:
+    virTypedParamsFree(stat->params, stat->nparams);
+    virObjectUnref(stat->dom);
+    VIR_FREE(stat);
+    return NULL;
+}
+
+static int
+vzConnectGetAllDomainStats(virConnectPtr conn,
+                           virDomainPtr *domains,
+                           unsigned int ndomains,
+                           unsigned int stats,
+                           virDomainStatsRecordPtr **retStats,
+                           unsigned int flags)
+{
+    vzConnPtr privconn = conn->privateData;
+    vzDriverPtr driver = privconn->driver;
+    unsigned int lflags = flags & (VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
+                                   VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
+                                   VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE);
+    unsigned int supported = VIR_DOMAIN_STATS_STATE |
+                             VIR_DOMAIN_STATS_VCPU |
+                             VIR_DOMAIN_STATS_INTERFACE |
+                             VIR_DOMAIN_STATS_BALLOON |
+                             VIR_DOMAIN_STATS_BLOCK;
+    virDomainObjPtr *doms = NULL;
+    size_t ndoms;
+    virDomainStatsRecordPtr *tmpstats = NULL;
+    int nstats = 0;
+    int ret = -1;
+    size_t i;
+
+    virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
+                  VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
+                  VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE |
+                  VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
+
+    if (virConnectGetAllDomainStatsEnsureACL(conn) < 0)
+        return -1;
+
+    if (!stats) {
+        stats = supported;
+    } else if ((flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS) &&
+               (stats & ~supported)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Stats types bits 0x%x are not supported by this daemon"),
+                       stats & ~supported);
+        return -1;
+    }
+
+    if (ndomains) {
+        if (virDomainObjListConvert(driver->domains, conn, domains, ndomains, &doms,
+                                    &ndoms, virConnectGetAllDomainStatsCheckACL,
+                                    lflags, true) < 0)
+            return -1;
+    } else {
+        if (virDomainObjListCollect(driver->domains, conn, &doms, &ndoms,
+                                    virConnectGetAllDomainStatsCheckACL,
+                                    lflags) < 0)
+            return -1;
+    }
+
+    if (VIR_ALLOC_N(tmpstats, ndoms + 1) < 0)
+        goto cleanup;
+
+    for (i = 0; i < ndoms; i++) {
+        virDomainStatsRecordPtr tmp;
+        virDomainObjPtr dom = doms[i];
+
+        virObjectLock(dom);
+        tmp = vzDomainGetAllStats(conn, dom);
+        virObjectUnlock(dom);
+
+        if (!tmp)
+            goto cleanup;
+
+        tmpstats[nstats++] = tmp;
+    }
+
+    *retStats = tmpstats;
+    tmpstats = NULL;
+    ret = nstats;
+
+ cleanup:
+    virDomainStatsRecordListFree(tmpstats);
+    virObjectListFreeCount(doms, ndoms);
+
+    return ret;
+}
+
+#undef VZ_ADD_STAT_PARAM_UUL
+
 static virHypervisorDriver vzHypervisorDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
@@ -3610,6 +3801,7 @@ static virHypervisorDriver vzHypervisorDriver = {
     .domainUpdateDeviceFlags = vzDomainUpdateDeviceFlags, /* 2.0.0 */
     .domainGetJobInfo = vzDomainGetJobInfo, /* 2.2.0 */
     .domainGetJobStats = vzDomainGetJobStats, /* 2.2.0 */
+    .connectGetAllDomainStats = vzConnectGetAllDomainStats, /* 3.1.0 */
 };
 
 static virConnectDriver vzConnectDriver = {

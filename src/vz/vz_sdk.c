@@ -596,6 +596,7 @@ prlsdkGetDiskInfo(vzDriverPtr driver,
     char *buf = NULL;
     PRL_RESULT pret;
     PRL_UINT32 emulatedType;
+    PRL_UINT32 size;
     virDomainDeviceDriveAddressPtr address;
     int busIdx, devIdx;
     int ret = -1;
@@ -653,6 +654,13 @@ prlsdkGetDiskInfo(vzDriverPtr driver,
 
     if (virDomainDiskSetDriver(disk, "vz") < 0)
         goto cleanup;
+
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_DISK) {
+        pret = PrlVmDevHd_GetDiskSize(prldisk, &size);
+        prlsdkCheckRetGoto(pret, cleanup);
+        /* from MiB to bytes */
+        disk->src->capacity = ((unsigned long long)size) << 20;
+    }
 
     ret = 0;
 
