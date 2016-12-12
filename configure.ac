@@ -1420,7 +1420,7 @@ LIBVIRT_CHECK_DEVMAPPER
 
 if test "$with_storage_mpath" = "yes" ||
    test "$with_storage_disk" = "yes"; then
-   if test "$DEVMAPPER_FOUND" = "no" ; then
+   if test "$with_devmapper" = "no" ; then
      AC_MSG_ERROR([You must install device-mapper-devel/libdevmapper >= $DEVMAPPER_REQUIRED to compile libvirt])
    fi
 fi

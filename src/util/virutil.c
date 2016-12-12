@@ -48,7 +48,7 @@
 #include <termios.h>
 #include <locale.h>
 
-#if HAVE_LIBDEVMAPPER_H
+#if WITH_DEVMAPPER
 # include <libdevmapper.h>
 #endif
 
@@ -1608,7 +1608,7 @@ void virFileWaitForDevices(void)
 {}
 #endif
 
-#if HAVE_LIBDEVMAPPER_H
+#if WITH_DEVMAPPER
 bool
 virIsDevMapperDevice(const char *dev_name)
 {

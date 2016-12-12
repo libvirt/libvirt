@@ -26,7 +26,6 @@
  */
 
 #ifdef LIBVIRT_SETUID_RPC_CLIENT
-# undef HAVE_LIBDEVMAPPER_H
 # undef HAVE_LIBNL
 # undef HAVE_LIBNL3
 # undef HAVE_LIBSASL2
@@ -34,6 +33,7 @@
 # undef WITH_CAPNG
 # undef WITH_CURL
 # undef WITH_DBUS
+# undef WITH_DEVMAPPER
 # undef WITH_DTRACE_PROBES
 # undef WITH_GNUTLS
 # undef WITH_GNUTLS_GCRYPT
@@ -53,13 +53,13 @@
  * explanation above.
  */
 #ifdef LIBVIRT_NSS
-# undef HAVE_LIBDEVMAPPER_H
 # undef HAVE_LIBNL
 # undef HAVE_LIBNL3
 # undef HAVE_LIBSASL2
 # undef HAVE_SYS_ACL_H
 # undef WITH_CAPNG
 # undef WITH_CURL
+# undef WITH_DEVMAPPER
 # undef WITH_DTRACE_PROBES
 # undef WITH_GNUTLS
 # undef WITH_GNUTLS_GCRYPT

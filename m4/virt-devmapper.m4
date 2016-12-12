@@ -19,24 +19,14 @@ dnl
 
 AC_DEFUN([LIBVIRT_CHECK_DEVMAPPER], [
   DEVMAPPER_REQUIRED=1.0.0
-  DEVMAPPER_CFLAGS=
-  DEVMAPPER_LIBS=
 
-  PKG_CHECK_MODULES([DEVMAPPER], [devmapper >= $DEVMAPPER_REQUIRED], [], [DEVMAPPER_FOUND=no])
+  with_devmapper=check
 
-  if test "$DEVMAPPER_FOUND" = "no"; then
+  LIBVIRT_CHECK_PKG([DEVMAPPER], [devmapper], [$DEVMAPPER_REQUIRED], [])
+
+  if test "x$with_devmapper" = "xno"; then
     # devmapper is missing pkg-config files in ubuntu, suse, etc
-    save_LIBS="$LIBS"
-    save_CFLAGS="$CFLAGS"
-    DEVMAPPER_FOUND=yes
-    AC_CHECK_LIB([devmapper], [dm_task_run],,[DEVMAPPER_FOUND=no])
-    DEVMAPPER_LIBS="-ldevmapper"
-    LIBS="$save_LIBS"
-    CFLAGS="$save_CFLAGS"
+    with_devmapper=check
+    LIBVIRT_CHECK_LIB([DEVMAPPER], [devmapper], [dm_task_run], [libdevmapper.h])
   fi
-
-  AC_CHECK_HEADERS([libdevmapper.h],,[DEVMAPPER_FOUND=no])
-
-  AC_SUBST([DEVMAPPER_CFLAGS])
-  AC_SUBST([DEVMAPPER_LIBS])
 ])
