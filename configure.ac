@@ -1796,34 +1796,8 @@ AC_PATH_PROG([QEMU_BRIDGE_HELPER], [qemu-bridge-helper], [/usr/libexec/qemu-brid
                   [/usr/libexec:/usr/lib/qemu:/usr/lib])
 AC_DEFINE_UNQUOTED([QEMU_BRIDGE_HELPER], ["$QEMU_BRIDGE_HELPER"], [QEMU bridge helper])
 
-LIBVIRT_ARG_WITH_ALT([MACVTAP], [enable macvtap device], [check])
-
-AC_MSG_CHECKING([whether to compile with macvtap support])
-if test "$with_macvtap" != "no" ; then
-    AC_TRY_COMPILE([ #include <sys/socket.h>
-                     #include <linux/rtnetlink.h> ],
-                   [ int x = MACVLAN_MODE_BRIDGE;
-                     int y = IFLA_VF_MAX; ],
-                   [ with_macvtap=yes ],
-                   [ if test "$with_macvtap" = "yes" ; then
-                         AC_MSG_ERROR([Installed linux headers don't show support for macvtap device.])
-                     fi
-                     with_macvtap=no ])
-    if test "$with_macvtap" = "yes" ; then
-        val=1
-    else
-        val=0
-    fi
-    AC_DEFINE_UNQUOTED([WITH_MACVTAP], $val, [whether macvtap support is enabled])
-fi
-AM_CONDITIONAL([WITH_MACVTAP], [test "$with_macvtap" = "yes"])
-AC_MSG_RESULT([$with_macvtap])
-if test "$with_macvtap" = yes; then
-    AC_CHECK_DECLS([MACVLAN_MODE_PASSTHRU], [], [], [[
-      #include <sys/socket.h>
-      #include <linux/if_link.h>
-    ]])
-fi
+LIBVIRT_ARG_MACVTAP
+LIBVIRT_CHECK_MACVTAP
 
 
 LIBVIRT_ARG_WITH_ALT([VIRTUALPORT], [enable virtual port support], [check])
@@ -2086,7 +2060,6 @@ AC_MSG_NOTICE([   Remote: $with_remote])
 AC_MSG_NOTICE([  Network: $with_network])
 AC_MSG_NOTICE([ Libvirtd: $with_libvirtd])
 AC_MSG_NOTICE([Interface: $with_interface])
-AC_MSG_NOTICE([  macvtap: $with_macvtap])
 AC_MSG_NOTICE([ virtport: $with_virtualport])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
@@ -2132,6 +2105,7 @@ LIBVIRT_RESULT_HAL
 LIBVIRT_RESULT_LIBPCAP
 LIBVIRT_RESULT_LIBSSH
 LIBVIRT_RESULT_LIBXML
+LIBVIRT_RESULT_MACVTAP
 LIBVIRT_RESULT_NETCF
 LIBVIRT_RESULT_NSS
 LIBVIRT_RESULT_NUMACTL
