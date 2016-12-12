@@ -17,9 +17,11 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 dnl
 
-AC_DEFUN([LIBVIRT_DRIVER_CHECK_BHYVE],[
+AC_DEFUN([LIBVIRT_DRIVER_ARG_BHYVE],[
     LIBVIRT_ARG_WITH([BHYVE], [BHyVe], [check])
+])
 
+AC_DEFUN([LIBVIRT_DRIVER_CHECK_BHYVE],[
     if test "$with_bhyve" != "no"; then
         AC_PATH_PROG([BHYVE], [bhyve], [], [$PATH:/usr/sbin])
         AC_PATH_PROG([BHYVECTL], [bhyvectl], [], [$PATH:/usr/sbin])

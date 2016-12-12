@@ -17,11 +17,13 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 dnl
 
-AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
+AC_DEFUN([LIBVIRT_ARG_INIT_SCRIPT],[
     LIBVIRT_ARG_WITH_ALT([INIT_SCRIPT],
                          [Style of init script to install: redhat, systemd,
                           systemd+redhat, upstart, check, none], [check])
+])
 
+AC_DEFUN([LIBVIRT_CHECK_INIT_SCRIPT],[
     AC_MSG_CHECKING([for init script type])
 
     init_redhat=no

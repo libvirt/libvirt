@@ -17,9 +17,11 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 dnl
 
-AC_DEFUN([LIBVIRT_DRIVER_CHECK_VZ],[
+AC_DEFUN([LIBVIRT_DRIVER_ARG_VZ],[
     LIBVIRT_ARG_WITH([VZ], [Virtuozzo], [check])
+])
 
+AC_DEFUN([LIBVIRT_DRIVER_CHECK_VZ],[
     if test "$with_vz" = "yes" ||
        test "$with_vz" = "check"; then
         PKG_CHECK_MODULES([PARALLELS_SDK], [parallels-sdk >= $PARALLELS_SDK_REQUIRED],

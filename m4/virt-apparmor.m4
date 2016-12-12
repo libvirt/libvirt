@@ -17,12 +17,14 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 dnl
 
-AC_DEFUN([LIBVIRT_CHECK_APPARMOR],[
+AC_DEFUN([LIBVIRT_ARG_APPARMOR],[
   LIBVIRT_ARG_WITH([APPARMOR], [AppArmor], [check])
+  LIBVIRT_ARG_WITH_ALT([APPARMOR_MOUNT], [set AppArmor mount point], [check])
+])
+
+AC_DEFUN([LIBVIRT_CHECK_APPARMOR],[
   LIBVIRT_CHECK_LIB([APPARMOR], [apparmor],
                     [aa_change_profile], [sys/apparmor.h])
-
-  LIBVIRT_ARG_WITH_ALT([APPARMOR_MOUNT], [set AppArmor mount point], [check])
 
   if test "$with_apparmor" = "yes"; then
     AC_DEFINE_UNQUOTED([APPARMOR_DIR],

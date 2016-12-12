@@ -17,8 +17,11 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 dnl
 
-AC_DEFUN([LIBVIRT_CHECK_AVAHI],[
+AC_DEFUN([LIBVIRT_ARG_AVAHI],[
   LIBVIRT_ARG_WITH([AVAHI], [avahi-client], [check], [0.6.0])
+])
+
+AC_DEFUN([LIBVIRT_CHECK_AVAHI],[
   LIBVIRT_CHECK_PKG([AVAHI], [avahi-client], [0.6.0])
 ])
 

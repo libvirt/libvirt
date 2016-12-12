@@ -17,8 +17,11 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 dnl
 
-AC_DEFUN([LIBVIRT_CHECK_NETCF],[
+AC_DEFUN([LIBVIRT_ARG_NETCF],[
   LIBVIRT_ARG_WITH([NETCF], [netcf], [check], [0.1.4])
+])
+
+AC_DEFUN([LIBVIRT_CHECK_NETCF],[
   LIBVIRT_CHECK_PKG([NETCF], [netcf], [0.1.4])
 
   if test "$with_netcf" = "yes" ; then

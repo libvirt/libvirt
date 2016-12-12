@@ -15,9 +15,11 @@ dnl You should have received a copy of the GNU Lesser General Public
 dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
-AC_DEFUN([LIBVIRT_CHECK_LOGIN_SHELL], [
+AC_DEFUN([LIBVIRT_ARG_LOGIN_SHELL], [
   LIBVIRT_ARG_WITH_ALT([LOGIN_SHELL], [build virt-login-shell], [check])
+])
 
+AC_DEFUN([LIBVIRT_CHECK_LOGIN_SHELL], [
   if test "x$with_login_shell" != "xno"; then
     if test "x$with_linux" != "xyes"; then
       if test "x$with_login_shell" = "xyes"; then

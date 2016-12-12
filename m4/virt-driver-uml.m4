@@ -17,9 +17,11 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 dnl
 
-AC_DEFUN([LIBVIRT_DRIVER_CHECK_UML],[
+AC_DEFUN([LIBVIRT_DRIVER_ARG_UML],[
     LIBVIRT_ARG_WITH([UML], [UML], [check])
+])
 
+AC_DEFUN([LIBVIRT_DRIVER_CHECK_UML],[
     if test "$with_libvirtd" = "no" || test "$with_linux" = "no"; then
         if test "$with_uml" = "yes"; then
             AC_MSG_ERROR([The UML driver cannot be enabled])

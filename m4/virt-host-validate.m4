@@ -15,9 +15,11 @@ dnl You should have received a copy of the GNU Lesser General Public
 dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
-AC_DEFUN([LIBVIRT_CHECK_HOST_VALIDATE], [
+AC_DEFUN([LIBVIRT_ARG_HOST_VALIDATE], [
   LIBVIRT_ARG_WITH_ALT([HOST_VALIDATE], [build virt-host-validate], [check])
+])
 
+AC_DEFUN([LIBVIRT_CHECK_HOST_VALIDATE], [
   if test "x$with_host_validate" != "xno"; then
     if test "x$with_win" = "xyes"; then
       if test "x$with_host_validate" = "xyes"; then

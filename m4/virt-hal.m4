@@ -17,8 +17,11 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 dnl
 
-AC_DEFUN([LIBVIRT_CHECK_HAL],[
+AC_DEFUN([LIBVIRT_ARG_HAL],[
   LIBVIRT_ARG_WITH([HAL], [hal], [check], [0.5.0])
+])
+
+AC_DEFUN([LIBVIRT_CHECK_HAL],[
   LIBVIRT_CHECK_PKG([HAL], [hal], [0.5.0])
 ])
 

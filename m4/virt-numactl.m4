@@ -17,8 +17,11 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 dnl
 
-AC_DEFUN([LIBVIRT_CHECK_NUMACTL],[
+AC_DEFUN([LIBVIRT_ARG_NUMACTL],[
   LIBVIRT_ARG_WITH([NUMACTL], [numa], [check])
+])
+
+AC_DEFUN([LIBVIRT_CHECK_NUMACTL],[
   LIBVIRT_CHECK_LIB([NUMACTL], [numa], [numa_available], [numa.h])
   AC_CHECK_LIB([numa], [numa_bitmask_isbitset], [have_numa_bitmask_isbitset=yes])
   if test "$have_numa_bitmask_isbitset" = "yes"; then

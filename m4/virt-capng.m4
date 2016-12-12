@@ -17,8 +17,11 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 dnl
 
-AC_DEFUN([LIBVIRT_CHECK_CAPNG],[
+AC_DEFUN([LIBVIRT_ARG_CAPNG],[
   LIBVIRT_ARG_WITH([CAPNG], [cap-ng], [check])
+])
+
+AC_DEFUN([LIBVIRT_CHECK_CAPNG],[
   LIBVIRT_CHECK_LIB([CAPNG], [cap-ng], [capng_updatev], [cap-ng.h])
 ])
 
