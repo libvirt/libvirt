@@ -22,8 +22,6 @@ AC_DEFUN([LIBVIRT_DRIVER_ARG_LIBXL], [
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
-  old_LIBS="$LIBS"
-  old_CFLAGS="$CFLAGS"
   LIBXL_LIBS=""
   LIBXL_CFLAGS=""
   LIBXL_FIRMWARE_DIR=""
@@ -48,6 +46,7 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
     dnl The libxl driver will make use of this new parameter for specifying
     dnl the Xen migration stream version. Specify LIBXL_API_VERSION to trigger
     dnl an error if there is too old xenlight
+    old_CFLAGS="$CFLAGS"
     CFLAGS="$CFLAGS $LIBXL_API_VERSION"
     LIBVIRT_CHECK_LIB([LIBXL], [xenlight], [libxl_ctx_alloc], [libxl.h], [fail="1"])
     CFLAGS="$old_CFLAGS"
@@ -57,11 +56,12 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
     fi
   fi
 
-  LIBXL_CFLAGS="$LIBXL_CFLAGS $LIBXL_API_VERSION"
-  LIBS="$old_LIBS"
-  CFLAGS="$old_CFLAGS"
-
   if test "$with_libxl" = "yes"; then
+    old_LIBS="$LIBS"
+    old_CFLAGS="$CFLAGS"
+
+    LIBXL_CFLAGS="$LIBXL_CFLAGS $LIBXL_API_VERSION"
+
     dnl If building with libxl, use the libxl utility header and lib too
     AC_CHECK_HEADERS([libxlutil.h])
     LIBXL_LIBS="$LIBXL_LIBS -lxlutil"
@@ -79,6 +79,9 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [
     ],[
       LIBXL_LIBS="$LIBXL_LIBS -lxenctrl"
     ])
+
+    CFLAGS="$old_CFLAGS"
+    LIBS="$old_LIBS"
   fi
 
   AC_SUBST([LIBXL_CFLAGS])
