@@ -561,7 +561,7 @@ LIBVIRT_STORAGE_ARG_LVM
 LIBVIRT_STORAGE_ARG_ISCSI
 LIBVIRT_STORAGE_ARG_SCSI
 LIBVIRT_STORAGE_ARG_MPATH
-LIBVIRT_ARG_WITH([STORAGE_DISK], [GPartd Disk backend for the storage driver], [check])
+LIBVIRT_STORAGE_ARG_DISK
 LIBVIRT_ARG_WITH([STORAGE_RBD], [RADOS Block Device backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_SHEEPDOG], [with Sheepdog backend for the storage driver], [check])
 LIBVIRT_ARG_WITH([STORAGE_GLUSTER], [Gluster backend for the storage driver], [check])
@@ -689,33 +689,7 @@ if test "$with_storage_fs" = "yes" ||
   fi
 fi
 
-if test "$with_storage_disk" = "yes" ||
-   test "$with_storage_disk" = "check"; then
-  if test "$with_storage_disk" = "yes" &&
-     test "$with_libparted" != "yes"; then
-    AC_MSG_ERROR([Need parted for disk storage driver])
-  fi
-
-  if test "$with_storage_disk" = "check"; then
-    if test "$with_libparted" != "yes"; then
-      with_storage_disk=no
-    else
-      with_storage_disk=yes
-    fi
-  fi
-
-  if test "$with_storage_disk" = "yes"; then
-    AC_DEFINE_UNQUOTED([WITH_STORAGE_DISK], 1,
-      [whether Disk backend for storage driver is enabled])
-  fi
-fi
-AM_CONDITIONAL([WITH_STORAGE_DISK], [test "$with_storage_disk" = "yes"])
-
-if test "$with_storage_disk" = "yes"; then
-   if test "$with_devmapper" = "no" ; then
-     AC_MSG_ERROR([You must install device-mapper-devel/libdevmapper >= $DEVMAPPER_REQUIRED to compile libvirt])
-   fi
-fi
+LIBVIRT_STORAGE_CHECK_DISK
 
 with_storage=no
 for backend in dir fs lvm iscsi scsi mpath rbd disk; do
@@ -1044,7 +1018,7 @@ LIBVIRT_STORAGE_RESULT_LVM
 LIBVIRT_STORAGE_RESULT_ISCSI
 LIBVIRT_STORAGE_RESULT_SCSI
 LIBVIRT_STORAGE_RESULT_MPATH
-AC_MSG_NOTICE([    Disk: $with_storage_disk])
+LIBVIRT_STORAGE_RESULT_DISK
 AC_MSG_NOTICE([     RBD: $with_storage_rbd])
 AC_MSG_NOTICE([Sheepdog: $with_storage_sheepdog])
 AC_MSG_NOTICE([ Gluster: $with_storage_gluster])
