@@ -293,40 +293,7 @@ AC_CHECK_FUNCS_ONCE([cfmakeraw fallocate geteuid getgid getgrnam_r \
   posix_memalign prlimit regexec sched_getaffinity setgroups setns \
   setrlimit symlink sysctlbyname getifaddrs sched_setscheduler unshare])
 
-dnl Availability of pthread functions. Because of $LIB_PTHREAD, we
-dnl cannot use AC_CHECK_FUNCS_ONCE. LIB_PTHREAD and LIBMULTITHREAD
-dnl were set during gl_INIT by gnulib.
-old_LIBS=$LIBS
-LIBS="$LIBS $LIB_PTHREAD $LIBMULTITHREAD"
-
-pthread_found=yes
-AC_CHECK_FUNCS([pthread_mutexattr_init])
-AC_CHECK_HEADER([pthread.h],,[pthread_found=no])
-
-if test "$ac_cv_func_pthread_mutexattr_init:$pthread_found" != "yes:yes"
-then
-  AC_MSG_ERROR([A pthreads impl is required for building libvirt])
-fi
-
-dnl At least mingw64-winpthreads #defines pthread_sigmask to 0,
-dnl which in turn causes compilation to complain about unused variables.
-dnl Expose this broken implementation, so we can work around it.
-AC_CACHE_CHECK([whether pthread_sigmask does anything],
-  [lv_cv_pthread_sigmask_works],
-  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-    #include <sys/types.h>
-    #include <signal.h>
-  ]], [[
-    #ifdef pthread_sigmask
-    int (*foo)(int, const sigset_t *, sigset_t *) = &pthread_sigmask;
-    return !foo;
-    #endif
-  ]])], [lv_cv_pthread_sigmask_works=yes], [lv_cv_pthread_sigmask_works=no])])
-if test "x$lv_cv_pthread_sigmask_works" != xyes; then
-  AC_DEFINE([FUNC_PTHREAD_SIGMASK_BROKEN], [1],
-    [Define to 1 if pthread_sigmask is not a real function])
-fi
-LIBS=$old_LIBS
+LIBVIRT_CHECK_PTHREAD
 
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h regex.h sys/un.h \
