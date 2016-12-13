@@ -5,10 +5,10 @@
   <bridge name='virbr1' stp='off' delay='1'/>
   <domain name='example.com'/>
   <ip address='192.168.122.1' netmask='255.255.255.0'>
-    <tftp root='/var/lib/tftproot'/>
     <dhcp>
       <range start='192.168.122.2' end='192.168.122.254'/>
       <bootp file='pxeboot.img'/>
     </dhcp>
+    <tftp root='/var/lib/tftproot'/>
   </ip>
 </network>

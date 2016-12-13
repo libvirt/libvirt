@@ -339,48 +339,52 @@
             <optional>
               <attribute name="family"><ref name="addr-family"/></attribute>
             </optional>
-            <optional>
-              <element name="tftp">
-                <attribute name="root"><text/></attribute>
-              </element>
-            </optional>
-            <optional>
-              <!-- Define the range(s) of IP addresses that the DHCP
-                   server should hand out -->
-              <element name="dhcp">
-                <zeroOrMore>
-                  <element name="range">
-                    <attribute name="start"><ref name="ipAddr"/></attribute>
-                    <attribute name="end"><ref name="ipAddr"/></attribute>
-                  </element>
-                </zeroOrMore>
-                <zeroOrMore>
-                  <element name="host">
-                    <choice>
-                      <group>
+            <interleave>
+              <optional>
+                <element name="tftp">
+                  <attribute name="root"><text/></attribute>
+                </element>
+              </optional>
+              <optional>
+                <!-- Define the range(s) of IP addresses that the DHCP
+                     server should hand out -->
+                <element name="dhcp">
+                  <interleave>
+                    <zeroOrMore>
+                      <element name="range">
+                        <attribute name="start"><ref name="ipAddr"/></attribute>
+                        <attribute name="end"><ref name="ipAddr"/></attribute>
+                      </element>
+                    </zeroOrMore>
+                    <zeroOrMore>
+                      <element name="host">
                         <choice>
-                          <attribute name="mac"><ref name="uniMacAddr"/></attribute>
-                          <attribute name="id"><ref name="DUID"/></attribute>
-                        </choice>
-                        <optional>
+                          <group>
+                            <choice>
+                              <attribute name="mac"><ref name="uniMacAddr"/></attribute>
+                              <attribute name="id"><ref name="DUID"/></attribute>
+                            </choice>
+                            <optional>
+                              <attribute name="name"><text/></attribute>
+                            </optional>
+                          </group>
                           <attribute name="name"><text/></attribute>
-                        </optional>
-                      </group>
-                      <attribute name="name"><text/></attribute>
-                    </choice>
-                    <attribute name="ip"><ref name="ipAddr"/></attribute>
-                  </element>
-                </zeroOrMore>
-                <optional>
-                  <element name="bootp">
-                    <attribute name="file"><ref name="filePath"/></attribute>
+                        </choice>
+                        <attribute name="ip"><ref name="ipAddr"/></attribute>
+                      </element>
+                    </zeroOrMore>
                     <optional>
-                      <attribute name="server"><ref name="dnsName"/></attribute>
+                      <element name="bootp">
+                        <attribute name="file"><ref name="filePath"/></attribute>
+                        <optional>
+                          <attribute name="server"><ref name="dnsName"/></attribute>
+                        </optional>
+                      </element>
                     </optional>
-                  </element>
-                </optional>
-              </element>
-            </optional>
+                  </interleave>
+                </element>
+              </optional>
+            </interleave>
           </element>
         </zeroOrMore>
         <!-- <route> element -->
