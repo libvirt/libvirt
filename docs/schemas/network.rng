@@ -283,13 +283,21 @@
                   </attribute>
                   <optional>
                     <attribute name="domain"><ref name="dnsName"/></attribute>
+                  </optional>
+                  <optional>
                     <attribute name="target"><text/></attribute>
+                  </optional>
+                  <optional>
                     <attribute name="port">
                       <ref name="unsignedShort"/>
                     </attribute>
+                  </optional>
+                  <optional>
                     <attribute name="priority">
                       <ref name="unsignedShort"/>
                     </attribute>
+                  </optional>
+                  <optional>
                     <attribute name="weight">
                       <ref name="unsignedShort"/>
                     </attribute>

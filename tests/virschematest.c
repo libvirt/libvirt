@@ -208,7 +208,7 @@ mymain(void)
             "domainsnapshotxml2xmlout");
     DO_TEST("interface.rng", "interfaceschemadata");
     DO_TEST("network.rng", "../src/network", "networkxml2xmlin",
-            "networkxml2xmlout");
+            "networkxml2xmlout", "networkxml2confdata");
     DO_TEST("nodedev.rng", "nodedevschemadata");
     DO_TEST("nwfilter.rng", "nwfilterxml2xmlout");
     DO_TEST("secret.rng", "secretxml2xmlin");
