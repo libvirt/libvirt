@@ -99,7 +99,7 @@ virLogDaemonConfigLoadOptions(virLogDaemonConfigPtr data,
         return -1;
     if (virConfGetValueString(conf, "log_filters", &data->log_filters) < 0)
         return -1;
-    if (virConfGetValueString(conf, "log_outputs", &data->log_filters) < 0)
+    if (virConfGetValueString(conf, "log_outputs", &data->log_outputs) < 0)
         return -1;
     if (virConfGetValueUInt(conf, "max_clients", &data->max_clients) < 0)
         return -1;
