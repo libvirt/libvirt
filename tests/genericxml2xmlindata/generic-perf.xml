@@ -22,6 +22,7 @@
     <event name='cache_misses' enabled='no'/>
     <event name='branch_instructions' enabled='yes'/>
     <event name='branch_misses' enabled='yes'/>
+    <event name='bus_cycles' enabled='yes'/>
   </perf>
   <devices>
   </devices>

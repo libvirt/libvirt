@@ -1929,6 +1929,7 @@
   &lt;event name='cache_misses' enabled='no'/&gt;
   &lt;event name='branch_instructions' enabled='no'/&gt;
   &lt;event name='branch_misses' enabled='no'/&gt;
+  &lt;event name='bus_cycles' enabled='no'/&gt;
 &lt;/perf&gt;
 ...
 </pre>
@@ -1983,6 +1984,11 @@
       <td><code>branch_misses</code></td>
       <td>the count of branch misses by applications running on the platform</td>
       <td><code>perf.branch_misses</code></td>
+    </tr>
+    <tr>
+      <td><code>bus_cycles</code></td>
+      <td>the count of bus cycles by applications running on the platform</td>
+      <td><code>perf.bus_cycles</code></td>
     </tr>
   </table>
 

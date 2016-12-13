@@ -2145,6 +2145,16 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_BRANCH_MISSES "branch_misses"
 
+/**
+ * VIR_PERF_PARAM_BUS_CYCLES:
+ *
+ * Macro for typed parameter name that represents bus_cycles
+ * perf event which can be used to measure the count of bus cycles
+ * by applications running on the platform. It corresponds to the
+ * "perf.bus_cycles" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_BUS_CYCLES "bus_cycles"
+
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
                            int *nparams,
