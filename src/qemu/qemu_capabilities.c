@@ -482,12 +482,12 @@ static virArch
 virQEMUCapsFindTarget(virArch hostarch,
                       virArch guestarch)
 {
+    if (virQEMUCapsGuestIsNative(hostarch, guestarch))
+        guestarch = hostarch;
+
     /* Both ppc64 and ppc64le guests can use the ppc64 target */
     if (ARCH_IS_PPC64(guestarch))
         guestarch = VIR_ARCH_PPC64;
-
-    if (virQEMUCapsGuestIsNative(hostarch, guestarch))
-        guestarch = hostarch;
 
     return guestarch;
 }
