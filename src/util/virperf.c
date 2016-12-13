@@ -42,7 +42,7 @@ VIR_ENUM_IMPL(virPerfEvent, VIR_PERF_EVENT_LAST,
               "cpu_cycles", "instructions",
               "cache_references", "cache_misses",
               "branch_instructions", "branch_misses",
-              "bus_cycles");
+              "bus_cycles", "stalled_cycles_frontend");
 
 struct virPerfEvent {
     int type;
@@ -96,6 +96,9 @@ static struct virPerfEventAttr attrs[] = {
     {.type = VIR_PERF_EVENT_BUS_CYCLES,
      .attrType = PERF_TYPE_HARDWARE,
      .attrConfig = PERF_COUNT_HW_BUS_CYCLES},
+    {.type = VIR_PERF_EVENT_STALLED_CYCLES_FRONTEND,
+     .attrType = PERF_TYPE_HARDWARE,
+     .attrConfig = PERF_COUNT_HW_STALLED_CYCLES_FRONTEND},
 };
 typedef struct virPerfEventAttr *virPerfEventAttrPtr;
 

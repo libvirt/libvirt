@@ -11236,6 +11236,11 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                            long. It is produced by branch_misses perf event.
  *     "perf.bus_cycles" - The count of bus cycles as unsigned long
  *                         long. It is produced by bus_cycles perf event.
+ *     "perf.stalled_cycles_frontend" - The count of stalled cpu cycles in the
+ *                                      frontend of the instruction processor
+ *                                      pipeline as unsigned long long. It is
+ *                                      produced by stalled_cycles_frontend
+ *                                      perf event.
  *
  * Note that entire stats groups or individual stat fields may be missing from
  * the output in case they are not supported by the given hypervisor, are not

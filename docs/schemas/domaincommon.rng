@@ -430,6 +430,7 @@
               <value>branch_instructions</value>
               <value>branch_misses</value>
               <value>bus_cycles</value>
+              <value>stalled_cycles_frontend</value>
             </choice>
           </attribute>
           <attribute name="enabled">

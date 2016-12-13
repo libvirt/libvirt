@@ -948,7 +948,8 @@ I<--perf> returns the statistics of all enabled perf events:
 "perf.cache_misses" - the count of caches misses,
 "perf.branch_instructions" - the count of branch instructions,
 "perf.branch_misses" - the count of branch misses,
-"perf.bus_cycles" - the count of bus cycles
+"perf.bus_cycles" - the count of bus cycles,
+"perf.stalled_cycles_frontend" - the count of stalled frontend cpu cycles
 
 See the B<perf> command for more details about each event.
 
@@ -2302,6 +2303,10 @@ B<Valid perf event names>
                      by applications running on the platform.
   bus_cycles       - Provides the count of bus cycles executed
                      by applications running on the platform.
+  stalled_cycles_frontend - Provides the count of stalled cpu
+                            cycles in the frontend of the
+                            instruction processor pipeline by
+                            applications running on the platform.
 
 B<Note>: The statistics can be retrieved using the B<domstats> command using
 the I<--perf> flag.

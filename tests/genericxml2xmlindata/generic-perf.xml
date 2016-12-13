@@ -23,6 +23,7 @@
     <event name='branch_instructions' enabled='yes'/>
     <event name='branch_misses' enabled='yes'/>
     <event name='bus_cycles' enabled='yes'/>
+    <event name='stalled_cycles_frontend' enabled='yes'/>
   </perf>
   <devices>
   </devices>
