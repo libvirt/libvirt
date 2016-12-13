@@ -1669,6 +1669,12 @@ virStorageVolDefFormat(virStoragePoolDefPtr pool,
                       def->target.capacity);
     virBufferAsprintf(&buf, "<allocation unit='bytes'>%llu</allocation>\n",
                       def->target.allocation);
+    /* NB: Display only - since virStorageVolInfo is limited to just
+     * 'capacity' and 'allocation' on output. Since we don't read this
+     * in, be sure it was filled in before printing */
+    if (def->target.physical)
+        virBufferAsprintf(&buf, "<physical unit='bytes'>%llu</physical>\n",
+                          def->target.physical);
 
     if (virStorageVolTargetDefFormat(options, &buf,
                                      &def->target, "target") < 0)
