@@ -2177,6 +2177,17 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_STALLED_CYCLES_BACKEND "stalled_cycles_backend"
 
+/**
+ * VIR_PERF_PARAM_REF_CPU_CYCLES:
+ *
+ * Macro for typed parameter name that represents ref_cpu_cycles
+ * perf event which can be used to measure the count of total cpu
+ * cycles not affected by CPU frequency scaling by applications
+ * running on the platform. It corresponds to the
+ * "perf.ref_cpu_cycles" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_REF_CPU_CYCLES "ref_cpu_cycles"
+
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
                            int *nparams,

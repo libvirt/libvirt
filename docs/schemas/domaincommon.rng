@@ -432,6 +432,7 @@
               <value>bus_cycles</value>
               <value>stalled_cycles_frontend</value>
               <value>stalled_cycles_backend</value>
+              <value>ref_cpu_cycles</value>
             </choice>
           </attribute>
           <attribute name="enabled">
