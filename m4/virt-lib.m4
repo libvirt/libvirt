@@ -481,3 +481,41 @@ AC_DEFUN([LIBVIRT_ARG_WITH_ALT], [
   m4_popdef([help_desc])
   m4_popdef([check_name])
 ])
+
+dnl
+dnl To be used instead of AC_ARG_ENABLE
+dnl
+dnl LIBVIRT_ARG_ENABLE([CHECK_NAME], [HELP_DESC], [DEFAULT_ACTION])
+dnl
+dnl      CHECK_NAME: Suffix/prefix used for variables/flags, in uppercase.
+dnl       HELP_DESC: Description that will appear in configure --help
+dnl  DEFAULT_ACTION: Default configure action
+dnl
+dnl LIBVIRT_ARG_ENABLE([DEBUG], [enable debugging output], [yes])
+dnl
+AC_DEFUN([LIBVIRT_ARG_ENABLE], [
+  m4_pushdef([check_name], [$1])
+  m4_pushdef([help_desc], [[$2]])
+  m4_pushdef([default_action], [$3])
+
+  m4_pushdef([check_name_lc], m4_tolower(check_name))
+  m4_pushdef([check_name_dash], m4_translit(check_name_lc, [_], [-]))
+
+  m4_pushdef([arg_var], [enable-]check_name_dash)
+  m4_pushdef([enable_var], [enable_]check_name_lc)
+
+  m4_divert_text([DEFAULTS], [enable_var][[=]][default_action])
+  AC_ARG_ENABLE([check_name_dash],
+                [AS_HELP_STRING([[--]arg_var],
+                                ]m4_dquote(help_desc)[[ @<:@default=]]m4_dquote(default_action)[[@:>@])])
+
+  m4_popdef([enable_var])
+  m4_popdef([arg_var])
+
+  m4_popdef([check_name_dash])
+  m4_popdef([check_name_lc])
+
+  m4_popdef([default_action])
+  m4_popdef([help_desc])
+  m4_popdef([check_name])
+])
