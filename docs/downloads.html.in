@@ -57,6 +57,21 @@
           </td>
         </tr>
         <tr>
+          <td>Go</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/go/">ftp</a>
+            <a href="http://libvirt.org/sources/go/">http</a>
+            <a href="https://libvirt.org/sources/go/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-go.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-go">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-go">github</a>
+          </td>
+        </tr>
+        <tr>
           <td>Java</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/java/">ftp</a>
