@@ -407,80 +407,13 @@ AM_CONDITIONAL([HAVE_LIBTASN1], [test "x$ac_cv_header_libtasn1_h" = "xyes"])
 
 AC_CHECK_LIB([intl],[gettext],[])
 
-dnl Do we have rpcgen?
-AC_PATH_PROGS([RPCGEN], [rpcgen portable-rpcgen], [no])
-AM_CONDITIONAL([HAVE_RPCGEN], [test "x$ac_cv_path_RPCGEN" != "xno"])
 
-dnl Miscellaneous external programs.
-AC_PATH_PROG([XMLLINT], [xmllint], [/usr/bin/xmllint])
-AC_PATH_PROG([XMLCATALOG], [xmlcatalog], [/usr/bin/xmlcatalog])
-AC_PATH_PROG([XSLTPROC], [xsltproc], [/usr/bin/xsltproc])
-AC_PATH_PROG([AUGPARSE], [augparse], [/usr/bin/augparse])
-AC_PROG_MKDIR_P
-AC_PROG_LN_S
+dnl
+dnl Check for external programs
+dnl
 
-dnl External programs that we can use if they are available.
-dnl We will hard-code paths to these programs unless we cannot
-dnl detect them, in which case we'll search for the program
-dnl along the $PATH at runtime and fail if it's not there.
-AC_PATH_PROG([DMIDECODE], [dmidecode], [dmidecode],
-	[$LIBVIRT_SBIN_PATH])
-AC_PATH_PROG([DNSMASQ], [dnsmasq], [dnsmasq],
-	[$LIBVIRT_SBIN_PATH])
-AC_PATH_PROG([RADVD], [radvd], [radvd],
-	[$LIBVIRT_SBIN_PATH])
-AC_PATH_PROG([TC], [tc], [tc],
-	[$LIBVIRT_SBIN_PATH])
-AC_PATH_PROG([UDEVADM], [udevadm], [],
-	[$LIBVIRT_SBIN_PATH])
-AC_PATH_PROG([UDEVSETTLE], [udevsettle], [],
-	[$LIBVIRT_SBIN_PATH])
-AC_PATH_PROG([MODPROBE], [modprobe], [modprobe],
-	[$LIBVIRT_SBIN_PATH])
-AC_PATH_PROG([RMMOD], [rmmod], [rmmod],
-	[$LIBVIRT_SBIN_PATH])
-AC_PATH_PROG([MMCTL], [mm-ctl], [mm-ctl],
-	[$LIBVIRT_SBIN_PATH])
-AC_PATH_PROG([OVSVSCTL], [ovs-vsctl], [ovs-vsctl],
-	[$LIBVIRT_SBIN_PATH])
-AC_PATH_PROG([SCRUB], [scrub], [scrub],
-	[$LIBVIRT_SBIN_PATH])
-AC_PATH_PROG([ADDR2LINE], [addr2line], [addr2line],
-	[$LIBVIRT_SBIN_PATH])
+LIBVIRT_CHECK_EXTERNAL_PROGRAMS
 
-AC_DEFINE_UNQUOTED([DMIDECODE],["$DMIDECODE"],
-        [Location or name of the dmidecode program])
-AC_DEFINE_UNQUOTED([DNSMASQ],["$DNSMASQ"],
-        [Location or name of the dnsmasq program])
-AC_DEFINE_UNQUOTED([RADVD],["$RADVD"],
-        [Location or name of the radvd program])
-AC_DEFINE_UNQUOTED([TC],["$TC"],
-        [Location or name of the tc program (see iproute2)])
-AC_DEFINE_UNQUOTED([MMCTL],["$MMCTL"],
-        [Location or name of the mm-ctl program])
-AC_DEFINE_UNQUOTED([OVSVSCTL],["$OVSVSCTL"],
-        [Location or name of the ovs-vsctl program])
-
-if test -n "$UDEVADM"; then
-  AC_DEFINE_UNQUOTED([UDEVADM],["$UDEVADM"],
-        [Location or name of the udevadm program])
-fi
-if test -n "$UDEVSETTLE"; then
-  AC_DEFINE_UNQUOTED([UDEVSETTLE],["$UDEVSETTLE"],
-        [Location or name of the udevsettle program])
-fi
-if test -n "$MODPROBE"; then
-  AC_DEFINE_UNQUOTED([MODPROBE],["$MODPROBE"],
-        [Location or name of the modprobe program])
-fi
-if test -n "$RMMOD"; then
-  AC_DEFINE_UNQUOTED([RMMOD],["$RMMOD"],
-        [Location or name of the rmmod program])
-fi
-AC_DEFINE_UNQUOTED([SCRUB],["$SCRUB"],
-        [Location or name of the scrub program (for wiping algorithms)])
-AC_DEFINE_UNQUOTED([ADDR2LINE],["$ADDR2LINE"],
-        [Location of addr2line program])
 
 dnl Specific dir for HTML output ?
 AC_ARG_WITH([html-dir], [AS_HELP_STRING([--with-html-dir=path],
@@ -626,18 +559,6 @@ then
 fi
 AM_CONDITIONAL([WITH_SYSCTL], test "$with_sysctl" = "yes")
 AC_MSG_RESULT($with_sysctl)
-
-AC_PATH_PROG([IP_PATH], [ip], /sbin/ip, [$LIBVIRT_SBIN_PATH])
-AC_DEFINE_UNQUOTED([IP_PATH], "$IP_PATH", [path to ip binary])
-
-AC_PATH_PROG([IPTABLES_PATH], [iptables], /sbin/iptables, [$LIBVIRT_SBIN_PATH])
-AC_DEFINE_UNQUOTED([IPTABLES_PATH], "$IPTABLES_PATH", [path to iptables binary])
-
-AC_PATH_PROG([IP6TABLES_PATH], [ip6tables], /sbin/ip6tables, [$LIBVIRT_SBIN_PATH])
-AC_DEFINE_UNQUOTED([IP6TABLES_PATH], "$IP6TABLES_PATH", [path to ip6tables binary])
-
-AC_PATH_PROG([EBTABLES_PATH], [ebtables], /sbin/ebtables, [$LIBVIRT_SBIN_PATH])
-AC_DEFINE_UNQUOTED([EBTABLES_PATH], "$EBTABLES_PATH", [path to ebtables binary])
 
 
 dnl
