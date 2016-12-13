@@ -7,15 +7,15 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dnl More compiler warnings
     dnl ******************************
 
-    AC_ARG_ENABLE([werror],
-                  AS_HELP_STRING([--enable-werror], [Use -Werror (if supported)]),
-                  [set_werror="$enableval"],
-                  [if test -d $srcdir/.git; then
-                     is_git_version=true
-                     set_werror=yes
-                   else
-                     set_werror=no
-                   fi])
+    LIBVIRT_ARG_ENABLE([WERROR], [Use -Werror (if supported)], [check])
+    if test "$enable_werror" = "check"; then
+        if test -d $srcdir/.git; then
+            is_git_version=true
+            enable_werror=yes
+        else
+            enable_werror=no
+        fi
+    fi
 
     # List of warnings that are not relevant / wanted
 
@@ -208,7 +208,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     wantwarn="$wantwarn -Wno-suggest-attribute=pure"
     wantwarn="$wantwarn -Wno-suggest-attribute=const"
 
-    if test "$set_werror" = "yes"
+    if test "$enable_werror" = "yes"
     then
       wantwarn="$wantwarn -Werror"
     fi

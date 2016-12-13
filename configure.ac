@@ -469,10 +469,7 @@ STATIC_BINARIES=
 AC_SUBST([STATIC_BINARIES])
 
 dnl --enable-debug=(yes|no)
-AC_ARG_ENABLE([debug],
-              [AS_HELP_STRING([--enable-debug=@<:@no|yes@:>@],
-                             [enable debugging output @<:@default=yes@:>@])],
-  [],[enable_debug=yes])
+LIBVIRT_ARG_ENABLE([DEBUG], [enable debugging output], [yes])
 AM_CONDITIONAL([ENABLE_DEBUG], test x"$enable_debug" = x"yes")
 if test x"$enable_debug" = x"yes"; then
    AC_DEFINE([ENABLE_DEBUG], [], [whether debugging is enabled])
@@ -1806,18 +1803,18 @@ fi
 AC_MSG_RESULT([$with_test_suite])
 AM_CONDITIONAL([WITH_TESTS], [test "$with_test_suite" = "yes"])
 
-AC_ARG_ENABLE([expensive-tests],
-  [AS_HELP_STRING([--enable-expensive-tests],
-    [set the default for enabling expensive tests (gnulib and long timeouts) ]
-    [@<:@default=check@:>@; use VIR_TEST_EXPENSIVE to override during make])],
-  [case $enableval in
-    0|no) VIR_TEST_EXPENSIVE_DEFAULT=0 ;;
-    1|yes) VIR_TEST_EXPENSIVE_DEFAULT=1 ;;
-    check) ;;
-    *) AC_MSG_ERROR([bad value ${enableval} for enable-expensive-tests option])
-      ;;
-  esac], [enableval=check])
-if test "$enableval" = check; then
+LIBVIRT_ARG_ENABLE([EXPENSIVE_TESTS],
+                   [set the default for enabling expensive tests ]
+                     [(gnulib and long timeouts), use VIR_TEST_EXPENSIVE to ]
+                     [override during make],
+                   [check])
+case "$enable_expensive_tests" in
+  0|no) VIR_TEST_EXPENSIVE_DEFAULT=0 ;;
+  1|yes) VIR_TEST_EXPENSIVE_DEFAULT=1 ;;
+  check) ;;
+  *) AC_MSG_ERROR([bad value ${enable_expensive_tests} for enable-expensive-tests option]) ;;
+esac
+if test "$enable_expensive_tests" = check; then
   if test -d $srcdir/.git ; then
     VIR_TEST_EXPENSIVE_DEFAULT=0
   else
@@ -1827,17 +1824,13 @@ fi
 AC_SUBST([VIR_TEST_EXPENSIVE_DEFAULT])
 AM_CONDITIONAL([WITH_EXPENSIVE_TESTS], [test $VIR_TEST_EXPENSIVE_DEFAULT = 1])
 
-AC_ARG_ENABLE([test-coverage],
-  [AS_HELP_STRING([--enable-test-coverage],
-    [turn on code coverage instrumentation @<:@default=no@:>@])],
-[case "${enableval}" in
-   yes|no) ;;
-   *)      AC_MSG_ERROR([bad value ${enableval} for test-coverage option]) ;;
- esac],
-              [enableval=no])
-enable_coverage=$enableval
+LIBVIRT_ARG_ENABLE([TEST_COVERAGE], [turn on code coverage instrumentation], [no])
+case "$enable_test_coverage" in
+  yes|no) ;;
+  *) AC_MSG_ERROR([bad value ${enable_test_coverga} for test-coverage option]) ;;
+esac
 
-if test "${enable_coverage}" = yes; then
+if test "$enable_test_coverage" = yes; then
   save_WARN_CFLAGS=$WARN_CFLAGS
   WARN_CFLAGS=
   gl_WARN_ADD([-fprofile-arcs])
@@ -1848,17 +1841,13 @@ if test "${enable_coverage}" = yes; then
   WARN_CFLAGS=$save_WARN_CFLAGS
 fi
 
-AC_ARG_ENABLE([test-oom],
-  [AS_HELP_STRING([--enable-test-oom],
-    [memory allocation failure checking @<:@default=no@:>@])],
-[case "${enableval}" in
-   yes|no) ;;
-   *)      AC_MSG_ERROR([bad value ${enableval} for test-oom option]) ;;
- esac],
-              [enableval=no])
-enable_oom=$enableval
+LIBVIRT_ARG_ENABLE([TEST_OOM], [memory allocation failure checking], [no])
+case "$enable_test_oom" in
+  yes|no) ;;
+  *) AC_MSG_ERROR([bad value ${enable_test_oom} for test-oom option]) ;;
+esac
 
-if test "${enable_oom}" = yes; then
+if test "$enable_test_oom" = yes; then
   have_trace=yes
   AC_CHECK_HEADER([execinfo.h],[],[have_trace=no])
   AC_CHECK_FUNC([backtrace],[],[have_trace=no])
@@ -1868,22 +1857,17 @@ if test "${enable_oom}" = yes; then
   AC_DEFINE([TEST_OOM], 1, [Whether malloc OOM checking is enabled])
 fi
 
+LIBVIRT_ARG_ENABLE([TEST_LOCKING], [thread locking tests using CIL], [no])
+case "$enable_test_locking" in
+  yes|no) ;;
+  *) AC_MSG_ERROR([bad value ${enable_test_locking} for test-locking option]) ;;
+esac
 
-AC_ARG_ENABLE([test-locking],
-  [AS_HELP_STRING([--enable-test-locking],
-    [thread locking tests using CIL @<:@default=no@:>@])],
-[case "${enableval}" in
-   yes|no) ;;
-   *)      AC_MSG_ERROR([bad value ${enableval} for test-locking option]) ;;
- esac],
-              [enableval=no])
-enable_locking=$enableval
-
-if test "$enable_locking" = "yes"; then
+if test "$enable_test_locking" = "yes"; then
   LOCK_CHECKING_CFLAGS="-save-temps"
   AC_SUBST([LOCK_CHECKING_CFLAGS])
 fi
-AM_CONDITIONAL([WITH_CIL],[test "$enable_locking" = "yes"])
+AM_CONDITIONAL([WITH_CIL],[test "$enable_test_locking" = "yes"])
 
 dnl Enable building libvirtd?
 AM_CONDITIONAL([WITH_LIBVIRTD],[test "x$with_libvirtd" = "xyes"])
@@ -2514,7 +2498,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([             Debug: $enable_debug])
-AC_MSG_NOTICE([       Use -Werror: $set_werror])
+AC_MSG_NOTICE([       Use -Werror: $enable_werror])
 AC_MSG_NOTICE([     Warning Flags: $WARN_CFLAGS])
 AC_MSG_NOTICE([            DTrace: $with_dtrace])
 AC_MSG_NOTICE([             numad: $with_numad])
