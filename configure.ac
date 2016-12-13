@@ -555,6 +555,10 @@ fi
 AM_CONDITIONAL([WITH_SECRETS], [test "$with_secrets" = "yes"])
 
 
+dnl
+dnl Storage driver checks
+dnl
+
 LIBVIRT_STORAGE_ARG_DIR
 LIBVIRT_STORAGE_ARG_FS
 LIBVIRT_STORAGE_ARG_LVM
@@ -581,24 +585,23 @@ if test "$with_libvirtd" = "no"; then
   with_storage_zfs=no
 fi
 
-LIBVIRT_STORAGE_CHECK_DIR
-
 dnl storage-fs does not work on MacOS X
 
 if test "$with_osx" = "yes"; then
   with_storage_fs=no
 fi
 
+LIBVIRT_STORAGE_CHECK_DIR
 LIBVIRT_STORAGE_CHECK_FS
 LIBVIRT_STORAGE_CHECK_LVM
 LIBVIRT_STORAGE_CHECK_ISCSI
 LIBVIRT_STORAGE_CHECK_SCSI
 LIBVIRT_STORAGE_CHECK_MPATH
+LIBVIRT_STORAGE_CHECK_DISK
 LIBVIRT_STORAGE_CHECK_RBD
 LIBVIRT_STORAGE_CHECK_SHEEPDOG
 LIBVIRT_STORAGE_CHECK_GLUSTER
 LIBVIRT_STORAGE_CHECK_ZFS
-
 
 if test "$with_storage_fs" = "yes" ||
    test "$with_storage_gluster" = "yes"; then
@@ -608,8 +611,6 @@ if test "$with_storage_fs" = "yes" ||
         [Location or name of the gluster command line tool])
   fi
 fi
-
-LIBVIRT_STORAGE_CHECK_DISK
 
 with_storage=no
 for backend in dir fs lvm iscsi scsi mpath rbd disk; do
