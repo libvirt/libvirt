@@ -420,10 +420,7 @@ LIBVIRT_ARG_WITH([TEST], [test driver], [yes])
 LIBVIRT_ARG_WITH([REMOTE], [remote driver], [yes])
 LIBVIRT_ARG_WITH([LIBVIRTD], [libvirtd], [yes])
 
-LIBVIRT_ARG_WITH_ALT([CHRDEV_LOCK_FILES],
-                     [location for UUCP style lock files for character devices ]
-                       [(use auto for default paths on some platforms)],
-                     [auto])
+LIBVIRT_ARG_CHRDEV_LOCK_FILES
 
 dnl
 dnl in case someone want to build static binaries
@@ -861,27 +858,7 @@ AC_DEFINE_UNQUOTED([TLS_PRIORITY], ["$with_tls_priority"],
 		   [TLS default priority string])
 
 
-dnl UUCP style file locks for character devices
-if test "$with_chrdev_lock_files" != "no"; then
-  case $with_chrdev_lock_files in
-  yes | auto)
-    dnl Default locations for platforms, or disable if unknown
-    if test "$with_linux" = "yes"; then
-      with_chrdev_lock_files=/var/lock
-    elif test "$with_chrdev_lock_files" = "auto"; then
-      with_chrdev_lock_files=no
-    fi ;;
-  esac
-  if test "$with_chrdev_lock_files" = "yes"; then
-    AC_MSG_ERROR([You must specify path for the lock files on this
-platform])
-  fi
-  if test "$with_chrdev_lock_files" != "no"; then
-    AC_DEFINE_UNQUOTED([VIR_CHRDEV_LOCK_FILE_PATH], "$with_chrdev_lock_files",
-                       [path to directory containing UUCP device lock files])
-  fi
-fi
-AM_CONDITIONAL([VIR_CHRDEV_LOCK_FILE_PATH], [test "$with_chrdev_lock_files" != "no"])
+LIBVIRT_CHECK_CHRDEV_LOCK_FILES
 
 
 LIBVIRT_ARG_WITH_ALT([SECDRIVER_SELINUX], [use SELinux security driver], [check])
@@ -1875,7 +1852,7 @@ LIBVIRT_RESULT_DTRACE
 LIBVIRT_RESULT_NUMAD
 AC_MSG_NOTICE([       XML Catalog: $with_xml_catalog_file])
 LIBVIRT_RESULT_INIT_SCRIPT
-AC_MSG_NOTICE([ Char device locks: $with_chrdev_lock_files])
+LIBVIRT_RESULT_CHRDEV_LOCK_FILES
 AC_MSG_NOTICE([    Default Editor: $with_default_editor])
 AC_MSG_NOTICE([      Loader/NVRAM: $with_loader_nvram])
 LIBVIRT_RESULT_LOGIN_SHELL
