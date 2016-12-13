@@ -43,6 +43,9 @@ typedef enum {
     VIR_PERF_EVENT_STALLED_CYCLES_FRONTEND, /* Count of stalled cpu cycles in
                                                the frontend of the instruction
                                                processor pipeline */
+    VIR_PERF_EVENT_STALLED_CYCLES_BACKEND, /* Count of stalled cpu cycles in
+                                              the backend of the instruction
+                                              processor pipeline */
 
     VIR_PERF_EVENT_LAST
 } virPerfEventType;

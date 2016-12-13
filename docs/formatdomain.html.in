@@ -1931,6 +1931,7 @@
   &lt;event name='branch_misses' enabled='no'/&gt;
   &lt;event name='bus_cycles' enabled='no'/&gt;
   &lt;event name='stalled_cycles_frontend' enabled='no'/&gt;
+  &lt;event name='stalled_cycles_backend' enabled='no'/&gt;
 &lt;/perf&gt;
 ...
 </pre>
@@ -1996,6 +1997,12 @@
       <td>the count of stalled cpu cycles in the frontend of the instruction
           processor pipeline by applications running on the platform</td>
       <td><code>perf.stalled_cycles_frontend</code></td>
+    </tr>
+    <tr>
+      <td><code>stalled_cycles_backend</code></td>
+      <td>the count of stalled cpu cycles in the backend of the instruction
+          processor pipeline by applications running on the platform</td>
+      <td><code>perf.stalled_cycles_backend</code></td>
     </tr>
   </table>
 

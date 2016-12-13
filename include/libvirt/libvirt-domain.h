@@ -2166,6 +2166,17 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_STALLED_CYCLES_FRONTEND "stalled_cycles_frontend"
 
+/**
+ * VIR_PERF_PARAM_STALLED_CYCLES_BACKEND:
+ *
+ * Macro for typed parameter name that represents stalled_cycles_backend
+ * perf event which can be used to measure the count of stalled cpu cycles
+ * in the backend of the instruction processor pipeline by application
+ * running on the platform. It corresponds to the
+ * "perf.stalled_cycles_backend" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_STALLED_CYCLES_BACKEND "stalled_cycles_backend"
+
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
                            int *nparams,
