@@ -427,11 +427,8 @@ STATIC_BINARIES=
 AC_SUBST([STATIC_BINARIES])
 
 dnl --enable-debug=(yes|no)
-LIBVIRT_ARG_ENABLE([DEBUG], [enable debugging output], [yes])
-AM_CONDITIONAL([ENABLE_DEBUG], test x"$enable_debug" = x"yes")
-if test x"$enable_debug" = x"yes"; then
-   AC_DEFINE([ENABLE_DEBUG], [], [whether debugging is enabled])
-fi
+LIBVIRT_ARG_DEBUG
+LIBVIRT_CHECK_DEBUG
 
 LIBVIRT_ARG_INIT_SCRIPT
 LIBVIRT_CHECK_INIT_SCRIPT
@@ -1827,7 +1824,7 @@ AC_MSG_NOTICE([        Alloc OOM: $enable_oom])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])
-AC_MSG_NOTICE([             Debug: $enable_debug])
+LIBVIRT_RESULT_DEBUG
 AC_MSG_NOTICE([       Use -Werror: $enable_werror])
 AC_MSG_NOTICE([     Warning Flags: $WARN_CFLAGS])
 LIBVIRT_RESULT_DTRACE
