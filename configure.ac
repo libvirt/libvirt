@@ -1800,42 +1800,8 @@ LIBVIRT_ARG_MACVTAP
 LIBVIRT_CHECK_MACVTAP
 
 
-LIBVIRT_ARG_WITH_ALT([VIRTUALPORT], [enable virtual port support], [check])
-
-dnl Warn the user and error out if they requested virtualport support with configure
-dnl options, but the required macvtap support isn't available
-
-if test "$with_virtualport" = "yes"; then
-    if test "$with_macvtap" = "no"; then
-        AC_MSG_ERROR([--with-virtualport requires --with-macvtap])
-    fi
-fi
-
-dnl virtualport checks
-
-if test "$with_macvtap" != "yes"; then
-    with_virtualport=no
-fi
-if test "$with_virtualport" != "no"; then
-    AC_MSG_CHECKING([whether to compile with virtual port support])
-    AC_TRY_COMPILE([ #include <sys/socket.h>
-                     #include <linux/rtnetlink.h> ],
-                     [ int x = IFLA_PORT_MAX; ],
-                     [ with_virtualport=yes ],
-                     [ if test "$with_virtualport" = "yes" ; then
-                         AC_MSG_ERROR([Installed linux headers don't show support for virtual port support.])
-                       fi
-                       with_virtualport=no ])
-    if test "$with_virtualport" = "yes"; then
-        val=1
-    else
-        val=0
-    fi
-    AC_DEFINE_UNQUOTED([WITH_VIRTUALPORT], $val,
-                       [whether vsi vepa support is enabled])
-    AC_MSG_RESULT([$with_virtualport])
-fi
-AM_CONDITIONAL([WITH_VIRTUALPORT], [test "$with_virtualport" = "yes"])
+LIBVIRT_ARG_VIRTUALPORT
+LIBVIRT_CHECK_VIRTUALPORT
 
 dnl GET_VLAN_VID_CMD is required for virNetDevGetVLanID
 AC_CHECK_DECLS([GET_VLAN_VID_CMD], [], [], [[#include <linux/if_vlan.h>]])
@@ -2060,7 +2026,6 @@ AC_MSG_NOTICE([   Remote: $with_remote])
 AC_MSG_NOTICE([  Network: $with_network])
 AC_MSG_NOTICE([ Libvirtd: $with_libvirtd])
 AC_MSG_NOTICE([Interface: $with_interface])
-AC_MSG_NOTICE([ virtport: $with_virtualport])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Storage Drivers])
 AC_MSG_NOTICE([])
@@ -2118,6 +2083,7 @@ LIBVIRT_RESULT_SASL
 LIBVIRT_RESULT_SELINUX
 LIBVIRT_RESULT_SSH2
 LIBVIRT_RESULT_UDEV
+LIBVIRT_RESULT_VIRTUALPORT
 LIBVIRT_RESULT_XDR
 LIBVIRT_RESULT_YAJL
 if test "$with_xen" = "yes" ; then
