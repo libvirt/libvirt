@@ -850,12 +850,8 @@ dnl Need to test if pkg-config exists
 PKG_PROG_PKG_CONFIG
 
 
-LIBVIRT_ARG_WITH_ALT([TLS_PRIORITY],
-                     [set the default TLS session priority string],
-                     [NORMAL])
-
-AC_DEFINE_UNQUOTED([TLS_PRIORITY], ["$with_tls_priority"],
-		   [TLS default priority string])
+LIBVIRT_ARG_TLS_PRIORITY
+LIBVIRT_CHECK_TLS_PRIORITY
 
 
 LIBVIRT_CHECK_CHRDEV_LOCK_FILES
@@ -1846,7 +1842,7 @@ LIBVIRT_RESULT_DEFAULT_EDITOR
 LIBVIRT_RESULT_LOADER_NVRAM
 LIBVIRT_RESULT_LOGIN_SHELL
 LIBVIRT_RESULT_HOST_VALIDATE
-AC_MSG_NOTICE([      TLS priority: $with_tls_priority])
+LIBVIRT_RESULT_TLS_PRIORITY
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Developer Tools])
 AC_MSG_NOTICE([])
