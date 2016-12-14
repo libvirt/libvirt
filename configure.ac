@@ -2674,8 +2674,8 @@ LIBVIRT_RESULT_INIT_SCRIPT
 AC_MSG_NOTICE([ Char device locks: $with_chrdev_lock_files])
 AC_MSG_NOTICE([    Default Editor: $DEFAULT_EDITOR])
 AC_MSG_NOTICE([      Loader/NVRAM: $with_loader_nvram])
-AC_MSG_NOTICE([  virt-login-shell: $with_login_shell])
-AC_MSG_NOTICE([virt-host-validate: $with_host_validate])
+LIBVIRT_RESULT_LOGIN_SHELL
+LIBVIRT_RESULT_HOST_VALIDATE
 AC_MSG_NOTICE([      TLS priority: $with_tls_priority])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Developer Tools])

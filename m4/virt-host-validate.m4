@@ -38,3 +38,7 @@ AC_DEFUN([LIBVIRT_CHECK_HOST_VALIDATE], [
   fi
   AM_CONDITIONAL([WITH_HOST_VALIDATE], [test "x$with_host_validate" = "xyes"])
 ])
+
+AC_DEFUN([LIBVIRT_RESULT_HOST_VALIDATE], [
+  AC_MSG_NOTICE([virt-host-validate: $with_host_validate])
+])
