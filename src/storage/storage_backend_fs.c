@@ -712,12 +712,15 @@ virStorageBackendMakeFileSystem(virStoragePoolObjPtr pool,
  *
  * Build a directory or FS based storage pool.
  *
- * If no flag is set, it only makes the directory; If
- * VIR_STORAGE_POOL_BUILD_NO_OVERWRITE set, it probes to determine if
- * filesystem already exists on the target device, renurning an error
- * if exists, or using mkfs to format the target device if not; If
- * VIR_STORAGE_POOL_BUILD_OVERWRITE is set, mkfs is always executed,
- * any existed data on the target device is overwritten unconditionally.
+ * If no flag is set, it only makes the directory.
+ *
+ * If VIR_STORAGE_POOL_BUILD_NO_OVERWRITE set, it probes to determine if
+ * any filesystem already exists on the target device, returning an error
+ * if one exists. If no filesystem already exists, use mkfs to format the
+ * target device.
+ *
+ * If VIR_STORAGE_POOL_BUILD_OVERWRITE is set, mkfs is always executed and
+ * any existing data on the target device is overwritten unconditionally.
  *
  * The underlying source device is mounted for FS based pools.
  *

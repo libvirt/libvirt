@@ -48,7 +48,7 @@
     {.name = "no-overwrite",                                      \
      .type = VSH_OT_BOOL,                                         \
      .flags = 0,                                                  \
-     .help = N_("do not overwrite an existing pool of this type") \
+     .help = N_("do not overwrite any existing data")             \
     }                                                             \
 
 #define VIRSH_COMMON_OPT_POOL_OVERWRITE                           \

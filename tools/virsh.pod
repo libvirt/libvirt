@@ -3466,20 +3466,24 @@ Configure whether I<pool> should automatically start at boot.
 Build a given pool.
 
 Options I<--overwrite> and I<--no-overwrite> can only be used for
-B<pool-build> a filesystem or disk pool. For a file system pool if
-neither of them is specified, B<pool-build> makes the directory. If
-I<--no-overwrite> is specified, it probes to determine if a
-filesystem already exists on the target device, returning an error
-if exists, or using mkfs to format the target device if not. If
-I<--overwrite> is specified, mkfs is always executed and any existing
-data on the target device is overwritten unconditionally. For a disk
-pool, if neither of them is specified or I<--no-overwrite> is specified,
-B<pool-build> will use 'parted --print' in order to determine if the
-disk already has a label before attempting to create one. Only if a disk
-does not already have one will a label be created. If I<--overwrite> is
-specified or it's been determined that the disk doesn't already have one,
-'parted mklabel' will be used to create a label of the format specified
-by the pool source format type or "dos" if not specified for the pool.
+B<pool-build> a filesystem or disk pool.
+
+For a file system pool if neither flag is specified, then B<pool-build>
+just makes the target path directory and no attempt to run mkfs on the
+target volume device. If I<--no-overwrite> is specified, it probes to
+determine if a filesystem already exists on the target device, returning
+an error if one exists or using mkfs to format the target device if not.
+If I<--overwrite> is specified, mkfs is always executed and any existing
+data on the target device is overwritten unconditionally.
+
+For a disk pool, if neither of them is specified or I<--no-overwrite>
+is specified, B<pool-build> will use 'parted --print' in order to
+determine if the disk already has a label before attempting to create
+one. Only if a disk does not already have one will a label be created.
+If I<--overwrite> is specified or it's been determined that the disk
+doesn't already have one, 'parted mklabel' will be used to create a
+label of the format specified by the pool source format type or "dos"
+if not specified for the pool.
 
 =item B<pool-create> I<file>
 [I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]]
