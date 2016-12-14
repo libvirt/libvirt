@@ -14472,8 +14472,6 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PMSUSPENDED) {
         pmsuspended = true;
     } else if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-        resume = true;
-
         /* For external checkpoints (those with memory), the guest
          * must pause (either by libvirt up front, or by qemu after
          * _LIVE converges).  For disk-only snapshots with multiple
@@ -14496,6 +14494,8 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
                                _("guest unexpectedly quit"));
                 goto cleanup;
             }
+
+            resume = true;
         }
     }
 
