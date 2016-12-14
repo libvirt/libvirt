@@ -774,17 +774,6 @@ qemuProcessHandleResume(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                          VIR_DOMAIN_EVENT_RESUMED,
                                          VIR_DOMAIN_EVENT_RESUMED_UNPAUSED);
 
-        VIR_DEBUG("Using lock state '%s' on resume event", NULLSTR(priv->lockState));
-        if (virDomainLockProcessResume(driver->lockManager, cfg->uri,
-                                       vm, priv->lockState) < 0) {
-            /* Don't free priv->lockState on error, because we need
-             * to make sure we have state still present if the user
-             * tries to resume again
-             */
-            goto unlock;
-        }
-        VIR_FREE(priv->lockState);
-
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
             VIR_WARN("Unable to save status on vm %s after state change",
                      vm->def->name);
