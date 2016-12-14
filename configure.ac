@@ -395,7 +395,10 @@ if test "$prefix" = "/usr" && test "$sysconfdir" = '${prefix}/etc' ; then
     sysconfdir='/etc'
 fi
 
-dnl Allow to build without Xen, QEMU/KVM, test or remote driver
+dnl
+dnl Virtualization drivers check
+dnl
+
 LIBVIRT_DRIVER_ARG_XEN
 LIBVIRT_DRIVER_ARG_QEMU
 LIBVIRT_DRIVER_ARG_OPENVZ
@@ -405,11 +408,39 @@ LIBVIRT_DRIVER_ARG_XENAPI
 LIBVIRT_DRIVER_ARG_LIBXL
 LIBVIRT_DRIVER_ARG_VBOX
 LIBVIRT_DRIVER_ARG_LXC
+LIBVIRT_DRIVER_ARG_VZ
+LIBVIRT_DRIVER_ARG_BHYVE
+LIBVIRT_DRIVER_ARG_UML
 LIBVIRT_DRIVER_ARG_ESX
 LIBVIRT_DRIVER_ARG_HYPERV
 LIBVIRT_DRIVER_ARG_TEST
 LIBVIRT_DRIVER_ARG_REMOTE
 LIBVIRT_DRIVER_ARG_LIBVIRTD
+LIBVIRT_DRIVER_ARG_NETWORK
+LIBVIRT_DRIVER_ARG_INTERFACE
+
+LIBVIRT_DRIVER_CHECK_XEN
+LIBVIRT_DRIVER_CHECK_QEMU
+LIBVIRT_DRIVER_CHECK_OPENVZ
+LIBVIRT_DRIVER_CHECK_VMWARE
+LIBVIRT_DRIVER_CHECK_PHYP
+LIBVIRT_DRIVER_CHECK_XENAPI
+LIBVIRT_DRIVER_CHECK_LIBXL
+LIBVIRT_DRIVER_CHECK_VBOX
+LIBVIRT_DRIVER_CHECK_LXC
+LIBVIRT_DRIVER_CHECK_VZ
+LIBVIRT_DRIVER_CHECK_BHYVE
+LIBVIRT_DRIVER_CHECK_UML
+LIBVIRT_DRIVER_CHECK_ESX
+LIBVIRT_DRIVER_CHECK_HYPERV
+LIBVIRT_DRIVER_CHECK_TEST
+LIBVIRT_DRIVER_CHECK_REMOTE
+LIBVIRT_DRIVER_CHECK_LIBVIRTD
+LIBVIRT_DRIVER_CHECK_NETWORK
+LIBVIRT_DRIVER_CHECK_INTERFACE
+
+AM_CONDITIONAL([WITH_XENCONFIG], [test "$with_libxl" = "yes" || test "$with_xen" = "yes"])
+
 
 dnl
 dnl in case someone want to build static binaries
@@ -450,43 +481,15 @@ LIBVIRT_CHECK_TLS_PRIORITY
 LIBVIRT_CHECK_SYSCTL_CONFIG
 
 
-LIBVIRT_DRIVER_CHECK_OPENVZ
-LIBVIRT_DRIVER_CHECK_VMWARE
 
-
-LIBVIRT_DRIVER_CHECK_VBOX
-LIBVIRT_DRIVER_CHECK_QEMU
-LIBVIRT_DRIVER_CHECK_TEST
-LIBVIRT_DRIVER_CHECK_REMOTE
-LIBVIRT_DRIVER_CHECK_LIBVIRTD
-LIBVIRT_DRIVER_CHECK_XENAPI
-LIBVIRT_DRIVER_CHECK_LIBXL
-LIBVIRT_DRIVER_CHECK_XEN
-
-AM_CONDITIONAL([WITH_XENCONFIG], [test "$with_libxl" = "yes" || test "$with_xen" = "yes"])
 
 dnl
 dnl check for kvm headers
 dnl
 AC_CHECK_HEADERS([linux/kvm.h])
 
-LIBVIRT_DRIVER_CHECK_LXC
 
 AM_CONDITIONAL([WITH_SETUID_RPC_CLIENT], [test "$with_lxc$with_login_shell" != "nono"])
-
-dnl
-dnl Checks for the Parallels driver
-dnl
-
-LIBVIRT_DRIVER_ARG_VZ
-LIBVIRT_DRIVER_CHECK_VZ
-
-dnl
-dnl Checks for bhyve driver
-dnl
-
-LIBVIRT_DRIVER_ARG_BHYVE
-LIBVIRT_DRIVER_CHECK_BHYVE
 
 
 dnl
@@ -589,24 +592,6 @@ if test "$with_apparmor" = "no"; then
   with_apparmor_profiles="no"
 fi
 AM_CONDITIONAL([WITH_APPARMOR_PROFILES], [test "$with_apparmor_profiles" != "no"])
-
-dnl
-dnl Checks for the UML driver
-dnl
-
-LIBVIRT_DRIVER_ARG_UML
-LIBVIRT_DRIVER_CHECK_UML
-
-dnl
-dnl check for PHYP
-dnl
-
-LIBVIRT_DRIVER_CHECK_PHYP
-
-dnl check if the network driver should be compiled
-
-LIBVIRT_DRIVER_ARG_NETWORK
-LIBVIRT_DRIVER_CHECK_NETWORK
 
 
 LIBVIRT_ARG_WITH([SECRETS], [local secrets management driver], [yes])
@@ -945,18 +930,6 @@ fi
 AM_CONDITIONAL([WITH_STORAGE], [test "$with_storage" = "yes"])
 
 dnl
-dnl check for (ESX)
-dnl
-
-LIBVIRT_DRIVER_CHECK_ESX
-
-dnl
-dnl check for Hyper-V
-dnl
-
-LIBVIRT_DRIVER_CHECK_HYPERV
-
-dnl
 dnl check for kernel headers required by btrfs ioctl
 dnl
 if test "$with_linux" = "yes"; then
@@ -1109,11 +1082,6 @@ then
   AC_DEFINE_UNQUOTED([WITH_NODE_DEVICES], 1, [with node device driver])
 fi
 AM_CONDITIONAL([WITH_NODE_DEVICES], [test "$with_nodedev" = "yes"])
-
-dnl check if the interface driver should be compiled
-LIBVIRT_DRIVER_ARG_INTERFACE
-LIBVIRT_DRIVER_CHECK_INTERFACE
-
 
 dnl GET_VLAN_VID_CMD is required for virNetDevGetVLanID
 AC_CHECK_DECLS([GET_VLAN_VID_CMD], [], [], [[#include <linux/if_vlan.h>]])
