@@ -601,7 +601,7 @@ int qemuMonitorTextGetVirtType(qemuMonitorPtr mon,
 
 
 static int parseMemoryStat(char **text, unsigned int tag,
-                           const char *search, virDomainMemoryStatPtr stat)
+                           const char *search, virDomainMemoryStatPtr mstat)
 {
     char *dummy;
     unsigned long long value;
@@ -625,8 +625,8 @@ static int parseMemoryStat(char **text, unsigned int tag,
             case VIR_DOMAIN_MEMORY_STAT_AVAILABLE:
                 value >>= 10;
         }
-        stat->tag = tag;
-        stat->val = value;
+        mstat->tag = tag;
+        mstat->val = value;
         return 1;
     }
     return 0;
