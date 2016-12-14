@@ -2990,7 +2990,7 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
 
 static int
 virStorageSourceParseBackingJSONDeflattenWorker(const char *key,
-                                                const virJSONValue *value,
+                                                virJSONValuePtr value,
                                                 void *opaque)
 {
     virJSONValuePtr retobj = opaque;

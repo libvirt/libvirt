@@ -172,10 +172,10 @@ char *virJSONValueToString(virJSONValuePtr object,
                            bool pretty);
 
 typedef int (*virJSONValueObjectIteratorFunc)(const char *key,
-                                              const virJSONValue *value,
+                                              virJSONValuePtr value,
                                               void *opaque);
 
-int virJSONValueObjectForeachKeyValue(const virJSONValue *object,
+int virJSONValueObjectForeachKeyValue(virJSONValuePtr object,
                                       virJSONValueObjectIteratorFunc cb,
                                       void *opaque);
 

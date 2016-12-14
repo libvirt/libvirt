@@ -42,7 +42,7 @@ struct virQEMUCommandLineJSONIteratorData {
 
 static int
 virQEMUBuildCommandLineJSONRecurse(const char *key,
-                                   const virJSONValue *value,
+                                   virJSONValuePtr value,
                                    virBufferPtr buf,
                                    virQEMUBuildCommandLineJSONArrayFormatFunc arrayFunc,
                                    bool nested);
@@ -51,7 +51,7 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
 
 int
 virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
-                                       const virJSONValue *array,
+                                       virJSONValuePtr array,
                                        virBufferPtr buf)
 {
     ssize_t pos = -1;
@@ -81,10 +81,10 @@ virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
 
 int
 virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
-                                         const virJSONValue *array,
+                                         virJSONValuePtr array,
                                          virBufferPtr buf)
 {
-    const virJSONValue *member;
+    virJSONValuePtr member;
     char *prefix = NULL;
     size_t i;
     int ret = 0;
@@ -114,7 +114,7 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
 /* internal iterator to handle nested object formatting */
 static int
 virQEMUBuildCommandLineJSONIterate(const char *key,
-                                   const virJSONValue *value,
+                                   virJSONValuePtr value,
                                    void *opaque)
 {
     struct virQEMUCommandLineJSONIteratorData *data = opaque;
@@ -140,7 +140,7 @@ virQEMUBuildCommandLineJSONIterate(const char *key,
 
 static int
 virQEMUBuildCommandLineJSONRecurse(const char *key,
-                                   const virJSONValue *value,
+                                   virJSONValuePtr value,
                                    virBufferPtr buf,
                                    virQEMUBuildCommandLineJSONArrayFormatFunc arrayFunc,
                                    bool nested)
@@ -225,7 +225,7 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
  * Returns 0 on success -1 on error.
  */
 int
-virQEMUBuildCommandLineJSON(const virJSONValue *value,
+virQEMUBuildCommandLineJSON(virJSONValuePtr value,
                             virBufferPtr buf,
                             virQEMUBuildCommandLineJSONArrayFormatFunc array)
 {
@@ -264,7 +264,7 @@ virQEMUBuildObjectCommandlineFromJSON(const char *type,
 
 
 char *
-virQEMUBuildDriveCommandlineFromJSON(const virJSONValue *srcdef)
+virQEMUBuildDriveCommandlineFromJSON(virJSONValuePtr srcdef)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     char *ret = NULL;

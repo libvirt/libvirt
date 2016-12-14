@@ -30,16 +30,16 @@
 # include "virstorageencryption.h"
 
 typedef int (*virQEMUBuildCommandLineJSONArrayFormatFunc)(const char *key,
-                                                          const virJSONValue *array,
+                                                          virJSONValuePtr array,
                                                           virBufferPtr buf);
 int virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
-                                           const virJSONValue *array,
+                                           virJSONValuePtr array,
                                            virBufferPtr buf);
 int virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
-                                             const virJSONValue *array,
+                                             virJSONValuePtr array,
                                              virBufferPtr buf);
 
-int virQEMUBuildCommandLineJSON(const virJSONValue *value,
+int virQEMUBuildCommandLineJSON(virJSONValuePtr value,
                                 virBufferPtr buf,
                                 virQEMUBuildCommandLineJSONArrayFormatFunc array);
 
@@ -47,7 +47,7 @@ char *virQEMUBuildObjectCommandlineFromJSON(const char *type,
                                             const char *alias,
                                             virJSONValuePtr props);
 
-char *virQEMUBuildDriveCommandlineFromJSON(const virJSONValue *src);
+char *virQEMUBuildDriveCommandlineFromJSON(virJSONValuePtr src);
 
 void virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str);
 void virQEMUBuildLuksOpts(virBufferPtr buf,

@@ -1321,7 +1321,7 @@ virJSONValueObjectIsNull(virJSONValuePtr object,
  * during iteration and -1 on generic errors.
  */
 int
-virJSONValueObjectForeachKeyValue(const virJSONValue *object,
+virJSONValueObjectForeachKeyValue(virJSONValuePtr object,
                                   virJSONValueObjectIteratorFunc cb,
                                   void *opaque)
 {
