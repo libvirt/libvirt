@@ -6866,7 +6866,7 @@ virDomainSendKey(virDomainPtr domain,
  * @domain: pointer to domain object
  * @pid_value: a positive integer process ID, or negative integer process group ID
  * @signum: a signal from the virDomainProcessSignal enum
- * @flags: one of the virDomainProcessSignalFlag values
+ * @flags: currently unused, pass 0
  *
  * Send a signal to the designated process in the guest
  *
