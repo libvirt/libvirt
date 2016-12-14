@@ -780,7 +780,7 @@ virSecuritySELinuxReserveLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecuritySELinuxSecurityDriverProbe(const char *virtDriver)
+virSecuritySELinuxDriverProbe(const char *virtDriver)
 {
     if (is_selinux_enabled() <= 0)
         return SECURITY_DRIVER_DISABLE;
@@ -797,14 +797,14 @@ virSecuritySELinuxSecurityDriverProbe(const char *virtDriver)
 
 
 static int
-virSecuritySELinuxSecurityDriverOpen(virSecurityManagerPtr mgr)
+virSecuritySELinuxDriverOpen(virSecurityManagerPtr mgr)
 {
     return virSecuritySELinuxInitialize(mgr);
 }
 
 
 static int
-virSecuritySELinuxSecurityDriverClose(virSecurityManagerPtr mgr)
+virSecuritySELinuxDriverClose(virSecurityManagerPtr mgr)
 {
     virSecuritySELinuxDataPtr data = virSecurityManagerGetPrivateData(mgr);
 
@@ -828,13 +828,13 @@ virSecuritySELinuxSecurityDriverClose(virSecurityManagerPtr mgr)
 
 
 static const char *
-virSecuritySELinuxSecurityGetModel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecuritySELinuxGetModel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 {
     return SECURITY_SELINUX_NAME;
 }
 
 static const char *
-virSecuritySELinuxSecurityGetDOI(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+virSecuritySELinuxGetDOI(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 {
     /*
      * Where will the DOI come from?  SELinux configuration, or qemu
@@ -2149,8 +2149,8 @@ virSecuritySELinuxRestoreSavedStateLabel(virSecurityManagerPtr mgr,
 
 
 static int
-virSecuritySELinuxSecurityVerify(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
-                                 virDomainDefPtr def)
+virSecuritySELinuxVerify(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                         virDomainDefPtr def)
 {
     virSecurityLabelDefPtr secdef;
 
@@ -2660,14 +2660,14 @@ virSecuritySELinuxDomainSetPathLabel(virSecurityManagerPtr mgr,
 virSecurityDriver virSecurityDriverSELinux = {
     .privateDataLen                     = sizeof(virSecuritySELinuxData),
     .name                               = SECURITY_SELINUX_NAME,
-    .probe                              = virSecuritySELinuxSecurityDriverProbe,
-    .open                               = virSecuritySELinuxSecurityDriverOpen,
-    .close                              = virSecuritySELinuxSecurityDriverClose,
+    .probe                              = virSecuritySELinuxDriverProbe,
+    .open                               = virSecuritySELinuxDriverOpen,
+    .close                              = virSecuritySELinuxDriverClose,
 
-    .getModel                           = virSecuritySELinuxSecurityGetModel,
-    .getDOI                             = virSecuritySELinuxSecurityGetDOI,
+    .getModel                           = virSecuritySELinuxGetModel,
+    .getDOI                             = virSecuritySELinuxGetDOI,
 
-    .domainSecurityVerify               = virSecuritySELinuxSecurityVerify,
+    .domainSecurityVerify               = virSecuritySELinuxVerify,
 
     .domainSetSecurityDiskLabel         = virSecuritySELinuxSetDiskLabel,
     .domainRestoreSecurityDiskLabel     = virSecuritySELinuxRestoreDiskLabel,
