@@ -68,6 +68,137 @@ struct _virSecurityDACCallbackData {
     virSecurityLabelDefPtr secdef;
 };
 
+typedef struct _virSecurityDACChownItem virSecurityDACChownItem;
+typedef virSecurityDACChownItem *virSecurityDACChownItemPtr;
+struct _virSecurityDACChownItem {
+    const char *path;
+    const virStorageSource *src;
+    uid_t uid;
+    gid_t gid;
+};
+
+typedef struct _virSecurityDACChownList virSecurityDACChownList;
+typedef virSecurityDACChownList *virSecurityDACChownListPtr;
+struct _virSecurityDACChownList {
+    virSecurityDACDataPtr priv;
+    virSecurityDACChownItemPtr *items;
+    size_t nItems;
+};
+
+
+virThreadLocal chownList;
+
+static int
+virSecurityDACChownListAppend(virSecurityDACChownListPtr list,
+                              const char *path,
+                              const virStorageSource *src,
+                              uid_t uid,
+                              gid_t gid)
+{
+    virSecurityDACChownItemPtr item;
+
+    if (VIR_ALLOC(item) < 0)
+        return -1;
+
+    item->path = path;
+    item->src = src;
+    item->uid = uid;
+    item->gid = gid;
+
+    if (VIR_APPEND_ELEMENT(list->items, list->nItems, item) < 0) {
+        VIR_FREE(item);
+        return -1;
+    }
+
+    return 0;
+}
+
+static void
+virSecurityDACChownListFree(void *opaque)
+{
+    virSecurityDACChownListPtr list = opaque;
+    size_t i;
+
+    if (!list)
+        return;
+
+    for (i = 0; i < list->nItems; i++)
+        VIR_FREE(list->items[i]);
+    VIR_FREE(list);
+}
+
+
+/**
+ * virSecurityDACTransactionAppend:
+ * @path: Path to chown
+ * @src: disk source to chown
+ * @uid: user ID
+ * @gid: group ID
+ *
+ * Appends an entry onto transaction list.
+ *
+ * Returns: 1 in case of successful append
+ *          0 if there is no transaction enabled
+ *         -1 otherwise.
+ */
+static int
+virSecurityDACTransactionAppend(const char *path,
+                                const virStorageSource *src,
+                                uid_t uid,
+                                gid_t gid)
+{
+    virSecurityDACChownListPtr list = virThreadLocalGet(&chownList);
+    if (!list)
+        return 0;
+
+    if (virSecurityDACChownListAppend(list, path, src, uid, gid) < 0)
+        return -1;
+
+    return 1;
+}
+
+
+static int virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
+                                              const virStorageSource *src,
+                                              const char *path,
+                                              uid_t uid,
+                                              gid_t gid);
+
+/**
+ * virSecurityDACTransactionRun:
+ * @pid: process pid
+ * @opaque: opaque data
+ *
+ * This is the callback that runs in the same namespace as the domain we are
+ * relabelling. For given transaction (@opaque) it relabels all the paths on
+ * the list.
+ *
+ * Returns: 0 on success
+ *         -1 otherwise.
+ */
+static int
+virSecurityDACTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
+                             void *opaque)
+{
+    virSecurityDACChownListPtr list = opaque;
+    size_t i;
+
+    for (i = 0; i < list->nItems; i++) {
+        virSecurityDACChownItemPtr item = list->items[i];
+
+        /* TODO Implement rollback */
+        if (virSecurityDACSetOwnershipInternal(list->priv,
+                                               item->src,
+                                               item->path,
+                                               item->uid,
+                                               item->gid) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 /* returns -1 on error, 0 on success */
 int
 virSecurityDACSetUserAndGroup(virSecurityManagerPtr mgr,
@@ -238,6 +369,13 @@ virSecurityDACProbe(const char *virtDriver ATTRIBUTE_UNUSED)
 static int
 virSecurityDACOpen(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
 {
+    if (virThreadLocalInit(&chownList,
+                           virSecurityDACChownListFree) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to initialize thread local variable"));
+        return -1;
+    }
+
     return 0;
 }
 
@@ -278,6 +416,113 @@ virSecurityDACPreFork(virSecurityManagerPtr mgr)
     return 0;
 }
 
+/**
+ * virSecurityDACTransactionStart:
+ * @mgr: security manager
+ *
+ * Starts a new transaction. In transaction nothing is chown()-ed until
+ * TransactionCommit() is called. This is implemented as a list that is
+ * appended to whenever chown() would be called. Since secdriver APIs
+ * can be called from multiple threads (to work over different domains)
+ * the pointer to the list is stored in thread local variable.
+ *
+ * Returns 0 on success,
+ *        -1 otherwise.
+ */
+static int
+virSecurityDACTransactionStart(virSecurityManagerPtr mgr)
+{
+    virSecurityDACDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityDACChownListPtr list;
+
+    list = virThreadLocalGet(&chownList);
+    if (list) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Another relabel transaction is already started"));
+        return -1;
+    }
+
+    if (VIR_ALLOC(list) < 0)
+        return -1;
+
+    list->priv = priv;
+
+    if (virThreadLocalSet(&chownList, list) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to set thread local variable"));
+        VIR_FREE(list);
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * virSecurityDACTransactionCommit:
+ * @mgr: security manager
+ * @pid: domain's PID
+ *
+ * Enters the @pid namespace (usually @pid refers to a domain) and
+ * performs all the chown()-s on the list. Note that the transaction is
+ * also freed, therefore new one has to be started after successful
+ * return from this function. Also it is considered as error if there's
+ * no transaction set and this function is called.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
+static int
+virSecurityDACTransactionCommit(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                pid_t pid)
+{
+    virSecurityDACChownListPtr list;
+    int ret = -1;
+
+    list = virThreadLocalGet(&chownList);
+    if (!list) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("No transaction is set"));
+        goto cleanup;
+    }
+
+    if (virThreadLocalSet(&chownList, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to clear thread local variable"));
+        goto cleanup;
+    }
+
+    if (virProcessRunInMountNamespace(pid,
+                                      virSecurityDACTransactionRun,
+                                      list) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virSecurityDACChownListFree(list);
+    return ret;
+}
+
+/**
+ * virSecurityDACTransactionAbort:
+ * @mgr: security manager
+ *
+ * Cancels and frees any out standing transaction.
+ */
+static void
+virSecurityDACTransactionAbort(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+{
+    virSecurityDACChownListPtr list;
+
+    list = virThreadLocalGet(&chownList);
+    if (!list)
+        return;
+
+    if (virThreadLocalSet(&chownList, NULL) < 0)
+        VIR_DEBUG("Unable to clear thread local variable");
+    virSecurityDACChownListFree(list);
+}
+
+
 static int
 virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
                                    const virStorageSource *src,
@@ -286,6 +531,14 @@ virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
                                    gid_t gid)
 {
     int rc;
+
+    /* Be aware that this function might run in a separate process.
+     * Therefore, any driver state changes would be thrown away. */
+
+    if ((rc = virSecurityDACTransactionAppend(path, src, uid, gid)) < 0)
+        return -1;
+    else if (rc > 0)
+        return 0;
 
     VIR_INFO("Setting DAC user and group on '%s' to '%ld:%ld'",
              NULLSTR(src ? src->path : path), (long) uid, (long) gid);
@@ -1625,6 +1878,10 @@ virSecurityDriver virSecurityDriverDAC = {
     .getDOI                             = virSecurityDACGetDOI,
 
     .preFork                            = virSecurityDACPreFork,
+
+    .transactionStart                   = virSecurityDACTransactionStart,
+    .transactionCommit                  = virSecurityDACTransactionCommit,
+    .transactionAbort                   = virSecurityDACTransactionAbort,
 
     .domainSecurityVerify               = virSecurityDACVerify,
 
