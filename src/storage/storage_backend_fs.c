@@ -693,7 +693,7 @@ virStorageBackendMakeFileSystem(virStoragePoolObjPtr pool,
     if (flags & VIR_STORAGE_POOL_BUILD_OVERWRITE) {
         ok_to_mkfs = true;
     } else if (flags & VIR_STORAGE_POOL_BUILD_NO_OVERWRITE &&
-               virStorageBackendDeviceIsEmpty(device, format)) {
+               virStorageBackendDeviceIsEmpty(device, format, true)) {
         ok_to_mkfs = true;
     }
 

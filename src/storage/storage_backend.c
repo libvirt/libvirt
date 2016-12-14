@@ -2730,6 +2730,7 @@ virStorageBackendBLKIDFindPart(blkid_probe probe,
 /*
  * @device: Path to device
  * @format: Desired format
+ * @writelabel: True if desire to write the label
  *
  * Use the blkid_ APIs in order to get details regarding whether a file
  * system or partition exists on the disk already.
@@ -2740,7 +2741,8 @@ virStorageBackendBLKIDFindPart(blkid_probe probe,
  */
 static int
 virStorageBackendBLKIDFindEmpty(const char *device,
-                                const char *format)
+                                const char *format,
+                                bool writelabel)
 {
 
     int ret = -1;
@@ -2768,7 +2770,12 @@ virStorageBackendBLKIDFindEmpty(const char *device,
 
     switch (rc) {
     case VIR_STORAGE_BLKID_PROBE_UNDEFINED:
-        ret = 0;
+        if (writelabel)
+            ret = 0;
+        else
+            virReportError(VIR_ERR_STORAGE_PROBE_FAILED,
+                           _("Device '%s' is unrecognized, requires build"),
+                           device);
         break;
 
     case VIR_STORAGE_BLKID_PROBE_ERROR:
@@ -2784,9 +2791,12 @@ virStorageBackendBLKIDFindEmpty(const char *device,
         break;
 
     case VIR_STORAGE_BLKID_PROBE_MATCH:
-        virReportError(VIR_ERR_STORAGE_POOL_BUILT,
-                       _("Device '%s' already formatted using '%s'"),
-                       device, format);
+        if (writelabel)
+            virReportError(VIR_ERR_STORAGE_POOL_BUILT,
+                           _("Device '%s' already formatted using '%s'"),
+                           device, format);
+        else
+            ret = 0;
         break;
 
     case VIR_STORAGE_BLKID_PROBE_DIFFERENT:
@@ -2813,7 +2823,8 @@ virStorageBackendBLKIDFindEmpty(const char *device,
 
 static int
 virStorageBackendBLKIDFindEmpty(const char *device ATTRIBUTE_UNUSED,
-                                const char *format ATTRIBUTE_UNUSED)
+                                const char *format ATTRIBUTE_UNUSED,
+                                bool writelabel ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("probing for filesystems is unsupported "
@@ -2827,6 +2838,7 @@ virStorageBackendBLKIDFindEmpty(const char *device ATTRIBUTE_UNUSED,
 /* virStorageBackendDeviceIsEmpty:
  * @devpath: Path to the device to check
  * @format: Desired format string
+ * @writelabel: True if the caller expects to write the label
  *
  * Check if the @devpath has some sort of known file system using the
  * BLKID API if available.
@@ -2836,7 +2848,8 @@ virStorageBackendBLKIDFindEmpty(const char *device ATTRIBUTE_UNUSED,
  */
 bool
 virStorageBackendDeviceIsEmpty(const char *devpath,
-                               const char *format)
+                               const char *format,
+                               bool writelabel)
 {
-    return virStorageBackendBLKIDFindEmpty(devpath, format) == 0;
+    return virStorageBackendBLKIDFindEmpty(devpath, format, writelabel) == 0;
 }

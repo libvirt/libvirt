@@ -159,7 +159,8 @@ int virStorageBackendVolWipeLocal(virConnectPtr conn,
                                   unsigned int flags);
 
 bool virStorageBackendDeviceIsEmpty(const char *devpath,
-                                    const char *format);
+                                    const char *format,
+                                    bool writelabel);
 
 typedef struct _virStorageBackend virStorageBackend;
 typedef virStorageBackend *virStorageBackendPtr;
