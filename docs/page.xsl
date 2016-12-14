@@ -104,9 +104,9 @@
           </div>
           <div id="jumplinks">
             <ul>
-              <li><a href="downloads.html">Download</a></li>
-              <li><a href="contribute.html">Contribute</a></li>
-              <li><a href="docs.html">Learn</a></li>
+              <li><a href="{$href_base}downloads.html">Download</a></li>
+              <li><a href="{$href_base}contribute.html">Contribute</a></li>
+              <li><a href="{$href_base}docs.html">Learn</a></li>
             </ul>
           </div>
           <div id="search">
@@ -122,8 +122,8 @@
           <div id="contact">
             <h3>Contact</h3>
             <ul>
-              <li><a href="contact.html#email">email</a></li>
-              <li><a href="contact.html#irc">irc</a></li>
+              <li><a href="{$href_base}contact.html#email">email</a></li>
+              <li><a href="{$href_base}contact.html#irc">irc</a></li>
             </ul>
           </div>
           <div id="community">
@@ -136,7 +136,7 @@
             </ul>
           </div>
           <div id="conduct">
-            Participants in the libvirt project agree to abide by <a href="governance.html#codeofconduct">the project code of conduct</a>
+            Participants in the libvirt project agree to abide by <a href="{$href_base}governance.html#codeofconduct">the project code of conduct</a>
           </div>
           <br class="clear"/>
         </div>
