@@ -44,9 +44,9 @@ ssize_t virStorageFileReadHeader(virStorageSourcePtr src,
                                  char **buf);
 const char *virStorageFileGetUniqueIdentifier(virStorageSourcePtr src);
 int virStorageFileAccess(virStorageSourcePtr src, int mode);
-int virStorageFileChown(virStorageSourcePtr src, uid_t uid, gid_t gid);
+int virStorageFileChown(const virStorageSource *src, uid_t uid, gid_t gid);
 
-bool virStorageFileSupportsSecurityDriver(virStorageSourcePtr src);
+bool virStorageFileSupportsSecurityDriver(const virStorageSource *src);
 
 int virStorageFileGetMetadata(virStorageSourcePtr src,
                               uid_t uid, gid_t gid,

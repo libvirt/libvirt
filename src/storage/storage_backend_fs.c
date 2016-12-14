@@ -1600,7 +1600,7 @@ virStorageFileBackendFileAccess(virStorageSourcePtr src,
 
 
 static int
-virStorageFileBackendFileChown(virStorageSourcePtr src,
+virStorageFileBackendFileChown(const virStorageSource *src,
                                uid_t uid,
                                gid_t gid)
 {

@@ -279,8 +279,8 @@ virSecurityDACPreFork(virSecurityManagerPtr mgr)
 }
 
 static int
-virSecurityDACSetOwnershipInternal(virSecurityDACDataPtr priv,
-                                   virStorageSourcePtr src,
+virSecurityDACSetOwnershipInternal(const virSecurityDACData *priv,
+                                   const virStorageSource *src,
                                    const char *path,
                                    uid_t uid,
                                    gid_t gid)

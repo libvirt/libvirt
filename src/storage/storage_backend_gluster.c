@@ -809,7 +809,7 @@ virStorageFileBackendGlusterGetUniqueIdentifier(virStorageSourcePtr src)
 
 
 static int
-virStorageFileBackendGlusterChown(virStorageSourcePtr src,
+virStorageFileBackendGlusterChown(const virStorageSource *src,
                                   uid_t uid,
                                   gid_t gid)
 {

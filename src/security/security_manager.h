@@ -62,7 +62,7 @@ int virSecurityManagerStackAddNested(virSecurityManagerPtr stack,
  * @src. The callback shall return 0 on success, -1 on error and errno set (no
  * libvirt error reported) OR -2 and a libvirt error reported. */
 typedef int
-(*virSecurityManagerDACChownCallback)(virStorageSourcePtr src,
+(*virSecurityManagerDACChownCallback)(const virStorageSource *src,
                                       uid_t uid,
                                       gid_t gid);
 

@@ -2082,7 +2082,7 @@ virStorageSourceGetActualType(const virStorageSource *def)
 
 
 bool
-virStorageSourceIsLocalStorage(virStorageSourcePtr src)
+virStorageSourceIsLocalStorage(const virStorageSource *src)
 {
     virStorageType type = virStorageSourceGetActualType(src);
 

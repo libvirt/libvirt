@@ -2848,7 +2848,7 @@ int storageRegister(void)
 
 /* ----------- file handlers cooperating with storage driver --------------- */
 static bool
-virStorageFileIsInitialized(virStorageSourcePtr src)
+virStorageFileIsInitialized(const virStorageSource *src)
 {
     return src && src->drv;
 }
@@ -2888,7 +2888,7 @@ virStorageFileSupportsBackingChainTraversal(virStorageSourcePtr src)
  * driver to perform labelling
  */
 bool
-virStorageFileSupportsSecurityDriver(virStorageSourcePtr src)
+virStorageFileSupportsSecurityDriver(const virStorageSource *src)
 {
     int actualType;
     virStorageFileBackendPtr backend;
@@ -3179,7 +3179,7 @@ virStorageFileAccess(virStorageSourcePtr src,
  * by libvirt storage backend.
  */
 int
-virStorageFileChown(virStorageSourcePtr src,
+virStorageFileChown(const virStorageSource *src,
                     uid_t uid,
                     gid_t gid)
 {

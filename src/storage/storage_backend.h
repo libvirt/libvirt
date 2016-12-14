@@ -285,7 +285,7 @@ typedef int
                                int mode);
 
 typedef int
-(*virStorageFileBackendChown)(virStorageSourcePtr src,
+(*virStorageFileBackendChown)(const virStorageSource *src,
                               uid_t uid,
                               gid_t gid);
 
