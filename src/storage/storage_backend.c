@@ -2639,36 +2639,116 @@ virStorageBackendFindGlusterPoolSources(const char *host ATTRIBUTE_UNUSED,
 
 
 #if WITH_BLKID
+
+typedef enum {
+    VIR_STORAGE_BLKID_PROBE_ERROR = -1,
+    VIR_STORAGE_BLKID_PROBE_UNDEFINED, /* Nothing found */
+    VIR_STORAGE_BLKID_PROBE_UNKNOWN,   /* Don't know libvirt fs/part type */
+    VIR_STORAGE_BLKID_PROBE_MATCH,     /* Matches the on disk format */
+    VIR_STORAGE_BLKID_PROBE_DIFFERENT, /* Format doesn't match on disk format */
+} virStorageBackendBLKIDProbeResult;
+
+/*
+ * Utility function to probe for a file system on the device using the
+ * blkid "superblock" (e.g. default) APIs.
+ *
+ * NB: In general this helper will handle the virStoragePoolFormatFileSystem
+ *     format types; however, if called from the Disk path, the initial fstype
+ *     check will fail forcing the usage of the ProbePart helper.
+ *
+ * Returns virStorageBackendBLKIDProbeResult enum
+ */
+static virStorageBackendBLKIDProbeResult
+virStorageBackendBLKIDFindFS(blkid_probe probe,
+                             const char *device,
+                             const char *format)
+{
+    const char *fstype = NULL;
+
+    /* Make sure we're doing a superblock probe from the start */
+    blkid_probe_enable_superblocks(probe, true);
+    blkid_probe_reset_superblocks_filter(probe);
+
+    if (blkid_do_probe(probe) != 0) {
+        VIR_INFO("No filesystem found on device '%s'", device);
+        return VIR_STORAGE_BLKID_PROBE_UNDEFINED;
+    }
+
+    if (blkid_probe_lookup_value(probe, "TYPE", &fstype, NULL) == 0) {
+        if (STREQ(fstype, format))
+            return VIR_STORAGE_BLKID_PROBE_MATCH;
+
+        return VIR_STORAGE_BLKID_PROBE_DIFFERENT;
+    }
+
+    if (blkid_known_fstype(format) == 0)
+        return VIR_STORAGE_BLKID_PROBE_UNKNOWN;
+
+    return VIR_STORAGE_BLKID_PROBE_ERROR;
+}
+
+
+/*
+ * Utility function to probe for a partition on the device using the
+ * blkid "partitions" APIs.
+ *
+ * NB: In general, this API will be validating the virStoragePoolFormatDisk
+ *     format types.
+ *
+ * Returns virStorageBackendBLKIDProbeResult enum
+ */
+static virStorageBackendBLKIDProbeResult
+virStorageBackendBLKIDFindPart(blkid_probe probe,
+                               const char *device,
+                               const char *format)
+{
+    const char *pttype = NULL;
+
+    /* Make sure we're doing a partitions probe from the start */
+    blkid_probe_enable_partitions(probe, true);
+    blkid_probe_reset_partitions_filter(probe);
+
+    if (blkid_do_probe(probe) != 0) {
+        VIR_INFO("No partition found on device '%s'", device);
+        return VIR_STORAGE_BLKID_PROBE_UNDEFINED;
+    }
+
+    if (blkid_probe_lookup_value(probe, "PTTYPE", &pttype, NULL) == 0) {
+        if (STREQ(pttype, format))
+            return VIR_STORAGE_BLKID_PROBE_MATCH;
+
+        return VIR_STORAGE_BLKID_PROBE_DIFFERENT;
+    }
+
+    if (blkid_known_pttype(format) == 0)
+        return VIR_STORAGE_BLKID_PROBE_UNKNOWN;
+
+    return VIR_STORAGE_BLKID_PROBE_ERROR;
+}
+
+
 /*
  * @device: Path to device
  * @format: Desired format
  *
  * Use the blkid_ APIs in order to get details regarding whether a file
- * system exists on the disk already.
+ * system or partition exists on the disk already.
  *
  * Returns:
  *   -1: An error was encountered, with error message set
  *    0: No file system found
  */
 static int
-virStorageBackendBLKIDFindFS(const char *device,
-                             const char *format)
+virStorageBackendBLKIDFindEmpty(const char *device,
+                                const char *format)
 {
 
     int ret = -1;
+    int rc;
     blkid_probe probe = NULL;
-    const char *fstype = NULL;
 
-    VIR_DEBUG("Probing for existing filesystem of type %s on device %s",
+    VIR_DEBUG("Probe for existing filesystem/partition format %s on device %s",
               format, device);
-
-    if (blkid_known_fstype(format) == 0) {
-        virReportError(VIR_ERR_STORAGE_PROBE_FAILED,
-                       _("Not capable of probing for filesystem of "
-                         "type %s, requires --overwrite"),
-                       format);
-        return -1;
-    }
 
     if (!(probe = blkid_new_probe_from_filename(device))) {
         virReportError(VIR_ERR_STORAGE_PROBE_FAILED,
@@ -2677,34 +2757,53 @@ virStorageBackendBLKIDFindFS(const char *device,
         return -1;
     }
 
-    if (blkid_do_probe(probe) != 0) {
-        VIR_INFO("No filesystem of type '%s' found on device '%s'",
-                 format, device);
-    } else if (blkid_probe_lookup_value(probe, "TYPE", &fstype, NULL) == 0) {
-        if (STREQ(fstype, format)) {
-            virReportError(VIR_ERR_STORAGE_POOL_BUILT,
-                           _("Device '%s' already contains a filesystem "
-                             "of type '%s'"),
-                           device, fstype);
-        } else {
-            virReportError(VIR_ERR_STORAGE_POOL_BUILT,
-                           _("Existing filesystem of type '%s' found on "
-                             "device '%s', requires --overwrite"),
-                           fstype, device);
-        }
-        goto cleanup;
+    /* Look for something on FS, if it either doesn't recognize the
+     * format type as a valid FS format type or it doesn't find a valid
+     * format type on the device, then perform the same check using
+     * partition probing. */
+    rc = virStorageBackendBLKIDFindFS(probe, device, format);
+    if (rc == VIR_STORAGE_BLKID_PROBE_UNDEFINED ||
+        rc == VIR_STORAGE_BLKID_PROBE_UNKNOWN)
+        rc = virStorageBackendBLKIDFindPart(probe, device, format);
+
+    switch (rc) {
+    case VIR_STORAGE_BLKID_PROBE_UNDEFINED:
+        ret = 0;
+        break;
+
+    case VIR_STORAGE_BLKID_PROBE_ERROR:
+        virReportError(VIR_ERR_STORAGE_PROBE_FAILED,
+                       _("Failed to probe for format type '%s'"), format);
+        break;
+
+    case VIR_STORAGE_BLKID_PROBE_UNKNOWN:
+        virReportError(VIR_ERR_STORAGE_PROBE_FAILED,
+                       _("Not capable of probing for format type '%s', "
+                         "requires build --overwrite"),
+                       format);
+        break;
+
+    case VIR_STORAGE_BLKID_PROBE_MATCH:
+        virReportError(VIR_ERR_STORAGE_POOL_BUILT,
+                       _("Device '%s' already formatted using '%s'"),
+                       device, format);
+        break;
+
+    case VIR_STORAGE_BLKID_PROBE_DIFFERENT:
+        virReportError(VIR_ERR_STORAGE_POOL_BUILT,
+                       _("Device '%s' formatted cannot overwrite using '%s', "
+                         "requires build --overwrite"),
+                       device, format);
+        break;
     }
 
-    if (blkid_do_probe(probe) != 1) {
+    if (ret == 0 && blkid_do_probe(probe) != 1) {
         virReportError(VIR_ERR_STORAGE_PROBE_FAILED, "%s",
-                       _("Found additional probes to run, "
-                         "filesystem probing may be incorrect"));
-        goto cleanup;
+                       _("Found additional probes to run, probing may "
+                         "be incorrect"));
+        ret = -1;
     }
 
-    ret = 0;
-
- cleanup:
     blkid_free_probe(probe);
 
     return ret;
@@ -2713,8 +2812,8 @@ virStorageBackendBLKIDFindFS(const char *device,
 #else /* #if WITH_BLKID */
 
 static int
-virStorageBackendBLKIDFindFS(const char *device ATTRIBUTE_UNUSED,
-                             const char *format ATTRIBUTE_UNUSED)
+virStorageBackendBLKIDFindEmpty(const char *device ATTRIBUTE_UNUSED,
+                                const char *format ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("probing for filesystems is unsupported "
@@ -2739,5 +2838,5 @@ bool
 virStorageBackendDeviceIsEmpty(const char *devpath,
                                const char *format)
 {
-    return virStorageBackendBLKIDFindFS(devpath, format) == 0;
+    return virStorageBackendBLKIDFindEmpty(devpath, format) == 0;
 }
