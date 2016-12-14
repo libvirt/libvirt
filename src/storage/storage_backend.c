@@ -2704,6 +2704,14 @@ virStorageBackendBLKIDFindPart(blkid_probe probe,
 {
     const char *pttype = NULL;
 
+    /* A blkid_known_pttype on "dvh" and "pc98" returns a failure;
+     * however, the blkid_do_probe for "dvh" returns "sgi" and
+     * for "pc98" it returns "dos". So since those will cause problems
+     * with startup comparison, let's just treat them as UNKNOWN causing
+     * the caller to fallback to using PARTED */
+    if (STREQ(format, "dvh") || STREQ(format, "pc98"))
+        return VIR_STORAGE_BLKID_PROBE_UNKNOWN;
+
     /* Make sure we're doing a partitions probe from the start */
     blkid_probe_enable_partitions(probe, true);
     blkid_probe_reset_partitions_filter(probe);
@@ -2736,6 +2744,7 @@ virStorageBackendBLKIDFindPart(blkid_probe probe,
  * system or partition exists on the disk already.
  *
  * Returns:
+ *   -2: Force usage of PARTED for unknown types
  *   -1: An error was encountered, with error message set
  *    0: No file system found
  */
@@ -2765,8 +2774,14 @@ virStorageBackendBLKIDFindEmpty(const char *device,
      * partition probing. */
     rc = virStorageBackendBLKIDFindFS(probe, device, format);
     if (rc == VIR_STORAGE_BLKID_PROBE_UNDEFINED ||
-        rc == VIR_STORAGE_BLKID_PROBE_UNKNOWN)
+        rc == VIR_STORAGE_BLKID_PROBE_UNKNOWN) {
+
         rc = virStorageBackendBLKIDFindPart(probe, device, format);
+        if (rc == VIR_STORAGE_BLKID_PROBE_UNKNOWN) {
+            ret = -2;
+            goto cleanup;
+        }
+    }
 
     switch (rc) {
     case VIR_STORAGE_BLKID_PROBE_UNDEFINED:
@@ -2814,6 +2829,7 @@ virStorageBackendBLKIDFindEmpty(const char *device,
         ret = -1;
     }
 
+ cleanup:
     blkid_free_probe(probe);
 
     return ret;
@@ -2829,10 +2845,149 @@ virStorageBackendBLKIDFindEmpty(const char *device ATTRIBUTE_UNUSED,
     virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                    _("probing for filesystems is unsupported "
                      "by this build"));
-    return -1;
+    return -2;
 }
 
 #endif /* #if WITH_BLKID */
+
+
+typedef enum {
+    VIR_STORAGE_PARTED_ERROR = -1,
+    VIR_STORAGE_PARTED_FOUND,       /* Valid label found */
+    VIR_STORAGE_PARTED_UNKNOWN,     /* No or unrecognized label */
+    VIR_STORAGE_PARTED_NOPTTYPE,    /* Did not find the Partition Table type */
+    VIR_STORAGE_PARTED_PTTYPE_UNK,  /* Partition Table type unknown*/
+} virStorageBackendPARTEDResult;
+
+/**
+ * Check for a valid disk label (partition table) on device using
+ * the PARTED command
+ *
+ * returns virStorageBackendPARTEDResult
+ */
+static virStorageBackendPARTEDResult
+virStorageBackendPARTEDFindLabel(const char *device)
+{
+    const char *const args[] = {
+        device, "print", "--script", NULL,
+    };
+    virCommandPtr cmd = virCommandNew(PARTED);
+    char *output = NULL;
+    char *error = NULL;
+    char *start, *end;
+    int ret = VIR_STORAGE_PARTED_ERROR;
+
+    virCommandAddArgSet(cmd, args);
+    virCommandAddEnvString(cmd, "LC_ALL=C");
+    virCommandSetOutputBuffer(cmd, &output);
+    virCommandSetErrorBuffer(cmd, &error);
+
+    /* if parted succeeds we have a valid partition table */
+    ret = virCommandRun(cmd, NULL);
+    if (ret < 0) {
+        if ((output && strstr(output, "unrecognised disk label")) ||
+            (error && strstr(error, "unrecognised disk label"))) {
+            ret = VIR_STORAGE_PARTED_UNKNOWN;
+        }
+        goto cleanup;
+    }
+
+    /* Search for "Partition Table:" in the output. If not present,
+     * then we cannot validate the partition table type.
+     */
+    if (!(start = strstr(output, "Partition Table: ")) ||
+        !(end = strstr(start, "\n"))) {
+        VIR_DEBUG("Unable to find tag in output: %s", output);
+        ret = VIR_STORAGE_PARTED_NOPTTYPE;
+        goto cleanup;
+    }
+    start += strlen("Partition Table: ");
+    *end = '\0';
+
+    /* on disk it's "msdos", but we document/use "dos" so deal with it here */
+    if (STREQ(start, "msdos"))
+        start += 2;
+
+    /* Make sure we know about this type */
+    if (virStoragePoolFormatDiskTypeFromString(start) < 0) {
+        ret = VIR_STORAGE_PARTED_PTTYPE_UNK;
+        goto cleanup;
+    }
+
+    ret = VIR_STORAGE_PARTED_FOUND;
+
+ cleanup:
+    virCommandFree(cmd);
+    VIR_FREE(output);
+    VIR_FREE(error);
+    return ret;
+}
+
+
+/**
+ * Determine whether the label on the disk is valid or in a known format
+ * for the purpose of rewriting the label during build or being able to
+ * start a pool on a device.
+ *
+ * When 'writelabel' is true, if we find a valid disk label on the device,
+ * then we shouldn't be attempting to write as the volume may contain
+ * data. Force the usage of the overwrite flag to the build command in
+ * order to be certain. When the disk label is unrecognized, then it
+ * should be safe to write.
+ *
+ * When 'writelabel' is false, only if we find a valid disk label on the
+ * device should we allow the start since for this path we won't be
+ * rewriting the label.
+ *
+ * Return: 0 if it's OK
+ *         -1 if something's wrong
+ */
+static int
+virStorageBackendPARTEDValidLabel(const char *device,
+                                  bool writelabel)
+{
+    int ret = -1;
+    virStorageBackendPARTEDResult check;
+
+    check = virStorageBackendPARTEDFindLabel(device);
+    switch (check) {
+    case VIR_STORAGE_PARTED_ERROR:
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Error checking for disk label, failed to get "
+                         "disk partition information"));
+        break;
+
+    case VIR_STORAGE_PARTED_FOUND:
+        if (writelabel)
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("Valid disk label already present, "
+                             "requires --overwrite"));
+        else
+            ret = 0;
+        break;
+
+    case VIR_STORAGE_PARTED_UNKNOWN:
+        if (writelabel)
+            ret = 0;
+        else
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("Unrecognized disk label found, requires build"));
+        break;
+
+    case VIR_STORAGE_PARTED_NOPTTYPE:
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Unable to determine Partition Type, "
+                         "requires build --overwrite"));
+        break;
+
+    case VIR_STORAGE_PARTED_PTTYPE_UNK:
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Unknown Partition Type, requires build --overwrite"));
+        break;
+    }
+
+    return ret;
+}
 
 
 /* virStorageBackendDeviceIsEmpty:
@@ -2851,5 +3006,11 @@ virStorageBackendDeviceIsEmpty(const char *devpath,
                                const char *format,
                                bool writelabel)
 {
-    return virStorageBackendBLKIDFindEmpty(devpath, format, writelabel) == 0;
+    int ret;
+
+    if ((ret = virStorageBackendBLKIDFindEmpty(devpath, format,
+                                               writelabel)) == -2)
+        ret = virStorageBackendPARTEDValidLabel(devpath, writelabel);
+
+    return ret == 0;
 }

@@ -3477,13 +3477,13 @@ If I<--overwrite> is specified, mkfs is always executed and any existing
 data on the target device is overwritten unconditionally.
 
 For a disk pool, if neither of them is specified or I<--no-overwrite>
-is specified, B<pool-build> will use 'parted --print' in order to
-determine if the disk already has a label before attempting to create
-one. Only if a disk does not already have one will a label be created.
-If I<--overwrite> is specified or it's been determined that the disk
-doesn't already have one, 'parted mklabel' will be used to create a
-label of the format specified by the pool source format type or "dos"
-if not specified for the pool.
+is specified, B<pool-build> will check the target volume device for
+existing filesystems or partitions before attempting to write a new
+label on the target volume device. If the target volume device already
+has a label, the command will fail. If I<--overwrite> is specified,
+then no check will be made on the target volume device prior to writing
+a new label. Writing of the label uses the pool source format type
+or "dos" if not specified.
 
 =item B<pool-create> I<file>
 [I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]]
