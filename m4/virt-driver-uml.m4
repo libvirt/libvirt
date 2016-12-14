@@ -51,5 +51,5 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_UML],[
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_RESULT_UML],[
-    AC_MSG_NOTICE([      UML: $with_uml])
+    LIBVIRT_RESULT([UML], [$with_uml])
 ])

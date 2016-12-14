@@ -56,5 +56,5 @@ dnl Build with gnulib's getopt which contains a reentrant interface
 AC_DEFUN([gl_REPLACE_GETOPT_ALWAYS], [])
 
 AC_DEFUN([LIBVIRT_DRIVER_RESULT_BHYVE],[
-    AC_MSG_NOTICE([    Bhyve: $with_bhyve])
+    LIBVIRT_RESULT([Bhyve], [$with_bhyve])
 ])

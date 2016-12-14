@@ -42,5 +42,5 @@ AC_DEFUN([LIBVIRT_DRIVER_CHECK_VZ],[
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_RESULT_VZ],[
-    AC_MSG_NOTICE([       vz: $with_vz])
+    LIBVIRT_RESULT([vz], [$with_vz])
 ])
