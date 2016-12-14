@@ -892,9 +892,9 @@ libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
 int
 libxlMakeNic(virDomainDefPtr def,
              virDomainNetDefPtr l_nic,
-             libxl_device_nic *x_nic)
+             libxl_device_nic *x_nic,
+             bool attach)
 {
-    bool ioemu_nic = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
     virDomainNetType actual_type = virDomainNetGetActualType(l_nic);
     virNetworkPtr network = NULL;
     virConnectPtr conn = NULL;
@@ -918,15 +918,38 @@ libxlMakeNic(virDomainDefPtr def,
 
     virMacAddrGetRaw(&l_nic->mac, x_nic->mac);
 
-    if (ioemu_nic)
-        x_nic->nictype = LIBXL_NIC_TYPE_VIF_IOEMU;
-    else
-        x_nic->nictype = LIBXL_NIC_TYPE_VIF;
-
+    /*
+     * The nictype field of libxl_device_nic structure tells Xen which type of
+     * NIC device to create for the domain. LIBXL_NIC_TYPE_VIF specifies a
+     * PV NIC. LIBXL_NIC_TYPE_VIF_IOEMU specifies a PV and emulated NIC,
+     * allowing the domain to choose which NIC to use and unplug the unused
+     * one. LIBXL_NIC_TYPE_VIF_IOEMU is only valid for HVM domains. Further,
+     * if hotplugging the NIC, emulated NICs are currently not supported.
+     * Alternatively one could set LIBXL_NIC_TYPE_UNKNOWN and let libxl decide,
+     * but its behaviour might not be consistent across all libvirt supported
+     * versions. The other nictype values are well established already, hence
+     * we manually select our own default and mimic xl/libxl behaviour starting
+     * xen commit 32e9d0f ("libxl: nic type defaults to vif in hotplug for
+     * hvm guest").
+     */
     if (l_nic->model) {
+        if (def->os.type == VIR_DOMAIN_OSTYPE_XEN &&
+            STRNEQ(l_nic->model, "netfront")) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("only model 'netfront' is supported for "
+                             "Xen PV domains"));
+            return -1;
+        }
         if (VIR_STRDUP(x_nic->model, l_nic->model) < 0)
             goto cleanup;
         if (STREQ(l_nic->model, "netfront"))
+            x_nic->nictype = LIBXL_NIC_TYPE_VIF;
+        else
+            x_nic->nictype = LIBXL_NIC_TYPE_VIF_IOEMU;
+    } else {
+        if (def->os.type == VIR_DOMAIN_OSTYPE_HVM && !attach)
+            x_nic->nictype = LIBXL_NIC_TYPE_VIF_IOEMU;
+        else
             x_nic->nictype = LIBXL_NIC_TYPE_VIF;
     }
 
@@ -1058,7 +1081,7 @@ libxlMakeNicList(virDomainDefPtr def,  libxl_domain_config *d_config)
         if (virDomainNetGetActualType(l_nics[i]) == VIR_DOMAIN_NET_TYPE_HOSTDEV)
             continue;
 
-        if (libxlMakeNic(def, l_nics[i], &x_nics[nvnics]))
+        if (libxlMakeNic(def, l_nics[i], &x_nics[nvnics], false))
             goto error;
         /*
          * The devid (at least right now) will not get initialized by

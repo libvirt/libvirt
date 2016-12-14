@@ -3379,7 +3379,7 @@ libxlDomainAttachNetDevice(libxlDriverPrivatePtr driver,
         goto cleanup;
     }
 
-    if (libxlMakeNic(vm->def, net, &nic) < 0)
+    if (libxlMakeNic(vm->def, net, &nic, true) < 0)
         goto cleanup;
 
     if (libxl_device_nic_add(cfg->ctx, vm->def->id, &nic, 0)) {

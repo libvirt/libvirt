@@ -178,7 +178,8 @@ libxlMakeDisk(virDomainDiskDefPtr l_dev, libxl_device_disk *x_dev);
 int
 libxlMakeNic(virDomainDefPtr def,
              virDomainNetDefPtr l_nic,
-             libxl_device_nic *x_nic);
+             libxl_device_nic *x_nic,
+             bool attach);
 int
 libxlMakeVfb(virPortAllocatorPtr graphicsports,
              virDomainGraphicsDefPtr l_vfb, libxl_device_vfb *x_vfb);
