@@ -22,6 +22,8 @@ AC_DEFUN([LIBVIRT_DRIVER_ARG_VZ],[
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_VZ],[
+    PARALLELS_SDK_REQUIRED="7.0.22"
+
     if test "$with_vz" = "yes" ||
        test "$with_vz" = "check"; then
         PKG_CHECK_MODULES([PARALLELS_SDK], [parallels-sdk >= $PARALLELS_SDK_REQUIRED],

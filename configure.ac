@@ -109,8 +109,6 @@ then
                      [Extra package version])
 fi
 
-dnl Required minimum versions of all libs we depend on
-PARALLELS_SDK_REQUIRED="7.0.22"
 dnl Where we look for daemons and admin binaries during configure
 LIBVIRT_SBIN_PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
 
