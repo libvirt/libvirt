@@ -37,10 +37,6 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
-#if WITH_BLKID
-# include <blkid/blkid.h>
-#endif
-
 #include "virerror.h"
 #include "storage_backend_fs.h"
 #include "storage_conf.h"
@@ -617,89 +613,6 @@ virStorageBackendFileSystemStart(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 #endif /* WITH_STORAGE_FS */
 
-#if WITH_BLKID
-static virStoragePoolProbeResult
-virStorageBackendFileSystemProbe(const char *device,
-                                 const char *format)
-{
-
-    virStoragePoolProbeResult ret = FILESYSTEM_PROBE_ERROR;
-    blkid_probe probe = NULL;
-    const char *fstype = NULL;
-    char *names[2], *libblkid_format = NULL;
-
-    VIR_DEBUG("Probing for existing filesystem of type %s on device %s",
-              format, device);
-
-    if (blkid_known_fstype(format) == 0) {
-        virReportError(VIR_ERR_STORAGE_PROBE_FAILED,
-                       _("Not capable of probing for "
-                         "filesystem of type %s"),
-                       format);
-        goto error;
-    }
-
-    probe = blkid_new_probe_from_filename(device);
-    if (probe == NULL) {
-        virReportError(VIR_ERR_STORAGE_PROBE_FAILED,
-                       _("Failed to create filesystem probe "
-                         "for device %s"),
-                       device);
-        goto error;
-    }
-
-    if (VIR_STRDUP(libblkid_format, format) < 0)
-        goto error;
-
-    names[0] = libblkid_format;
-    names[1] = NULL;
-
-    blkid_probe_filter_superblocks_type(probe,
-                                        BLKID_FLTR_ONLYIN,
-                                        names);
-
-    if (blkid_do_probe(probe) != 0) {
-        VIR_INFO("No filesystem of type '%s' found on device '%s'",
-                 format, device);
-        ret = FILESYSTEM_PROBE_NOT_FOUND;
-    } else if (blkid_probe_lookup_value(probe, "TYPE", &fstype, NULL) == 0) {
-        virReportError(VIR_ERR_STORAGE_POOL_BUILT,
-                       _("Existing filesystem of type '%s' found on "
-                         "device '%s'"),
-                       fstype, device);
-        ret = FILESYSTEM_PROBE_FOUND;
-    }
-
-    if (blkid_do_probe(probe) != 1) {
-        virReportError(VIR_ERR_STORAGE_PROBE_FAILED, "%s",
-                       _("Found additional probes to run, "
-                         "filesystem probing may be incorrect"));
-        ret = FILESYSTEM_PROBE_ERROR;
-    }
-
- error:
-    VIR_FREE(libblkid_format);
-
-    if (probe != NULL)
-        blkid_free_probe(probe);
-
-    return ret;
-}
-
-#else /* #if WITH_BLKID */
-
-static virStoragePoolProbeResult
-virStorageBackendFileSystemProbe(const char *device ATTRIBUTE_UNUSED,
-                                 const char *format ATTRIBUTE_UNUSED)
-{
-    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                   _("probing for filesystems is unsupported "
-                     "by this build"));
-
-    return FILESYSTEM_PROBE_ERROR;
-}
-
-#endif /* #if WITH_BLKID */
 
 /* some platforms don't support mkfs */
 #ifdef MKFS
@@ -780,8 +693,7 @@ virStorageBackendMakeFileSystem(virStoragePoolObjPtr pool,
     if (flags & VIR_STORAGE_POOL_BUILD_OVERWRITE) {
         ok_to_mkfs = true;
     } else if (flags & VIR_STORAGE_POOL_BUILD_NO_OVERWRITE &&
-               virStorageBackendFileSystemProbe(device, format) ==
-               FILESYSTEM_PROBE_NOT_FOUND) {
+               virStorageBackendDeviceIsEmpty(device, format)) {
         ok_to_mkfs = true;
     }
 
