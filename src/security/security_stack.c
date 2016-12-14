@@ -137,6 +137,51 @@ virSecurityStackPreFork(virSecurityManagerPtr mgr)
     return rc;
 }
 
+
+static int
+virSecurityStackTransactionStart(virSecurityManagerPtr mgr)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerTransactionStart(item->securityManager) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
+
+static int
+virSecurityStackTransactionCommit(virSecurityManagerPtr mgr,
+                                  pid_t pid)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+    int rc = 0;
+
+    for (; item; item = item->next) {
+        if (virSecurityManagerTransactionCommit(item->securityManager, pid) < 0)
+            rc = -1;
+    }
+
+    return rc;
+}
+
+
+static void
+virSecurityStackTransactionAbort(virSecurityManagerPtr mgr)
+{
+    virSecurityStackDataPtr priv = virSecurityManagerGetPrivateData(mgr);
+    virSecurityStackItemPtr item = priv->itemsHead;
+
+    for (; item; item = item->next)
+        virSecurityManagerTransactionAbort(item->securityManager);
+}
+
+
 static int
 virSecurityStackVerify(virSecurityManagerPtr mgr,
                        virDomainDefPtr def)
@@ -611,6 +656,10 @@ virSecurityDriver virSecurityDriverStack = {
     .getDOI                             = virSecurityStackGetDOI,
 
     .preFork                            = virSecurityStackPreFork,
+
+    .transactionStart                   = virSecurityStackTransactionStart,
+    .transactionCommit                  = virSecurityStackTransactionCommit,
+    .transactionAbort                   = virSecurityStackTransactionAbort,
 
     .domainSecurityVerify               = virSecurityStackVerify,
 

@@ -1183,6 +1183,9 @@ virSecurityManagerSetSavedStateLabel;
 virSecurityManagerSetSocketLabel;
 virSecurityManagerSetTapFDLabel;
 virSecurityManagerStackAddNested;
+virSecurityManagerTransactionAbort;
+virSecurityManagerTransactionCommit;
+virSecurityManagerTransactionStart;
 virSecurityManagerVerify;
 
 

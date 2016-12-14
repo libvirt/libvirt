@@ -51,6 +51,11 @@ typedef const char *(*virSecurityDriverGetBaseLabel) (virSecurityManagerPtr mgr,
 
 typedef int (*virSecurityDriverPreFork) (virSecurityManagerPtr mgr);
 
+typedef int (*virSecurityDriverTransactionStart) (virSecurityManagerPtr mgr);
+typedef int (*virSecurityDriverTransactionCommit) (virSecurityManagerPtr mgr,
+                                                   pid_t pid);
+typedef void (*virSecurityDriverTransactionAbort) (virSecurityManagerPtr mgr);
+
 typedef int (*virSecurityDomainRestoreDiskLabel) (virSecurityManagerPtr mgr,
                                                   virDomainDefPtr def,
                                                   virDomainDiskDefPtr disk);
@@ -134,6 +139,10 @@ struct _virSecurityDriver {
     virSecurityDriverGetDOI getDOI;
 
     virSecurityDriverPreFork preFork;
+
+    virSecurityDriverTransactionStart transactionStart;
+    virSecurityDriverTransactionCommit transactionCommit;
+    virSecurityDriverTransactionAbort transactionAbort;
 
     virSecurityDomainSecurityVerify domainSecurityVerify;
 

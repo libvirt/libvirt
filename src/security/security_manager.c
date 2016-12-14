@@ -235,6 +235,74 @@ virSecurityManagerPostFork(virSecurityManagerPtr mgr)
     virObjectUnlock(mgr);
 }
 
+
+/**
+ * virSecurityManagerTransactionStart:
+ * @mgr: security manager
+ *
+ * Starts a new transaction. In transaction nothing is changed security
+ * label until virSecurityManagerTransactionCommit() is called.
+ *
+ * Returns 0 on success,
+ *        -1 otherwise.
+ */
+int
+virSecurityManagerTransactionStart(virSecurityManagerPtr mgr)
+{
+    int ret = 0;
+
+    virObjectLock(mgr);
+    if (mgr->drv->transactionStart)
+        ret = mgr->drv->transactionStart(mgr);
+    virObjectUnlock(mgr);
+    return ret;
+}
+
+
+/**
+ * virSecurityManagerTransactionCommit:
+ * @mgr: security manager
+ * @pid: domain's PID
+ *
+ * Enters the @pid namespace (usually @pid refers to a domain) and
+ * performs all the operations on the transaction list. Note that the
+ * transaction is also freed, therefore new one has to be started after
+ * successful return from this function. Also it is considered as error
+ * if there's no transaction set and this function is called.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
+int
+virSecurityManagerTransactionCommit(virSecurityManagerPtr mgr,
+                                    pid_t pid)
+{
+    int ret = 0;
+
+    virObjectLock(mgr);
+    if (mgr->drv->transactionCommit)
+        ret = mgr->drv->transactionCommit(mgr, pid);
+    virObjectUnlock(mgr);
+    return ret;
+}
+
+
+/**
+ * virSecurityManagerTransactionAbort:
+ * @mgr: security manager
+ *
+ * Cancels and frees any out standing transaction.
+ */
+void
+virSecurityManagerTransactionAbort(virSecurityManagerPtr mgr)
+{
+    virObjectLock(mgr);
+    if (mgr->drv->transactionAbort)
+        mgr->drv->transactionAbort(mgr);
+    virObjectUnlock(mgr);
+}
+
+
 void *
 virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr)
 {

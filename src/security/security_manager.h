@@ -76,6 +76,11 @@ virSecurityManagerPtr virSecurityManagerNewDAC(const char *virtDriver,
 int virSecurityManagerPreFork(virSecurityManagerPtr mgr);
 void virSecurityManagerPostFork(virSecurityManagerPtr mgr);
 
+int virSecurityManagerTransactionStart(virSecurityManagerPtr mgr);
+int virSecurityManagerTransactionCommit(virSecurityManagerPtr mgr,
+                                        pid_t pid);
+void virSecurityManagerTransactionAbort(virSecurityManagerPtr mgr);
+
 void *virSecurityManagerGetPrivateData(virSecurityManagerPtr mgr);
 
 const char *virSecurityManagerGetDriver(virSecurityManagerPtr mgr);
