@@ -78,6 +78,22 @@ struct _virSecuritySELinuxCallbackData {
     virDomainDefPtr def;
 };
 
+typedef struct _virSecuritySELinuxContextItem virSecuritySELinuxContextItem;
+typedef virSecuritySELinuxContextItem *virSecuritySELinuxContextItemPtr;
+struct _virSecuritySELinuxContextItem {
+    const char *path;
+    const char *tcon;
+    bool optional;
+};
+
+typedef struct _virSecuritySELinuxContextList virSecuritySELinuxContextList;
+typedef virSecuritySELinuxContextList *virSecuritySELinuxContextListPtr;
+struct _virSecuritySELinuxContextList {
+    bool privileged;
+    virSecuritySELinuxContextItemPtr *items;
+    size_t nItems;
+};
+
 #define SECURITY_SELINUX_VOID_DOI       "0"
 #define SECURITY_SELINUX_NAME "selinux"
 
@@ -85,6 +101,115 @@ static int
 virSecuritySELinuxRestoreTPMFileLabelInt(virSecurityManagerPtr mgr,
                                          virDomainDefPtr def,
                                          virDomainTPMDefPtr tpm);
+
+
+virThreadLocal contextList;
+
+static int
+virSecuritySELinuxContextListAppend(virSecuritySELinuxContextListPtr list,
+                                    const char *path,
+                                    const char *tcon,
+                                    bool optional)
+{
+    virSecuritySELinuxContextItemPtr item;
+
+    if (VIR_ALLOC(item) < 0)
+        return -1;
+
+    item->path = path;
+    item->tcon = tcon;
+    item->optional = optional;
+
+    if (VIR_APPEND_ELEMENT(list->items, list->nItems, item) < 0) {
+        VIR_FREE(item);
+        return -1;
+    }
+
+    return 0;
+}
+
+static void
+virSecuritySELinuxContextListFree(void *opaque)
+{
+    virSecuritySELinuxContextListPtr list = opaque;
+    size_t i;
+
+    if (!list)
+        return;
+
+    for (i = 0; i < list->nItems; i++)
+        VIR_FREE(list->items[i]);
+    VIR_FREE(list);
+}
+
+
+/**
+ * virSecuritySELinuxTransactionAppend:
+ * @path: Path to chown
+ * @tcon: target context
+ * @optional: true if setting @tcon is optional
+ *
+ * Appends an entry onto transaction list.
+ *
+ * Returns: 1 in case of successful append
+ *          0 if there is no transaction enabled
+ *         -1 otherwise.
+ */
+static int
+virSecuritySELinuxTransactionAppend(const char *path,
+                                    const char *tcon,
+                                    bool optional)
+{
+    virSecuritySELinuxContextListPtr list;
+
+    list = virThreadLocalGet(&contextList);
+    if (!list)
+        return 0;
+
+    if (virSecuritySELinuxContextListAppend(list, path, tcon, optional) < 0)
+        return -1;
+
+    return 1;
+}
+
+
+static int virSecuritySELinuxSetFileconHelper(const char *path,
+                                              const char *tcon,
+                                              bool optional,
+                                              bool privileged);
+
+/**
+ * virSecuritySELinuxTransactionRun:
+ * @pid: process pid
+ * @opaque: opaque data
+ *
+ * This is the callback that runs in the same namespace as the domain we are
+ * relabelling. For given transaction (@opaque) it relabels all the paths on
+ * the list.
+ *
+ * Returns: 0 on success
+ *         -1 otherwise.
+ */
+static int
+virSecuritySELinuxTransactionRun(pid_t pid ATTRIBUTE_UNUSED,
+                                 void *opaque)
+{
+    virSecuritySELinuxContextListPtr list = opaque;
+    size_t i;
+
+    for (i = 0; i < list->nItems; i++) {
+        virSecuritySELinuxContextItemPtr item = list->items[i];
+
+        /* TODO Implement rollback */
+        if (virSecuritySELinuxSetFileconHelper(item->path,
+                                               item->tcon,
+                                               item->optional,
+                                               list->privileged) < 0)
+            return -1;
+    }
+
+    return 0;
+}
 
 
 /*
@@ -560,6 +685,14 @@ static int
 virSecuritySELinuxInitialize(virSecurityManagerPtr mgr)
 {
     VIR_DEBUG("SELinuxInitialize %s", virSecurityManagerGetDriver(mgr));
+
+    if (virThreadLocalInit(&contextList,
+                           virSecuritySELinuxContextListFree) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to initialize thread local variable"));
+        return -1;
+    }
+
     if (STREQ(virSecurityManagerGetDriver(mgr),  "LXC")) {
         return virSecuritySELinuxLXCInitialize(mgr);
     } else {
@@ -843,6 +976,110 @@ virSecuritySELinuxGetDOI(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
     return SECURITY_SELINUX_VOID_DOI;
 }
 
+/**
+ * virSecuritySELinuxTransactionStart:
+ * @mgr: security manager
+ *
+ * Starts a new transaction. In transaction nothing is changed context
+ * until TransactionCommit() is called. This is implemented as a list
+ * that is appended to whenever setfilecon() would be called. Since
+ * secdriver APIs can be called from multiple threads (to work over
+ * different domains) the pointer to the list is stored in thread local
+ * variable.
+ *
+ * Returns 0 on success,
+ *        -1 otherwise.
+ */
+static int
+virSecuritySELinuxTransactionStart(virSecurityManagerPtr mgr)
+{
+    bool privileged = virSecurityManagerGetPrivileged(mgr);
+    virSecuritySELinuxContextListPtr list;
+
+    list = virThreadLocalGet(&contextList);
+    if (list) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Another relabel transaction is already started"));
+        return -1;
+    }
+
+    if (VIR_ALLOC(list) < 0)
+        return -1;
+
+    list->privileged = privileged;
+
+    if (virThreadLocalSet(&contextList, list) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to set thread local variable"));
+        VIR_FREE(list);
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * virSecuritySELinuxTransactionCommit:
+ * @mgr: security manager
+ * @pid: domain's PID
+ *
+ * Enters the @pid namespace (usually @pid refers to a domain) and
+ * performs all the sefilecon()-s on the list. Note that the
+ * transaction is also freed, therefore new one has to be started after
+ * successful return from this function. Also it is considered as error
+ * if there's no transaction set and this function is called.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise.
+ */
+static int
+virSecuritySELinuxTransactionCommit(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
+                                    pid_t pid)
+{
+    virSecuritySELinuxContextListPtr list;
+    int ret = 0;
+
+    list = virThreadLocalGet(&contextList);
+    if (!list)
+        return 0;
+
+    if (virThreadLocalSet(&contextList, NULL) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to clear thread local variable"));
+        goto cleanup;
+    }
+
+    if (virProcessRunInMountNamespace(pid,
+                                      virSecuritySELinuxTransactionRun,
+                                      list) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virSecuritySELinuxContextListFree(list);
+    return ret;
+}
+
+/**
+ * virSecuritySELinuxTransactionAbort:
+ * @mgr: security manager
+ *
+ * Cancels and frees any out standing transaction.
+ */
+static void
+virSecuritySELinuxTransactionAbort(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED)
+{
+    virSecuritySELinuxContextListPtr list;
+
+    list = virThreadLocalGet(&contextList);
+    if (!list)
+        return;
+
+    if (virThreadLocalSet(&contextList, NULL) < 0)
+        VIR_DEBUG("Unable to clear thread local variable");
+    virSecuritySELinuxContextListFree(list);
+}
+
 static int
 virSecuritySELinuxGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
                                   virDomainDefPtr def ATTRIBUTE_UNUSED,
@@ -885,10 +1122,19 @@ virSecuritySELinuxGetProcessLabel(virSecurityManagerPtr mgr ATTRIBUTE_UNUSED,
  * return 1 if labelling was not possible.  Otherwise, require a label
  * change, and return 0 for success, -1 for failure.  */
 static int
-virSecuritySELinuxSetFileconHelper(const char *path, char *tcon,
+virSecuritySELinuxSetFileconHelper(const char *path, const char *tcon,
                                    bool optional, bool privileged)
 {
     security_context_t econ;
+    int rc;
+
+    /* Be aware that this function might run in a separate process.
+     * Therefore, any driver state changes would be thrown away. */
+
+    if ((rc = virSecuritySELinuxTransactionAppend(path, tcon, optional)) < 0)
+        return -1;
+    else if (rc > 0)
+        return 0;
 
     VIR_INFO("Setting SELinux context on '%s' to '%s'", path, tcon);
 
@@ -945,7 +1191,7 @@ virSecuritySELinuxSetFileconHelper(const char *path, char *tcon,
 
 static int
 virSecuritySELinuxSetFileconOptional(virSecurityManagerPtr mgr,
-                                     const char *path, char *tcon)
+                                     const char *path, const char *tcon)
 {
     bool privileged = virSecurityManagerGetPrivileged(mgr);
     return virSecuritySELinuxSetFileconHelper(path, tcon, true, privileged);
@@ -953,7 +1199,7 @@ virSecuritySELinuxSetFileconOptional(virSecurityManagerPtr mgr,
 
 static int
 virSecuritySELinuxSetFilecon(virSecurityManagerPtr mgr,
-                             const char *path, char *tcon)
+                             const char *path, const char *tcon)
 {
     bool privileged = virSecurityManagerGetPrivileged(mgr);
     return virSecuritySELinuxSetFileconHelper(path, tcon, false, privileged);
@@ -2666,6 +2912,10 @@ virSecurityDriver virSecurityDriverSELinux = {
 
     .getModel                           = virSecuritySELinuxGetModel,
     .getDOI                             = virSecuritySELinuxGetDOI,
+
+    .transactionStart                   = virSecuritySELinuxTransactionStart,
+    .transactionCommit                  = virSecuritySELinuxTransactionCommit,
+    .transactionAbort                   = virSecuritySELinuxTransactionAbort,
 
     .domainSecurityVerify               = virSecuritySELinuxVerify,
 
