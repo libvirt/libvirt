@@ -22,7 +22,7 @@ AC_DEFUN([LIBVIRT_CHECK_NETCF],[
 
   if test "$with_netcf" = "yes" ; then
     old_CFLAGS="$CFLAGS"
-    old_LIBS="$CFLAGS"
+    old_LIBS="$LIBS"
     CFLAGS="$CFLAGS $NETCF_CFLAGS"
     LIBS="$LIBS $NETCF_LIBS"
     AC_CHECK_FUNC([ncf_change_begin], [netcf_transactions=1], [netcf_transactions=0])
