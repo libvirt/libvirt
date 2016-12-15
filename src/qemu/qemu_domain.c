@@ -6782,6 +6782,119 @@ qemuDomainSupportsVideoVga(virDomainVideoDefPtr video,
 
 
 static int
+qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
+                         char **path)
+{
+    int ret = -1;
+    virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
+    virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
+    virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
+    virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
+    virPCIDevicePtr pci = NULL;
+    virUSBDevicePtr usb = NULL;
+    virSCSIDevicePtr scsi = NULL;
+    virSCSIVHostDevicePtr host = NULL;
+    char *tmpPath = NULL;
+    bool freeTmpPath = false;
+
+    *path = NULL;
+
+    switch ((virDomainHostdevMode) dev->mode) {
+    case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
+        switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+            if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
+                pci = virPCIDeviceNew(pcisrc->addr.domain,
+                                      pcisrc->addr.bus,
+                                      pcisrc->addr.slot,
+                                      pcisrc->addr.function);
+                if (!pci)
+                    goto cleanup;
+
+                if (!(tmpPath = virPCIDeviceGetIOMMUGroupDev(pci)))
+                    goto cleanup;
+                freeTmpPath = true;
+            }
+            break;
+
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+            if (dev->missing)
+                break;
+            usb = virUSBDeviceNew(usbsrc->bus,
+                                  usbsrc->device,
+                                  NULL);
+            if (!usb)
+                goto cleanup;
+
+            if (!(tmpPath = (char *) virUSBDeviceGetPath(usb)))
+                goto cleanup;
+            break;
+
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+            if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
+                virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
+                /* Follow qemuSetupDiskCgroup() and qemuSetImageCgroupInternal()
+                 * which does nothing for non local storage
+                 */
+                VIR_DEBUG("Not updating /dev for hostdev iSCSI path '%s'", iscsisrc->path);
+            } else {
+                virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
+                scsi = virSCSIDeviceNew(NULL,
+                                        scsihostsrc->adapter,
+                                        scsihostsrc->bus,
+                                        scsihostsrc->target,
+                                        scsihostsrc->unit,
+                                        dev->readonly,
+                                        dev->shareable);
+
+                if (!scsi)
+                    goto cleanup;
+
+                if (!(tmpPath = (char *) virSCSIDeviceGetPath(scsi)))
+                    goto cleanup;
+            }
+            break;
+
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST: {
+            if (hostsrc->protocol ==
+                VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST) {
+                if (!(host = virSCSIVHostDeviceNew(hostsrc->wwpn)))
+                    goto cleanup;
+
+                if (!(tmpPath = (char *) virSCSIVHostDeviceGetPath(host)))
+                    goto cleanup;
+            }
+            break;
+        }
+
+        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
+            break;
+        }
+        break;
+
+    case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
+    case VIR_DOMAIN_HOSTDEV_MODE_LAST:
+        /* nada */
+        break;
+    }
+
+    if (VIR_STRDUP(*path, tmpPath) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virPCIDeviceFree(pci);
+    virUSBDeviceFree(usb);
+    virSCSIDeviceFree(scsi);
+    virSCSIVHostDeviceFree(host);
+    if (freeTmpPath)
+        VIR_FREE(tmpPath);
+    return ret;
+}
+
+
+#if defined(__linux__)
+static int
 qemuDomainCreateDevice(const char *device,
                        const char *path,
                        bool allow_noent)
@@ -6958,118 +7071,6 @@ qemuDomainSetupAllDisks(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Setup all disks");
     return 0;
-}
-
-
-static int
-qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
-                         char **path)
-{
-    int ret = -1;
-    virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
-    virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
-    virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
-    virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
-    virPCIDevicePtr pci = NULL;
-    virUSBDevicePtr usb = NULL;
-    virSCSIDevicePtr scsi = NULL;
-    virSCSIVHostDevicePtr host = NULL;
-    char *tmpPath = NULL;
-    bool freeTmpPath = false;
-
-    *path = NULL;
-
-    switch ((virDomainHostdevMode) dev->mode) {
-    case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
-        switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                pci = virPCIDeviceNew(pcisrc->addr.domain,
-                                      pcisrc->addr.bus,
-                                      pcisrc->addr.slot,
-                                      pcisrc->addr.function);
-                if (!pci)
-                    goto cleanup;
-
-                if (!(tmpPath = virPCIDeviceGetIOMMUGroupDev(pci)))
-                    goto cleanup;
-                freeTmpPath = true;
-            }
-            break;
-
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-            if (dev->missing)
-                break;
-            usb = virUSBDeviceNew(usbsrc->bus,
-                                  usbsrc->device,
-                                  NULL);
-            if (!usb)
-                goto cleanup;
-
-            if (!(tmpPath = (char *) virUSBDeviceGetPath(usb)))
-                goto cleanup;
-            break;
-
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-            if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-                virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
-                /* Follow qemuSetupDiskCgroup() and qemuSetImageCgroupInternal()
-                 * which does nothing for non local storage
-                 */
-                VIR_DEBUG("Not updating /dev for hostdev iSCSI path '%s'", iscsisrc->path);
-            } else {
-                virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
-                scsi = virSCSIDeviceNew(NULL,
-                                        scsihostsrc->adapter,
-                                        scsihostsrc->bus,
-                                        scsihostsrc->target,
-                                        scsihostsrc->unit,
-                                        dev->readonly,
-                                        dev->shareable);
-
-                if (!scsi)
-                    goto cleanup;
-
-                if (!(tmpPath = (char *) virSCSIDeviceGetPath(scsi)))
-                    goto cleanup;
-            }
-            break;
-
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST: {
-            if (hostsrc->protocol ==
-                VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST) {
-                if (!(host = virSCSIVHostDeviceNew(hostsrc->wwpn)))
-                    goto cleanup;
-
-                if (!(tmpPath = (char *) virSCSIVHostDeviceGetPath(host)))
-                    goto cleanup;
-            }
-            break;
-        }
-
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
-            break;
-        }
-        break;
-
-    case VIR_DOMAIN_HOSTDEV_MODE_CAPABILITIES:
-    case VIR_DOMAIN_HOSTDEV_MODE_LAST:
-        /* nada */
-        break;
-    }
-
-    if (VIR_STRDUP(*path, tmpPath) < 0)
-        goto cleanup;
-
-    ret = 0;
- cleanup:
-    virPCIDeviceFree(pci);
-    virUSBDeviceFree(usb);
-    virSCSIDeviceFree(scsi);
-    virSCSIVHostDeviceFree(host);
-    if (freeTmpPath)
-        VIR_FREE(tmpPath);
-    return ret;
 }
 
 
@@ -7355,7 +7356,6 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
 }
 
 
-#if defined(__linux__)
 int
 qemuDomainCreateNamespace(virQEMUDriverPtr driver,
                           virDomainObjPtr vm)
@@ -7414,6 +7414,16 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
 }
 
 #else /* !defined(__linux__) */
+
+int
+qemuDomainBuildNamespace(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                         virDomainObjPtr vm ATTRIBUTE_UNUSED)
+{
+    /* Namespaces are Linux specific. On other platforms just
+     * carry on with the old behaviour. */
+    return 0;
+}
+
 
 int
 qemuDomainCreateNamespace(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
