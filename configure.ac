@@ -386,9 +386,6 @@ else
 fi
 AC_SUBST([HTML_DIR])
 
-LIBVIRT_ARG_XML_CATALOG
-LIBVIRT_CHECK_XML_CATALOG
-
 dnl if --prefix is /usr, don't use /usr/var for localstatedir
 dnl or /usr/etc for sysconfdir
 dnl as this makes a lot of things break in testing situations
@@ -417,8 +414,6 @@ LIBVIRT_ARG_WITH([TEST], [test driver], [yes])
 LIBVIRT_ARG_WITH([REMOTE], [remote driver], [yes])
 LIBVIRT_ARG_WITH([LIBVIRTD], [libvirtd], [yes])
 
-LIBVIRT_ARG_CHRDEV_LOCK_FILES
-
 dnl
 dnl in case someone want to build static binaries
 dnl STATIC_BINARIES="-static"
@@ -426,14 +421,35 @@ dnl
 STATIC_BINARIES=
 AC_SUBST([STATIC_BINARIES])
 
-dnl --enable-debug=(yes|no)
+dnl
+dnl Miscellaneous checks
+dnl
+
 LIBVIRT_ARG_DEBUG
-LIBVIRT_CHECK_DEBUG
-
+LIBVIRT_ARG_DTRACE
+LIBVIRT_ARG_NUMAD
+LIBVIRT_ARG_XML_CATALOG
 LIBVIRT_ARG_INIT_SCRIPT
-LIBVIRT_CHECK_INIT_SCRIPT
-
+LIBVIRT_ARG_CHRDEV_LOCK_FILES
+LIBVIRT_ARG_DEFAULT_EDITOR
+LIBVIRT_ARG_LOADER_NVRAM
+LIBVIRT_ARG_LOGIN_SHELL
+LIBVIRT_ARG_HOST_VALIDATE
+LIBVIRT_ARG_TLS_PRIORITY
 LIBVIRT_ARG_SYSCTL_CONFIG
+
+
+LIBVIRT_CHECK_DEBUG
+LIBVIRT_CHECK_DTRACE
+LIBVIRT_CHECK_NUMAD
+LIBVIRT_CHECK_XML_CATALOG
+LIBVIRT_CHECK_INIT_SCRIPT
+LIBVIRT_CHECK_CHRDEV_LOCK_FILES
+LIBVIRT_CHECK_DEFAULT_EDITOR
+LIBVIRT_CHECK_LOADER_NVRAM
+LIBVIRT_CHECK_LOGIN_SHELL
+LIBVIRT_CHECK_HOST_VALIDATE
+LIBVIRT_CHECK_TLS_PRIORITY
 LIBVIRT_CHECK_SYSCTL_CONFIG
 
 
@@ -769,20 +785,6 @@ if test "$with_lxc" = "yes" ; then
 fi
 AM_CONDITIONAL([WITH_LXC], [test "$with_lxc" = "yes"])
 
-dnl
-dnl Check for virt-login-shell
-dnl
-
-LIBVIRT_ARG_LOGIN_SHELL
-LIBVIRT_CHECK_LOGIN_SHELL
-
-dnl
-dnl Check for virt-host-validate
-dnl
-
-LIBVIRT_ARG_HOST_VALIDATE
-LIBVIRT_CHECK_HOST_VALIDATE
-
 AM_CONDITIONAL([WITH_SETUID_RPC_CLIENT], [test "$with_lxc$with_login_shell" != "nono"])
 
 dnl
@@ -844,13 +846,6 @@ dnl Need to test if pkg-config exists
 PKG_PROG_PKG_CONFIG
 
 
-LIBVIRT_ARG_TLS_PRIORITY
-LIBVIRT_CHECK_TLS_PRIORITY
-
-
-LIBVIRT_CHECK_CHRDEV_LOCK_FILES
-
-
 LIBVIRT_ARG_WITH_ALT([SECDRIVER_SELINUX], [use SELinux security driver], [check])
 
 if test "$with_selinux" != "yes" ; then
@@ -907,15 +902,6 @@ if test "$with_apparmor" = "no"; then
   with_apparmor_profiles="no"
 fi
 AM_CONDITIONAL([WITH_APPARMOR_PROFILES], [test "$with_apparmor_profiles" != "no"])
-
-LIBVIRT_ARG_DTRACE
-LIBVIRT_CHECK_DTRACE
-
-
-dnl numad
-LIBVIRT_ARG_NUMAD
-LIBVIRT_CHECK_NUMAD
-
 
 dnl
 dnl Checks for the UML driver
@@ -1669,12 +1655,6 @@ t=0
 test "x$lv_cv_static_analysis" = xyes && t=1
 AC_DEFINE_UNQUOTED([STATIC_ANALYSIS], [$t],
   [Define to 1 when performing static analysis.])
-
-LIBVIRT_ARG_DEFAULT_EDITOR
-LIBVIRT_CHECK_DEFAULT_EDITOR
-
-LIBVIRT_ARG_LOADER_NVRAM
-LIBVIRT_CHECK_LOADER_NVRAM
 
 # Some GNULIB base64 symbols clash with a kerberos library
 AC_DEFINE_UNQUOTED([isbase64],[libvirt_gl_isbase64],[Hack to avoid symbol clash])
