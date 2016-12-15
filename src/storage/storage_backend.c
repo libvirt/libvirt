@@ -2853,7 +2853,8 @@ virStorageBackendBLKIDFindEmpty(const char *device ATTRIBUTE_UNUSED,
 
 typedef enum {
     VIR_STORAGE_PARTED_ERROR = -1,
-    VIR_STORAGE_PARTED_FOUND,       /* Valid label found */
+    VIR_STORAGE_PARTED_MATCH,       /* Valid label found and matches format */
+    VIR_STORAGE_PARTED_DIFFERENT,   /* Valid label found but not match format */
     VIR_STORAGE_PARTED_UNKNOWN,     /* No or unrecognized label */
     VIR_STORAGE_PARTED_NOPTTYPE,    /* Did not find the Partition Table type */
     VIR_STORAGE_PARTED_PTTYPE_UNK,  /* Partition Table type unknown*/
@@ -2866,7 +2867,8 @@ typedef enum {
  * returns virStorageBackendPARTEDResult
  */
 static virStorageBackendPARTEDResult
-virStorageBackendPARTEDFindLabel(const char *device)
+virStorageBackendPARTEDFindLabel(const char *device,
+                                 const char *format)
 {
     const char *const args[] = {
         device, "print", "--script", NULL,
@@ -2914,7 +2916,11 @@ virStorageBackendPARTEDFindLabel(const char *device)
         goto cleanup;
     }
 
-    ret = VIR_STORAGE_PARTED_FOUND;
+    /*  Does the on disk match what the pool desired? */
+    if (STREQ(start, format))
+        ret = VIR_STORAGE_PARTED_MATCH;
+
+    ret = VIR_STORAGE_PARTED_DIFFERENT;
 
  cleanup:
     virCommandFree(cmd);
@@ -2944,12 +2950,13 @@ virStorageBackendPARTEDFindLabel(const char *device)
  */
 static int
 virStorageBackendPARTEDValidLabel(const char *device,
+                                  const char *format,
                                   bool writelabel)
 {
     int ret = -1;
     virStorageBackendPARTEDResult check;
 
-    check = virStorageBackendPARTEDFindLabel(device);
+    check = virStorageBackendPARTEDFindLabel(device, format);
     switch (check) {
     case VIR_STORAGE_PARTED_ERROR:
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
@@ -2957,13 +2964,19 @@ virStorageBackendPARTEDValidLabel(const char *device,
                          "disk partition information"));
         break;
 
-    case VIR_STORAGE_PARTED_FOUND:
+    case VIR_STORAGE_PARTED_MATCH:
         if (writelabel)
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("Valid disk label already present, "
-                             "requires --overwrite"));
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("Disk label already formatted using '%s'"),
+                           format);
         else
             ret = 0;
+        break;
+
+    case VIR_STORAGE_PARTED_DIFFERENT:
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Known, but different label format present, "
+                         "requires build --overwrite"));
         break;
 
     case VIR_STORAGE_PARTED_UNKNOWN:
@@ -3010,7 +3023,7 @@ virStorageBackendDeviceIsEmpty(const char *devpath,
 
     if ((ret = virStorageBackendBLKIDFindEmpty(devpath, format,
                                                writelabel)) == -2)
-        ret = virStorageBackendPARTEDValidLabel(devpath, writelabel);
+        ret = virStorageBackendPARTEDValidLabel(devpath, format, writelabel);
 
     return ret == 0;
 }
