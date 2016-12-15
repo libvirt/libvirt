@@ -1683,19 +1683,8 @@ AC_DEFINE_UNQUOTED([STATIC_ANALYSIS], [$t],
 LIBVIRT_ARG_WITH_ALT([DEFAULT_EDITOR], [Editor to use for interactive commands], [vi])
 AC_DEFINE_UNQUOTED([DEFAULT_EDITOR], ["$with_default_editor"], [Default editor to use])
 
-LIBVIRT_ARG_WITH_ALT([LOADER_NVRAM],
-                     [Pass list of pairs of <loader>:<nvram> paths.
-                      Both pairs and list items are separated by a colon.],
-                     [''])
-if test "x$with_loader_nvram" != "xno" && \
-   test "x$with_loader_nvram" != "x" ; then
-    l=$(echo $with_loader_nvram | tr ':' '\n' | wc -l)
-    if test $(expr $l % 2) -ne 0 ; then
-        AC_MSG_ERROR([Malformed --with-loader-nvram argument])
-    fi
-    AC_DEFINE_UNQUOTED([DEFAULT_LOADER_NVRAM], [$with_loader_nvram],
-                       [List of loader:nvram pairs])
-fi
+LIBVIRT_ARG_LOADER_NVRAM
+LIBVIRT_CHECK_LOADER_NVRAM
 
 # Some GNULIB base64 symbols clash with a kerberos library
 AC_DEFINE_UNQUOTED([isbase64],[libvirt_gl_isbase64],[Hack to avoid symbol clash])
@@ -1854,7 +1843,7 @@ AC_MSG_NOTICE([       XML Catalog: $with_xml_catalog_file])
 LIBVIRT_RESULT_INIT_SCRIPT
 LIBVIRT_RESULT_CHRDEV_LOCK_FILES
 AC_MSG_NOTICE([    Default Editor: $with_default_editor])
-AC_MSG_NOTICE([      Loader/NVRAM: $with_loader_nvram])
+LIBVIRT_RESULT_LOADER_NVRAM
 LIBVIRT_RESULT_LOGIN_SHELL
 LIBVIRT_RESULT_HOST_VALIDATE
 AC_MSG_NOTICE([      TLS priority: $with_tls_priority])
