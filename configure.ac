@@ -247,26 +247,34 @@ LIBVIRT_ARG_BLKID
 LIBVIRT_ARG_CAPNG
 LIBVIRT_ARG_CURL
 LIBVIRT_ARG_DBUS
+LIBVIRT_ARG_FIREWALLD
 LIBVIRT_ARG_FUSE
 LIBVIRT_ARG_GLUSTER
 LIBVIRT_ARG_GNUTLS
 LIBVIRT_ARG_HAL
+LIBVIRT_ARG_LIBPCAP
 LIBVIRT_ARG_LIBSSH
+LIBVIRT_ARG_LIBXML
+LIBVIRT_ARG_MACVTAP
 LIBVIRT_ARG_NETCF
 LIBVIRT_ARG_NSS
 LIBVIRT_ARG_NUMACTL
 LIBVIRT_ARG_OPENWSMAN
 LIBVIRT_ARG_PCIACCESS
+LIBVIRT_ARG_PM_UTILS
+LIBVIRT_ARG_POLKIT
 LIBVIRT_ARG_READLINE
 LIBVIRT_ARG_SANLOCK
 LIBVIRT_ARG_SASL
 LIBVIRT_ARG_SELINUX
 LIBVIRT_ARG_SSH2
 LIBVIRT_ARG_UDEV
+LIBVIRT_ARG_VIRTUALPORT
 LIBVIRT_ARG_WIRESHARK
 LIBVIRT_ARG_YAJL
 
 LIBVIRT_CHECK_APPARMOR
+LIBVIRT_CHECK_ATOMIC
 LIBVIRT_CHECK_ATTR
 LIBVIRT_CHECK_AUDIT
 LIBVIRT_CHECK_AVAHI
@@ -274,24 +282,37 @@ LIBVIRT_CHECK_BLKID
 LIBVIRT_CHECK_CAPNG
 LIBVIRT_CHECK_CURL
 LIBVIRT_CHECK_DBUS
+LIBVIRT_CHECK_DEVMAPPER
+LIBVIRT_CHECK_DLOPEN
+LIBVIRT_CHECK_FIREWALLD
 LIBVIRT_CHECK_FUSE
 LIBVIRT_CHECK_GLUSTER
 LIBVIRT_CHECK_GNUTLS
 LIBVIRT_CHECK_HAL
+LIBVIRT_CHECK_LIBNL
+LIBVIRT_CHECK_LIBPARTED
+LIBVIRT_CHECK_LIBPCAP
 LIBVIRT_CHECK_LIBSSH
+LIBVIRT_CHECK_LIBXML
+LIBVIRT_CHECK_MACVTAP
 LIBVIRT_CHECK_NETCF
 LIBVIRT_CHECK_NSS
 LIBVIRT_CHECK_NUMACTL
 LIBVIRT_CHECK_NWFILTER
 LIBVIRT_CHECK_OPENWSMAN
 LIBVIRT_CHECK_PCIACCESS
+LIBVIRT_CHECK_PM_UTILS
+LIBVIRT_CHECK_POLKIT
+LIBVIRT_CHECK_PTHREAD
 LIBVIRT_CHECK_READLINE
 LIBVIRT_CHECK_SANLOCK
 LIBVIRT_CHECK_SASL
 LIBVIRT_CHECK_SELINUX
 LIBVIRT_CHECK_SSH2
 LIBVIRT_CHECK_UDEV
+LIBVIRT_CHECK_VIRTUALPORT
 LIBVIRT_CHECK_WIRESHARK
+LIBVIRT_CHECK_XDR
 LIBVIRT_CHECK_YAJL
 
 AC_CHECK_SIZEOF([long])
@@ -302,8 +323,6 @@ AC_CHECK_FUNCS_ONCE([cfmakeraw fallocate geteuid getgid getgrnam_r \
   getmntent_r getpwuid_r getrlimit getuid kill mmap newlocale posix_fallocate \
   posix_memalign prlimit regexec sched_getaffinity setgroups setns \
   setrlimit symlink sysctlbyname getifaddrs sched_setscheduler unshare])
-
-LIBVIRT_CHECK_PTHREAD
 
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h regex.h sys/un.h \
@@ -321,9 +340,6 @@ if test "x$ac_cv_header_sys_acl_h:x$with_linux" = "xyes:xyes" ; then
 fi
 AC_SUBST([ACL_CFLAGS])
 AC_SUBST([ACL_LIBS])
-
-LIBVIRT_CHECK_ATOMIC
-
 
 AC_CHECK_TYPE([struct ifreq],
   [AC_DEFINE([HAVE_STRUCT_IFREQ],[1],
@@ -408,7 +424,6 @@ LIBVIRT_ARG_WITH_ALT([CHRDEV_LOCK_FILES],
                      [location for UUCP style lock files for character devices ]
                        [(use auto for default paths on some platforms)],
                      [auto])
-LIBVIRT_ARG_PM_UTILS
 
 dnl
 dnl in case someone want to build static binaries
@@ -475,20 +490,6 @@ if test "$with_vmware" = "yes"; then
     AC_DEFINE_UNQUOTED([WITH_VMWARE], 1, [whether VMware driver is enabled])
 fi
 AM_CONDITIONAL([WITH_VMWARE], [test "$with_vmware" = "yes"])
-
-
-dnl
-dnl check for XDR
-dnl
-
-LIBVIRT_CHECK_XDR
-
-
-dnl
-dnl check for libdl
-dnl
-
-LIBVIRT_CHECK_DLOPEN
 
 
 dnl
@@ -870,23 +871,12 @@ dnl Need to test if pkg-config exists
 PKG_PROG_PKG_CONFIG
 
 
-LIBVIRT_ARG_LIBXML
-LIBVIRT_CHECK_LIBXML
-
-
 LIBVIRT_ARG_WITH_ALT([TLS_PRIORITY],
                      [set the default TLS session priority string],
                      [NORMAL])
 
 AC_DEFINE_UNQUOTED([TLS_PRIORITY], ["$with_tls_priority"],
 		   [TLS default priority string])
-
-
-LIBVIRT_ARG_POLKIT
-LIBVIRT_CHECK_POLKIT
-
-LIBVIRT_ARG_FIREWALLD
-LIBVIRT_CHECK_FIREWALLD
 
 
 dnl UUCP style file locks for character devices
@@ -1020,9 +1010,6 @@ if test "$with_numad" = "yes"; then
 fi
 AM_CONDITIONAL([HAVE_NUMAD], [test "$with_numad" != "no"])
 
-LIBVIRT_ARG_LIBPCAP
-LIBVIRT_CHECK_LIBPCAP
-
 
 dnl
 dnl Checks for the UML driver
@@ -1052,11 +1039,6 @@ if test "$with_phyp" = "yes"; then
 fi
 
 AM_CONDITIONAL([WITH_PHYP],[test "$with_phyp" = "yes"])
-
-dnl
-dnl Should we build with pm-utils support?
-dnl
-LIBVIRT_CHECK_PM_UTILS
 
 dnl check if the network driver should be compiled
 
@@ -1375,8 +1357,6 @@ if test "$with_storage_fs" = "yes" ||
   fi
 fi
 
-LIBVIRT_CHECK_LIBPARTED
-
 if test "$with_storage_disk" = "yes" ||
    test "$with_storage_disk" = "check"; then
   if test "$with_storage_disk" = "yes" &&
@@ -1398,8 +1378,6 @@ if test "$with_storage_disk" = "yes" ||
   fi
 fi
 AM_CONDITIONAL([WITH_STORAGE_DISK], [test "$with_storage_disk" = "yes"])
-
-LIBVIRT_CHECK_DEVMAPPER
 
 if test "$with_storage_mpath" = "yes" ||
    test "$with_storage_disk" = "yes"; then
@@ -1687,19 +1665,8 @@ AC_PATH_PROG([QEMU_BRIDGE_HELPER], [qemu-bridge-helper], [/usr/libexec/qemu-brid
                   [/usr/libexec:/usr/lib/qemu:/usr/lib])
 AC_DEFINE_UNQUOTED([QEMU_BRIDGE_HELPER], ["$QEMU_BRIDGE_HELPER"], [QEMU bridge helper])
 
-LIBVIRT_ARG_MACVTAP
-LIBVIRT_CHECK_MACVTAP
-
-
-LIBVIRT_ARG_VIRTUALPORT
-LIBVIRT_CHECK_VIRTUALPORT
-
 dnl GET_VLAN_VID_CMD is required for virNetDevGetVLanID
 AC_CHECK_DECLS([GET_VLAN_VID_CMD], [], [], [[#include <linux/if_vlan.h>]])
-
-dnl netlink library
-
-LIBVIRT_CHECK_LIBNL
 
 # Check for Linux vs. BSD ifreq members
 AC_CHECK_MEMBERS([struct ifreq.ifr_newname,
