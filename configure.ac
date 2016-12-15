@@ -320,7 +320,7 @@ AC_CHECK_FUNCS([stat stat64 __xstat __xstat64 lstat lstat64 __lxstat __lxstat64]
 
 ACL_CFLAGS=""
 ACL_LIBS=""
-if test "x$ac_cv_header_sys_acl_h" = "xyes" ; then
+if test "x$ac_cv_header_sys_acl_h:x$with_linux" = "xyes:xyes" ; then
     ACL_LIBS="-lacl"
 fi
 AC_SUBST([ACL_CFLAGS])
