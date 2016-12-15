@@ -1638,41 +1638,30 @@ AC_SUBST([GETTEXT_CPPFLAGS])
 
 ALL_LINGUAS=`cd "$srcdir/po" > /dev/null && ls *.po | sed 's+\.po$++'`
 
+dnl Cygwin, MinGW and MSVC checks
+LIBVIRT_WIN_CHECK_COMMON
+
+
 dnl Extra link-time flags for Cygwin.
 dnl Copied from libxml2 configure.in, but I removed mingw changes
 dnl for now since I'm not supporting mingw at present.  - RWMJ
 CYGWIN_EXTRA_LDFLAGS=
 CYGWIN_EXTRA_LIBADD=
 MINGW_EXTRA_LDFLAGS=
-WIN32_EXTRA_CFLAGS=
 dnl libvirt.syms is generated in builddir, but libvirt_qemu.syms is in git;
 dnl hence the asymmetric naming of these two symbol files.
 LIBVIRT_SYMBOL_FILE=libvirt.syms
 LIBVIRT_ADMIN_SYMBOL_FILE=libvirt_admin.syms
 LIBVIRT_LXC_SYMBOL_FILE='$(srcdir)/libvirt_lxc.syms'
 LIBVIRT_QEMU_SYMBOL_FILE='$(srcdir)/libvirt_qemu.syms'
-MSCOM_LIBS=
 case "$host" in
   *-*-cygwin*)
     CYGWIN_EXTRA_LDFLAGS="-no-undefined"
     CYGWIN_EXTRA_LIBADD="${INTLLIBS}"
-    MSCOM_LIBS="-lole32 -loleaut32"
     ;;
   *-*-mingw*)
     MINGW_EXTRA_LDFLAGS="-no-undefined"
-    MSCOM_LIBS="-lole32 -loleaut32"
     ;;
-  *-*-msvc*)
-    MSCOM_LIBS="-lole32 -loleaut32"
-    ;;
-esac
-case "$host" in
-  *-*-mingw* | *-*-cygwin* | *-*-msvc* )
-    # If the host is Windows, and shared libraries are disabled, we
-    # need to add -DLIBVIRT_STATIC to the CFLAGS for proper linking
-    if test "x$enable_shared" = "xno"; then
-      WIN32_EXTRA_CFLAGS="-DLIBVIRT_STATIC"
-    fi
 esac
 case "$host" in
   *-*-mingw* | *-*-msvc* )
@@ -1693,13 +1682,11 @@ esac
 AC_SUBST([CYGWIN_EXTRA_LDFLAGS])
 AC_SUBST([CYGWIN_EXTRA_LIBADD])
 AC_SUBST([MINGW_EXTRA_LDFLAGS])
-AC_SUBST([WIN32_EXTRA_CFLAGS])
 AC_SUBST([LIBVIRT_SYMBOL_FILE])
 AC_SUBST([LIBVIRT_ADMIN_SYMBOL_FILE])
 AC_SUBST([LIBVIRT_LXC_SYMBOL_FILE])
 AC_SUBST([LIBVIRT_QEMU_SYMBOL_FILE])
 AC_SUBST([VERSION_SCRIPT_FLAGS])
-AC_SUBST([MSCOM_LIBS])
 
 
 dnl Look for windres to build a Windows icon resource.
@@ -2050,11 +2037,6 @@ AC_MSG_NOTICE([xenlight: $LIBXL_CFLAGS $LIBXL_LIBS])
 else
 AC_MSG_NOTICE([xenlight: no])
 fi
-if test "$with_vbox" = "yes" && test -n "$MSCOM_LIBS" ; then
-AC_MSG_NOTICE([   mscom: $MSCOM_LIBS])
-else
-AC_MSG_NOTICE([   mscom: no])
-fi
 if test "$with_storage_rbd" = "yes" ; then
 AC_MSG_NOTICE([     rbd: $LIBRBD_LIBS])
 else
@@ -2062,6 +2044,10 @@ AC_MSG_NOTICE([     rbd: no])
 fi
 AC_MSG_NOTICE([pm-utils: $with_pm_utils])
 
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([Windows])
+AC_MSG_NOTICE([])
+LIBVIRT_WIN_RESULT_COMMON
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Test suite])
 AC_MSG_NOTICE([])

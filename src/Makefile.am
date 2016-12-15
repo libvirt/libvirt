@@ -1132,7 +1132,7 @@ libvirt_util_la_CFLAGS = $(CAPNG_CFLAGS) $(YAJL_CFLAGS) $(LIBNL_CFLAGS) \
 		-I$(srcdir)/conf
 libvirt_util_la_LIBADD = $(CAPNG_LIBS) $(YAJL_LIBS) $(LIBNL_LIBS) \
 		$(THREAD_LIBS) $(AUDIT_LIBS) $(DEVMAPPER_LIBS) \
-		$(LIB_CLOCK_GETTIME) $(DBUS_LIBS) $(MSCOM_LIBS) $(LIBXML_LIBS) \
+		$(LIB_CLOCK_GETTIME) $(DBUS_LIBS) $(WIN32_EXTRA_LIBS) $(LIBXML_LIBS) \
 		$(SECDRIVER_LIBS) $(NUMACTL_LIBS) $(ACL_LIBS) \
 		$(POLKIT_LIBS)
 
@@ -1308,7 +1308,7 @@ libvirt_driver_vbox_impl_la_CFLAGS =				\
 		-DVBOX_DRIVER
 libvirt_driver_vbox_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_vbox_impl_la_LIBADD =  $(DLOPEN_LIBS)		\
-		$(MSCOM_LIBS)					\
+		$(WIN32_EXTRA_LIBS)				\
 		$(LIBXML_LIBS)
 libvirt_driver_vbox_impl_la_SOURCES = $(VBOX_DRIVER_SOURCES)
 endif WITH_VBOX
