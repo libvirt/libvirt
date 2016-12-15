@@ -3466,7 +3466,7 @@ Configure whether I<pool> should automatically start at boot.
 Build a given pool.
 
 Options I<--overwrite> and I<--no-overwrite> can only be used for
-B<pool-build> a filesystem or disk pool.
+B<pool-build> a filesystem, disk, or logical pool.
 
 For a file system pool if neither flag is specified, then B<pool-build>
 just makes the target path directory and no attempt to run mkfs on the
@@ -3484,6 +3484,16 @@ has a label, the command will fail. If I<--overwrite> is specified,
 then no check will be made on the target volume device prior to writing
 a new label. Writing of the label uses the pool source format type
 or "dos" if not specified.
+
+For a logical pool, if neither of them is specified or I<--no-overwrite>
+is specified, B<pool-build> will check the target volume devices for
+existing filesystems or partitions before attempting to initialize
+and format each device for usage by the logical pool. If any target
+volume device already has a label, the command will fail. If
+I<--overwrite> is specified, then no check will be made on the target
+volume devices prior to initializing and formatting each device. Once
+all the target volume devices are properly formatted via pvcreate,
+the volume group will be created using all the devices.
 
 =item B<pool-create> I<file>
 [I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]]

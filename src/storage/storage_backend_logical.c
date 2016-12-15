@@ -759,16 +759,28 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool,
                                   unsigned int flags)
 {
-    virCommandPtr vgcmd;
+    virCommandPtr vgcmd = NULL;
     int ret = -1;
-    size_t i;
+    size_t i = 0;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_STORAGE_POOL_BUILD_OVERWRITE |
+                  VIR_STORAGE_POOL_BUILD_NO_OVERWRITE, ret);
+
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_STORAGE_POOL_BUILD_OVERWRITE,
+                             VIR_STORAGE_POOL_BUILD_NO_OVERWRITE,
+                             cleanup);
 
     vgcmd = virCommandNewArgList(VGCREATE, pool->def->source.name, NULL);
 
     for (i = 0; i < pool->def->source.ndevice; i++) {
         const char *path = pool->def->source.devices[i].path;
+
+        /* The blkid FS and Part probing code doesn't know "lvm2" (this
+         * pool's only format type), but it does know "LVM2_member", so
+         * we'll pass that here */
+        if (!(flags & VIR_STORAGE_POOL_BUILD_OVERWRITE) &&
+            !virStorageBackendDeviceIsEmpty(path, "LVM2_member", true))
+            goto cleanup;
 
         if (virStorageBackendLogicalInitializeDevice(path) < 0)
             goto cleanup;
