@@ -3565,7 +3565,7 @@ int virFileIsSharedFS(const char *path)
 }
 
 
-#if defined(HAVE_SYS_MOUNT_H)
+#if defined(__linux__) && defined(HAVE_SYS_MOUNT_H)
 int
 virFileSetupDev(const char *path,
                 const char *mount_options)
@@ -3611,7 +3611,7 @@ virFileBindMountDevice(const char *src,
     return 0;
 }
 
-#else /* !defined(HAVE_SYS_MOUNT_H) */
+#else /* !defined(__linux__) || !defined(HAVE_SYS_MOUNT_H) */
 
 int
 virFileSetupDev(const char *path ATTRIBUTE_UNUSED,
@@ -3631,7 +3631,7 @@ virFileBindMountDevice(const char *src ATTRIBUTE_UNUSED,
                          _("mount is not supported on this platform."));
     return -1;
 }
-#endif /* !defined(HAVE_SYS_MOUNT_H) */
+#endif /* !defined(__linux__) || !defined(HAVE_SYS_MOUNT_H) */
 
 
 #if defined(HAVE_SYS_ACL_H)
