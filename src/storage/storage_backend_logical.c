@@ -64,6 +64,23 @@ virStorageBackendLogicalSetActive(virStoragePoolObjPtr pool,
 }
 
 
+/*
+ * @path: Path to the device
+ *
+ * Remove the pv device since we're done with it. This ensures a subsequent
+ * create won't require special arguments in order for force recreation.
+ */
+static void
+virStorageBackendLogicalRemoveDevice(const char *path)
+{
+    virCommandPtr cmd = virCommandNewArgList(PVREMOVE, path, NULL);
+
+    if (virCommandRun(cmd, NULL) < 0)
+        VIR_INFO("Failed to pvremove logical device '%s'", path);
+    virCommandFree(cmd);
+}
+
+
 #define VIR_STORAGE_VOL_LOGICAL_SEGTYPE_STRIPED "striped"
 #define VIR_STORAGE_VOL_LOGICAL_SEGTYPE_MIRROR  "mirror"
 #define VIR_STORAGE_VOL_LOGICAL_SEGTYPE_RAID    "raid"
@@ -752,6 +769,15 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
  cleanup:
     virCommandFree(vgcmd);
+
+    /* On any failure, run through the devices that had pvcreate run in
+     * in order to run pvremove on the device; otherwise, subsequent build
+     * will fail if a pvcreate had been run already. */
+    if (ret < 0) {
+        size_t j;
+        for (j = 0; j < i; j++)
+            virStorageBackendLogicalRemoveDevice(pool->def->source.devices[j].path);
+    }
     return ret;
 }
 
@@ -845,22 +871,12 @@ virStorageBackendLogicalDeletePool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto cleanup;
-    virCommandFree(cmd);
-    cmd = NULL;
 
     /* now remove the pv devices and clear them out */
+    for (i = 0; i < pool->def->source.ndevice; i++)
+        virStorageBackendLogicalRemoveDevice(pool->def->source.devices[i].path);
+
     ret = 0;
-    for (i = 0; i < pool->def->source.ndevice; i++) {
-        cmd = virCommandNewArgList(PVREMOVE,
-                                   pool->def->source.devices[i].path,
-                                   NULL);
-        if (virCommandRun(cmd, NULL) < 0) {
-            ret = -1;
-            break;
-        }
-        virCommandFree(cmd);
-        cmd = NULL;
-    }
 
  cleanup:
     virCommandFree(cmd);
