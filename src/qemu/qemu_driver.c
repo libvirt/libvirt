@@ -14359,7 +14359,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     bool persist = false;
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     virQEMUDriverConfigPtr cfg = NULL;
-    virErrorPtr orig_err = NULL;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -14442,19 +14441,6 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                                                        need_unlink);
             }
         }
-    }
-
-    /* recheck backing chains of all disks involved in the snapshot */
-    orig_err = virSaveLastError();
-    for (i = 0; i < snap->def->ndisks; i++) {
-        if (snap->def->disks[i].snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
-            continue;
-        ignore_value(qemuDomainDetermineDiskChain(driver, vm, vm->def->disks[i],
-                                                  true, true));
-    }
-    if (orig_err) {
-        virSetError(orig_err);
-        virFreeError(orig_err);
     }
 
     if (ret == 0 || !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
