@@ -14191,75 +14191,184 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
 }
 
 
+struct _qemuDomainSnapshotDiskData {
+    virStorageSourcePtr src;
+    bool initialized; /* @src was initialized in the storage driver */
+    bool created; /* @src was created by the snapshot code */
+    bool prepared; /* @src was prepared using qemuDomainDiskChainElementPrepare */
+    virDomainDiskDefPtr disk;
+
+    virStorageSourcePtr persistsrc;
+    virDomainDiskDefPtr persistdisk;
+};
+
+typedef struct _qemuDomainSnapshotDiskData qemuDomainSnapshotDiskData;
+typedef qemuDomainSnapshotDiskData *qemuDomainSnapshotDiskDataPtr;
+
+
+static void
+qemuDomainSnapshotDiskDataFree(qemuDomainSnapshotDiskDataPtr data,
+                               size_t ndata,
+                               virQEMUDriverPtr driver,
+                               virDomainObjPtr vm)
+{
+    size_t i;
+
+    if (!data)
+        return;
+
+    for (i = 0; i < ndata; i++) {
+        /* on success of the snapshot the 'src' and 'persistsrc' properties will
+         * be set to NULL by qemuDomainSnapshotUpdateDiskSources */
+        if (data[i].src) {
+            if (data[i].initialized)
+                virStorageFileDeinit(data[i].src);
+
+            if (data[i].prepared)
+                qemuDomainDiskChainElementRevoke(driver, vm, data[i].src);
+
+            virStorageSourceFree(data[i].src);
+        }
+        virStorageSourceFree(data[i].persistsrc);
+    }
+
+    VIR_FREE(data);
+}
+
+
+/**
+ * qemuDomainSnapshotDiskDataCollect:
+ *
+ * Collects and prepares a list of structures that hold information about disks
+ * that are selected for the snapshot.
+ */
+static qemuDomainSnapshotDiskDataPtr
+qemuDomainSnapshotDiskDataCollect(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm,
+                                  virDomainSnapshotObjPtr snap)
+{
+    size_t i;
+    qemuDomainSnapshotDiskDataPtr ret;
+    qemuDomainSnapshotDiskDataPtr dd;
+
+    if (VIR_ALLOC_N(ret, snap->def->ndisks) < 0)
+        return NULL;
+
+    for (i = 0; i < snap->def->ndisks; i++) {
+        if (snap->def->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
+            continue;
+
+        dd = ret + i;
+
+        dd->disk = vm->def->disks[i];
+
+        if (!(dd->src = virStorageSourceCopy(snap->def->disks[i].src, false)))
+            goto error;
+
+        if (virStorageSourceInitChainElement(dd->src, dd->disk->src, false) < 0)
+            goto error;
+
+        if (qemuDomainStorageFileInit(driver, vm, dd->src) < 0)
+            goto error;
+
+        dd->initialized = true;
+
+        /* Note that it's unsafe to assume that the disks in the persistent
+         * definition match up with the disks in the live definition just by
+         * checking that the target name is the same. We've done that
+         * historically this way though. */
+        if (vm->newDef &&
+            (dd->persistdisk = virDomainDiskByName(vm->newDef, dd->disk->dst,
+                                                   false))) {
+
+            if (!(dd->persistsrc = virStorageSourceCopy(dd->src, false)))
+                goto error;
+
+            if (virStorageSourceInitChainElement(dd->persistsrc,
+                                                 dd->persistdisk->src, false) < 0)
+                goto error;
+        }
+    }
+
+    return ret;
+
+ error:
+    qemuDomainSnapshotDiskDataFree(ret, snap->def->ndisks, driver, vm);
+    return NULL;
+}
+
+
+/**
+ * qemuDomainSnapshotUpdateDiskSources:
+ * @dd: snapshot disk data object
+ * @persist: set to true if persistent config of the VM was changed
+ *
+ * Updates disk definition after a successful snapshot.
+ */
+static void
+qemuDomainSnapshotUpdateDiskSources(qemuDomainSnapshotDiskDataPtr dd,
+                                    bool *persist)
+{
+    if (!dd->src)
+        return;
+
+    /* storage driver access won'd be needed */
+    if (dd->initialized)
+        virStorageFileDeinit(dd->src);
+
+    VIR_STEAL_PTR(dd->src->backingStore, dd->disk->src);
+    VIR_STEAL_PTR(dd->disk->src, dd->src);
+
+    if (dd->persistdisk) {
+        VIR_STEAL_PTR(dd->persistsrc->backingStore, dd->persistdisk->src);
+        VIR_STEAL_PTR(dd->persistdisk->src, dd->persistsrc);
+        *persist = true;
+    }
+}
+
+
 /* The domain is expected to hold monitor lock.  */
 static int
 qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
                                          virDomainObjPtr vm,
-                                         virDomainSnapshotDiskDefPtr snap,
-                                         virDomainDiskDefPtr disk,
-                                         virDomainDiskDefPtr persistDisk,
+                                         qemuDomainSnapshotDiskDataPtr dd,
                                          virJSONValuePtr actions,
                                          bool reuse,
                                          qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virStorageSourcePtr newDiskSrc = NULL;
-    virStorageSourcePtr persistDiskSrc = NULL;
     char *device = NULL;
     char *source = NULL;
     const char *formatStr = NULL;
     int ret = -1, rc;
-    bool need_unlink = false;
 
-    if (snap->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("unexpected code path"));
-        return -1;
-    }
-
-    if (!(device = qemuAliasFromDisk(disk)))
+    if (!(device = qemuAliasFromDisk(dd->disk)))
         goto cleanup;
 
-    if (!(newDiskSrc = virStorageSourceCopy(snap->src, false)))
+    if (qemuGetDriveSourceString(dd->src, NULL, &source) < 0)
         goto cleanup;
-
-    if (virStorageSourceInitChainElement(newDiskSrc, disk->src, false) < 0)
-        goto cleanup;
-
-    if (qemuDomainStorageFileInit(driver, vm, newDiskSrc) < 0)
-        goto cleanup;
-
-    if (qemuGetDriveSourceString(newDiskSrc, NULL, &source) < 0)
-        goto cleanup;
-
-    if (persistDisk) {
-        if (!(persistDiskSrc = virStorageSourceCopy(snap->src, false)))
-            goto cleanup;
-
-        if (virStorageSourceInitChainElement(persistDiskSrc, persistDisk->src,
-                                             false) < 0)
-            goto cleanup;
-    }
 
     /* pre-create the image file so that we can label it before handing it to qemu */
-    if (!reuse && newDiskSrc->type != VIR_STORAGE_TYPE_BLOCK) {
-        if (virStorageFileCreate(newDiskSrc) < 0) {
+    if (!reuse && dd->src->type != VIR_STORAGE_TYPE_BLOCK) {
+        if (virStorageFileCreate(dd->src) < 0) {
             virReportSystemError(errno, _("failed to create image file '%s'"),
                                  source);
             goto cleanup;
         }
-        need_unlink = true;
+        dd->created = true;
     }
 
     /* set correct security, cgroup and locking options on the new image */
-    if (qemuDomainDiskChainElementPrepare(driver, vm, newDiskSrc, false) < 0) {
-        qemuDomainDiskChainElementRevoke(driver, vm, newDiskSrc);
+    if (qemuDomainDiskChainElementPrepare(driver, vm, dd->src, false) < 0) {
+        qemuDomainDiskChainElementRevoke(driver, vm, dd->src);
         goto cleanup;
     }
 
+    dd->prepared = true;
+
     /* create the actual snapshot */
-    if (newDiskSrc->format)
-        formatStr = virStorageFileFormatTypeToString(newDiskSrc->format);
+    if (dd->src->format)
+        formatStr = virStorageFileFormatTypeToString(dd->src->format);
 
     /* The monitor is only accessed if qemu doesn't support transactions.
      * Otherwise the following monitor command only constructs the command.
@@ -14275,71 +14384,12 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
             ret = -1;
     }
 
-    virDomainAuditDisk(vm, disk->src, snap->src, "snapshot", rc >= 0);
-    if (ret < 0)
-        goto cleanup;
-
-    /* Update vm in place to match changes.  */
-    need_unlink = false;
-
-    newDiskSrc->backingStore = disk->src;
-    disk->src = newDiskSrc;
-    newDiskSrc = NULL;
-
-    if (persistDisk) {
-        persistDiskSrc->backingStore = persistDisk->src;
-        persistDisk->src = persistDiskSrc;
-        persistDiskSrc = NULL;
-    }
+    virDomainAuditDisk(vm, dd->disk->src, dd->src, "snapshot", rc >= 0);
 
  cleanup:
-    if (need_unlink && virStorageFileUnlink(newDiskSrc))
-        VIR_WARN("unable to unlink just-created %s", source);
-    virStorageFileDeinit(newDiskSrc);
-    virStorageSourceFree(newDiskSrc);
-    virStorageSourceFree(persistDiskSrc);
     VIR_FREE(device);
     VIR_FREE(source);
     return ret;
-}
-
-
-/* The domain is expected to hold monitor lock.  This is the
- * counterpart to qemuDomainSnapshotCreateSingleDiskActive, called
- * only on a failed transaction. */
-static void
-qemuDomainSnapshotUndoSingleDiskActive(virQEMUDriverPtr driver,
-                                       virDomainObjPtr vm,
-                                       virDomainDiskDefPtr disk,
-                                       virDomainDiskDefPtr persistDisk,
-                                       bool need_unlink)
-{
-    virStorageSourcePtr tmp;
-    struct stat st;
-
-    ignore_value(virStorageFileInit(disk->src));
-
-    qemuDomainDiskChainElementRevoke(driver, vm, disk->src);
-
-    if (need_unlink &&
-        virStorageFileStat(disk->src, &st) == 0 && S_ISREG(st.st_mode) &&
-        virStorageFileUnlink(disk->src) < 0)
-        VIR_WARN("Unable to remove just-created %s", disk->src->path);
-
-    virStorageFileDeinit(disk->src);
-
-    /* Update vm in place to match changes. */
-    tmp = disk->src;
-    disk->src = tmp->backingStore;
-    tmp->backingStore = NULL;
-    virStorageSourceFree(tmp);
-
-    if (persistDisk) {
-        tmp = persistDisk->src;
-        persistDisk->src = tmp->backingStore;
-        tmp->backingStore = NULL;
-        virStorageSourceFree(tmp);
-    }
 }
 
 
@@ -14359,6 +14409,8 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
     bool persist = false;
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     virQEMUDriverConfigPtr cfg = NULL;
+    qemuDomainSnapshotDiskDataPtr diskdata = NULL;
+    virErrorPtr orig_err = NULL;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -14376,80 +14428,82 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
         return -1;
     }
 
+    /* prepare a list of objects to use in the vm definition so that we don't
+     * have to roll back later */
+    if (!(diskdata = qemuDomainSnapshotDiskDataCollect(driver, vm, snap)))
+        goto cleanup;
+
     cfg = virQEMUDriverGetConfig(driver);
 
-    /* No way to roll back if first disk succeeds but later disks
-     * fail, unless we have transaction support.
-     * Based on earlier qemuDomainSnapshotPrepare, all
-     * disks in this list are now either SNAPSHOT_NO, or
-     * SNAPSHOT_EXTERNAL with a valid file name and qcow2 format.  */
+     /* Based on earlier qemuDomainSnapshotPrepare, all disks in this list are
+      * now either VIR_DOMAIN_SNAPSHOT_LOCATION_NONE, or
+      * VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL with a valid file name and
+      * qcow2 format.  */
     for (i = 0; i < snap->def->ndisks; i++) {
-        virDomainDiskDefPtr persistDisk = NULL;
-
         if (snap->def->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
             continue;
-        if (vm->newDef &&
-            (persistDisk = virDomainDiskByName(vm->newDef,
-                                               vm->def->disks[i]->dst,
-                                               false)))
-            persist = true;
 
         ret = qemuDomainSnapshotCreateSingleDiskActive(driver, vm,
-                                                       &snap->def->disks[i],
-                                                       vm->def->disks[i],
-                                                       persistDisk, actions,
-                                                       reuse, asyncJob);
+                                                       &diskdata[i],
+                                                       actions, reuse, asyncJob);
+
+        /* without transaction support the change can't be rolled back */
+        if (!actions)
+            qemuDomainSnapshotUpdateDiskSources(&diskdata[i], &persist);
+
         if (ret < 0)
-            break;
+            goto error;
 
         do_transaction = true;
     }
-    if (actions) {
-        if (ret == 0 && do_transaction) {
-            if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
-                ret = qemuMonitorTransaction(priv->mon, actions);
-                if (qemuDomainObjExitMonitor(driver, vm) < 0)
-                    ret = -1;
-            } else {
-                /* failed to enter monitor, clean stuff up and quit */
-                ret = -1;
-            }
-        } else {
-            VIR_DEBUG("no disks to snapshot, skipping 'transaction' command");
+
+    if (actions && do_transaction) {
+        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+            goto cleanup;
+
+        ret = qemuMonitorTransaction(priv->mon, actions);
+
+        if (qemuDomainObjExitMonitor(driver, vm) < 0 || ret < 0) {
+            ret = -1;
+            goto error;
         }
 
-        virJSONValueFree(actions);
+        for (i = 0; i < snap->def->ndisks; i++)
+            qemuDomainSnapshotUpdateDiskSources(&diskdata[i], &persist);
+    }
 
-        if (ret < 0) {
-            /* Transaction failed; undo the changes to vm.  */
-            bool need_unlink = !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT);
-            while (i-- > 0) {
-                virDomainDiskDefPtr persistDisk = NULL;
+ error:
+    if (ret < 0) {
+        orig_err = virSaveLastError();
+        for (i = 0; i < snap->def->ndisks; i++) {
+            if (!diskdata[i].src)
+                continue;
 
-                if (snap->def->disks[i].snapshot ==
-                    VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
-                    continue;
-                if (vm->newDef &&
-                    (persistDisk = virDomainDiskByName(vm->newDef,
-                                                       vm->def->disks[i]->dst,
-                                                       false)))
-                    persist = true;
+            if (diskdata[i].prepared)
+                qemuDomainDiskChainElementRevoke(driver, vm, diskdata[i].src);
 
-                qemuDomainSnapshotUndoSingleDiskActive(driver, vm,
-                                                       vm->def->disks[i],
-                                                       persistDisk,
-                                                       need_unlink);
-            }
+            if (diskdata[i].created &&
+                virStorageFileUnlink(diskdata[i].src) < 0)
+                VIR_WARN("Unable to remove just-created %s", diskdata[i].src->path);
         }
     }
 
-    if (ret == 0 || !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_TRANSACTION)) {
+    if (ret == 0 || !actions) {
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0 ||
             (persist && virDomainSaveConfig(cfg->configDir, driver->caps,
                                             vm->newDef) < 0))
             ret = -1;
     }
+
+ cleanup:
+    qemuDomainSnapshotDiskDataFree(diskdata, snap->def->ndisks, driver, vm);
+    virJSONValueFree(actions);
     virObjectUnref(cfg);
+
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
+    }
 
     return ret;
 }
