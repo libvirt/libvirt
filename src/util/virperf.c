@@ -104,8 +104,14 @@ static struct virPerfEventAttr attrs[] = {
      .attrType = PERF_TYPE_HARDWARE,
      .attrConfig = PERF_COUNT_HW_STALLED_CYCLES_BACKEND},
     {.type = VIR_PERF_EVENT_REF_CPU_CYCLES,
+# ifdef PERF_COUNT_HW_REF_CPU_CYCLES
      .attrType = PERF_TYPE_HARDWARE,
-     .attrConfig = PERF_COUNT_HW_REF_CPU_CYCLES},
+     .attrConfig = PERF_COUNT_HW_REF_CPU_CYCLES
+# else
+     .attrType = 0,
+     .attrConfig = 0,
+# endif
+    },
 };
 typedef struct virPerfEventAttr *virPerfEventAttrPtr;
 
