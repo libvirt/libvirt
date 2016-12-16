@@ -16244,9 +16244,7 @@ qemuDomainBlockPivot(virQEMUDriverPtr driver,
 
         if (disk->mirror->format &&
             disk->mirror->format != VIR_STORAGE_FILE_RAW &&
-            (virDomainLockDiskAttach(driver->lockManager, cfg->uri, vm,
-                                     disk) < 0 ||
-             qemuDomainNamespaceSetupDisk(driver, vm, disk) < 0 ||
+            (qemuDomainNamespaceSetupDisk(driver, vm, disk) < 0 ||
              qemuSetupDiskCgroup(vm, disk) < 0 ||
              qemuSecuritySetDiskLabel(driver, vm, disk) < 0))
             goto cleanup;

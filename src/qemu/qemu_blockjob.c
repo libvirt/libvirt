@@ -33,6 +33,7 @@
 #include "virstoragefile.h"
 #include "virthread.h"
 #include "virtime.h"
+#include "locking/domain_lock.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -139,17 +140,19 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
                 }
             }
 
-            /* XXX We want to revoke security labels and disk
-             * lease, as well as audit that revocation, before
-             * dropping the original source.  But it gets tricky
-             * if both source and mirror share common backing
-             * files (we want to only revoke the non-shared
-             * portion of the chain); so for now, we leak the
-             * access to the original.  */
+            /* XXX We want to revoke security labels as well as audit that
+             * revocation, before dropping the original source.  But it gets
+             * tricky if both source and mirror share common backing files (we
+             * want to only revoke the non-shared portion of the chain); so for
+             * now, we leak the access to the original.  */
+            virDomainLockImageDetach(driver->lockManager, vm, disk->src);
             virStorageSourceFree(disk->src);
             disk->src = disk->mirror;
         } else {
-            virStorageSourceFree(disk->mirror);
+            if (disk->mirror) {
+                virDomainLockImageDetach(driver->lockManager, vm, disk->mirror);
+                virStorageSourceFree(disk->mirror);
+            }
         }
 
         /* Recompute the cached backing chain to match our
@@ -172,8 +175,11 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
 
     case VIR_DOMAIN_BLOCK_JOB_FAILED:
     case VIR_DOMAIN_BLOCK_JOB_CANCELED:
-        virStorageSourceFree(disk->mirror);
-        disk->mirror = NULL;
+        if (disk->mirror) {
+            virDomainLockImageDetach(driver->lockManager, vm, disk->mirror);
+            virStorageSourceFree(disk->mirror);
+            disk->mirror = NULL;
+        }
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
         save = true;
