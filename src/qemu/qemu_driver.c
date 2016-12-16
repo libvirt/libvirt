@@ -14486,6 +14486,23 @@ qemuDomainSnapshotCreateDiskActive(virQEMUDriverPtr driver,
                 virStorageFileUnlink(diskdata[i].src) < 0)
                 VIR_WARN("Unable to remove just-created %s", diskdata[i].src->path);
         }
+    } else {
+        /* on successful snapshot we need to remove locks from the now-old
+         * disks and if the VM is paused release locks on the images since qemu
+         * stopped using them*/
+        bool paused = virDomainObjGetState(vm, NULL) != VIR_DOMAIN_RUNNING;
+
+        for (i = 0; i < snap->def->ndisks; i++) {
+            if (!diskdata[i].disk)
+                continue;
+
+            if (paused)
+                virDomainLockImageDetach(driver->lockManager, vm,
+                                         diskdata[i].disk->src);
+
+            virDomainLockImageDetach(driver->lockManager, vm,
+                                     diskdata[i].disk->src->backingStore);
+        }
     }
 
     if (ret == 0 || !actions) {
