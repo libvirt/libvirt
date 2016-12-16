@@ -3672,3 +3672,34 @@ virStorageFileCheckCompat(const char *compat)
     virStringListFree(version);
     return ret;
 }
+
+
+/**
+ * virStorageSourceIsRelative:
+ * @src: storage source to check
+ *
+ * Returns true if given storage source definition is a relative path.
+ */
+bool
+virStorageSourceIsRelative(virStorageSourcePtr src)
+{
+    virStorageType actual_type = virStorageSourceGetActualType(src);
+
+    if (!src->path)
+        return false;
+
+    switch (actual_type) {
+    case VIR_STORAGE_TYPE_FILE:
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_DIR:
+        return src->path[0] != '/';
+
+    case VIR_STORAGE_TYPE_NETWORK:
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NONE:
+    case VIR_STORAGE_TYPE_LAST:
+        return false;
+    }
+
+    return false;
+}

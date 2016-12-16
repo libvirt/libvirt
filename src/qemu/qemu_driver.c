@@ -16665,6 +16665,12 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
     priv = vm->privateData;
     cfg = virQEMUDriverGetConfig(driver);
 
+    if (virStorageSourceIsRelative(mirror)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("absolute path must be used as block copy target"));
+        goto cleanup;
+    }
+
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
 

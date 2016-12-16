@@ -2455,6 +2455,7 @@ virStorageSourceInitChainElement;
 virStorageSourceIsBlockLocal;
 virStorageSourceIsEmpty;
 virStorageSourceIsLocalStorage;
+virStorageSourceIsRelative;
 virStorageSourceNewFromBacking;
 virStorageSourceNewFromBackingAbsolute;
 virStorageSourceParseRBDColonString;

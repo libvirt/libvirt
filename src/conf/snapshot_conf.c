@@ -170,9 +170,7 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
     }
 
     /* validate that the passed path is absolute */
-    if (virStorageSourceIsLocalStorage(def->src) &&
-        def->src->path &&
-        def->src->path[0] != '/') {
+    if (virStorageSourceIsRelative(def->src)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("disk snapshot image path '%s' must be absolute"),
                        def->src->path);

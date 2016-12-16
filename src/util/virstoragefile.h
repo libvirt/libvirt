@@ -388,4 +388,6 @@ int virStorageFileCheckCompat(const char *compat);
 
 virStorageSourcePtr virStorageSourceNewFromBackingAbsolute(const char *path);
 
+bool virStorageSourceIsRelative(virStorageSourcePtr src);
+
 #endif /* __VIR_STORAGE_FILE_H__ */
