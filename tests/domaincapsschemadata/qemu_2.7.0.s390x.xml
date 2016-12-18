@@ -1,0 +1,78 @@
+<domainCapabilities>
+  <path>/usr/bin/qemu-system-s390x</path>
+  <domain>kvm</domain>
+  <machine>s390-ccw-virtio-2.7</machine>
+  <arch>s390x</arch>
+  <vcpu max='248'/>
+  <os supported='yes'>
+    <loader supported='yes'>
+      <value>/usr/share/AAVMF/AAVMF_CODE.fd</value>
+      <value>/usr/share/OVMF/OVMF_CODE.fd</value>
+      <enum name='type'>
+        <value>rom</value>
+        <value>pflash</value>
+      </enum>
+      <enum name='readonly'>
+        <value>yes</value>
+        <value>no</value>
+      </enum>
+    </loader>
+  </os>
+  <cpu>
+    <mode name='host-passthrough' supported='yes'/>
+    <mode name='host-model' supported='no'/>
+    <mode name='custom' supported='no'/>
+  </cpu>
+  <devices>
+    <disk supported='yes'>
+      <enum name='diskDevice'>
+        <value>disk</value>
+        <value>cdrom</value>
+        <value>floppy</value>
+        <value>lun</value>
+      </enum>
+      <enum name='bus'>
+        <value>ide</value>
+        <value>fdc</value>
+        <value>scsi</value>
+        <value>virtio</value>
+      </enum>
+    </disk>
+    <graphics supported='yes'>
+      <enum name='type'>
+        <value>sdl</value>
+        <value>vnc</value>
+      </enum>
+    </graphics>
+    <video supported='yes'>
+      <enum name='modelType'>
+        <value>virtio</value>
+      </enum>
+    </video>
+    <hostdev supported='yes'>
+      <enum name='mode'>
+        <value>subsystem</value>
+      </enum>
+      <enum name='startupPolicy'>
+        <value>default</value>
+        <value>mandatory</value>
+        <value>requisite</value>
+        <value>optional</value>
+      </enum>
+      <enum name='subsysType'>
+        <value>usb</value>
+        <value>pci</value>
+        <value>scsi</value>
+      </enum>
+      <enum name='capsType'/>
+      <enum name='pciBackend'>
+        <value>default</value>
+        <value>kvm</value>
+        <value>vfio</value>
+      </enum>
+    </hostdev>
+  </devices>
+  <features>
+    <gic supported='no'/>
+  </features>
+</domainCapabilities>

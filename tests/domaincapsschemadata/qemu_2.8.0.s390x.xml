@@ -1,0 +1,142 @@
+<domainCapabilities>
+  <path>/usr/bin/qemu-system-s390x</path>
+  <domain>kvm</domain>
+  <machine>s390-ccw-virtio-2.8</machine>
+  <arch>s390x</arch>
+  <vcpu max='248'/>
+  <os supported='yes'>
+    <loader supported='yes'>
+      <value>/usr/share/AAVMF/AAVMF_CODE.fd</value>
+      <value>/usr/share/OVMF/OVMF_CODE.fd</value>
+      <enum name='type'>
+        <value>rom</value>
+        <value>pflash</value>
+      </enum>
+      <enum name='readonly'>
+        <value>yes</value>
+        <value>no</value>
+      </enum>
+    </loader>
+  </os>
+  <cpu>
+    <mode name='host-passthrough' supported='yes'/>
+    <mode name='host-model' supported='no'/>
+    <mode name='custom' supported='yes'>
+      <model usable='unknown'>z10EC-base</model>
+      <model usable='unknown'>z9EC-base</model>
+      <model usable='unknown'>z196.2-base</model>
+      <model usable='unknown'>z900-base</model>
+      <model usable='unknown'>z990</model>
+      <model usable='unknown'>z900.2-base</model>
+      <model usable='unknown'>z900.3</model>
+      <model usable='unknown'>z114</model>
+      <model usable='unknown'>z890-base</model>
+      <model usable='unknown'>z13.2-base</model>
+      <model usable='unknown'>zEC12.2</model>
+      <model usable='unknown'>z900.2</model>
+      <model usable='unknown'>z10BC</model>
+      <model usable='unknown'>z10BC.2</model>
+      <model usable='unknown'>z196</model>
+      <model usable='unknown'>z9EC</model>
+      <model usable='unknown'>z990-base</model>
+      <model usable='unknown'>z10EC.3</model>
+      <model usable='unknown'>z900</model>
+      <model usable='unknown'>z9EC.3-base</model>
+      <model usable='unknown'>z990.5-base</model>
+      <model usable='unknown'>z10EC.2</model>
+      <model usable='unknown'>z9BC.2</model>
+      <model usable='unknown'>z10EC</model>
+      <model usable='unknown'>z990.3-base</model>
+      <model usable='unknown'>z13s</model>
+      <model usable='unknown'>z10EC.3-base</model>
+      <model usable='unknown'>zEC12.2-base</model>
+      <model usable='unknown'>z890.3-base</model>
+      <model usable='unknown'>z9EC.3</model>
+      <model usable='unknown'>z990.5</model>
+      <model usable='unknown'>z13</model>
+      <model usable='unknown'>z13s-base</model>
+      <model usable='unknown'>z9EC.2</model>
+      <model usable='unknown'>z990.4</model>
+      <model usable='unknown'>zEC12-base</model>
+      <model usable='unknown'>z9EC.2-base</model>
+      <model usable='unknown'>zBC12</model>
+      <model usable='unknown'>z196.2</model>
+      <model usable='unknown'>z990.3</model>
+      <model usable='unknown'>z990.2-base</model>
+      <model usable='unknown'>z900.3-base</model>
+      <model usable='unknown'>z890.3</model>
+      <model usable='unknown'>z10EC.2-base</model>
+      <model usable='unknown'>z990.2</model>
+      <model usable='unknown'>z890.2</model>
+      <model usable='unknown'>zBC12-base</model>
+      <model usable='unknown'>z800-base</model>
+      <model usable='unknown'>zEC12</model>
+      <model usable='unknown'>z9BC.2-base</model>
+      <model usable='unknown'>z9BC</model>
+      <model usable='unknown'>z10BC.2-base</model>
+      <model usable='unknown'>z990.4-base</model>
+      <model usable='unknown'>qemu</model>
+      <model usable='unknown'>z10BC-base</model>
+      <model usable='unknown'>z9BC-base</model>
+      <model usable='unknown'>z800</model>
+      <model usable='unknown'>z890.2-base</model>
+      <model usable='unknown'>z13.2</model>
+      <model usable='unknown'>z114-base</model>
+      <model usable='unknown'>z196-base</model>
+      <model usable='unknown'>z13-base</model>
+      <model usable='unknown'>z890</model>
+    </mode>
+  </cpu>
+  <devices>
+    <disk supported='yes'>
+      <enum name='diskDevice'>
+        <value>disk</value>
+        <value>cdrom</value>
+        <value>floppy</value>
+        <value>lun</value>
+      </enum>
+      <enum name='bus'>
+        <value>ide</value>
+        <value>fdc</value>
+        <value>scsi</value>
+        <value>virtio</value>
+      </enum>
+    </disk>
+    <graphics supported='yes'>
+      <enum name='type'>
+        <value>sdl</value>
+        <value>vnc</value>
+      </enum>
+    </graphics>
+    <video supported='yes'>
+      <enum name='modelType'>
+        <value>virtio</value>
+      </enum>
+    </video>
+    <hostdev supported='yes'>
+      <enum name='mode'>
+        <value>subsystem</value>
+      </enum>
+      <enum name='startupPolicy'>
+        <value>default</value>
+        <value>mandatory</value>
+        <value>requisite</value>
+        <value>optional</value>
+      </enum>
+      <enum name='subsysType'>
+        <value>usb</value>
+        <value>pci</value>
+        <value>scsi</value>
+      </enum>
+      <enum name='capsType'/>
+      <enum name='pciBackend'>
+        <value>default</value>
+        <value>kvm</value>
+        <value>vfio</value>
+      </enum>
+    </hostdev>
+  </devices>
+  <features>
+    <gic supported='no'/>
+  </features>
+</domainCapabilities>

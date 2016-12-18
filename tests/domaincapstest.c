@@ -134,6 +134,12 @@ static virCPUDef x86Cpu = {
     NULL, 0, NULL, 1, 1, 1, 0, 0, NULL,
 };
 
+static virCPUDef s390Cpu = {
+    VIR_CPU_TYPE_HOST, 0, 0,
+    VIR_ARCH_S390X, NULL,
+    NULL, 0, NULL, 1, 1, 1, 0, 0, NULL,
+};
+
 static int
 fakeHostCPU(virCapsPtr caps,
             virArch arch)
@@ -151,6 +157,10 @@ fakeHostCPU(virCapsPtr caps,
 
     case VIR_ARCH_X86_64:
         cpu = &x86Cpu;
+        break;
+
+    case VIR_ARCH_S390X:
+        cpu = &s390Cpu;
         break;
 
     default:
@@ -442,6 +452,14 @@ mymain(void)
     DO_TEST_QEMU("2.8.0-tcg", "caps_2.8.0",
                  "/usr/bin/qemu-system-x86_64", NULL,
                  "x86_64", VIR_DOMAIN_VIRT_QEMU);
+
+    DO_TEST_QEMU("2.7.0", "caps_2.7.0",
+                 "/usr/bin/qemu-system-s390x", NULL,
+                 "s390x", VIR_DOMAIN_VIRT_KVM);
+
+    DO_TEST_QEMU("2.8.0", "caps_2.8.0",
+                 "/usr/bin/qemu-system-s390x", NULL,
+                 "s390x", VIR_DOMAIN_VIRT_KVM);
 
 #endif /* WITH_QEMU */
 
