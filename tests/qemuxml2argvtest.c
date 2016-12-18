@@ -300,6 +300,9 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
     const char *ppc64Models[] = {
         "POWER8", "POWER7",
     };
+    const char *s390xModels[] = {
+        "z990", "zEC12", "z13",
+    };
 
     if (ARCH_IS_X86(arch)) {
         if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, x86Models,
@@ -335,6 +338,11 @@ testAddCPUModels(virQEMUCapsPtr caps, bool skipLegacy)
                                          VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0 ||
             virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_QEMU, ppc64Models,
                                          ARRAY_CARDINALITY(ppc64Models),
+                                         VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
+            return -1;
+    } else if (ARCH_IS_S390(arch)) {
+        if (virQEMUCapsAddCPUDefinitions(caps, VIR_DOMAIN_VIRT_KVM, s390xModels,
+                                         ARRAY_CARDINALITY(s390xModels),
                                          VIR_DOMCAPS_CPU_USABLE_UNKNOWN) < 0)
             return -1;
     }
@@ -1519,6 +1527,10 @@ mymain(void)
     DO_TEST("cpu-host-passthrough", QEMU_CAPS_KVM);
     DO_TEST_FAILURE("cpu-host-passthrough", NONE);
     DO_TEST_FAILURE("cpu-qemu-host-passthrough", QEMU_CAPS_KVM);
+
+    qemuTestSetHostArch(driver.caps, VIR_ARCH_S390X);
+    DO_TEST("cpu-s390-zEC12", QEMU_CAPS_KVM, QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+    qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE);
 
     qemuTestSetHostCPU(driver.caps, cpuHaswell);
     DO_TEST("cpu-Haswell", QEMU_CAPS_KVM);
