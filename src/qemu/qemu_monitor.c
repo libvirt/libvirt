@@ -3636,6 +3636,68 @@ qemuMonitorCPUDefInfoFree(qemuMonitorCPUDefInfoPtr cpu)
 
 
 int
+qemuMonitorGetCPUModelExpansion(qemuMonitorPtr mon,
+                                const char *type,
+                                const char *model_name,
+                                qemuMonitorCPUModelInfoPtr *model_info)
+{
+    VIR_DEBUG("type=%s model_name=%s", type, model_name);
+
+    QEMU_CHECK_MONITOR_JSON(mon);
+
+    return qemuMonitorJSONGetCPUModelExpansion(mon, type, model_name, model_info);
+}
+
+
+void
+qemuMonitorCPUModelInfoFree(qemuMonitorCPUModelInfoPtr model_info)
+{
+    size_t i;
+
+    if (!model_info)
+        return;
+
+    for (i = 0; i < model_info->nprops; i++)
+        VIR_FREE(model_info->props[i].name);
+
+    VIR_FREE(model_info->name);
+    VIR_FREE(model_info);
+}
+
+
+qemuMonitorCPUModelInfoPtr
+qemuMonitorCPUModelInfoCopy(const qemuMonitorCPUModelInfo *orig)
+{
+    qemuMonitorCPUModelInfoPtr copy;
+    size_t i;
+
+    if (VIR_ALLOC(copy) < 0)
+        goto error;
+
+    if (VIR_ALLOC_N(copy->props, orig->nprops) < 0)
+        goto error;
+
+    if (VIR_STRDUP(copy->name, orig->name) < 0)
+        goto error;
+
+    copy->nprops = orig->nprops;
+
+    for (i = 0; i < orig->nprops; i++) {
+        if (VIR_STRDUP(copy->props[i].name, orig->props[i].name) < 0)
+            goto error;
+
+        copy->props[i].supported = orig->props[i].supported;
+    }
+
+    return copy;
+
+ error:
+    qemuMonitorCPUModelInfoFree(copy);
+    return NULL;
+}
+
+
+int
 qemuMonitorGetCommands(qemuMonitorPtr mon,
                        char ***commands)
 {

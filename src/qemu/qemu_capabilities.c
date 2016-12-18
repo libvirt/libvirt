@@ -354,6 +354,8 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "gluster.debug_level",
               "vhost-scsi",
               "drive-iotune-group",
+
+              "query-cpu-model-expansion", /* 245 */
     );
 
 
@@ -1514,7 +1516,8 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
     { "migrate-incoming", QEMU_CAPS_INCOMING_DEFER },
     { "query-hotpluggable-cpus", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS },
-    { "query-qmp-schema", QEMU_CAPS_QUERY_QMP_SCHEMA }
+    { "query-qmp-schema", QEMU_CAPS_QUERY_QMP_SCHEMA },
+    { "query-cpu-model-expansion", QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION},
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {

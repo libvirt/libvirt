@@ -352,6 +352,12 @@ int qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
                                      qemuMonitorCPUDefInfoPtr **cpus)
     ATTRIBUTE_NONNULL(2);
 
+int qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
+                                        const char *type,
+                                        const char *model_name,
+                                        qemuMonitorCPUModelInfoPtr *model_info)
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
+
 int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
                                char ***commands)
     ATTRIBUTE_NONNULL(2);

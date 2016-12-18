@@ -4973,6 +4973,123 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
     return ret;
 }
 
+static int
+qemuMonitorJSONParseCPUModelProperty(const char *key,
+                                     virJSONValue *value,
+                                     void *opaque)
+{
+    qemuMonitorCPUModelInfoPtr machine_model = opaque;
+    size_t n = machine_model->nprops;
+    bool supported;
+
+    if (!key) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-cpu-model-expansion reply data is missing a"
+                         " property name"));
+        return -1;
+    }
+    if (VIR_STRDUP(machine_model->props[n].name, key) < 0)
+        return -1;
+
+    if (virJSONValueGetBoolean(value, &supported) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-cpu-model-expansion reply data is missing a"
+                         " feature support value"));
+        return -1;
+    }
+    machine_model->props[n].supported = supported;
+
+    machine_model->nprops++;
+    return 0;
+}
+
+int
+qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
+                                    const char *type,
+                                    const char *model_name,
+                                    qemuMonitorCPUModelInfoPtr *model_info)
+{
+    int ret = -1;
+    virJSONValuePtr model;
+    virJSONValuePtr cmd = NULL;
+    virJSONValuePtr reply = NULL;
+    virJSONValuePtr data;
+    virJSONValuePtr cpu_model;
+    virJSONValuePtr cpu_props;
+    qemuMonitorCPUModelInfoPtr machine_model = NULL;
+    char const *cpu_name;
+
+    *model_info = NULL;
+
+    if (!(model = virJSONValueNewObject()))
+        goto cleanup;
+
+    if (virJSONValueObjectAppendString(model, "name", model_name) < 0)
+        goto cleanup;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-cpu-model-expansion",
+                                           "s:type", type,
+                                           "a:model", model,
+                                           NULL)))
+        goto cleanup;
+
+    /* model will be freed when cmd is freed. we set model
+     * to NULL to avoid double freeing.
+     */
+    model = NULL;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        goto cleanup;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        goto cleanup;
+
+    data = virJSONValueObjectGetObject(reply, "return");
+
+    if (!(cpu_model = virJSONValueObjectGetObject(data, "model"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-cpu-model-expansion reply data was missing 'model'"));
+        goto cleanup;
+    }
+
+    if (!(cpu_name = virJSONValueObjectGetString(cpu_model, "name"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-cpu-model-expansion reply data was missing 'name'"));
+        goto cleanup;
+    }
+
+    if (!(cpu_props = virJSONValueObjectGetObject(cpu_model, "props"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-cpu-model-expansion reply data was missing 'props'"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(machine_model) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(machine_model->name, cpu_name) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(machine_model->props, cpu_props->data.object.npairs) < 0)
+        goto cleanup;
+
+    if (virJSONValueObjectForeachKeyValue(cpu_props,
+                                          qemuMonitorJSONParseCPUModelProperty,
+                                          machine_model) < 0)
+        goto cleanup;
+
+    ret = 0;
+    *model_info = machine_model;
+    machine_model = NULL;
+
+ cleanup:
+    qemuMonitorCPUModelInfoFree(machine_model);
+    virJSONValueFree(cmd);
+    virJSONValueFree(reply);
+    virJSONValueFree(model);
+    return ret;
+}
+
 
 int qemuMonitorJSONGetCommands(qemuMonitorPtr mon,
                                char ***commands)
