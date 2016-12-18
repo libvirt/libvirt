@@ -33,38 +33,6 @@
 
 static const virArch archs[] = { VIR_ARCH_S390, VIR_ARCH_S390X };
 
-static virCPUDataPtr
-s390NodeData(virArch arch)
-{
-    virCPUDataPtr data;
-
-    if (VIR_ALLOC(data) < 0)
-        return NULL;
-
-    data->arch = arch;
-
-    return data;
-}
-
-
-static int
-s390Decode(virCPUDefPtr cpu,
-           const virCPUData *data ATTRIBUTE_UNUSED,
-           const char **models ATTRIBUTE_UNUSED,
-           unsigned int nmodels ATTRIBUTE_UNUSED,
-           const char *preferred ATTRIBUTE_UNUSED,
-           unsigned int flags)
-{
-
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
-
-    if (cpu->model == NULL &&
-        VIR_STRDUP(cpu->model, "host") < 0)
-        return -1;
-
-    return 0;
-}
-
 static void
 s390DataFree(virCPUDataPtr data)
 {
@@ -145,10 +113,10 @@ struct cpuArchDriver cpuDriverS390 = {
     .arch = archs,
     .narch = ARRAY_CARDINALITY(archs),
     .compare    = virCPUs390Compare,
-    .decode     = s390Decode,
+    .decode     = NULL,
     .encode     = NULL,
     .free       = s390DataFree,
-    .nodeData   = s390NodeData,
+    .nodeData   = NULL,
     .baseline   = NULL,
     .update     = virCPUs390Update,
 };
