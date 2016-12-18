@@ -6664,6 +6664,14 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         break;
     }
 
+    if (ARCH_IS_S390(def->os.arch) && cpu->features &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("CPU features not supported by hypervisor for %s "
+                         "architecture"), virArchToString(def->os.arch));
+        goto cleanup;
+    }
+
     if (cpu->vendor_id)
         virBufferAsprintf(buf, ",vendor=%s", cpu->vendor_id);
 
@@ -6671,12 +6679,18 @@ qemuBuildCpuModelArgStr(virQEMUDriverPtr driver,
         switch ((virCPUFeaturePolicy) cpu->features[i].policy) {
         case VIR_CPU_FEATURE_FORCE:
         case VIR_CPU_FEATURE_REQUIRE:
-            virBufferAsprintf(buf, ",+%s", cpu->features[i].name);
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
+                virBufferAsprintf(buf, ",%s=on", cpu->features[i].name);
+            else
+                virBufferAsprintf(buf, ",+%s", cpu->features[i].name);
             break;
 
         case VIR_CPU_FEATURE_DISABLE:
         case VIR_CPU_FEATURE_FORBID:
-            virBufferAsprintf(buf, ",-%s", cpu->features[i].name);
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
+                virBufferAsprintf(buf, ",%s=off", cpu->features[i].name);
+            else
+                virBufferAsprintf(buf, ",-%s", cpu->features[i].name);
             break;
 
         case VIR_CPU_FEATURE_OPTIONAL:

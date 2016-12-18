@@ -1530,6 +1530,8 @@ mymain(void)
 
     qemuTestSetHostArch(driver.caps, VIR_ARCH_S390X);
     DO_TEST("cpu-s390-zEC12", QEMU_CAPS_KVM, QEMU_CAPS_VIRTIO_CCW, QEMU_CAPS_VIRTIO_S390);
+    DO_TEST("cpu-s390-features", QEMU_CAPS_KVM, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION);
+    DO_TEST_FAILURE("cpu-s390-features", QEMU_CAPS_KVM);
     qemuTestSetHostArch(driver.caps, VIR_ARCH_NONE);
 
     qemuTestSetHostCPU(driver.caps, cpuHaswell);
