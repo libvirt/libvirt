@@ -7,7 +7,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name dummy2 \
 -S \
--M pc-0.11 \
+-M pc \
 -m 128 \
 -smp 2,maxcpus=6,sockets=6,cores=1,threads=1 \
 -object iothread,id=iothread1 \

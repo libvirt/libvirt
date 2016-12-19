@@ -474,13 +474,6 @@ testCompareXMLToArgv(const void *data)
     if (qemuProcessPrepareMonitorChr(&monitor_chr, priv->libDir) < 0)
         goto cleanup;
 
-    if (STREQ(vm->def->os.machine, "pc") &&
-        STREQ(vm->def->emulator, "/usr/bin/qemu-system-x86_64")) {
-        VIR_FREE(vm->def->os.machine);
-        if (VIR_STRDUP(vm->def->os.machine, "pc-0.11") < 0)
-            goto cleanup;
-    }
-
     if (testUpdateQEMUCaps(info, vm, driver.caps) < 0)
         goto cleanup;
 
