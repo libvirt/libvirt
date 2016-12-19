@@ -2,7 +2,7 @@
 #include <tunables/global>
 @{LIBVIRT}="libvirt"
 
-/usr/sbin/libvirtd {
+/usr/sbin/libvirtd flags=(attach_disconnected) {
   #include <abstractions/base>
   #include <abstractions/dbus>
 
