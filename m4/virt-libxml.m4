@@ -23,22 +23,12 @@ AC_DEFUN([LIBVIRT_ARG_LIBXML], [
 
 AC_DEFUN([LIBVIRT_CHECK_LIBXML], [
   LIBXML_REQUIRED="2.6.0"
-  LIBXML_CFLAGS=""
-  LIBXML_LIBS=""
-  LIBXML_FOUND="no"
 
-  if test "x$with_libxml" = "xno" ; then
-    AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_REQUIRED)
-    AC_MSG_ERROR([libxml2 >= $LIBXML_REQUIRED is required for libvirt])
-  elif test "x$with_libxml" = "xcheck" && test "x$PKG_CONFIG" != "x" ; then
-    PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_REQUIRED, [LIBXML_FOUND=yes], [LIBXML_FOUND=no])
-  fi
-  if test "$LIBXML_FOUND" = "no" ; then
+  LIBVIRT_CHECK_PKG([LIBXML], [libxml-2.0], [$LIBXML_REQUIRED])
+
+  if test "$with_libxml" = "no" ; then
     AC_MSG_ERROR([libxml2 >= $LIBXML_REQUIRED is required for libvirt])
   fi
-
-  AC_SUBST([LIBXML_CFLAGS])
-  AC_SUBST([LIBXML_LIBS])
 
   dnl xmlURI structure has query_raw?
   old_CFLAGS="$CFLAGS"
