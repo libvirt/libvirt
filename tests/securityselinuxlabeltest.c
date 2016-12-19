@@ -45,7 +45,6 @@
 
 VIR_LOG_INIT("tests.securityselinuxlabeltest");
 
-static virCapsPtr caps;
 static virQEMUDriver driver;
 
 static virSecurityManagerPtr mgr;
@@ -189,7 +188,8 @@ testSELinuxLoadDef(const char *testname)
                     abs_srcdir, testname) < 0)
         goto cleanup;
 
-    if (!(def = virDomainDefParseFile(xmlfile, caps, driver.xmlopt, NULL, 0)))
+    if (!(def = virDomainDefParseFile(xmlfile, driver.caps, driver.xmlopt,
+                                      NULL, 0)))
         goto cleanup;
 
     for (i = 0; i < def->ndisks; i++) {
@@ -356,9 +356,6 @@ mymain(void)
                          virGetLastErrorMessage());
         return EXIT_FAILURE;
     }
-
-    if ((caps = testQemuCapsInit()) == NULL)
-        return EXIT_FAILURE;
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;

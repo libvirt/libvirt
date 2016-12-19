@@ -31,6 +31,10 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+
+virQEMUDriver driver;
+
+
 static int
 testQemuAgentFSFreeze(const void *data)
 {
@@ -167,7 +171,6 @@ static int
 testQemuAgentGetFSInfo(const void *data)
 {
     virDomainXMLOptionPtr xmlopt = (virDomainXMLOptionPtr)data;
-    virCapsPtr caps = testQemuCapsInit();
     qemuMonitorTestPtr test = qemuMonitorTestNewAgent(xmlopt);
     char *domain_filename = NULL;
     virDomainDefPtr def = NULL;
@@ -181,7 +184,7 @@ testQemuAgentGetFSInfo(const void *data)
                     abs_srcdir) < 0)
         goto cleanup;
 
-    if (!(def = virDomainDefParseFile(domain_filename, caps, xmlopt,
+    if (!(def = virDomainDefParseFile(domain_filename, driver.caps, xmlopt,
                                       NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE)))
         goto cleanup;
 
@@ -293,7 +296,6 @@ testQemuAgentGetFSInfo(const void *data)
         virDomainFSInfoFree(info[i]);
     VIR_FREE(info);
     VIR_FREE(domain_filename);
-    virObjectUnref(caps);
     virDomainDefFree(def);
     qemuMonitorTestFree(test);
     return ret;
@@ -903,7 +905,6 @@ testQemuAgentGetInterfaces(const void *data)
 static int
 mymain(void)
 {
-    virQEMUDriver driver;
     int ret = 0;
 
 #if !WITH_YAJL
