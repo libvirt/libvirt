@@ -258,6 +258,9 @@ mymain(void)
     DO_TEST("new-disk");
     DO_TEST_FORMAT("disk-positional-parms-full", false);
     DO_TEST_FORMAT("disk-positional-parms-partial", false);
+#ifdef LIBXL_HAVE_QED
+    DO_TEST_FORMAT("disk-qed", false);
+#endif
     DO_TEST("spice");
     DO_TEST("spice-features");
     DO_TEST("vif-rate");

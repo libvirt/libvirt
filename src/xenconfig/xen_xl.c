@@ -1050,6 +1050,9 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
         case VIR_STORAGE_FILE_QCOW2:
             virBufferAddLit(&buf, "qcow2");
             break;
+        case VIR_STORAGE_FILE_QED:
+            virBufferAddLit(&buf, "qed");
+            break;
       /* set default */
         default:
             virBufferAddLit(&buf, "raw");
