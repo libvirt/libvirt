@@ -254,9 +254,6 @@ testInfoSet(struct testInfo *info,
     if (!(info->qemuCaps = virQEMUCapsNew()))
         goto error;
 
-    virQEMUCapsSetList(info->qemuCaps,
-                       QEMU_CAPS_LAST);
-
     if (testQemuCapsSetGIC(info->qemuCaps, gic) < 0)
         goto error;
 
