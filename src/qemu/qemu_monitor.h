@@ -682,10 +682,6 @@ int qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
                                 unsigned int flags,
                                 const char * const *argv);
 
-int qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
-                             unsigned int flags,
-                             const char *unixfile);
-
 int qemuMonitorMigrateCancel(qemuMonitorPtr mon);
 
 int qemuMonitorGetDumpGuestMemoryCapability(qemuMonitorPtr mon,

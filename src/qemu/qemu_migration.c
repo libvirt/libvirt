@@ -4355,7 +4355,6 @@ qemuMigrationConfirm(virConnectPtr conn,
 enum qemuMigrationDestinationType {
     MIGRATION_DEST_HOST,
     MIGRATION_DEST_CONNECT_HOST,
-    MIGRATION_DEST_UNIX,
     MIGRATION_DEST_FD,
 };
 
@@ -4374,11 +4373,6 @@ struct _qemuMigrationSpec {
             const char *name;
             int port;
         } host;
-
-        struct {
-            char *file;
-            int sock;
-        } unix_socket;
 
         struct {
             int qemu;
@@ -4816,11 +4810,6 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         /* handled above and transformed into MIGRATION_DEST_FD */
         break;
 
-    case MIGRATION_DEST_UNIX:
-        ret = qemuMonitorMigrateToUnix(priv->mon, migrate_flags,
-                                       spec->dest.unix_socket.file);
-        break;
-
     case MIGRATION_DEST_FD:
         if (spec->fwdType != MIGRATION_FWD_DIRECT) {
             fd = spec->dest.fd.local;
@@ -4839,25 +4828,6 @@ qemuMigrationRun(virQEMUDriverPtr driver,
 
     /* From this point onwards we *must* call cancel to abort the
      * migration on source if anything goes wrong */
-
-    if (spec->destType == MIGRATION_DEST_UNIX) {
-        /* It is also possible that the migrate didn't fail initially, but
-         * rather failed later on.  Check its status before waiting for a
-         * connection from qemu which may never be initiated.
-         */
-        if (qemuMigrationCheckJobStatus(driver, vm,
-                                        QEMU_ASYNC_JOB_MIGRATION_OUT,
-                                        false) < 0)
-            goto cancel;
-
-        while ((fd = accept(spec->dest.unix_socket.sock, NULL, NULL)) < 0) {
-            if (errno == EAGAIN || errno == EINTR)
-                continue;
-            virReportSystemError(errno, "%s",
-                                 _("failed to accept connection from qemu"));
-            goto cancel;
-        }
-    }
 
     if (spec->fwdType != MIGRATION_FWD_DIRECT) {
         if (!(iothread = qemuMigrationStartTunnel(spec->fwd.stream, fd)))
@@ -5081,7 +5051,6 @@ static int doTunnelMigrate(virQEMUDriverPtr driver,
                            qemuMigrationCompressionPtr compression,
                            qemuMonitorMigrationParamsPtr migParams)
 {
-    virNetSocketPtr sock = NULL;
     int ret = -1;
     qemuMigrationSpec spec;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
@@ -5120,13 +5089,8 @@ static int doTunnelMigrate(virQEMUDriverPtr driver,
                            compression, migParams);
 
  cleanup:
-    if (spec.destType == MIGRATION_DEST_FD) {
-        VIR_FORCE_CLOSE(spec.dest.fd.qemu);
-        VIR_FORCE_CLOSE(spec.dest.fd.local);
-    } else {
-        virObjectUnref(sock);
-        VIR_FREE(spec.dest.unix_socket.file);
-    }
+    VIR_FORCE_CLOSE(spec.dest.fd.qemu);
+    VIR_FORCE_CLOSE(spec.dest.fd.local);
 
     virObjectUnref(cfg);
     return ret;

@@ -2622,30 +2622,6 @@ qemuMonitorMigrateToCommand(qemuMonitorPtr mon,
 
 
 int
-qemuMonitorMigrateToUnix(qemuMonitorPtr mon,
-                         unsigned int flags,
-                         const char *unixfile)
-{
-    char *dest = NULL;
-    int ret = -1;
-    VIR_DEBUG("unixfile=%s flags=%x", unixfile, flags);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    if (virAsprintf(&dest, "unix:%s", unixfile) < 0)
-        return -1;
-
-    if (mon->json)
-        ret = qemuMonitorJSONMigrate(mon, flags, dest);
-    else
-        ret = qemuMonitorTextMigrate(mon, flags, dest);
-
-    VIR_FREE(dest);
-    return ret;
-}
-
-
-int
 qemuMonitorMigrateCancel(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR(mon);
