@@ -94,6 +94,31 @@ static virCPUDef cpuPower8Data = {
     .threads = 8,
 };
 
+typedef enum {
+    TEST_UTILS_QEMU_BIN_I686_HVM,
+    TEST_UTILS_QEMU_BIN_I686_KVM,
+    TEST_UTILS_QEMU_BIN_X86_64_HVM,
+    TEST_UTILS_QEMU_BIN_X86_64_KVM,
+    TEST_UTILS_QEMU_BIN_AARCH64_HVM,
+    TEST_UTILS_QEMU_BIN_ARM_HVM,
+    TEST_UTILS_QEMU_BIN_PPC64_HVM,
+    TEST_UTILS_QEMU_BIN_PPC_HVM,
+    TEST_UTILS_QEMU_BIN_S390X_HVM
+} QEMUBinType;
+
+static const char *QEMUBinList[] = {
+    "/usr/bin/qemu",
+    "/usr/bin/qemu-kvm",
+    "/usr/bin/qemu-system-x86_64",
+    "/usr/bin/kvm",
+    "/usr/bin/qemu-system-aarch64",
+    "/usr/bin/qemu-system-arm",
+    "/usr/bin/qemu-system-ppc64",
+    "/usr/bin/qemu-system-ppc",
+    "/usr/bin/qemu-system-s390x"
+};
+
+
 static virCapsGuestMachinePtr *testQemuAllocMachines(int *nmachines)
 {
     virCapsGuestMachinePtr *machines;
@@ -154,7 +179,7 @@ testQemuAddI686Guest(virCapsPtr caps)
     if (!(guest = virCapabilitiesAddGuest(caps,
                                           VIR_DOMAIN_OSTYPE_HVM,
                                           VIR_ARCH_I686,
-                                          "/usr/bin/qemu",
+                                          QEMUBinList[TEST_UTILS_QEMU_BIN_I686_HVM],
                                           NULL,
                                           nmachines,
                                           machines)))
@@ -178,7 +203,7 @@ testQemuAddI686Guest(virCapsPtr caps)
 
     if (!virCapabilitiesAddGuestDomain(guest,
                                        VIR_DOMAIN_VIRT_KVM,
-                                       "/usr/bin/qemu-kvm",
+                                       QEMUBinList[TEST_UTILS_QEMU_BIN_I686_KVM],
                                        NULL,
                                        nmachines,
                                        machines))
@@ -205,7 +230,7 @@ testQemuAddX86_64Guest(virCapsPtr caps)
     if (!(guest = virCapabilitiesAddGuest(caps,
                                           VIR_DOMAIN_OSTYPE_HVM,
                                           VIR_ARCH_X86_64,
-                                          "/usr/bin/qemu-system-x86_64",
+                                          QEMUBinList[TEST_UTILS_QEMU_BIN_X86_64_HVM],
                                           NULL,
                                           nmachines,
                                           machines)))
@@ -229,7 +254,7 @@ testQemuAddX86_64Guest(virCapsPtr caps)
 
     if (!virCapabilitiesAddGuestDomain(guest,
                                        VIR_DOMAIN_VIRT_KVM,
-                                       "/usr/bin/kvm",
+                                       QEMUBinList[TEST_UTILS_QEMU_BIN_X86_64_KVM],
                                        NULL,
                                        nmachines,
                                        machines))
@@ -239,7 +264,7 @@ testQemuAddX86_64Guest(virCapsPtr caps)
 
     if (!virCapabilitiesAddGuestDomain(guest,
                                        VIR_DOMAIN_VIRT_KVM,
-                                       "/usr/bin/kvm",
+                                       QEMUBinList[TEST_UTILS_QEMU_BIN_X86_64_KVM],
                                        NULL,
                                        0,
                                        NULL))
@@ -264,8 +289,8 @@ static int testQemuAddPPC64Guest(virCapsPtr caps)
         goto error;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64,
-                                    "/usr/bin/qemu-system-ppc64", NULL,
-                                     1, machines);
+                                    QEMUBinList[TEST_UTILS_QEMU_BIN_PPC64_HVM],
+                                    NULL, 1, machines);
     if (!guest)
         goto error;
 
@@ -291,8 +316,8 @@ static int testQemuAddPPC64LEGuest(virCapsPtr caps)
         goto error;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64LE,
-                                    "/usr/bin/qemu-system-ppc64", NULL,
-                                     1, machines);
+                                    QEMUBinList[TEST_UTILS_QEMU_BIN_PPC64_HVM],
+                                    NULL, 1, machines);
     if (!guest)
         goto error;
 
@@ -321,8 +346,8 @@ static int testQemuAddPPCGuest(virCapsPtr caps)
         goto error;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC,
-                                    "/usr/bin/qemu-system-ppc", NULL,
-                                     1, machines);
+                                    QEMUBinList[TEST_UTILS_QEMU_BIN_PPC_HVM],
+                                    NULL, 1, machines);
     if (!guest)
         goto error;
 
@@ -350,7 +375,8 @@ static int testQemuAddS390Guest(virCapsPtr caps)
         goto error;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_S390X,
-                                    "/usr/bin/qemu-system-s390x", NULL,
+                                    QEMUBinList[TEST_UTILS_QEMU_BIN_S390X_HVM],
+                                    NULL,
                                     ARRAY_CARDINALITY(s390_machines),
                                     machines);
     if (!guest)
@@ -380,7 +406,8 @@ static int testQemuAddArmGuest(virCapsPtr caps)
         goto error;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_ARMV7L,
-                                    "/usr/bin/qemu-system-arm", NULL,
+                                    QEMUBinList[TEST_UTILS_QEMU_BIN_ARM_HVM],
+                                    NULL,
                                     ARRAY_CARDINALITY(machines),
                                     capsmachines);
     if (!guest)
@@ -408,7 +435,8 @@ static int testQemuAddAARCH64Guest(virCapsPtr caps)
         goto error;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_AARCH64,
-                                    "/usr/bin/qemu-system-aarch64", NULL,
+                                    QEMUBinList[TEST_UTILS_QEMU_BIN_AARCH64_HVM],
+                                    NULL,
                                     ARRAY_CARDINALITY(machines),
                                     capsmachines);
     if (!guest)
