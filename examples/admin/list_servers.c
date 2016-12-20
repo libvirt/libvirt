@@ -8,7 +8,7 @@ int main(void)
     virAdmConnectPtr conn = NULL;
     virAdmServerPtr *servers = NULL;    /* where to store the servers */
     virAdmServerPtr *tmp = NULL;
-    size_t i = 0;
+    ssize_t i = 0;
     int count = 0;
 
     /* first, open a connection to the daemon */

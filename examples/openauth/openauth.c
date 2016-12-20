@@ -91,7 +91,7 @@ static int
 showDomains(virConnectPtr conn)
 {
     int ret = 0, numNames, numInactiveDomains, numActiveDomains;
-    size_t i;
+    ssize_t i;
     char **nameList = NULL;
 
     numActiveDomains = virConnectNumOfDomains(conn);

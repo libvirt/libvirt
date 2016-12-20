@@ -9,7 +9,7 @@ int main(int argc, char **argv)
     virAdmServerPtr srv = NULL;     /* which server to work with */
     virTypedParameterPtr params = NULL;
     int nparams = 0;
-    size_t i;
+    ssize_t i;
 
     if (argc != 2) {
         fprintf(stderr, "One argument specifying the server which to work "

@@ -55,7 +55,7 @@ static int
 showDomains(virConnectPtr conn)
 {
     int ret = 0, numNames, numInactiveDomains, numActiveDomains;
-    size_t i;
+    ssize_t i;
     int flags = VIR_CONNECT_LIST_DOMAINS_ACTIVE |
                 VIR_CONNECT_LIST_DOMAINS_INACTIVE;
     virDomainPtr *nameList = NULL;

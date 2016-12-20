@@ -50,7 +50,7 @@ int main(int argc, char **argv)
     virAdmConnectPtr conn = NULL;
     virAdmServerPtr srv = NULL;      /* which server list the clients from */
     virAdmClientPtr *clients = NULL;    /* where to store the servers */
-    size_t i = 0;
+    ssize_t i = 0;
     int count = 0;
 
     if (argc != 2) {

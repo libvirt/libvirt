@@ -102,7 +102,7 @@ int main(int argc, char **argv)
     virAdmClientPtr clnt = NULL;   /* which client get identity for */
     virTypedParameterPtr params = NULL;     /* where to store identity info */
     int nparams = 0;
-    size_t i = 0;
+    ssize_t i = 0;
     char *timestr = NULL;
 
     if (argc != 3) {

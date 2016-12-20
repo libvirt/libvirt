@@ -161,7 +161,7 @@ fetch_domains(virConnectPtr conn)
 {
     int num_domains, ret = -1;
     virDomainPtr *domains = NULL;
-    size_t i;
+    ssize_t i;
     const int list_flags = VIR_CONNECT_LIST_DOMAINS_ACTIVE;
 
     DEBUG("Fetching list of running domains");
