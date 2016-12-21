@@ -46,11 +46,11 @@
       </li>
       <li><strong>Bug fixes</strong>
         <ul>
-            <li>qemu: Correct GetBlockInfo values<br/>
-            For an active domain, correct the physical value provided for
-            a raw sparse file backed storage and the allocation value provided
-            for a qcow2 file backed storage that hasn't yet been opened on
-            the domain
+          <li>qemu: Correct GetBlockInfo values<br/>
+          For an active domain, correct the physical value provided for
+          a raw sparse file backed storage and the allocation value provided
+          for a qcow2 file backed storage that hasn't yet been opened on
+          the domain
           </li>
         </ul>
       </li>
