@@ -414,7 +414,7 @@ AC_DEFUN([LIBVIRT_ARG_WITH], [
   m4_pushdef([version_text], m4_ifnblank(min_version, [[ (>= ]]min_version[[)]]))
 
   m4_divert_text([DEFAULTS], [with_var][[=]][default_action])
-  AC_ARG_WITH([check_name_dash],
+  AC_ARG_WITH([check_name_lc],
               [AS_HELP_STRING([[--]arg_var],
                               [with ]]m4_dquote(help_name)m4_dquote(version_text)[[ support @<:@default=]]m4_dquote(default_action)[[@:>@])])
 
@@ -456,7 +456,7 @@ AC_DEFUN([LIBVIRT_ARG_WITH_ALT], [
   m4_pushdef([with_var], [with_]check_name_lc)
 
   m4_divert_text([DEFAULTS], [with_var][[=]][default_action])
-  AC_ARG_WITH([check_name_dash],
+  AC_ARG_WITH([check_name_lc],
               [AS_HELP_STRING([[--]arg_var],
                               ]m4_dquote(help_desc)[[ @<:@default=]]m4_dquote(default_action)[[@:>@])])
 
@@ -494,7 +494,7 @@ AC_DEFUN([LIBVIRT_ARG_ENABLE], [
   m4_pushdef([enable_var], [enable_]check_name_lc)
 
   m4_divert_text([DEFAULTS], [enable_var][[=]][default_action])
-  AC_ARG_ENABLE([check_name_dash],
+  AC_ARG_ENABLE([check_name_lc],
                 [AS_HELP_STRING([[--]arg_var],
                                 ]m4_dquote(help_desc)[[ @<:@default=]]m4_dquote(default_action)[[@:>@])])
 
