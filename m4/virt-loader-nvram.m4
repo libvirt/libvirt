@@ -31,7 +31,7 @@ AC_DEFUN([LIBVIRT_CHECK_LOADER_NVRAM], [
     if test $(expr $l % 2) -ne 0 ; then
       AC_MSG_ERROR([Malformed --with-loader-nvram argument])
     fi
-    AC_DEFINE_UNQUOTED([DEFAULT_LOADER_NVRAM], [$with_loader_nvram],
+    AC_DEFINE_UNQUOTED([DEFAULT_LOADER_NVRAM], ["$with_loader_nvram"],
                        [List of loader:nvram pairs])
   fi
 ])
