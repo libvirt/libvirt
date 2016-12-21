@@ -52,6 +52,10 @@
           for a qcow2 file backed storage that hasn't yet been opened on
           the domain
           </li>
+          <li>qemu: Make virtio console usable on ppc64 guests<br/>
+          The chardev detection code has been improved and can now handle this
+          configuration properly
+          </li>
         </ul>
       </li>
     </ul>
