@@ -54,15 +54,18 @@ AC_DEFUN([LIBVIRT_CHECK_GNUTLS],[
                          [set to 1 if it is known or assumed that GNUTLS uses gcrypt])
     fi
 
+    OLD_CFLAGS="$CFLAGS"
+    OLD_LIBS="$LIBS"
+    CFLAGS="$CFLAGS $GNUTLS_CFLAGS"
+    LIBS="$LIBS $GNUTLS_LIBS"
     AC_CHECK_HEADERS([gnutls/crypto.h], [], [], [[
       #include <gnutls/gnutls.h>
     ]])
 
-    OLD_LIBS="$LIBS"
-    LIBS="$LIBS $GNUTLS_LIBS"
     AC_CHECK_FUNCS([gnutls_rnd])
     AC_CHECK_FUNCS([gnutls_cipher_encrypt])
-    LIBS=$OLD_LIBS
+    CFLAGS="$OLD_CFLAGS"
+    LIBS="$OLD_LIBS"
   fi
 ])
 
