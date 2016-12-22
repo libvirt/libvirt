@@ -32,6 +32,13 @@
           adjusted during runtime using the admin interface without the
           necessity of the daemon's restart
           </li>
+          <li>storage: Add virStorageVolInfoFlags API<br/>
+          Add the API to support using the VIR_STORAGE_VOL_GET_PHYSICAL
+          flag in order to return the host physical size in bytes
+          of the image container in the allocation field of the
+          _virStorageVolInfo structure. The --physical flag has been
+          added to the virsh vol-info command to access the data
+          </li>
         </ul>
       </li>
       <li><strong>Improvements</strong>
@@ -41,6 +48,10 @@
           executed, branch misses, bus cycles, stalled frontend
           cpu cycles, stalled backend cpu cycles, and ref cpu
           cycles by applications running on the platform
+          </li>
+          <li>conf: Display &lt;physical&gt; for volume xml<br/>
+          Add a display of the &lt;physical&gt; size of a disk
+          volume in the output of the volume XML
           </li>
         </ul>
       </li>
