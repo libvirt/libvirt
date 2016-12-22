@@ -43,6 +43,7 @@
 #include "configmake.h"
 #include "virstring.h"
 #include "viraccessapicheck.h"
+#include "secret_event.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECRET
 
@@ -58,6 +59,9 @@ struct _virSecretDriverState {
     virMutex lock;
     virSecretObjListPtr secrets;
     char *configDir;
+
+    /* Immutable pointer, self-locking APIs */
+    virObjectEventStatePtr secretEventState;
 };
 
 static virSecretDriverStatePtr driver;
@@ -218,6 +222,7 @@ secretDefineXML(virConnectPtr conn,
     virSecretObjPtr secret = NULL;
     virSecretDefPtr backup = NULL;
     virSecretDefPtr new_attrs;
+    virObjectEventPtr event = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -256,6 +261,12 @@ secretDefineXML(virConnectPtr conn,
     /* Saved successfully - drop old values */
     virSecretDefFree(backup);
 
+    event = virSecretEventLifecycleNew(new_attrs->uuid,
+                                       new_attrs->usage_type,
+                                       new_attrs->usage_id,
+                                       VIR_SECRET_EVENT_DEFINED,
+                                       0);
+
     ret = virGetSecret(conn,
                        new_attrs->uuid,
                        new_attrs->usage_type,
@@ -276,6 +287,8 @@ secretDefineXML(virConnectPtr conn,
  cleanup:
     virSecretDefFree(new_attrs);
     virSecretObjEndAPI(&secret);
+    if (event)
+        virObjectEventStateQueue(driver->secretEventState, event);
 
     return ret;
 }
@@ -381,6 +394,7 @@ secretUndefine(virSecretPtr obj)
     int ret = -1;
     virSecretObjPtr secret;
     virSecretDefPtr def;
+    virObjectEventPtr event = NULL;
 
     if (!(secret = secretObjFromSecret(obj)))
         goto cleanup;
@@ -392,6 +406,12 @@ secretUndefine(virSecretPtr obj)
     if (virSecretObjDeleteConfig(secret) < 0)
         goto cleanup;
 
+    event = virSecretEventLifecycleNew(def->uuid,
+                                       def->usage_type,
+                                       def->usage_id,
+                                       VIR_SECRET_EVENT_UNDEFINED,
+                                       0);
+
     virSecretObjDeleteData(secret);
 
     virSecretObjListRemove(driver->secrets, secret);
@@ -400,6 +420,8 @@ secretUndefine(virSecretPtr obj)
 
  cleanup:
     virSecretObjEndAPI(&secret);
+    if (event)
+        virObjectEventStateQueue(driver->secretEventState, event);
 
     return ret;
 }
@@ -414,6 +436,8 @@ secretStateCleanup(void)
 
     virObjectUnref(driver->secrets);
     VIR_FREE(driver->configDir);
+
+    virObjectUnref(driver->secretEventState);
 
     secretDriverUnlock();
     virMutexDestroy(&driver->lock);
@@ -437,6 +461,8 @@ secretStateInitialize(bool privileged,
         return -1;
     }
     secretDriverLock();
+
+    driver->secretEventState = virObjectEventStateNew();
 
     if (privileged) {
         if (VIR_STRDUP(base, SYSCONFDIR "/libvirt") < 0)
@@ -479,6 +505,48 @@ secretStateReload(void)
     return 0;
 }
 
+static int
+secretConnectSecretEventRegisterAny(virConnectPtr conn,
+                                    virSecretPtr secret,
+                                    int eventID,
+                                    virConnectSecretEventGenericCallback callback,
+                                    void *opaque,
+                                    virFreeCallback freecb)
+{
+    int callbackID = -1;
+
+    if (virConnectSecretEventRegisterAnyEnsureACL(conn) < 0)
+        goto cleanup;
+
+    if (virSecretEventStateRegisterID(conn, driver->secretEventState,
+                                      secret, eventID, callback,
+                                      opaque, freecb, &callbackID) < 0)
+        callbackID = -1;
+ cleanup:
+    return callbackID;
+}
+
+static int
+secretConnectSecretEventDeregisterAny(virConnectPtr conn,
+                                      int callbackID)
+{
+    int ret = -1;
+
+    if (virConnectSecretEventDeregisterAnyEnsureACL(conn) < 0)
+        goto cleanup;
+
+    if (virObjectEventStateDeregisterID(conn,
+                                        driver->secretEventState,
+                                        callbackID) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
 static virSecretDriver secretDriver = {
     .name = "secret",
     .connectNumOfSecrets = secretConnectNumOfSecrets, /* 0.7.1 */
@@ -491,6 +559,8 @@ static virSecretDriver secretDriver = {
     .secretSetValue = secretSetValue, /* 0.7.1 */
     .secretGetValue = secretGetValue, /* 0.7.1 */
     .secretUndefine = secretUndefine, /* 0.7.1 */
+    .connectSecretEventRegisterAny = secretConnectSecretEventRegisterAny, /* 3.0.0 */
+    .connectSecretEventDeregisterAny = secretConnectSecretEventDeregisterAny, /* 3.0.0 */
 };
 
 static virStateDriver stateDriver = {
