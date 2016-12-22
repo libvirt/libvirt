@@ -60,8 +60,8 @@ AC_DEFUN([LIBVIRT_CHECK_GNUTLS],[
 
     OLD_LIBS="$LIBS"
     LIBS="$LIBS $GNUTLS_LIBS"
-    AC_CHECK_FUNC([gnutls_rnd])
-    AC_CHECK_FUNC([gnutls_cipher_encrypt])
+    AC_CHECK_FUNCS([gnutls_rnd])
+    AC_CHECK_FUNCS([gnutls_cipher_encrypt])
     LIBS=$OLD_LIBS
   fi
 ])
