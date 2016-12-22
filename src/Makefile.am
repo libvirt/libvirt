@@ -354,6 +354,9 @@ STORAGE_EVENT_SOURCES =						\
 NODE_DEVICE_EVENT_SOURCES =					\
                 conf/node_device_event.c conf/node_device_event.h
 
+SECRET_EVENT_SOURCES =					\
+                conf/secret_event.c conf/secret_event.h
+
 # Network driver generic impl APIs
 NETWORK_CONF_SOURCES =						\
 		conf/network_conf.c conf/network_conf.h \
@@ -406,6 +409,7 @@ CONF_SOURCES =							\
 		$(NETWORK_EVENT_SOURCES)			\
 		$(STORAGE_EVENT_SOURCES)			\
 		$(NODE_DEVICE_EVENT_SOURCES)			\
+		$(SECRET_EVENT_SOURCES)				\
 		$(NETWORK_CONF_SOURCES)				\
 		$(NWFILTER_CONF_SOURCES)			\
 		$(NODE_DEVICE_CONF_SOURCES)			\
@@ -2390,6 +2394,7 @@ libvirt_setuid_rpc_client_la_SOURCES = 		\
 		conf/object_event.c		\
 		conf/storage_event.c            \
 		conf/node_device_event.c	\
+		conf/secret_event.c		\
 		rpc/virnetsocket.c		\
 		rpc/virnetsocket.h		\
 		rpc/virnetmessage.h		\

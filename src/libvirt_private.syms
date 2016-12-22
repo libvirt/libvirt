@@ -843,6 +843,11 @@ virSecretUsageTypeFromString;
 virSecretUsageTypeToString;
 
 
+# conf/secret_event.h
+virSecretEventLifecycleNew;
+virSecretEventStateRegisterID;
+
+
 # conf/snapshot_conf.h
 virDomainListSnapshots;
 virDomainSnapshotAlignDisks;
