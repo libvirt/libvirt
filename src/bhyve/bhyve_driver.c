@@ -1124,6 +1124,13 @@ bhyveDomainSetMetadata(virDomainPtr dom,
                                   privconn->xmlopt, BHYVE_STATE_DIR,
                                   BHYVE_CONFIG_DIR, flags);
 
+    if (ret == 0) {
+        virObjectEventPtr ev = NULL;
+        ev = virDomainEventMetadataChangeNewFromObj(vm, type, uri);
+        virObjectEventStateQueue(privconn->domainEventState, ev);
+    }
+
+
  cleanup:
     virObjectUnref(caps);
     virObjectUnlock(vm);

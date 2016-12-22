@@ -3770,6 +3770,25 @@ typedef void (*virConnectDomainEventDeviceRemovalFailedCallback)(virConnectPtr c
                                                                  const char *devAlias,
                                                                  void *opaque);
 
+/**
+ * virConnectDomainEventMetadataChangeCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @type: a value from virDomainMetadataTypea
+ * @nsuri: XML namespace URI
+ * @opaque: application specified data
+ *
+ * This callback is triggered when the domain XML metadata is changed
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_METADATA_CHANGE with virConnectDomainEventRegisterAny().
+ */
+typedef void (*virConnectDomainEventMetadataChangeCallback)(virConnectPtr conn,
+                                                            virDomainPtr dom,
+                                                            int type,
+                                                            const char *nsuri,
+                                                            void *opaque);
+
 
 /**
  * virConnectDomainEventMigrationIterationCallback:
@@ -4195,6 +4214,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION = 20, /* virConnectDomainEventMigrationIterationCallback */
     VIR_DOMAIN_EVENT_ID_JOB_COMPLETED = 21,  /* virConnectDomainEventJobCompletedCallback */
     VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED = 22, /* virConnectDomainEventDeviceRemovalFailedCallback */
+    VIR_DOMAIN_EVENT_ID_METADATA_CHANGE = 23, /* virConnectDomainEventMetadataChangeCallback */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

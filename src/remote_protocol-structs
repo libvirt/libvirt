@@ -2800,6 +2800,12 @@ struct remote_domain_set_guest_vcpus_args {
         int                        state;
         u_int                      flags;
 };
+struct remote_domain_event_callback_metadata_change_msg {
+        int                        callbackID;
+        remote_nonnull_domain      dom;
+        int                        type;
+        remote_string              nsuri
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3179,4 +3185,5 @@ enum remote_procedure {
         REMOTE_PROC_NODE_DEVICE_EVENT_LIFECYCLE = 376,
         REMOTE_PROC_NODE_DEVICE_EVENT_UPDATE = 377,
         REMOTE_PROC_STORAGE_VOL_GET_INFO_FLAGS = 378,
+        REMOTE_PROC_DOMAIN_EVENT_CALLBACK_METADATA_CHANGE = 379,
 };

@@ -1223,6 +1223,50 @@ remoteRelayDomainEventDeviceRemovalFailed(virConnectPtr conn,
 }
 
 
+static int
+remoteRelayDomainEventMetadataChange(virConnectPtr conn,
+                                     virDomainPtr dom,
+                                     int type,
+                                     const char *nsuri,
+                                     void *opaque)
+{
+    daemonClientEventCallbackPtr callback = opaque;
+    remote_domain_event_callback_metadata_change_msg data;
+    char **nsurip;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayDomainEventCheckACL(callback->client, conn, dom))
+        return -1;
+
+    VIR_DEBUG("Relaying domain metadata change %s %d %d %s, callback %d",
+              dom->name, dom->id, type, NULLSTR(nsuri), callback->callbackID);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+
+    data.type = type;
+    if (nsuri) {
+        if (VIR_ALLOC(nsurip) < 0)
+            return -1;
+        if (VIR_STRDUP(*nsurip, nsuri) < 0) {
+            VIR_FREE(nsurip);
+            return -1;
+        }
+        data.nsuri = nsurip;
+    }
+
+    make_nonnull_domain(&data.dom, dom);
+    data.callbackID = callback->callbackID;
+
+    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_CALLBACK_METADATA_CHANGE,
+                                  (xdrproc_t)xdr_remote_domain_event_callback_metadata_change_msg,
+                                  &data);
+
+    return 0;
+}
+
+
 
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
@@ -1248,6 +1292,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventMigrationIteration),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventJobCompleted),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventDeviceRemovalFailed),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventMetadataChange),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);

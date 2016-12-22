@@ -3353,6 +3353,13 @@ struct remote_domain_set_guest_vcpus_args {
 };
 
 
+struct remote_domain_event_callback_metadata_change_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+    int type;
+    remote_string nsuri;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -5952,5 +5959,11 @@ enum remote_procedure {
      * @priority: high
      * @acl: storage_vol:read
      */
-    REMOTE_PROC_STORAGE_VOL_GET_INFO_FLAGS = 378
+    REMOTE_PROC_STORAGE_VOL_GET_INFO_FLAGS = 378,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_METADATA_CHANGE = 379
 };

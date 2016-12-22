@@ -59,6 +59,7 @@ static virClassPtr virDomainEventDeviceAddedClass;
 static virClassPtr virDomainEventMigrationIterationClass;
 static virClassPtr virDomainEventJobCompletedClass;
 static virClassPtr virDomainEventDeviceRemovalFailedClass;
+static virClassPtr virDomainEventMetadataChangeClass;
 
 static void virDomainEventDispose(void *obj);
 static void virDomainEventLifecycleDispose(void *obj);
@@ -79,6 +80,7 @@ static void virDomainEventDeviceAddedDispose(void *obj);
 static void virDomainEventMigrationIterationDispose(void *obj);
 static void virDomainEventJobCompletedDispose(void *obj);
 static void virDomainEventDeviceRemovalFailedDispose(void *obj);
+static void virDomainEventMetadataChangeDispose(void *obj);
 
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
@@ -266,6 +268,15 @@ struct _virDomainEventDeviceRemovalFailed {
 typedef struct _virDomainEventDeviceRemovalFailed virDomainEventDeviceRemovalFailed;
 typedef virDomainEventDeviceRemovalFailed *virDomainEventDeviceRemovalFailedPtr;
 
+struct _virDomainEventMetadataCange {
+    virDomainEvent parent;
+
+    int type;
+    char *nsuri;
+};
+typedef struct _virDomainEventMetadataCange virDomainEventMetadataChange;
+typedef virDomainEventMetadataChange *virDomainEventMetadataChangePtr;
+
 
 
 static int
@@ -384,6 +395,12 @@ virDomainEventsOnceInit(void)
                       "virDomainEventDeviceRemovalFailed",
                       sizeof(virDomainEventDeviceRemovalFailed),
                       virDomainEventDeviceRemovalFailedDispose)))
+        return -1;
+    if (!(virDomainEventMetadataChangeClass =
+          virClassNew(virDomainEventClass,
+                      "virDomainEventMetadataChange",
+                      sizeof(virDomainEventMetadataChange),
+                      virDomainEventMetadataChangeDispose)))
         return -1;
     return 0;
 }
@@ -570,6 +587,16 @@ virDomainEventJobCompletedDispose(void *obj)
     VIR_DEBUG("obj=%p", event);
 
     virTypedParamsFree(event->params, event->nparams);
+}
+
+
+static void
+virDomainEventMetadataChangeDispose(void *obj)
+{
+    virDomainEventMetadataChangePtr event = obj;
+    VIR_DEBUG("obj=%p", event);
+
+    VIR_FREE(event->nsuri);
 }
 
 
@@ -1600,6 +1627,53 @@ virDomainEventTunableNewFromDom(virDomainPtr dom,
 }
 
 
+static virObjectEventPtr
+virDomainEventMetadataChangeNew(int id,
+                                const char *name,
+                                unsigned char *uuid,
+                                int type,
+                                const char *nsuri)
+{
+    virDomainEventMetadataChangePtr ev;
+
+    if (virDomainEventsInitialize() < 0)
+        return NULL;
+
+    if (!(ev = virDomainEventNew(virDomainEventMetadataChangeClass,
+                                 VIR_DOMAIN_EVENT_ID_METADATA_CHANGE,
+                                 id, name, uuid)))
+        return NULL;
+
+    ev->type = type;
+    if (nsuri && VIR_STRDUP(ev->nsuri, nsuri) < 0)
+        goto error;
+
+    return (virObjectEventPtr)ev;
+
+ error:
+    virObjectUnref(ev);
+    return NULL;
+}
+
+virObjectEventPtr
+virDomainEventMetadataChangeNewFromObj(virDomainObjPtr obj,
+                                       int type,
+                                       const char *nsuri)
+{
+    return virDomainEventMetadataChangeNew(obj->def->id, obj->def->name,
+                                           obj->def->uuid, type, nsuri);
+}
+
+virObjectEventPtr
+virDomainEventMetadataChangeNewFromDom(virDomainPtr dom,
+                                       int type,
+                                       const char *nsuri)
+{
+    return virDomainEventMetadataChangeNew(dom->id, dom->name, dom->uuid,
+                                           type, nsuri);
+}
+
+
 static void
 virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                   virObjectEventPtr event,
@@ -1854,6 +1928,18 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
             ((virConnectDomainEventDeviceRemovalFailedCallback)cb)(conn, dom,
                                                                    deviceRemovalFailedEvent->devAlias,
                                                                    cbopaque);
+            goto cleanup;
+        }
+
+    case VIR_DOMAIN_EVENT_ID_METADATA_CHANGE:
+        {
+            virDomainEventMetadataChangePtr metadataChangeEvent;
+
+            metadataChangeEvent = (virDomainEventMetadataChangePtr)event;
+            ((virConnectDomainEventMetadataChangeCallback)cb)(conn, dom,
+                                                              metadataChangeEvent->type,
+                                                              metadataChangeEvent->nsuri,
+                                                              cbopaque);
             goto cleanup;
         }
 

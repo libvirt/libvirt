@@ -12750,6 +12750,29 @@ virshEventDeviceRemovalFailedPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
     virshEventPrint(opaque, &buf);
 }
 
+VIR_ENUM_DECL(virshEventMetadataChangeType)
+VIR_ENUM_IMPL(virshEventMetadataChangeType,
+              VIR_DOMAIN_METADATA_LAST,
+              N_("description"),
+              N_("title"),
+              N_("element"))
+
+static void
+virshEventMetadataChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                              virDomainPtr dom,
+                              int type,
+                              const char *nsuri,
+                              void *opaque)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&buf, _("event 'metdata-change' for domain %s: %s %s\n"),
+                      virDomainGetName(dom),
+                      UNKNOWNSTR(virshEventMetadataChangeTypeTypeToString(type)),
+                      NULLSTR(nsuri));
+    virshEventPrint(opaque, &buf);
+}
+
 
 static vshEventCallback vshEventCallbacks[] = {
     { "lifecycle",
@@ -12796,6 +12819,8 @@ static vshEventCallback vshEventCallbacks[] = {
       VIR_DOMAIN_EVENT_CALLBACK(virshEventJobCompletedPrint), },
     { "device-removal-failed",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventDeviceRemovalFailedPrint), },
+    { "metadata-change",
+      VIR_DOMAIN_EVENT_CALLBACK(virshEventMetadataChangePrint), },
 };
 verify(VIR_DOMAIN_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
 

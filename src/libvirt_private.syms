@@ -558,6 +558,8 @@ virDomainEventLifecycleNew;
 virDomainEventLifecycleNewFromDef;
 virDomainEventLifecycleNewFromDom;
 virDomainEventLifecycleNewFromObj;
+virDomainEventMetadataChangeNewFromDom;
+virDomainEventMetadataChangeNewFromObj;
 virDomainEventMigrationIterationNewFromDom;
 virDomainEventMigrationIterationNewFromObj;
 virDomainEventPMSuspendDiskNewFromDom;

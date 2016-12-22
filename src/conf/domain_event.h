@@ -234,6 +234,16 @@ virDomainEventJobCompletedNewFromDom(virDomainPtr dom,
                                      virTypedParameterPtr params,
                                      int nparams);
 
+virObjectEventPtr
+virDomainEventMetadataChangeNewFromObj(virDomainObjPtr obj,
+                                       int type,
+                                       const char *nsuri);
+
+virObjectEventPtr
+virDomainEventMetadataChangeNewFromDom(virDomainPtr dom,
+                                       int type,
+                                       const char *nsuri);
+
 int
 virDomainEventStateRegister(virConnectPtr conn,
                             virObjectEventStatePtr state,

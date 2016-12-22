@@ -917,6 +917,40 @@ myDomainEventDeviceRemovalFailedCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static const char *
+metadataTypeToStr(int status)
+{
+    switch ((virDomainMetadataType) status) {
+    case VIR_DOMAIN_METADATA_DESCRIPTION:
+        return "description";
+
+    case VIR_DOMAIN_METADATA_TITLE:
+        return "title";
+
+    case VIR_DOMAIN_METADATA_ELEMENT:
+        return "element";
+
+    case VIR_DOMAIN_METADATA_LAST:
+        break;
+    }
+
+    return "unknown";
+}
+
+static int
+myDomainEventMetadataChangeCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                    virDomainPtr dom,
+                                    int type,
+                                    const char *nsuri,
+                                    void *opaque ATTRIBUTE_UNUSED)
+{
+    const char *typestr = metadataTypeToStr(type);
+    printf("%s EVENT: Domain %s(%d) metadata type: %s (%s)\n",
+           __func__, virDomainGetName(dom), virDomainGetID(dom), typestr, nsuri ? nsuri : "n/a");
+    return 0;
+}
+
+
 
 static void
 myFreeFunc(void *opaque)
@@ -971,6 +1005,7 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION, myDomainEventMigrationIterationCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_JOB_COMPLETED, myDomainEventJobCompletedCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED, myDomainEventDeviceRemovalFailedCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_METADATA_CHANGE, myDomainEventMetadataChangeCallback),
 };
 
 struct storagePoolEventData {

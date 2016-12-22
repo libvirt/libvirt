@@ -355,6 +355,11 @@ remoteDomainBuildEventCallbackJobCompleted(virNetClientProgramPtr prog,
                                            void *evdata, void *opaque);
 
 static void
+remoteDomainBuildEventCallbackMetadataChange(virNetClientProgramPtr prog,
+                                             virNetClientPtr client,
+                                             void *evdata, void *opaque);
+
+static void
 remoteNetworkBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                  virNetClientPtr client ATTRIBUTE_UNUSED,
                                  void *evdata, void *opaque);
@@ -558,6 +563,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteDomainBuildEventCallbackDeviceRemovalFailed,
       sizeof(remote_domain_event_callback_device_removal_failed_msg),
       (xdrproc_t)xdr_remote_domain_event_callback_device_removal_failed_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_CALLBACK_METADATA_CHANGE,
+      remoteDomainBuildEventCallbackMetadataChange,
+      sizeof(remote_domain_event_callback_metadata_change_msg),
+      (xdrproc_t)xdr_remote_domain_event_callback_metadata_change_msg },
     { REMOTE_PROC_STORAGE_POOL_EVENT_LIFECYCLE,
       remoteStoragePoolBuildEventLifecycle,
       sizeof(remote_storage_pool_event_lifecycle_msg),
@@ -5241,6 +5250,28 @@ remoteDomainBuildEventCallbackJobCompleted(virNetClientProgramPtr prog ATTRIBUTE
     }
 
     event = virDomainEventJobCompletedNewFromDom(dom, params, nparams);
+
+    virObjectUnref(dom);
+
+    remoteEventQueue(priv, event, msg->callbackID);
+}
+
+
+static void
+remoteDomainBuildEventCallbackMetadataChange(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                             virNetClientPtr client ATTRIBUTE_UNUSED,
+                                             void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_domain_event_callback_metadata_change_msg *msg = evdata;
+    struct private_data *priv = conn->privateData;
+    virDomainPtr dom;
+    virObjectEventPtr event = NULL;
+
+    if (!(dom = get_nonnull_domain(conn, msg->dom)))
+        return;
+
+    event = virDomainEventMetadataChangeNewFromDom(dom, msg->type, msg->nsuri ? *msg->nsuri : NULL);
 
     virObjectUnref(dom);
 

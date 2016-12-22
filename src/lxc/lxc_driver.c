@@ -5379,6 +5379,12 @@ lxcDomainSetMetadata(virDomainPtr dom,
                                   driver->xmlopt, cfg->stateDir,
                                   cfg->configDir, flags);
 
+    if (ret == 0) {
+        virObjectEventPtr ev = NULL;
+        ev = virDomainEventMetadataChangeNewFromObj(vm, type, uri);
+        virObjectEventStateQueue(driver->domainEventState, ev);
+    }
+
     virLXCDomainObjEndJob(driver, vm);
 
  cleanup:

@@ -2721,6 +2721,12 @@ static int testDomainSetMetadata(virDomainPtr dom,
                                   privconn->caps, privconn->xmlopt,
                                   NULL, NULL, flags);
 
+    if (ret == 0) {
+        virObjectEventPtr ev = NULL;
+        ev = virDomainEventMetadataChangeNewFromObj(privdom, type, uri);
+        testObjectEventQueue(privconn, ev);
+    }
+
     virDomainObjEndAPI(&privdom);
     return ret;
 }
