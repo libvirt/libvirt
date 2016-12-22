@@ -33,6 +33,7 @@
 #include "virfile.h"
 #include "virutil.h"
 #include "virstring.h"
+#include "virtime.h"
 #include "conf/secret_conf.h"
 
 static virSecretPtr
@@ -550,6 +551,189 @@ cmdSecretList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     return ret;
 }
 
+/*
+ * "Secret-event" command
+ */
+VIR_ENUM_DECL(virshSecretEvent)
+VIR_ENUM_IMPL(virshSecretEvent,
+              VIR_SECRET_EVENT_LAST,
+              N_("Defined"),
+              N_("Undefined"))
+
+static const char *
+virshSecretEventToString(int event)
+{
+    const char *str = virshSecretEventTypeToString(event);
+    return str ? _(str) : _("unknown");
+}
+
+struct vshEventCallback {
+    const char *name;
+    virConnectSecretEventGenericCallback cb;
+};
+typedef struct vshEventCallback vshEventCallback;
+
+struct virshSecretEventData {
+    vshControl *ctl;
+    bool loop;
+    bool timestamp;
+    int count;
+    vshEventCallback *cb;
+};
+typedef struct virshSecretEventData virshSecretEventData;
+
+static void
+vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                       virSecretPtr secret,
+                       int event,
+                       int detail ATTRIBUTE_UNUSED,
+                       void *opaque)
+{
+    virshSecretEventData *data = opaque;
+    char uuid[VIR_UUID_STRING_BUFLEN];
+
+    if (!data->loop && data->count)
+        return;
+
+    virSecretGetUUIDString(secret, uuid);
+    if (data->timestamp) {
+        char timestamp[VIR_TIME_STRING_BUFLEN];
+
+        if (virTimeStringNowRaw(timestamp) < 0)
+            timestamp[0] = '\0';
+
+        vshPrint(data->ctl, _("%s: event 'lifecycle' for secret %s: %s\n"),
+                 timestamp, uuid, virshSecretEventToString(event));
+    } else {
+        vshPrint(data->ctl, _("event 'lifecycle' for secret %s: %s\n"),
+                 uuid, virshSecretEventToString(event));
+    }
+
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
+static vshEventCallback vshEventCallbacks[] = {
+    { "lifecycle",
+      VIR_SECRET_EVENT_CALLBACK(vshEventLifecyclePrint), },
+};
+
+static const vshCmdInfo info_secret_event[] = {
+    {.name = "help",
+     .data = N_("Secret Events")
+    },
+    {.name = "desc",
+     .data = N_("List event types, or wait for secret events to occur")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_secret_event[] = {
+    {.name = "secret",
+     .type = VSH_OT_STRING,
+     .help = N_("filter by secret name or uuid")
+    },
+    {.name = "event",
+     .type = VSH_OT_STRING,
+     .help = N_("which event type to wait for")
+    },
+    {.name = "loop",
+     .type = VSH_OT_BOOL,
+     .help = N_("loop until timeout or interrupt, rather than one-shot")
+    },
+    {.name = "timeout",
+     .type = VSH_OT_INT,
+     .help = N_("timeout seconds")
+    },
+    {.name = "list",
+     .type = VSH_OT_BOOL,
+     .help = N_("list valid event types")
+    },
+    {.name = "timestamp",
+     .type = VSH_OT_BOOL,
+     .help = N_("show timestamp for each printed event")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdSecretEvent(vshControl *ctl, const vshCmd *cmd)
+{
+    virSecretPtr secret = NULL;
+    bool ret = false;
+    int eventId = -1;
+    int timeout = 0;
+    virshSecretEventData data;
+    const char *eventName = NULL;
+    int event;
+    virshControlPtr priv = ctl->privData;
+
+    if (vshCommandOptBool(cmd, "list")) {
+        size_t i;
+
+        for (i = 0; i < VIR_SECRET_EVENT_ID_LAST; i++)
+            vshPrint(ctl, "%s\n", vshEventCallbacks[i].name);
+        return true;
+    }
+
+    if (vshCommandOptStringReq(ctl, cmd, "event", &eventName) < 0)
+        return false;
+    if (!eventName) {
+        vshError(ctl, "%s", _("either --list or --event <type> is required"));
+        return false;
+    }
+    for (event = 0; event < VIR_SECRET_EVENT_ID_LAST; event++)
+        if (STREQ(eventName, vshEventCallbacks[event].name))
+            break;
+    if (event == VIR_SECRET_EVENT_ID_LAST) {
+        vshError(ctl, _("unknown event type %s"), eventName);
+        return false;
+    }
+
+    data.ctl = ctl;
+    data.loop = vshCommandOptBool(cmd, "loop");
+    data.timestamp = vshCommandOptBool(cmd, "timestamp");
+    data.count = 0;
+    data.cb = &vshEventCallbacks[event];
+    if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
+        return false;
+
+    if (vshCommandOptBool(cmd, "secret"))
+        secret = virshCommandOptSecret(ctl, cmd, NULL);
+    if (vshEventStart(ctl, timeout) < 0)
+        goto cleanup;
+
+    if ((eventId = virConnectSecretEventRegisterAny(priv->conn, secret, event,
+                                                    data.cb->cb,
+                                                    &data, NULL)) < 0)
+        goto cleanup;
+    switch (vshEventWait(ctl)) {
+    case VSH_EVENT_INTERRUPT:
+        vshPrint(ctl, "%s", _("event loop interrupted\n"));
+        break;
+    case VSH_EVENT_TIMEOUT:
+        vshPrint(ctl, "%s", _("event loop timed out\n"));
+        break;
+    case VSH_EVENT_DONE:
+        break;
+    default:
+        goto cleanup;
+    }
+    vshPrint(ctl, _("events received: %d\n"), data.count);
+    if (data.count)
+        ret = true;
+
+ cleanup:
+    vshEventCleanup(ctl);
+    if (eventId >= 0 &&
+        virConnectSecretEventDeregisterAny(priv->conn, eventId) < 0)
+        ret = false;
+    if (secret)
+        virSecretFree(secret);
+    return ret;
+}
+
 const vshCmdDef secretCmds[] = {
     {.name = "secret-define",
      .handler = cmdSecretDefine,
@@ -561,6 +745,12 @@ const vshCmdDef secretCmds[] = {
      .handler = cmdSecretDumpXML,
      .opts = opts_secret_dumpxml,
      .info = info_secret_dumpxml,
+     .flags = 0
+    },
+    {.name = "secret-event",
+     .handler = cmdSecretEvent,
+     .opts = opts_secret_event,
+     .info = info_secret_event,
      .flags = 0
     },
     {.name = "secret-get-value",

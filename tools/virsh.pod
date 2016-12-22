@@ -3964,6 +3964,24 @@ properties defined in I<file>, without affecting the secret value.
 
 Output properties of I<secret> (specified by its UUID) as an XML dump to stdout.
 
+=item B<secret-event> {[I<secret>] I<event> [I<--loop>] [I<--timeout>
+I<seconds>] [I<--timestamp>] | I<--list>}
+
+Wait for a class of secret events to occur, and print appropriate details
+of events as they happen.  The events can optionally be filtered by
+I<secret>.  Using I<--list> as the only argument will provide a list
+of possible I<event> values known by this client, although the connection
+might not allow registering for all these events.
+
+By default, this command is one-shot, and returns success once an event
+occurs; you can send SIGINT (usually via C<Ctrl-C>) to quit immediately.
+If I<--timeout> is specified, the command gives up waiting for events
+after I<seconds> have elapsed.   With I<--loop>, the command prints all
+events until a timeout or interrupt key.
+
+When I<--timestamp> is used, a human-readable timestamp will be printed
+before the event.
+
 =item B<secret-set-value> I<secret> I<base64>
 
 Set the value associated with I<secret> (specified by its UUID) to the value
