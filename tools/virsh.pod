@@ -2274,7 +2274,7 @@ including context-switches, minor-faults, etc.. Now dozens of events
 from different sources can be supported by perf.
 
 Currently only QEMU/KVM supports this command. The I<--enable> and I<--disable>
-option combined with B<eventSpec> can be used to enabled or disable specific
+option combined with B<eventSpec> can be used to enable or disable specific
 performance event. B<eventSpec> is a string list of one or more events
 separated by commas. Valid event names are as follows:
 
