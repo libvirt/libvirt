@@ -1044,6 +1044,18 @@ qemuDomainSecretDiskCapable(virStorageSourcePtr src)
 }
 
 
+bool
+qemuDomainDiskHasEncryptionSecret(virStorageSourcePtr src)
+{
+    if (!virStorageSourceIsEmpty(src) && src->encryption &&
+        src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
+        src->encryption->nsecrets > 0)
+        return true;
+
+    return false;
+}
+
+
 /* qemuDomainSecretDiskPrepare:
  * @conn: Pointer to connection
  * @priv: pointer to domain private object
@@ -1082,8 +1094,7 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
         diskPriv->secinfo = secinfo;
     }
 
-    if (!virStorageSourceIsEmpty(src) && src->encryption &&
-        src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
+    if (qemuDomainDiskHasEncryptionSecret(src)) {
 
         if (VIR_ALLOC(secinfo) < 0)
             return -1;
