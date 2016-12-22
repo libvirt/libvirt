@@ -370,6 +370,24 @@ nodeDeviceEventToString(int event)
 }
 
 
+static const char *
+secretEventToString(int event)
+{
+    switch ((virSecretEventLifecycleType) event) {
+        case VIR_SECRET_EVENT_DEFINED:
+            return "Defined";
+
+        case VIR_SECRET_EVENT_UNDEFINED:
+            return "Undefined";
+
+        case VIR_SECRET_EVENT_LAST:
+            break;
+    }
+
+    return "unknown";
+}
+
+
 static int
 myDomainEventCallback1(virConnectPtr conn ATTRIBUTE_UNUSED,
                        virDomainPtr dom,
@@ -728,6 +746,23 @@ myNodeDeviceEventUpdateCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int
+mySecretEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                      virSecretPtr secret,
+                      int event,
+                      int detail,
+                      void *opaque ATTRIBUTE_UNUSED)
+{
+    char uuid[VIR_UUID_STRING_BUFLEN];
+    virSecretGetUUIDString(secret, uuid);
+    printf("%s EVENT: Secret %s %s %d\n", __func__,
+           uuid,
+           secretEventToString(event),
+           detail);
+    return 0;
+}
+
+
 static void
 eventTypedParamsPrint(virTypedParameterPtr params,
                       int nparams)
@@ -1038,10 +1073,25 @@ struct nodeDeviceEventData nodeDeviceEvents[] = {
     NODE_DEVICE_EVENT(VIR_NODE_DEVICE_EVENT_ID_UPDATE, myNodeDeviceEventUpdateCallback),
 };
 
+struct secretEventData {
+    int event;
+    int id;
+    virConnectSecretEventGenericCallback cb;
+    const char *name;
+};
+
+#define SECRET_EVENT(event, callback)                                          \
+    {event, -1, VIR_SECRET_EVENT_CALLBACK(callback), #event}
+
+struct secretEventData secretEvents[] = {
+    SECRET_EVENT(VIR_SECRET_EVENT_ID_LIFECYCLE, mySecretEventCallback),
+};
+
 /* make sure that the events are kept in sync */
 verify(ARRAY_CARDINALITY(domainEvents) == VIR_DOMAIN_EVENT_ID_LAST);
 verify(ARRAY_CARDINALITY(storagePoolEvents) == VIR_STORAGE_POOL_EVENT_ID_LAST);
 verify(ARRAY_CARDINALITY(nodeDeviceEvents) == VIR_NODE_DEVICE_EVENT_ID_LAST);
+verify(ARRAY_CARDINALITY(secretEvents) == VIR_SECRET_EVENT_ID_LAST);
 
 int
 main(int argc, char **argv)
@@ -1149,6 +1199,22 @@ main(int argc, char **argv)
         }
     }
 
+    /* register common secret callbacks */
+    for (i = 0; i < ARRAY_CARDINALITY(secretEvents); i++) {
+        struct secretEventData *event = secretEvents + i;
+
+        event->id = virConnectSecretEventRegisterAny(dconn, NULL,
+                                                     event->event,
+                                                     event->cb,
+                                                     strdup(event->name),
+                                                     myFreeFunc);
+
+        if (event->id < 0) {
+            fprintf(stderr, "Failed to register event '%s'\n", event->name);
+            goto cleanup;
+        }
+    }
+
     if ((callback1ret == -1) ||
         (callback16ret == -1))
         goto cleanup;
@@ -1189,6 +1255,12 @@ main(int argc, char **argv)
     for (i = 0; i < ARRAY_CARDINALITY(nodeDeviceEvents); i++) {
         if (nodeDeviceEvents[i].id > 0)
             virConnectNodeDeviceEventDeregisterAny(dconn, nodeDeviceEvents[i].id);
+    }
+
+    printf("Deregistering secret event callbacks\n");
+    for (i = 0; i < ARRAY_CARDINALITY(secretEvents); i++) {
+        if (secretEvents[i].id > 0)
+            virConnectSecretEventDeregisterAny(dconn, secretEvents[i].id);
     }
 
 
