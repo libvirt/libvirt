@@ -693,3 +693,132 @@ virSecretFree(virSecretPtr secret)
     virObjectUnref(secret);
     return 0;
 }
+
+
+/**
+ * virConnectSecretEventRegisterAny:
+ * @conn: pointer to the connection
+ * @secret: pointer to the secret
+ * @eventID: the event type to receive
+ * @cb: callback to the function handling secret events
+ * @opaque: opaque data to pass on to the callback
+ * @freecb: optional function to deallocate opaque when not used anymore
+ *
+ * Adds a callback to receive notifications of arbitrary secret events
+ * occurring on a secret. This function requires that an event loop
+ * has been previously registered with virEventRegisterImpl() or
+ * virEventRegisterDefaultImpl().
+ *
+ * If @secret is NULL, then events will be monitored for any secret.
+ * If @secret is non-NULL, then only the specific secret will be monitored.
+ *
+ * Most types of events have a callback providing a custom set of parameters
+ * for the event. When registering an event, it is thus necessary to use
+ * the VIR_SECRET_EVENT_CALLBACK() macro to cast the
+ * supplied function pointer to match the signature of this method.
+ *
+ * The virSecretPtr object handle passed into the callback upon delivery
+ * of an event is only valid for the duration of execution of the callback.
+ * If the callback wishes to keep the secret object after the callback
+ * returns, it shall take a reference to it, by calling virSecretRef().
+ * The reference can be released once the object is no longer required
+ * by calling virSecretFree().
+ *
+ * The return value from this method is a positive integer identifier
+ * for the callback. To unregister a callback, this callback ID should
+ * be passed to the virConnectSecretEventDeregisterAny() method.
+ *
+ * Returns a callback identifier on success, -1 on failure.
+ */
+int
+virConnectSecretEventRegisterAny(virConnectPtr conn,
+                                 virSecretPtr secret,
+                                 int eventID,
+                                 virConnectSecretEventGenericCallback cb,
+                                 void *opaque,
+                                 virFreeCallback freecb)
+{
+    VIR_DEBUG("conn=%p, secret=%p, eventID=%d, cb=%p, opaque=%p, freecb=%p",
+              conn, secret, eventID, cb, opaque, freecb);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    if (secret) {
+        virCheckSecretGoto(secret, error);
+        if (secret->conn != conn) {
+            char uuidstr[VIR_UUID_STRING_BUFLEN];
+            virUUIDFormat(secret->uuid, uuidstr);
+            virReportInvalidArg(secret,
+                                _("secret '%s' in %s must match connection"),
+                                uuidstr, __FUNCTION__);
+            goto error;
+        }
+    }
+    virCheckNonNullArgGoto(cb, error);
+    virCheckNonNegativeArgGoto(eventID, error);
+
+    if (eventID >= VIR_SECRET_EVENT_ID_LAST) {
+        virReportInvalidArg(eventID,
+                            _("eventID in %s must be less than %d"),
+                            __FUNCTION__, VIR_SECRET_EVENT_ID_LAST);
+        goto error;
+    }
+
+    if (conn->secretDriver &&
+        conn->secretDriver->connectSecretEventRegisterAny) {
+        int ret;
+        ret = conn->secretDriver->connectSecretEventRegisterAny(conn,
+                                                                secret,
+                                                                eventID,
+                                                                cb,
+                                                                opaque,
+                                                                freecb);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
+ * virConnectSecretEventDeregisterAny:
+ * @conn: pointer to the connection
+ * @callbackID: the callback identifier
+ *
+ * Removes an event callback. The callbackID parameter should be the
+ * value obtained from a previous virConnectSecretEventRegisterAny() method.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+int
+virConnectSecretEventDeregisterAny(virConnectPtr conn,
+                                   int callbackID)
+{
+    VIR_DEBUG("conn=%p, callbackID=%d", conn, callbackID);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckNonNegativeArgGoto(callbackID, error);
+
+    if (conn->secretDriver &&
+        conn->secretDriver->connectSecretEventDeregisterAny) {
+        int ret;
+        ret = conn->secretDriver->connectSecretEventDeregisterAny(conn,
+                                                                  callbackID);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+ error:
+    virDispatchError(conn);
+    return -1;
+}

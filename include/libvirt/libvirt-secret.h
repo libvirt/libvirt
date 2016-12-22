@@ -110,5 +110,96 @@ int                     virSecretUndefine       (virSecretPtr secret);
 int                     virSecretRef            (virSecretPtr secret);
 int                     virSecretFree           (virSecretPtr secret);
 
+/**
+ * VIR_SECRET_EVENT_CALLBACK:
+ *
+ * Used to cast the event specific callback into the generic one
+ * for use for virConnectSecretEventRegisterAny()
+ */
+# define VIR_SECRET_EVENT_CALLBACK(cb)((virConnectSecretEventGenericCallback)(cb))
+
+/**
+ * virSecretEventID:
+ *
+ * An enumeration of supported eventId parameters for
+ * virConnectSecretEventRegisterAny(). Each event id determines which
+ * signature of callback function will be used.
+ */
+typedef enum {
+    VIR_SECRET_EVENT_ID_LIFECYCLE = 0, /* virConnectSecretEventLifecycleCallback */
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_SECRET_EVENT_ID_LAST
+    /*
+     * NB: this enum value will increase over time as new events are
+     * added to the libvirt API. It reflects the last event ID supported
+     * by this version of the libvirt API.
+     */
+# endif
+} virSecretEventID;
+
+/**
+ * virConnectSecretEventGenericCallback:
+ * @conn: the connection pointer
+ * @secret: the secret pointer
+ * @opaque: application specified data
+ *
+ * A generic secret event callback handler, for use with
+ * virConnectSecretEventRegisterAny(). Specific events usually
+ * have a customization with extra parameters, often with @opaque being
+ * passed in a different parameter position; use
+ * VIR_SECRET_EVENT_CALLBACK() when registering an appropriate handler.
+ */
+typedef void (*virConnectSecretEventGenericCallback)(virConnectPtr conn,
+                                                     virSecretPtr secret,
+                                                     void *opaque);
+
+/* Use VIR_SECRET_EVENT_CALLBACK() to cast the 'cb' parameter  */
+int virConnectSecretEventRegisterAny(virConnectPtr conn,
+                                     virSecretPtr secret, /* optional, to filter */
+                                     int eventID,
+                                     virConnectSecretEventGenericCallback cb,
+                                     void *opaque,
+                                     virFreeCallback freecb);
+
+int virConnectSecretEventDeregisterAny(virConnectPtr conn,
+                                       int callbackID);
+
+/**
+ * virSecretEventLifecycleType:
+ *
+ * a virSecretEventLifecycleType is emitted during secret
+ * lifecycle events
+ */
+typedef enum {
+    VIR_SECRET_EVENT_DEFINED = 0,
+    VIR_SECRET_EVENT_UNDEFINED = 1,
+
+# ifdef VIR_ENUM_SENTINELS
+    VIR_SECRET_EVENT_LAST
+# endif
+} virSecretEventLifecycleType;
+
+/**
+ * virConnectSecretEventLifecycleCallback:
+ * @conn: connection object
+ * @secret: secret on which the event occurred
+ * @event: The specific virSecretEventLifeCycleType which occurred
+ * @detail: contains some details on the reason of the event.
+ * @opaque: application specified data
+ *
+ * This callback is called when a secret lifecycle action is performed,
+ * like added or removed.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_SECRET_EVENT_ID_LIFECYCLE with
+ * virConnectSecretEventRegisterAny()
+ */
+typedef void (*virConnectSecretEventLifecycleCallback)(virConnectPtr conn,
+                                                       virSecretPtr secret,
+                                                       int event,
+                                                       int detail,
+                                                       void *opaque);
+
 
 #endif /* __VIR_LIBVIRT_SECRET_H__ */

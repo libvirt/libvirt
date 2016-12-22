@@ -77,6 +77,18 @@ typedef int
                                virSecretPtr **secrets,
                                unsigned int flags);
 
+typedef int
+(*virDrvConnectSecretEventRegisterAny)(virConnectPtr conn,
+                                       virSecretPtr secret,
+                                       int eventID,
+                                       virConnectSecretEventGenericCallback cb,
+                                       void *opaque,
+                                       virFreeCallback freecb);
+
+typedef int
+(*virDrvConnectSecretEventDeregisterAny)(virConnectPtr conn,
+                                         int callbackID);
+
 typedef struct _virSecretDriver virSecretDriver;
 typedef virSecretDriver *virSecretDriverPtr;
 
@@ -98,6 +110,8 @@ struct _virSecretDriver {
     virDrvSecretSetValue secretSetValue;
     virDrvSecretGetValue secretGetValue;
     virDrvSecretUndefine secretUndefine;
+    virDrvConnectSecretEventRegisterAny connectSecretEventRegisterAny;
+    virDrvConnectSecretEventDeregisterAny connectSecretEventDeregisterAny;
 };
 
 

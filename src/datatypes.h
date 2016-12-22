@@ -223,6 +223,20 @@ extern virClassPtr virAdmClientClass;
         }                                                               \
     } while (0)
 
+# define virCheckSecretGoto(obj, label)                                 \
+    do {                                                                \
+        virSecretPtr _secret = (obj);                                   \
+        if (!virObjectIsClass(_secret, virSecretClass) ||               \
+            !virObjectIsClass(_secret->conn, virConnectClass)) {        \
+            virReportErrorHelper(VIR_FROM_SECRET,                       \
+                                 VIR_ERR_INVALID_SECRET,                \
+                                 __FILE__, __FUNCTION__, __LINE__,      \
+                                 __FUNCTION__);                         \
+            virDispatchError(NULL);                                     \
+            goto label;                                                 \
+        }                                                               \
+    } while (0)
+
 # define virCheckStreamReturn(obj, retval)                              \
     do {                                                                \
         virStreamPtr _st = (obj);                                       \
