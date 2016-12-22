@@ -2806,6 +2806,22 @@ struct remote_domain_event_callback_metadata_change_msg {
         int                        type;
         remote_string              nsuri
 };
+struct remote_connect_secret_event_register_any_args {
+        int                        eventID;
+        remote_secret              secret;
+};
+struct remote_connect_secret_event_register_any_ret {
+        int                        callbackID;
+};
+struct remote_connect_secret_event_deregister_any_args {
+        int                        callbackID;
+};
+struct remote_secret_event_lifecycle_msg {
+        int                        callbackID;
+        remote_nonnull_secret      secret;
+        int                        event;
+        int                        detail;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3186,4 +3202,7 @@ enum remote_procedure {
         REMOTE_PROC_NODE_DEVICE_EVENT_UPDATE = 377,
         REMOTE_PROC_STORAGE_VOL_GET_INFO_FLAGS = 378,
         REMOTE_PROC_DOMAIN_EVENT_CALLBACK_METADATA_CHANGE = 379,
+        REMOTE_PROC_CONNECT_SECRET_EVENT_REGISTER_ANY = 380,
+        REMOTE_PROC_CONNECT_SECRET_EVENT_DEREGISTER_ANY = 381,
+        REMOTE_PROC_SECRET_EVENT_LIFECYCLE = 382,
 };

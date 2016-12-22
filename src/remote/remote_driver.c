@@ -36,6 +36,7 @@
 #include "network_event.h"
 #include "storage_event.h"
 #include "node_device_event.h"
+#include "secret_event.h"
 #include "driver.h"
 #include "virbuffer.h"
 #include "remote_driver.h"
@@ -385,6 +386,11 @@ remoteNodeDeviceBuildEventUpdate(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                  void *evdata, void *opaque);
 
 static void
+remoteSecretBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                virNetClientPtr client ATTRIBUTE_UNUSED,
+                                void *evdata, void *opaque);
+
+static void
 remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                          virNetClientPtr client ATTRIBUTE_UNUSED,
                                          void *evdata, void *opaque);
@@ -583,6 +589,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteNodeDeviceBuildEventUpdate,
       sizeof(remote_node_device_event_update_msg),
       (xdrproc_t)xdr_remote_node_device_event_update_msg },
+    { REMOTE_PROC_SECRET_EVENT_LIFECYCLE,
+      remoteSecretBuildEventLifecycle,
+      sizeof(remote_secret_event_lifecycle_msg),
+      (xdrproc_t)xdr_remote_secret_event_lifecycle_msg },
 };
 
 static void
@@ -3315,6 +3325,103 @@ remoteConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
 
 
 static int
+remoteConnectSecretEventRegisterAny(virConnectPtr conn,
+                                    virSecretPtr secret,
+                                    int eventID,
+                                    virConnectSecretEventGenericCallback callback,
+                                    void *opaque,
+                                    virFreeCallback freecb)
+{
+    int rv = -1;
+    struct private_data *priv = conn->privateData;
+    remote_connect_secret_event_register_any_args args;
+    remote_connect_secret_event_register_any_ret ret;
+    int callbackID;
+    int count;
+    remote_nonnull_secret sec;
+
+    remoteDriverLock(priv);
+
+    if ((count = virSecretEventStateRegisterClient(conn, priv->eventState,
+                                                   secret, eventID, callback,
+                                                   opaque, freecb,
+                                                   &callbackID)) < 0)
+        goto done;
+
+    /* If this is the first callback for this eventID, we need to enable
+     * events on the server */
+    if (count == 1) {
+        args.eventID = eventID;
+        if (secret) {
+            make_nonnull_secret(&sec, secret);
+            args.secret = &sec;
+        } else {
+            args.secret = NULL;
+        }
+
+        memset(&ret, 0, sizeof(ret));
+        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_SECRET_EVENT_REGISTER_ANY,
+                 (xdrproc_t) xdr_remote_connect_secret_event_register_any_args, (char *) &args,
+                 (xdrproc_t) xdr_remote_connect_secret_event_register_any_ret, (char *) &ret) == -1) {
+            virObjectEventStateDeregisterID(conn, priv->eventState,
+                                            callbackID);
+            goto done;
+        }
+
+        virObjectEventStateSetRemote(conn, priv->eventState, callbackID,
+                                     ret.callbackID);
+    }
+
+    rv = callbackID;
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
+remoteConnectSecretEventDeregisterAny(virConnectPtr conn,
+                                          int callbackID)
+{
+    struct private_data *priv = conn->privateData;
+    int rv = -1;
+    remote_connect_secret_event_deregister_any_args args;
+    int eventID;
+    int remoteID;
+    int count;
+
+    remoteDriverLock(priv);
+
+    if ((eventID = virObjectEventStateEventID(conn, priv->eventState,
+                                              callbackID, &remoteID)) < 0)
+        goto done;
+
+    if ((count = virObjectEventStateDeregisterID(conn, priv->eventState,
+                                                 callbackID)) < 0)
+        goto done;
+
+    /* If that was the last callback for this eventID, we need to disable
+     * events on the server */
+    if (count == 0) {
+        args.callbackID = remoteID;
+
+        if (call(conn, priv, 0, REMOTE_PROC_CONNECT_SECRET_EVENT_DEREGISTER_ANY,
+                 (xdrproc_t) xdr_remote_connect_secret_event_deregister_any_args, (char *) &args,
+                 (xdrproc_t) xdr_void, (char *) NULL) == -1)
+            goto done;
+
+    }
+
+    rv = 0;
+
+ done:
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
+static int
 remoteConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
                                             virDomainPtr dom,
                                             const char *event,
@@ -5383,6 +5490,28 @@ remoteNodeDeviceBuildEventUpdate(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 
     event = virNodeDeviceEventUpdateNew(dev->name);
     virObjectUnref(dev);
+
+    remoteEventQueue(priv, event, msg->callbackID);
+}
+
+static void
+remoteSecretBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                virNetClientPtr client ATTRIBUTE_UNUSED,
+                                void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_secret_event_lifecycle_msg *msg = evdata;
+    virSecretPtr secret;
+    virObjectEventPtr event = NULL;
+
+    secret = get_nonnull_secret(conn, msg->secret);
+    if (!secret)
+        return;
+
+    event = virSecretEventLifecycleNew(secret->uuid, secret->usageType, secret->usageID,
+                                       msg->event, msg->detail);
+    virObjectUnref(secret);
 
     remoteEventQueue(priv, event, msg->callbackID);
 }
@@ -8375,7 +8504,9 @@ static virSecretDriver secret_driver = {
     .secretGetXMLDesc = remoteSecretGetXMLDesc, /* 0.7.1 */
     .secretSetValue = remoteSecretSetValue, /* 0.7.1 */
     .secretGetValue = remoteSecretGetValue, /* 0.7.1 */
-    .secretUndefine = remoteSecretUndefine /* 0.7.1 */
+    .secretUndefine = remoteSecretUndefine, /* 0.7.1 */
+    .connectSecretEventDeregisterAny = remoteConnectSecretEventDeregisterAny, /* 3.0.0 */
+    .connectSecretEventRegisterAny = remoteConnectSecretEventRegisterAny, /* 3.0.0 */
 };
 
 static virNodeDeviceDriver node_device_driver = {

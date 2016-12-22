@@ -319,6 +319,7 @@ typedef remote_nonnull_nwfilter *remote_nwfilter;
 typedef remote_nonnull_storage_pool *remote_storage_pool;
 typedef remote_nonnull_storage_vol *remote_storage_vol;
 typedef remote_nonnull_node_device *remote_node_device;
+typedef remote_nonnull_secret *remote_secret;
 
 /* Error message. See <virterror.h> for explanation of fields. */
 
@@ -3360,6 +3361,26 @@ struct remote_domain_event_callback_metadata_change_msg {
     remote_string nsuri;
 };
 
+struct remote_connect_secret_event_register_any_args {
+    int eventID;
+    remote_secret secret;
+};
+
+struct remote_connect_secret_event_register_any_ret {
+    int callbackID;
+};
+
+struct remote_connect_secret_event_deregister_any_args {
+    int callbackID;
+};
+
+struct remote_secret_event_lifecycle_msg {
+    int callbackID;
+    remote_nonnull_secret secret;
+    int event;
+    int detail;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -5965,5 +5986,27 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_METADATA_CHANGE = 379
+    REMOTE_PROC_DOMAIN_EVENT_CALLBACK_METADATA_CHANGE = 379,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:search_secrets
+     * @aclfilter: secret:getattr
+     */
+    REMOTE_PROC_CONNECT_SECRET_EVENT_REGISTER_ANY = 380,
+
+    /**
+     * @generate: none
+     * @priority: high
+     * @acl: connect:read
+     */
+    REMOTE_PROC_CONNECT_SECRET_EVENT_DEREGISTER_ANY = 381,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_SECRET_EVENT_LIFECYCLE = 382
+
 };
