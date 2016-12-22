@@ -18,10 +18,10 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_CHRDEV_LOCK_FILES], [
-  LIBVIRT_ARG_WITH_ALT([CHRDEV_LOCK_FILES],
-                       [location for UUCP style lock files for character devices ]
-                         [(use auto for default paths on some platforms)],
-                       [auto])
+  LIBVIRT_ARG_WITH([CHRDEV_LOCK_FILES],
+                   [location for UUCP style lock files for character devices ]
+                     [(use auto for default paths on some platforms)],
+                   [auto])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_CHRDEV_LOCK_FILES], [

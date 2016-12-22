@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_OPENVZ], [
-  LIBVIRT_ARG_WITH([OPENVZ], [OpenVZ], [check])
+  LIBVIRT_ARG_WITH_FEATURE([OPENVZ], [OpenVZ], [check])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_OPENVZ], [

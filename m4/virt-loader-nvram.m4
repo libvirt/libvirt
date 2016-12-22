@@ -18,10 +18,10 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_LOADER_NVRAM], [
-  LIBVIRT_ARG_WITH_ALT([LOADER_NVRAM],
-                       [Pass list of pairs of <loader>:<nvram> paths.
-                        Both pairs and list items are separated by a colon.],
-                       [''])
+  LIBVIRT_ARG_WITH([LOADER_NVRAM],
+                   [Pass list of pairs of <loader>:<nvram> paths.
+                    Both pairs and list items are separated by a colon.],
+                   [''])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_LOADER_NVRAM], [

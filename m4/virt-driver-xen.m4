@@ -18,8 +18,8 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_XEN], [
-  LIBVIRT_ARG_WITH([XEN], [XEN], [check])
-  LIBVIRT_ARG_WITH([XEN_INOTIFY], [XEN inotify], [check])
+  LIBVIRT_ARG_WITH_FEATURE([XEN], [XEN], [check])
+  LIBVIRT_ARG_WITH_FEATURE([XEN_INOTIFY], [XEN inotify], [check])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_XEN], [

@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_NETWORK], [
-  LIBVIRT_ARG_WITH_ALT([NETWORK], [with virtual network driver], [yes])
+  LIBVIRT_ARG_WITH([NETWORK], [with virtual network driver], [yes])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_NETWORK], [

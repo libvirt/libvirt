@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_PCIACCESS],[
-  LIBVIRT_ARG_WITH([PCIACCESS], [pciaccess], [check], [0.10.0])
+  LIBVIRT_ARG_WITH_FEATURE([PCIACCESS], [pciaccess], [check], [0.10.0])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_PCIACCESS],[

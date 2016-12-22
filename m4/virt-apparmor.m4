@@ -18,8 +18,8 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_APPARMOR],[
-  LIBVIRT_ARG_WITH([APPARMOR], [AppArmor], [check])
-  LIBVIRT_ARG_WITH_ALT([APPARMOR_MOUNT], [set AppArmor mount point], [check])
+  LIBVIRT_ARG_WITH_FEATURE([APPARMOR], [AppArmor], [check])
+  LIBVIRT_ARG_WITH([APPARMOR_MOUNT], [set AppArmor mount point], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_APPARMOR],[

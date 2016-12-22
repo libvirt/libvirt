@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_PM_UTILS], [
-  LIBVIRT_ARG_WITH_ALT([PM_UTILS], [use pm-utils for power management], [check])
+  LIBVIRT_ARG_WITH([PM_UTILS], [use pm-utils for power management], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_PM_UTILS], [

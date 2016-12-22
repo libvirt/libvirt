@@ -18,9 +18,9 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_NSS],[
-  LIBVIRT_ARG_WITH_ALT([NSS_PLUGIN],
-                       [enable Name Service Switch plugin for resolving guest
-                        IP addresses], [check])
+  LIBVIRT_ARG_WITH([NSS_PLUGIN],
+                   [enable Name Service Switch plugin for resolving guest
+                    IP addresses], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_NSS],[

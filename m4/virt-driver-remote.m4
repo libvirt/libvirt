@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_REMOTE], [
-  LIBVIRT_ARG_WITH([REMOTE], [remote driver], [yes])
+  LIBVIRT_ARG_WITH_FEATURE([REMOTE], [remote driver], [yes])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_REMOTE], [

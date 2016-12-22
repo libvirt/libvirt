@@ -16,7 +16,7 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
 AC_DEFUN([LIBVIRT_ARG_HOST_VALIDATE], [
-  LIBVIRT_ARG_WITH_ALT([HOST_VALIDATE], [build virt-host-validate], [check])
+  LIBVIRT_ARG_WITH([HOST_VALIDATE], [build virt-host-validate], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_HOST_VALIDATE], [

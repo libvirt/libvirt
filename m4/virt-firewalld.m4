@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_FIREWALLD], [
-  LIBVIRT_ARG_WITH([FIREWALLD], [firewalld], [check])
+  LIBVIRT_ARG_WITH_FEATURE([FIREWALLD], [firewalld], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_FIREWALLD], [

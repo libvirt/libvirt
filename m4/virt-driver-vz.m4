@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_VZ],[
-    LIBVIRT_ARG_WITH([VZ], [Virtuozzo], [check])
+    LIBVIRT_ARG_WITH_FEATURE([VZ], [Virtuozzo], [check])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_VZ],[

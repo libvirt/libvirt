@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_SASL],[
-  LIBVIRT_ARG_WITH([SASL], [sasl], [check])
+  LIBVIRT_ARG_WITH_FEATURE([SASL], [sasl], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_SASL],[

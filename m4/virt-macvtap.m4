@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_MACVTAP], [
-  LIBVIRT_ARG_WITH_ALT([MACVTAP], [enable macvtap device], [check])
+  LIBVIRT_ARG_WITH([MACVTAP], [enable macvtap device], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_MACVTAP], [

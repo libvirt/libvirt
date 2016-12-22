@@ -22,7 +22,56 @@ dnl
 dnl
 dnl To be used instead of AC_ARG_WITH
 dnl
-dnl LIBVIRT_ARG_WITH([CHECK_NAME], [HELP_NAME], [DEFAULT_ACTION], [MIN_VERSION])
+dnl See LIBVIRT_ARG_WITH_FEATURE if the argument you're adding is going to
+dnl be used for switching a feature on and off.
+dnl
+dnl LIBVIRT_ARG_WITH([CHECK_NAME], [HELP_DESC], [DEFAULT_ACTION])
+dnl
+dnl      CHECK_NAME: Suffix/prefix used for variables/flags, in uppercase.
+dnl       HELP_DESC: Description that will appear in configure --help
+dnl  DEFAULT_ACTION: Default configure action
+dnl
+dnl LIBVIRT_ARG_WITH([PACKAGER], [Extra packager name], [no])
+dnl LIBVIRT_ARG_WITH([HTML_DIR], [path to base html directory], [$(datadir)/doc])
+dnl
+AC_DEFUN([LIBVIRT_ARG_WITH], [
+  m4_pushdef([check_name], [$1])
+  m4_pushdef([help_desc], [[$2]])
+  m4_pushdef([default_action], [$3])
+
+  m4_pushdef([check_name_lc], m4_tolower(check_name))
+  m4_pushdef([check_name_dash], m4_translit(check_name_lc, [_], [-]))
+
+  m4_pushdef([arg_var], [with-]check_name_dash)
+  m4_pushdef([with_var], [with_]check_name_lc)
+
+  m4_divert_text([DEFAULTS], [with_var][[=]][default_action])
+  AC_ARG_WITH([check_name_lc],
+              [AS_HELP_STRING([[--]arg_var],
+                              ]m4_dquote(help_desc)[[ @<:@default=]]m4_dquote(default_action)[[@:>@])])
+
+  m4_popdef([with_var])
+  m4_popdef([arg_var])
+
+  m4_popdef([check_name_dash])
+  m4_popdef([check_name_lc])
+
+  m4_popdef([default_action])
+  m4_popdef([help_desc])
+  m4_popdef([check_name])
+])
+
+dnl
+dnl To be used instead of AC_ARG_WITH
+dnl
+dnl The difference between LIBVIRT_ARG_WITH and this macro is that the former
+dnl is mostly an enhanced drop-in replacement for AC_ARG_WITH, whereas the
+dnl latter is tailored for adding an argument that is going to be used to
+dnl switch a feature on and off: as a consequence, it optionally supports
+dnl specifying the minimum version for libraries the feature depends on and
+dnl automatically builds a suitable description from the feature name.
+dnl
+dnl LIBVIRT_ARG_WITH_FEATURE([CHECK_NAME], [HELP_NAME], [DEFAULT_ACTION], [MIN_VERSION])
 dnl
 dnl      CHECK_NAME: Suffix/prefix used for variables/flags, in uppercase.
 dnl       HELP_NAME: Name that will appear in configure --help
@@ -30,10 +79,10 @@ dnl  DEFAULT_ACTION: Default configure action
 dnl     MIN_VERSION: Specify minimal version that will be added to
 dnl                  configure --help (optional)
 dnl
-dnl LIBVIRT_ARG_WITH([SELINUX], [SeLinux], [check])
-dnl LIBVIRT_ARG_WITH([GLUSTERFS], [glusterfs], [check], [3.4.1])
+dnl LIBVIRT_ARG_WITH_FEATURE([SELINUX], [SeLinux], [check])
+dnl LIBVIRT_ARG_WITH_FEATURE([GLUSTERFS], [glusterfs], [check], [3.4.1])
 dnl
-AC_DEFUN([LIBVIRT_ARG_WITH], [
+AC_DEFUN([LIBVIRT_ARG_WITH_FEATURE], [
   m4_pushdef([check_name], [$1])
   m4_pushdef([help_name], [[$2]])
   m4_pushdef([default_action], [$3])
@@ -63,45 +112,6 @@ AC_DEFUN([LIBVIRT_ARG_WITH], [
   m4_popdef([min_version])
   m4_popdef([default_action])
   m4_popdef([help_name])
-  m4_popdef([check_name])
-])
-
-dnl
-dnl To be used instead of AC_ARG_WITH
-dnl
-dnl LIBVIRT_ARG_WITH_ALT([CHECK_NAME], [HELP_DESC], [DEFAULT_ACTION])
-dnl
-dnl      CHECK_NAME: Suffix/prefix used for variables/flags, in uppercase.
-dnl       HELP_DESC: Description that will appear in configure --help
-dnl  DEFAULT_ACTION: Default configure action
-dnl
-dnl LIBVIRT_ARG_WITH_ALT([PACKAGER], [Extra packager name], [no])
-dnl LIBVIRT_ARG_WITH_ALT([HTML_DIR], [path to base html directory], [$(datadir)/doc])
-dnl
-AC_DEFUN([LIBVIRT_ARG_WITH_ALT], [
-  m4_pushdef([check_name], [$1])
-  m4_pushdef([help_desc], [[$2]])
-  m4_pushdef([default_action], [$3])
-
-  m4_pushdef([check_name_lc], m4_tolower(check_name))
-  m4_pushdef([check_name_dash], m4_translit(check_name_lc, [_], [-]))
-
-  m4_pushdef([arg_var], [with-]check_name_dash)
-  m4_pushdef([with_var], [with_]check_name_lc)
-
-  m4_divert_text([DEFAULTS], [with_var][[=]][default_action])
-  AC_ARG_WITH([check_name_lc],
-              [AS_HELP_STRING([[--]arg_var],
-                              ]m4_dquote(help_desc)[[ @<:@default=]]m4_dquote(default_action)[[@:>@])])
-
-  m4_popdef([with_var])
-  m4_popdef([arg_var])
-
-  m4_popdef([check_name_dash])
-  m4_popdef([check_name_lc])
-
-  m4_popdef([default_action])
-  m4_popdef([help_desc])
   m4_popdef([check_name])
 ])
 

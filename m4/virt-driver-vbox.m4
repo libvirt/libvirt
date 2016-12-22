@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_VBOX], [
-  LIBVIRT_ARG_WITH([VBOX], [VirtualBox XPCOMC], [yes])
+  LIBVIRT_ARG_WITH_FEATURE([VBOX], [VirtualBox XPCOMC], [yes])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_VBOX], [

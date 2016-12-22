@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_STORAGE_ARG_DIR], [
-  LIBVIRT_ARG_WITH([STORAGE_DIR], [directory backend for the storage driver], [yes])
+  LIBVIRT_ARG_WITH_FEATURE([STORAGE_DIR], [directory backend for the storage driver], [yes])
 ])
 
 AC_DEFUN([LIBVIRT_STORAGE_CHECK_DIR], [

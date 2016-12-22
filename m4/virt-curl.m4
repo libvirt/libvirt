@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_CURL],[
-  LIBVIRT_ARG_WITH([CURL], [libcurl], [check], [7.18.0])
+  LIBVIRT_ARG_WITH_FEATURE([CURL], [libcurl], [check], [7.18.0])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_CURL],[

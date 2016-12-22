@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_SECDRIVER_ARG_APPARMOR], [
-  LIBVIRT_ARG_WITH_ALT([SECDRIVER_APPARMOR], [use AppArmor security driver], [check])
+  LIBVIRT_ARG_WITH([SECDRIVER_APPARMOR], [use AppArmor security driver], [check])
 ])
 
 AC_DEFUN([LIBVIRT_SECDRIVER_CHECK_APPARMOR], [
@@ -37,7 +37,7 @@ AC_DEFUN([LIBVIRT_SECDRIVER_CHECK_APPARMOR], [
   fi
   AM_CONDITIONAL([WITH_SECDRIVER_APPARMOR], [test "$with_secdriver_apparmor" != "no"])
 
-  LIBVIRT_ARG_WITH_ALT([APPARMOR_PROFILES], [install apparmor profiles], [no])
+  LIBVIRT_ARG_WITH([APPARMOR_PROFILES], [install apparmor profiles], [no])
   if test "$with_apparmor" = "no"; then
     with_apparmor_profiles="no"
   fi

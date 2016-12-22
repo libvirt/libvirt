@@ -18,8 +18,8 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_STORAGE_ARG_MPATH], [
-  LIBVIRT_ARG_WITH([STORAGE_MPATH], [mpath backend for the storage driver],
-                   [check])
+  LIBVIRT_ARG_WITH_FEATURE([STORAGE_MPATH], [mpath backend for the storage driver],
+                           [check])
 ])
 
 AC_DEFUN([LIBVIRT_STORAGE_CHECK_MPATH], [

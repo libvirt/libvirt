@@ -18,8 +18,8 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_NUMAD], [
-  LIBVIRT_ARG_WITH_ALT([NUMAD], [use numad to manage CPU placement dynamically],
-                       [check])
+  LIBVIRT_ARG_WITH([NUMAD], [use numad to manage CPU placement dynamically],
+                   [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_NUMAD], [

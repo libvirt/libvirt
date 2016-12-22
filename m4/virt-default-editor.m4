@@ -18,8 +18,8 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_DEFAULT_EDITOR], [
-  LIBVIRT_ARG_WITH_ALT([DEFAULT_EDITOR],
-                       [Editor to use for interactive commands], [vi])
+  LIBVIRT_ARG_WITH([DEFAULT_EDITOR],
+                   [Editor to use for interactive commands], [vi])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_DEFAULT_EDITOR], [

@@ -18,8 +18,8 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_SELINUX],[
-  LIBVIRT_ARG_WITH([SELINUX], [SELinux], [check])
-  LIBVIRT_ARG_WITH_ALT([SELINUX_MOUNT], [set SELinux mount point], [check])
+  LIBVIRT_ARG_WITH_FEATURE([SELINUX], [SELinux], [check])
+  LIBVIRT_ARG_WITH([SELINUX_MOUNT], [set SELinux mount point], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_SELINUX],[

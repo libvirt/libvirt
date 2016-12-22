@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_BHYVE],[
-    LIBVIRT_ARG_WITH([BHYVE], [BHyVe], [check])
+    LIBVIRT_ARG_WITH_FEATURE([BHYVE], [BHyVe], [check])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_BHYVE],[

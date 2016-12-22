@@ -18,9 +18,9 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_XML_CATALOG], [
-  LIBVIRT_ARG_WITH_ALT([XML_CATALOG_FILE],
-                       [path to XML catalog file for validating generated html],
-                       ['/etc/xml/catalog'])
+  LIBVIRT_ARG_WITH([XML_CATALOG_FILE],
+                   [path to XML catalog file for validating generated html],
+                   ['/etc/xml/catalog'])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_XML_CATALOG], [

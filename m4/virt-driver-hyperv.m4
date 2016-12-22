@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_HYPERV], [
-  LIBVIRT_ARG_WITH([HYPERV], [Hyper-V], [check])
+  LIBVIRT_ARG_WITH_FEATURE([HYPERV], [Hyper-V], [check])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_HYPERV], [

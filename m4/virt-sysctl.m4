@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_SYSCTL_CONFIG], [
-  LIBVIRT_ARG_WITH_ALT([SYSCTL], [Whether to install sysctl configs], [check])
+  LIBVIRT_ARG_WITH([SYSCTL], [Whether to install sysctl configs], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_SYSCTL_CONFIG], [

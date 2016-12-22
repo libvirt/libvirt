@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_LIBXL], [
-  LIBVIRT_ARG_WITH([LIBXL], [libxenlight], [check])
+  LIBVIRT_ARG_WITH_FEATURE([LIBXL], [libxenlight], [check])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_LIBXL], [

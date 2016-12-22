@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_READLINE],[
-  LIBVIRT_ARG_WITH([READLINE], [readline], [check])
+  LIBVIRT_ARG_WITH_FEATURE([READLINE], [readline], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_READLINE],[

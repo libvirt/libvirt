@@ -18,8 +18,8 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_STORAGE_ARG_ISCSI], [
-  LIBVIRT_ARG_WITH([STORAGE_ISCSI], [iSCSI backend for the storage driver],
-                   [check])
+  LIBVIRT_ARG_WITH_FEATURE([STORAGE_ISCSI], [iSCSI backend for the storage driver],
+                           [check])
 ])
 
 AC_DEFUN([LIBVIRT_STORAGE_CHECK_ISCSI], [

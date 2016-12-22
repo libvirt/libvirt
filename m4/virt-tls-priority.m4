@@ -18,9 +18,9 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_TLS_PRIORITY], [
-  LIBVIRT_ARG_WITH_ALT([TLS_PRIORITY],
-                       [set the default TLS session priority string],
-                       [NORMAL])
+  LIBVIRT_ARG_WITH([TLS_PRIORITY],
+                   [set the default TLS session priority string],
+                   [NORMAL])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_TLS_PRIORITY], [

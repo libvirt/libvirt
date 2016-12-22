@@ -96,8 +96,8 @@ AC_SUBST([LIBVIRT_VERSION])
 AC_SUBST([LIBVIRT_VERSION_INFO])
 AC_SUBST([LIBVIRT_VERSION_NUMBER])
 
-LIBVIRT_ARG_WITH_ALT([PACKAGER], [Extra packager name], [no])
-LIBVIRT_ARG_WITH_ALT([PACKAGER_VERSION], [Extra packager version], [no])
+LIBVIRT_ARG_WITH([PACKAGER], [Extra packager name], [no])
+LIBVIRT_ARG_WITH([PACKAGER_VERSION], [Extra packager version], [no])
 if test "x$with_packager" != "xno"
 then
   AC_DEFINE_UNQUOTED([PACKAGER], ["$with_packager"],
@@ -373,10 +373,10 @@ LIBVIRT_CHECK_EXTERNAL_PROGRAMS
 
 
 dnl Specific dir for HTML output ?
-LIBVIRT_ARG_WITH_ALT([HTML_DIR], [path to base html directory],
-                     ['$(datadir)/doc'])
-LIBVIRT_ARG_WITH_ALT([HTML_SUBDIR], [directory used under html-dir],
-                     ['$(PACKAGE)-$(VERSION)/html'])
+LIBVIRT_ARG_WITH([HTML_DIR], [path to base html directory],
+                 ['$(datadir)/doc'])
+LIBVIRT_ARG_WITH([HTML_SUBDIR], [directory used under html-dir],
+                 ['$(PACKAGE)-$(VERSION)/html'])
 if test "x$with_html_subdir" != "x" ; then
   HTML_DIR="$with_html_dir/$with_html_subdir"
 else
@@ -544,7 +544,7 @@ LIBVIRT_SECDRIVER_CHECK_SELINUX
 LIBVIRT_SECDRIVER_CHECK_APPARMOR
 
 
-LIBVIRT_ARG_WITH([SECRETS], [local secrets management driver], [yes])
+LIBVIRT_ARG_WITH_FEATURE([SECRETS], [local secrets management driver], [yes])
 
 if test "$with_libvirtd" = "no"; then
   with_secrets=no
@@ -639,7 +639,7 @@ if test -z "$PERL"; then
          AC_MSG_ERROR([Failed to find perl.])
 fi
 
-LIBVIRT_ARG_WITH_ALT([TEST_SUITE], [build test suite by default], [check])
+LIBVIRT_ARG_WITH([TEST_SUITE], [build test suite by default], [check])
 case "$with_test_suite" in
     yes|no|check) ;;
     *) AC_MSG_ERROR([bad value ${withval} for tests option]) ;;

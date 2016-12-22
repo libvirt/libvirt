@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_ESX], [
-  LIBVIRT_ARG_WITH([ESX], [ESX], [check])
+  LIBVIRT_ARG_WITH_FEATURE([ESX], [ESX], [check])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_ESX], [

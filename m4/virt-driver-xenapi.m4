@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_XENAPI], [
-  LIBVIRT_ARG_WITH([XENAPI], [XenAPI], [check])
+  LIBVIRT_ARG_WITH_FEATURE([XENAPI], [XenAPI], [check])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_XENAPI], [

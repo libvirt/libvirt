@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_TEST], [
-  LIBVIRT_ARG_WITH([TEST], [test driver], [yes])
+  LIBVIRT_ARG_WITH_FEATURE([TEST], [test driver], [yes])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_TEST], [

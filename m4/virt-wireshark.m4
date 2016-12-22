@@ -18,10 +18,10 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_WIRESHARK],[
-  LIBVIRT_ARG_WITH([WIRESHARK_DISSECTOR], [wireshark], [check], [1.11.3])
-  LIBVIRT_ARG_WITH_ALT([WS_PLUGINDIR],
-                       [wireshark plugins directory for use when installing
-                        wireshark plugin], [check])
+  LIBVIRT_ARG_WITH_FEATURE([WIRESHARK_DISSECTOR], [wireshark], [check], [1.11.3])
+  LIBVIRT_ARG_WITH([WS_PLUGINDIR],
+                   [wireshark plugins directory for use when installing
+                   wireshark plugin], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_WIRESHARK],[

@@ -16,7 +16,7 @@ dnl License along with this library.  If not, see
 dnl <http://www.gnu.org/licenses/>.
 
 AC_DEFUN([LIBVIRT_ARG_LOGIN_SHELL], [
-  LIBVIRT_ARG_WITH_ALT([LOGIN_SHELL], [build virt-login-shell], [check])
+  LIBVIRT_ARG_WITH([LOGIN_SHELL], [build virt-login-shell], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_LOGIN_SHELL], [

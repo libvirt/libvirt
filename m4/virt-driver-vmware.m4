@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_VMWARE], [
-  LIBVIRT_ARG_WITH([VMWARE], [VMware], [yes])
+  LIBVIRT_ARG_WITH_FEATURE([VMWARE], [VMware], [yes])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_VMWARE], [

@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_YAJL],[
-  LIBVIRT_ARG_WITH([YAJL], [yajl], [check])
+  LIBVIRT_ARG_WITH_FEATURE([YAJL], [yajl], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_YAJL],[

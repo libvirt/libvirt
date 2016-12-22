@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_ARG_VIRTUALPORT], [
-  LIBVIRT_ARG_WITH_ALT([VIRTUALPORT], [enable virtual port support], [check])
+  LIBVIRT_ARG_WITH([VIRTUALPORT], [enable virtual port support], [check])
 ])
 
 AC_DEFUN([LIBVIRT_CHECK_VIRTUALPORT],[

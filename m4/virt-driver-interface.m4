@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_INTERFACE], [
-  LIBVIRT_ARG_WITH([INTERFACE], [host interface driver], [check])
+  LIBVIRT_ARG_WITH_FEATURE([INTERFACE], [host interface driver], [check])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_INTERFACE], [

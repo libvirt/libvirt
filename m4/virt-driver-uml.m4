@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_UML],[
-    LIBVIRT_ARG_WITH([UML], [UML], [check])
+    LIBVIRT_ARG_WITH_FEATURE([UML], [UML], [check])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_UML],[

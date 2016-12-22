@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_STORAGE_ARG_SCSI], [
-  LIBVIRT_ARG_WITH([STORAGE_SCSI], [SCSI backend for the storage driver], [check])
+  LIBVIRT_ARG_WITH_FEATURE([STORAGE_SCSI], [SCSI backend for the storage driver], [check])
 ])
 
 AC_DEFUN([LIBVIRT_STORAGE_CHECK_SCSI], [

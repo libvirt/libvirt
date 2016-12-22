@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_DRIVER_ARG_LXC], [
-  LIBVIRT_ARG_WITH([LXC], [Linux Container], [check])
+  LIBVIRT_ARG_WITH_FEATURE([LXC], [Linux Container], [check])
 ])
 
 AC_DEFUN([LIBVIRT_DRIVER_CHECK_LXC], [

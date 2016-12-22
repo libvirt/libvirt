@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_SECDRIVER_ARG_SELINUX], [
-  LIBVIRT_ARG_WITH_ALT([SECDRIVER_SELINUX], [use SELinux security driver], [check])
+  LIBVIRT_ARG_WITH([SECDRIVER_SELINUX], [use SELinux security driver], [check])
 ])
 
 AC_DEFUN([LIBVIRT_SECDRIVER_CHECK_SELINUX], [

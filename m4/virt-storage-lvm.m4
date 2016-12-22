@@ -18,7 +18,7 @@ dnl <http://www.gnu.org/licenses/>.
 dnl
 
 AC_DEFUN([LIBVIRT_STORAGE_ARG_LVM], [
-  LIBVIRT_ARG_WITH([STORAGE_LVM], [LVM backend for storage driver], [check])
+  LIBVIRT_ARG_WITH_FEATURE([STORAGE_LVM], [LVM backend for storage driver], [check])
 ])
 
 AC_DEFUN([LIBVIRT_STORAGE_CHECK_LVM], [
