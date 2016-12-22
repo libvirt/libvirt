@@ -36,15 +36,8 @@ struct _virSecretDef {
     unsigned char uuid[VIR_UUID_BUFLEN];
     char *description;          /* May be NULL */
     int usage_type;  /* virSecretUsageType */
-    union {
-        char *volume;               /* May be NULL */
-        char *ceph;
-        char *target;
-        char *name;
-    } usage;
+    char *usage_id; /* May be NULL */
 };
-
-const char *virSecretUsageIDForDef(virSecretDefPtr def);
 
 void virSecretDefFree(virSecretDefPtr def);
 virSecretDefPtr virSecretDefParseString(const char *xml);

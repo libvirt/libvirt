@@ -630,7 +630,7 @@ virStorageGenerateQcowEncryption(virConnectPtr conn,
         goto cleanup;
 
     def->usage_type = VIR_SECRET_USAGE_TYPE_VOLUME;
-    if (VIR_STRDUP(def->usage.volume, vol->target.path) < 0)
+    if (VIR_STRDUP(def->usage_id, vol->target.path) < 0)
         goto cleanup;
     xml = virSecretDefFormat(def);
     virSecretDefFree(def);

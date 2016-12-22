@@ -303,7 +303,7 @@ virAccessDriverPolkitCheckSecret(virAccessManagerPtr manager,
         const char *attrs[] = {
             "connect_driver", driverName,
             "secret_uuid", uuidstr,
-            "secret_usage_volume", secret->usage.volume,
+            "secret_usage_volume", secret->usage_id,
             NULL,
         };
 
@@ -316,7 +316,7 @@ virAccessDriverPolkitCheckSecret(virAccessManagerPtr manager,
         const char *attrs[] = {
             "connect_driver", driverName,
             "secret_uuid", uuidstr,
-            "secret_usage_ceph", secret->usage.ceph,
+            "secret_usage_ceph", secret->usage_id,
             NULL,
         };
 
@@ -329,7 +329,7 @@ virAccessDriverPolkitCheckSecret(virAccessManagerPtr manager,
         const char *attrs[] = {
             "connect_driver", driverName,
             "secret_uuid", uuidstr,
-            "secret_usage_target", secret->usage.target,
+            "secret_usage_target", secret->usage_id,
             NULL,
         };
 
@@ -342,7 +342,7 @@ virAccessDriverPolkitCheckSecret(virAccessManagerPtr manager,
         const char *attrs[] = {
                     "connect_driver", driverName,
                     "secret_uuid", uuidstr,
-                    "secret_usage_name", secret->usage.name,
+                    "secret_usage_name", secret->usage_id,
                     NULL,
                 };
 

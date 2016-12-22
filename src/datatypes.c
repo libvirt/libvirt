@@ -678,14 +678,13 @@ virGetSecret(virConnectPtr conn, const unsigned char *uuid,
 
     virCheckConnectGoto(conn, error);
     virCheckNonNullArgGoto(uuid, error);
-    virCheckNonNullArgGoto(usageID, error);
 
     if (!(ret = virObjectNew(virSecretClass)))
         return NULL;
 
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
     ret->usageType = usageType;
-    if (VIR_STRDUP(ret->usageID, usageID) < 0)
+    if (VIR_STRDUP(ret->usageID, usageID ? usageID : "") < 0)
         goto error;
 
     ret->conn = virObjectRef(conn);

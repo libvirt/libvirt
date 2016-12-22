@@ -838,7 +838,6 @@ virSecretDefFormat;
 virSecretDefFree;
 virSecretDefParseFile;
 virSecretDefParseString;
-virSecretUsageIDForDef;
 virSecretUsageTypeFromString;
 virSecretUsageTypeToString;
 

@@ -170,7 +170,7 @@ secretLookupByUUID(virConnectPtr conn,
     ret = virGetSecret(conn,
                        def->uuid,
                        def->usage_type,
-                       virSecretUsageIDForDef(def));
+                       def->usage_id);
 
  cleanup:
     virSecretObjEndAPI(&secret);
@@ -201,7 +201,7 @@ secretLookupByUsage(virConnectPtr conn,
     ret = virGetSecret(conn,
                        def->uuid,
                        def->usage_type,
-                       virSecretUsageIDForDef(def));
+                       def->usage_id);
 
  cleanup:
     virSecretObjEndAPI(&secret);
@@ -259,7 +259,7 @@ secretDefineXML(virConnectPtr conn,
     ret = virGetSecret(conn,
                        new_attrs->uuid,
                        new_attrs->usage_type,
-                       virSecretUsageIDForDef(new_attrs));
+                       new_attrs->usage_id);
     new_attrs = NULL;
     goto cleanup;
 
