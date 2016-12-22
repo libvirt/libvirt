@@ -281,6 +281,7 @@ test_helpers += qemucapsprobe
 test_libraries += libqemumonitortestutils.la \
 		libqemutestdriver.la \
 		qemuxml2argvmock.la \
+		qemuxml2xmlmock.la \
 		qemucaps2xmlmock.la \
 		qemucapsprobemock.la \
 		$(NULL)
@@ -557,6 +558,12 @@ qemuxml2argvmock_la_SOURCES = \
 qemuxml2argvmock_la_CFLAGS = $(AM_CFLAGS)
 qemuxml2argvmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 qemuxml2argvmock_la_LIBADD = $(MOCKLIBS_LIBS)
+
+qemuxml2xmlmock_la_SOURCES = \
+	qemuxml2xmlmock.c
+qemuxml2xmlmock_la_CFLAGS = $(AM_CFLAGS)
+qemuxml2xmlmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+qemuxml2xmlmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 qemuxml2xmltest_SOURCES = \
 	qemuxml2xmltest.c testutilsqemu.c testutilsqemu.h \

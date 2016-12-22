@@ -2072,6 +2072,7 @@ virNetDevMidonetUnbindPort;
 # util/virnetdevopenvswitch.h
 virNetDevOpenvswitchAddPort;
 virNetDevOpenvswitchGetMigrateData;
+virNetDevOpenvswitchGetVhostuserIfname;
 virNetDevOpenvswitchInterfaceStats;
 virNetDevOpenvswitchRemovePort;
 virNetDevOpenvswitchSetMigrateData;

@@ -41,6 +41,7 @@
 #include "domain_addr.h"
 #include "domain_event.h"
 #include "virtime.h"
+#include "virnetdevopenvswitch.h"
 #include "virstoragefile.h"
 #include "virstring.h"
 #include "virthreadjob.h"
@@ -3004,12 +3005,20 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                                           def->emulator);
     }
 
-    if (dev->type == VIR_DOMAIN_DEVICE_NET &&
-        dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-        !dev->data.net->model) {
-        if (VIR_STRDUP(dev->data.net->model,
-                       qemuDomainDefaultNetModel(def, qemuCaps)) < 0)
-            goto cleanup;
+    if (dev->type == VIR_DOMAIN_DEVICE_NET) {
+        if (dev->data.net->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
+            !dev->data.net->model) {
+            if (VIR_STRDUP(dev->data.net->model,
+                           qemuDomainDefaultNetModel(def, qemuCaps)) < 0)
+                goto cleanup;
+        }
+        if (dev->data.net->type == VIR_DOMAIN_NET_TYPE_VHOSTUSER &&
+            !dev->data.net->ifname) {
+            if (virNetDevOpenvswitchGetVhostuserIfname(
+                   dev->data.net->data.vhostuser->data.nix.path,
+                   &dev->data.net->ifname) < 0)
+                goto cleanup;
+        }
     }
 
     /* set default disk types and drivers */

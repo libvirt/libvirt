@@ -28,6 +28,7 @@
 #include "virnetdev.h"
 #include "virnetdevip.h"
 #include "virnetdevtap.h"
+#include "virnetdevopenvswitch.h"
 #include "virnuma.h"
 #include "virrandom.h"
 #include "virscsi.h"
@@ -179,4 +180,11 @@ virCryptoGenerateRandom(size_t nbytes)
     ignore_value(virRandomBytes(buf, nbytes));
 
     return buf;
+}
+
+int
+virNetDevOpenvswitchGetVhostuserIfname(const char *path ATTRIBUTE_UNUSED,
+                                       char **ifname)
+{
+    return VIR_STRDUP(*ifname, "vhost-user0");
 }
