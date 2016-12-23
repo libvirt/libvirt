@@ -54,6 +54,12 @@
           Add a display of the &lt;physical&gt; size of a disk
           volume in the output of the volume XML
           </li>
+          <li>qemu: Use virtio-pci by default for aarch64 mach-virt guests<br/>
+          virtio-pci provides several advantages over virtio-mmio, such
+          as the ability to hotplug devices and improved performance.
+          While opting in to virtio-pci has been possible for a while,
+          newly-defined guests will now use it automatically
+          </li>
         </ul>
       </li>
       <li><strong>Bug fixes</strong>
