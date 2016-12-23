@@ -3262,7 +3262,13 @@
         currently only available for some <code>armv7l</code> and
         <code>aarch64</code> virtual machines. virtio-mmio addresses
         do not have any additional attributes.
-        <span class="since">Since 1.1.3</span>
+        <span class="since">Since 1.1.3</span><br/>
+        If the guest architecture is <code>aarch64</code> and the machine
+        type is <code>virt</code>, libvirt will automatically assign PCI
+        addresses to devices; however, the presence of a single device
+        with virtio-mmio address in the guest configuration will cause
+        libvirt to assign virtio-mmio addresses to all further devices.
+        <span class="since">Since 3.0.0</span>
       </dd>
       <dt><code>isa</code></dt>
       <dd>ISA addresses have the following additional
