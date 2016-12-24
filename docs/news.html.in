@@ -67,6 +67,10 @@
           The chardev detection code has been improved and can now handle this
           configuration properly
           </li>
+          <li>qemu: Enable mount namespace<br/>
+          To avoid funny races with udev relabelling devices under our hands and
+          to enhance security, libvirt now spawns each qemu process with its own
+          <code>/dev</code>.</li>
         </ul>
       </li>
     </ul>
