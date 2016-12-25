@@ -205,7 +205,6 @@ test_libraries = libshunload.la \
 	virnetdevmock.la \
 	virrandommock.la \
 	virhostcpumock.la \
-	nssmock.la \
 	domaincapsmock.la \
 	$(NULL)
 
@@ -361,6 +360,7 @@ endif WITH_LINUX
 if WITH_NSS
 test_helpers += nsslinktest nssguestlinktest
 test_programs += nsstest nssguesttest
+test_libraries += nssmock.la
 endif WITH_NSS
 
 test_programs += storagevolxml2xmltest storagepoolxml2xmltest
@@ -1102,6 +1102,7 @@ virhostcpumock_la_CFLAGS = $(AM_CFLAGS)
 virhostcpumock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virhostcpumock_la_LIBADD = $(MOCKLIBS_LIBS)
 
+if WITH_NSS
 nsstest_SOURCES = \
 	nsstest.c testutils.h testutils.c
 nsstest_CFLAGS = \
@@ -1143,6 +1144,9 @@ nssguestlinktest_CFLAGS = 	\
 	-I$(top_srcdir)/tools/nss
 nssguestlinktest_LDADD = ../tools/nss/libnss_libvirt_guest_impl.la
 nssguestlinktest_LDFLAGS = $(NULL)
+else ! WITH_NSS
+EXTRA_DIST += nsstest.c nssmock.c nsslinktest.c
+endif ! WITH_NSS
 
 if WITH_YAJL
 virmacmapmock_la_SOURCES = \
