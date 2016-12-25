@@ -41,9 +41,21 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf, dnsmasqCapsPtr
     if (dctx == NULL)
         goto fail;
 
-    if (networkDnsmasqConfContents(obj, pidfile, &actual,
-                        dctx, caps) < 0)
+    if (networkDnsmasqConfContents(obj, pidfile, &actual, dctx, caps) < 0)
         goto fail;
+
+    /* Any changes to this function ^^ should be reflected here too. */
+#ifndef __linux__
+    char * tmp;
+
+    if (!(tmp = virStringReplace(actual,
+                                 "except-interface=lo0\n",
+                                 "except-interface=lo\n")))
+        goto fail;
+    VIR_FREE(actual);
+    actual = tmp;
+    tmp = NULL;
+#endif
 
     if (virTestCompareToFile(actual, outconf) < 0)
         goto fail;
