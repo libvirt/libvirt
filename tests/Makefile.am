@@ -192,7 +192,6 @@ test_programs = virshtest sockettest \
 	domainconftest \
 	virhostdevtest \
 	vircaps2xmltest \
-	virmacmaptest \
 	virnetdevtest \
 	virtypedparamtest \
 	$(NULL)
@@ -408,7 +407,6 @@ test_libraries = libshunload.la \
 		virhostcpumock.la \
 		nssmock.la \
 		domaincapsmock.la \
-		virmacmapmock.la \
 		$(NULL)
 if WITH_QEMU
 test_libraries += libqemumonitortestutils.la \
@@ -1158,6 +1156,7 @@ nssguestlinktest_CFLAGS = 	\
 nssguestlinktest_LDADD = ../tools/nss/libnss_libvirt_guest_impl.la
 nssguestlinktest_LDFLAGS = $(NULL)
 
+if WITH_YAJL
 virmacmapmock_la_SOURCES = \
 	virmacmapmock.c
 virmacmapmock_la_CFLAGS = $(AM_CFLAGS)
@@ -1166,8 +1165,14 @@ virmacmapmock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 virmacmaptest_SOURCES = \
 	virmacmaptest.c testutils.h testutils.c
-virmacmaptest_CLFAGS = $(AM_CFLAGS);
+virmacmaptest_CLFAGS = $(AM_CFLAGS)
 virmacmaptest_LDADD = $(LDADDS)
+
+test_libraries += virmacmapmock.la
+test_programs += virmacmaptest
+else ! WITH_YAJL
+EXTRA_DIST += virmacmapmock.c virmacmaptest.c
+endif ! WITH_YAJL
 
 virnetdevtest_SOURCES = \
 	virnetdevtest.c testutils.h testutils.c
