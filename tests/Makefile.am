@@ -196,6 +196,19 @@ test_programs = virshtest sockettest \
 	virtypedparamtest \
 	$(NULL)
 
+test_libraries = libshunload.la \
+	virportallocatormock.la \
+	virnetdaemonmock.la \
+	virnetserverclientmock.la \
+	vircgroupmock.la \
+	virpcimock.la \
+	virnetdevmock.la \
+	virrandommock.la \
+	virhostcpumock.la \
+	nssmock.la \
+	domaincapsmock.la \
+	$(NULL)
+
 if WITH_REMOTE
 test_programs += \
 	virnetmessagetest \
@@ -211,6 +224,10 @@ endif WITH_REMOTE
 if WITH_LINUX
 test_programs += fchosttest
 test_programs += scsihosttest
+test_libraries += virusbmock.la \
+	virnetdevbandwidthmock.la \
+	virtestmock.la \
+	$(NULL)
 endif WITH_LINUX
 
 if WITH_LIBVIRTD
@@ -221,6 +238,7 @@ if WITH_DBUS
 test_programs += virdbustest \
                  virsystemdtest \
                  $(NULL)
+test_libraries += virdbusmock.la
 if WITH_POLKIT1
 test_programs += virpolkittest
 endif WITH_POLKIT1
@@ -260,6 +278,12 @@ test_programs += qemuxml2argvtest qemuxml2xmltest \
 	qemuagenttest qemucapabilitiestest qemucaps2xmltest \
 	qemucommandutiltest
 test_helpers += qemucapsprobe
+test_libraries += libqemumonitortestutils.la \
+		libqemutestdriver.la \
+		qemuxml2argvmock.la \
+		qemucaps2xmlmock.la \
+		qemucapsprobemock.la \
+		$(NULL)
 endif WITH_QEMU
 
 if WITH_LXC
@@ -288,6 +312,7 @@ endif WITH_VMWARE
 
 if WITH_BHYVE
 test_programs += bhyvexml2argvtest bhyvexml2xmltest bhyveargv2xmltest
+test_libraries += bhyvexml2argvmock.la bhyveargv2xmlmock.la
 endif WITH_BHYVE
 
 if WITH_CIL
@@ -395,43 +420,6 @@ EXTRA_DIST += virt-aa-helper-test
 endif ! WITH_SECDRIVER_APPARMOR
 
 EXTRA_DIST += $(test_scripts)
-
-test_libraries = libshunload.la \
-		virportallocatormock.la \
-		virnetdaemonmock.la \
-		virnetserverclientmock.la \
-		vircgroupmock.la \
-		virpcimock.la \
-		virnetdevmock.la \
-		virrandommock.la \
-		virhostcpumock.la \
-		nssmock.la \
-		domaincapsmock.la \
-		$(NULL)
-if WITH_QEMU
-test_libraries += libqemumonitortestutils.la \
-		libqemutestdriver.la \
-		qemuxml2argvmock.la \
-		qemucaps2xmlmock.la \
-		qemucapsprobemock.la \
-		$(NULL)
-endif WITH_QEMU
-
-if WITH_BHYVE
-test_libraries += bhyvexml2argvmock.la bhyveargv2xmlmock.la
-endif WITH_BHYVE
-
-if WITH_DBUS
-test_libraries += \
-		virdbusmock.la
-endif WITH_DBUS
-
-if WITH_LINUX
-test_libraries += virusbmock.la \
-		virnetdevbandwidthmock.la \
-		virtestmock.la \
-		$(NULL)
-endif WITH_LINUX
 
 if WITH_LINUX
 check-access: file-access-clean
