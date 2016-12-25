@@ -3022,6 +3022,7 @@ endif WITH_LIBVIRTD
 endif WITH_SECDRIVER_APPARMOR
 EXTRA_DIST += $(SECURITY_DRIVER_APPARMOR_HELPER_SOURCES)
 
+if WITH_NSS
 noinst_LTLIBRARIES += libvirt-nss.la
 
 libvirt_nss_la_SOURCES =		\
@@ -3087,6 +3088,7 @@ libvirt_nss_la_LDFLAGS =		\
 libvirt_nss_la_LIBADD =			\
 		$(YAJL_LIBS)			\
 		$(NULL)
+endif WITH_NSS
 
 
 install-data-local: install-init install-systemd
