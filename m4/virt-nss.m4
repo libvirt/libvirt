@@ -27,16 +27,34 @@ AC_DEFUN([LIBVIRT_CHECK_NSS],[
   bsd_nss=no
   fail=0
   if test "x$with_nss_plugin" != "xno" ; then
-    AC_CHECK_HEADERS([nss.h], [
-        with_nss_plugin=yes
-      ],[
-        if test "x$with_nss_plugin" = "xyes" ; then
-          fail = 1
-        fi
-      ])
+    if test "x$with_yajl" != "xyes" ; then
+      if test "x$with_nss_plugin" = "xyes" ; then
+        AC_MSG_ERROR([Can't build nss plugin without yajl])
+      else
+        with_nss_plugin=no
+      fi
+    fi
 
-    if test $fail = 1 ; then
-      AC_MSG_ERROR([Can't build nss plugin without nss.h])
+    if test "x$with_network" != "xyes" ; then
+      if test "x$with_nss_plugin" = "xyes" ; then
+        AC_MSG_ERROR([Can't build nss plugin without yajl])
+      else
+        with_nss_plugin=no
+      fi
+    fi
+
+    if test "x$with_nss_plugin" != "xno" ; then
+      AC_CHECK_HEADERS([nss.h], [
+          with_nss_plugin=yes
+        ],[
+          if test "x$with_nss_plugin" = "xyes" ; then
+            fail = 1
+          fi
+        ])
+
+      if test $fail = 1 ; then
+        AC_MSG_ERROR([Can't build nss plugin without nss.h])
+      fi
     fi
 
     if test "x$with_nss_plugin" = "xyes" ; then
