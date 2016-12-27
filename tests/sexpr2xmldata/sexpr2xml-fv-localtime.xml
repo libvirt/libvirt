@@ -19,13 +19,13 @@
   <devices>
     <emulator>/usr/lib64/xen/bin/qemu-dm</emulator>
     <disk type='file' device='disk'>
-      <driver name='file'/>
+      <driver name='file' type='raw'/>
       <source file='/root/foo.img'/>
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='file' device='cdrom'>
-      <driver name='file'/>
+      <driver name='file' type='raw'/>
       <source file='/root/boot.iso'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
@@ -44,8 +44,7 @@
       <listen type='address'/>
     </graphics>
     <video>
-      <model type='cirrus' vram='16384' heads='1' primary='yes'/>
+      <model type='cirrus' vram='8192' heads='1' primary='yes'/>
     </video>
-    <memballoon model='xen'/>
   </devices>
 </domain>

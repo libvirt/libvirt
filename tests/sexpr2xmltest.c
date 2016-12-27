@@ -7,12 +7,11 @@
 #include "internal.h"
 #include "virxml.h"
 #include "datatypes.h"
-#include "xen/xen_driver.h"
-#include "xen/xend_internal.h"
 #include "xenconfig/xen_sxpr.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 #include "virstring.h"
+#include "libxl/libxl_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -24,37 +23,14 @@ testCompareFiles(const char *xml, const char *sexpr)
 {
   char *sexprData = NULL;
   char *gotxml = NULL;
-  int id;
-  char * tty;
-  int vncport;
   int ret = -1;
   virDomainDefPtr def = NULL;
-  virConnectPtr conn;
-  struct _xenUnifiedPrivate priv;
-
-
-  conn = virGetConnect();
-  if (!conn) goto fail;
 
   if (virTestLoadFile(sexpr, &sexprData) < 0)
       goto fail;
 
-  memset(&priv, 0, sizeof(priv));
-  /* Many puppies died to bring you this code. */
-  priv.caps = caps;
-  conn->privateData = &priv;
-  if (virMutexInit(&priv.lock) < 0)
-      goto fail;
-
-  if (xenGetDomIdFromSxprString(sexprData, &id) < 0)
-      goto fail;
-  xenUnifiedLock(&priv);
-  tty = xenStoreDomainGetConsolePath(conn, id);
-  vncport = xenStoreDomainGetVNCPort(conn, id);
-  xenUnifiedUnlock(&priv);
-
   if (!(def = xenParseSxprString(sexprData,
-                                 tty, vncport, caps, xmlopt)))
+                                 NULL, -1, caps, xmlopt)))
       goto fail;
 
   if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
@@ -74,7 +50,6 @@ testCompareFiles(const char *xml, const char *sexpr)
   VIR_FREE(sexprData);
   VIR_FREE(gotxml);
   virDomainDefFree(def);
-  virObjectUnref(conn);
 
   return ret;
 }
@@ -113,13 +88,11 @@ mymain(void)
 {
     int ret = 0;
 
-    if (!(caps = testXenCapsInit()))
+    if (!(caps = testXLInitCaps()))
         return EXIT_FAILURE;
 
-    if (!(xmlopt = xenDomainXMLConfInit())) {
-        virObjectUnref(caps);
+    if (!(xmlopt = libxlCreateXMLConf()))
         return EXIT_FAILURE;
-    }
 
 #define DO_TEST(in, out) \
     do { \

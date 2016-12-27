@@ -38,6 +38,5 @@
     <video>
       <model type='xen' vram='4096' heads='1' primary='yes'/>
     </video>
-    <memballoon model='xen'/>
   </devices>
 </domain>

@@ -15,7 +15,7 @@
   <devices>
     <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
     <disk type='block' device='disk'>
-      <driver name='phy'/>
+      <driver name='phy' type='raw'/>
       <source dev='/dev/vg_dom0test/test2vm'/>
       <target dev='xvda' bus='xen'/>
     </disk>
@@ -36,6 +36,5 @@
     <video>
       <model type='xen' vram='4096' heads='1' primary='yes'/>
     </video>
-    <memballoon model='xen'/>
   </devices>
 </domain>
