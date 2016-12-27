@@ -273,12 +273,12 @@ ssh_SOURCES = ssh.c
 ssh_LDADD = $(COVERAGE_LDFLAGS)
 
 if WITH_XEN
-test_programs += xml2sexprtest sexpr2xmltest \
+test_programs += sexpr2xmltest \
 	xmconfigtest xencapstest
 endif WITH_XEN
 
 if WITH_LIBXL
-test_programs += xlconfigtest libxlxml2domconfigtest
+test_programs += xlconfigtest xml2sexprtest libxlxml2domconfigtest
 test_libraries += virmocklibxl.la
 endif WITH_LIBXL
 
@@ -502,11 +502,6 @@ if WITH_XEN
 xen_LDADDS = ../src/libvirt_driver_xen_impl.la
 xen_LDADDS += $(LDADDS)
 
-xml2sexprtest_SOURCES = \
-	xml2sexprtest.c testutilsxen.c testutilsxen.h \
-	testutils.c testutils.h
-xml2sexprtest_LDADD = $(xen_LDADDS)
-
 sexpr2xmltest_SOURCES = \
 	sexpr2xmltest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
@@ -522,7 +517,7 @@ xencapstest_SOURCES = \
 xencapstest_LDADD = $(xen_LDADDS)
 
 else ! WITH_XEN
-EXTRA_DIST += xml2sexprtest.c sexpr2xmltest.c xmconfigtest.c \
+EXTRA_DIST += sexpr2xmltest.c xmconfigtest.c \
 	xencapstest.c \
 	testutilsxen.c testutilsxen.h
 endif ! WITH_XEN
@@ -539,6 +534,11 @@ xlconfigtest_SOURCES = \
 	testutils.c testutils.h
 xlconfigtest_LDADD =$(libxl_LDADDS)
 
+xml2sexprtest_SOURCES = \
+	xml2sexprtest.c testutilsxen.c testutilsxen.h \
+	testutils.c testutils.h
+xml2sexprtest_LDADD = $(libxl_LDADDS)
+
 libxlxml2domconfigtest_SOURCES = \
 	libxlxml2domconfigtest.c testutilsxen.c testutilsxen.h \
 	testutils.c testutils.h
@@ -550,7 +550,7 @@ virmocklibxl_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virmocklibxl_la_LIBADD = $(MOCKLIBS_LIBS)
 
 else ! WITH_LIBXL
-EXTRA_DIST += xlconfigtest.c libxlxml2domconfigtest.c
+EXTRA_DIST += xlconfigtest.c xml2sexprtest.c libxlxml2domconfigtest.c
 endif ! WITH_LIBXL
 
 QEMUMONITORTESTUTILS_SOURCES = \

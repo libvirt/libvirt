@@ -8,12 +8,11 @@
 #include <unistd.h>
 
 #include "internal.h"
-#include "xen/xend_internal.h"
-#include "xen/xen_driver.h"
 #include "xenconfig/xen_sxpr.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 #include "virstring.h"
+#include "libxl/libxl_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -95,10 +94,10 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-    if (!(caps = testXenCapsInit()))
+    if (!(caps = testXLInitCaps()))
         return EXIT_FAILURE;
 
-    if (!(xmlopt = xenDomainXMLConfInit()))
+    if (!(xmlopt = libxlCreateXMLConf()))
         return EXIT_FAILURE;
 
     DO_TEST("pv", "pv", "pvtest");
