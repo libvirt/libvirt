@@ -8848,13 +8848,27 @@ virshParseEventStr(const char *event,
     return ret;
 }
 
+static void
+virshPrintPerfStatus(vshControl *ctl, virTypedParameterPtr params, int nparams)
+{
+    size_t i;
+
+    for (i = 0; i < nparams; i++) {
+        if (params[i].type == VIR_TYPED_PARAM_BOOLEAN &&
+            params[i].value.b) {
+            vshPrintExtra(ctl, "%-15s: %s\n", params[i].field, _("enabled"));
+        } else {
+            vshPrintExtra(ctl, "%-15s: %s\n", params[i].field, _("disabled"));
+        }
+    }
+}
+
 static bool
 cmdPerf(vshControl *ctl, const vshCmd *cmd)
 {
     virDomainPtr dom;
     int nparams = 0;
     int maxparams = 0;
-    size_t i;
     virTypedParameterPtr params = NULL;
     bool ret = false;
     const char *enable = NULL, *disable = NULL;
@@ -8891,18 +8905,13 @@ cmdPerf(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, "%s", _("Unable to get perf events"));
             goto cleanup;
         }
-        for (i = 0; i < nparams; i++) {
-            if (params[i].type == VIR_TYPED_PARAM_BOOLEAN &&
-                params[i].value.b) {
-                vshPrint(ctl, "%-15s: %s\n", params[i].field, _("enabled"));
-            } else {
-                vshPrint(ctl, "%-15s: %s\n", params[i].field, _("disabled"));
-            }
-        }
+        virshPrintPerfStatus(ctl, params, nparams);
     } else {
         if (virDomainSetPerfEvents(dom, params, nparams, flags) != 0) {
             vshError(ctl, "%s", _("Unable to enable/disable perf events"));
             goto cleanup;
+        } else {
+            virshPrintPerfStatus(ctl, params, nparams);
         }
     }
 
