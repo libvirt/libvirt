@@ -82,20 +82,20 @@ testCompareXMLToConfHelper(const void *data)
     int result = -1;
     const testInfo *info = data;
     char *inxml = NULL;
-    char *outxml = NULL;
+    char *outconf = NULL;
 
     if (virAsprintf(&inxml, "%s/networkxml2confdata/%s.xml",
                     abs_srcdir, info->name) < 0 ||
-        virAsprintf(&outxml, "%s/networkxml2confdata/%s.conf",
+        virAsprintf(&outconf, "%s/networkxml2confdata/%s.conf",
                     abs_srcdir, info->name) < 0) {
         goto cleanup;
     }
 
-    result = testCompareXMLToConfFiles(inxml, outxml, info->caps);
+    result = testCompareXMLToConfFiles(inxml, outconf, info->caps);
 
  cleanup:
     VIR_FREE(inxml);
-    VIR_FREE(outxml);
+    VIR_FREE(outconf);
 
     return result;
 }
