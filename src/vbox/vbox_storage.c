@@ -568,14 +568,12 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
         VBOX_IID_INITIALIZE(&machineId);
         vboxIIDFromArrayItem(&machineId, &machineIds, i);
 
-        if (gVBoxAPI.getMachineForSession) {
-            if (NS_FAILED(gVBoxAPI.UIVirtualBox.GetMachine(data->vboxObj,
-                                                           &machineId,
-                                                           &machine))) {
-                virReportError(VIR_ERR_NO_DOMAIN, "%s",
-                               _("no domain with matching uuid"));
-                break;
-            }
+        if (NS_FAILED(gVBoxAPI.UIVirtualBox.GetMachine(data->vboxObj,
+                                                       &machineId,
+                                                       &machine))) {
+            virReportError(VIR_ERR_NO_DOMAIN, "%s",
+                           _("no domain with matching uuid"));
+            break;
         }
 
         if (NS_FAILED(gVBoxAPI.UISession.Open(data, &machineId, machine))) {

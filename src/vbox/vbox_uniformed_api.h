@@ -594,13 +594,10 @@ typedef struct {
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
     bool domainEventCallbacks;
-    bool getMachineForSession;
-    bool detachDevicesExplicitly;
     bool chipsetType;
     bool accelerate2DVideo;
     bool oldMediumInterface;
     bool vboxSnapshotRedefine;
-    bool supportScreenshot;
     bool networkRemoveInterface;
 } vboxUniformedAPI;
 

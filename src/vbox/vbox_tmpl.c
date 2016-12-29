@@ -3352,17 +3352,6 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->domainEventCallbacks = 1;
 #endif /* VBOX_API_VERSION > 2002000 || VBOX_API_VERSION < 4000000 */
 
-#if VBOX_API_VERSION >= 4000000
-    /* Get machine for the call to VBOX_SESSION_OPEN_EXISTING */
-    pVBoxAPI->getMachineForSession = 1;
-    pVBoxAPI->detachDevicesExplicitly = 0;
-    pVBoxAPI->supportScreenshot = 1;
-#else /* VBOX_API_VERSION < 4000000 */
-    pVBoxAPI->getMachineForSession = 0;
-    pVBoxAPI->detachDevicesExplicitly = 1;
-    pVBoxAPI->supportScreenshot = 0;
-#endif /* VBOX_API_VERSION < 4000000 */
-
 #if VBOX_API_VERSION >= 4001000
     pVBoxAPI->chipsetType = 1;
 #else /* VBOX_API_VERSION < 4001000 */
