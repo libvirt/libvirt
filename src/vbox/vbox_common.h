@@ -410,15 +410,7 @@ typedef nsISupports IKeyboard;
 # define installUniformedAPI(gVBoxAPI, result)                          \
     do {                                                                \
         result = 0;                                                     \
-        if (uVersion >= 2001052 && uVersion < 2002051) {                \
-            vbox22InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 2002051 && uVersion < 3000051) {         \
-            vbox30InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 3000051 && uVersion < 3001051) {         \
-            vbox31InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 3001051 && uVersion < 3002051) {         \
-            vbox32InstallUniformedAPI(&gVBoxAPI);                       \
-        } else if (uVersion >= 3002051 && uVersion < 4000051) {         \
+        if (uVersion >= 3002051 && uVersion < 4000051) {         \
             vbox40InstallUniformedAPI(&gVBoxAPI);                       \
         } else if (uVersion >= 4000051 && uVersion < 4001051) {         \
             vbox41InstallUniformedAPI(&gVBoxAPI);                       \
