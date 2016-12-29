@@ -27,7 +27,7 @@
  *
  * The vbox_tmpl.c is the only place where the driver knows the inside
  * architecture of those vbox structs(vboxObj, vboxSession,
- * pFuncs, vboxCallback and vboxQueue). The file should be included
+ * pFuncs, and vboxCallback). The file should be included
  * after the currect vbox_CAPI_v*.h, then we can use the vbox structs
  * in vboxGlobalData. The vbox_tmpl.c should implement functions
  * defined in vboxUniformedAPI.
@@ -36,7 +36,7 @@
  * The vbox_driver.c collects vboxUniformedAPI for all versions.
  * Then vboxRegister calls the vboxRegisterUniformedAPI to register.
  * Note: In vbox_driver.c, the vbox structs in vboxGlobalData is
- * defined by vbox_CAPI_v2.2.h.
+ * defined by vbox_CAPI_v4_0.h.
  *
  * The vbox_common.c, it is used to generate common codes for all vbox
  * versions. Bacause the same member varible's offset in a vbox struct
@@ -96,14 +96,6 @@ typedef union {
     PRInt32 resultCode;
 } resultCodeUnion;
 
-struct _vboxCallback {
-    struct IVirtualBoxCallback_vtbl *vtbl;
-    virConnectPtr conn;
-    int vboxCallBackRefCount;
-};
-
-typedef struct _vboxCallback vboxCallback;
-typedef struct _vboxCallback *vboxCallbackPtr;
 
 struct _vboxDriver {
     virObjectLockable parent;
@@ -120,13 +112,6 @@ struct _vboxDriver {
     IVirtualBoxClient *vboxClient;
 # endif
 
-    int fdWatch;
-    vboxCallbackPtr vboxCallback;
-# if VBOX_API_VERSION > 2002000 && VBOX_API_VERSION < 4000000
-    nsIEventQueue *vboxQueue;
-# else
-    void *vboxQueue;
-# endif
     unsigned long version;
 
     /* reference counting of vbox connections */
@@ -548,7 +533,6 @@ typedef struct {
     uint32_t APIVersion;
     uint32_t XPCOMCVersion;
     /* vbox APIs */
-    int (*initializeDomainEvent)(vboxDriverPtr driver);
     void (*detachDevices)(vboxDriverPtr driver, IMachine *machine, PRUnichar *hddcnameUtf16);
     nsresult (*unregisterMachine)(vboxDriverPtr driver, vboxIIDUnion *iidu, IMachine **machine);
     void (*deleteConfig)(IMachine *machine);
@@ -562,7 +546,6 @@ typedef struct {
     int (*attachFloppy)(vboxDriverPtr driver, IMachine *machine, const char *src);
     int (*detachFloppy)(IMachine *machine);
     int (*snapshotRestore)(virDomainPtr dom, IMachine *machine, ISnapshot *snapshot);
-    void (*registerDomainEvent)(virHypervisorDriverPtr driver);
     vboxUniformedPFN UPFN;
     vboxUniformedIID UIID;
     vboxUniformedArray UArray;
@@ -593,7 +576,6 @@ typedef struct {
     vboxUniformedIKeyboard UIKeyboard;
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
-    bool domainEventCallbacks;
     bool chipsetType;
     bool accelerate2DVideo;
     bool oldMediumInterface;

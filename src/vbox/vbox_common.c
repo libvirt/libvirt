@@ -111,8 +111,6 @@ vboxDriverDispose(void *obj)
 
     virObjectUnref(driver->caps);
     virObjectUnref(driver->xmlopt);
-    if (gVBoxAPI.domainEventCallbacks)
-        virObjectUnref(driver->domainEventState);
 }
 
 static int
@@ -143,10 +141,6 @@ vboxDriverObjNew(void)
     if (!(driver->caps = vboxCapsInit()) ||
         !(driver->xmlopt = virDomainXMLOptionNew(&vboxDomainDefParserConfig,
                                                  NULL, NULL)))
-        goto cleanup;
-
-    if (gVBoxAPI.domainEventCallbacks &&
-        !(driver->domainEventState = virObjectEventStateNew()))
         goto cleanup;
 
     return driver;
@@ -197,10 +191,6 @@ vboxSdkInitialize(void)
         return 0;
 
     if (gVBoxAPI.UPFN.Initialize(vbox_driver) != 0)
-        return -1;
-
-    if (gVBoxAPI.domainEventCallbacks &&
-        gVBoxAPI.initializeDomainEvent(vbox_driver) != 0)
         return -1;
 
     if (vbox_driver->vboxObj == NULL) {
@@ -7816,14 +7806,6 @@ virHypervisorDriver vboxCommonDriver = {
     .domainScreenshot = vboxDomainScreenshot, /* 0.9.2 */
 };
 
-static void updateDriver(void)
-{
-    /* Update the vboxDriver according to the vboxUniformedAPI.
-     * We need to make sure the vboxUniformedAPI is initialized
-     * before calling this function. */
-    gVBoxAPI.registerDomainEvent(&vboxCommonDriver);
-}
-
 virHypervisorDriverPtr vboxGetHypervisorDriver(uint32_t uVersion)
 {
     /* Install gVBoxAPI according to the vbox API version. */
@@ -7834,8 +7816,6 @@ virHypervisorDriverPtr vboxGetHypervisorDriver(uint32_t uVersion)
                  uVersion);
         return NULL;
     }
-
-    updateDriver();
 
     return &vboxCommonDriver;
 }
