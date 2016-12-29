@@ -255,7 +255,7 @@ static virNetworkPtr vboxNetworkLookupByUUID(virConnectPtr conn, const unsigned 
     char *nameUtf8 = NULL;
     PRUnichar *nameUtf16 = NULL;
     IHostNetworkInterface *networkInterface = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IHost *host = NULL;
     virNetworkPtr ret = NULL;
 
@@ -307,7 +307,7 @@ static virNetworkPtr vboxNetworkLookupByName(virConnectPtr conn, const char *nam
     IHostNetworkInterface *networkInterface = NULL;
     PRUint32 interfaceType = 0;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    vboxIIDUnion iid;
+    vboxIID iid;
     IHost *host = NULL;
     virNetworkPtr ret = NULL;
     nsresult rc;
@@ -378,7 +378,7 @@ vboxNetworkDefineCreateXML(virConnectPtr conn, const char *xml, bool start)
     virNetworkDefPtr def = virNetworkDefParseString(xml);
     virNetworkIPDefPtr ipdef = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    vboxIIDUnion vboxnetiid;
+    vboxIID vboxnetiid;
     virSocketAddr netmask;
     IHost *host = NULL;
     virNetworkPtr ret = NULL;
@@ -604,7 +604,7 @@ vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface)
         goto cleanup;
 
     if (removeinterface) {
-        vboxIIDUnion iid;
+        vboxIID iid;
         IProgress *progress = NULL;
         nsresult rc;
         resultCodeUnion resultCode;
@@ -769,7 +769,7 @@ static char *vboxNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
     PRUint32 interfaceType = 0;
     PRUnichar *networkNameUtf16 = NULL;
     IDHCPServer *dhcpServer = NULL;
-    vboxIIDUnion vboxnet0IID;
+    vboxIID vboxnet0IID;
     IHost *host = NULL;
     char *ret = NULL;
     nsresult rc;

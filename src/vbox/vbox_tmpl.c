@@ -150,14 +150,10 @@ if (strUtf16) {\
 #define VBOX_SESSION_CLOSE() \
     data->vboxSession->vtbl->UnlockMachine(data->vboxSession)
 
-typedef struct _vboxIID_v3_x vboxIID;
-typedef struct _vboxIID_v3_x vboxIID_v3_x;
-
 #define VBOX_IID_INITIALIZER { NULL, true }
-#define IID_MEMBER(name) (iidu->vboxIID_v3_x.name)
 
 static void
-vboxIIDUnalloc_v3_x(vboxDriverPtr data, vboxIID_v3_x *iid)
+_vboxIIDUnalloc(vboxDriverPtr data, vboxIID *iid)
 {
     if (iid->value != NULL && iid->owner)
         data->pFuncs->pfnUtf16Free(iid->value);
@@ -167,14 +163,8 @@ vboxIIDUnalloc_v3_x(vboxDriverPtr data, vboxIID_v3_x *iid)
 }
 
 static void
-_vboxIIDUnalloc(vboxDriverPtr data, vboxIIDUnion *iidu)
-{
-    vboxIIDUnalloc_v3_x(data, &iidu->vboxIID_v3_x);
-}
-
-static void
-vboxIIDToUUID_v3_x(vboxDriverPtr data, vboxIID_v3_x *iid,
-                   unsigned char *uuid)
+_vboxIIDToUUID(vboxDriverPtr data, vboxIID *iid,
+               unsigned char *uuid)
 {
     char *utf8 = NULL;
 
@@ -186,35 +176,21 @@ vboxIIDToUUID_v3_x(vboxDriverPtr data, vboxIID_v3_x *iid,
 }
 
 static void
-_vboxIIDToUUID(vboxDriverPtr data, vboxIIDUnion *iidu,
-               unsigned char *uuid)
-{
-    vboxIIDToUUID_v3_x(data, &iidu->vboxIID_v3_x, uuid);
-}
-
-static void
-vboxIIDFromUUID_v3_x(vboxDriverPtr data, vboxIID_v3_x *iid,
-                     const unsigned char *uuid)
+_vboxIIDFromUUID(vboxDriverPtr data, vboxIID *iid,
+                 const unsigned char *uuid)
 {
     char utf8[VIR_UUID_STRING_BUFLEN];
 
-    vboxIIDUnalloc_v3_x(data, iid);
+    _vboxIIDUnalloc(data, iid);
 
     virUUIDFormat(uuid, utf8);
 
     data->pFuncs->pfnUtf8ToUtf16(utf8, &iid->value);
 }
 
-static void
-_vboxIIDFromUUID(vboxDriverPtr data, vboxIIDUnion *iidu,
-                 const unsigned char *uuid)
-{
-    vboxIIDFromUUID_v3_x(data, &iidu->vboxIID_v3_x, uuid);
-}
-
 static bool
-vboxIIDIsEqual_v3_x(vboxDriverPtr data, vboxIID_v3_x *iid1,
-                    vboxIID_v3_x *iid2)
+_vboxIIDIsEqual(vboxDriverPtr data, vboxIID *iid1,
+                vboxIID *iid2)
 {
     unsigned char uuid1[VIR_UUID_BUFLEN];
     unsigned char uuid2[VIR_UUID_BUFLEN];
@@ -224,42 +200,28 @@ vboxIIDIsEqual_v3_x(vboxDriverPtr data, vboxIID_v3_x *iid1,
      * or mixture of both and we don't want to fail here by
      * using direct string comparison. Here virUUIDParse() takes
      * care of these cases. */
-    vboxIIDToUUID_v3_x(data, iid1, uuid1);
-    vboxIIDToUUID_v3_x(data, iid2, uuid2);
+    _vboxIIDToUUID(data, iid1, uuid1);
+    _vboxIIDToUUID(data, iid2, uuid2);
 
     return memcmp(uuid1, uuid2, VIR_UUID_BUFLEN) == 0;
 }
 
-static bool
-_vboxIIDIsEqual(vboxDriverPtr data, vboxIIDUnion *iidu1,
-                vboxIIDUnion *iidu2)
-{
-    return vboxIIDIsEqual_v3_x(data, &iidu1->vboxIID_v3_x, &iidu2->vboxIID_v3_x);
-}
-
 static void
-vboxIIDFromArrayItem_v3_x(vboxDriverPtr data, vboxIID_v3_x *iid,
-                          vboxArray *array, int idx)
+_vboxIIDFromArrayItem(vboxDriverPtr data, vboxIID *iid,
+                      vboxArray *array, int idx)
 {
-    vboxIIDUnalloc_v3_x(data, iid);
+    _vboxIIDUnalloc(data, iid);
 
     iid->value = array->items[idx];
     iid->owner = false;
 }
 
-static void
-_vboxIIDFromArrayItem(vboxDriverPtr data, vboxIIDUnion *iidu,
-                      vboxArray *array, int idx)
-{
-    vboxIIDFromArrayItem_v3_x(data, &iidu->vboxIID_v3_x, array, idx);
-}
-
-#define vboxIIDUnalloc(iid) vboxIIDUnalloc_v3_x(data, iid)
-#define vboxIIDToUUID(iid, uuid) vboxIIDToUUID_v3_x(data, iid, uuid)
-#define vboxIIDFromUUID(iid, uuid) vboxIIDFromUUID_v3_x(data, iid, uuid)
-#define vboxIIDIsEqual(iid1, iid2) vboxIIDIsEqual_v3_x(data, iid1, iid2)
+#define vboxIIDUnalloc(iid) _vboxIIDUnalloc(data, iid)
+#define vboxIIDToUUID(iid, uuid) _vboxIIDToUUID(data, iid, uuid)
+#define vboxIIDFromUUID(iid, uuid) _vboxIIDFromUUID(data, iid, uuid)
+#define vboxIIDIsEqual(iid1, iid2) _vboxIIDIsEqual(data, iid1, iid2)
 #define vboxIIDFromArrayItem(iid, array, idx) \
-    vboxIIDFromArrayItem_v3_x(data, iid, array, idx)
+    _vboxIIDFromArrayItem(data, iid, array, idx)
 #define DEBUGIID(msg, strUtf16) DEBUGPRUnichar(msg, strUtf16)
 
 /**
@@ -412,11 +374,11 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
 }
 
 static nsresult
-_unregisterMachine(vboxDriverPtr data, vboxIIDUnion *iidu, IMachine **machine)
+_unregisterMachine(vboxDriverPtr data, vboxIID *iid, IMachine **machine)
 {
     nsresult rc;
     vboxArray media = VBOX_ARRAY_INITIALIZER;
-    rc = data->vboxObj->vtbl->FindMachine(data->vboxObj, IID_MEMBER(value), machine);
+    rc = data->vboxObj->vtbl->FindMachine(data->vboxObj, iid->value, machine);
     if (NS_FAILED(rc)) {
         virReportError(VIR_ERR_NO_DOMAIN, "%s",
                        _("no domain with matching uuid"));
@@ -534,29 +496,29 @@ static int _pfnUtf8ToUtf16(PCVBOXXPCOM pFuncs, const char *pszString, PRUnichar 
     return pFuncs->pfnUtf8ToUtf16(pszString, ppwszString);
 }
 
-static void _vboxIIDInitialize(vboxIIDUnion *iidu)
+static void _vboxIIDInitialize(vboxIID *iid)
 {
-    memset(iidu, 0, sizeof(vboxIIDUnion));
-    IID_MEMBER(owner) = true;
+    memset(iid, 0, sizeof(vboxIID));
+    iid->owner = true;
 }
 
-static void _DEBUGIID(vboxDriverPtr data, const char *msg, vboxIIDUnion *iidu)
+static void _DEBUGIID(vboxDriverPtr data, const char *msg, vboxIID *iid)
 {
-    DEBUGPRUnichar(msg, IID_MEMBER(value));
+    DEBUGPRUnichar(msg, iid->value);
 }
 
 static void
 _vboxIIDToUtf8(vboxDriverPtr data ATTRIBUTE_UNUSED,
-               vboxIIDUnion *iidu ATTRIBUTE_UNUSED,
+               vboxIID *iid ATTRIBUTE_UNUSED,
                char **utf8 ATTRIBUTE_UNUSED)
 {
-    data->pFuncs->pfnUtf16ToUtf8(IID_MEMBER(value), utf8);
+    data->pFuncs->pfnUtf16ToUtf8(iid->value, utf8);
 }
 
 static nsresult
-_vboxArrayGetWithIIDArg(vboxArray *array, void *self, void *getter, vboxIIDUnion *iidu)
+_vboxArrayGetWithIIDArg(vboxArray *array, void *self, void *getter, vboxIID *iid)
 {
-    return vboxArrayGetWithPtrArg(array, self, getter, IID_MEMBER(value));
+    return vboxArrayGetWithPtrArg(array, self, getter, iid->value);
 }
 
 static void* _handleGetMachines(IVirtualBox *vboxObj)
@@ -626,9 +588,9 @@ _virtualboxGetVersion(IVirtualBox *vboxObj, PRUnichar **versionUtf16)
 }
 
 static nsresult
-_virtualboxGetMachine(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMachine **machine)
+_virtualboxGetMachine(IVirtualBox *vboxObj, vboxIID *iid, IMachine **machine)
 {
-    return vboxObj->vtbl->FindMachine(vboxObj, IID_MEMBER(value), machine);
+    return vboxObj->vtbl->FindMachine(vboxObj, iid->value, machine);
 }
 
 static nsresult
@@ -750,13 +712,13 @@ _virtualboxOpenMedium(IVirtualBox *vboxObj ATTRIBUTE_UNUSED,
 }
 
 static nsresult
-_virtualboxGetHardDiskByIID(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMedium **medium)
+_virtualboxGetHardDiskByIID(IVirtualBox *vboxObj, vboxIID *iid, IMedium **medium)
 {
 #if VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
-    return vboxObj->vtbl->FindMedium(vboxObj, IID_MEMBER(value), DeviceType_HardDisk,
+    return vboxObj->vtbl->FindMedium(vboxObj, iid->value, DeviceType_HardDisk,
                                      medium);
 #else /* VBOX_API_VERSION >= 4002000 */
-    return vboxObj->vtbl->OpenMedium(vboxObj, IID_MEMBER(value), DeviceType_HardDisk,
+    return vboxObj->vtbl->OpenMedium(vboxObj, iid->value, DeviceType_HardDisk,
                                      AccessMode_ReadWrite, PR_FALSE, medium);
 #endif /* VBOX_API_VERSION >= 4002000 */
 }
@@ -826,7 +788,7 @@ _machineRemoveSharedFolder(IMachine *machine, PRUnichar *name)
 static nsresult
 _machineLaunchVMProcess(vboxDriverPtr data,
                         IMachine *machine ATTRIBUTE_UNUSED,
-                        vboxIIDUnion *iidu ATTRIBUTE_UNUSED,
+                        vboxIID *iid ATTRIBUTE_UNUSED,
                         PRUnichar *sessionType, PRUnichar *env,
                         IProgress **progress)
 {
@@ -844,9 +806,9 @@ _machineUnregister(IMachine *machine ATTRIBUTE_UNUSED,
 }
 
 static nsresult
-_machineFindSnapshot(IMachine *machine, vboxIIDUnion *iidu, ISnapshot **snapshot)
+_machineFindSnapshot(IMachine *machine, vboxIID *iid, ISnapshot **snapshot)
 {
-    return machine->vtbl->FindSnapshot(machine, IID_MEMBER(value), snapshot);
+    return machine->vtbl->FindSnapshot(machine, iid->value, snapshot);
 }
 
 static nsresult
@@ -875,9 +837,9 @@ _machineGetName(IMachine *machine, PRUnichar **name)
 }
 
 static nsresult
-_machineGetId(IMachine *machine, vboxIIDUnion *iidu)
+_machineGetId(IMachine *machine, vboxIID *iid)
 {
-    return machine->vtbl->GetId(machine, &IID_MEMBER(value));
+    return machine->vtbl->GetId(machine, &iid->value);
 }
 
 static nsresult
@@ -1067,13 +1029,13 @@ _machineSaveSettings(IMachine *machine)
 }
 
 static nsresult
-_sessionOpen(vboxDriverPtr data, vboxIIDUnion *iidu ATTRIBUTE_UNUSED, IMachine *machine)
+_sessionOpen(vboxDriverPtr data, vboxIID *iid ATTRIBUTE_UNUSED, IMachine *machine)
 {
     return machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Write);
 }
 
 static nsresult
-_sessionOpenExisting(vboxDriverPtr data, vboxIIDUnion *iidu ATTRIBUTE_UNUSED, IMachine *machine)
+_sessionOpenExisting(vboxDriverPtr data, vboxIID *iid ATTRIBUTE_UNUSED, IMachine *machine)
 {
     return machine->vtbl->LockMachine(machine, data->vboxSession, LockType_Shared);
 }
@@ -1182,10 +1144,10 @@ _consoleTakeSnapshot(IConsole *console, PRUnichar *name,
 }
 
 static nsresult
-_consoleDeleteSnapshot(IConsole *console, vboxIIDUnion *iidu, IProgress **progress)
+_consoleDeleteSnapshot(IConsole *console, vboxIID *iid, IProgress **progress)
 {
 #if VBOX_API_VERSION < 5000000 /* VBOX_API_VERSION < 5000000 */
-    return console->vtbl->DeleteSnapshot(console, IID_MEMBER(value), progress);
+    return console->vtbl->DeleteSnapshot(console, iid->value, progress);
 #else /* VBOX_API_VERSION >= 5000000 */
     IMachine *machine;
     nsresult rc;
@@ -1193,7 +1155,7 @@ _consoleDeleteSnapshot(IConsole *console, vboxIIDUnion *iidu, IProgress **progre
     rc = console->vtbl->GetMachine(console, &machine);
 
     if (NS_SUCCEEDED(rc))
-        rc = machine->vtbl->DeleteSnapshot(machine, IID_MEMBER(value), progress);
+        rc = machine->vtbl->DeleteSnapshot(machine, iid->value, progress);
     else
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to get machine from console. (error %d)"), rc);
@@ -1786,9 +1748,9 @@ _usbDeviceFilterSetVendorId(IUSBDeviceFilter *USBDeviceFilter, PRUnichar *vendor
     return USBDeviceFilter->vtbl->SetVendorId(USBDeviceFilter, vendorId);
 }
 
-static nsresult _mediumGetId(IMedium *medium, vboxIIDUnion *iidu)
+static nsresult _mediumGetId(IMedium *medium, vboxIID *iid)
 {
-    return medium->vtbl->GetId(medium, &IID_MEMBER(value));
+    return medium->vtbl->GetId(medium, &iid->value);
 }
 
 static nsresult _mediumGetLocation(IMedium *medium, PRUnichar **location)
@@ -1968,9 +1930,9 @@ _snapshotGetName(ISnapshot *snapshot, PRUnichar **name)
 }
 
 static nsresult
-_snapshotGetId(ISnapshot *snapshot, vboxIIDUnion *iidu)
+_snapshotGetId(ISnapshot *snapshot, vboxIID *iid)
 {
-    return snapshot->vtbl->GetId(snapshot, &IID_MEMBER(value));
+    return snapshot->vtbl->GetId(snapshot, &iid->value);
 }
 
 static nsresult
@@ -2046,10 +2008,10 @@ _displayTakeScreenShotPNGToArray(IDisplay *display, PRUint32 screenId,
 }
 
 static nsresult
-_hostFindHostNetworkInterfaceById(IHost *host, vboxIIDUnion *iidu,
+_hostFindHostNetworkInterfaceById(IHost *host, vboxIID *iid,
                                   IHostNetworkInterface **networkInterface)
 {
-    return host->vtbl->FindHostNetworkInterfaceById(host, IID_MEMBER(value),
+    return host->vtbl->FindHostNetworkInterfaceById(host, iid->value,
                                                     networkInterface);
 }
 
@@ -2082,10 +2044,10 @@ _hostCreateHostOnlyNetworkInterface(vboxDriverPtr data ATTRIBUTE_UNUSED,
 
 static nsresult
 _hostRemoveHostOnlyNetworkInterface(IHost *host ATTRIBUTE_UNUSED,
-                                    vboxIIDUnion *iidu ATTRIBUTE_UNUSED,
+                                    vboxIID *iid ATTRIBUTE_UNUSED,
                                     IProgress **progress ATTRIBUTE_UNUSED)
 {
-    return host->vtbl->RemoveHostOnlyNetworkInterface(host, IID_MEMBER(value), progress);
+    return host->vtbl->RemoveHostOnlyNetworkInterface(host, iid->value, progress);
 }
 
 static nsresult
@@ -2107,9 +2069,9 @@ _hnInterfaceGetName(IHostNetworkInterface *hni, PRUnichar **name)
 }
 
 static nsresult
-_hnInterfaceGetId(IHostNetworkInterface *hni, vboxIIDUnion *iidu)
+_hnInterfaceGetId(IHostNetworkInterface *hni, vboxIID *iid)
 {
-    return hni->vtbl->GetId(hni, &IID_MEMBER(value));
+    return hni->vtbl->GetId(hni, &iid->value);
 }
 
 static nsresult

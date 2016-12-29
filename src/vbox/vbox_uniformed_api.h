@@ -58,24 +58,7 @@
 
 /* Extracted define from vbox_tmpl.c */
 
-# ifdef WIN32
-struct _vboxIID_v2_x_WIN32 {
-    /* IID is represented by a GUID value. */
-    GUID value;
-};
-# endif /* !WIN32 */
-
-struct _vboxIID_v2_x {
-    /* IID is represented by a pointer to a nsID. */
-    nsID *value;
-
-    /* backing is used in cases where we need to create or copy an IID.
-     * We cannot allocate memory that can be freed by ComUnallocMem.
-     * Therefore, we use this stack allocated nsID instead. */
-    nsID backing;
-};
-
-struct _vboxIID_v3_x {
+struct _vboxIID {
     /* IID is represented by a UTF-16 encoded UUID in string form. */
     PRUnichar *value;
 
@@ -83,13 +66,7 @@ struct _vboxIID_v3_x {
     bool owner;
 };
 
-typedef union {
-# ifdef WIN32
-    struct _vboxIID_v2_x_WIN32 vboxIID_v2_x_WIN32;
-# endif /* !WIN32 */
-    struct _vboxIID_v2_x vboxIID_v2_x;
-    struct _vboxIID_v3_x vboxIID_v3_x;
-} vboxIIDUnion;
+typedef struct _vboxIID vboxIID;
 
 typedef union {
     nsresult uResultCode;
@@ -138,20 +115,20 @@ typedef struct {
 
 /* Functions for vboxIID */
 typedef struct {
-    void (*vboxIIDInitialize)(vboxIIDUnion *iidu);
-    void (*vboxIIDUnalloc)(vboxDriverPtr driver, vboxIIDUnion *iidu);
-    void (*vboxIIDToUUID)(vboxDriverPtr driver, vboxIIDUnion *iidu, unsigned char *uuid);
-    void (*vboxIIDFromUUID)(vboxDriverPtr driver, vboxIIDUnion *iidu, const unsigned char *uuid);
-    bool (*vboxIIDIsEqual)(vboxDriverPtr driver, vboxIIDUnion *iidu1, vboxIIDUnion *iidu2);
-    void (*vboxIIDFromArrayItem)(vboxDriverPtr driver, vboxIIDUnion *iidu, vboxArray *array, int idx);
-    void (*vboxIIDToUtf8)(vboxDriverPtr driver, vboxIIDUnion *iidu, char **utf8);
-    void (*DEBUGIID)(vboxDriverPtr driver, const char *msg, vboxIIDUnion *iidu);
+    void (*vboxIIDInitialize)(vboxIID *iid);
+    void (*vboxIIDUnalloc)(vboxDriverPtr driver, vboxIID *iid);
+    void (*vboxIIDToUUID)(vboxDriverPtr driver, vboxIID *iid, unsigned char *uuid);
+    void (*vboxIIDFromUUID)(vboxDriverPtr driver, vboxIID *iid, const unsigned char *uuid);
+    bool (*vboxIIDIsEqual)(vboxDriverPtr driver, vboxIID *iid1, vboxIID *iid2);
+    void (*vboxIIDFromArrayItem)(vboxDriverPtr driver, vboxIID *iid, vboxArray *array, int idx);
+    void (*vboxIIDToUtf8)(vboxDriverPtr driver, vboxIID *iid, char **utf8);
+    void (*DEBUGIID)(vboxDriverPtr driver, const char *msg, vboxIID *iid);
 } vboxUniformedIID;
 
 /* Functions for vboxArray */
 typedef struct {
     nsresult (*vboxArrayGet)(vboxArray *array, void *self, void *getter);
-    nsresult (*vboxArrayGetWithIIDArg)(vboxArray *array, void *self, void *getter, vboxIIDUnion *iidu);
+    nsresult (*vboxArrayGetWithIIDArg)(vboxArray *array, void *self, void *getter, vboxIID *iid);
     void (*vboxArrayRelease)(vboxArray *array);
     void (*vboxArrayUnalloc)(vboxArray *array);
     /* Generate function pointers for vboxArrayGet */
@@ -176,7 +153,7 @@ typedef struct {
 /* Functions for IVirtualBox */
 typedef struct {
     nsresult (*GetVersion)(IVirtualBox *vboxObj, PRUnichar **versionUtf16);
-    nsresult (*GetMachine)(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMachine **machine);
+    nsresult (*GetMachine)(IVirtualBox *vboxObj, vboxIID *iid, IMachine **machine);
     nsresult (*OpenMachine)(IVirtualBox *vboxObj, PRUnichar *settingsFile, IMachine **machine);
     nsresult (*GetSystemProperties)(IVirtualBox *vboxObj, ISystemProperties **systemProperties);
     nsresult (*GetHost)(IVirtualBox *vboxObj, IHost **host);
@@ -186,7 +163,7 @@ typedef struct {
     nsresult (*FindHardDisk)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType,
                              PRUint32 accessMode, IMedium **medium);
     nsresult (*OpenMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
-    nsresult (*GetHardDiskByIID)(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMedium **medium);
+    nsresult (*GetHardDiskByIID)(IVirtualBox *vboxObj, vboxIID *iid, IMedium **medium);
     nsresult (*FindDHCPServerByNetworkName)(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server);
     nsresult (*CreateDHCPServer)(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server);
     nsresult (*RemoveDHCPServer)(IVirtualBox *vboxObj, IDHCPServer *server);
@@ -206,18 +183,18 @@ typedef struct {
                                    PRBool automount);
     nsresult (*RemoveSharedFolder)(IMachine *machine, PRUnichar *name);
     nsresult (*LaunchVMProcess)(vboxDriverPtr driver, IMachine *machine,
-                                vboxIIDUnion *iidu,
+                                vboxIID *iid,
                                 PRUnichar *sessionType, PRUnichar *env,
                                 IProgress **progress);
     nsresult (*Unregister)(IMachine *machine, PRUint32 cleanupMode,
                            PRUint32 *aMediaSize, IMedium ***aMedia);
-    nsresult (*FindSnapshot)(IMachine *machine, vboxIIDUnion *iidu, ISnapshot **snapshot);
+    nsresult (*FindSnapshot)(IMachine *machine, vboxIID *iid, ISnapshot **snapshot);
     nsresult (*DetachDevice)(IMachine *machine, PRUnichar *name,
                              PRInt32 controllerPort, PRInt32 device);
     nsresult (*GetAccessible)(IMachine *machine, PRBool *isAccessible);
     nsresult (*GetState)(IMachine *machine, PRUint32 *state);
     nsresult (*GetName)(IMachine *machine, PRUnichar **name);
-    nsresult (*GetId)(IMachine *machine, vboxIIDUnion *iidu);
+    nsresult (*GetId)(IMachine *machine, vboxIID *iid);
     nsresult (*GetBIOSSettings)(IMachine *machine, IBIOSSettings **bios);
     nsresult (*GetAudioAdapter)(IMachine *machine, IAudioAdapter **audioAdapter);
     nsresult (*GetNetworkAdapter)(IMachine *machine, PRUint32 slot, INetworkAdapter **adapter);
@@ -252,8 +229,8 @@ typedef struct {
 
 /* Functions for ISession */
 typedef struct {
-    nsresult (*Open)(vboxDriverPtr driver, vboxIIDUnion *iidu, IMachine *machine);
-    nsresult (*OpenExisting)(vboxDriverPtr driver, vboxIIDUnion *iidu, IMachine *machine);
+    nsresult (*Open)(vboxDriverPtr driver, vboxIID *iid, IMachine *machine);
+    nsresult (*OpenExisting)(vboxDriverPtr driver, vboxIID *iid, IMachine *machine);
     nsresult (*GetConsole)(ISession *session, IConsole **console);
     nsresult (*GetMachine)(ISession *session, IMachine **machine);
     nsresult (*Close)(ISession *session);
@@ -269,7 +246,7 @@ typedef struct {
     nsresult (*Reset)(IConsole *console);
     nsresult (*TakeSnapshot)(IConsole *console, PRUnichar *name,
                              PRUnichar *description, IProgress **progress);
-    nsresult (*DeleteSnapshot)(IConsole *console, vboxIIDUnion *iidu, IProgress **progress);
+    nsresult (*DeleteSnapshot)(IConsole *console, vboxIID *iid, IProgress **progress);
     nsresult (*GetDisplay)(IConsole *console, IDisplay **display);
     nsresult (*GetKeyboard)(IConsole *console, IKeyboard **keyboard);
 } vboxUniformedIConsole;
@@ -398,7 +375,7 @@ typedef struct {
 
 /* Functions for IMedium */
 typedef struct {
-    nsresult (*GetId)(IMedium *medium, vboxIIDUnion *iidu);
+    nsresult (*GetId)(IMedium *medium, vboxIID *iid);
     nsresult (*GetLocation)(IMedium *medium, PRUnichar **location);
     nsresult (*GetState)(IMedium *medium, PRUint32 *state);
     nsresult (*GetName)(IMedium *medium, PRUnichar **name);
@@ -445,7 +422,7 @@ typedef struct {
 /* Functions for ISnapshot */
 typedef struct {
     nsresult (*GetName)(ISnapshot *snapshot, PRUnichar **name);
-    nsresult (*GetId)(ISnapshot *snapshot, vboxIIDUnion *iidu);
+    nsresult (*GetId)(ISnapshot *snapshot, vboxIID *iid);
     nsresult (*GetMachine)(ISnapshot *snapshot, IMachine **machine);
     nsresult (*GetDescription)(ISnapshot *snapshot, PRUnichar **description);
     nsresult (*GetTimeStamp)(ISnapshot *snapshot, PRInt64 *timeStamp);
@@ -472,14 +449,14 @@ typedef struct {
 
 /* Functions for IHost */
 typedef struct {
-    nsresult (*FindHostNetworkInterfaceById)(IHost *host, vboxIIDUnion *iidu,
+    nsresult (*FindHostNetworkInterfaceById)(IHost *host, vboxIID *iid,
                                              IHostNetworkInterface **networkInterface);
     nsresult (*FindHostNetworkInterfaceByName)(IHost *host, PRUnichar *name,
                                                IHostNetworkInterface **networkInterface);
     nsresult (*CreateHostOnlyNetworkInterface)(vboxDriverPtr driver,
                                                IHost *host, char *name,
                                                IHostNetworkInterface **networkInterface);
-    nsresult (*RemoveHostOnlyNetworkInterface)(IHost *host, vboxIIDUnion *iidu,
+    nsresult (*RemoveHostOnlyNetworkInterface)(IHost *host, vboxIID *iid,
                                                IProgress **progress);
 } vboxUniformedIHost;
 
@@ -488,7 +465,7 @@ typedef struct {
     nsresult (*GetInterfaceType)(IHostNetworkInterface *hni, PRUint32 *interfaceType);
     nsresult (*GetStatus)(IHostNetworkInterface *hni, PRUint32 *status);
     nsresult (*GetName)(IHostNetworkInterface *hni, PRUnichar **name);
-    nsresult (*GetId)(IHostNetworkInterface *hni, vboxIIDUnion *iidu);
+    nsresult (*GetId)(IHostNetworkInterface *hni, vboxIID *iid);
     nsresult (*GetHardwareAddress)(IHostNetworkInterface *hni, PRUnichar **hardwareAddress);
     nsresult (*GetIPAddress)(IHostNetworkInterface *hni, PRUnichar **IPAddress);
     nsresult (*GetNetworkMask)(IHostNetworkInterface *hni, PRUnichar **networkMask);
@@ -533,7 +510,7 @@ typedef struct {
     uint32_t APIVersion;
     uint32_t XPCOMCVersion;
     /* vbox APIs */
-    nsresult (*unregisterMachine)(vboxDriverPtr driver, vboxIIDUnion *iidu, IMachine **machine);
+    nsresult (*unregisterMachine)(vboxDriverPtr driver, vboxIID *iid, IMachine **machine);
     void (*deleteConfig)(IMachine *machine);
     void (*vboxAttachDrivesOld)(virDomainDefPtr def, vboxDriverPtr driver, IMachine *machine);
     virDomainState (*vboxConvertState)(PRUint32 state);

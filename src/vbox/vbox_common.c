@@ -273,7 +273,7 @@ vboxDestroyDriverConnection(void)
 }
 
 static int openSessionForMachine(vboxDriverPtr data, const unsigned char *dom_uuid,
-                                 vboxIIDUnion *iid, IMachine **machine)
+                                 vboxIID *iid, IMachine **machine)
 {
     VBOX_IID_INITIALIZE(iid);
     vboxIIDFromUUID(iid, dom_uuid);
@@ -535,7 +535,7 @@ vboxDomainSave(virDomainPtr dom, const char *path ATTRIBUTE_UNUSED)
 {
     vboxDriverPtr data = dom->conn->privateData;
     IConsole *console = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     IProgress *progress = NULL;
     resultCodeUnion resultCode;
@@ -751,7 +751,7 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id)
     PRBool isAccessible = PR_FALSE;
     PRUnichar *machineNameUtf16 = NULL;
     char *machineNameUtf8 = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     unsigned char uuid[VIR_UUID_BUFLEN];
     PRUint32 state;
     nsresult rc;
@@ -825,7 +825,7 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
 {
     vboxDriverPtr data = conn->privateData;
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
-    vboxIIDUnion iid;
+    vboxIID iid;
     char *machineNameUtf8 = NULL;
     PRUnichar *machineNameUtf16 = NULL;
     unsigned char iid_as_uuid[VIR_UUID_BUFLEN];
@@ -902,7 +902,7 @@ vboxDomainLookupByName(virConnectPtr conn, const char *name)
 {
     vboxDriverPtr data = conn->privateData;
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
-    vboxIIDUnion iid;
+    vboxIID iid;
     char *machineNameUtf8 = NULL;
     PRUnichar *machineNameUtf16 = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -1104,7 +1104,7 @@ vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 
         if (type == VIR_STORAGE_TYPE_FILE && src) {
             IMedium *medium = NULL;
-            vboxIIDUnion mediumUUID;
+            vboxIID mediumUUID;
             PRUnichar *mediumFileUtf16 = NULL;
             PRUint32 storageBus = StorageBus_Null;
             PRUint32 deviceType = DeviceType_Null;
@@ -1858,7 +1858,7 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
     vboxDriverPtr data = conn->privateData;
     IMachine *machine = NULL;
     IBIOSSettings *bios = NULL;
-    vboxIIDUnion mchiid;
+    vboxIID mchiid;
     virDomainDefPtr def = NULL;
     nsresult rc;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -2006,7 +2006,7 @@ static int vboxDomainUndefineFlags(virDomainPtr dom, unsigned int flags)
 {
     vboxDriverPtr data = dom->conn->privateData;
     IMachine *machine = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     nsresult rc;
     int ret = -1;
 
@@ -2043,7 +2043,7 @@ static int vboxDomainUndefine(virDomainPtr dom)
 }
 
 static int
-vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine, vboxIIDUnion *iid)
+vboxStartMachine(virDomainPtr dom, int maxDomID, IMachine *machine, vboxIID *iid)
 {
     vboxDriverPtr data = dom->conn->privateData;
     int vrdpPresent = 0;
@@ -2231,7 +2231,7 @@ static int vboxDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
         gVBoxAPI.UIMachine.GetAccessible(machine, &isAccessible);
         if (isAccessible) {
-            vboxIIDUnion iid;
+            vboxIID iid;
 
             VBOX_IID_INITIALIZE(&iid);
 
@@ -2304,7 +2304,7 @@ static int vboxDomainIsActive(virDomainPtr dom)
 {
     vboxDriverPtr data = dom->conn->privateData;
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
-    vboxIIDUnion iid;
+    vboxIID iid;
     char *machineNameUtf8 = NULL;
     PRUnichar *machineNameUtf16 = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -2375,7 +2375,7 @@ static int vboxDomainIsPersistent(virDomainPtr dom)
     /* All domains are persistent.  However, we do want to check for
      * existence. */
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     int ret = -1;
 
@@ -2398,7 +2398,7 @@ static int vboxDomainIsUpdated(virDomainPtr dom)
     /* VBox domains never have a persistent state that differs from
      * current state.  However, we do want to check for existence.  */
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     int ret = -1;
 
@@ -2420,7 +2420,7 @@ static int vboxDomainSuspend(virDomainPtr dom)
 {
     vboxDriverPtr data = dom->conn->privateData;
     IMachine *machine = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IConsole *console = NULL;
     PRBool isAccessible = PR_FALSE;
     PRUint32 state;
@@ -2471,7 +2471,7 @@ static int vboxDomainResume(virDomainPtr dom)
 {
     vboxDriverPtr data = dom->conn->privateData;
     IMachine *machine = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IConsole *console = NULL;
     PRUint32 state;
     PRBool isAccessible = PR_FALSE;
@@ -2522,7 +2522,7 @@ static int vboxDomainShutdownFlags(virDomainPtr dom, unsigned int flags)
 {
     vboxDriverPtr data = dom->conn->privateData;
     IMachine *machine = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IConsole *console = NULL;
     PRUint32 state;
     PRBool isAccessible = PR_FALSE;
@@ -2579,7 +2579,7 @@ static int vboxDomainReboot(virDomainPtr dom, unsigned int flags)
 {
     vboxDriverPtr data = dom->conn->privateData;
     IMachine *machine = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IConsole *console = NULL;
     PRUint32 state;
     PRBool isAccessible = PR_FALSE;
@@ -2627,7 +2627,7 @@ static int vboxDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
 {
     vboxDriverPtr data = dom->conn->privateData;
     IMachine *machine = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IConsole *console = NULL;
     PRUint32 state;
     PRBool isAccessible = PR_FALSE;
@@ -2693,7 +2693,7 @@ static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)
 {
     vboxDriverPtr data = dom->conn->privateData;
     IMachine *machine = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     PRUint32 state;
     PRBool isAccessible = PR_FALSE;
     nsresult rc;
@@ -2834,7 +2834,7 @@ static int vboxDomainGetState(virDomainPtr dom, int *state,
                               int *reason, unsigned int flags)
 {
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion domiid;
+    vboxIID domiid;
     IMachine *machine = NULL;
     PRUint32 mstate;
     int ret = -1;
@@ -2866,7 +2866,7 @@ static int vboxDomainSetVcpusFlags(virDomainPtr dom, unsigned int nvcpus,
 {
     vboxDriverPtr data = dom->conn->privateData;
     IMachine *machine = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     PRUint32 CPUCount = nvcpus;
     nsresult rc;
     int ret = -1;
@@ -3782,7 +3782,7 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     vboxDriverPtr data = dom->conn->privateData;
     virDomainDefPtr def = NULL;
     IMachine *machine = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     PRBool accessible = PR_FALSE;
     size_t i = 0;
     PRBool PAEEnabled = PR_FALSE;
@@ -4041,7 +4041,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
 {
     vboxDriverPtr data = dom->conn->privateData;
     IMachine *machine = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     PRUint32 state;
     virDomainDefPtr def = NULL;
     virDomainDeviceDefPtr dev = NULL;
@@ -4160,7 +4160,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
 {
     vboxDriverPtr data = dom->conn->privateData;
     IMachine *machine = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     PRUint32 state;
     virDomainDefPtr def = NULL;
     virDomainDeviceDefPtr dev = NULL;
@@ -4356,7 +4356,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
      * Finally, we register the machine with the new virtualbox description file.
      */
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion domiid;
+    vboxIID domiid;
     IMachine *machine = NULL;
     nsresult rc;
     PRUnichar *settingsFilePath = NULL;
@@ -4465,7 +4465,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
             PRUnichar *formatUtf = NULL;
             char *format = NULL;
             const char *parentUuid = NULL;
-            vboxIIDUnion iid;
+            vboxIID iid;
 
             VBOX_IID_INITIALIZE(&iid);
             VBOX_UTF8_TO_UTF16(realReadWriteDisksPath[it], &locationUtf);
@@ -4561,7 +4561,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
         char *format = NULL;
         char *parentUuid = NULL;
         virVBoxSnapshotConfHardDiskPtr readOnlyDisk = NULL;
-        vboxIIDUnion iid, parentiid;
+        vboxIID iid, parentiid;
 
         VBOX_IID_INITIALIZE(&iid);
         VBOX_IID_INITIALIZE(&parentiid);
@@ -4867,7 +4867,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
             char *uuid = NULL;
             IMedium *parentDisk = NULL;
             char *parentUuid = NULL;
-            vboxIIDUnion iid, parentiid;
+            vboxIID iid, parentiid;
 
             VBOX_IID_INITIALIZE(&iid);
             VBOX_IID_INITIALIZE(&parentiid);
@@ -4984,7 +4984,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
             char *uuid = NULL;
             char *format = NULL;
             char *tmp = NULL;
-            vboxIIDUnion iid, parentiid;
+            vboxIID iid, parentiid;
 
             VBOX_IID_INITIALIZE(&iid);
             VBOX_IID_INITIALIZE(&parentiid);
@@ -5216,7 +5216,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
 {
     vboxDriverPtr data = dom->conn->privateData;
     virDomainSnapshotDefPtr def = NULL;
-    vboxIIDUnion domiid;
+    vboxIID domiid;
     IMachine *machine = NULL;
     IConsole *console = NULL;
     IProgress *progress = NULL;
@@ -5335,7 +5335,7 @@ vboxDomainSnapshotGetAll(virDomainPtr dom,
                          IMachine *machine,
                          ISnapshot ***snapshots)
 {
-    vboxIIDUnion empty;
+    vboxIID empty;
     ISnapshot **list = NULL;
     PRUint32 count;
     nsresult rc;
@@ -5469,7 +5469,7 @@ static int vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
 {
     virDomainPtr dom = snapshot->domain;
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion domiid;
+    vboxIID domiid;
     IMachine *machine = NULL;
     ISnapshot *snap = NULL;
     IMachine *snapMachine = NULL;
@@ -5478,7 +5478,7 @@ static int vboxSnapshotGetReadWriteDisks(virDomainSnapshotDefPtr def,
     PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
     int diskCount = 0;
     nsresult rc;
-    vboxIIDUnion snapIid;
+    vboxIID snapIid;
     char *snapshotUuidStr = NULL;
     size_t i = 0;
     int ret = -1;
@@ -5690,7 +5690,7 @@ int vboxSnapshotGetReadOnlyDisks(virDomainSnapshotPtr snapshot,
 {
     virDomainPtr dom = snapshot->domain;
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion domiid;
+    vboxIID domiid;
     ISnapshot *snap = NULL;
     IMachine *machine = NULL;
     IMachine *snapMachine = NULL;
@@ -5909,7 +5909,7 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 {
     virDomainPtr dom = snapshot->domain;
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion domiid;
+    vboxIID domiid;
     IMachine *machine = NULL;
     ISnapshot *snap = NULL;
     ISnapshot *parent = NULL;
@@ -6054,7 +6054,7 @@ static char *vboxDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
 static int vboxDomainSnapshotNum(virDomainPtr dom, unsigned int flags)
 {
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     nsresult rc;
     PRUint32 snapshotCount;
@@ -6099,7 +6099,7 @@ static int vboxDomainSnapshotListNames(virDomainPtr dom, char **names,
                                        int nameslen, unsigned int flags)
 {
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     nsresult rc;
     ISnapshot **snapshots = NULL;
@@ -6121,7 +6121,7 @@ static int vboxDomainSnapshotListNames(virDomainPtr dom, char **names,
     }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_LIST_ROOTS) {
-        vboxIIDUnion empty;
+        vboxIID empty;
 
         VBOX_IID_INITIALIZE(&empty);
         if (VIR_ALLOC_N(snapshots, 1) < 0)
@@ -6180,7 +6180,7 @@ vboxDomainSnapshotLookupByName(virDomainPtr dom, const char *name,
                                unsigned int flags)
 {
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     ISnapshot *snapshot = NULL;
     virDomainSnapshotPtr ret = NULL;
@@ -6209,7 +6209,7 @@ static int vboxDomainHasCurrentSnapshot(virDomainPtr dom,
                                         unsigned int flags)
 {
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     ISnapshot *snapshot = NULL;
     nsresult rc;
@@ -6247,7 +6247,7 @@ vboxDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
 {
     virDomainPtr dom = snapshot->domain;
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     ISnapshot *snap = NULL;
     ISnapshot *parent = NULL;
@@ -6310,7 +6310,7 @@ static virDomainSnapshotPtr
 vboxDomainSnapshotCurrent(virDomainPtr dom, unsigned int flags)
 {
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     ISnapshot *snapshot = NULL;
     PRUnichar *nameUtf16 = NULL;
@@ -6368,7 +6368,7 @@ static int vboxDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
 {
     virDomainPtr dom = snapshot->domain;
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     ISnapshot *snap = NULL;
     ISnapshot *current = NULL;
@@ -6429,7 +6429,7 @@ static int vboxDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
 {
     virDomainPtr dom = snapshot->domain;
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     ISnapshot *snap = NULL;
     int ret = -1;
@@ -6460,7 +6460,7 @@ static int vboxDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 {
     virDomainPtr dom = snapshot->domain;
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion domiid;
+    vboxIID domiid;
     IMachine *machine = NULL;
     ISnapshot *newSnapshot = NULL;
     ISnapshot *prevSnapshot = NULL;
@@ -6534,7 +6534,7 @@ vboxDomainSnapshotDeleteSingle(vboxDriverPtr data,
                                ISnapshot *snapshot)
 {
     IProgress *progress = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     int ret = -1;
     nsresult rc;
     resultCodeUnion result;
@@ -6626,7 +6626,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
     vboxDriverPtr data = dom->conn->privateData;
     virDomainSnapshotDefPtr def = NULL;
     char *defXml = NULL;
-    vboxIIDUnion domiid;
+    vboxIID domiid;
     nsresult rc;
     IMachine *machine = NULL;
     PRUnichar *settingsFilePathUtf16 = NULL;
@@ -6728,7 +6728,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
                 char *uuid = NULL;
                 char *format = NULL;
                 char *tmp = NULL;
-                vboxIIDUnion iid, parentiid;
+                vboxIID iid, parentiid;
                 resultCodeUnion resultCode;
 
                 VBOX_IID_INITIALIZE(&iid);
@@ -7061,7 +7061,7 @@ static int vboxDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
 {
     virDomainPtr dom = snapshot->domain;
     vboxDriverPtr data = dom->conn->privateData;
-    vboxIIDUnion domiid;
+    vboxIID domiid;
     IMachine *machine = NULL;
     ISnapshot *snap = NULL;
     IConsole *console = NULL;
@@ -7148,7 +7148,7 @@ vboxDomainScreenshot(virDomainPtr dom,
 {
     vboxDriverPtr data = dom->conn->privateData;
     IConsole *console = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     nsresult rc;
     char *tmp;
@@ -7286,7 +7286,7 @@ vboxConnectListAllDomains(virConnectPtr conn,
     char *machineNameUtf8 = NULL;
     PRUnichar *machineNameUtf16 = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    vboxIIDUnion iid;
+    vboxIID iid;
     PRUint32 state;
     nsresult rc;
     size_t i;
@@ -7495,7 +7495,7 @@ vboxDomainHasManagedSaveImage(virDomainPtr dom, unsigned int flags)
 {
     vboxDriverPtr data = dom->conn->privateData;
     vboxArray machines = VBOX_ARRAY_INITIALIZER;
-    vboxIIDUnion iid;
+    vboxIID iid;
     char *machineNameUtf8 = NULL;
     PRUnichar *machineNameUtf16 = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -7571,7 +7571,7 @@ vboxDomainSendKey(virDomainPtr dom,
     int ret = -1;
     vboxDriverPtr data = dom->conn->privateData;
     IConsole *console = NULL;
-    vboxIIDUnion iid;
+    vboxIID iid;
     IMachine *machine = NULL;
     IKeyboard *keyboard = NULL;
     PRInt32 *keyDownCodes = NULL;

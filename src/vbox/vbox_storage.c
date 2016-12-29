@@ -221,7 +221,7 @@ vboxStorageVolLookupByName(virStoragePoolPtr pool, const char *name)
         }
 
         if (nameUtf8 && STREQ(nameUtf8, name)) {
-            vboxIIDUnion hddIID;
+            vboxIID hddIID;
             unsigned char uuid[VIR_UUID_BUFLEN];
             char key[VIR_UUID_STRING_BUFLEN] = "";
 
@@ -257,7 +257,7 @@ static virStorageVolPtr
 vboxStorageVolLookupByKey(virConnectPtr conn, const char *key)
 {
     vboxDriverPtr data = conn->privateData;
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     unsigned char uuid[VIR_UUID_BUFLEN];
     IMedium *hardDisk = NULL;
     PRUnichar *hddNameUtf16 = NULL;
@@ -330,7 +330,7 @@ vboxStorageVolLookupByPath(virConnectPtr conn, const char *path)
     char *hddNameUtf8 = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
     char key[VIR_UUID_STRING_BUFLEN] = "";
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     PRUint32 hddstate;
     nsresult rc;
     virStorageVolPtr ret = NULL;
@@ -407,7 +407,7 @@ vboxStorageVolCreateXML(virStoragePoolPtr pool,
     PRUnichar *hddNameUtf16 = NULL;
     virStoragePoolDef poolDef;
     nsresult rc;
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     unsigned char uuid[VIR_UUID_BUFLEN];
     char key[VIR_UUID_STRING_BUFLEN] = "";
     IMedium *hardDisk = NULL;
@@ -517,7 +517,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
     size_t j = 0;
     PRUint32 machineIdsSize = 0;
     vboxArray machineIds = VBOX_ARRAY_INITIALIZER;
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     int ret = -1;
 
     if (!data->vboxObj)
@@ -562,7 +562,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
 
     for (i = 0; i < machineIds.count; i++) {
         IMachine *machine = NULL;
-        vboxIIDUnion machineId;
+        vboxIID machineId;
         vboxArray hddAttachments = VBOX_ARRAY_INITIALIZER;
 
         VBOX_IID_INITIALIZE(&machineId);
@@ -591,7 +591,7 @@ static int vboxStorageVolDelete(virStorageVolPtr vol, unsigned int flags)
         for (j = 0; j < hddAttachments.count; j++) {
             IMediumAttachment *hddAttachment = hddAttachments.items[j];
             IMedium *hdd = NULL;
-            vboxIIDUnion iid;
+            vboxIID iid;
 
             if (!hddAttachment)
                 continue;
@@ -667,7 +667,7 @@ static int vboxStorageVolGetInfo(virStorageVolPtr vol, virStorageVolInfoPtr info
     PRUint32 hddstate;
     PRUint64 hddLogicalSize = 0;
     PRUint64 hddActualSize = 0;
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     nsresult rc;
     int ret = -1;
 
@@ -725,7 +725,7 @@ static char *vboxStorageVolGetXMLDesc(virStorageVolPtr vol, unsigned int flags)
     PRUint64 hddActualSize = 0;
     virStoragePoolDef pool;
     virStorageVolDef def;
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     PRUint32 hddstate;
     nsresult rc;
     char *ret = NULL;
@@ -813,7 +813,7 @@ static char *vboxStorageVolGetPath(virStorageVolPtr vol)
     PRUnichar *hddLocationUtf16 = NULL;
     char *hddLocationUtf8 = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
-    vboxIIDUnion hddIID;
+    vboxIID hddIID;
     PRUint32 hddstate;
     nsresult rc;
     char *ret = NULL;
