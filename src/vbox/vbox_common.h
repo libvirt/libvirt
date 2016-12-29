@@ -328,7 +328,7 @@ typedef nsISupports IAudioAdapter;
 typedef nsISupports INetworkAdapter;
 typedef nsISupports ISerialPort;
 typedef nsISupports IParallelPort;
-typedef nsISupports IVRDxServer;
+typedef nsISupports IVRDEServer;
 typedef nsISupports IUSBCommon;
 typedef nsISupports IUSBDeviceFilter;
 typedef nsISupports IMedium;

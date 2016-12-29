@@ -72,8 +72,6 @@
 /* Include this *last* or we'll get the wrong vbox_CAPI_*.h. */
 #include "vbox_glue.h"
 
-typedef IVRDEServer IVRDxServer;
-
 #if VBOX_API_VERSION < 4003000
 typedef IUSBController IUSBCommon;
 #else /* VBOX_API_VERSION >= 4003000 */
@@ -919,9 +917,9 @@ _machineGetParallelPort(IMachine *machine, PRUint32 slot, IParallelPort **port)
 }
 
 static nsresult
-_machineGetVRDxServer(IMachine *machine, IVRDxServer **VRDxServer)
+_machineGetVRDEServer(IMachine *machine, IVRDEServer **VRDEServer)
 {
-    return machine->vtbl->GetVRDEServer(machine, VRDxServer);
+    return machine->vtbl->GetVRDEServer(machine, VRDEServer);
 }
 
 static nsresult
@@ -1607,27 +1605,27 @@ _parallelPortSetIOBase(IParallelPort *port, PRUint32 IOBase)
 }
 
 static nsresult
-_vrdxServerGetEnabled(IVRDxServer *VRDxServer, PRBool *enabled)
+_vrdeServerGetEnabled(IVRDEServer *VRDEServer, PRBool *enabled)
 {
-    return VRDxServer->vtbl->GetEnabled(VRDxServer, enabled);
+    return VRDEServer->vtbl->GetEnabled(VRDEServer, enabled);
 }
 
 static nsresult
-_vrdxServerSetEnabled(IVRDxServer *VRDxServer, PRBool enabled)
+_vrdeServerSetEnabled(IVRDEServer *VRDEServer, PRBool enabled)
 {
-    return VRDxServer->vtbl->SetEnabled(VRDxServer, enabled);
+    return VRDEServer->vtbl->SetEnabled(VRDEServer, enabled);
 }
 
 static nsresult
-_vrdxServerGetPorts(vboxDriverPtr data ATTRIBUTE_UNUSED,
-                    IVRDxServer *VRDxServer, virDomainGraphicsDefPtr graphics)
+_vrdeServerGetPorts(vboxDriverPtr data ATTRIBUTE_UNUSED,
+                    IVRDEServer *VRDEServer, virDomainGraphicsDefPtr graphics)
 {
     nsresult rc;
     PRUnichar *VRDEPortsKey = NULL;
     PRUnichar *VRDEPortsValue = NULL;
 
     VBOX_UTF8_TO_UTF16("TCP/Ports", &VRDEPortsKey);
-    rc = VRDxServer->vtbl->GetVRDEProperty(VRDxServer, VRDEPortsKey, &VRDEPortsValue);
+    rc = VRDEServer->vtbl->GetVRDEProperty(VRDEServer, VRDEPortsKey, &VRDEPortsValue);
     VBOX_UTF16_FREE(VRDEPortsKey);
     if (VRDEPortsValue) {
         /* even if vbox supports mutilpe ports, single port for now here */
@@ -1641,8 +1639,8 @@ _vrdxServerGetPorts(vboxDriverPtr data ATTRIBUTE_UNUSED,
 }
 
 static nsresult
-_vrdxServerSetPorts(vboxDriverPtr data ATTRIBUTE_UNUSED,
-                    IVRDxServer *VRDxServer, virDomainGraphicsDefPtr graphics)
+_vrdeServerSetPorts(vboxDriverPtr data ATTRIBUTE_UNUSED,
+                    IVRDEServer *VRDEServer, virDomainGraphicsDefPtr graphics)
 {
     nsresult rc = 0;
     PRUnichar *VRDEPortsKey = NULL;
@@ -1650,7 +1648,7 @@ _vrdxServerSetPorts(vboxDriverPtr data ATTRIBUTE_UNUSED,
 
     VBOX_UTF8_TO_UTF16("TCP/Ports", &VRDEPortsKey);
     VRDEPortsValue = PRUnicharFromInt(data->pFuncs, graphics->data.rdp.port);
-    rc = VRDxServer->vtbl->SetVRDEProperty(VRDxServer, VRDEPortsKey,
+    rc = VRDEServer->vtbl->SetVRDEProperty(VRDEServer, VRDEPortsKey,
                                            VRDEPortsValue);
     VBOX_UTF16_FREE(VRDEPortsKey);
     VBOX_UTF16_FREE(VRDEPortsValue);
@@ -1659,52 +1657,52 @@ _vrdxServerSetPorts(vboxDriverPtr data ATTRIBUTE_UNUSED,
 }
 
 static nsresult
-_vrdxServerGetReuseSingleConnection(IVRDxServer *VRDxServer, PRBool *enabled)
+_vrdeServerGetReuseSingleConnection(IVRDEServer *VRDEServer, PRBool *enabled)
 {
-    return VRDxServer->vtbl->GetReuseSingleConnection(VRDxServer, enabled);
+    return VRDEServer->vtbl->GetReuseSingleConnection(VRDEServer, enabled);
 }
 
 static nsresult
-_vrdxServerSetReuseSingleConnection(IVRDxServer *VRDxServer, PRBool enabled)
+_vrdeServerSetReuseSingleConnection(IVRDEServer *VRDEServer, PRBool enabled)
 {
-    return VRDxServer->vtbl->SetReuseSingleConnection(VRDxServer, enabled);
+    return VRDEServer->vtbl->SetReuseSingleConnection(VRDEServer, enabled);
 }
 
 static nsresult
-_vrdxServerGetAllowMultiConnection(IVRDxServer *VRDxServer, PRBool *enabled)
+_vrdeServerGetAllowMultiConnection(IVRDEServer *VRDEServer, PRBool *enabled)
 {
-    return VRDxServer->vtbl->GetAllowMultiConnection(VRDxServer, enabled);
+    return VRDEServer->vtbl->GetAllowMultiConnection(VRDEServer, enabled);
 }
 
 static nsresult
-_vrdxServerSetAllowMultiConnection(IVRDxServer *VRDxServer, PRBool enabled)
+_vrdeServerSetAllowMultiConnection(IVRDEServer *VRDEServer, PRBool enabled)
 {
-    return VRDxServer->vtbl->SetAllowMultiConnection(VRDxServer, enabled);
+    return VRDEServer->vtbl->SetAllowMultiConnection(VRDEServer, enabled);
 }
 
 static nsresult
-_vrdxServerGetNetAddress(vboxDriverPtr data ATTRIBUTE_UNUSED,
-                         IVRDxServer *VRDxServer, PRUnichar **netAddress)
+_vrdeServerGetNetAddress(vboxDriverPtr data ATTRIBUTE_UNUSED,
+                         IVRDEServer *VRDEServer, PRUnichar **netAddress)
 {
     PRUnichar *VRDENetAddressKey = NULL;
     nsresult rc;
 
     VBOX_UTF8_TO_UTF16("TCP/Address", &VRDENetAddressKey);
-    rc = VRDxServer->vtbl->GetVRDEProperty(VRDxServer, VRDENetAddressKey, netAddress);
+    rc = VRDEServer->vtbl->GetVRDEProperty(VRDEServer, VRDENetAddressKey, netAddress);
     VBOX_UTF16_FREE(VRDENetAddressKey);
 
     return rc;
 }
 
 static nsresult
-_vrdxServerSetNetAddress(vboxDriverPtr data ATTRIBUTE_UNUSED,
-                         IVRDxServer *VRDxServer, PRUnichar *netAddress)
+_vrdeServerSetNetAddress(vboxDriverPtr data ATTRIBUTE_UNUSED,
+                         IVRDEServer *VRDEServer, PRUnichar *netAddress)
 {
     PRUnichar *netAddressKey = NULL;
     nsresult rc;
 
     VBOX_UTF8_TO_UTF16("TCP/Address", &netAddressKey);
-    rc = VRDxServer->vtbl->SetVRDEProperty(VRDxServer, netAddressKey,
+    rc = VRDEServer->vtbl->SetVRDEProperty(VRDEServer, netAddressKey,
                                            netAddress);
     VBOX_UTF16_FREE(netAddressKey);
 
@@ -2346,7 +2344,7 @@ static vboxUniformedIMachine _UIMachine = {
     .GetChipsetType = _machineGetChipsetType,
     .GetSerialPort = _machineGetSerialPort,
     .GetParallelPort = _machineGetParallelPort,
-    .GetVRDxServer = _machineGetVRDxServer,
+    .GetVRDEServer = _machineGetVRDEServer,
     .GetUSBCommon = _machineGetUSBCommon,
     .GetCurrentSnapshot = _machineGetCurrentSnapshot,
     .GetSettingsFilePath = _machineGetSettingsFilePath,
@@ -2468,17 +2466,17 @@ static vboxUniformedIParallelPort _UIParallelPort = {
     .SetIOBase = _parallelPortSetIOBase,
 };
 
-static vboxUniformedIVRDxServer _UIVRDxServer = {
-    .GetEnabled = _vrdxServerGetEnabled,
-    .SetEnabled = _vrdxServerSetEnabled,
-    .GetPorts = _vrdxServerGetPorts,
-    .SetPorts = _vrdxServerSetPorts,
-    .GetReuseSingleConnection = _vrdxServerGetReuseSingleConnection,
-    .SetReuseSingleConnection = _vrdxServerSetReuseSingleConnection,
-    .GetAllowMultiConnection = _vrdxServerGetAllowMultiConnection,
-    .SetAllowMultiConnection = _vrdxServerSetAllowMultiConnection,
-    .GetNetAddress = _vrdxServerGetNetAddress,
-    .SetNetAddress = _vrdxServerSetNetAddress,
+static vboxUniformedIVRDEServer _UIVRDEServer = {
+    .GetEnabled = _vrdeServerGetEnabled,
+    .SetEnabled = _vrdeServerSetEnabled,
+    .GetPorts = _vrdeServerGetPorts,
+    .SetPorts = _vrdeServerSetPorts,
+    .GetReuseSingleConnection = _vrdeServerGetReuseSingleConnection,
+    .SetReuseSingleConnection = _vrdeServerSetReuseSingleConnection,
+    .GetAllowMultiConnection = _vrdeServerGetAllowMultiConnection,
+    .SetAllowMultiConnection = _vrdeServerSetAllowMultiConnection,
+    .GetNetAddress = _vrdeServerGetNetAddress,
+    .SetNetAddress = _vrdeServerSetNetAddress,
 };
 
 static vboxUniformedIUSBCommon _UIUSBCommon = {
@@ -2617,7 +2615,7 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->UINetworkAdapter = _UINetworkAdapter;
     pVBoxAPI->UISerialPort = _UISerialPort;
     pVBoxAPI->UIParallelPort = _UIParallelPort;
-    pVBoxAPI->UIVRDxServer = _UIVRDxServer;
+    pVBoxAPI->UIVRDEServer = _UIVRDEServer;
     pVBoxAPI->UIUSBCommon = _UIUSBCommon;
     pVBoxAPI->UIUSBDeviceFilter = _UIUSBDeviceFilter;
     pVBoxAPI->UIMedium = _UIMedium;

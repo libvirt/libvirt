@@ -224,7 +224,7 @@ typedef struct {
     nsresult (*GetChipsetType)(IMachine *machine, PRUint32 *chipsetType);
     nsresult (*GetSerialPort)(IMachine *machine, PRUint32 slot, ISerialPort **port);
     nsresult (*GetParallelPort)(IMachine *machine, PRUint32 slot, IParallelPort **port);
-    nsresult (*GetVRDxServer)(IMachine *machine, IVRDxServer **VRDxServer);
+    nsresult (*GetVRDEServer)(IMachine *machine, IVRDEServer **VRDEServer);
     nsresult (*GetUSBCommon)(IMachine *machine, IUSBCommon **USBCommon);
     nsresult (*GetCurrentSnapshot)(IMachine *machine, ISnapshot **currentSnapshot);
     nsresult (*GetSettingsFilePath)(IMachine *machine, PRUnichar **settingsFilePath);
@@ -359,23 +359,23 @@ typedef struct {
     nsresult (*SetIOBase)(IParallelPort *port, PRUint32 IOBase);
 } vboxUniformedIParallelPort;
 
-/* Functions for IVRDPServer and IVRDEServer */
+/* Functions for IVRDEServer */
 typedef struct {
-    nsresult (*GetEnabled)(IVRDxServer *VRDxServer, PRBool *enabled);
-    nsresult (*SetEnabled)(IVRDxServer *VRDxServer, PRBool enabled);
-    nsresult (*GetPorts)(vboxDriverPtr driver, IVRDxServer *VRDxServer,
+    nsresult (*GetEnabled)(IVRDEServer *VRDEServer, PRBool *enabled);
+    nsresult (*SetEnabled)(IVRDEServer *VRDEServer, PRBool enabled);
+    nsresult (*GetPorts)(vboxDriverPtr driver, IVRDEServer *VRDEServer,
                          virDomainGraphicsDefPtr graphics);
-    nsresult (*SetPorts)(vboxDriverPtr driver, IVRDxServer *VRDxServer,
+    nsresult (*SetPorts)(vboxDriverPtr driver, IVRDEServer *VRDEServer,
                          virDomainGraphicsDefPtr graphics);
-    nsresult (*GetReuseSingleConnection)(IVRDxServer *VRDxServer, PRBool *enabled);
-    nsresult (*SetReuseSingleConnection)(IVRDxServer *VRDxServer, PRBool enabled);
-    nsresult (*GetAllowMultiConnection)(IVRDxServer *VRDxServer, PRBool *enabled);
-    nsresult (*SetAllowMultiConnection)(IVRDxServer *VRDxServer, PRBool enabled);
-    nsresult (*GetNetAddress)(vboxDriverPtr driver, IVRDxServer *VRDxServer,
+    nsresult (*GetReuseSingleConnection)(IVRDEServer *VRDEServer, PRBool *enabled);
+    nsresult (*SetReuseSingleConnection)(IVRDEServer *VRDEServer, PRBool enabled);
+    nsresult (*GetAllowMultiConnection)(IVRDEServer *VRDEServer, PRBool *enabled);
+    nsresult (*SetAllowMultiConnection)(IVRDEServer *VRDEServer, PRBool enabled);
+    nsresult (*GetNetAddress)(vboxDriverPtr driver, IVRDEServer *VRDEServer,
                               PRUnichar **netAddress);
-    nsresult (*SetNetAddress)(vboxDriverPtr driver, IVRDxServer *VRDxServer,
+    nsresult (*SetNetAddress)(vboxDriverPtr driver, IVRDEServer *VRDEServer,
                               PRUnichar *netAddress);
-} vboxUniformedIVRDxServer;
+} vboxUniformedIVRDEServer;
 
 /* Common Functions for IUSBController and IUSBDeviceFilters */
 typedef struct {
@@ -553,7 +553,7 @@ typedef struct {
     vboxUniformedINetworkAdapter UINetworkAdapter;
     vboxUniformedISerialPort UISerialPort;
     vboxUniformedIParallelPort UIParallelPort;
-    vboxUniformedIVRDxServer UIVRDxServer;
+    vboxUniformedIVRDEServer UIVRDEServer;
     vboxUniformedIUSBCommon UIUSBCommon;
     vboxUniformedIUSBDeviceFilter UIUSBDeviceFilter;
     vboxUniformedIMedium UIMedium;

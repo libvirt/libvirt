@@ -1586,27 +1586,27 @@ vboxAttachDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
     virDomainGraphicsListenDefPtr glisten;
 
     for (i = 0; i < def->ngraphics; i++) {
-        IVRDxServer *VRDxServer = NULL;
+        IVRDEServer *VRDEServer = NULL;
 
         if ((def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) &&
             (vrdpPresent == 0)) {
 
             vrdpPresent = 1;
-            gVBoxAPI.UIMachine.GetVRDxServer(machine, &VRDxServer);
-            if (VRDxServer) {
-                gVBoxAPI.UIVRDxServer.SetEnabled(VRDxServer, PR_TRUE);
+            gVBoxAPI.UIMachine.GetVRDEServer(machine, &VRDEServer);
+            if (VRDEServer) {
+                gVBoxAPI.UIVRDEServer.SetEnabled(VRDEServer, PR_TRUE);
                 VIR_DEBUG("VRDP Support turned ON.");
 
-                gVBoxAPI.UIVRDxServer.SetPorts(data, VRDxServer, def->graphics[i]);
+                gVBoxAPI.UIVRDEServer.SetPorts(data, VRDEServer, def->graphics[i]);
 
                 if (def->graphics[i]->data.rdp.replaceUser) {
-                    gVBoxAPI.UIVRDxServer.SetReuseSingleConnection(VRDxServer,
+                    gVBoxAPI.UIVRDEServer.SetReuseSingleConnection(VRDEServer,
                                                                    PR_TRUE);
                     VIR_DEBUG("VRDP set to reuse single connection");
                 }
 
                 if (def->graphics[i]->data.rdp.multiUser) {
-                    gVBoxAPI.UIVRDxServer.SetAllowMultiConnection(VRDxServer,
+                    gVBoxAPI.UIVRDEServer.SetAllowMultiConnection(VRDEServer,
                                                                   PR_TRUE);
                     VIR_DEBUG("VRDP set to allow multiple connection");
                 }
@@ -1616,7 +1616,7 @@ vboxAttachDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
                     PRUnichar *netAddressUtf16 = NULL;
 
                     VBOX_UTF8_TO_UTF16(glisten->address, &netAddressUtf16);
-                    gVBoxAPI.UIVRDxServer.SetNetAddress(data, VRDxServer,
+                    gVBoxAPI.UIVRDEServer.SetNetAddress(data, VRDEServer,
                                                         netAddressUtf16);
                     VIR_DEBUG("VRDP listen address is set to: %s",
                               glisten->address);
@@ -1624,7 +1624,7 @@ vboxAttachDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
                     VBOX_UTF16_FREE(netAddressUtf16);
                 }
 
-                VBOX_RELEASE(VRDxServer);
+                VBOX_RELEASE(VRDEServer);
             }
         }
 
@@ -3263,7 +3263,7 @@ vboxDumpDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
     PRUnichar *valueTypeUtf16 = NULL;
     char *valueTypeUtf8 = NULL;
     char *netAddressUtf8 = NULL;
-    IVRDxServer *VRDxServer = NULL;
+    IVRDEServer *VRDEServer = NULL;
     PRBool VRDxEnabled = PR_FALSE;
     virDomainGraphicsDefPtr graphics = NULL;
     int ret = -1;
@@ -3325,9 +3325,9 @@ vboxDumpDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         VIR_APPEND_ELEMENT(def->graphics, def->ngraphics, graphics) < 0)
         goto cleanup;
 
-    gVBoxAPI.UIMachine.GetVRDxServer(machine, &VRDxServer);
-    if (VRDxServer)
-        gVBoxAPI.UIVRDxServer.GetEnabled(VRDxServer, &VRDxEnabled);
+    gVBoxAPI.UIMachine.GetVRDEServer(machine, &VRDEServer);
+    if (VRDEServer)
+        gVBoxAPI.UIVRDEServer.GetEnabled(VRDEServer, &VRDxEnabled);
 
     if (VRDxEnabled) {
         PRUnichar *netAddressUtf16 = NULL;
@@ -3337,11 +3337,11 @@ vboxDumpDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         if (VIR_ALLOC(graphics) < 0)
             goto cleanup;
 
-        gVBoxAPI.UIVRDxServer.GetPorts(data, VRDxServer, graphics);
+        gVBoxAPI.UIVRDEServer.GetPorts(data, VRDEServer, graphics);
 
         graphics->type = VIR_DOMAIN_GRAPHICS_TYPE_RDP;
 
-        gVBoxAPI.UIVRDxServer.GetNetAddress(data, VRDxServer, &netAddressUtf16);
+        gVBoxAPI.UIVRDEServer.GetNetAddress(data, VRDEServer, &netAddressUtf16);
         if (netAddressUtf16) {
             VBOX_UTF16_TO_UTF8(netAddressUtf16, &netAddressUtf8);
             VBOX_UTF16_FREE(netAddressUtf16);
@@ -3353,11 +3353,11 @@ vboxDumpDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
         if (virDomainGraphicsListenAppendAddress(graphics, netAddressUtf8) < 0)
             goto cleanup;
 
-        gVBoxAPI.UIVRDxServer.GetAllowMultiConnection(VRDxServer, &allowMultiConnection);
+        gVBoxAPI.UIVRDEServer.GetAllowMultiConnection(VRDEServer, &allowMultiConnection);
         if (allowMultiConnection)
             graphics->data.rdp.multiUser = true;
 
-        gVBoxAPI.UIVRDxServer.GetReuseSingleConnection(VRDxServer, &reuseSingleConnection);
+        gVBoxAPI.UIVRDEServer.GetReuseSingleConnection(VRDEServer, &reuseSingleConnection);
         if (reuseSingleConnection)
             graphics->data.rdp.replaceUser = true;
 
@@ -3368,7 +3368,7 @@ vboxDumpDisplay(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
     ret = 0;
 
  cleanup:
-    VBOX_RELEASE(VRDxServer);
+    VBOX_RELEASE(VRDEServer);
     VBOX_UTF8_FREE(valueTypeUtf8);
     VBOX_UTF8_FREE(netAddressUtf8);
     virDomainGraphicsDefFree(graphics);
