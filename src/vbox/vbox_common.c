@@ -1039,18 +1039,14 @@ vboxSetBootDeviceOrder(virDomainDefPtr def, vboxDriverPtr data,
 }
 
 static void
-vboxAttachDrivesNew(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
+vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 {
-    /* AttachDrives for 3.0 and later */
     size_t i;
     nsresult rc = 0;
     PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
     PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
     PRUnichar *storageCtlName = NULL;
     bool error = false;
-
-    if (gVBoxAPI.vboxAttachDrivesUseOld)
-        VIR_WARN("This function may not work in current vbox version");
 
     /* get the max port/slots/etc for the given storage bus */
     error = !vboxGetMaxPortSlotValues(data->vboxObj, maxPortPerInst,
@@ -1245,45 +1241,6 @@ vboxAttachDrivesNew(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
             VBOX_UTF16_FREE(storageCtlName);
         }
     }
-}
-
-static void
-vboxAttachDrives(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
-{
-    /* Here, About the vboxAttachDrives. In fact,there is
-     * three different implementations. We name it as
-     * v1, v2 and v3.
-     *
-     * The first version(v1) is only used in vbox 2.2 and 3.0,
-     * v2 is used by 3.1 and 3.2, and v3 is used for later
-     * vbox versions. In sight of implementation, the v1 is
-     * totally different with v2 and v3. The v2 shares the same
-     * outline with v3, meanwhile the API they used has much
-     * difference.
-     *
-     * It seems we have no thing to do with old versions such as
-     * v1 and v2 when developing new vbox drivers. What's more,
-     * most of the vbox APIs used in v1 and v2 is incompatible with
-     * new vbox versions. It is a burden to put these APIs into
-     * vboxUniformedAPI, I prefer not to do that.
-     *
-     * After balancing the code size and the complied code size,
-     * I put my solution here. The v1 and v2 is a version specified
-     * code, which only be generated for first four version. The v3
-     * will be put in vbox_common.c, it be complied only once, then
-     * be used by all next vbox drivers.
-     *
-     * Check the flag vboxAttachDrivesUseOld can tell you which
-     * implementation to use. When the flag is set, we need use
-     * the old version though gVBoxAPI.vboxAttachDrivesOld. It
-     * will automatically point to v1 or v2 deponds on you version.
-     * If the flag is clear, just call vboxAttachDrivesNew, which
-     * is the v3 implementation.
-     */
-    if (gVBoxAPI.vboxAttachDrivesUseOld)
-        gVBoxAPI.vboxAttachDrivesOld(def, data, machine);
-    else
-        vboxAttachDrivesNew(def, data, machine);
 }
 
 static void

@@ -605,7 +605,6 @@ typedef struct {
     bool detachDevicesExplicitly;
     bool chipsetType;
     bool accelerate2DVideo;
-    bool vboxAttachDrivesUseOld;
     bool oldMediumInterface;
     bool vboxSnapshotRedefine;
     bool supportScreenshot;
