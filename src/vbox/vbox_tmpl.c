@@ -2029,21 +2029,20 @@ _displayGetScreenResolution(IDisplay *display ATTRIBUTE_UNUSED,
 }
 
 static nsresult
-_displayTakeScreenShotPNGToArray(IDisplay *display ATTRIBUTE_UNUSED,
-                                 PRUint32 screenId ATTRIBUTE_UNUSED,
-                                 PRUint32 width ATTRIBUTE_UNUSED,
-                                 PRUint32 height ATTRIBUTE_UNUSED,
-                                 PRUint32 *screenDataSize ATTRIBUTE_UNUSED,
-                                 PRUint8** screenData ATTRIBUTE_UNUSED)
+_displayTakeScreenShotPNGToArray(IDisplay *display, PRUint32 screenId,
+                                 PRUint32 width, PRUint32 height,
+                                 PRUint32 *screenDataSize,
+                                 PRUint8** screenData)
 {
-#if VBOX_API_VERSION < 4000000 || VBOX_API_VERSION >= 5000000
-    vboxUnsupported();
-    return 0;
-#else /* VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 5000000 */
+#if VBOX_API_VERSION >= 5000000
+    return display->vtbl->TakeScreenShotToArray(display, screenId, width,
+                                                height, BitmapFormat_PNG,
+                                                screenDataSize, screenData);
+#else /* VBOX_API_VERSION < 5000000 */
     return display->vtbl->TakeScreenShotPNGToArray(display, screenId, width,
                                                    height, screenDataSize,
                                                    screenData);
-#endif /* VBOX_API_VERSION >= 4000000 */
+#endif /* VBOX_API_VERSION >= 5000000 */
 }
 
 static nsresult
