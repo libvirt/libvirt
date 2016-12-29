@@ -603,7 +603,7 @@ vboxNetworkUndefineDestroy(virNetworkPtr network, bool removeinterface)
     if (interfaceType != HostNetworkInterfaceType_HostOnly)
         goto cleanup;
 
-    if (gVBoxAPI.networkRemoveInterface && removeinterface) {
+    if (removeinterface) {
         vboxIIDUnion iid;
         IProgress *progress = NULL;
         nsresult rc;

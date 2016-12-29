@@ -413,14 +413,6 @@ _vboxDomainSnapshotRestore(virDomainPtr dom,
     return ret;
 }
 
-static void
-_detachDevices(vboxDriverPtr data ATTRIBUTE_UNUSED,
-               IMachine *machine ATTRIBUTE_UNUSED,
-               PRUnichar *hddcnameUtf16 ATTRIBUTE_UNUSED)
-{
-    vboxUnsupported();
-}
-
 static nsresult
 _unregisterMachine(vboxDriverPtr data, vboxIIDUnion *iidu, IMachine **machine)
 {
@@ -478,62 +470,6 @@ _deleteConfig(IMachine *machine)
         progress->vtbl->WaitForCompletion(progress, -1);
         VBOX_RELEASE(progress);
     }
-}
-
-static void
-_dumpIDEHDDsOld(virDomainDefPtr def ATTRIBUTE_UNUSED,
-                vboxDriverPtr data ATTRIBUTE_UNUSED,
-                IMachine *machine ATTRIBUTE_UNUSED)
-{
-    vboxUnsupported();
-}
-
-static void
-_dumpDVD(virDomainDefPtr def ATTRIBUTE_UNUSED,
-         vboxDriverPtr data ATTRIBUTE_UNUSED,
-         IMachine *machine ATTRIBUTE_UNUSED)
-{
-    vboxUnsupported();
-}
-
-static int
-_attachDVD(vboxDriverPtr data ATTRIBUTE_UNUSED,
-           IMachine *machine ATTRIBUTE_UNUSED,
-           const char *src ATTRIBUTE_UNUSED)
-{
-    vboxUnsupported();
-    return 0;
-}
-
-static int
-_detachDVD(IMachine *machine ATTRIBUTE_UNUSED)
-{
-    vboxUnsupported();
-    return 0;
-}
-
-static void
-_dumpFloppy(virDomainDefPtr def ATTRIBUTE_UNUSED,
-            vboxDriverPtr data ATTRIBUTE_UNUSED,
-            IMachine *machine ATTRIBUTE_UNUSED)
-{
-    vboxUnsupported();
-}
-
-static int
-_attachFloppy(vboxDriverPtr data ATTRIBUTE_UNUSED,
-              IMachine *machine ATTRIBUTE_UNUSED,
-              const char *src ATTRIBUTE_UNUSED)
-{
-    vboxUnsupported();
-    return 0;
-}
-
-static int
-_detachFloppy(IMachine *machine ATTRIBUTE_UNUSED)
-{
-    vboxUnsupported();
-    return 0;
 }
 
 static int _pfnInitialize(vboxDriverPtr driver)
@@ -1095,15 +1031,15 @@ _machineSetAccelerate3DEnabled(IMachine *machine, PRBool accelerate3DEnabled)
 }
 
 static nsresult
-_machineGetAccelerate2DVideoEnabled(IMachine *machine ATTRIBUTE_UNUSED,
-                                    PRBool *accelerate2DVideoEnabled ATTRIBUTE_UNUSED)
+_machineGetAccelerate2DVideoEnabled(IMachine *machine,
+                                    PRBool *accelerate2DVideoEnabled)
 {
     return machine->vtbl->GetAccelerate2DVideoEnabled(machine, accelerate2DVideoEnabled);
 }
 
 static nsresult
-_machineSetAccelerate2DVideoEnabled(IMachine *machine ATTRIBUTE_UNUSED,
-                                    PRBool accelerate2DVideoEnabled ATTRIBUTE_UNUSED)
+_machineSetAccelerate2DVideoEnabled(IMachine *machine,
+                                    PRBool accelerate2DVideoEnabled)
 {
     return machine->vtbl->SetAccelerate2DVideoEnabled(machine, accelerate2DVideoEnabled);
 }
@@ -2662,17 +2598,9 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
 {
     pVBoxAPI->APIVersion = VBOX_API_VERSION;
     pVBoxAPI->XPCOMCVersion = VBOX_XPCOMC_VERSION;
-    pVBoxAPI->detachDevices = _detachDevices;
     pVBoxAPI->unregisterMachine = _unregisterMachine;
     pVBoxAPI->deleteConfig = _deleteConfig;
     pVBoxAPI->vboxConvertState = _vboxConvertState;
-    pVBoxAPI->dumpIDEHDDsOld = _dumpIDEHDDsOld;
-    pVBoxAPI->dumpDVD = _dumpDVD;
-    pVBoxAPI->attachDVD = _attachDVD;
-    pVBoxAPI->detachDVD = _detachDVD;
-    pVBoxAPI->dumpFloppy = _dumpFloppy;
-    pVBoxAPI->attachFloppy = _attachFloppy;
-    pVBoxAPI->detachFloppy = _detachFloppy;
     pVBoxAPI->snapshotRestore = _vboxDomainSnapshotRestore;
     pVBoxAPI->UPFN = _UPFN;
     pVBoxAPI->UIID = _UIID;
@@ -2710,23 +2638,9 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->chipsetType = 0;
 #endif /* VBOX_API_VERSION < 4001000 */
 
-#if VBOX_API_VERSION >= 3001000
-    pVBoxAPI->accelerate2DVideo = 1;
-    pVBoxAPI->oldMediumInterface = 0;
-#else /* VBOX_API_VERSION < 3001000 */
-    pVBoxAPI->accelerate2DVideo = 0;
-    pVBoxAPI->oldMediumInterface = 1;
-#endif /* VBOX_API_VERSION < 3001000 */
-
 #if VBOX_API_VERSION >= 4002000
     pVBoxAPI->vboxSnapshotRedefine = 1;
 #else /* VBOX_API_VERSION < 4002000 */
     pVBoxAPI->vboxSnapshotRedefine = 0;
 #endif /* VBOX_API_VERSION < 4002000 */
-
-#if VBOX_API_VERSION == 2002000
-    pVBoxAPI->networkRemoveInterface = 0;
-#else /* VBOX_API_VERSION > 2002000 */
-    pVBoxAPI->networkRemoveInterface = 1;
-#endif /* VBOX_API_VERSION > 2002000 */
 }

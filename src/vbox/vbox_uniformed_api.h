@@ -533,18 +533,10 @@ typedef struct {
     uint32_t APIVersion;
     uint32_t XPCOMCVersion;
     /* vbox APIs */
-    void (*detachDevices)(vboxDriverPtr driver, IMachine *machine, PRUnichar *hddcnameUtf16);
     nsresult (*unregisterMachine)(vboxDriverPtr driver, vboxIIDUnion *iidu, IMachine **machine);
     void (*deleteConfig)(IMachine *machine);
     void (*vboxAttachDrivesOld)(virDomainDefPtr def, vboxDriverPtr driver, IMachine *machine);
     virDomainState (*vboxConvertState)(PRUint32 state);
-    void (*dumpIDEHDDsOld)(virDomainDefPtr def, vboxDriverPtr driver, IMachine *machine);
-    void (*dumpDVD)(virDomainDefPtr def, vboxDriverPtr driver, IMachine *machine);
-    int (*attachDVD)(vboxDriverPtr driver, IMachine *machine, const char *src);
-    int (*detachDVD)(IMachine *machine);
-    void (*dumpFloppy)(virDomainDefPtr def, vboxDriverPtr driver, IMachine *machine);
-    int (*attachFloppy)(vboxDriverPtr driver, IMachine *machine, const char *src);
-    int (*detachFloppy)(IMachine *machine);
     int (*snapshotRestore)(virDomainPtr dom, IMachine *machine, ISnapshot *snapshot);
     vboxUniformedPFN UPFN;
     vboxUniformedIID UIID;
@@ -577,10 +569,7 @@ typedef struct {
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */
     bool chipsetType;
-    bool accelerate2DVideo;
-    bool oldMediumInterface;
     bool vboxSnapshotRedefine;
-    bool networkRemoveInterface;
 } vboxUniformedAPI;
 
 virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,

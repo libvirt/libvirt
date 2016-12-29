@@ -1563,15 +1563,13 @@ vboxAttachVideo(virDomainDefPtr def, IMachine *machine)
                 gVBoxAPI.UIMachine.SetAccelerate3DEnabled(machine,
                     def->videos[0]->accel->accel3d == VIR_TRISTATE_BOOL_YES);
             }
-            if (def->videos[0]->accel->accel2d &&
-                gVBoxAPI.accelerate2DVideo) {
+            if (def->videos[0]->accel->accel2d) {
                 gVBoxAPI.UIMachine.SetAccelerate2DVideoEnabled(machine,
                     def->videos[0]->accel->accel2d == VIR_TRISTATE_BOOL_YES);
             }
         } else {
             gVBoxAPI.UIMachine.SetAccelerate3DEnabled(machine, 0);
-            if (gVBoxAPI.accelerate2DVideo)
-                gVBoxAPI.UIMachine.SetAccelerate2DVideoEnabled(machine, 0);
+            gVBoxAPI.UIMachine.SetAccelerate2DVideoEnabled(machine, 0);
         }
     }
 }
@@ -3063,7 +3061,7 @@ vboxHostDeviceGetXMLDesc(vboxDriverPtr data, virDomainDefPtr def, IMachine *mach
 }
 
 static void
-vboxDumpIDEHDDsNew(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
+vboxDumpIDEHDDs(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
 {
     /* dump IDE hdds if present */
     vboxArray mediumAttachments = VBOX_ARRAY_INITIALIZER;
@@ -3072,9 +3070,6 @@ vboxDumpIDEHDDsNew(virDomainDefPtr def, vboxDriverPtr data, IMachine *machine)
     size_t i;
     PRUint32 maxPortPerInst[StorageBus_Floppy + 1] = {};
     PRUint32 maxSlotPerPort[StorageBus_Floppy + 1] = {};
-
-    if (gVBoxAPI.oldMediumInterface)
-        VIR_WARN("This function may not work in current vbox version");
 
     def->ndisks = 0;
     gVBoxAPI.UArray.vboxArrayGet(&mediumAttachments, machine,
@@ -3245,8 +3240,7 @@ vboxDumpVideo(virDomainDefPtr def, vboxDriverPtr data ATTRIBUTE_UNUSED,
     gVBoxAPI.UIMachine.GetVRAMSize(machine, &VRAMSize);
     gVBoxAPI.UIMachine.GetMonitorCount(machine, &monitorCount);
     gVBoxAPI.UIMachine.GetAccelerate3DEnabled(machine, &accelerate3DEnabled);
-    if (gVBoxAPI.accelerate2DVideo)
-        gVBoxAPI.UIMachine.GetAccelerate2DVideoEnabled(machine, &accelerate2DEnabled);
+    gVBoxAPI.UIMachine.GetAccelerate2DVideoEnabled(machine, &accelerate2DEnabled);
 
     def->videos[0]->type = VIR_DOMAIN_VIDEO_TYPE_VBOX;
     def->videos[0]->vram = VRAMSize * 1024;
@@ -3914,26 +3908,11 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
     if (vboxDumpDisplay(def, data, machine) < 0)
         goto cleanup;
 
-    /* As the medium interface changed from 3.0 to 3.1.
-     * There are two totally different implementations.
-     * The old one would be version specified, while the
-     * new one is using the vboxUniformedAPI and be put
-     * into the common code.
-     */
-    if (gVBoxAPI.oldMediumInterface)
-        gVBoxAPI.dumpIDEHDDsOld(def, data, machine);
-    else
-        vboxDumpIDEHDDsNew(def, data, machine);
+    vboxDumpIDEHDDs(def, data, machine);
 
     vboxDumpSharedFolders(def, data, machine);
     vboxDumpNetwork(def, data, machine, networkAdapterCount);
     vboxDumpAudio(def, data, machine);
-
-    if (gVBoxAPI.oldMediumInterface) {
-        gVBoxAPI.dumpDVD(def, data, machine);
-        gVBoxAPI.dumpFloppy(def, data, machine);
-    }
-
     vboxDumpSerial(def, data, machine, serialPortCount);
     vboxDumpParallel(def, data, machine, parallelPortCount);
 
@@ -4106,20 +4085,8 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
     if (NS_SUCCEEDED(rc) && machine) {
         /* ret = -VIR_ERR_ARGUMENT_UNSUPPORTED means the current device don't support hotplug. */
         ret = -VIR_ERR_ARGUMENT_UNSUPPORTED;
-        if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-            if (gVBoxAPI.oldMediumInterface) {
-                const char *src = virDomainDiskGetSource(dev->data.disk);
-                int type = virDomainDiskGetType(dev->data.disk);
-
-                if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM &&
-                    type == VIR_STORAGE_TYPE_FILE && src)
-                    ret = gVBoxAPI.attachDVD(data, machine, src);
-                else if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-                         type == VIR_STORAGE_TYPE_FILE && src)
-                    ret = gVBoxAPI.attachFloppy(data, machine, src);
-            }
-        } else if (dev->type == VIR_DOMAIN_DEVICE_FS &&
-                   dev->data.fs->type == VIR_DOMAIN_FS_TYPE_MOUNT) {
+        if (dev->type == VIR_DOMAIN_DEVICE_FS &&
+            dev->data.fs->type == VIR_DOMAIN_FS_TYPE_MOUNT) {
             PRUnichar *nameUtf16;
             PRUnichar *hostPathUtf16;
             PRBool writable;
@@ -4237,24 +4204,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
     if (NS_SUCCEEDED(rc) && machine) {
         /* ret = -VIR_ERR_ARGUMENT_UNSUPPORTED means the current device don't support hotplug. */
         ret = -VIR_ERR_ARGUMENT_UNSUPPORTED;
-        if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-            if (gVBoxAPI.oldMediumInterface) {
-                int type = virDomainDiskGetType(dev->data.disk);
-
-                if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
-                    if (type == VIR_STORAGE_TYPE_FILE) {
-                        ret = gVBoxAPI.detachDVD(machine);
-                    } else if (type == VIR_STORAGE_TYPE_BLOCK) {
-                    }
-                } else if (dev->data.disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
-                    if (type == VIR_STORAGE_TYPE_FILE) {
-                        ret = gVBoxAPI.detachFloppy(machine);
-                    } else if (type == VIR_STORAGE_TYPE_BLOCK) {
-                    }
-                }
-            }
-        } else if (dev->type == VIR_DOMAIN_DEVICE_NET) {
-        } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
+        if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
             if (dev->data.hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
                 if (dev->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB) {
                 }
