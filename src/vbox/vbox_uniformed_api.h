@@ -196,12 +196,12 @@ typedef struct {
     nsresult (*GetSystemProperties)(IVirtualBox *vboxObj, ISystemProperties **systemProperties);
     nsresult (*GetHost)(IVirtualBox *vboxObj, IHost **host);
     nsresult (*CreateMachine)(vboxDriverPtr driver, virDomainDefPtr def, IMachine **machine, char *uuidstr);
-    nsresult (*CreateHardDisk)(IVirtualBox *vboxObj, PRUnichar *format, PRUnichar *location, IHardDisk **hardDisk);
+    nsresult (*CreateHardDisk)(IVirtualBox *vboxObj, PRUnichar *format, PRUnichar *location, IMedium **medium);
     nsresult (*RegisterMachine)(IVirtualBox *vboxObj, IMachine *machine);
     nsresult (*FindHardDisk)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType,
-                             PRUint32 accessMode, IHardDisk **hardDisk);
+                             PRUint32 accessMode, IMedium **medium);
     nsresult (*OpenMedium)(IVirtualBox *vboxObj, PRUnichar *location, PRUint32 deviceType, PRUint32 accessMode, IMedium **medium);
-    nsresult (*GetHardDiskByIID)(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IHardDisk **hardDisk);
+    nsresult (*GetHardDiskByIID)(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMedium **medium);
     nsresult (*FindDHCPServerByNetworkName)(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server);
     nsresult (*CreateDHCPServer)(IVirtualBox *vboxObj, PRUnichar *name, IDHCPServer **server);
     nsresult (*RemoveDHCPServer)(IVirtualBox *vboxObj, IDHCPServer *server);
@@ -420,19 +420,24 @@ typedef struct {
     nsresult (*GetSize)(IMedium *medium, PRUint64 *uSize);
     nsresult (*GetReadOnly)(IMedium *medium, PRBool *readOnly);
     nsresult (*GetParent)(IMedium *medium, IMedium **parent);
-    nsresult (*GetChildren)(IMedium *medium, PRUint32 *childrenSize, IMedium ***children);
+    nsresult (*GetChildren)(IMedium *medium, PRUint32 *childrenSize,
+                            IMedium ***children);
     nsresult (*GetFormat)(IMedium *medium, PRUnichar **format);
     nsresult (*DeleteStorage)(IMedium *medium, IProgress **progress);
     nsresult (*Release)(IMedium *medium);
     nsresult (*Close)(IMedium *medium);
     nsresult (*SetType)(IMedium *medium, PRUint32 type);
-    nsresult (*CreateDiffStorage)(IMedium *medium, IMedium *target, PRUint32 variantSize,
-                                  PRUint32 *variant, IProgress **progress);
+    nsresult (*CreateDiffStorage)(IMedium *medium, IMedium *target,
+                                  PRUint32 variantSize, PRUint32 *variant,
+                                  IProgress **progress);
+    nsresult (*CreateBaseStorage)(IMedium *medium, PRUint64 logicalSize,
+                                  PRUint32 variant, IProgress **progress);
+    nsresult (*GetLogicalSize)(IMedium *medium, PRUint64 *uLogicalSize);
 } vboxUniformedIMedium;
 
 /* Functions for IMediumAttachment */
 typedef struct {
-    nsresult (*GetMedium)(IMediumAttachment *mediumAttachment, IHardDisk **hardDisk);
+    nsresult (*GetMedium)(IMediumAttachment *mediumAttachment, IMedium **medium);
     nsresult (*GetController)(IMediumAttachment *mediumAttachment, PRUnichar **controller);
     nsresult (*GetType)(IMediumAttachment *mediumAttachment, PRUint32 *type);
     nsresult (*GetPort)(IMediumAttachment *mediumAttachment, PRInt32 *port);
@@ -523,17 +528,6 @@ typedef struct {
     nsresult (*Stop)(IDHCPServer *dhcpServer);
 } vboxUniformedIDHCPServer;
 
-/* Functions for IHardDisk, in vbox3.1 and later, it will call the
- * corresponding functions in IMedium as IHardDisk does't exist in
- * these versions. */
-typedef struct {
-    nsresult (*CreateBaseStorage)(IHardDisk *hardDisk, PRUint64 logicalSize,
-                                  PRUint32 variant, IProgress **progress);
-    nsresult (*DeleteStorage)(IHardDisk *hardDisk, IProgress **progress);
-    nsresult (*GetLogicalSizeInByte)(IHardDisk *hardDisk, PRUint64 *uLogicalSize);
-    nsresult (*GetFormat)(IHardDisk *hardDisk, PRUnichar **format);
-} vboxUniformedIHardDisk;
-
 typedef struct {
     nsresult (*PutScancode)(IKeyboard *keyboard, PRInt32 scancode);
     nsresult (*PutScancodes)(IKeyboard *keyboard, PRUint32 scancodesSize,
@@ -596,7 +590,6 @@ typedef struct {
     vboxUniformedIHost UIHost;
     vboxUniformedIHNInterface UIHNInterface;
     vboxUniformedIDHCPServer UIDHCPServer;
-    vboxUniformedIHardDisk UIHardDisk;
     vboxUniformedIKeyboard UIKeyboard;
     uniformedMachineStateChecker machineStateChecker;
     /* vbox API features */

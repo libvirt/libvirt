@@ -340,7 +340,6 @@ typedef nsISupports IDisplay;
 typedef nsISupports IHost;
 typedef nsISupports IHostNetworkInterface;
 typedef nsISupports IDHCPServer;
-typedef IMedium IHardDisk;
 typedef nsISupports IKeyboard;
 
 /* Macros for all vbox drivers. */

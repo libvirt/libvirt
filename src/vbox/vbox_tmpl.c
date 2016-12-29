@@ -73,7 +73,6 @@
 #include "vbox_glue.h"
 
 typedef IVRDEServer IVRDxServer;
-typedef IMedium IHardDisk;
 
 #if VBOX_API_VERSION < 4003000
 typedef IUSBController IUSBCommon;
@@ -1402,15 +1401,15 @@ _virtualboxCreateMachine(vboxDriverPtr data, virDomainDefPtr def, IMachine **mac
 
 static nsresult
 _virtualboxCreateHardDisk(IVirtualBox *vboxObj, PRUnichar *format,
-                          PRUnichar *location, IHardDisk **hardDisk)
+                          PRUnichar *location, IMedium **medium)
 {
     /* In vbox 2.2 and 3.0, this function will create a IHardDisk object.
      * In vbox 3.1 and later, this function will create a IMedium object.
      */
 #if VBOX_API_VERSION < 5000000
-    return vboxObj->vtbl->CreateHardDisk(vboxObj, format, location, hardDisk);
+    return vboxObj->vtbl->CreateHardDisk(vboxObj, format, location, medium);
 #elif VBOX_API_VERSION >= 5000000 /*VBOX_API_VERSION >= 5000000*/
-    return vboxObj->vtbl->CreateMedium(vboxObj, format, location, AccessMode_ReadWrite, DeviceType_HardDisk, hardDisk);
+    return vboxObj->vtbl->CreateMedium(vboxObj, format, location, AccessMode_ReadWrite, DeviceType_HardDisk, medium);
 #endif /*VBOX_API_VERSION >= 5000000*/
 }
 
@@ -1424,14 +1423,14 @@ static nsresult
 _virtualboxFindHardDisk(IVirtualBox *vboxObj, PRUnichar *location,
                         PRUint32 deviceType ATTRIBUTE_UNUSED,
                         PRUint32 accessMode ATTRIBUTE_UNUSED,
-                        IHardDisk **hardDisk)
+                        IMedium **medium)
 {
 #if VBOX_API_VERSION < 4002000
     return vboxObj->vtbl->FindMedium(vboxObj, location,
-                                     deviceType, hardDisk);
+                                     deviceType, medium);
 #else /* VBOX_API_VERSION >= 4002000 */
     return vboxObj->vtbl->OpenMedium(vboxObj, location,
-                                     deviceType, accessMode, PR_FALSE, hardDisk);
+                                     deviceType, accessMode, PR_FALSE, medium);
 #endif /* VBOX_API_VERSION >= 4002000 */
 }
 
@@ -1457,14 +1456,14 @@ _virtualboxOpenMedium(IVirtualBox *vboxObj ATTRIBUTE_UNUSED,
 }
 
 static nsresult
-_virtualboxGetHardDiskByIID(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IHardDisk **hardDisk)
+_virtualboxGetHardDiskByIID(IVirtualBox *vboxObj, vboxIIDUnion *iidu, IMedium **medium)
 {
 #if VBOX_API_VERSION >= 4000000 && VBOX_API_VERSION < 4002000
     return vboxObj->vtbl->FindMedium(vboxObj, IID_MEMBER(value), DeviceType_HardDisk,
-                                     hardDisk);
+                                     medium);
 #else /* VBOX_API_VERSION >= 4002000 */
     return vboxObj->vtbl->OpenMedium(vboxObj, IID_MEMBER(value), DeviceType_HardDisk,
-                                     AccessMode_ReadWrite, PR_FALSE, hardDisk);
+                                     AccessMode_ReadWrite, PR_FALSE, medium);
 #endif /* VBOX_API_VERSION >= 4002000 */
 }
 
@@ -2589,10 +2588,33 @@ _mediumCreateDiffStorage(IMedium *medium ATTRIBUTE_UNUSED,
 }
 
 static nsresult
-_mediumAttachmentGetMedium(IMediumAttachment *mediumAttachment,
-                           IHardDisk **hardDisk)
+_mediumCreateBaseStorage(IMedium *medium, PRUint64 logicalSize,
+                           PRUint32 variant, IProgress **progress)
 {
-    return mediumAttachment->vtbl->GetMedium(mediumAttachment, hardDisk);
+#if VBOX_API_VERSION < 4003000
+    return medium->vtbl->CreateBaseStorage(medium, logicalSize, variant, progress);
+#else
+    return medium->vtbl->CreateBaseStorage(medium, logicalSize, 1, &variant, progress);
+#endif
+}
+
+static nsresult
+_mediumGetLogicalSize(IMedium *medium, PRUint64 *uLogicalSize)
+{
+    nsresult rc;
+    PRInt64 logicalSize;
+
+    rc = medium->vtbl->GetLogicalSize(medium, &logicalSize);
+    *uLogicalSize = logicalSize;
+
+    return rc;
+}
+
+static nsresult
+_mediumAttachmentGetMedium(IMediumAttachment *mediumAttachment,
+                           IMedium **medium)
+{
+    return mediumAttachment->vtbl->GetMedium(mediumAttachment, medium);
 }
 
 static nsresult
@@ -2901,41 +2923,6 @@ _dhcpServerStop(IDHCPServer *dhcpServer)
 }
 
 static nsresult
-_hardDiskCreateBaseStorage(IHardDisk *hardDisk, PRUint64 logicalSize,
-                           PRUint32 variant, IProgress **progress)
-{
-#if VBOX_API_VERSION < 4003000
-    return hardDisk->vtbl->CreateBaseStorage(hardDisk, logicalSize, variant, progress);
-#else
-    return hardDisk->vtbl->CreateBaseStorage(hardDisk, logicalSize, 1, &variant, progress);
-#endif
-}
-
-static nsresult
-_hardDiskDeleteStorage(IHardDisk *hardDisk, IProgress **progress)
-{
-    return hardDisk->vtbl->DeleteStorage(hardDisk, progress);
-}
-
-static nsresult
-_hardDiskGetLogicalSizeInByte(IHardDisk *hardDisk, PRUint64 *uLogicalSize)
-{
-    nsresult rc;
-    PRInt64 logicalSize;
-
-    rc = hardDisk->vtbl->GetLogicalSize(hardDisk, &logicalSize);
-    *uLogicalSize = logicalSize;
-
-    return rc;
-}
-
-static nsresult
-_hardDiskGetFormat(IHardDisk *hardDisk, PRUnichar **format)
-{
-    return hardDisk->vtbl->GetFormat(hardDisk, format);
-}
-
-static nsresult
 _keyboardPutScancode(IKeyboard *keyboard, PRInt32 scancode)
 {
     return keyboard->vtbl->PutScancode(keyboard, scancode);
@@ -3229,6 +3216,8 @@ static vboxUniformedIMedium _UIMedium = {
     .Close = _mediumClose,
     .SetType = _mediumSetType,
     .CreateDiffStorage = _mediumCreateDiffStorage,
+    .CreateBaseStorage = _mediumCreateBaseStorage,
+    .GetLogicalSize = _mediumGetLogicalSize,
 };
 
 static vboxUniformedIMediumAttachment _UIMediumAttachment = {
@@ -3295,13 +3284,6 @@ static vboxUniformedIDHCPServer _UIDHCPServer = {
     .Stop = _dhcpServerStop,
 };
 
-static vboxUniformedIHardDisk _UIHardDisk = {
-    .CreateBaseStorage = _hardDiskCreateBaseStorage,
-    .DeleteStorage = _hardDiskDeleteStorage,
-    .GetLogicalSizeInByte = _hardDiskGetLogicalSizeInByte,
-    .GetFormat = _hardDiskGetFormat,
-};
-
 static vboxUniformedIKeyboard _UIKeyboard = {
     .PutScancode = _keyboardPutScancode,
     .PutScancodes = _keyboardPutScancodes,
@@ -3361,7 +3343,6 @@ void NAME(InstallUniformedAPI)(vboxUniformedAPI *pVBoxAPI)
     pVBoxAPI->UIHost = _UIHost;
     pVBoxAPI->UIHNInterface = _UIHNInterface;
     pVBoxAPI->UIDHCPServer = _UIDHCPServer;
-    pVBoxAPI->UIHardDisk = _UIHardDisk;
     pVBoxAPI->UIKeyboard = _UIKeyboard;
     pVBoxAPI->machineStateChecker = _machineStateChecker;
 
