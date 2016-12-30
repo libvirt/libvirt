@@ -6,7 +6,7 @@
   <vcpu placement='static'>2</vcpu>
   <bootloader>/usr/bin/pygrub</bootloader>
   <os>
-    <type arch='i686' machine='xenpv'>linux</type>
+    <type arch='x86_64' machine='xenpv'>linux</type>
   </os>
   <clock offset='utc' adjustment='reset'/>
   <on_poweroff>destroy</on_poweroff>
@@ -28,6 +28,5 @@
     </console>
     <input type='mouse' bus='xen'/>
     <input type='keyboard' bus='xen'/>
-    <memballoon model='xen'/>
   </devices>
 </domain>

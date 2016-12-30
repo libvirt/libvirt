@@ -29,13 +29,12 @@
 
 #include "internal.h"
 #include "datatypes.h"
-#include "xen/xen_driver.h"
-#include "xen/xm_internal.h"
 #include "xenconfig/xen_xm.h"
 #include "testutils.h"
 #include "testutilsxen.h"
 #include "viralloc.h"
 #include "virstring.h"
+#include "libxl/libxl_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -50,7 +49,6 @@ testCompareParseXML(const char *xmcfg, const char *xml)
     int ret = -1;
     virConnectPtr conn = NULL;
     int wrote = 4096;
-    struct _xenUnifiedPrivate priv;
     virDomainDefPtr def = NULL;
 
     if (VIR_ALLOC_N(gotxmcfgData, wrote) < 0)
@@ -58,10 +56,6 @@ testCompareParseXML(const char *xmcfg, const char *xml)
 
     conn = virGetConnect();
     if (!conn) goto fail;
-
-    /* Many puppies died to bring you this code. */
-    priv.caps = caps;
-    conn->privateData = &priv;
 
     if (!(def = virDomainDefParseFile(xml, caps, xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE)))
@@ -101,19 +95,10 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     char *gotxml = NULL;
     virConfPtr conf = NULL;
     int ret = -1;
-    virConnectPtr conn;
-    struct _xenUnifiedPrivate priv;
     virDomainDefPtr def = NULL;
-
-    conn = virGetConnect();
-    if (!conn) goto fail;
 
     if (virTestLoadFile(xmcfg, &xmcfgData) < 0)
         goto fail;
-
-    /* Many puppies died to bring you this code. */
-    priv.caps = caps;
-    conn->privateData = &priv;
 
     if (!(conf = virConfReadString(xmcfgData, 0)))
         goto fail;
@@ -135,7 +120,6 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     VIR_FREE(xmcfgData);
     VIR_FREE(gotxml);
     virDomainDefFree(def);
-    virObjectUnref(conn);
 
     return ret;
 }
@@ -180,10 +164,10 @@ mymain(void)
 {
     int ret = 0;
 
-    if (!(caps = testXenCapsInit()))
+    if (!(caps = testXLInitCaps()))
         return EXIT_FAILURE;
 
-    if (!(xmlopt = xenDomainXMLConfInit()))
+    if (!(xmlopt = libxlCreateXMLConf()))
         return EXIT_FAILURE;
 
 #define DO_TEST_PARSE(name) \

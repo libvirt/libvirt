@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>403456</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='i686' machine='xenfv'>hvm</type>
+    <type arch='x86_64' machine='xenfv'>hvm</type>
     <loader type='rom'>/usr/lib/xen/boot/hvmloader</loader>
     <boot dev='cdrom'/>
   </os>
@@ -23,13 +23,13 @@
   <devices>
     <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
     <disk type='block' device='disk'>
-      <driver name='phy'/>
+      <driver name='phy' type='raw'/>
       <source dev='/dev/HostVG/XenGuest2'/>
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='file' device='cdrom'>
-      <driver name='file'/>
+      <driver name='file' type='raw'/>
       <source file='/root/boot.iso'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
@@ -48,8 +48,7 @@
       <listen type='address' address='127.0.0.1'/>
     </graphics>
     <video>
-      <model type='cirrus' vram='16384' heads='1' primary='yes'/>
+      <model type='cirrus' vram='8192' heads='1' primary='yes'/>
     </video>
-    <memballoon model='xen'/>
   </devices>
 </domain>

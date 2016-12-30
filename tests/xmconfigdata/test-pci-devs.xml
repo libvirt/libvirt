@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>358400</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='i686' machine='xenfv'>hvm</type>
+    <type arch='x86_64' machine='xenfv'>hvm</type>
     <loader type='rom'>/usr/lib/xen/boot/hvmloader</loader>
     <boot dev='hd'/>
   </os>
@@ -21,13 +21,13 @@
   <devices>
     <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
     <disk type='block' device='disk'>
-      <driver name='phy'/>
+      <driver name='phy' type='raw'/>
       <source dev='/dev/sda8'/>
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='block' device='cdrom'>
-      <driver name='phy'/>
+      <driver name='phy' type='raw'/>
       <target dev='hdc' bus='ide'/>
       <readonly/>
       <address type='drive' controller='0' bus='1' target='0' unit='0'/>
@@ -51,18 +51,19 @@
       <listen type='address'/>
     </graphics>
     <video>
-      <model type='cirrus' vram='16384' heads='1' primary='yes'/>
+      <model type='cirrus' vram='8192' heads='1' primary='yes'/>
     </video>
     <hostdev mode='subsystem' type='pci' managed='no'>
+      <driver name='xen'/>
       <source>
         <address domain='0x0001' bus='0x0c' slot='0x1b' function='0x2'/>
       </source>
     </hostdev>
     <hostdev mode='subsystem' type='pci' managed='no'>
+      <driver name='xen'/>
       <source>
         <address domain='0x0000' bus='0x01' slot='0x13' function='0x0'/>
       </source>
     </hostdev>
-    <memballoon model='xen'/>
   </devices>
 </domain>
