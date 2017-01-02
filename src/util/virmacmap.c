@@ -121,8 +121,8 @@ virMacMapRemoveLocked(virMacMapPtr mgr,
         return 0;
 
     newMacsList = macsList;
-    virStringListRemove(&macsList, mac);
-    if (!macsList) {
+    virStringListRemove(&newMacsList, mac);
+    if (!newMacsList) {
         virHashSteal(mgr->macs, domain);
     } else {
         if (macsList != newMacsList &&
