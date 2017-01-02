@@ -53,18 +53,22 @@ struct virMacMap {
 static virClassPtr virMacMapClass;
 
 
-static void
-virMacMapDispose(void *obj)
+static int
+virMacMapHashFree(void *payload,
+                  const void *name ATTRIBUTE_UNUSED,
+                  void *opaque ATTRIBUTE_UNUSED)
 {
-    virMacMapPtr mgr = obj;
-    virHashFree(mgr->macs);
+    virStringListFree(payload);
+    return 0;
 }
 
 
 static void
-virMacMapHashFree(void *payload, const void *name ATTRIBUTE_UNUSED)
+virMacMapDispose(void *obj)
 {
-    virStringListFree(payload);
+    virMacMapPtr mgr = obj;
+    virHashForEach(mgr->macs, virMacMapHashFree, NULL);
+    virHashFree(mgr->macs);
 }
 
 
@@ -88,19 +92,20 @@ virMacMapAddLocked(virMacMapPtr mgr,
                    const char *mac)
 {
     int ret = -1;
-    const char **macsList = NULL;
+    char **macsList = NULL;
     char **newMacsList = NULL;
 
     if ((macsList = virHashLookup(mgr->macs, domain)) &&
-        virStringListHasString(macsList, mac)) {
+        virStringListHasString((const char**) macsList, mac)) {
         ret = 0;
         goto cleanup;
     }
 
-    if (!(newMacsList = virStringListAdd(macsList, mac)) ||
+    if (!(newMacsList = virStringListAdd((const char **) macsList, mac)) ||
         virHashUpdateEntry(mgr->macs, domain, newMacsList) < 0)
         goto cleanup;
     newMacsList = NULL;
+    virStringListFree(macsList);
 
     ret = 0;
  cleanup:
@@ -303,8 +308,7 @@ virMacMapNew(const char *file)
         return NULL;
 
     virObjectLock(mgr);
-    if (!(mgr->macs = virHashCreate(VIR_MAC_HASH_TABLE_SIZE,
-                                    virMacMapHashFree)))
+    if (!(mgr->macs = virHashCreate(VIR_MAC_HASH_TABLE_SIZE, NULL)))
         goto error;
 
     if (file &&
