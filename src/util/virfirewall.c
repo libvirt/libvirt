@@ -405,29 +405,6 @@ virFirewallAddRuleFullV(virFirewallPtr firewall,
     return NULL;
 }
 
-/**
- * virFirewallAddRule:
- * @firewall: firewall ruleset to add to
- * @layer: the firewall layer to change
- * @...: NULL terminated list of strings for the rule
- *
- * Add any type of rule to the firewall ruleset.
- *
- * Returns the new rule
- */
-virFirewallRulePtr
-virFirewallAddRule(virFirewallPtr firewall,
-                   virFirewallLayer layer,
-                   ...)
-{
-    virFirewallRulePtr rule;
-    va_list args;
-    va_start(args, layer);
-    rule = virFirewallAddRuleFullV(firewall, layer, false, NULL, NULL, args);
-    va_end(args);
-    return rule;
-}
-
 
 /**
  * virFirewallAddRuleFull:

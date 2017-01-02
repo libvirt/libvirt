@@ -44,10 +44,18 @@ virFirewallPtr virFirewallNew(void);
 
 void virFirewallFree(virFirewallPtr firewall);
 
-virFirewallRulePtr virFirewallAddRule(virFirewallPtr firewall,
-                                      virFirewallLayer layer,
-                                      ...)
-    ATTRIBUTE_SENTINEL;
+/**
+ * virFirewallAddRule:
+ * @firewall: firewall ruleset to add to
+ * @layer: the firewall layer to change
+ * @...: NULL terminated list of strings for the rule
+ *
+ * Add any type of rule to the firewall ruleset.
+ *
+ * Returns the new rule
+ */
+#define virFirewallAddRule(firewall, layer, ...) \
+        virFirewallAddRuleFull(firewall, layer, false, NULL, NULL, __VA_ARGS__)
 
 typedef int (*virFirewallQueryCallback)(virFirewallPtr firewall,
                                         const char *const *lines,
