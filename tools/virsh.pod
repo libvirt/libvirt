@@ -440,7 +440,7 @@ running B<virsh suspend>.  When in a paused state the domain will still
 consume allocated resources like memory, but will not be eligible for
 scheduling by the hypervisor.
 
-=item B<shutdown>
+=item B<in shutdown>
 
 The domain is in the process of shutting down, i.e. the guest operating system
 has been notified and should be in the process of stopping its operations
@@ -456,11 +456,6 @@ shut down completely, or has not been started.
 The domain has crashed, which is always a violent ending.  Usually
 this state can only occur if the domain has been configured not to
 restart on crash.
-
-=item B<dying>
-
-The domain is in process of dying, but hasn't completely shutdown or
-crashed.
 
 =item B<pmsuspended>
 
