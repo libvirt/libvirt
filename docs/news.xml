@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+
+<!-- libvirt release notes
+
+     This file will be processed to produce both HTML and plain text versions
+     of the release notes.
+
+     Keep the style consistent with existing entries as much as possible:
+     each change should be documented by a short, one-sentence summary
+     and optionally a description where it's explained in more detail -->
+
+<libvirt>
+  <release version="v3.0.0" date="unreleased">
+    <section title="New features">
+      <change>
+        <summary>
+          New localPtr attribute for "ip" element in network XML
+        </summary>
+      </change>
+      <change>
+        <summary>
+          qemu: Support QEMU group I/O throttling
+        </summary>
+        <description>
+          Add the capability to allow group I/O throttling via a new
+          domain &lt;disk&gt; &lt;iotune&gt; subelement "group_name"
+          to allow sharing I/O throttling quota between multiple drives
+        </description>
+      </change>
+      <change>
+        <summary>
+          nss: Introduce <code>libvirt-guest</code>
+        </summary>
+        <description>
+          New <code>libvirt-guest</code> nss module that translates libvirt
+          guest names into IP addresses
+        </description>
+      </change>
+      <change>
+        <summary>
+          daemon: Add support for runtime logging settings adjustment
+        </summary>
+        <description>
+          Logging-related settings like log outputs and filters can now be
+          adjusted during runtime using the admin interface without the
+          necessity of the daemon's restart
+        </description>
+      </change>
+      <change>
+        <summary>
+          storage: Add virStorageVolInfoFlags API
+        </summary>
+        <description>
+          Add the API to support using the VIR_STORAGE_VOL_GET_PHYSICAL
+          flag in order to return the host physical size in bytes
+          of the image container in the allocation field of the
+          _virStorageVolInfo structure. The --physical flag has been
+          added to the virsh vol-info command to access the data
+        </description>
+      </change>
+      <change>
+        <summary>
+          libxl: Implement virDomainGetMaxVcpus API
+        </summary>
+      </change>
+    </section>
+    <section title="Improvements">
+      <change>
+        <summary>
+          perf: Add more perf statistics
+        </summary>
+        <description>
+          Add support to get the count of branch instructions
+          executed, branch misses, bus cycles, stalled frontend
+          cpu cycles, stalled backend cpu cycles, and ref cpu
+          cycles by applications running on the platform
+        </description>
+      </change>
+      <change>
+        <summary>
+          conf: Display &lt;physical&gt; for volume xml
+        </summary>
+        <description>
+          Add a display of the &lt;physical&gt; size of a disk
+          volume in the output of the volume XML
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Use virtio-pci by default for aarch64 mach-virt guests
+        </summary>
+        <description>
+          virtio-pci provides several advantages over virtio-mmio, such
+          as the ability to hotplug devices and improved performance.
+          While opting in to virtio-pci has been possible for a while,
+          newly-defined guests will now use it automatically
+        </description>
+      </change>
+    </section>
+    <section title="Bug fixes">
+      <change>
+        <summary>
+          qemu: Correct GetBlockInfo values
+        </summary>
+        <description>
+          For an active domain, correct the physical value provided for
+          a raw sparse file backed storage and the allocation value provided
+          for a qcow2 file backed storage that hasn't yet been opened on
+          the domain
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Make virtio console usable on ppc64 guests
+        </summary>
+        <description>
+          The chardev detection code has been improved and can now handle this
+          configuration properly
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Enable mount namespace
+        </summary>
+        <description>
+          To avoid funny races with udev relabelling devices under our hands and
+          to enhance security, libvirt now spawns each qemu process with its own
+          <code>/dev</code>.
+        </description>
+      </change>
+    </section>
+  </release>
+  <release version="v2.5.0" date="2016-12-04">
+    <section title="New features">
+      <change>
+        <summary>
+          shmem: Add support for additional models
+        </summary>
+        <description>
+          The shmem device can now utilize QEMU's ivshmem-plain and
+          ivshmem-doorbell, more modern versions of ivshmem
+        </description>
+      </change>
+      <change>
+        <summary>
+          vbox: Add VirtualBox 5.1 support
+        </summary>
+      </change>
+      <change>
+        <summary>
+          libssh: New transport
+        </summary>
+        <description>
+          The new libssh transport allows one to connect to a running
+          libvirtd via SSH, using the libssh library; for example:
+          <tt>qemu+libssh://<i>server</i>/system</tt>
+        </description>
+      </change>
+      <change>
+        <summary>
+          vhost-scsi: Add support scsi_host hostdev passthrough
+        </summary>
+        <description>
+          Add the capability to pass through a scsi_host HBA and the
+          associated LUNs to the guest
+        </description>
+      </change>
+      <change>
+        <summary>
+          qemu: Users can now enable debug logging for native gluster
+          volumes in qemu using the "gluster_debug_level" option in qemu.conf
+        </summary>
+      </change>
+      <change>
+        <summary>
+          memory hotplug: Slot numbers for memory devices are now
+          automatically allocated and thus persistent. In addition slot numbers
+          can be specified without providing a base address, which simplifies
+          user configuration
+        </summary>
+      </change>
+      <change>
+        <summary>
+          qemu: Express devices will be placed on PCIe bus by default
+        </summary>
+        <description>
+          For machine types that use a PCI Express root bus
+          (e.g. x86_64/Q35 and aarch64/virt), any unaddressed PCI
+          device that is an Express device (all virtio-1.0 devices,
+          e1000e, nec-xhci, vfio assigned devices) will be placed on
+          an Express controller (i.e. a pcie-root-port) instead of a
+          legacy PCI controller (i.e. pci-bridge) with the root ports
+          added as needed
+        </description>
+      </change>
+    </section>
+    <section title="Improvements">
+      <change>
+        <summary>
+          docs: Better documentation for migration APIs and flags
+        </summary>
+      </change>
+      <change>
+        <summary>
+          vbox: Address thread safety issues
+        </summary>
+      </change>
+      <change>
+        <summary>
+          virsh: Add support for passing an alternative persistent XML
+          to migrate command
+        </summary>
+      </change>
+      <change>
+        <summary>
+          vhostuser: Allow hotplug of multiqueue devices
+        </summary>
+      </change>
+      <change>
+        <summary>
+          NEWS: Switch to an improved format
+        </summary>
+        <description>
+          List user-visible changes instead of single commits for a better
+          high-level overview of differences between libvirt releases
+        </description>
+      </change>
+      <change>
+        <summary>
+          website: Modernize layout and branding
+        </summary>
+        <description>
+          The libvirt website looked very cluttered and outdated; it has now
+          been completely overhauled, resulting in a design that's better
+          organized and more pleasant to look at
+        </description>
+      </change>
+    </section>
+    <section title="Bug fixes">
+      <change>
+        <summary>
+          vz: Fix migration in P2P mode
+        </summary>
+      </change>
+      <change>
+        <summary>
+          Forbid newline character in names of some libvirt objects
+        </summary>
+      </change>
+      <change>
+        <summary>
+          Fix compilation on macOS
+        </summary>
+      </change>
+    </section>
+  </release>
+</libvirt>

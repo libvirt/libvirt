@@ -106,9 +106,10 @@ internals_html = $(internals_html_in:%.html.in=%.html)
 # Since we ship pre-built html in the tarball, we must also
 # ship the sources, even when those sources are themselves
 # generated.
-# Generate hvsupport.html first, since it takes one extra step.
+# Generate hvsupport.html and news.html first, since they take one extra step.
 dot_html_in = \
   hvsupport.html.in \
+  news.html.in \
   $(notdir $(wildcard $(srcdir)/*.html.in))
 dot_html = $(dot_html_in:%.html.in=%.html)
 
@@ -156,7 +157,7 @@ schema_DATA = $(wildcard $(srcdir)/schemas/*.rng)
 
 EXTRA_DIST=					\
   apibuild.py genaclperms.pl \
-  site.xsl subsite.xsl newapi.xsl news.xsl page.xsl \
+  site.xsl subsite.xsl newapi.xsl page.xsl \
   hacking1.xsl hacking2.xsl wrapstring.xsl \
   $(dot_html) $(dot_html_in) $(gif) $(apihtml) $(apipng) \
   $(devhelphtml) $(devhelppng) $(devhelpcss) $(devhelpxsl) \
@@ -199,6 +200,29 @@ $(srcdir)/hvsupport.html.in: $(srcdir)/hvsupport.pl $(api_DATA) \
 	$(top_srcdir)/src/driver.h
 	$(AM_V_GEN)$(PERL) $(srcdir)/hvsupport.pl $(top_srcdir)/src > $@ \
 		|| { rm $@ && exit 1; }
+
+# xsltproc seems to add the xmlns="" attribute to random output elements:
+# use sed to strip it out, as leaving it there triggers XML errors during
+# further transformation steps
+news.html.in: \
+	  $(srcdir)/news.xml \
+	  $(srcdir)/news-html.xsl
+	$(AM_V_GEN) \
+	if [ -x $(XSLTPROC) ]; then \
+	  $(XSLTPROC) --nonet \
+	    $(srcdir)/news-html.xsl \
+	    $(srcdir)/news.xml \
+	  >$@-tmp \
+	    || { rm -f $@-tmp; exit 1; }; \
+	  sed 's/ xmlns=""//g' $@-tmp >$@ \
+	    || { rm -f $@-tmp; exit 1; }; \
+	  rm -f $@-tmp; \
+	fi
+EXTRA_DIST += \
+	$(srcdir)/news.xml \
+	$(srcdir)/news-html.xsl
+MAINTAINERCLEANFILES += \
+	$(srcdir)/news.html.in
 
 %.png: %.fig
 	convert -rotate 90 $< $@

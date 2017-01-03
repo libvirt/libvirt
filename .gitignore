@@ -72,6 +72,7 @@
 /docs/libvirt-lxc-*.xml
 /docs/libvirt-qemu-*.xml
 /docs/libvirt-refs.xml
+/docs/news.html.in
 /docs/search.php
 /docs/todo.html.in
 /examples/admin/client_close
