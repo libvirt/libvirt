@@ -722,39 +722,34 @@ createVport(virConnectPtr conn,
         goto cleanup;
     }
 
-    /* If a parent was provided, then let's make sure it's vhost capable */
     if (adapter->data.fchost.parent) {
-        if (virGetSCSIHostNumber(adapter->data.fchost.parent, &parent_host) < 0)
+        if (VIR_STRDUP(parent_hoststr, adapter->data.fchost.parent) < 0)
             goto cleanup;
-
-        if (!virIsCapableFCHost(NULL, parent_host)) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("parent '%s' specified for vHBA "
-                             "is not vport capable"),
-                           adapter->data.fchost.parent);
-            goto cleanup;
-        }
-    }
-
-    if (!adapter->data.fchost.parent) {
+    } else {
         if (!(parent_hoststr = virFindFCHostCapableVport(NULL))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("'parent' for vHBA not specified, and "
                              "cannot find one on this host"));
             goto cleanup;
         }
+    }
 
-        if (virGetSCSIHostNumber(parent_hoststr, &parent_host) < 0)
-            goto cleanup;
+    if (virGetSCSIHostNumber(parent_hoststr, &parent_host) < 0)
+        goto cleanup;
 
-        /* NOTE:
-         * We do not save the parent_hoststr in adapter->data.fchost.parent
-         * since we could be writing out the 'def' to the saved XML config.
-         * If we wrote out the name in the XML, then future starts would
-         * always use the same parent rather than finding the "best available"
-         * parent. Besides we have a way to determine the parent based on
-         * the 'name' field.
-         */
+    /* NOTE:
+     * We do not save the parent_hoststr in adapter->data.fchost.parent
+     * since we could be writing out the 'def' to the saved XML config.
+     * If we wrote out the name in the XML, then future starts would
+     * always use the same parent rather than finding the "best available"
+     * parent. Besides we have a way to determine the parent based on
+     * the 'name' field.
+     */
+    if (adapter->data.fchost.parent && !virIsCapableFCHost(NULL, parent_host)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("parent '%s' specified for vHBA is not vport capable"),
+                       parent_hoststr);
+        goto cleanup;
     }
 
     /* Since we're creating the vHBA, then we need to manage removing it
