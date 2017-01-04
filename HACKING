@@ -14,14 +14,20 @@ General tips for contributing patches
 (1) Discuss any large changes on the mailing list first. Post patches early and
 listen to feedback.
 
+
+
 (2) Official upstream repository is kept in git ("git://libvirt.org/libvirt.git")
 and is browsable along with other libvirt-related repositories (e.g.
 libvirt-python) online <http://libvirt.org/git/>.
+
+
 
 (3) Patches to translations are maintained via the zanata project
 <https://fedora.zanata.org/>. If you want to fix a translation in a .po file,
 join the appropriate language team. The libvirt release process automatically
 pulls the latest version of each translation file from zanata.
+
+
 
 (4) Post patches using "git send-email", with git rename detection enabled. You
 need a one-time setup of:
@@ -92,6 +98,8 @@ things).
 
 (7) Make sure your patches apply against libvirt GIT. Developers only follow GIT
 and don't care much about released versions.
+
+
 
 (8) Run the automated tests on your code before submitting any changes. In
 particular, configure with compile warnings set to -Werror. This is done
@@ -235,6 +243,8 @@ to "tests/.valgrind.supp" in order to suppress the warning:
 
 (10) Update tests and/or documentation, particularly if you are adding a new
 feature or changing the output of a program.
+
+
 
 
 

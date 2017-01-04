@@ -289,8 +289,11 @@
 }
 </pre>
       </li>
-      <li>Update tests and/or documentation, particularly if you are adding
-        a new feature or changing the output of a program.</li>
+
+      <li>
+        <p>Update tests and/or documentation, particularly if you are adding
+        a new feature or changing the output of a program.</p>
+      </li>
     </ol>
 
     <p>
