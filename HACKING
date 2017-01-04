@@ -226,6 +226,13 @@ to "tests/.valgrind.supp" in order to suppress the warning:
 (10) Update tests and/or documentation, particularly if you are adding a new
 feature or changing the output of a program.
 
+(11) Don't forget to update the release notes <news.html> by changing
+"docs/news.xml" if your changes are significant. All user-visible changes,
+such as adding new XML elements or fixing all but the most obscure bugs, must
+be (briefly) described in a release notes entry; changes that are only
+relevant to other libvirt developers, such as code refactoring, don't belong
+in the release notes.
+
 There is more on this subject, including lots of links to background reading
 on the subject, on Richard Jones' guide to working with open source projects
 <http://people.redhat.com/rjones/how-to-supply-code-to-open-source-projects/>.

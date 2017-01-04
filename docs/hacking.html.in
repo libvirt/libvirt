@@ -294,6 +294,16 @@
         <p>Update tests and/or documentation, particularly if you are adding
         a new feature or changing the output of a program.</p>
       </li>
+
+      <li>
+        <p>Don't forget to update the <a href="news.html">release notes</a>
+        by changing <code>docs/news.xml</code> if your changes are
+        significant. All user-visible changes, such as adding new XML elements
+        or fixing all but the most obscure bugs, must be (briefly) described
+        in a release notes entry; changes that are only relevant to other
+        libvirt developers, such as code refactoring, don't belong in the
+        release notes.</p>
+      </li>
     </ol>
 
     <p>
