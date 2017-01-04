@@ -14,20 +14,14 @@ General tips for contributing patches
 (1) Discuss any large changes on the mailing list first. Post patches early and
 listen to feedback.
 
-
-
 (2) Official upstream repository is kept in git ("git://libvirt.org/libvirt.git")
 and is browsable along with other libvirt-related repositories (e.g.
 libvirt-python) online <http://libvirt.org/git/>.
-
-
 
 (3) Patches to translations are maintained via the zanata project
 <https://fedora.zanata.org/>. If you want to fix a translation in a .po file,
 join the appropriate language team. The libvirt release process automatically
 pulls the latest version of each translation file from zanata.
-
-
 
 (4) Post patches using "git send-email", with git rename detection enabled. You
 need a one-time setup of:
@@ -71,8 +65,6 @@ Moreover, such patch needs to be prefixed correctly with
 "--subject-prefix=PATCHv2" appended to "git send-email" (substitute "v2" with
 the correct version if needed though).
 
-
-
 (5) In your commit message, make the summary line reasonably short (60 characters
 is typical), followed by a blank line, followed by any longer description of
 why your patch makes sense. If the patch fixes a regression, and you know what
@@ -83,8 +75,6 @@ You can use 'git shortlog -30' to get an idea of typical summary lines.
 Libvirt does not currently attach any meaning to Signed-off-by: lines, so it
 is up to you if you want to include or omit them in the commit message.
 
-
-
 (6) Split large changes into a series of smaller patches, self-contained if
 possible, with an explanation of each patch and an explanation of how the
 sequence of patches fits together. Moreover, please keep in mind that it's
@@ -94,12 +84,8 @@ of a series, but intermediate patches must compile and not cause test-suite
 failures (this is to preserve the usefulness of "git bisect", among other
 things).
 
-
-
 (7) Make sure your patches apply against libvirt GIT. Developers only follow GIT
 and don't care much about released versions.
-
-
 
 (8) Run the automated tests on your code before submitting any changes. In
 particular, configure with compile warnings set to -Werror. This is done
@@ -162,8 +148,6 @@ fulfils constraints described above into a file. To enable it just set
 the file is stored.
 
   VIR_TEST_FILE_ACCESS=1 VIR_TEST_FILE_ACCESS_OUTPUT="/tmp/file_access.txt" ./qemuxml2argvtest
-
-
 
 (9) The Valgrind test should produce similar output to "make check". If the output
 has traces within libvirt API's, then investigation is required in order to
@@ -239,14 +223,8 @@ to "tests/.valgrind.supp" in order to suppress the warning:
     obj:*/lib*/ld-2.*so*
 }
 
-
-
 (10) Update tests and/or documentation, particularly if you are adding a new
 feature or changing the output of a program.
-
-
-
-
 
 There is more on this subject, including lots of links to background reading
 on the subject, on Richard Jones' guide to working with open source projects
@@ -585,8 +563,6 @@ true) ...". Rather, write "if (seen)...".
 
 
 
-
-
 Of course, take all of the above with a grain of salt. If you're about to use
 some system interface that requires a type like "size_t", "pid_t" or "off_t",
 use matching types for any corresponding variables.
@@ -698,8 +674,6 @@ size:
 
 
 
-
-
 File handling
 =============
 Usage of the "fdopen()", "close()", "fclose()" APIs is deprecated in libvirt
@@ -739,8 +713,6 @@ APIs, use the macros from virfile.h
 
   VIR_FORCE_CLOSE(fd);
   VIR_FORCE_FCLOSE(file);
-
-
 
 
 
@@ -788,8 +760,6 @@ following semantically named macros
 
   STREQ_NULLABLE(a, b)
   STRNEQ_NULLABLE(a, b)
-
-
 
 
 
@@ -961,8 +931,6 @@ EINTR.
 by further potentially failing calls. You should almost certainly be using a
 conditional and a block instead of a goto. Perhaps some of your function's
 logic would be better pulled out into a helper function.
-
-
 
 Although libvirt does not encourage the Linux kernel wind/unwind style of
 multiple labels, there's a good general discussion of the issue archived at
