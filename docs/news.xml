@@ -109,6 +109,15 @@
           features going forward.
         </description>
       </change>
+      <change>
+        <summary>
+          virsh: pool-info: introduce option --bytes
+        </summary>
+        <description>
+          Add option --bytes to virsh pool-info in order ti allow display
+          of units in bytes rather than default of human readable output.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>

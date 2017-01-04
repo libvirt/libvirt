@@ -3616,9 +3616,10 @@ except that it does some error checking.
 The editor used can be supplied by the C<$VISUAL> or C<$EDITOR> environment
 variables, and defaults to C<vi>.
 
-=item B<pool-info> I<pool-or-uuid>
+=item B<pool-info> [I<--bytes>] I<pool-or-uuid>
 
-Returns basic information about the I<pool> object.
+Returns basic information about the I<pool> object. If I<--bytes> is specified the sizes
+of basic info are not converted to human friendly units.
 
 =item B<pool-list> [I<--inactive>] [I<--all>]
                    [I<--persistent>] [I<--transient>]

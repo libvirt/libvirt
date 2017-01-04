@@ -1589,6 +1589,10 @@ static const vshCmdInfo info_pool_info[] = {
 static const vshCmdOptDef opts_pool_info[] = {
     VIRSH_COMMON_OPT_POOL_FULL,
 
+    {.name = "bytes",
+     .type = VSH_OT_BOOL,
+     .help = N_("Reture pool info in bytes"),
+    },
     {.name = NULL}
 };
 
@@ -1600,10 +1604,13 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
     int autostart = 0;
     int persistent = 0;
     bool ret = true;
+    bool bytes = false;
     char uuid[VIR_UUID_STRING_BUFLEN];
 
     if (!(pool = virshCommandOptPool(ctl, cmd, "pool", NULL)))
         return false;
+
+    bytes = vshCommandOptBool(cmd, "bytes");
 
     vshPrint(ctl, "%-15s %s\n", _("Name:"), virStoragePoolGetName(pool));
 
@@ -1633,14 +1640,20 @@ cmdPoolInfo(vshControl *ctl, const vshCmd *cmd)
 
         if (info.state == VIR_STORAGE_POOL_RUNNING ||
             info.state == VIR_STORAGE_POOL_DEGRADED) {
-            val = vshPrettyCapacity(info.capacity, &unit);
-            vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
+            if (bytes) {
+                vshPrint(ctl, "%-15s %llu\n", _("Capacity:"), info.capacity);
+                vshPrint(ctl, "%-15s %llu\n", _("Allocation:"), info.allocation);
+                vshPrint(ctl, "%-15s %llu\n", _("Available:"), info.available);
+            } else {
+                val = vshPrettyCapacity(info.capacity, &unit);
+                vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
 
-            val = vshPrettyCapacity(info.allocation, &unit);
-            vshPrint(ctl, "%-15s %2.2lf %s\n", _("Allocation:"), val, unit);
+                val = vshPrettyCapacity(info.allocation, &unit);
+                vshPrint(ctl, "%-15s %2.2lf %s\n", _("Allocation:"), val, unit);
 
-            val = vshPrettyCapacity(info.available, &unit);
-            vshPrint(ctl, "%-15s %2.2lf %s\n", _("Available:"), val, unit);
+                val = vshPrettyCapacity(info.available, &unit);
+                vshPrint(ctl, "%-15s %2.2lf %s\n", _("Available:"), val, unit);
+            }
         }
     } else {
         ret = false;
