@@ -6957,9 +6957,13 @@ qemuDomainCreateDevice(const char *device,
     }
 
     if (mknod(devicePath, sb.st_mode, sb.st_rdev) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to make device %s"),
-                             devicePath);
+        if (errno == EEXIST) {
+            ret = 0;
+        } else {
+            virReportSystemError(errno,
+                                 _("Failed to make device %s"),
+                                 devicePath);
+        }
         goto cleanup;
     }
 
