@@ -8,20 +8,26 @@
 
     <h2><a name="patches">General tips for contributing patches</a></h2>
     <ol>
-      <li>Discuss any large changes on the mailing list first.  Post patches
-        early and listen to feedback.</li>
+      <li>
+        <p>Discuss any large changes on the mailing list first.  Post patches
+        early and listen to feedback.</p>
+      </li>
 
-      <li>Official upstream repository is kept in git
+      <li>
+        <p>Official upstream repository is kept in git
         (<code>git://libvirt.org/libvirt.git</code>) and is browsable
         along with other libvirt-related repositories
-        (e.g. libvirt-python) <a href="http://libvirt.org/git/">online</a>.</li>
+        (e.g. libvirt-python) <a href="http://libvirt.org/git/">online</a>.</p>
+      </li>
 
-      <li>Patches to translations are maintained via
+      <li>
+        <p>Patches to translations are maintained via
         the <a href="https://fedora.zanata.org/">zanata project</a>.
         If you want to fix a translation in a .po file, join the
         appropriate language team. The libvirt release process
         automatically pulls the latest version of each translation
-        file from zanata.</li>
+        file from zanata.</p>
+      </li>
 
       <li><p>Post patches using "git send-email", with git rename
         detection enabled.  You need a one-time setup of:</p>
@@ -98,8 +104,11 @@
         of <code>git bisect</code>, among other things).</p>
       </li>
 
-      <li>Make sure your patches apply against libvirt GIT.  Developers
-        only follow GIT and don't care much about released versions.</li>
+      <li>
+        <p>Make sure your patches apply against libvirt GIT.  Developers
+        only follow GIT and don't care much about released versions.</p>
+      </li>
+
       <li><p>Run the automated tests on your code before submitting any changes.
           In particular, configure with compile warnings set to
           -Werror.  This is done automatically for a git checkout; from a
