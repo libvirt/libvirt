@@ -7523,6 +7523,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
 {
     struct qemuDomainAttachDeviceMknodData *data = opaque;
     int ret = -1;
+    bool delDevice = false;
 
     virSecurityManagerPostFork(data->driver->securityManager);
 
@@ -7545,6 +7546,8 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
                                  data->file);
             goto cleanup;
         }
+    } else {
+        delDevice = true;
     }
 
     if (virFileSetACLs(data->file, data->acl) < 0 &&
@@ -7608,7 +7611,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
 
     ret = 0;
  cleanup:
-    if (ret < 0)
+    if (ret < 0 && delDevice)
         unlink(data->file);
     virFileFreeACLs(&data->acl);
     return ret;
