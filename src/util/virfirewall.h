@@ -54,8 +54,8 @@ void virFirewallFree(virFirewallPtr firewall);
  *
  * Returns the new rule
  */
-#define virFirewallAddRule(firewall, layer, ...) \
-        virFirewallAddRuleFull(firewall, layer, false, NULL, NULL, __VA_ARGS__)
+# define virFirewallAddRule(firewall, layer, ...) \
+         virFirewallAddRuleFull(firewall, layer, false, NULL, NULL, __VA_ARGS__)
 
 typedef int (*virFirewallQueryCallback)(virFirewallPtr firewall,
                                         const char *const *lines,
