@@ -6917,6 +6917,8 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
 }
 
 
+#define DEVPREFIX "/dev/"
+
 #if defined(__linux__)
 static int
 qemuDomainCreateDevice(const char *device,
@@ -6927,7 +6929,7 @@ qemuDomainCreateDevice(const char *device,
     struct stat sb;
     int ret = -1;
 
-    if (!STRPREFIX(device, "/dev")) {
+    if (!STRPREFIX(device, DEVPREFIX)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid device: %s"),
                        device);
@@ -6935,7 +6937,7 @@ qemuDomainCreateDevice(const char *device,
     }
 
     if (virAsprintf(&devicePath, "%s/%s",
-                    path, device + 4) < 0)
+                    path, device + strlen(DEVPREFIX)) < 0)
         goto cleanup;
 
     if (stat(device, &sb) < 0) {
@@ -7066,7 +7068,7 @@ qemuDomainSetupDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
     for (next = disk->src; next; next = next->backingStore) {
         if (!next->path || !virStorageSourceIsLocalStorage(next) ||
-            !STRPREFIX(next->path, "/dev")) {
+            !STRPREFIX(next->path, DEVPREFIX)) {
             /* Not creating device. Just continue. */
             continue;
         }
@@ -7770,7 +7772,7 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
 
     for (next = disk->src; next; next = next->backingStore) {
         if (!next->path || !virStorageSourceIsBlockLocal(disk->src) ||
-            !STRPREFIX(next->path, "/dev")) {
+            !STRPREFIX(next->path, DEVPREFIX)) {
             /* Not creating device. Just continue. */
             continue;
         }
