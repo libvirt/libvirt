@@ -14503,6 +14503,9 @@ qemuDomainSnapshotCreateActiveExternal(virConnectPtr conn,
          * atomic flag now says whether we need to pause, and a
          * capability bit says whether to use transaction.
          */
+        if (memory)
+            resume = true;
+
         if ((memory && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE)) ||
             (!memory && atomic && !transaction)) {
             if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SNAPSHOT,
