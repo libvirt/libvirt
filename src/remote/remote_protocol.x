@@ -3381,6 +3381,11 @@ struct remote_secret_event_lifecycle_msg {
     int detail;
 };
 
+struct remote_secret_event_value_changed_msg {
+    int callbackID;
+    remote_nonnull_secret secret;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6007,6 +6012,12 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_SECRET_EVENT_LIFECYCLE = 382
+    REMOTE_PROC_SECRET_EVENT_LIFECYCLE = 382,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_SECRET_EVENT_VALUE_CHANGED = 383
 
 };

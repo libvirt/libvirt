@@ -127,6 +127,7 @@ int                     virSecretFree           (virSecretPtr secret);
  */
 typedef enum {
     VIR_SECRET_EVENT_ID_LIFECYCLE = 0, /* virConnectSecretEventLifecycleCallback */
+    VIR_SECRET_EVENT_ID_VALUE_CHANGED = 1, /* virConnectSecretEventGenericCallback */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_SECRET_EVENT_ID_LAST

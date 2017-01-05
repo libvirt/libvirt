@@ -845,6 +845,7 @@ virSecretUsageTypeToString;
 # conf/secret_event.h
 virSecretEventLifecycleNew;
 virSecretEventStateRegisterID;
+virSecretEventValueChangedNew;
 
 
 # conf/snapshot_conf.h

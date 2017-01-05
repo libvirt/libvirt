@@ -327,6 +327,7 @@ secretSetValue(virSecretPtr obj,
     int ret = -1;
     virSecretObjPtr secret;
     virSecretDefPtr def;
+    virObjectEventPtr event = NULL;
 
     virCheckFlags(0, -1);
 
@@ -343,10 +344,15 @@ secretSetValue(virSecretPtr obj,
     if (virSecretObjSetValue(secret, value, value_size) < 0)
         goto cleanup;
 
+    event = virSecretEventValueChangedNew(def->uuid,
+                                          def->usage_type,
+                                          def->usage_id);
     ret = 0;
 
  cleanup:
     virSecretObjEndAPI(&secret);
+    if (event)
+        virObjectEventStateQueue(driver->secretEventState, event);
 
     return ret;
 }

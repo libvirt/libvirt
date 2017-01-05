@@ -614,9 +614,44 @@ vshEventLifecyclePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
         vshEventDone(data->ctl);
 }
 
+static void
+vshEventGenericPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                     virSecretPtr secret,
+                     void *opaque)
+{
+    virshSecretEventData *data = opaque;
+    char uuid[VIR_UUID_STRING_BUFLEN];
+
+    if (!data->loop && data->count)
+        return;
+
+    virSecretGetUUIDString(secret, uuid);
+
+    if (data->timestamp) {
+        char timestamp[VIR_TIME_STRING_BUFLEN];
+
+        if (virTimeStringNowRaw(timestamp) < 0)
+            timestamp[0] = '\0';
+
+        vshPrint(data->ctl, _("%s: event '%s' for secret %s\n"),
+                 timestamp,
+                 data->cb->name,
+                 uuid);
+    } else {
+        vshPrint(data->ctl, _("event '%s' for secret %s\n"),
+                 data->cb->name,
+                 uuid);
+    }
+
+    data->count++;
+    if (!data->loop)
+        vshEventDone(data->ctl);
+}
+
 static vshEventCallback vshEventCallbacks[] = {
     { "lifecycle",
       VIR_SECRET_EVENT_CALLBACK(vshEventLifecyclePrint), },
+    { "value-changed", vshEventGenericPrint, },
 };
 
 static const vshCmdInfo info_secret_event[] = {

@@ -57,5 +57,9 @@ virSecretEventLifecycleNew(const unsigned char *uuid,
                            const char *usage_id,
                            int type,
                            int detail);
+virObjectEventPtr
+virSecretEventValueChangedNew(const unsigned char *uuid,
+                              int usage_type,
+                              const char *usage_id);
 
 #endif

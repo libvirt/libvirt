@@ -1528,8 +1528,37 @@ remoteRelaySecretEventLifecycle(virConnectPtr conn,
     return 0;
 }
 
+static int
+remoteRelaySecretEventValueChanged(virConnectPtr conn,
+                                   virSecretPtr secret,
+                                   void *opaque)
+{
+    daemonClientEventCallbackPtr callback = opaque;
+    remote_secret_event_value_changed_msg data;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelaySecretEventCheckACL(callback->client, conn, secret))
+        return -1;
+
+    VIR_DEBUG("Relaying node secret value changed callback %d",
+              callback->callbackID);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    make_nonnull_secret(&data.secret, secret);
+    data.callbackID = callback->callbackID;
+
+    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+                                  REMOTE_PROC_SECRET_EVENT_VALUE_CHANGED,
+                                  (xdrproc_t)xdr_remote_secret_event_value_changed_msg,
+                                  &data);
+
+    return 0;
+}
+
 static virConnectSecretEventGenericCallback secretEventCallbacks[] = {
     VIR_SECRET_EVENT_CALLBACK(remoteRelaySecretEventLifecycle),
+    VIR_SECRET_EVENT_CALLBACK(remoteRelaySecretEventValueChanged),
 };
 
 verify(ARRAY_CARDINALITY(secretEventCallbacks) == VIR_SECRET_EVENT_ID_LAST);

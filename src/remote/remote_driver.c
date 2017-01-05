@@ -391,6 +391,11 @@ remoteSecretBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                 void *evdata, void *opaque);
 
 static void
+remoteSecretBuildEventValueChanged(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                   virNetClientPtr client ATTRIBUTE_UNUSED,
+                                   void *evdata, void *opaque);
+
+static void
 remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                          virNetClientPtr client ATTRIBUTE_UNUSED,
                                          void *evdata, void *opaque);
@@ -593,6 +598,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteSecretBuildEventLifecycle,
       sizeof(remote_secret_event_lifecycle_msg),
       (xdrproc_t)xdr_remote_secret_event_lifecycle_msg },
+    { REMOTE_PROC_SECRET_EVENT_VALUE_CHANGED,
+      remoteSecretBuildEventValueChanged,
+      sizeof(remote_secret_event_value_changed_msg),
+      (xdrproc_t)xdr_remote_secret_event_value_changed_msg },
 };
 
 static void
@@ -5511,6 +5520,27 @@ remoteSecretBuildEventLifecycle(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
 
     event = virSecretEventLifecycleNew(secret->uuid, secret->usageType, secret->usageID,
                                        msg->event, msg->detail);
+    virObjectUnref(secret);
+
+    remoteEventQueue(priv, event, msg->callbackID);
+}
+
+static void
+remoteSecretBuildEventValueChanged(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                   virNetClientPtr client ATTRIBUTE_UNUSED,
+                                   void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    struct private_data *priv = conn->privateData;
+    remote_secret_event_value_changed_msg *msg = evdata;
+    virSecretPtr secret;
+    virObjectEventPtr event = NULL;
+
+    secret = get_nonnull_secret(conn, msg->secret);
+    if (!secret)
+        return;
+
+    event = virSecretEventValueChangedNew(secret->uuid, secret->usageType, secret->usageID);
     virObjectUnref(secret);
 
     remoteEventQueue(priv, event, msg->callbackID);

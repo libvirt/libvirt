@@ -763,6 +763,18 @@ mySecretEventCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int
+mySecretEventValueChanged(virConnectPtr conn ATTRIBUTE_UNUSED,
+                          virSecretPtr secret,
+                          void *opaque ATTRIBUTE_UNUSED)
+{
+    char uuid[VIR_UUID_STRING_BUFLEN];
+    virSecretGetUUIDString(secret, uuid);
+    printf("%s EVENT: Secret %s\n", __func__, uuid);
+    return 0;
+}
+
+
 static void
 eventTypedParamsPrint(virTypedParameterPtr params,
                       int nparams)
@@ -1085,6 +1097,7 @@ struct secretEventData {
 
 struct secretEventData secretEvents[] = {
     SECRET_EVENT(VIR_SECRET_EVENT_ID_LIFECYCLE, mySecretEventCallback),
+    SECRET_EVENT(VIR_SECRET_EVENT_ID_VALUE_CHANGED, mySecretEventValueChanged),
 };
 
 /* make sure that the events are kept in sync */
