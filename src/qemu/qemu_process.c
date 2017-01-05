@@ -5582,10 +5582,10 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting domain security labels");
-        if (qemuSecuritySetAllLabel(driver,
-                                    vm,
-                                    incoming ? incoming->path : NULL) < 0)
-            goto cleanup;
+    if (qemuSecuritySetAllLabel(driver,
+                                vm,
+                                incoming ? incoming->path : NULL) < 0)
+        goto cleanup;
 
     /* Security manager labeled all devices, therefore
      * if any operation from now on fails, we need to ask the caller to
