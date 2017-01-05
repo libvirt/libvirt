@@ -226,11 +226,10 @@ qemuDomainGetPreservedMounts(virQEMUDriverPtr driver,
         return 0;
     }
 
-    /* Okay, this is crazy. But virFileGetMountSubtree() fetched us all the
-     * mount points under /dev including /dev itself. Fortunately, the paths
-     * are sorted based on their length so we skip the first one (/dev) as it
-     * is handled differently anyway. */
-    VIR_DELETE_ELEMENT(mounts, 0, nmounts);
+    /* Since the list is sorted and only has paths that start with /dev, the
+     * /dev itself can only be first. */
+    if (STREQ(mounts[0], "/dev"))
+        VIR_DELETE_ELEMENT(mounts, 0, nmounts);
 
     if (VIR_ALLOC_N(paths, nmounts) < 0)
         goto error;
