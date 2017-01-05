@@ -37,8 +37,15 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
     if (!(vmdef = virDomainDefParseFile(xml, driver.caps, driver.xmlopt,
                                         NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE))) {
-        if (flags & FLAG_EXPECT_PARSE_ERROR)
+        if (flags & FLAG_EXPECT_PARSE_ERROR) {
             ret = 0;
+        } else if (flags & FLAG_EXPECT_FAILURE) {
+            ret = 0;
+            VIR_TEST_DEBUG("Got expected error: %s\n",
+                    virGetLastErrorMessage());
+            virResetLastError();
+        }
+
         goto out;
     }
 
@@ -178,6 +185,17 @@ mymain(void)
     DO_TEST("disk-cdrom-grub");
     DO_TEST("serial-grub");
     DO_TEST("localtime");
+
+    /* Address allocation tests */
+    DO_TEST("addr-single-sata-disk");
+    DO_TEST("addr-multiple-sata-disks");
+    DO_TEST("addr-more-than-32-sata-disks");
+
+    /* The same without 32 devs per controller support */
+    driver.bhyvecaps ^= BHYVE_CAP_AHCI32SLOT;
+    DO_TEST("addr-no32devs-single-sata-disk");
+    DO_TEST("addr-no32devs-multiple-sata-disks");
+    DO_TEST_FAILURE("addr-no32devs-more-than-32-sata-disks");
 
     driver.grubcaps = 0;
 

@@ -14,8 +14,13 @@ static bhyveConn driver;
 
 struct testInfo {
     const char *name;
-    bool different;
+    unsigned int flags;
 };
+
+typedef enum {
+    FLAG_IS_DIFFERENT =   1 << 0,
+    FLAG_EXPECT_FAILURE = 1 << 1,
+} virBhyveXMLToXMLTestFlags;
 
 static int
 testCompareXMLToXMLHelper(const void *data)
@@ -23,6 +28,7 @@ testCompareXMLToXMLHelper(const void *data)
     const struct testInfo *info = data;
     char *xml_in = NULL;
     char *xml_out = NULL;
+    bool is_different = info->flags & FLAG_IS_DIFFERENT;
     int ret = -1;
 
     if (virAsprintf(&xml_in, "%s/bhyvexml2argvdata/bhyvexml2argv-%s.xml",
@@ -32,9 +38,16 @@ testCompareXMLToXMLHelper(const void *data)
         goto cleanup;
 
     ret = testCompareDomXML2XMLFiles(driver.caps, driver.xmlopt, xml_in,
-                                     info->different ? xml_out : xml_in,
+                                     is_different ? xml_out : xml_in,
                                      false, NULL, NULL, 0,
                                      TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
+
+    if ((ret != 0) && (info->flags & FLAG_EXPECT_FAILURE)) {
+        ret = 0;
+        VIR_TEST_DEBUG("Got expected error: %s\n",
+                       virGetLastErrorMessage());
+        virResetLastError();
+    }
 
  cleanup:
     VIR_FREE(xml_in);
@@ -53,16 +66,19 @@ mymain(void)
     if ((driver.xmlopt = virBhyveDriverCreateXMLConf(&driver)) == NULL)
         return EXIT_FAILURE;
 
-# define DO_TEST_FULL(name, is_different)                        \
+# define DO_TEST_FULL(name, flags)                               \
     do {                                                         \
-        const struct testInfo info = {name, is_different};       \
+        const struct testInfo info = {name, (flags)};            \
         if (virTestRun("BHYVE XML-2-XML " name,                  \
                        testCompareXMLToXMLHelper, &info) < 0)    \
             ret = -1;                                            \
     } while (0)
 
 # define DO_TEST_DIFFERENT(name) \
-    DO_TEST_FULL(name, true)
+    DO_TEST_FULL(name, FLAG_IS_DIFFERENT)
+
+# define DO_TEST_FAILURE(name) \
+    DO_TEST_FULL(name, FLAG_EXPECT_FAILURE)
 
     driver.bhyvecaps = BHYVE_CAP_AHCI32SLOT;
 
@@ -88,6 +104,17 @@ mymain(void)
     DO_TEST_DIFFERENT("serial");
     DO_TEST_DIFFERENT("serial-grub");
     DO_TEST_DIFFERENT("serial-grub-nocons");
+
+    /* Address allocation tests */
+    DO_TEST_DIFFERENT("addr-single-sata-disk");
+    DO_TEST_DIFFERENT("addr-multiple-sata-disks");
+    DO_TEST_DIFFERENT("addr-more-than-32-sata-disks");
+
+    /* The same without 32 devs per controller support */
+    driver.bhyvecaps ^= BHYVE_CAP_AHCI32SLOT;
+    DO_TEST_DIFFERENT("addr-no32devs-single-sata-disk");
+    DO_TEST_DIFFERENT("addr-no32devs-multiple-sata-disks");
+    DO_TEST_FAILURE("addr-no32devs-more-than-32-sata-disks");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);

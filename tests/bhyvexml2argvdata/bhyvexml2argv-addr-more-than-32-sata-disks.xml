@@ -1,0 +1,196 @@
+<domain type='bhyve'>
+  <name>bhyve</name>
+  <uuid>df3be7e7-a104-11e3-aeb0-50e5492bd3dc</uuid>
+  <memory>219136</memory>
+  <vcpu>1</vcpu>
+  <os>
+    <type>hvm</type>
+  </os>
+  <devices>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd1.img'/>
+      <target dev='hda' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd2.img'/>
+      <target dev='hdb' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd3.img'/>
+      <target dev='hdc' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd4.img'/>
+      <target dev='hdd' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd5.img'/>
+      <target dev='hde' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd6.img'/>
+      <target dev='hdf' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd7.img'/>
+      <target dev='hdg' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd8.img'/>
+      <target dev='hdh' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd9.img'/>
+      <target dev='hdi' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd10.img'/>
+      <target dev='hdj' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd11.img'/>
+      <target dev='hdk' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd12.img'/>
+      <target dev='hdl' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd12.img'/>
+      <target dev='hdm' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd13.img'/>
+      <target dev='hdn' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd14.img'/>
+      <target dev='hdo' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd15.img'/>
+      <target dev='hdp' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd16.img'/>
+      <target dev='hdq' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd17.img'/>
+      <target dev='hdr' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd18.img'/>
+      <target dev='hds' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd19.img'/>
+      <target dev='hdt' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd20.img'/>
+      <target dev='hdu' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd21.img'/>
+      <target dev='hdv' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd22.img'/>
+      <target dev='hdw' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd23.img'/>
+      <target dev='hdx' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd24.img'/>
+      <target dev='hdy' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd25.img'/>
+      <target dev='hdz' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd26.img'/>
+      <target dev='hdaa' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd27.img'/>
+      <target dev='hdab' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd28.img'/>
+      <target dev='hdac' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd29.img'/>
+      <target dev='hdae' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd30.img'/>
+      <target dev='hdaf' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd31.img'/>
+      <target dev='hdag' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd32.img'/>
+      <target dev='hdah' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd33.img'/>
+      <target dev='hdai' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd34.img'/>
+      <target dev='hdaj' bus='sata'/>
+    </disk>
+    <disk type='file'>
+      <driver name='file' type='raw'/>
+      <source file='/tmp/freebsd35.img'/>
+      <target dev='hdak' bus='sata'/>
+    </disk>
+    <interface type='bridge'>
+      <mac address='52:54:00:b9:94:02'/>
+      <model type='virtio'/>
+      <source bridge="virbr0"/>
+    </interface>
+  </devices>
+</domain>
