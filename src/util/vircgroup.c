@@ -1184,16 +1184,8 @@ virCgroupNew(pid_t pid,
 }
 
 
-/**
- * virCgroupAddTask:
- *
- * @group: The cgroup to add a task to
- * @pid: The pid of the task to add
- *
- * Returns: 0 on success, -1 on error
- */
-int
-virCgroupAddTask(virCgroupPtr group, pid_t pid)
+static int
+virCgroupAddTaskInternal(virCgroupPtr group, pid_t pid, bool withSystemd)
 {
     int ret = -1;
     size_t i;
@@ -1203,8 +1195,10 @@ virCgroupAddTask(virCgroupPtr group, pid_t pid)
         if (!group->controllers[i].mountPoint)
             continue;
 
-        /* We must never add tasks in systemd's hierarchy */
-        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD)
+        /* We must never add tasks in systemd's hierarchy
+         * unless we're intentionally trying to move a
+         * task into a systemd machine scope */
+        if (i == VIR_CGROUP_CONTROLLER_SYSTEMD && !withSystemd)
             continue;
 
         if (virCgroupAddTaskController(group, pid, i) < 0)
@@ -1214,6 +1208,40 @@ virCgroupAddTask(virCgroupPtr group, pid_t pid)
     ret = 0;
  cleanup:
     return ret;
+}
+
+/**
+ * virCgroupAddTask:
+ *
+ * @group: The cgroup to add a task to
+ * @pid: The pid of the task to add
+ *
+ * Will add the task to all controllers, except the
+ * systemd unit controller.
+ *
+ * Returns: 0 on success, -1 on error
+ */
+int
+virCgroupAddTask(virCgroupPtr group, pid_t pid)
+{
+    return virCgroupAddTaskInternal(group, pid, false);
+}
+
+/**
+ * virCgroupAddMachineTask:
+ *
+ * @group: The cgroup to add a task to
+ * @pid: The pid of the task to add
+ *
+ * Will add the task to all controllers, including the
+ * systemd unit controller.
+ *
+ * Returns: 0 on success, -1 on error
+ */
+int
+virCgroupAddMachineTask(virCgroupPtr group, pid_t pid)
+{
+    return virCgroupAddTaskInternal(group, pid, true);
 }
 
 
