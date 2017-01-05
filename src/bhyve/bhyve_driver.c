@@ -1246,9 +1246,7 @@ bhyveStateInitialize(bool privileged,
     if (virBhyveProbeGrubCaps(&bhyve_driver->grubcaps) < 0)
         goto cleanup;
 
-    if (!(bhyve_driver->xmlopt = virDomainXMLOptionNew(&virBhyveDriverDomainDefParserConfig,
-                                                       &virBhyveDriverPrivateDataCallbacks,
-                                                       NULL)))
+    if (!(bhyve_driver->xmlopt = virBhyveDriverCreateXMLConf(bhyve_driver)))
         goto cleanup;
 
     if (!(bhyve_driver->domains = virDomainObjListNew()))

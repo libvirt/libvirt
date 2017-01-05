@@ -19,6 +19,7 @@
       <target dev='hda' bus='sata'/>
       <address type='drive' controller='0' bus='0' target='2' unit='0'/>
     </disk>
+    <controller type='pci' index='0' model='pci-root'/>
     <controller type='sata' index='0'/>
     <interface type='bridge'>
       <mac address='52:54:00:4f:f3:5b'/>

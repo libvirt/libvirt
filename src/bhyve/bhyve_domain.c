@@ -83,6 +83,15 @@ bhyveDomainDeviceDefPostParse(virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
     return 0;
 }
 
+virDomainXMLOptionPtr
+virBhyveDriverCreateXMLConf(bhyveConnPtr driver)
+{
+    virBhyveDriverDomainDefParserConfig.priv = driver;
+    return virDomainXMLOptionNew(&virBhyveDriverDomainDefParserConfig,
+                                 &virBhyveDriverPrivateDataCallbacks,
+                                 NULL);
+}
+
 virDomainDefParserConfig virBhyveDriverDomainDefParserConfig = {
     .devicesPostParseCallback = bhyveDomainDeviceDefPostParse,
     .domainPostParseCallback = bhyveDomainDefPostParse,

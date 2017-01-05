@@ -5,6 +5,7 @@
 #ifdef WITH_BHYVE
 
 # include "bhyve/bhyve_capabilities.h"
+# include "bhyve/bhyve_domain.h"
 # include "bhyve/bhyve_utils.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
@@ -49,7 +50,7 @@ mymain(void)
     if ((driver.caps = virBhyveCapsBuild()) == NULL)
         return EXIT_FAILURE;
 
-    if ((driver.xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL)) == NULL)
+    if ((driver.xmlopt = virBhyveDriverCreateXMLConf(&driver)) == NULL)
         return EXIT_FAILURE;
 
 # define DO_TEST_FULL(name, is_different)                        \
