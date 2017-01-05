@@ -155,7 +155,7 @@ mymain(void)
     DO_TEST_FULL(name, FLAG_EXPECT_PARSE_ERROR)
 
     driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;
-    driver.bhyvecaps = BHYVE_CAP_RTC_UTC;
+    driver.bhyvecaps = BHYVE_CAP_RTC_UTC | BHYVE_CAP_AHCI32SLOT;
 
     DO_TEST("base");
     DO_TEST("acpiapic");

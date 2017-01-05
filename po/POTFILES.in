@@ -14,6 +14,7 @@ src/access/viraccessdriverpolkit.c
 src/access/viraccessmanager.c
 src/bhyve/bhyve_command.c
 src/bhyve/bhyve_device.c
+src/bhyve/bhyve_domain.c
 src/bhyve/bhyve_driver.c
 src/bhyve/bhyve_monitor.c
 src/bhyve/bhyve_parse_command.c

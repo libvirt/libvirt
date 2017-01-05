@@ -64,6 +64,8 @@ mymain(void)
 # define DO_TEST_DIFFERENT(name) \
     DO_TEST_FULL(name, true)
 
+    driver.bhyvecaps = BHYVE_CAP_AHCI32SLOT;
+
     DO_TEST_DIFFERENT("acpiapic");
     DO_TEST_DIFFERENT("base");
     DO_TEST_DIFFERENT("bhyveload-bootorder");

@@ -5,6 +5,5 @@
 -H \
 -P \
 -s 0:0,hostbridge \
--s 3:0,virtio-net,faketapdev,mac=52:54:00:8d:10:e1 \
--s 2:0,ahci-hd,/tmp/freebsd.img \
--s 4:0,ahci-cd,/tmp/cdrom.iso bhyve
+-s 2:0,ahci,hd:/tmp/freebsd.img,cd:/tmp/cdrom.iso \
+-s 3:0,virtio-net,faketapdev,mac=52:54:00:8d:10:e1 bhyve

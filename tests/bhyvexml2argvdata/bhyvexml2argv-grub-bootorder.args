@@ -5,7 +5,5 @@
 -H \
 -P \
 -s 0:0,hostbridge \
--s 3:0,virtio-net,faketapdev,mac=52:54:00:f4:6c:be \
--s 2:0,ahci-hd,/tmp/freebsd1.img \
--s 4:0,ahci-hd,/tmp/freebsd2.img \
--s 6:0,ahci-hd,/tmp/freebsd3.img bhyve
+-s 2:0,ahci,hd:/tmp/freebsd1.img,hd:/tmp/freebsd2.img,hd:/tmp/freebsd3.img \
+-s 3:0,virtio-net,faketapdev,mac=52:54:00:f4:6c:be bhyve

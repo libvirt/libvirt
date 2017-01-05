@@ -20,7 +20,9 @@
       <address type='drive' controller='0' bus='0' target='2' unit='0'/>
     </disk>
     <controller type='pci' index='0' model='pci-root'/>
-    <controller type='sata' index='0'/>
+    <controller type='sata' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </controller>
     <interface type='bridge'>
       <mac address='52:54:00:82:ca:a3'/>
       <source bridge='virbr0'/>
