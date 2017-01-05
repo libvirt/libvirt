@@ -3093,7 +3093,8 @@ qemuProcessRecoverJob(virQEMUDriverPtr driver,
               (job->asyncJob == QEMU_ASYNC_JOB_SAVE &&
                reason == VIR_DOMAIN_PAUSED_SAVE) ||
               (job->asyncJob == QEMU_ASYNC_JOB_SNAPSHOT &&
-               reason == VIR_DOMAIN_PAUSED_SNAPSHOT) ||
+               (reason == VIR_DOMAIN_PAUSED_SNAPSHOT ||
+                reason == VIR_DOMAIN_PAUSED_MIGRATION)) ||
               reason == VIR_DOMAIN_PAUSED_UNKNOWN)) {
              if (qemuProcessStartCPUs(driver, vm, conn,
                                       VIR_DOMAIN_RUNNING_UNPAUSED,
