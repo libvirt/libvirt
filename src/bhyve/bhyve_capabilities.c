@@ -168,18 +168,12 @@ virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps)
     return ret;
 }
 
-int
-virBhyveProbeCaps(unsigned int *caps)
+static int
+bhyveProbeCapsRTC_UTC(unsigned int *caps, char *binary)
 {
-    char *binary, *help;
+    char *help;
     virCommandPtr cmd = NULL;
     int ret = 0, exit;
-
-    binary = virFindFileInPath("bhyve");
-    if (binary == NULL)
-        goto out;
-    if (!virFileIsExecutable(binary))
-        goto out;
 
     cmd = virCommandNew(binary);
     virCommandAddArg(cmd, "-h");
@@ -195,6 +189,53 @@ virBhyveProbeCaps(unsigned int *caps)
  out:
     VIR_FREE(help);
     virCommandFree(cmd);
+    return ret;
+}
+
+static int
+bhyveProbeCapsAHCI32Slot(unsigned int *caps, char *binary)
+{
+    char *error;
+    virCommandPtr cmd = NULL;
+    int ret = 0, exit;
+
+    cmd = virCommandNew(binary);
+    virCommandAddArgList(cmd, "-s", "0,ahci", NULL);
+    virCommandSetErrorBuffer(cmd, &error);
+    if (virCommandRun(cmd, &exit) < 0) {
+        ret = -1;
+        goto out;
+    }
+
+    if (strstr(error, "pci slot 0:0: unknown device \"ahci\"") == NULL)
+        *caps |= BHYVE_CAP_AHCI32SLOT;
+
+ out:
+    VIR_FREE(error);
+    virCommandFree(cmd);
+    return ret;
+}
+
+
+int
+virBhyveProbeCaps(unsigned int *caps)
+{
+    char *binary;
+    int ret = 0;
+
+    binary = virFindFileInPath("bhyve");
+    if (binary == NULL)
+        goto out;
+    if (!virFileIsExecutable(binary))
+        goto out;
+
+    if ((ret = bhyveProbeCapsRTC_UTC(caps, binary)))
+        goto out;
+
+    if ((ret = bhyveProbeCapsAHCI32Slot(caps, binary)))
+        goto out;
+
+ out:
     VIR_FREE(binary);
     return ret;
 }
