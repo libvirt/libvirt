@@ -529,9 +529,8 @@ output should be used. This is the default.
 If both I<--name> and I<--uuid> are specified, domain UUID's and names
 are printed side by side without any header. Flag I<--table> specifies
 that the legacy table-formatted output should be used. This is the
-default if neither I<--name> nor I<--uuid> are specified. Options
-I<--uuid> and I<--name> are mutually exclusive if option I<--table> is
-specified.
+default if neither I<--name> nor I<--uuid> are specified. Option
+I<--table> is mutually exclusive with options I<--uuid> and I<--name>.
 
 If I<--title> is specified, then the short domain description (title) is
 printed in an extra column. This flag is usable only with the default
