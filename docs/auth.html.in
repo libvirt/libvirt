@@ -173,7 +173,7 @@ the libvirt daemon.
     <h2><a name="ACL_server_polkit">UNIX socket PolicyKit auth</a></h2>
     <p>
 If libvirt contains support for PolicyKit, then access control options are
-more advanced. The <code>unix_sock_auth</code> parameter will default to
+more advanced. The <code>auth_unix_rw</code> parameter will default to
 <code>polkit</code>, and the file permissions will default to <code>0777</code>
 even on the RW socket. Upon connecting to the socket, the client application
 will be required to identify itself with PolicyKit. The default policy for the
