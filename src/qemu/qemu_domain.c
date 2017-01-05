@@ -99,14 +99,8 @@ VIR_ENUM_IMPL(qemuDomainNamespace, QEMU_DOMAIN_NS_LAST,
 );
 
 
-static struct {
-    const char *path;
-    const char *suffix;
-} devPreserveMounts[] = {
-    {"/dev/pts", "devpts"},
-    {"/dev/shm", "devshm"},
-    {"/dev/mqueue", "mqueue"},
-};
+#define PROC_MOUNTS "/proc/mounts"
+#define DEVPREFIX "/dev/"
 
 
 struct _qemuDomainLogContext {
@@ -200,33 +194,73 @@ qemuDomainEnableNamespace(virDomainObjPtr vm,
 }
 
 
+/**
+ * qemuDomainGetPreservedMounts:
+ *
+ * Process list of mounted filesystems and:
+ * a) save all FSs mounted under /dev to @devPath
+ * b) generate backup path for all the entries in a)
+ *
+ * Any of the return pointers can be NULL.
+ *
+ * Returns 0 on success, -1 otherwise (with error reported)
+ */
 static int
 qemuDomainGetPreservedMounts(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
-                             char ***devMountsPath,
-                             size_t *ndevMountsPath)
+                             char ***devPath,
+                             char ***devSavePath,
+                             size_t *ndevPath)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    char **paths;
-    size_t i;
+    char **paths = NULL, **mounts = NULL;
+    size_t i, nmounts;
 
-    if (VIR_ALLOC_N(paths, ARRAY_CARDINALITY(devPreserveMounts)) < 0)
+    if (virFileGetMountSubtree(PROC_MOUNTS, "/dev",
+                               &mounts, &nmounts) < 0)
         goto error;
 
-    for (i = 0; i < ARRAY_CARDINALITY(devPreserveMounts); i++) {
+    if (!nmounts) {
+        if (ndevPath)
+            *ndevPath = 0;
+        return 0;
+    }
+
+    /* Okay, this is crazy. But virFileGetMountSubtree() fetched us all the
+     * mount points under /dev including /dev itself. Fortunately, the paths
+     * are sorted based on their length so we skip the first one (/dev) as it
+     * is handled differently anyway. */
+    VIR_DELETE_ELEMENT(mounts, 0, nmounts);
+
+    if (VIR_ALLOC_N(paths, nmounts) < 0)
+        goto error;
+
+    for (i = 0; i < nmounts; i++) {
         if (virAsprintf(&paths[i], "%s/%s.%s",
                         cfg->stateDir, vm->def->name,
-                        devPreserveMounts[i].suffix) < 0)
+                        mounts[i] + strlen(DEVPREFIX)) < 0)
             goto error;
     }
 
-    *devMountsPath = paths;
-    *ndevMountsPath = ARRAY_CARDINALITY(devPreserveMounts);
+    if (devPath)
+        *devPath = mounts;
+    else
+        virStringListFreeCount(mounts, nmounts);
+
+    if (devSavePath)
+        *devSavePath = paths;
+    else
+        virStringListFreeCount(paths, nmounts);
+
+    if (ndevPath)
+        *ndevPath = nmounts;
+
     virObjectUnref(cfg);
     return 0;
 
  error:
-    virStringListFreeCount(paths, ARRAY_CARDINALITY(devPreserveMounts));
+    virStringListFreeCount(mounts, nmounts);
+    virStringListFreeCount(paths, nmounts);
     virObjectUnref(cfg);
     return -1;
 }
@@ -6917,8 +6951,6 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
 }
 
 
-#define DEVPREFIX "/dev/"
-
 #if defined(__linux__)
 static int
 qemuDomainCreateDevice(const char *device,
@@ -7304,7 +7336,7 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const unsigned long mount_flags = MS_MOVE;
     char *devPath = NULL;
-    char **devMountsPath = NULL;
+    char **devMountsPath = NULL, **devMountsSavePath = NULL;
     size_t ndevMountsPath = 0, i;
     int ret = -1;
 
@@ -7318,7 +7350,8 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (qemuDomainGetPreservedMounts(driver, vm,
-                                     &devMountsPath, &ndevMountsPath) < 0)
+                                     &devMountsPath, &devMountsSavePath,
+                                     &ndevMountsPath) < 0)
         goto cleanup;
 
     if (qemuDomainSetupDev(driver, vm, devPath) < 0)
@@ -7326,11 +7359,11 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
 
     /* Save some mount points because we want to share them with the host */
     for (i = 0; i < ndevMountsPath; i++) {
-        if (mount(devPreserveMounts[i].path, devMountsPath[i],
+        if (mount(devMountsPath[i], devMountsSavePath[i],
                   NULL, mount_flags, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Unable to move %s mount"),
-                                 devPreserveMounts[i].path);
+                                 devMountsPath[i]);
             goto cleanup;
         }
     }
@@ -7361,18 +7394,18 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
     }
 
     for (i = 0; i < ndevMountsPath; i++) {
-        if (virFileMakePath(devPreserveMounts[i].path) < 0) {
+        if (virFileMakePath(devMountsPath[i]) < 0) {
             virReportSystemError(errno, _("Cannot create %s"),
-                                 devPreserveMounts[i].path);
+                                 devMountsPath[i]);
             goto cleanup;
         }
 
-        if (mount(devMountsPath[i], devPreserveMounts[i].path,
+        if (mount(devMountsSavePath[i], devMountsPath[i],
                   NULL, mount_flags, NULL) < 0) {
             virReportSystemError(errno,
                                  _("Failed to mount %s on %s"),
-                                 devMountsPath[i],
-                                 devPreserveMounts[i].path);
+                                 devMountsSavePath[i],
+                                 devMountsPath[i]);
             goto cleanup;
         }
     }
@@ -7382,6 +7415,7 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
     virObjectUnref(cfg);
     VIR_FREE(devPath);
     virStringListFreeCount(devMountsPath, ndevMountsPath);
+    virStringListFreeCount(devMountsSavePath, ndevMountsPath);
     return ret;
 }
 
@@ -7393,8 +7427,8 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
     char *devPath = NULL;
-    char **devMountsPath = NULL;
-    size_t ndevMountsPath = 0, i;
+    char **devMountsSavePath = NULL;
+    size_t ndevMountsSavePath = 0, i;
 
     if (!virBitmapIsBitSet(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT) ||
         !virQEMUDriverIsPrivileged(driver)) {
@@ -7407,7 +7441,8 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (qemuDomainGetPreservedMounts(driver, vm,
-                                     &devMountsPath, &ndevMountsPath) < 0)
+                                     NULL, &devMountsSavePath,
+                                     &ndevMountsSavePath) < 0)
         goto cleanup;
 
     if (virFileMakePath(devPath) < 0) {
@@ -7417,11 +7452,11 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    for (i = 0; i < ndevMountsPath; i++) {
-        if (virFileMakePath(devMountsPath[i]) < 0) {
+    for (i = 0; i < ndevMountsSavePath; i++) {
+        if (virFileMakePath(devMountsSavePath[i]) < 0) {
             virReportSystemError(errno,
                                  _("Failed to create %s"),
-                                 devMountsPath[i]);
+                                 devMountsSavePath[i]);
             goto cleanup;
         }
     }
@@ -7434,10 +7469,10 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
     if (ret < 0) {
         if (devPath)
             unlink(devPath);
-        for (i = 0; i < ndevMountsPath; i++)
-            unlink(devMountsPath[i]);
+        for (i = 0; i < ndevMountsSavePath; i++)
+            unlink(devMountsSavePath[i]);
     }
-    virStringListFreeCount(devMountsPath, ndevMountsPath);
+    virStringListFreeCount(devMountsSavePath, ndevMountsSavePath);
     VIR_FREE(devPath);
     virObjectUnref(cfg);
     return ret;
@@ -7472,8 +7507,8 @@ qemuDomainDeleteNamespace(virQEMUDriverPtr driver,
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     char *devPath = NULL;
-    char **devMountsPath = NULL;
-    size_t ndevMountsPath = 0, i;
+    char **devMountsSavePath = NULL;
+    size_t ndevMountsSavePath = 0, i;
 
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
@@ -7484,7 +7519,8 @@ qemuDomainDeleteNamespace(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (qemuDomainGetPreservedMounts(driver, vm,
-                                     &devMountsPath, &ndevMountsPath) < 0)
+                                     NULL, &devMountsSavePath,
+                                     &ndevMountsSavePath) < 0)
         goto cleanup;
 
     if (rmdir(devPath) < 0) {
@@ -7494,17 +7530,17 @@ qemuDomainDeleteNamespace(virQEMUDriverPtr driver,
         /* Bet effort. Fall through. */
     }
 
-    for (i = 0; i < ndevMountsPath; i++) {
-        if (rmdir(devMountsPath[i]) < 0) {
+    for (i = 0; i < ndevMountsSavePath; i++) {
+        if (rmdir(devMountsSavePath[i]) < 0) {
             virReportSystemError(errno,
                                  _("Unable to remove %s"),
-                                 devMountsPath[i]);
+                                 devMountsSavePath[i]);
             /* Bet effort. Fall through. */
         }
     }
  cleanup:
     virObjectUnref(cfg);
-    virStringListFreeCount(devMountsPath, ndevMountsPath);
+    virStringListFreeCount(devMountsSavePath, ndevMountsSavePath);
     VIR_FREE(devPath);
 }
 
