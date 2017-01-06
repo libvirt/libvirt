@@ -7467,9 +7467,9 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
  cleanup:
     if (ret < 0) {
         if (devPath)
-            unlink(devPath);
+            rmdir(devPath);
         for (i = 0; i < ndevMountsSavePath; i++)
-            unlink(devMountsSavePath[i]);
+            rmdir(devMountsSavePath[i]);
     }
     virStringListFreeCount(devMountsSavePath, ndevMountsSavePath);
     VIR_FREE(devPath);
