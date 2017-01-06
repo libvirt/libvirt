@@ -12,13 +12,15 @@
   <on_reboot>destroy</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <interface type='ethernet'>
+    <interface type='bridge'>
       <mac address='52:54:00:00:00:00'/>
+      <source bridge='virbr0'/>
       <target dev='tap0'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </interface>
-    <interface type='ethernet'>
+    <interface type='bridge'>
       <mac address='fe:ed:ad:ea:df:15'/>
+      <source bridge='virbr0'/>
       <target dev='tap1'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
     </interface>

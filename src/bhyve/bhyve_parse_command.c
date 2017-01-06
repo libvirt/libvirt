@@ -507,9 +507,12 @@ bhyveParsePCINet(virDomainDefPtr def,
     if (VIR_ALLOC(net) < 0)
         goto cleanup;
 
-    /* Let's just assume it is VIR_DOMAIN_NET_TYPE_ETHERNET, it could also be
-     * a bridge, but this is the most generic option. */
-    net->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
+    /* As we only support interface type='bridge' and cannot
+     * guess the actual bridge name from the command line,
+     * try to come up with some reasonable defaults */
+    net->type = VIR_DOMAIN_NET_TYPE_BRIDGE;
+    if (VIR_STRDUP(net->data.bridge.brname, "virbr0") < 0)
+        goto error;
 
     net->info.type = VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI;
     net->info.addr.pci.slot = pcislot;
