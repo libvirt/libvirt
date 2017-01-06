@@ -2363,6 +2363,13 @@ libxlDomainGetVcpusFlags(virDomainPtr dom, unsigned int flags)
 }
 
 static int
+libxlDomainGetMaxVcpus(virDomainPtr dom)
+{
+    return libxlDomainGetVcpusFlags(dom, (VIR_DOMAIN_AFFECT_LIVE |
+                                          VIR_DOMAIN_VCPU_MAXIMUM));
+}
+
+static int
 libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
                         unsigned char *cpumap, int maplen,
                         unsigned int flags)
@@ -6446,6 +6453,7 @@ static virHypervisorDriver libxlHypervisorDriver = {
     .domainSetVcpus = libxlDomainSetVcpus, /* 0.9.0 */
     .domainSetVcpusFlags = libxlDomainSetVcpusFlags, /* 0.9.0 */
     .domainGetVcpusFlags = libxlDomainGetVcpusFlags, /* 0.9.0 */
+    .domainGetMaxVcpus = libxlDomainGetMaxVcpus, /* 3.0.0 */
     .domainPinVcpu = libxlDomainPinVcpu, /* 0.9.0 */
     .domainPinVcpuFlags = libxlDomainPinVcpuFlags, /* 1.2.1 */
     .domainGetVcpus = libxlDomainGetVcpus, /* 0.9.0 */

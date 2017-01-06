@@ -39,6 +39,8 @@
           _virStorageVolInfo structure. The --physical flag has been
           added to the virsh vol-info command to access the data
           </li>
+          <li>libxl: Implement virDomainGetMaxVcpus API
+          </li>
         </ul>
       </li>
       <li><strong>Improvements</strong>
