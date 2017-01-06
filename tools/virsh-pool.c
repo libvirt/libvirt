@@ -1316,20 +1316,18 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
     /* Output basic info then return if --details option not selected */
     if (!details) {
-        if (uuid) {
+        if (uuid || name) {
             for (i = 0; i < list->npools; i++) {
-                char uuid_str[VIR_UUID_STRING_BUFLEN];
-                virStoragePoolGetUUIDString(list->pools[i], uuid_str);
-                vshPrint(ctl, "%-36s\n", uuid_str);
-            }
-            ret = true;
-            goto cleanup;
-        }
-
-        if (name) {
-            for (i = 0; i < list->npools; i++) {
-                const char *name_str = virStoragePoolGetName(list->pools[i]);
-                vshPrint(ctl, "%-20s\n", name_str);
+                if (uuid) {
+                    char uuid_str[VIR_UUID_STRING_BUFLEN];
+                    virStoragePoolGetUUIDString(list->pools[i], uuid_str);
+                    vshPrint(ctl, "%-36s%c", uuid_str, name ? ' ': '\n');
+                }
+                if (name) {
+                    const char *name_str =
+                        virStoragePoolGetName(list->pools[i]);
+                    vshPrint(ctl, "%-20s\n", name_str);
+                }
             }
             ret = true;
             goto cleanup;
