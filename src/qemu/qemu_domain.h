@@ -806,9 +806,6 @@ int qemuDomainBuildNamespace(virQEMUDriverPtr driver,
 int qemuDomainCreateNamespace(virQEMUDriverPtr driver,
                               virDomainObjPtr vm);
 
-void qemuDomainDeleteNamespace(virQEMUDriverPtr driver,
-                               virDomainObjPtr vm);
-
 int qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainDiskDefPtr disk);

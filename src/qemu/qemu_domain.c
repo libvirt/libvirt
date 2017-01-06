@@ -7486,39 +7486,6 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 #endif /* !defined(__linux__) */
 
 
-void
-qemuDomainDeleteNamespace(virQEMUDriverPtr driver,
-                          virDomainObjPtr vm)
-{
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    char *devPath = NULL;
-    char **devMountsSavePath = NULL;
-    size_t ndevMountsSavePath = 0, i;
-
-
-    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
-        return;
-
-    if (qemuDomainGetPreservedMounts(driver, vm,
-                                     NULL, &devMountsSavePath,
-                                     &ndevMountsSavePath) < 0)
-        goto cleanup;
-
-    for (i = 0; i < ndevMountsSavePath; i++) {
-        if (rmdir(devMountsSavePath[i]) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to remove %s"),
-                                 devMountsSavePath[i]);
-            /* Bet effort. Fall through. */
-        }
-    }
- cleanup:
-    virObjectUnref(cfg);
-    virStringListFreeCount(devMountsSavePath, ndevMountsSavePath);
-    VIR_FREE(devPath);
-}
-
-
 struct qemuDomainAttachDeviceMknodData {
     virQEMUDriverPtr driver;
     virDomainObjPtr vm;

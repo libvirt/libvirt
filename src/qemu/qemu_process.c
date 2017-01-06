@@ -6271,8 +6271,6 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         }
     }
 
-    qemuDomainDeleteNamespace(driver, vm);
-
     vm->taint = 0;
     vm->pid = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
