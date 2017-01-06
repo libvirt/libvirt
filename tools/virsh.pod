@@ -3621,7 +3621,7 @@ of basic info are not converted to human friendly units.
 =item B<pool-list> [I<--inactive>] [I<--all>]
                    [I<--persistent>] [I<--transient>]
                    [I<--autostart>] [I<--no-autostart>]
-                   [[I<--details>] [<type>]
+                   [[I<--details>] [I<--uuid>] [<type>]
 
 List pool objects known to libvirt.  By default, only active pools
 are listed; I<--inactive> lists just the inactive pools, and I<--all>
@@ -3630,7 +3630,7 @@ lists all pools.
 In addition, there are several sets of filtering flags. I<--persistent> is to
 list the persistent pools, I<--transient> is to list the transient pools.
 I<--autostart> lists the autostarting pools, I<--no-autostart> lists the pools
-with autostarting disabled.
+with autostarting disabled. If I<--uuid> is specified only pool's UUIDs are printed.
 
 You may also want to list pools with specified types using I<type>, the
 pool types must be separated by comma, e.g. --type dir,disk. The valid pool
