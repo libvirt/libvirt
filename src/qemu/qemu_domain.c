@@ -7369,6 +7369,13 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
         if (devMountsSavePath[i] == devPath)
             continue;
 
+        if (virFileMakePath(devMountsSavePath[i]) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to create %s"),
+                                 devMountsSavePath[i]);
+            goto cleanup;
+        }
+
         if (mount(devMountsPath[i], devMountsSavePath[i],
                   NULL, mount_flags, NULL) < 0) {
             virReportSystemError(errno,
@@ -7426,6 +7433,8 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
     ret = 0;
  cleanup:
     virObjectUnref(cfg);
+    for (i = 0; i < ndevMountsPath; i++)
+        rmdir(devMountsSavePath[i]);
     virStringListFreeCount(devMountsPath, ndevMountsPath);
     virStringListFreeCount(devMountsSavePath, ndevMountsPath);
     return ret;
@@ -7438,8 +7447,6 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
-    char **devMountsSavePath = NULL;
-    size_t ndevMountsSavePath = 0, i;
 
     if (!virBitmapIsBitSet(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT) ||
         !virQEMUDriverIsPrivileged(driver)) {
@@ -7447,30 +7454,11 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (qemuDomainGetPreservedMounts(driver, vm,
-                                     NULL, &devMountsSavePath,
-                                     &ndevMountsSavePath) < 0)
-        goto cleanup;
-
-    for (i = 0; i < ndevMountsSavePath; i++) {
-        if (virFileMakePath(devMountsSavePath[i]) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to create %s"),
-                                 devMountsSavePath[i]);
-            goto cleanup;
-        }
-    }
-
     if (qemuDomainEnableNamespace(vm, QEMU_DOMAIN_NS_MOUNT) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
-    if (ret < 0) {
-        for (i = 0; i < ndevMountsSavePath; i++)
-            rmdir(devMountsSavePath[i]);
-    }
-    virStringListFreeCount(devMountsSavePath, ndevMountsSavePath);
     virObjectUnref(cfg);
     return ret;
 }
