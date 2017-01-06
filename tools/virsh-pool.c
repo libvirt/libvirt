@@ -1064,6 +1064,10 @@ static const vshCmdOptDef opts_pool_list[] = {
      .type = VSH_OT_BOOL,
      .help = N_("list UUID of active pools only")
     },
+    {.name = "name",
+     .type = VSH_OT_BOOL,
+     .help = N_("list name of active pools only")
+    },
     {.name = NULL}
 };
 
@@ -1092,6 +1096,7 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     bool details = vshCommandOptBool(cmd, "details");
     bool inactive, all;
     bool uuid = false;
+    bool name = false;
     char *outputStr = NULL;
 
     inactive = vshCommandOptBool(cmd, "inactive");
@@ -1119,10 +1124,14 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
     if (vshCommandOptBool(cmd, "uuid"))
         uuid = true;
 
+    if (vshCommandOptBool(cmd, "name"))
+        name = true;
+
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
         return false;
 
     VSH_EXCLUSIVE_OPTIONS("details", "uuid");
+    VSH_EXCLUSIVE_OPTIONS("details", "name");
 
     if (type) {
         int poolType = -1;
@@ -1317,6 +1326,15 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             goto cleanup;
         }
 
+        if (name) {
+            for (i = 0; i < list->npools; i++) {
+                const char *name_str = virStoragePoolGetName(list->pools[i]);
+                vshPrint(ctl, "%-20s\n", name_str);
+            }
+            ret = true;
+            goto cleanup;
+        }
+
         /* Output old style header */
         vshPrintExtra(ctl, " %-20s %-10s %-10s\n", _("Name"), _("State"),
                       _("Autostart"));
@@ -1324,9 +1342,9 @@ cmdPoolList(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
 
         /* Output old style pool info */
         for (i = 0; i < list->npools; i++) {
-            const char *name = virStoragePoolGetName(list->pools[i]);
+            const char *name_str = virStoragePoolGetName(list->pools[i]);
             vshPrint(ctl, " %-20s %-10s %-10s\n",
-                 name,
+                 name_str,
                  poolInfoTexts[i].state,
                  poolInfoTexts[i].autostart);
         }
