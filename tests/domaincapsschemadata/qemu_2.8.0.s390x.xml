@@ -20,7 +20,24 @@
   </os>
   <cpu>
     <mode name='host-passthrough' supported='yes'/>
-    <mode name='host-model' supported='no'/>
+    <mode name='host-model' supported='yes'>
+      <model fallback='allow'>zEC12.2-base</model>
+      <feature policy='require' name='aefsi'/>
+      <feature policy='require' name='msa5'/>
+      <feature policy='require' name='msa4'/>
+      <feature policy='require' name='msa3'/>
+      <feature policy='require' name='msa2'/>
+      <feature policy='require' name='msa1'/>
+      <feature policy='require' name='sthyi'/>
+      <feature policy='require' name='edat'/>
+      <feature policy='require' name='ri'/>
+      <feature policy='require' name='edat2'/>
+      <feature policy='require' name='ipter'/>
+      <feature policy='require' name='esop'/>
+      <feature policy='require' name='cte'/>
+      <feature policy='require' name='te'/>
+      <feature policy='require' name='cmm'/>
+    </mode>
     <mode name='custom' supported='yes'>
       <model usable='unknown'>z10EC-base</model>
       <model usable='unknown'>z9EC-base</model>

@@ -399,6 +399,8 @@ struct _virQEMUCaps {
     size_t ngicCapabilities;
     virGICCapability *gicCapabilities;
 
+    qemuMonitorCPUModelInfoPtr hostCPUModelInfo;
+
     /* Anything below is not stored in the cache since the values are
      * re-computed from the other fields or external data sources every
      * time we probe QEMU or load the results from the cache.
@@ -2163,6 +2165,10 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
         !(ret->hostCPUModel = virCPUDefCopy(qemuCaps->hostCPUModel)))
         goto error;
 
+    if (qemuCaps->hostCPUModelInfo &&
+        !(ret->hostCPUModelInfo = qemuMonitorCPUModelInfoCopy(qemuCaps->hostCPUModelInfo)))
+        goto error;
+
     if (VIR_ALLOC_N(ret->machineTypes, qemuCaps->nmachineTypes) < 0)
         goto error;
     ret->nmachineTypes = qemuCaps->nmachineTypes;
@@ -2811,6 +2817,18 @@ virQEMUCapsProbeQMPCPUDefinitions(virQEMUCapsPtr qemuCaps,
     return ret;
 }
 
+static int
+virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
+                           qemuMonitorPtr mon)
+{
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION) ||
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
+        return 0;
+
+    return qemuMonitorGetCPUModelExpansion(mon, "static", "host",
+                                           &qemuCaps->hostCPUModelInfo);
+}
+
 struct tpmTypeToCaps {
     int type;
     virQEMUCapsFlags caps;
@@ -3020,17 +3038,61 @@ virQEMUCapsCPUFilterFeatures(const char *name,
 }
 
 
-void
-virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
-                            virCapsPtr caps)
+static void
+virQEMUCapsCopyCPUModelFromQEMU(virQEMUCapsPtr qemuCaps)
 {
     virCPUDefPtr cpu = NULL;
+    qemuMonitorCPUModelInfoPtr modelInfo = NULL;
+    size_t i;
 
-    if (!caps)
-        return;
-
-    if (!virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch))
+    if (!(modelInfo = qemuCaps->hostCPUModelInfo)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing host CPU model info from QEMU capabilities"
+                         " for binary %s"), qemuCaps->binary);
         goto error;
+    }
+
+    if (VIR_ALLOC(cpu) < 0)
+        goto error;
+
+    if (VIR_STRDUP(cpu->model, modelInfo->name) < 0 ||
+        VIR_ALLOC_N(cpu->features, modelInfo->nprops) < 0)
+        goto error;
+
+    cpu->nfeatures_max = modelInfo->nprops;
+    cpu->nfeatures = 0;
+    cpu->sockets = cpu->cores = cpu->threads = 0;
+    cpu->type = VIR_CPU_TYPE_GUEST;
+    cpu->mode = VIR_CPU_MODE_CUSTOM;
+    cpu->match = VIR_CPU_MATCH_EXACT;
+
+    for (i = 0; i < modelInfo->nprops; i++) {
+        if (VIR_STRDUP(cpu->features[i].name, modelInfo->props[i].name) < 0)
+            goto error;
+
+        if (modelInfo->props[i].supported)
+            cpu->features[i].policy = VIR_CPU_FEATURE_REQUIRE;
+        else
+            cpu->features[i].policy = VIR_CPU_FEATURE_DISABLE;
+
+        cpu->nfeatures++;
+    }
+
+    qemuCaps->hostCPUModel = cpu;
+    return;
+
+ error:
+    virCPUDefFree(cpu);
+    qemuCaps->hostCPUModel = NULL;
+    virResetLastError();
+}
+
+
+static void
+virQEMUCapsCopyCPUModelFromHost(virQEMUCapsPtr qemuCaps,
+                                virCapsPtr caps)
+{
+    virCPUDefPtr cpu = NULL;
 
     if (caps->host.cpu && caps->host.cpu->model) {
         if (VIR_ALLOC(cpu) < 0)
@@ -3053,6 +3115,102 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
     virCPUDefFree(cpu);
     qemuCaps->hostCPUModel = NULL;
     virResetLastError();
+}
+
+
+void
+virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
+                            virCapsPtr caps)
+{
+    if (!caps || !virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch))
+        return;
+
+    switch (qemuCaps->arch) {
+    case VIR_ARCH_S390:
+    case VIR_ARCH_S390X:
+        virQEMUCapsCopyCPUModelFromQEMU(qemuCaps);
+        break;
+
+    default:
+        virQEMUCapsCopyCPUModelFromHost(qemuCaps, caps);
+    }
+}
+
+
+static int
+virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
+                                xmlXPathContextPtr ctxt)
+{
+    char *str = NULL;
+    xmlNodePtr hostCPUNode;
+    xmlNodePtr *featureNodes = NULL;
+    xmlNodePtr oldnode = ctxt->node;
+    qemuMonitorCPUModelInfoPtr hostCPU = NULL;
+    int ret = -1;
+    size_t i;
+    int n;
+
+    if (!(hostCPUNode = virXPathNode("./hostCPU", ctxt))) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(hostCPU) < 0)
+        goto cleanup;
+
+    if (!(hostCPU->name = virXMLPropString(hostCPUNode, "model"))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing host CPU model name in QEMU "
+                         "capabilities cache"));
+        goto cleanup;
+    }
+
+    ctxt->node = hostCPUNode;
+
+    if ((n = virXPathNodeSet("./feature", ctxt, &featureNodes)) > 0) {
+        if (VIR_ALLOC_N(hostCPU->props, n) < 0)
+            goto cleanup;
+
+        hostCPU->nprops = n;
+
+        for (i = 0; i < n; i++) {
+            hostCPU->props[i].name = virXMLPropString(featureNodes[i], "name");
+            if (!hostCPU->props[i].name) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing 'name' attribute for a host CPU"
+                                 " model feature in QEMU capabilities cache"));
+                goto cleanup;
+            }
+
+            if (!(str = virXMLPropString(featureNodes[i], "supported"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing 'supported' attribute for a host CPU"
+                                 " model feature in QEMU capabilities cache"));
+                goto cleanup;
+            }
+            if (STREQ(str, "yes")) {
+                hostCPU->props[i].supported = true;
+            } else if (STREQ(str, "no")) {
+                hostCPU->props[i].supported = false;
+            } else {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("invalid supported value: '%s'"), str);
+                goto cleanup;
+            }
+            VIR_FREE(str);
+        }
+    }
+
+    qemuCaps->hostCPUModelInfo = hostCPU;
+    hostCPU = NULL;
+    ret = 0;
+
+ cleanup:
+    ctxt->node = oldnode;
+    VIR_FREE(str);
+    VIR_FREE(featureNodes);
+    qemuMonitorCPUModelInfoFree(hostCPU);
+    return ret;
 }
 
 
@@ -3250,6 +3408,9 @@ virQEMUCapsLoadCache(virCapsPtr caps,
     }
     VIR_FREE(str);
 
+    if (virQEMUCapsLoadHostCPUModelInfo(qemuCaps, ctxt) < 0)
+        goto cleanup;
+
     if (virQEMUCapsLoadCPUModels(qemuCaps, ctxt, VIR_DOMAIN_VIRT_KVM) < 0 ||
         virQEMUCapsLoadCPUModels(qemuCaps, ctxt, VIR_DOMAIN_VIRT_QEMU) < 0)
         goto cleanup;
@@ -3442,6 +3603,20 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
 
     virBufferAsprintf(&buf, "<arch>%s</arch>\n",
                       virArchToString(qemuCaps->arch));
+
+    if (qemuCaps->hostCPUModelInfo) {
+        virBufferAsprintf(&buf, "<hostCPU model='%s'>\n",
+                          qemuCaps->hostCPUModelInfo->name);
+        virBufferAdjustIndent(&buf, 2);
+        for (i = 0; i < qemuCaps->hostCPUModelInfo->nprops; i++) {
+            virBufferAsprintf(&buf, "<feature name='%s' supported='%s'/>\n",
+                              qemuCaps->hostCPUModelInfo->props[i].name,
+                              qemuCaps->hostCPUModelInfo->props[i].supported ?
+                              "yes" : "no");
+        }
+        virBufferAdjustIndent(&buf, -2);
+        virBufferAddLit(&buf, "</hostCPU>\n");
+    }
 
     virQEMUCapsFormatCPUModels(qemuCaps, &buf, VIR_DOMAIN_VIRT_KVM);
     virQEMUCapsFormatCPUModels(qemuCaps, &buf, VIR_DOMAIN_VIRT_QEMU);
@@ -4134,6 +4309,8 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
         goto cleanup;
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_QMP_SCHEMA) &&
         virQEMUCapsProbeQMPSchemaCapabilities(qemuCaps, mon) < 0)
+        goto cleanup;
+    if (virQEMUCapsProbeQMPHostCPU(qemuCaps, mon) < 0)
         goto cleanup;
 
     /* 'intel-iommu' shows up as a device since 2.2.0, but can

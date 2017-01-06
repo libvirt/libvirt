@@ -13023,6 +13023,32 @@
 
 {
   "return": {
+    "model": {
+      "name": "zEC12.2-base",
+      "props": {
+        "aefsi": true,
+        "msa5": true,
+        "msa4": true,
+        "msa3": true,
+        "msa2": true,
+        "msa1": true,
+        "sthyi": true,
+        "edat": true,
+        "ri": true,
+        "edat2": true,
+        "ipter": true,
+        "esop": true,
+        "cte": true,
+        "te": true,
+        "cmm": true
+      }
+    }
+  },
+  "id": "libvirt-48"
+}
+
+{
+  "return": {
   },
   "id": "libvirt-1"
 }
