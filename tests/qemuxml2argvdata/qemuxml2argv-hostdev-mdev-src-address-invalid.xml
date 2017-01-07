@@ -1,0 +1,35 @@
+<domain type='qemu'>
+  <name>QEMUGuest2</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <disk type='block' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source dev='/dev/HostVG/QEMUGuest2'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='usb' index='0'>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <controller type='ide' index='0'>
+    </controller>
+    <hostdev mode='subsystem' type='mdev' model='vfio-pci'>
+      <source>
+        <address domain='0x0000' bus='0x06' slot='0x12' function='0x5'/>
+      </source>
+    </hostdev>
+    <memballoon model='none'/>
+  </devices>
+</domain>

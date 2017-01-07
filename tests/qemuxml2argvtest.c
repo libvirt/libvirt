@@ -1469,6 +1469,15 @@ mymain(void)
     DO_TEST("hostdev-vfio-multidomain",
             QEMU_CAPS_NODEFCONFIG,
             QEMU_CAPS_DEVICE_VFIO_PCI, QEMU_CAPS_HOST_PCI_MULTIDOMAIN);
+    DO_TEST("hostdev-mdev-precreated",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST_PARSE_ERROR("hostdev-mdev-src-address-invalid",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST_PARSE_ERROR("hostdev-mdev-invalid-target-address",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_FAILURE("hostdev-vfio-multidomain",
                     QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("pci-rom",
