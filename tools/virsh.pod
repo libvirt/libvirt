@@ -1673,7 +1673,7 @@ periodically increased by I<auto-converge-increment>.
 
 I<--rdma-pin-all> can be used with RDMA migration (i.e., when I<migrateuri>
 starts with rdma://) to tell the hypervisor to pin all domain's memory at once
-before migration starts rather then letting it pin memory pages as needed.
+before migration starts rather than letting it pin memory pages as needed.
 
 B<Note>: Individual hypervisors usually do not support all possible types of
 migration. For example, QEMU does not support direct migration.
