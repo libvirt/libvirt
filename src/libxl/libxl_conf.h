@@ -41,6 +41,7 @@
 # include "locking/lock_manager.h"
 # include "virfirmware.h"
 # include "libxl_capabilities.h"
+# include "libxl_logger.h"
 
 # define LIBXL_DRIVER_NAME "xenlight"
 # define LIBXL_VNC_PORT_MIN  5900
@@ -74,8 +75,7 @@ struct _libxlDriverConfig {
     unsigned int version;
 
     /* log stream for driver-wide libxl ctx */
-    FILE *logger_file;
-    xentoollog_logger *logger;
+    libxlLoggerPtr logger;
     /* libxl ctx for driver wide ops; getVersion, getNodeInfo, ... */
     libxl_ctx *ctx;
 

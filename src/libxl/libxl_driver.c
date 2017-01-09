@@ -406,6 +406,8 @@ libxlReconnectDomain(virDomainObjPtr vm,
     /* Update domid in case it changed (e.g. reboot) while we were gone? */
     vm->def->id = d_info.domid;
 
+    libxlLoggerOpenFile(cfg->logger, vm->def->id, vm->def->name, NULL);
+
     /* Update hostdev state */
     if (virHostdevUpdateActiveDomainDevices(hostdev_mgr, LIBXL_DRIVER_NAME,
                                             vm->def, hostdev_flags) < 0)

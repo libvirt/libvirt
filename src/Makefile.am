@@ -851,6 +851,7 @@ LIBXL_DRIVER_SOURCES =							\
 		libxl/libxl_capabilities.c libxl/libxl_capabilities.h	\
 		libxl/libxl_domain.c libxl/libxl_domain.h       	\
 		libxl/libxl_driver.c libxl/libxl_driver.h       	\
+		libxl/libxl_logger.c libxl/libxl_logger.h           \
 		libxl/libxl_migration.c libxl/libxl_migration.h
 
 UML_DRIVER_SOURCES =						\

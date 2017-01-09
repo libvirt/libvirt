@@ -76,9 +76,7 @@ libxlDriverConfigDispose(void *obj)
 
     virObjectUnref(cfg->caps);
     libxl_ctx_free(cfg->ctx);
-    xtl_logger_destroy(cfg->logger);
-    if (cfg->logger_file)
-        VIR_FORCE_FCLOSE(cfg->logger_file);
+    libxlLoggerFree(cfg->logger);
 
     VIR_FREE(cfg->configDir);
     VIR_FREE(cfg->autostartDir);
@@ -1356,8 +1354,6 @@ libxlDriverConfigPtr
 libxlDriverConfigNew(void)
 {
     libxlDriverConfigPtr cfg;
-    char *log_file = NULL;
-    xentoollog_level log_level = XTL_DEBUG;
     char ebuf[1024];
     unsigned int free_mem;
 
@@ -1386,9 +1382,6 @@ libxlDriverConfigNew(void)
     if (VIR_STRDUP(cfg->channelDir, LIBXL_CHANNEL_DIR) < 0)
         goto error;
 
-    if (virAsprintf(&log_file, "%s/libxl-driver.log", cfg->logDir) < 0)
-        goto error;
-
     if (virFileMakePath(cfg->logDir) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to create log dir '%s': %s"),
@@ -1397,37 +1390,13 @@ libxlDriverConfigNew(void)
         goto error;
     }
 
-    if ((cfg->logger_file = fopen(log_file, "a")) == NULL)  {
-        VIR_ERROR(_("Failed to create log file '%s': %s"),
-                  log_file, virStrerror(errno, ebuf, sizeof(ebuf)));
-        goto error;
-    }
-    VIR_FREE(log_file);
-
-    switch (virLogGetDefaultPriority()) {
-    case VIR_LOG_DEBUG:
-        log_level = XTL_DEBUG;
-        break;
-    case VIR_LOG_INFO:
-        log_level = XTL_INFO;
-        break;
-    case VIR_LOG_WARN:
-        log_level = XTL_WARN;
-        break;
-    case VIR_LOG_ERROR:
-        log_level = XTL_ERROR;
-        break;
-    }
-
-    cfg->logger =
-        (xentoollog_logger *)xtl_createlogger_stdiostream(cfg->logger_file,
-                                      log_level, XTL_STDIOSTREAM_SHOW_DATE);
+    cfg->logger = libxlLoggerNew(cfg->logDir, virLogGetDefaultPriority());
     if (!cfg->logger) {
         VIR_ERROR(_("cannot create logger for libxenlight, disabling driver"));
         goto error;
     }
 
-    if (libxl_ctx_alloc(&cfg->ctx, LIBXL_VERSION, 0, cfg->logger)) {
+    if (libxl_ctx_alloc(&cfg->ctx, LIBXL_VERSION, 0, (xentoollog_logger *)cfg->logger)) {
         VIR_ERROR(_("cannot initialize libxenlight context, probably not "
                     "running in a Xen Dom0, disabling driver"));
         goto error;
@@ -1478,7 +1447,6 @@ libxlDriverConfigNew(void)
     return cfg;
 
  error:
-    VIR_FREE(log_file);
     virObjectUnref(cfg);
     return NULL;
 }

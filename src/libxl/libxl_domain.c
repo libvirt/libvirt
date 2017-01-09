@@ -809,6 +809,8 @@ libxlDomainCleanup(libxlDriverPrivatePtr driver,
         VIR_FREE(xml);
     }
 
+    libxlLoggerCloseFile(cfg->logger, vm->def->id);
+
     virDomainObjRemoveTransientDef(vm);
     virObjectUnref(cfg);
 }
@@ -1127,6 +1129,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
     libxl_asyncprogress_how aop_console_how;
     libxl_domain_restore_params params;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
+    char *config_json = NULL;
 
 #ifdef LIBXL_HAVE_PVUSB
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
@@ -1290,6 +1293,9 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
      * be cleaned up if there are any subsequent failures.
      */
     vm->def->id = domid;
+    config_json = libxl_domain_config_to_json(cfg->ctx, &d_config);
+
+    libxlLoggerOpenFile(cfg->logger, domid, vm->def->name, config_json);
 
     /* Always enable domain death events */
     if (libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW))
@@ -1366,6 +1372,7 @@ libxlDomainStart(libxlDriverPrivatePtr driver,
 
  cleanup:
     libxl_domain_config_dispose(&d_config);
+    VIR_FREE(config_json);
     VIR_FREE(dom_xml);
     VIR_FREE(managed_save_path);
     virDomainDefFree(def);
