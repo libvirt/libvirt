@@ -4943,8 +4943,19 @@ qemuDomainSetVcpusConfig(virDomainDefPtr def,
         for (i = 0; i < maxvcpus; i++) {
             vcpu = virDomainDefGetVcpu(def, i);
 
-            if (!vcpu || vcpu->online)
+            if (!vcpu)
                 continue;
+
+            if (vcpu->online) {
+                /* non-hotpluggable vcpus need to be clustered at the beggining,
+                 * thus we need to force vcpus to be hotpluggable when we find
+                 * vcpus that are hotpluggable and online prior to the ones
+                 * we are going to add */
+                if (vcpu->hotpluggable == VIR_TRISTATE_BOOL_YES)
+                    hotpluggable = true;
+
+                continue;
+            }
 
             vcpu->online = true;
             if (hotpluggable) {
