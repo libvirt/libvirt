@@ -2481,6 +2481,14 @@ virGetFCHostNameByWWN(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 }
 
 char *
+virGetFCHostNameByFabricWWN(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+                            const char *fabric_wwn ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
+    return NULL;
+}
+
+char *
 virFindFCHostCapableVport(const char *sysfs_prefix ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
