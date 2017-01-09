@@ -4289,6 +4289,16 @@ virCgroupAddTask(virCgroupPtr group ATTRIBUTE_UNUSED,
 
 
 int
+virCgroupAddMachineTask(virCgroupPtr group ATTRIBUTE_UNUSED,
+                        pid_t pid ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENXIO, "%s",
+                         _("Control groups not supported on this platform"));
+    return -1;
+}
+
+
+int
 virCgroupAddTaskController(virCgroupPtr group ATTRIBUTE_UNUSED,
                            pid_t pid ATTRIBUTE_UNUSED,
                            int controller ATTRIBUTE_UNUSED)
