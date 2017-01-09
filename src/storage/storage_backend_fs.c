@@ -306,15 +306,13 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
 
     retNFS = virStorageBackendFileSystemNetFindNFSPoolSources(&state);
 
-# ifdef GLUSTER_CLI
     retGluster = virStorageBackendFindGlusterPoolSources(state.host,
                                                          VIR_STORAGE_POOL_NETFS_GLUSTERFS,
-                                                         &state.list);
+                                                         &state.list, false);
 
     if (retGluster < 0)
         goto cleanup;
 
-# endif
     /* If both fail, then we won't return an empty list - return an error */
     if (retNFS < 0 && retGluster == 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,

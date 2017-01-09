@@ -135,7 +135,8 @@ virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
 
 int virStorageBackendFindGlusterPoolSources(const char *host,
                                             int pooltype,
-                                            virStoragePoolSourceListPtr list);
+                                            virStoragePoolSourceListPtr list,
+                                            bool report);
 
 int virStorageBackendVolUploadLocal(virConnectPtr conn,
                                     virStoragePoolObjPtr pool,

@@ -605,7 +605,7 @@ LIBVIRT_STORAGE_CHECK_ZFS
 
 if test "$with_storage_fs" = "yes" ||
    test "$with_storage_gluster" = "yes"; then
-  AC_PATH_PROG([GLUSTER_CLI], [gluster], [], [$LIBVIRT_SBIN_PATH])
+  AC_PATH_PROG([GLUSTER_CLI], [gluster], [gluster], [$LIBVIRT_SBIN_PATH])
   if test "x$GLUSTER_CLI" != "x"; then
       AC_DEFINE_UNQUOTED([GLUSTER_CLI], ["$GLUSTER_CLI"],
         [Location or name of the gluster command line tool])

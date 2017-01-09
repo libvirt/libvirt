@@ -2548,12 +2548,12 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
-#ifdef GLUSTER_CLI
 /**
  * virStorageBackendFindGlusterPoolSources:
  * @host: host to detect volumes on
  * @pooltype: src->format is set to this value
  * @list: list of storage pool sources to be filled
+ * @report: report error if the 'gluster' cli tool is missing
  *
  * Looks up gluster volumes on @host and fills them to @list.
  *
@@ -2562,8 +2562,10 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
 int
 virStorageBackendFindGlusterPoolSources(const char *host,
                                         int pooltype,
-                                        virStoragePoolSourceListPtr list)
+                                        virStoragePoolSourceListPtr list,
+                                        bool report)
 {
+    char *glusterpath = NULL;
     char *outbuf = NULL;
     virCommandPtr cmd = NULL;
     xmlDocPtr doc = NULL;
@@ -2576,7 +2578,17 @@ virStorageBackendFindGlusterPoolSources(const char *host,
 
     int ret = -1;
 
-    cmd = virCommandNewArgList(GLUSTER_CLI,
+    if (!(glusterpath = virFindFileInPath(GLUSTER_CLI))) {
+        if (report) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'gluster' command line tool not found"));
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
+    cmd = virCommandNewArgList(glusterpath,
                                "--xml",
                                "--log-file=/dev/null",
                                "volume", "info", "all", NULL);
@@ -2629,18 +2641,9 @@ virStorageBackendFindGlusterPoolSources(const char *host,
     xmlFreeDoc(doc);
     VIR_FREE(outbuf);
     virCommandFree(cmd);
+    VIR_FREE(glusterpath);
     return ret;
 }
-#else /* #ifdef GLUSTER_CLI */
-int
-virStorageBackendFindGlusterPoolSources(const char *host ATTRIBUTE_UNUSED,
-                                        int pooltype ATTRIBUTE_UNUSED,
-                                        virStoragePoolSourceListPtr list ATTRIBUTE_UNUSED)
-{
-    VIR_INFO("gluster cli tool not installed");
-    return 0;
-}
-#endif /* #ifdef GLUSTER_CLI */
 
 
 #if WITH_BLKID
