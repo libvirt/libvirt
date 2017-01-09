@@ -5130,7 +5130,7 @@ remoteDomainBuildEventCallbackDeviceRemovalFailed(virNetClientProgramPtr prog AT
                                                   void *evdata, void *opaque)
 {
     virConnectPtr conn = opaque;
-    remote_domain_event_callback_device_added_msg *msg = evdata;
+    remote_domain_event_callback_device_removal_failed_msg *msg = evdata;
     struct private_data *priv = conn->privateData;
     virDomainPtr dom;
     virObjectEventPtr event = NULL;
