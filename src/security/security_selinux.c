@@ -1138,7 +1138,7 @@ virSecuritySELinuxSetFileconHelper(const char *path, const char *tcon,
 
     VIR_INFO("Setting SELinux context on '%s' to '%s'", path, tcon);
 
-    if (setfilecon_raw(path, tcon) < 0) {
+    if (setfilecon_raw(path, (VIR_SELINUX_CTX_CONST char *) tcon) < 0) {
         int setfilecon_errno = errno;
 
         if (getfilecon_raw(path, &econ) >= 0) {
