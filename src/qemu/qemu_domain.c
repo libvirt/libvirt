@@ -194,76 +194,6 @@ qemuDomainEnableNamespace(virDomainObjPtr vm,
 }
 
 
-/**
- * qemuDomainGetPreservedMounts:
- *
- * Process list of mounted filesystems and:
- * a) save all FSs mounted under /dev to @devPath
- * b) generate backup path for all the entries in a)
- *
- * Any of the return pointers can be NULL.
- *
- * Returns 0 on success, -1 otherwise (with error reported)
- */
-static int
-qemuDomainGetPreservedMounts(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             char ***devPath,
-                             char ***devSavePath,
-                             size_t *ndevPath)
-{
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    char **paths = NULL, **mounts = NULL;
-    size_t i, nmounts;
-
-    if (virFileGetMountSubtree(PROC_MOUNTS, "/dev",
-                               &mounts, &nmounts) < 0)
-        goto error;
-
-    if (!nmounts) {
-        if (ndevPath)
-            *ndevPath = 0;
-        return 0;
-    }
-
-    if (VIR_ALLOC_N(paths, nmounts) < 0)
-        goto error;
-
-    for (i = 0; i < nmounts; i++) {
-        const char *suffix = mounts[i] + strlen(DEVPREFIX);
-
-        if (STREQ(mounts[i], "/dev"))
-            suffix = "dev";
-
-        if (virAsprintf(&paths[i], "%s/%s.%s",
-                        cfg->stateDir, vm->def->name, suffix) < 0)
-            goto error;
-    }
-
-    if (devPath)
-        *devPath = mounts;
-    else
-        virStringListFreeCount(mounts, nmounts);
-
-    if (devSavePath)
-        *devSavePath = paths;
-    else
-        virStringListFreeCount(paths, nmounts);
-
-    if (ndevPath)
-        *ndevPath = nmounts;
-
-    virObjectUnref(cfg);
-    return 0;
-
- error:
-    virStringListFreeCount(mounts, nmounts);
-    virStringListFreeCount(paths, nmounts);
-    virObjectUnref(cfg);
-    return -1;
-}
-
-
 void qemuDomainEventQueue(virQEMUDriverPtr driver,
                           virObjectEventPtr event)
 {
@@ -6950,6 +6880,76 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
 
 
 #if defined(__linux__)
+/**
+ * qemuDomainGetPreservedMounts:
+ *
+ * Process list of mounted filesystems and:
+ * a) save all FSs mounted under /dev to @devPath
+ * b) generate backup path for all the entries in a)
+ *
+ * Any of the return pointers can be NULL.
+ *
+ * Returns 0 on success, -1 otherwise (with error reported)
+ */
+static int
+qemuDomainGetPreservedMounts(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             char ***devPath,
+                             char ***devSavePath,
+                             size_t *ndevPath)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    char **paths = NULL, **mounts = NULL;
+    size_t i, nmounts;
+
+    if (virFileGetMountSubtree(PROC_MOUNTS, "/dev",
+                               &mounts, &nmounts) < 0)
+        goto error;
+
+    if (!nmounts) {
+        if (ndevPath)
+            *ndevPath = 0;
+        return 0;
+    }
+
+    if (VIR_ALLOC_N(paths, nmounts) < 0)
+        goto error;
+
+    for (i = 0; i < nmounts; i++) {
+        const char *suffix = mounts[i] + strlen(DEVPREFIX);
+
+        if (STREQ(mounts[i], "/dev"))
+            suffix = "dev";
+
+        if (virAsprintf(&paths[i], "%s/%s.%s",
+                        cfg->stateDir, vm->def->name, suffix) < 0)
+            goto error;
+    }
+
+    if (devPath)
+        *devPath = mounts;
+    else
+        virStringListFreeCount(mounts, nmounts);
+
+    if (devSavePath)
+        *devSavePath = paths;
+    else
+        virStringListFreeCount(paths, nmounts);
+
+    if (ndevPath)
+        *ndevPath = nmounts;
+
+    virObjectUnref(cfg);
+    return 0;
+
+ error:
+    virStringListFreeCount(mounts, nmounts);
+    virStringListFreeCount(paths, nmounts);
+    virObjectUnref(cfg);
+    return -1;
+}
+
+
 static int
 qemuDomainCreateDevice(const char *device,
                        const char *path,
