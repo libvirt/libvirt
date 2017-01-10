@@ -867,6 +867,89 @@ virDomainPCIAddressReserveNextSlot(virDomainPCIAddressSetPtr addrs,
 }
 
 
+static int
+virDomainPCIAddressSetMultiIter(virDomainDefPtr def ATTRIBUTE_UNUSED,
+                                virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                                virDomainDeviceInfoPtr info,
+                                void *data)
+{
+    virPCIDeviceAddressPtr testAddr = data;
+    virPCIDeviceAddressPtr thisAddr;
+
+    if (!info || info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+       return 0;
+
+    thisAddr = &info->addr.pci;
+
+    if (thisAddr->domain == testAddr->domain &&
+        thisAddr->bus == testAddr->bus &&
+        thisAddr->slot == testAddr->slot &&
+        thisAddr->function == 0) {
+
+        /* only set to ON if it wasn't previously set
+         * (assuming that the user must have better information
+         * than us if they explicitly set it OFF)
+         */
+        if (thisAddr->multi == VIR_TRISTATE_SWITCH_ABSENT)
+            thisAddr->multi = VIR_TRISTATE_SWITCH_ON;
+
+        return -1; /* finish early, *NOT* an error */
+    }
+
+    return 0;
+}
+
+
+static int
+virDomainPCIAddressSetAllMultiIter(virDomainDefPtr def,
+                                   virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
+                                   virDomainDeviceInfoPtr info,
+                                   void *data ATTRIBUTE_UNUSED)
+{
+    virPCIDeviceAddressPtr testAddr;
+
+    if (!info || info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI)
+       return 0;
+
+    testAddr = &info->addr.pci;
+
+    if (testAddr->function != 0) {
+        ignore_value(virDomainDeviceInfoIterate(def,
+                                                virDomainPCIAddressSetMultiIter,
+                                                testAddr));
+    }
+
+    return 0;
+}
+
+
+/**
+ * virDomainPCIAddressSetAllMulti():
+ *
+ * @def: the domain definition whose devices may need adjusting
+ * @addrs: address set keeping track of all addresses in use.
+ *
+ * Look for any PCI slots that have multiple functions assigned, and
+ * set multi to ON in the address for the device at function 0
+ * (unless it has been explicitly set to OFF).
+ *
+ * No return code, since there is no possibility of failure.
+ */
+void
+virDomainPCIAddressSetAllMulti(virDomainDefPtr def)
+{
+    /* Use nested iterators over all the devices - the outer iterator
+     * scans through all the devices looking for those whose address
+     * has a non-0 function; when one is found, the inner iterator looks
+     * for the device that uses function 0 on the same slot and marks
+     * it as multi = ON
+     */
+    ignore_value(virDomainDeviceInfoIterate(def,
+                                            virDomainPCIAddressSetAllMultiIter,
+                                            NULL));
+}
+
+
 static char*
 virDomainCCWAddressAsString(virDomainDeviceCCWAddressPtr addr)
 {

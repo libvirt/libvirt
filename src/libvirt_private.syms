@@ -104,6 +104,7 @@ virDomainPCIAddressReserveAddr;
 virDomainPCIAddressReserveNextAddr;
 virDomainPCIAddressReserveNextSlot;
 virDomainPCIAddressReserveSlot;
+virDomainPCIAddressSetAllMulti;
 virDomainPCIAddressSetAlloc;
 virDomainPCIAddressSetFree;
 virDomainPCIAddressSetGrow;
