@@ -1,0 +1,42 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/libexec/qemu-kvm \
+-name q35-test \
+-S \
+-M q35 \
+-m 2048 \
+-smp 2,sockets=2,cores=1,threads=1 \
+-uuid 11dbdcdd-4c3b-482b-8903-9bdb8c0a2774 \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/lib/domain--1-q35-test/monitor.sock,server,nowait \
+-no-acpi \
+-boot c \
+-device ioh3420,port=0x10,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,\
+addr=0x2 \
+-device ioh3420,port=0x11,chassis=2,id=pci.2,bus=pcie.0,addr=0x2.0x1 \
+-device ioh3420,port=0x12,chassis=3,id=pci.3,bus=pcie.0,addr=0x2.0x2 \
+-device ioh3420,port=0x18,chassis=4,id=pci.4,bus=pcie.0,multifunction=on,\
+addr=0x3 \
+-device ioh3420,port=0x19,chassis=5,id=pci.5,bus=pcie.0,multifunction=on,\
+addr=0x3.0x1 \
+-device ioh3420,port=0x20,chassis=6,id=pci.6,bus=pcie.0,multifunction=off,\
+addr=0x4 \
+-device ioh3420,port=0x21,chassis=7,id=pci.7,bus=pcie.0,addr=0x4.0x1 \
+-device ioh3420,port=0x8,chassis=8,id=pci.8,bus=pcie.0,addr=0x1 \
+-device ioh3420,port=0x28,chassis=9,id=pci.9,bus=pcie.0,addr=0x5 \
+-device ioh3420,port=0x30,chassis=10,id=pci.10,bus=pcie.0,addr=0x6 \
+-device ioh3420,port=0x38,chassis=11,id=pci.11,bus=pcie.0,addr=0x7 \
+-device ioh3420,port=0x40,chassis=12,id=pci.12,bus=pcie.0,addr=0x8 \
+-device ioh3420,port=0x48,chassis=13,id=pci.13,bus=pcie.0,addr=0x9 \
+-device ioh3420,port=0x50,chassis=14,id=pci.14,bus=pcie.0,addr=0xa \
+-device ioh3420,port=0x58,chassis=15,id=pci.15,bus=pcie.0,addr=0xb \
+-device ioh3420,port=0x60,chassis=16,id=pci.16,bus=pcie.0,addr=0xc \
+-device ioh3420,port=0x68,chassis=17,id=pci.17,bus=pcie.0,addr=0xd \
+-device ioh3420,port=0x70,chassis=18,id=pci.18,bus=pcie.0,addr=0xe \
+-device nec-usb-xhci,id=usb,bus=pci.1,addr=0x0 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.2,addr=0x0
