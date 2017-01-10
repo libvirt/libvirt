@@ -331,8 +331,10 @@ virCloseCallbacksRun(virCloseCallbacksPtr closeCallbacks,
 
     virObjectLock(closeCallbacks);
     list = virCloseCallbacksGetForConn(closeCallbacks, conn);
-    if (!list)
+    if (!list) {
+        virObjectLock(closeCallbacks);
         return;
+    }
 
     for (i = 0; i < list->nentries; i++) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
