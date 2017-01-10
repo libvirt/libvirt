@@ -2549,6 +2549,16 @@ virStorageBackendVolWipeLocal(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 #ifdef GLUSTER_CLI
+/**
+ * virStorageBackendFindGlusterPoolSources:
+ * @host: host to detect volumes on
+ * @pooltype: src->format is set to this value
+ * @list: list of storage pool sources to be filled
+ *
+ * Looks up gluster volumes on @host and fills them to @list.
+ *
+ * Returns number of volumes on the host on success, or -1 on error.
+ */
 int
 virStorageBackendFindGlusterPoolSources(const char *host,
                                         int pooltype,
@@ -2578,8 +2588,6 @@ virStorageBackendFindGlusterPoolSources(const char *host,
         goto cleanup;
 
     if (rc != 0) {
-        VIR_INFO("failed to query host '%s' for gluster volumes: %s",
-                 host, outbuf);
         ret = 0;
         goto cleanup;
     }
@@ -2588,11 +2596,8 @@ virStorageBackendFindGlusterPoolSources(const char *host,
                                       &ctxt)))
         goto cleanup;
 
-    if ((nnodes = virXPathNodeSet("//volumes/volume", ctxt, &nodes)) <= 0) {
-        VIR_INFO("no gluster volumes available on '%s'", host);
-        ret = 0;
+    if ((nnodes = virXPathNodeSet("//volumes/volume", ctxt, &nodes)) < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < nnodes; i++) {
         ctxt->node = nodes[i];
@@ -2616,7 +2621,7 @@ virStorageBackendFindGlusterPoolSources(const char *host,
         src->format = pooltype;
     }
 
-    ret = 0;
+    ret = nnodes;
 
  cleanup:
     VIR_FREE(nodes);

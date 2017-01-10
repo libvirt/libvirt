@@ -281,7 +281,8 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     virStoragePoolSourcePtr source = NULL;
     char *ret = NULL;
     size_t i;
-    int retNFS = -1, retGluster = -1;
+    int retNFS = -1;
+    int retGluster = 0;
 
     virCheckFlags(0, NULL);
 
@@ -306,14 +307,21 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     retNFS = virStorageBackendFileSystemNetFindNFSPoolSources(&state);
 
 # ifdef GLUSTER_CLI
-    retGluster =
-        virStorageBackendFindGlusterPoolSources(state.host,
-                                                VIR_STORAGE_POOL_NETFS_GLUSTERFS,
-                                                &state.list);
+    retGluster = virStorageBackendFindGlusterPoolSources(state.host,
+                                                         VIR_STORAGE_POOL_NETFS_GLUSTERFS,
+                                                         &state.list);
+
+    if (retGluster < 0)
+        goto cleanup;
+
 # endif
     /* If both fail, then we won't return an empty list - return an error */
-    if (retNFS < 0 && retGluster < 0)
+    if (retNFS < 0 && retGluster == 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("no storage pools were found on host '%s'"),
+                       state.host);
         goto cleanup;
+    }
 
     if (!(ret = virStoragePoolSourceListFormat(&state.list)))
         goto cleanup;
