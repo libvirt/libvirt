@@ -595,6 +595,10 @@ Requires: util-linux
 %if 0%{?fedora}
 Requires: glusterfs-client >= 2.0.1
 %endif
+# gluster cli tool for pool discovery
+%if (0%{?fedora} || 0%{?with_storage_gluster})
+Requires: /usr/sbin/gluster
+%endif
 # For LVM drivers
 Requires: lvm2
 # For ISCSI driver
