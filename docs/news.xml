@@ -24,7 +24,7 @@
         <description>
           Add the capability to allow group I/O throttling via a new
           domain &lt;disk&gt; &lt;iotune&gt; subelement "group_name"
-          to allow sharing I/O throttling quota between multiple drives
+          to allow sharing I/O throttling quota between multiple drives.
         </description>
       </change>
       <change>
@@ -33,7 +33,7 @@
         </summary>
         <description>
           New <code>libvirt-guest</code> nss module that translates libvirt
-          guest names into IP addresses
+          guest names into IP addresses.
         </description>
       </change>
       <change>
@@ -43,7 +43,7 @@
         <description>
           Logging-related settings like log outputs and filters can now be
           adjusted during runtime using the admin interface without the
-          necessity of the daemon's restart
+          necessity of the daemon's restart.
         </description>
       </change>
       <change>
@@ -55,7 +55,7 @@
           flag in order to return the host physical size in bytes
           of the image container in the allocation field of the
           _virStorageVolInfo structure. The --physical flag has been
-          added to the virsh vol-info command to access the data
+          added to the virsh vol-info command to access the data.
         </description>
       </change>
       <change>
@@ -73,7 +73,7 @@
           Add support to get the count of branch instructions
           executed, branch misses, bus cycles, stalled frontend
           cpu cycles, stalled backend cpu cycles, and ref cpu
-          cycles by applications running on the platform
+          cycles by applications running on the platform.
         </description>
       </change>
       <change>
@@ -82,7 +82,7 @@
         </summary>
         <description>
           Add a display of the &lt;physical&gt; size of a disk
-          volume in the output of the volume XML
+          volume in the output of the volume XML.
         </description>
       </change>
       <change>
@@ -93,7 +93,7 @@
           virtio-pci provides several advantages over virtio-mmio, such
           as the ability to hotplug devices and improved performance.
           While opting in to virtio-pci has been possible for a while,
-          newly-defined guests will now use it automatically
+          newly-defined guests will now use it automatically.
         </description>
       </change>
       <change>
@@ -128,7 +128,7 @@
           For an active domain, correct the physical value provided for
           a raw sparse file backed storage and the allocation value provided
           for a qcow2 file backed storage that hasn't yet been opened on
-          the domain
+          the domain.
         </description>
       </change>
       <change>
@@ -137,7 +137,7 @@
         </summary>
         <description>
           The chardev detection code has been improved and can now handle this
-          configuration properly
+          configuration properly.
         </description>
       </change>
       <change>
@@ -160,7 +160,7 @@
         </summary>
         <description>
           The shmem device can now utilize QEMU's ivshmem-plain and
-          ivshmem-doorbell, more modern versions of ivshmem
+          ivshmem-doorbell, more modern versions of ivshmem.
         </description>
       </change>
       <change>
@@ -175,7 +175,7 @@
         <description>
           The new libssh transport allows one to connect to a running
           libvirtd via SSH, using the libssh library; for example:
-          <tt>qemu+libssh://<i>server</i>/system</tt>
+          <tt>qemu+libssh://<i>server</i>/system</tt>.
         </description>
       </change>
       <change>
@@ -184,7 +184,7 @@
         </summary>
         <description>
           Add the capability to pass through a scsi_host HBA and the
-          associated LUNs to the guest
+          associated LUNs to the guest.
         </description>
       </change>
       <change>
@@ -212,7 +212,7 @@
           e1000e, nec-xhci, vfio assigned devices) will be placed on
           an Express controller (i.e. a pcie-root-port) instead of a
           legacy PCI controller (i.e. pci-bridge) with the root ports
-          added as needed
+          added as needed.
         </description>
       </change>
     </section>
@@ -244,7 +244,7 @@
         </summary>
         <description>
           List user-visible changes instead of single commits for a better
-          high-level overview of differences between libvirt releases
+          high-level overview of differences between libvirt releases.
         </description>
       </change>
       <change>
@@ -254,7 +254,7 @@
         <description>
           The libvirt website looked very cluttered and outdated; it has now
           been completely overhauled, resulting in a design that's better
-          organized and more pleasant to look at
+          organized and more pleasant to look at.
         </description>
       </change>
     </section>
