@@ -3048,37 +3048,36 @@ virQEMUCapsCPUFilterFeatures(const char *name,
 }
 
 
-static void
-virQEMUCapsCopyCPUModelFromQEMU(virQEMUCapsPtr qemuCaps)
+/**
+ * Returns  0 when host CPU model provided by QEMU was filled in qemuCaps,
+ *          1 when the caller should fall back to using virCapsPtr->host.cpu,
+ *         -1 on error.
+ */
+static int
+virQEMUCapsInitCPUModelS390(virQEMUCapsPtr qemuCaps,
+                            virCPUDefPtr cpu)
 {
-    virCPUDefPtr cpu = NULL;
-    qemuMonitorCPUModelInfoPtr modelInfo = NULL;
+    qemuMonitorCPUModelInfoPtr modelInfo = qemuCaps->hostCPUModelInfo;
     size_t i;
 
-    if (!(modelInfo = qemuCaps->hostCPUModelInfo)) {
+    if (!modelInfo) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing host CPU model info from QEMU capabilities"
-                         " for binary %s"), qemuCaps->binary);
-        goto error;
+                       _("missing host CPU model info from QEMU capabilities "
+                         "for binary %s"),
+                       qemuCaps->binary);
+        return -1;
     }
-
-    if (VIR_ALLOC(cpu) < 0)
-        goto error;
 
     if (VIR_STRDUP(cpu->model, modelInfo->name) < 0 ||
         VIR_ALLOC_N(cpu->features, modelInfo->nprops) < 0)
-        goto error;
+        return -1;
 
     cpu->nfeatures_max = modelInfo->nprops;
     cpu->nfeatures = 0;
-    cpu->sockets = cpu->cores = cpu->threads = 0;
-    cpu->type = VIR_CPU_TYPE_GUEST;
-    cpu->mode = VIR_CPU_MODE_CUSTOM;
-    cpu->match = VIR_CPU_MATCH_EXACT;
 
     for (i = 0; i < modelInfo->nprops; i++) {
         if (VIR_STRDUP(cpu->features[i].name, modelInfo->props[i].name) < 0)
-            goto error;
+            return -1;
 
         if (modelInfo->props[i].supported)
             cpu->features[i].policy = VIR_CPU_FEATURE_REQUIRE;
@@ -3088,30 +3087,52 @@ virQEMUCapsCopyCPUModelFromQEMU(virQEMUCapsPtr qemuCaps)
         cpu->nfeatures++;
     }
 
-    qemuCaps->hostCPUModel = cpu;
-    return;
-
- error:
-    virCPUDefFree(cpu);
-    qemuCaps->hostCPUModel = NULL;
-    virResetLastError();
+    return 0;
 }
 
 
-static void
-virQEMUCapsCopyCPUModelFromHost(virQEMUCapsPtr qemuCaps,
-                                virCapsPtr caps)
+/**
+ * Returns  0 when host CPU model provided by QEMU was filled in qemuCaps,
+ *          1 when the caller should fall back to using virCapsPtr->host.cpu,
+ *         -1 on error.
+ */
+static int
+virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
+                        virCPUDefPtr cpu)
+{
+    int ret = 1;
+
+    if (ARCH_IS_S390(qemuCaps->arch))
+        ret = virQEMUCapsInitCPUModelS390(qemuCaps, cpu);
+
+    return ret;
+}
+
+
+void
+virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
+                            virCapsPtr caps)
 {
     virCPUDefPtr cpu = NULL;
+    int rc;
 
-    if (caps->host.cpu && caps->host.cpu->model) {
-        if (VIR_ALLOC(cpu) < 0)
+    if (!caps || !virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch))
+        return;
+
+    if (VIR_ALLOC(cpu) < 0)
+        goto error;
+
+    cpu->type = VIR_CPU_TYPE_GUEST;
+    cpu->mode = VIR_CPU_MODE_CUSTOM;
+    cpu->match = VIR_CPU_MATCH_EXACT;
+    cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
+
+    if ((rc = virQEMUCapsInitCPUModel(qemuCaps, cpu)) < 0) {
+        goto error;
+    } else if (rc == 1) {
+        VIR_DEBUG("No host CPU model info from QEMU; using host capabilities");
+        if (!caps->host.cpu || !caps->host.cpu->model)
             goto error;
-
-        cpu->sockets = cpu->cores = cpu->threads = 0;
-        cpu->type = VIR_CPU_TYPE_GUEST;
-        cpu->mode = VIR_CPU_MODE_CUSTOM;
-        cpu->match = VIR_CPU_MATCH_EXACT;
 
         if (virCPUDefCopyModelFilter(cpu, caps->host.cpu, true,
                                      virQEMUCapsCPUFilterFeatures,
@@ -3124,27 +3145,7 @@ virQEMUCapsCopyCPUModelFromHost(virQEMUCapsPtr qemuCaps,
 
  error:
     virCPUDefFree(cpu);
-    qemuCaps->hostCPUModel = NULL;
     virResetLastError();
-}
-
-
-void
-virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
-                            virCapsPtr caps)
-{
-    if (!caps || !virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch))
-        return;
-
-    switch (qemuCaps->arch) {
-    case VIR_ARCH_S390:
-    case VIR_ARCH_S390X:
-        virQEMUCapsCopyCPUModelFromQEMU(qemuCaps);
-        break;
-
-    default:
-        virQEMUCapsCopyCPUModelFromHost(qemuCaps, caps);
-    }
 }
 
 
