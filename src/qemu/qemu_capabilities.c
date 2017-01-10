@@ -3105,6 +3105,9 @@ virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
     if (ARCH_IS_S390(qemuCaps->arch))
         ret = virQEMUCapsInitCPUModelS390(qemuCaps, cpu);
 
+    if (ret == 0)
+        cpu->fallback = VIR_CPU_FALLBACK_FORBID;
+
     return ret;
 }
 

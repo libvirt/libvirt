@@ -21,7 +21,7 @@
   <cpu>
     <mode name='host-passthrough' supported='yes'/>
     <mode name='host-model' supported='yes'>
-      <model fallback='allow'>zEC12.2-base</model>
+      <model fallback='forbid'>zEC12.2-base</model>
       <feature policy='require' name='aefsi'/>
       <feature policy='require' name='msa5'/>
       <feature policy='require' name='msa4'/>
