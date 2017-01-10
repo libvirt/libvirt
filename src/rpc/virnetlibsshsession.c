@@ -382,14 +382,16 @@ virNetLibsshCheckHostKey(virNetLibsshSessionPtr sess)
             VIR_FREE(askKey.result);
         }
 
-        /* write the host key file */
-        if (ssh_write_knownhost(sess->session) < 0) {
-            errmsg = ssh_get_error(sess->session);
-            virReportError(VIR_ERR_LIBSSH,
-                           _("failed to write known_host file '%s': %s"),
-                           sess->knownHostsFile,
-                           errmsg);
-            return -1;
+        /* write the host key file, if specified */
+        if (sess->knownHostsFile) {
+            if (ssh_write_knownhost(sess->session) < 0) {
+                errmsg = ssh_get_error(sess->session);
+                virReportError(VIR_ERR_LIBSSH,
+                               _("failed to write known_host file '%s': %s"),
+                               sess->knownHostsFile,
+                               errmsg);
+                return -1;
+            }
         }
         /* key was accepted and added */
         return 0;
@@ -1172,13 +1174,20 @@ virNetLibsshSessionSetHostKeyVerification(virNetLibsshSessionPtr sess,
             goto error;
     }
 
-    /* set the known hosts file */
-    if (ssh_options_set(sess->session, SSH_OPTIONS_KNOWNHOSTS, hostsfile) < 0)
-        goto error;
+    /* set the known hosts file, if specified */
+    if (hostsfile) {
+        if (ssh_options_set(sess->session, SSH_OPTIONS_KNOWNHOSTS, hostsfile) < 0)
+            goto error;
 
-    VIR_FREE(sess->knownHostsFile);
-    if (VIR_STRDUP(sess->knownHostsFile, hostsfile) < 0)
-        goto error;
+        VIR_FREE(sess->knownHostsFile);
+        if (VIR_STRDUP(sess->knownHostsFile, hostsfile) < 0)
+            goto error;
+    } else {
+        /* libssh does not support trying no known_host file at all:
+         * hence use /dev/null here, without storing it as file */
+        if (ssh_options_set(sess->session, SSH_OPTIONS_KNOWNHOSTS, "/dev/null") < 0)
+            goto error;
+    }
 
     virObjectUnlock(sess);
     return 0;
