@@ -28,4 +28,7 @@
 
 extern virStorageBackend virStorageBackendDisk;
 
+int virStorageBackendDiskValidLabel(const char *device,
+                                    const char *format,
+                                    bool writelabel);
 #endif /* __VIR_STORAGE_BACKEND_DISK_H__ */

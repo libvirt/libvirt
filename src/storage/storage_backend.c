@@ -2851,156 +2851,29 @@ virStorageBackendBLKIDFindEmpty(const char *device ATTRIBUTE_UNUSED,
 #endif /* #if WITH_BLKID */
 
 
-typedef enum {
-    VIR_STORAGE_PARTED_ERROR = -1,
-    VIR_STORAGE_PARTED_MATCH,       /* Valid label found and matches format */
-    VIR_STORAGE_PARTED_DIFFERENT,   /* Valid label found but not match format */
-    VIR_STORAGE_PARTED_UNKNOWN,     /* No or unrecognized label */
-    VIR_STORAGE_PARTED_NOPTTYPE,    /* Did not find the Partition Table type */
-    VIR_STORAGE_PARTED_PTTYPE_UNK,  /* Partition Table type unknown*/
-} virStorageBackendPARTEDResult;
+#if WITH_STORAGE_DISK
 
-/**
- * Check for a valid disk label (partition table) on device using
- * the PARTED command
- *
- * returns virStorageBackendPARTEDResult
- */
-static virStorageBackendPARTEDResult
-virStorageBackendPARTEDFindLabel(const char *device,
-                                 const char *format)
-{
-    const char *const args[] = {
-        device, "print", "--script", NULL,
-    };
-    virCommandPtr cmd = virCommandNew(PARTED);
-    char *output = NULL;
-    char *error = NULL;
-    char *start, *end;
-    int ret = VIR_STORAGE_PARTED_ERROR;
-
-    virCommandAddArgSet(cmd, args);
-    virCommandAddEnvString(cmd, "LC_ALL=C");
-    virCommandSetOutputBuffer(cmd, &output);
-    virCommandSetErrorBuffer(cmd, &error);
-
-    /* if parted succeeds we have a valid partition table */
-    ret = virCommandRun(cmd, NULL);
-    if (ret < 0) {
-        if ((output && strstr(output, "unrecognised disk label")) ||
-            (error && strstr(error, "unrecognised disk label"))) {
-            ret = VIR_STORAGE_PARTED_UNKNOWN;
-        }
-        goto cleanup;
-    }
-
-    /* Search for "Partition Table:" in the output. If not present,
-     * then we cannot validate the partition table type.
-     */
-    if (!(start = strstr(output, "Partition Table: ")) ||
-        !(end = strstr(start, "\n"))) {
-        VIR_DEBUG("Unable to find tag in output: %s", output);
-        ret = VIR_STORAGE_PARTED_NOPTTYPE;
-        goto cleanup;
-    }
-    start += strlen("Partition Table: ");
-    *end = '\0';
-
-    /* on disk it's "msdos", but we document/use "dos" so deal with it here */
-    if (STREQ(start, "msdos"))
-        start += 2;
-
-    /* Make sure we know about this type */
-    if (virStoragePoolFormatDiskTypeFromString(start) < 0) {
-        ret = VIR_STORAGE_PARTED_PTTYPE_UNK;
-        goto cleanup;
-    }
-
-    /*  Does the on disk match what the pool desired? */
-    if (STREQ(start, format))
-        ret = VIR_STORAGE_PARTED_MATCH;
-
-    ret = VIR_STORAGE_PARTED_DIFFERENT;
-
- cleanup:
-    virCommandFree(cmd);
-    VIR_FREE(output);
-    VIR_FREE(error);
-    return ret;
-}
-
-
-/**
- * Determine whether the label on the disk is valid or in a known format
- * for the purpose of rewriting the label during build or being able to
- * start a pool on a device.
- *
- * When 'writelabel' is true, if we find a valid disk label on the device,
- * then we shouldn't be attempting to write as the volume may contain
- * data. Force the usage of the overwrite flag to the build command in
- * order to be certain. When the disk label is unrecognized, then it
- * should be safe to write.
- *
- * When 'writelabel' is false, only if we find a valid disk label on the
- * device should we allow the start since for this path we won't be
- * rewriting the label.
- *
- * Return: 0 if it's OK
- *         -1 if something's wrong
- */
 static int
 virStorageBackendPARTEDValidLabel(const char *device,
                                   const char *format,
                                   bool writelabel)
 {
-    int ret = -1;
-    virStorageBackendPARTEDResult check;
-
-    check = virStorageBackendPARTEDFindLabel(device, format);
-    switch (check) {
-    case VIR_STORAGE_PARTED_ERROR:
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("Error checking for disk label, failed to get "
-                         "disk partition information"));
-        break;
-
-    case VIR_STORAGE_PARTED_MATCH:
-        if (writelabel)
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("Disk label already formatted using '%s'"),
-                           format);
-        else
-            ret = 0;
-        break;
-
-    case VIR_STORAGE_PARTED_DIFFERENT:
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("Known, but different label format present, "
-                         "requires build --overwrite"));
-        break;
-
-    case VIR_STORAGE_PARTED_UNKNOWN:
-        if (writelabel)
-            ret = 0;
-        else
-            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("Unrecognized disk label found, requires build"));
-        break;
-
-    case VIR_STORAGE_PARTED_NOPTTYPE:
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("Unable to determine Partition Type, "
-                         "requires build --overwrite"));
-        break;
-
-    case VIR_STORAGE_PARTED_PTTYPE_UNK:
-        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                       _("Unknown Partition Type, requires build --overwrite"));
-        break;
-    }
-
-    return ret;
+    return virStorageBackendDiskValidLabel(device, format, writelabel);
 }
+
+#else
+
+static int
+virStorageBackendPARTEDValidLabel(const char *device ATTRIBUTE_UNUSED,
+                                  const char *format ATTRIBUTE_UNUSED,
+                                  bool writelabel ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("PARTED is unsupported by this build"));
+    return -1;
+}
+
+#endif /* #if WITH_STORAGE_DISK */
 
 
 /* virStorageBackendDeviceIsEmpty:
