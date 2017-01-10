@@ -479,7 +479,8 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
             if (VIR_EXPAND_N(b_info->u.hvm.usbdevice_list, nusbdevice, 1) < 0)
                 return -1;
 #else
-            if (i > 1) {
+            nusbdevice++;
+            if (nusbdevice > 1) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                         _("libxenlight supports only one input device"));
                 return -1;
@@ -487,7 +488,7 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
 #endif
 
 #ifdef LIBXL_HAVE_BUILDINFO_USBDEVICE_LIST
-            usbdevice = &b_info->u.hvm.usbdevice_list[i];
+            usbdevice = &b_info->u.hvm.usbdevice_list[nusbdevice - 1];
 #else
             usbdevice = &b_info->u.hvm.usbdevice;
 #endif
