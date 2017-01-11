@@ -28,11 +28,6 @@
 # include "lxc_domain.h"
 # include "security/security_manager.h"
 
-enum {
-    LXC_CONTAINER_FEATURE_NET = (1 << 0),
-    LXC_CONTAINER_FEATURE_USER = (1 << 1),
-};
-
 # define LXC_DEV_MAJ_MEMORY  1
 # define LXC_DEV_MIN_NULL    3
 # define LXC_DEV_MIN_ZERO    5
@@ -64,8 +59,6 @@ int lxcContainerStart(virDomainDefPtr def,
                       int *nsInheritFDs,
                       size_t nttyPaths,
                       char **ttyPaths);
-
-int lxcContainerAvailable(int features);
 
 int lxcContainerSetupHostdevCapsMakePath(const char *dev);
 

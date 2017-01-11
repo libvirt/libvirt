@@ -95,5 +95,15 @@ int virProcessSetupPrivateMountNS(void);
 int virProcessSetScheduler(pid_t pid,
                            virProcessSchedPolicy policy,
                            int priority);
+typedef enum {
+    VIR_PROCESS_NAMESPACE_MNT = (1 << 1),
+    VIR_PROCESS_NAMESPACE_IPC = (1 << 2),
+    VIR_PROCESS_NAMESPACE_NET = (1 << 3),
+    VIR_PROCESS_NAMESPACE_PID = (1 << 4),
+    VIR_PROCESS_NAMESPACE_USER = (1 << 5),
+    VIR_PROCESS_NAMESPACE_UTS = (1 << 6),
+} virProcessNamespaceFlags;
+
+int virProcessNamespaceAvailable(unsigned int ns);
 
 #endif /* __VIR_PROCESS_H__ */

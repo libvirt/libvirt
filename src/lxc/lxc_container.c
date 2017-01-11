@@ -27,7 +27,6 @@
 #include <config.h>
 
 #include <fcntl.h>
-#include <sched.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -2265,7 +2264,7 @@ static int lxcContainerChild(void *data)
 
 static int userns_supported(void)
 {
-    return lxcContainerAvailable(LXC_CONTAINER_FEATURE_USER) == 0;
+    return virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_USER) == 0;
 }
 
 static int userns_required(virDomainDefPtr def)
@@ -2397,47 +2396,6 @@ int lxcContainerStart(virDomainDefPtr def,
     }
 
     return pid;
-}
-
-ATTRIBUTE_NORETURN static int
-lxcContainerDummyChild(void *argv ATTRIBUTE_UNUSED)
-{
-    _exit(0);
-}
-
-int lxcContainerAvailable(int features)
-{
-    int flags = CLONE_NEWPID|CLONE_NEWNS|CLONE_NEWUTS|
-        CLONE_NEWIPC|SIGCHLD;
-    int cpid;
-    char *childStack;
-    char *stack;
-    int stacksize = getpagesize() * 4;
-
-    if (features & LXC_CONTAINER_FEATURE_USER)
-        flags |= CLONE_NEWUSER;
-
-    if (features & LXC_CONTAINER_FEATURE_NET)
-        flags |= CLONE_NEWNET;
-
-    if (VIR_ALLOC_N(stack, stacksize) < 0)
-        return -1;
-
-    childStack = stack + stacksize;
-
-    cpid = clone(lxcContainerDummyChild, childStack, flags, NULL);
-    VIR_FREE(stack);
-    if (cpid < 0) {
-        char ebuf[1024] ATTRIBUTE_UNUSED;
-        VIR_DEBUG("clone call returned %s, container support is not enabled",
-                  virStrerror(errno, ebuf, sizeof(ebuf)));
-        return -1;
-    } else if (virProcessWait(cpid, NULL, false) < 0) {
-        return -1;
-    }
-
-    VIR_DEBUG("container support is enabled");
-    return 0;
 }
 
 int lxcContainerChown(virDomainDefPtr def, const char *path)

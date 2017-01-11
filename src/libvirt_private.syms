@@ -2275,6 +2275,7 @@ virProcessGetPids;
 virProcessGetStartTime;
 virProcessKill;
 virProcessKillPainfully;
+virProcessNamespaceAvailable;
 virProcessRunInMountNamespace;
 virProcessSchedPolicyTypeFromString;
 virProcessSchedPolicyTypeToString;

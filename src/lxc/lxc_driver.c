@@ -1575,7 +1575,7 @@ static int lxcCheckNetNsSupport(void)
     if (virRun(argv, &ip_rc) < 0 || ip_rc == 255)
         return 0;
 
-    if (lxcContainerAvailable(LXC_CONTAINER_FEATURE_NET) < 0)
+    if (virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_NET) < 0)
         return 0;
 
     return 1;
@@ -1633,7 +1633,10 @@ static int lxcStateInitialize(bool privileged,
     }
 
     /* Check that this is a container enabled kernel */
-    if (lxcContainerAvailable(0) < 0) {
+    if (virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_MNT |
+                                     VIR_PROCESS_NAMESPACE_PID |
+                                     VIR_PROCESS_NAMESPACE_UTS |
+                                     VIR_PROCESS_NAMESPACE_IPC) < 0) {
         VIR_INFO("LXC support not available in this kernel, disabling driver");
         return 0;
     }
