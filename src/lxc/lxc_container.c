@@ -2262,11 +2262,6 @@ static int lxcContainerChild(void *data)
     return ret;
 }
 
-static int userns_supported(void)
-{
-    return virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_USER) == 0;
-}
-
 static int userns_required(virDomainDefPtr def)
 {
     return def->idmap.uidmap && def->idmap.gidmap;
@@ -2346,15 +2341,14 @@ int lxcContainerStart(virDomainDefPtr def,
     cflags = CLONE_NEWPID|CLONE_NEWNS|SIGCHLD;
 
     if (userns_required(def)) {
-        if (userns_supported()) {
-            VIR_DEBUG("Enable user namespace");
-            cflags |= CLONE_NEWUSER;
-        } else {
+        if (virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_USER) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Kernel doesn't support user namespace"));
             VIR_FREE(stack);
             return -1;
         }
+        VIR_DEBUG("Enable user namespace");
+        cflags |= CLONE_NEWUSER;
     }
     if (!nsInheritFDs || nsInheritFDs[VIR_LXC_DOMAIN_NAMESPACE_SHARENET] == -1) {
         if (lxcNeedNetworkNamespace(def)) {
