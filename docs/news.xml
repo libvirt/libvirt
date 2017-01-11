@@ -162,6 +162,18 @@
           <code>/dev</code>.
         </description>
       </change>
+      <change>
+        <summary>
+          storage: Fix implementation of no-overwrite for file system backend
+        </summary>
+        <description>
+          Fix file system storage backend implementation of the OVERWRITE
+          flags to be consistent between code and documentation. Add checks
+          to ensure that when building a new file system on a target volume
+          that there is not something already on the disk in a format that
+          libvirt can recognize.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v2.5.0" date="2016-12-04">
