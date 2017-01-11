@@ -7275,14 +7275,14 @@ qemuDomainSetupAllInputs(virQEMUDriverPtr driver,
 {
     size_t i;
 
-    VIR_DEBUG("Setting up disks");
+    VIR_DEBUG("Setting up inputs");
     for (i = 0; i < vm->def->ninputs; i++) {
         if (qemuDomainSetupInput(driver,
                                  vm->def->inputs[i],
                                  devPath) < 0)
             return -1;
     }
-    VIR_DEBUG("Setup all disks");
+    VIR_DEBUG("Setup all inputs");
     return 0;
 }
 
