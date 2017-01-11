@@ -63,6 +63,16 @@
           libxl: Implement virDomainGetMaxVcpus API
         </summary>
       </change>
+      <change>
+        <summary>
+          storage: Add overwrite flag checking for logical pool
+        </summary>
+        <description>
+          Add support for the OVERWRITE flags for the logical storage
+          backend including checking for existing data on the target
+          volumes when building a new logical pool on target volume(s).
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
