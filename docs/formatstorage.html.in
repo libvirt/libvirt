@@ -237,6 +237,23 @@
             the scsi_hostN of some existing storage pool.
             <span class="since">Since 1.0.4</span>
           </dd>
+          <dt><code>parent_wwnn</code> and <code>parent_wwpn</code></dt>
+          <dd>Instead of the <code>parent</code> to specify which scsi_host
+            to use by name, it's possible to provide the wwnn and wwpn of
+            the parent to be used for the vHBA in order to ensure that
+            between reboots or after a hardware configuration change that
+            the scsi_host parent name doesn't change. Both the parent_wwnn
+            and parent_wwpn must be provided.
+            <span class="since">Since 3.0.0</span>
+          </dd>
+          <dt><code>parent_fabric_wwn</code></dt>
+          <dd>Instead of the <code>parent</code> to specify which scsi_host
+            to use by name, it's possible to provide the fabric_wwn on which
+            the scsi_host exists. This provides flexibility for choosing
+            a scsi_host that may be available on the fabric rather than
+            requiring a specific parent by wwnn or wwpn to be available.
+            <span class="since">Since 3.0.0</span>
+          </dd>
           <dt><code>managed</code></dt>
           <dd>An optional attribute to instruct the SCSI storage backend to
             manage destroying the vHBA when the pool is destroyed. For
