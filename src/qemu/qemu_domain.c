@@ -6955,28 +6955,38 @@ qemuDomainCreateDevice(const char *device,
                        bool allow_noent)
 {
     char *devicePath = NULL;
+    char *canonDevicePath = NULL;
     struct stat sb;
     int ret = -1;
 
-    if (!STRPREFIX(device, DEVPREFIX)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid device: %s"),
-                       device);
-        goto cleanup;
-    }
-
-    if (virAsprintf(&devicePath, "%s/%s",
-                    path, device + strlen(DEVPREFIX)) < 0)
-        goto cleanup;
-
-    if (stat(device, &sb) < 0) {
+    if (virFileResolveAllLinks(device, &canonDevicePath) < 0) {
         if (errno == ENOENT && allow_noent) {
             /* Ignore non-existent device. */
             ret = 0;
             goto cleanup;
         }
 
-        virReportSystemError(errno, _("Unable to stat %s"), device);
+        virReportError(errno, _("Unable to canonicalize %s"), device);
+        goto cleanup;
+    }
+
+    if (!STRPREFIX(canonDevicePath, DEVPREFIX)) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (virAsprintf(&devicePath, "%s/%s",
+                    path, canonDevicePath + strlen(DEVPREFIX)) < 0)
+        goto cleanup;
+
+    if (stat(canonDevicePath, &sb) < 0) {
+        if (errno == ENOENT && allow_noent) {
+            /* Ignore non-existent device. */
+            ret = 0;
+            goto cleanup;
+        }
+
+        virReportSystemError(errno, _("Unable to stat %s"), canonDevicePath);
         goto cleanup;
     }
 
@@ -7005,7 +7015,7 @@ qemuDomainCreateDevice(const char *device,
         goto cleanup;
     }
 
-    if (virFileCopyACLs(device, devicePath) < 0 &&
+    if (virFileCopyACLs(canonDevicePath, devicePath) < 0 &&
         errno != ENOTSUP) {
         virReportSystemError(errno,
                              _("Failed to copy ACLs on device %s"),
@@ -7015,6 +7025,7 @@ qemuDomainCreateDevice(const char *device,
 
     ret = 0;
  cleanup:
+    VIR_FREE(canonDevicePath);
     VIR_FREE(devicePath);
     return ret;
 }
@@ -7096,8 +7107,7 @@ qemuDomainSetupDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     int ret = -1;
 
     for (next = disk->src; next; next = next->backingStore) {
-        if (!next->path || !virStorageSourceIsLocalStorage(next) ||
-            !STRPREFIX(next->path, DEVPREFIX)) {
+        if (!next->path || !virStorageSourceIsLocalStorage(next)) {
             /* Not creating device. Just continue. */
             continue;
         }
@@ -7717,8 +7727,7 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
         return 0;
 
     for (next = disk->src; next; next = next->backingStore) {
-        if (!next->path || !virStorageSourceIsBlockLocal(disk->src) ||
-            !STRPREFIX(next->path, DEVPREFIX)) {
+        if (!next->path || !virStorageSourceIsBlockLocal(disk->src)) {
             /* Not creating device. Just continue. */
             continue;
         }
