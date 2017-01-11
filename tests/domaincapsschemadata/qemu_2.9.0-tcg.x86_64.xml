@@ -21,7 +21,38 @@
   <cpu>
     <mode name='host-passthrough' supported='no'/>
     <mode name='host-model' supported='yes'>
-      <model fallback='allow'>Broadwell</model>
+      <model fallback='forbid'>Opteron_G4</model>
+      <vendor>AMD</vendor>
+      <feature policy='require' name='acpi'/>
+      <feature policy='require' name='ss'/>
+      <feature policy='require' name='monitor'/>
+      <feature policy='require' name='movbe'/>
+      <feature policy='require' name='hypervisor'/>
+      <feature policy='require' name='arat'/>
+      <feature policy='require' name='fsgsbase'/>
+      <feature policy='require' name='bmi1'/>
+      <feature policy='require' name='smep'/>
+      <feature policy='require' name='bmi2'/>
+      <feature policy='require' name='erms'/>
+      <feature policy='require' name='mpx'/>
+      <feature policy='require' name='adx'/>
+      <feature policy='require' name='smap'/>
+      <feature policy='require' name='clflushopt'/>
+      <feature policy='require' name='pku'/>
+      <feature policy='require' name='ospke'/>
+      <feature policy='require' name='xsaveopt'/>
+      <feature policy='require' name='xgetbv1'/>
+      <feature policy='require' name='mmxext'/>
+      <feature policy='require' name='3dnowext'/>
+      <feature policy='require' name='3dnow'/>
+      <feature policy='require' name='cr8legacy'/>
+      <feature policy='disable' name='pclmuldq'/>
+      <feature policy='disable' name='avx'/>
+      <feature policy='disable' name='lahf_lm'/>
+      <feature policy='disable' name='misalignsse'/>
+      <feature policy='disable' name='3dnowprefetch'/>
+      <feature policy='disable' name='xop'/>
+      <feature policy='disable' name='fma4'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes'>qemu64</model>

@@ -33,6 +33,7 @@
 #include "virprocess.h"
 #include "nodeinfo.h"
 #include "cpu/cpu.h"
+#include "cpu/cpu_x86.h"
 #include "domain_conf.h"
 #include "vircommand.h"
 #include "virbitmap.h"
@@ -3137,6 +3138,80 @@ virQEMUCapsInitCPUModelS390(virQEMUCapsPtr qemuCaps,
  *         -1 on error.
  */
 static int
+virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
+                           virDomainVirtType type,
+                           virCPUDefPtr cpu)
+{
+    qemuMonitorCPUModelInfoPtr model;
+    virCPUDataPtr data = NULL;
+    unsigned long long sigFamily = 0;
+    unsigned long long sigModel = 0;
+    size_t nmodels = 0;
+    char **models = NULL;
+    int ret = -1;
+    size_t i;
+
+    if (type == VIR_DOMAIN_VIRT_KVM)
+        model = qemuCaps->kvmCPUModelInfo;
+    else
+        model = qemuCaps->tcgCPUModelInfo;
+
+    if (!model)
+        return 1;
+
+    if (!(data = virCPUDataNew(VIR_ARCH_X86_64)))
+        goto cleanup;
+
+    for (i = 0; i < model->nprops; i++) {
+        qemuMonitorCPUPropertyPtr prop = model->props + i;
+
+        switch (prop->type) {
+        case QEMU_MONITOR_CPU_PROPERTY_BOOLEAN:
+            if (prop->value.boolean &&
+                virCPUx86DataAddFeature(data, prop->name) < 0)
+                goto cleanup;
+            break;
+
+        case QEMU_MONITOR_CPU_PROPERTY_STRING:
+            if (STREQ(prop->name, "vendor") &&
+                virCPUx86DataSetVendor(data, prop->value.string) < 0)
+                goto cleanup;
+            break;
+
+        case QEMU_MONITOR_CPU_PROPERTY_NUMBER:
+            if (STREQ(prop->name, "family"))
+                sigFamily = prop->value.number;
+            else if (STREQ(prop->name, "model"))
+                sigModel = prop->value.number;
+            break;
+
+        case QEMU_MONITOR_CPU_PROPERTY_LAST:
+            break;
+        }
+    }
+
+    if (virCPUx86DataSetSignature(data, sigFamily, sigModel) < 0)
+        goto cleanup;
+
+    if (virQEMUCapsGetCPUDefinitions(qemuCaps, type, &models, &nmodels) < 0 ||
+        cpuDecode(cpu, data, (const char **) models, nmodels, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virCPUDataFree(data);
+    virStringListFreeCount(models, nmodels);
+    return ret;
+}
+
+
+/**
+ * Returns  0 when host CPU model provided by QEMU was filled in qemuCaps,
+ *          1 when the caller should fall back to using virCapsPtr->host.cpu,
+ *         -1 on error.
+ */
+static int
 virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
                         virDomainVirtType type,
                         virCPUDefPtr cpu)
@@ -3145,6 +3220,8 @@ virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
 
     if (ARCH_IS_S390(qemuCaps->arch))
         ret = virQEMUCapsInitCPUModelS390(qemuCaps, type, cpu);
+    else if (ARCH_IS_X86(qemuCaps->arch))
+        ret = virQEMUCapsInitCPUModelX86(qemuCaps, type, cpu);
 
     if (ret == 0)
         cpu->fallback = VIR_CPU_FALLBACK_FORBID;
