@@ -972,7 +972,8 @@ SECRET_DRIVER_SOURCES =						\
 # Storage backend specific impls
 STORAGE_DRIVER_SOURCES =						\
 		storage/storage_driver.h storage/storage_driver.c	\
-		storage/storage_backend.h storage/storage_backend.c
+		storage/storage_backend.h storage/storage_backend.c \
+		storage/storage_util.h storage/storage_util.c
 
 STORAGE_DRIVER_FS_SOURCES =					\
 		storage/storage_backend_fs.h storage/storage_backend_fs.c

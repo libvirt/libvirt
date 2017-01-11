@@ -39,6 +39,7 @@
 
 #include "virerror.h"
 #include "storage_backend_fs.h"
+#include "storage_util.h"
 #include "storage_conf.h"
 #include "virstoragefile.h"
 #include "vircommand.h"

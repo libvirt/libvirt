@@ -30,6 +30,7 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "storage_backend_disk.h"
+#include "storage_util.h"
 #include "viralloc.h"
 #include "vircommand.h"
 #include "virfile.h"

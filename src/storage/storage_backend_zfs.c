@@ -27,6 +27,7 @@
 #include "storage_backend_zfs.h"
 #include "virlog.h"
 #include "virstring.h"
+#include "storage_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

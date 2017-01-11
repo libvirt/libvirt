@@ -51,6 +51,7 @@
 #include "virstring.h"
 #include "viraccessapicheck.h"
 #include "dirname.h"
+#include "storage_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
