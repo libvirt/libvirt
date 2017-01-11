@@ -4982,12 +4982,6 @@ qemuMonitorJSONParseCPUModelProperty(const char *key,
     size_t n = machine_model->nprops;
     bool supported;
 
-    if (!key) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-cpu-model-expansion reply data is missing a"
-                         " property name"));
-        return -1;
-    }
     if (VIR_STRDUP(machine_model->props[n].name, key) < 0)
         return -1;
 
