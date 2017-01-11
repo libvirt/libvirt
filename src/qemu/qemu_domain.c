@@ -7332,7 +7332,6 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
                          virDomainObjPtr vm)
 {
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
-    const unsigned long mount_flags = MS_MOVE;
     char *devPath = NULL;
     char **devMountsPath = NULL, **devMountsSavePath = NULL;
     size_t ndevMountsPath = 0, i;
@@ -7376,13 +7375,8 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (mount(devMountsPath[i], devMountsSavePath[i],
-                  NULL, mount_flags, NULL) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to move %s mount"),
-                                 devMountsPath[i]);
+        if (virFileMoveMount(devMountsPath[i], devMountsSavePath[i]) < 0)
             goto cleanup;
-        }
     }
 
     if (qemuDomainSetupAllDisks(driver, vm, devPath) < 0)
@@ -7403,12 +7397,8 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
     if (qemuDomainSetupAllRNGs(driver, vm, devPath) < 0)
         goto cleanup;
 
-    if (mount(devPath, "/dev", NULL, mount_flags, NULL) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to mount %s on /dev"),
-                             devPath);
+    if (virFileMoveMount(devPath, "/dev") < 0)
         goto cleanup;
-    }
 
     for (i = 0; i < ndevMountsPath; i++) {
         if (devMountsSavePath[i] == devPath)
@@ -7420,14 +7410,8 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (mount(devMountsSavePath[i], devMountsPath[i],
-                  NULL, mount_flags, NULL) < 0) {
-            virReportSystemError(errno,
-                                 _("Failed to mount %s on %s"),
-                                 devMountsSavePath[i],
-                                 devMountsPath[i]);
+        if (virFileMoveMount(devMountsSavePath[i], devMountsPath[i]) < 0)
             goto cleanup;
-        }
     }
 
     ret = 0;

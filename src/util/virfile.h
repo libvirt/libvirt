@@ -318,6 +318,9 @@ int virFileSetupDev(const char *path,
 int virFileBindMountDevice(const char *src,
                            const char *dst);
 
+int virFileMoveMount(const char *src,
+                     const char *dst);
+
 int virFileGetACLs(const char *file,
                    void **acl);
 

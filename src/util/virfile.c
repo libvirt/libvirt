@@ -3610,6 +3610,24 @@ virFileBindMountDevice(const char *src,
     return 0;
 }
 
+
+int
+virFileMoveMount(const char *src,
+                 const char *dst)
+{
+    const unsigned long mount_flags = MS_MOVE;
+
+    if (mount(src, dst, NULL, mount_flags, NULL) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to move %s mount to %s"),
+                             src, dst);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 #else /* !defined(__linux__) || !defined(HAVE_SYS_MOUNT_H) */
 
 int
@@ -3628,6 +3646,16 @@ virFileBindMountDevice(const char *src ATTRIBUTE_UNUSED,
 {
     virReportSystemError(ENOSYS, "%s",
                          _("mount is not supported on this platform."));
+    return -1;
+}
+
+
+int
+virFileMoveMount(const char *src ATTRIBUTE_UNUSED,
+                 const char *dst ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("mount move is not supported on this platform."));
     return -1;
 }
 #endif /* !defined(__linux__) || !defined(HAVE_SYS_MOUNT_H) */
