@@ -118,6 +118,18 @@
           of units in bytes rather than default of human readable output.
         </description>
       </change>
+      <change>
+        <summary>
+          scsi: Add parent wwnn/wwpn or fabric capability for createVport
+        </summary>
+        <description>
+          Improve the algorithm searching for the parent scsi_host device
+          for vHBA/NPIV scsi_host creation. Rather than supplying the
+          "parent" by name, it's now possible to define the parent by
+          it's wwnn/wwpn or fabric_wwn in the node device create XML or
+          the storage pool XML.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
