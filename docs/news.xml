@@ -96,6 +96,19 @@
           newly-defined guests will now use it automatically
         </description>
       </change>
+      <change>
+        <summary>
+          vbox: remove support for VirtualBox 3.x and older
+        </summary>
+        <description>
+          Those old VirtualBox versions have been unsupported by
+          upstream for a long time and the API of 4.0 and newer has
+          diverged enough to require code abstractions to handle differences.
+          Removing support for those old versions drops lots of code from
+          the driver and simplifies the logic to ease implementation of new
+          features going forward.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
