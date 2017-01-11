@@ -6879,7 +6879,6 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
 }
 
 
-#if defined(__linux__)
 /**
  * qemuDomainGetPreservedMounts:
  *
@@ -7432,11 +7431,19 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
 
-    if (!virBitmapIsBitSet(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT) ||
-        !virQEMUDriverIsPrivileged(driver)) {
+    if (!virBitmapIsBitSet(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT)) {
         ret = 0;
         goto cleanup;
     }
+
+    if (!virQEMUDriverIsPrivileged(driver)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cannot use namespaces in session mode"));
+        goto cleanup;
+    }
+
+    if (virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_MNT) < 0)
+        goto cleanup;
 
     if (qemuDomainEnableNamespace(vm, QEMU_DOMAIN_NS_MOUNT) < 0)
         goto cleanup;
@@ -7446,28 +7453,6 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
     virObjectUnref(cfg);
     return ret;
 }
-
-#else /* !defined(__linux__) */
-
-int
-qemuDomainBuildNamespace(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                         virDomainObjPtr vm ATTRIBUTE_UNUSED)
-{
-    /* Namespaces are Linux specific. On other platforms just
-     * carry on with the old behaviour. */
-    return 0;
-}
-
-
-int
-qemuDomainCreateNamespace(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
-                          virDomainObjPtr vm ATTRIBUTE_UNUSED)
-{
-    /* Namespaces are Linux specific. On other platforms just
-     * carry on with the old behaviour. */
-    return 0;
-}
-#endif /* !defined(__linux__) */
 
 
 struct qemuDomainAttachDeviceMknodData {
