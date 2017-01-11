@@ -14,6 +14,25 @@
     <section title="New features">
       <change>
         <summary>
+          Domain events for metadata content changes
+        </summary>
+        <description>
+          The domain events framework has a new event ID that can
+          be used to get notifications when domain metadata content
+          changes.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Event notifications for the secret object
+        </summary>
+        <description>
+          The secret object now supports event notifications, covering
+          lifcycle changes and secret value changes.
+        </description>
+      </change>
+      <change>
+        <summary>
           New localPtr attribute for "ip" element in network XML
         </summary>
       </change>
@@ -161,6 +180,17 @@
       </change>
     </section>
     <section title="Bug fixes">
+      <change>
+        <summary>
+          lxc: fix accidental killing of containers during libvirtd restart
+        </summary>
+        <description>
+          The libvirt_lxc process was previously not moved into the
+          container scope. As a result, if systemd reloads its config
+          after a container is started, when libvirtd is later restarted
+          it will accidentally kill the containers.
+        </description>
+      </change>
       <change>
         <summary>
           qemu: Correct GetBlockInfo values
