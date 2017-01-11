@@ -184,6 +184,17 @@
           libvirt can recognize.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Create hugepage path on per domain basis
+        </summary>
+        <description>
+          Historically, all hugepage enabled domains shared the same path under
+          hugetlbfs. This left libvirt unable to correctly set security labels
+          on it. With this release, however, each domain is put into a
+          separate path which is also correctly labeled.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v2.5.0" date="2016-12-04">
