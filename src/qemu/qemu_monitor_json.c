@@ -4982,15 +4982,12 @@ qemuMonitorJSONParseCPUModelProperty(const char *key,
     size_t n = machine_model->nprops;
     bool supported;
 
+    if (virJSONValueGetBoolean(value, &supported) < 0)
+        return 0;
+
     if (VIR_STRDUP(machine_model->props[n].name, key) < 0)
         return -1;
 
-    if (virJSONValueGetBoolean(value, &supported) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("query-cpu-model-expansion reply data is missing a"
-                         " feature support value"));
-        return -1;
-    }
     machine_model->props[n].supported = supported;
 
     machine_model->nprops++;
