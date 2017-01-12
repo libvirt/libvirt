@@ -5032,6 +5032,15 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
+    /* Even though query-cpu-model-expansion is advertised by query-commands it
+     * may just return GenericError if it is not implemented for the requested
+     * guest architecture or it is not supported in the host environment.
+     */
+    if (qemuMonitorJSONHasError(reply, "GenericError")) {
+        ret = 0;
+        goto cleanup;
+    }
+
     if (qemuMonitorJSONCheckError(cmd, reply) < 0)
         goto cleanup;
 
