@@ -410,6 +410,12 @@ libxlDomainDefPostParse(virDomainDefPtr def,
     if (xenDomainDefAddImplicitInputDevice(def) < 0)
         return -1;
 
+    /* For x86_64 HVM, always enable pae */
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM &&
+        def->os.arch == VIR_ARCH_X86_64) {
+        def->features[VIR_DOMAIN_FEATURE_PAE] = VIR_TRISTATE_SWITCH_ON;
+    }
+
     return 0;
 }
 

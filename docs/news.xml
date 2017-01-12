@@ -214,6 +214,17 @@
           default to the general working scenario.
         </description>
       </change>
+      <change>
+        <summary>
+          libxl: always enable pae for x86_64 HVM
+        </summary>
+        <description>
+          By default pae is disabled in libxl. Without an explicit &lt;pae/&gt;
+          setting in the domain &lt;features&gt; configuration, an x86_64 HVM
+          domain would be get an i686 environment. pae should always be enabled
+          for x86_64 HVM domains.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v2.5.0" date="2016-12-04">
