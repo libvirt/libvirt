@@ -4975,6 +4975,9 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;model type='virtio'/&gt;
     <b>&lt;backend tap='/dev/net/tun' vhost='/dev/vhost-net'/&gt;</b>
     &lt;driver name='vhost' txmode='iothread' ioeventfd='on' event_idx='off' queues='5'/&gt;
+    <b>&lt;tune&gt;
+      &lt;sndbuf&gt;1600&lt;/sndbuf&gt;
+    &lt;/tune&gt;</b>
   &lt;/interface&gt;
 &lt;/devices&gt;
 ...</pre>
@@ -4985,7 +4988,12 @@ qemu-kvm -net nic,model=? /dev/null
       device path (<code>/dev/vhost-net</code>) for devices with <code>virtio</code> model.
       The <code>tap</code> attribute overrides the tun/tap device path (default:
       <code>/dev/net/tun</code>) for network and bridge interfaces. This does not work
-      in session mode.
+      in session mode. <span class="since">Since 1.2.9</span>
+    </p>
+    <p>
+      For tap devices there is also <code>sndbuf</code> element which can
+      adjust the size of send buffer in the host. <span class="since">Since
+      0.8.8</span>
     </p>
     <h5><a name="elementsNICSTargetOverride">Overriding the target element</a></h5>
 
