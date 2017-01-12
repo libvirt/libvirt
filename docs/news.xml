@@ -195,6 +195,15 @@
           separate path which is also correctly labeled.
         </description>
       </change>
+      <change>
+        <summary>
+          conf: Reject domains with duplicate drive addresses
+        </summary>
+        <description>
+          Reject duplicate drive addresses for disks and hostdevs at
+          domain definition.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v2.5.0" date="2016-12-04">
