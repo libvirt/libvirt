@@ -605,17 +605,8 @@ static int
 virStorageBackendFileSystemStart(virConnectPtr conn ATTRIBUTE_UNUSED,
                                  virStoragePoolObjPtr pool)
 {
-    const char *format =
-        virStoragePoolFormatFileSystemTypeToString(pool->def->source.format);
-    const char *path = pool->def->source.devices[0].path;
-
-    if (pool->def->type == VIR_STORAGE_POOL_DIR)
-        return 0;
-
-    if (!virStorageBackendDeviceIsEmpty(path, format, false))
-        return -1;
-
-    if (virStorageBackendFileSystemMount(pool) < 0)
+    if (pool->def->type != VIR_STORAGE_POOL_DIR &&
+        virStorageBackendFileSystemMount(pool) < 0)
         return -1;
 
     return 0;
