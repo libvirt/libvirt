@@ -743,19 +743,6 @@ static int
 virStorageBackendLogicalStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
                                   virStoragePoolObjPtr pool)
 {
-    size_t i;
-
-    /* Let's make sure the pool's devices are properly formatted */
-    for (i = 0; i < pool->def->source.ndevice; i++) {
-        const char *path = pool->def->source.devices[i].path;
-
-        /* The blkid FS and Part probing code doesn't know "lvm2" (this
-         * pool's only format type), but it does know "LVM2_member", so
-         * we'll pass that here */
-        if (!virStorageBackendDeviceIsEmpty(path, "LVM2_member", false))
-            return -1;
-    }
-
     /* Let's make sure that the pool's name matches the pvs output and
      * that the pool's source devices match the pvs output.
      */
