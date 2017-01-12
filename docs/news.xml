@@ -204,6 +204,16 @@
           domain definition.
         </description>
       </change>
+      <change>
+        <summary>
+          libxl: reverse defaults on HVM net device attach
+        </summary>
+        <description>
+          Fixes network interface attach for HVM domains when no model is
+          specified. Emulated hotplug isn't yet supported and hence we should
+          default to the general working scenario.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v2.5.0" date="2016-12-04">
