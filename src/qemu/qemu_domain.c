@@ -63,6 +63,9 @@
 #if defined(HAVE_SYS_MOUNT_H)
 # include <sys/mount.h>
 #endif
+#ifdef WITH_SELINUX
+# include <selinux/selinux.h>
+#endif
 
 #include <libxml/xpathInternals.h>
 
@@ -6958,6 +6961,9 @@ qemuDomainCreateDevice(const char *device,
     char *canonDevicePath = NULL;
     struct stat sb;
     int ret = -1;
+#ifdef WITH_SELINUX
+    char *tcon = NULL;
+#endif
 
     if (virFileResolveAllLinks(device, &canonDevicePath) < 0) {
         if (errno == ENOENT && allow_noent) {
@@ -7023,10 +7029,35 @@ qemuDomainCreateDevice(const char *device,
         goto cleanup;
     }
 
+#ifdef WITH_SELINUX
+    if (getfilecon_raw(canonDevicePath, &tcon) < 0 &&
+        (errno != ENOTSUP && errno != ENODATA)) {
+        virReportSystemError(errno,
+                             _("Unable to get SELinux label from %s"),
+                             canonDevicePath);
+        goto cleanup;
+    }
+
+    if (tcon &&
+        setfilecon_raw(devicePath, (VIR_SELINUX_CTX_CONST char *) tcon) < 0) {
+        VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
+        if (errno != EOPNOTSUPP && errno != ENOTSUP) {
+        VIR_WARNINGS_RESET
+            virReportSystemError(errno,
+                                 _("Unable to set SELinux label on %s"),
+                                 devicePath);
+            goto cleanup;
+        }
+    }
+#endif
+
     ret = 0;
  cleanup:
     VIR_FREE(canonDevicePath);
     VIR_FREE(devicePath);
+#ifdef WITH_SELINUX
+    freecon(tcon);
+#endif
     return ret;
 }
 
@@ -7472,6 +7503,9 @@ struct qemuDomainAttachDeviceMknodData {
     const char *file;
     struct stat sb;
     void *acl;
+#ifdef WITH_SELINUX
+    char *tcon;
+#endif
 };
 
 
@@ -7514,6 +7548,19 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
                              _("Unable to set ACLs on %s"), data->file);
         goto cleanup;
     }
+
+#ifdef WITH_SELINUX
+    if (setfilecon_raw(data->file, (VIR_SELINUX_CTX_CONST char *) data->tcon) < 0) {
+        VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
+        if (errno != EOPNOTSUPP && errno != ENOTSUP) {
+        VIR_WARNINGS_RESET
+            virReportSystemError(errno,
+                                 _("Unable to set SELinux label on %s"),
+                                 data->file);
+            goto cleanup;
+        }
+    }
+#endif
 
     switch ((virDomainDeviceType) data->devDef->type) {
     case VIR_DOMAIN_DEVICE_DISK: {
@@ -7571,6 +7618,9 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
  cleanup:
     if (ret < 0 && delDevice)
         unlink(data->file);
+#ifdef WITH_SELINUX
+    freecon(data->tcon);
+#endif
     virFileFreeACLs(&data->acl);
     return ret;
 }
@@ -7605,6 +7655,15 @@ qemuDomainAttachDeviceMknod(virQEMUDriverPtr driver,
         return ret;
     }
 
+#ifdef WITH_SELINUX
+    if (getfilecon_raw(file, &data.tcon) < 0 &&
+        (errno != ENOTSUP && errno != ENODATA)) {
+        virReportSystemError(errno,
+                             _("Unable to get SELinux label from %s"), file);
+        goto cleanup;
+    }
+#endif
+
     if (virSecurityManagerPreFork(driver->securityManager) < 0)
         goto cleanup;
 
@@ -7619,8 +7678,11 @@ qemuDomainAttachDeviceMknod(virQEMUDriverPtr driver,
 
     ret = 0;
  cleanup:
+#ifdef WITH_SELINUX
+    freecon(data.tcon);
+#endif
     virFileFreeACLs(&data.acl);
-    return 0;
+    return ret;
 }
 
 
