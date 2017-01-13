@@ -140,6 +140,20 @@
           the storage pool XML.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: aggregate pcie-root-ports onto multiple functions of a slot
+        </summary>
+        <description>
+          When pcie-root-ports are added to pcie-root in order to
+          provide a place to connect PCI Express endpoint devices,
+          libvirt now aggregates multiple root ports together onto the
+          same slot (up to 8 per slot) in order to conserve slots.
+          Using this method, it's possible to connect more than 200
+          endpoint devices to a guest that uses PCIe without requiring
+          setup of any PCIe switches.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
