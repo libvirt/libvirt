@@ -2842,9 +2842,6 @@ virStorageBackendBLKIDFindEmpty(const char *device ATTRIBUTE_UNUSED,
                                 const char *format ATTRIBUTE_UNUSED,
                                 bool writelabel ATTRIBUTE_UNUSED)
 {
-    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                   _("probing for filesystems is unsupported "
-                     "by this build"));
     return -2;
 }
 
@@ -2868,10 +2865,9 @@ virStorageBackendPARTEDValidLabel(const char *device ATTRIBUTE_UNUSED,
                                   const char *format ATTRIBUTE_UNUSED,
                                   bool writelabel ATTRIBUTE_UNUSED)
 {
-    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                   _("PARTED is unsupported by this build"));
-    return -1;
+    return -2;
 }
+
 
 #endif /* #if WITH_STORAGE_DISK */
 
@@ -2885,7 +2881,9 @@ virStorageBackendPARTEDValidLabel(const char *device ATTRIBUTE_UNUSED,
  * BLKID API if available.
  *
  * Returns true if the probe deems the device has nothing valid on it
- * and returns false if the probe finds something
+ * or when we cannot check and we're not writing the label.
+ *
+ * Returns false if the probe finds something
  */
 bool
 virStorageBackendDeviceIsEmpty(const char *devpath,
@@ -2897,6 +2895,16 @@ virStorageBackendDeviceIsEmpty(const char *devpath,
     if ((ret = virStorageBackendBLKIDFindEmpty(devpath, format,
                                                writelabel)) == -2)
         ret = virStorageBackendPARTEDValidLabel(devpath, format, writelabel);
+
+    if (ret == -2 && !writelabel)
+        ret = 0;
+
+    if (ret == -2) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("Unable to probe '%s' for existing data, "
+                         "forced overwrite is necessary"),
+                       devpath);
+    }
 
     return ret == 0;
 }
