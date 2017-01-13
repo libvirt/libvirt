@@ -40,6 +40,10 @@
 
 VIR_LOG_INIT("storage.storage_backend_scsi");
 
+#define LINUX_SYSFS_SCSI_HOST_PREFIX "/sys/class/scsi_host"
+#define LINUX_SYSFS_SCSI_HOST_POSTFIX "device"
+#define LINUX_SYSFS_SCSI_HOST_SCAN_STRING "- - -"
+
 typedef struct _virStoragePoolFCRefreshInfo virStoragePoolFCRefreshInfo;
 typedef virStoragePoolFCRefreshInfo *virStoragePoolFCRefreshInfoPtr;
 struct _virStoragePoolFCRefreshInfo {
