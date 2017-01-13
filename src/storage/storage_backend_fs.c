@@ -1390,6 +1390,7 @@ virStorageBackend virStorageBackendNetFileSystem = {
     .downloadVol = virStorageBackendVolDownloadLocal,
     .wipeVol = virStorageBackendVolWipeLocal,
 };
+#endif /* WITH_STORAGE_FS */
 
 
 typedef struct _virStorageFileBackendFsPriv virStorageFileBackendFsPriv;
@@ -1574,5 +1575,3 @@ virStorageFileBackend virStorageFileBackendDir = {
 
     .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
 };
-
-#endif /* WITH_STORAGE_FS */
