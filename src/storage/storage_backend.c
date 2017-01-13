@@ -2808,10 +2808,17 @@ virStorageBackendBLKIDFindEmpty(const char *device,
         break;
 
     case VIR_STORAGE_BLKID_PROBE_DIFFERENT:
-        virReportError(VIR_ERR_STORAGE_POOL_BUILT,
-                       _("Device '%s' formatted cannot overwrite using '%s', "
-                         "requires build --overwrite"),
-                       device, format);
+        if (writelabel)
+            virReportError(VIR_ERR_STORAGE_POOL_BUILT,
+                           _("Format of device '%s' does not match the "
+                             "expected format '%s', forced overwrite is "
+                             "necessary"),
+                           device, format);
+        else
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("Format of device '%s' does not match the "
+                             "expected format '%s'"),
+                           device, format);
         break;
     }
 
