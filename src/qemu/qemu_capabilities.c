@@ -3540,6 +3540,27 @@ virQEMUCapsLoadCache(virCapsPtr caps,
 
 
 static void
+virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
+                                  virBufferPtr buf)
+{
+    qemuMonitorCPUModelInfoPtr model = qemuCaps->hostCPUModelInfo;
+    size_t i;
+
+    virBufferAsprintf(buf, "<hostCPU model='%s'>\n", model->name);
+    virBufferAdjustIndent(buf, 2);
+
+    for (i = 0; i < model->nprops; i++) {
+        virBufferAsprintf(buf, "<feature name='%s' supported='%s'/>\n",
+                          model->props[i].name,
+                          model->props[i].supported ? "yes" : "no");
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</hostCPU>\n");
+}
+
+
+static void
 virQEMUCapsFormatCPUModels(virQEMUCapsPtr qemuCaps,
                            virBufferPtr buf,
                            virDomainVirtType type)
@@ -3615,19 +3636,8 @@ virQEMUCapsFormatCache(virQEMUCapsPtr qemuCaps,
     virBufferAsprintf(&buf, "<arch>%s</arch>\n",
                       virArchToString(qemuCaps->arch));
 
-    if (qemuCaps->hostCPUModelInfo) {
-        virBufferAsprintf(&buf, "<hostCPU model='%s'>\n",
-                          qemuCaps->hostCPUModelInfo->name);
-        virBufferAdjustIndent(&buf, 2);
-        for (i = 0; i < qemuCaps->hostCPUModelInfo->nprops; i++) {
-            virBufferAsprintf(&buf, "<feature name='%s' supported='%s'/>\n",
-                              qemuCaps->hostCPUModelInfo->props[i].name,
-                              qemuCaps->hostCPUModelInfo->props[i].supported ?
-                              "yes" : "no");
-        }
-        virBufferAdjustIndent(&buf, -2);
-        virBufferAddLit(&buf, "</hostCPU>\n");
-    }
+    if (qemuCaps->hostCPUModelInfo)
+        virQEMUCapsFormatHostCPUModelInfo(qemuCaps, &buf);
 
     virQEMUCapsFormatCPUModels(qemuCaps, &buf, VIR_DOMAIN_VIRT_KVM);
     virQEMUCapsFormatCPUModels(qemuCaps, &buf, VIR_DOMAIN_VIRT_QEMU);
