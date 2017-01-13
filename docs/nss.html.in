@@ -72,34 +72,34 @@ hosts:       files libvirt dns
     records. Therefore this is dependent on hostname provided by guests. Thing
     is, not all the guests out there provide one in DHCP transactions, or not
     every sysadmin out there believes all the guests. Hence libvirt implements
-    second method in <code>libvirt-guest</code> module which does libvirt guest
+    second method in <code>libvirt_guest</code> module which does libvirt guest
     name to IP address translation (regardless of hostname set in the guest).
     </p>
 
     <p>
     To enable either of the modules put their name into the
     <code>nsswitch.conf</code> file. For instance, to enable
-    <code>libvirt-guest</code> module:
+    <code>libvirt_guest</code> module:
     </p>
 
 <pre>
 $ cat /etc/nsswitch.conf
 # /etc/nsswitch.conf:
-hosts:       files libvirt-guest dns
+hosts:       files libvirt_guest dns
 # ...
 </pre>
     <p>Or users can enable both at the same time:</p>
 <pre>
 $ cat /etc/nsswitch.conf
 # /etc/nsswitch.conf:
-hosts:       files libvirt libvirt-guest dns
+hosts:       files libvirt libvirt_guest dns
 # ...
 </pre>
 
     <p>
     This configuration will mean that if hostname is not found by the
     <code>libvirt</code> module (e.g. because a guest did not sent hostname
-    during DHCP transaction), the <code>libvirt-guest</code> module is
+    during DHCP transaction), the <code>libvirt_guest</code> module is
     consulted (and if the hostname matches libvirt guest name it will be
     resolved).
     </p>
@@ -181,7 +181,7 @@ virsh domifaddr --source lease $domain
     <p>
     If there's no record for either of the aforementioned commands, it's
     very likely that NSS module won't find anything and vice versa.
-    As of <code>v3.0.0</code> libvirt provides <code>libvirt-guest</code> NSS
+    As of <code>v3.0.0</code> libvirt provides <code>libvirt_guest</code> NSS
     module that doesn't have this limitation. However, the statement is still
     true for the <code>libvirt</code> NSS module.
     </p>

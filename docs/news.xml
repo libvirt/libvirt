@@ -29,10 +29,10 @@
       </change>
       <change>
         <summary>
-          nss: Introduce <code>libvirt-guest</code>
+          nss: Introduce <code>libvirt_guest</code>
         </summary>
         <description>
-          New <code>libvirt-guest</code> nss module that translates libvirt
+          New <code>libvirt_guest</code> nss module that translates libvirt
           guest names into IP addresses.
         </description>
       </change>
