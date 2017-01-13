@@ -884,3 +884,30 @@ virStorageFileBackend virStorageFileBackendDir = {
 
     .storageFileGetUniqueIdentifier = virStorageFileBackendFileGetUniqueIdentifier,
 };
+
+
+int
+virStorageBackendFsRegister(void)
+{
+    if (virStorageBackendRegister(&virStorageBackendDirectory) < 0)
+        return -1;
+
+#if WITH_STORAGE_FS
+    if (virStorageBackendRegister(&virStorageBackendFileSystem) < 0)
+        return -1;
+
+    if (virStorageBackendRegister(&virStorageBackendNetFileSystem) < 0)
+        return -1;
+#endif /* WITH_STORAGE_FS */
+
+    if (virStorageBackendFileRegister(&virStorageFileBackendFile) < 0)
+        return -1;
+
+    if (virStorageBackendFileRegister(&virStorageFileBackendBlock) < 0)
+        return -1;
+
+    if (virStorageBackendFileRegister(&virStorageFileBackendDir) < 0)
+        return -1;
+
+    return 0;
+}

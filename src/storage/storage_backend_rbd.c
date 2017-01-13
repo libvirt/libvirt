@@ -1294,3 +1294,10 @@ virStorageBackend virStorageBackendRBD = {
     .resizeVol = virStorageBackendRBDResizeVol,
     .wipeVol = virStorageBackendRBDVolWipe
 };
+
+
+int
+virStorageBackendRBDRegister(void)
+{
+    return virStorageBackendRegister(&virStorageBackendRBD);
+}

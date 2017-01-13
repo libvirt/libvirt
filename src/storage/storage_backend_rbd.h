@@ -23,8 +23,6 @@
 #ifndef __VIR_STORAGE_BACKEND_RBD_H__
 # define __VIR_STORAGE_BACKEND_RBD_H__
 
-# include "storage_backend.h"
-
-extern virStorageBackend virStorageBackendRBD;
+int virStorageBackendRBDRegister(void);
 
 #endif /* __VIR_STORAGE_BACKEND_RBD_H__ */

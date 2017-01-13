@@ -32,6 +32,7 @@
 #include "virerror.h"
 #include "storage_conf.h"
 #include "storage_backend.h"
+#include "storage_backend_mpath.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virfile.h"
@@ -278,3 +279,10 @@ virStorageBackend virStorageBackendMpath = {
     .downloadVol = virStorageBackendVolDownloadLocal,
     .wipeVol = virStorageBackendVolWipeLocal,
 };
+
+
+int
+virStorageBackendMpathRegister(void)
+{
+    return virStorageBackendRegister(&virStorageBackendMpath);
+}

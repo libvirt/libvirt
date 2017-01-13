@@ -437,3 +437,10 @@ virStorageBackend virStorageBackendISCSI = {
     .downloadVol = virStorageBackendVolDownloadLocal,
     .wipeVol = virStorageBackendVolWipeLocal,
 };
+
+
+int
+virStorageBackendISCSIRegister(void)
+{
+    return virStorageBackendRegister(&virStorageBackendISCSI);
+}

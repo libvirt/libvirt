@@ -24,8 +24,6 @@
 #ifndef __VIR_STORAGE_BACKEND_LOGICAL_H__
 # define __VIR_STORAGE_BACKEND_LOGICAL_H__
 
-# include "storage_backend.h"
-
-extern virStorageBackend virStorageBackendLogical;
+int virStorageBackendLogicalRegister(void);
 
 #endif /* __VIR_STORAGE_BACKEND_LOGICAL_H__ */

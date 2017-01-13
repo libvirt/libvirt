@@ -417,3 +417,10 @@ virStorageBackend virStorageBackendSheepdog = {
     .deleteVol = virStorageBackendSheepdogDeleteVol,
     .resizeVol = virStorageBackendSheepdogResizeVol,
 };
+
+
+int
+virStorageBackendSheepdogRegister(void)
+{
+    return virStorageBackendRegister(&virStorageBackendSheepdog);
+}

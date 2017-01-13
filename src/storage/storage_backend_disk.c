@@ -937,3 +937,10 @@ virStorageBackend virStorageBackendDisk = {
     .downloadVol = virStorageBackendVolDownloadLocal,
     .wipeVol = virStorageBackendDiskVolWipe,
 };
+
+
+int
+virStorageBackendDiskRegister(void)
+{
+    return virStorageBackendRegister(&virStorageBackendDisk);
+}

@@ -198,4 +198,9 @@ struct _virStorageFileBackend {
     virStorageFileBackendChown  storageFileChown;
 };
 
+int virStorageBackendDriversRegister(void);
+
+int virStorageBackendRegister(virStorageBackendPtr backend);
+int virStorageBackendFileRegister(virStorageFileBackendPtr backend);
+
 #endif /* __VIR_STORAGE_BACKEND_H__ */

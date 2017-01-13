@@ -2840,6 +2840,8 @@ static virStateDriver stateDriver = {
 
 int storageRegister(void)
 {
+    if (virStorageBackendDriversRegister() < 0)
+        return -1;
     if (virSetSharedStorageDriver(&storageDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&stateDriver) < 0)

@@ -24,8 +24,6 @@
 #ifndef __VIR_STORAGE_BACKEND_ISCSI_H__
 # define __VIR_STORAGE_BACKEND_ISCSI_H__
 
-# include "storage_backend.h"
-
-extern virStorageBackend virStorageBackendISCSI;
+int virStorageBackendISCSIRegister(void);
 
 #endif /* __VIR_STORAGE_BACKEND_ISCSI_H__ */

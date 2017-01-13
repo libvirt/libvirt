@@ -72,67 +72,106 @@
 
 VIR_LOG_INIT("storage.storage_backend");
 
-static virStorageBackendPtr backends[] = {
-#if WITH_STORAGE_DIR
-    &virStorageBackendDirectory,
-#endif
-#if WITH_STORAGE_FS
-    &virStorageBackendFileSystem,
-    &virStorageBackendNetFileSystem,
+#define VIR_STORAGE_BACKENDS_MAX 20
+
+static virStorageBackendPtr virStorageBackends[VIR_STORAGE_BACKENDS_MAX];
+static size_t virStorageBackendsCount;
+static virStorageFileBackendPtr virStorageFileBackends[VIR_STORAGE_BACKENDS_MAX];
+static size_t virStorageFileBackendsCount;
+
+#define VIR_STORAGE_BACKEND_REGISTER(name)                                     \
+    if (name() < 0)                                                            \
+        return -1
+
+int
+virStorageBackendDriversRegister(void)
+{
+#if WITH_STORAGE_DIR || WITH_STORAGE_FS
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendFsRegister);
 #endif
 #if WITH_STORAGE_LVM
-    &virStorageBackendLogical,
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendLogicalRegister);
 #endif
 #if WITH_STORAGE_ISCSI
-    &virStorageBackendISCSI,
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendISCSIRegister);
 #endif
 #if WITH_STORAGE_SCSI
-    &virStorageBackendSCSI,
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendSCSIRegister);
 #endif
 #if WITH_STORAGE_MPATH
-    &virStorageBackendMpath,
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendMpathRegister);
 #endif
 #if WITH_STORAGE_DISK
-    &virStorageBackendDisk,
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendDiskRegister);
 #endif
 #if WITH_STORAGE_RBD
-    &virStorageBackendRBD,
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendRBDRegister);
 #endif
 #if WITH_STORAGE_SHEEPDOG
-    &virStorageBackendSheepdog,
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendSheepdogRegister);
 #endif
 #if WITH_STORAGE_GLUSTER
-    &virStorageBackendGluster,
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendGlusterRegister);
 #endif
 #if WITH_STORAGE_ZFS
-    &virStorageBackendZFS,
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendZFSRegister);
 #endif
 #if WITH_STORAGE_VSTORAGE
-    &virStorageBackendVstorage,
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendVstorageRegister);
 #endif
-    NULL
-};
+
+    return 0;
+}
+#undef VIR_STORAGE_BACKEND_REGISTER
 
 
-static virStorageFileBackendPtr fileBackends[] = {
-#if WITH_STORAGE_FS
-    &virStorageFileBackendFile,
-    &virStorageFileBackendBlock,
-#endif
-#if WITH_STORAGE_GLUSTER
-    &virStorageFileBackendGluster,
-#endif
-    NULL
-};
+int
+virStorageBackendRegister(virStorageBackendPtr backend)
+{
+    VIR_DEBUG("Registering storage backend '%s'",
+              virStorageTypeToString(backend->type));
+
+    if (virStorageBackendsCount >= VIR_STORAGE_BACKENDS_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Too many drivers, cannot register storage backend '%s'"),
+                       virStorageTypeToString(backend->type));
+        return -1;
+    }
+
+    virStorageBackends[virStorageBackendsCount] = backend;
+    virStorageBackendsCount++;
+    return 0;
+}
+
+
+int
+virStorageBackendFileRegister(virStorageFileBackendPtr backend)
+{
+    VIR_DEBUG("Registering storage file backend '%s' protocol '%s'",
+              virStorageTypeToString(backend->type),
+              virStorageNetProtocolTypeToString(backend->protocol));
+
+    if (virStorageFileBackendsCount >= VIR_STORAGE_BACKENDS_MAX) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Too many drivers, cannot register storage file "
+                         "backend '%s'"),
+                       virStorageTypeToString(backend->type));
+        return -1;
+    }
+
+    virStorageFileBackends[virStorageFileBackendsCount] = backend;
+    virStorageFileBackendsCount++;
+    return 0;
+}
 
 
 virStorageBackendPtr
 virStorageBackendForType(int type)
 {
     size_t i;
-    for (i = 0; backends[i]; i++)
-        if (backends[i]->type == type)
-            return backends[i];
+    for (i = 0; i < virStorageBackendsCount; i++)
+        if (virStorageBackends[i]->type == type)
+            return virStorageBackends[i];
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("missing backend for pool type %d (%s)"),
@@ -148,13 +187,13 @@ virStorageFileBackendForTypeInternal(int type,
 {
     size_t i;
 
-    for (i = 0; fileBackends[i]; i++) {
-        if (fileBackends[i]->type == type) {
+    for (i = 0; i < virStorageFileBackendsCount; i++) {
+        if (virStorageFileBackends[i]->type == type) {
             if (type == VIR_STORAGE_TYPE_NETWORK &&
-                fileBackends[i]->protocol != protocol)
+                virStorageFileBackends[i]->protocol != protocol)
                 continue;
 
-            return fileBackends[i];
+            return virStorageFileBackends[i];
         }
     }
 

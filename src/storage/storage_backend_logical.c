@@ -1112,3 +1112,10 @@ virStorageBackend virStorageBackendLogical = {
     .downloadVol = virStorageBackendVolDownloadLocal,
     .wipeVol = virStorageBackendLogicalVolWipe,
 };
+
+
+int
+virStorageBackendLogicalRegister(void)
+{
+    return virStorageBackendRegister(&virStorageBackendLogical);
+}

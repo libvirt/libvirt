@@ -24,15 +24,6 @@
 #ifndef __VIR_STORAGE_BACKEND_FS_H__
 # define __VIR_STORAGE_BACKEND_FS_H__
 
-# include "storage_backend.h"
+int virStorageBackendFsRegister(void);
 
-# if WITH_STORAGE_FS
-extern virStorageBackend virStorageBackendFileSystem;
-extern virStorageBackend virStorageBackendNetFileSystem;
-# endif
-
-extern virStorageBackend virStorageBackendDirectory;
-
-extern virStorageFileBackend virStorageFileBackendFile;
-extern virStorageFileBackend virStorageFileBackendBlock;
 #endif /* __VIR_STORAGE_BACKEND_FS_H__ */

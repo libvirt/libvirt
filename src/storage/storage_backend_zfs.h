@@ -22,8 +22,6 @@
 #ifndef __VIR_STORAGE_BACKEND_ZFS_H__
 # define __VIR_STORAGE_BACKEND_ZFS_H__
 
-# include "storage_backend.h"
-
-extern virStorageBackend virStorageBackendZFS;
+int virStorageBackendZFSRegister(void);
 
 #endif /* __VIR_STORAGE_BACKEND_ZFS_H__ */

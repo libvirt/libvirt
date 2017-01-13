@@ -843,6 +843,17 @@ virStorageFileBackend virStorageFileBackendGluster = {
     .storageFileChown = virStorageFileBackendGlusterChown,
 
     .storageFileGetUniqueIdentifier = virStorageFileBackendGlusterGetUniqueIdentifier,
-
-
 };
+
+
+int
+virStorageBackendGlusterRegister(void)
+{
+    if (virStorageBackendRegister(&virStorageBackendGluster) < 0)
+        return -1;
+
+    if (virStorageBackendFileRegister(&virStorageFileBackendGluster) < 0)
+        return -1;
+
+    return 0;
+}

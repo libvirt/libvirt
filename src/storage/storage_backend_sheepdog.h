@@ -27,8 +27,6 @@
 #ifndef __VIR_STORAGE_BACKEND_SHEEPDOG_H__
 # define __VIR_STORAGE_BACKEND_SHEEPDOG_H__
 
-# include "storage_backend.h"
-
-extern virStorageBackend virStorageBackendSheepdog;
+int virStorageBackendSheepdogRegister(void);
 
 #endif /* __VIR_STORAGE_BACKEND_SHEEPDOG_H__ */

@@ -24,8 +24,6 @@
 #ifndef __VIR_STORAGE_BACKEND_DISK_H__
 # define __VIR_STORAGE_BACKEND_DISK_H__
 
-# include "storage_backend.h"
-
-extern virStorageBackend virStorageBackendDisk;
+int virStorageBackendDiskRegister(void);
 
 #endif /* __VIR_STORAGE_BACKEND_DISK_H__ */

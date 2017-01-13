@@ -467,3 +467,10 @@ virStorageBackend virStorageBackendZFS = {
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
 };
+
+
+int
+virStorageBackendZFSRegister(void)
+{
+    return virStorageBackendRegister(&virStorageBackendZFS);
+}

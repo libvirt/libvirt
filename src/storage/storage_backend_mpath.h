@@ -24,8 +24,6 @@
 #ifndef __VIR_STORAGE_BACKEND_MPATH_H__
 # define __VIR_STORAGE_BACKEND_MPATH_H__
 
-# include "storage_backend.h"
-
-extern virStorageBackend virStorageBackendMpath;
+int virStorageBackendMpathRegister(void);
 
 #endif /* __VIR_STORAGE_BACKEND_MPATH_H__ */

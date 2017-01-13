@@ -183,3 +183,10 @@ virStorageBackend virStorageBackendVstorage = {
     .downloadVol = virStorageBackendVolDownloadLocal,
     .wipeVol = virStorageBackendVolWipeLocal,
 };
+
+
+int
+virStorageBackendVstorageRegister(void)
+{
+    return virStorageBackendRegister(&virStorageBackendVstorage);
+}
