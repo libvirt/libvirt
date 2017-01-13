@@ -73,6 +73,11 @@
           volumes when building a new logical pool on target volume(s).
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for guest CPU configuration on s390(x)
+        </summary>
+      </change>
     </section>
     <section title="Improvements">
       <change>
