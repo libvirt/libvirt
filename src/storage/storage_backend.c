@@ -2777,10 +2777,6 @@ virStorageBackendBLKIDFindEmpty(const char *device,
         rc == VIR_STORAGE_BLKID_PROBE_UNKNOWN) {
 
         rc = virStorageBackendBLKIDFindPart(probe, device, format);
-        if (rc == VIR_STORAGE_BLKID_PROBE_UNKNOWN) {
-            ret = -2;
-            goto cleanup;
-        }
     }
 
     switch (rc) {
@@ -2799,10 +2795,7 @@ virStorageBackendBLKIDFindEmpty(const char *device,
         break;
 
     case VIR_STORAGE_BLKID_PROBE_UNKNOWN:
-        virReportError(VIR_ERR_STORAGE_PROBE_FAILED,
-                       _("Not capable of probing for format type '%s', "
-                         "requires build --overwrite"),
-                       format);
+        ret = -2;
         break;
 
     case VIR_STORAGE_BLKID_PROBE_MATCH:
@@ -2829,7 +2822,6 @@ virStorageBackendBLKIDFindEmpty(const char *device,
         ret = -1;
     }
 
- cleanup:
     blkid_free_probe(probe);
 
     return ret;
