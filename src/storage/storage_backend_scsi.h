@@ -32,8 +32,4 @@
 
 extern virStorageBackend virStorageBackendSCSI;
 
-int
-virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
-                             uint32_t scanhost);
-
 #endif /* __VIR_STORAGE_BACKEND_SCSI_H__ */

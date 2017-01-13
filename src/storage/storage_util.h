@@ -146,4 +146,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virConnectPtr conn,
                                          int imgformat,
                                          const char *secretPath);
 
+int virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
+                                 uint32_t scanhost);
+
 #endif /* __VIR_STORAGE_UTIL_H__ */

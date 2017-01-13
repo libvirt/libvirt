@@ -32,7 +32,6 @@
 
 #include "datatypes.h"
 #include "driver.h"
-#include "storage_backend_scsi.h"
 #include "storage_backend_iscsi.h"
 #include "viralloc.h"
 #include "vircommand.h"
