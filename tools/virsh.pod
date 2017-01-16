@@ -945,8 +945,7 @@ I<--perf> returns the statistics of all enabled perf events:
 "perf.bus_cycles" - the count of bus cycles,
 "perf.stalled_cycles_frontend" - the count of stalled frontend cpu cycles,
 "perf.stalled_cycles_backend" - the count of stalled backend cpu cycles,
-"perf.ref_cpu_cycles" - the count of ref cpu cycles,
-"perf.cache_l1d" - the count of level 1 data cache
+"perf.ref_cpu_cycles" - the count of ref cpu cycles
 
 See the B<perf> command for more details about each event.
 
@@ -2311,8 +2310,6 @@ B<Valid perf event names>
   ref_cpu_cycles   -  Provides the count of total cpu cycles
                       not affected by CPU frequency scaling by
                       applications running on the platform.
-  cache_l1d - Provides the count of total level 1 data cache
-              by applications running on the platform.
 
 B<Note>: The statistics can be retrieved using the B<domstats> command using
 the I<--perf> flag.

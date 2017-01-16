@@ -1937,7 +1937,6 @@
   &lt;event name='stalled_cycles_frontend' enabled='no'/&gt;
   &lt;event name='stalled_cycles_backend' enabled='no'/&gt;
   &lt;event name='ref_cpu_cycles' enabled='no'/&gt;
-  &lt;event name='cache_l1d' enabled='no'/&gt;
 &lt;/perf&gt;
 ...
 </pre>
@@ -2015,12 +2014,6 @@
       <td>the count of total cpu cycles not affected by CPU frequency scaling
          by applications running on the platform</td>
       <td><code>perf.ref_cpu_cycles</code></td>
-    </tr>
-    <tr>
-      <td><code>cache_l1d</code></td>
-      <td>the count of total level 1 data cache by applications running on
-           the platform</td>
-      <td><code>perf.cache_l1d</code></td>
     </tr>
   </table>
 

@@ -47,7 +47,6 @@ typedef enum {
                                               the backend of the instruction
                                               processor pipeline */
     VIR_PERF_EVENT_REF_CPU_CYCLES,   /* Count of ref cpu cycles */
-    VIR_PERF_EVENT_CACHE_L1D, /* Count of level 1 data cache*/
 
     VIR_PERF_EVENT_LAST
 } virPerfEventType;

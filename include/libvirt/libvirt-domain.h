@@ -2188,17 +2188,6 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_REF_CPU_CYCLES "ref_cpu_cycles"
 
-/**
- * VIR_PERF_PARAM_CACHE_L1D:
- *
- * Macro for typed parameter name that represents cache_l1d
- * perf event which can be used to measure the count of total
- * level 1 data cache by applications running on the platform.
- * It corresponds to the "perf.cache_l1d" field in the
- * *Stats APIs.
- */
-# define VIR_PERF_PARAM_CACHE_L1D "cache_l1d"
-
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
                            int *nparams,
