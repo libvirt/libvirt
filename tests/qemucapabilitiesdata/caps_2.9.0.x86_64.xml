@@ -202,6 +202,7 @@
   <flag name='drive-iotune-group'/>
   <flag name='query-cpu-model-expansion'/>
   <flag name='virtio-net.host_mtu'/>
+  <flag name='pcie-root-port'/>
   <version>2008050</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.8.0-1961-g5b10b94bd5)</package>

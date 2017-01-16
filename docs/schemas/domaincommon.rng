@@ -1904,6 +1904,7 @@
                     <value>i82801b11-bridge</value>
                     <!-- implementations of 'pcie-root-port' -->
                     <value>ioh3420</value>
+                    <value>pcie-root-port</value>
                     <!-- implementations of 'pcie-switch-upstream-port' -->
                     <value>x3130-upstream</value>
                     <!-- implementations of 'pcie-switch-downstream-port' -->

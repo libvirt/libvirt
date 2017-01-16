@@ -2874,17 +2874,29 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                                def->opts.pciopts.modelName);
                 goto error;
             }
-            if (def->opts.pciopts.modelName
-                != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_IOH3420) {
+            if ((def->opts.pciopts.modelName !=
+                 VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_IOH3420) &&
+                (def->opts.pciopts.modelName !=
+                 VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_ROOT_PORT)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("PCI controller model name '%s' "
                                  "is not valid for a pcie-root-port"),
                                modelName);
                 goto error;
             }
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IOH3420)) {
+            if ((def->opts.pciopts.modelName ==
+                 VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_IOH3420) &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_IOH3420)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("the pcie-root-port (ioh3420) "
+                                 "controller is not supported in this QEMU binary"));
+                goto error;
+            }
+            if ((def->opts.pciopts.modelName ==
+                 VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_PCIE_ROOT_PORT) &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCIE_ROOT_PORT)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("the pcie-root-port (pcie-root-port) "
                                  "controller is not supported in this QEMU binary"));
                 goto error;
             }

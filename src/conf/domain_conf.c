@@ -338,7 +338,9 @@ VIR_ENUM_IMPL(virDomainControllerPCIModelName,
               "x3130-upstream",
               "xio3130-downstream",
               "pxb",
-              "pxb-pcie")
+              "pxb-pcie",
+              "pcie-root-port",
+);
 
 VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
               "auto",
