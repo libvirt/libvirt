@@ -1,9 +1,5 @@
 /*
- * storage_backend_sheepdog.h: storage backend for Sheepdog handling
- *
- * Copyright (C) 2012 Wido den Hollander
- * Copyright (C) 2012 Frank Spijkerman
- * Copyright (C) 2012 Sebastian Wiedenroth
+ * storage_backend_sheepdog_priv.h: header for functions necessary in tests
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,17 +14,16 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see
  * <http://www.gnu.org/licenses/>.
- *
- * Author: Wido den Hollander <wido@widodh.nl>
- *         Frank Spijkerman <frank.spijkerman@avira.com>
- *         Sebastian Wiedenroth <sebastian.wiedenroth@skylime.net>
  */
 
-#ifndef __VIR_STORAGE_BACKEND_SHEEPDOG_H__
-# define __VIR_STORAGE_BACKEND_SHEEPDOG_H__
+#ifndef __VIR_STORAGE_BACKEND_SHEEPDOG_PRIV_H__
+# define __VIR_STORAGE_BACKEND_SHEEPDOG_PRIV_H__
 
-# include "storage_backend.h"
+# include "conf/storage_conf.h"
 
-extern virStorageBackend virStorageBackendSheepdog;
+int virStorageBackendSheepdogParseNodeInfo(virStoragePoolDefPtr pool,
+                                           char *output);
+int virStorageBackendSheepdogParseVdiList(virStorageVolDefPtr vol,
+                                          char *output);
 
-#endif /* __VIR_STORAGE_BACKEND_SHEEPDOG_H__ */
+#endif /* __VIR_STORAGE_BACKEND_SHEEPDOG_PRIV_H__ */

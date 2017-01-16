@@ -998,7 +998,8 @@ STORAGE_DRIVER_RBD_SOURCES =					\
 		storage/storage_backend_rbd.h storage/storage_backend_rbd.c
 
 STORAGE_DRIVER_SHEEPDOG_SOURCES =				\
-		storage/storage_backend_sheepdog.h storage/storage_backend_sheepdog.c
+		storage/storage_backend_sheepdog.h storage/storage_backend_sheepdog.c \
+		storage/storage_backend_sheepdog_priv.h
 
 STORAGE_DRIVER_GLUSTER_SOURCES =				\
 		storage/storage_backend_gluster.h storage/storage_backend_gluster.c

@@ -29,6 +29,7 @@
 
 #include "virerror.h"
 #include "storage_backend_sheepdog.h"
+#include "storage_backend_sheepdog_priv.h"
 #include "storage_conf.h"
 #include "vircommand.h"
 #include "viralloc.h"

@@ -32,7 +32,7 @@
 
 #include "internal.h"
 #include "testutils.h"
-#include "storage/storage_backend_sheepdog.h"
+#include "storage/storage_backend_sheepdog_priv.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
