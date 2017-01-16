@@ -254,7 +254,7 @@
                 number of vport in use. <code>max_vports</code> shows the
                 maximum vports the HBA supports. "fc_host" implies following
                 sub-elements: <code>wwnn</code>, <code>wwpn</code>, and
-                <code>fabric_wwn</code>.
+                optionally <code>fabric_wwn</code>.
               </dd>
             </dl>
           </dd>

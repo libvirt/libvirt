@@ -18,7 +18,18 @@
       <change/>
     </section>
     <section title="Bug fixes">
-      <change/>
+      <change>
+        <summary>
+          nodedev: Fabric name must not be required for fc_host capability
+        </summary>
+        <description>
+          fabric_name is one of many fc_host attributes in Linux that is
+          optional and left to the low-level driver to decide if it is
+          implemented. For example the zfcp device driver does not provide a
+          fabric name for an fcp host. The requirement for the existence of
+          a fabric name has been removed by making it optional.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.0.0" date="2017-01-17">

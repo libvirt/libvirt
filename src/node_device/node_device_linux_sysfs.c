@@ -72,13 +72,10 @@ nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapDataPtr d)
         VIR_FREE(d->scsi_host.wwnn);
         VIR_STEAL_PTR(d->scsi_host.wwnn, tmp);
 
-        if (!(tmp = virReadFCHost(NULL, d->scsi_host.host, "fabric_name"))) {
-            VIR_WARN("Failed to read fabric WWN for host%d",
-                     d->scsi_host.host);
-            goto cleanup;
+        if ((tmp = virReadFCHost(NULL, d->scsi_host.host, "fabric_name"))) {
+            VIR_FREE(d->scsi_host.fabric_wwn);
+            VIR_STEAL_PTR(d->scsi_host.fabric_wwn, tmp);
         }
-        VIR_FREE(d->scsi_host.fabric_wwn);
-        VIR_STEAL_PTR(d->scsi_host.fabric_wwn, tmp);
     }
 
     if (virIsCapableVport(NULL, d->scsi_host.host)) {

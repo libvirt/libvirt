@@ -367,9 +367,11 @@
       <ref name='wwn'/>
     </element>
 
-    <element name='fabric_wwn'>
-      <ref name='wwn'/>
-    </element>
+    <optional>
+      <element name='fabric_wwn'>
+        <ref name='wwn'/>
+      </element>
+    </optional>
   </define>
 
   <define name='capsvports'>

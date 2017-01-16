@@ -29,13 +29,16 @@ static char *fchost_prefix;
 
 #define TEST_FC_HOST_PREFIX fchost_prefix
 #define TEST_FC_HOST_NUM 5
+#define TEST_FC_HOST_NUM_NO_FAB 6
 
 /* Test virIsCapableFCHost */
 static int
 test1(const void *data ATTRIBUTE_UNUSED)
 {
     if (virIsCapableFCHost(TEST_FC_HOST_PREFIX,
-                           TEST_FC_HOST_NUM))
+                           TEST_FC_HOST_NUM) &&
+        virIsCapableFCHost(TEST_FC_HOST_PREFIX,
+                           TEST_FC_HOST_NUM_NO_FAB))
         return 0;
 
     return -1;
@@ -148,6 +151,39 @@ test5(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
+/* Test virReadFCHost fabric name optional */
+static int
+test6(const void *data ATTRIBUTE_UNUSED)
+{
+    const char *expect_wwnn = "2002001b32a9da4e";
+    const char *expect_wwpn = "2102001b32a9da4e";
+    char *wwnn = NULL;
+    char *wwpn = NULL;
+    int ret = -1;
+
+    if (!(wwnn = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB,
+                               "node_name")))
+        return -1;
+
+    if (!(wwpn = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB,
+                               "port_name")))
+        goto cleanup;
+
+    if (virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB,
+                      "fabric_name"))
+        goto cleanup;
+
+    if (STRNEQ(expect_wwnn, wwnn) ||
+        STRNEQ(expect_wwpn, wwpn))
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(wwnn);
+    VIR_FREE(wwpn);
+    return ret;
+}
+
 static int
 mymain(void)
 {
@@ -168,6 +204,8 @@ mymain(void)
     if (virTestRun("test4", test4, NULL) < 0)
         ret = -1;
     if (virTestRun("test5", test5, NULL) < 0)
+        ret = -1;
+    if (virTestRun("test6", test6, NULL) < 0)
         ret = -1;
 
  cleanup:
