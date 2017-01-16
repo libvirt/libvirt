@@ -2011,7 +2011,7 @@ virGetSCSIHostNameByParentaddr(unsigned int domain,
  *
  * Read the value of sysfs "fc_host" entry.
  *
- * Returns result as a stringon success, caller must free @result after
+ * Returns result as a string on success, caller must free @result after
  * Otherwise returns NULL.
  */
 char *
@@ -2027,6 +2027,9 @@ virReadFCHost(const char *sysfs_prefix,
     if (virAsprintf(&sysfs_path, "%s/host%d/%s",
                     sysfs_prefix ? sysfs_prefix : SYSFS_FC_HOST_PATH,
                     host, entry) < 0)
+        goto cleanup;
+
+    if (!virFileExists(sysfs_path))
         goto cleanup;
 
     if (virFileReadAll(sysfs_path, 1024, &buf) < 0)
