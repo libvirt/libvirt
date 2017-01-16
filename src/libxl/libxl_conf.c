@@ -313,9 +313,10 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
     for (i = 0; i < virDomainDefGetVcpus(def); i++)
         libxl_bitmap_set((&b_info->avail_vcpus), i);
 
-    if (def->clock.ntimers > 0 &&
-        def->clock.timers[0]->name == VIR_DOMAIN_TIMER_NAME_TSC) {
-        switch (def->clock.timers[0]->mode) {
+    for (i = 0; i < def->clock.ntimers; i++) {
+        switch ((virDomainTimerNameType) def->clock.timers[i]->name) {
+        case VIR_DOMAIN_TIMER_NAME_TSC:
+            switch (def->clock.timers[i]->mode) {
             case VIR_DOMAIN_TIMER_MODE_NATIVE:
                 b_info->tsc_mode = 2;
                 break;
@@ -324,8 +325,35 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
                 break;
             default:
                 b_info->tsc_mode = 1;
+            }
+            break;
+
+        case VIR_DOMAIN_TIMER_NAME_HPET:
+            if (!hvm) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported timer type (name) '%s'"),
+                               virDomainTimerNameTypeToString(def->clock.timers[i]->name));
+                return -1;
+            }
+            if (def->clock.timers[i]->present == 1)
+                libxl_defbool_set(&b_info->u.hvm.hpet, 1);
+            break;
+
+        case VIR_DOMAIN_TIMER_NAME_PLATFORM:
+        case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_RTC:
+        case VIR_DOMAIN_TIMER_NAME_PIT:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported timer type (name) '%s'"),
+                           virDomainTimerNameTypeToString(def->clock.timers[i]->name));
+            return -1;
+
+        case VIR_DOMAIN_TIMER_NAME_LAST:
+            break;
         }
     }
+
     b_info->sched_params.weight = 1000;
     b_info->max_memkb = virDomainDefGetMemoryInitial(def);
     b_info->target_memkb = def->mem.cur_balloon;
@@ -341,12 +369,6 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         libxl_defbool_set(&b_info->u.hvm.acpi,
                           def->features[VIR_DOMAIN_FEATURE_ACPI] ==
                           VIR_TRISTATE_SWITCH_ON);
-        for (i = 0; i < def->clock.ntimers; i++) {
-            if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
-                def->clock.timers[i]->present == 1) {
-                libxl_defbool_set(&b_info->u.hvm.hpet, 1);
-            }
-        }
 
         if (def->nsounds > 0) {
             /*
