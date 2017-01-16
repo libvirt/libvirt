@@ -1640,10 +1640,10 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
     if (virDomainGetInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
+    info->maxMem = virDomainDefGetMemoryTotal(vm->def);
     if (!virDomainObjIsActive(vm)) {
         info->cpuTime = 0;
         info->memory = vm->def->mem.cur_balloon;
-        info->maxMem = virDomainDefGetMemoryTotal(vm->def);
     } else {
         libxl_dominfo_init(&d_info);
 
@@ -1655,7 +1655,6 @@ libxlDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
         }
         info->cpuTime = d_info.cpu_time;
         info->memory = d_info.current_memkb;
-        info->maxMem = d_info.max_memkb;
 
         libxl_dominfo_dispose(&d_info);
     }
@@ -5175,7 +5174,7 @@ libxlDomainMemoryStats(virDomainPtr dom,
         goto endjob;
     }
     mem = d_info.current_memkb;
-    maxmem = d_info.max_memkb;
+    maxmem = virDomainDefGetMemoryTotal(vm->def);
 
     LIBXL_SET_MEMSTAT(VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON, mem);
     LIBXL_SET_MEMSTAT(VIR_DOMAIN_MEMORY_STAT_AVAILABLE, maxmem);
