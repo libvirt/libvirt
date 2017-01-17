@@ -1959,6 +1959,16 @@ int qemuMonitorTextAddDrive(qemuMonitorPtr mon,
         goto cleanup;
     }
 
+    if (strstr(reply, "Could not open")) {
+        size_t len = strlen(reply);
+        if (reply[len - 1] == '\n')
+            reply[len - 1] = '\0';
+
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       reply);
+        goto cleanup;
+    }
+
     ret = 0;
 
  cleanup:
