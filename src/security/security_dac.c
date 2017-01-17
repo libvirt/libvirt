@@ -71,7 +71,7 @@ struct _virSecurityDACCallbackData {
 typedef struct _virSecurityDACChownItem virSecurityDACChownItem;
 typedef virSecurityDACChownItem *virSecurityDACChownItemPtr;
 struct _virSecurityDACChownItem {
-    const char *path;
+    char *path;
     const virStorageSource *src;
     uid_t uid;
     gid_t gid;
@@ -95,22 +95,31 @@ virSecurityDACChownListAppend(virSecurityDACChownListPtr list,
                               uid_t uid,
                               gid_t gid)
 {
-    virSecurityDACChownItemPtr item;
+    int ret = -1;
+    char *tmp = NULL;
+    virSecurityDACChownItemPtr item = NULL;
 
     if (VIR_ALLOC(item) < 0)
         return -1;
 
-    item->path = path;
+    if (VIR_STRDUP(tmp, path) < 0)
+        goto cleanup;
+
+    item->path = tmp;
     item->src = src;
     item->uid = uid;
     item->gid = gid;
 
-    if (VIR_APPEND_ELEMENT(list->items, list->nItems, item) < 0) {
-        VIR_FREE(item);
-        return -1;
-    }
+    if (VIR_APPEND_ELEMENT(list->items, list->nItems, item) < 0)
+        goto cleanup;
 
-    return 0;
+    tmp = NULL;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(tmp);
+    VIR_FREE(item);
+    return ret;
 }
 
 static void
@@ -122,8 +131,10 @@ virSecurityDACChownListFree(void *opaque)
     if (!list)
         return;
 
-    for (i = 0; i < list->nItems; i++)
+    for (i = 0; i < list->nItems; i++) {
+        VIR_FREE(list->items[i]->path);
         VIR_FREE(list->items[i]);
+    }
     VIR_FREE(list);
 }
 
