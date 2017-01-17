@@ -6,6 +6,7 @@
 [Unit]
 Description=Virtualization daemon
 Requires=virtlogd.socket
+Requires=virtlockd.socket
 Before=libvirt-guests.service
 After=network.target
 After=dbus.service

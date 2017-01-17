@@ -1,6 +1,7 @@
 [Unit]
 Description=Virtual machine lock manager
 Requires=virtlockd.socket
+Before=libvirtd.service
 Documentation=man:virtlockd(8)
 Documentation=http://libvirt.org
 
