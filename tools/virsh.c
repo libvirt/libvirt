@@ -648,6 +648,9 @@ virshShowVersion(vshControl *ctl ATTRIBUTE_UNUSED)
 #ifdef WITH_STORAGE_ZFS
     vshPrint(ctl, " ZFS");
 #endif
+#ifdef WITH_STORAGE_VSTORAGE
+    vshPrint(ctl, "Virtuozzo Storage");
+#endif
     vshPrint(ctl, "\n");
 
     vshPrint(ctl, "%s", _(" Miscellaneous:"));

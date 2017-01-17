@@ -60,7 +60,8 @@ VIR_ENUM_IMPL(virStoragePool,
               "dir", "fs", "netfs",
               "logical", "disk", "iscsi",
               "scsi", "mpath", "rbd",
-              "sheepdog", "gluster", "zfs")
+              "sheepdog", "gluster", "zfs",
+              "vstorage")
 
 VIR_ENUM_IMPL(virStoragePoolFormatFileSystem,
               VIR_STORAGE_POOL_FS_LAST,
@@ -272,6 +273,16 @@ static virStoragePoolTypeInfo poolTypeInfo[] = {
          .flags = (VIR_STORAGE_POOL_SOURCE_NAME |
                    VIR_STORAGE_POOL_SOURCE_DEVICE),
          .defaultFormat = VIR_STORAGE_FILE_RAW,
+     },
+    },
+    {.poolType = VIR_STORAGE_POOL_VSTORAGE,
+     .poolOptions = {
+        .flags = VIR_STORAGE_POOL_SOURCE_NAME,
+     },
+     .volOptions = {
+        .defaultFormat = VIR_STORAGE_FILE_RAW,
+        .formatFromString = virStorageVolumeFormatFromString,
+        .formatToString = virStorageFileFormatTypeToString,
      },
     },
 };
@@ -2610,6 +2621,10 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
         case VIR_STORAGE_POOL_MPATH:
             /* Only one mpath pool is valid per host */
             matchpool = pool;
+            break;
+        case VIR_STORAGE_POOL_VSTORAGE:
+            if (STREQ(pool->def->source.name, def->source.name))
+                matchpool = pool;
             break;
         case VIR_STORAGE_POOL_RBD:
         case VIR_STORAGE_POOL_LAST:
