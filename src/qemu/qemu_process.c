@@ -2663,9 +2663,6 @@ static int qemuProcessHook(void *data)
     if (virSecurityManagerClearSocketLabel(h->driver->securityManager, h->vm->def) < 0)
         goto cleanup;
 
-    if (virProcessSetupPrivateMountNS() < 0)
-        goto cleanup;
-
     if (qemuDomainBuildNamespace(h->driver, h->vm) < 0)
         goto cleanup;
 

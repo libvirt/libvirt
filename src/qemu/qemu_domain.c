@@ -7400,6 +7400,9 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
+    if (virProcessSetupPrivateMountNS() < 0)
+        goto cleanup;
+
     if (qemuDomainSetupDev(driver, vm, devPath) < 0)
         goto cleanup;
 
