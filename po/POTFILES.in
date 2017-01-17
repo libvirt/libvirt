@@ -175,6 +175,7 @@ src/storage/storage_backend_mpath.c
 src/storage/storage_backend_rbd.c
 src/storage/storage_backend_scsi.c
 src/storage/storage_backend_sheepdog.c
+src/storage/storage_backend_vstorage.c
 src/storage/storage_backend_zfs.c
 src/storage/storage_driver.c
 src/storage/storage_util.c
