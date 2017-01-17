@@ -12,7 +12,17 @@
 <libvirt>
   <release version="v3.1.0" date="unreleased">
     <section title="New features">
-      <change/>
+      <change>
+        <summary>
+          storage: Add Virtuozzo storage backend storage pool
+        </summary>
+        <description>
+          Add new storage backend to support pool and volume management
+          within the Virtuozzo Storage environment. Virtuozzo Storage is
+          a highly available distributed software defined storage with
+          built-in replication and disaster recovery.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>

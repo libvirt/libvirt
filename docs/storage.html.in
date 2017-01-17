@@ -120,6 +120,9 @@
       <li>
         <a href="#StorageBackendZFS">ZFS backend</a>
       </li>
+      <li>
+        <a href="#StorageBackendVstorage">Virtuozzo storage backend</a>
+      </li>
     </ul>
 
     <h2><a name="StorageBackendDir">Directory pool</a></h2>
@@ -791,6 +794,31 @@
     <p>
       The ZFS volume pool does not use the volume format type element.
     </p>
+    <h2><a name="StorageBackendVstorage">Vstorage pools</a></h2>
+    <p>
+      This provides a pool based on Virtuozzo storage. Virtuozzo Storage is
+      a highly available distributed software-defined storage with built-in
+      replication and disaster recovery. More detailed information about
+      Virtuozzo storage and its managment can be found here:
 
+      <a href="https://openvz.org/Virtuozzo_Storage">Virtuozzo Storage</a>).
+    </p>
+    <p>Please refer to the Virtuozzo Storage documentation for details
+      on storage management and usage.</p>
+    <h3>Example pool input</h3>
+    <p>In order to create storage pool with Virtuozzo Storage backend you
+    have to provide cluster name and be authorized within the cluster.</p>
+     <pre>
+&lt;pool type="vstorage"&gt;
+  &lt;name&gt;myvstoragepool&lt;/name&gt;
+  &lt;source&gt;
+    &lt;name&gt;clustername&lt;/name&gt;
+  &lt;/source&gt;
+  &lt;target&gt;
+    &lt;path&gt;/mnt/clustername&lt;/path&gt;
+  &lt;/target&gt;
+&lt;/pool&gt;</pre>
+    <h3>Valid volume format types</h3>
+    <p>The valid volume types are the same as for the directory pool.</p>
   </body>
 </html>

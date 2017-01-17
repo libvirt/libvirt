@@ -24,6 +24,7 @@
         <ref name='poolsheepdog'/>
         <ref name='poolgluster'/>
         <ref name='poolzfs'/>
+        <ref name='poolvstorage'/>
       </choice>
     </element>
   </define>
@@ -170,6 +171,18 @@
       <optional>
         <ref name='target'/>
       </optional>
+    </interleave>
+  </define>
+
+  <define name='poolvstorage'>
+    <attribute name='type'>
+      <value>vstorage</value>
+    </attribute>
+    <interleave>
+      <ref name='commonmetadata'/>
+      <ref name='sizing'/>
+      <ref name='sourcevstorage'/>
+      <ref name='target'/>
     </interleave>
   </define>
 
@@ -369,6 +382,14 @@
         <optional>
           <ref name='sourceinfodev'/>
         </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <define name='sourcevstorage'>
+    <element name='source'>
+      <interleave>
+        <ref name='sourceinfoname'/>
       </interleave>
     </element>
   </define>

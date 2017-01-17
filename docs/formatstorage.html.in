@@ -24,8 +24,9 @@
       (<span class="since">since 0.9.13</span>), <code>sheepdog</code>
       (<span class="since">since 0.10.0</span>),
       <code>gluster</code> (<span class="since">since
-      1.2.0</span>) or <code>zfs</code> (<span class="since">since
-      1.2.8</span>). This corresponds to the
+      1.2.0</span>),  <code>zfs</code> (<span class="since">since
+      1.2.8</span>) or <code>vstorage</code> (<span class="since">since
+      3.1.0</span>). This corresponds to the
       storage backend drivers listed further along in this document.
     </p>
     <h3><a name="StoragePoolFirst">General metadata</a></h3>
@@ -124,7 +125,7 @@
       <dt><code>device</code></dt>
       <dd>Provides the source for pools backed by physical devices
         (pool types <code>fs</code>, <code>logical</code>, <code>disk</code>,
-        <code>iscsi</code>, <code>zfs</code>).
+        <code>iscsi</code>, <code>zfs</code>, <code>vstorage</code>).
         May be repeated multiple times depending on backend driver. Contains
         a required attribute <code>path</code> which is either the fully
         qualified path to the block device node or for <code>iscsi</code>

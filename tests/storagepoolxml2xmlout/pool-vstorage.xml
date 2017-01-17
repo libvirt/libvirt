@@ -1,0 +1,18 @@
+<pool type='vstorage'>
+  <name>vstorage</name>
+  <uuid>cfd270f9-acc7-4394-8685-4977eb318171</uuid>
+  <capacity unit='bytes'>0</capacity>
+  <allocation unit='bytes'>0</allocation>
+  <available unit='bytes'>0</available>
+  <source>
+    <name>vstorage-cluster</name>
+  </source>
+  <target>
+    <path>/mnt/vstorage-cluster</path>
+    <permissions>
+      <mode>0755</mode>
+      <owner>-1</owner>
+      <group>-1</group>
+    </permissions>
+  </target>
+</pool>

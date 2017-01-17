@@ -104,6 +104,9 @@ mymain(void)
 #ifdef WITH_STORAGE_RBD
     DO_TEST("pool-rbd");
 #endif
+#ifdef WITH_STORAGE_VSTORAGE
+    DO_TEST("pool-vstorage");
+#endif
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
