@@ -2215,6 +2215,7 @@ void virQEMUCapsDispose(void *obj)
 
     VIR_FREE(qemuCaps->gicCapabilities);
 
+    qemuMonitorCPUModelInfoFree(qemuCaps->hostCPUModelInfo);
     virCPUDefFree(qemuCaps->hostCPUModel);
 }
 
