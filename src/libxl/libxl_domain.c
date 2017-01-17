@@ -909,6 +909,7 @@ libxlDomainFreeMem(libxl_ctx *ctx, libxl_domain_config *d_config)
 {
     uint32_t needed_mem;
     uint32_t free_mem;
+    int32_t target_mem;
     int tries = 3;
     int wait_secs = 10;
 
@@ -922,7 +923,8 @@ libxlDomainFreeMem(libxl_ctx *ctx, libxl_domain_config *d_config)
         if (free_mem >= needed_mem)
             return 0;
 
-        if (libxl_set_memory_target(ctx, 0, free_mem - needed_mem,
+        target_mem = free_mem - needed_mem;
+        if (libxl_set_memory_target(ctx, 0, target_mem,
                                     /* relative */ 1, 0) < 0)
             goto error;
 
