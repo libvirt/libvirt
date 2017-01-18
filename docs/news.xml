@@ -10,6 +10,17 @@
      and optionally a description where it's explained in more detail -->
 
 <libvirt>
+  <release version="v3.1.0" date="unreleased">
+    <section title="New features">
+      <change/>
+    </section>
+    <section title="Improvements">
+      <change/>
+    </section>
+    <section title="Bug fixes">
+      <change/>
+    </section>
+  </release>
   <release version="v3.0.0" date="2017-01-17">
     <section title="New features">
       <change>
