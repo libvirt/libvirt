@@ -317,13 +317,6 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     if (!(cfg->namespaces = virBitmapNew(QEMU_DOMAIN_NS_LAST)))
         goto error;
 
-#if defined(__linux__)
-    if (privileged &&
-        virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_MNT) == 0 &&
-        virBitmapSetBit(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT) < 0)
-        goto error;
-#endif /* defined(__linux__) */
-
 #ifdef DEFAULT_LOADER_NVRAM
     if (virFirmwareParseList(DEFAULT_LOADER_NVRAM,
                              &cfg->firmwares,
