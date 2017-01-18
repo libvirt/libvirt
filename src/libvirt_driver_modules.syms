@@ -4,6 +4,7 @@
 
 # driver.h
 virDriverLoadModule;
+virDriverLoadModuleFull;
 
 # Let emacs know we want case-insensitive sorting
 # Local Variables:

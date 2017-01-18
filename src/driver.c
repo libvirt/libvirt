@@ -43,13 +43,103 @@ VIR_LOG_INIT("driver");
 # include <dlfcn.h>
 # define DEFAULT_DRIVER_DIR LIBDIR "/libvirt/connection-driver"
 
+
+static void *
+virDriverLoadModuleFile(const char *file)
+{
+    void *handle = NULL;
+
+    VIR_DEBUG("Load module file '%s'", file);
+
+    if (access(file, R_OK) < 0) {
+        VIR_INFO("Module %s not accessible", file);
+        return NULL;
+    }
+
+    virUpdateSelfLastChanged(file);
+
+    if (!(handle = dlopen(file, RTLD_NOW | RTLD_GLOBAL)))
+        VIR_ERROR(_("failed to load module %s %s"), file, dlerror());
+
+    return handle;
+}
+
+
+static void *
+virDriverLoadModuleFunc(void *handle,
+                        const char *funcname)
+{
+    void *regsym;
+
+    VIR_DEBUG("Lookup function '%s'", funcname);
+
+    if (!(regsym = dlsym(handle, funcname)))
+        VIR_ERROR(_("Missing module registration symbol %s"), funcname);
+
+    return regsym;
+}
+
+
+/**
+ * virDriverLoadModuleFull:
+ * @path: filename of module to load
+ * @regfunc: name of the function that registers the module
+ * @handle: Returns handle of the loaded library if not NULL
+ *
+ * Loads a loadable module named @path and calls the
+ * registration function @regfunc. If @handle is not NULL the handle is returned
+ * in the variable. Otherwise the handle is leaked so that the module stays
+ * loaded forever.
+ *
+ * The module is automatically looked up in the appropriate place (git or
+ * installed directory).
+ *
+ * Returns 0 on success, 1 if the module was not found and -1 on any error.
+ */
+int
+virDriverLoadModuleFull(const char *path,
+                        const char *regfunc,
+                        void **handle)
+{
+    void *rethandle = NULL;
+    int (*regsym)(void);
+    int ret = -1;
+
+    if (!(rethandle = virDriverLoadModuleFile(path))) {
+        ret = 1;
+        goto cleanup;
+    }
+
+    if (!(regsym = virDriverLoadModuleFunc(rethandle, regfunc)))
+        goto cleanup;
+
+    if ((*regsym)() < 0) {
+        VIR_ERROR(_("Failed module registration %s"), regfunc);
+        goto cleanup;
+    }
+
+    if (handle)
+        VIR_STEAL_PTR(*handle, rethandle);
+    else
+        rethandle = NULL;
+
+    ret = 0;
+
+ cleanup:
+    if (rethandle)
+        dlclose(rethandle);
+    return ret;
+}
+
+
 void *
 virDriverLoadModule(const char *name)
 {
-    char *modfile = NULL, *regfunc = NULL, *fixedname = NULL;
+    char *modfile = NULL;
+    char *fixedname = NULL;
+    char *regfunc = NULL;
     char *tmp;
     void *handle = NULL;
-    int (*regsym)(void);
 
     VIR_DEBUG("Module load %s", name);
 
@@ -60,19 +150,6 @@ virDriverLoadModule(const char *name)
                                             DEFAULT_DRIVER_DIR,
                                             "LIBVIRT_DRIVER_DIR")))
         return NULL;
-
-    if (access(modfile, R_OK) < 0) {
-        VIR_INFO("Module %s not accessible", modfile);
-        goto cleanup;
-    }
-
-    virUpdateSelfLastChanged(modfile);
-
-    handle = dlopen(modfile, RTLD_NOW | RTLD_GLOBAL);
-    if (!handle) {
-        VIR_ERROR(_("failed to load module %s %s"), modfile, dlerror());
-        goto cleanup;
-    }
 
     if (VIR_STRDUP_QUIET(fixedname, name) < 0) {
         VIR_ERROR(_("out of memory"));
@@ -88,29 +165,13 @@ virDriverLoadModule(const char *name)
     if (virAsprintfQuiet(&regfunc, "%sRegister", fixedname) < 0)
         goto cleanup;
 
-    regsym = dlsym(handle, regfunc);
-    if (!regsym) {
-        VIR_ERROR(_("Missing module registration symbol %s"), regfunc);
-        goto cleanup;
-    }
-
-    if ((*regsym)() < 0) {
-        VIR_ERROR(_("Failed module registration %s"), regfunc);
-        goto cleanup;
-    }
-
-    VIR_FREE(modfile);
-    VIR_FREE(regfunc);
-    VIR_FREE(fixedname);
-    return handle;
+    virDriverLoadModuleFull(modfile, regfunc, &handle);
 
  cleanup:
     VIR_FREE(modfile);
-    VIR_FREE(regfunc);
     VIR_FREE(fixedname);
-    if (handle)
-        dlclose(handle);
-    return NULL;
+    VIR_FREE(regfunc);
+    return handle;
 }
 
 

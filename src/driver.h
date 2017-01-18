@@ -100,5 +100,8 @@ int virSetSharedSecretDriver(virSecretDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
 int virSetSharedStorageDriver(virStorageDriverPtr driver) ATTRIBUTE_RETURN_CHECK;
 
 void *virDriverLoadModule(const char *name);
+int virDriverLoadModuleFull(const char *name,
+                            const char *regfunc,
+                            void **handle);
 
 #endif /* __VIR_DRIVER_H__ */
