@@ -4564,7 +4564,7 @@ Messages at level WARNING or above
 
 =item * LIBVIRT_DEBUG=4
 
-Messages at level ERROR or above
+Messages at level ERROR
 
 =back
 
