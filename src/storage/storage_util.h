@@ -49,19 +49,9 @@ int virStorageBackendCreatePloop(virConnectPtr conn,
 int virStoragePloopResize(virStorageVolDefPtr vol,
                           unsigned long long capacity);
 
-int virStorageBackendRedoPloopUpdate(virStorageSourcePtr target,
-                                     struct stat *sb, int *fd,
-                                     unsigned int flags);
-bool virStorageBackendIsPloopDir(char *path);
-
 virStorageBackendBuildVolFrom
 virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
                                          virStorageVolDefPtr inputvol);
-
-int virStorageBackendFindGlusterPoolSources(const char *host,
-                                            int pooltype,
-                                            virStoragePoolSourceListPtr list,
-                                            bool report);
 
 int virStorageBackendVolUploadLocal(virConnectPtr conn,
                                     virStoragePoolObjPtr pool,
@@ -83,6 +73,23 @@ int virStorageBackendVolWipeLocal(virConnectPtr conn,
                                   virStorageVolDefPtr vol,
                                   unsigned int algorithm,
                                   unsigned int flags);
+
+/* Local/Common Storage Pool Backend APIs */
+int virStorageBackendBuildLocal(virStoragePoolObjPtr pool);
+
+int virStorageBackendUmountLocal(virStoragePoolObjPtr pool);
+
+int virStorageBackendDeleteLocal(virConnectPtr conn,
+                                 virStoragePoolObjPtr pool,
+                                 unsigned int flags);
+
+int virStorageBackendRefreshLocal(virConnectPtr conn,
+                                  virStoragePoolObjPtr pool);
+
+int virStorageBackendFindGlusterPoolSources(const char *host,
+                                            int pooltype,
+                                            virStoragePoolSourceListPtr list,
+                                            bool report);
 
 bool virStorageBackendDeviceIsEmpty(const char *devpath,
                                     const char *format,
@@ -110,6 +117,11 @@ enum {
 # define VIR_STORAGE_VOL_OPEN_DEFAULT (VIR_STORAGE_VOL_OPEN_REG      |\
                                        VIR_STORAGE_VOL_OPEN_BLOCK)
 
+# define VIR_STORAGE_VOL_FS_OPEN_FLAGS    (VIR_STORAGE_VOL_OPEN_DEFAULT | \
+                                           VIR_STORAGE_VOL_OPEN_DIR)
+# define VIR_STORAGE_VOL_FS_PROBE_FLAGS   (VIR_STORAGE_VOL_FS_OPEN_FLAGS | \
+                                           VIR_STORAGE_VOL_OPEN_NOERROR)
+
 int virStorageBackendVolOpen(const char *path, struct stat *sb,
                              unsigned int flags)
     ATTRIBUTE_RETURN_CHECK
@@ -122,11 +134,6 @@ int virStorageBackendUpdateVolInfo(virStorageVolDefPtr vol,
                                    bool withBlockVolFormat,
                                    unsigned int openflags,
                                    unsigned int readflags);
-int virStorageBackendUpdateVolTargetInfo(virStorageVolType voltype,
-                                         virStorageSourcePtr target,
-                                         bool withBlockVolFormat,
-                                         unsigned int openflags,
-                                         unsigned int readflags);
 int virStorageBackendUpdateVolTargetInfoFD(virStorageSourcePtr target,
                                            int fd,
                                            struct stat *sb);
