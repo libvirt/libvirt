@@ -69,6 +69,7 @@
 #endif
 
 #include <libxml/xpathInternals.h>
+#include "dosname.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -7003,70 +7004,135 @@ qemuDomainCreateDevice(const char *device,
                        bool allow_noent)
 {
     char *devicePath = NULL;
-    char *canonDevicePath = NULL;
+    char *target = NULL;
     struct stat sb;
     int ret = -1;
+    bool isLink = false;
+    bool create = false;
 #ifdef WITH_SELINUX
     char *tcon = NULL;
 #endif
 
-    if (virFileResolveAllLinks(device, &canonDevicePath) < 0) {
+    if (lstat(device, &sb) < 0) {
         if (errno == ENOENT && allow_noent) {
             /* Ignore non-existent device. */
-            ret = 0;
+            return 0;
+        }
+        virReportSystemError(errno, _("Unable to stat %s"), device);
+        return ret;
+    }
+
+    isLink = S_ISLNK(sb.st_mode);
+
+    /* Here, @device might be whatever path in the system. We
+     * should create the path in the namespace iff it's "/dev"
+     * prefixed. However, if it is a symlink, we need to traverse
+     * it too (it might point to something in "/dev"). Just
+     * consider:
+     *
+     *   /var/sym1 -> /var/sym2 -> /dev/sda  (because users can)
+     *
+     * This means, "/var/sym1" is not created (it's shared with
+     * the parent namespace), nor "/var/sym2", but "/dev/sda".
+     *
+     * TODO Remove all `.' and `..' from the @device path.
+     * Otherwise we might get fooled with `/dev/../var/my_image'.
+     * For now, lets hope callers play nice.
+     */
+    if (STRPREFIX(device, DEVPREFIX)) {
+        if (virAsprintf(&devicePath, "%s/%s",
+                        path, device + strlen(DEVPREFIX)) < 0)
+            goto cleanup;
+
+        if (virFileMakeParentPath(devicePath) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to create %s"),
+                                 devicePath);
+            goto cleanup;
+        }
+        create = true;
+    }
+
+    if (isLink) {
+        /* We are dealing with a symlink. Create a dangling symlink and descend
+         * down one level which hopefully creates the symlink's target. */
+        if (virFileReadLink(device, &target) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to resolve symlink %s"),
+                                 device);
             goto cleanup;
         }
 
-        virReportError(errno, _("Unable to canonicalize %s"), device);
-        goto cleanup;
+        if (create &&
+            symlink(target, devicePath) < 0) {
+            if (errno == EEXIST) {
+                ret = 0;
+            } else {
+                virReportSystemError(errno,
+                                     _("unable to create symlink %s"),
+                                     devicePath);
+            }
+            goto cleanup;
+        }
+
+        /* Tricky part. If the target starts with a slash then we need to take
+         * it as it is. Otherwise we need to replace the last component in the
+         * original path with the link target:
+         * /dev/rtc -> rtc0 (want /dev/rtc0)
+         * /dev/disk/by-id/ata-SanDisk_SDSSDXPS480G_161101402485 -> ../../sda
+         *   (want /dev/disk/by-id/../../sda)
+         * /dev/stdout -> /proc/self/fd/1 (no change needed)
+         */
+        if (IS_RELATIVE_FILE_NAME(target)) {
+            char *c = NULL, *tmp = NULL, *devTmp = NULL;
+
+            if (VIR_STRDUP(devTmp, device) < 0)
+                goto cleanup;
+
+            if ((c = strrchr(devTmp, '/')))
+                *(c + 1) = '\0';
+
+            if (virAsprintf(&tmp, "%s%s", devTmp, target) < 0) {
+                VIR_FREE(devTmp);
+                goto cleanup;
+            }
+            VIR_FREE(devTmp);
+            VIR_FREE(target);
+            target = tmp;
+            tmp = NULL;
+        }
+
+        if (qemuDomainCreateDevice(target, path, allow_noent) < 0)
+            goto cleanup;
+    } else {
+        if (create &&
+            mknod(devicePath, sb.st_mode, sb.st_rdev) < 0) {
+            if (errno == EEXIST) {
+                ret = 0;
+            } else {
+                virReportSystemError(errno,
+                                     _("Failed to make device %s"),
+                                     devicePath);
+            }
+            goto cleanup;
+        }
     }
 
-    if (!STRPREFIX(canonDevicePath, DEVPREFIX)) {
+    if (!create) {
         ret = 0;
         goto cleanup;
     }
 
-    if (virAsprintf(&devicePath, "%s/%s",
-                    path, canonDevicePath + strlen(DEVPREFIX)) < 0)
-        goto cleanup;
-
-    if (stat(canonDevicePath, &sb) < 0) {
-        if (errno == ENOENT && allow_noent) {
-            /* Ignore non-existent device. */
-            ret = 0;
-            goto cleanup;
-        }
-
-        virReportSystemError(errno, _("Unable to stat %s"), canonDevicePath);
-        goto cleanup;
-    }
-
-    if (virFileMakeParentPath(devicePath) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to create %s"),
-                             devicePath);
-        goto cleanup;
-    }
-
-    if (mknod(devicePath, sb.st_mode, sb.st_rdev) < 0) {
-        if (errno == EEXIST) {
-            ret = 0;
-        } else {
-            virReportSystemError(errno,
-                                 _("Failed to make device %s"),
-                                 devicePath);
-        }
-        goto cleanup;
-    }
-
-    if (chown(devicePath, sb.st_uid, sb.st_gid) < 0) {
+    if (lchown(devicePath, sb.st_uid, sb.st_gid) < 0) {
         virReportSystemError(errno,
                              _("Failed to chown device %s"),
                              devicePath);
         goto cleanup;
     }
 
-    if (virFileCopyACLs(canonDevicePath, devicePath) < 0 &&
+    /* Symlinks don't have ACLs. */
+    if (!isLink &&
+        virFileCopyACLs(device, devicePath) < 0 &&
         errno != ENOTSUP) {
         virReportSystemError(errno,
                              _("Failed to copy ACLs on device %s"),
@@ -7075,16 +7141,16 @@ qemuDomainCreateDevice(const char *device,
     }
 
 #ifdef WITH_SELINUX
-    if (getfilecon_raw(canonDevicePath, &tcon) < 0 &&
+    if (lgetfilecon_raw(device, &tcon) < 0 &&
         (errno != ENOTSUP && errno != ENODATA)) {
         virReportSystemError(errno,
                              _("Unable to get SELinux label from %s"),
-                             canonDevicePath);
+                             device);
         goto cleanup;
     }
 
     if (tcon &&
-        setfilecon_raw(devicePath, (VIR_SELINUX_CTX_CONST char *) tcon) < 0) {
+        lsetfilecon_raw(devicePath, (VIR_SELINUX_CTX_CONST char *) tcon) < 0) {
         VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
         if (errno != EOPNOTSUPP && errno != ENOTSUP) {
         VIR_WARNINGS_RESET
@@ -7098,7 +7164,7 @@ qemuDomainCreateDevice(const char *device,
 
     ret = 0;
  cleanup:
-    VIR_FREE(canonDevicePath);
+    VIR_FREE(target);
     VIR_FREE(devicePath);
 #ifdef WITH_SELINUX
     freecon(tcon);
