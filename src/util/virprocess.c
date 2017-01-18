@@ -1137,8 +1137,14 @@ virProcessRunInMountNamespace(pid_t pid,
         VIR_FORCE_CLOSE(errfd[1]);
         ignore_value(virFileReadHeaderFD(errfd[0], 1024, &buf));
         ret = virProcessWait(child, &status, false);
-        if (!ret)
+        if (!ret) {
             ret = status == EXIT_CANCELED ? -1 : status;
+            if (ret) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("child reported: %s"),
+                               NULLSTR(buf));
+            }
+        }
         VIR_FREE(buf);
     }
 
