@@ -47,53 +47,50 @@ mymain(void)
 {
     int ret = 0;
 
-#define TEST(name, dep1)                                                   \
+#define TEST(name)                                                         \
     do  {                                                                  \
         if (virTestRun("Test driver " # name, testDriverModule, name) < 0) \
             ret = -1;                                                      \
     } while (0)
 
 #ifdef WITH_NETWORK
-# define USE_NETWORK "network"
-    TEST("network", NULL);
-#else
-# define USE_NETWORK NULL
+    TEST("network");
 #endif
 #ifdef WITH_INTERFACE
-    TEST("interface", NULL);
+    TEST("interface");
 #endif
 #ifdef WITH_STORAGE
-    TEST("storage", NULL);
+    TEST("storage");
 #endif
 #ifdef WITH_NODE_DEVICES
-    TEST("nodedev", NULL);
+    TEST("nodedev");
 #endif
 #ifdef WITH_SECRETS
-    TEST("secret", NULL);
+    TEST("secret");
 #endif
 #ifdef WITH_NWFILTER
-    TEST("nwfilter", NULL);
+    TEST("nwfilter");
 #endif
 #ifdef WITH_XEN
-    TEST("xen", NULL);
+    TEST("xen");
 #endif
 #ifdef WITH_LIBXL
-    TEST("libxl", NULL);
+    TEST("libxl");
 #endif
 #ifdef WITH_QEMU
-    TEST("qemu", USE_NETWORK);
+    TEST("qemu");
 #endif
 #ifdef WITH_LXC
-    TEST("lxc", USE_NETWORK);
+    TEST("lxc");
 #endif
 #ifdef WITH_UML
-    TEST("uml", NULL);
+    TEST("uml");
 #endif
 #ifdef WITH_VBOX
-    TEST("vbox", NULL);
+    TEST("vbox");
 #endif
 #ifdef WITH_BHYVE
-    TEST("bhyve", NULL);
+    TEST("bhyve");
 #endif
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
