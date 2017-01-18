@@ -121,6 +121,7 @@ EXTRA_DIST =		\
 	qemucapabilitiesdata \
 	qemucaps2xmldata \
 	qemuhelpdata \
+	qemuhotplugtestcpus \
 	qemuhotplugtestdevices \
 	qemuhotplugtestdomains \
 	qemumonitorjsondata \
