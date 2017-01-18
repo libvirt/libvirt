@@ -360,9 +360,7 @@ NSS_NAME(gethostbyname)(const char *name, struct hostent *result,
                         char *buffer, size_t buflen, int *errnop,
                         int *herrnop)
 {
-    int af = ((_res.options & RES_USE_INET6) ? AF_INET6 : AF_INET);
-
-    return NSS_NAME(gethostbyname3)(name, af, result, buffer, buflen,
+    return NSS_NAME(gethostbyname3)(name, AF_INET, result, buffer, buflen,
                                     errnop, herrnop, NULL, NULL);
 }
 
