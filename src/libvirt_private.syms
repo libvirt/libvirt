@@ -1616,6 +1616,7 @@ virFileReadAllQuiet;
 virFileReadBufQuiet;
 virFileReadHeaderFD;
 virFileReadLimFD;
+virFileReadLink;
 virFileRelLinkPointsTo;
 virFileRemove;
 virFileRemoveLastComponent;

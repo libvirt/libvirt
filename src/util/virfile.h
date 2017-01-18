@@ -166,6 +166,9 @@ int virFileResolveAllLinks(const char *linkpath,
 int virFileIsLink(const char *linkpath)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
+int virFileReadLink(const char *linkpath, char **resultpath)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
 char *virFindFileInPath(const char *file);
 
 char *virFileFindResource(const char *filename,
