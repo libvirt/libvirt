@@ -15,7 +15,15 @@
       <change/>
     </section>
     <section title="Improvements">
-      <change/>
+      <change>
+        <summary>
+           virsh: pool-list: allow both --uuid and --name in one command
+        </summary>
+        <description>
+          Adjust the virsh-pool command to support the --uuid and/or --name
+          options in order to print just the --name and/or --uuid of pools.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
