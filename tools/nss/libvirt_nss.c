@@ -237,9 +237,7 @@ _nss_libvirt_gethostbyname_r(const char *name, struct hostent *result,
                              char *buffer, size_t buflen, int *errnop,
                              int *herrnop)
 {
-    int af = ((_res.options & RES_USE_INET6) ? AF_INET6 : AF_INET);
-
-    return _nss_libvirt_gethostbyname3_r(name, af, result, buffer, buflen,
+    return _nss_libvirt_gethostbyname3_r(name, AF_INET, result, buffer, buflen,
                                          errnop, herrnop, NULL, NULL);
 }
 
