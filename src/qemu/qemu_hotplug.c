@@ -110,14 +110,14 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
                                 vm, disk) < 0)
         goto cleanup;
 
-    if (qemuSecuritySetDiskLabel(driver, vm, disk) < 0)
+    if (qemuDomainNamespaceSetupDisk(driver, vm, disk) < 0)
         goto rollback_lock;
 
-    if (qemuDomainNamespaceSetupDisk(driver, vm, disk) < 0)
-        goto rollback_label;
+    if (qemuSecuritySetDiskLabel(driver, vm, disk) < 0)
+        goto rollback_namespace;
 
     if (qemuSetupDiskCgroup(vm, disk) < 0)
-        goto rollback_namespace;
+        goto rollback_label;
 
     ret = 0;
     goto cleanup;
@@ -126,14 +126,14 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
     if (qemuTeardownDiskCgroup(vm, disk) < 0)
         VIR_WARN("Unable to tear down cgroup access on %s",
                  virDomainDiskGetSource(disk));
- rollback_namespace:
-    if (qemuDomainNamespaceTeardownDisk(driver, vm, disk) < 0)
-        VIR_WARN("Unable to remove /dev entry for %s",
-                 virDomainDiskGetSource(disk));
-
  rollback_label:
     if (qemuSecurityRestoreDiskLabel(driver, vm, disk) < 0)
         VIR_WARN("Unable to restore security label on %s",
+                 virDomainDiskGetSource(disk));
+
+ rollback_namespace:
+    if (qemuDomainNamespaceTeardownDisk(driver, vm, disk) < 0)
+        VIR_WARN("Unable to remove /dev entry for %s",
                  virDomainDiskGetSource(disk));
 
  rollback_lock:
