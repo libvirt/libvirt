@@ -490,6 +490,7 @@ xenParseCPUFeatures(virConfPtr conf,
     unsigned long count = 0;
     const char *str = NULL;
     int val = 0;
+    virDomainTimerDefPtr timer;
 
     if (xenConfigGetULong(conf, "vcpus", &count, 1) < 0)
         return -1;
@@ -513,6 +514,29 @@ xenParseCPUFeatures(virConfPtr conf,
 
     if (str && (virBitmapParse(str, &def->cpumask, 4096) < 0))
         return -1;
+
+    if (xenConfigGetString(conf, "tsc_mode", &str, NULL) < 0)
+        return -1;
+
+    if (str) {
+        if (VIR_EXPAND_N(def->clock.timers, def->clock.ntimers, 1) < 0 ||
+            VIR_ALLOC(timer) < 0)
+            return -1;
+
+        timer->name = VIR_DOMAIN_TIMER_NAME_TSC;
+        timer->present = 1;
+        timer->tickpolicy = -1;
+        timer->mode = VIR_DOMAIN_TIMER_MODE_AUTO;
+        timer->track = -1;
+        if (STREQ_NULLABLE(str, "always_emulate"))
+            timer->mode = VIR_DOMAIN_TIMER_MODE_EMULATE;
+        else if (STREQ_NULLABLE(str, "native"))
+            timer->mode = VIR_DOMAIN_TIMER_MODE_NATIVE;
+        else if (STREQ_NULLABLE(str, "native_paravirt"))
+            timer->mode = VIR_DOMAIN_TIMER_MODE_PARAVIRT;
+
+        def->clock.timers[def->clock.ntimers - 1] = timer;
+    }
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (xenConfigGetBool(conf, "pae", &val, 1) < 0)
@@ -545,9 +569,7 @@ xenParseCPUFeatures(virConfPtr conf,
             return -1;
 
         if (val != -1) {
-            virDomainTimerDefPtr timer;
-
-            if (VIR_ALLOC_N(def->clock.timers, 1) < 0 ||
+            if (VIR_EXPAND_N(def->clock.timers, def->clock.ntimers, 1) < 0 ||
                 VIR_ALLOC(timer) < 0)
                 return -1;
 
@@ -557,8 +579,7 @@ xenParseCPUFeatures(virConfPtr conf,
             timer->mode = -1;
             timer->track = -1;
 
-            def->clock.ntimers = 1;
-            def->clock.timers[0] = timer;
+            def->clock.timers[def->clock.ntimers - 1] = timer;
         }
     }
 
@@ -1584,8 +1605,9 @@ static int
 xenFormatCPUFeatures(virConfPtr conf, virDomainDefPtr def)
 {
     size_t i;
+    bool hvm = !!(def->os.type == VIR_DOMAIN_OSTYPE_HVM);
 
-    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
+    if (hvm) {
         if (xenConfigSetInt(conf, "pae",
                             (def->features[VIR_DOMAIN_FEATURE_PAE] ==
                             VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
@@ -1610,12 +1632,57 @@ xenFormatCPUFeatures(virConfPtr conf, virDomainDefPtr def)
                             (def->features[VIR_DOMAIN_FEATURE_VIRIDIAN] ==
                              VIR_TRISTATE_SWITCH_ON) ? 1 : 0) < 0)
             return -1;
+    }
 
-        for (i = 0; i < def->clock.ntimers; i++) {
-            if (def->clock.timers[i]->name == VIR_DOMAIN_TIMER_NAME_HPET &&
-                def->clock.timers[i]->present != -1 &&
-                xenConfigSetInt(conf, "hpet", def->clock.timers[i]->present) < 0)
+    for (i = 0; i < def->clock.ntimers; i++) {
+        switch ((virDomainTimerNameType) def->clock.timers[i]->name) {
+        case VIR_DOMAIN_TIMER_NAME_TSC:
+            switch (def->clock.timers[i]->mode) {
+            case VIR_DOMAIN_TIMER_MODE_NATIVE:
+                if (xenConfigSetString(conf, "tsc_mode", "native") < 0)
+                    return -1;
+                break;
+            case VIR_DOMAIN_TIMER_MODE_PARAVIRT:
+                if (xenConfigSetString(conf, "tsc_mode", "native_paravirt") < 0)
+                    return -1;
+                break;
+            case VIR_DOMAIN_TIMER_MODE_EMULATE:
+                if (xenConfigSetString(conf, "tsc_mode", "always_emulate") < 0)
+                    return -1;
+                break;
+            default:
+                if (xenConfigSetString(conf, "tsc_mode", "default") < 0)
+                    return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_TIMER_NAME_HPET:
+            if (hvm) {
+                int enable_hpet = def->clock.timers[i]->present != 0;
+
+                /* disable hpet if 'present' is 0, enable otherwise */
+                if (xenConfigSetInt(conf, "hpet", enable_hpet) < 0)
+                    return -1;
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported timer type (name) '%s'"),
+                               virDomainTimerNameTypeToString(def->clock.timers[i]->name));
                 return -1;
+            }
+            break;
+
+        case VIR_DOMAIN_TIMER_NAME_PLATFORM:
+        case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
+        case VIR_DOMAIN_TIMER_NAME_RTC:
+        case VIR_DOMAIN_TIMER_NAME_PIT:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unsupported timer type (name) '%s'"),
+                           virDomainTimerNameTypeToString(def->clock.timers[i]->name));
+            return -1;
+
+        case VIR_DOMAIN_TIMER_NAME_LAST:
+            break;
         }
     }
 
