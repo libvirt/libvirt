@@ -7635,6 +7635,7 @@ struct qemuDomainAttachDeviceMknodData {
     virDomainObjPtr vm;
     virDomainDeviceDefPtr devDef;
     const char *file;
+    const char *target;
     struct stat sb;
     void *acl;
 #ifdef WITH_SELINUX
@@ -7650,6 +7651,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
     struct qemuDomainAttachDeviceMknodData *data = opaque;
     int ret = -1;
     bool delDevice = false;
+    bool isLink = S_ISLNK(data->sb.st_mode);
 
     virSecurityManagerPostFork(data->driver->securityManager);
 
@@ -7659,24 +7661,47 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
         goto cleanup;
     }
 
-    VIR_DEBUG("Creating dev %s (%d,%d)",
-              data->file, major(data->sb.st_rdev), minor(data->sb.st_rdev));
-    if (mknod(data->file, data->sb.st_mode, data->sb.st_rdev) < 0) {
-        /* Because we are not removing devices on hotunplug, or
-         * we might be creating part of backing chain that
-         * already exist due to a different disk plugged to
-         * domain, accept EEXIST. */
-        if (errno != EEXIST) {
-            virReportSystemError(errno,
-                                 _("Unable to create device %s"),
-                                 data->file);
-            goto cleanup;
+    if (isLink) {
+        VIR_DEBUG("Creating symlink %s -> %s", data->file, data->target);
+        if (symlink(data->target, data->file) < 0) {
+            if (errno != EEXIST) {
+                virReportSystemError(errno,
+                                     _("Unable to create symlink %s"),
+                                     data->target);
+                goto cleanup;
+            }
+        } else {
+            delDevice = true;
         }
     } else {
-        delDevice = true;
+        VIR_DEBUG("Creating dev %s (%d,%d)",
+                  data->file, major(data->sb.st_rdev), minor(data->sb.st_rdev));
+        if (mknod(data->file, data->sb.st_mode, data->sb.st_rdev) < 0) {
+            /* Because we are not removing devices on hotunplug, or
+             * we might be creating part of backing chain that
+             * already exist due to a different disk plugged to
+             * domain, accept EEXIST. */
+            if (errno != EEXIST) {
+                virReportSystemError(errno,
+                                     _("Unable to create device %s"),
+                                     data->file);
+                goto cleanup;
+            }
+        } else {
+            delDevice = true;
+        }
     }
 
-    if (virFileSetACLs(data->file, data->acl) < 0 &&
+    if (lchown(data->file, data->sb.st_uid, data->sb.st_gid) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to chown device %s"),
+                             data->file);
+        goto cleanup;
+    }
+
+    /* Symlinks don't have ACLs. */
+    if (!isLink &&
+        virFileSetACLs(data->file, data->acl) < 0 &&
         errno != ENOTSUP) {
         virReportSystemError(errno,
                              _("Unable to set ACLs on %s"), data->file);
@@ -7684,7 +7709,8 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
     }
 
 #ifdef WITH_SELINUX
-    if (setfilecon_raw(data->file, (VIR_SELINUX_CTX_CONST char *) data->tcon) < 0) {
+    if (data->tcon &&
+        lsetfilecon_raw(data->file, (VIR_SELINUX_CTX_CONST char *) data->tcon) < 0) {
         VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
         if (errno != EOPNOTSUPP && errno != ENOTSUP) {
         VIR_WARNINGS_RESET
@@ -7716,6 +7742,8 @@ qemuDomainAttachDeviceMknod(virQEMUDriverPtr driver,
 {
     struct qemuDomainAttachDeviceMknodData data;
     int ret = -1;
+    char *target = NULL;
+    bool isLink;
 
     memset(&data, 0, sizeof(data));
 
@@ -7724,21 +7752,55 @@ qemuDomainAttachDeviceMknod(virQEMUDriverPtr driver,
     data.devDef = devDef;
     data.file = file;
 
-    if (stat(file, &data.sb) < 0) {
+    if (lstat(file, &data.sb) < 0) {
         virReportSystemError(errno,
                              _("Unable to access %s"), file);
         return ret;
     }
 
-    if (virFileGetACLs(file, &data.acl) < 0 &&
+    isLink = S_ISLNK(data.sb.st_mode);
+
+    if (isLink) {
+        if (virFileReadLink(file, &target) < 0) {
+            virReportSystemError(errno,
+                                 _("unable to resolve symlink %s"),
+                                 file);
+            return ret;
+        }
+
+        if (IS_RELATIVE_FILE_NAME(target)) {
+            char *c = NULL, *tmp = NULL, *fileTmp = NULL;
+
+            if (VIR_STRDUP(fileTmp, file) < 0)
+                goto cleanup;
+
+            if ((c = strrchr(fileTmp, '/')))
+                *(c + 1) = '\0';
+
+            if (virAsprintf(&tmp, "%s%s", fileTmp, target) < 0) {
+                VIR_FREE(fileTmp);
+                goto cleanup;
+            }
+            VIR_FREE(fileTmp);
+            VIR_FREE(target);
+            target = tmp;
+            tmp = NULL;
+        }
+
+        data.target = target;
+    }
+
+    /* Symlinks don't have ACLs. */
+    if (!isLink &&
+        virFileGetACLs(file, &data.acl) < 0 &&
         errno != ENOTSUP) {
         virReportSystemError(errno,
                              _("Unable to get ACLs on %s"), file);
-        return ret;
+        goto cleanup;
     }
 
 #ifdef WITH_SELINUX
-    if (getfilecon_raw(file, &data.tcon) < 0 &&
+    if (lgetfilecon_raw(file, &data.tcon) < 0 &&
         (errno != ENOTSUP && errno != ENODATA)) {
         virReportSystemError(errno,
                              _("Unable to get SELinux label from %s"), file);
@@ -7746,17 +7808,22 @@ qemuDomainAttachDeviceMknod(virQEMUDriverPtr driver,
     }
 #endif
 
-    if (virSecurityManagerPreFork(driver->securityManager) < 0)
-        goto cleanup;
+    if (STRPREFIX(file, DEVPREFIX)) {
+        if (virSecurityManagerPreFork(driver->securityManager) < 0)
+            goto cleanup;
 
-    if (virProcessRunInMountNamespace(vm->pid,
-                                      qemuDomainAttachDeviceMknodHelper,
-                                      &data) < 0) {
+        if (virProcessRunInMountNamespace(vm->pid,
+                                          qemuDomainAttachDeviceMknodHelper,
+                                          &data) < 0) {
+            virSecurityManagerPostFork(driver->securityManager);
+            goto cleanup;
+        }
         virSecurityManagerPostFork(driver->securityManager);
-        goto cleanup;
     }
 
-    virSecurityManagerPostFork(driver->securityManager);
+    if (isLink &&
+        qemuDomainAttachDeviceMknod(driver, vm, devDef, target) < 0)
+        goto cleanup;
 
     ret = 0;
  cleanup:
@@ -7764,6 +7831,7 @@ qemuDomainAttachDeviceMknod(virQEMUDriverPtr driver,
     freecon(data.tcon);
 #endif
     virFileFreeACLs(&data.acl);
+    VIR_FREE(target);
     return ret;
 }
 
