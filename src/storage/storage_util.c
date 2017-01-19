@@ -2437,7 +2437,7 @@ virStorageBackendFindGlusterPoolSources(const char *host,
 
     int ret = -1;
 
-    if (!(glusterpath = virFindFileInPath(GLUSTER_CLI))) {
+    if (!(glusterpath = virFindFileInPath("gluster"))) {
         if (report) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("'gluster' command line tool not found"));
