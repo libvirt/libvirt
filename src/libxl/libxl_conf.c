@@ -318,13 +318,16 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         case VIR_DOMAIN_TIMER_NAME_TSC:
             switch (def->clock.timers[i]->mode) {
             case VIR_DOMAIN_TIMER_MODE_NATIVE:
-                b_info->tsc_mode = 2;
+                b_info->tsc_mode = LIBXL_TSC_MODE_NATIVE;
                 break;
             case VIR_DOMAIN_TIMER_MODE_PARAVIRT:
-                b_info->tsc_mode = 3;
+                b_info->tsc_mode = LIBXL_TSC_MODE_NATIVE_PARAVIRT;
+                break;
+            case VIR_DOMAIN_TIMER_MODE_EMULATE:
+                b_info->tsc_mode = LIBXL_TSC_MODE_ALWAYS_EMULATE;
                 break;
             default:
-                b_info->tsc_mode = 1;
+                b_info->tsc_mode = LIBXL_TSC_MODE_DEFAULT;
             }
             break;
 
