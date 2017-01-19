@@ -308,14 +308,14 @@ With I<--pretty> the online CPUs are printed as a range instead of a list.
 =item B<nodecpustats> [I<cpu>] [I<--percent>]
 
 Returns cpu stats of the node.
-If I<cpu> is specified, this will prints specified cpu statistics only.
-If I<--percent> is specified, this will prints percentage of each kind of cpu
-statistics during 1 second.
+If I<cpu> is specified, this will print the specified cpu statistics only.
+If I<--percent> is specified, this will print the percentage of each kind
+of cpu statistics during 1 second.
 
 =item B<nodememstats> [I<cell>]
 
 Returns memory stats of the node.
-If I<cell> is specified, this will prints specified cell statistics only.
+If I<cell> is specified, this will print the specified cell statistics only.
 
 =item B<nodesuspend> [I<target>] [I<duration>]
 
