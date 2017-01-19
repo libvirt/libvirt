@@ -1675,52 +1675,134 @@ noinst_LTLIBRARIES += libvirt_driver_storage.la
 #libvirt_la_BUILT_LIBADD += libvirt_driver_storage.la
 endif ! WITH_DRIVER_MODULES
 libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_SOURCES)
-libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_FS_SOURCES)
+
+
+libvirt_storage_backend_fs_la_SOURCES = $(STORAGE_DRIVER_FS_SOURCES)
+libvirt_storage_backend_fs_la_CFLAGS =	\
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS)
+
+noinst_LTLIBRARIES += libvirt_storage_backend_fs.la
+libvirt_driver_storage_impl_la_LIBADD += libvirt_storage_backend_fs.la
 endif WITH_STORAGE
 
 if WITH_STORAGE_LVM
-libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_LVM_SOURCES)
+libvirt_storage_backend_logical_la_SOURCES = \
+	$(STORAGE_DRIVER_LVM_SOURCES)
+libvirt_storage_backend_logical_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS)
+
+noinst_LTLIBRARIES += libvirt_storage_backend_logical.la
+libvirt_driver_storage_impl_la_LIBADD += \
+	libvirt_storage_backend_logical.la
 endif WITH_STORAGE_LVM
 
 if WITH_STORAGE_ISCSI
-libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_ISCSI_SOURCES)
+libvirt_storage_backend_iscsi_la_SOURCES = \
+	$(STORAGE_DRIVER_ISCSI_SOURCES)
+libvirt_storage_backend_iscsi_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	-I$(srcdir)/secret \
+	$(AM_CFLAGS)
+
+noinst_LTLIBRARIES += libvirt_storage_backend_iscsi.la
+libvirt_driver_storage_impl_la_LIBADD += \
+	libvirt_storage_backend_iscsi.la
 endif WITH_STORAGE_ISCSI
 
 if WITH_STORAGE_SCSI
-libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_SCSI_SOURCES)
+libvirt_storage_backend_scsi_la_SOURCES = $(STORAGE_DRIVER_SCSI_SOURCES)
+libvirt_storage_backend_scsi_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS)
+
+noinst_LTLIBRARIES += libvirt_storage_backend_scsi.la
+libvirt_driver_storage_impl_la_LIBADD += libvirt_storage_backend_scsi.la
 endif WITH_STORAGE_SCSI
 
 if WITH_STORAGE_MPATH
-libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_MPATH_SOURCES)
-libvirt_driver_storage_impl_la_CFLAGS += $(DEVMAPPER_CFLAGS)
-libvirt_driver_storage_impl_la_LIBADD += $(DEVMAPPER_LIBS)
+libvirt_storage_backend_mpath_la_SOURCES = \
+	$(STORAGE_DRIVER_MPATH_SOURCES)
+libvirt_storage_backend_mpath_la_LIBADD = $(DEVMAPPER_LIBS)
+libvirt_storage_backend_mpath_la_CFLAGS =	\
+	-I$(srcdir)/conf \
+	$(DEVMAPPER_CFLAGS) \
+	$(AM_CFLAGS)
+
+noinst_LTLIBRARIES += libvirt_storage_backend_mpath.la
+libvirt_driver_storage_impl_la_LIBADD += \
+	libvirt_storage_backend_mpath.la
 endif WITH_STORAGE_MPATH
 
 if WITH_STORAGE_DISK
-libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_DISK_SOURCES)
+libvirt_storage_backend_disk_la_SOURCES = $(STORAGE_DRIVER_DISK_SOURCES)
+libvirt_storage_backend_disk_la_CFLAGS =	\
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS)
+
+noinst_LTLIBRARIES += libvirt_storage_backend_disk.la
+libvirt_driver_storage_impl_la_LIBADD += libvirt_storage_backend_disk.la
 endif WITH_STORAGE_DISK
 
 if WITH_STORAGE_RBD
-libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_RBD_SOURCES)
-libvirt_driver_storage_impl_la_LIBADD += $(LIBRBD_LIBS)
+libvirt_storage_backend_rbd_la_SOURCES = $(STORAGE_DRIVER_RBD_SOURCES)
+libvirt_storage_backend_rbd_la_LIBADD = $(LIBRBD_LIBS)
+libvirt_storage_backend_rbd_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	-I$(srcdir)/secret \
+	$(AM_CFLAGS)
+
+noinst_LTLIBRARIES += libvirt_storage_backend_rbd.la
+libvirt_driver_storage_impl_la_LIBADD += libvirt_storage_backend_rbd.la
 endif WITH_STORAGE_RBD
 
 if WITH_STORAGE_SHEEPDOG
-libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_SHEEPDOG_SOURCES)
+libvirt_storage_backend_sheepdog_la_SOURCES = \
+	$(STORAGE_DRIVER_SHEEPDOG_SOURCES)
+libvirt_storage_backend_sheepdog_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS)
+
+noinst_LTLIBRARIES += libvirt_storage_backend_sheepdog.la
+libvirt_driver_storage_impl_la_LIBADD += \
+	libvirt_storage_backend_sheepdog.la
 endif WITH_STORAGE_SHEEPDOG
 
 if WITH_STORAGE_GLUSTER
-libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_GLUSTER_SOURCES)
-libvirt_driver_storage_impl_la_CFLAGS += $(GLUSTERFS_CFLAGS)
-libvirt_driver_storage_impl_la_LIBADD += $(GLUSTERFS_LIBS)
+libvirt_storage_backend_gluster_la_SOURCES = \
+	$(STORAGE_DRIVER_GLUSTER_SOURCES)
+libvirt_storage_backend_gluster_la_LIBADD = $(GLUSTERFS_LIBS)
+libvirt_storage_backend_gluster_la_CFLAGS = \
+	-I$(srcdir)/conf \
+	$(GLUSTERFS_CFLAGS) \
+	$(AM_CFLAGS)
+
+noinst_LTLIBRARIES += libvirt_storage_backend_gluster.la
+libvirt_driver_storage_impl_la_LIBADD += \
+	libvirt_storage_backend_gluster.la
 endif WITH_STORAGE_GLUSTER
 
 if WITH_STORAGE_ZFS
-libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_ZFS_SOURCES)
+libvirt_storage_backend_zfs_la_SOURCES = $(STORAGE_DRIVER_ZFS_SOURCES)
+libvirt_storage_backend_zfs_la_CFLAGS =	\
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS)
+
+noinst_LTLIBRARIES += libvirt_storage_backend_zfs.la
+libvirt_driver_storage_impl_la_LIBADD += libvirt_storage_backend_zfs.la
 endif WITH_STORAGE_ZFS
 
 if WITH_STORAGE_VSTORAGE
-libvirt_driver_storage_impl_la_SOURCES += $(STORAGE_DRIVER_VSTORAGE_SOURCES)
+libvirt_storage_backend_vstorage_la_SOURCES = \
+	$(STORAGE_DRIVER_VSTORAGE_SOURCES)
+libvirt_storage_backend_vstorage_la_CFLAGS =	\
+	-I$(srcdir)/conf \
+	$(AM_CFLAGS)
+
+noinst_LTLIBRARIES += libvirt_storage_backend_vstorage.la
+libvirt_driver_storage_impl_la_LIBADD += \
+	libvirt_storage_backend_vstorage.la
 endif WITH_STORAGE_VSTORAGE
 
 if WITH_NODE_DEVICES
