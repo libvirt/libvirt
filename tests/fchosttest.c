@@ -159,6 +159,7 @@ test6(const void *data ATTRIBUTE_UNUSED)
     const char *expect_wwpn = "2102001b32a9da4e";
     char *wwnn = NULL;
     char *wwpn = NULL;
+    char *fabric_wwn = NULL;
     int ret = -1;
 
     if (!(wwnn = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB,
@@ -169,8 +170,9 @@ test6(const void *data ATTRIBUTE_UNUSED)
                                "port_name")))
         goto cleanup;
 
-    if (virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB,
-                      "fabric_name"))
+    if ((fabric_wwn = virReadFCHost(TEST_FC_HOST_PREFIX,
+                                    TEST_FC_HOST_NUM_NO_FAB,
+                                    "fabric_name")))
         goto cleanup;
 
     if (STRNEQ(expect_wwnn, wwnn) ||
@@ -181,6 +183,7 @@ test6(const void *data ATTRIBUTE_UNUSED)
  cleanup:
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
+    VIR_FREE(fabric_wwn);
     return ret;
 }
 
