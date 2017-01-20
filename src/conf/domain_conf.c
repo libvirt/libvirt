@@ -6275,12 +6275,14 @@ virDomainHostdevSubsysSCSIVHostDefParseXML(xmlNodePtr sourcenode,
                                            virDomainHostdevDefPtr def)
 {
     char *protocol = NULL;
+    char *wwpn = NULL;
     virDomainHostdevSubsysSCSIVHostPtr hostsrc = &def->source.subsys.u.scsi_host;
+    int ret = -1;
 
     if (!(protocol = virXMLPropString(sourcenode, "protocol"))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Missing scsi_host subsystem protocol"));
-        return -1;
+        return ret;
     }
 
     if ((hostsrc->protocol =
@@ -6293,17 +6295,19 @@ virDomainHostdevSubsysSCSIVHostDefParseXML(xmlNodePtr sourcenode,
 
     switch ((virDomainHostdevSubsysSCSIHostProtocolType) hostsrc->protocol) {
     case VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST:
-        if (!(hostsrc->wwpn = virXMLPropString(sourcenode, "wwpn"))) {
+        if (!(wwpn = virXMLPropString(sourcenode, "wwpn"))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing vhost-scsi hostdev source wwpn"));
             goto cleanup;
         }
 
-        if (!STRPREFIX(hostsrc->wwpn, "naa.") ||
-            !virValidateWWN(hostsrc->wwpn + 4)) {
+        if (!STRPREFIX(wwpn, "naa.") ||
+            !virValidateWWN(wwpn + 4)) {
             virReportError(VIR_ERR_XML_ERROR, "%s", _("malformed 'wwpn' value"));
             goto cleanup;
         }
+        hostsrc->wwpn = wwpn;
+        wwpn = NULL;
         break;
     case VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_NONE:
     case VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_LAST:
@@ -6314,12 +6318,11 @@ virDomainHostdevSubsysSCSIVHostDefParseXML(xmlNodePtr sourcenode,
         break;
     }
 
-    return 0;
-
+    ret = 0;
  cleanup:
-    VIR_FREE(hostsrc->wwpn);
+    VIR_FREE(wwpn);
     VIR_FREE(protocol);
-    return -1;
+    return ret;
 }
 
 
