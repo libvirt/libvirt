@@ -4008,46 +4008,52 @@ void qemuDomainObjTaint(virQEMUDriverPtr driver,
 {
     virErrorPtr orig_err = NULL;
     bool closeLog = false;
+    char *timestamp = NULL;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (virDomainObjTaint(obj, taint)) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(obj->def->uuid, uuidstr);
+    if (!virDomainObjTaint(obj, taint))
+        return;
 
-        VIR_WARN("Domain id=%d name='%s' uuid=%s is tainted: %s",
-                 obj->def->id,
-                 obj->def->name,
-                 uuidstr,
-                 virDomainTaintTypeToString(taint));
+    virUUIDFormat(obj->def->uuid, uuidstr);
 
-        /* We don't care about errors logging taint info, so
-         * preserve original error, and clear any error that
-         * is raised */
-        orig_err = virSaveLastError();
-        if (logCtxt == NULL) {
-            logCtxt = qemuDomainLogContextNew(driver, obj,
-                                              QEMU_DOMAIN_LOG_CONTEXT_MODE_ATTACH);
-            if (!logCtxt) {
-                if (orig_err) {
-                    virSetError(orig_err);
-                    virFreeError(orig_err);
-                }
-                VIR_WARN("Unable to open domainlog");
-                return;
-            }
-            closeLog = true;
+    VIR_WARN("Domain id=%d name='%s' uuid=%s is tainted: %s",
+             obj->def->id,
+             obj->def->name,
+             uuidstr,
+             virDomainTaintTypeToString(taint));
+
+    /* We don't care about errors logging taint info, so
+     * preserve original error, and clear any error that
+     * is raised */
+    orig_err = virSaveLastError();
+
+    if (!(timestamp = virTimeStringNow()))
+        goto cleanup;
+
+    if (logCtxt == NULL) {
+        logCtxt = qemuDomainLogContextNew(driver, obj,
+                                          QEMU_DOMAIN_LOG_CONTEXT_MODE_ATTACH);
+        if (!logCtxt) {
+            VIR_WARN("Unable to open domainlog");
+            goto cleanup;
         }
+        closeLog = true;
+    }
 
-        if (qemuDomainLogContextWrite(logCtxt,
-                                      "Domain id=%d is tainted: %s\n",
-                                      obj->def->id,
-                                      virDomainTaintTypeToString(taint)) < 0)
-            virResetLastError();
-        if (closeLog)
-            qemuDomainLogContextFree(logCtxt);
-        if (orig_err) {
-            virSetError(orig_err);
-            virFreeError(orig_err);
-        }
+    if (qemuDomainLogContextWrite(logCtxt,
+                                  "%s: Domain id=%d is tainted: %s\n",
+                                  timestamp,
+                                  obj->def->id,
+                                  virDomainTaintTypeToString(taint)) < 0)
+        virResetLastError();
+
+ cleanup:
+    VIR_FREE(timestamp);
+    if (closeLog)
+        qemuDomainLogContextFree(logCtxt);
+    if (orig_err) {
+        virSetError(orig_err);
+        virFreeError(orig_err);
     }
 }
 
