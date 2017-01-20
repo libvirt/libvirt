@@ -73,22 +73,15 @@ qemuSecurityRestoreAllLabel(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             bool migrated)
 {
-    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
-        virSecurityManagerTransactionStart(driver->securityManager) < 0)
-        goto cleanup;
-
-    if (virSecurityManagerRestoreAllLabel(driver->securityManager,
-                                          vm->def,
-                                          migrated) < 0)
-        goto cleanup;
-
-    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT) &&
-        virSecurityManagerTransactionCommit(driver->securityManager,
-                                            vm->pid) < 0)
-        goto cleanup;
-
- cleanup:
-    virSecurityManagerTransactionAbort(driver->securityManager);
+    /* In contrast to qemuSecuritySetAllLabel, do not use
+     * secdriver transactions here. This function is called from
+     * qemuProcessStop() which is meant to do cleanup after qemu
+     * process died. If it did do, the namespace is gone as qemu
+     * was the only process running there. We would not succeed
+     * in entering the namespace then. */
+    virSecurityManagerRestoreAllLabel(driver->securityManager,
+                                      vm->def,
+                                      migrated);
 }
 
 
