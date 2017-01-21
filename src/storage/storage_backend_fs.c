@@ -536,8 +536,34 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
     return ret;
 }
 
+
 /**
+ * @conn connection to report errors against
+ * @pool storage pool to start
+ *
+ * Starts a directory or FS based storage pool.  The underlying source
+ * device will be mounted for FS based pools.
+ *
+ * Returns 0 on success, -1 on error
+ */
+static int
+virStorageBackendFileSystemStart(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                 virStoragePoolObjPtr pool)
+{
+    if (pool->def->type != VIR_STORAGE_POOL_DIR &&
+        virStorageBackendFileSystemMount(pool) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * @conn connection to report errors against
  * @pool storage pool to unmount
+ *
+ * Stops a file storage pool.  The underlying source device is unmounted
+ * for FS based pools.  Any cached data about volumes is released.
  *
  * Ensure that a FS storage pool is not mounted on its target location.
  * If already unmounted, this is a no-op.
@@ -545,7 +571,8 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
  * Returns 0 if successfully unmounted, -1 on error
  */
 static int
-virStorageBackendFileSystemUnmount(virStoragePoolObjPtr pool)
+virStorageBackendFileSystemStop(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                virStoragePoolObjPtr pool)
 {
     virCommandPtr cmd = NULL;
     int ret = -1;
@@ -597,29 +624,6 @@ virStorageBackendFileSystemCheck(virStoragePoolObjPtr pool,
 
     return 0;
 }
-
-#if WITH_STORAGE_FS
-/**
- * @conn connection to report errors against
- * @pool storage pool to start
- *
- * Starts a directory or FS based storage pool.  The underlying source
- * device will be mounted for FS based pools.
- *
- * Returns 0 on success, -1 on error
- */
-static int
-virStorageBackendFileSystemStart(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                 virStoragePoolObjPtr pool)
-{
-    if (pool->def->type != VIR_STORAGE_POOL_DIR &&
-        virStorageBackendFileSystemMount(pool) < 0)
-        return -1;
-
-    return 0;
-}
-#endif /* WITH_STORAGE_FS */
-
 
 /* some platforms don't support mkfs */
 #ifdef MKFS
@@ -944,28 +948,6 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn ATTRIBUTE_UNUSED,
         virStoragePoolObjClearVols(pool);
     return ret;
 }
-
-
-/**
- * @conn connection to report errors against
- * @pool storage pool to stop
- *
- * Stops a file storage pool.  The underlying source device is unmounted
- * for FS based pools.  Any cached data about volumes is released.
- *
- * Returns 0 on success, -1 on error.
- */
-#if WITH_STORAGE_FS
-static int
-virStorageBackendFileSystemStop(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                virStoragePoolObjPtr pool)
-{
-    if (virStorageBackendFileSystemUnmount(pool) < 0)
-        return -1;
-
-    return 0;
-}
-#endif /* WITH_STORAGE_FS */
 
 
 /**
