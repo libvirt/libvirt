@@ -3634,8 +3634,8 @@ I<--autostart> lists the autostarting pools, I<--no-autostart> lists the pools
 with autostarting disabled. If I<--uuid> is specified only pool's UUIDs are printed.
 If I<--name> is specified only pool's names are printed. If both I<--name>
 and I<--uuid> are specified, pool's UUID and names are printed side by side
-without any header. Options I<--uuid> and I<--name> are mutually exclusive
-if option I<--details> is specified.
+without any header. Option I<--details> is mutually exclusive with options
+I<--uuid> and I<--name>.
 
 You may also want to list pools with specified types using I<type>, the
 pool types must be separated by comma, e.g. --type dir,disk. The valid pool
