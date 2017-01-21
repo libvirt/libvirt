@@ -332,7 +332,7 @@ virCloseCallbacksRun(virCloseCallbacksPtr closeCallbacks,
     virObjectLock(closeCallbacks);
     list = virCloseCallbacksGetForConn(closeCallbacks, conn);
     if (!list) {
-        virObjectLock(closeCallbacks);
+        virObjectUnlock(closeCallbacks);
         return;
     }
 
