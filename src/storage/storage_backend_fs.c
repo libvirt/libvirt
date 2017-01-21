@@ -625,342 +625,6 @@ virStorageBackendFileSystemBuild(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
-/**
- * Set up a volume definition to be added to a pool's volume list, but
- * don't do any file creation or allocation. By separating the two processes,
- * we allow allocation progress reporting (by polling the volume's 'info'
- * function), and can drop the parent pool lock during the (slow) allocation.
- */
-static int
-virStorageBackendFileSystemVolCreate(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                     virStoragePoolObjPtr pool,
-                                     virStorageVolDefPtr vol)
-{
-
-    if (vol->target.format == VIR_STORAGE_FILE_DIR)
-        vol->type = VIR_STORAGE_VOL_DIR;
-    else if (vol->target.format == VIR_STORAGE_FILE_PLOOP)
-        vol->type = VIR_STORAGE_VOL_PLOOP;
-    else
-        vol->type = VIR_STORAGE_VOL_FILE;
-
-    /* Volumes within a directory pools are not recursive; do not
-     * allow escape to ../ or a subdir */
-    if (strchr(vol->name, '/')) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("volume name '%s' cannot contain '/'"), vol->name);
-        return -1;
-    }
-
-    VIR_FREE(vol->target.path);
-    if (virAsprintf(&vol->target.path, "%s/%s",
-                    pool->def->target.path,
-                    vol->name) == -1)
-        return -1;
-
-    if (virFileExists(vol->target.path)) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("volume target path '%s' already exists"),
-                       vol->target.path);
-        return -1;
-    }
-
-    VIR_FREE(vol->key);
-    return VIR_STRDUP(vol->key, vol->target.path);
-}
-
-static int createFileDir(virConnectPtr conn ATTRIBUTE_UNUSED,
-                         virStoragePoolObjPtr pool,
-                         virStorageVolDefPtr vol,
-                         virStorageVolDefPtr inputvol,
-                         unsigned int flags)
-{
-    int err;
-
-    virCheckFlags(0, -1);
-
-    if (inputvol) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s",
-                       _("cannot copy from volume to a directory volume"));
-        return -1;
-    }
-
-    if (vol->target.backingStore) {
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("backing storage not supported for directories volumes"));
-        return -1;
-    }
-
-
-    if ((err = virDirCreate(vol->target.path,
-                            (vol->target.perms->mode == (mode_t) -1 ?
-                             VIR_STORAGE_DEFAULT_VOL_PERM_MODE :
-                             vol->target.perms->mode),
-                            vol->target.perms->uid,
-                            vol->target.perms->gid,
-                            (pool->def->type == VIR_STORAGE_POOL_NETFS
-                             ? VIR_DIR_CREATE_AS_UID : 0))) < 0) {
-        return -1;
-    }
-
-    return 0;
-}
-
-static int
-_virStorageBackendFileSystemVolBuild(virConnectPtr conn,
-                                     virStoragePoolObjPtr pool,
-                                     virStorageVolDefPtr vol,
-                                     virStorageVolDefPtr inputvol,
-                                     unsigned int flags)
-{
-    virStorageBackendBuildVolFrom create_func;
-
-    if (inputvol) {
-        if (vol->target.encryption != NULL) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("storage pool does not support "
-                                   "building encrypted volumes from "
-                                   "other volumes"));
-            return -1;
-        }
-        create_func = virStorageBackendGetBuildVolFromFunction(vol,
-                                                               inputvol);
-        if (!create_func)
-            return -1;
-    } else if (vol->target.format == VIR_STORAGE_FILE_RAW &&
-               vol->target.encryption == NULL) {
-        create_func = virStorageBackendCreateRaw;
-    } else if (vol->target.format == VIR_STORAGE_FILE_DIR) {
-        create_func = createFileDir;
-    } else if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
-        create_func = virStorageBackendCreatePloop;
-    } else {
-        create_func = virStorageBackendCreateQemuImg;
-    }
-
-    if (create_func(conn, pool, vol, inputvol, flags) < 0)
-        return -1;
-    return 0;
-}
-
-/**
- * Allocate a new file as a volume. This is either done directly
- * for raw/sparse files, or by calling qemu-img for
- * special kinds of files
- */
-static int
-virStorageBackendFileSystemVolBuild(virConnectPtr conn,
-                                    virStoragePoolObjPtr pool,
-                                    virStorageVolDefPtr vol,
-                                    unsigned int flags)
-{
-    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
-                  VIR_STORAGE_VOL_CREATE_REFLINK,
-                  -1);
-
-    return _virStorageBackendFileSystemVolBuild(conn, pool, vol, NULL, flags);
-}
-
-/*
- * Create a storage vol using 'inputvol' as input
- */
-static int
-virStorageBackendFileSystemVolBuildFrom(virConnectPtr conn,
-                                        virStoragePoolObjPtr pool,
-                                        virStorageVolDefPtr vol,
-                                        virStorageVolDefPtr inputvol,
-                                        unsigned int flags)
-{
-    virCheckFlags(VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA |
-                  VIR_STORAGE_VOL_CREATE_REFLINK,
-                  -1);
-
-    return _virStorageBackendFileSystemVolBuild(conn, pool, vol, inputvol, flags);
-}
-
-/**
- * Remove a volume - no support for BLOCK and NETWORK yet
- */
-static int
-virStorageBackendFileSystemVolDelete(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                     virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
-                                     virStorageVolDefPtr vol,
-                                     unsigned int flags)
-{
-    virCheckFlags(0, -1);
-
-    switch ((virStorageVolType) vol->type) {
-    case VIR_STORAGE_VOL_FILE:
-    case VIR_STORAGE_VOL_DIR:
-        if (virFileRemove(vol->target.path, vol->target.perms->uid,
-                          vol->target.perms->gid) < 0) {
-            /* Silently ignore failures where the vol has already gone away */
-            if (errno != ENOENT) {
-                if (vol->type == VIR_STORAGE_VOL_FILE)
-                    virReportSystemError(errno,
-                                         _("cannot unlink file '%s'"),
-                                         vol->target.path);
-                else
-                    virReportSystemError(errno,
-                                         _("cannot remove directory '%s'"),
-                                         vol->target.path);
-                return -1;
-            }
-        }
-        break;
-    case VIR_STORAGE_VOL_PLOOP:
-        if (virFileDeleteTree(vol->target.path) < 0)
-            return -1;
-        break;
-    case VIR_STORAGE_VOL_BLOCK:
-    case VIR_STORAGE_VOL_NETWORK:
-    case VIR_STORAGE_VOL_NETDIR:
-    case VIR_STORAGE_VOL_LAST:
-        virReportError(VIR_ERR_NO_SUPPORT,
-                       _("removing block or network volumes is not supported: %s"),
-                       vol->target.path);
-        return -1;
-    }
-    return 0;
-}
-
-
-/* virStorageBackendFileSystemLoadDefaultSecrets:
- * @conn: Connection pointer to fetch secret
- * @vol: volume being refreshed
- *
- * If the volume had a secret generated, we need to regenerate the
- * encryption secret information
- *
- * Returns 0 if no secret or secret setup was successful,
- * -1 on failures w/ error message set
- */
-static int
-virStorageBackendFileSystemLoadDefaultSecrets(virConnectPtr conn,
-                                              virStorageVolDefPtr vol)
-{
-    virSecretPtr sec;
-    virStorageEncryptionSecretPtr encsec = NULL;
-
-    if (!vol->target.encryption || vol->target.encryption->nsecrets != 0)
-        return 0;
-
-    /* The encryption secret for qcow2 and luks volumes use the path
-     * to the volume, so look for a secret with the path. If not found,
-     * then we cannot generate the secret after a refresh (or restart).
-     * This may be the case if someone didn't follow instructions and created
-     * a usage string that although matched with the secret usage string,
-     * didn't contain the path to the volume. We won't error in that case,
-     * but we also cannot find the secret. */
-    if (!(sec = virSecretLookupByUsage(conn, VIR_SECRET_USAGE_TYPE_VOLUME,
-                                       vol->target.path)))
-        return 0;
-
-    if (VIR_ALLOC_N(vol->target.encryption->secrets, 1) < 0 ||
-        VIR_ALLOC(encsec) < 0) {
-        VIR_FREE(vol->target.encryption->secrets);
-        virObjectUnref(sec);
-        return -1;
-    }
-
-    vol->target.encryption->nsecrets = 1;
-    vol->target.encryption->secrets[0] = encsec;
-
-    encsec->type = VIR_STORAGE_ENCRYPTION_SECRET_TYPE_PASSPHRASE;
-    encsec->seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
-    virSecretGetUUID(sec, encsec->seclookupdef.u.uuid);
-    virObjectUnref(sec);
-
-    return 0;
-}
-
-
-/**
- * Update info about a volume's capacity/allocation
- */
-static int
-virStorageBackendFileSystemVolRefresh(virConnectPtr conn,
-                                      virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
-                                      virStorageVolDefPtr vol)
-{
-    int ret;
-
-    /* Refresh allocation / capacity / permissions info in case its changed */
-    if ((ret = virStorageBackendUpdateVolInfo(vol, false,
-                                              VIR_STORAGE_VOL_FS_OPEN_FLAGS,
-                                              0)) < 0)
-        return ret;
-
-    /* Load any secrets if possible */
-    return virStorageBackendFileSystemLoadDefaultSecrets(conn, vol);
-}
-
-static int
-virStorageBackendFilesystemResizeQemuImg(const char *path,
-                                         unsigned long long capacity)
-{
-    int ret = -1;
-    char *img_tool;
-    virCommandPtr cmd = NULL;
-
-    img_tool = virFindFileInPath("qemu-img");
-    if (!img_tool) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("unable to find qemu-img"));
-        return -1;
-    }
-
-    /* Round capacity as qemu-img resize errors out on sizes which are not
-     * a multiple of 512 */
-    capacity = VIR_ROUND_UP(capacity, 512);
-
-    cmd = virCommandNew(img_tool);
-    virCommandAddArgList(cmd, "resize", path, NULL);
-    virCommandAddArgFormat(cmd, "%llu", capacity);
-
-    ret = virCommandRun(cmd, NULL);
-
-    VIR_FREE(img_tool);
-    virCommandFree(cmd);
-
-    return ret;
-}
-
-/**
- * Resize a volume
- */
-static int
-virStorageBackendFileSystemVolResize(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                     virStoragePoolObjPtr pool ATTRIBUTE_UNUSED,
-                                     virStorageVolDefPtr vol,
-                                     unsigned long long capacity,
-                                     unsigned int flags)
-{
-    virCheckFlags(VIR_STORAGE_VOL_RESIZE_ALLOCATE |
-                  VIR_STORAGE_VOL_RESIZE_SHRINK, -1);
-
-    bool pre_allocate = flags & VIR_STORAGE_VOL_RESIZE_ALLOCATE;
-
-    if (vol->target.format == VIR_STORAGE_FILE_RAW) {
-        return virStorageFileResize(vol->target.path, capacity,
-                                    vol->target.allocation, pre_allocate);
-    } else if (vol->target.format == VIR_STORAGE_FILE_PLOOP) {
-        return virStoragePloopResize(vol, capacity);
-    } else {
-        if (pre_allocate) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("preallocate is only supported for raw "
-                             "type volume"));
-            return -1;
-        }
-
-        return virStorageBackendFilesystemResizeQemuImg(vol->target.path,
-                                                        capacity);
-    }
-}
-
-
 virStorageBackend virStorageBackendDirectory = {
     .type = VIR_STORAGE_POOL_DIR,
 
@@ -968,12 +632,12 @@ virStorageBackend virStorageBackendDirectory = {
     .checkPool = virStorageBackendFileSystemCheck,
     .refreshPool = virStorageBackendRefreshLocal,
     .deletePool = virStorageBackendDeleteLocal,
-    .buildVol = virStorageBackendFileSystemVolBuild,
-    .buildVolFrom = virStorageBackendFileSystemVolBuildFrom,
-    .createVol = virStorageBackendFileSystemVolCreate,
-    .refreshVol = virStorageBackendFileSystemVolRefresh,
-    .deleteVol = virStorageBackendFileSystemVolDelete,
-    .resizeVol = virStorageBackendFileSystemVolResize,
+    .buildVol = virStorageBackendVolBuildLocal,
+    .buildVolFrom = virStorageBackendVolBuildFromLocal,
+    .createVol = virStorageBackendVolCreateLocal,
+    .refreshVol = virStorageBackendVolRefreshLocal,
+    .deleteVol = virStorageBackendVolDeleteLocal,
+    .resizeVol = virStorageBackendVolResizeLocal,
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
     .wipeVol = virStorageBackendVolWipeLocal,
@@ -989,12 +653,12 @@ virStorageBackend virStorageBackendFileSystem = {
     .refreshPool = virStorageBackendRefreshLocal,
     .stopPool = virStorageBackendFileSystemStop,
     .deletePool = virStorageBackendDeleteLocal,
-    .buildVol = virStorageBackendFileSystemVolBuild,
-    .buildVolFrom = virStorageBackendFileSystemVolBuildFrom,
-    .createVol = virStorageBackendFileSystemVolCreate,
-    .refreshVol = virStorageBackendFileSystemVolRefresh,
-    .deleteVol = virStorageBackendFileSystemVolDelete,
-    .resizeVol = virStorageBackendFileSystemVolResize,
+    .buildVol = virStorageBackendVolBuildLocal,
+    .buildVolFrom = virStorageBackendVolBuildFromLocal,
+    .createVol = virStorageBackendVolCreateLocal,
+    .refreshVol = virStorageBackendVolRefreshLocal,
+    .deleteVol = virStorageBackendVolDeleteLocal,
+    .resizeVol = virStorageBackendVolResizeLocal,
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
     .wipeVol = virStorageBackendVolWipeLocal,
@@ -1009,12 +673,12 @@ virStorageBackend virStorageBackendNetFileSystem = {
     .refreshPool = virStorageBackendRefreshLocal,
     .stopPool = virStorageBackendFileSystemStop,
     .deletePool = virStorageBackendDeleteLocal,
-    .buildVol = virStorageBackendFileSystemVolBuild,
-    .buildVolFrom = virStorageBackendFileSystemVolBuildFrom,
-    .createVol = virStorageBackendFileSystemVolCreate,
-    .refreshVol = virStorageBackendFileSystemVolRefresh,
-    .deleteVol = virStorageBackendFileSystemVolDelete,
-    .resizeVol = virStorageBackendFileSystemVolResize,
+    .buildVol = virStorageBackendVolBuildLocal,
+    .buildVolFrom = virStorageBackendVolBuildFromLocal,
+    .createVol = virStorageBackendVolCreateLocal,
+    .refreshVol = virStorageBackendVolRefreshLocal,
+    .deleteVol = virStorageBackendVolDeleteLocal,
+    .resizeVol = virStorageBackendVolResizeLocal,
     .uploadVol = virStorageBackendVolUploadLocal,
     .downloadVol = virStorageBackendVolDownloadLocal,
     .wipeVol = virStorageBackendVolWipeLocal,

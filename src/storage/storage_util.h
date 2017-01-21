@@ -28,30 +28,39 @@
 # include "storage_backend.h"
 
 /* File creation/cloning functions used for cloning between backends */
-int virStorageBackendCreateRaw(virConnectPtr conn,
-                               virStoragePoolObjPtr pool,
-                               virStorageVolDefPtr vol,
-                               virStorageVolDefPtr inputvol,
-                               unsigned int flags);
-
-int virStorageBackendCreateQemuImg(virConnectPtr conn,
-                                   virStoragePoolObjPtr pool,
-                                   virStorageVolDefPtr vol,
-                                   virStorageVolDefPtr inputvol,
-                                   unsigned int flags);
-
-int virStorageBackendCreatePloop(virConnectPtr conn,
-                                 virStoragePoolObjPtr pool,
-                                 virStorageVolDefPtr vol,
-                                 virStorageVolDefPtr inputvol,
-                                 unsigned int flags);
-
-int virStoragePloopResize(virStorageVolDefPtr vol,
-                          unsigned long long capacity);
-
 virStorageBackendBuildVolFrom
 virStorageBackendGetBuildVolFromFunction(virStorageVolDefPtr vol,
                                          virStorageVolDefPtr inputvol);
+
+int virStorageBackendVolCreateLocal(virConnectPtr conn,
+                                    virStoragePoolObjPtr pool,
+                                    virStorageVolDefPtr vol);
+
+int virStorageBackendVolBuildLocal(virConnectPtr conn,
+                                   virStoragePoolObjPtr pool,
+                                   virStorageVolDefPtr vol,
+                                   unsigned int flags);
+
+int virStorageBackendVolBuildFromLocal(virConnectPtr conn,
+                                       virStoragePoolObjPtr pool,
+                                       virStorageVolDefPtr vol,
+                                       virStorageVolDefPtr inputvol,
+                                       unsigned int flags);
+
+int virStorageBackendVolDeleteLocal(virConnectPtr conn,
+                                    virStoragePoolObjPtr pool,
+                                    virStorageVolDefPtr vol,
+                                    unsigned int flags);
+
+int virStorageBackendVolRefreshLocal(virConnectPtr conn,
+                                     virStoragePoolObjPtr pool,
+                                     virStorageVolDefPtr vol);
+
+int virStorageBackendVolResizeLocal(virConnectPtr conn,
+                                    virStoragePoolObjPtr pool,
+                                    virStorageVolDefPtr vol,
+                                    unsigned long long capacity,
+                                    unsigned int flags);
 
 int virStorageBackendVolUploadLocal(virConnectPtr conn,
                                     virStoragePoolObjPtr pool,
@@ -60,6 +69,7 @@ int virStorageBackendVolUploadLocal(virConnectPtr conn,
                                     unsigned long long offset,
                                     unsigned long long len,
                                     unsigned int flags);
+
 int virStorageBackendVolDownloadLocal(virConnectPtr conn,
                                       virStoragePoolObjPtr pool,
                                       virStorageVolDefPtr vol,
