@@ -2354,6 +2354,12 @@ virSCSIDeviceNew;
 virSCSIDeviceSetUsedBy;
 
 
+# util/virscsihost.h
+virSCSIHostFindByPCI;
+virSCSIHostGetNameByParentaddr;
+virSCSIHostGetNumber;
+virSCSIHostGetUniqueId;
+
 # util/virscsivhost.h
 virSCSIVHostDeviceFileIterate;
 virSCSIVHostDeviceFree;
@@ -2679,7 +2685,6 @@ virUSBDeviceSetUsedBy;
 virDoubleToStr;
 virEnumFromString;
 virEnumToString;
-virFindSCSIHostByPCI;
 virFormatIntDecimal;
 virGetDeviceID;
 virGetDeviceUnprivSGIO;
@@ -2691,8 +2696,6 @@ virGetGroupName;
 virGetHostname;
 virGetHostnameQuiet;
 virGetListenFDs;
-virGetSCSIHostNameByParentaddr;
-virGetSCSIHostNumber;
 virGetSelfLastChanged;
 virGetSystemPageSize;
 virGetSystemPageSizeKB;
@@ -2716,7 +2719,6 @@ virParseNumber;
 virParseOwnershipIds;
 virParseVersionString;
 virPipeReadUntilEOF;
-virReadSCSIUniqueId;
 virScaleInteger;
 virSetBlocking;
 virSetCloseExec;

@@ -26,9 +26,9 @@
 # include <fcntl.h>
 # include <sys/stat.h>
 # include "virstring.h"
-# include "virutil.h"
 # include "virerror.h"
 # include "virlog.h"
+# include "virscsihost.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -173,8 +173,8 @@ testVirReadSCSIUniqueId(const void *data ATTRIBUTE_UNUSED)
     int hostnum, unique_id;
 
     for (hostnum = 0; hostnum < 4; hostnum++) {
-        if (virReadSCSIUniqueId(TEST_SCSIHOST_CLASS_PATH,
-                                hostnum, &unique_id) < 0) {
+        if ((unique_id = virSCSIHostGetUniqueId(TEST_SCSIHOST_CLASS_PATH,
+                                                hostnum)) < 0) {
             fprintf(stderr, "Failed to read hostnum=%d unique_id\n", hostnum);
             return -1;
         }
@@ -196,7 +196,7 @@ testVirReadSCSIUniqueId(const void *data ATTRIBUTE_UNUSED)
     return 0;
 }
 
-/* Test virFindSCSIHostByPCI */
+/* Test virSCSIHostFindByPCI */
 static int
 testVirFindSCSIHostByPCI(const void *data ATTRIBUTE_UNUSED)
 {
@@ -212,25 +212,25 @@ testVirFindSCSIHostByPCI(const void *data ATTRIBUTE_UNUSED)
                     "sysfs/class/scsi_host") < 0)
         goto cleanup;
 
-    if (!(ret_host = virFindSCSIHostByPCI(TEST_SCSIHOST_CLASS_PATH,
+    if (!(ret_host = virSCSIHostFindByPCI(TEST_SCSIHOST_CLASS_PATH,
                                           pci_addr1, unique_id1)) ||
         STRNEQ(ret_host, "host0"))
         goto cleanup;
     VIR_FREE(ret_host);
 
-    if (!(ret_host = virFindSCSIHostByPCI(TEST_SCSIHOST_CLASS_PATH,
+    if (!(ret_host = virSCSIHostFindByPCI(TEST_SCSIHOST_CLASS_PATH,
                                           pci_addr1, unique_id2)) ||
         STRNEQ(ret_host, "host1"))
         goto cleanup;
     VIR_FREE(ret_host);
 
-    if (!(ret_host = virFindSCSIHostByPCI(TEST_SCSIHOST_CLASS_PATH,
+    if (!(ret_host = virSCSIHostFindByPCI(TEST_SCSIHOST_CLASS_PATH,
                                           pci_addr2, unique_id1)) ||
         STRNEQ(ret_host, "host2"))
         goto cleanup;
     VIR_FREE(ret_host);
 
-    if (!(ret_host = virFindSCSIHostByPCI(TEST_SCSIHOST_CLASS_PATH,
+    if (!(ret_host = virSCSIHostFindByPCI(TEST_SCSIHOST_CLASS_PATH,
                                           pci_addr2, unique_id2)) ||
         STRNEQ(ret_host, "host3"))
         goto cleanup;

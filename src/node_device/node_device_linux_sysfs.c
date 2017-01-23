@@ -33,6 +33,7 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virfile.h"
+#include "virscsihost.h"
 #include "virstring.h"
 #include "virvhba.h"
 
@@ -48,8 +49,8 @@ nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapDataPtr d)
     char *tmp = NULL;
     int ret = -1;
 
-    if (virReadSCSIUniqueId(NULL, d->scsi_host.host,
-                            &d->scsi_host.unique_id) < 0) {
+    if ((d->scsi_host.unique_id =
+         virSCSIHostGetUniqueId(NULL, d->scsi_host.host)) < 0) {
         VIR_DEBUG("Failed to read unique_id for host%d", d->scsi_host.host);
         d->scsi_host.unique_id = -1;
     }

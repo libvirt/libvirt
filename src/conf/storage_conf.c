@@ -44,6 +44,7 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
+#include "virscsihost.h"
 #include "virstring.h"
 #include "virlog.h"
 #include "virvhba.h"
@@ -2289,16 +2290,16 @@ getSCSIHostNumber(virStoragePoolSourceAdapter adapter,
         virPCIDeviceAddress addr = adapter.data.scsi_host.parentaddr;
         unsigned int unique_id = adapter.data.scsi_host.unique_id;
 
-        if (!(name = virGetSCSIHostNameByParentaddr(addr.domain,
+        if (!(name = virSCSIHostGetNameByParentaddr(addr.domain,
                                                     addr.bus,
                                                     addr.slot,
                                                     addr.function,
                                                     unique_id)))
             goto cleanup;
-        if (virGetSCSIHostNumber(name, &num) < 0)
+        if (virSCSIHostGetNumber(name, &num) < 0)
             goto cleanup;
     } else {
-        if (virGetSCSIHostNumber(adapter.data.scsi_host.name, &num) < 0)
+        if (virSCSIHostGetNumber(adapter.data.scsi_host.name, &num) < 0)
             goto cleanup;
     }
 
@@ -2309,6 +2310,21 @@ getSCSIHostNumber(virStoragePoolSourceAdapter adapter,
     VIR_FREE(name);
     return ret;
 }
+
+
+static bool
+virStorageIsSameHostnum(const char *name,
+                        unsigned int scsi_hostnum)
+{
+    unsigned int fc_hostnum;
+
+    if (virSCSIHostGetNumber(name, &fc_hostnum) == 0 &&
+        scsi_hostnum == fc_hostnum)
+        return true;
+
+    return false;
+}
+
 
 /*
  * matchFCHostToSCSIHost:
@@ -2328,14 +2344,12 @@ matchFCHostToSCSIHost(virConnectPtr conn,
     char *name = NULL;
     char *scsi_host_name = NULL;
     char *parent_name = NULL;
-    unsigned int fc_hostnum;
 
     /* If we have a parent defined, get its hostnum, and compare to the
      * scsi_hostnum. If they are the same, then we have a match
      */
     if (fc_adapter.data.fchost.parent &&
-        virGetSCSIHostNumber(fc_adapter.data.fchost.parent, &fc_hostnum) == 0 &&
-        scsi_hostnum == fc_hostnum)
+        virStorageIsSameHostnum(fc_adapter.data.fchost.parent, scsi_hostnum))
         return true;
 
     /* If we find an fc_adapter name, then either libvirt created a vHBA
@@ -2347,11 +2361,11 @@ matchFCHostToSCSIHost(virConnectPtr conn,
         /* Get the scsi_hostN for the vHBA in order to see if it
          * matches our scsi_hostnum
          */
-        if (virGetSCSIHostNumber(name, &fc_hostnum) == 0 &&
-            scsi_hostnum == fc_hostnum) {
+        if (virStorageIsSameHostnum(name, scsi_hostnum)) {
             VIR_FREE(name);
             return true;
         }
+        VIR_FREE(name);
 
         /* We weren't provided a parent, so we have to query the node
          * device driver in order to ascertain the parent of the vHBA.
@@ -2366,10 +2380,8 @@ matchFCHostToSCSIHost(virConnectPtr conn,
             if ((parent_name = virNodeDeviceGetParentName(conn,
                                                           scsi_host_name))) {
                 VIR_FREE(scsi_host_name);
-                if (virGetSCSIHostNumber(parent_name, &fc_hostnum) == 0 &&
-                    scsi_hostnum == fc_hostnum) {
+                if (virStorageIsSameHostnum(parent_name, scsi_hostnum)) {
                     VIR_FREE(parent_name);
-                    VIR_FREE(name);
                     return true;
                 }
                 VIR_FREE(parent_name);
@@ -2380,7 +2392,6 @@ matchFCHostToSCSIHost(virConnectPtr conn,
                 VIR_FREE(scsi_host_name);
             }
         }
-        VIR_FREE(name);
     }
 
     /* NB: Lack of a name means that this vHBA hasn't yet been created,

@@ -164,6 +164,7 @@ UTIL_SOURCES =							\
 		util/virrandom.h util/virrandom.c		\
 		util/virrotatingfile.h util/virrotatingfile.c   \
 		util/virscsi.c util/virscsi.h			\
+		util/virscsihost.c util/virscsihost.h		\
 		util/virscsivhost.c util/virscsivhost.h		\
 		util/virseclabel.c util/virseclabel.h		\
 		util/virsecret.c util/virsecret.h		\

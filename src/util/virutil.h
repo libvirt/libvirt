@@ -164,26 +164,6 @@ int virGetDeviceUnprivSGIO(const char *path,
                            int *unpriv_sgio);
 char *virGetUnprivSGIOSysfsPath(const char *path,
                                 const char *sysfs_dir);
-int virReadSCSIUniqueId(const char *sysfs_prefix,
-                        int host,
-                        int *result)
-    ATTRIBUTE_NONNULL(3);
-char *
-virFindSCSIHostByPCI(const char *sysfs_prefix,
-                     const char *parentaddr,
-                     unsigned int unique_id);
-int
-virGetSCSIHostNumber(const char *adapter_name,
-                     unsigned int *result)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-char *
-virGetSCSIHostNameByParentaddr(unsigned int domain,
-                               unsigned int bus,
-                               unsigned int slot,
-                               unsigned int function,
-                               unsigned int unique_id);
-
-
 
 int virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr);
 
