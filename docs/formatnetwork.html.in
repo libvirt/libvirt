@@ -76,7 +76,7 @@
         be used to set that attribute of the same name for each domain
         interface connected to this network (<span class="since">since
         1.2.10</span>). See
-        the <a href="formatdomain.html#elementSNICS">Network
+        the <a href="formatdomain.html#elementsNICS">Network
         interfaces</a> section of the domain XML documentation for
         more details. Note that an explicit setting of this attribute
         in a portgroup or the individual domain interface will
@@ -765,7 +765,7 @@
       set that attribute of the same name for each domain interface
       using this portgroup (<span class="since">since
       1.2.10</span>). See
-      the <a href="formatdomain.html#elementSNICS">Network
+      the <a href="formatdomain.html#elementsNICS">Network
       interfaces</a> section of the domain XML documentation for more
       details. Note that an explicit setting of this attribute in the
       portgroup overrides the network-wide setting, and an explicit
