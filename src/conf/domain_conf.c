@@ -9343,7 +9343,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
     virNWFilterHashTablePtr filterparams = NULL;
     virDomainActualNetDefPtr actual = NULL;
     xmlNodePtr oldnode = ctxt->node;
-    int ret, val;
+    int rv, val;
 
     if (VIR_ALLOC(def) < 0)
         return NULL;
@@ -10041,10 +10041,10 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         }
     }
 
-    ret = virXPathULong("string(./tune/sndbuf)", ctxt, &def->tune.sndbuf);
-    if (ret >= 0) {
+    rv = virXPathULong("string(./tune/sndbuf)", ctxt, &def->tune.sndbuf);
+    if (rv >= 0) {
         def->tune.sndbuf_specified = true;
-    } else if (ret == -2) {
+    } else if (rv == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("sndbuf must be a positive integer"));
         goto error;
