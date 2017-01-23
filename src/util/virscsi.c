@@ -35,6 +35,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "virlog.h"
 #include "virscsi.h"
 #include "viralloc.h"
 #include "virfile.h"
@@ -46,6 +47,9 @@
 
 /* For virReportOOMError()  and virReportSystemError() */
 #define VIR_FROM_THIS VIR_FROM_NONE
+
+VIR_LOG_INIT("util.scsi");
+
 struct _virUsedByInfo {
     char *drvname; /* which driver */
     char *domname; /* which domain */

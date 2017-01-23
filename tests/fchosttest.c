@@ -20,7 +20,7 @@
 #include <config.h>
 
 #include "virstring.h"
-#include "virutil.h"
+#include "virvhba.h"
 #include "testutils.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -31,31 +31,28 @@ static char *fchost_prefix;
 #define TEST_FC_HOST_NUM 5
 #define TEST_FC_HOST_NUM_NO_FAB 6
 
-/* Test virIsCapableFCHost */
+/* Test virIsVHBACapable */
 static int
 test1(const void *data ATTRIBUTE_UNUSED)
 {
-    if (virIsCapableFCHost(TEST_FC_HOST_PREFIX,
-                           TEST_FC_HOST_NUM) &&
-        virIsCapableFCHost(TEST_FC_HOST_PREFIX,
-                           TEST_FC_HOST_NUM_NO_FAB))
+    if (virVHBAPathExists(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM) &&
+        virVHBAPathExists(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB))
         return 0;
 
     return -1;
 }
 
-/* Test virIsCapableVport */
+/* Test virVHBAIsVportCapable */
 static int
 test2(const void *data ATTRIBUTE_UNUSED)
 {
-    if (virIsCapableVport(TEST_FC_HOST_PREFIX,
-                          TEST_FC_HOST_NUM))
+    if (virVHBAIsVportCapable(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM))
         return 0;
 
     return -1;
 }
 
-/* Test virReadFCHost */
+/* Test virVHBAGetConfig */
 static int
 test3(const void *data ATTRIBUTE_UNUSED)
 {
@@ -71,25 +68,25 @@ test3(const void *data ATTRIBUTE_UNUSED)
     char *vports = NULL;
     int ret = -1;
 
-    if (!(wwnn = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
-                               "node_name")))
+    if (!(wwnn = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
+                                  "node_name")))
         return -1;
 
-    if (!(wwpn = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
-                               "port_name")))
+    if (!(wwpn = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
+                                  "port_name")))
         goto cleanup;
 
-    if (!(fabric_wwn = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
-                                     "fabric_name")))
+    if (!(fabric_wwn = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
+                                        "fabric_name")))
         goto cleanup;
 
-    if (!(max_vports = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
-                                     "max_npiv_vports")))
+    if (!(max_vports = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
+                                        "max_npiv_vports")))
         goto cleanup;
 
 
-    if (!(vports = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
-                                 "npiv_vports_inuse")))
+    if (!(vports = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
+                                    "npiv_vports_inuse")))
         goto cleanup;
 
     if (STRNEQ(expect_wwnn, wwnn) ||
@@ -109,7 +106,7 @@ test3(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
-/* Test virGetFCHostNameByWWN */
+/* Test virVHBAGetHostByWWN */
 static int
 test4(const void *data ATTRIBUTE_UNUSED)
 {
@@ -117,9 +114,9 @@ test4(const void *data ATTRIBUTE_UNUSED)
     char *hostname = NULL;
     int ret = -1;
 
-    if (!(hostname = virGetFCHostNameByWWN(TEST_FC_HOST_PREFIX,
-                                           "2001001b32a9da4e",
-                                           "2101001b32a9da4e")))
+    if (!(hostname = virVHBAGetHostByWWN(TEST_FC_HOST_PREFIX,
+                                         "2001001b32a9da4e",
+                                         "2101001b32a9da4e")))
         return -1;
 
     if (STRNEQ(hostname, expect_hostname))
@@ -131,7 +128,10 @@ test4(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
-/* Test virFindFCHostCapableVport (host4 is not Online) */
+/* Test virVHBAFindVportHost
+ *
+ * NB: host4 is not Online, so it should not be found
+ */
 static int
 test5(const void *data ATTRIBUTE_UNUSED)
 {
@@ -139,7 +139,7 @@ test5(const void *data ATTRIBUTE_UNUSED)
     char *hostname = NULL;
     int ret = -1;
 
-    if (!(hostname = virFindFCHostCapableVport(TEST_FC_HOST_PREFIX)))
+    if (!(hostname = virVHBAFindVportHost(TEST_FC_HOST_PREFIX)))
         return -1;
 
     if (STRNEQ(hostname, expect_hostname))
@@ -151,7 +151,7 @@ test5(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
-/* Test virReadFCHost fabric name optional */
+/* Test virVHBAGetConfig fabric name optional */
 static int
 test6(const void *data ATTRIBUTE_UNUSED)
 {
@@ -162,17 +162,17 @@ test6(const void *data ATTRIBUTE_UNUSED)
     char *fabric_wwn = NULL;
     int ret = -1;
 
-    if (!(wwnn = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB,
-                               "node_name")))
+    if (!(wwnn = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB,
+                                  "node_name")))
         return -1;
 
-    if (!(wwpn = virReadFCHost(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB,
-                               "port_name")))
+    if (!(wwpn = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB,
+                                  "port_name")))
         goto cleanup;
 
-    if ((fabric_wwn = virReadFCHost(TEST_FC_HOST_PREFIX,
-                                    TEST_FC_HOST_NUM_NO_FAB,
-                                    "fabric_name")))
+    if ((fabric_wwn = virVHBAGetConfig(TEST_FC_HOST_PREFIX,
+                                       TEST_FC_HOST_NUM_NO_FAB,
+                                       "fabric_name")))
         goto cleanup;
 
     if (STRNEQ(expect_wwnn, wwnn) ||
@@ -198,17 +198,17 @@ mymain(void)
         goto cleanup;
     }
 
-    if (virTestRun("test1", test1, NULL) < 0)
+    if (virTestRun("virVHBAPathExists", test1, NULL) < 0)
         ret = -1;
-    if (virTestRun("test2", test2, NULL) < 0)
+    if (virTestRun("virVHBAIsVportCapable", test2, NULL) < 0)
         ret = -1;
-    if (virTestRun("test3", test3, NULL) < 0)
+    if (virTestRun("virVHBAGetConfig", test3, NULL) < 0)
         ret = -1;
-    if (virTestRun("test4", test4, NULL) < 0)
+    if (virTestRun("virVHBAGetHostByWWN", test4, NULL) < 0)
         ret = -1;
-    if (virTestRun("test5", test5, NULL) < 0)
+    if (virTestRun("virVHBAFindVportHost", test5, NULL) < 0)
         ret = -1;
-    if (virTestRun("test6", test6, NULL) < 0)
+    if (virTestRun("virVHBAGetConfig-empty-fabric_wwn", test6, NULL) < 0)
         ret = -1;
 
  cleanup:

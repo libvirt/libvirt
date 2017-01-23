@@ -34,6 +34,7 @@
 #include "virfile.h"
 #include "vircommand.h"
 #include "virstring.h"
+#include "virvhba.h"
 #include "storage_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
@@ -193,9 +194,9 @@ getAdapterName(virStoragePoolSourceAdapter adapter)
             ignore_value(VIR_STRDUP(name, adapter.data.scsi_host.name));
         }
     } else if (adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
-        if (!(name = virGetFCHostNameByWWN(NULL,
-                                           adapter.data.fchost.wwnn,
-                                           adapter.data.fchost.wwpn))) {
+        if (!(name = virVHBAGetHostByWWN(NULL,
+                                         adapter.data.fchost.wwnn,
+                                         adapter.data.fchost.wwpn))) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Failed to find SCSI host with wwnn='%s', "
                              "wwpn='%s'"), adapter.data.fchost.wwnn,
@@ -269,8 +270,8 @@ createVport(virConnectPtr conn,
      * using the wwnn/wwpn, then a nodedev is already created for
      * this pool and we don't have to create the vHBA
      */
-    if ((name = virGetFCHostNameByWWN(NULL, adapter->data.fchost.wwnn,
-                                      adapter->data.fchost.wwpn))) {
+    if ((name = virVHBAGetHostByWWN(NULL, adapter->data.fchost.wwnn,
+                                    adapter->data.fchost.wwpn))) {
         /* If a parent was provided, let's make sure the 'name' we've
          * retrieved has the same parent
          */
@@ -287,22 +288,22 @@ createVport(virConnectPtr conn,
     } else if (adapter->data.fchost.parent_wwnn &&
                adapter->data.fchost.parent_wwpn) {
         if (!(parent_hoststr =
-              virGetFCHostNameByWWN(NULL, adapter->data.fchost.parent_wwnn,
-                                    adapter->data.fchost.parent_wwpn))) {
+              virVHBAGetHostByWWN(NULL, adapter->data.fchost.parent_wwnn,
+                                  adapter->data.fchost.parent_wwpn))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("cannot find parent using provided wwnn/wwpn"));
             goto cleanup;
         }
     } else if (adapter->data.fchost.parent_fabric_wwn) {
         if (!(parent_hoststr =
-              virGetFCHostNameByFabricWWN(NULL,
-                                          adapter->data.fchost.parent_fabric_wwn))) {
+              virVHBAGetHostByFabricWWN(NULL,
+                                        adapter->data.fchost.parent_fabric_wwn))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("cannot find parent using provided fabric_wwn"));
             goto cleanup;
         }
     } else {
-        if (!(parent_hoststr = virFindFCHostCapableVport(NULL))) {
+        if (!(parent_hoststr = virVHBAFindVportHost(NULL))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("'parent' for vHBA not specified, and "
                              "cannot find one on this host"));
@@ -322,9 +323,9 @@ createVport(virConnectPtr conn,
      * parent. Besides we have a way to determine the parent based on
      * the 'name' field.
      */
-    if (!skip_capable_check && !virIsCapableFCHost(NULL, parent_host)) {
+    if (!skip_capable_check && !virVHBAPathExists(NULL, parent_host)) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("parent '%s' specified for vHBA is not vport capable"),
+                       _("parent '%s' specified for vHBA does not exist"),
                        parent_hoststr);
         goto cleanup;
     }
@@ -342,8 +343,8 @@ createVport(virConnectPtr conn,
         }
     }
 
-    if (virManageVport(parent_host, adapter->data.fchost.wwpn,
-                       adapter->data.fchost.wwnn, VPORT_CREATE) < 0)
+    if (virVHBAManageVport(parent_host, adapter->data.fchost.wwpn,
+                           adapter->data.fchost.wwnn, VPORT_CREATE) < 0)
         goto cleanup;
 
     virFileWaitForDevices();
@@ -353,8 +354,8 @@ createVport(virConnectPtr conn,
      * retry logic set to true. If the thread isn't created, then no big
      * deal since it's still possible to refresh the pool later.
      */
-    if ((name = virGetFCHostNameByWWN(NULL, adapter->data.fchost.wwnn,
-                                      adapter->data.fchost.wwpn))) {
+    if ((name = virVHBAGetHostByWWN(NULL, adapter->data.fchost.wwnn,
+                                    adapter->data.fchost.wwpn))) {
         if (VIR_ALLOC(cbdata) == 0) {
             memcpy(cbdata->pool_uuid, pool->def->uuid, VIR_UUID_BUFLEN);
             VIR_STEAL_PTR(cbdata->fchost_name, name);
@@ -399,8 +400,8 @@ deleteVport(virConnectPtr conn,
         return 0;
 
     /* Find our vHBA by searching the fc_host sysfs tree for our wwnn/wwpn */
-    if (!(name = virGetFCHostNameByWWN(NULL, adapter.data.fchost.wwnn,
-                                       adapter.data.fchost.wwpn))) {
+    if (!(name = virVHBAGetHostByWWN(NULL, adapter.data.fchost.wwnn,
+                                     adapter.data.fchost.wwpn))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to find fc_host for wwnn='%s' and wwpn='%s'"),
                        adapter.data.fchost.wwnn, adapter.data.fchost.wwpn);
@@ -422,8 +423,8 @@ deleteVport(virConnectPtr conn,
             goto cleanup;
     }
 
-    if (virManageVport(parent_host, adapter.data.fchost.wwpn,
-                       adapter.data.fchost.wwnn, VPORT_DELETE) < 0)
+    if (virVHBAManageVport(parent_host, adapter.data.fchost.wwpn,
+                           adapter.data.fchost.wwnn, VPORT_DELETE) < 0)
         goto cleanup;
 
     ret = 0;

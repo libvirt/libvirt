@@ -45,6 +45,7 @@
 #include "virfile.h"
 #include "virstring.h"
 #include "virlog.h"
+#include "virvhba.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -2396,8 +2397,8 @@ matchFCHostToSCSIHost(virConnectPtr conn,
     /* If we find an fc_adapter name, then either libvirt created a vHBA
      * for this fc_host or a 'virsh nodedev-create' generated a vHBA.
      */
-    if ((name = virGetFCHostNameByWWN(NULL, fc_adapter.data.fchost.wwnn,
-                                      fc_adapter.data.fchost.wwpn))) {
+    if ((name = virVHBAGetHostByWWN(NULL, fc_adapter.data.fchost.wwnn,
+                                    fc_adapter.data.fchost.wwpn))) {
 
         /* Get the scsi_hostN for the vHBA in order to see if it
          * matches our scsi_hostnum

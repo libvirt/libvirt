@@ -39,7 +39,7 @@
 #include "node_device_driver.h"
 #include "node_device_hal.h"
 #include "node_device_linux_sysfs.h"
-#include "virutil.h"
+#include "virvhba.h"
 #include "viraccessapicheck.h"
 #include "virnetdev.h"
 
@@ -616,12 +616,8 @@ nodeDeviceCreateXML(virConnectPtr conn,
             goto cleanup;
     }
 
-    if (virManageVport(parent_host,
-                       wwpn,
-                       wwnn,
-                       VPORT_CREATE) == -1) {
+    if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_CREATE) < 0)
         goto cleanup;
-    }
 
     dev = find_new_device(conn, wwnn, wwpn);
     /* We don't check the return value, because one way or another,
@@ -679,19 +675,12 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
     virNodeDeviceObjUnlock(obj);
     obj = NULL;
 
-    if (virNodeDeviceGetParentHost(&driver->devs,
-                                   dev->name,
-                                   parent_name,
-                                   &parent_host) == -1) {
+    if (virNodeDeviceGetParentHost(&driver->devs, dev->name, parent_name,
+                                   &parent_host) < 0)
         goto out;
-    }
 
-    if (virManageVport(parent_host,
-                       wwpn,
-                       wwnn,
-                       VPORT_DELETE) == -1) {
+    if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_DELETE) < 0)
         goto out;
-    }
 
     ret = 0;
  out:

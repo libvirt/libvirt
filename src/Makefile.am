@@ -184,6 +184,7 @@ UTIL_SOURCES =							\
 		util/viruri.h util/viruri.c			\
 		util/virutil.c util/virutil.h			\
 		util/viruuid.c util/viruuid.h			\
+		util/virvhba.c util/virvhba.h			\
 		util/virxdrdefs.h                               \
 		util/virxml.c util/virxml.h			\
 		$(NULL)

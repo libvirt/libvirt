@@ -182,35 +182,8 @@ virGetSCSIHostNameByParentaddr(unsigned int domain,
                                unsigned int slot,
                                unsigned int function,
                                unsigned int unique_id);
-char *virReadFCHost(const char *sysfs_prefix,
-                    int host,
-                    const char *entry)
-    ATTRIBUTE_NONNULL(3);
 
-bool virIsCapableFCHost(const char *sysfs_prefix, int host);
-bool virIsCapableVport(const char *sysfs_prefix, int host);
 
-enum {
-    VPORT_CREATE,
-    VPORT_DELETE,
-};
-
-int virManageVport(const int parent_host,
-                   const char *wwpn,
-                   const char *wwnn,
-                   int operation)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-char *virGetFCHostNameByWWN(const char *sysfs_prefix,
-                            const char *wwnn,
-                            const char *wwpn)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-char *virGetFCHostNameByFabricWWN(const char *sysfs_prefix,
-                                  const char *fabric_wwn)
-    ATTRIBUTE_NONNULL(2);
-
-char *virFindFCHostCapableVport(const char *sysfs_prefix);
 
 int virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr);
 

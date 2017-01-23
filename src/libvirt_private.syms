@@ -2679,15 +2679,12 @@ virUSBDeviceSetUsedBy;
 virDoubleToStr;
 virEnumFromString;
 virEnumToString;
-virFindFCHostCapableVport;
 virFindSCSIHostByPCI;
 virFormatIntDecimal;
 virGetDeviceID;
 virGetDeviceUnprivSGIO;
 virGetEnvAllowSUID;
 virGetEnvBlockSUID;
-virGetFCHostNameByFabricWWN;
-virGetFCHostNameByWWN;
 virGetGroupID;
 virGetGroupList;
 virGetGroupName;
@@ -2710,11 +2707,8 @@ virGetUserRuntimeDirectory;
 virGetUserShell;
 virHexToBin;
 virIndexToDiskName;
-virIsCapableFCHost;
-virIsCapableVport;
 virIsDevMapperDevice;
 virIsSUID;
-virManageVport;
 virMemoryLimitIsSet;
 virMemoryLimitTruncate;
 virMemoryMaxValue;
@@ -2722,7 +2716,6 @@ virParseNumber;
 virParseOwnershipIds;
 virParseVersionString;
 virPipeReadUntilEOF;
-virReadFCHost;
 virReadSCSIUniqueId;
 virScaleInteger;
 virSetBlocking;
@@ -2748,6 +2741,16 @@ virUUIDFormat;
 virUUIDGenerate;
 virUUIDIsValid;
 virUUIDParse;
+
+
+# util/virvhba.h
+virVHBAFindVportHost;
+virVHBAGetConfig;
+virVHBAGetHostByFabricWWN;
+virVHBAGetHostByWWN;
+virVHBAIsVportCapable;
+virVHBAManageVport;
+virVHBAPathExists;
 
 
 # util/virxml.h

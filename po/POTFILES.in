@@ -258,6 +258,7 @@ src/util/virtypedparam.c
 src/util/viruri.c
 src/util/virusb.c
 src/util/virutil.c
+src/util/virvhba.c
 src/util/virxml.c
 src/vbox/vbox_MSCOMGlue.c
 src/vbox/vbox_XPCOMCGlue.c
