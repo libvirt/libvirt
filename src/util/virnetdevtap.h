@@ -71,6 +71,8 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    size_t tapfdSize,
                                    virNetDevVPortProfilePtr virtPortProfile,
                                    virNetDevVlanPtr virtVlan,
+                                   unsigned int mtu,
+                                   unsigned int *actualMTU,
                                    unsigned int flags)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_RETURN_CHECK;

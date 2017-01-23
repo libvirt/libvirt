@@ -28,6 +28,8 @@ int virNetDevTapCreateInBridgePort(const char *brname ATTRIBUTE_UNUSED,
                                    size_t tapfdSize ATTRIBUTE_UNUSED,
                                    virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
                                    virNetDevVlanPtr virtVlan ATTRIBUTE_UNUSED,
+                                   unsigned int mtu ATTRIBUTE_UNUSED,
+                                   unsigned int *actualMTU ATTRIBUTE_UNUSED,
                                    unsigned int fakeflags ATTRIBUTE_UNUSED)
 {
     VIR_FREE(*ifname);

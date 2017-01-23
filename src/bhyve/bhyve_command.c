@@ -78,6 +78,7 @@ bhyveBuildNetArgStr(const virDomainDef *def,
                                            def->uuid, NULL, NULL, 0,
                                            virDomainNetGetActualVirtPortProfile(net),
                                            virDomainNetGetActualVlan(net),
+                                           0, NULL,
                                            VIR_NETDEV_TAP_CREATE_IFUP | VIR_NETDEV_TAP_CREATE_PERSIST) < 0) {
             goto cleanup;
         }

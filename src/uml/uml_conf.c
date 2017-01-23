@@ -126,6 +126,7 @@ umlConnectTapDevice(virDomainDefPtr vm,
                                        vm->uuid, net->backend.tap, &tapfd, 1,
                                        virDomainNetGetActualVirtPortProfile(net),
                                        virDomainNetGetActualVlan(net),
+                                       0, NULL,
                                        VIR_NETDEV_TAP_CREATE_IFUP |
                                        VIR_NETDEV_TAP_CREATE_PERSIST) < 0) {
         if (template_ifname)

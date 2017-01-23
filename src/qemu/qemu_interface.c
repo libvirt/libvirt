@@ -544,6 +544,7 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
                                            def->uuid, tunpath, tapfd, *tapfdSize,
                                            virDomainNetGetActualVirtPortProfile(net),
                                            virDomainNetGetActualVlan(net),
+                                           0, NULL,
                                            tap_create_flags) < 0) {
             virDomainAuditNetDevice(def, net, tunpath, false);
             goto cleanup;

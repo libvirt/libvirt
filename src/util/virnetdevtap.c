@@ -513,6 +513,8 @@ int virNetDevTapDelete(const char *ifname ATTRIBUTE_UNUSED,
  * @tapfd: array of file descriptor return value for the new tap device
  * @tapfdSize: number of file descriptors in @tapfd
  * @virtPortProfile: bridge/port specific configuration
+ * @mtu: requested MTU for port (or 0 for "default")
+ * @actualMTU: MTU actually set for port (after accounting for bridge's MTU)
  * @flags: OR of virNetDevTapCreateFlags:
 
  *   VIR_NETDEV_TAP_CREATE_IFUP
@@ -543,6 +545,8 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    size_t tapfdSize,
                                    virNetDevVPortProfilePtr virtPortProfile,
                                    virNetDevVlanPtr virtVlan,
+                                   unsigned int mtu,
+                                   unsigned int *actualMTU,
                                    unsigned int flags)
 {
     virMacAddr tapmac;
@@ -578,12 +582,30 @@ int virNetDevTapCreateInBridgePort(const char *brname,
     if (virNetDevSetMAC(*ifname, &tapmac) < 0)
         goto error;
 
-    /* We need to set the interface MTU before adding it
-     * to the bridge, because the bridge will have its
-     * MTU adjusted automatically when we add the new interface.
+    /* If an MTU is specified for the new device, set it before
+     * attaching the device to the bridge, as it may affect the MTU of
+     * the bridge (in particular if it is the first device attached to
+     * the bridge, or if it is smaller than the current MTU of the
+     * bridge). If MTU isn't specified for the new device (i.e. 0),
+     * we need to set the interface MTU to the current MTU of the
+     * bridge (to avoid inadvertantly changing the bridge's MTU).
      */
-    if (virNetDevSetMTUFromDevice(*ifname, brname) < 0)
-        goto error;
+    if (mtu > 0) {
+        if (virNetDevSetMTU(*ifname, mtu) < 0)
+            goto error;
+    } else {
+        if (virNetDevSetMTUFromDevice(*ifname, brname) < 0)
+            goto error;
+    }
+    if (actualMTU) {
+        int retMTU = virNetDevGetMTU(*ifname);
+
+        if (retMTU < 0)
+            goto error;
+
+        *actualMTU = retMTU;
+    }
+
 
     if (virtPortProfile) {
         if (virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_MIDONET) {
