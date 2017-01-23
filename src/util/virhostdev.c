@@ -532,6 +532,17 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
         bool strict_acs_check = !!(flags & VIR_HOSTDEV_STRICT_ACS_CHECK);
         bool usesVFIO = (virPCIDeviceGetStubDriver(pci) == VIR_PCI_STUB_DRIVER_VFIO);
         struct virHostdevIsPCINodeDeviceUsedData data = { mgr, dom_name, usesVFIO };
+        int hdrType = -1;
+
+        if (virPCIGetHeaderType(pci, &hdrType) < 0)
+            goto cleanup;
+
+        if (hdrType != VIR_PCI_HEADER_ENDPOINT) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Non-endpoint PCI devices cannot be assigned "
+                             "to guests"));
+            goto cleanup;
+        }
 
         if (!usesVFIO && !virPCIDeviceIsAssignable(pci, strict_acs_check)) {
             virReportError(VIR_ERR_OPERATION_INVALID,
