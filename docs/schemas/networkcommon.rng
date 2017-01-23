@@ -260,10 +260,19 @@
       </optional>
     </element>
   </define>
+
   <define name="macTableManager">
     <choice>
       <value>kernel</value>
       <value>libvirt</value>
     </choice>
+  </define>
+
+  <define name="mtu">
+    <element name="mtu">
+      <attribute name="size">
+        <ref name="unsignedShort"/>
+      </attribute>
+    </element>
   </define>
 </grammar>

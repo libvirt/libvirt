@@ -10050,6 +10050,12 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         goto error;
     }
 
+    if (virXPathUInt("string(./mtu/@size)", ctxt, &def->mtu) < -1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("malformed mtu size"));
+        goto error;
+    }
+
  cleanup:
     ctxt->node = oldnode;
     VIR_FREE(macaddr);
@@ -21769,6 +21775,10 @@ virDomainNetDefFormat(virBufferPtr buf,
         virBufferAsprintf(buf, "<link state='%s'/>\n",
                           virDomainNetInterfaceLinkStateTypeToString(def->linkstate));
     }
+
+    if (def->mtu)
+        virBufferAsprintf(buf, "<mtu size='%u'/>\n", def->mtu);
+
     if (virDomainDeviceInfoFormat(buf, &def->info,
                                   flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT
                                   | VIR_DOMAIN_DEF_FORMAT_ALLOW_ROM) < 0)

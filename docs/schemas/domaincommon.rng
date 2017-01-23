@@ -2466,6 +2466,9 @@
         </element>
       </optional>
       <optional>
+        <ref name="mtu"/>
+      </optional>
+      <optional>
         <element name="target">
           <attribute name="dev">
             <ref name="deviceName"/>

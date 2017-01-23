@@ -1009,6 +1009,7 @@ struct _virDomainNetDef {
     virNetDevVlan vlan;
     int trustGuestRxFilters; /* enum virTristateBool */
     int linkstate;
+    unsigned int mtu;
 };
 
 /* Used for prefix of ifname of any network name generated dynamically

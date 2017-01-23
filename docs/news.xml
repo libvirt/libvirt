@@ -24,6 +24,14 @@
           options in order to print just the --name and/or --uuid of pools.
         </description>
       </change>
+      <change>
+        <summary>
+          Introduce MTU to domain &lt;interface/&gt;
+        </summary>
+        <description>
+          Allow setting MTU size for some types of domain interface.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>

@@ -2868,6 +2868,14 @@ qemuDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                            _("rx_queue_size has to be a power of two"));
             goto cleanup;
         }
+
+        if (net->mtu &&
+            !qemuDomainNetSupportsMTU(net->type)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("setting MTU on interface type %s is not supported yet"),
+                           virDomainNetTypeToString(net->type));
+            goto cleanup;
+        }
     }
 
     ret = 0;
@@ -6529,6 +6537,27 @@ qemuDomainSupportsNetdev(virDomainDefPtr def,
     return virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV);
 }
 
+bool
+qemuDomainNetSupportsMTU(virDomainNetType type)
+{
+    switch (type) {
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_LAST:
+        break;
+    }
+    return false;
+}
 
 int
 qemuDomainNetVLAN(virDomainNetDefPtr def)

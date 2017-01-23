@@ -5215,6 +5215,25 @@ qemu-kvm -net nic,model=? /dev/null
       <span class="since">Since 0.9.5</span>
     </p>
 
+    <h5><a name="mtu">MTU configuration</a></h5>
+<pre>
+...
+&lt;devices&gt;
+  &lt;interface type='network'&gt;
+    &lt;source network='default'/&gt;
+    &lt;target dev='vnet0'/&gt;
+    <b>&lt;mtu size='1500'/&gt;</b>
+  &lt;/interface&gt;
+&lt;/devices&gt;
+...</pre>
+
+    <p>
+      This element provides means of setting MTU of the virtual network link.
+      Currently there is just one attribute <code>size</code> which accepts a
+      non-negative integer which specifies the MTU size for the interface.
+      <span class="since">Since 3.1.0</span>
+    </p>
+
     <h5><a name="ipconfig">IP configuration</a></h5>
 <pre>
 ...
