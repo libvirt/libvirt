@@ -933,6 +933,18 @@ virPCIDeviceReset(virPCIDevicePtr dev,
     char *drvName = NULL;
     int ret = -1;
     int fd = -1;
+    int hdrType = -1;
+
+    if (virPCIGetHeaderType(dev, &hdrType) < 0)
+        return -1;
+
+    if (hdrType != VIR_PCI_HEADER_ENDPOINT) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid attempt to reset PCI device %s. "
+                         "Only PCI endpoint devices can be reset"),
+                       dev->name);
+        return -1;
+    }
 
     if (activeDevs && virPCIDeviceListFind(activeDevs, dev)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
