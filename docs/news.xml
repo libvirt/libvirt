@@ -36,10 +36,11 @@
       </change>
       <change>
         <summary>
-          Introduce MTU to domain &lt;interface/&gt;
+          Introduce MTU to domain &lt;interface/&gt; and &lt;network&gt;
         </summary>
         <description>
-          Allow setting MTU size for some types of domain interface.
+          Allow setting MTU size for some types of domain interface
+          and network.
         </description>
       </change>
     </section>

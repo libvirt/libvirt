@@ -240,6 +240,7 @@ struct _virNetworkDef {
     int domainLocalOnly; /* enum virTristateBool: yes disables dns forwarding */
     unsigned long delay;   /* Bridge forward delay (ms) */
     bool stp; /* Spanning tree protocol */
+    unsigned int mtu; /* MTU for bridge, 0 means "default" i.e. unset in config */
     virMacAddr mac; /* mac address of bridge device */
     bool mac_specified;
 

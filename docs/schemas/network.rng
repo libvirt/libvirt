@@ -79,6 +79,11 @@
           </element>
         </optional>
 
+        <!-- <mtu> element -->
+        <optional>
+          <ref name="mtu"/>
+        </optional>
+
         <!-- <mac> element -->
         <optional>
           <element name="mac">

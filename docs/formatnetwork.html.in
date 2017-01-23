@@ -93,6 +93,7 @@
     <pre>
 ...
 &lt;bridge name="virbr0" stp="on" delay="5" macTableManager="libvirt"/&gt;
+&lt;mtu size="9000"/&gt;
 &lt;domain name="example.com" localOnly="no"/&gt;
 &lt;forward mode="nat" dev="eth0"/&gt;
 ...</pre>
@@ -151,9 +152,25 @@
           <span class="since">Since 1.2.11, requires kernel 3.17 or
           newer</span>
         </p>
-
-
       </dd>
+
+      <dt><code>mtu</code></dt>
+      <dd>
+        The <code>size</code> attribute of the <code>mtu></code>
+        element specifies the Maximum Transmission Unit (MTU) for the
+        network. <span class="since">Since 3.1.0</span>. In the case
+        of a libvirt-managed network (one with forward mode
+        of <code>nat</code>, <code>route</code>, <code>open</code>, or
+        no <code>forward</code> element (i.e. an isolated network),
+        this will be the MTU assigned to the bridge device when
+        libvirt creates it, and thereafter also assigned to all tap
+        devices created to connect guest interfaces. Network types not
+        specifically mentioned here don't support having an MTU set in
+        the libvirt network config. If mtu size is unspecified, the
+        default setting for the type of device being used is assumed
+        (usually 1500).
+      </dd>
+
       <dt><code>domain</code></dt>
       <dd>
         The <code>name</code> attribute on the <code>domain</code>

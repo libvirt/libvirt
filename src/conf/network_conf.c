@@ -2242,6 +2242,17 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
         def->mac_specified = true;
     }
 
+    tmp = virXPathString("string(./mtu/@size)", ctxt);
+    if (tmp) {
+        if (virStrToLong_ui(tmp, NULL, 10, &def->mtu) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("Invalid mtu size '%s' in network '%s'"),
+                           tmp, def->name);
+            goto error;
+        }
+    }
+    VIR_FREE(tmp);
+
     dnsNode = virXPathNode("./dns", ctxt);
     if (dnsNode != NULL &&
         virNetworkDNSDefParseXML(def->name, dnsNode, ctxt, &def->dns) < 0) {
@@ -2435,7 +2446,9 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     case VIR_NETWORK_FORWARD_BRIDGE:
         if (def->delay || stp) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("bridge delay/stp options only allowed in route, nat, and isolated mode, not in %s (network '%s')"),
+                           _("bridge delay/stp options only allowed in "
+                             "route, nat, and isolated mode, not in %s "
+                             "(network '%s')"),
                            virNetworkForwardTypeToString(def->forward.type),
                            def->name);
             goto error;
@@ -2453,6 +2466,19 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     }
 
     VIR_FREE(stp);
+
+    if (def->mtu &&
+        (def->forward.type != VIR_NETWORK_FORWARD_NONE &&
+         def->forward.type != VIR_NETWORK_FORWARD_NAT &&
+         def->forward.type != VIR_NETWORK_FORWARD_ROUTE &&
+         def->forward.type != VIR_NETWORK_FORWARD_OPEN)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("mtu size only allowed in open, route, nat, "
+                         "and isolated mode, not in %s (network '%s')"),
+                       virNetworkForwardTypeToString(def->forward.type),
+                       def->name);
+        goto error;
+    }
 
     /* Extract custom metadata */
     if ((metadataNode = virXPathNode("./metadata[1]", ctxt)) != NULL) {
@@ -2963,6 +2989,9 @@ virNetworkDefFormatBuf(virBufferPtr buf,
         }
         virBufferAddLit(buf, "/>\n");
     }
+
+    if (def->mtu)
+        virBufferAsprintf(buf, "<mtu size='%u'/>\n", def->mtu);
 
     if (def->mac_specified) {
         char macaddr[VIR_MAC_STRING_BUFLEN];
