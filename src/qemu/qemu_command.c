@@ -3678,6 +3678,16 @@ qemuBuildNicDevStr(virDomainDefPtr def,
         }
         virBufferAsprintf(&buf, ",rx_queue_size=%u", net->driver.virtio.rx_queue_size);
     }
+
+    if (usingVirtio && net->mtu) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_HOST_MTU)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("setting MTU is not supported with this QEMU binary"));
+            goto error;
+        }
+        virBufferAsprintf(&buf, ",host_mtu=%u", net->mtu);
+    }
+
     if (vlan == -1)
         virBufferAsprintf(&buf, ",netdev=host%s", net->info.alias);
     else
@@ -8250,6 +8260,10 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
                      virDomainNetTypeToString(actualType));
         }
     }
+
+    if (net->mtu &&
+        virNetDevSetMTU(net->ifname, net->mtu) < 0)
+        goto cleanup;
 
     if ((actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
          actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
