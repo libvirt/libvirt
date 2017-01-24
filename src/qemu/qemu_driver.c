@@ -17173,7 +17173,7 @@ typedef enum {
 
 /* If the user didn't specify bytes limits, inherit previous values;
  * likewise if the user didn't specify iops limits.  */
-static void
+static int
 qemuDomainSetBlockIoTuneDefaults(virDomainBlockIoTuneInfoPtr newinfo,
                                  virDomainBlockIoTuneInfoPtr oldinfo,
                                  qemuBlockIoTuneSetFlags set_fields)
@@ -17193,8 +17193,9 @@ qemuDomainSetBlockIoTuneDefaults(virDomainBlockIoTuneInfoPtr newinfo,
 
     if (!(set_fields & QEMU_BLOCK_IOTUNE_SET_SIZE_IOPS))
         newinfo->size_iops_sec = oldinfo->size_iops_sec;
-    if (!(set_fields & QEMU_BLOCK_IOTUNE_SET_GROUP_NAME))
-        VIR_STEAL_PTR(newinfo->group_name, oldinfo->group_name);
+    if (!(set_fields & QEMU_BLOCK_IOTUNE_SET_GROUP_NAME) &&
+        VIR_STRDUP(newinfo->group_name, oldinfo->group_name) < 0)
+        return -1;
 
     /* The length field is handled a bit differently. If not defined/set,
      * QEMU will default these to 0 or 1 depending on whether something in
@@ -17226,6 +17227,7 @@ qemuDomainSetBlockIoTuneDefaults(virDomainBlockIoTuneInfoPtr newinfo,
 
 #undef SET_MAX_LENGTH
 
+    return 0;
 }
 
 
@@ -17477,8 +17479,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         if (!(device = qemuAliasFromDisk(disk)))
             goto endjob;
 
-        qemuDomainSetBlockIoTuneDefaults(&info, &disk->blkdeviotune,
-                                         set_fields);
+        if (qemuDomainSetBlockIoTuneDefaults(&info, &disk->blkdeviotune,
+                                             set_fields) < 0)
+            goto endjob;
 
 #define CHECK_MAX(val, _bool)                                           \
         do {                                                            \
@@ -17529,8 +17532,9 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         if (ret < 0)
             goto endjob;
         ret = -1;
-        disk->blkdeviotune = info;
-        info.group_name = NULL;
+
+        if (virDomainDiskSetBlockIOTune(disk, &info) < 0)
+            goto endjob;
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir,
                                 vm, driver->caps) < 0)
@@ -17550,14 +17554,17 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                            path);
             goto endjob;
         }
-        qemuDomainSetBlockIoTuneDefaults(&info, &conf_disk->blkdeviotune,
-                                         set_fields);
-        conf_disk->blkdeviotune = info;
-        info.group_name = NULL;
+
+        if (qemuDomainSetBlockIoTuneDefaults(&info, &conf_disk->blkdeviotune,
+                                             set_fields) < 0)
+            goto endjob;
+
+        if (virDomainDiskSetBlockIOTune(conf_disk, &info) < 0)
+            goto endjob;
+
         if (virDomainSaveConfig(cfg->configDir, driver->caps,
                                 persistentDef) < 0)
             goto endjob;
-
     }
 
     ret = 0;
