@@ -19,17 +19,30 @@
 
 #include <config.h>
 
+#include "virlog.h"
 #include "virstring.h"
 #include "virvhba.h"
 #include "testutils.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+VIR_LOG_INIT("tests.fchosttest");
+
 static char *fchost_prefix;
 
 #define TEST_FC_HOST_PREFIX fchost_prefix
 #define TEST_FC_HOST_NUM 5
 #define TEST_FC_HOST_NUM_NO_FAB 6
+
+/* virNodeDeviceCreateXML using "<parent>" to find the vport capable HBA */
+static const char test7_xml[] =
+"<device>"
+"  <parent>scsi_host1</parent>"
+"  <capability type='scsi_host'>"
+"    <capability type='fc_host'>"
+"    </capability>"
+"  </capability>"
+"</device>";
 
 /* Test virIsVHBACapable */
 static int
@@ -187,6 +200,50 @@ test6(const void *data ATTRIBUTE_UNUSED)
     return ret;
 }
 
+
+
+/* Test manageVHBAByNodeDevice
+ *  - Test both virNodeDeviceCreateXML and virNodeDeviceDestroy
+ *  - Create a node device vHBA allowing usage of various different
+ *    methods based on the input data/xml argument.
+ *  - Be sure that it's possible to destroy the node device as well.
+ */
+static int
+manageVHBAByNodeDevice(const void *data)
+{
+    const char *expect_hostname = "scsi_host12";
+    virConnectPtr conn = NULL;
+    virNodeDevicePtr dev = NULL;
+    int ret = -1;
+    const char *vhba = data;
+
+    if (!(conn = virConnectOpen("test:///default")))
+        return -1;
+
+    if (!(dev = virNodeDeviceCreateXML(conn, vhba, 0)))
+        goto cleanup;
+
+    if (virNodeDeviceDestroy(dev) < 0)
+        goto cleanup;
+
+    if (STRNEQ(virNodeDeviceGetName(dev), expect_hostname)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "Expected hostname: '%s' got: '%s'",
+                       expect_hostname, virNodeDeviceGetName(dev));
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (dev)
+        virNodeDeviceFree(dev);
+    if (conn)
+        virConnectClose(conn);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -210,10 +267,13 @@ mymain(void)
         ret = -1;
     if (virTestRun("virVHBAGetConfig-empty-fabric_wwn", test6, NULL) < 0)
         ret = -1;
+    if (virTestRun("manageVHBAByNodeDevice-by-parent", manageVHBAByNodeDevice,
+                   test7_xml) < 0)
+        ret = -1;
 
  cleanup:
     VIR_FREE(fchost_prefix);
     return ret;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virrandommock.so")

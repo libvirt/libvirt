@@ -23,6 +23,7 @@
 #ifndef WIN32
 
 # include "internal.h"
+# include "virstring.h"
 # include "virrandom.h"
 # include "virmock.h"
 
@@ -38,6 +39,14 @@ virRandomBytes(unsigned char *buf,
         buf[i] = i;
 
     return 0;
+}
+
+
+int virRandomGenerateWWN(char **wwn,
+                         const char *virt_type ATTRIBUTE_UNUSED)
+{
+    return virAsprintf(wwn, "5100000%09llx",
+                       (unsigned long long)virRandomBits(36));
 }
 
 
