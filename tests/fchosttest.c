@@ -53,6 +53,17 @@ static const char test8_xml[] =
 "  </capability>"
 "</device>";
 
+/* virNodeDeviceCreateXML using "<parent wwnn='%s' wwpn='%s'/>" to find
+ * the vport capable HBA */
+static const char test9_xml[] =
+"<device>"
+"  <parent wwnn='2000000012341234' wwpn='1000000012341234'/>"
+"  <capability type='scsi_host'>"
+"    <capability type='fc_host'>"
+"    </capability>"
+"  </capability>"
+"</device>";
+
 /* Test virIsVHBACapable */
 static int
 test1(const void *data ATTRIBUTE_UNUSED)
@@ -281,6 +292,9 @@ mymain(void)
         ret = -1;
     if (virTestRun("manageVHBAByNodeDevice-no-parent", manageVHBAByNodeDevice,
                    test8_xml) < 0)
+        ret = -1;
+    if (virTestRun("manageVHBAByNodeDevice-parent-wwn", manageVHBAByNodeDevice,
+                   test9_xml) < 0)
         ret = -1;
 
  cleanup:
