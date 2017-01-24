@@ -5625,38 +5625,17 @@ testNodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
     return ret;
 }
 
-static virNodeDevicePtr
-testNodeDeviceCreateXML(virConnectPtr conn,
-                        const char *xmlDesc,
-                        unsigned int flags)
+
+static int
+testNodeDeviceMockCreateVport(virConnectPtr conn,
+                              virNodeDeviceDefPtr def,
+                              const char *wwpn)
 {
+    int ret = -1;
     testDriverPtr driver = conn->privateData;
-    virNodeDeviceDefPtr def = NULL;
-    virNodeDeviceObjPtr obj = NULL;
-    char *wwnn = NULL, *wwpn = NULL;
-    int parent_host = -1;
-    virNodeDevicePtr dev = NULL;
     virNodeDevCapsDefPtr caps;
+    virNodeDeviceObjPtr obj = NULL;
     virObjectEventPtr event = NULL;
-
-    virCheckFlags(0, NULL);
-
-    testDriverLock(driver);
-
-    def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, NULL);
-    if (def == NULL)
-        goto cleanup;
-
-    /* We run these next two simply for validation */
-    if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
-        goto cleanup;
-
-    if (virNodeDeviceGetParentHost(&driver->devs,
-                                   def->name,
-                                   def->parent,
-                                   &parent_host) == -1) {
-        goto cleanup;
-    }
 
     /* 'name' is supposed to be filled in by the node device backend, which
      * we don't have. Use WWPN instead. */
@@ -5676,7 +5655,6 @@ testNodeDeviceCreateXML(virConnectPtr conn,
         caps = caps->next;
     }
 
-
     if (!(obj = virNodeDeviceAssignDef(&driver->devs, def)))
         goto cleanup;
     virNodeDeviceObjUnlock(obj);
@@ -5684,6 +5662,51 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     event = virNodeDeviceEventLifecycleNew(def->name,
                                            VIR_NODE_DEVICE_EVENT_CREATED,
                                            0);
+    testObjectEventQueue(driver, event);
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
+static virNodeDevicePtr
+testNodeDeviceCreateXML(virConnectPtr conn,
+                        const char *xmlDesc,
+                        unsigned int flags)
+{
+    testDriverPtr driver = conn->privateData;
+    virNodeDeviceDefPtr def = NULL;
+    char *wwnn = NULL, *wwpn = NULL;
+    int parent_host = -1;
+    virNodeDevicePtr dev = NULL;
+
+    virCheckFlags(0, NULL);
+
+    testDriverLock(driver);
+
+    if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, NULL)))
+        goto cleanup;
+
+    /* We run these next two simply for validation - they are essentially
+     * 'validating' that the input XML either has a wwnn/wwpn or the
+     * virNodeDevCapSCSIHostParseXML generated a wwnn/wwpn and that the
+     * input XML has a parent host defined. */
+    if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) < 0)
+        goto cleanup;
+
+    if (virNodeDeviceGetParentHost(&driver->devs, def->name,
+                                   def->parent, &parent_host) < 0)
+        goto cleanup;
+
+    /* In the real code, we'd call virVHBAManageVport followed by
+     * find_new_device, but we cannot do that here since we're not
+     * mocking udev. So we just mock a creation by altering the
+     * input XML enough to make it look like a vHBA and add it
+     * to the list of node devices */
+    if (testNodeDeviceMockCreateVport(conn, def, wwpn) < 0)
+        goto cleanup;
 
     dev = virGetNodeDevice(conn, def->name);
     ignore_value(VIR_STRDUP(dev->parent, def->parent));
@@ -5691,7 +5714,6 @@ testNodeDeviceCreateXML(virConnectPtr conn,
  cleanup:
     testDriverUnlock(driver);
     virNodeDeviceDefFree(def);
-    testObjectEventQueue(driver, event);
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
     return dev;
