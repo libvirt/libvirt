@@ -44,6 +44,15 @@ static const char test7_xml[] =
 "  </capability>"
 "</device>";
 
+/* virNodeDeviceCreateXML without "<parent>" to find the vport capable HBA */
+static const char test8_xml[] =
+"<device>"
+"  <capability type='scsi_host'>"
+"    <capability type='fc_host'>"
+"    </capability>"
+"  </capability>"
+"</device>";
+
 /* Test virIsVHBACapable */
 static int
 test1(const void *data ATTRIBUTE_UNUSED)
@@ -269,6 +278,9 @@ mymain(void)
         ret = -1;
     if (virTestRun("manageVHBAByNodeDevice-by-parent", manageVHBAByNodeDevice,
                    test7_xml) < 0)
+        ret = -1;
+    if (virTestRun("manageVHBAByNodeDevice-no-parent", manageVHBAByNodeDevice,
+                   test8_xml) < 0)
         ret = -1;
 
  cleanup:
