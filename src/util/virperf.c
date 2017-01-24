@@ -198,6 +198,9 @@ virPerfEventEnable(virPerfPtr perf,
     if (!event || !event_attr)
         return -1;
 
+    if (event->enabled)
+        return 0;
+
     if (event_attr->attrType == 0 && (type == VIR_PERF_EVENT_CMT ||
                                        type == VIR_PERF_EVENT_MBMT ||
                                        type == VIR_PERF_EVENT_MBML)) {
