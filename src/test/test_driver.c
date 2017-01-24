@@ -5712,7 +5712,6 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     testDriverPtr driver = conn->privateData;
     virNodeDeviceDefPtr def = NULL;
     char *wwnn = NULL, *wwpn = NULL;
-    int parent_host = -1;
     virNodeDevicePtr dev = NULL;
     virNodeDeviceDefPtr newdef = NULL;
 
@@ -5723,15 +5722,16 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, NULL)))
         goto cleanup;
 
-    /* We run these next two simply for validation - they are essentially
-     * 'validating' that the input XML either has a wwnn/wwpn or the
-     * virNodeDevCapSCSIHostParseXML generated a wwnn/wwpn and that the
-     * input XML has a parent host defined. */
+    /* We run this simply for validation - it essentially validates that
+     * the input XML either has a wwnn/wwpn or virNodeDevCapSCSIHostParseXML
+     * generated a wwnn/wwpn */
     if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) < 0)
         goto cleanup;
 
-    if (virNodeDeviceGetParentHost(&driver->devs, def->name,
-                                   def->parent, &parent_host) < 0)
+    /* Unlike the "real" code we don't need the parent_host in order to
+     * call virVHBAManageVport, but still let's make sure the code finds
+     * something valid and no one messed up the mock environment. */
+    if (virNodeDeviceGetParentHost(&driver->devs, def, CREATE_DEVICE) < 0)
         goto cleanup;
 
     /* In the real code, we'd call virVHBAManageVport followed by
@@ -5762,7 +5762,6 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
     testDriverPtr driver = dev->conn->privateData;
     virNodeDeviceObjPtr obj = NULL;
     char *parent_name = NULL, *wwnn = NULL, *wwpn = NULL;
-    int parent_host = -1;
     virObjectEventPtr event = NULL;
 
     testDriverLock(driver);
@@ -5788,11 +5787,10 @@ testNodeDeviceDestroy(virNodeDevicePtr dev)
      * any more once we have the parent's name.  */
     virNodeDeviceObjUnlock(obj);
 
-    /* We do this just for basic validation */
-    if (virNodeDeviceGetParentHost(&driver->devs,
-                                   dev->name,
-                                   parent_name,
-                                   &parent_host) == -1) {
+    /* We do this just for basic validation, but also avoid finding a
+     * vport capable HBA if for some reason our vHBA doesn't exist */
+    if (virNodeDeviceGetParentHost(&driver->devs, obj->def,
+                                   EXISTING_DEVICE) < 0) {
         obj = NULL;
         goto out;
     }

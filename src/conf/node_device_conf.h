@@ -299,23 +299,8 @@ int virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
                          char **wwpn);
 
 int virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
-                               const char *dev_name,
-                               const char *parent_name,
-                               int *parent_host);
-
-int virNodeDeviceGetParentHostByWWNs(virNodeDeviceObjListPtr devs,
-                                     const char *dev_name,
-                                     const char *parent_wwnn,
-                                     const char *parent_wwpn,
-                                     int *parent_host);
-
-int virNodeDeviceGetParentHostByFabricWWN(virNodeDeviceObjListPtr devs,
-                                          const char *dev_name,
-                                          const char *parent_fabric_wwn,
-                                          int *parent_host);
-
-int virNodeDeviceFindVportParentHost(virNodeDeviceObjListPtr devs,
-                                     int *parent_host);
+                               virNodeDeviceDefPtr def,
+                               int create);
 
 void virNodeDeviceDefFree(virNodeDeviceDefPtr def);
 

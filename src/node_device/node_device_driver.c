@@ -581,8 +581,7 @@ nodeDeviceCreateXML(virConnectPtr conn,
 
     nodeDeviceLock();
 
-    def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type);
-    if (def == NULL)
+    if (!(def = virNodeDeviceDefParseString(xmlDesc, CREATE_DEVICE, virt_type)))
         goto cleanup;
 
     if (virNodeDeviceCreateXMLEnsureACL(conn, def) < 0)
@@ -591,30 +590,9 @@ nodeDeviceCreateXML(virConnectPtr conn,
     if (virNodeDeviceGetWWNs(def, &wwnn, &wwpn) == -1)
         goto cleanup;
 
-    if (def->parent) {
-        if (virNodeDeviceGetParentHost(&driver->devs,
-                                       def->name,
-                                       def->parent,
-                                       &parent_host) < 0)
-            goto cleanup;
-    } else if (def->parent_wwnn && def->parent_wwpn) {
-        if (virNodeDeviceGetParentHostByWWNs(&driver->devs,
-                                             def->name,
-                                             def->parent_wwnn,
-                                             def->parent_wwpn,
-                                             &parent_host) < 0)
-            goto cleanup;
-    } else if (def->parent_fabric_wwn) {
-        if (virNodeDeviceGetParentHostByFabricWWN(&driver->devs,
-                                                  def->name,
-                                                  def->parent_fabric_wwn,
-                                                  &parent_host) < 0)
-            goto cleanup;
-    } else {
-        /* Try to find a vport capable scsi_host when no parent supplied */
-        if (virNodeDeviceFindVportParentHost(&driver->devs, &parent_host) < 0)
-            goto cleanup;
-    }
+    if ((parent_host = virNodeDeviceGetParentHost(&driver->devs, def,
+                                                  CREATE_DEVICE)) < 0)
+        goto cleanup;
 
     if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_CREATE) < 0)
         goto cleanup;
@@ -642,7 +620,8 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
 {
     int ret = -1;
     virNodeDeviceObjPtr obj = NULL;
-    char *parent_name = NULL, *wwnn = NULL, *wwpn = NULL;
+    virNodeDeviceDefPtr def;
+    char *wwnn = NULL, *wwpn = NULL;
     int parent_host = -1;
 
     nodeDeviceLock();
@@ -659,32 +638,26 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
     if (virNodeDeviceGetWWNs(obj->def, &wwnn, &wwpn) < 0)
         goto cleanup;
 
-
-    /* virNodeDeviceGetParentHost will cause the device object's lock to be
-     * taken, so we have to dup the parent's name and drop the lock
-     * before calling it.  We don't need the reference to the object
-     * any more once we have the parent's name.  */
-    if (VIR_STRDUP(parent_name, obj->def->parent) < 0) {
-        virNodeDeviceObjUnlock(obj);
-        obj = NULL;
-        goto cleanup;
-    }
+    /* virNodeDeviceGetParentHost will cause the device object's lock
+     * to be taken, so grab the object def which will have the various
+     * fields used to search (name, parent, parent_wwnn, parent_wwpn,
+     * or parent_fabric_wwn) and drop the object lock. */
+    def = obj->def;
     virNodeDeviceObjUnlock(obj);
     obj = NULL;
-
-    if (virNodeDeviceGetParentHost(&driver->devs, dev->name, parent_name,
-                                   &parent_host) < 0)
+    if ((parent_host = virNodeDeviceGetParentHost(&driver->devs, def,
+                                                  EXISTING_DEVICE)) < 0)
         goto cleanup;
 
     if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_DELETE) < 0)
         goto cleanup;
 
     ret = 0;
+
  cleanup:
     nodeDeviceUnlock();
     if (obj)
         virNodeDeviceObjUnlock(obj);
-    VIR_FREE(parent_name);
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
     return ret;

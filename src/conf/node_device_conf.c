@@ -1975,17 +1975,15 @@ virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
  */
 /* virNodeDeviceFindFCParentHost:
  * @parent: Pointer to node device object
- * @parent_host: Pointer to return parent host number
  *
  * Search the capabilities for the device to find the FC capabilities
  * in order to set the parent_host value.
  *
  * Returns:
- *   0 on success with parent_host set, -1 otherwise;
+ *   parent_host value on success (>= 0), -1 otherwise.
  */
 static int
-virNodeDeviceFindFCParentHost(virNodeDeviceObjPtr parent,
-                              int *parent_host)
+virNodeDeviceFindFCParentHost(virNodeDeviceObjPtr parent)
 {
     virNodeDevCapsDefPtr cap = virNodeDeviceFindVPORTCapDef(parent);
 
@@ -1997,16 +1995,14 @@ virNodeDeviceFindFCParentHost(virNodeDeviceObjPtr parent,
         return -1;
     }
 
-    *parent_host = cap->data.scsi_host.host;
-    return 0;
+    return cap->data.scsi_host.host;
 }
 
 
-int
-virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
-                           const char *dev_name,
-                           const char *parent_name,
-                           int *parent_host)
+static int
+virNodeDeviceGetParentHostByParent(virNodeDeviceObjListPtr devs,
+                                   const char *dev_name,
+                                   const char *parent_name)
 {
     virNodeDeviceObjPtr parent = NULL;
     int ret;
@@ -2018,7 +2014,7 @@ virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
         return -1;
     }
 
-    ret = virNodeDeviceFindFCParentHost(parent, parent_host);
+    ret = virNodeDeviceFindFCParentHost(parent);
 
     virNodeDeviceObjUnlock(parent);
 
@@ -2026,12 +2022,11 @@ virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
 }
 
 
-int
+static int
 virNodeDeviceGetParentHostByWWNs(virNodeDeviceObjListPtr devs,
                                  const char *dev_name,
                                  const char *parent_wwnn,
-                                 const char *parent_wwpn,
-                                 int *parent_host)
+                                 const char *parent_wwpn)
 {
     virNodeDeviceObjPtr parent = NULL;
     int ret;
@@ -2043,7 +2038,7 @@ virNodeDeviceGetParentHostByWWNs(virNodeDeviceObjListPtr devs,
         return -1;
     }
 
-    ret = virNodeDeviceFindFCParentHost(parent, parent_host);
+    ret = virNodeDeviceFindFCParentHost(parent);
 
     virNodeDeviceObjUnlock(parent);
 
@@ -2051,11 +2046,10 @@ virNodeDeviceGetParentHostByWWNs(virNodeDeviceObjListPtr devs,
 }
 
 
-int
+static int
 virNodeDeviceGetParentHostByFabricWWN(virNodeDeviceObjListPtr devs,
                                       const char *dev_name,
-                                      const char *parent_fabric_wwn,
-                                      int *parent_host)
+                                      const char *parent_fabric_wwn)
 {
     virNodeDeviceObjPtr parent = NULL;
     int ret;
@@ -2067,7 +2061,7 @@ virNodeDeviceGetParentHostByFabricWWN(virNodeDeviceObjListPtr devs,
         return -1;
     }
 
-    ret = virNodeDeviceFindFCParentHost(parent, parent_host);
+    ret = virNodeDeviceFindFCParentHost(parent);
 
     virNodeDeviceObjUnlock(parent);
 
@@ -2075,9 +2069,8 @@ virNodeDeviceGetParentHostByFabricWWN(virNodeDeviceObjListPtr devs,
 }
 
 
-int
-virNodeDeviceFindVportParentHost(virNodeDeviceObjListPtr devs,
-                                 int *parent_host)
+static int
+virNodeDeviceFindVportParentHost(virNodeDeviceObjListPtr devs)
 {
     virNodeDeviceObjPtr parent = NULL;
     const char *cap = virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_VPORTS);
@@ -2089,11 +2082,38 @@ virNodeDeviceFindVportParentHost(virNodeDeviceObjListPtr devs,
         return -1;
     }
 
-    ret = virNodeDeviceFindFCParentHost(parent, parent_host);
+    ret = virNodeDeviceFindFCParentHost(parent);
 
     virNodeDeviceObjUnlock(parent);
 
     return ret;
+}
+
+
+int
+virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
+                           virNodeDeviceDefPtr def,
+                           int create)
+{
+    int parent_host = -1;
+
+    if (def->parent) {
+        parent_host = virNodeDeviceGetParentHostByParent(devs, def->name,
+                                                         def->parent);
+    } else if (def->parent_wwnn && def->parent_wwpn) {
+        parent_host = virNodeDeviceGetParentHostByWWNs(devs, def->name,
+                                                       def->parent_wwnn,
+                                                       def->parent_wwpn);
+    } else if (def->parent_fabric_wwn) {
+        parent_host =
+            virNodeDeviceGetParentHostByFabricWWN(devs, def->name,
+                                                  def->parent_fabric_wwn);
+    } else if (create == CREATE_DEVICE) {
+        /* Try to find a vport capable scsi_host when no parent supplied */
+        parent_host = virNodeDeviceFindVportParentHost(devs);
+    }
+
+    return parent_host;
 }
 
 
