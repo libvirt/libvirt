@@ -17506,7 +17506,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         qemuDomainObjEnterMonitor(driver, vm);
         ret = qemuMonitorSetBlockIoThrottle(priv->mon, device,
                                             &info, supportMaxOptions,
-                                            supportGroupNameOption,
+                                            set_fields & QEMU_BLOCK_IOTUNE_SET_GROUP_NAME,
                                             supportMaxLengthOptions);
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             ret = -1;

@@ -4607,7 +4607,7 @@ int qemuMonitorJSONSetBlockIoThrottle(qemuMonitorPtr mon,
 
     if (supportGroupNameOption &&
         virJSONValueObjectAdd(args,
-                              "s:group", info->group_name,
+                              "S:group", info->group_name,
                               NULL) < 0)
         goto cleanup;
 
