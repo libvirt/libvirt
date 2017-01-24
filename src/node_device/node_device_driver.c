@@ -646,21 +646,18 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
     int parent_host = -1;
 
     nodeDeviceLock();
-    obj = virNodeDeviceFindByName(&driver->devs, dev->name);
-    nodeDeviceUnlock();
-
-    if (!obj) {
+    if (!(obj = virNodeDeviceFindByName(&driver->devs, dev->name))) {
         virReportError(VIR_ERR_NO_NODE_DEVICE,
                        _("no node device with matching name '%s'"),
                        dev->name);
-        goto out;
+        goto cleanup;
     }
 
     if (virNodeDeviceDestroyEnsureACL(dev->conn, obj->def) < 0)
-        goto out;
+        goto cleanup;
 
-    if (virNodeDeviceGetWWNs(obj->def, &wwnn, &wwpn) == -1)
-        goto out;
+    if (virNodeDeviceGetWWNs(obj->def, &wwnn, &wwpn) < 0)
+        goto cleanup;
 
 
     /* virNodeDeviceGetParentHost will cause the device object's lock to be
@@ -670,20 +667,21 @@ nodeDeviceDestroy(virNodeDevicePtr dev)
     if (VIR_STRDUP(parent_name, obj->def->parent) < 0) {
         virNodeDeviceObjUnlock(obj);
         obj = NULL;
-        goto out;
+        goto cleanup;
     }
     virNodeDeviceObjUnlock(obj);
     obj = NULL;
 
     if (virNodeDeviceGetParentHost(&driver->devs, dev->name, parent_name,
                                    &parent_host) < 0)
-        goto out;
+        goto cleanup;
 
     if (virVHBAManageVport(parent_host, wwpn, wwnn, VPORT_DELETE) < 0)
-        goto out;
+        goto cleanup;
 
     ret = 0;
- out:
+ cleanup:
+    nodeDeviceUnlock();
     if (obj)
         virNodeDeviceObjUnlock(obj);
     VIR_FREE(parent_name);
