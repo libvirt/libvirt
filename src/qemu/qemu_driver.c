@@ -17480,23 +17480,39 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         qemuDomainSetBlockIoTuneDefaults(&info, &disk->blkdeviotune,
                                          set_fields);
 
-#define CHECK_MAX(val)                                                  \
+#define CHECK_MAX(val, _bool)                                           \
         do {                                                            \
-            if (info.val##_max && !info.val) {                          \
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,              \
-                               _("value '%s' cannot be set if "         \
-                                 "'%s' is not set"),                    \
-                               #val "_max", #val);                      \
-                goto endjob;                                            \
+            if (info.val##_max) {                                       \
+                if (!info.val) {                                        \
+                    if (QEMU_BLOCK_IOTUNE_SET_##_bool) {                \
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,      \
+                                       _("cannot reset '%s' when "      \
+                                         "'%s' is set"),                \
+                                       #val, #val "_max");              \
+                    } else {                                            \
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,      \
+                                       _("value '%s' cannot be set if " \
+                                         "'%s' is not set"),            \
+                                       #val "_max", #val);              \
+                    }                                                   \
+                    goto endjob;                                        \
+                }                                                       \
+                if (info.val##_max < info.val) {                        \
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,          \
+                                   _("value '%s' cannot be "            \
+                                     "smaller than '%s'"),              \
+                                   #val "_max", #val);                  \
+                    goto endjob;                                        \
+                }                                                       \
             }                                                           \
-        } while (false);
+        } while (false)
 
-        CHECK_MAX(total_bytes_sec);
-        CHECK_MAX(read_bytes_sec);
-        CHECK_MAX(write_bytes_sec);
-        CHECK_MAX(total_iops_sec);
-        CHECK_MAX(read_iops_sec);
-        CHECK_MAX(write_iops_sec);
+        CHECK_MAX(total_bytes_sec, BYTES);
+        CHECK_MAX(read_bytes_sec, BYTES);
+        CHECK_MAX(write_bytes_sec, BYTES);
+        CHECK_MAX(total_iops_sec, IOPS);
+        CHECK_MAX(read_iops_sec, IOPS);
+        CHECK_MAX(write_iops_sec, IOPS);
 
 #undef CHECK_MAX
 
