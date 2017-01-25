@@ -1398,11 +1398,12 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     VSH_ADD_IOTUNE(write-iops-sec-max-length, WRITE_IOPS_SEC_MAX_LENGTH);
 #undef VSH_ADD_IOTUNE
 
-    rv = vshCommandOptStringReq(ctl, cmd, "group_name", &group_name);
-    if (rv < 0) {
+    if (vshCommandOptStringReq(ctl, cmd, "group_name", &group_name) < 0) {
         vshError(ctl, "%s", _("Unable to parse group parameter"));
         goto cleanup;
-    } else if (rv > 0) {
+    }
+
+    if (group_name) {
         if (virTypedParamsAddString(&params, &nparams, &maxparams,
                                     VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME,
                                     group_name) < 0)
