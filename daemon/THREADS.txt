@@ -42,7 +42,7 @@ event loop thread handles I/O from the client socket, and once a
 complete RPC message has been read off the wire (and optionally
 decrypted), it will be placed on the 'dx' job queue for the
 associated client object. The job condition will be signalled and
-a worker will wakup and process it.
+a worker will wakeup and process it.
 
 The worker thread must quickly drop its locks on the server and
 client to allow the main event loop thread to continue running

@@ -124,7 +124,7 @@ int virEventPollToNativeEvents(int events);
 /**
  * virEventPollInterrupt: wakeup any thread waiting in poll()
  *
- * return -1 if wakup failed
+ * return -1 if wakeup failed
  */
 int virEventPollInterrupt(void);
 
