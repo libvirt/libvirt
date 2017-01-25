@@ -5518,12 +5518,13 @@ qemu-kvm -net nic,model=? /dev/null
               should be auto-allocated). The <code>autoport</code> attribute is
               the new preferred syntax for indicating auto-allocation of the TCP
               port to use. The <code>passwd</code> attribute provides a VNC
-              password in clear text. The <code>keymap</code> attribute specifies
-              the keymap to use. It is possible to set a limit on the validity of
-              the password by giving an timestamp
-              <code>passwdValidTo='2010-04-09T15:51:00'</code> assumed to be
-              in UTC. The <code>connected</code> attribute allows control of
-              connected client during password changes. VNC accepts
+              password in clear text. If the <code>passwd</code> attribute is
+              set to an empty string, then VNC access is disabled. The
+              <code>keymap</code> attribute specifies the keymap to use. It is
+              possible to set a limit on the validity of the password by giving
+              an timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
+              assumed to be in UTC. The <code>connected</code> attribute allows
+              control of connected client during password changes. VNC accepts
               <code>keep</code> value only <span class="since">since 0.9.3</span>.
               NB, this may not be supported by all hypervisors.
             </p>
@@ -5559,11 +5560,13 @@ qemu-kvm -net nic,model=? /dev/null
               an alternative secure port number. The <code>autoport</code>
               attribute is the new preferred syntax for indicating
               auto-allocation of needed port numbers. The <code>passwd</code>
-              attribute provides a SPICE password in clear text. The
-              <code>keymap</code> attribute specifies the keymap to use. It is
-              possible to set a limit on the validity of the password by giving
-              an timestamp <code>passwdValidTo='2010-04-09T15:51:00'</code>
-              assumed to be in UTC.
+              attribute provides a SPICE password in clear text. If the
+              <code>passwd</code> attribute is set to an empty string, then
+              SPICE access is disabled. The <code>keymap</code> attribute
+              specifies the keymap to use. It is possible to set a limit on
+              the validity of the password by giving an timestamp
+              <code>passwdValidTo='2010-04-09T15:51:00'</code> assumed to be
+              in UTC.
             </p>
             <p>
               The <code>connected</code> attribute allows control of connected
