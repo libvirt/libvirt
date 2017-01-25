@@ -1139,7 +1139,7 @@ command.
 [I<read-bytes-sec-max-length>] [I<write-bytes-sec-max-length>]]
 [[I<total-iops-sec-max-length>] |
 [I<read-iops-sec-max-length>] [I<write-iops-sec-max-length>]]
-[I<size-iops-sec>] [I<group_name>]
+[I<size-iops-sec>] [I<group-name>]
 
 Set or query the block disk io parameters for a block device of I<domain>.
 I<device> specifies a unique target name (<target dev='name'/>) or source
@@ -1179,7 +1179,7 @@ read I/O operations limit.
 I<--write-iops-sec-max-length> specifies duration in seconds to allow maximum
 write I/O operations limit.
 I<--size-iops-sec> specifies size I/O operations limit per second.
-I<--group_name> specifies group name to share I/O quota between multiple drives.
+I<--group-name> specifies group name to share I/O quota between multiple drives.
 For a qemu domain, if no name is provided, then the default is to have a single
 group for each I<device>.
 

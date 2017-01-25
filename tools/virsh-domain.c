@@ -1264,6 +1264,10 @@ static const vshCmdOptDef opts_blkdeviotune[] = {
      .help = N_("I/O size in bytes")
     },
     {.name = "group_name",
+     .type = VSH_OT_ALIAS,
+     .help = "group-name"
+    },
+    {.name = "group-name",
      .type = VSH_OT_STRING,
      .help = N_("group name to share I/O quota between multiple drives")
     },
@@ -1398,8 +1402,8 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
     VSH_ADD_IOTUNE(write-iops-sec-max-length, WRITE_IOPS_SEC_MAX_LENGTH);
 #undef VSH_ADD_IOTUNE
 
-    if (vshCommandOptStringReq(ctl, cmd, "group_name", &group_name) < 0) {
-        vshError(ctl, "%s", _("Unable to parse group parameter"));
+    if (vshCommandOptStringReq(ctl, cmd, "group-name", &group_name) < 0) {
+        vshError(ctl, "%s", _("Unable to parse group-name parameter"));
         goto cleanup;
     }
 
