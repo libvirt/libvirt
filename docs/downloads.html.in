@@ -198,6 +198,40 @@
           <td></td>
         </tr>
         <tr>
+          <td>Go XML</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/go/">ftp</a>
+            <a href="http://libvirt.org/sources/go/">http</a>
+            <a href="https://libvirt.org/sources/go/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-go-xml.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-go-xml">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-go-xml">github</a>
+          </td>
+          <td>
+            <a href="https://godoc.org/github.com/libvirt/libvirt-go-xml">api ref</a>
+          </td>
+        </tr>
+        <tr>
+          <td>Console Proxy</td>
+          <td>
+            <a href="ftp://libvirt.org/libvirt/consoleproxy/">ftp</a>
+            <a href="http://libvirt.org/sources/consoleproxy/">http</a>
+            <a href="https://libvirt.org/sources/consoleproxy/">https</a>
+          </td>
+          <td>
+            <a href="http://libvirt.org/git/?p=libvirt-console-proxy.git;a=summary">libvirt</a>
+          </td>
+          <td>
+            <a href="https://gitlab.com/libvirt/libvirt-console-proxy">gitlab</a>
+            <a href="https://github.com/libvirt/libvirt-console-proxy">github</a>
+          </td>
+          <td></td>
+        </tr>
+        <tr>
           <td>CIM provider</td>
           <td>
             <a href="ftp://libvirt.org/libvirt/CIM/">ftp</a>
