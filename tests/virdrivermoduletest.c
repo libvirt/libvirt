@@ -30,12 +30,18 @@
 
 VIR_LOG_INIT("tests.drivermoduletest");
 
+struct testDriverModuleData {
+    const char *module;
+    const char *regfunc;
+};
+
+
 static int testDriverModule(const void *args)
 {
-    const char *name = args;
+    const struct testDriverModuleData *data = args;
 
     /* coverity[leaked_storage] */
-    if (!virDriverLoadModule(name))
+    if (virDriverLoadModule(data->module, data->regfunc) != 0)
         return -1;
 
     return 0;
@@ -46,12 +52,17 @@ static int
 mymain(void)
 {
     int ret = 0;
+    struct testDriverModuleData data;
 
-#define TEST(name)                                                         \
-    do  {                                                                  \
-        if (virTestRun("Test driver " # name, testDriverModule, name) < 0) \
-            ret = -1;                                                      \
+#define TEST_FULL(name, fnc)                                                   \
+    do  {                                                                      \
+        data.module = name;                                                    \
+        data.regfunc = fnc;                                                    \
+        if (virTestRun("Test driver " # name, testDriverModule, &data) < 0)    \
+            ret = -1;                                                          \
     } while (0)
+
+#define TEST(name) TEST_FULL(name, name "Register")
 
 #ifdef WITH_NETWORK
     TEST("network");

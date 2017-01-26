@@ -23,15 +23,12 @@
 #include <config.h>
 
 #include <unistd.h>
-#include <c-ctype.h>
 
 #include "driver.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virlog.h"
-#include "virutil.h"
 #include "configmake.h"
-#include "virstring.h"
 
 VIR_LOG_INIT("driver");
 
@@ -132,14 +129,12 @@ virDriverLoadModuleFull(const char *path,
 }
 
 
-void *
-virDriverLoadModule(const char *name)
+int
+virDriverLoadModule(const char *name,
+                    const char *regfunc)
 {
     char *modfile = NULL;
-    char *fixedname = NULL;
-    char *regfunc = NULL;
-    char *tmp;
-    void *handle = NULL;
+    int ret;
 
     VIR_DEBUG("Module load %s", name);
 
@@ -149,29 +144,13 @@ virDriverLoadModule(const char *name)
                                             abs_topbuilddir "/src/.libs",
                                             DEFAULT_DRIVER_DIR,
                                             "LIBVIRT_DRIVER_DIR")))
-        return NULL;
+        return 1;
 
-    if (VIR_STRDUP_QUIET(fixedname, name) < 0) {
-        VIR_ERROR(_("out of memory"));
-        goto cleanup;
-    }
+    ret = virDriverLoadModuleFull(modfile, regfunc, NULL);
 
-    /* convert something_like_this into somethingLikeThis */
-    while ((tmp = strchr(fixedname, '_'))) {
-        memmove(tmp, tmp + 1, strlen(tmp));
-        *tmp = c_toupper(*tmp);
-    }
-
-    if (virAsprintfQuiet(&regfunc, "%sRegister", fixedname) < 0)
-        goto cleanup;
-
-    virDriverLoadModuleFull(modfile, regfunc, &handle);
-
- cleanup:
     VIR_FREE(modfile);
-    VIR_FREE(fixedname);
-    VIR_FREE(regfunc);
-    return handle;
+
+    return ret;
 }
 
 
