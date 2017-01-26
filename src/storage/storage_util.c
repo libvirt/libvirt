@@ -2803,24 +2803,6 @@ virStorageBackendBuildLocal(virStoragePoolObjPtr pool)
 }
 
 
-int
-virStorageBackendUmountLocal(virStoragePoolObjPtr pool)
-{
-    int ret = -1;
-    virCommandPtr cmd = virCommandNewArgList(UMOUNT, pool->def->target.path,
-                                             NULL);
-
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-    return ret;
-}
-
-
 /**
  * @conn connection to report errors against
  * @pool storage pool to delete

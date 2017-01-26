@@ -125,13 +125,22 @@ static int
 virStorageBackendVzPoolStop(virConnectPtr conn ATTRIBUTE_UNUSED,
                             virStoragePoolObjPtr pool)
 {
+    virCommandPtr cmd = NULL;
+    int ret = -1;
     int rc;
 
     /* Short-circuit if already unmounted */
     if ((rc = virStorageBackendVzIsMounted(pool)) != 1)
         return rc;
 
-    return virStorageBackendUnmountLocal(pool);
+    cmd = virCommandNewArgList(UMOUNT, pool->def->target.path, NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virCommandFree(cmd);
+    return ret;
 }
 
 

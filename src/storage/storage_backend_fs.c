@@ -452,6 +452,8 @@ static int
 virStorageBackendFileSystemStop(virConnectPtr conn ATTRIBUTE_UNUSED,
                                 virStoragePoolObjPtr pool)
 {
+    virCommandPtr cmd = NULL;
+    int ret = -1;
     int rc;
 
     if (virStorageBackendFileSystemIsValid(pool) < 0)
@@ -461,7 +463,14 @@ virStorageBackendFileSystemStop(virConnectPtr conn ATTRIBUTE_UNUSED,
     if ((rc = virStorageBackendFileSystemIsMounted(pool)) != 1)
         return rc;
 
-    return virStorageBackendUmountLocal(pool);
+    cmd = virCommandNewArgList(UMOUNT, pool->def->target.path, NULL);
+    if (virCommandRun(cmd, NULL) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    virCommandFree(cmd);
+    return ret;
 }
 #endif /* WITH_STORAGE_FS */
 

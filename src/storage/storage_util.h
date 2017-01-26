@@ -87,8 +87,6 @@ int virStorageBackendVolWipeLocal(virConnectPtr conn,
 /* Local/Common Storage Pool Backend APIs */
 int virStorageBackendBuildLocal(virStoragePoolObjPtr pool);
 
-int virStorageBackendUmountLocal(virStoragePoolObjPtr pool);
-
 int virStorageBackendDeleteLocal(virConnectPtr conn,
                                  virStoragePoolObjPtr pool,
                                  unsigned int flags);
