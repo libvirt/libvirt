@@ -17217,12 +17217,12 @@ qemuDomainSetBlockIoTuneDefaults(virDomainBlockIoTuneInfoPtr newinfo,
         newinfo->FIELD##_max_length = (newinfo->FIELD ||                       \
                                        newinfo->FIELD##_max) ? 1 : 0;
 
-        SET_MAX_LENGTH(BYTES_MAX_LENGTH, total_bytes_sec);
-        SET_MAX_LENGTH(BYTES_MAX_LENGTH, read_bytes_sec);
-        SET_MAX_LENGTH(BYTES_MAX_LENGTH, write_bytes_sec);
-        SET_MAX_LENGTH(IOPS_MAX_LENGTH, total_iops_sec);
-        SET_MAX_LENGTH(IOPS_MAX_LENGTH, read_iops_sec);
-        SET_MAX_LENGTH(IOPS_MAX_LENGTH, write_iops_sec);
+    SET_MAX_LENGTH(BYTES_MAX_LENGTH, total_bytes_sec);
+    SET_MAX_LENGTH(BYTES_MAX_LENGTH, read_bytes_sec);
+    SET_MAX_LENGTH(BYTES_MAX_LENGTH, write_bytes_sec);
+    SET_MAX_LENGTH(IOPS_MAX_LENGTH, total_iops_sec);
+    SET_MAX_LENGTH(IOPS_MAX_LENGTH, read_iops_sec);
+    SET_MAX_LENGTH(IOPS_MAX_LENGTH, write_iops_sec);
 
 #undef SET_MAX_LENGTH
 
@@ -17512,11 +17512,12 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
             ret = -1;
         if (ret < 0)
             goto endjob;
+        ret = -1;
         disk->blkdeviotune = info;
         info.group_name = NULL;
 
-        ret = virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps);
-        if (ret < 0)
+        if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir,
+                                vm, driver->caps) < 0)
             goto endjob;
 
         if (eventNparams) {
@@ -17537,12 +17538,13 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
                                          set_fields);
         conf_disk->blkdeviotune = info;
         info.group_name = NULL;
-        ret = virDomainSaveConfig(cfg->configDir, driver->caps, persistentDef);
-        if (ret < 0)
+        if (virDomainSaveConfig(cfg->configDir, driver->caps,
+                                persistentDef) < 0)
             goto endjob;
 
     }
 
+    ret = 0;
  endjob:
     qemuDomainObjEndJob(driver, vm);
 
