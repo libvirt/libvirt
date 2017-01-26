@@ -9,6 +9,7 @@
 #include <mntent.h>
 #include <pwd.h>
 #include <grp.h>
+#include "storage_util.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
