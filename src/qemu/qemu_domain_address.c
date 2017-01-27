@@ -2238,7 +2238,12 @@ qemuDomainAssignUSBPortsIterator(virDomainDeviceInfoPtr info,
 {
     struct qemuAssignUSBIteratorInfo *data = opaque;
 
-    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE)
+    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB)
+        return 0;
+
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB &&
+        virDomainUSBAddressPortIsValid(info->addr.usb.port))
         return 0;
 
     return virDomainUSBAddressAssign(data->addrs, info);

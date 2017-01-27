@@ -22,5 +22,5 @@ server,nowait \
 -usb \
 -device usb-hub,id=hub0,bus=usb.0,port=1 \
 -device usb-hub,id=hub1,bus=usb.0,port=2 \
--device usb-mouse,id=input0,bus=usb.0 \
+-device usb-mouse,id=input0,bus=usb.0,port=1.1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
