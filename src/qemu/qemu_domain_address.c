@@ -2300,19 +2300,24 @@ qemuDomainUSBAddressAddHubs(virDomainDefPtr def)
     struct qemuAssignUSBIteratorInfo data = { .count = 0 };
     virDomainHubDefPtr hub = NULL;
     size_t available_ports;
+    size_t hubs_needed = 0;
     int ret = -1;
+    size_t i;
 
     available_ports = virDomainUSBAddressCountAllPorts(def);
     ignore_value(virDomainUSBDeviceDefForeach(def,
                                               qemuDomainAssignUSBPortsCounter,
                                               &data,
                                               false));
-    VIR_DEBUG("Found %zu USB devices and %zu provided USB ports",
-              data.count, available_ports);
 
-    /* Add one hub if there are more devices than ports
-     * otherwise it's up to the user to specify more hubs/controllers */
-    if (data.count > available_ports) {
+    if (data.count > available_ports)
+        hubs_needed = VIR_DIV_UP(data.count - available_ports + 1,
+                                 VIR_DOMAIN_USB_HUB_PORTS - 1);
+
+    VIR_DEBUG("Found %zu USB devices and %zu provided USB ports; adding %zu hubs",
+              data.count, available_ports, hubs_needed);
+
+    for (i = 0; i < hubs_needed; i++) {
         if (VIR_ALLOC(hub) < 0)
             return -1;
         hub->type = VIR_DOMAIN_HUB_TYPE_USB;

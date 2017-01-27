@@ -1,0 +1,42 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu \
+-name QEMUGuest1 \
+-S \
+-M pc \
+-m 214 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-nographic \
+-nodefconfig \
+-nodefaults \
+-chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
+server,nowait \
+-mon chardev=charmonitor,id=monitor,mode=readline \
+-no-acpi \
+-boot c \
+-usb \
+-device usb-hub,id=hub0,bus=usb.0,port=1 \
+-device usb-hub,id=hub1,bus=usb.0,port=2 \
+-device usb-hub,id=hub2,bus=usb.0,port=1.1 \
+-device usb-mouse,id=input0,bus=usb.0,port=1.2 \
+-device usb-mouse,id=input1,bus=usb.0,port=1.3 \
+-device usb-mouse,id=input2,bus=usb.0,port=1.4 \
+-device usb-tablet,id=input3,bus=usb.0,port=1.5 \
+-device usb-tablet,id=input4,bus=usb.0,port=1.6 \
+-device usb-tablet,id=input5,bus=usb.0,port=1.7 \
+-device usb-tablet,id=input6,bus=usb.0,port=1.8 \
+-device usb-tablet,id=input7,bus=usb.0,port=1.1.1 \
+-device usb-tablet,id=input8,bus=usb.0,port=1.1.2 \
+-device usb-tablet,id=input9,bus=usb.0,port=1.1.3 \
+-device usb-tablet,id=input10,bus=usb.0,port=1.1.4 \
+-device usb-tablet,id=input11,bus=usb.0,port=1.1.5 \
+-device usb-tablet,id=input12,bus=usb.0,port=1.1.6 \
+-device usb-tablet,id=input13,bus=usb.0,port=1.1.7 \
+-device usb-tablet,id=input14,bus=usb.0,port=1.1.8 \
+-device usb-tablet,id=input15,bus=usb.0,port=2.1 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
