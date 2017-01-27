@@ -5,14 +5,9 @@
   <allocation unit='bytes'>0</allocation>
   <available unit='bytes'>0</available>
   <source>
-    <name>vstorage-cluster</name>
+    <name>vzstorage-cluster</name>
   </source>
   <target>
-    <path>/mnt/vstorage-cluster</path>
-    <permissions>
-      <mode>0755</mode>
-      <owner>-1</owner>
-      <group>-1</group>
-    </permissions>
+    <path>/mnt/vstorage_cluster</path>
   </target>
 </pool>
