@@ -1587,6 +1587,7 @@ int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
     virJSONValuePtr secProps = NULL;
     char *tlsAlias = NULL;
     char *secAlias = NULL;
+    bool need_release = false;
     virErrorPtr orig_err;
 
     qemuDomainPrepareChardevSourceTLS(redirdev->source, cfg);
@@ -1596,6 +1597,11 @@ int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
 
     if (!(charAlias = qemuAliasChardevFromDevAlias(redirdev->info.alias)))
         goto cleanup;
+
+    if ((rc = virDomainUSBAddressEnsure(priv->usbaddrs, &redirdev->info)) < 0)
+        goto cleanup;
+    if (rc == 1)
+        need_release = true;
 
     if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, priv->qemuCaps)))
         goto cleanup;
@@ -1649,6 +1655,8 @@ int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
  audit:
     virDomainAuditRedirdev(vm, redirdev, "attach", ret == 0);
  cleanup:
+    if (ret < 0 && need_release)
+        qemuDomainReleaseDeviceAddress(vm, &redirdev->info, NULL);
     VIR_FREE(tlsAlias);
     virJSONValueFree(tlsProps);
     VIR_FREE(secAlias);
