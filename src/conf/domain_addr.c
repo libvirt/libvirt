@@ -1825,8 +1825,6 @@ virDomainUSBAddressFindPort(virDomainUSBAddressSetPtr addrs,
 }
 
 
-#define VIR_DOMAIN_USB_HUB_PORTS 8
-
 int
 virDomainUSBAddressSetAddHub(virDomainUSBAddressSetPtr addrs,
                              virDomainHubDefPtr hub)

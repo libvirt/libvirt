@@ -274,6 +274,8 @@ char *
 virDomainUSBAddressPortFormat(unsigned int *port)
     ATTRIBUTE_NONNULL(1);
 
+# define VIR_DOMAIN_USB_HUB_PORTS 8
+
 typedef struct _virDomainUSBAddressHub virDomainUSBAddressHub;
 typedef virDomainUSBAddressHub *virDomainUSBAddressHubPtr;
 struct _virDomainUSBAddressHub {
