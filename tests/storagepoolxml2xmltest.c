@@ -97,16 +97,10 @@ mymain(void)
     DO_TEST("pool-gluster");
     DO_TEST("pool-gluster-sub");
     DO_TEST("pool-scsi-type-scsi-host-stable");
-#ifdef WITH_STORAGE_ZFS
     DO_TEST("pool-zfs");
     DO_TEST("pool-zfs-sourcedev");
-#endif
-#ifdef WITH_STORAGE_RBD
     DO_TEST("pool-rbd");
-#endif
-#ifdef WITH_STORAGE_VSTORAGE
     DO_TEST("pool-vstorage");
-#endif
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
