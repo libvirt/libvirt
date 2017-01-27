@@ -2577,8 +2577,12 @@ qemuMonitorMigrateToHost(qemuMonitorPtr mon,
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (virAsprintf(&uri, "%s:%s:%d", protocol, hostname, port) < 0)
+    if (strchr(hostname, ':')) {
+        if (virAsprintf(&uri, "%s:[%s]:%d", protocol, hostname, port) < 0)
+            return -1;
+    } else if (virAsprintf(&uri, "%s:%s:%d", protocol, hostname, port) < 0) {
         return -1;
+    }
 
     if (mon->json)
         ret = qemuMonitorJSONMigrate(mon, flags, uri);
