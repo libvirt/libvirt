@@ -357,7 +357,7 @@ char *
 virNodeDeviceGetParentName(virConnectPtr conn,
                            const char *nodedev_name);
 
-int
+char *
 virNodeDeviceCreateVport(virConnectPtr conn,
                          virStorageAdapterFCHostPtr fchost);
 

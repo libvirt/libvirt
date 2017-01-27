@@ -240,27 +240,23 @@ createVport(virConnectPtr conn,
         }
     }
 
-    if (virNodeDeviceCreateVport(conn, fchost) < 0)
+    if (!(name = virNodeDeviceCreateVport(conn, fchost)))
         goto cleanup;
-
-    virWaitForDevices();
 
     /* Creating our own VPORT didn't leave enough time to find any LUN's,
      * so, let's create a thread whose job it is to call the FindLU's with
      * retry logic set to true. If the thread isn't created, then no big
      * deal since it's still possible to refresh the pool later.
      */
-    if ((name = virVHBAGetHostByWWN(NULL, fchost->wwnn, fchost->wwpn))) {
-        if (VIR_ALLOC(cbdata) == 0) {
-            memcpy(cbdata->pool_uuid, def->uuid, VIR_UUID_BUFLEN);
-            VIR_STEAL_PTR(cbdata->fchost_name, name);
+    if (VIR_ALLOC(cbdata) == 0) {
+        memcpy(cbdata->pool_uuid, def->uuid, VIR_UUID_BUFLEN);
+        VIR_STEAL_PTR(cbdata->fchost_name, name);
 
-            if (virThreadCreate(&thread, false, virStoragePoolFCRefreshThread,
-                                cbdata) < 0) {
-                /* Oh well - at least someone can still refresh afterwards */
-                VIR_DEBUG("Failed to create FC Pool Refresh Thread");
-                virStoragePoolFCRefreshDataFree(cbdata);
-            }
+        if (virThreadCreate(&thread, false, virStoragePoolFCRefreshThread,
+                            cbdata) < 0) {
+            /* Oh well - at least someone can still refresh afterwards */
+            VIR_DEBUG("Failed to create FC Pool Refresh Thread");
+            virStoragePoolFCRefreshDataFree(cbdata);
         }
     }
 

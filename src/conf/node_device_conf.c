@@ -1925,13 +1925,12 @@ checkParent(virConnectPtr conn,
  * wwnn/wwpn, or fabric_wwn (if provided). If no parent is provided, then
  * a vport capable scsi_host will be selected.
  *
- * Returns 0 on success, -1 on failure
+ * Returns vHBA name on success, NULL on failure with an error message set
  */
-int
+char *
 virNodeDeviceCreateVport(virConnectPtr conn,
                          virStorageAdapterFCHostPtr fchost)
 {
-    int ret = -1;
     unsigned int parent_host;
     char *name = NULL;
     char *parent_hoststr = NULL;
@@ -1948,9 +1947,9 @@ virNodeDeviceCreateVport(virConnectPtr conn,
         /* If a parent was provided, let's make sure the 'name' we've
          * retrieved has the same parent. If not this will cause failure. */
         if (fchost->parent && checkParent(conn, name, fchost->parent))
-            ret = 0;
+            VIR_FREE(name);
 
-        goto cleanup;
+        return name;
     }
 
     if (fchost->parent) {
@@ -2002,12 +2001,17 @@ virNodeDeviceCreateVport(virConnectPtr conn,
                            VPORT_CREATE) < 0)
         goto cleanup;
 
-    ret = 0;
+    /* Let's ensure the device was created */
+    virWaitForDevices();
+    if (!(name = virVHBAGetHostByWWN(NULL, fchost->wwnn, fchost->wwpn))) {
+        ignore_value(virVHBAManageVport(parent_host, fchost->wwpn, fchost->wwnn,
+                                        VPORT_DELETE));
+        goto cleanup;
+    }
 
  cleanup:
-    VIR_FREE(name);
     VIR_FREE(parent_hoststr);
-    return ret;
+    return name;
 }
 
 
