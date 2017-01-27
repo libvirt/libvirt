@@ -49,7 +49,7 @@ AC_DEFUN([LIBVIRT_STORAGE_CHECK_VSTORAGE], [
         with_storage_vstorage=no
       fi
 
-      if test "$with_storage_fs" = "check" ; then
+      if test "$with_storage_vstorage" = "check" ; then
         with_storage_vstorage=yes
       fi
     fi
