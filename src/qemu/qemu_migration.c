@@ -2322,7 +2322,7 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver,
         if (!qemuMigrationIsAllowedHostdev(vm->def))
             return false;
 
-        if (vm->def->cpu && vm->def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+        if (vm->def->cpu) {
             for (i = 0; i < vm->def->cpu->nfeatures; i++) {
                 virCPUFeatureDefPtr feature = &vm->def->cpu->features[i];
 

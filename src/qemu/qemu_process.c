@@ -3819,7 +3819,7 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
             }
         }
 
-        if (def->cpu && def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+        if (def->cpu) {
             for (i = 0; i < def->cpu->nfeatures; i++) {
                 virCPUFeatureDefPtr feature = &def->cpu->features[i];
 
