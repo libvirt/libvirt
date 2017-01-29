@@ -75,6 +75,19 @@ static const char test10_xml[] =
 "  </capability>"
 "</device>";
 
+/* virStoragePoolCreateXML using parent='%s' to find the vport capable HBA */
+static const char test11_xml[] =
+"<pool type='scsi'>"
+"  <name>vhba_pool</name>"
+"  <source>"
+"    <adapter type='fc_host' parent='scsi_host1' wwnn='20000000c9831b4b' wwpn='10000000c9831b4b'/>"
+"  </source>"
+"  <target>"
+"    <path>/dev/disk/by-path</path>"
+"  </target>"
+"</pool>";
+
+
 /* Test virIsVHBACapable */
 static int
 test1(const void *data ATTRIBUTE_UNUSED)
@@ -275,6 +288,54 @@ manageVHBAByNodeDevice(const void *data)
 }
 
 
+/* Test manageVHBAByStoragePool
+ *  - Test both virStoragePoolCreateXML and virStoragePoolDestroy
+ *  - Create a storage pool vHBA allowing usage of various different
+ *    methods based on the input data/xml argument.
+ *  - Be sure that it's possible to destroy the storage pool as well.
+ */
+static int
+manageVHBAByStoragePool(const void *data)
+{
+    const char *expect_hostname = "scsi_host12";
+    virConnectPtr conn = NULL;
+    virStoragePoolPtr pool = NULL;
+    virNodeDevicePtr dev = NULL;
+    int ret = -1;
+    const char *vhba = data;
+
+    if (!(conn = virConnectOpen("test:///default")))
+        return -1;
+
+    if (!(pool = virStoragePoolCreateXML(conn, vhba, 0)))
+        goto cleanup;
+
+    if (!(dev = virNodeDeviceLookupByName(conn, expect_hostname))) {
+        VIR_DEBUG("Failed to find expected_hostname '%s'", expect_hostname);
+        ignore_value(virStoragePoolDestroy(pool));
+        goto cleanup;
+    }
+
+    if (virStoragePoolDestroy(pool) < 0)
+        goto cleanup;
+
+    if ((dev = virNodeDeviceLookupByName(conn, expect_hostname))) {
+        VIR_DEBUG("Found expected_hostname '%s' after destroy",
+                  expect_hostname);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if (pool)
+        virStoragePoolFree(pool);
+    if (conn)
+        virConnectClose(conn);
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -309,6 +370,9 @@ mymain(void)
         ret = -1;
     if (virTestRun("manageVHBAByNodeDevice-parent-fabric-wwn",
                    manageVHBAByNodeDevice, test10_xml) < 0)
+        ret = -1;
+    if (virTestRun("manageVHBAByStoragePool-by-parent", manageVHBAByStoragePool,
+                   test11_xml) < 0)
         ret = -1;
 
  cleanup:

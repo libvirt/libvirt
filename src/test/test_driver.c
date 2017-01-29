@@ -4362,6 +4362,34 @@ testConnectFindStoragePoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static virNodeDeviceObjPtr
+testNodeDeviceMockCreateVport(testDriverPtr driver,
+                              const char *wwnn,
+                              const char *wwpn);
+static int
+testCreateVport(testDriverPtr driver,
+                const char *wwnn,
+                const char *wwpn)
+{
+    virNodeDeviceObjPtr obj = NULL;
+    /* The storage_backend_scsi createVport() will use the input adapter
+     * fields parent name, parent_wwnn/parent_wwpn, or parent_fabric_wwn
+     * in order to determine whether the provided parent can be used to
+     * create a vHBA or will find "an available vport capable" to create
+     * a vHBA. In order to do this, it uses the virVHBA* API's which traverse
+     * the sysfs looking at various fields (rather than going via nodedev).
+     *
+     * Since the test environ doesn't have the sysfs for the storage pool
+     * test, at least for now use the node device test infrastructure to
+     * create the vHBA. In the long run the result is the same. */
+    if (!(obj = testNodeDeviceMockCreateVport(driver, wwnn, wwpn)))
+        return -1;
+    virNodeDeviceObjUnlock(obj);
+
+    return 0;
+}
+
+
 static virStoragePoolPtr
 testStoragePoolCreateXML(virConnectPtr conn,
                          const char *xml,
@@ -4391,6 +4419,21 @@ testStoragePoolCreateXML(virConnectPtr conn,
     if (!(pool = virStoragePoolObjAssignDef(&privconn->pools, def)))
         goto cleanup;
     def = NULL;
+
+    if (pool->def->source.adapter.type ==
+        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+        /* In the real code, we'd call virVHBAManageVport followed by
+         * find_new_device, but we cannot do that here since we're not
+         * mocking udev. The mock routine will copy an existing vHBA and
+         * rename a few fields to mock that. */
+        if (testCreateVport(privconn,
+                            pool->def->source.adapter.data.fchost.wwnn,
+                            pool->def->source.adapter.data.fchost.wwpn) < 0) {
+            virStoragePoolObjRemove(&privconn->pools, pool);
+            pool = NULL;
+            goto cleanup;
+        }
+    }
 
     if (testStoragePoolObjSetDefaults(pool) == -1) {
         virStoragePoolObjRemove(&privconn->pools, pool);
@@ -4523,6 +4566,44 @@ testStoragePoolBuild(virStoragePoolPtr pool,
 
 
 static int
+testDestroyVport(testDriverPtr privconn,
+                 const char *wwnn ATTRIBUTE_UNUSED,
+                 const char *wwpn ATTRIBUTE_UNUSED)
+{
+    int ret = -1;
+    virNodeDeviceObjPtr obj = NULL;
+    virObjectEventPtr event = NULL;
+
+    /* NB: Cannot use virVHBAGetHostByWWN (yet) like the storage_backend_scsi
+     * deleteVport() helper since that traverses the file system looking for
+     * the wwnn/wwpn. So our choice short term is to cheat and use the name
+     * (scsi_host12) we know was created.
+     *
+     * Reaching across the boundaries of space and time into the
+     * Node Device in order to remove */
+    if (!(obj = virNodeDeviceObjFindByName(&privconn->devs, "scsi_host12"))) {
+        virReportError(VIR_ERR_NO_NODE_DEVICE, "%s",
+                       _("no node device with matching name 'scsi_host12'"));
+        goto cleanup;
+    }
+
+    event = virNodeDeviceEventLifecycleNew("scsi_host12",
+                                           VIR_NODE_DEVICE_EVENT_DELETED,
+                                           0);
+
+    virNodeDeviceObjRemove(&privconn->devs, &obj);
+
+    ret = 0;
+
+ cleanup:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
+    testObjectEventQueue(privconn, event);
+    return ret;
+}
+
+
+static int
 testStoragePoolDestroy(virStoragePoolPtr pool)
 {
     testDriverPtr privconn = pool->conn->privateData;
@@ -4540,7 +4621,17 @@ testStoragePoolDestroy(virStoragePoolPtr pool)
     }
 
     privpool->active = 0;
-    event = virStoragePoolEventLifecycleNew(privpool->def->name, privpool->def->uuid,
+
+    if (privpool->def->source.adapter.type ==
+        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+        if (testDestroyVport(privconn,
+                             privpool->def->source.adapter.data.fchost.wwnn,
+                             privpool->def->source.adapter.data.fchost.wwpn) < 0)
+            goto cleanup;
+    }
+
+    event = virStoragePoolEventLifecycleNew(privpool->def->name,
+                                            privpool->def->uuid,
                                             VIR_STORAGE_POOL_EVENT_STOPPED,
                                             0);
 
