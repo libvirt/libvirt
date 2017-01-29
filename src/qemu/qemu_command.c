@@ -4969,9 +4969,10 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool telnet;
     char *charAlias = NULL;
+    char *ret = NULL;
 
     if (!(charAlias = qemuAliasChardevFromDevAlias(alias)))
-        goto error;
+        goto cleanup;
 
     switch (dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
@@ -4999,13 +5000,13 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FILE_APPEND)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("append not supported in this QEMU binary"));
-            goto error;
+            goto cleanup;
         }
         if (qemuBuildChrChardevFileStr(virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FILE_APPEND) ?
                                        logManager : NULL, cmd, def, &buf,
                                        "path", dev->data.file.path,
                                        "append", dev->data.file.append) < 0)
-            goto error;
+            goto cleanup;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
@@ -5062,17 +5063,17 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
             if (chrSourcePriv && chrSourcePriv->secinfo &&
                 qemuBuildObjectSecretCommandLine(cmd,
                                                  chrSourcePriv->secinfo) < 0)
-                goto error;
+                goto cleanup;
 
             if (qemuBuildTLSx509CommandLine(cmd, cfg->chardevTLSx509certdir,
                                             dev->data.tcp.listen,
                                             cfg->chardevTLSx509verify,
                                             !!cfg->chardevTLSx509secretUUID,
                                             charAlias, qemuCaps) < 0)
-                goto error;
+                goto cleanup;
 
             if (!(objalias = qemuAliasTLSObjFromChardevAlias(charAlias)))
-                goto error;
+                goto cleanup;
             virBufferAsprintf(&buf, ",tls-creds=%s", objalias);
             VIR_FREE(objalias);
         }
@@ -5089,7 +5090,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEVMC)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("spicevmc not supported in this QEMU binary"));
-            goto error;
+            goto cleanup;
         }
         virBufferAsprintf(&buf, "spicevmc,id=%s,name=%s", charAlias,
                           virDomainChrSpicevmcTypeToString(dev->data.spicevmc));
@@ -5099,7 +5100,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_SPICEPORT)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("spiceport not supported in this QEMU binary"));
-            goto error;
+            goto cleanup;
         }
         virBufferAsprintf(&buf, "spiceport,id=%s,name=%s", charAlias,
                           dev->data.spiceport.channel);
@@ -5109,30 +5110,29 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported chardev '%s'"),
                        virDomainChrTypeToString(dev->type));
-        goto error;
+        goto cleanup;
     }
 
     if (dev->logfile) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_LOGFILE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("logfile not supported in this QEMU binary"));
-            goto error;
+            goto cleanup;
         }
         if (qemuBuildChrChardevFileStr(logManager, cmd, def, &buf,
                                        "logfile", dev->logfile,
                                        "logappend", dev->logappend) < 0)
-            goto error;
+            goto cleanup;
     }
 
     if (virBufferCheckError(&buf) < 0)
-        goto error;
+        goto cleanup;
 
-    return virBufferContentAndReset(&buf);
-
- error:
+    ret = virBufferContentAndReset(&buf);
+ cleanup:
     VIR_FREE(charAlias);
     virBufferFreeAndReset(&buf);
-    return NULL;
+    return ret;
 }
 
 
