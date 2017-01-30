@@ -639,15 +639,15 @@ test12(const void *opaque ATTRIBUTE_UNUSED)
 
     TEST_MAP(0, "");
 
-    if (virBitmapSetBitExpand(map, 100) < 0)
+    if (virBitmapSetBitExpand(map, 128) < 0)
         goto cleanup;
 
-    TEST_MAP(101, "100");
+    TEST_MAP(129, "128");
 
     if (virBitmapClearBitExpand(map, 150) < 0)
         goto cleanup;
 
-    TEST_MAP(151, "100");
+    TEST_MAP(151, "128");
 
     virBitmapFree(map);
     if (virBitmapParseUnlimited("34,1023", &map) < 0)

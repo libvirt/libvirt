@@ -187,7 +187,7 @@ int virBitmapSetBit(virBitmapPtr bitmap, size_t b)
  */
 static int virBitmapExpand(virBitmapPtr map, size_t b)
 {
-    size_t new_len = VIR_DIV_UP(b, VIR_BITMAP_BITS_PER_UNIT);
+    size_t new_len = VIR_DIV_UP(b + 1, VIR_BITMAP_BITS_PER_UNIT);
 
     /* resize the memory if necessary */
     if (map->map_len < new_len) {
