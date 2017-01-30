@@ -1785,7 +1785,7 @@ virDomainUSBAddressFindPort(virDomainUSBAddressSetPtr addrs,
                             const char *portStr)
 {
     virDomainUSBAddressHubPtr hub = NULL;
-    ssize_t i, lastIdx;
+    ssize_t i, lastIdx, targetPort;
 
     if (info->addr.usb.bus >= addrs->nbuses ||
         !addrs->buses[info->addr.usb.bus]) {
@@ -1820,7 +1820,15 @@ virDomainUSBAddressFindPort(virDomainUSBAddressSetPtr addrs,
         }
     }
 
-    *targetIdx = info->addr.usb.port[lastIdx] - 1;
+    targetPort = info->addr.usb.port[lastIdx] - 1;
+    if (targetPort >= virBitmapSize(hub->portmap)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("requested USB port %s not present on USB bus %u"),
+                       portStr, info->addr.usb.bus);
+        return NULL;
+    }
+
+    *targetIdx = targetPort;
     return hub;
 }
 
@@ -2069,13 +2077,6 @@ virDomainUSBAddressReserve(virDomainDeviceInfoPtr info,
     if (!(targetHub = virDomainUSBAddressFindPort(addrs, info, &targetPort,
                                                   portStr)))
         goto cleanup;
-
-    if (targetPort >= virBitmapSize(targetHub->portmap)) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("requested USB port %s not present on USB bus %u"),
-                       portStr, info->addr.usb.bus);
-        goto cleanup;
-    }
 
     if (virBitmapIsBitSet(targetHub->portmap, targetPort)) {
         virReportError(VIR_ERR_XML_ERROR,
