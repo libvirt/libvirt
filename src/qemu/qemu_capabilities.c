@@ -3164,7 +3164,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
 {
     char *str = NULL;
     xmlNodePtr hostCPUNode;
-    xmlNodePtr *featureNodes = NULL;
+    xmlNodePtr *nodes = NULL;
     xmlNodePtr oldnode = ctxt->node;
     qemuMonitorCPUModelInfoPtr hostCPU = NULL;
     int ret = -1;
@@ -3188,25 +3188,25 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
 
     ctxt->node = hostCPUNode;
 
-    if ((n = virXPathNodeSet("./feature", ctxt, &featureNodes)) > 0) {
+    if ((n = virXPathNodeSet("./property", ctxt, &nodes)) > 0) {
         if (VIR_ALLOC_N(hostCPU->props, n) < 0)
             goto cleanup;
 
         hostCPU->nprops = n;
 
         for (i = 0; i < n; i++) {
-            hostCPU->props[i].name = virXMLPropString(featureNodes[i], "name");
+            hostCPU->props[i].name = virXMLPropString(nodes[i], "name");
             if (!hostCPU->props[i].name) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("missing 'name' attribute for a host CPU"
-                                 " model feature in QEMU capabilities cache"));
+                                 " model property in QEMU capabilities cache"));
                 goto cleanup;
             }
 
-            if (!(str = virXMLPropString(featureNodes[i], "supported"))) {
+            if (!(str = virXMLPropString(nodes[i], "supported"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("missing 'supported' attribute for a host CPU"
-                                 " model feature in QEMU capabilities cache"));
+                                 " model property in QEMU capabilities cache"));
                 goto cleanup;
             }
             if (STREQ(str, "yes")) {
@@ -3229,7 +3229,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
  cleanup:
     ctxt->node = oldnode;
     VIR_FREE(str);
-    VIR_FREE(featureNodes);
+    VIR_FREE(nodes);
     qemuMonitorCPUModelInfoFree(hostCPU);
     return ret;
 }
@@ -3560,7 +3560,7 @@ virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
     virBufferAdjustIndent(buf, 2);
 
     for (i = 0; i < model->nprops; i++) {
-        virBufferAsprintf(buf, "<feature name='%s' supported='%s'/>\n",
+        virBufferAsprintf(buf, "<property name='%s' supported='%s'/>\n",
                           model->props[i].name,
                           model->props[i].supported ? "yes" : "no");
     }

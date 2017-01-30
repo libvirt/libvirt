@@ -134,21 +134,21 @@
   <package></package>
   <arch>s390x</arch>
   <hostCPU model='zEC12.2-base'>
-    <feature name='aefsi' supported='yes'/>
-    <feature name='msa5' supported='yes'/>
-    <feature name='msa4' supported='yes'/>
-    <feature name='msa3' supported='yes'/>
-    <feature name='msa2' supported='yes'/>
-    <feature name='msa1' supported='yes'/>
-    <feature name='sthyi' supported='yes'/>
-    <feature name='edat' supported='yes'/>
-    <feature name='ri' supported='yes'/>
-    <feature name='edat2' supported='yes'/>
-    <feature name='ipter' supported='yes'/>
-    <feature name='esop' supported='yes'/>
-    <feature name='cte' supported='yes'/>
-    <feature name='te' supported='yes'/>
-    <feature name='cmm' supported='yes'/>
+    <property name='aefsi' supported='yes'/>
+    <property name='msa5' supported='yes'/>
+    <property name='msa4' supported='yes'/>
+    <property name='msa3' supported='yes'/>
+    <property name='msa2' supported='yes'/>
+    <property name='msa1' supported='yes'/>
+    <property name='sthyi' supported='yes'/>
+    <property name='edat' supported='yes'/>
+    <property name='ri' supported='yes'/>
+    <property name='edat2' supported='yes'/>
+    <property name='ipter' supported='yes'/>
+    <property name='esop' supported='yes'/>
+    <property name='cte' supported='yes'/>
+    <property name='te' supported='yes'/>
+    <property name='cmm' supported='yes'/>
   </hostCPU>
   <cpu type='kvm' name='z10EC-base'/>
   <cpu type='kvm' name='z9EC-base'/>
