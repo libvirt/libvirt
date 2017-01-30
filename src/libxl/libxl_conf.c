@@ -1355,8 +1355,11 @@ libxlGetAutoballoonConf(libxlDriverConfigPtr cfg,
     regex_t regex;
     int res;
 
-    if (virConfGetValueBool(conf, "autoballoon", &cfg->autoballoon) < 0)
+    res = virConfGetValueBool(conf, "autoballoon", &cfg->autoballoon);
+    if (res < 0)
         return -1;
+    else if (res == 1)
+        return 0;
 
     if ((res = regcomp(&regex,
                       "(^| )dom0_mem=((|min:|max:)[0-9]+[bBkKmMgG]?,?)+($| )",
