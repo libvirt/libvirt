@@ -6,7 +6,7 @@
         "minor": 8,
         "major": 2
       },
-      "package": " (v2.8.0-1321-gad584d3)"
+      "package": " (v2.8.0-1961-g5b10b94bd5)"
     },
     "capabilities": [
     ]
@@ -26,7 +26,7 @@
       "minor": 8,
       "major": 2
     },
-    "package": " (v2.8.0-1321-gad584d3)"
+    "package": " (v2.8.0-1961-g5b10b94bd5)"
   },
   "id": "libvirt-2"
 }
@@ -213,6 +213,9 @@
     },
     {
       "name": "query-cpus"
+    },
+    {
+      "name": "query-cpu-model-expansion"
     },
     {
       "name": "query-cpu-definitions"
@@ -675,6 +678,9 @@
     },
     {
       "name": "floppy-bus"
+    },
+    {
+      "name": "base-x86_64-cpu"
     },
     {
       "name": "isa-parallel"
@@ -1404,6 +1410,9 @@
     },
     {
       "name": "pc-i440fx-1.7-machine"
+    },
+    {
+      "name": "max-x86_64-cpu"
     },
     {
       "name": "virtio-serial-device"
@@ -3996,12 +4005,28 @@
 {
   "return": [
     {
+      "name": "max",
+      "typename": "max-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": false
+    },
+    {
       "name": "host",
       "typename": "host-x86_64-cpu",
       "unavailable-features": [
       ],
       "static": false,
       "migration-safe": false
+    },
+    {
+      "name": "base",
+      "typename": "base-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": true,
+      "migration-safe": true
     },
     {
       "name": "qemu64",
@@ -14337,12 +14362,199 @@
 
 {
   "return": {
+    "model": {
+      "name": "base",
+      "props": {
+        "cmov": true,
+        "ia64": false,
+        "aes": true,
+        "mmx": true,
+        "rdpid": false,
+        "arat": true,
+        "pause-filter": false,
+        "xsavec": true,
+        "osxsave": false,
+        "kvm-asyncpf": true,
+        "perfctr-core": false,
+        "mpx": true,
+        "pbe": false,
+        "avx512cd": false,
+        "decodeassists": false,
+        "sse4.1": true,
+        "family": 6,
+        "avx512f": false,
+        "msr": true,
+        "mce": true,
+        "mca": true,
+        "xcrypt": false,
+        "min-level": 13,
+        "xgetbv1": true,
+        "cid": false,
+        "ds": false,
+        "fxsr": true,
+        "xsaveopt": true,
+        "xtpr": false,
+        "avx512vl": false,
+        "avx512-vpopcntdq": false,
+        "phe": false,
+        "extapic": false,
+        "3dnowprefetch": true,
+        "cr8legacy": false,
+        "xcrypt-en": false,
+        "pn": false,
+        "dca": false,
+        "vendor": "GenuineIntel",
+        "pku": false,
+        "smx": false,
+        "cmp-legacy": false,
+        "avx512-4fmaps": false,
+        "vmcb-clean": false,
+        "hle": true,
+        "3dnowext": false,
+        "npt": false,
+        "clwb": false,
+        "lbrv": false,
+        "adx": true,
+        "ss": true,
+        "pni": true,
+        "svm-lock": false,
+        "smep": true,
+        "smap": true,
+        "pfthreshold": false,
+        "x2apic": true,
+        "avx512vbmi": false,
+        "flushbyasid": false,
+        "f16c": true,
+        "ace2-en": false,
+        "pae": true,
+        "pat": true,
+        "sse": true,
+        "phe-en": false,
+        "kvm-nopiodelay": true,
+        "tm": false,
+        "kvmclock-stable-bit": true,
+        "hypervisor": true,
+        "pcommit": false,
+        "syscall": true,
+        "avx512dq": false,
+        "svm": false,
+        "invtsc": false,
+        "sse2": true,
+        "est": false,
+        "avx512ifma": false,
+        "tm2": false,
+        "kvm-pv-eoi": true,
+        "cx8": true,
+        "kvm-mmu": false,
+        "sse4.2": true,
+        "pge": true,
+        "pdcm": false,
+        "model": 94,
+        "movbe": true,
+        "nrip-save": false,
+        "ssse3": true,
+        "sse4a": false,
+        "invpcid": true,
+        "pdpe1gb": true,
+        "tsc-deadline": true,
+        "fma": true,
+        "cx16": true,
+        "de": true,
+        "stepping": 3,
+        "xsave": true,
+        "clflush": true,
+        "skinit": false,
+        "tsc": true,
+        "tce": false,
+        "fpu": true,
+        "ds-cpl": false,
+        "ibs": false,
+        "fma4": false,
+        "la57": false,
+        "osvw": false,
+        "apic": true,
+        "pmm": false,
+        "tsc-adjust": true,
+        "kvm-steal-time": true,
+        "kvmclock": true,
+        "lwp": false,
+        "xop": false,
+        "avx": true,
+        "ospke": false,
+        "acpi": false,
+        "avx512bw": false,
+        "ace2": false,
+        "fsgsbase": true,
+        "ht": false,
+        "nx": true,
+        "pclmulqdq": true,
+        "mmxext": false,
+        "popcnt": true,
+        "xsaves": true,
+        "lm": true,
+        "umip": false,
+        "pse": true,
+        "avx2": true,
+        "sep": true,
+        "nodeid-msr": false,
+        "misalignsse": false,
+        "min-xlevel": 2147483656,
+        "bmi1": true,
+        "bmi2": true,
+        "kvm-pv-unhalt": true,
+        "tsc-scale": false,
+        "topoext": false,
+        "clflushopt": true,
+        "monitor": false,
+        "avx512er": false,
+        "pmm-en": false,
+        "pcid": true,
+        "3dnow": false,
+        "erms": true,
+        "lahf-lm": true,
+        "fxsr-opt": false,
+        "xstore": false,
+        "rtm": true,
+        "lmce": true,
+        "perfctr-nb": false,
+        "rdrand": true,
+        "rdseed": true,
+        "avx512-4vnniw": false,
+        "vme": true,
+        "vmx": true,
+        "dtes64": false,
+        "mtrr": true,
+        "rdtscp": true,
+        "pse36": true,
+        "tbm": false,
+        "wdt": false,
+        "model-id": "Intel(R) Xeon(R) CPU E3-1245 v5 @ 3.50GHz",
+        "sha-ni": false,
+        "abm": true,
+        "avx512pf": false,
+        "xstore-en": false
+      }
+    }
+  },
+  "id": "libvirt-48"
+}
+
+{
+  "return": {
   },
   "id": "libvirt-1"
 }
 
 {
   "return": [
+    {
+      "name": "max",
+      "typename": "max-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": false,
+      "migration-safe": false
+    },
     {
       "name": "host",
       "typename": "host-x86_64-cpu",
@@ -14351,6 +14563,14 @@
       ],
       "static": false,
       "migration-safe": false
+    },
+    {
+      "name": "base",
+      "typename": "base-x86_64-cpu",
+      "unavailable-features": [
+      ],
+      "static": true,
+      "migration-safe": true
     },
     {
       "name": "qemu64",
