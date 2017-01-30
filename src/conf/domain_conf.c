@@ -25845,3 +25845,30 @@ virDomainDefVcpuOrderClear(virDomainDefPtr def)
     for (i = 0; i < def->maxvcpus; i++)
         def->vcpus[i]->order = 0;
 }
+
+
+/**
+ * virDomainDiskSetBlockIOTune:
+ * @disk: The disk to set block I/O tuning on
+ * @info: The BlockIoTuneInfo to be set on the @disk
+ *
+ * Set the block I/O tune settings from @info on the @disk, but error out early
+ * in case of any error.  That is to make sure nothing will fail half-way.
+ *
+ * Returns: 0 on success, -1 otherwise
+ */
+int
+virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
+                            virDomainBlockIoTuneInfo *info)
+{
+    char *tmp_group = NULL;
+
+    if (VIR_STRDUP(tmp_group, info->group_name) < 0)
+        return -1;
+
+    VIR_FREE(disk->blkdeviotune.group_name);
+    disk->blkdeviotune = *info;
+    VIR_STEAL_PTR(disk->blkdeviotune.group_name, tmp_group);
+
+    return 0;
+}

@@ -3219,4 +3219,8 @@ bool
 virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
                                   const virDomainDeviceInfo *b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int virDomainDiskSetBlockIOTune(virDomainDiskDefPtr disk,
+                                virDomainBlockIoTuneInfo *info);
+
 #endif /* __DOMAIN_CONF_H */

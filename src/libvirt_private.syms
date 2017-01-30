@@ -314,6 +314,7 @@ virDomainDiskMirrorStateTypeToString;
 virDomainDiskPathByName;
 virDomainDiskRemove;
 virDomainDiskRemoveByName;
+virDomainDiskSetBlockIOTune;
 virDomainDiskSetDriver;
 virDomainDiskSetFormat;
 virDomainDiskSetSource;
