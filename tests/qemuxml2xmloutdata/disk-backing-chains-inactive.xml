@@ -19,6 +19,10 @@
       <source protocol='gluster' name='Volume2/Image'>
         <host transport='unix' socket='/path/to/sock'/>
       </source>
+      <backingStore type='file'>
+        <format type='qcow2'/>
+        <source file='/tmp/missing-backing-store.qcow'/>
+      </backingStore>
       <target dev='vda' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </disk>
@@ -27,6 +31,31 @@
       <source protocol='nbd' name='bar'>
         <host transport='unix' socket='/var/run/nbdsock'/>
       </source>
+      <backingStore type='block'>
+        <format type='qcow2'/>
+        <source dev='/dev/HostVG/QEMUGuest1'/>
+        <backingStore type='file'>
+          <format type='qcow2'/>
+          <source file='/tmp/image2.qcow'/>
+          <backingStore type='file'>
+            <format type='qcow2'/>
+            <source file='/tmp/image3.qcow'/>
+            <backingStore type='file'>
+              <format type='qcow2'/>
+              <source file='/tmp/image4.qcow'/>
+              <backingStore type='file'>
+                <format type='qcow2'/>
+                <source file='/tmp/image5.qcow'/>
+                <backingStore type='file'>
+                  <format type='raw'/>
+                  <source file='/tmp/Fedora-17-x86_64-Live-KDE.iso'/>
+                  <backingStore/>
+                </backingStore>
+              </backingStore>
+            </backingStore>
+          </backingStore>
+        </backingStore>
+      </backingStore>
       <target dev='vdb' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </disk>
@@ -35,6 +64,7 @@
       <source protocol='gluster' name='Volume1/Image'>
         <host name='example.org' port='6000'/>
       </source>
+      <backingStore/>
       <target dev='vdc' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </disk>
@@ -48,6 +78,11 @@
         <host name='mon2.example.org' port='6322'/>
         <host name='mon3.example.org' port='6322'/>
       </source>
+      <backingStore type='file'>
+        <format type='qcow2'/>
+        <source file='/tmp/image.qcow'/>
+        <backingStore/>
+      </backingStore>
       <target dev='vdd' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </disk>

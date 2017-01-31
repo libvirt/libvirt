@@ -23997,8 +23997,13 @@ virDomainDiskBackingStoreFormat(virBufferPtr buf,
                                 unsigned int flags)
 {
     const char *format;
+    bool inactive = flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE;
 
     if (!backingStore)
+        return 0;
+
+    /* don't write detected backing chain members to inactive xml */
+    if (inactive && backingStore->detected)
         return 0;
 
     if (backingStore->type == VIR_STORAGE_TYPE_NONE) {
@@ -24266,8 +24271,7 @@ virDomainDiskDefFormat(virBufferPtr buf,
 
     /* Don't format backingStore to inactive XMLs until the code for
      * persistent storage of backing chains is ready. */
-    if (!(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
-        virDomainDiskBackingStoreFormat(buf, def->src->backingStore,
+    if (virDomainDiskBackingStoreFormat(buf, def->src->backingStore,
                                         xmlopt, flags) < 0)
         return -1;
 
