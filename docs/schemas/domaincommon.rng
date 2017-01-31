@@ -4034,6 +4034,7 @@
       <ref name="hostdevsubsysusb"/>
       <ref name="hostdevsubsysscsi"/>
       <ref name="hostdevsubsyshost"/>
+      <ref name="hostdevsubsysmdev"/>
     </choice>
   </define>
 
@@ -4181,6 +4182,20 @@
           </attribute>
         </group>
       </choice>
+    </element>
+  </define>
+
+  <define name="hostdevsubsysmdev">
+    <attribute name="type">
+      <value>mdev</value>
+    </attribute>
+    <attribute name="model">
+      <choice>
+        <value>vfio-pci</value>
+      </choice>
+    </attribute>
+    <element name="source">
+      <ref name="mdevaddress"/>
     </element>
   </define>
 
@@ -4341,6 +4356,13 @@
         <ref name="hexuint"/>
       </attribute>
     </optional>
+  </define>
+  <define name="mdevaddress">
+    <element name="address">
+      <attribute name="uuid">
+        <ref name="UUID"/>
+      </attribute>
+    </element>
   </define>
   <define name="devices">
     <element name="devices">

@@ -295,6 +295,7 @@ typedef enum {
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI,
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI,
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST,
+    VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV,
 
     VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST
 } virDomainHostdevSubsysType;
@@ -369,6 +370,13 @@ struct _virDomainHostdevSubsysSCSI {
     } u;
 };
 
+typedef struct _virDomainHostdevSubsysMediatedDev virDomainHostdevSubsysMediatedDev;
+typedef virDomainHostdevSubsysMediatedDev *virDomainHostdevSubsysMediatedDevPtr;
+struct _virDomainHostdevSubsysMediatedDev {
+    int model;                          /* enum virMediatedDeviceModelType */
+    char uuidstr[VIR_UUID_STRING_BUFLEN];   /* mediated device's uuid string */
+};
+
 typedef enum {
     VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_NONE,
     VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST,
@@ -394,6 +402,7 @@ struct _virDomainHostdevSubsys {
         virDomainHostdevSubsysPCI pci;
         virDomainHostdevSubsysSCSI scsi;
         virDomainHostdevSubsysSCSIVHost scsi_host;
+        virDomainHostdevSubsysMediatedDev mdev;
     } u;
 };
 
