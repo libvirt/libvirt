@@ -100,6 +100,8 @@ struct _vzDomainJobObj {
     unsigned long long elapsed;
     bool hasProgress;
     int progress; /* percents */
+    PRL_HANDLE sdkJob;
+    bool cancelled;
 };
 
 typedef struct _vzDomainJobObj vzDomainJobObj;

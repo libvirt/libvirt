@@ -659,6 +659,7 @@ vzDomainObjEndJob(virDomainObjPtr dom)
     vzDomObjPtr pdom = dom->privateData;
 
     pdom->job.active = false;
+    pdom->job.cancelled = false;
     virCondSignal(&pdom->job.cond);
 }
 

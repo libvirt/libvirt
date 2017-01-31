@@ -3883,6 +3883,26 @@ vzConnectGetAllDomainStats(virConnectPtr conn,
 
 #undef VZ_ADD_STAT_PARAM_UUL
 
+static int
+vzDomainAbortJob(virDomainPtr domain)
+{
+    virDomainObjPtr dom;
+    int ret = -1;
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    if (virDomainAbortJobEnsureACL(domain->conn, dom->def) < 0)
+        goto cleanup;
+
+    ret = prlsdkCancelJob(dom);
+
+ cleanup:
+    virDomainObjEndAPI(&dom);
+
+    return ret;
+}
+
 static virHypervisorDriver vzHypervisorDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
@@ -3979,6 +3999,7 @@ static virHypervisorDriver vzHypervisorDriver = {
     .domainGetJobInfo = vzDomainGetJobInfo, /* 2.2.0 */
     .domainGetJobStats = vzDomainGetJobStats, /* 2.2.0 */
     .connectGetAllDomainStats = vzConnectGetAllDomainStats, /* 3.1.0 */
+    .domainAbortJob = vzDomainAbortJob, /* 3.1.0 */
 };
 
 static virConnectDriver vzConnectDriver = {

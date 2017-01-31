@@ -243,13 +243,22 @@ waitDomainJobHelper(PRL_HANDLE job, virDomainObjPtr dom, unsigned int timeout,
                     const char *filename, const char *funcname,
                     size_t linenr)
 {
+    vzDomObjPtr pdom = dom->privateData;
     PRL_RESULT ret;
 
+    if (pdom->job.cancelled) {
+        virReportError(VIR_ERR_OPERATION_ABORTED, "%s",
+                       _("Operation cancelled by client"));
+        return PRL_ERR_FAILURE;
+    }
+
+    pdom->job.sdkJob = job;
     if (dom)
         virObjectUnlock(dom);
     ret = waitJobHelper(job, timeout, filename, funcname, linenr);
     if (dom)
         virObjectLock(dom);
+    pdom->job.sdkJob = NULL;
 
     return ret;
 }
@@ -259,6 +268,30 @@ waitDomainJobHelper(PRL_HANDLE job, virDomainObjPtr dom, unsigned int timeout,
                         __FUNCTION__, __LINE__)
 
 typedef PRL_RESULT (*prlsdkParamGetterType)(PRL_HANDLE, char*, PRL_UINT32*);
+
+int
+prlsdkCancelJob(virDomainObjPtr dom)
+{
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_RESULT pret;
+    PRL_HANDLE job;
+
+    if (!privdom->job.active) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("no job is active on the domain"));
+        return -1;
+    }
+
+   privdom->job.cancelled = true;
+   job = PrlJob_Cancel(privdom->job.sdkJob);
+
+   virObjectUnlock(dom);
+   pret = waitJobHelper(job, JOB_INFINIT_WAIT_TIMEOUT,
+                        __FILE__, __FUNCTION__, __LINE__);
+   virObjectLock(dom);
+
+   return PRL_FAILED(pret) ? -1 : 0;
+}
 
 static char*
 prlsdkGetStringParamVar(prlsdkParamGetterType getter, PRL_HANDLE handle)
