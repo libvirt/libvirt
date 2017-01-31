@@ -3641,11 +3641,11 @@ qemuMonitorCPUDefInfoFree(qemuMonitorCPUDefInfoPtr cpu)
 
 int
 qemuMonitorGetCPUModelExpansion(qemuMonitorPtr mon,
-                                const char *type,
+                                qemuMonitorCPUModelExpansionType type,
                                 const char *model_name,
                                 qemuMonitorCPUModelInfoPtr *model_info)
 {
-    VIR_DEBUG("type=%s model_name=%s", type, model_name);
+    VIR_DEBUG("type=%d model_name=%s", type, model_name);
 
     QEMU_CHECK_MONITOR_JSON(mon);
 

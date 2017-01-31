@@ -5026,7 +5026,7 @@ qemuMonitorJSONParseCPUModelProperty(const char *key,
 
 int
 qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
-                                    const char *type,
+                                    qemuMonitorCPUModelExpansionType type,
                                     const char *model_name,
                                     qemuMonitorCPUModelInfoPtr *model_info)
 {
@@ -5039,6 +5039,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
     virJSONValuePtr cpu_props;
     qemuMonitorCPUModelInfoPtr machine_model = NULL;
     char const *cpu_name;
+    const char *typeStr = "";
 
     *model_info = NULL;
 
@@ -5048,8 +5049,14 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
     if (virJSONValueObjectAppendString(model, "name", model_name) < 0)
         goto cleanup;
 
+    switch (type) {
+    case QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC:
+        typeStr = "static";
+        break;
+    }
+
     if (!(cmd = qemuMonitorJSONMakeCommand("query-cpu-model-expansion",
-                                           "s:type", type,
+                                           "s:type", typeStr,
                                            "a:model", model,
                                            NULL)))
         goto cleanup;
