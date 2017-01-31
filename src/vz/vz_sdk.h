@@ -45,6 +45,7 @@ int prlsdkPause(virDomainObjPtr dom);
 int prlsdkResume(virDomainObjPtr dom);
 int prlsdkSuspend(virDomainObjPtr dom);
 int prlsdkRestart(virDomainObjPtr dom);
+int prlsdkReset(virDomainObjPtr dom);
 
 int
 prlsdkApplyConfig(vzDriverPtr driver,

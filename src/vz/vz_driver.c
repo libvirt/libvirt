@@ -3903,6 +3903,37 @@ vzDomainAbortJob(virDomainPtr domain)
     return ret;
 }
 
+static int
+vzDomainReset(virDomainPtr domain, unsigned int flags)
+{
+    virDomainObjPtr dom = NULL;
+    int ret = -1;
+    bool job = false;
+
+    virCheckFlags(0, -1);
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        return -1;
+
+    if (virDomainResetEnsureACL(domain->conn, dom->def) < 0)
+        goto cleanup;
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
+    if (vzEnsureDomainExists(dom) < 0)
+        goto cleanup;
+
+    ret = prlsdkReset(dom);
+
+ cleanup:
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
+    return ret;
+}
+
 static virHypervisorDriver vzHypervisorDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
@@ -4000,6 +4031,7 @@ static virHypervisorDriver vzHypervisorDriver = {
     .domainGetJobStats = vzDomainGetJobStats, /* 2.2.0 */
     .connectGetAllDomainStats = vzConnectGetAllDomainStats, /* 3.1.0 */
     .domainAbortJob = vzDomainAbortJob, /* 3.1.0 */
+    .domainReset = vzDomainReset, /* 3.1.0 */
 };
 
 static virConnectDriver vzConnectDriver = {

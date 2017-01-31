@@ -2463,6 +2463,21 @@ int prlsdkRestart(virDomainObjPtr dom)
     return 0;
 }
 
+int prlsdkReset(virDomainObjPtr dom)
+{
+    PRL_HANDLE job = PRL_INVALID_HANDLE;
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_RESULT pret;
+
+    job = PrlVm_Reset(privdom->sdkdom);
+    if (PRL_FAILED(pret = waitDomainJob(job, dom))) {
+        prlsdkConvertError(pret);
+        return -1;
+    }
+
+    return 0;
+}
+
 static void
 prlsdkConvertError(PRL_RESULT pret)
 {
