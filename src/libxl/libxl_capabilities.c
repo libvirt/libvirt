@@ -211,27 +211,33 @@ libxlCapsInitHost(libxl_ctx *ctx, virCapsPtr caps)
     const libxl_version_info *ver_info;
     enum libxlHwcapVersion version;
     libxl_physinfo phy_info;
+    int ret = -1;
 
+    libxl_physinfo_init(&phy_info);
     if (libxl_get_physinfo(ctx, &phy_info) != 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to get node physical info from libxenlight"));
-        return -1;
+        goto cleanup;
     }
 
     if ((ver_info = libxl_get_version_info(ctx)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to get version info from libxenlight"));
-        return -1;
+        goto cleanup;
     }
 
     version = (ver_info->xen_version_minor >= 7);
     if (libxlCapsInitCPU(caps, &phy_info, version) < 0)
-        return -1;
+        goto cleanup;
 
     if (virCapabilitiesSetNetPrefix(caps, LIBXL_GENERATED_PREFIX_XEN) < 0)
-        return -1;
+        goto cleanup;
 
-    return 0;
+    ret = 0;
+
+ cleanup:
+    libxl_physinfo_dispose(&phy_info);
+    return ret;
 }
 
 static int

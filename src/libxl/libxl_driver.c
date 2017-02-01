@@ -4283,6 +4283,7 @@ libxlNodeGetFreeMemory(virConnectPtr conn)
     libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
     unsigned long long ret = 0;
 
+    libxl_physinfo_init(&phy_info);
     if (virNodeGetFreeMemoryEnsureACL(conn) < 0)
         goto cleanup;
 
@@ -4295,6 +4296,7 @@ libxlNodeGetFreeMemory(virConnectPtr conn)
     ret = phy_info.free_pages * cfg->verInfo->pagesize;
 
  cleanup:
+    libxl_physinfo_dispose(&phy_info);
     virObjectUnref(cfg);
     return ret;
 }
