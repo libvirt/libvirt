@@ -4589,6 +4589,25 @@ qemuProcessStartValidateIOThreads(virDomainObjPtr vm,
 }
 
 
+qemuProcessStartValidateShmem(virDomainObjPtr vm)
+{
+    size_t i;
+
+    for (i = 0; i < vm->def->nshmems; i++) {
+        virDomainShmemDefPtr shmem = vm->def->shmems[i];
+
+        if (strchr(shmem->name, '/')) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("shmem name '%s' must not contain '/'"),
+                           shmem->name);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 static int
 qemuProcessStartValidateXML(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
@@ -4666,6 +4685,9 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
         return -1;
 
     if (qemuProcessStartValidateIOThreads(vm, qemuCaps) < 0)
+        return -1;
+
+    if (qemuProcessStartValidateShmem(vm) < 0)
         return -1;
 
     VIR_DEBUG("Checking for any possible (non-fatal) issues");
