@@ -190,6 +190,8 @@ mymain(void)
     DO_TEST("addr-single-sata-disk");
     DO_TEST("addr-multiple-sata-disks");
     DO_TEST("addr-more-than-32-sata-disks");
+    DO_TEST("addr-single-virtio-disk");
+    DO_TEST("addr-multiple-virtio-disks");
 
     /* The same without 32 devs per controller support */
     driver.bhyvecaps ^= BHYVE_CAP_AHCI32SLOT;

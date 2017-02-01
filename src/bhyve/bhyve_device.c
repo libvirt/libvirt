@@ -129,6 +129,22 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
             goto error;
     }
 
+    for (i = 0; i < def->ndisks; i++) {
+        /* We only handle virtio disk addresses as SATA disks are
+         * attached to a controller and don't have their own PCI
+         * addresses */
+        if (def->disks[i]->bus != VIR_DOMAIN_DISK_BUS_VIRTIO)
+            continue;
+
+        if (def->disks[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
+            !virPCIDeviceAddressIsEmpty(&def->disks[i]->info.addr.pci))
+            continue;
+        if (virDomainPCIAddressReserveNextAddr(addrs, &def->disks[i]->info,
+                                               VIR_PCI_CONNECT_TYPE_PCI_DEVICE,
+                                               -1) < 0)
+            goto error;
+    }
+
     return 0;
 
  error:
