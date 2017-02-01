@@ -24,12 +24,39 @@ qom_get()
          '"property":"'$1'"},"id":"'$1'"}'
 }
 
+model_expansion()
+{
+    mode=$1
+    model=$2
+
+    echo '{"execute":"query-cpu-model-expansion","arguments":' \
+         '{"type":"'"$mode"'","model":'"$model"'},"id":"model-expansion"}'
+}
+
+model=$(
+    $qemu -machine accel=kvm -cpu host -nodefaults -nographic -qmp stdio <<EOF
+{"execute":"qmp_capabilities"}
+$(model_expansion static '{"name":"host"}')
+{"execute":"quit"}
+EOF
+)
+model=$(
+    echo "$model" | \
+    sed -ne 's/^{"return": {"model": {\(.*{.*}\)}}, .*/{\1}/p'
+)
+
 $qemu -machine accel=kvm -cpu host -nodefaults -nographic -qmp stdio <<EOF
 {"execute":"qmp_capabilities"}
-`qom_get feature-words`
-`qom_get family`
-`qom_get model`
-`qom_get stepping`
-`qom_get model-id`
+$(
+    if [ "x$model" != x ]; then
+        model_expansion full "$model"
+    else
+        qom_get feature-words
+        qom_get family
+        qom_get model
+        qom_get stepping
+        qom_get model-id
+    fi
+)
 {"execute":"quit"}
 EOF

@@ -52,6 +52,9 @@ echo $fname.xml
 json <<<"$data" >$fname.json
 if [[ -s $fname.json ]]; then
     echo $fname.json
+    if ! grep -q model-expansion $fname.json; then
+        $(dirname $0)/cpu-convert.py $fname.json
+    fi
 else
     rm $fname.json
 fi
