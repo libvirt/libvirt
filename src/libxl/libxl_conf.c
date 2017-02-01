@@ -34,6 +34,7 @@
 #include "internal.h"
 #include "virlog.h"
 #include "virerror.h"
+#include "c-ctype.h"
 #include "datatypes.h"
 #include "virconf.h"
 #include "virfile.h"
@@ -1558,6 +1559,88 @@ int libxlDriverConfigLoadFile(libxlDriverConfigPtr cfg,
     return ret;
 
 }
+
+/*
+ * dom0's maximum memory can be controled by the user with the 'dom0_mem' Xen
+ * command line parameter. E.g. to set dom0's initial memory to 4G and max
+ * memory to 8G: dom0_mem=4G,max:8G
+ * Supported unit suffixes are [bBkKmMgGtT]. If not specified the default
+ * unit is kilobytes.
+ *
+ * If not constrained by the user, dom0 can effectively use all host memory.
+ * This function returns the configured maximum memory for dom0 in kilobytes,
+ * either the user-specified value or total physical memory as a default.
+ */
+int
+libxlDriverGetDom0MaxmemConf(libxlDriverConfigPtr cfg,
+                             unsigned long long *maxmem)
+{
+    char **cmd_tokens = NULL;
+    char **mem_tokens = NULL;
+    size_t i;
+    size_t j;
+    libxl_physinfo physinfo;
+    int ret = -1;
+
+    if (cfg->verInfo->commandline == NULL ||
+        !(cmd_tokens = virStringSplit(cfg->verInfo->commandline, " ", 0)))
+        goto physmem;
+
+    for (i = 0; cmd_tokens[i] != NULL; i++) {
+        if (!STRPREFIX(cmd_tokens[i], "dom0_mem="))
+            continue;
+
+        if (!(mem_tokens = virStringSplit(cmd_tokens[i], ",", 0)))
+            break;
+        for (j = 0; mem_tokens[j] != NULL; j++) {
+            if (STRPREFIX(mem_tokens[j], "max:")) {
+                char *p = mem_tokens[j] + 4;
+                unsigned long long multiplier = 1;
+
+                while (c_isdigit(*p))
+                    p++;
+                if (virStrToLong_ull(mem_tokens[j] + 4, &p, 10, maxmem) < 0)
+                    break;
+                if (*p) {
+                    switch (*p) {
+                    case 'm':
+                    case 'M':
+                        multiplier = 1024;
+                        break;
+                    case 'g':
+                    case 'G':
+                        multiplier = 1024 * 1024;
+                        break;
+                    case 't':
+                    case 'T':
+                        multiplier = 1024 * 1024 * 1024;
+                        break;
+                    }
+                }
+                *maxmem = *maxmem * multiplier;
+                ret = 0;
+                goto cleanup;
+            }
+        }
+    }
+
+ physmem:
+    /* No 'max' specified in dom0_mem, so dom0 can use all physical memory */
+    libxl_physinfo_init(&physinfo);
+    if (libxl_get_physinfo(cfg->ctx, &physinfo)) {
+        VIR_WARN("libxl_get_physinfo failed");
+        goto cleanup;
+    }
+    *maxmem = (physinfo.total_pages * cfg->verInfo->pagesize) / 1024;
+    libxl_physinfo_dispose(&physinfo);
+    ret = 0;
+
+ cleanup:
+    virStringListFree(cmd_tokens);
+    virStringListFree(mem_tokens);
+    return ret;
+}
+
 
 #ifdef LIBXL_HAVE_DEVICE_CHANNEL
 static int
