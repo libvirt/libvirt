@@ -186,6 +186,8 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             goto error;
         if (virAsprintf(&cfg->nvramDir, "%s/nvram", cfg->libDir) < 0)
             goto error;
+        if (virAsprintf(&cfg->memoryBackingDir, "%s/ram", cfg->libDir) < 0)
+            goto error;
     } else {
         char *rundir;
         char *cachedir;
@@ -230,6 +232,8 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             goto error;
         if (virAsprintf(&cfg->nvramDir,
                         "%s/qemu/nvram", cfg->configBaseDir) < 0)
+            goto error;
+        if (virAsprintf(&cfg->memoryBackingDir, "%s/qemu/ram", cfg->configBaseDir) < 0)
             goto error;
     }
 
@@ -408,6 +412,8 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->lockManagerName);
 
     virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
+
+    VIR_FREE(cfg->memoryBackingDir);
 }
 
 
@@ -834,6 +840,9 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
             }
         }
     }
+
+    if (virConfGetValueString(conf, "memory_backing_dir", &cfg->memoryBackingDir) < 0)
+        goto cleanup;
 
     ret = 0;
 

@@ -109,6 +109,8 @@ module Libvirtd_qemu =
 
    let gluster_debug_level_entry = int_entry "gluster_debug_level"
 
+   let memory_entry = str_entry "memory_backing_dir"
+
    (* Each entry in the config is one of the following ... *)
    let entry = default_tls_entry
              | vnc_entry
@@ -125,6 +127,7 @@ module Libvirtd_qemu =
              | log_entry
              | nvram_entry
              | gluster_debug_level_entry
+             | memory_entry
 
    let comment = [ label "#comment" . del /#[ \t]*/ "# " .  store /([^ \t\n][^\n]*)?/ . del /\n/ "\n" ]
    let empty = [ label "#empty" . eol ]

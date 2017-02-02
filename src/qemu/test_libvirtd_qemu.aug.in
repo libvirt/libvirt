@@ -94,3 +94,4 @@ module Test_libvirtd_qemu =
 { "namespaces"
     { "1" = "mount" }
 }
+{ "memory_backing_dir" = "/var/lib/libvirt/qemu/ram" }
