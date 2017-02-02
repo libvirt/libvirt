@@ -2756,6 +2756,28 @@ virCPUx86DataSetVendor(virCPUDataPtr cpuData,
 }
 
 
+int
+virCPUx86DataAddFeature(virCPUDataPtr cpuData,
+                        const char *name)
+{
+    virCPUx86FeaturePtr feature;
+    virCPUx86MapPtr map;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    /* ignore unknown features */
+    if (!(feature = x86FeatureFind(map, name)) &&
+        !(feature = x86FeatureFindInternal(name)))
+        return 0;
+
+    if (x86DataAdd(&cpuData->data.x86, &feature->data) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
     .arch = archs,

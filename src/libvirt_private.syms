@@ -1003,6 +1003,7 @@ virCPUUpdate;
 
 # cpu/cpu_x86.h
 virCPUx86DataAddCPUID;
+virCPUx86DataAddFeature;
 virCPUx86DataSetSignature;
 virCPUx86DataSetVendor;
 
