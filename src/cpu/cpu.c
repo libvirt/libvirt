@@ -240,7 +240,7 @@ cpuDecode(virCPUDefPtr cpu,
         return -1;
     }
 
-    if ((driver = cpuGetSubDriver(cpu->arch)) == NULL)
+    if ((driver = cpuGetSubDriver(data->arch)) == NULL)
         return -1;
 
     if (driver->decode == NULL) {
