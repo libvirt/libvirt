@@ -72,7 +72,7 @@ libxlCapsAddCPUID(virCPUDataPtr data, virCPUx86CPUID *cpuid, ssize_t ncaps)
     for (i = 0; i < ncaps; i++) {
         virCPUx86CPUID *c = &cpuid[i];
 
-        if (virCPUx86DataAddCPUID(&data->data.x86, c) < 0) {
+        if (virCPUx86DataAddCPUID(data, c) < 0) {
             VIR_DEBUG("Failed to add CPUID(%x,%x)", c->eax_in, c->ecx_in);
             return -1;
         }

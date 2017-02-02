@@ -6564,7 +6564,7 @@ qemuMonitorJSONParseCPUx86Features(virJSONValuePtr data)
     for (i = 0; i < n; i++) {
         if (qemuMonitorJSONParseCPUx86FeatureWord(virJSONValueArrayGet(data, i),
                                                   &cpuid) < 0 ||
-            virCPUx86DataAddCPUID(&cpudata->data.x86, &cpuid) < 0)
+            virCPUx86DataAddCPUID(cpudata, &cpuid) < 0)
             goto error;
     }
 
