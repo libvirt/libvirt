@@ -377,6 +377,7 @@ testQemuHotplugCpuDataFree(struct testQemuHotplugCpuData *data)
 
     virObjectUnref(data->vm);
     qemuMonitorTestFree(data->mon);
+    VIR_FREE(data);
 }
 
 
@@ -433,6 +434,8 @@ testQemuHotplugCpuPrepare(const char *test,
 
     if (qemuDomainRefreshVcpuInfo(&driver, data->vm, 0, false) < 0)
         goto error;
+
+    VIR_FREE(prefix);
 
     return data;
 
