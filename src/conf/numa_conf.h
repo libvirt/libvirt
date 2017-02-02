@@ -46,14 +46,14 @@ VIR_ENUM_DECL(virDomainNumatunePlacement)
 VIR_ENUM_DECL(virDomainNumatuneMemMode)
 
 typedef enum {
-    VIR_NUMA_MEM_ACCESS_DEFAULT,
-    VIR_NUMA_MEM_ACCESS_SHARED,
-    VIR_NUMA_MEM_ACCESS_PRIVATE,
+    VIR_DOMAIN_MEMORY_ACCESS_DEFAULT = 0,  /*  No memory access defined */
+    VIR_DOMAIN_MEMORY_ACCESS_SHARED,    /* Memory access is set as shared */
+    VIR_DOMAIN_MEMORY_ACCESS_PRIVATE,   /* Memory access is set as private */
 
-    VIR_NUMA_MEM_ACCESS_LAST
-} virNumaMemAccess;
+    VIR_DOMAIN_MEMORY_ACCESS_LAST,
+} virDomainMemoryAccess;
+VIR_ENUM_DECL(virDomainMemoryAccess)
 
-VIR_ENUM_DECL(virNumaMemAccess)
 
 virDomainNumaPtr virDomainNumaNew(void);
 void virDomainNumaFree(virDomainNumaPtr numa);
@@ -90,7 +90,7 @@ size_t virDomainNumaGetNodeCount(virDomainNumaPtr numa)
 virBitmapPtr virDomainNumaGetNodeCpumask(virDomainNumaPtr numa,
                                          size_t node)
     ATTRIBUTE_NONNULL(1);
-virNumaMemAccess virDomainNumaGetNodeMemoryAccessMode(virDomainNumaPtr numa,
+virDomainMemoryAccess virDomainNumaGetNodeMemoryAccessMode(virDomainNumaPtr numa,
                                                       size_t node)
     ATTRIBUTE_NONNULL(1);
 unsigned long long virDomainNumaGetNodeMemorySize(virDomainNumaPtr numa,

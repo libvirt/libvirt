@@ -43,10 +43,11 @@ VIR_ENUM_IMPL(virDomainNumatunePlacement,
               "static",
               "auto");
 
-VIR_ENUM_IMPL(virNumaMemAccess, VIR_NUMA_MEM_ACCESS_LAST,
+VIR_ENUM_IMPL(virDomainMemoryAccess, VIR_DOMAIN_MEMORY_ACCESS_LAST,
               "default",
               "shared",
-              "private");
+              "private")
+
 
 typedef struct _virDomainNumaNode virDomainNumaNode;
 typedef virDomainNumaNode *virDomainNumaNodePtr;
@@ -64,7 +65,7 @@ struct _virDomainNuma {
         virBitmapPtr cpumask;   /* bitmap of vCPUs corresponding to the node */
         virBitmapPtr nodeset;   /* host memory nodes where this guest node resides */
         virDomainNumatuneMemMode mode;  /* memory mode selection */
-        virNumaMemAccess memAccess; /* shared memory access configuration */
+        virDomainMemoryAccess memAccess; /* shared memory access configuration */
     } *mem_nodes;           /* guest node configuration */
     size_t nmem_nodes;
 
@@ -777,7 +778,7 @@ virDomainNumaDefCPUParseXML(virDomainNumaPtr def,
             goto cleanup;
 
         if ((tmp = virXMLPropString(nodes[i], "memAccess"))) {
-            if ((rc = virNumaMemAccessTypeFromString(tmp)) <= 0) {
+            if ((rc = virDomainMemoryAccessTypeFromString(tmp)) <= 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Invalid 'memAccess' attribute value '%s'"),
                                tmp);
@@ -803,7 +804,7 @@ int
 virDomainNumaDefCPUFormat(virBufferPtr buf,
                           virDomainNumaPtr def)
 {
-    virNumaMemAccess memAccess;
+    virDomainMemoryAccess memAccess;
     char *cpustr;
     size_t ncells = virDomainNumaGetNodeCount(def);
     size_t i;
@@ -827,7 +828,7 @@ virDomainNumaDefCPUFormat(virBufferPtr buf,
         virBufferAddLit(buf, " unit='KiB'");
         if (memAccess)
             virBufferAsprintf(buf, " memAccess='%s'",
-                              virNumaMemAccessTypeToString(memAccess));
+                              virDomainMemoryAccessTypeToString(memAccess));
         virBufferAddLit(buf, "/>\n");
         VIR_FREE(cpustr);
     }
@@ -936,7 +937,7 @@ virDomainNumaGetNodeCpumask(virDomainNumaPtr numa,
 }
 
 
-virNumaMemAccess
+virDomainMemoryAccess
 virDomainNumaGetNodeMemoryAccessMode(virDomainNumaPtr numa,
                                      size_t node)
 {
