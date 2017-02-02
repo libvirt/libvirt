@@ -32,4 +32,8 @@ extern struct cpuArchDriver cpuDriverX86;
 int virCPUx86DataAddCPUID(virCPUDataPtr cpuData,
                           const virCPUx86CPUID *cpuid);
 
+int virCPUx86DataSetSignature(virCPUDataPtr cpuData,
+                              unsigned int family,
+                              unsigned int model);
+
 #endif /* __VIR_CPU_X86_H__ */

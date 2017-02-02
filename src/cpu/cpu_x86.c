@@ -2720,6 +2720,17 @@ virCPUx86DataAddCPUID(virCPUDataPtr cpuData,
 }
 
 
+int
+virCPUx86DataSetSignature(virCPUDataPtr cpuData,
+                          unsigned int family,
+                          unsigned int model)
+{
+    uint32_t signature = x86MakeSignature(family, model);
+
+    return x86DataAddSignature(&cpuData->data.x86, signature);
+}
+
+
 struct cpuArchDriver cpuDriverX86 = {
     .name = "x86",
     .arch = archs,
