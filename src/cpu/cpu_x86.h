@@ -36,4 +36,7 @@ int virCPUx86DataSetSignature(virCPUDataPtr cpuData,
                               unsigned int family,
                               unsigned int model);
 
+int virCPUx86DataSetVendor(virCPUDataPtr cpuData,
+                           const char *vendor);
+
 #endif /* __VIR_CPU_X86_H__ */

@@ -478,6 +478,26 @@ x86DataToVendor(const virCPUx86Data *data,
 }
 
 
+static int
+virCPUx86VendorToCPUID(const char *vendor,
+                       virCPUx86CPUID *cpuid)
+{
+    if (strlen(vendor) != VENDOR_STRING_LENGTH) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid CPU vendor string '%s'"), vendor);
+        return -1;
+    }
+
+    cpuid->eax_in = 0;
+    cpuid->ecx_in = 0;
+    cpuid->ebx = virReadBufInt32LE(vendor);
+    cpuid->edx = virReadBufInt32LE(vendor + 4);
+    cpuid->ecx = virReadBufInt32LE(vendor + 8);
+
+    return 0;
+}
+
+
 static uint32_t
 x86MakeSignature(unsigned int family,
                  unsigned int model)
@@ -651,17 +671,9 @@ x86VendorParse(xmlXPathContextPtr ctxt,
                        vendor->name);
         goto error;
     }
-    if (strlen(string) != VENDOR_STRING_LENGTH) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid CPU vendor string '%s'"), string);
-        goto error;
-    }
 
-    vendor->cpuid.eax_in = 0;
-    vendor->cpuid.ecx_in = 0;
-    vendor->cpuid.ebx = virReadBufInt32LE(string);
-    vendor->cpuid.edx = virReadBufInt32LE(string + 4);
-    vendor->cpuid.ecx = virReadBufInt32LE(string + 8);
+    if (virCPUx86VendorToCPUID(string, &vendor->cpuid) < 0)
+        goto error;
 
  cleanup:
     VIR_FREE(string);
@@ -2728,6 +2740,19 @@ virCPUx86DataSetSignature(virCPUDataPtr cpuData,
     uint32_t signature = x86MakeSignature(family, model);
 
     return x86DataAddSignature(&cpuData->data.x86, signature);
+}
+
+
+int
+virCPUx86DataSetVendor(virCPUDataPtr cpuData,
+                       const char *vendor)
+{
+    virCPUx86CPUID cpuid = { 0 };
+
+    if (virCPUx86VendorToCPUID(vendor, &cpuid) < 0)
+        return -1;
+
+    return virCPUx86DataAddCPUID(cpuData, &cpuid);
 }
 
 
