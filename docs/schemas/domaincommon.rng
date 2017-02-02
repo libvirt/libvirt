@@ -565,6 +565,36 @@
                 <empty/>
               </element>
             </optional>
+            <optional>
+              <element name="source">
+                <attribute name="type">
+                  <choice>
+                    <value>file</value>
+                    <value>anonymous</value>
+                  </choice>
+                </attribute>
+              </element>
+            </optional>
+            <optional>
+              <element name="access">
+                <attribute name="mode">
+                  <choice>
+                    <value>shared</value>
+                    <value>private</value>
+                  </choice>
+                </attribute>
+              </element>
+            </optional>
+            <optional>
+              <element name="allocation">
+                <attribute name="mode">
+                  <choice>
+                    <value>immediate</value>
+                    <value>ondemand</value>
+                  </choice>
+                </attribute>
+              </element>
+            </optional>
           </interleave>
         </element>
       </optional>

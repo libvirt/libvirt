@@ -903,6 +903,9 @@
     &lt;/hugepages&gt;
     &lt;nosharepages/&gt;
     &lt;locked/&gt;
+    &lt;source type="file|anonymous"/&gt;
+    &lt;access mode="shared|private"/&gt;
+    &lt;allocation mode="immediate|ondemand"/&gt;
   &lt;/memoryBacking&gt;
   ...
 &lt;/domain&gt;
@@ -942,6 +945,12 @@
         most of the host's memory). Doing so may be dangerous to both the
         domain and the host itself since the host's kernel may run out of
         memory. <span class="since">Since 1.0.6</span></dd>
+       <dt><code>source</code></dt>
+       <dd>In this attribute you can switch to file memorybacking or keep default anonymous.</dd>
+       <dt><code>access</code></dt>
+       <dd>Specify if memory is shared or private. This can be overridden per numa node by <code>memAccess</code></dd>
+       <dt><code>allocation</code></dt>
+       <dd>Specify when allocate the memory</dd>
     </dl>
 
 

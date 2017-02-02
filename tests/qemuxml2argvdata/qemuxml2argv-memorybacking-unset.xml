@@ -1,0 +1,24 @@
+<domain type='qemu'>
+  <name>SomeDummyGuest</name>
+  <uuid>ef1bdff4-27f3-4e85-a807-5fb4d58463cc</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <memoryBacking>
+    <source type="anonymous"/>
+    <access mode="private"/>
+    <allocation mode="ondemand"/>
+  </memoryBacking>
+  <vcpu placement='static'>2</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

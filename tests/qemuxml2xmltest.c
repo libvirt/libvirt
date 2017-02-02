@@ -1042,6 +1042,9 @@ mymain(void)
     DO_TEST("virtio-input", NONE);
     DO_TEST("virtio-input-passthrough", NONE);
 
+    DO_TEST("memorybacking-set", NONE);
+    DO_TEST("memorybacking-unset", NONE);
+
     virObjectUnref(cfg);
 
     DO_TEST("acpi-table", NONE);

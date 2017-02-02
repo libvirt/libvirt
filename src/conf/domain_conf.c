@@ -837,6 +837,16 @@ VIR_ENUM_IMPL(virDomainDiskMirrorState, VIR_DOMAIN_DISK_MIRROR_STATE_LAST,
               "abort",
               "pivot")
 
+VIR_ENUM_IMPL(virDomainMemorySource, VIR_DOMAIN_MEMORY_SOURCE_LAST,
+              "none",
+              "file",
+              "anonymous")
+
+VIR_ENUM_IMPL(virDomainMemoryAllocation, VIR_DOMAIN_MEMORY_ALLOCATION_LAST,
+              "none",
+              "immediate",
+              "ondemand")
+
 VIR_ENUM_IMPL(virDomainLoader,
               VIR_DOMAIN_LOADER_TYPE_LAST,
               "rom",
@@ -16594,48 +16604,93 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(tmp);
 
-    if ((n = virXPathNodeSet("./memoryBacking/hugepages/page", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("cannot extract hugepages nodes"));
-        goto error;
+    tmp = virXPathString("string(./memoryBacking/source/@type)", ctxt);
+    if (tmp) {
+        if ((def->mem.source = virDomainMemorySourceTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown memoryBacking/source/type '%s'"), tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
     }
 
-    if (n) {
-        if (VIR_ALLOC_N(def->mem.hugepages, n) < 0)
+    tmp = virXPathString("string(./memoryBacking/access/@mode)", ctxt);
+    if (tmp) {
+        if ((def->mem.access = virDomainMemoryAccessTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown memoryBacking/access/mode '%s'"), tmp);
             goto error;
+        }
+        VIR_FREE(tmp);
+    }
 
-        for (i = 0; i < n; i++) {
-            if (virDomainHugepagesParseXML(nodes[i], ctxt,
-                                           &def->mem.hugepages[i]) < 0)
-                goto error;
-            def->mem.nhugepages++;
+    tmp = virXPathString("string(./memoryBacking/allocation/@mode)", ctxt);
+    if (tmp) {
+        if ((def->mem.allocation = virDomainMemoryAllocationTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown memoryBacking/allocation/mode '%s'"), tmp);
+            goto error;
+        }
+        VIR_FREE(tmp);
+    }
 
-            for (j = 0; j < i; j++) {
-                if (def->mem.hugepages[i].nodemask &&
-                    def->mem.hugepages[j].nodemask &&
-                    virBitmapOverlaps(def->mem.hugepages[i].nodemask,
-                                      def->mem.hugepages[j].nodemask)) {
-                    virReportError(VIR_ERR_XML_DETAIL,
-                                   _("nodeset attribute of hugepages "
-                                     "of sizes %llu and %llu intersect"),
-                                   def->mem.hugepages[i].size,
-                                   def->mem.hugepages[j].size);
-                    goto error;
-                } else if (!def->mem.hugepages[i].nodemask &&
-                           !def->mem.hugepages[j].nodemask) {
-                    virReportError(VIR_ERR_XML_DETAIL,
-                                   _("two master hugepages detected: "
-                                     "%llu and %llu"),
-                                   def->mem.hugepages[i].size,
-                                   def->mem.hugepages[j].size);
-                    goto error;
-                }
-            }
+    if (virXPathNode("./memoryBacking/hugepages", ctxt)) {
+        /* hugepages will be used */
+
+        if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_ONDEMAND) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("hugepages are not allowed with memory allocation ondemand"));
+            goto error;
         }
 
-        VIR_FREE(nodes);
-    } else {
-        if ((node = virXPathNode("./memoryBacking/hugepages", ctxt))) {
+        if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_ANONYMOUS) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("hugepages are not allowed with anonymous memory source"));
+            goto error;
+        }
+
+        if ((n = virXPathNodeSet("./memoryBacking/hugepages/page", ctxt, &nodes)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("cannot extract hugepages nodes"));
+            goto error;
+        }
+
+        if (n) {
+            if (VIR_ALLOC_N(def->mem.hugepages, n) < 0)
+                goto error;
+
+            for (i = 0; i < n; i++) {
+                if (virDomainHugepagesParseXML(nodes[i], ctxt,
+                                               &def->mem.hugepages[i]) < 0)
+                    goto error;
+                def->mem.nhugepages++;
+
+                for (j = 0; j < i; j++) {
+                    if (def->mem.hugepages[i].nodemask &&
+                        def->mem.hugepages[j].nodemask &&
+                        virBitmapOverlaps(def->mem.hugepages[i].nodemask,
+                                          def->mem.hugepages[j].nodemask)) {
+                        virReportError(VIR_ERR_XML_DETAIL,
+                                       _("nodeset attribute of hugepages "
+                                         "of sizes %llu and %llu intersect"),
+                                       def->mem.hugepages[i].size,
+                                       def->mem.hugepages[j].size);
+                        goto error;
+                    } else if (!def->mem.hugepages[i].nodemask &&
+                               !def->mem.hugepages[j].nodemask) {
+                        virReportError(VIR_ERR_XML_DETAIL,
+                                       _("two master hugepages detected: "
+                                         "%llu and %llu"),
+                                       def->mem.hugepages[i].size,
+                                       def->mem.hugepages[j].size);
+                        goto error;
+                    }
+                }
+            }
+
+            VIR_FREE(nodes);
+        } else {
+            /* no hugepage pages */
             if (VIR_ALLOC(def->mem.hugepages) < 0)
                 goto error;
 
@@ -23728,7 +23783,9 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         virBufferAddLit(buf, "</memtune>\n");
     }
 
-    if (def->mem.nhugepages || def->mem.nosharepages || def->mem.locked) {
+    if (def->mem.nhugepages || def->mem.nosharepages || def->mem.locked
+        || def->mem.source || def->mem.access || def->mem.allocation)
+    {
         virBufferAddLit(buf, "<memoryBacking>\n");
         virBufferAdjustIndent(buf, 2);
         if (def->mem.nhugepages)
@@ -23737,6 +23794,16 @@ virDomainDefFormatInternal(virDomainDefPtr def,
             virBufferAddLit(buf, "<nosharepages/>\n");
         if (def->mem.locked)
             virBufferAddLit(buf, "<locked/>\n");
+        if (def->mem.source)
+            virBufferAsprintf(buf, "<source type='%s'/>\n",
+                virDomainMemorySourceTypeToString(def->mem.source));
+        if (def->mem.access)
+            virBufferAsprintf(buf, "<access mode='%s'/>\n",
+                virDomainMemoryAccessTypeToString(def->mem.access));
+        if (def->mem.allocation)
+            virBufferAsprintf(buf, "<allocation mode='%s'/>\n",
+                virDomainMemoryAllocationTypeToString(def->mem.allocation));
+
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</memoryBacking>\n");
     }
