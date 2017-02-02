@@ -2615,6 +2615,10 @@ virNetDevRunEthernetScript(const char *ifname, const char *script)
     virCommandPtr cmd;
     int ret;
 
+    /* Not a bug! Previously we did accept script="" as a NO-OP. */
+    if (STREQ(script, ""))
+        return 0;
+
     cmd = virCommandNew(script);
     virCommandAddArgFormat(cmd, "%s", ifname);
     virCommandClearCaps(cmd);

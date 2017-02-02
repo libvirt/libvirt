@@ -145,6 +145,16 @@
           libxl: fix dom0 autoballooning with Xen 4.8
         </summary>
       </change>
+      <change>
+        <summary>
+          qemu: Allow empty script path to &lt;interface/&gt;
+        </summary>
+        <description>
+          Historically, this was always allowed. Unfortunately, due to some
+          rework done for 1.3.2 release a bug was dragged in which suddenly
+          stop allowing domain with such configuration to start.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.0.0" date="2017-01-17">
