@@ -1,0 +1,21 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name instance-00000092 \
+-S \
+-M pc-i440fx-wily \
+-m 14336 \
+-mem-prealloc \
+-smp 8,sockets=8,cores=1,threads=1 \
+-uuid 126f2720-6f8e-45ab-a886-ec9277079a67 \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/lib/domain--1-instance-00000092/monitor.sock,server,nowait \
+-no-acpi \
+-boot c \
+-usb \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

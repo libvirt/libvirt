@@ -3314,17 +3314,26 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     if (!(props = virJSONValueNewObject()))
         return -1;
 
-    if (pagesize) {
-        if (qemuGetDomainHupageMemPath(def, cfg, pagesize, &mem_path) < 0)
-            goto cleanup;
-
+    if (pagesize || def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
         *backendType = "memory-backend-file";
 
-        if (virJSONValueObjectAdd(props,
-                                  "b:prealloc", true,
-                                  "s:mem-path", mem_path,
-                                  NULL) < 0)
-            goto cleanup;
+        if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
+            /* we can have both pagesize and mem source, then check mem source first */
+            force = true;
+            if (virJSONValueObjectAdd(props,
+                                      "s:mem-path", cfg->memoryBackingDir,
+                                      NULL) < 0)
+                goto cleanup;
+        } else {
+            if (qemuGetDomainHupageMemPath(def, cfg, pagesize, &mem_path) < 0)
+                goto cleanup;
+
+            if (virJSONValueObjectAdd(props,
+                                      "b:prealloc", true,
+                                      "s:mem-path", mem_path,
+                                      NULL) < 0)
+                goto cleanup;
+        }
 
         switch (memAccess) {
         case VIR_DOMAIN_MEMORY_ACCESS_SHARED:
@@ -3338,6 +3347,12 @@ qemuBuildMemoryBackendStr(unsigned long long size,
             break;
 
         case VIR_DOMAIN_MEMORY_ACCESS_DEFAULT:
+            if (def->mem.access == VIR_DOMAIN_MEMORY_ACCESS_SHARED) {
+                if (virJSONValueObjectAdd(props, "b:share", true, NULL) < 0)
+                    goto cleanup;
+            }
+            break;
+
         case VIR_DOMAIN_MEMORY_ACCESS_LAST:
             break;
         }
@@ -7313,7 +7328,10 @@ qemuBuildMemPathStr(virQEMUDriverConfigPtr cfg,
     if (qemuGetDomainHupageMemPath(def, cfg, def->mem.hugepages[0].size, &mem_path) < 0)
         return -1;
 
-    virCommandAddArgList(cmd, "-mem-prealloc", "-mem-path", mem_path, NULL);
+    if (def->mem.allocation != VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE)
+        virCommandAddArgList(cmd, "-mem-prealloc", NULL);
+
+    virCommandAddArgList(cmd, "-mem-path", mem_path, NULL);
     VIR_FREE(mem_path);
 
     return 0;
@@ -7343,9 +7361,12 @@ qemuBuildMemCommandLine(virCommandPtr cmd,
                               virDomainDefGetMemoryInitial(def) / 1024);
     }
 
+    if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE)
+        virCommandAddArgList(cmd, "-mem-prealloc", NULL);
+
     /*
-     * Add '-mem-path' (and '-mem-prealloc') parameter here only if
-     * there is no numa node specified.
+     * Add '-mem-path' (and '-mem-prealloc') parameter here if
+     * the hugepages and no numa node is specified.
      */
     if (!virDomainNumaGetNodeCount(def->numa) &&
         qemuBuildMemPathStr(cfg, def, qemuCaps, cmd) < 0)

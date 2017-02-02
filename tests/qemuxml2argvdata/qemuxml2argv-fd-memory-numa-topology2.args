@@ -1,0 +1,27 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name instance-00000092 \
+-S \
+-M pc-i440fx-wily \
+-m 28672 \
+-mem-prealloc \
+-smp 20,sockets=1,cores=8,threads=1 \
+-object memory-backend-file,id=ram-node0,mem-path=/var/lib/libvirt/qemu/ram,\
+size=15032385536 \
+-numa node,nodeid=0,cpus=0-7,memdev=ram-node0 \
+-object memory-backend-file,id=ram-node1,mem-path=/var/lib/libvirt/qemu/ram,\
+share=yes,size=15032385536 \
+-numa node,nodeid=1,cpus=8-15,memdev=ram-node1 \
+-uuid 126f2720-6f8e-45ab-a886-ec9277079a67 \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/lib/domain--1-instance-00000092/monitor.sock,server,nowait \
+-no-acpi \
+-boot c \
+-usb \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

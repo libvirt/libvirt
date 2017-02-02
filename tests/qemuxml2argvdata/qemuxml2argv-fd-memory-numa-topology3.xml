@@ -1,0 +1,32 @@
+  <domain type='kvm' id='56'>
+    <name>instance-00000092</name>
+    <uuid>126f2720-6f8e-45ab-a886-ec9277079a67</uuid>
+    <memory unit='KiB'>14680064</memory>
+    <currentMemory unit='KiB'>14680064</currentMemory>
+    <memoryBacking>
+      <source type='file'/>
+      <access mode='shared'/>
+      <allocation mode='immediate'/>
+    </memoryBacking>
+    <vcpu placement='static'>32</vcpu>
+    <os>
+      <type arch='x86_64' machine='pc-i440fx-wily'>hvm</type>
+      <boot dev='hd'/>
+    </os>
+    <cpu>
+      <topology sockets='1' cores='24' threads='1'/>
+      <numa>
+        <cell id='0' cpus='0-1' memory='14680064' unit='KiB'/>
+        <cell id='1' cpus='2-3' memory='14680064' unit='KiB' memAccess='shared'/>
+        <cell id='2' cpus='4-5' memory='14680064' unit='KiB' memAccess='private'/>
+      </numa>
+    </cpu>
+    <clock offset='utc'/>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>destroy</on_crash>
+    <devices>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <memballoon model='virtio'/>
+    </devices>
+  </domain>
