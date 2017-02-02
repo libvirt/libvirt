@@ -33,12 +33,6 @@
 
 static const virArch archs[] = { VIR_ARCH_S390, VIR_ARCH_S390X };
 
-static void
-s390DataFree(virCPUDataPtr data)
-{
-    VIR_FREE(data);
-}
-
 static virCPUCompareResult
 virCPUs390Compare(virCPUDefPtr host ATTRIBUTE_UNUSED,
                   virCPUDefPtr cpu ATTRIBUTE_UNUSED,
@@ -115,7 +109,6 @@ struct cpuArchDriver cpuDriverS390 = {
     .compare    = virCPUs390Compare,
     .decode     = NULL,
     .encode     = NULL,
-    .free       = s390DataFree,
     .nodeData   = NULL,
     .baseline   = NULL,
     .update     = virCPUs390Update,

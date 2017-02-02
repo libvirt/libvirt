@@ -3815,7 +3815,7 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
     ret = true;
 
  cleanup:
-    cpuDataFree(guestcpu);
+    virCPUDataFree(guestcpu);
     return ret;
 }
 

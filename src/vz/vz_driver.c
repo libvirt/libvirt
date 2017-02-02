@@ -151,7 +151,7 @@ vzBuildCapabilities(void)
     }
 
  cleanup:
-    cpuDataFree(data);
+    virCPUDataFree(data);
     return caps;
 
  error:

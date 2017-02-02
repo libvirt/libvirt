@@ -2410,7 +2410,7 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
     VIR_FREE(dataFile);
     VIR_FREE(jsonStr);
     VIR_FREE(actual);
-    cpuDataFree(cpuData);
+    virCPUDataFree(cpuData);
     qemuMonitorTestFree(test);
     return ret;
 }
@@ -2455,7 +2455,7 @@ testQemuMonitorJSONGetNonExistingCPUData(const void *opaque)
     ret = 0;
  cleanup:
     qemuMonitorTestFree(test);
-    cpuDataFree(cpuData);
+    virCPUDataFree(cpuData);
     return ret;
 }
 

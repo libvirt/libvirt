@@ -331,7 +331,7 @@ virCPUDataNew(virArch arch)
 
 
 /**
- * cpuDataFree:
+ * virCPUDataFree:
  *
  * @data: CPU data structure to be freed
  *
@@ -340,26 +340,19 @@ virCPUDataNew(virArch arch)
  * Returns nothing.
  */
 void
-cpuDataFree(virCPUDataPtr data)
+virCPUDataFree(virCPUDataPtr data)
 {
     struct cpuArchDriver *driver;
 
     VIR_DEBUG("data=%p", data);
 
-    if (data == NULL)
+    if (!data)
         return;
 
-    if ((driver = cpuGetSubDriver(data->arch)) == NULL)
-        return;
-
-    if (driver->free == NULL) {
-        virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot free CPU data for %s architecture"),
-                       virArchToString(data->arch));
-        return;
-    }
-
-    (driver->free)(data);
+    if ((driver = cpuGetSubDriver(data->arch)) && driver->dataFree)
+        driver->dataFree(data);
+    else
+        VIR_FREE(data);
 }
 
 

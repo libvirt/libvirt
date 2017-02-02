@@ -145,7 +145,7 @@ libxlCapsNodeData(virCPUDefPtr cpu, libxl_hwcap hwcap,
     return cpudata;
 
  error:
-    cpuDataFree(cpudata);
+    virCPUDataFree(cpudata);
     return NULL;
 }
 
@@ -198,7 +198,7 @@ libxlCapsInitCPU(virCapsPtr caps, libxl_physinfo *phy_info,
     }
 
  cleanup:
-    cpuDataFree(data);
+    virCPUDataFree(data);
 
     return ret;
 

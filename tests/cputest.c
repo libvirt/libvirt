@@ -439,7 +439,7 @@ cpuTestHasFeature(const void *arg)
     ret = 0;
 
  cleanup:
-    cpuDataFree(hostData);
+    virCPUDataFree(hostData);
     virCPUDefFree(host);
     return ret;
 }
@@ -489,7 +489,7 @@ cpuTestCPUID(bool guest, const void *arg)
  cleanup:
     VIR_FREE(hostFile);
     VIR_FREE(host);
-    cpuDataFree(hostData);
+    virCPUDataFree(hostData);
     virCPUDefFree(cpu);
     VIR_FREE(result);
     return ret;
@@ -549,7 +549,7 @@ cpuTestJSONCPUID(const void *arg)
 
  cleanup:
     qemuMonitorTestFree(testMon);
-    cpuDataFree(cpuData);
+    virCPUDataFree(cpuData);
     virCPUDefFree(cpu);
     VIR_FREE(result);
     VIR_FREE(json);

@@ -705,7 +705,7 @@ ppc64DriverDecode(virCPUDefPtr cpu,
 }
 
 static void
-ppc64DriverFree(virCPUDataPtr data)
+virCPUppc64DataFree(virCPUDataPtr data)
 {
     if (!data)
         return;
@@ -741,7 +741,7 @@ ppc64DriverNodeData(virArch arch)
     return nodeData;
 
  error:
-    ppc64DriverFree(nodeData);
+    virCPUppc64DataFree(nodeData);
     return NULL;
 }
 
@@ -901,7 +901,7 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .compare    = virCPUppc64Compare,
     .decode     = ppc64DriverDecode,
     .encode     = NULL,
-    .free       = ppc64DriverFree,
+    .dataFree   = virCPUppc64DataFree,
     .nodeData   = ppc64DriverNodeData,
     .baseline   = ppc64DriverBaseline,
     .update     = virCPUppc64Update,

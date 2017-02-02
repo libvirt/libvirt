@@ -37,12 +37,6 @@ static const virArch archs[] = {
     VIR_ARCH_AARCH64,
 };
 
-static void
-armDataFree(virCPUDataPtr data)
-{
-    VIR_FREE(data);
-}
-
 
 static int
 virCPUarmUpdate(virCPUDefPtr guest,
@@ -117,7 +111,6 @@ struct cpuArchDriver cpuDriverArm = {
     .compare = virCPUarmCompare,
     .decode = NULL,
     .encode = NULL,
-    .free = armDataFree,
     .nodeData = NULL,
     .baseline = armBaseline,
     .update = virCPUarmUpdate,

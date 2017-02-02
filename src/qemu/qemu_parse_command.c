@@ -1606,7 +1606,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
                 goto cleanup;
 
             is_32bit = (virCPUDataCheckFeature(cpuData, "lm") != 1);
-            cpuDataFree(cpuData);
+            virCPUDataFree(cpuData);
         } else if (model) {
             is_32bit = STREQ(model, "qemu32");
         }

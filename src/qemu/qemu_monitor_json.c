@@ -6571,7 +6571,7 @@ qemuMonitorJSONParseCPUx86Features(virJSONValuePtr data)
     return cpudata;
 
  error:
-    cpuDataFree(cpudata);
+    virCPUDataFree(cpudata);
     return NULL;
 }
 

@@ -116,7 +116,7 @@ struct cpuArchDriver {
     virCPUArchCompare   compare;
     cpuArchDecode       decode;
     cpuArchEncode       encode;
-    cpuArchDataFree     free;
+    cpuArchDataFree     dataFree;
     cpuArchNodeData     nodeData;
     cpuArchBaseline     baseline;
     virCPUArchUpdate    update;
@@ -166,7 +166,7 @@ virCPUDataPtr
 virCPUDataNew(virArch arch);
 
 void
-cpuDataFree (virCPUDataPtr data);
+virCPUDataFree(virCPUDataPtr data);
 
 virCPUDataPtr
 cpuNodeData (virArch arch);

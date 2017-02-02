@@ -304,7 +304,7 @@ virCPUx86DataClear(virCPUx86Data *data)
 
 
 static void
-x86FreeCPUData(virCPUDataPtr data)
+virCPUx86DataFree(virCPUDataPtr data)
 {
     if (!data)
         return;
@@ -1455,7 +1455,7 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
     return cpuData;
 
  error:
-    x86FreeCPUData(cpuData);
+    virCPUx86DataFree(cpuData);
     cpuData = NULL;
     goto cleanup;
 }
@@ -1641,7 +1641,7 @@ x86Compute(virCPUDefPtr host,
     return ret;
 
  error:
-    x86FreeCPUData(guestData);
+    virCPUx86DataFree(guestData);
     ret = VIR_CPU_COMPARE_ERROR;
     goto cleanup;
 }
@@ -2033,12 +2033,12 @@ x86Encode(virArch arch,
     return 0;
 
  error:
-    x86FreeCPUData(data_forced);
-    x86FreeCPUData(data_required);
-    x86FreeCPUData(data_optional);
-    x86FreeCPUData(data_disabled);
-    x86FreeCPUData(data_forbidden);
-    x86FreeCPUData(data_vendor);
+    virCPUx86DataFree(data_forced);
+    virCPUx86DataFree(data_required);
+    virCPUx86DataFree(data_optional);
+    virCPUx86DataFree(data_disabled);
+    virCPUx86DataFree(data_forbidden);
+    virCPUx86DataFree(data_vendor);
     return -1;
 }
 
@@ -2380,7 +2380,7 @@ x86NodeData(virArch arch)
     return cpuData;
 
  error:
-    x86FreeCPUData(cpuData);
+    virCPUx86DataFree(cpuData);
     return NULL;
 }
 #endif
@@ -2718,7 +2718,7 @@ struct cpuArchDriver cpuDriverX86 = {
     .compare    = virCPUx86Compare,
     .decode     = x86DecodeCPUData,
     .encode     = x86Encode,
-    .free       = x86FreeCPUData,
+    .dataFree   = virCPUx86DataFree,
 #if defined(__i386__) || defined(__x86_64__)
     .nodeData   = x86NodeData,
 #else
