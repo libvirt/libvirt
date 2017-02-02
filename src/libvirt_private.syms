@@ -1004,7 +1004,6 @@ virCPUUpdate;
 # cpu/cpu_x86.h
 virCPUx86DataAddCPUID;
 virCPUx86DataClear;
-virCPUx86MakeData;
 
 
 # datatypes.h

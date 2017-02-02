@@ -65,14 +65,14 @@ struct guest_arch {
 #define XEN_CAP_REGEX "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(aarch64|armv7l|x86_32|x86_64|ia64|powerpc64)(p|be)?"
 
 static int
-libxlCapsAddCPUID(virCPUx86Data *data, virCPUx86CPUID *cpuid, ssize_t ncaps)
+libxlCapsAddCPUID(virCPUDataPtr data, virCPUx86CPUID *cpuid, ssize_t ncaps)
 {
     size_t i;
 
     for (i = 0; i < ncaps; i++) {
         virCPUx86CPUID *c = &cpuid[i];
 
-        if (virCPUx86DataAddCPUID(data, c) < 0) {
+        if (virCPUx86DataAddCPUID(&data->data.x86, c) < 0) {
             VIR_DEBUG("Failed to add CPUID(%x,%x)", c->eax_in, c->ecx_in);
             return -1;
         }
@@ -112,7 +112,6 @@ libxlCapsNodeData(virCPUDefPtr cpu, libxl_hwcap hwcap,
 {
     ssize_t ncaps;
     virCPUDataPtr cpudata = NULL;
-    virCPUx86Data data = VIR_CPU_X86_DATA_INIT;
     virCPUx86CPUID cpuid[] = {
         { .eax_in = 0x00000001,
           .edx = hwcap[0] },
@@ -131,20 +130,23 @@ libxlCapsNodeData(virCPUDefPtr cpu, libxl_hwcap hwcap,
         { .eax_in = 0x80000007, .ecx_in = 0U, .edx = hwcap[7] },
     };
 
+    if (!(cpudata = virCPUDataNew(cpu->arch)))
+        goto error;
+
     ncaps = ARRAY_CARDINALITY(cpuid);
-    if (libxlCapsAddCPUID(&data, cpuid, ncaps) < 0)
+    if (libxlCapsAddCPUID(cpudata, cpuid, ncaps) < 0)
         goto error;
 
     ncaps = ARRAY_CARDINALITY(cpuid_ver1);
     if (version > LIBXL_HWCAP_V0 &&
-        libxlCapsAddCPUID(&data, cpuid_ver1, ncaps) < 0)
+        libxlCapsAddCPUID(cpudata, cpuid_ver1, ncaps) < 0)
         goto error;
 
-    cpudata = virCPUx86MakeData(cpu->arch, &data);
+    return cpudata;
 
  error:
-    virCPUx86DataClear(&data);
-    return cpudata;
+    cpuDataFree(cpudata);
+    return NULL;
 }
 
 /* hw_caps is an array of 32-bit words whose meaning is listed in

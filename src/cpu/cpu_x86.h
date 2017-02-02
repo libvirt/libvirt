@@ -34,7 +34,4 @@ int virCPUx86DataAddCPUID(virCPUx86Data *data,
 
 void virCPUx86DataClear(virCPUx86Data *data);
 
-virCPUDataPtr virCPUx86MakeData(virArch arch,
-                                virCPUx86Data *data);
-
 #endif /* __VIR_CPU_X86_H__ */

@@ -6544,37 +6544,35 @@ qemuMonitorJSONParseCPUx86FeatureWord(virJSONValuePtr data,
 }
 
 
-static int
-qemuMonitorJSONParseCPUx86Features(virJSONValuePtr data,
-                                   virCPUDataPtr *cpudata)
+static virCPUDataPtr
+qemuMonitorJSONParseCPUx86Features(virJSONValuePtr data)
 {
-    virCPUx86Data x86Data = VIR_CPU_X86_DATA_INIT;
+    virCPUDataPtr cpudata = NULL;
     virCPUx86CPUID cpuid;
     size_t i;
     ssize_t n;
-    int ret = -1;
 
     if (!data || (n = virJSONValueArraySize(data)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("invalid array of CPUID features"));
-        return -1;
+        goto error;
     }
+
+    if (!(cpudata = virCPUDataNew(VIR_ARCH_X86_64)))
+        goto error;
 
     for (i = 0; i < n; i++) {
         if (qemuMonitorJSONParseCPUx86FeatureWord(virJSONValueArrayGet(data, i),
                                                   &cpuid) < 0 ||
-            virCPUx86DataAddCPUID(&x86Data, &cpuid) < 0)
-            goto cleanup;
+            virCPUx86DataAddCPUID(&cpudata->data.x86, &cpuid) < 0)
+            goto error;
     }
 
-    if (!(*cpudata = virCPUx86MakeData(VIR_ARCH_X86_64, &x86Data)))
-        goto cleanup;
+    return cpudata;
 
-    ret = 0;
-
- cleanup:
-    virCPUx86DataClear(&x86Data);
-    return ret;
+ error:
+    cpuDataFree(cpudata);
+    return NULL;
 }
 
 
@@ -6601,7 +6599,10 @@ qemuMonitorJSONGetCPUx86Data(qemuMonitorPtr mon,
         goto cleanup;
 
     data = virJSONValueObjectGetArray(reply, "return");
-    ret = qemuMonitorJSONParseCPUx86Features(data, cpudata);
+    if (!(*cpudata = qemuMonitorJSONParseCPUx86Features(data)))
+        goto cleanup;
+
+    ret = 0;
 
  cleanup:
     virJSONValueFree(cmd);

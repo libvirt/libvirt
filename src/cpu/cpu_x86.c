@@ -303,22 +303,6 @@ virCPUx86DataClear(virCPUx86Data *data)
 }
 
 
-virCPUDataPtr
-virCPUx86MakeData(virArch arch, virCPUx86Data *data)
-{
-    virCPUDataPtr cpuData;
-
-    if (VIR_ALLOC(cpuData) < 0)
-        return NULL;
-
-    cpuData->arch = arch;
-    cpuData->data.x86 = *data;
-    data->len = 0;
-    data->data = NULL;
-
-    return cpuData;
-}
-
 static void
 x86FreeCPUData(virCPUDataPtr data)
 {
@@ -1441,7 +1425,6 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
 {
     xmlNodePtr *nodes = NULL;
     virCPUDataPtr cpuData = NULL;
-    virCPUx86Data data = VIR_CPU_X86_DATA_INIT;
     virCPUx86CPUID cpuid;
     size_t i;
     int n;
@@ -1450,26 +1433,31 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
     if (n <= 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no x86 CPU data found"));
-        goto cleanup;
+        goto error;
     }
+
+    if (!(cpuData = virCPUDataNew(VIR_ARCH_X86_64)))
+        goto error;
 
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
         if (x86ParseCPUID(ctxt, &cpuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to parse cpuid[%zu]"), i);
-            goto cleanup;
+            goto error;
         }
-        if (virCPUx86DataAddCPUID(&data, &cpuid) < 0)
-            goto cleanup;
+        if (virCPUx86DataAddCPUID(&cpuData->data.x86, &cpuid) < 0)
+            goto error;
     }
-
-    cpuData = virCPUx86MakeData(VIR_ARCH_X86_64, &data);
 
  cleanup:
     VIR_FREE(nodes);
-    virCPUx86DataClear(&data);
     return cpuData;
+
+ error:
+    x86FreeCPUData(cpuData);
+    cpuData = NULL;
+    goto cleanup;
 }
 
 
@@ -1514,7 +1502,7 @@ x86Compute(virCPUDefPtr host,
     virCPUx86ModelPtr cpu_forbid = NULL;
     virCPUx86ModelPtr diff = NULL;
     virCPUx86ModelPtr guest_model = NULL;
-    virCPUx86Data guestData = VIR_CPU_X86_DATA_INIT;
+    virCPUDataPtr guestData = NULL;
     virCPUCompareResult ret;
     virCPUx86CompareResult result;
     virArch arch;
@@ -1633,9 +1621,11 @@ x86Compute(virCPUDefPtr host,
 
         x86DataSubtract(&guest_model->data, &cpu_disable->data);
 
-        if (x86DataCopy(&guestData, &guest_model->data) < 0 ||
-            !(*guest = virCPUx86MakeData(arch, &guestData)))
+        if (!(guestData = virCPUDataNew(arch)) ||
+            x86DataCopy(&guestData->data.x86, &guest_model->data) < 0)
             goto error;
+
+        *guest = guestData;
     }
 
  cleanup:
@@ -1647,11 +1637,11 @@ x86Compute(virCPUDefPtr host,
     x86ModelFree(cpu_disable);
     x86ModelFree(cpu_forbid);
     x86ModelFree(guest_model);
-    virCPUx86DataClear(&guestData);
 
     return ret;
 
  error:
+    x86FreeCPUData(guestData);
     ret = VIR_CPU_COMPARE_ERROR;
     goto cleanup;
 }
@@ -1958,12 +1948,12 @@ x86Encode(virArch arch,
           virCPUDataPtr *vendor)
 {
     virCPUx86MapPtr map = NULL;
-    virCPUx86Data data_forced = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data data_required = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data data_optional = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data data_disabled = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data data_forbidden = VIR_CPU_X86_DATA_INIT;
-    virCPUx86Data data_vendor = VIR_CPU_X86_DATA_INIT;
+    virCPUDataPtr data_forced = NULL;
+    virCPUDataPtr data_required = NULL;
+    virCPUDataPtr data_optional = NULL;
+    virCPUDataPtr data_disabled = NULL;
+    virCPUDataPtr data_forbidden = NULL;
+    virCPUDataPtr data_vendor = NULL;
 
     if (forced)
         *forced = NULL;
@@ -1982,23 +1972,33 @@ x86Encode(virArch arch,
         goto error;
 
     if (forced &&
-        x86EncodePolicy(&data_forced, cpu, map, VIR_CPU_FEATURE_FORCE) < 0)
+        (!(data_forced = virCPUDataNew(arch)) ||
+         x86EncodePolicy(&data_forced->data.x86, cpu, map,
+                         VIR_CPU_FEATURE_FORCE) < 0))
         goto error;
 
     if (required &&
-        x86EncodePolicy(&data_required, cpu, map, VIR_CPU_FEATURE_REQUIRE) < 0)
+        (!(data_required = virCPUDataNew(arch)) ||
+         x86EncodePolicy(&data_required->data.x86, cpu, map,
+                         VIR_CPU_FEATURE_REQUIRE) < 0))
         goto error;
 
     if (optional &&
-        x86EncodePolicy(&data_optional, cpu, map, VIR_CPU_FEATURE_OPTIONAL) < 0)
+        (!(data_optional = virCPUDataNew(arch)) ||
+         x86EncodePolicy(&data_optional->data.x86, cpu, map,
+                         VIR_CPU_FEATURE_OPTIONAL) < 0))
         goto error;
 
     if (disabled &&
-        x86EncodePolicy(&data_disabled, cpu, map, VIR_CPU_FEATURE_DISABLE) < 0)
+        (!(data_disabled = virCPUDataNew(arch)) ||
+         x86EncodePolicy(&data_disabled->data.x86, cpu, map,
+                         VIR_CPU_FEATURE_DISABLE) < 0))
         goto error;
 
     if (forbidden &&
-        x86EncodePolicy(&data_forbidden, cpu, map, VIR_CPU_FEATURE_FORBID) < 0)
+        (!(data_forbidden = virCPUDataNew(arch)) ||
+         x86EncodePolicy(&data_forbidden->data.x86, cpu, map,
+                         VIR_CPU_FEATURE_FORBID) < 0))
         goto error;
 
     if (vendor) {
@@ -2010,50 +2010,35 @@ x86Encode(virArch arch,
             goto error;
         }
 
-        if (v && virCPUx86DataAddCPUID(&data_vendor, &v->cpuid) < 0)
+        if (!(data_vendor = virCPUDataNew(arch)))
+            goto error;
+
+        if (v && virCPUx86DataAddCPUID(&data_vendor->data.x86, &v->cpuid) < 0)
             goto error;
     }
 
-    if (forced &&
-        !(*forced = virCPUx86MakeData(arch, &data_forced)))
-        goto error;
-    if (required &&
-        !(*required = virCPUx86MakeData(arch, &data_required)))
-        goto error;
-    if (optional &&
-        !(*optional = virCPUx86MakeData(arch, &data_optional)))
-        goto error;
-    if (disabled &&
-        !(*disabled = virCPUx86MakeData(arch, &data_disabled)))
-        goto error;
-    if (forbidden &&
-        !(*forbidden = virCPUx86MakeData(arch, &data_forbidden)))
-        goto error;
-    if (vendor &&
-        !(*vendor = virCPUx86MakeData(arch, &data_vendor)))
-        goto error;
+    if (forced)
+        *forced = data_forced;
+    if (required)
+        *required = data_required;
+    if (optional)
+        *optional = data_optional;
+    if (disabled)
+        *disabled = data_disabled;
+    if (forbidden)
+        *forbidden = data_forbidden;
+    if (vendor)
+        *vendor = data_vendor;
 
     return 0;
 
  error:
-    virCPUx86DataClear(&data_forced);
-    virCPUx86DataClear(&data_required);
-    virCPUx86DataClear(&data_optional);
-    virCPUx86DataClear(&data_disabled);
-    virCPUx86DataClear(&data_forbidden);
-    virCPUx86DataClear(&data_vendor);
-    if (forced)
-        x86FreeCPUData(*forced);
-    if (required)
-        x86FreeCPUData(*required);
-    if (optional)
-        x86FreeCPUData(*optional);
-    if (disabled)
-        x86FreeCPUData(*disabled);
-    if (forbidden)
-        x86FreeCPUData(*forbidden);
-    if (vendor)
-        x86FreeCPUData(*vendor);
+    x86FreeCPUData(data_forced);
+    x86FreeCPUData(data_required);
+    x86FreeCPUData(data_optional);
+    x86FreeCPUData(data_disabled);
+    x86FreeCPUData(data_forbidden);
+    x86FreeCPUData(data_vendor);
     return -1;
 }
 
@@ -2382,22 +2367,20 @@ static virCPUDataPtr
 x86NodeData(virArch arch)
 {
     virCPUDataPtr cpuData = NULL;
-    virCPUx86Data data = VIR_CPU_X86_DATA_INIT;
 
-    if (cpuidSet(CPUX86_BASIC, &data) < 0)
+    if (!(cpuData = virCPUDataNew(arch)))
         goto error;
 
-    if (cpuidSet(CPUX86_EXTENDED, &data) < 0)
+    if (cpuidSet(CPUX86_BASIC, &cpuData->data.x86) < 0)
         goto error;
 
-    if (!(cpuData = virCPUx86MakeData(arch, &data)))
+    if (cpuidSet(CPUX86_EXTENDED, &cpuData->data.x86) < 0)
         goto error;
 
     return cpuData;
 
  error:
-    virCPUx86DataClear(&data);
-
+    x86FreeCPUData(cpuData);
     return NULL;
 }
 #endif
