@@ -293,7 +293,7 @@ x86DataCpuid(const virCPUx86Data *data,
     return NULL;
 }
 
-void
+static void
 virCPUx86DataClear(virCPUx86Data *data)
 {
     if (!data)
