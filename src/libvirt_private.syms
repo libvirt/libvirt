@@ -994,6 +994,7 @@ virCPUCompareXML;
 virCPUConvertLegacy;
 virCPUDataCheckFeature;
 virCPUDataFormat;
+virCPUDataNew;
 virCPUDataParse;
 virCPUGetModels;
 virCPUTranslate;

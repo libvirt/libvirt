@@ -162,6 +162,9 @@ cpuEncode   (virArch arch,
              virCPUDataPtr *vendor)
     ATTRIBUTE_NONNULL(2);
 
+virCPUDataPtr
+virCPUDataNew(virArch arch);
+
 void
 cpuDataFree (virCPUDataPtr data);
 

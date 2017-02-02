@@ -312,6 +312,25 @@ cpuEncode(virArch arch,
 
 
 /**
+ * virCPUDataNew:
+ *
+ * Returns an allocated memory for virCPUData or NULL on error.
+ */
+virCPUDataPtr
+virCPUDataNew(virArch arch)
+{
+    virCPUDataPtr data;
+
+    if (VIR_ALLOC(data) < 0)
+        return NULL;
+
+    data->arch = arch;
+
+    return data;
+}
+
+
+/**
  * cpuDataFree:
  *
  * @data: CPU data structure to be freed
