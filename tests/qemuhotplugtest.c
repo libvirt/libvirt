@@ -365,6 +365,8 @@ struct testQemuHotplugCpuData {
 static void
 testQemuHotplugCpuDataFree(struct testQemuHotplugCpuData *data)
 {
+    qemuDomainObjPrivatePtr priv;
+
     if (!data)
         return;
 
@@ -375,7 +377,13 @@ testQemuHotplugCpuDataFree(struct testQemuHotplugCpuData *data)
 
     VIR_FREE(data->xml_dom);
 
-    virObjectUnref(data->vm);
+    if (data->vm) {
+        priv = data->vm->privateData;
+        priv->mon = NULL;
+
+        virObjectUnref(data->vm);
+    }
+
     qemuMonitorTestFree(data->mon);
     VIR_FREE(data);
 }
