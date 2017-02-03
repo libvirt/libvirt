@@ -45,6 +45,14 @@ int qemuSecurityRestoreDiskLabel(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virDomainDiskDefPtr disk);
 
+int qemuSecuritySetImageLabel(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              virStorageSourcePtr src);
+
+int qemuSecurityRestoreImageLabel(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm,
+                                  virStorageSourcePtr src);
+
 int qemuSecuritySetHostdevLabel(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
                                 virDomainHostdevDefPtr hostdev);

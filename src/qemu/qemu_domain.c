@@ -31,6 +31,7 @@
 #include "qemu_parse_command.h"
 #include "qemu_capabilities.h"
 #include "qemu_migration.h"
+#include "qemu_security.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -5094,8 +5095,7 @@ qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
         VIR_WARN("Failed to teardown cgroup for disk path %s",
                  NULLSTR(elem->path));
 
-    if (virSecurityManagerRestoreImageLabel(driver->securityManager,
-                                            vm->def, elem) < 0)
+    if (qemuSecurityRestoreImageLabel(driver, vm, elem) < 0)
         VIR_WARN("Unable to restore security label on %s", NULLSTR(elem->path));
 
     if (qemuDomainNamespaceTeardownDisk(driver, vm, elem) < 0)
@@ -5135,8 +5135,7 @@ qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
     if (qemuSetupImageCgroup(vm, elem) < 0)
         goto cleanup;
 
-    if (virSecurityManagerSetImageLabel(driver->securityManager, vm->def,
-                                        elem) < 0)
+    if (qemuSecuritySetImageLabel(driver, vm, elem) < 0)
         goto cleanup;
 
     ret = 0;
