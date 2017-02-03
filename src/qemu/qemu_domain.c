@@ -7912,7 +7912,8 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
         return 0;
 
     for (next = src; next; next = next->backingStore) {
-        if (!next->path || !virStorageSourceIsBlockLocal(src)) {
+        if (virStorageSourceIsEmpty(next) ||
+            !virStorageSourceIsLocalStorage(next)) {
             /* Not creating device. Just continue. */
             continue;
         }
@@ -7923,12 +7924,8 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
             goto cleanup;
         }
 
-        if (!S_ISBLK(sb.st_mode)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Disk source %s must be a block device"),
-                           next->path);
-            goto cleanup;
-        }
+        if (!S_ISBLK(sb.st_mode))
+            continue;
 
         if (qemuDomainAttachDeviceMknod(driver,
                                         vm,
