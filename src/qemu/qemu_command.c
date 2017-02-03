@@ -58,6 +58,7 @@
 #include "virscsi.h"
 #include "virnuma.h"
 #include "virgic.h"
+#include "virmdev.h"
 #if defined(__linux__)
 # include <linux/capability.h>
 #endif
@@ -5220,6 +5221,31 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
     return ret;
 }
 
+char *
+qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
+                               virDomainHostdevDefPtr dev,
+                               virQEMUCapsPtr qemuCaps)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    virDomainHostdevSubsysMediatedDevPtr mdevsrc = &dev->source.subsys.u.mdev;
+    char *ret = NULL;
+
+    virBufferAddLit(&buf, "vfio-pci");
+    virBufferAsprintf(&buf, ",sysfsdev=%s",
+                      virMediatedDeviceGetSysfsPath(mdevsrc->uuidstr));
+
+    if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
+        goto cleanup;
+
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
+
+    ret = virBufferContentAndReset(&buf);
+
+ cleanup:
+    virBufferFreeAndReset(&buf);
+    return ret;
+}
 
 static int
 qemuBuildHostdevCommandLine(virCommandPtr cmd,
@@ -5407,6 +5433,25 @@ qemuBuildHostdevCommandLine(virCommandPtr cmd,
                 VIR_FREE(vhostfdName);
                 VIR_FREE(devstr);
             }
+        }
+
+        /* MDEV */
+        if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV) {
+
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("VFIO PCI device assignment is not "
+                                 "supported by this version of qemu"));
+                return -1;
+            }
+
+            virCommandAddArg(cmd, "-device");
+            if (!(devstr =
+                  qemuBuildHostdevMediatedDevStr(def, hostdev, qemuCaps)))
+                return -1;
+            virCommandAddArg(cmd, devstr);
+            VIR_FREE(devstr);
         }
     }
 
