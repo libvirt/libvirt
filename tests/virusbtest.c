@@ -217,6 +217,7 @@ testUSBList(const void *opaque ATTRIBUTE_UNUSED)
     }
 
     virUSBDeviceListDel(list, dev);
+    virUSBDeviceFree(dev);
     dev = NULL;
 
     if (testCheckNdevs("After deleting one",
