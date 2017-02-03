@@ -302,7 +302,8 @@
         or fixing all but the most obscure bugs, must be (briefly) described
         in a release notes entry; changes that are only relevant to other
         libvirt developers, such as code refactoring, don't belong in the
-        release notes.</p>
+        release notes. Note that <code>docs/news.xml</code> should be updated
+        in its own commit not to get in the way of backports.</p>
       </li>
     </ol>
 
