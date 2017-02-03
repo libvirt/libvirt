@@ -7643,7 +7643,6 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
 struct qemuDomainAttachDeviceMknodData {
     virQEMUDriverPtr driver;
     virDomainObjPtr vm;
-    virDomainDeviceDefPtr devDef;
     const char *file;
     const char *target;
     struct stat sb;
@@ -7747,7 +7746,6 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
 static int
 qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
-                                     virDomainDeviceDefPtr devDef,
                                      const char *file,
                                      unsigned int ttl)
 {
@@ -7767,7 +7765,6 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
 
     data.driver = driver;
     data.vm = vm;
-    data.devDef = devDef;
     data.file = file;
 
     if (lstat(file, &data.sb) < 0) {
@@ -7840,8 +7837,7 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
     }
 
     if (isLink &&
-        qemuDomainAttachDeviceMknodRecursive(driver, vm, devDef,
-                                             target, ttl -1) < 0)
+        qemuDomainAttachDeviceMknodRecursive(driver, vm, target, ttl -1) < 0)
         goto cleanup;
 
     ret = 0;
@@ -7858,13 +7854,11 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
 static int
 qemuDomainAttachDeviceMknod(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
-                            virDomainDeviceDefPtr devDef,
                             const char *file)
 {
     long symloop_max = sysconf(_SC_SYMLOOP_MAX);
 
-    return qemuDomainAttachDeviceMknodRecursive(driver, vm, devDef,
-                                                file, symloop_max);
+    return qemuDomainAttachDeviceMknodRecursive(driver, vm, file, symloop_max);
 }
 
 
@@ -7888,7 +7882,6 @@ qemuDomainDetachDeviceUnlinkHelper(pid_t pid ATTRIBUTE_UNUSED,
 static int
 qemuDomainDetachDeviceUnlink(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                              virDomainObjPtr vm,
-                             virDomainDeviceDefPtr dev ATTRIBUTE_UNUSED,
                              const char *file)
 {
     if (virProcessRunInMountNamespace(vm->pid,
@@ -7905,7 +7898,6 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
                              virDomainDiskDefPtr disk)
 {
-    virDomainDeviceDef dev = {.type = VIR_DOMAIN_DEVICE_DISK, .data.disk = disk};
     virStorageSourcePtr next;
     const char *src = NULL;
     struct stat sb;
@@ -7935,7 +7927,6 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
 
         if (qemuDomainAttachDeviceMknod(driver,
                                         vm,
-                                        &dev,
                                         next->path) < 0)
             goto cleanup;
     }
@@ -7966,7 +7957,6 @@ qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
                                 virDomainHostdevDefPtr hostdev)
 {
-    virDomainDeviceDef dev = {.type = VIR_DOMAIN_DEVICE_HOSTDEV, .data.hostdev = hostdev};
     int ret = -1;
     char *path = NULL;
 
@@ -7984,7 +7974,6 @@ qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver,
 
     if (qemuDomainAttachDeviceMknod(driver,
                                     vm,
-                                    &dev,
                                     path) < 0)
         goto cleanup;
     ret = 0;
@@ -7999,7 +7988,6 @@ qemuDomainNamespaceTeardownHostdev(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainHostdevDefPtr hostdev)
 {
-    virDomainDeviceDef dev = {.type = VIR_DOMAIN_DEVICE_HOSTDEV, .data.hostdev = hostdev};
     int ret = -1;
     char *path = NULL;
 
@@ -8015,7 +8003,7 @@ qemuDomainNamespaceTeardownHostdev(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (qemuDomainDetachDeviceUnlink(driver, vm, &dev, path) < 0)
+    if (qemuDomainDetachDeviceUnlink(driver, vm, path) < 0)
         goto cleanup;
 
     ret = 0;
@@ -8030,7 +8018,6 @@ qemuDomainNamespaceSetupChardev(virQEMUDriverPtr driver,
                                 virDomainObjPtr vm,
                                 virDomainChrDefPtr chr)
 {
-    virDomainDeviceDef dev = {.type = VIR_DOMAIN_DEVICE_CHR, .data.chr = chr};
     const char *path;
     int ret = -1;
 
@@ -8044,7 +8031,6 @@ qemuDomainNamespaceSetupChardev(virQEMUDriverPtr driver,
 
     if (qemuDomainAttachDeviceMknod(driver,
                                     vm,
-                                    &dev,
                                     path) < 0)
         goto cleanup;
     ret = 0;
@@ -8058,7 +8044,6 @@ qemuDomainNamespaceTeardownChardev(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainChrDefPtr chr)
 {
-    virDomainDeviceDef dev = {.type = VIR_DOMAIN_DEVICE_CHR, .data.chr = chr};
     int ret = -1;
     const char *path = NULL;
 
@@ -8070,7 +8055,7 @@ qemuDomainNamespaceTeardownChardev(virQEMUDriverPtr driver,
 
     path = chr->source->data.file.path;
 
-    if (qemuDomainDetachDeviceUnlink(driver, vm, &dev, path) < 0)
+    if (qemuDomainDetachDeviceUnlink(driver, vm, path) < 0)
         goto cleanup;
 
     ret = 0;
@@ -8084,7 +8069,6 @@ qemuDomainNamespaceSetupRNG(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
                             virDomainRNGDefPtr rng)
 {
-    virDomainDeviceDef dev = {.type = VIR_DOMAIN_DEVICE_RNG, .data.rng = rng};
     const char *path = NULL;
     int ret = -1;
 
@@ -8104,7 +8088,6 @@ qemuDomainNamespaceSetupRNG(virQEMUDriverPtr driver,
 
     if (qemuDomainAttachDeviceMknod(driver,
                                     vm,
-                                    &dev,
                                     path) < 0)
         goto cleanup;
     ret = 0;
@@ -8118,7 +8101,6 @@ qemuDomainNamespaceTeardownRNG(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                virDomainRNGDefPtr rng)
 {
-    virDomainDeviceDef dev = {.type = VIR_DOMAIN_DEVICE_RNG, .data.rng = rng};
     int ret = -1;
     const char *path = NULL;
 
@@ -8136,7 +8118,7 @@ qemuDomainNamespaceTeardownRNG(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (qemuDomainDetachDeviceUnlink(driver, vm, &dev, path) < 0)
+    if (qemuDomainDetachDeviceUnlink(driver, vm, path) < 0)
         goto cleanup;
 
     ret = 0;
