@@ -3886,6 +3886,19 @@
   &lt;/devices&gt;
   ...</pre>
 
+    <p>or:</p>
+
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;hostdev mode='subsystem' type='mdev' model='vfio-pci'&gt;
+    &lt;source&gt;
+      &lt;address uuid='c2177883-f1bb-47f0-914d-32a22e3a8804'&gt;
+    &lt;/source&gt;
+    &lt;/hostdev&gt;
+  &lt;/devices&gt;
+  ...</pre>
+
     <dl>
       <dt><code>hostdev</code></dt>
       <dd>The <code>hostdev</code> element is the main container for describing
@@ -3930,12 +3943,22 @@
             <code>type</code> passes all LUNs presented by a single HBA to
             the guest.
           </dd>
+          <dt><code>mdev</code></dt>
+          <dd>For mediated devices (<span class="since">Since 3.2.0</span>)
+          the <code>model</code> attribute specifies the device API which
+          determines how the host's vfio driver will expose the device to the
+          guest. Currently, only <code>model='vfio-pci'</code> is supported.
+          There are also some implications on the usage of guest's address type
+          depending on the <code>model</code> attribute, see the
+          <code>address</code> element below.</dd>
         </dl>
         <p>
-          Note: The <code>managed</code> attribute is only used with PCI devices
-          and is ignored by all the other device types, thus setting
-          <code>managed</code> explicitly with other than PCI device has the same
-          effect as omitting it.
+          Note: The <code>managed</code> attribute is only used with
+          <code>type='pci'</code> and is ignored by all the other device types,
+          thus setting <code>managed</code> explicitly with other than a PCI
+          device has the same effect as omitting it. Similarly,
+          <code>model</code> attribute is only supported by mediated devices and
+          ignored by all other device types.
         </p>
       </dd>
       <dt><code>source</code></dt>
@@ -4000,6 +4023,12 @@
             is the vhost_scsi wwpn (16 hexadecimal digits with a prefix of
             "naa.") established in the host configfs.
           </dd>
+          <dt><code>mdev</code></dt>
+          <dd>Mediated devices (<span class="since">Since 3.2.0</span>) are
+            described by the <code>address</code> element. The
+            <code>address</code> element contains a single mandatory attribute
+            <code>uuid</code>.
+          </dd>
         </dl>
       </dd>
       <dt><code>vendor</code>, <code>product</code></dt>
@@ -4043,8 +4072,13 @@
       For PCI devices the element carries 4 attributes allowing to designate
       the device as can be found with the <code>lspci</code> or
       with <code>virsh nodedev-list</code>. For SCSI devices a 'drive'
-      address type must be used. <a href="#elementsAddress">See above</a> for
-      more details on the address element.</dd>
+      address type must be used. For mediated devices, which are software-only
+      devices defining an allocation of resources on the physical parent device,
+      the address type used must conform to the <code>model</code> attribute
+      of element <code>hostdev</code>, e.g. any address type other than PCI for
+      <code>vfio-pci</code> device API will result in an error.
+      <a href="#elementsAddress">See above</a> for more details on the address
+      element.</dd>
       <dt><code>driver</code></dt>
       <dd>
         PCI devices can have an optional <code>driver</code>
