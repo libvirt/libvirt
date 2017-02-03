@@ -322,19 +322,7 @@ AppArmorSetSecurityHostdevLabelHelper(const char *file, void *opaque)
     struct SDPDOP *ptr = opaque;
     virDomainDefPtr def = ptr->def;
 
-    if (reload_profile(ptr->mgr, def, file, true) < 0) {
-        virSecurityLabelDefPtr secdef = virDomainDefGetSecurityLabelDef(
-                                                def, SECURITY_APPARMOR_NAME);
-        if (!secdef) {
-            virReportOOMError();
-            return -1;
-        }
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot update AppArmor profile \'%s\'"),
-                       secdef->imagelabel);
-        return -1;
-    }
-    return 0;
+    return reload_profile(ptr->mgr, def, file, true);
 }
 
 static int
