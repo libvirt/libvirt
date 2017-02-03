@@ -503,7 +503,8 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
                            virQEMUDriverPtr driver,
                            virDomainNetDefPtr net,
                            int *tapfd,
-                           size_t *tapfdSize)
+                           size_t *tapfdSize,
+                           unsigned int *mtu)
 {
     const char *brname;
     int ret = -1;
@@ -544,7 +545,7 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
                                            def->uuid, tunpath, tapfd, *tapfdSize,
                                            virDomainNetGetActualVirtPortProfile(net),
                                            virDomainNetGetActualVlan(net),
-                                           0, NULL,
+                                           net->mtu, mtu,
                                            tap_create_flags) < 0) {
             virDomainAuditNetDevice(def, net, tunpath, false);
             goto cleanup;

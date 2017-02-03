@@ -969,6 +969,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     bool charDevPlugged = false;
     bool netdevPlugged = false;
     bool hostPlugged = false;
+    unsigned int mtu = net->mtu;
 
     /* preallocate new slot for device */
     if (VIR_REALLOC_N(vm->def->nets, vm->def->nnets + 1) < 0)
@@ -1025,7 +1026,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
             goto cleanup;
         memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
         if (qemuInterfaceBridgeConnect(vm->def, driver, net,
-                                       tapfd, &tapfdSize) < 0)
+                                       tapfd, &tapfdSize, &mtu) < 0)
             goto cleanup;
         iface_connected = true;
         if (qemuInterfaceOpenVhostNet(vm->def, net, priv->qemuCaps,
@@ -1236,7 +1237,7 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         VIR_FORCE_CLOSE(vhostfd[i]);
 
     if (!(nicstr = qemuBuildNicDevStr(vm->def, net, vlan, 0,
-                                      queueSize, priv->qemuCaps)))
+                                      queueSize, priv->qemuCaps, mtu)))
         goto try_remove;
 
     qemuDomainObjEnterMonitor(driver, vm);
