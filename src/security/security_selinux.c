@@ -36,6 +36,7 @@
 #include "virerror.h"
 #include "viralloc.h"
 #include "virlog.h"
+#include "virmdev.h"
 #include "virpci.h"
 #include "virusb.h"
 #include "virscsi.h"
@@ -1741,6 +1742,7 @@ virSecuritySELinuxSetHostLabel(virSCSIVHostDevicePtr dev ATTRIBUTE_UNUSED,
     return virSecuritySELinuxSetHostdevLabelHelper(file, opaque);
 }
 
+
 static int
 virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
                                         virDomainDefPtr def,
@@ -1752,6 +1754,7 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
     virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
+    virDomainHostdevSubsysMediatedDevPtr mdevsrc = &dev->source.subsys.u.mdev;
     virSecuritySELinuxCallbackData data = {.mgr = mgr, .def = def};
 
     int ret = -1;
@@ -1838,7 +1841,26 @@ virSecuritySELinuxSetHostdevSubsysLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV: {
+        char *vfiodev = NULL;
+        virMediatedDevicePtr mdev = virMediatedDeviceNew(mdevsrc->uuidstr,
+                                                         mdevsrc->model);
+
+        if (!mdev)
+            goto done;
+
+        if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdev))) {
+            virMediatedDeviceFree(mdev);
+            goto done;
+        }
+
+        ret = virSecuritySELinuxSetHostdevLabelHelper(vfiodev, &data);
+
+        VIR_FREE(vfiodev);
+        virMediatedDeviceFree(mdev);
+        break;
+    }
+
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         ret = 0;
         break;
@@ -1973,6 +1995,7 @@ virSecuritySELinuxRestoreHostLabel(virSCSIVHostDevicePtr dev ATTRIBUTE_UNUSED,
     return virSecuritySELinuxRestoreFileLabel(mgr, file);
 }
 
+
 static int
 virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
                                             virDomainHostdevDefPtr dev,
@@ -1983,6 +2006,7 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
     virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
+    virDomainHostdevSubsysMediatedDevPtr mdevsrc = &dev->source.subsys.u.mdev;
     int ret = -1;
 
     /* Like virSecuritySELinuxRestoreImageLabelInt() for a networked
@@ -2066,7 +2090,26 @@ virSecuritySELinuxRestoreHostdevSubsysLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV: {
+        char *vfiodev = NULL;
+        virMediatedDevicePtr mdev = virMediatedDeviceNew(mdevsrc->uuidstr,
+                                                         mdevsrc->model);
+
+        if (!mdev)
+            goto done;
+
+        if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdev))) {
+            virMediatedDeviceFree(mdev);
+            goto done;
+        }
+
+        ret = virSecuritySELinuxRestoreFileLabel(mgr, vfiodev);
+
+        VIR_FREE(vfiodev);
+        virMediatedDeviceFree(mdev);
+        break;
+    }
+
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         ret = 0;
         break;

@@ -51,6 +51,7 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "virscsi.h"
+#include "virmdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 
@@ -813,6 +814,7 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
     virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
+    virDomainHostdevSubsysMediatedDevPtr mdevsrc = &dev->source.subsys.u.mdev;
 
     if (!secdef || !secdef->relabel)
         return 0;
@@ -901,8 +903,25 @@ AppArmorSetSecurityHostdevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV: {
+        char *vfiodev = NULL;
+        virMediatedDevicePtr mdev = virMediatedDeviceNew(mdevsrc->uuidstr,
+                                                         mdevsrc->model);
+
+        if (!mdev)
+            goto done;
+
+        if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdev))) {
+            virMediatedDeviceFree(mdev);
+            goto done;
+        }
+
+        ret = AppArmorSetSecurityHostdevLabelHelper(vfiodev, ptr);
+
+        VIR_FREE(vfiodev);
+        virMediatedDeviceFree(mdev);
         break;
+    }
 
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         ret = 0;

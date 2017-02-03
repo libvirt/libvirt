@@ -33,6 +33,7 @@
 #include "virfile.h"
 #include "viralloc.h"
 #include "virlog.h"
+#include "virmdev.h"
 #include "virpci.h"
 #include "virusb.h"
 #include "virscsi.h"
@@ -867,6 +868,7 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
     virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
+    virDomainHostdevSubsysMediatedDevPtr mdevsrc = &dev->source.subsys.u.mdev;
     int ret = -1;
 
     if (!priv->dynamicOwnership)
@@ -964,7 +966,26 @@ virSecurityDACSetHostdevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV: {
+        char *vfiodev = NULL;
+        virMediatedDevicePtr mdev = virMediatedDeviceNew(mdevsrc->uuidstr,
+                                                         mdevsrc->model);
+
+        if (!mdev)
+            goto done;
+
+        if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdev))) {
+            virMediatedDeviceFree(mdev);
+            goto done;
+        }
+
+        ret = virSecurityDACSetHostdevLabelHelper(vfiodev, &cbdata);
+
+        VIR_FREE(vfiodev);
+        virMediatedDeviceFree(mdev);
+        break;
+    }
+
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         ret = 0;
         break;
@@ -1032,6 +1053,7 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
     virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
     virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
+    virDomainHostdevSubsysMediatedDevPtr mdevsrc = &dev->source.subsys.u.mdev;
     int ret = -1;
 
     secdef = virDomainDefGetSecurityLabelDef(def, SECURITY_DAC_NAME);
@@ -1120,7 +1142,26 @@ virSecurityDACRestoreHostdevLabel(virSecurityManagerPtr mgr,
         break;
     }
 
-    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV: {
+        char *vfiodev = NULL;
+        virMediatedDevicePtr mdev = virMediatedDeviceNew(mdevsrc->uuidstr,
+                                                         mdevsrc->model);
+
+        if (!mdev)
+            goto done;
+
+        if (!(vfiodev = virMediatedDeviceGetIOMMUGroupDev(mdev))) {
+            virMediatedDeviceFree(mdev);
+            goto done;
+        }
+
+        ret = virSecurityDACRestoreFileLabel(virSecurityManagerGetPrivateData(mgr),
+                                             vfiodev);
+        VIR_FREE(vfiodev);
+        virMediatedDeviceFree(mdev);
+        break;
+    }
+
     case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
         ret = 0;
         break;
