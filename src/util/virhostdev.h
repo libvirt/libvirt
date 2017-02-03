@@ -32,6 +32,7 @@
 # include "virscsi.h"
 # include "virscsivhost.h"
 # include "conf/domain_conf.h"
+# include "virmdev.h"
 
 typedef enum {
     VIR_HOSTDEV_STRICT_ACS_CHECK     = (1 << 0), /* strict acs check */
@@ -55,6 +56,7 @@ struct _virHostdevManager {
     virUSBDeviceListPtr activeUSBHostdevs;
     virSCSIDeviceListPtr activeSCSIHostdevs;
     virSCSIVHostDeviceListPtr activeSCSIVHostHostdevs;
+    virMediatedDeviceListPtr activeMediatedHostdevs;
 };
 
 virHostdevManagerPtr virHostdevManagerGetDefault(void);
@@ -96,6 +98,13 @@ virHostdevPrepareSCSIVHostDevices(virHostdevManagerPtr hostdev_mgr,
                                   virDomainHostdevDefPtr *hostdevs,
                                   int nhostdevs)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+int
+virHostdevPrepareMediatedDevices(virHostdevManagerPtr hostdev_mgr,
+                                 const char *drv_name,
+                                 const char *dom_name,
+                                 virDomainHostdevDefPtr *hostdevs,
+                                 int nhostdevs)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 void
 virHostdevReAttachPCIDevices(virHostdevManagerPtr hostdev_mgr,
                              const char *drv_name,
@@ -125,6 +134,13 @@ virHostdevReAttachSCSIVHostDevices(virHostdevManagerPtr hostdev_mgr,
                                    virDomainHostdevDefPtr *hostdevs,
                                    int nhostdevs)
     ATTRIBUTE_NONNULL(1);
+void
+virHostdevReAttachMediatedDevices(virHostdevManagerPtr hostdev_mgr,
+                                  const char *drv_name,
+                                  const char *dom_name,
+                                  virDomainHostdevDefPtr *hostdevs,
+                                  int nhostdevs)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int
 virHostdevUpdateActivePCIDevices(virHostdevManagerPtr mgr,
                                  virDomainHostdevDefPtr *hostdevs,
@@ -145,6 +161,13 @@ virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
                                   int nhostdevs,
                                   const char *drv_name,
                                   const char *dom_name)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
+int
+virHostdevUpdateActiveMediatedDevices(virHostdevManagerPtr mgr,
+                                      virDomainHostdevDefPtr *hostdevs,
+                                      int nhostdevs,
+                                      const char *drv_name,
+                                      const char *dom_name)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 int
 virHostdevUpdateActiveDomainDevices(virHostdevManagerPtr mgr,

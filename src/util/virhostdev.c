@@ -1,6 +1,6 @@
 /* virhostdev.c: hostdev management
  *
- * Copyright (C) 2006-2007, 2009-2016 Red Hat, Inc.
+ * Copyright (C) 2006-2007, 2009-2017 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  * Copyright (C) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
  *
@@ -147,6 +147,7 @@ virHostdevManagerDispose(void *obj)
     virObjectUnref(hostdevMgr->activeUSBHostdevs);
     virObjectUnref(hostdevMgr->activeSCSIHostdevs);
     virObjectUnref(hostdevMgr->activeSCSIVHostHostdevs);
+    virObjectUnref(hostdevMgr->activeMediatedHostdevs);
     VIR_FREE(hostdevMgr->stateDir);
 }
 
@@ -172,6 +173,9 @@ virHostdevManagerNew(void)
         goto error;
 
     if (!(hostdevMgr->activeSCSIVHostHostdevs = virSCSIVHostDeviceListNew()))
+        goto error;
+
+    if (!(hostdevMgr->activeMediatedHostdevs = virMediatedDeviceListNew()))
         goto error;
 
     if (privileged) {
@@ -1165,6 +1169,50 @@ virHostdevUpdateActiveSCSIDevices(virHostdevManagerPtr mgr,
     return ret;
 }
 
+
+int
+virHostdevUpdateActiveMediatedDevices(virHostdevManagerPtr mgr,
+                                      virDomainHostdevDefPtr *hostdevs,
+                                      int nhostdevs,
+                                      const char *drv_name,
+                                      const char *dom_name)
+{
+    int ret = -1;
+    size_t i;
+    virMediatedDevicePtr mdev = NULL;
+
+    if (nhostdevs == 0)
+        return 0;
+
+    virObjectLock(mgr->activeMediatedHostdevs);
+    for (i = 0; i < nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevSubsysMediatedDevPtr mdevsrc;
+
+        mdevsrc = &hostdev->source.subsys.u.mdev;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV) {
+            continue;
+        }
+
+        if (!(mdev = virMediatedDeviceNew(mdevsrc->uuidstr, mdevsrc->model)))
+            goto cleanup;
+
+        virMediatedDeviceSetUsedBy(mdev, drv_name, dom_name);
+
+        if (virMediatedDeviceListAdd(mgr->activeMediatedHostdevs, mdev) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    virMediatedDeviceFree(mdev);
+    virObjectUnlock(mgr->activeMediatedHostdevs);
+    return ret;
+}
+
+
 static int
 virHostdevMarkUSBDevices(virHostdevManagerPtr mgr,
                          const char *drv_name,
@@ -1613,6 +1661,70 @@ virHostdevPrepareSCSIVHostDevices(virHostdevManagerPtr mgr,
     return -1;
 }
 
+
+int
+virHostdevPrepareMediatedDevices(virHostdevManagerPtr mgr,
+                                 const char *drv_name,
+                                 const char *dom_name,
+                                 virDomainHostdevDefPtr *hostdevs,
+                                 int nhostdevs)
+{
+    size_t i;
+    int ret = -1;
+    virMediatedDeviceListPtr list;
+
+    if (!nhostdevs)
+        return 0;
+
+    /* To prevent situation where mediated device is assigned to multiple
+     * domains we maintain a driver list of currently assigned mediated devices.
+     * A device is appended to the driver list after a series of preparations.
+     */
+    if (!(list = virMediatedDeviceListNew()))
+        goto cleanup;
+
+    /* Loop 1: Build a temporary list of ALL mediated devices. */
+    for (i = 0; i < nhostdevs; i++) {
+        virDomainHostdevDefPtr hostdev = hostdevs[i];
+        virDomainHostdevSubsysMediatedDevPtr src = &hostdev->source.subsys.u.mdev;
+        virMediatedDevicePtr mdev;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+            continue;
+        if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV)
+            continue;
+
+        if (!(mdev = virMediatedDeviceNew(src->uuidstr, src->model)))
+            goto cleanup;
+
+        if (virMediatedDeviceListAdd(list, mdev) < 0) {
+            virMediatedDeviceFree(mdev);
+            goto cleanup;
+        }
+    }
+
+    /* Mark the devices in the list as used by @drv_name-@dom_name and copy the
+     * references to the driver list
+     */
+    if (virMediatedDeviceListMarkDevices(mgr->activeMediatedHostdevs,
+                                         list, drv_name, dom_name) < 0)
+        goto cleanup;
+
+    /* Loop 2: Temporary list was successfully merged with
+     * driver list, so steal all items to avoid freeing them
+     * in cleanup label.
+     */
+    while (virMediatedDeviceListCount(list) > 0) {
+        virMediatedDevicePtr tmp = virMediatedDeviceListGet(list, 0);
+        virMediatedDeviceListSteal(list, tmp);
+    }
+
+    ret = 0;
+ cleanup:
+    virObjectUnref(list);
+    return ret;
+}
+
 void
 virHostdevReAttachUSBDevices(virHostdevManagerPtr mgr,
                              const char *drv_name,
@@ -1805,6 +1917,64 @@ virHostdevReAttachSCSIVHostDevices(virHostdevManagerPtr mgr,
         virSCSIVHostDeviceFree(host);
     }
     virObjectUnlock(mgr->activeSCSIVHostHostdevs);
+}
+
+/* TODO: Rename this function along with all virHostdevReAttach* functions that
+ * have nothing to do with an explicit re-attachment of a device back to the
+ * host driver (like PCI).
+ * Despite what the function name suggests, there's nothing to be re-attached
+ * for mediated devices, the function merely removes a mediated device from the
+ * list of active host devices.
+ */
+void
+virHostdevReAttachMediatedDevices(virHostdevManagerPtr mgr,
+                                  const char *drv_name,
+                                  const char *dom_name,
+                                  virDomainHostdevDefPtr *hostdevs,
+                                  int nhostdevs)
+{
+    const char *used_by_drvname = NULL;
+    const char *used_by_domname = NULL;
+    size_t i;
+
+    if (nhostdevs == 0)
+        return;
+
+    virObjectLock(mgr->activeMediatedHostdevs);
+    for (i = 0; i < nhostdevs; i++) {
+        virMediatedDevicePtr mdev, tmp;
+        virDomainHostdevSubsysMediatedDevPtr mdevsrc;
+        virDomainHostdevDefPtr hostdev = hostdevs[i];
+
+        mdevsrc = &hostdev->source.subsys.u.mdev;
+
+        if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
+            hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV) {
+            continue;
+        }
+
+        if (!(mdev = virMediatedDeviceNew(mdevsrc->uuidstr,
+                                          mdevsrc->model)))
+            continue;
+
+        /* Remove from the list only mdevs assigned to @drv_name/@dom_name */
+
+        tmp = virMediatedDeviceListFind(mgr->activeMediatedHostdevs, mdev);
+        virMediatedDeviceFree(mdev);
+
+        /* skip inactive devices */
+        if (!tmp)
+            continue;
+
+        virMediatedDeviceGetUsedBy(tmp, &used_by_drvname, &used_by_domname);
+        if (STREQ_NULLABLE(drv_name, used_by_drvname) &&
+            STREQ_NULLABLE(dom_name, used_by_domname)) {
+            VIR_DEBUG("Removing %s dom=%s from activeMediatedHostdevs",
+                      mdevsrc->uuidstr, dom_name);
+            virMediatedDeviceListDel(mgr->activeMediatedHostdevs, tmp);
+        }
+    }
+    virObjectUnlock(mgr->activeMediatedHostdevs);
 }
 
 int
