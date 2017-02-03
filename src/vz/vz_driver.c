@@ -163,11 +163,7 @@ static void vzDriverDispose(void * obj)
 {
     vzDriverPtr driver = obj;
 
-    if (driver->server) {
-        prlsdkUnsubscribeFromPCSEvents(driver);
-        prlsdkDisconnect(driver);
-    }
-
+    prlsdkDisconnect(driver);
     virObjectUnref(driver->domains);
     virObjectUnref(driver->caps);
     virObjectUnref(driver->xmlopt);
@@ -348,8 +344,7 @@ vzDriverObjNew(void)
         !(driver->domains = virDomainObjListNew()) ||
         !(driver->domainEventState = virObjectEventStateNew()) ||
         (vzInitVersion(driver) < 0) ||
-        (prlsdkConnect(driver) < 0) ||
-        (prlsdkSubscribeToPCSEvents(driver) < 0)) {
+        (prlsdkConnect(driver) < 0)) {
         virObjectUnref(driver);
         return NULL;
     }

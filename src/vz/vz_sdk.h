@@ -35,8 +35,6 @@ prlsdkAddDomainByUUID(vzDriverPtr driver, const unsigned char *uuid);
 virDomainObjPtr
 prlsdkAddDomainByName(vzDriverPtr driver, const char *name);
 int prlsdkUpdateDomain(vzDriverPtr driver, virDomainObjPtr dom);
-int prlsdkSubscribeToPCSEvents(vzDriverPtr driver);
-void prlsdkUnsubscribeFromPCSEvents(vzDriverPtr driver);
 
 int prlsdkStart(virDomainObjPtr dom);
 int prlsdkKill(virDomainObjPtr dom);

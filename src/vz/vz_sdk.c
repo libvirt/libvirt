@@ -43,6 +43,8 @@ static int
 prlsdkUUIDParse(const char *uuidstr, unsigned char *uuid);
 static void
 prlsdkConvertError(PRL_RESULT pret);
+static PRL_RESULT
+prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque);
 
 VIR_LOG_INIT("parallels.sdk");
 
@@ -363,41 +365,62 @@ prlsdkConnect(vzDriverPtr driver)
     job = PrlSrv_LoginLocalEx(driver->server, NULL, 0,
                               PSL_HIGH_SECURITY, PACF_NON_INTERACTIVE_MODE);
     if (PRL_FAILED(getJobResult(job, &result)))
-        goto cleanup;
+        goto destroy;
 
     pret = PrlResult_GetParam(result, &response);
-    prlsdkCheckRetGoto(pret, cleanup);
+    prlsdkCheckRetGoto(pret, logoff);
 
     pret = prlsdkGetStringParamBuf(PrlLoginResponse_GetSessionUuid,
                                    response, session_uuid, sizeof(session_uuid));
-    prlsdkCheckRetGoto(pret, cleanup);
+    prlsdkCheckRetGoto(pret, logoff);
 
     if (prlsdkUUIDParse(session_uuid, driver->session_uuid) < 0)
-        goto cleanup;
+        goto logoff;
+
+    pret = PrlSrv_RegEventHandler(driver->server,
+                                  prlsdkEventsHandler,
+                                  driver);
+    prlsdkCheckRetGoto(pret, logoff);
 
     ret = 0;
 
  cleanup:
-    if (ret < 0) {
-        PrlHandle_Free(driver->server);
-        driver->server = PRL_INVALID_HANDLE;
-    }
-
     PrlHandle_Free(result);
     PrlHandle_Free(response);
 
     return ret;
+
+ logoff:
+    job = PrlSrv_Logoff(driver->server);
+    waitJob(job);
+
+ destroy:
+    PrlHandle_Free(driver->server);
+    driver->server = PRL_INVALID_HANDLE;
+
+    goto cleanup;
 }
 
 void
 prlsdkDisconnect(vzDriverPtr driver)
 {
     PRL_HANDLE job;
+    PRL_RESULT ret;
+
+    if (driver->server == PRL_INVALID_HANDLE)
+        return;
+
+    ret = PrlSrv_UnregEventHandler(driver->server,
+                                   prlsdkEventsHandler,
+                                   driver);
+    if (PRL_FAILED(ret))
+        logPrlError(ret);
 
     job = PrlSrv_Logoff(driver->server);
     waitJob(job);
 
     PrlHandle_Free(driver->server);
+    driver->server = PRL_INVALID_HANDLE;
 }
 
 static int
@@ -2333,30 +2356,6 @@ prlsdkEventsHandler(PRL_HANDLE prlEvent, PRL_VOID_PTR opaque)
  cleanup:
     PrlHandle_Free(prlEvent);
     return PRL_ERR_SUCCESS;
-}
-
-int prlsdkSubscribeToPCSEvents(vzDriverPtr driver)
-{
-    PRL_RESULT pret = PRL_ERR_UNINITIALIZED;
-
-    pret = PrlSrv_RegEventHandler(driver->server,
-                                  prlsdkEventsHandler,
-                                  driver);
-    prlsdkCheckRetGoto(pret, error);
-    return 0;
-
- error:
-    return -1;
-}
-
-void prlsdkUnsubscribeFromPCSEvents(vzDriverPtr driver)
-{
-    PRL_RESULT ret = PRL_ERR_UNINITIALIZED;
-    ret = PrlSrv_UnregEventHandler(driver->server,
-                                   prlsdkEventsHandler,
-                                   driver);
-    if (PRL_FAILED(ret))
-        logPrlError(ret);
 }
 
 int prlsdkStart(virDomainObjPtr dom)
