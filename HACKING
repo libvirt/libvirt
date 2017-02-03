@@ -231,7 +231,8 @@ feature or changing the output of a program.
 such as adding new XML elements or fixing all but the most obscure bugs, must
 be (briefly) described in a release notes entry; changes that are only
 relevant to other libvirt developers, such as code refactoring, don't belong
-in the release notes.
+in the release notes. Note that "docs/news.xml" should be updated in its own
+commit not to get in the way of backports.
 
 There is more on this subject, including lots of links to background reading
 on the subject, on Richard Jones' guide to working with open source projects
