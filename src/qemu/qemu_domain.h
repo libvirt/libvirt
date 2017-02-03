@@ -34,6 +34,7 @@
 # include "qemu_agent.h"
 # include "qemu_conf.h"
 # include "qemu_capabilities.h"
+# include "virmdev.h"
 # include "virchrdev.h"
 # include "virobject.h"
 # include "logging/log_manager.h"
