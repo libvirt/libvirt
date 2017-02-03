@@ -5090,13 +5090,16 @@ qemuDomainDiskChainElementRevoke(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virStorageSourcePtr elem)
 {
+    if (qemuTeardownImageCgroup(vm, elem) < 0)
+        VIR_WARN("Failed to teardown cgroup for disk path %s",
+                 NULLSTR(elem->path));
+
     if (virSecurityManagerRestoreImageLabel(driver->securityManager,
                                             vm->def, elem) < 0)
         VIR_WARN("Unable to restore security label on %s", NULLSTR(elem->path));
 
-    if (qemuTeardownImageCgroup(vm, elem) < 0)
-        VIR_WARN("Failed to teardown cgroup for disk path %s",
-                 NULLSTR(elem->path));
+    if (qemuDomainNamespaceTeardownDisk(driver, vm, elem) < 0)
+        VIR_WARN("Unable to remove /dev entry for %s", NULLSTR(elem->path));
 
     if (virDomainLockImageDetach(driver->lockManager, vm, elem) < 0)
         VIR_WARN("Unable to release lock on %s", NULLSTR(elem->path));
@@ -5124,6 +5127,9 @@ qemuDomainDiskChainElementPrepare(virQEMUDriverPtr driver,
     elem->readonly = readonly;
 
     if (virDomainLockImageAttach(driver->lockManager, cfg->uri, vm, elem) < 0)
+        goto cleanup;
+
+    if (qemuDomainNamespaceSetupDisk(driver, vm, elem) < 0)
         goto cleanup;
 
     if (qemuSetupImageCgroup(vm, elem) < 0)
