@@ -7896,7 +7896,7 @@ qemuDomainDetachDeviceUnlink(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 int
 qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
                              virDomainObjPtr vm,
-                             virDomainDiskDefPtr disk)
+                             virStorageSourcePtr src)
 {
     virStorageSourcePtr next;
     struct stat sb;
@@ -7905,8 +7905,8 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    for (next = disk->src; next; next = next->backingStore) {
-        if (!next->path || !virStorageSourceIsBlockLocal(disk->src)) {
+    for (next = src; next; next = next->backingStore) {
+        if (!next->path || !virStorageSourceIsBlockLocal(src)) {
             /* Not creating device. Just continue. */
             continue;
         }
@@ -7939,7 +7939,7 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
 int
 qemuDomainNamespaceTeardownDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                                 virDomainObjPtr vm ATTRIBUTE_UNUSED,
-                                virDomainDiskDefPtr disk ATTRIBUTE_UNUSED)
+                                virStorageSourcePtr src ATTRIBUTE_UNUSED)
 {
     /* While in hotplug case we create the whole backing chain,
      * here we must limit ourselves. The disk we want to remove

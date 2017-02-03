@@ -110,7 +110,7 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
                                 vm, disk) < 0)
         goto cleanup;
 
-    if (qemuDomainNamespaceSetupDisk(driver, vm, disk) < 0)
+    if (qemuDomainNamespaceSetupDisk(driver, vm, disk->src) < 0)
         goto rollback_lock;
 
     if (qemuSecuritySetDiskLabel(driver, vm, disk) < 0)
@@ -132,7 +132,7 @@ qemuDomainPrepareDisk(virQEMUDriverPtr driver,
                  virDomainDiskGetSource(disk));
 
  rollback_namespace:
-    if (qemuDomainNamespaceTeardownDisk(driver, vm, disk) < 0)
+    if (qemuDomainNamespaceTeardownDisk(driver, vm, disk->src) < 0)
         VIR_WARN("Unable to remove /dev entry for %s",
                  virDomainDiskGetSource(disk));
 
@@ -3649,7 +3649,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriverPtr driver,
     if (virDomainLockDiskDetach(driver->lockManager, vm, disk) < 0)
         VIR_WARN("Unable to release lock on %s", src);
 
-    if (qemuDomainNamespaceTeardownDisk(driver, vm, disk) < 0)
+    if (qemuDomainNamespaceTeardownDisk(driver, vm, disk->src) < 0)
         VIR_WARN("Unable to remove /dev entry for %s", src);
 
     dev.type = VIR_DOMAIN_DEVICE_DISK;
