@@ -2532,6 +2532,7 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
     char *devstr = NULL;
     bool teardowncgroup = false;
     bool teardownlabel = false;
+    bool teardowndevice = false;
     bool releaseaddr = false;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_SCSI_GENERIC)) {
@@ -2547,6 +2548,10 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
                        hostsrc->wwpn);
         return -1;
     }
+
+    if (qemuDomainNamespaceSetupHostdev(driver, vm, hostdev) < 0)
+        goto cleanup;
+    teardowndevice = true;
 
     if (qemuSetupHostdevCgroup(vm, hostdev) < 0)
         goto cleanup;
@@ -2613,6 +2618,9 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
         if (teardownlabel &&
             qemuSecurityRestoreHostdevLabel(driver, vm, hostdev) < 0)
             VIR_WARN("Unable to restore host device labelling on hotplug fail");
+        if (teardowndevice &&
+            qemuDomainNamespaceTeardownHostdev(driver, vm, hostdev) < 0)
+            VIR_WARN("Unable to remove host device from /dev");
         if (releaseaddr)
             qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
     }
