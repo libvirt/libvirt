@@ -7899,7 +7899,6 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
                              virDomainDiskDefPtr disk)
 {
     virStorageSourcePtr next;
-    const char *src = NULL;
     struct stat sb;
     int ret = -1;
 
@@ -7914,14 +7913,14 @@ qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
 
         if (stat(next->path, &sb) < 0) {
             virReportSystemError(errno,
-                                 _("Unable to access %s"), src);
+                                 _("Unable to access %s"), next->path);
             goto cleanup;
         }
 
         if (!S_ISBLK(sb.st_mode)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Disk source %s must be a block device"),
-                           src);
+                           next->path);
             goto cleanup;
         }
 
