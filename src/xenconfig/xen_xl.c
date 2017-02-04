@@ -1034,6 +1034,7 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
     int format = virDomainDiskGetFormat(disk);
     const char *driver = virDomainDiskGetDriver(disk);
     char *target = NULL;
+    int ret = -1;
 
     /* format */
     virBufferAddLit(&buf, "format=");
@@ -1119,12 +1120,12 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
         tmp->next = val;
     else
         list->list = val;
-    return 0;
+    ret = 0;
 
  cleanup:
     VIR_FREE(target);
     virBufferFreeAndReset(&buf);
-    return -1;
+    return ret;
 }
 
 
