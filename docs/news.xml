@@ -56,6 +56,25 @@
           a fabric name has been removed by making it optional.
         </description>
       </change>
+      <change>
+        <summary>
+          bhyve: change address allocation schema for SATA disks
+        </summary>
+        <description>
+          Previously, the bhyve driver assigned PCI addresses to SATA disks
+          directly rather than assigning that to a controller and
+          using SATA addresses for disks. It was implemented this way
+          because bhyve has no notion of an explicit SATA controller.
+          However, as this doesn't match libvirt's understanding of
+          disk addresses, the bhyve driver was changed to follow
+          the common schema and have PCI addresses for SATA controllers
+          and SATA addresses for disks. If you're having issues
+          because of this, it's recommended to edit the domain's XML
+          and remove &lt;address type='pci'&gt; from the &lt;disk&gt;
+          elements with &lt;target bus='sata'/&gt; and let libvirt
+          regenerate it properly.
+        </description>
+      </change>
     </section>
   </release>
   <release version="v3.0.0" date="2017-01-17">
