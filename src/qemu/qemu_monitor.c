@@ -3664,6 +3664,7 @@ qemuMonitorCPUModelInfoFree(qemuMonitorCPUModelInfoPtr model_info)
     for (i = 0; i < model_info->nprops; i++)
         VIR_FREE(model_info->props[i].name);
 
+    VIR_FREE(model_info->props);
     VIR_FREE(model_info->name);
     VIR_FREE(model_info);
 }
