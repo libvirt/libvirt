@@ -2832,6 +2832,16 @@ qemuDomainDefValidate(const virDomainDef *def,
         }
     }
 
+    /* Memory locking can only work properly if the memory locking limit
+     * for the QEMU process has been raised appropriately: the default one
+     * is extrememly low, so there's no way the guest will fit in there */
+    if (def->mem.locked && !virMemoryLimitIsSet(def->mem.hard_limit)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Setting <memoryBacking><locked> requires "
+                         "<memtune><hard_limit> to be set as well"));
+        goto cleanup;
+    }
+
     if (qemuDomainDefValidateVideo(def) < 0)
         goto cleanup;
 
