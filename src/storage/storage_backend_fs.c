@@ -358,14 +358,13 @@ virStorageBackendFileSystemMount(virStoragePoolObjPtr pool)
     if (virStorageBackendFileSystemIsValid(pool) < 0)
         return -1;
 
-    /* Short-circuit if already mounted */
-    if ((rc = virStorageBackendFileSystemIsMounted(pool)) != 0) {
-        if (rc == 1) {
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("Target '%s' is already mounted"),
-                           pool->def->target.path);
-        }
+    if ((rc = virStorageBackendFileSystemIsMounted(pool)) < 0)
         return -1;
+
+    /* Short-circuit if already mounted */
+    if (rc == 1) {
+        VIR_INFO("Target '%s' is already mounted", pool->def->target.path);
+        return 0;
     }
 
     if (!(src = virStorageBackendFileSystemGetPoolSource(pool)))
