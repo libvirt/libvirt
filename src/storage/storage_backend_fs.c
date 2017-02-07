@@ -301,6 +301,7 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
     FILE *mtab;
     struct mntent ent;
     char buf[1024];
+    int rc1, rc2;
 
     if ((mtab = fopen(_PATH_MOUNTED, "r")) == NULL) {
         virReportSystemError(errno,
@@ -313,8 +314,15 @@ virStorageBackendFileSystemIsMounted(virStoragePoolObjPtr pool)
         if (!(src = virStorageBackendFileSystemGetPoolSource(pool)))
             goto cleanup;
 
-        if (STREQ(ent.mnt_dir, pool->def->target.path) &&
-            STREQ(ent.mnt_fsname, src)) {
+        /* compare both mount destinations and sources to be sure the mounted
+         * FS pool is really the one we're looking for
+         */
+        if ((rc1 = virFileComparePaths(ent.mnt_dir,
+                                       pool->def->target.path)) < 0 ||
+            (rc2 = virFileComparePaths(ent.mnt_fsname, src)) < 0)
+            goto cleanup;
+
+        if (rc1 && rc2) {
             ret = 1;
             goto cleanup;
         }
