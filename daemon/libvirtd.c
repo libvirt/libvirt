@@ -58,6 +58,7 @@
 #include "viraccessmanager.h"
 #include "virutil.h"
 #include "virgettext.h"
+#include "util/virnetdevopenvswitch.h"
 
 #ifdef WITH_DRIVER_MODULES
 # include "driver.h"
@@ -654,6 +655,16 @@ daemonSetupNetworking(virNetServerPtr srv,
     virObjectUnref(svcAdm);
     virObjectUnref(svc);
     return ret;
+}
+
+
+/*
+ * Set up the openvswitch timeout
+ */
+static void
+daemonSetupNetDevOpenvswitch(struct daemonConfig *config)
+{
+    virNetDevOpenvswitchSetTimeout(config->ovs_timeout);
 }
 
 
@@ -1266,6 +1277,8 @@ int main(int argc, char **argv) {
         VIR_ERROR(_("Can't initialize logging"));
         exit(EXIT_FAILURE);
     }
+
+    daemonSetupNetDevOpenvswitch(config);
 
     if (daemonSetupAccessManager(config) < 0) {
         VIR_ERROR(_("Can't initialize access manager"));
