@@ -5468,8 +5468,7 @@ libxlDomainBlockStatsGatherSingle(virDomainObjPtr vm,
         disk_drv = "qemu";
 
     if (STREQ(disk_drv, "phy")) {
-        if (disk_fmt != VIR_STORAGE_FILE_RAW &&
-            disk_fmt != VIR_STORAGE_FILE_NONE) {
+        if (disk_fmt != VIR_STORAGE_FILE_RAW) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                            _("unsupported format %s"),
                            virStorageFileFormatTypeToString(disk_fmt));

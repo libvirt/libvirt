@@ -765,8 +765,6 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
                 x_disk->format = LIBXL_DISK_FORMAT_VHD;
                 x_disk->backend = LIBXL_DISK_BACKEND_TAP;
                 break;
-            case VIR_STORAGE_FILE_NONE:
-                /* No subtype specified, default to raw/tap */
             case VIR_STORAGE_FILE_RAW:
                 x_disk->format = LIBXL_DISK_FORMAT_RAW;
                 x_disk->backend = LIBXL_DISK_BACKEND_TAP;
@@ -802,8 +800,6 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
             case VIR_STORAGE_FILE_VHD:
                 x_disk->format = LIBXL_DISK_FORMAT_VHD;
                 break;
-            case VIR_STORAGE_FILE_NONE:
-                /* No subtype specified, default to raw */
             case VIR_STORAGE_FILE_RAW:
                 x_disk->format = LIBXL_DISK_FORMAT_RAW;
                 break;
@@ -816,8 +812,7 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
                 return -1;
             }
         } else if (STREQ(driver, "file")) {
-            if (format != VIR_STORAGE_FILE_NONE &&
-                format != VIR_STORAGE_FILE_RAW) {
+            if (format != VIR_STORAGE_FILE_RAW) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("libxenlight does not support disk format %s "
                                  "with disk driver %s"),
@@ -828,8 +823,7 @@ libxlMakeDisk(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
             x_disk->format = LIBXL_DISK_FORMAT_RAW;
             x_disk->backend = LIBXL_DISK_BACKEND_QDISK;
         } else if (STREQ(driver, "phy")) {
-            if (format != VIR_STORAGE_FILE_NONE &&
-                format != VIR_STORAGE_FILE_RAW) {
+            if (format != VIR_STORAGE_FILE_RAW) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("libxenlight does not support disk format %s "
                                  "with disk driver %s"),

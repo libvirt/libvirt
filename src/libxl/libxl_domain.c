@@ -362,16 +362,21 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         }
     }
 
-    /* for network-based disks, set 'qemu' as the default driver */
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         virDomainDiskDefPtr disk = dev->data.disk;
         int actual_type = virStorageSourceGetActualType(disk->src);
+        int format = virDomainDiskGetFormat(disk);
 
+        /* for network-based disks, set 'qemu' as the default driver */
         if (actual_type == VIR_STORAGE_TYPE_NETWORK) {
             if (!virDomainDiskGetDriver(disk) &&
                 virDomainDiskSetDriver(disk, "qemu") < 0)
                 return -1;
         }
+
+        /* xl.cfg default format is raw. See xl-disk-configuration(5) */
+        if (format == VIR_STORAGE_FILE_NONE)
+            virDomainDiskSetFormat(disk, VIR_STORAGE_FILE_RAW);
     }
 
     return 0;
