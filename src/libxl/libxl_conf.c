@@ -907,6 +907,38 @@ libxlMakeDiskList(virDomainDefPtr def, libxl_domain_config *d_config)
     return -1;
 }
 
+/*
+ * Update libvirt disk config with libxl disk config.
+ *
+ * This function can be used to update the libvirt disk config with default
+ * values selected by libxl. Currently only the backend type is selected by
+ * libxl when not explicitly specified by the user.
+ */
+void
+libxlUpdateDiskDef(virDomainDiskDefPtr l_disk, libxl_device_disk *x_disk)
+{
+    const char *driver = NULL;
+
+    if (virDomainDiskGetDriver(l_disk))
+        return;
+
+    switch (x_disk->backend) {
+    case LIBXL_DISK_BACKEND_QDISK:
+        driver = "qemu";
+        break;
+    case LIBXL_DISK_BACKEND_TAP:
+        driver = "tap";
+        break;
+    case LIBXL_DISK_BACKEND_PHY:
+        driver = "phy";
+        break;
+    case LIBXL_DISK_BACKEND_UNKNOWN:
+        break;
+    }
+    if (driver)
+        ignore_value(virDomainDiskSetDriver(l_disk, driver));
+}
+
 int
 libxlMakeNic(virDomainDefPtr def,
              virDomainNetDefPtr l_nic,
