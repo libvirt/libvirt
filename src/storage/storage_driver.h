@@ -70,5 +70,6 @@ char *virStoragePoolObjBuildTempFilePath(virStoragePoolObjPtr pool,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int storageRegister(void);
+int storageRegisterAll(void);
 
 #endif /* __VIR_STORAGE_DRIVER_H__ */

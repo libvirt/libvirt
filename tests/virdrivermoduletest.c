@@ -71,7 +71,7 @@ mymain(void)
     TEST("interface");
 #endif
 #ifdef WITH_STORAGE
-    TEST("storage");
+    TEST_FULL("storage", "storageRegisterAll");
 #endif
 #ifdef WITH_NODE_DEVICES
     TEST("nodedev");

@@ -87,7 +87,8 @@ static size_t virStorageFileBackendsCount;
 
 static int
 virStorageDriverLoadBackendModule(const char *name,
-                                  const char *regfunc)
+                                  const char *regfunc,
+                                  bool forceload)
 {
     char *modfile = NULL;
     int ret;
@@ -100,7 +101,14 @@ virStorageDriverLoadBackendModule(const char *name,
                                             "LIBVIRT_STORAGE_BACKEND_DIR")))
         return 1;
 
-    ret = virDriverLoadModuleFull(modfile, regfunc, NULL);
+    if ((ret = virDriverLoadModuleFull(modfile, regfunc, NULL)) != 0) {
+        if (forceload) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to load storage backend module '%s'"),
+                           name);
+            ret = -1;
+        }
+    }
 
     VIR_FREE(modfile);
 
@@ -109,7 +117,7 @@ virStorageDriverLoadBackendModule(const char *name,
 
 
 # define VIR_STORAGE_BACKEND_REGISTER(func, module)                            \
-    if (virStorageDriverLoadBackendModule(module, #func) < 0)                  \
+    if (virStorageDriverLoadBackendModule(module, #func, allbackends) < 0)     \
         return -1
 #else
 # define VIR_STORAGE_BACKEND_REGISTER(func, module)                            \
@@ -118,7 +126,7 @@ virStorageDriverLoadBackendModule(const char *name,
 #endif
 
 int
-virStorageBackendDriversRegister(void)
+virStorageBackendDriversRegister(bool allbackends ATTRIBUTE_UNUSED)
 {
 #if WITH_STORAGE_DIR || WITH_STORAGE_FS
     VIR_STORAGE_BACKEND_REGISTER(virStorageBackendFsRegister, "fs");

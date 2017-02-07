@@ -2838,15 +2838,30 @@ static virStateDriver stateDriver = {
     .stateReload = storageStateReload,
 };
 
-int storageRegister(void)
+static int
+storageRegisterFull(bool allbackends)
 {
-    if (virStorageBackendDriversRegister() < 0)
+    if (virStorageBackendDriversRegister(allbackends) < 0)
         return -1;
     if (virSetSharedStorageDriver(&storageDriver) < 0)
         return -1;
     if (virRegisterStateDriver(&stateDriver) < 0)
         return -1;
     return 0;
+}
+
+
+int
+storageRegister(void)
+{
+    return storageRegisterFull(false);
+}
+
+
+int
+storageRegisterAll(void)
+{
+    return storageRegisterFull(true);
 }
 
 
