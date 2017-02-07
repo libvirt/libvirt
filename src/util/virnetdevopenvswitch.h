@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) 2012 Nicira, Inc.
+ * Copyright (C) 2017 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,6 +21,7 @@
  *     Dan Wendlandt <dan@nicira.com>
  *     Kyle Mestery <kmestery@cisco.com>
  *     Ansis Atteka <aatteka@nicira.com>
+ *     Boris Fiuczynski <fiuczy@linux.vnet.ibm.com>
  */
 
 #ifndef __VIR_NETDEV_OPENVSWITCH_H__
@@ -30,6 +32,8 @@
 # include "virnetdevvlan.h"
 
 # define VIR_NETDEV_OVS_DEFAULT_TIMEOUT 5
+
+void virNetDevOpenvswitchSetTimeout(unsigned int timeout);
 
 int virNetDevOpenvswitchAddPort(const char *brname,
                                 const char *ifname,

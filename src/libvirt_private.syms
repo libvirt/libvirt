@@ -2078,6 +2078,7 @@ virNetDevOpenvswitchGetVhostuserIfname;
 virNetDevOpenvswitchInterfaceStats;
 virNetDevOpenvswitchRemovePort;
 virNetDevOpenvswitchSetMigrateData;
+virNetDevOpenvswitchSetTimeout;
 
 
 # util/virnetdevtap.h

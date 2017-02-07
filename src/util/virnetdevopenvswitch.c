@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2013 Red Hat, Inc.
  * Copyright (C) 2012 Nicira, Inc.
+ * Copyright (C) 2017 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,6 +21,7 @@
  *     Dan Wendlandt <dan@nicira.com>
  *     Kyle Mestery <kmestery@cisco.com>
  *     Ansis Atteka <aatteka@nicira.com>
+ *     Boris Fiuczynski <fiuczy@linux.vnet.ibm.com>
  */
 
 #include <config.h>
@@ -37,6 +39,29 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.netdevopenvswitch");
+
+/*
+ * Set openvswitch default timout
+ */
+static unsigned int virNetDevOpenvswitchTimeout = VIR_NETDEV_OVS_DEFAULT_TIMEOUT;
+
+/**
+ * virNetDevOpenvswitchSetTimeout:
+ * @timeout: the timeout in seconds
+ *
+ * Set the openvswitch timeout
+ */
+void
+virNetDevOpenvswitchSetTimeout(unsigned int timeout)
+{
+    virNetDevOpenvswitchTimeout = timeout;
+}
+
+static void
+virNetDevOpenvswitchAddTimeout(virCommandPtr cmd)
+{
+    virCommandAddArgFormat(cmd, "--timeout=%u", virNetDevOpenvswitchTimeout);
+}
 
 /**
  * virNetDevOpenvswitchAddPort:
@@ -88,8 +113,8 @@ int virNetDevOpenvswitchAddPort(const char *brname, const char *ifname,
     }
 
     cmd = virCommandNew(OVSVSCTL);
-
-    virCommandAddArgList(cmd, "--timeout=5", "--", "--if-exists", "del-port",
+    virNetDevOpenvswitchAddTimeout(cmd);
+    virCommandAddArgList(cmd, "--", "--if-exists", "del-port",
                          ifname, "--", "add-port", brname, ifname, NULL);
 
     if (virtVlan && virtVlan->nTags > 0) {
@@ -183,7 +208,8 @@ int virNetDevOpenvswitchRemovePort(const char *brname ATTRIBUTE_UNUSED, const ch
     virCommandPtr cmd = NULL;
 
     cmd = virCommandNew(OVSVSCTL);
-    virCommandAddArgList(cmd, "--timeout=5", "--", "--if-exists", "del-port", ifname, NULL);
+    virNetDevOpenvswitchAddTimeout(cmd);
+    virCommandAddArgList(cmd, "--", "--if-exists", "del-port", ifname, NULL);
 
     if (virCommandRun(cmd, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -212,8 +238,10 @@ int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
     size_t len;
     int ret = -1;
 
-    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5", "--if-exists", "get", "Interface",
-                               ifname, "external_ids:PortData", NULL);
+    cmd = virCommandNew(OVSVSCTL);
+    virNetDevOpenvswitchAddTimeout(cmd);
+    virCommandAddArgList(cmd, "--if-exists", "get", "Interface",
+                         ifname, "external_ids:PortData", NULL);
 
     virCommandSetOutputBuffer(cmd, migrate);
 
@@ -255,8 +283,9 @@ int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
         return 0;
     }
 
-    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5", "set",
-                               "Interface", ifname, NULL);
+    cmd = virCommandNew(OVSVSCTL);
+    virNetDevOpenvswitchAddTimeout(cmd);
+    virCommandAddArgList(cmd, "set", "Interface", ifname, NULL);
     virCommandAddArgFormat(cmd, "external_ids:PortData=%s", migrate);
 
     /* Run the command */
@@ -299,9 +328,9 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
     int ret = -1;
 
     /* Just ensure the interface exists in ovs */
-    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5",
-                               "get", "Interface", ifname,
-                               "name", NULL);
+    cmd = virCommandNew(OVSVSCTL);
+    virNetDevOpenvswitchAddTimeout(cmd);
+    virCommandAddArgList(cmd, "get", "Interface", ifname, "name", NULL);
     virCommandSetOutputBuffer(cmd, &output);
 
     if (virCommandRun(cmd, NULL) < 0) {
@@ -314,12 +343,13 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
     VIR_FREE(output);
     virCommandFree(cmd);
 
-    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5",
-                               "get", "Interface", ifname,
-                               "statistics:rx_bytes",
-                               "statistics:rx_packets",
-                               "statistics:tx_bytes",
-                               "statistics:tx_packets", NULL);
+    cmd = virCommandNew(OVSVSCTL);
+    virNetDevOpenvswitchAddTimeout(cmd);
+    virCommandAddArgList(cmd, "get", "Interface", ifname,
+                         "statistics:rx_bytes",
+                         "statistics:rx_packets",
+                         "statistics:tx_bytes",
+                         "statistics:tx_packets", NULL);
     virCommandSetOutputBuffer(cmd, &output);
 
     if (virCommandRun(cmd, NULL) < 0) {
@@ -345,12 +375,13 @@ virNetDevOpenvswitchInterfaceStats(const char *ifname,
     VIR_FREE(output);
     virCommandFree(cmd);
 
-    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5",
-                               "get", "Interface", ifname,
-                               "statistics:rx_errors",
-                               "statistics:rx_dropped",
-                               "statistics:tx_errors",
-                               "statistics:tx_dropped", NULL);
+    cmd = virCommandNew(OVSVSCTL);
+    virNetDevOpenvswitchAddTimeout(cmd);
+    virCommandAddArgList(cmd, "get", "Interface", ifname,
+                         "statistics:rx_errors",
+                         "statistics:rx_dropped",
+                         "statistics:tx_errors",
+                         "statistics:tx_dropped", NULL);
     virCommandSetOutputBuffer(cmd, &output);
     if (virCommandRun(cmd, NULL) < 0) {
         /* This interface don't have errors or dropped, so set them to 0 */
@@ -399,6 +430,7 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
     size_t ntokens = 0;
     int status;
     int ret = -1;
+    char *ovs_timeout = NULL;
 
     /* Openvswitch vhostuser path are hardcoded to
      * /<runstatedir>/openvswitch/<ifname>
@@ -412,8 +444,9 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
         goto cleanup;
     }
 
-    cmd = virCommandNewArgList(OVSVSCTL, "--timeout=5", "get", "Interface",
-                               tmpIfname, "name", NULL);
+    cmd = virCommandNew(OVSVSCTL);
+    virNetDevOpenvswitchAddTimeout(cmd);
+    virCommandAddArgList(cmd, "get", "Interface", tmpIfname, "name", NULL);
     if (virCommandRun(cmd, &status) < 0 ||
         status) {
         /* it's not a openvswitch vhostuser interface. */
@@ -428,5 +461,6 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path,
  cleanup:
     virStringListFreeCount(tokens, ntokens);
     virCommandFree(cmd);
+    VIR_FREE(ovs_timeout);
     return ret;
 }
