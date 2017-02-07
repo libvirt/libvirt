@@ -2552,8 +2552,7 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
         goto cleanup;
     teardowncgroup = true;
 
-    if (virSecurityManagerSetHostdevLabel(driver->securityManager,
-                                          vm->def, hostdev, NULL) < 0)
+    if (qemuSecuritySetHostdevLabel(driver, vm, hostdev) < 0)
         goto cleanup;
     teardownlabel = true;
 
@@ -2612,8 +2611,7 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriverPtr driver,
         if (teardowncgroup && qemuTeardownHostdevCgroup(vm, hostdev) < 0)
             VIR_WARN("Unable to remove host device cgroup ACL on hotplug fail");
         if (teardownlabel &&
-            virSecurityManagerRestoreHostdevLabel(driver->securityManager,
-                                                  vm->def, hostdev, NULL) < 0)
+            qemuSecurityRestoreHostdevLabel(driver, vm, hostdev) < 0)
             VIR_WARN("Unable to restore host device labelling on hotplug fail");
         if (releaseaddr)
             qemuDomainReleaseDeviceAddress(vm, hostdev->info, NULL);
