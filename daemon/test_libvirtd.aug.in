@@ -63,3 +63,4 @@ module Test_libvirtd =
         { "admin_keepalive_required" = "1" }
         { "admin_keepalive_interval" = "5" }
         { "admin_keepalive_count" = "5" }
+        { "ovs_timeout" = "5" }

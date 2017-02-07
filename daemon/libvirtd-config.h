@@ -92,6 +92,8 @@ struct daemonConfig {
 
     int admin_keepalive_interval;
     unsigned int admin_keepalive_count;
+
+    unsigned int ovs_timeout;
 };
 
 

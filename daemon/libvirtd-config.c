@@ -32,6 +32,7 @@
 #include "configmake.h"
 #include "remote/remote_protocol.h"
 #include "remote/remote_driver.h"
+#include "util/virnetdevopenvswitch.h"
 #include "virstring.h"
 #include "virutil.h"
 
@@ -169,6 +170,8 @@ daemonConfigNew(bool privileged ATTRIBUTE_UNUSED)
 
     data->admin_keepalive_interval = 5;
     data->admin_keepalive_count = 5;
+
+    data->ovs_timeout = VIR_NETDEV_OVS_DEFAULT_TIMEOUT;
 
     localhost = virGetHostname();
     if (localhost == NULL) {
@@ -386,6 +389,9 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     if (virConfGetValueInt(conf, "admin_keepalive_interval", &data->admin_keepalive_interval) < 0)
         goto error;
     if (virConfGetValueUInt(conf, "admin_keepalive_count", &data->admin_keepalive_count) < 0)
+        goto error;
+
+    if (virConfGetValueUInt(conf, "ovs_timeout", &data->ovs_timeout) < 0)
         goto error;
 
     return 0;

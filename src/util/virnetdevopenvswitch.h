@@ -29,6 +29,7 @@
 # include "virnetdevvportprofile.h"
 # include "virnetdevvlan.h"
 
+# define VIR_NETDEV_OVS_DEFAULT_TIMEOUT 5
 
 int virNetDevOpenvswitchAddPort(const char *brname,
                                 const char *ifname,
