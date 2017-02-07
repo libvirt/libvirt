@@ -1239,6 +1239,8 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/lock-driver/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/lock-driver/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.a
+rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-backend/*.la
+rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-backend/*.a
 %if %{with_wireshark}
     %if 0%{fedora} >= 24
 rm -f $RPM_BUILD_ROOT%{_libdir}/wireshark/plugins/libvirt.la
@@ -1694,6 +1696,21 @@ exit 0
 %files daemon-driver-storage
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
 %{_libdir}/%{name}/connection-driver/libvirt_driver_storage.so
+%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_fs.so
+%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_disk.so
+%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_logical.so
+%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_scsi.so
+%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_iscsi.so
+%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_mpath.so
+%if %{with_storage_gluster}
+%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_gluster.so
+%endif
+%if %{with_storage_rbd}
+%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_rbd.so
+%endif
+%if %{with_storage_sheepdog}
+%{_libdir}/%{name}/storage-backend/libvirt_storage_backend_sheepdog.so
+%endif
 
 %if %{with_qemu}
 %files daemon-driver-qemu

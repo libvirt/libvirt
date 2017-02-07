@@ -33,6 +33,8 @@
 #include "virstoragefile.h"
 #include "storage_backend.h"
 #include "virlog.h"
+#include "virfile.h"
+#include "configmake.h"
 
 #if WITH_STORAGE_LVM
 # include "storage_backend_logical.h"
@@ -79,45 +81,77 @@ static size_t virStorageBackendsCount;
 static virStorageFileBackendPtr virStorageFileBackends[VIR_STORAGE_BACKENDS_MAX];
 static size_t virStorageFileBackendsCount;
 
-#define VIR_STORAGE_BACKEND_REGISTER(name)                                     \
-    if (name() < 0)                                                            \
+#if WITH_DRIVER_MODULES
+
+# define STORAGE_BACKEND_MODULE_DIR LIBDIR "/libvirt/storage-backend"
+
+static int
+virStorageDriverLoadBackendModule(const char *name,
+                                  const char *regfunc)
+{
+    char *modfile = NULL;
+    int ret;
+
+    if (!(modfile = virFileFindResourceFull(name,
+                                            "libvirt_storage_backend_",
+                                            ".so",
+                                            abs_topbuilddir "/src/.libs",
+                                            STORAGE_BACKEND_MODULE_DIR,
+                                            "LIBVIRT_STORAGE_BACKEND_DIR")))
+        return 1;
+
+    ret = virDriverLoadModuleFull(modfile, regfunc, NULL);
+
+    VIR_FREE(modfile);
+
+    return ret;
+}
+
+
+# define VIR_STORAGE_BACKEND_REGISTER(func, module)                            \
+    if (virStorageDriverLoadBackendModule(module, #func) < 0)                  \
         return -1
+#else
+# define VIR_STORAGE_BACKEND_REGISTER(func, module)                            \
+    if (func() < 0)                                                            \
+        return -1
+#endif
 
 int
 virStorageBackendDriversRegister(void)
 {
 #if WITH_STORAGE_DIR || WITH_STORAGE_FS
-    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendFsRegister);
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendFsRegister, "fs");
 #endif
 #if WITH_STORAGE_LVM
-    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendLogicalRegister);
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendLogicalRegister, "logical");
 #endif
 #if WITH_STORAGE_ISCSI
-    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendISCSIRegister);
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendISCSIRegister, "iscsi");
 #endif
 #if WITH_STORAGE_SCSI
-    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendSCSIRegister);
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendSCSIRegister, "scsi");
 #endif
 #if WITH_STORAGE_MPATH
-    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendMpathRegister);
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendMpathRegister, "mpath");
 #endif
 #if WITH_STORAGE_DISK
-    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendDiskRegister);
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendDiskRegister, "disk");
 #endif
 #if WITH_STORAGE_RBD
-    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendRBDRegister);
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendRBDRegister, "rbd");
 #endif
 #if WITH_STORAGE_SHEEPDOG
-    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendSheepdogRegister);
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendSheepdogRegister, "sheepdog");
 #endif
 #if WITH_STORAGE_GLUSTER
-    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendGlusterRegister);
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendGlusterRegister, "gluster");
 #endif
 #if WITH_STORAGE_ZFS
-    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendZFSRegister);
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendZFSRegister, "zfs");
 #endif
 #if WITH_STORAGE_VSTORAGE
-    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendVstorageRegister);
+    VIR_STORAGE_BACKEND_REGISTER(virStorageBackendVstorageRegister, "vstorage");
 #endif
 
     return 0;
