@@ -3749,3 +3749,47 @@ virFileCopyACLs(const char *src,
     virFileFreeACLs(&acl);
     return ret;
 }
+
+/*
+ * virFileComparePaths:
+ * @p1: source path 1
+ * @p2: source path 2
+ *
+ * Compares two paths for equality. To do so, it first canonicalizes both paths
+ * to resolve all symlinks and discard relative path components. If symlinks
+ * resolution or path canonicalization fails, plain string equality of @p1
+ * and @p2 is performed.
+ *
+ * Returns:
+ *  1 : Equal
+ *  0 : Non-Equal
+ * -1 : Error
+ */
+int
+virFileComparePaths(const char *p1, const char *p2)
+{
+    int ret = -1;
+    char *res1, *res2;
+
+    res1 = res2 = NULL;
+
+    /* Assume p1 and p2 are symlinks, so try to resolve and canonicalize them.
+     * Canonicalization fails for example on file systems names like 'proc' or
+     * 'sysfs', since they're no real paths so fallback to plain string
+     * comparison.
+     */
+    ignore_value(virFileResolveLink(p1, &res1));
+    if (!res1 && VIR_STRDUP(res1, p1) < 0)
+        goto cleanup;
+
+    ignore_value(virFileResolveLink(p2, &res2));
+    if (!res2 && VIR_STRDUP(res2, p2) < 0)
+        goto cleanup;
+
+    ret = STREQ_NULLABLE(res1, res2);
+
+ cleanup:
+    VIR_FREE(res1);
+    VIR_FREE(res2);
+    return ret;
+}

@@ -334,4 +334,6 @@ void virFileFreeACLs(void **acl);
 
 int virFileCopyACLs(const char *src,
                     const char *dst);
+
+int virFileComparePaths(const char *p1, const char *p2);
 #endif /* __VIR_FILE_H */

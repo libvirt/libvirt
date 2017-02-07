@@ -1575,6 +1575,7 @@ virFileActivateDirOverride;
 virFileBindMountDevice;
 virFileBuildPath;
 virFileClose;
+virFileComparePaths;
 virFileCopyACLs;
 virFileDeleteTree;
 virFileDirectFdFlag;
