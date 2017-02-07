@@ -261,7 +261,10 @@ nodeDeviceLookupByName(virConnectPtr conn, const char *name)
     if (virNodeDeviceLookupByNameEnsureACL(conn, obj->def) < 0)
         goto cleanup;
 
-    ret = virGetNodeDevice(conn, name);
+    if ((ret = virGetNodeDevice(conn, name))) {
+        if (VIR_STRDUP(ret->parent, obj->def->parent) < 0)
+            virObjectUnref(ret);
+    }
 
  cleanup:
     if (obj)
@@ -302,7 +305,10 @@ nodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
                         if (virNodeDeviceLookupSCSIHostByWWNEnsureACL(conn, obj->def) < 0)
                             goto out;
 
-                        dev = virGetNodeDevice(conn, obj->def->name);
+                        if ((dev = virGetNodeDevice(conn, obj->def->name))) {
+                            if (VIR_STRDUP(dev->parent, obj->def->parent) < 0)
+                                virObjectUnref(dev);
+                        }
                         virNodeDeviceObjUnlock(obj);
                         goto out;
                     }

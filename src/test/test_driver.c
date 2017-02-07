@@ -5450,7 +5450,10 @@ testNodeDeviceLookupByName(virConnectPtr conn, const char *name)
         goto cleanup;
     }
 
-    ret = virGetNodeDevice(conn, name);
+    if ((ret = virGetNodeDevice(conn, name))) {
+        if (VIR_STRDUP(ret->parent, obj->def->parent) < 0)
+            virObjectUnref(ret);
+    }
 
  cleanup:
     if (obj)
@@ -5648,6 +5651,7 @@ testNodeDeviceCreateXML(virConnectPtr conn,
                                            0);
 
     dev = virGetNodeDevice(conn, def->name);
+    ignore_value(VIR_STRDUP(dev->parent, def->parent));
     def = NULL;
  cleanup:
     testDriverUnlock(driver);

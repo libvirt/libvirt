@@ -2158,8 +2158,8 @@ virNodeDeviceObjListExport(virConnectPtr conn,
         if ((!filter || filter(conn, devobj->def)) &&
             virNodeDeviceMatch(devobj, flags)) {
             if (devices) {
-                if (!(device = virGetNodeDevice(conn,
-                                                devobj->def->name))) {
+                if (!(device = virGetNodeDevice(conn, devobj->def->name)) ||
+                    VIR_STRDUP(device->parent, devobj->def->parent) < 0) {
                     virNodeDeviceObjUnlock(devobj);
                     goto cleanup;
                 }
