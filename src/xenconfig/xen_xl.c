@@ -1168,7 +1168,7 @@ xenFormatXLSpice(virConfPtr conf, virDomainDefPtr def)
     virDomainGraphicsListenDefPtr glisten;
     virDomainGraphicsDefPtr graphics;
 
-    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
+    if (def->os.type == VIR_DOMAIN_OSTYPE_HVM && def->graphics) {
         graphics = def->graphics[0];
 
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
