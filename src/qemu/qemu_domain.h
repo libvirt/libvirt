@@ -803,8 +803,9 @@ bool qemuDomainSupportsVideoVga(virDomainVideoDefPtr video,
                                 virQEMUCapsPtr qemuCaps);
 
 int qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
-                             char **path,
-                             int *perms);
+                             size_t *npaths,
+                             char ***path,
+                             int **perms);
 
 int qemuDomainBuildNamespace(virQEMUDriverPtr driver,
                              virDomainObjPtr vm);

@@ -107,6 +107,7 @@ VIR_ENUM_IMPL(qemuDomainNamespace, QEMU_DOMAIN_NS_LAST,
 
 #define PROC_MOUNTS "/proc/mounts"
 #define DEVPREFIX "/dev/"
+#define DEV_VFIO "/dev/vfio/vfio"
 
 
 struct _qemuDomainLogContext {
@@ -6846,18 +6847,24 @@ qemuDomainSupportsVideoVga(virDomainVideoDefPtr video,
 /**
  * qemuDomainGetHostdevPath:
  * @dev: host device definition
+ * @npaths: number of items in @path and @perms arrays
  * @path: resulting path to @dev
  * @perms: Optional pointer to VIR_CGROUP_DEVICE_* perms
  *
- * For given device @dev fetch its host path and store it at @path. Optionally,
- * caller can get @perms on the path (e.g. rw/ro).
+ * For given device @dev fetch its host path and store it at
+ * @path. If a device requires other paths to be present/allowed
+ * they are stored in the @path array after the actual path.
+ * Optionally, caller can get @perms on the path (e.g. rw/ro).
+ *
+ * The caller is responsible for freeing the memory.
  *
  * Returns 0 on success, -1 otherwise.
  */
 int
 qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
-                         char **path,
-                         int *perms)
+                         size_t *npaths,
+                         char ***path,
+                         int **perms)
 {
     int ret = -1;
     virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
@@ -6870,8 +6877,13 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
     virSCSIVHostDevicePtr host = NULL;
     char *tmpPath = NULL;
     bool freeTmpPath = false;
+    bool includeVFIO = false;
+    char **tmpPaths = NULL;
+    int *tmpPerms = NULL;
+    size_t i, tmpNpaths = 0;
+    int perm = 0;
 
-    *path = NULL;
+    *npaths = 0;
 
     switch ((virDomainHostdevMode) dev->mode) {
     case VIR_DOMAIN_HOSTDEV_MODE_SUBSYS:
@@ -6888,8 +6900,9 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
                 if (!(tmpPath = virPCIDeviceGetIOMMUGroupDev(pci)))
                     goto cleanup;
                 freeTmpPath = true;
-                if (perms)
-                    *perms = VIR_CGROUP_DEVICE_RW;
+
+                perm = VIR_CGROUP_DEVICE_RW;
+                includeVFIO = true;
             }
             break;
 
@@ -6904,8 +6917,7 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
 
             if (!(tmpPath = (char *) virUSBDeviceGetPath(usb)))
                 goto cleanup;
-            if (perms)
-                *perms = VIR_CGROUP_DEVICE_RW;
+            perm = VIR_CGROUP_DEVICE_RW;
             break;
 
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
@@ -6930,9 +6942,8 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
 
                 if (!(tmpPath = (char *) virSCSIDeviceGetPath(scsi)))
                     goto cleanup;
-                if (perms)
-                    *perms = virSCSIDeviceGetReadonly(scsi) ?
-                        VIR_CGROUP_DEVICE_READ : VIR_CGROUP_DEVICE_RW;
+                perm = virSCSIDeviceGetReadonly(scsi) ?
+                    VIR_CGROUP_DEVICE_READ : VIR_CGROUP_DEVICE_RW;
             }
             break;
 
@@ -6944,8 +6955,7 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
 
                 if (!(tmpPath = (char *) virSCSIVHostDeviceGetPath(host)))
                     goto cleanup;
-                if (perms)
-                    *perms = VIR_CGROUP_DEVICE_RW;
+                perm = VIR_CGROUP_DEVICE_RW;
             }
             break;
         }
@@ -6961,11 +6971,40 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
         break;
     }
 
-    if (VIR_STRDUP(*path, tmpPath) < 0)
-        goto cleanup;
+    if (tmpPath) {
+        size_t toAlloc = 1;
 
+        if (includeVFIO)
+            toAlloc = 2;
+
+        if (VIR_ALLOC_N(tmpPaths, toAlloc) < 0 ||
+            VIR_ALLOC_N(tmpPerms, toAlloc) < 0 ||
+            VIR_STRDUP(tmpPaths[0], tmpPath) < 0)
+            goto cleanup;
+        tmpNpaths = toAlloc;
+        tmpPerms[0] = perm;
+
+        if (includeVFIO) {
+            if (VIR_STRDUP(tmpPaths[1], DEV_VFIO) < 0)
+                goto cleanup;
+            tmpPerms[1] = VIR_CGROUP_DEVICE_RW;
+        }
+    }
+
+    *npaths = tmpNpaths;
+    tmpNpaths = 0;
+    *path = tmpPaths;
+    tmpPaths = NULL;
+    if (perms) {
+        *perms = tmpPerms;
+        tmpPerms = NULL;
+    }
     ret = 0;
  cleanup:
+    for (i = 0; i < tmpNpaths; i++)
+        VIR_FREE(tmpPaths[i]);
+    VIR_FREE(tmpPaths);
+    VIR_FREE(tmpPerms);
     virPCIDeviceFree(pci);
     virUSBDeviceFree(usb);
     virSCSIDeviceFree(scsi);
@@ -7369,22 +7408,21 @@ qemuDomainSetupHostdev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                        const char *devPath)
 {
     int ret = -1;
-    char *path = NULL;
+    char **path = NULL;
+    size_t i, npaths = 0;
 
-    if (qemuDomainGetHostdevPath(dev, &path, NULL) < 0)
+    if (qemuDomainGetHostdevPath(dev, &npaths, &path, NULL) < 0)
         goto cleanup;
 
-    if (!path) {
-        /* There's no /dev device that we need to create. Claim success. */
-        ret = 0;
-        goto cleanup;
+    for (i = 0; i < npaths; i++) {
+        if (qemuDomainCreateDevice(path[i], devPath, false) < 0)
+            goto cleanup;
     }
-
-    if (qemuDomainCreateDevice(path, devPath, false) < 0)
-        goto cleanup;
 
     ret = 0;
  cleanup:
+    for (i = 0; i < npaths; i++)
+        VIR_FREE(path[i]);
     VIR_FREE(path);
     return ret;
 }
@@ -8018,26 +8056,26 @@ qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver,
                                 virDomainHostdevDefPtr hostdev)
 {
     int ret = -1;
-    char *path = NULL;
+    char **path = NULL;
+    size_t i, npaths = 0;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
+    if (qemuDomainGetHostdevPath(hostdev, &npaths, &path, NULL) < 0)
         goto cleanup;
 
-    if (!path) {
-        /* There's no /dev device that we need to create. Claim success. */
-        ret = 0;
+    for (i = 0; i < npaths; i++) {
+        if (qemuDomainAttachDeviceMknod(driver,
+                                        vm,
+                                        path[i]) < 0)
         goto cleanup;
     }
 
-    if (qemuDomainAttachDeviceMknod(driver,
-                                    vm,
-                                    path) < 0)
-        goto cleanup;
     ret = 0;
  cleanup:
+    for (i = 0; i < npaths; i++)
+        VIR_FREE(path[i]);
     VIR_FREE(path);
     return ret;
 }
@@ -8049,25 +8087,25 @@ qemuDomainNamespaceTeardownHostdev(virQEMUDriverPtr driver,
                                    virDomainHostdevDefPtr hostdev)
 {
     int ret = -1;
-    char *path = NULL;
+    char **path = NULL;
+    size_t i, npaths = 0;
 
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (qemuDomainGetHostdevPath(hostdev, &path, NULL) < 0)
+    if (qemuDomainGetHostdevPath(hostdev, &npaths, &path, NULL) < 0)
         goto cleanup;
 
-    if (!path) {
-        /* There's no /dev device that we need to create. Claim success. */
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (qemuDomainDetachDeviceUnlink(driver, vm, path) < 0)
+    /* Don't remove other paths than for the @hostdev itself.
+     * They might be still in use by other devices. */
+    if (npaths > 0 &&
+        qemuDomainDetachDeviceUnlink(driver, vm, path[0]) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
+    for (i = 0; i < npaths; i++)
+        VIR_FREE(path[i]);
     VIR_FREE(path);
     return ret;
 }

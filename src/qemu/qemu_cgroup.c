@@ -46,12 +46,13 @@ const char *const defaultDeviceACL[] = {
     "/dev/null", "/dev/full", "/dev/zero",
     "/dev/random", "/dev/urandom",
     "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
-    "/dev/rtc", "/dev/hpet", "/dev/vfio/vfio",
+    "/dev/rtc", "/dev/hpet",
     NULL,
 };
 #define DEVICE_PTY_MAJOR 136
 #define DEVICE_SND_MAJOR 116
 
+#define DEV_VFIO "/dev/vfio/vfio"
 
 static int
 qemuSetupImagePathCgroup(virDomainObjPtr vm,
@@ -265,26 +266,31 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
                        virDomainHostdevDefPtr dev)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *path = NULL;
-    int perms;
-    int ret = -1;
+    char **path = NULL;
+    int *perms = NULL;
+    size_t i, npaths = 0;
+    int rv, ret = -1;
 
-    if (qemuDomainGetHostdevPath(dev, &path, &perms) < 0)
+    if (qemuDomainGetHostdevPath(dev, &npaths, &path, &perms) < 0)
         goto cleanup;
 
-    if (!path) {
-        /* There's no path that we need to allow. Claim success. */
-        ret = 0;
-        goto cleanup;
+    for (i = 0; i < npaths; i++) {
+        VIR_DEBUG("Cgroup allow %s perms=%d", path[i], perms[i]);
+        rv = virCgroupAllowDevicePath(priv->cgroup, path[i], perms[i], false);
+        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path[i],
+                                 virCgroupGetDevicePermsString(perms[i]),
+                                 ret == 0);
+        if (rv < 0)
+            goto cleanup;
     }
 
-    VIR_DEBUG("Cgroup allow %s perms=%d", path, perms);
-    ret = virCgroupAllowDevicePath(priv->cgroup, path, perms, false);
-    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
-                             virCgroupGetDevicePermsString(perms), ret == 0);
+    ret = 0;
 
  cleanup:
+    for (i = 0; i < npaths; i++)
+        VIR_FREE(path[i]);
     VIR_FREE(path);
+    VIR_FREE(perms);
     return ret;
 }
 
@@ -312,6 +318,7 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
                 int rv;
+                size_t i, vfios = 0;
 
                 pci = virPCIDeviceNew(pcisrc->addr.domain,
                                       pcisrc->addr.bus,
@@ -330,6 +337,26 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
                                          "deny", path, "rwm", rv == 0);
                 if (rv < 0)
                     goto cleanup;
+
+                /* If this is the last hostdev with VFIO backend deny
+                 * /dev/vfio/vfio too. */
+                for (i = 0; i < vm->def->nhostdevs; i++) {
+                    virDomainHostdevDefPtr tmp = vm->def->hostdevs[i];
+                    if (tmp->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+                        tmp->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+                        tmp->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
+                        vfios++;
+                }
+
+                if (vfios == 0) {
+                    VIR_DEBUG("Cgroup deny " DEV_VFIO " for PCI device assignment");
+                    rv = virCgroupDenyDevicePath(priv->cgroup, DEV_VFIO,
+                                                 VIR_CGROUP_DEVICE_RWM, false);
+                    virDomainAuditCgroupPath(vm, priv->cgroup,
+                                             "deny", DEV_VFIO, "rwm", rv == 0);
+                    if (rv < 0)
+                        goto cleanup;
+                }
             }
             break;
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:

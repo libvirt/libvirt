@@ -55,7 +55,6 @@ module Test_libvirtd_qemu =
     { "8" = "/dev/kqemu" }
     { "9" = "/dev/rtc" }
     { "10" = "/dev/hpet" }
-    { "11" = "/dev/vfio/vfio" }
 }
 { "save_image_format" = "raw" }
 { "dump_image_format" = "raw" }
