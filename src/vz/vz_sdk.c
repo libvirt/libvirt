@@ -2220,8 +2220,6 @@ prlsdkHandleVmRemovedEvent(vzDriverPtr driver,
     return;
 }
 
-#define PARALLELS_STATISTICS_DROP_COUNT 3
-
 static void
 prlsdkHandlePerfEvent(vzDriverPtr driver,
                       PRL_HANDLE event,
