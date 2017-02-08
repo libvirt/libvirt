@@ -120,6 +120,16 @@
           to/from xl.cfg.
         </description>
       </change>
+      <change>
+        <summary>
+          storage: modularize the storage driver
+        </summary>
+        <description>
+          Split up the storage driver backends into loadable modules so that
+          binary distributions don't have to compromise on shipping the storage
+          driver with all backends which may pull in too many dependencies.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
