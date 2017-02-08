@@ -2230,8 +2230,10 @@ prlsdkHandlePerfEvent(vzDriverPtr driver,
     virDomainObjPtr dom = NULL;
     vzDomObjPtr privdom = NULL;
 
-    if (!(dom = virDomainObjListFindByUUID(driver->domains, uuid)))
+    if (!(dom = virDomainObjListFindByUUID(driver->domains, uuid))) {
+        PrlHandle_Free(event);
         return;
+    }
 
     privdom = dom->privateData;
     PrlHandle_Free(privdom->stats);
