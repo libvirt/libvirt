@@ -2147,6 +2147,7 @@ prlsdkHandleVmStateEvent(vzDriverPtr driver,
     prlsdkSendEvent(driver, dom, lvEventType, lvEventTypeDetails);
 
  cleanup:
+    PrlHandle_Free(eventParam);
     virObjectUnlock(dom);
     return;
 }
