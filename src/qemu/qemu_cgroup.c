@@ -264,147 +264,26 @@ int
 qemuSetupHostdevCgroup(virDomainObjPtr vm,
                        virDomainHostdevDefPtr dev)
 {
-    int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainHostdevSubsysUSBPtr usbsrc = &dev->source.subsys.u.usb;
-    virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
-    virDomainHostdevSubsysSCSIPtr scsisrc = &dev->source.subsys.u.scsi;
-    virDomainHostdevSubsysSCSIVHostPtr hostsrc = &dev->source.subsys.u.scsi_host;
-    virPCIDevicePtr pci = NULL;
-    virUSBDevicePtr usb = NULL;
-    virSCSIDevicePtr scsi = NULL;
-    virSCSIVHostDevicePtr host = NULL;
     char *path = NULL;
-    int rv;
+    int perms;
+    int ret = -1;
 
-    /* currently this only does something for PCI devices using vfio
-     * for device assignment, but it is called for *all* hostdev
-     * devices.
-     */
+    if (qemuDomainGetHostdevPath(dev, &path, &perms) < 0)
+        goto cleanup;
 
-    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
-        return 0;
-
-    if (dev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
-
-        switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                pci = virPCIDeviceNew(pcisrc->addr.domain,
-                                      pcisrc->addr.bus,
-                                      pcisrc->addr.slot,
-                                      pcisrc->addr.function);
-                if (!pci)
-                    goto cleanup;
-
-                if (!(path = virPCIDeviceGetIOMMUGroupDev(pci)))
-                    goto cleanup;
-
-                VIR_DEBUG("Cgroup allow %s for PCI device assignment", path);
-                rv = virCgroupAllowDevicePath(priv->cgroup, path,
-                                              VIR_CGROUP_DEVICE_RW, false);
-                virDomainAuditCgroupPath(vm, priv->cgroup,
-                                         "allow", path, "rw", rv == 0);
-                if (rv < 0)
-                    goto cleanup;
-            }
-            break;
-
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-            /* NB: hostdev->missing wasn't previously checked in the
-             * case of hotplug, only when starting a domain. Now it is
-             * always checked, and the cgroup setup skipped if true.
-             */
-            if (dev->missing)
-                break;
-            if ((usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device,
-                                       NULL)) == NULL) {
-                goto cleanup;
-            }
-
-            if (VIR_STRDUP(path, virUSBDeviceGetPath(usb)) < 0)
-                goto cleanup;
-
-            VIR_DEBUG("Process path '%s' for USB device", path);
-            rv = virCgroupAllowDevicePath(priv->cgroup, path,
-                                          VIR_CGROUP_DEVICE_RW, false);
-            virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path, "rw", rv == 0);
-            if (rv < 0)
-                goto cleanup;
-            break;
-
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
-            if (scsisrc->protocol ==
-                VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-                virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
-                /* Follow qemuSetupDiskCgroup() and qemuSetImageCgroupInternal()
-                 * which does nothing for non local storage
-                 */
-                VIR_DEBUG("Not updating cgroups for hostdev iSCSI path '%s'",
-                          iscsisrc->path);
-            } else {
-                virDomainHostdevSubsysSCSIHostPtr scsihostsrc =
-                    &scsisrc->u.host;
-                if ((scsi = virSCSIDeviceNew(NULL,
-                                             scsihostsrc->adapter,
-                                             scsihostsrc->bus,
-                                             scsihostsrc->target,
-                                             scsihostsrc->unit,
-                                             dev->readonly,
-                                             dev->shareable)) == NULL)
-                    goto cleanup;
-
-                if (VIR_STRDUP(path, virSCSIDeviceGetPath(scsi)) < 0)
-                    goto cleanup;
-
-                VIR_DEBUG("Process path '%s' for SCSI device", path);
-                rv = virCgroupAllowDevicePath(priv->cgroup, path,
-                                              virSCSIDeviceGetReadonly(scsi) ?
-                                              VIR_CGROUP_DEVICE_READ :
-                                              VIR_CGROUP_DEVICE_RW, false);
-
-                virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
-                                         virSCSIDeviceGetReadonly(scsi) ? "r" : "rw",
-                                         rv == 0);
-                if (rv < 0)
-                    goto cleanup;
-            }
-            break;
-        }
-
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST: {
-            if (hostsrc->protocol ==
-                VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_VHOST) {
-                if (!(host = virSCSIVHostDeviceNew(hostsrc->wwpn)))
-                    goto cleanup;
-
-                if (VIR_STRDUP(path, virSCSIVHostDeviceGetPath(host)) < 0)
-                    goto cleanup;
-
-                VIR_DEBUG("Process path '%s' for scsi_host device", path);
-
-                rv = virCgroupAllowDevicePath(priv->cgroup, path,
-                                              VIR_CGROUP_DEVICE_RW, false);
-
-                virDomainAuditCgroupPath(vm, priv->cgroup,
-                                         "allow", path, "rw", rv == 0);
-                if (rv < 0)
-                    goto cleanup;
-            }
-            break;
-        }
-
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
-            break;
-        }
+    if (!path) {
+        /* There's no path that we need to allow. Claim success. */
+        ret = 0;
+        goto cleanup;
     }
 
-    ret = 0;
+    VIR_DEBUG("Cgroup allow %s perms=%d", path, perms);
+    ret = virCgroupAllowDevicePath(priv->cgroup, path, perms, false);
+    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
+                             virCgroupGetDevicePermsString(perms), ret == 0);
+
  cleanup:
-    virPCIDeviceFree(pci);
-    virUSBDeviceFree(usb);
-    virSCSIDeviceFree(scsi);
-    virSCSIVHostDeviceFree(host);
     VIR_FREE(path);
     return ret;
 }
