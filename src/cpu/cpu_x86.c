@@ -2709,10 +2709,6 @@ virCPUx86Translate(virCPUDefPtr cpu,
     if (!(translated = virCPUDefCopyWithoutModel(cpu)))
         goto cleanup;
 
-    if (VIR_STRDUP(translated->vendor, cpu->vendor) < 0 ||
-        VIR_STRDUP(translated->vendor_id, cpu->vendor_id) < 0)
-        goto cleanup;
-
     if (x86Decode(translated, &model->data, models, nmodels, NULL, 0) < 0)
         goto cleanup;
 
