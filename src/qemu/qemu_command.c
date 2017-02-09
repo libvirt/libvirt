@@ -1419,7 +1419,7 @@ qemuBuildDriveSourceStr(virDomainDiskDefPtr disk,
     }
     virBufferAddLit(buf, ",");
 
-    if (disk->src &&
+    if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
         disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_GLUSTER_DEBUG_LEVEL))
             virBufferAsprintf(buf, "file.debug=%d,", cfg->glusterDebugLevel);
