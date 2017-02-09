@@ -802,7 +802,9 @@ int qemuDomainCheckMonitor(virQEMUDriverPtr driver,
 bool qemuDomainSupportsVideoVga(virDomainVideoDefPtr video,
                                 virQEMUCapsPtr qemuCaps);
 
-int qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
+int qemuDomainGetHostdevPath(virDomainDefPtr def,
+                             virDomainHostdevDefPtr dev,
+                             bool teardown,
                              size_t *npaths,
                              char ***path,
                              int **perms);

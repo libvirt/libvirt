@@ -6846,7 +6846,9 @@ qemuDomainSupportsVideoVga(virDomainVideoDefPtr video,
 
 /**
  * qemuDomainGetHostdevPath:
+ * @def: domain definition
  * @dev: host device definition
+ * @teardown: true if device will be removed
  * @npaths: number of items in @path and @perms arrays
  * @path: resulting path to @dev
  * @perms: Optional pointer to VIR_CGROUP_DEVICE_* perms
@@ -6861,7 +6863,9 @@ qemuDomainSupportsVideoVga(virDomainVideoDefPtr video,
  * Returns 0 on success, -1 otherwise.
  */
 int
-qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
+qemuDomainGetHostdevPath(virDomainDefPtr def,
+                         virDomainHostdevDefPtr dev,
+                         bool teardown,
                          size_t *npaths,
                          char ***path,
                          int **perms)
@@ -6902,7 +6906,21 @@ qemuDomainGetHostdevPath(virDomainHostdevDefPtr dev,
                 freeTmpPath = true;
 
                 perm = VIR_CGROUP_DEVICE_RW;
-                includeVFIO = true;
+                if (teardown) {
+                    size_t nvfios = 0;
+                    for (i = 0; i < def->nhostdevs; i++) {
+                        virDomainHostdevDefPtr tmp = def->hostdevs[i];
+                        if (tmp->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+                            tmp->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+                            tmp->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
+                            nvfios++;
+                    }
+
+                    if (nvfios == 0)
+                        includeVFIO = true;
+                } else {
+                    includeVFIO = true;
+                }
             }
             break;
 
@@ -7411,7 +7429,7 @@ qemuDomainSetupHostdev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     char **path = NULL;
     size_t i, npaths = 0;
 
-    if (qemuDomainGetHostdevPath(dev, &npaths, &path, NULL) < 0)
+    if (qemuDomainGetHostdevPath(NULL, dev, false, &npaths, &path, NULL) < 0)
         goto cleanup;
 
     for (i = 0; i < npaths; i++) {
@@ -8062,7 +8080,7 @@ qemuDomainNamespaceSetupHostdev(virQEMUDriverPtr driver,
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (qemuDomainGetHostdevPath(hostdev, &npaths, &path, NULL) < 0)
+    if (qemuDomainGetHostdevPath(NULL, hostdev, false, &npaths, &path, NULL) < 0)
         goto cleanup;
 
     for (i = 0; i < npaths; i++) {
@@ -8093,14 +8111,14 @@ qemuDomainNamespaceTeardownHostdev(virQEMUDriverPtr driver,
     if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
         return 0;
 
-    if (qemuDomainGetHostdevPath(hostdev, &npaths, &path, NULL) < 0)
+    if (qemuDomainGetHostdevPath(vm->def, hostdev, true,
+                                 &npaths, &path, NULL) < 0)
         goto cleanup;
 
-    /* Don't remove other paths than for the @hostdev itself.
-     * They might be still in use by other devices. */
-    if (npaths > 0 &&
-        qemuDomainDetachDeviceUnlink(driver, vm, path[0]) < 0)
-        goto cleanup;
+    for (i = 0; i < npaths; i++) {
+        if (qemuDomainDetachDeviceUnlink(driver, vm, path[i]) < 0)
+            goto cleanup;
+    }
 
     ret = 0;
  cleanup:

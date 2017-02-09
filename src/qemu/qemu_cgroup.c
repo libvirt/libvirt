@@ -52,7 +52,6 @@ const char *const defaultDeviceACL[] = {
 #define DEVICE_PTY_MAJOR 136
 #define DEVICE_SND_MAJOR 116
 
-#define DEV_VFIO "/dev/vfio/vfio"
 
 static int
 qemuSetupImagePathCgroup(virDomainObjPtr vm,
@@ -271,7 +270,7 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
     size_t i, npaths = 0;
     int rv, ret = -1;
 
-    if (qemuDomainGetHostdevPath(dev, &npaths, &path, &perms) < 0)
+    if (qemuDomainGetHostdevPath(NULL, dev, false, &npaths, &path, &perms) < 0)
         goto cleanup;
 
     for (i = 0; i < npaths; i++) {
@@ -298,11 +297,10 @@ int
 qemuTeardownHostdevCgroup(virDomainObjPtr vm,
                        virDomainHostdevDefPtr dev)
 {
-    int ret = -1;
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    virDomainHostdevSubsysPCIPtr pcisrc = &dev->source.subsys.u.pci;
-    virPCIDevicePtr pci = NULL;
-    char *path = NULL;
+    char **path = NULL;
+    size_t i, npaths = 0;
+    int rv, ret = -1;
 
     /* currently this only does something for PCI devices using vfio
      * for device assignment, but it is called for *all* hostdev
@@ -312,70 +310,27 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    if (dev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
+    if (dev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+        dev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+        dev->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO &&
+        qemuDomainGetHostdevPath(vm->def, dev, true,
+                                 &npaths, &path, NULL) < 0)
+        goto cleanup;
 
-        switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                int rv;
-                size_t i, vfios = 0;
-
-                pci = virPCIDeviceNew(pcisrc->addr.domain,
-                                      pcisrc->addr.bus,
-                                      pcisrc->addr.slot,
-                                      pcisrc->addr.function);
-                if (!pci)
-                    goto cleanup;
-
-                if (!(path = virPCIDeviceGetIOMMUGroupDev(pci)))
-                    goto cleanup;
-
-                VIR_DEBUG("Cgroup deny %s for PCI device assignment", path);
-                rv = virCgroupDenyDevicePath(priv->cgroup, path,
-                                             VIR_CGROUP_DEVICE_RWM, false);
-                virDomainAuditCgroupPath(vm, priv->cgroup,
-                                         "deny", path, "rwm", rv == 0);
-                if (rv < 0)
-                    goto cleanup;
-
-                /* If this is the last hostdev with VFIO backend deny
-                 * /dev/vfio/vfio too. */
-                for (i = 0; i < vm->def->nhostdevs; i++) {
-                    virDomainHostdevDefPtr tmp = vm->def->hostdevs[i];
-                    if (tmp->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
-                        tmp->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
-                        tmp->source.subsys.u.pci.backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
-                        vfios++;
-                }
-
-                if (vfios == 0) {
-                    VIR_DEBUG("Cgroup deny " DEV_VFIO " for PCI device assignment");
-                    rv = virCgroupDenyDevicePath(priv->cgroup, DEV_VFIO,
-                                                 VIR_CGROUP_DEVICE_RWM, false);
-                    virDomainAuditCgroupPath(vm, priv->cgroup,
-                                             "deny", DEV_VFIO, "rwm", rv == 0);
-                    if (rv < 0)
-                        goto cleanup;
-                }
-            }
-            break;
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-            /* nothing to tear down for USB */
-            break;
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
-            /* nothing to tear down for SCSI */
-            break;
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
-            /* nothing to tear down for scsi_host */
-            break;
-        case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
-            break;
-        }
+    for (i = 0; i < npaths; i++) {
+        VIR_DEBUG("Cgroup deny %s", path[i]);
+        rv = virCgroupDenyDevicePath(priv->cgroup, path[i],
+                                     VIR_CGROUP_DEVICE_RWM, false);
+        virDomainAuditCgroupPath(vm, priv->cgroup,
+                                 "deny", path[i], "rwm", rv == 0);
+        if (rv < 0)
+            goto cleanup;
     }
 
     ret = 0;
  cleanup:
-    virPCIDeviceFree(pci);
+    for (i = 0; i < npaths; i++)
+        VIR_FREE(path[i]);
     VIR_FREE(path);
     return ret;
 }
