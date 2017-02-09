@@ -13317,7 +13317,7 @@ virDomainRedirdevDefParseXML(virDomainXMLOptionPtr xmlopt,
 {
     xmlNodePtr cur;
     virDomainRedirdevDefPtr def;
-    char *bus, *type = NULL;
+    char *bus = NULL, *type = NULL;
     int remaining;
 
     if (VIR_ALLOC(def) < 0)
