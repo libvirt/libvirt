@@ -228,9 +228,9 @@ virNetServerServicePtr virNetServerServiceNewUNIX(const char *path,
     svc->tls = virObjectRef(tls);
 #endif
 
-    svc->nsocks = 1;
-    if (VIR_ALLOC_N(svc->socks, svc->nsocks) < 0)
+    if (VIR_ALLOC_N(svc->socks, 1) < 0)
         goto error;
+    svc->nsocks = 1;
 
     if (virNetSocketNewListenUNIX(path,
                                   mask,
@@ -289,9 +289,9 @@ virNetServerServicePtr virNetServerServiceNewFD(int fd,
     svc->tls = virObjectRef(tls);
 #endif
 
-    svc->nsocks = 1;
-    if (VIR_ALLOC_N(svc->socks, svc->nsocks) < 0)
+    if (VIR_ALLOC_N(svc->socks, 1) < 0)
         goto error;
+    svc->nsocks = 1;
 
     if (virNetSocketNewListenFD(fd,
                                 &svc->socks[0]) < 0)
@@ -367,9 +367,9 @@ virNetServerServicePtr virNetServerServiceNewPostExecRestart(virJSONValuePtr obj
         goto error;
     }
 
-    svc->nsocks = n;
-    if (VIR_ALLOC_N(svc->socks, svc->nsocks) < 0)
+    if (VIR_ALLOC_N(svc->socks, n) < 0)
         goto error;
+    svc->nsocks = n;
 
     for (i = 0; i < svc->nsocks; i++) {
         virJSONValuePtr child = virJSONValueArrayGet(socks, i);
@@ -493,7 +493,7 @@ void virNetServerServiceDispose(void *obj)
     size_t i;
 
     for (i = 0; i < svc->nsocks; i++)
-        virObjectUnref(svc->socks[i]);
+       virObjectUnref(svc->socks[i]);
     VIR_FREE(svc->socks);
 
 #if WITH_GNUTLS
