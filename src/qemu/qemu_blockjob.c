@@ -123,7 +123,8 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
                 if ((persistDisk = virDomainDiskByName(vm->newDef,
                                                        disk->dst, false))) {
                     copy = virStorageSourceCopy(disk->mirror, false);
-                    if (virStorageSourceInitChainElement(copy,
+                    if (!copy ||
+                        virStorageSourceInitChainElement(copy,
                                                          persistDisk->src,
                                                          true) < 0) {
                         VIR_WARN("Unable to update persistent definition "
