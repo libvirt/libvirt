@@ -335,6 +335,28 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
     return ret;
 }
 
+
+static int
+qemuSetupGraphicsCgroup(virDomainObjPtr vm,
+                        virDomainGraphicsDefPtr gfx)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    const char *rendernode = gfx->data.spice.rendernode;
+    int ret;
+
+    if (gfx->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE ||
+        gfx->data.spice.gl != VIR_TRISTATE_BOOL_YES ||
+        !rendernode)
+        return 0;
+
+    ret = virCgroupAllowDevicePath(priv->cgroup, rendernode,
+                                   VIR_CGROUP_DEVICE_RW, false);
+    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", rendernode,
+                             "rw", ret == 0);
+    return ret;
+}
+
+
 static int
 qemuSetupBlkioCgroup(virDomainObjPtr vm)
 {
@@ -601,6 +623,11 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
         if (qemuSetupHostdevCgroup(vm, vm->def->hostdevs[i]) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->ngraphics; i++) {
+        if (qemuSetupGraphicsCgroup(vm, vm->def->graphics[i]) < 0)
             goto cleanup;
     }
 

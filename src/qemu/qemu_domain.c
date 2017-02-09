@@ -7527,6 +7527,42 @@ qemuDomainSetupTPM(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 static int
+qemuDomainSetupGraphics(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                        virDomainGraphicsDefPtr gfx,
+                        const char *devPath)
+{
+    const char *rendernode = gfx->data.spice.rendernode;
+
+    if (gfx->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE ||
+        gfx->data.spice.gl != VIR_TRISTATE_BOOL_YES ||
+        !rendernode)
+        return 0;
+
+    return qemuDomainCreateDevice(rendernode, devPath, false);
+}
+
+
+static int
+qemuDomainSetupAllGraphics(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           const char *devPath)
+{
+    size_t i;
+
+    VIR_DEBUG("Setting up graphics");
+    for (i = 0; i < vm->def->ngraphics; i++) {
+        if (qemuDomainSetupGraphics(driver,
+                                    vm->def->graphics[i],
+                                    devPath) < 0)
+            return -1;
+    }
+
+    VIR_DEBUG("Setup all graphics");
+    return 0;
+}
+
+
+static int
 qemuDomainSetupInput(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
                      virDomainInputDefPtr input,
                      const char *devPath)
@@ -7677,6 +7713,9 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (qemuDomainSetupTPM(driver, vm, devPath) < 0)
+        goto cleanup;
+
+    if (qemuDomainSetupAllGraphics(driver, vm, devPath) < 0)
         goto cleanup;
 
     if (qemuDomainSetupAllInputs(driver, vm, devPath) < 0)
