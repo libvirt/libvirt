@@ -35,6 +35,15 @@
           <code>memory_backing_dir</code> was added to qemu.conf.
         </description>
       </change>
+      <change>
+        <summary>
+          network: make openvswitch call timeout configurable
+        </summary>
+        <description>
+          Adding the ability to specify the timeout value in seconds for
+          openvswitch calls in the libvirtd configuration file.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
