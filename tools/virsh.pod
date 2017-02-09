@@ -885,67 +885,85 @@ Note that - depending on the hypervisor type and version or the domain state
 - not all of the following statistics may be returned.
 
 When selecting the I<--state> group the following fields are returned:
-"state.state" - state of the VM, returned as number from virDomainState enum,
-"state.reason" - reason for entering given state, returned as int from
-virDomain*Reason enum corresponding to given state.
+
+ "state.state" - state of the VM, returned as number from
+                 virDomainState enum
+ "state.reason" - reason for entering given state, returned
+                  as int from virDomain*Reason enum corresponding
+                  to given state
 
 I<--cpu-total> returns:
-"cpu.time" - total cpu time spent for this domain in nanoseconds,
-"cpu.user" - user cpu time spent in nanoseconds,
-"cpu.system" - system cpu time spent in nanoseconds
+
+ "cpu.time" - total cpu time spent for this domain in nanoseconds
+ "cpu.user" - user cpu time spent in nanoseconds
+ "cpu.system" - system cpu time spent in nanoseconds
 
 I<--balloon> returns:
-"balloon.current" - the memory in kiB currently used,
-"balloon.maximum" - the maximum memory in kiB allowed,
-"balloon.swap_in" - the amount of data read from swap space (in kB),
-"balloon.swap_out" - the amount of memory written out to swap space (in kB),
-"balloon.major_fault" - the number of page faults then disk IO was required,
-"balloon.minor_fault" - the number of other page faults,
-"balloon.unused" - the amount of memory left unused by the system (in kB),
-"balloon.available" - the amount of usable memory as seen by the domain (in kB),
-"balloon.rss" - Resident Set Size of running domain's process (in kB),
-"balloon.usable" - the amount of memory which can be reclaimed by balloon
-without causing host swapping (in KB),
-"balloon.last-update" - timestamp of the last update of statistics (in seconds)
+
+ "balloon.current" - the memory in kiB currently used
+ "balloon.maximum" - the maximum memory in kiB allowed
+ "balloon.swap_in" - the amount of data read from swap space (in kB)
+ "balloon.swap_out" - the amount of memory written out to swap
+                      space (in kB)
+ "balloon.major_fault" - the number of page faults then disk IO
+                         was required
+ "balloon.minor_fault" - the number of other page faults
+ "balloon.unused" - the amount of memory left unused by the
+                    system (in kB)
+ "balloon.available" - the amount of usable memory as seen by
+                       the domain (in kB)
+ "balloon.rss" - Resident Set Size of running domain's process
+                 (in kB)
+ "balloon.usable" - the amount of memory which can be reclaimed by
+                    balloon without causing host swapping (in KB)
+ "balloon.last-update" - timestamp of the last update of statistics
+                         (in seconds)
 
 I<--vcpu> returns:
-"vcpu.current" - current number of online virtual CPUs,
-"vcpu.maximum" - maximum number of online virtual CPUs,
-"vcpu.<num>.state" - state of the virtual CPU <num>, as number
-from virVcpuState enum,
-"vcpu.<num>.time" - virtual cpu time spent by virtual CPU <num>
- (in microseconds),
-"vcpu.<num>.wait" - virtual cpu time spent by virtual CPU <num>
-waiting on I/O (in microseconds),
-"vcpu.<num>.halted" - virtual CPU <num> is halted: yes or no (may indicate
-the processor is idle or even disabled, depending on the architecture)
+
+ "vcpu.current" - current number of online virtual CPUs
+ "vcpu.maximum" - maximum number of online virtual CPUs
+ "vcpu.<num>.state" - state of the virtual CPU <num>, as
+                      number from virVcpuState enum
+ "vcpu.<num>.time" - virtual cpu time spent by virtual
+                     CPU <num> (in microseconds)
+ "vcpu.<num>.wait" - virtual cpu time spent by virtual
+                     CPU <num> waiting on I/O (in microseconds)
+ "vcpu.<num>.halted" - virtual CPU <num> is halted: yes or
+                       no (may indicate the processor is idle
+                       or even disabled, depending on the
+                       architecture)
 
 I<--interface> returns:
-"net.count" - number of network interfaces on this domain,
-"net.<num>.name" - name of the interface <num>,
-"net.<num>.rx.bytes" - number of bytes received,
-"net.<num>.rx.pkts" - number of packets received,
-"net.<num>.rx.errs" - number of receive errors,
-"net.<num>.rx.drop" - number of receive packets dropped,
-"net.<num>.tx.bytes" - number of bytes transmitted,
-"net.<num>.tx.pkts" - number of packets transmitted,
-"net.<num>.tx.errs" - number of transmission errors,
-"net.<num>.tx.drop" - number of transmit packets dropped
+
+ "net.count" - number of network interfaces on this domain
+ "net.<num>.name" - name of the interface <num>
+ "net.<num>.rx.bytes" - number of bytes received
+ "net.<num>.rx.pkts" - number of packets received
+ "net.<num>.rx.errs" - number of receive errors
+ "net.<num>.rx.drop" - number of receive packets dropped
+ "net.<num>.tx.bytes" - number of bytes transmitted
+ "net.<num>.tx.pkts" - number of packets transmitted
+ "net.<num>.tx.errs" - number of transmission errors
+ "net.<num>.tx.drop" - number of transmit packets dropped
 
 I<--perf> returns the statistics of all enabled perf events:
-"perf.cmt" - the cache usage in Byte currently used,
-"perf.mbmt" - total system bandwidth from one level of cache,
-"perf.mbml" - bandwidth of memory traffic for a memory controller,
-"perf.cpu_cycles" - the count of cpu cycles (total/elapsed),
-"perf.instructions" - the count of instructions,
-"perf.cache_references" - the count of cache hits,
-"perf.cache_misses" - the count of caches misses,
-"perf.branch_instructions" - the count of branch instructions,
-"perf.branch_misses" - the count of branch misses,
-"perf.bus_cycles" - the count of bus cycles,
-"perf.stalled_cycles_frontend" - the count of stalled frontend cpu cycles,
-"perf.stalled_cycles_backend" - the count of stalled backend cpu cycles,
-"perf.ref_cpu_cycles" - the count of ref cpu cycles
+
+ "perf.cmt" - the cache usage in Byte currently used
+ "perf.mbmt" - total system bandwidth from one level of cache
+ "perf.mbml" - bandwidth of memory traffic for a memory controller
+ "perf.cpu_cycles" - the count of cpu cycles (total/elapsed)
+ "perf.instructions" - the count of instructions
+ "perf.cache_references" - the count of cache hits
+ "perf.cache_misses" - the count of caches misses
+ "perf.branch_instructions" - the count of branch instructions
+ "perf.branch_misses" - the count of branch misses
+ "perf.bus_cycles" - the count of bus cycles
+ "perf.stalled_cycles_frontend" - the count of stalled frontend
+                                  cpu cycles
+ "perf.stalled_cycles_backend" - the count of stalled backend
+                                 cpu cycles
+ "perf.ref_cpu_cycles" - the count of ref cpu cycles
 
 See the B<perf> command for more details about each event.
 
@@ -954,25 +972,30 @@ domain.  Using the I<--backing> flag extends this information to
 cover all resources in the backing chain, rather than the default
 of limiting information to the active layer for each guest disk.
 Information listed includes:
-"block.count" - number of block devices being listed,
-"block.<num>.name" - name of the target of the block device <num> (the
-same name for multiple entries if I<--backing> is present),
-"block.<num>.backingIndex" - when I<--backing> is present, matches up
-with the <backingStore> index listed in domain XML for backing files,
-"block.<num>.path" - file source of block device <num>, if it is a
-local file or block device,
-"block.<num>.rd.reqs" - number of read requests,
-"block.<num>.rd.bytes" - number of read bytes,
-"block.<num>.rd.times" - total time (ns) spent on reads,
-"block.<num>.wr.reqs" - number of write requests,
-"block.<num>.wr.bytes" - number of written bytes,
-"block.<num>.wr.times" - total time (ns) spent on writes,
-"block.<num>.fl.reqs" - total flush requests,
-"block.<num>.fl.times" - total time (ns) spent on cache flushing,
-"block.<num>.errors" - Xen only: the 'oo_req' value,
-"block.<num>.allocation" - offset of highest written sector in bytes,
-"block.<num>.capacity" - logical size of source file in bytes,
-"block.<num>.physical" - physical size of source file in bytes
+
+ "block.count" - number of block devices being listed
+ "block.<num>.name" - name of the target of the block
+                      device <num> (the same name for
+                      multiple entries if I<--backing>
+                      is present)
+ "block.<num>.backingIndex" - when I<--backing> is present,
+                              matches up with the <backingStore>
+                              index listed in domain XML for
+                              backing files
+ "block.<num>.path" - file source of block device <num>, if
+                      it is a local file or block device
+ "block.<num>.rd.reqs" - number of read requests
+ "block.<num>.rd.bytes" - number of read bytes
+ "block.<num>.rd.times" - total time (ns) spent on reads
+ "block.<num>.wr.reqs" - number of write requests
+ "block.<num>.wr.bytes" - number of written bytes
+ "block.<num>.wr.times" - total time (ns) spent on writes
+ "block.<num>.fl.reqs" - total flush requests
+ "block.<num>.fl.times" - total time (ns) spent on cache flushing
+ "block.<num>.errors" - Xen only: the 'oo_req' value
+ "block.<num>.allocation" - offset of highest written sector in bytes
+ "block.<num>.capacity" - logical size of source file in bytes
+ "block.<num>.physical" - physical size of source file in bytes
 
 Selecting a specific statistics groups doesn't guarantee that the
 daemon supports the selected group of stats. Flag I<--enforce>
