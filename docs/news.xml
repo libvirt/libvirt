@@ -23,6 +23,18 @@
           built-in replication and disaster recovery.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for memory backing with file source
+        </summary>
+        <description>
+          Add support in numa topology for file source inside memory backing
+          (hugepages are not needed) Three new elements
+          &lt;source/&gt;,&lt;access/&gt; and &lt;allocation/&gt; were added
+          to &lt;memoryBacking/&gt; element. Also new configuration parameter
+          <code>memory_backing_dir</code> was added to qemu.conf.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
