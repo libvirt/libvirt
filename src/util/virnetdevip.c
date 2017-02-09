@@ -882,10 +882,12 @@ virNetDevIPInfoClear(virNetDevIPInfoPtr ip)
     for (i = 0; i < ip->nips; i++)
         VIR_FREE(ip->ips[i]);
     VIR_FREE(ip->ips);
+    ip->nips = 0;
 
     for (i = 0; i < ip->nroutes; i++)
         virNetDevIPRouteFree(ip->routes[i]);
     VIR_FREE(ip->routes);
+    ip->nroutes = 0;
 }
 
 
