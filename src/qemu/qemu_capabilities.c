@@ -4928,6 +4928,10 @@ virQEMUCapsCacheLookupCopy(virCapsPtr caps,
 
     ret = virQEMUCapsNewCopy(qemuCaps);
     virObjectUnref(qemuCaps);
+
+    if (!ret)
+        return NULL;
+
     virQEMUCapsFilterByMachineType(ret, machineType);
     return ret;
 }
