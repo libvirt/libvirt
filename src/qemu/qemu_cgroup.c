@@ -260,25 +260,6 @@ qemuSetupInputCgroup(virDomainObjPtr vm,
 }
 
 
-static int
-qemuSetupHostSCSIVHostDeviceCgroup(virSCSIVHostDevicePtr dev ATTRIBUTE_UNUSED,
-                                   const char *path,
-                                   void *opaque)
-{
-    virDomainObjPtr vm = opaque;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret;
-
-    VIR_DEBUG("Process path '%s' for scsi_host device", path);
-
-    ret = virCgroupAllowDevicePath(priv->cgroup, path,
-                                   VIR_CGROUP_DEVICE_RW, false);
-
-    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path, "rw", ret == 0);
-
-    return ret;
-}
-
 int
 qemuSetupHostdevCgroup(virDomainObjPtr vm,
                        virDomainHostdevDefPtr dev)
@@ -397,9 +378,17 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
                 if (!(host = virSCSIVHostDeviceNew(hostsrc->wwpn)))
                     goto cleanup;
 
-                if (virSCSIVHostDeviceFileIterate(host,
-                                             qemuSetupHostSCSIVHostDeviceCgroup,
-                                             vm) < 0)
+                if (VIR_STRDUP(path, virSCSIVHostDeviceGetPath(host)) < 0)
+                    goto cleanup;
+
+                VIR_DEBUG("Process path '%s' for scsi_host device", path);
+
+                rv = virCgroupAllowDevicePath(priv->cgroup, path,
+                                              VIR_CGROUP_DEVICE_RW, false);
+
+                virDomainAuditCgroupPath(vm, priv->cgroup,
+                                         "allow", path, "rw", rv == 0);
+                if (rv < 0)
                     goto cleanup;
             }
             break;
