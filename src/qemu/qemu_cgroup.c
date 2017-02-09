@@ -261,23 +261,6 @@ qemuSetupInputCgroup(virDomainObjPtr vm,
 
 
 static int
-qemuSetupHostUSBDeviceCgroup(virUSBDevicePtr dev ATTRIBUTE_UNUSED,
-                             const char *path,
-                             void *opaque)
-{
-    virDomainObjPtr vm = opaque;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret;
-
-    VIR_DEBUG("Process path '%s' for USB device", path);
-    ret = virCgroupAllowDevicePath(priv->cgroup, path,
-                                   VIR_CGROUP_DEVICE_RW, false);
-    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path, "rw", ret == 0);
-
-    return ret;
-}
-
-static int
 qemuSetupHostSCSIDeviceCgroup(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
                               const char *path,
                               void *opaque)
@@ -333,6 +316,7 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
     virSCSIDevicePtr scsi = NULL;
     virSCSIVHostDevicePtr host = NULL;
     char *path = NULL;
+    int rv;
 
     /* currently this only does something for PCI devices using vfio
      * for device assignment, but it is called for *all* hostdev
@@ -347,8 +331,6 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
         switch ((virDomainHostdevSubsysType) dev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
             if (pcisrc->backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO) {
-                int rv;
-
                 pci = virPCIDeviceNew(pcisrc->addr.domain,
                                       pcisrc->addr.bus,
                                       pcisrc->addr.slot,
@@ -381,13 +363,15 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
                 goto cleanup;
             }
 
-            /* oddly, qemuSetupHostUSBDeviceCgroup doesn't ever
-             * reference the usb object we just created
-             */
-            if (virUSBDeviceFileIterate(usb, qemuSetupHostUSBDeviceCgroup,
-                                        vm) < 0) {
+            if (VIR_STRDUP(path, virUSBDeviceGetPath(usb)) < 0)
                 goto cleanup;
-            }
+
+            VIR_DEBUG("Process path '%s' for USB device", path);
+            rv = virCgroupAllowDevicePath(priv->cgroup, path,
+                                          VIR_CGROUP_DEVICE_RW, false);
+            virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path, "rw", rv == 0);
+            if (rv < 0)
+                goto cleanup;
             break;
 
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI: {
