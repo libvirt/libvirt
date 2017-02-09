@@ -261,28 +261,6 @@ qemuSetupInputCgroup(virDomainObjPtr vm,
 
 
 static int
-qemuSetupHostSCSIDeviceCgroup(virSCSIDevicePtr dev ATTRIBUTE_UNUSED,
-                              const char *path,
-                              void *opaque)
-{
-    virDomainObjPtr vm = opaque;
-    qemuDomainObjPrivatePtr priv = vm->privateData;
-    int ret;
-
-    VIR_DEBUG("Process path '%s' for SCSI device", path);
-
-    ret = virCgroupAllowDevicePath(priv->cgroup, path,
-                                   virSCSIDeviceGetReadonly(dev) ?
-                                   VIR_CGROUP_DEVICE_READ :
-                                   VIR_CGROUP_DEVICE_RW, false);
-
-    virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
-                             virSCSIDeviceGetReadonly(dev) ? "r" : "rw", ret == 0);
-
-    return ret;
-}
-
-static int
 qemuSetupHostSCSIVHostDeviceCgroup(virSCSIVHostDevicePtr dev ATTRIBUTE_UNUSED,
                                    const char *path,
                                    void *opaque)
@@ -395,9 +373,19 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
                                              dev->shareable)) == NULL)
                     goto cleanup;
 
-                if (virSCSIDeviceFileIterate(scsi,
-                                             qemuSetupHostSCSIDeviceCgroup,
-                                             vm) < 0)
+                if (VIR_STRDUP(path, virSCSIDeviceGetPath(scsi)) < 0)
+                    goto cleanup;
+
+                VIR_DEBUG("Process path '%s' for SCSI device", path);
+                rv = virCgroupAllowDevicePath(priv->cgroup, path,
+                                              virSCSIDeviceGetReadonly(scsi) ?
+                                              VIR_CGROUP_DEVICE_READ :
+                                              VIR_CGROUP_DEVICE_RW, false);
+
+                virDomainAuditCgroupPath(vm, priv->cgroup, "allow", path,
+                                         virSCSIDeviceGetReadonly(scsi) ? "r" : "rw",
+                                         rv == 0);
+                if (rv < 0)
                     goto cleanup;
             }
             break;
