@@ -2559,7 +2559,8 @@ virDomainIOThreadIDDefArrayFree(virDomainIOThreadIDDefPtr *def,
 
 
 static int
-virDomainIOThreadIDDefArrayInit(virDomainDefPtr def)
+virDomainIOThreadIDDefArrayInit(virDomainDefPtr def,
+                                unsigned int iothreads)
 {
     int retval = -1;
     size_t i;
@@ -2570,11 +2571,11 @@ virDomainIOThreadIDDefArrayInit(virDomainDefPtr def)
     /* Same value (either 0 or some number), then we have none to fill in or
      * the iothreadid array was filled from the XML
      */
-    if (def->iothreads == def->niothreadids)
+    if (iothreads == def->niothreadids)
         return 0;
 
     /* iothread's are numbered starting at 1, account for that */
-    if (!(thrmap = virBitmapNew(def->iothreads + 1)))
+    if (!(thrmap = virBitmapNew(iothreads + 1)))
         goto error;
     virBitmapSetAll(thrmap);
 
@@ -2586,11 +2587,11 @@ virDomainIOThreadIDDefArrayInit(virDomainDefPtr def)
                                        def->iothreadids[i]->iothread_id));
 
     /* resize array */
-    if (VIR_REALLOC_N(def->iothreadids, def->iothreads) < 0)
+    if (VIR_REALLOC_N(def->iothreadids, iothreads) < 0)
         goto error;
 
     /* Populate iothreadids[] using the set bit number from thrmap */
-    while (def->niothreadids < def->iothreads) {
+    while (def->niothreadids < iothreads) {
         if ((nxt = virBitmapNextSetBit(thrmap, nxt)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to populate iothreadids"));
@@ -16433,6 +16434,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     bool usb_other = false;
     bool usb_master = false;
     char *netprefix = NULL;
+    unsigned int iothreads = 0;
 
     if (flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA) {
         char *schema = virFileFindResource("domain.rng",
@@ -16762,7 +16764,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     /* Optional - iothreads */
     tmp = virXPathString("string(./iothreads[1])", ctxt);
-    if (tmp && virStrToLong_uip(tmp, NULL, 10, &def->iothreads) < 0) {
+    if (tmp && virStrToLong_uip(tmp, NULL, 10, &iothreads) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("invalid iothreads count '%s'"), tmp);
         goto error;
@@ -16773,8 +16775,8 @@ virDomainDefParseXML(xmlDocPtr xml,
     if ((n = virXPathNodeSet("./iothreadids/iothread", ctxt, &nodes)) < 0)
         goto error;
 
-    if (n > def->iothreads)
-        def->iothreads = n;
+    if (n > iothreads)
+        iothreads = n;
 
     if (n && VIR_ALLOC_N(def->iothreadids, n) < 0)
         goto error;
@@ -16795,7 +16797,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     }
     VIR_FREE(nodes);
 
-    if (virDomainIOThreadIDDefArrayInit(def) < 0)
+    if (virDomainIOThreadIDDefArrayInit(def, iothreads) < 0)
         goto error;
 
     /* Extract cpu tunables. */
@@ -19493,11 +19495,11 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
     if (!virDomainDefVcpuCheckAbiStability(src, dst))
         goto error;
 
-    if (src->iothreads != dst->iothreads) {
+    if (src->niothreadids != dst->niothreadids) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain iothreads count %u does not "
-                         "match source %u"),
-                       dst->iothreads, src->iothreads);
+                       _("Target domain iothreads count %lu does not "
+                         "match source %lu"),
+                       dst->niothreadids, src->niothreadids);
         goto error;
     }
 
@@ -23828,8 +23830,8 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         goto error;
 
     if (def->niothreadids > 0) {
-        virBufferAsprintf(buf, "<iothreads>%u</iothreads>\n",
-                          def->iothreads);
+        virBufferAsprintf(buf, "<iothreads>%lu</iothreads>\n",
+                          def->niothreadids);
         /* Only print out iothreadids if we read at least one */
         for (i = 0; i < def->niothreadids; i++) {
             if (!def->iothreadids[i]->autofill)

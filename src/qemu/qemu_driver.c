@@ -5617,10 +5617,8 @@ qemuDomainHotplugAddIOThread(virQEMUDriverPtr driver,
                        _("got wrong number of IOThread ids from QEMU monitor. "
                          "got %d, wanted %d"),
                        new_niothreads, exp_niothreads);
-        vm->def->iothreads = new_niothreads;
         goto cleanup;
     }
-    vm->def->iothreads = exp_niothreads;
 
     /*
      * If we've successfully added an IOThread, find out where we added it
@@ -5716,10 +5714,8 @@ qemuDomainHotplugDelIOThread(virQEMUDriverPtr driver,
                        _("got wrong number of IOThread ids from QEMU monitor. "
                          "got %d, wanted %d"),
                        new_niothreads, exp_niothreads);
-        vm->def->iothreads = new_niothreads;
         goto cleanup;
     }
-    vm->def->iothreads = exp_niothreads;
 
     virDomainIOThreadIDDel(vm->def, iothread_id);
 
@@ -5798,7 +5794,6 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
             if (!virDomainIOThreadIDAdd(persistentDef, iothread_id))
                 goto endjob;
 
-            persistentDef->iothreads++;
         } else {
             virDomainIOThreadIDDefPtr iothrid;
             if (!(iothrid = virDomainIOThreadIDFind(persistentDef,
@@ -5811,7 +5806,6 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
             }
 
             virDomainIOThreadIDDel(persistentDef, iothread_id);
-            persistentDef->iothreads--;
         }
 
         if (virDomainSaveConfig(cfg->configDir, driver->caps,

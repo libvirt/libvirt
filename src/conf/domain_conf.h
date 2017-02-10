@@ -2211,7 +2211,6 @@ struct _virDomainDef {
     int placement_mode;
     virBitmapPtr cpumask;
 
-    unsigned int iothreads;
     size_t niothreadids;
     virDomainIOThreadIDDefPtr *iothreadids;
 

@@ -2123,7 +2123,6 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriverPtr driver,
             /* Remove any trace */
             VIR_FREE(vm->def->iothreadids);
             vm->def->niothreadids = 0;
-            vm->def->iothreads = 0;
         }
         return 0;
     }
