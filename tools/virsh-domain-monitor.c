@@ -2047,7 +2047,6 @@ virshDomainStatsPrintRecord(vshControl *ctl ATTRIBUTE_UNUSED,
         VIR_FREE(param);
     }
 
-    vshPrint(ctl, "\n");
     return true;
 }
 
@@ -2145,9 +2144,13 @@ cmdDomstats(vshControl *ctl, const vshCmd *cmd)
            goto cleanup;
     }
 
-    for (next = records; *next; next++) {
+    next = records;
+    while (*next) {
         if (!virshDomainStatsPrintRecord(ctl, *next, raw))
             goto cleanup;
+
+        if (*(++next))
+            vshPrint(ctl, "\n");
     }
 
     ret = true;
