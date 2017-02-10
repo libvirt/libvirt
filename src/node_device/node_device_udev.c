@@ -1563,13 +1563,12 @@ static int nodeStateInitialize(bool privileged,
     if (udevPCITranslateInit(privileged) < 0)
         goto cleanup;
 
-    /*
-     * http://www.kernel.org/pub/linux/utils/kernel/hotplug/libudev/libudev-udev.html#udev-new
-     *
-     * indicates no return value other than success, so we don't check
-     * its return value.
-     */
     udev = udev_new();
+    if (!udev) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to create udev context"));
+        goto cleanup;
+    }
 #if HAVE_UDEV_LOGGING
     /* cast to get rid of missing-format-attribute warning */
     udev_set_log_fn(udev, (udevLogFunctionPtr) udevLogFunction);
