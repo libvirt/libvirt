@@ -15544,7 +15544,7 @@ virDomainIOThreadIDDefParseXML(xmlNodePtr node,
     if (virStrToLong_uip(tmp, NULL, 10, &iothrid->iothread_id) < 0 ||
         iothrid->iothread_id == 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                        _("invalid iothread 'id' value '%s'"), tmp);
+                       _("invalid iothread 'id' value '%s'"), tmp);
         goto error;
     }
 
