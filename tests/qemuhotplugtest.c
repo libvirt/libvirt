@@ -493,6 +493,8 @@ testQemuHotplugCpuFinalize(struct testQemuHotplugCpuData *data)
 struct testQemuHotplugCpuParams {
     const char *test;
     int newcpus;
+    const char *cpumap;
+    bool state;
     bool modern;
     bool fail;
 };
@@ -531,6 +533,46 @@ testQemuHotplugCpuGroup(const void *opaque)
     testQemuHotplugCpuDataFree(data);
     return ret;
 }
+
+
+static int
+testQemuHotplugCpuIndividual(const void *opaque)
+{
+    const struct testQemuHotplugCpuParams *params = opaque;
+    struct testQemuHotplugCpuData *data = NULL;
+    virBitmapPtr map = NULL;
+    int ret = -1;
+    int rc;
+
+    if (!(data = testQemuHotplugCpuPrepare(params->test, params->modern)))
+        return -1;
+
+    if (virBitmapParse(params->cpumap, &map, 128) < 0)
+        goto cleanup;
+
+    rc = qemuDomainSetVcpuInternal(&driver, data->vm, data->vm->def,
+                                   data->vm->newDef, map, params->state);
+
+    if (params->fail) {
+        if (rc == 0)
+            fprintf(stderr, "cpu test '%s' should have failed\n", params->test);
+        else
+            ret = 0;
+
+        goto cleanup;
+    } else {
+        if (rc < 0)
+            goto cleanup;
+    }
+
+    ret = testQemuHotplugCpuFinalize(data);
+
+ cleanup:
+    virBitmapFree(map);
+    testQemuHotplugCpuDataFree(data);
+    return ret;
+}
+
 
 
 static int
@@ -788,6 +830,27 @@ mymain(void)
     DO_TEST_CPU_GROUP("ppc64-modern-bulk", 15, true, true);
     DO_TEST_CPU_GROUP("ppc64-modern-bulk", 23, true, true);
     DO_TEST_CPU_GROUP("ppc64-modern-bulk", 25, true, true);
+
+#define DO_TEST_CPU_INDIVIDUAL(prefix, mapstr, statefl, modernhp, expectfail)  \
+    do {                                                                       \
+        cpudata.test = prefix;                                                 \
+        cpudata.cpumap = mapstr;                                               \
+        cpudata.state = statefl;                                               \
+        cpudata.modern = modernhp;                                             \
+        cpudata.fail = expectfail;                                             \
+        if (virTestRun("hotplug vcpus group " prefix,                          \
+                       testQemuHotplugCpuIndividual, &cpudata) < 0)            \
+            ret = -1;                                                          \
+    } while (0)
+
+    DO_TEST_CPU_INDIVIDUAL("x86-modern-individual-add", "7", true, true, false);
+    DO_TEST_CPU_INDIVIDUAL("x86-modern-individual-add", "6,7", true, true, true);
+    DO_TEST_CPU_INDIVIDUAL("x86-modern-individual-add", "7", false, true, true);
+    DO_TEST_CPU_INDIVIDUAL("x86-modern-individual-add", "7", true, false, true);
+
+    DO_TEST_CPU_INDIVIDUAL("ppc64-modern-individual", "16-23", true, true, false);
+    DO_TEST_CPU_INDIVIDUAL("ppc64-modern-individual", "16-22", true, true, true);
+    DO_TEST_CPU_INDIVIDUAL("ppc64-modern-individual", "17", true, true, true);
 
     qemuTestDriverFree(&driver);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
