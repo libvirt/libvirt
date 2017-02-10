@@ -86,7 +86,7 @@ const REMOTE_STORAGE_POOL_LIST_MAX = 4096;
 const REMOTE_STORAGE_VOL_LIST_MAX = 16384;
 
 /* Upper limit on lists of node devices. */
-const REMOTE_NODE_DEVICE_LIST_MAX = 16384;
+const REMOTE_NODE_DEVICE_LIST_MAX = 65536;
 
 /* Upper limit on lists of node device capabilities. */
 const REMOTE_NODE_DEVICE_CAPS_LIST_MAX = 65536;
