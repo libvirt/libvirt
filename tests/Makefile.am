@@ -1204,6 +1204,7 @@ virusbmock_la_SOURCES = virusbmock.c
 virusbmock_la_CFLAGS = $(AM_CFLAGS)
 virusbmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virusbmock_la_LIBADD = $(MOCKLIBS_LIBS) \
+	$(PROBES_O) \
 	../src/libvirt_util.la
 
 virnetdevbandwidthmock_la_SOURCES = \
