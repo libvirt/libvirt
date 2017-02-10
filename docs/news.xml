@@ -80,6 +80,16 @@
           devices, providing device type information.
         </description>
       </change>
+      <change>
+        <summary>
+          Add API for individual/specific vCPU hotplug
+        </summary>
+        <description>
+          The new API allows selecting specific vCPUs to be added/removed from
+          the VM. The existing APIs allowed only adding/removing from the end
+          which did not play well with NUMA.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
