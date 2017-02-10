@@ -1222,11 +1222,11 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
  * Returns 0; returns -1 on error.
  */
 int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname,
-                                           const virMacAddr *macaddress,
-                                           const char *linkdev,
-                                           const unsigned char *vmuuid,
-                                           virNetDevVPortProfilePtr virtPortProfile,
-                                           virNetDevVPortProfileOp vmOp)
+                                            const virMacAddr *macaddress,
+                                            const char *linkdev,
+                                            const unsigned char *vmuuid,
+                                            virNetDevVPortProfilePtr virtPortProfile,
+                                            virNetDevVPortProfileOp vmOp)
 {
     int rc = 0;
 
@@ -1301,11 +1301,11 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname ATTRIBUTE_UNUSED,
 }
 
 int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname ATTRIBUTE_UNUSED,
-                                           const virMacAddr *macaddress ATTRIBUTE_UNUSED,
-                                           const char *linkdev ATTRIBUTE_UNUSED,
-                                           const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                                           virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
-                                           virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED)
+                                            const virMacAddr *macaddress ATTRIBUTE_UNUSED,
+                                            const char *linkdev ATTRIBUTE_UNUSED,
+                                            const unsigned char *vmuuid ATTRIBUTE_UNUSED,
+                                            virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
+                                            virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
@@ -1313,11 +1313,11 @@ int virNetDevMacVLanRestartWithVPortProfile(const char *cr_ifname ATTRIBUTE_UNUS
 }
 
 int virNetDevMacVLanVPortProfileRegisterCallback(const char *ifname ATTRIBUTE_UNUSED,
-                                             const virMacAddr *macaddress ATTRIBUTE_UNUSED,
-                                             const char *linkdev ATTRIBUTE_UNUSED,
-                                             const unsigned char *vmuuid ATTRIBUTE_UNUSED,
-                                             virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
-                                             virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED)
+                                                 const virMacAddr *macaddress ATTRIBUTE_UNUSED,
+                                                 const char *linkdev ATTRIBUTE_UNUSED,
+                                                 const unsigned char *vmuuid ATTRIBUTE_UNUSED,
+                                                 virNetDevVPortProfilePtr virtPortProfile ATTRIBUTE_UNUSED,
+                                                 virNetDevVPortProfileOp vmOp ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Cannot create macvlan devices on this platform"));
