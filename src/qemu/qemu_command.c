@@ -2586,22 +2586,10 @@ qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
  */
 static bool
 qemuCheckSCSIControllerIOThreads(const virDomainDef *domainDef,
-                                 virDomainControllerDefPtr def,
-                                 virQEMUCapsPtr qemuCaps)
+                                 virDomainControllerDefPtr def)
 {
     if (!def->iothread)
         return true;
-
-    /* By this time QEMU_CAPS_OBJECT_IOTHREAD was already checked.
-     * We just need to check if the QEMU_CAPS_VIRTIO_SCSI_IOTHREAD
-     * capability is set.
-     */
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI_IOTHREAD)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("IOThreads for virtio-scsi not supported for "
-                         "this QEMU"));
-        return false;
-    }
 
     if (def->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -2681,8 +2669,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
             if (def->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
                 virBufferAddLit(&buf, "virtio-scsi-ccw");
                 if (def->iothread) {
-                    if (!qemuCheckSCSIControllerIOThreads(domainDef,
-                                                          def, qemuCaps))
+                    if (!qemuCheckSCSIControllerIOThreads(domainDef, def))
                         goto error;
                     virBufferAsprintf(&buf, ",iothread=iothread%u",
                                       def->iothread);
@@ -2696,8 +2683,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
             } else {
                 virBufferAddLit(&buf, "virtio-scsi-pci");
                 if (def->iothread) {
-                    if (!qemuCheckSCSIControllerIOThreads(domainDef,
-                                                          def, qemuCaps))
+                    if (!qemuCheckSCSIControllerIOThreads(domainDef, def))
                         goto error;
                     virBufferAsprintf(&buf, ",iothread=iothread%u",
                                       def->iothread);
@@ -7389,19 +7375,12 @@ qemuBuildMemCommandLine(virCommandPtr cmd,
 
 static int
 qemuBuildIOThreadCommandLine(virCommandPtr cmd,
-                             const virDomainDef *def,
-                             virQEMUCapsPtr qemuCaps)
+                             const virDomainDef *def)
 {
     size_t i;
 
     if (def->niothreadids == 0)
         return 0;
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("IOThreads not supported for this QEMU"));
-        return -1;
-    }
 
     /* Create iothread objects using the defined iothreadids list
      * and the defined id and name from the list. These may be used
@@ -9715,7 +9694,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildSmpCommandLine(cmd, def) < 0)
         goto error;
 
-    if (qemuBuildIOThreadCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildIOThreadCommandLine(cmd, def) < 0)
         goto error;
 
     if (virDomainNumaGetNodeCount(def->numa) &&
