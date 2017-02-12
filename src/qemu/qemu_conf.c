@@ -530,22 +530,33 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueBool(conf, "spice_auto_unix_socket", &cfg->spiceAutoUnixSocket) < 0)
         goto cleanup;
 
+#define GET_CONFIG_TLS_CERTINFO(val)                                        \
+    do {                                                                    \
+        if ((rv = virConfGetValueBool(conf, #val "_tls_x509_verify",        \
+                                      &cfg->val## TLSx509verify)) < 0)      \
+            goto cleanup;                                                   \
+        if (rv == 0)                                                        \
+            cfg->val## TLSx509verify = cfg->defaultTLSx509verify;           \
+        if (virConfGetValueString(conf, #val "_tls_x509_cert_dir",          \
+                                  &cfg->val## TLSx509certdir) < 0)          \
+            goto cleanup;                                                   \
+        if (virConfGetValueString(conf,                                     \
+                                  #val "_tls_x509_secret_uuid",             \
+                                  &cfg->val## TLSx509secretUUID) < 0)       \
+            goto cleanup;                                                   \
+        if (!cfg->val## TLSx509secretUUID &&                                \
+            cfg->defaultTLSx509secretUUID) {                                \
+            if (VIR_STRDUP(cfg->val## TLSx509secretUUID,                    \
+                           cfg->defaultTLSx509secretUUID) < 0)              \
+                goto cleanup;                                               \
+        }                                                                   \
+    } while (0)
+
     if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
         goto cleanup;
-    if (virConfGetValueString(conf, "chardev_tls_x509_cert_dir", &cfg->chardevTLSx509certdir) < 0)
-        goto cleanup;
-    if ((rv = virConfGetValueBool(conf, "chardev_tls_x509_verify", &cfg->chardevTLSx509verify)) < 0)
-        goto cleanup;
-    if (rv == 0)
-        cfg->chardevTLSx509verify = cfg->defaultTLSx509verify;
-    if (virConfGetValueString(conf, "chardev_tls_x509_secret_uuid",
-                              &cfg->chardevTLSx509secretUUID) < 0)
-        goto cleanup;
-    if (!cfg->chardevTLSx509secretUUID && cfg->defaultTLSx509secretUUID) {
-        if (VIR_STRDUP(cfg->chardevTLSx509secretUUID,
-                       cfg->defaultTLSx509secretUUID) < 0)
-            goto cleanup;
-    }
+    GET_CONFIG_TLS_CERTINFO(chardev);
+
+#undef GET_CONFIG_TLS_CERTINFO
 
     if (virConfGetValueUInt(conf, "remote_websocket_port_min", &cfg->webSocketPortMin) < 0)
         goto cleanup;
