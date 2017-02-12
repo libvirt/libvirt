@@ -5742,6 +5742,25 @@ qemuDomainHotplugDelIOThread(virQEMUDriverPtr driver,
 }
 
 static int
+qemuDomainDelIOThreadCheck(virDomainDefPtr def,
+                           unsigned int iothread_id)
+{
+    size_t i;
+
+    for (i = 0; i < def->ndisks; i++) {
+        if (def->disks[i]->iothread == iothread_id) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("cannot remove IOThread %u since it "
+                             "is being used by disk '%s'"),
+                           iothread_id, def->disks[i]->dst);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+static int
 qemuDomainChgIOThread(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
                       unsigned int iothread_id,
@@ -5775,6 +5794,9 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
             if (qemuDomainHotplugAddIOThread(driver, vm, iothread_id) < 0)
                 goto endjob;
         } else {
+            if (qemuDomainDelIOThreadCheck(def, iothread_id) < 0)
+                goto endjob;
+
             if (qemuDomainHotplugDelIOThread(driver, vm, iothread_id) < 0)
                 goto endjob;
         }
@@ -5798,6 +5820,9 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
                                iothread_id);
                 goto endjob;
             }
+
+            if (qemuDomainDelIOThreadCheck(persistentDef, iothread_id) < 0)
+                goto endjob;
 
             virDomainIOThreadIDDel(persistentDef, iothread_id);
         }
@@ -5857,7 +5882,6 @@ qemuDomainDelIOThread(virDomainPtr dom,
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
     int ret = -1;
-    size_t i;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -5873,17 +5897,6 @@ qemuDomainDelIOThread(virDomainPtr dom,
 
     if (virDomainDelIOThreadEnsureACL(dom->conn, vm->def, flags) < 0)
            goto cleanup;
-
-    /* If there is a disk using the IOThread to be removed, then fail. */
-    for (i = 0; i < vm->def->ndisks; i++) {
-        if (vm->def->disks[i]->iothread == iothread_id) {
-            virReportError(VIR_ERR_INVALID_ARG,
-                           _("cannot remove IOThread %u since it "
-                             "is being used by disk '%s'"),
-                           iothread_id, vm->def->disks[i]->dst);
-            goto cleanup;
-        }
-    }
 
     ret = qemuDomainChgIOThread(driver, vm, iothread_id, false, flags);
 
