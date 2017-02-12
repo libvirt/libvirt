@@ -5677,21 +5677,6 @@ qemuDomainHotplugDelIOThread(virQEMUDriverPtr driver,
     int new_niothreads = 0;
     qemuMonitorIOThreadInfoPtr *new_iothreads = NULL;
 
-    /* Normally would use virDomainIOThreadIDFind, but we need the index
-     * from whence to delete for later...
-     */
-    for (idx = 0; idx < vm->def->niothreadids; idx++) {
-        if (iothread_id == vm->def->iothreadids[idx]->iothread_id)
-            break;
-    }
-
-    if (idx == vm->def->niothreadids) {
-        virReportError(VIR_ERR_INVALID_ARG,
-                       _("cannot find IOThread '%u' in iothreadids list"),
-                       iothread_id);
-        return -1;
-    }
-
     if (virAsprintf(&alias, "iothread%u", iothread_id) < 0)
         return -1;
 
@@ -5746,6 +5731,13 @@ qemuDomainDelIOThreadCheck(virDomainDefPtr def,
                            unsigned int iothread_id)
 {
     size_t i;
+
+    if (!virDomainIOThreadIDFind(def, iothread_id)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("cannot find IOThread '%u' in iothreadids list"),
+                       iothread_id);
+        return -1;
+    }
 
     for (i = 0; i < def->ndisks; i++) {
         if (def->disks[i]->iothread == iothread_id) {
@@ -5811,16 +5803,6 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
                 goto endjob;
 
         } else {
-            virDomainIOThreadIDDefPtr iothrid;
-            if (!(iothrid = virDomainIOThreadIDFind(persistentDef,
-                                                    iothread_id))) {
-                virReportError(VIR_ERR_INVALID_ARG,
-                               _("cannot find IOThread '%u' in persistent "
-                                 "iothreadids"),
-                               iothread_id);
-                goto endjob;
-            }
-
             if (qemuDomainDelIOThreadCheck(persistentDef, iothread_id) < 0)
                 goto endjob;
 
