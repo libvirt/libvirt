@@ -5754,12 +5754,6 @@ qemuDomainChgIOThread(virQEMUDriverPtr driver,
     virDomainDefPtr persistentDef;
     int ret = -1;
 
-    if (iothread_id == 0) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("invalid value of 0 for iothread_id"));
-        return -1;
-    }
-
     cfg = virQEMUDriverGetConfig(driver);
 
     priv = vm->privateData;
@@ -5835,6 +5829,12 @@ qemuDomainAddIOThread(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
 
+    if (iothread_id == 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("invalid value of 0 for iothread_id"));
+        return -1;
+    }
+
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
 
@@ -5861,6 +5861,12 @@ qemuDomainDelIOThread(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (iothread_id == 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("invalid value of 0 for iothread_id"));
+        return -1;
+    }
 
     if (!(vm = qemuDomObjFromDomain(dom)))
         goto cleanup;
