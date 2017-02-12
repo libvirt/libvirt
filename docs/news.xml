@@ -44,6 +44,15 @@
           openvswitch calls in the libvirtd configuration file.
         </description>
       </change>
+      <change>
+        <summary>
+          bhyve: add e1000 NIC support
+        </summary>
+        <description>
+          Add support for e1000 NIC. Previously, the only available option
+          was <code>virtio-net</code>.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>

@@ -278,5 +278,20 @@ you'll need to explicitly specify 'localtime' in this case:</p>
 &lt;/domain&gt;
 </pre>
 
+<h3><a name="e1000">e1000 NIC</a></h3>
+
+<p>As of <a href="https://svnweb.freebsd.org/changeset/base/302504">r302504</a> bhyve
+supports Intel e1000 network adapter emulation. It's supported in libvirt
+<span class="since">since 3.1.0</span> and could be used as follows:</p>
+
+<pre>
+...
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='virbr0'/&gt;
+      &lt;model type='<b>e1000</b>'/&gt;
+    &lt;/interface&gt;
+...
+</pre>
+
   </body>
 </html>
