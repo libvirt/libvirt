@@ -166,7 +166,8 @@ mymain(void)
 
     driver.grubcaps = BHYVE_GRUB_CAP_CONSDEV;
     driver.bhyvecaps = BHYVE_CAP_RTC_UTC | BHYVE_CAP_AHCI32SLOT | \
-                       BHYVE_CAP_NET_E1000 | BHYVE_CAP_LPC_BOOTROM;
+                       BHYVE_CAP_NET_E1000 | BHYVE_CAP_LPC_BOOTROM | \
+                       BHYVE_CAP_FBUF;
 
     DO_TEST("base");
     DO_TEST("acpiapic");
@@ -191,6 +192,7 @@ mymain(void)
     DO_TEST("localtime");
     DO_TEST("net-e1000");
     DO_TEST("uefi");
+    DO_TEST("vnc");
 
     /* Address allocation tests */
     DO_TEST("addr-single-sata-disk");
@@ -215,6 +217,9 @@ mymain(void)
 
     driver.bhyvecaps &= ~BHYVE_CAP_LPC_BOOTROM;
     DO_TEST_FAILURE("uefi");
+
+    driver.bhyvecaps &= ~BHYVE_CAP_FBUF;
+    DO_TEST_FAILURE("vnc");
 
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
