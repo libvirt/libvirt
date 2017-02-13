@@ -2648,6 +2648,11 @@ virStorageSourceParseBackingColon(virStorageSourcePtr src,
 
 
 static int
+virStorageSourceParseBackingJSONInternal(virStorageSourcePtr src,
+                                         virJSONValuePtr json);
+
+
+static int
 virStorageSourceParseBackingJSONPath(virStorageSourcePtr src,
                                      virJSONValuePtr json,
                                      int type)
@@ -2963,6 +2968,16 @@ virStorageSourceParseBackingJSONRBD(virStorageSourcePtr src,
     return -1;
 }
 
+static int
+virStorageSourceParseBackingJSONRaw(virStorageSourcePtr src,
+                                    virJSONValuePtr json,
+                                    int opaque ATTRIBUTE_UNUSED)
+{
+    /* There are no interesting attributes in raw driver.
+     * Treat it as pass-through.
+     */
+    return virStorageSourceParseBackingJSONInternal(src, json);
+}
 
 struct virStorageSourceJSONDriverParser {
     const char *drvname;
@@ -2985,6 +3000,7 @@ static const struct virStorageSourceJSONDriverParser jsonParsers[] = {
     {"sheepdog", virStorageSourceParseBackingJSONSheepdog, 0},
     {"ssh", virStorageSourceParseBackingJSONSSH, 0},
     {"rbd", virStorageSourceParseBackingJSONRBD, 0},
+    {"raw", virStorageSourceParseBackingJSONRaw, 0},
 };
 
 

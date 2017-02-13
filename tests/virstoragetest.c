@@ -1496,6 +1496,12 @@ mymain(void)
                        "<source protocol='rbd' name='testshare'>\n"
                        "  <host name='example.com'/>\n"
                        "</source>\n");
+    TEST_BACKING_PARSE("json:{ \"file\": { "
+                                "\"driver\": \"raw\","
+                                "\"file\": {"
+                                    "\"driver\": \"file\","
+                                    "\"filename\": \"/path/to/file\" } } }",
+                       "<source file='/path/to/file'/>\n");
 
  cleanup:
     /* Final cleanup */
