@@ -6554,7 +6554,7 @@ qemuMonitorJSONParseCPUx86Features(virJSONValuePtr data,
     ssize_t n;
     int ret = -1;
 
-    if ((n = virJSONValueArraySize(data)) < 0) {
+    if (!data || (n = virJSONValueArraySize(data)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("invalid array of CPUID features"));
         return -1;
@@ -6644,9 +6644,8 @@ qemuMonitorJSONCheckCPUx86(qemuMonitorPtr mon)
     if (qemuMonitorJSONCheckError(cmd, reply))
         goto cleanup;
 
-    data = virJSONValueObjectGetArray(reply, "return");
-
-    if ((n = virJSONValueArraySize(data)) < 0) {
+    if (!(data = virJSONValueObjectGetArray(reply, "return")) ||
+        (n = virJSONValueArraySize(data)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("qom-list reply data was not an array"));
         goto cleanup;
