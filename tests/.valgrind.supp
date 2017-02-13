@@ -32,6 +32,17 @@
    ...
    obj:*/bin/bash
 }
+{
+   bashMemoryLeak4
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:xmalloc
+   fun:set_default_locale
+   fun:main
+   ...
+   obj:*/bin/bash
+}
 #
 # Failure seen in /usr/lib64/ld-2.15.so
 #
