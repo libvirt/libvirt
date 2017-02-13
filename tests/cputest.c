@@ -527,7 +527,7 @@ cpuTestJSONCPUID(const void *arg)
     char *result = NULL;
     int ret = -1;
 
-    if (virAsprintf(&json, "%s/cputestdata/%s-cpuid-%s.json.new",
+    if (virAsprintf(&json, "%s/cputestdata/%s-cpuid-%s.json",
                     abs_srcdir, virArchToString(data->arch), data->host) < 0 ||
         virAsprintf(&result, "cpuid-%s-json", data->host) < 0)
         goto cleanup;
