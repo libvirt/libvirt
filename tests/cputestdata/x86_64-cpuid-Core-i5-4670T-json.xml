@@ -1,6 +1,7 @@
 <cpu mode='custom' match='exact'>
   <arch>x86_64</arch>
   <model fallback='forbid'>Haswell</model>
+  <vendor>Intel</vendor>
   <feature policy='require' name='vme'/>
   <feature policy='require' name='ss'/>
   <feature policy='require' name='vmx'/>

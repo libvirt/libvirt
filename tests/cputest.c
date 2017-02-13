@@ -43,7 +43,9 @@
 #if WITH_QEMU && WITH_YAJL
 # include "testutilsqemu.h"
 # include "qemumonitortestutils.h"
-# include "qemu/qemu_monitor_json.h"
+# define __QEMU_CAPSRIV_H_ALLOW__
+# include "qemu/qemu_capspriv.h"
+# undef __QEMU_CAPSRIV_H_ALLOW__
 #endif
 
 #define VIR_FROM_THIS VIR_FROM_CPU
@@ -517,14 +519,15 @@ static int
 cpuTestJSONCPUID(const void *arg)
 {
     const struct data *data = arg;
-    virCPUDataPtr cpuData = NULL;
+    qemuMonitorCPUModelInfoPtr model = NULL;
+    virQEMUCapsPtr qemuCaps = NULL;
     virCPUDefPtr cpu = NULL;
     qemuMonitorTestPtr testMon = NULL;
     char *json = NULL;
     char *result = NULL;
     int ret = -1;
 
-    if (virAsprintf(&json, "%s/cputestdata/%s-cpuid-%s.json",
+    if (virAsprintf(&json, "%s/cputestdata/%s-cpuid-%s.json.new",
                     abs_srcdir, virArchToString(data->arch), data->host) < 0 ||
         virAsprintf(&result, "cpuid-%s-json", data->host) < 0)
         goto cleanup;
@@ -532,26 +535,35 @@ cpuTestJSONCPUID(const void *arg)
     if (!(testMon = qemuMonitorTestNewFromFile(json, driver.xmlopt, true)))
         goto cleanup;
 
-    if (qemuMonitorJSONGetCPUx86Data(qemuMonitorTestGetMonitor(testMon),
-                                     "feature-words", &cpuData) < 0)
+    if (qemuMonitorGetCPUModelExpansion(qemuMonitorTestGetMonitor(testMon),
+                                        QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC,
+                                        "host", &model) < 0)
         goto cleanup;
+
+    if (!(qemuCaps = virQEMUCapsNew()))
+        goto cleanup;
+
+    virQEMUCapsSetArch(qemuCaps, data->arch);
+    virQEMUCapsSetCPUModelInfo(qemuCaps, VIR_DOMAIN_VIRT_KVM, model);
+    model = NULL;
 
     if (VIR_ALLOC(cpu) < 0)
         goto cleanup;
 
-    cpu->arch = cpuData->arch;
+    cpu->arch = data->arch;
     cpu->type = VIR_CPU_TYPE_GUEST;
     cpu->match = VIR_CPU_MATCH_EXACT;
     cpu->fallback = VIR_CPU_FALLBACK_FORBID;
 
-    if (cpuDecode(cpu, cpuData, NULL, 0, NULL) < 0)
+    if (virQEMUCapsInitCPUModel(qemuCaps, VIR_DOMAIN_VIRT_KVM, cpu) != 0)
         goto cleanup;
 
     ret = cpuTestCompareXML(data->arch, cpu, result, false);
 
  cleanup:
+    qemuMonitorCPUModelInfoFree(model);
+    virObjectUnref(qemuCaps);
     qemuMonitorTestFree(testMon);
-    virCPUDataFree(cpuData);
     virCPUDefFree(cpu);
     VIR_FREE(result);
     VIR_FREE(json);

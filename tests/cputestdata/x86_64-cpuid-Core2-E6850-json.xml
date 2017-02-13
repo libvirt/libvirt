@@ -1,11 +1,12 @@
 <cpu mode='custom' match='exact'>
   <arch>x86_64</arch>
-  <model fallback='forbid'>Penryn</model>
+  <model fallback='forbid'>Conroe</model>
+  <vendor>Intel</vendor>
   <feature policy='require' name='vme'/>
   <feature policy='require' name='ss'/>
+  <feature policy='require' name='cx16'/>
   <feature policy='require' name='x2apic'/>
   <feature policy='require' name='tsc-deadline'/>
   <feature policy='require' name='hypervisor'/>
   <feature policy='require' name='tsc_adjust'/>
-  <feature policy='disable' name='sse4.1'/>
 </cpu>

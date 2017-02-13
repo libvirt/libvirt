@@ -1,6 +1,7 @@
 <cpu mode='custom' match='exact'>
   <arch>x86_64</arch>
   <model fallback='forbid'>Opteron_G5</model>
+  <vendor>AMD</vendor>
   <feature policy='require' name='vme'/>
   <feature policy='require' name='x2apic'/>
   <feature policy='require' name='hypervisor'/>
