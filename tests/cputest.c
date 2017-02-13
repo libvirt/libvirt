@@ -677,13 +677,13 @@ mymain(void)
     } while (0)
 
     /* host to host comparison */
-    DO_TEST_COMPARE("x86", "host", "host", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_COMPARE("x86", "host", "host-better", VIR_CPU_COMPARE_INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host", "host-worse", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "host-amd-fake", VIR_CPU_COMPARE_INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host", "host-incomp-arch", VIR_CPU_COMPARE_INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host", "host-no-vendor", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_COMPARE("x86", "host-no-vendor", "host", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86_64", "host", "host", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86_64", "host", "host-better", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86_64", "host", "host-worse", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86_64", "host", "host-amd-fake", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86_64", "host", "host-incomp-arch", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86_64", "host", "host-no-vendor", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86_64", "host-no-vendor", "host", VIR_CPU_COMPARE_INCOMPATIBLE);
 
     DO_TEST_COMPARE("ppc64", "host", "host", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_COMPARE("ppc64", "host", "host-better", VIR_CPU_COMPARE_INCOMPATIBLE);
@@ -693,28 +693,28 @@ mymain(void)
     DO_TEST_COMPARE("ppc64", "host-no-vendor", "host", VIR_CPU_COMPARE_INCOMPATIBLE);
 
     /* guest to host comparison */
-    DO_TEST_COMPARE("x86", "host", "bogus-model", VIR_CPU_COMPARE_ERROR);
-    DO_TEST_COMPARE("x86", "host", "bogus-feature", VIR_CPU_COMPARE_ERROR);
-    DO_TEST_COMPARE("x86", "host", "min", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "pentium3", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact-forbid", VIR_CPU_COMPARE_INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host", "exact-forbid-extra", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact-disable", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact-disable2", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact-disable-extra", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact-require", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "exact-require-extra", VIR_CPU_COMPARE_INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host", "exact-force", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "strict", VIR_CPU_COMPARE_INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host", "strict-full", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_COMPARE("x86", "host", "strict-disable", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_COMPARE("x86", "host", "strict-force-extra", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_COMPARE("x86", "host", "guest", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host", "pentium3-amd", VIR_CPU_COMPARE_INCOMPATIBLE);
-    DO_TEST_COMPARE("x86", "host-amd", "pentium3-amd", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_COMPARE("x86", "host-worse", "penryn-force", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_COMPARE("x86", "host-SandyBridge", "exact-force-Haswell", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86_64", "host", "bogus-model", VIR_CPU_COMPARE_ERROR);
+    DO_TEST_COMPARE("x86_64", "host", "bogus-feature", VIR_CPU_COMPARE_ERROR);
+    DO_TEST_COMPARE("x86_64", "host", "min", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86_64", "host", "pentium3", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86_64", "host", "exact", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86_64", "host", "exact-forbid", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86_64", "host", "exact-forbid-extra", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86_64", "host", "exact-disable", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86_64", "host", "exact-disable2", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86_64", "host", "exact-disable-extra", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86_64", "host", "exact-require", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86_64", "host", "exact-require-extra", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86_64", "host", "exact-force", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86_64", "host", "strict", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86_64", "host", "strict-full", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86_64", "host", "strict-disable", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86_64", "host", "strict-force-extra", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86_64", "host", "guest", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86_64", "host", "pentium3-amd", VIR_CPU_COMPARE_INCOMPATIBLE);
+    DO_TEST_COMPARE("x86_64", "host-amd", "pentium3-amd", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_COMPARE("x86_64", "host-worse", "penryn-force", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_COMPARE("x86_64", "host-SandyBridge", "exact-force-Haswell", VIR_CPU_COMPARE_IDENTICAL);
 
     DO_TEST_COMPARE("ppc64", "host", "guest-strict", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_COMPARE("ppc64", "host", "guest-exact", VIR_CPU_COMPARE_INCOMPATIBLE);
@@ -728,14 +728,14 @@ mymain(void)
 
     /* guest updates for migration
      * automatically compares host CPU with the result */
-    DO_TEST_UPDATE("x86", "host", "min", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_UPDATE("x86", "host", "pentium3", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_UPDATE("x86", "host", "guest", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_UPDATE("x86", "host", "host-model", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_UPDATE("x86", "host", "host-model-nofallback", VIR_CPU_COMPARE_IDENTICAL);
-    DO_TEST_UPDATE("x86", "host-invtsc", "host-model", VIR_CPU_COMPARE_SUPERSET);
-    DO_TEST_UPDATE_ONLY("x86", "host", "host-passthrough");
-    DO_TEST_UPDATE_ONLY("x86", "host", "host-passthrough-features");
+    DO_TEST_UPDATE("x86_64", "host", "min", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_UPDATE("x86_64", "host", "pentium3", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_UPDATE("x86_64", "host", "guest", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_UPDATE("x86_64", "host", "host-model", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_UPDATE("x86_64", "host", "host-model-nofallback", VIR_CPU_COMPARE_IDENTICAL);
+    DO_TEST_UPDATE("x86_64", "host-invtsc", "host-model", VIR_CPU_COMPARE_SUPERSET);
+    DO_TEST_UPDATE_ONLY("x86_64", "host", "host-passthrough");
+    DO_TEST_UPDATE_ONLY("x86_64", "host", "host-passthrough-features");
 
     DO_TEST_UPDATE("ppc64", "host", "guest", VIR_CPU_COMPARE_IDENTICAL);
     DO_TEST_UPDATE("ppc64", "host", "guest-nofallback", VIR_CPU_COMPARE_INCOMPATIBLE);
@@ -748,21 +748,21 @@ mymain(void)
     DO_TEST_UPDATE("ppc64", "host", "guest-compat-incompatible", VIR_CPU_COMPARE_INCOMPATIBLE);
 
     /* computing baseline CPUs */
-    DO_TEST_BASELINE("x86", "incompatible-vendors", 0, -1);
-    DO_TEST_BASELINE("x86", "no-vendor", 0, 0);
-    DO_TEST_BASELINE("x86", "some-vendors", 0, 0);
-    DO_TEST_BASELINE("x86", "1", 0, 0);
-    DO_TEST_BASELINE("x86", "2", 0, 0);
-    DO_TEST_BASELINE("x86", "3", 0, 0);
-    DO_TEST_BASELINE("x86", "3", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
-    DO_TEST_BASELINE("x86", "4", 0, 0);
-    DO_TEST_BASELINE("x86", "4", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
-    DO_TEST_BASELINE("x86", "5", 0, 0);
-    DO_TEST_BASELINE("x86", "5", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
-    DO_TEST_BASELINE("x86", "6", 0, 0);
-    DO_TEST_BASELINE("x86", "6", VIR_CONNECT_BASELINE_CPU_MIGRATABLE, 0);
-    DO_TEST_BASELINE("x86", "7", 0, 0);
-    DO_TEST_BASELINE("x86", "8", 0, 0);
+    DO_TEST_BASELINE("x86_64", "incompatible-vendors", 0, -1);
+    DO_TEST_BASELINE("x86_64", "no-vendor", 0, 0);
+    DO_TEST_BASELINE("x86_64", "some-vendors", 0, 0);
+    DO_TEST_BASELINE("x86_64", "1", 0, 0);
+    DO_TEST_BASELINE("x86_64", "2", 0, 0);
+    DO_TEST_BASELINE("x86_64", "3", 0, 0);
+    DO_TEST_BASELINE("x86_64", "3", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
+    DO_TEST_BASELINE("x86_64", "4", 0, 0);
+    DO_TEST_BASELINE("x86_64", "4", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
+    DO_TEST_BASELINE("x86_64", "5", 0, 0);
+    DO_TEST_BASELINE("x86_64", "5", VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, 0);
+    DO_TEST_BASELINE("x86_64", "6", 0, 0);
+    DO_TEST_BASELINE("x86_64", "6", VIR_CONNECT_BASELINE_CPU_MIGRATABLE, 0);
+    DO_TEST_BASELINE("x86_64", "7", 0, 0);
+    DO_TEST_BASELINE("x86_64", "8", 0, 0);
 
     DO_TEST_BASELINE("ppc64", "incompatible-vendors", 0, -1);
     DO_TEST_BASELINE("ppc64", "no-vendor", 0, 0);
@@ -771,29 +771,29 @@ mymain(void)
     DO_TEST_BASELINE("ppc64", "legacy", 0, -1);
 
     /* CPU features */
-    DO_TEST_HASFEATURE("x86", "host", "vmx", YES);
-    DO_TEST_HASFEATURE("x86", "host", "lm", YES);
-    DO_TEST_HASFEATURE("x86", "host", "sse4.1", YES);
-    DO_TEST_HASFEATURE("x86", "host", "3dnowext", NO);
-    DO_TEST_HASFEATURE("x86", "host", "skinit", NO);
-    DO_TEST_HASFEATURE("x86", "host", "foo", FAIL);
+    DO_TEST_HASFEATURE("x86_64", "host", "vmx", YES);
+    DO_TEST_HASFEATURE("x86_64", "host", "lm", YES);
+    DO_TEST_HASFEATURE("x86_64", "host", "sse4.1", YES);
+    DO_TEST_HASFEATURE("x86_64", "host", "3dnowext", NO);
+    DO_TEST_HASFEATURE("x86_64", "host", "skinit", NO);
+    DO_TEST_HASFEATURE("x86_64", "host", "foo", FAIL);
 
     /* computing guest data and decoding the data into a guest CPU XML */
-    DO_TEST_GUESTCPU("x86", "host", "guest", NULL, 0);
-    DO_TEST_GUESTCPU("x86", "host-better", "pentium3", NULL, 0);
-    DO_TEST_GUESTCPU("x86", "host-worse", "guest", NULL, 0);
-    DO_TEST_GUESTCPU("x86", "host", "strict-force-extra", NULL, 0);
-    DO_TEST_GUESTCPU("x86", "host", "penryn-force", NULL, 0);
-    DO_TEST_GUESTCPU("x86", "host", "guest", model486, 0);
-    DO_TEST_GUESTCPU("x86", "host", "guest", models, 0);
-    DO_TEST_GUESTCPU("x86", "host", "guest", nomodel, -1);
-    DO_TEST_GUESTCPU("x86", "host", "guest-nofallback", models, -1);
-    DO_TEST_GUESTCPU("x86", "host", "host+host-model", models, 0);
-    DO_TEST_GUESTCPU("x86", "host", "host+host-model-nofallback", models, -1);
-    DO_TEST_GUESTCPU("x86", "host-Haswell-noTSX", "Haswell", haswell, 0);
-    DO_TEST_GUESTCPU("x86", "host-Haswell-noTSX", "Haswell-noTSX", haswell, 0);
-    DO_TEST_GUESTCPU("x86", "host-Haswell-noTSX", "Haswell-noTSX-nofallback", haswell, -1);
-    DO_TEST_GUESTCPU("x86", "host-Haswell-noTSX", "Haswell-noTSX", NULL, 0);
+    DO_TEST_GUESTCPU("x86_64", "host", "guest", NULL, 0);
+    DO_TEST_GUESTCPU("x86_64", "host-better", "pentium3", NULL, 0);
+    DO_TEST_GUESTCPU("x86_64", "host-worse", "guest", NULL, 0);
+    DO_TEST_GUESTCPU("x86_64", "host", "strict-force-extra", NULL, 0);
+    DO_TEST_GUESTCPU("x86_64", "host", "penryn-force", NULL, 0);
+    DO_TEST_GUESTCPU("x86_64", "host", "guest", model486, 0);
+    DO_TEST_GUESTCPU("x86_64", "host", "guest", models, 0);
+    DO_TEST_GUESTCPU("x86_64", "host", "guest", nomodel, -1);
+    DO_TEST_GUESTCPU("x86_64", "host", "guest-nofallback", models, -1);
+    DO_TEST_GUESTCPU("x86_64", "host", "host+host-model", models, 0);
+    DO_TEST_GUESTCPU("x86_64", "host", "host+host-model-nofallback", models, -1);
+    DO_TEST_GUESTCPU("x86_64", "host-Haswell-noTSX", "Haswell", haswell, 0);
+    DO_TEST_GUESTCPU("x86_64", "host-Haswell-noTSX", "Haswell-noTSX", haswell, 0);
+    DO_TEST_GUESTCPU("x86_64", "host-Haswell-noTSX", "Haswell-noTSX-nofallback", haswell, -1);
+    DO_TEST_GUESTCPU("x86_64", "host-Haswell-noTSX", "Haswell-noTSX", NULL, 0);
 
     DO_TEST_GUESTCPU("ppc64", "host", "guest", ppc_models, 0);
     DO_TEST_GUESTCPU("ppc64", "host", "guest-nofallback", ppc_models, -1);
@@ -801,35 +801,35 @@ mymain(void)
     DO_TEST_GUESTCPU("ppc64", "host", "guest-legacy-incompatible", ppc_models, -1);
     DO_TEST_GUESTCPU("ppc64", "host", "guest-legacy-invalid", ppc_models, -1);
 
-    DO_TEST_CPUID("x86", "A10-5800K", true);
-    DO_TEST_CPUID("x86", "Atom-D510", false);
-    DO_TEST_CPUID("x86", "Atom-N450", false);
-    DO_TEST_CPUID("x86", "Core-i5-2500", true);
-    DO_TEST_CPUID("x86", "Core-i5-2540M", true);
-    DO_TEST_CPUID("x86", "Core-i5-4670T", true);
-    DO_TEST_CPUID("x86", "Core-i5-6600", true);
-    DO_TEST_CPUID("x86", "Core-i7-2600", true);
-    DO_TEST_CPUID("x86", "Core-i7-3520M", false);
-    DO_TEST_CPUID("x86", "Core-i7-3740QM", true);
-    DO_TEST_CPUID("x86", "Core-i7-3770", true);
-    DO_TEST_CPUID("x86", "Core-i7-4600U", true);
-    DO_TEST_CPUID("x86", "Core-i7-5600U", true);
-    DO_TEST_CPUID("x86", "Core2-E6850", true);
-    DO_TEST_CPUID("x86", "Core2-Q9500", false);
-    DO_TEST_CPUID("x86", "FX-8150", false);
-    DO_TEST_CPUID("x86", "Opteron-1352", false);
-    DO_TEST_CPUID("x86", "Opteron-2350", true);
-    DO_TEST_CPUID("x86", "Opteron-6234", true);
-    DO_TEST_CPUID("x86", "Opteron-6282", false);
-    DO_TEST_CPUID("x86", "Pentium-P6100", false);
-    DO_TEST_CPUID("x86", "Phenom-B95", true);
-    DO_TEST_CPUID("x86", "Xeon-5110", false);
-    DO_TEST_CPUID("x86", "Xeon-E3-1245", true);
-    DO_TEST_CPUID("x86", "Xeon-E5-2630", true);
-    DO_TEST_CPUID("x86", "Xeon-E5-2650", true);
-    DO_TEST_CPUID("x86", "Xeon-E7-4820", true);
-    DO_TEST_CPUID("x86", "Xeon-W3520", true);
-    DO_TEST_CPUID("x86", "Xeon-X5460", false);
+    DO_TEST_CPUID("x86_64", "A10-5800K", true);
+    DO_TEST_CPUID("x86_64", "Atom-D510", false);
+    DO_TEST_CPUID("x86_64", "Atom-N450", false);
+    DO_TEST_CPUID("x86_64", "Core-i5-2500", true);
+    DO_TEST_CPUID("x86_64", "Core-i5-2540M", true);
+    DO_TEST_CPUID("x86_64", "Core-i5-4670T", true);
+    DO_TEST_CPUID("x86_64", "Core-i5-6600", true);
+    DO_TEST_CPUID("x86_64", "Core-i7-2600", true);
+    DO_TEST_CPUID("x86_64", "Core-i7-3520M", false);
+    DO_TEST_CPUID("x86_64", "Core-i7-3740QM", true);
+    DO_TEST_CPUID("x86_64", "Core-i7-3770", true);
+    DO_TEST_CPUID("x86_64", "Core-i7-4600U", true);
+    DO_TEST_CPUID("x86_64", "Core-i7-5600U", true);
+    DO_TEST_CPUID("x86_64", "Core2-E6850", true);
+    DO_TEST_CPUID("x86_64", "Core2-Q9500", false);
+    DO_TEST_CPUID("x86_64", "FX-8150", false);
+    DO_TEST_CPUID("x86_64", "Opteron-1352", false);
+    DO_TEST_CPUID("x86_64", "Opteron-2350", true);
+    DO_TEST_CPUID("x86_64", "Opteron-6234", true);
+    DO_TEST_CPUID("x86_64", "Opteron-6282", false);
+    DO_TEST_CPUID("x86_64", "Pentium-P6100", false);
+    DO_TEST_CPUID("x86_64", "Phenom-B95", true);
+    DO_TEST_CPUID("x86_64", "Xeon-5110", false);
+    DO_TEST_CPUID("x86_64", "Xeon-E3-1245", true);
+    DO_TEST_CPUID("x86_64", "Xeon-E5-2630", true);
+    DO_TEST_CPUID("x86_64", "Xeon-E5-2650", true);
+    DO_TEST_CPUID("x86_64", "Xeon-E7-4820", true);
+    DO_TEST_CPUID("x86_64", "Xeon-W3520", true);
+    DO_TEST_CPUID("x86_64", "Xeon-X5460", false);
 
 #if WITH_QEMU && WITH_YAJL
     qemuTestDriverFree(&driver);
