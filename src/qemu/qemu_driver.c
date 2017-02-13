@@ -405,26 +405,26 @@ qemuSecurityInit(virQEMUDriverPtr driver)
         cfg->securityDriverNames[0]) {
         names = cfg->securityDriverNames;
         while (names && *names) {
-            if (!(mgr = virSecurityManagerNew(*names,
-                                              QEMU_DRIVER_NAME,
-                                              flags)))
+            if (!(mgr = qemuSecurityNew(*names,
+                                        QEMU_DRIVER_NAME,
+                                        flags)))
                 goto error;
             if (!stack) {
-                if (!(stack = virSecurityManagerNewStack(mgr)))
+                if (!(stack = qemuSecurityNewStack(mgr)))
                     goto error;
             } else {
-                if (virSecurityManagerStackAddNested(stack, mgr) < 0)
+                if (qemuSecurityStackAddNested(stack, mgr) < 0)
                     goto error;
             }
             mgr = NULL;
             names++;
         }
     } else {
-        if (!(mgr = virSecurityManagerNew(NULL,
-                                          QEMU_DRIVER_NAME,
-                                          flags)))
+        if (!(mgr = qemuSecurityNew(NULL,
+                                    QEMU_DRIVER_NAME,
+                                    flags)))
             goto error;
-        if (!(stack = virSecurityManagerNewStack(mgr)))
+        if (!(stack = qemuSecurityNewStack(mgr)))
             goto error;
         mgr = NULL;
     }
@@ -432,17 +432,17 @@ qemuSecurityInit(virQEMUDriverPtr driver)
     if (virQEMUDriverIsPrivileged(driver)) {
         if (cfg->dynamicOwnership)
             flags |= VIR_SECURITY_MANAGER_DYNAMIC_OWNERSHIP;
-        if (!(mgr = virSecurityManagerNewDAC(QEMU_DRIVER_NAME,
-                                             cfg->user,
-                                             cfg->group,
-                                             flags,
-                                             qemuSecurityChownCallback)))
+        if (!(mgr = qemuSecurityNewDAC(QEMU_DRIVER_NAME,
+                                       cfg->user,
+                                       cfg->group,
+                                       flags,
+                                       qemuSecurityChownCallback)))
             goto error;
         if (!stack) {
-            if (!(stack = virSecurityManagerNewStack(mgr)))
+            if (!(stack = qemuSecurityNewStack(mgr)))
                 goto error;
         } else {
-            if (virSecurityManagerStackAddNested(stack, mgr) < 0)
+            if (qemuSecurityStackAddNested(stack, mgr) < 0)
                 goto error;
         }
         mgr = NULL;
@@ -3088,7 +3088,7 @@ qemuDomainSaveMemory(virQEMUDriverPtr driver,
     if (fd < 0)
         goto cleanup;
 
-    if (virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
+    if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
         goto cleanup;
 
     if (!(wrapperFd = virFileWrapperFdNew(&fd, path, wrapperFlags)))
@@ -3553,8 +3553,7 @@ static int qemuDumpToFd(virQEMUDriverPtr driver, virDomainObjPtr vm,
         return -1;
     }
 
-    if (virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def,
-                                          fd) < 0)
+    if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
         return -1;
 
     VIR_FREE(priv->job.current);
@@ -3846,7 +3845,7 @@ qemuDomainScreenshot(virDomainPtr dom,
     }
     unlink_tmp = true;
 
-    virSecurityManagerSetSavedStateLabel(driver->securityManager, vm->def, tmp);
+    qemuSecuritySetSavedStateLabel(driver->securityManager, vm->def, tmp);
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorScreendump(priv->mon, tmp) < 0) {
@@ -5948,8 +5947,8 @@ static int qemuDomainGetSecurityLabel(virDomainPtr dom, virSecurityLabelPtr secl
      *   QEMU monitor hasn't seen SIGHUP/ERR on poll().
      */
     if (virDomainObjIsActive(vm)) {
-        if (virSecurityManagerGetProcessLabel(driver->securityManager,
-                                              vm->def, vm->pid, seclabel) < 0) {
+        if (qemuSecurityGetProcessLabel(driver->securityManager,
+                                        vm->def, vm->pid, seclabel) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Failed to get security label"));
             goto cleanup;
@@ -5993,8 +5992,7 @@ static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
         ret = 0;
     } else {
         int len = 0;
-        virSecurityManagerPtr* mgrs = virSecurityManagerGetNested(
-                                            driver->securityManager);
+        virSecurityManagerPtr* mgrs = qemuSecurityGetNested(driver->securityManager);
         if (!mgrs)
             goto cleanup;
 
@@ -6010,8 +6008,8 @@ static int qemuDomainGetSecurityLabelList(virDomainPtr dom,
 
         /* Fill the array */
         for (i = 0; i < len; i++) {
-            if (virSecurityManagerGetProcessLabel(mgrs[i], vm->def, vm->pid,
-                                                  &(*seclabels)[i]) < 0) {
+            if (qemuSecurityGetProcessLabel(mgrs[i], vm->def, vm->pid,
+                                            &(*seclabels)[i]) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Failed to get security label"));
                 VIR_FREE(mgrs);
@@ -6389,8 +6387,8 @@ qemuDomainSaveImageStartVM(virConnectPtr conn,
  cleanup:
     virCommandFree(cmd);
     VIR_FREE(errbuf);
-    if (virSecurityManagerRestoreSavedStateLabel(driver->securityManager,
-                                                 vm->def, path) < 0)
+    if (qemuSecurityRestoreSavedStateLabel(driver->securityManager,
+                                           vm->def, path) < 0)
         VIR_WARN("failed to restore save state label on %s", path);
     virObjectUnref(cfg);
     return ret;
@@ -11216,7 +11214,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
         goto endjob;
     }
 
-    virSecurityManagerSetSavedStateLabel(driver->securityManager, vm->def, tmp);
+    qemuSecuritySetSavedStateLabel(driver->securityManager, vm->def, tmp);
 
     priv = vm->privateData;
     qemuDomainObjEnterMonitor(driver, vm);
@@ -17087,8 +17085,7 @@ qemuDomainOpenGraphics(virDomainPtr dom,
         goto endjob;
     }
 
-    if (virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def,
-                                          fd) < 0)
+    if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
         goto endjob;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -17152,13 +17149,13 @@ qemuDomainOpenGraphicsFD(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0)
+    if (qemuSecuritySetSocketLabel(driver->securityManager, vm->def) < 0)
         goto cleanup;
 
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, pair) < 0)
         goto cleanup;
 
-    if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0)
+    if (qemuSecurityClearSocketLabel(driver->securityManager, vm->def) < 0)
         goto cleanup;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)

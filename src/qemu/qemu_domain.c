@@ -589,8 +589,8 @@ qemuDomainWriteMasterKeyFile(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (virSecurityManagerDomainSetPathLabel(driver->securityManager,
-                                             vm->def, path) < 0)
+    if (qemuSecurityDomainSetPathLabel(driver->securityManager,
+                                       vm->def, path) < 0)
         goto cleanup;
 
     ret = 0;
@@ -2689,7 +2689,7 @@ qemuDomainDefPostParse(virDomainDefPtr def,
     if (qemuDomainRecheckInternalPaths(def, cfg, parseFlags) < 0)
         goto cleanup;
 
-    if (virSecurityManagerVerify(driver->securityManager, def) < 0)
+    if (qemuSecurityVerify(driver->securityManager, def) < 0)
         goto cleanup;
 
     if (qemuDomainDefVcpusPostParse(def) < 0)
@@ -7341,8 +7341,7 @@ qemuDomainSetupDev(virQEMUDriverConfigPtr cfg,
 
     VIR_DEBUG("Setting up /dev/ for domain %s", vm->def->name);
 
-    mount_options = virSecurityManagerGetMountOptions(mgr,
-                                                      vm->def);
+    mount_options = qemuSecurityGetMountOptions(mgr, vm->def);
 
     if (!mount_options &&
         VIR_STRDUP(mount_options, "") < 0)
@@ -7816,7 +7815,7 @@ qemuDomainAttachDeviceMknodHelper(pid_t pid ATTRIBUTE_UNUSED,
     bool delDevice = false;
     bool isLink = S_ISLNK(data->sb.st_mode);
 
-    virSecurityManagerPostFork(data->driver->securityManager);
+    qemuSecurityPostFork(data->driver->securityManager);
 
     if (virFileMakeParentPath(data->file) < 0) {
         virReportSystemError(errno,
@@ -7978,16 +7977,16 @@ qemuDomainAttachDeviceMknodRecursive(virQEMUDriverPtr driver,
 #endif
 
     if (STRPREFIX(file, DEVPREFIX)) {
-        if (virSecurityManagerPreFork(driver->securityManager) < 0)
+        if (qemuSecurityPreFork(driver->securityManager) < 0)
             goto cleanup;
 
         if (virProcessRunInMountNamespace(vm->pid,
                                           qemuDomainAttachDeviceMknodHelper,
                                           &data) < 0) {
-            virSecurityManagerPostFork(driver->securityManager);
+            qemuSecurityPostFork(driver->securityManager);
             goto cleanup;
         }
-        virSecurityManagerPostFork(driver->securityManager);
+        qemuSecurityPostFork(driver->securityManager);
     }
 
     if (isLink &&

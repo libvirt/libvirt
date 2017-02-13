@@ -28,6 +28,7 @@
 
 # include "qemu_conf.h"
 # include "domain_conf.h"
+# include "security/security_manager.h"
 
 int qemuSecuritySetAllLabel(virQEMUDriverPtr driver,
                             virDomainObjPtr vm,
@@ -60,4 +61,35 @@ int qemuSecuritySetHostdevLabel(virQEMUDriverPtr driver,
 int qemuSecurityRestoreHostdevLabel(virQEMUDriverPtr driver,
                                     virDomainObjPtr vm,
                                     virDomainHostdevDefPtr hostdev);
+
+/* Please note that for these APIs there is no wrapper yet. Do NOT blindly add
+ * new APIs here. If an API can touch a /dev file add a proper wrapper instead.
+ */
+# define qemuSecurityCheckAllLabel virSecurityManagerCheckAllLabel
+# define qemuSecurityClearSocketLabel virSecurityManagerClearSocketLabel
+# define qemuSecurityDomainSetPathLabel virSecurityManagerDomainSetPathLabel
+# define qemuSecurityGenLabel virSecurityManagerGenLabel
+# define qemuSecurityGetBaseLabel virSecurityManagerGetBaseLabel
+# define qemuSecurityGetDOI virSecurityManagerGetDOI
+# define qemuSecurityGetModel virSecurityManagerGetModel
+# define qemuSecurityGetMountOptions virSecurityManagerGetMountOptions
+# define qemuSecurityGetNested virSecurityManagerGetNested
+# define qemuSecurityGetProcessLabel virSecurityManagerGetProcessLabel
+# define qemuSecurityNew virSecurityManagerNew
+# define qemuSecurityNewDAC virSecurityManagerNewDAC
+# define qemuSecurityNewStack virSecurityManagerNewStack
+# define qemuSecurityPostFork virSecurityManagerPostFork
+# define qemuSecurityPreFork virSecurityManagerPreFork
+# define qemuSecurityReleaseLabel virSecurityManagerReleaseLabel
+# define qemuSecurityReserveLabel virSecurityManagerReserveLabel
+# define qemuSecurityRestoreSavedStateLabel virSecurityManagerRestoreSavedStateLabel
+# define qemuSecuritySetChildProcessLabel virSecurityManagerSetChildProcessLabel
+# define qemuSecuritySetDaemonSocketLabel virSecurityManagerSetDaemonSocketLabel
+# define qemuSecuritySetImageFDLabel virSecurityManagerSetImageFDLabel
+# define qemuSecuritySetSavedStateLabel virSecurityManagerSetSavedStateLabel
+# define qemuSecuritySetSocketLabel virSecurityManagerSetSocketLabel
+# define qemuSecuritySetTapFDLabel virSecurityManagerSetTapFDLabel
+# define qemuSecurityStackAddNested virSecurityManagerStackAddNested
+# define qemuSecurityVerify virSecurityManagerVerify
+
 #endif /* __QEMU_SECURITY_H__ */

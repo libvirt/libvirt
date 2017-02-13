@@ -28,6 +28,7 @@
 #include "qemu_capabilities.h"
 #include "qemu_interface.h"
 #include "qemu_alias.h"
+#include "qemu_security.h"
 #include "cpu/cpu.h"
 #include "dirname.h"
 #include "viralloc.h"
@@ -8210,8 +8211,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
     }
 
     for (i = 0; i < tapfdSize; i++) {
-        if (virSecurityManagerSetTapFDLabel(driver->securityManager,
-                                            def, tapfd[i]) < 0)
+        if (qemuSecuritySetTapFDLabel(driver->securityManager,
+                                      def, tapfd[i]) < 0)
             goto cleanup;
         virCommandPassFD(cmd, tapfd[i],
                          VIR_COMMAND_PASS_FD_CLOSE_PARENT);
@@ -8292,7 +8293,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriverPtr driver,
 
 
 /* NOTE: Not using const virDomainDef here since eventually a call is made
- *       into virSecurityManagerSetTapFDLabel which calls it's driver
+ *       into qemuSecuritySetTapFDLabel which calls it's driver
  *       API domainSetSecurityTapFDLabel that doesn't use the const format.
  */
 static int

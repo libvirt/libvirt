@@ -221,8 +221,7 @@ qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
         return 0;
     }
 
-    if (virSecurityManagerSetDaemonSocketLabel(driver->securityManager,
-                                               vm->def) < 0) {
+    if (qemuSecuritySetDaemonSocketLabel(driver->securityManager, vm->def) < 0) {
         VIR_ERROR(_("Failed to set security context for agent for %s"),
                   vm->def->name);
         goto cleanup;
@@ -250,8 +249,7 @@ qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
         return -1;
     }
 
-    if (virSecurityManagerClearSocketLabel(driver->securityManager,
-                                           vm->def) < 0) {
+    if (qemuSecurityClearSocketLabel(driver->securityManager, vm->def) < 0) {
         VIR_ERROR(_("Failed to clear security context for agent for %s"),
                   vm->def->name);
         qemuAgentClose(agent);
@@ -1657,8 +1655,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
     int ret = -1;
     qemuMonitorPtr mon = NULL;
 
-    if (virSecurityManagerSetDaemonSocketLabel(driver->securityManager,
-                                               vm->def) < 0) {
+    if (qemuSecuritySetDaemonSocketLabel(driver->securityManager, vm->def) < 0) {
         VIR_ERROR(_("Failed to set security context for monitor for %s"),
                   vm->def->name);
         return -1;
@@ -1695,7 +1692,7 @@ qemuConnectMonitor(virQEMUDriverPtr driver, virDomainObjPtr vm, int asyncJob,
     }
     priv->mon = mon;
 
-    if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0) {
+    if (qemuSecurityClearSocketLabel(driver->securityManager, vm->def) < 0) {
         VIR_ERROR(_("Failed to clear security context for monitor for %s"),
                   vm->def->name);
         return -1;
@@ -2611,7 +2608,7 @@ static int qemuProcessHook(void *data)
      * protected across fork()
      */
 
-    virSecurityManagerPostFork(h->driver->securityManager);
+    qemuSecurityPostFork(h->driver->securityManager);
 
     /* Some later calls want pid present */
     h->vm->pid = getpid();
@@ -2624,7 +2621,7 @@ static int qemuProcessHook(void *data)
      * sockets the lock driver opens that we don't want
      * labelled. So far we're ok though.
      */
-    if (virSecurityManagerSetSocketLabel(h->driver->securityManager, h->vm->def) < 0)
+    if (qemuSecuritySetSocketLabel(h->driver->securityManager, h->vm->def) < 0)
         goto cleanup;
     if (virDomainLockProcessStart(h->driver->lockManager,
                                   h->cfg->uri,
@@ -2633,7 +2630,7 @@ static int qemuProcessHook(void *data)
                                   true,
                                   &fd) < 0)
         goto cleanup;
-    if (virSecurityManagerClearSocketLabel(h->driver->securityManager, h->vm->def) < 0)
+    if (qemuSecurityClearSocketLabel(h->driver->securityManager, h->vm->def) < 0)
         goto cleanup;
 
     if (qemuDomainBuildNamespace(h->cfg, h->driver->securityManager, h->vm) < 0)
@@ -3233,8 +3230,8 @@ qemuProcessBuildDestroyHugepagesPath(virQEMUDriverPtr driver,
                     goto cleanup;
                 }
 
-                if (virSecurityManagerDomainSetPathLabel(driver->securityManager,
-                                                         vm->def, hugepagePath) < 0) {
+                if (qemuSecurityDomainSetPathLabel(driver->securityManager,
+                                                   vm->def, hugepagePath) < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    "%s", _("Unable to set huge path in security driver"));
                     goto cleanup;
@@ -3410,13 +3407,13 @@ qemuProcessReconnect(void *opaque)
     /* if domain requests security driver we haven't loaded, report error, but
      * do not kill the domain
      */
-    ignore_value(virSecurityManagerCheckAllLabel(driver->securityManager,
-                                                 obj->def));
+    ignore_value(qemuSecurityCheckAllLabel(driver->securityManager,
+                                           obj->def));
 
     if (qemuDomainRefreshVcpuInfo(driver, obj, QEMU_ASYNC_JOB_NONE, true) < 0)
         goto error;
 
-    if (virSecurityManagerReserveLabel(driver->securityManager, obj->def, obj->pid) < 0)
+    if (qemuSecurityReserveLabel(driver->securityManager, obj->def, obj->pid) < 0)
         goto error;
 
     if (qemuProcessNotifyNets(obj->def) < 0)
@@ -4423,8 +4420,8 @@ qemuProcessMakeDir(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (virSecurityManagerDomainSetPathLabel(driver->securityManager,
-                                             vm->def, path) < 0)
+    if (qemuSecurityDomainSetPathLabel(driver->securityManager,
+                                       vm->def, path) < 0)
         goto cleanup;
 
     ret = 0;
@@ -4670,7 +4667,7 @@ qemuProcessStartValidate(virQEMUDriverPtr driver,
         }
 
         VIR_DEBUG("Checking domain and device security labels");
-        if (virSecurityManagerCheckAllLabel(driver->securityManager, vm->def) < 0)
+        if (qemuSecurityCheckAllLabel(driver->securityManager, vm->def) < 0)
             return -1;
 
     }
@@ -5237,7 +5234,7 @@ qemuProcessPrepareDomain(virConnectPtr conn,
         /* If you are using a SecurityDriver with dynamic labelling,
            then generate a security label for isolation */
         VIR_DEBUG("Generating domain security label (if required)");
-        if (virSecurityManagerGenLabel(driver->securityManager, vm->def) < 0) {
+        if (qemuSecurityGenLabel(driver->securityManager, vm->def) < 0) {
             virDomainAuditSecurityLabel(vm, false);
             goto cleanup;
         }
@@ -5548,8 +5545,8 @@ qemuProcessLaunch(virConnectPtr conn,
     virCommandSetUmask(cmd, 0x002);
 
     VIR_DEBUG("Setting up security labelling");
-    if (virSecurityManagerSetChildProcessLabel(driver->securityManager,
-                                               vm->def, cmd) < 0)
+    if (qemuSecuritySetChildProcessLabel(driver->securityManager,
+                                         vm->def, cmd) < 0)
         goto cleanup;
 
     virCommandSetOutputFD(cmd, &logfile);
@@ -5559,10 +5556,10 @@ qemuProcessLaunch(virConnectPtr conn,
     virCommandDaemonize(cmd);
     virCommandRequireHandshake(cmd);
 
-    if (virSecurityManagerPreFork(driver->securityManager) < 0)
+    if (qemuSecurityPreFork(driver->securityManager) < 0)
         goto cleanup;
     rv = virCommandRun(cmd, NULL);
-    virSecurityManagerPostFork(driver->securityManager);
+    qemuSecurityPostFork(driver->securityManager);
 
     /* wait for qemu process to show up */
     if (rv == 0) {
@@ -5639,8 +5636,8 @@ qemuProcessLaunch(virConnectPtr conn,
             goto cleanup;
         }
         if (S_ISFIFO(stdin_sb.st_mode) &&
-            virSecurityManagerSetImageFDLabel(driver->securityManager,
-                                              vm->def, incoming->fd) < 0)
+            qemuSecuritySetImageFDLabel(driver->securityManager,
+                                        vm->def, incoming->fd) < 0)
             goto cleanup;
     }
 
@@ -6157,7 +6154,7 @@ void qemuProcessStop(virQEMUDriverPtr driver,
         qemuSecurityRestoreAllLabel(driver, vm,
                                     !!(flags & VIR_QEMU_PROCESS_STOP_MIGRATED));
 
-    virSecurityManagerReleaseLabel(driver->securityManager, vm->def);
+    qemuSecurityReleaseLabel(driver->securityManager, vm->def);
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDeviceDef dev;
@@ -6401,13 +6398,13 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
     vm->pid = pid;
 
     VIR_DEBUG("Detect security driver config");
-    sec_managers = virSecurityManagerGetNested(driver->securityManager);
+    sec_managers = qemuSecurityGetNested(driver->securityManager);
     if (sec_managers == NULL)
         goto error;
 
     for (i = 0; sec_managers[i]; i++) {
         seclabelgen = false;
-        model = virSecurityManagerGetModel(sec_managers[i]);
+        model = qemuSecurityGetModel(sec_managers[i]);
         seclabeldef = virDomainDefGetSecurityLabelDef(vm->def, model);
         if (seclabeldef == NULL) {
             if (!(seclabeldef = virSecurityLabelDefNew(model)))
@@ -6417,8 +6414,8 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         seclabeldef->type = VIR_DOMAIN_SECLABEL_STATIC;
         if (VIR_ALLOC(seclabel) < 0)
             goto error;
-        if (virSecurityManagerGetProcessLabel(sec_managers[i],
-                                              vm->def, vm->pid, seclabel) < 0)
+        if (qemuSecurityGetProcessLabel(sec_managers[i], vm->def,
+                                        vm->pid, seclabel) < 0)
             goto error;
 
         if (VIR_STRDUP(seclabeldef->model, model) < 0)
@@ -6435,9 +6432,9 @@ int qemuProcessAttach(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
     }
 
-    if (virSecurityManagerCheckAllLabel(driver->securityManager, vm->def) < 0)
+    if (qemuSecurityCheckAllLabel(driver->securityManager, vm->def) < 0)
         goto error;
-    if (virSecurityManagerGenLabel(driver->securityManager, vm->def) < 0)
+    if (qemuSecurityGenLabel(driver->securityManager, vm->def) < 0)
         goto error;
 
     if (qemuDomainPerfRestart(vm) < 0)

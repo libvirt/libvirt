@@ -38,6 +38,7 @@
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
 #include "qemu_domain.h"
+#include "qemu_security.h"
 #include "viruuid.h"
 #include "virbuffer.h"
 #include "virconf.h"
@@ -916,7 +917,7 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
     }
 
     /* access sec drivers and create a sec model for each one */
-    if (!(sec_managers = virSecurityManagerGetNested(driver->securityManager)))
+    if (!(sec_managers = qemuSecurityGetNested(driver->securityManager)))
         goto error;
 
     /* calculate length */
@@ -929,14 +930,14 @@ virCapsPtr virQEMUDriverCreateCapabilities(virQEMUDriverPtr driver)
 
     for (i = 0; sec_managers[i]; i++) {
         virCapsHostSecModelPtr sm = &caps->host.secModels[i];
-        doi = virSecurityManagerGetDOI(sec_managers[i]);
-        model = virSecurityManagerGetModel(sec_managers[i]);
+        doi = qemuSecurityGetDOI(sec_managers[i]);
+        model = qemuSecurityGetModel(sec_managers[i]);
         if (VIR_STRDUP(sm->model, model) < 0 ||
             VIR_STRDUP(sm->doi, doi) < 0)
             goto error;
 
         for (j = 0; j < ARRAY_CARDINALITY(virtTypes); j++) {
-            lbl = virSecurityManagerGetBaseLabel(sec_managers[i], virtTypes[j]);
+            lbl = qemuSecurityGetBaseLabel(sec_managers[i], virtTypes[j]);
             type = virDomainVirtTypeToString(virtTypes[j]);
             if (lbl &&
                 virCapabilitiesHostSecModelAddBaseLabel(sm, type, lbl) < 0)

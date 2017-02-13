@@ -1137,8 +1137,8 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
     }
 
     for (i = 0; i < tapfdSize; i++) {
-        if (virSecurityManagerSetTapFDLabel(driver->securityManager,
-                                            vm->def, tapfd[i]) < 0)
+        if (qemuSecuritySetTapFDLabel(driver->securityManager,
+                                      vm->def, tapfd[i]) < 0)
             goto cleanup;
     }
 

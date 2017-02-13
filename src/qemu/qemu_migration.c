@@ -40,6 +40,7 @@
 #include "qemu_cgroup.h"
 #include "qemu_hotplug.h"
 #include "qemu_blockjob.h"
+#include "qemu_security.h"
 
 #include "domain_audit.h"
 #include "virlog.h"
@@ -4597,7 +4598,7 @@ qemuMigrationConnect(virQEMUDriverPtr driver,
     spec->destType = MIGRATION_DEST_FD;
     spec->dest.fd.qemu = -1;
 
-    if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0)
+    if (qemuSecuritySetSocketLabel(driver->securityManager, vm->def) < 0)
         goto cleanup;
     if (virNetSocketNewConnectTCP(host, port,
                                   AF_UNSPEC,
@@ -4605,7 +4606,7 @@ qemuMigrationConnect(virQEMUDriverPtr driver,
         spec->dest.fd.qemu = virNetSocketDupFD(sock, true);
         virObjectUnref(sock);
     }
-    if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0 ||
+    if (qemuSecurityClearSocketLabel(driver->securityManager, vm->def) < 0 ||
         spec->dest.fd.qemu == -1)
         goto cleanup;
 
@@ -5076,8 +5077,8 @@ static int doTunnelMigrate(virQEMUDriverPtr driver,
         spec.dest.fd.local = fds[0];
     }
     if (spec.dest.fd.qemu == -1 ||
-        virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def,
-                                          spec.dest.fd.qemu) < 0) {
+        qemuSecuritySetImageFDLabel(driver->securityManager, vm->def,
+                                    spec.dest.fd.qemu) < 0) {
         virReportSystemError(errno, "%s",
                              _("cannot create pipe for tunnelled migration"));
         goto cleanup;
@@ -6463,8 +6464,8 @@ qemuMigrationToFile(virQEMUDriverPtr driver, virDomainObjPtr vm,
      * doesn't have to open() the file, so while we still have to
      * grant SELinux access, we can do it on fd and avoid cleanup
      * later, as well as skip futzing with cgroup.  */
-    if (virSecurityManagerSetImageFDLabel(driver->securityManager, vm->def,
-                                          compressor ? pipeFD[1] : fd) < 0)
+    if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def,
+                                    compressor ? pipeFD[1] : fd) < 0)
         goto cleanup;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
