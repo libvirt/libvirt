@@ -340,6 +340,8 @@ BuildRequires: polkit-devel >= 0.93
 # For mount/umount in FS driver
 BuildRequires: util-linux
 %if %{with_qemu}
+# For managing ACLs
+BuildRequires: libacl-devel
 # From QEMU RPMs
 BuildRequires: /usr/bin/qemu-img
 %else
