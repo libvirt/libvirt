@@ -271,6 +271,7 @@ LIBVIRT_ARG_VIRTUALPORT
 LIBVIRT_ARG_WIRESHARK
 LIBVIRT_ARG_YAJL
 
+LIBVIRT_CHECK_ACL
 LIBVIRT_CHECK_APPARMOR
 LIBVIRT_CHECK_ATOMIC
 LIBVIRT_CHECK_ATTR
@@ -325,18 +326,10 @@ dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h regex.h sys/un.h \
   sys/poll.h syslog.h mntent.h net/ethernet.h linux/magic.h \
   sys/un.h sys/syscall.h sys/sysctl.h netinet/tcp.h ifaddrs.h \
-  libtasn1.h sys/ucred.h sys/mount.h sys/acl.h])
+  libtasn1.h sys/ucred.h sys/mount.h])
 dnl Check whether endian provides handy macros.
 AC_CHECK_DECLS([htole64], [], [], [[#include <endian.h>]])
 AC_CHECK_FUNCS([stat stat64 __xstat __xstat64 lstat lstat64 __lxstat __lxstat64])
-
-ACL_CFLAGS=""
-ACL_LIBS=""
-if test "x$ac_cv_header_sys_acl_h:x$with_linux" = "xyes:xyes" ; then
-    ACL_LIBS="-lacl"
-fi
-AC_SUBST([ACL_CFLAGS])
-AC_SUBST([ACL_LIBS])
 
 AC_CHECK_TYPE([struct ifreq],
   [AC_DEFINE([HAVE_STRUCT_IFREQ],[1],
@@ -951,6 +944,7 @@ LIBVIRT_RESULT_DRIVER_MODULES
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
+LIBVIRT_RESULT_ACL
 LIBVIRT_RESULT_APPARMOR
 LIBVIRT_RESULT_ATTR
 LIBVIRT_RESULT_AUDIT
