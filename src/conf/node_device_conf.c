@@ -56,11 +56,17 @@ VIR_ENUM_IMPL(virNodeDevCap, VIR_NODE_DEV_CAP_LAST,
               "storage",
               "fc_host",
               "vports",
-              "scsi_generic")
+              "scsi_generic",
+              "drm")
 
 VIR_ENUM_IMPL(virNodeDevNetCap, VIR_NODE_DEV_CAP_NET_LAST,
               "80203",
               "80211")
+
+VIR_ENUM_IMPL(virNodeDevDRM, VIR_NODE_DEV_DRM_LAST,
+              "primary",
+              "control",
+              "render")
 
 static int
 virNodeDevCapsDefParseString(const char *xpath,
@@ -698,6 +704,9 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
             virBufferEscapeString(&buf, "<char>%s</char>\n",
                                   data->sg.path);
             break;
+        case VIR_NODE_DEV_CAP_DRM:
+            virBufferEscapeString(&buf, "<type>%s</type>\n", virNodeDevDRMTypeToString(data->drm.type));
+            break;
         case VIR_NODE_DEV_CAP_FC_HOST:
         case VIR_NODE_DEV_CAP_VPORTS:
         case VIR_NODE_DEV_CAP_LAST:
@@ -796,6 +805,35 @@ virNodeDevCapsDefParseULongLong(const char *xpath,
 
     *value = val;
     return 0;
+}
+
+static int
+virNodeDevCapDRMParseXML(xmlXPathContextPtr ctxt,
+                         virNodeDeviceDefPtr def,
+                         xmlNodePtr node,
+                         virNodeDevCapDataPtr data)
+{
+    xmlNodePtr orignode;
+    int ret = -1;
+    char *type = NULL;
+
+    orignode = ctxt->node;
+    ctxt->node = node;
+
+    type = virXPathString("string(./type[1])", ctxt);
+
+    if ((data->drm.type = virNodeDevDRMTypeFromString(type)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown drm type '%s' for '%s'"), type, def->name);
+        goto out;
+    }
+
+    ret = 0;
+
+ out:
+    VIR_FREE(type);
+    ctxt->node = orignode;
+    return ret;
 }
 
 static int
@@ -1689,6 +1727,9 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
     case VIR_NODE_DEV_CAP_STORAGE:
         ret = virNodeDevCapStorageParseXML(ctxt, def, node, &caps->data);
         break;
+    case VIR_NODE_DEV_CAP_DRM:
+        ret = virNodeDevCapDRMParseXML(ctxt, def, node, &caps->data);
+        break;
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:
     case VIR_NODE_DEV_CAP_SCSI_GENERIC:
@@ -2116,6 +2157,7 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
     case VIR_NODE_DEV_CAP_SCSI_GENERIC:
         VIR_FREE(data->sg.path);
         break;
+    case VIR_NODE_DEV_CAP_DRM:
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:
     case VIR_NODE_DEV_CAP_LAST:

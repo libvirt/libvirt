@@ -410,6 +410,42 @@ static int udevProcessPCI(struct udev_device *device,
     return ret;
 }
 
+static int drmGetMinorType(int minor)
+{
+    int type = minor >> 6;
+
+    if (minor < 0)
+        return -1;
+
+    switch (type) {
+    case VIR_NODE_DEV_DRM_PRIMARY:
+    case VIR_NODE_DEV_DRM_CONTROL:
+    case VIR_NODE_DEV_DRM_RENDER:
+        return type;
+    default:
+        return -1;
+    }
+}
+
+static int udevProcessDRMDevice(struct udev_device *device,
+                                virNodeDeviceDefPtr def)
+{
+    virNodeDevCapDataPtr data = &def->caps->data;
+    int minor;
+
+    if (udevGenerateDeviceName(device, def, NULL) != 0)
+        return -1;
+
+    if (udevGetIntProperty(device, "MINOR", &minor, 10) < 0)
+        return -1;
+
+    if ((minor = drmGetMinorType(minor)) == -1)
+        return -1;
+
+    data->drm.type = minor;
+
+    return 0;
+}
 
 static int udevProcessUSBDevice(struct udev_device *device,
                                 virNodeDeviceDefPtr def)
@@ -971,6 +1007,8 @@ udevGetDeviceType(struct udev_device *device,
             *type = VIR_NODE_DEV_CAP_STORAGE;
         else if (STREQ(devtype, "wlan"))
             *type = VIR_NODE_DEV_CAP_NET;
+        else if (STREQ(devtype, "drm_minor"))
+            *type = VIR_NODE_DEV_CAP_DRM;
     } else {
         /* PCI devices don't set the DEVTYPE property. */
         if (udevHasDeviceProperty(device, "PCI_CLASS"))
@@ -1038,6 +1076,9 @@ static int udevGetDeviceDetails(struct udev_device *device,
         break;
     case VIR_NODE_DEV_CAP_SCSI_GENERIC:
         ret = udevProcessSCSIGeneric(device, def);
+        break;
+    case VIR_NODE_DEV_CAP_DRM:
+        ret = udevProcessDRMDevice(device, def);
         break;
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,

@@ -72,6 +72,7 @@ static int update_caps(virNodeDeviceObjPtr dev)
         /* all types that (supposedly) don't require any updates
          * relative to what's in the cache.
          */
+        case VIR_NODE_DEV_CAP_DRM:
         case VIR_NODE_DEV_CAP_SYSTEM:
         case VIR_NODE_DEV_CAP_USB_DEV:
         case VIR_NODE_DEV_CAP_USB_INTERFACE:

@@ -82,6 +82,7 @@
         <ref name="capscsitarget"/>
         <ref name="capscsi"/>
         <ref name="capstorage"/>
+        <ref name="capdrm"/>
       </choice>
     </element>
   </define>
@@ -537,6 +538,19 @@
   <define name='capstoragefixed'>
     <element name='size'>
       <ref name='unsignedLong'/>
+    </element>
+  </define>
+
+  <define name='capdrm'>
+    <attribute name='type'>
+      <value>drm</value>
+    </attribute>
+    <element name='type'>
+      <choice>
+        <value>primary</value>
+        <value>control</value>
+        <value>render</value>
+      </choice>
     </element>
   </define>
 

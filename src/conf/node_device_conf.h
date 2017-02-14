@@ -62,6 +62,7 @@ typedef enum {
     VIR_NODE_DEV_CAP_FC_HOST,		/* FC Host Bus Adapter */
     VIR_NODE_DEV_CAP_VPORTS,		/* HBA which is capable of vports */
     VIR_NODE_DEV_CAP_SCSI_GENERIC,      /* SCSI generic device */
+    VIR_NODE_DEV_CAP_DRM,               /* DRM device */
 
     VIR_NODE_DEV_CAP_LAST
 } virNodeDevCapType;
@@ -92,6 +93,17 @@ typedef enum {
     VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION      = (1 << 1),
     VIR_NODE_DEV_CAP_FLAG_PCIE                      = (1 << 2),
 } virNodeDevPCICapFlags;
+
+typedef enum {
+    /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
+    VIR_NODE_DEV_DRM_PRIMARY,
+    VIR_NODE_DEV_DRM_CONTROL,
+    VIR_NODE_DEV_DRM_RENDER,
+
+    VIR_NODE_DEV_DRM_LAST
+} virNodeDevDRMType;
+
+VIR_ENUM_DECL(virNodeDevDRM)
 
 typedef struct _virNodeDevCapData {
     virNodeDevCapType type;
@@ -192,6 +204,9 @@ typedef struct _virNodeDevCapData {
         struct {
             char *path;
         } sg; /* SCSI generic device */
+        struct {
+            virNodeDevDRMType type;
+        } drm;
     };
 } virNodeDevCapData, *virNodeDevCapDataPtr;
 

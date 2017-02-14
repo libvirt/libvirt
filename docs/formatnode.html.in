@@ -314,6 +314,16 @@
                 and <code>media_label</code>.</dd>
             </dl>
           </dd>
+          <dt><code>drm</code></dt>
+          <dd>Describes a Direct Rendering Manager (DRM) device.
+          Sub-elements include:
+            <dl>
+              <dt><code>type</code></dt>
+              <dd>The type of DRM device. Could be
+              <code>primary</code>, <code>control</code> or
+              <code>render</code>.</dd>
+            </dl>
+          </dd>
         </dl>
       </dd>
     </dl>

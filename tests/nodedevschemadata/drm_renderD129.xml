@@ -1,0 +1,10 @@
+<device>
+  <name>drm_renderD129</name>
+  <path>/sys/devices/pci0000:00/0000:00:02.0/drm/renderD129</path>
+  <devnode type='dev'>/dev/dri/renderD129</devnode>
+  <devnode type='link'>/dev/dri/by-path/pci-0000:00:02.0-render</devnode>
+  <parent>pci_0000_00_02_0</parent>
+  <capability type='drm'>
+    <type>render</type>
+  </capability>
+</device>

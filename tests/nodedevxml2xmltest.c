@@ -100,6 +100,7 @@ mymain(void)
     DO_TEST("pci_0000_02_10_7_sriov_zero_vfs_max_count");
     DO_TEST("pci_0000_02_10_7_sriov_pf_vfs_all");
     DO_TEST("pci_0000_02_10_7_sriov_pf_vfs_all_header_type");
+    DO_TEST("drm_renderD129");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
