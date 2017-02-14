@@ -1736,6 +1736,8 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
             goto error;
     }
 
+    def->sysfs_path = virXPathString("string(./path[1])", ctxt);
+
     /* Parse devnodes */
     nodes = NULL;
     if ((n = virXPathNodeSet("./devnode", ctxt, &nodes)) < 0)
