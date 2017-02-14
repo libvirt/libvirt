@@ -678,7 +678,7 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
                                       data->storage.num_blocks);
             }
             if (data->storage.flags & VIR_NODE_DEV_CAP_STORAGE_HOTPLUGGABLE)
-                virBufferAddLit(&buf, "<capability type='hotpluggable' />\n");
+                virBufferAddLit(&buf, "<capability type='hotpluggable'/>\n");
             break;
         case VIR_NODE_DEV_CAP_SCSI_GENERIC:
             virBufferEscapeString(&buf, "<char>%s</char>\n",
