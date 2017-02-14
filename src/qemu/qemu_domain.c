@@ -7152,6 +7152,16 @@ qemuDomainCreateDeviceRecursive(const char *device,
             }
             goto cleanup;
         }
+
+        /* Set the file permissions again: mknod() is affected by the
+         * current umask, and as such might not have set them correctly */
+        if (create &&
+            chmod(devicePath, sb.st_mode) < 0) {
+            virReportSystemError(errno,
+                                 _("Failed to set permissions for device %s"),
+                                 devicePath);
+            goto cleanup;
+        }
     }
 
     if (!create) {
