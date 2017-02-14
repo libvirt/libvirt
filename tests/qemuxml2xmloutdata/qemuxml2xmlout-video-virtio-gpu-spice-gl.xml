@@ -31,7 +31,7 @@
     <input type='keyboard' bus='ps2'/>
     <graphics type='spice'>
       <listen type='none'/>
-      <gl enable='yes'/>
+      <gl enable='yes' rendernode='/dev/dri/foo'/>
     </graphics>
     <video>
       <model type='virtio' heads='1' primary='yes'>

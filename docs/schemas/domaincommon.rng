@@ -3033,6 +3033,11 @@
                 <attribute name="enable">
                   <ref name="virYesNo"/>
                 </attribute>
+                <optional>
+                  <attribute name="rendernode">
+                    <ref name="absFilePath"/>
+                  </attribute>
+                </optional>
                 <empty/>
               </element>
             </optional>

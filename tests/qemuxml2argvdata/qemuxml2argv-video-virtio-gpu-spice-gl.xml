@@ -26,7 +26,7 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <graphics type='spice' autoport='no'>
-      <gl enable='yes'/>
+      <gl enable='yes' rendernode='/dev/dri/foo'/>
     </graphics>
     <video>
       <model type='virtio' heads='1'>

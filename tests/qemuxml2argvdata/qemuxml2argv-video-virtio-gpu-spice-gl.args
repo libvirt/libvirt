@@ -19,6 +19,6 @@ QEMU_AUDIO_DRV=spice \
 -drive file=/var/lib/libvirt/images/QEMUGuest1,format=qcow2,if=none,\
 id=drive-ide0-0-0,cache=none \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
--spice port=0,gl=on \
+-spice port=0,gl=on,rendernode=/dev/dri/foo \
 -device virtio-gpu-pci,id=video0,virgl=on,bus=pci.0,addr=0x2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

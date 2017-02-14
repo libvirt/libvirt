@@ -7920,6 +7920,16 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
          * TristateSwitch helper */
         virBufferAsprintf(&opt, "gl=%s,",
                           virTristateSwitchTypeToString(graphics->data.spice.gl));
+
+        if (graphics->data.spice.rendernode) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_RENDERNODE)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("This QEMU doesn't support spice OpenGL rendernode"));
+                goto error;
+            }
+
+            virBufferAsprintf(&opt, "rendernode=%s,", graphics->data.spice.rendernode);
+        }
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEAMLESS_MIGRATION)) {

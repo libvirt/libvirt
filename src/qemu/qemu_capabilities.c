@@ -357,6 +357,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
 
               "query-cpu-model-expansion", /* 245 */
               "virtio-net.host_mtu",
+              "spice-rendernode",
     );
 
 
@@ -2950,6 +2951,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "spice", "unix", QEMU_CAPS_SPICE_UNIX },
     { "drive", "throttling.bps-total-max-length", QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH },
     { "drive", "throttling.group", QEMU_CAPS_DRIVE_IOTUNE_GROUP },
+    { "spice", "rendernode", QEMU_CAPS_SPICE_RENDERNODE },
 };
 
 static int
