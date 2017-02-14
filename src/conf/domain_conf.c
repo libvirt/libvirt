@@ -4219,6 +4219,50 @@ virDomainHostdevAssignAddress(virDomainXMLOptionPtr xmlopt,
 
 
 static int
+virDomainHostdevDefPostParse(virDomainHostdevDefPtr dev,
+                             const virDomainDef *def,
+                             virDomainXMLOptionPtr xmlopt)
+{
+    if (dev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
+        return 0;
+
+    switch (dev->source.subsys.type) {
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
+        if (dev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            virDomainHostdevAssignAddress(xmlopt, def, dev) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Cannot assign SCSI host device address"));
+            return -1;
+        } else {
+            /* Ensure provided address doesn't conflict with existing
+             * scsi disk drive address
+             */
+            virDomainDeviceDriveAddressPtr addr = &dev->info->addr.drive;
+            if (virDomainDriveAddressIsUsedByDisk(def,
+                                                  VIR_DOMAIN_DISK_BUS_SCSI,
+                                                  addr)) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("SCSI host address controller='%u' "
+                                 "bus='%u' target='%u' unit='%u' in "
+                                 "use by a SCSI disk"),
+                               addr->controller, addr->bus,
+                               addr->target, addr->unit);
+                return -1;
+            }
+        }
+        break;
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST:
+    case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
                                     const virDomainDef *def,
                                     virCapsPtr caps ATTRIBUTE_UNUSED,
@@ -4299,34 +4343,9 @@ virDomainDeviceDefPostParseInternal(virDomainDeviceDefPtr dev,
         video->vram = VIR_ROUND_UP_POWER_OF_TWO(video->vram);
     }
 
-    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
-        virDomainHostdevDefPtr hdev = dev->data.hostdev;
-
-        if (virHostdevIsSCSIDevice(hdev)) {
-            if (hdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-                virDomainHostdevAssignAddress(xmlopt, def, hdev) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Cannot assign SCSI host device address"));
-                return -1;
-            } else {
-                /* Ensure provided address doesn't conflict with existing
-                 * scsi disk drive address
-                 */
-                virDomainDeviceDriveAddressPtr addr = &hdev->info->addr.drive;
-                if (virDomainDriveAddressIsUsedByDisk(def,
-                                                      VIR_DOMAIN_DISK_BUS_SCSI,
-                                                      addr)) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("SCSI host address controller='%u' "
-                                     "bus='%u' target='%u' unit='%u' in "
-                                     "use by a SCSI disk"),
-                                   addr->controller, addr->bus,
-                                   addr->target, addr->unit);
-                    return -1;
-                }
-            }
-        }
-    }
+    if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV &&
+        virDomainHostdevDefPostParse(dev->data.hostdev, def, xmlopt) < 0)
+        return -1;
 
     if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
         virDomainControllerDefPtr cdev = dev->data.controller;
