@@ -918,6 +918,34 @@ udevProcessSCSIGeneric(struct udev_device *dev,
 }
 
 static int
+udevGetDeviceNodes(struct udev_device *device,
+                   virNodeDeviceDefPtr def)
+{
+    const char *devnode = NULL;
+    struct udev_list_entry *list_entry = NULL;
+    int n = 0;
+
+    devnode = udev_device_get_devnode(device);
+
+    if (VIR_STRDUP(def->devnode, devnode) < 0)
+        return -1;
+
+    udev_list_entry_foreach(list_entry, udev_device_get_devlinks_list_entry(device))
+        n++;
+
+    if (VIR_ALLOC_N(def->devlinks, n + 1) < 0)
+        return -1;
+
+    n = 0;
+    udev_list_entry_foreach(list_entry, udev_device_get_devlinks_list_entry(device)) {
+        if (VIR_STRDUP(def->devlinks[n++], udev_list_entry_get_name(list_entry)) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+static int
 udevGetDeviceType(struct udev_device *device,
                   virNodeDevCapType *type)
 {
@@ -1123,6 +1151,9 @@ static int udevAddOneDevice(struct udev_device *device)
         goto cleanup;
 
     if (udevGetDeviceType(device, &def->caps->data.type) != 0)
+        goto cleanup;
+
+    if (udevGetDeviceNodes(device, def) != 0)
         goto cleanup;
 
     if (udevGetDeviceDetails(device, def) != 0)

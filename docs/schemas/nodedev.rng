@@ -16,6 +16,22 @@
         <element name="path"><text/></element>
       </optional>
       <optional>
+        <element name="devnode">
+          <attribute name='type'>
+            <value>dev</value>
+          </attribute>
+          <text/>
+        </element>
+      </optional>
+      <zeroOrMore>
+        <element name="devnode">
+          <attribute name='type'>
+            <value>link</value>
+          </attribute>
+          <text/>
+        </element>
+      </zeroOrMore>
+      <optional>
         <ref name="parent"/>
       </optional>
 

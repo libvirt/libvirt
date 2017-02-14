@@ -1,5 +1,9 @@
 <device>
   <name>storage_serial_3600c0ff000d7a2a5d463ff4902000000</name>
+  <devnode type='dev'>/dev/sdb</devnode>
+  <devnode type='link'>/dev/disk/by-id/usb-SanDisk_Ultra_Fit_4C530001051009112405-0:0</devnode>
+  <devnode type='link'>/dev/disk/by-path/pci-0000:00:14.0-usb-0:1:1.0-scsi-0:0:0:0</devnode>
+  <devnode type='link'>/dev/disk/by-uuid/661A1A460111DA18</devnode>
   <parent>pci_10df_fe00_scsi_host_scsi_device_lun8</parent>
   <capability type='storage'>
     <block>/dev/sdj</block>

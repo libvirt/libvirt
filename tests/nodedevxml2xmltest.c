@@ -87,6 +87,7 @@ mymain(void)
     DO_TEST("pci_8086_27c5_scsi_host_scsi_host");
     DO_TEST("pci_8086_27c5_scsi_host");
     DO_TEST("storage_serial_SATA_HTS721010G9SA00_MPCZ12Y0GNGWSE");
+    DO_TEST("storage_serial_3600c0ff000d7a2a5d463ff4902000000");
     DO_TEST("usb_device_1d6b_1_0000_00_1d_0_if0");
     DO_TEST("usb_device_1d6b_1_0000_00_1d_0");
     DO_TEST("pci_8086_4238_pcie_wireless");

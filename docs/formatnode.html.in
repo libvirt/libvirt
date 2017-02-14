@@ -37,6 +37,12 @@
       <dd>If this element is present, it names the parent device (that
         is, a controller to which this node belongs).
       </dd>
+      <dt><code>devnode</code></dt>
+      <dd>This node appears for each associated <code>/dev</code>
+      special file. A mandatory attribute <code>type</code> specify
+      the kind of file path, which may be either <code>dev</code> for
+      the main name, or <code>link</code> for additional symlinks.
+      </dd>
       <dt><code>capability</code></dt>
       <dd>This node appears for each capability that libvirt
         associates with a node.  A mandatory

@@ -40,6 +40,16 @@
 
 typedef enum {
     /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
+    VIR_NODE_DEV_DEVNODE_DEV,
+    VIR_NODE_DEV_DEVNODE_LINK,
+
+    VIR_NODE_DEV_DEVNODE_LAST
+} virNodeDevDevnodeType;
+
+VIR_ENUM_DECL(virNodeDevDevnode)
+
+typedef enum {
+    /* Keep in sync with VIR_ENUM_IMPL in node_device_conf.c */
     VIR_NODE_DEV_CAP_SYSTEM,		/* System capability */
     VIR_NODE_DEV_CAP_PCI_DEV,		/* PCI device */
     VIR_NODE_DEV_CAP_USB_DEV,		/* USB device */
@@ -204,6 +214,8 @@ struct _virNodeDeviceDef {
     char *parent_wwpn;			/* optional parent wwpn */
     char *parent_fabric_wwn;		/* optional parent fabric_wwn */
     char *driver;                       /* optional driver name */
+    char *devnode;                      /* /dev path */
+    char **devlinks;                    /* /dev links */
     virNodeDevCapsDefPtr caps;		/* optional device capabilities */
 };
 

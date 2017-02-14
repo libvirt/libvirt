@@ -40,6 +40,10 @@
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
+VIR_ENUM_IMPL(virNodeDevDevnode, VIR_NODE_DEV_DEVNODE_LAST,
+              "dev",
+              "link")
+
 VIR_ENUM_IMPL(virNodeDevCap, VIR_NODE_DEV_CAP_LAST,
               "system",
               "pci",
@@ -252,6 +256,8 @@ void virNodeDeviceDefFree(virNodeDeviceDefPtr def)
     VIR_FREE(def->driver);
     VIR_FREE(def->sysfs_path);
     VIR_FREE(def->parent_sysfs_path);
+    VIR_FREE(def->devnode);
+    virStringListFree(def->devlinks);
 
     caps = def->caps;
     while (caps) {
@@ -387,6 +393,14 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
     virBufferAdjustIndent(&buf, 2);
     virBufferEscapeString(&buf, "<name>%s</name>\n", def->name);
     virBufferEscapeString(&buf, "<path>%s</path>\n", def->sysfs_path);
+    if (def->devnode)
+        virBufferEscapeString(&buf, "<devnode type='dev'>%s</devnode>\n",
+                              def->devnode);
+    if (def->devlinks) {
+        for (i = 0; def->devlinks[i]; i++)
+            virBufferEscapeString(&buf, "<devnode type='link'>%s</devnode>\n",
+                                  def->devlinks[i]);
+    }
     if (def->parent)
         virBufferEscapeString(&buf, "<parent>%s</parent>\n", def->parent);
     if (def->driver) {
@@ -1703,7 +1717,7 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
     virNodeDeviceDefPtr def;
     virNodeDevCapsDefPtr *next_cap;
     xmlNodePtr *nodes;
-    int n;
+    int n, m;
     size_t i;
 
     if (VIR_ALLOC(def) < 0)
@@ -1720,6 +1734,44 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
     } else {
         if (VIR_STRDUP(def->name, "new device") < 0)
             goto error;
+    }
+
+    /* Parse devnodes */
+    nodes = NULL;
+    if ((n = virXPathNodeSet("./devnode", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (VIR_ALLOC_N(def->devlinks, n + 1) < 0)
+        goto error;
+
+    for (i = 0, m = 0; i < n; i++) {
+        xmlNodePtr node = nodes[i];
+        char *tmp = virXMLPropString(node, "type");
+        virNodeDevDevnodeType type;
+
+        if (!tmp) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("missing devnode type"));
+            goto error;
+        }
+
+        if ((type = virNodeDevDevnodeTypeFromString(tmp)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown devnode type '%s'"), tmp);
+            VIR_FREE(tmp);
+            goto error;
+        }
+
+        switch (type) {
+        case VIR_NODE_DEV_DEVNODE_DEV:
+            def->devnode = (char*)xmlNodeGetContent(node);
+            break;
+        case VIR_NODE_DEV_DEVNODE_LINK:
+            def->devlinks[m++] = (char*)xmlNodeGetContent(node);
+            break;
+        case VIR_NODE_DEV_DEVNODE_LAST:
+            break;
+        }
     }
 
     /* Extract device parent, if any */
