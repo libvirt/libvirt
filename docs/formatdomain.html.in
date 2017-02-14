@@ -1307,16 +1307,6 @@
           a migration is attempted then the guest may hang or crash upon
           resuming execution on the destination host.</dd>
         </dl>
-
-        In both <code>host-model</code> and <code>host-passthrough</code>
-        mode, the real (approximate in <code>host-passthrough</code> mode) CPU
-        definition which would be used on current host can be determined by
-        specifying <code>VIR_DOMAIN_XML_UPDATE_CPU</code> flag when calling
-        <code>virDomainGetXMLDesc</code> API. When running a guest that might
-        be prone to operating system reactivation when presented with
-        different hardware, and which will be migrated between hosts with
-        different capabilities, you can use this output to rewrite XML to the
-        <code>custom</code> mode for more robust migration.
       </dd>
 
       <dt><code>model</code></dt>
