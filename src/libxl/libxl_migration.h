@@ -29,6 +29,7 @@
 # define LIBXL_MIGRATION_FLAGS                  \
     (VIR_MIGRATE_LIVE |                         \
      VIR_MIGRATE_PEER2PEER |                    \
+     VIR_MIGRATE_TUNNELLED |                    \
      VIR_MIGRATE_PERSIST_DEST |                 \
      VIR_MIGRATE_UNDEFINE_SOURCE |              \
      VIR_MIGRATE_PAUSED)
@@ -51,6 +52,14 @@ virDomainDefPtr
 libxlDomainMigrationPrepareDef(libxlDriverPrivatePtr driver,
                                const char *dom_xml,
                                const char *dname);
+
+int
+libxlDomainMigrationPrepareTunnel3(virConnectPtr dconn,
+                                   virStreamPtr st,
+                                   virDomainDefPtr *def,
+                                   const char *cookiein,
+                                   int cookieinlen,
+                                   unsigned int flags);
 
 int
 libxlDomainMigrationPrepare(virConnectPtr dconn,

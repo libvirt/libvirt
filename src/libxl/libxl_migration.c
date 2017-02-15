@@ -44,6 +44,7 @@
 #include "libxl_migration.h"
 #include "locking/domain_lock.h"
 #include "virtypedparam.h"
+#include "fdstream.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 
@@ -554,6 +555,95 @@ libxlDomainMigrationPrepareAny(virConnectPtr dconn,
 }
 
 int
+libxlDomainMigrationPrepareTunnel3(virConnectPtr dconn,
+                                   virStreamPtr st,
+                                   virDomainDefPtr *def,
+                                   const char *cookiein,
+                                   int cookieinlen,
+                                   unsigned int flags)
+{
+    libxlMigrationCookiePtr mig = NULL;
+    libxlDriverPrivatePtr driver = dconn->privateData;
+    virDomainObjPtr vm = NULL;
+    libxlMigrationDstArgs *args = NULL;
+    virThread thread;
+    bool taint_hook = false;
+    libxlDomainObjPrivatePtr priv = NULL;
+    char *xmlout = NULL;
+    int dataFD[2] = { -1, -1 };
+    int ret = -1;
+
+    if (libxlDomainMigrationPrepareAny(dconn, def, cookiein, cookieinlen,
+                                       &mig, &xmlout, &taint_hook) < 0)
+        goto error;
+
+    if (!(vm = virDomainObjListAdd(driver->domains, *def,
+                                   driver->xmlopt,
+                                   VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
+                                   VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
+                                   NULL)))
+        goto error;
+
+    *def = NULL;
+    priv = vm->privateData;
+
+    if (taint_hook) {
+        /* Domain XML has been altered by a hook script. */
+        priv->hookRun = true;
+    }
+
+    /*
+     * The data flow of tunnel3 migration in the dest side:
+     * stream -> pipe -> recvfd of libxlDomainStartRestore
+     */
+    if (pipe(dataFD) < 0)
+        goto error;
+
+    /* Stream data will be written to pipeIn */
+    if (virFDStreamOpen(st, dataFD[1]) < 0)
+        goto error;
+    dataFD[1] = -1; /* 'st' owns the FD now & will close it */
+
+    if (libxlMigrationDstArgsInitialize() < 0)
+        goto error;
+
+    if (!(args = virObjectNew(libxlMigrationDstArgsClass)))
+        goto error;
+
+    args->conn = dconn;
+    args->vm = vm;
+    args->flags = flags;
+    args->migcookie = mig;
+    /* Receive from pipeOut */
+    args->recvfd = dataFD[0];
+    args->nsocks = 0;
+    if (virThreadCreate(&thread, false, libxlDoMigrateReceive, args) < 0) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("Failed to create thread for receiving migration data"));
+        goto error;
+    }
+
+    ret = 0;
+    goto done;
+
+ error:
+    VIR_FORCE_CLOSE(dataFD[1]);
+    VIR_FORCE_CLOSE(dataFD[0]);
+    virObjectUnref(args);
+    /* Remove virDomainObj from domain list */
+    if (vm) {
+        virDomainObjListRemove(driver->domains, vm);
+        vm = NULL;
+    }
+
+ done:
+    if (vm)
+        virObjectUnlock(vm);
+
+    return ret;
+}
+
+int
 libxlDomainMigrationPrepare(virConnectPtr dconn,
                             virDomainDefPtr *def,
                             const char *uri_in,
@@ -734,9 +824,143 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     return ret;
 }
 
-/* This function is a simplification of virDomainMigrateVersion3Full
- * excluding tunnel support and restricting it to migration v3
- * with params since it was the first to be introduced in libxl.
+typedef struct _libxlTunnelMigrationThread libxlTunnelMigrationThread;
+struct _libxlTunnelMigrationThread {
+    virStreamPtr st;
+    int srcFD;
+};
+#define TUNNEL_SEND_BUF_SIZE 65536
+
+/*
+ * The data flow of tunnel3 migration in the src side:
+ * libxlDoMigrateSend() -> pipe
+ * libxlTunnel3MigrationFunc() polls pipe out and then write to dest stream.
+ */
+static void libxlTunnel3MigrationFunc(void *arg)
+{
+    libxlTunnelMigrationThread *data = (libxlTunnelMigrationThread *)arg;
+    char *buffer = NULL;
+    struct pollfd fds[1];
+    int timeout = -1;
+
+    if (VIR_ALLOC_N(buffer, TUNNEL_SEND_BUF_SIZE) < 0)
+        return;
+
+    fds[0].fd = data->srcFD;
+    for (;;) {
+        int ret;
+
+        fds[0].events = POLLIN;
+        fds[0].revents = 0;
+        ret = poll(fds, ARRAY_CARDINALITY(fds), timeout);
+        if (ret < 0) {
+            if (errno == EAGAIN || errno == EINTR)
+                continue;
+            virReportError(errno, "%s",
+                           _("poll failed in libxlTunnel3MigrationFunc"));
+            goto cleanup;
+        }
+
+        if (ret == 0) {
+            VIR_DEBUG("poll returned 0");
+            break;
+        }
+
+        if (fds[0].revents & (POLLIN | POLLERR | POLLHUP)) {
+            int nbytes;
+
+            nbytes = read(data->srcFD, buffer, TUNNEL_SEND_BUF_SIZE);
+            if (nbytes > 0) {
+                /* Write to dest stream */
+                if (virStreamSend(data->st, buffer, nbytes) < 0) {
+                    virStreamAbort(data->st);
+                    goto cleanup;
+                }
+            } else if (nbytes < 0) {
+                virReportError(errno, "%s",
+                               _("tunnelled migration failed to read from xen side"));
+                virStreamAbort(data->st);
+                goto cleanup;
+            } else {
+                /* EOF; transferred all data */
+                break;
+            }
+        }
+    }
+
+    ignore_value(virStreamFinish(data->st));
+
+ cleanup:
+    VIR_FREE(buffer);
+
+    return;
+}
+
+struct libxlTunnelControl {
+    libxlTunnelMigrationThread tmThread;
+    virThread thread;
+    int dataFD[2];
+};
+
+static int
+libxlMigrationStartTunnel(libxlDriverPrivatePtr driver,
+                          virDomainObjPtr vm,
+                          unsigned long flags,
+                          virStreamPtr st,
+                          struct libxlTunnelControl *tc)
+{
+    libxlTunnelMigrationThread *arg = NULL;
+    int ret = -1;
+
+    if (VIR_ALLOC(tc) < 0)
+        goto out;
+
+    tc->dataFD[0] = -1;
+    tc->dataFD[1] = -1;
+    if (pipe(tc->dataFD) < 0) {
+        virReportError(errno, "%s", _("Unable to make pipes"));
+        goto out;
+    }
+
+    arg = &tc->tmThread;
+    /* Read from pipe */
+    arg->srcFD = tc->dataFD[0];
+    /* Write to dest stream */
+    arg->st = st;
+    if (virThreadCreate(&tc->thread, true,
+                        libxlTunnel3MigrationFunc, arg) < 0) {
+        virReportError(errno, "%s",
+                       _("Unable to create tunnel migration thread"));
+        goto out;
+    }
+
+    virObjectUnlock(vm);
+    /* Send data to pipe */
+    ret = libxlDoMigrateSend(driver, vm, flags, tc->dataFD[1]);
+    virObjectLock(vm);
+
+ out:
+    /* libxlMigrationStopTunnel will be called in libxlDoMigrateP2P to free
+     * all resources for us. */
+    return ret;
+}
+
+static void libxlMigrationStopTunnel(struct libxlTunnelControl *tc)
+{
+    if (!tc)
+        return;
+
+    virThreadCancel(&tc->thread);
+    virThreadJoin(&tc->thread);
+
+    VIR_FORCE_CLOSE(tc->dataFD[0]);
+    VIR_FORCE_CLOSE(tc->dataFD[1]);
+    VIR_FREE(tc);
+}
+
+/* This function is a simplification of virDomainMigrateVersion3Full and
+ * restricting it to migration v3 with params since it was the first to be
+ * introduced in libxl.
  */
 static int
 libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
@@ -761,6 +985,9 @@ libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
     bool cancelled = true;
     virErrorPtr orig_err = NULL;
     int ret = -1;
+    /* For tunnel migration */
+    virStreamPtr st = NULL;
+    struct libxlTunnelControl *tc = NULL;
 
     dom_xml = libxlDomainMigrationBegin(sconn, vm, xmlin,
                                         &cookieout, &cookieoutlen);
@@ -788,29 +1015,40 @@ libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
 
     VIR_DEBUG("Prepare3");
     virObjectUnlock(vm);
-    ret = dconn->driver->domainMigratePrepare3Params
-        (dconn, params, nparams, cookieout, cookieoutlen, NULL, NULL, &uri_out, destflags);
+    if (flags & VIR_MIGRATE_TUNNELLED) {
+        if (!(st = virStreamNew(dconn, 0)))
+            goto cleanup;
+        ret = dconn->driver->domainMigratePrepareTunnel3Params
+            (dconn, st, params, nparams, cookieout, cookieoutlen, NULL, NULL, destflags);
+    } else {
+        ret = dconn->driver->domainMigratePrepare3Params
+            (dconn, params, nparams, cookieout, cookieoutlen, NULL, NULL, &uri_out, destflags);
+    }
     virObjectLock(vm);
 
     if (ret == -1)
         goto cleanup;
 
-    if (uri_out) {
-        if (virTypedParamsReplaceString(&params, &nparams,
-                                        VIR_MIGRATE_PARAM_URI, uri_out) < 0) {
-            orig_err = virSaveLastError();
+    if (!(flags & VIR_MIGRATE_TUNNELLED)) {
+        if (uri_out) {
+            if (virTypedParamsReplaceString(&params, &nparams,
+                                            VIR_MIGRATE_PARAM_URI, uri_out) < 0) {
+                orig_err = virSaveLastError();
+                goto finish;
+            }
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("domainMigratePrepare3 did not set uri"));
             goto finish;
         }
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("domainMigratePrepare3 did not set uri"));
-        goto finish;
     }
 
     VIR_DEBUG("Perform3 uri=%s", NULLSTR(uri_out));
-    ret = libxlDomainMigrationPerform(driver, vm, NULL, NULL,
-                                      uri_out, NULL, flags);
-
+    if (flags & VIR_MIGRATE_TUNNELLED)
+        ret = libxlMigrationStartTunnel(driver, vm, flags, st, tc);
+    else
+        ret = libxlDomainMigrationPerform(driver, vm, NULL, NULL,
+                                          uri_out, NULL, flags);
     if (ret < 0)
         orig_err = virSaveLastError();
 
@@ -848,6 +1086,11 @@ libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
                  vm->def->name);
 
  cleanup:
+    if (flags & VIR_MIGRATE_TUNNELLED) {
+        libxlMigrationStopTunnel(tc);
+        virObjectUnref(st);
+    }
+
     if (ddomain) {
         virObjectUnref(ddomain);
         ret = 0;
