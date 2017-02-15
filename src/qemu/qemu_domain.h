@@ -808,6 +808,8 @@ int qemuDomainBuildNamespace(virQEMUDriverPtr driver,
 int qemuDomainCreateNamespace(virQEMUDriverPtr driver,
                               virDomainObjPtr vm);
 
+bool qemuDomainNamespaceAvailable(qemuDomainNamespace ns);
+
 int qemuDomainNamespaceSetupDisk(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm,
                                  virStorageSourcePtr src);

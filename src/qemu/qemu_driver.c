@@ -676,7 +676,7 @@ qemuStateInitialize(bool privileged,
     if (virAsprintf(&driverConf, "%s/qemu.conf", cfg->configBaseDir) < 0)
         goto error;
 
-    if (virQEMUDriverConfigLoadFile(cfg, driverConf) < 0)
+    if (virQEMUDriverConfigLoadFile(cfg, driverConf, privileged) < 0)
         goto error;
     VIR_FREE(driverConf);
 

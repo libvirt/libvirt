@@ -7643,27 +7643,43 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
 
-    if (!virBitmapIsBitSet(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT)) {
-        ret = 0;
-        goto cleanup;
-    }
-
-    if (!virQEMUDriverIsPrivileged(driver)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("cannot use namespaces in session mode"));
-        goto cleanup;
-    }
-
-    if (virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_MNT) < 0)
-        goto cleanup;
-
-    if (qemuDomainEnableNamespace(vm, QEMU_DOMAIN_NS_MOUNT) < 0)
+    if (virBitmapIsBitSet(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT) &&
+        qemuDomainEnableNamespace(vm, QEMU_DOMAIN_NS_MOUNT) < 0)
         goto cleanup;
 
     ret = 0;
  cleanup:
     virObjectUnref(cfg);
     return ret;
+}
+
+
+bool
+qemuDomainNamespaceAvailable(qemuDomainNamespace ns ATTRIBUTE_UNUSED)
+{
+#if !defined(__linux__)
+    /* Namespaces are Linux specific. */
+    return false;
+
+#else /* defined(__linux__) */
+
+    switch (ns) {
+    case QEMU_DOMAIN_NS_MOUNT:
+# if !defined(HAVE_SYS_ACL_H) || !defined(WITH_SELINUX)
+        /* We can't create the exact copy of paths if either of
+         * these is not available. */
+        return false;
+# else
+        if (virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_MNT) < 0)
+            return false;
+# endif
+        break;
+    case QEMU_DOMAIN_NS_LAST:
+        break;
+    }
+
+    return true;
+#endif /* defined(__linux__) */
 }
 
 

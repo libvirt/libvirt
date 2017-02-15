@@ -321,12 +321,10 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     if (!(cfg->namespaces = virBitmapNew(QEMU_DOMAIN_NS_LAST)))
         goto error;
 
-#if defined(__linux__)
     if (privileged &&
-        virProcessNamespaceAvailable(VIR_PROCESS_NAMESPACE_MNT) == 0 &&
+        qemuDomainNamespaceAvailable(QEMU_DOMAIN_NS_MOUNT) &&
         virBitmapSetBit(cfg->namespaces, QEMU_DOMAIN_NS_MOUNT) < 0)
         goto error;
-#endif /* defined(__linux__) */
 
 #ifdef DEFAULT_LOADER_NVRAM
     if (virFirmwareParseList(DEFAULT_LOADER_NVRAM,
@@ -438,7 +436,8 @@ virQEMUDriverConfigHugeTLBFSInit(virHugeTLBFSPtr hugetlbfs,
 
 
 int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
-                                const char *filename)
+                                const char *filename,
+                                bool privileged)
 {
     virConfPtr conf = NULL;
     int ret = -1;
@@ -828,6 +827,19 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
             if (ns < 0) {
                 virReportError(VIR_ERR_CONF_SYNTAX,
                                _("Unknown namespace: %s"),
+                               namespaces[i]);
+                goto cleanup;
+            }
+
+            if (!privileged) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("cannot use namespaces in session mode"));
+                goto cleanup;
+            }
+
+            if (qemuDomainNamespaceAvailable(ns) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("%s namespace is not available"),
                                namespaces[i]);
                 goto cleanup;
             }

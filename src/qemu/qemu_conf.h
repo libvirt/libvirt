@@ -294,7 +294,8 @@ void qemuDomainCmdlineDefFree(qemuDomainCmdlineDefPtr def);
 virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged);
 
 int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
-                                const char *filename);
+                                const char *filename,
+                                bool privileged);
 
 virQEMUDriverConfigPtr virQEMUDriverGetConfig(virQEMUDriverPtr driver);
 bool virQEMUDriverIsPrivileged(virQEMUDriverPtr driver);
