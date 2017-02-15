@@ -563,7 +563,7 @@ int virDiskNameParse(const char *name, int *disk, int *partition)
         }
     }
 
-    if (!ptr)
+    if (!ptr || !c_islower(*ptr))
         return -1;
 
     for (i = 0; *ptr; i++) {

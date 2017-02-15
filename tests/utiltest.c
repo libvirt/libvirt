@@ -37,7 +37,8 @@ static struct testDiskName diskNamesPart[] = {
 };
 
 static const char* diskNamesInvalid[] = {
-    "sda00", "sda01", "sdb-1"
+    "sda00", "sda01", "sdb-1",
+    "vd2"
 };
 
 static int
