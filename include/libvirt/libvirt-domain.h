@@ -815,6 +815,14 @@ typedef enum {
      * post-copy mode. See virDomainMigrateStartPostCopy for more details.
      */
     VIR_MIGRATE_POSTCOPY          = (1 << 15),
+
+    /* Setting the VIR_MIGRATE_TLS flag will cause the migration to attempt
+     * to use the TLS environment configured by the hypervisor in order to
+     * perform the migration. If incorrectly configured on either source or
+     * destination, the migration will fail.
+     */
+    VIR_MIGRATE_TLS               = (1 << 16),
+
 } virDomainMigrateFlags;
 
 

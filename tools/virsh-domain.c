@@ -10222,6 +10222,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_STRING,
      .help = N_("filename containing updated persistent XML for the target")
     },
+    {.name = "tls",
+     .type = VSH_OT_BOOL,
+     .help = N_("use TLS for migration")
+    },
     {.name = NULL}
 };
 
@@ -10462,6 +10466,9 @@ doMigrate(void *opaque)
 
     if (vshCommandOptBool(cmd, "postcopy"))
         flags |= VIR_MIGRATE_POSTCOPY;
+
+    if (vshCommandOptBool(cmd, "tls"))
+        flags |= VIR_MIGRATE_TLS;
 
     if (flags & VIR_MIGRATE_PEER2PEER || vshCommandOptBool(cmd, "direct")) {
         if (virDomainMigrateToURI3(dom, desturi, params, nparams, flags) == 0)
