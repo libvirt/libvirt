@@ -53,6 +53,16 @@
           was <code>virtio-net</code>.
         </description>
       </change>
+      <change>
+        <summary>
+          libxl: add tunnelled migration support
+        </summary>
+        <description>
+          Add tunnelled migration to libxl driver, which is always capable of
+          strong encryption and doesn't require any extra network connection
+          other than what's required for remote access of libvirtd.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
