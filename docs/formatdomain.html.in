@@ -1282,7 +1282,7 @@
           it's a good idea to avoid using <code>host-model</code> and use
           <code>custom</code> mode with just the CPU model from host
           capabilities XML.
-          <span class="since">(Since 1.2.11)</span>. PowerISA allows
+          <span class="since">Since 1.2.11</span> PowerISA allows
           processors to run VMs in binary compatibility mode supporting an
           older version of ISA.  Libvirt on PowerPC architecture uses the
           <code>host-model</code> to signify a guest mode CPU running in
