@@ -483,6 +483,76 @@ libxlDomainMigrationPrepareDef(libxlDriverPrivatePtr driver,
     return def;
 }
 
+static int
+libxlDomainMigrationPrepareAny(virConnectPtr dconn,
+                               virDomainDefPtr *def,
+                               const char *cookiein,
+                               int cookieinlen,
+                               libxlMigrationCookiePtr *mig,
+                               char **xmlout,
+                               bool *taint_hook)
+{
+    libxlDriverPrivatePtr driver = dconn->privateData;
+    libxlDriverConfigPtr cfg = libxlDriverConfigGet(driver);
+
+    if (libxlMigrationEatCookie(cookiein, cookieinlen, mig) < 0)
+        return -1;
+
+    if ((*mig)->xenMigStreamVer > LIBXL_SAVE_VERSION) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("Xen migration stream version '%d' is not supported on this host"),
+                       (*mig)->xenMigStreamVer);
+        return -1;
+    }
+
+    /* Let migration hook filter domain XML */
+    if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
+        char *xml;
+        int hookret;
+
+        if (!(xml = virDomainDefFormat(*def, cfg->caps,
+                                       VIR_DOMAIN_XML_SECURE |
+                                       VIR_DOMAIN_XML_MIGRATABLE)))
+            return -1;
+
+        hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, (*def)->name,
+                              VIR_HOOK_LIBXL_OP_MIGRATE, VIR_HOOK_SUBOP_BEGIN,
+                              NULL, xml, xmlout);
+        VIR_FREE(xml);
+
+        if (hookret < 0) {
+            return -1;
+        } else if (hookret == 0) {
+            if (virStringIsEmpty(*xmlout)) {
+                VIR_DEBUG("Migrate hook filter returned nothing; using the"
+                          " original XML");
+            } else {
+                virDomainDefPtr newdef;
+
+                VIR_DEBUG("Using hook-filtered domain XML: %s", *xmlout);
+                newdef = virDomainDefParseString(*xmlout, cfg->caps, driver->xmlopt,
+                                                 NULL,
+                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                                 VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
+                if (!newdef)
+                    return -1;
+
+                /* TODO At some stage we will want to have some check of what the user
+                 * did in the hook. */
+
+                virDomainDefFree(*def);
+                *def = newdef;
+                /* We should taint the domain here. However, @vm and therefore
+                 * privateData too are still NULL, so just notice the fact and
+                 * taint it later. */
+                *taint_hook = true;
+            }
+        }
+    }
+
+    return 0;
+}
+
 int
 libxlDomainMigrationPrepare(virConnectPtr dconn,
                             virDomainDefPtr *def,
@@ -510,60 +580,9 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
     size_t i;
     int ret = -1;
 
-    if (libxlMigrationEatCookie(cookiein, cookieinlen, &mig) < 0)
+    if (libxlDomainMigrationPrepareAny(dconn, def, cookiein, cookieinlen,
+                                       &mig, &xmlout, &taint_hook) < 0)
         goto error;
-
-    if (mig->xenMigStreamVer > LIBXL_SAVE_VERSION) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("Xen migration stream version '%d' is not supported on this host"),
-                       mig->xenMigStreamVer);
-        goto error;
-    }
-
-    /* Let migration hook filter domain XML */
-    if (virHookPresent(VIR_HOOK_DRIVER_LIBXL)) {
-        char *xml;
-        int hookret;
-
-        if (!(xml = virDomainDefFormat(*def, cfg->caps,
-                                       VIR_DOMAIN_XML_SECURE |
-                                       VIR_DOMAIN_XML_MIGRATABLE)))
-            goto error;
-
-        hookret = virHookCall(VIR_HOOK_DRIVER_LIBXL, (*def)->name,
-                              VIR_HOOK_LIBXL_OP_MIGRATE, VIR_HOOK_SUBOP_BEGIN,
-                              NULL, xml, &xmlout);
-        VIR_FREE(xml);
-
-        if (hookret < 0) {
-            goto error;
-        } else if (hookret == 0) {
-            if (virStringIsEmpty(xmlout)) {
-                VIR_DEBUG("Migrate hook filter returned nothing; using the"
-                          " original XML");
-            } else {
-                virDomainDefPtr newdef;
-
-                VIR_DEBUG("Using hook-filtered domain XML: %s", xmlout);
-                newdef = virDomainDefParseString(xmlout, cfg->caps, driver->xmlopt,
-                                                 NULL,
-                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                                 VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
-                if (!newdef)
-                    goto error;
-
-                /* TODO At some stage we will want to have some check of what the user
-                 * did in the hook. */
-
-                virDomainDefFree(*def);
-                *def = newdef;
-                /* We should taint the domain here. However, @vm and therefore
-                 * privateData too are still NULL, so just notice the fact and
-                 * taint it later. */
-                taint_hook = true;
-            }
-        }
-    }
 
     if (!(vm = virDomainObjListAdd(driver->domains, *def,
                                    driver->xmlopt,
@@ -571,6 +590,7 @@ libxlDomainMigrationPrepare(virConnectPtr dconn,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto error;
+
     *def = NULL;
     priv = vm->privateData;
 
