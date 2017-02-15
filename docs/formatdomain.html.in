@@ -1272,19 +1272,21 @@
           model even if the destination host contains more capable CPUs for
           the running instance of the guest; but shutting down and restarting
           the guest may present different hardware to the guest according to
-          the capabilities of the new host. <strong>Beware</strong>, due to the
-          way libvirt detects host CPU and due to the fact libvirt does not
-          talk to QEMU/KVM when creating the CPU model, CPU configuration
-          created using <code>host-model</code> may not work as expected. The
-          guest CPU may differ from the configuration and it may also confuse
-          guest OS by using a combination of CPU features and other parameters
-          (such as CPUID level) that don't work. Until these issues are fixed,
-          it's a good idea to avoid using <code>host-model</code> and use
-          <code>custom</code> mode with just the CPU model from host
-          capabilities XML.
-          <span class="since">Since 1.2.11</span> PowerISA allows
-          processors to run VMs in binary compatibility mode supporting an
-          older version of ISA.  Libvirt on PowerPC architecture uses the
+          the capabilities of the new host. Prior to libvirt 3.2.0 and QEMU
+          2.9.0 detection of the host CPU model via QEMU is not supported.
+          Thus the CPU configuration created using <code>host-model</code>
+          may not work as expected.
+          <span class="since">Since 3.2.0 and QEMU 2.9.0</span> this mode
+          works the way it was designed and it is indicated by the
+          <code>fallback</code> attribute set to <code>forbid</code> in the
+          host-model CPU definition advertised in
+          <a href="formatdomaincaps.html#elementsCPU">domain capabilities XML</a>.
+          When <code>fallback</code> attribute is set to <code>allow</code>
+          in the domain capabilities XML, it is recommended to use
+          <code>custom</code> mode with just the CPU model from the host
+          capabilities XML. <span class="since">Since 1.2.11</span> PowerISA
+          allows processors to run VMs in binary compatibility mode supporting
+          an older version of ISA.  Libvirt on PowerPC architecture uses the
           <code>host-model</code> to signify a guest mode CPU running in
           binary compatibility mode. Example:
           When a user needs a power7 VM to run in compatibility mode
@@ -1307,6 +1309,15 @@
           a migration is attempted then the guest may hang or crash upon
           resuming execution on the destination host.</dd>
         </dl>
+
+        Both <code>host-model</code> and <code>host-passthrough</code> modes
+        make sense when a domain can run directly on the host CPUs (for
+        example, domains with type <code>kvm</code>). The actual host CPU is
+        irrelevant for domains with emulated virtual CPUs (such as domains with
+        type <code>qemu</code>). However, for backward compatibility
+        <code>host-model</code> may be implemented even for domains running on
+        emulated CPUs in which case the best CPU the hypervisor is able to
+        emulate may be used rather then trying to mimic the host CPU model.
       </dd>
 
       <dt><code>model</code></dt>
