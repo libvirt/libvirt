@@ -1,6 +1,6 @@
 <cpu>
   <arch>x86_64</arch>
-  <model>Haswell</model>
+  <model>Haswell-noTSX</model>
   <vendor>Intel</vendor>
   <feature name='vme'/>
   <feature name='ds'/>

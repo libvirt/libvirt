@@ -547,6 +547,26 @@ x86MakeSignature(unsigned int family,
 }
 
 
+static void
+x86DataToSignatureFull(const virCPUx86Data *data,
+                       unsigned int *family,
+                       unsigned int *model,
+                       unsigned int *stepping)
+{
+    virCPUx86CPUID leaf1 = { .eax_in = 0x1 };
+    virCPUx86CPUID *cpuid;
+
+    *family = *model = *stepping = 0;
+
+    if (!(cpuid = x86DataCpuid(data, &leaf1)))
+        return;
+
+    *family = ((cpuid->eax >> 20) & 0xff) + ((cpuid->eax >> 8) & 0xf);
+    *model = ((cpuid->eax >> 12) & 0xf0) + ((cpuid->eax >> 4) & 0xf);
+    *stepping = cpuid->eax & 0xf;
+}
+
+
 /* Mask out irrelevant bits (R and Step) from processor signature. */
 #define SIGNATURE_MASK  0x0fff3ff0
 
@@ -1784,9 +1804,44 @@ x86DecodeUseCandidate(virCPUx86ModelPtr current,
 }
 
 
+/**
+ * Drop broken TSX features.
+ */
+static void
+x86DataFilterTSX(virCPUx86Data *data,
+                 virCPUx86VendorPtr vendor,
+                 virCPUx86MapPtr map)
+{
+    unsigned int family;
+    unsigned int model;
+    unsigned int stepping;
+
+    if (!vendor || STRNEQ(vendor->name, "Intel"))
+        return;
+
+    x86DataToSignatureFull(data, &family, &model, &stepping);
+
+    if (family == 6 &&
+        ((model == 63 && stepping < 4) ||
+         model == 60 ||
+         model == 69 ||
+         model == 70)) {
+        virCPUx86FeaturePtr feature;
+
+        VIR_DEBUG("Dropping broken TSX");
+
+        if ((feature = x86FeatureFind(map, "hle")))
+            x86DataSubtract(data, &feature->data);
+
+        if ((feature = x86FeatureFind(map, "rtm")))
+            x86DataSubtract(data, &feature->data);
+    }
+}
+
+
 static int
 x86Decode(virCPUDefPtr cpu,
-          const virCPUx86Data *data,
+          const virCPUx86Data *cpuData,
           const char **models,
           unsigned int nmodels,
           const char *preferred,
@@ -1798,6 +1853,7 @@ x86Decode(virCPUDefPtr cpu,
     virCPUDefPtr cpuCandidate;
     virCPUx86ModelPtr model = NULL;
     virCPUDefPtr cpuModel = NULL;
+    virCPUx86Data data = VIR_CPU_X86_DATA_INIT;
     virCPUx86Data copy = VIR_CPU_X86_DATA_INIT;
     virCPUx86Data features = VIR_CPU_X86_DATA_INIT;
     virCPUx86VendorPtr vendor;
@@ -1808,11 +1864,16 @@ x86Decode(virCPUDefPtr cpu,
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
                   VIR_CONNECT_BASELINE_CPU_MIGRATABLE, -1);
 
-    if (!data || !(map = virCPUx86GetMap()))
+    if (!cpuData || x86DataCopy(&data, cpuData) < 0)
         return -1;
 
-    vendor = x86DataToVendor(data, map);
-    signature = x86DataToSignature(data);
+    if (!(map = virCPUx86GetMap()))
+        goto cleanup;
+
+    vendor = x86DataToVendor(&data, map);
+    signature = x86DataToSignature(&data);
+
+    x86DataFilterTSX(&data, vendor, map);
 
     /* Walk through the CPU models in reverse order to check newest
      * models first.
@@ -1847,7 +1908,7 @@ x86Decode(virCPUDefPtr cpu,
             continue;
         }
 
-        if (!(cpuCandidate = x86DataToCPU(data, candidate, map)))
+        if (!(cpuCandidate = x86DataToCPU(&data, candidate, map)))
             goto cleanup;
         cpuCandidate->type = cpu->type;
 
@@ -1912,6 +1973,7 @@ x86Decode(virCPUDefPtr cpu,
 
  cleanup:
     virCPUDefFree(cpuModel);
+    virCPUx86DataClear(&data);
     virCPUx86DataClear(&copy);
     virCPUx86DataClear(&features);
     return ret;
