@@ -837,7 +837,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
                 goto cleanup;
             }
 
-            if (qemuDomainNamespaceAvailable(ns) < 0) {
+            if (!qemuDomainNamespaceAvailable(ns)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("%s namespace is not available"),
                                namespaces[i]);
