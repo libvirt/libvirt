@@ -1623,6 +1623,7 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfigPtr cfg,
             }
         }
         virStringListFree(mem_tokens);
+        mem_tokens = NULL;
     }
 
  physmem:
