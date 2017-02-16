@@ -842,6 +842,7 @@ mymain(void)
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E5-2630", true);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E5-2650", true);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E7-4820", true);
+    DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-E7-8890", false);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-W3520", true);
     DO_TEST_CPUID(VIR_ARCH_X86_64, "Xeon-X5460", false);
 
