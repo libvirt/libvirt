@@ -2240,8 +2240,8 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     if (!(devstr = qemuBuildMemoryDeviceStr(mem)))
         goto cleanup;
 
-    if (qemuBuildMemoryBackendStr(mem, NULL, vm->def, priv->qemuCaps,
-                                  cfg, &backendType, &props, true) < 0)
+    if (qemuBuildMemoryBackendStr(&props, &backendType, cfg,
+                                  priv->qemuCaps, vm->def, mem, NULL, true) < 0)
         goto cleanup;
 
     if (virDomainMemoryInsert(vm->def, mem) < 0) {
