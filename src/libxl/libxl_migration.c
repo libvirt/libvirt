@@ -617,6 +617,8 @@ libxlDomainMigrationPrepareTunnel3(virConnectPtr dconn,
     /* Receive from pipeOut */
     args->recvfd = dataFD[0];
     args->nsocks = 0;
+    mig = NULL;
+
     if (virThreadCreate(&thread, false, libxlDoMigrateReceive, args) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("Failed to create thread for receiving migration data"));
@@ -627,6 +629,7 @@ libxlDomainMigrationPrepareTunnel3(virConnectPtr dconn,
     goto done;
 
  error:
+    libxlMigrationCookieFree(mig);
     VIR_FORCE_CLOSE(dataFD[1]);
     VIR_FORCE_CLOSE(dataFD[0]);
     virObjectUnref(args);
@@ -907,13 +910,15 @@ libxlMigrationStartTunnel(libxlDriverPrivatePtr driver,
                           virDomainObjPtr vm,
                           unsigned long flags,
                           virStreamPtr st,
-                          struct libxlTunnelControl *tc)
+                          struct libxlTunnelControl **tnl)
 {
+    struct libxlTunnelControl *tc = NULL;
     libxlTunnelMigrationThread *arg = NULL;
     int ret = -1;
 
     if (VIR_ALLOC(tc) < 0)
         goto out;
+    *tnl = tc;
 
     tc->dataFD[0] = -1;
     tc->dataFD[1] = -1;
@@ -1045,7 +1050,7 @@ libxlDoMigrateP2P(libxlDriverPrivatePtr driver,
 
     VIR_DEBUG("Perform3 uri=%s", NULLSTR(uri_out));
     if (flags & VIR_MIGRATE_TUNNELLED)
-        ret = libxlMigrationStartTunnel(driver, vm, flags, st, tc);
+        ret = libxlMigrationStartTunnel(driver, vm, flags, st, &tc);
     else
         ret = libxlDomainMigrationPerform(driver, vm, NULL, NULL,
                                           uri_out, NULL, flags);
