@@ -83,6 +83,16 @@
           and network.
         </description>
       </change>
+      <change>
+        <summary>
+          libxl: improve support for &lt;timer&gt; configurations
+        </summary>
+        <description>
+          Add support for multiple timers. Extend the tsc timer to
+          support the emulate mode. Improve conversion of timer XML
+          to/from xl.cfg.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change>
@@ -115,6 +125,25 @@
           elements with &lt;target bus='sata'/&gt; and let libvirt
           regenerate it properly.
         </description>
+      </change>
+      <change>
+        <summary>
+          libxl: maximum memory fixes
+        </summary>
+        <description>
+          Fix reporting of domain maximum memory. Fix setting dom0
+          maximum memory.
+        </description>
+      </change>
+      <change>
+        <summary>
+          libxl: fix disk detach when &lt;driver&gt; not specified
+        </summary>
+      </change>
+      <change>
+        <summary>
+          libxl: fix dom0 autoballooning with Xen 4.8
+        </summary>
       </change>
     </section>
   </release>
