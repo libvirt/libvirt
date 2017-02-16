@@ -33,6 +33,19 @@ int qemuDomainChangeEjectableMedia(virQEMUDriverPtr driver,
                                    virDomainDiskDefPtr disk,
                                    virStorageSourcePtr newsrc,
                                    bool force);
+
+void qemuDomainDelTLSObjects(virQEMUDriverPtr driver,
+                             virDomainObjPtr vm,
+                             const char *secAlias,
+                             const char *tlsAlias);
+
+int qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
+                            virDomainObjPtr vm,
+                            const char *secAlias,
+                            virJSONValuePtr *secProps,
+                            const char *tlsAlias,
+                            virJSONValuePtr *tlsProps);
+
 int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
                                      virDomainObjPtr vm,
                                      virDomainControllerDefPtr controller);
