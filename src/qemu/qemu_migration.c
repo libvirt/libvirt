@@ -3442,6 +3442,7 @@ qemuMigrationBegin(virConnectPtr conn,
                    unsigned long flags)
 {
     virQEMUDriverPtr driver = conn->privateData;
+    virQEMUDriverConfigPtr cfg = NULL;
     char *xml = NULL;
     qemuDomainAsyncJob asyncJob;
 
@@ -3475,6 +3476,12 @@ qemuMigrationBegin(virConnectPtr conn,
                                         nmigrate_disks, migrate_disks, flags)))
         goto endjob;
 
+    if (flags & VIR_MIGRATE_TLS) {
+        cfg = virQEMUDriverGetConfig(driver);
+        if (qemuMigrationCheckSetupTLS(conn, driver, cfg, vm, asyncJob) < 0)
+            goto endjob;
+    }
+
     if ((flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
         /* We keep the job active across API calls until the confirm() call.
          * This prevents any other APIs being invoked while migration is taking
@@ -3491,6 +3498,7 @@ qemuMigrationBegin(virConnectPtr conn,
     }
 
  cleanup:
+    virObjectUnref(cfg);
     virDomainObjEndAPI(&vm);
     return xml;
 
@@ -4951,8 +4959,11 @@ qemuMigrationRun(virQEMUDriverPtr driver,
 {
     int ret = -1;
     unsigned int migrate_flags = QEMU_MONITOR_MIGRATE_BACKGROUND;
+    virQEMUDriverConfigPtr cfg = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuMigrationCookiePtr mig = NULL;
+    char *tlsAlias = NULL;
+    char *secAlias = NULL;
     qemuMigrationIOThreadPtr iothread = NULL;
     int fd = -1;
     unsigned long migrate_speed = resource ? resource : priv->migMaxBandwidth;
@@ -5015,6 +5026,35 @@ qemuMigrationRun(virQEMUDriverPtr driver,
 
     if (qemuDomainMigrateGraphicsRelocate(driver, vm, mig, graphicsuri) < 0)
         VIR_WARN("unable to provide data for graphics client relocation");
+
+    if (flags & VIR_MIGRATE_TLS) {
+        cfg = virQEMUDriverGetConfig(driver);
+
+        /* Begin/CheckSetupTLS already set up migTLSAlias, the following
+         * assumes that and adds the TLS objects to the domain. */
+        if (qemuMigrationAddTLSObjects(driver, vm, cfg, false,
+                                       QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                       &tlsAlias, &secAlias, migParams) < 0)
+            goto cleanup;
+
+        /* We need to add tls-hostname whenever QEMU itself does not
+         * connect directly to the destination. */
+        if (spec->destType == MIGRATION_DEST_CONNECT_HOST ||
+            spec->destType == MIGRATION_DEST_FD) {
+            if (VIR_STRDUP(migParams->migrateTLSHostname,
+                           spec->dest.host.name) < 0)
+                goto cleanup;
+        } else {
+            /* Be sure there's nothing from a previous migration */
+            if (VIR_STRDUP(migParams->migrateTLSHostname, "") < 0)
+                goto cleanup;
+        }
+    } else {
+        if (qemuMigrationSetEmptyTLSParams(driver, vm,
+                                           QEMU_ASYNC_JOB_MIGRATION_OUT,
+                                           migParams) < 0)
+            goto cleanup;
+    }
 
     if (migrate_flags & (QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
                          QEMU_MONITOR_MIGRATE_NON_SHARED_INC)) {
@@ -5195,6 +5235,14 @@ qemuMigrationRun(virQEMUDriverPtr driver,
                                            dconn) < 0)
             ret = -1;
     }
+
+    if (qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
+                              tlsAlias, secAlias) < 0)
+        ret = -1;
+
+    VIR_FREE(tlsAlias);
+    VIR_FREE(secAlias);
+    virObjectUnref(cfg);
 
     if (spec->fwdType != MIGRATION_FWD_DIRECT) {
         if (iothread && qemuMigrationStopTunnel(iothread, ret < 0) < 0)
@@ -6899,6 +6947,9 @@ qemuMigrationCancel(virQEMUDriverPtr driver,
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || (storage && !blockJobs))
         goto endsyncjob;
+
+    ignore_value(qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_NONE,
+                                       NULL, NULL));
 
     if (!storage) {
         ret = 0;
