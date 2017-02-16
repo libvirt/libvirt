@@ -1561,7 +1561,7 @@ qemuDomainGetChardevTLSObjects(virQEMUDriverConfigPtr cfg,
                                      tlsProps) < 0)
         return -1;
 
-    if (!(*tlsAlias = qemuAliasTLSObjFromChardevAlias(charAlias)))
+    if (!(*tlsAlias = qemuAliasTLSObjFromSrcAlias(charAlias)))
         return -1;
     dev->data.tcp.tlscreds = true;
 
@@ -4016,7 +4016,7 @@ qemuDomainRemoveChrDevice(virQEMUDriverPtr driver,
     if (chr->source->type == VIR_DOMAIN_CHR_TYPE_TCP &&
         chr->source->data.tcp.haveTLS == VIR_TRISTATE_BOOL_YES) {
 
-        if (!(tlsAlias = qemuAliasTLSObjFromChardevAlias(charAlias)))
+        if (!(tlsAlias = qemuAliasTLSObjFromSrcAlias(charAlias)))
             goto cleanup;
 
         /* Best shot at this as the secinfo is destroyed after process launch
@@ -4095,7 +4095,7 @@ qemuDomainRemoveRNGDevice(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD) {
-        if (!(tlsAlias = qemuAliasTLSObjFromChardevAlias(charAlias)))
+        if (!(tlsAlias = qemuAliasTLSObjFromSrcAlias(charAlias)))
             goto cleanup;
 
         /* Best shot at this as the secinfo is destroyed after process launch

@@ -81,7 +81,7 @@ char *qemuDomainGetMasterKeyAlias(void);
 char *qemuDomainGetSecretAESAlias(const char *srcalias,
                                   bool isLuks);
 
-char *qemuAliasTLSObjFromChardevAlias(const char *chardev_alias)
+char *qemuAliasTLSObjFromSrcAlias(const char *srcAlias)
     ATTRIBUTE_NONNULL(1);
 
 char *qemuAliasChardevFromDevAlias(const char *devAlias)

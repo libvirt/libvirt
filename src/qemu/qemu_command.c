@@ -782,7 +782,7 @@ qemuBuildTLSx509CommandLine(virCommandPtr cmd,
                                      qemuCaps, &props) < 0)
         goto cleanup;
 
-    if (!(objalias = qemuAliasTLSObjFromChardevAlias(inalias)))
+    if (!(objalias = qemuAliasTLSObjFromSrcAlias(inalias)))
         goto cleanup;
 
     if (!(tmp = virQEMUBuildObjectCommandlineFromJSON("tls-creds-x509",
@@ -4988,7 +4988,7 @@ qemuBuildChrChardevStr(virLogManagerPtr logManager,
                                             charAlias, qemuCaps) < 0)
                 goto cleanup;
 
-            if (!(objalias = qemuAliasTLSObjFromChardevAlias(charAlias)))
+            if (!(objalias = qemuAliasTLSObjFromSrcAlias(charAlias)))
                 goto cleanup;
             virBufferAsprintf(&buf, ",tls-creds=%s", objalias);
             VIR_FREE(objalias);

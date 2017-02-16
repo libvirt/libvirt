@@ -6303,7 +6303,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
             virJSONValueObjectAppendBoolean(data, "server", chr->data.tcp.listen) < 0)
             goto error;
         if (chr->data.tcp.tlscreds) {
-            if (!(tlsalias = qemuAliasTLSObjFromChardevAlias(chrID)))
+            if (!(tlsalias = qemuAliasTLSObjFromSrcAlias(chrID)))
                 goto error;
 
             if (virJSONValueObjectAppendString(data, "tls-creds", tlsalias) < 0)

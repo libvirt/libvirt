@@ -609,17 +609,17 @@ qemuDomainGetSecretAESAlias(const char *srcalias,
 }
 
 
-/* qemuAliasTLSObjFromChardevAlias
- * @chardev_alias: Pointer to the chardev alias string
+/* qemuAliasTLSObjFromSrcAlias
+ * @srcAlias: Pointer to a source alias string
  *
  * Generate and return a string to be used as the TLS object alias
  */
 char *
-qemuAliasTLSObjFromChardevAlias(const char *chardev_alias)
+qemuAliasTLSObjFromSrcAlias(const char *srcAlias)
 {
     char *ret;
 
-    ignore_value(virAsprintf(&ret, "obj%s_tls0", chardev_alias));
+    ignore_value(virAsprintf(&ret, "obj%s_tls0", srcAlias));
 
     return ret;
 }
