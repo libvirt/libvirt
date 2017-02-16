@@ -53,5 +53,5 @@ json <<<"$data" >$fname.json
 if [[ -s $fname.json ]]; then
     echo $fname.json
 else
-    rm $fname.new.json
+    rm $fname.json
 fi
