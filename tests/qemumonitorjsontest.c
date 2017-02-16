@@ -1789,7 +1789,9 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
                                "        \"cpu-throttle-increment\": 10,"
                                "        \"compress-threads\": 8,"
                                "        \"compress-level\": 1,"
-                               "        \"cpu-throttle-initial\": 20"
+                               "        \"cpu-throttle-initial\": 20,"
+                               "        \"tls-creds\": \"tls0\","
+                               "        \"tls-hostname\": \"\""
                                "    }"
                                "}") < 0) {
         goto cleanup;
@@ -1821,9 +1823,30 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationParams(const void *data)
 
 #undef CHECK
 
+#define CHECK(VAR, FIELD, VALUE)                                            \
+    do {                                                                    \
+        if (!params.VAR) {                                                  \
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s is not set", FIELD); \
+            goto cleanup;                                                   \
+        }                                                                   \
+        if (STRNEQ(params.VAR, VALUE)) {                                    \
+            virReportError(VIR_ERR_INTERNAL_ERROR,                          \
+                           "Invalid %s:'%s', expected '%s'",                \
+                           FIELD, params.VAR, VALUE);                       \
+            goto cleanup;                                                   \
+        }                                                                   \
+    } while (0)
+
+    CHECK(migrateTLSAlias, "tls-creds", "tls0");
+    CHECK(migrateTLSHostname, "tls-hostname", "");
+
+#undef CHECK
+
     ret = 0;
 
  cleanup:
+    VIR_FREE(params.migrateTLSAlias);
+    VIR_FREE(params.migrateTLSHostname);
     qemuMonitorTestFree(test);
     return ret;
 }

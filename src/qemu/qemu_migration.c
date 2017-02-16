@@ -3508,6 +3508,28 @@ qemuMigrationSetCompression(virQEMUDriverPtr driver,
 }
 
 
+void
+qemuMigrationParamsClear(qemuMonitorMigrationParamsPtr migParams)
+{
+    if (!migParams)
+        return;
+
+    VIR_FREE(migParams->migrateTLSAlias);
+    VIR_FREE(migParams->migrateTLSHostname);
+}
+
+
+void
+qemuMigrationParamsFree(qemuMonitorMigrationParamsPtr *migParams)
+{
+    if (!*migParams)
+        return;
+
+    qemuMigrationParamsClear(*migParams);
+    VIR_FREE(*migParams);
+}
+
+
 qemuMonitorMigrationParamsPtr
 qemuMigrationParams(virTypedParameterPtr params,
                     int nparams,
@@ -3549,7 +3571,7 @@ qemuMigrationParams(virTypedParameterPtr params,
     return migParams;
 
  error:
-    VIR_FREE(migParams);
+    qemuMigrationParamsFree(&migParams);
     return NULL;
 }
 
@@ -3909,6 +3931,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
         virDomainObjRemoveTransientDef(vm);
         qemuDomainRemoveInactive(driver, vm);
     }
+    qemuMigrationParamsClear(&migParams);
     virDomainObjEndAPI(&vm);
     qemuDomainEventQueue(driver, event);
     qemuMigrationCookieFree(mig);
@@ -5244,6 +5267,7 @@ static int doPeer2PeerMigrate2(virQEMUDriverPtr driver,
         virSetError(orig_err);
         virFreeError(orig_err);
     }
+    qemuMigrationParamsClear(&migParams);
     VIR_FREE(uri_out);
     VIR_FREE(cookie);
     VIR_FREE(compression);

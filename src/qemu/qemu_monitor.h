@@ -571,6 +571,11 @@ struct _qemuMonitorMigrationParams {
 
     bool cpuThrottleIncrement_set;
     int cpuThrottleIncrement;
+
+    /* Value is either NULL, "", or some string. NULL indicates no support;
+     * whereas, some string value indicates we can support setting/clearing */
+    char *migrateTLSAlias;
+    char *migrateTLSHostname;
 };
 
 int qemuMonitorGetMigrationParams(qemuMonitorPtr mon,

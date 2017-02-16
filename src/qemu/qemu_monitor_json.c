@@ -2566,6 +2566,7 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
     virJSONValuePtr result;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
+    const char *tlsStr = NULL;
 
     memset(params, 0, sizeof(*params));
 
@@ -2594,6 +2595,16 @@ qemuMonitorJSONGetMigrationParams(qemuMonitorPtr mon,
     PARSE(cpuThrottleIncrement, "cpu-throttle-increment");
 
 #undef PARSE
+
+    if ((tlsStr = virJSONValueObjectGetString(result, "tls-creds"))) {
+        if (VIR_STRDUP(params->migrateTLSAlias, tlsStr) < 0)
+            goto cleanup;
+    }
+
+    if ((tlsStr = virJSONValueObjectGetString(result, "tls-hostname"))) {
+        if (VIR_STRDUP(params->migrateTLSHostname, tlsStr) < 0)
+            goto cleanup;
+    }
 
     ret = 0;
  cleanup:
@@ -2636,6 +2647,16 @@ qemuMonitorJSONSetMigrationParams(qemuMonitorPtr mon,
     APPEND(cpuThrottleIncrement, "cpu-throttle-increment");
 
 #undef APPEND
+
+    if (params->migrateTLSAlias &&
+        virJSONValueObjectAppendString(args, "tls-creds",
+                                       params->migrateTLSAlias) < 0)
+        goto cleanup;
+
+    if (params->migrateTLSHostname &&
+        virJSONValueObjectAppendString(args, "tls-hostname",
+                                       params->migrateTLSHostname) < 0)
+        goto cleanup;
 
     if (virJSONValueObjectAppend(cmd, "arguments", args) < 0)
         goto cleanup;

@@ -121,6 +121,12 @@ int qemuMigrationCompressionDump(qemuMigrationCompressionPtr compression,
                                  int *maxparams,
                                  unsigned long *flags);
 
+void
+qemuMigrationParamsClear(qemuMonitorMigrationParamsPtr migParams);
+
+void
+qemuMigrationParamsFree(qemuMonitorMigrationParamsPtr *migParams);
+
 qemuMonitorMigrationParamsPtr
 qemuMigrationParams(virTypedParameterPtr params,
                     int nparams,

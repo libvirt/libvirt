@@ -11845,6 +11845,7 @@ qemuDomainMigratePerform(virDomainPtr dom,
                                flags, dname, resource, false);
 
  cleanup:
+    qemuMigrationParamsClear(&migParams);
     VIR_FREE(compression);
     return ret;
 }
@@ -12253,6 +12254,7 @@ qemuDomainMigratePerform3(virDomainPtr dom,
                                flags, dname, resource, true);
 
  cleanup:
+    qemuMigrationParamsClear(&migParams);
     VIR_FREE(compression);
     return ret;
 }
@@ -12343,7 +12345,7 @@ qemuDomainMigratePerform3Params(virDomainPtr dom,
                                flags, dname, bandwidth, true);
  cleanup:
     VIR_FREE(compression);
-    VIR_FREE(migParams);
+    qemuMigrationParamsFree(&migParams);
     VIR_FREE(migrate_disks);
     return ret;
 }
