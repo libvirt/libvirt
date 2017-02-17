@@ -2224,7 +2224,8 @@ virNodeDeviceMatch(virNodeDeviceObjPtr devobj,
               MATCH(STORAGE)       ||
               MATCH(FC_HOST)       ||
               MATCH(VPORTS)        ||
-              MATCH(SCSI_GENERIC)))
+              MATCH(SCSI_GENERIC)  ||
+              MATCH(DRM)))
             return false;
     }
 

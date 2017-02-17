@@ -414,7 +414,7 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
             goto cleanup;
         }
 
-        switch (cap_type) {
+        switch ((virNodeDevCapType) cap_type) {
         case VIR_NODE_DEV_CAP_SYSTEM:
             flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM;
             break;
@@ -451,7 +451,10 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         case VIR_NODE_DEV_CAP_SCSI_GENERIC:
             flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC;
             break;
-        default:
+        case VIR_NODE_DEV_CAP_DRM:
+            flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM;
+            break;
+        case VIR_NODE_DEV_CAP_LAST:
             break;
         }
     }

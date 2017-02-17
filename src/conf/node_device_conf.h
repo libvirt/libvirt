@@ -340,7 +340,8 @@ void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj);
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE       | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST       | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS        | \
-                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC)
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC  | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM)
 
 typedef bool (*virNodeDeviceObjListFilter)(virConnectPtr conn,
                                            virNodeDeviceDefPtr def);
