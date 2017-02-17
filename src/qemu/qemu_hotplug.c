@@ -1607,40 +1607,34 @@ qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
 }
 
 
-static int
-qemuDomainGetChardevTLSObjects(virQEMUDriverConfigPtr cfg,
-                               qemuDomainObjPrivatePtr priv,
-                               virDomainChrSourceDefPtr dev,
-                               char *charAlias,
-                               virJSONValuePtr *tlsProps,
-                               char **tlsAlias,
-                               virJSONValuePtr *secProps,
-                               char **secAlias)
+int
+qemuDomainGetTLSObjects(virQEMUCapsPtr qemuCaps,
+                        qemuDomainSecretInfoPtr secinfo,
+                        const char *tlsCertdir,
+                        bool tlsListen,
+                        bool tlsVerify,
+                        const char *srcAlias,
+                        virJSONValuePtr *tlsProps,
+                        char **tlsAlias,
+                        virJSONValuePtr *secProps,
+                        char **secAlias)
 {
-    qemuDomainChrSourcePrivatePtr chrSourcePriv =
-        QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
-
     /* Add a secret object in order to access the TLS environment.
      * The secinfo will only be created for serial TCP device. */
-    if (chrSourcePriv && chrSourcePriv->secinfo) {
-        if (qemuBuildSecretInfoProps(chrSourcePriv->secinfo, secProps) < 0)
+    if (secinfo) {
+        if (qemuBuildSecretInfoProps(secinfo, secProps) < 0)
             return -1;
 
-        if (!(*secAlias = qemuDomainGetSecretAESAlias(charAlias, false)))
+        if (!(*secAlias = qemuDomainGetSecretAESAlias(srcAlias, false)))
             return -1;
     }
 
-    if (qemuBuildTLSx509BackendProps(cfg->chardevTLSx509certdir,
-                                     dev->data.tcp.listen,
-                                     cfg->chardevTLSx509verify,
-                                     *secAlias,
-                                     priv->qemuCaps,
-                                     tlsProps) < 0)
+    if (qemuBuildTLSx509BackendProps(tlsCertdir, tlsListen, tlsVerify,
+                                     *secAlias, qemuCaps, tlsProps) < 0)
         return -1;
 
-    if (!(*tlsAlias = qemuAliasTLSObjFromSrcAlias(charAlias)))
+    if (!(*tlsAlias = qemuAliasTLSObjFromSrcAlias(srcAlias)))
         return -1;
-    dev->data.tcp.tlscreds = true;
 
     return 0;
 }
@@ -1659,6 +1653,8 @@ qemuDomainAddChardevTLSObjects(virConnectPtr conn,
     int ret = -1;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuDomainChrSourcePrivatePtr chrSourcePriv;
+    qemuDomainSecretInfoPtr secinfo = NULL;
     virJSONValuePtr tlsProps = NULL;
     virJSONValuePtr secProps = NULL;
 
@@ -1674,10 +1670,17 @@ qemuDomainAddChardevTLSObjects(virConnectPtr conn,
     if (qemuDomainSecretChardevPrepare(conn, cfg, priv, devAlias, dev) < 0)
         goto cleanup;
 
-    if (qemuDomainGetChardevTLSObjects(cfg, priv, dev, charAlias,
-                                       &tlsProps, tlsAlias,
-                                       &secProps, secAlias) < 0)
+    if ((chrSourcePriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev)))
+        secinfo = chrSourcePriv->secinfo;
+
+    if (qemuDomainGetTLSObjects(priv->qemuCaps, secinfo,
+                                cfg->chardevTLSx509certdir,
+                                dev->data.tcp.listen,
+                                cfg->chardevTLSx509verify,
+                                charAlias, &tlsProps, tlsAlias,
+                                &secProps, secAlias) < 0)
         goto cleanup;
+    dev->data.tcp.tlscreds = true;
 
     if (qemuDomainAddTLSObjects(driver, vm, *secAlias, &secProps,
                                 *tlsAlias, &tlsProps) < 0)
