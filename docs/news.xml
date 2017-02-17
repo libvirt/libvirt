@@ -63,6 +63,23 @@
           other than what's required for remote access of libvirtd.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: add rendernode argument
+        </summary>
+        <description>
+          Add a new attribute 'rendernode' to &lt;gl&gt; spice element.
+        </description>
+      </change>
+      <change>
+        <summary>
+          nodedev: add drm capability
+        </summary>
+        <description>
+          Add a new 'drm' capability for Direct Rendering Manager (DRM)
+          devices, providing device type information.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
