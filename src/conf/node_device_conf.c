@@ -814,7 +814,7 @@ virNodeDevCapDRMParseXML(xmlXPathContextPtr ctxt,
                          virNodeDevCapDataPtr data)
 {
     xmlNodePtr orignode;
-    int ret = -1;
+    int ret = -1, val;
     char *type = NULL;
 
     orignode = ctxt->node;
@@ -822,11 +822,12 @@ virNodeDevCapDRMParseXML(xmlXPathContextPtr ctxt,
 
     type = virXPathString("string(./type[1])", ctxt);
 
-    if ((data->drm.type = virNodeDevDRMTypeFromString(type)) < 0) {
+    if ((val = virNodeDevDRMTypeFromString(type)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown drm type '%s' for '%s'"), type, def->name);
         goto out;
     }
+    data->drm.type = val;
 
     ret = 0;
 
@@ -1791,6 +1792,7 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
         xmlNodePtr node = nodes[i];
         char *tmp = virXMLPropString(node, "type");
         virNodeDevDevnodeType type;
+        int val;
 
         if (!tmp) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1798,12 +1800,13 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
             goto error;
         }
 
-        if ((type = virNodeDevDevnodeTypeFromString(tmp)) < 0) {
+        if ((val = virNodeDevDevnodeTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown devnode type '%s'"), tmp);
             VIR_FREE(tmp);
             goto error;
         }
+        type = val;
 
         switch (type) {
         case VIR_NODE_DEV_DEVNODE_DEV:
