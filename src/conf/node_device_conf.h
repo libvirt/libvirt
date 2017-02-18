@@ -352,4 +352,7 @@ int virNodeDeviceObjListExport(virConnectPtr conn,
                                virNodeDeviceObjListFilter filter,
                                unsigned int flags);
 
+char *virNodeDeviceGetParentName(virConnectPtr conn,
+                                 const char *nodedev_name);
+
 #endif /* __VIR_NODE_DEVICE_CONF_H__ */

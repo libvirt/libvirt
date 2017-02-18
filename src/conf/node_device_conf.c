@@ -2288,3 +2288,33 @@ virNodeDeviceObjListExport(virConnectPtr conn,
     VIR_FREE(tmp_devices);
     return ret;
 }
+
+
+/* virNodeDeviceGetParentName
+ * @conn: Connection pointer
+ * @nodedev_name: Node device to lookup
+ *
+ * Lookup the node device by name and return the parent name
+ *
+ * Returns parent name on success, caller is responsible for freeing;
+ * otherwise, returns NULL on failure
+ */
+char *
+virNodeDeviceGetParentName(virConnectPtr conn,
+                           const char *nodedev_name)
+{
+    virNodeDevicePtr device = NULL;
+    char *parent;
+
+    if (!(device = virNodeDeviceLookupByName(conn, nodedev_name))) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Cannot find '%s' in node device database"),
+                       nodedev_name);
+        return NULL;
+    }
+
+    ignore_value(VIR_STRDUP(parent, virNodeDeviceGetParent(device)));
+    virObjectUnref(device);
+
+    return parent;
+}
