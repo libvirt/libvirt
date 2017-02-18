@@ -36,6 +36,7 @@
 #include "virstring.h"
 #include "virvhba.h"
 #include "storage_util.h"
+#include "node_device_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -214,10 +215,11 @@ getAdapterName(virStoragePoolSourceAdapter adapter)
  * sysfs tree to get the parent 'scsi_host#' to ensure it matches.
  */
 static bool
-checkVhbaSCSIHostParent(virConnectPtr conn,
-                        const char *name,
-                        const char *parent_name)
+checkParent(virConnectPtr conn,
+            const char *name,
+            const char *parent_name)
 {
+    char *scsi_host_name = NULL;
     char *vhba_parent = NULL;
     bool retval = false;
 
@@ -227,7 +229,10 @@ checkVhbaSCSIHostParent(virConnectPtr conn,
     if (!conn)
         return true;
 
-    if (!(vhba_parent = virStoragePoolGetVhbaSCSIHostParent(conn, name)))
+    if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0)
+        goto cleanup;
+
+    if (!(vhba_parent = virNodeDeviceGetParentName(conn, scsi_host_name)))
         goto cleanup;
 
     if (STRNEQ(parent_name, vhba_parent)) {
@@ -242,6 +247,7 @@ checkVhbaSCSIHostParent(virConnectPtr conn,
 
  cleanup:
     VIR_FREE(vhba_parent);
+    VIR_FREE(scsi_host_name);
     return retval;
 }
 
@@ -276,7 +282,7 @@ createVport(virConnectPtr conn,
          * retrieved has the same parent
          */
         if (adapter->data.fchost.parent &&
-            checkVhbaSCSIHostParent(conn, name, adapter->data.fchost.parent))
+            checkParent(conn, name, adapter->data.fchost.parent))
             ret = 0;
 
         goto cleanup;
@@ -383,6 +389,7 @@ deleteVport(virConnectPtr conn,
 {
     unsigned int parent_host;
     char *name = NULL;
+    char *scsi_host_name = NULL;
     char *vhba_parent = NULL;
     int ret = -1;
 
@@ -416,7 +423,10 @@ deleteVport(virConnectPtr conn,
         if (virGetSCSIHostNumber(adapter.data.fchost.parent, &parent_host) < 0)
             goto cleanup;
     } else {
-        if (!(vhba_parent = virStoragePoolGetVhbaSCSIHostParent(conn, name)))
+        if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0)
+            goto cleanup;
+
+        if (!(vhba_parent = virNodeDeviceGetParentName(conn, scsi_host_name)))
             goto cleanup;
 
         if (virGetSCSIHostNumber(vhba_parent, &parent_host) < 0)
@@ -431,6 +441,7 @@ deleteVport(virConnectPtr conn,
  cleanup:
     VIR_FREE(name);
     VIR_FREE(vhba_parent);
+    VIR_FREE(scsi_host_name);
     return ret;
 }
 

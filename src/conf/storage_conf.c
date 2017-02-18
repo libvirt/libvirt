@@ -35,6 +35,7 @@
 
 #include "virerror.h"
 #include "datatypes.h"
+#include "node_device_conf.h"
 #include "storage_conf.h"
 #include "virstoragefile.h"
 
@@ -2275,64 +2276,6 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
     return ret;
 }
 
-/*
- * virStoragePoolGetVhbaSCSIHostParent:
- *
- * Using the Node Device Driver, find the host# name found via wwnn/wwpn
- * lookup in the fc_host sysfs tree (e.g. virGetFCHostNameByWWN) to get
- * the parent 'scsi_host#'.
- *
- * @conn: Connection pointer (must be non-NULL on entry)
- * @name: Pointer a string from a virGetFCHostNameByWWN (e.g., "host#")
- *
- * Returns a "scsi_host#" string of the parent of the vHBA
- */
-char *
-virStoragePoolGetVhbaSCSIHostParent(virConnectPtr conn,
-                                    const char *name)
-{
-    char *nodedev_name = NULL;
-    virNodeDevicePtr device = NULL;
-    char *xml = NULL;
-    virNodeDeviceDefPtr def = NULL;
-    char *vhba_parent = NULL;
-
-    VIR_DEBUG("conn=%p, name=%s", conn, name);
-
-    /* We get passed "host#" from the return from virGetFCHostNameByWWN,
-     * so we need to adjust that to what the nodedev lookup expects
-     */
-    if (virAsprintf(&nodedev_name, "scsi_%s", name) < 0)
-        goto cleanup;
-
-    /* Compare the scsi_host for the name with the provided parent
-     * if not the same, then fail
-     */
-    if (!(device = virNodeDeviceLookupByName(conn, nodedev_name))) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Cannot find '%s' in node device database"),
-                       nodedev_name);
-        goto cleanup;
-    }
-
-    if (!(xml = virNodeDeviceGetXMLDesc(device, 0)))
-        goto cleanup;
-
-    if (!(def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL)))
-        goto cleanup;
-
-    /* The caller checks whether the returned value is NULL or not
-     * before continuing
-     */
-    ignore_value(VIR_STRDUP(vhba_parent, def->parent));
-
- cleanup:
-    VIR_FREE(nodedev_name);
-    virNodeDeviceDefFree(def);
-    VIR_FREE(xml);
-    virObjectUnref(device);
-    return vhba_parent;
-}
 
 static int
 getSCSIHostNumber(virStoragePoolSourceAdapter adapter,
@@ -2383,6 +2326,7 @@ matchFCHostToSCSIHost(virConnectPtr conn,
                       unsigned int scsi_hostnum)
 {
     char *name = NULL;
+    char *scsi_host_name = NULL;
     char *parent_name = NULL;
     unsigned int fc_hostnum;
 
@@ -2415,8 +2359,13 @@ matchFCHostToSCSIHost(virConnectPtr conn,
          * have a match.
          */
         if (conn && !fc_adapter.data.fchost.parent) {
-            parent_name = virStoragePoolGetVhbaSCSIHostParent(conn, name);
-            if (parent_name) {
+            if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0) {
+                VIR_FREE(name);
+                return false;
+            }
+            if ((parent_name = virNodeDeviceGetParentName(conn,
+                                                          scsi_host_name))) {
+                VIR_FREE(scsi_host_name);
                 if (virGetSCSIHostNumber(parent_name, &fc_hostnum) == 0 &&
                     scsi_hostnum == fc_hostnum) {
                     VIR_FREE(parent_name);
@@ -2428,6 +2377,7 @@ matchFCHostToSCSIHost(virConnectPtr conn,
                 /* Throw away the error and fall through */
                 virResetLastError();
                 VIR_DEBUG("Could not determine parent vHBA");
+                VIR_FREE(scsi_host_name);
             }
         }
         VIR_FREE(name);

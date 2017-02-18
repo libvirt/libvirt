@@ -30,7 +30,6 @@
 # include "virbitmap.h"
 # include "virthread.h"
 # include "device_conf.h"
-# include "node_device_conf.h"
 # include "object_event.h"
 
 # include <libxml/tree.h>
@@ -417,10 +416,6 @@ char *virStoragePoolSourceListFormat(virStoragePoolSourceListPtr def);
 int virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
                                  virStoragePoolDefPtr def,
                                  unsigned int check_active);
-
-char *virStoragePoolGetVhbaSCSIHostParent(virConnectPtr conn,
-                                          const char *name)
-    ATTRIBUTE_NONNULL(1);
 
 int virStoragePoolSourceFindDuplicate(virConnectPtr conn,
                                       virStoragePoolObjListPtr pools,
