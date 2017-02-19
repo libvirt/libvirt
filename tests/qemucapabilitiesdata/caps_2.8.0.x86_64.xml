@@ -27,6 +27,8 @@
   <flag name='drive-aio'/>
   <flag name='pci-multibus'/>
   <flag name='pci-bootindex'/>
+  <flag name='ccid-emulated'/>
+  <flag name='ccid-passthru'/>
   <flag name='chardev-spicevmc'/>
   <flag name='virtio-tx-alg'/>
   <flag name='pci-multifunction'/>
@@ -170,6 +172,7 @@
   <flag name='vserport-change-event'/>
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='mptsas1068'/>
+  <flag name='spice-gl'/>
   <flag name='qxl.vram64_size_mb'/>
   <flag name='chardev-logfile'/>
   <flag name='debug-threads'/>
@@ -198,9 +201,9 @@
   <flag name='gluster.debug_level'/>
   <flag name='vhost-scsi'/>
   <flag name='drive-iotune-group'/>
-  <version>2007093</version>
+  <version>2008000</version>
   <kvmVersion>0</kvmVersion>
-  <package> (v2.8.0-rc3-dirty)</package>
+  <package> (v2.8.0)</package>
   <arch>x86_64</arch>
   <cpu type='kvm' name='host' usable='yes'/>
   <cpu type='kvm' name='qemu64' usable='yes'/>

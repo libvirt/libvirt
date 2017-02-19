@@ -2,11 +2,11 @@
   "QMP": {
     "version": {
       "qemu": {
-        "micro": 93,
-        "minor": 7,
+        "micro": 0,
+        "minor": 8,
         "major": 2
       },
-      "package": " (v2.8.0-rc3-dirty)"
+      "package": " (v2.8.0)"
     },
     "capabilities": [
     ]
@@ -22,11 +22,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 93,
-      "minor": 7,
+      "micro": 0,
+      "minor": 8,
       "major": 2
     },
-    "package": " (v2.8.0-rc3-dirty)"
+    "package": " (v2.8.0)"
   },
   "id": "libvirt-2"
 }
@@ -469,7 +469,7 @@
 
 {
   "return": {
-    "fd": 16,
+    "fd": 15,
     "fdset-id": 0
   },
   "id": "libvirt-5"
@@ -720,6 +720,9 @@
     },
     {
       "name": "container"
+    },
+    {
+      "name": "qio-channel-rdma"
     },
     {
       "name": "host-x86_64-cpu"
@@ -1016,10 +1019,10 @@
       "name": "i8257"
     },
     {
-      "name": "Opteron_G4-x86_64-cpu"
+      "name": "filter-mirror"
     },
     {
-      "name": "filter-mirror"
+      "name": "Opteron_G4-x86_64-cpu"
     },
     {
       "name": "virtio-mmio"
@@ -1277,6 +1280,9 @@
       "name": "isa-dma"
     },
     {
+      "name": "virtio-balloon-pci"
+    },
+    {
       "name": "tcg-accel"
     },
     {
@@ -1325,7 +1331,7 @@
       "name": "nvdimm"
     },
     {
-      "name": "virtio-balloon-pci"
+      "name": "ccid-card-passthru"
     },
     {
       "name": "SandyBridge-x86_64-cpu"
@@ -1422,6 +1428,9 @@
     },
     {
       "name": "virtio-rng-device"
+    },
+    {
+      "name": "ccid-card-emulated"
     },
     {
       "name": "am53c974"
@@ -1776,6 +1785,10 @@
       "type": "bool"
     },
     {
+      "name": "bootindex",
+      "type": "int32"
+    },
+    {
       "name": "x-pcie-lnksta-dllla",
       "description": "on/off",
       "type": "bool"
@@ -1814,16 +1827,16 @@
       "type": "uint16"
     },
     {
-      "name": "bootindex",
-      "type": "int32"
+      "name": "config-wce",
+      "description": "on/off",
+      "type": "bool"
     },
     {
       "name": "virtio-backend",
       "type": "child<virtio-blk-device>"
     },
     {
-      "name": "config-wce",
-      "description": "on/off",
+      "name": "x-ignore-backend-features",
       "type": "bool"
     },
     {
@@ -1867,6 +1880,11 @@
     {
       "name": "x-txtimer",
       "type": "uint32"
+    },
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
     },
     {
       "name": "guest_ufo",
@@ -2071,8 +2089,7 @@
       "type": "child<virtio-net-device>"
     },
     {
-      "name": "notify_on_empty",
-      "description": "on/off",
+      "name": "x-ignore-backend-features",
       "type": "bool"
     },
     {
@@ -2206,6 +2223,10 @@
     {
       "name": "virtio-backend",
       "type": "child<virtio-scsi-device>"
+    },
+    {
+      "name": "x-ignore-backend-features",
+      "type": "bool"
     },
     {
       "name": "notify_on_empty",
@@ -3205,7 +3226,7 @@
       "type": "bool"
     },
     {
-      "name": "event_idx",
+      "name": "indirect_desc",
       "description": "on/off",
       "type": "bool"
     },
@@ -3215,8 +3236,7 @@
       "type": "bool"
     },
     {
-      "name": "indirect_desc",
-      "description": "on/off",
+      "name": "x-ignore-backend-features",
       "type": "bool"
     },
     {
@@ -3240,7 +3260,7 @@
       "type": "bool"
     },
     {
-      "name": "notify_on_empty",
+      "name": "event_idx",
       "description": "on/off",
       "type": "bool"
     },
@@ -3294,6 +3314,11 @@
     {
       "name": "max_outputs",
       "type": "uint32"
+    },
+    {
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
     },
     {
       "name": "rombar",
@@ -3454,13 +3479,13 @@
       "type": "bool"
     },
     {
-      "name": "indirect_desc",
-      "description": "on/off",
+      "name": "x-ignore-backend-features",
       "type": "bool"
     },
     {
-      "name": "guest-stats",
-      "type": "guest statistics"
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
     },
     {
       "name": "page-per-vq",
@@ -3478,7 +3503,7 @@
       "type": "bool"
     },
     {
-      "name": "event_idx",
+      "name": "indirect_desc",
       "description": "on/off",
       "type": "bool"
     },
@@ -3533,6 +3558,10 @@
       "name": "deflate-on-oom",
       "description": "on/off",
       "type": "bool"
+    },
+    {
+      "name": "guest-stats",
+      "type": "guest statistics"
     }
   ],
   "id": "libvirt-37"
@@ -4142,6 +4171,10 @@
     },
     {
       "parameters": [
+        {
+          "name": "gl",
+          "type": "boolean"
+        },
         {
           "name": "seamless-migration",
           "type": "boolean"
