@@ -476,7 +476,7 @@ virVHBAPathExists(const char *sysfs_prefix ATTRIBUTE_UNUSED,
 
 
 bool
-virVHBAVportIsCapable(const char *sysfs_prefix ATTRIBUTE_UNUSED,
+virVHBAIsVportCapable(const char *sysfs_prefix ATTRIBUTE_UNUSED,
                       int host ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s", _("Not supported on this platform"));
