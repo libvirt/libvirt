@@ -169,6 +169,7 @@ mymain(void)
     DO_TEST("x86_64", "caps_2.6.0");
     DO_TEST("x86_64", "caps_2.7.0");
     DO_TEST("x86_64", "caps_2.8.0");
+    DO_TEST("x86_64", "caps_2.9.0");
     DO_TEST("aarch64", "caps_2.6.0-gicv2");
     DO_TEST("aarch64", "caps_2.6.0-gicv3");
     DO_TEST("ppc64le", "caps_2.6.0");
