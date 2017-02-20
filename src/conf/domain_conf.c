@@ -15561,6 +15561,61 @@ virDomainIOThreadIDDefParseXML(xmlNodePtr node,
 }
 
 
+static int
+virDomainDefParseIOThreads(virDomainDefPtr def,
+                           xmlXPathContextPtr ctxt)
+{
+    size_t i;
+    char *tmp;
+    int n = 0;
+    unsigned int iothreads = 0;
+    xmlNodePtr *nodes = NULL;
+
+    tmp = virXPathString("string(./iothreads[1])", ctxt);
+    if (tmp && virStrToLong_uip(tmp, NULL, 10, &iothreads) < 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("invalid iothreads count '%s'"), tmp);
+        goto error;
+    }
+    VIR_FREE(tmp);
+
+    /* Extract any iothread id's defined */
+    if ((n = virXPathNodeSet("./iothreadids/iothread", ctxt, &nodes)) < 0)
+        goto error;
+
+    if (n > iothreads)
+        iothreads = n;
+
+    if (n && VIR_ALLOC_N(def->iothreadids, n) < 0)
+        goto error;
+
+    for (i = 0; i < n; i++) {
+        virDomainIOThreadIDDefPtr iothrid = NULL;
+        if (!(iothrid = virDomainIOThreadIDDefParseXML(nodes[i], ctxt)))
+            goto error;
+
+        if (virDomainIOThreadIDFind(def, iothrid->iothread_id)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("duplicate iothread id '%u' found"),
+                           iothrid->iothread_id);
+            virDomainIOThreadIDDefFree(iothrid);
+            goto error;
+        }
+        def->iothreadids[def->niothreadids++] = iothrid;
+    }
+    VIR_FREE(nodes);
+
+    if (virDomainIOThreadIDDefArrayInit(def, iothreads) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    VIR_FREE(nodes);
+    return -1;
+}
+
+
 /* Parse the XML definition for a vcpupin
  *
  * vcpupin has the form of
@@ -16434,7 +16489,6 @@ virDomainDefParseXML(xmlDocPtr xml,
     bool usb_other = false;
     bool usb_master = false;
     char *netprefix = NULL;
-    unsigned int iothreads = 0;
 
     if (flags & VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA) {
         char *schema = virFileFindResource("domain.rng",
@@ -16762,42 +16816,7 @@ virDomainDefParseXML(xmlDocPtr xml,
     if (virDomainVcpuParse(def, ctxt, xmlopt) < 0)
         goto error;
 
-    /* Optional - iothreads */
-    tmp = virXPathString("string(./iothreads[1])", ctxt);
-    if (tmp && virStrToLong_uip(tmp, NULL, 10, &iothreads) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid iothreads count '%s'"), tmp);
-        goto error;
-    }
-    VIR_FREE(tmp);
-
-    /* Extract any iothread id's defined */
-    if ((n = virXPathNodeSet("./iothreadids/iothread", ctxt, &nodes)) < 0)
-        goto error;
-
-    if (n > iothreads)
-        iothreads = n;
-
-    if (n && VIR_ALLOC_N(def->iothreadids, n) < 0)
-        goto error;
-
-    for (i = 0; i < n; i++) {
-        virDomainIOThreadIDDefPtr iothrid = NULL;
-        if (!(iothrid = virDomainIOThreadIDDefParseXML(nodes[i], ctxt)))
-            goto error;
-
-        if (virDomainIOThreadIDFind(def, iothrid->iothread_id)) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("duplicate iothread id '%u' found"),
-                           iothrid->iothread_id);
-            virDomainIOThreadIDDefFree(iothrid);
-            goto error;
-        }
-        def->iothreadids[def->niothreadids++] = iothrid;
-    }
-    VIR_FREE(nodes);
-
-    if (virDomainIOThreadIDDefArrayInit(def, iothreads) < 0)
+    if (virDomainDefParseIOThreads(def, ctxt) < 0)
         goto error;
 
     /* Extract cpu tunables. */
