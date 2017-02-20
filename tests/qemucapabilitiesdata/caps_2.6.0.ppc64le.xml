@@ -163,6 +163,7 @@
   <flag name='query-named-block-nodes'/>
   <flag name='kernel-irqchip'/>
   <flag name='kernel-irqchip.split'/>
+  <flag name='spapr-pci-host-bridge'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
