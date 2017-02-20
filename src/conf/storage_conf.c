@@ -2341,6 +2341,7 @@ matchFCHostToSCSIHost(virConnectPtr conn,
                       virStoragePoolSourceAdapter fc_adapter,
                       unsigned int scsi_hostnum)
 {
+    bool ret = false;
     char *name = NULL;
     char *scsi_host_name = NULL;
     char *parent_name = NULL;
@@ -2362,10 +2363,9 @@ matchFCHostToSCSIHost(virConnectPtr conn,
          * matches our scsi_hostnum
          */
         if (virStorageIsSameHostnum(name, scsi_hostnum)) {
-            VIR_FREE(name);
-            return true;
+            ret = true;
+            goto cleanup;
         }
-        VIR_FREE(name);
 
         /* We weren't provided a parent, so we have to query the node
          * device driver in order to ascertain the parent of the vHBA.
@@ -2373,23 +2373,18 @@ matchFCHostToSCSIHost(virConnectPtr conn,
          * have a match.
          */
         if (conn && !fc_adapter.data.fchost.parent) {
-            if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0) {
-                VIR_FREE(name);
-                return false;
-            }
+            if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0)
+                goto cleanup;
             if ((parent_name = virNodeDeviceGetParentName(conn,
                                                           scsi_host_name))) {
-                VIR_FREE(scsi_host_name);
                 if (virStorageIsSameHostnum(parent_name, scsi_hostnum)) {
-                    VIR_FREE(parent_name);
-                    return true;
+                    ret = true;
+                    goto cleanup;
                 }
-                VIR_FREE(parent_name);
             } else {
                 /* Throw away the error and fall through */
                 virResetLastError();
                 VIR_DEBUG("Could not determine parent vHBA");
-                VIR_FREE(scsi_host_name);
             }
         }
     }
@@ -2401,7 +2396,12 @@ matchFCHostToSCSIHost(virConnectPtr conn,
      *     conflict with an existing scsi_host definition, but there's no
      *     way to know that now.
      */
-    return false;
+
+ cleanup:
+    VIR_FREE(name);
+    VIR_FREE(parent_name);
+    VIR_FREE(scsi_host_name);
+    return ret;
 }
 
 static bool
