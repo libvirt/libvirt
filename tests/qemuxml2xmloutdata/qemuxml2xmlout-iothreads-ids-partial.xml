@@ -8,6 +8,8 @@
   <iothreadids>
     <iothread id='5'/>
     <iothread id='6'/>
+    <iothread id='1'/>
+    <iothread id='2'/>
   </iothreadids>
   <os>
     <type arch='i686' machine='pc'>hvm</type>

@@ -23658,6 +23658,20 @@ virDomainCpuDefFormat(virBufferPtr buf,
 }
 
 
+static bool
+virDomainDefIothreadShouldFormat(virDomainDefPtr def)
+{
+    size_t i;
+
+    for (i = 0; i < def->niothreadids; i++) {
+        if (!def->iothreadids[i]->autofill)
+            return true;
+    }
+
+    return false;
+}
+
+
 /* This internal version appends to an existing buffer
  * (possibly with auto-indent), rather than flattening
  * to string.
@@ -23851,17 +23865,10 @@ virDomainDefFormatInternal(virDomainDefPtr def,
     if (def->niothreadids > 0) {
         virBufferAsprintf(buf, "<iothreads>%lu</iothreads>\n",
                           def->niothreadids);
-        /* Only print out iothreadids if we read at least one */
-        for (i = 0; i < def->niothreadids; i++) {
-            if (!def->iothreadids[i]->autofill)
-                break;
-        }
-        if (i < def->niothreadids) {
+        if (virDomainDefIothreadShouldFormat(def)) {
             virBufferAddLit(buf, "<iothreadids>\n");
             virBufferAdjustIndent(buf, 2);
             for (i = 0; i < def->niothreadids; i++) {
-                if (def->iothreadids[i]->autofill)
-                    continue;
                 virBufferAsprintf(buf, "<iothread id='%u'/>\n",
                                   def->iothreadids[i]->iothread_id);
             }
