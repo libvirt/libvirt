@@ -51,6 +51,8 @@ int virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
                          unsigned long long capBits,
                          bool clearExistingCaps);
 
+void virWaitForDevices(void);
+
 int virScaleInteger(unsigned long long *value, const char *suffix,
                     unsigned long long scale, unsigned long long limit)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;

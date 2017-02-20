@@ -426,7 +426,7 @@ virStorageBackendDiskRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     VIR_FREE(pool->def->source.devices[0].freeExtents);
     pool->def->source.devices[0].nfreeExtent = 0;
 
-    virFileWaitForDevices();
+    virWaitForDevices();
 
     if (!virFileExists(pool->def->source.devices[0].path)) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -450,7 +450,7 @@ virStorageBackendDiskStartPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         virStoragePoolFormatDiskTypeToString(pool->def->source.format);
     const char *path = pool->def->source.devices[0].path;
 
-    virFileWaitForDevices();
+    virWaitForDevices();
 
     if (!virFileExists(path)) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -859,7 +859,7 @@ virStorageBackendDiskCreateVol(virConnectPtr conn,
         goto cleanup;
 
     /* wait for device node to show up */
-    virFileWaitForDevices();
+    virWaitForDevices();
 
     /* Blow away free extent info, as we're about to re-populate it */
     VIR_FREE(pool->def->source.devices[0].freeExtents);

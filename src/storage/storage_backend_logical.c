@@ -831,7 +831,7 @@ virStorageBackendLogicalRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     virCommandPtr cmd = NULL;
     int ret = -1;
 
-    virFileWaitForDevices();
+    virWaitForDevices();
 
     /* Get list of all logical volumes */
     if (virStorageBackendLogicalFindLVs(pool, NULL) < 0)
@@ -925,7 +925,7 @@ virStorageBackendLogicalDeleteVol(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     virCheckFlags(0, -1);
 
-    virFileWaitForDevices();
+    virWaitForDevices();
 
     lvchange_cmd = virCommandNewArgList(LVCHANGE, "-aln", vol->target.path, NULL);
     lvremove_cmd = virCommandNewArgList(LVREMOVE, "-f", vol->target.path, NULL);

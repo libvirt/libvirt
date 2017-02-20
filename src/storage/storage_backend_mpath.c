@@ -262,7 +262,7 @@ virStorageBackendMpathRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     pool->def->allocation = pool->def->capacity = pool->def->available = 0;
 
-    virFileWaitForDevices();
+    virWaitForDevices();
 
     virStorageBackendGetMaps(pool);
 

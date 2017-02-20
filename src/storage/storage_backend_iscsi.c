@@ -98,7 +98,7 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
 
     VIR_DEBUG("Finding host number from '%s'", sysfs_path);
 
-    virFileWaitForDevices();
+    virWaitForDevices();
 
     if (virDirOpen(&sysdir, sysfs_path) < 0)
         goto cleanup;

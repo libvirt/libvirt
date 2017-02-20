@@ -292,8 +292,6 @@ int virFileOpenTty(int *ttymaster,
 
 char *virFileFindMountPoint(const char *type);
 
-void virFileWaitForDevices(void);
-
 /* NB: this should be combined with virFileBuildPath */
 # define virBuildPath(path, ...) \
     virBuildPathInternal(path, __VA_ARGS__, NULL)

@@ -347,7 +347,7 @@ createVport(virConnectPtr conn,
                            VPORT_CREATE) < 0)
         goto cleanup;
 
-    virFileWaitForDevices();
+    virWaitForDevices();
 
     /* Creating our own VPORT didn't leave enough time to find any LUN's,
      * so, let's create a thread whose job it is to call the FindLU's with

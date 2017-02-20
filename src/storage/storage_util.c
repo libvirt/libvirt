@@ -4017,7 +4017,7 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
 
     VIR_DEBUG("Discovering LUs on host %u", scanhost);
 
-    virFileWaitForDevices();
+    virWaitForDevices();
 
     if (virDirOpen(&devicedir, device_path) < 0)
         return -1;

@@ -548,7 +548,7 @@ find_new_device(virConnectPtr conn, const char *wwnn, const char *wwpn)
 
     while ((now - start) < LINUX_NEW_DEVICE_WAIT_TIME) {
 
-        virFileWaitForDevices();
+        virWaitForDevices();
 
         dev = nodeDeviceLookupSCSIHostByWWN(conn, wwnn, wwpn, 0);
 

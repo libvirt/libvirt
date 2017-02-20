@@ -1582,7 +1582,7 @@ virSetUIDGIDWithCaps(uid_t uid, gid_t gid, gid_t *groups, int ngroups,
 
 
 #if defined(UDEVADM) || defined(UDEVSETTLE)
-void virFileWaitForDevices(void)
+void virWaitForDevices(void)
 {
 # ifdef UDEVADM
     const char *const settleprog[] = { UDEVADM, "settle", NULL };
@@ -1603,7 +1603,7 @@ void virFileWaitForDevices(void)
     ignore_value(virRun(settleprog, &exitstatus));
 }
 #else
-void virFileWaitForDevices(void)
+void virWaitForDevices(void)
 {}
 #endif
 
