@@ -666,6 +666,13 @@ mymain(void)
     DO_TEST("pseries-panic-missing", NONE);
     DO_TEST("pseries-panic-no-address", NONE);
 
+    DO_TEST("pseries-phb-simple",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+    DO_TEST("pseries-phb-default-missing",
+            QEMU_CAPS_NODEFCONFIG,
+            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
+
     DO_TEST("balloon-device-auto", NONE);
     DO_TEST("balloon-device-period", NONE);
     DO_TEST("channel-virtio-auto", NONE);
