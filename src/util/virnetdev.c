@@ -33,6 +33,7 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "virjson.h"
 
 #include <sys/ioctl.h>
 #include <net/if.h>
@@ -1971,7 +1972,551 @@ virNetDevRestoreNetConfig(const char *linkdev, int vf, const char *stateDir)
     return ret;
 }
 
-#else /* defined(__linux__) && defined(HAVE_LIBNL) */
+# define VIR_NETDEV_KEYNAME_ADMIN_MAC "adminMac"
+# define VIR_NETDEV_KEYNAME_VLAN_TAG "vlanTag"
+# define VIR_NETDEV_KEYNAME_MAC "mac"
+
+/**
+ * virNetDevSaveNetConfig:
+ * @linkdev: name of the interface
+ * @vf: vf index if linkdev is a pf
+ * @stateDir: directory to store old net config
+ * @saveVlan: false if we shouldn't attempt to save vlan tag info
+ *            (eg for interfaces using 802.1Qbg, since it handles
+ *            vlan tags internally)
+ *
+ * Save current MAC address and (if linkdev itself is a VF, or if @vf
+ * >= 0) the "admin MAC address" and vlan tag the device described by
+ * @linkdev:@vf to @stateDir. (the "admin MAC address" is stored in
+ * the PF, and is what the VF MAC will be initialized to the next time
+ * its driver is reloaded (either on host or guest).
+ *
+ * File Format:
+ *
+ * The file is in json format and will contain 1 or more of the
+ * following values:
+ *
+ *      "mac"      - VF MAC address (or missing if VF has no host net driver)
+ *      "vlanTag"  - a single vlan tag id
+ *      "adminMac" - admin MAC address (stored in the PF)
+ *
+ * For example:
+ *
+ *    {"mac": "9A:11:22:33:44:55",
+ *     "vlanTag": "42",
+ *     "adminMac": "00:00:00:00:00:00"
+ *    }
+ *
+ * File Name:
+ *
+ * If the device is a VF and we're allowed to save vlan tag info, the
+ * file will be named ${pfDevName_vf#{vf} (e.g. "enp2s0f0_vf5") and
+ * will contain at least "adminMac" and "vlanTag" (if the device was bound
+ * to a net driver on the host prior to use, it will also have "mac"..
+ * If the device isn't a VF, or we're not allowed to save vlan tag
+ * info, the file will be named ${linkdev} (e.g. "enp3s0f0") and will
+ * contain just linkdev's MAC address.
+ *
+ * Returns 0 on success, -1 on failure
+ *
+ */
+int
+virNetDevSaveNetConfig(const char *linkdev, int vf,
+                       const char *stateDir,
+                       bool saveVlan)
+{
+    int ret = -1;
+    const char *pfDevName = NULL;
+    char *pfDevOrig = NULL;
+    char *vfDevOrig = NULL;
+    virMacAddr oldMAC;
+    char MACStr[VIR_MAC_STRING_BUFLEN];
+    int oldVlanTag = -1;
+    char *filePath = NULL;
+    char *fileStr = NULL;
+    virJSONValuePtr configJSON = NULL;
+
+    if (vf >= 0) {
+        /* linkdev is the PF */
+        pfDevName = linkdev;
+
+        /* linkdev should get the VF's netdev name (or NULL if none) */
+        if (virNetDevPFGetVF(pfDevName, vf, &vfDevOrig) < 0)
+            goto cleanup;
+
+        linkdev = vfDevOrig;
+
+    } else if (saveVlan && virNetDevIsVirtualFunction(linkdev) == 1) {
+        /* when vf is -1, linkdev might be a standard netdevice (not
+         * SRIOV), or it might be an SRIOV VF. If it's a VF, normalize
+         * it to PF + VFname
+         */
+
+        if (virNetDevGetPhysicalFunction(linkdev, &pfDevOrig) < 0)
+            goto cleanup;
+
+        pfDevName = pfDevOrig;
+
+        if (virNetDevGetVirtualFunctionIndex(pfDevName, linkdev, &vf) < 0)
+            goto cleanup;
+    }
+
+    if (!(configJSON = virJSONValueNewObject()))
+        goto cleanup;
+
+    /* if there is a PF, it's now in pfDevName, and linkdev is either
+     * the VF's name, or NULL (if the VF isn't bound to a net driver
+     * on the host)
+     */
+
+    if (pfDevName) {
+        if (virAsprintf(&filePath, "%s/%s_vf%d", stateDir, pfDevName, vf) < 0)
+            goto cleanup;
+
+        /* get admin MAC and vlan tag */
+        if (virNetDevGetVfConfig(pfDevName, vf, &oldMAC,
+                                 saveVlan ? &oldVlanTag : NULL) < 0) {
+            goto cleanup;
+        }
+
+        if (virJSONValueObjectAppendString(configJSON,
+                                           VIR_NETDEV_KEYNAME_ADMIN_MAC,
+                                           virMacAddrFormat(&oldMAC, MACStr)) < 0 ||
+            virJSONValueObjectAppendNumberInt(configJSON,
+                                              VIR_NETDEV_KEYNAME_VLAN_TAG,
+                                              oldVlanTag) < 0) {
+            goto cleanup;
+        }
+
+    } else {
+        if (virAsprintf(&filePath, "%s/%s", stateDir, linkdev) < 0)
+            goto cleanup;
+    }
+
+    if (linkdev) {
+        if (virNetDevGetMAC(linkdev, &oldMAC) < 0)
+            goto cleanup;
+
+        /* for interfaces with no pfDevName (i.e. not a VF, this will
+         * be the only value in the file.
+         */
+        if (virJSONValueObjectAppendString(configJSON, VIR_NETDEV_KEYNAME_MAC,
+                                           virMacAddrFormat(&oldMAC, MACStr)) < 0)
+           goto cleanup;
+    }
+
+    if (!(fileStr = virJSONValueToString(configJSON, true)))
+        goto cleanup;
+
+    if (virFileWriteStr(filePath, fileStr, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
+        virReportSystemError(errno, _("Unable to preserve mac/vlan tag "
+                                      "for device = %s, vf = %d"), linkdev, vf);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(pfDevOrig);
+    VIR_FREE(vfDevOrig);
+    VIR_FREE(filePath);
+    VIR_FREE(fileStr);
+    virJSONValueFree(configJSON);
+    return ret;
+}
+
+
+/**
+ * virNetDevReadNetConfig:
+ * @linkdev: name of the interface
+ * @vf: vf index if linkdev is a pf
+ * @stateDir: directory where net config is stored
+ * @adminMAC: returns admin MAC to store in the PF (if this is a VF)
+ * @MAC: returns MAC to set on device immediately
+ *
+ * Read saved MAC address and (if linkdev itself is a VF, or if @vf >=
+ * 0) "admin MAC address" and vlan tag of the device described by
+ * @linkdev:@vf from a file in @stateDir. (see virNetDevSaveNetConfig
+ * for details of file name and format).
+ *
+ * Returns 0 on success, -1 on failure.
+ *
+ * The caller MUST free adminMAC, vlan, and MAC when it is finished
+ * with them (they will be NULL if they weren't found in the file)
+ *
+ */
+int
+virNetDevReadNetConfig(const char *linkdev, int vf,
+                       const char *stateDir,
+                       virMacAddrPtr *adminMAC,
+                       virNetDevVlanPtr *vlan,
+                       virMacAddrPtr *MAC)
+{
+    int ret = -1;
+    const char *pfDevName = NULL;
+    char *pfDevOrig = NULL;
+    char *vfDevOrig = NULL;
+    char *filePath = NULL;
+    char *fileStr = NULL;
+    virJSONValuePtr configJSON = NULL;
+    const char *MACStr = NULL;
+    const char *adminMACStr = NULL;
+    int vlanTag = -1;
+
+    *adminMAC = NULL;
+    *vlan = NULL;
+    *MAC = NULL;
+
+    if (vf >= 0) {
+        /* linkdev is the PF */
+        pfDevName = linkdev;
+
+        /* linkdev should get the VF's netdev name (or NULL if none) */
+        if (virNetDevPFGetVF(pfDevName, vf, &vfDevOrig) < 0)
+            goto cleanup;
+
+        linkdev = vfDevOrig;
+
+    } else if (virNetDevIsVirtualFunction(linkdev) == 1) {
+        /* when vf is -1, linkdev might be a standard netdevice (not
+         * SRIOV), or it might be an SRIOV VF. If it's a VF, normalize
+         * it to PF + VFname
+         */
+
+        if (virNetDevGetPhysicalFunction(linkdev, &pfDevOrig) < 0)
+            goto cleanup;
+
+        pfDevName = pfDevOrig;
+
+        if (virNetDevGetVirtualFunctionIndex(pfDevName, linkdev, &vf) < 0)
+            goto cleanup;
+    }
+
+    /* if there is a PF, it's now in pfDevName, and linkdev is either
+     * the VF's name, or NULL (if the VF isn't bound to a net driver
+     * on the host)
+     */
+
+    if (pfDevName) {
+        if (virAsprintf(&filePath, "%s/%s_vf%d", stateDir, pfDevName, vf) < 0)
+            goto cleanup;
+
+        if (linkdev && !virFileExists(filePath)) {
+            /* the device may have been stored in a file named for the
+             * VF due to saveVlan == false (or an older version of
+             * libvirt), so reset filePath so we'll try the other
+             * filename before failing.
+             */
+            VIR_FREE(filePath);
+            pfDevName = NULL;
+        }
+    }
+
+    if (!pfDevName) {
+        if (virAsprintf(&filePath, "%s/%s", stateDir, linkdev) < 0)
+            goto cleanup;
+    }
+
+    if (virFileReadAll(filePath, 128, &fileStr) < 0)
+        goto cleanup;
+
+    if (strchr("0123456789abcdefABCDEF", fileStr[0])) {
+        const char *vlanStr = NULL;
+
+        /* old version of file - just two lines of text. Line 1 is the
+         * MAC address (or if line 2 is present, line 1 is adminMAC),
+         * and line 2 (if present) is the vlan tag
+         */
+
+        if ((vlanStr = strchr(fileStr, '\n'))) {
+            char *endptr;
+
+            /* if there are 2 lines, the first is adminMAC */
+            adminMACStr = fileStr;
+            vlanStr++;
+
+            if ((virStrToLong_i(vlanStr, &endptr, 10, &vlanTag) < 0) ||
+                (endptr && *endptr != '\n' && *endptr != 0)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("cannot parse vlan tag '%s' from file '%s'"),
+                               vlanStr, filePath);
+                goto cleanup;
+            }
+        } else {
+            /* if there is only one line, it is MAC */
+            MACStr = fileStr;
+        }
+    } else {
+        /* if it doesn't start with a hex digit, it is a modern
+         * version of the config file - JSON format as described in
+         * preamble to virNetDevSaveNetConfig()
+         */
+        if (!(configJSON = virJSONValueFromString(fileStr))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("invalid json in net device saved "
+                             "config file '%s': '%.60s'"),
+                           filePath, fileStr);
+            goto cleanup;
+        }
+
+        MACStr = virJSONValueObjectGetString(configJSON,
+                                             VIR_NETDEV_KEYNAME_MAC);
+        adminMACStr = virJSONValueObjectGetString(configJSON,
+                                                  VIR_NETDEV_KEYNAME_ADMIN_MAC);
+        ignore_value(virJSONValueObjectGetNumberInt(configJSON,
+                                                    VIR_NETDEV_KEYNAME_VLAN_TAG,
+                                                    &vlanTag));
+
+        if (!(MACStr || adminMACStr)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("network device saved config file '%s' "
+                             "has unexpected contents, missing both "
+                             "'MAC' and 'adminMAC': '%.60s'"),
+                           filePath, fileStr);
+            goto cleanup;
+        }
+    }
+
+    if (MACStr) {
+        if (VIR_ALLOC(*MAC) < 0)
+            goto cleanup;
+
+        if (virMacAddrParse(MACStr, *MAC) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse MAC address '%s' from file '%s'"),
+                           MACStr, filePath);
+            goto cleanup;
+        }
+    }
+
+    if (adminMACStr) {
+        if (VIR_ALLOC(*adminMAC) < 0)
+            goto cleanup;
+
+        if (virMacAddrParse(adminMACStr, *adminMAC) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("cannot parse MAC address '%s' from file '%s'"),
+                           adminMACStr, filePath);
+            goto cleanup;
+        }
+    }
+
+    if (vlanTag != -1) {
+        /* construct a simple virNetDevVlan object with a single tag */
+        if (VIR_ALLOC(*vlan) < 0)
+            goto cleanup;
+        if (VIR_ALLOC((*vlan)->tag) < 0)
+            goto cleanup;
+        (*vlan)->nTags = 1;
+        (*vlan)->tag[0] = vlanTag;
+    }
+
+    /* we won't need the file again */
+    ignore_value(unlink(filePath));
+
+    ret = 0;
+ cleanup:
+    if (ret < 0) {
+        VIR_FREE(*adminMAC);
+        VIR_FREE(*MAC);
+        VIR_FREE(*vlan);
+    }
+
+    VIR_FREE(pfDevOrig);
+    VIR_FREE(vfDevOrig);
+    VIR_FREE(filePath);
+    VIR_FREE(fileStr);
+    virJSONValueFree(configJSON);
+    return ret;
+}
+
+
+/**
+ * virNetDevSetNetConfig:
+ * @linkdev: name of the interface
+ * @vf: vf index if linkdev is a PF
+ * @adminMAC: new admin MAC address (will be stored in PF and
+ *            used for next initialization of VF driver)
+ * @vlan: new vlan tag info (or NULL)
+ * @MAC: new MAC address to set on the device immediately
+ * @setVlan: true to enable setting vlan tag (even if @vlan is NULL,
+ *           the interface vlan tag will be set to 0).
+ *
+ *
+ * Set new MAC address and (optionally) admin MAC and vlan tag of
+ * @linkdev VF# @vf.
+ *
+ * Returns 0 on success, -1 on failure
+ *
+ */
+int
+virNetDevSetNetConfig(const char *linkdev, int vf,
+                      const virMacAddr *adminMAC,
+                      virNetDevVlanPtr vlan,
+                      const virMacAddr *MAC,
+                      bool setVlan)
+{
+    int ret = -1;
+    char MACStr[VIR_MAC_STRING_BUFLEN];
+    const char *pfDevName = NULL;
+    char *pfDevOrig = NULL;
+    char *vfDevOrig = NULL;
+    int vlanTag = -1;
+
+    if (vf >= 0) {
+        /* linkdev is the PF */
+        pfDevName = linkdev;
+
+        /* linkdev should get the VF's netdev name (or NULL if none) */
+        if (virNetDevPFGetVF(pfDevName, vf, &vfDevOrig) < 0)
+            goto cleanup;
+
+        linkdev = vfDevOrig;
+
+    } else if (virNetDevIsVirtualFunction(linkdev) == 1) {
+        /* when vf is -1, linkdev might be a standard netdevice (not
+         * SRIOV), or it might be an SRIOV VF. If it's a VF, normalize
+         * it to PF + VFname
+         */
+
+        if (virNetDevGetPhysicalFunction(linkdev, &pfDevOrig) < 0)
+            goto cleanup;
+
+        pfDevName = pfDevOrig;
+
+        if (virNetDevGetVirtualFunctionIndex(pfDevName, linkdev, &vf) < 0)
+            goto cleanup;
+    }
+
+
+    if (!pfDevName) {
+        /* if it's not SRIOV, then we can't set the admin MAC address
+         * or vlan tag
+         */
+        if (adminMAC) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("admin MAC can only be set for SR-IOV VFs, but "
+                             "%s is not a VF"), linkdev);
+            goto cleanup;
+        }
+
+        if (vlan) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("vlan can only be set for SR-IOV VFs, but "
+                             "%s is not a VF"), linkdev);
+            goto cleanup;
+        }
+
+    } else {
+        bool pfIsOnline;
+
+        /* Assure that PF is online before trying to use it to set
+         * anything up for this VF. It *should* be online already,
+         * but if it isn't online the changes made to the VF via the
+         * PF won't take effect, yet there will be no error
+         * reported. In the case that the PF isn't online, we need to
+         * fail and report the error, rather than automatically
+         * setting it online, since setting an unconfigured interface
+         * online automatically turns on IPv6 autoconfig, which may
+         * not be what the admin expects, so we require them to
+         * explicitly enable the PF in the host system network config.
+         */
+        if (virNetDevGetOnline(pfDevName, &pfIsOnline) < 0)
+            goto cleanup;
+
+        if (!pfIsOnline) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to configure VF %d of PF '%s' "
+                             "because the PF is not online. Please "
+                             "change host network config to put the "
+                             "PF online."),
+                           vf, pfDevName);
+            goto cleanup;
+        }
+
+        if (vlan) {
+            if (vlan->nTags != 1 || vlan->trunk) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("vlan trunking is not supported "
+                                 "by SR-IOV network devices"));
+                goto cleanup;
+            }
+
+            if (!setVlan) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("vlan tag set for interface %s but "
+                                 "caller requested it not be set"));
+                goto cleanup;
+            }
+
+            vlanTag = vlan->tag[0];
+
+        } else if (setVlan) {
+            vlanTag = 0; /* assure any existing vlan tag is reset */
+        }
+    }
+
+    if (MAC) {
+        if (!linkdev) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("VF %d of PF '%s' is not bound to a net driver, "
+                             "so its MAC address cannot be set to %s"),
+                           vf, pfDevName, virMacAddrFormat(MAC, MACStr));
+            goto cleanup;
+        }
+
+        if (virNetDevSetMAC(linkdev, MAC) < 0) {
+            /* This may have failed due to the "administratively
+             * set" flag being set in the PF for this VF. For now
+             * we will just fail, but in the future we should
+             * attempt to set the VF MAC via the PF.
+             */
+            goto cleanup;
+        }
+        if (pfDevOrig) {
+            /* if pfDevOrig is set, it means that the caller was
+             * *really* only interested in setting the MAC of the VF
+             * itself, *not* the admin MAC via the PF. In those cases,
+             * the adminMAC was only provided in case we need to set
+             * the VF's MAC by temporarily unbinding/rebinding the
+             * VF's net driver with the admin MAC set to the desired
+             * MAC, and then want to restore the admin MAC to its
+             * original setting when we're finished. We would only
+             * need to do that if the virNetDevSetMAC() above had
+             * failed; since it didn't, we don't need to set the
+             * adminMAC, so we are NULLing it out here to avoid that
+             * below.
+
+             * (NB: since setting the admin MAC sets the
+             * "administratively set" flag for the VF in the PF's
+             * driver, which prevents any future changes to the VF's
+             * MAC address, we want to avoid setting the admin MAC as
+             * much as possible.)
+             */
+            adminMAC = NULL;
+        }
+    }
+
+    if (adminMAC || vlanTag >= 0) {
+        /* Set vlanTag and admin MAC using an RTM_SETLINK request sent to
+         * PFdevname+VF#, if mac != NULL this will set the "admin MAC" via
+         * the PF, *not* the actual VF MAC - the admin MAC only takes
+         * effect the next time the VF's driver is initialized (either in
+         * guest or host). if there is a vlanTag to set, it will take
+         * effect immediately though.
+         */
+        if (virNetDevSetVfConfig(pfDevName, vf, adminMAC, vlanTag) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(pfDevOrig);
+    VIR_FREE(vfDevOrig);
+    return ret;
+}
+
+
+#else /* defined(__linux__) && defined(HAVE_LIBNL)  && defined(IFLA_VF_MAX) */
 
 int
 virNetDevReplaceNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
@@ -1996,7 +2541,48 @@ virNetDevRestoreNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
     return -1;
 }
 
-#endif /* defined(__linux__) && defined(HAVE_LIBNL) */
+
+int
+virNetDevSaveNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
+                       int vf ATTRIBUTE_UNUSED,
+                       const char *stateDir ATTRIBUTE_UNUSED,
+                       bool saveVlan ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to save net device config on this platform"));
+    return -1;
+}
+
+
+int
+virNetDevReadNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
+                       int vf ATTRIBUTE_UNUSED,
+                       const char *stateDir ATTRIBUTE_UNUSED,
+                       virMacAddrPtr *adminMAC ATTRIBUTE_UNUSED,
+                       virNetDevVLanPtr *vlan ATTRIBUTE_UNUSED,
+                       virMacAddrPtr *MAC ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to read net device config on this platform"));
+    return -1;
+}
+
+
+int
+virNetDevSetNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
+                      int vf ATTRIBUTE_UNUSED,
+                      const virMacAddr *adminMAC ATTRIBUTE_UNUSED,
+                      virNetDevVlanPtr vlan ATTRIBUTE_UNUSED,
+                      const virMacAddr *MAC ATTRIBUTE_UNUSED,
+                      bool setVlan ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to set net device config on this platform"));
+    return -1;
+}
+
+
+#endif /* defined(__linux__) && defined(HAVE_LIBNL) && defined(IFLA_VF_MAX) */
 
 VIR_ENUM_IMPL(virNetDevIfState,
               VIR_NETDEV_IF_STATE_LAST,

@@ -194,6 +194,28 @@ int virNetDevGetVirtualFunctions(const char *pfname,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
 
+int virNetDevSaveNetConfig(const char *linkdev, int vf,
+                           const char *stateDir,
+                           bool saveVlan)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_RETURN_CHECK;
+
+int
+virNetDevReadNetConfig(const char *linkdev, int vf,
+                       const char *stateDir,
+                       virMacAddrPtr *adminMAC,
+                       virNetDevVlanPtr *vlan,
+                       virMacAddrPtr *MAC)
+   ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
+   ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6) ATTRIBUTE_RETURN_CHECK;
+
+int
+virNetDevSetNetConfig(const char *linkdev, int vf,
+                      const virMacAddr *adminMAC,
+                      virNetDevVlanPtr vlan,
+                      const virMacAddr *MAC,
+                      bool setVLan)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
 int virNetDevReplaceNetConfig(const char *linkdev, int vf,
                               const virMacAddr *macaddress,
                               virNetDevVlanPtr vlan,
