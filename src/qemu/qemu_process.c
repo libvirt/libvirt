@@ -2101,32 +2101,6 @@ qemuProcessDetectIOThreadPIDs(virQEMUDriverPtr driver,
     int ret = -1;
     size_t i;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
-        /* The following check is because at one time a domain could
-         * define iothreadids and start the domain - only failing the
-         * capability check when attempting to add a disk. Because the
-         * iothreads and [n]iothreadids were left untouched other code
-         * assumed it could use the ->thread_id value to make thread_id
-         * based adjustments (e.g. pinning, scheduling) which while
-         * succeeding would execute on the calling thread.
-         */
-        if (vm->def->niothreadids) {
-            for (i = 0; i < vm->def->niothreadids; i++) {
-                /* Check if the domain had defined any iothreadid elements
-                 * and supply a VIR_INFO indicating that it's being removed.
-                 */
-                if (!vm->def->iothreadids[i]->autofill)
-                    VIR_INFO("IOThreads not supported, remove iothread id '%u'",
-                             vm->def->iothreadids[i]->iothread_id);
-                virDomainIOThreadIDDefFree(vm->def->iothreadids[i]);
-            }
-            /* Remove any trace */
-            VIR_FREE(vm->def->iothreadids);
-            vm->def->niothreadids = 0;
-        }
-        return 0;
-    }
-
     /* Get the list of IOThreads from qemu */
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
