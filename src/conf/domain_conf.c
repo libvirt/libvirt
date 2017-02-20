@@ -19572,8 +19572,8 @@ virDomainDefCheckABIStabilityFlags(virDomainDefPtr src,
 
     if (src->niothreadids != dst->niothreadids) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target domain iothreads count %lu does not "
-                         "match source %lu"),
+                       _("Target domain iothreads count %zu does not "
+                         "match source %zu"),
                        dst->niothreadids, src->niothreadids);
         goto error;
     }
@@ -23912,7 +23912,7 @@ virDomainDefFormatInternal(virDomainDefPtr def,
         goto error;
 
     if (def->niothreadids > 0) {
-        virBufferAsprintf(buf, "<iothreads>%lu</iothreads>\n",
+        virBufferAsprintf(buf, "<iothreads>%zu</iothreads>\n",
                           def->niothreadids);
         if (virDomainDefIothreadShouldFormat(def)) {
             virBufferAddLit(buf, "<iothreadids>\n");
