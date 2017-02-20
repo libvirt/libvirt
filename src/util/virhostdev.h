@@ -31,7 +31,7 @@
 # include "virusb.h"
 # include "virscsi.h"
 # include "virscsivhost.h"
-# include "domain_conf.h"
+# include "conf/domain_conf.h"
 
 typedef enum {
     VIR_HOSTDEV_STRICT_ACS_CHECK     = (1 << 0), /* strict acs check */

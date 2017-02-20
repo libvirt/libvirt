@@ -25,7 +25,7 @@
 #ifndef __VIR_CLOSE_CALLBACKS__
 # define __VIR_CLOSE_CALLBACKS__
 
-# include "virdomainobjlist.h"
+# include "conf/virdomainobjlist.h"
 
 typedef struct _virCloseCallbacks virCloseCallbacks;
 typedef virCloseCallbacks *virCloseCallbacksPtr;

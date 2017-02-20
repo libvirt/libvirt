@@ -1242,3 +1242,6 @@ exclude_file_name_regexp--sc_prohibit_always-defined_macros = \
 
 exclude_file_name_regexp--sc_prohibit_readdir = \
   ^tests/.*mock\.c$$
+
+exclude_file_name_regexp--sc_prohibit_cross_inclusion = \
+  ^(src/util/virclosecallbacks\.h|src/util/virhostdev\.h)$$
