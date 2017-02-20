@@ -1766,7 +1766,7 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
 {
     virNodeDeviceDefPtr def;
     virNodeDevCapsDefPtr *next_cap;
-    xmlNodePtr *nodes;
+    xmlNodePtr *nodes = NULL;
     int n, m;
     size_t i;
 
@@ -1789,7 +1789,6 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
     def->sysfs_path = virXPathString("string(./path[1])", ctxt);
 
     /* Parse devnodes */
-    nodes = NULL;
     if ((n = virXPathNodeSet("./devnode", ctxt, &nodes)) < 0)
         goto error;
 
@@ -1842,7 +1841,7 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
                                             ctxt);
 
     /* Parse device capabilities */
-    nodes = NULL;
+    VIR_FREE(nodes);
     if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0)
         goto error;
 
@@ -1859,10 +1858,8 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
                                               nodes[i],
                                               create,
                                               virt_type);
-        if (!*next_cap) {
-            VIR_FREE(nodes);
+        if (!*next_cap)
             goto error;
-        }
 
         next_cap = &(*next_cap)->next;
     }
@@ -1872,6 +1869,7 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
 
  error:
     virNodeDeviceDefFree(def);
+    VIR_FREE(nodes);
     return NULL;
 }
 
