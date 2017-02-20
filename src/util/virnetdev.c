@@ -1447,20 +1447,18 @@ static struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
 
 
 static int
-virNetDevSetVfConfig(const char *ifname, int ifindex, int vf,
-                     bool nltarget_kernel, const virMacAddr *macaddr,
-                     int vlanid, uint32_t (*getPidFunc)(void))
+virNetDevSetVfConfig(const char *ifname, int vf,
+                     const virMacAddr *macaddr, int vlanid)
 {
     int rc = -1;
     struct nlmsghdr *resp = NULL;
     struct nlmsgerr *err;
     unsigned int recvbuflen = 0;
-    uint32_t pid = 0;
     struct nl_msg *nl_msg;
     struct nlattr *vfinfolist, *vfinfo;
     struct ifinfomsg ifinfo = {
         .ifi_family = AF_UNSPEC,
-        .ifi_index  = ifindex
+        .ifi_index  = -1,
     };
 
     if (!macaddr && vlanid < 0)
@@ -1514,15 +1512,7 @@ virNetDevSetVfConfig(const char *ifname, int ifindex, int vf,
     nla_nest_end(nl_msg, vfinfo);
     nla_nest_end(nl_msg, vfinfolist);
 
-    if (!nltarget_kernel) {
-        pid = getPidFunc();
-        if (pid == 0) {
-            rc = -1;
-            goto cleanup;
-        }
-    }
-
-    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, pid,
+    if (virNetlinkCommand(nl_msg, &resp, &recvbuflen, 0, 0,
                           NETLINK_ROUTE, 0) < 0)
         goto cleanup;
 
@@ -1540,13 +1530,13 @@ virNetDevSetVfConfig(const char *ifname, int ifindex, int vf,
 
             virReportSystemError(-err->error,
                                  _("Cannot set interface MAC/vlanid to %s/%d "
-                                   "for ifname %s ifindex %d vf %d"),
+                                   "for ifname %s vf %d"),
                                  (macaddr
                                   ? virMacAddrFormat(macaddr, macstr)
                                   : "(unchanged)"),
                                  vlanid,
                                  ifname ? ifname : "(unspecified)",
-                                 ifindex, vf);
+                                 vf);
             goto cleanup;
         }
         break;
@@ -1662,7 +1652,6 @@ virNetDevReplaceVfConfig(const char *pflinkdev, int vf,
     char *path = NULL;
     char macstr[VIR_MAC_STRING_BUFLEN];
     char *fileData = NULL;
-    int ifindex = -1;
     bool pfIsOnline;
 
     /* Assure that PF is online prior to twiddling with the VF.  It
@@ -1702,8 +1691,7 @@ virNetDevReplaceVfConfig(const char *pflinkdev, int vf,
         goto cleanup;
     }
 
-    ret = virNetDevSetVfConfig(pflinkdev, ifindex, vf, true,
-                                macaddress, vlanid, NULL);
+    ret = virNetDevSetVfConfig(pflinkdev, vf, macaddress, vlanid);
 
  cleanup:
     VIR_FREE(path);
@@ -1722,7 +1710,6 @@ virNetDevRestoreVfConfig(const char *pflinkdev,
     char *vlan = NULL;
     virMacAddr oldmac;
     int vlanid = -1;
-    int ifindex = -1;
 
     if (virAsprintf(&path, "%s/%s_vf%d",
                     stateDir, pflinkdev, vf) < 0)
@@ -1765,8 +1752,7 @@ virNetDevRestoreVfConfig(const char *pflinkdev,
     }
 
     /*reset mac and remove file-ignore results*/
-    rc = virNetDevSetVfConfig(pflinkdev, ifindex, vf, true,
-                              &oldmac, vlanid, NULL);
+    rc = virNetDevSetVfConfig(pflinkdev, vf, &oldmac, vlanid);
     ignore_value(unlink(path));
 
  cleanup:
