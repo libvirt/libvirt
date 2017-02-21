@@ -1182,11 +1182,14 @@ rm -f po/stamp-po
            --with-storage-fs \
            --with-storage-lvm \
            --with-storage-iscsi \
+           --with-storage-scsi \
            --with-storage-disk \
            --with-storage-mpath \
            %{?arg_storage_rbd} \
            %{?arg_storage_sheepdog} \
            %{?arg_storage_gluster} \
+           --without-storage-zfs \
+           --without-storage-vstorage \
            %{?arg_numactl} \
            %{?arg_numad} \
            --with-capng \
