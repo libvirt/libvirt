@@ -2664,19 +2664,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
-        if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
-            def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("wrong function called for pci-root/pcie-root"));
-            return NULL;
-        }
-        if (def->idx == 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("index for pci controllers of model '%s' must be > 0"),
-                           virDomainControllerModelPCITypeToString(def->model));
-            goto error;
-        }
-        switch (def->model) {
+        switch ((virDomainControllerModelPCI) def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
             if (def->opts.pciopts.modelName
                 == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE ||
@@ -2917,6 +2905,18 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                virBufferAsprintf(&buf, ",numa_node=%d",
                                  def->opts.pciopts.numaNode);
             break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("wrong function called"));
+            goto error;
+        }
+        if (def->idx == 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("index for pci controllers of model '%s' must be > 0"),
+                           virDomainControllerModelPCITypeToString(def->model));
+            goto error;
         }
         break;
 
@@ -6501,7 +6501,7 @@ qemuBuildGlobalControllerCommandLine(virCommandPtr cmd,
             bool cap = false;
             bool machine = false;
 
-            switch (cont->model) {
+            switch ((virDomainControllerModelPCI) cont->model) {
             case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
                 hoststr = "i440FX-pcihost";
                 cap = virQEMUCapsGet(qemuCaps, QEMU_CAPS_I440FX_PCI_HOLE64_SIZE);
