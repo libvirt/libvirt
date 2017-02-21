@@ -809,7 +809,8 @@ int qemuDomainGetHostdevPath(virDomainDefPtr def,
                              char ***path,
                              int **perms);
 
-int qemuDomainBuildNamespace(virQEMUDriverPtr driver,
+int qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
+                             virSecurityManagerPtr mgr,
                              virDomainObjPtr vm);
 
 int qemuDomainCreateNamespace(virQEMUDriverPtr driver,

@@ -7045,13 +7045,12 @@ qemuDomainGetHostdevPath(virDomainDefPtr def,
  * Returns 0 on success, -1 otherwise (with error reported)
  */
 static int
-qemuDomainGetPreservedMounts(virQEMUDriverPtr driver,
+qemuDomainGetPreservedMounts(virQEMUDriverConfigPtr cfg,
                              virDomainObjPtr vm,
                              char ***devPath,
                              char ***devSavePath,
                              size_t *ndevPath)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     char **paths = NULL, **mounts = NULL;
     size_t i, nmounts;
 
@@ -7092,13 +7091,11 @@ qemuDomainGetPreservedMounts(virQEMUDriverPtr driver,
     if (ndevPath)
         *ndevPath = nmounts;
 
-    virObjectUnref(cfg);
     return 0;
 
  error:
     virStringListFreeCount(mounts, nmounts);
     virStringListFreeCount(paths, nmounts);
-    virObjectUnref(cfg);
     return -1;
 }
 
@@ -7310,11 +7307,10 @@ qemuDomainCreateDevice(const char *device,
 
 
 static int
-qemuDomainPopulateDevices(virQEMUDriverPtr driver,
+qemuDomainPopulateDevices(virQEMUDriverConfigPtr cfg,
                           virDomainObjPtr vm ATTRIBUTE_UNUSED,
                           const char *path)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     const char *const *devices = (const char *const *) cfg->cgroupDeviceACL;
     size_t i;
     int ret = -1;
@@ -7329,13 +7325,13 @@ qemuDomainPopulateDevices(virQEMUDriverPtr driver,
 
     ret = 0;
  cleanup:
-    virObjectUnref(cfg);
     return ret;
 }
 
 
 static int
-qemuDomainSetupDev(virQEMUDriverPtr driver,
+qemuDomainSetupDev(virQEMUDriverConfigPtr cfg,
+                   virSecurityManagerPtr mgr,
                    virDomainObjPtr vm,
                    const char *path)
 {
@@ -7345,7 +7341,7 @@ qemuDomainSetupDev(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Setting up /dev/ for domain %s", vm->def->name);
 
-    mount_options = virSecurityManagerGetMountOptions(driver->securityManager,
+    mount_options = virSecurityManagerGetMountOptions(mgr,
                                                       vm->def);
 
     if (!mount_options &&
@@ -7363,7 +7359,7 @@ qemuDomainSetupDev(virQEMUDriverPtr driver,
     if (virFileSetupDev(path, opts) < 0)
         goto cleanup;
 
-    if (qemuDomainPopulateDevices(driver, vm, path) < 0)
+    if (qemuDomainPopulateDevices(cfg, vm, path) < 0)
         goto cleanup;
 
     ret = 0;
@@ -7375,7 +7371,7 @@ qemuDomainSetupDev(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainSetupDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainSetupDisk(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
                     virDomainDiskDefPtr disk,
                     const char *devPath)
 {
@@ -7401,7 +7397,7 @@ qemuDomainSetupDisk(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSetupAllDisks(virQEMUDriverPtr driver,
+qemuDomainSetupAllDisks(virQEMUDriverConfigPtr cfg,
                         virDomainObjPtr vm,
                         const char *devPath)
 {
@@ -7409,7 +7405,7 @@ qemuDomainSetupAllDisks(virQEMUDriverPtr driver,
     VIR_DEBUG("Setting up disks");
 
     for (i = 0; i < vm->def->ndisks; i++) {
-        if (qemuDomainSetupDisk(driver,
+        if (qemuDomainSetupDisk(cfg,
                                 vm->def->disks[i],
                                 devPath) < 0)
             return -1;
@@ -7421,7 +7417,7 @@ qemuDomainSetupAllDisks(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainSetupHostdev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainSetupHostdev(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
                        virDomainHostdevDefPtr dev,
                        const char *devPath)
 {
@@ -7447,7 +7443,7 @@ qemuDomainSetupHostdev(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSetupAllHostdevs(virQEMUDriverPtr driver,
+qemuDomainSetupAllHostdevs(virQEMUDriverConfigPtr cfg,
                            virDomainObjPtr vm,
                            const char *devPath)
 {
@@ -7455,7 +7451,7 @@ qemuDomainSetupAllHostdevs(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Setting up hostdevs");
     for (i = 0; i < vm->def->nhostdevs; i++) {
-        if (qemuDomainSetupHostdev(driver,
+        if (qemuDomainSetupHostdev(cfg,
                                    vm->def->hostdevs[i],
                                    devPath) < 0)
             return -1;
@@ -7480,7 +7476,7 @@ qemuDomainSetupChardev(virDomainDefPtr def ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSetupAllChardevs(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainSetupAllChardevs(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
                            virDomainObjPtr vm,
                            const char *devPath)
 {
@@ -7498,7 +7494,7 @@ qemuDomainSetupAllChardevs(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSetupTPM(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainSetupTPM(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
                    virDomainObjPtr vm,
                    const char *devPath)
 {
@@ -7527,7 +7523,7 @@ qemuDomainSetupTPM(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSetupGraphics(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainSetupGraphics(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
                         virDomainGraphicsDefPtr gfx,
                         const char *devPath)
 {
@@ -7543,7 +7539,7 @@ qemuDomainSetupGraphics(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSetupAllGraphics(virQEMUDriverPtr driver,
+qemuDomainSetupAllGraphics(virQEMUDriverConfigPtr cfg,
                            virDomainObjPtr vm,
                            const char *devPath)
 {
@@ -7551,7 +7547,7 @@ qemuDomainSetupAllGraphics(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Setting up graphics");
     for (i = 0; i < vm->def->ngraphics; i++) {
-        if (qemuDomainSetupGraphics(driver,
+        if (qemuDomainSetupGraphics(cfg,
                                     vm->def->graphics[i],
                                     devPath) < 0)
             return -1;
@@ -7563,7 +7559,7 @@ qemuDomainSetupAllGraphics(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainSetupInput(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainSetupInput(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
                      virDomainInputDefPtr input,
                      const char *devPath)
 {
@@ -7590,7 +7586,7 @@ qemuDomainSetupInput(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSetupAllInputs(virQEMUDriverPtr driver,
+qemuDomainSetupAllInputs(virQEMUDriverConfigPtr cfg,
                          virDomainObjPtr vm,
                          const char *devPath)
 {
@@ -7598,7 +7594,7 @@ qemuDomainSetupAllInputs(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Setting up inputs");
     for (i = 0; i < vm->def->ninputs; i++) {
-        if (qemuDomainSetupInput(driver,
+        if (qemuDomainSetupInput(cfg,
                                  vm->def->inputs[i],
                                  devPath) < 0)
             return -1;
@@ -7609,7 +7605,7 @@ qemuDomainSetupAllInputs(virQEMUDriverPtr driver,
 
 
 static int
-qemuDomainSetupRNG(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+qemuDomainSetupRNG(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
                    virDomainRNGDefPtr rng,
                    const char *devPath)
 {
@@ -7629,7 +7625,7 @@ qemuDomainSetupRNG(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
 
 
 static int
-qemuDomainSetupAllRNGs(virQEMUDriverPtr driver,
+qemuDomainSetupAllRNGs(virQEMUDriverConfigPtr cfg,
                        virDomainObjPtr vm,
                        const char *devPath)
 {
@@ -7637,7 +7633,7 @@ qemuDomainSetupAllRNGs(virQEMUDriverPtr driver,
 
     VIR_DEBUG("Setting up RNGs");
     for (i = 0; i < vm->def->nrngs; i++) {
-        if (qemuDomainSetupRNG(driver,
+        if (qemuDomainSetupRNG(cfg,
                                vm->def->rngs[i],
                                devPath) < 0)
             return -1;
@@ -7649,10 +7645,10 @@ qemuDomainSetupAllRNGs(virQEMUDriverPtr driver,
 
 
 int
-qemuDomainBuildNamespace(virQEMUDriverPtr driver,
+qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
+                         virSecurityManagerPtr mgr,
                          virDomainObjPtr vm)
 {
-    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     char *devPath = NULL;
     char **devMountsPath = NULL, **devMountsSavePath = NULL;
     size_t ndevMountsPath = 0, i;
@@ -7663,7 +7659,7 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
         goto cleanup;
     }
 
-    if (qemuDomainGetPreservedMounts(driver, vm,
+    if (qemuDomainGetPreservedMounts(cfg, vm,
                                      &devMountsPath, &devMountsSavePath,
                                      &ndevMountsPath) < 0)
         goto cleanup;
@@ -7684,7 +7680,7 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
     if (virProcessSetupPrivateMountNS() < 0)
         goto cleanup;
 
-    if (qemuDomainSetupDev(driver, vm, devPath) < 0)
+    if (qemuDomainSetupDev(cfg, mgr, vm, devPath) < 0)
         goto cleanup;
 
     /* Save some mount points because we want to share them with the host */
@@ -7703,25 +7699,25 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
             goto cleanup;
     }
 
-    if (qemuDomainSetupAllDisks(driver, vm, devPath) < 0)
+    if (qemuDomainSetupAllDisks(cfg, vm, devPath) < 0)
         goto cleanup;
 
-    if (qemuDomainSetupAllHostdevs(driver, vm, devPath) < 0)
+    if (qemuDomainSetupAllHostdevs(cfg, vm, devPath) < 0)
         goto cleanup;
 
-    if (qemuDomainSetupAllChardevs(driver, vm, devPath) < 0)
+    if (qemuDomainSetupAllChardevs(cfg, vm, devPath) < 0)
         goto cleanup;
 
-    if (qemuDomainSetupTPM(driver, vm, devPath) < 0)
+    if (qemuDomainSetupTPM(cfg, vm, devPath) < 0)
         goto cleanup;
 
-    if (qemuDomainSetupAllGraphics(driver, vm, devPath) < 0)
+    if (qemuDomainSetupAllGraphics(cfg, vm, devPath) < 0)
         goto cleanup;
 
-    if (qemuDomainSetupAllInputs(driver, vm, devPath) < 0)
+    if (qemuDomainSetupAllInputs(cfg, vm, devPath) < 0)
         goto cleanup;
 
-    if (qemuDomainSetupAllRNGs(driver, vm, devPath) < 0)
+    if (qemuDomainSetupAllRNGs(cfg, vm, devPath) < 0)
         goto cleanup;
 
     if (virFileMoveMount(devPath, "/dev") < 0)
@@ -7743,7 +7739,6 @@ qemuDomainBuildNamespace(virQEMUDriverPtr driver,
 
     ret = 0;
  cleanup:
-    virObjectUnref(cfg);
     for (i = 0; i < ndevMountsPath; i++)
         rmdir(devMountsSavePath[i]);
     virStringListFreeCount(devMountsPath, ndevMountsPath);

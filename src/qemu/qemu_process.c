@@ -2636,7 +2636,7 @@ static int qemuProcessHook(void *data)
     if (virSecurityManagerClearSocketLabel(h->driver->securityManager, h->vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainBuildNamespace(h->driver, h->vm) < 0)
+    if (qemuDomainBuildNamespace(h->cfg, h->driver->securityManager, h->vm) < 0)
         goto cleanup;
 
     if (virDomainNumatuneGetMode(h->vm->def->numa, -1, &mode) == 0) {
