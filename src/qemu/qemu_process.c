@@ -4589,6 +4589,7 @@ qemuProcessStartValidateIOThreads(virDomainObjPtr vm,
 }
 
 
+static int
 qemuProcessStartValidateShmem(virDomainObjPtr vm)
 {
     size_t i;
