@@ -16724,7 +16724,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     tmp = virXPathString("string(./memoryBacking/source/@type)", ctxt);
     if (tmp) {
-        if ((def->mem.source = virDomainMemorySourceTypeFromString(tmp)) < 0) {
+        if ((def->mem.source = virDomainMemorySourceTypeFromString(tmp)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown memoryBacking/source/type '%s'"), tmp);
             goto error;
@@ -16734,7 +16734,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     tmp = virXPathString("string(./memoryBacking/access/@mode)", ctxt);
     if (tmp) {
-        if ((def->mem.access = virDomainMemoryAccessTypeFromString(tmp)) < 0) {
+        if ((def->mem.access = virDomainMemoryAccessTypeFromString(tmp)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown memoryBacking/access/mode '%s'"), tmp);
             goto error;
@@ -16744,7 +16744,7 @@ virDomainDefParseXML(xmlDocPtr xml,
 
     tmp = virXPathString("string(./memoryBacking/allocation/@mode)", ctxt);
     if (tmp) {
-        if ((def->mem.allocation = virDomainMemoryAllocationTypeFromString(tmp)) < 0) {
+        if ((def->mem.allocation = virDomainMemoryAllocationTypeFromString(tmp)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown memoryBacking/allocation/mode '%s'"), tmp);
             goto error;
