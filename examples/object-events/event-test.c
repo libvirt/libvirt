@@ -15,6 +15,7 @@
 
 #define ARRAY_CARDINALITY(Array) (sizeof(Array) / sizeof(*(Array)))
 #define STREQ(a, b) (strcmp(a, b) == 0)
+#define NULLSTR(s) ((s) ? (s) : "<null>")
 
 #ifndef ATTRIBUTE_UNUSED
 # define ATTRIBUTE_UNUSED __attribute__((__unused__))
@@ -925,6 +926,23 @@ myDomainEventBlockJobCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
 
 
 static int
+myDomainEventBlockThresholdCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                    virDomainPtr dom,
+                                    const char *dev,
+                                    const char *path,
+                                    unsigned long long threshold,
+                                    unsigned long long excess,
+                                    void *opaque ATTRIBUTE_UNUSED)
+{
+    printf("%s EVENT: Domain %s(%d) block threshold callback dev '%s'(%s), "
+           "threshold: '%llu', excess: '%llu'",
+           __func__, virDomainGetName(dom), virDomainGetID(dom),
+           dev, NULLSTR(path), threshold, excess);
+    return 0;
+}
+
+
+static int
 myDomainEventMigrationIterationCallback(virConnectPtr conn ATTRIBUTE_UNUSED,
                                         virDomainPtr dom,
                                         int iteration,
@@ -1053,6 +1071,7 @@ struct domainEventData domainEvents[] = {
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_JOB_COMPLETED, myDomainEventJobCompletedCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED, myDomainEventDeviceRemovalFailedCallback),
     DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_METADATA_CHANGE, myDomainEventMetadataChangeCallback),
+    DOMAIN_EVENT(VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD, myDomainEventBlockThresholdCallback),
 };
 
 struct storagePoolEventData {

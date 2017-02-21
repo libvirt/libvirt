@@ -244,6 +244,21 @@ virDomainEventMetadataChangeNewFromDom(virDomainPtr dom,
                                        int type,
                                        const char *nsuri);
 
+
+virObjectEventPtr
+virDomainEventBlockThresholdNewFromObj(virDomainObjPtr obj,
+                                       const char *dev,
+                                       const char *path,
+                                       unsigned long long threshold,
+                                       unsigned long long excess);
+
+virObjectEventPtr
+virDomainEventBlockThresholdNewFromDom(virDomainPtr dom,
+                                       const char *dev,
+                                       const char *path,
+                                       unsigned long long threshold,
+                                       unsigned long long excess);
+
 int
 virDomainEventStateRegister(virConnectPtr conn,
                             virObjectEventStatePtr state,

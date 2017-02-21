@@ -4275,6 +4275,36 @@ typedef void (*virConnectDomainEventAgentLifecycleCallback)(virConnectPtr conn,
 
 
 /**
+ * virConnectDomainEventBlockThresholdCallback:
+ * @conn: connection object
+ * @dom: domain on which the event occurred
+ * @dev: name associated with the affected disk or storage backing chain
+ *       element
+ * @path: for local storage, the path of the backing chain element
+ * @threshold: threshold offset in bytes
+ * @excess: number of bytes written beyond the threshold
+ * @opaque: application specified data
+ *
+ * The callback occurs when the hypervisor detects that the given storage
+ * element was written beyond the point specified by @threshold. The excess
+ * data size written beyond @threshold is reported by @excess (if supported
+ * by the hypervisor, 0 otherwise). The event is useful for thin-provisioned
+ * storage.
+ *
+ * The threshold size can be set via the virDomainSetBlockThreshold API.
+ *
+ * The callback signature to use when registering for an event of type
+ * VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD with virConnectDomainEventRegisterAny()
+ */
+typedef void (*virConnectDomainEventBlockThresholdCallback)(virConnectPtr conn,
+                                                            virDomainPtr dom,
+                                                            const char *dev,
+                                                            const char *path,
+                                                            unsigned long long threshold,
+                                                            unsigned long long excess,
+                                                            void *opaque);
+
+/**
  * VIR_DOMAIN_EVENT_CALLBACK:
  *
  * Used to cast the event specific callback into the generic one
@@ -4315,6 +4345,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_ID_JOB_COMPLETED = 21,  /* virConnectDomainEventJobCompletedCallback */
     VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED = 22, /* virConnectDomainEventDeviceRemovalFailedCallback */
     VIR_DOMAIN_EVENT_ID_METADATA_CHANGE = 23, /* virConnectDomainEventMetadataChangeCallback */
+    VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD = 24, /* virConnectDomainEventBlockThresholdCallback */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST

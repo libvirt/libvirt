@@ -396,6 +396,11 @@ remoteSecretBuildEventValueChanged(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                    void *evdata, void *opaque);
 
 static void
+remoteDomainBuildEventBlockThreshold(virNetClientProgramPtr prog,
+                                     virNetClientPtr client,
+                                     void *evdata, void *opaque);
+
+static void
 remoteConnectNotifyEventConnectionClosed(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
                                          virNetClientPtr client ATTRIBUTE_UNUSED,
                                          void *evdata, void *opaque);
@@ -602,6 +607,10 @@ static virNetClientProgramEvent remoteEvents[] = {
       remoteSecretBuildEventValueChanged,
       sizeof(remote_secret_event_value_changed_msg),
       (xdrproc_t)xdr_remote_secret_event_value_changed_msg },
+    { REMOTE_PROC_DOMAIN_EVENT_BLOCK_THRESHOLD,
+      remoteDomainBuildEventBlockThreshold,
+      sizeof(remote_domain_event_block_threshold_msg),
+      (xdrproc_t)xdr_remote_domain_event_block_threshold_msg },
 };
 
 static void
@@ -5574,6 +5583,30 @@ remoteSecretGetValue(virSecretPtr secret, size_t *value_size,
  done:
     remoteDriverUnlock(priv);
     return rv;
+}
+
+
+static void
+remoteDomainBuildEventBlockThreshold(virNetClientProgramPtr prog ATTRIBUTE_UNUSED,
+                                     virNetClientPtr client ATTRIBUTE_UNUSED,
+                                     void *evdata, void *opaque)
+{
+    virConnectPtr conn = opaque;
+    remote_domain_event_block_threshold_msg *msg = evdata;
+    struct private_data *priv = conn->privateData;
+    virDomainPtr dom;
+    virObjectEventPtr event = NULL;
+
+    if (!(dom = get_nonnull_domain(conn, msg->dom)))
+        return;
+
+    event = virDomainEventBlockThresholdNewFromDom(dom, msg->dev,
+                                                   msg->path ? *msg->path : NULL,
+                                                   msg->threshold, msg->excess);
+
+    virObjectUnref(dom);
+
+    remoteEventQueue(priv, event, msg->callbackID);
 }
 
 

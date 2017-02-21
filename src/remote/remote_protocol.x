@@ -3071,6 +3071,15 @@ struct remote_domain_event_block_job_2_msg {
     int status;
 };
 
+struct remote_domain_event_block_threshold_msg {
+    int callbackID;
+    remote_nonnull_domain dom;
+    remote_nonnull_string dev;
+    remote_string path;
+    unsigned hyper threshold;
+    unsigned hyper excess;
+};
+
 struct remote_domain_event_callback_tunable_msg {
     int callbackID;
     remote_nonnull_domain dom;
@@ -6033,5 +6042,12 @@ enum remote_procedure {
      * @acl: domain:save:!VIR_DOMAIN_AFFECT_CONFIG|VIR_DOMAIN_AFFECT_LIVE
      * @acl: domain:save:VIR_DOMAIN_AFFECT_CONFIG
      */
-    REMOTE_PROC_DOMAIN_SET_VCPU = 384
+    REMOTE_PROC_DOMAIN_SET_VCPU = 384,
+
+    /**
+     * @generate: both
+     * @acl: none
+     */
+    REMOTE_PROC_DOMAIN_EVENT_BLOCK_THRESHOLD = 385
+
 };

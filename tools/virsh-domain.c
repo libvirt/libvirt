@@ -12877,6 +12877,25 @@ virshEventMetadataChangePrint(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static void
+virshEventBlockThresholdPrint(virConnectPtr conn ATTRIBUTE_UNUSED,
+                              virDomainPtr dom,
+                              const char *dev,
+                              const char *path,
+                              unsigned long long threshold,
+                              unsigned long long excess,
+                              void *opaque)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+    virBufferAsprintf(&buf, _("event 'block-threshold' for domain %s: "
+                              "dev: %s(%s) %llu %llu\n"),
+                      virDomainGetName(dom),
+                      dev, NULLSTR(path), threshold, excess);
+    virshEventPrint(opaque, &buf);
+}
+
+
 static vshEventCallback vshEventCallbacks[] = {
     { "lifecycle",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventLifecyclePrint), },
@@ -12924,6 +12943,8 @@ static vshEventCallback vshEventCallbacks[] = {
       VIR_DOMAIN_EVENT_CALLBACK(virshEventDeviceRemovalFailedPrint), },
     { "metadata-change",
       VIR_DOMAIN_EVENT_CALLBACK(virshEventMetadataChangePrint), },
+    { "block-threshold",
+      VIR_DOMAIN_EVENT_CALLBACK(virshEventBlockThresholdPrint), },
 };
 verify(VIR_DOMAIN_EVENT_ID_LAST == ARRAY_CARDINALITY(vshEventCallbacks));
 

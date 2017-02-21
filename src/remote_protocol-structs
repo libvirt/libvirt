@@ -2516,6 +2516,14 @@ struct remote_domain_event_block_job_2_msg {
         int                        type;
         int                        status;
 };
+struct remote_domain_event_block_threshold_msg {
+        int                        callbackID;
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      dev;
+        remote_string              path;
+        uint64_t                   threshold;
+        uint64_t                   excess;
+};
 struct remote_domain_event_callback_tunable_msg {
         int                        callbackID;
         remote_nonnull_domain      dom;
@@ -3217,4 +3225,5 @@ enum remote_procedure {
         REMOTE_PROC_SECRET_EVENT_LIFECYCLE = 382,
         REMOTE_PROC_SECRET_EVENT_VALUE_CHANGED = 383,
         REMOTE_PROC_DOMAIN_SET_VCPU = 384,
+        REMOTE_PROC_DOMAIN_EVENT_BLOCK_THRESHOLD = 385,
 };

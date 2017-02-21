@@ -1295,6 +1295,50 @@ remoteRelayDomainEventMetadataChange(virConnectPtr conn,
 }
 
 
+static int
+remoteRelayDomainEventBlockThreshold(virConnectPtr conn,
+                                     virDomainPtr dom,
+                                     const char *dev,
+                                     const char *path,
+                                     unsigned long long threshold,
+                                     unsigned long long excess,
+                                     void *opaque)
+{
+    daemonClientEventCallbackPtr callback = opaque;
+    remote_domain_event_block_threshold_msg data;
+
+    if (callback->callbackID < 0 ||
+        !remoteRelayDomainEventCheckACL(callback->client, conn, dom))
+        return -1;
+
+    VIR_DEBUG("Relaying domain block threshold event %s %d %s %s %llu %llu, callback %d",
+              dom->name, dom->id, dev, NULLSTR(path), threshold, excess, callback->callbackID);
+
+    /* build return data */
+    memset(&data, 0, sizeof(data));
+    data.callbackID = callback->callbackID;
+    if (VIR_STRDUP(data.dev, dev) < 0)
+        goto error;
+    if (path) {
+        if (VIR_ALLOC(data.path) < 0)
+            goto error;
+        if (VIR_STRDUP(*(data.path), path) < 0)
+            goto error;
+    }
+    data.threshold = threshold;
+    data.excess = excess;
+    make_nonnull_domain(&data.dom, dom);
+
+    remoteDispatchObjectEventSend(callback->client, remoteProgram,
+                                  REMOTE_PROC_DOMAIN_EVENT_BLOCK_THRESHOLD,
+                                  (xdrproc_t)xdr_remote_domain_event_block_threshold_msg, &data);
+
+    return 0;
+ error:
+    VIR_FREE(data.dev);
+    return -1;
+}
+
 
 static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventLifecycle),
@@ -1321,6 +1365,7 @@ static virConnectDomainEventGenericCallback domainEventCallbacks[] = {
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventJobCompleted),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventDeviceRemovalFailed),
     VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventMetadataChange),
+    VIR_DOMAIN_EVENT_CALLBACK(remoteRelayDomainEventBlockThreshold),
 };
 
 verify(ARRAY_CARDINALITY(domainEventCallbacks) == VIR_DOMAIN_EVENT_ID_LAST);
