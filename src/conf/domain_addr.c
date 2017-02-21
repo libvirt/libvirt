@@ -344,9 +344,9 @@ virDomainPCIAddressBusSetModel(virDomainPCIAddressBusPtr bus,
         bus->maxSlot = VIR_PCI_ADDRESS_SLOT_LAST;
         break;
 
-    default:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Invalid PCI controller model %d"), model);
+                       "%s", _("PCI controller model was not set correctly"));
         return -1;
     }
 

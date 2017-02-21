@@ -8834,7 +8834,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
         break;
     }
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
-        switch (def->model) {
+        switch ((virDomainControllerModelPCI) def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT: {
             unsigned long long bytes;
@@ -8859,6 +8859,16 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 def->opts.pciopts.pcihole64 = true;
             def->opts.pciopts.pcihole64size = VIR_DIV_UP(bytes, 1024);
         }
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+        case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+            /* Other controller models don't require extra checks */
+            break;
         }
         if (modelName &&
             (def->opts.pciopts.modelName
