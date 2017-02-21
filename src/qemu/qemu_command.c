@@ -342,13 +342,6 @@ qemuBuildDeviceAddressStr(virBufferPtr buf,
             }
         }
 
-        if (info->addr.pci.bus != 0 &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCI_BRIDGE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Multiple PCI buses are not supported "
-                             "with this QEMU binary"));
-            goto cleanup;
-        }
         virBufferAsprintf(buf, ",bus=%s", contAlias);
 
         if (info->addr.pci.multi == VIR_TRISTATE_SWITCH_ON)

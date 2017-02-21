@@ -1983,9 +1983,7 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
     if (qemuDomainFillAllPCIConnectFlags(def, qemuCaps, driver) < 0)
         goto cleanup;
 
-    if (nbuses > 0 &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_PCI_BRIDGE)) {
-
+    if (nbuses > 0) {
         /* 1st pass to figure out how many PCI bridges we need */
         if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, true)))
             goto cleanup;
@@ -2109,12 +2107,6 @@ qemuDomainAssignPCIAddresses(virDomainDefPtr def,
         nbuses = addrs->nbuses;
         virDomainPCIAddressSetFree(addrs);
         addrs = NULL;
-
-    } else if (max_idx > 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("PCI bridges are not supported "
-                         "by this QEMU binary"));
-        goto cleanup;
     }
 
     if (!(addrs = qemuDomainPCIAddressSetCreate(def, nbuses, false)))
