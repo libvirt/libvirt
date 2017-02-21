@@ -20,8 +20,8 @@
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='pci' index='0' model='pcie-root'/>
-    <controller type='pci' index='1' model='dmi-to-pci-bridge'/>
-    <controller type='pci' index='2' model='pci-bridge'/>
+    <controller type='pci' index='1' model='pcie-root-port'/>
+    <controller type='pci' index='2' model='pcie-root-port'/>
     <controller type='pci' index='3' model='pcie-root-port'/>
     <controller type='pci' index='4' model='pcie-root-port'/>
     <controller type='pci' index='5' model='pcie-root-port'/>
@@ -49,8 +49,6 @@
     <controller type='pci' index='27' model='pcie-root-port'/>
     <controller type='pci' index='28' model='pcie-root-port'/>
     <controller type='pci' index='29' model='pcie-root-port'/>
-    <controller type='pci' index='30' model='pcie-root-port'/>
-    <controller type='pci' index='31' model='pcie-root-port'/>
     <controller type='sata' index='0'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>

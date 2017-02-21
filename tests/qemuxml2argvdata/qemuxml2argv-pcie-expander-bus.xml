@@ -27,29 +27,24 @@
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='pci' index='0' model='pcie-root'/>
-    <controller type='pci' index='1' model='dmi-to-pci-bridge'>
-      <model name='i82801b11-bridge'/>
-    </controller>
-    <controller type='pci' index='2' model='pci-bridge'>
-      <model name='pci-bridge'/>
-      <target chassisNr='56'/>
-    </controller>
-    <controller type='pci' index='3' model='pcie-expander-bus'>
+    <controller type='pci' index='1' model='pcie-expander-bus'>
       <model name='pxb-pcie'/>
       <target busNr='254'>
         <node>0</node>
       </target>
       <address type='pci' bus='0x00' slot='4'/>
     </controller>
-    <controller type='pci' index='4' model='pcie-root-port'>
+    <controller type='pci' index='2' model='pcie-root-port'>
       <target busNr='220'>
         <node>1</node>
       </target>
-      <address type='pci' bus='0x03'/>
+      <address type='pci' bus='0x01'/>
     </controller>
-    <controller type='pci' index='5' model='pcie-switch-upstream-port'>
-      <address type='pci' bus='0x04'/>
+    <controller type='pci' index='3' model='pcie-switch-upstream-port'>
+      <address type='pci' bus='0x02'/>
     </controller>
+    <controller type='pci' index='4' model='pcie-switch-downstream-port'/>
+    <controller type='pci' index='5' model='pcie-switch-downstream-port'/>
     <controller type='pci' index='6' model='pcie-switch-downstream-port'/>
     <controller type='pci' index='7' model='pcie-switch-downstream-port'/>
     <controller type='pci' index='8' model='pcie-switch-downstream-port'/>
@@ -80,167 +75,165 @@
     <controller type='pci' index='33' model='pcie-switch-downstream-port'/>
     <controller type='pci' index='34' model='pcie-switch-downstream-port'/>
     <controller type='pci' index='35' model='pcie-switch-downstream-port'/>
-    <controller type='pci' index='36' model='pcie-switch-downstream-port'/>
-    <controller type='pci' index='37' model='pcie-switch-downstream-port'/>
     <interface type='user'>
       <mac address='52:54:00:f1:95:51'/>
       <model type='rtl8139'/>
-      <address type='pci' bus='6'/>
+      <address type='pci' bus='4'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:5c:c6:1a'/>
       <model type='e1000'/>
-      <address type='pci' bus='07'/>
+      <address type='pci' bus='5'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:39:97:ac'/>
       <model type='e1000'/>
-      <address type='pci' bus='8'/>
+      <address type='pci' bus='6'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:ee:b9:a8'/>
       <model type='e1000'/>
-      <address type='pci' bus='9'/>
+      <address type='pci' bus='7'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:a9:f7:17'/>
       <model type='e1000'/>
-      <address type='pci' bus='10'/>
+      <address type='pci' bus='8'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:df:2b:f3'/>
       <model type='e1000'/>
-      <address type='pci' bus='11'/>
+      <address type='pci' bus='9'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:78:94:b4'/>
       <model type='e1000'/>
-      <address type='pci' bus='12'/>
+      <address type='pci' bus='10'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:6b:9b:06'/>
       <model type='e1000'/>
-      <address type='pci' bus='13'/>
+      <address type='pci' bus='11'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:17:df:bc'/>
       <model type='e1000'/>
-      <address type='pci' bus='14'/>
+      <address type='pci' bus='12'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:3b:d0:51'/>
       <model type='e1000'/>
-      <address type='pci' bus='15'/>
+      <address type='pci' bus='13'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:8d:2d:17'/>
       <model type='e1000'/>
-      <address type='pci' bus='16'/>
+      <address type='pci' bus='14'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:a7:66:af'/>
       <model type='e1000'/>
-      <address type='pci' bus='17'/>
+      <address type='pci' bus='15'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:54:ab:d7'/>
       <model type='e1000'/>
-      <address type='pci' bus='18'/>
+      <address type='pci' bus='16'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:1f:99:90'/>
       <model type='e1000'/>
-      <address type='pci' bus='19'/>
+      <address type='pci' bus='17'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:c8:43:87'/>
       <model type='e1000'/>
-      <address type='pci' bus='20'/>
+      <address type='pci' bus='18'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:df:22:b2'/>
       <model type='e1000'/>
-      <address type='pci' bus='21'/>
+      <address type='pci' bus='19'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:d2:9a:47'/>
       <model type='e1000'/>
-      <address type='pci' bus='22'/>
+      <address type='pci' bus='20'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:86:05:e2'/>
       <model type='e1000'/>
-      <address type='pci' bus='23'/>
+      <address type='pci' bus='21'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:8c:1c:c2'/>
       <model type='e1000'/>
-      <address type='pci' bus='24'/>
+      <address type='pci' bus='22'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:48:58:92'/>
       <model type='e1000'/>
-      <address type='pci' bus='25'/>
+      <address type='pci' bus='23'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:99:e5:bf'/>
       <model type='e1000'/>
-      <address type='pci' bus='26'/>
+      <address type='pci' bus='24'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:b1:8c:25'/>
       <model type='e1000'/>
-      <address type='pci' bus='27'/>
+      <address type='pci' bus='25'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:60:e0:d0'/>
       <model type='e1000'/>
-      <address type='pci' bus='28'/>
+      <address type='pci' bus='26'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:37:00:6a'/>
       <model type='e1000'/>
-      <address type='pci' bus='29'/>
+      <address type='pci' bus='27'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:c7:c8:ad'/>
       <model type='e1000'/>
-      <address type='pci' bus='30'/>
+      <address type='pci' bus='28'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:4e:a7:cf'/>
       <model type='e1000'/>
-      <address type='pci' bus='31'/>
+      <address type='pci' bus='29'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:00:79:69'/>
       <model type='e1000'/>
-      <address type='pci' bus='32'/>
+      <address type='pci' bus='30'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:47:00:6f'/>
       <model type='e1000'/>
-      <address type='pci' bus='33'/>
+      <address type='pci' bus='31'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:2a:8c:8b'/>
       <model type='e1000'/>
-      <address type='pci' bus='34'/>
+      <address type='pci' bus='32'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:ec:d5:e3'/>
       <model type='e1000'/>
-      <address type='pci' bus='35'/>
+      <address type='pci' bus='33'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:7e:6e:c8'/>
       <model type='e1000'/>
-      <address type='pci' bus='36'/>
+      <address type='pci' bus='34'/>
     </interface>
     <interface type='user'>
       <mac address='52:54:00:7e:6d:c9'/>
       <model type='e1000'/>
-      <address type='pci' bus='37'/>
+      <address type='pci' bus='35'/>
     </interface>
     <memballoon model='none'/>
   </devices>

@@ -27,21 +27,9 @@
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='pci' index='0' model='pcie-root'/>
-    <controller type='pci' index='1' model='dmi-to-pci-bridge'>
-      <model name='i82801b11-bridge'/>
-    </controller>
-    <controller type='pci' index='2' model='pci-bridge'>
-      <model name='pci-bridge'/>
-      <target chassisNr='56'/>
-    </controller>
-    <controller type='pci' index='3' model='pcie-root-port'>
-      <target busNr='220'>
-        <node>1</node>
-      </target>
-      <address type='pci' bus='0x00'/>
-    </controller>
-    <controller type='pci' index='4' model='pcie-expander-bus'>
-      <address type='pci' bus='3'/>
+    <controller type='pci' index='1' model='pcie-root-port'/>
+    <controller type='pci' index='2' model='pcie-expander-bus'>
+      <address type='pci' bus='1'/>
     </controller>
     <memballoon model='none'/>
   </devices>

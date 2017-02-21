@@ -15,11 +15,6 @@
   <devices>
     <emulator>/usr/libexec/qemu-kvm</emulator>
     <controller type='pci' index='0' model='pcie-root'/>
-    <controller type='pci' index='1' model='dmi-to-pci-bridge'/>
-    <controller type='pci' index='2' model='pci-bridge'>
-      <model name='pci-bridge'/>
-      <target chassisNr='56'/>
-    </controller>
     <controller type='usb' index='0' model='nec-xhci'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
     </controller>

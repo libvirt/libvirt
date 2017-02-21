@@ -15,13 +15,6 @@
   <devices>
     <emulator>/usr/bin/qemu-kvm</emulator>
     <controller type='pci' index='0' model='pci-root'/>
-    <controller type='pci' index='1' model='dmi-to-pci-bridge'>
-      <model name='i82801b11-bridge'/>
-    </controller>
-    <controller type='pci' index='2' model='pci-bridge'>
-      <model name='pci-bridge'/>
-      <target chassisNr='56'/>
-    </controller>
     <memballoon model='none'/>
   </devices>
 </domain>

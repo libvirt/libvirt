@@ -26,12 +26,6 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x2'/>
     </controller>
     <controller type='pci' index='0' model='pcie-root'/>
-    <controller type='pci' index='1' model='dmi-to-pci-bridge'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1e' function='0x0'/>
-    </controller>
-    <controller type='pci' index='2' model='pci-bridge'>
-      <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'/>
-    </controller>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <memballoon model='none'/>

@@ -16,8 +16,6 @@ QEMU_AUDIO_DRV=none \
 -monitor unix:/tmp/lib/domain--1-q35-test/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
--device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1e \
--device pci-bridge,chassis_nr=56,id=pci.2,bus=pci.1,addr=0x0 \
 -device ich9-usb-ehci1,id=usb,bus=pcie.0,addr=0x1d.0x7 \
 -device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pcie.0,multifunction=on,\
 addr=0x1d \

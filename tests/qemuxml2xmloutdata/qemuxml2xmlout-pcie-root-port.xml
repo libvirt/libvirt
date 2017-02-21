@@ -20,21 +20,12 @@
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='pci' index='0' model='pcie-root'/>
-    <controller type='pci' index='1' model='dmi-to-pci-bridge'>
-      <model name='i82801b11-bridge'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x1e' function='0x0'/>
-    </controller>
-    <controller type='pci' index='2' model='pci-bridge'>
-      <model name='pci-bridge'/>
-      <target chassisNr='2'/>
-      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
-    </controller>
-    <controller type='pci' index='3' model='pcie-root-port'>
+    <controller type='pci' index='1' model='pcie-root-port'>
       <model name='ioh3420'/>
-      <target chassis='3' port='0x10'/>
+      <target chassis='1' port='0x10'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0' multifunction='on'/>
     </controller>
-    <controller type='pci' index='4' model='pcie-root-port'>
+    <controller type='pci' index='2' model='pcie-root-port'>
       <model name='ioh3420'/>
       <target chassis='40' port='0x1a'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x1'/>

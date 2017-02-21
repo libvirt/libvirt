@@ -20,21 +20,19 @@
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <controller type='pci' index='0' model='pcie-root'/>
-    <controller type='pci' index='1' model='dmi-to-pci-bridge'/>
-    <controller type='pci' index='2' model='pci-bridge'/>
-    <controller type='pci' index='3' model='pcie-root-port'/>
-    <controller type='pci' index='4' model='pcie-switch-upstream-port'/>
+    <controller type='pci' index='1' model='pcie-root-port'/>
+    <controller type='pci' index='2' model='pcie-switch-upstream-port'/>
+    <controller type='pci' index='3' model='pcie-switch-downstream-port'/>
+    <controller type='pci' index='4' model='pcie-switch-downstream-port'/>
     <controller type='pci' index='5' model='pcie-switch-downstream-port'/>
-    <controller type='pci' index='6' model='pcie-switch-downstream-port'/>
-    <controller type='pci' index='7' model='pcie-switch-downstream-port'/>
-    <controller type='pci' index='8' model='pcie-switch-downstream-port'>
+    <controller type='pci' index='6' model='pcie-switch-downstream-port'>
       <model name='xio3130-downstream'/>
       <target chassis='30' port='0x27'/>
     </controller>
-    <controller type='pci' index='9' model='pcie-switch-upstream-port'/>
+    <controller type='pci' index='7' model='pcie-switch-upstream-port'/>
+    <controller type='pci' index='8' model='pcie-switch-downstream-port'/>
+    <controller type='pci' index='9' model='pcie-switch-downstream-port'/>
     <controller type='pci' index='10' model='pcie-switch-downstream-port'/>
-    <controller type='pci' index='11' model='pcie-switch-downstream-port'/>
-    <controller type='pci' index='12' model='pcie-switch-downstream-port'/>
     <controller type='sata' index='0'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>

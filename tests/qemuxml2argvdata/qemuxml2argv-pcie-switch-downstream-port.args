@@ -16,18 +16,16 @@ QEMU_AUDIO_DRV=none \
 -monitor unix:/tmp/lib/domain--1-q35-test/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
--device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1e \
--device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x0 \
--device ioh3420,port=0x10,chassis=3,id=pci.3,bus=pcie.0,addr=0x2 \
--device x3130-upstream,id=pci.4,bus=pci.3,addr=0x0 \
--device xio3130-downstream,port=0x0,chassis=5,id=pci.5,bus=pci.4,addr=0x0 \
--device xio3130-downstream,port=0x1,chassis=6,id=pci.6,bus=pci.4,addr=0x1 \
--device xio3130-downstream,port=0x2,chassis=7,id=pci.7,bus=pci.4,addr=0x2 \
--device xio3130-downstream,port=0x27,chassis=30,id=pci.8,bus=pci.4,addr=0x3 \
--device x3130-upstream,id=pci.9,bus=pci.5,addr=0x0 \
--device xio3130-downstream,port=0x4,chassis=10,id=pci.10,bus=pci.4,addr=0x4 \
--device xio3130-downstream,port=0x5,chassis=11,id=pci.11,bus=pci.4,addr=0x5 \
--device xio3130-downstream,port=0x6,chassis=12,id=pci.12,bus=pci.4,addr=0x6 \
+-device ioh3420,port=0x10,chassis=1,id=pci.1,bus=pcie.0,addr=0x2 \
+-device x3130-upstream,id=pci.2,bus=pci.1,addr=0x0 \
+-device xio3130-downstream,port=0x0,chassis=3,id=pci.3,bus=pci.2,addr=0x0 \
+-device xio3130-downstream,port=0x1,chassis=4,id=pci.4,bus=pci.2,addr=0x1 \
+-device xio3130-downstream,port=0x2,chassis=5,id=pci.5,bus=pci.2,addr=0x2 \
+-device xio3130-downstream,port=0x27,chassis=30,id=pci.6,bus=pci.2,addr=0x3 \
+-device x3130-upstream,id=pci.7,bus=pci.3,addr=0x0 \
+-device xio3130-downstream,port=0x4,chassis=8,id=pci.8,bus=pci.2,addr=0x4 \
+-device xio3130-downstream,port=0x5,chassis=9,id=pci.9,bus=pci.2,addr=0x5 \
+-device xio3130-downstream,port=0x6,chassis=10,id=pci.10,bus=pci.2,addr=0x6 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-sata0-0-0 \
 -device ide-drive,bus=ide.0,drive=drive-sata0-0-0,id=sata0-0-0 \
 -device qxl-vga,id=video0,ram_size=67108864,vram_size=33554432,bus=pcie.0,\

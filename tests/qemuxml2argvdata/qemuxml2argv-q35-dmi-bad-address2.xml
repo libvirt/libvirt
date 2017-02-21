@@ -14,26 +14,11 @@
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/libexec/qemu-kvm</emulator>
-    <disk type='block' device='disk'>
-      <source dev='/dev/HostVG/QEMUGuest1'/>
-      <target dev='sda' bus='sata'/>
-      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
-    </disk>
     <controller type='pci' index='0' model='pcie-root'/>
-    <controller type='pci' index='1' model='dmi-to-pci-bridge'>
-      <model name='i82801b11-bridge'/>
+    <controller type='pci' index='1' model='pcie-root-port'/>
+    <controller type='pci' index='2' model='dmi-to-pci-bridge'>
+      <address type='pci' bus='1'/>
     </controller>
-    <controller type='pci' index='2' model='pci-bridge'>
-      <model name='pci-bridge'/>
-      <target chassisNr='56'/>
-    </controller>
-    <controller type='pci' index='3' model='pcie-root-port'/>
-    <controller type='pci' index='4' model='dmi-to-pci-bridge'>
-      <address type='pci' bus='3'/>
-    </controller>
-    <video>
-      <model type='qxl' ram='65536' vram='32768' vgamem='8192' heads='1'/>
-    </video>
     <memballoon model='none'/>
   </devices>
 </domain>

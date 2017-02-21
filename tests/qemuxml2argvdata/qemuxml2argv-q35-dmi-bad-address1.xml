@@ -22,9 +22,8 @@
       <model name='pci-bridge'/>
       <target chassisNr='56'/>
     </controller>
-    <controller type='pci' index='3' model='pcie-root-port'/>
-    <controller type='pci' index='4' model='dmi-to-pci-bridge'>
-      <address type='pci' bus='2' slot='3'/>
+    <controller type='pci' index='2' model='dmi-to-pci-bridge'>
+      <address type='pci' bus='2'/>
     </controller>
     <memballoon model='none'/>
   </devices>

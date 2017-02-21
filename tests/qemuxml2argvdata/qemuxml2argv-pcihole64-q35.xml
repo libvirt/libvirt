@@ -22,8 +22,6 @@
     <controller type='pci' index='0' model='pcie-root'>
       <pcihole64 unit='KiB'>1048576</pcihole64>
     </controller>
-    <controller type='pci' index='1' model='dmi-to-pci-bridge'/>
-    <controller type='pci' index='2' model='pci-bridge'/>
     <controller type='sata' index='0'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
