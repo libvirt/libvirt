@@ -7543,6 +7543,37 @@ qemuDomainSetupAllHostdevs(virQEMUDriverConfigPtr cfg,
 
 
 static int
+qemuDomainSetupMemory(virQEMUDriverConfigPtr cfg ATTRIBUTE_UNUSED,
+                      virDomainMemoryDefPtr mem,
+                      const char *devPath)
+{
+    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
+        return 0;
+
+    return qemuDomainCreateDevice(mem->nvdimmPath, devPath, false);
+}
+
+
+static int
+qemuDomainSetupAllMemories(virQEMUDriverConfigPtr cfg,
+                           virDomainObjPtr vm,
+                           const char *devPath)
+{
+    size_t i;
+
+    VIR_DEBUG("Setting up memories");
+    for (i = 0; i < vm->def->nmems; i++) {
+        if (qemuDomainSetupMemory(cfg,
+                                  vm->def->mems[i],
+                                  devPath) < 0)
+            return -1;
+    }
+    VIR_DEBUG("Setup all memories");
+    return 0;
+}
+
+
+static int
 qemuDomainSetupChardev(virDomainDefPtr def ATTRIBUTE_UNUSED,
                        virDomainChrDefPtr dev,
                        void *opaque)
@@ -7795,6 +7826,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     if (qemuDomainSetupAllHostdevs(cfg, vm, devPath) < 0)
+        goto cleanup;
+
+    if (qemuDomainSetupAllMemories(cfg, vm, devPath) < 0)
         goto cleanup;
 
     if (qemuDomainSetupAllChardevs(cfg, vm, devPath) < 0)
@@ -8278,6 +8312,48 @@ qemuDomainNamespaceTeardownHostdev(virQEMUDriverPtr driver,
     for (i = 0; i < npaths; i++)
         VIR_FREE(path[i]);
     VIR_FREE(path);
+    return ret;
+}
+
+
+int
+qemuDomainNamespaceSetupMemory(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               virDomainMemoryDefPtr mem)
+{
+    int ret = -1;
+
+    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
+        return 0;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
+    if (qemuDomainAttachDeviceMknod(driver, vm, mem->nvdimmPath) < 0)
+        goto cleanup;
+    ret = 0;
+ cleanup:
+    return ret;
+}
+
+
+int
+qemuDomainNamespaceTeardownMemory(virQEMUDriverPtr driver,
+                                  virDomainObjPtr vm,
+                                  virDomainMemoryDefPtr mem)
+{
+    int ret = -1;
+
+    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
+        return 0;
+
+    if (!qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        return 0;
+
+    if (qemuDomainDetachDeviceUnlink(driver, vm, mem->nvdimmPath) < 0)
+        goto cleanup;
+    ret = 0;
+ cleanup:
     return ret;
 }
 

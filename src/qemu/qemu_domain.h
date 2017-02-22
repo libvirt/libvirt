@@ -837,6 +837,14 @@ int qemuDomainNamespaceTeardownHostdev(virQEMUDriverPtr driver,
                                        virDomainObjPtr vm,
                                        virDomainHostdevDefPtr hostdev);
 
+int qemuDomainNamespaceSetupMemory(virQEMUDriverPtr driver,
+                                   virDomainObjPtr vm,
+                                   virDomainMemoryDefPtr memory);
+
+int qemuDomainNamespaceTeardownMemory(virQEMUDriverPtr driver,
+                                      virDomainObjPtr vm,
+                                      virDomainMemoryDefPtr memory);
+
 int qemuDomainNamespaceSetupChardev(virQEMUDriverPtr driver,
                                     virDomainObjPtr vm,
                                     virDomainChrDefPtr chr);
