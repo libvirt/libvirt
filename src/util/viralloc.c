@@ -243,7 +243,7 @@ int virReallocN(void *ptrptr,
         return -1;
     }
     tmp = realloc(*(void**)ptrptr, size * count);
-    if (!tmp && (size * count)) {
+    if (!tmp && ((size * count) != 0)) {
         if (report)
             virReportOOMErrorFull(domcode, filename, funcname, linenr);
         return -1;
