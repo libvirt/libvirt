@@ -223,11 +223,13 @@
     <property name='avx512cd' type='boolean' value='false'/>
     <property name='decodeassists' type='boolean' value='false'/>
     <property name='sse4.1' type='boolean' value='true'/>
+    <property name='family' type='number' value='6'/>
     <property name='avx512f' type='boolean' value='false'/>
     <property name='msr' type='boolean' value='true'/>
     <property name='mce' type='boolean' value='true'/>
     <property name='mca' type='boolean' value='true'/>
     <property name='xcrypt' type='boolean' value='false'/>
+    <property name='min-level' type='number' value='13'/>
     <property name='xgetbv1' type='boolean' value='true'/>
     <property name='cid' type='boolean' value='false'/>
     <property name='ds' type='boolean' value='false'/>
@@ -243,6 +245,7 @@
     <property name='xcrypt-en' type='boolean' value='false'/>
     <property name='pn' type='boolean' value='false'/>
     <property name='dca' type='boolean' value='false'/>
+    <property name='vendor' type='string' value='GenuineIntel'/>
     <property name='pku' type='boolean' value='false'/>
     <property name='smx' type='boolean' value='false'/>
     <property name='cmp-legacy' type='boolean' value='false'/>
@@ -288,6 +291,7 @@
     <property name='sse4.2' type='boolean' value='true'/>
     <property name='pge' type='boolean' value='true'/>
     <property name='pdcm' type='boolean' value='false'/>
+    <property name='model' type='number' value='94'/>
     <property name='movbe' type='boolean' value='true'/>
     <property name='nrip-save' type='boolean' value='false'/>
     <property name='ssse3' type='boolean' value='true'/>
@@ -298,6 +302,7 @@
     <property name='fma' type='boolean' value='true'/>
     <property name='cx16' type='boolean' value='true'/>
     <property name='de' type='boolean' value='true'/>
+    <property name='stepping' type='number' value='3'/>
     <property name='xsave' type='boolean' value='true'/>
     <property name='clflush' type='boolean' value='true'/>
     <property name='skinit' type='boolean' value='false'/>
@@ -335,6 +340,7 @@
     <property name='sep' type='boolean' value='true'/>
     <property name='nodeid-msr' type='boolean' value='false'/>
     <property name='misalignsse' type='boolean' value='false'/>
+    <property name='min-xlevel' type='number' value='2147483656'/>
     <property name='bmi1' type='boolean' value='true'/>
     <property name='bmi2' type='boolean' value='true'/>
     <property name='kvm-pv-unhalt' type='boolean' value='true'/>
@@ -364,6 +370,7 @@
     <property name='pse36' type='boolean' value='true'/>
     <property name='tbm' type='boolean' value='false'/>
     <property name='wdt' type='boolean' value='false'/>
+    <property name='model-id' type='string' value='Intel(R) Xeon(R) CPU E3-1245 v5 @ 3.50GHz'/>
     <property name='sha-ni' type='boolean' value='false'/>
     <property name='abm' type='boolean' value='true'/>
     <property name='avx512pf' type='boolean' value='false'/>

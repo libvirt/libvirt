@@ -4977,24 +4977,50 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitorPtr mon,
     return ret;
 }
 
+
+VIR_ENUM_IMPL(qemuMonitorCPUProperty,
+              QEMU_MONITOR_CPU_PROPERTY_LAST,
+              "boolean", "string", "number")
+
 static int
 qemuMonitorJSONParseCPUModelProperty(const char *key,
                                      virJSONValue *value,
                                      void *opaque)
 {
     qemuMonitorCPUModelInfoPtr machine_model = opaque;
-    size_t n = machine_model->nprops;
-    bool supported;
+    qemuMonitorCPUPropertyPtr prop;
 
-    if (virJSONValueGetBoolean(value, &supported) < 0)
+    prop = machine_model->props + machine_model->nprops;
+
+    switch ((virJSONType) value->type) {
+    case VIR_JSON_TYPE_STRING:
+        if (VIR_STRDUP(prop->value.string, virJSONValueGetString(value)) < 0)
+            return -1;
+        prop->type = QEMU_MONITOR_CPU_PROPERTY_STRING;
+        break;
+
+    case VIR_JSON_TYPE_NUMBER:
+        /* Ignore numbers which cannot be parsed as unsigned long long */
+        if (virJSONValueGetNumberLong(value, &prop->value.number) < 0)
+            return 0;
+        prop->type = QEMU_MONITOR_CPU_PROPERTY_NUMBER;
+        break;
+
+    case VIR_JSON_TYPE_BOOLEAN:
+        virJSONValueGetBoolean(value, &prop->value.boolean);
+        prop->type = QEMU_MONITOR_CPU_PROPERTY_BOOLEAN;
+        break;
+
+    case VIR_JSON_TYPE_OBJECT:
+    case VIR_JSON_TYPE_ARRAY:
+    case VIR_JSON_TYPE_NULL:
         return 0;
-
-    if (VIR_STRDUP(machine_model->props[n].name, key) < 0)
-        return -1;
-
-    machine_model->props[n].supported = supported;
+    }
 
     machine_model->nprops++;
+    if (VIR_STRDUP(prop->name, key) < 0)
+        return -1;
+
     return 0;
 }
 
