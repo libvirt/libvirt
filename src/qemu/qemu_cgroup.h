@@ -43,6 +43,10 @@ int qemuSetupHostdevCgroup(virDomainObjPtr vm,
 int qemuTeardownHostdevCgroup(virDomainObjPtr vm,
                               virDomainHostdevDefPtr dev)
    ATTRIBUTE_RETURN_CHECK;
+int qemuSetupMemoryDevicesCgroup(virDomainObjPtr vm,
+                                 virDomainMemoryDefPtr mem);
+int qemuTeardownMemoryDevicesCgroup(virDomainObjPtr vm,
+                                    virDomainMemoryDefPtr mem);
 int qemuSetupRNGCgroup(virDomainObjPtr vm,
                        virDomainRNGDefPtr rng);
 int qemuTeardownRNGCgroup(virDomainObjPtr vm,

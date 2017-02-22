@@ -348,6 +348,50 @@ qemuTeardownHostdevCgroup(virDomainObjPtr vm,
 }
 
 
+int
+qemuSetupMemoryDevicesCgroup(virDomainObjPtr vm,
+                             virDomainMemoryDefPtr mem)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int rv;
+
+    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
+        return 0;
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
+
+    VIR_DEBUG("Setting devices Cgroup for NVDIMM device: %s", mem->nvdimmPath);
+    rv = virCgroupAllowDevicePath(priv->cgroup, mem->nvdimmPath,
+                                  VIR_CGROUP_DEVICE_RW, false);
+    virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
+                             mem->nvdimmPath, "rw", rv == 0);
+
+    return rv;
+}
+
+
+int
+qemuTeardownMemoryDevicesCgroup(virDomainObjPtr vm,
+                                virDomainMemoryDefPtr mem)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    int rv;
+
+    if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM)
+        return 0;
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
+
+    rv = virCgroupDenyDevicePath(priv->cgroup, mem->nvdimmPath,
+                                 VIR_CGROUP_DEVICE_RWM, false);
+    virDomainAuditCgroupPath(vm, priv->cgroup,
+                             "deny", mem->nvdimmPath, "rwm", rv == 0);
+    return rv;
+}
+
+
 static int
 qemuSetupGraphicsCgroup(virDomainObjPtr vm,
                         virDomainGraphicsDefPtr gfx)
@@ -644,6 +688,11 @@ qemuSetupDevicesCgroup(virQEMUDriverPtr driver,
 
     for (i = 0; i < vm->def->nhostdevs; i++) {
         if (qemuSetupHostdevCgroup(vm, vm->def->hostdevs[i]) < 0)
+            goto cleanup;
+    }
+
+    for (i = 0; i < vm->def->nmems; i++) {
+        if (qemuSetupMemoryDevicesCgroup(vm, vm->def->mems[i]) < 0)
             goto cleanup;
     }
 

@@ -2216,6 +2216,7 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     const char *backendType;
     bool objAdded = false;
     bool teardownlabel = false;
+    bool teardowncgroup = false;
     virJSONValuePtr props = NULL;
     virObjectEventPtr event;
     int id;
@@ -2244,6 +2245,10 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     if (qemuBuildMemoryBackendStr(&props, &backendType, cfg,
                                   priv->qemuCaps, vm->def, mem, NULL, true) < 0)
         goto cleanup;
+
+    if (qemuSetupMemoryDevicesCgroup(vm, mem) < 0)
+        goto cleanup;
+    teardowncgroup = true;
 
     if (qemuSecuritySetMemoryLabel(driver, vm, mem) < 0)
         goto cleanup;
@@ -2290,6 +2295,8 @@ qemuDomainAttachMemory(virQEMUDriverPtr driver,
     virDomainAuditMemory(vm, oldmem, newmem, "update", ret == 0);
  cleanup:
     if (mem && ret < 0) {
+        if (teardowncgroup && qemuTeardownMemoryDevicesCgroup(vm, mem) < 0)
+            VIR_WARN("Unable to remove memory device cgroup ACL on hotplug fail");
         if (teardownlabel && qemuSecurityRestoreMemoryLabel(driver, vm, mem) < 0)
             VIR_WARN("Unable to restore security label on memdev");
     }
@@ -3757,6 +3764,9 @@ qemuDomainRemoveMemoryDevice(virQEMUDriverPtr driver,
 
     if (qemuSecurityRestoreMemoryLabel(driver, vm, mem) < 0)
         VIR_WARN("Unable to restore security label on memdev");
+
+    if (qemuTeardownMemoryDevicesCgroup(vm, mem) < 0)
+        VIR_WARN("Unable to remove memory device cgroup ACL");
 
     virDomainMemoryDefFree(mem);
 
