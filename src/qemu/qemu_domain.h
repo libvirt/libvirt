@@ -877,4 +877,10 @@ int qemuDomainNamespaceSetupRNG(virQEMUDriverPtr driver,
 int qemuDomainNamespaceTeardownRNG(virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
                                    virDomainRNGDefPtr rng);
+
+virDomainDiskDefPtr qemuDomainDiskLookupByNodename(virDomainDefPtr def,
+                                                   const char *nodename,
+                                                   virStorageSourcePtr *src,
+                                                   unsigned int *idx);
+
 #endif /* __QEMU_DOMAIN_H__ */
