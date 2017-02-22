@@ -1441,6 +1441,46 @@ qemuProcessHandleAcpiOstInfo(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 
 
 static int
+qemuProcessHandleBlockThreshold(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+                                virDomainObjPtr vm,
+                                const char *nodename,
+                                unsigned long long threshold,
+                                unsigned long long excess,
+                                void *opaque)
+{
+    virQEMUDriverPtr driver = opaque;
+    virObjectEventPtr event = NULL;
+    virDomainDiskDefPtr disk;
+    virStorageSourcePtr src;
+    unsigned int idx;
+    char *dev = NULL;
+    const char *path = NULL;
+
+    virObjectLock(vm);
+
+    VIR_DEBUG("BLOCK_WRITE_THRESHOLD event for block node '%s' in domain %p %s:"
+              "threshold '%llu' exceeded by '%llu'",
+              nodename, vm, vm->def->name, threshold, excess);
+
+    if ((disk = qemuDomainDiskLookupByNodename(vm->def, nodename, &src, &idx))) {
+        if (virStorageSourceIsLocalStorage(src))
+            path = src->path;
+
+        if ((dev = qemuDomainDiskBackingStoreGetName(disk, src, idx))) {
+            event = virDomainEventBlockThresholdNewFromObj(vm, dev, path,
+                                                           threshold, excess);
+            VIR_FREE(dev);
+        }
+    }
+
+    virObjectUnlock(vm);
+    qemuDomainEventQueue(driver, event);
+
+    return 0;
+}
+
+
+static int
 qemuProcessHandleNicRxFilterChanged(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                                     virDomainObjPtr vm,
                                     const char *devAlias,
@@ -1636,6 +1676,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainMigrationStatus = qemuProcessHandleMigrationStatus,
     .domainMigrationPass = qemuProcessHandleMigrationPass,
     .domainAcpiOstInfo = qemuProcessHandleAcpiOstInfo,
+    .domainBlockThreshold = qemuProcessHandleBlockThreshold,
 };
 
 static void
