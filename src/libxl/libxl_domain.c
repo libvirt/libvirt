@@ -1121,7 +1121,7 @@ libxlDomainCreateChannelPTY(virDomainDefPtr def, libxl_ctx *ctx)
                                            &channelinfo);
 
         if (!ret && channelinfo.u.pty.path &&
-            channelinfo.u.pty.path != '\0') {
+            *channelinfo.u.pty.path != '\0') {
                 VIR_FREE(chr->source->data.file.path);
                 ignore_value(VIR_STRDUP(chr->source->data.file.path,
                                         channelinfo.u.pty.path));
