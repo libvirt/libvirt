@@ -300,6 +300,23 @@ virQEMUBuildBufferEscapeComma(virBufferPtr buf, const char *str)
 
 
 /**
+ * virQEMUBuildBufferEscape:
+ * @buf: buffer to append the escaped string
+ * @str: the string to escape
+ *
+ * Some characters passed as values on the QEMU command line must be escaped.
+ *
+ *  - ',' must by escaped by ','
+ *  - '=' must by escaped by '\'
+ */
+void
+virQEMUBuildBufferEscape(virBufferPtr buf, const char *str)
+{
+    virBufferEscapeN(buf, "%s", str, ',', ",", '\\', "=", NULL);
+}
+
+
+/**
  * virQEMUBuildLuksOpts:
  * @buf: buffer to build the string into
  * @enc: pointer to encryption info
