@@ -3,7 +3,7 @@ PATH=/bin \
 HOME=/home/test \
 USER=test \
 LOGNAME=test \
-QEMU_AUDIO_DRV=none \
+QEMU_AUDIO_DRV=spice \
 /usr/bin/qemu \
 -name guest=foo=1,,bar=2,debug-threads=on \
 -S \
@@ -20,6 +20,7 @@ bar=2/monitor.sock,server,nowait \
 -no-acpi \
 -boot c \
 -usb \
--vnc unix:/tmp/bar,,foo.sock \
+-vnc 'unix:/tmp/lib/domain--1-foo\=1,,bar\=2/vnc.sock' \
+-spice 'unix,addr=/tmp/lib/domain--1-foo\=1,,bar\=2/spice.sock' \
 -vga cirrus \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3

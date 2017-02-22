@@ -7495,7 +7495,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfigPtr cfg,
     switch (glisten->type) {
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
         virBufferAddLit(&opt, "unix:");
-        virQEMUBuildBufferEscapeComma(&opt, glisten->socket);
+        virQEMUBuildBufferEscape(&opt, glisten->socket);
         break;
 
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
@@ -7627,7 +7627,9 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfigPtr cfg,
             goto error;
         }
 
-        virBufferAsprintf(&opt, "unix,addr=%s,", glisten->socket);
+        virBufferAddLit(&opt, "unix,addr=");
+        virQEMUBuildBufferEscape(&opt, glisten->socket);
+        virBufferAddLit(&opt, ",");
         hasInsecure = true;
         break;
 
