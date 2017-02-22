@@ -553,6 +553,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
             return pciFlags;
         }
     }
+        break;
 
     case VIR_DOMAIN_DEVICE_FS:
         /* the only type of filesystem so far is virtio-9p-pci */
