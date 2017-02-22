@@ -2012,6 +2012,8 @@ virStorageSourceCopy(const virStorageSource *src,
         VIR_STRDUP(ret->backingStoreRaw, src->backingStoreRaw) < 0 ||
         VIR_STRDUP(ret->snapshot, src->snapshot) < 0 ||
         VIR_STRDUP(ret->configFile, src->configFile) < 0 ||
+        VIR_STRDUP(ret->nodeformat, src->nodeformat) < 0 ||
+        VIR_STRDUP(ret->nodebacking, src->nodebacking) < 0 ||
         VIR_STRDUP(ret->compat, src->compat) < 0)
         goto error;
 
@@ -2231,6 +2233,9 @@ virStorageSourceClear(virStorageSourcePtr def)
 
     virStorageNetHostDefFree(def->nhosts, def->hosts);
     virStorageAuthDefFree(def->auth);
+
+    VIR_FREE(def->nodebacking);
+    VIR_FREE(def->nodeformat);
 
     virStorageSourceBackingStoreClear(def);
 }
@@ -3780,4 +3785,39 @@ virStorageSourceIsRelative(virStorageSourcePtr src)
     }
 
     return false;
+}
+
+
+/**
+ * virStorageSourceFindByNodeName:
+ * @top: backing chain top
+ * @nodeName: node name to find in backing chain
+ * @index: if provided the index in the backing chain
+ *
+ * Looks up the given storage source in the backing chain and returns the
+ * pointer to it. If @index is passed then it's filled by the index in the
+ * backing chain. On failure NULL is returned and no error is reported.
+ */
+virStorageSourcePtr
+virStorageSourceFindByNodeName(virStorageSourcePtr top,
+                               const char *nodeName,
+                               unsigned int *index)
+{
+    virStorageSourcePtr tmp;
+
+    if (index)
+        *index = 0;
+
+    for (tmp = top; tmp; tmp = tmp->backingStore) {
+        if (STREQ_NULLABLE(tmp->nodeformat, nodeName) ||
+            STREQ_NULLABLE(tmp->nodebacking, nodeName))
+            return tmp;
+
+        if (index)
+            (*index)++;
+    }
+
+    if (index)
+        *index = 0;
+    return NULL;
 }

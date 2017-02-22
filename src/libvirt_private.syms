@@ -2509,6 +2509,7 @@ virStorageNetProtocolTypeToString;
 virStorageSourceBackingStoreClear;
 virStorageSourceClear;
 virStorageSourceCopy;
+virStorageSourceFindByNodeName;
 virStorageSourceFree;
 virStorageSourceGetActualType;
 virStorageSourceGetSecurityLabelDef;
