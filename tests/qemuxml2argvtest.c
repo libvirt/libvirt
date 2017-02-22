@@ -2048,6 +2048,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("pcie-root-port-too-many",
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
+            QEMU_CAPS_PCI_MULTIFUNCTION,
             QEMU_CAPS_DEVICE_VIDEO_PRIMARY,
             QEMU_CAPS_DEVICE_QXL);
 
