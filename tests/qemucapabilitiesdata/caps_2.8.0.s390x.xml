@@ -134,21 +134,21 @@
   <package></package>
   <arch>s390x</arch>
   <hostCPU model='zEC12.2-base'>
-    <property name='aefsi' supported='yes'/>
-    <property name='msa5' supported='yes'/>
-    <property name='msa4' supported='yes'/>
-    <property name='msa3' supported='yes'/>
-    <property name='msa2' supported='yes'/>
-    <property name='msa1' supported='yes'/>
-    <property name='sthyi' supported='yes'/>
-    <property name='edat' supported='yes'/>
-    <property name='ri' supported='yes'/>
-    <property name='edat2' supported='yes'/>
-    <property name='ipter' supported='yes'/>
-    <property name='esop' supported='yes'/>
-    <property name='cte' supported='yes'/>
-    <property name='te' supported='yes'/>
-    <property name='cmm' supported='yes'/>
+    <property name='aefsi' type='boolean' value='true'/>
+    <property name='msa5' type='boolean' value='true'/>
+    <property name='msa4' type='boolean' value='true'/>
+    <property name='msa3' type='boolean' value='true'/>
+    <property name='msa2' type='boolean' value='true'/>
+    <property name='msa1' type='boolean' value='true'/>
+    <property name='sthyi' type='boolean' value='true'/>
+    <property name='edat' type='boolean' value='true'/>
+    <property name='ri' type='boolean' value='true'/>
+    <property name='edat2' type='boolean' value='true'/>
+    <property name='ipter' type='boolean' value='true'/>
+    <property name='esop' type='boolean' value='true'/>
+    <property name='cte' type='boolean' value='true'/>
+    <property name='te' type='boolean' value='true'/>
+    <property name='cmm' type='boolean' value='true'/>
   </hostCPU>
   <cpu type='kvm' name='z10EC-base'/>
   <cpu type='kvm' name='z9EC-base'/>

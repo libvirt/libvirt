@@ -3203,19 +3203,19 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
                 goto cleanup;
             }
 
-            if (!(str = virXMLPropString(nodes[i], "supported"))) {
+            if (!(str = virXMLPropString(nodes[i], "value"))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing 'supported' attribute for a host CPU"
+                               _("missing 'value' attribute for a host CPU"
                                  " model property in QEMU capabilities cache"));
                 goto cleanup;
             }
-            if (STREQ(str, "yes")) {
+            if (STREQ(str, "true")) {
                 hostCPU->props[i].supported = true;
-            } else if (STREQ(str, "no")) {
+            } else if (STREQ(str, "false")) {
                 hostCPU->props[i].supported = false;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("invalid supported value: '%s'"), str);
+                               _("invalid boolean  value: '%s'"), str);
                 goto cleanup;
             }
             VIR_FREE(str);
@@ -3560,9 +3560,9 @@ virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
     virBufferAdjustIndent(buf, 2);
 
     for (i = 0; i < model->nprops; i++) {
-        virBufferAsprintf(buf, "<property name='%s' supported='%s'/>\n",
+        virBufferAsprintf(buf, "<property name='%s' type='boolean' value='%s'/>\n",
                           model->props[i].name,
-                          model->props[i].supported ? "yes" : "no");
+                          model->props[i].supported ? "true" : "false");
     }
 
     virBufferAdjustIndent(buf, -2);
