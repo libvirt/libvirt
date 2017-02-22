@@ -5181,13 +5181,14 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
     /* custom CPUs in TCG mode don't need to be compared to host CPU */
     if (def->virtType != VIR_DOMAIN_VIRT_QEMU ||
         def->cpu->mode != VIR_CPU_MODE_CUSTOM) {
-        if (virCPUCompare(caps->host.arch, virQEMUCapsGetHostModel(qemuCaps),
+        if (virCPUCompare(caps->host.arch,
+                          virQEMUCapsGetHostModel(qemuCaps, def->virtType),
                           def->cpu, true) < 0)
             return -1;
     }
 
     if (virCPUUpdate(def->os.arch, def->cpu,
-                     virQEMUCapsGetHostModel(qemuCaps)) < 0)
+                     virQEMUCapsGetHostModel(qemuCaps, def->virtType)) < 0)
         goto cleanup;
 
     if (virQEMUCapsGetCPUDefinitions(qemuCaps, def->virtType,

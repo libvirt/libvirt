@@ -75,5 +75,6 @@ virQEMUCapsSetVersion(virQEMUCapsPtr qemuCaps,
 
 void
 virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
-                            virCapsPtr caps);
+                            virCapsPtr caps,
+                            virDomainVirtType type);
 #endif

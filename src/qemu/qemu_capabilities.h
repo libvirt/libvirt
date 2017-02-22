@@ -442,7 +442,8 @@ int virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                  virDomainVirtType type,
                                  char ***names,
                                  size_t *count);
-virCPUDefPtr virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps);
+virCPUDefPtr virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps,
+                                     virDomainVirtType type);
 bool virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                                    virCapsPtr caps,
                                    virDomainVirtType type,

@@ -389,7 +389,8 @@ testUpdateQEMUCaps(const struct testInfo *info,
     if (testAddCPUModels(info->qemuCaps, info->skipLegacyCPUs) < 0)
         goto cleanup;
 
-    virQEMUCapsInitHostCPUModel(info->qemuCaps, caps);
+    virQEMUCapsInitHostCPUModel(info->qemuCaps, caps, VIR_DOMAIN_VIRT_KVM);
+    virQEMUCapsInitHostCPUModel(info->qemuCaps, caps, VIR_DOMAIN_VIRT_QEMU);
 
     virQEMUCapsFilterByMachineType(info->qemuCaps, vm->def->os.machine);
 

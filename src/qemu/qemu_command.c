@@ -6666,7 +6666,7 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
             if (def->cpu->mode == VIR_CPU_MODE_CUSTOM)
                 cpuDef = def->cpu;
             else if (def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH)
-                cpuDef = virQEMUCapsGetHostModel(qemuCaps);
+                cpuDef = virQEMUCapsGetHostModel(qemuCaps, def->virtType);
 
             if (cpuDef) {
                 int svm = virCPUCheckFeature(def->os.arch, cpuDef, "svm");

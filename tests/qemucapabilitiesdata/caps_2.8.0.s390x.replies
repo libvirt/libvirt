@@ -13378,3 +13378,11 @@
   ],
   "id": "libvirt-2"
 }
+
+{
+  "id": "libvirt-3",
+  "error": {
+    "class": "GenericError",
+    "desc": "The CPU definition 'max' is unknown."
+  }
+}
