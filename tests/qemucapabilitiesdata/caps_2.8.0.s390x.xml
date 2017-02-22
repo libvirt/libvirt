@@ -130,6 +130,7 @@
   <flag name='drive-iotune-group'/>
   <flag name='query-cpu-model-expansion'/>
   <flag name='query-cpu-definitions'/>
+  <flag name='block-write-threshold'/>
   <version>2007093</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

@@ -399,6 +399,7 @@ typedef enum {
 
     /* 250 */
     QEMU_CAPS_QUERY_CPU_DEFINITIONS, /* qmp query-cpu-definitions */
+    QEMU_CAPS_BLOCK_WRITE_THRESHOLD, /* BLOCK_WRITE_THRESHOLD event */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

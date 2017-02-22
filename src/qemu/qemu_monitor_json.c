@@ -89,6 +89,7 @@ static void qemuMonitorJSONHandleSpiceMigrated(qemuMonitorPtr mon, virJSONValueP
 static void qemuMonitorJSONHandleMigrationStatus(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleMigrationPass(qemuMonitorPtr mon, virJSONValuePtr data);
 static void qemuMonitorJSONHandleAcpiOstInfo(qemuMonitorPtr mon, virJSONValuePtr data);
+static void qemuMonitorJSONHandleBlockThreshold(qemuMonitorPtr mon, virJSONValuePtr data);
 
 typedef struct {
     const char *type;
@@ -102,6 +103,7 @@ static qemuEventHandler eventHandlers[] = {
     { "BLOCK_JOB_CANCELLED", qemuMonitorJSONHandleBlockJobCanceled, },
     { "BLOCK_JOB_COMPLETED", qemuMonitorJSONHandleBlockJobCompleted, },
     { "BLOCK_JOB_READY", qemuMonitorJSONHandleBlockJobReady, },
+    { "BLOCK_WRITE_THRESHOLD", qemuMonitorJSONHandleBlockThreshold, },
     { "DEVICE_DELETED", qemuMonitorJSONHandleDeviceDeleted, },
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
     { "GUEST_PANICKED", qemuMonitorJSONHandleGuestPanic, },
@@ -1062,6 +1064,30 @@ qemuMonitorJSONHandleAcpiOstInfo(qemuMonitorPtr mon, virJSONValuePtr data)
  error:
     VIR_WARN("malformed ACPI_DEVICE_OST event");
     return;
+}
+
+
+static void
+qemuMonitorJSONHandleBlockThreshold(qemuMonitorPtr mon, virJSONValuePtr data)
+{
+    const char *nodename;
+    unsigned long long threshold;
+    unsigned long long excess;
+
+    if (!(nodename = virJSONValueObjectGetString(data, "node-name")))
+        goto error;
+
+    if (virJSONValueObjectGetNumberUlong(data, "write-threshold", &threshold) < 0)
+        goto error;
+
+    if (virJSONValueObjectGetNumberUlong(data, "amount-exceeded", &excess) < 0)
+        goto error;
+
+    qemuMonitorEmitBlockThreshold(mon, nodename, threshold, excess);
+    return;
+
+ error:
+    VIR_WARN("malformed 'BLOCK_WRITE_THRESHOLD' event");
 }
 
 

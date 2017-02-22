@@ -201,6 +201,7 @@
   <flag name='vhost-scsi'/>
   <flag name='drive-iotune-group'/>
   <flag name='query-cpu-definitions'/>
+  <flag name='block-write-threshold'/>
   <version>2008000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.8.0)</package>

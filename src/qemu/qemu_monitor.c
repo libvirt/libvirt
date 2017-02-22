@@ -1605,6 +1605,24 @@ qemuMonitorEmitAcpiOstInfo(qemuMonitorPtr mon,
 
 
 int
+qemuMonitorEmitBlockThreshold(qemuMonitorPtr mon,
+                              const char *nodename,
+                              unsigned long long threshold,
+                              unsigned long long excess)
+{
+    int ret = -1;
+
+    VIR_DEBUG("mon=%p, node-name='%s', threshold='%llu', excess='%llu'",
+              mon, nodename, threshold, excess);
+
+    QEMU_MONITOR_CALLBACK(mon, ret, domainBlockThreshold, mon->vm,
+                          nodename, threshold, excess);
+
+    return ret;
+}
+
+
+int
 qemuMonitorSetCapabilities(qemuMonitorPtr mon)
 {
     QEMU_CHECK_MONITOR(mon);
