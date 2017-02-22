@@ -2028,6 +2028,11 @@
                   </attribute>
                 </optional>
                 <optional>
+                  <attribute name='index'>
+                    <ref name='uint8'/>
+                  </attribute>
+                </optional>
+                <optional>
                   <element name='node'>
                     <ref name='unsignedInt'/>
                   </element>

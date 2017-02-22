@@ -786,6 +786,7 @@ struct _virDomainPCIControllerOpts {
     int chassis;
     int port;
     int busNr; /* used by pci-expander-bus, -1 == unspecified */
+    int targetIndex; /* used by spapr-pci-host-bridge, -1 == unspecified */
     /* numaNode is a *subelement* of target (to match existing
      * item in memory target config) -1 == unspecified
      */

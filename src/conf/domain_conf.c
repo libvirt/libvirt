@@ -1872,6 +1872,7 @@ virDomainControllerDefNew(virDomainControllerType type)
         def->opts.pciopts.chassis = -1;
         def->opts.pciopts.port = -1;
         def->opts.pciopts.busNr = -1;
+        def->opts.pciopts.targetIndex = -1;
         def->opts.pciopts.numaNode = -1;
         break;
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
@@ -9109,6 +9110,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     char *chassis = NULL;
     char *port = NULL;
     char *busNr = NULL;
+    char *targetIndex = NULL;
     int numaNode = -1;
     char *ioeventfd = NULL;
     char *portsStr = NULL;
@@ -9181,6 +9183,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 chassis = virXMLPropString(cur, "chassis");
                 port = virXMLPropString(cur, "port");
                 busNr = virXMLPropString(cur, "busNr");
+                targetIndex = virXMLPropString(cur, "index");
                 processedTarget = true;
             }
         }
@@ -9399,6 +9402,30 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                 goto error;
             }
         }
+        if (targetIndex) {
+            if (virStrToLong_i(targetIndex, NULL, 0,
+                               &def->opts.pciopts.targetIndex) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("Invalid target index '%s' in PCI controller"),
+                               targetIndex);
+                goto error;
+            }
+            if (def->opts.pciopts.targetIndex < 0 ||
+                def->opts.pciopts.targetIndex > 31) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("PCI controller target index '%s' out of "
+                                 "range - must be 0-31"),
+                               targetIndex);
+                goto error;
+            }
+            if ((def->idx == 0 && def->opts.pciopts.targetIndex != 0) ||
+                (def->idx != 0 && def->opts.pciopts.targetIndex == 0)) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("Only the PCI controller with index 0 can "
+                                 "have target index 0, and vice versa"));
+                goto error;
+            }
+        }
         if (numaNode >= 0)
             def->opts.pciopts.numaNode = numaNode;
         break;
@@ -9420,6 +9447,7 @@ virDomainControllerDefParseXML(xmlNodePtr node,
     VIR_FREE(chassis);
     VIR_FREE(port);
     VIR_FREE(busNr);
+    VIR_FREE(targetIndex);
     VIR_FREE(ioeventfd);
     VIR_FREE(portsStr);
     VIR_FREE(iothread);
@@ -21873,6 +21901,7 @@ virDomainControllerDefFormat(virBufferPtr buf,
             def->opts.pciopts.chassis != -1 ||
             def->opts.pciopts.port != -1 ||
             def->opts.pciopts.busNr != -1 ||
+            def->opts.pciopts.targetIndex != -1 ||
             def->opts.pciopts.numaNode != -1) {
             virBufferAddLit(&childBuf, "<target");
             if (def->opts.pciopts.chassisNr != -1)
@@ -21887,6 +21916,9 @@ virDomainControllerDefFormat(virBufferPtr buf,
             if (def->opts.pciopts.busNr != -1)
                 virBufferAsprintf(&childBuf, " busNr='%d'",
                                   def->opts.pciopts.busNr);
+            if (def->opts.pciopts.targetIndex != -1)
+                virBufferAsprintf(&childBuf, " index='%d'",
+                                  def->opts.pciopts.targetIndex);
             if (def->opts.pciopts.numaNode == -1) {
                 virBufferAddLit(&childBuf, "/>\n");
             } else {
