@@ -1620,10 +1620,6 @@ qemuDomainGetChardevTLSObjects(virQEMUDriverConfigPtr cfg,
     qemuDomainChrSourcePrivatePtr chrSourcePriv =
         QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
 
-    if (dev->type != VIR_DOMAIN_CHR_TYPE_TCP ||
-        dev->data.tcp.haveTLS != VIR_TRISTATE_BOOL_YES)
-        return 0;
-
     /* Add a secret object in order to access the TLS environment.
      * The secinfo will only be created for serial TCP device. */
     if (chrSourcePriv && chrSourcePriv->secinfo) {
@@ -1650,6 +1646,43 @@ qemuDomainGetChardevTLSObjects(virQEMUDriverConfigPtr cfg,
 }
 
 
+static int
+qemuDomainAddChardevTLSObjects(virQEMUDriverPtr driver,
+                               virQEMUDriverConfigPtr cfg,
+                               virDomainObjPtr vm,
+                               virDomainChrSourceDefPtr dev,
+                               char *charAlias,
+                               char **tlsAlias,
+                               char **secAlias)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virJSONValuePtr tlsProps = NULL;
+    virJSONValuePtr secProps = NULL;
+
+    if (dev->type != VIR_DOMAIN_CHR_TYPE_TCP ||
+        dev->data.tcp.haveTLS != VIR_TRISTATE_BOOL_YES)
+        return 0;
+
+    if (qemuDomainGetChardevTLSObjects(cfg, priv, dev, charAlias,
+                                       &tlsProps, tlsAlias,
+                                       &secProps, secAlias) < 0)
+        goto cleanup;
+
+    if (qemuDomainAddTLSObjects(driver, vm, *secAlias, &secProps,
+                                *tlsAlias, &tlsProps) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(tlsProps);
+    virJSONValueFree(secProps);
+
+    return ret;
+}
+
+
 int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
                                    virQEMUDriverPtr driver,
                                    virDomainObjPtr vm,
@@ -1663,8 +1696,6 @@ int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
     char *charAlias = NULL;
     char *devstr = NULL;
     bool chardevAdded = false;
-    virJSONValuePtr tlsProps = NULL;
-    virJSONValuePtr secProps = NULL;
     char *tlsAlias = NULL;
     char *secAlias = NULL;
     bool need_release = false;
@@ -1693,13 +1724,8 @@ int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
                                        redirdev->source) < 0)
         goto cleanup;
 
-    if (qemuDomainGetChardevTLSObjects(cfg, priv, redirdev->source,
-                                       charAlias, &tlsProps, &tlsAlias,
-                                       &secProps, &secAlias) < 0)
-        goto cleanup;
-
-    if (qemuDomainAddTLSObjects(driver, vm, secAlias, &secProps,
-                                tlsAlias, &tlsProps) < 0)
+    if (qemuDomainAddChardevTLSObjects(driver, cfg, vm, redirdev->source,
+                                       charAlias, &tlsAlias, &secAlias) < 0)
         goto audit;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -1724,9 +1750,7 @@ int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
     if (ret < 0 && need_release)
         qemuDomainReleaseDeviceAddress(vm, &redirdev->info, NULL);
     VIR_FREE(tlsAlias);
-    virJSONValueFree(tlsProps);
     VIR_FREE(secAlias);
-    virJSONValueFree(secProps);
     VIR_FREE(charAlias);
     VIR_FREE(devstr);
     virObjectUnref(cfg);
@@ -1922,9 +1946,7 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
     bool chardevAttached = false;
     bool teardowncgroup = false;
     bool teardowndevice = false;
-    virJSONValuePtr tlsProps = NULL;
     char *tlsAlias = NULL;
-    virJSONValuePtr secProps = NULL;
     char *secAlias = NULL;
     bool need_release = false;
 
@@ -1963,13 +1985,8 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
                                        dev) < 0)
         goto cleanup;
 
-    if (qemuDomainGetChardevTLSObjects(cfg, priv, dev, charAlias,
-                                       &tlsProps, &tlsAlias,
-                                       &secProps, &secAlias) < 0)
-        goto cleanup;
-
-    if (qemuDomainAddTLSObjects(driver, vm, secAlias, &secProps,
-                                tlsAlias, &tlsProps) < 0)
+    if (qemuDomainAddChardevTLSObjects(driver, cfg, vm, dev, charAlias,
+                                       &tlsAlias, &secAlias) < 0)
         goto audit;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -2000,9 +2017,7 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
             VIR_WARN("Unable to remove chr device from /dev");
     }
     VIR_FREE(tlsAlias);
-    virJSONValueFree(tlsProps);
     VIR_FREE(secAlias);
-    virJSONValueFree(secProps);
     VIR_FREE(charAlias);
     VIR_FREE(devstr);
     virObjectUnref(cfg);
@@ -2045,8 +2060,6 @@ qemuDomainAttachRNGDevice(virConnectPtr conn,
     bool chardevAdded = false;
     bool objAdded = false;
     virJSONValuePtr props = NULL;
-    virJSONValuePtr tlsProps = NULL;
-    virJSONValuePtr secProps = NULL;
     virDomainCCWAddressSetPtr ccwaddrs = NULL;
     const char *type;
     int ret = -1;
@@ -2114,13 +2127,8 @@ qemuDomainAttachRNGDevice(virConnectPtr conn,
                                            rng->source.chardev) < 0)
             goto cleanup;
 
-        if (qemuDomainGetChardevTLSObjects(cfg, priv, rng->source.chardev,
-                                           charAlias, &tlsProps, &tlsAlias,
-                                           &secProps, &secAlias) < 0)
-            goto cleanup;
-
-        if (qemuDomainAddTLSObjects(driver, vm, secAlias, &secProps,
-                                    tlsAlias, &tlsProps) < 0)
+        if (qemuDomainAddChardevTLSObjects(driver, cfg, vm, rng->source.chardev,
+                                           charAlias, &tlsAlias, &secAlias) < 0)
             goto audit;
     }
 
@@ -2153,8 +2161,6 @@ qemuDomainAttachRNGDevice(virConnectPtr conn,
  audit:
     virDomainAuditRNG(vm, NULL, rng, "attach", ret == 0);
  cleanup:
-    virJSONValueFree(tlsProps);
-    virJSONValueFree(secProps);
     virJSONValueFree(props);
     if (ret < 0) {
         if (releaseaddr)
