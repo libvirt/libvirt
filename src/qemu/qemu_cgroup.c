@@ -176,6 +176,9 @@ qemuSetupChrSourceCgroup(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
 
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
+
     if (source->type != VIR_DOMAIN_CHR_TYPE_DEV)
         return 0;
 
@@ -196,6 +199,9 @@ qemuTeardownChrSourceCgroup(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret;
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
 
     if (source->type != VIR_DOMAIN_CHR_TYPE_DEV)
         return 0;
@@ -247,6 +253,9 @@ qemuSetupInputCgroup(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int ret = 0;
 
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
+
     switch (dev->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
         VIR_DEBUG("Process path '%s' for input device", dev->source.evdev);
@@ -269,6 +278,9 @@ qemuSetupHostdevCgroup(virDomainObjPtr vm,
     int *perms = NULL;
     size_t i, npaths = 0;
     int rv, ret = -1;
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
 
     if (qemuDomainGetHostdevPath(NULL, dev, false, &npaths, &path, &perms) < 0)
         goto cleanup;
@@ -343,6 +355,9 @@ qemuSetupGraphicsCgroup(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     const char *rendernode = gfx->data.spice.rendernode;
     int ret;
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
 
     if (gfx->type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE ||
         gfx->data.spice.gl != VIR_TRISTATE_BOOL_YES ||
@@ -481,6 +496,9 @@ qemuSetupRNGCgroup(virDomainObjPtr vm,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rv;
 
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
+
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM) {
         VIR_DEBUG("Setting Cgroup ACL for RNG device");
         rv = virCgroupAllowDevicePath(priv->cgroup,
@@ -504,6 +522,9 @@ qemuTeardownRNGCgroup(virDomainObjPtr vm,
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rv;
+
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
+        return 0;
 
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM) {
         VIR_DEBUG("Tearing down Cgroup ACL for RNG device");
