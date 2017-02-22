@@ -140,7 +140,7 @@ do {
                 goto redefine;
                 break;
             }
-            /* fall-through */
+            ATTRIBUTE_FALLTHROUGH;
 #endif
 
         default:

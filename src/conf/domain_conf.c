@@ -14935,6 +14935,9 @@ virDomainChrEquals(virDomainChrDefPtr src,
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
         if (src->targetTypeAttr != tgt->targetTypeAttr)
             return false;
+
+        ATTRIBUTE_FALLTHROUGH;
+
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
         return src->target.port == tgt->target.port;
@@ -22158,6 +22161,8 @@ virDomainChrDefFormat(virBufferPtr buf,
                               def->target.port);
             break;
         }
+        ATTRIBUTE_FALLTHROUGH;
+
     default:
         virBufferAsprintf(buf, "<target port='%d'/>\n",
                           def->target.port);

@@ -2442,7 +2442,8 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
                            def->name);
             goto error;
         }
-        /* fall through to next case */
+        ATTRIBUTE_FALLTHROUGH;
+
     case VIR_NETWORK_FORWARD_BRIDGE:
         if (def->delay || stp) {
             virReportError(VIR_ERR_XML_ERROR,
