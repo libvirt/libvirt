@@ -441,6 +441,7 @@
               <value>page_faults_min</value>
               <value>page_faults_maj</value>
               <value>alignment_faults</value>
+              <value>emulation_faults</value>
             </choice>
           </attribute>
           <attribute name="enabled">

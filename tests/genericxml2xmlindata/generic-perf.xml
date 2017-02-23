@@ -34,6 +34,7 @@
     <event name='page_faults_min' enabled='yes'/>
     <event name='page_faults_maj' enabled='yes'/>
     <event name='alignment_faults' enabled='yes'/>
+    <event name='emulation_faults' enabled='yes'/>
   </perf>
   <devices>
   </devices>

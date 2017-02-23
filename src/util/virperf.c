@@ -47,7 +47,7 @@ VIR_ENUM_IMPL(virPerfEvent, VIR_PERF_EVENT_LAST,
               "cpu_clock", "task_clock", "page_faults",
               "context_switches", "cpu_migrations",
               "page_faults_min", "page_faults_maj",
-              "alignment_faults");
+              "alignment_faults", "emulation_faults");
 
 struct virPerfEvent {
     int type;
@@ -140,6 +140,9 @@ static struct virPerfEventAttr attrs[] = {
     {.type = VIR_PERF_EVENT_ALIGNMENT_FAULTS,
      .attrType = PERF_TYPE_SOFTWARE,
      .attrConfig = PERF_COUNT_SW_ALIGNMENT_FAULTS},
+    {.type = VIR_PERF_EVENT_EMULATION_FAULTS,
+     .attrType = PERF_TYPE_SOFTWARE,
+     .attrConfig = PERF_COUNT_SW_EMULATION_FAULTS},
 };
 typedef struct virPerfEventAttr *virPerfEventAttrPtr;
 

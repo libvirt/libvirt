@@ -2270,6 +2270,16 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_ALIGNMENT_FAULTS  "alignment_faults"
 
+/**
+ * VIR_PERF_PARAM_EMULATION_FAULTS:
+ *
+ * Macro for typed parameter name that represents emulation_faults
+ * perf event which can be used to measure the count of emulation
+ * faults by applications running on the platform. It corresponds
+ * to the "perf.emulation_faults" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_EMULATION_FAULTS  "emulation_faults"
+
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
                            int *nparams,

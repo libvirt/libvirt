@@ -1955,6 +1955,7 @@
   &lt;event name='page_faults_min' enabled='no'/&gt;
   &lt;event name='page_faults_maj' enabled='no'/&gt;
   &lt;event name='alignment_faults' enabled='no'/&gt;
+  &lt;event name='emulation_faults' enabled='no'/&gt;
 &lt;/perf&gt;
 ...
 </pre>
@@ -2089,6 +2090,14 @@
           the load or store is not aligned properly, by
           applications running on the platform</td>
       <td><code>perf.alignment_faults</code></td>
+    </tr>
+    <tr>
+      <td><code>emulation_faults</code></td>
+      <td>the count of emulation faults, that is when
+          the kernel traps on unimplemented instrucions
+          and emulates them for user space, by
+          applications running on the platform</td>
+      <td><code>perf.emulation_faults</code></td>
     </tr>
   </table>
 
