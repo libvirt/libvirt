@@ -2240,6 +2240,16 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_CPU_MIGRATIONS "cpu_migrations"
 
+/**
+ * VIR_PERF_PARAM_PAGE_FAULTS_MIN:
+ *
+ * Macro for typed parameter name that represents page_faults_min
+ * perf event which can be used to measure the count of minor page
+ * faults by applications running on the platform. It corresponds
+ * to the "perf.page_faults_min" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_PAGE_FAULTS_MIN  "page_faults_min"
+
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
                            int *nparams,

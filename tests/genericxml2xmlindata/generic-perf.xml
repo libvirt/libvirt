@@ -31,6 +31,7 @@
     <event name='page_faults' enabled='yes'/>
     <event name='context_switches' enabled='yes'/>
     <event name='cpu_migrations' enabled='yes'/>
+    <event name='page_faults_min' enabled='yes'/>
   </perf>
   <devices>
   </devices>

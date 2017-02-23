@@ -45,7 +45,8 @@ VIR_ENUM_IMPL(virPerfEvent, VIR_PERF_EVENT_LAST,
               "bus_cycles", "stalled_cycles_frontend",
               "stalled_cycles_backend", "ref_cpu_cycles",
               "cpu_clock", "task_clock", "page_faults",
-              "context_switches", "cpu_migrations");
+              "context_switches", "cpu_migrations",
+              "page_faults_min");
 
 struct virPerfEvent {
     int type;
@@ -129,6 +130,9 @@ static struct virPerfEventAttr attrs[] = {
     {.type = VIR_PERF_EVENT_CPU_MIGRATIONS,
      .attrType = PERF_TYPE_SOFTWARE,
      .attrConfig = PERF_COUNT_SW_CPU_MIGRATIONS},
+    {.type = VIR_PERF_EVENT_PAGE_FAULTS_MIN,
+     .attrType = PERF_TYPE_SOFTWARE,
+     .attrConfig = PERF_COUNT_SW_PAGE_FAULTS_MIN},
 };
 typedef struct virPerfEventAttr *virPerfEventAttrPtr;
 

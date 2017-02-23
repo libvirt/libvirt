@@ -1952,6 +1952,7 @@
   &lt;event name='page_faults' enabled='no'/&gt;
   &lt;event name='context_switches' enabled='no'/&gt;
   &lt;event name='cpu_migrations' enabled='no'/&gt;
+  &lt;event name='page_faults_min' enabled='no'/&gt;
 &lt;/perf&gt;
 ...
 </pre>
@@ -2063,6 +2064,14 @@
           moved from one logical processor to another, by
           applications running on the platform</td>
       <td><code>perf.cpu_migrations</code></td>
+    </tr>
+    <tr>
+      <td><code>page_faults_min</code></td>
+      <td>the count of minor page faults, that is, where the
+          page was present in the page cache, and therefore
+          the fault avoided loading it from storage, by
+          applications running on the platform</td>
+      <td><code>perf.page_faults_min</code></td>
     </tr>
   </table>
 
