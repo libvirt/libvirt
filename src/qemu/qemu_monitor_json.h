@@ -512,4 +512,10 @@ int qemuMonitorJSONGetHotpluggableCPUs(qemuMonitorPtr mon,
 
 virHashTablePtr qemuMonitorJSONQueryQMPSchema(qemuMonitorPtr mon)
     ATTRIBUTE_NONNULL(1);
+
+int qemuMonitorJSONSetBlockThreshold(qemuMonitorPtr mon,
+                                     const char *nodename,
+                                     unsigned long long threshold)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+
 #endif /* QEMU_MONITOR_JSON_H */

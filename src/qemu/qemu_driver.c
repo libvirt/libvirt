@@ -20312,6 +20312,75 @@ qemuDomainSetVcpu(virDomainPtr dom,
 }
 
 
+static int
+qemuDomainSetBlockThreshold(virDomainPtr dom,
+                            const char *dev,
+                            unsigned long long threshold,
+                            unsigned int flags)
+{
+    virQEMUDriverPtr driver = dom->conn->privateData;
+    qemuDomainObjPrivatePtr priv;
+    virDomainObjPtr vm = NULL;
+    virStorageSourcePtr src;
+    char *nodename = NULL;
+    int rc;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = qemuDomObjFromDomain(dom)))
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    if (virDomainSetBlockThresholdEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("domain is not running"));
+        goto endjob;
+    }
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCK_WRITE_THRESHOLD)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("this qemu does not support setting device threshold"));
+        goto endjob;
+    }
+
+    if (!(src = qemuDomainGetStorageSourceByDevstr(dev, vm->def)))
+        goto endjob;
+
+    if (!src->nodebacking) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("threshold currently can't be set for block device '%s'"),
+                       dev);
+        goto endjob;
+    }
+
+    if (VIR_STRDUP(nodename, src->nodebacking) < 0)
+        goto endjob;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    rc = qemuMonitorSetBlockThreshold(priv->mon, nodename, threshold);
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        goto endjob;
+
+    ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    VIR_FREE(nodename);
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectOpen = qemuConnectOpen, /* 0.2.0 */
@@ -20526,6 +20595,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainGetGuestVcpus = qemuDomainGetGuestVcpus, /* 2.0.0 */
     .domainSetGuestVcpus = qemuDomainSetGuestVcpus, /* 2.0.0 */
     .domainSetVcpu = qemuDomainSetVcpu, /* 3.1.0 */
+    .domainSetBlockThreshold = qemuDomainSetBlockThreshold /* 3.2.0 */
 };
 
 

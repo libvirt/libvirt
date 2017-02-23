@@ -4206,3 +4206,16 @@ qemuMonitorQueryQMPSchema(qemuMonitorPtr mon)
 
     return qemuMonitorJSONQueryQMPSchema(mon);
 }
+
+
+int
+qemuMonitorSetBlockThreshold(qemuMonitorPtr mon,
+                             const char *nodename,
+                             unsigned long long threshold)
+{
+    VIR_DEBUG("mon=%p, node='%s', threshold=%llu", mon, nodename, threshold);
+
+    QEMU_CHECK_MONITOR_JSON(mon);
+
+    return qemuMonitorJSONSetBlockThreshold(mon, nodename, threshold);
+}

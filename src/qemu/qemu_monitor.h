@@ -1079,4 +1079,9 @@ int qemuMonitorGetRTCTime(qemuMonitorPtr mon,
 
 virHashTablePtr qemuMonitorQueryQMPSchema(qemuMonitorPtr mon);
 
+int qemuMonitorSetBlockThreshold(qemuMonitorPtr mon,
+                                 const char *nodename,
+                                 unsigned long long threshold);
+
+
 #endif /* QEMU_MONITOR_H */
