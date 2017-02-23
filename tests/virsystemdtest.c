@@ -518,25 +518,21 @@ mymain(void)
     if (virUUIDParse("c7a5fdbd-edaf-9455-926a-d65c16db1809", uuid) < 0)
         return EXIT_FAILURE;
 
-    if (virTestRun("Test create container ", testCreateContainer, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test terminate container ", testTerminateContainer, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test create machine ", testCreateMachine, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test terminate machine ", testTerminateMachine, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test create no systemd ", testCreateNoSystemd, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test create systemd not running ",
-                   testCreateSystemdNotRunning, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test create bad systemd ", testCreateBadSystemd, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test create with network ", testCreateNetwork, NULL) < 0)
-        ret = -1;
-    if (virTestRun("Test getting machine name ", testGetMachineName, NULL) < 0)
-        ret = -1;
+# define DO_TEST(_name, func)                                           \
+    do {                                                                \
+        if (virTestRun(_name, func, NULL) < 0)                          \
+            ret = -1;                                                   \
+    } while (0)
+
+    DO_TEST("Test create container ", testCreateContainer);
+    DO_TEST("Test terminate container ", testTerminateContainer);
+    DO_TEST("Test create machine ", testCreateMachine);
+    DO_TEST("Test terminate machine ", testTerminateMachine);
+    DO_TEST("Test create no systemd ", testCreateNoSystemd);
+    DO_TEST("Test create systemd not running ", testCreateSystemdNotRunning);
+    DO_TEST("Test create bad systemd ", testCreateBadSystemd);
+    DO_TEST("Test create with network ", testCreateNetwork);
+    DO_TEST("Test getting machine name ", testGetMachineName);
 
 # define TEST_SCOPE(_name, unitname, _legacy)                           \
     do {                                                                \
