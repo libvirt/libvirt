@@ -1274,6 +1274,14 @@ I<--bytes> with a scaled value allows to use finer granularity. A scaled value
 used without I<--bytes> will be rounded down to MiB/s. Note that the
 I<--bytes> may be unsupported by the hypervisor.
 
+
+=item B<domblkthreshold> I<domain> I<dev> I<threshold>
+
+Set the threshold value for delivering the block-threshold event. I<dev>
+specifies the disk device target or backing chain element of given device using
+the 'target[1]' syntax. I<threshold> is a scaled value of the offset. If the
+block device should write beyond that offset the event will be delivered.
+
 =item B<blockresize> I<domain> I<path> I<size>
 
 Resize a block device of domain while the domain is running, I<path>

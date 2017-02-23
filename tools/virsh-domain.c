@@ -7097,6 +7097,64 @@ cmdSetvcpu(vshControl *ctl, const vshCmd *cmd)
 
 
 /*
+ * "domblkthreshold" command
+ */
+static const vshCmdInfo info_domblkthreshold[] = {
+    {.name = "help",
+     .data = N_("set the threshold for block-threshold event for a given block "
+                "device or it's backing chain element")
+    },
+    {.name = "desc",
+     .data = N_("set threshold for block-threshold event for a block device")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_domblkthreshold[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL,
+    {.name = "dev",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("device to set threshold for")
+    },
+    {.name = "threshold",
+     .type = VSH_OT_INT,
+     .flags = VSH_OFLAG_REQ,
+     .help = N_("threshold as a scaled number (by default bytes)")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDomblkthreshold(vshControl *ctl, const vshCmd *cmd)
+{
+    unsigned long long threshold;
+    const char *dev = NULL;
+    virDomainPtr dom;
+    bool ret = false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "dev", &dev))
+        return false;
+
+    if (vshCommandOptScaledInt(ctl, cmd, "threshold",
+                               &threshold, 1, ULLONG_MAX) < 0)
+        return false;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (virDomainSetBlockThreshold(dom, dev, threshold, 0) < 0)
+        goto cleanup;
+
+    ret = true;
+
+ cleanup:
+    virDomainFree(dom);
+    return ret;
+}
+
+
+/*
  * "iothreadinfo" command
  */
 static const vshCmdInfo info_iothreadinfo[] = {
@@ -14065,6 +14123,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdSetvcpu,
      .opts = opts_setvcpu,
      .info = info_setvcpu,
+     .flags = 0
+    },
+    {.name = "domblkthreshold",
+     .handler = cmdDomblkthreshold,
+     .opts = opts_domblkthreshold,
+     .info = info_domblkthreshold,
      .flags = 0
     },
     {.name = NULL}
