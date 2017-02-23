@@ -8580,3 +8580,40 @@ qemuDomainDiskBackingStoreGetName(virDomainDiskDefPtr disk,
 
     return ret;
 }
+
+
+virStorageSourcePtr
+qemuDomainGetStorageSourceByDevstr(const char *devstr,
+                                   virDomainDefPtr def)
+{
+    virDomainDiskDefPtr disk = NULL;
+    virStorageSourcePtr src = NULL;
+    char *target = NULL;
+    unsigned int idx;
+    size_t i;
+
+    if (virStorageFileParseBackingStoreStr(devstr, &target, &idx) < 0) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("failed to parse block device '%s'"), devstr);
+        return NULL;
+    }
+
+    for (i = 0; i < def->ndisks; i++) {
+        if (STREQ(target, def->disks[i]->dst)) {
+            disk = def->disks[i];
+            break;
+        }
+    }
+
+    if (!disk) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("failed to find disk '%s"), target);
+        goto cleanup;
+    }
+
+    src = virStorageFileChainLookup(disk->src, NULL, NULL, idx, NULL);
+
+ cleanup:
+    VIR_FREE(target);
+    return src;
+}
