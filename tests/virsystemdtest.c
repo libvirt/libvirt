@@ -525,6 +525,8 @@ mymain(void)
     do {                                                                \
         if (virTestRun(_name, func, NULL) < 0)                          \
             ret = -1;                                                   \
+        if (virTestRun(_name "again ", func, NULL) < 0)                 \
+            ret = -1;                                                   \
         virSystemdHasMachinedResetCachedValue();                        \
     } while (0)
 
