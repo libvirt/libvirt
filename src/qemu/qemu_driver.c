@@ -11336,6 +11336,9 @@ qemuDomainStorageUpdatePhysical(virQEMUDriverPtr driver,
     int fd = -1;
     struct stat sb;
 
+    if (virStorageSourceIsEmpty(src))
+        return 0;
+
     if (qemuDomainStorageOpenStat(driver, cfg, vm, src, &fd, &sb) < 0)
         return -1;
 
