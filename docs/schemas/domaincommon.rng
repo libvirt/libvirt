@@ -433,6 +433,7 @@
               <value>stalled_cycles_frontend</value>
               <value>stalled_cycles_backend</value>
               <value>ref_cpu_cycles</value>
+              <value>cpu_clock</value>
             </choice>
           </attribute>
           <attribute name="enabled">

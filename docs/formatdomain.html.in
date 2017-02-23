@@ -1947,6 +1947,7 @@
   &lt;event name='stalled_cycles_frontend' enabled='no'/&gt;
   &lt;event name='stalled_cycles_backend' enabled='no'/&gt;
   &lt;event name='ref_cpu_cycles' enabled='no'/&gt;
+  &lt;event name='cpu_clock' enabled='no'/&gt;
 &lt;/perf&gt;
 ...
 </pre>
@@ -2024,6 +2025,13 @@
       <td>the count of total cpu cycles not affected by CPU frequency scaling
          by applications running on the platform</td>
       <td><code>perf.ref_cpu_cycles</code></td>
+    </tr>
+    <tr>
+      <td><code>cpu_clock</code></td>
+      <td>the count of cpu clock time, as measured by a monotonic
+          high-resolution per-CPU timer, by applications running on
+          the platform</td>
+      <td><code>perf.cpu_clock</code></td>
     </tr>
   </table>
 
