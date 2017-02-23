@@ -2173,6 +2173,16 @@ qemuMonitorBlockIOStatusToError(const char *status)
 }
 
 
+static void
+qemuDomainDiskInfoFree(void *value, const void *name ATTRIBUTE_UNUSED)
+{
+    struct qemuDomainDiskInfo *info = value;
+
+    VIR_FREE(info->nodename);
+    VIR_FREE(info);
+}
+
+
 virHashTablePtr
 qemuMonitorGetBlockInfo(qemuMonitorPtr mon)
 {
@@ -2181,7 +2191,7 @@ qemuMonitorGetBlockInfo(qemuMonitorPtr mon)
 
     QEMU_CHECK_MONITOR_NULL(mon);
 
-    if (!(table = virHashCreate(32, virHashValueFree)))
+    if (!(table = virHashCreate(32, qemuDomainDiskInfoFree)))
         return NULL;
 
     if (mon->json)

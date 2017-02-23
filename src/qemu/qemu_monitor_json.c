@@ -1868,9 +1868,11 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
         virJSONValuePtr dev;
+        virJSONValuePtr image;
         struct qemuDomainDiskInfo *info;
         const char *thisdev;
         const char *status;
+        const char *nodename;
 
         if (!(dev = qemuMonitorJSONGetBlockDev(devices, i)))
             goto cleanup;
@@ -1907,8 +1909,12 @@ int qemuMonitorJSONGetBlockInfo(qemuMonitorPtr mon,
             info->tray = true;
 
         /* presence of 'inserted' notifies that a medium is in the device */
-        if (!virJSONValueObjectGetObject(dev, "inserted"))
+        if ((image = virJSONValueObjectGetObject(dev, "inserted"))) {
+            if ((nodename = virJSONValueObjectGetString(image, "node-name")))
+                ignore_value(VIR_STRDUP(info->nodename, nodename));
+        } else {
             info->empty = true;
+        }
 
         /* Missing io-status indicates no error */
         if ((status = virJSONValueObjectGetString(dev, "io-status"))) {
