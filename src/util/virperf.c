@@ -44,7 +44,7 @@ VIR_ENUM_IMPL(virPerfEvent, VIR_PERF_EVENT_LAST,
               "branch_instructions", "branch_misses",
               "bus_cycles", "stalled_cycles_frontend",
               "stalled_cycles_backend", "ref_cpu_cycles",
-              "cpu_clock");
+              "cpu_clock", "task_clock");
 
 struct virPerfEvent {
     int type;
@@ -116,6 +116,9 @@ static struct virPerfEventAttr attrs[] = {
     {.type = VIR_PERF_EVENT_CPU_CLOCK,
      .attrType = PERF_TYPE_SOFTWARE,
      .attrConfig = PERF_COUNT_SW_CPU_CLOCK},
+    {.type = VIR_PERF_EVENT_TASK_CLOCK,
+     .attrType = PERF_TYPE_SOFTWARE,
+     .attrConfig = PERF_COUNT_SW_TASK_CLOCK},
 };
 typedef struct virPerfEventAttr *virPerfEventAttrPtr;
 

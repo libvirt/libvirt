@@ -1948,6 +1948,7 @@
   &lt;event name='stalled_cycles_backend' enabled='no'/&gt;
   &lt;event name='ref_cpu_cycles' enabled='no'/&gt;
   &lt;event name='cpu_clock' enabled='no'/&gt;
+  &lt;event name='task_clock' enabled='no'/&gt;
 &lt;/perf&gt;
 ...
 </pre>
@@ -2032,6 +2033,13 @@
           high-resolution per-CPU timer, by applications running on
           the platform</td>
       <td><code>perf.cpu_clock</code></td>
+    </tr>
+    <tr>
+      <td><code>task_clock</code></td>
+      <td>the count of task clock time, as measured by a monotonic
+          high-resolution CPU timer, specific to the task that
+          is run by applications running on the platform</td>
+      <td><code>perf.task_clock</code></td>
     </tr>
   </table>
 

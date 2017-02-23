@@ -48,6 +48,7 @@ typedef enum {
                                               processor pipeline */
     VIR_PERF_EVENT_REF_CPU_CYCLES,   /* Count of ref cpu cycles */
     VIR_PERF_EVENT_CPU_CLOCK,   /* Count of cpu clock time*/
+    VIR_PERF_EVENT_TASK_CLOCK,   /* Count of task clock time*/
 
     VIR_PERF_EVENT_LAST
 } virPerfEventType;

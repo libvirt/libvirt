@@ -434,6 +434,7 @@
               <value>stalled_cycles_backend</value>
               <value>ref_cpu_cycles</value>
               <value>cpu_clock</value>
+              <value>task_clock</value>
             </choice>
           </attribute>
           <attribute name="enabled">
