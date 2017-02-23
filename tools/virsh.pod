@@ -968,6 +968,7 @@ I<--perf> returns the statistics of all enabled perf events:
  "perf.task_clock" - the count of task clock time
  "perf.page_faults" - the count of page faults
  "perf.context_switches" - the count of context switches
+ "perf.cpu_migrations" - the count of cpu migrations
 
 See the B<perf> command for more details about each event.
 
@@ -2345,6 +2346,8 @@ B<Valid perf event names>
                 applications running on the platform.
   context_switches - Provides the count of context switches
                      by applications running on the platform.
+  cpu_migrations - Provides the count cpu migrations by
+                   applications running on the platform.
 
 B<Note>: The statistics can be retrieved using the B<domstats> command using
 the I<--perf> flag.

@@ -11259,6 +11259,10 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *     "perf.context_switches" - The count of context switches as unsigned long
  *                               long. It is produced by the context_switches
  *                               perf event.
+ *     "perf.cpu_migrations" - The count of cpu migrations, from one logical
+ *                             processor to another, as unsigned long
+ *                             long. It is produced by the cpu_migrations
+ *                             perf event.
  *
  * Note that entire stats groups or individual stat fields may be missing from
  * the output in case they are not supported by the given hypervisor, are not

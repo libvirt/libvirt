@@ -2230,6 +2230,15 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_CONTEXT_SWITCHES "context_switches"
 
+/**
+ * VIR_PERF_PARAM_CPU_MIGRATIONS:
+ *
+ * Macro for typed parameter name that represents cpu_migrations
+ * perf event which can be used to measure the count of cpu
+ * migrations by applications running on the platform. It corresponds
+ * to the "perf.cpu_migrations" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_CPU_MIGRATIONS "cpu_migrations"
 
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,

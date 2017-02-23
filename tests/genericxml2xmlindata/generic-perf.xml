@@ -30,6 +30,7 @@
     <event name='task_clock' enabled='yes'/>
     <event name='page_faults' enabled='yes'/>
     <event name='context_switches' enabled='yes'/>
+    <event name='cpu_migrations' enabled='yes'/>
   </perf>
   <devices>
   </devices>

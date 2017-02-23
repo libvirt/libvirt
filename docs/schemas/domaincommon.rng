@@ -437,6 +437,7 @@
               <value>task_clock</value>
               <value>page_faults</value>
               <value>context_switches</value>
+              <value>cpu_migrations</value>
             </choice>
           </attribute>
           <attribute name="enabled">
