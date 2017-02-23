@@ -4755,9 +4755,12 @@ qemuProcessInit(virQEMUDriverPtr driver,
      */
     VIR_DEBUG("Setting current domain def as transient");
     if (virDomainObjSetDefTransient(caps, driver->xmlopt, vm) < 0)
-        goto stop;
+        goto cleanup;
 
-    if (!(flags & VIR_QEMU_PROCESS_START_PRETEND)) {
+    if (flags & VIR_QEMU_PROCESS_START_PRETEND) {
+        if (qemuDomainSetPrivatePaths(driver, vm) < 0)
+            goto stop;
+    } else {
         vm->def->id = qemuDriverAllocateID(driver);
         qemuDomainSetFakeReboot(driver, vm, false);
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_STARTING_UP);
@@ -4770,10 +4773,10 @@ qemuProcessInit(virQEMUDriverPtr driver,
                                  VIR_HOOK_QEMU_OP_PREPARE,
                                  VIR_HOOK_SUBOP_BEGIN) < 0)
             goto stop;
-    }
 
-    if (qemuDomainSetPrivatePaths(driver, vm) < 0)
-        goto cleanup;
+        if (qemuDomainSetPrivatePaths(driver, vm) < 0)
+            goto stop;
+    }
 
     ret = 0;
 
