@@ -28,6 +28,7 @@
     <event name='ref_cpu_cycles' enabled='yes'/>
     <event name='cpu_clock' enabled='yes'/>
     <event name='task_clock' enabled='yes'/>
+    <event name='page_faults' enabled='yes'/>
   </perf>
   <devices>
   </devices>

@@ -435,6 +435,7 @@
               <value>ref_cpu_cycles</value>
               <value>cpu_clock</value>
               <value>task_clock</value>
+              <value>page_faults</value>
             </choice>
           </attribute>
           <attribute name="enabled">

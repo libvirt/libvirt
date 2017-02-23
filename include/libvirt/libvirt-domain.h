@@ -2210,6 +2210,17 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_TASK_CLOCK "task_clock"
 
+/**
+* VIR_PERF_PARAM_PAGE_FAULTS:
+*
+* Macro for typed parameter name that represents page_faults
+* perf event which can be used to measure the count of page
+* faults by applications running on the platform. It corresponds
+* to the "perf.page_faults" field in the *Stats APIs.
+*/
+# define VIR_PERF_PARAM_PAGE_FAULTS "page_faults"
+
+
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
                            int *nparams,

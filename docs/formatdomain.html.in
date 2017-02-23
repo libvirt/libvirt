@@ -1949,6 +1949,7 @@
   &lt;event name='ref_cpu_cycles' enabled='no'/&gt;
   &lt;event name='cpu_clock' enabled='no'/&gt;
   &lt;event name='task_clock' enabled='no'/&gt;
+  &lt;event name='page_faults' enabled='no'/&gt;
 &lt;/perf&gt;
 ...
 </pre>
@@ -2040,6 +2041,13 @@
           high-resolution CPU timer, specific to the task that
           is run by applications running on the platform</td>
       <td><code>perf.task_clock</code></td>
+    </tr>
+    <tr>
+      <td><code>page_faults</code></td>
+      <td>the count of page faults by applications running on the
+          platform. This includes minor, major, invalid and other
+          types of page faults</td>
+      <td><code>perf.page_faults</code></td>
     </tr>
   </table>
 

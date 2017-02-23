@@ -966,6 +966,7 @@ I<--perf> returns the statistics of all enabled perf events:
  "perf.ref_cpu_cycles" - the count of ref cpu cycles
  "perf.cpu_clock" - the count of cpu clock time
  "perf.task_clock" - the count of task clock time
+ "perf.page_faults" - the count of page faults
 
 See the B<perf> command for more details about each event.
 
@@ -2339,6 +2340,8 @@ B<Valid perf event names>
               applications running on the platform.
   task_clock - Provides the task clock time consumed by
                applications running on the platform.
+  page_faults - Provides the count of page faults by
+                applications running on the platform.
 
 B<Note>: The statistics can be retrieved using the B<domstats> command using
 the I<--perf> flag.

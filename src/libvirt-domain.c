@@ -11254,6 +11254,8 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                        It is produced by the cpu_clock perf event.
  *     "perf.task_clock" - The count of task clock time as unsigned long long.
  *                         It is produced by the task_clock perf event.
+ *     "perf.page_faults" - The count of page faults as unsigned long long.
+ *                          It is produced by the page_faults perf event
  *
  * Note that entire stats groups or individual stat fields may be missing from
  * the output in case they are not supported by the given hypervisor, are not
