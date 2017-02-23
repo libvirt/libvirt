@@ -5031,7 +5031,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
                                     qemuMonitorCPUModelInfoPtr *model_info)
 {
     int ret = -1;
-    virJSONValuePtr model;
+    virJSONValuePtr model = NULL;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
@@ -5049,9 +5049,15 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
     if (virJSONValueObjectAppendString(model, "name", model_name) < 0)
         goto cleanup;
 
+ retry:
     switch (type) {
     case QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC:
+    case QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC_FULL:
         typeStr = "static";
+        break;
+
+    case QEMU_MONITOR_CPU_MODEL_EXPANSION_FULL:
+        typeStr = "full";
         break;
     }
 
@@ -5087,6 +5093,19 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("query-cpu-model-expansion reply data was missing 'model'"));
         goto cleanup;
+    }
+
+    /* QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC_FULL requests "full" expansion
+     * on the result of the initial "static" expansion.
+     */
+    if (type == QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC_FULL) {
+        if (!(model = virJSONValueCopy(cpu_model)))
+            goto cleanup;
+
+        virJSONValueFree(cmd);
+        virJSONValueFree(reply);
+        type = QEMU_MONITOR_CPU_MODEL_EXPANSION_FULL;
+        goto retry;
     }
 
     if (!(cpu_name = virJSONValueObjectGetString(cpu_model, "name"))) {

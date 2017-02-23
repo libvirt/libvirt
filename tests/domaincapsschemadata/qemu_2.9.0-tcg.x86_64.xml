@@ -46,9 +46,7 @@
       <feature policy='require' name='3dnowext'/>
       <feature policy='require' name='3dnow'/>
       <feature policy='require' name='cr8legacy'/>
-      <feature policy='disable' name='pclmuldq'/>
       <feature policy='disable' name='avx'/>
-      <feature policy='disable' name='lahf_lm'/>
       <feature policy='disable' name='misalignsse'/>
       <feature policy='disable' name='3dnowprefetch'/>
       <feature policy='disable' name='xop'/>

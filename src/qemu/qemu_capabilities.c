@@ -2851,6 +2851,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
 {
     qemuMonitorCPUModelInfoPtr *modelInfo;
     const char *model;
+    qemuMonitorCPUModelExpansionType type;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
         return 0;
@@ -2863,9 +2864,17 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
         model = "host";
     }
 
-    return qemuMonitorGetCPUModelExpansion(mon,
-                                           QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC,
-                                           model, modelInfo);
+    /* Some x86_64 features defined in cpu_map.xml use spelling which differ
+     * from the one preferred by QEMU. Static expansion would give us only the
+     * preferred spelling, thus we need to do a full expansion on the result of
+     * the initial static expansion to get all variants of all features.
+     */
+    if (ARCH_IS_X86(qemuCaps->arch))
+        type = QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC_FULL;
+    else
+        type = QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC;
+
+    return qemuMonitorGetCPUModelExpansion(mon, type, model, modelInfo);
 }
 
 struct tpmTypeToCaps {

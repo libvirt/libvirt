@@ -26,11 +26,10 @@
       <feature policy='require' name='ss'/>
       <feature policy='require' name='vmx'/>
       <feature policy='require' name='hypervisor'/>
+      <feature policy='require' name='tsc_adjust'/>
       <feature policy='require' name='clflushopt'/>
       <feature policy='require' name='xsaves'/>
       <feature policy='require' name='pdpe1gb'/>
-      <feature policy='disable' name='pclmuldq'/>
-      <feature policy='disable' name='lahf_lm'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes'>qemu64</model>

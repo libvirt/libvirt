@@ -954,6 +954,8 @@ struct _qemuMonitorCPUModelInfo {
 
 typedef enum {
     QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC,
+    QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC_FULL,
+    QEMU_MONITOR_CPU_MODEL_EXPANSION_FULL,
 } qemuMonitorCPUModelExpansionType;
 
 int qemuMonitorGetCPUModelExpansion(qemuMonitorPtr mon,
