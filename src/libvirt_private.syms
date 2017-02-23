@@ -1286,6 +1286,7 @@ virBufferContentAndReset;
 virBufferCurrentContent;
 virBufferError;
 virBufferEscape;
+virBufferEscapeN;
 virBufferEscapeSexpr;
 virBufferEscapeShell;
 virBufferEscapeString;

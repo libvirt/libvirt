@@ -33,6 +33,7 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virerror.h"
+#include "virstring.h"
 
 
 /* If adding more fields, ensure to edit buf.h to match
@@ -587,6 +588,101 @@ virBufferEscape(virBufferPtr buf, char escape, const char *toescape,
     virBufferAsprintf(buf, format, escaped);
     VIR_FREE(escaped);
 }
+
+
+struct _virBufferEscapePair {
+    char escape;
+    char *toescape;
+};
+
+
+/**
+ * virBufferEscapeN:
+ * @buf: the buffer to append to
+ * @format: a printf like format string but with only one %s parameter
+ * @str: the string argument which needs to be escaped
+ * @...: the variable list of escape pairs
+ *
+ * The variable list of arguments @... must be composed of
+ * 'char escape, char *toescape' pairs followed by NULL.
+ *
+ * This has the same functionality as virBufferEscape with the extension
+ * that allows to specify multiple pairs of chars that needs to be escaped.
+ */
+void
+virBufferEscapeN(virBufferPtr buf,
+                 const char *format,
+                 const char *str,
+                 ...)
+{
+    int len;
+    size_t i;
+    char *escaped = NULL;
+    char *out;
+    const char *cur;
+    struct _virBufferEscapePair escapeItem;
+    struct _virBufferEscapePair *escapeList = NULL;
+    size_t nescapeList = 0;
+    va_list ap;
+
+    if ((format == NULL) || (buf == NULL) || (str == NULL))
+        return;
+
+    if (buf->error)
+        return;
+
+    len = strlen(str);
+
+    va_start(ap, str);
+
+    while ((escapeItem.escape = va_arg(ap, int))) {
+        if (!(escapeItem.toescape = va_arg(ap, char *))) {
+            virBufferSetError(buf, errno);
+            goto cleanup;
+        }
+
+        if (strcspn(str, escapeItem.toescape) == len)
+            continue;
+
+        if (VIR_APPEND_ELEMENT_QUIET(escapeList, nescapeList, escapeItem) < 0) {
+            virBufferSetError(buf, errno);
+            goto cleanup;
+        }
+    }
+
+    if (nescapeList == 0) {
+        virBufferAsprintf(buf, format, str);
+        goto cleanup;
+    }
+
+    if (xalloc_oversized(2, len) ||
+        VIR_ALLOC_N_QUIET(escaped, 2 * len + 1) < 0) {
+        virBufferSetError(buf, errno);
+        goto cleanup;
+    }
+
+    cur = str;
+    out = escaped;
+    while (*cur != 0) {
+        for (i = 0; i < nescapeList; i++) {
+            if (strchr(escapeList[i].toescape, *cur)) {
+                *out++ = escapeList[i].escape;
+                break;
+            }
+        }
+        *out++ = *cur;
+        cur++;
+    }
+    *out = 0;
+
+    virBufferAsprintf(buf, format, escaped);
+
+ cleanup:
+    va_end(ap);
+    VIR_FREE(escapeList);
+    VIR_FREE(escaped);
+}
+
 
 /**
  * virBufferURIEncodeString:
