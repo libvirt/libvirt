@@ -8558,3 +8558,25 @@ qemuDomainDiskLookupByNodename(virDomainDefPtr def,
 
     return NULL;
 }
+
+
+/**
+ * qemuDomainDiskBackingStoreGetName:
+ *
+ * Creates a name using the indexed syntax (vda[1])for the given backing store
+ * entry for a disk.
+ */
+char *
+qemuDomainDiskBackingStoreGetName(virDomainDiskDefPtr disk,
+                                  virStorageSourcePtr src ATTRIBUTE_UNUSED,
+                                  unsigned int idx)
+{
+    char *ret = NULL;
+
+    if (idx)
+        ignore_value(virAsprintf(&ret, "%s[%d]", disk->dst, idx));
+    else
+        ignore_value(VIR_STRDUP(ret, disk->dst));
+
+    return ret;
+}
