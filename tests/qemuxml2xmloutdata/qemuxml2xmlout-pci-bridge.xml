@@ -43,195 +43,163 @@
       <target chassisNr='2'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </controller>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:f1:95:51'/>
-      <source network='default'/>
       <model type='rtl8139'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:5c:c6:1a'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:39:97:ac'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:45:28:cb'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:ee:b9:a8'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:a9:f7:17'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:df:2b:f3'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0c' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:78:94:b4'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:6b:9b:06'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0e' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:17:df:bc'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0f' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:3b:d0:51'/>
-      <source network='default'/>
-      <model type='e1000'/>
+      <model type='rtl8139'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x10' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:8d:2d:17'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x11' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:a7:66:af'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x12' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:54:ab:d7'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x13' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:1f:99:90'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x14' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:c8:43:87'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x15' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:df:22:b2'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x16' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:d2:9a:47'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x17' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:86:05:e2'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x18' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:8c:1c:c2'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x19' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:48:58:92'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1a' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:99:e5:bf'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1b' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:b1:8c:25'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1c' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:60:e0:d0'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1d' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:37:00:6a'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1e' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:c7:c8:ad'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x1f' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:4e:a7:cf'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x01' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:00:79:69'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x02' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:47:00:6f'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x03' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:2a:8c:8b'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x04' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:ec:d5:e3'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x05' function='0x0'/>
     </interface>
-    <interface type='network'>
+    <interface type='user'>
       <mac address='52:54:00:7e:6e:c8'/>
-      <source network='default'/>
       <model type='e1000'/>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x06' function='0x0'/>
     </interface>

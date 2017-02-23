@@ -1,0 +1,90 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/libexec/qemu-kvm \
+-name fdr-br \
+-S \
+-M pc-1.2 \
+-m 2048 \
+-smp 2,sockets=2,cores=1,threads=1 \
+-uuid 3ec6cbe1-b5a2-4515-b800-31a61855df41 \
+-nodefaults \
+-monitor unix:/tmp/lib/domain--1-fdr-br/monitor.sock,server,nowait \
+-boot c \
+-device pci-bridge,chassis_nr=1,id=pci.1,bus=pci.0,addr=0x3 \
+-device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.0,addr=0x4 \
+-usb \
+-drive file=/var/iso/f18kde.iso,format=raw,if=none,media=cdrom,\
+id=drive-ide0-1-0,readonly=on \
+-device ide-drive,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \
+-device rtl8139,vlan=0,id=net0,mac=52:54:00:f1:95:51,bus=pci.0,addr=0x5 \
+-net user,vlan=0,name=hostnet0 \
+-device e1000,vlan=1,id=net1,mac=52:54:00:5c:c6:1a,bus=pci.0,addr=0x7 \
+-net user,vlan=1,name=hostnet1 \
+-device e1000,vlan=2,id=net2,mac=52:54:00:39:97:ac,bus=pci.0,addr=0x8 \
+-net user,vlan=2,name=hostnet2 \
+-device e1000,vlan=3,id=net3,mac=52:54:00:45:28:cb,bus=pci.0,addr=0x9 \
+-net user,vlan=3,name=hostnet3 \
+-device e1000,vlan=4,id=net4,mac=52:54:00:ee:b9:a8,bus=pci.0,addr=0xa \
+-net user,vlan=4,name=hostnet4 \
+-device e1000,vlan=5,id=net5,mac=52:54:00:a9:f7:17,bus=pci.0,addr=0xb \
+-net user,vlan=5,name=hostnet5 \
+-device e1000,vlan=6,id=net6,mac=52:54:00:df:2b:f3,bus=pci.0,addr=0xc \
+-net user,vlan=6,name=hostnet6 \
+-device e1000,vlan=7,id=net7,mac=52:54:00:78:94:b4,bus=pci.0,addr=0xd \
+-net user,vlan=7,name=hostnet7 \
+-device e1000,vlan=8,id=net8,mac=52:54:00:6b:9b:06,bus=pci.0,addr=0xe \
+-net user,vlan=8,name=hostnet8 \
+-device e1000,vlan=9,id=net9,mac=52:54:00:17:df:bc,bus=pci.0,addr=0xf \
+-net user,vlan=9,name=hostnet9 \
+-device rtl8139,vlan=10,id=net10,mac=52:54:00:3b:d0:51,bus=pci.0,addr=0x10 \
+-net user,vlan=10,name=hostnet10 \
+-device e1000,vlan=11,id=net11,mac=52:54:00:8d:2d:17,bus=pci.0,addr=0x11 \
+-net user,vlan=11,name=hostnet11 \
+-device e1000,vlan=12,id=net12,mac=52:54:00:a7:66:af,bus=pci.0,addr=0x12 \
+-net user,vlan=12,name=hostnet12 \
+-device e1000,vlan=13,id=net13,mac=52:54:00:54:ab:d7,bus=pci.0,addr=0x13 \
+-net user,vlan=13,name=hostnet13 \
+-device e1000,vlan=14,id=net14,mac=52:54:00:1f:99:90,bus=pci.0,addr=0x14 \
+-net user,vlan=14,name=hostnet14 \
+-device e1000,vlan=15,id=net15,mac=52:54:00:c8:43:87,bus=pci.0,addr=0x15 \
+-net user,vlan=15,name=hostnet15 \
+-device e1000,vlan=16,id=net16,mac=52:54:00:df:22:b2,bus=pci.0,addr=0x16 \
+-net user,vlan=16,name=hostnet16 \
+-device e1000,vlan=17,id=net17,mac=52:54:00:d2:9a:47,bus=pci.0,addr=0x17 \
+-net user,vlan=17,name=hostnet17 \
+-device e1000,vlan=18,id=net18,mac=52:54:00:86:05:e2,bus=pci.0,addr=0x18 \
+-net user,vlan=18,name=hostnet18 \
+-device e1000,vlan=19,id=net19,mac=52:54:00:8c:1c:c2,bus=pci.0,addr=0x19 \
+-net user,vlan=19,name=hostnet19 \
+-device e1000,vlan=20,id=net20,mac=52:54:00:48:58:92,bus=pci.0,addr=0x1a \
+-net user,vlan=20,name=hostnet20 \
+-device e1000,vlan=21,id=net21,mac=52:54:00:99:e5:bf,bus=pci.0,addr=0x1b \
+-net user,vlan=21,name=hostnet21 \
+-device e1000,vlan=22,id=net22,mac=52:54:00:b1:8c:25,bus=pci.0,addr=0x1c \
+-net user,vlan=22,name=hostnet22 \
+-device e1000,vlan=23,id=net23,mac=52:54:00:60:e0:d0,bus=pci.0,addr=0x1d \
+-net user,vlan=23,name=hostnet23 \
+-device e1000,vlan=24,id=net24,mac=52:54:00:37:00:6a,bus=pci.0,addr=0x1e \
+-net user,vlan=24,name=hostnet24 \
+-device e1000,vlan=25,id=net25,mac=52:54:00:c7:c8:ad,bus=pci.0,addr=0x1f \
+-net user,vlan=25,name=hostnet25 \
+-device e1000,vlan=26,id=net26,mac=52:54:00:4e:a7:cf,bus=pci.1,addr=0x1 \
+-net user,vlan=26,name=hostnet26 \
+-device e1000,vlan=27,id=net27,mac=52:54:00:00:79:69,bus=pci.1,addr=0x2 \
+-net user,vlan=27,name=hostnet27 \
+-device e1000,vlan=28,id=net28,mac=52:54:00:47:00:6f,bus=pci.1,addr=0x3 \
+-net user,vlan=28,name=hostnet28 \
+-device e1000,vlan=29,id=net29,mac=52:54:00:2a:8c:8b,bus=pci.1,addr=0x4 \
+-net user,vlan=29,name=hostnet29 \
+-device e1000,vlan=30,id=net30,mac=52:54:00:ec:d5:e3,bus=pci.1,addr=0x5 \
+-net user,vlan=30,name=hostnet30 \
+-device e1000,vlan=31,id=net31,mac=52:54:00:7e:6e:c8,bus=pci.1,addr=0x6 \
+-net user,vlan=31,name=hostnet31 \
+-vnc 127.0.0.1:0 \
+-k en-us \
+-vga cirrus \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6
