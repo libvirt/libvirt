@@ -4757,8 +4757,10 @@ qemuProcessInit(virQEMUDriverPtr driver,
         goto cleanup;
 
     if (flags & VIR_QEMU_PROCESS_START_PRETEND) {
-        if (qemuDomainSetPrivatePaths(driver, vm) < 0)
-            goto stop;
+        if (qemuDomainSetPrivatePaths(driver, vm) < 0) {
+            virDomainObjRemoveTransientDef(vm);
+            goto cleanup;
+        }
     } else {
         vm->def->id = qemuDriverAllocateID(driver);
         qemuDomainSetFakeReboot(driver, vm, false);
