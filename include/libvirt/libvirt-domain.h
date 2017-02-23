@@ -2220,6 +2220,16 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
 */
 # define VIR_PERF_PARAM_PAGE_FAULTS "page_faults"
 
+/**
+ * VIR_PERF_PARAM_CONTEXT_SWITCHES:
+ *
+ * Macro for typed parameter name that represents context_switches
+ * perf event which can be used to measure the count of context
+ * switches by applications running on the platform. It corresponds
+ * to the "perf.context_switches" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_CONTEXT_SWITCHES "context_switches"
+
 
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,

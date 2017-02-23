@@ -1950,6 +1950,7 @@
   &lt;event name='cpu_clock' enabled='no'/&gt;
   &lt;event name='task_clock' enabled='no'/&gt;
   &lt;event name='page_faults' enabled='no'/&gt;
+  &lt;event name='context_switches' enabled='no'/&gt;
 &lt;/perf&gt;
 ...
 </pre>
@@ -2048,6 +2049,12 @@
           platform. This includes minor, major, invalid and other
           types of page faults</td>
       <td><code>perf.page_faults</code></td>
+    </tr>
+    <tr>
+      <td><code>context_switches</code></td>
+      <td>the count of context switches by applications running on
+          the platform</td>
+      <td><code>perf.context_switches</code></td>
     </tr>
   </table>
 
