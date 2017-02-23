@@ -3222,7 +3222,7 @@ virQEMUCapsInitCPUModelX86(virQEMUCapsPtr qemuCaps,
  *          1 when the caller should fall back to using virCapsPtr->host.cpu,
  *         -1 on error.
  */
-static int
+int
 virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
                         virDomainVirtType type,
                         virCPUDefPtr cpu)
@@ -3283,6 +3283,18 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
  error:
     virCPUDefFree(cpu);
     virResetLastError();
+}
+
+
+void
+virQEMUCapsSetCPUModelInfo(virQEMUCapsPtr qemuCaps,
+                           virDomainVirtType type,
+                           qemuMonitorCPUModelInfoPtr modelInfo)
+{
+    if (type == VIR_DOMAIN_VIRT_KVM)
+        qemuCaps->kvmCPUModelInfo = modelInfo;
+    else
+        qemuCaps->tcgCPUModelInfo = modelInfo;
 }
 
 
@@ -3385,10 +3397,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
         }
     }
 
-    if (virtType == VIR_DOMAIN_VIRT_KVM)
-        qemuCaps->kvmCPUModelInfo = hostCPU;
-    else
-        qemuCaps->tcgCPUModelInfo = hostCPU;
+    virQEMUCapsSetCPUModelInfo(qemuCaps, virtType, hostCPU);
     hostCPU = NULL;
     ret = 0;
 

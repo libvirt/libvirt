@@ -77,4 +77,14 @@ void
 virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
                             virCapsPtr caps,
                             virDomainVirtType type);
+
+int
+virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
+                        virDomainVirtType type,
+                        virCPUDefPtr cpu);
+
+void
+virQEMUCapsSetCPUModelInfo(virQEMUCapsPtr qemuCaps,
+                           virDomainVirtType type,
+                           qemuMonitorCPUModelInfoPtr modelInfo);
 #endif
