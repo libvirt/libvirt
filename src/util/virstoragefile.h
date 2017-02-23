@@ -309,6 +309,11 @@ int virStorageFileParseChainIndex(const char *diskTarget,
                                   unsigned int *chainIndex)
     ATTRIBUTE_NONNULL(3);
 
+int virStorageFileParseBackingStoreStr(const char *str,
+                                       char **target,
+                                       unsigned int *chainIndex)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+
 virStorageSourcePtr virStorageFileChainLookup(virStorageSourcePtr chain,
                                               virStorageSourcePtr startFrom,
                                               const char *name,

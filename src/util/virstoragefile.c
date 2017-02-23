@@ -1442,32 +1442,78 @@ int virStorageFileGetSCSIKey(const char *path,
 }
 #endif
 
+
+/**
+ * virStorageFileParseBackingStoreStr:
+ * @str: backing store specifier string to parse
+ * @target: returns target device portion of the string
+ * @chainIndex: returns the backing store portion of the string
+ *
+ * Parses the backing store specifier string such as vda[1], or sda into
+ * components and returns them via arguments. If the string did not specify an
+ * index, 0 is assumed.
+ *
+ * Returns 0 on success -1 on error
+ */
+int
+virStorageFileParseBackingStoreStr(const char *str,
+                                   char **target,
+                                   unsigned int *chainIndex)
+{
+    char **strings = NULL;
+    size_t nstrings;
+    unsigned int idx = 0;
+    char *suffix;
+    int ret = -1;
+
+    *chainIndex = 0;
+
+    if (!(strings = virStringSplitCount(str, "[", 2, &nstrings)))
+        return -1;
+
+    if (nstrings == 2) {
+        if (virStrToLong_uip(strings[1], &suffix, 10, &idx) < 0 ||
+            STRNEQ(suffix, "]"))
+            goto cleanup;
+    }
+
+    if (target &&
+        VIR_STRDUP(*target, strings[0]) < 0)
+        goto cleanup;
+
+    *chainIndex = idx;
+    ret = 0;
+
+ cleanup:
+    virStringListFreeCount(strings, nstrings);
+    return ret;
+}
+
+
 int
 virStorageFileParseChainIndex(const char *diskTarget,
                               const char *name,
                               unsigned int *chainIndex)
 {
-    char **strings = NULL;
     unsigned int idx = 0;
-    char *suffix;
+    char *target = NULL;
     int ret = 0;
 
     *chainIndex = 0;
 
-    if (name && diskTarget)
-        strings = virStringSplit(name, "[", 2);
+    if (!name || !diskTarget)
+        return 0;
 
-    if (virStringListLength((const char * const *)strings) != 2)
+    if (virStorageFileParseBackingStoreStr(name, &target, &idx) < 0)
+        return 0;
+
+    if (idx == 0)
         goto cleanup;
 
-    if (virStrToLong_uip(strings[1], &suffix, 10, &idx) < 0 ||
-        STRNEQ(suffix, "]"))
-        goto cleanup;
-
-    if (STRNEQ(diskTarget, strings[0])) {
+    if (STRNEQ(diskTarget, target)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("requested target '%s' does not match target '%s'"),
-                       strings[0], diskTarget);
+                       target, diskTarget);
         ret = -1;
         goto cleanup;
     }
@@ -1475,7 +1521,7 @@ virStorageFileParseChainIndex(const char *diskTarget,
     *chainIndex = idx;
 
  cleanup:
-    virStringListFree(strings);
+    VIR_FREE(target);
     return ret;
 }
 
