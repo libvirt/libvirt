@@ -971,6 +971,7 @@ I<--perf> returns the statistics of all enabled perf events:
  "perf.cpu_migrations" - the count of cpu migrations
  "perf.page_faults_min" - the count of minor page faults
  "perf.page_faults_maj" - the count of major page faults
+ "perf.alignment_faults" - the count of alignment faults
 
 See the B<perf> command for more details about each event.
 
@@ -2354,6 +2355,8 @@ B<Valid perf event names>
                     by applications running on the platform.
   page_faults_maj - Provides the count major page faults
                     by applications running on the platform.
+  alignment_faults - Provides the count alignment faults
+                     by applications running on the platform.
 
 B<Note>: The statistics can be retrieved using the B<domstats> command using
 the I<--perf> flag.

@@ -11269,6 +11269,9 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *     "perf.page_faults_maj" - The count of major page faults as unsigned
  *                              long long. It is produced by the
  *                              page_faults_maj perf event.
+ *     "perf.alignment_faults" - The count of alignment faults as unsigned
+ *                               long long. It is produced by the
+ *                               alignment_faults perf event
  *
  * Note that entire stats groups or individual stat fields may be missing from
  * the output in case they are not supported by the given hypervisor, are not

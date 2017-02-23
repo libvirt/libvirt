@@ -54,6 +54,7 @@ typedef enum {
     VIR_PERF_EVENT_CPU_MIGRATIONS,   /* Count of cpu migrations */
     VIR_PERF_EVENT_PAGE_FAULTS_MIN,   /* Count of minor page faults */
     VIR_PERF_EVENT_PAGE_FAULTS_MAJ,   /* Count of major page faults */
+    VIR_PERF_EVENT_ALIGNMENT_FAULTS,   /* Count of alignment faults */
 
     VIR_PERF_EVENT_LAST
 } virPerfEventType;

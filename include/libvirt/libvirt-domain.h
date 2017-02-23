@@ -2260,6 +2260,16 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_PAGE_FAULTS_MAJ  "page_faults_maj"
 
+/**
+ * VIR_PERF_PARAM_ALIGNMENT_FAULTS:
+ *
+ * Macro for typed parameter name that represents alignment_faults
+ * perf event which can be used to measure the count of alignment
+ * faults by applications running on the platform. It corresponds
+ * to the "perf.alignment_faults" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_ALIGNMENT_FAULTS  "alignment_faults"
+
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
                            int *nparams,
