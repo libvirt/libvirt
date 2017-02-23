@@ -1953,6 +1953,7 @@
   &lt;event name='context_switches' enabled='no'/&gt;
   &lt;event name='cpu_migrations' enabled='no'/&gt;
   &lt;event name='page_faults_min' enabled='no'/&gt;
+  &lt;event name='page_faults_maj' enabled='no'/&gt;
 &lt;/perf&gt;
 ...
 </pre>
@@ -2072,6 +2073,14 @@
           the fault avoided loading it from storage, by
           applications running on the platform</td>
       <td><code>perf.page_faults_min</code></td>
+    </tr>
+    <tr>
+      <td><code>page_faults_maj</code></td>
+      <td>the count of major page faults, that is, where the
+          page was not present in the page cache, and
+          therefore had to be fetched from storage, by
+          applications running on the platform</td>
+      <td><code>perf.page_faults_maj</code></td>
     </tr>
   </table>
 

@@ -439,6 +439,7 @@
               <value>context_switches</value>
               <value>cpu_migrations</value>
               <value>page_faults_min</value>
+              <value>page_faults_maj</value>
             </choice>
           </attribute>
           <attribute name="enabled">

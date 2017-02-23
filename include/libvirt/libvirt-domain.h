@@ -2250,6 +2250,16 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  */
 # define VIR_PERF_PARAM_PAGE_FAULTS_MIN  "page_faults_min"
 
+/**
+ * VIR_PERF_PARAM_PAGE_FAULTS_MAJ:
+ *
+ * Macro for typed parameter name that represents page_faults_maj
+ * perf event which can be used to measure the count of major page
+ * faults by applications running on the platform. It corresponds
+ * to the "perf.page_faults_maj" field in the *Stats APIs.
+ */
+# define VIR_PERF_PARAM_PAGE_FAULTS_MAJ  "page_faults_maj"
+
 int virDomainGetPerfEvents(virDomainPtr dom,
                            virTypedParameterPtr *params,
                            int *nparams,
