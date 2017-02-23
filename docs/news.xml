@@ -26,6 +26,17 @@
           don't start it with unsupported features.
         </description>
       </change>
+      <change>
+        <summary>
+          perf: Add more perf statistics
+        </summary>
+        <description>
+          Add support to get the count of cpu clock time, task clock time,
+          page faults, context switches, cpu migrations, minor page faults,
+          major page faults, alignment faults, emulation faults by
+          applications running on the platform.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change/>
