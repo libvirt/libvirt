@@ -2840,6 +2840,12 @@ struct remote_secret_event_value_changed_msg {
         int                        callbackID;
         remote_nonnull_secret      secret;
 };
+struct remote_domain_set_block_threshold_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      dev;
+        uint64_t                   threshold;
+        u_int                      flags;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3226,4 +3232,5 @@ enum remote_procedure {
         REMOTE_PROC_SECRET_EVENT_VALUE_CHANGED = 383,
         REMOTE_PROC_DOMAIN_SET_VCPU = 384,
         REMOTE_PROC_DOMAIN_EVENT_BLOCK_THRESHOLD = 385,
+        REMOTE_PROC_DOMAIN_SET_BLOCK_THRESHOLD = 386,
 };

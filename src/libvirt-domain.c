@@ -11822,3 +11822,59 @@ virDomainSetVcpu(virDomainPtr domain,
     virDispatchError(domain->conn);
     return -1;
 }
+
+
+/**
+ * virDomainSetBlockThreshold:
+ * @domain: pointer to domain object
+ * @dev: string specifying the block device or backing chain element
+ * @threshold: threshold in bytes when to fire the event
+ * @flags: currently unused, callers should pass 0
+ *
+ * Set the threshold level for delivering the
+ * VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD if the device or backing chain element
+ * described by @dev is written beyond the set threshold level. The threshold
+ * level is unset once the event fires. The event might not be delivered at all
+ * if libvirtd was not running at the moment when the threshold was reached.
+ *
+ * Hypervisors report the last written sector of an image in the bulk stats API
+ * (virConnectGetAllDomainStats/virDomainListGetStats) as
+ * "block.<num>.allocation" in the VIR_DOMAIN_STATS_BLOCK group. The current
+ * threshold value is reported as "block.<num>.threshold".
+ *
+ * This event allows to use thin-provisioned storage which needs management
+ * tools to grow it without the need for polling of the data.
+ *
+ * Returns 0 if the operation has started, -1 on failure.
+ */
+int
+virDomainSetBlockThreshold(virDomainPtr domain,
+                           const char *dev,
+                           unsigned long long threshold,
+                           unsigned int flags)
+{
+    VIR_DOMAIN_DEBUG(domain, "dev='%s' threshold=%llu flags=%x",
+                     NULLSTR(dev), threshold, flags);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    virCheckReadOnlyGoto(domain->conn->flags, error);
+
+    virCheckNonNullArgGoto(dev, error);
+
+    if (domain->conn->driver->domainSetBlockThreshold) {
+        int ret;
+        ret = domain->conn->driver->domainSetBlockThreshold(domain, dev,
+                                                            threshold, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}

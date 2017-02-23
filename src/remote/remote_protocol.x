@@ -3402,6 +3402,14 @@ struct remote_secret_event_value_changed_msg {
     remote_nonnull_secret secret;
 };
 
+struct remote_domain_set_block_threshold_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string dev;
+    unsigned hyper threshold;
+    unsigned int flags;
+};
+
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6048,6 +6056,13 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_BLOCK_THRESHOLD = 385
+    REMOTE_PROC_DOMAIN_EVENT_BLOCK_THRESHOLD = 385,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_SET_BLOCK_THRESHOLD = 386
+
 
 };

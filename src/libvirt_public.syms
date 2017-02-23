@@ -755,6 +755,7 @@ LIBVIRT_3.0.0 {
 
 LIBVIRT_3.1.0 {
     global:
+        virDomainSetBlockThreshold;
         virDomainSetVcpu;
 } LIBVIRT_3.0.0;
 

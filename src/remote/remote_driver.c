@@ -8436,6 +8436,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainGetGuestVcpus = remoteDomainGetGuestVcpus, /* 2.0.0 */
     .domainSetGuestVcpus = remoteDomainSetGuestVcpus, /* 2.0.0 */
     .domainSetVcpu = remoteDomainSetVcpu, /* 3.1.0 */
+    .domainSetBlockThreshold = remoteDomainSetBlockThreshold, /* 3.2.0 */
 };
 
 static virNetworkDriver network_driver = {

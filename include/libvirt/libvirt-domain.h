@@ -4664,4 +4664,9 @@ int virDomainSetVcpu(virDomainPtr domain,
                      int state,
                      unsigned int flags);
 
+int virDomainSetBlockThreshold(virDomainPtr domain,
+                               const char *dev,
+                               unsigned long long threshold,
+                               unsigned int flags);
+
 #endif /* __VIR_LIBVIRT_DOMAIN_H__ */
