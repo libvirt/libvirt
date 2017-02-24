@@ -1043,50 +1043,35 @@ udevGetDeviceType(struct udev_device *device,
 static int udevGetDeviceDetails(struct udev_device *device,
                                 virNodeDeviceDefPtr def)
 {
-    int ret = 0;
-
     switch (def->caps->data.type) {
-    case VIR_NODE_DEV_CAP_SYSTEM:
-        /* There's no libudev equivalent of system, so ignore it. */
-        break;
     case VIR_NODE_DEV_CAP_PCI_DEV:
-        ret = udevProcessPCI(device, def);
-        break;
+        return udevProcessPCI(device, def);
     case VIR_NODE_DEV_CAP_USB_DEV:
-        ret = udevProcessUSBDevice(device, def);
-        break;
+        return udevProcessUSBDevice(device, def);
     case VIR_NODE_DEV_CAP_USB_INTERFACE:
-        ret = udevProcessUSBInterface(device, def);
-        break;
+        return udevProcessUSBInterface(device, def);
     case VIR_NODE_DEV_CAP_NET:
-        ret = udevProcessNetworkInterface(device, def);
-        break;
+        return udevProcessNetworkInterface(device, def);
     case VIR_NODE_DEV_CAP_SCSI_HOST:
-        ret = udevProcessSCSIHost(device, def);
-        break;
+        return udevProcessSCSIHost(device, def);
     case VIR_NODE_DEV_CAP_SCSI_TARGET:
-        ret = udevProcessSCSITarget(device, def);
-        break;
+        return udevProcessSCSITarget(device, def);
     case VIR_NODE_DEV_CAP_SCSI:
-        ret = udevProcessSCSIDevice(device, def);
-        break;
+        return udevProcessSCSIDevice(device, def);
     case VIR_NODE_DEV_CAP_STORAGE:
-        ret = udevProcessStorage(device, def);
-        break;
+        return udevProcessStorage(device, def);
     case VIR_NODE_DEV_CAP_SCSI_GENERIC:
-        ret = udevProcessSCSIGeneric(device, def);
-        break;
+        return udevProcessSCSIGeneric(device, def);
     case VIR_NODE_DEV_CAP_DRM:
-        ret = udevProcessDRMDevice(device, def);
-        break;
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown device type %d"), def->caps->data.type);
-        ret = -1;
+        return udevProcessDRMDevice(device, def);
+    case VIR_NODE_DEV_CAP_SYSTEM:
+    case VIR_NODE_DEV_CAP_FC_HOST:
+    case VIR_NODE_DEV_CAP_VPORTS:
+    case VIR_NODE_DEV_CAP_LAST:
         break;
     }
 
-    return ret;
+    return 0;
 }
 
 
