@@ -3634,7 +3634,6 @@ qemuProcessSPICEAllocatePorts(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    virPortAllocatorRelease(driver->remotePorts, port);
     virObjectUnref(cfg);
     return ret;
 }
