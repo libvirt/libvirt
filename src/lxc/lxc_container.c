@@ -2285,6 +2285,8 @@ virArch lxcContainerGetAlt32bitArch(virArch arch)
         return VIR_ARCH_MIPS;
     if (arch == VIR_ARCH_MIPS64EL)
         return VIR_ARCH_MIPSEL;
+    if (arch == VIR_ARCH_AARCH64)
+        return VIR_ARCH_ARMV7L;
 
     return VIR_ARCH_NONE;
 }
