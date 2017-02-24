@@ -280,6 +280,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
     SET_TLS_X509_CERT_DEFAULT(vnc);
     SET_TLS_X509_CERT_DEFAULT(spice);
     SET_TLS_X509_CERT_DEFAULT(chardev);
+    SET_TLS_X509_CERT_DEFAULT(migrate);
 
 #undef SET_TLS_X509_CERT_DEFAULT
 
@@ -394,6 +395,9 @@ static void virQEMUDriverConfigDispose(void *obj)
 
     VIR_FREE(cfg->chardevTLSx509certdir);
     VIR_FREE(cfg->chardevTLSx509secretUUID);
+
+    VIR_FREE(cfg->migrateTLSx509certdir);
+    VIR_FREE(cfg->migrateTLSx509secretUUID);
 
     while (cfg->nhugetlbfs) {
         cfg->nhugetlbfs--;
@@ -555,6 +559,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueBool(conf, "chardev_tls", &cfg->chardevTLS) < 0)
         goto cleanup;
     GET_CONFIG_TLS_CERTINFO(chardev);
+
+    GET_CONFIG_TLS_CERTINFO(migrate);
 
 #undef GET_CONFIG_TLS_CERTINFO
 

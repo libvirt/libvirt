@@ -54,6 +54,10 @@ module Libvirtd_qemu =
                  | bool_entry "chardev_tls_x509_verify"
                  | str_entry "chardev_tls_x509_secret_uuid"
 
+   let migrate_entry = str_entry "migrate_tls_x509_cert_dir"
+                 | bool_entry "migrate_tls_x509_verify"
+                 | str_entry "migrate_tls_x509_secret_uuid"
+
    let nogfx_entry = bool_entry "nographics_allow_host_audio"
 
    let remote_display_entry = int_entry "remote_display_port_min"
@@ -116,6 +120,7 @@ module Libvirtd_qemu =
              | vnc_entry
              | spice_entry
              | chardev_entry
+             | migrate_entry
              | nogfx_entry
              | remote_display_entry
              | security_entry
