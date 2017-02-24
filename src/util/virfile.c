@@ -1820,7 +1820,8 @@ virFileIsDir(const char *path)
  * virFileExists: Check for presence of file
  * @path: Path of file to check
  *
- * Returns if the file exists. Preserves errno in case it does not exist.
+ * Returns true if the file exists, false if it doesn't, setting errno
+ * appropriately.
  */
 bool
 virFileExists(const char *path)
