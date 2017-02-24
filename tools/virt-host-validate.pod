@@ -12,8 +12,8 @@ This tool validates that the host is configured in a suitable
 way to run libvirt hypervisor drivers. If invoked without any
 arguments it will check support for all hypervisor drivers it
 is aware of. Optionally it can be given a particular hypervisor
-type ('qemu' or 'lxc') to restrict the checks to those relevant
-for that virtualization technology
+type ('qemu', 'lxc' or 'bhyve') to restrict the checks
+to those relevant for that virtualization technology
 
 =head1 OPTIONS
 

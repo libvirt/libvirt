@@ -309,6 +309,7 @@ tools/virsh-snapshot.c
 tools/virsh-volume.c
 tools/virsh.c
 tools/virt-admin.c
+tools/virt-host-validate-bhyve.c
 tools/virt-host-validate-common.c
 tools/virt-host-validate-lxc.c
 tools/virt-host-validate-qemu.c

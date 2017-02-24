@@ -36,6 +36,9 @@
 #if WITH_LXC
 # include "virt-host-validate-lxc.h"
 #endif
+#if WITH_BHYVE
+# include "virt-host-validate-bhyve.h"
+#endif
 
 static void
 show_help(FILE *out, const char *argv0)
@@ -48,6 +51,7 @@ show_help(FILE *out, const char *argv0)
               "\n"
               "   - qemu\n"
               "   - lxc\n"
+              "   - bhyve\n"
               "\n"
               " Options:\n"
               "   -h, --help     Display command line help\n"
@@ -126,6 +130,14 @@ main(int argc, char **argv)
     if (!hvname || STREQ(hvname, "lxc")) {
         usedHvname = true;
         if (virHostValidateLXC() < 0)
+            ret = EXIT_FAILURE;
+    }
+#endif
+
+#if WITH_BHYVE
+    if (!hvname || STREQ(hvname, "bhyve")) {
+        usedHvname = true;
+        if (virHostValidateBhyve() < 0)
             ret = EXIT_FAILURE;
     }
 #endif
