@@ -9302,12 +9302,6 @@ virDomainControllerDefParseXML(xmlNodePtr node,
                                  "have an address"));
                 goto error;
             }
-            if (def->idx > 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("pci-root and pcie-root controllers "
-                                 "should have index 0"));
-                goto error;
-            }
             if ((rc = virDomainParseScaledValue("./pcihole64", NULL,
                                                 ctxt, &bytes, 1024,
                                                 1024ULL * ULONG_MAX, false)) < 0)

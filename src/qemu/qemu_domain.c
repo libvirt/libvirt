@@ -3426,6 +3426,15 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+        if  ((cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
+              cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) &&
+             cont->idx != 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("pci-root and pcie-root controllers "
+                             "should have index 0"));
+            return -1;
+        }
+
         if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS &&
             !qemuDomainIsI440FX(def)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
