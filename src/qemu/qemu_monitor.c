@@ -4219,3 +4219,14 @@ qemuMonitorSetBlockThreshold(qemuMonitorPtr mon,
 
     return qemuMonitorJSONSetBlockThreshold(mon, nodename, threshold);
 }
+
+
+virJSONValuePtr
+qemuMonitorQueryNamedBlockNodes(qemuMonitorPtr mon)
+{
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_CHECK_MONITOR_JSON_NULL(mon);
+
+    return qemuMonitorJSONQueryNamedBlockNodes(mon);
+}

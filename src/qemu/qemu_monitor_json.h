@@ -518,4 +518,7 @@ int qemuMonitorJSONSetBlockThreshold(qemuMonitorPtr mon,
                                      unsigned long long threshold)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
+virJSONValuePtr qemuMonitorJSONQueryNamedBlockNodes(qemuMonitorPtr mon)
+    ATTRIBUTE_NONNULL(1);
+
 #endif /* QEMU_MONITOR_JSON_H */

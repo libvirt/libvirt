@@ -1083,5 +1083,6 @@ int qemuMonitorSetBlockThreshold(qemuMonitorPtr mon,
                                  const char *nodename,
                                  unsigned long long threshold);
 
+virJSONValuePtr qemuMonitorQueryNamedBlockNodes(qemuMonitorPtr mon);
 
 #endif /* QEMU_MONITOR_H */
