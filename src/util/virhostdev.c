@@ -411,15 +411,14 @@ virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Interface type hostdev is currently supported on"
                          " SR-IOV Virtual Functions only"));
-        return ret;
+        goto cleanup;
     }
 
     if (virHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
-        return ret;
+        goto cleanup;
 
     vlan = virDomainNetGetActualVlan(hostdev->parent.data.net);
-    virtPort = virDomainNetGetActualVirtPortProfile(
-                                 hostdev->parent.data.net);
+    virtPort = virDomainNetGetActualVirtPortProfile(hostdev->parent.data.net);
     if (virtPort) {
         if (vlan) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -428,15 +427,21 @@ virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
                            virNetDevVPortTypeToString(virtPort->virtPortType));
             goto cleanup;
         }
-        ret = virHostdevNetConfigVirtPortProfile(linkdev, vf,
-                            virtPort, &hostdev->parent.data.net->mac, uuid,
-                            port_profile_associate);
+        if (virHostdevNetConfigVirtPortProfile(linkdev, vf, virtPort,
+                                               &hostdev->parent.data.net->mac,
+                                               uuid, port_profile_associate) < 0) {
+            goto cleanup;
+        }
     } else {
         /* Set only mac and vlan */
-        ret = virNetDevReplaceNetConfig(linkdev, vf,
-                                        &hostdev->parent.data.net->mac,
-                                        vlan, stateDir);
+        if (virNetDevReplaceNetConfig(linkdev, vf,
+                                      &hostdev->parent.data.net->mac,
+                                      vlan, stateDir) < 0) {
+            goto cleanup;
+        }
     }
+
+    ret = 0;
  cleanup:
     VIR_FREE(linkdev);
     return ret;
