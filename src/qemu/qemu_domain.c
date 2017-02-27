@@ -3426,9 +3426,13 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
-        if  ((cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
-              cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) &&
-             cont->idx != 0) {
+
+        /* pSeries guests can have multiple pci-root controllers,
+         * but other machine types only support a single one */
+        if (!qemuDomainIsPSeries(def) &&
+            (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
+             cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) &&
+            cont->idx != 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("pci-root and pcie-root controllers "
                              "should have index 0"));
