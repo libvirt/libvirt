@@ -13785,6 +13785,24 @@ virDomainMemoryTargetDefParseXML(xmlNodePtr node,
                              &def->size, true, false) < 0)
         goto cleanup;
 
+    if (def->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
+        if (virDomainParseMemory("./label/size", "./label/size/@unit", ctxt,
+                                 &def->labelsize, false, false) < 0)
+            goto cleanup;
+
+        if (def->labelsize && def->labelsize < 128) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("nvdimm label must be at least 128KiB"));
+            goto cleanup;
+        }
+
+        if (def->labelsize >= def->size) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("label size must be smaller than NVDIMM size"));
+            goto cleanup;
+        }
+    }
+
     ret = 0;
 
  cleanup:
@@ -19468,6 +19486,15 @@ virDomainMemoryDefCheckABIStability(virDomainMemoryDefPtr src,
         return false;
     }
 
+    if (src->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
+        src->labelsize != dst->labelsize) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target NVDIMM label size '%llu' doesn't match "
+                         "source NVDIMM label size '%llu'"),
+                       src->labelsize, dst->labelsize);
+        return false;
+    }
+
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
 }
 
@@ -22624,6 +22651,13 @@ virDomainMemoryTargetDefFormat(virBufferPtr buf,
     virBufferAsprintf(buf, "<size unit='KiB'>%llu</size>\n", def->size);
     if (def->targetNode >= 0)
         virBufferAsprintf(buf, "<node>%d</node>\n", def->targetNode);
+    if (def->labelsize) {
+        virBufferAddLit(buf, "<label>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferAsprintf(buf, "<size unit='KiB'>%llu</size>\n", def->labelsize);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</label>\n");
+    }
 
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</target>\n");

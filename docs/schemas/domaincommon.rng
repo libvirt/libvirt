@@ -4810,6 +4810,13 @@
             <ref name="unsignedInt"/>
           </element>
         </optional>
+        <optional>
+          <element name="label">
+            <element name="size">
+              <ref name="scaledInteger"/>
+            </element>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

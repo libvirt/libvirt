@@ -7123,6 +7123,9 @@ qemu-kvm -net nic,model=? /dev/null
     &lt;target&gt;
       &lt;size unit='KiB'&gt;524288&lt;/size&gt;
       &lt;node&gt;1&lt;/node&gt;
+      &lt;label&gt;
+        &lt;size unit='KiB'&gt;128&lt;/size&gt;
+      &lt;/label&gt;
     &lt;/target&gt;
   &lt;/memory&gt;
 &lt;/devices&gt;
@@ -7204,6 +7207,20 @@ qemu-kvm -net nic,model=? /dev/null
           attach the memory to. The element shall be used only if the guest has
           NUMA nodes configured.
         </p>
+        <p>
+          For NVDIMM type devices one can optionally use
+          <code>label</code> and its subelement <code>size</code>
+          to configure the size of namespaces label storage
+          within the NVDIMM module. The <code>size</code> element
+          has usual meaning described
+          <a href="#elementsMemoryAllocation">here</a>.
+          For QEMU domains the following restrictions apply:
+        </p>
+        <ol>
+          <li>the minimum label size is 128KiB,</li>
+          <li>the remaining size (total-size - label-size) has to be aligned to
+            4KiB</li>
+        </ol>
       </dd>
     </dl>
 

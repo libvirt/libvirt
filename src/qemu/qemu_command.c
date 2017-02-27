@@ -3519,6 +3519,9 @@ qemuBuildMemoryDeviceStr(virDomainMemoryDefPtr mem)
         if (mem->targetNode >= 0)
             virBufferAsprintf(&buf, "node=%d,", mem->targetNode);
 
+        if (mem->labelsize)
+            virBufferAsprintf(&buf, "label-size=%llu,", mem->labelsize * 1024);
+
         virBufferAsprintf(&buf, "memdev=mem%s,id=%s",
                           mem->info.alias, mem->info.alias);
 

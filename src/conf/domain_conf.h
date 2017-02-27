@@ -2014,6 +2014,7 @@ struct _virDomainMemoryDef {
     int model; /* virDomainMemoryModel */
     int targetNode;
     unsigned long long size; /* kibibytes */
+    unsigned long long labelsize; /* kibibytes; valid only for NVDIMM */
 
     virDomainDeviceInfo info;
 };

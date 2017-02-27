@@ -1,0 +1,59 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <maxMemory slots='16' unit='KiB'>1099511627776</maxMemory>
+  <memory unit='KiB'>1267710</memory>
+  <currentMemory unit='KiB'>1267710</currentMemory>
+  <vcpu placement='static' cpuset='0-1'>2</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <idmap>
+    <uid start='0' target='1000' count='10'/>
+    <gid start='0' target='1000' count='10'/>
+  </idmap>
+  <cpu>
+    <topology sockets='2' cores='1' threads='1'/>
+    <numa>
+      <cell id='0' cpus='0-1' memory='219136' unit='KiB'/>
+    </numa>
+  </cpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu</emulator>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <target dev='hda' bus='ide'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <controller type='ide' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
+    </controller>
+    <controller type='usb' index='0'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <memballoon model='virtio'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </memballoon>
+    <memory model='nvdimm' access='private'>
+      <source>
+        <path>/tmp/nvdimm</path>
+      </source>
+      <target>
+        <size unit='KiB'>523264</size>
+        <node>0</node>
+        <label>
+          <size unit='KiB'>128</size>
+        </label>
+      </target>
+      <address type='dimm' slot='0'/>
+    </memory>
+  </devices>
+</domain>
