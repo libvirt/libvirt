@@ -176,12 +176,12 @@ virStoragePoolFCRefreshThread(void *opaque)
 }
 
 static char *
-getAdapterName(virStoragePoolSourceAdapterPtr adapter)
+getAdapterName(virStorageAdapterPtr adapter)
 {
     char *name = NULL;
     char *parentaddr = NULL;
 
-    if (adapter->type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
+    if (adapter->type == VIR_STORAGE_ADAPTER_TYPE_SCSI_HOST) {
         virStorageAdapterSCSIHostPtr scsi_host = &adapter->data.scsi_host;
 
         if (scsi_host->has_parent) {
@@ -197,7 +197,7 @@ getAdapterName(virStoragePoolSourceAdapterPtr adapter)
         } else {
             ignore_value(VIR_STRDUP(name, scsi_host->name));
         }
-    } else if (adapter->type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+    } else if (adapter->type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
         virStorageAdapterFCHostPtr fchost = &adapter->data.fchost;
 
         if (!(name = virVHBAGetHostByWWN(NULL, fchost->wwnn, fchost->wwpn))) {
@@ -451,7 +451,7 @@ virStorageBackendSCSICheckPool(virStoragePoolObjPtr pool,
          * the adapter based on might be not created yet.
          */
         if (pool->def->source.adapter.type ==
-            VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+            VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
             virResetLastError();
             return 0;
         } else {
@@ -505,24 +505,24 @@ virStorageBackendSCSIRefreshPool(virConnectPtr conn ATTRIBUTE_UNUSED,
     return ret;
 }
 
+
 static int
 virStorageBackendSCSIStartPool(virConnectPtr conn,
                                virStoragePoolObjPtr pool)
 {
-    if (pool->def->source.adapter.type ==
-        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
+    if (pool->def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST)
         return createVport(conn, pool->def, pool->configFile,
                            &pool->def->source.adapter.data.fchost);
 
     return 0;
 }
 
+
 static int
 virStorageBackendSCSIStopPool(virConnectPtr conn,
                               virStoragePoolObjPtr pool)
 {
-    if (pool->def->source.adapter.type ==
-        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
+    if (pool->def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST)
         return deleteVport(conn, &pool->def->source.adapter.data.fchost);
 
     return 0;

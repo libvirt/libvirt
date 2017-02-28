@@ -2467,8 +2467,7 @@ phypBuildStoragePool(virConnectPtr conn, virStoragePoolDefPtr def)
     int exit_status = 0;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
-    if (source.adapter.type !=
-        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
+    if (source.adapter.type != VIR_STORAGE_ADAPTER_TYPE_SCSI_HOST) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Only 'scsi_host' adapter is supported"));
         goto cleanup;

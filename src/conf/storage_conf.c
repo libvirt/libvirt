@@ -565,7 +565,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         goto cleanup;
 
     if ((adapternode = virXPathNode("./adapter", ctxt))) {
-        if (virStorageAdapterParseXML(source, adapternode, ctxt) < 0)
+        if (virStorageAdapterParseXML(&source->adapter, adapternode, ctxt) < 0)
             goto cleanup;
     }
 
@@ -802,7 +802,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     }
 
     if ((options->flags & VIR_STORAGE_POOL_SOURCE_ADAPTER) &&
-        (virStorageAdapterValidate(ret)) < 0)
+        (virStorageAdapterValidate(&ret->source.adapter)) < 0)
             goto error;
 
     /* If DEVICE is the only source type, then its required */
@@ -958,9 +958,9 @@ virStoragePoolSourceFormat(virBufferPtr buf,
         virBufferEscapeString(buf, "<dir path='%s'/>\n", src->dir);
 
     if ((options->flags & VIR_STORAGE_POOL_SOURCE_ADAPTER) &&
-        (src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST ||
-         src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST))
-        virStorageAdapterFormat(buf, src);
+        (src->adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST ||
+         src->adapter.type == VIR_STORAGE_ADAPTER_TYPE_SCSI_HOST))
+        virStorageAdapterFormat(buf, &src->adapter);
 
     if (options->flags & VIR_STORAGE_POOL_SOURCE_NAME)
         virBufferEscapeString(buf, "<name>%s</name>\n", src->name);
@@ -2266,8 +2266,8 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
     int ret = 1;
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolObjPtr matchpool = NULL;
-    virStoragePoolSourceAdapterPtr pool_adapter;
-    virStoragePoolSourceAdapterPtr def_adapter;
+    virStorageAdapterPtr pool_adapter;
+    virStorageAdapterPtr def_adapter;
 
     /* Check the pool list for duplicate underlying storage */
     for (i = 0; i < pools->count; i++) {
@@ -2306,10 +2306,8 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
             pool_adapter = &pool->def->source.adapter;
             def_adapter = &def->source.adapter;
 
-            if (pool_adapter->type ==
-                VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST &&
-                def_adapter->type ==
-                VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+            if (pool_adapter->type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST &&
+                def_adapter->type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
                 virStorageAdapterFCHostPtr pool_fchost =
                     &pool_adapter->data.fchost;
                 virStorageAdapterFCHostPtr def_fchost =
@@ -2319,9 +2317,9 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
                     STREQ(pool_fchost->wwpn, def_fchost->wwpn))
                     matchpool = pool;
             } else if (pool_adapter->type ==
-                       VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST &&
+                       VIR_STORAGE_ADAPTER_TYPE_SCSI_HOST &&
                        def_adapter->type ==
-                       VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
+                       VIR_STORAGE_ADAPTER_TYPE_SCSI_HOST) {
                 virStorageAdapterSCSIHostPtr pool_scsi_host =
                     &pool_adapter->data.scsi_host;
                 virStorageAdapterSCSIHostPtr def_scsi_host =
@@ -2341,9 +2339,9 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
                 if (pool_hostnum == def_hostnum)
                     matchpool = pool;
             } else if (pool_adapter->type ==
-                       VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST &&
+                       VIR_STORAGE_ADAPTER_TYPE_FC_HOST &&
                        def_adapter->type ==
-                       VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
+                       VIR_STORAGE_ADAPTER_TYPE_SCSI_HOST) {
                 virStorageAdapterFCHostPtr pool_fchost =
                     &pool_adapter->data.fchost;
                 virStorageAdapterSCSIHostPtr def_scsi_host =
@@ -2360,9 +2358,9 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
                 }
 
             } else if (pool_adapter->type ==
-                       VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST &&
+                       VIR_STORAGE_ADAPTER_TYPE_SCSI_HOST &&
                        def_adapter->type ==
-                       VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+                       VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
                 virStorageAdapterSCSIHostPtr pool_scsi_host =
                     &pool_adapter->data.scsi_host;
                 virStorageAdapterFCHostPtr def_fchost =

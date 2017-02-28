@@ -4420,8 +4420,7 @@ testStoragePoolCreateXML(virConnectPtr conn,
         goto cleanup;
     def = NULL;
 
-    if (pool->def->source.adapter.type ==
-        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+    if (pool->def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
         /* In the real code, we'd call virVHBAManageVport followed by
          * find_new_device, but we cannot do that here since we're not
          * mocking udev. The mock routine will copy an existing vHBA and
@@ -4623,7 +4622,7 @@ testStoragePoolDestroy(virStoragePoolPtr pool)
     privpool->active = 0;
 
     if (privpool->def->source.adapter.type ==
-        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+        VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
         if (testDestroyVport(privconn,
                              privpool->def->source.adapter.data.fchost.wwnn,
                              privpool->def->source.adapter.data.fchost.wwpn) < 0)
