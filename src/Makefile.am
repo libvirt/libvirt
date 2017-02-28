@@ -369,11 +369,13 @@ NWFILTER_PARAM_CONF_SOURCES =					\
 		conf/nwfilter_params.c conf/nwfilter_params.h	\
 		conf/nwfilter_ipaddrmap.c			\
 		conf/nwfilter_ipaddrmap.h			\
-		conf/nwfilter_conf.h
+		conf/nwfilter_conf.h                            \
+		conf/virnwfilterobj.h
 
 NWFILTER_CONF_SOURCES =						\
 		$(NWFILTER_PARAM_CONF_SOURCES)			\
-		conf/nwfilter_conf.c conf/nwfilter_conf.h
+		conf/nwfilter_conf.c conf/nwfilter_conf.h	\
+		conf/virnwfilterobj.c conf/virnwfilterobj.h
 
 # Storage driver generic impl APIs
 STORAGE_CONF_SOURCES =                                         \

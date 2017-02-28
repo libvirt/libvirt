@@ -546,41 +546,6 @@ struct _virNWFilterDef {
 };
 
 
-typedef struct _virNWFilterObj virNWFilterObj;
-typedef virNWFilterObj *virNWFilterObjPtr;
-
-struct _virNWFilterObj {
-    virMutex lock;
-
-    int active;
-    int wantRemoved;
-
-    virNWFilterDefPtr def;
-    virNWFilterDefPtr newDef;
-};
-
-
-typedef struct _virNWFilterObjList virNWFilterObjList;
-typedef virNWFilterObjList *virNWFilterObjListPtr;
-struct _virNWFilterObjList {
-    size_t count;
-    virNWFilterObjPtr *objs;
-};
-
-
-typedef struct _virNWFilterDriverState virNWFilterDriverState;
-typedef virNWFilterDriverState *virNWFilterDriverStatePtr;
-struct _virNWFilterDriverState {
-    virMutex lock;
-    bool privileged;
-
-    virNWFilterObjList nwfilters;
-
-    char *configDir;
-    bool watchingFirewallD;
-};
-
-
 typedef enum {
     STEP_APPLY_NEW,
     STEP_TEAR_NEW,
@@ -598,29 +563,14 @@ struct domUpdateCBStruct {
 void virNWFilterRuleDefFree(virNWFilterRuleDefPtr def);
 
 void virNWFilterDefFree(virNWFilterDefPtr def);
-void virNWFilterObjListFree(virNWFilterObjListPtr nwfilters);
-void virNWFilterObjRemove(virNWFilterObjListPtr nwfilters,
-                          virNWFilterObjPtr nwfilter);
 
-void virNWFilterObjFree(virNWFilterObjPtr obj);
-
-virNWFilterObjPtr virNWFilterObjFindByUUID(virNWFilterObjListPtr nwfilters,
-                                           const unsigned char *uuid);
-
-virNWFilterObjPtr virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters,
-                                           const char *name);
-
+int virNWFilterTriggerVMFilterRebuild(void);
 
 int virNWFilterSaveDef(const char *configDir,
                        virNWFilterDefPtr def);
 
 int virNWFilterDeleteDef(const char *configDir,
                          virNWFilterDefPtr def);
-
-virNWFilterObjPtr virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
-                                          virNWFilterDefPtr def);
-
-int virNWFilterTestUnassignDef(virNWFilterObjPtr nwfilter);
 
 virNWFilterDefPtr virNWFilterDefParseNode(xmlDocPtr xml,
                                           xmlNodePtr root);
@@ -634,17 +584,11 @@ int virNWFilterSaveXML(const char *configDir,
 int virNWFilterSaveConfig(const char *configDir,
                           virNWFilterDefPtr def);
 
-int virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
-                              const char *configDir);
-
 char *virNWFilterConfigFile(const char *dir,
                             const char *name);
 
 virNWFilterDefPtr virNWFilterDefParseString(const char *xml);
 virNWFilterDefPtr virNWFilterDefParseFile(const char *filename);
-
-void virNWFilterObjLock(virNWFilterObjPtr obj);
-void virNWFilterObjUnlock(virNWFilterObjPtr obj);
 
 void virNWFilterWriteLockFilterUpdates(void);
 void virNWFilterReadLockFilterUpdates(void);

@@ -26,7 +26,7 @@
 #ifndef __NWFILTER_TECH_DRIVER_H__
 # define __NWFILTER_TECH_DRIVER_H__
 
-# include "nwfilter_conf.h"
+# include "virnwfilterobj.h"
 
 typedef struct _virNWFilterTechDriver virNWFilterTechDriver;
 typedef virNWFilterTechDriver *virNWFilterTechDriverPtr;

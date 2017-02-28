@@ -746,14 +746,6 @@ virNWFilterDefParseString;
 virNWFilterDeleteDef;
 virNWFilterInstFiltersOnAllVMs;
 virNWFilterJumpTargetTypeToString;
-virNWFilterLoadAllConfigs;
-virNWFilterObjAssignDef;
-virNWFilterObjFindByName;
-virNWFilterObjFindByUUID;
-virNWFilterObjListFree;
-virNWFilterObjLock;
-virNWFilterObjRemove;
-virNWFilterObjUnlock;
 virNWFilterPrintStateMatchFlags;
 virNWFilterPrintTCPFlags;
 virNWFilterReadLockFilterUpdates;
@@ -765,7 +757,7 @@ virNWFilterRuleIsProtocolIPv4;
 virNWFilterRuleIsProtocolIPv6;
 virNWFilterRuleProtocolTypeToString;
 virNWFilterSaveDef;
-virNWFilterTestUnassignDef;
+virNWFilterTriggerVMFilterRebuild;
 virNWFilterUnlockFilterUpdates;
 virNWFilterUnRegisterCallbackDriver;
 virNWFilterWriteLockFilterUpdates;
@@ -962,6 +954,18 @@ virNodeDeviceObjListFree;
 virNodeDeviceObjLock;
 virNodeDeviceObjRemove;
 virNodeDeviceObjUnlock;
+
+
+# conf/virnwfilterobj.h
+virNWFilterLoadAllConfigs;
+virNWFilterObjAssignDef;
+virNWFilterObjFindByName;
+virNWFilterObjFindByUUID;
+virNWFilterObjListFree;
+virNWFilterObjLock;
+virNWFilterObjRemove;
+virNWFilterObjUnlock;
+virNWFilterTestUnassignDef;
 
 
 # conf/virsecretobj.h

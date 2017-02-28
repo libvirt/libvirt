@@ -37,7 +37,6 @@
 #include "viralloc.h"
 #include "domain_conf.h"
 #include "domain_nwfilter.h"
-#include "nwfilter_conf.h"
 #include "nwfilter_driver.h"
 #include "nwfilter_gentech_driver.h"
 #include "configmake.h"

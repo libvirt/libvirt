@@ -44,6 +44,7 @@ src/conf/virchrdev.c
 src/conf/virdomainobjlist.c
 src/conf/virinterfaceobj.c
 src/conf/virnodedeviceobj.c
+src/conf/virnwfilterobj.c
 src/conf/virsecretobj.c
 src/cpu/cpu.c
 src/cpu/cpu_arm.c
