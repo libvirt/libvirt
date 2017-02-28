@@ -1104,6 +1104,9 @@ qemuDomainAttachNetDevice(virQEMUDriverPtr driver,
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
+        /* No preparation needed. */
+        break;
+
     case VIR_DOMAIN_NET_TYPE_SERVER:
     case VIR_DOMAIN_NET_TYPE_CLIENT:
     case VIR_DOMAIN_NET_TYPE_MCAST:
