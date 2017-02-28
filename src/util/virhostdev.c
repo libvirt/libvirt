@@ -653,6 +653,14 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
         }
     }
 
+    /* Step 1.5: For non-802.11Qbh SRIOV network devices, save the
+     * current device config
+     */
+    for (i = 0; i < nhostdevs; i++) {
+        if (virHostdevSaveNetConfig(hostdevs[i], mgr->stateDir) < 0)
+            goto cleanup;
+    }
+
     /* Step 2: detach managed devices and make sure unmanaged devices
      *         have already been taken care of */
     for (i = 0; i < virPCIDeviceListCount(pcidevs); i++) {
@@ -742,9 +750,6 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
     /* Step 4: For SRIOV network devices, Now that we have detached the
      * the network device, set the new netdev config */
     for (i = 0; i < nhostdevs; i++) {
-
-        if (virHostdevSaveNetConfig(hostdevs[i], mgr->stateDir) < 0)
-            goto resetvfnetconfig;
 
         if (virHostdevSetNetConfig(hostdevs[i], uuid) < 0)
             goto resetvfnetconfig;
