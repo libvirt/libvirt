@@ -2719,6 +2719,26 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
         switch ((virDomainControllerModelPCI) def->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+        case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+            if (def->idx == 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("index for pci controllers of model '%s' must be > 0"),
+                               virDomainControllerModelPCITypeToString(def->model));
+                goto error;
+            }
+            break;
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+            break;
+        }
+        switch ((virDomainControllerModelPCI) def->model) {
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
             if (def->opts.pciopts.modelName
                 == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_NONE ||
                 def->opts.pciopts.chassisNr == -1) {
@@ -2975,12 +2995,6 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("wrong function called"));
-            goto error;
-        }
-        if (def->idx == 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("index for pci controllers of model '%s' must be > 0"),
-                           virDomainControllerModelPCITypeToString(def->model));
             goto error;
         }
         break;
