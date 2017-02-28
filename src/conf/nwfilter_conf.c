@@ -3226,25 +3226,23 @@ virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
 
 
 int
-virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
-                      virNWFilterDefPtr def)
+virNWFilterSaveDef(const char *configDir,
+                   virNWFilterDefPtr def)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *xml;
     int ret = -1;
     char *configFile = NULL;
 
-    if (virFileMakePath(driver->configDir) < 0) {
+    if (virFileMakePath(configDir) < 0) {
         virReportSystemError(errno,
                              _("cannot create config directory %s"),
-                             driver->configDir);
+                             configDir);
         goto error;
     }
 
-    if (!(configFile = virFileBuildPath(driver->configDir,
-                                        def->name, ".xml"))) {
+    if (!(configFile = virFileBuildPath(configDir, def->name, ".xml")))
         goto error;
-    }
 
     if (!(xml = virNWFilterDefFormat(def))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

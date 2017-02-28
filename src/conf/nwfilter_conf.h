@@ -611,8 +611,8 @@ virNWFilterObjPtr virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters,
                                            const char *name);
 
 
-int virNWFilterObjSaveDef(virNWFilterDriverStatePtr driver,
-                          virNWFilterDefPtr def);
+int virNWFilterSaveDef(const char *configDir,
+                       virNWFilterDefPtr def);
 
 int virNWFilterObjDeleteDef(const char *configDir,
                             virNWFilterObjPtr nwfilter);
