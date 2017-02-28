@@ -523,7 +523,10 @@ int qemuDomainAttachControllerDevice(virQEMUDriverPtr driver,
     if (qemuAssignDeviceControllerAlias(vm->def, priv->qemuCaps, controller) < 0)
         goto cleanup;
 
-    if (!(devstr = qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, NULL)))
+    if (qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, &devstr, NULL) < 0)
+        goto cleanup;
+
+    if (!devstr)
         goto cleanup;
 
     if (VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers+1) < 0)

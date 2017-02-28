@@ -119,10 +119,11 @@ char *qemuBuildDriveDevStr(const virDomainDef *def,
                            virQEMUCapsPtr qemuCaps);
 
 /* Current, best practice */
-char *qemuBuildControllerDevStr(const virDomainDef *domainDef,
-                                virDomainControllerDefPtr def,
-                                virQEMUCapsPtr qemuCaps,
-                                int *nusbcontroller);
+int qemuBuildControllerDevStr(const virDomainDef *domainDef,
+                              virDomainControllerDefPtr def,
+                              virQEMUCapsPtr qemuCaps,
+                              char **devstr,
+                              int *nusbcontroller);
 
 int qemuBuildMemoryBackendStr(virJSONValuePtr *backendProps,
                               const char **backendType,

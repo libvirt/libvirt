@@ -2549,23 +2549,46 @@ qemuCheckSCSIControllerIOThreads(const virDomainDef *domainDef,
 }
 
 
-char *
+/**
+ * qemuBuildControllerDevStr:
+ * @domainDef: domain definition
+ * @def: controller definition
+ * @qemuCaps: QEMU binary capabilities
+ * @devstr: device string
+ * @nusbcontroller: number of USB controllers
+ *
+ * Turn @def into a description of the controller that QEMU will understand,
+ * to be used either on the command line or through the monitor.
+ *
+ * The description will be returned in @devstr and can be NULL, eg. when
+ * passing in one of the built-in controllers. The returned string must be
+ * freed by the caller.
+ *
+ * The number pointed to by @nusbcontroller will be increased by one every
+ * time the description for a USB controller has been generated successfully.
+ *
+ * Returns: 0 on success, <0 on failure
+ */
+int
 qemuBuildControllerDevStr(const virDomainDef *domainDef,
                           virDomainControllerDefPtr def,
                           virQEMUCapsPtr qemuCaps,
+                          char **devstr,
                           int *nusbcontroller)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int model = def->model;
     const char *modelName = NULL;
 
+    *devstr = NULL;
+
     if (!qemuCheckCCWS390AddressSupport(domainDef, def->info, qemuCaps,
                                         "controller"))
-        return NULL;
+        return -1;
 
     if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
         if ((qemuDomainSetSCSIControllerModel(domainDef, qemuCaps, &model)) < 0)
-            return NULL;
+            return -1;
     }
 
     if (!(def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
@@ -2573,22 +2596,22 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         if (def->queues) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("'queues' is only supported by virtio-scsi controller"));
-            return NULL;
+            return -1;
         }
         if (def->cmd_per_lun) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("'cmd_per_lun' is only supported by virtio-scsi controller"));
-            return NULL;
+            return -1;
         }
         if (def->max_sectors) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("'max_sectors' is only supported by virtio-scsi controller"));
-            return NULL;
+            return -1;
         }
         if (def->ioeventfd) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("'ioeventfd' is only supported by virtio-scsi controller"));
-            return NULL;
+            return -1;
         }
     }
 
@@ -3003,11 +3026,12 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
     if (virBufferCheckError(&buf) < 0)
         goto error;
 
-    return virBufferContentAndReset(&buf);
+    *devstr = virBufferContentAndReset(&buf);
+    return 0;
 
  error:
     virBufferFreeAndReset(&buf);
-    return NULL;
+    return -1;
 }
 
 
@@ -3102,12 +3126,15 @@ qemuBuildControllerDevCommandLine(virCommandPtr cmd,
                 continue;
             }
 
-            virCommandAddArg(cmd, "-device");
-            if (!(devstr = qemuBuildControllerDevStr(def, cont, qemuCaps,
-                                                     &usbcontroller)))
+            if (qemuBuildControllerDevStr(def, cont, qemuCaps,
+                                          &devstr, &usbcontroller) < 0)
                 return -1;
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
+
+            if (devstr) {
+                virCommandAddArg(cmd, "-device");
+                virCommandAddArg(cmd, devstr);
+                VIR_FREE(devstr);
+            }
         }
     }
 
