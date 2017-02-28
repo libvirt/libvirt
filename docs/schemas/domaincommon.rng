@@ -1983,6 +1983,8 @@
               <element name="model">
                 <attribute name="name">
                   <choice>
+                    <!-- implementations of 'pci-root' -->
+                    <value>spapr-pci-host-bridge</value>
                     <!-- implementations of 'pci-bridge' -->
                     <value>pci-bridge</value>
                     <!-- implementations of 'dmi-to-pci-bridge' -->

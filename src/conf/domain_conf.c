@@ -349,6 +349,7 @@ VIR_ENUM_IMPL(virDomainControllerPCIModelName,
               "pxb",
               "pxb-pcie",
               "pcie-root-port",
+              "spapr-pci-host-bridge",
 );
 
 VIR_ENUM_IMPL(virDomainControllerModelSCSI, VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST,
