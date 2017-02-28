@@ -412,10 +412,65 @@ virHostdevNetConfigVirtPortProfile(const char *linkdev, int vf,
 }
 
 
+/**
+ * virHostdevSaveNetConfig:
+ * @hostdev: config object describing a hostdev device
+ * @stateDir: directory to save device state into
+ *
+ * If the given hostdev device is an SRIOV network VF and *does not*
+ * have a <virtualport> element (ie, it isn't being configured via
+ * 802.11Qbh), determine its PF+VF#, and use that to save its current
+ * "admin" MAC address and VF tag (the ones saved in the PF
+ * driver).
+ *
+ * Returns 0 on success, -1 on failure.
+ */
 static int
-virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
-                           const unsigned char *uuid,
-                           const char *stateDir)
+virHostdevSaveNetConfig(virDomainHostdevDefPtr hostdev,
+                        const char *stateDir)
+{
+    int ret = -1;
+    char *linkdev = NULL;
+    int vf = -1;
+
+    if (!virHostdevIsPCINetDevice(hostdev) ||
+        virDomainNetGetActualVirtPortProfile(hostdev->parent.data.net))
+       return 0;
+
+    if (virHostdevIsVirtualFunction(hostdev) != 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Interface type hostdev is currently supported on"
+                         " SR-IOV Virtual Functions only"));
+        goto cleanup;
+    }
+
+    if (virHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
+        goto cleanup;
+
+    if (virNetDevSaveNetConfig(linkdev, vf, stateDir, true) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(linkdev);
+    return ret;
+}
+
+
+/**
+ * virHostdevSetNetConfig:
+ * @hostdev: config object describing a hostdev device
+ * @uuid: uuid of the domain
+ *
+ * If the given hostdev device is an SRIOV network VF, determine its
+ * PF+VF#, and use that to set the "admin" MAC address and VF tag (the
+ * ones saved in the PF driver).xs
+ *
+ * Returns 0 on success, -1 on failure.
+ */
+static int
+virHostdevSetNetConfig(virDomainHostdevDefPtr hostdev,
+                       const unsigned char *uuid)
 {
     char *linkdev = NULL;
     virNetDevVlanPtr vlan;
@@ -424,12 +479,8 @@ virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
     int vf = -1;
     bool port_profile_associate = true;
 
-    if (virHostdevIsVirtualFunction(hostdev) != 1) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Interface type hostdev is currently supported on"
-                         " SR-IOV Virtual Functions only"));
-        goto cleanup;
-    }
+    if (!virHostdevIsPCINetDevice(hostdev))
+        return 0;
 
     if (virHostdevNetDevice(hostdev, &linkdev, &vf) < 0)
         goto cleanup;
@@ -450,11 +501,6 @@ virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
             goto cleanup;
         }
     } else {
-        /* Save/Set only mac and vlan */
-
-        if (virNetDevSaveNetConfig(linkdev, vf, stateDir, true) < 0)
-            goto cleanup;
-
         if (virNetDevSetNetConfig(linkdev, vf, &hostdev->parent.data.net->mac,
                                   vlan, NULL, true) < 0) {
             goto cleanup;
@@ -466,6 +512,7 @@ virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
     VIR_FREE(linkdev);
     return ret;
 }
+
 
 /* @oldStateDir:
  * For upgrade purpose:
@@ -693,16 +740,16 @@ virHostdevPreparePCIDevices(virHostdevManagerPtr mgr,
     }
 
     /* Step 4: For SRIOV network devices, Now that we have detached the
-     * the network device, set the netdev config */
+     * the network device, set the new netdev config */
     for (i = 0; i < nhostdevs; i++) {
-         virDomainHostdevDefPtr hostdev = hostdevs[i];
-         if (!virHostdevIsPCINetDevice(hostdev))
-             continue;
-         if (virHostdevNetConfigReplace(hostdev, uuid,
-                                        mgr->stateDir) < 0) {
-             goto resetvfnetconfig;
-         }
-         last_processed_hostdev_vf = i;
+
+        if (virHostdevSaveNetConfig(hostdevs[i], mgr->stateDir) < 0)
+            goto resetvfnetconfig;
+
+        if (virHostdevSetNetConfig(hostdevs[i], uuid) < 0)
+            goto resetvfnetconfig;
+
+        last_processed_hostdev_vf = i;
     }
 
     /* Step 5: Move devices from the inactive list to the active list */
