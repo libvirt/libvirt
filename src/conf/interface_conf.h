@@ -161,46 +161,7 @@ struct _virInterfaceDef {
     virInterfaceProtocolDefPtr *protos; /* ptr to array of protos[nprotos] */
 };
 
-typedef struct _virInterfaceObj virInterfaceObj;
-typedef virInterfaceObj *virInterfaceObjPtr;
-struct _virInterfaceObj {
-    virMutex lock;
-
-    bool active;           /* true if interface is active (up) */
-    virInterfaceDefPtr def; /* The interface definition */
-};
-
-typedef struct _virInterfaceObjList virInterfaceObjList;
-typedef virInterfaceObjList *virInterfaceObjListPtr;
-struct _virInterfaceObjList {
-    size_t count;
-    virInterfaceObjPtr *objs;
-};
-
-static inline bool
-virInterfaceObjIsActive(const virInterfaceObj *iface)
-{
-    return iface->active;
-}
-
-int virInterfaceFindByMACString(virInterfaceObjListPtr interfaces,
-                                const char *mac,
-                                virInterfaceObjPtr *matches, int maxmatches);
-virInterfaceObjPtr virInterfaceFindByName(virInterfaceObjListPtr interfaces,
-                                          const char *name);
-
-
 void virInterfaceDefFree(virInterfaceDefPtr def);
-void virInterfaceObjFree(virInterfaceObjPtr iface);
-void virInterfaceObjListFree(virInterfaceObjListPtr vms);
-int virInterfaceObjListClone(virInterfaceObjListPtr src,
-                             virInterfaceObjListPtr dest);
-
-
-virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
-                                         virInterfaceDefPtr def);
-void virInterfaceRemove(virInterfaceObjListPtr interfaces,
-                        virInterfaceObjPtr iface);
 
 virInterfaceDefPtr virInterfaceDefParseString(const char *xmlStr);
 virInterfaceDefPtr virInterfaceDefParseFile(const char *filename);
@@ -208,12 +169,6 @@ virInterfaceDefPtr virInterfaceDefParseNode(xmlDocPtr xml,
                                             xmlNodePtr root);
 
 char *virInterfaceDefFormat(const virInterfaceDef *def);
-
-void virInterfaceObjLock(virInterfaceObjPtr obj);
-void virInterfaceObjUnlock(virInterfaceObjPtr obj);
-
-typedef bool (*virInterfaceObjListFilter)(virConnectPtr conn,
-                                          virInterfaceDefPtr def);
 
 # define VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE   \
                 (VIR_CONNECT_LIST_INTERFACES_ACTIVE | \

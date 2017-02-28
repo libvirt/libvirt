@@ -594,19 +594,11 @@ virDomainConfVMNWFilterTeardown;
 
 
 # conf/interface_conf.h
-virInterfaceAssignDef;
 virInterfaceDefFormat;
 virInterfaceDefFree;
 virInterfaceDefParseFile;
 virInterfaceDefParseNode;
 virInterfaceDefParseString;
-virInterfaceFindByMACString;
-virInterfaceFindByName;
-virInterfaceObjListClone;
-virInterfaceObjListFree;
-virInterfaceObjLock;
-virInterfaceObjUnlock;
-virInterfaceRemove;
 
 
 # conf/netdev_bandwidth_conf.h
@@ -946,6 +938,17 @@ virDomainObjListNumOfDomains;
 virDomainObjListRemove;
 virDomainObjListRemoveLocked;
 virDomainObjListRename;
+
+
+# conf/virinterfaceobj.h
+virInterfaceAssignDef;
+virInterfaceFindByMACString;
+virInterfaceFindByName;
+virInterfaceObjListClone;
+virInterfaceObjListFree;
+virInterfaceObjLock;
+virInterfaceObjUnlock;
+virInterfaceRemove;
 
 
 # conf/virnodedeviceobj.h

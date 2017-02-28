@@ -64,6 +64,7 @@
 #include "virauth.h"
 #include "viratomic.h"
 #include "virdomainobjlist.h"
+#include "virinterfaceobj.h"
 #include "virhostcpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_TEST

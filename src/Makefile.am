@@ -381,7 +381,8 @@ STORAGE_CONF_SOURCES =                                         \
 
 # Interface driver generic impl APIs
 INTERFACE_CONF_SOURCES =                                       \
-		conf/interface_conf.c conf/interface_conf.h
+		conf/interface_conf.c conf/interface_conf.h    \
+		conf/virinterfaceobj.c conf/virinterfaceobj.h
 
 # Secret driver generic impl APIs
 SECRET_CONF_SOURCES =                                          \

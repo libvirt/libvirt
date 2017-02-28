@@ -33,6 +33,7 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "viraccessapicheck.h"
+#include "virinterfaceobj.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 
