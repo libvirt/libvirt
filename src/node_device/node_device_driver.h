@@ -26,7 +26,7 @@
 
 # include "internal.h"
 # include "driver.h"
-# include "node_device_conf.h"
+# include "virnodedeviceobj.h"
 
 # define LINUX_NEW_DEVICE_WAIT_TIME 60
 

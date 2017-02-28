@@ -390,7 +390,8 @@ SECRET_CONF_SOURCES =                                          \
 
 # Network driver generic impl APIs
 NODE_DEVICE_CONF_SOURCES =                                     \
-		conf/node_device_conf.c conf/node_device_conf.h
+		conf/node_device_conf.c conf/node_device_conf.h \
+		conf/virnodedeviceobj.c conf/virnodedeviceobj.h
 
 CPU_CONF_SOURCES =						\
 		conf/cpu_conf.c conf/cpu_conf.h

@@ -51,6 +51,7 @@
 #include "storage_conf.h"
 #include "storage_event.h"
 #include "node_device_conf.h"
+#include "virnodedeviceobj.h"
 #include "node_device_event.h"
 #include "virxml.h"
 #include "virthread.h"
