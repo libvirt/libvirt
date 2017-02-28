@@ -603,7 +603,7 @@ nwfilterUndefine(virNWFilterPtr obj)
         goto cleanup;
     }
 
-    if (virNWFilterObjDeleteDef(driver->configDir, nwfilter) < 0)
+    if (virNWFilterDeleteDef(driver->configDir, nwfilter->def) < 0)
         goto cleanup;
 
     virNWFilterObjRemove(&driver->nwfilters, nwfilter);

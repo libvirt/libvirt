@@ -3263,21 +3263,19 @@ virNWFilterSaveDef(const char *configDir,
 
 
 int
-virNWFilterObjDeleteDef(const char *configDir,
-                        virNWFilterObjPtr nwfilter)
+virNWFilterDeleteDef(const char *configDir,
+                     virNWFilterDefPtr def)
 {
     int ret = -1;
     char *configFile = NULL;
 
-    if (!(configFile = virFileBuildPath(configDir,
-                                        nwfilter->def->name, ".xml"))) {
+    if (!(configFile = virFileBuildPath(configDir, def->name, ".xml")))
         goto error;
-    }
 
     if (unlink(configFile) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot remove config for %s"),
-                       nwfilter->def->name);
+                       def->name);
         goto error;
     }
 

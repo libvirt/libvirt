@@ -614,8 +614,8 @@ virNWFilterObjPtr virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters,
 int virNWFilterSaveDef(const char *configDir,
                        virNWFilterDefPtr def);
 
-int virNWFilterObjDeleteDef(const char *configDir,
-                            virNWFilterObjPtr nwfilter);
+int virNWFilterDeleteDef(const char *configDir,
+                         virNWFilterDefPtr def);
 
 virNWFilterObjPtr virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
                                           virNWFilterDefPtr def);
