@@ -5626,17 +5626,15 @@ testNodeDeviceListCaps(virNodeDevicePtr dev, char **const names, int maxnames)
 }
 
 
-static virNodeDeviceDefPtr
-testNodeDeviceMockCreateVport(virConnectPtr conn,
+static virNodeDeviceObjPtr
+testNodeDeviceMockCreateVport(testDriverPtr driver,
                               const char *wwnn,
                               const char *wwpn)
 {
-    testDriverPtr driver = conn->privateData;
-    virNodeDevicePtr devcpy = NULL;
     char *xml = NULL;
     virNodeDeviceDefPtr def = NULL;
     virNodeDevCapsDefPtr caps;
-    virNodeDeviceObjPtr obj = NULL;
+    virNodeDeviceObjPtr obj = NULL, objcopy = NULL;
     virObjectEventPtr event = NULL;
 
     /* In the real code, we'd call virVHBAManageVport which would take the
@@ -5648,9 +5646,15 @@ testNodeDeviceMockCreateVport(virConnectPtr conn,
      * using the scsi_host11 definition, changing the name and the
      * scsi_host capability fields before calling virNodeDeviceAssignDef
      * to add the def to the node device objects list. */
-    if (!(devcpy = virNodeDeviceLookupByName(conn, "scsi_host11")) ||
-        !(xml = virNodeDeviceGetXMLDesc(devcpy, 0)) ||
-        !(def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL)))
+    if (!(objcopy = virNodeDeviceFindByName(&driver->devs, "scsi_host11")))
+        goto cleanup;
+
+    xml = virNodeDeviceDefFormat(objcopy->def);
+    virNodeDeviceObjUnlock(objcopy);
+    if (!xml)
+        goto cleanup;
+
+    if (!(def = virNodeDeviceDefParseString(xml, EXISTING_DEVICE, NULL)))
         goto cleanup;
 
     VIR_FREE(def->name);
@@ -5684,23 +5688,17 @@ testNodeDeviceMockCreateVport(virConnectPtr conn,
 
     if (!(obj = virNodeDeviceAssignDef(&driver->devs, def)))
         goto cleanup;
-    virNodeDeviceObjUnlock(obj);
+    def = NULL;
 
-    event = virNodeDeviceEventLifecycleNew(def->name,
+    event = virNodeDeviceEventLifecycleNew(obj->def->name,
                                            VIR_NODE_DEVICE_EVENT_CREATED,
                                            0);
     testObjectEventQueue(driver, event);
 
  cleanup:
     VIR_FREE(xml);
-    if (!obj) {
-        virNodeDeviceDefFree(def);
-        def = NULL;
-    }
-    if (devcpy)
-        virNodeDeviceFree(devcpy);
-
-    return def;
+    virNodeDeviceDefFree(def);
+    return obj;
 }
 
 
@@ -5712,8 +5710,8 @@ testNodeDeviceCreateXML(virConnectPtr conn,
     testDriverPtr driver = conn->privateData;
     virNodeDeviceDefPtr def = NULL;
     char *wwnn = NULL, *wwpn = NULL;
-    virNodeDevicePtr dev = NULL;
-    virNodeDeviceDefPtr newdef = NULL;
+    virNodeDevicePtr dev = NULL, ret = NULL;
+    virNodeDeviceObjPtr obj = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -5739,20 +5737,28 @@ testNodeDeviceCreateXML(virConnectPtr conn,
      * mocking udev. The mock routine will copy an existing vHBA and
      * rename a few fields to mock that. So in order to allow that to
      * work properly, we need to drop our lock */
-    testDriverUnlock(driver);
-    if ((newdef = testNodeDeviceMockCreateVport(conn, wwnn, wwpn))) {
-        if ((dev = virNodeDeviceLookupByName(conn, newdef->name)))
-            ignore_value(VIR_STRDUP(dev->parent, def->parent));
-    }
-    testDriverLock(driver);
-    newdef = NULL;
+    if (!(obj = testNodeDeviceMockCreateVport(driver, wwnn, wwpn)))
+        goto cleanup;
+
+    if (!(dev = virGetNodeDevice(conn, obj->def->name)))
+        goto cleanup;
+
+    VIR_FREE(dev->parent);
+    if (VIR_STRDUP(dev->parent, def->parent) < 0)
+        goto cleanup;
+
+    ret = dev;
+    dev = NULL;
 
  cleanup:
+    if (obj)
+        virNodeDeviceObjUnlock(obj);
     testDriverUnlock(driver);
     virNodeDeviceDefFree(def);
+    virObjectUnref(dev);
     VIR_FREE(wwnn);
     VIR_FREE(wwpn);
-    return dev;
+    return ret;
 }
 
 static int
