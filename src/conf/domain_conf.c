@@ -1899,6 +1899,37 @@ void virDomainControllerDefFree(virDomainControllerDefPtr def)
     VIR_FREE(def);
 }
 
+
+/**
+ * virDomainControllerIsPCIHostBridge:
+ * @cont: controller
+ *
+ * Checks whether @cont is a PCI Host Bridge (PHB), a specific type
+ * of PCI controller used by pSeries guests.
+ *
+ * Returns: true if @cont is a PHB, false otherwise.
+ */
+bool
+virDomainControllerIsPCIHostBridge(const virDomainControllerDef *cont)
+{
+    virDomainControllerPCIModelName name;
+
+    /* PHBs are pci-root controllers */
+    if (cont->type != VIR_DOMAIN_CONTROLLER_TYPE_PCI ||
+        cont->model != VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT) {
+        return false;
+    }
+
+    name = cont->opts.pciopts.modelName;
+
+    /* The actual device used for PHBs is spapr-pci-host-bridge */
+    if (name != VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE)
+        return false;
+
+    return true;
+}
+
+
 virDomainFSDefPtr
 virDomainFSDefNew(void)
 {

@@ -2678,10 +2678,12 @@ int virDomainDeviceFindControllerModel(const virDomainDef *def,
 virDomainDiskDefPtr virDomainDiskFindByBusAndDst(virDomainDefPtr def,
                                                  int bus,
                                                  char *dst);
+
+virDomainControllerDefPtr virDomainControllerDefNew(virDomainControllerType type);
 void virDomainControllerDefFree(virDomainControllerDefPtr def);
+bool virDomainControllerIsPCIHostBridge(const virDomainControllerDef *cont);
+
 virDomainFSDefPtr virDomainFSDefNew(void);
-virDomainControllerDefPtr
-virDomainControllerDefNew(virDomainControllerType type);
 void virDomainFSDefFree(virDomainFSDefPtr def);
 void virDomainActualNetDefFree(virDomainActualNetDefPtr def);
 void virDomainNetDefClear(virDomainNetDefPtr def);
