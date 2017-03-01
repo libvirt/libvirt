@@ -18,7 +18,7 @@
     <pae/>
     <gic version='2'/>
   </features>
-  <cpu mode='custom' match='exact'>
+  <cpu mode='custom' match='exact' check='none'>
     <model fallback='allow'>cortex-a53</model>
   </cpu>
   <clock offset='utc'/>

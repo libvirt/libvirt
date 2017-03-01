@@ -15,7 +15,7 @@
     <apic/>
     <pae/>
   </features>
-  <cpu mode='custom' match='exact'>
+  <cpu mode='custom' match='exact' check='partial'>
     <model fallback='allow'>core2duo</model>
     <vendor>Intel</vendor>
     <topology sockets='1' cores='2' threads='1'/>

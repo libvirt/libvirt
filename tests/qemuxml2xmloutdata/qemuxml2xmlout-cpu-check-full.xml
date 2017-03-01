@@ -5,20 +5,18 @@
   <currentMemory unit='KiB'>219100</currentMemory>
   <vcpu placement='static'>6</vcpu>
   <os>
-    <type arch='i686' machine='pc'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='network'/>
   </os>
-  <cpu mode='custom' match='exact' check='partial'>
-    <model fallback='allow'>core2duo</model>
+  <cpu mode='custom' match='exact' check='full'>
+    <model fallback='forbid'>core2duo</model>
   </cpu>
-  <clock offset='utc'>
-    <timer name='kvmclock' present='no'/>
-  </clock>
+  <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu</emulator>
+    <emulator>/usr/bin/qemu-kvm</emulator>
     <controller type='usb' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>

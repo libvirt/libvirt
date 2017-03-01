@@ -13,7 +13,7 @@
     <apic eoi='off'/>
     <pae/>
   </features>
-  <cpu mode='custom' match='exact'>
+  <cpu mode='custom' match='exact' check='none'>
     <model fallback='allow'>qemu32</model>
   </cpu>
   <clock offset='utc'/>

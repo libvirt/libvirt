@@ -2675,6 +2675,45 @@ qemuDomainDefVcpusPostParse(virDomainDefPtr def)
 
 
 static int
+qemuDomainDefCPUPostParse(virDomainDefPtr def)
+{
+    if (!def->cpu)
+        return 0;
+
+    /* Nothing to be done if only CPU topology is specified. */
+    if (def->cpu->mode == VIR_CPU_MODE_CUSTOM &&
+        !def->cpu->model)
+        return 0;
+
+    if (def->cpu->check != VIR_CPU_CHECK_DEFAULT)
+        return 0;
+
+    switch ((virCPUMode) def->cpu->mode) {
+    case VIR_CPU_MODE_HOST_PASSTHROUGH:
+        def->cpu->check = VIR_CPU_CHECK_NONE;
+        break;
+
+    case VIR_CPU_MODE_HOST_MODEL:
+        def->cpu->check = VIR_CPU_CHECK_PARTIAL;
+        break;
+
+    case VIR_CPU_MODE_CUSTOM:
+        /* Custom CPUs in TCG mode are not compared to host CPU by default. */
+        if (def->virtType == VIR_DOMAIN_VIRT_QEMU)
+            def->cpu->check = VIR_CPU_CHECK_NONE;
+        else
+            def->cpu->check = VIR_CPU_CHECK_PARTIAL;
+        break;
+
+    case VIR_CPU_MODE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefPostParse(virDomainDefPtr def,
                        virCapsPtr caps,
                        unsigned int parseFlags,
@@ -2736,6 +2775,9 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         goto cleanup;
 
     if (qemuDomainDefVcpusPostParse(def) < 0)
+        goto cleanup;
+
+    if (qemuDomainDefCPUPostParse(def) < 0)
         goto cleanup;
 
     ret = 0;

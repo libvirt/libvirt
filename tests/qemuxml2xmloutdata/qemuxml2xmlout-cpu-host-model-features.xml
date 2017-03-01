@@ -13,7 +13,7 @@
     <type arch='i686' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
-  <cpu mode='host-model'>
+  <cpu mode='host-model' check='partial'>
     <model fallback='allow'/>
     <feature policy='require' name='abm'/>
     <feature policy='force' name='ds'/>

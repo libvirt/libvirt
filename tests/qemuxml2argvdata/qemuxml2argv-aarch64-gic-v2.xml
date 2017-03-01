@@ -11,7 +11,7 @@
   <features>
     <gic version='2'/>
   </features>
-  <cpu mode='host-passthrough'/>
+  <cpu mode='host-passthrough' check='none'/>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>

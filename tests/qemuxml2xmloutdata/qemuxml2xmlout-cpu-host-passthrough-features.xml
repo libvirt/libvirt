@@ -13,7 +13,7 @@
     <type arch='i686' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
-  <cpu mode='host-passthrough'>
+  <cpu mode='host-passthrough' check='none'>
     <feature policy='require' name='abm'/>
     <feature policy='force' name='ds'/>
     <feature policy='disable' name='invtsc'/>

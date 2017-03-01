@@ -1125,6 +1125,14 @@ mymain(void)
             QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_IOMMU);
 
+    DO_TEST("cpu-check-none", NONE);
+    DO_TEST("cpu-check-partial", NONE);
+    DO_TEST("cpu-check-full", NONE);
+    DO_TEST("cpu-check-default-none", NONE);
+    DO_TEST("cpu-check-default-none2", NONE);
+    DO_TEST("cpu-check-default-partial", NONE);
+    DO_TEST("cpu-check-default-partial2", NONE);
+
     qemuTestDriverFree(&driver);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
