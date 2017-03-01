@@ -2830,8 +2830,8 @@
             how the hypervisor will behave on a disk read or write
             error, possible values are "stop", "report", "ignore", and
             "enospace".<span class="since">Since 0.8.0, "report" since
-            0.9.7</span> The default setting of error_policy is "report".
-            There is also an
+            0.9.7</span> The default is left to the discretion of the
+            hypervisor. There is also an
             optional <code>rerror_policy</code> that controls behavior
             for read errors only. <span class="since">Since
             0.9.7</span>. If no rerror_policy is given, error_policy
@@ -2840,8 +2840,7 @@
             read errors. Also note that "enospace" is not a valid
             policy for read errors, so if <code>error_policy</code> is
             set to "enospace" and no <code>rerror_policy</code> is
-            given, the read error policy will be left at its default,
-            which is "report".
+            given, the read error policy will be left at its default.
           </li>
           <li>
             The optional <code>io</code> attribute controls specific
