@@ -1158,6 +1158,40 @@ qemuDomainSecretInfoNew(virConnectPtr conn,
 }
 
 
+/**
+ * qemuDomainSecretInfoTLSNew:
+ * @conn: Pointer to connection
+ * @priv: pointer to domain private object
+ * @srcAlias: Alias base to use for TLS object
+ * @secretUUID: Provide a secretUUID value to look up/create the secretInfo
+ *
+ * Using the passed @secretUUID, generate a seclookupdef that can be used
+ * to generate the returned qemuDomainSecretInfoPtr for a TLS based secret.
+ *
+ * Returns qemuDomainSecretInfoPtr or NULL on error.
+ */
+static qemuDomainSecretInfoPtr
+qemuDomainSecretInfoTLSNew(virConnectPtr conn,
+                           qemuDomainObjPrivatePtr priv,
+                           const char *srcAlias,
+                           const char *secretUUID)
+{
+    virSecretLookupTypeDef seclookupdef = {0};
+
+    if (virUUIDParse(secretUUID, seclookupdef.u.uuid) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("malformed TLS secret uuid '%s' provided"),
+                       secretUUID);
+        return NULL;
+    }
+    seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
+
+    return qemuDomainSecretInfoNew(conn, priv, srcAlias,
+                                   VIR_SECRET_USAGE_TYPE_TLS, NULL,
+                                   &seclookupdef, false);
+}
+
+
 /* qemuDomainSecretDiskDestroy:
  * @disk: Pointer to a disk definition
  *
@@ -1337,7 +1371,6 @@ qemuDomainSecretChardevPrepare(virConnectPtr conn,
                                const char *chrAlias,
                                virDomainChrSourceDefPtr dev)
 {
-    virSecretLookupTypeDef seclookupdef = {0};
     char *charAlias = NULL;
 
     if (dev->type != VIR_DOMAIN_CHR_TYPE_TCP)
@@ -1348,31 +1381,19 @@ qemuDomainSecretChardevPrepare(virConnectPtr conn,
         qemuDomainChrSourcePrivatePtr chrSourcePriv =
             QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
 
-        if (virUUIDParse(cfg->chardevTLSx509secretUUID,
-                         seclookupdef.u.uuid) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("malformed chardev TLS secret uuid in qemu.conf"));
-            return -1;
-        }
-        seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
-
         if (!(charAlias = qemuAliasChardevFromDevAlias(chrAlias)))
             return -1;
 
-        if (!(chrSourcePriv->secinfo =
-              qemuDomainSecretInfoNew(conn, priv, charAlias,
-                                      VIR_SECRET_USAGE_TYPE_TLS, NULL,
-                                      &seclookupdef, false)))
-            goto error;
-
+        chrSourcePriv->secinfo =
+            qemuDomainSecretInfoTLSNew(conn, priv, charAlias,
+                                       cfg->chardevTLSx509secretUUID);
         VIR_FREE(charAlias);
+
+        if (!chrSourcePriv->secinfo)
+            return -1;
     }
 
     return 0;
-
- error:
-    VIR_FREE(charAlias);
-    return -1;
 }
 
 
