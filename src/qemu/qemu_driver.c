@@ -13873,6 +13873,22 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
         goto cleanup;
     }
 
+    /* internal snapshots + pflash based loader have the following problems:
+     * - if the variable store is raw, the snapshot fails
+     * - alowing a qcow2 image as the varstore would make it eligible to receive
+     *   the vmstate dump, which would make it huge
+     * - offline snapshot would not snapshot the varstore at all
+     *
+     * Avoid the issues by forbidding internal snapshot with pflash completely.
+     */
+    if (found_internal &&
+        vm->def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_PFLASH) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("internal snapshots of a VM with pflash based "
+                         "firmware are not supported"));
+        goto cleanup;
+    }
+
     /* Alter flags to let later users know what we learned.  */
     if (external && !active)
         *flags |= VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY;
