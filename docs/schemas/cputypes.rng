@@ -23,6 +23,16 @@
     </attribute>
   </define>
 
+  <define name="cpuCheck">
+    <attribute name="check">
+      <choice>
+        <value>none</value>
+        <value>partial</value>
+        <value>full</value>
+      </choice>
+    </attribute>
+  </define>
+
   <define name="cpuModel">
     <element name="model">
       <optional>

@@ -1247,6 +1247,36 @@
         <span class="since">Since 0.8.5</span> the <code>match</code>
         attribute can be omitted and will default to <code>exact</code>.
 
+        Sometimes the hypervisor is not able to create a virtual CPU exactly
+        matching the specification passed by libvirt.
+        <span class="since">Since 3.2.0</span>, an optional <code>check</code>
+        attribute can be used to request a specific way of checking whether
+        the virtual CPU matches the specification. It is usually safe to omit
+        this attribute when starting a domain and stick with the default
+        value. Once the domain starts, libvirt will automatically change the
+        <code>check</code> attribute to the best supported value to ensure the
+        virtual CPU does not change when the domain is migrated to another
+        host. The following values can be used:
+
+        <dl>
+          <dt><code>none</code></dt>
+          <dd>Libvirt does no checking and it is up to the hypervisor to
+            refuse to start the domain if it cannot provide the requested CPU.
+            With QEMU this means no checking is done at all since the default
+            behavior of QEMU is to emit warnings, but start the domain anyway.
+          </dd>
+
+          <dt><code>partial</code></dt>
+          <dd>Libvirt will check the guest CPU specification before starting
+            a domain, but the rest is left on the hypervisor. It can still
+            provide a different virtual CPU.</dd>
+
+          <dt><code>full</code></dt>
+          <dd>The virtual CPU created by the hypervisor will be checked
+            against the CPU specification and the domain will not be started
+            unless the two CPUs match.</dd>
+        </dl>
+
         <span class="since">Since 0.9.10</span>, an optional <code>mode</code>
         attribute may be used to make it easier to configure a guest CPU to be
         as close to host CPU as possible. Possible values for the

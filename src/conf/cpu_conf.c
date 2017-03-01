@@ -45,6 +45,12 @@ VIR_ENUM_IMPL(virCPUMatch, VIR_CPU_MATCH_LAST,
               "exact",
               "strict")
 
+VIR_ENUM_IMPL(virCPUCheck, VIR_CPU_CHECK_LAST,
+              "default",
+              "none",
+              "partial",
+              "full")
+
 VIR_ENUM_IMPL(virCPUFallback, VIR_CPU_FALLBACK_LAST,
               "allow",
               "forbid")
@@ -182,6 +188,7 @@ virCPUDefCopyWithoutModel(const virCPUDef *cpu)
     copy->type = cpu->type;
     copy->mode = cpu->mode;
     copy->match = cpu->match;
+    copy->check = cpu->check;
     copy->fallback = cpu->fallback;
     copy->sockets = cpu->sockets;
     copy->cores = cpu->cores;
@@ -277,6 +284,7 @@ virCPUDefParseXML(xmlNodePtr node,
 
     if (def->type == VIR_CPU_TYPE_GUEST) {
         char *match = virXMLPropString(node, "match");
+        char *check;
 
         if (!match) {
             if (virXPathBoolean("boolean(./model)", ctxt))
@@ -293,6 +301,19 @@ virCPUDefParseXML(xmlNodePtr node,
                                  "specification"));
                 goto error;
             }
+        }
+
+        if ((check = virXMLPropString(node, "check"))) {
+            int value = virCPUCheckTypeFromString(check);
+            VIR_FREE(check);
+
+            if (value < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Invalid check attribute for CPU "
+                                 "specification"));
+                goto error;
+            }
+            def->check = value;
         }
     }
 
@@ -531,6 +552,11 @@ virCPUDefFormatBufFull(virBufferPtr buf,
                 goto cleanup;
             }
             virBufferAsprintf(&attributeBuf, " match='%s'", tmp);
+        }
+
+        if (def->check) {
+            virBufferAsprintf(&attributeBuf, " check='%s'",
+                              virCPUCheckTypeToString(def->check));
         }
     }
 

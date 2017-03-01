@@ -4593,6 +4593,24 @@ virDomainVcpuDefPostParse(virDomainDefPtr def)
 
 
 static int
+virDomainDefPostParseCPU(virDomainDefPtr def)
+{
+    if (!def->cpu)
+        return 0;
+
+    if (def->cpu->mode == VIR_CPU_MODE_CUSTOM &&
+        !def->cpu->model &&
+        def->cpu->check != VIR_CPU_CHECK_DEFAULT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("check attribute specified for CPU with no model"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDefPostParseInternal(virDomainDefPtr def,
                               struct virDomainDefPostParseDeviceIteratorData *data)
 {
@@ -4641,6 +4659,9 @@ virDomainDefPostParseInternal(virDomainDefPtr def,
     virXMLNodeSanitizeNamespaces(def->metadata);
 
     virDomainDefPostParseGraphics(def);
+
+    if (virDomainDefPostParseCPU(def) < 0)
+        return -1;
 
     return 0;
 }

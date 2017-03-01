@@ -64,6 +64,17 @@ typedef enum {
 VIR_ENUM_DECL(virCPUMatch)
 
 typedef enum {
+    VIR_CPU_CHECK_DEFAULT,
+    VIR_CPU_CHECK_NONE,
+    VIR_CPU_CHECK_PARTIAL,
+    VIR_CPU_CHECK_FULL,
+
+    VIR_CPU_CHECK_LAST
+} virCPUCheck;
+
+VIR_ENUM_DECL(virCPUCheck)
+
+typedef enum {
     VIR_CPU_FALLBACK_ALLOW,
     VIR_CPU_FALLBACK_FORBID,
 
@@ -98,6 +109,7 @@ struct _virCPUDef {
     int type;           /* enum virCPUType */
     int mode;           /* enum virCPUMode */
     int match;          /* enum virCPUMatch */
+    virCPUCheck check;
     virArch arch;
     char *model;
     char *vendor_id;    /* vendor id returned by CPUID in the guest */
