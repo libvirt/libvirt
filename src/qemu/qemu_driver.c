@@ -3990,13 +3990,11 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
         goto endjob;
     }
 
-    virDomainObjSetState(vm,
-                         VIR_DOMAIN_CRASHED,
-                         VIR_DOMAIN_CRASHED_PANICKED);
+    virDomainObjSetState(vm, VIR_DOMAIN_CRASHED, VIR_DOMAIN_CRASHED_PANICKED);
 
     event = virDomainEventLifecycleNewFromObj(vm,
-                                     VIR_DOMAIN_EVENT_CRASHED,
-                                     VIR_DOMAIN_EVENT_CRASHED_PANICKED);
+                                              VIR_DOMAIN_EVENT_CRASHED,
+                                              VIR_DOMAIN_EVENT_CRASHED_PANICKED);
 
     qemuDomainEventQueue(driver, event);
 
@@ -4019,8 +4017,8 @@ processGuestPanicEvent(virQEMUDriverPtr driver,
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_CRASHED,
                         QEMU_ASYNC_JOB_DUMP, 0);
         event = virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STOPPED,
-                                         VIR_DOMAIN_EVENT_STOPPED_CRASHED);
+                                                  VIR_DOMAIN_EVENT_STOPPED,
+                                                  VIR_DOMAIN_EVENT_STOPPED_CRASHED);
 
         qemuDomainEventQueue(driver, event);
         virDomainAuditStop(vm, "destroyed");
