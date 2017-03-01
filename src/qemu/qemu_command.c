@@ -4827,7 +4827,8 @@ qemuBuildChrChardevFileStr(virLogManagerPtr logManager,
         int flags = 0;
         int logfd;
 
-        if (appendval == VIR_TRISTATE_SWITCH_OFF)
+        if (appendval == VIR_TRISTATE_SWITCH_ABSENT ||
+            appendval == VIR_TRISTATE_SWITCH_OFF)
             flags |= VIR_LOG_MANAGER_PROTOCOL_DOMAIN_OPEN_LOG_FILE_TRUNCATE;
 
         if ((logfd = virLogManagerDomainOpenLogFile(logManager,
