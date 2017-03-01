@@ -3141,7 +3141,8 @@ qemuDomainShmemDefPostParse(virDomainShmemDefPtr shm)
 static int
 qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
                                  const virDomainDef *def,
-                                 virQEMUCapsPtr qemuCaps)
+                                 virQEMUCapsPtr qemuCaps,
+                                 unsigned int parseFlags)
 {
     switch ((virDomainControllerType)cont->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
@@ -3169,9 +3170,16 @@ qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
                  * address is found */
                 cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
             } else if (ARCH_IS_PPC64(def->os.arch)) {
-                /* Default USB controller for ppc64 is pci-ohci */
-                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+                /* To not break migration we need to set default USB controller
+                 * for ppc64 to pci-ohci if we cannot change ABI of the VM.
+                 * The nec-usb-xhci controller is used as default only for
+                 * newly defined domains or devices. */
+                if ((parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE) &&
+                    virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI)) {
+                    cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI;
+                } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI)) {
                     cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+                }
             } else {
                 /* Default USB controller for anything else is piix3-uhci */
                 if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
@@ -3370,7 +3378,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
 
     if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
         qemuDomainControllerDefPostParse(dev->data.controller, def,
-                                         qemuCaps) < 0)
+                                         qemuCaps, parseFlags) < 0)
         goto cleanup;
 
     if (dev->type == VIR_DOMAIN_DEVICE_SHMEM &&
