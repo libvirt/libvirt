@@ -316,7 +316,6 @@ static int udevTranslatePCIIds(unsigned int vendor,
 static int udevProcessPCI(struct udev_device *device,
                           virNodeDeviceDefPtr def)
 {
-    const char *syspath = NULL;
     virNodeDevCapPCIDevPtr pci_dev = &def->caps->data.pci_dev;
     virPCIEDeviceInfoPtr pci_express = NULL;
     virPCIDevicePtr pciDev = NULL;
@@ -324,19 +323,17 @@ static int udevProcessPCI(struct udev_device *device,
     int ret = -1;
     char *p;
 
-    syspath = udev_device_get_syspath(device);
-
     if (udevGetUintProperty(device, "PCI_CLASS", &pci_dev->class, 16) < 0)
         goto cleanup;
 
-    if ((p = strrchr(syspath, '/')) == NULL ||
+    if ((p = strrchr(def->sysfs_path, '/')) == NULL ||
         virStrToLong_ui(p + 1, &p, 16, &pci_dev->domain) < 0 || p == NULL ||
         virStrToLong_ui(p + 1, &p, 16, &pci_dev->bus) < 0 || p == NULL ||
         virStrToLong_ui(p + 1, &p, 16, &pci_dev->slot) < 0 || p == NULL ||
         virStrToLong_ui(p + 1, &p, 16, &pci_dev->function) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to parse the PCI address from sysfs path: '%s'"),
-                       syspath);
+                       def->sysfs_path);
         goto cleanup;
     }
 
@@ -363,8 +360,7 @@ static int udevProcessPCI(struct udev_device *device,
                             &pci_dev->numa_node, 10) < 0)
         goto cleanup;
 
-    if (nodeDeviceSysfsGetPCIRelatedDevCaps(syspath,
-                                            &def->caps->data.pci_dev) < 0)
+    if (nodeDeviceSysfsGetPCIRelatedDevCaps(def->sysfs_path, pci_dev) < 0)
         goto cleanup;
 
     if (!(pciDev = virPCIDeviceNew(pci_dev->domain,
