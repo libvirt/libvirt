@@ -66,10 +66,10 @@ fillAllCaps(virDomainCapsPtr domCaps)
     virDomainCapsDeviceVideoPtr video = &domCaps->video;
     virDomainCapsDeviceHostdevPtr hostdev = &domCaps->hostdev;
     virCPUDef host = {
-        VIR_CPU_TYPE_HOST, 0, 0,
-        VIR_ARCH_X86_64, (char *) "host",
-        NULL, 0, (char *) "CPU Vendorrr",
-        0, 0, 0, 0, 0, NULL,
+        .type = VIR_CPU_TYPE_HOST,
+        .arch = VIR_ARCH_X86_64,
+        .model = (char *) "host",
+        .vendor = (char *) "CPU Vendorrr",
     };
 
     domCaps->maxvcpus = 255;
@@ -119,25 +119,35 @@ fillAllCaps(virDomainCapsPtr domCaps)
 # include "testutilsqemu.h"
 
 static virCPUDef aarch64Cpu = {
-    0, 0, 0, 0, NULL, NULL, 0, NULL, 1, 1, 1, 0, 0, NULL,
+    .sockets = 1,
+    .cores = 1,
+    .threads = 1,
 };
 
 static virCPUDef ppc64leCpu = {
-    VIR_CPU_TYPE_HOST, 0, 0,
-    VIR_ARCH_PPC64LE, (char *) "POWER8",
-    NULL, 0, NULL, 1, 1, 1, 0, 0, NULL,
+    .type = VIR_CPU_TYPE_HOST,
+    .arch = VIR_ARCH_PPC64LE,
+    .model = (char *) "POWER8",
+    .sockets = 1,
+    .cores = 1,
+    .threads = 1,
 };
 
 static virCPUDef x86Cpu = {
-    VIR_CPU_TYPE_HOST, 0, 0,
-    VIR_ARCH_X86_64, (char *) "Broadwell",
-    NULL, 0, NULL, 1, 1, 1, 0, 0, NULL,
+    .type = VIR_CPU_TYPE_HOST,
+    .arch = VIR_ARCH_X86_64,
+    .model = (char *) "Broadwell",
+    .sockets = 1,
+    .cores = 1,
+    .threads = 1,
 };
 
 static virCPUDef s390Cpu = {
-    VIR_CPU_TYPE_HOST, 0, 0,
-    VIR_ARCH_S390X, NULL,
-    NULL, 0, NULL, 1, 1, 1, 0, 0, NULL,
+    .type = VIR_CPU_TYPE_HOST,
+    .arch = VIR_ARCH_S390X,
+    .sockets = 1,
+    .cores = 1,
+    .threads = 1,
 };
 
 static int
