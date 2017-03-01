@@ -3010,6 +3010,106 @@ qemuDomainShmemDefPostParse(virDomainShmemDefPtr shm)
 
 
 static int
+qemuDomainControllerDefPostParse(virDomainControllerDefPtr cont,
+                                 const virDomainDef *def,
+                                 virQEMUCapsPtr qemuCaps)
+{
+    /* set the default USB model to none for s390 unless an address is found */
+    if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+        cont->model == -1 &&
+        cont->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        ARCH_IS_S390(def->os.arch))
+        cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
+
+    /* forbid usb model 'qusb1' and 'qusb2' in this kind of hyperviosr */
+    if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+        (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1 ||
+         cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("USB controller model type 'qusb1' or 'qusb2' "
+                         "is not supported in %s"),
+                       virDomainVirtTypeToString(def->virtType));
+        return -1;
+    }
+
+
+    /* set the default SCSI controller model for S390 arches */
+    if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
+        cont->model == -1 &&
+        ARCH_IS_S390(def->os.arch))
+        cont->model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
+
+    if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+        cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI &&
+        cont->opts.usbopts.ports > QEMU_USB_NEC_XHCI_MAXPORTS) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("nec-xhci controller only supports up to %u ports"),
+                       QEMU_USB_NEC_XHCI_MAXPORTS);
+        return -1;
+    }
+
+    if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
+        if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS &&
+            !qemuDomainMachineIsI440FX(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("pci-expander-bus controllers are only supported "
+                             "on 440fx-based machinetypes"));
+            return -1;
+        }
+        if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS &&
+            !qemuDomainMachineIsQ35(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("pcie-expander-bus controllers are only supported "
+                             "on q35-based machinetypes"));
+            return -1;
+        }
+
+        /* if a PCI expander bus has a NUMA node set, make sure
+         * that NUMA node is configured in the guest <cpu><numa>
+         * array. NUMA cell id's in this array are numbered
+         * from 0 .. size-1.
+         */
+        if ((cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS ||
+             cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS) &&
+            (int) virDomainNumaGetNodeCount(def->numa)
+            <= cont->opts.pciopts.numaNode) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("%s with index %d is "
+                             "configured for a NUMA node (%d) "
+                             "not present in the domain's "
+                             "<cpu><numa> array (%zu)"),
+                           virDomainControllerModelPCITypeToString(cont->model),
+                           cont->idx, cont->opts.pciopts.numaNode,
+                           virDomainNumaGetNodeCount(def->numa));
+            return -1;
+        }
+    } else if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
+               cont->model == -1) {
+        /* Pick a suitable default model for the USB controller if none
+         * has been selected by the user.
+         *
+         * We rely on device availability instead of setting the model
+         * unconditionally because, for some machine types, there's a
+         * chance we will get away with using the legacy USB controller
+         * when the relevant device is not available.
+         *
+         * See qemuBuildControllerDevCommandLine() */
+        if (ARCH_IS_PPC64(def->os.arch)) {
+            /* Default USB controller for ppc64 is pci-ohci */
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
+                cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
+        } else {
+            /* Default USB controller for anything else is piix3-uhci */
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
+                cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
                              const virDomainDef *def,
                              virCapsPtr caps,
@@ -3087,34 +3187,6 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
         ARCH_IS_S390(def->os.arch))
         dev->data.chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO;
 
-    /* set the default USB model to none for s390 unless an address is found */
-    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
-        dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-        dev->data.controller->model == -1 &&
-        dev->data.controller->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-        ARCH_IS_S390(def->os.arch))
-        dev->data.controller->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_NONE;
-
-    /* forbid usb model 'qusb1' and 'qusb2' in this kind of hyperviosr */
-    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
-        dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-        (dev->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB1 ||
-         dev->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("USB controller model type 'qusb1' or 'qusb2' "
-                         "is not supported in %s"),
-                       virDomainVirtTypeToString(def->virtType));
-        goto cleanup;
-    }
-
-
-    /* set the default SCSI controller model for S390 arches */
-    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
-        dev->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI &&
-        dev->data.controller->model == -1 &&
-        ARCH_IS_S390(def->os.arch))
-        dev->data.controller->model = VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
-
     /* clear auto generated unix socket path for inactive definitions */
     if ((parseFlags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
         dev->type == VIR_DOMAIN_DEVICE_CHR)
@@ -3159,76 +3231,10 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDefPtr dev,
             dev->data.panic->model = VIR_DOMAIN_PANIC_MODEL_ISA;
     }
 
-
-    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER) {
-        virDomainControllerDefPtr cont = dev->data.controller;
-
-        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-            cont->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI &&
-            cont->opts.usbopts.ports > QEMU_USB_NEC_XHCI_MAXPORTS) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("nec-xhci controller only supports up to %u ports"),
-                           QEMU_USB_NEC_XHCI_MAXPORTS);
-            goto cleanup;
-        }
-
-        if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) {
-            if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS &&
-                !qemuDomainMachineIsI440FX(def)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("pci-expander-bus controllers are only supported "
-                                 "on 440fx-based machinetypes"));
-                goto cleanup;
-            }
-            if (cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS &&
-                !qemuDomainMachineIsQ35(def)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("pcie-expander-bus controllers are only supported "
-                                 "on q35-based machinetypes"));
-                goto cleanup;
-            }
-
-            /* if a PCI expander bus has a NUMA node set, make sure
-             * that NUMA node is configured in the guest <cpu><numa>
-             * array. NUMA cell id's in this array are numbered
-             * from 0 .. size-1.
-             */
-            if ((cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS ||
-                 cont->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS) &&
-                (int) virDomainNumaGetNodeCount(def->numa)
-                <= cont->opts.pciopts.numaNode) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("%s with index %d is "
-                                 "configured for a NUMA node (%d) "
-                                 "not present in the domain's "
-                                 "<cpu><numa> array (%zu)"),
-                               virDomainControllerModelPCITypeToString(cont->model),
-                               cont->idx, cont->opts.pciopts.numaNode,
-                               virDomainNumaGetNodeCount(def->numa));
-                goto cleanup;
-            }
-        } else if (cont->type == VIR_DOMAIN_CONTROLLER_TYPE_USB &&
-                   cont->model == -1) {
-            /* Pick a suitable default model for the USB controller if none
-             * has been selected by the user.
-             *
-             * We rely on device availability instead of setting the model
-             * unconditionally because, for some machine types, there's a
-             * chance we will get away with using the legacy USB controller
-             * when the relevant device is not available.
-             *
-             * See qemuBuildControllerDevCommandLine() */
-            if (ARCH_IS_PPC64(def->os.arch)) {
-                /* Default USB controller for ppc64 is pci-ohci */
-                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_OHCI))
-                    cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PCI_OHCI;
-            } else {
-                /* Default USB controller for anything else is piix3-uhci */
-                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX3_USB_UHCI))
-                    cont->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_PIIX3_UHCI;
-            }
-        }
-    }
+    if (dev->type == VIR_DOMAIN_DEVICE_CONTROLLER &&
+        qemuDomainControllerDefPostParse(dev->data.controller, def,
+                                         qemuCaps) < 0)
+        goto cleanup;
 
     if (dev->type == VIR_DOMAIN_DEVICE_SHMEM &&
         qemuDomainShmemDefPostParse(dev->data.shmem) < 0)
