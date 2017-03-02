@@ -153,7 +153,7 @@ gather_pci_cap(LibHalContext *ctx, const char *udi,
             ignore_value(virStrToLong_ui(p+1, &p, 16, &d->pci_dev.function));
         }
 
-        if (nodeDeviceSysfsGetPCIRelatedDevCaps(sysfs_path, d) < 0) {
+        if (nodeDeviceSysfsGetPCIRelatedDevCaps(sysfs_path, &d->pci_dev) < 0) {
             VIR_FREE(sysfs_path);
             return -1;
         }
@@ -239,7 +239,7 @@ gather_scsi_host_cap(LibHalContext *ctx, const char *udi,
 
     (void)get_int_prop(ctx, udi, "scsi_host.host", (int *)&d->scsi_host.host);
 
-    retval = nodeDeviceSysfsGetSCSIHostCaps(d);
+    retval = nodeDeviceSysfsGetSCSIHostCaps(&d->scsi_host);
 
     if (retval == -1)
         goto out;

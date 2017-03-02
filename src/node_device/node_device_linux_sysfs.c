@@ -44,65 +44,65 @@
 VIR_LOG_INIT("node_device.node_device_linux_sysfs");
 
 int
-nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapDataPtr d)
+nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host)
 {
     char *tmp = NULL;
     int ret = -1;
 
-    if ((d->scsi_host.unique_id =
-         virSCSIHostGetUniqueId(NULL, d->scsi_host.host)) < 0) {
-        VIR_DEBUG("Failed to read unique_id for host%d", d->scsi_host.host);
-        d->scsi_host.unique_id = -1;
+    if ((scsi_host->unique_id =
+         virSCSIHostGetUniqueId(NULL, scsi_host->host)) < 0) {
+        VIR_DEBUG("Failed to read unique_id for host%d", scsi_host->host);
+        scsi_host->unique_id = -1;
     }
 
-    VIR_DEBUG("Checking if host%d is an FC HBA", d->scsi_host.host);
+    VIR_DEBUG("Checking if host%d is an FC HBA", scsi_host->host);
 
-    if (virVHBAPathExists(NULL, d->scsi_host.host)) {
-        d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST;
+    if (virVHBAPathExists(NULL, scsi_host->host)) {
+        scsi_host->flags |= VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST;
 
-        if (!(tmp = virVHBAGetConfig(NULL, d->scsi_host.host, "port_name"))) {
-            VIR_WARN("Failed to read WWPN for host%d", d->scsi_host.host);
+        if (!(tmp = virVHBAGetConfig(NULL, scsi_host->host, "port_name"))) {
+            VIR_WARN("Failed to read WWPN for host%d", scsi_host->host);
             goto cleanup;
         }
-        VIR_FREE(d->scsi_host.wwpn);
-        VIR_STEAL_PTR(d->scsi_host.wwpn, tmp);
+        VIR_FREE(scsi_host->wwpn);
+        VIR_STEAL_PTR(scsi_host->wwpn, tmp);
 
-        if (!(tmp = virVHBAGetConfig(NULL, d->scsi_host.host, "node_name"))) {
-            VIR_WARN("Failed to read WWNN for host%d", d->scsi_host.host);
+        if (!(tmp = virVHBAGetConfig(NULL, scsi_host->host, "node_name"))) {
+            VIR_WARN("Failed to read WWNN for host%d", scsi_host->host);
             goto cleanup;
         }
-        VIR_FREE(d->scsi_host.wwnn);
-        VIR_STEAL_PTR(d->scsi_host.wwnn, tmp);
+        VIR_FREE(scsi_host->wwnn);
+        VIR_STEAL_PTR(scsi_host->wwnn, tmp);
 
-        if ((tmp = virVHBAGetConfig(NULL, d->scsi_host.host, "fabric_name"))) {
-            VIR_FREE(d->scsi_host.fabric_wwn);
-            VIR_STEAL_PTR(d->scsi_host.fabric_wwn, tmp);
+        if ((tmp = virVHBAGetConfig(NULL, scsi_host->host, "fabric_name"))) {
+            VIR_FREE(scsi_host->fabric_wwn);
+            VIR_STEAL_PTR(scsi_host->fabric_wwn, tmp);
         }
     }
 
-    if (virVHBAIsVportCapable(NULL, d->scsi_host.host)) {
-        d->scsi_host.flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
+    if (virVHBAIsVportCapable(NULL, scsi_host->host)) {
+        scsi_host->flags |= VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS;
 
-        if (!(tmp = virVHBAGetConfig(NULL, d->scsi_host.host,
+        if (!(tmp = virVHBAGetConfig(NULL, scsi_host->host,
                                      "max_npiv_vports"))) {
             VIR_WARN("Failed to read max_npiv_vports for host%d",
-                     d->scsi_host.host);
+                     scsi_host->host);
             goto cleanup;
         }
 
-        if (virStrToLong_i(tmp, NULL, 10, &d->scsi_host.max_vports) < 0) {
+        if (virStrToLong_i(tmp, NULL, 10, &scsi_host->max_vports) < 0) {
             VIR_WARN("Failed to parse value of max_npiv_vports '%s'", tmp);
             goto cleanup;
         }
 
-         if (!(tmp = virVHBAGetConfig(NULL, d->scsi_host.host,
+         if (!(tmp = virVHBAGetConfig(NULL, scsi_host->host,
                                       "npiv_vports_inuse"))) {
             VIR_WARN("Failed to read npiv_vports_inuse for host%d",
-                     d->scsi_host.host);
+                     scsi_host->host);
             goto cleanup;
         }
 
-        if (virStrToLong_i(tmp, NULL, 10, &d->scsi_host.vports) < 0) {
+        if (virStrToLong_i(tmp, NULL, 10, &scsi_host->vports) < 0) {
             VIR_WARN("Failed to parse value of npiv_vports_inuse '%s'", tmp);
             goto cleanup;
         }
@@ -112,12 +112,12 @@ nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapDataPtr d)
  cleanup:
     if (ret < 0) {
         /* Clear the two flags in case of producing confusing XML output */
-        d->scsi_host.flags &= ~(VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST |
+        scsi_host->flags &= ~(VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST |
                                 VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS);
 
-        VIR_FREE(d->scsi_host.wwnn);
-        VIR_FREE(d->scsi_host.wwpn);
-        VIR_FREE(d->scsi_host.fabric_wwn);
+        VIR_FREE(scsi_host->wwnn);
+        VIR_FREE(scsi_host->wwpn);
+        VIR_FREE(scsi_host->fabric_wwn);
     }
     VIR_FREE(tmp);
     return ret;
@@ -126,37 +126,37 @@ nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapDataPtr d)
 
 static int
 nodeDeviceSysfsGetPCISRIOVCaps(const char *sysfsPath,
-                               virNodeDevCapDataPtr data)
+                               virNodeDevCapPCIDevPtr pci_dev)
 {
     size_t i;
     int ret;
 
     /* this could be a refresh, so clear out the old data */
-    for (i = 0; i < data->pci_dev.num_virtual_functions; i++)
-       VIR_FREE(data->pci_dev.virtual_functions[i]);
-    VIR_FREE(data->pci_dev.virtual_functions);
-    data->pci_dev.num_virtual_functions = 0;
-    data->pci_dev.max_virtual_functions = 0;
-    data->pci_dev.flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
-    data->pci_dev.flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
+    for (i = 0; i < pci_dev->num_virtual_functions; i++)
+       VIR_FREE(pci_dev->virtual_functions[i]);
+    VIR_FREE(pci_dev->virtual_functions);
+    pci_dev->num_virtual_functions = 0;
+    pci_dev->max_virtual_functions = 0;
+    pci_dev->flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
+    pci_dev->flags &= ~VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
 
     ret = virPCIGetPhysicalFunction(sysfsPath,
-                                    &data->pci_dev.physical_function);
+                                    &pci_dev->physical_function);
     if (ret < 0)
         goto cleanup;
 
-    if (data->pci_dev.physical_function)
-        data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
+    if (pci_dev->physical_function)
+        pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
 
-    ret = virPCIGetVirtualFunctions(sysfsPath, &data->pci_dev.virtual_functions,
-                                    &data->pci_dev.num_virtual_functions,
-                                    &data->pci_dev.max_virtual_functions);
+    ret = virPCIGetVirtualFunctions(sysfsPath, &pci_dev->virtual_functions,
+                                    &pci_dev->num_virtual_functions,
+                                    &pci_dev->max_virtual_functions);
     if (ret < 0)
         goto cleanup;
 
-    if (data->pci_dev.num_virtual_functions > 0 ||
-        data->pci_dev.max_virtual_functions > 0)
-        data->pci_dev.flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
+    if (pci_dev->num_virtual_functions > 0 ||
+        pci_dev->max_virtual_functions > 0)
+        pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
 
  cleanup:
     return ret;
@@ -164,23 +164,23 @@ nodeDeviceSysfsGetPCISRIOVCaps(const char *sysfsPath,
 
 
 static int
-nodeDeviceSysfsGetPCIIOMMUGroupCaps(virNodeDevCapDataPtr data)
+nodeDeviceSysfsGetPCIIOMMUGroupCaps(virNodeDevCapPCIDevPtr pci_dev)
 {
     size_t i;
     int tmpGroup, ret = -1;
     virPCIDeviceAddress addr;
 
     /* this could be a refresh, so clear out the old data */
-    for (i = 0; i < data->pci_dev.nIommuGroupDevices; i++)
-       VIR_FREE(data->pci_dev.iommuGroupDevices[i]);
-    VIR_FREE(data->pci_dev.iommuGroupDevices);
-    data->pci_dev.nIommuGroupDevices = 0;
-    data->pci_dev.iommuGroupNumber = 0;
+    for (i = 0; i < pci_dev->nIommuGroupDevices; i++)
+       VIR_FREE(pci_dev->iommuGroupDevices[i]);
+    VIR_FREE(pci_dev->iommuGroupDevices);
+    pci_dev->nIommuGroupDevices = 0;
+    pci_dev->iommuGroupNumber = 0;
 
-    addr.domain = data->pci_dev.domain;
-    addr.bus = data->pci_dev.bus;
-    addr.slot = data->pci_dev.slot;
-    addr.function = data->pci_dev.function;
+    addr.domain = pci_dev->domain;
+    addr.bus = pci_dev->bus;
+    addr.slot = pci_dev->slot;
+    addr.function = pci_dev->function;
     tmpGroup = virPCIDeviceAddressGetIOMMUGroupNum(&addr);
     if (tmpGroup == -1) {
         /* error was already reported */
@@ -192,10 +192,10 @@ nodeDeviceSysfsGetPCIIOMMUGroupCaps(virNodeDevCapDataPtr data)
         goto cleanup;
     }
     if (tmpGroup >= 0) {
-        if (virPCIDeviceAddressGetIOMMUGroupAddresses(&addr, &data->pci_dev.iommuGroupDevices,
-                                                      &data->pci_dev.nIommuGroupDevices) < 0)
+        if (virPCIDeviceAddressGetIOMMUGroupAddresses(&addr, &pci_dev->iommuGroupDevices,
+                                                      &pci_dev->nIommuGroupDevices) < 0)
             goto cleanup;
-        data->pci_dev.iommuGroupNumber = tmpGroup;
+        pci_dev->iommuGroupNumber = tmpGroup;
     }
 
     ret = 0;
@@ -212,11 +212,11 @@ nodeDeviceSysfsGetPCIIOMMUGroupCaps(virNodeDevCapDataPtr data)
  */
 int
 nodeDeviceSysfsGetPCIRelatedDevCaps(const char *sysfsPath,
-                                    virNodeDevCapDataPtr data)
+                                    virNodeDevCapPCIDevPtr pci_dev)
 {
-    if (nodeDeviceSysfsGetPCISRIOVCaps(sysfsPath, data) < 0)
+    if (nodeDeviceSysfsGetPCISRIOVCaps(sysfsPath, pci_dev) < 0)
         return -1;
-    if (nodeDeviceSysfsGetPCIIOMMUGroupCaps(data) < 0)
+    if (nodeDeviceSysfsGetPCIIOMMUGroupCaps(pci_dev) < 0)
         return -1;
     return 0;
 }
@@ -225,14 +225,14 @@ nodeDeviceSysfsGetPCIRelatedDevCaps(const char *sysfsPath,
 #else
 
 int
-nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapDataPtr d ATTRIBUTE_UNUSED)
+nodeDeviceSysfsGetSCSIHostCaps(virNodeDevCapSCSIHostPtr scsi_host ATTRIBUTE_UNUSED)
 {
     return -1;
 }
 
 int
 nodeDeviceSysfsGetPCIRelatedDevCaps(const char *sysfsPath ATTRIBUTE_UNUSED,
-                                    virNodeDevCapDataPtr data ATTRIBUTE_UNUSED)
+                                    virNodeDevCapPCIDevPtr pci_dev ATTRIBUTE_UNUSED)
 {
     return -1;
 }
