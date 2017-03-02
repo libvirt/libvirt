@@ -57,29 +57,38 @@ struct _virNWFilterDriverState {
     bool watchingFirewallD;
 };
 
-void virNWFilterObjListFree(virNWFilterObjListPtr nwfilters);
+void
+virNWFilterObjListFree(virNWFilterObjListPtr nwfilters);
 
-void virNWFilterObjRemove(virNWFilterObjListPtr nwfilters,
-                          virNWFilterObjPtr nwfilter);
+void
+virNWFilterObjRemove(virNWFilterObjListPtr nwfilters,
+                     virNWFilterObjPtr nwfilter);
 
 void virNWFilterObjFree(virNWFilterObjPtr obj);
 
-virNWFilterObjPtr virNWFilterObjFindByUUID(virNWFilterObjListPtr nwfilters,
-                                           const unsigned char *uuid);
+virNWFilterObjPtr
+virNWFilterObjFindByUUID(virNWFilterObjListPtr nwfilters,
+                         const unsigned char *uuid);
 
-virNWFilterObjPtr virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters,
-                                           const char *name);
+virNWFilterObjPtr
+virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters,
+                         const char *name);
 
-virNWFilterObjPtr virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
-                                          virNWFilterDefPtr def);
+virNWFilterObjPtr
+virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
+                        virNWFilterDefPtr def);
 
-int virNWFilterTestUnassignDef(virNWFilterObjPtr nwfilter);
+int
+virNWFilterTestUnassignDef(virNWFilterObjPtr nwfilter);
 
-int virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
-                              const char *configDir);
+int
+virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
+                          const char *configDir);
 
-void virNWFilterObjLock(virNWFilterObjPtr obj);
+void
+virNWFilterObjLock(virNWFilterObjPtr obj);
 
-void virNWFilterObjUnlock(virNWFilterObjPtr obj);
+void
+virNWFilterObjUnlock(virNWFilterObjPtr obj);
 
 #endif /* VIRNWFILTEROBJ_H */

@@ -560,50 +560,74 @@ struct domUpdateCBStruct {
 };
 
 
-void virNWFilterRuleDefFree(virNWFilterRuleDefPtr def);
+void
+virNWFilterRuleDefFree(virNWFilterRuleDefPtr def);
 
-void virNWFilterDefFree(virNWFilterDefPtr def);
+void
+virNWFilterDefFree(virNWFilterDefPtr def);
 
-int virNWFilterTriggerVMFilterRebuild(void);
+int
+virNWFilterTriggerVMFilterRebuild(void);
 
-int virNWFilterSaveDef(const char *configDir,
-                       virNWFilterDefPtr def);
+int
+virNWFilterSaveDef(const char *configDir,
+                   virNWFilterDefPtr def);
 
-int virNWFilterDeleteDef(const char *configDir,
-                         virNWFilterDefPtr def);
+int
+virNWFilterDeleteDef(const char *configDir,
+                     virNWFilterDefPtr def);
 
-virNWFilterDefPtr virNWFilterDefParseNode(xmlDocPtr xml,
-                                          xmlNodePtr root);
+virNWFilterDefPtr
+virNWFilterDefParseNode(xmlDocPtr xml,
+                        xmlNodePtr root);
 
-char *virNWFilterDefFormat(const virNWFilterDef *def);
+char *
+virNWFilterDefFormat(const virNWFilterDef *def);
 
-int virNWFilterSaveXML(const char *configDir,
-                       virNWFilterDefPtr def,
-                       const char *xml);
+int
+virNWFilterSaveXML(const char *configDir,
+                   virNWFilterDefPtr def,
+                   const char *xml);
 
-int virNWFilterSaveConfig(const char *configDir,
-                          virNWFilterDefPtr def);
+int
+virNWFilterSaveConfig(const char *configDir,
+                      virNWFilterDefPtr def);
 
-char *virNWFilterConfigFile(const char *dir,
-                            const char *name);
+char *
+virNWFilterConfigFile(const char *dir,
+                      const char *name);
 
-virNWFilterDefPtr virNWFilterDefParseString(const char *xml);
-virNWFilterDefPtr virNWFilterDefParseFile(const char *filename);
+virNWFilterDefPtr
+virNWFilterDefParseString(const char *xml);
 
-void virNWFilterWriteLockFilterUpdates(void);
-void virNWFilterReadLockFilterUpdates(void);
-void virNWFilterUnlockFilterUpdates(void);
+virNWFilterDefPtr
+virNWFilterDefParseFile(const char *filename);
 
-int virNWFilterConfLayerInit(virDomainObjListIterator domUpdateCB, void *opaque);
-void virNWFilterConfLayerShutdown(void);
+void
+virNWFilterWriteLockFilterUpdates(void);
 
-int virNWFilterInstFiltersOnAllVMs(void);
+void
+virNWFilterReadLockFilterUpdates(void);
 
+void
+virNWFilterUnlockFilterUpdates(void);
 
-typedef int (*virNWFilterRebuild)(virDomainObjListIterator domUpdateCB,
-                                  void *data);
-typedef void (*virNWFilterVoidCall)(void);
+int
+virNWFilterConfLayerInit(virDomainObjListIterator domUpdateCB,
+                         void *opaque);
 
+void
+virNWFilterConfLayerShutdown(void);
+
+int
+virNWFilterInstFiltersOnAllVMs(void);
+
+typedef int
+(*virNWFilterRebuild)(virDomainObjListIterator domUpdateCB,
+                      void *data);
+
+typedef void
+(*virNWFilterVoidCall)(void);
 
 typedef struct _virNWFilterCallbackDriver virNWFilterCallbackDriver;
 typedef virNWFilterCallbackDriver *virNWFilterCallbackDriverPtr;
@@ -615,18 +639,29 @@ struct _virNWFilterCallbackDriver {
     virNWFilterVoidCall vmDriverUnlock;
 };
 
-void virNWFilterRegisterCallbackDriver(virNWFilterCallbackDriverPtr);
-void virNWFilterUnRegisterCallbackDriver(virNWFilterCallbackDriverPtr);
-void virNWFilterCallbackDriversLock(void);
-void virNWFilterCallbackDriversUnlock(void);
+void
+virNWFilterRegisterCallbackDriver(virNWFilterCallbackDriverPtr);
 
+void
+virNWFilterUnRegisterCallbackDriver(virNWFilterCallbackDriverPtr);
 
-char *virNWFilterPrintTCPFlags(uint8_t flags);
+void
+virNWFilterCallbackDriversLock(void);
 
+void
+virNWFilterCallbackDriversUnlock(void);
 
-bool virNWFilterRuleIsProtocolIPv4(virNWFilterRuleDefPtr rule);
-bool virNWFilterRuleIsProtocolIPv6(virNWFilterRuleDefPtr rule);
-bool virNWFilterRuleIsProtocolEthernet(virNWFilterRuleDefPtr rule);
+char *
+virNWFilterPrintTCPFlags(uint8_t flags);
+
+bool
+virNWFilterRuleIsProtocolIPv4(virNWFilterRuleDefPtr rule);
+
+bool
+virNWFilterRuleIsProtocolIPv6(virNWFilterRuleDefPtr rule);
+
+bool
+virNWFilterRuleIsProtocolEthernet(virNWFilterRuleDefPtr rule);
 
 VIR_ENUM_DECL(virNWFilterRuleAction);
 VIR_ENUM_DECL(virNWFilterRuleDirection);
