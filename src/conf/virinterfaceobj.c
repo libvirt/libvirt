@@ -36,17 +36,22 @@ VIR_LOG_INIT("conf.virinterfaceobj");
 
 /* virInterfaceObj manipulation */
 
-void virInterfaceObjLock(virInterfaceObjPtr obj)
+void
+virInterfaceObjLock(virInterfaceObjPtr obj)
 {
     virMutexLock(&obj->lock);
 }
 
-void virInterfaceObjUnlock(virInterfaceObjPtr obj)
+
+void
+virInterfaceObjUnlock(virInterfaceObjPtr obj)
 {
     virMutexUnlock(&obj->lock);
 }
 
-void virInterfaceObjFree(virInterfaceObjPtr iface)
+
+void
+virInterfaceObjFree(virInterfaceObjPtr iface)
 {
     if (!iface)
         return;
@@ -56,11 +61,12 @@ void virInterfaceObjFree(virInterfaceObjPtr iface)
     VIR_FREE(iface);
 }
 
-/* virInterfaceObjList manipulation */
 
-int virInterfaceFindByMACString(virInterfaceObjListPtr interfaces,
-                                const char *mac,
-                                virInterfaceObjPtr *matches, int maxmatches)
+/* virInterfaceObjList manipulation */
+int
+virInterfaceFindByMACString(virInterfaceObjListPtr interfaces,
+                            const char *mac,
+                            virInterfaceObjPtr *matches, int maxmatches)
 {
     size_t i;
     unsigned int matchct = 0;
@@ -83,8 +89,10 @@ int virInterfaceFindByMACString(virInterfaceObjListPtr interfaces,
     return matchct;
 }
 
-virInterfaceObjPtr virInterfaceFindByName(virInterfaceObjListPtr interfaces,
-                                          const char *name)
+
+virInterfaceObjPtr
+virInterfaceFindByName(virInterfaceObjListPtr interfaces,
+                       const char *name)
 {
     size_t i;
 
@@ -98,7 +106,9 @@ virInterfaceObjPtr virInterfaceFindByName(virInterfaceObjListPtr interfaces,
     return NULL;
 }
 
-void virInterfaceObjListFree(virInterfaceObjListPtr interfaces)
+
+void
+virInterfaceObjListFree(virInterfaceObjListPtr interfaces)
 {
     size_t i;
 
@@ -109,8 +119,10 @@ void virInterfaceObjListFree(virInterfaceObjListPtr interfaces)
     interfaces->count = 0;
 }
 
-int virInterfaceObjListClone(virInterfaceObjListPtr src,
-                             virInterfaceObjListPtr dest)
+
+int
+virInterfaceObjListClone(virInterfaceObjListPtr src,
+                         virInterfaceObjListPtr dest)
 {
     int ret = -1;
     size_t i;
@@ -148,8 +160,10 @@ int virInterfaceObjListClone(virInterfaceObjListPtr src,
     return ret;
 }
 
-virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
-                                         virInterfaceDefPtr def)
+
+virInterfaceObjPtr
+virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
+                      virInterfaceDefPtr def)
 {
     virInterfaceObjPtr iface;
 
@@ -181,8 +195,10 @@ virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
 
 }
 
-void virInterfaceRemove(virInterfaceObjListPtr interfaces,
-                        virInterfaceObjPtr iface)
+
+void
+virInterfaceRemove(virInterfaceObjListPtr interfaces,
+                   virInterfaceObjPtr iface)
 {
     size_t i;
 
