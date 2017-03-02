@@ -785,7 +785,7 @@ virQEMUCapsProbeCPUModels(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
     if (qemuCaps->arch == VIR_ARCH_I686 ||
         qemuCaps->arch == VIR_ARCH_X86_64) {
         parse = virQEMUCapsParseX86Models;
-    } else if ARCH_IS_PPC64(qemuCaps->arch) {
+    } else if (ARCH_IS_PPC64(qemuCaps->arch)) {
         parse = virQEMUCapsParsePPCModels;
     } else {
         VIR_DEBUG("don't know how to parse %s CPU models",
