@@ -2341,6 +2341,14 @@ virArch virQEMUCapsGetArch(virQEMUCapsPtr qemuCaps)
 }
 
 
+void
+virQEMUCapsSetVersion(virQEMUCapsPtr qemuCaps,
+                      unsigned int version)
+{
+    qemuCaps->version = version;
+}
+
+
 unsigned int virQEMUCapsGetVersion(virQEMUCapsPtr qemuCaps)
 {
     return qemuCaps->version;

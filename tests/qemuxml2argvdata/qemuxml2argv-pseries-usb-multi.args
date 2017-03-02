@@ -19,7 +19,7 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot c \
--device piix3-usb-uhci,id=usb,bus=pci,addr=0x1 \
--device pci-ohci,id=usb1,bus=pci,addr=0x2 \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1 \
+-device pci-ohci,id=usb1,bus=pci.0,addr=0x2 \
 -chardev pty,id=charserial0 \
 -device spapr-vty,chardev=charserial0,reg=0x30000000

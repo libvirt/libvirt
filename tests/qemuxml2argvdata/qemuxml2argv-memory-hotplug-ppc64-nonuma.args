@@ -25,4 +25,4 @@ QEMU_AUDIO_DRV=none \
 -append 'root=/dev/ram rw console=ttyS0,115200' \
 -usb \
 -serial pty \
--device virtio-balloon-pci,id=balloon0,bus=pci,addr=0x2
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2

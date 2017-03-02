@@ -19,6 +19,6 @@ server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
 -no-acpi \
 -boot c \
--device pci-ohci,id=usb,bus=pci,addr=0x1 \
+-device pci-ohci,id=usb,bus=pci.0,addr=0x1 \
 -chardev pty,id=charserial0 \
 -device spapr-vty,chardev=charserial0,reg=0x30000000

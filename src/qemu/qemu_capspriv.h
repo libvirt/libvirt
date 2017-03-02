@@ -70,6 +70,10 @@ virQEMUCapsSetArch(virQEMUCapsPtr qemuCaps,
                    virArch arch);
 
 void
+virQEMUCapsSetVersion(virQEMUCapsPtr qemuCaps,
+                      unsigned int version);
+
+void
 virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
                             virCapsPtr caps);
 #endif

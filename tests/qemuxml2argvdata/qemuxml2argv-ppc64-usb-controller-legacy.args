@@ -16,4 +16,4 @@ QEMU_AUDIO_DRV=none \
 -monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
 -boot c \
 -usb \
--device virtio-balloon-pci,id=balloon0,bus=pci,addr=0x6
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6
