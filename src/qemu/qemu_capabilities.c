@@ -1043,13 +1043,17 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 
         machines = NULL;
         nmachines = 0;
+    }
 
+    if ((ARCH_IS_X86(guestarch) || guestarch == VIR_ARCH_AARCH64) &&
+        virCapabilitiesAddGuestFeature(guest, "acpi", true, true) == NULL) {
+        goto cleanup;
     }
 
     if (ARCH_IS_X86(guestarch) &&
-        (virCapabilitiesAddGuestFeature(guest, "acpi", true, true) == NULL ||
-         virCapabilitiesAddGuestFeature(guest, "apic", true, false) == NULL))
+        virCapabilitiesAddGuestFeature(guest, "apic", true, false) == NULL) {
         goto cleanup;
+    }
 
     if ((guestarch == VIR_ARCH_I686) &&
         (virCapabilitiesAddGuestFeature(guest, "pae", true, false) == NULL ||
@@ -4180,10 +4184,15 @@ virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid, const c
                                 qmperr) < 0)
         goto cleanup;
 
-    /* -no-acpi is not supported on non-x86
-     * even if qemu reports it in -help */
-    if (!ARCH_IS_X86(qemuCaps->arch))
+    /* Older QEMU versions reported -no-acpi in the output of -help even
+     * though it was not supported by the architecture. The issue has since
+     * been fixed, but to maintain compatibility with all release we still
+     * need to filter out the capability for architectures that we know
+     * don't support the feature, eg. anything but x86 and aarch64 */
+    if (!ARCH_IS_X86(qemuCaps->arch) &&
+        qemuCaps->arch != VIR_ARCH_AARCH64) {
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_NO_ACPI);
+    }
 
     /* virQEMUCapsExtractDeviceStr will only set additional caps if qemu
      * understands the 0.13.0+ notion of "-device driver,".  */
@@ -4304,9 +4313,14 @@ virQEMUCapsInitQMPArch(virQEMUCapsPtr qemuCaps,
 void
 virQEMUCapsInitQMPBasicArch(virQEMUCapsPtr qemuCaps)
 {
-    /* ACPI/HPET/KVM PIT are x86 specific */
-    if (ARCH_IS_X86(qemuCaps->arch)) {
+    /* ACPI only works on x86 and aarch64 */
+    if (ARCH_IS_X86(qemuCaps->arch) ||
+        qemuCaps->arch == VIR_ARCH_AARCH64) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
+    }
+
+    /* HPET and KVM PIT are x86 specific */
+    if (ARCH_IS_X86(qemuCaps->arch)) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_HPET);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_KVM_PIT);
     }

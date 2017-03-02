@@ -40,6 +40,7 @@
   <flag name='no-shutdown'/>
   <flag name='cache-unsafe'/>
   <flag name='ich9-ahci'/>
+  <flag name='no-acpi'/>
   <flag name='fsdev-readonly'/>
   <flag name='virtio-blk-pci.scsi'/>
   <flag name='drive-copy-on-read'/>
