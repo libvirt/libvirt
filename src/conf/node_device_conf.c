@@ -86,7 +86,8 @@ virNodeDevCapsDefParseString(const char *xpath,
 }
 
 
-void virNodeDeviceDefFree(virNodeDeviceDefPtr def)
+void
+virNodeDeviceDefFree(virNodeDeviceDefPtr def)
 {
     virNodeDevCapsDefPtr caps;
 
@@ -133,6 +134,7 @@ virPCIELinkFormat(virBufferPtr buf,
     virBufferAddLit(buf, "/>\n");
 }
 
+
 static void
 virPCIEDeviceInfoFormat(virBufferPtr buf,
                         virPCIEDeviceInfoPtr info)
@@ -152,7 +154,9 @@ virPCIEDeviceInfoFormat(virBufferPtr buf,
     virBufferAddLit(buf, "</pci-express>\n");
 }
 
-char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
+
+char *
+virNodeDeviceDefFormat(const virNodeDeviceDef *def)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virNodeDevCapsDefPtr caps;
@@ -489,6 +493,7 @@ char *virNodeDeviceDefFormat(const virNodeDeviceDef *def)
     return virBufferContentAndReset(&buf);
 }
 
+
 /**
  * virNodeDevCapsDefParseIntOptional:
  * @xpath:  XPath to evaluate
@@ -524,6 +529,7 @@ virNodeDevCapsDefParseIntOptional(const char *xpath,
     return 1;
 }
 
+
 static int
 virNodeDevCapsDefParseULong(const char *xpath,
                             xmlXPathContextPtr ctxt,
@@ -547,6 +553,7 @@ virNodeDevCapsDefParseULong(const char *xpath,
     return 0;
 }
 
+
 static int
 virNodeDevCapsDefParseULongLong(const char *xpath,
                                 xmlXPathContextPtr ctxt,
@@ -569,6 +576,7 @@ virNodeDevCapsDefParseULongLong(const char *xpath,
     *value = val;
     return 0;
 }
+
 
 static int
 virNodeDevCapDRMParseXML(xmlXPathContextPtr ctxt,
@@ -599,6 +607,7 @@ virNodeDevCapDRMParseXML(xmlXPathContextPtr ctxt,
     ctxt->node = orignode;
     return ret;
 }
+
 
 static int
 virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
@@ -693,6 +702,7 @@ virNodeDevCapStorageParseXML(xmlXPathContextPtr ctxt,
     ctxt->node = orignode;
     return ret;
 }
+
 
 static int
 virNodeDevCapSCSIParseXML(xmlXPathContextPtr ctxt,
@@ -954,6 +964,7 @@ virNodeDevCapNetParseXML(xmlXPathContextPtr ctxt,
     return ret;
 }
 
+
 static int
 virNodeDevCapUSBInterfaceParseXML(xmlXPathContextPtr ctxt,
                                   virNodeDeviceDefPtr def,
@@ -998,6 +1009,7 @@ virNodeDevCapUSBInterfaceParseXML(xmlXPathContextPtr ctxt,
     return ret;
 }
 
+
 static int
 virNodeDevCapsDefParseHexId(const char *xpath,
                             xmlXPathContextPtr ctxt,
@@ -1020,6 +1032,7 @@ virNodeDevCapsDefParseHexId(const char *xpath,
     *value = val;
     return 0;
 }
+
 
 static int
 virNodeDevCapUSBDevParseXML(xmlXPathContextPtr ctxt,
@@ -1065,6 +1078,7 @@ virNodeDevCapUSBDevParseXML(xmlXPathContextPtr ctxt,
     ctxt->node = orignode;
     return ret;
 }
+
 
 static int
 virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
@@ -1122,6 +1136,7 @@ virNodeDevCapPCIDevIommuGroupParseXML(xmlXPathContextPtr ctxt,
     return ret;
 }
 
+
 static int
 virPCIEDeviceInfoLinkParseXML(xmlXPathContextPtr ctxt,
                               xmlNodePtr linkNode,
@@ -1167,6 +1182,7 @@ virPCIEDeviceInfoLinkParseXML(xmlXPathContextPtr ctxt,
     ctxt->node = origNode;
     return ret;
 }
+
 
 static int
 virPCIEDeviceInfoParseXML(xmlXPathContextPtr ctxt,
@@ -1391,6 +1407,7 @@ virNodeDevCapPCIDevParseXML(xmlXPathContextPtr ctxt,
     return ret;
 }
 
+
 static int
 virNodeDevCapSystemParseXML(xmlXPathContextPtr ctxt,
                             virNodeDeviceDefPtr def,
@@ -1434,6 +1451,7 @@ virNodeDevCapSystemParseXML(xmlXPathContextPtr ctxt,
     ctxt->node = orignode;
     return ret;
 }
+
 
 static virNodeDevCapsDefPtr
 virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
@@ -1518,6 +1536,7 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
     virNodeDevCapsDefFree(caps);
     return NULL;
 }
+
 
 static virNodeDeviceDefPtr
 virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
@@ -1633,6 +1652,7 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
     return NULL;
 }
 
+
 virNodeDeviceDefPtr
 virNodeDeviceDefParseNode(xmlDocPtr xml,
                           xmlNodePtr root,
@@ -1664,6 +1684,7 @@ virNodeDeviceDefParseNode(xmlDocPtr xml,
     return def;
 }
 
+
 static virNodeDeviceDefPtr
 virNodeDeviceDefParse(const char *str,
                       const char *filename,
@@ -1682,6 +1703,7 @@ virNodeDeviceDefParse(const char *str,
     return def;
 }
 
+
 virNodeDeviceDefPtr
 virNodeDeviceDefParseString(const char *str,
                             int create,
@@ -1690,6 +1712,7 @@ virNodeDeviceDefParseString(const char *str,
     return virNodeDeviceDefParse(str, NULL, create, virt_type);
 }
 
+
 virNodeDeviceDefPtr
 virNodeDeviceDefParseFile(const char *filename,
                           int create,
@@ -1697,6 +1720,7 @@ virNodeDeviceDefParseFile(const char *filename,
 {
     return virNodeDeviceDefParse(NULL, filename, create, virt_type);
 }
+
 
 /*
  * Return fc_host dev's WWNN and WWPN
@@ -1737,7 +1761,8 @@ virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
 }
 
 
-void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
+void
+virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
 {
     size_t i = 0;
     virNodeDevCapDataPtr data = &caps->data;

@@ -33,7 +33,9 @@
 VIR_LOG_INIT("conf.virnodedeviceobj");
 
 
-int virNodeDeviceHasCap(const virNodeDeviceObj *dev, const char *cap)
+int
+virNodeDeviceHasCap(const virNodeDeviceObj *dev,
+                    const char *cap)
 {
     virNodeDevCapsDefPtr caps = dev->def->caps;
     const char *fc_host_cap =
@@ -125,8 +127,9 @@ virNodeDeviceFindBySysfsPath(virNodeDeviceObjListPtr devs,
 }
 
 
-virNodeDeviceObjPtr virNodeDeviceFindByName(virNodeDeviceObjListPtr devs,
-                                            const char *name)
+virNodeDeviceObjPtr
+virNodeDeviceFindByName(virNodeDeviceObjListPtr devs,
+                        const char *name)
 {
     size_t i;
 
@@ -198,7 +201,8 @@ virNodeDeviceFindByCap(virNodeDeviceObjListPtr devs,
 }
 
 
-void virNodeDeviceObjFree(virNodeDeviceObjPtr dev)
+void
+virNodeDeviceObjFree(virNodeDeviceObjPtr dev)
 {
     if (!dev)
         return;
@@ -212,7 +216,9 @@ void virNodeDeviceObjFree(virNodeDeviceObjPtr dev)
     VIR_FREE(dev);
 }
 
-void virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs)
+
+void
+virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs)
 {
     size_t i;
     for (i = 0; i < devs->count; i++)
@@ -221,8 +227,10 @@ void virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs)
     devs->count = 0;
 }
 
-virNodeDeviceObjPtr virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
-                                           virNodeDeviceDefPtr def)
+
+virNodeDeviceObjPtr
+virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
+                       virNodeDeviceDefPtr def)
 {
     virNodeDeviceObjPtr device;
 
@@ -254,8 +262,10 @@ virNodeDeviceObjPtr virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
 
 }
 
-void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
-                            virNodeDeviceObjPtr *dev)
+
+void
+virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
+                       virNodeDeviceObjPtr *dev)
 {
     size_t i;
 
@@ -423,15 +433,19 @@ virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
 }
 
 
-void virNodeDeviceObjLock(virNodeDeviceObjPtr obj)
+void
+virNodeDeviceObjLock(virNodeDeviceObjPtr obj)
 {
     virMutexLock(&obj->lock);
 }
 
-void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj)
+
+void
+virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj)
 {
     virMutexUnlock(&obj->lock);
 }
+
 
 static bool
 virNodeDeviceCapMatch(virNodeDeviceObjPtr devobj,
@@ -458,6 +472,7 @@ virNodeDeviceCapMatch(virNodeDeviceObjPtr devobj,
 
     return false;
 }
+
 
 #define MATCH(FLAG) ((flags & (VIR_CONNECT_LIST_NODE_DEVICES_CAP_ ## FLAG)) && \
                      virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_ ## FLAG))
@@ -486,6 +501,7 @@ virNodeDeviceMatch(virNodeDeviceObjPtr devobj,
     return true;
 }
 #undef MATCH
+
 
 int
 virNodeDeviceObjListExport(virConnectPtr conn,
