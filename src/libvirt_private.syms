@@ -949,11 +949,11 @@ virDomainObjListRename;
 
 
 # conf/virnodedeviceobj.h
-virNodeDeviceAssignDef;
-virNodeDeviceFindByName;
-virNodeDeviceFindBySysfsPath;
-virNodeDeviceGetParentHost;
-virNodeDeviceHasCap;
+virNodeDeviceObjAssignDef;
+virNodeDeviceObjFindByName;
+virNodeDeviceObjFindBySysfsPath;
+virNodeDeviceObjGetParentHost;
+virNodeDeviceObjHasCap;
 virNodeDeviceObjListExport;
 virNodeDeviceObjListFree;
 virNodeDeviceObjLock;

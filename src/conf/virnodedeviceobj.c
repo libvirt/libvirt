@@ -34,8 +34,8 @@ VIR_LOG_INIT("conf.virnodedeviceobj");
 
 
 int
-virNodeDeviceHasCap(const virNodeDeviceObj *dev,
-                    const char *cap)
+virNodeDeviceObjHasCap(const virNodeDeviceObj *dev,
+                       const char *cap)
 {
     virNodeDevCapsDefPtr caps = dev->def->caps;
     const char *fc_host_cap =
@@ -109,8 +109,8 @@ virNodeDeviceFindVPORTCapDef(const virNodeDeviceObj *dev)
 
 
 virNodeDeviceObjPtr
-virNodeDeviceFindBySysfsPath(virNodeDeviceObjListPtr devs,
-                             const char *sysfs_path)
+virNodeDeviceObjFindBySysfsPath(virNodeDeviceObjListPtr devs,
+                                const char *sysfs_path)
 {
     size_t i;
 
@@ -128,8 +128,8 @@ virNodeDeviceFindBySysfsPath(virNodeDeviceObjListPtr devs,
 
 
 virNodeDeviceObjPtr
-virNodeDeviceFindByName(virNodeDeviceObjListPtr devs,
-                        const char *name)
+virNodeDeviceObjFindByName(virNodeDeviceObjListPtr devs,
+                           const char *name)
 {
     size_t i;
 
@@ -192,7 +192,7 @@ virNodeDeviceFindByCap(virNodeDeviceObjListPtr devs,
 
     for (i = 0; i < devs->count; i++) {
         virNodeDeviceObjLock(devs->objs[i]);
-        if (virNodeDeviceHasCap(devs->objs[i], cap))
+        if (virNodeDeviceObjHasCap(devs->objs[i], cap))
             return devs->objs[i];
         virNodeDeviceObjUnlock(devs->objs[i]);
     }
@@ -229,12 +229,12 @@ virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs)
 
 
 virNodeDeviceObjPtr
-virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
-                       virNodeDeviceDefPtr def)
+virNodeDeviceObjAssignDef(virNodeDeviceObjListPtr devs,
+                          virNodeDeviceDefPtr def)
 {
     virNodeDeviceObjPtr device;
 
-    if ((device = virNodeDeviceFindByName(devs, def->name))) {
+    if ((device = virNodeDeviceObjFindByName(devs, def->name))) {
         virNodeDeviceDefFree(device->def);
         device->def = def;
         return device;
@@ -323,7 +323,7 @@ virNodeDeviceGetParentHostByParent(virNodeDeviceObjListPtr devs,
     virNodeDeviceObjPtr parent = NULL;
     int ret;
 
-    if (!(parent = virNodeDeviceFindByName(devs, parent_name))) {
+    if (!(parent = virNodeDeviceObjFindByName(devs, parent_name))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Could not find parent device for '%s'"),
                        dev_name);
@@ -407,9 +407,9 @@ virNodeDeviceFindVportParentHost(virNodeDeviceObjListPtr devs)
 
 
 int
-virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
-                           virNodeDeviceDefPtr def,
-                           int create)
+virNodeDeviceObjGetParentHost(virNodeDeviceObjListPtr devs,
+                              virNodeDeviceDefPtr def,
+                              int create)
 {
     int parent_host = -1;
 

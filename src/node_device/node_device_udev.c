@@ -1099,7 +1099,7 @@ static int udevRemoveOneDevice(struct udev_device *device)
     int ret = -1;
 
     name = udev_device_get_syspath(device);
-    dev = virNodeDeviceFindBySysfsPath(&driver->devs, name);
+    dev = virNodeDeviceObjFindBySysfsPath(&driver->devs, name);
 
     if (!dev) {
         VIR_DEBUG("Failed to find device to remove that has udev name '%s'",
@@ -1146,8 +1146,8 @@ static int udevSetParent(struct udev_device *device,
             goto cleanup;
         }
 
-        dev = virNodeDeviceFindBySysfsPath(&driver->devs,
-                                           parent_sysfs_path);
+        dev = virNodeDeviceObjFindBySysfsPath(&driver->devs,
+                                              parent_sysfs_path);
         if (dev != NULL) {
             if (VIR_STRDUP(def->parent, dev->def->name) < 0) {
                 virNodeDeviceObjUnlock(dev);
@@ -1203,7 +1203,7 @@ static int udevAddOneDevice(struct udev_device *device)
     if (udevSetParent(device, def) != 0)
         goto cleanup;
 
-    dev = virNodeDeviceFindByName(&driver->devs, def->name);
+    dev = virNodeDeviceObjFindByName(&driver->devs, def->name);
     if (dev) {
         virNodeDeviceObjUnlock(dev);
         new_device = false;
@@ -1211,7 +1211,7 @@ static int udevAddOneDevice(struct udev_device *device)
 
     /* If this is a device change, the old definition will be freed
      * and the current definition will take its place. */
-    dev = virNodeDeviceAssignDef(&driver->devs, def);
+    dev = virNodeDeviceObjAssignDef(&driver->devs, def);
     if (dev == NULL)
         goto cleanup;
 
@@ -1492,7 +1492,7 @@ static int udevSetupSystemDev(void)
     udevGetDMIData(&def->caps->data);
 #endif
 
-    dev = virNodeDeviceAssignDef(&driver->devs, def);
+    dev = virNodeDeviceObjAssignDef(&driver->devs, def);
     if (dev == NULL)
         goto cleanup;
 

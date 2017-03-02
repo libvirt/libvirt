@@ -40,24 +40,24 @@ struct _virNodeDeviceDriverState {
 };
 
 
-int virNodeDeviceHasCap(const virNodeDeviceObj *dev, const char *cap);
+int virNodeDeviceObjHasCap(const virNodeDeviceObj *dev, const char *cap);
 
-virNodeDeviceObjPtr virNodeDeviceFindByName(virNodeDeviceObjListPtr devs,
+virNodeDeviceObjPtr virNodeDeviceObjFindByName(virNodeDeviceObjListPtr devs,
                                             const char *name);
 virNodeDeviceObjPtr
-virNodeDeviceFindBySysfsPath(virNodeDeviceObjListPtr devs,
-                             const char *sysfs_path)
+virNodeDeviceObjFindBySysfsPath(virNodeDeviceObjListPtr devs,
+                                const char *sysfs_path)
     ATTRIBUTE_NONNULL(2);
 
-virNodeDeviceObjPtr virNodeDeviceAssignDef(virNodeDeviceObjListPtr devs,
-                                           virNodeDeviceDefPtr def);
+virNodeDeviceObjPtr virNodeDeviceObjAssignDef(virNodeDeviceObjListPtr devs,
+                                              virNodeDeviceDefPtr def);
 
 void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
                             virNodeDeviceObjPtr *dev);
 
-int virNodeDeviceGetParentHost(virNodeDeviceObjListPtr devs,
-                               virNodeDeviceDefPtr def,
-                               int create);
+int virNodeDeviceObjGetParentHost(virNodeDeviceObjListPtr devs,
+                                  virNodeDeviceDefPtr def,
+                                  int create);
 
 void virNodeDeviceObjFree(virNodeDeviceObjPtr dev);
 
