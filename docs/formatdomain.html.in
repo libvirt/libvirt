@@ -1217,8 +1217,8 @@
     <dl>
       <dt><code>cpu</code></dt>
       <dd>The <code>cpu</code> element is the main container for describing
-        guest CPU requirements. Its <code>match</code> attribute specified how
-        strictly has the virtual CPU provided to the guest match these
+        guest CPU requirements. Its <code>match</code> attribute specifies how
+        strictly the virtual CPU provided to the guest matches these
         requirements. <span class="since">Since 0.7.6</span> the
         <code>match</code> attribute can be omitted if <code>topology</code>
         is the only element within <code>cpu</code>. Possible values for the
@@ -1227,13 +1227,21 @@
         <dl>
           <dt><code>minimum</code></dt>
           <dd>The specified CPU model and features describes the minimum
-            requested CPU.</dd>
+            requested CPU. A better CPU will be provided to the guest if it
+            is possible with the requested hypervisor on the current host.
+            This is a constrained <code>host-model</code> mode; the domain
+            will not be created if the provided virtual CPU does not meet
+            the requirements.</dd>
+
           <dt><code>exact</code></dt>
-          <dd>The virtual CPU provided to the guest will exactly match the
-            specification</dd>
+          <dd>The virtual CPU provided to the guest should exactly match the
+            specification. If such CPU is not supported, libvirt will refuse
+            to start the domain.</dd>
+
           <dt><code>strict</code></dt>
-          <dd>The guest will not be created unless the host CPU does exactly
-            match the specification.</dd>
+          <dd>The domain will not be created unless the host CPU exactly
+            matches the specification. This is not very useful in practice
+            and should only be used if there is a real reason.</dd>
         </dl>
 
         <span class="since">Since 0.8.5</span> the <code>match</code>
