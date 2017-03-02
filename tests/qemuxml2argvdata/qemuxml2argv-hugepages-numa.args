@@ -22,6 +22,7 @@ host-nodes=1-3,policy=bind \
 -monitor unix:/tmp/lib/domain--1-fedora/monitor.sock,server,nowait \
 -rtc base=utc,driftfix=slew \
 -no-kvm-pit-reinjection \
+-no-hpet \
 -global PIIX4_PM.disable_s3=1 \
 -global PIIX4_PM.disable_s4=1 \
 -boot c \

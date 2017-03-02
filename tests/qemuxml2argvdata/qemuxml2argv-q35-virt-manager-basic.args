@@ -15,6 +15,7 @@ QEMU_AUDIO_DRV=spice \
 -monitor unix:/tmp/lib/domain--1-virt-manager-basic/monitor.sock,server,nowait \
 -rtc base=utc,driftfix=slew \
 -no-kvm-pit-reinjection \
+-no-hpet \
 -global ICH9-LPC.disable_s3=1 \
 -global ICH9-LPC.disable_s4=1 \
 -boot c \

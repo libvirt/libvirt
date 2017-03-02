@@ -15,5 +15,4 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefaults \
 -monitor unix:/tmp/lib/domain--1-aarch64test/monitor.sock,server,nowait \
--no-acpi \
 -boot c

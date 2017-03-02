@@ -17,7 +17,6 @@ QEMU_AUDIO_DRV=none \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
--no-acpi \
 -device virtio-serial-ccw,id=virtio-serial0,devno=fe.0.0001 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,\

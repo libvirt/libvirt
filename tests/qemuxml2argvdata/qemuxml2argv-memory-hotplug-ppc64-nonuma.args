@@ -18,7 +18,6 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefaults \
 -monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
--no-acpi \
 -boot c \
 -kernel /media/ram/uImage \
 -initrd /media/ram/ramdisk \

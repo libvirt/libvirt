@@ -15,6 +15,5 @@ QEMU_AUDIO_DRV=none \
 -nodefconfig \
 -nodefaults \
 -monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
--no-acpi \
 -boot c \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a,deflate-on-oom=on

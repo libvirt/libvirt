@@ -17,7 +17,6 @@ QEMU_AUDIO_DRV=none \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-QEMUGuest1/monitor.sock,\
 server,nowait \
 -mon chardev=charmonitor,id=monitor,mode=readline \
--no-acpi \
 -boot c \
 -device spapr-vscsi,id=scsi0,reg=0x2000 \
 -device spapr-vscsi,id=scsi1,reg=0x3000 \

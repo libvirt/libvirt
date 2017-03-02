@@ -360,8 +360,6 @@ testInitQEMUCaps(struct testInfo *info,
     if (!(info->qemuCaps = virQEMUCapsNew()))
         goto cleanup;
 
-    virQEMUCapsSet(info->qemuCaps, QEMU_CAPS_NO_ACPI);
-
     if (testQemuCapsSetGIC(info->qemuCaps, gic) < 0)
         goto cleanup;
 
@@ -380,6 +378,8 @@ testUpdateQEMUCaps(const struct testInfo *info,
     int ret = -1;
 
     virQEMUCapsSetArch(info->qemuCaps, vm->def->os.arch);
+
+    virQEMUCapsInitQMPBasicArch(info->qemuCaps);
 
     /* We need to pretend QEMU 2.0.0 is in use so that pSeries guests
      * will get the correct alias assigned to their buses.

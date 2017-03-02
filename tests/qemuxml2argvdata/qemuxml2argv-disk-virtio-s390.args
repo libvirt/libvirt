@@ -14,7 +14,6 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefaults \
 -monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
--no-acpi \
 -boot c \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-s390,drive=drive-virtio-disk0,id=virtio-disk0

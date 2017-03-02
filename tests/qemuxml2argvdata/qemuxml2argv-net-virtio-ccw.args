@@ -14,7 +14,6 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefaults \
 -monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
--no-acpi \
 -boot c \
 -device virtio-net-ccw,vlan=0,id=net0,mac=00:11:22:33:44:55,devno=fe.0.0001 \
 -net user,vlan=0,name=hostnet0 \

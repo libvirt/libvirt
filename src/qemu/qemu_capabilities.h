@@ -510,6 +510,8 @@ int virQEMUCapsParseHelpStr(const char *qemu,
                             const char *qmperr);
 /* Only for use by test suite */
 int virQEMUCapsParseDeviceStr(virQEMUCapsPtr qemuCaps, const char *str);
+/* Only for use by test suite */
+void virQEMUCapsInitQMPBasicArch(virQEMUCapsPtr qemuCaps);
 
 VIR_ENUM_DECL(virQEMUCaps);
 

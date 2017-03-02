@@ -14,7 +14,6 @@ QEMU_AUDIO_DRV=none \
 -nographic \
 -nodefaults \
 -monitor unix:/tmp/lib/domain--1-QEMUGuest1/monitor.sock,server,nowait \
--no-acpi \
 -boot c \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,\
