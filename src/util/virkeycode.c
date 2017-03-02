@@ -22,57 +22,53 @@
 #include <string.h>
 #include <stddef.h>
 
+#include "virkeycodetable_atset1.h"
+#include "virkeycodetable_atset2.h"
+#include "virkeycodetable_atset3.h"
+#include "virkeycodetable_linux.h"
+#include "virkeycodetable_osx.h"
+#include "virkeycodetable_rfb.h"
+#include "virkeycodetable_usb.h"
+#include "virkeycodetable_win32.h"
+#include "virkeycodetable_xt.h"
+#include "virkeycodetable_xtkbd.h"
+#include "virkeynametable_linux.h"
+#include "virkeynametable_osx.h"
+#include "virkeynametable_win32.h"
 
-#define VIRT_KEY_INTERNAL
-#include "virkeymaps.h"
-
-static const char **virKeymapNames[] = {
-    [VIR_KEYCODE_SET_LINUX] =
-      virKeymapNames_linux,
-    [VIR_KEYCODE_SET_XT] =
-      NULL,
-    [VIR_KEYCODE_SET_ATSET1] =
-      NULL,
-    [VIR_KEYCODE_SET_ATSET2] =
-      NULL,
-    [VIR_KEYCODE_SET_ATSET3] =
-      NULL,
-    [VIR_KEYCODE_SET_OSX] =
-      virKeymapNames_os_x,
-    [VIR_KEYCODE_SET_XT_KBD] =
-      NULL,
-    [VIR_KEYCODE_SET_USB] =
-      NULL,
-    [VIR_KEYCODE_SET_WIN32] =
-      virKeymapNames_win32,
-    [VIR_KEYCODE_SET_RFB] =
-      NULL,
+static const char **virKeymapNames[VIR_KEYCODE_SET_LAST] = {
+    [VIR_KEYCODE_SET_LINUX] = virKeyNameTable_linux,
+    [VIR_KEYCODE_SET_OSX] = virKeyNameTable_osx,
+    [VIR_KEYCODE_SET_WIN32] = virKeyNameTable_win32,
 };
-verify(ARRAY_CARDINALITY(virKeymapNames) == VIR_KEYCODE_SET_LAST);
 
-static int *virKeymapValues[] = {
-    [VIR_KEYCODE_SET_LINUX] =
-      virKeymapValues_linux,
-    [VIR_KEYCODE_SET_XT] =
-      virKeymapValues_xt,
-    [VIR_KEYCODE_SET_ATSET1] =
-      virKeymapValues_atset1,
-    [VIR_KEYCODE_SET_ATSET2] =
-      virKeymapValues_atset2,
-    [VIR_KEYCODE_SET_ATSET3] =
-      virKeymapValues_atset3,
-    [VIR_KEYCODE_SET_OSX] =
-      virKeymapValues_os_x,
-    [VIR_KEYCODE_SET_XT_KBD] =
-      virKeymapValues_xt_kbd,
-    [VIR_KEYCODE_SET_USB] =
-      virKeymapValues_usb,
-    [VIR_KEYCODE_SET_WIN32] =
-      virKeymapValues_win32,
-    [VIR_KEYCODE_SET_RFB] =
-      virKeymapValues_rfb,
+static const unsigned short *virKeymapValues[VIR_KEYCODE_SET_LAST] = {
+    [VIR_KEYCODE_SET_LINUX] = virKeyCodeTable_linux,
+    [VIR_KEYCODE_SET_XT] = virKeyCodeTable_xt,
+    [VIR_KEYCODE_SET_ATSET1] = virKeyCodeTable_atset1,
+    [VIR_KEYCODE_SET_ATSET2] = virKeyCodeTable_atset2,
+    [VIR_KEYCODE_SET_ATSET3] = virKeyCodeTable_atset3,
+    [VIR_KEYCODE_SET_OSX] = virKeyCodeTable_osx,
+    [VIR_KEYCODE_SET_XT_KBD] = virKeyCodeTable_xtkbd,
+    [VIR_KEYCODE_SET_USB] = virKeyCodeTable_usb,
+    [VIR_KEYCODE_SET_WIN32] = virKeyCodeTable_win32,
+    [VIR_KEYCODE_SET_RFB] = virKeyCodeTable_rfb,
 };
-verify(ARRAY_CARDINALITY(virKeymapValues) == VIR_KEYCODE_SET_LAST);
+
+#define VIR_KEYMAP_ENTRY_MAX ARRAY_CARDINALITY(virKeyCodeTable_linux)
+
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_xt));
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_atset1));
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_atset2));
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_atset3));
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_osx));
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_xtkbd));
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_usb));
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_win32));
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyCodeTable_rfb));
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyNameTable_linux));
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyNameTable_osx));
+verify(VIR_KEYMAP_ENTRY_MAX == ARRAY_CARDINALITY(virKeyNameTable_win32));
 
 VIR_ENUM_IMPL(virKeycodeSet, VIR_KEYCODE_SET_LAST,
     "linux",

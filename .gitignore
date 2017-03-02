@@ -159,7 +159,8 @@
 /src/test_libvirt*.aug
 /src/test_virtlockd.aug
 /src/test_virtlogd.aug
-/src/util/virkeymaps.h
+/src/util/virkeycodetable*.h
+/src/util/virkeynametable*.h
 /src/virt-aa-helper
 /src/virtlockd
 /src/virtlogd

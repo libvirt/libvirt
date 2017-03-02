@@ -57,6 +57,9 @@ static int testKeycodeMapping(const void *data ATTRIBUTE_UNUSED)
     TRANSLATE(LINUX, RFB, 88, 88);
     TRANSLATE(LINUX, RFB, 160, 163);
     TRANSLATE(ATSET2, ATSET3, 259, 55);
+    TRANSLATE(OSX, WIN32, 90, 131);
+    TRANSLATE(OSX, ATSET1, 90, 0);
+    TRANSLATE(OSX, ATSET1, 3200, -1);
 
 #undef TRANSLATE
 
@@ -82,6 +85,8 @@ static int testKeycodeStrings(const void *data ATTRIBUTE_UNUSED)
     } while (0)
 
     TRANSLATE(LINUX, "KEY_DELETE", 111);
+    TRANSLATE(LINUX, "KEY_RFKILL", 524);
+    TRANSLATE(LINUX, "KEY_WIBBLE", -1);
     TRANSLATE(OSX, "Function", 0x3f);
     TRANSLATE(WIN32, "VK_UP", 0x26);
 
