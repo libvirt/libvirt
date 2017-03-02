@@ -40,39 +40,53 @@ struct _virNodeDeviceDriverState {
 };
 
 
-int virNodeDeviceObjHasCap(const virNodeDeviceObj *dev, const char *cap);
+int
+virNodeDeviceObjHasCap(const virNodeDeviceObj *dev,
+                       const char *cap);
 
-virNodeDeviceObjPtr virNodeDeviceObjFindByName(virNodeDeviceObjListPtr devs,
-                                            const char *name);
+virNodeDeviceObjPtr
+virNodeDeviceObjFindByName(virNodeDeviceObjListPtr devs,
+                           const char *name);
+
 virNodeDeviceObjPtr
 virNodeDeviceObjFindBySysfsPath(virNodeDeviceObjListPtr devs,
                                 const char *sysfs_path)
     ATTRIBUTE_NONNULL(2);
 
-virNodeDeviceObjPtr virNodeDeviceObjAssignDef(virNodeDeviceObjListPtr devs,
-                                              virNodeDeviceDefPtr def);
+virNodeDeviceObjPtr
+virNodeDeviceObjAssignDef(virNodeDeviceObjListPtr devs,
+                          virNodeDeviceDefPtr def);
 
-void virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
-                            virNodeDeviceObjPtr *dev);
+void
+virNodeDeviceObjRemove(virNodeDeviceObjListPtr devs,
+                       virNodeDeviceObjPtr *dev);
 
-int virNodeDeviceObjGetParentHost(virNodeDeviceObjListPtr devs,
-                                  virNodeDeviceDefPtr def,
-                                  int create);
+int
+virNodeDeviceObjGetParentHost(virNodeDeviceObjListPtr devs,
+                              virNodeDeviceDefPtr def,
+                              int create);
 
-void virNodeDeviceObjFree(virNodeDeviceObjPtr dev);
+void
+virNodeDeviceObjFree(virNodeDeviceObjPtr dev);
 
-void virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs);
+void
+virNodeDeviceObjListFree(virNodeDeviceObjListPtr devs);
 
-void virNodeDeviceObjLock(virNodeDeviceObjPtr obj);
-void virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj);
+void
+virNodeDeviceObjLock(virNodeDeviceObjPtr obj);
 
-typedef bool (*virNodeDeviceObjListFilter)(virConnectPtr conn,
-                                           virNodeDeviceDefPtr def);
+void
+virNodeDeviceObjUnlock(virNodeDeviceObjPtr obj);
 
-int virNodeDeviceObjListExport(virConnectPtr conn,
-                               virNodeDeviceObjList devobjs,
-                               virNodeDevicePtr **devices,
-                               virNodeDeviceObjListFilter filter,
-                               unsigned int flags);
+typedef bool
+(*virNodeDeviceObjListFilter)(virConnectPtr conn,
+                              virNodeDeviceDefPtr def);
+
+int
+virNodeDeviceObjListExport(virConnectPtr conn,
+                           virNodeDeviceObjList devobjs,
+                           virNodeDevicePtr **devices,
+                           virNodeDeviceObjListFilter filter,
+                           unsigned int flags);
 
 #endif /* __VIRNODEDEVICEOBJ_H__ */

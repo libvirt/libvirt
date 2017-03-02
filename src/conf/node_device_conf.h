@@ -251,26 +251,35 @@ struct _virNodeDeviceObjList {
     virNodeDeviceObjPtr *objs;
 };
 
-char *virNodeDeviceDefFormat(const virNodeDeviceDef *def);
+char *
+virNodeDeviceDefFormat(const virNodeDeviceDef *def);
 
-virNodeDeviceDefPtr virNodeDeviceDefParseString(const char *str,
-                                                int create,
-                                                const char *virt_type);
-virNodeDeviceDefPtr virNodeDeviceDefParseFile(const char *filename,
-                                              int create,
-                                              const char *virt_type);
-virNodeDeviceDefPtr virNodeDeviceDefParseNode(xmlDocPtr xml,
-                                              xmlNodePtr root,
-                                              int create,
-                                              const char *virt_type);
+virNodeDeviceDefPtr
+virNodeDeviceDefParseString(const char *str,
+                            int create,
+                            const char *virt_type);
 
-int virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
-                         char **wwnn,
-                         char **wwpn);
+virNodeDeviceDefPtr
+virNodeDeviceDefParseFile(const char *filename,
+                          int create,
+                          const char *virt_type);
 
-void virNodeDeviceDefFree(virNodeDeviceDefPtr def);
+virNodeDeviceDefPtr
+virNodeDeviceDefParseNode(xmlDocPtr xml,
+                          xmlNodePtr root,
+                          int create,
+                          const char *virt_type);
 
-void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps);
+int
+virNodeDeviceGetWWNs(virNodeDeviceDefPtr def,
+                     char **wwnn,
+                     char **wwpn);
+
+void
+virNodeDeviceDefFree(virNodeDeviceDefPtr def);
+
+void
+virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps);
 
 # define VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_CAP \
                 (VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM        | \
@@ -287,7 +296,8 @@ void virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps);
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC  | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM)
 
-char *virNodeDeviceGetParentName(virConnectPtr conn,
-                                 const char *nodedev_name);
+char *
+virNodeDeviceGetParentName(virConnectPtr conn,
+                           const char *nodedev_name);
 
 #endif /* __VIR_NODE_DEVICE_CONF_H__ */
