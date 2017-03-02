@@ -79,11 +79,11 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
                         virNWFilterDefPtr def);
 
 int
-virNWFilterTestUnassignDef(virNWFilterObjPtr nwfilter);
+virNWFilterObjTestUnassignDef(virNWFilterObjPtr nwfilter);
 
 int
-virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
-                          const char *configDir);
+virNWFilterObjLoadAllConfigs(virNWFilterObjListPtr nwfilters,
+                             const char *configDir);
 
 void
 virNWFilterObjLock(virNWFilterObjPtr obj);

@@ -237,8 +237,7 @@ nwfilterStateInitialize(bool privileged,
 
     VIR_FREE(base);
 
-    if (virNWFilterLoadAllConfigs(&driver->nwfilters,
-                                  driver->configDir) < 0)
+    if (virNWFilterObjLoadAllConfigs(&driver->nwfilters, driver->configDir) < 0)
         goto error;
 
     nwfilterDriverUnlock();
@@ -290,8 +289,7 @@ nwfilterStateReload(void)
     virNWFilterWriteLockFilterUpdates();
     virNWFilterCallbackDriversLock();
 
-    virNWFilterLoadAllConfigs(&driver->nwfilters,
-                              driver->configDir);
+    virNWFilterObjLoadAllConfigs(&driver->nwfilters, driver->configDir);
 
     virNWFilterCallbackDriversUnlock();
     virNWFilterUnlockFilterUpdates();
@@ -595,7 +593,7 @@ nwfilterUndefine(virNWFilterPtr obj)
     if (virNWFilterUndefineEnsureACL(obj->conn, nwfilter->def) < 0)
         goto cleanup;
 
-    if (virNWFilterTestUnassignDef(nwfilter) < 0) {
+    if (virNWFilterObjTestUnassignDef(nwfilter) < 0) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s",
                        _("nwfilter is in use"));

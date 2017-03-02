@@ -957,15 +957,15 @@ virNodeDeviceObjUnlock;
 
 
 # conf/virnwfilterobj.h
-virNWFilterLoadAllConfigs;
 virNWFilterObjAssignDef;
 virNWFilterObjFindByName;
 virNWFilterObjFindByUUID;
 virNWFilterObjListFree;
+virNWFilterObjLoadAllConfigs;
 virNWFilterObjLock;
 virNWFilterObjRemove;
+virNWFilterObjTestUnassignDef;
 virNWFilterObjUnlock;
-virNWFilterTestUnassignDef;
 
 
 # conf/virsecretobj.h

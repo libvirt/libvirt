@@ -117,9 +117,9 @@ virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters,
 
 
 static int
-_virNWFilterDefLoopDetect(virNWFilterObjListPtr nwfilters,
-                          virNWFilterDefPtr def,
-                          const char *filtername)
+_virNWFilterObjDefLoopDetect(virNWFilterObjListPtr nwfilters,
+                             virNWFilterDefPtr def,
+                             const char *filtername)
 {
     int rc = 0;
     size_t i;
@@ -141,8 +141,8 @@ _virNWFilterDefLoopDetect(virNWFilterObjListPtr nwfilters,
             obj = virNWFilterObjFindByName(nwfilters,
                                            entry->include->filterref);
             if (obj) {
-                rc = _virNWFilterDefLoopDetect(nwfilters,
-                                               obj->def, filtername);
+                rc = _virNWFilterObjDefLoopDetect(nwfilters,
+                                                  obj->def, filtername);
 
                 virNWFilterObjUnlock(obj);
                 if (rc < 0)
@@ -156,7 +156,7 @@ _virNWFilterDefLoopDetect(virNWFilterObjListPtr nwfilters,
 
 
 /*
- * virNWFilterDefLoopDetect:
+ * virNWFilterObjDefLoopDetect:
  * @nwfilters : the nwfilters to search
  * @def : the filter definition that may add a loop and is to be tested
  *
@@ -166,15 +166,15 @@ _virNWFilterDefLoopDetect(virNWFilterObjListPtr nwfilters,
  * Returns 0 in case no loop was detected, -1 otherwise.
  */
 static int
-virNWFilterDefLoopDetect(virNWFilterObjListPtr nwfilters,
-                         virNWFilterDefPtr def)
+virNWFilterObjDefLoopDetect(virNWFilterObjListPtr nwfilters,
+                            virNWFilterDefPtr def)
 {
-    return _virNWFilterDefLoopDetect(nwfilters, def, def->name);
+    return _virNWFilterObjDefLoopDetect(nwfilters, def, def->name);
 }
 
 
 int
-virNWFilterTestUnassignDef(virNWFilterObjPtr nwfilter)
+virNWFilterObjTestUnassignDef(virNWFilterObjPtr nwfilter)
 {
     int rc = 0;
 
@@ -252,7 +252,7 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
         }
     }
 
-    if (virNWFilterDefLoopDetect(nwfilters, def) < 0) {
+    if (virNWFilterObjDefLoopDetect(nwfilters, def) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        "%s", _("filter would introduce a loop"));
         return NULL;
@@ -306,9 +306,9 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
 
 
 static virNWFilterObjPtr
-virNWFilterLoadConfig(virNWFilterObjListPtr nwfilters,
-                      const char *configDir,
-                      const char *name)
+virNWFilterObjLoadConfig(virNWFilterObjListPtr nwfilters,
+                         const char *configDir,
+                         const char *name)
 {
     virNWFilterDefPtr def = NULL;
     virNWFilterObjPtr nwfilter;
@@ -347,8 +347,8 @@ virNWFilterLoadConfig(virNWFilterObjListPtr nwfilters,
 
 
 int
-virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
-                          const char *configDir)
+virNWFilterObjLoadAllConfigs(virNWFilterObjListPtr nwfilters,
+                             const char *configDir)
 {
     DIR *dir;
     struct dirent *entry;
@@ -364,7 +364,7 @@ virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
         if (!virFileStripSuffix(entry->d_name, ".xml"))
             continue;
 
-        nwfilter = virNWFilterLoadConfig(nwfilters, configDir, entry->d_name);
+        nwfilter = virNWFilterObjLoadConfig(nwfilters, configDir, entry->d_name);
         if (nwfilter)
             virNWFilterObjUnlock(nwfilter);
     }
