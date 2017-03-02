@@ -100,7 +100,8 @@ virNWFilterObjFindByUUID(virNWFilterObjListPtr nwfilters,
 
 
 virNWFilterObjPtr
-virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters, const char *name)
+virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters,
+                         const char *name)
 {
     size_t i;
 
@@ -187,8 +188,10 @@ virNWFilterTestUnassignDef(virNWFilterObjPtr nwfilter)
     return rc;
 }
 
+
 static bool
-virNWFilterDefEqual(const virNWFilterDef *def1, virNWFilterDefPtr def2,
+virNWFilterDefEqual(const virNWFilterDef *def1,
+                    virNWFilterDefPtr def2,
                     bool cmpUUIDs)
 {
     bool ret = false;
@@ -216,6 +219,7 @@ virNWFilterDefEqual(const virNWFilterDef *def1, virNWFilterDefPtr def2,
 
     return ret;
 }
+
 
 virNWFilterObjPtr
 virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
@@ -370,13 +374,15 @@ virNWFilterLoadAllConfigs(virNWFilterObjListPtr nwfilters,
 }
 
 
-void virNWFilterObjLock(virNWFilterObjPtr obj)
+void
+virNWFilterObjLock(virNWFilterObjPtr obj)
 {
     virMutexLock(&obj->lock);
 }
 
 
-void virNWFilterObjUnlock(virNWFilterObjPtr obj)
+void
+virNWFilterObjUnlock(virNWFilterObjPtr obj)
 {
     virMutexUnlock(&obj->lock);
 }
