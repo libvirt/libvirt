@@ -119,7 +119,7 @@ typedef enum {
     /* 50 */
     QEMU_CAPS_HDA_DUPLEX, /* -device hda-duplex */
     QEMU_CAPS_DRIVE_AIO, /* -drive aio= supported */
-    QEMU_CAPS_PCI_MULTIBUS, /* bus=pci.0 vs bus=pci */
+    X_QEMU_CAPS_PCI_MULTIBUS, /* bus=pci.0 vs bus=pci */
     QEMU_CAPS_PCI_BOOTINDEX, /* pci-assign.bootindex */
     QEMU_CAPS_CCID_EMULATED, /* -device ccid-card-emulated */
 

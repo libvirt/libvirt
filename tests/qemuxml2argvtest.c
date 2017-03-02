@@ -388,9 +388,6 @@ testUpdateQEMUCaps(const struct testInfo *info,
 
     virQEMUCapsFilterByMachineType(info->qemuCaps, vm->def->os.machine);
 
-    if (ARCH_IS_X86(vm->def->os.arch))
-        virQEMUCapsSet(info->qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
-
     ret = 0;
 
  cleanup:

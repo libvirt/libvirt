@@ -25,7 +25,6 @@
   <flag name='boot-index'/>
   <flag name='hda-duplex'/>
   <flag name='drive-aio'/>
-  <flag name='pci-multibus'/>
   <flag name='pci-bootindex'/>
   <flag name='ccid-emulated'/>
   <flag name='ccid-passthru'/>

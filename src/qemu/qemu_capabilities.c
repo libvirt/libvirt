@@ -2268,9 +2268,9 @@ virQEMUCapsGet(virQEMUCapsPtr qemuCaps,
 bool virQEMUCapsHasPCIMultiBus(virQEMUCapsPtr qemuCaps,
                                virDomainDefPtr def)
 {
-    bool hasMultiBus = virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
-
-    if (hasMultiBus)
+    /* x86_64 and i686 support PCI-multibus on all machine types
+     * since forever */
+    if (ARCH_IS_X86(qemuCaps->arch))
         return true;
 
     if (def->os.arch == VIR_ARCH_PPC ||
@@ -3913,17 +3913,6 @@ virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid, const c
                                 qmperr) < 0)
         goto cleanup;
 
-    /* x86_64 and i686 support PCI-multibus on all machine types
-     * since forever. For other architectures, it has been changing
-     * across releases, per machine type, so we can't simply detect
-     * it here. Thus the rest of the logic is provided in a separate
-     * helper virQEMUCapsHasPCIMultiBus() which keys off the machine
-     * stored in virDomainDef and QEMU version number
-     */
-    if (qemuCaps->arch == VIR_ARCH_X86_64 ||
-        qemuCaps->arch == VIR_ARCH_I686)
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
-
     /* -no-acpi is not supported on non-x86
      * even if qemu reports it in -help */
     if (qemuCaps->arch != VIR_ARCH_X86_64 &&
@@ -4025,18 +4014,9 @@ virQEMUCapsInitArchQMPBasic(virQEMUCapsPtr qemuCaps,
         goto cleanup;
     }
 
-    /* x86_64 and i686 support PCI-multibus on all machine types
-     * since forever. For other architectures, it has been changing
-     * across releases, per machine type, so we can't simply detect
-     * it here. Thus the rest of the logic is provided in a separate
-     * helper virQEMUCapsHasPCIMultiBus() which keys off the machine
-     * stored in virDomainDef and QEMU version number
-     *
-     * ACPI/HPET/KVM PIT are also x86 specific
-     */
+    /* ACPI/HPET/KVM PIT are x86 specific */
     if (qemuCaps->arch == VIR_ARCH_X86_64 ||
         qemuCaps->arch == VIR_ARCH_I686) {
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_PCI_MULTIBUS);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_HPET);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_KVM_PIT);
