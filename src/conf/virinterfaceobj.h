@@ -44,11 +44,11 @@ virInterfaceObjIsActive(const virInterfaceObj *iface)
     return iface->active;
 }
 
-int virInterfaceFindByMACString(virInterfaceObjListPtr interfaces,
-                                const char *mac,
-                                virInterfaceObjPtr *matches, int maxmatches);
-virInterfaceObjPtr virInterfaceFindByName(virInterfaceObjListPtr interfaces,
-                                          const char *name);
+int virInterfaceObjFindByMACString(virInterfaceObjListPtr interfaces,
+                                   const char *mac,
+                                   virInterfaceObjPtr *matches, int maxmatches);
+virInterfaceObjPtr virInterfaceObjFindByName(virInterfaceObjListPtr interfaces,
+                                             const char *name);
 
 
 void virInterfaceObjFree(virInterfaceObjPtr iface);
@@ -57,10 +57,10 @@ int virInterfaceObjListClone(virInterfaceObjListPtr src,
                              virInterfaceObjListPtr dest);
 
 
-virInterfaceObjPtr virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
-                                         virInterfaceDefPtr def);
-void virInterfaceRemove(virInterfaceObjListPtr interfaces,
-                        virInterfaceObjPtr iface);
+virInterfaceObjPtr virInterfaceObjAssignDef(virInterfaceObjListPtr interfaces,
+                                            virInterfaceDefPtr def);
+void virInterfaceObjRemove(virInterfaceObjListPtr interfaces,
+                           virInterfaceObjPtr iface);
 
 void virInterfaceObjLock(virInterfaceObjPtr obj);
 void virInterfaceObjUnlock(virInterfaceObjPtr obj);

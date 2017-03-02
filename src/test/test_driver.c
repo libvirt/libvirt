@@ -1019,7 +1019,7 @@ testParseInterfaces(testDriverPtr privconn,
         if (!def)
             goto error;
 
-        if (!(obj = virInterfaceAssignDef(&privconn->ifaces, def))) {
+        if (!(obj = virInterfaceObjAssignDef(&privconn->ifaces, def))) {
             virInterfaceDefFree(def);
             goto error;
         }
@@ -3738,7 +3738,7 @@ static virInterfacePtr testInterfaceLookupByName(virConnectPtr conn,
     virInterfacePtr ret = NULL;
 
     testDriverLock(privconn);
-    iface = virInterfaceFindByName(&privconn->ifaces, name);
+    iface = virInterfaceObjFindByName(&privconn->ifaces, name);
     testDriverUnlock(privconn);
 
     if (iface == NULL) {
@@ -3763,7 +3763,7 @@ static virInterfacePtr testInterfaceLookupByMACString(virConnectPtr conn,
     virInterfacePtr ret = NULL;
 
     testDriverLock(privconn);
-    ifacect = virInterfaceFindByMACString(&privconn->ifaces, mac, &iface, 1);
+    ifacect = virInterfaceObjFindByMACString(&privconn->ifaces, mac, &iface, 1);
     testDriverUnlock(privconn);
 
     if (ifacect == 0) {
@@ -3791,7 +3791,7 @@ static int testInterfaceIsActive(virInterfacePtr iface)
     int ret = -1;
 
     testDriverLock(privconn);
-    obj = virInterfaceFindByName(&privconn->ifaces, iface->name);
+    obj = virInterfaceObjFindByName(&privconn->ifaces, iface->name);
     testDriverUnlock(privconn);
     if (!obj) {
         virReportError(VIR_ERR_NO_INTERFACE, NULL);
@@ -3902,8 +3902,7 @@ static char *testInterfaceGetXMLDesc(virInterfacePtr iface,
     virCheckFlags(0, NULL);
 
     testDriverLock(privconn);
-    privinterface = virInterfaceFindByName(&privconn->ifaces,
-                                           iface->name);
+    privinterface = virInterfaceObjFindByName(&privconn->ifaces, iface->name);
     testDriverUnlock(privconn);
 
     if (privinterface == NULL) {
@@ -3934,7 +3933,7 @@ static virInterfacePtr testInterfaceDefineXML(virConnectPtr conn, const char *xm
     if ((def = virInterfaceDefParseString(xmlStr)) == NULL)
         goto cleanup;
 
-    if ((iface = virInterfaceAssignDef(&privconn->ifaces, def)) == NULL)
+    if ((iface = virInterfaceObjAssignDef(&privconn->ifaces, def)) == NULL)
         goto cleanup;
     def = NULL;
 
@@ -3955,16 +3954,14 @@ static int testInterfaceUndefine(virInterfacePtr iface)
     int ret = -1;
 
     testDriverLock(privconn);
-    privinterface = virInterfaceFindByName(&privconn->ifaces,
-                                           iface->name);
+    privinterface = virInterfaceObjFindByName(&privconn->ifaces, iface->name);
 
     if (privinterface == NULL) {
         virReportError(VIR_ERR_NO_INTERFACE, NULL);
         goto cleanup;
     }
 
-    virInterfaceRemove(&privconn->ifaces,
-                       privinterface);
+    virInterfaceObjRemove(&privconn->ifaces, privinterface);
     ret = 0;
 
  cleanup:
@@ -3982,8 +3979,7 @@ static int testInterfaceCreate(virInterfacePtr iface,
     virCheckFlags(0, -1);
 
     testDriverLock(privconn);
-    privinterface = virInterfaceFindByName(&privconn->ifaces,
-                                           iface->name);
+    privinterface = virInterfaceObjFindByName(&privconn->ifaces, iface->name);
 
     if (privinterface == NULL) {
         virReportError(VIR_ERR_NO_INTERFACE, NULL);
@@ -4015,8 +4011,7 @@ static int testInterfaceDestroy(virInterfacePtr iface,
     virCheckFlags(0, -1);
 
     testDriverLock(privconn);
-    privinterface = virInterfaceFindByName(&privconn->ifaces,
-                                           iface->name);
+    privinterface = virInterfaceObjFindByName(&privconn->ifaces, iface->name);
 
     if (privinterface == NULL) {
         virReportError(VIR_ERR_NO_INTERFACE, NULL);

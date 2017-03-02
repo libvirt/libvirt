@@ -941,14 +941,14 @@ virDomainObjListRename;
 
 
 # conf/virinterfaceobj.h
-virInterfaceAssignDef;
-virInterfaceFindByMACString;
-virInterfaceFindByName;
+virInterfaceObjAssignDef;
+virInterfaceObjFindByMACString;
+virInterfaceObjFindByName;
 virInterfaceObjListClone;
 virInterfaceObjListFree;
 virInterfaceObjLock;
+virInterfaceObjRemove;
 virInterfaceObjUnlock;
-virInterfaceRemove;
 
 
 # conf/virnodedeviceobj.h

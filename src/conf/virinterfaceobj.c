@@ -64,9 +64,9 @@ virInterfaceObjFree(virInterfaceObjPtr iface)
 
 /* virInterfaceObjList manipulation */
 int
-virInterfaceFindByMACString(virInterfaceObjListPtr interfaces,
-                            const char *mac,
-                            virInterfaceObjPtr *matches, int maxmatches)
+virInterfaceObjFindByMACString(virInterfaceObjListPtr interfaces,
+                               const char *mac,
+                               virInterfaceObjPtr *matches, int maxmatches)
 {
     size_t i;
     unsigned int matchct = 0;
@@ -91,8 +91,8 @@ virInterfaceFindByMACString(virInterfaceObjListPtr interfaces,
 
 
 virInterfaceObjPtr
-virInterfaceFindByName(virInterfaceObjListPtr interfaces,
-                       const char *name)
+virInterfaceObjFindByName(virInterfaceObjListPtr interfaces,
+                          const char *name)
 {
     size_t i;
 
@@ -148,9 +148,9 @@ virInterfaceObjListClone(virInterfaceObjListPtr src,
         }
 
         VIR_FREE(xml);
-        if ((iface = virInterfaceAssignDef(dest, backup)) == NULL)
+        if ((iface = virInterfaceObjAssignDef(dest, backup)) == NULL)
             goto cleanup;
-        virInterfaceObjUnlock(iface); /* was locked by virInterfaceAssignDef */
+        virInterfaceObjUnlock(iface); /* locked by virInterfaceObjAssignDef */
     }
 
     ret = cnt;
@@ -162,12 +162,12 @@ virInterfaceObjListClone(virInterfaceObjListPtr src,
 
 
 virInterfaceObjPtr
-virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
-                      virInterfaceDefPtr def)
+virInterfaceObjAssignDef(virInterfaceObjListPtr interfaces,
+                         virInterfaceDefPtr def)
 {
     virInterfaceObjPtr iface;
 
-    if ((iface = virInterfaceFindByName(interfaces, def->name))) {
+    if ((iface = virInterfaceObjFindByName(interfaces, def->name))) {
         virInterfaceDefFree(iface->def);
         iface->def = def;
 
@@ -197,8 +197,8 @@ virInterfaceAssignDef(virInterfaceObjListPtr interfaces,
 
 
 void
-virInterfaceRemove(virInterfaceObjListPtr interfaces,
-                   virInterfaceObjPtr iface)
+virInterfaceObjRemove(virInterfaceObjListPtr interfaces,
+                      virInterfaceObjPtr iface)
 {
     size_t i;
 
