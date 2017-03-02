@@ -44,27 +44,41 @@ virInterfaceObjIsActive(const virInterfaceObj *iface)
     return iface->active;
 }
 
-int virInterfaceObjFindByMACString(virInterfaceObjListPtr interfaces,
-                                   const char *mac,
-                                   virInterfaceObjPtr *matches, int maxmatches);
-virInterfaceObjPtr virInterfaceObjFindByName(virInterfaceObjListPtr interfaces,
-                                             const char *name);
+int
+virInterfaceObjFindByMACString(virInterfaceObjListPtr interfaces,
+                               const char *mac,
+                               virInterfaceObjPtr *matches, int maxmatches);
 
+virInterfaceObjPtr
+virInterfaceObjFindByName(virInterfaceObjListPtr interfaces,
+                          const char *name);
 
-void virInterfaceObjFree(virInterfaceObjPtr iface);
-void virInterfaceObjListFree(virInterfaceObjListPtr vms);
-int virInterfaceObjListClone(virInterfaceObjListPtr src,
-                             virInterfaceObjListPtr dest);
+void
+virInterfaceObjFree(virInterfaceObjPtr iface);
 
+void
+virInterfaceObjListFree(virInterfaceObjListPtr vms);
 
-virInterfaceObjPtr virInterfaceObjAssignDef(virInterfaceObjListPtr interfaces,
-                                            virInterfaceDefPtr def);
-void virInterfaceObjRemove(virInterfaceObjListPtr interfaces,
-                           virInterfaceObjPtr iface);
+int
+virInterfaceObjListClone(virInterfaceObjListPtr src,
+                         virInterfaceObjListPtr dest);
 
-void virInterfaceObjLock(virInterfaceObjPtr obj);
-void virInterfaceObjUnlock(virInterfaceObjPtr obj);
+virInterfaceObjPtr
+virInterfaceObjAssignDef(virInterfaceObjListPtr interfaces,
+                         virInterfaceDefPtr def);
 
-typedef bool (*virInterfaceObjListFilter)(virConnectPtr conn,
-                                          virInterfaceDefPtr def);
+void
+virInterfaceObjRemove(virInterfaceObjListPtr interfaces,
+                      virInterfaceObjPtr iface);
+
+void
+virInterfaceObjLock(virInterfaceObjPtr obj);
+
+void
+virInterfaceObjUnlock(virInterfaceObjPtr obj);
+
+typedef bool
+(*virInterfaceObjListFilter)(virConnectPtr conn,
+                             virInterfaceDefPtr def);
+
 #endif /* __VIRINTERFACEOBJ_H__ */

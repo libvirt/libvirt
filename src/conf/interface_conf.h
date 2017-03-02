@@ -161,14 +161,21 @@ struct _virInterfaceDef {
     virInterfaceProtocolDefPtr *protos; /* ptr to array of protos[nprotos] */
 };
 
-void virInterfaceDefFree(virInterfaceDefPtr def);
+void
+virInterfaceDefFree(virInterfaceDefPtr def);
 
-virInterfaceDefPtr virInterfaceDefParseString(const char *xmlStr);
-virInterfaceDefPtr virInterfaceDefParseFile(const char *filename);
-virInterfaceDefPtr virInterfaceDefParseNode(xmlDocPtr xml,
-                                            xmlNodePtr root);
+virInterfaceDefPtr
+virInterfaceDefParseString(const char *xmlStr);
 
-char *virInterfaceDefFormat(const virInterfaceDef *def);
+virInterfaceDefPtr
+virInterfaceDefParseFile(const char *filename);
+
+virInterfaceDefPtr
+virInterfaceDefParseNode(xmlDocPtr xml,
+                         xmlNodePtr root);
+
+char *
+virInterfaceDefFormat(const virInterfaceDef *def);
 
 # define VIR_CONNECT_LIST_INTERFACES_FILTERS_ACTIVE   \
                 (VIR_CONNECT_LIST_INTERFACES_ACTIVE | \
