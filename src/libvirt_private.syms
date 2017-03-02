@@ -2010,6 +2010,7 @@ virNetDevGetVLanID;
 virNetDevIfStateTypeFromString;
 virNetDevIfStateTypeToString;
 virNetDevIsVirtualFunction;
+virNetDevPFGetVF;
 virNetDevReplaceMacAddress;
 virNetDevReplaceNetConfig;
 virNetDevRestoreMacAddress;

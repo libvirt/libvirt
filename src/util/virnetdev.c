@@ -1380,6 +1380,57 @@ virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
     return ret;
 }
 
+
+/**
+ * virNetDevPFGetVF:
+ *
+ * @pfname: netdev name of the physical function (PF)
+ * @vf: virtual function (VF) number for the device of interest
+ * @vfname: name of the physical function interface name
+ *
+ * Finds the netdev name of VF# @vf of SRIOV PF @pfname, and puts it
+ * in @vfname. The caller must free @vfname when it's finished with
+ * it.
+ *
+ * Returns 0 on success, -1 on failure
+ *
+ * NB: if the VF has no netdev name, that is *not* considered an
+ * error; *vfname simply gets a NULL and the return value is 0
+ * (success).
+ */
+int
+virNetDevPFGetVF(const char *pfname, int vf, char **vfname)
+{
+    char *virtfnName = NULL;
+    char *virtfnSysfsPath = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&virtfnName, "virtfn%d", vf) < 0)
+        goto cleanup;
+
+    /* this provides the path to the VF's directory in sysfs,
+     * e.g. "/sys/class/net/enp2s0f0/virtfn3"
+     */
+    if (virNetDevSysfsDeviceFile(&virtfnSysfsPath, pfname, virtfnName) < 0)
+        goto cleanup;
+
+    /* and this gets the netdev name associated with it, which is a
+     * directory entry in [virtfnSysfsPath]/net,
+     * e.g. "/sys/class/net/enp2s0f0/virtfn3/net/enp2s11f4" - in this
+     * example the VF for enp2s0f0 vf#3 is "enp2s11f4". (If the VF
+     * isn't bound to a netdev driver, it won't have a netdev name,
+     * and vfname will be NULL).
+     */
+    ret = virPCIGetNetName(virtfnSysfsPath, vfname);
+
+ cleanup:
+    VIR_FREE(virtfnName);
+    VIR_FREE(virtfnSysfsPath);
+
+    return ret;
+}
+
+
 /**
  * virNetDevGetVirtualFunctionInfo:
  * @vfname: name of the virtual function interface
@@ -1456,6 +1507,16 @@ virNetDevGetPhysicalFunction(const char *ifname ATTRIBUTE_UNUSED,
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get physical function status on this platform"));
+    return -1;
+}
+
+int
+virNetDevPFGetVF(const char *pfname ATTRIBUTE_UNUSED,
+                 int vf ATTRIBUTE_UNUSED,
+                 char **vfname ATTRUBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to get virtual function name on this platform"));
     return -1;
 }
 

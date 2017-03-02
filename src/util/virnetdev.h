@@ -183,6 +183,9 @@ int virNetDevGetVirtualFunctionIndex(const char *pfname, const char *vfname,
 int virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
+int virNetDevPFGetVF(const char *pfname, int vf, char **vfname)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
 int virNetDevGetVirtualFunctions(const char *pfname,
                                  char ***vfname,
                                  virPCIDeviceAddressPtr **virt_fns,
