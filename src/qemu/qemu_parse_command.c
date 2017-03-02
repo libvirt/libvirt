@@ -1441,8 +1441,7 @@ qemuParseCommandLineCPU(virDomainDefPtr dom,
             if (*feature == '\0')
                 goto syntax;
 
-            if (dom->os.arch != VIR_ARCH_X86_64 &&
-                dom->os.arch != VIR_ARCH_I686) {
+            if (!ARCH_IS_X86(dom->os.arch)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("%s platform doesn't support CPU features'"),
                                virArchToString(dom->os.arch));
@@ -1863,8 +1862,7 @@ qemuParseCommandLine(virCapsPtr caps,
     else
         def->os.arch = VIR_ARCH_I686;
 
-    if ((def->os.arch == VIR_ARCH_I686) ||
-        (def->os.arch == VIR_ARCH_X86_64))
+    if (ARCH_IS_X86(def->os.arch))
         def->features[VIR_DOMAIN_FEATURE_ACPI] = VIR_TRISTATE_SWITCH_ON;
 
 #define WANT_VALUE()                                                   \

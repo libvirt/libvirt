@@ -782,8 +782,7 @@ virQEMUCapsProbeCPUModels(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid)
     virQEMUCapsParseCPUModels parse;
     virCommandPtr cmd;
 
-    if (qemuCaps->arch == VIR_ARCH_I686 ||
-        qemuCaps->arch == VIR_ARCH_X86_64) {
+    if (ARCH_IS_X86(qemuCaps->arch)) {
         parse = virQEMUCapsParseX86Models;
     } else if (ARCH_IS_PPC64(qemuCaps->arch)) {
         parse = virQEMUCapsParsePPCModels;
@@ -1039,8 +1038,7 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 
     }
 
-    if (((guestarch == VIR_ARCH_I686) ||
-         (guestarch == VIR_ARCH_X86_64)) &&
+    if (ARCH_IS_X86(guestarch) &&
         (virCapabilitiesAddGuestFeature(guest, "acpi", true, true) == NULL ||
          virCapabilitiesAddGuestFeature(guest, "apic", true, false) == NULL))
         goto cleanup;
@@ -3923,8 +3921,7 @@ virQEMUCapsInitHelp(virQEMUCapsPtr qemuCaps, uid_t runUid, gid_t runGid, const c
 
     /* -no-acpi is not supported on non-x86
      * even if qemu reports it in -help */
-    if (qemuCaps->arch != VIR_ARCH_X86_64 &&
-        qemuCaps->arch != VIR_ARCH_I686)
+    if (!ARCH_IS_X86(qemuCaps->arch))
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_NO_ACPI);
 
     /* virQEMUCapsExtractDeviceStr will only set additional caps if qemu
@@ -4023,8 +4020,7 @@ virQEMUCapsInitArchQMPBasic(virQEMUCapsPtr qemuCaps,
     }
 
     /* ACPI/HPET/KVM PIT are x86 specific */
-    if (qemuCaps->arch == VIR_ARCH_X86_64 ||
-        qemuCaps->arch == VIR_ARCH_I686) {
+    if (ARCH_IS_X86(qemuCaps->arch)) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_HPET);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_KVM_PIT);
