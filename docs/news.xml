@@ -15,7 +15,17 @@
       <change/>
     </section>
     <section title="Improvements">
-      <change/>
+      <change>
+        <summary>
+          qemu: Detect host CPU model by asking QEMU on x86_64
+        </summary>
+        <description>
+          Previously, libvirt detected the host CPU model using CPUID
+          instruction, which cased libvirt to detect a lot of CPU features
+          that are not supported by QEMU/KVM. Asking QEMU makes sure we
+          don't start it with unsupported features.
+        </description>
+      </change>
     </section>
     <section title="Bug fixes">
       <change/>
@@ -139,17 +149,6 @@
           Split up the storage driver backends into loadable modules so that
           binary distributions don't have to compromise on shipping the storage
           driver with all backends which may pull in too many dependencies.
-        </description>
-      </change>
-      <change>
-        <summary>
-          qemu: Detect host CPU model by asking QEMU on x86_64
-        </summary>
-        <description>
-          Previously, libvirt detected the host CPU model using CPUID
-          instruction, which cased libvirt to detect a lot of CPU features
-          that are not supported by QEMU/KVM. Asking QEMU makes sure we
-          don't start it with unsupported features.
         </description>
       </change>
     </section>
