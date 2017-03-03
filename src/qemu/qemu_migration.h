@@ -278,4 +278,11 @@ int qemuMigrationRunIncoming(virQEMUDriverPtr driver,
 void qemuMigrationPostcopyFailed(virQEMUDriverPtr driver,
                                  virDomainObjPtr vm);
 
+int
+qemuMigrationResetTLS(virQEMUDriverPtr driver,
+                      virDomainObjPtr vm,
+                      qemuDomainAsyncJob asyncJob,
+                      char *in_tlsAlias,
+                      char *in_secAlias);
+
 #endif /* __QEMU_MIGRATION_H__ */

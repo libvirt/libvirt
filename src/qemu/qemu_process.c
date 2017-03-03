@@ -2929,6 +2929,9 @@ qemuProcessRecoverMigrationIn(virQEMUDriverPtr driver,
         /* migration finished, we started resuming the domain but didn't
          * confirm success or failure yet; killing it seems safest unless
          * we already started guest CPUs or we were in post-copy mode */
+        ignore_value(qemuMigrationResetTLS(driver, vm,
+                                           QEMU_ASYNC_JOB_MIGRATION_IN,
+                                           NULL, NULL));
         if (postcopy) {
             qemuMigrationPostcopyFailed(driver, vm);
         } else if (state != VIR_DOMAIN_RUNNING) {

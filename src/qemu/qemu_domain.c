@@ -782,7 +782,7 @@ qemuDomainSecretAESClear(qemuDomainSecretAES secret)
 }
 
 
-static void
+void
 qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr *secinfo)
 {
     if (!*secinfo)
@@ -1186,7 +1186,7 @@ qemuDomainSecretInfoNew(virConnectPtr conn,
  *
  * Returns qemuDomainSecretInfoPtr or NULL on error.
  */
-static qemuDomainSecretInfoPtr
+qemuDomainSecretInfoPtr
 qemuDomainSecretInfoTLSNew(virConnectPtr conn,
                            qemuDomainObjPrivatePtr priv,
                            const char *srcAlias,
@@ -1677,6 +1677,9 @@ qemuDomainObjPrivateFree(void *data)
 
     VIR_FREE(priv->libDir);
     VIR_FREE(priv->channelTargetDir);
+
+    qemuDomainSecretInfoFree(&priv->migSecinfo);
+    VIR_FREE(priv->migTLSAlias);
     qemuDomainMasterKeyFree(priv);
 
     VIR_FREE(priv);

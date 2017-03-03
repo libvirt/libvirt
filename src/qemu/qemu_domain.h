@@ -175,6 +175,43 @@ VIR_ENUM_DECL(qemuDomainNamespace)
 bool qemuDomainNamespaceEnabled(virDomainObjPtr vm,
                                 qemuDomainNamespace ns);
 
+/* Type of domain secret */
+typedef enum {
+    VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN = 0,
+    VIR_DOMAIN_SECRET_INFO_TYPE_AES,  /* utilize GNUTLS_CIPHER_AES_256_CBC */
+
+    VIR_DOMAIN_SECRET_INFO_TYPE_LAST
+} qemuDomainSecretInfoType;
+
+typedef struct _qemuDomainSecretPlain qemuDomainSecretPlain;
+typedef struct _qemuDomainSecretPlain *qemuDomainSecretPlainPtr;
+struct _qemuDomainSecretPlain {
+    char *username;
+    uint8_t *secret;
+    size_t secretlen;
+};
+
+# define QEMU_DOMAIN_AES_IV_LEN 16   /* 16 bytes for 128 bit random */
+                                     /*    initialization vector */
+typedef struct _qemuDomainSecretAES qemuDomainSecretAES;
+typedef struct _qemuDomainSecretAES *qemuDomainSecretAESPtr;
+struct _qemuDomainSecretAES {
+    char *username;
+    char *alias;      /* generated alias for secret */
+    char *iv;         /* base64 encoded initialization vector */
+    char *ciphertext; /* encoded/encrypted secret */
+};
+
+typedef struct _qemuDomainSecretInfo qemuDomainSecretInfo;
+typedef qemuDomainSecretInfo *qemuDomainSecretInfoPtr;
+struct _qemuDomainSecretInfo {
+    qemuDomainSecretInfoType type;
+    union {
+        qemuDomainSecretPlain plain;
+        qemuDomainSecretAES aes;
+    } s;
+};
+
 typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 typedef qemuDomainObjPrivate *qemuDomainObjPrivatePtr;
 struct _qemuDomainObjPrivate {
@@ -246,47 +283,18 @@ struct _qemuDomainObjPrivate {
 
     /* note whether memory device alias does not correspond to slot number */
     bool memAliasOrderMismatch;
+
+    /* for migrations using TLS with a secret (not to be saved in our */
+    /* private XML). */
+    qemuDomainSecretInfoPtr migSecinfo;
+
+    /* Used when fetching/storing the current 'tls-creds' migration setting */
+    /* (not to be saved in our private XML). */
+    char *migTLSAlias;
 };
 
 # define QEMU_DOMAIN_PRIVATE(vm)	\
     ((qemuDomainObjPrivatePtr) (vm)->privateData)
-
-/* Type of domain secret */
-typedef enum {
-    VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN = 0,
-    VIR_DOMAIN_SECRET_INFO_TYPE_AES,  /* utilize GNUTLS_CIPHER_AES_256_CBC */
-
-    VIR_DOMAIN_SECRET_INFO_TYPE_LAST
-} qemuDomainSecretInfoType;
-
-typedef struct _qemuDomainSecretPlain qemuDomainSecretPlain;
-typedef struct _qemuDomainSecretPlain *qemuDomainSecretPlainPtr;
-struct _qemuDomainSecretPlain {
-    char *username;
-    uint8_t *secret;
-    size_t secretlen;
-};
-
-# define QEMU_DOMAIN_AES_IV_LEN 16   /* 16 bytes for 128 bit random */
-                                     /*    initialization vector */
-typedef struct _qemuDomainSecretAES qemuDomainSecretAES;
-typedef struct _qemuDomainSecretAES *qemuDomainSecretAESPtr;
-struct _qemuDomainSecretAES {
-    char *username;
-    char *alias;      /* generated alias for secret */
-    char *iv;         /* base64 encoded initialization vector */
-    char *ciphertext; /* encoded/encrypted secret */
-};
-
-typedef struct _qemuDomainSecretInfo qemuDomainSecretInfo;
-typedef qemuDomainSecretInfo *qemuDomainSecretInfoPtr;
-struct _qemuDomainSecretInfo {
-    qemuDomainSecretInfoType type;
-    union {
-        qemuDomainSecretPlain plain;
-        qemuDomainSecretAES aes;
-    } s;
-};
 
 # define QEMU_DOMAIN_DISK_PRIVATE(disk)	\
     ((qemuDomainDiskPrivatePtr) (disk)->privateData)
@@ -730,6 +738,9 @@ int qemuDomainMasterKeyCreate(virDomainObjPtr vm);
 
 void qemuDomainMasterKeyRemove(qemuDomainObjPrivatePtr priv);
 
+void qemuDomainSecretInfoFree(qemuDomainSecretInfoPtr *secinfo)
+    ATTRIBUTE_NONNULL(1);
+
 void qemuDomainSecretDiskDestroy(virDomainDiskDefPtr disk)
     ATTRIBUTE_NONNULL(1);
 
@@ -738,6 +749,12 @@ bool qemuDomainSecretDiskCapable(virStorageSourcePtr src)
 
 bool qemuDomainDiskHasEncryptionSecret(virStorageSourcePtr src)
     ATTRIBUTE_NONNULL(1);
+
+qemuDomainSecretInfoPtr
+qemuDomainSecretInfoTLSNew(virConnectPtr conn,
+                           qemuDomainObjPrivatePtr priv,
+                           const char *srcAlias,
+                           const char *secretUUID);
 
 int qemuDomainSecretDiskPrepare(virConnectPtr conn,
                                 qemuDomainObjPrivatePtr priv,

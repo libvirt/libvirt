@@ -85,6 +85,8 @@ VIR_ENUM_IMPL(qemuMigrationCompressMethod, QEMU_MIGRATION_COMPRESS_LAST,
               "mt",
 );
 
+#define QEMU_MIGRATION_TLS_ALIAS_BASE "libvirt_migrate"
+
 enum qemuMigrationCookieFlags {
     QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS,
     QEMU_MIGRATION_COOKIE_FLAG_LOCKSTATE,
@@ -1487,6 +1489,153 @@ qemuMigrationEatCookie(virQEMUDriverPtr driver,
     qemuMigrationCookieFree(mig);
     return NULL;
 }
+
+/* qemuMigrationCheckTLSCreds
+ * @driver: pointer to qemu driver
+ * @vm: domain object
+ * @asyncJob: migration job to join
+ *
+ * Query the migration parameters looking for the 'tls-creds' parameter.
+ * If found, then we can support setting or clearing the parameters and thus
+ * can support TLS for migration.
+ *
+ * Returns 0 if we were able to successfully fetch the params and
+ * additionally if the tls-creds parameter exists, saves it in the
+ * private domain structure. Returns -1 on failure.
+ */
+static int
+qemuMigrationCheckTLSCreds(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           qemuDomainAsyncJob asyncJob)
+{
+    int ret = -1;
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    qemuMonitorMigrationParams migParams = { 0 };
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
+
+    if (qemuMonitorGetMigrationParams(priv->mon, &migParams) < 0)
+        goto cleanup;
+
+    /* NB: Could steal NULL pointer too! Let caller decide what to do. */
+    VIR_STEAL_PTR(priv->migTLSAlias, migParams.migrateTLSAlias);
+
+    ret = 0;
+
+ cleanup:
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        ret = -1;
+
+    qemuMigrationParamsClear(&migParams);
+
+    return ret;
+}
+
+
+/* qemuMigrationCheckSetupTLS
+ * @conn: Connection pointer
+ * @driver: pointer to qemu driver
+ * @vm: domain object
+ * @cfg: configuration pointer
+ * @asyncJob: migration job to join
+ *
+ * Check if TLS is possible and set up the environment. Assumes the caller
+ * desires to use TLS (e.g. caller found VIR_MIGRATE_TLS flag).
+ *
+ * Ensure the qemu.conf has been properly configured to add an entry for
+ * "migrate_tls_x509_cert_dir". Also check if the "tls-creds" parameter
+ * was present from a query of migration parameters
+ *
+ * Returns 0 on success, -1 on error/failure
+ */
+static int
+qemuMigrationCheckSetupTLS(virConnectPtr conn,
+                           virQEMUDriverPtr driver,
+                           virQEMUDriverConfigPtr cfg,
+                           virDomainObjPtr vm,
+                           qemuDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (!cfg->migrateTLSx509certdir) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("host migration TLS directory not configured"));
+        return -1;
+    }
+
+    if (qemuMigrationCheckTLSCreds(driver, vm, asyncJob) < 0)
+        return -1;
+
+    if (!priv->migTLSAlias) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("TLS migration is not supported with this "
+                         "QEMU binary"));
+        return -1;
+    }
+
+    /* If there's a secret, then grab/store it now using the connection */
+    if (cfg->migrateTLSx509secretUUID &&
+        !(priv->migSecinfo =
+          qemuDomainSecretInfoTLSNew(conn, priv, QEMU_MIGRATION_TLS_ALIAS_BASE,
+                                     cfg->migrateTLSx509secretUUID)))
+        return -1;
+
+    return 0;
+}
+
+
+/* qemuMigrationAddTLSObjects
+ * @driver: pointer to qemu driver
+ * @vm: domain object
+ * @cfg: configuration pointer
+ * @tlsListen: server or client
+ * @asyncJob: Migration job to join
+ * @tlsAlias: alias to be generated for TLS object
+ * @secAlias: alias to be generated for a secinfo object
+ * @migParams: migration parameters to set
+ *
+ * Create the TLS objects for the migration and set the migParams value
+ *
+ * Returns 0 on success, -1 on failure
+ */
+static int
+qemuMigrationAddTLSObjects(virQEMUDriverPtr driver,
+                           virDomainObjPtr vm,
+                           virQEMUDriverConfigPtr cfg,
+                           bool tlsListen,
+                           qemuDomainAsyncJob asyncJob,
+                           char **tlsAlias,
+                           char **secAlias,
+                           qemuMonitorMigrationParamsPtr migParams)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virJSONValuePtr tlsProps = NULL;
+    virJSONValuePtr secProps = NULL;
+
+    if (qemuDomainGetTLSObjects(priv->qemuCaps, priv->migSecinfo,
+                                cfg->migrateTLSx509certdir, tlsListen,
+                                cfg->migrateTLSx509verify,
+                                QEMU_MIGRATION_TLS_ALIAS_BASE,
+                                &tlsProps, tlsAlias, &secProps, secAlias) < 0)
+        return -1;
+
+    /* Ensure the domain doesn't already have the TLS objects defined...
+     * This should prevent any issues just in case some cleanup wasn't
+     * properly completed (both src and dst use the same alias) or
+     * some other error path between now and perform . */
+    qemuDomainDelTLSObjects(driver, vm, asyncJob, *secAlias, *tlsAlias);
+
+    if (qemuDomainAddTLSObjects(driver, vm, asyncJob, *secAlias, &secProps,
+                                *tlsAlias, &tlsProps) < 0)
+        return -1;
+
+    if (VIR_STRDUP(migParams->migrateTLSAlias, *tlsAlias) < 0)
+        return -1;
+
+    return 0;
+}
+
 
 static void
 qemuMigrationStoreDomainState(virDomainObjPtr vm)
@@ -3530,6 +3679,40 @@ qemuMigrationParamsFree(qemuMonitorMigrationParamsPtr *migParams)
 }
 
 
+/* qemuMigrationSetEmptyTLSParams
+ * @driver: pointer to qemu driver
+ * @vm: domain object
+ * @asyncJob: migration job to join
+ * @migParams: Pointer to a migration parameters block
+ *
+ * If we support setting the tls-creds, then set both tls-creds and
+ * tls-hostname to the empty string ("") which indicates to not use
+ * TLS on this migration.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+static int
+qemuMigrationSetEmptyTLSParams(virQEMUDriverPtr driver,
+                               virDomainObjPtr vm,
+                               qemuDomainAsyncJob asyncJob,
+                               qemuMonitorMigrationParamsPtr migParams)
+{
+   qemuDomainObjPrivatePtr priv = vm->privateData;
+
+   if (qemuMigrationCheckTLSCreds(driver, vm, asyncJob) < 0)
+       return -1;
+
+   if (!priv->migTLSAlias)
+       return 0;
+
+   if (VIR_STRDUP(migParams->migrateTLSAlias, "") < 0 ||
+       VIR_STRDUP(migParams->migrateTLSHostname, "") < 0)
+       return -1;
+
+    return 0;
+}
+
+
 qemuMonitorMigrationParamsPtr
 qemuMigrationParams(virTypedParameterPtr params,
                     int nparams,
@@ -3601,6 +3784,71 @@ qemuMigrationSetParams(virQEMUDriverPtr driver,
 }
 
 
+/* qemuMigrationResetTLS
+ * @driver: pointer to qemu driver
+ * @vm: domain object
+ * @asyncJob: migration job to join
+ * @tlsAlias: alias generated for TLS object (may be NULL)
+ * @secAlias: alias generated for a secinfo object (may be NULL)
+ *
+ * Deconstruct all the setup possibly done for TLS - delete the TLS and
+ * security objects, fre the secinfo, and reset the migration params to "".
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+qemuMigrationResetTLS(virQEMUDriverPtr driver,
+                      virDomainObjPtr vm,
+                      qemuDomainAsyncJob asyncJob,
+                      char *in_tlsAlias,
+                      char *in_secAlias)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    char *tlsAlias = in_tlsAlias;
+    char *secAlias = in_secAlias;
+    qemuMonitorMigrationParams migParams = { 0 };
+    int ret;
+
+    /* If coming from a path that doesn't know whether it's been used or not,
+     * let's first check we need to do this. If the tls-creds doesn't exist
+     * or if they're set to "" then there's nothing to do since we never set
+     * anything up */
+    if (!in_tlsAlias && qemuMigrationCheckTLSCreds(driver, vm, asyncJob) < 0)
+        return -1;
+
+    if (!priv->migTLSAlias || !*priv->migTLSAlias)
+        return 0;
+
+    /* NB: If either or both fail to allocate memory we can still proceed
+     *     since the next time we migrate another deletion attempt will be
+     *     made after successfully generating the aliases. */
+    if (!tlsAlias)
+        tlsAlias = qemuAliasTLSObjFromSrcAlias(QEMU_MIGRATION_TLS_ALIAS_BASE);
+    if (!secAlias)
+        secAlias = qemuDomainGetSecretAESAlias(QEMU_MIGRATION_TLS_ALIAS_BASE,
+                                               false);
+
+    qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, tlsAlias);
+    qemuDomainSecretInfoFree(&priv->migSecinfo);
+
+    if (VIR_STRDUP(migParams.migrateTLSAlias, "") < 0 ||
+        VIR_STRDUP(migParams.migrateTLSHostname, "") < 0 ||
+        qemuMigrationSetParams(driver, vm, asyncJob, &migParams) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if (!in_tlsAlias)
+        VIR_FREE(tlsAlias);
+    if (!in_secAlias)
+        VIR_FREE(secAlias);
+    qemuMigrationParamsClear(&migParams);
+
+    return ret;
+}
+
+
 static int
 qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                         virConnectPtr dconn,
@@ -3623,6 +3871,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
 {
     virDomainObjPtr vm = NULL;
     virObjectEventPtr event = NULL;
+    virQEMUDriverConfigPtr cfg = NULL;
     int ret = -1;
     int dataFD[2] = { -1, -1 };
     qemuDomainObjPrivatePtr priv = NULL;
@@ -3636,6 +3885,8 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     bool stopProcess = false;
     bool relabel = false;
     int rv;
+    char *tlsAlias = NULL;
+    char *secAlias = NULL;
     qemuMonitorMigrationParams migParams = { 0 };
 
     virNWFilterReadLockFilterUpdates();
@@ -3829,6 +4080,30 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
                                     compression, &migParams) < 0)
         goto stopjob;
 
+    /* Migrations using TLS need to add the "tls-creds-x509" object and
+     * set the migration TLS parameters */
+    if (flags & VIR_MIGRATE_TLS) {
+        cfg = virQEMUDriverGetConfig(driver);
+        if (qemuMigrationCheckSetupTLS(dconn, driver, cfg, vm,
+                                       QEMU_ASYNC_JOB_MIGRATION_IN) < 0)
+            goto stopjob;
+
+        if (qemuMigrationAddTLSObjects(driver, vm, cfg, true,
+                                       QEMU_ASYNC_JOB_MIGRATION_IN,
+                                       &tlsAlias, &secAlias, &migParams) < 0)
+            goto stopjob;
+
+        /* Force reset of 'tls-hostname', it's a source only parameter */
+        if (VIR_STRDUP(migParams.migrateTLSHostname, "") < 0)
+            goto stopjob;
+
+    } else {
+        if (qemuMigrationSetEmptyTLSParams(driver, vm,
+                                           QEMU_ASYNC_JOB_MIGRATION_IN,
+                                           &migParams) < 0)
+            goto stopjob;
+    }
+
     if (STREQ_NULLABLE(protocol, "rdma") &&
         virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
         goto stopjob;
@@ -3914,6 +4189,9 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
+    VIR_FREE(tlsAlias);
+    VIR_FREE(secAlias);
+    virObjectUnref(cfg);
     qemuProcessIncomingDefFree(incoming);
     VIR_FREE(xmlout);
     VIR_FORCE_CLOSE(dataFD[0]);
@@ -3940,6 +4218,10 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     return ret;
 
  stopjob:
+    ignore_value(qemuMigrationResetTLS(driver, vm,
+                                       QEMU_ASYNC_JOB_MIGRATION_IN,
+                                       tlsAlias, secAlias));
+
     if (stopProcess) {
         unsigned int stopFlags = VIR_QEMU_PROCESS_STOP_MIGRATED;
         if (!relabel)
@@ -6414,6 +6696,10 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         qemuMigrationSetPostCopy(driver, vm, false,
                                  QEMU_ASYNC_JOB_MIGRATION_IN);
     }
+
+    if (qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
+                              NULL, NULL) < 0)
+        goto endjob;
 
     qemuMigrationJobFinish(driver, vm);
     if (!virDomainObjIsActive(vm))
