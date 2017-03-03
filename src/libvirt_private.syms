@@ -2067,6 +2067,7 @@ virNetDevBridgeSetVlanFiltering;
 virNetDevIPAddrAdd;
 virNetDevIPAddrDel;
 virNetDevIPAddrGet;
+virNetDevIPCheckIPv6Forwarding;
 virNetDevIPInfoAddToDev;
 virNetDevIPInfoClear;
 virNetDevIPRouteAdd;

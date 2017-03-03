@@ -61,6 +61,7 @@
 #include "virlog.h"
 #include "virdnsmasq.h"
 #include "configmake.h"
+#include "virnetlink.h"
 #include "virnetdev.h"
 #include "virnetdevip.h"
 #include "virnetdevbridge.h"
@@ -2389,11 +2390,16 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
     }
 
     /* If forward.type != NONE, turn on global IP forwarding */
-    if (network->def->forward.type != VIR_NETWORK_FORWARD_NONE &&
-        networkEnableIPForwarding(v4present, v6present) < 0) {
-        virReportSystemError(errno, "%s",
-                             _("failed to enable IP forwarding"));
-        goto err3;
+    if (network->def->forward.type != VIR_NETWORK_FORWARD_NONE) {
+        if (!virNetDevIPCheckIPv6Forwarding())
+            goto err3; /* Precise error message already provided */
+
+
+        if (networkEnableIPForwarding(v4present, v6present) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("failed to enable IP forwarding"));
+            goto err3;
+        }
     }
 
 
