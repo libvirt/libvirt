@@ -5355,6 +5355,7 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
     int oldvcpus = virDomainDefGetVcpus(vm->def);
     unsigned int nvcpus = vcpupriv->vcpus;
     int rc;
+    int ret = -1;
 
     if (!vcpupriv->alias) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
@@ -5369,11 +5370,11 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
     rc = qemuMonitorDelDevice(qemuDomainGetMonitor(vm), vcpupriv->alias);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+        goto cleanup;
 
     if (rc < 0) {
         virDomainAuditVcpu(vm, oldvcpus, oldvcpus - nvcpus, "update", false);
-        return -1;
+        goto cleanup;
     }
 
     if ((rc = qemuDomainWaitForDeviceRemoval(vm)) <= 0) {
@@ -5381,10 +5382,17 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("vcpu unplug request timed out"));
 
-        return -1;
+        goto cleanup;
     }
 
-    return qemuDomainRemoveVcpu(driver, vm, vcpu);
+    if (qemuDomainRemoveVcpu(driver, vm, vcpu) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    qemuDomainResetDeviceRemoval(vm);
+    return ret;
 }
 
 
