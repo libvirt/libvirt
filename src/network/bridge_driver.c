@@ -85,6 +85,8 @@
  */
 #define VIR_NETWORK_DHCP_LEASE_FILE_SIZE_MAX (32 * 1024 * 1024)
 
+#define SYSCTL_PATH "/proc/sys"
+
 VIR_LOG_INIT("network.bridge_driver");
 
 static virNetworkDriverStatePtr network_driver;
@@ -2092,14 +2094,13 @@ networkEnableIPForwarding(bool enableIPv4, bool enableIPv6)
                            &enabled, sizeof(enabled));
 #else
     if (enableIPv4)
-        ret = virFileWriteStr("/proc/sys/net/ipv4/ip_forward", "1\n", 0);
+        ret = virFileWriteStr(SYSCTL_PATH "/net/ipv4/ip_forward", "1\n", 0);
     if (enableIPv6 && ret == 0)
-        ret = virFileWriteStr("/proc/sys/net/ipv6/conf/all/forwarding", "1\n", 0);
+        ret = virFileWriteStr(SYSCTL_PATH "/net/ipv6/conf/all/forwarding", "1\n", 0);
+
 #endif
     return ret;
 }
-
-#define SYSCTL_PATH "/proc/sys"
 
 static int
 networkSetIPv6Sysctls(virNetworkObjPtr network)
