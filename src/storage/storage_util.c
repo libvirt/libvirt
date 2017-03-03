@@ -39,7 +39,7 @@
 #endif
 
 #if WITH_BLKID
-# include <blkid/blkid.h>
+# include <blkid.h>
 #endif
 
 #if WITH_SELINUX
