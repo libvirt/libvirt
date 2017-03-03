@@ -114,6 +114,10 @@ from docs/hacking.html.in!
 <xsl:template match="html:li/html:ul/html:li">-- <xsl:apply-templates/><xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
 </xsl:template>
 
+<xsl:template match="html:dl/html:dt">*<xsl:apply-templates/>*<xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
+</xsl:template>
+<xsl:template match="html:dl/html:dd"><xsl:apply-templates/><xsl:value-of select="$newline"/><xsl:value-of select="$newline"/>
+</xsl:template>
 
 
 <!-- add newline before nested <ul> -->

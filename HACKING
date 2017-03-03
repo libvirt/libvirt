@@ -239,6 +239,86 @@ on the subject, on Richard Jones' guide to working with open source projects
 <http://people.redhat.com/rjones/how-to-supply-code-to-open-source-projects/>.
 
 
+Naming conventions
+==================
+When reading libvirt code, a number of different naming conventions will be
+evident due to various changes in thinking over the course of the project's
+lifetime. The conventions documented below should be followed when creating
+any entirely new files in libvirt. When working on existing files, while it is
+desirable to apply these conventions, keeping a consistent style with existing
+code in that particular file is generally more important. The overall guiding
+principal is that every file, enum, struct, function, macro and typedef name
+must have a 'vir' or 'VIR' prefix. All local scope variable names are exempt,
+and global variables are exempt, unless exported in a header file.
+
+*File names*
+
+File naming varies depending on the subdirectory. The preferred style is to
+have a 'vir' prefix, followed by a name which matches the name of the
+functions / objects inside the file. For example, a file containing an object
+'virHashtable' is stored in files 'virhashtable.c' and 'virhashtable.h'.
+Sometimes, methods which would otherwise be declared 'static' need to be
+exported for use by a test suite. For this purpose a second header file should
+be added with a suffix of 'priv', e.g. 'virhashtablepriv.h'. Use of
+underscores in file names is discouraged when using the 'vir' prefix style.
+The 'vir' prefix naming applies to src/util, src/rpc and tests/ directories.
+Most other directories do not follow this convention.
+
+
+
+*Enum type & field names*
+
+All enums should have a 'vir' prefix in their typedef name, and each following
+word should have its first letter in uppercase. The enum name should match the
+typedef name with a leading underscore. The enum member names should be in all
+uppercase, and use an underscore to separate each word. The enum member name
+prefix should match the enum typedef name.
+
+    typedef enum _virSocketType virSocketType;
+    enum _virSocketType {
+        VIR_SOCKET_TYPE_IPV4,
+        VIR_SOCKET_TYPE_IPV6,
+    };
+
+
+*Struct type names*
+
+All structs should have a 'vir' prefix in their typedef name, and each
+following word should have its first letter in uppercase. The struct name
+should be the same as the typedef name with a leading underscore. A second
+typedef should be given for a pointer to the struct with a 'Ptr' suffix.
+
+    typedef struct _virHashTable virHashTable;
+    typedef virHashTable *virHashTablePtr;
+    struct _virHashTable {
+       ...
+    };
+
+
+*Function names*
+
+All functions should have a 'vir' prefix in their name, followed by one or
+more words with first letter of each word capitalized. Underscores should not
+be used in function names. If the function is operating on an object, then the
+function name prefix should match the object typedef name, otherwise it should
+match the filename. Following this comes the verb / action name, and finally
+an optional subject name. For example, given an object 'virHashTable', all
+functions should have a name 'virHashTable$VERB' or
+'virHashTable$VERB$SUBJECT", e.g. 'virHashTableLookup' or
+'virHashTableGetValue'.
+
+
+
+*Macro names*
+
+All macros should have a "VIR" prefix in their name, followed by one or more
+uppercase words separated by underscores. The macro argument names should be
+in lowercase. Aside from having a "VIR" prefix there are no common practices
+for the rest of the macro name.
+
+
+
+
 Code indentation
 ================
 Libvirt's C source code generally adheres to some basic code-formatting
