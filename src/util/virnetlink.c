@@ -335,6 +335,52 @@ int virNetlinkCommand(struct nl_msg *nl_msg,
     return ret;
 }
 
+int
+virNetlinkDumpCommand(struct nl_msg *nl_msg,
+                      virNetlinkDumpCallback callback,
+                      uint32_t src_pid, uint32_t dst_pid,
+                      unsigned int protocol, unsigned int groups,
+                      void *opaque)
+{
+    int ret = -1;
+    bool end = false;
+    int len = 0;
+    struct nlmsghdr *resp = NULL;
+    struct nlmsghdr *msg = NULL;
+
+    struct sockaddr_nl nladdr = {
+            .nl_family = AF_NETLINK,
+            .nl_pid    = dst_pid,
+            .nl_groups = 0,
+    };
+    virNetlinkHandle *nlhandle = NULL;
+
+    if (!(nlhandle = virNetlinkSendRequest(nl_msg, src_pid, nladdr,
+                                           protocol, groups)))
+        goto cleanup;
+
+    while (!end) {
+        len = nl_recv(nlhandle, &nladdr, (unsigned char **)&resp, NULL);
+
+        for (msg = resp; NLMSG_OK(msg, len); msg = NLMSG_NEXT(msg, len)) {
+            if (msg->nlmsg_type == NLMSG_DONE)
+                end = true;
+
+            if (virNetlinkGetErrorCode(msg, len) < 0)
+                goto cleanup;
+
+            if (callback(msg, opaque) < 0)
+                goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    virNetlinkFree(nlhandle);
+    return ret;
+}
+
 /**
  * virNetlinkDumpLink:
  *
@@ -1061,6 +1107,18 @@ int virNetlinkCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
     return -1;
 }
 
+int
+virNetlinkDumpCommand(struct nl_msg *nl_msg ATTRIBUTE_UNUSED,
+                      virNetlinkDumpCallback callback ATTRIBUTE_UNUSED,
+                      uint32_t src_pid ATTRIBUTE_UNUSED,
+                      uint32_t dst_pid ATTRIBUTE_UNUSED,
+                      unsigned int protocol ATTRIBUTE_UNUSED,
+                      unsigned int groups ATTRIBUTE_UNUSED,
+                      void *opaque ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    return -1;
+}
 
 int
 virNetlinkDumpLink(const char *ifname ATTRIBUTE_UNUSED,
