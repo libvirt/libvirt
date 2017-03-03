@@ -2854,8 +2854,11 @@ virPCIGetNetName(char *device_link_sysfs_path, char **netname)
         return -1;
     }
 
-    if (virDirOpenQuiet(&dir, pcidev_sysfs_net_path) < 0)
+    if (virDirOpenQuiet(&dir, pcidev_sysfs_net_path) < 0) {
+        /* this *isn't* an error - caller needs to check for netname == NULL */
+        ret = 0;
         goto out;
+    }
 
     while (virDirRead(dir, &entry, pcidev_sysfs_net_path) > 0) {
         /* Assume a single directory entry */
@@ -2881,24 +2884,35 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
     int ret = -1;
 
     if (virPCIGetPhysicalFunction(vf_sysfs_device_path, &pf_config_address) < 0)
-        return ret;
+        goto cleanup;
 
     if (!pf_config_address)
-        return ret;
+        goto cleanup;
 
     if (virPCIDeviceAddressGetSysfsFile(pf_config_address,
                                         &pf_sysfs_device_path) < 0) {
-
-        VIR_FREE(pf_config_address);
-        return ret;
+        goto cleanup;
     }
 
-    if (virPCIGetVirtualFunctionIndex(pf_sysfs_device_path, vf_sysfs_device_path,
-                                      vf_index) < 0)
+    if (virPCIGetVirtualFunctionIndex(pf_sysfs_device_path,
+                                      vf_sysfs_device_path, vf_index) < 0) {
+        goto cleanup;
+    }
+
+    if (virPCIGetNetName(pf_sysfs_device_path, pfname) < 0)
         goto cleanup;
 
-    ret = virPCIGetNetName(pf_sysfs_device_path, pfname);
+    if (!*pfname) {
+        /* this shouldn't be possible. A VF can't exist unless its
+         * PF device is bound to a network driver
+         */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("The PF device for VF %s has no network device name"),
+                       vf_sysfs_device_path);
+        goto cleanup;
+    }
 
+    ret = 0;
  cleanup:
     VIR_FREE(pf_config_address);
     VIR_FREE(pf_sysfs_device_path);

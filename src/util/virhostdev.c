@@ -317,8 +317,21 @@ virHostdevNetDevice(virDomainHostdevDefPtr hostdev, char **linkdev,
                                          vf) < 0)
             goto cleanup;
     } else {
+        /* In practice this should never happen, since we currently
+         * only support assigning SRIOV VFs via <interface
+         * type='hostdev'>, and it is only those devices that should
+         * end up calling this function.
+         */
         if (virPCIGetNetName(sysfs_path, linkdev) < 0)
             goto cleanup;
+
+        if (!linkdev) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("The device at %s has no network device name"),
+                             sysfs_path);
+            goto cleanup;
+        }
+
         *vf = -1;
     }
 

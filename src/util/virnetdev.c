@@ -1231,6 +1231,9 @@ virNetDevGetVirtualFunctions(const char *pfname,
         }
 
         if (virPCIGetNetName(pci_sysfs_device_link, &((*vfname)[i])) < 0)
+            goto cleanup;
+
+        if (!(*vfname)[i])
             VIR_INFO("VF does not have an interface name");
     }
 
@@ -1327,10 +1330,22 @@ virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
     if (virNetDevSysfsDeviceFile(&physfn_sysfs_path, ifname, "physfn") < 0)
         return ret;
 
-    ret = virPCIGetNetName(physfn_sysfs_path, pfname);
+    if (virPCIGetNetName(physfn_sysfs_path, pfname) < 0)
+        goto cleanup;
 
+    if (!*pfname) {
+        /* this shouldn't be possible. A VF can't exist unless its
+         * PF device is bound to a network driver
+         */
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("The PF device for VF %s has no network device name"),
+                       ifname);
+        goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
     VIR_FREE(physfn_sysfs_path);
-
     return ret;
 }
 
