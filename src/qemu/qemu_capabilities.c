@@ -1881,19 +1881,6 @@ virQEMUCapsProcessProps(virQEMUCapsPtr qemuCaps,
 }
 
 
-static void
-virQEMUCapsFreeStringList(size_t len,
-                          char **values)
-{
-    size_t i;
-    if (!values)
-        return;
-    for (i = 0; i < len; i++)
-        VIR_FREE(values[i]);
-    VIR_FREE(values);
-}
-
-
 #define OBJECT_TYPE_PREFIX "name \""
 
 static int
@@ -1928,7 +1915,7 @@ virQEMUCapsParseDeviceStrObjectTypes(const char *str,
 
  cleanup:
     if (ret < 0)
-        virQEMUCapsFreeStringList(ntypelist, typelist);
+        virStringListFreeCount(typelist, ntypelist);
     return ret;
 }
 
@@ -1981,7 +1968,7 @@ virQEMUCapsParseDeviceStrObjectProps(const char *str,
 
  cleanup:
     if (ret < 0)
-        virQEMUCapsFreeStringList(nproplist, proplist);
+        virStringListFreeCount(proplist, nproplist);
     return ret;
 }
 
@@ -1999,7 +1986,7 @@ virQEMUCapsParseDeviceStr(virQEMUCapsPtr qemuCaps, const char *str)
                                   ARRAY_CARDINALITY(virQEMUCapsObjectTypes),
                                   virQEMUCapsObjectTypes,
                                   nvalues, values);
-    virQEMUCapsFreeStringList(nvalues, values);
+    virStringListFreeCount(values, nvalues);
 
     for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsObjectProps); i++) {
         const char *type = virQEMUCapsObjectProps[i].type;
@@ -2011,7 +1998,7 @@ virQEMUCapsParseDeviceStr(virQEMUCapsPtr qemuCaps, const char *str)
                                       virQEMUCapsObjectProps[i].nprops,
                                       virQEMUCapsObjectProps[i].props,
                                       nvalues, values);
-        virQEMUCapsFreeStringList(nvalues, values);
+        virStringListFreeCount(values, nvalues);
     }
 
     /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
@@ -2665,7 +2652,7 @@ virQEMUCapsProbeQMPCommands(virQEMUCapsPtr qemuCaps,
                                   ARRAY_CARDINALITY(virQEMUCapsCommands),
                                   virQEMUCapsCommands,
                                   ncommands, commands);
-    virQEMUCapsFreeStringList(ncommands, commands);
+    virStringListFreeCount(commands, ncommands);
 
     /* QMP add-fd was introduced in 1.2, but did not support
      * management control of set numbering, and did not have a
@@ -2707,7 +2694,7 @@ virQEMUCapsProbeQMPEvents(virQEMUCapsPtr qemuCaps,
                                   ARRAY_CARDINALITY(virQEMUCapsEvents),
                                   virQEMUCapsEvents,
                                   nevents, events);
-    virQEMUCapsFreeStringList(nevents, events);
+    virStringListFreeCount(events, nevents);
 
     return 0;
 }
@@ -2727,7 +2714,7 @@ virQEMUCapsProbeQMPObjects(virQEMUCapsPtr qemuCaps,
                                   ARRAY_CARDINALITY(virQEMUCapsObjectTypes),
                                   virQEMUCapsObjectTypes,
                                   nvalues, values);
-    virQEMUCapsFreeStringList(nvalues, values);
+    virStringListFreeCount(values, nvalues);
 
     for (i = 0; i < ARRAY_CARDINALITY(virQEMUCapsObjectProps); i++) {
         const char *type = virQEMUCapsObjectProps[i].type;
@@ -2743,7 +2730,7 @@ virQEMUCapsProbeQMPObjects(virQEMUCapsPtr qemuCaps,
                                 ARRAY_CARDINALITY(virQEMUCapsPropObjects),
                                 virQEMUCapsPropObjects, type,
                                 nvalues, values);
-        virQEMUCapsFreeStringList(nvalues, values);
+        virStringListFreeCount(values, nvalues);
     }
 
     /* Prefer -chardev spicevmc (detected earlier) over -device spicevmc */
@@ -3043,7 +3030,7 @@ virQEMUCapsProbeQMPMigrationCapabilities(virQEMUCapsPtr qemuCaps,
                                   ARRAY_CARDINALITY(virQEMUCapsMigration),
                                   virQEMUCapsMigration,
                                   ncaps, caps);
-    virQEMUCapsFreeStringList(ncaps, caps);
+    virStringListFreeCount(caps, ncaps);
 
     return 0;
 }
