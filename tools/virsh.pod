@@ -2082,10 +2082,14 @@ The numeric values are those defined by the Linux generic input
 event subsystem. The symbolic names match the corresponding
 Linux key constant macro names.
 
+See L<virkeycode-linux(7)> and L<virkeyname-linux(7)>
+
 =item B<xt>
 
 The numeric values are those defined by the original XT keyboard
 controller. No symbolic names are provided
+
+See L<virkeycode-xt(7)>
 
 =item B<atset1>
 
@@ -2094,21 +2098,29 @@ set 1 (aka XT compatible set). Extended keycoes from B<atset1>
 may differ from extended keycodes in the B<xt> codeset. No symbolic
 names are provided
 
+See L<virkeycode-atset1(7)>
+
 =item B<atset2>
 
 The numeric values are those defined by the AT keyboard controller,
 set 2. No symbolic names are provided
+
+See L<virkeycode-atset2(7)>
 
 =item B<atset3>
 
 The numeric values are those defined by the AT keyboard controller,
 set 3 (aka PS/2 compatible set). No symbolic names are provided
 
+See L<virkeycode-atset3(7)>
+
 =item B<os_x>
 
 The numeric values are those defined by the OS-X keyboard input
 subsystem. The symbolic names match the corresponding OS-X key
 constant macro names
+
+See L<virkeycode-osx(7)> and L<virkeyname-osx(7)>
 
 =item B<xt_kbd>
 
@@ -2117,16 +2129,22 @@ These are a variant on the original XT codeset, but often with
 different encoding for extended keycodes. No symbolic names are
 provided.
 
+See L<virkeycode-xtkbd(7)>
+
 =item B<win32>
 
 The numeric values are those defined by the Win32 keyboard input
 subsystem. The symbolic names match the corresponding Win32 key
 constant macro names
 
+See L<virkeycode-win32(7)> and L<virkeyname-win32(7)>
+
 =item B<usb>
 
 The numeric values are those defined by the USB HID specification
 for keyboard input. No symbolic names are provided
+
+See L<virkeycode-usb(7)>
 
 =item B<rfb>
 
@@ -2134,6 +2152,8 @@ The numeric values are those defined by the RFB extension for sending
 raw keycodes. These are a variant on the XT codeset, but extended
 keycodes have the low bit of the second byte set, instead of the high
 bit of the first byte. No symbolic names are provided.
+
+See L<virkeycode-rfb(7)>
 
 =back
 

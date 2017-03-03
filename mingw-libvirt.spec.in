@@ -259,6 +259,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw32_mandir}/man1/virt-admin.1*
 %{mingw32_mandir}/man1/virt-xml-validate.1*
 %{mingw32_mandir}/man1/virt-pki-validate.1*
+%{mingw32_mandir}/man7/virkey*.7*
 
 %files -n mingw32-libvirt-static
 %{mingw32_libdir}/libvirt.a
@@ -343,6 +344,7 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %{mingw64_mandir}/man1/virt-admin.1*
 %{mingw64_mandir}/man1/virt-xml-validate.1*
 %{mingw64_mandir}/man1/virt-pki-validate.1*
+%{mingw64_mandir}/man7/virkey*.7*
 
 %files -n mingw64-libvirt-static
 %{mingw64_libdir}/libvirt.a
