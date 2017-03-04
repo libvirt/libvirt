@@ -3237,6 +3237,22 @@ static virNetworkPtr testNetworkLookupByUUID(virConnectPtr conn,
     return ret;
 }
 
+
+static virNetworkObjPtr
+testNetworkObjFindByName(testDriverPtr privconn,
+                         const char *name)
+{
+    virNetworkObjPtr net;
+
+    if (!(net = virNetworkObjFindByName(privconn->networks, name)))
+        virReportError(VIR_ERR_NO_NETWORK,
+                       _("no network with matching name '%s'"),
+                       name);
+
+    return net;
+}
+
+
 static virNetworkPtr testNetworkLookupByName(virConnectPtr conn,
                                              const char *name)
 {
@@ -3244,11 +3260,8 @@ static virNetworkPtr testNetworkLookupByName(virConnectPtr conn,
     virNetworkObjPtr net;
     virNetworkPtr ret = NULL;
 
-    net = virNetworkObjFindByName(privconn->networks, name);
-    if (net == NULL) {
-        virReportError(VIR_ERR_NO_NETWORK, NULL);
+    if (!(net = testNetworkObjFindByName(privconn, name)))
         goto cleanup;
-    }
 
     ret = virGetNetwork(conn, net->def->name, net->def->uuid);
 
@@ -3412,12 +3425,8 @@ static int testNetworkUndefine(virNetworkPtr network)
     int ret = -1;
     virObjectEventPtr event = NULL;
 
-    privnet = virNetworkObjFindByName(privconn->networks, network->name);
-
-    if (privnet == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+    if (!(privnet = testNetworkObjFindByName(privconn, network->name)))
         goto cleanup;
-    }
 
     if (virNetworkObjIsActive(privnet)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -3491,11 +3500,8 @@ static int testNetworkCreate(virNetworkPtr network)
     int ret = -1;
     virObjectEventPtr event = NULL;
 
-    privnet = virNetworkObjFindByName(privconn->networks, network->name);
-    if (privnet == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+    if (!(privnet = testNetworkObjFindByName(privconn, network->name)))
         goto cleanup;
-    }
 
     if (virNetworkObjIsActive(privnet)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -3522,11 +3528,8 @@ static int testNetworkDestroy(virNetworkPtr network)
     int ret = -1;
     virObjectEventPtr event = NULL;
 
-    privnet = virNetworkObjFindByName(privconn->networks, network->name);
-    if (privnet == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+    if (!(privnet = testNetworkObjFindByName(privconn, network->name)))
         goto cleanup;
-    }
 
     privnet->active = 0;
     event = virNetworkEventLifecycleNew(privnet->def->name, privnet->def->uuid,
@@ -3552,11 +3555,8 @@ static char *testNetworkGetXMLDesc(virNetworkPtr network,
 
     virCheckFlags(0, NULL);
 
-    privnet = virNetworkObjFindByName(privconn->networks, network->name);
-    if (privnet == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+    if (!(privnet = testNetworkObjFindByName(privconn, network->name)))
         goto cleanup;
-    }
 
     ret = virNetworkDefFormat(privnet->def, flags);
 
@@ -3570,11 +3570,8 @@ static char *testNetworkGetBridgeName(virNetworkPtr network) {
     char *bridge = NULL;
     virNetworkObjPtr privnet;
 
-    privnet = virNetworkObjFindByName(privconn->networks, network->name);
-    if (privnet == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+    if (!(privnet = testNetworkObjFindByName(privconn, network->name)))
         goto cleanup;
-    }
 
     if (!(privnet->def->bridge)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -3597,11 +3594,8 @@ static int testNetworkGetAutostart(virNetworkPtr network,
     virNetworkObjPtr privnet;
     int ret = -1;
 
-    privnet = virNetworkObjFindByName(privconn->networks, network->name);
-    if (privnet == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+    if (!(privnet = testNetworkObjFindByName(privconn, network->name)))
         goto cleanup;
-    }
 
     *autostart = privnet->autostart;
     ret = 0;
@@ -3618,11 +3612,8 @@ static int testNetworkSetAutostart(virNetworkPtr network,
     virNetworkObjPtr privnet;
     int ret = -1;
 
-    privnet = virNetworkObjFindByName(privconn->networks, network->name);
-    if (privnet == NULL) {
-        virReportError(VIR_ERR_INVALID_ARG, __FUNCTION__);
+    if (!(privnet = testNetworkObjFindByName(privconn, network->name)))
         goto cleanup;
-    }
 
     privnet->autostart = autostart ? 1 : 0;
     ret = 0;
