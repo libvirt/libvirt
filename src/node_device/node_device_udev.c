@@ -1420,12 +1420,12 @@ static void udevEventHandleCallback(int watch ATTRIBUTE_UNUSED,
 /* DMI is intel-compatible specific */
 #if defined(__x86_64__) || defined(__i386__) || defined(__amd64__)
 static void
-udevGetDMIData(virNodeDevCapSystemPtr system)
+udevGetDMIData(virNodeDevCapSystemPtr syscap)
 {
     struct udev *udev = NULL;
     struct udev_device *device = NULL;
-    virNodeDevCapSystemHardwarePtr hardware = &system->hardware;
-    virNodeDevCapSystemFirmwarePtr firmware = &system->firmware;
+    virNodeDevCapSystemHardwarePtr hardware = &syscap->hardware;
+    virNodeDevCapSystemFirmwarePtr firmware = &syscap->firmware;
 
     udev = udev_monitor_get_udev(DRV_STATE_UDEV_MONITOR(driver));
 
@@ -1441,7 +1441,7 @@ udevGetDMIData(virNodeDevCapSystemPtr system)
     }
 
     if (udevGetStringSysfsAttr(device, "product_name",
-                               &system->product_name) < 0)
+                               &syscap->product_name) < 0)
         goto cleanup;
     if (udevGetStringSysfsAttr(device, "sys_vendor",
                                &hardware->vendor_name) < 0)

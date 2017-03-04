@@ -1412,10 +1412,10 @@ static int
 virNodeDevCapSystemParseXML(xmlXPathContextPtr ctxt,
                             virNodeDeviceDefPtr def,
                             xmlNodePtr node,
-                            virNodeDevCapSystemPtr system)
+                            virNodeDevCapSystemPtr syscap)
 {
-    virNodeDevCapSystemHardwarePtr hardware = &system->hardware;
-    virNodeDevCapSystemFirmwarePtr firmware = &system->firmware;
+    virNodeDevCapSystemHardwarePtr hardware = &syscap->hardware;
+    virNodeDevCapSystemFirmwarePtr firmware = &syscap->firmware;
     xmlNodePtr orignode;
     int ret = -1;
     char *tmp;
@@ -1423,7 +1423,7 @@ virNodeDevCapSystemParseXML(xmlXPathContextPtr ctxt,
     orignode = ctxt->node;
     ctxt->node = node;
 
-    system->product_name = virXPathString("string(./product[1])", ctxt);
+    syscap->product_name = virXPathString("string(./product[1])", ctxt);
 
     hardware->vendor_name = virXPathString("string(./hardware/vendor[1])", ctxt);
     hardware->version     = virXPathString("string(./hardware/version[1])", ctxt);
