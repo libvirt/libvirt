@@ -3217,6 +3217,24 @@ static int testDomainInterfaceStats(virDomainPtr domain,
 }
 
 
+static virNetworkObjPtr
+testNetworkObjFindByUUID(testDriverPtr privconn,
+                         const unsigned char *uuid)
+{
+    virNetworkObjPtr net;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (!(net = virNetworkObjFindByUUID(privconn->networks, uuid))) {
+        virUUIDFormat(uuid, uuidstr);
+        virReportError(VIR_ERR_NO_NETWORK,
+                       _("no network with matching uuid '%s'"),
+                       uuidstr);
+    }
+
+    return net;
+}
+
+
 static virNetworkPtr testNetworkLookupByUUID(virConnectPtr conn,
                                              const unsigned char *uuid)
 {
@@ -3224,11 +3242,8 @@ static virNetworkPtr testNetworkLookupByUUID(virConnectPtr conn,
     virNetworkObjPtr net;
     virNetworkPtr ret = NULL;
 
-    net = virNetworkObjFindByUUID(privconn->networks, uuid);
-    if (net == NULL) {
-        virReportError(VIR_ERR_NO_NETWORK, NULL);
+    if (!(net = testNetworkObjFindByUUID(privconn, uuid)))
         goto cleanup;
-    }
 
     ret = virGetNetwork(conn, net->def->name, net->def->uuid);
 
@@ -3327,11 +3342,9 @@ static int testNetworkIsActive(virNetworkPtr net)
     virNetworkObjPtr obj;
     int ret = -1;
 
-    obj = virNetworkObjFindByUUID(privconn->networks, net->uuid);
-    if (!obj) {
-        virReportError(VIR_ERR_NO_NETWORK, NULL);
+    if (!(obj = testNetworkObjFindByUUID(privconn, net->uuid)))
         goto cleanup;
-    }
+
     ret = virNetworkObjIsActive(obj);
 
  cleanup:
@@ -3345,11 +3358,9 @@ static int testNetworkIsPersistent(virNetworkPtr net)
     virNetworkObjPtr obj;
     int ret = -1;
 
-    obj = virNetworkObjFindByUUID(privconn->networks, net->uuid);
-    if (!obj) {
-        virReportError(VIR_ERR_NO_NETWORK, NULL);
+    if (!(obj = testNetworkObjFindByUUID(privconn, net->uuid)))
         goto cleanup;
-    }
+
     ret = obj->persistent;
 
  cleanup:
@@ -3463,12 +3474,8 @@ testNetworkUpdate(virNetworkPtr net,
                   VIR_NETWORK_UPDATE_AFFECT_CONFIG,
                   -1);
 
-    network = virNetworkObjFindByUUID(privconn->networks, net->uuid);
-    if (!network) {
-        virReportError(VIR_ERR_NO_NETWORK,
-                       "%s", _("no network with matching uuid"));
+    if (!(network = testNetworkObjFindByUUID(privconn, net->uuid)))
         goto cleanup;
-    }
 
     /* VIR_NETWORK_UPDATE_AFFECT_CURRENT means "change LIVE if network
      * is active, else change CONFIG
@@ -4049,6 +4056,28 @@ testStoragePoolObjFindByName(testDriverPtr privconn,
 }
 
 
+static virStoragePoolObjPtr
+testStoragePoolObjFindByUUID(testDriverPtr privconn,
+                             const unsigned char *uuid)
+{
+    virStoragePoolObjPtr pool;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    testDriverLock(privconn);
+    pool = virStoragePoolObjFindByUUID(&privconn->pools, uuid);
+    testDriverUnlock(privconn);
+
+    if (!pool) {
+        virUUIDFormat(uuid, uuidstr);
+        virReportError(VIR_ERR_NO_STORAGE_POOL,
+                       _("no storage pool with matching uuid '%s'"),
+                       uuidstr);
+    }
+
+    return pool;
+}
+
+
 static virStoragePoolPtr
 testStoragePoolLookupByUUID(virConnectPtr conn,
                             const unsigned char *uuid)
@@ -4057,14 +4086,8 @@ testStoragePoolLookupByUUID(virConnectPtr conn,
     virStoragePoolObjPtr pool;
     virStoragePoolPtr ret = NULL;
 
-    testDriverLock(privconn);
-    pool = virStoragePoolObjFindByUUID(&privconn->pools, uuid);
-    testDriverUnlock(privconn);
-
-    if (pool == NULL) {
-        virReportError(VIR_ERR_NO_STORAGE_POOL, NULL);
+    if (!(pool = testStoragePoolObjFindByUUID(privconn, uuid)))
         goto cleanup;
-    }
 
     ret = virGetStoragePool(conn, pool->def->name, pool->def->uuid,
                             NULL, NULL);
@@ -4222,13 +4245,9 @@ static int testStoragePoolIsActive(virStoragePoolPtr pool)
     virStoragePoolObjPtr obj;
     int ret = -1;
 
-    testDriverLock(privconn);
-    obj = virStoragePoolObjFindByUUID(&privconn->pools, pool->uuid);
-    testDriverUnlock(privconn);
-    if (!obj) {
-        virReportError(VIR_ERR_NO_STORAGE_POOL, NULL);
+    if (!(obj = testStoragePoolObjFindByUUID(privconn, pool->uuid)))
         goto cleanup;
-    }
+
     ret = virStoragePoolObjIsActive(obj);
 
  cleanup:
@@ -4243,13 +4262,9 @@ static int testStoragePoolIsPersistent(virStoragePoolPtr pool)
     virStoragePoolObjPtr obj;
     int ret = -1;
 
-    testDriverLock(privconn);
-    obj = virStoragePoolObjFindByUUID(&privconn->pools, pool->uuid);
-    testDriverUnlock(privconn);
-    if (!obj) {
-        virReportError(VIR_ERR_NO_STORAGE_POOL, NULL);
+    if (!(obj = testStoragePoolObjFindByUUID(privconn, pool->uuid)))
         goto cleanup;
-    }
+
     ret = obj->configFile ? 1 : 0;
 
  cleanup:
@@ -4781,15 +4796,8 @@ testStoragePoolListAllVolumes(virStoragePoolPtr obj,
 
     virCheckFlags(0, -1);
 
-    testDriverLock(privconn);
-    pool = virStoragePoolObjFindByUUID(&privconn->pools, obj->uuid);
-    testDriverUnlock(privconn);
-
-    if (!pool) {
-        virReportError(VIR_ERR_NO_STORAGE_POOL, "%s",
-                       _("no storage pool with matching uuid"));
+    if (!(pool = testStoragePoolObjFindByUUID(privconn, obj->uuid)))
         goto cleanup;
-    }
 
     if (!virStoragePoolObjIsActive(pool)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
