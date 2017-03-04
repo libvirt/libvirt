@@ -55,6 +55,9 @@
         <element name='allocation'>
           <ref name='scaledInteger'/>
         </element>
+        <element name='redundancy'>
+          <ref name='string'/>
+        </element>
       </optional>
     </interleave>
   </define>

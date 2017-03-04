@@ -1406,6 +1406,8 @@ virStorageVolDefParseXML(virStoragePoolDefPtr pool,
         ret->target.allocation = ret->target.capacity;
     }
 
+    ret->target.redundancy = virXPathString("string(./redundancy)", ctxt);
+
     ret->target.path = virXPathString("string(./target/path)", ctxt);
     if (options->formatFromString) {
         char *format = virXPathString("string(./target/format/@type)", ctxt);
