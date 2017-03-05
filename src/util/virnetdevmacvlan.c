@@ -1010,20 +1010,22 @@ virNetDevMacVLanCreateWithVPortProfile(const char *ifnameRequested,
      */
 
     if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
+        bool setVlan = true;
+
         if (virtPortProfile &&
             virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_8021QBH) {
-            /* The Cisco enic driver (the only card that uses
-             * 802.1Qbh) doesn't support IFLA_VFINFO_LIST, which is
-             * required for virNetDevReplaceNetConfig(), so we must
-             * use this function (which uses ioctl(SIOCGIFHWADDR)
-             * instead or virNetDevReplaceNetConfig()
+            /* The Cisco enic driver (the only SRIOV-capable card that
+             * uses 802.1Qbh) doesn't support IFLA_VFINFO_LIST, which
+             * is required to get/set the vlan tag of a VF.
              */
-            if (virNetDevReplaceMacAddress(linkdev, macaddress, stateDir) < 0)
-                return -1;
-        } else {
-            if (virNetDevReplaceNetConfig(linkdev, -1, macaddress, vlan, stateDir) < 0)
-                return -1;
+            setVlan = false;
         }
+
+        if (virNetDevSaveNetConfig(linkdev, -1, stateDir, setVlan) < 0)
+           return -1;
+
+        if (virNetDevSetNetConfig(linkdev, -1, NULL, vlan, macaddress, setVlan) < 0)
+           return -1;
     }
 
     if (ifnameRequested) {
@@ -1194,11 +1196,19 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
     }
 
     if (mode == VIR_NETDEV_MACVLAN_MODE_PASSTHRU) {
-        if (virtPortProfile &&
-             virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_8021QBH)
-            ignore_value(virNetDevRestoreMacAddress(linkdev, stateDir));
-        else
-            ignore_value(virNetDevRestoreNetConfig(linkdev, -1, stateDir));
+        virMacAddrPtr MAC = NULL;
+        virMacAddrPtr adminMAC = NULL;
+        virNetDevVlanPtr vlan = NULL;
+
+        if (virNetDevReadNetConfig(linkdev, -1, stateDir,
+                                   &adminMAC, &vlan, &MAC) == 0) {
+
+            ignore_value(virNetDevSetNetConfig(linkdev, -1,
+                                               adminMAC, vlan, MAC, !!vlan));
+            VIR_FREE(MAC);
+            VIR_FREE(adminMAC);
+            virNetDevVlanFree(vlan);
+        }
     }
 
     virNetlinkEventRemoveClient(0, macaddr, NETLINK_ROUTE);
