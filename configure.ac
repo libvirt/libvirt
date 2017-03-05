@@ -192,6 +192,7 @@ if test $with_linux = no; then
         with_lxc=no
     fi
     with_dtrace=no
+    with_storage_scsi=no
 fi
 
 if test $with_freebsd = yes; then
