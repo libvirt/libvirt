@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2016 Red Hat, Inc.
+ * Copyright (C) 2010-2017 Red Hat, Inc.
  * Copyright (C) 2010-2012 IBM Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -1179,14 +1179,13 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
                                            char *stateDir)
 {
     int ret = 0;
-    int vf = -1;
 
     if (ifname) {
         if (virNetDevVPortProfileDisassociate(ifname,
                                               virtPortProfile,
                                               macaddr,
                                               linkdev,
-                                              vf,
+                                              -1,
                                               VIR_NETDEV_VPORT_PROFILE_OP_DESTROY) < 0)
             ret = -1;
         if (virNetDevMacVLanDelete(ifname) < 0)
@@ -1199,7 +1198,7 @@ int virNetDevMacVLanDeleteWithVPortProfile(const char *ifname,
              virtPortProfile->virtPortType == VIR_NETDEV_VPORT_PROFILE_8021QBH)
             ignore_value(virNetDevRestoreMacAddress(linkdev, stateDir));
         else
-            ignore_value(virNetDevRestoreNetConfig(linkdev, vf, stateDir));
+            ignore_value(virNetDevRestoreNetConfig(linkdev, -1, stateDir));
     }
 
     virNetlinkEventRemoveClient(0, macaddr, NETLINK_ROUTE);
