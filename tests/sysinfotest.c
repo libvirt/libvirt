@@ -42,14 +42,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#if defined (__linux__)
-
-# if defined(__s390__) || defined(__s390x__) || \
-     defined(__powerpc__) || defined(__powerpc64__) || \
-     defined(__i386__) || defined(__x86_64__) || defined(__amd64__) || \
-     defined(__arm__) || defined(__aarch64__)
-
 struct testSysinfoData {
+    virSysinfoDefPtr (*func)(void); /* sysinfo gathering function */
     char *decoder; /* name of dmi decoder binary/script */
     char *sysinfo; /* name of /proc/sysinfo substitute file */
     char *cpuinfo; /* name of /proc/cpuinfo substitute file */
@@ -68,7 +62,7 @@ testSysinfo(const void *data)
     virSysinfoSetup(testdata->decoder, testdata->sysinfo, testdata->cpuinfo);
 
     if (!testdata->expected ||
-        !(ret = virSysinfoRead()))
+        !(ret = testdata->func()))
         goto cleanup;
 
     if (virSysinfoFormat(&buf, ret) < 0)
@@ -91,6 +85,7 @@ testSysinfo(const void *data)
 
 static int
 sysinfotest_run(const char *test,
+                virSysinfoDefPtr (*func)(void),
                 const char *decoder,
                 const char *sysinfo,
                 const char *cpuinfo,
@@ -98,6 +93,8 @@ sysinfotest_run(const char *test,
 {
     struct testSysinfoData testdata = { NULL };
     int ret = EXIT_FAILURE;
+
+    testdata.func = func;
 
     if ((decoder &&
          virAsprintf(&testdata.decoder, "%s/%s", abs_srcdir, decoder) < 0) ||
@@ -122,91 +119,34 @@ sysinfotest_run(const char *test,
     VIR_FREE(testdata.expected);
     return ret;
 }
-# endif
 
-# if defined(__s390__) || defined(__s390x__)
-static int
-test_s390(void)
-{
-    return sysinfotest_run("s390 sysinfo",
-                           NULL,
-                           "/sysinfodata/s390sysinfo.data",
-                           "/sysinfodata/s390cpuinfo.data",
-                           "/sysinfodata/s390sysinfo.expect");
-}
+#define TEST_FULL(name, func, decoder) \
+    if (sysinfotest_run(name " sysinfo", func, decoder, \
+                        "/sysinfodata/" name "sysinfo.data", \
+                        "/sysinfodata/" name "cpuinfo.data", \
+                        "/sysinfodata/" name "sysinfo.expect") != EXIT_SUCCESS) \
+        ret = EXIT_FAILURE
 
-VIRT_TEST_MAIN(test_s390)
-# elif defined(__powerpc__) || defined(__powerpc64__)
-static int
-test_ppc(void)
-{
-    return sysinfotest_run("ppc sysinfo",
-                           NULL,
-                           NULL,
-                           "/sysinfodata/ppccpuinfo.data",
-                           "/sysinfodata/ppcsysinfo.expect");
-}
 
-VIRT_TEST_MAIN(test_ppc)
-# elif defined(__i386__) || defined(__x86_64__) || defined(__amd64__)
-static int
-test_x86(void)
-{
-    return sysinfotest_run("x86 sysinfo",
-                           "/sysinfodata/dmidecode.sh",
-                           NULL,
-                           NULL,
-                           "/sysinfodata/x86sysinfo.expect");
-}
+#define TEST(name, func) \
+        TEST_FULL(name, func, NULL)
 
-VIRT_TEST_MAIN(test_x86)
-# elif defined(__arm__)
 static int
-test_arm(void)
+mymain(void)
 {
     int ret = EXIT_SUCCESS;
 
-    if (sysinfotest_run("arm sysinfo",
-                        NULL,
-                        NULL,
-                        "/sysinfodata/armcpuinfo.data",
-                        "/sysinfodata/armsysinfo.expect") != EXIT_SUCCESS)
-        ret = EXIT_FAILURE;
-
-    if (sysinfotest_run("Raspberry Pi 2 sysinfo",
-                        NULL,
-                        NULL,
-                        "/sysinfodata/arm-rpi2cpuinfo.data",
-                        "/sysinfodata/arm-rpi2sysinfo.expect") != EXIT_SUCCESS)
-        ret = EXIT_FAILURE;
+    TEST("s390", virSysinfoReadS390);
+    TEST("ppc", virSysinfoReadPPC);
+    TEST_FULL("x86", virSysinfoReadX86, "/sysinfodata/dmidecode.sh");
+    TEST("arm", virSysinfoReadARM);
+    TEST("arm-rpi2", virSysinfoReadARM);
+    TEST("aarch64", virSysinfoReadARM);
 
     return ret;
 }
 
-VIRT_TEST_MAIN(test_arm)
-# elif defined(__aarch64__)
-static int
-test_aarch64(void)
-{
-    return sysinfotest_run("aarch64 sysinfo",
-                           NULL,
-                           NULL,
-                           "/sysinfodata/aarch64cpuinfo.data",
-                           "/sysinfodata/aarch64sysinfo.expect");
-}
+#undef TEST
+#undef TEST_FULL
 
-VIRT_TEST_MAIN(test_aarch64)
-# else
-int
-main(void)
-{
-    return EXIT_AM_SKIP;
-}
-# endif /* defined(__s390__) ... */
-#else
-int
-main(void)
-{
-    return EXIT_AM_SKIP;
-}
-#endif /* defined(__linux__) */
+VIRT_TEST_MAIN(mymain)
