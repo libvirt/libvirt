@@ -127,10 +127,12 @@ struct _virNetworkDNSHostDef {
 };
 
 
-typedef struct _virNetworkDNSForwarder {
+typedef struct _virNetworkDNSForwarder virNetworkDNSForwarder;
+typedef virNetworkDNSForwarder *virNetworkDNSForwarderPtr;
+struct _virNetworkDNSForwarder {
     virSocketAddr addr;
     char *domain;
-} virNetworkDNSForwarder, *virNetworkDNSForwarderPtr;
+};
 
 typedef struct _virNetworkDNSDef virNetworkDNSDef;
 typedef virNetworkDNSDef *virNetworkDNSDefPtr;

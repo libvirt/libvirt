@@ -243,7 +243,9 @@ struct _virNodeDevCapDRM {
     virNodeDevDRMType type;
 };
 
-typedef struct _virNodeDevCapData {
+typedef struct _virNodeDevCapData virNodeDevCapData;
+typedef virNodeDevCapData *virNodeDevCapDataPtr;
+struct _virNodeDevCapData {
     virNodeDevCapType type;
     union {
         virNodeDevCapSystem system;
@@ -258,7 +260,7 @@ typedef struct _virNodeDevCapData {
         virNodeDevCapSCSIGeneric sg;
         virNodeDevCapDRM drm;
     };
-} virNodeDevCapData, *virNodeDevCapDataPtr;
+};
 
 typedef struct _virNodeDevCapsDef virNodeDevCapsDef;
 typedef virNodeDevCapsDef *virNodeDevCapsDefPtr;

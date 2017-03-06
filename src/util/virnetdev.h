@@ -86,10 +86,12 @@ typedef enum {
 
 VIR_ENUM_DECL(virNetDevIfState)
 
-typedef struct {
+typedef struct _virNetDevIfLink virNetDevIfLink;
+typedef virNetDevIfLink *virNetDevIfLinkPtr;
+struct _virNetDevIfLink {
     virNetDevIfState state; /* link state */
     unsigned int speed;      /* link speed in Mbits per second */
-} virNetDevIfLink, *virNetDevIfLinkPtr;
+};
 
 typedef enum {
     VIR_NET_DEV_FEAT_GRXCSUM,

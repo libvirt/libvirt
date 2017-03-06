@@ -51,46 +51,58 @@ typedef enum {
     VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST
 } virDomainDeviceAddressType;
 
-typedef struct _virDomainDeviceDriveAddress {
+typedef struct _virDomainDeviceDriveAddress virDomainDeviceDriveAddress;
+typedef virDomainDeviceDriveAddress *virDomainDeviceDriveAddressPtr;
+struct _virDomainDeviceDriveAddress {
     unsigned int controller;
     unsigned int bus;
     unsigned int target;
     unsigned int unit;
-} virDomainDeviceDriveAddress, *virDomainDeviceDriveAddressPtr;
+};
 
-typedef struct _virDomainDeviceVirtioSerialAddress {
+typedef struct _virDomainDeviceVirtioSerialAddress virDomainDeviceVirtioSerialAddress;
+typedef virDomainDeviceVirtioSerialAddress *virDomainDeviceVirtioSerialAddressPtr;
+struct _virDomainDeviceVirtioSerialAddress {
     unsigned int controller;
     unsigned int bus;
     unsigned int port;
-} virDomainDeviceVirtioSerialAddress, *virDomainDeviceVirtioSerialAddressPtr;
+};
 
 # define VIR_DOMAIN_DEVICE_CCW_MAX_CSSID    254
 # define VIR_DOMAIN_DEVICE_CCW_MAX_SSID       3
 # define VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO  65535
 
-typedef struct _virDomainDeviceCCWAddress {
+typedef struct _virDomainDeviceCCWAddress virDomainDeviceCCWAddress;
+typedef virDomainDeviceCCWAddress *virDomainDeviceCCWAddressPtr;
+struct _virDomainDeviceCCWAddress {
     unsigned int cssid;
     unsigned int ssid;
     unsigned int devno;
     bool         assigned;
-} virDomainDeviceCCWAddress, *virDomainDeviceCCWAddressPtr;
+};
 
-typedef struct _virDomainDeviceCcidAddress {
+typedef struct _virDomainDeviceCcidAddress virDomainDeviceCcidAddress;
+typedef virDomainDeviceCcidAddress *virDomainDeviceCcidAddressPtr;
+struct _virDomainDeviceCcidAddress {
     unsigned int controller;
     unsigned int slot;
-} virDomainDeviceCcidAddress, *virDomainDeviceCcidAddressPtr;
+};
 
 # define VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH 4
 
-typedef struct _virDomainDeviceUSBAddress {
+typedef struct _virDomainDeviceUSBAddress virDomainDeviceUSBAddress;
+typedef virDomainDeviceUSBAddress *virDomainDeviceUSBAddressPtr;
+struct _virDomainDeviceUSBAddress {
     unsigned int bus;
     unsigned int port[VIR_DOMAIN_DEVICE_USB_MAX_PORT_DEPTH];
-} virDomainDeviceUSBAddress, *virDomainDeviceUSBAddressPtr;
+};
 
-typedef struct _virDomainDeviceSpaprVioAddress {
+typedef struct _virDomainDeviceSpaprVioAddress virDomainDeviceSpaprVioAddress;
+typedef virDomainDeviceSpaprVioAddress *virDomainDeviceSpaprVioAddressPtr;
+struct _virDomainDeviceSpaprVioAddress {
     unsigned long long reg;
     bool has_reg;
-} virDomainDeviceSpaprVioAddress, *virDomainDeviceSpaprVioAddressPtr;
+};
 
 typedef enum {
     VIR_DOMAIN_CONTROLLER_MASTER_NONE,
@@ -99,21 +111,29 @@ typedef enum {
     VIR_DOMAIN_CONTROLLER_MASTER_LAST
 } virDomainControllerMaster;
 
-typedef struct _virDomainDeviceUSBMaster {
+typedef struct _virDomainDeviceUSBMaster virDomainDeviceUSBMaster;
+typedef virDomainDeviceUSBMaster *virDomainDeviceUSBMasterPtr;
+struct _virDomainDeviceUSBMaster {
     unsigned int startport;
-} virDomainDeviceUSBMaster, *virDomainDeviceUSBMasterPtr;
+};
 
-typedef struct _virDomainDeviceISAAddress {
+typedef struct _virDomainDeviceISAAddress virDomainDeviceISAAddress;
+typedef virDomainDeviceISAAddress *virDomainDeviceISAAddressPtr;
+struct _virDomainDeviceISAAddress {
     unsigned int iobase;
     unsigned int irq;
-} virDomainDeviceISAAddress, *virDomainDeviceISAAddressPtr;
+};
 
-typedef struct _virDomainDeviceDimmAddress {
+typedef struct _virDomainDeviceDimmAddress virDomainDeviceDimmAddress;
+typedef virDomainDeviceDimmAddress *virDomainDeviceDimmAddressPtr;
+struct _virDomainDeviceDimmAddress {
     unsigned int slot;
     unsigned long long base;
-} virDomainDeviceDimmAddress, *virDomainDeviceDimmAddressPtr;
+};
 
-typedef struct _virDomainDeviceInfo {
+typedef struct _virDomainDeviceInfo virDomainDeviceInfo;
+typedef virDomainDeviceInfo *virDomainDeviceInfoPtr;
+struct _virDomainDeviceInfo {
     /* If adding to this struct, ensure that
      * virDomainDeviceInfoIsSet() is updated
      * to consider the new fields
@@ -147,7 +167,7 @@ typedef struct _virDomainDeviceInfo {
      * assignment, never saved and never reported.
      */
     int pciConnectFlags; /* enum virDomainPCIConnectFlags */
-} virDomainDeviceInfo, *virDomainDeviceInfoPtr;
+};
 
 
 int virPCIDeviceAddressIsValid(virPCIDeviceAddressPtr addr,
