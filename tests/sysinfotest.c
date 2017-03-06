@@ -142,6 +142,7 @@ mymain(void)
     TEST("arm", virSysinfoReadARM);
     TEST("arm-rpi2", virSysinfoReadARM);
     TEST("aarch64", virSysinfoReadARM);
+    TEST("aarch64-moonshot", virSysinfoReadARM);
 
     return ret;
 }
