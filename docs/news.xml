@@ -21,7 +21,7 @@
         </summary>
         <description>
           Previously, libvirt detected the host CPU model using CPUID
-          instruction, which cased libvirt to detect a lot of CPU features
+          instruction, which caused libvirt to detect a lot of CPU features
           that are not supported by QEMU/KVM. Asking QEMU makes sure we
           don't start it with unsupported features.
         </description>
