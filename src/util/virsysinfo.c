@@ -55,12 +55,11 @@ static const char *sysinfoCpuinfo = "/proc/cpuinfo";
 #define CPUINFO sysinfoCpuinfo
 #define CPUINFO_FILE_LEN (1024*1024)	/* 1MB limit for /proc/cpuinfo file */
 
-/* only to be used test programs, therefore not in sysinfo.h */
-extern void virSysinfoSetup(const char *dmidecode, const char *sysinfo,
-                            const char *cpuinfo);
 
-void virSysinfoSetup(const char *dmidecode, const char *sysinfo,
-                     const char *cpuinfo)
+void
+virSysinfoSetup(const char *dmidecode,
+                const char *sysinfo,
+                const char *cpuinfo)
 {
     sysinfoDmidecode = dmidecode;
     sysinfoSysinfo = sysinfo;

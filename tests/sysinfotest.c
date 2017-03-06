@@ -37,6 +37,9 @@
 #include "virfile.h"
 #include "virstring.h"
 
+#define __VIR_SYSINFO_PRIV_H_ALLOW__
+#include "virsysinfopriv.h"
+
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #if defined (__linux__)
@@ -45,11 +48,6 @@
      defined(__powerpc__) || defined(__powerpc64__) || \
      defined(__i386__) || defined(__x86_64__) || defined(__amd64__) || \
      defined(__arm__) || defined(__aarch64__)
-
-/* from sysinfo.c */
-void virSysinfoSetup(const char *decoder,
-                     const char *sysinfo,
-                     const char *cpuinfo);
 
 struct testSysinfoData {
     char *decoder; /* name of dmi decoder binary/script */

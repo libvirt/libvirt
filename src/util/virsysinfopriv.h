@@ -24,6 +24,11 @@
 #ifndef __VIR_SYSINFO_PRIV_H__
 # define __VIR_SYSINFO_PRIV_H__
 
+void
+virSysinfoSetup(const char *dmidecode,
+                const char *sysinfo,
+                const char *cpuinfo);
+
 virSysinfoDefPtr
 virSysinfoReadPPC(void);
 
