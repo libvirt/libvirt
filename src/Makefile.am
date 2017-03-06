@@ -173,7 +173,7 @@ UTIL_SOURCES =							\
 		util/virstorageencryption.c util/virstorageencryption.h \
 		util/virstoragefile.c util/virstoragefile.h	\
 		util/virstring.h util/virstring.c		\
-		util/virsysinfo.c util/virsysinfo.h		\
+		util/virsysinfo.c util/virsysinfo.h util/virsysinfopriv.h		\
 		util/virsystemd.c util/virsystemd.h util/virsystemdpriv.h \
 		util/virthread.c util/virthread.h		\
 		util/virthreadjob.c util/virthreadjob.h		\
