@@ -1460,6 +1460,14 @@ virNetDevSysfsFile(char **pf_sysfs_device_link ATTRIBUTE_UNUSED,
 #if defined(__linux__) && defined(HAVE_LIBNL) && defined(IFLA_VF_MAX)
 
 
+static virMacAddr zeroMAC = { .addr = { 0, 0, 0, 0, 0, 0 } };
+
+/* if a net driver doesn't allow setting MAC to all 0, try setting
+ * to this (the only bit that is set is the "locally administered" bit")
+ */
+static virMacAddr altZeroMAC = { .addr = { 2, 0, 0, 0, 0, 0 } };
+
+
 static struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
     [IFLA_VF_MAC]       = { .type = NLA_UNSPEC,
                             .maxlen = sizeof(struct ifla_vf_mac) },
@@ -1470,7 +1478,8 @@ static struct nla_policy ifla_vf_policy[IFLA_VF_MAX+1] = {
 
 static int
 virNetDevSetVfConfig(const char *ifname, int vf,
-                     const virMacAddr *macaddr, int vlanid)
+                     const virMacAddr *macaddr, int vlanid,
+                     bool *allowRetry)
 {
     int rc = -1;
     struct nlmsghdr *resp = NULL;
@@ -1547,7 +1556,15 @@ virNetDevSetVfConfig(const char *ifname, int vf,
         if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
             goto malformed_resp;
 
-        if (err->error) {
+        /* if allowRetry is true and the error was EINVAL, then
+         * silently return a failure so the caller can retry with a
+         * different MAC address
+         */
+        if (err->error == -EINVAL && *allowRetry &&
+            macaddr && !virMacAddrCmp(macaddr, &zeroMAC)) {
+            goto cleanup;
+        } else if (err->error) {
+            /* other errors are permanent */
             char macstr[VIR_MAC_STRING_BUFLEN];
 
             virReportSystemError(-err->error,
@@ -1559,6 +1576,7 @@ virNetDevSetVfConfig(const char *ifname, int vf,
                                  vlanid,
                                  ifname ? ifname : "(unspecified)",
                                  vf);
+            *allowRetry = false; /* no use retrying */
             goto cleanup;
         }
         break;
@@ -2195,8 +2213,24 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
          * guest or host). if there is a vlanTag to set, it will take
          * effect immediately though.
          */
-        if (virNetDevSetVfConfig(pfDevName, vf, adminMAC, vlanTag) < 0)
-            goto cleanup;
+        bool allowRetry = true;
+
+        if (virNetDevSetVfConfig(pfDevName, vf,
+                                 adminMAC, vlanTag, &allowRetry) < 0) {
+            /* allowRetry will still be true if the failure was due to
+             * trying to set the MAC address to all 0. In that case,
+             * we can retry with "altZeroMAC", which is just an all-0 MAC
+             * with the "locally administered" bit set.
+             */
+            if (!allowRetry)
+                goto cleanup;
+
+            allowRetry = false;
+            if (virNetDevSetVfConfig(pfDevName, vf,
+                                     &altZeroMAC, vlanTag, &allowRetry) < 0) {
+                goto cleanup;
+            }
+        }
     }
 
     ret = 0;
