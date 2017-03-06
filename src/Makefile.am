@@ -174,7 +174,7 @@ UTIL_SOURCES =							\
 		util/virstoragefile.c util/virstoragefile.h	\
 		util/virstring.h util/virstring.c		\
 		util/virsysinfo.c util/virsysinfo.h		\
-		util/virsystemd.c util/virsystemd.h		\
+		util/virsystemd.c util/virsystemd.h util/virsystemdpriv.h \
 		util/virthread.c util/virthread.h		\
 		util/virthreadjob.c util/virthreadjob.h		\
 		util/virthreadpool.c util/virthreadpool.h	\
