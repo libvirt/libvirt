@@ -42,11 +42,13 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *dev,
         virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_FC_HOST);
     const char *vports_cap =
         virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_VPORTS);
+    const char *mdev_types =
+        virNodeDevCapTypeToString(VIR_NODE_DEV_CAP_MDEV_TYPES);
 
     while (caps) {
-        if (STREQ(cap, virNodeDevCapTypeToString(caps->data.type)))
+        if (STREQ(cap, virNodeDevCapTypeToString(caps->data.type))) {
             return 1;
-        else if (caps->data.type == VIR_NODE_DEV_CAP_SCSI_HOST)
+        } else if (caps->data.type == VIR_NODE_DEV_CAP_SCSI_HOST) {
             if ((STREQ(cap, fc_host_cap) &&
                 (caps->data.scsi_host.flags &
                  VIR_NODE_DEV_CAP_FLAG_HBA_FC_HOST)) ||
@@ -54,6 +56,13 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *dev,
                 (caps->data.scsi_host.flags &
                  VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS)))
                 return 1;
+        } else if (caps->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
+            if ((STREQ(cap, mdev_types)) &&
+                (caps->data.pci_dev.flags &
+                 VIR_NODE_DEV_CAP_FLAG_PCI_MDEV))
+                return 1;
+        }
+
         caps = caps->next;
     }
     return 0;
@@ -466,6 +475,13 @@ virNodeDeviceCapMatch(virNodeDeviceObjPtr devobj,
             if (type == VIR_NODE_DEV_CAP_VPORTS &&
                 (cap->data.scsi_host.flags &
                  VIR_NODE_DEV_CAP_FLAG_HBA_VPORT_OPS))
+                return true;
+        }
+
+        if (cap->data.type == VIR_NODE_DEV_CAP_PCI_DEV) {
+            if (type == VIR_NODE_DEV_CAP_MDEV_TYPES &&
+                (cap->data.pci_dev.flags &
+                 VIR_NODE_DEV_CAP_FLAG_PCI_MDEV))
                 return true;
         }
     }

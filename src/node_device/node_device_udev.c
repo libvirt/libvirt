@@ -314,6 +314,119 @@ static int udevTranslatePCIIds(unsigned int vendor,
 }
 
 
+static int
+udevFillMdevType(struct udev_device *device,
+                 const char *dir,
+                 virNodeDevCapMdevTypePtr type)
+{
+    int ret = -1;
+    char *attrpath = NULL;
+
+#define MDEV_GET_SYSFS_ATTR(attr_name, cb, ...)                             \
+    do {                                                                    \
+        if (virAsprintf(&attrpath, "%s/%s", dir, #attr_name) < 0)           \
+            goto cleanup;                                                   \
+                                                                            \
+        if (cb(device, attrpath, __VA_ARGS__) < 0)                          \
+            goto cleanup;                                                   \
+                                                                            \
+        VIR_FREE(attrpath);                                                 \
+    } while (0)                                                             \
+
+    if (VIR_STRDUP(type->id, last_component(dir)) < 0)
+        goto cleanup;
+
+    /* query udev for the attributes under subdirectories using the relative
+     * path stored in @dir, i.e. 'mdev_supported_types/<type_id>'
+     */
+    MDEV_GET_SYSFS_ATTR(name, udevGetStringSysfsAttr, &type->name);
+    MDEV_GET_SYSFS_ATTR(device_api, udevGetStringSysfsAttr, &type->device_api);
+    MDEV_GET_SYSFS_ATTR(available_instances, udevGetUintSysfsAttr,
+                        &type->available_instances, 10);
+
+#undef MDEV_GET_SYSFS_ATTR
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(attrpath);
+    return ret;
+}
+
+
+static int
+udevPCIGetMdevTypesCap(struct udev_device *device,
+                       virNodeDevCapPCIDevPtr pcidata)
+{
+    int ret = -1;
+    int dirret = -1;
+    DIR *dir = NULL;
+    struct dirent *entry;
+    char *path = NULL;
+    char *tmppath = NULL;
+    virNodeDevCapMdevTypePtr type = NULL;
+    virNodeDevCapMdevTypePtr *types = NULL;
+    size_t ntypes = 0;
+    size_t i;
+
+    if (virAsprintf(&path, "%s/mdev_supported_types",
+                    udev_device_get_syspath(device)) < 0)
+        return -1;
+
+    if ((dirret = virDirOpenIfExists(&dir, path)) < 0)
+        goto cleanup;
+
+    if (dirret == 0) {
+        ret = 0;
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC(types) < 0)
+        goto cleanup;
+
+    /* UDEV doesn't report attributes under subdirectories by default but is
+     * able to query them if the path to the attribute is relative to the
+     * device's base path, e.g. /sys/devices/../0000:00:01.0/ is the device's
+     * base path as udev reports it, but we're interested in attributes under
+     * /sys/devices/../0000:00:01.0/mdev_supported_types/<type>/. So, we need to
+     * scan the subdirectories ourselves.
+     */
+    while ((dirret = virDirRead(dir, &entry, path)) > 0) {
+        if (VIR_ALLOC(type) < 0)
+            goto cleanup;
+
+        /* construct the relative mdev type path bit for udev */
+        if (virAsprintf(&tmppath, "mdev_supported_types/%s", entry->d_name) < 0)
+            goto cleanup;
+
+        if (udevFillMdevType(device, tmppath, type) < 0)
+            goto cleanup;
+
+        if (VIR_APPEND_ELEMENT(types, ntypes, type) < 0)
+            goto cleanup;
+
+        VIR_FREE(tmppath);
+    }
+
+    if (dirret < 0)
+        goto cleanup;
+
+    VIR_STEAL_PTR(pcidata->mdev_types, types);
+    pcidata->nmdev_types = ntypes;
+    pcidata->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
+    ntypes = 0;
+    ret = 0;
+ cleanup:
+    virNodeDevCapMdevTypeFree(type);
+    for (i = 0; i < ntypes; i++)
+        virNodeDevCapMdevTypeFree(types[i]);
+    VIR_FREE(types);
+    VIR_FREE(path);
+    VIR_FREE(tmppath);
+    VIR_DIR_CLOSE(dir);
+    return ret;
+}
+
+
 static int udevProcessPCI(struct udev_device *device,
                           virNodeDeviceDefPtr def)
 {
@@ -399,6 +512,12 @@ static int udevProcessPCI(struct udev_device *device,
             pci_express = NULL;
         }
     }
+
+    /* check whether the device is mediated devices framework capable, if so,
+     * process it
+     */
+    if (udevPCIGetMdevTypesCap(device, pci_dev) < 0)
+        goto cleanup;
 
     ret = 0;
 

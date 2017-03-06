@@ -89,6 +89,19 @@ virNodeDevCapsDefParseString(const char *xpath,
 
 
 void
+virNodeDevCapMdevTypeFree(virNodeDevCapMdevTypePtr type)
+{
+    if (!type)
+        return;
+
+    VIR_FREE(type->id);
+    VIR_FREE(type->name);
+    VIR_FREE(type->device_api);
+    VIR_FREE(type);
+}
+
+
+void
 virNodeDeviceDefFree(virNodeDeviceDefPtr def)
 {
     virNodeDevCapsDefPtr caps;
@@ -264,6 +277,27 @@ virNodeDeviceCapPCIDefFormat(virBufferPtr buf,
     if (data->pci_dev.hdrType) {
         virBufferAsprintf(buf, "<capability type='%s'/>\n",
                           virPCIHeaderTypeToString(data->pci_dev.hdrType));
+    }
+    if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_MDEV) {
+        virBufferAddLit(buf, "<capability type='mdev_types'>\n");
+        virBufferAdjustIndent(buf, 2);
+        for (i = 0; i < data->pci_dev.nmdev_types; i++) {
+            virNodeDevCapMdevTypePtr type = data->pci_dev.mdev_types[i];
+            virBufferEscapeString(buf, "<type id='%s'>\n", type->id);
+            virBufferAdjustIndent(buf, 2);
+            if (type->name)
+                virBufferEscapeString(buf, "<name>%s</name>\n",
+                                      type->name);
+            virBufferEscapeString(buf, "<deviceAPI>%s</deviceAPI>\n",
+                                  type->device_api);
+            virBufferAsprintf(buf,
+                              "<availableInstances>%u</availableInstances>\n",
+                              type->available_instances);
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</type>\n");
+        }
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</capability>\n");
     }
     if (data->pci_dev.nIommuGroupDevices) {
         virBufferAsprintf(buf, "<iommuGroup number='%d'>\n",
@@ -1365,6 +1399,67 @@ virNodeDevPCICapSRIOVVirtualParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
+virNodeDevPCICapMdevTypesParseXML(xmlXPathContextPtr ctxt,
+                                  virNodeDevCapPCIDevPtr pci_dev)
+{
+    int ret = -1;
+    xmlNodePtr orignode = NULL;
+    xmlNodePtr *nodes = NULL;
+    int nmdev_types = -1;
+    virNodeDevCapMdevTypePtr type = NULL;
+    size_t i;
+
+    if ((nmdev_types = virXPathNodeSet("./type", ctxt, &nodes)) < 0)
+        goto cleanup;
+
+    orignode = ctxt->node;
+    for (i = 0; i < nmdev_types; i++) {
+        ctxt->node = nodes[i];
+
+        if (VIR_ALLOC(type) < 0)
+            goto cleanup;
+
+        if (!(type->id = virXPathString("string(./@id[1])", ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing 'id' attribute for mediated device's "
+                             "<type> element"));
+            goto cleanup;
+        }
+
+        if (!(type->device_api = virXPathString("string(./deviceAPI[1])", ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("missing device API for mediated device type '%s'"),
+                           type->id);
+            goto cleanup;
+        }
+
+        if (virXPathUInt("number(./availableInstances)", ctxt,
+                         &type->available_instances) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("missing number of available instances for "
+                             "mediated device type '%s'"),
+                           type->id);
+            goto cleanup;
+        }
+
+        type->name = virXPathString("string(./name)", ctxt);
+
+        if (VIR_APPEND_ELEMENT(pci_dev->mdev_types,
+                               pci_dev->nmdev_types, type) < 0)
+            goto cleanup;
+    }
+
+    pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
+    ret = 0;
+ cleanup:
+    VIR_FREE(nodes);
+    virNodeDevCapMdevTypeFree(type);
+    ctxt->node = orignode;
+    return ret;
+}
+
+
+static int
 virNodeDevPCICapabilityParseXML(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node,
                                 virNodeDevCapPCIDevPtr pci_dev)
@@ -1385,6 +1480,9 @@ virNodeDevPCICapabilityParseXML(xmlXPathContextPtr ctxt,
         goto cleanup;
     } else if (STREQ(type, "virt_functions") &&
                virNodeDevPCICapSRIOVVirtualParseXML(ctxt, pci_dev) < 0) {
+        goto cleanup;
+    } else if (STREQ(type, "mdev_types") &&
+        virNodeDevPCICapMdevTypesParseXML(ctxt, pci_dev) < 0) {
         goto cleanup;
     } else {
         int hdrType = virPCIHeaderTypeFromString(type);
@@ -1899,6 +1997,9 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps)
             VIR_FREE(data->pci_dev.iommuGroupDevices[i]);
         VIR_FREE(data->pci_dev.iommuGroupDevices);
         virPCIEDeviceInfoFree(data->pci_dev.pci_express);
+        for (i = 0; i < data->pci_dev.nmdev_types; i++)
+            virNodeDevCapMdevTypeFree(data->pci_dev.mdev_types[i]);
+        VIR_FREE(data->pci_dev.mdev_types);
         break;
     case VIR_NODE_DEV_CAP_USB_DEV:
         VIR_FREE(data->usb_dev.product_name);
