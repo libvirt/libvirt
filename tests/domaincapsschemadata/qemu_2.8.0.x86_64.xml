@@ -69,6 +69,7 @@
         <value>scsi</value>
         <value>virtio</value>
         <value>usb</value>
+        <value>sata</value>
       </enum>
     </disk>
     <graphics supported='yes'>
