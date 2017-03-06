@@ -566,6 +566,30 @@ virHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
                                          &adminMAC, &vlan, &MAC);
 
         if (ret == 0) {
+            /* if a MAC was stored for the VF, we should now restore
+             * that as the adminMAC. We have to do it this way because
+             * the VF is still not bound to the host's net driver, so
+             * we can't directly set its MAC (and even after it is
+             * re-bound to the host net driver, it will still have its
+             * "administratively set" flag on, and that prohibits the
+             * VF's net driver from directly setting the MAC
+             * anyway). But it we set the desired VF MAC as the "admin
+             * MAC" *now*, then when the VF is re-bound to the host
+             * net driver (which will happen soon after returning from
+             * this function), that adminMAC will be set (by the PF)
+             * as the VF's new initial MAC.
+             *
+             * If no MAC was stored for the VF, that means it wasn't
+             * bound to a net driver before we used it anyway, so the
+             * adminMAC is all we have, and we can just restore it
+             * directly.
+             */
+            if (MAC) {
+                VIR_FREE(adminMAC);
+                adminMAC = MAC;
+                MAC = NULL;
+            }
+
             ignore_value(virNetDevSetNetConfig(linkdev, vf,
                                                adminMAC, vlan, MAC, true));
         }
