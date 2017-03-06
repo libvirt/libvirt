@@ -513,6 +513,10 @@ qemuTestParseCapabilities(virCapsPtr caps,
 void qemuTestDriverFree(virQEMUDriver *driver)
 {
     virMutexDestroy(&driver->lock);
+    if (driver->config) {
+        virFileDeleteTree(driver->config->stateDir);
+        virFileDeleteTree(driver->config->configDir);
+    }
     virQEMUCapsCacheFree(driver->qemuCapsCache);
     virObjectUnref(driver->xmlopt);
     virObjectUnref(driver->caps);
@@ -548,9 +552,14 @@ int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache, const char *binary,
     return ret;
 }
 
+# define STATEDIRTEMPLATE abs_builddir "/qemustatedir-XXXXXX"
+# define CONFIGDIRTEMPLATE abs_builddir "/qemuconfigdir-XXXXXX"
+
 int qemuTestDriverInit(virQEMUDriver *driver)
 {
     virSecurityManagerPtr mgr = NULL;
+    char statedir[] = STATEDIRTEMPLATE;
+    char configdir[] = CONFIGDIRTEMPLATE;
 
     memset(driver, 0, sizeof(*driver));
 
@@ -561,12 +570,37 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     if (!driver->config)
         goto error;
 
+    /* Do this early so that qemuTestDriverFree() doesn't see (unlink) the real
+     * dirs. */
+    VIR_FREE(driver->config->stateDir);
+    VIR_FREE(driver->config->configDir);
+
     /* Overwrite some default paths so it's consistent for tests. */
     VIR_FREE(driver->config->libDir);
     VIR_FREE(driver->config->channelTargetDir);
     if (VIR_STRDUP(driver->config->libDir, "/tmp/lib") < 0 ||
         VIR_STRDUP(driver->config->channelTargetDir, "/tmp/channel") < 0)
         goto error;
+
+    if (!mkdtemp(statedir)) {
+        virFilePrintf(stderr, "Cannot create fake stateDir");
+        goto error;
+    }
+
+    if (VIR_STRDUP(driver->config->stateDir, statedir) < 0) {
+        rmdir(statedir);
+        goto error;
+    }
+
+    if (!mkdtemp(configdir)) {
+        virFilePrintf(stderr, "Cannot create fake configDir");
+        goto error;
+    }
+
+    if (VIR_STRDUP(driver->config->configDir, configdir) < 0) {
+        rmdir(configdir);
+        goto error;
+    }
 
     driver->caps = testQemuCapsInit();
     if (!driver->caps)
