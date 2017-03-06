@@ -83,6 +83,7 @@
         <ref name="capscsi"/>
         <ref name="capstorage"/>
         <ref name="capdrm"/>
+        <ref name="capmdev"/>
       </choice>
     </element>
   </define>
@@ -577,6 +578,22 @@
         <value>control</value>
         <value>render</value>
       </choice>
+    </element>
+  </define>
+
+  <define name='capmdev'>
+    <attribute name='type'>
+      <value>mdev</value>
+    </attribute>
+    <element name='type'>
+      <attribute name='id'>
+        <data type='string'/>
+      </attribute>
+    </element>
+    <element name='iommuGroup'>
+      <attribute name='number'>
+        <ref name='unsignedInt'/>
+      </attribute>
     </element>
   </define>
 

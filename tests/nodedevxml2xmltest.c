@@ -102,6 +102,7 @@ mymain(void)
     DO_TEST("pci_0000_02_10_7_sriov_pf_vfs_all_header_type");
     DO_TEST("drm_renderD129");
     DO_TEST("pci_0000_02_10_7_mdev_types");
+    DO_TEST("mdev_3627463d_b7f0_4fea_b468_f1da537d301b");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -1069,6 +1069,42 @@ udevProcessSCSIGeneric(struct udev_device *dev,
 }
 
 static int
+udevProcessMediatedDevice(struct udev_device *dev,
+                          virNodeDeviceDefPtr def)
+{
+    int ret = -1;
+    const char *uuidstr = NULL;
+    int iommugrp = -1;
+    char *linkpath = NULL;
+    char *realpath = NULL;
+    virNodeDevCapMdevPtr data = &def->caps->data.mdev;
+
+    if (virAsprintf(&linkpath, "%s/mdev_type", udev_device_get_syspath(dev)) < 0)
+        goto cleanup;
+
+    if (virFileResolveLink(linkpath, &realpath) < 0)
+        goto cleanup;
+
+    if (VIR_STRDUP(data->type, last_component(realpath)) < 0)
+        goto cleanup;
+
+    uuidstr = udev_device_get_sysname(dev);
+    if ((iommugrp = virMediatedDeviceGetIOMMUGroupNum(uuidstr)) < 0)
+        goto cleanup;
+
+    if (udevGenerateDeviceName(dev, def, NULL) != 0)
+        goto cleanup;
+
+    data->iommuGroupNumber = iommugrp;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(linkpath);
+    VIR_FREE(realpath);
+    return ret;
+}
+
+static int
 udevGetDeviceNodes(struct udev_device *device,
                    virNodeDeviceDefPtr def)
 {
@@ -1136,12 +1172,16 @@ udevGetDeviceType(struct udev_device *device,
         if (udevHasDeviceProperty(device, "INTERFACE"))
             *type = VIR_NODE_DEV_CAP_NET;
 
-        /* SCSI generic device doesn't set DEVTYPE property */
+        /* Neither SCSI generic devices nor mediated devices set DEVTYPE
+         * property, therefore we need to rely on the SUBSYSTEM property */
         if (udevGetStringProperty(device, "SUBSYSTEM", &subsystem) < 0)
             return -1;
 
         if (STREQ_NULLABLE(subsystem, "scsi_generic"))
             *type = VIR_NODE_DEV_CAP_SCSI_GENERIC;
+        else if (STREQ_NULLABLE(subsystem, "mdev"))
+            *type = VIR_NODE_DEV_CAP_MDEV;
+
         VIR_FREE(subsystem);
     }
 
@@ -1181,6 +1221,7 @@ static int udevGetDeviceDetails(struct udev_device *device,
     case VIR_NODE_DEV_CAP_DRM:
         return udevProcessDRMDevice(device, def);
     case VIR_NODE_DEV_CAP_MDEV:
+        return udevProcessMediatedDevice(device, def);
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
     case VIR_NODE_DEV_CAP_SYSTEM:
     case VIR_NODE_DEV_CAP_FC_HOST:

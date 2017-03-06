@@ -143,6 +143,13 @@ struct _virNodeDevCapMdevType {
     unsigned int available_instances;
 };
 
+typedef struct _virNodeDevCapMdev virNodeDevCapMdev;
+typedef virNodeDevCapMdev *virNodeDevCapMdevPtr;
+struct _virNodeDevCapMdev {
+    char *type;
+    unsigned int iommuGroupNumber;
+};
+
 typedef struct _virNodeDevCapPCIDev virNodeDevCapPCIDev;
 typedef virNodeDevCapPCIDev *virNodeDevCapPCIDevPtr;
 struct _virNodeDevCapPCIDev {
@@ -276,6 +283,7 @@ struct _virNodeDevCapData {
         virNodeDevCapStorage storage;
         virNodeDevCapSCSIGeneric sg;
         virNodeDevCapDRM drm;
+        virNodeDevCapMdev mdev;
     };
 };
 
