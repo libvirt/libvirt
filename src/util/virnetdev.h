@@ -216,15 +216,6 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
                       bool setVLan)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
-int virNetDevReplaceNetConfig(const char *linkdev, int vf,
-                              const virMacAddr *macaddress,
-                              virNetDevVlanPtr vlan,
-                              const char *stateDir)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(5);
-
-int virNetDevRestoreNetConfig(const char *linkdev, int vf, const char *stateDir)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
-
 int virNetDevGetVirtualFunctionInfo(const char *vfname, char **pfname,
                                     int *vf)
     ATTRIBUTE_NONNULL(1);
