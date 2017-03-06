@@ -82,6 +82,8 @@ static int update_caps(virNodeDeviceObjPtr dev)
         case VIR_NODE_DEV_CAP_FC_HOST:
         case VIR_NODE_DEV_CAP_VPORTS:
         case VIR_NODE_DEV_CAP_SCSI_GENERIC:
+        case VIR_NODE_DEV_CAP_MDEV_TYPES:
+        case VIR_NODE_DEV_CAP_MDEV:
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }

@@ -454,6 +454,12 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd ATTRIBUTE_UNUSED)
         case VIR_NODE_DEV_CAP_DRM:
             flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM;
             break;
+        case VIR_NODE_DEV_CAP_MDEV_TYPES:
+            flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV_TYPES;
+            break;
+        case VIR_NODE_DEV_CAP_MDEV:
+            flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV;
+            break;
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }

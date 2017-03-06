@@ -43,6 +43,7 @@
 #include "virpci.h"
 #include "virstring.h"
 #include "virnetdev.h"
+#include "virmdev.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -1060,6 +1061,8 @@ static int udevGetDeviceDetails(struct udev_device *device,
         return udevProcessSCSIGeneric(device, def);
     case VIR_NODE_DEV_CAP_DRM:
         return udevProcessDRMDevice(device, def);
+    case VIR_NODE_DEV_CAP_MDEV:
+    case VIR_NODE_DEV_CAP_MDEV_TYPES:
     case VIR_NODE_DEV_CAP_SYSTEM:
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:

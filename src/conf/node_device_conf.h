@@ -64,6 +64,8 @@ typedef enum {
     VIR_NODE_DEV_CAP_VPORTS,		/* HBA which is capable of vports */
     VIR_NODE_DEV_CAP_SCSI_GENERIC,      /* SCSI generic device */
     VIR_NODE_DEV_CAP_DRM,               /* DRM device */
+    VIR_NODE_DEV_CAP_MDEV_TYPES,        /* Device capable of mediated devices */
+    VIR_NODE_DEV_CAP_MDEV,              /* Mediated device */
 
     VIR_NODE_DEV_CAP_LAST
 } virNodeDevCapType;
@@ -351,7 +353,9 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps);
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST       | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS        | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC  | \
-                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM)
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM           | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV_TYPES    | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV)
 
 char *
 virNodeDeviceGetParentName(virConnectPtr conn,
