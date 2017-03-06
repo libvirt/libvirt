@@ -450,10 +450,13 @@ virHostdevNetConfigReplace(virDomainHostdevDefPtr hostdev,
             goto cleanup;
         }
     } else {
-        /* Set only mac and vlan */
-        if (virNetDevReplaceNetConfig(linkdev, vf,
-                                      &hostdev->parent.data.net->mac,
-                                      vlan, stateDir) < 0) {
+        /* Save/Set only mac and vlan */
+
+        if (virNetDevSaveNetConfig(linkdev, vf, stateDir, true) < 0)
+            goto cleanup;
+
+        if (virNetDevSetNetConfig(linkdev, vf, &hostdev->parent.data.net->mac,
+                                  vlan, NULL, true) < 0) {
             goto cleanup;
         }
     }
@@ -506,9 +509,23 @@ virHostdevNetConfigRestore(virDomainHostdevDefPtr hostdev,
                                                  NULL,
                                                  port_profile_associate);
     } else {
-        ret = virNetDevRestoreNetConfig(linkdev, vf, stateDir);
-        if (ret < 0 && oldStateDir != NULL)
-            ret = virNetDevRestoreNetConfig(linkdev, vf, oldStateDir);
+        virMacAddrPtr MAC = NULL;
+        virMacAddrPtr adminMAC = NULL;
+        virNetDevVlanPtr vlan = NULL;
+
+        ret = virNetDevReadNetConfig(linkdev, vf, stateDir, &adminMAC, &vlan, &MAC);
+        if (ret < 0 && oldStateDir)
+            ret = virNetDevReadNetConfig(linkdev, vf, oldStateDir,
+                                         &adminMAC, &vlan, &MAC);
+
+        if (ret == 0) {
+            ignore_value(virNetDevSetNetConfig(linkdev, vf,
+                                               adminMAC, vlan, MAC, true));
+        }
+
+        VIR_FREE(MAC);
+        VIR_FREE(adminMAC);
+        virNetDevVlanFree(vlan);
     }
 
     VIR_FREE(linkdev);
