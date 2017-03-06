@@ -111,7 +111,6 @@ struct cpuArchDriver cpuDriverArm = {
     .compare = virCPUarmCompare,
     .decode = NULL,
     .encode = NULL,
-    .nodeData = NULL,
     .baseline = armBaseline,
     .update = virCPUarmUpdate,
 };

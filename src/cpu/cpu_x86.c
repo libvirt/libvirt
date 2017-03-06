@@ -2437,25 +2437,24 @@ cpuidSet(uint32_t base, virCPUDataPtr data)
 }
 
 
-static virCPUDataPtr
-x86NodeData(virArch arch)
+static int
+virCPUx86GetHost(virCPUDefPtr cpu)
 {
     virCPUDataPtr cpuData = NULL;
+    int ret = -1;
 
-    if (!(cpuData = virCPUDataNew(arch)))
-        goto error;
+    if (!(cpuData = virCPUDataNew(archs[0])))
+        goto cleanup;
 
-    if (cpuidSet(CPUX86_BASIC, cpuData) < 0)
-        goto error;
+    if (cpuidSet(CPUX86_BASIC, cpuData) < 0 ||
+        cpuidSet(CPUX86_EXTENDED, cpuData) < 0)
+        goto cleanup;
 
-    if (cpuidSet(CPUX86_EXTENDED, cpuData) < 0)
-        goto error;
+    ret = x86DecodeCPUData(cpu, cpuData, NULL, 0, NULL, 0);
 
-    return cpuData;
-
- error:
+ cleanup:
     virCPUx86DataFree(cpuData);
-    return NULL;
+    return ret;
 }
 #endif
 
@@ -2849,9 +2848,7 @@ struct cpuArchDriver cpuDriverX86 = {
     .encode     = x86Encode,
     .dataFree   = virCPUx86DataFree,
 #if defined(__i386__) || defined(__x86_64__)
-    .nodeData   = x86NodeData,
-#else
-    .nodeData   = NULL,
+    .getHost    = virCPUx86GetHost,
 #endif
     .baseline   = x86Baseline,
     .update     = virCPUx86Update,

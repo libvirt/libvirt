@@ -62,7 +62,6 @@ vmwareCapsInit(void)
     virCapsPtr caps = NULL;
     virCapsGuestPtr guest = NULL;
     virCPUDefPtr cpu = NULL;
-    virCPUDataPtr data = NULL;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
@@ -83,16 +82,8 @@ vmwareCapsInit(void)
                                       NULL, NULL, 0, NULL) == NULL)
         goto error;
 
-    if (VIR_ALLOC(cpu) < 0)
+    if (!(cpu = virCPUGetHost(caps->host.arch, NULL)))
         goto error;
-
-    cpu->arch = caps->host.arch;
-    cpu->type = VIR_CPU_TYPE_HOST;
-
-    if (!(data = cpuNodeData(cpu->arch))
-        || cpuDecode(cpu, data, NULL, 0, NULL) < 0) {
-        goto error;
-    }
 
     /* x86_64 guests are supported if
      *  - Host arch is x86_64
@@ -100,9 +91,9 @@ vmwareCapsInit(void)
      *  - Host CPU is x86_64 with virtualization extensions
      */
     if (caps->host.arch == VIR_ARCH_X86_64 ||
-        (virCPUDataCheckFeature(data, "lm") &&
-         (virCPUDataCheckFeature(data, "vmx") ||
-          virCPUDataCheckFeature(data, "svm")))) {
+        (virCPUCheckFeature(cpu->arch, cpu, "lm") &&
+         (virCPUCheckFeature(cpu->arch, cpu, "vmx") ||
+          virCPUCheckFeature(cpu->arch, cpu, "svm")))) {
 
         if ((guest = virCapabilitiesAddGuest(caps,
                                              VIR_DOMAIN_OSTYPE_HVM,
@@ -118,8 +109,6 @@ vmwareCapsInit(void)
 
  cleanup:
     virCPUDefFree(cpu);
-    virCPUDataFree(data);
-
     return caps;
 
  error:

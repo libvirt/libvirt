@@ -109,7 +109,6 @@ struct cpuArchDriver cpuDriverS390 = {
     .compare    = virCPUs390Compare,
     .decode     = NULL,
     .encode     = NULL,
-    .nodeData   = NULL,
     .baseline   = NULL,
     .update     = virCPUs390Update,
 };

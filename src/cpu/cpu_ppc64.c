@@ -714,19 +714,21 @@ virCPUppc64DataFree(virCPUDataPtr data)
     VIR_FREE(data);
 }
 
-static virCPUDataPtr
-ppc64DriverNodeData(virArch arch)
+
+static int
+virCPUppc64GetHost(virCPUDefPtr cpu)
 {
-    virCPUDataPtr nodeData;
+    virCPUDataPtr cpuData = NULL;
     virCPUppc64Data *data;
+    int ret = -1;
 
-    if (VIR_ALLOC(nodeData) < 0)
-        goto error;
+    if (!(cpuData = virCPUDataNew(archs[0])))
+        goto cleanup;
 
-    data = &nodeData->data.ppc64;
+    data = &cpuData->data.ppc64;
 
     if (VIR_ALLOC_N(data->pvr, 1) < 0)
-        goto error;
+        goto cleanup;
 
     data->len = 1;
 
@@ -736,13 +738,11 @@ ppc64DriverNodeData(virArch arch)
 #endif
     data->pvr[0].mask = 0xfffffffful;
 
-    nodeData->arch = arch;
+    ret = ppc64DriverDecode(cpu, cpuData, NULL, 0, NULL, 0);
 
-    return nodeData;
-
- error:
-    virCPUppc64DataFree(nodeData);
-    return NULL;
+ cleanup:
+    virCPUppc64DataFree(cpuData);
+    return ret;
 }
 
 
@@ -902,7 +902,7 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .decode     = ppc64DriverDecode,
     .encode     = NULL,
     .dataFree   = virCPUppc64DataFree,
-    .nodeData   = ppc64DriverNodeData,
+    .getHost    = virCPUppc64GetHost,
     .baseline   = ppc64DriverBaseline,
     .update     = virCPUppc64Update,
     .getModels  = virCPUppc64DriverGetModels,

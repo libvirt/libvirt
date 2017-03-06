@@ -99,8 +99,6 @@ static virCapsPtr
 vzBuildCapabilities(void)
 {
     virCapsPtr caps = NULL;
-    virCPUDefPtr cpu = NULL;
-    virCPUDataPtr data = NULL;
     virNodeInfo nodeinfo;
     virDomainOSType ostypes[] = {
         VIR_DOMAIN_OSTYPE_HVM,
@@ -131,32 +129,17 @@ vzBuildCapabilities(void)
     if (nodeGetInfo(&nodeinfo))
         goto error;
 
-    if (VIR_ALLOC(cpu) < 0)
+    if (!(caps->host.cpu = virCPUGetHost(caps->host.arch, &nodeinfo)))
         goto error;
-
-    cpu->arch = caps->host.arch;
-    cpu->type = VIR_CPU_TYPE_HOST;
-    cpu->sockets = nodeinfo.sockets;
-    cpu->cores = nodeinfo.cores;
-    cpu->threads = nodeinfo.threads;
-
-    caps->host.cpu = cpu;
 
     if (virCapabilitiesAddHostMigrateTransport(caps, "vzmigr") < 0)
         goto error;
 
-    if (!(data = cpuNodeData(cpu->arch))
-        || cpuDecode(cpu, data, NULL, 0, NULL) < 0) {
-        goto cleanup;
-    }
-
- cleanup:
-    virCPUDataFree(data);
     return caps;
 
  error:
     virObjectUnref(caps);
-    goto cleanup;
+    return NULL;
 }
 
 static void vzDriverDispose(void * obj)

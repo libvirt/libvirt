@@ -1065,39 +1065,15 @@ static int
 virQEMUCapsInitCPU(virCapsPtr caps,
                    virArch arch)
 {
-    virCPUDefPtr cpu = NULL;
-    virCPUDataPtr data = NULL;
     virNodeInfo nodeinfo;
-    int ret = -1;
-
-    if (VIR_ALLOC(cpu) < 0)
-        goto error;
-
-    cpu->arch = arch;
 
     if (nodeGetInfo(&nodeinfo))
-        goto error;
+        return -1;
 
-    cpu->type = VIR_CPU_TYPE_HOST;
-    cpu->sockets = nodeinfo.sockets;
-    cpu->cores = nodeinfo.cores;
-    cpu->threads = nodeinfo.threads;
-    caps->host.cpu = cpu;
+    if (!(caps->host.cpu = virCPUGetHost(arch, &nodeinfo)))
+        return -1;
 
-    if (!(data = cpuNodeData(arch))
-        || cpuDecode(cpu, data, NULL, 0, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    virCPUDataFree(data);
-
-    return ret;
-
- error:
-    virCPUDefFree(cpu);
-    goto cleanup;
+    return 0;
 }
 
 

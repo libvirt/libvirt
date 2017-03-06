@@ -70,8 +70,8 @@ typedef int
 typedef void
 (*cpuArchDataFree)  (virCPUDataPtr data);
 
-typedef virCPUDataPtr
-(*cpuArchNodeData)  (virArch arch);
+typedef int
+(*virCPUArchGetHost)(virCPUDefPtr cpu);
 
 typedef virCPUDefPtr
 (*cpuArchBaseline)  (virCPUDefPtr *cpus,
@@ -117,7 +117,7 @@ struct cpuArchDriver {
     cpuArchDecode       decode;
     cpuArchEncode       encode;
     cpuArchDataFree     dataFree;
-    cpuArchNodeData     nodeData;
+    virCPUArchGetHost   getHost;
     cpuArchBaseline     baseline;
     virCPUArchUpdate    update;
     virCPUArchCheckFeature checkFeature;
@@ -168,8 +168,9 @@ virCPUDataNew(virArch arch);
 void
 virCPUDataFree(virCPUDataPtr data);
 
-virCPUDataPtr
-cpuNodeData (virArch arch);
+virCPUDefPtr
+virCPUGetHost(virArch arch,
+              virNodeInfoPtr nodeInfo);
 
 char *
 cpuBaselineXML(const char **xmlCPUs,

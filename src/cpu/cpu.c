@@ -357,30 +357,66 @@ virCPUDataFree(virCPUDataPtr data)
 
 
 /**
- * cpuNodeData:
+ * virCPUGetHost:
  *
  * @arch: CPU architecture
+ * @nodeInfo: simplified CPU topology (optional)
  *
- * Returns CPU data for host CPU or NULL on error.
+ * Create CPU definition describing the host's CPU. If @nodeInfo is not NULL,
+ * the CPU definition will have topology (sockets, cores, threads) filled in
+ * according to the content of @nodeInfo. The function fails only if @nodeInfo
+ * was not passed in and the assigned CPU driver was not able to detect the
+ * host CPU model. In other words, a CPU definition containing just the
+ * topology is a successful result even if detecting the host CPU model fails.
+ *
+ * Returns host CPU definition or NULL on error.
  */
-virCPUDataPtr
-cpuNodeData(virArch arch)
+virCPUDefPtr
+virCPUGetHost(virArch arch,
+              virNodeInfoPtr nodeInfo)
 {
     struct cpuArchDriver *driver;
+    virCPUDefPtr cpu = NULL;
 
-    VIR_DEBUG("arch=%s", virArchToString(arch));
+    VIR_DEBUG("arch=%s, nodeInfo=%p",
+              virArchToString(arch), nodeInfo);
 
-    if ((driver = cpuGetSubDriver(arch)) == NULL)
+    if (!(driver = cpuGetSubDriver(arch)))
         return NULL;
 
-    if (driver->nodeData == NULL) {
-        virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot get node CPU data for %s architecture"),
-                       virArchToString(arch));
+    if (VIR_ALLOC(cpu) < 0)
         return NULL;
+
+    cpu->arch = arch;
+    cpu->type = VIR_CPU_TYPE_HOST;
+
+    if (nodeInfo) {
+        cpu->sockets = nodeInfo->sockets;
+        cpu->cores = nodeInfo->cores;
+        cpu->threads = nodeInfo->threads;
     }
 
-    return driver->nodeData(arch);
+    /* Try to get the host CPU model, but don't really fail if nodeInfo is
+     * filled in.
+     */
+    if (driver->getHost) {
+        if (driver->getHost(cpu) < 0 && !nodeInfo)
+            goto error;
+    } else if (nodeInfo) {
+        VIR_DEBUG("cannot detect host CPU model for %s architecture",
+                  virArchToString(arch));
+    } else {
+        virReportError(VIR_ERR_NO_SUPPORT,
+                       _("cannot detect host CPU model for %s architecture"),
+                       virArchToString(arch));
+        goto error;
+    }
+
+    return cpu;
+
+ error:
+    virCPUDefFree(cpu);
+    return NULL;
 }
 
 
