@@ -48,7 +48,6 @@
 #include "openvz_util.h"
 #include "virbuffer.h"
 #include "openvz_conf.h"
-#include "nodeinfo.h"
 #include "virhostcpu.h"
 #include "virhostmem.h"
 #include "viralloc.h"
@@ -2162,7 +2161,7 @@ static int
 openvzNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
                   virNodeInfoPtr nodeinfo)
 {
-    return nodeGetInfo(nodeinfo);
+    return virCapabilitiesGetNodeInfo(nodeinfo);
 }
 
 

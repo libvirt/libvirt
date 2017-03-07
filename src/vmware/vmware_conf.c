@@ -27,7 +27,6 @@
 #include "cpu/cpu.h"
 #include "dirname.h"
 #include "viralloc.h"
-#include "nodeinfo.h"
 #include "virfile.h"
 #include "viruuid.h"
 #include "virerror.h"
@@ -66,7 +65,7 @@ vmwareCapsInit(void)
                                    false, false)) == NULL)
         goto error;
 
-    if (nodeCapsInitNUMA(caps) < 0)
+    if (virCapabilitiesInitNUMA(caps) < 0)
         goto error;
 
     /* i686 guests are always supported */

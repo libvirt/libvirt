@@ -23,18 +23,35 @@
 
 #include <config.h>
 
+#include <stdio.h>
+#include <string.h>
 #include <strings.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <unistd.h>
 
 #include "capabilities.h"
-#include "virbuffer.h"
-#include "viralloc.h"
-#include "viruuid.h"
+#include "count-one-bits.h"
 #include "cpu_conf.h"
-#include "virerror.h"
-#include "virstring.h"
 #include "domain_conf.h"
+#include "physmem.h"
+#include "viralloc.h"
+#include "virarch.h"
+#include "virbuffer.h"
+#include "virerror.h"
+#include "virfile.h"
+#include "virhostcpu.h"
+#include "virhostmem.h"
+#include "virlog.h"
+#include "virnuma.h"
+#include "virstring.h"
+#include "virsysfs.h"
+#include "virtypedparam.h"
+#include "viruuid.h"
 
 #define VIR_FROM_THIS VIR_FROM_CAPABILITIES
+
+VIR_LOG_INIT("conf.capabilities")
 
 VIR_ENUM_DECL(virCapsHostPMTarget)
 VIR_ENUM_IMPL(virCapsHostPMTarget, VIR_NODE_SUSPEND_TARGET_LAST,
@@ -1126,5 +1143,273 @@ virCapabilitiesGetCpusForNodemask(virCapsPtr caps,
         }
     }
 
+    return ret;
+}
+
+
+int
+virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo)
+{
+    virArch hostarch = virArchFromHost();
+    unsigned long long memorybytes;
+
+    memset(nodeinfo, 0, sizeof(*nodeinfo));
+
+    if (virStrcpyStatic(nodeinfo->model, virArchToString(hostarch)) == NULL)
+        return -1;
+
+    if (virHostMemGetInfo(&memorybytes, NULL) < 0)
+        return -1;
+    nodeinfo->memory = memorybytes / 1024;
+
+    if (virHostCPUGetInfo(hostarch,
+                          &nodeinfo->cpus, &nodeinfo->mhz,
+                          &nodeinfo->nodes, &nodeinfo->sockets,
+                          &nodeinfo->cores, &nodeinfo->threads) < 0)
+        return -1;
+
+    return 0;
+}
+
+/* returns 1 on success, 0 if the detection failed and -1 on hard error */
+static int
+virCapabilitiesFillCPUInfo(int cpu_id ATTRIBUTE_UNUSED,
+                           virCapsHostNUMACellCPUPtr cpu ATTRIBUTE_UNUSED)
+{
+#ifdef __linux__
+    cpu->id = cpu_id;
+
+    if (virHostCPUGetSocket(cpu_id, &cpu->socket_id) < 0 ||
+        virHostCPUGetCore(cpu_id, &cpu->core_id) < 0)
+        return -1;
+
+    if (!(cpu->siblings = virHostCPUGetSiblingsList(cpu_id)))
+        return -1;
+
+    return 0;
+#else
+    virReportError(VIR_ERR_NO_SUPPORT, "%s",
+                   _("node cpu info not implemented on this platform"));
+    return -1;
+#endif
+}
+
+static int
+virCapabilitiesGetNUMASiblingInfo(int node,
+                                  virCapsHostNUMACellSiblingInfoPtr *siblings,
+                                  int *nsiblings)
+{
+    virCapsHostNUMACellSiblingInfoPtr tmp = NULL;
+    int tmp_size = 0;
+    int ret = -1;
+    int *distances = NULL;
+    int ndistances = 0;
+    size_t i;
+
+    if (virNumaGetDistances(node, &distances, &ndistances) < 0)
+        goto cleanup;
+
+    if (!distances) {
+        *siblings = NULL;
+        *nsiblings = 0;
+        return 0;
+    }
+
+    if (VIR_ALLOC_N(tmp, ndistances) < 0)
+        goto cleanup;
+
+    for (i = 0; i < ndistances; i++) {
+        if (!distances[i])
+            continue;
+
+        tmp[tmp_size].node = i;
+        tmp[tmp_size].distance = distances[i];
+        tmp_size++;
+    }
+
+    if (VIR_REALLOC_N(tmp, tmp_size) < 0)
+        goto cleanup;
+
+    *siblings = tmp;
+    *nsiblings = tmp_size;
+    tmp = NULL;
+    tmp_size = 0;
+    ret = 0;
+ cleanup:
+    VIR_FREE(distances);
+    VIR_FREE(tmp);
+    return ret;
+}
+
+static int
+virCapabilitiesGetNUMAPagesInfo(int node,
+                                virCapsHostNUMACellPageInfoPtr *pageinfo,
+                                int *npageinfo)
+{
+    int ret = -1;
+    unsigned int *pages_size = NULL, *pages_avail = NULL;
+    size_t npages, i;
+
+    if (virNumaGetPages(node, &pages_size, &pages_avail, NULL, &npages) < 0)
+        goto cleanup;
+
+    if (VIR_ALLOC_N(*pageinfo, npages) < 0)
+        goto cleanup;
+    *npageinfo = npages;
+
+    for (i = 0; i < npages; i++) {
+        (*pageinfo)[i].size = pages_size[i];
+        (*pageinfo)[i].avail = pages_avail[i];
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(pages_avail);
+    VIR_FREE(pages_size);
+    return ret;
+}
+
+
+static int
+virCapabilitiesInitNUMAFake(virCapsPtr caps)
+{
+    virNodeInfo nodeinfo;
+    virCapsHostNUMACellCPUPtr cpus;
+    int ncpus;
+    int s, c, t;
+    int id, cid;
+    int onlinecpus ATTRIBUTE_UNUSED;
+    bool tmp;
+
+    if (virCapabilitiesGetNodeInfo(&nodeinfo) < 0)
+        return -1;
+
+    ncpus = VIR_NODEINFO_MAXCPUS(nodeinfo);
+    onlinecpus = nodeinfo.cpus;
+
+    if (VIR_ALLOC_N(cpus, ncpus) < 0)
+        return -1;
+
+    id = cid = 0;
+    for (s = 0; s < nodeinfo.sockets; s++) {
+        for (c = 0; c < nodeinfo.cores; c++) {
+            for (t = 0; t < nodeinfo.threads; t++) {
+                if (virHostCPUGetOnline(id, &tmp) < 0)
+                    goto error;
+                if (tmp) {
+                    cpus[cid].id = id;
+                    cpus[cid].socket_id = s;
+                    cpus[cid].core_id = c;
+                    if (!(cpus[cid].siblings = virBitmapNew(ncpus)))
+                        goto error;
+                    ignore_value(virBitmapSetBit(cpus[cid].siblings, id));
+                    cid++;
+                }
+
+                id++;
+            }
+        }
+    }
+
+    if (virCapabilitiesAddHostNUMACell(caps, 0,
+                                       nodeinfo.memory,
+#ifdef __linux__
+                                       onlinecpus, cpus,
+#else
+                                       ncpus, cpus,
+#endif
+                                       0, NULL,
+                                       0, NULL) < 0)
+        goto error;
+
+    return 0;
+
+ error:
+    for (; id >= 0; id--)
+        virBitmapFree(cpus[id].siblings);
+    VIR_FREE(cpus);
+    return -1;
+}
+
+int
+virCapabilitiesInitNUMA(virCapsPtr caps)
+{
+    int n;
+    unsigned long long memory;
+    virCapsHostNUMACellCPUPtr cpus = NULL;
+    virBitmapPtr cpumap = NULL;
+    virCapsHostNUMACellSiblingInfoPtr siblings = NULL;
+    int nsiblings = 0;
+    virCapsHostNUMACellPageInfoPtr pageinfo = NULL;
+    int npageinfo;
+    int ret = -1;
+    int ncpus = 0;
+    int cpu;
+    bool topology_failed = false;
+    int max_node;
+
+    if (!virNumaIsAvailable())
+        return virCapabilitiesInitNUMAFake(caps);
+
+    if ((max_node = virNumaGetMaxNode()) < 0)
+        goto cleanup;
+
+    for (n = 0; n <= max_node; n++) {
+        size_t i;
+
+        if ((ncpus = virNumaGetNodeCPUs(n, &cpumap)) < 0) {
+            if (ncpus == -2)
+                continue;
+
+            goto cleanup;
+        }
+
+        if (VIR_ALLOC_N(cpus, ncpus) < 0)
+            goto cleanup;
+        cpu = 0;
+
+        for (i = 0; i < virBitmapSize(cpumap); i++) {
+            if (virBitmapIsBitSet(cpumap, i)) {
+                if (virCapabilitiesFillCPUInfo(i, cpus + cpu++) < 0) {
+                    topology_failed = true;
+                    virResetLastError();
+                }
+            }
+        }
+
+        if (virCapabilitiesGetNUMASiblingInfo(n, &siblings, &nsiblings) < 0)
+            goto cleanup;
+
+        if (virCapabilitiesGetNUMAPagesInfo(n, &pageinfo, &npageinfo) < 0)
+            goto cleanup;
+
+        /* Detect the amount of memory in the numa cell in KiB */
+        virNumaGetNodeMemory(n, &memory, NULL);
+        memory >>= 10;
+
+        if (virCapabilitiesAddHostNUMACell(caps, n, memory,
+                                           ncpus, cpus,
+                                           nsiblings, siblings,
+                                           npageinfo, pageinfo) < 0)
+            goto cleanup;
+
+        cpus = NULL;
+        siblings = NULL;
+        pageinfo = NULL;
+        virBitmapFree(cpumap);
+        cpumap = NULL;
+    }
+
+    ret = 0;
+
+ cleanup:
+    if ((topology_failed || ret < 0) && cpus)
+        virCapabilitiesClearHostNUMACellCPUTopology(cpus, ncpus);
+
+    virBitmapFree(cpumap);
+    VIR_FREE(cpus);
+    VIR_FREE(siblings);
+    VIR_FREE(pageinfo);
     return ret;
 }

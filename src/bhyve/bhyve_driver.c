@@ -50,7 +50,6 @@
 #include "virstring.h"
 #include "cpu/cpu.h"
 #include "viraccessapicheck.h"
-#include "nodeinfo.h"
 #include "virhostcpu.h"
 #include "virhostmem.h"
 #include "conf/domain_capabilities.h"
@@ -1207,12 +1206,12 @@ bhyveNodeGetMemoryStats(virConnectPtr conn,
 
 static int
 bhyveNodeGetInfo(virConnectPtr conn,
-                      virNodeInfoPtr nodeinfo)
+                 virNodeInfoPtr nodeinfo)
 {
     if (virNodeGetInfoEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetInfo(nodeinfo);
+    return virCapabilitiesGetNodeInfo(nodeinfo);
 }
 
 static int

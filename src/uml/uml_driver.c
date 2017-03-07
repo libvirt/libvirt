@@ -45,7 +45,6 @@
 #include "uml_driver.h"
 #include "uml_conf.h"
 #include "virbuffer.h"
-#include "nodeinfo.h"
 #include "virhostcpu.h"
 #include "virhostmem.h"
 #include "capabilities.h"
@@ -2770,7 +2769,7 @@ umlNodeGetInfo(virConnectPtr conn,
     if (virNodeGetInfoEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetInfo(nodeinfo);
+    return virCapabilitiesGetNodeInfo(nodeinfo);
 }
 
 

@@ -31,7 +31,6 @@
 #include "virfile.h"
 #include "virpidfile.h"
 #include "virprocess.h"
-#include "nodeinfo.h"
 #include "cpu/cpu.h"
 #include "cpu/cpu_x86.h"
 #include "domain_conf.h"
@@ -1124,7 +1123,7 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
      * unexpected failures. We don't want to break the QEMU
      * driver in this scenario, so log errors & carry on
      */
-    if (nodeCapsInitNUMA(caps) < 0) {
+    if (virCapabilitiesInitNUMA(caps) < 0) {
         virCapabilitiesFreeNUMAInfo(caps);
         VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }

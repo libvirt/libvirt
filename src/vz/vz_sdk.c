@@ -26,7 +26,6 @@
 #include "virerror.h"
 #include "viralloc.h"
 #include "virstring.h"
-#include "nodeinfo.h"
 #include "virlog.h"
 #include "datatypes.h"
 #include "domain_conf.h"

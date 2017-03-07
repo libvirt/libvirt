@@ -53,7 +53,6 @@
 #include "viruuid.h"
 #include "domain_conf.h"
 #include "storage_conf.h"
-#include "nodeinfo.h"
 #include "virfile.h"
 #include "interface_conf.h"
 #include "phyp_driver.h"
@@ -335,7 +334,7 @@ phypCapsInit(void)
      * unexpected failures. We don't want to break the QEMU
      * driver in this scenario, so log errors & carry on
      */
-    if (nodeCapsInitNUMA(caps) < 0) {
+    if (virCapabilitiesInitNUMA(caps) < 0) {
         virCapabilitiesFreeNUMAInfo(caps);
         VIR_WARN
             ("Failed to query host NUMA topology, disabling NUMA capabilities");

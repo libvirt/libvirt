@@ -204,7 +204,6 @@ util/virkeymaps.h: $(srcdir)/util/keymaps.csv	\
 	  <$(srcdir)/util/keymaps.csv >util/virkeymaps.h
 
 # Internal generic driver infrastructure
-NODE_INFO_SOURCES = nodeinfo.h nodeinfo.c
 DATATYPES_SOURCES = datatypes.h datatypes.c
 DRIVER_SOURCES =							\
 		driver.c driver.h					\
@@ -219,7 +218,6 @@ DRIVER_SOURCES =							\
 		driver-stream.h						\
 		internal.h						\
 		$(DATATYPES_SOURCES)					\
-		$(NODE_INFO_SOURCES)					\
 		libvirt.c libvirt_internal.h				\
 		libvirt-domain.c 					\
 		libvirt-domain-snapshot.c 				\
@@ -3168,7 +3166,6 @@ libexec_PROGRAMS += libvirt_lxc
 
 libvirt_lxc_SOURCES =						\
 		$(LXC_CONTROLLER_SOURCES)			\
-		$(NODE_INFO_SOURCES)				\
 		$(DATATYPES_SOURCES)
 libvirt_lxc_LDFLAGS = \
 		$(AM_LDFLAGS) \

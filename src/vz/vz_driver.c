@@ -47,7 +47,6 @@
 #include "configmake.h"
 #include "virfile.h"
 #include "virstoragefile.h"
-#include "nodeinfo.h"
 #include "virstring.h"
 #include "cpu/cpu.h"
 #include "virtypedparam.h"
@@ -116,7 +115,7 @@ vzBuildCapabilities(void)
                                    false, false)) == NULL)
         return NULL;
 
-    if (nodeCapsInitNUMA(caps) < 0)
+    if (virCapabilitiesInitNUMA(caps) < 0)
         goto error;
 
 
@@ -129,7 +128,7 @@ vzBuildCapabilities(void)
                                          emulators[k], virt_types[k]) < 0)
                     goto error;
 
-    if (nodeGetInfo(&nodeinfo))
+    if (virCapabilitiesGetNodeInfo(&nodeinfo))
         goto error;
 
     if (!(caps->host.cpu = virCPUGetHost(caps->host.arch, VIR_CPU_TYPE_HOST,
@@ -925,7 +924,7 @@ vzNodeGetInfo(virConnectPtr conn,
     if (virNodeGetInfoEnsureACL(conn) < 0)
         return -1;
 
-    return nodeGetInfo(nodeinfo);
+    return virCapabilitiesGetNodeInfo(nodeinfo);
 }
 
 static int vzConnectIsEncrypted(virConnectPtr conn ATTRIBUTE_UNUSED)

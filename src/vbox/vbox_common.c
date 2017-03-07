@@ -29,7 +29,6 @@
 #include "domain_event.h"
 #include "virlog.h"
 #include "viralloc.h"
-#include "nodeinfo.h"
 #include "virhostmem.h"
 #include "virstring.h"
 #include "virfile.h"
@@ -77,7 +76,7 @@ vboxCapsInit(void)
                                    false, false)) == NULL)
         goto no_memory;
 
-    if (nodeCapsInitNUMA(caps) < 0)
+    if (virCapabilitiesInitNUMA(caps) < 0)
         goto no_memory;
 
     if ((guest = virCapabilitiesAddGuest(caps,
@@ -7438,7 +7437,7 @@ static int
 vboxNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
                 virNodeInfoPtr nodeinfo)
 {
-    return nodeGetInfo(nodeinfo);
+    return virCapabilitiesGetNodeInfo(nodeinfo);
 }
 
 static int

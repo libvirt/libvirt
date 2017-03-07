@@ -297,4 +297,8 @@ virCapabilitiesFormatXML(virCapsPtr caps);
 virBitmapPtr virCapabilitiesGetCpusForNodemask(virCapsPtr caps,
                                                virBitmapPtr nodemask);
 
+int virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo);
+
+int virCapabilitiesInitNUMA(virCapsPtr caps);
+
 #endif /* __VIR_CAPABILITIES_H */

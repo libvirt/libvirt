@@ -64,7 +64,6 @@
 #include "viruri.h"
 #include "vircommand.h"
 #include "virnodesuspend.h"
-#include "nodeinfo.h"
 #include "virhostmem.h"
 #include "configmake.h"
 #include "virstring.h"

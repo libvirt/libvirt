@@ -26,13 +26,13 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "virxml.h"
-#include "nodeinfo.h"
 #include "cpu.h"
 #include "cpu_map.h"
 #include "cpu_x86.h"
 #include "cpu_ppc64.h"
 #include "cpu_s390.h"
 #include "cpu_arm.h"
+#include "capabilities.h"
 #include "virstring.h"
 
 
@@ -468,7 +468,7 @@ virCPUProbeHost(virArch arch)
 {
     virNodeInfo nodeinfo;
 
-    if (nodeGetInfo(&nodeinfo))
+    if (virCapabilitiesGetNodeInfo(&nodeinfo))
         return NULL;
 
     return virCPUGetHost(arch, VIR_CPU_TYPE_HOST, &nodeinfo, NULL, 0);

@@ -31,7 +31,6 @@
 #include "virlog.h"
 #include "virstring.h"
 #include "cpu/cpu.h"
-#include "nodeinfo.h"
 #include "domain_conf.h"
 #include "vircommand.h"
 #include "bhyve_capabilities.h"
