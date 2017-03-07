@@ -87,7 +87,7 @@
 #include "virhook.h"
 #include "virstoragefile.h"
 #include "virfile.h"
-#include "fdstream.h"
+#include "virfdstream.h"
 #include "configmake.h"
 #include "virthreadpool.h"
 #include "locking/lock_manager.h"

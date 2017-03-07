@@ -25,7 +25,7 @@
 
 #include "testutils.h"
 
-#include "fdstream.h"
+#include "virfdstream.h"
 #include "datatypes.h"
 #include "virerror.h"
 #include "viralloc.h"

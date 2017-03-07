@@ -46,7 +46,7 @@
 #include "storage_backend.h"
 #include "virlog.h"
 #include "virfile.h"
-#include "fdstream.h"
+#include "virfdstream.h"
 #include "configmake.h"
 #include "virstring.h"
 #include "viraccessapicheck.h"

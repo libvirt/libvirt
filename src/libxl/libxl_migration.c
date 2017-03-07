@@ -44,7 +44,7 @@
 #include "libxl_migration.h"
 #include "locking/domain_lock.h"
 #include "virtypedparam.h"
-#include "fdstream.h"
+#include "virfdstream.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 

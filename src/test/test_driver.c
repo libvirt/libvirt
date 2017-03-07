@@ -47,7 +47,7 @@
 #include "domain_event.h"
 #include "network_event.h"
 #include "snapshot_conf.h"
-#include "fdstream.h"
+#include "virfdstream.h"
 #include "storage_conf.h"
 #include "virstorageobj.h"
 #include "storage_event.h"

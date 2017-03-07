@@ -67,7 +67,7 @@
 #include "stat-time.h"
 #include "virstring.h"
 #include "virxml.h"
-#include "fdstream.h"
+#include "virfdstream.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

@@ -29,7 +29,7 @@
 
 #include "virchrdev.h"
 #include "virhash.h"
-#include "fdstream.h"
+#include "virfdstream.h"
 #include "internal.h"
 #include "virthread.h"
 #include "viralloc.h"

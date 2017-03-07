@@ -1,5 +1,5 @@
 /*
- * fdstream.c: generic streams impl for file descriptors
+ * virfdstream.c: generic streams impl for file descriptors
  *
  * Copyright (C) 2009-2012, 2014 Red Hat, Inc.
  *
@@ -33,7 +33,7 @@
 #include <netinet/in.h>
 #include <termios.h>
 
-#include "fdstream.h"
+#include "virfdstream.h"
 #include "virerror.h"
 #include "datatypes.h"
 #include "virlog.h"

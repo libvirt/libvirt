@@ -67,7 +67,6 @@ src/esx/esx_util.c
 src/esx/esx_vi.c
 src/esx/esx_vi_methods.c
 src/esx/esx_vi_types.c
-src/fdstream.c
 src/hyperv/hyperv_driver.c
 src/hyperv/hyperv_util.c
 src/hyperv/hyperv_wmi.c
@@ -206,6 +205,7 @@ src/util/virdnsmasq.c
 src/util/virerror.c
 src/util/virerror.h
 src/util/vireventpoll.c
+src/util/virfdstream.c
 src/util/virfile.c
 src/util/virfirewall.c
 src/util/virfirmware.c

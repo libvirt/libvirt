@@ -37,7 +37,7 @@
 #include "virkeycode.h"
 #include "snapshot_conf.h"
 #include "vbox_snapshot_conf.h"
-#include "fdstream.h"
+#include "virfdstream.h"
 #include "configmake.h"
 
 #include "vbox_common.h"

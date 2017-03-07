@@ -59,7 +59,7 @@
 #include "node_device_conf.h"
 #include "virpci.h"
 #include "viruuid.h"
-#include "fdstream.h"
+#include "virfdstream.h"
 #include "virfile.h"
 #include "viruri.h"
 #include "vircommand.h"

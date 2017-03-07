@@ -58,7 +58,7 @@
 #include "domain_nwfilter.h"
 #include "nwfilter_conf.h"
 #include "virfile.h"
-#include "fdstream.h"
+#include "virfdstream.h"
 #include "configmake.h"
 #include "virnetdevtap.h"
 #include "virnodesuspend.h"

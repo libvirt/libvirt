@@ -113,6 +113,7 @@ UTIL_SOURCES =							\
 		util/virerror.c util/virerror.h			\
 		util/virevent.c util/virevent.h			\
 		util/vireventpoll.c util/vireventpoll.h		\
+		util/virfdstream.c util/virfdstream.h		\
 		util/virfile.c util/virfile.h			\
 		util/virfirewall.c util/virfirewall.h		\
 		util/virfirewallpriv.h				\
@@ -218,7 +219,6 @@ DRIVER_SOURCES =							\
 		driver-stream.h						\
 		internal.h						\
 		$(DATATYPES_SOURCES)					\
-		fdstream.c fdstream.h					\
 		$(NODE_INFO_SOURCES)					\
 		libvirt.c libvirt_internal.h				\
 		libvirt-domain.c 					\

@@ -1,5 +1,5 @@
 /*
- * fdstream.h: generic streams impl for file descriptors
+ * virfdstream.h: generic streams impl for file descriptors
  *
  * Copyright (C) 2009-2012 Red Hat, Inc.
  *

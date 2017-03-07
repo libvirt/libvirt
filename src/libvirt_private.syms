@@ -1063,16 +1063,6 @@ virStorageVolClass;
 virStreamClass;
 
 
-# fdstream.h
-virFDStreamConnectUNIX;
-virFDStreamCreateFile;
-virFDStreamOpen;
-virFDStreamOpenBlockDevice;
-virFDStreamOpenFile;
-virFDStreamOpenPTY;
-virFDStreamSetInternalCloseCb;
-
-
 # libvirt_internal.h
 virConnectSupportsFeature;
 virDomainMigrateBegin3;
@@ -1567,6 +1557,16 @@ virEventPollRunOnce;
 virEventPollToNativeEvents;
 virEventPollUpdateHandle;
 virEventPollUpdateTimeout;
+
+
+# util/virfdstream.h
+virFDStreamConnectUNIX;
+virFDStreamCreateFile;
+virFDStreamOpen;
+virFDStreamOpenBlockDevice;
+virFDStreamOpenFile;
+virFDStreamOpenPTY;
+virFDStreamSetInternalCloseCb;
 
 
 # util/virfile.h

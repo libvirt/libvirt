@@ -64,7 +64,7 @@
 #include "virhook.h"
 #include "virfile.h"
 #include "virpidfile.h"
-#include "fdstream.h"
+#include "virfdstream.h"
 #include "domain_audit.h"
 #include "domain_nwfilter.h"
 #include "nwfilter_conf.h"

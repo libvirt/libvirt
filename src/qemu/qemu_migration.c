@@ -49,7 +49,7 @@
 #include "virfile.h"
 #include "virnetdevopenvswitch.h"
 #include "datatypes.h"
-#include "fdstream.h"
+#include "virfdstream.h"
 #include "viruuid.h"
 #include "virtime.h"
 #include "locking/domain_lock.h"
