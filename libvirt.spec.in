@@ -732,7 +732,7 @@ parted and more.
 
 %if %{with_qemu}
 %package daemon-driver-qemu
-Summary: Qemu driver plugin for the libvirtd daemon
+Summary: QEMU driver plugin for the libvirtd daemon
 Group: Development/Libraries
 Requires: libvirt-daemon = %{version}-%{release}
 # There really is a hard cross-driver dependency here

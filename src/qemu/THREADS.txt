@@ -51,7 +51,7 @@ There are a number of locks on various objects
     Since virDomainObjPtr lock must not be held during sleeps, the job
     conditions provide additional protection for code making updates.
 
-    Qemu driver uses two kinds of job conditions: asynchronous and
+    QEMU driver uses two kinds of job conditions: asynchronous and
     normal.
 
     Asynchronous job condition is used for long running jobs (such as

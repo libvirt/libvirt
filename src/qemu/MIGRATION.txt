@@ -1,7 +1,7 @@
     QEMU Migration Phases
     =====================
 
-Qemu supports only migration protocols 2 and 3 (1 was lacking too many
+QEMU supports only migration protocols 2 and 3 (1 was lacking too many
 steps).  Repeating the protocol sequences from libvirt.c:
 
 Sequence v2:

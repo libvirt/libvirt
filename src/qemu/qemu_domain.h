@@ -43,7 +43,7 @@
      VIR_DOMAIN_XML_UPDATE_CPU)
 
 # if ULONG_MAX == 4294967295
-/* Qemu has a 64-bit limit, but we are limited by our historical choice of
+/* QEMU has a 64-bit limit, but we are limited by our historical choice of
  * representing bandwidth in a long instead of a 64-bit int.  */
 #  define QEMU_DOMAIN_MIG_BANDWIDTH_MAX ULONG_MAX
 # else

@@ -543,13 +543,13 @@
       This storage driver provides a pool which contains all RBD
       images in a RADOS pool.  RBD (RADOS Block Device) is part
       of the Ceph distributed storage project.<br/>
-      This backend <i>only</i> supports Qemu with RBD support. Kernel RBD
+      This backend <i>only</i> supports QEMU with RBD support. Kernel RBD
       which exposes RBD devices as block devices in /dev is <i>not</i>
       supported. RBD images created with this storage backend
       can be accessed through kernel RBD if configured manually, but
       this backend does not provide mapping for these images.<br/>
-      Images created with this backend can be attached to Qemu guests
-      when Qemu is build with RBD support (Since Qemu 0.14.0). The
+      Images created with this backend can be attached to QEMU guests
+      when QEMU is build with RBD support (Since QEMU 0.14.0). The
       backend supports cephx authentication for communication with the
       Ceph cluster. Storing the cephx authentication key is done with
       the libvirt secret mechanism. The UUID in the example pool input
@@ -595,7 +595,7 @@
 &lt;/volume&gt;</pre>
 
     <h3>Example disk attachment</h3>
-    <p>RBD images can be attached to Qemu guests when Qemu is built
+    <p>RBD images can be attached to QEMU guests when QEMU is built
     with RBD support. Information about attaching a RBD image to a
     guest can be found
     at <a href="formatdomain.html#elementsDisks">format domain</a>
@@ -654,7 +654,7 @@
 &lt;/volume&gt;</pre>
 
     <h3>Example disk attachment</h3>
-    <p>Sheepdog images can be attached to Qemu guests.
+    <p>Sheepdog images can be attached to QEMU guests.
     Information about attaching a Sheepdog image to a
     guest can be found
     at the <a href="formatdomain.html#elementsDisks">format domain</a>
@@ -739,7 +739,7 @@
 &lt;/volume&gt;</pre>
 
     <h3>Example disk attachment</h3>
-    <p>Files within a gluster volume can be attached to Qemu guests.
+    <p>Files within a gluster volume can be attached to QEMU guests.
     Information about attaching a Gluster image to a
     guest can be found
     at the <a href="formatdomain.html#elementsDisks">format domain</a>

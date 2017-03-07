@@ -953,7 +953,7 @@ qemuMonitorClose(qemuMonitorPtr mon)
             virErrorPtr err = virSaveLastError();
 
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
-                           _("Qemu monitor was closed"));
+                           _("QEMU monitor was closed"));
             virCopyLastError(&mon->lastError);
             if (err) {
                 virSetError(err);
@@ -3493,7 +3493,7 @@ qemuMonitorVMStatusToPausedReason(const char *status)
         return VIR_DOMAIN_PAUSED_UNKNOWN;
 
     if ((st = qemuMonitorVMStatusTypeFromString(status)) < 0) {
-        VIR_WARN("Qemu reported unknown VM status: '%s'", status);
+        VIR_WARN("QEMU reported unknown VM status: '%s'", status);
         return VIR_DOMAIN_PAUSED_UNKNOWN;
     }
 
@@ -3516,7 +3516,7 @@ qemuMonitorVMStatusToPausedReason(const char *status)
         return VIR_DOMAIN_PAUSED_USER;
 
     case QEMU_MONITOR_VM_STATUS_RUNNING:
-        VIR_WARN("Qemu reports the guest is paused but status is 'running'");
+        VIR_WARN("QEMU reports the guest is paused but status is 'running'");
         return VIR_DOMAIN_PAUSED_UNKNOWN;
 
     case QEMU_MONITOR_VM_STATUS_SAVE_VM:

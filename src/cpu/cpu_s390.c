@@ -38,7 +38,7 @@ virCPUs390Compare(virCPUDefPtr host ATTRIBUTE_UNUSED,
                   virCPUDefPtr cpu ATTRIBUTE_UNUSED,
                   bool failMessages ATTRIBUTE_UNUSED)
 {
-    /* s390 relies on Qemu to perform all runability checking. Return
+    /* s390 relies on QEMU to perform all runability checking. Return
      * VIR_CPU_COMPARE_IDENTICAL to bypass Libvirt checking.
      */
     return VIR_CPU_COMPARE_IDENTICAL;

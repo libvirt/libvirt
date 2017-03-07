@@ -417,7 +417,7 @@ qemuParseKeywords(const char *str,
 
         endmark = start;
         do {
-            /* Qemu accepts ',,' as an escape for a literal comma;
+            /* QEMU accepts ',,' as an escape for a literal comma;
              * skip past those here while searching for the end of the
              * value, then strip them down below */
             endmark = strchr(endmark, ',');

@@ -1299,7 +1299,7 @@ qemuCheckCCWS390AddressSupport(const virDomainDef *def,
 }
 
 
-/* Qemu 1.2 and later have a binary flag -enable-fips that must be
+/* QEMU 1.2 and later have a binary flag -enable-fips that must be
  * used for VNC auth to obey FIPS settings; but the flag only
  * exists on Linux, and with no way to probe for it via QMP.  Our
  * solution: if FIPS mode is required, then unconditionally use

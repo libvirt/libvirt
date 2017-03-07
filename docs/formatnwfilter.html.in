@@ -40,7 +40,7 @@
       of all running virtual machines that reference this filter are updated.
       <br/><br/>
       Network filtering support is available <span class="since">since 0.8.1
-      (Qemu, KVM)</span>
+      (QEMU, KVM)</span>
     </p>
 
     <h2><a name="nwfconcepts">Concepts</a></h2>
@@ -2064,7 +2064,7 @@ echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
      traffic you want to allow does pass.
      <br/><br/>
      The network filtering subsystem is currently only available on
-     Linux hosts and only works for Qemu and KVM type of virtual machines.
+     Linux hosts and only works for QEMU and KVM type of virtual machines.
      On Linux
      it builds upon the support for <code>ebtables</code>, <code>iptables
      </code> and <code>ip6tables</code> and makes use of their features.
@@ -2265,7 +2265,7 @@ echo 3 > /proc/sys/net/netfilter/nf_conntrack_icmp_timeout
      to the incoming and outgoing direction. All this is related to the ftp
      data traffic originating from TCP port 20 of the VM. This then leads to
      the following solution
-     <span class="since">(since 0.8.5 (Qemu, KVM, UML))</span>:
+     <span class="since">(since 0.8.5 (QEMU, KVM, UML))</span>:
     </p>
 <pre>
 &lt;filter name='test-eth0'&gt;
