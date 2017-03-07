@@ -22,7 +22,7 @@
 # include <sys/stat.h>
 
 # include "internal.h"
-# include "storage_conf.h"
+# include "virstorageobj.h"
 # include "storage_driver.h"
 
 typedef char * (*virStorageBackendFindPoolSources)(virConnectPtr conn,

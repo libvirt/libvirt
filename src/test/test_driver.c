@@ -49,6 +49,7 @@
 #include "snapshot_conf.h"
 #include "fdstream.h"
 #include "storage_conf.h"
+#include "virstorageobj.h"
 #include "storage_event.h"
 #include "node_device_conf.h"
 #include "virnodedeviceobj.h"

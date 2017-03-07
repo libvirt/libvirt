@@ -22,7 +22,6 @@
 # include <sys/stat.h>
 
 # include "internal.h"
-# include "storage_conf.h"
 # include "vircommand.h"
 # include "storage_driver.h"
 # include "storage_backend.h"

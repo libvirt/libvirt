@@ -27,7 +27,7 @@
 # include <sys/stat.h>
 
 # include "domain_conf.h"
-# include "storage_conf.h"
+# include "virstorageobj.h"
 # include "virstoragefile.h"
 
 int virStorageFileInit(virStorageSourcePtr src);
