@@ -249,8 +249,8 @@ mymain(void)
         return EXIT_FAILURE;
 
     for (i = 0; i < ARRAY_CARDINALITY(nodeData); i++)
-      if (virTestRun(nodeData[i].testName, linuxTestHostCPU, &nodeData[i]) != 0)
-        ret = -1;
+        if (virTestRun(nodeData[i].testName, linuxTestHostCPU, &nodeData[i]) != 0)
+            ret = -1;
 
 # define DO_TEST_CPU_STATS(name, ncpus) \
     do { \
