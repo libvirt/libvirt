@@ -71,7 +71,9 @@ typedef void
 (*cpuArchDataFree)  (virCPUDataPtr data);
 
 typedef int
-(*virCPUArchGetHost)(virCPUDefPtr cpu);
+(*virCPUArchGetHost)(virCPUDefPtr cpu,
+                     const char **models,
+                     unsigned int nmodels);
 
 typedef virCPUDefPtr
 (*cpuArchBaseline)  (virCPUDefPtr *cpus,
@@ -171,7 +173,9 @@ virCPUDataFree(virCPUDataPtr data);
 virCPUDefPtr
 virCPUGetHost(virArch arch,
               virCPUType type,
-              virNodeInfoPtr nodeInfo);
+              virNodeInfoPtr nodeInfo,
+              const char **models,
+              unsigned int nmodels);
 
 char *
 cpuBaselineXML(const char **xmlCPUs,

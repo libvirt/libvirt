@@ -82,7 +82,8 @@ vmwareCapsInit(void)
                                       NULL, NULL, 0, NULL) == NULL)
         goto error;
 
-    if (!(cpu = virCPUGetHost(caps->host.arch, VIR_CPU_TYPE_HOST, NULL)))
+    if (!(cpu = virCPUGetHost(caps->host.arch, VIR_CPU_TYPE_HOST,
+                              NULL, NULL, 0)))
         goto error;
 
     /* x86_64 guests are supported if

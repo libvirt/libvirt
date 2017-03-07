@@ -716,7 +716,9 @@ virCPUppc64DataFree(virCPUDataPtr data)
 
 
 static int
-virCPUppc64GetHost(virCPUDefPtr cpu)
+virCPUppc64GetHost(virCPUDefPtr cpu,
+                   const char **models,
+                   unsigned int nmodels)
 {
     virCPUDataPtr cpuData = NULL;
     virCPUppc64Data *data;
@@ -738,7 +740,7 @@ virCPUppc64GetHost(virCPUDefPtr cpu)
 #endif
     data->pvr[0].mask = 0xfffffffful;
 
-    ret = ppc64DriverDecode(cpu, cpuData, NULL, 0, NULL, 0);
+    ret = ppc64DriverDecode(cpu, cpuData, models, nmodels, NULL, 0);
 
  cleanup:
     virCPUppc64DataFree(cpuData);

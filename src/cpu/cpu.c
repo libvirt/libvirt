@@ -362,6 +362,8 @@ virCPUDataFree(virCPUDataPtr data)
  * @arch: CPU architecture
  * @type: requested type of the CPU
  * @nodeInfo: simplified CPU topology (optional)
+ * @models: list of CPU models that can be considered for host CPU
+ * @nmodels: number of CPU models in @models
  *
  * Create CPU definition describing the host's CPU.
  *
@@ -378,18 +380,26 @@ virCPUDataFree(virCPUDataPtr data)
  * host CPU model. In other words, a CPU definition containing just the
  * topology is a successful result even if detecting the host CPU model fails.
  *
+ * It possible to limit the CPU model which may appear in the created CPU
+ * definition by passing non-NULL @models list. This is useful when requesting
+ * a CPU model usable on a specific hypervisor. If @models is NULL, any CPU
+ * model known to libvirt may appear in the result.
+ *
  * Returns host CPU definition or NULL on error.
  */
 virCPUDefPtr
 virCPUGetHost(virArch arch,
               virCPUType type,
-              virNodeInfoPtr nodeInfo)
+              virNodeInfoPtr nodeInfo,
+              const char **models,
+              unsigned int nmodels)
 {
     struct cpuArchDriver *driver;
     virCPUDefPtr cpu = NULL;
 
-    VIR_DEBUG("arch=%s, type=%s, nodeInfo=%p",
-              virArchToString(arch), virCPUTypeToString(type), nodeInfo);
+    VIR_DEBUG("arch=%s, type=%s, nodeInfo=%p, models=%p, nmodels=%u",
+              virArchToString(arch), virCPUTypeToString(type), nodeInfo,
+              models, nmodels);
 
     if (!(driver = cpuGetSubDriver(arch)))
         return NULL;
@@ -431,7 +441,8 @@ virCPUGetHost(virArch arch,
      * filled in.
      */
     if (driver->getHost) {
-        if (driver->getHost(cpu) < 0 && !nodeInfo)
+        if (driver->getHost(cpu, models, nmodels) < 0 &&
+            !nodeInfo)
             goto error;
     } else if (nodeInfo) {
         VIR_DEBUG("cannot detect host CPU model for %s architecture",

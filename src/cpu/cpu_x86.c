@@ -2438,7 +2438,9 @@ cpuidSet(uint32_t base, virCPUDataPtr data)
 
 
 static int
-virCPUx86GetHost(virCPUDefPtr cpu)
+virCPUx86GetHost(virCPUDefPtr cpu,
+                 const char **models,
+                 unsigned int nmodels)
 {
     virCPUDataPtr cpuData = NULL;
     int ret = -1;
@@ -2450,7 +2452,7 @@ virCPUx86GetHost(virCPUDefPtr cpu)
         cpuidSet(CPUX86_EXTENDED, cpuData) < 0)
         goto cleanup;
 
-    ret = x86DecodeCPUData(cpu, cpuData, NULL, 0, NULL, 0);
+    ret = x86DecodeCPUData(cpu, cpuData, models, nmodels, NULL, 0);
 
  cleanup:
     virCPUx86DataFree(cpuData);

@@ -50,7 +50,8 @@ virBhyveCapsInitCPU(virCapsPtr caps,
     if (nodeGetInfo(&nodeinfo))
         return -1;
 
-    if (!(caps->host.cpu = virCPUGetHost(arch, VIR_CPU_TYPE_HOST, &nodeinfo)))
+    if (!(caps->host.cpu = virCPUGetHost(arch, VIR_CPU_TYPE_HOST,
+                                         &nodeinfo, NULL, 0)))
         return -1;
 
     return 0;
