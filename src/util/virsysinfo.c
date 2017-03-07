@@ -231,6 +231,7 @@ virSysinfoParsePPCProcessor(const char *base, virSysinfoDefPtr ret)
         if (eol && VIR_STRNDUP(processor->processor_socket_destination,
                                cur, eol - cur) < 0)
             return -1;
+        base = cur;
 
         if ((cur = strstr(base, "cpu")) != NULL) {
             cur = strchr(cur, ':') + 1;
@@ -239,6 +240,7 @@ virSysinfoParsePPCProcessor(const char *base, virSysinfoDefPtr ret)
             if (eol && VIR_STRNDUP(processor->processor_type,
                                    cur, eol - cur) < 0)
                 return -1;
+            base = cur;
         }
 
         if ((cur = strstr(base, "revision")) != NULL) {
@@ -248,9 +250,9 @@ virSysinfoParsePPCProcessor(const char *base, virSysinfoDefPtr ret)
             if (eol && VIR_STRNDUP(processor->processor_version,
                                    cur, eol - cur) < 0)
                 return -1;
+            base = cur;
         }
 
-        base = cur;
     }
 
     return 0;
