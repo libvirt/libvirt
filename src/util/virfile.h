@@ -30,6 +30,7 @@
 # include <dirent.h>
 
 # include "internal.h"
+# include "virbitmap.h"
 # include "virstoragefile.h"
 
 typedef enum {
@@ -334,4 +335,9 @@ int virFileCopyACLs(const char *src,
                     const char *dst);
 
 int virFileComparePaths(const char *p1, const char *p2);
+
+int virFileReadValueInt(const char *path, int *value);
+int virFileReadValueUint(const char *path, unsigned int *value);
+int virFileReadValueBitmap(const char *path, int maxlen, virBitmapPtr *value);
+
 #endif /* __VIR_FILE_H */
