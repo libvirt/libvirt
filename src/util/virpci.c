@@ -1101,6 +1101,31 @@ virPCIDeviceUnbind(virPCIDevicePtr dev)
     return ret;
 }
 
+
+/**
+ * virPCIDeviceRebind:
+ *  @dev: virPCIDevice object describing the device to rebind
+ *
+ * unbind a device from its driver, then immediately rebind it.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int virPCIDeviceRebind(virPCIDevicePtr dev)
+{
+    if (virPCIDeviceUnbind(dev) < 0)
+        return -1;
+
+    if (virFileWriteStr(PCI_SYSFS "drivers_probe", dev->name, 0) < 0) {
+        virReportSystemError(errno,
+                             _("Failed to trigger a probe for PCI device '%s'"),
+                             dev->name);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /*
  * Bind a PCI device to a driver using driver_override sysfs interface.
  * E.g.
@@ -1130,15 +1155,8 @@ virPCIDeviceBindWithDriverOverride(virPCIDevicePtr dev,
         goto cleanup;
     }
 
-    if (virPCIDeviceUnbind(dev) < 0)
+    if (virPCIDeviceRebind(dev) < 0)
         goto cleanup;
-
-    if (virFileWriteStr(PCI_SYSFS "drivers_probe", dev->name, 0) < 0) {
-        virReportSystemError(errno,
-                             _("Failed to trigger a probe for PCI device '%s'"),
-                             dev->name);
-        goto cleanup;
-    }
 
     ret = 0;
 
