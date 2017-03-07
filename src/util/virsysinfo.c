@@ -270,7 +270,7 @@ virSysinfoReadPPC(void)
     if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), CPUINFO);
-        return NULL;
+        goto no_memory;
     }
 
     ret->nprocessor = 0;
@@ -281,10 +281,12 @@ virSysinfoReadPPC(void)
     if (virSysinfoParsePPCSystem(outbuf, &ret->system) < 0)
         goto no_memory;
 
+    VIR_FREE(outbuf);
     return ret;
 
  no_memory:
     VIR_FREE(outbuf);
+    virSysinfoDefFree(ret);
     return NULL;
 }
 
@@ -402,7 +404,7 @@ virSysinfoReadARM(void)
     if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), CPUINFO);
-        return NULL;
+        goto no_memory;
     }
 
     ret->nprocessor = 0;
@@ -413,10 +415,12 @@ virSysinfoReadARM(void)
     if (virSysinfoParseARMSystem(outbuf, &ret->system) < 0)
         goto no_memory;
 
+    VIR_FREE(outbuf);
     return ret;
 
  no_memory:
     VIR_FREE(outbuf);
+    virSysinfoDefFree(ret);
     return NULL;
 }
 
@@ -539,7 +543,7 @@ virSysinfoReadS390(void)
     if (virFileReadAll(CPUINFO, CPUINFO_FILE_LEN, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), CPUINFO);
-        return NULL;
+        goto no_memory;
     }
 
     ret->nprocessor = 0;
@@ -554,12 +558,13 @@ virSysinfoReadS390(void)
     if (virFileReadAll(SYSINFO, 8192, &outbuf) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to open %s"), SYSINFO);
-        return NULL;
+        goto no_memory;
     }
 
     if (virSysinfoParseS390System(outbuf, &ret->system) < 0)
         goto no_memory;
 
+    VIR_FREE(outbuf);
     return ret;
 
  no_memory:
