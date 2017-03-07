@@ -56,6 +56,7 @@ virStoragePoolObjFree(virStoragePoolObjPtr obj)
     VIR_FREE(obj);
 }
 
+
 void
 virStoragePoolObjListFree(virStoragePoolObjListPtr pools)
 {
@@ -65,6 +66,7 @@ virStoragePoolObjListFree(virStoragePoolObjListPtr pools)
     VIR_FREE(pools->objs);
     pools->count = 0;
 }
+
 
 void
 virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
@@ -104,6 +106,7 @@ virStoragePoolObjFindByUUID(virStoragePoolObjListPtr pools,
     return NULL;
 }
 
+
 virStoragePoolObjPtr
 virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
                             const char *name)
@@ -119,6 +122,7 @@ virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
 
     return NULL;
 }
+
 
 virStoragePoolObjPtr
 virStoragePoolSourceFindDuplicateDevices(virStoragePoolObjPtr pool,
@@ -136,6 +140,7 @@ virStoragePoolSourceFindDuplicateDevices(virStoragePoolObjPtr pool,
     return NULL;
 }
 
+
 void
 virStoragePoolObjClearVols(virStoragePoolObjPtr pool)
 {
@@ -146,6 +151,7 @@ virStoragePoolObjClearVols(virStoragePoolObjPtr pool)
     VIR_FREE(pool->volumes.objs);
     pool->volumes.count = 0;
 }
+
 
 virStorageVolDefPtr
 virStorageVolDefFindByKey(virStoragePoolObjPtr pool,
@@ -160,6 +166,7 @@ virStorageVolDefFindByKey(virStoragePoolObjPtr pool,
     return NULL;
 }
 
+
 virStorageVolDefPtr
 virStorageVolDefFindByPath(virStoragePoolObjPtr pool,
                            const char *path)
@@ -173,6 +180,7 @@ virStorageVolDefFindByPath(virStoragePoolObjPtr pool,
     return NULL;
 }
 
+
 virStorageVolDefPtr
 virStorageVolDefFindByName(virStoragePoolObjPtr pool,
                            const char *name)
@@ -185,6 +193,7 @@ virStorageVolDefFindByName(virStoragePoolObjPtr pool,
 
     return NULL;
 }
+
 
 virStoragePoolObjPtr
 virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
@@ -224,6 +233,7 @@ virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
 
     return pool;
 }
+
 
 static virStoragePoolObjPtr
 virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
@@ -427,6 +437,7 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
 
     return virStoragePoolSaveConfig(pool->configFile, def);
 }
+
 
 int
 virStoragePoolObjDeleteDef(virStoragePoolObjPtr pool)
@@ -654,6 +665,7 @@ matchSCSIAdapterParent(virStorageAdapterSCSIHostPtr pool_scsi_host,
     return false;
 }
 
+
 static bool
 virStoragePoolSourceMatchSingleHost(virStoragePoolSourcePtr poolsrc,
                                     virStoragePoolSourcePtr defsrc)
@@ -848,17 +860,20 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
     return ret;
 }
 
+
 void
 virStoragePoolObjLock(virStoragePoolObjPtr obj)
 {
     virMutexLock(&obj->lock);
 }
 
+
 void
 virStoragePoolObjUnlock(virStoragePoolObjPtr obj)
 {
     virMutexUnlock(&obj->lock);
 }
+
 
 #define MATCH(FLAG) (flags & (FLAG))
 static bool
@@ -923,6 +938,7 @@ virStoragePoolMatch(virStoragePoolObjPtr poolobj,
     return true;
 }
 #undef MATCH
+
 
 int
 virStoragePoolObjListExport(virConnectPtr conn,
