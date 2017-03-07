@@ -186,6 +186,9 @@ int virPCIDeviceIsAssignable(virPCIDevicePtr dev,
                              int strict_acs_check);
 int virPCIDeviceWaitForCleanup(virPCIDevicePtr dev, const char *matcher);
 
+virPCIDeviceAddressPtr
+virPCIGetDeviceAddressFromSysfsLink(const char *device_link);
+
 int virPCIGetPhysicalFunction(const char *vf_sysfs_path,
                               virPCIDeviceAddressPtr *pf);
 

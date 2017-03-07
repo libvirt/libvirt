@@ -2594,7 +2594,7 @@ virPCIDeviceAddressIsEqual(virPCIDeviceAddressPtr bdf1,
             (bdf1->function == bdf2->function));
 }
 
-static virPCIDeviceAddressPtr
+virPCIDeviceAddressPtr
 virPCIGetDeviceAddressFromSysfsLink(const char *device_link)
 {
     virPCIDeviceAddressPtr bdf = NULL;
@@ -2922,6 +2922,14 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
 
 #else
 static const char *unsupported = N_("not supported on non-linux platforms");
+
+virPCIDeviceAddressPtr
+virPCIGetDeviceAddressFromSysfsLink(const char *device_link ATTRIBUTE_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    return -1;
+}
+
 
 int
 virPCIGetPhysicalFunction(const char *vf_sysfs_path ATTRIBUTE_UNUSED,
