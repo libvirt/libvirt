@@ -25,9 +25,9 @@
 
 # include "internal.h"
 
-int nodeSuspendForDuration(unsigned int target,
-                           unsigned long long duration,
-                           unsigned int flags);
+int virNodeSuspend(unsigned int target,
+                   unsigned long long duration,
+                   unsigned int flags);
 
 int virNodeSuspendGetTargetMask(unsigned int *bitmask);
 

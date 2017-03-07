@@ -2174,7 +2174,7 @@ virNetlinkStartup;
 
 
 # util/virnodesuspend.h
-nodeSuspendForDuration;
+virNodeSuspend;
 virNodeSuspendGetTargetMask;
 
 

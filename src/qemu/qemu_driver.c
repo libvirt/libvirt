@@ -18400,7 +18400,7 @@ qemuNodeSuspendForDuration(virConnectPtr conn,
     if (virNodeSuspendForDurationEnsureACL(conn) < 0)
         return -1;
 
-    return nodeSuspendForDuration(target, duration, flags);
+    return virNodeSuspend(target, duration, flags);
 }
 
 static int

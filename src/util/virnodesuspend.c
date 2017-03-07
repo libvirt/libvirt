@@ -96,23 +96,23 @@ static int virNodeSuspendSetNodeWakeup(unsigned long long alarmTime)
 }
 
 /**
- * virNodeSuspend:
+ * virNodeSuspendHelper:
  * @cmdString: pointer to the command string this thread has to execute.
  *
  * Actually perform the suspend operation by invoking the command.
  * Give a short delay before executing the command so as to give a chance
- * to virNodeSuspendForDuration() to return the status to the caller.
+ * to virNodeSuspend() to return the status to the caller.
  * If we don't give this delay, that function will not be able to return
  * the status, since the suspend operation would have begun and hence no
  * data can be sent through the connection to the caller. However, with
  * this delay added, the status return is best-effort only.
  */
-static void virNodeSuspend(void *cmdString)
+static void virNodeSuspendHelper(void *cmdString)
 {
     virCommandPtr suspendCmd = virCommandNew((const char *)cmdString);
 
     /*
-     * Delay for sometime so that the function nodeSuspendForDuration()
+     * Delay for sometime so that the function virNodeSuspend()
      * can return the status to the caller.
      */
     sleep(SUSPEND_DELAY);
@@ -131,7 +131,7 @@ static void virNodeSuspend(void *cmdString)
 }
 
 /**
- * nodeSuspendForDuration:
+ * virNodeSuspend:
  * @conn: pointer to the hypervisor connection
  * @target: the state to which the host must be suspended to -
  *         VIR_NODE_SUSPEND_TARGET_MEM       (Suspend-to-RAM),
@@ -157,9 +157,9 @@ static void virNodeSuspend(void *cmdString)
  * -1 if suspending the node is not supported, or if a previous suspend
  * operation is still in progress.
  */
-int nodeSuspendForDuration(unsigned int target,
-                           unsigned long long duration,
-                           unsigned int flags)
+int virNodeSuspend(unsigned int target,
+                   unsigned long long duration,
+                   unsigned int flags)
 {
     static virThread thread;
     const char *cmdString = NULL;
@@ -219,7 +219,9 @@ int nodeSuspendForDuration(unsigned int target,
     if (virNodeSuspendSetNodeWakeup(duration) < 0)
         goto cleanup;
 
-    if (virThreadCreate(&thread, false, virNodeSuspend, (void *)cmdString) < 0) {
+    if (virThreadCreate(&thread, false,
+                        virNodeSuspendHelper,
+                        (void *)cmdString) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to create thread to suspend the host"));
         goto cleanup;
