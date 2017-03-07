@@ -28,7 +28,6 @@
 # include "virarch.h"
 # include "virbitmap.h"
 
-# define VIR_HOST_CPU_MASK_LEN 1024
 
 int virHostCPUGetStats(int cpuNum,
                        virNodeCPUStatsPtr params,
@@ -57,5 +56,11 @@ int virHostCPUGetKVMMaxVCPUs(void);
 int virHostCPUStatsAssign(virNodeCPUStatsPtr param,
                           const char *name,
                           unsigned long long value);
+
+int virHostCPUGetSocket(unsigned int cpu, unsigned int *socket);
+int virHostCPUGetCore(unsigned int cpu, unsigned int *core);
+int virHostCPUGetOnline(unsigned int cpu, bool *online);
+
+virBitmapPtr virHostCPUGetSiblingsList(unsigned int cpu);
 
 #endif /* __VIR_HOSTCPU_H__*/

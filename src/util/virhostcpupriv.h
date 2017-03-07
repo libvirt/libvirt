@@ -25,8 +25,6 @@
 # include "virhostcpu.h"
 
 # ifdef __linux__
-void virHostCPUSetSysFSSystemPathLinux(const char *path);
-
 int virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
                                    virArch arch,
                                    unsigned int *cpus,

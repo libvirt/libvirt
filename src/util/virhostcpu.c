@@ -56,6 +56,7 @@
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "virstring.h"
+#include "virsysfs.h"
 #include "virnuma.h"
 #include "virlog.h"
 
@@ -189,89 +190,27 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
 #endif /* __FreeBSD__ */
 
 #ifdef __linux__
-# define SYSFS_SYSTEM_PATH "/sys/devices/system"
 # define CPUINFO_PATH "/proc/cpuinfo"
 # define PROCSTAT_PATH "/proc/stat"
-# define SYSFS_THREAD_SIBLINGS_LIST_LENGTH_MAX 8192
+# define VIR_HOST_CPU_MASK_LEN 1024
 
 # define LINUX_NB_CPU_STATS 4
 
-static const char *sysfs_system_path = SYSFS_SYSTEM_PATH;
-
-void virHostCPUSetSysFSSystemPathLinux(const char *path)
-{
-    if (path)
-        sysfs_system_path = path;
-    else
-        sysfs_system_path = SYSFS_SYSTEM_PATH;
-}
-
-/* Return the positive decimal contents of the given
- * DIR/cpu%u/FILE, or -1 on error.  If DEFAULT_VALUE is non-negative
- * and the file could not be found, return that instead of an error;
- * this is useful for machines that cannot hot-unplug cpu0, or where
- * hot-unplugging is disabled, or where the kernel is too old
- * to support NUMA cells, etc.  */
-static int
-virHostCPUGetValue(const char *dir, unsigned int cpu, const char *file,
-                   int default_value)
-{
-    char *path;
-    FILE *pathfp;
-    int value = -1;
-    char value_str[INT_BUFSIZE_BOUND(value)];
-    char *tmp;
-
-    if (virAsprintf(&path, "%s/cpu%u/%s", dir, cpu, file) < 0)
-        return -1;
-
-    pathfp = fopen(path, "r");
-    if (pathfp == NULL) {
-        if (default_value >= 0 && errno == ENOENT)
-            value = default_value;
-        else
-            virReportSystemError(errno, _("cannot open %s"), path);
-        goto cleanup;
-    }
-
-    if (fgets(value_str, sizeof(value_str), pathfp) == NULL) {
-        virReportSystemError(errno, _("cannot read from %s"), path);
-        goto cleanup;
-    }
-    if (virStrToLong_i(value_str, &tmp, 10, &value) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("could not convert '%s' to an integer"),
-                       value_str);
-        goto cleanup;
-    }
-
- cleanup:
-    VIR_FORCE_FCLOSE(pathfp);
-    VIR_FREE(path);
-
-    return value;
-}
 
 static unsigned long
-virHostCPUCountThreadSiblings(const char *dir, unsigned int cpu)
+virHostCPUCountThreadSiblings(unsigned int cpu)
 {
     unsigned long ret = 0;
-    char *path;
+    int rv = -1;
     char *str = NULL;
     size_t i;
 
-    if (virAsprintf(&path, "%s/cpu%u/topology/thread_siblings",
-                    dir, cpu) < 0)
-        return 0;
-
-    if (!virFileExists(path)) {
-        /* If file doesn't exist, then pretend our only
-         * sibling is ourself */
+    rv = virSysfsGetCpuValueString(cpu, "topology/thread_siblings", &str);
+    if (rv == -2) {
         ret = 1;
         goto cleanup;
     }
-
-    if (virFileReadAll(path, SYSFS_THREAD_SIBLINGS_LIST_LENGTH_MAX, &str) < 0)
+    if (rv < 0)
         goto cleanup;
 
     for (i = 0; str[i] != '\0'; i++) {
@@ -281,21 +220,78 @@ virHostCPUCountThreadSiblings(const char *dir, unsigned int cpu)
 
  cleanup:
     VIR_FREE(str);
-    VIR_FREE(path);
     return ret;
 }
 
-static int
-virHostCPUParseSocket(const char *dir,
-                   virArch arch,
-                   unsigned int cpu)
+int
+virHostCPUGetSocket(unsigned int cpu, unsigned int *socket)
 {
-    int ret = virHostCPUGetValue(dir, cpu, "topology/physical_package_id", 0);
+    int tmp;
+    int ret = virSysfsGetCpuValueInt(cpu,
+                                     "topology/physical_package_id",
+                                     &tmp);
 
-    if (ARCH_IS_ARM(arch) || ARCH_IS_PPC(arch) || ARCH_IS_S390(arch)) {
-        /* arm, ppc and s390(x) has -1 */
-        if (ret < 0)
-            ret = 0;
+    /* If the file is not there, it's 0 */
+    if (ret == -2)
+        tmp = 0;
+    else if (ret < 0)
+        return -1;
+
+    /* Some architectures might have '-1' validly in the file, but that actually
+     * means there are no sockets, so from our point of view it's all one socket,
+     * i.e. socket 0.  Similarly when the file does not exist. */
+    if (tmp < 0)
+        tmp = 0;
+
+    *socket = tmp;
+
+    return 0;
+}
+
+int
+virHostCPUGetCore(unsigned int cpu, unsigned int *core)
+{
+    int ret = virSysfsGetCpuValueUint(cpu, "topology/core_id", core);
+
+    /* If the file is not there, it's 0 */
+    if (ret == -2)
+        *core = 0;
+    else if (ret < 0)
+        return -1;
+
+    return 0;
+}
+
+int
+virHostCPUGetOnline(unsigned int cpu, bool *online)
+{
+    unsigned int tmp = 0;
+    int ret = virSysfsGetCpuValueUint(cpu, "online", &tmp);
+
+
+    /* If the file is not there, it's online (doesn't support offlining) */
+    if (ret == -2)
+        tmp = 1;
+    else if (ret < 0)
+        return -1;
+
+    *online = tmp;
+
+    return 0;
+}
+
+virBitmapPtr
+virHostCPUGetSiblingsList(unsigned int cpu)
+{
+    virBitmapPtr ret = NULL;
+    int rv = -1;
+
+    rv = virSysfsGetCpuValueBitmap(cpu, "topology/thread_siblings_list", &ret);
+    if (rv == -2) {
+        /* If the file doesn't exist, the threadis its only sibling */
+        ret = virBitmapNew(cpu + 1);
+        if (ret)
+            ignore_value(virBitmapSetBit(ret, cpu));
     }
 
     return ret;
@@ -329,9 +325,9 @@ virHostCPUParseNode(const char *node,
     virBitmapPtr sockets_map = NULL;
     virBitmapPtr *cores_maps = NULL;
     int npresent_cpus = virBitmapSize(present_cpus_map);
-    int sock_max = 0;
-    int sock;
-    int core;
+    unsigned int sock_max = 0;
+    unsigned int sock;
+    unsigned int core;
     size_t i;
     int siblings;
     unsigned int cpu;
@@ -366,8 +362,7 @@ virHostCPUParseNode(const char *node,
         if (!virBitmapIsBitSet(online_cpus_map, cpu))
             continue;
 
-        /* Parse socket */
-        if ((sock = virHostCPUParseSocket(node, arch, cpu)) < 0)
+        if (virHostCPUGetSocket(cpu, &sock) < 0)
             goto cleanup;
         if (sock > ID_MAX) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -421,8 +416,7 @@ virHostCPUParseNode(const char *node,
 
         processors++;
 
-        /* Parse socket */
-        if ((sock = virHostCPUParseSocket(node, arch, cpu)) < 0)
+        if (virHostCPUGetSocket(cpu, &sock) < 0)
             goto cleanup;
         if (!virBitmapIsBitSet(sockets_map, sock)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -435,8 +429,7 @@ virHostCPUParseNode(const char *node,
             /* logical cpu is equivalent to a core on s390 */
             core = cpu;
         } else {
-            if ((core = virHostCPUGetValue(node, cpu,
-                                           "topology/core_id", 0)) < 0)
+            if (virHostCPUGetCore(cpu, &core) < 0)
                 goto cleanup;
         }
         if (core > ID_MAX) {
@@ -449,7 +442,7 @@ virHostCPUParseNode(const char *node,
         if (virBitmapSetBit(cores_maps[sock], core) < 0)
             goto cleanup;
 
-        if (!(siblings = virHostCPUCountThreadSiblings(node, cpu)))
+        if (!(siblings = virHostCPUCountThreadSiblings(cpu)))
             goto cleanup;
 
         if (siblings > *threads)
@@ -640,7 +633,7 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
     /* OK, we've parsed clock speed out of /proc/cpuinfo. Get the
      * core, node, socket, thread and topology information from /sys
      */
-    if (virAsprintf(&sysfs_nodedir, "%s/node", sysfs_system_path) < 0)
+    if (virAsprintf(&sysfs_nodedir, "%s/node", virSysfsGetSystemPath()) < 0)
         goto cleanup;
 
     if (virDirOpenQuiet(&nodedir, sysfs_nodedir) < 0) {
@@ -685,7 +678,7 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
         (*nodes)++;
 
         if (virAsprintf(&sysfs_cpudir, "%s/node/%s",
-                        sysfs_system_path, nodedirent->d_name) < 0)
+                        virSysfsGetSystemPath(), nodedirent->d_name) < 0)
             goto cleanup;
 
         if ((nodecpus = virHostCPUParseNode(sysfs_cpudir, arch,
@@ -719,7 +712,7 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
  fallback:
     VIR_FREE(sysfs_cpudir);
 
-    if (virAsprintf(&sysfs_cpudir, "%s/cpu", sysfs_system_path) < 0)
+    if (virAsprintf(&sysfs_cpudir, "%s/cpu", virSysfsGetSystemPath()) < 0)
         goto cleanup;
 
     if ((nodecpus = virHostCPUParseNode(sysfs_cpudir, arch,
@@ -857,47 +850,24 @@ virHostCPUGetStatsLinux(FILE *procstat,
 }
 
 
-static char *
-virHostCPUGetGlobalPathLinux(const char *file)
-{
-    char *path = NULL;
-
-    if (virAsprintf(&path, "%s/cpu/%s", sysfs_system_path, file) < 0)
-        return NULL;
-
-    return path;
-}
-
-static char *
-virHostCPUGetPresentPathLinux(void)
-{
-    return virHostCPUGetGlobalPathLinux("present");
-}
-
-static char *
-virHostCPUGetOnlinePathLinux(void)
-{
-    return virHostCPUGetGlobalPathLinux("online");
-}
-
 /* Determine the number of CPUs (maximum CPU id + 1) from a file containing
  * a list of CPU ids, like the Linux sysfs cpu/present file */
 static int
-virHostCPUParseCountLinux(const char *path)
+virHostCPUParseCountLinux(void)
 {
     char *str = NULL;
     char *tmp;
     int ret = -1;
 
-    if (virFileReadAll(path, 5 * VIR_HOST_CPU_MASK_LEN, &str) < 0)
-        goto cleanup;
+    if (virSysfsGetValueString("cpu/present", &str) < 0)
+        return -1;
 
     tmp = str;
     do {
         if (virStrToLong_i(tmp, &tmp, 10, &ret) < 0 ||
             !strchr(",-\n", *tmp)) {
             virReportError(VIR_ERR_NO_SUPPORT,
-                           _("failed to parse %s"), path);
+                           _("failed to parse %s"), str);
             ret = -1;
             goto cleanup;
         }
@@ -907,32 +877,6 @@ virHostCPUParseCountLinux(const char *path)
  cleanup:
     VIR_FREE(str);
     return ret;
-}
-
-/*
- * Linux maintains cpu bit map under cpu/online. For example, if
- * cpuid=5's flag is not set and max cpu is 7, the map file shows
- * 0-4,6-7. This function parses it and returns cpumap.
- */
-static virBitmapPtr
-virHostCPUParseMapLinux(int max_cpuid, const char *path)
-{
-    virBitmapPtr map = NULL;
-    char *str = NULL;
-
-    if (virFileReadAll(path, 5 * VIR_HOST_CPU_MASK_LEN, &str) < 0)
-        goto error;
-
-    if (virBitmapParse(str, &map, max_cpuid) < 0)
-        goto error;
-
-    VIR_FREE(str);
-    return map;
-
- error:
-    VIR_FREE(str);
-    virBitmapFree(map);
-    return NULL;
 }
 #endif
 
@@ -1063,46 +1007,7 @@ int
 virHostCPUGetCount(void)
 {
 #if defined(__linux__)
-    /* To support older kernels that lack cpu/present, such as 2.6.18
-     * in RHEL5, we fall back to count cpu/cpuNN entries; this assumes
-     * that such kernels also lack hotplug, and therefore cpu/cpuNN
-     * will be consecutive.
-     */
-    char *present_path = NULL;
-    char *cpupath = NULL;
-    int ncpu = -1;
-
-    if (!(present_path = virHostCPUGetPresentPathLinux()))
-        return -1;
-
-    if (virFileExists(present_path)) {
-        ncpu = virHostCPUParseCountLinux(present_path);
-        goto cleanup;
-    }
-
-    if (virAsprintf(&cpupath, "%s/cpu/cpu0", sysfs_system_path) < 0)
-        goto cleanup;
-    if (virFileExists(cpupath)) {
-        ncpu = 0;
-        do {
-            ncpu++;
-            VIR_FREE(cpupath);
-            if (virAsprintf(&cpupath, "%s/cpu/cpu%d",
-                            sysfs_system_path, ncpu) < 0) {
-                ncpu = -1;
-                goto cleanup;
-            }
-        } while (virFileExists(cpupath));
-    } else {
-        /* no cpu/cpu0: we give up */
-        virReportError(VIR_ERR_NO_SUPPORT, "%s",
-                       _("host cpu counting not supported on this node"));
-    }
-
- cleanup:
-    VIR_FREE(present_path);
-    VIR_FREE(cpupath);
-    return ncpu;
+    return virHostCPUParseCountLinux();
 #elif defined(__FreeBSD__) || defined(__APPLE__)
     return virHostCPUGetCountAppleFreeBSD();
 #else
@@ -1126,83 +1031,27 @@ virBitmapPtr
 virHostCPUGetPresentBitmap(void)
 {
 #ifdef __linux__
-    virBitmapPtr present_cpus = NULL;
-    char *present_path = NULL;
-    int npresent_cpus;
+    virBitmapPtr ret = NULL;
 
-    if ((npresent_cpus = virHostCPUGetCount()) < 0)
-        goto cleanup;
+    virSysfsGetValueBitmap("cpu/present", &ret);
 
-    if (!(present_path = virHostCPUGetPresentPathLinux()))
-        goto cleanup;
-
-    /* If the cpu/present file is available, parse it and exit */
-    if (virFileExists(present_path)) {
-        present_cpus = virHostCPUParseMapLinux(npresent_cpus, present_path);
-        goto cleanup;
-    }
-
-    /* If the file is not available, we can assume that the kernel is
-     * too old to support non-consecutive CPU ids and just mark all
-     * possible CPUs as present */
-    if (!(present_cpus = virBitmapNew(npresent_cpus)))
-        goto cleanup;
-
-    virBitmapSetAll(present_cpus);
-
- cleanup:
-    VIR_FREE(present_path);
-
-    return present_cpus;
-#endif
+    return ret;
+#else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("node present CPU map not implemented on this platform"));
     return NULL;
+#endif
 }
 
 virBitmapPtr
 virHostCPUGetOnlineBitmap(void)
 {
 #ifdef __linux__
-    char *online_path = NULL;
-    char *cpudir = NULL;
-    virBitmapPtr cpumap;
-    int present;
+    virBitmapPtr ret = NULL;
 
-    present = virHostCPUGetCount();
-    if (present < 0)
-        return NULL;
+    virSysfsGetValueBitmap("cpu/online", &ret);
 
-    if (!(online_path = virHostCPUGetOnlinePathLinux()))
-        return NULL;
-    if (virFileExists(online_path)) {
-        cpumap = virHostCPUParseMapLinux(present, online_path);
-    } else {
-        size_t i;
-
-        cpumap = virBitmapNew(present);
-        if (!cpumap)
-            goto cleanup;
-
-        if (virAsprintf(&cpudir, "%s/cpu", sysfs_system_path) < 0)
-            goto cleanup;
-
-        for (i = 0; i < present; i++) {
-            int online = virHostCPUGetValue(cpudir, i, "online", 1);
-            if (online < 0) {
-                virBitmapFree(cpumap);
-                cpumap = NULL;
-                goto cleanup;
-            }
-            if (online)
-                ignore_value(virBitmapSetBit(cpumap, i));
-        }
-    }
-
- cleanup:
-    VIR_FREE(online_path);
-    VIR_FREE(cpudir);
-    return cpumap;
+    return ret;
 #else
     virReportError(VIR_ERR_NO_SUPPORT, "%s",
                    _("node online CPU map not implemented on this platform"));

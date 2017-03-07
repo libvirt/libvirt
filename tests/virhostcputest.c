@@ -8,6 +8,7 @@
 #include "testutils.h"
 #include "internal.h"
 #include "virhostcpupriv.h"
+#include "virsysfspriv.h"
 #include "virfile.h"
 #include "virstring.h"
 
@@ -177,9 +178,9 @@ linuxTestHostCPU(const void *opaque)
         goto cleanup;
     }
 
-    virHostCPUSetSysFSSystemPathLinux(sysfs_prefix);
+    virSysfsSetSystemPath(sysfs_prefix);
     result = linuxTestCompareFiles(cpuinfo, data->arch, output);
-    virHostCPUSetSysFSSystemPathLinux(NULL);
+    virSysfsSetSystemPath(NULL);
 
  cleanup:
     VIR_FREE(cpuinfo);

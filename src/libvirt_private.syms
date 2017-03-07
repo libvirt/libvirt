@@ -1715,12 +1715,15 @@ virHookPresent;
 
 
 # util/virhostcpu.h
+virHostCPUGetCore;
 virHostCPUGetCount;
 virHostCPUGetInfo;
 virHostCPUGetKVMMaxVCPUs;
 virHostCPUGetMap;
+virHostCPUGetOnline;
 virHostCPUGetOnlineBitmap;
 virHostCPUGetPresentBitmap;
+virHostCPUGetSocket;
 virHostCPUGetStats;
 virHostCPUGetThreadsPerSubcore;
 virHostCPUHasBitmap;
