@@ -66,8 +66,9 @@ struct _virStorageDriverState {
     virObjectEventStatePtr storageEventState;
 };
 
-typedef bool (*virStoragePoolObjListFilter)(virConnectPtr conn,
-                                            virStoragePoolDefPtr def);
+typedef bool
+(*virStoragePoolObjListFilter)(virConnectPtr conn,
+                               virStoragePoolDefPtr def);
 
 static inline int
 virStoragePoolObjIsActive(virStoragePoolObjPtr pool)
@@ -75,23 +76,28 @@ virStoragePoolObjIsActive(virStoragePoolObjPtr pool)
     return pool->active;
 }
 
-int virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
-                                 const char *configDir,
-                                 const char *autostartDir);
+int
+virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
+                             const char *configDir,
+                             const char *autostartDir);
 
-int virStoragePoolLoadAllState(virStoragePoolObjListPtr pools,
-                               const char *stateDir);
+int
+virStoragePoolLoadAllState(virStoragePoolObjListPtr pools,
+                           const char *stateDir);
 
 virStoragePoolObjPtr
 virStoragePoolLoadState(virStoragePoolObjListPtr pools,
                         const char *stateDir,
                         const char *name);
+
 virStoragePoolObjPtr
 virStoragePoolObjFindByUUID(virStoragePoolObjListPtr pools,
                             const unsigned char *uuid);
+
 virStoragePoolObjPtr
 virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
                             const char *name);
+
 virStoragePoolObjPtr
 virStoragePoolSourceFindDuplicateDevices(virStoragePoolObjPtr pool,
                                          virStoragePoolDefPtr def);
@@ -99,44 +105,61 @@ virStoragePoolSourceFindDuplicateDevices(virStoragePoolObjPtr pool,
 virStorageVolDefPtr
 virStorageVolDefFindByKey(virStoragePoolObjPtr pool,
                           const char *key);
+
 virStorageVolDefPtr
 virStorageVolDefFindByPath(virStoragePoolObjPtr pool,
                            const char *path);
+
 virStorageVolDefPtr
 virStorageVolDefFindByName(virStoragePoolObjPtr pool,
                            const char *name);
 
-void virStoragePoolObjClearVols(virStoragePoolObjPtr pool);
+void
+virStoragePoolObjClearVols(virStoragePoolObjPtr pool);
 
 virStoragePoolObjPtr
 virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
                            virStoragePoolDefPtr def);
 
-int virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
-                             virStoragePoolObjPtr pool,
-                             virStoragePoolDefPtr def);
-int virStoragePoolObjDeleteDef(virStoragePoolObjPtr pool);
+int
+virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
+                         virStoragePoolObjPtr pool,
+                         virStoragePoolDefPtr def);
 
-void virStoragePoolObjFree(virStoragePoolObjPtr pool);
-void virStoragePoolObjListFree(virStoragePoolObjListPtr pools);
-void virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
-                             virStoragePoolObjPtr pool);
+int
+virStoragePoolObjDeleteDef(virStoragePoolObjPtr pool);
 
-int virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
-                                 virStoragePoolDefPtr def,
-                                 unsigned int check_active);
+void
+virStoragePoolObjFree(virStoragePoolObjPtr pool);
 
-int virStoragePoolSourceFindDuplicate(virConnectPtr conn,
-                                      virStoragePoolObjListPtr pools,
-                                      virStoragePoolDefPtr def);
+void
+virStoragePoolObjListFree(virStoragePoolObjListPtr pools);
 
-void virStoragePoolObjLock(virStoragePoolObjPtr obj);
-void virStoragePoolObjUnlock(virStoragePoolObjPtr obj);
+void
+virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
+                        virStoragePoolObjPtr pool);
 
-int virStoragePoolObjListExport(virConnectPtr conn,
-                                virStoragePoolObjList poolobjs,
-                                virStoragePoolPtr **pools,
-                                virStoragePoolObjListFilter filter,
-                                unsigned int flags);
+int
+virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
+                             virStoragePoolDefPtr def,
+                             unsigned int check_active);
+
+int
+virStoragePoolSourceFindDuplicate(virConnectPtr conn,
+                                  virStoragePoolObjListPtr pools,
+                                  virStoragePoolDefPtr def);
+
+void
+virStoragePoolObjLock(virStoragePoolObjPtr obj);
+
+void
+virStoragePoolObjUnlock(virStoragePoolObjPtr obj);
+
+int
+virStoragePoolObjListExport(virConnectPtr conn,
+                            virStoragePoolObjList poolobjs,
+                            virStoragePoolPtr **pools,
+                            virStoragePoolObjListFilter filter,
+                            unsigned int flags);
 
 #endif /* __VIRSTORAGEOBJ_H__ */
