@@ -173,6 +173,7 @@ UTIL_SOURCES =							\
 		util/virstorageencryption.c util/virstorageencryption.h \
 		util/virstoragefile.c util/virstoragefile.h	\
 		util/virstring.h util/virstring.c		\
+		util/virsysfs.c util/virsysfs.h util/virsysfspriv.h \
 		util/virsysinfo.c util/virsysinfo.h util/virsysinfopriv.h		\
 		util/virsystemd.c util/virsystemd.h util/virsystemdpriv.h \
 		util/virthread.c util/virthread.h		\
@@ -2585,6 +2586,7 @@ libvirt_setuid_rpc_client_la_SOURCES = 		\
 		util/virrandom.c		\
 		util/virsocketaddr.c		\
 		util/virstring.c		\
+		util/virsysfs.c			\
 		util/virsystemd.c		\
 		util/virtime.c			\
 		util/virthread.c		\

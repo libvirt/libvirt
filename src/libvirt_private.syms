@@ -2594,6 +2594,20 @@ virTrimSpaces;
 virVasprintfInternal;
 
 
+# util/virsysfs.h
+virSysfsGetCpuValueBitmap;
+virSysfsGetCpuValueInt;
+virSysfsGetCpuValueString;
+virSysfsGetCpuValueUint;
+virSysfsGetNodeValueBitmap;
+virSysfsGetNodeValueString;
+virSysfsGetSystemPath;
+virSysfsGetValueBitmap;
+virSysfsGetValueInt;
+virSysfsGetValueString;
+virSysfsSetSystemPath;
+
+
 # util/virsysinfo.h
 virSysinfoBaseBoardDefClear;
 virSysinfoBIOSDefFree;
