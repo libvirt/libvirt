@@ -272,6 +272,13 @@ mymain(void)
                  "pool-dir", "vol-qcow2-nocapacity-backing", NULL, NULL,
                  "qcow2-nocapacity", 0, FMT_OPTIONS);
 
+    DO_TEST("pool-dir", "vol-file-iso",
+            NULL, NULL,
+            "iso", 0, FMT_OPTIONS);
+    DO_TEST("pool-dir", "vol-file",
+            "pool-dir", "vol-file-iso",
+            "iso-input", 0, FMT_OPTIONS);
+
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

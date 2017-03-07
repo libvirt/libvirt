@@ -100,6 +100,7 @@ mymain(void)
     DO_TEST("pool-dir", "vol-file");
     DO_TEST("pool-dir", "vol-file-naming");
     DO_TEST("pool-dir", "vol-file-backing");
+    DO_TEST("pool-dir", "vol-file-iso");
     DO_TEST("pool-dir", "vol-qcow2");
     DO_TEST("pool-dir", "vol-qcow2-1.1");
     DO_TEST("pool-dir", "vol-qcow2-lazy");

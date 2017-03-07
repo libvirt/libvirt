@@ -1,0 +1,10 @@
+<volume>
+  <name>test.iso</name>
+  <source/>
+  <capacity unit="MiB">1</capacity>
+  <allocation unit="MiB">1</allocation>
+  <target>
+    <format type='iso'/>
+    <path>/var/lib/libvirt/images/test.iso</path>
+  </target>
+</volume>
