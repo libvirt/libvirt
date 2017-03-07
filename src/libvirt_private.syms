@@ -2475,6 +2475,7 @@ virSocketAddrSetIPv6Addr;
 virSocketAddrSetIPv6AddrNetOrder;
 virSocketAddrSetPort;
 
+
 # util/virstorageencryption.h
 virStorageEncryptionFormat;
 virStorageEncryptionFree;
