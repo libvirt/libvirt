@@ -77,18 +77,13 @@ virStoragePoolObjIsActive(virStoragePoolObjPtr pool)
 }
 
 int
-virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
-                             const char *configDir,
-                             const char *autostartDir);
+virStoragePoolObjLoadAllConfigs(virStoragePoolObjListPtr pools,
+                                const char *configDir,
+                                const char *autostartDir);
 
 int
-virStoragePoolLoadAllState(virStoragePoolObjListPtr pools,
-                           const char *stateDir);
-
-virStoragePoolObjPtr
-virStoragePoolLoadState(virStoragePoolObjListPtr pools,
-                        const char *stateDir,
-                        const char *name);
+virStoragePoolObjLoadAllState(virStoragePoolObjListPtr pools,
+                              const char *stateDir);
 
 virStoragePoolObjPtr
 virStoragePoolObjFindByUUID(virStoragePoolObjListPtr pools,
@@ -97,10 +92,6 @@ virStoragePoolObjFindByUUID(virStoragePoolObjListPtr pools,
 virStoragePoolObjPtr
 virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
                             const char *name);
-
-virStoragePoolObjPtr
-virStoragePoolSourceFindDuplicateDevices(virStoragePoolObjPtr pool,
-                                         virStoragePoolDefPtr def);
 
 virStorageVolDefPtr
 virStorageVolDefFindByKey(virStoragePoolObjPtr pool,
@@ -145,9 +136,9 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
                              unsigned int check_active);
 
 int
-virStoragePoolSourceFindDuplicate(virConnectPtr conn,
-                                  virStoragePoolObjListPtr pools,
-                                  virStoragePoolDefPtr def);
+virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
+                                     virStoragePoolObjListPtr pools,
+                                     virStoragePoolDefPtr def);
 
 void
 virStoragePoolObjLock(virStoragePoolObjPtr obj);

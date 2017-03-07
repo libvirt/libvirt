@@ -124,7 +124,7 @@ virStoragePoolObjFindByName(virStoragePoolObjListPtr pools,
 }
 
 
-virStoragePoolObjPtr
+static virStoragePoolObjPtr
 virStoragePoolSourceFindDuplicateDevices(virStoragePoolObjPtr pool,
                                          virStoragePoolDefPtr def)
 {
@@ -279,10 +279,10 @@ virStoragePoolObjLoad(virStoragePoolObjListPtr pools,
 }
 
 
-virStoragePoolObjPtr
-virStoragePoolLoadState(virStoragePoolObjListPtr pools,
-                        const char *stateDir,
-                        const char *name)
+static virStoragePoolObjPtr
+virStoragePoolObjLoadState(virStoragePoolObjListPtr pools,
+                           const char *stateDir,
+                           const char *name)
 {
     char *stateFile = NULL;
     virStoragePoolDefPtr def = NULL;
@@ -339,8 +339,8 @@ virStoragePoolLoadState(virStoragePoolObjListPtr pools,
 
 
 int
-virStoragePoolLoadAllState(virStoragePoolObjListPtr pools,
-                           const char *stateDir)
+virStoragePoolObjLoadAllState(virStoragePoolObjListPtr pools,
+                              const char *stateDir)
 {
     DIR *dir;
     struct dirent *entry;
@@ -356,7 +356,8 @@ virStoragePoolLoadAllState(virStoragePoolObjListPtr pools,
         if (!virFileStripSuffix(entry->d_name, ".xml"))
             continue;
 
-        if (!(pool = virStoragePoolLoadState(pools, stateDir, entry->d_name)))
+        if (!(pool = virStoragePoolObjLoadState(pools, stateDir,
+                                                entry->d_name)))
             continue;
         virStoragePoolObjUnlock(pool);
     }
@@ -367,9 +368,9 @@ virStoragePoolLoadAllState(virStoragePoolObjListPtr pools,
 
 
 int
-virStoragePoolLoadAllConfigs(virStoragePoolObjListPtr pools,
-                             const char *configDir,
-                             const char *autostartDir)
+virStoragePoolObjLoadAllConfigs(virStoragePoolObjListPtr pools,
+                                const char *configDir,
+                                const char *autostartDir)
 {
     DIR *dir;
     struct dirent *entry;
@@ -697,9 +698,9 @@ virStoragePoolSourceISCSIMatch(virStoragePoolObjPtr matchpool,
 
 
 int
-virStoragePoolSourceFindDuplicate(virConnectPtr conn,
-                                  virStoragePoolObjListPtr pools,
-                                  virStoragePoolDefPtr def)
+virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
+                                     virStoragePoolObjListPtr pools,
+                                     virStoragePoolDefPtr def)
 {
     size_t i;
     int ret = 1;

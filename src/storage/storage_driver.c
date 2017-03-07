@@ -267,13 +267,13 @@ storageStateInitialize(bool privileged,
         goto error;
     }
 
-    if (virStoragePoolLoadAllState(&driver->pools,
-                                   driver->stateDir) < 0)
+    if (virStoragePoolObjLoadAllState(&driver->pools,
+                                      driver->stateDir) < 0)
         goto error;
 
-    if (virStoragePoolLoadAllConfigs(&driver->pools,
-                                     driver->configDir,
-                                     driver->autostartDir) < 0)
+    if (virStoragePoolObjLoadAllConfigs(&driver->pools,
+                                        driver->configDir,
+                                        driver->autostartDir) < 0)
         goto error;
 
     storagePoolUpdateAllState();
@@ -323,11 +323,11 @@ storageStateReload(void)
         return -1;
 
     storageDriverLock();
-    virStoragePoolLoadAllState(&driver->pools,
-                               driver->stateDir);
-    virStoragePoolLoadAllConfigs(&driver->pools,
-                                 driver->configDir,
-                                 driver->autostartDir);
+    virStoragePoolObjLoadAllState(&driver->pools,
+                                  driver->stateDir);
+    virStoragePoolObjLoadAllConfigs(&driver->pools,
+                                    driver->configDir,
+                                    driver->autostartDir);
     storageDriverAutostart();
     storageDriverUnlock();
 
@@ -695,7 +695,7 @@ storagePoolCreateXML(virConnectPtr conn,
     if (virStoragePoolObjIsDuplicate(&driver->pools, def, 1) < 0)
         goto cleanup;
 
-    if (virStoragePoolSourceFindDuplicate(conn, &driver->pools, def) < 0)
+    if (virStoragePoolObjSourceFindDuplicate(conn, &driver->pools, def) < 0)
         goto cleanup;
 
     if ((backend = virStorageBackendForType(def->type)) == NULL)
@@ -790,7 +790,7 @@ storagePoolDefineXML(virConnectPtr conn,
     if (virStoragePoolObjIsDuplicate(&driver->pools, def, 0) < 0)
         goto cleanup;
 
-    if (virStoragePoolSourceFindDuplicate(conn, &driver->pools, def) < 0)
+    if (virStoragePoolObjSourceFindDuplicate(conn, &driver->pools, def) < 0)
         goto cleanup;
 
     if (virStorageBackendForType(def->type) == NULL)
