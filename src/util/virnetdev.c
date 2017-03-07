@@ -1123,6 +1123,32 @@ virNetDevSysfsDeviceFile(char **pf_sysfs_device_link, const char *ifname,
     return 0;
 }
 
+
+static virPCIDevicePtr
+virNetDevGetPCIDevice(const char *devName)
+{
+    char *vfSysfsDevicePath = NULL;
+    virPCIDeviceAddressPtr vfPCIAddr = NULL;
+    virPCIDevicePtr vfPCIDevice = NULL;
+
+    if (virNetDevSysfsFile(&vfSysfsDevicePath, devName, "device") < 0)
+        goto cleanup;
+
+    vfPCIAddr = virPCIGetDeviceAddressFromSysfsLink(vfSysfsDevicePath);
+    if (!vfPCIAddr)
+        goto cleanup;
+
+    vfPCIDevice = virPCIDeviceNew(vfPCIAddr->domain, vfPCIAddr->bus,
+                                  vfPCIAddr->slot, vfPCIAddr->function);
+
+ cleanup:
+    VIR_FREE(vfSysfsDevicePath);
+    VIR_FREE(vfPCIAddr);
+
+    return vfPCIDevice;
+}
+
+
 /**
  * virNetDevGetVirtualFunctions:
  *
@@ -2070,6 +2096,7 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
     char *pfDevOrig = NULL;
     char *vfDevOrig = NULL;
     int vlanTag = -1;
+    virPCIDevicePtr vfPCIDevice = NULL;
 
     if (vf >= 0) {
         /* linkdev is the PF */
@@ -2165,6 +2192,8 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
     }
 
     if (MAC) {
+        int setMACrc;
+
         if (!linkdev) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("VF %d of PF '%s' is not bound to a net driver, "
@@ -2173,27 +2202,61 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
             goto cleanup;
         }
 
-        if (virNetDevSetMAC(linkdev, MAC) < 0) {
-            /* This may have failed due to the "administratively
-             * set" flag being set in the PF for this VF. For now
-             * we will just fail, but in the future we should
-             * attempt to set the VF MAC via the PF.
+        setMACrc = virNetDevSetMACInternal(linkdev, MAC, !!pfDevOrig);
+        if (setMACrc < 0) {
+            bool allowRetry = false;
+            int retries = 100;
+
+            /* if pfDevOrig == NULL, this isn't a VF, so we've failed */
+            if (!pfDevOrig || errno != EADDRNOTAVAIL)
+                goto cleanup;
+
+            /* Otherwise this is a VF, and virNetDevSetMAC failed with
+             * EADDRNOTAVAIL, which could be due to the
+             * "administratively set" flag being set in the PF for
+             * this VF.  When this happens, we can attempt to use an
+             * alternate method to set the VF MAC: first set it into
+             * the admin MAC for this VF in the PF, then unbind/rebind
+             * the VF from its net driver. This causes the VF's MAC to
+             * be initialized to whatever was stored in the admin MAC.
              */
-            goto cleanup;
+
+            if (virNetDevSetVfConfig(pfDevName, vf,
+                                     MAC, vlanTag, &allowRetry) < 0) {
+                goto cleanup;
+            }
+
+            /* admin MAC is set, now we need to construct a virPCIDevice
+             * object so we can call virPCIDeviceRebind()
+             */
+            if (!(vfPCIDevice = virNetDevGetPCIDevice(linkdev)))
+                goto cleanup;
+
+            /* Rebind the device. This should set the proper MAC address */
+            if (virPCIDeviceRebind(vfPCIDevice) < 0)
+                goto cleanup;
+
+            /* Wait until virNetDevGetIndex for the VF netdev returns success.
+             * This indicates that the device is ready to be used. If we don't
+             * wait, then upcoming operations on the VF may fail.
+             */
+            while (retries-- > 0 && !virNetDevExists(linkdev))
+               usleep(1000);
         }
-        if (pfDevOrig) {
-            /* if pfDevOrig is set, it means that the caller was
-             * *really* only interested in setting the MAC of the VF
-             * itself, *not* the admin MAC via the PF. In those cases,
-             * the adminMAC was only provided in case we need to set
-             * the VF's MAC by temporarily unbinding/rebinding the
-             * VF's net driver with the admin MAC set to the desired
-             * MAC, and then want to restore the admin MAC to its
-             * original setting when we're finished. We would only
-             * need to do that if the virNetDevSetMAC() above had
-             * failed; since it didn't, we don't need to set the
-             * adminMAC, so we are NULLing it out here to avoid that
-             * below.
+
+        if (pfDevOrig && setMACrc == 0) {
+            /* if pfDevOrig is set, it that the caller was *really*
+             * only interested in setting the MAC of the VF itself,
+             * *not* the admin MAC via the PF. In those cases, the
+             * adminMAC was only provided in case we need to set the
+             * VF's MAC by temporarily unbinding/rebinding the VF's
+             * net driver with the admin MAC set to the desired MAC,
+             * and then want to restore the admin MAC to its original
+             * setting when we're finished. We would only need to do
+             * that if the virNetDevSetMAC() above had failed; since
+             * setMACrc == 0, we know it didn't fail and we don't need
+             * to set the adminMAC, so we are NULLing it out here to
+             * avoid that below.
 
              * (NB: since setting the admin MAC sets the
              * "administratively set" flag for the VF in the PF's
@@ -2237,6 +2300,7 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
  cleanup:
     VIR_FREE(pfDevOrig);
     VIR_FREE(vfDevOrig);
+    virPCIDeviceFree(vfPCIDevice);
     return ret;
 }
 
