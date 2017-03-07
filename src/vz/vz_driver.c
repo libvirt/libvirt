@@ -129,7 +129,8 @@ vzBuildCapabilities(void)
     if (nodeGetInfo(&nodeinfo))
         goto error;
 
-    if (!(caps->host.cpu = virCPUGetHost(caps->host.arch, &nodeinfo)))
+    if (!(caps->host.cpu = virCPUGetHost(caps->host.arch, VIR_CPU_TYPE_HOST,
+                                         &nodeinfo)))
         goto error;
 
     if (virCapabilitiesAddHostMigrateTransport(caps, "vzmigr") < 0)

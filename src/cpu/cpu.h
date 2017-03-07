@@ -170,6 +170,7 @@ virCPUDataFree(virCPUDataPtr data);
 
 virCPUDefPtr
 virCPUGetHost(virArch arch,
+              virCPUType type,
               virNodeInfoPtr nodeInfo);
 
 char *

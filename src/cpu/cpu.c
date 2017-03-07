@@ -360,9 +360,18 @@ virCPUDataFree(virCPUDataPtr data)
  * virCPUGetHost:
  *
  * @arch: CPU architecture
+ * @type: requested type of the CPU
  * @nodeInfo: simplified CPU topology (optional)
  *
- * Create CPU definition describing the host's CPU. If @nodeInfo is not NULL,
+ * Create CPU definition describing the host's CPU.
+ *
+ * The @type (either VIR_CPU_TYPE_HOST or VIR_CPU_TYPE_GUEST) specifies what
+ * type of CPU definition should be created. Specifically, VIR_CPU_TYPE_HOST
+ * CPUs may contain only features without any policy attribute. Requesting
+ * VIR_CPU_TYPE_GUEST provides better results because the CPU is allowed to
+ * contain disabled features.
+ *
+ * If @nodeInfo is not NULL (which is only allowed for VIR_CPU_TYPE_HOST CPUs),
  * the CPU definition will have topology (sockets, cores, threads) filled in
  * according to the content of @nodeInfo. The function fails only if @nodeInfo
  * was not passed in and the assigned CPU driver was not able to detect the
@@ -373,13 +382,14 @@ virCPUDataFree(virCPUDataPtr data)
  */
 virCPUDefPtr
 virCPUGetHost(virArch arch,
+              virCPUType type,
               virNodeInfoPtr nodeInfo)
 {
     struct cpuArchDriver *driver;
     virCPUDefPtr cpu = NULL;
 
-    VIR_DEBUG("arch=%s, nodeInfo=%p",
-              virArchToString(arch), nodeInfo);
+    VIR_DEBUG("arch=%s, type=%s, nodeInfo=%p",
+              virArchToString(arch), virCPUTypeToString(type), nodeInfo);
 
     if (!(driver = cpuGetSubDriver(arch)))
         return NULL;
@@ -387,8 +397,29 @@ virCPUGetHost(virArch arch,
     if (VIR_ALLOC(cpu) < 0)
         return NULL;
 
-    cpu->arch = arch;
-    cpu->type = VIR_CPU_TYPE_HOST;
+    switch (type) {
+    case VIR_CPU_TYPE_HOST:
+        cpu->arch = arch;
+        cpu->type = type;
+        break;
+
+    case VIR_CPU_TYPE_GUEST:
+        if (nodeInfo) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("cannot set topology for CPU type '%s'"),
+                           virCPUTypeToString(type));
+            goto error;
+        }
+        cpu->type = type;
+        break;
+
+    case VIR_CPU_TYPE_AUTO:
+    case VIR_CPU_TYPE_LAST:
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("unsupported CPU type: %s"),
+                       virCPUTypeToString(type));
+        goto error;
+    }
 
     if (nodeInfo) {
         cpu->sockets = nodeInfo->sockets;

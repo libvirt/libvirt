@@ -1070,7 +1070,7 @@ virQEMUCapsInitCPU(virCapsPtr caps,
     if (nodeGetInfo(&nodeinfo))
         return -1;
 
-    if (!(caps->host.cpu = virCPUGetHost(arch, &nodeinfo)))
+    if (!(caps->host.cpu = virCPUGetHost(arch, VIR_CPU_TYPE_HOST, &nodeinfo)))
         return -1;
 
     return 0;
