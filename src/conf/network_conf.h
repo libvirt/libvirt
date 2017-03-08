@@ -290,43 +290,71 @@ enum {
     VIR_NETWORK_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
 };
 
-virNetworkDefPtr virNetworkDefCopy(virNetworkDefPtr def, unsigned int flags);
-virNetworkDefPtr virNetworkDefParseXML(xmlXPathContextPtr ctxt);
-virNetworkDefPtr virNetworkDefParseString(const char *xmlStr);
-virNetworkDefPtr virNetworkDefParseFile(const char *filename);
-virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
-                                        xmlNodePtr root);
-char *virNetworkDefFormat(const virNetworkDef *def, unsigned int flags);
-int virNetworkDefFormatBuf(virBufferPtr buf,
-                           const virNetworkDef *def,
-                           unsigned int flags);
+virNetworkDefPtr
+virNetworkDefCopy(virNetworkDefPtr def, unsigned int flags);
 
-const char * virNetworkDefForwardIf(const virNetworkDef *def, size_t n);
+virNetworkDefPtr
+virNetworkDefParseXML(xmlXPathContextPtr ctxt);
 
-virPortGroupDefPtr virPortGroupFindByName(virNetworkDefPtr net,
-                                          const char *portgroup);
+virNetworkDefPtr
+virNetworkDefParseString(const char *xmlStr);
+
+virNetworkDefPtr
+virNetworkDefParseFile(const char *filename);
+
+virNetworkDefPtr
+virNetworkDefParseNode(xmlDocPtr xml,
+                       xmlNodePtr root);
+
+char *
+virNetworkDefFormat(const virNetworkDef *def,
+                    unsigned int flags);
+
+int
+virNetworkDefFormatBuf(virBufferPtr buf,
+                       const virNetworkDef *def,
+                       unsigned int flags);
+
+const char *
+virNetworkDefForwardIf(const virNetworkDef *def,
+                       size_t n);
+
+virPortGroupDefPtr
+virPortGroupFindByName(virNetworkDefPtr net,
+                       const char *portgroup);
 
 virNetworkIPDefPtr
 virNetworkDefGetIPByIndex(const virNetworkDef *def,
-                          int family, size_t n);
+                          int family,
+                          size_t n);
+
 virNetDevIPRoutePtr
 virNetworkDefGetRouteByIndex(const virNetworkDef *def,
-                             int family, size_t n);
-int virNetworkIPDefPrefix(const virNetworkIPDef *def);
-int virNetworkIPDefNetmask(const virNetworkIPDef *def,
-                           virSocketAddrPtr netmask);
+                             int family,
+                             size_t n);
 
-int virNetworkSaveXML(const char *configDir,
-                      virNetworkDefPtr def,
-                      const char *xml);
+int
+virNetworkIPDefPrefix(const virNetworkIPDef *def);
 
-int virNetworkSaveConfig(const char *configDir,
-                         virNetworkDefPtr def);
+int
+virNetworkIPDefNetmask(const virNetworkIPDef *def,
+                       virSocketAddrPtr netmask);
 
-char *virNetworkConfigFile(const char *dir,
-                           const char *name);
+int
+virNetworkSaveXML(const char *configDir,
+                  virNetworkDefPtr def,
+                  const char *xml);
 
-void virNetworkSetBridgeMacAddr(virNetworkDefPtr def);
+int
+virNetworkSaveConfig(const char *configDir,
+                     virNetworkDefPtr def);
+
+char *
+virNetworkConfigFile(const char *dir,
+                     const char *name);
+
+void
+virNetworkSetBridgeMacAddr(virNetworkDefPtr def);
 
 VIR_ENUM_DECL(virNetworkForward)
 
