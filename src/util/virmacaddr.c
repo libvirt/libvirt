@@ -169,7 +169,7 @@ virMacAddrParse(const char* str, virMacAddrPtr addr)
 
         addr->addr[i] = (unsigned char) result;
 
-        if ((i == 5) && (*end_ptr == '\0'))
+        if ((i == 5) && (*end_ptr <= ' '))
             return 0;
         if (*end_ptr != ':')
             break;
