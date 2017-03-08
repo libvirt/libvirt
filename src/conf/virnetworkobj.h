@@ -95,9 +95,9 @@ virNetworkAssignDef(virNetworkObjListPtr nets,
                     unsigned int flags);
 
 void
-virNetworkObjAssignDef(virNetworkObjPtr network,
-                       virNetworkDefPtr def,
-                       bool live);
+virNetworkObjUpdateAssignDef(virNetworkObjPtr network,
+                             virNetworkDefPtr def,
+                             bool live);
 
 int
 virNetworkObjSetDefTransient(virNetworkObjPtr network,

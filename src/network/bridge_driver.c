@@ -3490,7 +3490,7 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml)
          * definition by making it transient.
          * XXX - this isn't necessarily the correct thing to do.
          */
-        virNetworkObjAssignDef(network, NULL, false);
+        virNetworkObjUpdateAssignDef(network, NULL, false);
         goto cleanup;
     }
 
@@ -3554,7 +3554,7 @@ networkUndefine(virNetworkPtr net)
         /* if the network still exists, it was active, and we need to make
          * it transient (by deleting the persistent def)
          */
-        virNetworkObjAssignDef(network, NULL, false);
+        virNetworkObjUpdateAssignDef(network, NULL, false);
     }
 
     ret = 0;

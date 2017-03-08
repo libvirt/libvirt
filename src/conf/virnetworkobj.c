@@ -276,7 +276,7 @@ virNetworkObjListDispose(void *obj)
 
 
 /*
- * virNetworkObjAssignDef:
+ * virNetworkObjUpdateAssignDef:
  * @network: the network object to update
  * @def: the new NetworkDef (will be consumed by this function)
  * @live: is this new def the "live" version, or the "persistent" version
@@ -292,9 +292,9 @@ virNetworkObjListDispose(void *obj)
  *
  */
 void
-virNetworkObjAssignDef(virNetworkObjPtr network,
-                       virNetworkDefPtr def,
-                       bool live)
+virNetworkObjUpdateAssignDef(virNetworkObjPtr network,
+                             virNetworkDefPtr def,
+                             bool live)
 {
     if (live) {
         /* before setting new live def, save (into newDef) any
@@ -378,9 +378,9 @@ virNetworkAssignDefLocked(virNetworkObjListPtr nets,
             }
         }
 
-        virNetworkObjAssignDef(network,
-                               def,
-                               !!(flags & VIR_NETWORK_OBJ_LIST_ADD_LIVE));
+        virNetworkObjUpdateAssignDef(network,
+                                     def,
+                                     !!(flags & VIR_NETWORK_OBJ_LIST_ADD_LIVE));
     } else {
         /* UUID does not match, but if a name matches, refuse it */
         if ((network = virNetworkObjFindByNameLocked(nets, def->name))) {
