@@ -965,7 +965,7 @@ qemuDomainChrSourcePrivateDispose(void *obj)
 /* qemuDomainSecretPlainSetup:
  * @conn: Pointer to connection
  * @secinfo: Pointer to secret info
- * @secretUsageType: The virSecretUsageType
+ * @usageType: The virSecretUsageType
  * @username: username to use for authentication (may be NULL)
  * @seclookupdef: Pointer to seclookupdef data
  *
@@ -976,7 +976,7 @@ qemuDomainChrSourcePrivateDispose(void *obj)
 static int
 qemuDomainSecretPlainSetup(virConnectPtr conn,
                            qemuDomainSecretInfoPtr secinfo,
-                           virSecretUsageType secretUsageType,
+                           virSecretUsageType usageType,
                            const char *username,
                            virSecretLookupTypeDefPtr seclookupdef)
 {
@@ -984,7 +984,7 @@ qemuDomainSecretPlainSetup(virConnectPtr conn,
     if (VIR_STRDUP(secinfo->s.plain.username, username) < 0)
         return -1;
 
-    return virSecretGetSecretString(conn, seclookupdef, secretUsageType,
+    return virSecretGetSecretString(conn, seclookupdef, usageType,
                                     &secinfo->s.plain.secret,
                                     &secinfo->s.plain.secretlen);
 }
@@ -995,7 +995,7 @@ qemuDomainSecretPlainSetup(virConnectPtr conn,
  * @priv: pointer to domain private object
  * @secinfo: Pointer to secret info
  * @srcalias: Alias of the disk/hostdev used to generate the secret alias
- * @secretUsageType: The virSecretUsageType
+ * @usageType: The virSecretUsageType
  * @username: username to use for authentication (may be NULL)
  * @seclookupdef: Pointer to seclookupdef data
  * @isLuks: True/False for is for luks (alias generation)
@@ -1009,7 +1009,7 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
                          qemuDomainObjPrivatePtr priv,
                          qemuDomainSecretInfoPtr secinfo,
                          const char *srcalias,
-                         virSecretUsageType secretUsageType,
+                         virSecretUsageType usageType,
                          const char *username,
                          virSecretLookupTypeDefPtr seclookupdef,
                          bool isLuks)
@@ -1038,7 +1038,7 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
         goto cleanup;
 
     /* Grab the unencoded secret */
-    if (virSecretGetSecretString(conn, seclookupdef, secretUsageType,
+    if (virSecretGetSecretString(conn, seclookupdef, usageType,
                                  &secret, &secretlen) < 0)
         goto cleanup;
 
@@ -1072,7 +1072,7 @@ qemuDomainSecretAESSetup(virConnectPtr conn,
  * @priv: pointer to domain private object
  * @secinfo: Pointer to secret info
  * @srcalias: Alias of the disk/hostdev used to generate the secret alias
- * @secretUsageType: The virSecretUsageType
+ * @usageType: The virSecretUsageType
  * @username: username to use for authentication (may be NULL)
  * @seclookupdef: Pointer to seclookupdef data
  * @isLuks: True when is luks (generates different alias)
@@ -1089,22 +1089,22 @@ qemuDomainSecretSetup(virConnectPtr conn,
                       qemuDomainObjPrivatePtr priv,
                       qemuDomainSecretInfoPtr secinfo,
                       const char *srcalias,
-                      virSecretUsageType secretUsageType,
+                      virSecretUsageType usageType,
                       const char *username,
                       virSecretLookupTypeDefPtr seclookupdef,
                       bool isLuks)
 {
     if (virCryptoHaveCipher(VIR_CRYPTO_CIPHER_AES256CBC) &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
-        (secretUsageType == VIR_SECRET_USAGE_TYPE_CEPH ||
-         secretUsageType == VIR_SECRET_USAGE_TYPE_VOLUME ||
-         secretUsageType == VIR_SECRET_USAGE_TYPE_TLS)) {
+        (usageType == VIR_SECRET_USAGE_TYPE_CEPH ||
+         usageType == VIR_SECRET_USAGE_TYPE_VOLUME ||
+         usageType == VIR_SECRET_USAGE_TYPE_TLS)) {
         if (qemuDomainSecretAESSetup(conn, priv, secinfo, srcalias,
-                                     secretUsageType, username,
+                                     usageType, username,
                                      seclookupdef, isLuks) < 0)
             return -1;
     } else {
-        if (qemuDomainSecretPlainSetup(conn, secinfo, secretUsageType,
+        if (qemuDomainSecretPlainSetup(conn, secinfo, usageType,
                                        username, seclookupdef) < 0)
             return -1;
     }
@@ -1253,14 +1253,14 @@ qemuDomainSecretDiskPrepare(virConnectPtr conn,
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
     if (qemuDomainSecretDiskCapable(src)) {
-        virSecretUsageType secretUsageType = VIR_SECRET_USAGE_TYPE_ISCSI;
+        virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
 
         if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
-            secretUsageType = VIR_SECRET_USAGE_TYPE_CEPH;
+            usageType = VIR_SECRET_USAGE_TYPE_CEPH;
 
         if (!(diskPriv->secinfo =
               qemuDomainSecretInfoNew(conn, priv, disk->info.alias,
-                                      secretUsageType, src->auth->username,
+                                      usageType, src->auth->username,
                                       &src->auth->seclookupdef, false)))
               return -1;
     }
