@@ -3371,7 +3371,8 @@ qemuBuildMemoryBackendStr(unsigned long long size,
     }
 
     /* If none of the following is requested... */
-    if (!needHugepage && !userNodeset && !memAccess && !nodeSpecified &&
+    if (!needHugepage && !userNodeset && !nodeSpecified &&
+        memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT &&
         def->mem.source != VIR_DOMAIN_MEMORY_SOURCE_FILE && !force) {
         /* report back that using the new backend is not necessary
          * to achieve the desired configuration */
