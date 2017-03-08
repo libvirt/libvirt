@@ -628,11 +628,8 @@ virNetDevVPortTypeToString;
 
 
 # conf/network_conf.h
-virNetworkAssignDef;
-virNetworkBridgeInUse;
 virNetworkBridgeMACTableManagerTypeFromString;
 virNetworkBridgeMACTableManagerTypeToString;
-virNetworkConfigChangeSetup;
 virNetworkConfigFile;
 virNetworkDefCopy;
 virNetworkDefFormat;
@@ -644,35 +641,12 @@ virNetworkDefGetRouteByIndex;
 virNetworkDefParseFile;
 virNetworkDefParseNode;
 virNetworkDefParseString;
+virNetworkDefParseXML;
 virNetworkDefUpdateSection;
-virNetworkDeleteConfig;
 virNetworkForwardTypeToString;
 virNetworkIPDefNetmask;
 virNetworkIPDefPrefix;
-virNetworkLoadAllConfigs;
-virNetworkLoadAllState;
-virNetworkObjAssignDef;
-virNetworkObjEndAPI;
-virNetworkObjFindByName;
-virNetworkObjFindByNameLocked;
-virNetworkObjFindByUUID;
-virNetworkObjFindByUUIDLocked;
-virNetworkObjGetPersistentDef;
-virNetworkObjListExport;
-virNetworkObjListForEach;
-virNetworkObjListGetNames;
-virNetworkObjListNew;
-virNetworkObjListNumOfNetworks;
-virNetworkObjListPrune;
-virNetworkObjNew;
-virNetworkObjReplacePersistentDef;
-virNetworkObjSetDefTransient;
-virNetworkObjTaint;
-virNetworkObjUnsetDefTransient;
-virNetworkObjUpdate;
-virNetworkRemoveInactive;
 virNetworkSaveConfig;
-virNetworkSaveStatus;
 virNetworkSetBridgeMacAddr;
 virNetworkTaintTypeFromString;
 virNetworkTaintTypeToString;
@@ -942,6 +916,36 @@ virInterfaceObjLock;
 virInterfaceObjNumOfInterfaces;
 virInterfaceObjRemove;
 virInterfaceObjUnlock;
+
+
+# conf/virnetworkobj.h
+virNetworkAssignDef;
+virNetworkBridgeInUse;
+virNetworkConfigChangeSetup;
+virNetworkDeleteConfig;
+virNetworkLoadAllConfigs;
+virNetworkLoadAllState;
+virNetworkObjAssignDef;
+virNetworkObjEndAPI;
+virNetworkObjFindByName;
+virNetworkObjFindByNameLocked;
+virNetworkObjFindByUUID;
+virNetworkObjFindByUUIDLocked;
+virNetworkObjGetPersistentDef;
+virNetworkObjListExport;
+virNetworkObjListForEach;
+virNetworkObjListGetNames;
+virNetworkObjListNew;
+virNetworkObjListNumOfNetworks;
+virNetworkObjListPrune;
+virNetworkObjNew;
+virNetworkObjReplacePersistentDef;
+virNetworkObjSetDefTransient;
+virNetworkObjTaint;
+virNetworkObjUnsetDefTransient;
+virNetworkObjUpdate;
+virNetworkRemoveInactive;
+virNetworkSaveStatus;
 
 
 # conf/virnodedeviceobj.h

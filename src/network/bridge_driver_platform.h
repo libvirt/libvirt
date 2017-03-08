@@ -27,7 +27,7 @@
 # include "internal.h"
 # include "virthread.h"
 # include "virdnsmasq.h"
-# include "network_conf.h"
+# include "virnetworkobj.h"
 # include "object_event.h"
 
 /* Main driver state */

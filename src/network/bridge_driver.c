@@ -49,7 +49,6 @@
 #include "datatypes.h"
 #include "bridge_driver.h"
 #include "bridge_driver_platform.h"
-#include "network_conf.h"
 #include "device_conf.h"
 #include "driver.h"
 #include "virbuffer.h"

@@ -363,7 +363,8 @@ SECRET_EVENT_SOURCES =					\
 
 # Network driver generic impl APIs
 NETWORK_CONF_SOURCES =						\
-		conf/network_conf.c conf/network_conf.h \
+		conf/network_conf.c conf/network_conf.h		\
+		conf/virnetworkobj.c conf/virnetworkobj.h	\
 		conf/networkcommon_conf.c conf/networkcommon_conf.h
 
 # Network filter driver generic impl APIs

@@ -26,10 +26,10 @@
 # define __VIR_NETWORK__DRIVER_H
 
 # include "internal.h"
-# include "network_conf.h"
 # include "domain_conf.h"
 # include "vircommand.h"
 # include "virdnsmasq.h"
+# include "virnetworkobj.h"
 
 int networkRegister(void);
 

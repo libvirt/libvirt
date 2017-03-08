@@ -41,7 +41,7 @@
 #include "capabilities.h"
 #include "configmake.h"
 #include "viralloc.h"
-#include "network_conf.h"
+#include "virnetworkobj.h"
 #include "interface_conf.h"
 #include "domain_conf.h"
 #include "domain_event.h"
