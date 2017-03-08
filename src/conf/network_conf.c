@@ -80,6 +80,7 @@ virPortGroupDefClear(virPortGroupDefPtr def)
     def->bandwidth = NULL;
 }
 
+
 static void
 virNetworkForwardIfDefClear(virNetworkForwardIfDefPtr def)
 {
@@ -87,11 +88,13 @@ virNetworkForwardIfDefClear(virNetworkForwardIfDefPtr def)
         VIR_FREE(def->device.dev);
 }
 
+
 static void
 virNetworkForwardPfDefClear(virNetworkForwardPfDefPtr def)
 {
     VIR_FREE(def->dev);
 }
+
 
 static void
 virNetworkDHCPHostDefClear(virNetworkDHCPHostDefPtr def)
@@ -100,6 +103,7 @@ virNetworkDHCPHostDefClear(virNetworkDHCPHostDefPtr def)
     VIR_FREE(def->id);
     VIR_FREE(def->name);
 }
+
 
 static void
 virNetworkIPDefClear(virNetworkIPDefPtr def)
@@ -115,12 +119,14 @@ virNetworkIPDefClear(virNetworkIPDefPtr def)
     VIR_FREE(def->bootfile);
 }
 
+
 static void
 virNetworkDNSTxtDefClear(virNetworkDNSTxtDefPtr def)
 {
     VIR_FREE(def->name);
     VIR_FREE(def->value);
 }
+
 
 static void
 virNetworkDNSHostDefClear(virNetworkDNSHostDefPtr def)
@@ -129,6 +135,7 @@ virNetworkDNSHostDefClear(virNetworkDNSHostDefPtr def)
         VIR_FREE(def->names[--def->nnames]);
     VIR_FREE(def->names);
 }
+
 
 static void
 virNetworkDNSSrvDefClear(virNetworkDNSSrvDefPtr def)
@@ -172,6 +179,7 @@ virNetworkDNSDefClear(virNetworkDNSDefPtr def)
     }
 }
 
+
 static void
 virNetworkForwardDefClear(virNetworkForwardDefPtr def)
 {
@@ -186,6 +194,7 @@ virNetworkForwardDefClear(virNetworkForwardDefPtr def)
     VIR_FREE(def->ifs);
     def->nifs = def->npfs = 0;
 }
+
 
 void
 virNetworkDefFree(virNetworkDefPtr def)
@@ -225,6 +234,7 @@ virNetworkDefFree(virNetworkDefPtr def)
     VIR_FREE(def);
 }
 
+
 /*
  * virNetworkDefCopy:
  * @def: NetworkDef to copy
@@ -255,10 +265,12 @@ virNetworkDefCopy(virNetworkDefPtr def, unsigned int flags)
     return newDef;
 }
 
+
 /* return ips[index], or NULL if there aren't enough ips */
 virNetworkIPDefPtr
 virNetworkDefGetIPByIndex(const virNetworkDef *def,
-                          int family, size_t n)
+                          int family,
+                          size_t n)
 {
     size_t i;
 
@@ -279,10 +291,12 @@ virNetworkDefGetIPByIndex(const virNetworkDef *def,
     return NULL;
 }
 
+
 /* return routes[index], or NULL if there aren't enough routes */
 virNetDevIPRoutePtr
 virNetworkDefGetRouteByIndex(const virNetworkDef *def,
-                             int family, size_t n)
+                             int family,
+                             size_t n)
 {
     size_t i;
 
@@ -305,15 +319,18 @@ virNetworkDefGetRouteByIndex(const virNetworkDef *def,
     return NULL;
 }
 
+
 /* return number of 1 bits in netmask for the network's ipAddress,
  * or -1 on error
  */
-int virNetworkIPDefPrefix(const virNetworkIPDef *def)
+int
+virNetworkIPDefPrefix(const virNetworkIPDef *def)
 {
     return virSocketAddrGetIPPrefix(&def->address,
                                     &def->netmask,
                                     def->prefix);
 }
+
 
 /* Fill in a virSocketAddr with the proper netmask for this
  * definition, based on either the definition's netmask, or its
@@ -373,6 +390,7 @@ virSocketAddrRangeParseXML(const char *networkName,
     VIR_FREE(end);
     return ret;
 }
+
 
 static int
 virNetworkDHCPHostDefParseXML(const char *networkName,
@@ -494,6 +512,7 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
     return ret;
 }
 
+
 static int
 virNetworkDHCPDefParseXML(const char *networkName,
                           xmlNodePtr node,
@@ -561,6 +580,7 @@ virNetworkDHCPDefParseXML(const char *networkName,
     return ret;
 }
 
+
 static int
 virNetworkDNSHostDefParseXML(const char *networkName,
                              xmlNodePtr node,
@@ -627,6 +647,7 @@ virNetworkDNSHostDefParseXML(const char *networkName,
     virNetworkDNSHostDefClear(def);
     return -1;
 }
+
 
 /* This includes all characters used in the names of current
  * /etc/services and /etc/protocols files (on Fedora 20), except ".",
@@ -755,6 +776,7 @@ virNetworkDNSSrvDefParseXML(const char *networkName,
     return -1;
 }
 
+
 static int
 virNetworkDNSTxtDefParseXML(const char *networkName,
                             xmlNodePtr node,
@@ -794,6 +816,7 @@ virNetworkDNSTxtDefParseXML(const char *networkName,
     virNetworkDNSTxtDefClear(def);
     return -1;
 }
+
 
 static int
 virNetworkDNSDefParseXML(const char *networkName,
@@ -953,6 +976,7 @@ virNetworkDNSDefParseXML(const char *networkName,
     return ret;
 }
 
+
 static int
 virNetworkIPDefParseXML(const char *networkName,
                         xmlNodePtr node,
@@ -1108,6 +1132,7 @@ virNetworkIPDefParseXML(const char *networkName,
     return result;
 }
 
+
 static int
 virNetworkPortGroupParseXML(virPortGroupDefPtr def,
                             xmlNodePtr node,
@@ -1178,6 +1203,7 @@ virNetworkPortGroupParseXML(virPortGroupDefPtr def,
     ctxt->node = save;
     return result;
 }
+
 
 static int
 virNetworkForwardNatDefParseXML(const char *networkName,
@@ -1306,6 +1332,7 @@ virNetworkForwardNatDefParseXML(const char *networkName,
     ctxt->node = save;
     return ret;
 }
+
 
 static int
 virNetworkForwardDefParseXML(const char *networkName,
@@ -1554,6 +1581,7 @@ virNetworkForwardDefParseXML(const char *networkName,
     ctxt->node = save;
     return ret;
 }
+
 
 virNetworkDefPtr
 virNetworkDefParseXML(xmlXPathContextPtr ctxt)
@@ -1966,6 +1994,7 @@ virNetworkDefParseXML(xmlXPathContextPtr ctxt)
     return NULL;
 }
 
+
 static virNetworkDefPtr
 virNetworkDefParse(const char *xmlStr,
                    const char *filename)
@@ -1983,19 +2012,24 @@ virNetworkDefParse(const char *xmlStr,
     return def;
 }
 
-virNetworkDefPtr virNetworkDefParseString(const char *xmlStr)
+
+virNetworkDefPtr
+virNetworkDefParseString(const char *xmlStr)
 {
     return virNetworkDefParse(xmlStr, NULL);
 }
 
-virNetworkDefPtr virNetworkDefParseFile(const char *filename)
+
+virNetworkDefPtr
+virNetworkDefParseFile(const char *filename)
 {
     return virNetworkDefParse(NULL, filename);
 }
 
 
-virNetworkDefPtr virNetworkDefParseNode(xmlDocPtr xml,
-                                        xmlNodePtr root)
+virNetworkDefPtr
+virNetworkDefParseNode(xmlDocPtr xml,
+                       xmlNodePtr root)
 {
     xmlXPathContextPtr ctxt = NULL;
     virNetworkDefPtr def = NULL;
@@ -2129,6 +2163,7 @@ virNetworkDNSDefFormat(virBufferPtr buf,
     return 0;
 }
 
+
 static int
 virNetworkIPDefFormat(virBufferPtr buf,
                       const virNetworkIPDef *def)
@@ -2230,6 +2265,7 @@ virNetworkIPDefFormat(virBufferPtr buf,
     return result;
 }
 
+
 static int
 virPortGroupDefFormat(virBufferPtr buf,
                       const virPortGroupDef *def)
@@ -2251,6 +2287,7 @@ virPortGroupDefFormat(virBufferPtr buf,
     virBufferAddLit(buf, "</portgroup>\n");
     return 0;
 }
+
 
 static int
 virNetworkForwardNatDefFormat(virBufferPtr buf,
@@ -2301,6 +2338,7 @@ virNetworkForwardNatDefFormat(virBufferPtr buf,
     VIR_FREE(addrEnd);
     return ret;
 }
+
 
 int
 virNetworkDefFormatBuf(virBufferPtr buf,
@@ -2516,6 +2554,7 @@ virNetworkDefFormatBuf(virBufferPtr buf,
     return -1;
 }
 
+
 char *
 virNetworkDefFormat(const virNetworkDef *def,
                     unsigned int flags)
@@ -2535,16 +2574,20 @@ virNetworkDefFormat(const virNetworkDef *def,
     return NULL;
 }
 
+
 const char *
-virNetworkDefForwardIf(const virNetworkDef *def, size_t n)
+virNetworkDefForwardIf(const virNetworkDef *def,
+                       size_t n)
 {
     return ((def->forward.ifs && (def->forward.nifs > n) &&
              def->forward.ifs[n].type == VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV)
             ? def->forward.ifs[n].device.dev : NULL);
 }
 
-virPortGroupDefPtr virPortGroupFindByName(virNetworkDefPtr net,
-                                          const char *portgroup)
+
+virPortGroupDefPtr
+virPortGroupFindByName(virNetworkDefPtr net,
+                       const char *portgroup)
 {
     size_t i;
     for (i = 0; i < net->nPortGroups; i++) {
@@ -2559,9 +2602,11 @@ virPortGroupDefPtr virPortGroupFindByName(virNetworkDefPtr net,
     return NULL;
 }
 
-int virNetworkSaveXML(const char *configDir,
-                      virNetworkDefPtr def,
-                      const char *xml)
+
+int
+virNetworkSaveXML(const char *configDir,
+                  virNetworkDefPtr def,
+                  const char *xml)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *configFile = NULL;
@@ -2587,8 +2632,10 @@ int virNetworkSaveXML(const char *configDir,
     return ret;
 }
 
-int virNetworkSaveConfig(const char *configDir,
-                         virNetworkDefPtr def)
+
+int
+virNetworkSaveConfig(const char *configDir,
+                     virNetworkDefPtr def)
 {
     int ret = -1;
     char *xml;
@@ -2605,8 +2652,10 @@ int virNetworkSaveConfig(const char *configDir,
     return ret;
 }
 
-char *virNetworkConfigFile(const char *dir,
-                           const char *name)
+
+char *
+virNetworkConfigFile(const char *dir,
+                     const char *name)
 {
     char *ret = NULL;
 
@@ -2614,7 +2663,9 @@ char *virNetworkConfigFile(const char *dir,
     return ret;
 }
 
-void virNetworkSetBridgeMacAddr(virNetworkDefPtr def)
+
+void
+virNetworkSetBridgeMacAddr(virNetworkDefPtr def)
 {
     if (!def->mac_specified) {
         /* if the bridge doesn't have a mac address explicitly defined,
@@ -2626,6 +2677,7 @@ void virNetworkSetBridgeMacAddr(virNetworkDefPtr def)
     }
 }
 
+
 /* NetworkObj backend of the virNetworkUpdate API */
 
 static void
@@ -2636,12 +2688,14 @@ virNetworkDefUpdateNoSupport(virNetworkDefPtr def, const char *section)
                    section, def->name);
 }
 
+
 static void
 virNetworkDefUpdateUnknownCommand(unsigned int command)
 {
     virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                    _("unrecognized network update command code %d"), command);
 }
+
 
 static int
 virNetworkDefUpdateCheckElementName(virNetworkDefPtr def,
@@ -2658,6 +2712,7 @@ virNetworkDefUpdateCheckElementName(virNetworkDefPtr def,
     return 0;
 }
 
+
 static int
 virNetworkDefUpdateBridge(virNetworkDefPtr def,
                           unsigned int command ATTRIBUTE_UNUSED,
@@ -2669,6 +2724,7 @@ virNetworkDefUpdateBridge(virNetworkDefPtr def,
     virNetworkDefUpdateNoSupport(def, "bridge");
     return -1;
 }
+
 
 static int
 virNetworkDefUpdateDomain(virNetworkDefPtr def,
@@ -2682,6 +2738,7 @@ virNetworkDefUpdateDomain(virNetworkDefPtr def,
     return -1;
 }
 
+
 static int
 virNetworkDefUpdateIP(virNetworkDefPtr def,
                       unsigned int command ATTRIBUTE_UNUSED,
@@ -2693,6 +2750,7 @@ virNetworkDefUpdateIP(virNetworkDefPtr def,
     virNetworkDefUpdateNoSupport(def, "ip");
     return -1;
 }
+
 
 static virNetworkIPDefPtr
 virNetworkIPDefByIndex(virNetworkDefPtr def, int parentIndex)
@@ -2897,6 +2955,7 @@ virNetworkDefUpdateIPDHCPHost(virNetworkDefPtr def,
     return ret;
 }
 
+
 static int
 virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
                                unsigned int command,
@@ -2998,6 +3057,7 @@ virNetworkDefUpdateIPDHCPRange(virNetworkDefPtr def,
     return ret;
 }
 
+
 static int
 virNetworkDefUpdateForward(virNetworkDefPtr def,
                            unsigned int command ATTRIBUTE_UNUSED,
@@ -3009,6 +3069,7 @@ virNetworkDefUpdateForward(virNetworkDefPtr def,
     virNetworkDefUpdateNoSupport(def, "forward");
     return -1;
 }
+
 
 static int
 virNetworkDefUpdateForwardInterface(virNetworkDefPtr def,
@@ -3104,6 +3165,7 @@ virNetworkDefUpdateForwardInterface(virNetworkDefPtr def,
     return ret;
 }
 
+
 static int
 virNetworkDefUpdateForwardPF(virNetworkDefPtr def,
                              unsigned int command ATTRIBUTE_UNUSED,
@@ -3115,6 +3177,7 @@ virNetworkDefUpdateForwardPF(virNetworkDefPtr def,
     virNetworkDefUpdateNoSupport(def, "forward pf");
     return -1;
 }
+
 
 static int
 virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
@@ -3210,6 +3273,7 @@ virNetworkDefUpdatePortGroup(virNetworkDefPtr def,
     return ret;
 }
 
+
 static int
 virNetworkDefUpdateDNSHost(virNetworkDefPtr def,
                            unsigned int command ATTRIBUTE_UNUSED,
@@ -3304,6 +3368,7 @@ virNetworkDefUpdateDNSHost(virNetworkDefPtr def,
     return ret;
 }
 
+
 static int
 virNetworkDefUpdateDNSSrv(virNetworkDefPtr def,
                           unsigned int command ATTRIBUTE_UNUSED,
@@ -3390,6 +3455,7 @@ virNetworkDefUpdateDNSSrv(virNetworkDefPtr def,
     return ret;
 }
 
+
 static int
 virNetworkDefUpdateDNSTxt(virNetworkDefPtr def,
                           unsigned int command ATTRIBUTE_UNUSED,
@@ -3462,6 +3528,7 @@ virNetworkDefUpdateDNSTxt(virNetworkDefPtr def,
     virNetworkDNSTxtDefClear(&txt);
     return ret;
 }
+
 
 int
 virNetworkDefUpdateSection(virNetworkDefPtr def,
