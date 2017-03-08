@@ -124,10 +124,7 @@ char *qemuBuildControllerDevStr(const virDomainDef *domainDef,
                                 virQEMUCapsPtr qemuCaps,
                                 int *nusbcontroller);
 
-int qemuBuildMemoryBackendStr(unsigned long long size,
-                              unsigned long long pagesize,
-                              int guestNode,
-                              virBitmapPtr userNodeset,
+int qemuBuildMemoryBackendStr(virDomainMemoryDefPtr mem,
                               virBitmapPtr autoNodeset,
                               virDomainDefPtr def,
                               virQEMUCapsPtr qemuCaps,
