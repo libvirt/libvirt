@@ -87,4 +87,9 @@ void
 virQEMUCapsSetCPUModelInfo(virQEMUCapsPtr qemuCaps,
                            virDomainVirtType type,
                            qemuMonitorCPUModelInfoPtr modelInfo);
+
+virCPUDefPtr
+virQEMUCapsProbeHostCPUForEmulator(virCapsPtr caps,
+                                   virQEMUCapsPtr qemuCaps,
+                                   virDomainVirtType type);
 #endif

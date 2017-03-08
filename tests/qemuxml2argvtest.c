@@ -2473,8 +2473,10 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/qemuxml2argvmock.so",
-                       abs_builddir "/.libs/virrandommock.so")
+VIRT_TEST_MAIN_PRELOAD(mymain,
+                       abs_builddir "/.libs/qemuxml2argvmock.so",
+                       abs_builddir "/.libs/virrandommock.so",
+                       abs_builddir "/.libs/qemucpumock.so")
 
 #else
 

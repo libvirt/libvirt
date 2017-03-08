@@ -1074,6 +1074,26 @@ virQEMUCapsProbeHostCPU(virCapsPtr caps)
 }
 
 
+virCPUDefPtr
+virQEMUCapsProbeHostCPUForEmulator(virCapsPtr caps,
+                                   virQEMUCapsPtr qemuCaps,
+                                   virDomainVirtType type)
+{
+    size_t nmodels;
+    char **models;
+    virCPUDefPtr cpu;
+
+    if (virQEMUCapsGetCPUDefinitions(qemuCaps, type, &models, &nmodels) < 0)
+        return NULL;
+
+    cpu = virCPUGetHost(caps->host.arch, VIR_CPU_TYPE_GUEST, NULL,
+                        (const char **) models, nmodels);
+
+    virStringListFreeCount(models, nmodels);
+    return cpu;
+}
+
+
 static int
 virQEMUCapsInitPages(virCapsPtr caps)
 {
@@ -3207,6 +3227,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
                             virDomainVirtType type)
 {
     virCPUDefPtr cpu = NULL;
+    virCPUDefPtr hostCPU = NULL;
     int rc;
 
     if (!caps || !virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch))
@@ -3223,11 +3244,11 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
     if ((rc = virQEMUCapsInitCPUModel(qemuCaps, type, cpu)) < 0) {
         goto error;
     } else if (rc == 1) {
-        VIR_DEBUG("No host CPU model info from QEMU; using host capabilities");
-        if (!caps->host.cpu || !caps->host.cpu->model)
-            goto error;
+        VIR_DEBUG("No host CPU model info from QEMU; probing host CPU directly");
 
-        if (virCPUDefCopyModelFilter(cpu, caps->host.cpu, true,
+        hostCPU = virQEMUCapsProbeHostCPUForEmulator(caps, qemuCaps, type);
+        if (!hostCPU ||
+            virCPUDefCopyModelFilter(cpu, hostCPU, true,
                                      virQEMUCapsCPUFilterFeatures,
                                      qemuCaps) < 0)
             goto error;
@@ -3238,11 +3259,14 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
     else
         qemuCaps->tcgCPUModel = cpu;
 
+ cleanup:
+    virCPUDefFree(hostCPU);
     return;
 
  error:
     virCPUDefFree(cpu);
     virResetLastError();
+    goto cleanup;
 }
 
 

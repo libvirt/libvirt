@@ -284,6 +284,7 @@ test_libraries += libqemumonitortestutils.la \
 		qemuxml2xmlmock.la \
 		qemucaps2xmlmock.la \
 		qemucapsprobemock.la \
+		qemucpumock.la \
 		$(NULL)
 endif WITH_QEMU
 
@@ -549,10 +550,16 @@ libqemutestdriver_la_SOURCES =
 libqemutestdriver_la_LDFLAGS = $(QEMULIB_LDFLAGS)
 libqemutestdriver_la_LIBADD = $(qemu_LDADDS)
 
+qemucpumock_la_SOURCES = \
+	qemucpumock.c
+qemucpumock_la_CFLAGS = $(AM_CFLAGS)
+qemucpumock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+qemucpumock_la_LIBADD = $(MOCKLIBS_LIBS)
+
 qemuxml2argvtest_SOURCES = \
 	qemuxml2argvtest.c testutilsqemu.c testutilsqemu.h \
 	testutils.c testutils.h
-qemuxml2argvtest_LDADD = $(qemu_LDADDS) $(LDADDS) $(LIBXML_LIBS)
+qemuxml2argvtest_LDADD = libqemutestdriver.la $(LDADDS) $(LIBXML_LIBS)
 
 qemuxml2argvmock_la_SOURCES = \
 	qemuxml2argvmock.c
@@ -949,7 +956,7 @@ domaincapstest_LDADD = $(LDADDS)
 
 if WITH_QEMU
 domaincapstest_SOURCES += testutilsqemu.c testutilsqemu.h
-domaincapstest_LDADD += $(qemu_LDADDS) $(GNULIB_LIBS)
+domaincapstest_LDADD += libqemutestdriver.la $(GNULIB_LIBS)
 endif WITH_QEMU
 
 if WITH_LIBXL
