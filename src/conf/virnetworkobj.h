@@ -90,9 +90,9 @@ typedef bool
                            virNetworkDefPtr def);
 
 virNetworkObjPtr
-virNetworkAssignDef(virNetworkObjListPtr nets,
-                    virNetworkDefPtr def,
-                    unsigned int flags);
+virNetworkObjAssignDef(virNetworkObjListPtr nets,
+                       virNetworkDefPtr def,
+                       unsigned int flags);
 
 void
 virNetworkObjUpdateAssignDef(virNetworkObjPtr network,
@@ -113,47 +113,32 @@ int
 virNetworkObjReplacePersistentDef(virNetworkObjPtr network,
                                   virNetworkDefPtr def);
 
-int
-virNetworkConfigChangeSetup(virNetworkObjPtr dom,
-                            unsigned int flags);
-
 void
-virNetworkRemoveInactive(virNetworkObjListPtr nets,
-                         virNetworkObjPtr net);
+virNetworkObjRemoveInactive(virNetworkObjListPtr nets,
+                            virNetworkObjPtr net);
 
 int
-virNetworkSaveStatus(const char *statusDir,
-                     virNetworkObjPtr net) ATTRIBUTE_RETURN_CHECK;
-
-virNetworkObjPtr
-virNetworkLoadConfig(virNetworkObjListPtr nets,
-                     const char *configDir,
-                     const char *autostartDir,
-                     const char *file);
-
-virNetworkObjPtr
-virNetworkLoadState(virNetworkObjListPtr nets,
-                    const char *stateDir,
-                    const char *name);
+virNetworkObjSaveStatus(const char *statusDir,
+                        virNetworkObjPtr net) ATTRIBUTE_RETURN_CHECK;
 
 int
-virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
-                         const char *configDir,
-                         const char *autostartDir);
+virNetworkObjLoadAllConfigs(virNetworkObjListPtr nets,
+                            const char *configDir,
+                            const char *autostartDir);
 
 int
-virNetworkLoadAllState(virNetworkObjListPtr nets,
-                       const char *stateDir);
+virNetworkObjLoadAllState(virNetworkObjListPtr nets,
+                          const char *stateDir);
 
 int
-virNetworkDeleteConfig(const char *configDir,
-                       const char *autostartDir,
-                       virNetworkObjPtr net);
+virNetworkObjDeleteConfig(const char *configDir,
+                          const char *autostartDir,
+                          virNetworkObjPtr net);
 
 int
-virNetworkBridgeInUse(virNetworkObjListPtr nets,
-                      const char *bridge,
-                      const char *skipname);
+virNetworkObjBridgeInUse(virNetworkObjListPtr nets,
+                         const char *bridge,
+                         const char *skipname);
 
 int
 virNetworkObjUpdate(virNetworkObjPtr obj,

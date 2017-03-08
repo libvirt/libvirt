@@ -363,7 +363,7 @@ networkRemoveInactive(virNetworkDriverStatePtr driver,
     unlink(statusfile);
 
     /* remove the network definition */
-    virNetworkRemoveInactive(driver->networks, net);
+    virNetworkObjRemoveInactive(driver->networks, net);
 
     ret = 0;
 
@@ -753,13 +753,13 @@ networkStateInitialize(bool privileged,
     if (!(network_driver->networks = virNetworkObjListNew()))
         goto error;
 
-    if (virNetworkLoadAllState(network_driver->networks,
-                               network_driver->stateDir) < 0)
+    if (virNetworkObjLoadAllState(network_driver->networks,
+                                  network_driver->stateDir) < 0)
         goto error;
 
-    if (virNetworkLoadAllConfigs(network_driver->networks,
-                                 network_driver->networkConfigDir,
-                                 network_driver->networkAutostartDir) < 0)
+    if (virNetworkObjLoadAllConfigs(network_driver->networks,
+                                    network_driver->networkConfigDir,
+                                    network_driver->networkAutostartDir) < 0)
         goto error;
 
     /* Update the internal status of all allegedly active
@@ -841,11 +841,11 @@ networkStateReload(void)
     if (!network_driver)
         return 0;
 
-    virNetworkLoadAllState(network_driver->networks,
-                           network_driver->stateDir);
-    virNetworkLoadAllConfigs(network_driver->networks,
-                             network_driver->networkConfigDir,
-                             network_driver->networkAutostartDir);
+    virNetworkObjLoadAllState(network_driver->networks,
+                              network_driver->stateDir);
+    virNetworkObjLoadAllConfigs(network_driver->networks,
+                                network_driver->networkConfigDir,
+                                network_driver->networkAutostartDir);
     networkReloadFirewallRules(network_driver);
     networkRefreshDaemons(network_driver);
     virNetworkObjListForEach(network_driver->networks,
@@ -2751,7 +2751,7 @@ networkStartNetwork(virNetworkDriverStatePtr driver,
      * is setup.
      */
     VIR_DEBUG("Writing network status to disk");
-    if (virNetworkSaveStatus(driver->stateDir, network) < 0)
+    if (virNetworkObjSaveStatus(driver->stateDir, network) < 0)
         goto cleanup;
 
     network->active = 1;
@@ -3076,7 +3076,7 @@ networkFindUnusedBridgeName(virNetworkObjListPtr nets,
          * from virNetDevExists(), just in case it isn't implemented
          * on this platform (probably impossible).
          */
-        if (!(virNetworkBridgeInUse(nets, newname, def->name) ||
+        if (!(virNetworkObjBridgeInUse(nets, newname, def->name) ||
               virNetDevExists(newname) == 1)) {
             VIR_FREE(def->bridge); /*could contain template */
             def->bridge = newname;
@@ -3112,7 +3112,7 @@ networkBridgeNameValidate(virNetworkObjListPtr nets,
     int ret = -1;
 
     if (def->bridge && !strstr(def->bridge, "%d")) {
-        if (virNetworkBridgeInUse(nets, def->bridge, def->name)) {
+        if (virNetworkObjBridgeInUse(nets, def->bridge, def->name)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("bridge name '%s' already in use."),
                            def->bridge);
@@ -3429,15 +3429,14 @@ static virNetworkPtr networkCreateXML(virConnectPtr conn, const char *xml)
      * we assign the def with live = true in anticipation that it will
      * be started momentarily.
      */
-    if (!(network = virNetworkAssignDef(driver->networks, def,
-                                        VIR_NETWORK_OBJ_LIST_ADD_LIVE |
-                                        VIR_NETWORK_OBJ_LIST_ADD_CHECK_LIVE)))
+    if (!(network = virNetworkObjAssignDef(driver->networks, def,
+                                           VIR_NETWORK_OBJ_LIST_ADD_LIVE |
+                                           VIR_NETWORK_OBJ_LIST_ADD_CHECK_LIVE)))
         goto cleanup;
     def = NULL;
 
     if (networkStartNetwork(driver, network) < 0) {
-        virNetworkRemoveInactive(driver->networks,
-                                 network);
+        virNetworkObjRemoveInactive(driver->networks, network);
         goto cleanup;
     }
 
@@ -3475,7 +3474,7 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml)
     if (networkValidate(driver, def) < 0)
         goto cleanup;
 
-    if (!(network = virNetworkAssignDef(driver->networks, def, 0)))
+    if (!(network = virNetworkObjAssignDef(driver->networks, def, 0)))
         goto cleanup;
 
     /* def was assigned to network object */
@@ -3483,7 +3482,7 @@ static virNetworkPtr networkDefineXML(virConnectPtr conn, const char *xml)
 
     if (virNetworkSaveConfig(driver->networkConfigDir, def) < 0) {
         if (!virNetworkObjIsActive(network)) {
-            virNetworkRemoveInactive(driver->networks, network);
+            virNetworkObjRemoveInactive(driver->networks, network);
             goto cleanup;
         }
         /* if network was active already, just undo new persistent
@@ -3535,9 +3534,9 @@ networkUndefine(virNetworkPtr net)
     }
 
     /* remove autostart link */
-    if (virNetworkDeleteConfig(driver->networkConfigDir,
-                               driver->networkAutostartDir,
-                               network) < 0)
+    if (virNetworkObjDeleteConfig(driver->networkConfigDir,
+                                  driver->networkAutostartDir,
+                                  network) < 0)
         goto cleanup;
 
     event = virNetworkEventLifecycleNew(network->def->name,
@@ -3725,10 +3724,8 @@ networkUpdate(virNetworkPtr net,
         }
 
         /* save current network state to disk */
-        if ((ret = virNetworkSaveStatus(driver->stateDir,
-                                        network)) < 0) {
+        if ((ret = virNetworkObjSaveStatus(driver->stateDir, network)) < 0)
             goto cleanup;
-        }
     }
 
     /* call the 'updated' network hook script */
@@ -5312,7 +5309,7 @@ networkPlugBandwidthImpl(virNetworkObjPtr net,
     /* update sum of 'floor'-s of attached NICs */
     net->floor_sum += ifaceBand->in->floor;
     /* update status file */
-    if (virNetworkSaveStatus(driver->stateDir, net) < 0) {
+    if (virNetworkObjSaveStatus(driver->stateDir, net) < 0) {
         ignore_value(virBitmapClearBit(net->class_id, class_id));
         net->floor_sum -= ifaceBand->in->floor;
         iface->data.network.actual->class_id = 0;
@@ -5404,7 +5401,7 @@ networkUnplugBandwidth(virNetworkObjPtr net,
         ignore_value(virBitmapClearBit(net->class_id,
                                        iface->data.network.actual->class_id));
         /* update status file */
-        if (virNetworkSaveStatus(driver->stateDir, net) < 0) {
+        if (virNetworkObjSaveStatus(driver->stateDir, net) < 0) {
             net->floor_sum += ifaceBand->in->floor;
             ignore_value(virBitmapSetBit(net->class_id,
                                          iface->data.network.actual->class_id));
@@ -5548,7 +5545,7 @@ networkBandwidthUpdate(virDomainNetDefPtr iface,
 
         if (virNetDevBandwidthUpdateRate(network->def->bridge, 2,
                                          network->def->bandwidth, new_rate) < 0 ||
-            virNetworkSaveStatus(driver->stateDir, network) < 0) {
+            virNetworkObjSaveStatus(driver->stateDir, network) < 0) {
             /* Ouch, rollback */
             network->floor_sum -= newBandwidth->in->floor;
             network->floor_sum += ifaceBand->in->floor;

@@ -348,9 +348,9 @@ virNetworkObjUpdateAssignDef(virNetworkObjPtr network,
  * If flags is zero, network is considered as inactive and persistent.
  */
 static virNetworkObjPtr
-virNetworkAssignDefLocked(virNetworkObjListPtr nets,
-                          virNetworkDefPtr def,
-                          unsigned int flags)
+virNetworkObjAssignDefLocked(virNetworkObjListPtr nets,
+                             virNetworkDefPtr def,
+                             unsigned int flags)
 {
     virNetworkObjPtr network;
     virNetworkObjPtr ret = NULL;
@@ -416,7 +416,7 @@ virNetworkAssignDefLocked(virNetworkObjListPtr nets,
 
 
 /*
- * virNetworkAssignDef:
+ * virNetworkObjAssignDef:
  * @nets: list of all networks
  * @def: the new NetworkDef (will be consumed by this function iff successful)
  * @flags: bitwise-OR of VIR_NETWORK_OBJ_LIST_ADD_* flags
@@ -426,19 +426,19 @@ virNetworkAssignDefLocked(virNetworkObjListPtr nets,
  * def. For an existing network, use "live" and current state of the
  * network to determine which to replace.
  *
- * Look at virNetworkAssignDefLocked() for @flags description.
+ * Look at virNetworkObjAssignDefLocked() for @flags description.
  *
  * Returns NULL on error, virNetworkObjPtr on success.
  */
 virNetworkObjPtr
-virNetworkAssignDef(virNetworkObjListPtr nets,
-                    virNetworkDefPtr def,
-                    unsigned int flags)
+virNetworkObjAssignDef(virNetworkObjListPtr nets,
+                       virNetworkDefPtr def,
+                       unsigned int flags)
 {
     virNetworkObjPtr network;
 
     virObjectLock(nets);
-    network = virNetworkAssignDefLocked(nets, def, flags);
+    network = virNetworkObjAssignDefLocked(nets, def, flags);
     virObjectUnlock(nets);
     return network;
 }
@@ -534,7 +534,7 @@ virNetworkObjReplacePersistentDef(virNetworkObjPtr network,
 
 
 /*
- * virNetworkConfigChangeSetup:
+ * virNetworkObjConfigChangeSetup:
  *
  * 1) checks whether network state is consistent with the requested
  *    type of modification.
@@ -544,9 +544,9 @@ virNetworkObjReplacePersistentDef(virNetworkObjPtr network,
  *
  * Returns 0 on success, -1 on error.
  */
-int
-virNetworkConfigChangeSetup(virNetworkObjPtr network,
-                            unsigned int flags)
+static int
+virNetworkObjConfigChangeSetup(virNetworkObjPtr network,
+                               unsigned int flags)
 {
     bool isActive;
     int ret = -1;
@@ -580,8 +580,8 @@ virNetworkConfigChangeSetup(virNetworkObjPtr network,
 
 
 void
-virNetworkRemoveInactive(virNetworkObjListPtr nets,
-                         virNetworkObjPtr net)
+virNetworkObjRemoveInactive(virNetworkObjListPtr nets,
+                            virNetworkObjPtr net)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
@@ -637,8 +637,8 @@ virNetworkObjFormat(virNetworkObjPtr net,
 
 
 int
-virNetworkSaveStatus(const char *statusDir,
-                     virNetworkObjPtr network)
+virNetworkObjSaveStatus(const char *statusDir,
+                        virNetworkObjPtr network)
 {
     int ret = -1;
     int flags = 0;
@@ -657,7 +657,7 @@ virNetworkSaveStatus(const char *statusDir,
 }
 
 
-virNetworkObjPtr
+static virNetworkObjPtr
 virNetworkLoadState(virNetworkObjListPtr nets,
                     const char *stateDir,
                     const char *name)
@@ -752,7 +752,8 @@ virNetworkLoadState(virNetworkObjListPtr nets,
     }
 
     /* create the object */
-    if (!(net = virNetworkAssignDef(nets, def, VIR_NETWORK_OBJ_LIST_ADD_LIVE)))
+    if (!(net = virNetworkObjAssignDef(nets, def,
+                                       VIR_NETWORK_OBJ_LIST_ADD_LIVE)))
         goto error;
     /* do not put any "goto error" below this comment */
 
@@ -782,7 +783,7 @@ virNetworkLoadState(virNetworkObjListPtr nets,
 }
 
 
-virNetworkObjPtr
+static virNetworkObjPtr
 virNetworkLoadConfig(virNetworkObjListPtr nets,
                      const char *configDir,
                      const char *autostartDir,
@@ -827,7 +828,7 @@ virNetworkLoadConfig(virNetworkObjListPtr nets,
         def->mac_specified = false;
     }
 
-    if (!(net = virNetworkAssignDef(nets, def, 0)))
+    if (!(net = virNetworkObjAssignDef(nets, def, 0)))
         goto error;
 
     net->autostart = autostart;
@@ -846,8 +847,8 @@ virNetworkLoadConfig(virNetworkObjListPtr nets,
 
 
 int
-virNetworkLoadAllState(virNetworkObjListPtr nets,
-                       const char *stateDir)
+virNetworkObjLoadAllState(virNetworkObjListPtr nets,
+                          const char *stateDir)
 {
     DIR *dir;
     struct dirent *entry;
@@ -873,9 +874,9 @@ virNetworkLoadAllState(virNetworkObjListPtr nets,
 
 
 int
-virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
-                         const char *configDir,
-                         const char *autostartDir)
+virNetworkObjLoadAllConfigs(virNetworkObjListPtr nets,
+                            const char *configDir,
+                            const char *autostartDir)
 {
     DIR *dir;
     struct dirent *entry;
@@ -906,9 +907,9 @@ virNetworkLoadAllConfigs(virNetworkObjListPtr nets,
 
 
 int
-virNetworkDeleteConfig(const char *configDir,
-                       const char *autostartDir,
-                       virNetworkObjPtr net)
+virNetworkObjDeleteConfig(const char *configDir,
+                          const char *autostartDir,
+                          virNetworkObjPtr net)
 {
     char *configFile = NULL;
     char *autostartLink = NULL;
@@ -939,19 +940,19 @@ virNetworkDeleteConfig(const char *configDir,
 }
 
 
-struct virNetworkBridgeInUseHelperData {
+struct virNetworkObjBridgeInUseHelperData {
     const char *bridge;
     const char *skipname;
 };
 
 static int
-virNetworkBridgeInUseHelper(const void *payload,
-                            const void *name ATTRIBUTE_UNUSED,
-                            const void *opaque)
+virNetworkObjBridgeInUseHelper(const void *payload,
+                               const void *name ATTRIBUTE_UNUSED,
+                               const void *opaque)
 {
     int ret;
     virNetworkObjPtr net = (virNetworkObjPtr) payload;
-    const struct virNetworkBridgeInUseHelperData *data = opaque;
+    const struct virNetworkObjBridgeInUseHelperData *data = opaque;
 
     virObjectLock(net);
     if (data->skipname &&
@@ -971,15 +972,15 @@ virNetworkBridgeInUseHelper(const void *payload,
 
 
 int
-virNetworkBridgeInUse(virNetworkObjListPtr nets,
-                      const char *bridge,
-                      const char *skipname)
+virNetworkObjBridgeInUse(virNetworkObjListPtr nets,
+                         const char *bridge,
+                         const char *skipname)
 {
     virNetworkObjPtr obj;
-    struct virNetworkBridgeInUseHelperData data = {bridge, skipname};
+    struct virNetworkObjBridgeInUseHelperData data = {bridge, skipname};
 
     virObjectLock(nets);
-    obj = virHashSearch(nets->objs, virNetworkBridgeInUseHelper, &data);
+    obj = virHashSearch(nets->objs, virNetworkObjBridgeInUseHelper, &data);
     virObjectUnlock(nets);
 
     return obj != NULL;
@@ -1012,7 +1013,7 @@ virNetworkObjUpdate(virNetworkObjPtr network,
     virNetworkDefPtr livedef = NULL, configdef = NULL;
 
     /* normalize config data, and check for common invalid requests. */
-    if (virNetworkConfigChangeSetup(network, flags) < 0)
+    if (virNetworkObjConfigChangeSetup(network, flags) < 0)
        goto cleanup;
 
     if (flags & VIR_NETWORK_UPDATE_AFFECT_LIVE) {

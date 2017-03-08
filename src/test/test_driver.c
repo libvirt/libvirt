@@ -980,7 +980,7 @@ testParseNetworks(testDriverPtr privconn,
         if (!def)
             goto error;
 
-        if (!(obj = virNetworkAssignDef(privconn->networks, def, 0))) {
+        if (!(obj = virNetworkObjAssignDef(privconn->networks, def, 0))) {
             virNetworkDefFree(def);
             goto error;
         }
@@ -3367,9 +3367,9 @@ static virNetworkPtr testNetworkCreateXML(virConnectPtr conn, const char *xml)
     if ((def = virNetworkDefParseString(xml)) == NULL)
         goto cleanup;
 
-    if (!(net = virNetworkAssignDef(privconn->networks, def,
-                                    VIR_NETWORK_OBJ_LIST_ADD_LIVE |
-                                    VIR_NETWORK_OBJ_LIST_ADD_CHECK_LIVE)))
+    if (!(net = virNetworkObjAssignDef(privconn->networks, def,
+                                       VIR_NETWORK_OBJ_LIST_ADD_LIVE |
+                                       VIR_NETWORK_OBJ_LIST_ADD_CHECK_LIVE)))
         goto cleanup;
     def = NULL;
     net->active = 1;
@@ -3399,7 +3399,7 @@ virNetworkPtr testNetworkDefineXML(virConnectPtr conn, const char *xml)
     if ((def = virNetworkDefParseString(xml)) == NULL)
         goto cleanup;
 
-    if (!(net = virNetworkAssignDef(privconn->networks, def, 0)))
+    if (!(net = virNetworkObjAssignDef(privconn->networks, def, 0)))
         goto cleanup;
     def = NULL;
 
@@ -3436,7 +3436,7 @@ static int testNetworkUndefine(virNetworkPtr network)
                                         VIR_NETWORK_EVENT_UNDEFINED,
                                         0);
 
-    virNetworkRemoveInactive(privconn->networks, privnet);
+    virNetworkObjRemoveInactive(privconn->networks, privnet);
     ret = 0;
 
  cleanup:
@@ -3530,7 +3530,7 @@ static int testNetworkDestroy(virNetworkPtr network)
                                         VIR_NETWORK_EVENT_STOPPED,
                                         0);
     if (!privnet->persistent)
-        virNetworkRemoveInactive(privconn->networks, privnet);
+        virNetworkObjRemoveInactive(privconn->networks, privnet);
 
     ret = 0;
 
