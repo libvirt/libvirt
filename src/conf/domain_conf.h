@@ -2726,6 +2726,10 @@ typedef enum {
     VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE = 1 << 10,
     /* skip parsing of security labels */
     VIR_DOMAIN_DEF_PARSE_SKIP_SECLABEL        = 1 << 11,
+    /* Allows updates in post parse callback for incoming persistent migration
+     * that would break ABI otherwise.  This should be used only if it's safe
+     * to do such change. */
+    VIR_DOMAIN_DEF_PARSE_ABI_UPDATE_MIGRATION = 1 << 12,
 } virDomainDefParseFlags;
 
 typedef enum {

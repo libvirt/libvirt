@@ -3818,7 +3818,8 @@ virDomainDefPostParseMemory(virDomainDefPtr def,
     /* Attempt to infer the initial memory size from the sum NUMA memory sizes
      * in case ABI updates are allowed or the <memory> element wasn't specified */
     if (def->mem.total_memory == 0 ||
-        parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE)
+        parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE ||
+        parseFlags & VIR_DOMAIN_DEF_PARSE_ABI_UPDATE_MIGRATION)
         numaMemory = virDomainNumaGetMemorySize(def->numa);
 
     /* calculate the sizes of hotplug memory */

@@ -1173,7 +1173,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookiePtr mig,
         mig->persistent = virDomainDefParseNode(doc, nodes[0],
                                                 caps, driver->xmlopt, NULL,
                                                 VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                                VIR_DOMAIN_DEF_PARSE_ABI_UPDATE |
+                                                VIR_DOMAIN_DEF_PARSE_ABI_UPDATE_MIGRATION |
                                                 VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
         if (!mig->persistent) {
             /* virDomainDefParseNode already reported
