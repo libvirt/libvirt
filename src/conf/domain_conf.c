@@ -4737,8 +4737,7 @@ virDomainDiskAddressDiskBusCompatibility(virDomainDiskBus bus,
 
 
 static int
-virDomainDiskDefValidate(const virDomainDef *def,
-                         const virDomainDiskDef *disk)
+virDomainDiskDefValidate(const virDomainDiskDef *disk)
 {
     /* Validate LUN configuration */
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
@@ -4766,24 +4765,6 @@ virDomainDiskDefValidate(const virDomainDef *def,
                        disk->dst,
                        virDomainDiskBusTypeToString(disk->bus));
         return -1;
-    }
-
-    if (disk->iothread > 0) {
-        if (disk->bus != VIR_DOMAIN_DISK_BUS_VIRTIO ||
-            (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-             disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("IOThreads are only available for virtio pci and "
-                             "virtio ccw disk"));
-            return -1;
-        }
-
-        if (!virDomainIOThreadIDFind(def, disk->iothread)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid IOThread id '%u' for disk '%s'"),
-                           disk->iothread, disk->dst);
-            return -1;
-        }
     }
 
     return 0;
@@ -4837,56 +4818,18 @@ virDomainNetDefValidate(const virDomainNetDef *net)
 
 
 static int
-virDomainControllerDefValidate(const virDomainDef *def,
-                               const virDomainControllerDef *cont)
-{
-    if (cont->iothread > 0) {
-        if (cont->type != VIR_DOMAIN_CONTROLLER_TYPE_SCSI ||
-            cont->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("IOThreads are only supported for virtio-scsi "
-                             "controllers, model is '%s'"),
-                           virDomainControllerModelSCSITypeToString(cont->model));
-            return -1;
-        }
-
-        if (cont->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-            cont->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("IOThreads are only available for virtio pci and "
-                             "virtio ccw controllers"));
-            return -1;
-        }
-
-        if (!virDomainIOThreadIDFind(def, cont->iothread)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid IOThread id '%u' for controller '%s'"),
-                           cont->iothread,
-                           virDomainControllerTypeToString(cont->type));
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-
-static int
 virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
                                    const virDomainDef *def)
 {
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
-        return virDomainDiskDefValidate(def, dev->data.disk);
+        return virDomainDiskDefValidate(dev->data.disk);
 
     case VIR_DOMAIN_DEVICE_REDIRDEV:
         return virDomainRedirdevDefValidate(def, dev->data.redirdev);
 
     case VIR_DOMAIN_DEVICE_NET:
         return virDomainNetDefValidate(dev->data.net);
-
-    case VIR_DOMAIN_DEVICE_CONTROLLER:
-        return virDomainControllerDefValidate(def, dev->data.controller);
 
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
@@ -4895,6 +4838,7 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_HOSTDEV:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
