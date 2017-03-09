@@ -1,0 +1,22 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-aarch64 \
+-name guest \
+-S \
+-M virt \
+-cpu cortex-a57 \
+-drive file=/usr/share/AAVMF/AAVMF_CODE.fd,if=pflash,format=raw,unit=0,\
+readonly=on \
+-drive file=/var/lib/libvirt/qemu/nvram/guest_VARS.fd,if=pflash,format=raw,\
+unit=1 \
+-m 1024 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 496d7ea8-9739-544b-4ebd-ef08be936e8b \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/lib/domain--1-guest/monitor.sock,server,nowait \
+-boot c

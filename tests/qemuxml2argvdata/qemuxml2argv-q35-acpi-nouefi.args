@@ -1,0 +1,21 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/home/test \
+USER=test \
+LOGNAME=test \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-x86_64 \
+-name guest \
+-S \
+-M q35 \
+-cpu Haswell \
+-m 1024 \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 496d7ea8-9739-544b-4ebd-ef08be936e8b \
+-nographic \
+-nodefaults \
+-monitor unix:/tmp/lib/domain--1-guest/monitor.sock,server,nowait \
+-boot c \
+-kernel /var/lib/libvirt/images/guest.vmlinuz \
+-initrd /var/lib/libvirt/images/guest.initramfs \
+-append 'rw root=/dev/vda rootwait'

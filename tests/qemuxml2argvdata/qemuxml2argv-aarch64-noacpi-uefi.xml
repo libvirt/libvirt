@@ -1,0 +1,18 @@
+<domain type='qemu'>
+  <name>guest</name>
+  <uuid>496d7ea8-9739-544b-4ebd-ef08be936e8b</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='aarch64' machine='virt'>hvm</type>
+    <loader readonly='yes' type='pflash'>/usr/share/AAVMF/AAVMF_CODE.fd</loader>
+    <nvram>/var/lib/libvirt/qemu/nvram/guest_VARS.fd</nvram>
+  </os>
+  <cpu mode='custom'>
+    <model>cortex-a57</model>
+  </cpu>
+  <devices>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <memballoon model='none'/>
+  </devices>
+</domain>
