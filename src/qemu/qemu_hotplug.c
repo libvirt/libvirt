@@ -1531,6 +1531,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriverPtr driver,
 void
 qemuDomainDelTLSObjects(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
+                        qemuDomainAsyncJob asyncJob,
                         const char *secAlias,
                         const char *tlsAlias)
 {
@@ -1542,7 +1543,8 @@ qemuDomainDelTLSObjects(virQEMUDriverPtr driver,
 
     orig_err = virSaveLastError();
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        goto cleanup;
 
     if (tlsAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, tlsAlias));
@@ -1552,6 +1554,7 @@ qemuDomainDelTLSObjects(virQEMUDriverPtr driver,
 
     ignore_value(qemuDomainObjExitMonitor(driver, vm));
 
+ cleanup:
     if (orig_err) {
         virSetError(orig_err);
         virFreeError(orig_err);
@@ -1562,6 +1565,7 @@ qemuDomainDelTLSObjects(virQEMUDriverPtr driver,
 int
 qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
                         virDomainObjPtr vm,
+                        qemuDomainAsyncJob asyncJob,
                         const char *secAlias,
                         virJSONValuePtr *secProps,
                         const char *tlsAlias,
@@ -1574,7 +1578,8 @@ qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
     if (!tlsAlias && !secAlias)
         return 0;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
 
     if (secAlias) {
         rc = qemuMonitorAddObject(priv->mon, "secret",
@@ -1601,7 +1606,7 @@ qemuDomainAddTLSObjects(virQEMUDriverPtr driver,
         virSetError(orig_err);
         virFreeError(orig_err);
     }
-    qemuDomainDelTLSObjects(driver, vm, secAlias, tlsAlias);
+    qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, tlsAlias);
 
     return -1;
 }
@@ -1682,8 +1687,8 @@ qemuDomainAddChardevTLSObjects(virConnectPtr conn,
         goto cleanup;
     dev->data.tcp.tlscreds = true;
 
-    if (qemuDomainAddTLSObjects(driver, vm, *secAlias, &secProps,
-                                *tlsAlias, &tlsProps) < 0)
+    if (qemuDomainAddTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
+                                *secAlias, &secProps, *tlsAlias, &tlsProps) < 0)
         goto cleanup;
 
     ret = 0;
@@ -1773,7 +1778,8 @@ int qemuDomainAttachRedirdevDevice(virConnectPtr conn,
         virSetError(orig_err);
         virFreeError(orig_err);
     }
-    qemuDomainDelTLSObjects(driver, vm, secAlias, tlsAlias);
+    qemuDomainDelTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
+                            secAlias, tlsAlias);
     goto audit;
 }
 
@@ -2034,7 +2040,8 @@ int qemuDomainAttachChrDevice(virConnectPtr conn,
         virFreeError(orig_err);
     }
 
-    qemuDomainDelTLSObjects(driver, vm, secAlias, tlsAlias);
+    qemuDomainDelTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
+                            secAlias, tlsAlias);
     goto audit;
 }
 
@@ -2186,7 +2193,8 @@ qemuDomainAttachRNGDevice(virConnectPtr conn,
         virFreeError(orig_err);
     }
 
-    qemuDomainDelTLSObjects(driver, vm, secAlias, tlsAlias);
+    qemuDomainDelTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
+                            secAlias, tlsAlias);
     goto audit;
 }
 
