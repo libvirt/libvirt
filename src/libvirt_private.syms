@@ -1315,6 +1315,7 @@ virBufferEscapeShell;
 virBufferEscapeString;
 virBufferFreeAndReset;
 virBufferGetIndent;
+virBufferSetIndent;
 virBufferStrcat;
 virBufferTrim;
 virBufferURIEncodeString;

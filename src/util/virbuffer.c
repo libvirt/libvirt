@@ -88,6 +88,25 @@ virBufferAdjustIndent(virBufferPtr buf, int indent)
     buf->indent += indent;
 }
 
+
+/**
+ * virBufferSetIndent:
+ * @buf: the buffer
+ * @indent: new indentation size.
+ *
+ * Set the auto-indent value to @indent. See virBufferAdjustIndent on how auto
+ * indentation is applied.
+ */
+void
+virBufferSetIndent(virBufferPtr buf, int indent)
+{
+    if (!buf || buf->error)
+        return;
+
+    buf->indent = indent;
+}
+
+
 /**
  * virBufferGetIndent:
  * @buf: the buffer

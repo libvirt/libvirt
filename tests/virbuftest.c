@@ -405,6 +405,34 @@ testBufEscapeN(const void *opaque)
 
 
 static int
+testBufSetIndent(const void *opaque ATTRIBUTE_UNUSED)
+{
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    char *actual;
+    int ret = -1;
+
+    virBufferSetIndent(&buf, 11);
+    virBufferAddLit(&buf, "test\n");
+    virBufferSetIndent(&buf, 2);
+    virBufferAddLit(&buf, "test2\n");
+
+    if (!(actual = virBufferContentAndReset(&buf)))
+        goto cleanup;
+
+    if (STRNEQ(actual, "           test\n  test2\n")) {
+        VIR_TEST_DEBUG("testBufSetIndent: expected indent not set\n");
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(actual);
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -422,6 +450,7 @@ mymain(void)
     DO_TEST("Auto-indentation", testBufAutoIndent, 0);
     DO_TEST("Trim", testBufTrim, 0);
     DO_TEST("AddBuffer", testBufAddBuffer, 0);
+    DO_TEST("set indent", testBufSetIndent, 0);
 
 #define DO_TEST_ADD_STR(DATA, EXPECT)                                  \
     do {                                                               \

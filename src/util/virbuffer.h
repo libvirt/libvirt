@@ -95,6 +95,8 @@ void virBufferURIEncodeString(virBufferPtr buf, const char *str);
     virBufferAdd(buf_, "" literal_string_ "", sizeof(literal_string_) - 1)
 
 void virBufferAdjustIndent(virBufferPtr buf, int indent);
+void virBufferSetIndent(virBufferPtr, int indent);
+
 int virBufferGetIndent(const virBuffer *buf, bool dynamic);
 
 void virBufferTrim(virBufferPtr buf, const char *trim, int len);
