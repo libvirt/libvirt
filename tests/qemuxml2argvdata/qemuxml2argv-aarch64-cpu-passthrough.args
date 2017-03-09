@@ -16,6 +16,7 @@ QEMU_AUDIO_DRV=none \
 -nodefconfig \
 -nodefaults \
 -monitor unix:/tmp/lib/domain--1-aarch64test/monitor.sock,server,nowait \
+-no-acpi \
 -boot c \
 -drive file=/aarch64.raw,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0

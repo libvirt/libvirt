@@ -9324,18 +9324,16 @@ qemuBuildRedirdevCommandLine(virLogManagerPtr logManager,
 }
 
 
-static int
+static void
 qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
-                                 virDomainDefPtr def,
-                                 virQEMUCapsPtr qemuCaps)
+                                 virDomainDefPtr def)
 {
-    int ret = -1;
     virDomainLoaderDefPtr loader = def->os.loader;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     int unit = 0;
 
     if (!loader)
-        return 0;
+        return;
 
     switch ((virDomainLoader) loader->type) {
     case VIR_DOMAIN_LOADER_TYPE_ROM:
@@ -9344,12 +9342,6 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
         break;
 
     case VIR_DOMAIN_LOADER_TYPE_PFLASH:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_ACPI) &&
-            def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_TRISTATE_SWITCH_ON) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("ACPI must be enabled in order to use UEFI"));
-            goto cleanup;
-        }
 
         if (loader->secure == VIR_TRISTATE_BOOL_YES) {
             virCommandAddArgList(cmd,
@@ -9387,10 +9379,7 @@ qemuBuildDomainLoaderCommandLine(virCommandPtr cmd,
         break;
     }
 
-    ret = 0;
- cleanup:
     virBufferFreeAndReset(&buf);
-    return ret;
 }
 
 
@@ -9827,8 +9816,7 @@ qemuBuildCommandLine(virQEMUDriverPtr driver,
     if (qemuBuildCpuCommandLine(cmd, driver, def, qemuCaps) < 0)
         goto error;
 
-    if (qemuBuildDomainLoaderCommandLine(cmd, def, qemuCaps) < 0)
-        goto error;
+    qemuBuildDomainLoaderCommandLine(cmd, def);
 
     if (!migrateURI && !snapshot && qemuDomainAlignMemorySizes(def) < 0)
         goto error;

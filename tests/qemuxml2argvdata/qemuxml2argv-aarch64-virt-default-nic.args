@@ -17,6 +17,7 @@ QEMU_AUDIO_DRV=none \
 -nodefaults \
 -monitor unix:/tmp/lib/domain--1-aarch64-virt-default/monitor.sock,server,\
 nowait \
+-no-acpi \
 -boot c \
 -kernel /aarch64.kernel \
 -initrd /aarch64.initrd \

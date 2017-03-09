@@ -12,7 +12,6 @@
     <cmdline>earlyprintk console=ttyAMA0,115200n8 rw root=/dev/vda rootwait</cmdline>
   </os>
   <features>
-    <acpi/>
     <apic/>
     <pae/>
   </features>

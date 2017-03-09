@@ -7,9 +7,6 @@
   <os>
     <type arch='aarch64' machine='virt'>hvm</type>
   </os>
-  <features>
-    <acpi/>
-  </features>
   <cpu mode='custom' match='exact'>
     <model fallback='allow'>cortex-a57</model>
   </cpu>

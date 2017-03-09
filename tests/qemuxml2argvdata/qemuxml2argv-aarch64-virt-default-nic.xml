@@ -4,9 +4,6 @@
   <memory>1048576</memory>
   <currentMemory>1048576</currentMemory>
   <vcpu>1</vcpu>
-  <features>
-    <acpi/>
-  </features>
   <cpu match='exact'>
     <model>cortex-a53</model>
   </cpu>

@@ -8,7 +8,6 @@
     <type arch="aarch64" machine="virt">hvm</type>
   </os>
   <features>
-    <acpi/>
     <apic/>
     <pae/>
   </features>

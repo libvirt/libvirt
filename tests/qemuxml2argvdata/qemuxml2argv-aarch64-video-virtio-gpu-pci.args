@@ -16,6 +16,7 @@ QEMU_AUDIO_DRV=none \
 -nodefconfig \
 -nodefaults \
 -monitor unix:/tmp/lib/domain--1-aarch64-vgpu/monitor.sock,server,nowait \
+-no-acpi \
 -device ioh3420,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,\
 addr=0x1 \
 -device ioh3420,port=0x9,chassis=2,id=pci.2,bus=pcie.0,multifunction=on,\

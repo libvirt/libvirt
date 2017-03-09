@@ -13,7 +13,6 @@
     <boot dev='hd'/>
   </os>
   <features>
-    <acpi/>
     <apic/>
     <pae/>
     <gic version='2'/>

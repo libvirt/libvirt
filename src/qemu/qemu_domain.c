@@ -2884,6 +2884,26 @@ qemuDomainDefValidate(const virDomainDef *def,
         goto cleanup;
     }
 
+    /* On x86, UEFI requires ACPI */
+    if (def->os.loader &&
+        def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_PFLASH &&
+        ARCH_IS_X86(def->os.arch) &&
+        def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_TRISTATE_SWITCH_ON) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("UEFI requires ACPI on this architecture"));
+        goto cleanup;
+    }
+
+    /* On aarch64, ACPI requires UEFI */
+    if (def->features[VIR_DOMAIN_FEATURE_ACPI] == VIR_TRISTATE_SWITCH_ON &&
+        def->os.arch == VIR_ARCH_AARCH64 &&
+        (!def->os.loader ||
+         def->os.loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("ACPI requires UEFI on this architecture"));
+        goto cleanup;
+    }
+
     if (def->os.loader &&
         def->os.loader->secure == VIR_TRISTATE_BOOL_YES) {
         /* These are the QEMU implementation limitations. But we
