@@ -3839,50 +3839,44 @@ qemuProcessVerifyCPUFeatures(virDomainDefPtr def,
 }
 
 
-static bool
+static int
 qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
-                          int asyncJob)
+                          qemuDomainAsyncJob asyncJob)
 {
     virDomainDefPtr def = vm->def;
-    virArch arch = def->os.arch;
-    virCPUDataPtr guestcpu = NULL;
+    virCPUDataPtr cpu = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rc;
-    bool ret = false;
+    int ret = -1;
 
-    switch (arch) {
-    case VIR_ARCH_I686:
-    case VIR_ARCH_X86_64:
+    if (ARCH_IS_X86(def->os.arch)) {
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-            return false;
-        rc = qemuMonitorGetGuestCPU(priv->mon, arch, &guestcpu);
+            goto cleanup;
+
+        rc = qemuMonitorGetGuestCPU(priv->mon, def->os.arch, &cpu);
+
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            return false;
+            goto cleanup;
 
         if (rc < 0) {
             if (rc == -2)
-                break;
-
+                ret = 0;
             goto cleanup;
         }
 
-        if (qemuProcessVerifyKVMFeatures(def, guestcpu) < 0 ||
-            qemuProcessVerifyHypervFeatures(def, guestcpu) < 0)
+        if (qemuProcessVerifyKVMFeatures(def, cpu) < 0 ||
+            qemuProcessVerifyHypervFeatures(def, cpu) < 0)
             goto cleanup;
 
-        if (qemuProcessVerifyCPUFeatures(def, guestcpu) < 0)
+        if (qemuProcessVerifyCPUFeatures(def, cpu) < 0)
             goto cleanup;
-        break;
-
-    default:
-        break;
     }
 
-    ret = true;
+    ret = 0;
 
  cleanup:
-    virCPUDataFree(guestcpu);
+    virCPUDataFree(cpu);
     return ret;
 }
 
@@ -5727,7 +5721,7 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Detecting if required emulator features are present");
-    if (!qemuProcessVerifyGuestCPU(driver, vm, asyncJob))
+    if (qemuProcessVerifyGuestCPU(driver, vm, asyncJob) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up post-init cgroup restrictions");
