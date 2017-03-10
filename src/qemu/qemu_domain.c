@@ -7741,10 +7741,21 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
 
     /* Save some mount points because we want to share them with the host */
     for (i = 0; i < ndevMountsPath; i++) {
+        struct stat sb;
+
         if (devMountsSavePath[i] == devPath)
             continue;
 
-        if (virFileMakePath(devMountsSavePath[i]) < 0) {
+        if (stat(devMountsPath[i], &sb) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to stat: %s"),
+                                 devMountsPath[i]);
+            goto cleanup;
+        }
+
+        /* At this point, devMountsPath is either a regular file or a directory. */
+        if ((S_ISDIR(sb.st_mode) && virFileMakePath(devMountsSavePath[i]) < 0) ||
+            (S_ISREG(sb.st_mode) && virFileTouch(devMountsSavePath[i], sb.st_mode) < 0)) {
             virReportSystemError(errno,
                                  _("Failed to create %s"),
                                  devMountsSavePath[i]);
@@ -7780,13 +7791,31 @@ qemuDomainBuildNamespace(virQEMUDriverConfigPtr cfg,
         goto cleanup;
 
     for (i = 0; i < ndevMountsPath; i++) {
+        struct stat sb;
+
         if (devMountsSavePath[i] == devPath)
             continue;
 
-        if (virFileMakePath(devMountsPath[i]) < 0) {
-            virReportSystemError(errno, _("Cannot create %s"),
-                                 devMountsPath[i]);
+        if (stat(devMountsSavePath[i], &sb) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to stat: %s"),
+                                 devMountsSavePath[i]);
             goto cleanup;
+        }
+
+        if (S_ISDIR(sb.st_mode)) {
+            if (virFileMakePath(devMountsPath[i]) < 0) {
+                virReportSystemError(errno, _("Cannot create %s"),
+                                     devMountsPath[i]);
+                goto cleanup;
+            }
+        } else {
+            if (virFileMakeParentPath(devMountsPath[i]) < 0 ||
+                virFileTouch(devMountsPath[i], sb.st_mode) < 0) {
+                virReportSystemError(errno, _("Cannot create %s"),
+                                     devMountsPath[i]);
+                goto cleanup;
+            }
         }
 
         if (virFileMoveMount(devMountsSavePath[i], devMountsPath[i]) < 0)
