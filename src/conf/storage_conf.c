@@ -2085,27 +2085,27 @@ virStoragePoolObjIsDuplicate(virStoragePoolObjListPtr pools,
 
 
 static int
-getSCSIHostNumber(virStoragePoolSourceAdapter adapter,
+getSCSIHostNumber(virStorageAdapterSCSIHostPtr scsi_host,
                   unsigned int *hostnum)
 {
     int ret = -1;
     unsigned int num;
     char *name = NULL;
 
-    if (adapter.data.scsi_host.has_parent) {
-        virPCIDeviceAddress addr = adapter.data.scsi_host.parentaddr;
-        unsigned int unique_id = adapter.data.scsi_host.unique_id;
+    if (scsi_host->has_parent) {
+        virPCIDeviceAddressPtr addr = &scsi_host->parentaddr;
+        unsigned int unique_id = scsi_host->unique_id;
 
-        if (!(name = virSCSIHostGetNameByParentaddr(addr.domain,
-                                                    addr.bus,
-                                                    addr.slot,
-                                                    addr.function,
+        if (!(name = virSCSIHostGetNameByParentaddr(addr->domain,
+                                                    addr->bus,
+                                                    addr->slot,
+                                                    addr->function,
                                                     unique_id)))
             goto cleanup;
         if (virSCSIHostGetNumber(name, &num) < 0)
             goto cleanup;
     } else {
-        if (virSCSIHostGetNumber(adapter.data.scsi_host.name, &num) < 0)
+        if (virSCSIHostGetNumber(scsi_host->name, &num) < 0)
             goto cleanup;
     }
 
@@ -2136,7 +2136,7 @@ virStorageIsSameHostnum(const char *name,
  * matchFCHostToSCSIHost:
  *
  * @conn: Connection pointer
- * @fc_adapter: fc_host adapter (either def or pool->def)
+ * @fchost: fc_host adapter ptr (either def or pool->def)
  * @scsi_hostnum: Already determined "scsi_pool" hostnum
  *
  * Returns true/false whether there is a match between the incoming
@@ -2144,7 +2144,7 @@ virStorageIsSameHostnum(const char *name,
  */
 static bool
 matchFCHostToSCSIHost(virConnectPtr conn,
-                      virStoragePoolSourceAdapter fc_adapter,
+                      virStorageAdapterFCHostPtr fchost,
                       unsigned int scsi_hostnum)
 {
     bool ret = false;
@@ -2155,15 +2155,14 @@ matchFCHostToSCSIHost(virConnectPtr conn,
     /* If we have a parent defined, get its hostnum, and compare to the
      * scsi_hostnum. If they are the same, then we have a match
      */
-    if (fc_adapter.data.fchost.parent &&
-        virStorageIsSameHostnum(fc_adapter.data.fchost.parent, scsi_hostnum))
+    if (fchost->parent &&
+        virStorageIsSameHostnum(fchost->parent, scsi_hostnum))
         return true;
 
-    /* If we find an fc_adapter name, then either libvirt created a vHBA
+    /* If we find an fc adapter name, then either libvirt created a vHBA
      * for this fc_host or a 'virsh nodedev-create' generated a vHBA.
      */
-    if ((name = virVHBAGetHostByWWN(NULL, fc_adapter.data.fchost.wwnn,
-                                    fc_adapter.data.fchost.wwpn))) {
+    if ((name = virVHBAGetHostByWWN(NULL, fchost->wwnn, fchost->wwpn))) {
 
         /* Get the scsi_hostN for the vHBA in order to see if it
          * matches our scsi_hostnum
@@ -2178,7 +2177,7 @@ matchFCHostToSCSIHost(virConnectPtr conn,
          * If the parent fc_hostnum is the same as the scsi_hostnum, we
          * have a match.
          */
-        if (conn && !fc_adapter.data.fchost.parent) {
+        if (conn && !fchost->parent) {
             if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0)
                 goto cleanup;
             if ((parent_name = virNodeDeviceGetParentName(conn,
@@ -2210,25 +2209,21 @@ matchFCHostToSCSIHost(virConnectPtr conn,
     return ret;
 }
 
+
 static bool
-matchSCSIAdapterParent(virStoragePoolObjPtr pool,
-                       virStoragePoolDefPtr def)
+matchSCSIAdapterParent(virStorageAdapterSCSIHostPtr pool_scsi_host,
+                       virStorageAdapterSCSIHostPtr def_scsi_host)
 {
-    virPCIDeviceAddressPtr pooladdr =
-        &pool->def->source.adapter.data.scsi_host.parentaddr;
-    virPCIDeviceAddressPtr defaddr =
-        &def->source.adapter.data.scsi_host.parentaddr;
-    int pool_unique_id =
-        pool->def->source.adapter.data.scsi_host.unique_id;
-    int def_unique_id =
-        def->source.adapter.data.scsi_host.unique_id;
+    virPCIDeviceAddressPtr pooladdr = &pool_scsi_host->parentaddr;
+    virPCIDeviceAddressPtr defaddr = &def_scsi_host->parentaddr;
+
     if (pooladdr->domain == defaddr->domain &&
         pooladdr->bus == defaddr->bus &&
         pooladdr->slot == defaddr->slot &&
         pooladdr->function == defaddr->function &&
-        pool_unique_id == def_unique_id) {
+        pool_scsi_host->unique_id == def_scsi_host->unique_id)
         return true;
-    }
+
     return false;
 }
 
@@ -2271,6 +2266,8 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
     int ret = 1;
     virStoragePoolObjPtr pool = NULL;
     virStoragePoolObjPtr matchpool = NULL;
+    virStoragePoolSourceAdapterPtr pool_adapter;
+    virStoragePoolSourceAdapterPtr def_adapter;
 
     /* Check the pool list for duplicate underlying storage */
     for (i = 0; i < pools->count; i++) {
@@ -2306,63 +2303,76 @@ virStoragePoolSourceFindDuplicate(virConnectPtr conn,
             break;
 
         case VIR_STORAGE_POOL_SCSI:
-            if (pool->def->source.adapter.type ==
+            pool_adapter = &pool->def->source.adapter;
+            def_adapter = &def->source.adapter;
+
+            if (pool_adapter->type ==
                 VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST &&
-                def->source.adapter.type ==
+                def_adapter->type ==
                 VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
-                if (STREQ(pool->def->source.adapter.data.fchost.wwnn,
-                          def->source.adapter.data.fchost.wwnn) &&
-                    STREQ(pool->def->source.adapter.data.fchost.wwpn,
-                          def->source.adapter.data.fchost.wwpn))
+                virStorageAdapterFCHostPtr pool_fchost =
+                    &pool_adapter->data.fchost;
+                virStorageAdapterFCHostPtr def_fchost =
+                    &def_adapter->data.fchost;
+
+                if (STREQ(pool_fchost->wwnn, def_fchost->wwnn) &&
+                    STREQ(pool_fchost->wwpn, def_fchost->wwpn))
                     matchpool = pool;
-            } else if (pool->def->source.adapter.type ==
+            } else if (pool_adapter->type ==
                        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST &&
-                       def->source.adapter.type ==
+                       def_adapter->type ==
                        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
+                virStorageAdapterSCSIHostPtr pool_scsi_host =
+                    &pool_adapter->data.scsi_host;
+                virStorageAdapterSCSIHostPtr def_scsi_host =
+                    &def_adapter->data.scsi_host;
                 unsigned int pool_hostnum, def_hostnum;
 
-                if (pool->def->source.adapter.data.scsi_host.has_parent &&
-                    def->source.adapter.data.scsi_host.has_parent &&
-                    matchSCSIAdapterParent(pool, def)) {
+                if (pool_scsi_host->has_parent &&
+                    def_scsi_host->has_parent &&
+                    matchSCSIAdapterParent(pool_scsi_host, def_scsi_host)) {
                     matchpool = pool;
                     break;
                 }
 
-                if (getSCSIHostNumber(pool->def->source.adapter,
-                                      &pool_hostnum) < 0 ||
-                    getSCSIHostNumber(def->source.adapter, &def_hostnum) < 0)
+                if (getSCSIHostNumber(pool_scsi_host, &pool_hostnum) < 0 ||
+                    getSCSIHostNumber(def_scsi_host, &def_hostnum) < 0)
                     break;
                 if (pool_hostnum == def_hostnum)
                     matchpool = pool;
-            } else if (pool->def->source.adapter.type ==
+            } else if (pool_adapter->type ==
                        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST &&
-                       def->source.adapter.type ==
+                       def_adapter->type ==
                        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
+                virStorageAdapterFCHostPtr pool_fchost =
+                    &pool_adapter->data.fchost;
+                virStorageAdapterSCSIHostPtr def_scsi_host =
+                    &def_adapter->data.scsi_host;
                 unsigned int scsi_hostnum;
 
                 /* Get the scsi_hostN for the scsi_host source adapter def */
-                if (getSCSIHostNumber(def->source.adapter,
-                                      &scsi_hostnum) < 0)
+                if (getSCSIHostNumber(def_scsi_host, &scsi_hostnum) < 0)
                     break;
 
-                if (matchFCHostToSCSIHost(conn, pool->def->source.adapter,
-                                          scsi_hostnum)) {
+                if (matchFCHostToSCSIHost(conn, pool_fchost, scsi_hostnum)) {
                     matchpool = pool;
                     break;
                 }
 
-            } else if (pool->def->source.adapter.type ==
+            } else if (pool_adapter->type ==
                        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST &&
-                       def->source.adapter.type ==
+                       def_adapter->type ==
                        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+                virStorageAdapterSCSIHostPtr pool_scsi_host =
+                    &pool_adapter->data.scsi_host;
+                virStorageAdapterFCHostPtr def_fchost =
+                    &def_adapter->data.fchost;
                 unsigned int scsi_hostnum;
 
-                if (getSCSIHostNumber(pool->def->source.adapter,
-                                      &scsi_hostnum) < 0)
+                if (getSCSIHostNumber(pool_scsi_host, &scsi_hostnum) < 0)
                     break;
 
-                if (matchFCHostToSCSIHost(conn, def->source.adapter,
-                                          scsi_hostnum)) {
+                if (matchFCHostToSCSIHost(conn, def_fchost, scsi_hostnum)) {
                     matchpool = pool;
                     break;
                 }
