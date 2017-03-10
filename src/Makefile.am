@@ -379,6 +379,7 @@ NWFILTER_CONF_SOURCES =						\
 
 # Storage driver generic impl APIs
 STORAGE_CONF_SOURCES =                                         \
+		conf/storage_adapter_conf.h conf/storage_adapter_conf.c \
 		conf/storage_conf.h conf/storage_conf.c
 
 # Interface driver generic impl APIs
