@@ -201,6 +201,22 @@ qemuDomainEnableNamespace(virDomainObjPtr vm,
 }
 
 
+static void
+qemuDomainDisableNamespace(virDomainObjPtr vm,
+                           qemuDomainNamespace ns)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+
+    if (priv->namespaces) {
+        ignore_value(virBitmapClearBit(priv->namespaces, ns));
+        if (virBitmapIsAllClear(priv->namespaces)) {
+            virBitmapFree(priv->namespaces);
+            priv->namespaces = NULL;
+        }
+    }
+}
+
+
 void qemuDomainEventQueue(virQEMUDriverPtr driver,
                           virObjectEventPtr event)
 {
@@ -7802,6 +7818,15 @@ qemuDomainCreateNamespace(virQEMUDriverPtr driver,
  cleanup:
     virObjectUnref(cfg);
     return ret;
+}
+
+
+void
+qemuDomainDestroyNamespace(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
+                           virDomainObjPtr vm)
+{
+    if (qemuDomainNamespaceEnabled(vm, QEMU_DOMAIN_NS_MOUNT))
+        qemuDomainDisableNamespace(vm, QEMU_DOMAIN_NS_MOUNT);
 }
 
 

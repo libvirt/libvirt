@@ -314,6 +314,10 @@ qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
      */
     qemuMonitorUnregister(mon);
 
+    /* We don't want any cleanup from EOF handler (or any other
+     * thread) to enter qemu namespace. */
+    qemuDomainDestroyNamespace(driver, vm);
+
  cleanup:
     virObjectUnlock(vm);
 }
