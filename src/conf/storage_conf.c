@@ -941,6 +941,25 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
             if (!virValidateWWN(ret->source.adapter.data.fchost.wwnn) ||
                 !virValidateWWN(ret->source.adapter.data.fchost.wwpn))
                 goto error;
+
+            if ((ret->source.adapter.data.fchost.parent_wwnn &&
+                 !ret->source.adapter.data.fchost.parent_wwpn)) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("when providing parent_wwnn='%s', the "
+                                 "parent_wwpn must also be provided"),
+                               ret->source.adapter.data.fchost.parent_wwnn);
+                goto error;
+            }
+
+            if (!ret->source.adapter.data.fchost.parent_wwnn &&
+                 ret->source.adapter.data.fchost.parent_wwpn) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("when providing parent_wwpn='%s', the "
+                                 "parent_wwnn must also be provided"),
+                               ret->source.adapter.data.fchost.parent_wwpn);
+                goto error;
+            }
+
         } else if (ret->source.adapter.type ==
                    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
             if (!ret->source.adapter.data.scsi_host.name &&
