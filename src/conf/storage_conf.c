@@ -464,13 +464,17 @@ virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
 
 static int
 virStoragePoolDefParseSourceAdapter(virStoragePoolSourcePtr source,
+                                    xmlNodePtr node,
                                     xmlXPathContextPtr ctxt)
 {
     int ret = -1;
+    xmlNodePtr relnode = ctxt->node;
     char *adapter_type = NULL;
     char *managed = NULL;
 
-    if ((adapter_type = virXPathString("string(./adapter/@type)", ctxt))) {
+    ctxt->node = node;
+
+    if ((adapter_type = virXMLPropString(node, "type"))) {
         if ((source->adapter.type =
              virStoragePoolSourceAdapterTypeFromString(adapter_type)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -482,8 +486,8 @@ virStoragePoolDefParseSourceAdapter(virStoragePoolSourcePtr source,
         if (source->adapter.type ==
             VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
             source->adapter.data.fchost.parent =
-                virXPathString("string(./adapter/@parent)", ctxt);
-            managed = virXPathString("string(./adapter/@managed)", ctxt);
+                virXMLPropString(node, "parent");
+            managed = virXMLPropString(node, "managed");
             if (managed) {
                 source->adapter.data.fchost.managed =
                     virTristateBoolTypeFromString(managed);
@@ -496,23 +500,21 @@ virStoragePoolDefParseSourceAdapter(virStoragePoolSourcePtr source,
             }
 
             source->adapter.data.fchost.parent_wwnn =
-                virXPathString("string(./adapter/@parent_wwnn)", ctxt);
+                virXMLPropString(node, "parent_wwnn");
             source->adapter.data.fchost.parent_wwpn =
-                virXPathString("string(./adapter/@parent_wwpn)", ctxt);
+                virXMLPropString(node, "parent_wwpn");
             source->adapter.data.fchost.parent_fabric_wwn =
-                virXPathString("string(./adapter/@parent_fabric_wwn)", ctxt);
+                virXMLPropString(node, "parent_fabric_wwn");
 
-            source->adapter.data.fchost.wwpn =
-                virXPathString("string(./adapter/@wwpn)", ctxt);
-            source->adapter.data.fchost.wwnn =
-                virXPathString("string(./adapter/@wwnn)", ctxt);
+            source->adapter.data.fchost.wwpn = virXMLPropString(node, "wwpn");
+            source->adapter.data.fchost.wwnn = virXMLPropString(node, "wwnn");
         } else if (source->adapter.type ==
                    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
 
             source->adapter.data.scsi_host.name =
-                virXPathString("string(./adapter/@name)", ctxt);
-            if (virXPathNode("./adapter/parentaddr", ctxt)) {
-                xmlNodePtr addrnode = virXPathNode("./adapter/parentaddr/address",
+                virXMLPropString(node, "name");
+            if (virXPathNode("./parentaddr", ctxt)) {
+                xmlNodePtr addrnode = virXPathNode("./parentaddr/address",
                                                    ctxt);
                 virPCIDeviceAddressPtr addr =
                     &source->adapter.data.scsi_host.parentaddr;
@@ -525,7 +527,7 @@ virStoragePoolDefParseSourceAdapter(virStoragePoolSourcePtr source,
                 source->adapter.data.scsi_host.has_parent = true;
                 if (virPCIDeviceAddressParseXML(addrnode, addr) < 0)
                     goto cleanup;
-                if ((virXPathInt("string(./adapter/parentaddr/@unique_id)",
+                if ((virXPathInt("string(./parentaddr/@unique_id)",
                                  ctxt,
                                  &source->adapter.data.scsi_host.unique_id) < 0) ||
                     (source->adapter.data.scsi_host.unique_id < 0)) {
@@ -537,17 +539,14 @@ virStoragePoolDefParseSourceAdapter(virStoragePoolSourcePtr source,
             }
         }
     } else {
-        char *wwnn = NULL;
-        char *wwpn = NULL;
-        char *parent = NULL;
+        char *wwnn = virXMLPropString(node, "wwnn");
+        char *wwpn = virXMLPropString(node, "wwpn");
+        char *parent = virXMLPropString(node, "parent");
 
         /* "type" was not specified in the XML, so we must verify that
          * "wwnn", "wwpn", "parent", or "parentaddr" are also not in the
          * XML. If any are found, then we cannot just use "name" alone".
          */
-        wwnn = virXPathString("string(./adapter/@wwnn)", ctxt);
-        wwpn = virXPathString("string(./adapter/@wwpn)", ctxt);
-        parent = virXPathString("string(./adapter/@parent)", ctxt);
 
         if (wwnn || wwpn || parent) {
             VIR_FREE(wwnn);
@@ -559,7 +558,7 @@ virStoragePoolDefParseSourceAdapter(virStoragePoolSourcePtr source,
             goto cleanup;
         }
 
-        if (virXPathNode("./adapter/parentaddr", ctxt)) {
+        if (virXPathNode("./parentaddr", ctxt)) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Use of 'parent' element requires use "
                              "of the adapter 'type'"));
@@ -570,7 +569,7 @@ virStoragePoolDefParseSourceAdapter(virStoragePoolSourcePtr source,
          * for scsi_host adapter.
          */
         if ((source->adapter.data.scsi_host.name =
-             virXPathString("string(./adapter/@name)", ctxt)))
+             virXMLPropString(node, "name")))
             source->adapter.type =
                 VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST;
     }
@@ -578,6 +577,7 @@ virStoragePoolDefParseSourceAdapter(virStoragePoolSourcePtr source,
     ret = 0;
 
  cleanup:
+    ctxt->node = relnode;
     VIR_FREE(adapter_type);
     VIR_FREE(managed);
     return ret;
@@ -592,6 +592,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
 {
     int ret = -1;
     xmlNodePtr relnode, authnode, *nodeset = NULL;
+    xmlNodePtr adapternode;
     int nsource;
     size_t i;
     virStoragePoolOptionsPtr options;
@@ -703,8 +704,10 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         VIR_STRDUP(source->dir, "/") < 0)
         goto cleanup;
 
-    if (virStoragePoolDefParseSourceAdapter(source, ctxt) < 0)
-        goto cleanup;
+    if ((adapternode = virXPathNode("./adapter", ctxt))) {
+        if (virStoragePoolDefParseSourceAdapter(source, adapternode, ctxt) < 0)
+            goto cleanup;
+    }
 
     if ((authnode = virXPathNode("./auth", ctxt))) {
         if (!(authdef = virStorageAuthDefParse(node->doc, authnode)))
