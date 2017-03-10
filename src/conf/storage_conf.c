@@ -960,6 +960,18 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
                 goto error;
             }
 
+            if (ret->source.adapter.data.fchost.parent_wwnn &&
+                !virValidateWWN(ret->source.adapter.data.fchost.parent_wwnn))
+                goto error;
+
+            if (ret->source.adapter.data.fchost.parent_wwpn &&
+                !virValidateWWN(ret->source.adapter.data.fchost.parent_wwpn))
+                goto error;
+
+            if (ret->source.adapter.data.fchost.parent_fabric_wwn &&
+                !virValidateWWN(ret->source.adapter.data.fchost.parent_fabric_wwn))
+                goto error;
+
         } else if (ret->source.adapter.type ==
                    VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
             if (!ret->source.adapter.data.scsi_host.name &&
