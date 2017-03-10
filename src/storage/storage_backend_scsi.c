@@ -255,10 +255,10 @@ checkParent(virConnectPtr conn,
 
 static int
 createVport(virConnectPtr conn,
-            virStoragePoolObjPtr pool)
+            virStoragePoolDefPtr def,
+            const char *configFile,
+            virStorageAdapterFCHostPtr fchost)
 {
-    const char *configFile = pool->configFile;
-    virStoragePoolSourceAdapterPtr adapter = &pool->def->source.adapter;
     unsigned int parent_host;
     char *name = NULL;
     char *parent_hoststr = NULL;
@@ -267,45 +267,37 @@ createVport(virConnectPtr conn,
     virThread thread;
     int ret = -1;
 
-    if (adapter->type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
-        return 0;
-
     VIR_DEBUG("conn=%p, configFile='%s' parent='%s', wwnn='%s' wwpn='%s'",
-              conn, NULLSTR(configFile), NULLSTR(adapter->data.fchost.parent),
-              adapter->data.fchost.wwnn, adapter->data.fchost.wwpn);
+              conn, NULLSTR(configFile), NULLSTR(fchost->parent),
+              fchost->wwnn, fchost->wwpn);
 
     /* If we find an existing HBA/vHBA within the fc_host sysfs
      * using the wwnn/wwpn, then a nodedev is already created for
      * this pool and we don't have to create the vHBA
      */
-    if ((name = virVHBAGetHostByWWN(NULL, adapter->data.fchost.wwnn,
-                                    adapter->data.fchost.wwpn))) {
+    if ((name = virVHBAGetHostByWWN(NULL, fchost->wwnn, fchost->wwpn))) {
         /* If a parent was provided, let's make sure the 'name' we've
          * retrieved has the same parent
          */
-        if (adapter->data.fchost.parent &&
-            checkParent(conn, name, adapter->data.fchost.parent))
+        if (fchost->parent && checkParent(conn, name, fchost->parent))
             ret = 0;
 
         goto cleanup;
     }
 
-    if (adapter->data.fchost.parent) {
-        if (VIR_STRDUP(parent_hoststr, adapter->data.fchost.parent) < 0)
+    if (fchost->parent) {
+        if (VIR_STRDUP(parent_hoststr, fchost->parent) < 0)
             goto cleanup;
-    } else if (adapter->data.fchost.parent_wwnn &&
-               adapter->data.fchost.parent_wwpn) {
-        if (!(parent_hoststr =
-              virVHBAGetHostByWWN(NULL, adapter->data.fchost.parent_wwnn,
-                                  adapter->data.fchost.parent_wwpn))) {
+    } else if (fchost->parent_wwnn && fchost->parent_wwpn) {
+        if (!(parent_hoststr = virVHBAGetHostByWWN(NULL, fchost->parent_wwnn,
+                                                   fchost->parent_wwpn))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("cannot find parent using provided wwnn/wwpn"));
             goto cleanup;
         }
-    } else if (adapter->data.fchost.parent_fabric_wwn) {
+    } else if (fchost->parent_fabric_wwn) {
         if (!(parent_hoststr =
-              virVHBAGetHostByFabricWWN(NULL,
-                                        adapter->data.fchost.parent_fabric_wwn))) {
+              virVHBAGetHostByFabricWWN(NULL, fchost->parent_fabric_wwn))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("cannot find parent using provided fabric_wwn"));
             goto cleanup;
@@ -324,8 +316,8 @@ createVport(virConnectPtr conn,
         goto cleanup;
 
     /* NOTE:
-     * We do not save the parent_hoststr in adapter->data.fchost.parent
-     * since we could be writing out the 'def' to the saved XML config.
+     * We do not save the parent_hoststr in fchost->parent since
+     * we could be writing out the 'def' to the saved XML config.
      * If we wrote out the name in the XML, then future starts would
      * always use the same parent rather than finding the "best available"
      * parent. Besides we have a way to determine the parent based on
@@ -343,16 +335,16 @@ createVport(virConnectPtr conn,
      * restart, we need to save the persistent configuration. So if not
      * already defined as YES, then force the issue.
      */
-    if (adapter->data.fchost.managed != VIR_TRISTATE_BOOL_YES) {
-        adapter->data.fchost.managed = VIR_TRISTATE_BOOL_YES;
+    if (fchost->managed != VIR_TRISTATE_BOOL_YES) {
+        fchost->managed = VIR_TRISTATE_BOOL_YES;
         if (configFile) {
-            if (virStoragePoolSaveConfig(configFile, pool->def) < 0)
+            if (virStoragePoolSaveConfig(configFile, def) < 0)
                 goto cleanup;
         }
     }
 
-    if (virVHBAManageVport(parent_host, adapter->data.fchost.wwpn,
-                           adapter->data.fchost.wwnn, VPORT_CREATE) < 0)
+    if (virVHBAManageVport(parent_host, fchost->wwpn, fchost->wwnn,
+                           VPORT_CREATE) < 0)
         goto cleanup;
 
     virFileWaitForDevices();
@@ -362,10 +354,9 @@ createVport(virConnectPtr conn,
      * retry logic set to true. If the thread isn't created, then no big
      * deal since it's still possible to refresh the pool later.
      */
-    if ((name = virVHBAGetHostByWWN(NULL, adapter->data.fchost.wwnn,
-                                    adapter->data.fchost.wwpn))) {
+    if ((name = virVHBAGetHostByWWN(NULL, fchost->wwnn, fchost->wwpn))) {
         if (VIR_ALLOC(cbdata) == 0) {
-            memcpy(cbdata->pool_uuid, pool->def->uuid, VIR_UUID_BUFLEN);
+            memcpy(cbdata->pool_uuid, def->uuid, VIR_UUID_BUFLEN);
             VIR_STEAL_PTR(cbdata->fchost_name, name);
 
             if (virThreadCreate(&thread, false, virStoragePoolFCRefreshThread,
@@ -385,9 +376,10 @@ createVport(virConnectPtr conn,
     return ret;
 }
 
+
 static int
 deleteVport(virConnectPtr conn,
-            virStoragePoolSourceAdapter adapter)
+            virStorageAdapterFCHostPtr fchost)
 {
     unsigned int parent_host;
     char *name = NULL;
@@ -395,25 +387,19 @@ deleteVport(virConnectPtr conn,
     char *vhba_parent = NULL;
     int ret = -1;
 
-    if (adapter.type != VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
-        return 0;
-
     VIR_DEBUG("conn=%p parent='%s', managed='%d' wwnn='%s' wwpn='%s'",
-              conn, NULLSTR(adapter.data.fchost.parent),
-              adapter.data.fchost.managed,
-              adapter.data.fchost.wwnn,
-              adapter.data.fchost.wwpn);
+              conn, NULLSTR(fchost->parent), fchost->managed,
+              fchost->wwnn, fchost->wwpn);
 
     /* If we're not managing the deletion of the vHBA, then just return */
-    if (adapter.data.fchost.managed != VIR_TRISTATE_BOOL_YES)
+    if (fchost->managed != VIR_TRISTATE_BOOL_YES)
         return 0;
 
     /* Find our vHBA by searching the fc_host sysfs tree for our wwnn/wwpn */
-    if (!(name = virVHBAGetHostByWWN(NULL, adapter.data.fchost.wwnn,
-                                     adapter.data.fchost.wwpn))) {
+    if (!(name = virVHBAGetHostByWWN(NULL, fchost->wwnn, fchost->wwpn))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to find fc_host for wwnn='%s' and wwpn='%s'"),
-                       adapter.data.fchost.wwnn, adapter.data.fchost.wwpn);
+                       fchost->wwnn, fchost->wwpn);
         goto cleanup;
     }
 
@@ -421,8 +407,8 @@ deleteVport(virConnectPtr conn,
      * get the parent_host value; otherwise, we have to determine
      * the parent scsi_host which we did not save at startup time
      */
-    if (adapter.data.fchost.parent) {
-        if (virSCSIHostGetNumber(adapter.data.fchost.parent, &parent_host) < 0)
+    if (fchost->parent) {
+        if (virSCSIHostGetNumber(fchost->parent, &parent_host) < 0)
             goto cleanup;
     } else {
         if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0)
@@ -435,8 +421,8 @@ deleteVport(virConnectPtr conn,
             goto cleanup;
     }
 
-    if (virVHBAManageVport(parent_host, adapter.data.fchost.wwpn,
-                           adapter.data.fchost.wwnn, VPORT_DELETE) < 0)
+    if (virVHBAManageVport(parent_host, fchost->wwpn, fchost->wwnn,
+                           VPORT_DELETE) < 0)
         goto cleanup;
 
     ret = 0;
@@ -523,15 +509,23 @@ static int
 virStorageBackendSCSIStartPool(virConnectPtr conn,
                                virStoragePoolObjPtr pool)
 {
-    return createVport(conn, pool);
+    if (pool->def->source.adapter.type ==
+        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
+        return createVport(conn, pool->def, pool->configFile,
+                           &pool->def->source.adapter.data.fchost);
+
+    return 0;
 }
 
 static int
 virStorageBackendSCSIStopPool(virConnectPtr conn,
                               virStoragePoolObjPtr pool)
 {
-    virStoragePoolSourceAdapter adapter = pool->def->source.adapter;
-    return deleteVport(conn, adapter);
+    if (pool->def->source.adapter.type ==
+        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST)
+        return deleteVport(conn, &pool->def->source.adapter.data.fchost);
+
+    return 0;
 }
 
 virStorageBackend virStorageBackendSCSI = {
