@@ -179,27 +179,35 @@ typedef enum {
 } virStoragePoolSourceAdapterType;
 VIR_ENUM_DECL(virStoragePoolSourceAdapter)
 
+typedef struct _virStorageAdapterSCSIHost virStorageAdapterSCSIHost;
+typedef virStorageAdapterSCSIHost *virStorageAdapterSCSIHostPtr;
+struct _virStorageAdapterSCSIHost {
+    char *name;
+    virPCIDeviceAddress parentaddr; /* host address */
+    int unique_id;
+    bool has_parent;
+};
+
+typedef struct _virStorageAdapterFCHost virStorageAdapterFCHost;
+typedef virStorageAdapterFCHost *virStorageAdapterFCHostPtr;
+struct _virStorageAdapterFCHost {
+    char *parent;
+    char *parent_wwnn;
+    char *parent_wwpn;
+    char *parent_fabric_wwn;
+    char *wwnn;
+    char *wwpn;
+    int managed;        /* enum virTristateSwitch */
+};
+
 typedef struct _virStoragePoolSourceAdapter virStoragePoolSourceAdapter;
 typedef virStoragePoolSourceAdapter *virStoragePoolSourceAdapterPtr;
 struct _virStoragePoolSourceAdapter {
     int type; /* virStoragePoolSourceAdapterType */
 
     union {
-        struct {
-            char *name;
-            virPCIDeviceAddress parentaddr; /* host address */
-            int unique_id;
-            bool has_parent;
-        } scsi_host;
-        struct {
-            char *parent;
-            char *parent_wwnn;
-            char *parent_wwpn;
-            char *parent_fabric_wwn;
-            char *wwnn;
-            char *wwpn;
-            int managed;        /* enum virTristateSwitch */
-        } fchost;
+        virStorageAdapterSCSIHost scsi_host;
+        virStorageAdapterFCHost fchost;
     } data;
 };
 
