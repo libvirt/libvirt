@@ -463,125 +463,12 @@ virStoragePoolObjRemove(virStoragePoolObjListPtr pools,
 }
 
 static int
-virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
-                             virStoragePoolSourcePtr source,
-                             int pool_type,
-                             xmlNodePtr node)
+virStoragePoolDefParseSourceAdapter(virStoragePoolSourcePtr source,
+                                    xmlXPathContextPtr ctxt)
 {
     int ret = -1;
-    xmlNodePtr relnode, authnode, *nodeset = NULL;
-    int nsource;
-    size_t i;
-    virStoragePoolOptionsPtr options;
-    virStorageAuthDefPtr authdef = NULL;
-    char *name = NULL;
-    char *port = NULL;
     char *adapter_type = NULL;
     char *managed = NULL;
-    int n;
-
-    relnode = ctxt->node;
-    ctxt->node = node;
-
-    if ((options = virStoragePoolOptionsForPoolType(pool_type)) == NULL)
-        goto cleanup;
-
-    source->name = virXPathString("string(./name)", ctxt);
-    if (pool_type == VIR_STORAGE_POOL_RBD && source->name == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("element 'name' is mandatory for RBD pool"));
-        goto cleanup;
-    }
-
-    if (options->formatFromString) {
-        char *format = virXPathString("string(./format/@type)", ctxt);
-        if (format == NULL)
-            source->format = options->defaultFormat;
-        else
-            source->format = options->formatFromString(format);
-
-        if (source->format < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown pool format type %s"), format);
-            VIR_FREE(format);
-            goto cleanup;
-        }
-        VIR_FREE(format);
-    }
-
-    if ((n = virXPathNodeSet("./host", ctxt, &nodeset)) < 0)
-        goto cleanup;
-
-    if (n) {
-        if (VIR_ALLOC_N(source->hosts, n) < 0)
-            goto cleanup;
-        source->nhost = n;
-
-        for (i = 0; i < source->nhost; i++) {
-            name = virXMLPropString(nodeset[i], "name");
-            if (name == NULL) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("missing storage pool host name"));
-                goto cleanup;
-            }
-            source->hosts[i].name = name;
-
-            port = virXMLPropString(nodeset[i], "port");
-            if (port) {
-                if (virStrToLong_i(port, NULL, 10, &source->hosts[i].port) < 0) {
-                    virReportError(VIR_ERR_XML_ERROR,
-                                   _("Invalid port number: %s"),
-                                   port);
-                    goto cleanup;
-                }
-            }
-        }
-    }
-
-    VIR_FREE(nodeset);
-    source->initiator.iqn = virXPathString("string(./initiator/iqn/@name)", ctxt);
-
-    nsource = virXPathNodeSet("./device", ctxt, &nodeset);
-    if (nsource < 0)
-        goto cleanup;
-
-    for (i = 0; i < nsource; i++) {
-        char *partsep;
-        virStoragePoolSourceDevice dev = { .path = NULL };
-        dev.path = virXMLPropString(nodeset[i], "path");
-
-        if (dev.path == NULL) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("missing storage pool source device path"));
-            goto cleanup;
-        }
-
-        partsep = virXMLPropString(nodeset[i], "part_separator");
-        if (partsep) {
-            dev.part_separator = virTristateBoolTypeFromString(partsep);
-            if (dev.part_separator <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("invalid part_separator setting '%s'"),
-                               partsep);
-                virStoragePoolSourceDeviceClear(&dev);
-                VIR_FREE(partsep);
-                goto cleanup;
-            }
-            VIR_FREE(partsep);
-        }
-
-        if (VIR_APPEND_ELEMENT(source->devices, source->ndevice, dev) < 0) {
-            virStoragePoolSourceDeviceClear(&dev);
-            goto cleanup;
-        }
-
-    }
-
-    source->dir = virXPathString("string(./dir/@path)", ctxt);
-    /* In gluster, a missing dir defaults to "/" */
-    if (!source->dir && pool_type == VIR_STORAGE_POOL_GLUSTER &&
-        VIR_STRDUP(source->dir, "/") < 0)
-        goto cleanup;
 
     if ((adapter_type = virXPathString("string(./adapter/@type)", ctxt))) {
         if ((source->adapter.type =
@@ -688,6 +575,137 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                 VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST;
     }
 
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(adapter_type);
+    VIR_FREE(managed);
+    return ret;
+}
+
+
+static int
+virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
+                             virStoragePoolSourcePtr source,
+                             int pool_type,
+                             xmlNodePtr node)
+{
+    int ret = -1;
+    xmlNodePtr relnode, authnode, *nodeset = NULL;
+    int nsource;
+    size_t i;
+    virStoragePoolOptionsPtr options;
+    virStorageAuthDefPtr authdef = NULL;
+    char *name = NULL;
+    char *port = NULL;
+    int n;
+
+    relnode = ctxt->node;
+    ctxt->node = node;
+
+    if ((options = virStoragePoolOptionsForPoolType(pool_type)) == NULL)
+        goto cleanup;
+
+    source->name = virXPathString("string(./name)", ctxt);
+    if (pool_type == VIR_STORAGE_POOL_RBD && source->name == NULL) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("element 'name' is mandatory for RBD pool"));
+        goto cleanup;
+    }
+
+    if (options->formatFromString) {
+        char *format = virXPathString("string(./format/@type)", ctxt);
+        if (format == NULL)
+            source->format = options->defaultFormat;
+        else
+            source->format = options->formatFromString(format);
+
+        if (source->format < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown pool format type %s"), format);
+            VIR_FREE(format);
+            goto cleanup;
+        }
+        VIR_FREE(format);
+    }
+
+    if ((n = virXPathNodeSet("./host", ctxt, &nodeset)) < 0)
+        goto cleanup;
+
+    if (n) {
+        if (VIR_ALLOC_N(source->hosts, n) < 0)
+            goto cleanup;
+        source->nhost = n;
+
+        for (i = 0; i < source->nhost; i++) {
+            name = virXMLPropString(nodeset[i], "name");
+            if (name == NULL) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("missing storage pool host name"));
+                goto cleanup;
+            }
+            source->hosts[i].name = name;
+
+            port = virXMLPropString(nodeset[i], "port");
+            if (port) {
+                if (virStrToLong_i(port, NULL, 10, &source->hosts[i].port) < 0) {
+                    virReportError(VIR_ERR_XML_ERROR,
+                                   _("Invalid port number: %s"),
+                                   port);
+                    goto cleanup;
+                }
+            }
+        }
+    }
+
+    VIR_FREE(nodeset);
+    source->initiator.iqn = virXPathString("string(./initiator/iqn/@name)", ctxt);
+
+    nsource = virXPathNodeSet("./device", ctxt, &nodeset);
+    if (nsource < 0)
+        goto cleanup;
+
+    for (i = 0; i < nsource; i++) {
+        char *partsep;
+        virStoragePoolSourceDevice dev = { .path = NULL };
+        dev.path = virXMLPropString(nodeset[i], "path");
+
+        if (dev.path == NULL) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing storage pool source device path"));
+            goto cleanup;
+        }
+
+        partsep = virXMLPropString(nodeset[i], "part_separator");
+        if (partsep) {
+            dev.part_separator = virTristateBoolTypeFromString(partsep);
+            if (dev.part_separator <= 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("invalid part_separator setting '%s'"),
+                               partsep);
+                virStoragePoolSourceDeviceClear(&dev);
+                VIR_FREE(partsep);
+                goto cleanup;
+            }
+            VIR_FREE(partsep);
+        }
+
+        if (VIR_APPEND_ELEMENT(source->devices, source->ndevice, dev) < 0) {
+            virStoragePoolSourceDeviceClear(&dev);
+            goto cleanup;
+        }
+
+    }
+
+    source->dir = virXPathString("string(./dir/@path)", ctxt);
+    /* In gluster, a missing dir defaults to "/" */
+    if (!source->dir && pool_type == VIR_STORAGE_POOL_GLUSTER &&
+        VIR_STRDUP(source->dir, "/") < 0)
+        goto cleanup;
+
+    if (virStoragePoolDefParseSourceAdapter(source, ctxt) < 0)
+        goto cleanup;
+
     if ((authnode = virXPathNode("./auth", ctxt))) {
         if (!(authdef = virStorageAuthDefParse(node->doc, authnode)))
             goto cleanup;
@@ -711,8 +729,6 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
 
     VIR_FREE(port);
     VIR_FREE(nodeset);
-    VIR_FREE(adapter_type);
-    VIR_FREE(managed);
     virStorageAuthDefFree(authdef);
     return ret;
 }
@@ -831,6 +847,82 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
     return ret;
 }
 
+static int
+virStoragePoolSourceAdapterValidate(virStoragePoolDefPtr ret)
+{
+    if (!ret->source.adapter.type) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("missing storage pool source adapter"));
+        return -1;
+    }
+
+    if (ret->source.adapter.type ==
+        VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+        if (!ret->source.adapter.data.fchost.wwnn ||
+            !ret->source.adapter.data.fchost.wwpn) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("'wwnn' and 'wwpn' must be specified for adapter "
+                             "type 'fchost'"));
+            return -1;
+        }
+
+        if (!virValidateWWN(ret->source.adapter.data.fchost.wwnn) ||
+            !virValidateWWN(ret->source.adapter.data.fchost.wwpn))
+            return -1;
+
+        if ((ret->source.adapter.data.fchost.parent_wwnn &&
+             !ret->source.adapter.data.fchost.parent_wwpn)) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("when providing parent_wwnn='%s', the "
+                             "parent_wwpn must also be provided"),
+                           ret->source.adapter.data.fchost.parent_wwnn);
+            return -1;
+        }
+
+        if (!ret->source.adapter.data.fchost.parent_wwnn &&
+             ret->source.adapter.data.fchost.parent_wwpn) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("when providing parent_wwpn='%s', the "
+                             "parent_wwnn must also be provided"),
+                           ret->source.adapter.data.fchost.parent_wwpn);
+            return -1;
+        }
+
+        if (ret->source.adapter.data.fchost.parent_wwnn &&
+            !virValidateWWN(ret->source.adapter.data.fchost.parent_wwnn))
+            return -1;
+
+        if (ret->source.adapter.data.fchost.parent_wwpn &&
+            !virValidateWWN(ret->source.adapter.data.fchost.parent_wwpn))
+            return -1;
+
+        if (ret->source.adapter.data.fchost.parent_fabric_wwn &&
+            !virValidateWWN(ret->source.adapter.data.fchost.parent_fabric_wwn))
+            return -1;
+
+    } else if (ret->source.adapter.type ==
+               VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
+        if (!ret->source.adapter.data.scsi_host.name &&
+            !ret->source.adapter.data.scsi_host.has_parent) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Either 'name' or 'parent' must be specified "
+                             "for the 'scsi_host' adapter"));
+            return -1;
+        }
+
+        if (ret->source.adapter.data.scsi_host.name &&
+            ret->source.adapter.data.scsi_host.has_parent) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Both 'name' and 'parent' cannot be specified "
+                             "for the 'scsi_host' adapter"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 static virStoragePoolDefPtr
 virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 {
@@ -921,76 +1013,9 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
         }
     }
 
-    if (options->flags & VIR_STORAGE_POOL_SOURCE_ADAPTER) {
-        if (!ret->source.adapter.type) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("missing storage pool source adapter"));
+    if ((options->flags & VIR_STORAGE_POOL_SOURCE_ADAPTER) &&
+        (virStoragePoolSourceAdapterValidate(ret)) < 0)
             goto error;
-        }
-
-        if (ret->source.adapter.type ==
-            VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
-            if (!ret->source.adapter.data.fchost.wwnn ||
-                !ret->source.adapter.data.fchost.wwpn) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("'wwnn' and 'wwpn' must be specified for adapter "
-                                 "type 'fchost'"));
-                goto error;
-            }
-
-            if (!virValidateWWN(ret->source.adapter.data.fchost.wwnn) ||
-                !virValidateWWN(ret->source.adapter.data.fchost.wwpn))
-                goto error;
-
-            if ((ret->source.adapter.data.fchost.parent_wwnn &&
-                 !ret->source.adapter.data.fchost.parent_wwpn)) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("when providing parent_wwnn='%s', the "
-                                 "parent_wwpn must also be provided"),
-                               ret->source.adapter.data.fchost.parent_wwnn);
-                goto error;
-            }
-
-            if (!ret->source.adapter.data.fchost.parent_wwnn &&
-                 ret->source.adapter.data.fchost.parent_wwpn) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("when providing parent_wwpn='%s', the "
-                                 "parent_wwnn must also be provided"),
-                               ret->source.adapter.data.fchost.parent_wwpn);
-                goto error;
-            }
-
-            if (ret->source.adapter.data.fchost.parent_wwnn &&
-                !virValidateWWN(ret->source.adapter.data.fchost.parent_wwnn))
-                goto error;
-
-            if (ret->source.adapter.data.fchost.parent_wwpn &&
-                !virValidateWWN(ret->source.adapter.data.fchost.parent_wwpn))
-                goto error;
-
-            if (ret->source.adapter.data.fchost.parent_fabric_wwn &&
-                !virValidateWWN(ret->source.adapter.data.fchost.parent_fabric_wwn))
-                goto error;
-
-        } else if (ret->source.adapter.type ==
-                   VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
-            if (!ret->source.adapter.data.scsi_host.name &&
-                !ret->source.adapter.data.scsi_host.has_parent) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Either 'name' or 'parent' must be specified "
-                                 "for the 'scsi_host' adapter"));
-                goto error;
-            }
-
-            if (ret->source.adapter.data.scsi_host.name &&
-                ret->source.adapter.data.scsi_host.has_parent) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("Both 'name' and 'parent' cannot be specified "
-                                 "for the 'scsi_host' adapter"));
-                goto error;
-            }
-        }
-    }
 
     /* If DEVICE is the only source type, then its required */
     if (options->flags == VIR_STORAGE_POOL_SOURCE_DEVICE) {
@@ -1094,6 +1119,51 @@ virStoragePoolDefParseFile(const char *filename)
     return virStoragePoolDefParse(NULL, filename);
 }
 
+static void
+virStoragePoolSourceAdapterFormat(virBufferPtr buf,
+                                  virStoragePoolSourcePtr src)
+{
+    virBufferAsprintf(buf, "<adapter type='%s'",
+                      virStoragePoolSourceAdapterTypeToString(src->adapter.type));
+
+    if (src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
+        virBufferEscapeString(buf, " parent='%s'",
+                              src->adapter.data.fchost.parent);
+        if (src->adapter.data.fchost.managed)
+            virBufferAsprintf(buf, " managed='%s'",
+                              virTristateBoolTypeToString(src->adapter.data.fchost.managed));
+        virBufferEscapeString(buf, " parent_wwnn='%s'",
+                              src->adapter.data.fchost.parent_wwnn);
+        virBufferEscapeString(buf, " parent_wwpn='%s'",
+                              src->adapter.data.fchost.parent_wwpn);
+        virBufferEscapeString(buf, " parent_fabric_wwn='%s'",
+                              src->adapter.data.fchost.parent_fabric_wwn);
+
+        virBufferAsprintf(buf, " wwnn='%s' wwpn='%s'/>\n",
+                          src->adapter.data.fchost.wwnn,
+                          src->adapter.data.fchost.wwpn);
+    } else if (src->adapter.type ==
+               VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
+        if (src->adapter.data.scsi_host.name) {
+            virBufferAsprintf(buf, " name='%s'/>\n",
+                              src->adapter.data.scsi_host.name);
+        } else {
+            virPCIDeviceAddress addr;
+            virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
+            virBufferAsprintf(buf, "<parentaddr unique_id='%d'>\n",
+                              src->adapter.data.scsi_host.unique_id);
+            virBufferAdjustIndent(buf, 2);
+            addr = src->adapter.data.scsi_host.parentaddr;
+            ignore_value(virPCIDeviceAddressFormat(buf, addr, false));
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</parentaddr>\n");
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</adapter>\n");
+        }
+    }
+}
+
 static int
 virStoragePoolSourceFormat(virBufferPtr buf,
                            virStoragePoolOptionsPtr options,
@@ -1143,49 +1213,10 @@ virStoragePoolSourceFormat(virBufferPtr buf,
     if (options->flags & VIR_STORAGE_POOL_SOURCE_DIR)
         virBufferEscapeString(buf, "<dir path='%s'/>\n", src->dir);
 
-    if ((options->flags & VIR_STORAGE_POOL_SOURCE_ADAPTER)) {
-        if (src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST ||
-            src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST)
-            virBufferAsprintf(buf, "<adapter type='%s'",
-                              virStoragePoolSourceAdapterTypeToString(src->adapter.type));
-
-        if (src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
-            virBufferEscapeString(buf, " parent='%s'",
-                                  src->adapter.data.fchost.parent);
-            if (src->adapter.data.fchost.managed)
-                virBufferAsprintf(buf, " managed='%s'",
-                                  virTristateBoolTypeToString(src->adapter.data.fchost.managed));
-            virBufferEscapeString(buf, " parent_wwnn='%s'",
-                                  src->adapter.data.fchost.parent_wwnn);
-            virBufferEscapeString(buf, " parent_wwpn='%s'",
-                                  src->adapter.data.fchost.parent_wwpn);
-            virBufferEscapeString(buf, " parent_fabric_wwn='%s'",
-                                  src->adapter.data.fchost.parent_fabric_wwn);
-
-            virBufferAsprintf(buf, " wwnn='%s' wwpn='%s'/>\n",
-                              src->adapter.data.fchost.wwnn,
-                              src->adapter.data.fchost.wwpn);
-        } else if (src->adapter.type ==
-                   VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST) {
-            if (src->adapter.data.scsi_host.name) {
-                virBufferAsprintf(buf, " name='%s'/>\n",
-                                  src->adapter.data.scsi_host.name);
-            } else {
-                virPCIDeviceAddress addr;
-                virBufferAddLit(buf, ">\n");
-                virBufferAdjustIndent(buf, 2);
-                virBufferAsprintf(buf, "<parentaddr unique_id='%d'>\n",
-                                  src->adapter.data.scsi_host.unique_id);
-                virBufferAdjustIndent(buf, 2);
-                addr = src->adapter.data.scsi_host.parentaddr;
-                ignore_value(virPCIDeviceAddressFormat(buf, addr, false));
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</parentaddr>\n");
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</adapter>\n");
-            }
-        }
-    }
+    if ((options->flags & VIR_STORAGE_POOL_SOURCE_ADAPTER) &&
+        (src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST ||
+         src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST))
+        virStoragePoolSourceAdapterFormat(buf, src);
 
     if (options->flags & VIR_STORAGE_POOL_SOURCE_NAME)
         virBufferEscapeString(buf, "<name>%s</name>\n", src->name);
