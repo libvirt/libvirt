@@ -3734,6 +3734,59 @@ qemuValidateCpuCount(virDomainDefPtr def,
 }
 
 
+static int
+qemuProcessVerifyHypervFeatures(virDomainDefPtr def,
+                                virCPUDataPtr cpu)
+{
+    char *cpuFeature;
+    size_t i;
+    int rc;
+
+    for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
+        if (def->hyperv_features[i] != VIR_TRISTATE_SWITCH_ON)
+            continue;
+
+        if (virAsprintf(&cpuFeature, "__kvm_hv_%s",
+                        virDomainHypervTypeToString(i)) < 0)
+            return -1;
+
+        rc = virCPUDataCheckFeature(cpu, cpuFeature);
+        VIR_FREE(cpuFeature);
+
+        if (rc < 0)
+            return -1;
+        else if (rc == 1)
+            continue;
+
+        switch ((virDomainHyperv) i) {
+        case VIR_DOMAIN_HYPERV_RELAXED:
+        case VIR_DOMAIN_HYPERV_VAPIC:
+        case VIR_DOMAIN_HYPERV_SPINLOCKS:
+            VIR_WARN("host doesn't support hyperv '%s' feature",
+                     virDomainHypervTypeToString(i));
+            break;
+
+        case VIR_DOMAIN_HYPERV_VPINDEX:
+        case VIR_DOMAIN_HYPERV_RUNTIME:
+        case VIR_DOMAIN_HYPERV_SYNIC:
+        case VIR_DOMAIN_HYPERV_STIMER:
+        case VIR_DOMAIN_HYPERV_RESET:
+        case VIR_DOMAIN_HYPERV_VENDOR_ID:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("host doesn't support hyperv '%s' feature"),
+                           virDomainHypervTypeToString(i));
+            return -1;
+
+        /* coverity[dead_error_begin] */
+        case VIR_DOMAIN_HYPERV_LAST:
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
 static bool
 qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
@@ -3771,39 +3824,8 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
             }
         }
 
-        for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
-            if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON) {
-                char *cpuFeature;
-                if (virAsprintf(&cpuFeature, "__kvm_hv_%s",
-                                virDomainHypervTypeToString(i)) < 0)
-                    goto cleanup;
-                if (!virCPUDataCheckFeature(guestcpu, cpuFeature)) {
-                    switch ((virDomainHyperv) i) {
-                    case VIR_DOMAIN_HYPERV_RELAXED:
-                    case VIR_DOMAIN_HYPERV_VAPIC:
-                    case VIR_DOMAIN_HYPERV_SPINLOCKS:
-                        VIR_WARN("host doesn't support hyperv '%s' feature",
-                                 virDomainHypervTypeToString(i));
-                        break;
-                    case VIR_DOMAIN_HYPERV_VPINDEX:
-                    case VIR_DOMAIN_HYPERV_RUNTIME:
-                    case VIR_DOMAIN_HYPERV_SYNIC:
-                    case VIR_DOMAIN_HYPERV_STIMER:
-                    case VIR_DOMAIN_HYPERV_RESET:
-                    case VIR_DOMAIN_HYPERV_VENDOR_ID:
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                       _("host doesn't support hyperv '%s' feature"),
-                                       virDomainHypervTypeToString(i));
-                        goto cleanup;
-                        break;
-
-                    /* coverity[dead_error_begin] */
-                    case VIR_DOMAIN_HYPERV_LAST:
-                        break;
-                    }
-                }
-            }
-        }
+        if (qemuProcessVerifyHypervFeatures(def, guestcpu) < 0)
+            goto cleanup;
 
         if (def->cpu) {
             for (i = 0; i < def->cpu->nfeatures; i++) {
