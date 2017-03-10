@@ -26,18 +26,18 @@
 # include "storage_conf.h"
 
 void
-virStoragePoolSourceAdapterClear(virStoragePoolSourceAdapterPtr adapter);
+virStorageAdapterClear(virStoragePoolSourceAdapterPtr adapter);
 
 int
-virStoragePoolDefParseSourceAdapter(virStoragePoolSourcePtr source,
-                                    xmlNodePtr node,
-                                    xmlXPathContextPtr ctxt);
+virStorageAdapterParseXML(virStoragePoolSourcePtr source,
+                          xmlNodePtr node,
+                          xmlXPathContextPtr ctxt);
 
 int
-virStoragePoolSourceAdapterValidate(virStoragePoolDefPtr ret);
+virStorageAdapterValidate(virStoragePoolDefPtr ret);
 
 void
-virStoragePoolSourceAdapterFormat(virBufferPtr buf,
-                                  virStoragePoolSourcePtr src);
+virStorageAdapterFormat(virBufferPtr buf,
+                        virStoragePoolSourcePtr src);
 
 #endif /* __VIR_STORAGE_ADAPTER_CONF_H__ */

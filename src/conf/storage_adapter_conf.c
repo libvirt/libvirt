@@ -38,7 +38,7 @@ VIR_ENUM_IMPL(virStoragePoolSourceAdapter,
 
 
 void
-virStoragePoolSourceAdapterClear(virStoragePoolSourceAdapterPtr adapter)
+virStorageAdapterClear(virStoragePoolSourceAdapterPtr adapter)
 {
     if (adapter->type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST) {
         VIR_FREE(adapter->data.fchost.wwnn);
@@ -55,9 +55,9 @@ virStoragePoolSourceAdapterClear(virStoragePoolSourceAdapterPtr adapter)
 
 
 int
-virStoragePoolDefParseSourceAdapter(virStoragePoolSourcePtr source,
-                                    xmlNodePtr node,
-                                    xmlXPathContextPtr ctxt)
+virStorageAdapterParseXML(virStoragePoolSourcePtr source,
+                          xmlNodePtr node,
+                          xmlXPathContextPtr ctxt)
 {
     int ret = -1;
     xmlNodePtr relnode = ctxt->node;
@@ -177,7 +177,7 @@ virStoragePoolDefParseSourceAdapter(virStoragePoolSourcePtr source,
 
 
 int
-virStoragePoolSourceAdapterValidate(virStoragePoolDefPtr ret)
+virStorageAdapterValidate(virStoragePoolDefPtr ret)
 {
     if (!ret->source.adapter.type) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -253,8 +253,8 @@ virStoragePoolSourceAdapterValidate(virStoragePoolDefPtr ret)
 
 
 void
-virStoragePoolSourceAdapterFormat(virBufferPtr buf,
-                                  virStoragePoolSourcePtr src)
+virStorageAdapterFormat(virBufferPtr buf,
+                        virStoragePoolSourcePtr src)
 {
     virBufferAsprintf(buf, "<adapter type='%s'",
                       virStoragePoolSourceAdapterTypeToString(src->adapter.type));

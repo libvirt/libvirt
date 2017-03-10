@@ -363,7 +363,7 @@ virStoragePoolSourceClear(virStoragePoolSourcePtr source)
     VIR_FREE(source->devices);
     VIR_FREE(source->dir);
     VIR_FREE(source->name);
-    virStoragePoolSourceAdapterClear(&source->adapter);
+    virStorageAdapterClear(&source->adapter);
     VIR_FREE(source->initiator.iqn);
     virStorageAuthDefFree(source->auth);
     VIR_FREE(source->vendor);
@@ -565,7 +565,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
         goto cleanup;
 
     if ((adapternode = virXPathNode("./adapter", ctxt))) {
-        if (virStoragePoolDefParseSourceAdapter(source, adapternode, ctxt) < 0)
+        if (virStorageAdapterParseXML(source, adapternode, ctxt) < 0)
             goto cleanup;
     }
 
@@ -802,7 +802,7 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
     }
 
     if ((options->flags & VIR_STORAGE_POOL_SOURCE_ADAPTER) &&
-        (virStoragePoolSourceAdapterValidate(ret)) < 0)
+        (virStorageAdapterValidate(ret)) < 0)
             goto error;
 
     /* If DEVICE is the only source type, then its required */
@@ -960,7 +960,7 @@ virStoragePoolSourceFormat(virBufferPtr buf,
     if ((options->flags & VIR_STORAGE_POOL_SOURCE_ADAPTER) &&
         (src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_FC_HOST ||
          src->adapter.type == VIR_STORAGE_POOL_SOURCE_ADAPTER_TYPE_SCSI_HOST))
-        virStoragePoolSourceAdapterFormat(buf, src);
+        virStorageAdapterFormat(buf, src);
 
     if (options->flags & VIR_STORAGE_POOL_SOURCE_NAME)
         virBufferEscapeString(buf, "<name>%s</name>\n", src->name);
