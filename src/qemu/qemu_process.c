@@ -3809,6 +3809,36 @@ qemuProcessVerifyKVMFeatures(virDomainDefPtr def,
 }
 
 
+static int
+qemuProcessVerifyCPUFeatures(virDomainDefPtr def,
+                             virCPUDataPtr cpu)
+{
+    int rc;
+
+    if (!def->cpu ||
+        (def->cpu->mode == VIR_CPU_MODE_CUSTOM &&
+         !def->cpu->model))
+        return 0;
+
+    rc = virCPUCheckFeature(def->os.arch, def->cpu, "invtsc");
+
+    if (rc < 0) {
+        return -1;
+    } else if (rc == 1) {
+        rc = virCPUDataCheckFeature(cpu, "invtsc");
+        if (rc <= 0) {
+            if (rc == 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("host doesn't support invariant TSC"));
+            }
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 static bool
 qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
                           virDomainObjPtr vm,
@@ -3820,7 +3850,6 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rc;
     bool ret = false;
-    size_t i;
 
     switch (arch) {
     case VIR_ARCH_I686:
@@ -3842,21 +3871,8 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
             qemuProcessVerifyHypervFeatures(def, guestcpu) < 0)
             goto cleanup;
 
-        if (def->cpu) {
-            for (i = 0; i < def->cpu->nfeatures; i++) {
-                virCPUFeatureDefPtr feature = &def->cpu->features[i];
-
-                if (feature->policy != VIR_CPU_FEATURE_REQUIRE)
-                    continue;
-
-                if (STREQ(feature->name, "invtsc") &&
-                    !virCPUDataCheckFeature(guestcpu, feature->name)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("host doesn't support invariant TSC"));
-                    goto cleanup;
-                }
-            }
-        }
+        if (qemuProcessVerifyCPUFeatures(def, guestcpu) < 0)
+            goto cleanup;
         break;
 
     default:
