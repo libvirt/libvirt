@@ -241,6 +241,7 @@ virNetDevSetMACInternal(const char *ifname,
     int fd = -1;
     int ret = -1;
     struct ifreq ifr;
+    char macstr[VIR_MAC_STRING_BUFLEN];
 
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         return -1;
@@ -256,7 +257,6 @@ virNetDevSetMACInternal(const char *ifname,
     virMacAddrGetRaw(macaddr, (unsigned char *)ifr.ifr_hwaddr.sa_data);
 
     if (ioctl(fd, SIOCSIFHWADDR, &ifr) < 0) {
-        char macstr[VIR_MAC_STRING_BUFLEN];
 
         if (quiet && errno == EADDRNOTAVAIL)
             goto cleanup;
@@ -270,6 +270,10 @@ virNetDevSetMACInternal(const char *ifname,
     ret = 0;
 
  cleanup:
+    VIR_DEBUG("SIOCSIFHWADDR %s MAC=%s - %s",
+              ifname, virMacAddrFormat(macaddr, macstr),
+              ret < 0 ? "Fail" : "Success");
+
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -312,6 +316,9 @@ virNetDevSetMACInternal(const char *ifname,
 
         ret = 0;
  cleanup:
+        VIR_DEBUG("SIOCSIFLLADDR %s MAC=%s - %s", ifname, mac + 1),
+                  ret < 0 ? "Fail" : "Success");
+
         VIR_FORCE_CLOSE(s);
 
         return ret;
@@ -1508,6 +1515,7 @@ virNetDevSetVfConfig(const char *ifname, int vf,
                      bool *allowRetry)
 {
     int rc = -1;
+    char macstr[VIR_MAC_STRING_BUFLEN];
     struct nlmsghdr *resp = NULL;
     struct nlmsgerr *err;
     unsigned int recvbuflen = 0;
@@ -1591,8 +1599,6 @@ virNetDevSetVfConfig(const char *ifname, int vf,
             goto cleanup;
         } else if (err->error) {
             /* other errors are permanent */
-            char macstr[VIR_MAC_STRING_BUFLEN];
-
             virReportSystemError(-err->error,
                                  _("Cannot set interface MAC/vlanid to %s/%d "
                                    "for ifname %s vf %d"),
@@ -1616,6 +1622,11 @@ virNetDevSetVfConfig(const char *ifname, int vf,
 
     rc = 0;
  cleanup:
+    VIR_DEBUG("RTM_SETLINK %s vf %d MAC=%s vlanid=%d - %s",
+              ifname, vf,
+              macaddr ? virMacAddrFormat(macaddr, macstr) : "(unchanged)",
+              vlanid, rc < 0 ? "Fail" : "Success");
+
     nlmsg_free(nl_msg);
     VIR_FREE(resp);
     return rc;
