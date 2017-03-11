@@ -327,11 +327,13 @@ qemuMonitorDispose(void *obj)
 
 
 static int
-qemuMonitorOpenUnix(const char *monitor, pid_t cpid)
+qemuMonitorOpenUnix(const char *monitor,
+                    pid_t cpid,
+                    unsigned long long timeout)
 {
     struct sockaddr_un addr;
     int monfd;
-    virTimeBackOffVar timeout;
+    virTimeBackOffVar timebackoff;
     int ret = -1;
 
     if ((monfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
@@ -348,9 +350,9 @@ qemuMonitorOpenUnix(const char *monitor, pid_t cpid)
         goto error;
     }
 
-    if (virTimeBackOffStart(&timeout, 1, 30*1000 /* ms */) < 0)
+    if (virTimeBackOffStart(&timebackoff, 1, timeout * 1000) < 0)
         goto error;
-    while (virTimeBackOffWait(&timeout)) {
+    while (virTimeBackOffWait(&timebackoff)) {
         ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
 
         if (ret == 0)
@@ -871,10 +873,30 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
 }
 
 
+#define QEMU_DEFAULT_MONITOR_WAIT 30
+
+/**
+ * qemuMonitorOpen:
+ * @vm: domain object
+ * @config: monitor configuration
+ * @json: enable JSON on the monitor
+ * @timeout: number of seconds to add to default timeout
+ * @cb: monitor event handles
+ * @opaque: opaque data for @cb
+ *
+ * Opens the monitor for running qemu. It may happen that it
+ * takes some time for qemu to create the monitor socket (e.g.
+ * because kernel is zeroing configured hugepages), therefore we
+ * wait up to default + timeout seconds for the monitor to show
+ * up after which a failure is claimed.
+ *
+ * Returns monitor object, NULL on error.
+ */
 qemuMonitorPtr
 qemuMonitorOpen(virDomainObjPtr vm,
                 virDomainChrSourceDefPtr config,
                 bool json,
+                unsigned long long timeout,
                 qemuMonitorCallbacksPtr cb,
                 void *opaque)
 {
@@ -882,10 +904,14 @@ qemuMonitorOpen(virDomainObjPtr vm,
     bool hasSendFD = false;
     qemuMonitorPtr ret;
 
+    timeout += QEMU_DEFAULT_MONITOR_WAIT;
+
     switch (config->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         hasSendFD = true;
-        if ((fd = qemuMonitorOpenUnix(config->data.nix.path, vm ? vm->pid : 0)) < 0)
+        if ((fd = qemuMonitorOpenUnix(config->data.nix.path,
+                                      vm ? vm->pid : 0,
+                                      timeout)) < 0)
             return NULL;
         break;
 
