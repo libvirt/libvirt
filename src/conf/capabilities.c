@@ -1413,3 +1413,25 @@ virCapabilitiesInitNUMA(virCapsPtr caps)
     VIR_FREE(pageinfo);
     return ret;
 }
+
+int
+virCapabilitiesInitPages(virCapsPtr caps)
+{
+    int ret = -1;
+    unsigned int *pages_size = NULL;
+    size_t npages;
+
+    if (virNumaGetPages(-1 /* Magic constant for overall info */,
+                        &pages_size, NULL, NULL, &npages) < 0)
+        goto cleanup;
+
+    caps->host.pagesSize = pages_size;
+    pages_size = NULL;
+    caps->host.nPagesSize = npages;
+    npages = 0;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(pages_size);
+    return ret;
+}

@@ -299,6 +299,8 @@ virBitmapPtr virCapabilitiesGetCpusForNodemask(virCapsPtr caps,
 
 int virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo);
 
+int virCapabilitiesInitPages(virCapsPtr caps);
+
 int virCapabilitiesInitNUMA(virCapsPtr caps);
 
 #endif /* __VIR_CAPABILITIES_H */

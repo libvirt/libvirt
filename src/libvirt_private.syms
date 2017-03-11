@@ -60,6 +60,7 @@ virCapabilitiesGetCpusForNodemask;
 virCapabilitiesGetNodeInfo;
 virCapabilitiesHostSecModelAddBaseLabel;
 virCapabilitiesInitNUMA;
+virCapabilitiesInitPages;
 virCapabilitiesNew;
 virCapabilitiesSetHostCPU;
 virCapabilitiesSetNetPrefix;
