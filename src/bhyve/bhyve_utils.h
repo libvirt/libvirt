@@ -34,8 +34,20 @@
 # define BHYVE_STATE_DIR        LOCALSTATEDIR "/run/libvirt/bhyve"
 # define BHYVE_LOG_DIR          LOCALSTATEDIR "/log/libvirt/bhyve"
 
+typedef struct _virBhyveDriverConfig virBhyveDriverConfig;
+typedef struct _virBhyveDriverConfig *virBhyveDriverConfigPtr;
+
+struct _virBhyveDriverConfig {
+    virObject parent;
+
+    char *firmwareDir;
+};
+
 struct _bhyveConn {
     virMutex lock;
+
+    virBhyveDriverConfigPtr config;
+
     virDomainObjListPtr domains;
     virCapsPtr caps;
     virDomainXMLOptionPtr xmlopt;

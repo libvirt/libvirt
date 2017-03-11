@@ -930,6 +930,8 @@ BHYVE_DRIVER_SOURCES =						\
 		bhyve/bhyve_capabilities.h			\
 		bhyve/bhyve_command.c				\
 		bhyve/bhyve_command.h				\
+		bhyve/bhyve_conf.c				\
+		bhyve/bhyve_conf.h				\
 		bhyve/bhyve_parse_command.c			\
 		bhyve/bhyve_parse_command.h			\
 		bhyve/bhyve_device.c				\
@@ -1575,7 +1577,14 @@ libvirt_driver_bhyve_impl_la_CFLAGS = \
 	$(AM_CFLAGS)
 libvirt_driver_bhyve_impl_la_LDFLAGS = $(AM_LDFLAGS)
 libvirt_driver_bhyve_impl_la_SOURCES = $(BHYVE_DRIVER_SOURCES)
+
+conf_DATA += bhyve/bhyve.conf
+augeas_DATA += bhyve/libvirtd_bhyve.aug
+augeastest_DATA += test_libvirtd_bhyve.aug
 endif WITH_BHYVE
+EXTRA_DIST += bhyve/bhyve.conf \
+	bhyve/libvirtd_bhyve.aug \
+	bhyve/test_libvirtd_bhyve.aug.in
 
 if WITH_NETWORK
 noinst_LTLIBRARIES += libvirt_driver_network_impl.la
@@ -2125,11 +2134,12 @@ check-local: check-augeas
 	check-augeas-sanlock \
 	check-augeas-lockd \
 	check-augeas-libxl \
+	check-augeas-bhyve \
 	$(NULL)
 
 check-augeas: check-augeas-qemu check-augeas-lxc check-augeas-sanlock \
 	check-augeas-lockd check-augeas-virtlockd check-augeas-libxl \
-	check-augeas-virtlogd
+	check-augeas-bhyve check-augeas-virtlogd
 
 AUG_GENTEST = $(PERL) $(top_srcdir)/build-aux/augeas-gentest.pl
 EXTRA_DIST += $(top_srcdir)/build-aux/augeas-gentest.pl
@@ -2211,6 +2221,19 @@ check-augeas-libxl: test_libvirtd_libxl.aug
 else ! WITH_LIBXL
 check-augeas-libxl:
 endif ! WITH_LIBXL
+
+if WITH_BHYVE
+test_libvirtd_bhyve.aug: bhyve/test_libvirtd_bhyve.aug.in \
+		$(srcdir)/bhyve/bhyve.conf $(AUG_GENTEST)
+	$(AM_V_GEN)$(AUG_GENTEST) $(srcdir)/bhyve/bhyve.conf $< $@
+
+check-augeas-bhyve: test_libvirtd_bhyve.aug
+	$(AM_V_GEN)if test -x '$(AUGPARSE)'; then \
+	    '$(AUGPARSE)' -I $(srcdir)/bhyve test_libvirtd_bhyve.aug; \
+	fi
+else ! WITH_BHYVE
+check-augeas-bhyve:
+endif ! WITH_BHYVE
 
 test_virtlogd.aug: logging/test_virtlogd.aug.in \
 		logging/virtlogd.conf $(AUG_GENTEST)

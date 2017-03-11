@@ -55,6 +55,7 @@
 #include "virhostmem.h"
 #include "conf/domain_capabilities.h"
 
+#include "bhyve_conf.h"
 #include "bhyve_device.h"
 #include "bhyve_driver.h"
 #include "bhyve_command.h"
@@ -1228,6 +1229,7 @@ bhyveStateCleanup(void)
     virSysinfoDefFree(bhyve_driver->hostsysinfo);
     virObjectUnref(bhyve_driver->closeCallbacks);
     virObjectUnref(bhyve_driver->domainEventState);
+    virObjectUnref(bhyve_driver->config);
 
     virMutexDestroy(&bhyve_driver->lock);
     VIR_FREE(bhyve_driver);
@@ -1275,6 +1277,12 @@ bhyveStateInitialize(bool privileged,
         goto cleanup;
 
     bhyve_driver->hostsysinfo = virSysinfoRead();
+
+    if (!(bhyve_driver->config = virBhyveDriverConfigNew()))
+        goto cleanup;
+
+    if (virBhyveLoadDriverConfig(bhyve_driver->config, SYSCONFDIR "/libvirt/bhyve.conf") < 0)
+        goto cleanup;
 
     if (virFileMakePath(BHYVE_LOG_DIR) < 0) {
         virReportSystemError(errno,
@@ -1657,7 +1665,8 @@ bhyveConnectGetDomainCapabilities(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (!(caps = virBhyveDomainCapsBuild(emulatorbin, machine, arch, virttype)))
+    if (!(caps = virBhyveDomainCapsBuild(conn->privateData, emulatorbin,
+                                         machine, arch, virttype)))
         goto cleanup;
 
     ret = virDomainCapsFormat(caps);

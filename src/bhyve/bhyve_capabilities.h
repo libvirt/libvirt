@@ -25,8 +25,11 @@
 # include "capabilities.h"
 # include "conf/domain_capabilities.h"
 
+# include "bhyve_utils.h"
+
 virCapsPtr virBhyveCapsBuild(void);
-virDomainCapsPtr virBhyveDomainCapsBuild(const char *emulatorbin,
+virDomainCapsPtr virBhyveDomainCapsBuild(bhyveConnPtr,
+                                         const char *emulatorbin,
                                          const char *machine,
                                          virArch arch,
                                          virDomainVirtType virttype);
