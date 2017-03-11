@@ -33,7 +33,7 @@
 #include "cpu_ppc64.h"
 #include "cpu_s390.h"
 #include "cpu_arm.h"
-#include "util/virstring.h"
+#include "virstring.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_CPU
