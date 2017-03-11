@@ -1362,7 +1362,7 @@ static int openvzDomainSetVcpusInternal(virDomainObjPtr vm,
     const char *prog[] = { VZCTL, "--quiet", "set", PROGRAM_SENTINEL,
                            "--cpus", str_vcpus, "--save", NULL };
     unsigned int pcpus;
-    pcpus = openvzGetNodeCPUs();
+    pcpus = virHostCPUGetCount();
     if (pcpus > 0 && pcpus < nvcpus)
         nvcpus = pcpus;
 

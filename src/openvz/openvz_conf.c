@@ -51,6 +51,7 @@
 #include "virfile.h"
 #include "vircommand.h"
 #include "virstring.h"
+#include "virhostcpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_OPENVZ
 
@@ -570,7 +571,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
         }
 
         if (ret == 0 || vcpus == 0)
-            vcpus = openvzGetNodeCPUs();
+            vcpus = virHostCPUGetCount();
 
         if (virDomainDefSetVcpusMax(def, vcpus, driver->xmlopt) < 0)
             goto cleanup;
@@ -626,17 +627,6 @@ int openvzLoadDomains(struct openvz_driver *driver)
     virObjectUnref(dom);
     virDomainDefFree(def);
     return -1;
-}
-
-unsigned int
-openvzGetNodeCPUs(void)
-{
-    virNodeInfo nodeinfo;
-
-    if (nodeGetInfo(&nodeinfo) < 0)
-        return 0;
-
-    return nodeinfo.cpus;
 }
 
 static int
