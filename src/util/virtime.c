@@ -390,6 +390,9 @@ virTimeBackOffStart(virTimeBackOffVar *var,
     return 0;
 }
 
+
+#define VIR_TIME_BACKOFF_CAP 1000
+
 /**
  * virTimeBackOffWait
  * @var: Timeout variable (with type virTimeBackOffVar *).
@@ -410,7 +413,9 @@ virTimeBackOffStart(virTimeBackOffVar *var,
  * The while loop that runs the body of the code repeatedly, with an
  * exponential backoff.  It first waits for first milliseconds, then
  * runs the body, then waits for 2*first ms, then runs the body again.
- * Then 4*first ms, and so on.
+ * Then 4*first ms, and so on, up until wait time would reach
+ * VIR_TIME_BACK_OFF_CAP (whole second). Then it switches to constant
+ * waiting time of VIR_TIME_BACK_OFF_CAP.
  *
  * When timeout milliseconds is reached, the while loop ends.
  *
@@ -429,8 +434,13 @@ virTimeBackOffWait(virTimeBackOffVar *var)
     if (t > var->limit_t)
         return 0;               /* ends the while loop */
 
+    /* Compute next wait time. Cap at VIR_TIME_BACKOFF_CAP
+     * to avoid long useless sleeps. */
     next = var->next;
-    var->next *= 2;
+    if (var->next < VIR_TIME_BACKOFF_CAP)
+        var->next *= 2;
+    else if (var->next > VIR_TIME_BACKOFF_CAP)
+        var->next = VIR_TIME_BACKOFF_CAP;
 
     /* If sleeping would take us beyond the limit, then shorten the
      * sleep.  This is so we always run the body just before the final
