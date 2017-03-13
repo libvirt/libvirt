@@ -6741,22 +6741,19 @@ qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
 {
     int rc;
 
-    switch (arch) {
-    case VIR_ARCH_X86_64:
-    case VIR_ARCH_I686:
+    if (ARCH_IS_X86(arch)) {
         if ((rc = qemuMonitorJSONCheckCPUx86(mon)) < 0)
             return -1;
         else if (!rc)
             return -2;
 
         return qemuMonitorJSONGetCPUx86Data(mon, "feature-words", data);
-
-    default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("CPU definition retrieval isn't supported for '%s'"),
-                       virArchToString(arch));
-        return -1;
     }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("CPU definition retrieval isn't supported for '%s'"),
+                   virArchToString(arch));
+    return -1;
 }
 
 int
