@@ -2395,7 +2395,7 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
 
     if (qemuMonitorJSONGetGuestCPU(qemuMonitorTestGetMonitor(test),
                                    VIR_ARCH_X86_64,
-                                   &cpuData) < 0)
+                                   &cpuData, NULL) < 0)
         goto cleanup;
 
     if (!(actual = virCPUDataFormat(cpuData)))
@@ -2438,7 +2438,7 @@ testQemuMonitorJSONGetNonExistingCPUData(const void *opaque)
 
     rv = qemuMonitorJSONGetGuestCPU(qemuMonitorTestGetMonitor(test),
                                    VIR_ARCH_X86_64,
-                                   &cpuData);
+                                   &cpuData, NULL);
     if (rv != -2) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Unexpected return value %d, expecting -2", rv);

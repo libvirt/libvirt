@@ -6728,6 +6728,7 @@ qemuMonitorJSONCheckCPUx86(qemuMonitorPtr mon)
  * @mon: Pointer to the monitor
  * @arch: arch of the guest
  * @data: returns the cpu data of the guest
+ * @disabled: returns the CPU data for features which were disabled by QEMU
  *
  * Retrieve the definition of the guest CPU from a running qemu instance.
  *
@@ -6737,8 +6738,11 @@ qemuMonitorJSONCheckCPUx86(qemuMonitorPtr mon)
 int
 qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
                            virArch arch,
-                           virCPUDataPtr *data)
+                           virCPUDataPtr *data,
+                           virCPUDataPtr *disabled)
 {
+    virCPUDataPtr cpuEnabled = NULL;
+    virCPUDataPtr cpuDisabled = NULL;
     int rc;
 
     if (ARCH_IS_X86(arch)) {
@@ -6747,12 +6751,29 @@ qemuMonitorJSONGetGuestCPU(qemuMonitorPtr mon,
         else if (!rc)
             return -2;
 
-        return qemuMonitorJSONGetCPUx86Data(mon, "feature-words", data);
+        if (qemuMonitorJSONGetCPUx86Data(mon, "feature-words",
+                                         &cpuEnabled) < 0)
+            goto error;
+
+        if (disabled &&
+            qemuMonitorJSONGetCPUx86Data(mon, "filtered-features",
+                                         &cpuDisabled) < 0)
+            goto error;
+
+        *data = cpuEnabled;
+        if (disabled)
+            *disabled = cpuDisabled;
+        return 0;
     }
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
                    _("CPU definition retrieval isn't supported for '%s'"),
                    virArchToString(arch));
+    return -1;
+
+ error:
+    virCPUDataFree(cpuEnabled);
+    virCPUDataFree(cpuDisabled);
     return -1;
 }
 

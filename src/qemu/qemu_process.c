@@ -3854,7 +3854,7 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
             goto cleanup;
 
-        rc = qemuMonitorGetGuestCPU(priv->mon, def->os.arch, &cpu);
+        rc = qemuMonitorGetGuestCPU(priv->mon, def->os.arch, &cpu, NULL);
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;
