@@ -2671,7 +2671,11 @@ virStoragePoolMatch(virStoragePoolObjPtr poolobj,
               (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_SHEEPDOG) &&
                (poolobj->def->type == VIR_STORAGE_POOL_SHEEPDOG)) ||
               (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_GLUSTER) &&
-               (poolobj->def->type == VIR_STORAGE_POOL_GLUSTER))))
+               (poolobj->def->type == VIR_STORAGE_POOL_GLUSTER)) ||
+              (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_ZFS) &&
+               poolobj->def->type == VIR_STORAGE_POOL_ZFS)       ||
+              (MATCH(VIR_CONNECT_LIST_STORAGE_POOLS_VSTORAGE) &&
+               poolobj->def->type == VIR_STORAGE_POOL_VSTORAGE)))
             return false;
     }
 
