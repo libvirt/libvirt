@@ -3840,12 +3840,13 @@ qemuProcessVerifyCPUFeatures(virDomainDefPtr def,
 
 
 static int
-qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
-                          virDomainObjPtr vm,
-                          qemuDomainAsyncJob asyncJob)
+qemuProcessUpdateLiveGuestCPU(virQEMUDriverPtr driver,
+                              virDomainObjPtr vm,
+                              qemuDomainAsyncJob asyncJob)
 {
     virDomainDefPtr def = vm->def;
     virCPUDataPtr cpu = NULL;
+    virCPUDataPtr disabled = NULL;
     qemuDomainObjPrivatePtr priv = vm->privateData;
     int rc;
     int ret = -1;
@@ -3854,7 +3855,7 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
             goto cleanup;
 
-        rc = qemuMonitorGetGuestCPU(priv->mon, def->os.arch, &cpu, NULL);
+        rc = qemuMonitorGetGuestCPU(priv->mon, def->os.arch, &cpu, &disabled);
 
         if (qemuDomainObjExitMonitor(driver, vm) < 0)
             goto cleanup;
@@ -3871,12 +3872,18 @@ qemuProcessVerifyGuestCPU(virQEMUDriverPtr driver,
 
         if (qemuProcessVerifyCPUFeatures(def, cpu) < 0)
             goto cleanup;
+
+        if ((rc = virCPUUpdateLive(def->os.arch, def->cpu, cpu, disabled)) < 0)
+            goto cleanup;
+        else if (rc == 0)
+            def->cpu->check = VIR_CPU_CHECK_FULL;
     }
 
     ret = 0;
 
  cleanup:
     virCPUDataFree(cpu);
+    virCPUDataFree(disabled);
     return ret;
 }
 
@@ -5720,8 +5727,8 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuConnectAgent(driver, vm) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Detecting if required emulator features are present");
-    if (qemuProcessVerifyGuestCPU(driver, vm, asyncJob) < 0)
+    VIR_DEBUG("Verifying and updating provided guest CPU");
+    if (qemuProcessUpdateLiveGuestCPU(driver, vm, asyncJob) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting up post-init cgroup restrictions");

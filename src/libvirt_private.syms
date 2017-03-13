@@ -1016,6 +1016,7 @@ virCPUGetHost;
 virCPUGetModels;
 virCPUTranslate;
 virCPUUpdate;
+virCPUUpdateLive;
 
 
 # cpu/cpu_x86.h

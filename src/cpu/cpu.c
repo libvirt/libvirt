@@ -713,6 +713,50 @@ virCPUUpdate(virArch arch,
 
 
 /**
+ * virCPUUpdateLive:
+ *
+ * @arch: CPU architecture
+ * @cpu: guest CPU definition to be updated
+ * @dataEnabled: CPU data of the virtual CPU
+ * @dataDisabled: CPU data with features requested by @cpu but disabled by the
+ *                hypervisor
+ *
+ * Update custom mode CPU according to the virtual CPU created by the
+ * hypervisor.
+ *
+ * Returns -1 on error,
+ *          0 when the CPU was successfully updated,
+ *          1 when the operation does not make sense on the CPU or it is not
+ *            supported for the given architecture.
+ */
+int
+virCPUUpdateLive(virArch arch,
+                 virCPUDefPtr cpu,
+                 virCPUDataPtr dataEnabled,
+                 virCPUDataPtr dataDisabled)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s, cpu=%p, dataEnabled=%p, dataDisabled=%p",
+              virArchToString(arch), cpu, dataEnabled, dataDisabled);
+
+    if (!(driver = cpuGetSubDriver(arch)))
+        return -1;
+
+    if (!driver->updateLive)
+        return 1;
+
+    if (cpu->mode != VIR_CPU_MODE_CUSTOM)
+        return 1;
+
+    if (driver->updateLive(cpu, dataEnabled, dataDisabled) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
  * virCPUCheckFeature:
  *
  * @arch: CPU architecture

@@ -2678,6 +2678,64 @@ virCPUx86Update(virCPUDefPtr guest,
 
 
 static int
+virCPUx86UpdateLive(virCPUDefPtr cpu,
+                    virCPUDataPtr dataEnabled,
+                    virCPUDataPtr dataDisabled)
+{
+    virCPUx86MapPtr map;
+    virCPUx86ModelPtr model = NULL;
+    virCPUx86Data enabled = VIR_CPU_X86_DATA_INIT;
+    virCPUx86Data disabled = VIR_CPU_X86_DATA_INIT;
+    size_t i;
+    int ret = -1;
+
+    if (!(map = virCPUx86GetMap()))
+        return -1;
+
+    if (!(model = x86ModelFromCPU(cpu, map, -1)))
+        goto cleanup;
+
+    if (dataEnabled &&
+        x86DataCopy(&enabled, &dataEnabled->data.x86) < 0)
+        goto cleanup;
+
+    if (dataDisabled &&
+        x86DataCopy(&disabled, &dataDisabled->data.x86) < 0)
+        goto cleanup;
+
+    x86DataSubtract(&enabled, &model->data);
+
+    for (i = 0; i < map->nfeatures; i++) {
+        virCPUx86FeaturePtr feature = map->features[i];
+
+        if (x86DataIsSubset(&enabled, &feature->data)) {
+            VIR_DEBUG("Adding feature '%s' enabled by the hypervisor",
+                      feature->name);
+            if (virCPUDefUpdateFeature(cpu, feature->name,
+                                       VIR_CPU_FEATURE_REQUIRE) < 0)
+                goto cleanup;
+        }
+
+        if (x86DataIsSubset(&disabled, &feature->data)) {
+            VIR_DEBUG("Removing feature '%s' disabled by the hypervisor",
+                      feature->name);
+            if (virCPUDefUpdateFeature(cpu, feature->name,
+                                       VIR_CPU_FEATURE_DISABLE) < 0)
+                goto cleanup;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    x86ModelFree(model);
+    virCPUx86DataClear(&enabled);
+    virCPUx86DataClear(&disabled);
+    return ret;
+}
+
+
+static int
 virCPUx86CheckFeature(const virCPUDef *cpu,
                       const char *name)
 {
@@ -2854,6 +2912,7 @@ struct cpuArchDriver cpuDriverX86 = {
 #endif
     .baseline   = x86Baseline,
     .update     = virCPUx86Update,
+    .updateLive = virCPUx86UpdateLive,
     .checkFeature = virCPUx86CheckFeature,
     .dataCheckFeature = virCPUx86DataCheckFeature,
     .dataFormat = virCPUx86DataFormat,
