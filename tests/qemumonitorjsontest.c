@@ -2929,6 +2929,7 @@ mymain(void)
     } while (0)
 
     DO_TEST_BLOCK_NODE_DETECT("1", "#block118");
+    DO_TEST_BLOCK_NODE_DETECT("2", "#block161");
 
 #undef DO_TEST_BLOCK_NODE_DETECT
 
