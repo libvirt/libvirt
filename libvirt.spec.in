@@ -979,9 +979,9 @@ Group: Development/Libraries
 # (client invokes 'nc' against the UNIX socket on the server)
 Requires: nc
 Requires: cyrus-sasl
-# Not technically required, but makes 'out-of-box' config
-# work correctly & doesn't have onerous dependencies
-Requires: cyrus-sasl-md5
+# Needed by default sasl.conf - no onerous extra deps, since
+# 100's of other things on a system already pull in krb5-libs
+Requires: cyrus-sasl-gssapi
 
 %description libs
 Shared libraries for accessing the libvirt daemon.

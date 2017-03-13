@@ -204,16 +204,72 @@ ResultActive=yes</pre>
 Further examples of PolicyKit setup can be found on the
 <a href="http://wiki.libvirt.org/page/SSHPolicyKitSetup">wiki page</a>.
     </p>
-    <h2><a name="ACL_server_username">Username/password auth</a></h2>
+    <h2><a name="ACL_server_sasl">SASL pluggable authentication</a></h2>
+
     <p>
-The plain TCP socket of the libvirt daemon defaults to using SASL for authentication.
-The SASL mechanism configured by default is DIGEST-MD5, which provides a basic
-username+password style authentication. It also provides for encryption of the data
-stream, so the security of the plain TCP socket is on a par with that of the TLS
-socket. If desired the UNIX socket and TLS socket can also have SASL enabled by
-setting the <code>auth_unix_ro</code>, <code>auth_unix_rw</code>, <code>auth_tls</code>
-config params in <code>libvirt.conf</code>.
-</p>
+Libvirt integrates with the cyrus-sasl library to provide a pluggable authentication
+system using the SASL protocol. SASL can be used in combination with libvirtd's TLS
+or TCP socket listeners. When used with the TCP listener, the SASL mechanism is
+rqeuired to provide session encryption in addition to authentication. Only a very
+few SASL mechanisms are able to do this, and of those that can do it, only the
+GSSAPI plugin is considered acceptably secure by modern standards:
+    </p>
+
+    <dl>
+      <dt>GSSAPI</dt>
+      <dd><strong>This is the current default mechanism to use with libvirtd</strong>.
+        It uses the Kerberos v5 authentication protocol underneath, and assuming
+        the Kerberos client/server are configured with modern ciphers (AES),
+        it provides strong session encryption capabilities.</dd>
+
+      <dt>DIGEST-MD5</dt>
+      <dd>This was previously set as the default mechanism to use with libvirtd.
+        It provides a simple username/password based authentication mechanism
+        that includes session encryption.
+        <a href="https://tools.ietf.org/html/rfc6331">RFC 6331</a>, however,
+        documents a number of serious security flaws with DIGEST-MD5 and as a
+        result marks it as <code>OBSOLETE</code>. Specific concerns are that
+        it is vulnerable to MITM attacks and the MD5 hash can be brute-forced
+        to reveal the password. A replacement is provided via the SCRAM mechanism,
+        however, note that this does not provide encryption, so the SCRAM
+        mechanism can only be used on the libvirtd TLS listener.
+      </dd>
+
+      <dt>PASSDSS-3DES-1</dt>
+      <dd>This provides a simple username/password based authentication
+        mechanism that includes session encryption. The current cyrus-sasl
+        implementation does not provide a way to validate the server's
+        public key identity, thus it is susceptible to a MITM attacker
+        impersonating the server. It is also not enabled in many OS
+        distros when building SASL libraries.</dd>
+
+      <dt>KERBEROS_V4</dt>
+      <dd>This uses the obsolete Kerberos v4 protocol to provide both authentication
+        and session encryption. Kerberos v4 protocol has been obsolete since the
+        early 1990's and has known security vulnerabilities so this will never be
+        used in practice.</dd>
+    </dl>
+
+    <p>
+      Other SASL mechanisms, not listed above, can only be used when the libvirtd
+      TLS or UNIX socket listeners.
+    </p>
+
+    <h3><a name="ACL_server_username">Username/password auth</a></h3>
+    <p>
+As noted above, the DIGEST-MD5 mechanism is considered obsolete and should
+not be used anymore. To provide a simple username/password auth scheme on
+the libvirt UNIX socket or TLS listeners, however, it is possible to use
+the SCRAM mechanism. The <code>auth_unix_ro</code>, <code>auth_unix_rw</code>,
+<code>auth_tls</code> config params in <code>libvirt.conf</code> can be used
+to turn on SASL auth in these listeners.
+    </p>
+    <p>
+Since the libvirt SASL config file defaults to using GSSAPI (Kerberos), a
+config change is rquired to enable plain password auth. This is done by
+editting <code>/etc/sasl2/libvirt.conf</code> to set the <code>mech_list</code>
+parameter to <code>scram-sha-1</code>.
+    </p>
     <p>
 Out of the box, no user accounts are defined, so no clients will be able to authenticate
 on the TCP socket. Adding users and setting their passwords is done with the <code>saslpasswd2</code>
@@ -241,17 +297,13 @@ again:
     <pre>
 # saslpasswd2 -a libvirt -d fred
 </pre>
-    <h2><a name="ACL_server_kerberos">Kerberos auth</a></h2>
+    <h3><a name="ACL_server_kerberos">GSSAPI/Kerberos auth</a></h3>
     <p>
-The plain TCP socket of the libvirt daemon defaults to using SASL for authentication.
-The SASL mechanism configured by default is DIGEST-MD5, which provides a basic
-username+password style authentication. To enable Kerberos single-sign-on instead,
-the libvirt SASL configuration file must be changed. This is <code>/etc/sasl2/libvirt.conf</code>.
-The <code>mech_list</code> parameter must first be changed to <code>gssapi</code>
-instead of the default <code>digest-md5</code>, and keytab should be set to
-<code>/etc/libvirt/krb5.tab</code> . If SASL is enabled on the UNIX
-and/or TLS sockets, Kerberos will also be used for them. Like DIGEST-MD5, the Kerberos
-mechanism provides data encryption of the session.
+The plain TCP listener of the libvirt daemon defaults to using SASL for authentication.
+The libvirt SASL config also defaults to GSSAPI, so there is no need to edit the
+SASL config when using GSSAPI. If the libvirtd TLS or UNIX listeners are used,
+then the Kerberos session encryption will be disabled since it is not required
+in these scenarios - only the plain TCP listener needs encryption
 </p>
     <p>
 Some operating systems do not install the SASL kerberos plugin by default. It
