@@ -23,6 +23,7 @@
 #include "testutilsqemu.h"
 #include "qemumonitortestutils.h"
 #include "qemu/qemu_domain.h"
+#include "qemu/qemu_block.h"
 #include "qemu/qemu_monitor_json.h"
 #include "virthread.h"
 #include "virerror.h"
@@ -2682,6 +2683,109 @@ testQemuMonitorCPUInfo(const void *opaque)
 }
 
 
+struct testBlockNodeNameDetectData {
+    const char *name;
+    const char *nodenames;
+};
+
+
+static void
+testBlockNodeNameDetectFormat(virBufferPtr buf,
+                              const char *basenode,
+                              virHashTablePtr nodedata)
+{
+    qemuBlockNodeNameBackingChainDataPtr entry = NULL;
+    const char *node = basenode;
+
+    virBufferSetIndent(buf, 0);
+
+    while (node) {
+        if (!(entry = virHashLookup(nodedata, node)))
+            break;
+
+        virBufferAsprintf(buf, "filename    : '%s'\n", entry->qemufilename);
+        virBufferAsprintf(buf, "format node : '%s'\n",
+                          NULLSTR(entry->nodeformat));
+        virBufferAsprintf(buf, "storage node: '%s'\n",
+                          NULLSTR(entry->nodestorage));
+        virBufferAsprintf(buf, "backingfile : '%s'\n",
+                          NULLSTR(entry->backingstore));
+        virBufferAsprintf(buf, "backing ptr : '%s'\n",
+                          NULLSTR(entry->nodebacking));
+
+        virBufferAdjustIndent(buf, 2);
+
+        node = entry->nodebacking;
+    }
+
+    virBufferSetIndent(buf, 0);
+    virBufferAddLit(buf, "\n");
+}
+
+
+static int
+testBlockNodeNameDetect(const void *opaque)
+{
+    const struct testBlockNodeNameDetectData *data = opaque;
+    char *jsonFile = NULL;
+    char *jsonStr = NULL;
+    char *resultFile = NULL;
+    char *actual = NULL;
+    char **nodenames = NULL;
+    char **next;
+    virJSONValuePtr json = NULL;
+    virHashTablePtr nodedata = NULL;
+    virBuffer buf = VIR_BUFFER_INITIALIZER;
+    int ret = -1;
+
+    if (virAsprintf(&jsonFile,
+                    "%s/qemumonitorjsondata/qemumonitorjson-nodename-%s.json",
+                    abs_srcdir, data->name) < 0 ||
+        virAsprintf(&resultFile,
+                    "%s/qemumonitorjsondata/qemumonitorjson-nodename-%s.result",
+                    abs_srcdir, data->name) < 0)
+        goto cleanup;
+
+    if (!(nodenames = virStringSplit(data->nodenames, ",", 0)))
+        goto cleanup;
+
+    if (virTestLoadFile(jsonFile, &jsonStr) < 0)
+        goto cleanup;
+
+    if (!(json = virJSONValueFromString(jsonStr)))
+        goto cleanup;
+
+    if (!(nodedata = qemuBlockNodeNameGetBackingChain(json)))
+        goto cleanup;
+
+    for (next = nodenames; *next; next++)
+        testBlockNodeNameDetectFormat(&buf, *next, nodedata);
+
+    virBufferTrim(&buf, "\n", -1);
+
+    if (virBufferCheckError(&buf) < 0)
+        goto cleanup;
+
+    actual = virBufferContentAndReset(&buf);
+
+    if (virTestCompareToFile(actual, resultFile) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(jsonFile);
+    VIR_FREE(resultFile);
+    VIR_FREE(jsonStr);
+    VIR_FREE(actual);
+    virHashFree(nodedata);
+    virStringListFree(nodenames);
+    virJSONValueFree(json);
+
+    return ret;
+}
+
+
 static int
 mymain(void)
 {
@@ -2815,6 +2919,18 @@ mymain(void)
     DO_TEST_CPU_INFO("ppc64-hotplug-2", 24);
     DO_TEST_CPU_INFO("ppc64-hotplug-4", 24);
     DO_TEST_CPU_INFO("ppc64-no-threads", 16);
+
+#define DO_TEST_BLOCK_NODE_DETECT(testname, testnodes)                         \
+    do {                                                                       \
+        struct testBlockNodeNameDetectData testdata = {testname, testnodes};   \
+        if (virTestRun("node-name-detect(" testname ")",                       \
+                       testBlockNodeNameDetect, &testdata) < 0)                \
+            ret = -1;                                                          \
+    } while (0)
+
+    DO_TEST_BLOCK_NODE_DETECT("1", "#block118");
+
+#undef DO_TEST_BLOCK_NODE_DETECT
 
     qemuTestDriverFree(&driver);
 
