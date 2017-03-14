@@ -2686,6 +2686,10 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
     virCPUx86ModelPtr model = NULL;
     virCPUx86Data enabled = VIR_CPU_X86_DATA_INIT;
     virCPUx86Data disabled = VIR_CPU_X86_DATA_INIT;
+    virBuffer bufAdded = VIR_BUFFER_INITIALIZER;
+    virBuffer bufRemoved = VIR_BUFFER_INITIALIZER;
+    char *added = NULL;
+    char *removed = NULL;
     size_t i;
     int ret = -1;
 
@@ -2709,20 +2713,58 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
         virCPUx86FeaturePtr feature = map->features[i];
 
         if (x86DataIsSubset(&enabled, &feature->data)) {
-            VIR_DEBUG("Adding feature '%s' enabled by the hypervisor",
-                      feature->name);
-            if (virCPUDefUpdateFeature(cpu, feature->name,
-                                       VIR_CPU_FEATURE_REQUIRE) < 0)
+            VIR_DEBUG("Feature '%s' enabled by the hypervisor", feature->name);
+            if (cpu->check == VIR_CPU_CHECK_FULL)
+                virBufferAsprintf(&bufAdded, "%s,", feature->name);
+            else if (virCPUDefUpdateFeature(cpu, feature->name,
+                                            VIR_CPU_FEATURE_REQUIRE) < 0)
                 goto cleanup;
         }
 
         if (x86DataIsSubset(&disabled, &feature->data)) {
-            VIR_DEBUG("Removing feature '%s' disabled by the hypervisor",
-                      feature->name);
-            if (virCPUDefUpdateFeature(cpu, feature->name,
-                                       VIR_CPU_FEATURE_DISABLE) < 0)
+            VIR_DEBUG("Feature '%s' disabled by the hypervisor", feature->name);
+            if (cpu->check == VIR_CPU_CHECK_FULL)
+                virBufferAsprintf(&bufRemoved, "%s,", feature->name);
+            else if (virCPUDefUpdateFeature(cpu, feature->name,
+                                            VIR_CPU_FEATURE_DISABLE) < 0)
                 goto cleanup;
         }
+    }
+
+    virBufferTrim(&bufAdded, ",", -1);
+    virBufferTrim(&bufRemoved, ",", -1);
+
+    if (virBufferCheckError(&bufAdded) < 0 ||
+        virBufferCheckError(&bufRemoved) < 0)
+        goto cleanup;
+
+    added = virBufferContentAndReset(&bufAdded);
+    removed = virBufferContentAndReset(&bufRemoved);
+
+    if (added || removed) {
+        if (added && removed)
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("guest CPU doesn't match specification: "
+                             "extra features: %s, missing features: %s"),
+                           added, removed);
+        else if (added)
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("guest CPU doesn't match specification: "
+                             "extra features: %s"),
+                           added);
+        else
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("guest CPU doesn't match specification: "
+                             "missing features: %s"),
+                           removed);
+        goto cleanup;
+    }
+
+    if (cpu->check == VIR_CPU_CHECK_FULL &&
+        !x86DataIsEmpty(&disabled)) {
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("guest CPU doesn't match specification"));
+        goto cleanup;
     }
 
     ret = 0;
@@ -2731,6 +2773,10 @@ virCPUx86UpdateLive(virCPUDefPtr cpu,
     x86ModelFree(model);
     virCPUx86DataClear(&enabled);
     virCPUx86DataClear(&disabled);
+    VIR_FREE(added);
+    VIR_FREE(removed);
+    virBufferFreeAndReset(&bufAdded);
+    virBufferFreeAndReset(&bufRemoved);
     return ret;
 }
 

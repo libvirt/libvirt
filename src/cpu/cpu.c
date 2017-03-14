@@ -722,7 +722,8 @@ virCPUUpdate(virArch arch,
  *                hypervisor
  *
  * Update custom mode CPU according to the virtual CPU created by the
- * hypervisor.
+ * hypervisor. The function refuses to update the CPU in case cpu->check is set
+ * to VIR_CPU_CHECK_FULL.
  *
  * Returns -1 on error,
  *          0 when the CPU was successfully updated,
