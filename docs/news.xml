@@ -29,6 +29,16 @@
           for QEMUs older than 2.9.0.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Introduce support for generic PCIe Root Ports
+        </summary>
+        <description>
+          For new controllers, a generic device (pcie-root-port) will be used
+          by default instead of the Intel-specific device (ioh3420), provided
+          the QEMU binary supports it.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
