@@ -119,9 +119,12 @@ vzBuildCapabilities(void)
     if (nodeCapsInitNUMA(caps) < 0)
         goto error;
 
-    for (i = 0; i < 2; i++)
-        for (j = 0; j < 2; j++)
-            for (k = 0; k < 2; k++)
+
+    verify(ARRAY_CARDINALITY(archs) == ARRAY_CARDINALITY(emulators));
+
+    for (i = 0; i < ARRAY_CARDINALITY(os_types); i++)
+        for (j = 0; j < ARRAY_CARDINALITY(archs); j++)
+            for (k = 0; k < ARRAY_CARDINALITY(emulators); k++)
                 if (vzCapsAddGuestDomain(caps, ostypes[i], archs[j],
                                          emulators[k], virt_types[k]) < 0)
                     goto error;
