@@ -171,6 +171,24 @@ cpuidMap = [
 ]
 
 
+def cpuidIsSet(cpuid, feature):
+    in_eax = feature["in_eax"]
+    in_ecx = feature["in_ecx"]
+    eax = feature["eax"]
+    ebx = feature["ebx"]
+    ecx = feature["ecx"]
+    edx = feature["edx"]
+
+    if in_eax not in cpuid or in_ecx not in cpuid[in_eax]:
+        return False
+    else:
+        leaf = cpuid[in_eax][in_ecx]
+        return ((eax > 0 and leaf["eax"] & eax > 0) or
+                (ebx > 0 and leaf["ebx"] & ebx > 0) or
+                (ecx > 0 and leaf["ecx"] & ecx > 0) or
+                (edx > 0 and leaf["edx"] & edx > 0))
+
+
 def parseFeatureWords(path):
     features = None
 
@@ -217,30 +235,13 @@ def parseFeatureWords(path):
     return props, cpuid
 
 
-def propAdd(props, feature, value):
-    for name in feature["names"]:
-        props[name] = value
-
-
 def convert(path):
     props, cpuid = parseFeatureWords(path)
 
     for feature in cpuidMap:
-        in_eax = feature["in_eax"]
-        in_ecx = feature["in_ecx"]
-        eax = feature["eax"]
-        ebx = feature["ebx"]
-        ecx = feature["ecx"]
-        edx = feature["edx"]
-
-        if in_eax not in cpuid or in_ecx not in cpuid[in_eax]:
-            propAdd(props, feature, False)
-        else:
-            leaf = cpuid[in_eax][in_ecx]
-            propAdd(props, feature, ((eax > 0 and leaf["eax"] & eax > 0) or
-                                     (ebx > 0 and leaf["ebx"] & ebx > 0) or
-                                     (ecx > 0 and leaf["ecx"] & ecx > 0) or
-                                     (edx > 0 and leaf["edx"] & edx > 0)))
+        value = cpuidIsSet(cpuid, feature)
+        for name in feature["names"]:
+            props[name] = value
 
     with open(path, "w") as f:
         json.dump({"return": {"model": {"name": "base", "props": props}},
