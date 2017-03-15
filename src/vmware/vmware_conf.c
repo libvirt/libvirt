@@ -105,14 +105,15 @@ vmwareCapsInit(void)
                                           VIR_DOMAIN_VIRT_VMWARE,
                                           NULL, NULL, 0, NULL) == NULL)
             goto error;
+        guest = NULL;
     }
 
- cleanup:
     return caps;
 
  error:
+    virCapabilitiesFreeGuest(guest);
     virObjectUnref(caps);
-    goto cleanup;
+    return NULL;
 }
 
 int
