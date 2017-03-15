@@ -46,6 +46,7 @@
 #include "qemu_driver.h"
 #include "qemu_agent.h"
 #include "qemu_alias.h"
+#include "qemu_block.h"
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
 #include "qemu_command.h"
@@ -20352,6 +20353,10 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
     }
 
     if (!(src = qemuDomainGetStorageSourceByDevstr(dev, vm->def)))
+        goto endjob;
+
+    if (!src->nodebacking &&
+        qemuBlockNodeNamesDetect(driver, vm) < 0)
         goto endjob;
 
     if (!src->nodebacking) {

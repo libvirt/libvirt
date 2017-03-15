@@ -278,3 +278,105 @@ qemuBlockNodeNameGetBackingChain(virJSONValuePtr json)
 
      return ret;
 }
+
+
+static void
+qemuBlockDiskClearDetectedNodes(virDomainDiskDefPtr disk)
+{
+    virStorageSourcePtr next = disk->src;
+
+    while (next) {
+        VIR_FREE(next->nodeformat);
+        VIR_FREE(next->nodebacking);
+
+        next = next->backingStore;
+    }
+}
+
+
+static int
+qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
+                         const char *parentnode,
+                         virHashTablePtr table)
+{
+    qemuBlockNodeNameBackingChainDataPtr entry = NULL;
+    virStorageSourcePtr src = disk->src;
+
+    /* don't attempt the detection if the top level already has node names */
+    if (!parentnode || src->nodeformat || src->nodebacking)
+        return 0;
+
+    while (src && parentnode) {
+        if (!(entry = virHashLookup(table, parentnode)))
+            break;
+
+        if (src->nodeformat || src->nodebacking) {
+            if (STRNEQ_NULLABLE(src->nodeformat, entry->nodeformat) ||
+                STRNEQ_NULLABLE(src->nodebacking, entry->nodestorage))
+                goto error;
+
+            break;
+        } else {
+            if (VIR_STRDUP(src->nodeformat, entry->nodeformat) < 0 ||
+                VIR_STRDUP(src->nodebacking, entry->nodestorage) < 0)
+                goto error;
+        }
+
+        parentnode = entry->nodebacking;
+        src = src->backingStore;
+    }
+
+    return 0;
+
+ error:
+    qemuBlockDiskClearDetectedNodes(disk);
+    return -1;
+}
+
+
+int
+qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm)
+{
+    qemuDomainObjPrivatePtr priv = vm->privateData;
+    virHashTablePtr disktable = NULL;
+    virHashTablePtr nodenametable = NULL;
+    virJSONValuePtr data = NULL;
+    virDomainDiskDefPtr disk;
+    struct qemuDomainDiskInfo *info;
+    size_t i;
+    int ret = -1;
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_NAMED_BLOCK_NODES))
+        return 0;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    disktable = qemuMonitorGetBlockInfo(qemuDomainGetMonitor(vm));
+    data = qemuMonitorQueryNamedBlockNodes(qemuDomainGetMonitor(vm));
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0 || !data || !disktable)
+        goto cleanup;
+
+    if (!(nodenametable = qemuBlockNodeNameGetBackingChain(data)))
+        goto cleanup;
+
+    for (i = 0; i < vm->def->ndisks; i++) {
+        disk = vm->def->disks[i];
+
+        if (!(info = virHashLookup(disktable, disk->info.alias)))
+            continue;
+
+        if (qemuBlockDiskDetectNodes(disk, info->nodename, nodenametable) < 0)
+            goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virJSONValueFree(data);
+    virHashFree(nodenametable);
+    virHashFree(disktable);
+
+    return ret;
+}

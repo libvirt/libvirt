@@ -44,4 +44,8 @@ struct qemuBlockNodeNameBackingChainData {
 virHashTablePtr
 qemuBlockNodeNameGetBackingChain(virJSONValuePtr data);
 
+int
+qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
+                         virDomainObjPtr vm);
+
 #endif /* __QEMU_BLOCK_H__ */

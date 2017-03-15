@@ -24,6 +24,7 @@
 #include "internal.h"
 
 #include "qemu_blockjob.h"
+#include "qemu_block.h"
 #include "qemu_domain.h"
 
 #include "conf/domain_conf.h"
@@ -166,6 +167,7 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
         ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk,
                                                   true, true));
+        ignore_value(qemuBlockNodeNamesDetect(driver, vm));
         diskPriv->blockjob = false;
         break;
 

@@ -35,6 +35,7 @@
 #include "qemu_process.h"
 #include "qemu_processpriv.h"
 #include "qemu_alias.h"
+#include "qemu_block.h"
 #include "qemu_domain.h"
 #include "qemu_domain_address.h"
 #include "qemu_cgroup.h"
@@ -3484,6 +3485,9 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     if (qemuProcessRefreshDisks(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
+        goto error;
+
+    if (qemuBlockNodeNamesDetect(driver, obj) < 0)
         goto error;
 
     if (qemuRefreshVirtioChannelState(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
