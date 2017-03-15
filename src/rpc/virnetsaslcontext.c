@@ -390,6 +390,12 @@ char *virNetSASLSessionListMechanisms(virNetSASLSessionPtr sasl)
                        err, sasl_errdetail(sasl->conn));
         goto cleanup;
     }
+    VIR_DEBUG("SASL mechanism list is '%s'", mechlist);
+    if (STREQ(mechlist, "")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no SASL mechanisms are available"));
+        goto cleanup;
+    }
     ignore_value(VIR_STRDUP(ret, mechlist));
 
  cleanup:
