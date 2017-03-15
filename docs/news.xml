@@ -43,7 +43,20 @@
       </change>
     </section>
     <section title="Bug fixes">
-      <change/>
+      <change>
+        <summary>
+          QEMU: Use adaptive timeout for connecting to monitor
+        </summary>
+        <description>
+          When starting qemu, libvirt waits for qemu to create the monitor
+          socket which libvirt connects to. Historically, there was sharp 30
+          second timeout after which the qemu process was killed. This
+          approach is suboptimal as in some scenarios with huge amounts of
+          guest RAM it can take a minute or more for kernel to allocate and
+          zero out pages for qemu. The timeout is now flexible and computed by
+          libvirt at domain startup.
+        </description>
+        </change>
     </section>
   </release>
   <release version="v3.1.0" date="2017-03-03">
