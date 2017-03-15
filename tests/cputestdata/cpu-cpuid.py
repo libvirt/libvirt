@@ -222,7 +222,7 @@ def propAdd(props, feature, value):
         props[name] = value
 
 
-for path in sys.argv[1:]:
+def convert(path):
     props, cpuid = parseFeatureWords(path)
 
     for feature in cpuidMap:
@@ -247,3 +247,18 @@ for path in sys.argv[1:]:
                    "id": "model-expansion"},
                   f, indent = 2, separators = (',', ': '))
         f.write("\n")
+
+
+if len(sys.argv) < 3:
+    print "Usage: %s convert json_file..." % sys.argv[0]
+    sys.exit(1)
+
+action = sys.argv[1]
+args = sys.argv[2:]
+
+if action == "convert":
+    for path in args:
+        convert(path)
+else:
+    print "Unknown action: " + action
+    sys.exit(1)
