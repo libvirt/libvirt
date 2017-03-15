@@ -16525,9 +16525,6 @@ qemuDomainBlockCopyCommon(virDomainObjPtr vm,
         goto endjob;
     }
 
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
-        goto endjob;
-
     /* clear the _SHALLOW flag if there is only one layer */
     if (!disk->src->backingStore)
         flags &= ~VIR_DOMAIN_BLOCK_COPY_SHALLOW;
@@ -16906,8 +16903,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
     }
 
     if (qemuDomainDiskBlockJobIsActive(disk))
-        goto endjob;
-    if (qemuDomainDetermineDiskChain(driver, vm, disk, false, true) < 0)
         goto endjob;
 
     if (!top)
