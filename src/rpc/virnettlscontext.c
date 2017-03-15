@@ -1187,6 +1187,7 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
 {
     virNetTLSSessionPtr sess;
     int err;
+    const char *priority;
 
     VIR_DEBUG("ctxt=%p hostname=%s isServer=%d",
               ctxt, NULLSTR(hostname), ctxt->isServer);
@@ -1208,12 +1209,14 @@ virNetTLSSessionPtr virNetTLSSessionNew(virNetTLSContextPtr ctxt,
     /* avoid calling all the priority functions, since the defaults
      * are adequate.
      */
+    priority = ctxt->priority ? ctxt->priority : TLS_PRIORITY;
+    VIR_DEBUG("Setting priority string '%s'", priority);
     if ((err = gnutls_priority_set_direct(sess->session,
-                                          ctxt->priority ? ctxt->priority : TLS_PRIORITY,
+                                          priority,
                                           NULL)) != 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
                        _("Failed to set TLS session priority to %s: %s"),
-                       ctxt->priority ? ctxt->priority : TLS_PRIORITY, gnutls_strerror(err));
+                       priority, gnutls_strerror(err));
         goto error;
     }
 
