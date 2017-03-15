@@ -174,6 +174,8 @@ cpuidMap = [
 def parseFeatureWords(path):
     features = None
 
+    dec = json.JSONDecoder()
+
     with open(path, "r") as f:
         s = f.read()
 
@@ -219,8 +221,6 @@ def propAdd(props, feature, value):
     for name in feature["names"]:
         props[name] = value
 
-
-dec = json.JSONDecoder()
 
 for path in sys.argv[1:]:
     props, cpuid = parseFeatureWords(path)
