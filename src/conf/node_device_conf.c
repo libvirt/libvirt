@@ -1615,10 +1615,19 @@ virNodeDeviceDefParseXML(xmlXPathContextPtr ctxt,
     def->parent = virXPathString("string(./parent[1])", ctxt);
     def->parent_wwnn = virXPathString("string(./parent[1]/@wwnn)", ctxt);
     def->parent_wwpn = virXPathString("string(./parent[1]/@wwpn)", ctxt);
-    if ((def->parent_wwnn && !def->parent_wwpn) ||
-        (!def->parent_wwnn && def->parent_wwpn)) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("must supply both wwnn and wwpn for parent"));
+    if (def->parent_wwnn && !def->parent_wwpn) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("when providing parent wwnn='%s', the "
+                         "wwpn must also be provided"),
+                       def->parent_wwnn);
+        goto error;
+    }
+
+    if (!def->parent_wwnn && def->parent_wwpn) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("when providing parent wwpn='%s', the "
+                         "wwnn must also be provided"),
+                       def->parent_wwpn);
         goto error;
     }
     def->parent_fabric_wwn = virXPathString("string(./parent[1]/@fabric_wwn)",
