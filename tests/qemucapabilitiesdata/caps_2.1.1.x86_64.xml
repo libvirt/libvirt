@@ -162,6 +162,7 @@
   <flag name='display'/>
   <flag name='vhost-scsi'/>
   <flag name='query-cpu-definitions'/>
+  <flag name='query-named-block-nodes'/>
   <version>2001001</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

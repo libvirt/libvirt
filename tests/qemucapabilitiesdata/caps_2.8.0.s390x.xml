@@ -131,6 +131,7 @@
   <flag name='query-cpu-model-expansion'/>
   <flag name='query-cpu-definitions'/>
   <flag name='block-write-threshold'/>
+  <flag name='query-named-block-nodes'/>
   <version>2007093</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

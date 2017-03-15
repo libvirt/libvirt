@@ -202,6 +202,7 @@
   <flag name='drive-iotune-group'/>
   <flag name='query-cpu-definitions'/>
   <flag name='block-write-threshold'/>
+  <flag name='query-named-block-nodes'/>
   <version>2008000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.8.0)</package>

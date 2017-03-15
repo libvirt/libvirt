@@ -206,6 +206,7 @@
   <flag name='pcie-root-port'/>
   <flag name='query-cpu-definitions'/>
   <flag name='block-write-threshold'/>
+  <flag name='query-named-block-nodes'/>
   <version>2008090</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.9.0-rc0-142-g940a8ce)</package>
