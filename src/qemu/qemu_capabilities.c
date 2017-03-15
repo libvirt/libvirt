@@ -1067,19 +1067,6 @@ virQEMUCapsInitGuestFromBinary(virCapsPtr caps,
 }
 
 
-static virCPUDefPtr
-virQEMUCapsProbeHostCPU(virCapsPtr caps)
-{
-    virNodeInfo nodeinfo;
-
-    if (nodeGetInfo(&nodeinfo))
-        return NULL;
-
-    return virCPUGetHost(caps->host.arch, VIR_CPU_TYPE_HOST,
-                         &nodeinfo, NULL, 0);
-}
-
-
 virCPUDefPtr
 virQEMUCapsProbeHostCPUForEmulator(virCapsPtr caps,
                                    virQEMUCapsPtr qemuCaps,
@@ -1142,7 +1129,7 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache)
         VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
 
-    if (!(caps->host.cpu = virQEMUCapsProbeHostCPU(caps)))
+    if (!(caps->host.cpu = virCPUProbeHost(caps->host.arch)))
         VIR_WARN("Failed to get host CPU");
 
     /* Add the power management features of the host */

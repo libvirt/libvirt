@@ -41,21 +41,6 @@
 
 VIR_LOG_INIT("bhyve.bhyve_capabilities");
 
-static int
-virBhyveCapsInitCPU(virCapsPtr caps,
-                    virArch arch)
-{
-    virNodeInfo nodeinfo;
-
-    if (nodeGetInfo(&nodeinfo))
-        return -1;
-
-    if (!(caps->host.cpu = virCPUGetHost(arch, VIR_CPU_TYPE_HOST,
-                                         &nodeinfo, NULL, 0)))
-        return -1;
-
-    return 0;
-}
 
 virCapsPtr
 virBhyveCapsBuild(void)
@@ -77,8 +62,8 @@ virBhyveCapsBuild(void)
                                       NULL, NULL, 0, NULL) == NULL)
         goto error;
 
-    if (virBhyveCapsInitCPU(caps, virArchFromHost()) < 0)
-        VIR_WARN("Failed to get host CPU: %s", virGetLastErrorMessage());
+    if (!(caps->host.cpu = virCPUProbeHost(caps->host.arch)))
+        VIR_WARN("Failed to get host CPU");
 
     return caps;
 

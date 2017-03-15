@@ -26,6 +26,7 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "virxml.h"
+#include "nodeinfo.h"
 #include "cpu.h"
 #include "cpu_map.h"
 #include "cpu_x86.h"
@@ -459,6 +460,18 @@ virCPUGetHost(virArch arch,
  error:
     virCPUDefFree(cpu);
     return NULL;
+}
+
+
+virCPUDefPtr
+virCPUProbeHost(virArch arch)
+{
+    virNodeInfo nodeinfo;
+
+    if (nodeGetInfo(&nodeinfo))
+        return NULL;
+
+    return virCPUGetHost(arch, VIR_CPU_TYPE_HOST, &nodeinfo, NULL, 0);
 }
 
 
