@@ -1870,3 +1870,210 @@ virNodeDeviceGetParentName(virConnectPtr conn,
 
     return parent;
 }
+
+
+/*
+ * Using the host# name found via wwnn/wwpn lookup in the fc_host
+ * sysfs tree to get the parent 'scsi_host#' to ensure it matches.
+ */
+static bool
+checkParent(virConnectPtr conn,
+            const char *name,
+            const char *parent_name)
+{
+    char *scsi_host_name = NULL;
+    char *vhba_parent = NULL;
+    bool retval = false;
+
+    VIR_DEBUG("conn=%p, name=%s, parent_name=%s", conn, name, parent_name);
+
+    /* autostarted pool - assume we're OK */
+    if (!conn)
+        return true;
+
+    if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0)
+        goto cleanup;
+
+    if (!(vhba_parent = virNodeDeviceGetParentName(conn, scsi_host_name)))
+        goto cleanup;
+
+    if (STRNEQ(parent_name, vhba_parent)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Parent attribute '%s' does not match parent '%s' "
+                         "determined for the '%s' wwnn/wwpn lookup."),
+                       parent_name, vhba_parent, name);
+        goto cleanup;
+    }
+
+    retval = true;
+
+ cleanup:
+    VIR_FREE(vhba_parent);
+    VIR_FREE(scsi_host_name);
+    return retval;
+}
+
+
+/**
+ * @conn: Connection pointer
+ * @fchost: Pointer to vHBA adapter
+ *
+ * Create a vHBA for Storage. This code accomplishes this via searching
+ * through the sysfs for scsi_host/fc_host in order to first ensure some
+ * vHBA doesn't already exist for the requested wwnn/wwpn (e.g. an unmanaged
+ * vHBA) and to search for the parent vport capable scsi_host by name,
+ * wwnn/wwpn, or fabric_wwn (if provided). If no parent is provided, then
+ * a vport capable scsi_host will be selected.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+virNodeDeviceCreateVport(virConnectPtr conn,
+                         virStorageAdapterFCHostPtr fchost)
+{
+    int ret = -1;
+    unsigned int parent_host;
+    char *name = NULL;
+    char *parent_hoststr = NULL;
+    bool skip_capable_check = false;
+
+    VIR_DEBUG("conn=%p, parent='%s', wwnn='%s' wwpn='%s'",
+              conn, NULLSTR(fchost->parent), fchost->wwnn, fchost->wwpn);
+
+    /* If we find an existing HBA/vHBA within the fc_host sysfs
+     * using the wwnn/wwpn, then a nodedev is already created for
+     * this pool and we don't have to create the vHBA
+     */
+    if ((name = virVHBAGetHostByWWN(NULL, fchost->wwnn, fchost->wwpn))) {
+        /* If a parent was provided, let's make sure the 'name' we've
+         * retrieved has the same parent. If not this will cause failure. */
+        if (fchost->parent && checkParent(conn, name, fchost->parent))
+            ret = 0;
+
+        goto cleanup;
+    }
+
+    if (fchost->parent) {
+        if (VIR_STRDUP(parent_hoststr, fchost->parent) < 0)
+            goto cleanup;
+    } else if (fchost->parent_wwnn && fchost->parent_wwpn) {
+        if (!(parent_hoststr = virVHBAGetHostByWWN(NULL, fchost->parent_wwnn,
+                                                   fchost->parent_wwpn))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("cannot find parent using provided wwnn/wwpn"));
+            goto cleanup;
+        }
+    } else if (fchost->parent_fabric_wwn) {
+        if (!(parent_hoststr =
+              virVHBAGetHostByFabricWWN(NULL, fchost->parent_fabric_wwn))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("cannot find parent using provided fabric_wwn"));
+            goto cleanup;
+        }
+    } else {
+        if (!(parent_hoststr = virVHBAFindVportHost(NULL))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("'parent' for vHBA not specified, and "
+                             "cannot find one on this host"));
+            goto cleanup;
+        }
+        skip_capable_check = true;
+    }
+
+    if (virSCSIHostGetNumber(parent_hoststr, &parent_host) < 0)
+        goto cleanup;
+
+    /* NOTE:
+     * We do not save the parent_hoststr in fchost->parent since
+     * we could be writing out the 'def' to the saved XML config.
+     * If we wrote out the name in the XML, then future starts would
+     * always use the same parent rather than finding the "best available"
+     * parent. Besides we have a way to determine the parent based on
+     * the 'name' field.
+     */
+    if (!skip_capable_check && !virVHBAPathExists(NULL, parent_host)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("parent '%s' specified for vHBA does not exist"),
+                       parent_hoststr);
+        goto cleanup;
+    }
+
+    if (virVHBAManageVport(parent_host, fchost->wwpn, fchost->wwnn,
+                           VPORT_CREATE) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(name);
+    VIR_FREE(parent_hoststr);
+    return ret;
+}
+
+
+/**
+ * @conn: Connection pointer
+ * @fchost: Pointer to vHBA adapter
+ *
+ * As long as the vHBA is being managed, search for the scsi_host via the
+ * provided wwnn/wwpn and then find the corresponding parent scsi_host in
+ * order to send the delete request.
+ *
+ * Returns 0 on success, -1 on failure
+ */
+int
+virNodeDeviceDeleteVport(virConnectPtr conn,
+                         virStorageAdapterFCHostPtr fchost)
+{
+    char *name = NULL;
+    char *scsi_host_name = NULL;
+    unsigned int parent_host;
+    char *vhba_parent = NULL;
+    int ret = -1;
+
+    VIR_DEBUG("conn=%p parent='%s', managed='%d' wwnn='%s' wwpn='%s'",
+              conn, NULLSTR(fchost->parent), fchost->managed,
+              fchost->wwnn, fchost->wwpn);
+
+    /* If we're not managing the deletion of the vHBA, then just return */
+    if (fchost->managed != VIR_TRISTATE_BOOL_YES)
+        return 0;
+
+    /* Find our vHBA by searching the fc_host sysfs tree for our wwnn/wwpn */
+    if (!(name = virVHBAGetHostByWWN(NULL, fchost->wwnn, fchost->wwpn))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to find fc_host for wwnn='%s' and wwpn='%s'"),
+                       fchost->wwnn, fchost->wwpn);
+        goto cleanup;
+    }
+
+    /* If at startup time we provided a parent, then use that to
+     * get the parent_host value; otherwise, we have to determine
+     * the parent scsi_host which we did not save at startup time
+     */
+    if (fchost->parent) {
+        if (virSCSIHostGetNumber(fchost->parent, &parent_host) < 0)
+            goto cleanup;
+    } else {
+        if (virAsprintf(&scsi_host_name, "scsi_%s", name) < 0)
+            goto cleanup;
+
+        if (!(vhba_parent = virNodeDeviceGetParentName(conn, scsi_host_name)))
+            goto cleanup;
+
+        if (virSCSIHostGetNumber(vhba_parent, &parent_host) < 0)
+            goto cleanup;
+    }
+
+    if (virVHBAManageVport(parent_host, fchost->wwpn, fchost->wwnn,
+                           VPORT_DELETE) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(name);
+    VIR_FREE(vhba_parent);
+    VIR_FREE(scsi_host_name);
+    return ret;
+}

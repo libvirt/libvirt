@@ -28,8 +28,11 @@
 # include "internal.h"
 # include "virbitmap.h"
 # include "virutil.h"
+# include "virscsihost.h"
 # include "virpci.h"
+# include "virvhba.h"
 # include "device_conf.h"
+# include "storage_adapter_conf.h"
 
 # include <libxml/tree.h>
 
@@ -353,5 +356,13 @@ virNodeDevCapsDefFree(virNodeDevCapsDefPtr caps);
 char *
 virNodeDeviceGetParentName(virConnectPtr conn,
                            const char *nodedev_name);
+
+int
+virNodeDeviceCreateVport(virConnectPtr conn,
+                         virStorageAdapterFCHostPtr fchost);
+
+int
+virNodeDeviceDeleteVport(virConnectPtr conn,
+                         virStorageAdapterFCHostPtr fchost);
 
 #endif /* __VIR_NODE_DEVICE_CONF_H__ */
