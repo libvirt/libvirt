@@ -189,6 +189,18 @@ def cpuidIsSet(cpuid, feature):
                 (edx > 0 and leaf["edx"] & edx > 0))
 
 
+def cpuidLeaf(cpuid, in_eax, in_ecx):
+    if in_eax not in cpuid:
+        cpuid[in_eax] = {}
+    leaf = cpuid[in_eax]
+
+    if in_ecx not in leaf:
+        leaf[in_ecx] = {"eax": 0, "ebx": 0, "ecx": 0, "edx": 0}
+    leaf = leaf[in_ecx]
+
+    return leaf
+
+
 def parseFeatureWords(path):
     features = None
 
@@ -222,14 +234,7 @@ def parseFeatureWords(path):
         if "cpuid-input-ecx" in feat:
             in_ecx = feat["cpuid-input-ecx"]
 
-        if in_eax not in cpuid:
-            cpuid[in_eax] = {}
-        leaf = cpuid[in_eax]
-
-        if in_ecx not in leaf:
-            leaf[in_ecx] = {"eax": 0, "ebx": 0, "ecx": 0, "edx": 0}
-        leaf = leaf[in_ecx]
-
+        leaf = cpuidLeaf(cpuid, in_eax, in_ecx)
         leaf[feat["cpuid-register"].lower()] = feat["features"]
 
     return props, cpuid
