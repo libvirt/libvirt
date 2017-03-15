@@ -13,6 +13,10 @@ ExecReload=/bin/kill -USR1 $MAINPID
 # cause the machine to be fenced (rebooted), so make
 # sure we discourage OOM killer
 OOMScoreAdjust=-900
+# Needs to allow for max guests * average disks per guest
+# libvirtd.service written to expect 4096 guests, so if we
+# allow for 4 disks per guest, we get:
+LimitNOFILE=16384
 
 [Install]
 Also=virtlockd.socket
