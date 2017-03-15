@@ -544,6 +544,23 @@ daemonSetupNetworking(virNetServerPtr srv,
             if (config->ca_file ||
                 config->cert_file ||
                 config->key_file) {
+                if (!config->ca_file) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("No CA certificate path set to match server key/cert"));
+                    goto cleanup;
+                }
+                if (!config->cert_file) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("No server certificate path set to match server key"));
+                    goto cleanup;
+                }
+                if (!config->key_file) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("No server key path set to match server cert"));
+                    goto cleanup;
+                }
+                VIR_DEBUG("Using CA='%s' cert='%s' key='%s'",
+                          config->ca_file, config->cert_file, config->key_file);
                 if (!(ctxt = virNetTLSContextNewServer(config->ca_file,
                                                        config->crl_file,
                                                        config->cert_file,
