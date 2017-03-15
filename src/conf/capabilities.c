@@ -148,7 +148,7 @@ virCapabilitiesFreeGuestFeature(virCapsGuestFeaturePtr feature)
     VIR_FREE(feature);
 }
 
-static void
+void
 virCapabilitiesFreeGuest(virCapsGuestPtr guest)
 {
     size_t i;

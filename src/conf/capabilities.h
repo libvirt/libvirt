@@ -248,6 +248,9 @@ void
 virCapabilitiesFreeMachines(virCapsGuestMachinePtr *machines,
                             int nmachines);
 
+void
+virCapabilitiesFreeGuest(virCapsGuestPtr guest);
+
 virCapsGuestPtr
 virCapabilitiesAddGuest(virCapsPtr caps,
                         int ostype,
