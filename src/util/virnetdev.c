@@ -899,6 +899,25 @@ virNetDevGetRcvAllMulti(const char *ifname,
     return virNetDevGetIFFlag(ifname, VIR_IFF_ALLMULTI, receive);
 }
 
+char *virNetDevGetName(int ifindex)
+{
+    char name[IFNAMSIZ];
+    char *ifname = NULL;
+
+    memset(&name, 0, sizeof(name));
+
+    if (!if_indextoname(ifindex, name)) {
+        virReportSystemError(errno,
+                             _("Failed to convert interface index %d to a name"),
+                             ifindex);
+        goto cleanup;
+    }
+
+   ignore_value(VIR_STRDUP(ifname, name));
+
+ cleanup:
+     return ifname;
+}
 
 /**
  * virNetDevGetIndex:

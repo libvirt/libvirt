@@ -1995,6 +1995,7 @@ virNetDevGetIndex;
 virNetDevGetLinkInfo;
 virNetDevGetMAC;
 virNetDevGetMTU;
+virNetDevGetName;
 virNetDevGetOnline;
 virNetDevGetPhysicalFunction;
 virNetDevGetPromiscuous;
