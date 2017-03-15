@@ -4439,6 +4439,12 @@ testStoragePoolCreateXML(virConnectPtr conn,
         pool = NULL;
         goto cleanup;
     }
+
+    /* *SetDefaults fills this in for the persistent pools, but this
+     * would be a transient pool so remove it; otherwise, the Destroy
+     * code will not Remove the pool */
+    VIR_FREE(pool->configFile);
+
     pool->active = 1;
 
     event = virStoragePoolEventLifecycleNew(pool->def->name, pool->def->uuid,
