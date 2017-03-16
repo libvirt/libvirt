@@ -376,6 +376,14 @@ virJSONValueFree(virJSONValuePtr value)
 }
 
 
+void
+virJSONValueHashFree(void *opaque,
+                     const void *name ATTRIBUTE_UNUSED)
+{
+    virJSONValueFree(opaque);
+}
+
+
 virJSONValuePtr
 virJSONValueNewString(const char *data)
 {

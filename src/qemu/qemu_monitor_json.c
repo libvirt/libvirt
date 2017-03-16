@@ -7488,14 +7488,6 @@ qemuMonitorJSONFillQMPSchema(size_t pos ATTRIBUTE_UNUSED,
 }
 
 
-static void
-qemuMonitorJSONFreeSchemaEntry(void *opaque,
-                               const void *name ATTRIBUTE_UNUSED)
-{
-    virJSONValueFree(opaque);
-}
-
-
 virHashTablePtr
 qemuMonitorJSONQueryQMPSchema(qemuMonitorPtr mon)
 {
@@ -7516,7 +7508,7 @@ qemuMonitorJSONQueryQMPSchema(qemuMonitorPtr mon)
 
     arr = virJSONValueObjectGet(reply, "return");
 
-    if (!(schema = virHashCreate(512, qemuMonitorJSONFreeSchemaEntry)))
+    if (!(schema = virHashCreate(512, virJSONValueHashFree)))
         goto cleanup;
 
     if (virJSONValueArrayForeachSteal(arr, qemuMonitorJSONFillQMPSchema,

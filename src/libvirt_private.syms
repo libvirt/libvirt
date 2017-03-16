@@ -1835,6 +1835,7 @@ virJSONValueGetNumberLong;
 virJSONValueGetNumberUint;
 virJSONValueGetNumberUlong;
 virJSONValueGetString;
+virJSONValueHashFree;
 virJSONValueIsArray;
 virJSONValueIsNull;
 virJSONValueNewArray;
