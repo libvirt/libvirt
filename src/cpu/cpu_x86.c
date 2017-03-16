@@ -2891,6 +2891,58 @@ virCPUx86Translate(virCPUDefPtr cpu,
 }
 
 
+static int
+virCPUx86ExpandFeatures(virCPUDefPtr cpu)
+{
+    virCPUx86MapPtr map;
+    virCPUDefPtr expanded = NULL;
+    virCPUx86ModelPtr model = NULL;
+    bool host = cpu->type == VIR_CPU_TYPE_HOST;
+    size_t i;
+    int ret = -1;
+
+    if (!(map = virCPUx86GetMap()))
+        goto cleanup;
+
+    if (!(expanded = virCPUDefCopy(cpu)))
+        goto cleanup;
+
+    virCPUDefFreeFeatures(expanded);
+
+    if (!(model = x86ModelFind(map, cpu->model))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown CPU model %s"), cpu->model);
+        goto cleanup;
+    }
+
+    if (!(model = x86ModelCopy(model)) ||
+        x86DataToCPUFeatures(expanded, host ? -1 : VIR_CPU_FEATURE_REQUIRE,
+                             &model->data, map) < 0)
+        goto cleanup;
+
+    for (i = 0; i < cpu->nfeatures; i++) {
+        virCPUFeatureDefPtr f = cpu->features + i;
+
+        if (!host &&
+            f->policy != VIR_CPU_FEATURE_REQUIRE &&
+            f->policy != VIR_CPU_FEATURE_DISABLE)
+            continue;
+
+        if (virCPUDefUpdateFeature(expanded, f->name, f->policy) < 0)
+            goto cleanup;
+    }
+
+    virCPUDefFreeModel(cpu);
+
+    ret = virCPUDefCopyModel(cpu, expanded, false);
+
+ cleanup:
+    virCPUDefFree(expanded);
+    x86ModelFree(model);
+    return ret;
+}
+
+
 int
 virCPUx86DataAddCPUID(virCPUDataPtr cpuData,
                       const virCPUx86CPUID *cpuid)
@@ -2965,4 +3017,5 @@ struct cpuArchDriver cpuDriverX86 = {
     .dataParse  = virCPUx86DataParse,
     .getModels  = virCPUx86GetModels,
     .translate  = virCPUx86Translate,
+    .expandFeatures = virCPUx86ExpandFeatures,
 };

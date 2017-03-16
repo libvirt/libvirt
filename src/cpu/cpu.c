@@ -1076,3 +1076,53 @@ virCPUConvertLegacy(virArch arch,
     VIR_DEBUG("model=%s", NULLSTR(cpu->model));
     return 0;
 }
+
+
+static int
+virCPUFeatureCompare(const void *p1,
+                     const void *p2)
+{
+    const virCPUFeatureDef *f1 = p1;
+    const virCPUFeatureDef *f2 = p2;
+
+    return strcmp(f1->name, f2->name);
+}
+
+
+/**
+ * virCPUExpandFeatures:
+ *
+ * @arch: CPU architecture
+ * @cpu: CPU definition to be expanded
+ *
+ * Add all features implicitly enabled by the CPU model to the list of
+ * features. The @cpu is expected to be either a host or a guest representation
+ * of a host CPU, i.e., only VIR_CPU_FEATURE_REQUIRE and
+ * VIR_CPU_FEATURE_DISABLE policies are supported.
+ *
+ * The updated list of features in the CPU definition is sorted.
+ *
+ * Return -1 on error, 0 on success.
+ */
+int
+virCPUExpandFeatures(virArch arch,
+                     virCPUDefPtr cpu)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s, cpu=%p, model=%s, nfeatures=%zu",
+              virArchToString(arch), cpu, NULLSTR(cpu->model), cpu->nfeatures);
+
+    if (!(driver = cpuGetSubDriver(arch)))
+        return -1;
+
+    if (driver->expandFeatures &&
+        driver->expandFeatures(cpu) < 0)
+        return -1;
+
+    qsort(cpu->features, cpu->nfeatures, sizeof(*cpu->features),
+          virCPUFeatureCompare);
+
+    VIR_DEBUG("nfeatures=%zu", cpu->nfeatures);
+    return 0;
+}

@@ -1021,6 +1021,7 @@ virCPUDataFormat;
 virCPUDataFree;
 virCPUDataNew;
 virCPUDataParse;
+virCPUExpandFeatures;
 virCPUGetHost;
 virCPUGetModels;
 virCPUProbeHost;
