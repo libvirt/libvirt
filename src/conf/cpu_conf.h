@@ -125,6 +125,9 @@ struct _virCPUDef {
 
 
 void ATTRIBUTE_NONNULL(1)
+virCPUDefFreeFeatures(virCPUDefPtr def);
+
+void ATTRIBUTE_NONNULL(1)
 virCPUDefFreeModel(virCPUDefPtr def);
 
 void

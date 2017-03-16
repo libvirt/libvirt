@@ -62,18 +62,27 @@ VIR_ENUM_IMPL(virCPUFeaturePolicy, VIR_CPU_FEATURE_LAST,
               "disable",
               "forbid")
 
-void ATTRIBUTE_NONNULL(1)
-virCPUDefFreeModel(virCPUDefPtr def)
+void
+virCPUDefFreeFeatures(virCPUDefPtr def)
 {
     size_t i;
-
-    VIR_FREE(def->model);
-    VIR_FREE(def->vendor);
-    VIR_FREE(def->vendor_id);
 
     for (i = 0; i < def->nfeatures; i++)
         VIR_FREE(def->features[i].name);
     VIR_FREE(def->features);
+
+    def->nfeatures = def->nfeatures_max = 0;
+}
+
+
+void ATTRIBUTE_NONNULL(1)
+virCPUDefFreeModel(virCPUDefPtr def)
+{
+
+    VIR_FREE(def->model);
+    VIR_FREE(def->vendor);
+    VIR_FREE(def->vendor_id);
+    virCPUDefFreeFeatures(def);
 }
 
 void
