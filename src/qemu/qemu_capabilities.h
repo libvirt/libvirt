@@ -397,6 +397,9 @@ typedef enum {
     QEMU_CAPS_DEVICE_NVDIMM, /* -device nvdimm */
     QEMU_CAPS_DEVICE_PCIE_ROOT_PORT, /* -device pcie-root-port */
 
+    /* 250 */
+    QEMU_CAPS_QUERY_CPU_DEFINITIONS, /* qmp query-cpu-definitions */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

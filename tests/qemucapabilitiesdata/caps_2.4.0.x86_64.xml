@@ -182,6 +182,7 @@
   <flag name='virtio-vga'/>
   <flag name='vhost-scsi'/>
   <flag name='drive-iotune-group'/>
+  <flag name='query-cpu-definitions'/>
   <version>2004000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

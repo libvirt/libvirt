@@ -197,6 +197,7 @@
   <flag name='query-qmp-schema'/>
   <flag name='vhost-scsi'/>
   <flag name='drive-iotune-group'/>
+  <flag name='query-cpu-definitions'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

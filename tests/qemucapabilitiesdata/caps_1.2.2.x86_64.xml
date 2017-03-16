@@ -109,6 +109,7 @@
   <flag name='qxl.vram64_size_mb'/>
   <flag name='device-tray-moved-event'/>
   <flag name='display'/>
+  <flag name='query-cpu-definitions'/>
   <version>1002002</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

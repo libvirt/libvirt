@@ -127,6 +127,7 @@
   <flag name='device-tray-moved-event'/>
   <flag name='nec-usb-xhci-ports'/>
   <flag name='display'/>
+  <flag name='query-cpu-definitions'/>
   <version>1003001</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

@@ -139,6 +139,7 @@
   <flag name='nec-usb-xhci-ports'/>
   <flag name='display'/>
   <flag name='vhost-scsi'/>
+  <flag name='query-cpu-definitions'/>
   <version>1005003</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

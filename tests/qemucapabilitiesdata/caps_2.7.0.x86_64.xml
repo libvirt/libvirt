@@ -199,6 +199,7 @@
   <flag name='gluster.debug_level'/>
   <flag name='vhost-scsi'/>
   <flag name='drive-iotune-group'/>
+  <flag name='query-cpu-definitions'/>
   <version>2007000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.7.0)</package>
