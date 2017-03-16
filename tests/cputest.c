@@ -523,6 +523,151 @@ cpuTestGuestCPUID(const void *arg)
 }
 
 
+static int
+cpuTestUpdateLiveCompare(virArch arch,
+                         virCPUDefPtr actual,
+                         virCPUDefPtr expected)
+{
+    size_t i, j;
+    int ret = 0;
+
+    if (virCPUExpandFeatures(arch, actual) < 0 ||
+        virCPUExpandFeatures(arch, expected) < 0)
+        return -1;
+
+    if (STRNEQ(actual->model, expected->model)) {
+        VIR_TEST_VERBOSE("Actual CPU model '%s', expected '%s'\n",
+                         actual->model, expected->model);
+        return -1;
+    }
+
+    i = j = 0;
+    while (i < actual->nfeatures || j < expected->nfeatures) {
+        virCPUFeatureDefPtr featAct = NULL;
+        virCPUFeatureDefPtr featExp = NULL;
+        int cmp;
+
+        if (i < actual->nfeatures)
+            featAct = actual->features + i;
+
+        if (j < expected->nfeatures)
+            featExp = expected->features + j;
+
+        /*
+         * Act < Exp => cmp < 0 (missing entry in Exp)
+         * Act = Exp => cmp = 0
+         * Act > Exp => cmp > 0 (missing entry in Act)
+         *
+         * NULL > name for any name != NULL
+         */
+        if (featAct && featExp)
+            cmp = strcmp(featAct->name, featExp->name);
+        else
+            cmp = featExp ? 1 : -1;
+
+        if (cmp <= 0)
+            i++;
+        if (cmp >= 0)
+            j++;
+
+        /* Possible combinations of cmp, featAct->policy, and featExp->policy:
+         *  cmp     Act     Exp     result
+         * ---------------------------------
+         *   0      dis     dis      ok
+         *   0      dis     req     missing
+         *   0      req     dis     extra
+         *   0      req     req      ok
+         * ---------------------------------
+         *   -      dis      X       ok     # ignoring extra disabled features
+         *   -      req      X      extra
+         * ---------------------------------
+         *   +       X      dis     extra
+         *   +       X      req     missing
+         */
+        if ((cmp == 0 &&
+             featAct->policy == VIR_CPU_FEATURE_DISABLE &&
+             featExp->policy == VIR_CPU_FEATURE_REQUIRE) ||
+            (cmp > 0 &&
+             featExp->policy == VIR_CPU_FEATURE_REQUIRE)) {
+            VIR_TEST_VERBOSE("Actual CPU lacks feature '%s'\n",
+                             featExp->name);
+            ret = -1;
+            continue;
+        }
+
+        if ((cmp == 0 &&
+             featAct->policy == VIR_CPU_FEATURE_REQUIRE &&
+             featExp->policy == VIR_CPU_FEATURE_DISABLE) ||
+            (cmp < 0 &&
+             featAct->policy == VIR_CPU_FEATURE_REQUIRE) ||
+            (cmp > 0 &&
+             featExp->policy == VIR_CPU_FEATURE_DISABLE)) {
+            VIR_TEST_VERBOSE("Actual CPU has extra feature '%s'\n",
+                             featAct->name);
+            ret = -1;
+        }
+    }
+
+    return ret;
+}
+
+
+static int
+cpuTestUpdateLive(const void *arg)
+{
+    const struct data *data = arg;
+    char *cpuFile = NULL;
+    virCPUDefPtr cpu = NULL;
+    char *enabledFile = NULL;
+    char *enabled = NULL;
+    virCPUDataPtr enabledData = NULL;
+    char *disabledFile = NULL;
+    char *disabled = NULL;
+    virCPUDataPtr disabledData = NULL;
+    char *expectedFile = NULL;
+    virCPUDefPtr expected = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&cpuFile, "cpuid-%s-guest", data->host) < 0 ||
+        !(cpu = cpuTestLoadXML(data->arch, cpuFile)))
+        goto cleanup;
+
+    if (virAsprintf(&enabledFile, "%s/cputestdata/%s-cpuid-%s-enabled.xml",
+                    abs_srcdir, virArchToString(data->arch), data->host) < 0 ||
+        virTestLoadFile(enabledFile, &enabled) < 0 ||
+        !(enabledData = virCPUDataParse(enabled)))
+        goto cleanup;
+
+    if (virAsprintf(&disabledFile, "%s/cputestdata/%s-cpuid-%s-disabled.xml",
+                    abs_srcdir, virArchToString(data->arch), data->host) < 0 ||
+        virTestLoadFile(disabledFile, &disabled) < 0 ||
+        !(disabledData = virCPUDataParse(disabled)))
+        goto cleanup;
+
+    if (virCPUUpdateLive(data->arch, cpu, enabledData, disabledData) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&expectedFile, "cpuid-%s-json", data->host) < 0 ||
+        !(expected = cpuTestLoadXML(data->arch, expectedFile)))
+        goto cleanup;
+
+    ret = cpuTestUpdateLiveCompare(data->arch, cpu, expected);
+
+ cleanup:
+    VIR_FREE(cpuFile);
+    virCPUDefFree(cpu);
+    VIR_FREE(enabledFile);
+    VIR_FREE(enabled);
+    virCPUDataFree(enabledData);
+    VIR_FREE(disabledFile);
+    VIR_FREE(disabled);
+    virCPUDataFree(disabledData);
+    VIR_FREE(expectedFile);
+    virCPUDefFree(expected);
+    return ret;
+}
+
+
 #if WITH_QEMU && WITH_YAJL
 static int
 cpuTestJSONCPUID(const void *arg)
@@ -697,6 +842,10 @@ mymain(void)
         DO_TEST(arch, cpuTestGuestCPUID, host, host,                    \
                 NULL, NULL, 0, 0, 0);                                   \
         DO_TEST_CPUID_JSON(arch, host, json);                           \
+        if (json) {                                                     \
+            DO_TEST(arch, cpuTestUpdateLive, host, host,                \
+                    NULL, NULL, 0, 0, 0);                               \
+        }                                                               \
     } while (0)
 
     /* host to host comparison */
