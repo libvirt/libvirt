@@ -17,6 +17,18 @@
           The virt-host-validate tool now supports bhyve hypervisor
         </summary>
       </change>
+      <change>
+        <summary>
+          Introduce NVDIMM memory model
+        </summary>
+        <description>
+          NVDIMM is new type of memory introduced into QEMU 2.6. The idea is
+          that we have a non-volatile memory module that keeps the data
+          persistent across domain reboots and offers much faster data
+          accesses.  However, due to a bug in QEMU, this feature is not enabled
+          for QEMUs older than 2.9.0.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
