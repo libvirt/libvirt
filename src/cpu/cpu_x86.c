@@ -1984,10 +1984,9 @@ x86DecodeCPUData(virCPUDefPtr cpu,
                  const virCPUData *data,
                  const char **models,
                  unsigned int nmodels,
-                 const char *preferred,
-                 unsigned int flags)
+                 const char *preferred)
 {
-    return x86Decode(cpu, &data->data.x86, models, nmodels, preferred, flags);
+    return x86Decode(cpu, &data->data.x86, models, nmodels, preferred, 0);
 }
 
 
@@ -2452,7 +2451,7 @@ virCPUx86GetHost(virCPUDefPtr cpu,
         cpuidSet(CPUX86_EXTENDED, cpuData) < 0)
         goto cleanup;
 
-    ret = x86DecodeCPUData(cpu, cpuData, models, nmodels, NULL, 0);
+    ret = x86DecodeCPUData(cpu, cpuData, models, nmodels, NULL);
 
  cleanup:
     virCPUx86DataFree(cpuData);

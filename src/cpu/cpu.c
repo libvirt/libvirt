@@ -251,7 +251,7 @@ cpuDecode(virCPUDefPtr cpu,
         return -1;
     }
 
-    return driver->decode(cpu, data, models, nmodels, preferred, 0);
+    return driver->decode(cpu, data, models, nmodels, preferred);
 }
 
 

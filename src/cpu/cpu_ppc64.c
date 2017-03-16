@@ -665,14 +665,11 @@ ppc64DriverDecode(virCPUDefPtr cpu,
                   const virCPUData *data,
                   const char **models,
                   unsigned int nmodels,
-                  const char *preferred ATTRIBUTE_UNUSED,
-                  unsigned int flags)
+                  const char *preferred ATTRIBUTE_UNUSED)
 {
     int ret = -1;
     struct ppc64_map *map;
     const struct ppc64_model *model;
-
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES, -1);
 
     if (!data || !(map = ppc64LoadMap()))
         return -1;
@@ -740,7 +737,7 @@ virCPUppc64GetHost(virCPUDefPtr cpu,
 #endif
     data->pvr[0].mask = 0xfffffffful;
 
-    ret = ppc64DriverDecode(cpu, cpuData, models, nmodels, NULL, 0);
+    ret = ppc64DriverDecode(cpu, cpuData, models, nmodels, NULL);
 
  cleanup:
     virCPUppc64DataFree(cpuData);

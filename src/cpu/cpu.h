@@ -54,8 +54,7 @@ typedef int
                      const virCPUData *data,
                      const char **models,
                      unsigned int nmodels,
-                     const char *preferred,
-                     unsigned int flags);
+                     const char *preferred);
 
 typedef int
 (*cpuArchEncode)    (virArch arch,
