@@ -2,6 +2,7 @@
 
 import sys
 import json
+import xmltodict
 
 # This is a list of x86 CPU features as of QEMU 2.8.50 and it won't need any
 # updates since in the future because query-cpu-model-expansion will be used
@@ -171,6 +172,16 @@ cpuidMap = [
 ]
 
 
+def reverseCpuidMap():
+    features = {}
+
+    for feature in cpuidMap:
+        for name in feature["names"]:
+            features[name] = feature
+
+    return features
+
+
 def cpuidIsSet(cpuid, feature):
     in_eax = feature["in_eax"]
     in_ecx = feature["in_ecx"]
@@ -199,6 +210,12 @@ def cpuidLeaf(cpuid, in_eax, in_ecx):
     leaf = leaf[in_ecx]
 
     return leaf
+
+
+def cpuidAdd(cpuid, feature):
+    leaf = cpuidLeaf(cpuid, feature["in_eax"], feature["in_ecx"])
+    for reg in ["eax", "ebx", "ecx", "edx"]:
+        leaf[reg] |= feature[reg]
 
 
 def parseFeatureWords(path):
@@ -240,6 +257,51 @@ def parseFeatureWords(path):
     return props, cpuid
 
 
+def parseQemu(path, features):
+    cpuid = {}
+    with open(path, "r") as f:
+        data = json.load(f)
+
+    for (prop, val) in data["return"]["model"]["props"].iteritems():
+        if val and prop in features:
+            cpuidAdd(cpuid, features[prop])
+
+    return cpuid
+
+
+def parseCpuid(path):
+    cpuid = {}
+    with open(path, "r") as f:
+        data = xmltodict.parse(f)
+
+    for leaf in data["cpudata"]["cpuid"]:
+        feature = {}
+        feature["in_eax"] = int(leaf["@eax_in"], 0)
+        feature["in_ecx"] = int(leaf["@ecx_in"], 0)
+        for reg in ["eax", "ebx", "ecx", "edx"]:
+            feature[reg] = int(leaf["@" + reg], 0)
+
+        cpuidAdd(cpuid, feature)
+
+    return cpuid
+
+
+def formatCpuid(cpuid, path, comment):
+    with open(path, "w") as f:
+        f.write("<!-- " + comment + " -->\n")
+        f.write("<cpudata arch='x86'>\n")
+        for in_eax in sorted(cpuid.keys()):
+            for in_ecx in sorted(cpuid[in_eax].keys()):
+                leaf = cpuid[in_eax][in_ecx]
+                line = ("  <cpuid eax_in='0x%08x' ecx_in='0x%02x' "
+                        "eax='0x%08x' ebx='0x%08x' "
+                        "ecx='0x%08x' edx='0x%08x'/>\n")
+                f.write(line %(
+                        in_eax, in_ecx,
+                        leaf["eax"], leaf["ebx"], leaf["ecx"], leaf["edx"]))
+        f.write("</cpudata>\n")
+
+
 def convert(path):
     props, cpuid = parseFeatureWords(path)
 
@@ -255,8 +317,30 @@ def convert(path):
         f.write("\n")
 
 
+def diff(features, path):
+    base = path.replace(".json", "")
+    jsonFile = path
+    cpuidFile = base + ".xml"
+    enabledFile = base + "-enabled.xml"
+    disabledFile = base + "-disabled.xml"
+
+    cpuid = parseCpuid(cpuidFile)
+    qemu = parseQemu(jsonFile, features)
+
+    enabled = {}
+    disabled = {}
+    for feature in cpuidMap:
+        if cpuidIsSet(qemu, feature):
+            cpuidAdd(enabled, feature)
+        elif cpuidIsSet(cpuid, feature):
+            cpuidAdd(disabled, feature)
+
+    formatCpuid(enabled, enabledFile, "Features enabled by QEMU")
+    formatCpuid(disabled, disabledFile, "Features disabled by QEMU")
+
+
 if len(sys.argv) < 3:
-    print "Usage: %s convert json_file..." % sys.argv[0]
+    print "Usage: %s convert|diff json_file..." % sys.argv[0]
     sys.exit(1)
 
 action = sys.argv[1]
@@ -265,6 +349,10 @@ args = sys.argv[2:]
 if action == "convert":
     for path in args:
         convert(path)
+elif action == "diff":
+    features = reverseCpuidMap()
+    for path in args:
+        diff(features, path)
 else:
     print "Unknown action: " + action
     sys.exit(1)
