@@ -3105,7 +3105,7 @@ remoteDispatchDomainGetPerfEvents(virNetServerPtr server ATTRIBUTE_UNUSED,
     if (virDomainGetPerfEvents(dom, &params, &nparams, args->flags) < 0)
         goto cleanup;
 
-    if (nparams > REMOTE_DOMAIN_MEMORY_PARAMETERS_MAX) {
+    if (nparams > REMOTE_DOMAIN_PERF_EVENTS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("nparams too large"));
         goto cleanup;
     }
