@@ -325,7 +325,7 @@ libxlMigrateReceive(virNetSocketPtr sock,
         goto fail;
     }
     VIR_DEBUG("Accepted migration connection."
-              "  Spawing thread to process migration data");
+              "  Spawning thread to process migration data");
     recvfd = virNetSocketDupFD(client_sock, true);
     virObjectUnref(client_sock);
 
