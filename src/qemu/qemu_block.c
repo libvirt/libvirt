@@ -380,3 +380,49 @@ qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
 
     return ret;
 }
+
+
+static int
+qemuBlockFillNodeData(size_t pos ATTRIBUTE_UNUSED,
+                      virJSONValuePtr item,
+                      void *opaque)
+{
+    virHashTablePtr table = opaque;
+    const char *name;
+
+    if (!(name = virJSONValueObjectGetString(item, "node-name")))
+        return 1;
+
+    if (virHashAddEntry(table, name, item) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
+ * qemuBlockGetNodeData:
+ * @data: JSON object returned from query-named-block-nodes
+ *
+ * Returns a hash table organized by the node name of the JSON value objects of
+ * data for given qemu block nodes.
+ *
+ * Returns a filled virHashTablePtr on success NULL on error.
+ */
+virHashTablePtr
+qemuBlockGetNodeData(virJSONValuePtr data)
+{
+    virHashTablePtr ret = NULL;
+
+    if (!(ret = virHashCreate(50, virJSONValueHashFree)))
+        return NULL;
+
+    if (virJSONValueArrayForeachSteal(data, qemuBlockFillNodeData, ret) < 0)
+        goto error;
+
+    return ret;
+
+ error:
+    virHashFree(ret);
+    return NULL;
+}

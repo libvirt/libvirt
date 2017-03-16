@@ -48,4 +48,7 @@ int
 qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
                          virDomainObjPtr vm);
 
+virHashTablePtr
+qemuBlockGetNodeData(virJSONValuePtr data);
+
 #endif /* __QEMU_BLOCK_H__ */
