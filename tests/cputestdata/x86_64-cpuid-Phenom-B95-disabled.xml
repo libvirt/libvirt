@@ -1,0 +1,7 @@
+<!-- Features disabled by QEMU -->
+<cpudata arch='x86'>
+  <cpuid eax_in='0x00000001' ecx_in='0x00' eax='0x00000000' ebx='0x00000000' ecx='0x00000008' edx='0x10000000'/>
+  <cpuid eax_in='0x80000001' ecx_in='0x00' eax='0x00000000' ebx='0x00000000' ecx='0x0000340c' edx='0x08000000'/>
+  <cpuid eax_in='0x80000007' ecx_in='0x00' eax='0x00000000' ebx='0x00000000' ecx='0x00000000' edx='0x00000100'/>
+  <cpuid eax_in='0x8000000a' ecx_in='0x00' eax='0x00000000' ebx='0x00000000' ecx='0x00000000' edx='0x00000006'/>
+</cpudata>
