@@ -3,9 +3,6 @@
   <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
   <memory unit='KiB'>219136</memory>
   <currentMemory unit='KiB'>219136</currentMemory>
-  <memtune>
-    <hard_limit unit='KiB'>256000</hard_limit>
-  </memtune>
   <memoryBacking>
     <locked/>
   </memoryBacking>
