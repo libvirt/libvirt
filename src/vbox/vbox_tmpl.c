@@ -1836,7 +1836,7 @@ _mediumCreateDiffStorage(IMedium *medium ATTRIBUTE_UNUSED,
     if (variantSize == 0)
         return 0;
     if (variantSize > 1)
-        VIR_WARN("Only one variant is avaible in current version");
+        VIR_WARN("Only one variant is available in current version");
     return medium->vtbl->CreateDiffStorage(medium, target, variant[0], progress);
 #else /* VBOX_API_VERSION >= 4003000 */
     return medium->vtbl->CreateDiffStorage(medium, target, variantSize, variant, progress);
