@@ -11206,6 +11206,9 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *                              backing image as unsigned long long.
  *     "block.<num>.physical" - physical size in bytes of the container of the
  *                              backing image as unsigned long long.
+ *     "block.<num>.threshold" - current threshold for delivering the
+ *                               VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD
+ *                               event in bytes. See virDomainSetBlockThreshold.
  *
  * VIR_DOMAIN_STATS_PERF:
  *     Return perf event statistics.

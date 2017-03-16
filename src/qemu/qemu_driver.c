@@ -19207,6 +19207,32 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriverPtr driver,
 
 
 static int
+qemuDomainGetStatsOneBlockNode(virDomainStatsRecordPtr record,
+                               int *maxparams,
+                               virStorageSourcePtr src,
+                               size_t block_idx,
+                               virHashTablePtr nodedata)
+{
+    virJSONValuePtr data;
+    unsigned long long tmp;
+    int ret = -1;
+
+    if (src->nodebacking &&
+        (data = virHashLookup(nodedata, src->nodebacking))) {
+        if (virJSONValueObjectGetNumberUlong(data, "write_threshold", &tmp) == 0 &&
+            tmp > 0)
+            QEMU_ADD_BLOCK_PARAM_ULL(record, maxparams, block_idx,
+                                     "threshold", tmp);
+    }
+
+    ret = 0;
+
+ cleanup:
+    return ret;
+}
+
+
+static int
 qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
                            virQEMUDriverConfigPtr cfg,
                            virDomainObjPtr dom,
@@ -19216,7 +19242,8 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
                            virStorageSourcePtr src,
                            size_t block_idx,
                            unsigned int backing_idx,
-                           virHashTablePtr stats)
+                           virHashTablePtr stats,
+                           virHashTablePtr nodedata)
 {
     qemuBlockStats *entry;
     int ret = -1;
@@ -19285,6 +19312,10 @@ qemuDomainGetStatsOneBlock(virQEMUDriverPtr driver,
         }
     }
 
+    if (qemuDomainGetStatsOneBlockNode(record, maxparams, src, block_idx,
+                                       nodedata) < 0)
+        goto cleanup;
+
     ret = 0;
  cleanup:
     VIR_FREE(alias);
@@ -19303,8 +19334,12 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
     int ret = -1;
     int rc;
     virHashTablePtr stats = NULL;
+    virHashTablePtr nodestats = NULL;
+    virJSONValuePtr nodedata = NULL;
     qemuDomainObjPrivatePtr priv = dom->privateData;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    bool fetchnodedata = virQEMUCapsGet(priv->qemuCaps,
+                                        QEMU_CAPS_QUERY_NAMED_BLOCK_NODES);
     int count_index = -1;
     size_t visited = 0;
     bool visitBacking = !!(privflags & QEMU_DOMAIN_STATS_BACKING);
@@ -19316,13 +19351,21 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
         if (rc >= 0)
             ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats,
                                                              visitBacking));
+
+        if (fetchnodedata)
+            nodedata = qemuMonitorQueryNamedBlockNodes(priv->mon);
+
         if (qemuDomainObjExitMonitor(driver, dom) < 0)
             goto cleanup;
 
         /* failure to retrieve stats is fine at this point */
-        if (rc < 0)
+        if (rc < 0 || (fetchnodedata && !nodedata))
             virResetLastError();
     }
+
+    if (nodedata &&
+        !(nodestats = qemuBlockGetNodeData(nodedata)))
+        goto cleanup;
 
     /* When listing backing chains, it's easier to fix up the count
      * after the iteration than it is to iterate twice; but we still
@@ -19338,7 +19381,7 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
         while (src && (backing_idx == 0 || visitBacking)) {
             if (qemuDomainGetStatsOneBlock(driver, cfg, dom, record, maxparams,
                                            disk, src, visited, backing_idx,
-                                           stats) < 0)
+                                           stats, nodestats) < 0)
                 goto cleanup;
             visited++;
             backing_idx++;
@@ -19351,6 +19394,8 @@ qemuDomainGetStatsBlock(virQEMUDriverPtr driver,
 
  cleanup:
     virHashFree(stats);
+    virHashFree(nodestats);
+    virJSONValueFree(nodedata);
     virObjectUnref(cfg);
     return ret;
 }

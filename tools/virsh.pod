@@ -1005,6 +1005,9 @@ Information listed includes:
  "block.<num>.allocation" - offset of highest written sector in bytes
  "block.<num>.capacity" - logical size of source file in bytes
  "block.<num>.physical" - physical size of source file in bytes
+ "block.<num>.threshold" - threshold (in bytes) for delivering the
+                           VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD event
+                           See domblkthreshold.
 
 Selecting a specific statistics groups doesn't guarantee that the
 daemon supports the selected group of stats. Flag I<--enforce>
