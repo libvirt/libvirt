@@ -79,6 +79,7 @@ cpuidMap = [
     {"in_eax": 0x00000007, "in_ecx": 0, "eax": 0, "ebx": 0x00000200, "ecx": 0, "edx": 0, "names": ["erms"]},
     {"in_eax": 0x00000007, "in_ecx": 0, "eax": 0, "ebx": 0x00000400, "ecx": 0, "edx": 0, "names": ["invpcid"]},
     {"in_eax": 0x00000007, "in_ecx": 0, "eax": 0, "ebx": 0x00000800, "ecx": 0, "edx": 0, "names": ["rtm"]},
+    {"in_eax": 0x00000007, "in_ecx": 0, "eax": 0, "ebx": 0x00001000, "ecx": 0, "edx": 0, "names": []}, # cmt is unknown to QEMU
     {"in_eax": 0x00000007, "in_ecx": 0, "eax": 0, "ebx": 0x00004000, "ecx": 0, "edx": 0, "names": ["mpx"]},
     {"in_eax": 0x00000007, "in_ecx": 0, "eax": 0, "ebx": 0x00010000, "ecx": 0, "edx": 0, "names": ["avx512f"]},
     {"in_eax": 0x00000007, "in_ecx": 0, "eax": 0, "ebx": 0x00020000, "ecx": 0, "edx": 0, "names": ["avx512dq"]},
