@@ -67,7 +67,7 @@
   # allow changing to our UUID-based named profiles
   change_profile -> @{LIBVIRT}-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*-[0-9a-f]*,
 
-  /usr/{lib,libexec}/qemu-bridge-helper Cx -> qemu_bridge_helper,
+  /usr/{lib,lib64,lib/qemu,libexec}/qemu-bridge-helper Cx -> qemu_bridge_helper,
   # child profile for bridge helper process
   profile qemu_bridge_helper {
    #include <abstractions/base>
@@ -83,6 +83,6 @@
    /etc/qemu/** r,
    owner @{PROC}/*/status r,
 
-   /usr/{lib,libexec}/qemu-bridge-helper rmix,
+   /usr/{lib,lib64,lib/qemu,libexec}/qemu-bridge-helper rmix,
   }
 }
