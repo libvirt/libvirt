@@ -213,6 +213,7 @@
   <flag name='kernel-irqchip'/>
   <flag name='kernel-irqchip.split'/>
   <flag name='intel-iommu.intremap'/>
+  <flag name='intel-iommu.caching-mode'/>
   <version>2009000</version>
   <kvmVersion>0</kvmVersion>
   <package> (v2.9.0)</package>

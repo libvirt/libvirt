@@ -408,6 +408,7 @@ typedef enum {
     QEMU_CAPS_MACHINE_KERNEL_IRQCHIP, /* -machine kernel_irqchip */
     QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT, /* -machine kernel_irqchip=split */
     QEMU_CAPS_INTEL_IOMMU_INTREMAP, /* intel-iommu.intremap */
+    QEMU_CAPS_INTEL_IOMMU_CACHING_MODE, /* intel-iommu.caching-mode */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

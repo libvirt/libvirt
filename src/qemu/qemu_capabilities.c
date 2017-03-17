@@ -370,6 +370,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "kernel-irqchip", /* 255 */
               "kernel-irqchip.split",
               "intel-iommu.intremap",
+              "intel-iommu.caching-mode",
     );
 
 
@@ -1726,6 +1727,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsUSBNECXHCI[] = {
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsIntelIOMMU[] = {
     { "intremap", QEMU_CAPS_INTEL_IOMMU_INTREMAP },
+    { "caching-mode", QEMU_CAPS_INTEL_IOMMU_CACHING_MODE },
 };
 
 /* see documentation for virQEMUCapsQMPSchemaGetByPath for the query format */
