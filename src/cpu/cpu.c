@@ -511,6 +511,10 @@ cpuBaselineXML(const char **xmlCPUs,
     size_t i;
 
     VIR_DEBUG("ncpus=%u, nmodels=%u", ncpus, nmodels);
+
+    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
+                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
+
     if (xmlCPUs) {
         for (i = 0; i < ncpus; i++)
             VIR_DEBUG("xmlCPUs[%zu]=%s", i, NULLSTR(xmlCPUs[i]));
@@ -549,6 +553,10 @@ cpuBaselineXML(const char **xmlCPUs,
     }
 
     if (!(cpu = cpuBaseline(cpus, ncpus, models, nmodels, flags)))
+        goto error;
+
+    if ((flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
+        virCPUExpandFeatures(cpus[0]->arch, cpu) < 0)
         goto error;
 
     cpustr = virCPUDefFormat(cpu, NULL, false);

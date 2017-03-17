@@ -967,28 +967,6 @@ x86FeaturesLoad(virCPUx86MapPtr map,
     return 0;
 }
 
-static int
-x86DataFromCPUFeatures(virCPUx86Data *data,
-                       virCPUDefPtr cpu,
-                       virCPUx86MapPtr map)
-{
-    size_t i;
-
-    for (i = 0; i < cpu->nfeatures; i++) {
-        virCPUx86FeaturePtr feature;
-        if (!(feature = x86FeatureFind(map, cpu->features[i].name))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown CPU feature %s"), cpu->features[i].name);
-            return -1;
-        }
-
-        if (x86DataAdd(data, &feature->data) < 0)
-            return -1;
-    }
-
-    return 0;
-}
-
 
 static virCPUx86ModelPtr
 x86ModelNew(void)
@@ -1946,17 +1924,6 @@ x86Decode(virCPUDefPtr cpu,
                                            cpuModel->nfeatures);
             }
         }
-    }
-
-    if (flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) {
-        if (x86DataCopy(&copy, &model->data) < 0 ||
-            x86DataFromCPUFeatures(&features, cpuModel, map) < 0)
-            goto cleanup;
-
-        x86DataSubtract(&copy, &features);
-        if (x86DataToCPUFeatures(cpuModel, VIR_CPU_FEATURE_REQUIRE,
-                                 &copy, map) < 0)
-            goto cleanup;
     }
 
     if (vendor && VIR_STRDUP(cpu->vendor, vendor->name) < 0)

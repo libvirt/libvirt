@@ -325,6 +325,14 @@ cpuTestBaseline(const void *arg)
         goto cleanup;
 
     baseline = cpuBaseline(cpus, ncpus, NULL, 0, data->flags);
+
+    if (baseline &&
+        (data->flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
+        virCPUExpandFeatures(data->arch, baseline) < 0) {
+        virCPUDefFree(baseline);
+        baseline = NULL;
+    }
+
     if (data->result < 0) {
         virResetLastError();
         if (!baseline) {
