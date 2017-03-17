@@ -366,6 +366,9 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "query-named-block-nodes",
               "cpu-cache",
               "qemu-xhci",
+
+              "kernel-irqchip", /* 255 */
+              "kernel-irqchip.split",
     );
 
 
@@ -3130,6 +3133,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "drive", "throttling.bps-total-max-length", QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH },
     { "drive", "throttling.group", QEMU_CAPS_DRIVE_IOTUNE_GROUP },
     { "spice", "rendernode", QEMU_CAPS_SPICE_RENDERNODE },
+    { "machine", "kernel_irqchip", QEMU_CAPS_MACHINE_KERNEL_IRQCHIP },
 };
 
 static int
@@ -4741,6 +4745,10 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     /* Since 2.4.50 ARM virt machine supports gic-version option */
     if (qemuCaps->version >= 2004050)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACH_VIRT_GIC_VERSION);
+
+    /* no way to query if -machine kernel_irqchip supports split */
+    if (qemuCaps->version >= 2006000)
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT);
 
     if (virQEMUCapsProbeQMPCommands(qemuCaps, mon) < 0)
         goto cleanup;

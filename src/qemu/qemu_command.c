@@ -7422,6 +7422,31 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
             }
         }
 
+        if (def->features[VIR_DOMAIN_FEATURE_IOAPIC] == VIR_TRISTATE_SWITCH_ON) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("I/O APIC tuning is not supported by this "
+                                 "QEMU binary"));
+                goto cleanup;
+            }
+            switch (def->ioapic) {
+            case VIR_DOMAIN_IOAPIC_QEMU:
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT)) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("split I/O APIC is not supported by this "
+                                     "QEMU binary"));
+                    goto cleanup;
+                }
+                virBufferAddLit(&buf, ",kernel_irqchip=split");
+                break;
+            case VIR_DOMAIN_IOAPIC_KVM:
+                virBufferAddLit(&buf, ",kernel_irqchip=on");
+                break;
+            case VIR_DOMAIN_IOAPIC_LAST:
+                break;
+            }
+        }
+
         virCommandAddArgBuffer(cmd, &buf);
     }
 

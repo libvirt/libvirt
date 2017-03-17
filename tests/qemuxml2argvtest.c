@@ -2509,6 +2509,11 @@ mymain(void)
     DO_TEST("intel-iommu-machine",
             QEMU_CAPS_MACHINE_OPT,
             QEMU_CAPS_MACHINE_IOMMU);
+    DO_TEST("intel-iommu-ioapic",
+            QEMU_CAPS_MACHINE_OPT,
+            QEMU_CAPS_MACHINE_KERNEL_IRQCHIP,
+            QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT,
+            QEMU_CAPS_DEVICE_INTEL_IOMMU);
 
     DO_TEST("cpu-hotplug-startup", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
 

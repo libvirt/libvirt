@@ -2807,6 +2807,22 @@ qemuDomainDefCPUPostParse(virDomainDefPtr def)
 
 
 static int
+qemuDomainDefVerifyFeatures(const virDomainDef *def)
+{
+    if (def->features[VIR_DOMAIN_FEATURE_IOAPIC] == VIR_TRISTATE_SWITCH_ON &&
+        !ARCH_IS_X86(def->os.arch)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("I/O APIC tuning is not supported "
+                         "for '%s' architecture"),
+                       virArchToString(def->os.arch));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainDefPostParse(virDomainDefPtr def,
                        virCapsPtr caps,
                        unsigned int parseFlags,
@@ -2860,6 +2876,9 @@ qemuDomainDefPostParse(virDomainDefPtr def,
         goto cleanup;
 
     qemuDomainDefEnableDefaultFeatures(def, qemuCaps);
+
+    if (qemuDomainDefVerifyFeatures(def) < 0)
+        goto cleanup;
 
     if (qemuDomainRecheckInternalPaths(def, cfg, parseFlags) < 0)
         goto cleanup;

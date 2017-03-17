@@ -145,6 +145,7 @@
   <flag name='display'/>
   <flag name='vhost-scsi'/>
   <flag name='query-cpu-definitions'/>
+  <flag name='kernel-irqchip'/>
   <version>1006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

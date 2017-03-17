@@ -200,6 +200,8 @@
   <flag name='query-cpu-definitions'/>
   <flag name='block-write-threshold'/>
   <flag name='query-named-block-nodes'/>
+  <flag name='kernel-irqchip'/>
+  <flag name='kernel-irqchip.split'/>
   <version>2006000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>

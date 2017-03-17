@@ -185,6 +185,7 @@
   <flag name='query-cpu-definitions'/>
   <flag name='block-write-threshold'/>
   <flag name='query-named-block-nodes'/>
+  <flag name='kernel-irqchip'/>
   <version>2004000</version>
   <kvmVersion>0</kvmVersion>
   <package></package>
