@@ -1199,17 +1199,49 @@ qemuGetDriveSourceString(virStorageSourcePtr src,
 }
 
 
+static bool
+qemuDiskConfigBlkdeviotuneHasBasic(virDomainDiskDefPtr disk)
+{
+    return disk->blkdeviotune.total_bytes_sec ||
+           disk->blkdeviotune.read_bytes_sec ||
+           disk->blkdeviotune.write_bytes_sec ||
+           disk->blkdeviotune.total_iops_sec ||
+           disk->blkdeviotune.read_iops_sec ||
+           disk->blkdeviotune.write_iops_sec;
+}
+
+
+static bool
+qemuDiskConfigBlkdeviotuneHasMax(virDomainDiskDefPtr disk)
+{
+    return disk->blkdeviotune.total_bytes_sec_max ||
+           disk->blkdeviotune.read_bytes_sec_max ||
+           disk->blkdeviotune.write_bytes_sec_max ||
+           disk->blkdeviotune.total_iops_sec_max ||
+           disk->blkdeviotune.read_iops_sec_max ||
+           disk->blkdeviotune.write_iops_sec_max ||
+           disk->blkdeviotune.size_iops_sec;
+}
+
+
+static bool
+qemuDiskConfigBlkdeviotuneHasMaxLength(virDomainDiskDefPtr disk)
+{
+    return disk->blkdeviotune.total_bytes_sec_max_length ||
+           disk->blkdeviotune.read_bytes_sec_max_length ||
+           disk->blkdeviotune.write_bytes_sec_max_length ||
+           disk->blkdeviotune.total_iops_sec_max_length ||
+           disk->blkdeviotune.read_iops_sec_max_length ||
+           disk->blkdeviotune.write_iops_sec_max_length;
+}
+
+
 static int
 qemuCheckDiskConfigBlkdeviotune(virDomainDiskDefPtr disk,
                                 virQEMUCapsPtr qemuCaps)
 {
     /* block I/O throttling */
-    if ((disk->blkdeviotune.total_bytes_sec ||
-         disk->blkdeviotune.read_bytes_sec ||
-         disk->blkdeviotune.write_bytes_sec ||
-         disk->blkdeviotune.total_iops_sec ||
-         disk->blkdeviotune.read_iops_sec ||
-         disk->blkdeviotune.write_iops_sec) &&
+    if (qemuDiskConfigBlkdeviotuneHasBasic(disk) &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("block I/O throttling not supported with this "
@@ -1218,13 +1250,7 @@ qemuCheckDiskConfigBlkdeviotune(virDomainDiskDefPtr disk,
     }
 
     /* block I/O throttling 1.7 */
-    if ((disk->blkdeviotune.total_bytes_sec_max ||
-         disk->blkdeviotune.read_bytes_sec_max ||
-         disk->blkdeviotune.write_bytes_sec_max ||
-         disk->blkdeviotune.total_iops_sec_max ||
-         disk->blkdeviotune.read_iops_sec_max ||
-         disk->blkdeviotune.write_iops_sec_max ||
-         disk->blkdeviotune.size_iops_sec) &&
+    if (qemuDiskConfigBlkdeviotuneHasMax(disk) &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("there are some block I/O throttling parameters "
@@ -1242,12 +1268,7 @@ qemuCheckDiskConfigBlkdeviotune(virDomainDiskDefPtr disk,
     }
 
     /* block I/O throttling length 2.6 */
-    if ((disk->blkdeviotune.total_bytes_sec_max_length ||
-         disk->blkdeviotune.read_bytes_sec_max_length ||
-         disk->blkdeviotune.write_bytes_sec_max_length ||
-         disk->blkdeviotune.total_iops_sec_max_length ||
-         disk->blkdeviotune.read_iops_sec_max_length ||
-         disk->blkdeviotune.write_iops_sec_max_length) &&
+    if (qemuDiskConfigBlkdeviotuneHasMaxLength(disk) &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_MAX_LENGTH)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("there are some block I/O throttling length parameters "
