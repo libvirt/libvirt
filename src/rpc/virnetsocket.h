@@ -143,6 +143,8 @@ int virNetSocketGetSELinuxContext(virNetSocketPtr sock,
 int virNetSocketSetBlocking(virNetSocketPtr sock,
                             bool blocking);
 
+void virNetSocketSetQuietEOF(virNetSocketPtr sock);
+
 ssize_t virNetSocketRead(virNetSocketPtr sock, char *buf, size_t len);
 ssize_t virNetSocketWrite(virNetSocketPtr sock, const char *buf, size_t len);
 

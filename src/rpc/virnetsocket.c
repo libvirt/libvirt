@@ -82,6 +82,7 @@ struct _virNetSocket {
     int errfd;
     bool client;
     bool ownsFd;
+    bool quietEOF;
 
     /* Event callback fields */
     virNetSocketIOFunc func;
@@ -1792,13 +1793,22 @@ static ssize_t virNetSocketReadWire(virNetSocketPtr sock, char *buf, size_t len)
                                  _("Cannot recv data"));
         ret = -1;
     } else if (ret == 0) {
-        if (errout)
-            virReportSystemError(EIO,
-                                 _("End of file while reading data: %s"), errout);
-        else
-            virReportSystemError(EIO, "%s",
-                                 _("End of file while reading data"));
-        ret = -1;
+        if (sock->quietEOF) {
+            VIR_DEBUG("socket='%p' EOF while reading: errout='%s'",
+                      socket, NULLSTR(errout));
+
+            ret = -2;
+        } else {
+            if (errout)
+                virReportSystemError(EIO,
+                                     _("End of file while reading data: %s"),
+                                     errout);
+            else
+                virReportSystemError(EIO, "%s",
+                                     _("End of file while reading data"));
+
+            ret = -1;
+        }
     }
 
     VIR_FREE(errout);
@@ -2232,4 +2242,18 @@ void virNetSocketClose(virNetSocketPtr sock)
 #endif
 
     virObjectUnlock(sock);
+}
+
+
+/**
+ * virNetSocketSetQuietEOF:
+ * @sock: socket object pointer
+ *
+ * Disables reporting I/O errors as a virError when @socket is closed while
+ * reading data.
+ */
+void
+virNetSocketSetQuietEOF(virNetSocketPtr sock)
+{
+    sock->quietEOF = true;
 }
