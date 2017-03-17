@@ -712,6 +712,9 @@ virLockDaemonClientNew(virNetServerClientPtr client,
         }
     }
 
+    /* there's no closing handshake in the locking protocol */
+    virNetServerClientSetQuietEOF(client);
+
     return priv;
 
  error:

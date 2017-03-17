@@ -572,6 +572,9 @@ virLogDaemonClientNew(virNetServerClientPtr client,
         }
     }
 
+    /* there's no closing handshake in the logging protocol */
+    virNetServerClientSetQuietEOF(client);
+
     return priv;
 
  error:
