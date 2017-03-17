@@ -1259,12 +1259,23 @@ qemuCheckDiskConfigBlkdeviotune(virDomainDiskDefPtr disk,
     }
 
     /* block I/O group 2.4 */
-    if (disk->blkdeviotune.group_name &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_GROUP)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("the block I/O throttling group parameter is "
-                         "not supported with this QEMU binary"));
-        return -1;
+    if (disk->blkdeviotune.group_name) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_IOTUNE_GROUP)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("the block I/O throttling group parameter is "
+                             "not supported with this QEMU binary"));
+            return -1;
+        }
+
+        /* group_name by itself is ignored by qemu */
+        if (!qemuDiskConfigBlkdeviotuneHasBasic(disk) &&
+            !qemuDiskConfigBlkdeviotuneHasMax(disk) &&
+            !qemuDiskConfigBlkdeviotuneHasMaxLength(disk)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("group_name can be configured only together with "
+                             "settings"));
+            return -1;
+        }
     }
 
     /* block I/O throttling length 2.6 */
