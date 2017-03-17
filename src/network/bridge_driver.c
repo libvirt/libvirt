@@ -1085,7 +1085,15 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
         virBufferAddLit(&configbuf, "port=0\n");
 
     if (wantDNS && network->def->dns.forwarders) {
-        virBufferAddLit(&configbuf, "no-resolv\n");
+        /* addNoResolv should be set to true if there are any entries
+         * that specify an IP address for requests, but no domain
+         * qualifier (implying that all requests otherwise "unclaimed"
+         * should be sent to that address). if it is still false when
+         * we've looked at all entries, it means we still need the
+         * host's resolv.conf for some cases.
+         */
+        bool addNoResolv = false;
+
         for (i = 0; i < network->def->dns.nfwds; i++) {
             virNetworkDNSForwarderPtr fwd = &network->def->dns.forwarders[i];
 
@@ -1099,11 +1107,15 @@ networkDnsmasqConfContents(virNetworkObjPtr network,
                     goto cleanup;
                 virBufferAsprintf(&configbuf, "%s\n", addr);
                 VIR_FREE(addr);
+                if (!fwd->domain)
+                    addNoResolv = true;
             } else {
                 /* "don't forward requests for this domain" */
                 virBufferAddLit(&configbuf, "#\n");
             }
         }
+        if (addNoResolv)
+            virBufferAddLit(&configbuf, "no-resolv\n");
     }
 
     if (network->def->domain) {

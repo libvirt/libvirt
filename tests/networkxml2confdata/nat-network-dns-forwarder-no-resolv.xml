@@ -1,0 +1,11 @@
+<network>
+  <name>default</name>
+  <uuid>81ff0d90-c91e-6742-64da-4a736edb9a9c</uuid>
+  <forward mode='nat'/>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <dns>
+    <forwarder domain='example.com' addr='192.168.1.1'/>
+  </dns>
+  <ip address='192.168.122.1' netmask='255.255.255.0'>
+  </ip>
+</network>
