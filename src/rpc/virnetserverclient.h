@@ -152,4 +152,6 @@ int virNetServerClientGetInfo(virNetServerClientPtr client,
                               bool *readonly, char **sock_addr,
                               virIdentityPtr *identity);
 
+void virNetServerClientSetQuietEOF(virNetServerClientPtr client);
+
 #endif /* __VIR_NET_SERVER_CLIENT_H__ */

@@ -1637,3 +1637,16 @@ virNetServerClientGetInfo(virNetServerClientPtr client,
     virObjectUnlock(client);
     return ret;
 }
+
+
+/**
+ * virNetServerClientSetQuietEOF:
+ *
+ * Don't report errors for protocols that close connection by hangup of the
+ * socket rather than calling an API to close it.
+ */
+void
+virNetServerClientSetQuietEOF(virNetServerClientPtr client)
+{
+    virNetSocketSetQuietEOF(client->sock);
+}
