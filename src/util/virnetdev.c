@@ -2583,12 +2583,6 @@ virNetDevGetFeatures(const char *ifname,
     if (!(*out = virBitmapNew(VIR_NET_DEV_FEAT_LAST)))
         return -1;
 
-    /* Only fetch features if we're privileged, but no need to fail */
-    if (geteuid() != 0) {
-        VIR_DEBUG("ETHTOOL feature bits not available in session mode");
-        return 0;
-    }
-
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         goto cleanup;
 
