@@ -1823,7 +1823,7 @@ x86Decode(virCPUDefPtr cpu,
           const char **models,
           unsigned int nmodels,
           const char *preferred,
-          unsigned int flags)
+          bool migratable)
 {
     int ret = -1;
     virCPUx86MapPtr map;
@@ -1838,9 +1838,6 @@ x86Decode(virCPUDefPtr cpu,
     uint32_t signature;
     ssize_t i;
     int rc;
-
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
-                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, -1);
 
     if (!cpuData || x86DataCopy(&data, cpuData) < 0)
         return -1;
@@ -1913,7 +1910,7 @@ x86Decode(virCPUDefPtr cpu,
     /* Remove non-migratable features if requested
      * Note: this only works as long as no CPU model contains non-migratable
      * features directly */
-    if (flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE) {
+    if (migratable) {
         i = 0;
         while (i < cpuModel->nfeatures) {
             if (x86FeatureIsMigratable(cpuModel->features[i].name, map)) {
@@ -1953,7 +1950,7 @@ x86DecodeCPUData(virCPUDefPtr cpu,
                  unsigned int nmodels,
                  const char *preferred)
 {
-    return x86Decode(cpu, &data->data.x86, models, nmodels, preferred, 0);
+    return x86Decode(cpu, &data->data.x86, models, nmodels, preferred, false);
 }
 
 
@@ -2432,7 +2429,7 @@ x86Baseline(virCPUDefPtr *cpus,
             unsigned int ncpus,
             const char **models,
             unsigned int nmodels,
-            unsigned int flags)
+            bool migratable)
 {
     virCPUx86MapPtr map = NULL;
     virCPUx86ModelPtr base_model = NULL;
@@ -2443,9 +2440,6 @@ x86Baseline(virCPUDefPtr *cpus,
     bool outputVendor = true;
     const char *modelName;
     bool matchingNames = true;
-
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
-                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
 
     if (!(map = virCPUx86GetMap()))
         goto error;
@@ -2529,7 +2523,7 @@ x86Baseline(virCPUDefPtr *cpus,
         virCPUx86DataAddCPUIDInt(&base_model->data, &vendor->cpuid) < 0)
         goto error;
 
-    if (x86Decode(cpu, &base_model->data, models, nmodels, modelName, flags) < 0)
+    if (x86Decode(cpu, &base_model->data, models, nmodels, modelName, migratable) < 0)
         goto error;
 
     if (STREQ_NULLABLE(cpu->model, modelName))
@@ -2838,7 +2832,7 @@ virCPUx86Translate(virCPUDefPtr cpu,
     if (!(translated = virCPUDefCopyWithoutModel(cpu)))
         goto cleanup;
 
-    if (x86Decode(translated, &model->data, models, nmodels, NULL, 0) < 0)
+    if (x86Decode(translated, &model->data, models, nmodels, NULL, false) < 0)
         goto cleanup;
 
     for (i = 0; i < cpu->nfeatures; i++) {

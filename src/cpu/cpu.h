@@ -79,7 +79,7 @@ typedef virCPUDefPtr
                      unsigned int ncpus,
                      const char **models,
                      unsigned int nmodels,
-                     unsigned int flags);
+                     bool migratable);
 
 typedef int
 (*virCPUArchUpdate)(virCPUDefPtr guest,
@@ -201,7 +201,7 @@ cpuBaseline (virCPUDefPtr *cpus,
              unsigned int ncpus,
              const char **models,
              unsigned int nmodels,
-             unsigned int flags);
+             bool migratable);
 
 int
 virCPUUpdate(virArch arch,

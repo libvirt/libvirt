@@ -552,7 +552,8 @@ cpuBaselineXML(const char **xmlCPUs,
         doc = NULL;
     }
 
-    if (!(cpu = cpuBaseline(cpus, ncpus, models, nmodels, flags)))
+    if (!(cpu = cpuBaseline(cpus, ncpus, models, nmodels,
+                            !!(flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE))))
         goto error;
 
     if ((flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
@@ -586,17 +587,12 @@ cpuBaselineXML(const char **xmlCPUs,
  * @ncpus: number of CPUs in @cpus
  * @models: list of CPU models that can be considered for the baseline CPU
  * @nmodels: number of CPU models in @models
- * @flags: bitwise-OR of virConnectBaselineCPUFlags
+ * @migratable: requests non-migratable features to be removed from the result
  *
  * Computes the most feature-rich CPU which is compatible with all given
  * host CPUs. If @models array is NULL, all models supported by libvirt will
  * be considered when computing the baseline CPU model, otherwise the baseline
  * CPU model will be one of the provided CPU @models.
- *
- * If @flags includes VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES then libvirt
- * will explicitly list all CPU features that are part of the host CPU,
- * without this flag features that are part of the CPU model will not be
- * listed.
  *
  * Returns baseline CPU definition or NULL on error.
  */
@@ -605,7 +601,7 @@ cpuBaseline(virCPUDefPtr *cpus,
             unsigned int ncpus,
             const char **models,
             unsigned int nmodels,
-            unsigned int flags)
+            bool migratable)
 {
     struct cpuArchDriver *driver;
     size_t i;
@@ -660,7 +656,7 @@ cpuBaseline(virCPUDefPtr *cpus,
         return NULL;
     }
 
-    return driver->baseline(cpus, ncpus, models, nmodels, flags);
+    return driver->baseline(cpus, ncpus, models, nmodels, migratable);
 }
 
 

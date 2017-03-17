@@ -324,7 +324,8 @@ cpuTestBaseline(const void *arg)
     if (!(cpus = cpuTestLoadMultiXML(data->arch, data->name, &ncpus)))
         goto cleanup;
 
-    baseline = cpuBaseline(cpus, ncpus, NULL, 0, data->flags);
+    baseline = cpuBaseline(cpus, ncpus, NULL, 0,
+                           !!(data->flags & VIR_CONNECT_BASELINE_CPU_MIGRATABLE));
 
     if (baseline &&
         (data->flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&

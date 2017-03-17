@@ -768,16 +768,13 @@ ppc64DriverBaseline(virCPUDefPtr *cpus,
                     unsigned int ncpus,
                     const char **models ATTRIBUTE_UNUSED,
                     unsigned int nmodels ATTRIBUTE_UNUSED,
-                    unsigned int flags)
+                    bool migratable ATTRIBUTE_UNUSED)
 {
     struct ppc64_map *map;
     const struct ppc64_model *model;
     const struct ppc64_vendor *vendor = NULL;
     virCPUDefPtr cpu = NULL;
     size_t i;
-
-    virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
-                  VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
 
     if (!(map = ppc64LoadMap()))
         goto error;
