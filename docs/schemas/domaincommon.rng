@@ -4569,6 +4569,9 @@
               </optional>
             </element>
           </optional>
+          <optional>
+            <ref name="ioapic"/>
+          </optional>
         </interleave>
       </element>
     </optional>
@@ -4744,6 +4747,18 @@
           <ref name="rebootTimeoutDelay"/>
         </attribute>
       </optional>
+    </element>
+  </define>
+
+  <define name="ioapic">
+    <element name="ioapic">
+      <attribute name="driver">
+        <choice>
+          <value>qemu</value>
+          <value>kvm</value>
+        </choice>
+      </attribute>
+      <empty/>
     </element>
   </define>
 

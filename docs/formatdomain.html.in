@@ -1678,6 +1678,7 @@
   &lt;/kvm&gt;
   &lt;pvspinlock state='on'/&gt;
   &lt;gic version='2'/&gt;
+  &lt;ioapic driver='qemu'/&gt;
 
 &lt;/features&gt;
 ...</pre>
@@ -1838,6 +1839,14 @@
           <code>on</code> and <code>off</code>. The default is left
           for hypervisor to decide.
           <span class="since">Since 2.1.0</span>
+      </dd>
+      <dt><code>ioapic</code></dt>
+      <dd>Tune the I/O APIC. Possible values for the
+          <code>driver</code> attribute are:
+          <code>kvm</code> (default for KVM domains)
+          and <code>qemu</code> which puts I/O APIC in userspace
+          which is also known as a split I/O APIC mode.
+          <span class="since">Since 3.4.0</span> (QEMU/KVM only)
       </dd>
     </dl>
 
