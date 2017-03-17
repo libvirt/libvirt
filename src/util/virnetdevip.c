@@ -44,7 +44,7 @@
 #ifdef __linux__
 # include <linux/sockios.h>
 # include <linux/if_vlan.h>
-# define VIR_NETDEV_FAMILY AF_PACKET
+# define VIR_NETDEV_FAMILY AF_UNIX
 #elif defined(HAVE_STRUCT_IFREQ) && defined(AF_LOCAL)
 # define VIR_NETDEV_FAMILY AF_LOCAL
 #else

@@ -41,7 +41,7 @@
 #ifdef __linux__
 # include <linux/sockios.h>
 # include <linux/if_vlan.h>
-# define VIR_NETDEV_FAMILY AF_PACKET
+# define VIR_NETDEV_FAMILY AF_UNIX
 #elif defined(HAVE_STRUCT_IFREQ) && defined(AF_LOCAL)
 # define VIR_NETDEV_FAMILY AF_LOCAL
 #else
@@ -2589,9 +2589,6 @@ virNetDevGetFeatures(const char *ifname,
         return 0;
     }
 
-    /* Ultimately uses AF_PACKET for socket which requires privileged
-     * daemon support.
-     */
     if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
         goto cleanup;
 
