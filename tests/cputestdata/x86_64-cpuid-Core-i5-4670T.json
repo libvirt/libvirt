@@ -5,7 +5,7 @@
       "props": {
         "pfthreshold": false,
         "pku": false,
-        "rtm": true,
+        "rtm": false,
         "tsc_adjust": true,
         "tsc-deadline": true,
         "xstore-en": false,
@@ -69,7 +69,7 @@
         "avx512-4vnniw": false,
         "xsave": true,
         "erms": true,
-        "hle": true,
+        "hle": false,
         "nodeid_msr": false,
         "est": false,
         "svm_lock": false,
