@@ -7396,7 +7396,9 @@ qemu-kvm -net nic,model=? /dev/null
 <pre>
 ...
 &lt;devices&gt;
-  &lt;iommu model='intel'/&gt;
+  &lt;iommu model='intel'&gt;
+    &lt;driver intremap='on'/&gt;
+  &lt;/iommu&gt;
 &lt;/devices&gt;
 ...
 </pre>
@@ -7406,6 +7408,26 @@ qemu-kvm -net nic,model=? /dev/null
         <p>
           Currently only the <code>intel</code> model is supported.
         </p>
+      </dd>
+      <dt><code>driver</code></dt>
+      <dd>
+        <p>
+          The <code>driver</code> subelement can be used to configure
+          additional options:
+        </p>
+        <dl>
+          <dt><code>intremap</code></dt>
+          <dd>
+            <p>
+              The <code>intremap</code> attribute with possible values
+              <code>on</code> and <code>off</code> can be used to
+              turn on interrupt remapping, a part of the VT-d functionality.
+              Currently this requires split I/O APIC
+              (<code>&lt;ioapic driver='qemu'/&gt;</code>).
+              <span class="since">Since 3.4.0</span> (QEMU/KVM only)
+            </p>
+          </dd>
+        </dl>
       </dd>
     </dl>
 

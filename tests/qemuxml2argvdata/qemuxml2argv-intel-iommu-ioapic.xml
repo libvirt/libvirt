@@ -24,6 +24,8 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <memballoon model='none'/>
-    <iommu model='intel'/>
+    <iommu model='intel'>
+      <driver intremap='on'/>
+    </iommu>
   </devices>
 </domain>
