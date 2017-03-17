@@ -17707,6 +17707,11 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
             goto endjob;
         }
         reply = disk->blkdeviotune;
+
+        /* Group name needs to be copied since qemuMonitorGetBlockIoThrottle
+         * allocates it as well */
+        if (VIR_STRDUP(reply.group_name, disk->blkdeviotune.group_name))
+            goto endjob;
     }
 
 #define BLOCK_IOTUNE_ASSIGN(name, var)                                         \
@@ -17736,13 +17741,15 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
 
     BLOCK_IOTUNE_ASSIGN(SIZE_IOPS_SEC, size_iops_sec);
 
-    /* NB: Cannot use macro since this is a STRING not a ULLONG */
-    if (*nparams < maxparams &&
-        virTypedParameterAssign(&params[(*nparams)++],
-                                VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME,
-                                VIR_TYPED_PARAM_STRING,
-                                reply.group_name) < 0)
-        goto endjob;
+    if (*nparams < maxparams) {
+        if (virTypedParameterAssign(&params[(*nparams)++],
+                                    VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME,
+                                    VIR_TYPED_PARAM_STRING,
+                                    reply.group_name) < 0)
+            goto endjob;
+
+        reply.group_name = NULL;
+    }
 
     BLOCK_IOTUNE_ASSIGN(TOTAL_BYTES_SEC_MAX_LENGTH, total_bytes_sec_max_length);
     BLOCK_IOTUNE_ASSIGN(READ_BYTES_SEC_MAX_LENGTH, read_bytes_sec_max_length);
@@ -17759,6 +17766,7 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
+    VIR_FREE(reply.group_name);
     VIR_FREE(device);
     virDomainObjEndAPI(&vm);
     return ret;
