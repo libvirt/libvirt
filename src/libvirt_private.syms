@@ -1994,6 +1994,7 @@ virNetDevGetFeatures;
 virNetDevGetIndex;
 virNetDevGetLinkInfo;
 virNetDevGetMAC;
+virNetDevGetMaster;
 virNetDevGetMTU;
 virNetDevGetName;
 virNetDevGetOnline;

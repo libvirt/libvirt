@@ -165,6 +165,9 @@ int virNetDevGetIndex(const char *ifname, int *ifindex)
 int virNetDevGetVLanID(const char *ifname, int *vlanid)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
+int virNetDevGetMaster(const char *ifname, char **master)
+   ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
 int virNetDevValidateConfig(const char *ifname,
                             const virMacAddr *macaddr, int ifindex)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;

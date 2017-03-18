@@ -979,6 +979,55 @@ int virNetDevGetIndex(const char *ifname ATTRIBUTE_UNUSED,
 #endif /* ! SIOCGIFINDEX */
 
 
+#if defined(__linux__) && defined(HAVE_LIBNL)
+/**
+ * virNetDevGetMaster:
+ * @ifname: name of interface we're interested in
+ * @master: used to return a string containing the name of @ifname's "master"
+ *          (this is the bridge or bond device that this device is attached to)
+ *
+ * Returns 0 on success, -1 on failure (if @ifname has no master
+ * @master will be NULL, but return value will still be 0 (success)).
+ */
+int
+virNetDevGetMaster(const char *ifname, char **master)
+{
+    int ret = -1;
+    void *nlData = NULL;
+    struct nlattr *tb[IFLA_MAX + 1] = {NULL, };
+
+    *master = NULL;
+
+    if (virNetlinkDumpLink(ifname, -1, &nlData, tb, 0, 0) < 0)
+        goto cleanup;
+
+    if (tb[IFLA_MASTER]) {
+        if (!(*master = virNetDevGetName(*(int *)RTA_DATA(tb[IFLA_MASTER]))))
+            goto cleanup;
+    }
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(nlData);
+    return ret;
+}
+
+
+#else
+
+
+int
+virNetDevGetMaster(const char *ifname, char **master)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("Unable to get device master from netlink on this platform"));
+    return -1;
+}
+
+
+#endif /* defined(__linux__) && defined(HAVE_LIBNL) */
+
+
 #if defined(SIOCGIFVLAN) && defined(HAVE_STRUCT_IFREQ) && HAVE_DECL_GET_VLAN_VID_CMD
 int virNetDevGetVLanID(const char *ifname, int *vlanid)
 {
