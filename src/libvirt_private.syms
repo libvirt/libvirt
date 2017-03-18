@@ -2107,6 +2107,7 @@ virNetDevOpenvswitchSetTimeout;
 
 
 # util/virnetdevtap.h
+virNetDevTapAttachBridge;
 virNetDevTapCreate;
 virNetDevTapCreateInBridgePort;
 virNetDevTapDelete;
