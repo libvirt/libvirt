@@ -283,12 +283,37 @@ fillXenCaps(virDomainCapsPtr domCaps)
 }
 #endif /* WITH_LIBXL */
 
+#ifdef WITH_BHYVE
+# include "bhyve/bhyve_capabilities.h"
+
+static int
+fillBhyveCaps(virDomainCapsPtr domCaps, unsigned int *bhyve_caps)
+{
+    virDomainCapsStringValuesPtr firmwares = NULL;
+    int ret = -1;
+
+    if (VIR_ALLOC(firmwares) < 0)
+        return -1;
+
+    if (fillStringValues(firmwares, "/foo/bar", "/foo/baz", NULL) < 0)
+        goto cleanup;
+
+    if (virBhyveDomainCapsFill(domCaps, *bhyve_caps, firmwares) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(firmwares);
+    return ret;
+}
+#endif /* WITH_BHYVE */
 
 enum testCapsType {
     CAPS_NONE,
     CAPS_ALL,
     CAPS_QEMU,
     CAPS_LIBXL,
+    CAPS_BHYVE,
 };
 
 struct testData {
@@ -343,6 +368,12 @@ test_virDomainCapsFormat(const void *opaque)
             goto cleanup;
 #endif
         break;
+    case CAPS_BHYVE:
+#if WITH_BHYVE
+        if (fillBhyveCaps(domCaps, data->capsOpaque) < 0)
+            goto cleanup;
+#endif
+        break;
     }
 
     if (!(domCapsXML = virDomainCapsFormat(domCaps)))
@@ -363,6 +394,10 @@ static int
 mymain(void)
 {
     int ret = 0;
+
+#if WITH_BHYVE
+    unsigned int bhyve_caps = 0;
+#endif
 
 #if WITH_QEMU
     virQEMUDriverConfigPtr cfg = virQEMUDriverConfigNew(false);
@@ -428,6 +463,26 @@ mymain(void)
             "x86_64", VIR_DOMAIN_VIRT_UML, CAPS_NONE);
     DO_TEST("full", "/bin/emulatorbin", "my-machine-type",
             "x86_64", VIR_DOMAIN_VIRT_KVM, CAPS_ALL);
+
+#define DO_TEST_BHYVE(Name, Emulator, BhyveCaps, Type) \
+    do {                                                                \
+        char *name = NULL;                                              \
+        if (virAsprintf(&name, "bhyve_%s.x86_64", Name) < 0) {          \
+             ret = -1;                                                  \
+             break;                                                     \
+        }                                                               \
+        struct testData data = {                                        \
+            .name = name,                                               \
+            .emulator = Emulator,                                       \
+            .arch = "x86_64",                                           \
+            .type = Type,                                               \
+            .capsType = CAPS_BHYVE,                                     \
+            .capsOpaque = BhyveCaps,                                    \
+        };                                                              \
+        if (virTestRun(name, test_virDomainCapsFormat, &data) < 0)      \
+            ret = -1;                                                   \
+        VIR_FREE(name);                                                 \
+    } while (0)
 
 #if WITH_QEMU
 
@@ -497,6 +552,16 @@ mymain(void)
                   "xenfv", "x86_64", VIR_DOMAIN_VIRT_XEN);
 
 #endif /* WITH_LIBXL */
+
+#if WITH_BHYVE
+    DO_TEST_BHYVE("basic", "/usr/sbin/bhyve", &bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
+
+    bhyve_caps |= BHYVE_CAP_LPC_BOOTROM;
+    DO_TEST_BHYVE("uefi", "/usr/sbin/bhyve", &bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
+
+    bhyve_caps |= BHYVE_CAP_FBUF;
+    DO_TEST_BHYVE("fbuf", "/usr/sbin/bhyve", &bhyve_caps, VIR_DOMAIN_VIRT_BHYVE);
+#endif /* WITH_BHYVE */
 
     return ret;
 }

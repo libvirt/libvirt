@@ -964,6 +964,10 @@ domaincapstest_SOURCES += testutilsxen.c testutilsxen.h
 domaincapstest_LDADD += ../src/libvirt_driver_libxl_impl.la $(GNULIB_LIBS)
 endif WITH_LIBXL
 
+if WITH_BHYVE
+domaincapstest_LDADD += ../src/libvirt_driver_bhyve_impl.la $(GNULIB_LIBS)
+endif WITH_BHYVE
+
 virnetmessagetest_SOURCES = \
 	virnetmessagetest.c testutils.h testutils.c
 virnetmessagetest_CFLAGS = $(XDR_CFLAGS) $(AM_CFLAGS)

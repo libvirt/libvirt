@@ -87,6 +87,44 @@ virBhyveCapsBuild(void)
     return NULL;
 }
 
+int
+virBhyveDomainCapsFill(virDomainCapsPtr caps,
+                       unsigned int bhyvecaps,
+                       virDomainCapsStringValuesPtr firmwares)
+{
+    caps->disk.supported = true;
+    VIR_DOMAIN_CAPS_ENUM_SET(caps->disk.diskDevice,
+                             VIR_DOMAIN_DISK_DEVICE_DISK,
+                             VIR_DOMAIN_DISK_DEVICE_CDROM);
+
+    VIR_DOMAIN_CAPS_ENUM_SET(caps->disk.bus,
+                             VIR_DOMAIN_DISK_BUS_SATA,
+                             VIR_DOMAIN_DISK_BUS_VIRTIO);
+
+    caps->os.supported = true;
+
+    if (bhyvecaps & BHYVE_CAP_LPC_BOOTROM) {
+        caps->os.loader.supported = true;
+        VIR_DOMAIN_CAPS_ENUM_SET(caps->os.loader.type,
+                                 VIR_DOMAIN_LOADER_TYPE_PFLASH);
+        VIR_DOMAIN_CAPS_ENUM_SET(caps->os.loader.readonly,
+                                 VIR_TRISTATE_BOOL_YES);
+
+        caps->os.loader.values.values = firmwares->values;
+        caps->os.loader.values.nvalues = firmwares->nvalues;
+    }
+
+
+    if (bhyvecaps & BHYVE_CAP_FBUF) {
+        caps->graphics.supported = true;
+        caps->video.supported = true;
+        VIR_DOMAIN_CAPS_ENUM_SET(caps->graphics.type, VIR_DOMAIN_GRAPHICS_TYPE_VNC);
+        VIR_DOMAIN_CAPS_ENUM_SET(caps->video.modelType, VIR_DOMAIN_VIDEO_TYPE_GOP);
+    }
+    return 0;
+}
+
+
 virDomainCapsPtr
 virBhyveDomainCapsBuild(bhyveConnPtr conn,
                         const char *emulatorbin,
@@ -101,6 +139,7 @@ virBhyveDomainCapsBuild(bhyveConnPtr conn,
     size_t firmwares_alloc = 0;
     virBhyveDriverConfigPtr cfg = virBhyveDriverGetConfig(conn);
     const char *firmware_dir = cfg->firmwareDir;
+    virDomainCapsStringValuesPtr firmwares = NULL;
 
     if (!(caps = virDomainCapsNew(emulatorbin, machine, arch, virttype)))
         goto cleanup;
@@ -111,46 +150,31 @@ virBhyveDomainCapsBuild(bhyveConnPtr conn,
         goto cleanup;
     }
 
-    caps->os.supported = true;
-    caps->os.loader.supported = true;
-    VIR_DOMAIN_CAPS_ENUM_SET(caps->os.loader.type,
-                             VIR_DOMAIN_LOADER_TYPE_PFLASH);
-    VIR_DOMAIN_CAPS_ENUM_SET(caps->os.loader.readonly,
-                             VIR_TRISTATE_BOOL_YES);
+    if (VIR_ALLOC(firmwares) < 0)
+        goto cleanup;
 
     if (virDirOpenIfExists(&dir, firmware_dir) > 0) {
         while ((virDirRead(dir, &entry, firmware_dir)) > 0) {
-            if (VIR_RESIZE_N(caps->os.loader.values.values,
-                firmwares_alloc, caps->os.loader.values.nvalues, 2) < 0)
+            if (VIR_RESIZE_N(firmwares->values,
+                firmwares_alloc, firmwares->nvalues, 1) < 0)
                 goto cleanup;
 
             if (virAsprintf(
-                    &caps->os.loader.values.values[caps->os.loader.values.nvalues],
+                    &firmwares->values[firmwares->nvalues],
                     "%s/%s", firmware_dir, entry->d_name) < 0)
                 goto cleanup;
 
-           caps->os.loader.values.nvalues++;
+            firmwares->nvalues++;
         }
     } else {
         VIR_WARN("Cannot open firmware directory %s", firmware_dir);
     }
 
-    caps->disk.supported = true;
-    VIR_DOMAIN_CAPS_ENUM_SET(caps->disk.diskDevice,
-                             VIR_DOMAIN_DISK_DEVICE_DISK,
-                             VIR_DOMAIN_DISK_DEVICE_CDROM);
+    if (virBhyveDomainCapsFill(caps, bhyve_caps, firmwares) < 0)
+        goto cleanup;
 
-    VIR_DOMAIN_CAPS_ENUM_SET(caps->disk.bus,
-                             VIR_DOMAIN_DISK_BUS_SATA,
-                             VIR_DOMAIN_DISK_BUS_VIRTIO);
-
-    if (bhyve_caps & BHYVE_CAP_FBUF) {
-        caps->graphics.supported = true;
-        caps->video.supported = true;
-        VIR_DOMAIN_CAPS_ENUM_SET(caps->graphics.type, VIR_DOMAIN_GRAPHICS_TYPE_VNC);
-        VIR_DOMAIN_CAPS_ENUM_SET(caps->video.modelType, VIR_DOMAIN_VIDEO_TYPE_GOP);
-    }
  cleanup:
+    VIR_FREE(firmwares);
     VIR_DIR_CLOSE(dir);
     virObjectUnref(cfg);
     return caps;

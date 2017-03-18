@@ -28,6 +28,9 @@
 # include "bhyve_utils.h"
 
 virCapsPtr virBhyveCapsBuild(void);
+int virBhyveDomainCapsFill(virDomainCapsPtr caps,
+                           unsigned int bhyvecaps,
+                           virDomainCapsStringValuesPtr firmwares);
 virDomainCapsPtr virBhyveDomainCapsBuild(bhyveConnPtr,
                                          const char *emulatorbin,
                                          const char *machine,

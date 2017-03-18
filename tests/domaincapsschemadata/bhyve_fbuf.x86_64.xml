@@ -1,0 +1,48 @@
+<domainCapabilities>
+  <path>/usr/sbin/bhyve</path>
+  <domain>bhyve</domain>
+  <arch>x86_64</arch>
+  <os supported='yes'>
+    <loader supported='yes'>
+      <value>/foo/bar</value>
+      <value>/foo/baz</value>
+      <enum name='type'>
+        <value>pflash</value>
+      </enum>
+      <enum name='readonly'>
+        <value>yes</value>
+      </enum>
+    </loader>
+  </os>
+  <cpu>
+    <mode name='host-passthrough' supported='no'/>
+    <mode name='host-model' supported='no'/>
+    <mode name='custom' supported='no'/>
+  </cpu>
+  <devices>
+    <disk supported='yes'>
+      <enum name='diskDevice'>
+        <value>disk</value>
+        <value>cdrom</value>
+      </enum>
+      <enum name='bus'>
+        <value>virtio</value>
+        <value>sata</value>
+      </enum>
+    </disk>
+    <graphics supported='yes'>
+      <enum name='type'>
+        <value>vnc</value>
+      </enum>
+    </graphics>
+    <video supported='yes'>
+      <enum name='modelType'>
+        <value>gop</value>
+      </enum>
+    </video>
+    <hostdev supported='no'/>
+  </devices>
+  <features>
+    <gic supported='no'/>
+  </features>
+</domainCapabilities>

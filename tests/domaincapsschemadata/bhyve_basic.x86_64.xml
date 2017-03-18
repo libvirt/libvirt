@@ -1,0 +1,31 @@
+<domainCapabilities>
+  <path>/usr/sbin/bhyve</path>
+  <domain>bhyve</domain>
+  <arch>x86_64</arch>
+  <os supported='yes'>
+    <loader supported='no'/>
+  </os>
+  <cpu>
+    <mode name='host-passthrough' supported='no'/>
+    <mode name='host-model' supported='no'/>
+    <mode name='custom' supported='no'/>
+  </cpu>
+  <devices>
+    <disk supported='yes'>
+      <enum name='diskDevice'>
+        <value>disk</value>
+        <value>cdrom</value>
+      </enum>
+      <enum name='bus'>
+        <value>virtio</value>
+        <value>sata</value>
+      </enum>
+    </disk>
+    <graphics supported='no'/>
+    <video supported='no'/>
+    <hostdev supported='no'/>
+  </devices>
+  <features>
+    <gic supported='no'/>
+  </features>
+</domainCapabilities>
