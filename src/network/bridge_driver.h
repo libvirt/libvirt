@@ -102,6 +102,4 @@ networkBandwidthUpdate(virDomainNetDefPtr iface ATTRIBUTE_UNUSED,
 
 # endif
 
-typedef char *(*networkDnsmasqLeaseFileNameFunc)(const char *netname);
-
 #endif /* __VIR_NETWORK__DRIVER_H */
