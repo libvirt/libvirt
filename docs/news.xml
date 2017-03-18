@@ -51,6 +51,14 @@
           enhanced check may also be requested when starting a new domain to
           ensure the virtual CPU exactly matches the one specified in the XML.
         </description>
+        <summary>
+          qemu: Add support to migrate using TLS
+        </summary>
+        <description>
+          Add the ability to migrate QEMU guests using TLS via a new flag
+          VIR_MIGRATE_TLS or virsh migrate '--tls' option. Requires using at
+          least QEMU 2.9.0 in order to work properly.
+        </description>
       </change>
     </section>
     <section title="Improvements">
