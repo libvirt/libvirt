@@ -414,22 +414,11 @@ nwfilterLookupByName(virConnectPtr conn,
 static int
 nwfilterConnectNumOfNWFilters(virConnectPtr conn)
 {
-    size_t i;
-    int n;
-
     if (virConnectNumOfNWFiltersEnsureACL(conn) < 0)
         return -1;
 
-    n = 0;
-    for (i = 0; i < driver->nwfilters.count; i++) {
-        virNWFilterObjPtr obj = driver->nwfilters.objs[i];
-        virNWFilterObjLock(obj);
-        if (virConnectNumOfNWFiltersCheckACL(conn, obj->def))
-            n++;
-        virNWFilterObjUnlock(obj);
-    }
-
-    return n;
+    return virNWFilterObjNumOfNWFilters(&driver->nwfilters, conn,
+                                        virConnectNumOfNWFiltersCheckACL);
 }
 
 

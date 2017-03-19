@@ -305,6 +305,26 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
 }
 
 
+int
+virNWFilterObjNumOfNWFilters(virNWFilterObjListPtr nwfilters,
+                             virConnectPtr conn,
+                             virNWFilterObjListFilter aclfilter)
+{
+    size_t i;
+    int nfilters = 0;
+
+    for (i = 0; i < nwfilters->count; i++) {
+        virNWFilterObjPtr obj = nwfilters->objs[i];
+        virNWFilterObjLock(obj);
+        if (!aclfilter || aclfilter(conn, obj->def))
+            nfilters++;
+        virNWFilterObjUnlock(obj);
+    }
+
+    return nfilters;
+}
+
+
 static virNWFilterObjPtr
 virNWFilterObjLoadConfig(virNWFilterObjListPtr nwfilters,
                          const char *configDir,
