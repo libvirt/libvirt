@@ -33,7 +33,7 @@
 VIR_LOG_INIT("conf.virnodedeviceobj");
 
 
-int
+static int
 virNodeDeviceObjHasCap(const virNodeDeviceObj *dev,
                        const char *cap)
 {
@@ -493,6 +493,39 @@ virNodeDeviceObjNumOfDevices(virNodeDeviceObjListPtr devs,
     }
 
     return ndevs;
+}
+
+
+int
+virNodeDeviceObjGetNames(virNodeDeviceObjListPtr devs,
+                         virConnectPtr conn,
+                         virNodeDeviceObjListFilter aclfilter,
+                         const char *cap,
+                         char **const names,
+                         int maxnames)
+{
+    int nnames = 0;
+    size_t i;
+
+    for (i = 0; i < devs->count && nnames < maxnames; i++) {
+        virNodeDeviceObjPtr obj = devs->objs[i];
+        virNodeDeviceObjLock(obj);
+        if (aclfilter && aclfilter(conn, obj->def) &&
+            (!cap || virNodeDeviceObjHasCap(obj, cap))) {
+            if (VIR_STRDUP(names[nnames++], obj->def->name) < 0) {
+                virNodeDeviceObjUnlock(obj);
+                goto failure;
+            }
+        }
+        virNodeDeviceObjUnlock(obj);
+    }
+
+    return nnames;
+
+ failure:
+    while (--nnames >= 0)
+        VIR_FREE(names[nnames]);
+    return -1;
 }
 
 

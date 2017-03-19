@@ -40,10 +40,6 @@ struct _virNodeDeviceDriverState {
 };
 
 
-int
-virNodeDeviceObjHasCap(const virNodeDeviceObj *dev,
-                       const char *cap);
-
 virNodeDeviceObjPtr
 virNodeDeviceObjFindByName(virNodeDeviceObjListPtr devs,
                            const char *name);
@@ -87,6 +83,14 @@ virNodeDeviceObjNumOfDevices(virNodeDeviceObjListPtr devs,
                              virConnectPtr conn,
                              const char *cap,
                              virNodeDeviceObjListFilter aclfilter);
+
+int
+virNodeDeviceObjGetNames(virNodeDeviceObjListPtr devs,
+                         virConnectPtr conn,
+                         virNodeDeviceObjListFilter aclfilter,
+                         const char *cap,
+                         char **const names,
+                         int maxnames);
 
 int
 virNodeDeviceObjListExport(virConnectPtr conn,

@@ -174,14 +174,15 @@ nodeNumOfDevices(virConnectPtr conn,
     return ndevs;
 }
 
+
 int
 nodeListDevices(virConnectPtr conn,
                 const char *cap,
-                char **const names, int maxnames,
+                char **const names,
+                int maxnames,
                 unsigned int flags)
 {
-    int ndevs = 0;
-    size_t i;
+    int nnames;
 
     if (virNodeListDevicesEnsureACL(conn) < 0)
         return -1;
@@ -189,29 +190,12 @@ nodeListDevices(virConnectPtr conn,
     virCheckFlags(0, -1);
 
     nodeDeviceLock();
-    for (i = 0; i < driver->devs.count && ndevs < maxnames; i++) {
-        virNodeDeviceObjPtr obj = driver->devs.objs[i];
-        virNodeDeviceObjLock(obj);
-        if (virNodeListDevicesCheckACL(conn, obj->def) &&
-            (cap == NULL ||
-             virNodeDeviceObjHasCap(obj, cap))) {
-            if (VIR_STRDUP(names[ndevs++], obj->def->name) < 0) {
-                virNodeDeviceObjUnlock(obj);
-                goto failure;
-            }
-        }
-        virNodeDeviceObjUnlock(obj);
-    }
+    nnames = virNodeDeviceObjGetNames(&driver->devs, conn,
+                                      virNodeListDevicesCheckACL,
+                                      cap, names, maxnames);
     nodeDeviceUnlock();
 
-    return ndevs;
-
- failure:
-    nodeDeviceUnlock();
-    --ndevs;
-    while (--ndevs >= 0)
-        VIR_FREE(names[ndevs]);
-    return -1;
+    return nnames;
 }
 
 int

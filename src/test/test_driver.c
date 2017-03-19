@@ -5382,6 +5382,7 @@ testNodeNumOfDevices(virConnectPtr conn,
     return ndevs;
 }
 
+
 static int
 testNodeListDevices(virConnectPtr conn,
                     const char *cap,
@@ -5390,34 +5391,18 @@ testNodeListDevices(virConnectPtr conn,
                     unsigned int flags)
 {
     testDriverPtr driver = conn->privateData;
-    int ndevs = 0;
-    size_t i;
+    int nnames = 0;
 
     virCheckFlags(0, -1);
 
     testDriverLock(driver);
-    for (i = 0; i < driver->devs.count && ndevs < maxnames; i++) {
-        virNodeDeviceObjLock(driver->devs.objs[i]);
-        if (cap == NULL ||
-            virNodeDeviceObjHasCap(driver->devs.objs[i], cap)) {
-            if (VIR_STRDUP(names[ndevs++], driver->devs.objs[i]->def->name) < 0) {
-                virNodeDeviceObjUnlock(driver->devs.objs[i]);
-                goto failure;
-            }
-        }
-        virNodeDeviceObjUnlock(driver->devs.objs[i]);
-    }
+    nnames = virNodeDeviceObjGetNames(&driver->devs, conn, NULL,
+                                     cap, names, maxnames);
     testDriverUnlock(driver);
 
-    return ndevs;
-
- failure:
-    testDriverUnlock(driver);
-    --ndevs;
-    while (--ndevs >= 0)
-        VIR_FREE(names[ndevs]);
-    return -1;
+    return nnames;
 }
+
 
 static virNodeDevicePtr
 testNodeDeviceLookupByName(virConnectPtr conn, const char *name)
