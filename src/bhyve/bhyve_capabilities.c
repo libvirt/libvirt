@@ -217,6 +217,34 @@ virBhyveProbeGrubCaps(virBhyveGrubCapsFlags *caps)
 }
 
 static int
+bhyveProbeCapsDeviceHelper(unsigned int *caps,
+                           char *binary,
+                           const char *bus,
+                           const char *device,
+                           const char *errormsg,
+                           unsigned int flag)
+{
+    char *error;
+    virCommandPtr cmd = NULL;
+    int ret = -1, exit;
+
+    cmd = virCommandNew(binary);
+    virCommandAddArgList(cmd, bus, device, NULL);
+    virCommandSetErrorBuffer(cmd, &error);
+    if (virCommandRun(cmd, &exit) < 0)
+        goto cleanup;
+
+    if (strstr(error, errormsg) == NULL)
+        *caps |= flag;
+
+    ret = 0;
+ cleanup:
+    VIR_FREE(error);
+    virCommandFree(cmd);
+    return ret;
+}
+
+static int
 bhyveProbeCapsRTC_UTC(unsigned int *caps, char *binary)
 {
     char *help;
@@ -243,95 +271,43 @@ bhyveProbeCapsRTC_UTC(unsigned int *caps, char *binary)
 static int
 bhyveProbeCapsAHCI32Slot(unsigned int *caps, char *binary)
 {
-    char *error;
-    virCommandPtr cmd = NULL;
-    int ret = 0, exit;
-
-    cmd = virCommandNew(binary);
-    virCommandAddArgList(cmd, "-s", "0,ahci", NULL);
-    virCommandSetErrorBuffer(cmd, &error);
-    if (virCommandRun(cmd, &exit) < 0) {
-        ret = -1;
-        goto out;
-    }
-
-    if (strstr(error, "pci slot 0:0: unknown device \"ahci\"") == NULL)
-        *caps |= BHYVE_CAP_AHCI32SLOT;
-
- out:
-    VIR_FREE(error);
-    virCommandFree(cmd);
-    return ret;
+    return bhyveProbeCapsDeviceHelper(caps, binary,
+                                      "-s",
+                                      "0,ahci",
+                                      "pci slot 0:0: unknown device \"ahci\"",
+                                      BHYVE_CAP_AHCI32SLOT);
 }
+
 
 static int
 bhyveProbeCapsNetE1000(unsigned int *caps, char *binary)
 {
-    char *error;
-    virCommandPtr cmd = NULL;
-    int ret = -1, exit;
-
-    cmd = virCommandNew(binary);
-    virCommandAddArgList(cmd, "-s", "0,e1000", NULL);
-    virCommandSetErrorBuffer(cmd, &error);
-    if (virCommandRun(cmd, &exit) < 0)
-        goto cleanup;
-
-    if (strstr(error, "pci slot 0:0: unknown device \"e1000\"") == NULL)
-        *caps |= BHYVE_CAP_NET_E1000;
-
-    ret = 0;
- cleanup:
-    VIR_FREE(error);
-    virCommandFree(cmd);
-    return ret;
+    return bhyveProbeCapsDeviceHelper(caps, binary,
+                                      "-s",
+                                      "0,e1000",
+                                      "pci slot 0:0: unknown device \"e1000\"",
+                                      BHYVE_CAP_NET_E1000);
 }
 
 static int
 bhyveProbeCapsLPC_Bootrom(unsigned int *caps, char *binary)
 {
-    char *error;
-    virCommandPtr cmd = NULL;
-    int ret = -1, exit;
-
-    cmd = virCommandNew(binary);
-    virCommandAddArgList(cmd, "-l", "bootrom", NULL);
-    virCommandSetErrorBuffer(cmd, &error);
-    if (virCommandRun(cmd, &exit) < 0)
-        goto cleanup;
-
-    if (strstr(error, "bhyve: invalid lpc device configuration 'bootrom'") == NULL)
-        *caps |= BHYVE_CAP_LPC_BOOTROM;
-
-    ret = 0;
- cleanup:
-    VIR_FREE(error);
-    virCommandFree(cmd);
-    return ret;
+    return bhyveProbeCapsDeviceHelper(caps, binary,
+                                      "-l",
+                                      "bootrom",
+                                      "bhyve: invalid lpc device configuration 'bootrom'",
+                                      BHYVE_CAP_LPC_BOOTROM);
 }
 
 
 static int
 bhyveProbeCapsFramebuffer(unsigned int *caps, char *binary)
 {
-    char *error;
-    virCommandPtr cmd = NULL;
-    int ret = -1, exit;
-
-    cmd = virCommandNew(binary);
-    virCommandAddArgList(cmd, "-s", "0,fbuf", NULL);
-    virCommandSetErrorBuffer(cmd, &error);
-    if (virCommandRun(cmd, &exit) < 0)
-        goto cleanup;
-
-    if (strstr(error, "pci slot 0:0: unknown device \"fbuf\"") == NULL)
-        *caps |= BHYVE_CAP_FBUF;
-
-    ret = 0;
- cleanup:
-    VIR_FREE(error);
-    virCommandFree(cmd);
-    return ret;
+    return bhyveProbeCapsDeviceHelper(caps, binary,
+                                      "-s",
+                                      "0,fbuf",
+                                      "pci slot 0:0: unknown device \"fbuf\"",
+                                      BHYVE_CAP_FBUF);
 }
 
 int
