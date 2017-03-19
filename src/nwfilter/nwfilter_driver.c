@@ -425,36 +425,19 @@ nwfilterConnectNumOfNWFilters(virConnectPtr conn)
 static int
 nwfilterConnectListNWFilters(virConnectPtr conn,
                              char **const names,
-                             int nnames)
+                             int maxnames)
 {
-    int got = 0;
-    size_t i;
+    int nnames;
 
     if (virConnectListNWFiltersEnsureACL(conn) < 0)
         return -1;
 
     nwfilterDriverLock();
-    for (i = 0; i < driver->nwfilters.count && got < nnames; i++) {
-        virNWFilterObjPtr obj = driver->nwfilters.objs[i];
-        virNWFilterObjLock(obj);
-        if (virConnectListNWFiltersCheckACL(conn, obj->def)) {
-            if (VIR_STRDUP(names[got], obj->def->name) < 0) {
-                virNWFilterObjUnlock(obj);
-                goto cleanup;
-            }
-            got++;
-        }
-        virNWFilterObjUnlock(obj);
-    }
+    nnames = virNWFilterObjGetNames(&driver->nwfilters, conn,
+                                    virConnectListNWFiltersCheckACL,
+                                    names, maxnames);
     nwfilterDriverUnlock();
-    return got;
-
- cleanup:
-    nwfilterDriverUnlock();
-    for (i = 0; i < got; i++)
-        VIR_FREE(names[i]);
-    memset(names, 0, nnames * sizeof(*names));
-    return -1;
+    return nnames;
 }
 
 

@@ -962,6 +962,7 @@ virNodeDeviceObjUnlock;
 virNWFilterObjAssignDef;
 virNWFilterObjFindByName;
 virNWFilterObjFindByUUID;
+virNWFilterObjGetNames;
 virNWFilterObjListFree;
 virNWFilterObjLoadAllConfigs;
 virNWFilterObjLock;
