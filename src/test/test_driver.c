@@ -5372,15 +5372,11 @@ testNodeNumOfDevices(virConnectPtr conn,
 {
     testDriverPtr driver = conn->privateData;
     int ndevs = 0;
-    size_t i;
 
     virCheckFlags(0, -1);
 
     testDriverLock(driver);
-    for (i = 0; i < driver->devs.count; i++)
-        if ((cap == NULL) ||
-            virNodeDeviceObjHasCap(driver->devs.objs[i], cap))
-            ++ndevs;
+    ndevs = virNodeDeviceObjNumOfDevices(&driver->devs, conn, cap, NULL);
     testDriverUnlock(driver);
 
     return ndevs;

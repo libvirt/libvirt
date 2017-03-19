@@ -160,7 +160,6 @@ nodeNumOfDevices(virConnectPtr conn,
                  unsigned int flags)
 {
     int ndevs = 0;
-    size_t i;
 
     if (virNodeNumOfDevicesEnsureACL(conn) < 0)
         return -1;
@@ -168,15 +167,8 @@ nodeNumOfDevices(virConnectPtr conn,
     virCheckFlags(0, -1);
 
     nodeDeviceLock();
-    for (i = 0; i < driver->devs.count; i++) {
-        virNodeDeviceObjPtr obj = driver->devs.objs[i];
-        virNodeDeviceObjLock(obj);
-        if (virNodeNumOfDevicesCheckACL(conn, obj->def) &&
-            ((cap == NULL) ||
-             virNodeDeviceObjHasCap(obj, cap)))
-            ++ndevs;
-        virNodeDeviceObjUnlock(obj);
-    }
+    ndevs = virNodeDeviceObjNumOfDevices(&driver->devs, conn, cap,
+                                         virNodeNumOfDevicesCheckACL);
     nodeDeviceUnlock();
 
     return ndevs;

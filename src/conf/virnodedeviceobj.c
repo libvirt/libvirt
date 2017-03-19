@@ -474,6 +474,28 @@ virNodeDeviceCapMatch(virNodeDeviceObjPtr devobj,
 }
 
 
+int
+virNodeDeviceObjNumOfDevices(virNodeDeviceObjListPtr devs,
+                             virConnectPtr conn,
+                             const char *cap,
+                             virNodeDeviceObjListFilter aclfilter)
+{
+    size_t i;
+    int ndevs = 0;
+
+    for (i = 0; i < devs->count; i++) {
+        virNodeDeviceObjPtr obj = devs->objs[i];
+        virNodeDeviceObjLock(obj);
+        if (aclfilter && aclfilter(conn, obj->def) &&
+            (!cap || virNodeDeviceObjHasCap(obj, cap)))
+            ++ndevs;
+        virNodeDeviceObjUnlock(obj);
+    }
+
+    return ndevs;
+}
+
+
 #define MATCH(FLAG) ((flags & (VIR_CONNECT_LIST_NODE_DEVICES_CAP_ ## FLAG)) && \
                      virNodeDeviceCapMatch(devobj, VIR_NODE_DEV_CAP_ ## FLAG))
 static bool

@@ -83,6 +83,12 @@ typedef bool
                               virNodeDeviceDefPtr def);
 
 int
+virNodeDeviceObjNumOfDevices(virNodeDeviceObjListPtr devs,
+                             virConnectPtr conn,
+                             const char *cap,
+                             virNodeDeviceObjListFilter aclfilter);
+
+int
 virNodeDeviceObjListExport(virConnectPtr conn,
                            virNodeDeviceObjList devobjs,
                            virNodeDevicePtr **devices,
