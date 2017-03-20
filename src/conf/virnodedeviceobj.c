@@ -560,7 +560,7 @@ virNodeDeviceMatch(virNodeDeviceObjPtr devobj,
 
 int
 virNodeDeviceObjListExport(virConnectPtr conn,
-                           virNodeDeviceObjList devobjs,
+                           virNodeDeviceObjListPtr devobjs,
                            virNodeDevicePtr **devices,
                            virNodeDeviceObjListFilter filter,
                            unsigned int flags)
@@ -571,11 +571,11 @@ virNodeDeviceObjListExport(virConnectPtr conn,
     int ret = -1;
     size_t i;
 
-    if (devices && VIR_ALLOC_N(tmp_devices, devobjs.count + 1) < 0)
+    if (devices && VIR_ALLOC_N(tmp_devices, devobjs->count + 1) < 0)
         goto cleanup;
 
-    for (i = 0; i < devobjs.count; i++) {
-        virNodeDeviceObjPtr devobj = devobjs.objs[i];
+    for (i = 0; i < devobjs->count; i++) {
+        virNodeDeviceObjPtr devobj = devobjs->objs[i];
         virNodeDeviceObjLock(devobj);
         if ((!filter || filter(conn, devobj->def)) &&
             virNodeDeviceMatch(devobj, flags)) {

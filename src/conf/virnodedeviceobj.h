@@ -94,7 +94,7 @@ virNodeDeviceObjGetNames(virNodeDeviceObjListPtr devs,
 
 int
 virNodeDeviceObjListExport(virConnectPtr conn,
-                           virNodeDeviceObjList devobjs,
+                           virNodeDeviceObjListPtr devobjs,
                            virNodeDevicePtr **devices,
                            virNodeDeviceObjListFilter filter,
                            unsigned int flags);
