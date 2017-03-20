@@ -963,6 +963,7 @@ virNWFilterObjAssignDef;
 virNWFilterObjFindByName;
 virNWFilterObjFindByUUID;
 virNWFilterObjGetNames;
+virNWFilterObjListExport;
 virNWFilterObjListFree;
 virNWFilterObjLoadAllConfigs;
 virNWFilterObjLock;

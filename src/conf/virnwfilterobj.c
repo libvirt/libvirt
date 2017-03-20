@@ -358,6 +358,56 @@ virNWFilterObjGetNames(virNWFilterObjListPtr nwfilters,
 }
 
 
+int
+virNWFilterObjListExport(virConnectPtr conn,
+                         virNWFilterObjListPtr nwfilters,
+                         virNWFilterPtr **filters,
+                         virNWFilterObjListFilter aclfilter)
+{
+    virNWFilterPtr *tmp_filters = NULL;
+    int nfilters = 0;
+    virNWFilterPtr filter = NULL;
+    virNWFilterObjPtr obj = NULL;
+    size_t i;
+    int ret = -1;
+
+    if (!filters) {
+        ret = nwfilters->count;
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(tmp_filters, nwfilters->count + 1) < 0)
+        goto cleanup;
+
+    for (i = 0; i < nwfilters->count; i++) {
+        obj = nwfilters->objs[i];
+        virNWFilterObjLock(obj);
+        if (!aclfilter || aclfilter(conn, obj->def)) {
+            if (!(filter = virGetNWFilter(conn, obj->def->name,
+                                          obj->def->uuid))) {
+                virNWFilterObjUnlock(obj);
+                goto cleanup;
+            }
+            tmp_filters[nfilters++] = filter;
+        }
+        virNWFilterObjUnlock(obj);
+    }
+
+    *filters = tmp_filters;
+    tmp_filters = NULL;
+    ret = nfilters;
+
+ cleanup:
+    if (tmp_filters) {
+        for (i = 0; i < nfilters; i ++)
+            virObjectUnref(tmp_filters[i]);
+    }
+    VIR_FREE(tmp_filters);
+
+    return ret;
+}
+
+
 static virNWFilterObjPtr
 virNWFilterObjLoadConfig(virNWFilterObjListPtr nwfilters,
                          const char *configDir,

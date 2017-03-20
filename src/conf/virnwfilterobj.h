@@ -98,6 +98,12 @@ virNWFilterObjGetNames(virNWFilterObjListPtr nwfilters,
                        int maxnames);
 
 int
+virNWFilterObjListExport(virConnectPtr conn,
+                         virNWFilterObjListPtr nwfilters,
+                         virNWFilterPtr **filters,
+                         virNWFilterObjListFilter aclfilter);
+
+int
 virNWFilterObjLoadAllConfigs(virNWFilterObjListPtr nwfilters,
                              const char *configDir);
 
