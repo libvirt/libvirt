@@ -97,6 +97,7 @@ struct _qemuMonitorEventPanicInfo {
     } data;
 };
 
+char *qemuMonitorGuestPanicEventInfoFormatMsg(qemuMonitorEventPanicInfoPtr info);
 void qemuMonitorEventPanicInfoFree(qemuMonitorEventPanicInfoPtr info);
 
 typedef void (*qemuMonitorDestroyCallback)(qemuMonitorPtr mon,

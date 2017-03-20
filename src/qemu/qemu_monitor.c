@@ -4243,6 +4243,30 @@ qemuMonitorQueryNamedBlockNodes(qemuMonitorPtr mon)
 }
 
 
+char *
+qemuMonitorGuestPanicEventInfoFormatMsg(qemuMonitorEventPanicInfoPtr info)
+{
+    char *ret = NULL;
+
+    switch (info->type) {
+    case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_HYPERV:
+        ignore_value(virAsprintf(&ret,
+                                 "hyper-v: arg1='0x%llx', arg2='0x%llx', "
+                                 "arg3='0x%llx', arg4='0x%llx', arg5='0x%llx'",
+                                 info->data.hyperv.arg1, info->data.hyperv.arg2,
+                                 info->data.hyperv.arg3, info->data.hyperv.arg4,
+                                 info->data.hyperv.arg5));
+        break;
+
+    case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_NONE:
+    case QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_LAST:
+        break;
+    }
+
+    return ret;
+}
+
+
 void
 qemuMonitorEventPanicInfoFree(qemuMonitorEventPanicInfoPtr info)
 {
