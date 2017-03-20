@@ -3815,11 +3815,6 @@ qemuProcessVerifyCPUFeatures(virDomainDefPtr def,
 {
     int rc;
 
-    if (!def->cpu ||
-        (def->cpu->mode == VIR_CPU_MODE_CUSTOM &&
-         !def->cpu->model))
-        return 0;
-
     rc = virCPUCheckFeature(def->os.arch, def->cpu, "invtsc");
 
     if (rc < 0) {
@@ -3869,6 +3864,13 @@ qemuProcessUpdateLiveGuestCPU(virQEMUDriverPtr driver,
         if (qemuProcessVerifyKVMFeatures(def, cpu) < 0 ||
             qemuProcessVerifyHypervFeatures(def, cpu) < 0)
             goto cleanup;
+
+        if (!def->cpu ||
+            (def->cpu->mode == VIR_CPU_MODE_CUSTOM &&
+             !def->cpu->model)) {
+            ret = 0;
+            goto cleanup;
+        }
 
         if (qemuProcessVerifyCPUFeatures(def, cpu) < 0)
             goto cleanup;
