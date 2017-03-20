@@ -1411,16 +1411,14 @@ storagePoolNumOfVolumes(virStoragePoolPtr obj)
     return ret;
 }
 
+
 static int
 storagePoolListVolumes(virStoragePoolPtr obj,
                        char **const names,
                        int maxnames)
 {
     virStoragePoolObjPtr pool;
-    size_t i;
-    int n = 0;
-
-    memset(names, 0, maxnames * sizeof(*names));
+    int n = -1;
 
     if (!(pool = virStoragePoolObjFromStoragePool(obj)))
         return -1;
@@ -1434,24 +1432,12 @@ storagePoolListVolumes(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-    for (i = 0; i < pool->volumes.count && n < maxnames; i++) {
-        if (!virStoragePoolListVolumesCheckACL(obj->conn, pool->def,
-                                               pool->volumes.objs[i]))
-            continue;
-        if (VIR_STRDUP(names[n++], pool->volumes.objs[i]->name) < 0)
-            goto cleanup;
-    }
-
-    virStoragePoolObjUnlock(pool);
-    return n;
-
+    n = virStoragePoolObjVolumeGetNames(&pool->volumes, obj->conn, pool->def,
+                                        virStoragePoolListVolumesCheckACL,
+                                        names, maxnames);
  cleanup:
     virStoragePoolObjUnlock(pool);
-    for (n = 0; n < maxnames; n++)
-        VIR_FREE(names[n]);
-
-    memset(names, 0, maxnames * sizeof(*names));
-    return -1;
+    return n;
 }
 
 static int

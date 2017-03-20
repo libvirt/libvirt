@@ -4817,6 +4817,7 @@ testStoragePoolNumOfVolumes(virStoragePoolPtr pool)
     return ret;
 }
 
+
 static int
 testStoragePoolListVolumes(virStoragePoolPtr pool,
                            char **const names,
@@ -4824,13 +4825,10 @@ testStoragePoolListVolumes(virStoragePoolPtr pool,
 {
     testDriverPtr privconn = pool->conn->privateData;
     virStoragePoolObjPtr privpool;
-    size_t i = 0;
-    int n = 0;
-
-    memset(names, 0, maxnames * sizeof(*names));
+    int n = -1;
 
     if (!(privpool = testStoragePoolObjFindByName(privconn, pool->name)))
-        goto cleanup;
+        return -1;
 
     if (!virStoragePoolObjIsActive(privpool)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -4838,23 +4836,14 @@ testStoragePoolListVolumes(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-    for (i = 0; i < privpool->volumes.count && n < maxnames; i++) {
-        if (VIR_STRDUP(names[n++], privpool->volumes.objs[i]->name) < 0)
-            goto cleanup;
-    }
-
-    virStoragePoolObjUnlock(privpool);
-    return n;
+    n = virStoragePoolObjVolumeGetNames(&privpool->volumes, pool->conn,
+                                        privpool->def, NULL, names, maxnames);
 
  cleanup:
-    for (n = 0; n < maxnames; n++)
-        VIR_FREE(names[i]);
-
-    memset(names, 0, maxnames * sizeof(*names));
-    if (privpool)
-        virStoragePoolObjUnlock(privpool);
-    return -1;
+    virStoragePoolObjUnlock(privpool);
+    return n;
 }
+
 
 static int
 testStoragePoolListAllVolumes(virStoragePoolPtr obj,

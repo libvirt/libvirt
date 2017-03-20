@@ -119,6 +119,14 @@ virStoragePoolObjNumOfVolumes(virStorageVolDefListPtr volumes,
                               virStoragePoolDefPtr pooldef,
                               virStoragePoolVolumeACLFilter aclfilter);
 
+int
+virStoragePoolObjVolumeGetNames(virStorageVolDefListPtr volumes,
+                                virConnectPtr conn,
+                                virStoragePoolDefPtr pooldef,
+                                virStoragePoolVolumeACLFilter aclfilter,
+                                char **const names,
+                                int maxnames);
+
 virStoragePoolObjPtr
 virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
                            virStoragePoolDefPtr def);
