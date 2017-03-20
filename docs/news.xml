@@ -39,6 +39,19 @@
           the QEMU binary supports it.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: Add support for checking guest CPU ABI compatibility
+        </summary>
+        <description>
+          When migrating a domain to a different host, restoring a domain from
+          a file or reverting a snapshot libvirt will make sure the guest CPU
+          QEMU presents to the guest OS exactly matches the one provided on
+          the source host (or before the domain's state was saved). This
+          enhanced check may also be requested when starting a new domain to
+          ensure the virtual CPU exactly matches the one specified in the XML.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
