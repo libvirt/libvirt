@@ -95,6 +95,19 @@
           is exceeded. Currently only the qemu driver supports this.
         </description>
       </change>
+      <change>
+        <summary>
+           bhyve: Add support for UEFI boot ROM, VNC, and USB tablet
+        </summary>
+        <description>
+          The bhyve driver now supports booting using the UEFI boot ROM,
+          so non-FreeBSD guests that support UEFI could be booted without
+          using an external boot loader like grub-bhyve. Video is also
+          supported now, allowing to connect to guests via VNC and use
+          an USB tablet as an input device. Please refer to
+          the driver page for domain XML examples.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>

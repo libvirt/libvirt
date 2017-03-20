@@ -155,6 +155,57 @@ Note the addition of &lt;bootloader&gt;.
 &lt;/domain&gt;
 </pre>
 
+<h3>Example config (Linux UEFI guest, VNC, tablet)</h3>
+
+<p>This is an example to boot into Fedora 25 installation:</p>
+
+<pre>
+&lt;domain type='bhyve'&gt;
+    &lt;name&gt;fedora_uefi_vnc_tablet&lt;/name&gt;
+    &lt;memory unit='G'&gt;4&lt;/memory&gt;
+    &lt;vcpu&gt;2&lt;/vcpu&gt;
+    &lt;os&gt;
+       &lt;type&gt;hvm&lt;/type&gt;
+       <b>&lt;loader readonly=&quot;yes&quot; type=&quot;pflash&quot;&gt;/usr/local/share/uefi-firmware/BHYVE_UEFI.fd&lt;/loader&gt;</b>
+    &lt;/os&gt;
+    &lt;features&gt;
+      &lt;apic/&gt;
+      &lt;acpi/&gt;
+    &lt;/features&gt;
+    &lt;clock offset='utc'/&gt;
+    &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+    &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+    &lt;on_crash&gt;destroy&lt;/on_crash&gt;
+    &lt;devices&gt;
+      &lt;disk type='file' device='cdrom'&gt;
+        &lt;driver name='file' type='raw'/&gt;
+          &lt;source file='/path/to/Fedora-Workstation-Live-x86_64-25-1.3.iso'/&gt;
+        &lt;target dev='hdc' bus='sata'/&gt;
+        &lt;readonly/&gt;
+      &lt;/disk&gt;
+      &lt;disk type='file' device='disk'&gt;
+        &lt;driver name='file' type='raw'/&gt;
+        &lt;source file='/path/to/linux_uefi.img'/&gt;
+        &lt;target dev='hda' bus='sata'/&gt;
+        &lt;/disk&gt;
+      &lt;interface type='bridge'&gt;
+        &lt;model type='virtio'/&gt;
+        &lt;source bridge=&quot;virbr0&quot;/&gt;
+      &lt;/interface&gt;
+      &lt;serial type=&quot;nmdm&quot;&gt;
+        &lt;source master=&quot;/dev/nmdm0A&quot; slave=&quot;/dev/nmdm0B&quot;/&gt;
+      &lt;/serial&gt;
+      <b>&lt;graphics type='vnc' port='5904'&gt;
+        &lt;listen type='address' address='127.0.0.1'/&gt;
+      &lt;/graphics&gt;
+      &lt;controller type='usb' model='nec-xhci'/&gt;
+      &lt;input type='tablet' bus='usb'/&gt;</b>
+    &lt;/devices&gt;
+&lt;/domain&gt;
+</pre>
+
+<p>Please refer to the <a href="#uefi">UEFI</a> section for a more detailed explanation.</p>
+
 <h2><a name="usage">Guest usage / management</a></h2>
 
 <h3><a name="console">Connecting to a guest console</a></h3>
@@ -260,6 +311,49 @@ attempt to boot from the first partition in the disk image.</p>
 
 <p>Caveat: <code>bootloader_args</code> does not support any quoting.
 Filenames, etc, must not have spaces or they will be tokenized incorrectly.</p>
+
+<h3><a name="uefi">Using UEFI bootrom, VNC, and USB tables</a></h3>
+
+<p><span class="since">Since 3.2.0</span>, in addition to <a href="#grubbhyve">grub-bhyve</a>,
+non-FreeBSD guests could be also booted using an UEFI boot ROM, provided both guest OS and
+installed <code>bhyve(1)</code> version support UEFI. To use that, <code>loader</code>
+should be specified in the <code>os</code> section:</p>
+
+<pre>
+&lt;domain type='bhyve'&gt;
+    ...
+    &lt;os&gt;
+       &lt;type&gt;hvm&lt;/type&gt;
+       &lt;loader readonly="yes" type="pflash"&gt;/usr/local/share/uefi-firmware/BHYVE_UEFI.fd&lt;/loader&gt;
+    &lt;/os&gt;
+    ...
+</pre>
+
+<p>This uses the UEFI firmware provided by
+the <a href="https://www.freshports.org/sysutils/bhyve-firmware/">sysutils/bhyve-firmware</a>
+FreeBSD port.</p>
+
+<p>VNC and the tablet input device could be configured this way:</p>
+
+<pre>
+&lt;domain type='bhyve'&gt;
+    &lt;devices&gt;
+      ...
+      &lt;graphics type='vnc' port='5904'&gt;
+        &lt;listen type='address' address='127.0.0.1'/&gt;
+      &lt;/graphics&gt;
+      &lt;controller type='usb' model='nec-xhci'/&gt;
+      &lt;input type='tablet' bus='usb'/&gt;
+    &lt;/devices&gt;
+    ...
+&lt;/domain&gt;
+</pre>
+
+<p>This way, VNC will be accessible on <code>127.0.0.1:5904</code>.</p>
+
+<p>Please note that the tablet device requires to have an USB controller
+of the <code>nec-xhci</code> model. Currently, only a single controller of this
+type and a single tablet are supported per domain.</p>
 
 <h3><a name="clockconfig">Clock configuration</a></h3>
 
