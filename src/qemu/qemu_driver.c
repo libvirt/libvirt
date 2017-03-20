@@ -136,14 +136,6 @@ VIR_LOG_INIT("qemu.qemu_driver");
 
 #define QEMU_NB_BANDWIDTH_PARAM 7
 
-static void processWatchdogEvent(virQEMUDriverPtr driver,
-                                 virDomainObjPtr vm,
-                                 int action);
-
-static void processGuestPanicEvent(virQEMUDriverPtr driver,
-                                   virDomainObjPtr vm,
-                                   int action);
-
 static void qemuProcessEventHandler(void *data, void *opaque);
 
 static int qemuStateCleanup(void);
@@ -154,15 +146,8 @@ static int qemuDomainObjStart(virConnectPtr conn,
                               unsigned int flags,
                               qemuDomainAsyncJob asyncJob);
 
-static int qemuDomainGetMaxVcpus(virDomainPtr dom);
-
 static int qemuDomainManagedSaveLoad(virDomainObjPtr vm,
                                      void *opaque);
-
-static int qemuOpenFile(virQEMUDriverPtr driver,
-                        virDomainObjPtr vm,
-                        const char *path, int oflags,
-                        bool *needUnlink, bool *bypassSecurityDriver);
 
 static int qemuOpenFileAs(uid_t fallback_uid, gid_t fallback_gid,
                           bool dynamicOwnership,
