@@ -1005,6 +1005,7 @@ virStoragePoolObjListFree;
 virStoragePoolObjLoadAllConfigs;
 virStoragePoolObjLoadAllState;
 virStoragePoolObjLock;
+virStoragePoolObjNumOfVolumes;
 virStoragePoolObjRemove;
 virStoragePoolObjSaveDef;
 virStoragePoolObjSourceFindDuplicate;

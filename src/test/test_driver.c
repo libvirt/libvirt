@@ -4808,7 +4808,8 @@ testStoragePoolNumOfVolumes(virStoragePoolPtr pool)
         goto cleanup;
     }
 
-    ret = privpool->volumes.count;
+    ret = virStoragePoolObjNumOfVolumes(&privpool->volumes, pool->conn,
+                                        privpool->def, NULL);
 
  cleanup:
     if (privpool)

@@ -108,6 +108,17 @@ virStorageVolDefFindByName(virStoragePoolObjPtr pool,
 void
 virStoragePoolObjClearVols(virStoragePoolObjPtr pool);
 
+typedef bool
+(*virStoragePoolVolumeACLFilter)(virConnectPtr conn,
+                                 virStoragePoolDefPtr pool,
+                                 virStorageVolDefPtr def);
+
+int
+virStoragePoolObjNumOfVolumes(virStorageVolDefListPtr volumes,
+                              virConnectPtr conn,
+                              virStoragePoolDefPtr pooldef,
+                              virStoragePoolVolumeACLFilter aclfilter);
+
 virStoragePoolObjPtr
 virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
                            virStoragePoolDefPtr def);

@@ -1390,7 +1390,6 @@ storagePoolNumOfVolumes(virStoragePoolPtr obj)
 {
     virStoragePoolObjPtr pool;
     int ret = -1;
-    size_t i;
 
     if (!(pool = virStoragePoolObjFromStoragePool(obj)))
         return -1;
@@ -1403,12 +1402,9 @@ storagePoolNumOfVolumes(virStoragePoolPtr obj)
                        _("storage pool '%s' is not active"), pool->def->name);
         goto cleanup;
     }
-    ret = 0;
-    for (i = 0; i < pool->volumes.count; i++) {
-        if (virStoragePoolNumOfVolumesCheckACL(obj->conn, pool->def,
-                                               pool->volumes.objs[i]))
-            ret++;
-    }
+
+    ret = virStoragePoolObjNumOfVolumes(&pool->volumes, obj->conn, pool->def,
+                                        virStoragePoolNumOfVolumesCheckACL);
 
  cleanup:
     virStoragePoolObjUnlock(pool);
