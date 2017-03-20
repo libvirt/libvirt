@@ -548,10 +548,62 @@ static void qemuMonitorJSONHandleResume(qemuMonitorPtr mon, virJSONValuePtr data
     qemuMonitorEmitResume(mon);
 }
 
-static void qemuMonitorJSONHandleGuestPanic(qemuMonitorPtr mon, virJSONValuePtr data ATTRIBUTE_UNUSED)
+
+static qemuMonitorEventPanicInfoPtr
+qemuMonitorJSONGuestPanicExtractInfoHyperv(virJSONValuePtr data)
 {
-    qemuMonitorEmitGuestPanic(mon);
+    qemuMonitorEventPanicInfoPtr ret;
+
+    if (VIR_ALLOC(ret) < 0)
+        return NULL;
+
+    ret->type = QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_HYPERV;
+
+    if (virJSONValueObjectGetNumberUlong(data, "arg1", &ret->data.hyperv.arg1) < 0 ||
+        virJSONValueObjectGetNumberUlong(data, "arg2", &ret->data.hyperv.arg2) < 0 ||
+        virJSONValueObjectGetNumberUlong(data, "arg3", &ret->data.hyperv.arg3) < 0 ||
+        virJSONValueObjectGetNumberUlong(data, "arg4", &ret->data.hyperv.arg4) < 0 ||
+        virJSONValueObjectGetNumberUlong(data, "arg5", &ret->data.hyperv.arg5) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("malformed hyperv panic data"));
+        goto error;
+    }
+
+    return ret;
+
+ error:
+    qemuMonitorEventPanicInfoFree(ret);
+    return NULL;
 }
+
+
+static qemuMonitorEventPanicInfoPtr
+qemuMonitorJSONGuestPanicExtractInfo(virJSONValuePtr data)
+{
+    const char *type = virJSONValueObjectGetString(data, "type");
+
+    if (STREQ_NULLABLE(type, "hyper-v"))
+        return qemuMonitorJSONGuestPanicExtractInfoHyperv(data);
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("unknown panic info type '%s'"), NULLSTR(type));
+    return NULL;
+}
+
+
+static void
+qemuMonitorJSONHandleGuestPanic(qemuMonitorPtr mon,
+                                virJSONValuePtr data)
+{
+    virJSONValuePtr infojson = virJSONValueObjectGetObject(data, "info");
+    qemuMonitorEventPanicInfoPtr info = NULL;
+
+    if (infojson)
+        info = qemuMonitorJSONGuestPanicExtractInfo(infojson);
+
+    qemuMonitorEmitGuestPanic(mon, info);
+}
+
 
 static void qemuMonitorJSONHandleRTCChange(qemuMonitorPtr mon, virJSONValuePtr data)
 {

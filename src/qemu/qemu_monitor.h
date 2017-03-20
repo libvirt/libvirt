@@ -70,6 +70,34 @@ struct _qemuMonitorMessage {
     void *passwordOpaque;
 };
 
+typedef enum {
+    QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_NONE = 0,
+    QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_HYPERV,
+
+    QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_LAST
+} qemuMonitorEventPanicInfoType;
+
+typedef struct _qemuMonitorEventPanicInfoHyperv qemuMonitorEventPanicInfoHyperv;
+typedef qemuMonitorEventPanicInfoHyperv *qemuMonitorEventPanicInfoHypervPtr;
+struct _qemuMonitorEventPanicInfoHyperv {
+    /* Hyper-V specific guest panic information (HV crash MSRs) */
+    unsigned long long arg1;
+    unsigned long long arg2;
+    unsigned long long arg3;
+    unsigned long long arg4;
+    unsigned long long arg5;
+};
+
+typedef struct _qemuMonitorEventPanicInfo qemuMonitorEventPanicInfo;
+typedef qemuMonitorEventPanicInfo *qemuMonitorEventPanicInfoPtr;
+struct _qemuMonitorEventPanicInfo {
+    qemuMonitorEventPanicInfoType type;
+    union {
+        qemuMonitorEventPanicInfoHyperv hyperv;
+    } data;
+};
+
+void qemuMonitorEventPanicInfoFree(qemuMonitorEventPanicInfoPtr info);
 
 typedef void (*qemuMonitorDestroyCallback)(qemuMonitorPtr mon,
                                            virDomainObjPtr vm,
@@ -167,6 +195,7 @@ typedef int (*qemuMonitorDomainPMSuspendDiskCallback)(qemuMonitorPtr mon,
                                                       void *opaque);
 typedef int (*qemuMonitorDomainGuestPanicCallback)(qemuMonitorPtr mon,
                                                    virDomainObjPtr vm,
+                                                   qemuMonitorEventPanicInfoPtr info,
                                                    void *opaque);
 typedef int (*qemuMonitorDomainDeviceDeletedCallback)(qemuMonitorPtr mon,
                                                       virDomainObjPtr vm,
@@ -346,7 +375,8 @@ int qemuMonitorEmitBlockJob(qemuMonitorPtr mon,
 int qemuMonitorEmitBalloonChange(qemuMonitorPtr mon,
                                  unsigned long long actual);
 int qemuMonitorEmitPMSuspendDisk(qemuMonitorPtr mon);
-int qemuMonitorEmitGuestPanic(qemuMonitorPtr mon);
+int qemuMonitorEmitGuestPanic(qemuMonitorPtr mon,
+                              qemuMonitorEventPanicInfoPtr info);
 int qemuMonitorEmitDeviceDeleted(qemuMonitorPtr mon,
                                  const char *devAlias);
 int qemuMonitorEmitNicRxFilterChanged(qemuMonitorPtr mon,
