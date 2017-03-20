@@ -249,6 +249,45 @@ bhyveBuildAHCIControllerArgStr(const virDomainDef *def,
 }
 
 static int
+bhyveBuildUSBControllerArgStr(const virDomainDef *def,
+                              virDomainControllerDefPtr controller,
+                              virCommandPtr cmd)
+{
+    size_t i;
+    int ndevices = 0;
+
+    for (i = 0; i < def->ninputs; i++) {
+        virDomainInputDefPtr input = def->inputs[i];
+
+        if (input->bus != VIR_DOMAIN_INPUT_BUS_USB) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("only USB input devices are supported"));
+            return -1;
+        }
+
+        if (input->type != VIR_DOMAIN_INPUT_TYPE_TABLET) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("only tablet input devices are supported"));
+            return -1;
+        }
+        ndevices++;
+    }
+
+    if (ndevices != 1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("only single input device is supported"));
+        return -1;
+    }
+
+    virCommandAddArg(cmd, "-s");
+    virCommandAddArgFormat(cmd, "%d:%d,xhci,tablet",
+                           controller->info.addr.pci.slot,
+                           controller->info.addr.pci.function);
+
+    return 0;
+}
+
+static int
 bhyveBuildVirtIODiskArgStr(const virDomainDef *def ATTRIBUTE_UNUSED,
                      virDomainDiskDefPtr disk,
                      virConnectPtr conn,
@@ -392,6 +431,7 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
      */
     size_t i;
     bool add_lpc = false;
+    int nusbcontrollers = 0;
 
     virCommandPtr cmd = virCommandNew(BHYVE);
 
@@ -474,6 +514,16 @@ virBhyveProcessBuildBhyveCmd(virConnectPtr conn,
                 break;
         case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
                 if (bhyveBuildAHCIControllerArgStr(def, controller, conn, cmd) < 0)
+                    goto error;
+                break;
+        case VIR_DOMAIN_CONTROLLER_TYPE_USB:
+                if (++nusbcontrollers > 1) {
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                       "%s", _("only single USB controller is supported"));
+                        goto error;
+                }
+
+                if (bhyveBuildUSBControllerArgStr(def, controller, cmd) < 0)
                     goto error;
                 break;
         }

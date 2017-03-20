@@ -118,6 +118,9 @@ mymain(void)
     DO_TEST_DIFFERENT("addr-no32devs-multiple-sata-disks");
     DO_TEST_FAILURE("addr-no32devs-more-than-32-sata-disks");
 
+    /* USB xhci tablet */
+    DO_TEST_DIFFERENT("input-xhci-tablet");
+
     virObjectUnref(driver.caps);
     virObjectUnref(driver.xmlopt);
 

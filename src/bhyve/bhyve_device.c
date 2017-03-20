@@ -106,7 +106,9 @@ bhyveAssignDevicePCISlots(virDomainDefPtr def,
 
     for (i = 0; i < def->ncontrollers; i++) {
         if ((def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI) ||
-            (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA)) {
+            (def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_SATA) ||
+            ((def->controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB) &&
+             (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI))) {
             if (def->controllers[i]->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT ||
                 !virDeviceInfoPCIAddressWanted(&def->controllers[i]->info))
                 continue;

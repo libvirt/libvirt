@@ -310,6 +310,18 @@ bhyveProbeCapsFramebuffer(unsigned int *caps, char *binary)
                                       BHYVE_CAP_FBUF);
 }
 
+
+static int
+bhyveProbeCapsXHCIController(unsigned int *caps, char *binary)
+{
+    return bhyveProbeCapsDeviceHelper(caps, binary,
+                                      "-s",
+                                      "0,xhci",
+                                      "pci slot 0:0: unknown device \"xhci\"",
+                                      BHYVE_CAP_FBUF);
+}
+
+
 int
 virBhyveProbeCaps(unsigned int *caps)
 {
@@ -335,6 +347,9 @@ virBhyveProbeCaps(unsigned int *caps)
         goto out;
 
     if ((ret = bhyveProbeCapsFramebuffer(caps, binary)))
+        goto out;
+
+    if ((ret = bhyveProbeCapsXHCIController(caps, binary)))
         goto out;
 
  out:
