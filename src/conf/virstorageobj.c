@@ -245,6 +245,53 @@ virStoragePoolObjVolumeGetNames(virStorageVolDefListPtr volumes,
 }
 
 
+int
+virStoragePoolObjVolumeListExport(virConnectPtr conn,
+                                  virStorageVolDefListPtr volumes,
+                                  virStoragePoolDefPtr pooldef,
+                                  virStorageVolPtr **vols,
+                                  virStoragePoolVolumeACLFilter aclfilter)
+{
+    int ret = -1;
+    size_t i;
+    virStorageVolPtr *tmp_vols = NULL;
+    virStorageVolPtr vol = NULL;
+    int nvols = 0;
+
+    /* Just returns the volumes count */
+    if (!vols) {
+        ret = volumes->count;
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(tmp_vols, volumes->count + 1) < 0)
+        goto cleanup;
+
+    for (i = 0; i < volumes->count; i++) {
+        virStorageVolDefPtr def = volumes->objs[i];
+        if (aclfilter && !aclfilter(conn, pooldef, def))
+            continue;
+        if (!(vol = virGetStorageVol(conn, pooldef->name, def->name, def->key,
+                                     NULL, NULL)))
+            goto cleanup;
+        tmp_vols[nvols++] = vol;
+    }
+
+    *vols = tmp_vols;
+    tmp_vols = NULL;
+    ret = nvols;
+
+ cleanup:
+    if (tmp_vols) {
+        for (i = 0; i < nvols; i++)
+            virObjectUnref(tmp_vols[i]);
+        VIR_FREE(tmp_vols);
+    }
+
+    return ret;
+}
+
+
 virStoragePoolObjPtr
 virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
                            virStoragePoolDefPtr def)

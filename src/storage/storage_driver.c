@@ -1440,16 +1440,13 @@ storagePoolListVolumes(virStoragePoolPtr obj,
     return n;
 }
 
+
 static int
 storagePoolListAllVolumes(virStoragePoolPtr pool,
                           virStorageVolPtr **vols,
                           unsigned int flags)
 {
     virStoragePoolObjPtr obj;
-    size_t i;
-    virStorageVolPtr *tmp_vols = NULL;
-    virStorageVolPtr vol = NULL;
-    int nvols = 0;
     int ret = -1;
 
     virCheckFlags(0, -1);
@@ -1466,38 +1463,12 @@ storagePoolListAllVolumes(virStoragePoolPtr pool,
         goto cleanup;
     }
 
-     /* Just returns the volumes count */
-    if (!vols) {
-        ret = obj->volumes.count;
-        goto cleanup;
-    }
+    ret = virStoragePoolObjVolumeListExport(pool->conn, &obj->volumes,
+                                            obj->def, vols,
+                                            virStoragePoolListAllVolumesCheckACL);
 
-    if (VIR_ALLOC_N(tmp_vols, obj->volumes.count + 1) < 0)
-        goto cleanup;
-
-    for (i = 0; i < obj->volumes.count; i++) {
-        if (!virStoragePoolListAllVolumesCheckACL(pool->conn, obj->def,
-                                                  obj->volumes.objs[i]))
-            continue;
-        if (!(vol = virGetStorageVol(pool->conn, obj->def->name,
-                                     obj->volumes.objs[i]->name,
-                                     obj->volumes.objs[i]->key,
-                                     NULL, NULL)))
-            goto cleanup;
-        tmp_vols[nvols++] = vol;
-    }
-
-    *vols = tmp_vols;
-    tmp_vols = NULL;
-    ret = nvols;
 
  cleanup:
-    if (tmp_vols) {
-        for (i = 0; i < nvols; i++)
-            virObjectUnref(tmp_vols[i]);
-        VIR_FREE(tmp_vols);
-    }
-
     virStoragePoolObjUnlock(obj);
 
     return ret;

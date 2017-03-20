@@ -4852,16 +4852,12 @@ testStoragePoolListAllVolumes(virStoragePoolPtr obj,
 {
     testDriverPtr privconn = obj->conn->privateData;
     virStoragePoolObjPtr pool;
-    size_t i;
-    virStorageVolPtr *tmp_vols = NULL;
-    virStorageVolPtr vol = NULL;
-    int nvols = 0;
     int ret = -1;
 
     virCheckFlags(0, -1);
 
     if (!(pool = testStoragePoolObjFindByUUID(privconn, obj->uuid)))
-        goto cleanup;
+        return -1;
 
     if (!virStoragePoolObjIsActive(pool)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -4869,39 +4865,11 @@ testStoragePoolListAllVolumes(virStoragePoolPtr obj,
         goto cleanup;
     }
 
-     /* Just returns the volumes count */
-    if (!vols) {
-        ret = pool->volumes.count;
-        goto cleanup;
-    }
-
-    if (VIR_ALLOC_N(tmp_vols, pool->volumes.count + 1) < 0)
-         goto cleanup;
-
-    for (i = 0; i < pool->volumes.count; i++) {
-        if (!(vol = virGetStorageVol(obj->conn, pool->def->name,
-                                     pool->volumes.objs[i]->name,
-                                     pool->volumes.objs[i]->key,
-                                     NULL, NULL)))
-            goto cleanup;
-        tmp_vols[nvols++] = vol;
-    }
-
-    *vols = tmp_vols;
-    tmp_vols = NULL;
-    ret = nvols;
+    ret = virStoragePoolObjVolumeListExport(obj->conn, &pool->volumes,
+                                            pool->def, vols, NULL);
 
  cleanup:
-    if (tmp_vols) {
-        for (i = 0; i < nvols; i++) {
-            if (tmp_vols[i])
-                virStorageVolFree(tmp_vols[i]);
-        }
-        VIR_FREE(tmp_vols);
-    }
-
-    if (pool)
-        virStoragePoolObjUnlock(pool);
+    virStoragePoolObjUnlock(pool);
 
     return ret;
 }

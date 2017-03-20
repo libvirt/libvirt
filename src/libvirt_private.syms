@@ -1011,6 +1011,7 @@ virStoragePoolObjSaveDef;
 virStoragePoolObjSourceFindDuplicate;
 virStoragePoolObjUnlock;
 virStoragePoolObjVolumeGetNames;
+virStoragePoolObjVolumeListExport;
 
 
 # cpu/cpu.h

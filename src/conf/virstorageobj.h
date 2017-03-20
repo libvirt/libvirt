@@ -127,6 +127,13 @@ virStoragePoolObjVolumeGetNames(virStorageVolDefListPtr volumes,
                                 char **const names,
                                 int maxnames);
 
+int
+virStoragePoolObjVolumeListExport(virConnectPtr conn,
+                                  virStorageVolDefListPtr volumes,
+                                  virStoragePoolDefPtr pooldef,
+                                  virStorageVolPtr **vols,
+                                  virStoragePoolVolumeACLFilter aclfilter);
+
 virStoragePoolObjPtr
 virStoragePoolObjAssignDef(virStoragePoolObjListPtr pools,
                            virStoragePoolDefPtr def);
