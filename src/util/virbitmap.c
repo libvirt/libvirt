@@ -647,7 +647,7 @@ virBitmapParseUnlimited(const char *str)
 
  error:
     virReportError(VIR_ERR_INVALID_ARG,
-                   _("Failed to parse bitmap '%s'"), str);
+                   _("Failed to parse bitmap '%s'"), NULLSTR(str));
     virBitmapFree(bitmap);
     return NULL;
 }
