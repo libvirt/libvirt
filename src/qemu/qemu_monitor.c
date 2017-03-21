@@ -910,8 +910,7 @@ qemuMonitorOpen(virDomainObjPtr vm,
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         hasSendFD = true;
         if ((fd = qemuMonitorOpenUnix(config->data.nix.path,
-                                      vm ? vm->pid : 0,
-                                      timeout)) < 0)
+                                      vm->pid, timeout)) < 0)
             return NULL;
         break;
 
