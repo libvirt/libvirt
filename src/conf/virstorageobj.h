@@ -191,7 +191,7 @@ virStoragePoolObjUnlock(virStoragePoolObjPtr obj);
 
 int
 virStoragePoolObjListExport(virConnectPtr conn,
-                            virStoragePoolObjList poolobjs,
+                            virStoragePoolObjListPtr poolobjs,
                             virStoragePoolPtr **pools,
                             virStoragePoolObjListFilter filter,
                             unsigned int flags);

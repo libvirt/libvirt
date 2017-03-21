@@ -1099,7 +1099,7 @@ virStoragePoolMatch(virStoragePoolObjPtr poolobj,
 
 int
 virStoragePoolObjListExport(virConnectPtr conn,
-                            virStoragePoolObjList poolobjs,
+                            virStoragePoolObjListPtr poolobjs,
                             virStoragePoolPtr **pools,
                             virStoragePoolObjListFilter filter,
                             unsigned int flags)
@@ -1110,11 +1110,11 @@ virStoragePoolObjListExport(virConnectPtr conn,
     int ret = -1;
     size_t i;
 
-    if (pools && VIR_ALLOC_N(tmp_pools, poolobjs.count + 1) < 0)
+    if (pools && VIR_ALLOC_N(tmp_pools, poolobjs->count + 1) < 0)
         goto cleanup;
 
-    for (i = 0; i < poolobjs.count; i++) {
-        virStoragePoolObjPtr poolobj = poolobjs.objs[i];
+    for (i = 0; i < poolobjs->count; i++) {
+        virStoragePoolObjPtr poolobj = poolobjs->objs[i];
         virStoragePoolObjLock(poolobj);
         if ((!filter || filter(conn, poolobj->def)) &&
             virStoragePoolMatch(poolobj, flags)) {

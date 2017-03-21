@@ -4177,7 +4177,7 @@ testConnectListAllStoragePools(virConnectPtr conn,
     virCheckFlags(VIR_CONNECT_LIST_STORAGE_POOLS_FILTERS_ALL, -1);
 
     testDriverLock(privconn);
-    ret = virStoragePoolObjListExport(conn, privconn->pools, pools,
+    ret = virStoragePoolObjListExport(conn, &privconn->pools, pools,
                                       NULL, flags);
     testDriverUnlock(privconn);
 

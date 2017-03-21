@@ -2647,7 +2647,7 @@ storageConnectListAllStoragePools(virConnectPtr conn,
         goto cleanup;
 
     storageDriverLock();
-    ret = virStoragePoolObjListExport(conn, driver->pools, pools,
+    ret = virStoragePoolObjListExport(conn, &driver->pools, pools,
                                       virConnectListAllStoragePoolsCheckACL,
                                       flags);
     storageDriverUnlock();
