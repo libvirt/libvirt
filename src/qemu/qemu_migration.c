@@ -3617,11 +3617,13 @@ qemuMigrationRun(virQEMUDriverPtr driver,
         if (persist_xml) {
             persistDef = qemuMigrationPrepareDef(driver, persist_xml,
                                                  NULL, NULL);
-            if (!persistDef)
-                goto cleanup;
         } else {
-            persistDef = vm->newDef;
+            persistDef = qemuDomainDefCopy(driver, vm->newDef,
+                                           VIR_DOMAIN_XML_SECURE |
+                                           VIR_DOMAIN_XML_MIGRATABLE);
         }
+        if (!persistDef)
+            goto cleanup;
     }
 
     mig = qemuMigrationEatCookie(driver, vm, cookiein, cookieinlen,
@@ -3868,14 +3870,13 @@ qemuMigrationRun(virQEMUDriverPtr driver,
                    QEMU_MIGRATION_COOKIE_STATS;
 
     if (ret == 0 &&
-        (qemuMigrationCookieAddPersistent(mig, persistDef) < 0 ||
+        (qemuMigrationCookieAddPersistent(mig, &persistDef) < 0 ||
          qemuMigrationBakeCookie(mig, driver, vm, cookieout,
                                  cookieoutlen, cookieFlags) < 0)) {
         VIR_WARN("Unable to encode migration cookie");
     }
 
-    if (persistDef != vm->newDef)
-        virDomainDefFree(persistDef);
+    virDomainDefFree(persistDef);
     qemuMigrationCookieFree(mig);
 
     if (events)
@@ -5365,10 +5366,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
     VIR_FREE(priv->origname);
     virDomainObjEndAPI(&vm);
-    if (mig) {
-        virDomainDefFree(qemuMigrationCookieGetPersistent(mig));
-        qemuMigrationCookieFree(mig);
-    }
+    qemuMigrationCookieFree(mig);
     if (orig_err) {
         virSetError(orig_err);
         virFreeError(orig_err);

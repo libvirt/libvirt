@@ -145,7 +145,7 @@ qemuMigrationCookieFree(qemuMigrationCookiePtr mig);
 
 int
 qemuMigrationCookieAddPersistent(qemuMigrationCookiePtr mig,
-                                 virDomainDefPtr def);
+                                 virDomainDefPtr *def);
 
 virDomainDefPtr
 qemuMigrationCookieGetPersistent(qemuMigrationCookiePtr mig);

@@ -99,6 +99,7 @@ qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
         return;
 
     qemuMigrationCookieGraphicsFree(mig->graphics);
+    virDomainDefFree(mig->persistent);
     qemuMigrationCookieNetworkFree(mig->network);
     qemuMigrationCookieNBDFree(mig->nbd);
 
@@ -385,7 +386,7 @@ qemuMigrationCookieAddLockstate(qemuMigrationCookiePtr mig,
 
 int
 qemuMigrationCookieAddPersistent(qemuMigrationCookiePtr mig,
-                                 virDomainDefPtr def)
+                                 virDomainDefPtr *def)
 {
     if (mig->flags & QEMU_MIGRATION_COOKIE_PERSISTENT) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -393,10 +394,11 @@ qemuMigrationCookieAddPersistent(qemuMigrationCookiePtr mig,
         return -1;
     }
 
-    if (!def)
+    if (!def || !*def)
         return 0;
 
-    mig->persistent = def;
+    mig->persistent = *def;
+    *def = NULL;
     mig->flags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
     mig->flagsMandatory |= QEMU_MIGRATION_COOKIE_PERSISTENT;
     return 0;
