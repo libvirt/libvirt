@@ -51,7 +51,8 @@ VIR_ENUM_IMPL(qemuMigrationCookieFlag,
               "cpu-hotplug");
 
 
-static void qemuMigrationCookieGraphicsFree(qemuMigrationCookieGraphicsPtr grap)
+static void
+qemuMigrationCookieGraphicsFree(qemuMigrationCookieGraphicsPtr grap)
 {
     if (!grap)
         return;
@@ -78,7 +79,8 @@ qemuMigrationCookieNetworkFree(qemuMigrationCookieNetworkPtr network)
 }
 
 
-static void qemuMigrationCookieNBDFree(qemuMigrationCookieNBDPtr nbd)
+static void
+qemuMigrationCookieNBDFree(qemuMigrationCookieNBDPtr nbd)
 {
     if (!nbd)
         return;
@@ -90,7 +92,8 @@ static void qemuMigrationCookieNBDFree(qemuMigrationCookieNBDPtr nbd)
 }
 
 
-void qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
+void
+qemuMigrationCookieFree(qemuMigrationCookiePtr mig)
 {
     if (!mig)
         return;
@@ -258,6 +261,7 @@ qemuMigrationCookieNetworkAlloc(virQEMUDriverPtr driver ATTRIBUTE_UNUSED,
     qemuMigrationCookieNetworkFree(mig);
     return NULL;
 }
+
 
 static qemuMigrationCookiePtr
 qemuMigrationCookieNew(virDomainObjPtr dom)
@@ -513,8 +517,9 @@ qemuMigrationCookieAddStatistics(qemuMigrationCookiePtr mig,
 }
 
 
-static void qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
-                                                 qemuMigrationCookieGraphicsPtr grap)
+static void
+qemuMigrationCookieGraphicsXMLFormat(virBufferPtr buf,
+                                     qemuMigrationCookieGraphicsPtr grap)
 {
     virBufferAsprintf(buf, "<graphics type='%s' port='%d' listen='%s'",
                       virDomainGraphicsTypeToString(grap->type),
@@ -754,8 +759,9 @@ qemuMigrationCookieXMLFormat(virQEMUDriverPtr driver,
 }
 
 
-static char *qemuMigrationCookieXMLFormatStr(virQEMUDriverPtr driver,
-                                             qemuMigrationCookiePtr mig)
+static char *
+qemuMigrationCookieXMLFormatStr(virQEMUDriverPtr driver,
+                                qemuMigrationCookiePtr mig)
 {
     virBuffer buf = VIR_BUFFER_INITIALIZER;
 
