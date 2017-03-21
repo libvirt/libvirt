@@ -34,8 +34,7 @@ int virNetDevBandwidthParse(virNetDevBandwidthPtr *bandwidth,
                             int net_type)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virNetDevBandwidthFormat(virNetDevBandwidthPtr def,
-                             virBufferPtr buf)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+                             virBufferPtr buf);
 
 void virDomainClearNetBandwidth(virDomainObjPtr vm)
     ATTRIBUTE_NONNULL(1);

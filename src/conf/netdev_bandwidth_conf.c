@@ -241,7 +241,7 @@ virNetDevBandwidthRateFormat(virNetDevBandwidthRatePtr def,
 }
 
 /**
- * virNetDevBandwidthDefFormat:
+ * virNetDevBandwidthFormat:
  * @def: Data source
  * @buf: Buffer to print to
  *
