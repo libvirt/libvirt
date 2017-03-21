@@ -79,8 +79,7 @@ virTypedParamsFilter(virTypedParameterPtr params,
                      int nparams,
                      const char *name,
                      virTypedParameterPtr **ret)
-    ATTRIBUTE_RETURN_CHECK  ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_RETURN_CHECK;
 
 
 int virTypedParameterAssign(virTypedParameterPtr param, const char *name,
