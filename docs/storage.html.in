@@ -83,47 +83,7 @@
     <p>
       Libvirt supports the following storage pool types:
     </p>
-    <ul>
-      <li>
-        <a href="#StorageBackendDir">Directory backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendFS">Local filesystem backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendNetFS">Network filesystem backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendLogical">Logical backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendDisk">Disk backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendISCSI">iSCSI backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendSCSI">SCSI backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendMultipath">Multipath backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendRBD">RBD (RADOS Block Device) backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendSheepdog">Sheepdog backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendGluster">Gluster backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendZFS">ZFS backend</a>
-      </li>
-      <li>
-        <a href="#StorageBackendVstorage">Virtuozzo storage backend</a>
-      </li>
-    </ul>
+    <ul id="toc"></ul>
 
     <h2><a name="StorageBackendDir">Directory pool</a></h2>
     <p>
@@ -306,7 +266,7 @@
     </p>
 
 
-    <h2><a name="StorageBackendLogical">Logical volume pools</a></h2>
+    <h2><a name="StorageBackendLogical">Logical volume pool</a></h2>
     <p>
       This provides a pool based on an LVM volume group. For a
       pre-defined LVM volume group, simply providing the group
@@ -343,7 +303,7 @@
     </p>
 
 
-    <h2><a name="StorageBackendDisk">Disk volume pools</a></h2>
+    <h2><a name="StorageBackendDisk">Disk pool</a></h2>
     <p>
       This provides a pool based on a physical disk. Volumes are created
       by adding partitions to the disk. Disk pools have constraints
@@ -434,7 +394,7 @@
     </ul>
 
 
-    <h2><a name="StorageBackendISCSI">iSCSI volume pools</a></h2>
+    <h2><a name="StorageBackendISCSI">iSCSI pool</a></h2>
     <p>
       This provides a pool based on an iSCSI target. Volumes must be
       pre-allocated on the iSCSI server, and cannot be created via
@@ -473,7 +433,7 @@
       The iSCSI volume pool does not use the volume format type element.
     </p>
 
-    <h2><a name="StorageBackendSCSI">SCSI volume pools</a></h2>
+    <h2><a name="StorageBackendSCSI">SCSI pool</a></h2>
     <p>
       This provides a pool based on a SCSI HBA. Volumes are preexisting SCSI
       LUNs, and cannot be created via the libvirt APIs. Since /dev/XXX names
@@ -505,7 +465,7 @@
       The SCSI volume pool does not use the volume format type element.
     </p>
 
-    <h2><a name="StorageBackendMultipath">Multipath pools</a></h2>
+    <h2><a name="StorageBackendMultipath">Multipath pool</a></h2>
     <p>
       This provides a pool that contains all the multipath devices on the
       host. Therefore, only one Multipath pool may be configured per host.
@@ -538,7 +498,7 @@
       The Multipath volume pool does not use the volume format type element.
     </p>
 
-    <h2><a name="StorageBackendRBD">RBD pools</a></h2>
+    <h2><a name="StorageBackendRBD">RBD pool</a></h2>
     <p>
       This storage driver provides a pool which contains all RBD
       images in a RADOS pool.  RBD (RADOS Block Device) is part
@@ -611,7 +571,7 @@
       The RBD pool does not use the volume format type element.
     </p>
 
-    <h2><a name="StorageBackendSheepdog">Sheepdog pools</a></h2>
+    <h2><a name="StorageBackendSheepdog">Sheepdog pool</a></h2>
     <p>
       This provides a pool based on a Sheepdog Cluster.
       Sheepdog is a distributed storage system for QEMU/KVM.
@@ -670,7 +630,7 @@
       The Sheepdog pool does not use the volume format type element.
     </p>
 
-    <h2><a name="StorageBackendGluster">Gluster pools</a></h2>
+    <h2><a name="StorageBackendGluster">Gluster pool</a></h2>
     <p>
       This provides a pool based on native Gluster access.  Gluster is
       a distributed file system that can be exposed to the user via
@@ -756,7 +716,7 @@
       pool type.
     </p>
 
-    <h2><a name="StorageBackendZFS">ZFS pools</a></h2>
+    <h2><a name="StorageBackendZFS">ZFS pool</a></h2>
     <p>
       This provides a pool based on the ZFS filesystem. Initially it was developed
       for FreeBSD, and <span class="since">since 1.3.2</span> experimental support
@@ -794,7 +754,7 @@
     <p>
       The ZFS volume pool does not use the volume format type element.
     </p>
-    <h2><a name="StorageBackendVstorage">Vstorage pools</a></h2>
+    <h2><a name="StorageBackendVstorage">Vstorage pool</a></h2>
     <p>
       This provides a pool based on Virtuozzo storage. Virtuozzo Storage is
       a highly available distributed software-defined storage with built-in
