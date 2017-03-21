@@ -59,8 +59,7 @@ int virNetDevBandwidthPlug(const char *brname,
                            const virMacAddr *ifmac_ptr,
                            virNetDevBandwidthPtr bandwidth,
                            unsigned int id)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
     ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevBandwidthUnplug(const char *brname,
