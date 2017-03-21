@@ -85,8 +85,8 @@ int virDomainNumatuneMaybeGetNodeset(virDomainNumaPtr numatune,
                                      virBitmapPtr *retNodeset,
                                      int cellid);
 
-size_t virDomainNumaGetNodeCount(virDomainNumaPtr numa)
-    ATTRIBUTE_NONNULL(1);
+size_t virDomainNumaGetNodeCount(virDomainNumaPtr numa);
+
 virBitmapPtr virDomainNumaGetNodeCpumask(virDomainNumaPtr numa,
                                          size_t node)
     ATTRIBUTE_NONNULL(1);
