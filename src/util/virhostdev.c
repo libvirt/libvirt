@@ -1624,7 +1624,7 @@ virHostdevReAttachUSBDevices(virHostdevManagerPtr mgr,
 
         if (!(usb = virUSBDeviceNew(usbsrc->bus, usbsrc->device, NULL))) {
             VIR_WARN("Unable to reattach USB device %03d.%03d on domain %s",
-                     usbsrc->bus, usbsrc->device, dom_name);
+                     usbsrc->bus, usbsrc->device, NULLSTR(dom_name));
             continue;
         }
 
