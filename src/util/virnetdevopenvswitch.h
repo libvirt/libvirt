@@ -51,7 +51,7 @@ int virNetDevOpenvswitchGetMigrateData(char **migrate, const char *ifname)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevOpenvswitchSetMigrateData(char *migrate, const char *ifname)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevOpenvswitchInterfaceStats(const char *ifname,
                                        virDomainInterfaceStatsPtr stats)
