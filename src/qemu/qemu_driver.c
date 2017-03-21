@@ -14072,8 +14072,7 @@ qemuDomainSnapshotCreateSingleDiskActive(virQEMUDriverPtr driver,
     dd->prepared = true;
 
     /* create the actual snapshot */
-    if (dd->src->format)
-        formatStr = virStorageFileFormatTypeToString(dd->src->format);
+    formatStr = virStorageFileFormatTypeToString(dd->src->format);
 
     /* The monitor is only accessed if qemu doesn't support transactions.
      * Otherwise the following monitor command only constructs the command.
