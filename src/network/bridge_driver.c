@@ -4612,7 +4612,8 @@ networkAllocateActualDevice(virDomainDefPtr dom,
  * Called to notify the network driver when libvirtd is restarted and
  * finds an already running domain. If appropriate it will force an
  * allocation of the actual->direct.linkdev to get everything back in
- * order.
+ * order, or re-attach the interface's tap device to the network's
+ * bridge.
  *
  * Returns 0 on success, -1 on failure.
  */
@@ -4627,6 +4628,7 @@ networkNotifyActualDevice(virDomainDefPtr dom,
     virNetworkForwardIfDefPtr dev = NULL;
     size_t i;
     int ret = -1;
+    char *master = NULL;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
         return 0;
@@ -4650,6 +4652,31 @@ networkNotifyActualDevice(virDomainDefPtr dom,
         (VIR_STRDUP(iface->data.network.actual->data.bridge.brname,
                     netdef->bridge) < 0))
             goto error;
+
+    /* see if we're connected to the correct bridge */
+    if (netdef->bridge) {
+        if (virNetDevGetMaster(iface->ifname, &master) < 0)
+            goto error;
+
+        if (STRNEQ_NULLABLE(netdef->bridge, master)) {
+            /* disconnect from current (incorrect) bridge */
+            if (master)
+                ignore_value(virNetDevBridgeRemovePort(master, iface->ifname));
+
+            /* attach/reattach to correct bridge.
+             * NB: we can't notify the guest of any MTU change anyway,
+             * so there is no point in trying to learn the actualMTU
+             * (final arg to virNetDevTapAttachBridge())
+             */
+            if (virNetDevTapAttachBridge(iface->ifname, netdef->bridge,
+                                         &iface->mac, dom->uuid,
+                                         virDomainNetGetActualVirtPortProfile(iface),
+                                         virDomainNetGetActualVlan(iface),
+                                         iface->mtu, NULL) < 0) {
+                goto error;
+            }
+        }
+    }
 
     if (!iface->data.network.actual ||
         (actualType != VIR_DOMAIN_NET_TYPE_DIRECT &&
@@ -4783,6 +4810,7 @@ networkNotifyActualDevice(virDomainDefPtr dom,
     ret = 0;
  cleanup:
     virNetworkObjEndAPI(&network);
+    VIR_FREE(master);
     return ret;
 
  error:
