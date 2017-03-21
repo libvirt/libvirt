@@ -387,6 +387,56 @@ storageStateCleanup(void)
 }
 
 
+static virStoragePoolObjPtr
+storagePoolObjFindByUUID(const unsigned char *uuid,
+                         const char *name)
+{
+    virStoragePoolObjPtr pool;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (!(pool = virStoragePoolObjFindByUUID(&driver->pools, uuid))) {
+        virUUIDFormat(uuid, uuidstr);
+        if (name)
+            virReportError(VIR_ERR_NO_STORAGE_POOL,
+                           _("no storage pool with matching uuid '%s' (%s)"),
+                           uuidstr, name);
+        else
+            virReportError(VIR_ERR_NO_STORAGE_POOL,
+                           _("no storage pool with matching uuid '%s'"),
+                           uuidstr);
+    }
+
+    return pool;
+}
+
+
+static virStoragePoolObjPtr
+virStoragePoolObjFromStoragePool(virStoragePoolPtr pool)
+{
+    virStoragePoolObjPtr ret;
+
+    storageDriverLock();
+    ret = storagePoolObjFindByUUID(pool->uuid, pool->name);
+    storageDriverUnlock();
+
+    return ret;
+}
+
+
+static virStoragePoolObjPtr
+storagePoolObjFindByName(const char *name)
+{
+    virStoragePoolObjPtr pool;
+
+    storageDriverLock();
+    if (!(pool = virStoragePoolObjFindByName(&driver->pools, name)))
+        virReportError(VIR_ERR_NO_STORAGE_POOL,
+                       _("no storage pool with matching name '%s'"), name);
+    storageDriverUnlock();
+
+    return pool;
+}
+
 
 static virStoragePoolPtr
 storagePoolLookupByUUID(virConnectPtr conn,
@@ -396,16 +446,10 @@ storagePoolLookupByUUID(virConnectPtr conn,
     virStoragePoolPtr ret = NULL;
 
     storageDriverLock();
-    pool = virStoragePoolObjFindByUUID(&driver->pools, uuid);
+    pool = storagePoolObjFindByUUID(uuid, NULL);
     storageDriverUnlock();
-
-    if (!pool) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(uuid, uuidstr);
-        virReportError(VIR_ERR_NO_STORAGE_POOL,
-                       _("no storage pool with matching uuid '%s'"), uuidstr);
+    if (!pool)
         return NULL;
-    }
 
     if (virStoragePoolLookupByUUIDEnsureACL(conn, pool->def) < 0)
         goto cleanup;
@@ -425,15 +469,8 @@ storagePoolLookupByName(virConnectPtr conn,
     virStoragePoolObjPtr pool;
     virStoragePoolPtr ret = NULL;
 
-    storageDriverLock();
-    pool = virStoragePoolObjFindByName(&driver->pools, name);
-    storageDriverUnlock();
-
-    if (!pool) {
-        virReportError(VIR_ERR_NO_STORAGE_POOL,
-                       _("no storage pool with matching name '%s'"), name);
+    if (!(pool = storagePoolObjFindByName(name)))
         return NULL;
-    }
 
     if (virStoragePoolLookupByNameEnsureACL(conn, pool->def) < 0)
         goto cleanup;
@@ -452,16 +489,8 @@ storagePoolLookupByVolume(virStorageVolPtr vol)
     virStoragePoolObjPtr pool;
     virStoragePoolPtr ret = NULL;
 
-    storageDriverLock();
-    pool = virStoragePoolObjFindByName(&driver->pools, vol->pool);
-    storageDriverUnlock();
-
-    if (!pool) {
-        virReportError(VIR_ERR_NO_STORAGE_POOL,
-                       _("no storage pool with matching name '%s'"),
-                       vol->pool);
+    if (!(pool = storagePoolObjFindByName(vol->pool)))
         return NULL;
-    }
 
     if (virStoragePoolLookupByVolumeEnsureACL(vol->conn, pool->def) < 0)
         goto cleanup;
@@ -580,25 +609,6 @@ storageConnectFindStoragePoolSources(virConnectPtr conn,
     ret = backend->findPoolSources(conn, srcSpec, flags);
 
  cleanup:
-    return ret;
-}
-
-
-static virStoragePoolObjPtr
-virStoragePoolObjFromStoragePool(virStoragePoolPtr pool)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virStoragePoolObjPtr ret;
-
-    storageDriverLock();
-    if (!(ret = virStoragePoolObjFindByUUID(&driver->pools, pool->uuid))) {
-        virUUIDFormat(pool->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_STORAGE_POOL,
-                       _("no storage pool with matching uuid '%s' (%s)"),
-                       uuidstr, pool->name);
-    }
-    storageDriverUnlock();
-
     return ret;
 }
 
@@ -809,14 +819,8 @@ storagePoolUndefine(virStoragePoolPtr obj)
     int ret = -1;
 
     storageDriverLock();
-    if (!(pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid))) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(obj->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_STORAGE_POOL,
-                       _("no storage pool with matching uuid '%s' (%s)"),
-                       uuidstr, obj->name);
+    if (!(pool = storagePoolObjFindByUUID(obj->uuid, obj->name)))
         goto cleanup;
-    }
 
     if (virStoragePoolUndefineEnsureACL(obj->conn, pool->def) < 0)
         goto cleanup;
@@ -995,14 +999,8 @@ storagePoolDestroy(virStoragePoolPtr obj)
     int ret = -1;
 
     storageDriverLock();
-    if (!(pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid))) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(obj->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_STORAGE_POOL,
-                       _("no storage pool with matching uuid '%s' (%s)"),
-                       uuidstr, obj->name);
+    if (!(pool = storagePoolObjFindByUUID(obj->uuid, obj->name)))
         goto cleanup;
-    }
 
     if (virStoragePoolDestroyEnsureACL(obj->conn, pool->def) < 0)
         goto cleanup;
@@ -1129,14 +1127,8 @@ storagePoolRefresh(virStoragePoolPtr obj,
     virCheckFlags(0, -1);
 
     storageDriverLock();
-    if (!(pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid))) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(obj->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_STORAGE_POOL,
-                       _("no storage pool with matching uuid '%s' (%s)"),
-                       uuidstr, obj->name);
+    if (!(pool = storagePoolObjFindByUUID(obj->uuid, obj->name)))
         goto cleanup;
-    }
 
     if (virStoragePoolRefreshEnsureACL(obj->conn, pool->def) < 0)
         goto cleanup;
@@ -1279,16 +1271,8 @@ storagePoolSetAutostart(virStoragePoolPtr obj,
     int ret = -1;
 
     storageDriverLock();
-    pool = virStoragePoolObjFindByUUID(&driver->pools, obj->uuid);
-
-    if (!pool) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(obj->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_STORAGE_POOL,
-                       _("no storage pool with matching uuid '%s' (%s)"),
-                       uuidstr, obj->name);
+    if (!(pool = storagePoolObjFindByUUID(obj->uuid, obj->name)))
         goto cleanup;
-    }
 
     if (virStoragePoolSetAutostartEnsureACL(obj->conn, pool->def) < 0)
         goto cleanup;
@@ -1707,18 +1691,8 @@ virStorageVolDefFromVol(virStorageVolPtr obj,
 {
     virStorageVolDefPtr vol = NULL;
 
-    *pool = NULL;
-
-    storageDriverLock();
-    *pool = virStoragePoolObjFindByName(&driver->pools, obj->pool);
-    storageDriverUnlock();
-
-    if (!*pool) {
-        virReportError(VIR_ERR_NO_STORAGE_POOL,
-                       _("no storage pool with matching name '%s'"),
-                       obj->pool);
+    if (!(*pool = storagePoolObjFindByName(obj->pool)))
         return NULL;
-    }
 
     if (!virStoragePoolObjIsActive(*pool)) {
         virReportError(VIR_ERR_OPERATION_INVALID,
