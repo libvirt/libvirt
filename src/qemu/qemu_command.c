@@ -6674,33 +6674,42 @@ qemuBuildIOMMUCommandLine(virCommandPtr cmd,
                           const virDomainDef *def,
                           virQEMUCapsPtr qemuCaps)
 {
-    if (!def->iommu)
+    virBuffer opts = VIR_BUFFER_INITIALIZER;
+    const virDomainIOMMUDef *iommu = def->iommu;
+    int ret = -1;
+
+    if (!iommu)
         return 0;
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_IOMMU))
         return 0; /* Already handled via -machine */
 
-    switch (def->iommu->model) {
+    switch (iommu->model) {
     case VIR_DOMAIN_IOMMU_MODEL_INTEL:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_INTEL_IOMMU)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("IOMMU device: '%s' is not supported with "
                              "this QEMU binary"),
-                           virDomainIOMMUModelTypeToString(def->iommu->model));
+                           virDomainIOMMUModelTypeToString(iommu->model));
             return -1;
         }
         if (!qemuDomainMachineIsQ35(def)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("IOMMU device: '%s' is only supported with "
                              "Q35 machines"),
-                           virDomainIOMMUModelTypeToString(def->iommu->model));
+                           virDomainIOMMUModelTypeToString(iommu->model));
             return -1;
         }
-        virCommandAddArgList(cmd, "-device", "intel-iommu", NULL);
+        virBufferAddLit(&opts, "intel-iommu");
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
         break;
     }
-    return 0;
+    virCommandAddArg(cmd, "-device");
+    virCommandAddArgBuffer(cmd, &opts);
+
+    ret = 0;
+    virBufferFreeAndReset(&opts);
+    return ret;
 }
 
 
