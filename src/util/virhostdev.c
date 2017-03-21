@@ -1873,8 +1873,11 @@ virHostdevPrepareDomainDevices(virHostdevManagerPtr mgr,
     if (!def->nhostdevs)
         return 0;
 
-    if (mgr == NULL)
+    if (!mgr) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("no host device manager defined"));
         return -1;
+    }
 
     if (flags & VIR_HOSTDEV_SP_PCI) {
         if (virHostdevPreparePCIDevices(mgr, driver,
