@@ -19,7 +19,7 @@
 #ifndef __QEMU_MIGRATION_COOKIE_H__
 # define __QEMU_MIGRATION_COOKIE_H__
 
-enum qemuMigrationCookieFlags {
+typedef enum {
     QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS,
     QEMU_MIGRATION_COOKIE_FLAG_LOCKSTATE,
     QEMU_MIGRATION_COOKIE_FLAG_PERSISTENT,
@@ -30,11 +30,11 @@ enum qemuMigrationCookieFlags {
     QEMU_MIGRATION_COOKIE_FLAG_CPU_HOTPLUG,
 
     QEMU_MIGRATION_COOKIE_FLAG_LAST
-};
+} qemuMigrationCookieFlags;
 
 VIR_ENUM_DECL(qemuMigrationCookieFlag);
 
-enum qemuMigrationCookieFeatures {
+typedef enum {
     QEMU_MIGRATION_COOKIE_GRAPHICS  = (1 << QEMU_MIGRATION_COOKIE_FLAG_GRAPHICS),
     QEMU_MIGRATION_COOKIE_LOCKSTATE = (1 << QEMU_MIGRATION_COOKIE_FLAG_LOCKSTATE),
     QEMU_MIGRATION_COOKIE_PERSISTENT = (1 << QEMU_MIGRATION_COOKIE_FLAG_PERSISTENT),
@@ -43,7 +43,7 @@ enum qemuMigrationCookieFeatures {
     QEMU_MIGRATION_COOKIE_STATS = (1 << QEMU_MIGRATION_COOKIE_FLAG_STATS),
     QEMU_MIGRATION_COOKIE_MEMORY_HOTPLUG = (1 << QEMU_MIGRATION_COOKIE_FLAG_MEMORY_HOTPLUG),
     QEMU_MIGRATION_COOKIE_CPU_HOTPLUG = (1 << QEMU_MIGRATION_COOKIE_FLAG_CPU_HOTPLUG),
-};
+} qemuMigrationCookieFeatures;
 
 typedef struct _qemuMigrationCookieGraphics qemuMigrationCookieGraphics;
 typedef qemuMigrationCookieGraphics *qemuMigrationCookieGraphicsPtr;
