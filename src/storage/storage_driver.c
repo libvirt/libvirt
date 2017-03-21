@@ -477,21 +477,14 @@ storagePoolLookupByVolume(virStorageVolPtr vol)
 static int
 storageConnectNumOfStoragePools(virConnectPtr conn)
 {
-    size_t i;
     int nactive = 0;
 
     if (virConnectNumOfStoragePoolsEnsureACL(conn) < 0)
         return -1;
 
     storageDriverLock();
-    for (i = 0; i < driver->pools.count; i++) {
-        virStoragePoolObjPtr obj = driver->pools.objs[i];
-        virStoragePoolObjLock(obj);
-        if (virConnectNumOfStoragePoolsCheckACL(conn, obj->def) &&
-            virStoragePoolObjIsActive(obj))
-            nactive++;
-        virStoragePoolObjUnlock(obj);
-    }
+    nactive = virStoragePoolObjNumOfStoragePools(&driver->pools, conn, true,
+                                                 virConnectNumOfStoragePoolsCheckACL);
     storageDriverUnlock();
 
     return nactive;
@@ -536,21 +529,14 @@ storageConnectListStoragePools(virConnectPtr conn,
 static int
 storageConnectNumOfDefinedStoragePools(virConnectPtr conn)
 {
-    size_t i;
     int nactive = 0;
 
     if (virConnectNumOfDefinedStoragePoolsEnsureACL(conn) < 0)
         return -1;
 
     storageDriverLock();
-    for (i = 0; i < driver->pools.count; i++) {
-        virStoragePoolObjPtr obj = driver->pools.objs[i];
-        virStoragePoolObjLock(obj);
-        if (virConnectNumOfDefinedStoragePoolsCheckACL(conn, obj->def) &&
-            !virStoragePoolObjIsActive(obj))
-            nactive++;
-        virStoragePoolObjUnlock(obj);
-    }
+    nactive = virStoragePoolObjNumOfStoragePools(&driver->pools, conn, false,
+                                                 virConnectNumOfDefinedStoragePoolsCheckACL);
     storageDriverUnlock();
 
     return nactive;

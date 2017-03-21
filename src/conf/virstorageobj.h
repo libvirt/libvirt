@@ -146,6 +146,15 @@ virStoragePoolObjSaveDef(virStorageDriverStatePtr driver,
 int
 virStoragePoolObjDeleteDef(virStoragePoolObjPtr pool);
 
+typedef bool (*virStoragePoolObjListACLFilter)(virConnectPtr conn,
+                                               virStoragePoolDefPtr def);
+
+int
+virStoragePoolObjNumOfStoragePools(virStoragePoolObjListPtr pools,
+                                   virConnectPtr conn,
+                                   bool wantActive,
+                                   virStoragePoolObjListACLFilter aclfilter);
+
 void
 virStoragePoolObjFree(virStoragePoolObjPtr pool);
 

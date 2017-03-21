@@ -4102,17 +4102,16 @@ testStoragePoolLookupByVolume(virStorageVolPtr vol)
     return testStoragePoolLookupByName(vol->conn, vol->pool);
 }
 
+
 static int
 testConnectNumOfStoragePools(virConnectPtr conn)
 {
     testDriverPtr privconn = conn->privateData;
     int numActive = 0;
-    size_t i;
 
     testDriverLock(privconn);
-    for (i = 0; i < privconn->pools.count; i++)
-        if (virStoragePoolObjIsActive(privconn->pools.objs[i]))
-            numActive++;
+    numActive = virStoragePoolObjNumOfStoragePools(&privconn->pools, conn,
+                                                   true, NULL);
     testDriverUnlock(privconn);
 
     return numActive;
@@ -4149,20 +4148,16 @@ testConnectListStoragePools(virConnectPtr conn,
     return -1;
 }
 
+
 static int
 testConnectNumOfDefinedStoragePools(virConnectPtr conn)
 {
     testDriverPtr privconn = conn->privateData;
     int numInactive = 0;
-    size_t i;
 
     testDriverLock(privconn);
-    for (i = 0; i < privconn->pools.count; i++) {
-        virStoragePoolObjLock(privconn->pools.objs[i]);
-        if (!virStoragePoolObjIsActive(privconn->pools.objs[i]))
-            numInactive++;
-        virStoragePoolObjUnlock(privconn->pools.objs[i]);
-    }
+    numInactive = virStoragePoolObjNumOfStoragePools(&privconn->pools, conn,
+                                                     false, NULL);
     testDriverUnlock(privconn);
 
     return numInactive;
