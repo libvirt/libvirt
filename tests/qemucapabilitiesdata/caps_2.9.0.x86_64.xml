@@ -202,11 +202,12 @@
   <flag name='drive-iotune-group'/>
   <flag name='query-cpu-model-expansion'/>
   <flag name='virtio-net.host_mtu'/>
+  <flag name='spice-rendernode'/>
   <flag name='pcie-root-port'/>
   <flag name='query-cpu-definitions'/>
-  <version>2008050</version>
+  <version>2008090</version>
   <kvmVersion>0</kvmVersion>
-  <package> (v2.8.0-1961-g5b10b94bd5)</package>
+  <package> (v2.9.0-rc0-142-g940a8ce)</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base'>
     <property name='phys-bits' type='number' value='0'/>
@@ -403,6 +404,7 @@
     <property name='hv-vpindex' type='boolean' value='false'/>
     <property name='xlevel2' type='number' value='0'/>
     <property name='clflushopt' type='boolean' value='true'/>
+    <property name='kvm-no-smi-migration' type='boolean' value='false'/>
     <property name='monitor' type='boolean' value='false'/>
     <property name='avx512er' type='boolean' value='false'/>
     <property name='pmm-en' type='boolean' value='false'/>
@@ -634,6 +636,7 @@
     <property name='hv-vpindex' type='boolean' value='false'/>
     <property name='xlevel2' type='number' value='0'/>
     <property name='clflushopt' type='boolean' value='true'/>
+    <property name='kvm-no-smi-migration' type='boolean' value='false'/>
     <property name='monitor' type='boolean' value='true'/>
     <property name='avx512er' type='boolean' value='false'/>
     <property name='pmm-en' type='boolean' value='false'/>
