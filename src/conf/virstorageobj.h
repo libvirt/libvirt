@@ -155,6 +155,14 @@ virStoragePoolObjNumOfStoragePools(virStoragePoolObjListPtr pools,
                                    bool wantActive,
                                    virStoragePoolObjListACLFilter aclfilter);
 
+int
+virStoragePoolObjGetNames(virStoragePoolObjListPtr pools,
+                          virConnectPtr conn,
+                          bool wantActive,
+                          virStoragePoolObjListACLFilter aclfilter,
+                          char **const names,
+                          int maxnames);
+
 void
 virStoragePoolObjFree(virStoragePoolObjPtr pool);
 

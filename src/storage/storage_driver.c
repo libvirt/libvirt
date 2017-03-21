@@ -490,40 +490,23 @@ storageConnectNumOfStoragePools(virConnectPtr conn)
     return nactive;
 }
 
+
 static int
 storageConnectListStoragePools(virConnectPtr conn,
                                char **const names,
-                               int nnames)
+                               int maxnames)
 {
     int got = 0;
-    size_t i;
 
     if (virConnectListStoragePoolsEnsureACL(conn) < 0)
         return -1;
 
     storageDriverLock();
-    for (i = 0; i < driver->pools.count && got < nnames; i++) {
-        virStoragePoolObjPtr obj = driver->pools.objs[i];
-        virStoragePoolObjLock(obj);
-        if (virConnectListStoragePoolsCheckACL(conn, obj->def) &&
-            virStoragePoolObjIsActive(obj)) {
-            if (VIR_STRDUP(names[got], obj->def->name) < 0) {
-                virStoragePoolObjUnlock(obj);
-                goto cleanup;
-            }
-            got++;
-        }
-        virStoragePoolObjUnlock(obj);
-    }
+    got = virStoragePoolObjGetNames(&driver->pools, conn, true,
+                                    virConnectListStoragePoolsCheckACL,
+                                    names, maxnames);
     storageDriverUnlock();
     return got;
-
- cleanup:
-    storageDriverUnlock();
-    for (i = 0; i < got; i++)
-        VIR_FREE(names[i]);
-    memset(names, 0, nnames * sizeof(*names));
-    return -1;
 }
 
 static int
@@ -542,40 +525,23 @@ storageConnectNumOfDefinedStoragePools(virConnectPtr conn)
     return nactive;
 }
 
+
 static int
 storageConnectListDefinedStoragePools(virConnectPtr conn,
                                       char **const names,
-                                      int nnames)
+                                      int maxnames)
 {
     int got = 0;
-    size_t i;
 
     if (virConnectListDefinedStoragePoolsEnsureACL(conn) < 0)
         return -1;
 
     storageDriverLock();
-    for (i = 0; i < driver->pools.count && got < nnames; i++) {
-        virStoragePoolObjPtr obj = driver->pools.objs[i];
-        virStoragePoolObjLock(obj);
-        if (virConnectListDefinedStoragePoolsCheckACL(conn, obj->def) &&
-            !virStoragePoolObjIsActive(obj)) {
-            if (VIR_STRDUP(names[got], obj->def->name) < 0) {
-                virStoragePoolObjUnlock(obj);
-                goto cleanup;
-            }
-            got++;
-        }
-        virStoragePoolObjUnlock(obj);
-    }
+    got = virStoragePoolObjGetNames(&driver->pools, conn, false,
+                                    virConnectListDefinedStoragePoolsCheckACL,
+                                    names, maxnames);
     storageDriverUnlock();
     return got;
-
- cleanup:
-    storageDriverUnlock();
-    for (i = 0; i < got; i++)
-        VIR_FREE(names[i]);
-    memset(names, 0, nnames * sizeof(*names));
-    return -1;
 }
 
 /* This method is required to be re-entrant / thread safe, so

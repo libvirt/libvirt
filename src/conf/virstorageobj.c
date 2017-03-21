@@ -580,6 +580,42 @@ virStoragePoolObjNumOfStoragePools(virStoragePoolObjListPtr pools,
 }
 
 
+int
+virStoragePoolObjGetNames(virStoragePoolObjListPtr pools,
+                          virConnectPtr conn,
+                          bool wantActive,
+                          virStoragePoolObjListACLFilter aclfilter,
+                          char **const names,
+                          int maxnames)
+{
+    int nnames = 0;
+    size_t i;
+
+    for (i = 0; i < pools->count && nnames < maxnames; i++) {
+        virStoragePoolObjPtr obj = pools->objs[i];
+        virStoragePoolObjLock(obj);
+        if (!aclfilter || aclfilter(conn, obj->def)) {
+            if (wantActive == virStoragePoolObjIsActive(obj)) {
+                if (VIR_STRDUP(names[nnames], obj->def->name) < 0) {
+                    virStoragePoolObjUnlock(obj);
+                    goto failure;
+                }
+                nnames++;
+            }
+        }
+        virStoragePoolObjUnlock(obj);
+    }
+
+    return nnames;
+
+ failure:
+    while (--nnames >= 0)
+        VIR_FREE(names[nnames]);
+
+    return -1;
+}
+
+
 /*
  * virStoragePoolObjIsDuplicate:
  * @doms : virStoragePoolObjListPtr to search

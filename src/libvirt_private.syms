@@ -999,6 +999,7 @@ virStoragePoolObjClearVols;
 virStoragePoolObjDeleteDef;
 virStoragePoolObjFindByName;
 virStoragePoolObjFindByUUID;
+virStoragePoolObjGetNames;
 virStoragePoolObjIsDuplicate;
 virStoragePoolObjListExport;
 virStoragePoolObjListFree;

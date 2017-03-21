@@ -4117,35 +4117,21 @@ testConnectNumOfStoragePools(virConnectPtr conn)
     return numActive;
 }
 
+
 static int
 testConnectListStoragePools(virConnectPtr conn,
                             char **const names,
-                            int nnames)
+                            int maxnames)
 {
     testDriverPtr privconn = conn->privateData;
     int n = 0;
-    size_t i;
 
     testDriverLock(privconn);
-    memset(names, 0, sizeof(*names)*nnames);
-    for (i = 0; i < privconn->pools.count && n < nnames; i++) {
-        virStoragePoolObjLock(privconn->pools.objs[i]);
-        if (virStoragePoolObjIsActive(privconn->pools.objs[i]) &&
-            VIR_STRDUP(names[n++], privconn->pools.objs[i]->def->name) < 0) {
-            virStoragePoolObjUnlock(privconn->pools.objs[i]);
-            goto error;
-        }
-        virStoragePoolObjUnlock(privconn->pools.objs[i]);
-    }
+    n = virStoragePoolObjGetNames(&privconn->pools, conn, true, NULL,
+                                  names, maxnames);
     testDriverUnlock(privconn);
 
     return n;
-
- error:
-    for (n = 0; n < nnames; n++)
-        VIR_FREE(names[n]);
-    testDriverUnlock(privconn);
-    return -1;
 }
 
 
@@ -4163,35 +4149,21 @@ testConnectNumOfDefinedStoragePools(virConnectPtr conn)
     return numInactive;
 }
 
+
 static int
 testConnectListDefinedStoragePools(virConnectPtr conn,
                                    char **const names,
-                                   int nnames)
+                                   int maxnames)
 {
     testDriverPtr privconn = conn->privateData;
     int n = 0;
-    size_t i;
 
     testDriverLock(privconn);
-    memset(names, 0, sizeof(*names)*nnames);
-    for (i = 0; i < privconn->pools.count && n < nnames; i++) {
-        virStoragePoolObjLock(privconn->pools.objs[i]);
-        if (!virStoragePoolObjIsActive(privconn->pools.objs[i]) &&
-            VIR_STRDUP(names[n++], privconn->pools.objs[i]->def->name) < 0) {
-            virStoragePoolObjUnlock(privconn->pools.objs[i]);
-            goto error;
-        }
-        virStoragePoolObjUnlock(privconn->pools.objs[i]);
-    }
+    n = virStoragePoolObjGetNames(&privconn->pools, conn, false, NULL,
+                                  names, maxnames);
     testDriverUnlock(privconn);
 
     return n;
-
- error:
-    for (n = 0; n < nnames; n++)
-        VIR_FREE(names[n]);
-    testDriverUnlock(privconn);
-    return -1;
 }
 
 static int
