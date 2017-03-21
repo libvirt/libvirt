@@ -527,7 +527,8 @@ virDomainCapsFormatInternal(virBufferPtr buf,
 
     virBufferEscapeString(buf, "<path>%s</path>\n", caps->path);
     virBufferAsprintf(buf, "<domain>%s</domain>\n", virttype_str);
-    virBufferAsprintf(buf, "<machine>%s</machine>\n", caps->machine);
+    if (caps->machine)
+        virBufferAsprintf(buf, "<machine>%s</machine>\n", caps->machine);
     virBufferAsprintf(buf, "<arch>%s</arch>\n", arch_str);
 
     if (caps->maxvcpus)

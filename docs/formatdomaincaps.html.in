@@ -70,7 +70,8 @@
 
       <dt><code>machine</code></dt>
       <dd>The domain's <a href="formatdomain.html#elementsOSBIOS">machine
-          type</a>.</dd>
+          type</a>. Since not every hypervisor has a sense of machine types
+          this element might be omitted in such drivers.</dd>
 
       <dt><code>arch</code></dt>
       <dd>The domain's <a href="formatdomain.html#elementsOSBIOS">
