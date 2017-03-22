@@ -747,7 +747,15 @@ virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes)
     if (bytes == 0)
         return 0;
 
-    rlim.rlim_cur = rlim.rlim_max = bytes;
+    /* We use VIR_DOMAIN_MEMORY_PARAM_UNLIMITED internally to represent
+     * unlimited memory amounts, but setrlimit() and prlimit() use
+     * RLIM_INFINITY for the same purpose, so we need to translate between
+     * the two conventions */
+    if (virMemoryLimitIsSet(bytes))
+        rlim.rlim_cur = rlim.rlim_max = bytes;
+    else
+        rlim.rlim_cur = rlim.rlim_max = RLIM_INFINITY;
+
     if (pid == 0) {
         if (setrlimit(RLIMIT_MEMLOCK, &rlim) < 0) {
             virReportSystemError(errno,
@@ -810,8 +818,14 @@ virProcessGetMaxMemLock(pid_t pid,
     }
 
     /* virProcessSetMaxMemLock() sets both rlim_cur and rlim_max to the
-     * same value, so we can retrieve just rlim_max here */
-    *bytes = rlim.rlim_max;
+     * same value, so we can retrieve just rlim_max here. We use
+     * VIR_DOMAIN_MEMORY_PARAM_UNLIMITED internally to represent unlimited
+     * memory amounts, but setrlimit() and prlimit() use RLIM_INFINITY for the
+     * same purpose, so we need to translate between the two conventions */
+    if (rlim.rlim_max == RLIM_INFINITY)
+        *bytes = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
+    else
+        *bytes = rlim.rlim_max;
 
     return 0;
 }
