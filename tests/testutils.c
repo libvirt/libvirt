@@ -926,7 +926,7 @@ int virTestMain(int argc,
     }
 
     if ((testRange = getenv("VIR_TEST_RANGE")) != NULL) {
-        if (virBitmapParseUnlimited(testRange, &testBitmap) < 0) {
+        if (!(testBitmap = virBitmapParseUnlimited(testRange))) {
             fprintf(stderr, "Cannot parse range %s\n", testRange);
             return EXIT_FAILURE;
         }

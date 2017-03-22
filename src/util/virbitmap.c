@@ -545,7 +545,6 @@ virBitmapParse(const char *str,
 /**
  * virBitmapParseUnlimited:
  * @str: points to a string representing a human-readable bitmap
- * @bitmap: a bitmap created from @str
  *
  * This function is the counterpart of virBitmapFormat. This function creates
  * a bitmap, in which bits are set according to the content of @str.
@@ -556,20 +555,20 @@ virBitmapParse(const char *str,
  * to set, and ^N, which means to unset the bit, and N-M for ranges of bits
  * to set.
  *
- * Returns 0 on success, or -1 in case of error.
+ * Returns @bitmap on success, or NULL in case of error
  */
-int
-virBitmapParseUnlimited(const char *str,
-                        virBitmapPtr *bitmap)
+virBitmapPtr
+virBitmapParseUnlimited(const char *str)
 {
+    virBitmapPtr bitmap;
     bool neg = false;
     const char *cur = str;
     char *tmp;
     size_t i;
     int start, last;
 
-    if (!(*bitmap = virBitmapNewEmpty()))
-        return -1;
+    if (!(bitmap = virBitmapNewEmpty()))
+        return NULL;
 
     if (!str)
         goto error;
@@ -605,10 +604,10 @@ virBitmapParseUnlimited(const char *str,
 
         if (*cur == ',' || *cur == 0) {
             if (neg) {
-                if (virBitmapClearBitExpand(*bitmap, start) < 0)
+                if (virBitmapClearBitExpand(bitmap, start) < 0)
                     goto error;
             } else {
-                if (virBitmapSetBitExpand(*bitmap, start) < 0)
+                if (virBitmapSetBitExpand(bitmap, start) < 0)
                     goto error;
             }
         } else if (*cur == '-') {
@@ -626,7 +625,7 @@ virBitmapParseUnlimited(const char *str,
             cur = tmp;
 
             for (i = start; i <= last; i++) {
-                if (virBitmapSetBitExpand(*bitmap, i) < 0)
+                if (virBitmapSetBitExpand(bitmap, i) < 0)
                     goto error;
             }
 
@@ -644,14 +643,13 @@ virBitmapParseUnlimited(const char *str,
         }
     }
 
-    return 0;
+    return bitmap;
 
  error:
     virReportError(VIR_ERR_INVALID_ARG,
                    _("Failed to parse bitmap '%s'"), str);
-    virBitmapFree(*bitmap);
-    *bitmap = NULL;
-    return -1;
+    virBitmapFree(bitmap);
+    return NULL;
 }
 
 /**

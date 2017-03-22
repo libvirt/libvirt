@@ -650,7 +650,7 @@ test12(const void *opaque ATTRIBUTE_UNUSED)
     TEST_MAP(151, "128");
 
     virBitmapFree(map);
-    if (virBitmapParseUnlimited("34,1023", &map) < 0)
+    if (!(map = virBitmapParseUnlimited("34,1023")))
         goto cleanup;
 
     TEST_MAP(1024, "34,1023");
