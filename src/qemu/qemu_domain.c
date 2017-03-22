@@ -6223,10 +6223,13 @@ qemuDomainGetMemLockLimitBytes(virDomainDefPtr def)
         goto done;
     }
 
-    if (def->mem.locked) {
-        memKB = virDomainDefGetMemoryTotal(def) + 1024 * 1024;
-        goto done;
-    }
+    /* If the guest wants its memory to be locked, we need to raise the memory
+     * locking limit so that the OS will not refuse allocation requests;
+     * however, there is no reliable way for us to figure out how much memory
+     * the QEMU process will allocate for its own use, so our only way out is
+     * to remove the limit altogether. Use with extreme care */
+    if (def->mem.locked)
+        return VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
 
     if (ARCH_IS_PPC64(def->os.arch) && def->virtType == VIR_DOMAIN_VIRT_KVM) {
         unsigned long long maxMemory;
