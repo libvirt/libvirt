@@ -44,7 +44,7 @@
 #include "virstring.h"
 #include "qemu_hostdev.h"
 #include "qemu_domain.h"
-#define __QEMU_CAPSRIV_H_ALLOW__
+#define __QEMU_CAPSPRIV_H_ALLOW__
 #include "qemu_capspriv.h"
 
 #include <fcntl.h>

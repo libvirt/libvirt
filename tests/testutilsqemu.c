@@ -8,7 +8,7 @@
 # include "cpu_conf.h"
 # include "qemu/qemu_driver.h"
 # include "qemu/qemu_domain.h"
-# define __QEMU_CAPSRIV_H_ALLOW__
+# define __QEMU_CAPSPRIV_H_ALLOW__
 # include "qemu/qemu_capspriv.h"
 # include "virstring.h"
 

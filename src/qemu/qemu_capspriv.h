@@ -21,7 +21,7 @@
  * Author: Pavel Fedin <p.fedin@samsung.com>
  */
 
-#ifndef __QEMU_CAPSRIV_H_ALLOW__
+#ifndef __QEMU_CAPSPRIV_H_ALLOW__
 # error "qemu_capspriv.h may only be included by qemu_capabilities.c or test suites"
 #endif
 

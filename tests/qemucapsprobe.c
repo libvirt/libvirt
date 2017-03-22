@@ -24,7 +24,7 @@
 #include "internal.h"
 #include "virthread.h"
 #include "qemu/qemu_capabilities.h"
-#define __QEMU_CAPSRIV_H_ALLOW__ 1
+#define __QEMU_CAPSPRIV_H_ALLOW__ 1
 #include "qemu/qemu_capspriv.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
