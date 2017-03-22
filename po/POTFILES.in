@@ -223,6 +223,7 @@ src/util/virlease.c
 src/util/virlockspace.c
 src/util/virlog.c
 src/util/virmacmap.c
+src/util/virmdev.c
 src/util/virnetdev.c
 src/util/virnetdevbandwidth.c
 src/util/virnetdevbridge.c

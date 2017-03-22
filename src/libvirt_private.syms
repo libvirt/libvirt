@@ -2000,6 +2000,28 @@ virMacMapNew;
 virMacMapRemove;
 virMacMapWriteFile;
 
+# util/virmdev.h
+virMediatedDeviceFree;
+virMediatedDeviceGetIOMMUGroupDev;
+virMediatedDeviceGetIOMMUGroupNum;
+virMediatedDeviceGetSysfsPath;
+virMediatedDeviceGetUsedBy;
+virMediatedDeviceIsUsed;
+virMediatedDeviceListAdd;
+virMediatedDeviceListCount;
+virMediatedDeviceListDel;
+virMediatedDeviceListFind;
+virMediatedDeviceListGet;
+virMediatedDeviceListMarkDevices;
+virMediatedDeviceListNew;
+virMediatedDeviceListSteal;
+virMediatedDeviceListStealIndex;
+virMediatedDeviceModelTypeFromString;
+virMediatedDeviceModelTypeToString;
+virMediatedDeviceNew;
+virMediatedDeviceSetUsedBy;
+
+
 
 # util/virnetdev.h
 virNetDevAddMulti;
