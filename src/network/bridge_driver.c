@@ -470,6 +470,7 @@ networkUpdateState(virNetworkObjPtr obj,
 {
     virNetworkDriverStatePtr driver = opaque;
     dnsmasqCapsPtr dnsmasq_caps = networkGetDnsmasqCaps(driver);
+    char *macMapFile = NULL;
     int ret = -1;
 
     virObjectLock(obj);
@@ -486,6 +487,13 @@ networkUpdateState(virNetworkObjPtr obj,
         /* If bridge doesn't exist, then mark it inactive */
         if (!(obj->def->bridge && virNetDevExists(obj->def->bridge) == 1))
             obj->active = 0;
+
+        if (!(macMapFile = networkMacMgrFileName(driver, obj->def->bridge)))
+            goto cleanup;
+
+        if (!(obj->macmap = virMacMapNew(macMapFile)))
+            goto cleanup;
+
         break;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
@@ -512,7 +520,6 @@ networkUpdateState(virNetworkObjPtr obj,
     /* Try and read dnsmasq/radvd pids of active networks */
     if (obj->active && obj->def->ips && (obj->def->nips > 0)) {
         char *radvdpidbase;
-        char *macMapFile;
 
         ignore_value(virPidFileReadIfAlive(driver->pidDir,
                                            obj->def->name,
@@ -527,23 +534,13 @@ networkUpdateState(virNetworkObjPtr obj,
                                            radvdpidbase,
                                            &obj->radvdPid, RADVD));
         VIR_FREE(radvdpidbase);
-
-        if (!(macMapFile = networkMacMgrFileName(driver, obj->def->bridge)))
-            goto cleanup;
-
-        if (virFileExists(macMapFile) &&
-            !(obj->macmap = virMacMapNew(macMapFile))) {
-            VIR_FREE(macMapFile);
-            goto cleanup;
-        }
-
-        VIR_FREE(macMapFile);
     }
 
     ret = 0;
  cleanup:
     virObjectUnlock(obj);
     virObjectUnref(dnsmasq_caps);
+    VIR_FREE(macMapFile);
     return ret;
 }
 
