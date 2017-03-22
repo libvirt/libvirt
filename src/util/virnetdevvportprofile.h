@@ -95,23 +95,21 @@ int virNetDevVPortProfileMerge3(virNetDevVPortProfilePtr *result,
 
 int virNetDevVPortProfileAssociate(const char *ifname,
                                    const virNetDevVPortProfile *virtPort,
-                                   const virMacAddr *macaddr,
+                                   const virMacAddr *macvtap_macaddr,
                                    const char *linkdev,
                                    int vf,
                                    const unsigned char *vmuuid,
                                    virNetDevVPortProfileOp vmOp,
                                    bool setlink_only)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(6)
-    ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevVPortProfileDisassociate(const char *ifname,
                                       const virNetDevVPortProfile *virtPort,
-                                      const virMacAddr *macaddr,
+                                      const virMacAddr *macvtap_macaddr,
                                       const char *linkdev,
                                       int vf,
                                       virNetDevVPortProfileOp vmOp)
-    ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4)
-    ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_RETURN_CHECK;
 
 
 #endif /* __VIR_NETDEV_VPORT_PROFILE_H__ */
