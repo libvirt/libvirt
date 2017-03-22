@@ -195,8 +195,7 @@ cpuBaseline (virCPUDefPtr *cpus,
              unsigned int ncpus,
              const char **models,
              unsigned int nmodels,
-             unsigned int flags)
-    ATTRIBUTE_NONNULL(1);
+             unsigned int flags);
 
 int
 virCPUUpdate(virArch arch,
