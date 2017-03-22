@@ -1756,7 +1756,7 @@ virHostdevReAttachSCSIVHostDevices(virHostdevManagerPtr mgr,
 
         if (!(host = virSCSIVHostDeviceNew(hostsrc->wwpn))) {
             VIR_WARN("Unable to reattach SCSI_host device %s on domain %s",
-                     hostsrc->wwpn, dom_name);
+                     hostsrc->wwpn, NULLSTR(dom_name));
             virObjectUnlock(mgr->activeSCSIVHostHostdevs);
             return;
         }
