@@ -2171,6 +2171,7 @@ virNumaGetAutoPlacementAdvice;
 virNumaGetDistances;
 virNumaGetHostMemoryNodeset;
 virNumaGetMaxNode;
+virNumaGetNodeCPUs;
 virNumaGetNodeMemory;
 virNumaGetPageInfo;
 virNumaGetPages;
