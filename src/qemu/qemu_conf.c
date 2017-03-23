@@ -275,7 +275,7 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
                            cfg->defaultTLSx509certdir) < 0)            \
                 goto error;                                            \
         }                                                              \
-    } while (false);
+    } while (0)
 
     SET_TLS_X509_CERT_DEFAULT(vnc);
     SET_TLS_X509_CERT_DEFAULT(spice);
