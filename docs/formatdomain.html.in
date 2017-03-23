@@ -937,14 +937,21 @@
       <dt><code>locked</code></dt>
       <dd>When set and supported by the hypervisor, memory pages belonging
         to the domain will be locked in host's memory and the host will not
-        be allowed to swap them out. For QEMU/KVM this requires
-        <code>hard_limit</code> <a href="#elementsMemoryTuning">memory tuning</a>
-        element to be used and set to the maximum memory configured for the
-        domain plus any memory consumed by the QEMU process itself. Beware of
-        setting the memory limit too high (and thus allowing the domain to lock
-        most of the host's memory). Doing so may be dangerous to both the
-        domain and the host itself since the host's kernel may run out of
-        memory. <span class="since">Since 1.0.6</span></dd>
+        be allowed to swap them out, which might be required for some
+        workloads such as real-time. For QEMU/KVM guests, the memory used by
+        the QEMU process itself will be locked too: unlike guest memory, this
+        is an amount libvirt has no way of figuring out in advance, so it has
+        to remove the limit on locked memory altogether. Thus, enabling this
+        option opens up to a potential security risk: the host will be unable
+        to reclaim the locked memory back from the guest when it's running out
+        of memory, which means a malicious guest allocating large amounts of
+        locked memory could cause a denial-of-service attach on the host.
+        Because of this, using this option is discouraged unless your workload
+        demands it; even then, it's highly recommended to set an
+        <code>hard_limit</code> (see
+        <a href="#elementsMemoryTuning">memory tuning</a>) on memory allocation
+        suitable for the specific environment at the same time to mitigate
+        the risks described above. <span class="since">Since 1.0.6</span></dd>
        <dt><code>source</code></dt>
        <dd>In this attribute you can switch to file memorybacking or keep default anonymous.</dd>
        <dt><code>access</code></dt>
@@ -989,12 +996,18 @@
       <dt><code>hard_limit</code></dt>
       <dd> The optional <code>hard_limit</code> element is the maximum memory
         the guest can use. The units for this value are kibibytes (i.e. blocks
-        of 1024 bytes). <strong>However, users of QEMU and KVM are strongly
-        advised not to set this limit as domain may get killed by the kernel
-        if the guess is too low. To determine the memory needed for a process
-        to run is an
+        of 1024 bytes). Users of QEMU and KVM are strongly advised not to set
+        this limit as domain may get killed by the kernel if the guess is too
+        low, and determining the memory needed for a process to run is an
         <a href="http://en.wikipedia.org/wiki/Undecidable_problem">
-        undecidable problem</a>.</strong></dd>
+        undecidable problem</a>; that said, if you already set
+        <code>locked</code> in
+        <a href="#elementsMemoryBacking">memory backing</a> because your
+        workload demands it, you'll have to take into account the specifics of
+        your deployment and figure out a value for <code>hard_limit</code> that
+        balances the risk of your guest being killed because the limit was set
+        too low and the risk of your host crashing because it cannot reclaim
+        the memory used by the guest due to <code>locked</code>. Good luck!</dd>
       <dt><code>soft_limit</code></dt>
       <dd> The optional <code>soft_limit</code> element is the memory limit to
         enforce during memory contention. The units for this value are
