@@ -1,0 +1,17 @@
+<domain type='kvm'>
+  <name>guest</name>
+  <memory unit='KiB'>1048576</memory>
+  <memtune>
+    <hard_limit unit='KiB'>2097152</hard_limit>
+  </memtune>
+  <memoryBacking>
+    <locked/>
+  </memoryBacking>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='ppc64' machine='pseries'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-ppc64</emulator>
+  </devices>
+</domain>

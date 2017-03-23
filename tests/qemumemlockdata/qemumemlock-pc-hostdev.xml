@@ -1,0 +1,17 @@
+<domain type='kvm'>
+  <name>guest</name>
+  <memory unit='KiB'>1048576</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <driver name='vfio'/>
+      <source>
+        <address domain='0x0000' bus='0x04' slot='0x02' function='0x0'/>
+      </source>
+    </hostdev>
+  </devices>
+</domain>
