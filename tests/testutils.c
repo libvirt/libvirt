@@ -722,6 +722,33 @@ virTestCompareToFile(const char *strcontent,
 }
 
 /*
+ * @param content: Input content
+ * @param src: Source to compare @content against
+ */
+int
+virTestCompareToULL(unsigned long long content,
+                    unsigned long long src)
+{
+    char *strcontent = NULL;
+    char *strsrc = NULL;
+    int ret = -1;
+
+    if (virAsprintf(&strcontent, "%llu", content) < 0)
+        goto cleanup;
+
+    if (virAsprintf(&strsrc, "%llu", src) < 0)
+        goto cleanup;
+
+    ret = virTestCompareToString(strcontent, strsrc);
+
+ cleanup:
+    VIR_FREE(strcontent);
+    VIR_FREE(strsrc);
+
+    return ret;
+}
+
+/*
  * @param strcontent: String input content
  * @param strsrc: String source to compare strcontent against
  */

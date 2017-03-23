@@ -77,6 +77,8 @@ int virTestCompareToFile(const char *strcontent,
                          const char *filename);
 int virTestCompareToString(const char *strcontent,
                            const char *strsrc);
+int virTestCompareToULL(unsigned long long content,
+                        unsigned long long src);
 
 unsigned int virTestGetDebug(void);
 unsigned int virTestGetVerbose(void);
