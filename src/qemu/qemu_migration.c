@@ -2359,6 +2359,12 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver,
                            _("migration with shmem device is not supported"));
             return false;
         }
+
+        if (vm->def->iommu) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("migration with iommu device is not supported"));
+            return false;
+        }
     }
 
     return true;
