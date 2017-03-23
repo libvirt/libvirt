@@ -206,6 +206,7 @@ test_libraries = libshunload.la \
 	virnetdevmock.la \
 	virrandommock.la \
 	virhostcpumock.la \
+	virnumamock.la \
 	domaincapsmock.la \
 	$(NULL)
 
@@ -1123,6 +1124,12 @@ virhostcpumock_la_SOURCES = \
 virhostcpumock_la_CFLAGS = $(AM_CFLAGS)
 virhostcpumock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virhostcpumock_la_LIBADD = $(MOCKLIBS_LIBS)
+
+virnumamock_la_SOURCES = \
+	virnumamock.c
+virnumamock_la_CFLAGS = $(AM_CFLAGS)
+virnumamock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+virnumamock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 if WITH_NSS
 nsstest_SOURCES = \
