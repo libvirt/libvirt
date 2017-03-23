@@ -6329,12 +6329,12 @@ qemuBuildClockCommandLine(virCommandPtr cmd,
     for (i = 0; i < def->clock.ntimers; i++) {
         switch ((virDomainTimerNameType) def->clock.timers[i]->name) {
         case VIR_DOMAIN_TIMER_NAME_PLATFORM:
-        case VIR_DOMAIN_TIMER_NAME_TSC:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported timer type (name) '%s'"),
                            virDomainTimerNameTypeToString(def->clock.timers[i]->name));
             return -1;
 
+        case VIR_DOMAIN_TIMER_NAME_TSC:
         case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
         case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
             /* Timers above are handled when building -cpu.  */
@@ -6921,18 +6921,22 @@ qemuBuildCpuCommandLine(virCommandPtr cmd,
     for (i = 0; i < def->clock.ntimers; i++) {
         virDomainTimerDefPtr timer = def->clock.timers[i];
 
-        if (timer->present == -1)
-            continue;
-
-        if (timer->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK) {
+        if (timer->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK &&
+            timer->present != -1) {
             virBufferAsprintf(&buf, "%s,%ckvmclock",
                               have_cpu ? "" : default_model,
                               timer->present ? '+' : '-');
             have_cpu = true;
         } else if (timer->name == VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK &&
-                   timer->present) {
+                   timer->present == 1) {
             virBufferAsprintf(&buf, "%s,hv_time",
                               have_cpu ? "" : default_model);
+            have_cpu = true;
+        } else if (timer->name == VIR_DOMAIN_TIMER_NAME_TSC &&
+                   timer->frequency > 0) {
+            virBufferAsprintf(&buf, "%s,tsc-frequency=%lu",
+                              have_cpu ? "" : default_model,
+                              timer->frequency);
             have_cpu = true;
         }
     }
