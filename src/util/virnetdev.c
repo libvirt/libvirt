@@ -1017,7 +1017,8 @@ virNetDevGetMaster(const char *ifname, char **master)
 
 
 int
-virNetDevGetMaster(const char *ifname, char **master)
+virNetDevGetMaster(const char *ifname ATTRIBUTE_UNUSED,
+                   char **master ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("Unable to get device master from netlink on this platform"));
