@@ -93,7 +93,8 @@ static int
 virStorageBackendLogicalInitializeDevice(const char *path)
 {
     int fd = -1;
-    char zeros[PV_BLANK_SECTOR_SIZE] = {0};
+    char zeros[4 * PV_BLANK_SECTOR_SIZE] = {0};
+    off_t size;
     int ret = -1;
     virCommandPtr pvcmd = NULL;
 
@@ -105,6 +106,25 @@ virStorageBackendLogicalInitializeDevice(const char *path)
     if ((fd = open(path, O_WRONLY)) < 0) {
         virReportSystemError(errno, _("cannot open device '%s'"), path);
         return -1;
+    }
+
+    if ((size = lseek(fd, 0, SEEK_END)) == (off_t)-1) {
+        virReportSystemError(errno,
+                             _("failed to seek to end of %s"), path);
+        goto cleanup;
+    }
+
+    if (size < 4 * PV_BLANK_SECTOR_SIZE) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("cannot initialize '%s' detected size='%lu' less "
+                         "than minimum required='%d"),
+                         path, size, 4 * PV_BLANK_SECTOR_SIZE);
+        goto cleanup;
+    }
+    if ((size = lseek(fd, 0, SEEK_SET)) == (off_t)-1) {
+        virReportSystemError(errno,
+                             _("failed to seek to start of %s"), path);
+        goto cleanup;
     }
 
     if (safewrite(fd, zeros, sizeof(zeros)) < 0) {
