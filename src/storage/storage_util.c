@@ -3436,6 +3436,9 @@ storageBackendProbeTarget(virStorageSourcePtr target,
         target->capacity = meta->capacity;
 
     if (encryption && meta->encryption) {
+        if (meta->encryption->payload_offset != -1)
+            target->capacity -= meta->encryption->payload_offset * 512;
+
         *encryption = meta->encryption;
         meta->encryption = NULL;
 
