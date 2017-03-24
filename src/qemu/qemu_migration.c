@@ -2473,12 +2473,29 @@ qemuMigrationIsAllowed(virQEMUDriverPtr driver,
             return false;
 
         if (vm->def->cpu) {
-            /* QEMU blocks migration and save with invariant TSC enabled */
+            /* QEMU blocks migration and save with invariant TSC enabled
+             * unless TSC frequency is explicitly set.
+             */
             if (virCPUCheckFeature(vm->def->os.arch, vm->def->cpu,
                                    "invtsc") == 1) {
-                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                               _("domain has 'invtsc' CPU feature"));
-                return false;
+                bool block = true;
+
+                for (i = 0; i < vm->def->clock.ntimers; i++) {
+                    virDomainTimerDefPtr timer = vm->def->clock.timers[i];
+
+                    if (timer->name == VIR_DOMAIN_TIMER_NAME_TSC &&
+                        timer->frequency > 0) {
+                        block = false;
+                        break;
+                    }
+                }
+
+                if (block) {
+                    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                                   _("domain has 'invtsc' CPU feature but "
+                                     "TSC frequency is not specified"));
+                    return false;
+                }
             }
         }
 
