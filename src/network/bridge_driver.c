@@ -2391,9 +2391,8 @@ networkStartNetworkVirtual(virNetworkDriverStatePtr driver,
 
     /* If forward.type != NONE, turn on global IP forwarding */
     if (network->def->forward.type != VIR_NETWORK_FORWARD_NONE) {
-        if (!virNetDevIPCheckIPv6Forwarding())
+        if (v6present && !virNetDevIPCheckIPv6Forwarding())
             goto err3; /* Precise error message already provided */
-
 
         if (networkEnableIPForwarding(v4present, v6present) < 0) {
             virReportSystemError(errno, "%s",
