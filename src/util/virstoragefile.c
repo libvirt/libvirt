@@ -133,6 +133,8 @@ struct FileEncryptionInfo {
 
     int modeOffset; /* Byte offset of the format native encryption mode */
     char modeValue; /* Value expected at offset */
+
+    int payloadOffset; /* start offset of the volume data (in 512 byte sectors) */
 };
 
 /* Either 'magic' or 'extension' *must* be provided */
@@ -212,9 +214,18 @@ qedGetBackingStore(char **, int *, const char *, size_t);
 
 #define LUKS_HDR_MAGIC_LEN 6
 #define LUKS_HDR_VERSION_LEN 2
+#define LUKS_HDR_CIPHER_NAME_LEN 32
+#define LUKS_HDR_CIPHER_MODE_LEN 32
+#define LUKS_HDR_HASH_SPEC_LEN 32
+#define LUKS_HDR_PAYLOAD_LEN 4
 
 /* Format described by qemu commit id '3e308f20e' */
 #define LUKS_HDR_VERSION_OFFSET LUKS_HDR_MAGIC_LEN
+#define LUKS_HDR_PAYLOAD_OFFSET (LUKS_HDR_MAGIC_LEN+\
+                                 LUKS_HDR_VERSION_LEN+\
+                                 LUKS_HDR_CIPHER_NAME_LEN+\
+                                 LUKS_HDR_CIPHER_MODE_LEN+\
+                                 LUKS_HDR_HASH_SPEC_LEN)
 
 static struct FileEncryptionInfo const luksEncryptionInfo[] = {
     {
@@ -231,6 +242,8 @@ static struct FileEncryptionInfo const luksEncryptionInfo[] = {
 
         .modeOffset = -1,
         .modeValue = -1,
+
+        .payloadOffset = LUKS_HDR_PAYLOAD_OFFSET,
     },
     { 0 }
 };
@@ -249,6 +262,8 @@ static struct FileEncryptionInfo const qcow1EncryptionInfo[] = {
 
         .modeOffset = QCOW1_HDR_CRYPT,
         .modeValue = 1,
+
+        .payloadOffset = -1,
     },
     { 0 }
 };
@@ -267,6 +282,8 @@ static struct FileEncryptionInfo const qcow2EncryptionInfo[] = {
 
         .modeOffset = QCOW2_HDR_CRYPT,
         .modeValue = 1,
+
+        .payloadOffset = -1,
     },
     { 0 }
 };
@@ -921,6 +938,23 @@ virStorageFileHasEncryptionFormat(const struct FileEncryptionInfo *info,
 }
 
 
+static int
+virStorageFileGetEncryptionPayloadOffset(const struct FileEncryptionInfo *info,
+                                         char *buf)
+{
+    int payload_offset = -1;
+
+    if (info->payloadOffset != -1) {
+        if (info->endian == LV_LITTLE_ENDIAN)
+            payload_offset = virReadBufInt32LE(buf + info->payloadOffset);
+        else
+            payload_offset = virReadBufInt32BE(buf + info->payloadOffset);
+    }
+
+    return payload_offset;
+}
+
+
 /* Given a header in BUF with length LEN, as parsed from the storage file
  * assuming it has the given FORMAT, populate information into META
  * with information about the file and its backing store. Return format
@@ -967,6 +1001,8 @@ virStorageFileGetMetadataInternal(virStorageSourcePtr meta,
                         goto cleanup;
                     }
                 }
+                meta->encryption->payload_offset =
+                    virStorageFileGetEncryptionPayloadOffset(&fileTypeInfo[meta->format].cryptInfo[i], buf);
             }
         }
     }
@@ -3422,6 +3458,9 @@ virStorageSourceUpdateCapacity(virStorageSourcePtr src,
         src->capacity = meta->capacity ? meta->capacity : src->physical;
     else
         goto cleanup;
+
+    if (src->encryption && src->encryption->payload_offset != -1)
+        src->capacity -= src->encryption->payload_offset * 512;
 
     ret = 0;
 

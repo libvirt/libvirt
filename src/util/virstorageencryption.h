@@ -70,6 +70,7 @@ typedef struct _virStorageEncryption virStorageEncryption;
 typedef virStorageEncryption *virStorageEncryptionPtr;
 struct _virStorageEncryption {
     int format; /* virStorageEncryptionFormatType */
+    int payload_offset;
 
     size_t nsecrets;
     virStorageEncryptionSecretPtr *secrets;
