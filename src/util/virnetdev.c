@@ -1493,8 +1493,8 @@ virNetDevIsVirtualFunction(const char *ifname ATTRIBUTE_UNUSED)
 
 int
 virNetDevGetVirtualFunctionIndex(const char *pfname ATTRIBUTE_UNUSED,
-                             const char *vfname ATTRIBUTE_UNUSED,
-                             int *vf_index ATTRIBUTE_UNUSED)
+                                 const char *vfname ATTRIBUTE_UNUSED,
+                                 int *vf_index ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get virtual function index on this platform"));
@@ -1513,7 +1513,7 @@ virNetDevGetPhysicalFunction(const char *ifname ATTRIBUTE_UNUSED,
 int
 virNetDevPFGetVF(const char *pfname ATTRIBUTE_UNUSED,
                  int vf ATTRIBUTE_UNUSED,
-                 char **vfname ATTRUBUTE_UNUSED)
+                 char **vfname ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get virtual function name on this platform"));
