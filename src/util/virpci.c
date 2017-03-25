@@ -2945,7 +2945,7 @@ virPCIDeviceAddressPtr
 virPCIGetDeviceAddressFromSysfsLink(const char *device_link ATTRIBUTE_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
-    return -1;
+    return NULL;
 }
 
 
