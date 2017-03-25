@@ -3639,6 +3639,12 @@ follow-up command to build the pool. The I<--overwrite> and
 I<--no-overwrite> flags follow the same rules as B<pool-build>. If
 just I<--build> is provided, then B<pool-build> is called with no flags.
 
+For a "logical" pool only [I<--name>] needs to be provided. The
+[I<--source-name>] if provided must match the Volume Group name.
+If not provided, one will be generated using the [I<--name>]. If
+provided the [I<--target>] is ignored and a target source is generated
+using the [I<--source-name>] (or as generated from the [I<--name>]).
+
 =item B<pool-define> I<file>
 
 Define an inactive persistent storage pool or modify an existing persistent one
