@@ -3224,14 +3224,55 @@ networkValidate(virNetworkDriverStatePtr driver,
      * the type of each.
      */
     for (i = 0; i < def->forward.nifs; i++) {
-        switch ((virNetworkForwardHostdevDeviceType)
-                def->forward.ifs[i].type) {
+        virNetworkForwardIfDefPtr iface = &def->forward.ifs[i];
+        char *sysfs_path = NULL;
+
+        switch ((virNetworkForwardHostdevDeviceType) iface->type) {
         case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NETDEV:
             usesInterface = true;
+
+            if (def->forward.type == VIR_NETWORK_FORWARD_HOSTDEV) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("hostdev network '%s' lists '%s' "
+                                 "in the device pool, but hostdev "
+                                 "networks require all devices to "
+                                 "be listed by PCI address, not "
+                                 "network device name"),
+                               def->name, iface->device.dev);
+                return -1;
+            }
             break;
-        case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI:
+
+        case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_PCI: {
             usesAddress = true;
+
+            if (def->forward.type != VIR_NETWORK_FORWARD_HOSTDEV) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("network '%s' has forward mode '%s' "
+                                 " but lists a device by PCI address "
+                                 "in the device pool. This is only "
+                                 "supported for networks with forward "
+                                 "mode 'hostdev'"),
+                               def->name,
+                               virNetworkForwardTypeToString(def->forward.type));
+                return -1;
+            }
+
+            if (virPCIDeviceAddressGetSysfsFile(&iface->device.pci, &sysfs_path) < 0)
+                return -1;
+
+            if (!virPCIIsVirtualFunction(sysfs_path)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("device '%s' in network '%s' is not "
+                                 "an SR-IOV Virtual Function"),
+                               sysfs_path, def->name);
+                VIR_FREE(sysfs_path);
+                return -1;
+            }
+            VIR_FREE(sysfs_path);
             break;
+        }
+
         case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_NONE:
         case VIR_NETWORK_FORWARD_HOSTDEV_DEVICE_LAST:
             break;
