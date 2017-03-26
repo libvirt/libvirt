@@ -3815,7 +3815,7 @@ qemuMigrationResetTLS(virQEMUDriverPtr driver,
     char *tlsAlias = in_tlsAlias;
     char *secAlias = in_secAlias;
     qemuMonitorMigrationParams migParams = { 0 };
-    int ret;
+    int ret = -1;
 
     /* If coming from a path that doesn't know whether it's been used or not,
      * let's first check we need to do this. If the tls-creds doesn't exist
