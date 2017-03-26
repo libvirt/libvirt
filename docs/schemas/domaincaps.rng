@@ -17,9 +17,11 @@
         <element name='domain'>
           <text/>
         </element>
-        <element name='machine'>
-          <text/>
-        </element>
+        <optional>
+          <element name='machine'>
+            <text/>
+          </element>
+        </optional>
         <element name='arch'>
           <text/>
         </element>
