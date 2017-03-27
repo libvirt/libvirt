@@ -700,6 +700,11 @@
           logical: Need to overwrite/clear more than just first 512 bytes
         </summary>
       </change>
+      <change>
+        <summary>
+          Describe the logical backend requirements better for pool-create-as
+        </summary>
+      </change>
     </section>
   </release>
 </libvirt>
