@@ -703,6 +703,9 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
         if (virStoragePoolDefParseSource(ctxt, &ret->source, ret->type,
                                          source_node) < 0)
             goto error;
+    } else {
+        if (options->formatFromString)
+            ret->source.format = options->defaultFormat;
     }
 
     ret->name = virXPathString("string(./name)", ctxt);
