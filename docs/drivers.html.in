@@ -4,7 +4,11 @@
   <body>
     <h1>Internal drivers</h1>
 
-    <ul id="toc"></ul>
+    <ul>
+      <li><a href="#hypervisor">Hypervisor drivers</a></li>
+      <li><a href="#storage">Storage drivers</a></li>
+      <li><a href="drvnodedev.html">Node device driver</a></li>
+    </ul>
 
     <p>
       The libvirt public API delegates its implementation to one or
