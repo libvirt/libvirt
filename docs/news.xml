@@ -81,6 +81,20 @@
           with 'invtsc' CPU feature turned on.
         </description>
       </change>
+      <change>
+        <summary>
+          Add support for block device threshold event
+        </summary>
+        <description>
+          When using thin provisioning, management tools need to resize the
+          disk in certain cases. To avoid having them to poll disk usage
+          this version introduces an event which will be fired when a given
+          offset of the storage is written by the hypervisor. Together with the
+          API it allows registering thresholds for given storage backing
+          volumes and this event will then notify management if the threshold
+          is exceeded. Currently only the qemu driver supports this.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
@@ -103,6 +117,17 @@
           page faults, context switches, cpu migrations, minor page faults,
           major page faults, alignment faults, emulation faults by
           applications running on the platform.
+        </description>
+      </change>
+      <change>
+        <summary>
+          Write hyperv crash information into vm log
+        </summary>
+        <description>
+          qemu's implementation of the hyperv panic notifier now reports
+          information about the crash from the guest os. Starting with this
+          version, libvirt logs the information to the vm log file for possible
+          debugging.
         </description>
       </change>
     </section>
