@@ -51,6 +51,8 @@
           enhanced check may also be requested when starting a new domain to
           ensure the virtual CPU exactly matches the one specified in the XML.
         </description>
+      </change>
+      <change>
         <summary>
           qemu: Add support to migrate using TLS
         </summary>
