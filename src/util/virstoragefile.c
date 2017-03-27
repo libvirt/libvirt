@@ -3809,8 +3809,8 @@ virStorageSourceFindByNodeName(virStorageSourcePtr top,
         *index = 0;
 
     for (tmp = top; tmp; tmp = tmp->backingStore) {
-        if (STREQ_NULLABLE(tmp->nodeformat, nodeName) ||
-            STREQ_NULLABLE(tmp->nodebacking, nodeName))
+        if ((tmp->nodeformat && STREQ(tmp->nodeformat, nodeName)) ||
+            (tmp->nodebacking && STREQ(tmp->nodebacking, nodeName)))
             return tmp;
 
         if (index)
