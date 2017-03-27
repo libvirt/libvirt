@@ -1,7 +1,7 @@
 /*
  * virstoragefile.c: file utility functions for FS storage backend
  *
- * Copyright (C) 2007-2014, 2016 Red Hat, Inc.
+ * Copyright (C) 2007-2017 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -3801,23 +3801,23 @@ virStorageSourceIsRelative(virStorageSourcePtr src)
 virStorageSourcePtr
 virStorageSourceFindByNodeName(virStorageSourcePtr top,
                                const char *nodeName,
-                               unsigned int *index)
+                               unsigned int *idx)
 {
     virStorageSourcePtr tmp;
 
-    if (index)
-        *index = 0;
+    if (idx)
+        *idx = 0;
 
     for (tmp = top; tmp; tmp = tmp->backingStore) {
         if ((tmp->nodeformat && STREQ(tmp->nodeformat, nodeName)) ||
             (tmp->nodebacking && STREQ(tmp->nodebacking, nodeName)))
             return tmp;
 
-        if (index)
-            (*index)++;
+        if (idx)
+            (*idx)++;
     }
 
-    if (index)
-        *index = 0;
+    if (idx)
+        *idx = 0;
     return NULL;
 }
