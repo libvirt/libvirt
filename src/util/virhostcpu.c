@@ -262,24 +262,6 @@ virHostCPUGetCore(unsigned int cpu, unsigned int *core)
     return 0;
 }
 
-int
-virHostCPUGetOnline(unsigned int cpu, bool *online)
-{
-    unsigned int tmp = 0;
-    int ret = virSysfsGetCpuValueUint(cpu, "online", &tmp);
-
-
-    /* If the file is not there, it's online (doesn't support offlining) */
-    if (ret == -2)
-        tmp = 1;
-    else if (ret < 0)
-        return -1;
-
-    *online = tmp;
-
-    return 0;
-}
-
 virBitmapPtr
 virHostCPUGetSiblingsList(unsigned int cpu)
 {
@@ -880,6 +862,23 @@ virHostCPUParseCountLinux(void)
 }
 #endif
 
+int
+virHostCPUGetOnline(unsigned int cpu, bool *online)
+{
+    unsigned int tmp = 0;
+    int ret = virSysfsGetCpuValueUint(cpu, "online", &tmp);
+
+
+    /* If the file is not there, it's online (doesn't support offlining) */
+    if (ret == -2)
+        tmp = 1;
+    else if (ret < 0)
+        return -1;
+
+    *online = tmp;
+
+    return 0;
+}
 
 int
 virHostCPUStatsAssign(virNodeCPUStatsPtr param,
