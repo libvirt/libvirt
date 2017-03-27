@@ -706,7 +706,7 @@
       </change>
       <change>
         <summary>
-          logical: Need to overwrite/clear more than just first 512 bytes
+          Overwrite (clear) 2 KB instead of just 512 bytes when initializing logical device
         </summary>
       </change>
       <change>
