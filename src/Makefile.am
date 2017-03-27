@@ -840,6 +840,7 @@ QEMU_DRIVER_SOURCES =							\
 		qemu/qemu_process.c qemu/qemu_process.h			\
 		qemu/qemu_processpriv.h					\
 		qemu/qemu_migration.c qemu/qemu_migration.h		\
+		qemu/qemu_migration_cookie.c qemu/qemu_migration_cookie.h \
 		qemu/qemu_monitor.c qemu/qemu_monitor.h			\
 		qemu/qemu_monitor_text.c				\
 		qemu/qemu_monitor_text.h				\

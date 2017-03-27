@@ -139,6 +139,7 @@ src/qemu/qemu_hostdev.c
 src/qemu/qemu_hotplug.c
 src/qemu/qemu_interface.c
 src/qemu/qemu_migration.c
+src/qemu/qemu_migration_cookie.c
 src/qemu/qemu_monitor.c
 src/qemu/qemu_monitor_json.c
 src/qemu/qemu_monitor_text.c
