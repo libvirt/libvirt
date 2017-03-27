@@ -206,7 +206,7 @@ static int
 virshVolSize(const char *data, unsigned long long *val)
 {
     char *end;
-    if (virStrToLong_ull(data, &end, 10, val) < 0)
+    if (virStrToLong_ullp(data, &end, 10, val) < 0)
         return -1;
     return virScaleInteger(val, end, 1, ULLONG_MAX);
 }
