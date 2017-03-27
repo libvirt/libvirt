@@ -28,6 +28,8 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
+#define MDEV_SYSFS_DEVICES "/sys/bus/mdev/devices/"
+
 VIR_LOG_INIT("util.mdev");
 
 struct _virMediatedDevice {
@@ -68,7 +70,6 @@ virMediatedOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virMediated)
 
 #ifdef __linux__
-# define MDEV_SYSFS_DEVICES "/sys/bus/mdev/devices/"
 
 static int
 virMediatedDeviceGetSysfsDeviceAPI(virMediatedDevicePtr dev,
@@ -173,12 +174,12 @@ virMediatedDeviceNew(const char *uuidstr, virMediatedDeviceModelType model)
 #else
 
 virMediatedDevicePtr
-virMediatedDeviceNew(virPCIDeviceAddressPtr pciaddr ATTRIBUTE_UNUSED,
-                     const char *uuidstr ATTRIBUTE_UNUSED)
+virMediatedDeviceNew(const char *uuidstr ATTRIBUTE_UNUSED,
+                     virMediatedDeviceModelType model ATTRIBUTE_UNUSED)
 {
-    virRerportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                    _("mediated devices are not supported on non-linux "
-                      "platforms"));
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                   _("mediated devices are not supported on non-linux "
+                     "platforms"));
     return NULL;
 }
 
