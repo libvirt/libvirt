@@ -316,7 +316,7 @@ virNetDevSetMACInternal(const char *ifname,
 
         ret = 0;
  cleanup:
-        VIR_DEBUG("SIOCSIFLLADDR %s MAC=%s - %s", ifname, mac + 1),
+        VIR_DEBUG("SIOCSIFLLADDR %s MAC=%s - %s", ifname, mac + 1,
                   ret < 0 ? "Fail" : "Success");
 
         VIR_FORCE_CLOSE(s);
