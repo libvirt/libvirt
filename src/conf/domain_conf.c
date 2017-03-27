@@ -55,6 +55,7 @@
 #include "virtpm.h"
 #include "virstring.h"
 #include "virnetdev.h"
+#include "virnetdevmacvlan.h"
 #include "virhostdev.h"
 #include "virmdev.h"
 
@@ -10029,8 +10030,12 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         def->data.direct.linkdev = dev;
         dev = NULL;
 
-        if (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)
+        if (ifname &&
+            flags & VIR_DOMAIN_DEF_PARSE_INACTIVE &&
+            (STRPREFIX(ifname, VIR_NET_GENERATED_MACVTAP_PREFIX) ||
+             STRPREFIX(ifname, VIR_NET_GENERATED_MACVTAP_PREFIX))) {
             VIR_FREE(ifname);
+        }
 
         break;
 
