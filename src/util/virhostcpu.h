@@ -57,10 +57,13 @@ int virHostCPUStatsAssign(virNodeCPUStatsPtr param,
                           const char *name,
                           unsigned long long value);
 
+# ifdef __linux__
 int virHostCPUGetSocket(unsigned int cpu, unsigned int *socket);
 int virHostCPUGetCore(unsigned int cpu, unsigned int *core);
-int virHostCPUGetOnline(unsigned int cpu, bool *online);
 
 virBitmapPtr virHostCPUGetSiblingsList(unsigned int cpu);
+# endif
+
+int virHostCPUGetOnline(unsigned int cpu, bool *online);
 
 #endif /* __VIR_HOSTCPU_H__*/
