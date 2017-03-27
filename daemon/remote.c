@@ -1666,6 +1666,24 @@ void remoteRelayConnectionClosedEvent(virConnectPtr conn ATTRIBUTE_UNUSED, int r
                                   &msg);
 }
 
+#define DEREG_CB(conn, eventCallbacks, neventCallbacks, deregFcn, name)     \
+    do {                                                                    \
+        size_t i;                                                           \
+        for (i = 0; i < neventCallbacks; i++) {                             \
+            int callbackID = eventCallbacks[i]->callbackID;                 \
+            if (callbackID < 0) {                                           \
+                VIR_WARN("unexpected incomplete %s callback %zu", name, i); \
+                continue;                                                   \
+            }                                                               \
+            VIR_DEBUG("Deregistering remote %s event relay %d",             \
+                      name, callbackID);                                    \
+            eventCallbacks[i]->callbackID = -1;                             \
+            if (deregFcn(conn, callbackID) < 0)                             \
+                VIR_WARN("unexpected %s event deregister failure", name);   \
+        }                                                                   \
+        VIR_FREE(eventCallbacks);                                           \
+    } while (0);
+
 /*
  * You must hold lock for at least the client
  * We don't free stuff here, merely disconnect the client's
@@ -1680,98 +1698,27 @@ void remoteClientFreeFunc(void *data)
     /* Deregister event delivery callback */
     if (priv->conn) {
         virIdentityPtr sysident = virIdentityGetSystem();
-        size_t i;
 
         virIdentitySetCurrent(sysident);
 
-        for (i = 0; i < priv->ndomainEventCallbacks; i++) {
-            int callbackID = priv->domainEventCallbacks[i]->callbackID;
-            if (callbackID < 0) {
-                VIR_WARN("unexpected incomplete domain callback %zu", i);
-                continue;
-            }
-            VIR_DEBUG("Deregistering remote domain event relay %d",
-                      callbackID);
-            priv->domainEventCallbacks[i]->callbackID = -1;
-            if (virConnectDomainEventDeregisterAny(priv->conn, callbackID) < 0)
-                VIR_WARN("unexpected domain event deregister failure");
-        }
-        VIR_FREE(priv->domainEventCallbacks);
-
-        for (i = 0; i < priv->nnetworkEventCallbacks; i++) {
-            int callbackID = priv->networkEventCallbacks[i]->callbackID;
-            if (callbackID < 0) {
-                VIR_WARN("unexpected incomplete network callback %zu", i);
-                continue;
-            }
-            VIR_DEBUG("Deregistering remote network event relay %d",
-                      callbackID);
-            priv->networkEventCallbacks[i]->callbackID = -1;
-            if (virConnectNetworkEventDeregisterAny(priv->conn,
-                                                    callbackID) < 0)
-                VIR_WARN("unexpected network event deregister failure");
-        }
-        VIR_FREE(priv->networkEventCallbacks);
-
-        for (i = 0; i < priv->nstorageEventCallbacks; i++) {
-            int callbackID = priv->storageEventCallbacks[i]->callbackID;
-            if (callbackID < 0) {
-                VIR_WARN("unexpected incomplete storage pool callback %zu", i);
-                continue;
-            }
-            VIR_DEBUG("Deregistering remote storage pool event relay %d",
-                      callbackID);
-            priv->storageEventCallbacks[i]->callbackID = -1;
-            if (virConnectStoragePoolEventDeregisterAny(priv->conn,
-                                                        callbackID) < 0)
-                VIR_WARN("unexpected storage pool event deregister failure");
-        }
-        VIR_FREE(priv->storageEventCallbacks);
-
-        for (i = 0; i < priv->nnodeDeviceEventCallbacks; i++) {
-            int callbackID = priv->nodeDeviceEventCallbacks[i]->callbackID;
-            if (callbackID < 0) {
-                VIR_WARN("unexpected incomplete node device callback %zu", i);
-                continue;
-            }
-            VIR_DEBUG("Deregistering remote node device event relay %d",
-                      callbackID);
-            priv->nodeDeviceEventCallbacks[i]->callbackID = -1;
-            if (virConnectNodeDeviceEventDeregisterAny(priv->conn,
-                                                       callbackID) < 0)
-                VIR_WARN("unexpected node device event deregister failure");
-        }
-        VIR_FREE(priv->nodeDeviceEventCallbacks);
-
-        for (i = 0; i < priv->nsecretEventCallbacks; i++) {
-            int callbackID = priv->secretEventCallbacks[i]->callbackID;
-            if (callbackID < 0) {
-                VIR_WARN("unexpected incomplete secret callback %zu", i);
-                continue;
-            }
-            VIR_DEBUG("Deregistering remote secret event relay %d",
-                      callbackID);
-            priv->secretEventCallbacks[i]->callbackID = -1;
-            if (virConnectSecretEventDeregisterAny(priv->conn,
-                                                   callbackID) < 0)
-                VIR_WARN("unexpected secret event deregister failure");
-        }
-        VIR_FREE(priv->secretEventCallbacks);
-
-        for (i = 0; i < priv->nqemuEventCallbacks; i++) {
-            int callbackID = priv->qemuEventCallbacks[i]->callbackID;
-            if (callbackID < 0) {
-                VIR_WARN("unexpected incomplete qemu monitor callback %zu", i);
-                continue;
-            }
-            VIR_DEBUG("Deregistering remote qemu monitor event relay %d",
-                      callbackID);
-            priv->qemuEventCallbacks[i]->callbackID = -1;
-            if (virConnectDomainQemuMonitorEventDeregister(priv->conn,
-                                                           callbackID) < 0)
-                VIR_WARN("unexpected qemu monitor event deregister failure");
-        }
-        VIR_FREE(priv->qemuEventCallbacks);
+        DEREG_CB(priv->conn, priv->domainEventCallbacks,
+                 priv->ndomainEventCallbacks,
+                 virConnectDomainEventDeregisterAny, "domain");
+        DEREG_CB(priv->conn, priv->networkEventCallbacks,
+                 priv->nnetworkEventCallbacks,
+                 virConnectNetworkEventDeregisterAny, "network");
+        DEREG_CB(priv->conn, priv->storageEventCallbacks,
+                 priv->nstorageEventCallbacks,
+                 virConnectStoragePoolEventDeregisterAny, "storage");
+        DEREG_CB(priv->conn, priv->nodeDeviceEventCallbacks,
+                 priv->nnodeDeviceEventCallbacks,
+                 virConnectNodeDeviceEventDeregisterAny, "node device");
+        DEREG_CB(priv->conn, priv->secretEventCallbacks,
+                 priv->nsecretEventCallbacks,
+                 virConnectSecretEventDeregisterAny, "secret");
+        DEREG_CB(priv->conn, priv->qemuEventCallbacks,
+                 priv->nqemuEventCallbacks,
+                 virConnectDomainQemuMonitorEventDeregister, "qemu monitor");
 
         if (priv->closeRegistered) {
             if (virConnectUnregisterCloseCallback(priv->conn,
@@ -1787,6 +1734,7 @@ void remoteClientFreeFunc(void *data)
 
     VIR_FREE(priv);
 }
+#undef DEREG_CB
 
 
 static void remoteClientCloseFunc(virNetServerClientPtr client)
