@@ -808,7 +808,7 @@ sc_prohibit_semicolon_at_eol_in_python:
 # mymain() in test files should use return, not exit, for nicer output
 sc_prohibit_exit_in_tests:
 	@prohibit='\<exit *\('						\
-	in_vc_files='^tests/'						\
+	in_vc_files='^tests/.*\.c$$'					\
 	halt='use return, not exit(), in tests'				\
 	  $(_sc_search_regexp)
 
