@@ -3583,13 +3583,13 @@ follow-up command to build the pool. The I<--overwrite> and
 I<--no-overwrite> flags follow the same rules as B<pool-build>. If
 just I<--build> is provided, then B<pool-build> is called with no flags.
 
-=item B<pool-create-as> I<name> I<type> [I<--print-xml>]
+=item B<pool-create-as> I<name> I<type>
 [I<--source-host hostname>] [I<--source-path path>] [I<--source-dev path>]
 [I<--source-name name>] [I<--target path>] [I<--source-format format>]
 [I<--auth-type authtype> I<--auth-username username> I<--secret-usage usage>]
 [[I<--adapter-name name>] | [I<--adapter-wwnn> I<--adapter-wwpn>]
 [I<--adapter-parent parent>]]
-[I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]]
+[I<--build>] [[I<--overwrite>] | [I<--no-overwrite>]] [I<--print-xml>]
 
 
 Create and start a pool object I<name> from the raw parameters.  If
@@ -3644,12 +3644,12 @@ just I<--build> is provided, then B<pool-build> is called with no flags.
 Define an inactive persistent storage pool or modify an existing persistent one
 from the XML I<file>.
 
-=item B<pool-define-as> I<name> I<type> [I<--print-xml>]
+=item B<pool-define-as> I<name> I<type>
 [I<--source-host hostname>] [I<--source-path path>] [I<--source-dev path>]
 [I<--source-name name>] [I<--target path>] [I<--source-format format>]
 [I<--auth-type authtype> I<--auth-username username> I<--secret-usage usage>]
 [[I<--adapter-name name>] | [I<--adapter-wwnn> I<--adapter-wwpn>]
-[I<--adapter-parent parent>]]
+[I<--adapter-parent parent>]] [I<--print-xml>]
 
 Create, but do not start, a pool object I<name> from the raw parameters.  If
 I<--print-xml> is specified, then print the XML of the pool object
