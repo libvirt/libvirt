@@ -852,6 +852,7 @@ virNetDevGetRcvAllMulti(const char *ifname,
     return virNetDevGetIFFlag(ifname, VIR_IFF_ALLMULTI, receive);
 }
 
+#if defined(HAVE_IF_INDEXTONAME)
 char *virNetDevGetName(int ifindex)
 {
     char name[IFNAMSIZ];
@@ -871,6 +872,15 @@ char *virNetDevGetName(int ifindex)
  cleanup:
      return ifname;
 }
+#else
+char *virNetDevGetName(int ifindex)
+{
+    virReportSystemError(ENOSYS,
+                         _("Cannot get interface name for index '%i'"),
+                         ifindex);
+    return NULL;
+}
+#endif
 
 /**
  * virNetDevGetIndex:

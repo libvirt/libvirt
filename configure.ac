@@ -319,9 +319,10 @@ AC_CHECK_SIZEOF([long])
 dnl Availability of various common functions (non-fatal if missing),
 dnl and various less common threadsafe functions
 AC_CHECK_FUNCS_ONCE([cfmakeraw fallocate geteuid getgid getgrnam_r \
-  getmntent_r getpwuid_r getrlimit getuid kill mmap newlocale posix_fallocate \
-  posix_memalign prlimit regexec sched_getaffinity setgroups setns \
-  setrlimit symlink sysctlbyname getifaddrs sched_setscheduler unshare])
+  getmntent_r getpwuid_r getrlimit getuid if_indextoname kill mmap \
+  newlocale posix_fallocate posix_memalign prlimit regexec \
+  sched_getaffinity setgroups setns setrlimit symlink sysctlbyname \
+  getifaddrs sched_setscheduler unshare])
 
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h regex.h sys/un.h \
