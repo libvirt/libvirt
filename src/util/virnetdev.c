@@ -2336,7 +2336,7 @@ virNetDevReadNetConfig(const char *linkdev ATTRIBUTE_UNUSED,
                        int vf ATTRIBUTE_UNUSED,
                        const char *stateDir ATTRIBUTE_UNUSED,
                        virMacAddrPtr *adminMAC ATTRIBUTE_UNUSED,
-                       virNetDevVLanPtr *vlan ATTRIBUTE_UNUSED,
+                       virNetDevVlanPtr *vlan ATTRIBUTE_UNUSED,
                        virMacAddrPtr *MAC ATTRIBUTE_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
