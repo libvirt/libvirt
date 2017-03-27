@@ -181,7 +181,7 @@ virNumaGetNodeCPUs(int node, virBitmapPtr *cpus)
         return -1;
 
     *cpus = virBitmapParseUnlimited(cpulist);
-    if (!cpus)
+    if (!*cpus)
         goto cleanup;
 
     ret = virBitmapCountBits(*cpus);
