@@ -1132,7 +1132,6 @@ xenFormatXLDisk(virConfValuePtr list, virDomainDiskDefPtr disk)
 static int
 xenFormatXLDomainDisks(virConfPtr conf, virDomainDefPtr def)
 {
-    int ret = -1;
     virConfValuePtr diskVal;
     size_t i;
 
@@ -1150,15 +1149,19 @@ xenFormatXLDomainDisks(virConfPtr conf, virDomainDefPtr def)
             goto cleanup;
     }
 
-    if (diskVal->list != NULL)
-        if (virConfSetValue(conf, "disk", diskVal) == 0)
-            diskVal = NULL;
+    if (diskVal->list != NULL) {
+        int ret = virConfSetValue(conf, "disk", diskVal);
+        diskVal = NULL;
+        if (ret < 0)
+            return -1;
+    }
+    VIR_FREE(diskVal);
 
-    ret = 0;
+    return 0;
 
  cleanup:
     virConfFreeValue(diskVal);
-    return ret;
+    return -1;
 }
 
 
