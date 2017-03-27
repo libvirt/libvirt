@@ -3,7 +3,10 @@
 #
 
 # util/virhostcpu.h
+virHostCPUGetCore;
 virHostCPUGetInfoPopulateLinux;
+virHostCPUGetSiblingsList;
+virHostCPUGetSocket;
 virHostCPUGetStatsLinux;
 
 # Let emacs know we want case-insensitive sorting
