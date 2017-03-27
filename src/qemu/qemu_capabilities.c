@@ -4261,18 +4261,25 @@ virQEMUCapsInitQMPBasic(virQEMUCapsPtr qemuCaps)
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_DISPLAY);
 }
 
-/* Capabilities that are architecture depending
- * initialized for QEMU.
+
+/**
+ * virQEMUCapsInitQMPArch:
+ * @qemuCaps: QEMU capabilities
+ * @mon: QEMU monitor
+ *
+ * Initialize the architecture for @qemuCaps by asking @mon.
+ *
+ * Returns: 0 on success, <0 on failure
  */
 static int
-virQEMUCapsInitArchQMPBasic(virQEMUCapsPtr qemuCaps,
+virQEMUCapsInitQMPArch(virQEMUCapsPtr qemuCaps,
                             qemuMonitorPtr mon)
 {
     char *archstr = NULL;
     int ret = -1;
 
     if (!(archstr = qemuMonitorGetTargetArch(mon)))
-        return -1;
+        goto cleanup;
 
     if ((qemuCaps->arch = virQEMUCapsArchFromString(archstr)) == VIR_ARCH_NONE) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -4280,18 +4287,29 @@ virQEMUCapsInitArchQMPBasic(virQEMUCapsPtr qemuCaps,
         goto cleanup;
     }
 
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(archstr);
+    return ret;
+}
+
+
+/**
+ * virQEMUCapsInitQMPBasicArch:
+ * @qemuCaps: QEMU capabilities
+ *
+ * Initialize @qemuCaps with basic architecture-dependent capabilities.
+ */
+static void
+virQEMUCapsInitQMPBasicArch(virQEMUCapsPtr qemuCaps)
+{
     /* ACPI/HPET/KVM PIT are x86 specific */
     if (ARCH_IS_X86(qemuCaps->arch)) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_ACPI);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_HPET);
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_NO_KVM_PIT);
     }
-
-    ret = 0;
-
- cleanup:
-    VIR_FREE(archstr);
-    return ret;
 }
 
 
@@ -4516,8 +4534,10 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
 
     virQEMUCapsInitQMPBasic(qemuCaps);
 
-    if (virQEMUCapsInitArchQMPBasic(qemuCaps, mon) < 0)
+    if (virQEMUCapsInitQMPArch(qemuCaps, mon) < 0)
         goto cleanup;
+
+    virQEMUCapsInitQMPBasicArch(qemuCaps);
 
     /* USB option is supported v1.3.0 onwards */
     if (qemuCaps->version >= 1003000)
