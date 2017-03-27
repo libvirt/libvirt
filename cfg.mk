@@ -666,7 +666,7 @@ sc_prohibit_useless_translation:
 	halt='found useless translation'				\
 	  $(_sc_search_regexp)
 	@prohibit='\<N?_ *\('						\
-	in_vc_files='^(tests|examples)/'				\
+	in_vc_files='(tests|examples)/'					\
 	halt='no translations in tests or examples'			\
 	  $(_sc_search_regexp)
 
@@ -808,7 +808,7 @@ sc_prohibit_semicolon_at_eol_in_python:
 # mymain() in test files should use return, not exit, for nicer output
 sc_prohibit_exit_in_tests:
 	@prohibit='\<exit *\('						\
-	in_vc_files='^tests/.*\.c$$'					\
+	in_vc_files='tests/.*\.c$$'					\
 	halt='use return, not exit(), in tests'				\
 	  $(_sc_search_regexp)
 
@@ -878,7 +878,7 @@ sc_prohibit_wrong_filename_in_comment:
 
 sc_prohibit_virConnectOpen_in_virsh:
 	@prohibit='\bvirConnectOpen[a-zA-Z]* *\('                      \
-	in_vc_files='^tools/virsh-.*\.[ch]$$'                          \
+	in_vc_files='tools/virsh-.*\.[ch]$$'                           \
 	halt='Use vshConnect() in virsh instead of virConnectOpen*'    \
 	  $(_sc_search_regexp)
 
