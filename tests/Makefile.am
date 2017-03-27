@@ -192,7 +192,6 @@ test_programs = virshtest sockettest \
 	domaincapstest \
 	domainconftest \
 	virhostdevtest \
-	vircaps2xmltest \
 	virnetdevtest \
 	virtypedparamtest \
 	$(NULL)
@@ -206,7 +205,6 @@ test_libraries = libshunload.la \
 	virnetdevmock.la \
 	virrandommock.la \
 	virhostcpumock.la \
-	virnumamock.la \
 	domaincapsmock.la \
 	$(NULL)
 
@@ -225,8 +223,10 @@ endif WITH_REMOTE
 if WITH_LINUX
 test_programs += fchosttest
 test_programs += scsihosttest
+test_programs += vircaps2xmltest
 test_libraries += virusbmock.la \
 	virnetdevbandwidthmock.la \
+	virnumamock.la \
 	virtestmock.la \
 	$(NULL)
 endif WITH_LINUX
@@ -941,11 +941,6 @@ vircapstest_SOURCES += testutilsxen.c testutilsxen.h
 endif WITH_XEN
 vircapstest_LDADD = $(qemu_LDADDS) $(LDADDS)
 
-vircaps2xmltest_SOURCES = \
-	vircaps2xmltest.c testutils.h testutils.c
-vircaps2xmltest_LDADD = $(LDADDS)
-
-
 domaincapsmock_la_SOURCES = domaincapsmock.c
 domaincapsmock_la_CFLAGS = $(AM_CFLAGS)
 domaincapsmock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
@@ -1125,11 +1120,19 @@ virhostcpumock_la_CFLAGS = $(AM_CFLAGS)
 virhostcpumock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virhostcpumock_la_LIBADD = $(MOCKLIBS_LIBS)
 
+if WITH_LINUX
+vircaps2xmltest_SOURCES = \
+	vircaps2xmltest.c testutils.h testutils.c
+vircaps2xmltest_LDADD = $(LDADDS)
+
 virnumamock_la_SOURCES = \
 	virnumamock.c
 virnumamock_la_CFLAGS = $(AM_CFLAGS)
 virnumamock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virnumamock_la_LIBADD = $(MOCKLIBS_LIBS)
+else ! WITH_LINUX
+EXTRA_DIST += vircaps2xmltest.c virnumamock.c
+endif ! WITH_LINUX
 
 if WITH_NSS
 nsstest_SOURCES = \

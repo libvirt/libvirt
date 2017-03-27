@@ -30,8 +30,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-#ifdef __linux__
-
 struct virCapabilitiesData {
     const char *filename;
     virArch arch;
@@ -90,7 +88,7 @@ mymain(void)
 {
     int ret = 0;
 
-# define DO_TEST_FULL(filename, arch, offlineMigrate, liveMigrate)       \
+#define DO_TEST_FULL(filename, arch, offlineMigrate, liveMigrate)       \
     do {                                                                \
         struct virCapabilitiesData data = {filename, arch,              \
                                            offlineMigrate,              \
@@ -99,7 +97,7 @@ mymain(void)
             ret = -1;                                                   \
     } while (0)
 
-# define DO_TEST(filename, arch) DO_TEST_FULL(filename, arch, true, true)
+#define DO_TEST(filename, arch) DO_TEST_FULL(filename, arch, true, true)
 
     DO_TEST_FULL("basic", VIR_ARCH_X86_64, false, false);
     DO_TEST_FULL("basic", VIR_ARCH_AARCH64, true, false);
@@ -110,13 +108,3 @@ mymain(void)
 }
 
 VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnumamock.so")
-
-#else /* !__linux__ */
-
-int
-main(void)
-{
-    return EXIT_AM_SKIP;
-}
-
-#endif /* !__linux__ */
