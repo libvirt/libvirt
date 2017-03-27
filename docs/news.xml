@@ -695,6 +695,11 @@
           Fix compilation on macOS
         </summary>
       </change>
+      <change>
+        <summary>
+          logical: Need to overwrite/clear more than just first 512 bytes
+        </summary>
+      </change>
     </section>
   </release>
 </libvirt>
