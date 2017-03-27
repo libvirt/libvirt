@@ -60,6 +60,16 @@
           least QEMU 2.9.0 in order to work properly.
         </description>
       </change>
+      <change>
+        <summary>
+          qemu: add mediated devices framework support
+        </summary>
+        <description>
+          Recent kernel version introduced new mediated device framework, so
+          provide an initial support of this framework for libvirt, mainly by
+          introducing a new host device type in the XML.
+        </description>
+      </change>
     </section>
     <section title="Improvements">
       <change>
