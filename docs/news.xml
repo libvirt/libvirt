@@ -120,7 +120,17 @@
           zero out pages for qemu. The timeout is now flexible and computed by
           libvirt at domain startup.
         </description>
-        </change>
+      </change>
+      <change>
+        <summary>
+          Overwrite (clear) 2 KB instead of just 512 bytes when initializing logical device
+        </summary>
+      </change>
+      <change>
+        <summary>
+          Describe the logical backend requirements better for pool-create-as
+        </summary>
+      </change>
     </section>
   </release>
   <release version="v3.1.0" date="2017-03-03">
@@ -702,16 +712,6 @@
       <change>
         <summary>
           Fix compilation on macOS
-        </summary>
-      </change>
-      <change>
-        <summary>
-          Overwrite (clear) 2 KB instead of just 512 bytes when initializing logical device
-        </summary>
-      </change>
-      <change>
-        <summary>
-          Describe the logical backend requirements better for pool-create-as
         </summary>
       </change>
     </section>
