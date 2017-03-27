@@ -1063,7 +1063,7 @@ virStorageSize(const char *unit,
                const char *val,
                unsigned long long *ret)
 {
-    if (virStrToLong_ull(val, NULL, 10, ret) < 0) {
+    if (virStrToLong_ullp(val, NULL, 10, ret) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("malformed capacity element"));
         return -1;
