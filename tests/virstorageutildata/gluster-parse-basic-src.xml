@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cliOutput>
+  <opRet>0</opRet>
+  <opErrno>0</opErrno>
+  <opErrstr/>
+  <volInfo>
+    <volumes>
+      <volume>
+        <name>vol0</name>
+        <id>ac14dfa5-0b98-4593-a2aa-9fe2bb9b9ce3</id>
+        <status>1</status>
+        <statusStr>Started</statusStr>
+        <snapshotCount>0</snapshotCount>
+        <brickCount>2</brickCount>
+        <distCount>2</distCount>
+        <stripeCount>1</stripeCount>
+        <replicaCount>2</replicaCount>
+        <arbiterCount>0</arbiterCount>
+        <disperseCount>0</disperseCount>
+        <redundancyCount>0</redundancyCount>
+        <type>2</type>
+        <typeStr>Replicate</typeStr>
+        <transport>0</transport>
+        <bricks>
+          <brick uuid="a6f5ddea-bc6a-44db-ae1d-5aa1db743490">virt-gluster-node1:/bricks/brick1/brick<name>virt-gluster-node1:/bricks/brick1/brick</name><hostUuid>a6f5ddea-bc6a-44db-ae1d-5aa1db743490</hostUuid><isArbiter>0</isArbiter></brick>
+          <brick uuid="f4ab9fb1-44ec-443b-8783-e5f70ed78da3">virt-gluster-node2:/bricks/brick1/brick<name>virt-gluster-node2:/bricks/brick1/brick</name><hostUuid>f4ab9fb1-44ec-443b-8783-e5f70ed78da3</hostUuid><isArbiter>0</isArbiter></brick>
+        </bricks>
+        <optCount>3</optCount>
+        <options>
+          <option>
+            <name>nfs.disable</name>
+            <value>on</value>
+          </option>
+          <option>
+            <name>performance.readdir-ahead</name>
+            <value>on</value>
+          </option>
+          <option>
+            <name>transport.address-family</name>
+            <value>inet</value>
+          </option>
+        </options>
+      </volume>
+      <count>1</count>
+    </volumes>
+  </volInfo>
+</cliOutput>

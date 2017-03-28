@@ -160,7 +160,9 @@ EXTRA_DIST =		\
 	xlconfigdata \
 	xmconfigdata \
 	xml2sexprdata \
-	xml2vmxdata
+	xml2vmxdata \
+	virstorageutildata \
+	$(NULL)
 
 test_helpers = commandhelper ssh
 test_programs = virshtest sockettest \
@@ -353,6 +355,7 @@ endif WITH_NWFILTER
 
 if WITH_STORAGE
 test_programs += storagevolxml2argvtest
+test_programs += virstorageutiltest
 endif WITH_STORAGE
 
 if WITH_STORAGE_FS
@@ -859,6 +862,16 @@ genericxml2xmltest_LDADD = $(LDADDS)
 
 
 if WITH_STORAGE
+virstorageutiltest_SOURCES = \
+	virstorageutiltest.c \
+	testutils.c \
+	testutils.h \
+	$(NULL)
+virstorageutiltest_LDADD = \
+	../src/libvirt_driver_storage_impl.la \
+	$(LDADDS) \
+	$(NULL)
+
 storagevolxml2argvtest_SOURCES = \
     storagevolxml2argvtest.c \
     testutils.c testutils.h
@@ -868,6 +881,7 @@ storagevolxml2argvtest_LDADD = \
 
 else ! WITH_STORAGE
 EXTRA_DIST += storagevolxml2argvtest.c
+EXTRA_DIST += virstorageutiltest.c
 endif ! WITH_STORAGE
 
 storagevolxml2xmltest_SOURCES = \
