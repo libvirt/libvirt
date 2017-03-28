@@ -1764,10 +1764,11 @@ virDomainEventDispatchDefaultFunc(virConnectPtr conn,
                                   virConnectObjectEventGenericCallback cb,
                                   void *cbopaque)
 {
-    virDomainPtr dom = virGetDomain(conn, event->meta.name, event->meta.uuid);
+    virDomainPtr dom = virGetDomain(conn, event->meta.name,
+                                    event->meta.uuid, event->meta.id);
+
     if (!dom)
         return;
-    dom->id = event->meta.id;
 
     switch ((virDomainEventID) event->eventID) {
     case VIR_DOMAIN_EVENT_ID_LIFECYCLE:
@@ -2108,13 +2109,13 @@ virDomainQemuMonitorEventDispatchFunc(virConnectPtr conn,
                                       virConnectObjectEventGenericCallback cb,
                                       void *cbopaque)
 {
-    virDomainPtr dom = virGetDomain(conn, event->meta.name, event->meta.uuid);
+    virDomainPtr dom;
     virDomainQemuMonitorEventPtr qemuMonitorEvent;
     virDomainQemuMonitorEventData *data = cbopaque;
 
-    if (!dom)
+    if (!(dom = virGetDomain(conn, event->meta.name,
+                             event->meta.uuid, event->meta.id)))
         return;
-    dom->id = event->meta.id;
 
     qemuMonitorEvent = (virDomainQemuMonitorEventPtr)event;
     ((virConnectDomainQemuMonitorEventCallback)cb)(conn, dom,

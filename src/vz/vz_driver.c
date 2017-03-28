@@ -586,9 +586,7 @@ vzDomainLookupByID(virConnectPtr conn, int id)
     if (virDomainLookupByIDEnsureACL(conn, dom->def) < 0)
         goto cleanup;
 
-    ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
-    if (ret)
-        ret->id = dom->def->id;
+    ret = virGetDomain(conn, dom->def->name, dom->def->uuid, dom->def->id);
 
  cleanup:
     virObjectUnlock(dom);
@@ -615,9 +613,7 @@ vzDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (virDomainLookupByUUIDEnsureACL(conn, dom->def) < 0)
         goto cleanup;
 
-    ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
-    if (ret)
-        ret->id = dom->def->id;
+    ret = virGetDomain(conn, dom->def->name, dom->def->uuid, dom->def->id);
 
  cleanup:
     virObjectUnlock(dom);
@@ -642,9 +638,7 @@ vzDomainLookupByName(virConnectPtr conn, const char *name)
     if (virDomainLookupByNameEnsureACL(conn, dom->def) < 0)
         goto cleanup;
 
-    ret = virGetDomain(conn, dom->def->name, dom->def->uuid);
-    if (ret)
-        ret->id = dom->def->id;
+    ret = virGetDomain(conn, dom->def->name, dom->def->uuid, dom->def->id);
 
  cleanup:
     virDomainObjEndAPI(&dom);
@@ -898,9 +892,7 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
         }
     }
 
-    retdom = virGetDomain(conn, def->name, def->uuid);
-    if (retdom)
-        retdom->id = def->id;
+    retdom = virGetDomain(conn, def->name, def->uuid, def->id);
 
  cleanup:
     if (job)
@@ -3351,9 +3343,7 @@ vzDomainMigrateFinish3Params(virConnectPtr dconn,
     if (virDomainMigrateFinish3ParamsEnsureACL(dconn, dom->def) < 0)
         goto cleanup;
 
-    domain = virGetDomain(dconn, dom->def->name, dom->def->uuid);
-    if (domain)
-        domain->id = dom->def->id;
+    domain = virGetDomain(dconn, dom->def->name, dom->def->uuid, dom->def->id);
 
  cleanup:
     /* In this situation we have to restore domain on source. But the migration
@@ -3767,7 +3757,7 @@ vzDomainGetAllStats(virConnectPtr conn,
     if (vzDomainGetBalloonStats(dom, stat, &maxparams) < 0)
         goto error;
 
-    if (!(stat->dom = virGetDomain(conn, dom->def->name, dom->def->uuid)))
+    if (!(stat->dom = virGetDomain(conn, dom->def->name, dom->def->uuid, dom->def->id)))
         goto error;
 
     return stat;

@@ -1027,15 +1027,11 @@ virDomainObjListExport(virDomainObjListPtr domlist,
             virDomainObjPtr vm = vms[i];
 
             virObjectLock(vm);
-
-            if (!(doms[i] = virGetDomain(conn, vm->def->name, vm->def->uuid))) {
-                virObjectUnlock(vm);
-                goto cleanup;
-            }
-
-            doms[i]->id = vm->def->id;
-
+            doms[i] = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
             virObjectUnlock(vm);
+
+            if (!doms[i])
+                goto cleanup;
         }
 
         *domains = doms;

@@ -1322,7 +1322,7 @@ libxlDomainMigrationFinish(virConnectPtr dconn,
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, cfg->caps) < 0)
         goto cleanup;
 
-    dom = virGetDomain(dconn, vm->def->name, vm->def->uuid);
+    dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
     if (dom == NULL) {

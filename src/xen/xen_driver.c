@@ -774,9 +774,7 @@ xenUnifiedDomainCreateXML(virConnectPtr conn,
     if (xenDaemonCreateXML(conn, def) < 0)
         goto cleanup;
 
-    ret = virGetDomain(conn, def->name, def->uuid);
-    if (ret)
-        ret->id = def->id;
+    ret = virGetDomain(conn, def->name, def->uuid, def->id);
 
  cleanup:
     virDomainDefFree(def);
@@ -795,10 +793,7 @@ xenUnifiedDomainLookupByID(virConnectPtr conn, int id)
     if (virDomainLookupByIDEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (!(ret = virGetDomain(conn, def->name, def->uuid)))
-        goto cleanup;
-
-    ret->id = def->id;
+    ret = virGetDomain(conn, def->name, def->uuid, def->id);
 
  cleanup:
     virDomainDefFree(def);
@@ -818,10 +813,7 @@ xenUnifiedDomainLookupByUUID(virConnectPtr conn,
     if (virDomainLookupByUUIDEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (!(ret = virGetDomain(conn, def->name, def->uuid)))
-        goto cleanup;
-
-    ret->id = def->id;
+    ret = virGetDomain(conn, def->name, def->uuid, def->id);
 
  cleanup:
     virDomainDefFree(def);
@@ -841,10 +833,7 @@ xenUnifiedDomainLookupByName(virConnectPtr conn,
     if (virDomainLookupByNameEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (!(ret = virGetDomain(conn, def->name, def->uuid)))
-        goto cleanup;
-
-    ret->id = def->id;
+    ret = virGetDomain(conn, def->name, def->uuid, def->id);
 
  cleanup:
     virDomainDefFree(def);
@@ -1720,9 +1709,7 @@ xenUnifiedDomainMigrateFinish(virConnectPtr dconn,
             goto cleanup;
     }
 
-    ret = virGetDomain(dconn, minidef->name, minidef->uuid);
-    if (ret)
-        ret->id = minidef->id;
+    ret = virGetDomain(dconn, minidef->name, minidef->uuid, minidef->id);
 
  cleanup:
     virDomainDefFree(def);
@@ -1817,10 +1804,7 @@ xenUnifiedDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int
 
     if (xenDaemonDomainDefineXML(conn, def) < 0)
         goto cleanup;
-    ret = virGetDomain(conn, def->name, def->uuid);
-
-    if (ret)
-        ret->id = -1;
+    ret = virGetDomain(conn, def->name, def->uuid, -1);
 
  cleanup:
     virDomainDefFree(def);

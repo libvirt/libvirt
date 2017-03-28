@@ -683,7 +683,8 @@ struct _virNWFilter {
 virConnectPtr virGetConnect(void);
 virDomainPtr virGetDomain(virConnectPtr conn,
                           const char *name,
-                          const unsigned char *uuid);
+                          const unsigned char *uuid,
+                          int id);
 virNetworkPtr virGetNetwork(virConnectPtr conn,
                             const char *name,
                             const unsigned char *uuid);

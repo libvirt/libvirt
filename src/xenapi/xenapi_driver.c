@@ -580,14 +580,14 @@ xenapiDomainCreateXML(virConnectPtr conn,
         ignore_value(virUUIDParse(record->uuid, raw_uuid));
         if (vm) {
             if (xen_vm_start(priv->session, vm, false, false)) {
-                domP = virGetDomain(conn, record->name_label, raw_uuid);
+                domP = virGetDomain(conn, record->name_label,
+                                    raw_uuid, record->domid);
                 if (!domP) {
                     xen_vm_record_free(record);
                     xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
                                               _("Domain Pointer is invalid"));
                     return domP;
                 }
-                domP->id = record->domid;
                 xen_vm_free(vm);
             }
             else
@@ -627,18 +627,16 @@ xenapiDomainLookupByID(virConnectPtr conn, int id)
             for (i = 0; i < result->size; i++) {
                 xen_vm_get_domid(session, &domID, result->contents[i]);
                 if (domID == id) {
+                    int64_t domid = -1;
+
                     xen_vm_get_record(session, &record, result->contents[i]);
                     xen_vm_get_uuid(session, &uuid, result->contents[i]);
                     ignore_value(virUUIDParse(uuid, raw_uuid));
-                    domP = virGetDomain(conn, record->name_label, raw_uuid);
-                    if (domP) {
-                        int64_t domid = -1;
-                        xen_vm_get_domid(session, &domid, result->contents[i]);
-                        domP->id = domid;
-                    } else {
+                    xen_vm_get_domid(session, &domid, result->contents[i]);
+                    domP = virGetDomain(conn, record->name_label, raw_uuid, domid);
+                    if (!domP) {
                         xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
                                                   _("Domain Pointer not valid"));
-                        domP = NULL;
                     }
                     xen_uuid_free(uuid);
                     xen_vm_record_free(record);
@@ -676,13 +674,10 @@ xenapiDomainLookupByUUID(virConnectPtr conn,
     if (xen_vm_get_by_uuid(session, &vm, uuidStr)) {
         xen_vm_get_record(session, &record, vm);
         if (record != NULL) {
-            domP = virGetDomain(conn, record->name_label, uuid);
+            domP = virGetDomain(conn, record->name_label, uuid, record->domid);
             if (!domP) {
                 xenapiSessionErrorHandler(conn, VIR_ERR_INTERNAL_ERROR,
                                           _("Domain Pointer not valid"));
-                domP = NULL;
-            } else {
-                domP->id = record->domid;
             }
             xen_vm_record_free(record);
         } else {
@@ -722,12 +717,11 @@ xenapiDomainLookupByName(virConnectPtr conn,
         vm = vms->contents[0];
         xen_vm_get_uuid(session, &uuid, vm);
         if (uuid != NULL) {
+            int64_t domid = -1;
             ignore_value(virUUIDParse(uuid, raw_uuid));
-            domP = virGetDomain(conn, name, raw_uuid);
+            xen_vm_get_domid(session, &domid, vm);
+            domP = virGetDomain(conn, name, raw_uuid, domid);
             if (domP != NULL) {
-                int64_t domid = -1;
-                xen_vm_get_domid(session, &domid, vm);
-                domP->id = domid;
                 xen_uuid_free(uuid);
                 xen_vm_set_free(vms);
                 return domP;
@@ -1776,7 +1770,7 @@ xenapiDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     if (record != NULL) {
         unsigned char raw_uuid[VIR_UUID_BUFLEN];
         ignore_value(virUUIDParse(record->uuid, raw_uuid));
-        domP = virGetDomain(conn, record->name_label, raw_uuid);
+        domP = virGetDomain(conn, record->name_label, raw_uuid, -1);
         if (!domP && !priv->session->ok)
             xenapiSessionErrorHandler(conn, VIR_ERR_NO_DOMAIN, NULL);
         xen_vm_record_free(record);

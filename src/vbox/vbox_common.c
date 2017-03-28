@@ -806,9 +806,7 @@ static virDomainPtr vboxDomainLookupByID(virConnectPtr conn, int id)
      * itself, so need not worry.
      */
 
-    ret = virGetDomain(conn, machineNameUtf8, uuid);
-    if (ret)
-        ret->id = id + 1;
+    ret = virGetDomain(conn, machineNameUtf8, uuid, id + 1);
 
     /* Cleanup all the XPCOM allocated stuff here */
     VBOX_UTF8_FREE(machineNameUtf8);
@@ -862,8 +860,9 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
         vboxIIDUnalloc(&iid);
 
         if (memcmp(uuid, iid_as_uuid, VIR_UUID_BUFLEN) == 0) {
-
             PRUint32 state;
+            int id = -1;
+
 
             matched = true;
 
@@ -872,16 +871,10 @@ virDomainPtr vboxDomainLookupByUUID(virConnectPtr conn,
 
             gVBoxAPI.UIMachine.GetState(machine, &state);
 
-            /* get a new domain pointer from virGetDomain, if it fails
-             * then no need to assign the id, else assign the id, cause
-             * it is -1 by default. rest is taken care by virGetDomain
-             * itself, so need not worry.
-             */
+            if (gVBoxAPI.machineStateChecker.Online(state))
+                id = i + 1;
 
-            ret = virGetDomain(conn, machineNameUtf8, iid_as_uuid);
-            if (ret &&
-                gVBoxAPI.machineStateChecker.Online(state))
-                ret->id = i + 1;
+            ret = virGetDomain(conn, machineNameUtf8, iid_as_uuid, id);
          }
 
          if (matched)
@@ -936,8 +929,8 @@ vboxDomainLookupByName(virConnectPtr conn, const char *name)
         VBOX_UTF16_TO_UTF8(machineNameUtf16, &machineNameUtf8);
 
         if (STREQ(name, machineNameUtf8)) {
-
             PRUint32 state;
+            int id = -1;
 
             matched = true;
 
@@ -947,16 +940,10 @@ vboxDomainLookupByName(virConnectPtr conn, const char *name)
 
             gVBoxAPI.UIMachine.GetState(machine, &state);
 
-            /* get a new domain pointer from virGetDomain, if it fails
-             * then no need to assign the id, else assign the id, cause
-             * it is -1 by default. rest is taken care by virGetDomain
-             * itself, so need not worry.
-             */
+            if (gVBoxAPI.machineStateChecker.Online(state))
+                id = i + 1;
 
-            ret = virGetDomain(conn, machineNameUtf8, uuid);
-            if (ret &&
-                gVBoxAPI.machineStateChecker.Online(state))
-                ret->id = i + 1;
+            ret = virGetDomain(conn, machineNameUtf8, uuid, id);
         }
 
         VBOX_UTF8_FREE(machineNameUtf8);
@@ -1982,7 +1969,7 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
     gVBoxAPI.UISession.Close(data->vboxSession);
     vboxIIDUnalloc(&mchiid);
 
-    ret = virGetDomain(conn, def->name, def->uuid);
+    ret = virGetDomain(conn, def->name, def->uuid, -1);
     VBOX_RELEASE(machine);
 
     virDomainDefFree(def);
@@ -7333,6 +7320,7 @@ vboxConnectListAllDomains(virConnectPtr conn,
 
     for (i = 0; i < machines.count; i++) {
         IMachine *machine = machines.items[i];
+        int id = -1;
 
         if (!machine)
             continue;
@@ -7397,16 +7385,16 @@ vboxConnectListAllDomains(virConnectPtr conn,
       vboxIIDToUUID(&iid, uuid);
       vboxIIDUnalloc(&iid);
 
-      dom = virGetDomain(conn, machineNameUtf8, uuid);
+      if (active)
+          id = i + 1;
+
+      dom = virGetDomain(conn, machineNameUtf8, uuid, id);
 
       VBOX_UTF8_FREE(machineNameUtf8);
       VBOX_UTF16_FREE(machineNameUtf16);
 
       if (!dom)
           goto cleanup;
-
-      if (active)
-          dom->id = i + 1;
 
       doms[count++] = dom;
     }

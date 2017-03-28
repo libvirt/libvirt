@@ -608,6 +608,7 @@ hypervMsvmComputerSystemToDomain(virConnectPtr conn,
                                  virDomainPtr *domain)
 {
     unsigned char uuid[VIR_UUID_BUFLEN];
+    int id = -1;
 
     if (domain == NULL || *domain != NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -621,18 +622,12 @@ hypervMsvmComputerSystemToDomain(virConnectPtr conn,
         return -1;
     }
 
-    *domain = virGetDomain(conn, computerSystem->data->ElementName, uuid);
+    if (hypervIsMsvmComputerSystemActive(computerSystem, NULL))
+        id = computerSystem->data->ProcessID;
 
-    if (*domain == NULL)
-        return -1;
+    *domain = virGetDomain(conn, computerSystem->data->ElementName, uuid, id);
 
-    if (hypervIsMsvmComputerSystemActive(computerSystem, NULL)) {
-        (*domain)->id = computerSystem->data->ProcessID;
-    } else {
-        (*domain)->id = -1;
-    }
-
-    return 0;
+    return *domain ? 0 : -1;
 }
 
 int

@@ -3214,10 +3214,7 @@ phypDomainLookupByName(virConnectPtr conn, const char *lpar_name)
     if (phypGetLparUUID(lpar_uuid, lpar_id, conn) == -1)
         return NULL;
 
-    dom = virGetDomain(conn, lpar_name, lpar_uuid);
-
-    if (dom)
-        dom->id = lpar_id;
+    dom = virGetDomain(conn, lpar_name, lpar_uuid, lpar_id);
 
     return dom;
 }
@@ -3237,10 +3234,7 @@ phypDomainLookupByID(virConnectPtr conn, int lpar_id)
     if (phypGetLparUUID(lpar_uuid, lpar_id, conn) == -1)
         goto cleanup;
 
-    dom = virGetDomain(conn, lpar_name, lpar_uuid);
-
-    if (dom)
-        dom->id = lpar_id;
+    dom = virGetDomain(conn, lpar_name, lpar_uuid, lpar_id);
 
  cleanup:
     VIR_FREE(lpar_name);
@@ -3593,7 +3587,7 @@ phypDomainCreateXML(virConnectPtr conn,
         }
     }
 
-    if ((dom = virGetDomain(conn, def->name, def->uuid)) == NULL)
+    if ((dom = virGetDomain(conn, def->name, def->uuid, def->id)) == NULL)
         goto err;
 
     if (phypBuildLpar(conn, def) == -1)

@@ -1534,8 +1534,7 @@ static virDomainPtr qemuDomainLookupByID(virConnectPtr conn,
     if (virDomainLookupByIDEnsureACL(conn, vm->def) < 0)
         goto cleanup;
 
-    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
-    if (dom) dom->id = vm->def->id;
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
     if (vm)
@@ -1563,8 +1562,7 @@ static virDomainPtr qemuDomainLookupByUUID(virConnectPtr conn,
     if (virDomainLookupByUUIDEnsureACL(conn, vm->def) < 0)
         goto cleanup;
 
-    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
-    if (dom) dom->id = vm->def->id;
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -1589,8 +1587,7 @@ static virDomainPtr qemuDomainLookupByName(virConnectPtr conn,
     if (virDomainLookupByNameEnsureACL(conn, vm->def) < 0)
         goto cleanup;
 
-    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
-    if (dom) dom->id = vm->def->id;
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -1794,9 +1791,7 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     }
     virDomainAuditStart(vm, "booted", true);
 
-    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
-    if (dom)
-        dom->id = vm->def->id;
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
     qemuProcessEndJob(driver, vm);
 
@@ -7101,8 +7096,7 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
                                      VIR_DOMAIN_EVENT_DEFINED_UPDATED);
 
     VIR_INFO("Creating domain '%s'", vm->def->name);
-    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
-    if (dom) dom->id = vm->def->id;
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
     virDomainDefFree(oldDef);
@@ -15736,9 +15730,7 @@ static virDomainPtr qemuDomainQemuAttach(virConnectPtr conn,
 
     monConfig = NULL;
 
-    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
-    if (dom)
-        dom->id = vm->def->id;
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
     qemuDomainObjEndJob(driver, vm);
 
@@ -19554,11 +19546,9 @@ qemuDomainGetStats(virConnectPtr conn,
         }
     }
 
-    if (!(tmp->dom = virGetDomain(conn, dom->def->name, dom->def->uuid)))
+    if (!(tmp->dom = virGetDomain(conn, dom->def->name,
+                                  dom->def->uuid, dom->def->id)))
         goto cleanup;
-
-    /* We have to copy the domain ID by hand */
-    tmp->dom->id = dom->def->id;
 
     *record = tmp;
     tmp = NULL;

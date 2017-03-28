@@ -5160,7 +5160,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
     if (flags & VIR_MIGRATE_OFFLINE) {
         if (retcode == 0 &&
             qemuMigrationPersist(driver, vm, mig, false) == 0)
-            dom = virGetDomain(dconn, vm->def->name, vm->def->uuid);
+            dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, -1);
         goto endjob;
     }
 
@@ -5294,7 +5294,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
         }
     }
 
-    dom = virGetDomain(dconn, vm->def->name, vm->def->uuid);
+    dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id);
 
     event = virDomainEventLifecycleNewFromObj(vm,
                                               VIR_DOMAIN_EVENT_RESUMED,

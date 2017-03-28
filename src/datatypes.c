@@ -261,6 +261,7 @@ virConnectCloseCallbackDataGetCallback(virConnectCloseCallbackDataPtr closeData)
  * @conn: the hypervisor connection
  * @name: pointer to the domain name
  * @uuid: pointer to the uuid
+ * @id: domain ID
  *
  * Allocates a new domain object. When the object is no longer needed,
  * virObjectUnref() must be called in order to not leak data.
@@ -268,7 +269,10 @@ virConnectCloseCallbackDataGetCallback(virConnectCloseCallbackDataPtr closeData)
  * Returns a pointer to the domain object, or NULL on error.
  */
 virDomainPtr
-virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid)
+virGetDomain(virConnectPtr conn,
+             const char *name,
+             const unsigned char *uuid,
+             int id)
 {
     virDomainPtr ret = NULL;
 
@@ -286,7 +290,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid)
         goto error;
 
     ret->conn = virObjectRef(conn);
-    ret->id = -1;
+    ret->id = id;
     memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
     return ret;
