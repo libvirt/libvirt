@@ -66,40 +66,61 @@ virClassPtr virClassForObjectLockable(void);
 # ifndef VIR_PARENT_REQUIRED
 #  define VIR_PARENT_REQUIRED ATTRIBUTE_NONNULL(1)
 # endif
-virClassPtr virClassNew(virClassPtr parent,
-                        const char *name,
-                        size_t objectSize,
-                        virObjectDisposeCallback dispose)
+virClassPtr
+virClassNew(virClassPtr parent,
+            const char *name,
+            size_t objectSize,
+            virObjectDisposeCallback dispose)
     VIR_PARENT_REQUIRED ATTRIBUTE_NONNULL(2);
 
-const char *virClassName(virClassPtr klass)
+const char *
+virClassName(virClassPtr klass)
     ATTRIBUTE_NONNULL(1);
 
-bool virClassIsDerivedFrom(virClassPtr klass,
-                           virClassPtr parent)
+bool
+virClassIsDerivedFrom(virClassPtr klass,
+                      virClassPtr parent)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-void *virObjectNew(virClassPtr klass)
+void *
+virObjectNew(virClassPtr klass)
     ATTRIBUTE_NONNULL(1);
-bool virObjectUnref(void *obj);
-void *virObjectRef(void *obj);
 
-bool virObjectIsClass(void *obj,
-                      virClassPtr klass)
+bool
+virObjectUnref(void *obj);
+
+void *
+virObjectRef(void *obj);
+
+bool
+virObjectIsClass(void *obj,
+                 virClassPtr klass)
     ATTRIBUTE_NONNULL(2);
 
-void virObjectFreeCallback(void *opaque);
-void virObjectFreeHashData(void *opaque, const void *name);
+void
+virObjectFreeCallback(void *opaque);
 
-void *virObjectLockableNew(virClassPtr klass)
+void
+virObjectFreeHashData(void *opaque,
+                      const void *name);
+
+void *
+virObjectLockableNew(virClassPtr klass)
     ATTRIBUTE_NONNULL(1);
 
-void virObjectLock(void *lockableobj)
-    ATTRIBUTE_NONNULL(1);
-void virObjectUnlock(void *lockableobj)
+void
+virObjectLock(void *lockableobj)
     ATTRIBUTE_NONNULL(1);
 
-void virObjectListFree(void *list);
-void virObjectListFreeCount(void *list, size_t count);
+void
+virObjectUnlock(void *lockableobj)
+    ATTRIBUTE_NONNULL(1);
+
+void
+virObjectListFree(void *list);
+
+void
+virObjectListFreeCount(void *list,
+                       size_t count);
 
 #endif /* __VIR_OBJECT_H */

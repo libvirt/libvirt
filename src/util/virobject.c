@@ -52,7 +52,8 @@ static virClassPtr virObjectLockableClass;
 
 static void virObjectLockableDispose(void *anyobj);
 
-static int virObjectOnceInit(void)
+static int
+virObjectOnceInit(void)
 {
     if (!(virObjectClass = virClassNew(NULL,
                                        "virObject",
@@ -77,7 +78,8 @@ VIR_ONCE_GLOBAL_INIT(virObject);
  *
  * Returns the class instance for the base virObject type
  */
-virClassPtr virClassForObject(void)
+virClassPtr
+virClassForObject(void)
 {
     if (virObjectInitialize() < 0)
         return NULL;
@@ -91,7 +93,8 @@ virClassPtr virClassForObject(void)
  *
  * Returns the class instance for the virObjectLockable type
  */
-virClassPtr virClassForObjectLockable(void)
+virClassPtr
+virClassForObjectLockable(void)
 {
     if (virObjectInitialize() < 0)
         return NULL;
@@ -116,10 +119,11 @@ virClassPtr virClassForObjectLockable(void)
  *
  * Returns a new class instance
  */
-virClassPtr virClassNew(virClassPtr parent,
-                        const char *name,
-                        size_t objectSize,
-                        virObjectDisposeCallback dispose)
+virClassPtr
+virClassNew(virClassPtr parent,
+            const char *name,
+            size_t objectSize,
+            virObjectDisposeCallback dispose)
 {
     virClassPtr klass;
 
@@ -162,8 +166,9 @@ virClassPtr virClassNew(virClassPtr parent,
  *
  * Return true if @klass is derived from @parent, false otherwise
  */
-bool virClassIsDerivedFrom(virClassPtr klass,
-                           virClassPtr parent)
+bool
+virClassIsDerivedFrom(virClassPtr klass,
+                      virClassPtr parent)
 {
     while (klass) {
         if (klass->magic == parent->magic)
@@ -186,7 +191,8 @@ bool virClassIsDerivedFrom(virClassPtr klass,
  *
  * Returns the new object
  */
-void *virObjectNew(virClassPtr klass)
+void *
+virObjectNew(virClassPtr klass)
 {
     virObjectPtr obj = NULL;
 
@@ -205,7 +211,8 @@ void *virObjectNew(virClassPtr klass)
 }
 
 
-void *virObjectLockableNew(virClassPtr klass)
+void *
+virObjectLockableNew(virClassPtr klass)
 {
     virObjectLockablePtr obj;
 
@@ -230,12 +237,14 @@ void *virObjectLockableNew(virClassPtr klass)
 }
 
 
-static void virObjectLockableDispose(void *anyobj)
+static void
+virObjectLockableDispose(void *anyobj)
 {
     virObjectLockablePtr obj = anyobj;
 
     virMutexDestroy(&obj->lock);
 }
+
 
 /**
  * virObjectUnref:
@@ -248,7 +257,8 @@ static void virObjectLockableDispose(void *anyobj)
  * Returns true if the remaining reference count is
  * non-zero, false if the object was disposed of
  */
-bool virObjectUnref(void *anyobj)
+bool
+virObjectUnref(void *anyobj)
 {
     virObjectPtr obj = anyobj;
 
@@ -286,7 +296,8 @@ bool virObjectUnref(void *anyobj)
  *
  * Returns @anyobj
  */
-void *virObjectRef(void *anyobj)
+void *
+virObjectRef(void *anyobj)
 {
     virObjectPtr obj = anyobj;
 
@@ -310,7 +321,8 @@ void *virObjectRef(void *anyobj)
  * The object must be unlocked before releasing this
  * reference.
  */
-void virObjectLock(void *anyobj)
+void
+virObjectLock(void *anyobj)
 {
     virObjectLockablePtr obj = anyobj;
 
@@ -331,7 +343,8 @@ void virObjectLock(void *anyobj)
  * Release a lock on @anyobj. The lock must have been
  * acquired by virObjectLock.
  */
-void virObjectUnlock(void *anyobj)
+void
+virObjectUnlock(void *anyobj)
 {
     virObjectLockablePtr obj = anyobj;
 
@@ -355,8 +368,9 @@ void virObjectUnlock(void *anyobj)
  *
  * Returns true if @anyobj is an instance of @klass
  */
-bool virObjectIsClass(void *anyobj,
-                      virClassPtr klass)
+bool
+virObjectIsClass(void *anyobj,
+                 virClassPtr klass)
 {
     virObjectPtr obj = anyobj;
     if (!obj)
@@ -372,7 +386,8 @@ bool virObjectIsClass(void *anyobj,
  *
  * Returns the name of @klass
  */
-const char *virClassName(virClassPtr klass)
+const char *
+virClassName(virClassPtr klass)
 {
     return klass->name;
 }
@@ -401,7 +416,9 @@ void virObjectFreeCallback(void *opaque)
  * but with the signature matching the virHashDataFree
  * typedef.
  */
-void virObjectFreeHashData(void *opaque, const void *name ATTRIBUTE_UNUSED)
+void
+virObjectFreeHashData(void *opaque,
+                      const void *name ATTRIBUTE_UNUSED)
 {
     virObjectUnref(opaque);
 }
@@ -413,7 +430,8 @@ void virObjectFreeHashData(void *opaque, const void *name ATTRIBUTE_UNUSED)
  *
  * Unrefs all members of @list and frees the list itself.
  */
-void virObjectListFree(void *list)
+void
+virObjectListFree(void *list)
 {
     void **next;
 
@@ -434,7 +452,9 @@ void virObjectListFree(void *list)
  *
  * Unrefs all members of @list and frees the list itself.
  */
-void virObjectListFreeCount(void *list, size_t count)
+void
+virObjectListFreeCount(void *list,
+                       size_t count)
 {
     size_t i;
 
