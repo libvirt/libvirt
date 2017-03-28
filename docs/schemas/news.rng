@@ -35,21 +35,18 @@
       <attribute name="title">
         <data type="string"/>
       </attribute>
-      <oneOrMore>
+      <zeroOrMore>
         <ref name="change"/>
-      </oneOrMore>
+      </zeroOrMore>
     </element>
   </define>
 
   <define name="change">
     <element name="change">
       <element name="summary">
-        <choice>
-          <data type="string">
-            <param name="pattern">\n[^\n]+\n +</param>
-          </data>
-          <empty/>
-        </choice>
+        <data type="string">
+          <param name="pattern">\n[^\n]+\n +</param>
+        </data>
       </element>
       <optional>
         <element name="description">

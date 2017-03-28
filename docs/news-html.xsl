@@ -57,9 +57,11 @@
       <strong>
         <xsl:value-of select="@title"/>
       </strong>
-      <ul>
-        <xsl:apply-templates select="change"/>
-      </ul>
+      <xsl:if test="*">
+        <ul>
+          <xsl:apply-templates select="change"/>
+        </ul>
+      </xsl:if>
     </li>
   </xsl:template>
 
