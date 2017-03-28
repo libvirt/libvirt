@@ -710,8 +710,9 @@ virStoragePoolDefParseXML(xmlXPathContextPtr ctxt)
 
     ret->name = virXPathString("string(./name)", ctxt);
     if (ret->name == NULL &&
-        options->flags & VIR_STORAGE_POOL_SOURCE_NAME)
-        ret->name = ret->source.name;
+        options->flags & VIR_STORAGE_POOL_SOURCE_NAME &&
+        VIR_STRDUP(ret->name, ret->source.name) < 0)
+        goto error;
     if (ret->name == NULL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing pool source name element"));
