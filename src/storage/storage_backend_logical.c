@@ -116,9 +116,9 @@ virStorageBackendLogicalInitializeDevice(const char *path)
 
     if (size < 4 * PV_BLANK_SECTOR_SIZE) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot initialize '%s' detected size='%lu' less "
+                       _("cannot initialize '%s' detected size='%zd' less "
                          "than minimum required='%d"),
-                         path, size, 4 * PV_BLANK_SECTOR_SIZE);
+                         path, (ssize_t) size, 4 * PV_BLANK_SECTOR_SIZE);
         goto cleanup;
     }
     if ((size = lseek(fd, 0, SEEK_SET)) == (off_t)-1) {
