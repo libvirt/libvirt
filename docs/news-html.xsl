@@ -82,15 +82,11 @@
     <xsl:apply-templates/>
   </xsl:template>
 
-  <!-- Misc HTML tags, add more as they are needed -->
-  <xsl:template match="code|i|tt">
-    <xsl:text disable-output-escaping="yes">&lt;</xsl:text>
-    <xsl:value-of select="name()"/>
-    <xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+  <!-- <code> HTML tag -->
+  <xsl:template match="code">
+    <xsl:text disable-output-escaping="yes">&lt;code&gt;</xsl:text>
     <xsl:apply-templates/>
-    <xsl:text disable-output-escaping="yes">&lt;/</xsl:text>
-    <xsl:value-of select="name()"/>
-    <xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+    <xsl:text disable-output-escaping="yes">&lt;/code&gt;</xsl:text>
   </xsl:template>
 
 </xsl:stylesheet>
