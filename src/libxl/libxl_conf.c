@@ -1833,34 +1833,94 @@ libxlMakeUSBController(virDomainControllerDefPtr controller,
 }
 
 static int
+libxlMakeDefaultUSBControllers(virDomainDefPtr def,
+                               libxl_domain_config *d_config)
+{
+    virDomainControllerDefPtr l_controller = NULL;
+    libxl_device_usbctrl *x_controllers = NULL;
+    size_t nusbdevs = 0;
+    size_t ncontrollers;
+    size_t i;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        if (def->hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            def->hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB)
+            nusbdevs++;
+    }
+
+    /* No controllers needed if there are no USB devs */
+    if (nusbdevs == 0)
+        return 0;
+
+    /* Create USB controllers with 8 ports */
+    ncontrollers = VIR_DIV_UP(nusbdevs, 8);
+    if (VIR_ALLOC_N(x_controllers, ncontrollers) < 0)
+        return -1;
+
+    for (i = 0; i < ncontrollers; i++) {
+        if (!(l_controller = virDomainControllerDefNew(VIR_DOMAIN_CONTROLLER_TYPE_USB)))
+            goto error;
+
+        l_controller->model = VIR_DOMAIN_CONTROLLER_MODEL_USB_QUSB2;
+        l_controller->idx = i;
+        l_controller->opts.usbopts.ports = 8;
+
+        libxl_device_usbctrl_init(&x_controllers[i]);
+
+        if (libxlMakeUSBController(l_controller, &x_controllers[i]) < 0)
+            goto error;
+
+        if (virDomainControllerInsert(def, l_controller) < 0)
+            goto error;
+
+        l_controller = NULL;
+    }
+
+    d_config->usbctrls = x_controllers;
+    d_config->num_usbctrls = ncontrollers;
+    return 0;
+
+ error:
+     virDomainControllerDefFree(l_controller);
+     for (i = 0; i < ncontrollers; i++)
+         libxl_device_usbctrl_dispose(&x_controllers[i]);
+     VIR_FREE(x_controllers);
+     return -1;
+}
+
+static int
 libxlMakeUSBControllerList(virDomainDefPtr def, libxl_domain_config *d_config)
 {
     virDomainControllerDefPtr *l_controllers = def->controllers;
     size_t ncontrollers = def->ncontrollers;
     size_t nusbctrls = 0;
     libxl_device_usbctrl *x_usbctrls;
-    size_t i;
-
-    if (ncontrollers == 0)
-        return 0;
-
-    if (VIR_ALLOC_N(x_usbctrls, ncontrollers) < 0)
-        return -1;
+    size_t i, j;
 
     for (i = 0; i < ncontrollers; i++) {
+        if (l_controllers[i]->type == VIR_DOMAIN_CONTROLLER_TYPE_USB)
+            nusbctrls++;
+    }
+
+    if (nusbctrls == 0)
+        return libxlMakeDefaultUSBControllers(def, d_config);
+
+    if (VIR_ALLOC_N(x_usbctrls, nusbctrls) < 0)
+        return -1;
+
+    for (i = 0, j = 0; i < ncontrollers && j < nusbctrls; i++) {
         if (l_controllers[i]->type != VIR_DOMAIN_CONTROLLER_TYPE_USB)
             continue;
 
-        libxl_device_usbctrl_init(&x_usbctrls[nusbctrls]);
+        libxl_device_usbctrl_init(&x_usbctrls[j]);
 
         if (libxlMakeUSBController(l_controllers[i],
-                                   &x_usbctrls[nusbctrls]) < 0)
+                                   &x_usbctrls[j]) < 0)
             goto error;
 
-        nusbctrls++;
+        j++;
     }
 
-    VIR_SHRINK_N(x_usbctrls, ncontrollers, ncontrollers - nusbctrls);
     d_config->usbctrls = x_usbctrls;
     d_config->num_usbctrls = nusbctrls;
 
