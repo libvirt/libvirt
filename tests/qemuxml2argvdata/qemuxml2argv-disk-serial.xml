@@ -20,6 +20,12 @@
       <serial>  WD-WMAP9A966149</serial>
       <address type='drive' controller='0' bus='0' target='0' unit='1'/>
     </disk>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/AllSerialChars'/>
+      <target dev='hdb' bus='ide'/>
+      <serial>abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_ .+</serial>
+      <address type='drive' controller='0' bus='0' target='0' unit='2'/>
+    </disk>
     <controller type='usb' index='0'/>
     <controller type='ide' index='0'/>
     <memballoon model='virtio'/>

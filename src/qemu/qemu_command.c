@@ -475,7 +475,7 @@ qemuBuildIoEventFdStr(virBufferPtr buf,
 }
 
 #define QEMU_SERIAL_PARAM_ACCEPTED_CHARS \
-  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_ "
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_ .+"
 
 static int
 qemuSafeSerialParamValue(const char *value)

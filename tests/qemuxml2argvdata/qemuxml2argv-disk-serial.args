@@ -22,4 +22,7 @@ server,nowait \
 -drive 'file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-1,\
 serial=\ \ WD-WMAP9A966149' \
 -device ide-drive,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \
+-drive 'file=/dev/HostVG/AllSerialChars,format=raw,if=none,id=drive-ide0-0-2,\
+serial=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_\ .+' \
+-device ide-drive,bus=ide.0,unit=2,drive=drive-ide0-0-2,id=ide0-0-2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3
