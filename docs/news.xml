@@ -72,7 +72,7 @@
           introducing a new host device type in the XML.
         </description>
       </change>
-      <changes>
+      <change>
         <summary>
           qemu: Add support for setting TSC frequency
         </summary>
@@ -80,7 +80,7 @@
           Setting TSC frequency is required to enable migration for domains
           with 'invtsc' CPU feature turned on.
         </description>
-      </changes>
+      </change>
     </section>
     <section title="Improvements">
       <change>
