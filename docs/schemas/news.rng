@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <ref name="libvirt"/>
+  </start>
+
+  <define name="libvirt">
+    <element name="libvirt">
+      <oneOrMore>
+        <ref name="release"/>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="release">
+    <element name="release">
+      <attribute name="version">
+        <data type="string">
+          <param name="pattern">v[0-9]+\.[0-9]+\.[0-9]+</param>
+        </data>
+      </attribute>
+      <attribute name="date">
+        <data type="string">
+          <param name="pattern">[0-9]{4}-[0-9]{2}-[0-9]{2}|unreleased</param>
+        </data>
+      </attribute>
+      <oneOrMore>
+        <ref name="section"/>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="section">
+    <element name="section">
+      <attribute name="title">
+        <data type="string"/>
+      </attribute>
+      <oneOrMore>
+        <ref name="change"/>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="change">
+    <element name="change">
+      <element name="summary">
+        <choice>
+          <data type="string">
+            <param name="pattern">\n[^\n]+\n +</param>
+          </data>
+          <empty/>
+        </choice>
+      </element>
+      <optional>
+        <element name="description">
+          <ref name="description"/>
+        </element>
+      </optional>
+    </element>
+  </define>
+
+  <define name="description">
+    <oneOrMore>
+      <choice>
+        <text/>
+        <element name="code">
+          <text/>
+        </element>
+      </choice>
+    </oneOrMore>
+  </define>
+
+</grammar>
