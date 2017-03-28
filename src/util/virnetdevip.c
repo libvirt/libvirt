@@ -556,15 +556,24 @@ virNetDevIPCheckIPv6ForwardingCallback(const struct nlmsghdr *resp,
     if (resp->nlmsg_type != RTM_NEWROUTE)
         return ret;
 
-    /* Extract a few attributes */
+    /* Extract a device ID attribute */
+    VIR_WARNINGS_NO_CAST_ALIGN
     for (rta = RTM_RTA(rtmsg); RTA_OK(rta, len); rta = RTA_NEXT(rta, len)) {
-        switch (rta->rta_type) {
-        case RTA_OIF:
+        VIR_WARNINGS_RESET
+        if (rta->rta_type == RTA_OIF) {
             oif = *(int *)RTA_DATA(rta);
+
+            /* Should never happen: netlink message would be broken */
+            if (ifname) {
+                char *ifname2 = virNetDevGetName(oif);
+                VIR_WARN("Single route has unexpected 2nd interface "
+                         "- '%s' and '%s'", ifname, ifname2);
+                VIR_FREE(ifname2);
+                break;
+            }
 
             if (!(ifname = virNetDevGetName(oif)))
                 goto error;
-            break;
         }
     }
 
