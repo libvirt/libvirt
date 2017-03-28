@@ -19556,6 +19556,9 @@ qemuDomainGetStats(virConnectPtr conn,
     if (!(tmp->dom = virGetDomain(conn, dom->def->name, dom->def->uuid)))
         goto cleanup;
 
+    /* We have to copy the domain ID by hand */
+    tmp->dom->id = dom->def->id;
+
     *record = tmp;
     tmp = NULL;
     ret = 0;
