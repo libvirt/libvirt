@@ -35,6 +35,7 @@ VIR_LOG_INIT("tests.schematest");
 
 struct testSchemaData {
     virXMLValidatorPtr validator;
+    const char *schema;
     const char *xml_path;
 };
 
@@ -140,15 +141,10 @@ testSchemaDirs(const char *schema, virXMLValidatorPtr validator, ...)
 }
 
 
-struct testSchemaFileData {
-    virXMLValidatorPtr validator;
-    const char *schema;
-};
-
 static int
 testSchemaGrammar(const void *opaque)
 {
-    struct testSchemaFileData *data = (struct testSchemaFileData *) opaque;
+    struct testSchemaData *data = (struct testSchemaData *) opaque;
     char *schema_path;
     int ret = -1;
 
@@ -171,11 +167,11 @@ static int
 mymain(void)
 {
     int ret = 0;
-    struct testSchemaFileData data;
+    struct testSchemaData data;
 
     memset(&data, 0, sizeof(data));
 
-#define DO_TEST(sch, ...)                                                      \
+#define DO_TEST_DIR(sch, ...)                                                  \
     do {                                                                       \
         data.schema = sch;                                                     \
         if (virTestRun("test schema grammar file: " sch,                       \
@@ -196,26 +192,49 @@ mymain(void)
         }                                                                      \
     } while (0)
 
-    DO_TEST("capability.rng", "capabilityschemadata", "xencapsdata");
-    DO_TEST("domain.rng", "domainschemadata", "qemuargv2xmldata",
-            "qemuxml2argvdata", "sexpr2xmldata", "xmconfigdata",
-            "xml2sexprdata", "qemuxml2xmloutdata", "lxcxml2xmldata",
-            "lxcxml2xmloutdata", "bhyvexml2argvdata", "genericxml2xmlindata",
-            "genericxml2xmloutdata", "xlconfigdata",
-            "qemuhotplugtestdomains");
-    DO_TEST("domaincaps.rng", "domaincapsschemadata");
-    DO_TEST("domainsnapshot.rng", "domainsnapshotxml2xmlin",
-            "domainsnapshotxml2xmlout");
-    DO_TEST("interface.rng", "interfaceschemadata");
-    DO_TEST("network.rng", "../src/network", "networkxml2xmlin",
-            "networkxml2xmlout", "networkxml2confdata");
-    DO_TEST("nodedev.rng", "nodedevschemadata");
-    DO_TEST("nwfilter.rng", "nwfilterxml2xmlout");
-    DO_TEST("secret.rng", "secretxml2xmlin");
-    DO_TEST("storagepool.rng", "storagepoolxml2xmlin", "storagepoolxml2xmlout",
-            "storagepoolschemadata");
-    DO_TEST("storagevol.rng", "storagevolxml2xmlin", "storagevolxml2xmlout",
-            "storagevolschemadata");
+#define DO_TEST_FILE(sch, xmlfile)                                             \
+    do {                                                                       \
+        data.schema = sch;                                                     \
+        data.xml_path = abs_srcdir "/" xmlfile;                                \
+        if (virTestRun("test schema grammar file: " sch,                       \
+                       testSchemaGrammar, &data) == 0) {                       \
+            /* initialize the validator even if the schema test                \
+             * was skipped because of VIR_TEST_RANGE */                        \
+            if (!data.validator && testSchemaGrammar(&data) < 0) {             \
+                ret = -1;                                                      \
+                break;                                                         \
+            }                                                                  \
+            if (virTestRun("Checking " xmlfile " against " sch,                \
+                           testSchemaFile, &data) < 0)                         \
+                ret = -1;                                                      \
+                                                                               \
+            virXMLValidatorFree(data.validator);                               \
+            data.validator = NULL;                                             \
+        } else {                                                               \
+            ret = -1;                                                          \
+        }                                                                      \
+    } while (0)
+
+    DO_TEST_DIR("capability.rng", "capabilityschemadata", "xencapsdata");
+    DO_TEST_DIR("domain.rng", "domainschemadata", "qemuargv2xmldata",
+                "qemuxml2argvdata", "sexpr2xmldata", "xmconfigdata",
+                "xml2sexprdata", "qemuxml2xmloutdata", "lxcxml2xmldata",
+                "lxcxml2xmloutdata", "bhyvexml2argvdata", "genericxml2xmlindata",
+                "genericxml2xmloutdata", "xlconfigdata",
+                "qemuhotplugtestdomains");
+    DO_TEST_DIR("domaincaps.rng", "domaincapsschemadata");
+    DO_TEST_DIR("domainsnapshot.rng", "domainsnapshotxml2xmlin",
+                "domainsnapshotxml2xmlout");
+    DO_TEST_DIR("interface.rng", "interfaceschemadata");
+    DO_TEST_DIR("network.rng", "../src/network", "networkxml2xmlin",
+                "networkxml2xmlout", "networkxml2confdata");
+    DO_TEST_DIR("nodedev.rng", "nodedevschemadata");
+    DO_TEST_DIR("nwfilter.rng", "nwfilterxml2xmlout");
+    DO_TEST_DIR("secret.rng", "secretxml2xmlin");
+    DO_TEST_DIR("storagepool.rng", "storagepoolxml2xmlin", "storagepoolxml2xmlout",
+                "storagepoolschemadata");
+    DO_TEST_DIR("storagevol.rng", "storagevolxml2xmlin", "storagevolxml2xmlout",
+                "storagevolschemadata");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
