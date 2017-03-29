@@ -3178,10 +3178,11 @@ for HBA).
 
 List all of the devices available on the node that are known by libvirt.
 I<cap> is used to filter the list by capability types, the types must be
-separated by comma, e.g. --cap pci,scsi, valid capability types include
+separated by comma, e.g. --cap pci,scsi. Valid capability types include
 'system', 'pci', 'usb_device', 'usb', 'net', 'scsi_host', 'scsi_target',
-'scsi', 'storage', 'fc_host', 'vports', 'scsi_generic', 'drm'.If I<--tree>
-is used, the output is formatted in a tree representing parents of each
+'scsi', 'storage', 'fc_host', 'vports', 'scsi_generic', 'drm', 'mdev',
+'mdev_types'.
+If I<--tree> is used, the output is formatted in a tree representing parents of each
 node.  I<cap> and I<--tree> are mutually exclusive.
 
 =item B<nodedev-reattach> I<nodedev>

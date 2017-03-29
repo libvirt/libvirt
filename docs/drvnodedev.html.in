@@ -9,7 +9,7 @@
       (historically also referred to as node devices) like USB, PCI, SCSI, and
       network devices. This also includes various virtualization capabilities
       which the aforementioned devices provide for utilization, for example
-      SR-IOV, NPIV, DRM, etc.
+      SR-IOV, NPIV, MDEV, DRM, etc.
     </p>
 
     <p>
@@ -75,6 +75,7 @@
           <code>storage</code> (<span class="since">Since 1.0.4</span>),
           <code>scsi_generic</code> (<span class="since">Since 1.0.7</span>),
           <code>drm</code> (<span class="since">Since 3.1.0</span>), and
+          <code>mdev</code> (<span class="since">Since 3.4.0</span>).
           This element can be nested in which case it further specifies a
           device's capability. Refer to specific device types to see more values
           for the <code>type</code> attribute which are exclusive.
@@ -184,6 +185,171 @@
   &lt;/capability&gt;
 ...
 &lt;device&gt;</pre>
+
+    <h3><a name="MDEVCap">MDEV capability</a></h3>
+    <p>
+      A PCI device capable of creating mediated devices will include a nested
+      capability <code>mdev_types</code> which enumerates all supported mdev
+      types on the physical device, along with the type attributes available
+      through sysfs:
+    </p>
+
+    <dl>
+      <dt><code>type</code></dt>
+      <dd>
+        This element describes a mediated device type which acts as an
+        abstract template defining a resource allocation for instances of this
+        device type. The element has one attribute <code>id</code> which holds
+        an official vendor-supplied identifier for the type.
+        <span class="since">Since 3.4.0</span>
+      </dd>
+
+      <dt><code>name</code></dt>
+      <dd>
+        The <code>name</code> element holds a vendor-supplied code name for
+        the given mediated device type. This is an optional element.
+        <span class="since">Since 3.4.0</span>
+      </dd>
+
+      <dt><code>deviceAPI</code></dt>
+      <dd>
+        The value of this element describes how an instance of the given type
+        will be presented to the guest by the VFIO framework.
+        <span class="since">Since 3.4.0</span>
+      </dd>
+
+      <dt><code>availableInstances</code></dt>
+      <dd>
+        This element reports the current state of resource allocation. In other
+        words, how many instances of the given type can still be successfully
+        created on the physical device.
+        <span class="since">Since 3.4.0</span>
+      </dd>
+    </dl>
+
+    <p>
+      For a more info about mediated devices, refer to the
+      <a href="#MDEV">paragraph below</a>.
+    </p>
+
+<pre>
+&lt;device&gt;
+...
+  &lt;driver&gt;
+    &lt;name&gt;nvidia&lt;/name&gt;
+  &lt;/driver&gt;
+  &lt;capability type='pci'&gt;
+...
+    &lt;capability type='mdev_types'&gt;
+      &lt;type id='nvidia-11'&gt;
+        &lt;name&gt;GRID M60-0B&lt;/name&gt;
+        &lt;deviceAPI&gt;vfio-pci&lt;/deviceAPI&gt;
+        &lt;availableInstances&gt;16&lt;/availableInstances&gt;
+      &lt;/type&gt;
+      &lt;!-- Here would come the rest of the available mdev types --&gt;
+    &lt;/capability&gt;
+...
+  &lt;/capability&gt;
+&lt;/device&gt;</pre>
+
+    <h2><a name="MDEV">Mediated devices (MDEVs)</a></h2>
+    <p>
+      Mediated devices (<span class="since">Since 3.2.0</span>) are software
+      devices defining resource allocation on the backing physical device which
+      in turn allows the parent physical device's resources to be divided into
+      several mediated devices, thus sharing the physical device's performance
+      among multiple guests. Unlike SR-IOV however, where a PCIe device appears
+      as multiple separate PCIe devices on the host's PCI bus, mediated devices
+      only appear on the mdev virtual bus. Therefore, no detach/reattach
+      procedure from/to the host driver procedure is involved even though
+      mediated devices are used in a direct device assignment manner.
+    </p>
+
+    <p>
+      The following sub-elements and attributes are exposed within the
+      <code>capability</code> element:
+    </p>
+
+    <dl>
+      <dt><code>type</code></dt>
+      <dd>
+        This element describes a mediated device type which acts as an
+        abstract template defining a resource allocation for instances of this
+        device type. The element has one attribute <code>id</code> which holds
+        an official vendor-supplied identifier for the type.
+        <span class="since">Since 3.4.0</span>
+      </dd>
+
+      <dt><code>iommuGroup</code></dt>
+      <dd>
+        This element supports a single attribute <code>number</code> which holds
+        the IOMMU group number the mediated device belongs to.
+        <span class="since">Since 3.4.0</span>
+      </dd>
+    </dl>
+
+    <h3>Example of a mediated device</h3>
+    <pre>
+&lt;device&gt;
+  &lt;name&gt;mdev_4b20d080_1b54_4048_85b3_a6a62d165c01&lt;/name&gt;
+  &lt;path&gt;/sys/devices/pci0000:00/0000:00:02.0/4b20d080-1b54-4048-85b3-a6a62d165c01&lt;/path&gt;
+  &lt;parent&gt;pci_0000_06_00_0&lt;/parent&gt;
+  &lt;driver&gt;
+    &lt;name&gt;vfio_mdev&lt;/name&gt;
+  &lt;/driver&gt;
+  &lt;capability type='mdev'&gt;
+    &lt;type id='nvidia-11'/&gt;
+    &lt;iommuGroup number='12'/&gt;
+  &lt;capability/&gt;
+&lt;device/&gt;</pre>
+
+    <p>
+      The support of mediated device's framework in libvirt's node device driver
+      covers the following features:
+    </p>
+
+    <ul>
+      <li>
+        list available mediated devices on the host
+        (<span class="since">Since 3.4.0</span>)
+      </li>
+      <li>
+        display device details
+        (<span class="since">Since 3.4.0</span>)
+      </li>
+    </ul>
+
+    <p>
+      Because mediated devices are instantiated from vendor specific templates,
+      simply called 'types', information describing these types is contained
+      within the parent device's capabilities
+      (see the example in <a href="#PCI">PCI host devices</a>).
+    </p>
+
+    <p>
+      To see the supported mediated device types on a specific physical device
+      use the following:
+    </p>
+
+    <pre>
+$ ls /sys/class/mdev_bus/&lt;device&gt;/mdev_supported_types</pre>
+
+    <p>
+      To manually instantiate a mediated device, use one of the following as a
+      reference:
+    </p>
+
+    <pre>
+$ uuidgen &gt; /sys/class/mdev_bus/&lt;device&gt;/mdev_supported_types/&lt;type&gt;/create
+...
+$ echo &lt;UUID&gt; &gt; /sys/class/mdev_bus/&lt;device&gt;/mdev_supported_types/&lt;type&gt;/create</pre>
+
+    <p>
+      Manual removal of a mediated device is then performed as follows:
+    </p>
+
+    <pre>
+$ echo 1 &gt; /sys/bus/mdev/devices/&lt;uuid&gt;/remove</pre>
 
   </body>
 </html>
