@@ -2549,8 +2549,7 @@ x86Baseline(virCPUDefPtr *cpus,
 
 static int
 x86UpdateHostModel(virCPUDefPtr guest,
-                   const virCPUDef *host,
-                   virCPUx86MapPtr map)
+                   const virCPUDef *host)
 {
     virCPUDefPtr updated = NULL;
     size_t i;
@@ -2559,11 +2558,9 @@ x86UpdateHostModel(virCPUDefPtr guest,
     if (!(updated = virCPUDefCopyWithoutModel(host)))
         goto cleanup;
 
-    /* Remove non-migratable features by default */
     updated->type = VIR_CPU_TYPE_GUEST;
     updated->mode = VIR_CPU_MODE_CUSTOM;
-    if (virCPUDefCopyModelFilter(updated, host, true,
-                                 x86FeatureIsMigratable, map) < 0)
+    if (virCPUDefCopyModel(updated, host, true) < 0)
         goto cleanup;
 
     if (guest->vendor_id) {
@@ -2627,7 +2624,7 @@ virCPUx86Update(virCPUDefPtr guest,
 
     if (guest->mode == VIR_CPU_MODE_HOST_MODEL ||
         guest->match == VIR_CPU_MATCH_MINIMUM)
-        ret = x86UpdateHostModel(guest, host, map);
+        ret = x86UpdateHostModel(guest, host);
     else
         ret = 0;
 
