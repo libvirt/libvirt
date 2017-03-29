@@ -81,7 +81,8 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
 int
 virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
                         virDomainVirtType type,
-                        virCPUDefPtr cpu);
+                        virCPUDefPtr cpu,
+                        bool migratable);
 
 void
 virQEMUCapsInitQMPBasicArch(virQEMUCapsPtr qemuCaps);

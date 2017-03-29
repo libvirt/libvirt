@@ -709,7 +709,7 @@ cpuTestJSONCPUID(const void *arg)
     cpu->match = VIR_CPU_MATCH_EXACT;
     cpu->fallback = VIR_CPU_FALLBACK_FORBID;
 
-    if (virQEMUCapsInitCPUModel(qemuCaps, VIR_DOMAIN_VIRT_KVM, cpu) != 0)
+    if (virQEMUCapsInitCPUModel(qemuCaps, VIR_DOMAIN_VIRT_KVM, cpu, false) != 0)
         goto cleanup;
 
     ret = cpuTestCompareXML(data->arch, cpu, result, false);
