@@ -8605,7 +8605,10 @@ qemuDomainGetStorageSourceByDevstr(const char *devstr,
         goto cleanup;
     }
 
-    src = virStorageFileChainLookup(disk->src, NULL, NULL, idx, NULL);
+    if (idx == 0)
+        src = disk->src;
+    else
+        src = virStorageFileChainLookup(disk->src, NULL, NULL, idx, NULL);
 
  cleanup:
     VIR_FREE(target);
