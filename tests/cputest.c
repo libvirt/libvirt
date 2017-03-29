@@ -691,7 +691,7 @@ cpuTestJSONCPUID(const void *arg)
 
     if (qemuMonitorGetCPUModelExpansion(qemuMonitorTestGetMonitor(testMon),
                                         QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC,
-                                        "host", &model) < 0)
+                                        "host", true, &model) < 0)
         goto cleanup;
 
     if (!(qemuCaps = virQEMUCapsNew()))

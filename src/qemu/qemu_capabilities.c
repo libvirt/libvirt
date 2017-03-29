@@ -2807,8 +2807,11 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
                            bool tcg)
 {
     qemuMonitorCPUModelInfoPtr *modelInfo;
+    qemuMonitorCPUModelInfoPtr nonMigratable = NULL;
+    virHashTablePtr hash = NULL;
     const char *model;
     qemuMonitorCPUModelExpansionType type;
+    int ret = -1;
 
     if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
         return 0;
@@ -2831,7 +2834,55 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
     else
         type = QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC;
 
-    return qemuMonitorGetCPUModelExpansion(mon, type, model, modelInfo);
+    if (qemuMonitorGetCPUModelExpansion(mon, type, model, true, modelInfo) < 0)
+        return -1;
+
+    /* Try to check migratability of each feature. */
+    if (*modelInfo &&
+        qemuMonitorGetCPUModelExpansion(mon, type, model, false,
+                                        &nonMigratable) < 0)
+        goto error;
+
+    if (nonMigratable) {
+        qemuMonitorCPUPropertyPtr prop;
+        qemuMonitorCPUPropertyPtr nmProp;
+        size_t i;
+
+        if (!(hash = virHashCreate(0, NULL)))
+            goto error;
+
+        for (i = 0; i < (*modelInfo)->nprops; i++) {
+            prop = (*modelInfo)->props + i;
+            if (virHashAddEntry(hash, prop->name, prop) < 0)
+                goto error;
+        }
+
+        for (i = 0; i < nonMigratable->nprops; i++) {
+            nmProp = nonMigratable->props + i;
+            if (!(prop = virHashLookup(hash, nmProp->name)) ||
+                prop->type != QEMU_MONITOR_CPU_PROPERTY_BOOLEAN ||
+                prop->type != nmProp->type)
+                continue;
+
+            if (prop->value.boolean)
+                prop->migratable = VIR_TRISTATE_BOOL_YES;
+        }
+
+        (*modelInfo)->migratability = true;
+    }
+
+    ret = 0;
+
+ cleanup:
+    virHashFree(hash);
+    qemuMonitorCPUModelInfoFree(nonMigratable);
+
+    return ret;
+
+ error:
+    qemuMonitorCPUModelInfoFree(*modelInfo);
+    *modelInfo = NULL;
+    goto cleanup;
 }
 
 struct tpmTypeToCaps {

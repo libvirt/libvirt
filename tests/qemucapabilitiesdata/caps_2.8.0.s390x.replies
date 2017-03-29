@@ -13048,6 +13048,14 @@
 }
 
 {
+  "id": "libvirt-49",
+  "error": {
+    "class": "GenericError",
+    "desc": "Property '.migratable' not found"
+  }
+}
+
+{
   "return": {
   },
   "id": "libvirt-1"

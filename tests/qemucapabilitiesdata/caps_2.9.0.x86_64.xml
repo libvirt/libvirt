@@ -211,60 +211,60 @@
   <kvmVersion>0</kvmVersion>
   <package> (v2.9.0-rc0-142-g940a8ce)</package>
   <arch>x86_64</arch>
-  <hostCPU type='kvm' model='base' migratability='no'>
+  <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='phys-bits' type='number' value='0'/>
     <property name='core-id' type='number' value='-1'/>
     <property name='xlevel' type='number' value='2147483656'/>
-    <property name='cmov' type='boolean' value='true'/>
+    <property name='cmov' type='boolean' value='true' migratable='yes'/>
     <property name='ia64' type='boolean' value='false'/>
-    <property name='aes' type='boolean' value='true'/>
-    <property name='mmx' type='boolean' value='true'/>
-    <property name='arat' type='boolean' value='true'/>
+    <property name='aes' type='boolean' value='true' migratable='yes'/>
+    <property name='mmx' type='boolean' value='true' migratable='yes'/>
+    <property name='arat' type='boolean' value='true' migratable='yes'/>
     <property name='rdpid' type='boolean' value='false'/>
     <property name='pause-filter' type='boolean' value='false'/>
-    <property name='xsavec' type='boolean' value='true'/>
+    <property name='xsavec' type='boolean' value='true' migratable='yes'/>
     <property name='osxsave' type='boolean' value='false'/>
     <property name='tsc-frequency' type='number' value='0'/>
-    <property name='xd' type='boolean' value='true'/>
+    <property name='xd' type='boolean' value='true' migratable='yes'/>
     <property name='hv-vendor-id' type='string' value=''/>
-    <property name='kvm-asyncpf' type='boolean' value='true'/>
-    <property name='kvm_asyncpf' type='boolean' value='true'/>
+    <property name='kvm-asyncpf' type='boolean' value='true' migratable='yes'/>
+    <property name='kvm_asyncpf' type='boolean' value='true' migratable='yes'/>
     <property name='perfctr_core' type='boolean' value='false'/>
     <property name='perfctr-core' type='boolean' value='false'/>
-    <property name='mpx' type='boolean' value='true'/>
+    <property name='mpx' type='boolean' value='true' migratable='yes'/>
     <property name='avx512cd' type='boolean' value='false'/>
     <property name='decodeassists' type='boolean' value='false'/>
     <property name='pbe' type='boolean' value='false'/>
-    <property name='sse4_1' type='boolean' value='true'/>
-    <property name='sse4.1' type='boolean' value='true'/>
-    <property name='sse4-1' type='boolean' value='true'/>
+    <property name='sse4_1' type='boolean' value='true' migratable='yes'/>
+    <property name='sse4.1' type='boolean' value='true' migratable='yes'/>
+    <property name='sse4-1' type='boolean' value='true' migratable='yes'/>
     <property name='family' type='number' value='6'/>
-    <property name='vmware-cpuid-freq' type='boolean' value='true'/>
+    <property name='vmware-cpuid-freq' type='boolean' value='true' migratable='yes'/>
     <property name='avx512f' type='boolean' value='false'/>
     <property name='xcrypt' type='boolean' value='false'/>
     <property name='hv-runtime' type='boolean' value='false'/>
-    <property name='msr' type='boolean' value='true'/>
-    <property name='mce' type='boolean' value='true'/>
-    <property name='mca' type='boolean' value='true'/>
+    <property name='msr' type='boolean' value='true' migratable='yes'/>
+    <property name='mce' type='boolean' value='true' migratable='yes'/>
+    <property name='mca' type='boolean' value='true' migratable='yes'/>
     <property name='thread-id' type='number' value='-1'/>
     <property name='min-level' type='number' value='13'/>
-    <property name='xgetbv1' type='boolean' value='true'/>
+    <property name='xgetbv1' type='boolean' value='true' migratable='yes'/>
     <property name='cid' type='boolean' value='false'/>
     <property name='hv-relaxed' type='boolean' value='false'/>
-    <property name='fxsr' type='boolean' value='true'/>
+    <property name='fxsr' type='boolean' value='true' migratable='yes'/>
     <property name='ds' type='boolean' value='false'/>
     <property name='hv-crash' type='boolean' value='false'/>
-    <property name='xsaveopt' type='boolean' value='true'/>
+    <property name='xsaveopt' type='boolean' value='true' migratable='yes'/>
     <property name='xtpr' type='boolean' value='false'/>
     <property name='avx512-vpopcntdq' type='boolean' value='false'/>
     <property name='phe' type='boolean' value='false'/>
     <property name='avx512vl' type='boolean' value='false'/>
     <property name='extapic' type='boolean' value='false'/>
-    <property name='3dnowprefetch' type='boolean' value='true'/>
+    <property name='3dnowprefetch' type='boolean' value='true' migratable='yes'/>
     <property name='cr8legacy' type='boolean' value='false'/>
-    <property name='cpuid-0xb' type='boolean' value='true'/>
+    <property name='cpuid-0xb' type='boolean' value='true' migratable='yes'/>
     <property name='xcrypt-en' type='boolean' value='false'/>
-    <property name='kvm_pv_eoi' type='boolean' value='true'/>
+    <property name='kvm_pv_eoi' type='boolean' value='true' migratable='yes'/>
     <property name='apic-id' type='number' value='4294967295'/>
     <property name='pn' type='boolean' value='false'/>
     <property name='dca' type='boolean' value='false'/>
@@ -277,81 +277,81 @@
     <property name='vmcb-clean' type='boolean' value='false'/>
     <property name='vmcb_clean' type='boolean' value='false'/>
     <property name='3dnowext' type='boolean' value='false'/>
-    <property name='hle' type='boolean' value='true'/>
+    <property name='hle' type='boolean' value='true' migratable='yes'/>
     <property name='npt' type='boolean' value='false'/>
     <property name='memory' type='string' value='/machine/unattached/system[0]'/>
     <property name='clwb' type='boolean' value='false'/>
     <property name='lbrv' type='boolean' value='false'/>
-    <property name='adx' type='boolean' value='true'/>
-    <property name='ss' type='boolean' value='true'/>
-    <property name='pni' type='boolean' value='true'/>
+    <property name='adx' type='boolean' value='true' migratable='yes'/>
+    <property name='ss' type='boolean' value='true' migratable='yes'/>
+    <property name='pni' type='boolean' value='true' migratable='yes'/>
     <property name='svm_lock' type='boolean' value='false'/>
     <property name='svm-lock' type='boolean' value='false'/>
-    <property name='smep' type='boolean' value='true'/>
+    <property name='smep' type='boolean' value='true' migratable='yes'/>
     <property name='pfthreshold' type='boolean' value='false'/>
-    <property name='smap' type='boolean' value='true'/>
-    <property name='x2apic' type='boolean' value='true'/>
+    <property name='smap' type='boolean' value='true' migratable='yes'/>
+    <property name='x2apic' type='boolean' value='true' migratable='yes'/>
     <property name='avx512vbmi' type='boolean' value='false'/>
     <property name='hv-stimer' type='boolean' value='false'/>
-    <property name='i64' type='boolean' value='true'/>
+    <property name='i64' type='boolean' value='true' migratable='yes'/>
     <property name='flushbyasid' type='boolean' value='false'/>
-    <property name='f16c' type='boolean' value='true'/>
+    <property name='f16c' type='boolean' value='true' migratable='yes'/>
     <property name='ace2-en' type='boolean' value='false'/>
-    <property name='pat' type='boolean' value='true'/>
-    <property name='pae' type='boolean' value='true'/>
-    <property name='sse' type='boolean' value='true'/>
+    <property name='pat' type='boolean' value='true' migratable='yes'/>
+    <property name='pae' type='boolean' value='true' migratable='yes'/>
+    <property name='sse' type='boolean' value='true' migratable='yes'/>
     <property name='phe-en' type='boolean' value='false'/>
-    <property name='kvm-nopiodelay' type='boolean' value='true'/>
-    <property name='kvm_nopiodelay' type='boolean' value='true'/>
+    <property name='kvm-nopiodelay' type='boolean' value='true' migratable='yes'/>
+    <property name='kvm_nopiodelay' type='boolean' value='true' migratable='yes'/>
     <property name='tm' type='boolean' value='false'/>
-    <property name='kvmclock-stable-bit' type='boolean' value='true'/>
-    <property name='hypervisor' type='boolean' value='true'/>
+    <property name='kvmclock-stable-bit' type='boolean' value='true' migratable='yes'/>
+    <property name='hypervisor' type='boolean' value='true' migratable='yes'/>
     <property name='socket-id' type='number' value='-1'/>
     <property name='pcommit' type='boolean' value='false'/>
-    <property name='syscall' type='boolean' value='true'/>
+    <property name='syscall' type='boolean' value='true' migratable='yes'/>
     <property name='level' type='number' value='13'/>
     <property name='avx512dq' type='boolean' value='false'/>
     <property name='svm' type='boolean' value='false'/>
-    <property name='full-cpuid-auto-level' type='boolean' value='true'/>
+    <property name='full-cpuid-auto-level' type='boolean' value='true' migratable='yes'/>
     <property name='hv-reset' type='boolean' value='false'/>
     <property name='invtsc' type='boolean' value='false'/>
-    <property name='sse3' type='boolean' value='true'/>
-    <property name='sse2' type='boolean' value='true'/>
+    <property name='sse3' type='boolean' value='true' migratable='yes'/>
+    <property name='sse2' type='boolean' value='true' migratable='yes'/>
     <property name='est' type='boolean' value='false'/>
     <property name='avx512ifma' type='boolean' value='false'/>
     <property name='tm2' type='boolean' value='false'/>
-    <property name='kvm-pv-eoi' type='boolean' value='true'/>
-    <property name='cx8' type='boolean' value='true'/>
+    <property name='kvm-pv-eoi' type='boolean' value='true' migratable='yes'/>
+    <property name='cx8' type='boolean' value='true' migratable='yes'/>
     <property name='kvm-mmu' type='boolean' value='false'/>
     <property name='kvm_mmu' type='boolean' value='false'/>
-    <property name='sse4_2' type='boolean' value='true'/>
-    <property name='sse4.2' type='boolean' value='true'/>
-    <property name='sse4-2' type='boolean' value='true'/>
-    <property name='pge' type='boolean' value='true'/>
-    <property name='fill-mtrr-mask' type='boolean' value='true'/>
+    <property name='sse4_2' type='boolean' value='true' migratable='yes'/>
+    <property name='sse4.2' type='boolean' value='true' migratable='yes'/>
+    <property name='sse4-2' type='boolean' value='true' migratable='yes'/>
+    <property name='pge' type='boolean' value='true' migratable='yes'/>
+    <property name='fill-mtrr-mask' type='boolean' value='true' migratable='yes'/>
     <property name='pdcm' type='boolean' value='false'/>
     <property name='nodeid_msr' type='boolean' value='false'/>
     <property name='model' type='number' value='94'/>
-    <property name='movbe' type='boolean' value='true'/>
+    <property name='movbe' type='boolean' value='true' migratable='yes'/>
     <property name='nrip-save' type='boolean' value='false'/>
     <property name='nrip_save' type='boolean' value='false'/>
     <property name='sse4a' type='boolean' value='false'/>
-    <property name='ssse3' type='boolean' value='true'/>
-    <property name='kvm_pv_unhalt' type='boolean' value='true'/>
-    <property name='invpcid' type='boolean' value='true'/>
-    <property name='pdpe1gb' type='boolean' value='true'/>
-    <property name='tsc-deadline' type='boolean' value='true'/>
-    <property name='fma' type='boolean' value='true'/>
-    <property name='cx16' type='boolean' value='true'/>
-    <property name='de' type='boolean' value='true'/>
+    <property name='ssse3' type='boolean' value='true' migratable='yes'/>
+    <property name='kvm_pv_unhalt' type='boolean' value='true' migratable='yes'/>
+    <property name='invpcid' type='boolean' value='true' migratable='yes'/>
+    <property name='pdpe1gb' type='boolean' value='true' migratable='yes'/>
+    <property name='tsc-deadline' type='boolean' value='true' migratable='yes'/>
+    <property name='fma' type='boolean' value='true' migratable='yes'/>
+    <property name='cx16' type='boolean' value='true' migratable='yes'/>
+    <property name='de' type='boolean' value='true' migratable='yes'/>
     <property name='enforce' type='boolean' value='false'/>
     <property name='stepping' type='number' value='3'/>
-    <property name='xsave' type='boolean' value='true'/>
-    <property name='clflush' type='boolean' value='true'/>
+    <property name='xsave' type='boolean' value='true' migratable='yes'/>
+    <property name='clflush' type='boolean' value='true' migratable='yes'/>
     <property name='skinit' type='boolean' value='false'/>
     <property name='tce' type='boolean' value='false'/>
-    <property name='tsc' type='boolean' value='true'/>
-    <property name='fpu' type='boolean' value='true'/>
+    <property name='tsc' type='boolean' value='true' migratable='yes'/>
+    <property name='fpu' type='boolean' value='true' migratable='yes'/>
     <property name='ds-cpl' type='boolean' value='false'/>
     <property name='ds_cpl' type='boolean' value='false'/>
     <property name='ibs' type='boolean' value='false'/>
@@ -359,242 +359,242 @@
     <property name='fma4' type='boolean' value='false'/>
     <property name='la57' type='boolean' value='false'/>
     <property name='osvw' type='boolean' value='false'/>
-    <property name='check' type='boolean' value='true'/>
+    <property name='check' type='boolean' value='true' migratable='yes'/>
     <property name='hv-spinlocks' type='number' value='-1'/>
     <property name='pmm' type='boolean' value='false'/>
-    <property name='apic' type='boolean' value='true'/>
+    <property name='apic' type='boolean' value='true' migratable='yes'/>
     <property name='pmu' type='boolean' value='false'/>
     <property name='min-xlevel2' type='number' value='0'/>
-    <property name='tsc-adjust' type='boolean' value='true'/>
-    <property name='tsc_adjust' type='boolean' value='true'/>
-    <property name='kvm-steal-time' type='boolean' value='true'/>
-    <property name='kvm_steal_time' type='boolean' value='true'/>
-    <property name='kvmclock' type='boolean' value='true'/>
-    <property name='l3-cache' type='boolean' value='true'/>
+    <property name='tsc-adjust' type='boolean' value='true' migratable='yes'/>
+    <property name='tsc_adjust' type='boolean' value='true' migratable='yes'/>
+    <property name='kvm-steal-time' type='boolean' value='true' migratable='yes'/>
+    <property name='kvm_steal_time' type='boolean' value='true' migratable='yes'/>
+    <property name='kvmclock' type='boolean' value='true' migratable='yes'/>
+    <property name='l3-cache' type='boolean' value='true' migratable='yes'/>
     <property name='lwp' type='boolean' value='false'/>
     <property name='xop' type='boolean' value='false'/>
-    <property name='avx' type='boolean' value='true'/>
+    <property name='avx' type='boolean' value='true' migratable='yes'/>
     <property name='ospke' type='boolean' value='false'/>
     <property name='ace2' type='boolean' value='false'/>
     <property name='acpi' type='boolean' value='false'/>
     <property name='avx512bw' type='boolean' value='false'/>
     <property name='hv-vapic' type='boolean' value='false'/>
-    <property name='fsgsbase' type='boolean' value='true'/>
+    <property name='fsgsbase' type='boolean' value='true' migratable='yes'/>
     <property name='ht' type='boolean' value='false'/>
-    <property name='nx' type='boolean' value='true'/>
-    <property name='pclmulqdq' type='boolean' value='true'/>
+    <property name='nx' type='boolean' value='true' migratable='yes'/>
+    <property name='pclmulqdq' type='boolean' value='true' migratable='yes'/>
     <property name='mmxext' type='boolean' value='false'/>
-    <property name='popcnt' type='boolean' value='true'/>
-    <property name='xsaves' type='boolean' value='true'/>
-    <property name='lm' type='boolean' value='true'/>
+    <property name='popcnt' type='boolean' value='true' migratable='yes'/>
+    <property name='xsaves' type='boolean' value='true' migratable='yes'/>
+    <property name='lm' type='boolean' value='true' migratable='yes'/>
     <property name='umip' type='boolean' value='false'/>
-    <property name='avx2' type='boolean' value='true'/>
-    <property name='pse' type='boolean' value='true'/>
-    <property name='sep' type='boolean' value='true'/>
-    <property name='pclmuldq' type='boolean' value='true'/>
+    <property name='avx2' type='boolean' value='true' migratable='yes'/>
+    <property name='pse' type='boolean' value='true' migratable='yes'/>
+    <property name='sep' type='boolean' value='true' migratable='yes'/>
+    <property name='pclmuldq' type='boolean' value='true' migratable='yes'/>
     <property name='nodeid-msr' type='boolean' value='false'/>
-    <property name='kvm' type='boolean' value='true'/>
+    <property name='kvm' type='boolean' value='true' migratable='yes'/>
     <property name='misalignsse' type='boolean' value='false'/>
     <property name='min-xlevel' type='number' value='2147483656'/>
-    <property name='bmi2' type='boolean' value='true'/>
-    <property name='bmi1' type='boolean' value='true'/>
-    <property name='kvm-pv-unhalt' type='boolean' value='true'/>
+    <property name='bmi2' type='boolean' value='true' migratable='yes'/>
+    <property name='bmi1' type='boolean' value='true' migratable='yes'/>
+    <property name='kvm-pv-unhalt' type='boolean' value='true' migratable='yes'/>
     <property name='realized' type='boolean' value='false'/>
     <property name='tsc_scale' type='boolean' value='false'/>
     <property name='tsc-scale' type='boolean' value='false'/>
     <property name='topoext' type='boolean' value='false'/>
     <property name='hv-vpindex' type='boolean' value='false'/>
     <property name='xlevel2' type='number' value='0'/>
-    <property name='clflushopt' type='boolean' value='true'/>
+    <property name='clflushopt' type='boolean' value='true' migratable='yes'/>
     <property name='kvm-no-smi-migration' type='boolean' value='false'/>
     <property name='monitor' type='boolean' value='false'/>
     <property name='avx512er' type='boolean' value='false'/>
     <property name='pmm-en' type='boolean' value='false'/>
-    <property name='pcid' type='boolean' value='true'/>
+    <property name='pcid' type='boolean' value='true' migratable='yes'/>
     <property name='3dnow' type='boolean' value='false'/>
-    <property name='erms' type='boolean' value='true'/>
-    <property name='lahf-lm' type='boolean' value='true'/>
-    <property name='lahf_lm' type='boolean' value='true'/>
+    <property name='erms' type='boolean' value='true' migratable='yes'/>
+    <property name='lahf-lm' type='boolean' value='true' migratable='yes'/>
+    <property name='lahf_lm' type='boolean' value='true' migratable='yes'/>
     <property name='xstore' type='boolean' value='false'/>
     <property name='hv-synic' type='boolean' value='false'/>
     <property name='fxsr-opt' type='boolean' value='false'/>
     <property name='fxsr_opt' type='boolean' value='false'/>
-    <property name='rtm' type='boolean' value='true'/>
-    <property name='lmce' type='boolean' value='true'/>
+    <property name='rtm' type='boolean' value='true' migratable='yes'/>
+    <property name='lmce' type='boolean' value='true' migratable='yes'/>
     <property name='hv-time' type='boolean' value='false'/>
     <property name='perfctr-nb' type='boolean' value='false'/>
     <property name='perfctr_nb' type='boolean' value='false'/>
     <property name='ffxsr' type='boolean' value='false'/>
-    <property name='rdrand' type='boolean' value='true'/>
-    <property name='rdseed' type='boolean' value='true'/>
+    <property name='rdrand' type='boolean' value='true' migratable='yes'/>
+    <property name='rdseed' type='boolean' value='true' migratable='yes'/>
     <property name='avx512-4vnniw' type='boolean' value='false'/>
-    <property name='vme' type='boolean' value='true'/>
-    <property name='vmx' type='boolean' value='true'/>
+    <property name='vme' type='boolean' value='true' migratable='yes'/>
+    <property name='vmx' type='boolean' value='true' migratable='yes'/>
     <property name='dtes64' type='boolean' value='false'/>
-    <property name='mtrr' type='boolean' value='true'/>
-    <property name='rdtscp' type='boolean' value='true'/>
-    <property name='pse36' type='boolean' value='true'/>
+    <property name='mtrr' type='boolean' value='true' migratable='yes'/>
+    <property name='rdtscp' type='boolean' value='true' migratable='yes'/>
+    <property name='pse36' type='boolean' value='true' migratable='yes'/>
     <property name='tbm' type='boolean' value='false'/>
     <property name='wdt' type='boolean' value='false'/>
     <property name='pause_filter' type='boolean' value='false'/>
     <property name='model-id' type='string' value='Intel(R) Xeon(R) CPU E3-1245 v5 @ 3.50GHz'/>
     <property name='sha-ni' type='boolean' value='false'/>
-    <property name='abm' type='boolean' value='true'/>
+    <property name='abm' type='boolean' value='true' migratable='yes'/>
     <property name='avx512pf' type='boolean' value='false'/>
     <property name='xstore-en' type='boolean' value='false'/>
   </hostCPU>
-  <hostCPU type='tcg' model='base' migratability='no'>
+  <hostCPU type='tcg' model='base' migratability='yes'>
     <property name='phys-bits' type='number' value='0'/>
     <property name='core-id' type='number' value='-1'/>
     <property name='xlevel' type='number' value='2147483658'/>
-    <property name='cmov' type='boolean' value='true'/>
+    <property name='cmov' type='boolean' value='true' migratable='yes'/>
     <property name='ia64' type='boolean' value='false'/>
-    <property name='aes' type='boolean' value='true'/>
-    <property name='mmx' type='boolean' value='true'/>
-    <property name='arat' type='boolean' value='true'/>
+    <property name='aes' type='boolean' value='true' migratable='yes'/>
+    <property name='mmx' type='boolean' value='true' migratable='yes'/>
+    <property name='arat' type='boolean' value='true' migratable='yes'/>
     <property name='rdpid' type='boolean' value='false'/>
     <property name='pause-filter' type='boolean' value='false'/>
     <property name='xsavec' type='boolean' value='false'/>
     <property name='osxsave' type='boolean' value='false'/>
     <property name='tsc-frequency' type='number' value='0'/>
-    <property name='xd' type='boolean' value='true'/>
+    <property name='xd' type='boolean' value='true' migratable='yes'/>
     <property name='hv-vendor-id' type='string' value=''/>
     <property name='kvm-asyncpf' type='boolean' value='false'/>
     <property name='kvm_asyncpf' type='boolean' value='false'/>
     <property name='perfctr_core' type='boolean' value='false'/>
     <property name='perfctr-core' type='boolean' value='false'/>
-    <property name='mpx' type='boolean' value='true'/>
+    <property name='mpx' type='boolean' value='true' migratable='yes'/>
     <property name='avx512cd' type='boolean' value='false'/>
     <property name='decodeassists' type='boolean' value='false'/>
     <property name='pbe' type='boolean' value='false'/>
-    <property name='sse4_1' type='boolean' value='true'/>
-    <property name='sse4.1' type='boolean' value='true'/>
-    <property name='sse4-1' type='boolean' value='true'/>
+    <property name='sse4_1' type='boolean' value='true' migratable='yes'/>
+    <property name='sse4.1' type='boolean' value='true' migratable='yes'/>
+    <property name='sse4-1' type='boolean' value='true' migratable='yes'/>
     <property name='family' type='number' value='6'/>
-    <property name='vmware-cpuid-freq' type='boolean' value='true'/>
+    <property name='vmware-cpuid-freq' type='boolean' value='true' migratable='yes'/>
     <property name='avx512f' type='boolean' value='false'/>
     <property name='xcrypt' type='boolean' value='false'/>
     <property name='hv-runtime' type='boolean' value='false'/>
-    <property name='msr' type='boolean' value='true'/>
-    <property name='mce' type='boolean' value='true'/>
-    <property name='mca' type='boolean' value='true'/>
+    <property name='msr' type='boolean' value='true' migratable='yes'/>
+    <property name='mce' type='boolean' value='true' migratable='yes'/>
+    <property name='mca' type='boolean' value='true' migratable='yes'/>
     <property name='thread-id' type='number' value='-1'/>
     <property name='min-level' type='number' value='13'/>
-    <property name='xgetbv1' type='boolean' value='true'/>
+    <property name='xgetbv1' type='boolean' value='true' migratable='yes'/>
     <property name='cid' type='boolean' value='false'/>
     <property name='hv-relaxed' type='boolean' value='false'/>
-    <property name='fxsr' type='boolean' value='true'/>
+    <property name='fxsr' type='boolean' value='true' migratable='yes'/>
     <property name='ds' type='boolean' value='false'/>
     <property name='hv-crash' type='boolean' value='false'/>
-    <property name='xsaveopt' type='boolean' value='true'/>
+    <property name='xsaveopt' type='boolean' value='true' migratable='yes'/>
     <property name='xtpr' type='boolean' value='false'/>
     <property name='avx512-vpopcntdq' type='boolean' value='false'/>
     <property name='phe' type='boolean' value='false'/>
     <property name='avx512vl' type='boolean' value='false'/>
     <property name='extapic' type='boolean' value='false'/>
     <property name='3dnowprefetch' type='boolean' value='false'/>
-    <property name='cr8legacy' type='boolean' value='true'/>
-    <property name='cpuid-0xb' type='boolean' value='true'/>
+    <property name='cr8legacy' type='boolean' value='true' migratable='yes'/>
+    <property name='cpuid-0xb' type='boolean' value='true' migratable='yes'/>
     <property name='xcrypt-en' type='boolean' value='false'/>
     <property name='kvm_pv_eoi' type='boolean' value='false'/>
     <property name='apic-id' type='number' value='4294967295'/>
     <property name='pn' type='boolean' value='false'/>
     <property name='dca' type='boolean' value='false'/>
     <property name='vendor' type='string' value='AuthenticAMD'/>
-    <property name='pku' type='boolean' value='true'/>
+    <property name='pku' type='boolean' value='true' migratable='yes'/>
     <property name='smx' type='boolean' value='false'/>
     <property name='cmp-legacy' type='boolean' value='false'/>
     <property name='cmp_legacy' type='boolean' value='false'/>
     <property name='avx512-4fmaps' type='boolean' value='false'/>
     <property name='vmcb-clean' type='boolean' value='false'/>
     <property name='vmcb_clean' type='boolean' value='false'/>
-    <property name='3dnowext' type='boolean' value='true'/>
+    <property name='3dnowext' type='boolean' value='true' migratable='yes'/>
     <property name='hle' type='boolean' value='false'/>
     <property name='npt' type='boolean' value='false'/>
     <property name='memory' type='string' value='/machine/unattached/system[0]'/>
-    <property name='clwb' type='boolean' value='true'/>
+    <property name='clwb' type='boolean' value='true' migratable='yes'/>
     <property name='lbrv' type='boolean' value='false'/>
-    <property name='adx' type='boolean' value='true'/>
-    <property name='ss' type='boolean' value='true'/>
-    <property name='pni' type='boolean' value='true'/>
+    <property name='adx' type='boolean' value='true' migratable='yes'/>
+    <property name='ss' type='boolean' value='true' migratable='yes'/>
+    <property name='pni' type='boolean' value='true' migratable='yes'/>
     <property name='svm_lock' type='boolean' value='false'/>
     <property name='svm-lock' type='boolean' value='false'/>
-    <property name='smep' type='boolean' value='true'/>
+    <property name='smep' type='boolean' value='true' migratable='yes'/>
     <property name='pfthreshold' type='boolean' value='false'/>
-    <property name='smap' type='boolean' value='true'/>
+    <property name='smap' type='boolean' value='true' migratable='yes'/>
     <property name='x2apic' type='boolean' value='false'/>
     <property name='avx512vbmi' type='boolean' value='false'/>
     <property name='hv-stimer' type='boolean' value='false'/>
-    <property name='i64' type='boolean' value='true'/>
+    <property name='i64' type='boolean' value='true' migratable='yes'/>
     <property name='flushbyasid' type='boolean' value='false'/>
     <property name='f16c' type='boolean' value='false'/>
     <property name='ace2-en' type='boolean' value='false'/>
-    <property name='pat' type='boolean' value='true'/>
-    <property name='pae' type='boolean' value='true'/>
-    <property name='sse' type='boolean' value='true'/>
+    <property name='pat' type='boolean' value='true' migratable='yes'/>
+    <property name='pae' type='boolean' value='true' migratable='yes'/>
+    <property name='sse' type='boolean' value='true' migratable='yes'/>
     <property name='phe-en' type='boolean' value='false'/>
     <property name='kvm-nopiodelay' type='boolean' value='false'/>
     <property name='kvm_nopiodelay' type='boolean' value='false'/>
     <property name='tm' type='boolean' value='false'/>
     <property name='kvmclock-stable-bit' type='boolean' value='false'/>
-    <property name='hypervisor' type='boolean' value='true'/>
+    <property name='hypervisor' type='boolean' value='true' migratable='yes'/>
     <property name='socket-id' type='number' value='-1'/>
-    <property name='pcommit' type='boolean' value='true'/>
-    <property name='syscall' type='boolean' value='true'/>
+    <property name='pcommit' type='boolean' value='true' migratable='yes'/>
+    <property name='syscall' type='boolean' value='true' migratable='yes'/>
     <property name='level' type='number' value='13'/>
     <property name='avx512dq' type='boolean' value='false'/>
-    <property name='svm' type='boolean' value='true'/>
-    <property name='full-cpuid-auto-level' type='boolean' value='true'/>
+    <property name='svm' type='boolean' value='true' migratable='yes'/>
+    <property name='full-cpuid-auto-level' type='boolean' value='true' migratable='yes'/>
     <property name='hv-reset' type='boolean' value='false'/>
     <property name='invtsc' type='boolean' value='false'/>
-    <property name='sse3' type='boolean' value='true'/>
-    <property name='sse2' type='boolean' value='true'/>
+    <property name='sse3' type='boolean' value='true' migratable='yes'/>
+    <property name='sse2' type='boolean' value='true' migratable='yes'/>
     <property name='est' type='boolean' value='false'/>
     <property name='avx512ifma' type='boolean' value='false'/>
     <property name='tm2' type='boolean' value='false'/>
     <property name='kvm-pv-eoi' type='boolean' value='false'/>
-    <property name='cx8' type='boolean' value='true'/>
+    <property name='cx8' type='boolean' value='true' migratable='yes'/>
     <property name='kvm-mmu' type='boolean' value='false'/>
     <property name='kvm_mmu' type='boolean' value='false'/>
-    <property name='sse4_2' type='boolean' value='true'/>
-    <property name='sse4.2' type='boolean' value='true'/>
-    <property name='sse4-2' type='boolean' value='true'/>
-    <property name='pge' type='boolean' value='true'/>
-    <property name='fill-mtrr-mask' type='boolean' value='true'/>
+    <property name='sse4_2' type='boolean' value='true' migratable='yes'/>
+    <property name='sse4.2' type='boolean' value='true' migratable='yes'/>
+    <property name='sse4-2' type='boolean' value='true' migratable='yes'/>
+    <property name='pge' type='boolean' value='true' migratable='yes'/>
+    <property name='fill-mtrr-mask' type='boolean' value='true' migratable='yes'/>
     <property name='pdcm' type='boolean' value='false'/>
     <property name='nodeid_msr' type='boolean' value='false'/>
     <property name='model' type='number' value='6'/>
-    <property name='movbe' type='boolean' value='true'/>
+    <property name='movbe' type='boolean' value='true' migratable='yes'/>
     <property name='nrip-save' type='boolean' value='false'/>
     <property name='nrip_save' type='boolean' value='false'/>
-    <property name='sse4a' type='boolean' value='true'/>
-    <property name='ssse3' type='boolean' value='true'/>
+    <property name='sse4a' type='boolean' value='true' migratable='yes'/>
+    <property name='ssse3' type='boolean' value='true' migratable='yes'/>
     <property name='kvm_pv_unhalt' type='boolean' value='false'/>
     <property name='invpcid' type='boolean' value='false'/>
-    <property name='pdpe1gb' type='boolean' value='true'/>
+    <property name='pdpe1gb' type='boolean' value='true' migratable='yes'/>
     <property name='tsc-deadline' type='boolean' value='false'/>
     <property name='fma' type='boolean' value='false'/>
-    <property name='cx16' type='boolean' value='true'/>
-    <property name='de' type='boolean' value='true'/>
+    <property name='cx16' type='boolean' value='true' migratable='yes'/>
+    <property name='de' type='boolean' value='true' migratable='yes'/>
     <property name='enforce' type='boolean' value='false'/>
     <property name='stepping' type='number' value='3'/>
-    <property name='xsave' type='boolean' value='true'/>
-    <property name='clflush' type='boolean' value='true'/>
+    <property name='xsave' type='boolean' value='true' migratable='yes'/>
+    <property name='clflush' type='boolean' value='true' migratable='yes'/>
     <property name='skinit' type='boolean' value='false'/>
     <property name='tce' type='boolean' value='false'/>
-    <property name='tsc' type='boolean' value='true'/>
-    <property name='fpu' type='boolean' value='true'/>
+    <property name='tsc' type='boolean' value='true' migratable='yes'/>
+    <property name='fpu' type='boolean' value='true' migratable='yes'/>
     <property name='ds-cpl' type='boolean' value='false'/>
     <property name='ds_cpl' type='boolean' value='false'/>
     <property name='ibs' type='boolean' value='false'/>
     <property name='host-phys-bits' type='boolean' value='false'/>
     <property name='fma4' type='boolean' value='false'/>
-    <property name='la57' type='boolean' value='true'/>
+    <property name='la57' type='boolean' value='true' migratable='yes'/>
     <property name='osvw' type='boolean' value='false'/>
-    <property name='check' type='boolean' value='true'/>
+    <property name='check' type='boolean' value='true' migratable='yes'/>
     <property name='hv-spinlocks' type='number' value='-1'/>
     <property name='pmm' type='boolean' value='false'/>
-    <property name='apic' type='boolean' value='true'/>
+    <property name='apic' type='boolean' value='true' migratable='yes'/>
     <property name='pmu' type='boolean' value='false'/>
     <property name='min-xlevel2' type='number' value='0'/>
     <property name='tsc-adjust' type='boolean' value='false'/>
@@ -602,34 +602,34 @@
     <property name='kvm-steal-time' type='boolean' value='false'/>
     <property name='kvm_steal_time' type='boolean' value='false'/>
     <property name='kvmclock' type='boolean' value='false'/>
-    <property name='l3-cache' type='boolean' value='true'/>
+    <property name='l3-cache' type='boolean' value='true' migratable='yes'/>
     <property name='lwp' type='boolean' value='false'/>
     <property name='xop' type='boolean' value='false'/>
     <property name='avx' type='boolean' value='false'/>
-    <property name='ospke' type='boolean' value='true'/>
+    <property name='ospke' type='boolean' value='true' migratable='yes'/>
     <property name='ace2' type='boolean' value='false'/>
-    <property name='acpi' type='boolean' value='true'/>
+    <property name='acpi' type='boolean' value='true' migratable='yes'/>
     <property name='avx512bw' type='boolean' value='false'/>
     <property name='hv-vapic' type='boolean' value='false'/>
-    <property name='fsgsbase' type='boolean' value='true'/>
+    <property name='fsgsbase' type='boolean' value='true' migratable='yes'/>
     <property name='ht' type='boolean' value='false'/>
-    <property name='nx' type='boolean' value='true'/>
-    <property name='pclmulqdq' type='boolean' value='true'/>
-    <property name='mmxext' type='boolean' value='true'/>
-    <property name='popcnt' type='boolean' value='true'/>
+    <property name='nx' type='boolean' value='true' migratable='yes'/>
+    <property name='pclmulqdq' type='boolean' value='true' migratable='yes'/>
+    <property name='mmxext' type='boolean' value='true' migratable='yes'/>
+    <property name='popcnt' type='boolean' value='true' migratable='yes'/>
     <property name='xsaves' type='boolean' value='false'/>
-    <property name='lm' type='boolean' value='true'/>
+    <property name='lm' type='boolean' value='true' migratable='yes'/>
     <property name='umip' type='boolean' value='false'/>
     <property name='avx2' type='boolean' value='false'/>
-    <property name='pse' type='boolean' value='true'/>
-    <property name='sep' type='boolean' value='true'/>
-    <property name='pclmuldq' type='boolean' value='true'/>
+    <property name='pse' type='boolean' value='true' migratable='yes'/>
+    <property name='sep' type='boolean' value='true' migratable='yes'/>
+    <property name='pclmuldq' type='boolean' value='true' migratable='yes'/>
     <property name='nodeid-msr' type='boolean' value='false'/>
-    <property name='kvm' type='boolean' value='true'/>
+    <property name='kvm' type='boolean' value='true' migratable='yes'/>
     <property name='misalignsse' type='boolean' value='false'/>
     <property name='min-xlevel' type='number' value='2147483658'/>
-    <property name='bmi2' type='boolean' value='true'/>
-    <property name='bmi1' type='boolean' value='true'/>
+    <property name='bmi2' type='boolean' value='true' migratable='yes'/>
+    <property name='bmi1' type='boolean' value='true' migratable='yes'/>
     <property name='kvm-pv-unhalt' type='boolean' value='false'/>
     <property name='realized' type='boolean' value='false'/>
     <property name='tsc_scale' type='boolean' value='false'/>
@@ -637,16 +637,16 @@
     <property name='topoext' type='boolean' value='false'/>
     <property name='hv-vpindex' type='boolean' value='false'/>
     <property name='xlevel2' type='number' value='0'/>
-    <property name='clflushopt' type='boolean' value='true'/>
+    <property name='clflushopt' type='boolean' value='true' migratable='yes'/>
     <property name='kvm-no-smi-migration' type='boolean' value='false'/>
-    <property name='monitor' type='boolean' value='true'/>
+    <property name='monitor' type='boolean' value='true' migratable='yes'/>
     <property name='avx512er' type='boolean' value='false'/>
     <property name='pmm-en' type='boolean' value='false'/>
     <property name='pcid' type='boolean' value='false'/>
-    <property name='3dnow' type='boolean' value='true'/>
-    <property name='erms' type='boolean' value='true'/>
-    <property name='lahf-lm' type='boolean' value='true'/>
-    <property name='lahf_lm' type='boolean' value='true'/>
+    <property name='3dnow' type='boolean' value='true' migratable='yes'/>
+    <property name='erms' type='boolean' value='true' migratable='yes'/>
+    <property name='lahf-lm' type='boolean' value='true' migratable='yes'/>
+    <property name='lahf_lm' type='boolean' value='true' migratable='yes'/>
     <property name='xstore' type='boolean' value='false'/>
     <property name='hv-synic' type='boolean' value='false'/>
     <property name='fxsr-opt' type='boolean' value='false'/>
@@ -663,15 +663,15 @@
     <property name='vme' type='boolean' value='false'/>
     <property name='vmx' type='boolean' value='false'/>
     <property name='dtes64' type='boolean' value='false'/>
-    <property name='mtrr' type='boolean' value='true'/>
-    <property name='rdtscp' type='boolean' value='true'/>
-    <property name='pse36' type='boolean' value='true'/>
+    <property name='mtrr' type='boolean' value='true' migratable='yes'/>
+    <property name='rdtscp' type='boolean' value='true' migratable='yes'/>
+    <property name='pse36' type='boolean' value='true' migratable='yes'/>
     <property name='tbm' type='boolean' value='false'/>
     <property name='wdt' type='boolean' value='false'/>
     <property name='pause_filter' type='boolean' value='false'/>
     <property name='model-id' type='string' value='QEMU TCG CPU version 2.5+'/>
     <property name='sha-ni' type='boolean' value='false'/>
-    <property name='abm' type='boolean' value='true'/>
+    <property name='abm' type='boolean' value='true' migratable='yes'/>
     <property name='avx512pf' type='boolean' value='false'/>
     <property name='xstore-en' type='boolean' value='false'/>
   </hostCPU>

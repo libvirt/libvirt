@@ -5133,10 +5133,12 @@ int
 qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
                                     qemuMonitorCPUModelExpansionType type,
                                     const char *model_name,
+                                    bool migratable,
                                     qemuMonitorCPUModelInfoPtr *model_info)
 {
     int ret = -1;
     virJSONValuePtr model = NULL;
+    virJSONValuePtr props = NULL;
     virJSONValuePtr cmd = NULL;
     virJSONValuePtr reply = NULL;
     virJSONValuePtr data;
@@ -5153,6 +5155,14 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
 
     if (virJSONValueObjectAppendString(model, "name", model_name) < 0)
         goto cleanup;
+
+    if (!migratable) {
+        if (!(props = virJSONValueNewObject()) ||
+            virJSONValueObjectAppendBoolean(props, "migratable", false) < 0 ||
+            virJSONValueObjectAppend(model, "props", props) < 0)
+            goto cleanup;
+        props = NULL;
+    }
 
  retry:
     switch (type) {
@@ -5248,6 +5258,7 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitorPtr mon,
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     virJSONValueFree(model);
+    virJSONValueFree(props);
     return ret;
 }
 

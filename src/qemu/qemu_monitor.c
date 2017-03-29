@@ -3702,13 +3702,16 @@ int
 qemuMonitorGetCPUModelExpansion(qemuMonitorPtr mon,
                                 qemuMonitorCPUModelExpansionType type,
                                 const char *model_name,
+                                bool migratable,
                                 qemuMonitorCPUModelInfoPtr *model_info)
 {
-    VIR_DEBUG("type=%d model_name=%s", type, model_name);
+    VIR_DEBUG("type=%d model_name=%s migratable=%d",
+              type, model_name, migratable);
 
     QEMU_CHECK_MONITOR_JSON(mon);
 
-    return qemuMonitorJSONGetCPUModelExpansion(mon, type, model_name, model_info);
+    return qemuMonitorJSONGetCPUModelExpansion(mon, type, model_name,
+                                               migratable, model_info);
 }
 
 

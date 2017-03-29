@@ -1014,6 +1014,7 @@ typedef enum {
 int qemuMonitorGetCPUModelExpansion(qemuMonitorPtr mon,
                                     qemuMonitorCPUModelExpansionType type,
                                     const char *model_name,
+                                    bool migratable,
                                     qemuMonitorCPUModelInfoPtr *model_info);
 
 void qemuMonitorCPUModelInfoFree(qemuMonitorCPUModelInfoPtr model_info);
