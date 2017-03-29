@@ -174,7 +174,7 @@ mymain(void)
 
 }
 
-VIRT_TEST_MAIN(mymain);
+VIR_TEST_MAIN(mymain);
 #else
 int
 main(void)

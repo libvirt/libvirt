@@ -291,4 +291,4 @@ mymain(void)
     return EXIT_SUCCESS;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virusbmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virusbmock.so")

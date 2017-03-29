@@ -149,12 +149,12 @@ mymain(void)
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnetserverclientmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnetserverclientmock.so")
 #else
 static int
 mymain(void)
 {
     return EXIT_AM_SKIP;
 }
-VIRT_TEST_MAIN(mymain);
+VIR_TEST_MAIN(mymain);
 #endif

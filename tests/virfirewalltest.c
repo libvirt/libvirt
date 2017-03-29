@@ -1184,9 +1184,9 @@ mymain(void)
 }
 
 # if WITH_DBUS
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virdbusmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virdbusmock.so")
 # else
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)
 # endif
 
 #else /* ! defined (__linux__) */

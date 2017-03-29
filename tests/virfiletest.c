@@ -189,4 +189,4 @@ mymain(void)
     return ret != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

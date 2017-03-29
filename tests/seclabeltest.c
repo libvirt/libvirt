@@ -43,4 +43,4 @@ mymain(void)
     return 0;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

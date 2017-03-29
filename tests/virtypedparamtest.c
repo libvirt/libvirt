@@ -307,4 +307,4 @@ mymain(void)
     return EXIT_SUCCESS;
 }
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

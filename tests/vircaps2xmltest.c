@@ -107,4 +107,4 @@ mymain(void)
     return ret;
 }
 
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnumamock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virnumamock.so")

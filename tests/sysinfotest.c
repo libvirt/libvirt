@@ -150,4 +150,4 @@ mymain(void)
 #undef TEST
 #undef TEST_FULL
 
-VIRT_TEST_MAIN(mymain)
+VIR_TEST_MAIN(mymain)

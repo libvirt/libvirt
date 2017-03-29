@@ -179,4 +179,4 @@ mymain(void)
 }
 
 /* Forces usage of not so random virRandomBytes */
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virrandommock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/virrandommock.so")

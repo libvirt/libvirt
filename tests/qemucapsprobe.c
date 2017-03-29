@@ -48,7 +48,7 @@ main(int argc, char **argv)
     virThread thread;
     virQEMUCapsPtr caps;
 
-    VIRT_TEST_PRELOAD(abs_builddir "/.libs/qemucapsprobemock.so");
+    VIR_TEST_PRELOAD(abs_builddir "/.libs/qemucapsprobemock.so");
 
     if (argc != 2) {
         fprintf(stderr, "%s QEMU_binary\n", argv[0]);

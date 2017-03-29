@@ -567,9 +567,9 @@ mymain(void)
 }
 
 #if WITH_QEMU
-VIRT_TEST_MAIN_PRELOAD(mymain,
+VIR_TEST_MAIN_PRELOAD(mymain,
                        abs_builddir "/.libs/domaincapsmock.so",
                        abs_builddir "/.libs/qemucpumock.so")
 #else
-VIRT_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/domaincapsmock.so")
+VIR_TEST_MAIN_PRELOAD(mymain, abs_builddir "/.libs/domaincapsmock.so")
 #endif
