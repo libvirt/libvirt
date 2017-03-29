@@ -211,7 +211,7 @@
   <kvmVersion>0</kvmVersion>
   <package> (v2.9.0-rc0-142-g940a8ce)</package>
   <arch>x86_64</arch>
-  <hostCPU type='kvm' model='base'>
+  <hostCPU type='kvm' model='base' migratability='no'>
     <property name='phys-bits' type='number' value='0'/>
     <property name='core-id' type='number' value='-1'/>
     <property name='xlevel' type='number' value='2147483656'/>
@@ -443,7 +443,7 @@
     <property name='avx512pf' type='boolean' value='false'/>
     <property name='xstore-en' type='boolean' value='false'/>
   </hostCPU>
-  <hostCPU type='tcg' model='base'>
+  <hostCPU type='tcg' model='base' migratability='no'>
     <property name='phys-bits' type='number' value='0'/>
     <property name='core-id' type='number' value='-1'/>
     <property name='xlevel' type='number' value='2147483658'/>

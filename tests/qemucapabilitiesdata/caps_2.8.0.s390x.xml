@@ -136,7 +136,7 @@
   <kvmVersion>0</kvmVersion>
   <package></package>
   <arch>s390x</arch>
-  <hostCPU type='kvm' model='zEC12.2-base'>
+  <hostCPU type='kvm' model='zEC12.2-base' migratability='no'>
     <property name='aefsi' type='boolean' value='true'/>
     <property name='msa5' type='boolean' value='true'/>
     <property name='msa4' type='boolean' value='true'/>

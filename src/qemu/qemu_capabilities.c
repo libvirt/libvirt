@@ -3272,6 +3272,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
     int ret = -1;
     size_t i;
     int n;
+    int val;
 
     if (virtType == VIR_DOMAIN_VIRT_KVM)
         hostCPUNode = virXPathNode("./hostCPU[@type='kvm']", ctxt);
@@ -3293,6 +3294,15 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
         goto cleanup;
     }
 
+    if (!(str = virXMLPropString(hostCPUNode, "migratability")) ||
+        (val = virTristateBoolTypeFromString(str)) <= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("invalid migratability value for host CPU model"));
+        goto cleanup;
+    }
+    hostCPU->migratability = val == VIR_TRISTATE_BOOL_YES;
+    VIR_FREE(str);
+
     ctxt->node = hostCPUNode;
 
     if ((n = virXPathNodeSet("./property", ctxt, &nodes)) > 0) {
@@ -3303,7 +3313,6 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
 
         for (i = 0; i < n; i++) {
             qemuMonitorCPUPropertyPtr prop = hostCPU->props + i;
-            int type;
 
             ctxt->node = nodes[i];
 
@@ -3315,7 +3324,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
             }
 
             if (!(str = virXMLPropString(ctxt->node, "type")) ||
-                (type = qemuMonitorCPUPropertyTypeFromString(str)) < 0) {
+                (val = qemuMonitorCPUPropertyTypeFromString(str)) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("missing or invalid CPU model property type "
                                  "in QEMU capabilities cache"));
@@ -3323,7 +3332,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
             }
             VIR_FREE(str);
 
-            prop->type = type;
+            prop->type = val;
             switch (prop->type) {
             case QEMU_MONITOR_CPU_PROPERTY_BOOLEAN:
                 if (virXPathBoolean("./@value='true'", ctxt))
@@ -3354,6 +3363,19 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
 
             case QEMU_MONITOR_CPU_PROPERTY_LAST:
                 break;
+            }
+
+            if ((str = virXMLPropString(ctxt->node, "migratable"))) {
+                if ((val = virTristateBoolTypeFromString(str)) <= 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("unknown migratable value for '%s' host "
+                                     "CPU model property"),
+                                   prop->name);
+                    goto cleanup;
+                }
+
+                prop->migratable = val;
+                VIR_FREE(str);
             }
         }
     }
@@ -3707,8 +3729,10 @@ virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
     if (!model)
         return;
 
-    virBufferAsprintf(buf, "<hostCPU type='%s' model='%s'>\n",
-                      typeStr, model->name);
+    virBufferAsprintf(buf,
+                      "<hostCPU type='%s' model='%s' migratability='%s'>\n",
+                      typeStr, model->name,
+                      model->migratability ? "yes" : "no");
     virBufferAdjustIndent(buf, 2);
 
     for (i = 0; i < model->nprops; i++) {
@@ -3735,6 +3759,11 @@ virQEMUCapsFormatHostCPUModelInfo(virQEMUCapsPtr qemuCaps,
         case QEMU_MONITOR_CPU_PROPERTY_LAST:
             break;
         }
+
+        if (prop->migratable > 0)
+            virBufferAsprintf(buf, " migratable='%s'",
+                              virTristateBoolTypeToString(prop->migratable));
+
         virBufferAddLit(buf, "/>\n");
     }
 

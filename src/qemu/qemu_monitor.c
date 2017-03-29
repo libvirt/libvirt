@@ -3747,12 +3747,14 @@ qemuMonitorCPUModelInfoCopy(const qemuMonitorCPUModelInfo *orig)
     if (VIR_STRDUP(copy->name, orig->name) < 0)
         goto error;
 
+    copy->migratability = orig->migratability;
     copy->nprops = orig->nprops;
 
     for (i = 0; i < orig->nprops; i++) {
         if (VIR_STRDUP(copy->props[i].name, orig->props[i].name) < 0)
             goto error;
 
+        copy->props[i].migratable = orig->props[i].migratable;
         copy->props[i].type = orig->props[i].type;
         switch (orig->props[i].type) {
         case QEMU_MONITOR_CPU_PROPERTY_BOOLEAN:

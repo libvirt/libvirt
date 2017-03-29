@@ -992,6 +992,7 @@ struct _qemuMonitorCPUProperty {
         char *string;
         long long number;
     } value;
+    virTristateBool migratable;
 };
 
 typedef struct _qemuMonitorCPUModelInfo qemuMonitorCPUModelInfo;
@@ -1001,6 +1002,7 @@ struct _qemuMonitorCPUModelInfo {
     char *name;
     size_t nprops;
     qemuMonitorCPUPropertyPtr props;
+    bool migratability;
 };
 
 typedef enum {
