@@ -393,6 +393,7 @@ cpuTestUpdate(const void *arg)
     const struct data *data = arg;
     int ret = -1;
     virCPUDefPtr host = NULL;
+    virCPUDefPtr migHost = NULL;
     virCPUDefPtr cpu = NULL;
     char *result = NULL;
 
@@ -400,7 +401,10 @@ cpuTestUpdate(const void *arg)
         !(cpu = cpuTestLoadXML(data->arch, data->name)))
         goto cleanup;
 
-    if (virCPUUpdate(host->arch, cpu, host) < 0)
+    if (!(migHost = virCPUCopyMigratable(data->arch, host)))
+        goto cleanup;
+
+    if (virCPUUpdate(host->arch, cpu, migHost) < 0)
         goto cleanup;
 
     if (virAsprintf(&result, "%s+%s", data->host, data->name) < 0)
@@ -411,6 +415,7 @@ cpuTestUpdate(const void *arg)
  cleanup:
     virCPUDefFree(host);
     virCPUDefFree(cpu);
+    virCPUDefFree(migHost);
     VIR_FREE(result);
     return ret;
 }

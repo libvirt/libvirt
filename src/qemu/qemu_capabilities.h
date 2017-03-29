@@ -453,6 +453,8 @@ int virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
 typedef enum {
     /* Host CPU definition reported in domain capabilities. */
     VIR_QEMU_CAPS_HOST_CPU_REPORTED,
+    /* Migratable host CPU definition used for updating guest CPU. */
+    VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE,
 } virQEMUCapsHostCPUType;
 
 virCPUDefPtr virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps,

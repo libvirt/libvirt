@@ -384,6 +384,8 @@ struct _virQEMUCapsHostCPUData {
     qemuMonitorCPUModelInfoPtr info;
     /* Host CPU definition reported in domain capabilities. */
     virCPUDefPtr reported;
+    /* Migratable host CPU definition used for updating guest CPU. */
+    virCPUDefPtr migratable;
 };
 
 /*
@@ -2136,6 +2138,10 @@ virQEMUCapsHostCPUDataCopy(virQEMUCapsHostCPUDataPtr dst,
         !(dst->reported = virCPUDefCopy(src->reported)))
         return -1;
 
+    if (src->migratable &&
+        !(dst->migratable = virCPUDefCopy(src->migratable)))
+        return -1;
+
     return 0;
 }
 
@@ -2145,6 +2151,7 @@ virQEMUCapsHostCPUDataClear(virQEMUCapsHostCPUDataPtr cpuData)
 {
     qemuMonitorCPUModelInfoFree(cpuData->info);
     virCPUDefFree(cpuData->reported);
+    virCPUDefFree(cpuData->migratable);
 
     memset(cpuData, 0, sizeof(*cpuData));
 }
@@ -2483,6 +2490,9 @@ virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps,
     switch (cpuType) {
     case VIR_QEMU_CAPS_HOST_CPU_REPORTED:
         return cpuData->reported;
+
+    case VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE:
+        return cpuData->migratable;
     }
 
     return NULL;
@@ -2492,11 +2502,13 @@ virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps,
 static void
 virQEMUCapsSetHostModel(virQEMUCapsPtr qemuCaps,
                         virDomainVirtType type,
-                        virCPUDefPtr cpu)
+                        virCPUDefPtr reported,
+                        virCPUDefPtr migratable)
 {
     virQEMUCapsHostCPUDataPtr cpuData = virQEMUCapsGetHostCPUData(qemuCaps, type);
 
-    cpuData->reported = cpu;
+    cpuData->reported = reported;
+    cpuData->migratable = migratable;
 }
 
 
@@ -3348,25 +3360,38 @@ virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
 }
 
 
+static virCPUDefPtr
+virQEMUCapsNewHostCPUModel(void)
+{
+    virCPUDefPtr cpu;
+
+    if (VIR_ALLOC(cpu) < 0)
+        return NULL;
+
+    cpu->type = VIR_CPU_TYPE_GUEST;
+    cpu->mode = VIR_CPU_MODE_CUSTOM;
+    cpu->match = VIR_CPU_MATCH_EXACT;
+    cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
+
+    return cpu;
+}
+
+
 void
 virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
                             virCapsPtr caps,
                             virDomainVirtType type)
 {
     virCPUDefPtr cpu = NULL;
+    virCPUDefPtr migCPU = NULL;
     virCPUDefPtr hostCPU = NULL;
     int rc;
 
     if (!caps || !virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch))
         return;
 
-    if (VIR_ALLOC(cpu) < 0)
+    if (!(cpu = virQEMUCapsNewHostCPUModel()))
         goto error;
-
-    cpu->type = VIR_CPU_TYPE_GUEST;
-    cpu->mode = VIR_CPU_MODE_CUSTOM;
-    cpu->match = VIR_CPU_MATCH_EXACT;
-    cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
 
     if ((rc = virQEMUCapsInitCPUModel(qemuCaps, type, cpu, false)) < 0) {
         goto error;
@@ -3381,7 +3406,20 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
             goto error;
     }
 
-    virQEMUCapsSetHostModel(qemuCaps, type, cpu);
+    if (!(migCPU = virQEMUCapsNewHostCPUModel()))
+        goto error;
+
+    if ((rc = virQEMUCapsInitCPUModel(qemuCaps, type, migCPU, true)) < 0) {
+        goto error;
+    } else if (rc == 1) {
+        VIR_DEBUG("CPU migratability not provided by QEMU");
+
+        virCPUDefFree(migCPU);
+        if (!(migCPU = virCPUCopyMigratable(qemuCaps->arch, cpu)))
+            goto error;
+    }
+
+    virQEMUCapsSetHostModel(qemuCaps, type, cpu, migCPU);
 
  cleanup:
     virCPUDefFree(hostCPU);
@@ -3389,6 +3427,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
 
  error:
     virCPUDefFree(cpu);
+    virCPUDefFree(migCPU);
     virResetLastError();
     goto cleanup;
 }

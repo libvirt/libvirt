@@ -5311,7 +5311,7 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
 
     if (virCPUUpdate(def->os.arch, def->cpu,
                      virQEMUCapsGetHostModel(qemuCaps, def->virtType,
-                                             VIR_QEMU_CAPS_HOST_CPU_REPORTED)) < 0)
+                                             VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE)) < 0)
         goto cleanup;
 
     if (virQEMUCapsGetCPUDefinitions(qemuCaps, def->virtType,
