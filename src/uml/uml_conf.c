@@ -69,6 +69,9 @@ virCapsPtr umlCapsInit(void)
         VIR_WARN("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
 
+    if (virCapabilitiesInitCaches(caps) < 0)
+        VIR_WARN("Failed to get host CPU cache info");
+
     if (virNodeSuspendGetTargetMask(&caps->host.powerMgmt) < 0)
         VIR_WARN("Failed to get host power management capabilities");
 

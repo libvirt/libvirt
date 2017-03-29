@@ -340,6 +340,9 @@ phypCapsInit(void)
             ("Failed to query host NUMA topology, disabling NUMA capabilities");
     }
 
+    if (virCapabilitiesInitCaches(caps) < 0)
+        VIR_WARN("Failed to get host CPU cache info");
+
     if ((guest = virCapabilitiesAddGuest(caps,
                                          VIR_DOMAIN_OSTYPE_LINUX,
                                          caps->host.arch,

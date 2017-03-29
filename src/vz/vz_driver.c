@@ -118,6 +118,8 @@ vzBuildCapabilities(void)
     if (virCapabilitiesInitNUMA(caps) < 0)
         goto error;
 
+    if (virCapabilitiesInitCaches(caps) < 0)
+        goto error;
 
     verify(ARRAY_CARDINALITY(archs) == ARRAY_CARDINALITY(emulators));
 

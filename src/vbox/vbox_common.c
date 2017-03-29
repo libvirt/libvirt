@@ -79,6 +79,9 @@ vboxCapsInit(void)
     if (virCapabilitiesInitNUMA(caps) < 0)
         goto no_memory;
 
+    if (virCapabilitiesInitCaches(caps) < 0)
+        goto no_memory;
+
     if ((guest = virCapabilitiesAddGuest(caps,
                                          VIR_DOMAIN_OSTYPE_HVM,
                                          caps->host.arch,

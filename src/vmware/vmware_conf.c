@@ -68,6 +68,9 @@ vmwareCapsInit(void)
     if (virCapabilitiesInitNUMA(caps) < 0)
         goto error;
 
+    if (virCapabilitiesInitCaches(caps) < 0)
+        goto error;
+
     /* i686 guests are always supported */
     if ((guest = virCapabilitiesAddGuest(caps,
                                          VIR_DOMAIN_OSTYPE_HVM,
