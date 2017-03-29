@@ -1130,3 +1130,34 @@ virCPUExpandFeatures(virArch arch,
     VIR_DEBUG("nfeatures=%zu", cpu->nfeatures);
     return 0;
 }
+
+
+/**
+ * virCPUCopyMigratable:
+ *
+ * @arch: CPU architecture
+ * @cpu: CPU definition to be copied
+ *
+ * Makes a copy of @cpu with all features which would block migration removed.
+ * If this doesn't make sense for a given architecture, the function returns a
+ * plain copy of @cpu (i.e., a copy with no features removed).
+ *
+ * Returns the copy of the CPU or NULL on error.
+ */
+virCPUDefPtr
+virCPUCopyMigratable(virArch arch,
+                     virCPUDefPtr cpu)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s, cpu=%p, model=%s",
+              virArchToString(arch), cpu, NULLSTR(cpu->model));
+
+    if (!(driver = cpuGetSubDriver(arch)))
+        return NULL;
+
+    if (driver->copyMigratable)
+        return driver->copyMigratable(cpu);
+    else
+        return virCPUDefCopy(cpu);
+}

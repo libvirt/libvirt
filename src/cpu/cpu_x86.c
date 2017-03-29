@@ -2903,6 +2903,30 @@ virCPUx86ExpandFeatures(virCPUDefPtr cpu)
 }
 
 
+static virCPUDefPtr
+virCPUx86CopyMigratable(virCPUDefPtr cpu)
+{
+    virCPUDefPtr copy;
+    virCPUx86MapPtr map;
+
+    if (!(map = virCPUx86GetMap()))
+        return NULL;
+
+    if (!(copy = virCPUDefCopyWithoutModel(cpu)))
+        return NULL;
+
+    if (virCPUDefCopyModelFilter(copy, cpu, false,
+                                 x86FeatureIsMigratable, map) < 0)
+        goto error;
+
+    return copy;
+
+ error:
+    virCPUDefFree(copy);
+    return NULL;
+}
+
+
 int
 virCPUx86DataAddCPUID(virCPUDataPtr cpuData,
                       const virCPUx86CPUID *cpuid)
@@ -2978,4 +3002,5 @@ struct cpuArchDriver cpuDriverX86 = {
     .getModels  = virCPUx86GetModels,
     .translate  = virCPUx86Translate,
     .expandFeatures = virCPUx86ExpandFeatures,
+    .copyMigratable = virCPUx86CopyMigratable,
 };

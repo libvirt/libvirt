@@ -1017,6 +1017,7 @@ virCPUCheckFeature;
 virCPUCompare;
 virCPUCompareXML;
 virCPUConvertLegacy;
+virCPUCopyMigratable;
 virCPUDataCheckFeature;
 virCPUDataFormat;
 virCPUDataFree;
