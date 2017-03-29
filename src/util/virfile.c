@@ -2861,11 +2861,11 @@ virDirOpenQuiet(DIR **dirp, const char *name)
 /**
  * virDirRead:
  * @dirp: directory to read
- * @end: output one entry
+ * @ent: output one entry
  * @name: if non-NULL, the name related to @dirp for use in error reporting
  *
  * Wrapper around readdir. Typical usage:
- *   struct dirent ent;
+ *   struct dirent *ent;
  *   int rc;
  *   DIR *dir;
  *   if (virDirOpen(&dir, name) < 0)
