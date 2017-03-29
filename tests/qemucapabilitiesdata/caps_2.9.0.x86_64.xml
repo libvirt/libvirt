@@ -314,7 +314,7 @@
     <property name='svm' type='boolean' value='false'/>
     <property name='full-cpuid-auto-level' type='boolean' value='true' migratable='yes'/>
     <property name='hv-reset' type='boolean' value='false'/>
-    <property name='invtsc' type='boolean' value='false'/>
+    <property name='invtsc' type='boolean' value='true' migratable='no'/>
     <property name='sse3' type='boolean' value='true' migratable='yes'/>
     <property name='sse2' type='boolean' value='true' migratable='yes'/>
     <property name='est' type='boolean' value='false'/>

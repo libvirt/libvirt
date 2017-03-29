@@ -2864,8 +2864,12 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCapsPtr qemuCaps,
                 prop->type != nmProp->type)
                 continue;
 
-            if (prop->value.boolean)
+            if (prop->value.boolean) {
                 prop->migratable = VIR_TRISTATE_BOOL_YES;
+            } else if (nmProp->value.boolean) {
+                prop->value.boolean = true;
+                prop->migratable = VIR_TRISTATE_BOOL_NO;
+            }
         }
 
         (*modelInfo)->migratability = true;
