@@ -955,7 +955,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
     if (caps->host.nnumaCell &&
         virCapabilitiesFormatNUMATopology(&buf, caps->host.nnumaCell,
                                           caps->host.numaCell) < 0)
-        return NULL;
+        goto error;
 
     for (i = 0; i < caps->host.nsecModels; i++) {
         virBufferAddLit(&buf, "<secmodel>\n");
@@ -1072,6 +1072,10 @@ virCapabilitiesFormatXML(virCapsPtr caps)
         return NULL;
 
     return virBufferContentAndReset(&buf);
+
+ error:
+    virBufferFreeAndReset(&buf);
+    return NULL;
 }
 
 /* get the maximum ID of cpus in the host */
