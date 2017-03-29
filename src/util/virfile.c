@@ -3811,7 +3811,6 @@ int
 virFileReadValueInt(const char *path, int *value)
 {
     char *str = NULL;
-    char *endp = NULL;
 
     if (!virFileExists(path))
         return -2;
@@ -3819,8 +3818,9 @@ virFileReadValueInt(const char *path, int *value)
     if (virFileReadAll(path, INT_STRLEN_BOUND(*value), &str) < 0)
         return -1;
 
-    if (virStrToLong_i(str, &endp, 10, value) < 0 ||
-        (endp && !c_isspace(*endp))) {
+    virStringTrimOptionalNewline(str);
+
+    if (virStrToLong_i(str, NULL, 10, value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid integer value '%s' in file '%s'"),
                        str, path);
@@ -3847,7 +3847,6 @@ int
 virFileReadValueUint(const char *path, unsigned int *value)
 {
     char *str = NULL;
-    char *endp = NULL;
 
     if (!virFileExists(path))
         return -2;
@@ -3855,8 +3854,9 @@ virFileReadValueUint(const char *path, unsigned int *value)
     if (virFileReadAll(path, INT_STRLEN_BOUND(*value), &str) < 0)
         return -1;
 
-    if (virStrToLong_uip(str, &endp, 10, value) < 0 ||
-        (endp && !c_isspace(*endp))) {
+    virStringTrimOptionalNewline(str);
+
+    if (virStrToLong_uip(str, NULL, 10, value)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid unsigned integer value '%s' in file '%s'"),
                        str, path);
@@ -3886,7 +3886,6 @@ virFileReadValueBitmap(const char *path,
 {
     char *buf = NULL;
     int ret = -1;
-    char *tmp = NULL;
 
     if (!virFileExists(path))
         return -2;
@@ -3894,10 +3893,7 @@ virFileReadValueBitmap(const char *path,
     if (virFileReadAll(path, maxlen, &buf) < 0)
         goto cleanup;
 
-    /* trim optinoal newline at the end */
-    tmp = buf + strlen(buf) - 1;
-    if (*tmp == '\n')
-        *tmp = '\0';
+    virStringTrimOptionalNewline(buf);
 
     *value = virBitmapParseUnlimited(buf);
     if (!*value)

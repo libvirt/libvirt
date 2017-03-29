@@ -89,6 +89,8 @@ virSysfsGetValueString(const char *file,
     if (virFileReadAll(path, VIR_SYSFS_VALUE_MAXLEN, value) < 0)
         goto cleanup;
 
+    virStringTrimOptionalNewline(*value);
+
     ret = 0;
  cleanup:
     VIR_FREE(path);

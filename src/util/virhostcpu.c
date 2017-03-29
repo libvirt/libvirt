@@ -847,13 +847,13 @@ virHostCPUParseCountLinux(void)
     tmp = str;
     do {
         if (virStrToLong_i(tmp, &tmp, 10, &ret) < 0 ||
-            !strchr(",-\n", *tmp)) {
+            !strchr(",-", *tmp)) {
             virReportError(VIR_ERR_NO_SUPPORT,
                            _("failed to parse %s"), str);
             ret = -1;
             goto cleanup;
         }
-    } while (*tmp++ != '\n');
+    } while (*tmp++ && *tmp);
     ret++;
 
  cleanup:
