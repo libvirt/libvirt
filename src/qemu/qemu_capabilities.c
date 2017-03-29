@@ -373,6 +373,14 @@ struct virQEMUCapsMachineType {
     unsigned int maxCpus;
     bool hotplugCpus;
 };
+
+typedef struct _virQEMUCapsCPUModel virQEMUCapsCPUModel;
+typedef virQEMUCapsCPUModel *virQEMUCapsCPUModelPtr;
+struct _virQEMUCapsCPUModel {
+    virCPUDefPtr full;
+    virCPUDefPtr migratable;
+};
+
 /*
  * Update the XML parser/formatter when adding more
  * information to this struct so that it gets cached
@@ -415,8 +423,8 @@ struct _virQEMUCaps {
      * time we probe QEMU or load the results from the cache.
      */
     struct {
-        virCPUDefPtr kvm;
-        virCPUDefPtr tcg;
+        virQEMUCapsCPUModel kvm;
+        virQEMUCapsCPUModel tcg;
     } hostCPU;
 };
 
@@ -2101,12 +2109,20 @@ virQEMUCapsCopyHostCPUData(virQEMUCapsPtr dst,
         !(dst->tcgCPUModelInfo = qemuMonitorCPUModelInfoCopy(src->tcgCPUModelInfo)))
         return -1;
 
-    if (src->hostCPU.kvm &&
-        !(dst->hostCPU.kvm = virCPUDefCopy(src->hostCPU.kvm)))
+    if (src->hostCPU.kvm.full &&
+        !(dst->hostCPU.kvm.full = virCPUDefCopy(src->hostCPU.kvm.full)))
         return -1;
 
-    if (src->hostCPU.tcg &&
-        !(dst->hostCPU.tcg = virCPUDefCopy(src->hostCPU.tcg)))
+    if (src->hostCPU.kvm.migratable &&
+        !(dst->hostCPU.kvm.migratable = virCPUDefCopy(src->hostCPU.kvm.migratable)))
+        return -1;
+
+    if (src->hostCPU.tcg.full &&
+        !(dst->hostCPU.tcg.full = virCPUDefCopy(src->hostCPU.tcg.full)))
+        return -1;
+
+    if (src->hostCPU.tcg.migratable &&
+        !(dst->hostCPU.tcg.migratable = virCPUDefCopy(src->hostCPU.tcg.migratable)))
         return -1;
 
     return 0;
@@ -2201,8 +2217,10 @@ void virQEMUCapsDispose(void *obj)
 
     qemuMonitorCPUModelInfoFree(qemuCaps->kvmCPUModelInfo);
     qemuMonitorCPUModelInfoFree(qemuCaps->tcgCPUModelInfo);
-    virCPUDefFree(qemuCaps->hostCPU.kvm);
-    virCPUDefFree(qemuCaps->hostCPU.tcg);
+    virCPUDefFree(qemuCaps->hostCPU.kvm.full);
+    virCPUDefFree(qemuCaps->hostCPU.kvm.migratable);
+    virCPUDefFree(qemuCaps->hostCPU.tcg.full);
+    virCPUDefFree(qemuCaps->hostCPU.tcg.migratable);
 }
 
 void
@@ -2431,9 +2449,9 @@ virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps,
                         virDomainVirtType type)
 {
     if (type == VIR_DOMAIN_VIRT_KVM)
-        return qemuCaps->hostCPU.kvm;
+        return qemuCaps->hostCPU.kvm.full;
     else
-        return qemuCaps->hostCPU.tcg;
+        return qemuCaps->hostCPU.tcg.full;
 }
 
 
@@ -3280,25 +3298,39 @@ virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
 }
 
 
+static virCPUDefPtr
+virQEMUCapsNewHostCPUModel(void)
+{
+    virCPUDefPtr cpu;
+
+    if (VIR_ALLOC(cpu) < 0)
+        return NULL;
+
+    cpu->type = VIR_CPU_TYPE_GUEST;
+    cpu->mode = VIR_CPU_MODE_CUSTOM;
+    cpu->match = VIR_CPU_MATCH_EXACT;
+    cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
+
+    return cpu;
+}
+
+
 void
 virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
                             virCapsPtr caps,
                             virDomainVirtType type)
 {
     virCPUDefPtr cpu = NULL;
+    virCPUDefPtr migCPU = NULL;
     virCPUDefPtr hostCPU = NULL;
+    virQEMUCapsCPUModelPtr model;
     int rc;
 
     if (!caps || !virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch))
         return;
 
-    if (VIR_ALLOC(cpu) < 0)
+    if (!(cpu = virQEMUCapsNewHostCPUModel()))
         goto error;
-
-    cpu->type = VIR_CPU_TYPE_GUEST;
-    cpu->mode = VIR_CPU_MODE_CUSTOM;
-    cpu->match = VIR_CPU_MATCH_EXACT;
-    cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
 
     if ((rc = virQEMUCapsInitCPUModel(qemuCaps, type, cpu, false)) < 0) {
         goto error;
@@ -3313,10 +3345,26 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
             goto error;
     }
 
+    if (!(migCPU = virQEMUCapsNewHostCPUModel()))
+        goto error;
+
+    if ((rc = virQEMUCapsInitCPUModel(qemuCaps, type, migCPU, true)) < 0) {
+        goto error;
+    } else if (rc == 1) {
+        VIR_DEBUG("CPU migratibility not provided by QEMU");
+
+        virCPUDefFree(migCPU);
+        if (!(migCPU = virCPUCopyMigratable(qemuCaps->arch, cpu)))
+            goto error;
+    }
+
     if (type == VIR_DOMAIN_VIRT_KVM)
-        qemuCaps->hostCPU.kvm = cpu;
+        model = &qemuCaps->hostCPU.kvm;
     else
-        qemuCaps->hostCPU.tcg = cpu;
+        model = &qemuCaps->hostCPU.tcg;
+
+    model->full = cpu;
+    model->migratable = migCPU;
 
  cleanup:
     virCPUDefFree(hostCPU);
@@ -3324,6 +3372,7 @@ virQEMUCapsInitHostCPUModel(virQEMUCapsPtr qemuCaps,
 
  error:
     virCPUDefFree(cpu);
+    virCPUDefFree(migCPU);
     virResetLastError();
     goto cleanup;
 }
@@ -4071,8 +4120,10 @@ virQEMUCapsReset(virQEMUCapsPtr qemuCaps)
     qemuCaps->kvmCPUModelInfo = NULL;
     qemuCaps->tcgCPUModelInfo = NULL;
 
-    virCPUDefFree(qemuCaps->hostCPU.kvm);
-    virCPUDefFree(qemuCaps->hostCPU.tcg);
+    virCPUDefFree(qemuCaps->hostCPU.kvm.full);
+    virCPUDefFree(qemuCaps->hostCPU.kvm.migratable);
+    virCPUDefFree(qemuCaps->hostCPU.tcg.full);
+    virCPUDefFree(qemuCaps->hostCPU.tcg.migratable);
     memset(&qemuCaps->hostCPU, 0, sizeof(qemuCaps->hostCPU));
 }
 
