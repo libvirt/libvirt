@@ -309,6 +309,22 @@ virObjectRef(void *anyobj)
 }
 
 
+static virObjectLockablePtr
+virObjectGetLockableObj(void *anyobj)
+{
+    virObjectPtr obj;
+
+    if (virObjectIsClass(anyobj, virObjectLockableClass))
+        return anyobj;
+
+    obj = anyobj;
+    VIR_WARN("Object %p (%s) is not a virObjectLockable instance",
+              anyobj, obj ? obj->klass->name : "(unknown)");
+
+    return NULL;
+}
+
+
 /**
  * virObjectLock:
  * @anyobj: any instance of virObjectLockablePtr
@@ -324,13 +340,10 @@ virObjectRef(void *anyobj)
 void
 virObjectLock(void *anyobj)
 {
-    virObjectLockablePtr obj = anyobj;
+    virObjectLockablePtr obj = virObjectGetLockableObj(anyobj);
 
-    if (!virObjectIsClass(obj, virObjectLockableClass)) {
-        VIR_WARN("Object %p (%s) is not a virObjectLockable instance",
-                 obj, obj ? obj->parent.klass->name : "(unknown)");
+    if (!obj)
         return;
-    }
 
     virMutexLock(&obj->lock);
 }
@@ -346,13 +359,10 @@ virObjectLock(void *anyobj)
 void
 virObjectUnlock(void *anyobj)
 {
-    virObjectLockablePtr obj = anyobj;
+    virObjectLockablePtr obj = virObjectGetLockableObj(anyobj);
 
-    if (!virObjectIsClass(obj, virObjectLockableClass)) {
-        VIR_WARN("Object %p (%s) is not a virObjectLockable instance",
-                 obj, obj ? obj->parent.klass->name : "(unknown)");
+    if (!obj)
         return;
-    }
 
     virMutexUnlock(&obj->lock);
 }
