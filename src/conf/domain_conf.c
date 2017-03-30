@@ -25342,10 +25342,8 @@ virDomainDiskDefForeachPath(virDomainDiskDefPtr disk,
     }
 
     for (tmp = disk->src; tmp; tmp = tmp->backingStore) {
-        int actualType = virStorageSourceGetActualType(tmp);
         /* execute the callback only for local storage */
-        if (actualType != VIR_STORAGE_TYPE_NETWORK &&
-            actualType != VIR_STORAGE_TYPE_VOLUME &&
+        if (virStorageSourceIsLocalStorage(tmp) &&
             tmp->path) {
             if (iter(disk, tmp->path, depth, opaque) < 0)
                 goto cleanup;
