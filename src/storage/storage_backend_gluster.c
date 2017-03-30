@@ -537,9 +537,22 @@ virStorageBackendGlusterFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
 }
 
 
+static int
+virStorageBackendGlusterCheckPool(virStoragePoolObjPtr pool,
+                                  bool *active)
+{
+    /* Return previous state remembered by the status XML. If the pool is not
+     * available we will fail to refresh it and end up in the same situation.
+     * This will save one attempt to open the connection to the remote server */
+    *active = pool->active;
+    return 0;
+}
+
+
 virStorageBackend virStorageBackendGluster = {
     .type = VIR_STORAGE_POOL_GLUSTER,
 
+    .checkPool = virStorageBackendGlusterCheckPool,
     .refreshPool = virStorageBackendGlusterRefreshPool,
     .findPoolSources = virStorageBackendGlusterFindPoolSources,
 
