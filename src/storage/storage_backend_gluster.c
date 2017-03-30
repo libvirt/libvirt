@@ -513,7 +513,7 @@ virStorageBackendGlusterFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if ((rc = virStorageBackendFindGlusterPoolSources(source->hosts[0].name,
-                                                      0, /* currently ignored */
+                                                      VIR_STORAGE_POOL_GLUSTER,
                                                       &list, true)) < 0)
         goto cleanup;
 
