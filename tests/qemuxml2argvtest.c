@@ -762,9 +762,8 @@ mymain(void)
     DO_TEST("clock-localtime-basis-localtime", QEMU_CAPS_RTC);
     DO_TEST("clock-variable", QEMU_CAPS_RTC);
     DO_TEST("clock-france", QEMU_CAPS_RTC);
-    DO_TEST("clock-hpet-off", QEMU_CAPS_RTC, QEMU_CAPS_NO_HPET,
-            QEMU_CAPS_NO_KVM_PIT);
-    DO_TEST("clock-catchup", QEMU_CAPS_RTC, QEMU_CAPS_NO_KVM_PIT);
+    DO_TEST("clock-hpet-off", QEMU_CAPS_RTC);
+    DO_TEST("clock-catchup", QEMU_CAPS_RTC);
     DO_TEST("cpu-kvmclock", QEMU_CAPS_ENABLE_KVM);
     DO_TEST("cpu-host-kvmclock", QEMU_CAPS_ENABLE_KVM);
     DO_TEST("kvmclock", QEMU_CAPS_KVM);
@@ -797,7 +796,7 @@ mymain(void)
     DO_TEST("pmu-feature-off", NONE);
 
     DO_TEST("hugepages", QEMU_CAPS_MEM_PATH);
-    DO_TEST("hugepages-numa", QEMU_CAPS_RTC, QEMU_CAPS_NO_KVM_PIT,
+    DO_TEST("hugepages-numa", QEMU_CAPS_RTC,
             QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4,
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_ICH9_USB_EHCI1, QEMU_CAPS_PCI_MULTIFUNCTION,
@@ -1990,7 +1989,6 @@ mymain(void)
     DO_TEST("q35-virt-manager-basic",
             QEMU_CAPS_KVM,
             QEMU_CAPS_RTC,
-            QEMU_CAPS_NO_KVM_PIT,
             QEMU_CAPS_ICH9_DISABLE_S3,
             QEMU_CAPS_ICH9_DISABLE_S4,
             QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
@@ -2322,7 +2320,7 @@ mymain(void)
 
     DO_TEST("kvm-pit-delay", QEMU_CAPS_KVM_PIT_TICK_POLICY);
     DO_TEST("kvm-pit-discard", QEMU_CAPS_KVM_PIT_TICK_POLICY);
-    DO_TEST("no-kvm-pit-device", QEMU_CAPS_NO_KVM_PIT);
+    DO_TEST("no-kvm-pit-device", NONE);
 
     DO_TEST("panic", QEMU_CAPS_DEVICE_PANIC,
             QEMU_CAPS_NODEFCONFIG);
