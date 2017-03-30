@@ -105,31 +105,28 @@ virStoragePoolUpdateInactive(virStoragePoolObjPtr *poolptr)
 static void
 storagePoolUpdateState(virStoragePoolObjPtr pool)
 {
-    bool active;
+    bool active = false;
     virStorageBackendPtr backend;
-    int ret = -1;
     char *stateFile;
 
     if (!(stateFile = virFileBuildPath(driver->stateDir,
                                        pool->def->name, ".xml")))
-        goto error;
+        goto cleanup;
 
     if ((backend = virStorageBackendForType(pool->def->type)) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Missing backend %d"), pool->def->type);
-        goto error;
+        goto cleanup;
     }
 
     /* Backends which do not support 'checkPool' are considered
-     * inactive by default.
-     */
-    active = false;
+     * inactive by default. */
     if (backend->checkPool &&
         backend->checkPool(pool, &active) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to initialize storage pool '%s': %s"),
                        pool->def->name, virGetLastErrorMessage());
-        goto error;
+        active = false;
     }
 
     /* We can pass NULL as connection, most backends do not use
@@ -144,17 +141,18 @@ storagePoolUpdateState(virStoragePoolObjPtr pool)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to restart storage pool '%s': %s"),
                            pool->def->name, virGetLastErrorMessage());
-            goto error;
+            active = false;
         }
     }
 
     pool->active = active;
-    ret = 0;
- error:
-    if (ret < 0) {
-        if (stateFile)
-            unlink(stateFile);
-    }
+
+    if (!pool->active)
+        virStoragePoolUpdateInactive(&pool);
+
+ cleanup:
+    if (!active && stateFile)
+        ignore_value(unlink(stateFile));
     VIR_FREE(stateFile);
 
     return;
