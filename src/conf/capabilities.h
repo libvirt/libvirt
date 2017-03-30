@@ -138,6 +138,26 @@ struct _virCapsHostSecModel {
     virCapsHostSecModelLabelPtr labels;
 };
 
+typedef enum {
+    VIR_CACHE_TYPE_BOTH,
+    VIR_CACHE_TYPE_CODE,
+    VIR_CACHE_TYPE_DATA,
+
+    VIR_CACHE_TYPE_LAST
+} virCacheType;
+
+VIR_ENUM_DECL(virCache);
+
+typedef struct _virCapsHostCacheBank virCapsHostCacheBank;
+typedef virCapsHostCacheBank *virCapsHostCacheBankPtr;
+struct _virCapsHostCacheBank {
+    unsigned int id;
+    unsigned int level; /* 1=L1, 2=L2, 3=L3, etc. */
+    unsigned long long size; /* B */
+    virCacheType type;  /* Data, Instruction or Unified */
+    virBitmapPtr cpus;  /* All CPUs that share this bank */
+};
+
 typedef struct _virCapsHost virCapsHost;
 typedef virCapsHost *virCapsHostPtr;
 struct _virCapsHost {
@@ -156,6 +176,9 @@ struct _virCapsHost {
     size_t nnumaCell;
     size_t nnumaCell_max;
     virCapsHostNUMACellPtr *numaCell;
+
+    size_t ncaches;
+    virCapsHostCacheBankPtr *caches;
 
     size_t nsecModels;
     virCapsHostSecModelPtr secModels;
@@ -302,5 +325,11 @@ int virCapabilitiesGetNodeInfo(virNodeInfoPtr nodeinfo);
 int virCapabilitiesInitPages(virCapsPtr caps);
 
 int virCapabilitiesInitNUMA(virCapsPtr caps);
+
+bool virCapsHostCacheBankEquals(virCapsHostCacheBankPtr a,
+                                virCapsHostCacheBankPtr b);
+void virCapsHostCacheBankFree(virCapsHostCacheBankPtr ptr);
+
+int virCapabilitiesInitCaches(virCapsPtr caps);
 
 #endif /* __VIR_CAPABILITIES_H */

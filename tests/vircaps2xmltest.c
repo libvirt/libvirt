@@ -58,7 +58,8 @@ test_virCapabilities(const void *opaque)
     if (!caps)
         goto cleanup;
 
-    if (virCapabilitiesInitNUMA(caps) < 0)
+    if (virCapabilitiesInitNUMA(caps) < 0 ||
+        virCapabilitiesInitCaches(caps) < 0)
         goto cleanup;
 
     virFileWrapperClearPrefixes();

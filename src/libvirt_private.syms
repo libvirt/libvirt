@@ -59,6 +59,7 @@ virCapabilitiesFreeNUMAInfo;
 virCapabilitiesGetCpusForNodemask;
 virCapabilitiesGetNodeInfo;
 virCapabilitiesHostSecModelAddBaseLabel;
+virCapabilitiesInitCaches;
 virCapabilitiesInitNUMA;
 virCapabilitiesInitPages;
 virCapabilitiesNew;
