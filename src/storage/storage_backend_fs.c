@@ -186,7 +186,7 @@ virStorageBackendFileSystemNetFindPoolSources(virConnectPtr conn ATTRIBUTE_UNUSE
     retNFS = virStorageBackendFileSystemNetFindNFSPoolSources(&state);
 
     retGluster = virStorageBackendFindGlusterPoolSources(state.host,
-                                                         VIR_STORAGE_POOL_NETFS_GLUSTERFS,
+                                                         VIR_STORAGE_POOL_NETFS,
                                                          &state.list, false);
 
     if (retGluster < 0)

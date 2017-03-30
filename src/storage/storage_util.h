@@ -94,7 +94,7 @@ int virStorageBackendRefreshLocal(virConnectPtr conn,
                                   virStoragePoolObjPtr pool);
 
 int virStorageBackendFindGlusterPoolSources(const char *host,
-                                            int pooltype,
+                                            virStoragePoolType pooltype,
                                             virStoragePoolSourceListPtr list,
                                             bool report);
 
