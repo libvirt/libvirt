@@ -171,12 +171,12 @@ int
 virStorageBackendRegister(virStorageBackendPtr backend)
 {
     VIR_DEBUG("Registering storage backend '%s'",
-              virStorageTypeToString(backend->type));
+              virStoragePoolTypeToString(backend->type));
 
     if (virStorageBackendsCount >= VIR_STORAGE_BACKENDS_MAX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Too many drivers, cannot register storage backend '%s'"),
-                       virStorageTypeToString(backend->type));
+                       virStoragePoolTypeToString(backend->type));
         return -1;
     }
 
