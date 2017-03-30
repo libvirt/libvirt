@@ -2862,7 +2862,7 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
         if (!(src = virStoragePoolSourceListNewSource(list)))
             goto cleanup;
 
-        if (!(src->dir = virXPathString("string(//name)", ctxt))) {
+        if (!(src->dir = virXPathString("string(./name)", ctxt))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to extract gluster volume name"));
             goto cleanup;

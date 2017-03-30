@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--- note that the XML file is truncated -->
+<cliOutput>
+  <opRet>0</opRet>
+  <opErrno>0</opErrno>
+  <opErrstr/>
+  <volInfo>
+    <volumes>
+      <volume>
+        <name>aaa</name>
+        <id>d0b219d4-4169-4907-8994-d2e2434854ed</id>
+        <status>0</status>
+        <statusStr>Created</statusStr>
+        <snapshotCount>0</snapshotCount>
+      </volume>
+      <volume>
+        <name>test</name>
+        <id>32826068-2320-4b62-a825-2554edb7f020</id>
+        <status>1</status>
+        <statusStr>Started</statusStr>
+        <snapshotCount>0</snapshotCount>
+      </volume>
+      <volume>
+        <name>test1</name>
+        <id>dfa070f4-b12f-4166-8d68-041b73127abc</id>
+        <status>0</status>
+        <statusStr>Created</statusStr>
+      </volume>
+      <count>3</count>
+    </volumes>
+  </volInfo>
+</cliOutput>

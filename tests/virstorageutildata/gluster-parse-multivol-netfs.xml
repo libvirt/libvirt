@@ -1,0 +1,17 @@
+<sources>
+  <source>
+    <host name='testhost'/>
+    <dir path='aaa'/>
+    <format type='glusterfs'/>
+  </source>
+  <source>
+    <host name='testhost'/>
+    <dir path='test'/>
+    <format type='glusterfs'/>
+  </source>
+  <source>
+    <host name='testhost'/>
+    <dir path='test1'/>
+    <format type='glusterfs'/>
+  </source>
+</sources>
