@@ -33,7 +33,7 @@
 
 typedef struct _hypervObject hypervObject;
 
-int hyperyVerifyResponse(WsManClient *client, WsXmlDocH response,
+int hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
                          const char *detail);
 
 

@@ -47,7 +47,7 @@
 
 
 int
-hyperyVerifyResponse(WsManClient *client, WsXmlDocH response,
+hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
                      const char *detail)
 {
     int lastError = wsmc_get_last_error(client);
@@ -157,7 +157,7 @@ hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
 
     response = wsmc_action_enumerate(priv->client, root, options, filter);
 
-    if (hyperyVerifyResponse(priv->client, response, "enumeration") < 0)
+    if (hypervVerifyResponse(priv->client, response, "enumeration") < 0)
         goto cleanup;
 
     enumContext = wsmc_get_enum_context(response);
@@ -169,7 +169,7 @@ hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query, const char *root,
         response = wsmc_action_pull(priv->client, resourceUri, options,
                                     filter, enumContext);
 
-        if (hyperyVerifyResponse(priv->client, response, "pull") < 0)
+        if (hypervVerifyResponse(priv->client, response, "pull") < 0)
             goto cleanup;
 
         node = ws_xml_get_soap_body(response);
@@ -425,7 +425,7 @@ hypervInvokeMsvmComputerSystemRequestStateChange(virDomainPtr domain,
     response = wsmc_action_invoke(priv->client, MSVM_COMPUTERSYSTEM_RESOURCE_URI,
                                   options, "RequestStateChange", NULL);
 
-    if (hyperyVerifyResponse(priv->client, response, "invocation") < 0)
+    if (hypervVerifyResponse(priv->client, response, "invocation") < 0)
         goto cleanup;
 
     /* Check return value */
