@@ -5,9 +5,17 @@
      This file will be processed to produce both HTML and plain text versions
      of the release notes.
 
-     Keep the style consistent with existing entries as much as possible:
-     each change should be documented by a short, one-sentence summary
-     and optionally a description where it's explained in more detail
+     Keep the style consistent with existing entries as much as possible.
+
+     Each change should be documented by a short, one-sentence summary, which
+     should fit in a single line and should not contain any formatting tags.
+
+     You can optionally add a description if you feel like the summary alone is
+     not enough to document the change accurately. The description may contain
+     a <code> tag for switching to non-proportional font. No other tags are
+     allowed.
+
+     Lines should be kept under 80 columns, and should not exceed 100 columns.
 
      Use the following template to add a new release section:
 
@@ -432,7 +440,7 @@
       </change>
       <change>
         <summary>
-          nss: Introduce <code>libvirt_guest</code>
+          nss: Introduce libvirt_guest
         </summary>
         <description>
           New <code>libvirt_guest</code> nss module that translates libvirt
@@ -692,7 +700,7 @@
         <description>
           The new libssh transport allows one to connect to a running
           libvirtd via SSH, using the libssh library; for example:
-          <tt>qemu+libssh://<i>server</i>/system</tt>.
+          <code>qemu+libssh://server/system</code>.
         </description>
       </change>
       <change>
@@ -706,17 +714,22 @@
       </change>
       <change>
         <summary>
-          qemu: Users can now enable debug logging for native gluster
-          volumes in qemu using the "gluster_debug_level" option in qemu.conf
+          Allow debugging of gluster volumes in qemu
         </summary>
+        <description>
+          Users can now enable debug logging for native gluster
+          volumes in qemu using the "gluster_debug_level" option in qemu.conf
+        </description>
       </change>
       <change>
         <summary>
-          memory hotplug: Slot numbers for memory devices are now
-          automatically allocated and thus persistent. In addition slot numbers
-          can be specified without providing a base address, which simplifies
-          user configuration
+          Pre-allocate memory slots for memory hotplug
         </summary>
+        <description>
+          Slot numbers for memory devices are now automatically allocated and
+          thus persistent. In addition slot numbers can be specified without
+          providing a base address, which simplifies user configuration
+        </description>
       </change>
       <change>
         <summary>
@@ -746,8 +759,7 @@
       </change>
       <change>
         <summary>
-          virsh: Add support for passing an alternative persistent XML
-          to migrate command
+          virsh: Add support for passing an alternative persistent XML to migrate command
         </summary>
       </change>
       <change>
