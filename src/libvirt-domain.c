@@ -8702,7 +8702,9 @@ virDomainGetJobStats(virDomainPtr domain,
  * @domain: a domain object
  *
  * Requests that the current background job be aborted at the
- * soonest opportunity.
+ * soonest opportunity. In case the job is a migration in a post-copy mode,
+ * virDomainAbortJob will report an error (see virDomainMigrateStartPostCopy
+ * for more details).
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -8976,7 +8978,8 @@ virDomainMigrateGetMaxSpeed(virDomainPtr domain,
  * rolled back because none of the hosts has complete state. If this happens,
  * libvirt will leave the domain paused on both hosts with
  * VIR_DOMAIN_PAUSED_POSTCOPY_FAILED reason. It's up to the upper layer to
- * decide what to do in such case.
+ * decide what to do in such case. Because of this, libvirt will refuse to
+ * cancel post-copy migration via virDomainAbortJob.
  *
  * The following domain life cycle events are emitted during post-copy
  * migration:
