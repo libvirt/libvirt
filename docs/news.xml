@@ -7,7 +7,29 @@
 
      Keep the style consistent with existing entries as much as possible:
      each change should be documented by a short, one-sentence summary
-     and optionally a description where it's explained in more detail -->
+     and optionally a description where it's explained in more detail
+
+     Use the following template to add a new release section:
+
+  <release version="FIXME" date="unreleased">
+    <section title="New features">
+      <change>
+        <summary/>
+      </change>
+    </section>
+    <section title="Improvements">
+      <change>
+        <summary/>
+      </change>
+    </section>
+    <section title="Bug fixes">
+      <change>
+        <summary/>
+      </change>
+    </section>
+  </release>
+
+     -->
 
 <libvirt>
   <release version="v3.2.0" date="unreleased">
