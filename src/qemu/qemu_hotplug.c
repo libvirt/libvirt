@@ -5784,7 +5784,7 @@ qemuDomainSetVcpuConfig(virDomainDefPtr def,
 
     def->individualvcpus = true;
 
-    while ((next = virBitmapNextSetBit(map, next)) > 0) {
+    while ((next = virBitmapNextSetBit(map, next)) >= 0) {
         if (!(vcpu = virDomainDefGetVcpu(def, next)))
             continue;
 
@@ -5817,7 +5817,7 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
         return NULL;
 
     /* make sure that all selected vcpus are in the correct state */
-    while ((next = virBitmapNextSetBit(map, next)) > 0) {
+    while ((next = virBitmapNextSetBit(map, next)) >= 0) {
         if (!(vcpu = virDomainDefGetVcpu(def, next)))
             continue;
 
@@ -5837,7 +5837,7 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
     /* Make sure that all vCPUs belonging to a single hotpluggable entity were
      * selected and then de-select any sub-threads of it. */
     next = -1;
-    while ((next = virBitmapNextSetBit(map, next)) > 0) {
+    while ((next = virBitmapNextSetBit(map, next)) >= 0) {
         if (!(vcpu = virDomainDefGetVcpu(def, next)))
             continue;
 
