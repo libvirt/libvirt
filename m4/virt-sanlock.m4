@@ -61,6 +61,13 @@ AC_DEFUN([LIBVIRT_CHECK_SANLOCK],[
         [whether sanlock supports sanlock_write_lockspace])
     fi
 
+    AC_CHECK_LIB([sanlock_client], [sanlock_strerror],
+                 [sanlock_strerror=yes], [sanlock_strerror=no])
+    if test "x$sanlock_strerror" = "xyes" ; then
+      AC_DEFINE_UNQUOTED([HAVE_SANLOCK_STRERROR], 1,
+        [whether sanlock supports sanlock_strerror])
+    fi
+
     CPPFLAGS="$old_cppflags"
     LIBS="$old_libs"
   fi
