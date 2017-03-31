@@ -5823,13 +5823,13 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
 
         if (vcpu->online == state) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("vcpu '%zu' is already in requested state"), next);
+                           _("vcpu '%zd' is already in requested state"), next);
             goto cleanup;
         }
 
         if (vcpu->online && !vcpu->hotpluggable) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("vcpu '%zu' can't be hotunplugged"), next);
+                           _("vcpu '%zd' can't be hotunplugged"), next);
             goto cleanup;
         }
     }
@@ -5845,7 +5845,7 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
 
         if (vcpupriv->vcpus == 0) {
             virReportError(VIR_ERR_INVALID_ARG,
-                           _("vcpu '%zu' belongs to a larger hotpluggable entity, "
+                           _("vcpu '%zd' belongs to a larger hotpluggable entity, "
                              "but siblings were not selected"), next);
             goto cleanup;
         }
@@ -5854,7 +5854,7 @@ qemuDomainFilterHotplugVcpuEntities(virDomainDefPtr def,
             if (!virBitmapIsBitSet(map, i)) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("vcpu '%zu' was not selected but it belongs to "
-                                 "hotpluggable entity '%zu-%zu' which was "
+                                 "hotpluggable entity '%zd-%zd' which was "
                                  "partially selected"),
                                i, next, next + vcpupriv->vcpus - 1);
                 goto cleanup;
