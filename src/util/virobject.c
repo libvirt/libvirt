@@ -343,7 +343,7 @@ virObjectUnref(void *anyobj)
 {
     virObjectPtr obj = anyobj;
 
-    if (!obj)
+    if (VIR_OBJECT_NOTVALID(obj))
         return false;
 
     bool lastRef = virAtomicIntDecAndTest(&obj->u.s.refs);
@@ -382,7 +382,7 @@ virObjectRef(void *anyobj)
 {
     virObjectPtr obj = anyobj;
 
-    if (!obj)
+    if (VIR_OBJECT_NOTVALID(obj))
         return NULL;
     virAtomicIntInc(&obj->u.s.refs);
     PROBE(OBJECT_REF, "obj=%p", obj);
