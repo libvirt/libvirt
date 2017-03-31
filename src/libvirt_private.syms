@@ -299,6 +299,7 @@ virDomainDiskDetectZeroesTypeFromString;
 virDomainDiskDetectZeroesTypeToString;
 virDomainDiskDeviceTypeToString;
 virDomainDiskDiscardTypeToString;
+virDomainDiskEmptySource;
 virDomainDiskErrorPolicyTypeFromString;
 virDomainDiskErrorPolicyTypeToString;
 virDomainDiskFindByBusAndDst;

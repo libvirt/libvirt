@@ -4908,7 +4908,7 @@ qemuDomainCheckRemoveOptionalDisk(virQEMUDriverPtr driver,
         event = virDomainEventDiskChangeNewFromObj(vm, src, NULL,
                                                    disk->info.alias,
                                                    VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START);
-        ignore_value(virDomainDiskSetSource(disk, NULL));
+        virDomainDiskEmptySource(disk);
         /* keeping the old startup policy would be invalid for new images */
         disk->startupPolicy = VIR_DOMAIN_STARTUP_POLICY_DEFAULT;
     } else {

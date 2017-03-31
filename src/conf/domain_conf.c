@@ -1719,6 +1719,16 @@ virDomainDiskSetSource(virDomainDiskDefPtr def, const char *src)
 }
 
 
+void
+virDomainDiskEmptySource(virDomainDiskDefPtr def)
+{
+    virStorageSourcePtr src = def->src;
+
+    virStorageSourceClear(src);
+    src->type = VIR_STORAGE_TYPE_FILE;
+}
+
+
 const char *
 virDomainDiskGetDriver(virDomainDiskDefPtr def)
 {

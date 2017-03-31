@@ -6804,7 +6804,7 @@ qemuProcessRefreshDisks(virQEMUDriverPtr driver,
 
         if (info->removable) {
             if (info->empty)
-                ignore_value(virDomainDiskSetSource(disk, NULL));
+                virDomainDiskEmptySource(disk);
 
             if (info->tray) {
                 if (info->tray_open)
