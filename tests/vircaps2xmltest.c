@@ -35,6 +35,7 @@ struct virCapabilitiesData {
     virArch arch;
     bool offlineMigrate;
     bool liveMigrate;
+    bool resctrl; /* Whether both resctrl and system sysfs are used */
 };
 
 static int
@@ -48,8 +49,13 @@ test_virCapabilities(const void *opaque)
     char *dir = NULL;
     int ret = -1;
 
-    if (virAsprintf(&dir, "%s/vircaps2xmldata/linux-%s",
-                    abs_srcdir, data->filename) < 0)
+    /*
+     * We want to keep our directory structure clean, so if there's both resctrl
+     * and system used, we need to use slightly different path; a subdir.
+     */
+    if (virAsprintf(&dir, "%s/vircaps2xmldata/linux-%s%s",
+                    abs_srcdir, data->filename,
+                    data->resctrl ? "/system" : "") < 0)
         goto cleanup;
 
     virFileWrapperAddPrefix("/sys/devices/system", dir);
@@ -89,19 +95,19 @@ mymain(void)
 {
     int ret = 0;
 
-#define DO_TEST_FULL(filename, arch, offlineMigrate, liveMigrate)       \
+#define DO_TEST_FULL(filename, arch, offlineMigrate, liveMigrate, resctrl) \
     do {                                                                \
         struct virCapabilitiesData data = {filename, arch,              \
                                            offlineMigrate,              \
-                                           liveMigrate};                \
+                                           liveMigrate, resctrl};       \
         if (virTestRun(filename, test_virCapabilities, &data) < 0)      \
             ret = -1;                                                   \
     } while (0)
 
-#define DO_TEST(filename, arch) DO_TEST_FULL(filename, arch, true, true)
+#define DO_TEST(filename, arch) DO_TEST_FULL(filename, arch, true, true, false)
 
-    DO_TEST_FULL("basic", VIR_ARCH_X86_64, false, false);
-    DO_TEST_FULL("basic", VIR_ARCH_AARCH64, true, false);
+    DO_TEST_FULL("basic", VIR_ARCH_X86_64, false, false, false);
+    DO_TEST_FULL("basic", VIR_ARCH_AARCH64, true, false, false);
 
     DO_TEST("caches", VIR_ARCH_X86_64);
 
