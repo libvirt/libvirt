@@ -5784,13 +5784,15 @@ qemuDomainSetVcpuConfig(virDomainDefPtr def,
 
     def->individualvcpus = true;
 
+    /* ordering information may become invalid, thus clear it */
+    virDomainDefVcpuOrderClear(def);
+
     while ((next = virBitmapNextSetBit(map, next)) >= 0) {
         if (!(vcpu = virDomainDefGetVcpu(def, next)))
             continue;
 
         vcpu->online = state;
         vcpu->hotpluggable = VIR_TRISTATE_BOOL_YES;
-        vcpu->order = 0;
     }
 }
 
