@@ -111,6 +111,8 @@ mymain(void)
 
     DO_TEST("caches", VIR_ARCH_X86_64);
 
+    DO_TEST_FULL("resctrl", VIR_ARCH_X86_64, true, true, true);
+
     return ret;
 }
 
