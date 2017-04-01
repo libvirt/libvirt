@@ -30,7 +30,7 @@ typedef struct _virSecretObj virSecretObj;
 typedef virSecretObj *virSecretObjPtr;
 
 void
-virSecretObjEndAPI(virSecretObjPtr *secret);
+virSecretObjEndAPI(virSecretObjPtr *obj);
 
 typedef struct _virSecretObjList virSecretObjList;
 typedef virSecretObjList *virSecretObjListPtr;
@@ -49,11 +49,11 @@ virSecretObjListFindByUsage(virSecretObjListPtr secrets,
 
 void
 virSecretObjListRemove(virSecretObjListPtr secrets,
-                       virSecretObjPtr secret);
+                       virSecretObjPtr obj);
 
 virSecretObjPtr
 virSecretObjListAdd(virSecretObjListPtr secrets,
-                    virSecretDefPtr def,
+                    virSecretDefPtr newdef,
                     const char *configDir,
                     virSecretDefPtr *oldDef);
 
@@ -81,37 +81,37 @@ virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
                          virConnectPtr conn);
 
 int
-virSecretObjDeleteConfig(virSecretObjPtr secret);
+virSecretObjDeleteConfig(virSecretObjPtr obj);
 
 void
-virSecretObjDeleteData(virSecretObjPtr secret);
+virSecretObjDeleteData(virSecretObjPtr obj);
 
 int
-virSecretObjSaveConfig(virSecretObjPtr secret);
+virSecretObjSaveConfig(virSecretObjPtr obj);
 
 int
-virSecretObjSaveData(virSecretObjPtr secret);
+virSecretObjSaveData(virSecretObjPtr obj);
 
 virSecretDefPtr
-virSecretObjGetDef(virSecretObjPtr secret);
+virSecretObjGetDef(virSecretObjPtr obj);
 
 void
-virSecretObjSetDef(virSecretObjPtr secret,
+virSecretObjSetDef(virSecretObjPtr obj,
                    virSecretDefPtr def);
 
 unsigned char *
-virSecretObjGetValue(virSecretObjPtr secret);
+virSecretObjGetValue(virSecretObjPtr obj);
 
 int
-virSecretObjSetValue(virSecretObjPtr secret,
+virSecretObjSetValue(virSecretObjPtr obj,
                      const unsigned char *value,
                      size_t value_size);
 
 size_t
-virSecretObjGetValueSize(virSecretObjPtr secret);
+virSecretObjGetValueSize(virSecretObjPtr obj);
 
 void
-virSecretObjSetValueSize(virSecretObjPtr secret,
+virSecretObjSetValueSize(virSecretObjPtr obj,
                          size_t value_size);
 
 int
