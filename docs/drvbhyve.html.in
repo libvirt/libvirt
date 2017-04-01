@@ -312,7 +312,7 @@ attempt to boot from the first partition in the disk image.</p>
 <p>Caveat: <code>bootloader_args</code> does not support any quoting.
 Filenames, etc, must not have spaces or they will be tokenized incorrectly.</p>
 
-<h3><a name="uefi">Using UEFI bootrom, VNC, and USB tables</a></h3>
+<h3><a name="uefi">Using UEFI bootrom, VNC, and USB tablet</a></h3>
 
 <p><span class="since">Since 3.2.0</span>, in addition to <a href="#grubbhyve">grub-bhyve</a>,
 non-FreeBSD guests could be also booted using an UEFI boot ROM, provided both guest OS and
