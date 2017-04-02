@@ -32,7 +32,7 @@
      -->
 
 <libvirt>
-  <release version="v3.2.0" date="unreleased">
+  <release version="v3.2.0" date="2017-04-02">
     <section title="New features">
       <change>
         <summary>
