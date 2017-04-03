@@ -963,7 +963,7 @@ qemuMonitorClose(qemuMonitorPtr mon)
     PROBE(QEMU_MONITOR_CLOSE,
           "mon=%p refs=%d", mon, mon->parent.parent.u.s.refs);
 
-    qemuMonitorSetDomainLog(mon, NULL, NULL, NULL);
+    qemuMonitorSetDomainLogLocked(mon, NULL, NULL, NULL);
 
     if (mon->fd >= 0) {
         qemuMonitorUnregister(mon);
@@ -4035,20 +4035,21 @@ qemuMonitorGetDeviceAliases(qemuMonitorPtr mon,
 
 
 /**
- * qemuMonitorSetDomainLog:
- * Set the file descriptor of the open VM log file to report potential
- * early startup errors of qemu.
- *
- * @mon: Monitor object to set the log file reading on
+ * qemuMonitorSetDomainLogLocked:
+ * @mon: Locked monitor object to set the log file reading on
  * @func: the callback to report errors
  * @opaque: data to pass to @func
  * @destroy: optional callback to free @opaque
+ *
+ * Set the file descriptor of the open VM log file to report potential
+ * early startup errors of qemu. This function requires @mon to be
+ * locked already!
  */
 void
-qemuMonitorSetDomainLog(qemuMonitorPtr mon,
-                        qemuMonitorReportDomainLogError func,
-                        void *opaque,
-                        virFreeCallback destroy)
+qemuMonitorSetDomainLogLocked(qemuMonitorPtr mon,
+                              qemuMonitorReportDomainLogError func,
+                              void *opaque,
+                              virFreeCallback destroy)
 {
     if (mon->logDestroy && mon->logOpaque)
         mon->logDestroy(mon->logOpaque);
@@ -4056,6 +4057,29 @@ qemuMonitorSetDomainLog(qemuMonitorPtr mon,
     mon->logFunc = func;
     mon->logOpaque = opaque;
     mon->logDestroy = destroy;
+}
+
+
+/**
+ * qemuMonitorSetDomainLog:
+ * @mon: Unlocked monitor object to set the log file reading on
+ * @func: the callback to report errors
+ * @opaque: data to pass to @func
+ * @destroy: optional callback to free @opaque
+ *
+ * Set the file descriptor of the open VM log file to report potential
+ * early startup errors of qemu. This functions requires @mon to be
+ * unlocked.
+ */
+void
+qemuMonitorSetDomainLog(qemuMonitorPtr mon,
+                        qemuMonitorReportDomainLogError func,
+                        void *opaque,
+                        virFreeCallback destroy)
+{
+    virObjectLock(mon);
+    qemuMonitorSetDomainLogLocked(mon, func, opaque, destroy);
+    virObjectUnlock(mon);
 }
 
 

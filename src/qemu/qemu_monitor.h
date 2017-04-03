@@ -1067,6 +1067,10 @@ int qemuMonitorGetDeviceAliases(qemuMonitorPtr mon,
 typedef void (*qemuMonitorReportDomainLogError)(qemuMonitorPtr mon,
                                                 const char *msg,
                                                 void *opaque);
+void qemuMonitorSetDomainLogLocked(qemuMonitorPtr mon,
+                                   qemuMonitorReportDomainLogError func,
+                                   void *opaque,
+                                   virFreeCallback destroy);
 void qemuMonitorSetDomainLog(qemuMonitorPtr mon,
                              qemuMonitorReportDomainLogError func,
                              void *opaque,
