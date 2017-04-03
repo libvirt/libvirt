@@ -213,7 +213,7 @@ qemuMigrationAddTLSObjects(virQEMUDriverPtr driver,
                                 cfg->migrateTLSx509verify,
                                 QEMU_MIGRATION_TLS_ALIAS_BASE,
                                 &tlsProps, tlsAlias, &secProps, secAlias) < 0)
-        return -1;
+        goto error;
 
     /* Ensure the domain doesn't already have the TLS objects defined...
      * This should prevent any issues just in case some cleanup wasn't
@@ -223,12 +223,17 @@ qemuMigrationAddTLSObjects(virQEMUDriverPtr driver,
 
     if (qemuDomainAddTLSObjects(driver, vm, asyncJob, *secAlias, &secProps,
                                 *tlsAlias, &tlsProps) < 0)
-        return -1;
+        goto error;
 
     if (VIR_STRDUP(migParams->migrateTLSAlias, *tlsAlias) < 0)
-        return -1;
+        goto error;
 
     return 0;
+
+ error:
+    virJSONValueFree(tlsProps);
+    virJSONValueFree(secProps);
+    return -1;
 }
 
 
