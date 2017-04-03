@@ -10265,7 +10265,7 @@ qemuDomainGetSchedulerParametersFlags(virDomainPtr dom,
 {
     virQEMUDriverPtr driver = dom->conn->privateData;
     virDomainObjPtr vm = NULL;
-    virDomainCputune data;
+    virDomainCputune data = {0};
     int ret = -1;
     bool cpu_bw_status = true;
     virDomainDefPtr persistentDef;
