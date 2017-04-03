@@ -32,6 +32,23 @@
      -->
 
 <libvirt>
+  <release version="v3.3.0" date="unreleased">
+    <section title="New features">
+      <change>
+        <summary/>
+      </change>
+    </section>
+    <section title="Improvements">
+      <change>
+        <summary/>
+      </change>
+    </section>
+    <section title="Bug fixes">
+      <change>
+        <summary/>
+      </change>
+    </section>
+  </release>
   <release version="v3.2.0" date="2017-04-02">
     <section title="New features">
       <change>
