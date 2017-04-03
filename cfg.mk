@@ -1129,7 +1129,7 @@ exclude_file_name_regexp--sc_copyright_usage = \
   ^COPYING(|\.LESSER)$$
 
 exclude_file_name_regexp--sc_flags_usage = \
-  ^(cfg\.mk|docs/|src/util/virnetdevtap\.c$$|tests/(vir(cgroup|pci|test|usb)|nss|qemuxml2argv)mock\.c$$)
+  ^(cfg\.mk|docs/|src/util/virnetdevtap\.c$$|tests/((vir(cgroup|pci|test|usb)|nss|qemuxml2argv)mock|virfilewrapper)\.c$$)
 
 exclude_file_name_regexp--sc_libvirt_unmarked_diagnostics = \
   ^(src/rpc/gendispatch\.pl$$|tests/)
@@ -1258,7 +1258,7 @@ exclude_file_name_regexp--sc_prohibit_always-defined_macros = \
   ^tests/virtestmock.c$$
 
 exclude_file_name_regexp--sc_prohibit_readdir = \
-  ^tests/.*mock\.c$$
+  ^tests/(.*mock|virfilewrapper)\.c$$
 
 exclude_file_name_regexp--sc_prohibit_cross_inclusion = \
   ^(src/util/virclosecallbacks\.h|src/util/virhostdev\.h)$$

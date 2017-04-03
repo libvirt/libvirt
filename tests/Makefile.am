@@ -1156,7 +1156,7 @@ virnumamock_la_CFLAGS = $(AM_CFLAGS)
 virnumamock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virnumamock_la_LIBADD = $(MOCKLIBS_LIBS)
 else ! WITH_LINUX
-EXTRA_DIST += vircaps2xmltest.c virnumamock.c
+EXTRA_DIST += vircaps2xmltest.c virnumamock.c virfilewrapper.c virfilewrapper.h
 endif ! WITH_LINUX
 
 if WITH_NSS
