@@ -196,8 +196,7 @@ void virConnectCloseCallbackDataRegister(virConnectCloseCallbackDataPtr closeDat
         return;
     }
 
-    closeData->conn = conn;
-    virObjectRef(closeData->conn);
+    closeData->conn = virObjectRef(conn);
     closeData->callback = cb;
     closeData->opaque = opaque;
     closeData->freeCallback = freecb;
@@ -985,8 +984,7 @@ virAdmConnectCloseCallbackDataRegister(virAdmConnectCloseCallbackDataPtr cbdata,
         goto cleanup;
     }
 
-    virObjectRef(conn);
-    cbdata->conn = conn;
+    cbdata->conn = virObjectRef(conn);
     cbdata->callback = cb;
     cbdata->opaque = opaque;
     cbdata->freeCallback = freecb;

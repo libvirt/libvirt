@@ -145,11 +145,9 @@ virNetClientStreamPtr virNetClientStreamNew(virNetClientProgramPtr prog,
     if (!(st = virObjectLockableNew(virNetClientStreamClass)))
         return NULL;
 
-    st->prog = prog;
+    st->prog = virObjectRef(prog);
     st->proc = proc;
     st->serial = serial;
-
-    virObjectRef(prog);
 
     return st;
 }

@@ -213,8 +213,7 @@ static int virNetServerDispatchNewMessage(virNetServerClientPtr client,
         job->msg = msg;
 
         if (prog) {
-            virObjectRef(prog);
-            job->prog = prog;
+            job->prog = virObjectRef(prog);
             priority = virNetServerProgramGetPriority(prog, msg->header.proc);
         }
 
@@ -284,8 +283,7 @@ int virNetServerAddClient(virNetServerPtr srv,
 
     if (VIR_EXPAND_N(srv->clients, srv->nclients, 1) < 0)
         goto error;
-    srv->clients[srv->nclients-1] = client;
-    virObjectRef(client);
+    srv->clients[srv->nclients-1] = virObjectRef(client);
 
     if (virNetServerClientNeedAuth(client))
         virNetServerTrackPendingAuthLocked(srv);
@@ -695,8 +693,7 @@ int virNetServerAddService(virNetServerPtr srv,
         }
     }
 
-    srv->services[srv->nservices-1] = svc;
-    virObjectRef(svc);
+    srv->services[srv->nservices-1] = virObjectRef(svc);
 
     virNetServerServiceSetDispatcher(svc,
                                      virNetServerDispatchNewClient,
