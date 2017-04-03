@@ -5231,7 +5231,8 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
     char *ret = NULL;
 
     virBufferAddLit(&buf, "vfio-pci");
-    virBufferAsprintf(&buf, ",sysfsdev=%s",
+    virBufferAsprintf(&buf, ",id=%s,sysfsdev=%s",
+                      dev->info->alias,
                       virMediatedDeviceGetSysfsPath(mdevsrc->uuidstr));
 
     if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)

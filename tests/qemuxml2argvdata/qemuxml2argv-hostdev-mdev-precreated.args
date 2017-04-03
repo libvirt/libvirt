@@ -20,6 +20,6 @@ QEMU_AUDIO_DRV=none \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-drive,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
--device vfio-pci,\
+-device vfio-pci,id=hostdev0,\
 sysfsdev=/sys/bus/mdev/devices/53764d0e-85a0-42b4-af5c-2046b460b1dc,bus=pci.0,\
 addr=0x3
