@@ -837,15 +837,7 @@ qemuMonitorOpenInternal(virDomainObjPtr vm,
 
 
     virObjectLock(mon);
-    virObjectRef(mon);
-    if ((mon->watch = virEventAddHandle(mon->fd,
-                                        VIR_EVENT_HANDLE_HANGUP |
-                                        VIR_EVENT_HANDLE_ERROR |
-                                        VIR_EVENT_HANDLE_READABLE,
-                                        qemuMonitorIO,
-                                        mon,
-                                        virObjectFreeCallback)) < 0) {
-        virObjectUnref(mon);
+    if (!qemuMonitorRegister(mon)) {
         virObjectUnlock(mon);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("unable to register monitor events"));
@@ -941,6 +933,34 @@ qemuMonitorOpenFD(virDomainObjPtr vm,
                   void *opaque)
 {
     return qemuMonitorOpenInternal(vm, sockfd, true, json, cb, opaque);
+}
+
+
+/**
+ * qemuMonitorRegister:
+ * @mon: QEMU monitor
+ *
+ * Registers the monitor in the event loop. The caller has to hold the
+ * lock for @mon.
+ *
+ * Returns true in case of success, false otherwise
+ */
+bool
+qemuMonitorRegister(qemuMonitorPtr mon)
+{
+    virObjectRef(mon);
+    if ((mon->watch = virEventAddHandle(mon->fd,
+                                        VIR_EVENT_HANDLE_HANGUP |
+                                        VIR_EVENT_HANDLE_ERROR |
+                                        VIR_EVENT_HANDLE_READABLE,
+                                        qemuMonitorIO,
+                                        mon,
+                                        virObjectFreeCallback)) < 0) {
+        virObjectUnref(mon);
+        return false;
+    }
+
+    return true;
 }
 
 
