@@ -540,8 +540,6 @@ ssize_t qemuDomainLogContextRead(qemuDomainLogContextPtr ctxt,
                                  char **msg);
 int qemuDomainLogContextGetWriteFD(qemuDomainLogContextPtr ctxt);
 void qemuDomainLogContextMarkPosition(qemuDomainLogContextPtr ctxt);
-void qemuDomainLogContextRef(qemuDomainLogContextPtr ctxt);
-void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt);
 
 virLogManagerPtr qemuDomainLogContextGetManager(qemuDomainLogContextPtr ctxt);
 

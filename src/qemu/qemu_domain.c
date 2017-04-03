@@ -111,7 +111,8 @@ VIR_ENUM_IMPL(qemuDomainNamespace, QEMU_DOMAIN_NS_LAST,
 
 
 struct _qemuDomainLogContext {
-    int refs;
+    virObject parent;
+
     int writefd;
     int readfd; /* Only used if manager == NULL */
     off_t pos;
@@ -119,6 +120,36 @@ struct _qemuDomainLogContext {
     char *path;
     virLogManagerPtr manager;
 };
+
+static virClassPtr qemuDomainLogContextClass;
+
+static void qemuDomainLogContextDispose(void *obj);
+
+static int
+qemuDomainLogContextOnceInit(void)
+{
+    if (!(qemuDomainLogContextClass = virClassNew(virClassForObject(),
+                                                 "qemuDomainLogContext",
+                                                 sizeof(qemuDomainLogContext),
+                                                 qemuDomainLogContextDispose)))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(qemuDomainLogContext)
+
+static void
+qemuDomainLogContextDispose(void *obj)
+{
+    qemuDomainLogContextPtr ctxt = obj;
+    VIR_DEBUG("ctxt=%p", ctxt);
+
+    virLogManagerFree(ctxt->manager);
+    VIR_FREE(ctxt->path);
+    VIR_FORCE_CLOSE(ctxt->writefd);
+    VIR_FORCE_CLOSE(ctxt->readfd);
+}
 
 const char *
 qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,
@@ -4195,7 +4226,7 @@ void qemuDomainObjTaint(virQEMUDriverPtr driver,
  cleanup:
     VIR_FREE(timestamp);
     if (closeLog)
-        qemuDomainLogContextFree(logCtxt);
+        virObjectUnref(logCtxt);
     if (orig_err) {
         virSetError(orig_err);
         virFreeError(orig_err);
@@ -4307,13 +4338,15 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
     qemuDomainLogContextPtr ctxt = NULL;
 
-    if (VIR_ALLOC(ctxt) < 0)
-        goto error;
+    if (qemuDomainLogContextInitialize() < 0)
+        goto cleanup;
+
+    if (!(ctxt = virObjectNew(qemuDomainLogContextClass)))
+        goto cleanup;
 
     VIR_DEBUG("Context new %p stdioLogD=%d", ctxt, cfg->stdioLogD);
     ctxt->writefd = -1;
     ctxt->readfd = -1;
-    virAtomicIntSet(&ctxt->refs, 1);
 
     if (virAsprintf(&ctxt->path, "%s/%s.log", cfg->logDir, vm->def->name) < 0)
         goto error;
@@ -4381,7 +4414,7 @@ qemuDomainLogContextPtr qemuDomainLogContextNew(virQEMUDriverPtr driver,
     return ctxt;
 
  error:
-    qemuDomainLogContextFree(ctxt);
+    virObjectUnref(ctxt);
     ctxt = NULL;
     goto cleanup;
 }
@@ -4550,36 +4583,9 @@ void qemuDomainLogContextMarkPosition(qemuDomainLogContextPtr ctxt)
 }
 
 
-void qemuDomainLogContextRef(qemuDomainLogContextPtr ctxt)
-{
-    VIR_DEBUG("Context ref %p", ctxt);
-    virAtomicIntInc(&ctxt->refs);
-}
-
-
 virLogManagerPtr qemuDomainLogContextGetManager(qemuDomainLogContextPtr ctxt)
 {
     return ctxt->manager;
-}
-
-
-void qemuDomainLogContextFree(qemuDomainLogContextPtr ctxt)
-{
-    bool lastRef;
-
-    if (!ctxt)
-        return;
-
-    lastRef = virAtomicIntDecAndTest(&ctxt->refs);
-    VIR_DEBUG("Context free %p lastref=%d", ctxt, lastRef);
-    if (!lastRef)
-        return;
-
-    virLogManagerFree(ctxt->manager);
-    VIR_FREE(ctxt->path);
-    VIR_FORCE_CLOSE(ctxt->writefd);
-    VIR_FORCE_CLOSE(ctxt->readfd);
-    VIR_FREE(ctxt);
 }
 
 
