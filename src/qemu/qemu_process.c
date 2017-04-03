@@ -279,7 +279,7 @@ qemuConnectAgent(virQEMUDriverPtr driver, virDomainObjPtr vm)
  * performed
  */
 static void
-qemuProcessHandleMonitorEOF(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
+qemuProcessHandleMonitorEOF(qemuMonitorPtr mon,
                             virDomainObjPtr vm,
                             void *opaque)
 {
