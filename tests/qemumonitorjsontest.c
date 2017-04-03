@@ -2035,27 +2035,27 @@ testQemuMonitorJSONqemuMonitorJSONGetChardevInfo(const void *data)
 
 
 static int
-testValidateGetBlockIoThrottle(virDomainBlockIoTuneInfo info,
-                               virDomainBlockIoTuneInfo expectedInfo)
+testValidateGetBlockIoThrottle(const virDomainBlockIoTuneInfo *info,
+                               const virDomainBlockIoTuneInfo *expectedInfo)
 {
 #define VALIDATE_IOTUNE(field) \
-    if (info.field != expectedInfo.field) { \
+    if (info->field != expectedInfo->field) { \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
-                       "info.%s=%llu != expected=%llu",  \
-                       #field, info.field, expectedInfo.field); \
+                       "info->%s=%llu != expected=%llu",  \
+                       #field, info->field, expectedInfo->field); \
         return -1; \
     } \
-    if (info.field##_max != expectedInfo.field##_max) { \
+    if (info->field##_max != expectedInfo->field##_max) { \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
-                       "info.%s_max=%llu != expected=%llu",  \
-                       #field, info.field##_max, expectedInfo.field##_max); \
+                       "info->%s_max=%llu != expected=%llu",  \
+                       #field, info->field##_max, expectedInfo->field##_max); \
         return -1; \
     } \
-    if (info.field##_max_length != expectedInfo.field##_max_length) { \
+    if (info->field##_max_length != expectedInfo->field##_max_length) { \
         virReportError(VIR_ERR_INTERNAL_ERROR, \
-                       "info.%s_max_length=%llu != expected=%llu",  \
-                       #field, info.field##_max_length, \
-                       expectedInfo.field##_max_length); \
+                       "info->%s_max_length=%llu != expected=%llu",  \
+                       #field, info->field##_max_length, \
+                       expectedInfo->field##_max_length); \
         return -1; \
     }
     VALIDATE_IOTUNE(total_bytes_sec);
@@ -2064,16 +2064,16 @@ testValidateGetBlockIoThrottle(virDomainBlockIoTuneInfo info,
     VALIDATE_IOTUNE(total_iops_sec);
     VALIDATE_IOTUNE(read_iops_sec);
     VALIDATE_IOTUNE(write_iops_sec);
-    if (info.size_iops_sec != expectedInfo.size_iops_sec) {
+    if (info->size_iops_sec != expectedInfo->size_iops_sec) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "info.size_iops_sec=%llu != expected=%llu",
-                       info.size_iops_sec, expectedInfo.size_iops_sec);
+                       "info->size_iops_sec=%llu != expected=%llu",
+                       info->size_iops_sec, expectedInfo->size_iops_sec);
         return -1;
     }
-    if (STRNEQ(info.group_name, expectedInfo.group_name)) {
+    if (STRNEQ(info->group_name, expectedInfo->group_name)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "info.group_name=%s != expected=%s",
-                       info.group_name, expectedInfo.group_name);
+                       "info->group_name=%s != expected=%s",
+                       info->group_name, expectedInfo->group_name);
         return -1;
     }
 #undef VALIDATE_IOTUNE
@@ -2121,7 +2121,7 @@ testQemuMonitorJSONqemuMonitorJSONSetBlockIoThrottle(const void *data)
                                           "drive-virtio-disk0", &info) < 0)
         goto cleanup;
 
-    if (testValidateGetBlockIoThrottle(info, expectedInfo) < 0)
+    if (testValidateGetBlockIoThrottle(&info, &expectedInfo) < 0)
         goto cleanup;
 
     if (qemuMonitorJSONSetBlockIoThrottle(qemuMonitorTestGetMonitor(test),
