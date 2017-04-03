@@ -212,16 +212,18 @@ virSecretObjSearchName(const void *payload,
                        const void *opaque)
 {
     virSecretObjPtr obj = (virSecretObjPtr) payload;
+    virSecretDefPtr def;
     struct virSecretSearchData *data = (struct virSecretSearchData *) opaque;
     int found = 0;
 
     virObjectLock(obj);
+    def = obj->def;
 
-    if (obj->def->usage_type != data->usageType)
+    if (def->usage_type != data->usageType)
         goto cleanup;
 
     if (data->usageType != VIR_SECRET_USAGE_TYPE_NONE &&
-        STREQ(obj->def->usage_id, data->usageID))
+        STREQ(def->usage_id, data->usageID))
         found = 1;
 
  cleanup:
@@ -297,11 +299,13 @@ virSecretObjListRemove(virSecretObjListPtr secrets,
                        virSecretObjPtr obj)
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+    virSecretDefPtr def;
 
     if (!obj)
         return;
+    def = obj->def;
 
-    virUUIDFormat(obj->def->uuid, uuidstr);
+    virUUIDFormat(def->uuid, uuidstr);
     virObjectRef(obj);
     virObjectUnlock(obj);
 
@@ -334,6 +338,7 @@ virSecretObjListAddLocked(virSecretObjListPtr secrets,
                           virSecretDefPtr *oldDef)
 {
     virSecretObjPtr obj;
+    virSecretDefPtr def;
     virSecretObjPtr ret = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *configFile = NULL, *base64File = NULL;
@@ -344,26 +349,27 @@ virSecretObjListAddLocked(virSecretObjListPtr secrets,
     /* Is there a secret already matching this UUID */
     if ((obj = virSecretObjListFindByUUIDLocked(secrets, newdef->uuid))) {
         virObjectLock(obj);
+        def = obj->def;
 
-        if (STRNEQ_NULLABLE(obj->def->usage_id, newdef->usage_id)) {
-            virUUIDFormat(obj->def->uuid, uuidstr);
+        if (STRNEQ_NULLABLE(def->usage_id, newdef->usage_id)) {
+            virUUIDFormat(def->uuid, uuidstr);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("a secret with UUID %s is already defined for "
                              "use with %s"),
-                           uuidstr, obj->def->usage_id);
+                           uuidstr, def->usage_id);
             goto cleanup;
         }
 
-        if (obj->def->isprivate && !newdef->isprivate) {
+        if (def->isprivate && !newdef->isprivate) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cannot change private flag on existing secret"));
             goto cleanup;
         }
 
         if (oldDef)
-            *oldDef = obj->def;
+            *oldDef = def;
         else
-            virSecretDefFree(obj->def);
+            virSecretDefFree(def);
         obj->def = newdef;
     } else {
         /* No existing secret with same UUID,
@@ -372,7 +378,8 @@ virSecretObjListAddLocked(virSecretObjListPtr secrets,
                                                      newdef->usage_type,
                                                      newdef->usage_id))) {
             virObjectLock(obj);
-            virUUIDFormat(obj->def->uuid, uuidstr);
+            def = obj->def;
+            virUUIDFormat(def->uuid, uuidstr);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("a secret with UUID %s already defined for "
                              "use with %s"),
@@ -443,6 +450,7 @@ virSecretObjListGetHelper(void *payload,
 {
     struct virSecretObjListGetHelperData *data = opaque;
     virSecretObjPtr obj = payload;
+    virSecretDefPtr def;
 
     if (data->error)
         return 0;
@@ -451,8 +459,9 @@ virSecretObjListGetHelper(void *payload,
         return 0;
 
     virObjectLock(obj);
+    def = obj->def;
 
-    if (data->filter && !data->filter(data->conn, obj->def))
+    if (data->filter && !data->filter(data->conn, def))
         goto cleanup;
 
     if (data->uuids) {
@@ -463,7 +472,7 @@ virSecretObjListGetHelper(void *payload,
             goto cleanup;
         }
 
-        virUUIDFormat(obj->def->uuid, uuidstr);
+        virUUIDFormat(def->uuid, uuidstr);
         data->uuids[data->got] = uuidstr;
     }
 
@@ -497,20 +506,22 @@ static bool
 virSecretObjMatchFlags(virSecretObjPtr obj,
                        unsigned int flags)
 {
+    virSecretDefPtr def = obj->def;
+
     /* filter by whether it's ephemeral */
     if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_EPHEMERAL) &&
         !((MATCH(VIR_CONNECT_LIST_SECRETS_EPHEMERAL) &&
-           obj->def->isephemeral) ||
+           def->isephemeral) ||
           (MATCH(VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL) &&
-           !obj->def->isephemeral)))
+           !def->isephemeral)))
         return false;
 
     /* filter by whether it's private */
     if (MATCH(VIR_CONNECT_LIST_SECRETS_FILTERS_PRIVATE) &&
         !((MATCH(VIR_CONNECT_LIST_SECRETS_PRIVATE) &&
-           obj->def->isprivate) ||
+           def->isprivate) ||
           (MATCH(VIR_CONNECT_LIST_SECRETS_NO_PRIVATE) &&
-           !obj->def->isprivate)))
+           !def->isprivate)))
         return false;
 
     return true;
@@ -534,14 +545,16 @@ virSecretObjListExportCallback(void *payload,
 {
     struct virSecretObjListData *data = opaque;
     virSecretObjPtr obj = payload;
+    virSecretDefPtr def;
     virSecretPtr secret = NULL;
 
     if (data->error)
         return 0;
 
     virObjectLock(obj);
+    def = obj->def;
 
-    if (data->filter && !data->filter(data->conn, obj->def))
+    if (data->filter && !data->filter(data->conn, def))
         goto cleanup;
 
     if (!virSecretObjMatchFlags(obj, data->flags))
@@ -552,9 +565,9 @@ virSecretObjListExportCallback(void *payload,
         goto cleanup;
     }
 
-    if (!(secret = virGetSecret(data->conn, obj->def->uuid,
-                                obj->def->usage_type,
-                                obj->def->usage_id))) {
+    if (!(secret = virGetSecret(data->conn, def->uuid,
+                                def->usage_type,
+                                def->usage_id))) {
         data->error = true;
         goto cleanup;
     }
@@ -640,7 +653,9 @@ virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
 int
 virSecretObjDeleteConfig(virSecretObjPtr obj)
 {
-    if (!obj->def->isephemeral &&
+    virSecretDefPtr def = obj->def;
+
+    if (!def->isephemeral &&
         unlink(obj->configFile) < 0 && errno != ENOENT) {
         virReportSystemError(errno, _("cannot unlink '%s'"),
                              obj->configFile);
@@ -727,11 +742,12 @@ virSecretObjSetDef(virSecretObjPtr obj,
 unsigned char *
 virSecretObjGetValue(virSecretObjPtr obj)
 {
+    virSecretDefPtr def = obj->def;
     unsigned char *ret = NULL;
 
     if (!obj->value) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(obj->def->uuid, uuidstr);
+        virUUIDFormat(def->uuid, uuidstr);
         virReportError(VIR_ERR_NO_SECRET,
                        _("secret '%s' does not have a value"), uuidstr);
         goto cleanup;
@@ -751,6 +767,7 @@ virSecretObjSetValue(virSecretObjPtr obj,
                      const unsigned char *value,
                      size_t value_size)
 {
+    virSecretDefPtr def = obj->def;
     unsigned char *old_value, *new_value;
     size_t old_value_size;
 
@@ -764,7 +781,7 @@ virSecretObjSetValue(virSecretObjPtr obj,
     obj->value = new_value;
     obj->value_size = value_size;
 
-    if (!obj->def->isephemeral && virSecretObjSaveData(obj) < 0)
+    if (!def->isephemeral && virSecretObjSaveData(obj) < 0)
         goto error;
 
     /* Saved successfully - drop old value */
