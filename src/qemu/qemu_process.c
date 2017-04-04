@@ -2998,6 +2998,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
     bool postcopy = state == VIR_DOMAIN_PAUSED &&
                     (reason == VIR_DOMAIN_PAUSED_POSTCOPY ||
                      reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED);
+    bool resume = false;
 
     switch (phase) {
     case QEMU_MIGRATION_PHASE_NONE:
@@ -3028,7 +3029,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
                 VIR_WARN("Could not cancel ongoing migration of domain %s",
                          vm->def->name);
             }
-            goto resume;
+            resume = true;
         }
         break;
 
@@ -3051,7 +3052,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
         } else {
             VIR_DEBUG("Resuming domain %s after failed migration",
                       vm->def->name);
-            goto resume;
+            resume = true;
         }
         break;
 
@@ -3061,21 +3062,21 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
         return -1;
     }
 
-    return 0;
-
- resume:
-    /* resume the domain but only if it was paused as a result of
-     * migration
-     */
-    if (state == VIR_DOMAIN_PAUSED &&
-        (reason == VIR_DOMAIN_PAUSED_MIGRATION ||
-         reason == VIR_DOMAIN_PAUSED_UNKNOWN)) {
-        if (qemuProcessStartCPUs(driver, vm, conn,
-                                 VIR_DOMAIN_RUNNING_UNPAUSED,
-                                 QEMU_ASYNC_JOB_NONE) < 0) {
-            VIR_WARN("Could not resume domain %s", vm->def->name);
+    if (resume) {
+        /* resume the domain but only if it was paused as a result of
+         * migration
+         */
+        if (state == VIR_DOMAIN_PAUSED &&
+            (reason == VIR_DOMAIN_PAUSED_MIGRATION ||
+             reason == VIR_DOMAIN_PAUSED_UNKNOWN)) {
+            if (qemuProcessStartCPUs(driver, vm, conn,
+                                     VIR_DOMAIN_RUNNING_UNPAUSED,
+                                     QEMU_ASYNC_JOB_NONE) < 0) {
+                VIR_WARN("Could not resume domain %s", vm->def->name);
+            }
         }
     }
+
     return 0;
 }
 
