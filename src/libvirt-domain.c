@@ -7010,7 +7010,8 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
  * CPU limit is altered; generally, this value must be less than or
  * equal to virConnectGetMaxVcpus().  Otherwise, this call affects the
  * current virtual CPU limit, which must be less than or equal to the
- * maximum limit.
+ * maximum limit. Note that hypervisors may not allow changing the maximum
+ * vcpu count if processor topology is specified.
  *
  * If @flags includes VIR_DOMAIN_VCPU_GUEST, then the state of processors is
  * modified inside the guest instead of the hypervisor. This flag can only
