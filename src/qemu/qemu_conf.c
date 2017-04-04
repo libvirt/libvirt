@@ -159,11 +159,19 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
                         "%s/log/libvirt/qemu", LOCALSTATEDIR) < 0)
             goto error;
 
+        if (virAsprintf(&cfg->swtpmLogDir,
+                        "%s/log/swtpm/libvirt/qemu", LOCALSTATEDIR) < 0)
+            goto error;
+
         if (VIR_STRDUP(cfg->configBaseDir, SYSCONFDIR "/libvirt") < 0)
             goto error;
 
         if (virAsprintf(&cfg->stateDir,
                       "%s/run/libvirt/qemu", LOCALSTATEDIR) < 0)
+            goto error;
+
+        if (virAsprintf(&cfg->swtpmStateDir,
+                       "%s/run/libvirt/qemu/swtpm", LOCALSTATEDIR) < 0)
             goto error;
 
         if (virAsprintf(&cfg->cacheDir,
@@ -186,6 +194,13 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             goto error;
         if (virAsprintf(&cfg->memoryBackingDir, "%s/ram", cfg->libDir) < 0)
             goto error;
+        if (virAsprintf(&cfg->swtpmStorageDir, "%s/lib/libvirt/swtpm",
+                        LOCALSTATEDIR) < 0)
+            goto error;
+        if (virGetUserID("tss", &cfg->swtpm_user) < 0)
+            cfg->swtpm_user = 0; /* fall back to root */
+        if (virGetGroupID("tss", &cfg->swtpm_group) < 0)
+            cfg->swtpm_group = 0; /* fall back to root */
     } else {
         char *rundir;
         char *cachedir;
@@ -195,6 +210,11 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             goto error;
 
         if (virAsprintf(&cfg->logDir,
+                        "%s/qemu/log", cachedir) < 0) {
+            VIR_FREE(cachedir);
+            goto error;
+        }
+        if (virAsprintf(&cfg->swtpmLogDir,
                         "%s/qemu/log", cachedir) < 0) {
             VIR_FREE(cachedir);
             goto error;
@@ -213,6 +233,9 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             goto error;
         }
         VIR_FREE(rundir);
+
+        if (virAsprintf(&cfg->swtpmStateDir, "%s/swtpm", cfg->stateDir) < 0)
+            goto error;
 
         if (!(cfg->configBaseDir = virGetUserConfigDirectory()))
             goto error;
@@ -233,6 +256,10 @@ virQEMUDriverConfigPtr virQEMUDriverConfigNew(bool privileged)
             goto error;
         if (virAsprintf(&cfg->memoryBackingDir, "%s/qemu/ram", cfg->configBaseDir) < 0)
             goto error;
+        if (virAsprintf(&cfg->swtpmStorageDir, "%s/qemu/swtpm", cfg->configBaseDir) < 0)
+            goto error;
+        cfg->swtpm_user = (uid_t)-1;
+        cfg->swtpm_group = (gid_t)-1;
     }
 
     if (virAsprintf(&cfg->configDir, "%s/qemu", cfg->configBaseDir) < 0)
@@ -352,7 +379,9 @@ static void virQEMUDriverConfigDispose(void *obj)
     VIR_FREE(cfg->configDir);
     VIR_FREE(cfg->autostartDir);
     VIR_FREE(cfg->logDir);
+    VIR_FREE(cfg->swtpmLogDir);
     VIR_FREE(cfg->stateDir);
+    VIR_FREE(cfg->swtpmStateDir);
 
     VIR_FREE(cfg->libDir);
     VIR_FREE(cfg->cacheDir);
@@ -403,6 +432,7 @@ static void virQEMUDriverConfigDispose(void *obj)
     virFirmwareFreeList(cfg->firmwares, cfg->nfirmwares);
 
     VIR_FREE(cfg->memoryBackingDir);
+    VIR_FREE(cfg->swtpmStorageDir);
 }
 
 
@@ -475,6 +505,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     size_t i, j;
     char *stdioHandler = NULL;
     char *user = NULL, *group = NULL;
+    char *swtpm_user = NULL, *swtpm_group = NULL;
     char **controllers = NULL;
     char **hugetlbfs = NULL;
     char **nvram = NULL;
@@ -918,6 +949,16 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     if (virConfGetValueString(conf, "memory_backing_dir", &cfg->memoryBackingDir) < 0)
         goto cleanup;
 
+    if (virConfGetValueString(conf, "swtpm_user", &swtpm_user) < 0)
+        goto cleanup;
+    if (swtpm_user && virGetUserID(swtpm_user, &cfg->swtpm_user) < 0)
+        goto cleanup;
+
+    if (virConfGetValueString(conf, "swtpm_group", &swtpm_group) < 0)
+        goto cleanup;
+    if (swtpm_group && virGetGroupID(swtpm_group, &cfg->swtpm_group) < 0)
+        goto cleanup;
+
     ret = 0;
 
  cleanup:
@@ -928,6 +969,8 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     VIR_FREE(corestr);
     VIR_FREE(user);
     VIR_FREE(group);
+    VIR_FREE(swtpm_user);
+    VIR_FREE(swtpm_group);
     virConfFree(conf);
     return ret;
 }
