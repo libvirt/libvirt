@@ -41,6 +41,24 @@ int hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Object
  */
+typedef struct _hypervObjectUnified hypervObjectUnified;
+struct _hypervObjectUnified {
+    /* Unserialized data from wsman response. The member called "common" has
+     * properties that are the same type and name for all "versions" of given
+     * WMI class. This means that calling code does not have to make any
+     * conditional checks based on which version was returned as long as it
+     * only needs to read common values. The alignment of structs is ensured
+     * by the generator.
+     */
+    union {
+        XML_TYPE_PTR common;
+        XML_TYPE_PTR v1;
+        XML_TYPE_PTR v2;
+    } data;
+    /* The info used to make wsman request */
+    hypervWmiClassInfoPtr info;
+    hypervObjectUnified *next;
+};
 
 struct _hypervObject {
     XmlSerializerInfo *serializerInfo;
