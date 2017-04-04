@@ -121,7 +121,7 @@ vzBuildCapabilities(void)
 
     verify(ARRAY_CARDINALITY(archs) == ARRAY_CARDINALITY(emulators));
 
-    for (i = 0; i < ARRAY_CARDINALITY(os_types); i++)
+    for (i = 0; i < ARRAY_CARDINALITY(ostypes); i++)
         for (j = 0; j < ARRAY_CARDINALITY(archs); j++)
             for (k = 0; k < ARRAY_CARDINALITY(emulators); k++)
                 if (vzCapsAddGuestDomain(caps, ostypes[i], archs[j],
