@@ -45,7 +45,9 @@
     <element name="change">
       <element name="summary">
         <data type="string">
-          <param name="pattern">\n[^\n]+\n +</param>
+          <!-- Use literal newline instead of \n for bug in libxml2 2.7.6 -->
+          <param name="pattern">\n[^
+]+\n +</param>
         </data>
       </element>
       <optional>
