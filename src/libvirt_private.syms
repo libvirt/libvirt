@@ -1768,6 +1768,7 @@ virFileActivateDirOverride;
 virFileBindMountDevice;
 virFileBuildPath;
 virFileCanonicalizePath;
+virFileChownFiles;
 virFileClose;
 virFileComparePaths;
 virFileCopyACLs;

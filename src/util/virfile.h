@@ -238,6 +238,9 @@ int virFileOpenAs(const char *path, int openflags, mode_t mode,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 int virFileRemove(const char *path, uid_t uid, gid_t gid);
 
+int virFileChownFiles(const char *name, uid_t uid, gid_t gid)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+
 enum {
     VIR_DIR_CREATE_NONE        = 0,
     VIR_DIR_CREATE_AS_UID      = (1 << 0),

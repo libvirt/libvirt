@@ -2980,6 +2980,61 @@ void virDirClose(DIR **dirp)
     *dirp = NULL;
 }
 
+
+/*
+ * virFileChownFiles:
+ * @name: name of the directory
+ * @uid: uid
+ * @gid: gid
+ *
+ * Change ownership of all regular files in a directory.
+ *
+ * Returns -1 on error, with error already reported, 0 on success.
+ */
+int virFileChownFiles(const char *name,
+                      uid_t uid,
+                      gid_t gid)
+{
+    struct dirent *ent;
+    int ret = -1;
+    int direrr;
+    DIR *dir;
+    char *path = NULL;
+
+    if (virDirOpen(&dir, name) < 0)
+        return -1;
+
+    while ((direrr = virDirRead(dir, &ent, name)) > 0) {
+        if (ent->d_type != DT_REG)
+            continue;
+
+        if (virAsprintf(&path, "%s/%s", name, ent->d_name) < 0)
+            goto cleanup;
+
+        if (chown(path, uid, gid) < 0) {
+            virReportSystemError(errno,
+                                 _("cannot chown '%s' to (%u, %u)"),
+                                 ent->d_name, (unsigned int) uid,
+                                 (unsigned int) gid);
+            goto cleanup;
+        }
+        VIR_FREE(path);
+    }
+
+    if (direrr < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(path);
+
+    virDirClose(&dir);
+
+    return ret;
+}
+
+
 static int
 virFileMakePathHelper(char *path, mode_t mode)
 {
