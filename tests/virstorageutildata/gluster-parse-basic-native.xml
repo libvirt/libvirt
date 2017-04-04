@@ -1,6 +1,7 @@
 <sources>
   <source>
     <host name='testhost'/>
-    <dir path='vol0'/>
+    <dir path='/'/>
+    <name>vol0</name>
   </source>
 </sources>

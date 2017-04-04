@@ -1,14 +1,17 @@
 <sources>
   <source>
     <host name='testhost'/>
-    <dir path='aaa'/>
+    <dir path='/'/>
+    <name>aaa</name>
   </source>
   <source>
     <host name='testhost'/>
-    <dir path='test'/>
+    <dir path='/'/>
+    <name>test</name>
   </source>
   <source>
     <host name='testhost'/>
-    <dir path='test1'/>
+    <dir path='/'/>
+    <name>test1</name>
   </source>
 </sources>
