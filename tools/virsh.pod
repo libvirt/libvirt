@@ -2477,7 +2477,8 @@ marked as hotpluggable.
 The I<--maximum> flag controls the maximum number of virtual cpus that can
 be hot-plugged the next time the domain is booted.  As such, it must only be
 used with the I<--config> flag, and not with the I<--live> or the I<--current>
-flag.
+flag. Note that it may not be possible to change the maximum vcpu count if
+the processor topology is specified for the guest.
 
 =item B<setvcpu> I<domain> I<vcpulist> [I<--enable>] | [I<--disable>]
 [[I<--live>] [I<--config>] | [I<--current>]]

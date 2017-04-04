@@ -1401,7 +1401,10 @@
         virtual CPU provided to the guest. Three non-zero values have to be
         given for <code>sockets</code>, <code>cores</code>, and
         <code>threads</code>: total number of CPU sockets, number of cores per
-        socket, and number of threads per core, respectively.</dd>
+        socket, and number of threads per core, respectively. Hypervisors may
+        require that the maximum number of vCPUs specified by the
+        <code>cpus</code> element equals to the number of vcpus resulting
+        from the topology.</dd>
 
       <dt><code>feature</code></dt>
       <dd>The <code>cpu</code> element can contain zero or more
