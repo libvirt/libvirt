@@ -1,0 +1,746 @@
+/*
+ * qemu_tpm.c: QEMU TPM support
+ *
+ * Copyright (C) 2018 IBM Corporation
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ * Author: Stefan Berger <stefanb@linux.vnet.ibm.com>
+ */
+
+#include <config.h>
+
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <cap-ng.h>
+
+#include "qemu_extdevice.h"
+#include "qemu_domain.h"
+
+#include "conf/domain_conf.h"
+#include "vircommand.h"
+#include "viralloc.h"
+#include "virkmod.h"
+#include "virlog.h"
+#include "virutil.h"
+#include "viruuid.h"
+#include "virfile.h"
+#include "virstring.h"
+#include "configmake.h"
+#include "dirname.h"
+#include "qemu_tpm.h"
+
+#define VIR_FROM_THIS VIR_FROM_NONE
+
+VIR_LOG_INIT("qemu.tpm")
+
+/*
+ * executables for the swtpm; to be found on the host
+ */
+static char *swtpm_path;
+static char *swtpm_setup;
+static char *swtpm_ioctl;
+
+/*
+ * qemuTPMEmulatorInit
+ *
+ * Initialize the Emulator functions by searching for necessary
+ * executables that we will use to start and setup the swtpm
+ */
+static int
+qemuTPMEmulatorInit(void)
+{
+    if (!swtpm_path) {
+        swtpm_path = virFindFileInPath("swtpm");
+        if (!swtpm_path) {
+            virReportSystemError(ENOENT, "%s",
+                                 _("Unable to find 'swtpm' binary in $PATH"));
+            return -1;
+        }
+        if (!virFileIsExecutable(swtpm_path)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("TPM emulator %s is not an executable"),
+                           swtpm_path);
+            VIR_FREE(swtpm_path);
+            return -1;
+        }
+    }
+
+    if (!swtpm_setup) {
+        swtpm_setup = virFindFileInPath("swtpm_setup");
+        if (!swtpm_setup) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Could not find 'swtpm_setup' in PATH"));
+            return -1;
+        }
+        if (!virFileIsExecutable(swtpm_setup)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("'%s' is not an executable"),
+                           swtpm_setup);
+            VIR_FREE(swtpm_setup);
+            return -1;
+        }
+    }
+
+    if (!swtpm_ioctl) {
+        swtpm_ioctl = virFindFileInPath("swtpm_ioctl");
+        if (!swtpm_ioctl) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Could not find swtpm_ioctl in PATH"));
+            return -1;
+        }
+        if (!virFileIsExecutable(swtpm_ioctl)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("swtpm_ioctl program %s is not an executable"),
+                           swtpm_ioctl);
+            VIR_FREE(swtpm_ioctl);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+/*
+ * qemuTPMCreateEmulatorStoragePath
+ *
+ * @swtpmStorageDir: directory for swtpm persistent state
+ * @uuid: The UUID of the VM for which to create the storage
+ *
+ * Create the swtpm's storage path
+ */
+static char *
+qemuTPMCreateEmulatorStoragePath(const char *swtpmStorageDir,
+                                 const char *uuidstr)
+{
+    char *path = NULL;
+
+    ignore_value(virAsprintf(&path, "%s/%s/tpm1.2", swtpmStorageDir, uuidstr));
+
+    return path;
+}
+
+
+/*
+ * virtTPMGetTPMStorageDir:
+ *
+ * @storagepath: directory for swtpm's persistent state
+ *
+ * Derive the 'TPMStorageDir' from the storagepath by searching
+ * for the last '/'.
+ */
+static char *
+qemuTPMGetTPMStorageDir(const char *storagepath)
+{
+    char *ret = mdir_name(storagepath);
+
+    if (!ret)
+        virReportOOMError();
+
+    return ret;
+}
+
+
+/*
+ * qemuTPMEmulatorInitStorage
+ *
+ * Initialize the TPM Emulator storage by creating its root directory,
+ * which is typically found in /var/lib/libvirt/tpm.
+ *
+ */
+static int
+qemuTPMEmulatorInitStorage(const char *swtpmStorageDir)
+{
+    int rc = 0;
+
+    /* allow others to cd into this dir */
+    if (virFileMakePathWithMode(swtpmStorageDir, 0711) < 0) {
+        virReportSystemError(errno,
+                             _("Could not create TPM directory %s"),
+                             swtpmStorageDir);
+        rc = -1;
+    }
+
+    return rc;
+}
+
+
+/*
+ * qemuTPMCreateEmulatorStorage
+ *
+ * @storagepath: directory for swtpm's persistent state
+ * @created: a pointer to a bool that will be set to true if the
+ *           storage was created because it did not exist yet
+ * @swtpm_user: The uid that needs to be able to access the directory
+ * @swtpm_group: The gid that needs to be able to access the directory
+ *
+ * Unless the storage path for the swtpm for the given VM
+ * already exists, create it and make it accessible for the given userid.
+ * Adapt ownership of the directory and all swtpm's state files there.
+ */
+static int
+qemuTPMCreateEmulatorStorage(const char *storagepath,
+                             bool *created,
+                             uid_t swtpm_user,
+                             gid_t swtpm_group)
+{
+    int ret = -1;
+    char *swtpmStorageDir = qemuTPMGetTPMStorageDir(storagepath);
+
+    if (!swtpmStorageDir)
+        return -1;
+
+    if (qemuTPMEmulatorInitStorage(swtpmStorageDir) < 0)
+        goto cleanup;
+
+    *created = false;
+
+    if (!virFileExists(storagepath))
+        *created = true;
+
+    if (virDirCreate(storagepath, 0700, swtpm_user, swtpm_group,
+                     VIR_DIR_CREATE_ALLOW_EXIST) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not create directory %s as %u:%d"),
+                       storagepath, swtpm_user, swtpm_group);
+        goto cleanup;
+    }
+
+    if (virFileChownFiles(storagepath, swtpm_user, swtpm_group) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(swtpmStorageDir);
+
+    return ret;
+}
+
+
+static void
+qemuTPMDeleteEmulatorStorage(virDomainTPMDefPtr tpm)
+{
+    char *path = qemuTPMGetTPMStorageDir(tpm->data.emulator.storagepath);
+
+    if (path) {
+        ignore_value(virFileDeleteTree(path));
+        VIR_FREE(path);
+    }
+}
+
+
+/*
+ * qemuTPMCreateEmulatorSocket:
+ *
+ * @swtpmStateDir: the directory where to create the socket in
+ * @shortName: short and unique name of the domain
+ *
+ * Create the Unix socket path from the given parameters
+ */
+static char *
+qemuTPMCreateEmulatorSocket(const char *swtpmStateDir,
+                            const char *shortName)
+{
+    char *path = NULL;
+
+    ignore_value(virAsprintf(&path, "%s/%s-swtpm.sock", swtpmStateDir,
+                             shortName));
+
+    return path;
+}
+
+
+/*
+ * qemuTPMEmulatorInitPaths:
+ *
+ * @tpm: TPM definition for an emulator type
+ * @swtpmStorageDir: the general swtpm storage dir which is used as a base
+ *                   directory for creating VM specific directories
+ * @uuid: the UUID of the VM
+ */
+static int
+qemuTPMEmulatorInitPaths(virDomainTPMDefPtr tpm,
+                         const char *swtpmStorageDir,
+                         const unsigned char *uuid)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(uuid, uuidstr);
+
+    if (!tpm->data.emulator.storagepath &&
+        !(tpm->data.emulator.storagepath =
+            qemuTPMCreateEmulatorStoragePath(swtpmStorageDir, uuidstr)))
+        return -1;
+
+    return 0;
+}
+
+
+/*
+ * qemuTPMEmulatorPrepareHost:
+ *
+ * @tpm: tpm definition
+ * @logDir: directory where swtpm writes its logs into
+ * @vmname: name of the VM
+ * @swtpm_user: uid to run the swtpm with
+ * @swtpm_group: gid to run the swtpm with
+ * @swtpmStateDir: directory for swtpm's persistent state
+ * @qemu_user: uid that qemu will run with; we share the socket file with it
+ * @shortName: short and unique name of the domain
+ *
+ * Prepare the log directory for the swtpm and adjust ownership of it and the
+ * log file we will be using. Prepare the state directory where we will share
+ * the socket between tss and qemu users.
+ */
+static int
+qemuTPMEmulatorPrepareHost(virDomainTPMDefPtr tpm,
+                           const char *logDir,
+                           const char *vmname,
+                           uid_t swtpm_user,
+                           gid_t swtpm_group,
+                           const char *swtpmStateDir,
+                           uid_t qemu_user,
+                           const char *shortName)
+{
+    int ret = -1;
+
+    if (qemuTPMEmulatorInit() < 0)
+        return -1;
+
+    /* create log dir ... allow 'tss' user to cd into it */
+    if (virFileMakePathWithMode(logDir, 0711) < 0)
+        return -1;
+
+    /* ... and adjust ownership */
+    if (virDirCreate(logDir, 0730, swtpm_user, swtpm_group,
+                     VIR_DIR_CREATE_ALLOW_EXIST) < 0)
+        goto cleanup;
+
+    /* create logfile name ... */
+    if (!tpm->data.emulator.logfile &&
+        virAsprintf(&tpm->data.emulator.logfile, "%s/%s-swtpm.log",
+                    logDir, vmname) < 0)
+        goto cleanup;
+
+    /* ... and make sure it can be accessed by swtpm_user */
+    if (virFileExists(tpm->data.emulator.logfile) &&
+        chown(tpm->data.emulator.logfile, swtpm_user, swtpm_group) < 0) {
+        virReportSystemError(errno,
+                             _("Could not chown on swtpm logfile %s"),
+                             tpm->data.emulator.logfile);
+        goto cleanup;
+    }
+
+    /*
+      create our swtpm state dir ...
+      - QEMU user needs to be able to access the socket there
+      - swtpm group needs to be able to create files there
+      - in privileged mode 0570 would be enough, for non-privileged mode
+        we need 0770
+    */
+    if (virDirCreate(swtpmStateDir, 0770, qemu_user, swtpm_group,
+                     VIR_DIR_CREATE_ALLOW_EXIST) < 0)
+        goto cleanup;
+
+    /* create the socket filename */
+    if (!tpm->data.emulator.source.data.nix.path &&
+        !(tpm->data.emulator.source.data.nix.path =
+          qemuTPMCreateEmulatorSocket(swtpmStateDir, shortName)))
+        goto cleanup;
+    tpm->data.emulator.source.type = VIR_DOMAIN_CHR_TYPE_UNIX;
+
+    ret = 0;
+
+ cleanup:
+
+    return ret;
+}
+
+
+/*
+ * qemuTPMEmulatorRunSetup
+ *
+ * @storagepath: path to the directory for TPM state
+ * @vmname: the name of the VM
+ * @vmuuid: the UUID of the VM
+ * @privileged: whether we are running in privileged mode
+ * @swtpm_user: The userid to switch to when setting up the TPM;
+ *              typically this should be the uid of 'tss' or 'root'
+ * @swtpm_group: The group id to switch to
+ * @logfile: The file to write the log into; it must be writable
+ *           for the user given by userid or 'tss'
+ *
+ * Setup the external swtpm by creating endorsement key and
+ * certificates for it.
+ */
+static int
+qemuTPMEmulatorRunSetup(const char *storagepath,
+                        const char *vmname,
+                        const unsigned char *vmuuid,
+                        bool privileged,
+                        uid_t swtpm_user,
+                        gid_t swtpm_group,
+                        const char *logfile)
+{
+    virCommandPtr cmd = NULL;
+    int exitstatus;
+    int ret = -1;
+    char uuid[VIR_UUID_STRING_BUFLEN];
+    char *vmid = NULL;
+
+    if (!privileged)
+        return virFileWriteStr(logfile,
+                               _("Did not create EK and certificates since "
+                               "this requires privileged mode\n"),
+                               0600);
+
+    cmd = virCommandNew(swtpm_setup);
+    if (!cmd)
+        goto cleanup;
+
+    virUUIDFormat(vmuuid, uuid);
+    if (virAsprintf(&vmid, "%s:%s", vmname, uuid) < 0)
+        goto cleanup;
+
+    virCommandSetUID(cmd, swtpm_user);
+    virCommandSetGID(cmd, swtpm_group);
+
+    virCommandAddArgList(cmd,
+                         "--tpm-state", storagepath,
+                         "--vmid", vmid,
+                         "--logfile", logfile,
+                         "--createek",
+                         "--create-ek-cert",
+                         "--create-platform-cert",
+                         "--lock-nvram",
+                         "--not-overwrite",
+                         NULL);
+
+    virCommandClearCaps(cmd);
+
+    if (virCommandRun(cmd, &exitstatus) < 0 || exitstatus != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not run '%s'. exitstatus: %d; "
+                         "Check error log '%s' for details."),
+                          swtpm_setup, exitstatus, logfile);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(vmid);
+    virCommandFree(cmd);
+
+    return ret;
+}
+
+
+/*
+ * qemuTPMEmulatorBuildCommand:
+ *
+ * @tpm: TPM definition
+ * @vmname: The name of the VM
+ * @vmuuid: The UUID of the VM
+ * @privileged: whether we are running in privileged mode
+ * @swtpm_user: The uid for the swtpm to run as (drop privileges to from root)
+ * @swtpm_group: The gid for the swtpm to run as
+ *
+ * Create the virCommand use for starting the emulator
+ * Do some initializations on the way, such as creation of storage
+ * and emulator setup.
+ */
+static virCommandPtr
+qemuTPMEmulatorBuildCommand(virDomainTPMDefPtr tpm,
+                            const char *vmname,
+                            const unsigned char *vmuuid,
+                            bool privileged,
+                            uid_t swtpm_user,
+                            gid_t swtpm_group)
+{
+    virCommandPtr cmd = NULL;
+    bool created = false;
+
+    if (qemuTPMCreateEmulatorStorage(tpm->data.emulator.storagepath,
+                                     &created, swtpm_user, swtpm_group) < 0)
+        return NULL;
+
+    if (created &&
+        qemuTPMEmulatorRunSetup(tpm->data.emulator.storagepath, vmname, vmuuid,
+                                privileged, swtpm_user, swtpm_group,
+                                tpm->data.emulator.logfile) < 0)
+        goto error;
+
+    unlink(tpm->data.emulator.source.data.nix.path);
+
+    cmd = virCommandNew(swtpm_path);
+    if (!cmd)
+        goto error;
+
+    virCommandClearCaps(cmd);
+
+    virCommandAddArgList(cmd, "socket", "--daemon", "--ctrl", NULL);
+    virCommandAddArgFormat(cmd, "type=unixio,path=%s,mode=0600",
+                           tpm->data.emulator.source.data.nix.path);
+
+    virCommandAddArg(cmd, "--tpmstate");
+    virCommandAddArgFormat(cmd, "dir=%s,mode=0600",
+                           tpm->data.emulator.storagepath);
+
+    virCommandAddArg(cmd, "--log");
+    virCommandAddArgFormat(cmd, "file=%s", tpm->data.emulator.logfile);
+
+    virCommandSetUID(cmd, swtpm_user);
+    virCommandSetGID(cmd, swtpm_group);
+
+    return cmd;
+
+ error:
+    if (created)
+        qemuTPMDeleteEmulatorStorage(tpm);
+
+    virCommandFree(cmd);
+
+    return NULL;
+}
+
+
+/*
+ * qemuTPMEmulatorStop
+ * @swtpmStateDir: A directory where the socket is located
+ * @shortName: short and unique name of the domain
+ *
+ * Gracefully stop the swptm
+ */
+static void
+qemuTPMEmulatorStop(const char *swtpmStateDir,
+                    const char *shortName)
+{
+    virCommandPtr cmd;
+    char *pathname;
+    char *errbuf = NULL;
+
+    if (qemuTPMEmulatorInit() < 0)
+        return;
+
+    if (!(pathname = qemuTPMCreateEmulatorSocket(swtpmStateDir, shortName)))
+        return;
+
+    if (!virFileExists(pathname))
+        goto cleanup;
+
+    cmd = virCommandNew(swtpm_ioctl);
+    if (!cmd)
+        goto cleanup;
+
+    virCommandAddArgList(cmd, "--unix", pathname, "-s", NULL);
+
+    virCommandSetErrorBuffer(cmd, &errbuf);
+
+    ignore_value(virCommandRun(cmd, NULL));
+
+    virCommandFree(cmd);
+
+    /* clean up the socket */
+    unlink(pathname);
+
+ cleanup:
+    VIR_FREE(pathname);
+    VIR_FREE(errbuf);
+}
+
+
+int
+qemuExtTPMInitPaths(virQEMUDriverPtr driver,
+                    virDomainDefPtr def)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int ret = 0;
+
+    switch (def->tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        ret = qemuTPMEmulatorInitPaths(def->tpm, cfg->swtpmStorageDir,
+                                       def->uuid);
+        break;
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+    virObjectUnref(cfg);
+
+    return ret;
+}
+
+
+int
+qemuExtTPMPrepareHost(virQEMUDriverPtr driver,
+                      virDomainDefPtr def)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int ret = 0;
+    char *shortName = NULL;
+
+    switch (def->tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        shortName = virDomainDefGetShortName(def);
+        if (!shortName)
+            goto cleanup;
+
+        ret = qemuTPMEmulatorPrepareHost(def->tpm, cfg->swtpmLogDir,
+                                         def->name, cfg->swtpm_user,
+                                         cfg->swtpm_group,
+                                         cfg->swtpmStateDir, cfg->user,
+                                         shortName);
+        break;
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+ cleanup:
+    VIR_FREE(shortName);
+    virObjectUnref(cfg);
+
+    return ret;
+}
+
+
+void
+qemuExtTPMCleanupHost(virDomainDefPtr def)
+{
+    switch (def->tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        qemuTPMDeleteEmulatorStorage(def->tpm);
+        break;
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        /* nothing to do */
+        break;
+    }
+}
+
+
+/*
+ * qemuExtTPMStartEmulator:
+ *
+ * @driver: QEMU driver
+ * @def: domain definition
+ * @logCtxt: log context
+ *
+ * Start the external TPM Emulator:
+ * - have the command line built
+ * - start the external TPM Emulator and sync with it before QEMU start
+ */
+static int
+qemuExtTPMStartEmulator(virQEMUDriverPtr driver,
+                        virDomainDefPtr def,
+                        qemuDomainLogContextPtr logCtxt)
+{
+    int ret = -1;
+    virCommandPtr cmd = NULL;
+    int exitstatus;
+    char *errbuf = NULL;
+    virQEMUDriverConfigPtr cfg;
+    virDomainTPMDefPtr tpm = def->tpm;
+    char *shortName = virDomainDefGetShortName(def);
+
+    if (!shortName)
+        return -1;
+
+    cfg = virQEMUDriverGetConfig(driver);
+
+    /* stop any left-over TPM emulator for this VM */
+    qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
+
+    if (!(cmd = qemuTPMEmulatorBuildCommand(tpm, def->name, def->uuid,
+                                            driver->privileged,
+                                            cfg->swtpm_user,
+                                            cfg->swtpm_group)))
+        goto cleanup;
+
+    if (qemuExtDeviceLogCommand(logCtxt, cmd, "TPM Emulator") < 0)
+        goto cleanup;
+
+    virCommandSetErrorBuffer(cmd, &errbuf);
+
+    if (virCommandRun(cmd, &exitstatus) < 0 || exitstatus != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not start 'swtpm'. exitstatus: %d, "
+                         "error: %s"), exitstatus, errbuf);
+        goto cleanup;
+    }
+
+    ret = 0;
+
+ cleanup:
+    VIR_FREE(shortName);
+    VIR_FREE(errbuf);
+    virCommandFree(cmd);
+
+    virObjectUnref(cfg);
+
+    return ret;
+}
+
+
+int
+qemuExtTPMStart(virQEMUDriverPtr driver,
+                virDomainDefPtr def,
+                qemuDomainLogContextPtr logCtxt)
+{
+    int ret = 0;
+    virDomainTPMDefPtr tpm = def->tpm;
+
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        ret = qemuExtTPMStartEmulator(driver, def, logCtxt);
+        break;
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+    return ret;
+}
+
+
+void
+qemuExtTPMStop(virQEMUDriverPtr driver,
+               virDomainDefPtr def)
+{
+    virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    char *shortName = NULL;
+
+    switch (def->tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        shortName = virDomainDefGetShortName(def);
+        if (!shortName)
+            goto cleanup;
+
+        qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
+        break;
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+ cleanup:
+    VIR_FREE(shortName);
+    virObjectUnref(cfg);
+}

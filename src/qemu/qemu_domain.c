@@ -34,6 +34,7 @@
 #include "qemu_migration.h"
 #include "qemu_migration_params.h"
 #include "qemu_security.h"
+#include "qemu_extdevice.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
@@ -7736,6 +7737,7 @@ qemuDomainRemoveInactive(virQEMUDriverPtr driver,
             VIR_WARN("unable to remove snapshot directory %s", snapDir);
         VIR_FREE(snapDir);
     }
+    qemuExtDevicesCleanupHost(driver, vm->def);
 
     virDomainObjListRemove(driver->domains, vm);
 
