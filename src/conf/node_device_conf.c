@@ -2075,6 +2075,13 @@ virNodeDeviceDeleteVport(virConnectPtr conn,
         if (!(vhba_parent = virNodeDeviceGetParentName(conn, scsi_host_name)))
             goto cleanup;
 
+        /* If the parent is not a scsi_host, then this is a pool backed
+         * directly to an HBA and there's no vHBA to remove - so we're done */
+        if (!STRPREFIX(vhba_parent, "scsi_host")) {
+            ret = 0;
+            goto cleanup;
+        }
+
         if (virSCSIHostGetNumber(vhba_parent, &parent_host) < 0)
             goto cleanup;
     }
