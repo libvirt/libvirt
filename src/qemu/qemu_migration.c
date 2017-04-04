@@ -5356,9 +5356,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                                  QEMU_ASYNC_JOB_MIGRATION_IN);
     }
 
-    if (qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN,
-                              NULL, NULL) < 0)
-        goto endjob;
+    qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN, NULL, NULL);
 
     qemuMigrationJobFinish(driver, vm);
     if (!virDomainObjIsActive(vm))
