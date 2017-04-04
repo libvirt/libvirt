@@ -984,8 +984,8 @@ sc_prohibit_sysconf_pagesize:
 	  $(_sc_search_regexp)
 
 sc_prohibit_virSecurity:
-	@grep -Pn 'virSecurityManager(?!Ptr)' $$($(VC_LIST_EXCEPT) | grep '^src/qemu/' | \
-		grep -v '^src/qemu/qemu_security') && \
+	@grep -Pn 'virSecurityManager(?!Ptr)' $$($(VC_LIST_EXCEPT) | grep 'src/qemu/' | \
+		grep -v 'src/qemu/qemu_security') && \
 		{ echo '$(ME): prefer qemuSecurity wrappers' 1>&2; exit 1; } || :
 
 sc_prohibit_pthread_create:
