@@ -361,8 +361,9 @@ virNetlinkDumpCommand(struct nl_msg *nl_msg,
 
     while (!end) {
         len = nl_recv(nlhandle, &nladdr, (unsigned char **)&resp, NULL);
-
+        VIR_WARNINGS_NO_CAST_ALIGN
         for (msg = resp; NLMSG_OK(msg, len); msg = NLMSG_NEXT(msg, len)) {
+            VIR_WARNINGS_RESET
             if (msg->nlmsg_type == NLMSG_DONE)
                 end = true;
 
