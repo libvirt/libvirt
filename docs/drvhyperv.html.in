@@ -5,7 +5,7 @@
     <h1>Microsoft Hyper-V hypervisor driver</h1>
     <ul id="toc"></ul>
     <p>
-        The libvirt Microsoft Hyper-V driver can manage Hyper-V 2008 R2.
+        The libvirt Microsoft Hyper-V driver can manage Hyper-V 2008 R2 and newer.
     </p>
 
 
