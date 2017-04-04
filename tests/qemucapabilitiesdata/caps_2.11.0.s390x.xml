@@ -125,6 +125,7 @@
   <flag name='sdl-gl'/>
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
+  <flag name='tpm-emulator'/>
   <version>2011000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>342166</microcodeVersion>

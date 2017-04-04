@@ -207,6 +207,7 @@
   <flag name='vmgenid'/>
   <flag name='vhost-vsock'/>
   <flag name='chardev-fd-pass'/>
+  <flag name='tpm-emulator'/>
   <version>2011090</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>390813</microcodeVersion>
