@@ -31,7 +31,7 @@
 
 
 
-typedef struct _hypervObject hypervObject;
+# define HYPERV_WQL_QUERY_INITIALIZER { NULL, NULL }
 
 int hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
                          const char *detail);
@@ -41,8 +41,9 @@ int hypervVerifyResponse(WsManClient *client, WsXmlDocH response,
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Object
  */
-typedef struct _hypervObjectUnified hypervObjectUnified;
-struct _hypervObjectUnified {
+
+typedef struct _hypervObject hypervObject;
+struct _hypervObject {
     /* Unserialized data from wsman response. The member called "common" has
      * properties that are the same type and name for all "versions" of given
      * WMI class. This means that calling code does not have to make any
@@ -57,18 +58,17 @@ struct _hypervObjectUnified {
     } data;
     /* The info used to make wsman request */
     hypervWmiClassInfoPtr info;
-    hypervObjectUnified *next;
-};
-
-struct _hypervObject {
-    XmlSerializerInfo *serializerInfo;
-    XML_TYPE_PTR data;
     hypervObject *next;
 };
 
-int hypervEnumAndPull(hypervPrivate *priv, virBufferPtr query,
-                      const char *root, XmlSerializerInfo *serializerInfo,
-                      const char *resourceUri, const char *className,
+typedef struct _hypervWqlQuery hypervWqlQuery;
+typedef hypervWqlQuery *hypervWqlQueryPtr;
+struct _hypervWqlQuery {
+    virBufferPtr query;
+    hypervWmiClassInfoListPtr info;
+};
+
+int hypervEnumAndPull(hypervPrivate *priv, hypervWqlQueryPtr wqlQuery,
                       hypervObject **list);
 
 void hypervFreeObject(hypervPrivate *priv, hypervObject *object);
@@ -112,6 +112,35 @@ const char *hypervReturnCodeToString(int returnCode);
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Generic "Get WMI class list" helpers
+ */
+
+int hypervGetMsvmComputerSystemList(hypervPrivate *priv, virBufferPtr query,
+                                    Msvm_ComputerSystem **list);
+
+int hypervGetMsvmConcreteJobList(hypervPrivate *priv, virBufferPtr query,
+                                 Msvm_ConcreteJob **list);
+
+int hypervGetWin32ComputerSystemList(hypervPrivate *priv, virBufferPtr query,
+                                     Win32_ComputerSystem **list);
+
+int hypervGetWin32ProcessorList(hypervPrivate *priv, virBufferPtr query,
+                                    Win32_Processor **list);
+
+int hypervGetMsvmVirtualSystemSettingDataList(hypervPrivate *priv,
+                                              virBufferPtr query,
+                                              Msvm_VirtualSystemSettingData **list);
+
+int hypervGetMsvmProcessorSettingDataList(hypervPrivate *priv,
+                                          virBufferPtr query,
+                                          Msvm_ProcessorSettingData **list);
+
+int hypervGetMsvmMemorySettingDataList(hypervPrivate *priv, virBufferPtr query,
+                                       Msvm_MemorySettingData **list);
+
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Msvm_ComputerSystem
  */
 
@@ -130,9 +159,5 @@ int hypervMsvmComputerSystemToDomain(virConnectPtr conn,
 
 int hypervMsvmComputerSystemFromDomain(virDomainPtr domain,
                                        Msvm_ComputerSystem **computerSystem);
-
-
-
-# include "hyperv_wmi.generated.h"
 
 #endif /* __HYPERV_WMI_H__ */

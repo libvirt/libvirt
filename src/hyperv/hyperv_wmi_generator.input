@@ -56,6 +56,55 @@ class Msvm_ComputerSystem
 end
 
 
+class v2/Msvm_ComputerSystem
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    uint16   CommunicationStatus
+    uint16   DetailedStatus
+    uint16   OperatingStatus
+    uint16   PrimaryStatus
+    uint16   EnabledState
+    string   OtherEnabledState
+    uint16   RequestedState
+    uint16   EnabledDefault
+    datetime TimeOfLastStateChange
+    uint16   AvailableRequestedStates[]
+    uint16   TransitioningToState
+    string   CreationClassName
+    string   Name
+    string   PrimaryOwnerName
+    string   PrimaryOwnerContact
+    string   Roles[]
+    string   NameFormat
+    string   OtherIdentifyingInfo[]
+    string   IdentifyingDescriptions[]
+    uint16   Dedicated[]
+    string   OtherDedicatedDescriptions[]
+    uint16   ResetCapability
+    uint16   PowerManagementCapabilities[]
+    uint64   OnTimeInMilliseconds
+    uint32   ProcessID
+    datetime TimeOfLastConfigurationChange
+    uint16   NumberOfNumaNodes
+    uint16   ReplicationState
+    uint16   ReplicationHealth
+    uint16   ReplicationMode
+    uint16   FailedOverReplicationType
+    uint16   LastReplicationType
+    datetime LastApplicationConsistentReplicationTime
+    datetime LastReplicationTime
+    datetime LastSuccessfulBackupTime
+    uint16   EnhancedSessionModeState
+end
+
+
 class Msvm_ConcreteJob
     string   Caption
     string   Description
@@ -96,6 +145,51 @@ class Msvm_ConcreteJob
 end
 
 
+class v2/Msvm_ConcreteJob
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    datetime InstallDate
+    string   Name
+    uint16   OperationalStatus[]
+    string   StatusDescriptions[]
+    string   Status
+    uint16   HealthState
+    uint16   CommunicationStatus
+    uint16   DetailedStatus
+    uint16   OperatingStatus
+    uint16   PrimaryStatus
+    string   JobStatus
+    datetime TimeSubmitted
+    datetime ScheduledStartTime
+    datetime StartTime
+    datetime ElapsedTime
+    uint32   JobRunTimes
+    uint8    RunMonth
+    sint8    RunDay
+    sint8    RunDayOfWeek
+    datetime RunStartInterval
+    uint16   LocalOrUtcTime
+    datetime UntilTime
+    string   Notify
+    string   Owner
+    uint32   Priority
+    uint16   PercentComplete
+    boolean  DeleteOnCompletion
+    uint16   ErrorCode
+    string   ErrorDescription
+    string   ErrorSummaryDescription
+    uint16   RecoveryAction
+    string   OtherRecoveryAction
+    uint16   JobState
+    datetime TimeOfLastStateChange
+    datetime TimeBeforeRemoval
+    boolean  Cancellable
+    uint16   JobType
+end
+
+
 class Msvm_MemorySettingData
     string   Caption
     string   Description
@@ -123,6 +217,38 @@ class Msvm_MemorySettingData
     string   DeviceIDFormat
     boolean  DynamicMemoryEnabled
 #    uint32   TargetMemoryBuffer # Available only on Windows Server 2008 R2 SP1
+end
+
+
+class v2/Msvm_MemorySettingData
+    string  InstanceID
+    string  Caption
+    string  Description
+    string  ElementName
+    uint16  ResourceType
+    string  OtherResourceType
+    string  ResourceSubType
+    string  PoolID
+    uint16  ConsumerVisibility
+    string  HostResource[]
+    string  AllocationUnits
+    uint64  VirtualQuantity
+    uint64  Reservation
+    uint64  Limit
+    uint32  Weight
+    boolean AutomaticAllocation
+    boolean AutomaticDeallocation
+    string  Parent
+    string  Connection[]
+    string  Address
+    uint16  MappingBehavior
+    string  AddressOnParent
+    string  VirtualQuantityUnits
+    boolean DynamicMemoryEnabled
+    uint32  TargetMemoryBuffer
+    boolean IsVirtualized
+    boolean SwapFilesInUse
+    uint64  MaxMemoryBlocksPerNumaNode
 end
 
 
@@ -159,6 +285,37 @@ class Msvm_ProcessorSettingData
 end
 
 
+class v2/Msvm_ProcessorSettingData
+    string  InstanceID
+    string  Caption
+    string  Description
+    string  ElementName
+    uint16  ResourceType
+    string  OtherResourceType
+    string  ResourceSubType
+    string  PoolID
+    uint16  ConsumerVisibility
+    string  HostResource[]
+    string  AllocationUnits
+    uint64  VirtualQuantity
+    uint64  Reservation
+    uint64  Limit
+    uint32  Weight
+    boolean AutomaticAllocation
+    boolean AutomaticDeallocation
+    string  Parent
+    string  Connection[]
+    string  Address
+    uint16  MappingBehavior
+    string  AddressOnParent
+    string  VirtualQuantityUnits
+    boolean LimitCPUID
+    boolean LimitProcessorFeatures
+    uint64  MaxProcessorsPerNumaNode
+    uint64  MaxNumaNodesPerSocket
+end
+
+
 class Msvm_VirtualSystemSettingData
     string   Caption
     string   Description
@@ -181,6 +338,55 @@ class Msvm_VirtualSystemSettingData
     string   Parent
     uint16   NumaNodeList[]
     boolean  NumaNodesAreRequired
+end
+
+
+class v2/Msvm_VirtualSystemSettingData
+    string   InstanceID
+    string   Caption
+    string   Description
+    string   ElementName
+    string   VirtualSystemIdentifier
+    string   VirtualSystemType
+    string   Notes[]
+    datetime CreationTime
+    string   ConfigurationID
+    string   ConfigurationDataRoot
+    string   ConfigurationFile
+    string   SnapshotDataRoot
+    string   SuspendDataRoot
+    string   SwapFileDataRoot
+    string   LogDataRoot
+    uint16   AutomaticStartupAction
+    datetime AutomaticStartupActionDelay
+    uint16   AutomaticStartupActionSequenceNumber
+    uint16   AutomaticShutdownAction
+    uint16   AutomaticRecoveryAction
+    string   RecoveryFile
+    string   BIOSGUID
+    string   BIOSSerialNumber
+    string   BaseBoardSerialNumber
+    string   ChassisSerialNumber
+    string   ChassisAssetTag
+    boolean  BIOSNumLock
+    uint16   BootOrder[]
+    string   Parent
+    boolean  IsSaved
+    string   AdditionalRecoveryInformation
+    boolean  AllowFullSCSICommandSet
+    uint32   DebugChannelId
+    uint16   DebugPortEnabled
+    uint32   DebugPort
+    string   Version
+    boolean  IncrementalBackupEnabled
+    boolean  VirtualNumaEnabled
+    boolean  AllowReducedFcRedundancy
+    string   VirtualSystemSubType
+    string   BootSourceOrder[]
+    boolean  PauseAfterBootFailure
+    uint16   NetworkBootPreferredProtocol
+    boolean  SecureBootEnabled
+    uint64   LowMmioGapSize
 end
 
 
@@ -604,39 +810,6 @@ class Msvm_VirtualSystemGlobalSettingData
     uint32   DebugChannelId
     boolean  AllowFullSCSICommandSet
     string   Version
-end
-
-
-class Msvm_VirtualSwitch
-    string   Caption
-    string   Description
-    string   ElementName
-    datetime InstallDate
-    uint16   OperationalStatus[]
-    string   StatusDescriptions[]
-    string   Status
-    uint16   HealthState
-    uint16   EnabledState
-    string   OtherEnabledState
-    uint16   RequestedState
-    uint16   EnabledDefault
-    datetime TimeOfLastStateChange
-    string   CreationClassName
-    string   Name
-    string   PrimaryOwnerContact
-    string   PrimaryOwnerName
-    string   Roles[]
-    string   NameFormat
-    string   OtherIdentifyingInfo[]
-    string   IdentifyingDescriptions[]
-    uint16   Dedicated[]
-    string   OtherDedicatedDescriptions[]
-    uint16   ResetCapability
-    uint16   PowerManagementCapabilities[]
-    string   ScopeOfResidence
-    uint32   NumLearnableAddresses
-    uint32   MaxVMQOffloads
-    uint32   MaxChimneyOffloads
 end
 
 

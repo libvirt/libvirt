@@ -912,8 +912,6 @@ HYPERV_DRIVER_SOURCES =									\
 		hyperv/openwsman.h
 
 HYPERV_DRIVER_GENERATED =							\
-		hyperv/hyperv_wmi.generated.c					\
-		hyperv/hyperv_wmi.generated.h					\
 		hyperv/hyperv_wmi_classes.generated.c				\
 		hyperv/hyperv_wmi_classes.generated.h				\
 		hyperv/hyperv_wmi_classes.generated.typedef
