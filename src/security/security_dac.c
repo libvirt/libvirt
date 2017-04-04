@@ -1373,6 +1373,10 @@ virSecurityDACSetTPMFileLabel(virSecurityManagerPtr mgr,
                                             false);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        ret = virSecurityDACSetChardevLabel(mgr, def,
+                                            &tpm->data.emulator.source,
+                                            false);
+        break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
@@ -1395,6 +1399,7 @@ virSecurityDACRestoreTPMFileLabel(virSecurityManagerPtr mgr,
                                                 false);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        /* swtpm will have removed the Unix socket upon termination */
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
