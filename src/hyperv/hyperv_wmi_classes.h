@@ -87,6 +87,28 @@ enum _Msvm_ConcreteJob_JobState {
 };
 
 
+typedef struct _hypervWmiClassInfo hypervWmiClassInfo;
+typedef hypervWmiClassInfo *hypervWmiClassInfoPtr;
+struct _hypervWmiClassInfo {
+    /* The WMI class name */
+    const char *name;
+    /* The version of the WMI class as in "v1" or "v2" */
+    const char *version;
+    /* The URI for wsman enumerate request */
+    const char *rootUri;
+    /* The namespace URI for XML serialization */
+    const char *resourceUri;
+    /* The wsman serializer info - one of the *_TypeInfo structs */
+    XmlSerializerInfo *serializerInfo;
+};
+
+
+typedef struct _hypervWmiClassInfoList hypervWmiClassInfoList;
+typedef hypervWmiClassInfoList *hypervWmiClassInfoListPtr;
+struct _hypervWmiClassInfoList {
+    size_t count;
+    hypervWmiClassInfoPtr *objs;
+};
 
 # include "hyperv_wmi_classes.generated.h"
 
