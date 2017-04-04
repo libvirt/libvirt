@@ -9519,16 +9519,26 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
                        virCommandPtr cmd,
                        virQEMUCapsPtr qemuCaps,
                        int *tpmfd,
-                       int *cancelfd)
+                       int *cancelfd,
+                       char **chardev)
 {
     const virDomainTPMDef *tpm = def->tpm;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
-    const char *type = virDomainTPMBackendTypeToString(tpm->type);
+    const char *type = NULL;
     char *cancel_path = NULL, *devset = NULL;
     const char *tpmdev;
 
     *tpmfd = -1;
     *cancelfd = -1;
+
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        type = virDomainTPMBackendTypeToString(tpm->type);
+        break;
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        goto error;
+    }
 
     virBufferAsprintf(&buf, "%s,id=tpm-%s", type, tpm->info.alias);
 
@@ -9581,6 +9591,16 @@ qemuBuildTPMBackendStr(const virDomainDef *def,
 
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_EMULATOR))
+            goto no_support;
+
+        virBufferAddLit(&buf, ",chardev=chrtpm");
+
+        if (virAsprintf(chardev, "socket,id=chrtpm,path=%s",
+                        tpm->data.emulator.source.data.nix.path) < 0)
+            goto error;
+
+        break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         goto error;
     }
@@ -9611,6 +9631,7 @@ qemuBuildTPMCommandLine(virCommandPtr cmd,
                         virQEMUCapsPtr qemuCaps)
 {
     char *optstr;
+    char *chardev = NULL;
     int tpmfd = -1;
     int cancelfd = -1;
     char *fdset;
@@ -9619,11 +9640,17 @@ qemuBuildTPMCommandLine(virCommandPtr cmd,
         return 0;
 
     if (!(optstr = qemuBuildTPMBackendStr(def, cmd, qemuCaps,
-                                          &tpmfd, &cancelfd)))
+                                          &tpmfd, &cancelfd,
+                                          &chardev)))
         return -1;
 
     virCommandAddArgList(cmd, "-tpmdev", optstr, NULL);
     VIR_FREE(optstr);
+
+    if (chardev) {
+        virCommandAddArgList(cmd, "-chardev", chardev, NULL);
+        VIR_FREE(chardev);
+    }
 
     if (tpmfd >= 0) {
         fdset = qemuVirCommandGetFDSet(cmd, tpmfd);
