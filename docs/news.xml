@@ -37,6 +37,17 @@
     <section title="New features">
     </section>
     <section title="Improvements">
+      <change>
+        <summary>
+          The libvirt Hyper-V driver now supports Hyper-V 2012 and newer.
+        </summary>
+        <description>
+          Starting with Hyper-V 2012 the API has changed causing the existing
+          driver to be unable to send and process requests properly. This has
+          been resolved by adding abstractions to handle the differences and
+          ease handling such breaks if they happen in the future.
+       </description>
+      </change>
     </section>
     <section title="Bug fixes">
     </section>
