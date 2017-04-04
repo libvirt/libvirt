@@ -93,6 +93,10 @@ int virStorageBackendDeleteLocal(virConnectPtr conn,
 int virStorageBackendRefreshLocal(virConnectPtr conn,
                                   virStoragePoolObjPtr pool);
 
+int virStorageUtilGlusterExtractPoolSources(const char *host,
+                                            const char *xml,
+                                            virStoragePoolSourceListPtr list,
+                                            virStoragePoolType pooltype);
 int virStorageBackendFindGlusterPoolSources(const char *host,
                                             virStoragePoolType pooltype,
                                             virStoragePoolSourceListPtr list,
