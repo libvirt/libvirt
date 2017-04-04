@@ -7751,6 +7751,26 @@ qemu-kvm -net nic,model=? /dev/null
 &lt;/devices&gt;
 ...
 </pre>
+
+    <p>
+      The emulator device type gives access to a TPM emulator providing
+      TPM functionality for each VM. QEMU talks to it over a Unix socket. With
+      the emulator device type each guest gets its own private TPM.
+      <span class="since">'emulator' since 4.5.0</span>
+    </p>
+    <p>
+     Example: usage of the TPM Emulator
+    </p>
+<pre>
+  ...
+  &lt;devices&gt;
+    &lt;tpm model='tpm-tis'&gt;
+      &lt;backend type='emulator'&gt;
+      &lt;/backend&gt;
+    &lt;/tpm&gt;
+  &lt;/devices&gt;
+  ...
+</pre>
     <dl>
       <dt><code>model</code></dt>
       <dd>
@@ -7781,6 +7801,16 @@ qemu-kvm -net nic,model=? /dev/null
               qualified file name is specified by path attribute of the
               <code>source</code> element. If no file name is specified then
               /dev/tpm0 is automatically used.
+            </p>
+          </dd>
+        </dl>
+        <dl>
+          <dt><code>emulator</code></dt>
+          <dd>
+            <p>
+              For this backend type the 'swtpm' TPM Emulator must be installed on the
+              host. Libvirt will automatically start an independent TPM emulator
+              for each QEMU guest requesting access to it.
             </p>
           </dd>
         </dl>

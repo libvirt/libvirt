@@ -677,6 +677,7 @@ mymain(void)
     DO_TEST("disk-copy_on_read", NONE);
     DO_TEST("tpm-passthrough", NONE);
     DO_TEST("tpm-passthrough-crb", NONE);
+    DO_TEST("tpm-emulator", NONE);
 
     DO_TEST("metadata", NONE);
     DO_TEST("metadata-duplicate", NONE);

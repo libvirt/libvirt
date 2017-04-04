@@ -1291,6 +1291,7 @@ typedef enum {
 
 typedef enum {
     VIR_DOMAIN_TPM_TYPE_PASSTHROUGH,
+    VIR_DOMAIN_TPM_TYPE_EMULATOR,
 
     VIR_DOMAIN_TPM_TYPE_LAST
 } virDomainTPMBackendType;
@@ -1305,6 +1306,11 @@ struct _virDomainTPMDef {
         struct {
             virDomainChrSourceDef source;
         } passthrough;
+        struct {
+            virDomainChrSourceDef source;
+            char *storagepath;
+            char *logfile;
+        } emulator;
     } data;
 };
 

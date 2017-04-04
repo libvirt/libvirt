@@ -305,6 +305,7 @@ qemuSetupTPMCgroup(virDomainObjPtr vm)
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         ret = qemuSetupChrSourceCgroup(vm, &dev->data.passthrough.source);
         break;
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }

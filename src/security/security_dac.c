@@ -1372,6 +1372,7 @@ virSecurityDACSetTPMFileLabel(virSecurityManagerPtr mgr,
                                             &tpm->data.passthrough.source,
                                             false);
         break;
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
@@ -1393,6 +1394,7 @@ virSecurityDACRestoreTPMFileLabel(virSecurityManagerPtr mgr,
                                                 &tpm->data.passthrough.source,
                                                 false);
         break;
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
