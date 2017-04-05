@@ -84,6 +84,9 @@ virQEMUCapsInitCPUModel(virQEMUCapsPtr qemuCaps,
                         virCPUDefPtr cpu);
 
 void
+virQEMUCapsInitQMPBasicArch(virQEMUCapsPtr qemuCaps);
+
+void
 virQEMUCapsSetCPUModelInfo(virQEMUCapsPtr qemuCaps,
                            virDomainVirtType type,
                            qemuMonitorCPUModelInfoPtr modelInfo);
@@ -92,4 +95,23 @@ virCPUDefPtr
 virQEMUCapsProbeHostCPUForEmulator(virCapsPtr caps,
                                    virQEMUCapsPtr qemuCaps,
                                    virDomainVirtType type);
+
+void
+virQEMUCapsSetGICCapabilities(virQEMUCapsPtr qemuCaps,
+                              virGICCapability *capabilities,
+                              size_t ncapabilities);
+
+int
+virQEMUCapsParseHelpStr(const char *qemu,
+                        const char *str,
+                        virQEMUCapsPtr qemuCaps,
+                        unsigned int *version,
+                        bool *is_kvm,
+                        unsigned int *kvm_version,
+                        bool check_yajl,
+                        const char *qmperr);
+
+int
+virQEMUCapsParseDeviceStr(virQEMUCapsPtr qemuCaps,
+                          const char *str);
 #endif

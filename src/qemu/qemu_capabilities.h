@@ -473,11 +473,6 @@ bool virQEMUCapsIsValid(virQEMUCapsPtr qemuCaps,
 void virQEMUCapsFilterByMachineType(virQEMUCapsPtr qemuCaps,
                                     const char *machineType);
 
-/* Only for use by test suite */
-void virQEMUCapsSetGICCapabilities(virQEMUCapsPtr qemuCaps,
-                                   virGICCapability *capabilities,
-                                   size_t ncapabilities);
-
 virQEMUCapsCachePtr virQEMUCapsCacheNew(const char *libDir,
                                         const char *cacheDir,
                                         uid_t uid, gid_t gid);
@@ -498,20 +493,6 @@ virCapsPtr virQEMUCapsInit(virQEMUCapsCachePtr cache);
 int virQEMUCapsGetDefaultVersion(virCapsPtr caps,
                                  virQEMUCapsCachePtr capsCache,
                                  unsigned int *version);
-
-/* Only for use by test suite */
-int virQEMUCapsParseHelpStr(const char *qemu,
-                            const char *str,
-                            virQEMUCapsPtr qemuCaps,
-                            unsigned int *version,
-                            bool *is_kvm,
-                            unsigned int *kvm_version,
-                            bool check_yajl,
-                            const char *qmperr);
-/* Only for use by test suite */
-int virQEMUCapsParseDeviceStr(virQEMUCapsPtr qemuCaps, const char *str);
-/* Only for use by test suite */
-void virQEMUCapsInitQMPBasicArch(virQEMUCapsPtr qemuCaps);
 
 VIR_ENUM_DECL(virQEMUCaps);
 

@@ -8,6 +8,10 @@
 # include <stdlib.h>
 
 # include "qemu/qemu_capabilities.h"
+# define __QEMU_CAPSPRIV_H_ALLOW__
+# include "qemu/qemu_capspriv.h"
+# undef __QEMU_CAPSPRIV_H_ALLOW__
+
 # include "viralloc.h"
 # include "virstring.h"
 
