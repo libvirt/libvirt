@@ -853,6 +853,30 @@ virStoragePoolSourceISCSIMatch(virStoragePoolObjPtr matchpool,
 }
 
 
+static virStoragePoolObjPtr
+virStoragePoolObjSourceMatchTypeDIR(virStoragePoolObjPtr pool,
+                                    virStoragePoolDefPtr def)
+{
+    if (pool->def->type == VIR_STORAGE_POOL_DIR) {
+        if (STREQ(pool->def->target.path, def->target.path))
+            return pool;
+    } else if (pool->def->type == VIR_STORAGE_POOL_GLUSTER) {
+        if (STREQ(pool->def->source.name, def->source.name) &&
+            STREQ_NULLABLE(pool->def->source.dir, def->source.dir) &&
+            virStoragePoolSourceMatchSingleHost(&pool->def->source,
+                                                &def->source))
+            return pool;
+    } else if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
+        if (STREQ(pool->def->source.dir, def->source.dir) &&
+            virStoragePoolSourceMatchSingleHost(&pool->def->source,
+                                                &def->source))
+            return pool;
+    }
+
+    return NULL;
+}
+
+
 int
 virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
                                      virStoragePoolObjListPtr pools,
@@ -879,23 +903,9 @@ virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
 
         switch ((virStoragePoolType)pool->def->type) {
         case VIR_STORAGE_POOL_DIR:
-            if (STREQ(pool->def->target.path, def->target.path))
-                matchpool = pool;
-            break;
-
         case VIR_STORAGE_POOL_GLUSTER:
-            if (STREQ(pool->def->source.name, def->source.name) &&
-                STREQ_NULLABLE(pool->def->source.dir, def->source.dir) &&
-                virStoragePoolSourceMatchSingleHost(&pool->def->source,
-                                                    &def->source))
-                matchpool = pool;
-            break;
-
         case VIR_STORAGE_POOL_NETFS:
-            if (STREQ(pool->def->source.dir, def->source.dir) &&
-                virStoragePoolSourceMatchSingleHost(&pool->def->source,
-                                                    &def->source))
-                matchpool = pool;
+            matchpool = virStoragePoolObjSourceMatchTypeDIR(pool, def);
             break;
 
         case VIR_STORAGE_POOL_SCSI:
