@@ -4194,8 +4194,6 @@ qemuMonitorMigrateIncoming(qemuMonitorPtr mon,
 int
 qemuMonitorMigrateStartPostCopy(qemuMonitorPtr mon)
 {
-    VIR_DEBUG("mon=%p", mon);
-
     QEMU_CHECK_MONITOR_JSON(mon);
 
     return qemuMonitorJSONMigrateStartPostCopy(mon);
@@ -4205,8 +4203,6 @@ int
 qemuMonitorGetRTCTime(qemuMonitorPtr mon,
                       struct tm *tm)
 {
-    VIR_DEBUG("mon=%p", mon);
-
     QEMU_CHECK_MONITOR_JSON(mon);
 
     return qemuMonitorJSONGetRTCTime(mon, tm);
@@ -4216,8 +4212,6 @@ qemuMonitorGetRTCTime(qemuMonitorPtr mon,
 virHashTablePtr
 qemuMonitorQueryQMPSchema(qemuMonitorPtr mon)
 {
-    VIR_DEBUG("mon=%p", mon);
-
     QEMU_CHECK_MONITOR_JSON_NULL(mon);
 
     return qemuMonitorJSONQueryQMPSchema(mon);
@@ -4229,7 +4223,7 @@ qemuMonitorSetBlockThreshold(qemuMonitorPtr mon,
                              const char *nodename,
                              unsigned long long threshold)
 {
-    VIR_DEBUG("mon=%p, node='%s', threshold=%llu", mon, nodename, threshold);
+    VIR_DEBUG("node='%s', threshold=%llu", nodename, threshold);
 
     QEMU_CHECK_MONITOR_JSON(mon);
 
@@ -4240,8 +4234,6 @@ qemuMonitorSetBlockThreshold(qemuMonitorPtr mon,
 virJSONValuePtr
 qemuMonitorQueryNamedBlockNodes(qemuMonitorPtr mon)
 {
-    VIR_DEBUG("mon=%p", mon);
-
     QEMU_CHECK_MONITOR_JSON_NULL(mon);
 
     return qemuMonitorJSONQueryNamedBlockNodes(mon);
