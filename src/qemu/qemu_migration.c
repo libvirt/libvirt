@@ -3216,6 +3216,9 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
             qemuDomainEventQueue(driver, event);
         }
 
+        qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
+                              NULL, NULL);
+
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
     }
@@ -3847,10 +3850,6 @@ qemuMigrationRun(virQEMUDriverPtr driver,
                                            dconn) < 0)
             ret = -1;
     }
-
-    if (qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
-                              tlsAlias, secAlias) < 0)
-        ret = -1;
 
     VIR_FREE(tlsAlias);
     VIR_FREE(secAlias);
@@ -4826,6 +4825,13 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
  endjob:
     if (ret < 0)
         orig_err = virSaveLastError();
+
+    /* v2 proto has no confirm phase so we need to reset migration parameters
+     * here
+     */
+    if (!v3proto && ret < 0)
+        qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
+                              NULL, NULL);
 
     if (qemuMigrationRestoreDomainState(conn, vm)) {
         event = virDomainEventLifecycleNewFromObj(vm,
