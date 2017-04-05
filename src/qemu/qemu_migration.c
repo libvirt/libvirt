@@ -5560,9 +5560,6 @@ qemuMigrationCancel(virQEMUDriverPtr driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || (storage && !blockJobs))
         goto endsyncjob;
 
-    ignore_value(qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_NONE,
-                                       NULL, NULL));
-
     if (!storage) {
         ret = 0;
         goto cleanup;
