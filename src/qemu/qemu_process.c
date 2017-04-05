@@ -2982,7 +2982,7 @@ qemuProcessRecoverMigrationIn(virQEMUDriverPtr driver,
         break;
     }
 
-    qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_NONE, NULL, NULL);
+    qemuMigrationReset(driver, vm, QEMU_ASYNC_JOB_NONE);
     return 0;
 }
 
@@ -3077,7 +3077,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriverPtr driver,
         }
     }
 
-    qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_NONE, NULL, NULL);
+    qemuMigrationReset(driver, vm, QEMU_ASYNC_JOB_NONE);
     return 0;
 }
 

@@ -2836,9 +2836,7 @@ qemuMigrationPrepareAny(virQEMUDriverPtr driver,
     return ret;
 
  stopjob:
-    ignore_value(qemuMigrationResetTLS(driver, vm,
-                                       QEMU_ASYNC_JOB_MIGRATION_IN,
-                                       tlsAlias, secAlias));
+    qemuMigrationReset(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN);
 
     if (stopProcess) {
         unsigned int stopFlags = VIR_QEMU_PROCESS_STOP_MIGRATED;
@@ -3216,8 +3214,7 @@ qemuMigrationConfirmPhase(virQEMUDriverPtr driver,
             qemuDomainEventQueue(driver, event);
         }
 
-        qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
-                              NULL, NULL);
+        qemuMigrationReset(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT);
 
         if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
             VIR_WARN("Failed to save status on vm %s", vm->def->name);
@@ -4830,8 +4827,7 @@ qemuMigrationPerformJob(virQEMUDriverPtr driver,
      * here
      */
     if (!v3proto && ret < 0)
-        qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
-                              NULL, NULL);
+        qemuMigrationReset(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT);
 
     if (qemuMigrationRestoreDomainState(conn, vm)) {
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -5362,7 +5358,7 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
                                  QEMU_ASYNC_JOB_MIGRATION_IN);
     }
 
-    qemuMigrationResetTLS(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN, NULL, NULL);
+    qemuMigrationReset(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN);
 
     qemuMigrationJobFinish(driver, vm);
     if (!virDomainObjIsActive(vm))
@@ -5874,4 +5870,23 @@ qemuMigrationCompressionDump(qemuMigrationCompressionPtr compression,
         return -1;
 
     return 0;
+}
+
+
+/*
+ * qemuMigrationReset:
+ *
+ * Reset all migration parameters so that the next job which internally uses
+ * migration (save, managedsave, snapshots, dump) will not try to use them.
+ */
+void
+qemuMigrationReset(virQEMUDriverPtr driver,
+                   virDomainObjPtr vm,
+                   qemuDomainAsyncJob job)
+{
+    if (!virDomainObjIsActive(vm))
+        return;
+
+    if (qemuMigrationResetTLS(driver, vm, job, NULL, NULL) < 0)
+        return;
 }

@@ -321,4 +321,9 @@ qemuMigrationResetTLS(virQEMUDriverPtr driver,
                       char *in_tlsAlias,
                       char *in_secAlias);
 
+void
+qemuMigrationReset(virQEMUDriverPtr driver,
+                   virDomainObjPtr vm,
+                   qemuDomainAsyncJob job);
+
 #endif /* __QEMU_MIGRATION_H__ */
