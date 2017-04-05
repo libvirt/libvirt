@@ -2846,7 +2846,7 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr *nodes = NULL;
     virStoragePoolSource *src = NULL;
-    char *volname;
+    char *volname = NULL;
     size_t i;
     int nnodes;
     int ret = -1;
@@ -2871,12 +2871,11 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
 
         if (pooltype == VIR_STORAGE_POOL_NETFS) {
             src->format = VIR_STORAGE_POOL_NETFS_GLUSTERFS;
-            src->dir = volname;
+            VIR_STEAL_PTR(src->dir, volname);
         } else if (pooltype == VIR_STORAGE_POOL_GLUSTER) {
-            src->name = volname;
-
             if (VIR_STRDUP(src->dir, "/") < 0)
                 goto cleanup;
+            VIR_STEAL_PTR(src->name, volname);
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("unsupported gluster lookup"));
@@ -2894,6 +2893,7 @@ virStorageUtilGlusterExtractPoolSources(const char *host,
     ret = nnodes;
 
  cleanup:
+    VIR_FREE(volname);
     VIR_FREE(nodes);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
