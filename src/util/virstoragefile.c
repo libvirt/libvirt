@@ -2274,6 +2274,8 @@ virStorageSourceClear(virStorageSourcePtr def)
     VIR_FREE(def->nodeformat);
 
     virStorageSourceBackingStoreClear(def);
+
+    memset(def, 0, sizeof(*def));
 }
 
 
