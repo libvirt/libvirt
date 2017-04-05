@@ -2406,45 +2406,36 @@ qemuMigrationSetParams(virQEMUDriverPtr driver,
  * @driver: pointer to qemu driver
  * @vm: domain object
  * @asyncJob: migration job to join
- * @tlsAlias: alias generated for TLS object (may be NULL)
- * @secAlias: alias generated for a secinfo object (may be NULL)
  *
  * Deconstruct all the setup possibly done for TLS - delete the TLS and
- * security objects, fre the secinfo, and reset the migration params to "".
+ * security objects, free the secinfo, and reset the migration params to "".
  *
  * Returns 0 on success, -1 on failure
  */
-int
+static int
 qemuMigrationResetTLS(virQEMUDriverPtr driver,
                       virDomainObjPtr vm,
-                      qemuDomainAsyncJob asyncJob,
-                      char *in_tlsAlias,
-                      char *in_secAlias)
+                      qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
-    char *tlsAlias = in_tlsAlias;
-    char *secAlias = in_secAlias;
+    char *tlsAlias = NULL;
+    char *secAlias = NULL;
     qemuMonitorMigrationParams migParams = { 0 };
     int ret = -1;
 
-    /* If coming from a path that doesn't know whether it's been used or not,
-     * let's first check we need to do this. If the tls-creds doesn't exist
-     * or if they're set to "" then there's nothing to do since we never set
-     * anything up */
-    if (!in_tlsAlias && qemuMigrationCheckTLSCreds(driver, vm, asyncJob) < 0)
+    if (qemuMigrationCheckTLSCreds(driver, vm, asyncJob) < 0)
         return -1;
 
+    /* If the tls-creds doesn't exist or if they're set to "" then there's
+     * nothing to do since we never set anything up */
     if (!priv->migTLSAlias || !*priv->migTLSAlias)
         return 0;
 
     /* NB: If either or both fail to allocate memory we can still proceed
      *     since the next time we migrate another deletion attempt will be
      *     made after successfully generating the aliases. */
-    if (!tlsAlias)
-        tlsAlias = qemuAliasTLSObjFromSrcAlias(QEMU_MIGRATION_TLS_ALIAS_BASE);
-    if (!secAlias)
-        secAlias = qemuDomainGetSecretAESAlias(QEMU_MIGRATION_TLS_ALIAS_BASE,
-                                               false);
+    tlsAlias = qemuAliasTLSObjFromSrcAlias(QEMU_MIGRATION_TLS_ALIAS_BASE);
+    secAlias = qemuDomainGetSecretAESAlias(QEMU_MIGRATION_TLS_ALIAS_BASE, false);
 
     qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, tlsAlias);
     qemuDomainSecretInfoFree(&priv->migSecinfo);
@@ -2457,10 +2448,8 @@ qemuMigrationResetTLS(virQEMUDriverPtr driver,
     ret = 0;
 
  cleanup:
-    if (!in_tlsAlias)
-        VIR_FREE(tlsAlias);
-    if (!in_secAlias)
-        VIR_FREE(secAlias);
+    VIR_FREE(tlsAlias);
+    VIR_FREE(secAlias);
     qemuMigrationParamsClear(&migParams);
 
     return ret;
@@ -5887,6 +5876,6 @@ qemuMigrationReset(virQEMUDriverPtr driver,
     if (!virDomainObjIsActive(vm))
         return;
 
-    if (qemuMigrationResetTLS(driver, vm, job, NULL, NULL) < 0)
+    if (qemuMigrationResetTLS(driver, vm, job) < 0)
         return;
 }
