@@ -86,7 +86,7 @@ virSecretObjOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virSecretObj)
 
-virSecretObjPtr
+static virSecretObjPtr
 virSecretObjNew(void)
 {
     virSecretObjPtr secret;
@@ -169,7 +169,7 @@ virSecretObjListDispose(void *obj)
  *
  * Returns: not locked, but ref'd secret object.
  */
-virSecretObjPtr
+static virSecretObjPtr
 virSecretObjListFindByUUIDLocked(virSecretObjListPtr secrets,
                                  const unsigned char *uuid)
 {
@@ -240,7 +240,7 @@ virSecretObjSearchName(const void *payload,
  *
  * Returns: not locked, but ref'd secret object.
  */
-virSecretObjPtr
+static virSecretObjPtr
 virSecretObjListFindByUsageLocked(virSecretObjListPtr secrets,
                                   int usageType,
                                   const char *usageID)
@@ -324,7 +324,7 @@ virSecretObjListRemove(virSecretObjListPtr secrets,
  *
  * Returns pointer to secret or NULL if failure to add
  */
-virSecretObjPtr
+static virSecretObjPtr
 virSecretObjListAddLocked(virSecretObjListPtr secrets,
                           virSecretDefPtr def,
                           const char *configDir,

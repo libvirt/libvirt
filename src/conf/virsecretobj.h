@@ -29,9 +29,6 @@
 typedef struct _virSecretObj virSecretObj;
 typedef virSecretObj *virSecretObjPtr;
 
-virSecretObjPtr
-virSecretObjNew(void);
-
 void
 virSecretObjEndAPI(virSecretObjPtr *secret);
 
@@ -42,17 +39,8 @@ virSecretObjListPtr
 virSecretObjListNew(void);
 
 virSecretObjPtr
-virSecretObjListFindByUUIDLocked(virSecretObjListPtr secrets,
-                                 const unsigned char *uuid);
-
-virSecretObjPtr
 virSecretObjListFindByUUID(virSecretObjListPtr secrets,
                            const unsigned char *uuid);
-
-virSecretObjPtr
-virSecretObjListFindByUsageLocked(virSecretObjListPtr secrets,
-                                  int usageType,
-                                  const char *usageID);
 
 virSecretObjPtr
 virSecretObjListFindByUsage(virSecretObjListPtr secrets,
@@ -62,12 +50,6 @@ virSecretObjListFindByUsage(virSecretObjListPtr secrets,
 void
 virSecretObjListRemove(virSecretObjListPtr secrets,
                        virSecretObjPtr secret);
-
-virSecretObjPtr
-virSecretObjListAddLocked(virSecretObjListPtr secrets,
-                          virSecretDefPtr def,
-                          const char *configDir,
-                          virSecretDefPtr *oldDef);
 
 virSecretObjPtr
 virSecretObjListAdd(virSecretObjListPtr secrets,
