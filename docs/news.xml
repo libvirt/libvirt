@@ -17,7 +17,7 @@
 
      Lines should be kept under 80 columns, and should not exceed 100 columns.
 
-     This file is validated against docs/schemas/news.rng schema.
+     This file is validated against docs/news.rng schema.
 
      Use the following template to add a new release section:
 
