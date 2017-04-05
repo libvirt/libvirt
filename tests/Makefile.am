@@ -930,7 +930,7 @@ virconftest_SOURCES = \
 virconftest_LDADD = $(LDADDS)
 
 virhostcputest_SOURCES = \
-	virhostcputest.c testutils.h testutils.c
+	virhostcputest.c testutils.h testutils.c virfilewrapper.c
 virhostcputest_LDADD = $(LDADDS)
 
 commandtest_SOURCES = \
@@ -1147,7 +1147,7 @@ virhostcpumock_la_LIBADD = $(MOCKLIBS_LIBS)
 
 if WITH_LINUX
 vircaps2xmltest_SOURCES = \
-	vircaps2xmltest.c testutils.h testutils.c
+	vircaps2xmltest.c testutils.h testutils.c virfilewrapper.c
 vircaps2xmltest_LDADD = $(LDADDS)
 
 virnumamock_la_SOURCES = \
@@ -1155,6 +1155,7 @@ virnumamock_la_SOURCES = \
 virnumamock_la_CFLAGS = $(AM_CFLAGS)
 virnumamock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virnumamock_la_LIBADD = $(MOCKLIBS_LIBS)
+
 else ! WITH_LINUX
 EXTRA_DIST += vircaps2xmltest.c virnumamock.c virfilewrapper.c virfilewrapper.h
 endif ! WITH_LINUX

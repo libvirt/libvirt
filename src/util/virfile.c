@@ -3799,24 +3799,36 @@ virFileComparePaths(const char *p1, const char *p2)
 
 /**
  * virFileReadValueInt:
- * @path: file to read from
  * @value: pointer to int to be filled in with the value
+ * @format, ...: file to read from
  *
- * Read int from @path and put it into @value.
+ * Read int from @format and put it into @value.
  *
  * Return -2 for non-existing file, -1 on other errors and 0 if everything went
  * fine.
  */
 int
-virFileReadValueInt(const char *path, int *value)
+virFileReadValueInt(int *value, const char *format, ...)
 {
+    int ret = -1;
     char *str = NULL;
+    char *path = NULL;
+    va_list ap;
 
-    if (!virFileExists(path))
-        return -2;
+    va_start(ap, format);
+    if (virVasprintf(&path, format, ap) < 0) {
+        va_end(ap);
+        goto cleanup;
+    }
+    va_end(ap);
 
-    if (virFileReadAll(path, INT_STRLEN_BOUND(*value), &str) < 0)
-        return -1;
+    if (!virFileExists(path)) {
+        ret = -2;
+        goto cleanup;
+    }
+
+    if (virFileReadAll(path, INT_BUFSIZE_BOUND(*value), &str) < 0)
+        goto cleanup;
 
     virStringTrimOptionalNewline(str);
 
@@ -3824,83 +3836,205 @@ virFileReadValueInt(const char *path, int *value)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid integer value '%s' in file '%s'"),
                        str, path);
-        return -1;
+        goto cleanup;
     }
 
+    ret = 0;
+ cleanup:
+    VIR_FREE(path);
     VIR_FREE(str);
-
-    return 0;
+    return ret;
 }
 
 
 /**
  * virFileReadValueUint:
- * @path: file to read from
- * @value: pointer to unsigned int to be filled in with the value
+ * @value: pointer to int to be filled in with the value
+ * @format, ...: file to read from
  *
- * Read int from @path and put it into @value.
+ * Read unsigned int from @format and put it into @value.
  *
  * Return -2 for non-existing file, -1 on other errors and 0 if everything went
  * fine.
  */
 int
-virFileReadValueUint(const char *path, unsigned int *value)
+virFileReadValueUint(unsigned int *value, const char *format, ...)
 {
+    int ret = -1;
     char *str = NULL;
+    char *path = NULL;
+    va_list ap;
 
-    if (!virFileExists(path))
-        return -2;
+    va_start(ap, format);
+    if (virVasprintf(&path, format, ap) < 0) {
+        va_end(ap);
+        goto cleanup;
+    }
+    va_end(ap);
 
-    if (virFileReadAll(path, INT_STRLEN_BOUND(*value), &str) < 0)
-        return -1;
+    if (!virFileExists(path)) {
+        ret = -2;
+        goto cleanup;
+    }
+
+    if (virFileReadAll(path, INT_BUFSIZE_BOUND(*value), &str) < 0)
+        goto cleanup;
 
     virStringTrimOptionalNewline(str);
 
-    if (virStrToLong_uip(str, NULL, 10, value)) {
+    if (virStrToLong_uip(str, NULL, 10, value) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid unsigned integer value '%s' in file '%s'"),
                        str, path);
-        return -1;
+        goto cleanup;
     }
 
+    ret = 0;
+ cleanup:
+    VIR_FREE(path);
     VIR_FREE(str);
-
-    return 0;
+    return ret;
 }
 
+
 /**
- * virFileReadValueBitmap:
- * @path: file to read from
- * @value: double pointer to virBitmap to be allocated and filled in with the
- * value
+ * virFileReadValueScaledInt:
+ * @value: pointer to unsigned long long int to be filled in with the value
+ * @format, ...: file to read from
  *
- * Read int from @path and put it into @value.
+ * Read unsigned scaled int from @format and put it into @value.
  *
  * Return -2 for non-existing file, -1 on other errors and 0 if everything went
  * fine.
  */
 int
-virFileReadValueBitmap(const char *path,
-                       int maxlen,
-                       virBitmapPtr *value)
+virFileReadValueScaledInt(unsigned long long *value, const char *format, ...)
 {
-    char *buf = NULL;
     int ret = -1;
+    char *str = NULL;
+    char *endp = NULL;
+    char *path = NULL;
+    va_list ap;
 
-    if (!virFileExists(path))
-        return -2;
+    va_start(ap, format);
+    if (virVasprintf(&path, format, ap) < 0) {
+        va_end(ap);
+        goto cleanup;
+    }
+    va_end(ap);
 
-    if (virFileReadAll(path, maxlen, &buf) < 0)
+    if (!virFileExists(path)) {
+        ret = -2;
+        goto cleanup;
+    }
+
+    if (virFileReadAll(path, INT_BUFSIZE_BOUND(*value), &str) < 0)
         goto cleanup;
 
-    virStringTrimOptionalNewline(buf);
+    virStringTrimOptionalNewline(str);
 
-    *value = virBitmapParseUnlimited(buf);
+    if (virStrToLong_ullp(str, &endp, 10, value) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid unsigned scaled integer value '%s' in file '%s'"),
+                       str, path);
+        goto cleanup;
+    }
+
+    ret = virScaleInteger(value, endp, 1024, ULLONG_MAX);
+ cleanup:
+    VIR_FREE(path);
+    VIR_FREE(str);
+    return ret;
+}
+
+/* Arbitrarily sized number, feel free to change, but the function should be
+ * used for small, interface-like files, so it should not be huge (subjective) */
+#define VIR_FILE_READ_VALUE_STRING_MAX 4096
+
+/**
+ * virFileReadValueBitmap:
+ * @value: pointer to virBitmapPtr to be allocated and filled in with the value
+ * @format, ...: file to read from
+ *
+ * Read int from @format and put it into @value.
+ *
+ * Return -2 for non-existing file, -1 on other errors and 0 if everything went
+ * fine.
+ */
+int
+virFileReadValueBitmap(virBitmapPtr *value, const char *format, ...)
+{
+    int ret = -1;
+    char *str = NULL;
+    char *path = NULL;
+    va_list ap;
+
+    va_start(ap, format);
+    if (virVasprintf(&path, format, ap) < 0) {
+        va_end(ap);
+        goto cleanup;
+    }
+    va_end(ap);
+
+    if (!virFileExists(path)) {
+        ret = -2;
+        goto cleanup;
+    }
+
+    if (virFileReadAll(path, VIR_FILE_READ_VALUE_STRING_MAX, &str) < 0)
+        goto cleanup;
+
+    virStringTrimOptionalNewline(str);
+
+    *value = virBitmapParseUnlimited(str);
     if (!*value)
         goto cleanup;
 
     ret = 0;
  cleanup:
-    VIR_FREE(buf);
+    VIR_FREE(path);
+    VIR_FREE(str);
+    return ret;
+}
+
+/**
+ * virFileReadValueString:
+ * @value: pointer to char * to be allocated and filled in with the value
+ * @format, ...: file to read from
+ *
+ * Read string from @format and put it into @value.  Don't get this mixed with
+ * virFileReadAll().  This function is a wrapper over it with the behaviour
+ * aligned to other virFileReadValue* functions
+ *
+ * Return -2 for non-existing file, -1 on other errors and 0 if everything went
+ * fine.
+ */
+int
+virFileReadValueString(char **value, const char *format, ...)
+{
+    int ret = -1;
+    char *str = NULL;
+    char *path = NULL;
+    va_list ap;
+
+    va_start(ap, format);
+    if (virVasprintf(&path, format, ap) < 0) {
+        va_end(ap);
+        goto cleanup;
+    }
+    va_end(ap);
+
+    if (!virFileExists(path)) {
+        ret = -2;
+        goto cleanup;
+    }
+
+    ret = virFileReadAll(path, VIR_FILE_READ_VALUE_STRING_MAX, value);
+
+    if (*value)
+        virStringTrimOptionalNewline(*value);
+ cleanup:
+    VIR_FREE(path);
+    VIR_FREE(str);
     return ret;
 }

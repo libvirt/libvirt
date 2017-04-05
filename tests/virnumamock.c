@@ -1,5 +1,5 @@
 /*
- * virnumamock.c: Mock some virNuma functions using virsysfs
+ * virnumamock.c: Mock some virNuma functions using sysfs
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,9 +24,10 @@
 #include "virfile.h"
 #include "viralloc.h"
 #include "virstring.h"
-#include "virsysfspriv.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
+
+#define SYSFS_SYSTEM_PATH "/sys/devices/system"
 
 static int numa_avail = -1;
 
@@ -42,7 +43,7 @@ virNumaIsAvailable(void)
     if (numa_avail < 0) {
         char *sysfs_node_path = NULL;
 
-        if (virAsprintfQuiet(&sysfs_node_path, "%s/node", virSysfsGetSystemPath()) < 0)
+        if (virAsprintfQuiet(&sysfs_node_path, "%s/node", SYSFS_SYSTEM_PATH) < 0)
             return false;
 
         numa_avail = virFileExists(sysfs_node_path);
@@ -68,7 +69,7 @@ virNumaGetMaxNode(void)
     int ret = -1;
     virBitmapPtr map = NULL;
 
-    if (virSysfsGetValueBitmap("node/online", &map) < 0)
+    if (virFileReadValueBitmap(&map, "%s/node/online", SYSFS_SYSTEM_PATH) < 0)
         return -1;
 
     ret = virBitmapLastSetBit(map);
@@ -82,7 +83,7 @@ virNumaNodeIsAvailable(int node)
     bool ret = false;
     virBitmapPtr map = NULL;
 
-    if (virSysfsGetValueBitmap("node/online", &map) < 0)
+    if (virFileReadValueBitmap(&map, "%s/node/online", SYSFS_SYSTEM_PATH) < 0)
         return false;
 
     ret = virBitmapIsBitSet(map, node);
@@ -117,7 +118,7 @@ virNumaGetDistances(int node ATTRIBUTE_UNUSED,
 }
 
 /*
- * TODO: Adapt virNumaGetHugePageInfo{Path,Dir} to use virsysfs so that the
+ * TODO: Adapt virNumaGetHugePageInfo{Path,Dir} to use sysfs so that the
  * paths can be modified and this function can be thrown away and instead we'd
  * have copied info from /sys (as we do with /sys/devices/system).
  */
@@ -177,7 +178,9 @@ virNumaGetNodeCPUs(int node, virBitmapPtr *cpus)
     int ret = -1;
     char *cpulist = NULL;
 
-    if (virSysfsGetNodeValueString(node, "cpulist", &cpulist) < 0)
+    if (virFileReadValueString(&cpulist,
+                               "%s/node/node%u/cpulist",
+                               SYSFS_SYSTEM_PATH, node) < 0)
         return -1;
 
     *cpus = virBitmapParseUnlimited(cpulist);

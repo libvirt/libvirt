@@ -56,7 +56,6 @@
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "virstring.h"
-#include "virsysfs.h"
 #include "virnuma.h"
 #include "virlog.h"
 
@@ -192,6 +191,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
 #ifdef __linux__
 # define CPUINFO_PATH "/proc/cpuinfo"
 # define PROCSTAT_PATH "/proc/stat"
+# define SYSFS_SYSTEM_PATH "/sys/devices/system"
 # define VIR_HOST_CPU_MASK_LEN 1024
 
 # define LINUX_NB_CPU_STATS 4
@@ -205,7 +205,9 @@ virHostCPUCountThreadSiblings(unsigned int cpu)
     char *str = NULL;
     size_t i;
 
-    rv = virSysfsGetCpuValueString(cpu, "topology/thread_siblings", &str);
+    rv = virFileReadValueString(&str,
+                                "%s/cpu/cpu%u/topology/thread_siblings",
+                                SYSFS_SYSTEM_PATH, cpu);
     if (rv == -2) {
         ret = 1;
         goto cleanup;
@@ -227,9 +229,9 @@ int
 virHostCPUGetSocket(unsigned int cpu, unsigned int *socket)
 {
     int tmp;
-    int ret = virSysfsGetCpuValueInt(cpu,
-                                     "topology/physical_package_id",
-                                     &tmp);
+    int ret = virFileReadValueInt(&tmp,
+                                  "%s/cpu/cpu%u/topology/physical_package_id",
+                                  SYSFS_SYSTEM_PATH, cpu);
 
     /* If the file is not there, it's 0 */
     if (ret == -2)
@@ -251,7 +253,9 @@ virHostCPUGetSocket(unsigned int cpu, unsigned int *socket)
 int
 virHostCPUGetCore(unsigned int cpu, unsigned int *core)
 {
-    int ret = virSysfsGetCpuValueUint(cpu, "topology/core_id", core);
+    int ret = virFileReadValueUint(core,
+                                   "%s/cpu/cpu%u/topology/core_id",
+                                   SYSFS_SYSTEM_PATH, cpu);
 
     /* If the file is not there, it's 0 */
     if (ret == -2)
@@ -268,7 +272,9 @@ virHostCPUGetSiblingsList(unsigned int cpu)
     virBitmapPtr ret = NULL;
     int rv = -1;
 
-    rv = virSysfsGetCpuValueBitmap(cpu, "topology/thread_siblings_list", &ret);
+    rv = virFileReadValueBitmap(&ret,
+                                "%s/cpu/cpu%u/topology/thread_siblings_list",
+                                SYSFS_SYSTEM_PATH, cpu);
     if (rv == -2) {
         /* If the file doesn't exist, the threadis its only sibling */
         ret = virBitmapNew(cpu + 1);
@@ -615,7 +621,7 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
     /* OK, we've parsed clock speed out of /proc/cpuinfo. Get the
      * core, node, socket, thread and topology information from /sys
      */
-    if (virAsprintf(&sysfs_nodedir, "%s/node", virSysfsGetSystemPath()) < 0)
+    if (virAsprintf(&sysfs_nodedir, "%s/node", SYSFS_SYSTEM_PATH) < 0)
         goto cleanup;
 
     if (virDirOpenQuiet(&nodedir, sysfs_nodedir) < 0) {
@@ -659,8 +665,8 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
 
         (*nodes)++;
 
-        if (virAsprintf(&sysfs_cpudir, "%s/node/%s",
-                        virSysfsGetSystemPath(), nodedirent->d_name) < 0)
+        if (virAsprintf(&sysfs_cpudir, "%s/node/%s", SYSFS_SYSTEM_PATH,
+                        nodedirent->d_name) < 0)
             goto cleanup;
 
         if ((nodecpus = virHostCPUParseNode(sysfs_cpudir, arch,
@@ -694,7 +700,7 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
  fallback:
     VIR_FREE(sysfs_cpudir);
 
-    if (virAsprintf(&sysfs_cpudir, "%s/cpu", virSysfsGetSystemPath()) < 0)
+    if (virAsprintf(&sysfs_cpudir, "%s/cpu", SYSFS_SYSTEM_PATH) < 0)
         goto cleanup;
 
     if ((nodecpus = virHostCPUParseNode(sysfs_cpudir, arch,
@@ -841,7 +847,7 @@ virHostCPUParseCountLinux(void)
     char *tmp;
     int ret = -1;
 
-    if (virSysfsGetValueString("cpu/present", &str) < 0)
+    if (virFileReadValueString(&str, "%s/cpu/present", SYSFS_SYSTEM_PATH) < 0)
         return -1;
 
     tmp = str;
@@ -866,8 +872,9 @@ int
 virHostCPUGetOnline(unsigned int cpu, bool *online)
 {
     unsigned int tmp = 0;
-    int ret = virSysfsGetCpuValueUint(cpu, "online", &tmp);
-
+    int ret = virFileReadValueUint(&tmp,
+                                   "%s/cpu/cpu%u/online",
+                                   SYSFS_SYSTEM_PATH, cpu);
 
     /* If the file is not there, it's online (doesn't support offlining) */
     if (ret == -2)
@@ -1032,7 +1039,7 @@ virHostCPUGetPresentBitmap(void)
 #ifdef __linux__
     virBitmapPtr ret = NULL;
 
-    virSysfsGetValueBitmap("cpu/present", &ret);
+    virFileReadValueBitmap(&ret, "%s/cpu/present", SYSFS_SYSTEM_PATH);
 
     return ret;
 #else
@@ -1048,7 +1055,7 @@ virHostCPUGetOnlineBitmap(void)
 #ifdef __linux__
     virBitmapPtr ret = NULL;
 
-    virSysfsGetValueBitmap("cpu/online", &ret);
+    virFileReadValueBitmap(&ret, "%s/cpu/online", SYSFS_SYSTEM_PATH);
 
     return ret;
 #else

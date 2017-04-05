@@ -336,8 +336,16 @@ int virFileCopyACLs(const char *src,
 
 int virFileComparePaths(const char *p1, const char *p2);
 
-int virFileReadValueInt(const char *path, int *value);
-int virFileReadValueUint(const char *path, unsigned int *value);
-int virFileReadValueBitmap(const char *path, int maxlen, virBitmapPtr *value);
+int virFileReadValueInt(int *value, const char *format, ...)
+ ATTRIBUTE_FMT_PRINTF(2, 3);
+int virFileReadValueUint(unsigned int *value, const char *format, ...)
+ ATTRIBUTE_FMT_PRINTF(2, 3);
+int virFileReadValueBitmap(virBitmapPtr *value, const char *format, ...)
+ ATTRIBUTE_FMT_PRINTF(2, 3);
+int virFileReadValueScaledInt(unsigned long long *value, const char *format, ...)
+ ATTRIBUTE_FMT_PRINTF(2, 3);
+int virFileReadValueString(char **value, const char *format, ...)
+ ATTRIBUTE_FMT_PRINTF(2, 3);
+
 
 #endif /* __VIR_FILE_H */

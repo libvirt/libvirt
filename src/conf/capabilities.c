@@ -45,7 +45,6 @@
 #include "virlog.h"
 #include "virnuma.h"
 #include "virstring.h"
-#include "virsysfs.h"
 #include "virtypedparam.h"
 #include "viruuid.h"
 

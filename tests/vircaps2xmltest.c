@@ -25,7 +25,7 @@
 #include "testutils.h"
 #include "capabilities.h"
 #include "virbitmap.h"
-#include "virsysfspriv.h"
+#include "virfilewrapper.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -52,7 +52,7 @@ test_virCapabilities(const void *opaque)
                     abs_srcdir, data->filename) < 0)
         goto cleanup;
 
-    virSysfsSetSystemPath(dir);
+    virFileWrapperAddPrefix("/sys/devices/system", dir);
     caps = virCapabilitiesNew(data->arch, data->offlineMigrate, data->liveMigrate);
 
     if (!caps)
@@ -61,7 +61,7 @@ test_virCapabilities(const void *opaque)
     if (virCapabilitiesInitNUMA(caps) < 0)
         goto cleanup;
 
-    virSysfsSetSystemPath(NULL);
+    virFileWrapperClearPrefixes();
 
     if (!(capsXML = virCapabilitiesFormatXML(caps)))
         goto cleanup;
