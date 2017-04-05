@@ -5342,9 +5342,6 @@ qemuMigrationFinish(virQEMUDriverPtr driver,
          */
         if (inPostCopy)
             VIR_FREE(priv->job.completed);
-
-        qemuMigrationSetPostCopy(driver, vm, false,
-                                 QEMU_ASYNC_JOB_MIGRATION_IN);
     }
 
     qemuMigrationReset(driver, vm, QEMU_ASYNC_JOB_MIGRATION_IN);
@@ -5873,9 +5870,16 @@ qemuMigrationReset(virQEMUDriverPtr driver,
                    virDomainObjPtr vm,
                    qemuDomainAsyncJob job)
 {
+    qemuMonitorMigrationCaps cap;
+
     if (!virDomainObjIsActive(vm))
         return;
 
     if (qemuMigrationResetTLS(driver, vm, job) < 0)
         return;
+
+    for (cap = 0; cap < QEMU_MONITOR_MIGRATION_CAPS_LAST; cap++) {
+        if (qemuMigrationSetOption(driver, vm, cap, false, job) < 0)
+            return;
+    }
 }
