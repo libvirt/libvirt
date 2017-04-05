@@ -950,12 +950,18 @@ virStoragePoolObjSourceMatchTypeDEVICE(virStoragePoolObjPtr pool,
     virStoragePoolObjPtr matchpool = NULL;
 
     if (pool->def->type == VIR_STORAGE_POOL_ISCSI) {
+        if (def->type != VIR_STORAGE_POOL_ISCSI)
+            return NULL;
+
         if ((matchpool = virStoragePoolSourceFindDuplicateDevices(pool, def))) {
             if (!virStoragePoolSourceISCSIMatch(matchpool, def))
                 return NULL;
         }
         return matchpool;
     }
+
+    if (def->type == VIR_STORAGE_POOL_ISCSI)
+        return NULL;
 
     /* VIR_STORAGE_POOL_FS
      * VIR_STORAGE_POOL_LOGICAL
@@ -978,8 +984,6 @@ virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
     /* Check the pool list for duplicate underlying storage */
     for (i = 0; i < pools->count; i++) {
         pool = pools->objs[i];
-        if (def->type != pool->def->type)
-            continue;
 
         /* Don't match against ourself if re-defining existing pool ! */
         if (STREQ(pool->def->name, def->name))
@@ -991,11 +995,14 @@ virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
         case VIR_STORAGE_POOL_DIR:
         case VIR_STORAGE_POOL_GLUSTER:
         case VIR_STORAGE_POOL_NETFS:
-            matchpool = virStoragePoolObjSourceMatchTypeDIR(pool, def);
+            if (def->type == pool->def->type)
+                matchpool = virStoragePoolObjSourceMatchTypeDIR(pool, def);
             break;
 
         case VIR_STORAGE_POOL_SCSI:
-            matchpool = virStoragePoolObjSourceMatchTypeISCSI(pool, def, conn);
+            if (def->type == pool->def->type)
+                matchpool = virStoragePoolObjSourceMatchTypeISCSI(pool, def,
+                                                                  conn);
             break;
 
         case VIR_STORAGE_POOL_ISCSI:
@@ -1003,22 +1010,33 @@ virStoragePoolObjSourceFindDuplicate(virConnectPtr conn,
         case VIR_STORAGE_POOL_LOGICAL:
         case VIR_STORAGE_POOL_DISK:
         case VIR_STORAGE_POOL_ZFS:
-            matchpool = virStoragePoolObjSourceMatchTypeDEVICE(pool, def);
+            if (def->type == VIR_STORAGE_POOL_ISCSI ||
+                def->type == VIR_STORAGE_POOL_FS ||
+                def->type == VIR_STORAGE_POOL_LOGICAL ||
+                def->type == VIR_STORAGE_POOL_DISK ||
+                def->type == VIR_STORAGE_POOL_ZFS)
+                matchpool = virStoragePoolObjSourceMatchTypeDEVICE(pool, def);
             break;
 
         case VIR_STORAGE_POOL_SHEEPDOG:
-            if (virStoragePoolSourceMatchSingleHost(&pool->def->source,
+            if (def->type == pool->def->type &&
+                virStoragePoolSourceMatchSingleHost(&pool->def->source,
                                                     &def->source))
                 matchpool = pool;
             break;
+
         case VIR_STORAGE_POOL_MPATH:
             /* Only one mpath pool is valid per host */
-            matchpool = pool;
-            break;
-        case VIR_STORAGE_POOL_VSTORAGE:
-            if (STREQ(pool->def->source.name, def->source.name))
+            if (def->type == pool->def->type)
                 matchpool = pool;
             break;
+
+        case VIR_STORAGE_POOL_VSTORAGE:
+            if (def->type == pool->def->type &&
+                STREQ(pool->def->source.name, def->source.name))
+                matchpool = pool;
+            break;
+
         case VIR_STORAGE_POOL_RBD:
         case VIR_STORAGE_POOL_LAST:
             break;
