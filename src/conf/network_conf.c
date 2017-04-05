@@ -443,6 +443,7 @@ virNetworkObjDispose(void *obj)
     virNetworkDefFree(net->def);
     virNetworkDefFree(net->newDef);
     virBitmapFree(net->class_id);
+    virObjectUnref(net->macmap);
 }
 
 static void
