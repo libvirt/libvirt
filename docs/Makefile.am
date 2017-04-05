@@ -220,6 +220,7 @@ news.html.in: \
 	fi
 EXTRA_DIST += \
 	$(srcdir)/news.xml \
+	$(srcdir)/news.rng \
 	$(srcdir)/news-html.xsl
 MAINTAINERCLEANFILES += \
 	$(srcdir)/news.html.in
