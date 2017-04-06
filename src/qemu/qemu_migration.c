@@ -5871,15 +5871,22 @@ qemuMigrationReset(virQEMUDriverPtr driver,
                    qemuDomainAsyncJob job)
 {
     qemuMonitorMigrationCaps cap;
+    virErrorPtr err = virSaveLastError();
 
     if (!virDomainObjIsActive(vm))
-        return;
+        goto cleanup;
 
     if (qemuMigrationResetTLS(driver, vm, job) < 0)
-        return;
+        goto cleanup;
 
     for (cap = 0; cap < QEMU_MONITOR_MIGRATION_CAPS_LAST; cap++) {
         if (qemuMigrationSetOption(driver, vm, cap, false, job) < 0)
-            return;
+            goto cleanup;
+    }
+
+ cleanup:
+    if (err) {
+        virSetError(err);
+        virFreeError(err);
     }
 }
