@@ -4103,3 +4103,25 @@ virStorageBackendSCSIFindLUs(virStoragePoolObjPtr pool,
 
     return found;
 }
+
+
+/*
+ * @path: Path to the device to initialize
+ * @size: Size to be cleared
+ *
+ * Zero out possible partition table information for the specified
+ * bytes from the start of the @path and from the end of @path
+ *
+ * Returns 0 on success, -1 on failure with error message set
+ */
+int
+virStorageBackendZeroPartitionTable(const char *path,
+                                    unsigned long long size)
+{
+    if (storageBackendVolWipeLocalFile(path, VIR_STORAGE_VOL_WIPE_ALG_ZERO,
+                                       size, false) < 0)
+        return -1;
+
+    return storageBackendVolWipeLocalFile(path, VIR_STORAGE_VOL_WIPE_ALG_ZERO,
+                                          size, true);
+}
