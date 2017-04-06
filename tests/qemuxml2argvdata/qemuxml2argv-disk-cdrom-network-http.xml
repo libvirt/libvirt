@@ -18,7 +18,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
-    <emulator>/usr/bin/kvm</emulator>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='network' device='cdrom'>
       <driver name='qemu' type='raw'/>
       <source protocol='http' name='/url/path/file.iso'>

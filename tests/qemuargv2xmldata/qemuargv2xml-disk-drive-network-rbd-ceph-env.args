@@ -6,7 +6,7 @@ LOGNAME=test \
 QEMU_AUDIO_DRV=none \
 CEPH_ARGS=-m \
 mon1.example.org:6321,mon2.example.org:6322,mon3.example.org:6322 \
-/usr/bin/qemu \
+/usr/bin/qemu-system-i686 \
 -name QEMUGuest1 \
 -S \
 -M pc \

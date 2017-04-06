@@ -4,7 +4,7 @@ HOME=/home/test \
 USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
-/usr/bin/qemu \
+/usr/bin/qemu-system-i686 \
 -name QEMUGuest2 \
 -S \
 -M pc \

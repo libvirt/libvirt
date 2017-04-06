@@ -8,7 +8,7 @@
     <boot dev='hd'/>
   </os>
   <devices>
-    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <controller type='pci' index='0' model='pci-root'/>
     <controller type='pci' index='1' model='pci-bridge'/>
     <controller type='pci' index='1' model='pci-bridge'/>

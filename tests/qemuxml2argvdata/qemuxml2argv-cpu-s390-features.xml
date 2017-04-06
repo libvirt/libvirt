@@ -17,7 +17,7 @@
     <feature policy='disable' name='stckf'/>
   </cpu>
   <devices>
-      <emulator>/usr/bin/qemu-kvm</emulator>
+      <emulator>/usr/bin/qemu-system-s390x</emulator>
       <memballoon model='none'/>
   </devices>
 </domain>

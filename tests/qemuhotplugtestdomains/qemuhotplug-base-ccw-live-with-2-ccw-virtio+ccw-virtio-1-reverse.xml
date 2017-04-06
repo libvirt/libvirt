@@ -18,7 +18,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
-    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <emulator>/usr/bin/qemu-system-s390x</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none'/>
       <source file='/dev/null'/>

@@ -53,7 +53,7 @@
       <machine>isapc</machine>
       <domain type='qemu'/>
       <domain type='kvm'>
-        <emulator>/usr/libexec/qemu-kvm</emulator>
+        <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <machine>pc-1.2</machine>
         <machine canonical='pc-1.2'>pc</machine>
         <machine>pc-1.1</machine>
@@ -95,7 +95,7 @@
       <machine>isapc</machine>
       <domain type='qemu'/>
       <domain type='kvm'>
-        <emulator>/usr/libexec/qemu-kvm</emulator>
+        <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <machine>pc-1.2</machine>
         <machine canonical='pc-1.2'>pc</machine>
         <machine>pc-1.1</machine>

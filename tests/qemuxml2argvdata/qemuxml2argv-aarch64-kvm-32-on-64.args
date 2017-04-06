@@ -4,7 +4,7 @@ HOME=/home/test \
 USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
-/usr/bin/qemu-system-aarch64 \
+/usr/bin/qemu-system-arm \
 -name armtest \
 -S \
 -M virt \

@@ -4,7 +4,7 @@ HOME=/home/test \
 USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
-/usr/libexec/qemu-kvm \
+/usr/bin/qemu-system-x86_64 \
 -name hotplug \
 -S \
 -M pc \

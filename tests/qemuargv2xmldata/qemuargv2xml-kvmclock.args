@@ -4,10 +4,10 @@ HOME=/home/test \
 USER=test \
 LOGNAME=test \
 QEMU_AUDIO_DRV=none \
-/usr/bin/kvm \
+/usr/bin/qemu-system-i686 \
 -name QEMUGuest1 \
 -S \
--M pc \
+-M pc,accel=kvm \
 -cpu qemu32,-kvmclock \
 -m 214 \
 -smp 6 \

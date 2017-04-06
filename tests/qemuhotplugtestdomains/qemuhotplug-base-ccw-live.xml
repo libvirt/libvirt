@@ -18,7 +18,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
-    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <emulator>/usr/bin/qemu-system-s390x</emulator>
     <controller type='usb' index='0'>
       <alias name='usb'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>

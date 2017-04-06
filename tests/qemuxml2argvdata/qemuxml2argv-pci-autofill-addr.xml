@@ -9,7 +9,7 @@
     <boot dev='hd'/>
   </os>
   <devices>
-    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
       <source file='/var/iso/f18kde.iso'/>

@@ -11,7 +11,7 @@
     <model fallback='allow'>cortex-a57</model>
   </cpu>
   <devices>
-    <emulator>/opt/qemu-installed/bin/qemu-system-aarch64</emulator>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
     <controller type='pci' index='0' model='pcie-root'/>
     <controller type='pci' index='1' model='pcie-root-port'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0' multifunction='on'/>

@@ -15,7 +15,7 @@
     <model fallback='forbid'>zEC12</model>
   </cpu>
   <devices>
-      <emulator>/usr/bin/qemu-kvm</emulator>
+      <emulator>/usr/bin/qemu-system-s390x</emulator>
       <memballoon model='none'/>
   </devices>
 </domain>

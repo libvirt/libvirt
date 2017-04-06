@@ -5,7 +5,7 @@ USER=test \
 LOGNAME=test \
 SASL_CONF_PATH=/root/.sasl2 \
 QEMU_AUDIO_DRV=none \
-/usr/bin/qemu \
+/usr/bin/qemu-system-i686 \
 -name QEMUGuest1 \
 -S \
 -M pc \
