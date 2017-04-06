@@ -3646,7 +3646,8 @@ testInterfaceObjFindByName(testDriverPtr privconn,
 }
 
 
-static int testConnectNumOfInterfaces(virConnectPtr conn)
+static int
+testConnectNumOfInterfaces(virConnectPtr conn)
 {
     testDriverPtr privconn = conn->privateData;
     int ninterfaces;
@@ -3657,7 +3658,11 @@ static int testConnectNumOfInterfaces(virConnectPtr conn)
     return ninterfaces;
 }
 
-static int testConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
+
+static int
+testConnectListInterfaces(virConnectPtr conn,
+                          char **const names,
+                          int maxnames)
 {
     testDriverPtr privconn = conn->privateData;
     int nnames;
@@ -3669,7 +3674,9 @@ static int testConnectListInterfaces(virConnectPtr conn, char **const names, int
     return nnames;
 }
 
-static int testConnectNumOfDefinedInterfaces(virConnectPtr conn)
+
+static int
+testConnectNumOfDefinedInterfaces(virConnectPtr conn)
 {
     testDriverPtr privconn = conn->privateData;
     int ninterfaces;
@@ -3680,7 +3687,11 @@ static int testConnectNumOfDefinedInterfaces(virConnectPtr conn)
     return ninterfaces;
 }
 
-static int testConnectListDefinedInterfaces(virConnectPtr conn, char **const names, int maxnames)
+
+static int
+testConnectListDefinedInterfaces(virConnectPtr conn,
+                                 char **const names,
+                                 int maxnames)
 {
     testDriverPtr privconn = conn->privateData;
     int nnames;
@@ -3692,8 +3703,10 @@ static int testConnectListDefinedInterfaces(virConnectPtr conn, char **const nam
     return nnames;
 }
 
-static virInterfacePtr testInterfaceLookupByName(virConnectPtr conn,
-                                                 const char *name)
+
+static virInterfacePtr
+testInterfaceLookupByName(virConnectPtr conn,
+                          const char *name)
 {
     testDriverPtr privconn = conn->privateData;
     virInterfaceObjPtr iface;
@@ -3710,8 +3723,10 @@ static virInterfacePtr testInterfaceLookupByName(virConnectPtr conn,
     return ret;
 }
 
-static virInterfacePtr testInterfaceLookupByMACString(virConnectPtr conn,
-                                                      const char *mac)
+
+static virInterfacePtr
+testInterfaceLookupByMACString(virConnectPtr conn,
+                               const char *mac)
 {
     testDriverPtr privconn = conn->privateData;
     virInterfaceObjPtr iface;
@@ -3740,7 +3755,9 @@ static virInterfacePtr testInterfaceLookupByMACString(virConnectPtr conn,
     return ret;
 }
 
-static int testInterfaceIsActive(virInterfacePtr iface)
+
+static int
+testInterfaceIsActive(virInterfacePtr iface)
 {
     testDriverPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr obj;
@@ -3757,8 +3774,10 @@ static int testInterfaceIsActive(virInterfacePtr iface)
     return ret;
 }
 
-static int testInterfaceChangeBegin(virConnectPtr conn,
-                                    unsigned int flags)
+
+static int
+testInterfaceChangeBegin(virConnectPtr conn,
+                         unsigned int flags)
 {
     testDriverPtr privconn = conn->privateData;
     int ret = -1;
@@ -3784,8 +3803,10 @@ static int testInterfaceChangeBegin(virConnectPtr conn,
     return ret;
 }
 
-static int testInterfaceChangeCommit(virConnectPtr conn,
-                                     unsigned int flags)
+
+static int
+testInterfaceChangeCommit(virConnectPtr conn,
+                          unsigned int flags)
 {
     testDriverPtr privconn = conn->privateData;
     int ret = -1;
@@ -3812,8 +3833,10 @@ static int testInterfaceChangeCommit(virConnectPtr conn,
     return ret;
 }
 
-static int testInterfaceChangeRollback(virConnectPtr conn,
-                                       unsigned int flags)
+
+static int
+testInterfaceChangeRollback(virConnectPtr conn,
+                            unsigned int flags)
 {
     testDriverPtr privconn = conn->privateData;
     int ret = -1;
@@ -3844,8 +3867,10 @@ static int testInterfaceChangeRollback(virConnectPtr conn,
     return ret;
 }
 
-static char *testInterfaceGetXMLDesc(virInterfacePtr iface,
-                                     unsigned int flags)
+
+static char *
+testInterfaceGetXMLDesc(virInterfacePtr iface,
+                        unsigned int flags)
 {
     testDriverPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr privinterface;
@@ -3865,8 +3890,10 @@ static char *testInterfaceGetXMLDesc(virInterfacePtr iface,
 }
 
 
-static virInterfacePtr testInterfaceDefineXML(virConnectPtr conn, const char *xmlStr,
-                                              unsigned int flags)
+static virInterfacePtr
+testInterfaceDefineXML(virConnectPtr conn,
+                       const char *xmlStr,
+                       unsigned int flags)
 {
     testDriverPtr privconn = conn->privateData;
     virInterfaceDefPtr def;
@@ -3893,7 +3920,9 @@ static virInterfacePtr testInterfaceDefineXML(virConnectPtr conn, const char *xm
     return ret;
 }
 
-static int testInterfaceUndefine(virInterfacePtr iface)
+
+static int
+testInterfaceUndefine(virInterfacePtr iface)
 {
     testDriverPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr privinterface;
@@ -3910,8 +3939,10 @@ static int testInterfaceUndefine(virInterfacePtr iface)
     return ret;
 }
 
-static int testInterfaceCreate(virInterfacePtr iface,
-                               unsigned int flags)
+
+static int
+testInterfaceCreate(virInterfacePtr iface,
+                    unsigned int flags)
 {
     testDriverPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr privinterface;
@@ -3937,8 +3968,10 @@ static int testInterfaceCreate(virInterfacePtr iface,
     return ret;
 }
 
-static int testInterfaceDestroy(virInterfacePtr iface,
-                                unsigned int flags)
+
+static int
+testInterfaceDestroy(virInterfacePtr iface,
+                     unsigned int flags)
 {
     testDriverPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr privinterface;
