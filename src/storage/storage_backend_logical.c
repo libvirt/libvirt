@@ -92,9 +92,6 @@ virStorageBackendLogicalRemoveDevice(const char *path)
 static int
 virStorageBackendLogicalInitializeDevice(const char *path)
 {
-    int fd = -1;
-    char zeros[4 * PV_BLANK_SECTOR_SIZE] = {0};
-    off_t size;
     int ret = -1;
     virCommandPtr pvcmd = NULL;
 
@@ -103,46 +100,8 @@ virStorageBackendLogicalInitializeDevice(const char *path)
      * a whole disk as a PV. So we just blank them out regardless
      * rather than trying to figure out if we're a disk or partition
      */
-    if ((fd = open(path, O_WRONLY)) < 0) {
-        virReportSystemError(errno, _("cannot open device '%s'"), path);
+    if (virStorageBackendZeroPartitionTable(path, 4 * PV_BLANK_SECTOR_SIZE) < 0)
         return -1;
-    }
-
-    if ((size = lseek(fd, 0, SEEK_END)) == (off_t)-1) {
-        virReportSystemError(errno,
-                             _("failed to seek to end of %s"), path);
-        goto cleanup;
-    }
-
-    if (size < 4 * PV_BLANK_SECTOR_SIZE) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("cannot initialize '%s' detected size='%zd' less "
-                         "than minimum required='%d"),
-                         path, (ssize_t) size, 4 * PV_BLANK_SECTOR_SIZE);
-        goto cleanup;
-    }
-    if ((size = lseek(fd, 0, SEEK_SET)) == (off_t)-1) {
-        virReportSystemError(errno,
-                             _("failed to seek to start of %s"), path);
-        goto cleanup;
-    }
-
-    if (safewrite(fd, zeros, sizeof(zeros)) < 0) {
-        virReportSystemError(errno, _("cannot clear device header of '%s'"),
-                             path);
-        goto cleanup;
-    }
-
-    if (fsync(fd) < 0) {
-        virReportSystemError(errno, _("cannot flush header of device'%s'"),
-                             path);
-        goto cleanup;
-    }
-
-    if (VIR_CLOSE(fd) < 0) {
-        virReportSystemError(errno, _("cannot close device '%s'"), path);
-        goto cleanup;
-    }
 
     /*
      * Initialize the physical volume because vgcreate is not
@@ -155,7 +114,6 @@ virStorageBackendLogicalInitializeDevice(const char *path)
     ret = 0;
 
  cleanup:
-    VIR_FORCE_CLOSE(fd);
     virCommandFree(pvcmd);
 
     return ret;
