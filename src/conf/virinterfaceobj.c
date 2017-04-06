@@ -215,3 +215,22 @@ virInterfaceObjRemove(virInterfaceObjListPtr interfaces,
         virInterfaceObjUnlock(interfaces->objs[i]);
     }
 }
+
+
+int
+virInterfaceObjNumOfInterfaces(virInterfaceObjListPtr interfaces,
+                               bool wantActive)
+{
+    size_t i;
+    int ninterfaces = 0;
+
+    for (i = 0; (i < interfaces->count); i++) {
+        virInterfaceObjPtr obj = interfaces->objs[i];
+        virInterfaceObjLock(obj);
+        if (wantActive == virInterfaceObjIsActive(obj))
+            ninterfaces++;
+        virInterfaceObjUnlock(obj);
+    }
+
+    return ninterfaces;
+}

@@ -3649,18 +3649,12 @@ testInterfaceObjFindByName(testDriverPtr privconn,
 static int testConnectNumOfInterfaces(virConnectPtr conn)
 {
     testDriverPtr privconn = conn->privateData;
-    size_t i;
-    int count = 0;
+    int ninterfaces;
 
     testDriverLock(privconn);
-    for (i = 0; (i < privconn->ifaces.count); i++) {
-        virInterfaceObjLock(privconn->ifaces.objs[i]);
-        if (virInterfaceObjIsActive(privconn->ifaces.objs[i]))
-            count++;
-        virInterfaceObjUnlock(privconn->ifaces.objs[i]);
-    }
+    ninterfaces = virInterfaceObjNumOfInterfaces(&privconn->ifaces, true);
     testDriverUnlock(privconn);
-    return count;
+    return ninterfaces;
 }
 
 static int testConnectListInterfaces(virConnectPtr conn, char **const names, int nnames)
@@ -3695,18 +3689,12 @@ static int testConnectListInterfaces(virConnectPtr conn, char **const names, int
 static int testConnectNumOfDefinedInterfaces(virConnectPtr conn)
 {
     testDriverPtr privconn = conn->privateData;
-    size_t i;
-    int count = 0;
+    int ninterfaces;
 
     testDriverLock(privconn);
-    for (i = 0; i < privconn->ifaces.count; i++) {
-        virInterfaceObjLock(privconn->ifaces.objs[i]);
-        if (!virInterfaceObjIsActive(privconn->ifaces.objs[i]))
-            count++;
-        virInterfaceObjUnlock(privconn->ifaces.objs[i]);
-    }
+    ninterfaces = virInterfaceObjNumOfInterfaces(&privconn->ifaces, false);
     testDriverUnlock(privconn);
-    return count;
+    return ninterfaces;
 }
 
 static int testConnectListDefinedInterfaces(virConnectPtr conn, char **const names, int nnames)
