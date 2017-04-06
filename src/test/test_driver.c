@@ -3657,33 +3657,16 @@ static int testConnectNumOfInterfaces(virConnectPtr conn)
     return ninterfaces;
 }
 
-static int testConnectListInterfaces(virConnectPtr conn, char **const names, int nnames)
+static int testConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
 {
     testDriverPtr privconn = conn->privateData;
-    int n = 0;
-    size_t i;
+    int nnames;
 
     testDriverLock(privconn);
-    memset(names, 0, sizeof(*names)*nnames);
-    for (i = 0; (i < privconn->ifaces.count) && (n < nnames); i++) {
-        virInterfaceObjLock(privconn->ifaces.objs[i]);
-        if (virInterfaceObjIsActive(privconn->ifaces.objs[i])) {
-            if (VIR_STRDUP(names[n++], privconn->ifaces.objs[i]->def->name) < 0) {
-                virInterfaceObjUnlock(privconn->ifaces.objs[i]);
-                goto error;
-            }
-        }
-        virInterfaceObjUnlock(privconn->ifaces.objs[i]);
-    }
+    nnames = virInterfaceObjGetNames(&privconn->ifaces, true, names, maxnames);
     testDriverUnlock(privconn);
 
-    return n;
-
- error:
-    for (n = 0; n < nnames; n++)
-        VIR_FREE(names[n]);
-    testDriverUnlock(privconn);
-    return -1;
+    return nnames;
 }
 
 static int testConnectNumOfDefinedInterfaces(virConnectPtr conn)
@@ -3697,33 +3680,16 @@ static int testConnectNumOfDefinedInterfaces(virConnectPtr conn)
     return ninterfaces;
 }
 
-static int testConnectListDefinedInterfaces(virConnectPtr conn, char **const names, int nnames)
+static int testConnectListDefinedInterfaces(virConnectPtr conn, char **const names, int maxnames)
 {
     testDriverPtr privconn = conn->privateData;
-    int n = 0;
-    size_t i;
+    int nnames;
 
     testDriverLock(privconn);
-    memset(names, 0, sizeof(*names)*nnames);
-    for (i = 0; (i < privconn->ifaces.count) && (n < nnames); i++) {
-        virInterfaceObjLock(privconn->ifaces.objs[i]);
-        if (!virInterfaceObjIsActive(privconn->ifaces.objs[i])) {
-            if (VIR_STRDUP(names[n++], privconn->ifaces.objs[i]->def->name) < 0) {
-                virInterfaceObjUnlock(privconn->ifaces.objs[i]);
-                goto error;
-            }
-        }
-        virInterfaceObjUnlock(privconn->ifaces.objs[i]);
-    }
+    nnames = virInterfaceObjGetNames(&privconn->ifaces, false, names, maxnames);
     testDriverUnlock(privconn);
 
-    return n;
-
- error:
-    for (n = 0; n < nnames; n++)
-        VIR_FREE(names[n]);
-    testDriverUnlock(privconn);
-    return -1;
+    return nnames;
 }
 
 static virInterfacePtr testInterfaceLookupByName(virConnectPtr conn,

@@ -234,3 +234,35 @@ virInterfaceObjNumOfInterfaces(virInterfaceObjListPtr interfaces,
 
     return ninterfaces;
 }
+
+
+int
+virInterfaceObjGetNames(virInterfaceObjListPtr interfaces,
+                        bool wantActive,
+                        char **const names,
+                        int maxnames)
+{
+    int nnames = 0;
+    size_t i;
+
+    for (i = 0; i < interfaces->count && nnames < maxnames; i++) {
+        virInterfaceObjPtr obj = interfaces->objs[i];
+        virInterfaceObjLock(obj);
+        if (wantActive == virInterfaceObjIsActive(obj)) {
+            if (VIR_STRDUP(names[nnames], obj->def->name) < 0) {
+                virInterfaceObjUnlock(obj);
+                goto failure;
+            }
+            nnames++;
+        }
+        virInterfaceObjUnlock(obj);
+    }
+
+    return nnames;
+
+ failure:
+    while (--nnames >= 0)
+        VIR_FREE(names[nnames]);
+
+    return -1;
+}

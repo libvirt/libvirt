@@ -935,6 +935,7 @@ virDomainObjListRename;
 virInterfaceObjAssignDef;
 virInterfaceObjFindByMACString;
 virInterfaceObjFindByName;
+virInterfaceObjGetNames;
 virInterfaceObjListClone;
 virInterfaceObjListFree;
 virInterfaceObjLock;
