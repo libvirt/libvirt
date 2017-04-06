@@ -3793,6 +3793,10 @@ qemuProcessVerifyHypervFeatures(virDomainDefPtr def,
     int rc;
 
     for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
+        /* always supported string property */
+        if (i == VIR_DOMAIN_HYPERV_VENDOR_ID)
+            continue;
+
         if (def->hyperv_features[i] != VIR_TRISTATE_SWITCH_ON)
             continue;
 
@@ -3821,13 +3825,13 @@ qemuProcessVerifyHypervFeatures(virDomainDefPtr def,
         case VIR_DOMAIN_HYPERV_SYNIC:
         case VIR_DOMAIN_HYPERV_STIMER:
         case VIR_DOMAIN_HYPERV_RESET:
-        case VIR_DOMAIN_HYPERV_VENDOR_ID:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("host doesn't support hyperv '%s' feature"),
                            virDomainHypervTypeToString(i));
             return -1;
 
         /* coverity[dead_error_begin] */
+        case VIR_DOMAIN_HYPERV_VENDOR_ID:
         case VIR_DOMAIN_HYPERV_LAST:
             break;
         }
