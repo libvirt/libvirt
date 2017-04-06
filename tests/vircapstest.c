@@ -234,7 +234,7 @@ test_virCapsDomainDataLookupQEMU(const void *data ATTRIBUTE_UNUSED)
         VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-aarch64", "virt");
     CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_KVM, NULL, NULL,
         VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
-        VIR_DOMAIN_VIRT_KVM, "/usr/bin/kvm", "pc");
+        VIR_DOMAIN_VIRT_KVM, "/usr/bin/qemu-system-x86_64", "pc");
     CAPSCOMP(-1, VIR_ARCH_NONE, VIR_DOMAIN_VIRT_NONE, "/usr/bin/qemu-system-ppc64", NULL,
         VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_PPC64,
         VIR_DOMAIN_VIRT_QEMU, "/usr/bin/qemu-system-ppc64", "pseries");
