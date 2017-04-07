@@ -55,13 +55,14 @@ VIR_LOG_INIT("qemu.qemu_blockjob");
 int
 qemuBlockJobUpdate(virQEMUDriverPtr driver,
                    virDomainObjPtr vm,
+                   qemuDomainAsyncJob asyncJob,
                    virDomainDiskDefPtr disk)
 {
     qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     int status = diskPriv->blockJobStatus;
 
     if (status != -1) {
-        qemuBlockJobEventProcess(driver, vm, disk,
+        qemuBlockJobEventProcess(driver, vm, disk, asyncJob,
                                  diskPriv->blockJobType,
                                  diskPriv->blockJobStatus);
         diskPriv->blockJobStatus = -1;
@@ -87,6 +88,7 @@ void
 qemuBlockJobEventProcess(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          virDomainDiskDefPtr disk,
+                         qemuDomainAsyncJob asyncJob,
                          int type,
                          int status)
 {
@@ -167,7 +169,7 @@ qemuBlockJobEventProcess(virQEMUDriverPtr driver,
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
         ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk,
                                                   true, true));
-        ignore_value(qemuBlockNodeNamesDetect(driver, vm));
+        ignore_value(qemuBlockNodeNamesDetect(driver, vm, asyncJob));
         diskPriv->blockjob = false;
         break;
 
@@ -247,9 +249,10 @@ qemuBlockJobSyncBegin(virDomainDiskDefPtr disk)
 void
 qemuBlockJobSyncEnd(virQEMUDriverPtr driver,
                     virDomainObjPtr vm,
+                    qemuDomainAsyncJob asyncJob,
                     virDomainDiskDefPtr disk)
 {
     VIR_DEBUG("disk=%s", disk->dst);
-    qemuBlockJobUpdate(driver, vm, disk);
+    qemuBlockJobUpdate(driver, vm, asyncJob, disk);
     QEMU_DOMAIN_DISK_PRIVATE(disk)->blockJobSync = false;
 }

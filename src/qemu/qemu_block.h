@@ -22,6 +22,7 @@
 # include "internal.h"
 
 # include "qemu_conf.h"
+# include "qemu_domain.h"
 
 # include "virhash.h"
 # include "virjson.h"
@@ -46,7 +47,8 @@ qemuBlockNodeNameGetBackingChain(virJSONValuePtr data);
 
 int
 qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm);
+                         virDomainObjPtr vm,
+                         qemuDomainAsyncJob asyncJob);
 
 virHashTablePtr
 qemuBlockGetNodeData(virJSONValuePtr data);

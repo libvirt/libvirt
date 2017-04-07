@@ -336,7 +336,8 @@ qemuBlockDiskDetectNodes(virDomainDiskDefPtr disk,
 
 int
 qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
-                         virDomainObjPtr vm)
+                         virDomainObjPtr vm,
+                         qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivatePtr priv = vm->privateData;
     virHashTablePtr disktable = NULL;
@@ -350,7 +351,8 @@ qemuBlockNodeNamesDetect(virQEMUDriverPtr driver,
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_QUERY_NAMED_BLOCK_NODES))
         return 0;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
 
     disktable = qemuMonitorGetBlockInfo(qemuDomainGetMonitor(vm));
     data = qemuMonitorQueryNamedBlockNodes(qemuDomainGetMonitor(vm));

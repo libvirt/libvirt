@@ -4513,7 +4513,7 @@ processBlockJobEvent(virQEMUDriverPtr driver,
     }
 
     if ((disk = qemuProcessFindDomainDiskByAlias(vm, diskAlias)))
-        qemuBlockJobEventProcess(driver, vm, disk, type, status);
+        qemuBlockJobEventProcess(driver, vm, disk, QEMU_ASYNC_JOB_NONE, type, status);
 
  endjob:
     qemuDomainObjEndJob(driver, vm);
@@ -16239,24 +16239,25 @@ qemuDomainBlockJobAbort(virDomainPtr dom,
              * event to pull and let qemuBlockJobEventProcess() handle
              * the rest as usual */
             qemuBlockJobEventProcess(driver, vm, disk,
+                                     QEMU_ASYNC_JOB_NONE,
                                      VIR_DOMAIN_BLOCK_JOB_TYPE_PULL,
                                      VIR_DOMAIN_BLOCK_JOB_CANCELED);
         } else {
             qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-            qemuBlockJobUpdate(driver, vm, disk);
+            qemuBlockJobUpdate(driver, vm, QEMU_ASYNC_JOB_NONE, disk);
             while (diskPriv->blockjob) {
                 if (virDomainObjWait(vm) < 0) {
                     ret = -1;
                     goto endjob;
                 }
-                qemuBlockJobUpdate(driver, vm, disk);
+                qemuBlockJobUpdate(driver, vm, QEMU_ASYNC_JOB_NONE, disk);
             }
         }
     }
 
  endjob:
     if (disk)
-        qemuBlockJobSyncEnd(driver, vm, disk);
+        qemuBlockJobSyncEnd(driver, vm, QEMU_ASYNC_JOB_NONE, disk);
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
@@ -20404,7 +20405,7 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
         goto endjob;
 
     if (!src->nodebacking &&
-        qemuBlockNodeNamesDetect(driver, vm) < 0)
+        qemuBlockNodeNamesDetect(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
         goto endjob;
 
     if (!src->nodebacking) {

@@ -24,19 +24,23 @@
 
 # include "internal.h"
 # include "qemu_conf.h"
+# include "qemu_domain.h"
 
 int qemuBlockJobUpdate(virQEMUDriverPtr driver,
                        virDomainObjPtr vm,
+                       qemuDomainAsyncJob asyncJob,
                        virDomainDiskDefPtr disk);
 void qemuBlockJobEventProcess(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainDiskDefPtr disk,
+                              qemuDomainAsyncJob asyncJob,
                               int type,
                               int status);
 
 void qemuBlockJobSyncBegin(virDomainDiskDefPtr disk);
 void qemuBlockJobSyncEnd(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
+                         qemuDomainAsyncJob asyncJob,
                          virDomainDiskDefPtr disk);
 
 #endif /* __QEMU_BLOCKJOB_H__ */
