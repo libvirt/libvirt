@@ -112,6 +112,36 @@ typedef enum {
 
 VIR_ENUM_DECL(virNetDevFeature)
 
+/* Modeled after struct ethtool_coalesce, see linux/ethtool.h for explanations
+ * of particular fields */
+typedef struct _virNetDevCoalesce virNetDevCoalesce;
+typedef virNetDevCoalesce *virNetDevCoalescePtr;
+struct _virNetDevCoalesce {
+    uint32_t rx_coalesce_usecs;
+    uint32_t rx_max_coalesced_frames;
+    uint32_t rx_coalesce_usecs_irq;
+    uint32_t rx_max_coalesced_frames_irq;
+    uint32_t tx_coalesce_usecs;
+    uint32_t tx_max_coalesced_frames;
+    uint32_t tx_coalesce_usecs_irq;
+    uint32_t tx_max_coalesced_frames_irq;
+    uint32_t stats_block_coalesce_usecs;
+    uint32_t use_adaptive_rx_coalesce;
+    uint32_t use_adaptive_tx_coalesce;
+    uint32_t pkt_rate_low;
+    uint32_t rx_coalesce_usecs_low;
+    uint32_t rx_max_coalesced_frames_low;
+    uint32_t tx_coalesce_usecs_low;
+    uint32_t tx_max_coalesced_frames_low;
+    uint32_t pkt_rate_high;
+    uint32_t rx_coalesce_usecs_high;
+    uint32_t rx_max_coalesced_frames_high;
+    uint32_t tx_coalesce_usecs_high;
+    uint32_t tx_max_coalesced_frames_high;
+    uint32_t rate_sample_interval;
+};
+
+
 int virNetDevSetupControl(const char *ifname,
                           virIfreq *ifr)
     ATTRIBUTE_RETURN_CHECK;
@@ -143,6 +173,10 @@ int virNetDevReplaceMacAddress(const char *linkdev,
 int virNetDevRestoreMacAddress(const char *linkdev,
                                const char *stateDir)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+
+int virNetDevSetCoalesce(const char *ifname,
+                         virNetDevCoalescePtr coalesce)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
 
 int virNetDevSetMTU(const char *ifname,
                     int mtu)

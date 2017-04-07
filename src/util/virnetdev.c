@@ -3078,6 +3078,89 @@ virNetDevGetEthtoolGFeatures(virBitmapPtr bitmap ATTRIBUTE_UNUSED,
 # endif
 
 
+# if HAVE_DECL_ETHTOOL_SCOALESCE && HAVE_DECL_ETHTOOL_GCOALESCE
+/**
+ * virNetDevSetCoalesce:
+ * @ifname: interface name to modify
+ * @coalesce: Coalesce settings to set and update
+ *
+ * This function sets the various coalesce settings for a given interface
+ * @ifname and updates them back into @coalesce.
+ *
+ * Returns 0 in case of success or -1 on failure
+ */
+int virNetDevSetCoalesce(const char *ifname,
+                         virNetDevCoalescePtr coalesce)
+{
+    int fd = -1;
+    int ret = -1;
+    struct ifreq ifr;
+    struct ethtool_coalesce coal = {0};
+
+    if (!coalesce)
+        return 0;
+
+    coal = (struct ethtool_coalesce) {
+        .cmd = ETHTOOL_SCOALESCE,
+        .rx_max_coalesced_frames = coalesce->rx_max_coalesced_frames,
+        .rx_coalesce_usecs_irq = coalesce->rx_coalesce_usecs_irq,
+        .rx_max_coalesced_frames_irq = coalesce->rx_max_coalesced_frames_irq,
+        .tx_coalesce_usecs = coalesce->tx_coalesce_usecs,
+        .tx_max_coalesced_frames = coalesce->tx_max_coalesced_frames,
+        .tx_coalesce_usecs_irq = coalesce->tx_coalesce_usecs_irq,
+        .tx_max_coalesced_frames_irq = coalesce->tx_max_coalesced_frames_irq,
+        .stats_block_coalesce_usecs = coalesce->stats_block_coalesce_usecs,
+        .use_adaptive_rx_coalesce = coalesce->use_adaptive_rx_coalesce,
+        .use_adaptive_tx_coalesce = coalesce->use_adaptive_tx_coalesce,
+        .pkt_rate_low = coalesce->pkt_rate_low,
+        .rx_coalesce_usecs_low = coalesce->rx_coalesce_usecs_low,
+        .rx_max_coalesced_frames_low = coalesce->rx_max_coalesced_frames_low,
+        .tx_coalesce_usecs_low = coalesce->tx_coalesce_usecs_low,
+        .tx_max_coalesced_frames_low = coalesce->tx_max_coalesced_frames_low,
+        .pkt_rate_high = coalesce->pkt_rate_high,
+        .rx_coalesce_usecs_high = coalesce->rx_coalesce_usecs_high,
+        .rx_max_coalesced_frames_high = coalesce->rx_max_coalesced_frames_high,
+        .tx_coalesce_usecs_high = coalesce->tx_coalesce_usecs_high,
+        .tx_max_coalesced_frames_high = coalesce->tx_max_coalesced_frames_high,
+        .rate_sample_interval = coalesce->rate_sample_interval,
+    };
+
+    if ((fd = virNetDevSetupControl(ifname, &ifr)) < 0)
+        return -1;
+
+    ifr.ifr_data = (void *) &coal;
+
+    if (virNetDevSendEthtoolIoctl(fd, &ifr) < 0) {
+        virReportSystemError(errno,
+                             _("Cannot set coalesce info on '%s'"),
+                             ifname);
+        goto cleanup;
+    }
+
+    coal = (struct ethtool_coalesce) {
+        .cmd = ETHTOOL_GCOALESCE,
+    };
+
+    /* Don't fail if the update itself fails */
+    virNetDevSendEthtoolIoctl(fd, &ifr);
+
+    ret = 0;
+ cleanup:
+    VIR_FORCE_CLOSE(fd);
+    return ret;
+}
+# else
+int virNetDevSetCoalesce(const char *ifname,
+                         virNetDevCoalescePtr coalesce ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS,
+                         _("Cannot set coalesce info on interface '%s'"),
+                         ifname);
+    return -1;
+}
+# endif
+
+
 /**
  * virNetDevGetFeatures:
  * This function gets the nic offloads features available for ifname
