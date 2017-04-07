@@ -43,7 +43,7 @@
 /NEWS
 /aclocal.m4
 /autom4te.cache
-/build-aux/
+/build-aux/*
 /build/
 /confdefs.h
 /config.cache
