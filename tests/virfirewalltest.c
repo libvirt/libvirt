@@ -1123,10 +1123,23 @@ testFirewallQuery(const void *opaque ATTRIBUTE_UNUSED)
     return ret;
 }
 
+static bool
+hasNetfilterTools(void)
+{
+    return virFileIsExecutable(IPTABLES_PATH) &&
+        virFileIsExecutable(IP6TABLES_PATH) &&
+        virFileIsExecutable(EBTABLES_PATH);
+}
+
 static int
 mymain(void)
 {
     int ret = 0;
+
+    if (!hasNetfilterTools()) {
+        fprintf(stderr, "iptables/ip6tables/ebtables tools not present");
+        return EXIT_AM_SKIP;
+    }
 
 # define RUN_TEST_DIRECT(name, method)                                  \
     do {                                                                \
