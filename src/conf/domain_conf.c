@@ -1723,9 +1723,12 @@ void
 virDomainDiskEmptySource(virDomainDiskDefPtr def)
 {
     virStorageSourcePtr src = def->src;
+    bool readonly = src->readonly;
 
     virStorageSourceClear(src);
     src->type = VIR_STORAGE_TYPE_FILE;
+    /* readonly property is necessary for CDROMs and thus can't be cleared */
+    src->readonly = readonly;
 }
 
 
