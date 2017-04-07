@@ -100,7 +100,7 @@ virStorageBackendLogicalInitializeDevice(const char *path)
      * a whole disk as a PV. So we just blank them out regardless
      * rather than trying to figure out if we're a disk or partition
      */
-    if (virStorageBackendZeroPartitionTable(path, 4 * PV_BLANK_SECTOR_SIZE) < 0)
+    if (virStorageBackendZeroPartitionTable(path, 1024 * 1024) < 0)
         return -1;
 
     /*
