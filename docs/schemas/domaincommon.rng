@@ -2509,6 +2509,9 @@
         <ref name="mtu"/>
       </optional>
       <optional>
+        <ref name="coalesce"/>
+      </optional>
+      <optional>
         <element name="target">
           <attribute name="dev">
             <ref name="deviceName"/>
@@ -5743,4 +5746,132 @@
       </choice>
     </attribute>
   </define>
+
+  <define name="coalesce">
+    <element name="coalesce">
+      <interleave>
+        <optional>
+          <element name="rx">
+            <optional>
+              <element name="frames">
+                <optional>
+                  <attribute name="max">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <!--
+                    This is how we'd add more Rx-related settings for
+                    frames, like irq, high, and low
+
+                <optional>
+                  <attribute name="irq">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="high">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="low">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+
+              -->
+              </element>
+            </optional>
+            <!--
+                This is how we'd add more Rx-related settings, like
+                usecs
+
+            <optional>
+              <element name="usecs">
+                <optional>
+                  <attribute name="max">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="irq">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="high">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="low">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+              </element>
+            </optional>
+              -->
+          </element>
+        </optional>
+        <!--
+            This is how you would add more coalesce settings, like
+            Tx-related ones
+
+        <optional>
+          <element name="tx">
+            <optional>
+              <element name="frames">
+                <optional>
+                  <attribute name="max">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="irq">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="high">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="low">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+              </element>
+            </optional>
+            <optional>
+              <element name="usecs">
+                <optional>
+                  <attribute name="max">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="irq">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="high">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="low">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
+              </element>
+            </optional>
+          </element>
+        </optional>
+        -->
+      </interleave>
+    </element>
+  </define>
+
 </grammar>

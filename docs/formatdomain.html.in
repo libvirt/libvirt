@@ -5405,6 +5405,33 @@ qemu-kvm -net nic,model=? /dev/null
       <span class="since">Since 3.1.0</span>
     </p>
 
+    <h5><a name="coalesce">Coalesce settings</a></h5>
+<pre>
+...
+&lt;devices&gt;
+  &lt;interface type='network'&gt;
+    &lt;source network='default'/&gt;
+    &lt;target dev='vnet0'/&gt;
+    <b>&lt;coalesce&gt;
+      &lt;rx&gt;
+        &lt;frames max='7'/&gt;
+      &lt;/rx&gt;
+    &lt;/coalesce&gt;</b>
+  &lt;/interface&gt;
+&lt;/devices&gt;
+...</pre>
+
+    <p>
+      This element provides means of setting coalesce settings for
+      some interface devices (currently only type <code>network</code>
+      and <code>bridge</code>.  Currently there is just one attribute,
+      <code>max</code>, to tweak, in element <code>frames<code> for
+      the <code>rx</code> group, which accepts a non-negative integer
+      that specifies the maximum number of packets that will be
+      received before an interrupt.
+      <span class="since">Since 3.3.0</span>
+    </p>
+
     <h5><a name="ipconfig">IP configuration</a></h5>
 <pre>
 ...

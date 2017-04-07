@@ -6772,6 +6772,77 @@ virDomainNetIPInfoParseXML(const char *source,
     return ret;
 }
 
+
+static virNetDevCoalescePtr
+virDomainNetDefCoalesceParseXML(xmlNodePtr node,
+                                xmlXPathContextPtr ctxt)
+{
+    virNetDevCoalescePtr ret = NULL;
+    xmlNodePtr save = NULL;
+    char *str = NULL;
+    unsigned long long tmp = 0;
+
+    save = ctxt->node;
+    ctxt->node = node;
+
+    str = virXPathString("string(./rx/frames/@max)", ctxt);
+    if (!str)
+        goto cleanup;
+
+    if (!ret && VIR_ALLOC(ret) < 0)
+        goto cleanup;
+
+    if (virStrToLong_ullp(str, NULL, 10, &tmp) < 0) {
+        virReportError(VIR_ERR_XML_DETAIL,
+                       _("cannot parse value '%s' for coalesce parameter"),
+                       str);
+        VIR_FREE(str);
+        goto error;
+    }
+    VIR_FREE(str);
+
+    if (tmp > UINT32_MAX) {
+        virReportError(VIR_ERR_OVERFLOW,
+                       _("value '%llu' is too big for coalesce "
+                         "parameter, maximum is '%lu'"),
+                       tmp, (unsigned long) UINT32_MAX);
+        goto error;
+    }
+    ret->rx_max_coalesced_frames = tmp;
+
+ cleanup:
+    ctxt->node = save;
+    return ret;
+
+ error:
+    VIR_FREE(ret);
+    goto cleanup;
+}
+
+static void
+virDomainNetDefCoalesceFormatXML(virBufferPtr buf,
+                                 virNetDevCoalescePtr coalesce)
+{
+    if (!coalesce || !coalesce->rx_max_coalesced_frames)
+        return;
+
+    virBufferAddLit(buf, "<coalesce>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    virBufferAddLit(buf, "<rx>\n");
+    virBufferAdjustIndent(buf, 2);
+
+    virBufferAsprintf(buf, "<frames max='%u'/>\n",
+                      coalesce->rx_max_coalesced_frames);
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</rx>\n");
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</coalesce>\n");
+}
+
+
 static int
 virDomainHostdevDefParseXMLCaps(xmlNodePtr node ATTRIBUTE_UNUSED,
                                 xmlXPathContextPtr ctxt,
@@ -10253,6 +10324,13 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("malformed mtu size"));
         goto error;
+    }
+
+    node = virXPathNode("./coalesce", ctxt);
+    if (node) {
+        def->coalesce = virDomainNetDefCoalesceParseXML(node, ctxt);
+        if (!def->coalesce)
+            goto error;
     }
 
  cleanup:
@@ -22146,6 +22224,8 @@ virDomainNetDefFormat(virBufferPtr buf,
 
     if (def->mtu)
         virBufferAsprintf(buf, "<mtu size='%u'/>\n", def->mtu);
+
+    virDomainNetDefCoalesceFormatXML(buf, def->coalesce);
 
     if (virDomainDeviceInfoFormat(buf, &def->info,
                                   flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT

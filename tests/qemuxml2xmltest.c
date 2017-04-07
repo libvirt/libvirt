@@ -528,6 +528,7 @@ mymain(void)
     DO_TEST("net-bandwidth", NONE);
     DO_TEST("net-bandwidth2", NONE);
     DO_TEST("net-mtu", NONE);
+    DO_TEST("net-coalesce", NONE);
 
     DO_TEST("serial-vc", NONE);
     DO_TEST("serial-pty", NONE);

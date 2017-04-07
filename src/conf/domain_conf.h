@@ -41,6 +41,7 @@
 # include "numa_conf.h"
 # include "virnetdevmacvlan.h"
 # include "virsysinfo.h"
+# include "virnetdev.h"
 # include "virnetdevip.h"
 # include "virnetdevvportprofile.h"
 # include "virnetdevbandwidth.h"
@@ -1036,6 +1037,7 @@ struct _virDomainNetDef {
     int trustGuestRxFilters; /* enum virTristateBool */
     int linkstate;
     unsigned int mtu;
+    virNetDevCoalescePtr coalesce;
 };
 
 /* Used for prefix of ifname of any network name generated dynamically
