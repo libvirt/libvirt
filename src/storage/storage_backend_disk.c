@@ -491,11 +491,15 @@ virStorageBackendDiskBuildPool(virConnectPtr conn ATTRIBUTE_UNUSED,
         ok_to_mklabel = true;
     } else {
         if (virStorageBackendDeviceIsEmpty(pool->def->source.devices[0].path,
-                                              fmt, true))
+                                           fmt, true))
             ok_to_mklabel = true;
     }
 
     if (ok_to_mklabel) {
+        if (virStorageBackendZeroPartitionTable(pool->def->source.devices[0].path,
+                                                1024 * 1024) < 0)
+            goto error;
+
         /* eg parted /dev/sda mklabel --script msdos */
         if (format == VIR_STORAGE_POOL_DISK_UNKNOWN)
             format = pool->def->source.format = VIR_STORAGE_POOL_DISK_DOS;
