@@ -3245,8 +3245,8 @@ virStorageBackendPARTEDFindLabel(const char *device,
     /*  Does the on disk match what the pool desired? */
     if (STREQ(start, format))
         ret = VIR_STORAGE_PARTED_MATCH;
-
-    ret = VIR_STORAGE_PARTED_DIFFERENT;
+    else
+        ret = VIR_STORAGE_PARTED_DIFFERENT;
 
  cleanup:
     virCommandFree(cmd);
