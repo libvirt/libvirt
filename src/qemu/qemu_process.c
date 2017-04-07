@@ -5304,12 +5304,12 @@ qemuProcessUpdateGuestCPU(virDomainDefPtr def,
 
     if (def->cpu->check == VIR_CPU_CHECK_PARTIAL &&
         virCPUCompare(caps->host.arch,
-                      virQEMUCapsGetHostModel(qemuCaps, def->virtType, false),
+                      virQEMUCapsGetHostModel(qemuCaps, def->virtType),
                       def->cpu, true) < 0)
         return -1;
 
     if (virCPUUpdate(def->os.arch, def->cpu,
-                     virQEMUCapsGetHostModel(qemuCaps, def->virtType, true)) < 0)
+                     virQEMUCapsGetHostModel(qemuCaps, def->virtType)) < 0)
         goto cleanup;
 
     if (virQEMUCapsGetCPUDefinitions(qemuCaps, def->virtType,
