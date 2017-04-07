@@ -584,6 +584,7 @@ virNetDevTapAttachBridge(const char *tapname,
  * @tapfd: array of file descriptor return value for the new tap device
  * @tapfdSize: number of file descriptors in @tapfd
  * @virtPortProfile: bridge/port specific configuration
+ * @coalesce: optional coalesce parameters
  * @mtu: requested MTU for port (or 0 for "default")
  * @actualMTU: MTU actually set for port (after accounting for bridge's MTU)
  * @flags: OR of virNetDevTapCreateFlags:
@@ -616,6 +617,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    size_t tapfdSize,
                                    virNetDevVPortProfilePtr virtPortProfile,
                                    virNetDevVlanPtr virtVlan,
+                                   virNetDevCoalescePtr coalesce,
                                    unsigned int mtu,
                                    unsigned int *actualMTU,
                                    unsigned int flags)
@@ -659,6 +661,9 @@ int virNetDevTapCreateInBridgePort(const char *brname,
     }
 
     if (virNetDevSetOnline(*ifname, !!(flags & VIR_NETDEV_TAP_CREATE_IFUP)) < 0)
+        goto error;
+
+    if (virNetDevSetCoalesce(*ifname, coalesce) < 0)
         goto error;
 
     return 0;

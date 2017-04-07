@@ -24,6 +24,7 @@
 # define __VIR_NETDEV_TAP_H__
 
 # include "internal.h"
+# include "virnetdev.h"
 # include "virnetdevvportprofile.h"
 # include "virnetdevvlan.h"
 
@@ -83,6 +84,7 @@ int virNetDevTapCreateInBridgePort(const char *brname,
                                    size_t tapfdSize,
                                    virNetDevVPortProfilePtr virtPortProfile,
                                    virNetDevVlanPtr virtVlan,
+                                   virNetDevCoalescePtr coalesce,
                                    unsigned int mtu,
                                    unsigned int *actualMTU,
                                    unsigned int flags)
