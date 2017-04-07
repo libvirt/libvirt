@@ -515,9 +515,10 @@ qemuMigrationStartNBDServer(virQEMUDriverPtr driver,
         if (!qemuMigrateDisk(disk, nmigrate_disks, migrate_disks))
             continue;
 
-        if (disk->src->readonly) {
+        if (disk->src->readonly || virStorageSourceIsEmpty(disk->src)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("Cannot migrate read-only disk %s"), disk->dst);
+                           _("Cannot migrate empty or read-only disk %s"),
+                           disk->dst);
             goto cleanup;
         }
 
