@@ -415,7 +415,7 @@ qemuMigrateDisk(virDomainDiskDef const *disk,
     /* Default is to migrate only non-shared non-readonly disks
      * with source */
     return !disk->src->shared && !disk->src->readonly &&
-           virDomainDiskGetSource(disk);
+           !virStorageSourceIsEmpty(disk->src);
 }
 
 
