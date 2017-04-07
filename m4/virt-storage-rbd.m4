@@ -28,12 +28,24 @@ AC_DEFUN([LIBVIRT_STORAGE_CHECK_RBD], [
     AC_CHECK_HEADER([rbd/librbd.h], [LIBRBD_FOUND=yes; break;])
 
     if test "$LIBRBD_FOUND" = "yes"; then
-      with_storage_rbd=yes
       LIBRBD_LIBS="-lrbd -lrados"
+
+      old_LIBS="$LIBS"
+      LIBS="$LIBS $LIBRBD_LIBS"
+      AC_CHECK_FUNCS([rbd_get_features],[],[LIBRBD_FOUND=no])
+      LIBS="$old_LIBS"
+    fi
+
+    if test "$LIBRDB_FOUND" = "yes"; then
+      with_storage_rbd=yes
       AC_DEFINE_UNQUOTED([WITH_STORAGE_RBD], [1],
                          [whether RBD backend for storage driver is enabled])
     else
-      with_storage_rbd=no
+      if test "$with_storage_rbd" = "yes"; then
+        AC_MSG_ERROR([You must install the librbd library & headers to compile libvirt])
+      else
+        with_storage_rbd=no
+      fi
     fi
   fi
   AM_CONDITIONAL([WITH_STORAGE_RBD], [test "$with_storage_rbd" = "yes"])
