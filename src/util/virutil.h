@@ -142,8 +142,8 @@ char *virGetUserConfigDirectory(void);
 char *virGetUserCacheDirectory(void);
 char *virGetUserRuntimeDirectory(void);
 char *virGetUserShell(uid_t uid);
-char *virGetUserName(uid_t uid);
-char *virGetGroupName(gid_t gid);
+char *virGetUserName(uid_t uid) ATTRIBUTE_NOINLINE;
+char *virGetGroupName(gid_t gid) ATTRIBUTE_NOINLINE;
 int virGetGroupList(uid_t uid, gid_t group, gid_t **groups)
     ATTRIBUTE_NONNULL(3);
 int virGetUserID(const char *name,
@@ -204,12 +204,12 @@ verify((int)VIR_TRISTATE_BOOL_ABSENT == (int)VIR_TRISTATE_SWITCH_ABSENT);
 
 unsigned int virGetListenFDs(void);
 
-long virGetSystemPageSize(void);
-long virGetSystemPageSizeKB(void);
+long virGetSystemPageSize(void) ATTRIBUTE_NOINLINE;
+long virGetSystemPageSizeKB(void) ATTRIBUTE_NOINLINE;
 
 unsigned long long virMemoryLimitTruncate(unsigned long long value);
 bool virMemoryLimitIsSet(unsigned long long value);
-unsigned long long virMemoryMaxValue(bool ulong);
+unsigned long long virMemoryMaxValue(bool ulong) ATTRIBUTE_NOINLINE;
 
 /**
  * VIR_ASSIGN_IS_OVERFLOW:

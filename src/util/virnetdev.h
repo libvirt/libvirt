@@ -121,7 +121,7 @@ int virNetDevExists(const char *brname)
 
 int virNetDevSetOnline(const char *ifname,
                        bool online)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NOINLINE;
 int virNetDevGetOnline(const char *ifname,
                       bool *online)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
@@ -129,7 +129,7 @@ int virNetDevGetOnline(const char *ifname,
 
 int virNetDevSetMAC(const char *ifname,
                     const virMacAddr *macaddr)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NOINLINE;
 int virNetDevGetMAC(const char *ifname,
                     virMacAddrPtr macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_RETURN_CHECK;
@@ -263,7 +263,8 @@ int virNetDevSysfsFile(char **pf_sysfs_device_link,
                        const char *ifname,
                        const char *file)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_RETURN_CHECK;
+    ATTRIBUTE_RETURN_CHECK ATTRIBUTE_NOINLINE;
 
-int virNetDevRunEthernetScript(const char *ifname, const char *script);
+int virNetDevRunEthernetScript(const char *ifname, const char *script)
+    ATTRIBUTE_NOINLINE;
 #endif /* __VIR_NETDEV_H__ */

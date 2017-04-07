@@ -153,6 +153,20 @@
 #  endif
 
 /**
+ * ATTRIBUTE_NOINLINE:
+ *
+ * Force compiler not to inline a method. Should be used if
+ * the method need to be overridable by test mocks.
+ */
+#  ifndef ATTRIBUTE_NOINLINE
+#   if __GNUC_PREREQ (4, 0)
+#    define ATTRIBUTE_NOINLINE __attribute__((__noinline__))
+#   else
+#    define ATTRIBUTE_NOINLINE
+#   endif
+#  endif
+
+/**
  * ATTRIBUTE_FMT_PRINTF
  *
  * Macro used to check printf like functions, if compiling
@@ -235,6 +249,9 @@
 #  endif
 #  ifndef ATTRIBUTE_RETURN_CHECK
 #   define ATTRIBUTE_RETURN_CHECK
+#  endif
+#  ifndef ATTRIBUTE_NOINLINE
+#   define ATTRIBUTE_NOINLINE
 #  endif
 #
 #  ifndef ATTRIBUTE_FALLTHROUGH

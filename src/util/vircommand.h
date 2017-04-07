@@ -58,7 +58,7 @@ enum {
 
 void virCommandPassFD(virCommandPtr cmd,
                       int fd,
-                      unsigned int flags);
+                      unsigned int flags) ATTRIBUTE_NOINLINE;
 
 void virCommandPassListenFDs(virCommandPtr cmd);
 

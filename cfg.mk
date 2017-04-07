@@ -1069,7 +1069,7 @@ _autogen:
 # regenerate HACKING as part of the syntax-check
 ifneq ($(_gl-Makefile),)
 syntax-check: $(top_srcdir)/HACKING spacing-check test-wrap-argv \
-	prohibit-duplicate-header
+	prohibit-duplicate-header mock-noinline
 endif
 
 # Don't include duplicate header in the source (either *.c or *.h)
@@ -1082,6 +1082,10 @@ spacing-check:
 	$(PERL) $(top_srcdir)/build-aux/check-spacing.pl $$files || \
 	  { echo '$(ME): incorrect formatting, see HACKING for rules' 1>&2; \
 	    exit 1; }
+
+mock-noinline:
+	$(AM_V_GEN)files=`$(VC_LIST) | grep '\.[ch]$$'`; \
+	$(PERL) $(top_srcdir)/build-aux/mock-noinline.pl $$files
 
 test-wrap-argv:
 	$(AM_V_GEN)files=`$(VC_LIST) | grep -E '\.(ldargs|args)'`; \
