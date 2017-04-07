@@ -13825,7 +13825,8 @@ qemuDomainSnapshotPrepare(virConnectPtr conn,
 
         case VIR_DOMAIN_SNAPSHOT_LOCATION_NONE:
             /* Remember seeing a disk that has snapshot disabled */
-            if (!dom_disk->src->readonly)
+            if (!virStorageSourceIsEmpty(dom_disk->src) &&
+                !dom_disk->src->readonly)
                 forbid_internal = true;
             break;
 
