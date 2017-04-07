@@ -44,35 +44,6 @@
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 
 static int
-prepare(const char *path, int oflags, int mode,
-        unsigned long long offset)
-{
-    int fd = -1;
-
-    if (oflags & O_CREAT) {
-        fd = open(path, oflags, mode);
-    } else {
-        fd = open(path, oflags);
-    }
-    if (fd < 0) {
-        virReportSystemError(errno, _("Unable to open %s"), path);
-        goto cleanup;
-    }
-
-    if (offset) {
-        if (lseek(fd, offset, SEEK_SET) < 0) {
-            virReportSystemError(errno, _("Unable to seek %s to %llu"),
-                                 path, offset);
-            VIR_FORCE_CLOSE(fd);
-            goto cleanup;
-        }
-    }
-
- cleanup:
-    return fd;
-}
-
-static int
 runIO(const char *path, int fd, int oflags, unsigned long long length)
 {
     void *base = NULL; /* Location to be freed */
@@ -207,9 +178,7 @@ usage(int status)
     if (status) {
         fprintf(stderr, _("%s: try --help for more details"), program_name);
     } else {
-        printf(_("Usage: %s FILENAME OFLAGS MODE OFFSET LENGTH DELETE\n"
-                 "   or: %s FILENAME LENGTH FD\n"),
-               program_name, program_name);
+        printf(_("Usage: %s FILENAME LENGTH FD\n"), program_name);
     }
     exit(status);
 }
@@ -218,13 +187,9 @@ int
 main(int argc, char **argv)
 {
     const char *path;
-    unsigned long long offset;
     unsigned long long length;
     int oflags = -1;
-    int mode;
-    unsigned int delete = 0;
     int fd = -1;
-    int lengthIndex = 0;
 
     program_name = argv[0];
 
@@ -239,31 +204,13 @@ main(int argc, char **argv)
 
     if (argc > 1 && STREQ(argv[1], "--help"))
         usage(EXIT_SUCCESS);
-    if (argc == 7) { /* FILENAME OFLAGS MODE OFFSET LENGTH DELETE */
-        lengthIndex = 5;
-        if (virStrToLong_i(argv[2], NULL, 10, &oflags) < 0) {
-            fprintf(stderr, _("%s: malformed file flags %s"),
+    if (argc == 4) { /* FILENAME LENGTH FD */
+        if (virStrToLong_ull(argv[2], NULL, 10, &length) < 0) {
+            fprintf(stderr, _("%s: malformed file length %s"),
                     program_name, argv[2]);
             exit(EXIT_FAILURE);
         }
-        if (virStrToLong_i(argv[3], NULL, 10, &mode) < 0) {
-            fprintf(stderr, _("%s: malformed file mode %s"),
-                    program_name, argv[3]);
-            exit(EXIT_FAILURE);
-        }
-        if (virStrToLong_ull(argv[4], NULL, 10, &offset) < 0) {
-            fprintf(stderr, _("%s: malformed file offset %s"),
-                    program_name, argv[4]);
-            exit(EXIT_FAILURE);
-        }
-        if (argc == 7 && virStrToLong_ui(argv[6], NULL, 10, &delete) < 0) {
-            fprintf(stderr, _("%s: malformed delete flag %s"),
-                    program_name, argv[6]);
-            exit(EXIT_FAILURE);
-        }
-        fd = prepare(path, oflags, mode, offset);
-    } else if (argc == 4) { /* FILENAME LENGTH FD */
-        lengthIndex = 2;
+
         if (virStrToLong_i(argv[3], NULL, 10, &fd) < 0) {
             fprintf(stderr, _("%s: malformed fd %s"),
                     program_name, argv[3]);
@@ -287,17 +234,8 @@ main(int argc, char **argv)
         usage(EXIT_FAILURE);
     }
 
-    if (virStrToLong_ull(argv[lengthIndex], NULL, 10, &length) < 0) {
-        fprintf(stderr, _("%s: malformed file length %s"),
-                program_name, argv[lengthIndex]);
-        exit(EXIT_FAILURE);
-    }
-
     if (fd < 0 || runIO(path, fd, oflags, length) < 0)
         goto error;
-
-    if (delete)
-        unlink(path);
 
     return 0;
 
