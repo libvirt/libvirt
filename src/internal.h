@@ -265,6 +265,10 @@
     _Pragma ("GCC diagnostic push") \
     _Pragma ("GCC diagnostic ignored \"-Wcast-align\"")
 
+#  define VIR_WARNINGS_NO_DEPRECATED \
+    _Pragma ("GCC diagnostic push") \
+    _Pragma ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+
 #  if HAVE_SUGGEST_ATTRIBUTE_FORMAT
 #   define VIR_WARNINGS_NO_PRINTF \
     _Pragma ("GCC diagnostic push") \
@@ -289,6 +293,7 @@
     _Pragma ("GCC diagnostic pop")
 # else
 #  define VIR_WARNINGS_NO_CAST_ALIGN
+#  define VIR_WARNINGS_NO_DEPRECATED
 #  define VIR_WARNINGS_NO_PRINTF
 #  define VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
 #  define VIR_WARNINGS_RESET

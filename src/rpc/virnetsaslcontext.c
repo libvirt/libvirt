@@ -73,6 +73,14 @@ static int virNetSASLContextOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virNetSASLContext)
 
+/* Apple have annotated all SASL functions as deprecated for
+ * unknown reasons. Since they still work, lets just ignore
+ * the warnings. If Apple finally delete the SASL functions
+ * our configure check should already catch that
+ */
+#ifdef __APPLE__
+VIR_WARNINGS_NO_DEPRECATED
+#endif
 
 virNetSASLContextPtr virNetSASLContextNewClient(void)
 {
@@ -686,3 +694,7 @@ void virNetSASLSessionDispose(void *obj)
         sasl_dispose(&sasl->conn);
     VIR_FREE(sasl->callbacks);
 }
+
+#ifdef __APPLE__
+VIR_WARNINGS_RESET
+#endif
