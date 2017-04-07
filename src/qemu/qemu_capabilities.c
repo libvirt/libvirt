@@ -2118,6 +2118,30 @@ virQEMUCapsNew(void)
 }
 
 
+static int
+virQEMUCapsHostCPUDataCopy(virQEMUCapsPtr dst,
+                           virQEMUCapsPtr src)
+{
+    if (src->kvmCPUModel &&
+        !(dst->kvmCPUModel = virCPUDefCopy(src->kvmCPUModel)))
+        return -1;
+
+    if (src->tcgCPUModel &&
+        !(dst->tcgCPUModel = virCPUDefCopy(src->tcgCPUModel)))
+        return -1;
+
+    if (src->kvmCPUModelInfo &&
+        !(dst->kvmCPUModelInfo = qemuMonitorCPUModelInfoCopy(src->kvmCPUModelInfo)))
+        return -1;
+
+    if (src->tcgCPUModelInfo &&
+        !(dst->tcgCPUModelInfo = qemuMonitorCPUModelInfoCopy(src->tcgCPUModelInfo)))
+        return -1;
+
+    return 0;
+}
+
+
 virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
 {
     virQEMUCapsPtr ret = virQEMUCapsNew();
@@ -2155,20 +2179,7 @@ virQEMUCapsPtr virQEMUCapsNewCopy(virQEMUCapsPtr qemuCaps)
             goto error;
     }
 
-    if (qemuCaps->kvmCPUModel &&
-        !(ret->kvmCPUModel = virCPUDefCopy(qemuCaps->kvmCPUModel)))
-        goto error;
-
-    if (qemuCaps->tcgCPUModel &&
-        !(ret->tcgCPUModel = virCPUDefCopy(qemuCaps->tcgCPUModel)))
-        goto error;
-
-    if (qemuCaps->kvmCPUModelInfo &&
-        !(ret->kvmCPUModelInfo = qemuMonitorCPUModelInfoCopy(qemuCaps->kvmCPUModelInfo)))
-        goto error;
-
-    if (qemuCaps->tcgCPUModelInfo &&
-        !(ret->tcgCPUModelInfo = qemuMonitorCPUModelInfoCopy(qemuCaps->tcgCPUModelInfo)))
+    if (virQEMUCapsHostCPUDataCopy(ret, qemuCaps) < 0)
         goto error;
 
     if (VIR_ALLOC_N(ret->machineTypes, qemuCaps->nmachineTypes) < 0)
