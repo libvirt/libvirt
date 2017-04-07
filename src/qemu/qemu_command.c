@@ -5229,11 +5229,13 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     virDomainHostdevSubsysMediatedDevPtr mdevsrc = &dev->source.subsys.u.mdev;
     char *ret = NULL;
+    char *mdevPath = NULL;
+
+    if (!(mdevPath = virMediatedDeviceGetSysfsPath(mdevsrc->uuidstr)))
+        goto cleanup;
 
     virBufferAddLit(&buf, "vfio-pci");
-    virBufferAsprintf(&buf, ",id=%s,sysfsdev=%s",
-                      dev->info->alias,
-                      virMediatedDeviceGetSysfsPath(mdevsrc->uuidstr));
+    virBufferAsprintf(&buf, ",id=%s,sysfsdev=%s", dev->info->alias, mdevPath);
 
     if (qemuBuildDeviceAddressStr(&buf, def, dev->info, qemuCaps) < 0)
         goto cleanup;
@@ -5244,6 +5246,7 @@ qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
     ret = virBufferContentAndReset(&buf);
 
  cleanup:
+    VIR_FREE(mdevPath);
     virBufferFreeAndReset(&buf);
     return ret;
 }
