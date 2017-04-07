@@ -655,9 +655,11 @@ qemuMigrationDriveMirrorCancelled(virQEMUDriverPtr driver,
 {
     size_t i;
     size_t active = 0;
+    size_t completed = 0;
     int status;
     bool failed = false;
 
+ retry:
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDefPtr disk = vm->def->disks[i];
         qemuDomainDiskPrivatePtr diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
@@ -684,6 +686,19 @@ qemuMigrationDriveMirrorCancelled(virQEMUDriverPtr driver,
         default:
             active++;
         }
+
+        if (status == VIR_DOMAIN_BLOCK_JOB_COMPLETED)
+            completed++;
+    }
+
+    /* Updating completed block job drops the lock thus we have to recheck
+     * block jobs for disks that reside before the disk(s) with completed
+     * block job.
+     */
+    if (completed > 0) {
+        completed = 0;
+        active = 0;
+        goto retry;
     }
 
     if (failed) {
