@@ -1443,7 +1443,7 @@ virDomainEventDeviceRemovalFailedNew(int id,
     if (virDomainEventsInitialize() < 0)
         return NULL;
 
-    if (!(ev = virDomainEventNew(virDomainEventDeviceAddedClass,
+    if (!(ev = virDomainEventNew(virDomainEventDeviceRemovalFailedClass,
                                  VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED,
                                  id, name, uuid)))
         return NULL;
