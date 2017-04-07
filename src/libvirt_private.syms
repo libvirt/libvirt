@@ -1712,6 +1712,15 @@ virFileWriteStr;
 virFindFileInPath;
 
 
+# util/virfilecache.h
+virFileCacheGetPriv;
+virFileCacheInsertData;
+virFileCacheLookup;
+virFileCacheLookupByFunc;
+virFileCacheNew;
+virFileCacheSetPriv;
+
+
 # util/virfirewall.h
 virFirewallAddRuleFull;
 virFirewallApply;

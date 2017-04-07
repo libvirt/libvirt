@@ -211,6 +211,7 @@ src/util/vireventpoll.c
 src/util/virfcp.c
 src/util/virfdstream.c
 src/util/virfile.c
+src/util/virfilecache.c
 src/util/virfirewall.c
 src/util/virfirmware.c
 src/util/virhash.c

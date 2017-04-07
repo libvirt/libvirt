@@ -194,6 +194,7 @@ UTIL_SOURCES =							\
 		util/virxdrdefs.h                               \
 		util/virxml.c util/virxml.h			\
 		util/virmdev.c util/virmdev.h			\
+		util/virfilecache.c util/virfilecache.h		\
 		$(NULL)
 
 EXTRA_DIST += \
