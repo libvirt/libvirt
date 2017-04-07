@@ -3007,10 +3007,12 @@ virStorageBackendBLKIDFindPart(blkid_probe probe,
 
     /* A blkid_known_pttype on "dvh" and "pc98" returns a failure;
      * however, the blkid_do_probe for "dvh" returns "sgi" and
-     * for "pc98" it returns "dos". So since those will cause problems
+     * for "pc98" it returns "dos". Although "bsd" is recognized,
+     * it seems that the parted created partition table is not being
+     * properly recogized. Since each of these will cause problems
      * with startup comparison, let's just treat them as UNKNOWN causing
      * the caller to fallback to using PARTED */
-    if (STREQ(format, "dvh") || STREQ(format, "pc98"))
+    if (STREQ(format, "dvh") || STREQ(format, "pc98") || STREQ(format, "bsd"))
         return VIR_STORAGE_BLKID_PROBE_UNKNOWN;
 
     /* Make sure we're doing a partitions probe from the start */
