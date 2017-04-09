@@ -534,6 +534,8 @@ mymain(void)
                  "/usr/bin/qemu-system-s390x", NULL,
                  "s390x", VIR_DOMAIN_VIRT_KVM);
 
+    virObjectUnref(cfg);
+
 #endif /* WITH_QEMU */
 
 #if WITH_LIBXL
