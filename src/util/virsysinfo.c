@@ -521,6 +521,8 @@ virSysinfoParseS390Processor(const char *base, virSysinfoDefPtr ret)
                                           &processor->processor_family,
                                           '=', '\n'))
             goto cleanup;
+
+        VIR_FREE(procline);
     }
     result = 0;
 
