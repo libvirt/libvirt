@@ -82,6 +82,7 @@ virDomainCapsDispose(void *obj)
     VIR_FREE(caps->path);
     VIR_FREE(caps->machine);
     virObjectUnref(caps->cpu.custom);
+    virCPUDefFree(caps->cpu.hostModel);
 
     virDomainCapsStringValuesFree(&caps->os.loader.values);
 }
