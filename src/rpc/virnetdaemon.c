@@ -401,6 +401,7 @@ virNetDaemonPreExecRestart(virNetDaemonPtr dmn)
         }
     }
 
+    VIR_FREE(srvArray);
     virObjectUnlock(dmn);
 
     return object;
