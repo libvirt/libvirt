@@ -429,8 +429,10 @@ static void init_sysfs(void)
             abort();                                                   \
         if (make_controller(path, 0755) < 0) {                         \
             fprintf(stderr, "Cannot initialize %s\n", path);           \
+            free(path);                                                \
             abort();                                                   \
         }                                                              \
+        free(path);                                                    \
     } while (0)
 
     MAKE_CONTROLLER("cpu");

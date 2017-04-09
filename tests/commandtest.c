@@ -1093,6 +1093,9 @@ static int test25(const void *unused ATTRIBUTE_UNUSED)
         virCommandPtr cmd = virCommandNew("some/nonexistent/binary");
 
         rv = virCommandExec(cmd);
+
+        virCommandFree(cmd);
+
         if (safewrite(pipeFD[1], &rv, sizeof(rv)) < 0)
             fprintf(stderr, "Unable to write to pipe\n");
         _exit(EXIT_FAILURE);
