@@ -25,6 +25,7 @@
 
 #include <config.h>
 #include "virsh-domain-monitor.h"
+#include "virsh-util.h"
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>

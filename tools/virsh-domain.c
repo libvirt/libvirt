@@ -25,6 +25,7 @@
 
 #include <config.h>
 #include "virsh-domain.h"
+#include "virsh-util.h"
 
 #include <fcntl.h>
 #include <poll.h>

@@ -226,6 +226,7 @@ virsh_SOURCES =							\
 		virsh-pool.c virsh-pool.h			\
 		virsh-secret.c virsh-secret.h			\
 		virsh-snapshot.c virsh-snapshot.h		\
+		virsh-util.c virsh-util.h			\
 		virsh-volume.c virsh-volume.h			\
 		$(NULL)
 

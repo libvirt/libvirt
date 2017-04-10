@@ -257,14 +257,6 @@ virshReconnect(vshControl *ctl, const char *name, bool readonly, bool force)
     return 0;
 }
 
-int virshStreamSink(virStreamPtr st ATTRIBUTE_UNUSED,
-                    const char *bytes, size_t nbytes, void *opaque)
-{
-    int *fd = opaque;
-
-    return safewrite(*fd, bytes, nbytes);
-}
-
 /* ---------------
  * Command Connect
  * ---------------
@@ -346,39 +338,6 @@ virshConnectionHandler(vshControl *ctl)
     return NULL;
 }
 
-
-/* ---------------
- * Misc utils
- * ---------------
- */
-int
-virshDomainState(vshControl *ctl, virDomainPtr dom, int *reason)
-{
-    virDomainInfo info;
-    virshControlPtr priv = ctl->privData;
-
-    if (reason)
-        *reason = -1;
-
-    if (!priv->useGetInfo) {
-        int state;
-        if (virDomainGetState(dom, &state, reason, 0) < 0) {
-            virErrorPtr err = virGetLastError();
-            if (err && err->code == VIR_ERR_NO_SUPPORT)
-                priv->useGetInfo = true;
-            else
-                return -1;
-        } else {
-            return state;
-        }
-    }
-
-    /* fall back to virDomainGetInfo if virDomainGetState is not supported */
-    if (virDomainGetInfo(dom, &info) < 0)
-        return -1;
-    else
-        return info.state;
-}
 
 /*
  * Initialize connection.

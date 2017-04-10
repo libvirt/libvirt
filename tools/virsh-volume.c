@@ -25,6 +25,7 @@
 
 #include <config.h>
 #include "virsh-volume.h"
+#include "virsh-util.h"
 
 #include <fcntl.h>
 

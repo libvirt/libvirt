@@ -145,9 +145,5 @@ typedef enum {
 } virshLookupByFlags;
 
 virConnectPtr virshConnect(vshControl *ctl, const char *uri, bool readonly);
-int virshDomainState(vshControl *ctl, virDomainPtr dom, int *reason);
-
-int virshStreamSink(virStreamPtr st, const char *bytes, size_t nbytes,
-                    void *opaque);
 
 #endif /* VIRSH_H */
