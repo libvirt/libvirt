@@ -512,10 +512,11 @@ virNodeDeviceObjGetNames(virNodeDeviceObjListPtr devs,
         virNodeDeviceObjLock(obj);
         if (aclfilter && aclfilter(conn, obj->def) &&
             (!cap || virNodeDeviceObjHasCap(obj, cap))) {
-            if (VIR_STRDUP(names[nnames++], obj->def->name) < 0) {
+            if (VIR_STRDUP(names[nnames], obj->def->name) < 0) {
                 virNodeDeviceObjUnlock(obj);
                 goto failure;
             }
+            nnames++;
         }
         virNodeDeviceObjUnlock(obj);
     }
