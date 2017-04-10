@@ -486,7 +486,7 @@ virNodeDeviceObjNumOfDevices(virNodeDeviceObjListPtr devs,
     for (i = 0; i < devs->count; i++) {
         virNodeDeviceObjPtr obj = devs->objs[i];
         virNodeDeviceObjLock(obj);
-        if (aclfilter && aclfilter(conn, obj->def) &&
+        if ((!aclfilter || aclfilter(conn, obj->def)) &&
             (!cap || virNodeDeviceObjHasCap(obj, cap)))
             ++ndevs;
         virNodeDeviceObjUnlock(obj);
@@ -510,7 +510,7 @@ virNodeDeviceObjGetNames(virNodeDeviceObjListPtr devs,
     for (i = 0; i < devs->count && nnames < maxnames; i++) {
         virNodeDeviceObjPtr obj = devs->objs[i];
         virNodeDeviceObjLock(obj);
-        if (aclfilter && aclfilter(conn, obj->def) &&
+        if ((!aclfilter || aclfilter(conn, obj->def)) &&
             (!cap || virNodeDeviceObjHasCap(obj, cap))) {
             if (VIR_STRDUP(names[nnames], obj->def->name) < 0) {
                 virNodeDeviceObjUnlock(obj);
