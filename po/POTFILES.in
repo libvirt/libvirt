@@ -310,6 +310,7 @@ tools/virsh-nwfilter.c
 tools/virsh-pool.c
 tools/virsh-secret.c
 tools/virsh-snapshot.c
+tools/virsh-util.c
 tools/virsh-volume.c
 tools/virsh.c
 tools/virt-admin.c

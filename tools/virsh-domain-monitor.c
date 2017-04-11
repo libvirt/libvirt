@@ -37,7 +37,6 @@
 #include "intprops.h"
 #include "viralloc.h"
 #include "virmacaddr.h"
-#include "virsh-domain.h"
 #include "virxml.h"
 #include "virstring.h"
 

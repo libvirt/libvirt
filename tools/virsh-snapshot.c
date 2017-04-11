@@ -37,7 +37,7 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
-#include "virsh-domain.h"
+#include "virsh-util.h"
 #include "virstring.h"
 #include "virxml.h"
 #include "conf/snapshot_conf.h"

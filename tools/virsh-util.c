@@ -21,6 +21,92 @@
 #include "virsh-util.h"
 
 #include "virfile.h"
+#include "virstring.h"
+
+static virDomainPtr
+virshLookupDomainInternal(vshControl *ctl,
+                          const char *cmdname,
+                          const char *name,
+                          unsigned int flags)
+{
+    virDomainPtr dom = NULL;
+    int id;
+    virCheckFlags(VIRSH_BYID | VIRSH_BYUUID | VIRSH_BYNAME, NULL);
+    virshControlPtr priv = ctl->privData;
+
+    /* try it by ID */
+    if (flags & VIRSH_BYID) {
+        if (virStrToLong_i(name, NULL, 10, &id) == 0 && id >= 0) {
+            vshDebug(ctl, VSH_ERR_DEBUG, "%s: <domain> looks like ID\n",
+                     cmdname);
+            dom = virDomainLookupByID(priv->conn, id);
+        }
+    }
+
+    /* try it by UUID */
+    if (!dom && (flags & VIRSH_BYUUID) &&
+        strlen(name) == VIR_UUID_STRING_BUFLEN-1) {
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <domain> trying as domain UUID\n",
+                 cmdname);
+        dom = virDomainLookupByUUIDString(priv->conn, name);
+    }
+
+    /* try it by NAME */
+    if (!dom && (flags & VIRSH_BYNAME)) {
+        vshDebug(ctl, VSH_ERR_DEBUG, "%s: <domain> trying as domain NAME\n",
+                 cmdname);
+        dom = virDomainLookupByName(priv->conn, name);
+    }
+
+    vshResetLibvirtError();
+
+    if (!dom)
+        vshError(ctl, _("failed to get domain '%s'"), name);
+
+    return dom;
+}
+
+
+virDomainPtr
+virshLookupDomainBy(vshControl *ctl,
+                    const char *name,
+                    unsigned int flags)
+{
+    return virshLookupDomainInternal(ctl, "unknown", name, flags);
+}
+
+
+virDomainPtr
+virshCommandOptDomainBy(vshControl *ctl,
+                        const vshCmd *cmd,
+                        const char **name,
+                        unsigned int flags)
+{
+    const char *n = NULL;
+    const char *optname = "domain";
+
+    if (vshCommandOptStringReq(ctl, cmd, optname, &n) < 0)
+        return NULL;
+
+    vshDebug(ctl, VSH_ERR_INFO, "%s: found option <%s>: %s\n",
+             cmd->def->name, optname, n);
+
+    if (name)
+        *name = n;
+
+    return virshLookupDomainInternal(ctl, cmd->def->name, n, flags);
+}
+
+
+virDomainPtr
+virshCommandOptDomain(vshControl *ctl,
+                      const vshCmd *cmd,
+                      const char **name)
+{
+    return virshCommandOptDomainBy(ctl, cmd, name,
+                                   VIRSH_BYID | VIRSH_BYUUID | VIRSH_BYNAME);
+}
+
 
 int
 virshDomainState(vshControl *ctl,
