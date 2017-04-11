@@ -2983,13 +2983,13 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     const char *iface;
     const char *state;
     char *value;
-    char *desc;
     virMacAddr macaddr;
     const char *element;
     const char *attr;
     bool config;
     bool ret = false;
     unsigned int flags = 0;
+    unsigned int xmlflags = 0;
     size_t i;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -3011,28 +3011,18 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    /* get persistent or live description of network device */
-    desc = virDomainGetXMLDesc(dom, config ? VIR_DOMAIN_XML_INACTIVE : 0);
-    if (desc == NULL) {
-        vshError(ctl, _("Failed to get domain description xml"));
-        goto cleanup;
-    }
-
-    if (config)
+    if (config) {
         flags = VIR_DOMAIN_AFFECT_CONFIG;
-    else
+        xmlflags |= VIR_DOMAIN_XML_INACTIVE;
+    } else {
         flags = VIR_DOMAIN_AFFECT_LIVE;
+    }
 
     if (virDomainIsActive(dom) == 0)
         flags = VIR_DOMAIN_AFFECT_CONFIG;
 
-    /* extract current network device description */
-    xml = virXMLParseStringCtxt(desc, _("(domain_definition)"), &ctxt);
-    VIR_FREE(desc);
-    if (!xml) {
-        vshError(ctl, _("Failed to parse domain description xml"));
+    if (virshDomainGetXMLFromDom(ctl, dom, xmlflags, &xml, &ctxt) < 0)
         goto cleanup;
-    }
 
     obj = xmlXPathEval(BAD_CAST "/domain/devices/interface", ctxt);
     if (obj == NULL || obj->type != XPATH_NODESET ||
@@ -3575,7 +3565,6 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     int nvol_list = 0;
     virshUndefineVolume *vols = NULL; /* info about the volumes to delete*/
     size_t nvols = 0;
-    char *def = NULL;               /* domain def */
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr *vol_nodes = NULL;   /* XML nodes of volumes of the guest */
@@ -3685,14 +3674,8 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
             goto cleanup;
         }
 
-        if (!(def = virDomainGetXMLDesc(dom, 0))) {
-            vshError(ctl, _("Could not retrieve domain XML description"));
+        if (virshDomainGetXMLFromDom(ctl, dom, 0, &doc, &ctxt) < 0)
             goto cleanup;
-        }
-
-        if (!(doc = virXMLParseStringCtxt(def, _("(domain_definition)"),
-                                          &ctxt)))
-            goto error;
 
         /* tokenize the string from user and save its parts into an array */
         if (vol_string &&
@@ -3897,7 +3880,6 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
         VIR_FREE(vol_list[i]);
     VIR_FREE(vol_list);
 
-    VIR_FREE(def);
     VIR_FREE(vol_nodes);
     xmlFreeDoc(doc);
     xmlXPathFreeContext(ctxt);
@@ -6029,7 +6011,6 @@ virshCPUCountCollect(vshControl *ctl,
     int ret = -2;
     virDomainInfo info;
     int count;
-    char *def = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
 
@@ -6071,10 +6052,8 @@ virshCPUCountCollect(vshControl *ctl,
            count = info.nrVirtCpu;
         }
     } else {
-        if (!(def = virDomainGetXMLDesc(dom, VIR_DOMAIN_XML_INACTIVE)))
-            goto cleanup;
-
-        if (!(xml = virXMLParseStringCtxt(def, _("(domain_definition)"), &ctxt)))
+        if (virshDomainGetXMLFromDom(ctl, dom, VIR_DOMAIN_XML_INACTIVE,
+                                     &xml, &ctxt) < 0)
             goto cleanup;
 
         if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
@@ -6092,7 +6071,6 @@ virshCPUCountCollect(vshControl *ctl,
 
     ret = count;
  cleanup:
-    VIR_FREE(def);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
 
@@ -6237,7 +6215,6 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
                          bool inactive)
 {
     unsigned int flags = 0;
-    char *def = NULL;
     virBitmapPtr ret = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -6253,10 +6230,7 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
     if (inactive)
         flags |= VIR_DOMAIN_XML_INACTIVE;
 
-    if (!(def = virDomainGetXMLDesc(dom, flags)))
-        goto cleanup;
-
-    if (!(xml = virXMLParseStringCtxt(def, _("(domain_definition)"), &ctxt)))
+    if (virshDomainGetXMLFromDom(ctl, dom, flags, &xml, &ctxt) < 0)
         goto cleanup;
 
     if (virXPathUInt("string(/domain/vcpu)", ctxt, &maxvcpus) < 0) {
@@ -6308,7 +6282,6 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
     VIR_FREE(nodes);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    VIR_FREE(def);
     return ret;
 }
 
@@ -10902,7 +10875,6 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     virBuffer buf = VIR_BUFFER_INITIALIZER;
     bool ret = false;
-    char *doc = NULL;
     char *xpath = NULL;
     char *listen_addr = NULL;
     int port, tls_port = 0;
@@ -10932,10 +10904,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
         goto cleanup;
 
-    if (!(doc = virDomainGetXMLDesc(dom, flags)))
-        goto cleanup;
-
-    if (!(xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt)))
+    if (virshDomainGetXMLFromDom(ctl, dom, flags, &xml, &ctxt) < 0)
         goto cleanup;
 
     /* Attempt to grab our display info */
@@ -11108,14 +11077,12 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    VIR_FREE(doc);
     VIR_FREE(xpath);
     VIR_FREE(passwd);
     VIR_FREE(listen_addr);
     VIR_FREE(output);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -11145,7 +11112,6 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
     virDomainPtr dom;
     bool ret = false;
     int port = 0;
-    char *doc = NULL;
     char *listen_addr = NULL;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
@@ -11157,10 +11123,7 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (!(doc = virDomainGetXMLDesc(dom, 0)))
-        goto cleanup;
-
-    if (!(xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt)))
+    if (virshDomainGetXMLFromDom(ctl, dom, 0, &xml, &ctxt) < 0)
         goto cleanup;
 
     /* Get the VNC port */
@@ -11192,7 +11155,6 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(doc);
     VIR_FREE(listen_addr);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
