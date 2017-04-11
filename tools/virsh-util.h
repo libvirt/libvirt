@@ -21,6 +21,8 @@
 
 # include "virsh.h"
 
+# include <libxml/parser.h>
+# include <libxml/xpath.h>
 
 virDomainPtr
 virshLookupDomainBy(vshControl *ctl,
@@ -54,5 +56,23 @@ virshStreamSink(virStreamPtr st,
                 const char *bytes,
                 size_t nbytes,
                 void *opaque);
+
+int
+virshDomainGetXMLFromDom(vshControl *ctl,
+                         virDomainPtr dom,
+                         unsigned int flags,
+                         xmlDocPtr *xml,
+                         xmlXPathContextPtr *ctxt)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
+
+int
+virshDomainGetXML(vshControl *ctl,
+                  const vshCmd *cmd,
+                  unsigned int flags,
+                  xmlDocPtr *xml,
+                  xmlXPathContextPtr *ctxt)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
+    ATTRIBUTE_NONNULL(5) ATTRIBUTE_RETURN_CHECK;
 
 #endif /* VIRSH_UTIL_H */

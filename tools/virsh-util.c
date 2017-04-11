@@ -22,6 +22,7 @@
 
 #include "virfile.h"
 #include "virstring.h"
+#include "viralloc.h"
 
 static virDomainPtr
 virshLookupDomainInternal(vshControl *ctl,
@@ -171,4 +172,51 @@ virshDomainSnapshotFree(virDomainSnapshotPtr snap)
 
     vshSaveLibvirtHelperError();
     virDomainSnapshotFree(snap); /* sc_prohibit_obj_free_apis_in_virsh */
+}
+
+
+int
+virshDomainGetXMLFromDom(vshControl *ctl,
+                         virDomainPtr dom,
+                         unsigned int flags,
+                         xmlDocPtr *xml,
+                         xmlXPathContextPtr *ctxt)
+{
+    char *desc = NULL;
+
+    if (!(desc = virDomainGetXMLDesc(dom, flags))) {
+        vshError(ctl, _("Failed to get domain description xml"));
+        return -1;
+    }
+
+    *xml = virXMLParseStringCtxt(desc, _("(domain_definition)"), ctxt);
+    VIR_FREE(desc);
+
+    if (!(*xml)) {
+        vshError(ctl, _("Failed to parse domain description xml"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+int
+virshDomainGetXML(vshControl *ctl,
+                  const vshCmd *cmd,
+                  unsigned int flags,
+                  xmlDocPtr *xml,
+                  xmlXPathContextPtr *ctxt)
+{
+    virDomainPtr dom;
+    int ret;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return -1;
+
+    ret = virshDomainGetXMLFromDom(ctl, dom, flags, xml, ctxt);
+
+    virshDomainFree(dom);
+
+    return ret;
 }
