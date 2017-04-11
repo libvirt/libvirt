@@ -314,7 +314,7 @@ static int testFDStreamWriteNonblock(const void *data)
     return testFDStreamWriteCommon(data, false);
 }
 
-#define SCRATCHDIRTEMPLATE abs_builddir "/fakesysfsdir-XXXXXX"
+#define SCRATCHDIRTEMPLATE abs_builddir "/fdstreamdir-XXXXXX"
 
 static int
 mymain(void)
@@ -323,7 +323,7 @@ mymain(void)
     int ret = 0;
 
     if (!mkdtemp(scratchdir)) {
-        virFilePrintf(stderr, "Cannot create fakesysfsdir");
+        virFilePrintf(stderr, "Cannot create fdstreamdir");
         abort();
     }
 
