@@ -150,3 +150,13 @@ virshStreamSink(virStreamPtr st ATTRIBUTE_UNUSED,
 
     return safewrite(*fd, bytes, nbytes);
 }
+
+
+void
+virshDomainFree(virDomainPtr dom)
+{
+    if (!dom)
+        return;
+
+    virDomainFree(dom); /* sc_prohibit_obj_free_apis_in_virsh */
+}

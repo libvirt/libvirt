@@ -38,6 +38,9 @@ virshCommandOptDomain(vshControl *ctl,
                       const vshCmd *cmd,
                       const char **name);
 
+void
+virshDomainFree(virDomainPtr dom);
+
 int
 virshDomainState(vshControl *ctl,
                  virDomainPtr dom,

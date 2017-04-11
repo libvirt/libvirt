@@ -218,7 +218,7 @@ cmdAttachDevice(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -700,8 +700,7 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(xml);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
     virBufferFreeAndReset(&buf);
     return functionReturn;
 }
@@ -1011,8 +1010,7 @@ cmdAttachInterface(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(xml);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
     virBufferFreeAndReset(&buf);
     return functionReturn;
 }
@@ -1056,7 +1054,7 @@ cmdAutostart(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("Failed to mark domain %s as autostarted"), name);
         else
             vshError(ctl, _("Failed to unmark domain %s as autostarted"), name);
-        virDomainFree(dom);
+        virshDomainFree(dom);
         return false;
     }
 
@@ -1065,7 +1063,7 @@ cmdAutostart(vshControl *ctl, const vshCmd *cmd)
     else
         vshPrintExtra(ctl, _("Domain %s unmarked as autostarted\n"), name);
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return true;
 }
 
@@ -1379,8 +1377,7 @@ cmdBlkdeviotune(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 
  save_error:
@@ -1577,7 +1574,7 @@ cmdBlkiotune(vshControl * ctl, const vshCmd * cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 
  save_error:
@@ -2086,7 +2083,7 @@ cmdBlockCommit(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     virshBlockJobWaitFree(bjWait);
     return ret;
 }
@@ -2394,7 +2391,7 @@ cmdBlockCopy(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     VIR_FREE(xmlstr);
     virTypedParamsFree(params, nparams);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     virshBlockJobWaitFree(bjWait);
     return ret;
 }
@@ -2638,8 +2635,7 @@ cmdBlockJob(vshControl *ctl, const vshCmd *cmd)
         ret = virshBlockJobInfo(ctl, dom, path, raw, bytes);
 
  cleanup:
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -2784,7 +2780,7 @@ cmdBlockPull(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     virshBlockJobWaitFree(bjWait);
     return ret;
 }
@@ -2848,7 +2844,7 @@ cmdBlockResize(vshControl *ctl, const vshCmd *cmd)
         ret = true;
     }
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -2942,7 +2938,7 @@ cmdConsole(vshControl *ctl, const vshCmd *cmd)
     ret = cmdRunConsole(ctl, dom, name, flags);
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 #endif /* WIN32 */
@@ -3123,7 +3119,7 @@ cmdDomIfSetLink(vshControl *ctl, const vshCmd *cmd)
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     VIR_FREE(xml_buf);
-    virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -3314,7 +3310,7 @@ cmdDomIftune(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 
  save_error:
@@ -3359,7 +3355,7 @@ cmdSuspend(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -3438,7 +3434,7 @@ cmdDomPMSuspend(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -3485,7 +3481,7 @@ cmdDomPMWakeup(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -3905,7 +3901,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(vol_nodes);
     xmlFreeDoc(doc);
     xmlXPathFreeContext(ctxt);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 
  error:
@@ -4085,7 +4081,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     VIR_FREE(fds);
     return ret;
 }
@@ -4183,8 +4179,7 @@ doSave(void *opaque)
  out:
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
     VIR_FREE(xml);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
 }
@@ -4344,7 +4339,7 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
         vshPrintExtra(ctl, _("\nDomain %s saved to %s\n"), name, to);
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -4607,8 +4602,7 @@ doManagedsave(void *opaque)
  out:
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
 }
 
@@ -4651,7 +4645,7 @@ cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
         vshPrintExtra(ctl, _("\nDomain %s state saved by libvirt\n"), name);
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     VIR_FORCE_CLOSE(p[0]);
     VIR_FORCE_CLOSE(p[1]);
     return ret;
@@ -4708,7 +4702,7 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -4943,7 +4937,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     virTypedParamsFree(params, nparams);
     virTypedParamsFree(updates, nupdates);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret_val;
 }
 
@@ -5145,7 +5139,7 @@ doDump(void *opaque)
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
     if (dom)
-        virDomainFree(dom);
+        virshDomainFree(dom);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
 }
 
@@ -5191,7 +5185,7 @@ cmdDump(vshControl *ctl, const vshCmd *cmd)
         vshPrintExtra(ctl, _("\nDomain %s dumped to %s\n"), name, to);
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     VIR_FORCE_CLOSE(p[0]);
     VIR_FORCE_CLOSE(p[1]);
     return ret;
@@ -5330,7 +5324,7 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
         unlink(file);
     if (generated)
         VIR_FREE(file);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     if (st)
         virStreamFree(st);
     VIR_FORCE_CLOSE(fd);
@@ -5399,7 +5393,7 @@ cmdSetUserPassword(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 /*
@@ -5437,7 +5431,7 @@ cmdResume(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -5520,8 +5514,7 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
     virStringListFree(modes);
     return ret;
 }
@@ -5600,8 +5593,7 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
     virStringListFree(modes);
     return ret;
 }
@@ -5641,7 +5633,7 @@ cmdReset(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -5943,7 +5935,7 @@ cmdDomjobinfo(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     virTypedParamsFree(params, nparams);
     return ret;
 
@@ -5982,7 +5974,7 @@ cmdDomjobabort(vshControl *ctl, const vshCmd *cmd)
     if (virDomainAbortJob(dom) < 0)
         ret = false;
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -6183,7 +6175,7 @@ cmdVcpucount(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -6437,7 +6429,7 @@ cmdVcpuinfo(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     VIR_FREE(cpumaps);
     VIR_FREE(cpuinfo);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -6654,7 +6646,7 @@ cmdVcpuPin(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(cpumap);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -6715,13 +6707,13 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "cpulist", &cpulist) < 0) {
-        virDomainFree(dom);
+        virshDomainFree(dom);
         return false;
     }
     query = !cpulist;
 
     if ((maxcpu = virshNodeGetCPUCount(priv->conn)) < 0) {
-        virDomainFree(dom);
+        virshDomainFree(dom);
         return false;
     }
 
@@ -6758,7 +6750,7 @@ cmdEmulatorPin(vshControl *ctl, const vshCmd *cmd)
     ret = true;
  cleanup:
     VIR_FREE(cpumap);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -6854,7 +6846,7 @@ cmdSetvcpus(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -6940,7 +6932,7 @@ cmdGuestvcpus(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -7022,7 +7014,7 @@ cmdSetvcpu(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -7080,7 +7072,7 @@ cmdDomblkthreshold(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -7156,7 +7148,7 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(info);
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return niothreads >= 0;
 }
 
@@ -7238,7 +7230,7 @@ cmdIOThreadPin(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(cpumap);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -7303,7 +7295,7 @@ cmdIOThreadAdd(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -7368,7 +7360,7 @@ cmdIOThreadDel(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -7759,7 +7751,7 @@ cmdCPUStats(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 
  failed_stats:
@@ -7855,7 +7847,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     if (console)
         cmdRunConsole(ctl, dom, NULL, 0);
 #endif
-    virDomainFree(dom);
+    virshDomainFree(dom);
     ret = true;
 
  cleanup:
@@ -7914,7 +7906,7 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
     if (dom != NULL) {
         vshPrintExtra(ctl, _("Domain %s defined from %s\n"),
                       virDomainGetName(dom), from);
-        virDomainFree(dom);
+        virshDomainFree(dom);
     } else {
         vshError(ctl, _("Failed to define domain from %s"), from);
         ret = false;
@@ -7971,7 +7963,7 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -8138,8 +8130,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
         unlink(tmp);
         VIR_FREE(tmp);
     }
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -8282,7 +8273,7 @@ cmdMetadata(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -8317,7 +8308,7 @@ cmdInjectNMI(vshControl *ctl, const vshCmd *cmd)
     if (virDomainInjectNMI(dom, 0) < 0)
             ret = false;
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -8413,7 +8404,7 @@ cmdSendKey(vshControl *ctl, const vshCmd *cmd)
         ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -8518,7 +8509,7 @@ cmdSendProcessSignal(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -8586,7 +8577,7 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
     else
         max = ULONG_MAX;
     if (vshCommandOptScaledInt(ctl, cmd, "size", &bytes, 1024, max) < 0) {
-        virDomainFree(dom);
+        virshDomainFree(dom);
         return false;
     }
     kibibytes = VIR_DIV_UP(bytes, 1024);
@@ -8599,7 +8590,7 @@ cmdSetmem(vshControl *ctl, const vshCmd *cmd)
             ret = false;
     }
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -8667,7 +8658,7 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
     else
         max = ULONG_MAX;
     if (vshCommandOptScaledInt(ctl, cmd, "size", &bytes, 1024, max) < 0) {
-        virDomainFree(dom);
+        virshDomainFree(dom);
         return false;
     }
     kibibytes = VIR_DIV_UP(bytes, 1024);
@@ -8684,7 +8675,7 @@ cmdSetmaxmem(vshControl *ctl, const vshCmd *cmd)
         }
     }
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -8855,7 +8846,7 @@ cmdMemtune(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 
  save_error:
@@ -8994,7 +8985,7 @@ cmdPerf(vshControl *ctl, const vshCmd *cmd)
     ret = true;
  cleanup:
     virTypedParamsFree(params, nparams);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -9127,7 +9118,7 @@ cmdNumatune(vshControl * ctl, const vshCmd * cmd)
 
  cleanup:
     virTypedParamsFree(params, nparams);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 
  save_error:
@@ -9221,7 +9212,7 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(result);
     VIR_FREE(monitor_cmd);
     virJSONValueFree(pretty);
-    virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -9385,8 +9376,7 @@ cmdQemuMonitorEvent(vshControl *ctl, const vshCmd *cmd)
     if (eventId >= 0 &&
         virConnectDomainQemuMonitorEventDeregister(priv->conn, eventId) < 0)
         ret = false;
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -9432,7 +9422,7 @@ cmdQemuAttach(vshControl *ctl, const vshCmd *cmd)
 
     vshPrintExtra(ctl, _("Domain %s attached to pid %u\n"),
                   virDomainGetName(dom), pid_value);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     ret = true;
 
  cleanup:
@@ -9556,8 +9546,7 @@ cmdQemuAgentCommand(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     VIR_FREE(result);
     VIR_FREE(guest_agent_cmd);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -9698,8 +9687,7 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     VIR_FREE(seclabel);
     VIR_FREE(secmodel);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
     VIR_FREE(cmdargv);
     return ret;
 }
@@ -9770,7 +9758,7 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -9916,7 +9904,7 @@ cmdDomname(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     vshPrint(ctl, "%s\n", virDomainGetName(dom));
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return true;
 }
 
@@ -9963,7 +9951,7 @@ cmdDomrename(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -10000,7 +9988,7 @@ cmdDomid(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%s\n", "-");
     else
         vshPrint(ctl, "%d\n", id);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return true;
 }
 
@@ -10037,7 +10025,7 @@ cmdDomuuid(vshControl *ctl, const vshCmd *cmd)
     else
         vshError(ctl, "%s", _("failed to get domain UUID"));
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return true;
 }
 
@@ -10467,7 +10455,7 @@ doMigrate(void *opaque)
         virDomainPtr ddom = NULL;
 
         if ((ddom = virDomainMigrate3(dom, dconn, params, nparams, flags))) {
-            virDomainFree(ddom);
+            virshDomainFree(ddom);
             ret = '0';
         }
     }
@@ -10476,8 +10464,7 @@ doMigrate(void *opaque)
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:
     virTypedParamsFree(params, nparams);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
     ignore_value(safewrite(data->writefd, &ret, sizeof(ret)));
     return;
 
@@ -10633,7 +10620,7 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
         virConnectClose(data.dconn);
     if (iterEvent != -1)
         virConnectDomainEventDeregisterAny(priv->conn, iterEvent);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     VIR_FORCE_CLOSE(p[0]);
     VIR_FORCE_CLOSE(p[1]);
     return functionReturn;
@@ -10685,7 +10672,7 @@ cmdMigrateSetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  done:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -10742,7 +10729,7 @@ cmdMigrateCompCache(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -10789,7 +10776,7 @@ cmdMigrateSetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  done:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -10829,7 +10816,7 @@ cmdMigrateGetMaxSpeed(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  done:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -10871,7 +10858,7 @@ cmdMigratePostCopy(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -11128,7 +11115,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(output);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -11209,7 +11196,7 @@ cmdVNCDisplay(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(listen_addr);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -11265,7 +11252,7 @@ cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -11308,7 +11295,7 @@ cmdDomHostname(vshControl *ctl, const vshCmd *cmd)
 
  error:
     VIR_FREE(hostname);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -11505,7 +11492,7 @@ cmdDetachDevice(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(buffer);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return funcRet;
 }
 
@@ -11587,7 +11574,7 @@ cmdUpdateDevice(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(buffer);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -11773,7 +11760,7 @@ cmdDetachInterface(vshControl *ctl, const vshCmd *cmd)
     }
     VIR_FREE(doc_live);
     VIR_FREE(doc_config);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -12130,7 +12117,7 @@ cmdDetachDisk(vshControl *ctl, const vshCmd *cmd)
     xmlFreeNode(disk_node);
     VIR_FREE(disk_xml);
     VIR_FREE(doc);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return functionReturn;
 }
 
@@ -12197,10 +12184,8 @@ cmdEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    if (dom)
-        virDomainFree(dom);
-    if (dom_edited)
-        virDomainFree(dom_edited);
+    virshDomainFree(dom);
+    virshDomainFree(dom_edited);
 
     return ret;
 }
@@ -13088,8 +13073,7 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         }
         VIR_FREE(data);
     }
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -13254,7 +13238,7 @@ cmdChangeMedia(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(doc);
     xmlFreeNode(disk_node);
     VIR_FREE(disk_xml);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -13307,7 +13291,7 @@ cmdDomFSTrim(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -13360,7 +13344,7 @@ cmdDomFSFreeze(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(mountpoints);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret >= 0;
 }
 
@@ -13413,7 +13397,7 @@ cmdDomFSThaw(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(mountpoints);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret >= 0;
 }
 
@@ -13473,7 +13457,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret >= 0;
 }
 

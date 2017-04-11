@@ -381,7 +381,7 @@ cmdDomMemStat(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -432,7 +432,7 @@ cmdDomblkinfo(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -554,7 +554,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xmldoc);
     VIR_FREE(xml);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -648,7 +648,7 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(interfaces);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     VIR_FREE(xml);
     xmlFreeDoc(xmldoc);
     xmlXPathFreeContext(ctxt);
@@ -758,7 +758,7 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(xpath);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -811,7 +811,7 @@ cmdDomControl(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -997,7 +997,7 @@ cmdDomblkstat(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(params);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 #undef DOMBLKSTAT_LEGACY_PRINT
@@ -1071,7 +1071,7 @@ cmdDomIfstat(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -1132,7 +1132,7 @@ cmdDomBlkError(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(disks);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -1241,7 +1241,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
     memset(&secmodel, 0, sizeof(secmodel));
     if (virNodeGetSecurityModel(priv->conn, &secmodel) == -1) {
         if (last_error->code != VIR_ERR_NO_SUPPORT) {
-            virDomainFree(dom);
+            virshDomainFree(dom);
             return false;
         } else {
             vshResetLibvirtError();
@@ -1254,12 +1254,12 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
 
             /* Security labels are only valid for active domains */
             if (VIR_ALLOC(seclabel) < 0) {
-                virDomainFree(dom);
+                virshDomainFree(dom);
                 return false;
             }
 
             if (virDomainGetSecurityLabel(dom, seclabel) == -1) {
-                virDomainFree(dom);
+                virshDomainFree(dom);
                 VIR_FREE(seclabel);
                 return false;
             } else {
@@ -1271,7 +1271,7 @@ cmdDominfo(vshControl *ctl, const vshCmd *cmd)
             VIR_FREE(seclabel);
         }
     }
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -1323,7 +1323,7 @@ cmdDomstate(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -1427,7 +1427,7 @@ cmdDomTime(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -1493,7 +1493,7 @@ virshDomainListFree(virshDomainListPtr domlist)
     if (domlist && domlist->domains) {
         for (i = 0; i < domlist->ndomains; i++) {
             if (domlist->domains[i])
-                virDomainFree(domlist->domains[i]);
+                virshDomainFree(domlist->domains[i]);
         }
         VIR_FREE(domlist->domains);
     }
@@ -1689,7 +1689,7 @@ virshDomainListCollect(vshControl *ctl, unsigned int flags)
 
  remove_entry:
         /* the domain has to be removed as it failed one of the filters */
-        virDomainFree(list->domains[i]);
+        virshDomainFree(list->domains[i]);
         list->domains[i] = NULL;
         deleted++;
     }
@@ -2294,7 +2294,7 @@ cmdDomIfAddr(vshControl *ctl, const vshCmd *cmd)
     }
     VIR_FREE(ifaces);
 
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 

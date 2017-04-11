@@ -210,8 +210,7 @@ cmdSnapshotCreate(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(buffer);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -454,7 +453,7 @@ cmdSnapshotCreateAs(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     virBufferFreeAndReset(&buf);
     VIR_FREE(buffer);
-    virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -606,7 +605,7 @@ cmdSnapshotEdit(vshControl *ctl, const vshCmd *cmd)
         virDomainSnapshotFree(edited);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -720,7 +719,7 @@ cmdSnapshotCurrent(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(xml);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
-    virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -1008,7 +1007,7 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(parent);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
-    virDomainFree(dom);
+    virshDomainFree(dom);
     return ret;
 }
 
@@ -1647,7 +1646,7 @@ cmdSnapshotList(vshControl *ctl, const vshCmd *cmd)
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
     VIR_FREE(doc);
-    virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -1711,7 +1710,7 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(xml);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
-    virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -1771,8 +1770,7 @@ cmdSnapshotParent(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(parent);
     if (snapshot)
         virDomainSnapshotFree(snapshot);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -1857,8 +1855,7 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (snapshot)
         virDomainSnapshotFree(snapshot);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }
@@ -1940,8 +1937,7 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (snapshot)
         virDomainSnapshotFree(snapshot);
-    if (dom)
-        virDomainFree(dom);
+    virshDomainFree(dom);
 
     return ret;
 }

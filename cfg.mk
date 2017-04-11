@@ -1014,6 +1014,13 @@ sc_gettext_init:
 	halt='the above files do not call virGettextInitialize'		\
 	  $(_sc_search_regexp)
 
+sc_prohibit_obj_free_apis_in_virsh:
+	@prohibit='\bvirDomainFree\b' \
+	in_vc_files='virsh.*\.[ch]$$'                              \
+	exclude='sc_prohibit_obj_free_apis_in_virsh' \
+	halt='avoid using virDomainFree in virsh, use virsh-prefixed wrappers instead' \
+	  $(_sc_search_regexp)
+
 # We don't use this feature of maint.mk.
 prev_version_file = /dev/null
 
