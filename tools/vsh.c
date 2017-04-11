@@ -258,6 +258,21 @@ vshSaveLibvirtError(void)
     last_error = virSaveLastError();
 }
 
+
+/* Store libvirt error from helper API but don't overwrite existing errors */
+void
+vshSaveLibvirtHelperError(void)
+{
+    if (last_error)
+        return;
+
+    if (!virGetLastError())
+        return;
+
+    vshSaveLibvirtError();
+}
+
+
 /*
  * Reset libvirt error on graceful fallback paths
  */

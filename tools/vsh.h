@@ -341,6 +341,7 @@ void vshErrorHandler(void *opaque, virErrorPtr error);
 void vshReportError(vshControl *ctl);
 void vshResetLibvirtError(void);
 void vshSaveLibvirtError(void);
+void vshSaveLibvirtHelperError(void);
 
 /* file handling */
 char *vshEditWriteToTempFile(vshControl *ctl, const char *doc);

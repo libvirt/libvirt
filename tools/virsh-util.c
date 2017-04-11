@@ -158,6 +158,7 @@ virshDomainFree(virDomainPtr dom)
     if (!dom)
         return;
 
+    vshSaveLibvirtHelperError();
     virDomainFree(dom); /* sc_prohibit_obj_free_apis_in_virsh */
 }
 
@@ -168,5 +169,6 @@ virshDomainSnapshotFree(virDomainSnapshotPtr snap)
     if (!snap)
         return;
 
+    vshSaveLibvirtHelperError();
     virDomainSnapshotFree(snap); /* sc_prohibit_obj_free_apis_in_virsh */
 }
