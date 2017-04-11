@@ -455,6 +455,10 @@ typedef enum {
     VIR_QEMU_CAPS_HOST_CPU_REPORTED,
     /* Migratable host CPU definition used for updating guest CPU. */
     VIR_QEMU_CAPS_HOST_CPU_MIGRATABLE,
+    /* CPU definition with features detected by libvirt using virCPUGetHost
+     * combined with features reported by QEMU. This is used for backward
+     * compatible comparison between a guest CPU and a host CPU. */
+    VIR_QEMU_CAPS_HOST_CPU_FULL,
 } virQEMUCapsHostCPUType;
 
 virCPUDefPtr virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps,
