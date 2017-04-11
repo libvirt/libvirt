@@ -58,7 +58,7 @@ static int
 qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
                          virDomainObjPtr *vm,
                          const char *domxml,
-                         bool event, const char *testname)
+                         bool event)
 {
     int ret = -1;
     qemuDomainObjPrivatePtr priv = NULL;
@@ -79,8 +79,7 @@ qemuHotplugCreateObjects(virDomainXMLOptionPtr xmlopt,
     if (event)
         virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_DEL_EVENT);
 
-    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, testname,
-                                priv->qemuCaps) < 0)
+    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, priv->qemuCaps) < 0)
         goto cleanup;
 
     if (!((*vm)->def = virDomainDefParseString(domxml,
@@ -262,8 +261,7 @@ testQemuHotplug(const void *data)
         vm = test->vm;
     } else {
         if (qemuHotplugCreateObjects(driver.xmlopt, &vm, domain_xml,
-                                     test->deviceDeletedEvent,
-                                     test->domain_filename) < 0)
+                                     test->deviceDeletedEvent) < 0)
             goto cleanup;
     }
 
@@ -415,8 +413,7 @@ testQemuHotplugCpuPrepare(const char *test,
     if (virTestLoadFile(data->file_xml_dom, &data->xml_dom) < 0)
         goto error;
 
-    if (qemuHotplugCreateObjects(driver.xmlopt, &data->vm, data->xml_dom, true,
-                                 "cpu-hotplug-test-domain") < 0)
+    if (qemuHotplugCreateObjects(driver.xmlopt, &data->vm, data->xml_dom, true) < 0)
         goto error;
 
     if (!(caps = virQEMUDriverGetCapabilities(&driver, false)))

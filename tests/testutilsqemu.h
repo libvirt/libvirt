@@ -29,12 +29,9 @@ void qemuTestSetHostCPU(virCapsPtr caps,
 
 int qemuTestDriverInit(virQEMUDriver *driver);
 void qemuTestDriverFree(virQEMUDriver *driver);
-int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache, const char *binary,
+int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache,
                             virQEMUCapsPtr caps);
 
 int testQemuCapsSetGIC(virQEMUCapsPtr qemuCaps,
                        int gic);
-
-/* This variable is actually defined in src/qemu/qemu_capabilities.c */
-extern const char *qemuTestCapsName;
 #endif

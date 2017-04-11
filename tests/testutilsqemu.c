@@ -586,33 +586,35 @@ void qemuTestDriverFree(virQEMUDriver *driver)
     virObjectUnref(driver->securityManager);
 }
 
-int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache, const char *binary,
+int qemuTestCapsCacheInsert(virQEMUCapsCachePtr cache,
                             virQEMUCapsPtr caps)
 {
-    int ret;
+    size_t i;
+    virQEMUCapsPtr tmpCaps;
 
     if (caps) {
-        /* Our caps were created artificially, so we don't want
-         * virQEMUCapsCacheFree() to attempt to deallocate them */
-        virObjectRef(caps);
+        tmpCaps = caps;
     } else {
-        caps = virQEMUCapsNew();
-        if (!caps)
+        if (!(tmpCaps = virQEMUCapsNew()))
             return -ENOMEM;
     }
 
-    /* We can have repeating names for our test data sets,
-     * so make sure there's no old copy */
-    virHashRemoveEntry(cache->binaries, binary);
+    for (i = 0; i < ARRAY_CARDINALITY(QEMUBinList); i++) {
+        virObjectRef(tmpCaps);
+        if (virHashUpdateEntry(cache->binaries,
+                               QEMUBinList[i],
+                               tmpCaps) < 0) {
+            virObjectUnref(tmpCaps);
+            return -1;
+        }
+    }
 
-    ret = virHashAddEntry(cache->binaries, binary, caps);
-    if (ret < 0)
-        virObjectUnref(caps);
-    else
-        qemuTestCapsName = binary;
+    if (!caps)
+        virObjectUnref(tmpCaps);
 
-    return ret;
+    return 0;
 }
+
 
 # define STATEDIRTEMPLATE abs_builddir "/qemustatedir-XXXXXX"
 # define CONFIGDIRTEMPLATE abs_builddir "/qemuconfigdir-XXXXXX"
@@ -678,7 +680,7 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     if (!driver->xmlopt)
         goto error;
 
-    if (qemuTestCapsCacheInsert(driver->qemuCapsCache, "empty", NULL) < 0)
+    if (qemuTestCapsCacheInsert(driver->qemuCapsCache, NULL) < 0)
         goto error;
 
     if (!(mgr = virSecurityManagerNew("none", "qemu",

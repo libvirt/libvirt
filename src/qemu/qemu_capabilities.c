@@ -5209,18 +5209,12 @@ virQEMUCapsCacheValidate(virQEMUCapsCachePtr cache,
 }
 
 
-const char *qemuTestCapsName;
-
 virQEMUCapsPtr
 virQEMUCapsCacheLookup(virCapsPtr caps,
                        virQEMUCapsCachePtr cache,
                        const char *binary)
 {
     virQEMUCapsPtr ret = NULL;
-
-    /* This is used only by test suite!!! */
-    if (qemuTestCapsName)
-        binary = qemuTestCapsName;
 
     virMutexLock(&cache->lock);
 
