@@ -358,6 +358,26 @@ virCPUDataFree(virCPUDataPtr data)
 
 
 /**
+ * virCPUGetHostIsSupported:
+ *
+ * @arch: CPU architecture
+ *
+ * Check whether virCPUGetHost is supported for @arch.
+ *
+ * Returns true if virCPUGetHost is supported, false otherwise.
+ */
+bool
+virCPUGetHostIsSupported(virArch arch)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("arch=%s", virArchToString(arch));
+
+    return (driver = cpuGetSubDriver(arch)) && driver->getHost;
+}
+
+
+/**
  * virCPUGetHost:
  *
  * @arch: CPU architecture

@@ -183,6 +183,9 @@ virCPUDataNew(virArch arch);
 void
 virCPUDataFree(virCPUDataPtr data);
 
+bool
+virCPUGetHostIsSupported(virArch arch);
+
 virCPUDefPtr
 virCPUGetHost(virArch arch,
               virCPUType type,
