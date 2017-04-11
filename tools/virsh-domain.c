@@ -11184,37 +11184,23 @@ static bool
 cmdTTYConsole(vshControl *ctl, const vshCmd *cmd)
 {
     xmlDocPtr xml = NULL;
-    xmlXPathObjectPtr obj = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    virDomainPtr dom;
     bool ret = false;
-    char *doc;
+    char *tty = NULL;
 
-    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+    if (virshDomainGetXML(ctl, cmd, 0, &xml, &ctxt) < 0)
         return false;
 
-    doc = virDomainGetXMLDesc(dom, 0);
-    if (!doc)
+    if (!(tty = virXPathString("string(/domain/devices/console/@tty)", ctxt)))
         goto cleanup;
 
-    xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt);
-    VIR_FREE(doc);
-    if (!xml)
-        goto cleanup;
-
-    obj = xmlXPathEval(BAD_CAST "string(/domain/devices/console/@tty)", ctxt);
-    if (obj == NULL || obj->type != XPATH_STRING ||
-        obj->stringval == NULL || obj->stringval[0] == 0) {
-        goto cleanup;
-    }
-    vshPrint(ctl, "%s\n", (const char *)obj->stringval);
+    vshPrint(ctl, "%s\n", tty);
     ret = true;
 
  cleanup:
-    xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    virshDomainFree(dom);
+    VIR_FREE(tty);
     return ret;
 }
 
