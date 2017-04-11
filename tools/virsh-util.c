@@ -160,3 +160,13 @@ virshDomainFree(virDomainPtr dom)
 
     virDomainFree(dom); /* sc_prohibit_obj_free_apis_in_virsh */
 }
+
+
+void
+virshDomainSnapshotFree(virDomainSnapshotPtr snap)
+{
+    if (!snap)
+        return;
+
+    virDomainSnapshotFree(snap); /* sc_prohibit_obj_free_apis_in_virsh */
+}
