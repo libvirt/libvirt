@@ -250,14 +250,16 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
         goto cleanup;
 
     for (i = 0; i < 10; i++) {
-        size_t want;
+        size_t want, got;
         if (i == 9)
             want = PATTERN_LEN / 2;
         else
             want = PATTERN_LEN;
 
-        if (saferead(fd, buf, want) != want) {
-            virFilePrintf(stderr, "Short read from data\n");
+        if ((got = saferead(fd, buf, want)) != want) {
+            virFilePrintf(stderr,
+                          "Short read from data, i=%zu got=%zu want=%zu\n",
+                          i, got, want);
             goto cleanup;
         }
 
