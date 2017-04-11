@@ -63,7 +63,6 @@ virshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
                           unsigned int flags)
 {
     char *desc = NULL;
-    char *domxml = NULL;
     virErrorPtr err = NULL;
     xmlDocPtr doc = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -90,16 +89,9 @@ virshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
     }
 
     /* fall back to xml */
-    /* get domain's xml description and extract the title/description */
-    if (!(domxml = virDomainGetXMLDesc(dom, flags))) {
-        vshError(ctl, "%s", _("Failed to retrieve domain XML"));
+    if (virshDomainGetXMLFromDom(ctl, dom, flags, &doc, &ctxt) < 0)
         goto cleanup;
-    }
-    doc = virXMLParseStringCtxt(domxml, _("(domain_definition)"), &ctxt);
-    if (!doc) {
-        vshError(ctl, "%s", _("Couldn't parse domain XML"));
-        goto cleanup;
-    }
+
     if (title)
         desc = virXPathString("string(./title[1])", ctxt);
     else
@@ -109,7 +101,6 @@ virshGetDomainDescription(vshControl *ctl, virDomainPtr dom, bool title,
         desc = vshStrdup(ctl, "");
 
  cleanup:
-    VIR_FREE(domxml);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(doc);
 
@@ -465,10 +456,8 @@ static const vshCmdOptDef opts_domblklist[] = {
 static bool
 cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
     bool ret = false;
     unsigned int flags = 0;
-    char *xml = NULL;
     xmlDocPtr xmldoc = NULL;
     xmlXPathContextPtr ctxt = NULL;
     int ndisks;
@@ -485,15 +474,7 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
 
     details = vshCommandOptBool(cmd, "details");
 
-    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
-        return false;
-
-    xml = virDomainGetXMLDesc(dom, flags);
-    if (!xml)
-        goto cleanup;
-
-    xmldoc = virXMLParseStringCtxt(xml, _("(domain_definition)"), &ctxt);
-    if (!xmldoc)
+    if (virshDomainGetXML(ctl, cmd, flags, &xmldoc, &ctxt) < 0)
         goto cleanup;
 
     ndisks = virXPathNodeSet("./devices/disk", ctxt, &disks);
@@ -553,8 +534,6 @@ cmdDomblklist(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(disks);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xmldoc);
-    VIR_FREE(xml);
-    virshDomainFree(dom);
     return ret;
 }
 
@@ -579,10 +558,8 @@ static const vshCmdOptDef opts_domiflist[] = {
 static bool
 cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
     bool ret = false;
     unsigned int flags = 0;
-    char *xml = NULL;
     xmlDocPtr xmldoc = NULL;
     xmlXPathContextPtr ctxt = NULL;
     int ninterfaces;
@@ -592,15 +569,7 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "inactive"))
         flags |= VIR_DOMAIN_XML_INACTIVE;
 
-    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
-        return false;
-
-    xml = virDomainGetXMLDesc(dom, flags);
-    if (!xml)
-        goto cleanup;
-
-    xmldoc = virXMLParseStringCtxt(xml, _("(domain_definition)"), &ctxt);
-    if (!xmldoc)
+    if (virshDomainGetXML(ctl, cmd, flags, &xmldoc, &ctxt) < 0)
         goto cleanup;
 
     ninterfaces = virXPathNodeSet("./devices/interface", ctxt, &interfaces);
@@ -648,8 +617,6 @@ cmdDomiflist(vshControl *ctl, const vshCmd *cmd)
 
  cleanup:
     VIR_FREE(interfaces);
-    virshDomainFree(dom);
-    VIR_FREE(xml);
     xmlFreeDoc(xmldoc);
     xmlXPathFreeContext(ctxt);
     return ret;
@@ -686,13 +653,11 @@ static const vshCmdOptDef opts_domif_getlink[] = {
 static bool
 cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
 {
-    virDomainPtr dom;
     const char *iface = NULL;
     char *state = NULL;
     char *xpath = NULL;
     virMacAddr macaddr;
     char macstr[VIR_MAC_STRING_BUFLEN] = "";
-    char *desc = NULL;
     xmlDocPtr xml = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlNodePtr *interfaces = NULL;
@@ -703,21 +668,11 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "interface", &iface) < 0)
         return false;
 
-    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
-        return false;
-
     if (vshCommandOptBool(cmd, "config"))
         flags = VIR_DOMAIN_XML_INACTIVE;
 
-    if (!(desc = virDomainGetXMLDesc(dom, flags))) {
-        vshError(ctl, _("Failed to get domain description xml"));
+    if (virshDomainGetXML(ctl, cmd, flags, &xml, &ctxt) < 0)
         goto cleanup;
-    }
-
-    if (!(xml = virXMLParseStringCtxt(desc, _("(domain_definition)"), &ctxt))) {
-        vshError(ctl, _("Failed to parse domain description xml"));
-        goto cleanup;
-    }
 
     /* normalize the mac addr */
     if (virMacAddrParse(iface, &macaddr) == 0)
@@ -752,13 +707,11 @@ cmdDomIfGetLink(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    VIR_FREE(desc);
     VIR_FREE(state);
     VIR_FREE(interfaces);
     VIR_FREE(xpath);
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
-    virshDomainFree(dom);
 
     return ret;
 }
