@@ -2475,11 +2475,17 @@ virQEMUCapsGetHostCPUData(virQEMUCapsPtr qemuCaps,
 
 virCPUDefPtr
 virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps,
-                        virDomainVirtType type)
+                        virDomainVirtType type,
+                        virQEMUCapsHostCPUType cpuType)
 {
     virQEMUCapsHostCPUDataPtr cpuData = virQEMUCapsGetHostCPUData(qemuCaps, type);
 
-    return cpuData->reported;
+    switch (cpuType) {
+    case VIR_QEMU_CAPS_HOST_CPU_REPORTED:
+        return cpuData->reported;
+    }
+
+    return NULL;
 }
 
 
@@ -2508,7 +2514,8 @@ virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                virQEMUCapsGuestIsNative(caps->host.arch, qemuCaps->arch);
 
     case VIR_CPU_MODE_HOST_MODEL:
-        return !!virQEMUCapsGetHostModel(qemuCaps, type);
+        return !!virQEMUCapsGetHostModel(qemuCaps, type,
+                                         VIR_QEMU_CAPS_HOST_CPU_REPORTED);
 
     case VIR_CPU_MODE_CUSTOM:
         if (type == VIR_DOMAIN_VIRT_KVM)
@@ -5521,7 +5528,8 @@ virQEMUCapsFillDomainCPUCaps(virCapsPtr caps,
 
     if (virQEMUCapsIsCPUModeSupported(qemuCaps, caps, domCaps->virttype,
                                       VIR_CPU_MODE_HOST_MODEL)) {
-        virCPUDefPtr cpu = virQEMUCapsGetHostModel(qemuCaps, domCaps->virttype);
+        virCPUDefPtr cpu = virQEMUCapsGetHostModel(qemuCaps, domCaps->virttype,
+                                                   VIR_QEMU_CAPS_HOST_CPU_REPORTED);
         domCaps->cpu.hostModel = virCPUDefCopy(cpu);
     }
 

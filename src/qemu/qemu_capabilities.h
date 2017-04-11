@@ -449,8 +449,16 @@ int virQEMUCapsGetCPUDefinitions(virQEMUCapsPtr qemuCaps,
                                  virDomainVirtType type,
                                  char ***names,
                                  size_t *count);
+
+typedef enum {
+    /* Host CPU definition reported in domain capabilities. */
+    VIR_QEMU_CAPS_HOST_CPU_REPORTED,
+} virQEMUCapsHostCPUType;
+
 virCPUDefPtr virQEMUCapsGetHostModel(virQEMUCapsPtr qemuCaps,
-                                     virDomainVirtType type);
+                                     virDomainVirtType type,
+                                     virQEMUCapsHostCPUType cpuType);
+
 bool virQEMUCapsIsCPUModeSupported(virQEMUCapsPtr qemuCaps,
                                    virCapsPtr caps,
                                    virDomainVirtType type,
