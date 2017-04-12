@@ -877,6 +877,7 @@ int virQEMUDriverConfigLoadFile(virQEMUDriverConfigPtr cfg,
     ret = 0;
 
  cleanup:
+    virStringListFree(namespaces);
     virStringListFree(controllers);
     virStringListFree(hugetlbfs);
     virStringListFree(nvram);
