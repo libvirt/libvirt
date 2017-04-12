@@ -182,6 +182,7 @@ test_programs = virshtest sockettest \
 	virpcitest \
 	virendiantest \
 	virfiletest \
+	virfilecachetest \
 	virfirewalltest \
 	viriscsitest \
 	virkeycodetest \
@@ -211,6 +212,7 @@ test_libraries = libshunload.la \
 	virrandommock.la \
 	virhostcpumock.la \
 	domaincapsmock.la \
+	virfilecachemock.la \
 	$(NULL)
 
 if WITH_REMOTE
@@ -1137,6 +1139,12 @@ virhostcpumock_la_CFLAGS = $(AM_CFLAGS)
 virhostcpumock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
 virhostcpumock_la_LIBADD = $(MOCKLIBS_LIBS)
 
+virfilecachemock_la_SOURCES = \
+	virfilecachemock.c
+virfilecachemock_la_CFLAGS = $(AM_CFLAGS)
+virfilecachemock_la_LDFLAGS = $(MOCKLIBS_LDFLAGS)
+virfilecachemock_la_LIBADD = $(MOCKLIBS_LIBS)
+
 if WITH_LINUX
 vircaps2xmltest_SOURCES = \
 	vircaps2xmltest.c testutils.h testutils.c virfilewrapper.h virfilewrapper.c
@@ -1368,6 +1376,10 @@ virendiantest_LDADD = $(LDADDS)
 virfiletest_SOURCES = \
 	virfiletest.c testutils.h testutils.c
 virfiletest_LDADD = $(LDADDS)
+
+virfilecachetest_SOURCES = \
+	virfilecachetest.c testutils.h testutils.c
+virfilecachetest_LDADD = $(LDADDS)
 
 virfirewalltest_SOURCES = \
 	virfirewalltest.c testutils.h testutils.c
