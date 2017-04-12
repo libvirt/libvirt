@@ -330,11 +330,20 @@ qemuHostdevPrepareMediatedDevices(virQEMUDriverPtr driver,
                                   int nhostdevs)
 {
     virHostdevManagerPtr hostdev_mgr = driver->hostdevMgr;
+    bool supportsVFIO = qemuHostdevHostSupportsPassthroughVFIO();
+    size_t i;
 
-    if (!qemuHostdevHostSupportsPassthroughVFIO()) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("host doesn't support VFIO PCI interface"));
-        return -1;
+    for (i = 0; i < nhostdevs; i++) {
+        if (hostdevs[i]->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+            hostdevs[i]->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV) {
+            if (!supportsVFIO) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Mediated host device assignment requires "
+                                 "VFIO support"));
+                return -1;
+            }
+            break;
+        }
     }
 
     return virHostdevPrepareMediatedDevices(hostdev_mgr, QEMU_DRIVER_NAME,
