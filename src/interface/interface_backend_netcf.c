@@ -622,8 +622,10 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
         }
 
         if (ifaces) {
-            if (!(iface_obj = virGetInterface(conn, def->name, def->mac)))
+            if (!(iface_obj = virGetInterface(conn, def->name, def->mac))) {
+                virInterfaceDefFree(def);
                 goto cleanup;
+            }
             tmp_iface_objs[niface_objs] = iface_obj;
         }
         niface_objs++;
