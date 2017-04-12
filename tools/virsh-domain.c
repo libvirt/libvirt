@@ -6618,6 +6618,7 @@ virshVcpuPinQuery(vshControl *ctl,
         }
     }
 
+    VIR_FREE(cpumap);
     return ret;
 }
 
