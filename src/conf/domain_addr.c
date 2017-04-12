@@ -2009,7 +2009,8 @@ virDomainUSBAddressAssign(virDomainUSBAddressSetPtr addrs,
 
     if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB) {
         VIR_DEBUG("A USB port on bus %u was requested", info->addr.usb.bus);
-        if (!addrs->buses[info->addr.usb.bus]) {
+        if (info->addr.usb.bus >= addrs->nbuses ||
+            !addrs->buses[info->addr.usb.bus]) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("USB bus %u requested but no controller "
                              "with that index is present"), info->addr.usb.bus);
