@@ -4025,8 +4025,8 @@ I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
 is in. I<vol-name-or-path> is the name or path of the volume to return the
 volume key for.
 
-=item B<vol-resize> [I<--pool> I<pool-or-uuid>] I<vol-name-or-path>
-I<pool-or-uuid> I<capacity> [I<--allocate>] [I<--delta>] [I<--shrink>]
+=item B<vol-resize> I<vol-name-or-path> I<capacity> [I<--pool> I<pool-or-uuid>]
+[I<--allocate>] [I<--delta>] [I<--shrink>]
 
 Resize the capacity of the given volume, in bytes.
 I<--pool> I<pool-or-uuid> is the name or UUID of the storage pool the volume
