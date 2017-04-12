@@ -1026,33 +1026,30 @@ prev_version_file = /dev/null
 
 ifneq ($(_gl-Makefile),)
 ifeq (0,$(MAKELEVEL))
-  _curr_status = .git-module-status
-  # The sed filter accommodates those who check out on a commit from which
-  # no tag is reachable.  In that case, git submodule status prints a "-"
-  # in column 1 and does not print a "git describe"-style string after the
-  # submodule name.  Contrast these:
-  # -b653eda3ac4864de205419d9f41eec267cb89eeb .gnulib
-  #  b653eda3ac4864de205419d9f41eec267cb89eeb .gnulib (v0.0-2286-gb653eda)
-  # $ cat .git-module-status
-  # b653eda3ac4864de205419d9f41eec267cb89eeb
-  #
-  # Keep this logic in sync with autogen.sh.
-  _submodule_hash = $(SED) 's/^[ +-]//;s/ .*//'
-  _update_required := $(shell						\
-      cd '$(srcdir)';							\
-      test -d .git || { echo 0; exit; };				\
-      test -f po/Makevars || { echo 1; exit; };				\
-      test -f AUTHORS || { echo 1; exit; };				\
-      test "no-git" = "$$(cat $(_curr_status))" && { echo 0; exit; };	\
-      actual=$$(git submodule status | $(_submodule_hash);		\
-		git hash-object bootstrap.conf;				\
-		git ls-tree -d HEAD gnulib/local | awk '{print $$3}';	\
-		git diff .gnulib);					\
-      stamp="$$($(_submodule_hash) $(_curr_status) 2>/dev/null)";	\
-      test "$$stamp" = "$$actual"; echo $$?)
+  _dry_run_result := $(shell \
+      cd '$(srcdir)'; \
+      test -d .git || test -f .git || { echo 0; exit; }; \
+      $(srcdir)/autogen.sh --dry-run >/dev/null 2>&1; \
+      echo $$?; \
+  )
   _clean_requested = $(filter %clean,$(MAKECMDGOALS))
-  ifeq (1,$(_update_required)$(_clean_requested))
-    $(info INFO: gnulib update required; running ./autogen.sh first)
+
+  # A return value of 0 means no action is required
+
+  # A return value of 1 means a genuine error has occurred while
+  # performing the dry run, and it should be reported so it can
+  # be investigated
+  ifeq (1,$(_dry_run_result))
+    $(info INFO: autogen.sh error, running again to show details)
+maint.mk Makefile: _autogen_error
+  endif
+
+  # A return value of 2 means that autogen.sh needs to be executed
+  # in earnest before building, probably because of gnulib updates.
+  # We don't run autogen.sh if the clean target has been invoked,
+  # though, as it would be quite pointless
+  ifeq (2,$(_dry_run_result)$(_clean_requested))
+    $(info INFO: running autogen.sh is required, running it now...)
     $(shell touch $(srcdir)/AUTHORS $(srcdir)/ChangeLog)
 maint.mk Makefile: _autogen
   endif
@@ -1065,6 +1062,10 @@ endif
 _autogen:
 	$(srcdir)/autogen.sh
 	./config.status
+
+.PHONY: _autogen_error
+_autogen_error:
+	$(srcdir)/autogen.sh --dry-run
 
 # regenerate HACKING as part of the syntax-check
 ifneq ($(_gl-Makefile),)
