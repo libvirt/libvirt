@@ -483,18 +483,19 @@ virRotatingFileWriterAppend(virRotatingFileWriterPtr file,
 
         if ((file->entry->pos == file->maxlen && len) ||
             forceRollover) {
-            virRotatingFileWriterEntryPtr tmp = file->entry;
+            virRotatingFileWriterEntryPtr tmp;
             VIR_DEBUG("Hit max size %zu on %s (force=%d)\n",
                       file->maxlen, file->basepath, forceRollover);
 
             if (virRotatingFileWriterRollover(file) < 0)
                 return -1;
 
-            if (!(file->entry = virRotatingFileWriterEntryNew(file->basepath,
-                                                              file->mode)))
+            if (!(tmp = virRotatingFileWriterEntryNew(file->basepath,
+                                                      file->mode)))
                 return -1;
 
-            virRotatingFileWriterEntryFree(tmp);
+            virRotatingFileWriterEntryFree(file->entry);
+            file->entry = tmp;
         }
     }
 
