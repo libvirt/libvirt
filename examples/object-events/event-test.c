@@ -240,6 +240,12 @@ eventDetailToString(int event,
             case VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED:
                 return "Finished";
 
+            case VIR_DOMAIN_EVENT_SHUTDOWN_GUEST:
+                return "Guest request";
+
+            case VIR_DOMAIN_EVENT_SHUTDOWN_HOST:
+                return "Host request";
+
             case VIR_DOMAIN_EVENT_SHUTDOWN_LAST:
                 break;
             }

@@ -1326,13 +1326,13 @@ qemuMonitorEmitEvent(qemuMonitorPtr mon, const char *event,
 
 
 int
-qemuMonitorEmitShutdown(qemuMonitorPtr mon)
+qemuMonitorEmitShutdown(qemuMonitorPtr mon, virTristateBool guest)
 {
     int ret = -1;
-    VIR_DEBUG("mon=%p", mon);
+    VIR_DEBUG("mon=%p guest=%u", mon, guest);
     mon->willhangup = 1;
 
-    QEMU_MONITOR_CALLBACK(mon, ret, domainShutdown, mon->vm);
+    QEMU_MONITOR_CALLBACK(mon, ret, domainShutdown, mon->vm, guest);
     return ret;
 }
 

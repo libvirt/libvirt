@@ -2983,7 +2983,16 @@ typedef enum {
  * Details on the cause of a 'shutdown' lifecycle event
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED = 0, /* Guest finished shutdown sequence */
+    /* Guest finished shutdown sequence */
+    VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED = 0,
+
+    /* Domain finished shutting down after request from the guest itself
+     * (e.g. hardware-specific action) */
+    VIR_DOMAIN_EVENT_SHUTDOWN_GUEST = 1,
+
+    /* Domain finished shutting down after request from the host (e.g. killed by
+     * a signal) */
+    VIR_DOMAIN_EVENT_SHUTDOWN_HOST = 2,
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_SHUTDOWN_LAST

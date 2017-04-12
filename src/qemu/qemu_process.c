@@ -634,12 +634,14 @@ qemuProcessHandleEvent(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
 static int
 qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
                           virDomainObjPtr vm,
+                          virTristateBool guest_initiated,
                           void *opaque)
 {
     virQEMUDriverPtr driver = opaque;
     qemuDomainObjPrivatePtr priv;
     virObjectEventPtr event = NULL;
     virQEMUDriverConfigPtr cfg = virQEMUDriverGetConfig(driver);
+    int detail = 0;
 
     VIR_DEBUG("vm=%p", vm);
 
@@ -662,9 +664,24 @@ qemuProcessHandleShutdown(qemuMonitorPtr mon ATTRIBUTE_UNUSED,
     virDomainObjSetState(vm,
                          VIR_DOMAIN_SHUTDOWN,
                          VIR_DOMAIN_SHUTDOWN_UNKNOWN);
+
+    switch (guest_initiated) {
+    case VIR_TRISTATE_BOOL_YES:
+        detail = VIR_DOMAIN_EVENT_SHUTDOWN_GUEST;
+        break;
+
+    case VIR_TRISTATE_BOOL_NO:
+        detail = VIR_DOMAIN_EVENT_SHUTDOWN_HOST;
+        break;
+
+    default:
+        detail = VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED;
+        break;
+    }
+
     event = virDomainEventLifecycleNewFromObj(vm,
-                                     VIR_DOMAIN_EVENT_SHUTDOWN,
-                                     VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED);
+                                              VIR_DOMAIN_EVENT_SHUTDOWN,
+                                              detail);
 
     if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0) {
         VIR_WARN("Unable to save status on vm %s after state change",
