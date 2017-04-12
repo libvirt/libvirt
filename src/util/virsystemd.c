@@ -135,6 +135,8 @@ virSystemdAppendValidMachineName(virBufferPtr buf,
     bool skip_dot = false;
 
     for (; *name; name++) {
+        if (virBufferError(buf))
+            break;
         if (strlen(virBufferCurrentContent(buf)) >= 64)
             break;
 
