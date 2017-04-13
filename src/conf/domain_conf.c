@@ -13089,7 +13089,6 @@ virSysinfoBaseBoardParseXML(xmlXPathContextPtr ctxt,
     *baseBoard = boards;
     *nbaseBoard = nboards;
     boards = NULL;
-    nboards = 0;
     ret = 0;
  cleanup:
     VIR_FREE(boards);
