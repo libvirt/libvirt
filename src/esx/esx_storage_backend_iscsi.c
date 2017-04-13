@@ -220,7 +220,7 @@ esxStoragePoolLookupByUUID(virConnectPtr conn,
          target; target = target->_next) {
         md5_buffer(target->iScsiName, strlen(target->iScsiName), md5);
 
-        if (memcmp(uuid, md5, VIR_UUID_STRING_BUFLEN) == 0)
+        if (memcmp(uuid, md5, VIR_UUID_BUFLEN) == 0)
             break;
     }
 
