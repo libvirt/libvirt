@@ -5386,6 +5386,7 @@ qemuDomainRemoveVcpuAlias(virQEMUDriverPtr driver,
 
 static int
 qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
+                         virQEMUDriverConfigPtr cfg,
                          virDomainObjPtr vm,
                          unsigned int vcpu)
 {
@@ -5427,6 +5428,11 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
     if (qemuDomainRemoveVcpu(driver, vm, vcpu) < 0)
         goto cleanup;
 
+    qemuDomainVcpuPersistOrder(vm->def);
+
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
+        goto cleanup;
+
     ret = 0;
 
  cleanup:
@@ -5437,6 +5443,7 @@ qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
 
 static int
 qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
+                         virQEMUDriverConfigPtr cfg,
                          virDomainObjPtr vm,
                          unsigned int vcpu)
 {
@@ -5495,6 +5502,11 @@ qemuDomainHotplugAddVcpu(virQEMUDriverPtr driver,
     }
 
     if (qemuDomainValidateVcpuInfo(vm) < 0)
+        goto cleanup;
+
+    qemuDomainVcpuPersistOrder(vm->def);
+
+    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
         goto cleanup;
 
     ret = 0;
@@ -5611,7 +5623,6 @@ qemuDomainSetVcpusLive(virQEMUDriverPtr driver,
     qemuDomainObjPrivatePtr priv = vm->privateData;
     qemuCgroupEmulatorAllNodesDataPtr emulatorCgroup = NULL;
     ssize_t nextvcpu = -1;
-    int rc = 0;
     int ret = -1;
 
     if (qemuCgroupEmulatorAllNodesAllow(priv->cgroup, &emulatorCgroup) < 0)
@@ -5619,26 +5630,18 @@ qemuDomainSetVcpusLive(virQEMUDriverPtr driver,
 
     if (enable) {
         while ((nextvcpu = virBitmapNextSetBit(vcpumap, nextvcpu)) != -1) {
-            if ((rc = qemuDomainHotplugAddVcpu(driver, vm, nextvcpu)) < 0)
-                break;
+            if (qemuDomainHotplugAddVcpu(driver, cfg, vm, nextvcpu) < 0)
+                goto cleanup;
         }
     } else {
         for (nextvcpu = virDomainDefGetVcpusMax(vm->def) - 1; nextvcpu >= 0; nextvcpu--) {
             if (!virBitmapIsBitSet(vcpumap, nextvcpu))
                 continue;
 
-            if ((rc = qemuDomainHotplugDelVcpu(driver, vm, nextvcpu)) < 0)
-                break;
+            if (qemuDomainHotplugDelVcpu(driver, cfg, vm, nextvcpu) < 0)
+                goto cleanup;
         }
     }
-
-    qemuDomainVcpuPersistOrder(vm->def);
-
-    if (virDomainSaveStatus(driver->xmlopt, cfg->stateDir, vm, driver->caps) < 0)
-        goto cleanup;
-
-    if (rc < 0)
-        goto cleanup;
 
     ret = 0;
 
