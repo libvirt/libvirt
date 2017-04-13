@@ -1931,6 +1931,7 @@
                   <value>none</value>
                   <value>qusb1</value>
                   <value>qusb2</value>
+                  <value>qemu-xhci</value>
                 </choice>
               </attribute>
             </optional>

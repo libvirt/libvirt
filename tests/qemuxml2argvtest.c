@@ -1416,6 +1416,10 @@ mymain(void)
     DO_TEST_PARSE_ERROR("usb-controller-xhci-limit",
             QEMU_CAPS_CHARDEV, QEMU_CAPS_NODEFCONFIG, QEMU_CAPS_PIIX3_USB_UHCI,
             QEMU_CAPS_NEC_USB_XHCI, QEMU_CAPS_NEC_USB_XHCI_PORTS);
+    DO_TEST("usb-controller-qemu-xhci", QEMU_CAPS_DEVICE_QEMU_XHCI);
+    DO_TEST_FAILURE("usb-controller-qemu-xhci-unavailable", NONE);
+    DO_TEST_PARSE_ERROR("usb-controller-qemu-xhci-limit",
+                        QEMU_CAPS_DEVICE_QEMU_XHCI);
 
     DO_TEST("smbios", QEMU_CAPS_SMBIOS_TYPE);
     DO_TEST_PARSE_ERROR("smbios-date", QEMU_CAPS_SMBIOS_TYPE);

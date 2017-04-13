@@ -152,6 +152,7 @@ VIR_ENUM_IMPL(qemuControllerModelUSB, VIR_DOMAIN_CONTROLLER_MODEL_USB_LAST,
               "nec-usb-xhci",
               "qusb1",
               "qusb2",
+              "qemu-xhci",
               "none");
 
 VIR_ENUM_DECL(qemuDomainFSDriver)
@@ -2558,6 +2559,8 @@ qemuControllerModelUSBToCaps(int model)
         return QEMU_CAPS_PCI_OHCI;
     case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
         return QEMU_CAPS_NEC_USB_XHCI;
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI:
+        return QEMU_CAPS_DEVICE_QEMU_XHCI;
     default:
         return -1;
     }
@@ -2592,8 +2595,9 @@ qemuBuildUSBControllerDevStr(virDomainControllerDefPtr def,
     virBufferAsprintf(buf, "%s", smodel);
 
     if (def->opts.usbopts.ports != -1) {
-        if (model != VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI ||
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI_PORTS)) {
+        if ((model != VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI ||
+             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_NEC_USB_XHCI_PORTS)) &&
+            model != VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("usb controller type %s doesn't support 'ports' "
                              "with this QEMU binary"), smodel);

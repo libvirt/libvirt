@@ -502,6 +502,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDefPtr dev,
         case VIR_DOMAIN_CONTROLLER_TYPE_USB:
             switch ((virDomainControllerModelUSB) cont->model) {
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
+            case VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI:
                 return pcieFlags;
 
             case VIR_DOMAIN_CONTROLLER_MODEL_USB_EHCI:

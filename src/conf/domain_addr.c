@@ -1673,6 +1673,7 @@ virDomainUSBAddressControllerModelToPorts(virDomainControllerDefPtr cont)
         return 3;
 
     case VIR_DOMAIN_CONTROLLER_MODEL_USB_NEC_XHCI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_USB_QEMU_XHCI:
         if (cont->opts.usbopts.ports != -1)
             return cont->opts.usbopts.ports;
         return 4;
