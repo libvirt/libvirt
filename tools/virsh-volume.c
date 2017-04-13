@@ -1282,10 +1282,8 @@ virshStorageVolListCollect(vshControl *ctl,
         goto cleanup;
     }
 
-    if (nvols == 0) {
-        success = true;
+    if (nvols == 0)
         return list;
-    }
 
     /* Retrieve the list of volume names in the pool */
     names = vshCalloc(ctl, nvols, sizeof(*names));
