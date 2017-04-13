@@ -2467,7 +2467,7 @@ static int testDomainGetVcpus(virDomainPtr domain,
     virDomainObjPtr privdom;
     virDomainDefPtr def;
     size_t i;
-    int maxcpu, hostcpus;
+    int hostcpus;
     int ret = -1;
     struct timeval tv;
     unsigned long long statbase;
@@ -2493,10 +2493,6 @@ static int testDomainGetVcpus(virDomainPtr domain,
     statbase = (tv.tv_sec * 1000UL * 1000UL) + tv.tv_usec;
 
     hostcpus = VIR_NODEINFO_MAXCPUS(privconn->nodeInfo);
-    maxcpu = maplen * 8;
-    if (maxcpu > hostcpus)
-        maxcpu = hostcpus;
-
     if (!(allcpumap = virBitmapNew(hostcpus)))
         goto cleanup;
 
