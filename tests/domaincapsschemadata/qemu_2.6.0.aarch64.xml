@@ -63,7 +63,6 @@
         <value>lun</value>
       </enum>
       <enum name='bus'>
-        <value>ide</value>
         <value>fdc</value>
         <value>scsi</value>
         <value>virtio</value>

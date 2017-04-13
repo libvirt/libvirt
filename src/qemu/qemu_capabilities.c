@@ -5547,8 +5547,10 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCapsPtr qemuCaps,
     if (!qemuDomainMachineIsPSeries(machine, qemuCaps->arch))
         VIR_DOMAIN_CAPS_ENUM_SET(disk->diskDevice, VIR_DOMAIN_DISK_DEVICE_FLOPPY);
 
+    if (qemuDomainMachineHasBuiltinIDE(machine))
+        VIR_DOMAIN_CAPS_ENUM_SET(disk->bus, VIR_DOMAIN_DISK_BUS_IDE);
+
     VIR_DOMAIN_CAPS_ENUM_SET(disk->bus,
-                             VIR_DOMAIN_DISK_BUS_IDE,
                              VIR_DOMAIN_DISK_BUS_SCSI,
                              VIR_DOMAIN_DISK_BUS_VIRTIO,
                              /* VIR_DOMAIN_DISK_BUS_SD */);
