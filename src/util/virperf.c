@@ -83,7 +83,7 @@ static struct virPerfEventAttr attrs[] = {
         .attrType = 0,
         .attrConfig = 2
     },
-    [VIR_PERF_EVENT_MBML] {
+    [VIR_PERF_EVENT_MBML] = {
         .attrType = 0,
         .attrConfig = 3
     },
