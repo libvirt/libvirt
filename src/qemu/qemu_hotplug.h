@@ -140,9 +140,6 @@ int qemuDomainDetachRNGDevice(virQEMUDriverPtr driver,
                               virDomainObjPtr vm,
                               virDomainRNGDefPtr rng);
 
-int qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
-                             virDomainObjPtr vm,
-                             unsigned int vcpu);
 void qemuDomainRemoveVcpuAlias(virQEMUDriverPtr driver,
                                virDomainObjPtr vm,
                                const char *alias);

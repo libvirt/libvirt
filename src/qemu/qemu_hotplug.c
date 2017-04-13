@@ -5384,7 +5384,7 @@ qemuDomainRemoveVcpuAlias(virQEMUDriverPtr driver,
 }
 
 
-int
+static int
 qemuDomainHotplugDelVcpu(virQEMUDriverPtr driver,
                          virDomainObjPtr vm,
                          unsigned int vcpu)
