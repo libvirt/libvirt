@@ -3931,7 +3931,6 @@ testInterfaceUndefine(virInterfacePtr iface)
     ret = 0;
 
  cleanup:
-    testDriverUnlock(privconn);
     return ret;
 }
 
@@ -3960,7 +3959,6 @@ testInterfaceCreate(virInterfacePtr iface,
  cleanup:
     if (privinterface)
         virInterfaceObjUnlock(privinterface);
-    testDriverUnlock(privconn);
     return ret;
 }
 
@@ -3989,7 +3987,6 @@ testInterfaceDestroy(virInterfacePtr iface,
  cleanup:
     if (privinterface)
         virInterfaceObjUnlock(privinterface);
-    testDriverUnlock(privconn);
     return ret;
 }
 
@@ -4480,7 +4477,6 @@ testStoragePoolUndefine(virStoragePoolPtr pool)
     if (privpool)
         virStoragePoolObjUnlock(privpool);
     testObjectEventQueue(privconn, event);
-    testDriverUnlock(privconn);
     return ret;
 }
 
@@ -4591,7 +4587,6 @@ testStoragePoolDestroy(virStoragePoolPtr pool)
     testObjectEventQueue(privconn, event);
     if (privpool)
         virStoragePoolObjUnlock(privpool);
-    testDriverUnlock(privconn);
     return ret;
 }
 
