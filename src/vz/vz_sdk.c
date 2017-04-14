@@ -4902,3 +4902,26 @@ int prlsdkMigrate(virDomainObjPtr dom, virURIPtr uri,
  cleanup:
     return ret;
 }
+
+int prlsdkSetCpuCount(virDomainObjPtr dom, unsigned int count)
+{
+    vzDomObjPtr privdom = dom->privateData;
+    PRL_HANDLE job;
+    PRL_RESULT pret;
+
+    job = PrlVm_BeginEdit(privdom->sdkdom);
+    if (PRL_FAILED(waitDomainJob(job, dom)))
+        goto error;
+
+    pret = PrlVmCfg_SetCpuCount(privdom->sdkdom, count);
+    prlsdkCheckRetGoto(pret, error);
+
+    job = PrlVm_CommitEx(privdom->sdkdom, 0);
+    if (PRL_FAILED(waitDomainJob(job, dom)))
+        goto error;
+
+    return 0;
+
+ error:
+    return -1;
+}

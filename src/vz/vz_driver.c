@@ -3905,6 +3905,47 @@ vzDomainReset(virDomainPtr domain, unsigned int flags)
     return ret;
 }
 
+static int vzDomainSetVcpusFlags(virDomainPtr domain, unsigned int nvcpus,
+                                 unsigned int flags)
+{
+    virDomainObjPtr dom = NULL;
+    int ret = -1;
+    bool job = false;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        goto cleanup;
+
+    if (vzCheckConfigUpdateFlags(dom, &flags) < 0)
+        goto cleanup;
+
+    if (virDomainSetVcpusFlagsEnsureACL(domain->conn, dom->def, flags) < 0)
+        goto cleanup;
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
+    if (vzEnsureDomainExists(dom) < 0)
+        goto cleanup;
+
+    ret = prlsdkSetCpuCount(dom, nvcpus);
+
+ cleanup:
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
+    return ret;
+}
+
+static int vzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
+{
+    return vzDomainSetVcpusFlags(dom, nvcpus,
+                                 VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
+}
+
 static virHypervisorDriver vzHypervisorDriver = {
     .name = "vz",
     .connectOpen = vzConnectOpen,            /* 0.10.0 */
@@ -3954,6 +3995,8 @@ static virHypervisorDriver vzHypervisorDriver = {
     .domainDetachDeviceFlags = vzDomainDetachDeviceFlags, /* 1.2.15 */
     .domainIsActive = vzDomainIsActive, /* 1.2.10 */
     .domainIsUpdated = vzDomainIsUpdated,     /* 1.2.21 */
+    .domainSetVcpus = vzDomainSetVcpus, /* 3.3.0 */
+    .domainSetVcpusFlags = vzDomainSetVcpusFlags, /* 3.3.0 */
     .domainGetVcpusFlags = vzDomainGetVcpusFlags, /* 1.2.21 */
     .domainGetMaxVcpus = vzDomainGetMaxVcpus, /* 1.2.21 */
     .domainSetUserPassword = vzDomainSetUserPassword, /* 2.0.0 */

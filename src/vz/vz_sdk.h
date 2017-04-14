@@ -71,6 +71,7 @@ int
 prlsdkGetMemoryStats(PRL_HANDLE sdkstas, virDomainMemoryStatPtr stats, unsigned int nr_stats);
 /* memsize is in MiB */
 int prlsdkSetMemsize(virDomainObjPtr dom, unsigned int memsize);
+int prlsdkSetCpuCount(virDomainObjPtr dom, unsigned int count);
 int
 prlsdkDomainSetUserPassword(virDomainObjPtr dom,
                             const char *user,
