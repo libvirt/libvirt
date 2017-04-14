@@ -90,3 +90,4 @@ prlsdkMigrate(virDomainObjPtr dom,
 PRL_HANDLE
 prlsdkSdkDomainLookupByName(vzDriverPtr driver, const char *name);
 int prlsdkCancelJob(virDomainObjPtr dom);
+int prlsdkResizeImage(virDomainObjPtr dom, virDomainDiskDefPtr disk, unsigned long long newsize);

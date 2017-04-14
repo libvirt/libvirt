@@ -3945,6 +3945,63 @@ static int vzDomainSetVcpus(virDomainPtr dom, unsigned int nvcpus)
     return vzDomainSetVcpusFlags(dom, nvcpus,
                                  VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG);
 }
+static int
+vzDomainBlockResize(virDomainPtr domain,
+                    const char *path,
+                    unsigned long long size,
+                    unsigned int flags)
+{
+    virDomainObjPtr dom = NULL;
+    virDomainDiskDefPtr disk = NULL;
+    int ret = -1;
+    bool job = false;
+
+    virCheckFlags(VIR_DOMAIN_BLOCK_RESIZE_BYTES, -1);
+
+    if (!(dom = vzDomObjFromDomainRef(domain)))
+        goto cleanup;
+
+    if (virDomainBlockResizeEnsureACL(domain->conn, dom->def) < 0)
+        goto cleanup;
+
+    if (path[0] == '\0') {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       "%s", _("empty path"));
+        goto cleanup;
+    }
+
+    /* sdk wants Mb */
+    if (flags & VIR_DOMAIN_BLOCK_RESIZE_BYTES)
+        size /= 1024;
+    size /= 1024;
+
+    if (!(disk = virDomainDiskByName(dom->def, path, false))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("invalid path: %s"), path);
+        goto cleanup;
+    }
+
+    if (vzDomainObjBeginJob(dom) < 0)
+        goto cleanup;
+    job = true;
+
+    if (vzEnsureDomainExists(dom) < 0)
+        goto cleanup;
+
+    if (!virDomainObjIsActive(dom)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain is not running"));
+        goto cleanup;
+    }
+
+    ret = prlsdkResizeImage(dom, disk, size);
+
+ cleanup:
+    if (job)
+        vzDomainObjEndJob(dom);
+    virDomainObjEndAPI(&dom);
+    return ret;
+}
 
 static virHypervisorDriver vzHypervisorDriver = {
     .name = "vz",
@@ -4046,6 +4103,7 @@ static virHypervisorDriver vzHypervisorDriver = {
     .connectGetAllDomainStats = vzConnectGetAllDomainStats, /* 3.1.0 */
     .domainAbortJob = vzDomainAbortJob, /* 3.1.0 */
     .domainReset = vzDomainReset, /* 3.1.0 */
+    .domainBlockResize = vzDomainBlockResize, /* 3.3.0 */
 };
 
 static virConnectDriver vzConnectDriver = {
