@@ -39,6 +39,10 @@ struct _virInterfaceObj {
     virInterfaceDefPtr def; /* The interface definition */
 };
 
+struct _virInterfaceObjList {
+    size_t count;
+    virInterfaceObjPtr *objs;
+};
 
 /* virInterfaceObj manipulation */
 
@@ -91,6 +95,17 @@ virInterfaceObjSetActive(virInterfaceObjPtr obj,
 
 
 /* virInterfaceObjList manipulation */
+virInterfaceObjListPtr
+virInterfaceObjListNew(void)
+{
+    virInterfaceObjListPtr interfaces;
+
+    if (VIR_ALLOC(interfaces) < 0)
+        return NULL;
+    return interfaces;
+}
+
+
 int
 virInterfaceObjFindByMACString(virInterfaceObjListPtr interfaces,
                                const char *mac,
@@ -149,50 +164,50 @@ virInterfaceObjListFree(virInterfaceObjListPtr interfaces)
 
     for (i = 0; i < interfaces->count; i++)
         virInterfaceObjFree(interfaces->objs[i]);
-
     VIR_FREE(interfaces->objs);
-    interfaces->count = 0;
+    VIR_FREE(interfaces);
 }
 
 
-int
-virInterfaceObjListClone(virInterfaceObjListPtr src,
-                         virInterfaceObjListPtr dest)
+virInterfaceObjListPtr
+virInterfaceObjListClone(virInterfaceObjListPtr interfaces)
 {
-    int ret = -1;
     size_t i;
     unsigned int cnt;
+    virInterfaceObjListPtr dest;
 
-    if (!src || !dest)
-        goto cleanup;
+    if (!interfaces)
+        return NULL;
 
-    virInterfaceObjListFree(dest); /* start with an empty list */
-    cnt = src->count;
+    if (!(dest = virInterfaceObjListNew()))
+        return NULL;
+
+    cnt = interfaces->count;
     for (i = 0; i < cnt; i++) {
-        virInterfaceObjPtr srcobj = src->objs[i];
+        virInterfaceObjPtr srcobj = interfaces->objs[i];
         virInterfaceDefPtr backup;
         virInterfaceObjPtr obj;
         char *xml = virInterfaceDefFormat(srcobj->def);
 
         if (!xml)
-            goto cleanup;
+            goto error;
 
-        if ((backup = virInterfaceDefParseString(xml)) == NULL) {
+        if (!(backup = virInterfaceDefParseString(xml))) {
             VIR_FREE(xml);
-            goto cleanup;
+            goto error;
         }
 
         VIR_FREE(xml);
-        if ((obj = virInterfaceObjAssignDef(dest, backup)) == NULL)
-            goto cleanup;
+        if (!(obj = virInterfaceObjAssignDef(dest, backup)))
+            goto error;
         virInterfaceObjUnlock(obj); /* locked by virInterfaceObjAssignDef */
     }
 
-    ret = cnt;
- cleanup:
-    if ((ret < 0) && dest)
-       virInterfaceObjListFree(dest);
-    return ret;
+    return dest;
+
+ error:
+    virInterfaceObjListFree(dest);
+    return NULL;
 }
 
 

@@ -97,9 +97,9 @@ struct _testDriver {
     virMutex lock;
 
     virNodeInfo nodeInfo;
-    virInterfaceObjList ifaces;
+    virInterfaceObjListPtr ifaces;
     bool transaction_running;
-    virInterfaceObjList backupIfaces;
+    virInterfaceObjListPtr backupIfaces;
     virStoragePoolObjList pools;
     virNodeDeviceObjList devs;
     int numCells;
@@ -154,7 +154,7 @@ testDriverFree(testDriverPtr driver)
     virObjectUnref(driver->domains);
     virNodeDeviceObjListFree(&driver->devs);
     virObjectUnref(driver->networks);
-    virInterfaceObjListFree(&driver->ifaces);
+    virInterfaceObjListFree(driver->ifaces);
     virStoragePoolObjListFree(&driver->pools);
     virObjectUnref(driver->eventState);
     virMutexUnlock(&driver->lock);
@@ -416,6 +416,7 @@ testDriverNew(void)
 
     if (!(ret->xmlopt = virDomainXMLOptionNew(NULL, NULL, &ns)) ||
         !(ret->eventState = virObjectEventStateNew()) ||
+        !(ret->ifaces = virInterfaceObjListNew()) ||
         !(ret->domains = virDomainObjListNew()) ||
         !(ret->networks = virNetworkObjListNew()))
         goto error;
@@ -1020,7 +1021,7 @@ testParseInterfaces(testDriverPtr privconn,
         if (!def)
             goto error;
 
-        if (!(obj = virInterfaceObjAssignDef(&privconn->ifaces, def))) {
+        if (!(obj = virInterfaceObjAssignDef(privconn->ifaces, def))) {
             virInterfaceDefFree(def);
             goto error;
         }
@@ -3630,7 +3631,7 @@ testInterfaceObjFindByName(testDriverPtr privconn,
     virInterfaceObjPtr obj;
 
     testDriverLock(privconn);
-    obj = virInterfaceObjFindByName(&privconn->ifaces, name);
+    obj = virInterfaceObjFindByName(privconn->ifaces, name);
     testDriverUnlock(privconn);
 
     if (!obj)
@@ -3649,7 +3650,7 @@ testConnectNumOfInterfaces(virConnectPtr conn)
     int ninterfaces;
 
     testDriverLock(privconn);
-    ninterfaces = virInterfaceObjNumOfInterfaces(&privconn->ifaces, true);
+    ninterfaces = virInterfaceObjNumOfInterfaces(privconn->ifaces, true);
     testDriverUnlock(privconn);
     return ninterfaces;
 }
@@ -3664,7 +3665,7 @@ testConnectListInterfaces(virConnectPtr conn,
     int nnames;
 
     testDriverLock(privconn);
-    nnames = virInterfaceObjGetNames(&privconn->ifaces, true, names, maxnames);
+    nnames = virInterfaceObjGetNames(privconn->ifaces, true, names, maxnames);
     testDriverUnlock(privconn);
 
     return nnames;
@@ -3678,7 +3679,7 @@ testConnectNumOfDefinedInterfaces(virConnectPtr conn)
     int ninterfaces;
 
     testDriverLock(privconn);
-    ninterfaces = virInterfaceObjNumOfInterfaces(&privconn->ifaces, false);
+    ninterfaces = virInterfaceObjNumOfInterfaces(privconn->ifaces, false);
     testDriverUnlock(privconn);
     return ninterfaces;
 }
@@ -3693,7 +3694,7 @@ testConnectListDefinedInterfaces(virConnectPtr conn,
     int nnames;
 
     testDriverLock(privconn);
-    nnames = virInterfaceObjGetNames(&privconn->ifaces, false, names, maxnames);
+    nnames = virInterfaceObjGetNames(privconn->ifaces, false, names, maxnames);
     testDriverUnlock(privconn);
 
     return nnames;
@@ -3731,7 +3732,7 @@ testInterfaceLookupByMACString(virConnectPtr conn,
     virInterfacePtr ret = NULL;
 
     testDriverLock(privconn);
-    ifacect = virInterfaceObjFindByMACString(&privconn->ifaces, mac, &obj, 1);
+    ifacect = virInterfaceObjFindByMACString(privconn->ifaces, mac, &obj, 1);
     testDriverUnlock(privconn);
 
     if (ifacect == 0) {
@@ -3789,8 +3790,7 @@ testInterfaceChangeBegin(virConnectPtr conn,
 
     privconn->transaction_running = true;
 
-    if (virInterfaceObjListClone(&privconn->ifaces,
-                                 &privconn->backupIfaces) < 0)
+    if (!(privconn->backupIfaces = virInterfaceObjListClone(privconn->ifaces)))
         goto cleanup;
 
     ret = 0;
@@ -3818,7 +3818,7 @@ testInterfaceChangeCommit(virConnectPtr conn,
         goto cleanup;
     }
 
-    virInterfaceObjListFree(&privconn->backupIfaces);
+    virInterfaceObjListFree(privconn->backupIfaces);
     privconn->transaction_running = false;
 
     ret = 0;
@@ -3848,11 +3848,9 @@ testInterfaceChangeRollback(virConnectPtr conn,
         goto cleanup;
     }
 
-    virInterfaceObjListFree(&privconn->ifaces);
-    privconn->ifaces.count = privconn->backupIfaces.count;
-    privconn->ifaces.objs = privconn->backupIfaces.objs;
-    privconn->backupIfaces.count = 0;
-    privconn->backupIfaces.objs = NULL;
+    virInterfaceObjListFree(privconn->ifaces);
+    privconn->ifaces = privconn->backupIfaces;
+    privconn->backupIfaces = NULL;
 
     privconn->transaction_running = false;
 
@@ -3903,7 +3901,7 @@ testInterfaceDefineXML(virConnectPtr conn,
     if ((def = virInterfaceDefParseString(xmlStr)) == NULL)
         goto cleanup;
 
-    if ((obj = virInterfaceObjAssignDef(&privconn->ifaces, def)) == NULL)
+    if ((obj = virInterfaceObjAssignDef(privconn->ifaces, def)) == NULL)
         goto cleanup;
     def = NULL;
     objdef = virInterfaceObjGetDef(obj);
@@ -3928,7 +3926,7 @@ testInterfaceUndefine(virInterfacePtr iface)
     if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
         return -1;
 
-    virInterfaceObjRemove(&privconn->ifaces, obj);
+    virInterfaceObjRemove(privconn->ifaces, obj);
 
     return 0;
 }

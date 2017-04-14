@@ -918,6 +918,7 @@ virInterfaceObjGetNames;
 virInterfaceObjIsActive;
 virInterfaceObjListClone;
 virInterfaceObjListFree;
+virInterfaceObjListNew;
 virInterfaceObjLock;
 virInterfaceObjNumOfInterfaces;
 virInterfaceObjRemove;

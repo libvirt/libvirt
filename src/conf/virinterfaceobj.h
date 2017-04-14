@@ -27,10 +27,6 @@ typedef virInterfaceObj *virInterfaceObjPtr;
 
 typedef struct _virInterfaceObjList virInterfaceObjList;
 typedef virInterfaceObjList *virInterfaceObjListPtr;
-struct _virInterfaceObjList {
-    size_t count;
-    virInterfaceObjPtr *objs;
-};
 
 virInterfaceDefPtr
 virInterfaceObjGetDef(virInterfaceObjPtr obj);
@@ -41,6 +37,9 @@ virInterfaceObjIsActive(virInterfaceObjPtr obj);
 void
 virInterfaceObjSetActive(virInterfaceObjPtr obj,
                          bool active);
+
+virInterfaceObjListPtr
+virInterfaceObjListNew(void);
 
 int
 virInterfaceObjFindByMACString(virInterfaceObjListPtr interfaces,
@@ -57,9 +56,8 @@ virInterfaceObjFree(virInterfaceObjPtr obj);
 void
 virInterfaceObjListFree(virInterfaceObjListPtr vms);
 
-int
-virInterfaceObjListClone(virInterfaceObjListPtr src,
-                         virInterfaceObjListPtr dest);
+virInterfaceObjListPtr
+virInterfaceObjListClone(virInterfaceObjListPtr interfaces);
 
 virInterfaceObjPtr
 virInterfaceObjAssignDef(virInterfaceObjListPtr interfaces,
