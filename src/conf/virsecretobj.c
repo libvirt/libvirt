@@ -457,8 +457,10 @@ virSecretObjListGetHelper(void *payload,
     if (data->uuids) {
         char *uuidstr;
 
-        if (VIR_ALLOC_N(uuidstr, VIR_UUID_STRING_BUFLEN) < 0)
+        if (VIR_ALLOC_N(uuidstr, VIR_UUID_STRING_BUFLEN) < 0) {
+            data->error = true;
             goto cleanup;
+        }
 
         virUUIDFormat(obj->def->uuid, uuidstr);
         data->uuids[data->got] = uuidstr;
