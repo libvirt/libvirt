@@ -1021,7 +1021,7 @@ testParseInterfaces(testDriverPtr privconn,
         if (!def)
             goto error;
 
-        if (!(obj = virInterfaceObjAssignDef(privconn->ifaces, def))) {
+        if (!(obj = virInterfaceObjListAssignDef(privconn->ifaces, def))) {
             virInterfaceDefFree(def);
             goto error;
         }
@@ -3631,7 +3631,7 @@ testInterfaceObjFindByName(testDriverPtr privconn,
     virInterfaceObjPtr obj;
 
     testDriverLock(privconn);
-    obj = virInterfaceObjFindByName(privconn->ifaces, name);
+    obj = virInterfaceObjListFindByName(privconn->ifaces, name);
     testDriverUnlock(privconn);
 
     if (!obj)
@@ -3650,7 +3650,7 @@ testConnectNumOfInterfaces(virConnectPtr conn)
     int ninterfaces;
 
     testDriverLock(privconn);
-    ninterfaces = virInterfaceObjNumOfInterfaces(privconn->ifaces, true);
+    ninterfaces = virInterfaceObjListNumOfInterfaces(privconn->ifaces, true);
     testDriverUnlock(privconn);
     return ninterfaces;
 }
@@ -3665,7 +3665,8 @@ testConnectListInterfaces(virConnectPtr conn,
     int nnames;
 
     testDriverLock(privconn);
-    nnames = virInterfaceObjGetNames(privconn->ifaces, true, names, maxnames);
+    nnames = virInterfaceObjListGetNames(privconn->ifaces, true,
+                                         names, maxnames);
     testDriverUnlock(privconn);
 
     return nnames;
@@ -3679,7 +3680,7 @@ testConnectNumOfDefinedInterfaces(virConnectPtr conn)
     int ninterfaces;
 
     testDriverLock(privconn);
-    ninterfaces = virInterfaceObjNumOfInterfaces(privconn->ifaces, false);
+    ninterfaces = virInterfaceObjListNumOfInterfaces(privconn->ifaces, false);
     testDriverUnlock(privconn);
     return ninterfaces;
 }
@@ -3694,7 +3695,8 @@ testConnectListDefinedInterfaces(virConnectPtr conn,
     int nnames;
 
     testDriverLock(privconn);
-    nnames = virInterfaceObjGetNames(privconn->ifaces, false, names, maxnames);
+    nnames = virInterfaceObjListGetNames(privconn->ifaces, false,
+                                         names, maxnames);
     testDriverUnlock(privconn);
 
     return nnames;
@@ -3732,7 +3734,7 @@ testInterfaceLookupByMACString(virConnectPtr conn,
     virInterfacePtr ret = NULL;
 
     testDriverLock(privconn);
-    ifacect = virInterfaceObjFindByMACString(privconn->ifaces, mac, &obj, 1);
+    ifacect = virInterfaceObjListFindByMACString(privconn->ifaces, mac, &obj, 1);
     testDriverUnlock(privconn);
 
     if (ifacect == 0) {
@@ -3901,7 +3903,7 @@ testInterfaceDefineXML(virConnectPtr conn,
     if ((def = virInterfaceDefParseString(xmlStr)) == NULL)
         goto cleanup;
 
-    if ((obj = virInterfaceObjAssignDef(privconn->ifaces, def)) == NULL)
+    if ((obj = virInterfaceObjListAssignDef(privconn->ifaces, def)) == NULL)
         goto cleanup;
     def = NULL;
     objdef = virInterfaceObjGetDef(obj);
@@ -3926,7 +3928,7 @@ testInterfaceUndefine(virInterfacePtr iface)
     if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
         return -1;
 
-    virInterfaceObjRemove(privconn->ifaces, obj);
+    virInterfaceObjListRemove(privconn->ifaces, obj);
 
     return 0;
 }

@@ -910,18 +910,18 @@ virDomainObjListRename;
 
 
 # conf/virinterfaceobj.h
-virInterfaceObjAssignDef;
-virInterfaceObjFindByMACString;
-virInterfaceObjFindByName;
 virInterfaceObjGetDef;
-virInterfaceObjGetNames;
 virInterfaceObjIsActive;
+virInterfaceObjListAssignDef;
 virInterfaceObjListClone;
+virInterfaceObjListFindByMACString;
+virInterfaceObjListFindByName;
 virInterfaceObjListFree;
+virInterfaceObjListGetNames;
 virInterfaceObjListNew;
+virInterfaceObjListNumOfInterfaces;
+virInterfaceObjListRemove;
 virInterfaceObjLock;
-virInterfaceObjNumOfInterfaces;
-virInterfaceObjRemove;
 virInterfaceObjSetActive;
 virInterfaceObjUnlock;
 

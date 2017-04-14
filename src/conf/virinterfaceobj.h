@@ -42,13 +42,14 @@ virInterfaceObjListPtr
 virInterfaceObjListNew(void);
 
 int
-virInterfaceObjFindByMACString(virInterfaceObjListPtr interfaces,
-                               const char *mac,
-                               virInterfaceObjPtr *matches, int maxmatches);
+virInterfaceObjListFindByMACString(virInterfaceObjListPtr interfaces,
+                                   const char *mac,
+                                   virInterfaceObjPtr *matches,
+                                   int maxmatches);
 
 virInterfaceObjPtr
-virInterfaceObjFindByName(virInterfaceObjListPtr interfaces,
-                          const char *name);
+virInterfaceObjListFindByName(virInterfaceObjListPtr interfaces,
+                              const char *name);
 
 void
 virInterfaceObjFree(virInterfaceObjPtr obj);
@@ -60,12 +61,12 @@ virInterfaceObjListPtr
 virInterfaceObjListClone(virInterfaceObjListPtr interfaces);
 
 virInterfaceObjPtr
-virInterfaceObjAssignDef(virInterfaceObjListPtr interfaces,
-                         virInterfaceDefPtr def);
+virInterfaceObjListAssignDef(virInterfaceObjListPtr interfaces,
+                             virInterfaceDefPtr def);
 
 void
-virInterfaceObjRemove(virInterfaceObjListPtr interfaces,
-                      virInterfaceObjPtr obj);
+virInterfaceObjListRemove(virInterfaceObjListPtr interfaces,
+                          virInterfaceObjPtr obj);
 
 void
 virInterfaceObjLock(virInterfaceObjPtr obj);
@@ -78,13 +79,13 @@ typedef bool
                              virInterfaceDefPtr def);
 
 int
-virInterfaceObjNumOfInterfaces(virInterfaceObjListPtr interfaces,
-                               bool wantActive);
+virInterfaceObjListNumOfInterfaces(virInterfaceObjListPtr interfaces,
+                                   bool wantActive);
 
 int
-virInterfaceObjGetNames(virInterfaceObjListPtr interfaces,
-                        bool wantActive,
-                        char **const names,
-                        int maxnames);
+virInterfaceObjListGetNames(virInterfaceObjListPtr interfaces,
+                            bool wantActive,
+                            char **const names,
+                            int maxnames);
 
 #endif /* __VIRINTERFACEOBJ_H__ */
