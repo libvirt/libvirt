@@ -3709,13 +3709,11 @@ testInterfaceLookupByName(virConnectPtr conn,
     virInterfacePtr ret = NULL;
 
     if (!(obj = testInterfaceObjFindByName(privconn, name)))
-        goto cleanup;
+        return NULL;
 
     ret = virGetInterface(conn, obj->def->name, obj->def->mac);
 
- cleanup:
-    if (obj)
-        virInterfaceObjUnlock(obj);
+    virInterfaceObjUnlock(obj);
     return ret;
 }
 
@@ -3760,13 +3758,11 @@ testInterfaceIsActive(virInterfacePtr iface)
     int ret = -1;
 
     if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
-        goto cleanup;
+        return -1;
 
     ret = virInterfaceObjIsActive(obj);
 
- cleanup:
-    if (obj)
-        virInterfaceObjUnlock(obj);
+    virInterfaceObjUnlock(obj);
     return ret;
 }
 
@@ -3875,13 +3871,11 @@ testInterfaceGetXMLDesc(virInterfacePtr iface,
     virCheckFlags(0, NULL);
 
     if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
-        goto cleanup;
+        return NULL;
 
     ret = virInterfaceDefFormat(obj->def);
 
- cleanup:
-    if (obj)
-        virInterfaceObjUnlock(obj);
+    virInterfaceObjUnlock(obj);
     return ret;
 }
 
@@ -3922,16 +3916,13 @@ testInterfaceUndefine(virInterfacePtr iface)
 {
     testDriverPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr obj;
-    int ret = -1;
 
     if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
-        goto cleanup;
+        return -1;
 
     virInterfaceObjRemove(&privconn->ifaces, obj);
-    ret = 0;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -3946,7 +3937,7 @@ testInterfaceCreate(virInterfacePtr iface,
     virCheckFlags(0, -1);
 
     if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
-        goto cleanup;
+        return -1;
 
     if (obj->active != 0) {
         virReportError(VIR_ERR_OPERATION_INVALID, NULL);
@@ -3957,8 +3948,7 @@ testInterfaceCreate(virInterfacePtr iface,
     ret = 0;
 
  cleanup:
-    if (obj)
-        virInterfaceObjUnlock(obj);
+    virInterfaceObjUnlock(obj);
     return ret;
 }
 
@@ -3974,7 +3964,7 @@ testInterfaceDestroy(virInterfacePtr iface,
     virCheckFlags(0, -1);
 
     if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
-        goto cleanup;
+        return -1;
 
     if (obj->active == 0) {
         virReportError(VIR_ERR_OPERATION_INVALID, NULL);
@@ -3985,8 +3975,7 @@ testInterfaceDestroy(virInterfacePtr iface,
     ret = 0;
 
  cleanup:
-    if (obj)
-        virInterfaceObjUnlock(obj);
+    virInterfaceObjUnlock(obj);
     return ret;
 }
 
