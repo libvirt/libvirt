@@ -44,7 +44,7 @@ virInterfaceObjListNew(void);
 int
 virInterfaceObjListFindByMACString(virInterfaceObjListPtr interfaces,
                                    const char *mac,
-                                   virInterfaceObjPtr *matches,
+                                   char **const matches,
                                    int maxmatches);
 
 virInterfaceObjPtr

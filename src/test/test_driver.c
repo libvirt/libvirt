@@ -3728,17 +3728,18 @@ testInterfaceLookupByMACString(virConnectPtr conn,
                                const char *mac)
 {
     testDriverPtr privconn = conn->privateData;
-    virInterfaceObjPtr obj;
-    virInterfaceDefPtr def;
     int ifacect;
+    char *ifacenames[] = { NULL, NULL };
     virInterfacePtr ret = NULL;
 
     testDriverLock(privconn);
-    ifacect = virInterfaceObjListFindByMACString(privconn->ifaces, mac, &obj, 1);
+    ifacect = virInterfaceObjListFindByMACString(privconn->ifaces, mac,
+                                                 ifacenames, 2);
     testDriverUnlock(privconn);
 
     if (ifacect == 0) {
-        virReportError(VIR_ERR_NO_INTERFACE, NULL);
+        virReportError(VIR_ERR_NO_INTERFACE,
+                       _("no interface with matching mac '%s'"), mac);
         goto cleanup;
     }
 
@@ -3747,12 +3748,11 @@ testInterfaceLookupByMACString(virConnectPtr conn,
         goto cleanup;
     }
 
-    def = virInterfaceObjGetDef(obj);
-    ret = virGetInterface(conn, def->name, def->mac);
+    ret = virGetInterface(conn, ifacenames[0], mac);
 
  cleanup:
-    if (obj)
-        virInterfaceObjUnlock(obj);
+    VIR_FREE(ifacenames[0]);
+    VIR_FREE(ifacenames[1]);
     return ret;
 }
 

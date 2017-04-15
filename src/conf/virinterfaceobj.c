@@ -109,11 +109,11 @@ virInterfaceObjListNew(void)
 int
 virInterfaceObjListFindByMACString(virInterfaceObjListPtr interfaces,
                                    const char *mac,
-                                   virInterfaceObjPtr *matches,
+                                   char **const matches,
                                    int maxmatches)
 {
     size_t i;
-    unsigned int matchct = 0;
+    int matchct = 0;
 
     for (i = 0; i < interfaces->count; i++) {
         virInterfaceObjPtr obj = interfaces->objs[i];
@@ -122,18 +122,23 @@ virInterfaceObjListFindByMACString(virInterfaceObjListPtr interfaces,
         virInterfaceObjLock(obj);
         def = obj->def;
         if (STRCASEEQ(def->mac, mac)) {
-            matchct++;
-            if (matchct <= maxmatches) {
-                matches[matchct - 1] = obj;
-                /* keep the lock if we're returning object to caller */
-                /* it is the caller's responsibility to unlock *all* matches */
-                continue;
+            if (matchct < maxmatches) {
+                if (VIR_STRDUP(matches[matchct], def->name) < 0) {
+                    virInterfaceObjUnlock(obj);
+                    goto error;
+                }
+                matchct++;
             }
         }
         virInterfaceObjUnlock(obj);
-
     }
     return matchct;
+
+ error:
+    while (--matchct >= 0)
+        VIR_FREE(matches[matchct]);
+
+    return -1;
 }
 
 
