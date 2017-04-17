@@ -226,7 +226,8 @@ int virNetDevExists(const char *ifname)
  * virNetDevSetMACInternal:
  * @ifname: interface name to set MTU for
  * @macaddr: MAC address
- * @quiet: true if a failure to set MAC address with errno == EADDRNOTAVAIL
+ * @quiet: true if a failure to set MAC address with
+ *         errno == EADDRNOTAVAIL || errno == EPERM
  *         should be silent (still returns error, but without log)
  *
  * This function sets the @macaddr for a given interface @ifname.
@@ -258,7 +259,8 @@ virNetDevSetMACInternal(const char *ifname,
 
     if (ioctl(fd, SIOCSIFHWADDR, &ifr) < 0) {
 
-        if (quiet && errno == EADDRNOTAVAIL)
+        if (quiet &&
+            (errno == EADDRNOTAVAIL || errno == EPERM))
             goto cleanup;
 
         virReportSystemError(errno,
@@ -305,7 +307,8 @@ virNetDevSetMACInternal(const char *ifname,
         ifr.ifr_addr.sa_len = VIR_MAC_BUFLEN;
 
         if (ioctl(s, SIOCSIFLLADDR, &ifr) < 0) {
-            if (quiet && errno == EADDRNOTAVAIL)
+            if (quiet &&
+                (errno == EADDRNOTAVAIL || errno == EPERM))
                 goto cleanup;
 
             virReportSystemError(errno,
@@ -2229,11 +2232,12 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
             int retries = 100;
 
             /* if pfDevOrig == NULL, this isn't a VF, so we've failed */
-            if (!pfDevOrig || errno != EADDRNOTAVAIL)
+            if (!pfDevOrig ||
+                (errno != EADDRNOTAVAIL && errno != EPERM))
                 goto cleanup;
 
             /* Otherwise this is a VF, and virNetDevSetMAC failed with
-             * EADDRNOTAVAIL, which could be due to the
+             * EADDRNOTAVAIL/EPERM, which could be due to the
              * "administratively set" flag being set in the PF for
              * this VF.  When this happens, we can attempt to use an
              * alternate method to set the VF MAC: first set it into
