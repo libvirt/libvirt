@@ -1743,10 +1743,16 @@ static int virNetClientIOEventLoop(virNetClientPtr client,
         if (error)
             goto error;
 
-        if (fds[0].revents & (POLLHUP | POLLERR)) {
-            virNetClientMarkClose(client, VIR_CONNECT_CLOSE_REASON_EOF);
+        if (fds[0].revents & POLLHUP) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("received hangup / error event on socket"));
+                           _("received hangup event on socket"));
+            virNetClientMarkClose(client, VIR_CONNECT_CLOSE_REASON_EOF);
+            goto error;
+        }
+        if (fds[0].revents & POLLERR) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("received error event on socket"));
+            virNetClientMarkClose(client, VIR_CONNECT_CLOSE_REASON_ERROR);
             goto error;
         }
     }
