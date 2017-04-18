@@ -1286,76 +1286,102 @@ virPCIEDeviceInfoParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
+virNodeDevPCICapSRIOVPhysicalParseXML(xmlXPathContextPtr ctxt,
+                                      virNodeDevCapPCIDevPtr pci_dev)
+{
+    xmlNodePtr address = virXPathNode("./address[1]", ctxt);
+
+    if (VIR_ALLOC(pci_dev->physical_function) < 0)
+        return -1;
+
+    if (!address) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Missing address in 'phys_function' capability"));
+        return -1;
+    }
+
+    if (virPCIDeviceAddressParseXML(address,
+                                    pci_dev->physical_function) < 0)
+        return -1;
+
+    pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
+
+    return 0;
+}
+
+
+static int
+virNodeDevPCICapSRIOVVirtualParseXML(xmlXPathContextPtr ctxt,
+                                     virNodeDevCapPCIDevPtr pci_dev)
+{
+    int ret = -1;
+    xmlNodePtr *addresses = NULL;
+    int naddresses = virXPathNodeSet("./address", ctxt, &addresses);
+    char *maxFuncsStr = virXPathString("string(./@maxCount)", ctxt);
+    size_t i;
+
+    if (naddresses < 0)
+        goto cleanup;
+
+    if (maxFuncsStr &&
+        virStrToLong_uip(maxFuncsStr, NULL, 10,
+                         &pci_dev->max_virtual_functions) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Malformed 'maxCount' parameter"));
+        goto cleanup;
+    }
+
+    if (VIR_ALLOC_N(pci_dev->virtual_functions, naddresses) < 0)
+        goto cleanup;
+
+    for (i = 0; i < naddresses; i++) {
+        virPCIDeviceAddressPtr addr = NULL;
+
+        if (VIR_ALLOC(addr) < 0)
+            goto cleanup;
+
+        if (virPCIDeviceAddressParseXML(addresses[i], addr) < 0) {
+            VIR_FREE(addr);
+            goto cleanup;
+        }
+
+        if (VIR_APPEND_ELEMENT(pci_dev->virtual_functions,
+                               pci_dev->num_virtual_functions,
+                               addr) < 0)
+            goto cleanup;
+    }
+
+    pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
+    ret = 0;
+ cleanup:
+    VIR_FREE(addresses);
+    VIR_FREE(maxFuncsStr);
+    return ret;
+}
+
+
+static int
 virNodeDevPCICapabilityParseXML(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node,
                                 virNodeDevCapPCIDevPtr pci_dev)
 {
-    char *maxFuncsStr = virXMLPropString(node, "maxCount");
     char *type = virXMLPropString(node, "type");
-    xmlNodePtr *addresses = NULL;
     xmlNodePtr orignode = ctxt->node;
     int ret = -1;
-    size_t i = 0;
 
     ctxt->node = node;
 
     if (!type) {
         virReportError(VIR_ERR_XML_ERROR, "%s", _("Missing capability type"));
-        goto out;
+        goto cleanup;
     }
 
-    if (STREQ(type, "phys_function")) {
-        xmlNodePtr address = virXPathNode("./address[1]", ctxt);
-
-        if (VIR_ALLOC(pci_dev->physical_function) < 0)
-            goto out;
-
-        if (!address) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing address in 'phys_function' capability"));
-            goto out;
-        }
-
-        if (virPCIDeviceAddressParseXML(address,
-                                        pci_dev->physical_function) < 0)
-            goto out;
-
-        pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_PHYSICAL_FUNCTION;
-    } else if (STREQ(type, "virt_functions")) {
-        int naddresses;
-
-        if ((naddresses = virXPathNodeSet("./address", ctxt, &addresses)) < 0)
-            goto out;
-
-        if (maxFuncsStr &&
-            virStrToLong_uip(maxFuncsStr, NULL, 10,
-                             &pci_dev->max_virtual_functions) < 0) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Malformed 'maxCount' parameter"));
-            goto out;
-        }
-
-        if (VIR_ALLOC_N(pci_dev->virtual_functions, naddresses) < 0)
-            goto out;
-
-        for (i = 0; i < naddresses; i++) {
-            virPCIDeviceAddressPtr addr = NULL;
-
-            if (VIR_ALLOC(addr) < 0)
-                goto out;
-
-            if (virPCIDeviceAddressParseXML(addresses[i], addr) < 0) {
-                VIR_FREE(addr);
-                goto out;
-            }
-
-            if (VIR_APPEND_ELEMENT(pci_dev->virtual_functions,
-                                   pci_dev->num_virtual_functions,
-                                   addr) < 0)
-                goto out;
-        }
-
-        pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION;
+    if (STREQ(type, "phys_function") &&
+        virNodeDevPCICapSRIOVPhysicalParseXML(ctxt, pci_dev) < 0) {
+        goto cleanup;
+    } else if (STREQ(type, "virt_functions") &&
+               virNodeDevPCICapSRIOVVirtualParseXML(ctxt, pci_dev) < 0) {
+        goto cleanup;
     } else {
         int hdrType = virPCIHeaderTypeFromString(type);
 
@@ -1364,9 +1390,7 @@ virNodeDevPCICapabilityParseXML(xmlXPathContextPtr ctxt,
     }
 
     ret = 0;
- out:
-    VIR_FREE(addresses);
-    VIR_FREE(maxFuncsStr);
+ cleanup:
     VIR_FREE(type);
     ctxt->node = orignode;
     return ret;
