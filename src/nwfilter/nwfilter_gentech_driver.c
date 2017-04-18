@@ -60,11 +60,11 @@ static virNWFilterTechDriverPtr filter_tech_drivers[] = {
  * to avoid lock ordering deadlocks. eg __virNWFilterInstantiateFilter
  * will hold a lock on a virNWFilterObjPtr. This in turn invokes
  * virNWFilterInstantiate which invokes virNWFilterDetermineMissingVarsRec
- * which invokes virNWFilterObjFindByName. This iterates over every single
+ * which invokes virNWFilterObjListFindByName. This iterates over every single
  * virNWFilterObjPtr in the list. So if 2 threads try to instantiate a
  * filter in parallel, they'll both hold 1 lock at the top level in
  * __virNWFilterInstantiateFilter which will cause the other thread
- * to deadlock in virNWFilterObjFindByName.
+ * to deadlock in virNWFilterObjListFindByName.
  *
  * XXX better long term solution is to make virNWFilterObjList use a
  * hash table as is done for virDomainObjList. You can then get
@@ -383,8 +383,8 @@ virNWFilterIncludeDefToRuleInst(virNWFilterDriverStatePtr driver,
     int ret = -1;
 
     VIR_DEBUG("Instantiating filter %s", inc->filterref);
-    obj = virNWFilterObjFindByName(&driver->nwfilters,
-                                   inc->filterref);
+    obj = virNWFilterObjListFindByName(&driver->nwfilters,
+                                       inc->filterref);
     if (!obj) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("referenced filter '%s' is missing"),
@@ -545,7 +545,7 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                 break;
         } else if (inc) {
             VIR_DEBUG("Following filter %s", inc->filterref);
-            obj = virNWFilterObjFindByName(&driver->nwfilters, inc->filterref);
+            obj = virNWFilterObjListFindByName(&driver->nwfilters, inc->filterref);
             if (obj) {
 
                 if (virNWFilterObjWantRemoved(obj)) {
@@ -812,7 +812,7 @@ __virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
 
     VIR_DEBUG("filter name: %s", filtername);
 
-    obj = virNWFilterObjFindByName(&driver->nwfilters, filtername);
+    obj = virNWFilterObjListFindByName(&driver->nwfilters, filtername);
     if (!obj) {
         virReportError(VIR_ERR_NO_NWFILTER,
                        _("Could not find filter '%s'"),

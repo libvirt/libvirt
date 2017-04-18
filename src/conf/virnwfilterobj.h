@@ -59,20 +59,20 @@ void
 virNWFilterObjListFree(virNWFilterObjListPtr nwfilters);
 
 void
-virNWFilterObjRemove(virNWFilterObjListPtr nwfilters,
-                     virNWFilterObjPtr obj);
+virNWFilterObjListRemove(virNWFilterObjListPtr nwfilters,
+                         virNWFilterObjPtr obj);
 
 virNWFilterObjPtr
-virNWFilterObjFindByUUID(virNWFilterObjListPtr nwfilters,
-                         const unsigned char *uuid);
+virNWFilterObjListFindByUUID(virNWFilterObjListPtr nwfilters,
+                             const unsigned char *uuid);
 
 virNWFilterObjPtr
-virNWFilterObjFindByName(virNWFilterObjListPtr nwfilters,
-                         const char *name);
+virNWFilterObjListFindByName(virNWFilterObjListPtr nwfilters,
+                             const char *name);
 
 virNWFilterObjPtr
-virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
-                        virNWFilterDefPtr def);
+virNWFilterObjListAssignDef(virNWFilterObjListPtr nwfilters,
+                            virNWFilterDefPtr def);
 
 int
 virNWFilterObjTestUnassignDef(virNWFilterObjPtr obj);
@@ -82,16 +82,16 @@ typedef bool
                             virNWFilterDefPtr def);
 
 int
-virNWFilterObjNumOfNWFilters(virNWFilterObjListPtr nwfilters,
-                             virConnectPtr conn,
-                             virNWFilterObjListFilter aclfilter);
+virNWFilterObjListNumOfNWFilters(virNWFilterObjListPtr nwfilters,
+                                 virConnectPtr conn,
+                                 virNWFilterObjListFilter aclfilter);
 
 int
-virNWFilterObjGetNames(virNWFilterObjListPtr nwfilters,
-                       virConnectPtr conn,
-                       virNWFilterObjListFilter aclfilter,
-                       char **const names,
-                       int maxnames);
+virNWFilterObjListGetNames(virNWFilterObjListPtr nwfilters,
+                           virConnectPtr conn,
+                           virNWFilterObjListFilter aclfilter,
+                           char **const names,
+                           int maxnames);
 
 int
 virNWFilterObjListExport(virConnectPtr conn,
@@ -100,8 +100,8 @@ virNWFilterObjListExport(virConnectPtr conn,
                          virNWFilterObjListFilter aclfilter);
 
 int
-virNWFilterObjLoadAllConfigs(virNWFilterObjListPtr nwfilters,
-                             const char *configDir);
+virNWFilterObjListLoadAllConfigs(virNWFilterObjListPtr nwfilters,
+                                 const char *configDir);
 
 void
 virNWFilterObjLock(virNWFilterObjPtr obj);

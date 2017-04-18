@@ -962,18 +962,18 @@ virNodeDeviceObjUnlock;
 
 
 # conf/virnwfilterobj.h
-virNWFilterObjAssignDef;
-virNWFilterObjFindByName;
-virNWFilterObjFindByUUID;
 virNWFilterObjGetDef;
-virNWFilterObjGetNames;
 virNWFilterObjGetNewDef;
+virNWFilterObjListAssignDef;
 virNWFilterObjListExport;
+virNWFilterObjListFindByName;
+virNWFilterObjListFindByUUID;
 virNWFilterObjListFree;
-virNWFilterObjLoadAllConfigs;
+virNWFilterObjListGetNames;
+virNWFilterObjListLoadAllConfigs;
+virNWFilterObjListNumOfNWFilters;
+virNWFilterObjListRemove;
 virNWFilterObjLock;
-virNWFilterObjNumOfNWFilters;
-virNWFilterObjRemove;
 virNWFilterObjTestUnassignDef;
 virNWFilterObjUnlock;
 virNWFilterObjWantRemoved;
