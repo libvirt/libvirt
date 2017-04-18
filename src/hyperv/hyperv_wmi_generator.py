@@ -251,7 +251,7 @@ class WmiClass:
         for cls in self.versions:
             for prop in cls.properties:
                 # consdered same if matches by name AND type
-                key = "%s_%s" % (prop.name, prop.type)
+                key = "%s_%s_%s" % (prop.name, prop.type, prop.is_array)
 
                 if key in property_info:
                     property_info[key][1] += 1

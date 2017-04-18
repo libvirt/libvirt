@@ -894,8 +894,31 @@ hypervDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     if (VIR_STRDUP(def->name, computerSystem->data.common->ElementName) < 0)
         goto cleanup;
 
-    if (VIR_STRDUP(def->description, virtualSystemSettingData->data.common->Notes) < 0)
-        goto cleanup;
+    if (priv->wmiVersion == HYPERV_WMI_VERSION_V1) {
+        if (VIR_STRDUP(def->description,
+                       virtualSystemSettingData->data.v1->Notes) < 0)
+            goto cleanup;
+    } else if (priv->wmiVersion == HYPERV_WMI_VERSION_V2 &&
+               virtualSystemSettingData->data.v2->Notes.data != NULL) {
+        char **notes = (char **)virtualSystemSettingData->data.v2->Notes.data;
+        virBuffer buf = VIR_BUFFER_INITIALIZER;
+        size_t i = 0;
+
+        /* in practice Notes has 1 element */
+        for (i = 0; i < virtualSystemSettingData->data.v2->Notes.count; i++) {
+            /* but if there's more than 1, separate by double new line */
+            if (virBufferUse(&buf) > 0)
+                virBufferAddLit(&buf, "\n\n");
+
+            virBufferAdd(&buf, *notes, -1);
+            notes++;
+        }
+
+        if (virBufferCheckError(&buf))
+            goto cleanup;
+
+        def->description = virBufferContentAndReset(&buf);
+    }
 
     virDomainDefSetMemoryTotal(def, memorySettingData->data.common->Limit * 1024); /* megabyte to kilobyte */
     def->mem.cur_balloon = memorySettingData->data.common->VirtualQuantity * 1024; /* megabyte to kilobyte */
