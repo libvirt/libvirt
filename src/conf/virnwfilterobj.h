@@ -29,7 +29,7 @@ typedef virNWFilterObj *virNWFilterObjPtr;
 struct _virNWFilterObj {
     virMutex lock;
 
-    int wantRemoved;
+    bool wantRemoved;
 
     virNWFilterDefPtr def;
     virNWFilterDefPtr newDef;

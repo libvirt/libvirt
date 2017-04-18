@@ -185,12 +185,12 @@ virNWFilterObjTestUnassignDef(virNWFilterObjPtr obj)
 {
     int rc = 0;
 
-    obj->wantRemoved = 1;
+    obj->wantRemoved = true;
     /* trigger the update on VMs referencing the filter */
     if (virNWFilterTriggerVMFilterRebuild())
         rc = -1;
 
-    obj->wantRemoved = 0;
+    obj->wantRemoved = false;
 
     return rc;
 }
