@@ -356,6 +356,21 @@ nwfilterStateCleanup(void)
 }
 
 
+static virNWFilterObjPtr
+nwfilterObjFromNWFilter(const unsigned char *uuid)
+{
+    virNWFilterObjPtr obj;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    if (!(obj = virNWFilterObjListFindByUUID(driver->nwfilters, uuid))) {
+        virUUIDFormat(uuid, uuidstr);
+        virReportError(VIR_ERR_NO_NWFILTER,
+                       _("no nwfilter with matching uuid '%s'"), uuidstr);
+    }
+    return obj;
+}
+
+
 static virNWFilterPtr
 nwfilterLookupByUUID(virConnectPtr conn,
                      const unsigned char *uuid)
@@ -365,14 +380,11 @@ nwfilterLookupByUUID(virConnectPtr conn,
     virNWFilterPtr ret = NULL;
 
     nwfilterDriverLock();
-    obj = virNWFilterObjListFindByUUID(driver->nwfilters, uuid);
+    obj = nwfilterObjFromNWFilter(uuid);
     nwfilterDriverUnlock();
 
-    if (!obj) {
-        virReportError(VIR_ERR_NO_NWFILTER,
-                       "%s", _("no nwfilter with matching uuid"));
+    if (!obj)
         goto cleanup;
-    }
     def = virNWFilterObjGetDef(obj);
 
     if (virNWFilterLookupByUUIDEnsureACL(conn, def) < 0)
@@ -528,12 +540,8 @@ nwfilterUndefine(virNWFilterPtr nwfilter)
     virNWFilterWriteLockFilterUpdates();
     virNWFilterCallbackDriversLock();
 
-    obj = virNWFilterObjListFindByUUID(driver->nwfilters, nwfilter->uuid);
-    if (!obj) {
-        virReportError(VIR_ERR_NO_NWFILTER,
-                       "%s", _("no nwfilter with matching uuid"));
+    if (!(obj = nwfilterObjFromNWFilter(nwfilter->uuid)))
         goto cleanup;
-    }
     def = virNWFilterObjGetDef(obj);
 
     if (virNWFilterUndefineEnsureACL(nwfilter->conn, def) < 0)
@@ -575,14 +583,11 @@ nwfilterGetXMLDesc(virNWFilterPtr nwfilter,
     virCheckFlags(0, NULL);
 
     nwfilterDriverLock();
-    obj = virNWFilterObjListFindByUUID(driver->nwfilters, nwfilter->uuid);
+    obj = nwfilterObjFromNWFilter(nwfilter->uuid);
     nwfilterDriverUnlock();
 
-    if (!obj) {
-        virReportError(VIR_ERR_NO_NWFILTER,
-                       "%s", _("no nwfilter with matching uuid"));
+    if (!obj)
         goto cleanup;
-    }
     def = virNWFilterObjGetDef(obj);
 
     if (virNWFilterGetXMLDescEnsureACL(nwfilter->conn, def) < 0)
