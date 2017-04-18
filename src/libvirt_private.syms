@@ -971,6 +971,7 @@ virNWFilterObjListFindByUUID;
 virNWFilterObjListFree;
 virNWFilterObjListGetNames;
 virNWFilterObjListLoadAllConfigs;
+virNWFilterObjListNew;
 virNWFilterObjListNumOfNWFilters;
 virNWFilterObjListRemove;
 virNWFilterObjLock;

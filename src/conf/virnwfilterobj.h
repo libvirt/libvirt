@@ -28,11 +28,6 @@ typedef virNWFilterObj *virNWFilterObjPtr;
 
 typedef struct _virNWFilterObjList virNWFilterObjList;
 typedef virNWFilterObjList *virNWFilterObjListPtr;
-struct _virNWFilterObjList {
-    size_t count;
-    virNWFilterObjPtr *objs;
-};
-
 
 typedef struct _virNWFilterDriverState virNWFilterDriverState;
 typedef virNWFilterDriverState *virNWFilterDriverStatePtr;
@@ -40,7 +35,7 @@ struct _virNWFilterDriverState {
     virMutex lock;
     bool privileged;
 
-    virNWFilterObjList nwfilters;
+    virNWFilterObjListPtr nwfilters;
 
     char *configDir;
     bool watchingFirewallD;
@@ -54,6 +49,9 @@ virNWFilterObjGetNewDef(virNWFilterObjPtr obj);
 
 bool
 virNWFilterObjWantRemoved(virNWFilterObjPtr obj);
+
+virNWFilterObjListPtr
+virNWFilterObjListNew(void);
 
 void
 virNWFilterObjListFree(virNWFilterObjListPtr nwfilters);

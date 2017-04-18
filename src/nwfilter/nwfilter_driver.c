@@ -237,7 +237,10 @@ nwfilterStateInitialize(bool privileged,
 
     VIR_FREE(base);
 
-    if (virNWFilterObjListLoadAllConfigs(&driver->nwfilters, driver->configDir) < 0)
+    if (!(driver->nwfilters = virNWFilterObjListNew()))
+        goto error;
+
+    if (virNWFilterObjListLoadAllConfigs(driver->nwfilters, driver->configDir) < 0)
         goto error;
 
     nwfilterDriverUnlock();
@@ -289,7 +292,7 @@ nwfilterStateReload(void)
     virNWFilterWriteLockFilterUpdates();
     virNWFilterCallbackDriversLock();
 
-    virNWFilterObjListLoadAllConfigs(&driver->nwfilters, driver->configDir);
+    virNWFilterObjListLoadAllConfigs(driver->nwfilters, driver->configDir);
 
     virNWFilterCallbackDriversUnlock();
     virNWFilterUnlockFilterUpdates();
@@ -340,7 +343,7 @@ nwfilterStateCleanup(void)
         nwfilterDriverRemoveDBusMatches();
 
         /* free inactive nwfilters */
-        virNWFilterObjListFree(&driver->nwfilters);
+        virNWFilterObjListFree(driver->nwfilters);
 
         VIR_FREE(driver->configDir);
         nwfilterDriverUnlock();
@@ -362,7 +365,7 @@ nwfilterLookupByUUID(virConnectPtr conn,
     virNWFilterPtr ret = NULL;
 
     nwfilterDriverLock();
-    obj = virNWFilterObjListFindByUUID(&driver->nwfilters, uuid);
+    obj = virNWFilterObjListFindByUUID(driver->nwfilters, uuid);
     nwfilterDriverUnlock();
 
     if (!obj) {
@@ -393,7 +396,7 @@ nwfilterLookupByName(virConnectPtr conn,
     virNWFilterPtr ret = NULL;
 
     nwfilterDriverLock();
-    obj = virNWFilterObjListFindByName(&driver->nwfilters, name);
+    obj = virNWFilterObjListFindByName(driver->nwfilters, name);
     nwfilterDriverUnlock();
 
     if (!obj) {
@@ -421,7 +424,7 @@ nwfilterConnectNumOfNWFilters(virConnectPtr conn)
     if (virConnectNumOfNWFiltersEnsureACL(conn) < 0)
         return -1;
 
-    return virNWFilterObjListNumOfNWFilters(&driver->nwfilters, conn,
+    return virNWFilterObjListNumOfNWFilters(driver->nwfilters, conn,
                                         virConnectNumOfNWFiltersCheckACL);
 }
 
@@ -437,7 +440,7 @@ nwfilterConnectListNWFilters(virConnectPtr conn,
         return -1;
 
     nwfilterDriverLock();
-    nnames = virNWFilterObjListGetNames(&driver->nwfilters, conn,
+    nnames = virNWFilterObjListGetNames(driver->nwfilters, conn,
                                     virConnectListNWFiltersCheckACL,
                                     names, maxnames);
     nwfilterDriverUnlock();
@@ -458,7 +461,7 @@ nwfilterConnectListAllNWFilters(virConnectPtr conn,
         return -1;
 
     nwfilterDriverLock();
-    ret = virNWFilterObjListExport(conn, &driver->nwfilters, filters,
+    ret = virNWFilterObjListExport(conn, driver->nwfilters, filters,
                                    virConnectListAllNWFiltersCheckACL);
     nwfilterDriverUnlock();
 
@@ -490,13 +493,13 @@ nwfilterDefineXML(virConnectPtr conn,
     if (virNWFilterDefineXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (!(obj = virNWFilterObjListAssignDef(&driver->nwfilters, def)))
+    if (!(obj = virNWFilterObjListAssignDef(driver->nwfilters, def)))
         goto cleanup;
     def = NULL;
     objdef = virNWFilterObjGetDef(obj);
 
     if (virNWFilterSaveDef(driver->configDir, objdef) < 0) {
-        virNWFilterObjListRemove(&driver->nwfilters, obj);
+        virNWFilterObjListRemove(driver->nwfilters, obj);
         goto cleanup;
     }
 
@@ -525,7 +528,7 @@ nwfilterUndefine(virNWFilterPtr nwfilter)
     virNWFilterWriteLockFilterUpdates();
     virNWFilterCallbackDriversLock();
 
-    obj = virNWFilterObjListFindByUUID(&driver->nwfilters, nwfilter->uuid);
+    obj = virNWFilterObjListFindByUUID(driver->nwfilters, nwfilter->uuid);
     if (!obj) {
         virReportError(VIR_ERR_NO_NWFILTER,
                        "%s", _("no nwfilter with matching uuid"));
@@ -546,7 +549,7 @@ nwfilterUndefine(virNWFilterPtr nwfilter)
     if (virNWFilterDeleteDef(driver->configDir, def) < 0)
         goto cleanup;
 
-    virNWFilterObjListRemove(&driver->nwfilters, obj);
+    virNWFilterObjListRemove(driver->nwfilters, obj);
     obj = NULL;
     ret = 0;
 
@@ -572,7 +575,7 @@ nwfilterGetXMLDesc(virNWFilterPtr nwfilter,
     virCheckFlags(0, NULL);
 
     nwfilterDriverLock();
-    obj = virNWFilterObjListFindByUUID(&driver->nwfilters, nwfilter->uuid);
+    obj = virNWFilterObjListFindByUUID(driver->nwfilters, nwfilter->uuid);
     nwfilterDriverUnlock();
 
     if (!obj) {

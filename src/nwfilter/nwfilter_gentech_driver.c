@@ -383,7 +383,7 @@ virNWFilterIncludeDefToRuleInst(virNWFilterDriverStatePtr driver,
     int ret = -1;
 
     VIR_DEBUG("Instantiating filter %s", inc->filterref);
-    obj = virNWFilterObjListFindByName(&driver->nwfilters,
+    obj = virNWFilterObjListFindByName(driver->nwfilters,
                                        inc->filterref);
     if (!obj) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -545,7 +545,7 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                 break;
         } else if (inc) {
             VIR_DEBUG("Following filter %s", inc->filterref);
-            obj = virNWFilterObjListFindByName(&driver->nwfilters, inc->filterref);
+            obj = virNWFilterObjListFindByName(driver->nwfilters, inc->filterref);
             if (obj) {
 
                 if (virNWFilterObjWantRemoved(obj)) {
@@ -812,7 +812,7 @@ __virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
 
     VIR_DEBUG("filter name: %s", filtername);
 
-    obj = virNWFilterObjListFindByName(&driver->nwfilters, filtername);
+    obj = virNWFilterObjListFindByName(driver->nwfilters, filtername);
     if (!obj) {
         virReportError(VIR_ERR_NO_NWFILTER,
                        _("Could not find filter '%s'"),
