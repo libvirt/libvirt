@@ -370,7 +370,7 @@ nwfilterLookupByUUID(virConnectPtr conn,
                        "%s", _("no nwfilter with matching uuid"));
         goto cleanup;
     }
-    def = obj->def;
+    def = virNWFilterObjGetDef(obj);
 
     if (virNWFilterLookupByUUIDEnsureACL(conn, def) < 0)
         goto cleanup;
@@ -401,7 +401,7 @@ nwfilterLookupByName(virConnectPtr conn,
                        _("no nwfilter with matching name '%s'"), name);
         goto cleanup;
     }
-    def = obj->def;
+    def = virNWFilterObjGetDef(obj);
 
     if (virNWFilterLookupByNameEnsureACL(conn, def) < 0)
         goto cleanup;
@@ -493,7 +493,7 @@ nwfilterDefineXML(virConnectPtr conn,
     if (!(obj = virNWFilterObjAssignDef(&driver->nwfilters, def)))
         goto cleanup;
     def = NULL;
-    objdef = obj->def;
+    objdef = virNWFilterObjGetDef(obj);
 
     if (virNWFilterSaveDef(driver->configDir, objdef) < 0) {
         virNWFilterObjRemove(&driver->nwfilters, obj);
@@ -518,6 +518,7 @@ static int
 nwfilterUndefine(virNWFilterPtr nwfilter)
 {
     virNWFilterObjPtr obj;
+    virNWFilterDefPtr def;
     int ret = -1;
 
     nwfilterDriverLock();
@@ -530,8 +531,9 @@ nwfilterUndefine(virNWFilterPtr nwfilter)
                        "%s", _("no nwfilter with matching uuid"));
         goto cleanup;
     }
+    def = virNWFilterObjGetDef(obj);
 
-    if (virNWFilterUndefineEnsureACL(nwfilter->conn, obj->def) < 0)
+    if (virNWFilterUndefineEnsureACL(nwfilter->conn, def) < 0)
         goto cleanup;
 
     if (virNWFilterObjTestUnassignDef(obj) < 0) {
@@ -541,7 +543,7 @@ nwfilterUndefine(virNWFilterPtr nwfilter)
         goto cleanup;
     }
 
-    if (virNWFilterDeleteDef(driver->configDir, obj->def) < 0)
+    if (virNWFilterDeleteDef(driver->configDir, def) < 0)
         goto cleanup;
 
     virNWFilterObjRemove(&driver->nwfilters, obj);
@@ -564,6 +566,7 @@ nwfilterGetXMLDesc(virNWFilterPtr nwfilter,
                    unsigned int flags)
 {
     virNWFilterObjPtr obj;
+    virNWFilterDefPtr def;
     char *ret = NULL;
 
     virCheckFlags(0, NULL);
@@ -577,11 +580,12 @@ nwfilterGetXMLDesc(virNWFilterPtr nwfilter,
                        "%s", _("no nwfilter with matching uuid"));
         goto cleanup;
     }
+    def = virNWFilterObjGetDef(obj);
 
-    if (virNWFilterGetXMLDescEnsureACL(nwfilter->conn, obj->def) < 0)
+    if (virNWFilterGetXMLDescEnsureACL(nwfilter->conn, def) < 0)
         goto cleanup;
 
-    ret = virNWFilterDefFormat(obj->def);
+    ret = virNWFilterDefFormat(def);
 
  cleanup:
     if (obj)

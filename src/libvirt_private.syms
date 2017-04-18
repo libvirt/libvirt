@@ -965,7 +965,9 @@ virNodeDeviceObjUnlock;
 virNWFilterObjAssignDef;
 virNWFilterObjFindByName;
 virNWFilterObjFindByUUID;
+virNWFilterObjGetDef;
 virNWFilterObjGetNames;
+virNWFilterObjGetNewDef;
 virNWFilterObjListExport;
 virNWFilterObjListFree;
 virNWFilterObjLoadAllConfigs;
@@ -974,6 +976,7 @@ virNWFilterObjNumOfNWFilters;
 virNWFilterObjRemove;
 virNWFilterObjTestUnassignDef;
 virNWFilterObjUnlock;
+virNWFilterObjWantRemoved;
 
 
 # conf/virsecretobj.h

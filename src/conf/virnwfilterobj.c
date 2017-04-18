@@ -33,8 +33,38 @@
 
 VIR_LOG_INIT("conf.virnwfilterobj");
 
+struct _virNWFilterObj {
+    virMutex lock;
 
-void
+    bool wantRemoved;
+
+    virNWFilterDefPtr def;
+    virNWFilterDefPtr newDef;
+};
+
+
+virNWFilterDefPtr
+virNWFilterObjGetDef(virNWFilterObjPtr obj)
+{
+    return obj->def;
+}
+
+
+virNWFilterDefPtr
+virNWFilterObjGetNewDef(virNWFilterObjPtr obj)
+{
+    return obj->newDef;
+}
+
+
+bool
+virNWFilterObjWantRemoved(virNWFilterObjPtr obj)
+{
+    return obj->wantRemoved;
+}
+
+
+static void
 virNWFilterObjFree(virNWFilterObjPtr obj)
 {
     if (!obj)

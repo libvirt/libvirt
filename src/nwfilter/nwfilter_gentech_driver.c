@@ -379,6 +379,7 @@ virNWFilterIncludeDefToRuleInst(virNWFilterDriverStatePtr driver,
     virNWFilterObjPtr obj;
     virNWFilterHashTablePtr tmpvars = NULL;
     virNWFilterDefPtr childdef;
+    virNWFilterDefPtr newChilddef;
     int ret = -1;
 
     VIR_DEBUG("Instantiating filter %s", inc->filterref);
@@ -390,7 +391,7 @@ virNWFilterIncludeDefToRuleInst(virNWFilterDriverStatePtr driver,
                        inc->filterref);
         goto cleanup;
     }
-    if (obj->wantRemoved) {
+    if (virNWFilterObjWantRemoved(obj)) {
         virReportError(VIR_ERR_NO_NWFILTER,
                        _("Filter '%s' is in use."),
                        inc->filterref);
@@ -402,12 +403,13 @@ virNWFilterIncludeDefToRuleInst(virNWFilterDriverStatePtr driver,
                                               vars)))
         goto cleanup;
 
-    childdef = obj->def;
+    childdef = virNWFilterObjGetDef(obj);
 
     switch (useNewFilter) {
     case INSTANTIATE_FOLLOW_NEWFILTER:
-        if (obj->newDef) {
-            childdef = obj->newDef;
+        newChilddef = virNWFilterObjGetNewDef(obj);
+        if (newChilddef) {
+            childdef = newChilddef;
             *foundNewFilter = true;
         }
         break;
@@ -505,6 +507,7 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
     int rc = 0;
     size_t i, j;
     virNWFilterDefPtr next_filter;
+    virNWFilterDefPtr newNext_filter;
     virNWFilterVarValuePtr val;
 
     for (i = 0; i < filter->nentries; i++) {
@@ -545,7 +548,7 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
             obj = virNWFilterObjFindByName(&driver->nwfilters, inc->filterref);
             if (obj) {
 
-                if (obj->wantRemoved) {
+                if (virNWFilterObjWantRemoved(obj)) {
                     virReportError(VIR_ERR_NO_NWFILTER,
                                    _("Filter '%s' is in use."),
                                    inc->filterref);
@@ -564,12 +567,13 @@ virNWFilterDetermineMissingVarsRec(virNWFilterDefPtr filter,
                     break;
                 }
 
-                next_filter = obj->def;
+                next_filter = virNWFilterObjGetDef(obj);
 
                 switch (useNewFilter) {
                 case INSTANTIATE_FOLLOW_NEWFILTER:
-                    if (obj->newDef)
-                        next_filter = obj->newDef;
+                    newNext_filter = virNWFilterObjGetNewDef(obj);
+                    if (newNext_filter)
+                        next_filter = newNext_filter;
                     break;
                 case INSTANTIATE_ALWAYS:
                     break;
@@ -790,6 +794,7 @@ __virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
     virNWFilterObjPtr obj;
     virNWFilterHashTablePtr vars, vars1;
     virNWFilterDefPtr filter;
+    virNWFilterDefPtr newFilter;
     char vmmacaddr[VIR_MAC_STRING_BUFLEN] = {0};
     char *str_macaddr = NULL;
     virNWFilterVarValuePtr ipaddr;
@@ -815,7 +820,7 @@ __virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
         return -1;
     }
 
-    if (obj->wantRemoved) {
+    if (virNWFilterObjWantRemoved(obj)) {
         virReportError(VIR_ERR_NO_NWFILTER,
                        _("Filter '%s' is in use."),
                        filtername);
@@ -847,12 +852,13 @@ __virNWFilterInstantiateFilter(virNWFilterDriverStatePtr driver,
         goto err_exit_vars1;
     }
 
-    filter = obj->def;
+    filter = virNWFilterObjGetDef(obj);
 
     switch (useNewFilter) {
     case INSTANTIATE_FOLLOW_NEWFILTER:
-        if (obj->newDef) {
-            filter = obj->newDef;
+        newFilter = virNWFilterObjGetNewDef(obj);
+        if (newFilter) {
+            filter = newFilter;
             *foundNewFilter = true;
         }
         break;
