@@ -301,7 +301,6 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
         return NULL;
     }
     virNWFilterObjLock(obj);
-    obj->active = 0;
 
     if (VIR_APPEND_ELEMENT_COPY(nwfilters->objs,
                                 nwfilters->count, obj) < 0) {
