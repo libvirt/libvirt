@@ -160,16 +160,16 @@ virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
     bool dead;
     void *client;
 
+    virObjectRef(ka);
     virObjectLock(ka);
 
     client = ka->client;
     dead = virKeepAliveTimerInternal(ka, &msg);
 
+    virObjectUnlock(ka);
+
     if (!dead && !msg)
         goto cleanup;
-
-    virObjectRef(ka);
-    virObjectUnlock(ka);
 
     if (dead) {
         ka->deadCB(client);
@@ -178,11 +178,8 @@ virKeepAliveTimer(int timer ATTRIBUTE_UNUSED, void *opaque)
         virNetMessageFree(msg);
     }
 
-    virObjectLock(ka);
-    virObjectUnref(ka);
-
  cleanup:
-    virObjectUnlock(ka);
+    virObjectUnref(ka);
 }
 
 
