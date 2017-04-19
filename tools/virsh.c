@@ -358,16 +358,22 @@ virshInit(vshControl *ctl)
     /* set up the library error handler */
     virSetErrorFunc(NULL, vshErrorHandler);
 
-    if (virEventRegisterDefaultImpl() < 0)
+    if (virEventRegisterDefaultImpl() < 0) {
+        vshReportError(ctl);
         return false;
+    }
 
-    if (virThreadCreate(&ctl->eventLoop, true, vshEventLoop, ctl) < 0)
+    if (virThreadCreate(&ctl->eventLoop, true, vshEventLoop, ctl) < 0) {
+        vshReportError(ctl);
         return false;
+    }
     ctl->eventLoopStarted = true;
 
     if ((ctl->eventTimerId = virEventAddTimeout(-1, vshEventTimeout, ctl,
-                                                NULL)) < 0)
+                                                NULL)) < 0) {
+        vshReportError(ctl);
         return false;
+    }
 
     if (ctl->connname) {
         /* Connecting to a named connection must succeed, but we delay
