@@ -2932,43 +2932,6 @@ virNWFilterTriggerVMFilterRebuild(void)
 
 
 int
-virNWFilterSaveDef(const char *configDir,
-                   virNWFilterDefPtr def)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    char *xml;
-    int ret = -1;
-    char *configFile = NULL;
-
-    if (virFileMakePath(configDir) < 0) {
-        virReportSystemError(errno,
-                             _("cannot create config directory %s"),
-                             configDir);
-        goto error;
-    }
-
-    if (!(configFile = virFileBuildPath(configDir, def->name, ".xml")))
-        goto error;
-
-    if (!(xml = virNWFilterDefFormat(def))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("failed to generate XML"));
-        goto error;
-    }
-
-    virUUIDFormat(def->uuid, uuidstr);
-    ret = virXMLSaveFile(configFile,
-                         virXMLPickShellSafeComment(def->name, uuidstr),
-                         "nwfilter-edit", xml);
-    VIR_FREE(xml);
-
- error:
-    VIR_FREE(configFile);
-    return ret;
-}
-
-
-int
 virNWFilterDeleteDef(const char *configDir,
                      virNWFilterDefPtr def)
 {

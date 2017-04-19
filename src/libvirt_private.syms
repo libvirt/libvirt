@@ -740,7 +740,7 @@ virNWFilterRuleIsProtocolEthernet;
 virNWFilterRuleIsProtocolIPv4;
 virNWFilterRuleIsProtocolIPv6;
 virNWFilterRuleProtocolTypeToString;
-virNWFilterSaveDef;
+virNWFilterSaveConfig;
 virNWFilterTriggerVMFilterRebuild;
 virNWFilterUnlockFilterUpdates;
 virNWFilterUnRegisterCallbackDriver;
