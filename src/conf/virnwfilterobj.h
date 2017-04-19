@@ -62,9 +62,10 @@ virNWFilterObjListFree(virNWFilterObjListPtr nwfilters);
 
 void
 virNWFilterObjRemove(virNWFilterObjListPtr nwfilters,
-                     virNWFilterObjPtr nwfilter);
+                     virNWFilterObjPtr obj);
 
-void virNWFilterObjFree(virNWFilterObjPtr obj);
+void
+virNWFilterObjFree(virNWFilterObjPtr obj);
 
 virNWFilterObjPtr
 virNWFilterObjFindByUUID(virNWFilterObjListPtr nwfilters,
@@ -79,7 +80,7 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
                         virNWFilterDefPtr def);
 
 int
-virNWFilterObjTestUnassignDef(virNWFilterObjPtr nwfilter);
+virNWFilterObjTestUnassignDef(virNWFilterObjPtr obj);
 
 typedef bool
 (*virNWFilterObjListFilter)(virConnectPtr conn,
