@@ -2775,7 +2775,7 @@ virNWFilterSaveXML(const char *configDir,
     char *configFile = NULL;
     int ret = -1;
 
-    if ((configFile = virNWFilterConfigFile(configDir, def->name)) == NULL)
+    if (!(configFile = virFileBuildPath(configDir, def->name, ".xml")))
         goto cleanup;
 
     if (virFileMakePath(configDir) < 0) {
@@ -3233,17 +3233,6 @@ virNWFilterDefFormat(const virNWFilterDef *def)
  err_exit:
     virBufferFreeAndReset(&buf);
     return NULL;
-}
-
-
-char *
-virNWFilterConfigFile(const char *dir,
-                      const char *name)
-{
-    char *ret = NULL;
-
-    ignore_value(virAsprintf(&ret, "%s/%s.xml", dir, name));
-    return ret;
 }
 
 
