@@ -2778,13 +2778,6 @@ virNWFilterSaveXML(const char *configDir,
     if (!(configFile = virFileBuildPath(configDir, def->name, ".xml")))
         goto cleanup;
 
-    if (virFileMakePath(configDir) < 0) {
-        virReportSystemError(errno,
-                             _("cannot create config directory '%s'"),
-                             configDir);
-        goto cleanup;
-    }
-
     virUUIDFormat(def->uuid, uuidstr);
     ret = virXMLSaveFile(configFile,
                          virXMLPickShellSafeComment(def->name, uuidstr),

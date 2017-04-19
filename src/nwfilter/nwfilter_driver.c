@@ -40,6 +40,7 @@
 #include "nwfilter_driver.h"
 #include "nwfilter_gentech_driver.h"
 #include "configmake.h"
+#include "virfile.h"
 #include "virstring.h"
 #include "viraccessapicheck.h"
 
@@ -236,6 +237,12 @@ nwfilterStateInitialize(bool privileged,
         goto error;
 
     VIR_FREE(base);
+
+    if (virFileMakePathWithMode(driver->configDir, S_IRWXU) < 0) {
+        virReportSystemError(errno, _("cannot create config directory '%s'"),
+                             driver->configDir);
+        goto error;
+    }
 
     if (!(driver->nwfilters = virNWFilterObjListNew()))
         goto error;
