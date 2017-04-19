@@ -29,6 +29,11 @@ Restart=on-failure
 # If changing this, also consider virtlogd.service & virtlockd.service
 # limits which are also related to number of guests
 LimitNOFILE=8192
+# The cgroups pids controller can limit the number of tasks started by
+# the daemon, which can limit the number of domains for some hypervisors.
+# A conservative default of 8 tasks per guest results in a TasksMax of
+# 32k to support 4096 guests.
+TasksMax=32768
 
 [Install]
 WantedBy=multi-user.target
