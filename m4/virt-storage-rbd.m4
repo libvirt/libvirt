@@ -36,7 +36,7 @@ AC_DEFUN([LIBVIRT_STORAGE_CHECK_RBD], [
       LIBS="$old_LIBS"
     fi
 
-    if test "$LIBRDB_FOUND" = "yes"; then
+    if test "$LIBRBD_FOUND" = "yes"; then
       with_storage_rbd=yes
       AC_DEFINE_UNQUOTED([WITH_STORAGE_RBD], [1],
                          [whether RBD backend for storage driver is enabled])
