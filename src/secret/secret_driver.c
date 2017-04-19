@@ -96,17 +96,6 @@ secretObjFromSecret(virSecretPtr secret)
 }
 
 
-static int
-secretEnsureDirectory(void)
-{
-    if (mkdir(driver->configDir, S_IRWXU) < 0 && errno != EEXIST) {
-        virReportSystemError(errno, _("cannot create '%s'"),
-                             driver->configDir);
-        return -1;
-    }
-    return 0;
-}
-
 /* Driver functions */
 
 static int
@@ -237,9 +226,6 @@ secretDefineXML(virConnectPtr conn,
         goto cleanup;
 
     if (!def->isephemeral) {
-        if (secretEnsureDirectory() < 0)
-            goto cleanup;
-
         if (backup && backup->isephemeral) {
             if (virSecretObjSaveData(obj) < 0)
                 goto restore_backup;
@@ -336,9 +322,6 @@ secretSetValue(virSecretPtr secret,
 
     def = virSecretObjGetDef(obj);
     if (virSecretSetValueEnsureACL(secret->conn, def) < 0)
-        goto cleanup;
-
-    if (secretEnsureDirectory() < 0)
         goto cleanup;
 
     if (virSecretObjSetValue(obj, value, value_size) < 0)
@@ -480,6 +463,12 @@ secretStateInitialize(bool privileged,
     if (virAsprintf(&driver->configDir, "%s/secrets", base) < 0)
         goto error;
     VIR_FREE(base);
+
+    if (virFileMakePathWithMode(driver->configDir, S_IRWXU) < 0) {
+        virReportSystemError(errno, _("cannot create config directory '%s'"),
+                             driver->configDir);
+        goto error;
+    }
 
     if (!(driver->secrets = virSecretObjListNew()))
         goto error;
