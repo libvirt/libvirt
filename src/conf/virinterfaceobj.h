@@ -54,7 +54,7 @@ virInterfaceObjFindByName(virInterfaceObjListPtr interfaces,
                           const char *name);
 
 void
-virInterfaceObjFree(virInterfaceObjPtr iface);
+virInterfaceObjFree(virInterfaceObjPtr obj);
 
 void
 virInterfaceObjListFree(virInterfaceObjListPtr vms);
@@ -69,7 +69,7 @@ virInterfaceObjAssignDef(virInterfaceObjListPtr interfaces,
 
 void
 virInterfaceObjRemove(virInterfaceObjListPtr interfaces,
-                      virInterfaceObjPtr iface);
+                      virInterfaceObjPtr obj);
 
 void
 virInterfaceObjLock(virInterfaceObjPtr obj);

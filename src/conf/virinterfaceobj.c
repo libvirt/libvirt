@@ -51,14 +51,14 @@ virInterfaceObjUnlock(virInterfaceObjPtr obj)
 
 
 void
-virInterfaceObjFree(virInterfaceObjPtr iface)
+virInterfaceObjFree(virInterfaceObjPtr obj)
 {
-    if (!iface)
+    if (!obj)
         return;
 
-    virInterfaceDefFree(iface->def);
-    virMutexDestroy(&iface->lock);
-    VIR_FREE(iface);
+    virInterfaceDefFree(obj->def);
+    virMutexDestroy(&obj->lock);
+    VIR_FREE(obj);
 }
 
 
@@ -136,7 +136,7 @@ virInterfaceObjListClone(virInterfaceObjListPtr src,
     for (i = 0; i < cnt; i++) {
         virInterfaceDefPtr def = src->objs[i]->def;
         virInterfaceDefPtr backup;
-        virInterfaceObjPtr iface;
+        virInterfaceObjPtr obj;
         char *xml = virInterfaceDefFormat(def);
 
         if (!xml)
@@ -148,9 +148,9 @@ virInterfaceObjListClone(virInterfaceObjListPtr src,
         }
 
         VIR_FREE(xml);
-        if ((iface = virInterfaceObjAssignDef(dest, backup)) == NULL)
+        if ((obj = virInterfaceObjAssignDef(dest, backup)) == NULL)
             goto cleanup;
-        virInterfaceObjUnlock(iface); /* locked by virInterfaceObjAssignDef */
+        virInterfaceObjUnlock(obj); /* locked by virInterfaceObjAssignDef */
     }
 
     ret = cnt;
@@ -165,47 +165,47 @@ virInterfaceObjPtr
 virInterfaceObjAssignDef(virInterfaceObjListPtr interfaces,
                          virInterfaceDefPtr def)
 {
-    virInterfaceObjPtr iface;
+    virInterfaceObjPtr obj;
 
-    if ((iface = virInterfaceObjFindByName(interfaces, def->name))) {
-        virInterfaceDefFree(iface->def);
-        iface->def = def;
+    if ((obj = virInterfaceObjFindByName(interfaces, def->name))) {
+        virInterfaceDefFree(obj->def);
+        obj->def = def;
 
-        return iface;
+        return obj;
     }
 
-    if (VIR_ALLOC(iface) < 0)
+    if (VIR_ALLOC(obj) < 0)
         return NULL;
-    if (virMutexInit(&iface->lock) < 0) {
+    if (virMutexInit(&obj->lock) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot initialize mutex"));
-        VIR_FREE(iface);
+        VIR_FREE(obj);
         return NULL;
     }
-    virInterfaceObjLock(iface);
+    virInterfaceObjLock(obj);
 
     if (VIR_APPEND_ELEMENT_COPY(interfaces->objs,
-                                interfaces->count, iface) < 0) {
-        virInterfaceObjFree(iface);
+                                interfaces->count, obj) < 0) {
+        virInterfaceObjFree(obj);
         return NULL;
     }
 
-    iface->def = def;
-    return iface;
+    obj->def = def;
+    return obj;
 
 }
 
 
 void
 virInterfaceObjRemove(virInterfaceObjListPtr interfaces,
-                      virInterfaceObjPtr iface)
+                      virInterfaceObjPtr obj)
 {
     size_t i;
 
-    virInterfaceObjUnlock(iface);
+    virInterfaceObjUnlock(obj);
     for (i = 0; i < interfaces->count; i++) {
         virInterfaceObjLock(interfaces->objs[i]);
-        if (interfaces->objs[i] == iface) {
+        if (interfaces->objs[i] == obj) {
             virInterfaceObjUnlock(interfaces->objs[i]);
             virInterfaceObjFree(interfaces->objs[i]);
 

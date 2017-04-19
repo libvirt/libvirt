@@ -3627,18 +3627,18 @@ static virInterfaceObjPtr
 testInterfaceObjFindByName(testDriverPtr privconn,
                            const char *name)
 {
-    virInterfaceObjPtr iface;
+    virInterfaceObjPtr obj;
 
     testDriverLock(privconn);
-    iface = virInterfaceObjFindByName(&privconn->ifaces, name);
+    obj = virInterfaceObjFindByName(&privconn->ifaces, name);
     testDriverUnlock(privconn);
 
-    if (!iface)
+    if (!obj)
         virReportError(VIR_ERR_NO_INTERFACE,
                        _("no interface with matching name '%s'"),
                        name);
 
-    return iface;
+    return obj;
 }
 
 
@@ -3705,17 +3705,17 @@ testInterfaceLookupByName(virConnectPtr conn,
                           const char *name)
 {
     testDriverPtr privconn = conn->privateData;
-    virInterfaceObjPtr iface;
+    virInterfaceObjPtr obj;
     virInterfacePtr ret = NULL;
 
-    if (!(iface = testInterfaceObjFindByName(privconn, name)))
+    if (!(obj = testInterfaceObjFindByName(privconn, name)))
         goto cleanup;
 
-    ret = virGetInterface(conn, iface->def->name, iface->def->mac);
+    ret = virGetInterface(conn, obj->def->name, obj->def->mac);
 
  cleanup:
-    if (iface)
-        virInterfaceObjUnlock(iface);
+    if (obj)
+        virInterfaceObjUnlock(obj);
     return ret;
 }
 
@@ -3725,12 +3725,12 @@ testInterfaceLookupByMACString(virConnectPtr conn,
                                const char *mac)
 {
     testDriverPtr privconn = conn->privateData;
-    virInterfaceObjPtr iface;
+    virInterfaceObjPtr obj;
     int ifacect;
     virInterfacePtr ret = NULL;
 
     testDriverLock(privconn);
-    ifacect = virInterfaceObjFindByMACString(&privconn->ifaces, mac, &iface, 1);
+    ifacect = virInterfaceObjFindByMACString(&privconn->ifaces, mac, &obj, 1);
     testDriverUnlock(privconn);
 
     if (ifacect == 0) {
@@ -3743,11 +3743,11 @@ testInterfaceLookupByMACString(virConnectPtr conn,
         goto cleanup;
     }
 
-    ret = virGetInterface(conn, iface->def->name, iface->def->mac);
+    ret = virGetInterface(conn, obj->def->name, obj->def->mac);
 
  cleanup:
-    if (iface)
-        virInterfaceObjUnlock(iface);
+    if (obj)
+        virInterfaceObjUnlock(obj);
     return ret;
 }
 
@@ -3869,19 +3869,19 @@ testInterfaceGetXMLDesc(virInterfacePtr iface,
                         unsigned int flags)
 {
     testDriverPtr privconn = iface->conn->privateData;
-    virInterfaceObjPtr privinterface;
+    virInterfaceObjPtr obj;
     char *ret = NULL;
 
     virCheckFlags(0, NULL);
 
-    if (!(privinterface = testInterfaceObjFindByName(privconn, iface->name)))
+    if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
         goto cleanup;
 
-    ret = virInterfaceDefFormat(privinterface->def);
+    ret = virInterfaceDefFormat(obj->def);
 
  cleanup:
-    if (privinterface)
-        virInterfaceObjUnlock(privinterface);
+    if (obj)
+        virInterfaceObjUnlock(obj);
     return ret;
 }
 
@@ -3893,7 +3893,7 @@ testInterfaceDefineXML(virConnectPtr conn,
 {
     testDriverPtr privconn = conn->privateData;
     virInterfaceDefPtr def;
-    virInterfaceObjPtr iface = NULL;
+    virInterfaceObjPtr obj = NULL;
     virInterfacePtr ret = NULL;
 
     virCheckFlags(0, NULL);
@@ -3902,16 +3902,16 @@ testInterfaceDefineXML(virConnectPtr conn,
     if ((def = virInterfaceDefParseString(xmlStr)) == NULL)
         goto cleanup;
 
-    if ((iface = virInterfaceObjAssignDef(&privconn->ifaces, def)) == NULL)
+    if ((obj = virInterfaceObjAssignDef(&privconn->ifaces, def)) == NULL)
         goto cleanup;
     def = NULL;
 
-    ret = virGetInterface(conn, iface->def->name, iface->def->mac);
+    ret = virGetInterface(conn, obj->def->name, obj->def->mac);
 
  cleanup:
     virInterfaceDefFree(def);
-    if (iface)
-        virInterfaceObjUnlock(iface);
+    if (obj)
+        virInterfaceObjUnlock(obj);
     testDriverUnlock(privconn);
     return ret;
 }
@@ -3921,13 +3921,13 @@ static int
 testInterfaceUndefine(virInterfacePtr iface)
 {
     testDriverPtr privconn = iface->conn->privateData;
-    virInterfaceObjPtr privinterface;
+    virInterfaceObjPtr obj;
     int ret = -1;
 
-    if (!(privinterface = testInterfaceObjFindByName(privconn, iface->name)))
+    if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
         goto cleanup;
 
-    virInterfaceObjRemove(&privconn->ifaces, privinterface);
+    virInterfaceObjRemove(&privconn->ifaces, obj);
     ret = 0;
 
  cleanup:
@@ -3940,25 +3940,25 @@ testInterfaceCreate(virInterfacePtr iface,
                     unsigned int flags)
 {
     testDriverPtr privconn = iface->conn->privateData;
-    virInterfaceObjPtr privinterface;
+    virInterfaceObjPtr obj;
     int ret = -1;
 
     virCheckFlags(0, -1);
 
-    if (!(privinterface = testInterfaceObjFindByName(privconn, iface->name)))
+    if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
         goto cleanup;
 
-    if (privinterface->active != 0) {
+    if (obj->active != 0) {
         virReportError(VIR_ERR_OPERATION_INVALID, NULL);
         goto cleanup;
     }
 
-    privinterface->active = 1;
+    obj->active = 1;
     ret = 0;
 
  cleanup:
-    if (privinterface)
-        virInterfaceObjUnlock(privinterface);
+    if (obj)
+        virInterfaceObjUnlock(obj);
     return ret;
 }
 
@@ -3968,25 +3968,25 @@ testInterfaceDestroy(virInterfacePtr iface,
                      unsigned int flags)
 {
     testDriverPtr privconn = iface->conn->privateData;
-    virInterfaceObjPtr privinterface;
+    virInterfaceObjPtr obj;
     int ret = -1;
 
     virCheckFlags(0, -1);
 
-    if (!(privinterface = testInterfaceObjFindByName(privconn, iface->name)))
+    if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
         goto cleanup;
 
-    if (privinterface->active == 0) {
+    if (obj->active == 0) {
         virReportError(VIR_ERR_OPERATION_INVALID, NULL);
         goto cleanup;
     }
 
-    privinterface->active = 0;
+    obj->active = 0;
     ret = 0;
 
  cleanup:
-    if (privinterface)
-        virInterfaceObjUnlock(privinterface);
+    if (obj)
+        virInterfaceObjUnlock(obj);
     return ret;
 }
 
