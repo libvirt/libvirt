@@ -358,6 +358,7 @@ nwfilterLookupByUUID(virConnectPtr conn,
                      const unsigned char *uuid)
 {
     virNWFilterObjPtr obj;
+    virNWFilterDefPtr def;
     virNWFilterPtr ret = NULL;
 
     nwfilterDriverLock();
@@ -369,11 +370,12 @@ nwfilterLookupByUUID(virConnectPtr conn,
                        "%s", _("no nwfilter with matching uuid"));
         goto cleanup;
     }
+    def = obj->def;
 
-    if (virNWFilterLookupByUUIDEnsureACL(conn, obj->def) < 0)
+    if (virNWFilterLookupByUUIDEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    ret = virGetNWFilter(conn, obj->def->name, obj->def->uuid);
+    ret = virGetNWFilter(conn, def->name, def->uuid);
 
  cleanup:
     if (obj)
@@ -387,6 +389,7 @@ nwfilterLookupByName(virConnectPtr conn,
                      const char *name)
 {
     virNWFilterObjPtr obj;
+    virNWFilterDefPtr def;
     virNWFilterPtr ret = NULL;
 
     nwfilterDriverLock();
@@ -398,11 +401,12 @@ nwfilterLookupByName(virConnectPtr conn,
                        _("no nwfilter with matching name '%s'"), name);
         goto cleanup;
     }
+    def = obj->def;
 
-    if (virNWFilterLookupByNameEnsureACL(conn, obj->def) < 0)
+    if (virNWFilterLookupByNameEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    ret = virGetNWFilter(conn, obj->def->name, obj->def->uuid);
+    ret = virGetNWFilter(conn, def->name, def->uuid);
 
  cleanup:
     if (obj)
@@ -467,6 +471,7 @@ nwfilterDefineXML(virConnectPtr conn,
 {
     virNWFilterDefPtr def;
     virNWFilterObjPtr obj = NULL;
+    virNWFilterDefPtr objdef;
     virNWFilterPtr ret = NULL;
 
     if (!driver->privileged) {
@@ -487,15 +492,15 @@ nwfilterDefineXML(virConnectPtr conn,
 
     if (!(obj = virNWFilterObjAssignDef(&driver->nwfilters, def)))
         goto cleanup;
+    def = NULL;
+    objdef = obj->def;
 
-    if (virNWFilterSaveDef(driver->configDir, def) < 0) {
+    if (virNWFilterSaveDef(driver->configDir, objdef) < 0) {
         virNWFilterObjRemove(&driver->nwfilters, obj);
-        def = NULL;
         goto cleanup;
     }
-    def = NULL;
 
-    ret = virGetNWFilter(conn, obj->def->name, obj->def->uuid);
+    ret = virGetNWFilter(conn, objdef->name, objdef->uuid);
 
  cleanup:
     virNWFilterDefFree(def);
