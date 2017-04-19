@@ -3706,12 +3706,14 @@ testInterfaceLookupByName(virConnectPtr conn,
 {
     testDriverPtr privconn = conn->privateData;
     virInterfaceObjPtr obj;
+    virInterfaceDefPtr def;
     virInterfacePtr ret = NULL;
 
     if (!(obj = testInterfaceObjFindByName(privconn, name)))
         return NULL;
+    def = obj->def;
 
-    ret = virGetInterface(conn, obj->def->name, obj->def->mac);
+    ret = virGetInterface(conn, def->name, def->mac);
 
     virInterfaceObjUnlock(obj);
     return ret;
@@ -3724,6 +3726,7 @@ testInterfaceLookupByMACString(virConnectPtr conn,
 {
     testDriverPtr privconn = conn->privateData;
     virInterfaceObjPtr obj;
+    virInterfaceDefPtr def;
     int ifacect;
     virInterfacePtr ret = NULL;
 
@@ -3741,7 +3744,8 @@ testInterfaceLookupByMACString(virConnectPtr conn,
         goto cleanup;
     }
 
-    ret = virGetInterface(conn, obj->def->name, obj->def->mac);
+    def = obj->def;
+    ret = virGetInterface(conn, def->name, def->mac);
 
  cleanup:
     if (obj)
@@ -3888,6 +3892,7 @@ testInterfaceDefineXML(virConnectPtr conn,
     testDriverPtr privconn = conn->privateData;
     virInterfaceDefPtr def;
     virInterfaceObjPtr obj = NULL;
+    virInterfaceDefPtr objdef;
     virInterfacePtr ret = NULL;
 
     virCheckFlags(0, NULL);
@@ -3899,8 +3904,9 @@ testInterfaceDefineXML(virConnectPtr conn,
     if ((obj = virInterfaceObjAssignDef(&privconn->ifaces, def)) == NULL)
         goto cleanup;
     def = NULL;
+    objdef = obj->def;
 
-    ret = virGetInterface(conn, obj->def->name, obj->def->mac);
+    ret = virGetInterface(conn, objdef->name, objdef->mac);
 
  cleanup:
     virInterfaceDefFree(def);

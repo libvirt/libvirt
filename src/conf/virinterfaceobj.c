@@ -72,18 +72,21 @@ virInterfaceObjFindByMACString(virInterfaceObjListPtr interfaces,
     unsigned int matchct = 0;
 
     for (i = 0; i < interfaces->count; i++) {
+        virInterfaceObjPtr obj = interfaces->objs[i];
+        virInterfaceDefPtr def;
 
-        virInterfaceObjLock(interfaces->objs[i]);
-        if (STRCASEEQ(interfaces->objs[i]->def->mac, mac)) {
+        virInterfaceObjLock(obj);
+        def = obj->def;
+        if (STRCASEEQ(def->mac, mac)) {
             matchct++;
             if (matchct <= maxmatches) {
-                matches[matchct - 1] = interfaces->objs[i];
+                matches[matchct - 1] = obj;
                 /* keep the lock if we're returning object to caller */
                 /* it is the caller's responsibility to unlock *all* matches */
                 continue;
             }
         }
-        virInterfaceObjUnlock(interfaces->objs[i]);
+        virInterfaceObjUnlock(obj);
 
     }
     return matchct;
@@ -97,10 +100,14 @@ virInterfaceObjFindByName(virInterfaceObjListPtr interfaces,
     size_t i;
 
     for (i = 0; i < interfaces->count; i++) {
-        virInterfaceObjLock(interfaces->objs[i]);
-        if (STREQ(interfaces->objs[i]->def->name, name))
-            return interfaces->objs[i];
-        virInterfaceObjUnlock(interfaces->objs[i]);
+        virInterfaceObjPtr obj = interfaces->objs[i];
+        virInterfaceDefPtr def;
+
+        virInterfaceObjLock(obj);
+        def = obj->def;
+        if (STREQ(def->name, name))
+            return obj;
+        virInterfaceObjUnlock(obj);
     }
 
     return NULL;
@@ -134,10 +141,10 @@ virInterfaceObjListClone(virInterfaceObjListPtr src,
     virInterfaceObjListFree(dest); /* start with an empty list */
     cnt = src->count;
     for (i = 0; i < cnt; i++) {
-        virInterfaceDefPtr def = src->objs[i]->def;
+        virInterfaceObjPtr srcobj = src->objs[i];
         virInterfaceDefPtr backup;
         virInterfaceObjPtr obj;
-        char *xml = virInterfaceDefFormat(def);
+        char *xml = virInterfaceDefFormat(srcobj->def);
 
         if (!xml)
             goto cleanup;
@@ -247,9 +254,12 @@ virInterfaceObjGetNames(virInterfaceObjListPtr interfaces,
 
     for (i = 0; i < interfaces->count && nnames < maxnames; i++) {
         virInterfaceObjPtr obj = interfaces->objs[i];
+        virInterfaceDefPtr def;
+
         virInterfaceObjLock(obj);
+        def = obj->def;
         if (wantActive == virInterfaceObjIsActive(obj)) {
-            if (VIR_STRDUP(names[nnames], obj->def->name) < 0) {
+            if (VIR_STRDUP(names[nnames], def->name) < 0) {
                 virInterfaceObjUnlock(obj);
                 goto failure;
             }
