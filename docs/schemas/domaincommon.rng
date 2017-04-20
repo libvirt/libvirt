@@ -1556,6 +1556,19 @@
     </element>
   </define>
 
+  <define name="diskSourceNetworkProtocolHTTP">
+    <element name="source">
+      <attribute name="protocol">
+        <choice>
+          <value>http</value>
+          <value>https</value>
+        </choice>
+      </attribute>
+      <attribute name="name"/>
+      <ref name="diskSourceNetworkHost"/>
+    </element>
+  </define>
+
   <define name="diskSourceNetworkProtocolGeneric">
     <element name="source">
       <interleave>
@@ -1565,8 +1578,6 @@
             <value>sheepdog</value>
             <value>gluster</value>
             <value>iscsi</value>
-            <value>http</value>
-            <value>https</value>
             <value>ftp</value>
             <value>ftps</value>
             <value>tftp</value>
@@ -1589,6 +1600,7 @@
     <choice>
       <ref name="diskSourceNetworkProtocolGeneric"/>
       <ref name="diskSourceNetworkProtocolRBD"/>
+      <ref name="diskSourceNetworkProtocolHTTP"/>
     </choice>
   </define>
 
