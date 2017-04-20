@@ -43,6 +43,26 @@ struct _virNWFilterObj {
 };
 
 
+static virNWFilterObjPtr
+virNWFilterObjNew(void)
+{
+    virNWFilterObjPtr obj;
+
+    if (VIR_ALLOC(obj) < 0)
+        return NULL;
+
+    if (virMutexInitRecursive(&obj->lock) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot initialize mutex"));
+        VIR_FREE(obj);
+        return NULL;
+    }
+
+    virNWFilterObjLock(obj);
+    return obj;
+}
+
+
 virNWFilterDefPtr
 virNWFilterObjGetDef(virNWFilterObjPtr obj)
 {
@@ -321,16 +341,8 @@ virNWFilterObjAssignDef(virNWFilterObjListPtr nwfilters,
         return obj;
     }
 
-    if (VIR_ALLOC(obj) < 0)
+    if (!(obj = virNWFilterObjNew()))
         return NULL;
-
-    if (virMutexInitRecursive(&obj->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot initialize mutex"));
-        VIR_FREE(obj);
-        return NULL;
-    }
-    virNWFilterObjLock(obj);
 
     if (VIR_APPEND_ELEMENT_COPY(nwfilters->objs,
                                 nwfilters->count, obj) < 0) {
