@@ -11567,10 +11567,12 @@ qemuDomainGetBlockInfo(virDomainPtr dom,
         if (info->allocation == 0)
             info->allocation = entry->physical;
 
-        if (qemuDomainStorageUpdatePhysical(driver, cfg, vm, disk->src) < 0)
-            goto endjob;
-
-        info->physical = disk->src->physical;
+        if (qemuDomainStorageUpdatePhysical(driver, cfg, vm, disk->src) == 0) {
+            info->physical = disk->src->physical;
+        } else {
+            virResetLastError();
+            info->physical = entry->physical;
+        }
     } else {
         info->physical = entry->physical;
     }
