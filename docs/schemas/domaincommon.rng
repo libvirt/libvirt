@@ -1430,65 +1430,59 @@
         <value>file</value>
       </attribute>
     </optional>
-    <interleave>
-      <optional>
-        <element name="source">
-          <optional>
-            <attribute name="file">
-              <ref name="absFilePath"/>
-            </attribute>
-          </optional>
-          <optional>
-            <ref name="storageStartupPolicy"/>
-          </optional>
-          <zeroOrMore>
-            <ref name='devSeclabel'/>
-          </zeroOrMore>
-        </element>
-      </optional>
-    </interleave>
+    <optional>
+      <element name="source">
+        <optional>
+          <attribute name="file">
+            <ref name="absFilePath"/>
+          </attribute>
+        </optional>
+        <optional>
+          <ref name="storageStartupPolicy"/>
+        </optional>
+        <zeroOrMore>
+          <ref name='devSeclabel'/>
+        </zeroOrMore>
+      </element>
+    </optional>
   </define>
 
   <define name="diskSourceBlock">
     <attribute name="type">
       <value>block</value>
     </attribute>
-    <interleave>
-      <optional>
-        <element name="source">
-          <optional>
-            <attribute name="dev">
-              <ref name="absFilePath"/>
-            </attribute>
-          </optional>
-          <optional>
-            <ref name="storageStartupPolicy"/>
-          </optional>
-          <zeroOrMore>
-            <ref name='devSeclabel'/>
-          </zeroOrMore>
-        </element>
-      </optional>
-    </interleave>
+    <optional>
+      <element name="source">
+        <optional>
+          <attribute name="dev">
+            <ref name="absFilePath"/>
+          </attribute>
+        </optional>
+        <optional>
+          <ref name="storageStartupPolicy"/>
+        </optional>
+        <zeroOrMore>
+          <ref name='devSeclabel'/>
+        </zeroOrMore>
+      </element>
+    </optional>
   </define>
 
   <define name="diskSourceDir">
     <attribute name="type">
       <value>dir</value>
     </attribute>
-    <interleave>
-      <optional>
-        <element name="source">
-          <attribute name="dir">
-            <ref name="absFilePath"/>
-          </attribute>
-          <optional>
-            <ref name="storageStartupPolicy"/>
-          </optional>
-          <empty/>
-        </element>
-      </optional>
-    </interleave>
+    <optional>
+      <element name="source">
+        <attribute name="dir">
+          <ref name="absFilePath"/>
+        </attribute>
+        <optional>
+          <ref name="storageStartupPolicy"/>
+        </optional>
+        <empty/>
+      </element>
+    </optional>
   </define>
 
   <define name="diskSourceNetwork">
@@ -1574,32 +1568,30 @@
     <attribute name="type">
       <value>volume</value>
     </attribute>
-    <interleave>
-      <optional>
-        <element name="source">
-          <attribute name="pool">
-            <ref name="genericName"/>
+    <optional>
+      <element name="source">
+        <attribute name="pool">
+          <ref name="genericName"/>
+        </attribute>
+        <attribute name="volume">
+          <ref name="volName"/>
+        </attribute>
+        <optional>
+          <attribute name="mode">
+            <choice>
+              <value>host</value>
+              <value>direct</value>
+            </choice>
           </attribute>
-          <attribute name="volume">
-            <ref name="volName"/>
-          </attribute>
-          <optional>
-            <attribute name="mode">
-              <choice>
-                <value>host</value>
-                <value>direct</value>
-              </choice>
-            </attribute>
-          </optional>
-          <optional>
-            <ref name="storageStartupPolicy"/>
-          </optional>
-          <zeroOrMore>
-            <ref name='devSeclabel'/>
-          </zeroOrMore>
-        </element>
-      </optional>
-    </interleave>
+        </optional>
+        <optional>
+          <ref name="storageStartupPolicy"/>
+        </optional>
+        <zeroOrMore>
+          <ref name='devSeclabel'/>
+        </zeroOrMore>
+      </element>
+    </optional>
   </define>
 
   <define name="diskTarget">
