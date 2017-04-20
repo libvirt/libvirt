@@ -1485,6 +1485,42 @@
     </optional>
   </define>
 
+  <define name="diskSourceNetworkHost">
+    <element name="host">
+      <choice>
+        <group>
+          <optional>
+            <attribute name="transport">
+              <choice>
+                <value>tcp</value>
+                <value>rdma</value>
+              </choice>
+            </attribute>
+          </optional>
+          <attribute name="name">
+            <choice>
+              <ref name="dnsName"/>
+              <ref name="ipAddr"/>
+            </choice>
+          </attribute>
+          <optional>
+            <attribute name="port">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
+        </group>
+        <group>
+          <attribute name="transport">
+            <value>unix</value>
+          </attribute>
+          <attribute name="socket">
+            <ref name="absFilePath"/>
+          </attribute>
+        </group>
+      </choice>
+    </element>
+  </define>
+
   <define name="diskSourceNetwork">
     <attribute name="type">
       <value>network</value>
@@ -1509,39 +1545,7 @@
           <attribute name="name"/>
         </optional>
         <zeroOrMore>
-          <element name="host">
-            <choice>
-              <group>
-                <optional>
-                  <attribute name="transport">
-                    <choice>
-                      <value>tcp</value>
-                      <value>rdma</value>
-                    </choice>
-                  </attribute>
-                </optional>
-                <attribute name="name">
-                  <choice>
-                    <ref name="dnsName"/>
-                    <ref name="ipAddr"/>
-                  </choice>
-                </attribute>
-                <optional>
-                  <attribute name="port">
-                    <ref name="unsignedInt"/>
-                  </attribute>
-                </optional>
-              </group>
-              <group>
-                <attribute name="transport">
-                  <value>unix</value>
-                </attribute>
-                <attribute name="socket">
-                  <ref name="absFilePath"/>
-                </attribute>
-              </group>
-            </choice>
-          </element>
+          <ref name="diskSourceNetworkHost"/>
         </zeroOrMore>
         <optional>
           <element name="snapshot">
