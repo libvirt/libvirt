@@ -46,6 +46,27 @@ struct _virInterfaceObjList {
 
 /* virInterfaceObj manipulation */
 
+static virInterfaceObjPtr
+virInterfaceObjNew(void)
+{
+    virInterfaceObjPtr obj;
+
+    if (VIR_ALLOC(obj) < 0)
+        return NULL;
+
+    if (virMutexInit(&obj->lock) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("cannot initialize mutex"));
+        VIR_FREE(obj);
+        return NULL;
+    }
+
+    virInterfaceObjLock(obj);
+
+    return obj;
+}
+
+
 void
 virInterfaceObjLock(virInterfaceObjPtr obj)
 {
@@ -230,18 +251,12 @@ virInterfaceObjListAssignDef(virInterfaceObjListPtr interfaces,
         return obj;
     }
 
-    if (VIR_ALLOC(obj) < 0)
+    if (!(obj = virInterfaceObjNew()))
         return NULL;
-    if (virMutexInit(&obj->lock) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "%s", _("cannot initialize mutex"));
-        VIR_FREE(obj);
-        return NULL;
-    }
-    virInterfaceObjLock(obj);
 
     if (VIR_APPEND_ELEMENT_COPY(interfaces->objs,
                                 interfaces->count, obj) < 0) {
+        virInterfaceObjUnlock(obj);
         virInterfaceObjFree(obj);
         return NULL;
     }
