@@ -1585,22 +1585,31 @@
     </element>
   </define>
 
-  <define name="diskSourceNetworkProtocolGeneric">
+  <define name="diskSourceNetworkProtocolNBD">
     <element name="source">
-      <interleave>
-        <attribute name="protocol">
-          <choice>
-            <value>nbd</value>
-            <value>gluster</value>
-          </choice>
-        </attribute>
-        <optional>
-          <attribute name="name"/>
-        </optional>
-        <zeroOrMore>
-          <ref name="diskSourceNetworkHost"/>
-        </zeroOrMore>
-      </interleave>
+      <attribute name="protocol">
+        <choice>
+          <value>nbd</value>
+        </choice>
+      </attribute>
+      <optional>
+        <attribute name="name"/>
+      </optional>
+      <ref name="diskSourceNetworkHost"/>
+    </element>
+  </define>
+
+  <define name="diskSourceNetworkProtocolGluster">
+    <element name="source">
+      <attribute name="protocol">
+        <choice>
+          <value>gluster</value>
+        </choice>
+      </attribute>
+      <attribute name="name"/>
+      <oneOrMore>
+        <ref name="diskSourceNetworkHost"/>
+      </oneOrMore>
     </element>
   </define>
 
@@ -1609,7 +1618,8 @@
       <value>network</value>
     </attribute>
     <choice>
-      <ref name="diskSourceNetworkProtocolGeneric"/>
+      <ref name="diskSourceNetworkProtocolNBD"/>
+      <ref name="diskSourceNetworkProtocolGluster"/>
       <ref name="diskSourceNetworkProtocolRBD"/>
       <ref name="diskSourceNetworkProtocolHTTP"/>
       <ref name="diskSourceNetworkProtocolSimple"/>
