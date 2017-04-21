@@ -1569,18 +1569,29 @@
     </element>
   </define>
 
+  <define name="diskSourceNetworkProtocolSimple">
+    <element name="source">
+      <attribute name="protocol">
+        <choice>
+          <value>sheepdog</value>
+          <value>iscsi</value>
+          <value>ftp</value>
+          <value>ftps</value>
+          <value>tftp</value>
+        </choice>
+      </attribute>
+      <attribute name="name"/>
+      <ref name="diskSourceNetworkHost"/>
+    </element>
+  </define>
+
   <define name="diskSourceNetworkProtocolGeneric">
     <element name="source">
       <interleave>
         <attribute name="protocol">
           <choice>
             <value>nbd</value>
-            <value>sheepdog</value>
             <value>gluster</value>
-            <value>iscsi</value>
-            <value>ftp</value>
-            <value>ftps</value>
-            <value>tftp</value>
           </choice>
         </attribute>
         <optional>
@@ -1601,6 +1612,7 @@
       <ref name="diskSourceNetworkProtocolGeneric"/>
       <ref name="diskSourceNetworkProtocolRBD"/>
       <ref name="diskSourceNetworkProtocolHTTP"/>
+      <ref name="diskSourceNetworkProtocolSimple"/>
     </choice>
   </define>
 
