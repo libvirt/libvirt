@@ -5425,7 +5425,7 @@ qemu-kvm -net nic,model=? /dev/null
       This element provides means of setting coalesce settings for
       some interface devices (currently only type <code>network</code>
       and <code>bridge</code>.  Currently there is just one attribute,
-      <code>max</code>, to tweak, in element <code>frames<code> for
+      <code>max</code>, to tweak, in element <code>frames</code> for
       the <code>rx</code> group, which accepts a non-negative integer
       that specifies the maximum number of packets that will be
       received before an interrupt.
