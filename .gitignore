@@ -36,6 +36,7 @@
 .lvimrc
 .memdump
 .sc-start-sc_*
+.ycm_extra_conf.py
 /ABOUT-NLS
 /AUTHORS
 /ChangeLog

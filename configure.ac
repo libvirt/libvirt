@@ -883,6 +883,7 @@ AC_CONFIG_FILES([\
         gnulib/lib/Makefile \
         gnulib/tests/Makefile \
         .color_coded \
+        .ycm_extra_conf.py \
         libvirt.pc \
         libvirt-qemu.pc \
         libvirt-lxc.pc \
