@@ -40,7 +40,7 @@ virSecretObjListNew(void);
 
 virSecretObjPtr
 virSecretObjListFindByUUID(virSecretObjListPtr secrets,
-                           const unsigned char *uuid);
+                           const char *uuidstr);
 
 virSecretObjPtr
 virSecretObjListFindByUsage(virSecretObjListPtr secrets,

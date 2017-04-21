@@ -86,8 +86,8 @@ secretObjFromSecret(virSecretPtr secret)
     virSecretObjPtr obj;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (!(obj = virSecretObjListFindByUUID(driver->secrets, secret->uuid))) {
-        virUUIDFormat(secret->uuid, uuidstr);
+    virUUIDFormat(secret->uuid, uuidstr);
+    if (!(obj = virSecretObjListFindByUUID(driver->secrets, uuidstr))) {
         virReportError(VIR_ERR_NO_SECRET,
                        _("no secret with matching uuid '%s'"), uuidstr);
         return NULL;
@@ -148,10 +148,10 @@ secretLookupByUUID(virConnectPtr conn,
     virSecretPtr ret = NULL;
     virSecretObjPtr obj;
     virSecretDefPtr def;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (!(obj = virSecretObjListFindByUUID(driver->secrets, uuid))) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-        virUUIDFormat(uuid, uuidstr);
+    virUUIDFormat(uuid, uuidstr);
+    if (!(obj = virSecretObjListFindByUUID(driver->secrets, uuidstr))) {
         virReportError(VIR_ERR_NO_SECRET,
                        _("no secret with matching uuid '%s'"), uuidstr);
         goto cleanup;
