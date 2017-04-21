@@ -3207,6 +3207,15 @@ virNetDevGetFeatures(const char *ifname ATTRIBUTE_UNUSED,
               ifname);
     return 0;
 }
+
+int virNetDevSetCoalesce(const char *ifname,
+                         virNetDevCoalescePtr coalesce ATTRIBUTE_UNUSED)
+{
+    virReportSystemError(ENOSYS,
+                         _("Cannot set coalesce info on interface '%s'"),
+                         ifname);
+    return -1;
+}
 #endif
 
 
