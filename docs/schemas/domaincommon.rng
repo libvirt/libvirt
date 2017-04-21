@@ -1525,8 +1525,8 @@
     <attribute name="type">
       <value>network</value>
     </attribute>
-    <interleave>
-      <element name="source">
+    <element name="source">
+      <interleave>
         <attribute name="protocol">
           <choice>
             <value>nbd</value>
@@ -1564,8 +1564,8 @@
           </element>
         </optional>
         <empty/>
-      </element>
-    </interleave>
+      </interleave>
+    </element>
   </define>
 
   <define name="diskSourceVolume">
