@@ -26,6 +26,7 @@
 *.swp
 *~
 .#*
+.color_coded
 .deps
 .dirstamp
 .gdb_history
