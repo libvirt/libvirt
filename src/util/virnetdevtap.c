@@ -762,6 +762,9 @@ virNetDevTapInterfaceStats(const char *ifname,
     }
 
     for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
+        if (!ifa->ifa_addr)
+            continue;
+
         if (ifa->ifa_addr->sa_family != AF_LINK)
             continue;
 

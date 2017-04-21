@@ -902,10 +902,15 @@ virNetDevGetifaddrsAddress(const char *ifname,
     }
 
     for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
-        int family = ifa->ifa_addr->sa_family;
+        int family;
 
         if (STRNEQ_NULLABLE(ifa->ifa_name, ifname))
             continue;
+
+        if (!ifa->ifa_addr)
+            continue;
+        family = ifa->ifa_addr->sa_family;
+
         if (family != AF_INET6 && family != AF_INET)
             continue;
 
