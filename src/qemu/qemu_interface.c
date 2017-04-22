@@ -555,7 +555,7 @@ qemuInterfaceBridgeConnect(virDomainDefPtr def,
             /* libvirt is managing the FDB of the bridge this device
              * is attaching to, so we need to turn off learning and
              * unicast_flood on the device to prevent the kernel from
-             * adding any FDB entries for it. We will add add an fdb
+             * adding any FDB entries for it. We will add an fdb
              * entry ourselves (during qemuInterfaceStartDevices(),
              * using the MAC address from the interface config.
              */

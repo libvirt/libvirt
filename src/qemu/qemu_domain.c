@@ -8717,7 +8717,7 @@ qemuDomainGetStorageSourceByDevstr(const char *devstr,
 
     if (!disk) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("failed to find disk '%s"), target);
+                       _("failed to find disk '%s'"), target);
         goto cleanup;
     }
 

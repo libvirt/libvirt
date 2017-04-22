@@ -21,7 +21,7 @@
     command line tool command '<code>capabilities</code>', it dumps the XML
     associated to the current connection. </p>
 
-    <p>As can be seen seen in the <a href="#elementExamples">example</a>, the
+    <p>As can be seen in the <a href="#elementExamples">example</a>, the
     capabilities XML consists of the <code>capabilities</code> element which
     have exactly one <code>host</code> child element to report information on
     host capabilities, and zero or more <code>guest</code> element to express

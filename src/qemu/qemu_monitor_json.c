@@ -1466,7 +1466,7 @@ qemuMonitorJSONExtractCPUInfo(virJSONValuePtr data,
  * extract results does not produce an error as libvirt can continue without
  * this information.
  *
- * Returns 0 on success success, -1 on a fatal error (oom ...) and -2 if the
+ * Returns 0 on success, -1 on a fatal error (oom ...) and -2 if the
  * query failed gracefully.
  */
 int

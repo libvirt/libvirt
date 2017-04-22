@@ -872,7 +872,7 @@ void qemuAgentClose(qemuAgentPtr mon)
  * VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK(-2), this function will block forever
  * waiting for the result. The value of
  * VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT(-1) means use default timeout value
- * and VIR_DOMAIN_QEMU_AGENT_COMMAND_NOWAIT(0) makes this this function return
+ * and VIR_DOMAIN_QEMU_AGENT_COMMAND_NOWAIT(0) makes this function return
  * immediately without waiting. Any positive value means the number of seconds
  * to wait for the result.
  *

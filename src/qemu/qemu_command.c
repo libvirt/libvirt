@@ -1843,7 +1843,7 @@ qemuBuildDriveStr(virDomainDiskDefPtr disk,
         if (disk->error_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE) {
             /* in the case of enospace, the option is spelled
              * differently in qemu, and it's only valid for werror,
-             * not for rerror, so leave leave rerror NULL.
+             * not for rerror, so leave rerror NULL.
              */
             wpolicy = "enospc";
         } else if (!rpolicy) {
@@ -7242,7 +7242,7 @@ qemuBuildMachineCommandLine(virCommandPtr cmd,
         for (i = 0; i < def->nmems; i++) {
             if (def->mems[i]->model == VIR_DOMAIN_MEMORY_MODEL_NVDIMM) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("nvdimm not is not available "
+                               _("nvdimm is not available "
                                  "with this QEMU binary"));
                 return -1;
             }

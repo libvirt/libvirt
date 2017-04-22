@@ -13993,7 +13993,7 @@ virDomainMemorySourceDefParseXML(xmlNodePtr node,
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         if (!(def->nvdimmPath = virXPathString("string(./path)", ctxt))) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("path is required for model nvdimm'"));
+                           _("path is required for model 'nvdimm'"));
             goto cleanup;
         }
         break;
