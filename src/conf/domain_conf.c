@@ -6789,7 +6789,7 @@ virDomainNetDefCoalesceParseXML(xmlNodePtr node,
     if (!str)
         goto cleanup;
 
-    if (!ret && VIR_ALLOC(ret) < 0)
+    if (VIR_ALLOC(ret) < 0)
         goto cleanup;
 
     if (virStrToLong_ullp(str, NULL, 10, &tmp) < 0) {
