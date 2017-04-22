@@ -6811,6 +6811,7 @@ virDomainNetDefCoalesceParseXML(xmlNodePtr node,
     ret->rx_max_coalesced_frames = tmp;
 
  cleanup:
+    VIR_FREE(str);
     ctxt->node = save;
     return ret;
 
