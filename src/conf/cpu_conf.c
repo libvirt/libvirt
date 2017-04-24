@@ -230,7 +230,7 @@ virCPUDefCopy(const virCPUDef *cpu)
 virCPUDefPtr
 virCPUDefParseXML(xmlNodePtr node,
                   xmlXPathContextPtr ctxt,
-                  virCPUType mode)
+                  virCPUType type)
 {
     virCPUDefPtr def;
     xmlNodePtr *nodes = NULL;
@@ -250,7 +250,7 @@ virCPUDefParseXML(xmlNodePtr node,
     if (VIR_ALLOC(def) < 0)
         return NULL;
 
-    if (mode == VIR_CPU_TYPE_AUTO) {
+    if (type == VIR_CPU_TYPE_AUTO) {
         if (virXPathBoolean("boolean(./arch)", ctxt)) {
             if (virXPathBoolean("boolean(./@match)", ctxt)) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -263,7 +263,7 @@ virCPUDefParseXML(xmlNodePtr node,
             def->type = VIR_CPU_TYPE_GUEST;
         }
     } else {
-        def->type = mode;
+        def->type = type;
     }
 
     if ((cpuMode = virXMLPropString(node, "mode"))) {
