@@ -1198,6 +1198,7 @@
   &lt;model fallback='allow'&gt;core2duo&lt;/model&gt;
   &lt;vendor&gt;Intel&lt;/vendor&gt;
   &lt;topology sockets='1' cores='2' threads='1'/&gt;
+  &lt;cache level='3' mode='emulate'/&gt;
   &lt;feature policy='disable' name='lahf_lm'/&gt;
 &lt;/cpu&gt;
 ...</pre>
@@ -1211,6 +1212,7 @@
 
 <pre>
 &lt;cpu mode='host-passthrough'&gt;
+  &lt;cache mode='passthrough'/&gt;
   &lt;feature policy='disable' name='lahf_lm'/&gt;
 ...</pre>
 
@@ -1433,6 +1435,39 @@
 
         <span class="since">Since 0.8.5</span> the <code>policy</code>
         attribute can be omitted and will default to <code>require</code>.
+      </dd>
+
+      <dt><code>cache</code></dt>
+      <dd><span class="since">Since 3.3.0</span> the <code>cache</code>
+        element describes the virtual CPU cache. If the element is missing,
+        the hypervisor will use a sensible default.
+
+        <dl>
+          <dt><code>level</code></dt>
+          <dd>This optional attribute specifies which cache level is described
+            by the element. Missing attribute means the element describes all
+            CPU cache levels at once. Mixing <code>cache</code> elements with
+            the <code>level</code> attribute set and those without the
+            attribute is forbidden.</dd>
+
+          <dt><code>mode</code></dt>
+          <dd>
+            The following values are supported:
+            <dl>
+              <dt><code>emulate</code></dt>
+              <dd>The hypervisor will provide a fake CPU cache data.</dd>
+
+              <dt><code>passthrough</code></dt>
+              <dd>The real CPU cache data reported by the host CPU will be
+                passed through to the virtual CPU.</dd>
+
+              <dt><code>disable</code></dt>
+              <dd>The virtual CPU will report no CPU cache of the specified
+                level (or no cache at all if the <code>level</code> attribute
+                is missing).</dd>
+            </dl>
+          </dd>
+        </dl>
       </dd>
     </dl>
 

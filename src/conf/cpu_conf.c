@@ -62,6 +62,12 @@ VIR_ENUM_IMPL(virCPUFeaturePolicy, VIR_CPU_FEATURE_LAST,
               "disable",
               "forbid")
 
+VIR_ENUM_IMPL(virCPUCacheMode, VIR_CPU_CACHE_MODE_LAST,
+              "emulate",
+              "passthrough",
+              "disable")
+
+
 void
 virCPUDefFreeFeatures(virCPUDefPtr def)
 {
@@ -92,6 +98,7 @@ virCPUDefFree(virCPUDefPtr def)
         return;
 
     virCPUDefFreeModel(def);
+    VIR_FREE(def->cache);
     VIR_FREE(def);
 }
 
@@ -204,7 +211,18 @@ virCPUDefCopyWithoutModel(const virCPUDef *cpu)
     copy->threads = cpu->threads;
     copy->arch = cpu->arch;
 
+    if (cpu->cache) {
+        if (VIR_ALLOC(copy->cache) < 0)
+            goto error;
+
+        *copy->cache = *cpu->cache;
+    }
+
     return copy;
+
+ error:
+    virCPUDefFree(copy);
+    return NULL;
 }
 
 
@@ -489,6 +507,41 @@ virCPUDefParseXML(xmlNodePtr node,
         def->features[i].policy = policy;
     }
 
+    if (virXPathInt("count(./cache)", ctxt, &n) < 0) {
+        goto cleanup;
+    } else if (n > 1) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("at most one CPU cache element may be specified"));
+        goto cleanup;
+    } else if (n == 1) {
+        int level = -1;
+        char *strmode;
+        int mode;
+
+        if (virXPathBoolean("boolean(./cache[1]/@level)", ctxt) == 1 &&
+            (virXPathInt("string(./cache[1]/@level)", ctxt, &level) < 0 ||
+             level < 1 || level > 3)) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("invalid CPU cache level, must be in range [1,3]"));
+            goto cleanup;
+        }
+
+        if (!(strmode = virXPathString("string(./cache[1]/@mode)", ctxt)) ||
+            (mode = virCPUCacheModeTypeFromString(strmode)) < 0) {
+            VIR_FREE(strmode);
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing or invalid CPU cache mode"));
+            goto cleanup;
+        }
+        VIR_FREE(strmode);
+
+        if (VIR_ALLOC(def->cache) < 0)
+            goto cleanup;
+
+        def->cache->level = level;
+        def->cache->mode = mode;
+    }
+
  cleanup:
     ctxt->node = oldnode;
     VIR_FREE(fallback);
@@ -659,6 +712,15 @@ virCPUDefFormatBuf(virBufferPtr buf,
         virBufferAsprintf(buf, " sockets='%u'", def->sockets);
         virBufferAsprintf(buf, " cores='%u'", def->cores);
         virBufferAsprintf(buf, " threads='%u'", def->threads);
+        virBufferAddLit(buf, "/>\n");
+    }
+
+    if (def->cache) {
+        virBufferAddLit(buf, "<cache ");
+        if (def->cache->level != -1)
+            virBufferAsprintf(buf, "level='%d' ", def->cache->level);
+        virBufferAsprintf(buf, "mode='%s'",
+                          virCPUCacheModeTypeToString(def->cache->mode));
         virBufferAddLit(buf, "/>\n");
     }
 

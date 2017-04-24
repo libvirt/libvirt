@@ -103,6 +103,24 @@ struct _virCPUFeatureDef {
 };
 
 
+typedef enum {
+    VIR_CPU_CACHE_MODE_EMULATE,
+    VIR_CPU_CACHE_MODE_PASSTHROUGH,
+    VIR_CPU_CACHE_MODE_DISABLE,
+
+    VIR_CPU_CACHE_MODE_LAST
+} virCPUCacheMode;
+
+VIR_ENUM_DECL(virCPUCacheMode);
+
+typedef struct _virCPUCacheDef virCPUCacheDef;
+typedef virCPUCacheDef *virCPUCacheDefPtr;
+struct _virCPUCacheDef {
+    int level;          /* -1 for unspecified */
+    virCPUCacheMode mode;
+};
+
+
 typedef struct _virCPUDef virCPUDef;
 typedef virCPUDef *virCPUDefPtr;
 struct _virCPUDef {
@@ -121,6 +139,7 @@ struct _virCPUDef {
     size_t nfeatures;
     size_t nfeatures_max;
     virCPUFeatureDefPtr features;
+    virCPUCacheDefPtr cache;
 };
 
 

@@ -100,6 +100,10 @@ mymain(void)
 
     DO_TEST("vcpus-individual");
 
+    DO_TEST("cpu-cache-emulate");
+    DO_TEST("cpu-cache-passthrough");
+    DO_TEST("cpu-cache-disable");
+
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
 

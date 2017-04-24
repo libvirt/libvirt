@@ -67,6 +67,8 @@ virCapabilitiesSetNetPrefix;
 
 
 # conf/cpu_conf.h
+virCPUCacheModeTypeFromString;
+virCPUCacheModeTypeToString;
 virCPUDefAddFeature;
 virCPUDefCopy;
 virCPUDefCopyModel;

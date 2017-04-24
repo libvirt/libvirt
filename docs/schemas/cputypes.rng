@@ -142,4 +142,25 @@
     </data>
   </define>
 
+  <define name="cpuCache">
+    <element name="cache">
+      <optional>
+        <attribute name="level">
+          <choice>
+            <value>1</value>
+            <value>2</value>
+            <value>3</value>
+          </choice>
+        </attribute>
+      </optional>
+      <attribute name="mode">
+        <choice>
+          <value>emulate</value>
+          <value>passthrough</value>
+          <value>disable</value>
+        </choice>
+      </attribute>
+    </element>
+  </define>
+
 </grammar>
