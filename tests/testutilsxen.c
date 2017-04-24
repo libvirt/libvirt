@@ -6,6 +6,33 @@
 #include "testutilsxen.h"
 #include "domain_conf.h"
 
+static virCPUFeatureDef cpuDefaultFeatures[] = {
+    { (char *) "ds",        -1 },
+    { (char *) "acpi",      -1 },
+    { (char *) "ss",        -1 },
+    { (char *) "ht",        -1 },
+    { (char *) "tm",        -1 },
+    { (char *) "pbe",       -1 },
+    { (char *) "ds_cpl",    -1 },
+    { (char *) "vmx",       -1 },
+    { (char *) "est",       -1 },
+    { (char *) "tm2",       -1 },
+    { (char *) "cx16",      -1 },
+    { (char *) "xtpr",      -1 },
+    { (char *) "lahf_lm",   -1 },
+};
+static virCPUDef cpuDefaultData = {
+    .type = VIR_CPU_TYPE_HOST,
+    .arch = VIR_ARCH_X86_64,
+    .model = (char *) "core2duo",
+    .vendor = (char *) "Intel",
+    .sockets = 1,
+    .cores = 2,
+    .threads = 1,
+    .nfeatures = ARRAY_CARDINALITY(cpuDefaultFeatures),
+    .nfeatures_max = ARRAY_CARDINALITY(cpuDefaultFeatures),
+    .features = cpuDefaultFeatures,
+};
 
 virCapsPtr testXenCapsInit(void)
 {
@@ -88,6 +115,9 @@ testXLInitCaps(void)
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
         return NULL;
+
+    caps->host.cpu = virCPUDefCopy(&cpuDefaultData);
+
     nmachines = ARRAY_CARDINALITY(x86_machines);
     if ((machines = virCapabilitiesAllocMachines(x86_machines, nmachines)) == NULL)
         goto cleanup;

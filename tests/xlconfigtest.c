@@ -268,6 +268,8 @@ mymain(void)
     DO_TEST("fullvirt-hpet-timer");
     DO_TEST("fullvirt-tsc-timer");
     DO_TEST("fullvirt-multi-timer");
+    DO_TEST("fullvirt-nestedhvm");
+    DO_TEST("fullvirt-nestedhvm-disabled");
 
     DO_TEST("paravirt-cmdline");
     DO_TEST_FORMAT("paravirt-cmdline-extra-root", false);
