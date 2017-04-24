@@ -1066,8 +1066,10 @@ remoteRelayDomainEventTunable(virConnectPtr conn,
     if (virTypedParamsSerialize(params, nparams,
                                 (virTypedParameterRemotePtr *) &data.params.params_val,
                                 &data.params.params_len,
-                                VIR_TYPED_PARAM_STRING_OKAY) < 0)
+                                VIR_TYPED_PARAM_STRING_OKAY) < 0) {
+        VIR_FREE(data.dom.name);
         return -1;
+    }
 
     remoteDispatchObjectEventSend(callback->client, remoteProgram,
                                   REMOTE_PROC_DOMAIN_EVENT_CALLBACK_TUNABLE,
@@ -1206,8 +1208,10 @@ remoteRelayDomainEventJobCompleted(virConnectPtr conn,
     if (virTypedParamsSerialize(params, nparams,
                                 (virTypedParameterRemotePtr *) &data.params.params_val,
                                 &data.params.params_len,
-                                VIR_TYPED_PARAM_STRING_OKAY) < 0)
+                                VIR_TYPED_PARAM_STRING_OKAY) < 0) {
+        VIR_FREE(data.dom.name);
         return -1;
+    }
 
     remoteDispatchObjectEventSend(callback->client, remoteProgram,
                                   REMOTE_PROC_DOMAIN_EVENT_CALLBACK_JOB_COMPLETED,
