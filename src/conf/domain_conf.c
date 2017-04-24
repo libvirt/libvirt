@@ -20767,6 +20767,56 @@ virDomainSourceDefFormatSeclabel(virBufferPtr buf,
     virDomainDiskSourceDefFormatSeclabel(buf, nseclabels, seclabels, flags, false);
 }
 
+
+static int
+virDomainDiskSourceFormatNetwork(virBufferPtr buf,
+                                 virStorageSourcePtr src)
+{
+    size_t n;
+    char *path = NULL;
+
+    virBufferAsprintf(buf, "<source protocol='%s'",
+                      virStorageNetProtocolTypeToString(src->protocol));
+
+    if (src->volume) {
+        if (virAsprintf(&path, "%s%s", src->volume, src->path) < 0)
+            return -1;
+    }
+
+    virBufferEscapeString(buf, " name='%s'", path ? path : src->path);
+
+    VIR_FREE(path);
+
+    if (src->nhosts == 0 && !src->snapshot && !src->configFile) {
+        virBufferAddLit(buf, "/>\n");
+    } else {
+        virBufferAddLit(buf, ">\n");
+        virBufferAdjustIndent(buf, 2);
+
+        for (n = 0; n < src->nhosts; n++) {
+            virBufferAddLit(buf, "<host");
+            virBufferEscapeString(buf, " name='%s'", src->hosts[n].name);
+            virBufferEscapeString(buf, " port='%s'", src->hosts[n].port);
+
+            if (src->hosts[n].transport)
+                virBufferAsprintf(buf, " transport='%s'",
+                                  virStorageNetHostTransportTypeToString(src->hosts[n].transport));
+
+            virBufferEscapeString(buf, " socket='%s'", src->hosts[n].socket);
+            virBufferAddLit(buf, "/>\n");
+        }
+
+        virBufferEscapeString(buf, "<snapshot name='%s'/>\n", src->snapshot);
+        virBufferEscapeString(buf, "<config file='%s'/>\n", src->configFile);
+
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</source>\n");
+    }
+
+    return 0;
+}
+
+
 static int
 virDomainDiskSourceFormatInternal(virBufferPtr buf,
                                   virStorageSourcePtr src,
@@ -20774,8 +20824,6 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
                                   unsigned int flags,
                                   bool skipSeclabels)
 {
-    size_t n;
-    char *path = NULL;
     const char *startupPolicy = NULL;
 
     if (policy)
@@ -20811,51 +20859,8 @@ virDomainDiskSourceFormatInternal(virBufferPtr buf,
             break;
 
         case VIR_STORAGE_TYPE_NETWORK:
-            virBufferAsprintf(buf, "<source protocol='%s'",
-                              virStorageNetProtocolTypeToString(src->protocol));
-
-
-            if (src->volume) {
-                if (virAsprintf(&path, "%s%s", src->volume, src->path) < 0)
-                    return -1;
-            }
-
-            virBufferEscapeString(buf, " name='%s'", path ? path : src->path);
-
-            VIR_FREE(path);
-
-            if (src->nhosts == 0 && !src->snapshot && !src->configFile) {
-                virBufferAddLit(buf, "/>\n");
-            } else {
-                virBufferAddLit(buf, ">\n");
-                virBufferAdjustIndent(buf, 2);
-
-                for (n = 0; n < src->nhosts; n++) {
-                    virBufferAddLit(buf, "<host");
-                    virBufferEscapeString(buf, " name='%s'",
-                                          src->hosts[n].name);
-                    virBufferEscapeString(buf, " port='%s'",
-                                          src->hosts[n].port);
-
-                    if (src->hosts[n].transport)
-                        virBufferAsprintf(buf, " transport='%s'",
-                                          virStorageNetHostTransportTypeToString(src->hosts[n].transport));
-
-                    virBufferEscapeString(buf, " socket='%s'",
-                                          src->hosts[n].socket);
-
-                    virBufferAddLit(buf, "/>\n");
-                }
-
-                virBufferEscapeString(buf, "<snapshot name='%s'/>\n",
-                                      src->snapshot);
-
-                virBufferEscapeString(buf, "<config file='%s'/>\n",
-                                      src->configFile);
-
-                virBufferAdjustIndent(buf, -2);
-                virBufferAddLit(buf, "</source>\n");
-            }
+            if (virDomainDiskSourceFormatNetwork(buf, src) < 0)
+                return -1;
             break;
 
         case VIR_STORAGE_TYPE_VOLUME:
