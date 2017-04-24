@@ -777,7 +777,7 @@ sc_prohibit_cross_inclusion:
 	    locking/) safe="($$dir|util|conf|rpc)";;			\
 	    cpu/| network/| node_device/| rpc/| security/| storage/)	\
 	      safe="($$dir|util|conf|storage)";;			\
-	    xenapi/ | xenconfig/ ) safe="($$dir|util|conf|xen)";;	\
+	    xenapi/ | xenconfig/ ) safe="($$dir|util|conf|xen|cpu)";;	\
 	    *) safe="($$dir|$(mid_dirs)|util)";;			\
 	  esac;								\
 	  in_vc_files="^src/$$dir"					\

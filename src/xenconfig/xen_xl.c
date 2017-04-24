@@ -34,6 +34,7 @@
 #include "virstoragefile.h"
 #include "xen_xl.h"
 #include "libxl_capabilities.h"
+#include "cpu/cpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_XENXL
 
@@ -106,6 +107,7 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         const char *bios;
         const char *boot;
+        int val = 0;
 
         if (xenConfigGetString(conf, "bios", &bios, NULL) < 0)
             return -1;
@@ -163,6 +165,52 @@ xenParseXLOS(virConfPtr conf, virDomainDefPtr def, virCapsPtr caps)
                 break;
             }
             def->os.nBootDevs++;
+        }
+
+        if (xenConfigGetBool(conf, "nestedhvm", &val, -1) < 0)
+            return -1;
+
+        if (val == 1) {
+            virCPUDefPtr cpu;
+
+            if (VIR_ALLOC(cpu) < 0)
+                return -1;
+
+            cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;
+            cpu->type = VIR_CPU_TYPE_GUEST;
+            def->cpu = cpu;
+        } else if (val == 0) {
+            const char *vtfeature = NULL;
+
+            if (caps && caps->host.cpu && ARCH_IS_X86(def->os.arch)) {
+                if (virCPUCheckFeature(caps->host.arch, caps->host.cpu, "vmx"))
+                    vtfeature = "vmx";
+                else if (virCPUCheckFeature(caps->host.arch, caps->host.cpu, "svm"))
+                    vtfeature = "svm";
+            }
+
+            if (vtfeature) {
+                virCPUDefPtr cpu;
+
+                if (VIR_ALLOC(cpu) < 0)
+                    return -1;
+
+                if (VIR_ALLOC(cpu->features) < 0) {
+                    VIR_FREE(cpu);
+                    return -1;
+                }
+
+                if (VIR_STRDUP(cpu->features->name, vtfeature) < 0) {
+                    VIR_FREE(cpu->features);
+                    VIR_FREE(cpu);
+                    return -1;
+                }
+                cpu->features->policy = VIR_CPU_FEATURE_DISABLE;
+                cpu->nfeatures = cpu->nfeatures_max = 1;
+                cpu->mode = VIR_CPU_MODE_HOST_PASSTHROUGH;
+                cpu->type = VIR_CPU_TYPE_GUEST;
+                def->cpu = cpu;
+            }
         }
     } else {
         if (xenConfigCopyStringOpt(conf, "bootloader", &def->os.bootloader) < 0)
@@ -898,6 +946,34 @@ xenFormatXLOS(virConfPtr conf, virDomainDefPtr def)
 
         if (xenConfigSetString(conf, "boot", boot) < 0)
             return -1;
+
+        if (def->cpu &&
+            def->cpu->mode == VIR_CPU_MODE_HOST_PASSTHROUGH) {
+            bool hasHwVirt = true;
+
+            if (def->cpu->nfeatures) {
+                for (i = 0; i < def->cpu->nfeatures; i++) {
+
+                    switch (def->cpu->features[i].policy) {
+                        case VIR_CPU_FEATURE_DISABLE:
+                        case VIR_CPU_FEATURE_FORBID:
+                            if (STREQ(def->cpu->features[i].name, "vmx") ||
+                                STREQ(def->cpu->features[i].name, "svm"))
+                                hasHwVirt = false;
+                            break;
+
+                        case VIR_CPU_FEATURE_FORCE:
+                        case VIR_CPU_FEATURE_REQUIRE:
+                        case VIR_CPU_FEATURE_OPTIONAL:
+                        case VIR_CPU_FEATURE_LAST:
+                            break;
+                    }
+                }
+            }
+
+            if (xenConfigSetInt(conf, "nestedhvm", hasHwVirt) < 0)
+                return -1;
+        }
 
         /* XXX floppy disks */
     } else {
