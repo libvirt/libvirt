@@ -47,6 +47,7 @@
 #include "libxl_utils.h"
 #include "virstoragefile.h"
 #include "secret_util.h"
+#include "cpu/cpu.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
@@ -293,6 +294,7 @@ libxlMakeChrdevStr(virDomainChrDefPtr def, char **buf)
 static int
 libxlMakeDomBuildInfo(virDomainDefPtr def,
                       libxl_ctx *ctx,
+                      virCapsPtr caps,
                       libxl_domain_config *d_config)
 {
     libxl_domain_build_info *b_info = &d_config->b_info;
@@ -373,6 +375,40 @@ libxlMakeDomBuildInfo(virDomainDefPtr def,
         libxl_defbool_set(&b_info->u.hvm.acpi,
                           def->features[VIR_DOMAIN_FEATURE_ACPI] ==
                           VIR_TRISTATE_SWITCH_ON);
+
+        if (caps &&
+            def->cpu && def->cpu->mode == (VIR_CPU_MODE_HOST_PASSTHROUGH)) {
+            bool hasHwVirt = false;
+            bool svm = false, vmx = false;
+
+            if (ARCH_IS_X86(def->os.arch)) {
+                vmx = virCPUCheckFeature(caps->host.arch, caps->host.cpu, "vmx");
+                svm = virCPUCheckFeature(caps->host.arch, caps->host.cpu, "svm");
+                hasHwVirt = vmx | svm;
+            }
+
+            if (def->cpu->nfeatures) {
+                for (i = 0; i < def->cpu->nfeatures; i++) {
+
+                    switch (def->cpu->features[i].policy) {
+
+                        case VIR_CPU_FEATURE_DISABLE:
+                        case VIR_CPU_FEATURE_FORBID:
+                            if ((vmx && STREQ(def->cpu->features[i].name, "vmx")) ||
+                                (svm && STREQ(def->cpu->features[i].name, "svm")))
+                                hasHwVirt = false;
+                            break;
+
+                        case VIR_CPU_FEATURE_FORCE:
+                        case VIR_CPU_FEATURE_REQUIRE:
+                        case VIR_CPU_FEATURE_OPTIONAL:
+                        case VIR_CPU_FEATURE_LAST:
+                            break;
+                    }
+                }
+            }
+            libxl_defbool_set(&b_info->u.hvm.nested_hvm, hasHwVirt);
+        }
 
         if (def->nsounds > 0) {
             /*
@@ -2089,6 +2125,7 @@ libxlBuildDomainConfig(virPortAllocatorPtr graphicsports,
                        virDomainDefPtr def,
                        const char *channelDir LIBXL_ATTR_UNUSED,
                        libxl_ctx *ctx,
+                       virCapsPtr caps,
                        libxl_domain_config *d_config)
 {
     libxl_domain_config_init(d_config);
@@ -2096,7 +2133,7 @@ libxlBuildDomainConfig(virPortAllocatorPtr graphicsports,
     if (libxlMakeDomCreateInfo(ctx, def, &d_config->c_info) < 0)
         return -1;
 
-    if (libxlMakeDomBuildInfo(def, ctx, d_config) < 0)
+    if (libxlMakeDomBuildInfo(def, ctx, caps, d_config) < 0)
         return -1;
 
     if (libxlMakeDiskList(def, d_config) < 0)
