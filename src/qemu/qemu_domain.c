@@ -2719,6 +2719,60 @@ qemuDomainDefCPUPostParse(virDomainDefPtr def)
     if (!def->cpu)
         return 0;
 
+    if (def->cpu->cache) {
+        virCPUCacheDefPtr cache = def->cpu->cache;
+
+        if (!ARCH_IS_X86(def->os.arch)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("CPU cache specification is not supported "
+                             "for '%s' architecture"),
+                           virArchToString(def->os.arch));
+            return -1;
+        }
+
+        switch (cache->mode) {
+        case VIR_CPU_CACHE_MODE_EMULATE:
+            if (cache->level != 3) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("CPU cache mode '%s' can only be used with "
+                                 "level='3'"),
+                               virCPUCacheModeTypeToString(cache->mode));
+                return -1;
+            }
+            break;
+
+        case VIR_CPU_CACHE_MODE_PASSTHROUGH:
+            if (def->cpu->mode != VIR_CPU_MODE_HOST_PASSTHROUGH) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("CPU cache mode '%s' can only be used with "
+                                 "'%s' CPUs"),
+                               virCPUCacheModeTypeToString(cache->mode),
+                               virCPUModeTypeToString(VIR_CPU_MODE_HOST_PASSTHROUGH));
+                return -1;
+            }
+
+            if (cache->level != -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported CPU cache level for mode '%s'"),
+                               virCPUCacheModeTypeToString(cache->mode));
+                return -1;
+            }
+            break;
+
+        case VIR_CPU_CACHE_MODE_DISABLE:
+            if (cache->level != -1) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unsupported CPU cache level for mode '%s'"),
+                               virCPUCacheModeTypeToString(cache->mode));
+                return -1;
+            }
+            break;
+
+        case VIR_CPU_CACHE_MODE_LAST:
+            break;
+        }
+    }
+
     /* Nothing to be done if only CPU topology is specified. */
     if (def->cpu->mode == VIR_CPU_MODE_CUSTOM &&
         !def->cpu->model)

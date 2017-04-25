@@ -364,6 +364,7 @@ VIR_ENUM_IMPL(virQEMUCaps, QEMU_CAPS_LAST,
               "query-cpu-definitions", /* 250 */
               "block-write-threshold",
               "query-named-block-nodes",
+              "cpu-cache",
     );
 
 
@@ -4786,6 +4787,10 @@ virQEMUCapsInitQMPMonitor(virQEMUCapsPtr qemuCaps,
     if (qemuCaps->version < 2009000 &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM))
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_DEVICE_NVDIMM);
+
+    if (ARCH_IS_X86(qemuCaps->arch) &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION))
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_CACHE);
 
     ret = 0;
  cleanup:
