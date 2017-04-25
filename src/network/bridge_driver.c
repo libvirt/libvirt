@@ -4675,6 +4675,13 @@ networkNotifyActualDevice(virDomainDefPtr dom,
     }
     netdef = network->def;
 
+    if (!virNetworkObjIsActive(network)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("network '%s' is not active"),
+                       netdef->name);
+        goto error;
+    }
+
     /* if we're restarting libvirtd after an upgrade from a version
      * that didn't save bridge name in actualNetDef for
      * actualType==network, we need to copy it in so that it will be
