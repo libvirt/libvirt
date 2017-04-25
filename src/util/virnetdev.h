@@ -37,6 +37,11 @@ typedef struct ifreq virIfreq;
 typedef void virIfreq;
 # endif
 
+/* Used for prefix of ifname of any tap device name generated
+ * dynamically by libvirt, cannot be used for a persistent network name.
+ */
+# define VIR_NET_GENERATED_TAP_PREFIX "vnet"
+
 typedef enum {
    VIR_NETDEV_RX_FILTER_MODE_NONE = 0,
    VIR_NETDEV_RX_FILTER_MODE_NORMAL,

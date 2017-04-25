@@ -9746,7 +9746,7 @@ virDomainNetDefParseXML(virDomainXMLOptionPtr xmlopt,
                 ifname = virXMLPropString(cur, "dev");
                 if (ifname &&
                     (flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
-                    (STRPREFIX(ifname, VIR_NET_GENERATED_PREFIX) ||
+                    (STRPREFIX(ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
                      (prefix && STRPREFIX(ifname, prefix)))) {
                     /* An auto-generated target name, blank it out */
                     VIR_FREE(ifname);
@@ -22162,7 +22162,7 @@ virDomainNetDefFormat(virBufferPtr buf,
 
     if (def->ifname &&
         !((flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE) &&
-          (STRPREFIX(def->ifname, VIR_NET_GENERATED_PREFIX) ||
+          (STRPREFIX(def->ifname, VIR_NET_GENERATED_TAP_PREFIX) ||
            (prefix && STRPREFIX(def->ifname, prefix))))) {
         /* Skip auto-generated target names for inactive config. */
         virBufferEscapeString(buf, "<target dev='%s'/>\n", def->ifname);

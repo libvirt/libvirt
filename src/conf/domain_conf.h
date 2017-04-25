@@ -1041,10 +1041,6 @@ struct _virDomainNetDef {
     virNetDevCoalescePtr coalesce;
 };
 
-/* Used for prefix of ifname of any network name generated dynamically
- * by libvirt, and cannot be used for a persistent network name.  */
-# define VIR_NET_GENERATED_PREFIX "vnet"
-
 typedef enum {
     VIR_DOMAIN_CHR_DEVICE_STATE_DEFAULT = 0,
     VIR_DOMAIN_CHR_DEVICE_STATE_CONNECTED,
