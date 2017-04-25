@@ -626,8 +626,6 @@ virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
                          virSecretObjListACLFilter filter,
                          virConnectPtr conn)
 {
-    int ret = -1;
-
     struct virSecretObjListGetHelperData data = {
         .conn = conn, .filter = filter, .got = 0,
         .uuids = uuids, .nuuids = nuuids, .error = false };
@@ -637,16 +635,14 @@ virSecretObjListGetUUIDs(virSecretObjListPtr secrets,
     virObjectUnlock(secrets);
 
     if (data.error)
-        goto cleanup;
+        goto error;
 
-    ret = data.got;
+    return data.got;
 
- cleanup:
-    if (ret < 0) {
-        while (data.got)
-            VIR_FREE(data.uuids[--data.got]);
-    }
-    return ret;
+ error:
+    while (data.got)
+        VIR_FREE(data.uuids[--data.got]);
+    return -1;
 }
 
 
