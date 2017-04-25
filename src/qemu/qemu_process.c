@@ -6431,6 +6431,12 @@ void qemuProcessStop(virQEMUDriverPtr driver,
     priv->qemuCaps = NULL;
     VIR_FREE(priv->pidfile);
 
+    /* remove automatic pinning data */
+    virBitmapFree(priv->autoNodeset);
+    priv->autoNodeset = NULL;
+    virBitmapFree(priv->autoCpuset);
+    priv->autoCpuset = NULL;
+
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
         char *xml = qemuDomainDefFormatXML(driver, vm->def, 0);
