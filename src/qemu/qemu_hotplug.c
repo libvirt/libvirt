@@ -3273,7 +3273,7 @@ qemuDomainChangeNet(virQEMUDriverPtr driver,
 
     if (STRNEQ_NULLABLE(virDomainNetGetActualDirectDev(olddev),
                         virDomainNetGetActualDirectDev(newdev)) ||
-        virDomainNetGetActualDirectMode(olddev) != virDomainNetGetActualDirectMode(olddev) ||
+        virDomainNetGetActualDirectMode(olddev) != virDomainNetGetActualDirectMode(newdev) ||
         !virNetDevVPortProfileEqual(virDomainNetGetActualVirtPortProfile(olddev),
                                     virDomainNetGetActualVirtPortProfile(newdev)) ||
         !virNetDevVlanEqual(virDomainNetGetActualVlan(olddev),
