@@ -913,12 +913,15 @@ virDomainObjListRename;
 virInterfaceObjAssignDef;
 virInterfaceObjFindByMACString;
 virInterfaceObjFindByName;
+virInterfaceObjGetDef;
 virInterfaceObjGetNames;
+virInterfaceObjIsActive;
 virInterfaceObjListClone;
 virInterfaceObjListFree;
 virInterfaceObjLock;
 virInterfaceObjNumOfInterfaces;
 virInterfaceObjRemove;
+virInterfaceObjSetActive;
 virInterfaceObjUnlock;
 
 

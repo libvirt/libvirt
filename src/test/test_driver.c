@@ -1025,7 +1025,7 @@ testParseInterfaces(testDriverPtr privconn,
             goto error;
         }
 
-        obj->active = 1;
+        virInterfaceObjSetActive(obj, true);
         virInterfaceObjUnlock(obj);
     }
 
@@ -3711,7 +3711,7 @@ testInterfaceLookupByName(virConnectPtr conn,
 
     if (!(obj = testInterfaceObjFindByName(privconn, name)))
         return NULL;
-    def = obj->def;
+    def = virInterfaceObjGetDef(obj);
 
     ret = virGetInterface(conn, def->name, def->mac);
 
@@ -3744,7 +3744,7 @@ testInterfaceLookupByMACString(virConnectPtr conn,
         goto cleanup;
     }
 
-    def = obj->def;
+    def = virInterfaceObjGetDef(obj);
     ret = virGetInterface(conn, def->name, def->mac);
 
  cleanup:
@@ -3870,14 +3870,16 @@ testInterfaceGetXMLDesc(virInterfacePtr iface,
 {
     testDriverPtr privconn = iface->conn->privateData;
     virInterfaceObjPtr obj;
+    virInterfaceDefPtr def;
     char *ret = NULL;
 
     virCheckFlags(0, NULL);
 
     if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
         return NULL;
+    def = virInterfaceObjGetDef(obj);
 
-    ret = virInterfaceDefFormat(obj->def);
+    ret = virInterfaceDefFormat(def);
 
     virInterfaceObjUnlock(obj);
     return ret;
@@ -3904,7 +3906,7 @@ testInterfaceDefineXML(virConnectPtr conn,
     if ((obj = virInterfaceObjAssignDef(&privconn->ifaces, def)) == NULL)
         goto cleanup;
     def = NULL;
-    objdef = obj->def;
+    objdef = virInterfaceObjGetDef(obj);
 
     ret = virGetInterface(conn, objdef->name, objdef->mac);
 
@@ -3945,12 +3947,12 @@ testInterfaceCreate(virInterfacePtr iface,
     if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
         return -1;
 
-    if (obj->active != 0) {
+    if (virInterfaceObjIsActive(obj)) {
         virReportError(VIR_ERR_OPERATION_INVALID, NULL);
         goto cleanup;
     }
 
-    obj->active = 1;
+    virInterfaceObjSetActive(obj, true);
     ret = 0;
 
  cleanup:
@@ -3972,12 +3974,12 @@ testInterfaceDestroy(virInterfacePtr iface,
     if (!(obj = testInterfaceObjFindByName(privconn, iface->name)))
         return -1;
 
-    if (obj->active == 0) {
+    if (!virInterfaceObjIsActive(obj)) {
         virReportError(VIR_ERR_OPERATION_INVALID, NULL);
         goto cleanup;
     }
 
-    obj->active = 0;
+    virInterfaceObjSetActive(obj, false);
     ret = 0;
 
  cleanup:

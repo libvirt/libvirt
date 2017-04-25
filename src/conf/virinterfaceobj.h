@@ -24,12 +24,6 @@
 
 typedef struct _virInterfaceObj virInterfaceObj;
 typedef virInterfaceObj *virInterfaceObjPtr;
-struct _virInterfaceObj {
-    virMutex lock;
-
-    bool active;           /* true if interface is active (up) */
-    virInterfaceDefPtr def; /* The interface definition */
-};
 
 typedef struct _virInterfaceObjList virInterfaceObjList;
 typedef virInterfaceObjList *virInterfaceObjListPtr;
@@ -38,11 +32,15 @@ struct _virInterfaceObjList {
     virInterfaceObjPtr *objs;
 };
 
-static inline bool
-virInterfaceObjIsActive(const virInterfaceObj *iface)
-{
-    return iface->active;
-}
+virInterfaceDefPtr
+virInterfaceObjGetDef(virInterfaceObjPtr obj);
+
+bool
+virInterfaceObjIsActive(virInterfaceObjPtr obj);
+
+void
+virInterfaceObjSetActive(virInterfaceObjPtr obj,
+                         bool active);
 
 int
 virInterfaceObjFindByMACString(virInterfaceObjListPtr interfaces,
