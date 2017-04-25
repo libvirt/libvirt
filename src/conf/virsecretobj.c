@@ -298,6 +298,9 @@ virSecretObjListRemove(virSecretObjListPtr secrets,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
+    if (!obj)
+        return;
+
     virUUIDFormat(secret->def->uuid, uuidstr);
     virObjectRef(secret);
     virObjectUnlock(secret);
@@ -915,8 +918,7 @@ virSecretLoad(virSecretObjListPtr secrets,
     secret = NULL;
 
  cleanup:
-    if (secret)
-        virSecretObjListRemove(secrets, secret);
+    virSecretObjListRemove(secrets, secret);
     virSecretDefFree(def);
     return ret;
 }
