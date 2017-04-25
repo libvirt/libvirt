@@ -37,8 +37,8 @@ int networkRegister(void);
 int networkAllocateActualDevice(virDomainDefPtr dom,
                                 virDomainNetDefPtr iface)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int networkNotifyActualDevice(virDomainDefPtr dom,
-                              virDomainNetDefPtr iface)
+void networkNotifyActualDevice(virDomainDefPtr dom,
+                               virDomainNetDefPtr iface)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int networkReleaseActualDevice(virDomainDefPtr dom,
                                virDomainNetDefPtr iface)
@@ -72,11 +72,10 @@ int networkBandwidthUpdate(virDomainNetDefPtr iface,
 #  define networkDnsmasqConfContents(network, pidfile, configstr, \
                     dctx, caps) 0
 
-static inline int
+static inline void
 networkNotifyActualDevice(virDomainDefPtr dom ATTRIBUTE_UNUSED,
                           virDomainNetDefPtr iface ATTRIBUTE_UNUSED)
 {
-    return 0;
 }
 
 static inline int

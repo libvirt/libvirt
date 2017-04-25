@@ -4649,9 +4649,9 @@ networkAllocateActualDevice(virDomainDefPtr dom,
  * order, or re-attach the interface's tap device to the network's
  * bridge.
  *
- * Returns 0 on success, -1 on failure.
+ * No return value (but does log any failures)
  */
-int
+void
 networkNotifyActualDevice(virDomainDefPtr dom,
                           virDomainNetDefPtr iface)
 {
@@ -4661,11 +4661,10 @@ networkNotifyActualDevice(virDomainDefPtr dom,
     virNetworkDefPtr netdef;
     virNetworkForwardIfDefPtr dev = NULL;
     size_t i;
-    int ret = -1;
     char *master = NULL;
 
     if (iface->type != VIR_DOMAIN_NET_TYPE_NETWORK)
-        return 0;
+        return;
 
     network = virNetworkObjFindByName(driver->networks, iface->data.network.name);
     if (!network) {
@@ -4841,11 +4840,10 @@ networkNotifyActualDevice(virDomainDefPtr dom,
     }
     networkLogAllocation(netdef, actualType, dev, iface, true);
 
-    ret = 0;
  cleanup:
     virNetworkObjEndAPI(&network);
     VIR_FREE(master);
-    return ret;
+    return;
 
  error:
     goto cleanup;

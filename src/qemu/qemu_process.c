@@ -2825,7 +2825,7 @@ int qemuProcessStopCPUs(virQEMUDriverPtr driver,
 
 
 
-static int
+static void
 qemuProcessNotifyNets(virDomainDefPtr def)
 {
     size_t i;
@@ -2840,10 +2840,8 @@ qemuProcessNotifyNets(virDomainDefPtr def)
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_DIRECT)
            ignore_value(virNetDevMacVLanReserveName(net->ifname, false));
 
-        if (networkNotifyActualDevice(def, net) < 0)
-            return -1;
+        networkNotifyActualDevice(def, net);
     }
-    return 0;
 }
 
 static int
@@ -3480,8 +3478,7 @@ qemuProcessReconnect(void *opaque)
     if (qemuSecurityReserveLabel(driver->securityManager, obj->def, obj->pid) < 0)
         goto error;
 
-    if (qemuProcessNotifyNets(obj->def) < 0)
-        goto error;
+    qemuProcessNotifyNets(obj->def);
 
     if (qemuProcessFiltersInstantiate(obj->def))
         goto error;
