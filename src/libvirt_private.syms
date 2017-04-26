@@ -2692,6 +2692,7 @@ virStrcpy;
 virStrdup;
 virStringBufferIsPrintable;
 virStringEncodeBase64;
+virStringHasChars;
 virStringHasControlChars;
 virStringIsEmpty;
 virStringIsPrintable;

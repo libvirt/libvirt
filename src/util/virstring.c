@@ -1195,6 +1195,24 @@ virStringStripIPv6Brackets(char *str)
 }
 
 
+/**
+ * virStringHasChars:
+ * @str: string to look for chars in
+ * @chars: chars to find in string @str
+ *
+ * Returns true if @str contains any of the chars in @chars.
+ */
+bool
+virStringHasChars(const char *str,
+                  const char *chars)
+{
+    if (!str)
+        return false;
+
+    return str[strcspn(str, chars)] != '\0';
+}
+
+
 static const char control_chars[] =
     "\x01\x02\x03\x04\x05\x06\x07"
     "\x08" /* \t \n */ "\x0B\x0C" /* \r */ "\x0E\x0F"
@@ -1204,10 +1222,7 @@ static const char control_chars[] =
 bool
 virStringHasControlChars(const char *str)
 {
-    if (!str)
-        return false;
-
-    return str[strcspn(str, control_chars)] != '\0';
+    return virStringHasChars(str, control_chars);
 }
 
 
