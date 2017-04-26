@@ -2467,23 +2467,8 @@ qemuDomainAttachHostSCSIDevice(virConnectPtr conn,
             return -1;
     }
 
-    if (qemuHostdevPrepareSCSIDevices(driver, vm->def->name,
-                                      &hostdev, 1) < 0) {
-        virDomainHostdevSubsysSCSIPtr scsisrc = &hostdev->source.subsys.u.scsi;
-        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-            virDomainHostdevSubsysSCSIiSCSIPtr iscsisrc = &scsisrc->u.iscsi;
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to prepare scsi hostdev for iSCSI: %s"),
-                           iscsisrc->path);
-        } else {
-            virDomainHostdevSubsysSCSIHostPtr scsihostsrc = &scsisrc->u.host;
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to prepare scsi hostdev: %s:%u:%u:%llu"),
-                           scsihostsrc->adapter, scsihostsrc->bus,
-                           scsihostsrc->target, scsihostsrc->unit);
-        }
+    if (qemuHostdevPrepareSCSIDevices(driver, vm->def->name, &hostdev, 1) < 0)
         return -1;
-    }
 
     if (qemuDomainNamespaceSetupHostdev(driver, vm, hostdev) < 0)
         goto cleanup;
