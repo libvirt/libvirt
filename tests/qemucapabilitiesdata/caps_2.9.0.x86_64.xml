@@ -203,13 +203,14 @@
   <flag name='query-cpu-model-expansion'/>
   <flag name='virtio-net.host_mtu'/>
   <flag name='spice-rendernode'/>
+  <flag name='nvdimm'/>
   <flag name='pcie-root-port'/>
   <flag name='query-cpu-definitions'/>
   <flag name='block-write-threshold'/>
   <flag name='query-named-block-nodes'/>
-  <version>2008090</version>
+  <version>2009000</version>
   <kvmVersion>0</kvmVersion>
-  <package> (v2.9.0-rc0-142-g940a8ce)</package>
+  <package> (v2.9.0)</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='phys-bits' type='number' value='0'/>
