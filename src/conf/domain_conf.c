@@ -23310,7 +23310,8 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
             return -1;
         }
 
-        if (glisten->type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET) {
+        switch (glisten->type) {
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
             /* To not break migration we shouldn't print the 'socket' attribute
              * if it's auto-generated or if it's based on config option from
              * qemu.conf.  If the socket is provided by user we need to print it
@@ -23320,7 +23321,10 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                   (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE))) {
                 virBufferEscapeString(buf, " socket='%s'", glisten->socket);
             }
-        } else {
+            break;
+
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_ADDRESS:
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK:
             if (def->data.vnc.port &&
                 (!def->data.vnc.autoport || !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE)))
                 virBufferAsprintf(buf, " port='%d'",
@@ -23338,6 +23342,10 @@ virDomainGraphicsDefFormat(virBufferPtr buf,
                 virBufferAsprintf(buf, " websocket='%d'", def->data.vnc.websocket);
 
             virDomainGraphicsListenDefFormatAddr(buf, glisten, flags);
+            break;
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
+        case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_LAST:
+            break;
         }
 
         if (def->data.vnc.keymap)
